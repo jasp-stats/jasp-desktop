@@ -48,9 +48,10 @@ RCPP_MODULE(jaspResults)
 	Rcpp::class_<jaspContainer_Interface>("jaspContainer")
 		.derives<jaspObject_Interface>("jaspObject")
 
-		.property("length",			&jaspContainer_Interface::length,		"Returns how many objects are stored in this container.")
-		.method( "[[",				&jaspContainer_Interface::at,			"Retrieve an object from this container as specified under the fieldname.")
-		.method( "[[<-",			&jaspContainer_Interface::insert,		"Insert an object into this container under a fieldname, if this object is a jaspObject and without a title it will get the fieldname as title.")
+		.property("length",			&jaspContainer_Interface::length,																		"Returns how many objects are stored in this container.")
+		.property("initCollapsed",	&jaspContainer_Interface::getInitiallyCollapsed,	&jaspContainer_Interface::setInitiallyCollapsed,	"If this is set true the container will be collapsed initially.")
+		.method( "[[",				&jaspContainer_Interface::at,																			"Retrieve an object from this container as specified under the fieldname.")
+		.method( "[[<-",			&jaspContainer_Interface::insert,																		"Insert an object into this container under a fieldname, if this object is a jaspObject and without a title it will get the fieldname as title.")
 	;
 
 	Rcpp::class_<jaspPlot_Interface>("jaspPlot")

@@ -3,7 +3,8 @@ JASPWidgets.collection = Backbone.Model.extend({
 		title:			'',
 		titleFormat:	'h3',
 		collection:		[],
-		name:			""
+		name:			"",
+		initCollapsed:	false
 	}
 });
 
@@ -243,8 +244,11 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 			}
 		}
 
+		if(this.model.get("collapsed") === undefined && this.model.get("initCollapsed") !== undefined)
+			this.model.set("collapsed", this.model.get("initCollapsed"));
+
 		var styleAttr = '';
-		var collapsed = this.model.get("collapsed");
+		var collapsed = this.model.get("collapsed") ;
 		styleAttr = collapsed ? ' style="display: none;"' : '';
 		if (collapsed)
 			this.$el.addClass('jasp-collapsed');
