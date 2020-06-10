@@ -51,6 +51,8 @@ public:
 	bool		containsNonContainer();
 	bool		canShowErrorMessage()										const	override;
 
+	bool		_initiallyCollapsed = false;
+
 	static std::vector<std::string>				convertSortedDataFieldsToStringVector(std::vector<std::pair<double, std::string>> sortvec, bool removeDuplicates = false);
 	std::vector<std::pair<double, std::string>> getSortedDataFieldsSortVector()														const;
 	std::vector<std::string>					getSortedDataFields()																const;
@@ -74,6 +76,8 @@ public:
 	int length()													{ return ((jaspContainer*)myJaspObject)->length(); }
 	Rcpp::RObject	at(std::string field)							{ return ((jaspContainer*)myJaspObject)->at(field); }
 	void			insert(std::string field, Rcpp::RObject value)	{ ((jaspContainer*)myJaspObject)->insert(field, value); }
+
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspContainer, bool,	_initiallyCollapsed,	InitiallyCollapsed)
 };
 
 RCPP_EXPOSED_CLASS_NODECL(jaspContainer_Interface)

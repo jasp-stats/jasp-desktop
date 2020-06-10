@@ -95,8 +95,8 @@ jaspResultsCalledFromJasp <- function() {
 createJaspPlot <- function( plot = NULL, title = "",    width = 320,   height = 320,    aspectRatio = 0,           error = NULL,  dependencies = NULL,         position = NULL)
   return(jaspPlotR$new(     plot = plot, title = title, width = width, height = height, aspectRatio = aspectRatio, error = error, dependencies = dependencies, position = position))
 
-createJaspContainer <- function(  title = "",     dependencies = NULL,          position = NULL)
-  return(jaspContainerR$new(      title = title,  dependencies = dependencies,  position = position))
+createJaspContainer <- function(  title = "",     dependencies = NULL,          position = NULL,     initCollapsed = FALSE)
+  return(jaspContainerR$new(      title = title,  dependencies = dependencies,  position = position, initCollapsed = initCollapsed))
 
 createJaspTable <- function( title="",       data = NULL, colNames = NULL,     colTitles = NULL,       overtitles = NULL,       colFormats = NULL,       rowNames = NULL,     rowTitles = NULL,      dependencies = NULL,         position = NULL,     expectedRows = NULL,          expectedColumns = NULL)
   return(jaspTableR$new(      title = title,  data = data, colNames = colNames, colTitles = colTitles,  overtitles = overtitles, colFormats = colFormats, rowNames = rowNames, rowTitles = rowTitles, dependencies = dependencies, position = position, expectedRows = expectedRows,  expectedColumns = expectedColumns))
@@ -354,7 +354,7 @@ jaspContainerR <- R6Class(
 	inherit   = jaspOutputObjR,
 	cloneable = FALSE,
 	public    = list(
-		initialize = function(title = "", dependencies = NULL, position = NULL, jaspObject = NULL) {
+    initialize = function(title = "", dependencies = NULL, position = NULL, initCollapsed = FALSE, jaspObject = NULL) {
 			if (!is.null(jaspObject)) {
 			  private$jaspObject <- jaspObject
 			  return()
@@ -368,26 +368,32 @@ jaspContainerR <- R6Class(
 			if (!is.null(dependencies))
 				container$dependOnOptions(dependencies)
 			
-			if (is.numeric(position))
-				container$position = position
+      if (is.numeric(position))
+        container$position <- position
+
+      if (is.logical(initCollapsed))
+        container$initCollapsed <- initCollapsed
 			
 			private$jaspObject <- container
 			return()
 		},
 		length = function() private$jaspObject$length
 	),
+  active = list(
+    initCollapsed  = function(x) if (missing(x)) private$jaspObject$initCollapsed   else private$jaspObject$initCollapsed   <- x
+  ),
 	private	= list(
 		children    = list(),
 		jaspObject  = NULL,
 		jaspCppToR6 = function(cppObj) {
 			return(switch(
 				class(cppObj),
-				"Rcpp_jaspPlot"      = jaspPlotR$new(jaspObject = cppObj),
-				"Rcpp_jaspTable"     = jaspTableR$new(jaspObject = cppObj),
-				"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
-				"Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
-				"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
-				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
+        "Rcpp_jaspPlot"      = jaspPlotR$new(      jaspObject = cppObj ),
+        "Rcpp_jaspTable"     = jaspTableR$new(     jaspObject = cppObj ),
+        "Rcpp_jaspContainer" = jaspContainerR$new( jaspObject = cppObj ),
+        "Rcpp_jaspColumn"    = jaspColumnR$new(    jaspObject = cppObj ),
+        "Rcpp_jaspState"     = jaspStateR$new(     jaspObject = cppObj ),
+        "Rcpp_jaspHtml"      = jaspHtmlR$new(      jaspObject = cppObj ),
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)), domain = NA)
 			))
 		},
