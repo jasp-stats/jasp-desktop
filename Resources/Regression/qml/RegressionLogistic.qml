@@ -61,7 +61,7 @@ Form
 				source: ['covariates', 'factors']
 				width: parent.width / 4
 			}
-			ModelTermsList { width: parent.width * 5 / 9; 	addInteractionsByDefault: falses }
+			ModelTermsList { width: parent.width * 5 / 9; 	addInteractionsByDefault: false }
 		}
 		
 	}
