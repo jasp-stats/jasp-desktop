@@ -23,7 +23,8 @@ openGrDevice <- function(...) {
   #if (jaspResultsCalledFromJasp())
   #  svglite::svglite(...)
   #else
-  grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+  ragg::agg_png(...)
+  # grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
 }
 
 writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathpng=NULL, ppi=300, backgroundColor="white", location=getImageLocation())
@@ -65,13 +66,15 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
     ggplot2::ggsave(
       filename  = relativePathpng, 
       plot      = plot2draw,
-      device    = grDevices::png,
+      # device    = grDevices::png,
+      # ragg detects ggsave and messes things up so we use a lambda
+      device    = function(...) ragg::agg_png(...),
       dpi       = ppi,
       width     = width,
       height    = height,
       bg        = backgroundColor,
       res       = 72 * (ppi / 96),
-      type      = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"),
+      # type      = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"),
       limitsize = FALSE # only necessary if users make the plot ginormous.
     )
 
