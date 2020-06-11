@@ -292,7 +292,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   if(!ready){
     
     row <- data.frame(test = gettext("Chi-square"), 
-                      measure = gettextf("X%1$s", "\u00B2"), 
+                      measure = gettext("X\u00B2", ""),
                       df = df, 
                       value = ".", 
                       pvalue = ".",
@@ -307,7 +307,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                                 ready)
 
   row <- data.frame(test = gettext("Chi-square"), 
-                    measure = gettextf("X%1$s", "\u00B2"), 
+                    measure = gettext("X\u00B2"),
                     df = state[["df"]], 
                     value = round(state[["chiSquare"]], 3), 
                     pvalue = state[["pvalue"]],

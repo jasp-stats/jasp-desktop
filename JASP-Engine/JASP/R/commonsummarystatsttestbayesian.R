@@ -271,8 +271,8 @@
   
   if(title == gettext("Bayesian Independent Samples T-Test")) { #This check might mess up with translations, but what to do about it?
     
-    ttestTable$addColumnInfo(name = "n1"   , title = gettextf("n%s", "\u2081") , type = "integer")
-    ttestTable$addColumnInfo(name = "n2"   , title = gettextf("n%s", "\u2082") , type = "integer")
+    ttestTable$addColumnInfo(name = "n1"   , title = gettext("n\u2081") , type = "integer")
+    ttestTable$addColumnInfo(name = "n2"   , title = gettext("n\u2082") , type = "integer")
     
   } else {
     

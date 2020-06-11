@@ -126,8 +126,8 @@ LDt <- function(jaspResults, dataset, options, state=NULL){
 .ldTParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettextf("degree of freedom: %s", "df \u2208 \u211D<sup>+</sup>")
-    pars[[2]] <- gettextf("non-centrality: %s",    "ncp \u2208 \u211D")
+    pars[[1]] <- gettext("degree of freedom: df \u2208 \u211D<sup>+</sup>")
+    pars[[2]] <- gettext("non-centrality: ncp \u2208 \u211D")
     
     support <- "x \u2208 \u211D"
     

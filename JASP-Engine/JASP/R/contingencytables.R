@@ -331,7 +331,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
                                 crossTabKendallTau$addColumnInfo(name = "value[kTauB]",     title = gettext("Kendall's Tau-b "),    type = "number")
                                 crossTabKendallTau$addColumnInfo(name = "statistic[kTauB]", title = gettext("Z"),                   type = "number", format = "dp:3")
                                 crossTabKendallTau$addColumnInfo(name = "p[kTauB]",         title = gettext("p"),                   type = "pvalue")
-    if (options$VovkSellkeMPR)  crossTabKendallTau$addColumnInfo(name = "MPR[kTauB]",       title = gettextf("VS-MPR%s", "\u002A"), type = "number")
+    if (options$VovkSellkeMPR)  crossTabKendallTau$addColumnInfo(name = "MPR[kTauB]",       title = gettext("VS-MPR\u002A"),        type = "number")
 
     analysisContainer[["crossTabKendallTau"]] <- crossTabKendallTau
     analysis                                  <- as.list(analysis)
@@ -405,7 +405,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
                               table$addColumnInfo(name = paste0("value[", fold, "]"),   title = gettext("Value"),               type = valueFoldType)
                               table$addColumnInfo(name = paste0("df[",    fold, "]"),   title = gettext("df"),                  type = "integer")
                               table$addColumnInfo(name = paste0("p[",     fold, "]"),   title = gettext("p"),                   type = "pvalue")
-  if (options$VovkSellkeMPR)  table$addColumnInfo(name = paste0("MPR[",   fold, "]"),   title = gettextf("VS-MPR%s", "\u002A"), type = "number")
+  if (options$VovkSellkeMPR)  table$addColumnInfo(name = paste0("MPR[",   fold, "]"),   title = gettext("VS-MPR\u002A"),        type = "number")
 }
 
 .crossTabLogOddsAddColInfo <- function(table, fold, ci.label) {
@@ -930,7 +930,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           row[["p[chiSquared]"]]     <- " "
           row[["MPR[chiSquared]"]]   <- " "
 
-          message <- gettextf("%s could not be calculated - At least one row or column contains all zeros", "\u03A7\u00B2")
+          message <- gettext("\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros")
           analysisContainer[["crossTabChisq"]]$addFootnote(message, rowNames = row.rownames[g], colNames = "value[chiSquared]")
         } else {
           row[["value[chiSquared]"]] <- unname(chi.result$statistic)
@@ -944,7 +944,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     if (options$chiSquaredContinuityCorrection) {
       
-      row[["type[chiSquared-cc]"]] <- gettextf("%s continuity correction", "\u03A7\u00B2")
+      row[["type[chiSquared-cc]"]] <- gettext("\u03A7\u00B2 continuity correction")
       
       if (ready) {
         
@@ -962,7 +962,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           row[["p[chiSquared-cc]"]]     <- " "
           row[["MPR[chiSquared-cc]"]]   <- " "
 
-          message <- gettextf("%s could not be calculated - At least one row or column contains all zeros", "\u03A7\u00B2")
+          message <- gettext("\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros")
           analysisContainer[["crossTabChisq"]]$addFootnote(message, rowNames = row.rownames[g], colNames = "value[chiSquared-cc]")
         } else {
           row[["value[chiSquared-cc]"]] <- unname(chi.result$statistic)

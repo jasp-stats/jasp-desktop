@@ -513,7 +513,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   betweenTable$addColumnInfo(title = gettext("p"),              name = "Pr(>F)",  type = "pvalue")
   
   if (options$VovkSellkeMPR && length(options$betweenSubjectFactors) > 0) {
-    betweenTable$addColumnInfo(title = gettextf("VS-MPR%s", "\u002A"), name = "VovkSellkeMPR", type = "number")
+    betweenTable$addColumnInfo(title = gettext("VS-MPR\u002A"), name = "VovkSellkeMPR", type = "number")
     betweenTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
   }
   
@@ -526,7 +526,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       betweenTable$addColumnInfo(title = "\u03B7\u00B2\u209A", name = "etaPart", type = "number")
     
     if (options$effectSizeGenEtaSquared) 
-      betweenTable$addColumnInfo(title = gettextf("%s<sub>G</sub>", "\u03B7\u00B2"), name = "genEta", type = "number")
+      betweenTable$addColumnInfo(title = gettext("\u03B7\u00B2<sub>G</sub>"), name = "genEta", type = "number")
     
     if (options$effectSizeOmegaSquared) 
       betweenTable$addColumnInfo(title = "\u03C9\u00B2", name = "omega", type = "number")
@@ -589,7 +589,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   anovaTable$addColumnInfo(title = gettext("p"),              name = "p",       type = "pvalue")
   
   if (options$VovkSellkeMPR) {
-    anovaTable$addColumnInfo(title = gettextf("VS-MPR%s", "\u002A"), name = "VovkSellkeMPR", type = "number")
+    anovaTable$addColumnInfo(title = gettext("VS-MPR\u002A"), name = "VovkSellkeMPR", type = "number")
     anovaTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
   }
   
@@ -604,7 +604,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     }
     
     if(options$effectSizeGenEtaSquared) {
-      anovaTable$addColumnInfo(name="genEta", type="number", title=gettextf("%s<sub>G</sub>", "\u03B7\u00B2"))
+      anovaTable$addColumnInfo(name="genEta", type="number", title=gettext("\u03B7\u00B2<sub>G</sub>"))
     }
     
     if (options$effectSizeOmegaSquared) {
@@ -703,7 +703,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   rmAnovaLevenesTable$addColumnInfo(name="p", type="pvalue")
   
   if (options$VovkSellkeMPR) {
-    rmAnovaLevenesTable$addColumnInfo(title = "VS-MPR\u002A", name = "VovkSellkeMPR", type = "number")
+    rmAnovaLevenesTable$addColumnInfo(title = gettext("VS-MPR\u002A"), name = "VovkSellkeMPR", type = "number")
     rmAnovaLevenesTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
   }
   rmAnovaLevenesTable$showSpecifiedColumnsOnly <- TRUE
@@ -765,12 +765,12 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   sphericityTable$addColumnInfo(name="case",            type="string",  title="")
   sphericityTable$addColumnInfo(name="Test statistic",  type="number",  title=gettext("Mauchly's W"))
-  sphericityTable$addColumnInfo(name="approxChi",       type="number",  title=gettextf("Approx. %s", "\u03A7\u00B2"))
+  sphericityTable$addColumnInfo(name="approxChi",       type="number",  title=gettext("Approx. \u03A7\u00B2"))
   sphericityTable$addColumnInfo(name="dfSphericity",    type="integer", title=gettext("dfSphericity"))
   sphericityTable$addColumnInfo(name="p-value",         type="pvalue",  title=gettext("p-value"))
-  sphericityTable$addColumnInfo(name="GG eps",          type="number",  title=gettextf("Greenhouse-Geisser %s", "\u03B5"))
-  sphericityTable$addColumnInfo(name="HF eps",          type="number",  title=gettextf("Huynh-Feldt %s", "\u03B5"))
-  sphericityTable$addColumnInfo(name="LB",              type="number",  title=gettextf("Lower Bound %s", "\u03B5"))
+  sphericityTable$addColumnInfo(name="GG eps",          type="number",  title=gettext("Greenhouse-Geisser \u03B5"))
+  sphericityTable$addColumnInfo(name="HF eps",          type="number",  title=gettext("Huynh-Feldt \u03B5"))
+  sphericityTable$addColumnInfo(name="LB",              type="number",  title=gettext("Lower Bound \u03B5"))
 
   sphericityTable$showSpecifiedColumnsOnly <- TRUE
   
@@ -999,7 +999,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   if (options$confidenceIntervalsPostHoc || makeBootstrapTable) {
     
     if (makeBootstrapTable) {
-      thisOverTitle <- gettextf("%1$s%% bca%2$s CI", options$confidenceIntervalIntervalPostHoc * 100, "\u2020")
+      thisOverTitle <- gettextf("%s%% bca\u2020 CI", options$confidenceIntervalIntervalPostHoc * 100)
     } else {
       thisOverTitle <- gettextf("%s%% CI for Mean Difference", options$confidenceIntervalIntervalPostHoc * 100)
     }
@@ -1301,7 +1301,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   marginalMeansTable$addColumnInfo(name="lsmean", title=gettext("Marginal Mean"), type="number")
   
   if (makeBootstrapTable) {
-    thisOverTitle <- gettextf("95%% bca%s CI", "\u002A")
+    thisOverTitle <- gettext("95% bca\u002A CI")
     marginalMeansTable$addColumnInfo(name="bias", title=gettext("bias"), type="number")
     
     marginalMeansTable$addFootnote(message = gettext("Marginal Means estimate is based on the median of the bootstrap distribution."))

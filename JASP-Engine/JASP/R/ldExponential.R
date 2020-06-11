@@ -137,8 +137,8 @@ LDexponential <- function(jaspResults, dataset, options, state=NULL){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
     pars[[1]] <- switch(options[['parametrization']],
-                        scale = gettextf("scale: %s", "&beta; \u2208 \u211D<sup>+</sup>"),
-                        gettextf("rate: %s", "&lambda; \u2208 \u211D<sup>+</sup>"))
+                        scale = gettext("scale: &beta; \u2208 \u211D<sup>+</sup>"),
+                        gettext("rate: &lambda; \u2208 \u211D<sup>+</sup>"))
     
     support <- "x \u2208 \u211D<sup>+</sup>"
     

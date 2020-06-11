@@ -214,7 +214,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
                                           "holdoutData", "testDataManual"))
   
   coefTable$addColumnInfo(name = "var",  title = "", type = "string")
-  coefTable$addColumnInfo(name = "coefs",  title = gettextf("Coefficient (%s)", "\u03B2"), type = "number")
+  coefTable$addColumnInfo(name = "coefs",  title = gettext("Coefficient (\u03B2)"), type = "number")
 
   jaspResults[["coefTable"]] <- coefTable
 
@@ -314,7 +314,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
         ggplot2::scale_y_continuous(gettextf("Cross-Validated %sMean Squared Error", "\n"), breaks = yBreaks, labels = yBreaks) +
         ggplot2::geom_vline(ggplot2::aes(xintercept = regressionResult[["model"]]$lambda.min, color = "lambdaMin"), linetype = "dashed") +
         ggplot2::geom_vline(ggplot2::aes(xintercept = regressionResult[["model"]]$lambda.1se, color = "lambda1se"), linetype = "dashed") +
-        ggplot2::scale_color_manual(name = "", values = c(lambdaMin = "#14a1e3", lambda1se = "#99c454"), labels = c(lambdaMin = gettext("Min. CV MSE"), lambda1se = gettextf("%s 1 SE", "\u03BB")))
+        ggplot2::scale_color_manual(name = "", values = c(lambdaMin = "#14a1e3", lambda1se = "#99c454"), labels = c(lambdaMin = gettext("Min. CV MSE"), lambda1se = gettext("\u03BB 1 SE")))
   
   if(options[["lambdaEvaluationLegend"]]){
     p <- JASPgraphs::themeJasp(p, legend.position = "top")

@@ -474,7 +474,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   anovaTable$addColumnInfo(title = gettext("p"),              name = "Pr(>F)",  type = "pvalue")
   
   if (options$VovkSellkeMPR) {
-    anovaTable$addColumnInfo(title = gettextf("VS-MPR%s", "\u002A"), name = "VovkSellkeMPR", type = "number")
+    anovaTable$addColumnInfo(title = gettext("VS-MPR\u002A"), name = "VovkSellkeMPR", type = "number")
     anovaTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
   }
   
@@ -1381,7 +1381,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   
   if (options$VovkSellkeMPR) {
-    leveneTable$addColumnInfo(title = gettextf("VS-MPR%s", "\u002A"), name = "VovkSellkeMPR", type = "number")
+    leveneTable$addColumnInfo(title = gettext("VS-MPR\u002A"), name = "VovkSellkeMPR", type = "number")
     leveneTable$addFootnote(message = .messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
   }
   

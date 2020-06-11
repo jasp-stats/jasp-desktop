@@ -140,12 +140,12 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
 .ldGaussianParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettextf("mean: &mu; %s","\u2208 \u211D")
+    pars[[1]] <- gettext("mean: &mu; \u2208 \u211D")
     pars[[2]] <- switch(options[['parametrization']],
-                        sigma2 = gettextf("variance: %s",                 "&sigma;<sup>2</sup> \u2208 \u211D<sup>+</sup>"),
-                        sigma  = gettextf("standard deviation: %s",       "&sigma; \u2208 \u211D<sup>+</sup>"),
-                        tau    = gettextf("precision: %s",                "&tau; \u2208 \u211D<sup>+</sup>"),
-                        kappa  = gettextf("square root of precision: %s", "&kappa; \u2208 \u211D<sup>+</sup>"))
+                        sigma2 = gettext("variance: &sigma;<sup>2</sup> \u2208 \u211D<sup>+</sup>"),
+                        sigma  = gettext("standard deviation: &sigma; \u2208 \u211D<sup>+</sup>"),
+                        tau    = gettext("precision: &tau; \u2208 \u211D<sup>+</sup>"),
+                        kappa  = gettext("square root of precision: &kappa; \u2208 \u211D<sup>+</sup>"))
     
     support <- "x \u2208 \u211D"
     

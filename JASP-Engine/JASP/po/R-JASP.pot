@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-05-06 14:32\n"
+"POT-Creation-Date: 2020-05-28 12:09\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgstr ""
 msgid "Log odds ratio < 0"
 msgstr ""
 
-msgid "Log odds ratio %s 0"
+msgid "Log odds ratio ≠ 0"
 msgstr ""
 
 msgid "Descriptives"
@@ -109,7 +109,7 @@ msgstr ""
 msgid "p"
 msgstr ""
 
-msgid "VS-MPR%s"
+msgid "VS-MPR*"
 msgstr ""
 
 msgid "Type I Sum of Squares"
@@ -337,7 +337,7 @@ msgstr ""
 msgid "Between Subjects Effects"
 msgstr ""
 
-msgid "%s<sub>G</sub>"
+msgid "η²<sub>G</sub>"
 msgstr ""
 
 msgid "Within Subjects Effects"
@@ -361,7 +361,7 @@ msgstr ""
 msgid "Mauchly's W"
 msgstr ""
 
-msgid "Approx. %s"
+msgid "Approx. Χ²"
 msgstr ""
 
 msgid "dfSphericity"
@@ -370,13 +370,13 @@ msgstr ""
 msgid "p-value"
 msgstr ""
 
-msgid "Greenhouse-Geisser %s"
+msgid "Greenhouse-Geisser ε"
 msgstr ""
 
-msgid "Huynh-Feldt %s"
+msgid "Huynh-Feldt ε"
 msgstr ""
 
-msgid "Lower Bound %s"
+msgid "Lower Bound ε"
 msgstr ""
 
 msgid "Cannot perform sphericity tests because there only two levels of the RM factor."
@@ -400,7 +400,7 @@ msgstr ""
 msgid "Bootstrapped Post Hoc Comparisons -"
 msgstr ""
 
-msgid "%1$s%% bca%2$s CI"
+msgid "%s%% bca† CI"
 msgstr ""
 
 msgid "bias"
@@ -427,7 +427,7 @@ msgstr ""
 msgid "Marginal Mean"
 msgstr ""
 
-msgid "95%% bca%s CI"
+msgid "95% bca* CI"
 msgstr ""
 
 msgid "Marginal Means estimate is based on the median of the bootstrap distribution."
@@ -511,7 +511,7 @@ msgstr ""
 msgid "Chi-square"
 msgstr ""
 
-msgid "X%1$s"
+msgid "X²"
 msgstr ""
 
 msgid "<b>Table %i.</b> Descriptive Statistics"
@@ -562,7 +562,7 @@ msgstr ""
 msgid "Regression estimator"
 msgstr ""
 
-msgid "Estimate %1$s"
+msgid "Estimate Ŵ"
 msgstr ""
 
 msgid "Uncertainty"
@@ -595,19 +595,19 @@ msgstr ""
 msgid "The sample size <i>n</i>"
 msgstr ""
 
-msgid "The mean of the sample audit values %1$s"
+msgid "The mean of the sample audit values <i>w̄</i>"
 msgstr ""
 
 msgid "%1$s = %2$s"
 msgstr ""
 
-msgid "The standard deviation of the sample audit values %1$s"
+msgid "The standard deviation of the sample audit values <i>s<sub>w</sub></i>"
 msgstr ""
 
-msgid "The t-value <i>(df = n - 1)</i> corresponding to %1$s%% confidence %2$s%3$s%4$s"
+msgid "The t-value <i>(df = n - 1)</i> corresponding to %1$s%% confidence <i>t<sub>%2$s/2</sub></i>"
 msgstr ""
 
-msgid "The t-value <i>(df = %1$s - 1)</i> corresponding to %2$s%% confidence %3$s%4$s%5$s%6$s"
+msgid "The t-value <i>(df = %1$s - 1)</i> corresponding to %2$s%% confidence <i>t<sub>%3$s/2</sub></i> = %4$s"
 msgstr ""
 
 msgid "%1$s\n                                %2$s\n                                %3$s\n                                %4$s\n                                %5$s"
@@ -616,16 +616,16 @@ msgstr ""
 msgid "<i>This information allows for calculation of:</i>"
 msgstr ""
 
-msgid "The point estimate of the true population value %1$s"
+msgid "The point estimate of the true population value <i>Ŵ = N × w̄</i>"
 msgstr ""
 
-msgid "The uncertainty of the estimator %1$s%2$s%3$s"
+msgid "The uncertainty of the estimator <i>U = t<sub>%1$s/2</sub> × s<sub>w</sub> × <sup>N</sup>&frasl;<sub>√ n</sub> × √ (<sup>N - n</sup>&frasl;<sub>N - 1</sub>)</i>"
 msgstr ""
 
-msgid "The confidence interval around the point estimate %1$s"
+msgid "The confidence interval around the point estimate <i>Ŵ ± U</i>"
 msgstr ""
 
-msgid "%1$s = %2$s %3$s %4$s"
+msgid "%1$s = %2$s ± %3$s"
 msgstr ""
 
 msgid "%1$s\n                           %2$s\n                           %3$s"
@@ -637,13 +637,19 @@ msgstr ""
 msgid "The sum of the population book values <i>B</i>"
 msgstr ""
 
-msgid "The mean of the sample errors %1$s"
+msgid "The mean of the sample errors <i>ē</i>"
 msgstr ""
 
-msgid "The standard deviation of the sample errors %1$s"
+msgid "The standard deviation of the sample errors <i>s<sub>e</sub></i>"
 msgstr ""
 
 msgid "%1$s\n                                %2$s\n                                %3$s\n                                %4$s\n                                %5$s\n                                %6$s"
+msgstr ""
+
+msgid "The point estimate of the true population value <i>Ŵ = B - N × ē</i>"
+msgstr ""
+
+msgid "The uncertainty of the estimator <i>U = t<sub>%1$s/2</sub> × s<sub>e</sub> × <sup>N</sup>&frasl;<sub>√ n</sub> × √ (<sup>N - n</sup>&frasl;<sub>N - 1</sub>)</i>"
 msgstr ""
 
 msgid "%1$s\n                            %2$s\n                            %3$s"
@@ -652,7 +658,7 @@ msgstr ""
 msgid "<i>The required information for the <b>ratio</b> estimator consists of:</i>"
 msgstr ""
 
-msgid "The mean of the sample book values %1$s"
+msgid "The mean of the sample book values <i>b̄</i>"
 msgstr ""
 
 msgid "The standard deviation of the sample book values %1$s"
@@ -667,13 +673,28 @@ msgstr ""
 msgid "%1$s\n                                %2$s\n                                %3$s\n                                %4$s\n                                %5$s\n                                %6$s\n                                %7$s\n                                %8$s\n                                %9$s\n                                %10$s"
 msgstr ""
 
+msgid "The point estimate of the true population value <i>Ŵ = q<sub>bw</sub> × B</i>"
+msgstr ""
+
+msgid "The uncertainty of the estimator <i>U = t<sub>%1$s/2</sub> × √(s<sub>w</sub><sup>2</sup> - 2 × q<sub>bw</sub> × r<sub>bw</sub> × s<sub>b</sub> × s<sub>w</sub> + q<sub>bw</sub><sup>2</sup> × s<sub>b</sub><sup>2</sup>) × <sup>N</sup>&frasl;<sub>√ n</sub> × √ (<sup>N - n</sup>&frasl;<sub>N - 1</sub>)</i>"
+msgstr ""
+
 msgid "<i>The required information for the <b>regression</b> estimator consists of:</i>"
 msgstr ""
 
-msgid "The regression coefficient of the sample book values and audit values %1$s"
+msgid "The correlation coefficient of the sample book values and audit values <i>r<sub>bw</sub></i>"
+msgstr ""
+
+msgid "The regression coefficient of the sample book values and audit values <i>b<sub>1</sub></i>"
 msgstr ""
 
 msgid "%1$s\n                                %2$s\n                                %3$s\n                                %4$s\n                                %5$s\n                                %6$s\n                                %7$s\n                                %8$s\n                                %9$s"
+msgstr ""
+
+msgid "The point estimate of the true population value <i>Ŵ = N × w̄ + b<sub>1</sub> x (B - N × b̄)</i>"
+msgstr ""
+
+msgid "The uncertainty of the estimator <i>U = t<sub>%1$s/2</sub> × s<sub>w</sub> × √(1 - r<sub>bw</sub><sup>2</sup>) × <sup>N</sup>&frasl;<sub>√ n</sub> × √ (<sup>N - n</sup>&frasl;<sub>N - 1</sub>)</i>"
 msgstr ""
 
 msgid "Required Sample Size"
@@ -742,7 +763,7 @@ msgstr ""
 msgid "Book Value Distribution"
 msgstr ""
 
-msgid "Mean %1$s sd"
+msgid "Mean ± sd"
 msgstr ""
 
 msgid "Quartile"
@@ -823,7 +844,7 @@ msgstr ""
 msgid "Expected evidence ratio"
 msgstr ""
 
-msgid "Expected %1$s"
+msgid "Expected BF₋₊"
 msgstr ""
 
 msgid "The required sample size is based on the <b>Poisson</b> distribution."
@@ -916,6 +937,9 @@ msgstr ""
 msgid "%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned sample size (%3$s), as observations are selected multiple times due to their high value. These observations (%4$s) are counted multiple times in the evaluation."
 msgstr ""
 
+msgid "Your specified starting point lies outside the selection interval."
+msgstr ""
+
 msgid "<b>Table %1$i.</b> Selection Summary"
 msgstr ""
 
@@ -934,7 +958,7 @@ msgstr ""
 msgid "The sample is drawn with <i>seed %1$s</i>."
 msgstr ""
 
-msgid "The first unit from every interval is selected."
+msgid "Unit %1$s is selected from each interval."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Selected Observations"
@@ -997,7 +1021,7 @@ msgstr ""
 msgid "Evidence ratio"
 msgstr ""
 
-msgid "BF%1$s"
+msgid "BF₋₊"
 msgstr ""
 
 msgid "The confidence bound is calculated according to the <b>Poisson</b> distributon."
@@ -1102,10 +1126,13 @@ msgstr ""
 msgid "Functional form"
 msgstr ""
 
-msgid "Support %1$s"
+msgid "Support H₋"
 msgstr ""
 
-msgid "Evidence ratio %1$s"
+msgid "Support H₊"
+msgstr ""
+
+msgid "Evidence ratio <sup>H₋</sup>&frasl;<sub>H₊</sub>"
 msgstr ""
 
 msgid "%1$s%% Credible bound"
@@ -1117,7 +1144,7 @@ msgstr ""
 msgid "Expected shift"
 msgstr ""
 
-msgid "%1$s: The population misstatement is lower than materiality (%2$s %3$s). %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s)."
+msgid "H₋: The population misstatement is lower than materiality (θ < %1$s). H₊: The population misstatement is equal to, or higher than, materiality (θ ≥ %1$s)."
 msgstr ""
 
 msgid "Implied Prior from Risk Assessments"
@@ -1423,10 +1450,13 @@ msgstr ""
 msgid "Posterior Estimates per Model"
 msgstr ""
 
-msgid "BF%s%s"
+msgid "BF₁₀"
 msgstr ""
 
-msgid "Log(BF%s%s)"
+msgid "BF₀₁"
+msgstr ""
+
+msgid "Log(BF₁₀)"
 msgstr ""
 
 msgid "95%% Credible Interval"
@@ -1444,52 +1474,58 @@ msgstr ""
 msgid "Ordered effects"
 msgstr ""
 
-msgid "%s and %s are the group-level effect size and standard deviation, respectively."
+msgid "μ and τ are the group-level effect size and standard deviation, respectively."
 msgstr ""
 
-msgid "%s is the group-level effect size."
+msgid "μ is the group-level effect size."
 msgstr ""
 
-msgid "Bayes factor of the random effects H%1$s over the fixed effects H%1$s."
+msgid "Bayes factor of the random effects H₁ over the fixed effects H₁."
 msgstr ""
 
-msgid "Posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: fixed effects H%2$s & random effects H%2$s over the fixed effects H%1$s & random effects H%1$s."
+msgid "Posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: fixed effects H₁ & random effects H₁ over the fixed effects H₀ & random effects H₀."
 msgstr ""
 
-msgid "Model averaged posterior estimates for %3$s are not yet available, but will be added in the future. The Bayes factor is based on all four models: random effects H%1$s & H%2$s over the fixed effects H%1$s & H%2$s."
+msgid "Model averaged posterior estimates for τ are not yet available, but will be added in the future. The Bayes factor is based on all four models: random effects H₀ & H₁ over the fixed effects H₀ & H₁."
 msgstr ""
 
-msgid "Bayes factor of the (unconstrained/constrained) random effects H%1$s over the fixed effects H%1$s."
+msgid "Bayes factor of the (unconstrained/constrained) random effects H₁ over the fixed effects H₁."
 msgstr ""
 
-msgid "Bayes factor of the fixed effects H%1$s over the random effects H%1$s."
+msgid "Bayes factor of the fixed effects H₁ over the random effects H₁."
 msgstr ""
 
-msgid "Model averaged posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: fixed effects H%1$s & random effects H%1$s over the fixed effects H%2$s & random effects H%2$s."
+msgid "Model averaged posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: fixed effects H₀ & random effects H₀ over the fixed effects H₁ & random effects H₁."
 msgstr ""
 
-msgid "Model averaged posterior estimates for %3$s are not yet available, but will be added in the future. The Bayes factor is based on all four models: fixed effects H%1$s & H%2$s over the random effects H%1$s & H%2$s."
+msgid "Model averaged posterior estimates for τ are not yet available, but will be added in the future. The Bayes factor is based on all four models: fixed effects H₀ & H₁ over the random effects H₀ & H₁."
 msgstr ""
 
-msgid "Bayes factor of the fixed effects H%1$s over the (unconstrained/constrained) random effects H%1$s."
+msgid "Bayes factor of the fixed effects H₁ over the (unconstrained/constrained) random effects H₁."
 msgstr ""
 
-msgid "Bayes factor of the ordered effects H%1$s over the fixed effects H%1$s. The Bayes factor for the ordered effects H%1$s versus the unconstrained (random) effects H%1$s model is %2$.3f."
+msgid "Bayes factor of the ordered effects H₁ over the fixed effects H₁. The Bayes factor for the ordered effects H₁ versus the unconstrained (random) effects H₁ model is %1$.3f."
 msgstr ""
 
-msgid "Bayes factor of the fixed effects H%1$s over the ordered effects H%1$s. The Bayes factor for the unconstrained (random) effects H%1$s versus the ordered effects H%1$s model is %2$.3f."
+msgid "Bayes factor of the fixed effects H₁ over the ordered effects H₁. The Bayes factor for the unconstrained (random) effects H₁ versus the ordered effects H₁ model is %1$.3f."
 msgstr ""
 
 msgid "Model Probabilities"
 msgstr ""
 
-msgid "Fixed H%s"
+msgid "Fixed H₀"
 msgstr ""
 
-msgid "Random H%s"
+msgid "Fixed H₁"
 msgstr ""
 
-msgid "Ordered H%s"
+msgid "Random H₀"
+msgstr ""
+
+msgid "Random H₁"
+msgstr ""
+
+msgid "Ordered H₁"
 msgstr ""
 
 msgid "Effect Sizes per Study"
@@ -1672,7 +1708,7 @@ msgstr ""
 msgid "Rank correlation test for Funnel plot asymmetry"
 msgstr ""
 
-msgid "Kendall's %s"
+msgid "Kendall's τ"
 msgstr ""
 
 msgid "Regression test for Funnel plot asymmetry (\"Egger's test\")"
@@ -1693,7 +1729,7 @@ msgstr ""
 msgid "Cov. Ratio"
 msgstr ""
 
-msgid "%s%s<sub>(-i)</sub>"
+msgid "τ²<sub>(-i)</sub>"
 msgstr ""
 
 msgid "Q<sub>E(-i)</sub>"
@@ -1738,16 +1774,16 @@ msgstr ""
 msgid "AICc"
 msgstr ""
 
-msgid "I%s (%%)"
+msgid "I² (%)"
 msgstr ""
 
-msgid "H%s"
+msgid "H²"
 msgstr ""
 
 msgid "Rank test"
 msgstr ""
 
-msgid "Cases marked with %s are influential."
+msgid "Cases marked with * are influential."
 msgstr ""
 
 msgid "Plot"
@@ -1759,7 +1795,7 @@ msgstr ""
 msgid "Funnel Plot"
 msgstr ""
 
-msgid "Log-likelihood for %s%s"
+msgid "Log-likelihood for τ²"
 msgstr ""
 
 msgid "Trim-fill Analysis"
@@ -2077,7 +2113,7 @@ msgstr ""
 msgid "%s%% Credible Interval"
 msgstr ""
 
-msgid "Model Averaged R%s"
+msgid "Model Averaged R²"
 msgstr ""
 
 msgid "Model Averaged Posterior Distributions"
@@ -2092,7 +2128,7 @@ msgstr ""
 msgid "Model Averaged Q-Q Plot"
 msgstr ""
 
-msgid "Model Averaged Posterior R%s"
+msgid "Model Averaged Posterior R²"
 msgstr ""
 
 msgid "The posterior odds have been corrected for multiple testing by\n\t\tfixing to 0.5 the prior probability that the null hypothesis holds \n\t\tacross all comparisons (Westfall, Johnson, & Utts, 1997). Individual \n\t\tcomparisons are based on the default t-test with a Cauchy (0, r = \n    1/sqrt(2)) prior. The \"U\" in the Bayes factor denotes that it is uncorrected."
@@ -2137,10 +2173,10 @@ msgstr ""
 msgid "Single Model Posterior Distributions"
 msgstr ""
 
-msgid "Posterior R%s"
+msgid "Posterior R²"
 msgstr ""
 
-msgid "Single Model R%s"
+msgid "Single Model R²"
 msgstr ""
 
 msgid "The following problem(s) occurred while running the analysis:<ul><li>Variable has to be discrete (i.e., integer)</li></ul>"
@@ -2479,7 +2515,7 @@ msgstr ""
 msgid "Clusters"
 msgstr ""
 
-msgid "R%s"
+msgid "R²"
 msgstr ""
 
 msgid "Please provide at least 2 variables."
@@ -2539,7 +2575,7 @@ msgstr ""
 msgid "Minimum separation"
 msgstr ""
 
-msgid "Pearson's %s"
+msgid "Pearson's γ"
 msgstr ""
 
 msgid "Dunn index"
@@ -2638,7 +2674,7 @@ msgstr ""
 msgid "The model is optimized with respect to the <i>validation set mean squared error</i>."
 msgstr ""
 
-msgid "When %s is set to 0 linear regression is performed."
+msgid "When λ is set to 0 linear regression is performed."
 msgstr ""
 
 msgid "The model is optimized with respect to the <i>out-of-bag mean squared error</i>."
@@ -2650,7 +2686,7 @@ msgstr ""
 msgid "Laplace"
 msgstr ""
 
-msgid "R%s cannot be computed due to lack of variance in the predictions.</i>"
+msgid "R² cannot be computed due to lack of variance in the predictions.</i>"
 msgstr ""
 
 msgid "Predictive Performance Plot"
@@ -2683,7 +2719,7 @@ msgstr ""
 msgid "Object passed to .scaleNumericData.matrix was not numeric!"
 msgstr ""
 
-msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value,the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
+msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value,the maximum possible odds in favor of H₁ over H₀ equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 
 msgid "Please provide another variable."
@@ -2833,7 +2869,7 @@ msgstr ""
 msgid "the modelterms list must contain the named item `components`"
 msgstr ""
 
-msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,\n  the maximum possible odds in favor of H%1$s over H%2$s equals\n  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37\n  (Sellke, Bayarri, & Berger, 2001)."
+msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H₁ over H₀ equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 
 msgid "The following problem(s) occurred while running the analysis:"
@@ -2884,9 +2920,6 @@ msgstr ""
 msgid "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
 msgstr ""
 
-msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
-msgstr ""
-
 msgid "Proportions tested against value: %s"
 msgstr ""
 
@@ -2899,13 +2932,31 @@ msgstr ""
 msgid "Could not find message for class %s and type %s"
 msgstr ""
 
-msgid "Log(BF%s)"
+msgid "BF₀₊"
+msgstr ""
+
+msgid "BF₀₋"
+msgstr ""
+
+msgid "BF₊₀"
+msgstr ""
+
+msgid "BF₋₀"
+msgstr ""
+
+msgid "Log(BF₊₀)"
+msgstr ""
+
+msgid "Log(BF₋₀)"
 msgstr ""
 
 msgid "Bayesian Independent Samples T-Test"
 msgstr ""
 
-msgid "n%s"
+msgid "n₁"
+msgstr ""
+
+msgid "n₂"
 msgstr ""
 
 msgid "Proportional error estimate could not be computed."
@@ -3049,10 +3100,10 @@ msgstr ""
 msgid "Standardized root mean square residual (SRMR)"
 msgstr ""
 
-msgid "Hoelter's critical N (%s = .05)"
+msgid "Hoelter's critical N (α = .05)"
 msgstr ""
 
-msgid "Hoelter's critical N (%s = .01)"
+msgid "Hoelter's critical N (α = .01)"
 msgstr ""
 
 msgid "Goodness of fit index (GFI)"
@@ -3220,10 +3271,10 @@ msgstr ""
 msgid "%% of total"
 msgstr ""
 
-msgid "%s could not be calculated - At least one row or column contains all zeros"
+msgid "Χ² could not be calculated - At least one row or column contains all zeros"
 msgstr ""
 
-msgid "%s continuity correction"
+msgid "Χ² continuity correction"
 msgstr ""
 
 msgid "Likelihood ratio"
@@ -3475,7 +3526,7 @@ msgstr ""
 msgid "All values are identical"
 msgstr ""
 
-msgid "Infimum (minimum) of an empty set is %s, supremum (maximum) of an empty set is %s."
+msgid "Infimum (minimum) of an empty set is ∞, supremum (maximum) of an empty set is -∞."
 msgstr ""
 
 msgid "Not all values are available for <i>Nominal Text</i> variables"
@@ -3790,10 +3841,10 @@ msgstr ""
 msgid "Cumulative Distribution Function"
 msgstr ""
 
-msgid "probability of success: p %s %s: 0 %s p %s 1"
+msgid "probability of success: p ∈ ℝ: 0 ≤ p ≤ 1"
 msgstr ""
 
-msgid "x %s {0, 1}"
+msgid "x ∈ {0, 1}"
 msgstr ""
 
 msgid "p(1-p)"
@@ -3814,46 +3865,64 @@ msgstr ""
 msgid "Quantile Function"
 msgstr ""
 
-msgid "shape: %s"
+msgid "shape: &alpha; ∈ ℝ<sup>+</sup>"
+msgstr ""
+
+msgid "shape: &beta; ∈ ℝ<sup>+</sup>"
 msgstr ""
 
 msgid "binomial distribution"
 msgstr ""
 
-msgid "probability of success: %s"
-msgstr ""
-
-msgid "number of trials: %s"
+msgid "number of trials: n ∈ ℤ: n ≥ 0"
 msgstr ""
 
 msgid "Parameter n was fixed at value %s."
 msgstr ""
 
-msgid "%s<sup>2</sup> distribution"
+msgid "Χ<sup>2</sup> distribution"
 msgstr ""
 
-msgid "degree of freedom: %s"
+msgid "degree of freedom: k ∈ ℝ<sup>+</sup>"
 msgstr ""
 
-msgid "non-centrality: %s"
+msgid "non-centrality: &lambda; ∈ ℝ"
 msgstr ""
 
 msgid "exponential distribution"
 msgstr ""
 
-msgid "scale: %s"
+msgid "scale: &beta; ∈ ℝ<sup>+</sup>"
 msgstr ""
 
-msgid "rate: %s"
+msgid "rate: &lambda; ∈ ℝ<sup>+</sup>"
 msgstr ""
 
 msgid "F-distribution"
 msgstr ""
 
+msgid "degree of freedom: df 1 ∈ ℝ<sup>+</sup>"
+msgstr ""
+
+msgid "degree of freedom: df 2 ∈ ℝ<sup>+</sup>"
+msgstr ""
+
+msgid "non-centrality: ncp ∈ ℝ"
+msgstr ""
+
 msgid "gamma distribution"
 msgstr ""
 
-msgid "mean: %s"
+msgid "shape: k ∈ ℝ<sup>+</sup>"
+msgstr ""
+
+msgid "scale: &theta; ∈ ℝ<sup>+</sup>"
+msgstr ""
+
+msgid "mean: &mu; ∈ ℝ<sup>+</sup>"
+msgstr ""
+
+msgid "rate: &beta; ∈ ℝ<sup>+</sup>"
 msgstr ""
 
 msgid "inverse gamma distribution"
@@ -3862,19 +3931,19 @@ msgstr ""
 msgid "normal distribution"
 msgstr ""
 
-msgid "mean: &mu; %s"
+msgid "mean: &mu; ∈ ℝ"
 msgstr ""
 
-msgid "variance: %s"
+msgid "variance: &sigma;<sup>2</sup> ∈ ℝ<sup>+</sup>"
 msgstr ""
 
-msgid "standard deviation: %s"
+msgid "standard deviation: &sigma; ∈ ℝ<sup>+</sup>"
 msgstr ""
 
-msgid "precision: %s"
+msgid "precision: &tau; ∈ ℝ<sup>+</sup>"
 msgstr ""
 
-msgid "square root of precision: %s"
+msgid "square root of precision: &kappa; ∈ ℝ<sup>+</sup>"
 msgstr ""
 
 msgid "&mu;"
@@ -3883,16 +3952,25 @@ msgstr ""
 msgid "negative binomial distribution"
 msgstr ""
 
-msgid "number of successes: %s"
+msgid "number of successes: k ∈ ℝ: ϕ ≥ 0"
 msgstr ""
 
-msgid "dispersion: %s"
+msgid "dispersion: ϕ ∈ ℝ: ϕ ≥ 0"
+msgstr ""
+
+msgid "mean: μ ∈ ℝ: μ ≥ 0"
 msgstr ""
 
 msgid "Poisson distribution"
 msgstr ""
 
+msgid "rate: λ ∈ ℝ: λ > 0"
+msgstr ""
+
 msgid "t-distribution"
+msgstr ""
+
+msgid "degree of freedom: df ∈ ℝ<sup>+</sup>"
 msgstr ""
 
 msgid "does not exist unless df > 1"
@@ -4159,7 +4237,7 @@ msgstr ""
 msgid "Regression Coefficients"
 msgstr ""
 
-msgid "Coefficient (%s)"
+msgid "Coefficient (β)"
 msgstr ""
 
 msgid "Variable Trace Plot"
@@ -4174,7 +4252,7 @@ msgstr ""
 msgid "Min. CV MSE"
 msgstr ""
 
-msgid "%s 1 SE"
+msgid "λ 1 SE"
 msgstr ""
 
 msgid "Variance Components"
@@ -4468,13 +4546,13 @@ msgstr ""
 msgid "R"
 msgstr ""
 
-msgid "Adjusted R%s"
+msgid "Adjusted R²"
 msgstr ""
 
 msgid "RMSE"
 msgstr ""
 
-msgid "R%s Change"
+msgid "R² Change"
 msgstr ""
 
 msgid "F Change"
@@ -4606,6 +4684,12 @@ msgstr ""
 msgid "Residuals %s"
 msgstr ""
 
+msgid "H₀"
+msgstr ""
+
+msgid "H₁"
+msgstr ""
+
 msgid "Std. Predicted Value"
 msgstr ""
 
@@ -4616,9 +4700,6 @@ msgid "We need at least one predictor, or an intercept to make a formula"
 msgstr ""
 
 msgid "Null model includes %s"
-msgstr ""
-
-msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum\n        possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 
 msgid "The intercept model is omitted, as no meaningful information can be shown."
@@ -4714,19 +4795,19 @@ msgstr ""
 msgid "Performance Diagnostics"
 msgstr ""
 
-msgid "McFadden R%s"
+msgid "McFadden R²"
 msgstr ""
 
-msgid "Nagelkerke R%s"
+msgid "Nagelkerke R²"
 msgstr ""
 
-msgid "Tjur R%s"
+msgid "Tjur R²"
 msgstr ""
 
-msgid "Cox & Snell R%s"
+msgid "Cox & Snell R²"
 msgstr ""
 
-msgid "Standardized%s"
+msgid "Standardized⁺"
 msgstr ""
 
 msgid "Odds Ratio"
@@ -4786,7 +4867,7 @@ msgstr ""
 msgid "Squared Pearson Residual"
 msgstr ""
 
-msgid "%1$s%% bca%2$s Confidence interval"
+msgid "%1$s%% bca* Confidence interval"
 msgstr ""
 
 msgid "%s%% Confidence interval"
@@ -4805,9 +4886,6 @@ msgid "Residual Deviance"
 msgstr ""
 
 msgid "%s%% Confidence Intervals"
-msgstr ""
-
-msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based the <em>p</em>-value, \nthe maximum possible odds in favor of H%1$s over H%2$s equals \n1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 \n(Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 
 msgid "variables cannot be read"
@@ -4852,13 +4930,13 @@ msgstr ""
 msgid "sd"
 msgstr ""
 
-msgid "McDonald's %s"
+msgid "McDonald's ω"
 msgstr ""
 
-msgid "Cronbach's %s"
+msgid "Cronbach's α"
 msgstr ""
 
-msgid "Gutmann's %s"
+msgid "Gutmann's λ6"
 msgstr ""
 
 msgid "Greatest lower bound"
@@ -4882,7 +4960,7 @@ msgstr ""
 msgid "item-rest correlation"
 msgstr ""
 
-msgid "Warning: McDonald's %s if item dropped can only be calculated for three or more variables."
+msgid "Warning: McDonald's ω if item dropped can only be calculated for three or more variables."
 msgstr ""
 
 msgid "reverse-scaled item"
@@ -4906,7 +4984,7 @@ msgstr ""
 msgid "Chi Square Test Statistic (unscaled)"
 msgstr ""
 
-msgid "&#967;&sup2;"
+msgid "χ²"
 msgstr ""
 
 msgid "label"
@@ -5026,6 +5104,9 @@ msgstr ""
 msgid "Path Diagrams"
 msgstr ""
 
+msgid "- *Bayes factor*: If one-sided test is requested:\n  - BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is larger than the test value\n  - BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is smaller than the test value\n  - BF0+: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that the population mean is larger\n   than the test value\n  - BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that that the population mean is\n  smaller than the test value\n  - **p**: p-value corresponding to t-statistic."
+msgstr ""
+
 msgid "Successes"
 msgstr ""
 
@@ -5068,7 +5149,7 @@ msgstr ""
 msgid "Number of Covariates must be less than N-1 (sample size minus 1)"
 msgstr ""
 
-msgid "Input: When number of covariates for Alternative hypothesis is greater than that of Null hypothesis, the R%s has to be higher under Alternative than under Null hypothesis"
+msgid "Input: When number of covariates for Alternative hypothesis is greater than that of Null hypothesis, the R² has to be higher under Alternative than under Null hypothesis"
 msgstr ""
 
 msgid "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given."

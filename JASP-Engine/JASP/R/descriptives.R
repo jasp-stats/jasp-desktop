@@ -296,7 +296,7 @@ Descriptives <- function(jaspResults, dataset, options) {
                             rowNames = paste0(variable, l))
         
         if (subReturn$shouldAddExplainEmptySet)
-          stats$addFootnote(message  = gettextf("Infimum (minimum) of an empty set is %s, supremum (maximum) of an empty set is %s.", "\u221E", "-\u221E"),
+          stats$addFootnote(message  = gettext("Infimum (minimum) of an empty set is \u221E, supremum (maximum) of an empty set is -\u221E."),
                             colNames = c("Minimum", "Maximum"),
                             rowNames = paste0(variable, l))
       }
@@ -317,7 +317,7 @@ Descriptives <- function(jaspResults, dataset, options) {
                           rowNames = variable)
       
       if (subReturn$shouldAddExplainEmptySet)
-        stats$addFootnote(message  = gettextf("Infimum (minimum) of an empty set is %s, supremum (maximum) of an empty set is %s.", "\u221E", "-\u221E"),
+        stats$addFootnote(message  = gettext("Infimum (minimum) of an empty set is \u221E, supremum (maximum) of an empty set is -\u221E."),
                           colNames = c("Minimum", "Maximum"),
                           rowNames = variable)
     }

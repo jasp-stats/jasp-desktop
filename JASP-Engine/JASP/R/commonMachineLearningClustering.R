@@ -132,7 +132,7 @@
 
   clusteringTable$addColumnInfo(name = 'clusters', title = gettext('Clusters'), type = 'integer')
   clusteringTable$addColumnInfo(name = 'n', title = gettext('N'), type = 'integer')
-  clusteringTable$addColumnInfo(name = 'measure', title = gettextf('R%s', "\u00B2"), type = 'number', format = 'dp:2')
+  clusteringTable$addColumnInfo(name = 'measure', title = gettext("R\u00B2"), type = 'number', format = 'dp:2')
   clusteringTable$addColumnInfo(name = 'aic', title = gettext('AIC'), type = 'number', format = 'dp:2')
   clusteringTable$addColumnInfo(name = 'bic', title = gettext('BIC'), type = 'number', format = 'dp:2')
   clusteringTable$addColumnInfo(name = 'Silh', title = 'Silhouette', type = 'number', format = 'dp:2')
@@ -279,7 +279,7 @@
 
   clusterEvaluationMetrics[["metric"]] <- c(gettext("Maximum diameter"), 
                                             gettext("Minimum separation"), 
-                                            gettextf("Pearson's %s", "\u03B3"), 
+                                            gettext("Pearson's \u03B3"),
                                             gettext("Dunn index"), 
                                             gettext("Entropy"), 
                                             gettext("Calinski-Harabasz index"))
