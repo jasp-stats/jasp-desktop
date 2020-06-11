@@ -457,15 +457,35 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
 }
 
 .ttestPairedGetHypothesisFootnote <- function(hypothesis, pairs) {
-  directionNote <- if (hypothesis == "groupTwoGreater") gettext("less") else gettext("greater")
+
   idx <- .ttestPairedGetIndexOfFirstNonEmptyPair(pairs)
-  return(
-    if (idx != 0L)
-      gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is %1s than Measure 2. For example, %2s is %3s than %4s.",
-               directionNote, pairs[[idx]][[1L]], directionNote, pairs[[idx]][[2L]])
-    else
-      gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is %s than Measure 2.", directionNote)
-  )
+  onePair <- length(pairs) == 1L
+  isLess <- hypothesis == "groupTwoGreater" # greater -> 1 is less than 2
+
+  if (idx == 0L) { # no pairs, no example
+    ans <- if (isLess) {
+      gettext("For all tests, the alternative hypothesis specifies that Measure 1 is less than Measure 2.")
+    } else {
+      gettext("For all tests, the alternative hypothesis specifies that Measure 1 is greater than Measure 2.")
+    }
+  } else {
+    pair1 <- pairs[[idx]][[1L]]
+    pair2 <- pairs[[idx]][[2L]]
+    if (onePair) { # one pair, only give example
+      ans <- if (isLess) {
+        gettextf("the alternative hypothesis specifies that %1s is less than %2s.", pair1, pair2)
+      } else {
+        gettextf("the alternative hypothesis specifies that %1s is greater than %2s.", pair1, pair2)
+      }
+    } else { # multiple pairs, general + example
+      ans <- if (isLess) {
+        gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is less than Measure 2. For example, %1s is less than %2s.", pair1, pair2)
+      } else {
+        gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is greater than Measure 2. For example, %1s is greater than %2s.", pair1, pair2)
+      }
+    }
+  }
+  return(ans)
 }
 
 .ttestPairedGetIndexOfFirstNonEmptyPair <- function(pairs) {
