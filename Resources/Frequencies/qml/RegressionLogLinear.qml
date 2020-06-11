@@ -37,7 +37,7 @@ Form
 		{
 			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList	{ name: "availableTerms";	title: qsTr("Components");	width: parent.width / 4;		source: ['factors'] }
-			AssignedVariablesList	{ name: "modelTerms";		title: qsTr("Model Terms");	width: parent.width * 5 / 9;	listViewType: JASP.Interaction }
+			AssignedVariablesList	{ name: "modelTerms";		title: qsTr("Model Terms");	width: parent.width * 5 / 9;	listViewType: JASP.Interaction;	addInteractionsByDefault: false}
 		}
 	}
 	

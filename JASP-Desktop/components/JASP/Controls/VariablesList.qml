@@ -48,6 +48,7 @@ JASPGridViewControl
 	property bool	showVariableTypeIcon			: true
 	property bool	setWidthInForm					: false
 	property bool	setHeightInForm					: false
+	property bool	addInteractionsByDefault		: true
 	property bool	interactionContainLowerTerms	: true
 	property var	interactionHighOrderCheckBox
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction

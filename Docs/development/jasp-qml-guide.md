@@ -395,6 +395,7 @@ Properties
 - `maxRows`: [optional, default: `-1`] maximum number of rows the list can accept. -1 means no limit.
 - `singleVariable`: [optional, default: `false`] if true, set the maxRows to 1
 - `listViewType`: [optional] enumerative that specifies the type of `AssignedVariablesList`, when omitted we get a normal list, options are `JASP.Layers` (see Contingency Tables), `JASP.Interaction` (see ANOVA) and `JASP.RepeatedMeasures` (see Repeated Measures ANOVA)
+- `addInteractionsByDefault`: [optional, default: `true`] Specify if all interactions between factors should be automatically added to the model. Only has an effect if `listViewType == JASP.Interaction`.
 - `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
 - `height`: [optional] in pixels how heigh should the field be. Per default, it is set so that all AssignedVariablesList's fit the VariablesForm. If you set the height for 1 AssignedVariablesList, it will try to set height of the other AssignedVariablesLists's so that they all fit the heigth of the VariablesForm.
 - `count`: [read-only integer] Gives the number of rows of the list.

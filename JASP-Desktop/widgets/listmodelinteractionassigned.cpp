@@ -25,12 +25,13 @@
 
 using namespace std;
 
-ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool mustContainLowerTerms)
+ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool mustContainLowerTerms, bool addInteractionsByDefault)
 	: ListModelAssignedInterface(listView), InteractionModel ()
 {
-	_areTermsInteractions = true;
-	_copyTermsWhenDropped = true;
-	_mustContainLowerTerms = mustContainLowerTerms;
+	_areTermsInteractions		= true;
+	_copyTermsWhenDropped		= true;
+	_mustContainLowerTerms		= mustContainLowerTerms;
+	_addInteractionsByDefault	= addInteractionsByDefault;
 }
 
 void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
@@ -140,7 +141,7 @@ void ListModelInteractionAssigned::availableTermsChanged(const Terms *termsAdded
 {
 	if (termsAdded && termsAdded->size() > 0 && _addNewAvailableTermsToAssignedModel)
 	{
-		_addTerms(*termsAdded, true);
+		_addTerms(*termsAdded, _addInteractionsByDefault);
 		setTerms();
 	}
 	
