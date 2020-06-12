@@ -22,7 +22,7 @@
 #include "analysis/boundqmlitem.h"
 #include "analysis/options/optionlist.h"
 #include "listmodel.h"
-#include "listmodeltermsavailable.h"
+#include "listmodellabelvalueterms.h"
 #include <QMap>
 
 class BoundQMLComboBox : public QMLListView, public BoundQMLItem
@@ -53,15 +53,11 @@ protected:
 	int							_currentIndex			= 0;
 	QString						_currentText;
 	QString						_currentColumnType;
-	ListModelTermsAvailable*	_model					= nullptr;
-	QMap<QString, QString>		_valueToLabelMap;
-	QMap<QString, QString>		_labelToValueMap;
-
+	ListModelLabelValueTerms*	_model					= nullptr;
 
 	void _resetItemWidth();
 	void _resetOptions();
 	void _setCurrentValue(int index, bool setComboBoxIndex = true, bool setOption = true);
-	std::vector<std::string> _getOptionValues();
 };
 
 #endif // BOUNDQMLCOMBOBOX_H

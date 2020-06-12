@@ -442,7 +442,8 @@ HEADERS += \
     widgets/boundqmljagstextarea.h \
     widgets/boundqmlcomponentslist.h \
     widgets/listmodelanovacustomcontrasts.h \
-    widgets/listmodelcustomcontrasts.h
+    widgets/listmodelcustomcontrasts.h \
+    widgets/listmodellabelvalueterms.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -627,7 +628,8 @@ SOURCES += \
     widgets/boundqmljagstextarea.cpp \
     widgets/boundqmlcomponentslist.cpp \
     widgets/listmodelanovacustomcontrasts.cpp \
-    widgets/listmodelcustomcontrasts.cpp
+    widgets/listmodelcustomcontrasts.cpp \
+    widgets/listmodellabelvalueterms.cpp
 
 RESOURCES += \
     html/html.qrc \

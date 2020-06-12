@@ -28,19 +28,11 @@ BoundQMLComboBox::BoundQMLComboBox(JASPControlBase* item)
 	, BoundQMLItem()
 {
 	_currentIndex = getItemProperty("currentIndex").toInt();	
-	_model = new ListModelTermsAvailable(this);
+	_model = new ListModelLabelValueTerms(this);
 
 	connect(_model, &ListModelTermsAvailable::allAvailableTermsChanged, this, &BoundQMLComboBox::modelChangedHandler);
 	if (getItemProperty("addEmptyValue").toBool())
 		_model->addEmptyValue();
-
-	readModelProperty(&_labelToValueMap);
-	QMapIterator<QString, QString> it(_labelToValueMap);
-	while (it.hasNext())
-	{
-		it.next();
-		_valueToLabelMap[it.value()] = it.key();
-	}
 
 	_resetItemWidth();
 
@@ -63,7 +55,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 				index = 0;
 			else
 			{
-				QString selectedLabel = _valueToLabelMap.contains(selectedValue) ? _valueToLabelMap[selectedValue] : selectedValue;
+				QString selectedLabel = _model->getLabel(selectedValue);
 				index = labels.indexOf(selectedLabel);
 				if (index == -1)
 				{
@@ -72,7 +64,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 				}
 			}
 		}
-		std::vector<std::string> options = _getOptionValues();
+		std::vector<std::string> options = _model->getValues();
 		_boundTo->resetOptions(options, index);
 		
 		_setCurrentValue(index, true, false);
@@ -99,23 +91,9 @@ void BoundQMLComboBox::resetQMLItem(JASPControlBase *item)
 		QQuickItem::connect(_item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
 }
 
-std::vector<std::string> BoundQMLComboBox::_getOptionValues()
-{
-	std::vector<std::string> values;
-	const Terms& terms = _model->terms();
-	for (const Term& term : terms)
-	{
-		QString label = term.asQString();
-		QString value = _labelToValueMap.contains(label) ? _labelToValueMap[label] : label;
-		values.push_back(value.toStdString());
-	}
-	
-	return values;
-}
-
 Option *BoundQMLComboBox::createOption()
 {
-	std::vector<std::string> options = _getOptionValues();
+	std::vector<std::string> options = _model->getValues();
 	
 	int index = getItemProperty("currentIndex").toInt();
 	
@@ -181,16 +159,7 @@ void BoundQMLComboBox::languageChangedHandler()
 
 void BoundQMLComboBox::resetValues()
 {
-	_valueToLabelMap.clear();
-	_labelToValueMap.clear();
-
-	readModelProperty(&_labelToValueMap);
-	QMapIterator<QString, QString> it(_labelToValueMap);
-	while (it.hasNext())
-	{
-		it.next();
-		_valueToLabelMap[it.value()] = it.key();
-	}
+	_model->readModelProperty(this);
 
 	_resetItemWidth();
 
@@ -211,7 +180,7 @@ void BoundQMLComboBox::_resetOptions()
 	for (const Term& term : terms)
 	{
 		QString label = term.asQString();
-		QString value = _labelToValueMap.contains(label) ? _labelToValueMap[label] : label;
+		QString value = _model->getValue(label);
 		options.push_back(value.toStdString());
 		if (label == _currentText)
 			currentIndex = index;
@@ -280,7 +249,7 @@ void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool s
 	// Cannot use _boundTo to get the current value, because when _boundTo is changed (by setting the current index),
 	// it emits a signal that can be received by a slot that needs already the currentValue.
 	// This is in particular needed in CustomContrast
-	setItemProperty("currentValue", _labelToValueMap.contains(_currentText) ? _labelToValueMap[_currentText] : _currentText);
+	setItemProperty("currentValue", _model->getValue(_currentText));
 	setItemProperty("currentColumnType", _currentColumnType);
 
 	if (setComboBoxIndex)
