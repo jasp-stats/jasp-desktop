@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-06-04 13:29\n"
+"POT-Creation-Date: 2020-06-14 21:44\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -968,6 +968,12 @@ msgid "Minimum"
 msgstr ""
 
 msgid "Maximum"
+msgstr ""
+
+msgid "Population and sample histograms"
+msgstr ""
+
+msgid "<b>Figure %1$i.</b> The distributions of numeric variables in the population compared to the distributions in the sample."
 msgstr ""
 
 msgid "<u>Evaluation</u>"
@@ -4294,6 +4300,9 @@ msgstr ""
 msgid "Strength"
 msgstr ""
 
+msgid "Expected influence"
+msgstr ""
+
 msgid "Barrat"
 msgstr ""
 
@@ -5245,7 +5254,22 @@ msgstr ""
 msgid "For the Student t-test, effect size is given by Cohen's <em>d</em>. For the Wilcoxon test, effect size is given by the matched rank biserial correlation."
 msgstr ""
 
-msgid "For all tests, the alternative hypothesis specifies that measurement one is %s than measurement two."
+msgid "For all tests, the alternative hypothesis specifies that Measure 1 is less than Measure 2."
+msgstr ""
+
+msgid "For all tests, the alternative hypothesis specifies that Measure 1 is greater than Measure 2."
+msgstr ""
+
+msgid "For all tests, the alternative hypothesis specifies that %1s is less than %2s."
+msgstr ""
+
+msgid "For all tests, the alternative hypothesis specifies that %1s is greater than %2s."
+msgstr ""
+
+msgid "For all tests, the alternative hypothesis specifies that Measure 1 is less than Measure 2. For example, %1s is less than %2s."
+msgstr ""
+
+msgid "For all tests, the alternative hypothesis specifies that Measure 1 is greater than Measure 2. For example, %1s is greater than %2s."
 msgstr ""
 
 msgid "Evidence for H1"

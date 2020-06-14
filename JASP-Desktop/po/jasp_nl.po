@@ -7509,10 +7509,6 @@ msgid "Bootstrap Type"
 msgstr "Bootstrap type"
 
 msgctxt "NetworkAnalysis|"
-msgid "Nonparametic"
-msgstr "Niet parametrisch"
-
-msgctxt "NetworkAnalysis|"
 msgid "Case"
 msgstr "Geval"
 
@@ -7687,10 +7683,6 @@ msgstr "Kort labels af tot "
 msgctxt "NetworkAnalysis|"
 msgid "Show Variable Names"
 msgstr "Toon Variabelnamen"
-
-msgctxt "NetworkAnalysis|"
-msgid "In nodes"
-msgstr "In knopen"
 
 msgctxt "NetworkAnalysis|"
 msgid "In legend"
@@ -10257,14 +10249,6 @@ msgstr "Model toegepast"
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Too many rows in OptionsTable for ListModelFilteredDataEntry"
 msgstr "Teveel rijen in OptionsTable voor ListModelFilteredDataEntry"
-
-msgctxt "ListModelJAGSDataInput|"
-msgid ""
-"Number of rows specifed in Options for ListModelJAGSDataInput does not match "
-"number of rows in values!"
-msgstr ""
-"Aantal rijen gespecificeerd in Opties voor ListModelJAGSDataInput komt niet "
-"overeen met aantal rijen in waarden!"
 
 #, qt-format
 msgctxt "ListModelLayersAssigned|"
@@ -14180,14 +14164,6 @@ msgstr "Sla JASP Afbeelding Op"
 
 msgctxt "MainWindow|"
 msgid ""
-"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
-"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)"
-msgstr ""
-"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
-"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)"
-
-msgctxt "MainWindow|"
-msgid ""
 "This analysis was created in an older version of JASP, to resize the image "
 "it must be refreshed first.\n"
 "\n"
@@ -15995,13 +15971,112 @@ msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
 msgstr "Contrast %1"
 
-msgctxt "ListModelCustomContrasts|"
+msgctxt "RCommanderWindow|"
+msgid "R in JASP"
+msgstr "R in JASP"
+
+msgctxt "RCommanderWindow|"
+msgid "Welcome to R in JASP!"
+msgstr "Welkom bij R in JASP!"
+
+msgctxt "RCommanderWindow|"
 msgid ""
-"Number of rows specifed in Options for ListModelCustumContrasts does not "
-"match number of rows in values!"
+"Enter your R code here.\n"
+"The data is fully available as 'data' and filtered as 'filteredData'."
 msgstr ""
-"Aantal rijen gespecificeerd in Opties voor ListModelCustumContrasts komt "
-"niet overeen met aantal rijen in waarden!"
+"Voer hier uw R-code in.\n"
+"De gegevens zijn volledig beschikbaar als 'data' en gefilterd als "
+"'filteredData'."
+
+msgctxt "RCommanderWindow|"
+msgid "Enter your R code here."
+msgstr "Voer hier uw R-code in."
+
+msgctxt "RCommanderWindow|"
+msgid "Run Code"
+msgstr "Voer code uit"
+
+msgctxt "RCommanderWindow|"
+msgid "Pressing Ctrl+Enter or F5 will also run the code"
+msgstr "Als u op Ctrl+Enter of F5 drukt, wordt de code ook uitgevoerd"
+
+msgctxt "RCommanderWindow|"
+msgid "Clear Output"
+msgstr "Wis uitvoer"
+
+msgctxt "RCommanderWindow|"
+msgid "Cleared..."
+msgstr "Gewist..."
+
+msgctxt "auditSelection|"
+msgid "Tables and Plots"
+msgstr "Tabellen en Grafieken"
+
+msgctxt "auditSelection|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "auditSelection|"
+msgid "Population and sample histograms"
+msgstr "Populatie en steekproef histogrammen"
+
+msgctxt "auditSelection|"
+msgid "Add selection counter to data"
+msgstr "Voeg selectieteller toe aan de gegevens"
+
+msgctxt "auditSelection|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "NetworkAnalysis|"
+msgid "Nonparametric"
+msgstr "Niet parametrisch"
+
+msgctxt "NetworkAnalysis|"
+msgid "Edge labels"
+msgstr "Verbindingslabels"
+
+msgctxt "NetworkAnalysis|"
+msgid "Edge label size"
+msgstr "Grootte verbindingslabel"
+
+msgctxt "NetworkAnalysis|"
+msgid "Edge label position"
+msgstr "Positie verbindingslabel"
+
+msgctxt "NetworkAnalysis|"
+msgid "In plot"
+msgstr "In grafiek"
+
+msgctxt "NetworkAnalysis|"
+msgid "Measures shown in centrality plot"
+msgstr "Pasmaten getoond in centraliteitsgrafiek"
+
+msgctxt "NetworkAnalysis|"
+msgid "Betweenness"
+msgstr "Betweenness"
+
+msgctxt "NetworkAnalysis|"
+msgid "Closeness"
+msgstr "Geslotenheid"
+
+msgctxt "NetworkAnalysis|"
+msgid "Expected Influence"
+msgstr "Verwachte Invloed"
+
+msgctxt "MainWindow|"
+msgid ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx)"
+msgstr ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx)"
+
+msgctxt "RibbonModel|"
+msgid "R (Beta)"
+msgstr "R (Beta)"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
