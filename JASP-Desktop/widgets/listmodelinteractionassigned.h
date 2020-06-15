@@ -30,7 +30,7 @@ class ListModelInteractionAssigned : public ListModelAssignedInterface, public I
 	Q_OBJECT
 	
 public:
-	ListModelInteractionAssigned(QMLListView* listView, bool mustContainLowerTerms);
+	ListModelInteractionAssigned(QMLListView* listView, bool mustContainLowerTerms, bool addInteractionsByDefault);
 
 	void			initTerms(const Terms &terms, const RowControlsOptions& = RowControlsOptions())	override;
 	void			setAvailableModel(ListModelAvailableInterface *source)							override;
@@ -51,6 +51,8 @@ protected:
 	void _addTerms(const Terms& terms, bool combineWithExistingTerms);
 	
 	void setTerms();
+
+	bool _addInteractionsByDefault;
 };
 
 

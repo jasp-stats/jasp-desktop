@@ -883,11 +883,6 @@ msgctxt "ContrastsList|"
 msgid "Factors"
 msgstr ""
 
-#, qt-format
-msgctxt "ContrastsList|"
-msgid "Custom contrast for %1"
-msgstr ""
-
 msgctxt "BreadCrumbs|"
 msgid "You are here"
 msgstr ""
@@ -7499,10 +7494,6 @@ msgid "Bootstrap Type"
 msgstr ""
 
 msgctxt "NetworkAnalysis|"
-msgid "Nonparametic"
-msgstr ""
-
-msgctxt "NetworkAnalysis|"
 msgid "Case"
 msgstr ""
 
@@ -7676,10 +7667,6 @@ msgstr ""
 
 msgctxt "NetworkAnalysis|"
 msgid "Show Variable Names"
-msgstr ""
-
-msgctxt "NetworkAnalysis|"
-msgid "In nodes"
 msgstr ""
 
 msgctxt "NetworkAnalysis|"
@@ -10297,12 +10284,6 @@ msgstr ""
 
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Too many rows in OptionsTable for ListModelFilteredDataEntry"
-msgstr ""
-
-msgctxt "ListModelJAGSDataInput|"
-msgid ""
-"Number of rows specifed in Options for ListModelJAGSDataInput does not match "
-"number of rows in values!"
 msgstr ""
 
 #, qt-format
@@ -14031,12 +14012,6 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid ""
-"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
-"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)"
-msgstr ""
-
-msgctxt "MainWindow|"
-msgid ""
 "This analysis was created in an older version of JASP, to resize the image "
 "it must be refreshed first.\n"
 "\n"
@@ -15503,10 +15478,6 @@ msgctxt "auditSelection|"
 msgid "Range"
 msgstr ""
 
-msgctxt "auditSelection|"
-msgid "<b>Download Sample</b>"
-msgstr ""
-
 msgctxt "TTestBayesianOneSample|"
 msgid "Tests"
 msgstr ""
@@ -15559,41 +15530,6 @@ msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
 msgstr ""
 
-msgctxt "CSVImporter|"
-msgid "Loading Data Set"
-msgstr ""
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set Description"
-msgstr ""
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set"
-msgstr ""
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Add Contrast"
-msgstr ""
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Delete Contrast"
-msgstr ""
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Reset"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelMarginalMeansContrasts|"
-msgid "Contrast %1"
-msgstr ""
-
-msgctxt "ListModelMarginalMeansContrasts|"
-msgid ""
-"Number of rows specifed in Options for ListModelMarginalMeansContrasts does "
-"not match number of rows in values!"
-msgstr ""
-
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
 msgstr ""
@@ -15638,13 +15574,221 @@ msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
 msgstr ""
 
-msgctxt "Importer|"
-msgid "Loading Data Set"
-msgstr ""
-
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
+msgstr ""
+
+msgctxt "ComponentsList|"
+msgid "Add a row"
+msgstr ""
+
+msgctxt "ComponentsList|"
+msgid "Remove a row"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Save file to:"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Load file from:"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Select file to save"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Select file to load"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Browse"
+msgstr ""
+
+msgctxt "TabView|"
+msgid "Add a tab"
+msgstr ""
+
+msgctxt "TabView|"
+msgid "Remove this tab"
+msgstr ""
+
+msgctxt "TabView|"
+msgid "New tab"
+msgstr ""
+
+#, qt-format
+msgctxt "ContrastsList|"
+msgid "Custom for %1"
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "<b>Download Report</b>"
+msgstr ""
+
+#, qt-format
+msgctxt "FileEvent|"
+msgid "Importing Data from %1"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing SPSS File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing SAS File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing STATA File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading JASP File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Saving JASP File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Exporting Results"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Exporting Data"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Synchronizing Data"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Processing File"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelCustomContrasts|"
+msgid "Contrast %1"
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "R in JASP"
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Welcome to R in JASP!"
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"The data is fully available as 'data' and filtered as 'filteredData'."
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Enter your R code here."
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Run Code"
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Pressing Ctrl+Enter or F5 will also run the code"
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Clear Output"
+msgstr ""
+
+msgctxt "RCommanderWindow|"
+msgid "Cleared..."
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Tables and Plots"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Plots"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Population and sample histograms"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Add selection counter to data"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Nonparametric"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Edge labels"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Edge label size"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Edge label position"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "In plot"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Measures shown in centrality plot"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Betweenness"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Closeness"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Expected Influence"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx)"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "R (Beta)"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

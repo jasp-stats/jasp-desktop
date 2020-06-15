@@ -627,7 +627,7 @@ bool EngineSync::allEnginesStopped()
 bool EngineSync::allEnginesPaused()
 {
 	for(auto * engine : _engines)
-		if(!engine->paused() && !engine->initializing()) //Initializing is also sort of paused I guess
+		if(!engine->paused()) //Initializing() is part paused()
 			return false;
 	return true;
 }

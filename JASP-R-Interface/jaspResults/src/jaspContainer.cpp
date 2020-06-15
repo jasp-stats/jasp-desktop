@@ -224,6 +224,7 @@ Json::Value jaspContainer::dataEntry(jaspObject * oldResult, std::string & error
 	Json::Value dataJson			= jaspObject::dataEntryBase();					//jaspContainer should not try to set any errorMessage on itself
 	dataJson["title"]				= _title;
 	dataJson["name"]				= getUniqueNestedName();
+	dataJson["initCollapsed"]		= _initiallyCollapsed;
 	dataJson["collection"]			= Json::objectValue;
 	bool cascaded					= errorMsg != "";
 	std::string cascadingMsg		= cascaded ? errorMsg : _errorMessage;	//cascading errorMessagues trumps local one
@@ -353,6 +354,7 @@ bool jaspContainer::canShowErrorMessage() const
 Json::Value jaspContainer::convertToJSON() const
 {
 	Json::Value obj			= jaspObject::convertToJSON();
+	obj["initCollapsed"]	= _initiallyCollapsed;
 	obj["data"]				= Json::objectValue;
 	obj["data_order"]		= Json::objectValue;
 	obj["order_increment"]	= _order_increment;
@@ -388,6 +390,8 @@ void jaspContainer::convertFromJSON_SetFields(Json::Value in)
 
 	for(auto & dataOrderEntry : dataOrderIn.getMemberNames())
 		_data_order[dataOrderEntry] = dataOrderIn.get(dataOrderEntry, -1).asInt();
+
+	_initiallyCollapsed = in.get("initCollapsed", false).asBool();
 }
 
 void jaspContainer::checkDependenciesChildren(Json::Value currentOptions)

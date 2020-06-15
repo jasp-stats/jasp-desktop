@@ -49,9 +49,9 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   ttest$showSpecifiedColumnsOnly <- TRUE
   ttest$position <- 1
   
-  ttest$addColumnInfo(name = "v1", type = "string", title = "")
-  ttest$addColumnInfo(name = "sep",  type = "separator", title = "")
-  ttest$addColumnInfo(name = "v2", type = "string", title = "")
+  ttest$addColumnInfo(name = "v1",  type = "string",    title = "Measure 1")
+  ttest$addColumnInfo(name = "sep", type = "separator", title = "")
+  ttest$addColumnInfo(name = "v2",  type = "string",    title = "Measure 2")
   
   if (optionsList$wantsWilcox && optionsList$onlyTest) {
     ttest$addFootnote(gettext("Wilcoxon signed-rank test."))
@@ -111,11 +111,8 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     ttest$addColumnInfo(name = "upperCIeffectSize", type = "number", title = gettext("Upper"), overtitle = title)
   }
   
-  
-  if (options$hypothesis == "groupOneGreater" || options$hypothesis == "groupTwoGreater") {
-    directionNote <- ifelse(options$hypothesis == "groupTwoGreater", gettext("less"), gettext("greater"))
-    ttest$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that measurement one is %s than measurement two.", directionNote))
-  }
+  if (options$hypothesis == "groupOneGreater" || options$hypothesis == "groupTwoGreater")
+    ttest$addFootnote(.ttestPairedGetHypothesisFootnote(options[["hypothesis"]], options[["pairs"]]))
   
   jaspResults[["ttest"]] <- ttest
   
@@ -459,4 +456,41 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   return(p)
 }
 
+.ttestPairedGetHypothesisFootnote <- function(hypothesis, pairs) {
 
+  idx <- .ttestPairedGetIndexOfFirstNonEmptyPair(pairs)
+  onePair <- length(pairs) == 1L
+  isLess <- hypothesis == "groupTwoGreater" # greater -> 1 is less than 2
+
+  if (idx == 0L) { # no pairs, no example
+    ans <- if (isLess) {
+      gettext("For all tests, the alternative hypothesis specifies that Measure 1 is less than Measure 2.")
+    } else {
+      gettext("For all tests, the alternative hypothesis specifies that Measure 1 is greater than Measure 2.")
+    }
+  } else {
+    pair1 <- pairs[[idx]][[1L]]
+    pair2 <- pairs[[idx]][[2L]]
+    if (onePair) { # one pair, only give example
+      ans <- if (isLess) {
+        gettextf("For all tests, the alternative hypothesis specifies that %1s is less than %2s.", pair1, pair2)
+      } else {
+        gettextf("For all tests, the alternative hypothesis specifies that %1s is greater than %2s.", pair1, pair2)
+      }
+    } else { # multiple pairs, general + example
+      ans <- if (isLess) {
+        gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is less than Measure 2. For example, %1s is less than %2s.", pair1, pair2)
+      } else {
+        gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is greater than Measure 2. For example, %1s is greater than %2s.", pair1, pair2)
+      }
+    }
+  }
+  return(ans)
+}
+
+.ttestPairedGetIndexOfFirstNonEmptyPair <- function(pairs) {
+  for (i in seq_along(pairs))
+    if (pairs[[i]][1L] != "" && pairs[[i]][[2L]] != "")
+      return(i)
+  return(0L)
+}
