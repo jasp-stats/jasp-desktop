@@ -1,7 +1,7 @@
 {
 	"moduleDescription" :
 	{
-		"name" : 		"Meta Analysis",
+		"name" : 		"MetaAnalysis",
 		"title" : 		"Meta-Analyse",
 		"description" : "Meta-Analysis module.",
 		"icon":			"meta-analysis.svg",
@@ -17,15 +17,20 @@
 
 	"menu":  [
 		{
-			"title":	"Klassieke Meta-Analyse",
-			"function":	"ClassicalMetaAnalysis"
+			"title":		"Klassieke Meta-Analyse",
+			"function":		"ClassicalMetaAnalysis"
 		},
 		{
-			"title":	"-"
+			"title":		"-"
 		},
 		{
-			"title": 	"Bayesiaanse Meta-Analyse",
-			"function":	"BayesianMetaAnalysis"
+			"title": 		"Bayesiaanse Meta-Analyse",
+			"function":		"BayesianMetaAnalysis"
+		},
+		{
+			"title": 		"Robuste Bayesiaanse Meta-Analyse (beta)",
+			"function":		"RobustBayesianMetaAnalysis",
+			"requiresData":	false
 		}
 	]
 }
