@@ -242,5 +242,7 @@
         <file>icons/audit-other.svg</file>
         <file>icons/reliability_icon_bayesian.svg</file>
         <file>icons/reliability_icon_classic.svg</file>
+		<file>icons/MixedModels_bayesian.svg</file>
+        <file>icons/MixedModels_classical.svg</file>
     </qresource>
 </RCC>
