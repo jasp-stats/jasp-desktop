@@ -17,10 +17,6 @@
 		{
 			"title":	"Descriptive Statistics",
 			"function":	"Descriptives"
-		},
-		{
-			"title":	"Reliability Analysis",
-			"function":	"ReliabilityAnalysis"
 		}
 	]
 }
