@@ -30,7 +30,8 @@ QVariant ListModelLabelValueTerms::data(const QModelIndex &index, int role) cons
 	int row = index.row();
 	const Terms& myTerms = terms();
 	size_t row_t = size_t(row);
-	if (row_t >= myTerms.size())
+
+	if (row < 0 || row_t >= myTerms.size())
 		return QVariant();
 
 	if (role == ListModel::ValueRole)
@@ -93,7 +94,7 @@ void ListModelLabelValueTerms::readModelProperty(QMLListView *item)
 			while (i.hasNext())
 			{
 				i.next();
-				QString valueStr = QString::fromStdString(i.value().toStdString());
+				QString valueStr = i.value();
 				roleMap[valueStr] = i.key();
 			}
 			for (int i = 0; i < srcModel->rowCount(); i++)
