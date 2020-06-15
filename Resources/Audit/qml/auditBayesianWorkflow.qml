@@ -27,6 +27,10 @@ Form
 	usesJaspResults: 	true
     columns: 			1
 
+		// Extra options
+		CheckBox { name: "workflow"; checked: true; visible: false}
+		CheckBox { name: "useSumStats"; checked: false; visible: false}
+
 	// --------------------------------------------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------  PLANNING  -----------------------------------------------------------------------------
 	// --------------------------------------------------------------------------------------------------------------------------------------------
@@ -140,7 +144,7 @@ Form
 				name: 				"recordNumberVariable"
 				title: 				qsTr("Record ID's")
 				singleVariable: 	true
-				allowedColumns: 	["ordinal", "scale"]
+				allowedColumns: 	["nominal", "nominalText", "ordinal", "scale"]
 			}
 
 			AssignedVariablesList
@@ -153,6 +157,108 @@ Form
 			}
 		}
 
+		Section {
+			title: 		qsTr("Prior Information")
+			columns: 3
+
+			RadioButtonGroup
+			{
+				id: 		ir
+				title: 		qsTr("Inherent Risk")
+				name: 		"IR"
+
+				RadioButton { text: qsTr("High"); 		name: "High"; checked: true	}
+				RadioButton { text: qsTr("Medium");		name: "Medium"}
+				RadioButton { text: qsTr("Low"); 			name: "Low"}
+				RadioButton
+				{
+					id: 								irCustom
+					text:	 							qsTr("Custom")
+					name: 							"Custom"
+					childrenOnSameRow: 	true
+
+					PercentField
+					{
+						name: 						"irCustom"
+						visible: 					irCustom.checked
+						decimals: 				2
+						defaultValue: 		100
+						min: 							25
+					}
+				}
+			}
+
+			RadioButtonGroup
+			{
+				id: 		cr
+				title: 		qsTr("Control Risk")
+				name: 		"CR"
+
+				RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
+				RadioButton { text: qsTr("Medium"); 	name: "Medium" 					}
+				RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+				RadioButton
+				{
+					id: 							crCustom
+					text:	 						qsTr("Custom")
+					name: 						"Custom"
+					childrenOnSameRow: true
+
+					PercentField
+					{
+						name: 					"crCustom"
+						visible: 				crCustom.checked
+						decimals: 			2
+						defaultValue: 	100
+						min:						25
+					}
+				}
+			}
+
+			RadioButtonGroup
+			{
+				id: 		expectedErrors
+				name: 		"expectedErrors"
+				title: 		qsTr("Expected Errors")
+
+				RowLayout
+				{
+					enabled: monetaryVariable.count > 0
+
+					RadioButton { text: qsTr("Absolute"); name: "expectedAbsolute"; id: expectedAbsolute}
+
+					DoubleField
+					{
+						name: 			"expectedNumber"
+						enabled: 		expectedAbsolute.checked
+						defaultValue: 	0
+						min: 			0
+						max: 			1e10
+						decimals: 		2
+						visible: 		expectedAbsolute.checked
+						fieldWidth: 	60
+						label: 			"$"
+					}
+				}
+
+				RowLayout
+				{
+					RadioButton { text: qsTr("Relative") ; name: "expectedRelative"; id: expectedRelative; checked: true}
+
+					PercentField
+					{
+						name: 			"expectedPercentage"
+						enabled: 		expectedRelative.checked
+						decimals: 		2
+						defaultValue: 	0
+						visible: 		expectedRelative.checked
+						fieldWidth: 	40
+					}
+				}
+			}
+
+		}
+
 		Section
 		{
 			text: qsTr("Advanced Options")
@@ -160,136 +266,6 @@ Form
 			GridLayout
 			{
 				columns: 3
-
-				RadioButtonGroup
-				{
-					id: 		ir
-					title: 		qsTr("Inherent Risk")
-					name: 		"IR"
-					enabled:	!pasteVariables.checked
-
-					RadioButton { text: qsTr("High"); 		name: "High"; checked: true	}
-					RadioButton { text: qsTr("Medium");		name: "Medium"}
-					RadioButton { text: qsTr("Low"); 			name: "Low"}
-					RadioButton
-					{
-						id: 								irCustom
-						text:	 							qsTr("Custom")
-						name: 							"Custom"
-						childrenOnSameRow: 	true
-
-						PercentField
-						{
-							name: 						"irCustom"
-							visible: 					irCustom.checked
-							decimals: 				2
-							defaultValue: 		100
-							min: 							25
-						}
-					}
-				}
-
-				RadioButtonGroup
-				{
-					id: 		expectedErrors
-					name: 		"expectedErrors"
-					title: 		qsTr("Expected Errors")
-					enabled:	!pasteVariables.checked
-
-					RowLayout
-					{
-						enabled: monetaryVariable.count > 0
-
-						RadioButton { text: qsTr("Absolute"); name: "expectedAbsolute"; id: expectedAbsolute}
-
-						DoubleField
-						{
-							name: 			"expectedNumber"
-							enabled: 		expectedAbsolute.checked
-							defaultValue: 	0
-							min: 			0
-							max: 			1e10
-							decimals: 		2
-							visible: 		expectedAbsolute.checked
-							fieldWidth: 	60
-							label: 			euroValuta.checked ? "€" : (dollarValuta.checked ? "$" : otherValutaName.value)
-						}
-					}
-
-					RowLayout
-					{
-						RadioButton { text: qsTr("Relative") ; name: "expectedRelative"; id: expectedRelative; checked: true}
-
-						PercentField
-						{
-							name: 			"expectedPercentage"
-							enabled: 		expectedRelative.checked
-							decimals: 		2
-							defaultValue: 	0
-							visible: 		expectedRelative.checked
-							fieldWidth: 	40
-						}
-					}
-				}
-
-				GroupBox
-				{
-					title: qsTr("Explanatory Text")
-
-					RowLayout
-					{
-
-						CheckBox
-						{
-							id: 		explanatoryText
-							text: 		qsTr("Enable")
-							name: 		"explanatoryText"
-							checked: 	true
-						}
-
-						HelpButton
-						{
-							helpPage:			"Audit/explanatoryText"
-							toolTip: 			qsTr("Show explanatory text at each step of the analysis")
-						}
-					}
-
-					CheckBox
-					{
-						text:	 		qsTr("Report badges")
-						name: 		"reportBadges"
-						checked: 	false
-						visible: 	false
-					}
-				}
-
-				RadioButtonGroup
-				{
-					id: 		cr
-					title: 		qsTr("Control Risk")
-					name: 		"CR"
-					enabled:	!pasteVariables.checked
-
-					RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
-					RadioButton { text: qsTr("Medium"); 	name: "Medium" 					}
-					RadioButton { text: qsTr("Low"); 		name: "Low" 					}
-					RadioButton
-					{
-						id: 							crCustom
-						text:	 						qsTr("Custom")
-						name: 						"Custom"
-						childrenOnSameRow: true
-
-						PercentField
-						{
-							name: 					"crCustom"
-							visible: 				crCustom.checked
-							decimals: 			2
-							defaultValue: 	100
-							min:						25
-						}
-					}
-				}
 
 				RadioButtonGroup
 				{
@@ -341,6 +317,29 @@ Form
 							fieldWidth: 100
 							enabled: 	otherValuta.checked
 							visible: 	otherValuta.checked
+						}
+					}
+				}
+
+				GroupBox
+				{
+					title: qsTr("Explanatory Text")
+
+					RowLayout
+					{
+
+						CheckBox
+						{
+							id: 		explanatoryText
+							text: 		qsTr("Enable")
+							name: 		"explanatoryText"
+							checked: 	true
+						}
+
+						HelpButton
+						{
+							helpPage:			"Audit/explanatoryText"
+							toolTip: 			qsTr("Show explanatory text at each step of the analysis")
 						}
 					}
 				}

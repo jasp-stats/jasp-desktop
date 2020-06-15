@@ -161,14 +161,6 @@ Form {
 						toolTip: 			qsTr("Show explanatory text and formulas")
 					}
 				}
-
-				CheckBox
-				{
-					text:	 		qsTr("Report badges")
-					name: 		"reportBadges"
-					checked: 	false
-					visible: 	false
-				}
 			}
 		}
 	}

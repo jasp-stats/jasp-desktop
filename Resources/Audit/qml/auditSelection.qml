@@ -25,6 +25,9 @@ Form {
 
 	usesJaspResults: 								true
 
+	// Extra options 
+	CheckBox { name: "workflow"; checked: false; visible: false}
+
 	VariablesForm
 	{
 		id: 													variablesFormSampling
@@ -41,7 +44,8 @@ Form {
 			name: 											"recordNumberVariable"
 			title: 											qsTr("Record ID's")
 			singleVariable:							true
-			allowedColumns:							["ordinal", "scale"]
+			allowedColumns:							["nominal", "nominalText", "ordinal", "scale"]
+			allowAnalysisOwnComputedColumns: false
 		}
 
 		AssignedVariablesList
@@ -51,6 +55,7 @@ Form {
 			title: 											musSampling.checked ? qsTr("Book Values <i>(required)</i>") : qsTr("Book Values <i>(optional)</i>")
 			singleVariable: 						true
 			allowedColumns: 						["scale"]
+			allowAnalysisOwnComputedColumns: false
 		}
 
 		AssignedVariablesList
@@ -59,6 +64,7 @@ Form {
 			title: 											qsTr("Ranking Variable <i>(optional)</i>")
 			singleVariable:							true
 			allowedColumns:							["scale"]
+			allowAnalysisOwnComputedColumns: false
 		}
 
 		AssignedVariablesList
@@ -67,6 +73,7 @@ Form {
 			title: 											qsTr("Additional Variables <i>(optional)</i>")
 			Layout.preferredHeight: 		140 * preferencesModel.uiScale
 			allowedColumns: 						["scale", "ordinal", "nominal"]
+			allowAnalysisOwnComputedColumns: false
 		}
 	}
 

@@ -25,6 +25,9 @@ Form {
 
 	usesJaspResults: true
 
+	// Extra options
+	CheckBox { name: "workflow"; checked: false; visible: false}
+
 	GridLayout
 	{
 		columns: 3
@@ -245,14 +248,6 @@ Form {
 						helpPage:			"Audit/explanatoryText"
 						toolTip: 			qsTr("Show explanatory text at each step of the analysis")
 					}
-				}
-
-				CheckBox
-				{
-					text:	 		qsTr("Report badges")
-					name: 		"reportBadges"
-					checked: 	false
-					visible: 	false
 				}
 			}
 

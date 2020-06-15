@@ -239,7 +239,8 @@
         <file>icons/equivalence-module.svg</file>
         <file>icons/audit-selection.svg</file>
         <file>icons/Rlogo.svg</file>
-		<file>icons/reliability_icon_bayesian.svg</file>
-		<file>icons/reliability_icon_classic.svg</file>
+        <file>icons/audit-other.svg</file>
+        <file>icons/reliability_icon_bayesian.svg</file>
+        <file>icons/reliability_icon_classic.svg</file>
     </qresource>
 </RCC>

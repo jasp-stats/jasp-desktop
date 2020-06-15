@@ -21,7 +21,6 @@
 auditClassicalWorkflow <- function(jaspResults, dataset, options, ...){
    
   # For the workflow constituents, see auditCommonFunctions.R
-  .auditWorkflow(options, 
-                 jaspResults, 
-                 type = "frequentist")
+  .auditWorkflow(options, jaspResults, type = "frequentist")
+  
 }

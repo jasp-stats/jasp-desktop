@@ -1601,17 +1601,12 @@
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorBound', 
                                                    title = gettextf("%1$s%% Credible bound", round(options[["confidence"]] * 100, 2)) , 
                                                    type = 'string')
-    priorAndPosteriorStatisticsTable$addFootnote(message = gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s).",
-                                                                    "H\u208B",
-                                                                    "\u03B8 <",
-                                                                    round(evaluationState[["materiality"]], 3),
-                                                                    "H\u208A",
-                                                                    "\u03B8 \u2265",
-                                                                    round(evaluationState[["materiality"]], 3)))
 
     evaluationContainer[["priorAndPosteriorStatistics"]] <- priorAndPosteriorStatisticsTable
 
-    if(options[["auditResult"]] == "" || 
+    if(((options[["auditResult"]] == "" || options[["recordNumberVariable"]] == "") && !options[["useSumStats"]]) ||
+        (options[["useSumStats"]] && options[["nSumStats"]] == 0) ||
+        planningOptions[["materiality"]] == 0 ||
         evaluationContainer$getError()) {
 
         row <- data.frame(v = c(gettext("Prior"), gettext("Posterior"), gettext("Shift")))
@@ -1619,6 +1614,15 @@
         return()
 
     }
+
+    priorAndPosteriorStatisticsTable$addFootnote(message = gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s).",
+                                                                "H\u208B",
+                                                                "\u03B8 <",
+                                                                round(evaluationState[["materiality"]], 3),
+                                                                "H\u208A",
+                                                                "\u03B8 \u2265",
+                                                                round(evaluationState[["materiality"]], 3)))
+  
 
     if(planningOptions[["likelihood"]] == "poisson"){
 

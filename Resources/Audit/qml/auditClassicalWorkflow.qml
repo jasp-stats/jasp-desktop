@@ -30,6 +30,10 @@ Form
 	usesJaspResults: 	true
 	columns: 			1
 
+	// Extra options
+	CheckBox { name: "workflow"; checked: true; visible: false}
+	CheckBox { name: "useSumStats"; checked: false; visible: false}
+
 	// --------------------------------------------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------  PLANNING  -----------------------------------------------------------------------------
 	// --------------------------------------------------------------------------------------------------------------------------------------------
@@ -140,7 +144,7 @@ Form
 				name: 			"recordNumberVariable"
 				title: 			qsTr("Record ID's")
 				singleVariable:	true
-				allowedColumns:	["ordinal", "scale"]
+				allowedColumns:	["nominal", "nominalText", "ordinal", "scale"]
 			}
 
 			AssignedVariablesList
@@ -251,14 +255,6 @@ Form
 							helpPage:			"Audit/explanatoryText"
 							toolTip: 			qsTr("Show explanatory text at each step of the analysis")
 						}
-					}
-
-					CheckBox
-					{
-						text:	 		qsTr("Report badges")
-						name: 		"reportBadges"
-						checked: 	false
-						visible: 	false
 					}
 				}
 
