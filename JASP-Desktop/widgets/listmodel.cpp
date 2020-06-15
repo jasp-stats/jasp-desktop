@@ -23,6 +23,7 @@
 #include "../analysis/jaspcontrolbase.h"
 #include <QJSEngine>
 #include <boost/bind.hpp>
+#include "log.h"
 
 ListModel::ListModel(QMLListView* listView) 
 	: QAbstractTableModel(listView)
@@ -45,6 +46,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 		roles[ColumnTypeRole]		= "columnType";
 		roles[NameRole]				= "name";
 		roles[RowComponentsRole]	= "rowComponents";
+		roles[ValueRole]			= "value";
 
 		setMe = false;
 	}
@@ -539,4 +541,38 @@ void ListModel::replaceVariableName(const std::string & oldName, const std::stri
 	for(const QString & key : _rowControlsOptions.keys())
 		for(const QString & key2 : _rowControlsOptions[key].keys())
 			_rowControlsOptions[key][key2]->replaceVariableName(oldName, newName);
+}
+
+void ListModel::readModelProperty(QMLListView* item)
+{
+	QVariant modelVar = item->getItemProperty("values");
+
+	if (modelVar.isNull())
+	{
+		if (item->getItemProperty("source").isNull())
+			item->setModelHasAllVariables(true);
+	}
+	else
+	{
+		Terms terms;
+		QList<QVariant> list = modelVar.toList();
+		if (!list.isEmpty())
+		{
+			for (const QVariant& itemVariant : list)
+				terms.add(itemVariant.toString());
+		}
+		else
+		{
+			QAbstractItemModel *srcModel = qobject_cast<QAbstractItemModel *>(modelVar.value<QObject *>());
+			if (srcModel)
+			{
+				for (int i = 0; i < srcModel->rowCount(); i++)
+					terms.add(srcModel->data(srcModel->index(i, 0)).toString());
+			}
+			else
+				Log::log() << "Could not read model of " << name() << std::endl;
+		}
+
+		initTerms(terms);
+	}
 }

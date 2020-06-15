@@ -96,6 +96,7 @@ public:
 	const QList<SourceType*>&	sourceModels()				const	{ return _sourceModels; }
 			bool				hasSource()					const	{ return _hasSource; }
 			bool				modelHasAllVariables()		const	{ return _modelHasAllVariables; }
+			void				setModelHasAllVariables(bool b)		{ _modelHasAllVariables = b; }
 
 			JASPControlWrapper*	getRowControl(const QString& key, const QString& name)		const;
 			bool				addRowControl(const QString& key, JASPControlWrapper* control);
@@ -112,7 +113,6 @@ protected slots:
 
 protected:
 	virtual void				setSources();
-	virtual void				readModelProperty(QMap<QString, QString>* map = nullptr);
 			void				addRowComponentsDefaultOptions(Options* optionTable);
 
 protected:

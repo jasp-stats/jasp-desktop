@@ -45,7 +45,8 @@ public:
 		SelectedRole,
 		SelectableRole,
 		ColumnTypeRole,
-		RowComponentsRole
+		RowComponentsRole,
+		ValueRole
     };
 	typedef QMap<QString, QMap<QString, Option*> > RowControlsOptions;
 
@@ -73,6 +74,7 @@ public:
 			Terms					getSourceTerms();
 			QMap<ListModel*, Terms> getSourceTermsPerModel();
 			ListModel*				getSourceModelOfTerm(const Term& term);
+	virtual void					readModelProperty(QMLListView* item);
 
 			void					setRowComponents(QList<QQmlComponent*> &rowComponents);
 	virtual void					setUpRowControls();
