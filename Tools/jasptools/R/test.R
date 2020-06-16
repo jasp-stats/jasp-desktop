@@ -646,10 +646,11 @@ approxMatch <- function(new, old, tol = 1e-5) {
 
 .prepOptionValueForPrinting <- function(value) {
   if (is.list(value))
-    return(paste(capture.output(dput(value)), collapse="\n"))
+    result <- paste(capture.output(dput(value)), collapse="\n")
+  else if (is.character(value) && length(value) == 1 && !startsWith(value, "\""))
+    result <- paste0("\"", value, "\"")
+  else
+    result <- value
   
-  if (is.character(value) && !startsWith(value, "\""))
-    return(paste0("\"", value, "\""))
-  
-  return(value)
+  return(result)
 }
