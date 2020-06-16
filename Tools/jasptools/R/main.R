@@ -201,6 +201,9 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
       stop("please supply an analysis name")
   }
   
+  if (!is.null(names(options)) && ".meta" %in% names(options))
+    options[[".meta"]] <- NULL
+  
   if (.insideTestEnvironment()) {
     view <- FALSE
     quiet <- TRUE
