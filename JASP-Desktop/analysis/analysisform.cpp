@@ -453,7 +453,10 @@ void AnalysisForm::_addLoadingError()
 	{
 		QString errorMsg;
 		if (_jaspControlsWithWarningSet.size() == 1)
-			errorMsg = tr("Component %1 was loaded with a wrong kind of value and is set with its default value.<br>").arg(_getControlLabel(_jaspControlsWithWarningSet.toList()[0]));
+		{
+			JASPControlBase* control = _jaspControlsWithWarningSet.values()[0];
+			errorMsg = tr("Component %1 was loaded with a wrong kind of value and is set with its default value.<br>").arg(control->name());
+		}
 		else if (_jaspControlsWithWarningSet.size() < 4)
 		{
 			QString names = "<ul>";

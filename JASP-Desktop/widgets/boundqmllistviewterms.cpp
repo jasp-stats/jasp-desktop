@@ -66,7 +66,7 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 			return;
 		}
 
-		if (!_tempOptionKey.empty() &&_tempOptionKey != _optionKeyName)
+		if (!_tempOptionKey.empty() && _tempOptionKey != _optionKeyName)
 		{
 			// Backward compatibility: the key in the JASP file does not correspond to the current key. This must be replacec
 			_optionsTable->replaceKey(_tempOptionKey, _optionKeyName);
@@ -193,7 +193,15 @@ bool BoundQMLListViewTerms::isJsonValid(const Json::Value &optionValue)
 					}
 					const Json::Value& components = value[_tempOptionKey];
 					if (_termsModel->areTermsInteractions())
+					{
 						valid = components.type() == Json::arrayValue;
+						if (!valid)
+						{
+							valid = (components.type() == Json::stringValue);
+							if (valid)
+								Log::log() << "JASP file has a VariableList with interaction but the elements are strings in place of arrays. Probably an old JASP file" << std::endl;
+						}
+					}
 					else
 						valid = components.type() == Json::stringValue;
 				}

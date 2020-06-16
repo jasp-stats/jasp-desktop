@@ -39,7 +39,8 @@ void JASPControlBase::setHasWarning(bool hasWarning)
 	if (section())
 		QMetaObject::invokeMethod(section(), "addControlWithWarning", Qt::DirectConnection, Q_ARG(QVariant, name()), Q_ARG(QVariant, hasWarning));
 
-	if (form())
+	// the call to addControlWithWarning to an expander (section) calls setHasWarning, but this warning does nog have to be added to the form.
+	if (form() && (controlType() != JASPControlBase::ControlType::Expander))
 		form()->addControlWarningSet(this, hasWarning);
 
 	if (hasWarning != _hasWarning)
