@@ -16,14 +16,19 @@
 #
 
 
-ABTestBayesian <- function(jaspResults, dataset, options, ...) {
+ABTestBayesian <- function(jaspResults, dataset = NULL, options) {
 
   ready <- (options$n1 != "" && options$y1 != "" && options$n2 != "" && options$y2 != "")
 
   ### READ DATA                ###
   if (ready)
     dataset <- .abTestBayesianReadData(dataset, options)
+  
+  ### This function is shared with summary stats a/b test
+  .abTestMain(jaspResults, dataset, options, ready)
+}
 
+.abTestMain <- function(jaspResults, dataset, options, ready) {
   ## COMPUTE AB OBJECT         ###
   ab_obj <- .calcModel.abTest(jaspResults, dataset, options, ready)
 

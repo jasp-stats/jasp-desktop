@@ -56,6 +56,11 @@
 			"menu"    : "Bayesian Binomial Test",
 			"title"   : "S.S. Bayesian Binomial Test",
 			"function": "SummaryStatsBinomialTestBayesian"
+		},
+		{
+			"menu"    : "Bayesian A/B Test",
+			"title"   : "S.S. Bayesian A/B Test",
+			"function": "SummaryStatsABTestBayesian"
 		}
 	]
 }

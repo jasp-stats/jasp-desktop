@@ -57,6 +57,11 @@
 			"menu"    : "Bayesiaanse Binomiaal Toets",
 			"title"   : "S.S. Bayesiaanse Binomiaal Toets",
 			"function": "SummaryStatsBinomialTestBayesian"
+		},
+		{
+			"menu"    : "Bayesiaanse A/B Toets",
+			"title"   : "S.S. Bayesiaanse A/B Toets",
+			"function": "SummaryStatsABTestBayesian"
 		}
 	]
 }
