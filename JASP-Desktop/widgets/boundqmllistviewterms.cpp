@@ -198,7 +198,7 @@ bool BoundQMLListViewTerms::isJsonValid(const Json::Value &optionValue)
 						if (components.type() == Json::stringValue)
 						{
 							valid = true;
-							Log::log() << "JASP file has a VariableList with interaction but the elements are strings in place of arrays. Probably an old JASP file" << std::endl;
+							Log::log() << "JASP file has a VariableList with interaction but the elements are strings in place of arrays. Probably an old JASP file." << std::endl;
 						}
 					}
 					else

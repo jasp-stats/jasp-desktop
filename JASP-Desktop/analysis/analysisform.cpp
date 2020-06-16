@@ -466,11 +466,11 @@ void AnalysisForm::_addLoadingError()
 				names += "<li>" + _getControlLabel(it.next()) + "</li>";
 			names += "</ul>";
 
-			errorMsg = tr("These components were loaded with a wrong type of value and have been reset to their default values:%1").arg(names);
+			errorMsg = tr("These components were loaded with the wrong type of value and have been reset to their default values:%1").arg(names);
 		}
 		else
 		{
-			errorMsg = tr("Many components were loaded with a wrong type of value and have been reset to their default values.");
+			errorMsg = tr("Many components were loaded with the wrong type of value and have been reset to their default values.");
 			errorMsg += "<br>";
 		}
 
