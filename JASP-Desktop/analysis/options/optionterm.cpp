@@ -39,6 +39,8 @@ void OptionTerm::set(const Json::Value &value)
 	if (value.isArray())
 		for (uint i = 0; i < value.size(); i++)
 			terms.push_back(value[i].asString());
+	else if (value.isString()) // For backward compatibility, accepts also json string.
+		terms.push_back(value.asString());
 
 	setValue(terms);
 }

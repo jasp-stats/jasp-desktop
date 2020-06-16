@@ -10507,21 +10507,21 @@ msgstr ""
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
-"Component %1 was loaded with a wrong kind of value and is set with its "
-"default value.<br>"
+"Component %1 was loaded with the wrong type of value and has been reset to its "
+"default value."
 msgstr ""
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
-"These components were loaded with a wrong kind of value and are set with "
+"These components were loaded with the wrong type of value and have been reset to "
 "their default values:%1"
 msgstr ""
 
 msgctxt "AnalysisForm|"
 msgid ""
-"Many components were loaded with a wrong kind of value and are set with "
-"their default values.<br>"
+"Many components were loaded with the wrong type of value and have been reset to "
+"their default values."
 msgstr ""
 
 msgctxt "AnalysisForm|"

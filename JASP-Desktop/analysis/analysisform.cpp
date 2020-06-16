@@ -453,7 +453,11 @@ void AnalysisForm::_addLoadingError()
 	{
 		QString errorMsg;
 		if (_jaspControlsWithWarningSet.size() == 1)
-			errorMsg = tr("Component %1 was loaded with a wrong kind of value and is set with its default value.<br>").arg(_getControlLabel(_jaspControlsWithWarningSet.toList()[0]));
+		{
+			JASPControlBase* control = _jaspControlsWithWarningSet.values()[0];
+			errorMsg = tr("Component %1 was loaded with the wrong type of value and has been reset to its default value.").arg(control->name());
+			errorMsg += "<br>";
+		}
 		else if (_jaspControlsWithWarningSet.size() < 4)
 		{
 			QString names = "<ul>";
@@ -462,10 +466,13 @@ void AnalysisForm::_addLoadingError()
 				names += "<li>" + _getControlLabel(it.next()) + "</li>";
 			names += "</ul>";
 
-			errorMsg = tr("These components were loaded with a wrong kind of value and are set with their default values:%1").arg(names);
+			errorMsg = tr("These components were loaded with the wrong type of value and have been reset to their default values:%1").arg(names);
 		}
 		else
-			errorMsg = tr("Many components were loaded with a wrong kind of value and are set with their default values.<br>");
+		{
+			errorMsg = tr("Many components were loaded with the wrong type of value and have been reset to their default values.");
+			errorMsg += "<br>";
+		}
 
 		errorMsg += tr("The file probably comes from an older version of JASP.");
 		errorMsg += "<br>" + tr("That means that the results currently displayed do not correspond to the options selected.");
