@@ -158,8 +158,7 @@ DISTFILES += \
     JASP/R/exposeUs.R \
     JASP/R/friendlyConstructorFunctions.R \
     JASP/R/informedbayesianttestfunctions.R \
-  JASP/R/jagsModule.R \
-    JASP/R/linearmixedmodels.R \
+  	JASP/R/jagsModule.R \
     JASP/R/manova.R \
     JASP/R/massStepAIC.R \
     JASP/R/mediationanalysis.R \
@@ -190,7 +189,6 @@ DISTFILES += \
     JASP/R/regressionloglinear.R \
     JASP/R/regressionloglinearbayesian.R \
     JASP/R/reinforcementlearningr11tlearning.R \
-    JASP/R/reliabilityanalysis.R \
     JASP/R/semsimple.R \
     JASP/R/summarystatsbinomialtestbayesian.R \
     JASP/R/summarystatscorrelationbayesianpairs.R \

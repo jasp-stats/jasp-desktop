@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2018 University of Amsterdam
+# Copyright (C) 2019 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,16 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-LinearMixedModels <- function(jaspResults, dataset, options, state=NULL)
-{
-    table <- list()
-    table[["title"]] <- "Linear Mixed Models"
-    table[["schema"]] <- list(fields = list())
-    table[["data"]] <- list()
+MixedModelsLMM   <-
+  function(jaspResults, dataset, options, state = NULL) {
 
-    results <- list()
-    results[[".meta"]] <- list(list(name = "table", type = "table"))
-    results[["table"]] <- table
-
-    return (list(results = results, status = "complete"))
-}
+    .mmRunAnalysis(jaspResults, dataset, options, "LMM")
+    
+    return()
+  }
