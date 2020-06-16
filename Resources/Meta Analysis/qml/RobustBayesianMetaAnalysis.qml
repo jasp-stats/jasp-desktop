@@ -695,6 +695,21 @@ Form
 								{ label: qsTr("One-sided"),			value: "One-sided"},
 								{ label: qsTr("None"),				value: "spike"}
 							]
+
+								onCurrentValueChanged: {
+								if (currentValue !== "Two-sided")
+								{
+									parCuts.value = "(.05, .95)";
+									parAlpha.value = "(1,1,1)";
+									parCuts.editingFinished();
+									parAlpha.editingFinished();
+								}
+								else if (parCuts.value !== '(.05)' && parCuts !== "(.05, .10)")
+								{
+									parCuts.value = "(.05, .10)";
+									parCuts.editingFinished();
+								}
+							}
 						}
 					}
 					Row
@@ -704,11 +719,12 @@ Form
 						TextField
 						{
 							label:				qsTr("p-values")
+							id:					parCuts
 							name:				"parCuts"
 							visible:			typeOmegatem.currentValue === "Two-sided"		||
 												typeOmegatem.currentValue === "One-sided"		||
 												typeOmegatem.currentValue === "One-sided (mon.)"
-							value:				if(typeOmegatem.currentValue === "Two-sided"){"(.05, .10)"} else {"(.05, .95)"}
+							value:				"(.05, .10)"
 							fieldWidth: 		100 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder: 		true
@@ -722,6 +738,7 @@ Form
 						TextField
 						{
 							label:				"α "
+							id:					parAlpha
 							name:				"parAlpha"
 							visible:			typeOmegatem.currentValue === "Two-sided"		||
 												typeOmegatem.currentValue === "One-sided (mon.)"
