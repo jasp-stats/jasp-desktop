@@ -540,14 +540,14 @@
     
     if (options$pvalVS) {
       ANOVAsummary$addColumnInfo(name = "pvalVS",
-                                 title = gettext("VS-MPR\u002A"),
+                                 title = gettext("VS-MPR"),
                                  type = "number")
       if (options$method == "PB") {
         ANOVAsummary$addColumnInfo(name = "pvalBootVS",
-                                   title = gettext("VS-MPR\u002A (bootstrap)"),
+                                   title = gettext("VS-MPR (bootstrap)"),
                                    type = "number")
       }
-      ANOVAsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
+      ANOVAsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A", colNames = c("pvalVS", "pvalBootVS"))
     }
     
     
@@ -853,9 +853,9 @@
   
   if (options$pvalVS) {
     FEsummary$addColumnInfo(name = "pvalVS",
-                            title = gettext("VS-MPR\u002A"),
+                            title = gettext("VS-MPR"),
                             type = "number")
-    FEsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
+    FEsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A", colNames = "pvalVS")
   }
   
   
@@ -1346,16 +1346,16 @@
           type = "number"
         )
         EMMsummary$addColumnInfo(name = "pval",
-                                 title = gettext("p\u207A"),
+                                 title = gettext("p"),
                                  type = "pvalue")
         EMMsummary$addFootnote(.mmMessageTestNull(options$marginalMeansCompareTo),
-                               symbol = "\u207A")
+                               symbol = "\u2020", colNames = "pval")
         
         if (options$pvalVS) {
           EMMsummary$addColumnInfo(name = "pvalVS",
-                                   title = gettext("VS-MPR\u002A"),
+                                   title = gettext("VS-MPR"),
                                    type = "number")
-          EMMsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
+          EMMsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A", colNames = "pvalVS")
         }
       }
     } else if (type %in% c("BLMM", "BGLMM")) {
@@ -1593,15 +1593,15 @@
           type = "number"
         )
         trendsSummary$addColumnInfo(name = "pval",
-                                    title = gettext("p\u207A"),
+                                    title = gettext("p"),
                                     type = "pvalue")
-        trendsSummary$addFootnote(.mmMessageTestNull(options$trendsCompareTo), symbol = "\u207A")
+        trendsSummary$addFootnote(.mmMessageTestNull(options$trendsCompareTo), symbol = "\u2020", colNames = "pval")
         
         if (options$pvalVS) {
           trendsSummary$addColumnInfo(name = "pvalVS",
-                                      title = gettext("VS-MPR\u002A"),
+                                      title = gettext("VS-MPR"),
                                       type = "number")
-          trendsSummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
+          trendsSummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A", colNames = "pvalVS")
         }
       }
     } else if (type %in% c("BLMM", "BGLMM")) {
@@ -1793,13 +1793,13 @@
                                 title = gettext("z"),
                                 type = "number")
       EMMCsummary$addColumnInfo(name = "pval",
-                                title = gettext("p\u207A"),
+                                title = gettext("p"),
                                 type = "pvalue")
       if (options$pvalVS) {
         EMMCsummary$addColumnInfo(name = "pvalVS",
-                                  title = gettext("VS-MPR\u002A"),
+                                  title = gettext("VS-MPR"),
                                   type = "number")
-        EMMCsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
+        EMMCsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A", colNames = "pvalVS")
       }
     } else if (type %in% c("BLMM", "BGLMM")) {
       EMMCsummary$addColumnInfo(name = "contrast",
@@ -1945,7 +1945,7 @@
           temp_row$pvalVS <- JASP:::.VovkSellkeMPR(temp_row$pval)
         }
         
-        EMMCsummary$addFootnote(.messagePvalAdjustment(selectedAdjustment), symbol = "\u207A")
+        EMMCsummary$addFootnote(.messagePvalAdjustment(selectedAdjustment), symbol = "\u2020", colNames = "pval")
         if (options$pvalVS) {
           temp_row$pvalVS <- JASP:::.VovkSellkeMPR(temp_row$pval)
         }
