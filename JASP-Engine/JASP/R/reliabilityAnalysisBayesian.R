@@ -144,9 +144,9 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       relyFit$Bayes$samp <- lapply(relyFit$Bayes$chains, .chainSmoker)
 
       # mean and sd
-      relyFit$Bayes$samp$mean <- c(NA_real_, NA_real_)
+      relyFit$Bayes$samp$mean <- NA_real_
       relyFit$Bayes$est$mean <- mean(rowMeans(dataset, na.rm = T))
-      relyFit$Bayes$samp$sd <- c(NA_real_, NA_real_)
+      relyFit$Bayes$samp$sd <- NA_real_
       relyFit$Bayes$est$sd <- sd(colMeans(dataset, na.rm = T))
       
       # get rid of multiple chains, first save the chains:
@@ -228,7 +228,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   
   for (nm in names(samps)) {
     if (any(is.na(samps[[nm]]))) {
-      cri[[nm]] <- NA_real_
+      cri[[nm]] <- c(NA_real_, NA_real_)
     } else {
       cri[[nm]] <- coda::HPDinterval(coda::mcmc(samps[[nm]]), prob = criValue)
     }
@@ -289,10 +289,11 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     } else {
       allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp))
     }
+
     for (i in idxSelected) {
       scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
       if (options[["rHat"]]) {
-        if (names(idxSelected[i]) == "meanScale" || names(idxSelected[i]) == "sdScale") {
+        if (opts[i] == "mean" || opts[i] == "sd") {
           rhat <- NA_real_
         } else {
           tmp <- lapply(as.data.frame(t(relyFit[["Bayes"]][["chains"]][[i]])), coda::mcmc)
