@@ -540,11 +540,11 @@
     
     if (options$pvalVS) {
       ANOVAsummary$addColumnInfo(name = "pvalVS",
-                                 title = gettextf("VS-MPR%s","\u002A"),
+                                 title = gettext("VS-MPR\u002A"),
                                  type = "number")
       if (options$method == "PB") {
         ANOVAsummary$addColumnInfo(name = "pvalBootVS",
-                                   title = gettextf("VS-MPR%s (bootstrap)","\u002A"),
+                                   title = gettext("VS-MPR\u002A (bootstrap)"),
                                    type = "number")
       }
       ANOVAsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
@@ -853,7 +853,7 @@
   
   if (options$pvalVS) {
     FEsummary$addColumnInfo(name = "pvalVS",
-                            title = gettextf("VS-MPR%s","\u002A"),
+                            title = gettext("VS-MPR\u002A"),
                             type = "number")
     FEsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
   }
@@ -1346,14 +1346,14 @@
           type = "number"
         )
         EMMsummary$addColumnInfo(name = "pval",
-                                 title = gettextf("p%s","\u207A"),
+                                 title = gettext("p\u207A"),
                                  type = "pvalue")
         EMMsummary$addFootnote(.mmMessageTestNull(options$marginalMeansCompareTo),
                                symbol = "\u207A")
         
         if (options$pvalVS) {
           EMMsummary$addColumnInfo(name = "pvalVS",
-                                   title = gettextf("VS-MPR%s","\u002A"),
+                                   title = gettext("VS-MPR\u002A"),
                                    type = "number")
           EMMsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
         }
@@ -1593,13 +1593,13 @@
           type = "number"
         )
         trendsSummary$addColumnInfo(name = "pval",
-                                    title = gettextf("p%s","\u207A"),
+                                    title = gettext("p\u207A"),
                                     type = "pvalue")
         trendsSummary$addFootnote(.mmMessageTestNull(options$trendsCompareTo), symbol = "\u207A")
         
         if (options$pvalVS) {
           trendsSummary$addColumnInfo(name = "pvalVS",
-                                      title = gettextf("VS-MPR%s","\u002A"),
+                                      title = gettext("VS-MPR\u002A"),
                                       type = "number")
           trendsSummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
         }
@@ -1793,11 +1793,11 @@
                                 title = gettext("z"),
                                 type = "number")
       EMMCsummary$addColumnInfo(name = "pval",
-                                title = gettextf("p%s","\u207A"),
+                                title = gettext("p\u207A"),
                                 type = "pvalue")
       if (options$pvalVS) {
         EMMCsummary$addColumnInfo(name = "pvalVS",
-                                  title = gettextf("VS-MPR%s","\u002A"),
+                                  title = gettext("VS-MPR\u002A"),
                                   type = "number")
         EMMCsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
       }
