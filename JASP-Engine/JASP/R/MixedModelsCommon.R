@@ -126,7 +126,14 @@
   
   .hasErrors(
     dataset,
-    type = c('variance', 'infinity', 'factorLevels'),
+    type = 'infinity',
+    exitAnalysisIfErrors = TRUE
+  )
+  
+  # the aggregation variable for binomial can have zero variance and be without factor levels
+  .hasErrors(
+    dataset[,.v(c(options$dependentVariable, options$fixedVariables, options$randomVariables))],
+    type = c('variance', 'factorLevels'),
     factorLevels.amount  = "< 2",
     exitAnalysisIfErrors = TRUE
   )
@@ -846,7 +853,7 @@
   
   if (options$pvalVS) {
     FEsummary$addColumnInfo(name = "pvalVS",
-                            title = gettextf("VS-MPR","\u002A"),
+                            title = gettextf("VS-MPR%s","\u002A"),
                             type = "number")
     FEsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
   }
@@ -1586,7 +1593,7 @@
           type = "number"
         )
         trendsSummary$addColumnInfo(name = "pval",
-                                    title = gettextf("p","\u207A"),
+                                    title = gettextf("p%s","\u207A"),
                                     type = "pvalue")
         trendsSummary$addFootnote(.mmMessageTestNull(options$trendsCompareTo), symbol = "\u207A")
         
@@ -1786,11 +1793,11 @@
                                 title = gettext("z"),
                                 type = "number")
       EMMCsummary$addColumnInfo(name = "pval",
-                                title = gettextf("p","\u207A"),
+                                title = gettextf("p%s","\u207A"),
                                 type = "pvalue")
       if (options$pvalVS) {
         EMMCsummary$addColumnInfo(name = "pvalVS",
-                                  title = gettextf("VS-MPR","\u002A"),
+                                  title = gettextf("VS-MPR%s","\u002A"),
                                   type = "number")
         EMMCsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A")
       }
