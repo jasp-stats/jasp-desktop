@@ -349,12 +349,12 @@
 		{
 			"changes":
 			{
-				"ci":						{ "_renamed":	"credibleInterval" 	},
+				"ci":						{ "_renamed":	"credibleInterval" 			},
 				"plotMatrix":				{ "_renamed":	"plotCorrelationMatrix" 	},
-				"plotMatrixDensities":		{ "_renamed":	"plotDensitiesForVariables" 	},
-				"plotMatrixPosteriors":		{ "_renamed":	"plotPosteriors" 	},
-				"kappa":					{ "_renamed":	"priorWidth" 		},
-				"kendall":					{ "_renamed":	"kendallsTauB" 			}
+				"plotMatrixDensities":		{ "_renamed":	"plotDensitiesForVariables" },
+				"plotMatrixPosteriors":		{ "_renamed":	"plotPosteriors" 			},
+				"kappa":					{ "_renamed":	"priorWidth" 				},
+				"kendall":					{ "_renamed":	"kendallsTauB" 				}
 			}
 		},
 		{
@@ -370,5 +370,35 @@
 			"changes": 		{ "hypothesis":	null,	"alternative": "less"	 }
 		}
 	]
+	},
+	{
+		"from": { "module": "Descriptives",			"version": "0.12.2", "function": "ReliabilityAnalysis" 					},
+		"to":	{ "module": "Reliability",			"version": "0.13",	 "function": "reliabilityFrequentist"				},
+		"options":
+		[
+			{
+				"changes":
+				{
+					"mcDonaldScalef":			{ "_renamed":	"mcDonaldScale" 	},
+					"alphaScalef":				{ "_renamed":	"alphaScale" 		},
+					"guttman6Scalef":			{ "_renamed":	"gutmannScale" 		},
+					"glbScalef":				{ "_renamed":	"glbScale" 			},
+					"mcDonaldItemf":			{ "_renamed":	"mcDonaldItem" 		},
+					"alphaItemf":				{ "_renamed":	"alphaItem" 		},
+					"guttman6Itemf":			{ "_renamed":	"gutmannItem" 		},
+					"missingValuesf":			{ "_renamed":	"missingValues"		},
+					"intervalOn":				{ "_renamed":	"confAlpha"			},
+					"confidenceIntervalValue":	{ "_renamed":	"confAlphaLevel"	}
+				}
+			},
+			{
+				"conditional": 	{ "_args": [ { 						"alphaScaleStandardized": 	"_1unstandardized" } ] 	},
+				"changes": 		{ "alphaScaleStandardized":	null,	"alphaMethod": 				"alphaUnstand"			}
+			},
+			{
+				"conditional": 	{ "_args": [ { 						"alphaScaleStandardized": 	"_2standardized" } ] },
+				"changes": 		{ "alphaScaleStandardized":	null,	"alphaMethod": 				"alphaStand"		 }
+			}
+		]
 	}
 ]
