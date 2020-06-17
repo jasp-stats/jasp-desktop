@@ -99,7 +99,7 @@
   # check if we actually need to compute things
   ttestState <- ttestContainer[["stateTTestResults"]]$object
   if (!is.null(ttestContainer[["ttestTable"]]) && !derivedOptions[["anyNewVariables"]] &&
-      ttestState[["hypothesis"]] == "hypothesis") {
+      ttestState[["hypothesis"]] == options[["hypothesis"]]) {
     ttestState[["derivedOptions"]] <- derivedOptions
     return(ttestState)
   }
@@ -390,7 +390,7 @@
   if (!is.null(ttestState)) {
     obj <- ttestState
   } else {
-    # TODO make this a data.frame so that the state can be efficiently reused
+    # only instantiate variables that correspond to variable names
     obj <- list(
       status          = rep("ok", nvar),
       BF10post        = numeric(nvar),
@@ -400,9 +400,13 @@
       plottingError   = vector("list", nvar),
       errorFootnotes  = vector("list", nvar),
       footnotes       = vector("list", nvar),
-      delta           = vector("list", nvar),
-      hypothesis      = options[["hypothesis"]]
+      delta           = vector("list", nvar)
     )
+    if (nvar > 0L)
+      for (i in seq_along(obj))
+        names(obj[[i]]) <- derivedOptions[["variables"]]
+
+    obj[["hypothesis"]] <- options[["hypothesis"]]
 
   }
   
@@ -412,14 +416,6 @@
   obj[["analysis"]]        <- derivedOptions[["ttestType"]]
   obj[["derivedOptions"]]  <- derivedOptions
   obj[["bayesFactorType"]] <- options[["bayesFactorType"]]
-
-  if (nvar > 0L) {
-    idx <- lengths(obj) == nvar
-    # so we can index everything by name
-    for (i in which(idx)) {
-      names(obj[[i]]) <- derivedOptions[["variables"]]
-    }
-  }
 
   if (obj[["analysis"]] != "independent")
     obj[["n2"]] <- NULL
