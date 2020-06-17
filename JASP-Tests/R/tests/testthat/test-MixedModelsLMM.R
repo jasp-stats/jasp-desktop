@@ -345,7 +345,7 @@ library("afex")
   test_that("Plot matches", {
     plotName <- results[["results"]][["plots"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "plot", dir = "MixedModelsLMM")
+    expect_equal_plots(testPlot, "plot1", dir = "MixedModelsLMM")
   })
   
   test_that("Estimated Trends table results match", {
@@ -771,7 +771,7 @@ library("afex")
             {
               plotName <- results[["results"]][["plots"]][["data"]]
               testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-              expect_equal_plots(testPlot, "plot", dir = "MixedModelsLMM")
+              expect_equal_plots(testPlot, "plot2", dir = "MixedModelsLMM")
             })
   
   test_that("Estimated Trends table results match (custom compare to, CI)", {
@@ -1068,7 +1068,7 @@ library("afex")
   test_that("Plot matches (trace & line, lot of customization)", {
     plotName <- results[["results"]][["plots"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "plot", dir = "MixedModelsLMM")
+    expect_equal_plots(testPlot, "plot3", dir = "MixedModelsLMM")
   })
 }
 ### parametric bootstrap
@@ -1289,6 +1289,6 @@ library("afex")
   test_that("Plot matches (trace + separate plots, count)", {
     plotName <- results[["results"]][["plots"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "plot", dir = "MixedModelsLMM")
+    expect_equal_plots(testPlot, "plot4", dir = "MixedModelsLMM")
   })
 }

@@ -336,7 +336,7 @@ library("afex")
   test_that("Plot matches", {
     plotName <- results[["results"]][["plots"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "plot", dir = "MixedModelsGLMM")
+    expect_equal_plots(testPlot, "plot1", dir = "MixedModelsGLMM")
   })
   
   test_that("Estimated Trends table results match", {
@@ -706,7 +706,7 @@ library("afex")
               plotName <- results[["results"]][["plots"]][["data"]]
               testPlot <-
                 results[["state"]][["figures"]][[plotName]][["obj"]]
-              expect_equal_plots(testPlot, "plot", dir = "MixedModelsGLMM")
+              expect_equal_plots(testPlot, "plot2", dir = "MixedModelsGLMM")
             })
   
   test_that("Estimated Trends table results match (compare to not null)", {
@@ -1018,7 +1018,7 @@ library("afex")
   test_that("Plot matches", {
     plotName <- results[["results"]][["plots"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "plot", dir = "MixedModelsGLMM")
+    expect_equal_plots(testPlot, "plot3", dir = "MixedModelsGLMM")
   })
 }
 ### inverse gaussian + log, type II parametric bootsrap
@@ -1190,7 +1190,7 @@ library("afex")
   test_that("Plot matches", {
     plotName <- results[["results"]][["plots"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "plot", dir = "MixedModelsGLMM")
+    expect_equal_plots(testPlot, "plot4", dir = "MixedModelsGLMM")
   })
 }
 ### poisson + sqrt
@@ -1293,7 +1293,7 @@ library("afex")
          list(components = "cB"),
          list(components = c("cA",
                              "cB")))
-  options$fixedVariables <- c("\"cA\"", "\"cB\"")
+  options$fixedVariables <- c("cA", "cB")
   options$marginalMeans <-
     list(list(variable = "cA"), list(variable = "cB"))
   options$plotsAgregatedOver <- "id"
@@ -2173,6 +2173,6 @@ library("afex")
   test_that("Plot matches", {
     plotName <- results[["results"]][["plots"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "plot", dir = "MixedModelsGLMM")
+    expect_equal_plots(testPlot, "plot5", dir = "MixedModelsGLMM")
   })
 }
