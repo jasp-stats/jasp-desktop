@@ -36,7 +36,6 @@
 			"icon":		"reliability_icon_bayesian.svg"
 		},
 		{
-			"menu"    : "Single-Test Reliability Analysis",
 			"title"   : "Bayesian Single-Test Reliability Analysis",
 			"qml"     : "ReliabilityBayesian.qml",
 			"function": "reliabilityBayesian"
