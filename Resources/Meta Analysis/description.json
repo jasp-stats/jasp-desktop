@@ -1,7 +1,7 @@
 {
 	"moduleDescription" :
 	{
-		"name": 		"MetaAnalysis",
+	    "name": 		"Meta Analysis",
 		"title" : 		"Meta-Analysis",
 		"description" : "Meta-Analysis module.",
 		"icon":			"meta-analysis.svg",
