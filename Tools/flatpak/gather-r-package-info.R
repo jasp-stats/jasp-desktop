@@ -61,13 +61,14 @@ giveOrderedDependencies <- function()
 
       #Workaround for pkgs not on CRAN because they therefore miss dependencies
       switch(curPkg,
-        bstats    = { deps <- append(deps, c("hypergeo", "purrr", "SuppDists") ) },
-        flexplot  = { deps <- append(deps, c("ggplot2", "cowplot", "tibble", "withr", "dplyr", "magrittr", "forcats", "purrr", "plyr", "R6") ) },
-        RoBMA     = { deps <- append(deps, c("runjags", "bridgesampling", "rjags", "coda", "psych", "stats", "graphics", "extraDistr", "scales", "DPQ", "Rdpack") ) },
-        Bayesrel  = { deps <- append(deps, c("LaplacesDemon", "Rcsdp", "MASS", "ggplot2", "ggridges", "lavaan", "plotrix", "coda", "methods", "stats", "graphics", "Rdpack") ) },
-        stanova   = { deps <- append(deps, c("rstanarm", "emmeans", "lme4", "coda", "rstan", "stats") ) },
-        afex      = { deps <- append(deps, c("pbkrtest", "lmerTest", "car", "reshape2", "stats", "methods", "utils") ) },
-        emmeans   = { deps <- append(deps, c("estimability", "graphics", "methods", "numDeriv", "stats", "utils", "plyr", "mvtnorm", "xtable") ) }
+        bstats    		= { deps <- append(deps, c("hypergeo", "purrr", "SuppDists") ) },
+        flexplot  		= { deps <- append(deps, c("ggplot2", "cowplot", "tibble", "withr", "dplyr", "magrittr", "forcats", "purrr", "plyr", "R6") ) },
+        RoBMA     		= { deps <- append(deps, c("runjags", "bridgesampling", "rjags", "coda", "psych", "stats", "graphics", "extraDistr", "scales", "DPQ", "Rdpack") ) },
+        Bayesrel  		= { deps <- append(deps, c("LaplacesDemon", "Rcsdp", "MASS", "ggplot2", "ggridges", "lavaan", "plotrix", "coda", "methods", "stats", "graphics", "Rdpack") ) },
+        stanova   		= { deps <- append(deps, c("rstanarm", "emmeans", "lme4", "coda", "rstan", "stats") ) },
+        afex      		= { deps <- append(deps, c("pbkrtest", "lmerTest", "car", "reshape2", "stats", "methods", "utils") ) },
+        emmeans   		= { deps <- append(deps, c("estimability", "graphics", "methods", "numDeriv", "stats", "utils", "plyr", "mvtnorm", "xtable") ) },
+		fitdistrplus    = { deps <- append(deps, c("npsurv") ) } # It seems there is some discrepancy between the dependencies of the version of CRAN and the one we use...
       )
 
       pkgDeps[[curPkg]] <- deps

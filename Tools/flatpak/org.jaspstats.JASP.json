@@ -104,7 +104,7 @@
 			[
 				{
 					"type":		"git",
-					"tag":		"v0.13.0.0_rc0_flathub",
+					"tag":		"v0.13.0.0_rc0_flathub_fix0",
 					"url": 		"https://github.com/jasp-stats/jasp-desktop"
 				},
 				{

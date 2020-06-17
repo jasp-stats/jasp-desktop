@@ -497,18 +497,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "fitdistrplus",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/fitdistrplus_1.0-14.tar.gz",
-					"sha256": "85082590f62aa08d99048ea3414c5cc1e5b780d97b3779d2397c6cb435470083"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "Formula",
 			"buildsystem": "simple",
 			"sources": [
@@ -2136,6 +2124,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/extraDistr_1.8.11.tar.gz",
 					"sha256": "83b205d9f8fe11515a8b25e6410ff258e361e08d8ba15a5f114075485ad878ef"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "fitdistrplus",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/fitdistrplus_1.0-14.tar.gz",
+					"sha256": "85082590f62aa08d99048ea3414c5cc1e5b780d97b3779d2397c6cb435470083"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
