@@ -59,9 +59,16 @@ giveOrderedDependencies <- function()
 
       deps              <- deps[!(deps %in% base_pkgs)] #remove base pkgs
 
-      #if(curPkg == "KneeArrower") deps <- append(deps, "signal") #workaround... Becacuse KneeArrower is taken from github apparently the dependencies aren't taken into account properly.
-      if(curPkg == "bstats")       deps <- append(deps, c("hypergeo", "purrr", "SuppDists"))
-      if(curPkg == "flexplot")     deps <- append(deps, c("ggplot2", "cowplot", "tibble", "withr", "dplyr", "magrittr", "forcats", "purrr", "plyr", "R6"))
+      #Workaround for pkgs not on CRAN because they therefore miss dependencies
+      switch(curPkg,
+        bstats    = { deps <- append(deps, c("hypergeo", "purrr", "SuppDists") ) },
+        flexplot  = { deps <- append(deps, c("ggplot2", "cowplot", "tibble", "withr", "dplyr", "magrittr", "forcats", "purrr", "plyr", "R6") ) },
+        RoBMA     = { deps <- append(deps, c("runjags", "bridgesampling", "rjags", "coda", "psych", "stats", "graphics", "extraDistr", "scales", "DPQ", "Rdpack") ) },
+        Bayesrel  = { deps <- append(deps, c("LaplacesDemon", "Rcsdp", "MASS", "ggplot2", "ggridges", "lavaan", "plotrix", "coda", "methods", "stats", "graphics", "Rdpack") ) },
+        stanova   = { deps <- append(deps, c("rstanarm", "emmeans", "lme4", "coda", "rstan", "stats") ) },
+        afex      = { deps <- append(deps, c("pbkrtest", "lmerTest", "car", "reshape2", "stats", "methods", "utils") ) },
+        emmeans   = { deps <- append(deps, c("estimability", "graphics", "methods", "numDeriv", "stats", "utils", "plyr", "mvtnorm", "xtable") ) }
+      )
 
       pkgDeps[[curPkg]] <- deps
       pkgs              <- append(pkgs, deps, i)
@@ -141,13 +148,14 @@ giveOrderedDependencies <- function()
 
 #Dont forget to add the dependencies up top
 specials <- new.env(hash = TRUE, parent = parent.frame())
-specials[['abtest']]       <- list(type='github', commit='503c50e96768a0134b755747e0421d820cc1a115', repo='quentingronau/abtest')
-#specials[['BAS']]          <- list(type='github', commit='daba70f5a5d60bfa63386d4e6a6522f86a04946c', repo='merliseclyde/BAS')
-specials[['bstats']]       <- list(type='github', commit='a6fdbea42078b8d275a98dd1e37c113118555b6f', repo='AlexanderLyNL/bstats')
-#specials[['Bain']]         <- list(type='github', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='jasp-stats/BAIN-for-JASP')
-#specials[['KneeArrower']]  <- list(type='github', commit='cdb14e574e00914e4e7019a4cf3c5fcda7426466', repo='agentlans/KneeArrower')
-specials[['flexplot']]     <- list(type='github', commit='46adae504c83b6dbd7baf7ba679cc95d0fb5c1a9', repo='dustinfife/flexplot')
-
+specials[['abtest']]       <- list(type='github', commit='503c50e96768a0134b755747e0421d820cc1a115', repo='quentingronau/abtest'  )
+specials[['bstats']]       <- list(type='github', commit='a6fdbea42078b8d275a98dd1e37c113118555b6f', repo='AlexanderLyNL/bstats'  )
+specials[['flexplot']]     <- list(type='github', commit='15b5cae2b8d009b8a95c5f1d261e2077f53e8bd9', repo='dustinfife/flexplot'   )
+specials[['RoBMA']]        <- list(type='github', commit='662149c70530510c6a537b0130718a2481aa686d', repo='FBartos/RoBMA'         )
+specials[['Bayesrel']]     <- list(type='github', commit='906c44c93be8623e543b5a7d25d7246b4c465283', repo='juliuspf/Bayesrel'     )
+specials[['stanova']]      <- list(type='github', commit='2cb08223f957533103612e72055fa7063a1fb5ce', repo='bayesstuff/stanova'    )
+specials[['afex']]         <- list(type='github', commit='56359709a19a72f2f2088099cc6647b732ea2c71', repo='singmann/afex'         )
+specials[['emmeans']]      <- list(type='github', commit='1e6ab3e1e9eb47bb8a038221495463992f8dfb60', repo='rvlenth/emmeans'       )
 
 createFlatpakJson <- function()
 {
