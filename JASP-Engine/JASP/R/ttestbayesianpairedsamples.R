@@ -301,9 +301,9 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
     }
     
     if (nBurnin > 0) {
-      deltaSamples <- -deltaSamples[-(1:nBurnin)]
+      deltaSamples <- deltaSamples[-(1:nBurnin)]
     } else {
-      deltaSamples <- -deltaSamples
+      deltaSamples <- deltaSamples
     }
     deltaSamplesMatrix[, thisChain] <- deltaSamples
   }
