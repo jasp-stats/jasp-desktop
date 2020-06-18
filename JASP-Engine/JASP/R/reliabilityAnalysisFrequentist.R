@@ -70,15 +70,12 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 # estimate reliability ----
 # maybe in the future it would be easier to have one function for every estimator...
 .frequentistReliabilityMainResults <- function(jaspResults, dataset, options) {
-  if (!options[["mcDonaldScalef"]] & !options[["alphaScalef"]] & !options[["guttman2Scalef"]]
-      & !options[["guttman6Scalef"]] & !options[["glbScalef"]] & !options[["averageInterItemCorf"]]
-      & !options[["meanScalef"]] & !options[["sdScalef"]]) {
+  if (!options[["mcDonaldScalef"]] && !options[["alphaScalef"]] && !options[["guttman2Scalef"]]
+      && !options[["guttman6Scalef"]] && !options[["glbScalef"]] && !options[["averageInterItemCorf"]]
+      && !options[["meanScalef"]] && !options[["sdScalef"]]) {
     variables <- options[["variables"]]
-    dataset <- as.matrix(dataset) # fails for string factors!
     if (length(options[["reverseScaledItems"]]) > 0L) {
-      cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
-      total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
-      dataset[ ,cols] = matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
+      dataset <- .reverseScoreItems(dataset, options)
     }
     model <- list()
     model[["footnote"]] <- .frequentistReliabilityCheckLoadings(dataset, variables)
@@ -96,11 +93,8 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     
     if (length(variables) > 2L) {
       
-      dataset <- as.matrix(dataset) # fails for string factors!
       if (length(options[["reverseScaledItems"]]) > 0L) {
-        cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
-        total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
-        dataset[ ,cols] = matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
+        dataset <- .reverseScoreItems(dataset, options)
       }
 
       # observations for alpha interval need to be speccified: 
@@ -184,7 +178,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
               cors[i, , ] <- .cov2cor.callback(relyFit$freq$covsamp[i, , ], progressbarTick)
             }
             relyFit$freq$boot$alpha <- apply(cors, 1, Bayesrel:::applyalpha)
-            if (omegaAna & is.null(relyFit[["freq"]][["omega.error"]])) {
+            if (omegaAna && is.null(relyFit[["freq"]][["omega.error"]])) {
               relyFit[["freq"]][["boot"]] <- relyFit[["freq"]][["boot"]][c(4, 1, 2, 3)]
             } else {
               relyFit[["freq"]][["boot"]] <- relyFit[["freq"]][["boot"]][c(5, 1, 2, 3, 4)]
@@ -341,7 +335,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         
         
         # omega cfa analytic interval:
-        if (is.null(relyFit[["freq"]][["omega.pfa"]]) & (options[["omegaInterval"]] == "omegaAnalytic")) { 
+        if (is.null(relyFit[["freq"]][["omega.pfa"]]) && (options[["omegaInterval"]] == "omegaAnalytic")) { 
           fit <- relyFit[["freq"]][["fit.object"]]
           params <- lavaan::parameterestimates(fit, level = options[["confidenceIntervalValue"]])
           om_low <- params$ci.lower[params$lhs=="omega"]
@@ -405,8 +399,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       return("")
     } else {
       hasSchar <- if (sidx == 1L) "" else "s"
-      footnote <- gettextf("The following item%s correlated negatively with the scale: %s. ",
-                           hasSchar, paste0(variables[idx], collapse = ", "))
+      footnote <- sprintf(ngettext(length(variables[idx]),
+                                   "The following item correlated negatively with the scale: %s. ",
+                                   "The following items correlated negatively with the scale: %s. "),
+                          paste(variables[idx], collapse = ", "))
       return(footnote)
     }
   } else {
@@ -419,54 +415,47 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
 
 .frequentistReliabilityScaleTable <- function(jaspResults, model, options) {
-  
-  if ((!options[["mcDonaldScalef"]] & !options[["alphaScalef"]] & !options[["guttman2Scalef"]] 
-       & !options[["guttman6Scalef"]] & !options[["glbScalef"]] & !options[["averageInterItemCorf"]]
-       & !options[["meanScalef"]] & !options[["sdScalef"]])) {
-    scaleTableF <- createJaspTable(gettext("Frequentist Scale Reliability Statistics"))
-    scaleTableF$dependOn(options = c("variables", "reverseScaledItems", "confidenceIntervalValue"))
-    scaleTableF$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
-
-    if (options[["intervalOn"]]) {
-      intervalLow <- gettextf("%s%% CI",
-                              format(100*options[["confidenceIntervalValue"]], digits = 3, drop0trailing = TRUE))
-      intervalUp <- gettextf("%s%% CI",
-                             format(100*options[["confidenceIntervalValue"]], digits = 3, drop0trailing = TRUE))
-      intervalLow <- gettextf("%s lower bound", intervalLow)
-      intervalUp <- gettextf("%s upper bound", intervalUp)
-      allData <- data.frame(estimate = c(gettext("Point estimate"), intervalLow, intervalUp))
-    } else {
-      allData <- data.frame(estimate = c(gettext("Point estimate")))
-    }
-    scaleTableF$setData(allData)
-    
-    nvar <- length(options[["variables"]])
-    if (nvar > 0L && nvar < 3L){
-      scaleTableF$addFootnote(gettext("Please enter at least 3 variables to do an analysis."))
-    }
-    scaleTableF$addFootnote(gettextf("%s", model[["footnote"]]))
-    jaspResults[["scaleTableF"]] <- scaleTableF
-    scaleTableF$position <- 1
+  if (!is.null(jaspResults[["scaleTableF"]])) {
     return()
   }
-
   scaleTableF <- createJaspTable(gettext("Frequentist Scale Reliability Statistics"))
   scaleTableF$dependOn(options = c("variables", "mcDonaldScalef", "alphaScalef", "guttman2Scalef", "guttman6Scalef",
                                    "glbScalef", "reverseScaledItems", "confidenceIntervalValue", "noSamplesf", 
                                    "averageInterItemCorf", "meanScalef", "sdScalef", "missingValuesf", "omegaEst", 
                                    "alphaMethod", "alphaInterval", "omegaInterval", "bootType", 
                                    "setSeed", "seedValue", "intervalOn"))
+  scaleTableF$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
+  
+
   
   if (options[["intervalOn"]]) {
     intervalLow <- gettextf("%s%% CI",
-                           format(100*options[["confidenceIntervalValue"]], digits = 3, drop0trailing = TRUE))
+                            format(100*options[["confidenceIntervalValue"]], digits = 3, drop0trailing = TRUE))
     intervalUp <- gettextf("%s%% CI",
-                          format(100*options[["confidenceIntervalValue"]], digits = 3, drop0trailing = TRUE))
+                           format(100*options[["confidenceIntervalValue"]], digits = 3, drop0trailing = TRUE))
     intervalLow <- gettextf("%s lower bound", intervalLow)
     intervalUp <- gettextf("%s upper bound", intervalUp)
+    allData <- data.frame(estimate = c(gettext("Point estimate"), intervalLow, intervalUp))
+  } else {
+    allData <- data.frame(estimate = c(gettext("Point estimate")))
+  }
+  
+# if no coefficients selected:
+  if ((!options[["mcDonaldScalef"]] && !options[["alphaScalef"]] && !options[["guttman2Scalef"]] 
+       && !options[["guttman6Scalef"]] && !options[["glbScalef"]] && !options[["averageInterItemCorf"]]
+       && !options[["meanScalef"]] && !options[["sdScalef"]])) {
+    
+    scaleTableF$setData(allData)
+    nvar <- length(options[["variables"]])
+    if (nvar > 0L && nvar < 3L)
+      scaleTableF$addFootnote(gettextf("Please enter at least 3 variables to do an analysis. %s", model[["footnote"]]))
+    else
+      scaleTableF$addFootnote(gettext(model[["footnote"]]))
+    jaspResults[["scaleTableF"]] <- scaleTableF
+    scaleTableF$position <- 1
+    return()
   }
 
-  scaleTableF$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
 
   relyFit <- model[["relyFit"]]
   derivedOptions <- model[["derivedOptions"]]
@@ -475,14 +464,13 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   selected <- derivedOptions[["selectedEstimatorsF"]]
   idxSelected <- which(selected)
   
-  if (options[["mcDonaldScalef"]] & !is.null(relyFit[["freq"]][["omega.error"]])) {
+  if (options[["mcDonaldScalef"]] && !is.null(relyFit[["freq"]][["omega.error"]])) {
     model[["footnote"]] <- gettextf("%sMcDonald's \u03C9 estimation method switched to PFA because the CFA
                                           did not find a solution. ", model[["footnote"]])
   }
 
   if (!is.null(relyFit)) {
     if (options[["intervalOn"]]) {
-      allData <- data.frame(estimate = c(gettext("Point estimate"), intervalLow, intervalUp))
       for (i in idxSelected) {
         scaleTableF$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
         newData <- data.frame(est = c(unlist(relyFit$freq$est[[i]], use.names = F), 
@@ -491,7 +479,6 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         allData <- cbind(allData, newData)
       }
     } else {
-      allData <- data.frame(estimate = c(gettext("Point estimate")))
       for (i in idxSelected) {
         scaleTableF$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
         newData <- data.frame(est = c(unlist(relyFit$freq$est[[i]], use.names = F)))
@@ -509,10 +496,11 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     for (i in idxSelected) {
       scaleTableF$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
     }
-    
     nvar <- length(options[["variables"]])
-    if (nvar > 0L && nvar < 3L)
+    if (nvar > 0L && nvar < 3L){
       scaleTableF$addFootnote(gettext("Please enter at least 3 variables to do an analysis."))
+    }
+    
   }
   if (!is.null(model[["error"]]))
     scaleTableF$setError(model[["error"]])
@@ -521,6 +509,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     scaleTableF$addFootnote(gettext(model[["footnote"]]))
   
   jaspResults[["scaleTableF"]] <- scaleTableF
+  scaleTableF$position <- 1
   
   return()
 }
@@ -580,6 +569,8 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   }
   
   jaspResults[["itemTableF"]] <- itemTableF
+  itemTableF$position <- 2
+  
   return()
 }
 
@@ -628,6 +619,8 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
 
   jaspResults[["fitTable"]] <- fitTable
+  fitTableF$position <- 3
+  
 }
 
 
@@ -638,4 +631,12 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   out <- Bayesrel:::omegaFreqData(data, pairwise = F)
   om <- out$omega
   return(om)
+}
+
+.reverseScoreItems <- function(dataset, options) {
+  dataset <- as.matrix(dataset) # fails for string factors!
+  cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
+  total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
+  dataset[ ,cols] <- matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
+  return(dataset)
 }

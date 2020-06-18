@@ -79,15 +79,12 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 # estimate reliability ----
 .BayesianReliabilityMainResults <- function(jaspResults, dataset, options) {
-  if (!options[["mcDonaldScale"]] & !options[["alphaScale"]] & !options[["guttman2Scale"]]
-      & !options[["guttman6Scale"]] & !options[["glbScale"]] & !options[["averageInterItemCor"]]
-      & !options[["meanScale"]] & !options[["sdScale"]]) {
+  if (!options[["mcDonaldScale"]] && !options[["alphaScale"]] && !options[["guttman2Scale"]]
+      && !options[["guttman6Scale"]] && !options[["glbScale"]] && !options[["averageInterItemCor"]]
+      && !options[["meanScale"]] && !options[["sdScale"]]) {
     variables <- options[["variables"]]
-    dataset <- as.matrix(dataset) # fails for string factors!
     if (length(options[["reverseScaledItems"]]) > 0L) {
-      cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
-      total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
-      dataset[ ,cols] = matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
+      dataset <- .reverseScoreItems(dataset, options)
     }
     model <- list()
     model[["footnote"]] <- .BayesianReliabilityCheckLoadings(dataset, variables)
@@ -102,11 +99,8 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
     if (length(variables) > 2L) {
 
-      dataset <- as.matrix(dataset) # fails for string factors!
       if (length(options[["reverseScaledItems"]]) > 0L) {
-        cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
-        total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
-        dataset[ ,cols] = matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
+        dataset <- .reverseScoreItems(dataset, options)
       }
       
       missing <- "none" 
@@ -260,8 +254,10 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       return("")
     } else {
       hasSchar <- if (sidx == 1L) "" else "s"
-      footnote <- gettextf("The following item%s correlated negatively with the scale: %s. ",
-                           hasSchar, paste0(variables[idx], collapse = ", "))
+      footnote <- sprintf(ngettext(length(variables[idx]),
+                                   "The following item correlated negatively with the scale: %s. ",
+                                   "The following items correlated negatively with the scale: %s. "),
+                          paste(variables[idx], collapse = ", "))
       return(footnote)
     }
   } else {
@@ -272,34 +268,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 # ----------------------------- tables ------------------------------------
 .BayesianReliabilityScaleTable <- function(jaspResults, model, options) {
-  
-  if ((!options[["mcDonaldScale"]] & !options[["alphaScale"]] & !options[["guttman2Scale"]] 
-       & !options[["guttman6Scale"]] & !options[["glbScale"]] & !options[["averageInterItemCor"]]
-       & !options[["meanScale"]] & !options[["sdScale"]])) {
-    scaleTable <- createJaspTable(gettext("Bayesian Scale Reliability Statistics"))
-    scaleTable$dependOn(options = c("variables", "reverseScaledItems", "credibleIntervalValueScale"))
-    
-    scaleTable$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
-    intervalLow <- gettextf("%s%% CI",
-                            format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
-    intervalUp <- gettextf("%s%% CI",
-                           format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
-    intervalLow <- gettextf("%s lower bound", intervalLow)
-    intervalUp <- gettextf("%s upper bound", intervalUp)
-    
-    if (options[["rHat"]]) {
-      allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp, "R-hat"))
-    } else {
-      allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp))
-    }
-    scaleTable$setData(allData)
-    
-    nvar <- length(options[["variables"]])
-    if (nvar > 0L && nvar < 3L)
-      scaleTable$addFootnote(gettext("Please enter at least 3 variables to do an analysis."))
-    scaleTable$addFootnote(gettextf("%s", model[["footnote"]]))
-    jaspResults[["scaleTable"]] <- scaleTable
-    scaleTable$position <- 1
+  if (!is.null(jaspResults[["scaleTable"]])) {
     return()
   }
   
@@ -309,14 +278,35 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                   "noChains", "noThin", "setSeed", "seedValue",
                                   "averageInterItemCor", "meanScale", "sdScale", "missingValues", "rHat"))
   
+  scaleTable$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
   intervalLow <- gettextf("%s%% CI",
-                         format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
+                          format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
   intervalUp <- gettextf("%s%% CI",
-                        format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
+                         format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
   intervalLow <- gettextf("%s lower bound", intervalLow)
   intervalUp <- gettextf("%s upper bound", intervalUp)
   
-  scaleTable$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
+  if (options[["rHat"]]) {
+    allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp, "R-hat"))
+  } else {
+    allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp))
+  }
+  
+  if ((!options[["mcDonaldScale"]] && !options[["alphaScale"]] && !options[["guttman2Scale"]] 
+       && !options[["guttman6Scale"]] && !options[["glbScale"]] && !options[["averageInterItemCor"]]
+       && !options[["meanScale"]] && !options[["sdScale"]])) {
+
+    scaleTable$setData(allData)
+    nvar <- length(options[["variables"]])
+    if (nvar > 0L && nvar < 3L)
+      scaleTable$addFootnote(gettextf("Please enter at least 3 variables to do an analysis. %s", model[["footnote"]]))
+    else
+      scaleTable$addFootnote(gettext(model[["footnote"]]))
+    jaspResults[["scaleTable"]] <- scaleTable
+    scaleTable$position <- 1
+    return()
+  }
+  
   
   relyFit <- model[["relyFit"]]
   derivedOptions <- model[["derivedOptions"]]
@@ -326,11 +316,6 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   idxSelected <- which(selected)
   
   if (!is.null(relyFit)) {
-    if (options[["rHat"]]) {
-      allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp, "R-hat"))
-    } else {
-      allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp))
-    }
 
     for (i in idxSelected) {
       scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
@@ -647,7 +632,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 	
 	if (!is.null(shade)) {
-	  datFilter <- datDens[datDens[["x"]] >= shade[1] & datDens[["x"]] <= shade[2], ]
+	  datFilter <- datDens[datDens[["x"]] >= shade[1] && datDens[["x"]] <= shade[2], ]
 	  g <- g + ggplot2::geom_ribbon(data = datFilter, mapping = ggplot2::aes(ymin = 0, ymax = y), 
 	                                fill = "grey", alpha = 0.95) +
 	           ggplot2::geom_line(size = .85)
@@ -976,5 +961,13 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 .cov2cor.callback <- function(C, callback) {
   callback()
   return(cov2cor(C))
+}
+
+.reverseScoreItems <- function(dataset, options) {
+  dataset <- as.matrix(dataset) # fails for string factors!
+  cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
+  total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
+  dataset[ ,cols] <- matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
+  return(dataset)
 }
 
