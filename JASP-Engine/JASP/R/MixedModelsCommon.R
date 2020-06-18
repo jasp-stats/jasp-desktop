@@ -486,6 +486,8 @@
     }
     ANOVAsummary$dependOn(c(dependencies, seed_dependencies, "pvalVS"))
     
+    # add message about (lack of) random effect grouping factors 
+    ANOVAsummary$addFootnote(.mmMessageREgrouping(options$randomVariables))
     
     # some error managment for GLMMS - and oh boy, they can fail really easily
     if (type %in% c("LMM", "GLMM") && !is.null(model)) {
@@ -553,13 +555,6 @@
     
     if (is.null(model)) {
       ANOVAsummary$setExpectedSize(1)
-      
-      # notify user that the random effects grouping factor must be selected if it's the last missing piece
-      if(length(options$dependentVariable) > 0 &&
-         length(options$fixedVariables) > 0 &&
-         length(options$randomVariables) == 0) {
-        ANOVAsummary$setError("At least one random effects grouping factor needs to be selected.")
-      }
       
       return()
     }
@@ -642,7 +637,6 @@
       }
     }
     
-    ANOVAsummary$addFootnote(.mmMessageREgrouping(options$randomVariables))
     ANOVAsummary$addFootnote(.mmMessageANOVAtype(ifelse(options$type == 3, gettext("III"), gettext("II"))))
     if (type == "GLMM") {
       ANOVAsummary$addFootnote(.mmMessageGLMMtype(options$family, options$link))
@@ -2403,6 +2397,9 @@
       temp_table <- createJaspTable(title = table_name)
       STANOVAsummary[[paste0("summary_", i)]] <- temp_table
       
+      # add message about (lack of) random effects grouping factors
+      temp_table$addFootnote(.mmMessageREgrouping(options$randomVariables))
+      
       if (var_name != "Intercept" && nrow(temp_summary) > 1) {
         temp_table$addColumnInfo(name = "level",
                                  title = gettext("Level"),
@@ -2438,13 +2435,6 @@
       
       if (table_name == "Model summary") {
         temp_table$setExpectedSize(1)
-        
-        # notify user that the random effects grouping factor must be selected if it's the last missing piece
-        if(length(options$dependentVariable) > 0 &&
-           length(options$fixedVariables) > 0 &&
-           length(options$randomVariables) == 0) {
-          temp_table$setError("At least one random effects grouping factor needs to be selected.")
-        }
         
         return()
       }
@@ -2534,8 +2524,6 @@
       if (type == "BGLMM") {
         temp_table$addFootnote(.mmMessageGLMMtype(options$family, options$link))
       }
-      
-      temp_table$addFootnote(.mmMessageREgrouping(options$randomVariables))
       
     }
     
@@ -2925,10 +2913,10 @@
 .mmMessageREgrouping    <- function(RE_grouping_factors) {
   gettextf(
     "The following %s used %s random effects grouping %s: %s.",
-    ifelse(length(RE_grouping_factors) == 1, "variable is", "variables are"),
-    ifelse(length(RE_grouping_factors) == 1, "as a", "as"),
-    ifelse(length(RE_grouping_factors) == 1, "factor", "factors"),
-    paste0("'", RE_grouping_factors, "'", collapse = ", ")
+    ifelse(length(RE_grouping_factors) < 2, "variable is", "variables are"),
+    ifelse(length(RE_grouping_factors) < 2, "as a", "as"),
+    ifelse(length(RE_grouping_factors) < 2, "factor", "factors"),
+    ifelse(length(RE_grouping_factors) == 0, "...", paste0("'", RE_grouping_factors, "'", collapse = ", "))
   )
 }
 .mmMessageTestNull      <- function(value) {
