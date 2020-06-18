@@ -8,11 +8,6 @@ expEnv     <- new.env(hash = TRUE, parent = parent.frame())
 CRAN       <- "https://cran.rstudio.com/"
 	#"https://cran.r-project.org/" #
 
-#At least one package (graph) moved to Bioconductor, so should be using BiocManager because it supports both CRAN and Bioconductor packages?
-#install.packages("BiocManager", repos=CRAN)
-# this needs a bit of a rewrite though... so I will first try to do a quick manual fix and hope nothing breaks
-  
-
 giveOrderedDependencies <- function()
 {
   available_pkgs  <- available.packages(repos = CRAN)
@@ -215,10 +210,10 @@ createFlatpakJson <- function()
   }
 
   ind             <- '\t\t'
-  buildOptionsEtc <- paste0(
-    ind,'\t"build-commands": [ "R CMD INSTALL ." ]\n',ind,'}',
+  buildOptionsEtc <- function(configargs="") return(paste0(
+    ind,'\t"build-commands": [ "R CMD INSTALL .', ifelse(configargs == "", "", paste0(" --configure--args=",configargs)) ,'" ]\n',ind,'}',
     sep='',
-    collapse='')
+    collapse=''));
 
   convertToJsonGitBuild <- function(pkgName, repo, commit)
   {
@@ -230,7 +225,7 @@ createFlatpakJson <- function()
       '",\n',ind,'\t\t\t"commit": "', 
       commit,
       '"\n',ind,'\t\t}\n',ind,'\t],\n',
-      buildOptionsEtc,
+      buildOptionsEtc(),
       sep='',
       collapse=''))
   }
@@ -251,6 +246,8 @@ createFlatpakJson <- function()
         stop(paste0("Found a special that I cannot handle because type is: ", specialDef$type))
     }
 
+	needsJAGSInfo = (pkgName == "runjags"); #rjags is smart enough, but runjags isnt...
+
     pkgUrl <- downloaded[[pkgName]]$downloadUrl
     pkgSha <- downloaded[[pkgName]]$sha256
     return(paste0(
@@ -261,7 +258,7 @@ createFlatpakJson <- function()
       '",\n',ind,'\t\t\t"sha256": "', 
       pkgSha,
       '"\n',ind,'\t\t}\n',ind,'\t],\n',
-      buildOptionsEtc,
+      buildOptionsEtc(ifelse(needsJAGSInfo, '"--with-jags-include=/app/include/JAGS --with-jags-lib=/app/lib/"' , '')),
       sep='',
       collapse=''))
   }
