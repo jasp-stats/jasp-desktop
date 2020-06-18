@@ -96,9 +96,9 @@ Form
 				label: 	qsTr("Greatest lower bound"); 
 			}
 
-			CheckBox { name: "averageInterItemCor";	label: qsTr("Average interitem correlation")	}
-			CheckBox { name: "meanScale";				label: qsTr("Mean")							}
-			CheckBox { name: "sdScale";				label: qsTr("Standard deviation")			}
+			CheckBox { name: "averageInterItemCorf";	label: qsTr("Average interitem correlation")	}
+			CheckBox { name: "meanScalef";				label: qsTr("Mean")							}
+			CheckBox { name: "sdScalef";				label: qsTr("Standard deviation")			}
 			
 		}
 		
@@ -141,9 +141,9 @@ Form
 				enabled: 	glbf.checked     
 			}    
 			
-			CheckBox { name: "itemRestCor";	label: qsTr("Item-rest correlation")		}
-			CheckBox { name: "meanItem";	label: qsTr("Mean")							}
-			CheckBox { name: "sdItem";		label: qsTr("Standard deviation")			}
+			CheckBox { name: "itemRestCorf";	label: qsTr("Item-rest correlation")		}
+			CheckBox { name: "meanItemf";	label: qsTr("Mean")							}
+			CheckBox { name: "sdItemf";		label: qsTr("Standard deviation")			}
 		}
 	}
 
