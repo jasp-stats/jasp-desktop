@@ -554,8 +554,6 @@
     
     
     if (is.null(model)) {
-      ANOVAsummary$setExpectedSize(1)
-      
       return()
     }
     
@@ -1862,7 +1860,6 @@
           eval(parse(text = x))))
     }
     if (length(contrs) == 0) {
-      EMMCsummary$setExpectedSize(1)
       jaspResults[[paste0("contrasts_", what)]] <- EMMCsummary
       return()
     }
@@ -2434,8 +2431,6 @@
                                type = "number")
       
       if (table_name == "Model summary") {
-        temp_table$setExpectedSize(1)
-        
         return()
       }
       
