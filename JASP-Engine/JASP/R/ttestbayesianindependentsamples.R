@@ -288,9 +288,10 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
 
       }
 
-      xVals <- currentVals[1:n1]
-      yVals <- currentVals[(n1+1):(n1+n2)]
-
+      decorStepResult <- .decorrelateStepTwoSample(currentVals[1:n1], currentVals[(n1+1):(n1+n2)], oldDeltaProp, sigmaProp = 0.5)
+      xVals <- decorStepResult[[1]]
+      yVals <- decorStepResult[[2]]
+      
       gibbsResult <- .sampleGibbsTwoSampleWilcoxon(x = xVals, y = yVals, nIter = nGibbsIterations,
                                                    rscale = cauchyPriorParameter)
 
@@ -375,4 +376,23 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
   bf <- if (isFALSE(oneSided)) priorDensZeroPoint / densZeroPoint else (priorDensZeroPoint / corFactorPrior) / (densZeroPoint / corFactorPosterior)
 
   return(bf)
+}
+
+
+.decorrelateStepTwoSample <- function(x, y, muProp, sigmaProp = 0.5) {
+  
+  thisZ <- rnorm(1, 0, sigmaProp)
+  
+  newX <- x + thisZ
+  newY <- y + thisZ
+  
+  denom <- sum(dnorm(x, (muProp-thisZ) * -0.5, log = TRUE)) + sum(dnorm(y, (muProp-thisZ) * 0.5, log = TRUE))
+  num <- sum(dnorm(newX, muProp * -0.5, log = TRUE)) + sum(dnorm(newY, muProp * 0.5, log = TRUE))
+  
+  if(runif(1) < exp(num - denom) ) {
+    return(list(x = newX, y = newY, accept = TRUE))
+  } else {
+    return(list(x = x, y = y, accept = FALSE))
+  }
+  
 }

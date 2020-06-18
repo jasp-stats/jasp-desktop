@@ -293,6 +293,9 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
       
       sampledDiffsAbs <- abs(diffSamples)
       
+      thisZ <- .decorrelateStepOneSample(diffSamples, oldDeltaProp, sigmaProp = 0.5)
+      diffSamples <- diffSamples + thisZ
+      
       gibbsOutput <- .sampleGibbsOneSampleWilcoxon(diffScores = diffSamples, nIter = nGibbsIterations, rscale = cauchyPriorParameter)
       
       deltaSamples[j] <- oldDeltaProp <- gibbsOutput
@@ -337,4 +340,20 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
     delta <- mu / sqrt(sigmaSq)
   }
   return(delta)
+}
+
+.decorrelateStepOneSample <- function(d, muProp, sigmaProp = 0.5) {
+  
+  thisZ <- rnorm(1, 0, sigmaProp)
+  newD <- d + thisZ
+  
+  denom <- sum(dnorm(d, (muProp-thisZ), log = TRUE))
+  num <- sum(dnorm(newD, muProp, log = TRUE))
+  
+  if(runif(1) < exp(num - denom) ) {
+    return(thisZ)
+  } else {
+    return(0)
+  }
+  
 }
