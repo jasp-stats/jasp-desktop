@@ -473,7 +473,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 .JAGSPlotDensity <- function(samples, param, options, removeAxisLabels = FALSE) {
   
   npoints <- 2^10 # precision for density estimation
-  if (options[["aggregateChains"]]) {
+  if (!options[["aggregateChains"]]) {
     df <- do.call(rbind.data.frame, lapply(seq_along(samples), function(i) {
       d <- density(samples[[i]][, param], n = npoints)[c("x", "y")]
       return(data.frame(x = d[["x"]], y = d[["y"]], g = factor(i)))
@@ -494,7 +494,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   
   g <- JASPgraphs::themeJasp(
     ggplot2::ggplot(df, mapping) +
-      ggplot2::geom_line(show.legend = options[["aggregateChains"]]) +
+      ggplot2::geom_line(show.legend = !options[["aggregateChains"]]) +
       labs +
       colorScale, legend.position = if (options[["showLegend"]]) "right" else "none"
   )
@@ -530,7 +530,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   breaksType <- tmpBreaks$breaks
   isDiscrete <- !is.character(breaksType)
   
-  if (options[["aggregateChains"]]) {
+  if (!options[["aggregateChains"]]) {
     df <- do.call(rbind.data.frame, lapply(seq_along(samples), function(i) {
       d <- graphics::hist(samples[[i]][, param], breaks = breaksType, plot = FALSE)
       return(data.frame(x = if (isDiscrete) tmpBreaks$unique else d[["mids"]], y = d[["counts"]], g = factor(i)))
@@ -559,7 +559,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   # TODO: (vandenman - 29/03) from ggplot2 version 3.3.0 onwards we need to uncomment the 'orientation = "x"'
   g <- JASPgraphs::themeJasp(
     ggplot2::ggplot(df, mapping) +
-      ggplot2::geom_bar(show.legend = options[["aggregateChains"]], position = ggplot2::position_dodge(),
+      ggplot2::geom_bar(show.legend = !options[["aggregateChains"]], position = ggplot2::position_dodge(),
                         stat = "identity") + #, orientation = "x") +
       labs + colorScale + fillScale + xAxis,
     legend.position = if (options[["showLegend"]]) "right" else "none"
@@ -648,8 +648,8 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   nParams <- length(allParams)
   plotMatrix <- matrix(list(), nParams, nParams, dimnames = list(allParams, allParams))
   
-  # these should always be false for the matrix plot
-  options[["aggregateChains"]] <- FALSE
+  # these should always be fixed for the matrix plot
+  options[["aggregateChains"]] <- TRUE
   options[["showLegend"]]      <- FALSE
   
   for (j in seq_len(nParams)) {
