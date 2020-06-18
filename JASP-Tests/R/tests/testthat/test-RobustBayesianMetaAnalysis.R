@@ -1,7 +1,5 @@
 context("Robust Bayesian Meta-Analysis")
 
-skip("rjags needs to work for this to be testable")
-
 # path to the pre-fitted RoBMA model
 fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "RoBMA_testfit.RDS")
 
