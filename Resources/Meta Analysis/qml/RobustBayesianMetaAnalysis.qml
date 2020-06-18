@@ -22,14 +22,13 @@ import JASP.Widgets 1.0
 import JASP 1.0
 Form
 {
- 	id: form
-
 	RadioButtonGroup
 	{
 		Layout.columnSpan:		2
 		name:					"measures"
 		radioButtonsOnSameRow:	true
-		
+		columns:				2
+
 		RadioButton
 		{
 			label: qsTr("Cohen's d / t-statistics & (N / SE)")
@@ -165,7 +164,7 @@ Form
 		name:					"cohensd_testType"
 		visible:				measures_cohensd.checked
 		radioButtonsOnSameRow:	true
-		
+
 		RadioButton
 		{
 			label:		qsTr("One-sample t-tests")
@@ -189,7 +188,7 @@ Form
 		columns:		1
 
 		CheckBox
-		{	
+		{
 			name:		"priors_plot"
 			label:		qsTr("Plot priors")
 		}
@@ -216,7 +215,6 @@ Form
 				name:					"priors_mu"
 				optionKey:				"name"
 				defaultValues: 			[{"type": "normal"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -443,7 +441,6 @@ Form
 				name:					"priors_tau"
 				optionKey:				"name"
 				defaultValues: 			[{"type": "invgamma"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -677,7 +674,6 @@ Form
 					{"type": "Two-sided", "parCuts": "(.05)", "parAlpha": "(1,1)", "priorOdds": "1/2"},
 					{"type": "Two-sided", "parCuts": "(.05, .10)", "parAlpha": "(1,1,1)", "priorOdds": "1/2"}
 				]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -742,7 +738,7 @@ Form
 							name:				"parAlpha"
 							visible:			typeOmegatem.currentValue === "Two-sided"		||
 												typeOmegatem.currentValue === "One-sided (mon.)"
-							value:				"(1,1,1)" 
+							value:				"(1,1,1)"
 							fieldWidth: 		70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder: 		true
@@ -785,7 +781,7 @@ Form
 
 
 		CheckBox
-		{	
+		{
 			id:						priors_null
 			name:					"priors_null"
 			label:					qsTr("Set null priors")
@@ -815,7 +811,6 @@ Form
 				name:					"priors_mu_null"
 				optionKey:				"name"
 				defaultValues: 			[{"type": "spike"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -1040,7 +1035,6 @@ Form
 				name:					"priors_tau_null"
 				optionKey:				"name"
 				defaultValues: 			[{"type": "spike"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -1270,7 +1264,6 @@ Form
 				name:					"priors_omega_null"
 				optionKey:				"name"
 				defaultValues:			[{"type": "spike"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -1318,7 +1311,7 @@ Form
 							name:				"parAlpha"
 							visible:			typeOmegaNullItem.currentValue === "Two-sided"		||
 												typeOmegaNullItem.currentValue === "One-sided (mon.)"
-							value:				"(1,1,1)" 
+							value:				"(1,1,1)"
 							fieldWidth: 		70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder: 		true
@@ -1412,7 +1405,7 @@ Form
 				{
 					name: 		"results_models_order"
 					title:		qsTr("Order")
-					
+
 					RadioButton
 					{
 						name: 		"default"
@@ -1431,7 +1424,7 @@ Form
 					{
 						name: 		"posterior"
 						label: 		qsTr("Posterior prob.")
-						
+
 					}
 				}
 			}
@@ -1544,7 +1537,7 @@ Form
 							checked:true
 						}
 					}
-				
+
 			}
 
 			CheckBox
@@ -1631,7 +1624,7 @@ Form
 		{
 			title:	qsTr("Individual models")
 
-			
+
 			CheckBox
 			{
 				label:	qsTr("Effect")
@@ -1650,7 +1643,7 @@ Form
 				name:	"plots_individual_omega"
 			}
 
-				
+
 		}
 
 		Group
@@ -1840,6 +1833,7 @@ Form
 				label:			qsTr("Adaptation")
 				defaultValue:	1000
 				min:			100
+				fieldWidth:		55 * preferencesModel.uiScale
 			}
 			IntegerField
 			{
@@ -1847,6 +1841,7 @@ Form
 				label:			qsTr("Burnin")
 				defaultValue:	5000
 				min:			1000
+				fieldWidth:		55 * preferencesModel.uiScale
 			}
 			IntegerField
 			{
@@ -1854,6 +1849,7 @@ Form
 				label:			qsTr("Iterations")
 				defaultValue:	10000
 				min:			4000
+				fieldWidth:		55 * preferencesModel.uiScale
 			}
 			IntegerField
 			{
@@ -1861,6 +1857,7 @@ Form
 				label:			qsTr("Chains")
 				defaultValue:	3
 				min:			2
+				fieldWidth:		55 * preferencesModel.uiScale
 			}
 			IntegerField
 			{
@@ -1868,6 +1865,7 @@ Form
 				label:			qsTr("Thin")
 				defaultValue:	1
 				min:			1
+				fieldWidth:		55 * preferencesModel.uiScale
 			}
 
 		}
@@ -2015,5 +2013,5 @@ Form
 
 
 	}
- 	
+
 }
