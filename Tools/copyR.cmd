@@ -67,7 +67,7 @@ FOR /D %%G in ("*") DO (
     if exist %SOURCEDIR%\library\%%G\enc  ( XCOPY %SOURCEDIR%\library\%%G\enc  /Q /E /I enc >nul )
     if exist %SOURCEDIR%\library\%%G\icc  ( XCOPY %SOURCEDIR%\library\%%G\icc  /Q /E /I icc >nul )
 
-	if exist %SOURCEDIR%\library\%%G\shinythemes  ( XCOPY %SOURCEDIR%\library\%%G\icc  /Q /E /I shinythemes >nul )
+	if exist %SOURCEDIR%\library\%%G\shinythemes  ( XCOPY %SOURCEDIR%\library\%%G\shinythemes  /Q /E /I shinythemes >nul )
 
     rem for issue https://github.com/jasp-stats/jasp-test-release/issues/416#issuecomment-591899068
     if "%%G"=="viridisLite"               ( XCOPY %SOURCEDIR%\library\%%G\data /Q /E /I data >nul )
