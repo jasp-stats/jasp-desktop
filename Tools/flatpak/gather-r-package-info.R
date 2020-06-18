@@ -5,8 +5,8 @@ options(nCpus=8)
 
 
 expEnv     <- new.env(hash = TRUE, parent = parent.frame())
-CRAN       <- #"https://cran.rstudio.com/"
-	"https://cran.r-project.org/" #
+CRAN       <- "https://cran.rstudio.com/"
+	#"https://cran.r-project.org/" #
 
 #At least one package (graph) moved to Bioconductor, so should be using BiocManager because it supports both CRAN and Bioconductor packages?
 #install.packages("BiocManager", repos=CRAN)
@@ -68,7 +68,8 @@ giveOrderedDependencies <- function()
         stanova   		= { deps <- append(deps, c("rstanarm", "emmeans", "lme4", "coda", "rstan", "stats") ) },
         afex      		= { deps <- append(deps, c("pbkrtest", "lmerTest", "car", "reshape2", "stats", "methods", "utils") ) },
         emmeans   		= { deps <- append(deps, c("estimability", "graphics", "methods", "numDeriv", "stats", "utils", "plyr", "mvtnorm", "xtable") ) },
-		fitdistrplus    = { deps <- append(deps, c("npsurv") ) } # It seems there is some discrepancy between the dependencies of the version of CRAN and the one we use...
+		fitdistrplus    = { deps <- append(deps, c("npsurv") ) }, # It seems there is some discrepancy between the dependencies of the version of CRAN and the one we use...
+		parcor			= { deps <- append(deps, c("glmnet", "ppls", "Epi", "GeneNet") ) }
       )
 
       pkgDeps[[curPkg]] <- deps

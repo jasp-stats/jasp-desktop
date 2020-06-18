@@ -1073,18 +1073,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "parcor",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/parcor_0.2-6.tar.gz",
-					"sha256": "a06f1df3d41a9e00dd42cd4dfd14187c2b6c9c137b7186566520b72dd234fa6d"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "pbapply",
 			"buildsystem": "simple",
 			"sources": [
@@ -3060,6 +3048,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/OpenMx_2.14.11.tar.gz",
 					"sha256": "1f99ad16c3b7ae1d1542c373c177eacc5382fa949a4f516cd72694636145e992"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "parcor",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/parcor_0.2-6.tar.gz",
+					"sha256": "a06f1df3d41a9e00dd42cd4dfd14187c2b6c9c137b7186566520b72dd234fa6d"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
