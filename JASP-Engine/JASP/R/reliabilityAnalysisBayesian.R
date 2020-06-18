@@ -277,8 +277,23 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
        & !options[["guttman6Scale"]] & !options[["glbScale"]] & !options[["averageInterItemCor"]]
        & !options[["meanScale"]] & !options[["sdScale"]])) {
     scaleTable <- createJaspTable(gettext("Bayesian Scale Reliability Statistics"))
-    scaleTable$dependOn(options = c("variables", "reverseScaledItems"))
+    scaleTable$dependOn(options = c("variables", "reverseScaledItems", "credibleIntervalValueScale"))
+    
     scaleTable$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
+    intervalLow <- gettextf("%s%% CI",
+                            format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
+    intervalUp <- gettextf("%s%% CI",
+                           format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
+    intervalLow <- gettextf("%s lower bound", intervalLow)
+    intervalUp <- gettextf("%s upper bound", intervalUp)
+    
+    if (options[["rHat"]]) {
+      allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp, "R-hat"))
+    } else {
+      allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp))
+    }
+    scaleTable$setData(allData)
+    
     nvar <- length(options[["variables"]])
     if (nvar > 0L && nvar < 3L)
       scaleTable$addFootnote(gettext("Please enter at least 3 variables to do an analysis."))

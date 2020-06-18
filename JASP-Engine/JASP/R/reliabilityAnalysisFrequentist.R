@@ -424,8 +424,22 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
        & !options[["guttman6Scalef"]] & !options[["glbScalef"]] & !options[["averageInterItemCorf"]]
        & !options[["meanScalef"]] & !options[["sdScalef"]])) {
     scaleTableF <- createJaspTable(gettext("Frequentist Scale Reliability Statistics"))
-    scaleTableF$dependOn(options = c("variables", "reverseScaledItems"))
+    scaleTableF$dependOn(options = c("variables", "reverseScaledItems", "confidenceIntervalValue"))
     scaleTableF$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
+
+    if (options[["intervalOn"]]) {
+      intervalLow <- gettextf("%s%% CI",
+                              format(100*options[["confidenceIntervalValue"]], digits = 3, drop0trailing = TRUE))
+      intervalUp <- gettextf("%s%% CI",
+                             format(100*options[["confidenceIntervalValue"]], digits = 3, drop0trailing = TRUE))
+      intervalLow <- gettextf("%s lower bound", intervalLow)
+      intervalUp <- gettextf("%s upper bound", intervalUp)
+      allData <- data.frame(estimate = c(gettext("Point estimate"), intervalLow, intervalUp))
+    } else {
+      allData <- data.frame(estimate = c(gettext("Point estimate")))
+    }
+    scaleTableF$setData(allData)
+    
     nvar <- length(options[["variables"]])
     if (nvar > 0L && nvar < 3L){
       scaleTableF$addFootnote(gettext("Please enter at least 3 variables to do an analysis."))
