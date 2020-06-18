@@ -553,6 +553,14 @@
     
     if (is.null(model)) {
       ANOVAsummary$setExpectedSize(1)
+      
+      # notify user that the random effects grouping factor must be selected if it's the last missing piece
+      if(length(options$dependentVariable) > 0 &&
+         length(options$fixedVariables) > 0 &&
+         length(options$randomVariables) == 0) {
+        ANOVAsummary$setError("At least one random effects grouping factor needs to be selected.")
+      }
+      
       return()
     }
     
@@ -634,7 +642,7 @@
       }
     }
     
-    
+    ANOVAsummary$addFootnote(.mmMessageREgrouping(options$randomVariables))
     ANOVAsummary$addFootnote(.mmMessageANOVAtype(ifelse(options$type == 3, gettext("III"), gettext("II"))))
     if (type == "GLMM") {
       ANOVAsummary$addFootnote(.mmMessageGLMMtype(options$family, options$link))
@@ -976,7 +984,7 @@
     # stop with message if there is no random effects grouping factor selected
     if (length(options$plotsAgregatedOver) == 0) {
       plots$setError(
-        gettext("At least one random effect grouping factor needs to be selected in field 'Background data show'.")
+        gettext("At least one random effects grouping factor needs to be selected in field 'Background data show'.")
       )
       jaspResults[["plots"]] <- plots
       return()
@@ -2430,6 +2438,14 @@
       
       if (table_name == "Model summary") {
         temp_table$setExpectedSize(1)
+        
+        # notify user that the random effects grouping factor must be selected if it's the last missing piece
+        if(length(options$dependentVariable) > 0 &&
+           length(options$fixedVariables) > 0 &&
+           length(options$randomVariables) == 0) {
+          temp_table$setError("At least one random effects grouping factor needs to be selected.")
+        }
+        
         return()
       }
       
@@ -2518,6 +2534,8 @@
       if (type == "BGLMM") {
         temp_table$addFootnote(.mmMessageGLMMtype(options$family, options$link))
       }
+      
+      temp_table$addFootnote(.mmMessageREgrouping(options$randomVariables))
       
     }
     
@@ -2903,6 +2921,15 @@
   gettext("Results are not on the response scale and might be misleading.")
 .mmMessageANOVAtype     <- function(type) {
   gettextf("Type %s Sum of Squares",type)
+}
+.mmMessageREgrouping    <- function(RE_grouping_factors) {
+  gettextf(
+    "The following %s used %s random effects grouping %s: %s.",
+    ifelse(length(RE_grouping_factors) == 1, "variable is", "variables are"),
+    ifelse(length(RE_grouping_factors) == 1, "as a", "as"),
+    ifelse(length(RE_grouping_factors) == 1, "factor", "factors"),
+    paste0("'", RE_grouping_factors, "'", collapse = ", ")
+  )
 }
 .mmMessageTestNull      <- function(value) {
   gettextf("P-values correspond to test of null hypothesis against %s.", value)
