@@ -486,9 +486,6 @@
     }
     ANOVAsummary$dependOn(c(dependencies, seed_dependencies, "pvalVS"))
     
-    # add message about (lack of) random effect grouping factors 
-    ANOVAsummary$addFootnote(.mmMessageREgrouping(options$randomVariables))
-    
     # some error managment for GLMMS - and oh boy, they can fail really easily
     if (type %in% c("LMM", "GLMM") && !is.null(model)) {
       if (any(attr(model, "class") %in% c("std::runtime_error", "C++Error", "error"))) {
@@ -554,6 +551,17 @@
     
     
     if (is.null(model)) {
+      if (options$dependentVariable != "" &&
+          length(options$fixedVariables) > 0 &&
+          length(options$randomVariables) == 0) {
+        ANOVAsummary$addFootnote(.mmMessageMissingRE)
+      }
+      if (type == "GLMM") {
+        if (options$family == "binomial_agg" &
+            options$dependentVariableAggregation == "") {
+          ANOVAsummary$addFootnote(.mmMessageMissingAgg)
+        }
+      }
       return()
     }
     
@@ -592,6 +600,9 @@
       
       ANOVAsummary$addRows(temp_row)
     }
+    
+    # add message about (lack of) random effect grouping factors 
+    ANOVAsummary$addFootnote(.mmMessageREgrouping(options$randomVariables))
     
     # add warning messages
     # deal with type II multiple models stuff
@@ -2049,7 +2060,7 @@
         glmm_family <<- rstanarm::neg_binomial_2(link = glmm_link)
       } else if (options$family == "betar") {
         glmm_family <<- mgcv::betar(link = glmm_link)
-      } else{
+      } else if (options$family != "binomial_agg"){
         temp_family <<- options$family
         glmm_family <<- eval(call(temp_family, glmm_link))
       }
@@ -2058,7 +2069,7 @@
       if (options$family == "binomial_agg") {
         glmm_weight <<- dataset[, .v(options$dependentVariableAggregation)]
         
-        model <- stanova::stanova_lmer(
+        model <- stanova::stanova_glmer(
           formula           = as.formula(model_formula$model_formula),
           check_contrasts   = "contr.bayes",
           data              = dataset,
@@ -2394,9 +2405,6 @@
       temp_table <- createJaspTable(title = table_name)
       STANOVAsummary[[paste0("summary_", i)]] <- temp_table
       
-      # add message about (lack of) random effects grouping factors
-      temp_table$addFootnote(.mmMessageREgrouping(options$randomVariables))
-      
       if (var_name != "Intercept" && nrow(temp_summary) > 1) {
         temp_table$addColumnInfo(name = "level",
                                  title = gettext("Level"),
@@ -2431,6 +2439,17 @@
                                type = "number")
       
       if (table_name == "Model summary") {
+        if(options$dependentVariable != "" &&
+           length(options$fixedVariables) > 0 &&
+           length(options$randomVariables) == 0) {
+          temp_table$addFootnote(.mmMessageMissingRE)
+        }
+        if (type == "BGLMM") {
+          if (options$family == "binomial_agg" &
+              options$dependentVariableAggregation == "") {
+            temp_table$addFootnote(.mmMessageMissingAgg)
+          }
+        }
         return()
       }
       
@@ -2468,6 +2487,9 @@
         
         temp_table$addRows(temp_row)
       }
+      
+      # add message about (lack of) random effects grouping factors
+      temp_table$addFootnote(.mmMessageREgrouping(options$randomVariables))
       
       # check model fit
       div_iterations <- rstan::get_num_divergent(model$stanfit)
@@ -2914,6 +2936,9 @@
     ifelse(length(RE_grouping_factors) == 0, "...", paste0("'", RE_grouping_factors, "'", collapse = ", "))
   )
 }
+
+.mmMessageMissingRE     <- gettext("This analysis requires at least one random effects grouping factor to run.")
+.mmMessageMissingAgg    <- gettext("The 'Binomial (aggregated)' family requires the 'Number of trials' to be specified to run.")
 .mmMessageTestNull      <- function(value) {
   gettextf("P-values correspond to test of null hypothesis against %s.", value)
 }
