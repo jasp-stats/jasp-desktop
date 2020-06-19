@@ -1,9 +1,8 @@
 reliabilityBayesian <- function(jaspResults, dataset, options) {
 
+	dataset <- .reliabilityReadData(dataset, options)
 
-	dataset <- .BayesianReliabilityReadData(dataset, options)
-
-	.BayesianReliabilityCheckErrors(dataset, options)
+	.reliabilityCheckErrors(dataset, options)
   
 	model <- .BayesianReliabilityMainResults(jaspResults, dataset, options)
 
@@ -53,7 +52,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   return(derivedOptions)
 }
 
-.BayesianReliabilityReadData <- function(dataset, options) {
+.reliabilityReadData <- function(dataset, options) {
 
   variables <- unlist(options[["variables"]])
 	if (is.null(dataset)) {
@@ -62,10 +61,10 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   return(dataset)
 }
 
-.BayesianReliabilityCheckErrors <- function(dataset, options) {
+.reliabilityCheckErrors <- function(dataset, options) {
 
   .hasErrors(dataset = dataset, perform = "run",
-             type = c("infinity", "variance", "observations"),
+             type = c("infinity", "variance", "observations", "varCovData"),
              observations.amount = " < 3",
              custom = .checkEigen,
              exitAnalysisIfErrors = TRUE)
@@ -78,8 +77,39 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   }
 }
 
+.reliabilityCheckLoadings <- function(dataset, variables) {
+  if (ncol(dataset > 2)) {
+    prin <- psych::principal(dataset)
+    idx <- prin[["loadings"]] < 0
+    sidx <- sum(idx)
+    if (sidx == 0) {
+      return("")
+    } else {
+      footnote <- sprintf(ngettext(length(variables[idx]),
+                                   "The following item correlated negatively with the scale: %s. ",
+                                   "The following items correlated negatively with the scale: %s. "),
+                          paste(variables[idx], collapse = ", "))      
+      return(footnote)
+    }
+  } else {
+    return("")  
+  }
+}
+
+
 # estimate reliability ----
 .BayesianReliabilityMainResults <- function(jaspResults, dataset, options) {
+  if (!options[["mcDonaldScale"]] && !options[["alphaScale"]] && !options[["guttman2Scale"]]
+      && !options[["guttman6Scale"]] && !options[["glbScale"]] && !options[["averageInterItemCor"]]
+      && !options[["meanScale"]] && !options[["sdScale"]]) {
+    variables <- options[["variables"]]
+    if (length(options[["reverseScaledItems"]]) > 0L) {
+      dataset <- .reverseScoreItems(dataset, options)
+    }
+    model <- list()
+    model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
+    return(model)
+  }
   
   model <- jaspResults[["modelObj"]]$object
   relyFit <- model[["relyFit"]]
@@ -89,11 +119,8 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
     if (length(variables) > 2L) {
 
-      dataset <- as.matrix(dataset) # fails for string factors!
       if (length(options[["reverseScaledItems"]]) > 0L) {
-        cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
-        total <- min(dataset, na.rm = T) + max(dataset, na.rm = T)
-        dataset[ ,cols] = total - dataset[ ,cols]
+        dataset <- .reverseScoreItems(dataset, options)
       }
       
       missing <- "none" 
@@ -109,7 +136,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
           options[["missings"]] <- "complete.obs"
           }
       }
-      model[["footnote"]] <- .BayesianReliabilityCheckLoadings(dataset, variables)
+      model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
       
       chains <- options[["noChains"]]
       samples <- options[["noSamples"]]
@@ -144,9 +171,9 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       relyFit$Bayes$samp <- lapply(relyFit$Bayes$chains, .chainSmoker)
 
       # mean and sd
-      relyFit$Bayes$samp$mean <- c(NA_real_, NA_real_)
+      relyFit$Bayes$samp$mean <- NA_real_
       relyFit$Bayes$est$mean <- mean(rowMeans(dataset, na.rm = T))
-      relyFit$Bayes$samp$sd <- c(NA_real_, NA_real_)
+      relyFit$Bayes$samp$sd <- NA_real_
       relyFit$Bayes$est$sd <- sd(colMeans(dataset, na.rm = T))
       
       # get rid of multiple chains, first save the chains:
@@ -168,6 +195,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       ops <- .BayesianReliabilityDerivedOptions(options)
       order <- ops[["order"]]
       relyFit[["Bayes"]][["samp"]] <- relyFit[["Bayes"]][["samp"]][order]
+      relyFit[["Bayes"]][["chains"]] <- relyFit[["Bayes"]][["chains"]][order]
       relyFit[["Bayes"]][["est"]] <- relyFit[["Bayes"]][["est"]][order]
       
       relyFit[["Bayes"]][["ifitem"]][["samp"]] <- relyFit[["Bayes"]][["ifitem"]][["samp"]][order]
@@ -228,7 +256,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   
   for (nm in names(samps)) {
     if (any(is.na(samps[[nm]]))) {
-      cri[[nm]] <- NA_real_
+      cri[[nm]] <- c(NA_real_, NA_real_)
     } else {
       cri[[nm]] <- coda::HPDinterval(coda::mcmc(samps[[nm]]), prob = criValue)
     }
@@ -237,26 +265,11 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 }
 
 
-.BayesianReliabilityCheckLoadings <- function(dataset, variables) {
 
-	prin <- psych::principal(dataset)
-	idx <- prin[["loadings"]] < 0
-	sidx <- sum(idx)
-	if (sidx == 0) {
-	  return()
-	} else {
-	  hasSchar <- if (sidx == 1L) "" else "s"
-	  footnote <- gettextf("The following item%s correlated negatively with the scale: %s. ",
-	                       hasSchar, paste0(variables[idx], collapse = ", "))
-	  return(footnote)
-	}
-
-}
 
 
 # ----------------------------- tables ------------------------------------
 .BayesianReliabilityScaleTable <- function(jaspResults, model, options) {
-  
   if (!is.null(jaspResults[["scaleTable"]])) {
     return()
   }
@@ -267,14 +280,35 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                   "noChains", "noThin", "setSeed", "seedValue",
                                   "averageInterItemCor", "meanScale", "sdScale", "missingValues", "rHat"))
   
+  scaleTable$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
   intervalLow <- gettextf("%s%% CI",
-                         format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
+                          format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
   intervalUp <- gettextf("%s%% CI",
-                        format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
+                         format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
   intervalLow <- gettextf("%s lower bound", intervalLow)
   intervalUp <- gettextf("%s upper bound", intervalUp)
   
-  scaleTable$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
+  if (options[["rHat"]]) {
+    allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp, "R-hat"))
+  } else {
+    allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp))
+  }
+  
+  if ((!options[["mcDonaldScale"]] && !options[["alphaScale"]] && !options[["guttman2Scale"]] 
+       && !options[["guttman6Scale"]] && !options[["glbScale"]] && !options[["averageInterItemCor"]]
+       && !options[["meanScale"]] && !options[["sdScale"]])) {
+
+    scaleTable$setData(allData)
+    nvar <- length(options[["variables"]])
+    if (nvar > 0L && nvar < 3L)
+      scaleTable$addFootnote(gettextf("Please enter at least 3 variables to do an analysis. %s", model[["footnote"]]))
+    else
+      scaleTable$addFootnote(gettext(model[["footnote"]]))
+    jaspResults[["scaleTable"]] <- scaleTable
+    scaleTable$position <- 1
+    return()
+  }
+  
   
   relyFit <- model[["relyFit"]]
   derivedOptions <- model[["derivedOptions"]]
@@ -284,15 +318,11 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   idxSelected <- which(selected)
   
   if (!is.null(relyFit)) {
-    if (options[["rHat"]]) {
-      allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp, "R-hat"))
-    } else {
-      allData <- data.frame(estimate = c("Posterior mean", intervalLow, intervalUp))
-    }
+
     for (i in idxSelected) {
       scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
       if (options[["rHat"]]) {
-        if (names(idxSelected[i]) == "meanScale" || names(idxSelected[i]) == "sdScale") {
+        if (opts[i] == "mean" || opts[i] == "sd") {
           rhat <- NA_real_
         } else {
           tmp <- lapply(as.data.frame(t(relyFit[["Bayes"]][["chains"]][[i]])), coda::mcmc)
@@ -446,17 +476,18 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	idxSelected  <- which(selected)
 
 
-	n.item <- dim(relyFit$Bayes$covsamp)[3]
-	prior <- Bayesrel:::priors[[as.character(n.item)]] 
-	prior <- prior[order]
-  end <- length(prior[[1]][["x"]])
-  poslow <- end - sum(prior[[1]][["x"]] > options[["probTableValueLow"]]) 
-  poshigh <- end - sum(prior[[1]][["x"]] > options[["probTableValueHigh"]]) 
-  # since the priors are only available in density form, the prior probability for the estimator being larger than
-  # a cutoff is given by caculating the relative probability of the density from the cutoff to 1.
-  # maybe check this with someone though
-  
+
 	if (!is.null(relyFit)) {
+	  n.item <- dim(relyFit$Bayes$covsamp)[3]
+	  prior <- Bayesrel:::priors[[as.character(n.item)]] 
+	  prior <- prior[order]
+	  end <- length(prior[[1]][["x"]])
+	  poslow <- end - sum(prior[[1]][["x"]] > options[["probTableValueLow"]]) 
+	  poshigh <- end - sum(prior[[1]][["x"]] > options[["probTableValueHigh"]]) 
+	  # since the priors are only available in density form, the prior probability for the estimator being larger than
+	  # a cutoff is given by caculating the relative probability of the density from the cutoff to 1.
+	  # maybe check this with someone though
+	  
     probsPost <- numeric(sum(selected))
     probsPrior <- numeric(sum(selected))
     z <- 1
@@ -506,8 +537,6 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 	relyFit  <- model[["relyFit"]]
 	scaleCri <- model[["cri"]][["scaleCri"]]
-	n.item <- dim(relyFit$Bayes$covsamp)[3]
-	prior <- Bayesrel:::priors[[as.character(n.item)]][order] ##### change this when more estimators are included!!!
 
 
 	if (options[["shadePlots"]] && options[["probTable"]]) {
@@ -518,6 +547,9 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 
 	if (!is.null(relyFit)) {
+	  n.item <- dim(relyFit$Bayes$covsamp)[3]
+	  prior <- Bayesrel:::priors[[as.character(n.item)]][order] ##### change this when more estimators are included!!!
+	  
 	  for (i in indices) {
 	    if (is.null(plotContainer[[nmsObjs[i]]])) {
 
@@ -598,7 +630,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	ggplot2::geom_text(data = datTxt, mapping = ggplot2::aes(x = x, y = y, label = label), inherit.aes = FALSE, 
 	                   size = 5) +
 	ggplot2::scale_y_continuous(name = gettext("Density"), breaks = yBreaks, limits = range(yBreaks)) +
-	ggplot2::scale_x_continuous(name = gettext(nms), breaks = (xBreaks), expand = xExpand)
+	ggplot2::scale_x_continuous(name = nms, breaks = (xBreaks), expand = xExpand)
 
 	
 	if (!is.null(shade)) {
@@ -611,7 +643,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	if (priorTrue) {
 	  g <- g + ggplot2::geom_line(data = datPrior, mapping = ggplot2::aes(x = x, y = y),
 	                              linetype = "dashed", size = .85) +
-	           ggplot2::scale_x_continuous(name = gettext(nms), breaks = xBreaks, expand = xExpand,
+	           ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, expand = xExpand,
 	                                       limits = c(min(xBreaks), max(xBreaks)))
 	  
 	}
@@ -742,7 +774,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     ggplot2::theme(strip.background = ggplot2::element_rect(fill = "white"),
                    strip.text = ggplot2::element_text(colour = "black")) +
     ggplot2::ylab(gettext("Item Dropped")) +
-    ggplot2::xlab(gettext(nms)) +
+    ggplot2::xlab(nms) +
     ggplot2::scale_fill_grey() +
     ggplot2::scale_y_discrete(expand = ggplot2::expand_scale(mult = c(0.1, 0.25)))  
 
@@ -868,7 +900,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   
   g <- ggplot2::ggplot(dat, ggplot2::aes(x = Iterations, y = Value, colour = chain)) +
     ggplot2::geom_line(size = .3) +
-    ggplot2::ylab(gettext(nms)) +
+    ggplot2::ylab(nms) +
     ggplot2::scale_x_continuous(name = gettext("Iterations"), breaks = xBreaks)
 
   return(JASPgraphs::themeJasp(g))
@@ -933,3 +965,12 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   return(cov2cor(C))
 }
 
+.reverseScoreItems <- function(dataset, options) {
+  dataset <- as.matrix(dataset) # fails for string factors!
+  cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
+  total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
+  dataset[ ,cols] <- matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
+  return(dataset)
+}
+
+  

@@ -36,7 +36,6 @@
 			"icon":		"reliability_icon_bayesian.svg"
 		},
 		{
-			"menu"	  : "Enkele-Test Betrouwbaarheidsanalyse",
 			"title"   : "Bayesiaanse Enkele-Test Betrouwbaarheidsanalyse",
 			"qml"     : "ReliabilityBayesian.qml",
 			"function": "reliabilityBayesian"
