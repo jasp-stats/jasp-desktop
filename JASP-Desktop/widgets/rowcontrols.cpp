@@ -24,6 +24,14 @@
 
 #include <QQmlContext>
 
+RowControls::RowControls(ListModel* parent
+						 , QList<QQmlComponent *>& components
+						 , const QMap<QString, Option*>& rowOptions
+						 , bool isDummy)
+ : QObject(parent), _parentModel(parent), _rowComponents(components), _rowOptions(rowOptions), _isDummy(isDummy)
+{
+}
+
 // Cannot do this code in the constructor: the Component create function will call the addJASPControl method (JASPControlBase, en ListView),
 // but to call the ListView needs to have already the instance of the RowControls to be able to call addJASPControl.
 void RowControls::init(int row, const Term& key, bool isNew)
@@ -51,6 +59,9 @@ void RowControls::init(int row, const Term& key, bool isNew)
 		{
 			_contextMap[obj] = context;
 			_rowObjects.push_back(QVariant::fromValue(obj));
+
+			if (_isDummy) // A dummy will never be used in QML, and does not get a parent, but a parent is needed to destroy it
+				obj->setParent(this);
 		}
 		else
 			Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
