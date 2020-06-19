@@ -64,7 +64,8 @@ giveOrderedDependencies <- function()
         afex      		= { deps <- append(deps, c("pbkrtest", "lmerTest", "car", "reshape2", "stats", "methods", "utils") ) },
         emmeans   		= { deps <- append(deps, c("estimability", "graphics", "methods", "numDeriv", "stats", "utils", "plyr", "mvtnorm", "xtable") ) },
 		fitdistrplus    = { deps <- append(deps, c("npsurv") ) }, # It seems there is some discrepancy between the dependencies of the version of CRAN and the one we use...
-		parcor			= { deps <- append(deps, c("glmnet", "ppls", "Epi", "GeneNet") ) }
+		parcor			= { deps <- append(deps, c("glmnet", "ppls", "Epi", "GeneNet") ) },
+		dplyr			= { deps <- append(deps, c("plogr") ) }
       )
 
       pkgDeps[[curPkg]] <- deps
@@ -258,7 +259,7 @@ createFlatpakJson <- function()
       '",\n',ind,'\t\t\t"sha256": "', 
       pkgSha,
       '"\n',ind,'\t\t}\n',ind,'\t],\n',
-      buildOptionsEtc(ifelse(needsJAGSInfo, '"--with-jags-include=/app/include/JAGS --with-jags-lib=/app/lib/"' , '')),
+      buildOptionsEtc(ifelse(needsJAGSInfo, "'--with-jags-include=/app/include/JAGS --with-jags-lib=/app/lib/'" , '')),
       sep='',
       collapse=''))
   }
