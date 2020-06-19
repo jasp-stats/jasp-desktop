@@ -39,8 +39,7 @@ public:
 			ListModel* parent
 			, QList<QQmlComponent *>& components
 			, const QMap<QString, Option*>& rowOptions
-			, bool isDummy = false) : _parentModel(parent), _rowComponents(components), _rowOptions(rowOptions), _isDummy(isDummy) {}
-	virtual ~RowControls() {}
+			, bool isDummy = false);
 
 	void										init(int row, const Term& key, bool isNew);
 	void										setContext(int row, const QString& key);
