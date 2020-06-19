@@ -1878,10 +1878,9 @@ Form
 				label: 		qsTr("Autofit")
 				name:		"advanced_autofit"
 				checked:	false
-				Group
-				{
-					columns:	2
 
+				Row
+				{
 					IntegerField
 					{
 						name:			"advanced_autofit_time"
@@ -1905,6 +1904,7 @@ Form
 
 				PercentField
 				{
+					id:				advanced_autofit_error
 					name:			"advanced_autofit_error"
 					label:			qsTr("Target margin of error")
 					defaultValue:	1
@@ -1920,60 +1920,64 @@ Form
 				name:		"advanced_omit"
 				checked:	false
 
-
-				CheckBox
+				Group
 				{
-					childrenOnSameRow:	true
-					name:				"advanced_omit_error"
-					label:				qsTr("error % >")
-					checked:			false
+					columns: 2
+
+					CheckBox
+					{
+						id:					advanced_omit_error
+						name:				"advanced_omit_error"
+						label:				qsTr("error % >")
+						checked:			false
+					}
 
 					PercentField
 					{
+						enabled:		advanced_omit_error.checked
 						name: 			"advanced_omit_error_value"
 						defaultValue: 	1
 						decimals:		1
 					}
-				}
 
-
-				CheckBox
-				{
-					childrenOnSameRow:	true
-					name:				"advanced_omit_rhat"
-					label:				qsTr("R-hat >")
-					checked:			false
+					CheckBox
+					{
+						id:					advanced_omit_rhat
+						name:				"advanced_omit_rhat"
+						label:				qsTr("R-hat >")
+						checked:			false
+					}
 
 					DoubleField
 					{
+						enabled:		advanced_omit_rhat.checked
 						name: 			"advanced_omit_rhat_value"
 						defaultValue: 	1.05
 						min:			1
 					}
-				}
 
-
-				CheckBox
-				{
-					childrenOnSameRow:	true
-					name:				"advanced_omit_ESS"
-					label:				qsTr("Estimated sample size <")
+					CheckBox
+					{
+						id:				advanced_omit_ESS
+						name:			"advanced_omit_ESS"
+						label:			qsTr("Estimated sample size <")
+					}
 
 					DoubleField
 					{
+						enabled:		advanced_omit_ESS.checked
 						name: 			"advanced_omit_ESS_value"
 						defaultValue:	500
 						min: 			1
 					}
+
+					CheckBox
+					{
+						Layout.columnSpan: 2
+						label:			qsTr("Include theta")
+						name:			"advanced_omit_theta"
+					}
 				}
-
-
-				CheckBox
-				{
-					label:			qsTr("Include theta")
-					name:			"advanced_omit_theta"
-				}
-
 
 				DropDown
 				{
