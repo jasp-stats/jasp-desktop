@@ -50,8 +50,8 @@ Button
 	function setIconToLeft()	{ if (rightSource.activeFocus)	leftToRight = false;	}
 	function setState()
 	{
-		var result = true;
-		if (source.model && source.model.selectedItems().length > 0)
+		var result = source.enabled && target.enabled;
+		if (result && source.model && source.model.selectedItems().length > 0)
 		{
 			if (target.allowedColumns.length > 0)
 			{
@@ -66,7 +66,7 @@ Button
 			}
 		}
 
-		if (interactionControl)
+		if (result && interactionControl)
 		{
 			if (target.addInteractionOptions && source.model)
 			{
