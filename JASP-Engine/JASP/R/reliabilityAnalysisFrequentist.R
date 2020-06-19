@@ -1,9 +1,8 @@
 reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
-
-  dataset <- .frequentistReliabilityReadData(dataset, options)
   
-  .frequentistReliabilityCheckErrors(dataset, options)
+  dataset <- .reliabilityReadData(dataset, options)
+  .reliabilityCheckErrors(dataset, options)
   
   model <- .frequentistReliabilityMainResults(jaspResults, dataset, options)
   
@@ -41,30 +40,6 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   return(derivedOptions)
 }
 
-.frequentistReliabilityReadData <- function(dataset, options) {
-  
-  variables <- unlist(options[["variables"]])
-  if (is.null(dataset)) {
-    dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = NULL, exclude.na.listwise = NULL)
-  }
-  return(dataset)
-}
-
-.frequentistReliabilityCheckErrors <- function(dataset, options) {
-  
-  .hasErrors(dataset = dataset, perform = "run",
-             type = c("infinity", "variance", "observations"),
-             observations.amount = " < 3",
-             custom = .checkEigen,
-             exitAnalysisIfErrors = TRUE)
-  
-}
-# check for negative eigenvalues, positive semidefiniteness
-.checkEigen <- function() {
-  if (any(eigen(cov(x))$values < 0)) {
-    return(gettext("Data covariance matrix is not positive semidefinite"))
-  }
-}
 
 
 # estimate reliability ----
@@ -78,7 +53,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       dataset <- .reverseScoreItems(dataset, options)
     }
     model <- list()
-    model[["footnote"]] <- .frequentistReliabilityCheckLoadings(dataset, variables)
+    model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
     return(model)
   }
   model <- jaspResults[["modelObj"]]$object
@@ -100,7 +75,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       # observations for alpha interval need to be speccified: 
       model[["obs"]] <- nrow(dataset)
       
-      model[["footnote"]] <- .frequentistReliabilityCheckLoadings(dataset, variables)
+      model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
       if (any(is.na(dataset))) {
         if (options[["missingValuesf"]] == "excludeCasesPairwise") {
           missing <- "pairwise"
@@ -234,7 +209,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         Dtmp <- array(0, c(p, nrow(dataset), p - 1))
         for (i in 1:p){
           Cvtmp[i, , ] <- cv[-i, -i]
-          Dtmp[i, , ] <- dataset[, -i]
+          Dtmp[i, , ] <- as.matrix(dataset[, -i])
         }
         
         if (options[["omegaEst"]] == "pfa") {
@@ -259,6 +234,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
             if (any(is.na(omega))) {
               omega.est <- Bayesrel:::applyomega_pfa(cv)
               relyFit$freq$omega.error <- TRUE
+              omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
+            }
+            if (any(is.na(omega.item))) {
+              relyFit$freq$omega.item.error <- TRUE
               omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
             }
           }
@@ -389,26 +368,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   return(cfi)
 }
 
-.frequentistReliabilityCheckLoadings <- function(dataset, variables) {
-  
-  if (ncol(dataset > 2)) {
-    prin <- psych::principal(dataset)
-    idx <- prin[["loadings"]] < 0
-    sidx <- sum(idx)
-    if (sidx == 0) {
-      return("")
-    } else {
-      hasSchar <- if (sidx == 1L) "" else "s"
-      footnote <- sprintf(ngettext(length(variables[idx]),
-                                   "The following item correlated negatively with the scale: %s. ",
-                                   "The following items correlated negatively with the scale: %s. "),
-                          paste(variables[idx], collapse = ", "))
-      return(footnote)
-    }
-  } else {
-    return("")
-  }
-}
+
 
 
 # tables ----
@@ -552,9 +512,15 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       itemTableF$addColumnInfo(name = paste0("pointEst", i), title = estimators[i], type = "number")
     }
   }
-  
+
   relyFit <- model[["relyFit"]]
+
   if (!is.null(relyFit)) {
+    if (options[["mcDonaldScalef"]] && !is.null(relyFit[["freq"]][["omega.item.error"]])) {
+      itemTableF$addFootnote(gettext("McDonald's \u03C9 estimation method for item-dropped statistics
+                                    switched to PFA because the CFA did not find a solution."))
+    }
+    
     tb <- data.frame(variable = model[["itemsDropped"]])
     for (i in idxSelectedF) {
       newtb <- cbind(pointEst = relyFit$freq$ifitem[[i]])
@@ -633,10 +599,4 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   return(om)
 }
 
-.reverseScoreItems <- function(dataset, options) {
-  dataset <- as.matrix(dataset) # fails for string factors!
-  cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
-  total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
-  dataset[ ,cols] <- matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
-  return(dataset)
-}
+
