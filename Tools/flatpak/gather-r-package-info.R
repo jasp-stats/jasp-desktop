@@ -212,7 +212,7 @@ createFlatpakJson <- function()
 
   ind             <- '\t\t'
   buildOptionsEtc <- function(configargs="") return(paste0(
-    ind,'\t"build-commands": [ "R CMD INSTALL .', ifelse(configargs == "", "", paste0(" --configure--args=",configargs)) ,'" ]\n',ind,'}',
+    ind,'\t"build-commands": [ "R CMD INSTALL .', ifelse(configargs == "", "", paste0(" --configure-args=",configargs)) ,'" ]\n',ind,'}',
     sep='',
     collapse=''));
 

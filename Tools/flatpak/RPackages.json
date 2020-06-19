@@ -1574,7 +1574,7 @@
 					"sha256": "423caf1d1100fa68b220e06a4345dce6ef44a1298f63ca2cb1ae805d64d02771"
 				}
 			],
-			"build-commands": [ "R CMD INSTALL . --configure--args='--with-jags-include=/app/include/JAGS --with-jags-lib=/app/lib/'" ]
+			"build-commands": [ "R CMD INSTALL . --configure-args='--with-jags-include=/app/include/JAGS --with-jags-lib=/app/lib/'" ]
 		},
 		{
 			"name": "sfsmisc",
