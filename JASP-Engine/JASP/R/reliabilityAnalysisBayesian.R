@@ -85,7 +85,10 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     if (sidx == 0) {
       return("")
     } else {
-      footnote <- .footnoteNegativeCorrelation(variables, idx)
+      footnote <- sprintf(ngettext(length(variables[idx]),
+                                   "The following item correlated negatively with the scale: %s. ",
+                                   "The following items correlated negatively with the scale: %s. "),
+                          paste(variables[idx], collapse = ", "))      
       return(footnote)
     }
   } else {
@@ -970,10 +973,4 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   return(dataset)
 }
 
-.footnoteNegativeCorrelation <- function(variables, idx) {
-  footnote <- sprintf(ngettext(length(variables[idx]),
-                               "The following item correlated negatively with the scale: %s. ",
-                               "The following items correlated negatively with the scale: %s. "),
-                      paste(variables[idx], collapse = ", "))
-}
   
