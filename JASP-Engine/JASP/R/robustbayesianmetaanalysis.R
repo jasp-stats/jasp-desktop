@@ -851,7 +851,8 @@ RobustBayesianMetaAnalysis <-
     priors_mu_null    = priors[["mu_null"]],
     priors_tau_null   = priors[["tau_null"]],
     priors_omega_null = priors[["omega_null"]],
-    models            = TRUE
+    models            = TRUE,
+    silent            = TRUE
   )
   
   
@@ -974,7 +975,8 @@ RobustBayesianMetaAnalysis <-
           priors_mu_null    = priors[["mu_null"]],
           priors_tau_null   = priors[["tau_null"]],
           priors_omega_null = priors[["omega_null"]],
-          models            = TRUE
+          models            = TRUE,
+          silent            = TRUE
         )
         
         needs_refit <- !isTRUE(all.equal(fit[["priors"]], s.fit[["priors"]]))
