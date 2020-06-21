@@ -144,7 +144,9 @@ RobustBayesianMetaAnalysis <-
   "advanced_burnin",
   "advanced_adapt",
   "advanced_bridge_iter",
-  "advanced_mu_transform"
+  "advanced_mu_transform",
+  "setSeed",
+  "seed"
 )
 # priors related functions
 .RoBMA_options2priors       <- function(options_prior) {
@@ -941,7 +943,7 @@ RobustBayesianMetaAnalysis <-
 
     if (is.null(jaspResults[["model"]])) {
       model <- createJaspState()
-      model$dependOn("measures")
+      model$dependOn("measures", "seed", "setSeed")
       jaspResults[["model"]] <- model
       
     } else{
@@ -1080,7 +1082,7 @@ RobustBayesianMetaAnalysis <-
           ),
           save    = "all",
           seed    = if (options[["setSeed"]])
-            options[["setSeed"]]
+            options[["seed"]]
         ),error = function(e)e)
         
       } else{
