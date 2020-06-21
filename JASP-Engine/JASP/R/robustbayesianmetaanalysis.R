@@ -943,7 +943,7 @@ RobustBayesianMetaAnalysis <-
 
     if (is.null(jaspResults[["model"]])) {
       model <- createJaspState()
-      model$dependOn("measures", "seed", "setSeed")
+      model$dependOn(c("measures", "seed", "setSeed"))
       jaspResults[["model"]] <- model
       
     } else{
