@@ -208,25 +208,23 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 	)
 	bfTitle <- .ttestBayesianGetBFTitle(bfType, hypothesis)
 
-  if (!(options[["hypothesis"]] == "notEqualToTestValue" && options[["testValue"]] == 0)) {
-    testValueFormatted <- format(options[["testValue"]], drop0trailing = TRUE)
-    message <- switch(
-      options[["hypothesis"]],
-      "greaterThanTestValue" = gettextf(
-        "For all tests, the alternative hypothesis specifies that the population mean is greater than %s.", 
-        testValueFormatted
-      ),
-      "lessThanTestValue"    = gettextf(
-        "For all tests, the alternative hypothesis specifies that the population mean is less than %s.", 
-        testValueFormatted
-      ),
-      "notEqualToTestValue"  = gettextf(
-        "For all tests, the alternative hypothesis specifies that the population mean differs from %s.", 
-        testValueFormatted
-      )
+  testValueFormatted <- format(options[["testValue"]], drop0trailing = TRUE)
+  message <- switch(
+    options[["hypothesis"]],
+    "greaterThanTestValue" = gettextf(
+      "For all tests, the alternative hypothesis specifies that the population mean is greater than %s.",
+      testValueFormatted
+    ),
+    "lessThanTestValue"    = gettextf(
+      "For all tests, the alternative hypothesis specifies that the population mean is less than %s.",
+      testValueFormatted
+    ),
+    "notEqualToTestValue"  = gettextf(
+      "For all tests, the alternative hypothesis specifies that the population mean differs from %s.",
+      testValueFormatted
     )
-    jaspTable$addFootnote(message)
-  }
+  )
+  jaspTable$addFootnote(message)
 
   jaspTable$addColumnInfo(name = "variable", title = "",      type = "string")
   jaspTable$addColumnInfo(name = "BF",       title = bfTitle, type = "number")
