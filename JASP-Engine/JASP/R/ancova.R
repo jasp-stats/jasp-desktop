@@ -355,9 +355,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
   }
 
-  # Make sure that the order of the result is same order as reordered modelterms
-  result <- result[.mapAnovaTermsToTerms(rownames(result), c(termsBase64, "Residuals")), ]
-  result[['cases']] <- c(termsNormal, "Residuals")
+  result[['cases']] <- gsub(x = rownames(result), pattern = ":", " \u273B ")
   result <- as.data.frame(result)
   result[['.isNewGroup']] <- c(TRUE, rep(FALSE, nrow(result)-2), TRUE)
   if (length(options$covariates) > 0)
