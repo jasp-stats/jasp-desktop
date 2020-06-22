@@ -1,5 +1,7 @@
 reliabilityBayesian <- function(jaspResults, dataset, options) {
+  
 
+  
 	dataset <- .reliabilityReadData(dataset, options)
 
 	.reliabilityCheckErrors(dataset, options)
@@ -85,10 +87,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     if (sidx == 0) {
       return("")
     } else {
-      footnote <- sprintf(ngettext(length(variables[idx]),
-                                   "The following item correlated negatively with the scale: %s. ",
-                                   "The following items correlated negatively with the scale: %s. "),
-                          paste(variables[idx], collapse = ", "))      
+      footnote <- .footnoteNegativeCorrelation(variables, idx)
       return(footnote)
     }
   } else {
@@ -860,7 +859,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     for (i in indices) {
       if (is.null(plotContainerTP[[nmsObjs[i]]])) {
         
-        p <- .BayesianReliabilityMakeTracePlot(relyFit, i, nmsLabs[[i]], xlim)
+        p <- .BayesianReliabilityMakeTracePlot(relyFit, i, nmsLabs[[i]])
         plotObjTP <- createJaspPlot(plot = p, title = nmsObjs[i], width = 400)
         plotObjTP$dependOn(options = names(indices[i]))
         plotObjTP$position <- i
@@ -885,11 +884,11 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 }
 
 
-.BayesianReliabilityMakeTracePlot <- function(relyFit, i, nms, xlim) {
+.BayesianReliabilityMakeTracePlot <- function(relyFit, i, nms) {
   
   dd <- relyFit$Bayes$chains[[i]]
-  xBreaks <- pretty(1:length(dd[1, ]), n=4)
-  
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, length(dd[1, ])+50))
+
   dv <- cbind(dd[1, ], 1, seq(1, ncol(dd))) 
   for (j in 2:nrow(dd)) {
     dv <- rbind(dv, cbind(dd[j, ], j, seq(1, ncol(dd))))
@@ -902,6 +901,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     ggplot2::geom_line(size = .3) +
     ggplot2::ylab(nms) +
     ggplot2::scale_x_continuous(name = gettext("Iterations"), breaks = xBreaks)
+
 
   return(JASPgraphs::themeJasp(g))
   
@@ -973,4 +973,10 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   return(dataset)
 }
 
+.footnoteNegativeCorrelation <- function(variables, idx) {
+  footnote <- sprintf(ngettext(length(variables[idx]),
+                               "The following item correlated negatively with the scale: %s. ",
+                               "The following items correlated negatively with the scale: %s. "),
+                      paste(variables[idx], collapse = ", "))
+}
   

@@ -1,6 +1,7 @@
 reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
   
+  
   dataset <- .reliabilityReadData(dataset, options)
   .reliabilityCheckErrors(dataset, options)
   
@@ -130,6 +131,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         if (options[["setSeed"]]) {
           set.seed(options[["seedValue"]])
         }
+
         if (options[["alphaMethod"]] == "alphaStand") {
           model[["dat_cov"]] <- Bayesrel:::make_symmetric(cov2cor(cov(dataset, use = use.cases)))
           relyFit <- try(Bayesrel::strel(data = dataset, estimates=c("lambda2", "lambda6", "glb", "omega"), 
@@ -163,7 +165,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           relyFit[["freq"]][["est"]] <- relyFit[["freq"]][["est"]][c(5, 1, 2, 3, 4)]
           relyFit[["freq"]][["ifitem"]] <- relyFit[["freq"]][["ifitem"]][c(5, 1, 2, 3, 4)]
           
-        } else {
+        } else { # alpha unstandardized
           model[["dat_cov"]] <- Bayesrel:::make_symmetric(cov(dataset, use = use.cases))
           relyFit <- try(Bayesrel::strel(data = dataset, estimates=c("alpha", "lambda2", "lambda6", "glb", "omega"), 
                                          Bayes = FALSE, n.boot = options[["noSamplesf"]],
@@ -173,6 +175,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
                                          para.boot = para,
                                          missing = missing, callback = progressbarTick))
         }
+
         # first the scale statistics
         cordat <- cor(dataset, use = use.cases)
         relyFit$freq$est$avg_cor <- mean(cordat[lower.tri(cordat)])
@@ -585,7 +588,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
 
   jaspResults[["fitTable"]] <- fitTable
-  fitTableF$position <- 3
+  fitTable$position <- 3
   
 }
 
