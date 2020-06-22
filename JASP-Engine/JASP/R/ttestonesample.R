@@ -155,7 +155,7 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
     direction <- "two.sided"
   }
   
-  if ((options$testValue != 0 || options$hypothesis != "notEqualToTestValue") && (optionsList$wantsStudents || optionsList$wantsWilcox || optionsList$wantsZtest)) {
+  if (optionsList$wantsStudents || optionsList$wantsWilcox || optionsList$wantsZtest) {
     tMessage <- wMessage <- NULL
 
     if (optionsList$wantsStudents || optionsList$wantsZtest)
