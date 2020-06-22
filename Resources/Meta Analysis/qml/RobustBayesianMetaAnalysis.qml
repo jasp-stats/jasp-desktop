@@ -1481,6 +1481,7 @@ Form
 		Group
 		{
 			title:	qsTr("Pooled estimates")
+			columns: 1
 
 			CheckBox
 			{
@@ -1488,56 +1489,55 @@ Form
 				label:		qsTr("Forest plot")
 				name:		"plots_theta"
 
-					RadioButtonGroup
+				RadioButtonGroup
+				{
+					name: "plots_theta_show"
+					title: qsTr("Show")
+
+					RadioButton
 					{
-						name: "plots_theta_show"
-						title: qsTr("Show")
-
-						RadioButton
-						{
-							name: 		"observed"
-							label: 		qsTr("Observed")
-							checked: 	true
-						}
-
-						RadioButton
-						{
-							name: 		"estimated"
-							label: 		qsTr("Estimated")
-						}
-
-						RadioButton
-						{
-							name: 		"both"
-							label: 		qsTr("Both")
-						}
+						name: 		"observed"
+						label: 		qsTr("Observed")
+						checked: 	true
 					}
 
-					RadioButtonGroup
+					RadioButton
 					{
-						name: 		"plots_theta_order"
-						title:		qsTr("Order")
-
-						RadioButton
-						{
-							name: 	"ascending"
-							label: 	qsTr("Ascending")
-						}
-
-						RadioButton
-						{
-							name: 	"descending"
-							label: 	qsTr("Descending")
-						}
-
-						RadioButton
-						{
-							name: 	"labels"
-							label: 	qsTr("Row order")
-							checked:true
-						}
+						name: 		"estimated"
+						label: 		qsTr("Estimated")
 					}
 
+					RadioButton
+					{
+						name: 		"both"
+						label: 		qsTr("Both")
+					}
+				}
+
+				RadioButtonGroup
+				{
+					name: 		"plots_theta_order"
+					title:		qsTr("Order")
+
+					RadioButton
+					{
+						name: 	"ascending"
+						label: 	qsTr("Ascending")
+					}
+
+					RadioButton
+					{
+						name: 	"descending"
+						label: 	qsTr("Descending")
+					}
+
+					RadioButton
+					{
+						name: 	"labels"
+						label: 	qsTr("Row order")
+						checked:true
+					}
+				}
 			}
 
 			CheckBox
@@ -1564,12 +1564,13 @@ Form
 					checked:true
 				}
 			}
-
 		}
 
 		Group
 		{
-			title:	qsTr(" ") // just alligning one line lower ;)
+			title: " " // Add a line to align with the first column
+			columns: 1
+
 			RadioButtonGroup
 			{
 				name:	"plots_type"
@@ -1623,7 +1624,7 @@ Form
 		Group
 		{
 			title:	qsTr("Individual models")
-
+			columns: 1
 
 			CheckBox
 			{
@@ -1642,17 +1643,15 @@ Form
 				label:	qsTr("Weights")
 				name:	"plots_individual_omega"
 			}
-
-
 		}
 
 		Group
 		{
-			title:	qsTr(" ")
+			title: " "
+			columns: 1
 
 			CheckBox
 			{
-
 				name:	"plots_type_individual_conditional"
 				label:	qsTr("Conditional models only")
 				checked:true
@@ -1700,8 +1699,6 @@ Form
 				}
 			}
 		}
-
-
 	}
 
 	//// Diagnostics section ////
@@ -1803,76 +1800,84 @@ Form
 
 		DropDown
 		{
+			Layout.columnSpan: 2
 			enabled:	measures_correlation.checked
 			label:		qsTr("Transform correlations")
 			name:		"advanced_mu_transform"
 			values:
 			[
-				{ label: qsTr("Cohen's d"),			value: "cohens_d"},
-				{ label: qsTr("Fisher's z"),			value: "fishers_z"}
+				{ label: qsTr("Cohen's d"),		value: "cohens_d"},
+				{ label: qsTr("Fisher's z"),	value: "fishers_z"}
 			]
 		}
 
-		IntegerField
+		Group
 		{
-			label:  		qsTr("Bridge sampling iterations:")
-			name:     		"advanced_bridge_iter"
-			defaultValue: 	10000
-			max:			1000000
-			fieldWidth: 	100
-		}
+			rowSpacing: 10 * preferencesModel.uiScale
 
+			Group
+			{
+				title: 		qsTr("Estimation settings (MCMC)")
+
+				IntegerField
+				{
+					name:			"advanced_adapt"
+					label:			qsTr("Adaptation")
+					defaultValue:	1000
+					min:			100
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+				IntegerField
+				{
+					name:			"advanced_burnin"
+					label:			qsTr("Burnin")
+					defaultValue:	5000
+					min:			1000
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+				IntegerField
+				{
+					name:			"advanced_iteration"
+					label:			qsTr("Iterations")
+					defaultValue:	10000
+					min:			4000
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+				IntegerField
+				{
+					name:			"advanced_chains"
+					label:			qsTr("Chains")
+					defaultValue:	3
+					min:			2
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+				IntegerField
+				{
+					name:			"advanced_thin"
+					label:			qsTr("Thin")
+					defaultValue:	1
+					min:			1
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+
+			}
+
+			IntegerField
+			{
+				label:  		qsTr("Bridge sampling iterations:")
+				name:     		"advanced_bridge_iter"
+				defaultValue: 	10000
+				max:			1000000
+				fieldWidth: 	60
+			}
+
+			SetSeed{}
+		}
 
 		Group
 		{
-			title: 		qsTr("Estimation settings (MCMC)")
+			rowSpacing: 10 * preferencesModel.uiScale
 
-			IntegerField
-			{
-				name:			"advanced_adapt"
-				label:			qsTr("Adaptation")
-				defaultValue:	1000
-				min:			100
-				fieldWidth:		55 * preferencesModel.uiScale
-			}
-			IntegerField
-			{
-				name:			"advanced_burnin"
-				label:			qsTr("Burnin")
-				defaultValue:	5000
-				min:			1000
-				fieldWidth:		55 * preferencesModel.uiScale
-			}
-			IntegerField
-			{
-				name:			"advanced_iteration"
-				label:			qsTr("Iterations")
-				defaultValue:	10000
-				min:			4000
-				fieldWidth:		55 * preferencesModel.uiScale
-			}
-			IntegerField
-			{
-				name:			"advanced_chains"
-				label:			qsTr("Chains")
-				defaultValue:	3
-				min:			2
-				fieldWidth:		55 * preferencesModel.uiScale
-			}
-			IntegerField
-			{
-				name:			"advanced_thin"
-				label:			qsTr("Thin")
-				defaultValue:	1
-				min:			1
-				fieldWidth:		55 * preferencesModel.uiScale
-			}
-
-		}
-
-
-		Group
-		{
 			CheckBox
 			{
 				label: 		qsTr("Autofit")
@@ -1938,6 +1943,7 @@ Form
 						name: 			"advanced_omit_error_value"
 						defaultValue: 	1
 						decimals:		1
+						fieldWidth:		jaspTheme.numericFieldWidth
 					}
 
 					CheckBox
@@ -1990,20 +1996,18 @@ Form
 					]
 				}
 			}
-		}
 
-		SetSeed{}
-
-		DropDown
-		{
-			label: qsTr("Control")
-			name: "advanced_control"
-			values:
-			[
-				{ label: qsTr("Clever refitting"),	value: "clever",	default: true},
-				{ label: qsTr("Do not refit"),		value: "no_refit"},
-				{ label: qsTr("Always refit"),		value: "refit"}
-			]
+			DropDown
+			{
+				label: qsTr("Control")
+				name: "advanced_control"
+				values:
+				[
+					{ label: qsTr("Clever refitting"),	value: "clever",	default: true},
+					{ label: qsTr("Do not refit"),		value: "no_refit"},
+					{ label: qsTr("Always refit"),		value: "refit"}
+				]
+			}
 		}
 
 		FileSelector
