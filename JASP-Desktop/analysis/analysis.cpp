@@ -170,25 +170,6 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 	_wasUpgraded = false;
 }
 
-void Analysis::imageSaved(const Json::Value & results)
-{
-	_imgResults = results;
-
-	setStatus(Analysis::Complete);
-
-	emit imageSavedSignal(this);
-}
-
-void Analysis::imageEdited(const Json::Value & results)
-{
-    _imgResults = results;
-
-	setStatus(Analysis::Complete);
-
-	emit imageEditedSignal(this);
-}
-
-
 void Analysis::reload()
 {
 	Analyses::analyses()->reload(this, true);
@@ -225,11 +206,62 @@ void Analysis::saveImage(const Json::Value &options)
 	_imgOptions = options;
 }
 
+void Analysis::imageSaved(const Json::Value & results)
+{
+	_imgResults = results;
+
+	setStatus(Analysis::Complete);
+
+	emit imageSavedSignal(this);
+}
+
 void Analysis::editImage(const Json::Value &options)
 {
 	setStatus(Analysis::EditImg);
 	_imgOptions = options;
 }
+
+void Analysis::imageEdited(const Json::Value & results)
+{
+	_imgResults = results;
+
+	if(		 _imgResults.get(	"resized",	false).asBool()		&&
+			!_imgResults.get(	"error",	true).asBool()		&&
+			_imgOptions.get(	"name",		"").asString() != "" )
+		updatePlotSize(_imgOptions["name"].asString(), _imgResults.get("width", -1).asInt(), _imgResults.get("height", -1).asInt(), _results);
+
+	setStatus(Analysis::Complete);
+
+	emit imageEditedSignal(this);
+	emit somethingModified();
+}
+
+bool Analysis::updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root)
+{
+	if(root.isNull()) return false;
+
+	if(root.isArray())
+		for(Json::Value & entry: root)
+			if(updatePlotSize(plotName, width, height, entry))
+				return true;
+
+	if(root.isObject())
+	{
+		if(root.isMember(plotName))
+		{
+			root[plotName]["width"]  = width;
+			root[plotName]["height"] = height;
+			return true;
+		}
+		else
+			for(const std::string & memName : root.getMemberNames())
+				if(updatePlotSize(plotName, width, height, root[memName]))
+					return true;
+	}
+
+	return false;
+}
+
 
 void Analysis::rewriteImages()
 {
@@ -240,6 +272,8 @@ void Analysis::imagesRewritten()
 {
 	setStatus(Analysis::Complete);
 	emit resultsChangedSignal(this);
+	emit somethingModified();
+
 }
 
 Analysis::Status Analysis::parseStatus(std::string name)
@@ -523,12 +557,14 @@ void Analysis::setTitleQ(QString title)
 	_title = strippedTitle;
 	
 	emit titleChanged();
+	emit somethingModified();
 }
 
 void Analysis::emitDuplicationSignals()
 {
 	emit resultsChangedSignal(this);
 	emit titleChanged();
+	emit somethingModified();
 }
 
 void Analysis::refreshAvailableVariablesModels()
