@@ -3549,9 +3549,9 @@
 			"buildsystem": "simple",
 			"sources": [
 				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/ggpol_0.0.6.tar.gz",
-					"sha256": "5a769a68ad0267a5153ed5f82ec3cee00d4e765e5708a2b425d592083c78268c"
+					"type": "git",
+					"url": "https://github.com/jasp-stats/ggpol",
+					"commit": "dea9db2503b04b81dbc746fdeccf92e9849ce64b"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]

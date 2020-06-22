@@ -154,6 +154,7 @@ specials[['Bayesrel']]     <- list(type='github', commit='906c44c93be8623e543b5a
 specials[['stanova']]      <- list(type='github', commit='2cb08223f957533103612e72055fa7063a1fb5ce', repo='bayesstuff/stanova'    )
 specials[['afex']]         <- list(type='github', commit='56359709a19a72f2f2088099cc6647b732ea2c71', repo='singmann/afex'         )
 specials[['emmeans']]      <- list(type='github', commit='1e6ab3e1e9eb47bb8a038221495463992f8dfb60', repo='rvlenth/emmeans'       )
+specials[['ggpol']]        <- list(type='github', commit='dea9db2503b04b81dbc746fdeccf92e9849ce64b', repo='jasp-stats/ggpol'      ) # temporary fix for conflicting ggplot2 dependencies in jasp 0.12.2. Should be removed after that release and shit should be fixed!
 
 createFlatpakJson <- function()
 {
