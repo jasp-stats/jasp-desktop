@@ -234,3 +234,39 @@ test_that("Analysis fails gracefully if some models error", {
     label = "Table where one inclusion BF is NaN")
   
 })
+
+# Single model inference
+options <- initOpts()
+options$modelTerms <- list(list(components = "RM.Factor.1", isNuisance = FALSE))
+options$repeatedMeasuresCells <- c("Stick Insect", "Kangaroo Testicle")
+options$repeatedMeasuresFactors <- list(list(levels = c("Level 1", "Level 2"), name = "RM.Factor.1"))
+options$singleModelCriTable <- TRUE
+options$singleModelEstimates <- TRUE
+options$singleModelTerms <- list(list(components = "RM.Factor.1"))
+set.seed(1)
+results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "Bush Tucker Food.csv", options)
+
+test_that("Single Model Posterior Summary table results match", {
+  table <- results[["results"]][["containerSingleModel"]][["collection"]][["containerSingleModel_SMItablePosteriorEstimates"]][["data"]]
+  expect_equal_tables(table,
+                      list("", 4.66637117937209, 6.16416124973501, 0.753709372929632, 7.68768000305394,
+                           "Intercept", "Level 1", 0.784358809094558, 1.72524090821814,
+                           0.45987045937437, 2.560856603435, "RM.Factor.1", "Level 2",
+                           -2.560856603435, -1.72524090821814, 0.45987045937437, -0.784358809094558,
+                           ""))
+})
+
+test_that("Single Model R² table results match", {
+  table <- results[["results"]][["containerSingleModel"]][["collection"]][["containerSingleModel_tableSMICRI"]][["data"]]
+  expect_equal_tables(table,
+                      list(0.303589273337922, 0.635529621583097, 0.807755734920037, "R<unicode>"
+                      ))
+})
+
+test_that("Model Comparison table results match", {
+  table <- results[["results"]][["tableModelComparison"]][["data"]]
+  expect_equal_tables(table,
+                      list(1, 79.689528579468, "RM.Factor.1", 0.5, 0.987606818163336, "",
+                           0.0125487001595546, 0.0125487001595546, "Null model (incl. subject)",
+                           0.5, 0.0123931818366634, 1.37459086034136))
+})

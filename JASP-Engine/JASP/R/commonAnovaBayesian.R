@@ -348,7 +348,8 @@
   if (!is.null(jaspResults[["tableEffects"]]) || !options[["effects"]])
     return()
 
-  if (model[["analysisType"]] != "RM-ANOVA" && options[["dependent"]] != "") {
+  # isTRUE should handle a state issue, see https://github.com/jasp-stats/jasp-test-release/issues/839
+  if (isTRUE(model[["analysisType"]] != "RM-ANOVA" && options[["dependent"]] != "")) {
     title <- gettextf("Analysis of Effects - %s", options[["dependent"]])
   } else {
     title <- gettext("Analysis of Effects")
@@ -2401,7 +2402,7 @@
   rscaleRandom  <- options$priorRandomEffects
 
   if (analysisType == "RM-ANOVA") {
-    dependent <- "dependent"
+    dependent <- .BANOVAdependentName
     rscaleCont <- options[["priorCovariates"]]
     randomFactors <- .BANOVAsubjectName
     modelTerms[[length(modelTerms) + 1L]] <- list(components = .BANOVAsubjectName, isNuisance = TRUE)
