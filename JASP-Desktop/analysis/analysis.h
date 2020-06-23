@@ -170,7 +170,7 @@ signals:
 	void				imageEditedSignal(		Analysis * analysis);
 	void				resultsChangedSignal(	Analysis * analysis);
 	void				userDataChangedSignal(	Analysis * analysis);
-	void				somethingModified(); //Possibly not emitted everywhere. But it should be ^^ (well, eventually, but take into account loading stuff etc, thats why it wasnt added everywhere it should be in the first place)
+	void				imageChanged();
 
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
 	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);

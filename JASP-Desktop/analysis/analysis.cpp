@@ -233,7 +233,7 @@ void Analysis::imageEdited(const Json::Value & results)
 	setStatus(Analysis::Complete);
 
 	emit imageEditedSignal(this);
-	emit somethingModified();
+	emit imageChanged();
 }
 
 bool Analysis::updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root)
@@ -272,7 +272,7 @@ void Analysis::imagesRewritten()
 {
 	setStatus(Analysis::Complete);
 	emit resultsChangedSignal(this);
-	emit somethingModified();
+	emit imageChanged();
 
 }
 
@@ -557,14 +557,12 @@ void Analysis::setTitleQ(QString title)
 	_title = strippedTitle;
 	
 	emit titleChanged();
-	emit somethingModified();
 }
 
 void Analysis::emitDuplicationSignals()
 {
 	emit resultsChangedSignal(this);
 	emit titleChanged();
-	emit somethingModified();
 }
 
 void Analysis::refreshAvailableVariablesModels()

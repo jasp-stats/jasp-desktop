@@ -158,7 +158,8 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
 	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation,		Qt::DirectConnection);
 	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction,	Qt::DirectConnection);
-	connect(analysis, &Analysis::somethingModified,					this, &Analyses::somethingModified					);
+	connect(analysis, &Analysis::titleChanged,						this, &Analyses::somethingModified					);
+	connect(analysis, &Analysis::imageChanged,						this, &Analyses::somethingModified					);
 	connect(analysis, &Analysis::userDataChangedSignal,				this, &Analyses::analysisOverwriteUserdata			);
 
 	
