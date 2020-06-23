@@ -35,9 +35,6 @@ public slots:
 	void setLastCmd(QString lastCmd);
 	void countDownToScroll();
 
-
-
-
 signals:
 	void outputChanged(QString output);
 	void runningChanged(bool running);
