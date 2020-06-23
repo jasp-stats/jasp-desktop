@@ -892,7 +892,7 @@
         }
         if(.auditCalculateDetectionRisk(options) >= 1){
           # Error if the detection risk of the analysis is higher than one
-          analysisContainer$setError(gettext("The detection risk is higher than 100%. Please re-specify your custom values for the Inherent risk and/or Control risk, or the confidence."))
+          analysisContainer$setError(gettext("The detection risk is equal to or higher than 100%. Please re-specify your custom values for the Inherent risk and/or Control risk, or the confidence."))
           return(TRUE)
         }
       }
@@ -971,7 +971,7 @@
     } else if(.auditCalculateDetectionRisk(options) >= 1){
       # Error if the detection risk of the analysis is higher than one
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
-      analysisContainer$setError(gettext("The detection risk is higher than 100%. Please re-specify your values for the Inherent risk and/or Control risk, or the confidence."))
+      analysisContainer$setError(gettext("The detection risk is equal to or higher than 100%. Please re-specify your values for the Inherent risk and/or Control risk, or the confidence."))
       return(TRUE)
     } else {
       # No error in the evaluation options
@@ -1471,7 +1471,7 @@
   detectionRisk <- auditRisk / inherentRisk / controlRisk
 
   if(detectionRisk >= 1){
-    planningContainer$setError(gettextf("The detection risk is higher than 100%. Please re-specify your custom values for the Inherent risk and/or Control risk."))  
+    planningContainer$setError(gettextf("The detection risk is equal to or higher than 100%. Please re-specify your custom values for the Inherent risk and/or Control risk."))  
     return()
   }
 
@@ -3414,8 +3414,17 @@
   evaluationContainer[["evaluationTable"]] <- evaluationTable
 
   if(is.null(evaluationState) || 
-      (options[["auditResult"]] == "" && !options[["useSumStats"]]))
+      (options[["auditResult"]] == "" && !options[["useSumStats"]])){
+
+    if(options[["workflow"]]){
+      evaluationTable$addFootnote(message = gettext("The audit result column is empty."), 
+                          symbol = gettext("<b>Analysis not ready.</b>"))
+    } else {
+      evaluationTable$addFootnote(message = gettext("Either the materiality, the population size, or the population value is defined as zero, or one of the required variables is missing."), 
+                          symbol = gettext("<b>Analysis not ready.</b>"))
+    }
     return()
+  }
 
   taintLabel <- round(evaluationState[["t"]], 2)
 
