@@ -3204,36 +3204,22 @@
   )
 }
 .mmMessageBadWAIC       <- function(n_bad) {
-  if (n_bad < 2) {
-    return(
-      gettextf(
-        "There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO instead.",
-        n_bad
-      )
-    )
-  } else{
-    return(
-      gettextf(
-        "There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO instead.",
-        n_bad
-      )
-    )
-  }
+  sprintf(
+    ngettext(
+      n_bad < 2,
+      "There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO instead.",
+      "There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO instead."
+    ),
+    n_bad
+  )
 }
 .mmMessageBadLOO        <- function(n_bad) {
-  if (n_bad < 2) {
-    return(
-      gettextf(
-        "There was %1.0f observation with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate.",
-        n_bad
-      )
-    )
-  } else{
-    return(
-      gettextf(
-        "There were %1.0f observations with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate.",
-        n_bad
-      )
-    )
-  }
+  sprintf(
+    ngettext(
+      n_bad < 2,
+      "There was %1.0f observation with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate.",
+      "There were %1.0f observations with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate."
+    ),
+    n_bad
+  )
 }
