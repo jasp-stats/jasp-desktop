@@ -2608,7 +2608,7 @@
                                       jaspResults,
                                       positionInContainer){
 
-  if (!is.null(jaspResults[["plotHistograms"]]) || !options[["plotHistograms"]]) return()
+  if (!is.null(selectionContainer[["plotHistograms"]]) || !options[["plotHistograms"]]) return()
 
   .updateFigNumber(jaspResults)
 
@@ -2621,7 +2621,8 @@
                                       "selectionType",
                                       "seed",
                                       "intervalStartingPoint",
-                                      "sampleSize"))
+                                      "sampleSize",
+                                      "plotHistograms"))
   plotHistograms$position <- positionInContainer
 
   selectionContainer[["plotHistograms"]] <- plotHistograms
