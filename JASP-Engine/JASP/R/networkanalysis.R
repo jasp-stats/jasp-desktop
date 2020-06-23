@@ -50,6 +50,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (options[["missingValues"]] == "listwise")
     exclude <- vars2read
   dataset <- .readDataSetToEnd(columns.as.numeric = vars2read, exclude.na.listwise = exclude)
+  # dataset <- .readDataSetToEnd(columns = vars2read, exclude.na.listwise = exclude) # jasptools need this, JASP the line above
 
   if (options[["groupingVariable"]] == "") { # one network
     dataset <- list(dataset) # for compatability with the split behaviour
@@ -706,16 +707,25 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   # defaults
   shape <- "circle"
   edgeColor <- NULL
-  if (options[["estimator"]] == "mgm" && options[["mgmVariableType"]] != "" ) {
+  if (options[["estimator"]] == "mgm") {
+
+    idx <- integer(length(options[["variables"]]))
+    nms <- c("mgmVariableTypeContinuous", "mgmVariableTypeCategorical", "mgmVariableTypeCount")
+    for (i in seq_along(nms))
+      idx[options[["variables"]] %in% options[[nms[[i]]]]] <- i
+    # idx[i] is 1 if variable[i] %in% mgmVariableTypeContinuous, 2 if in mgmVariableTypeCategorical, etc.
+
+    ll <- lengths(options[c("mgmVariableTypeContinuous", "mgmVariableTypeCategorical", "mgmVariableTypeCount")])
 
     if (options[["showMgmVariableType"]] == "mgmNodeShape") {
       #         gaussian, categorical, poisson
       opts <- c("circle", "square",    "triangle")
-      shape <- opts[match(options[["mgmVariableTypeData"]], c("g", "c", "p"))]
+      shape <- opts[idx]
+
     } else if (options[["showMgmVariableType"]] == "mgmNodeColor") {
       #         gaussian,  categorical, poisson
       opts <- c("#00a9e6", "#fb8b00",   "#00ba63")
-      nodeColor <- opts[match(options[["mgmVariableTypeData"]], c("g", "c", "p"))]
+      nodeColor <- opts[idx]
 
     }
   }
@@ -826,8 +836,14 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     bt <- bootstrapResults[[v]]
     p <- try(JASP:::.suppressGrDevice(plot(bt, statistic = statistic, order = "sample")))
 
-    if (isTryError(p)) {
-      plotContainer[[v]]$setError(gettextf("bootnet crashed with the following error message:\n%s", .extractErrorMessage(p)))
+    # sometimes bootnet catches an error and returns a faulty ggplot object.
+    # here we ensure that if there was any error, e contains that error.
+    e <- p
+    if (!isTryError(p))
+      e <- try(JASP:::.suppressGrDevice(print(p)))
+
+    if (isTryError(e)) {
+      plotContainer[[v]]$setError(gettextf("bootnet crashed with the following error message:\n%s", .extractErrorMessage(e)))
     } else {
       plotContainer[[v]]$plotObject <- p
     }
@@ -856,7 +872,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
         mainContainer[["generalTable"]]$addFootnote(e[["message"]])
       },
       error = function(e) {
-        mainContainer$setError(gettextf("bootnet crashed with the following error message:\n%s", .extractErrorMessage(e)))
+        mainContainer$setError(.networkAnalysisCheckKnownErrors(e))
       }
     )
 
@@ -1525,6 +1541,26 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   }
   newData <- newData[match(variables, newData[, 1]), ]
   return(list(newData = newData[, 2], message = message))
+
+}
+
+.networkAnalysisCheckKnownErrors <- function(e) {
+
+  # NOTE: this fails if glmnet decides to translate their error messages one day.
+  # Unfortunately, these error appear for particular subsets of the data (from cross validation),
+  # so it's difficult to traceable particular errors to the complete data.
+
+  errmsg <- .extractErrorMessage(e)
+  # possibly add other checks here in the future
+  dataIssue <- startsWith(errmsg, "y is constant") || endsWith(errmsg, "standardization step")
+
+  ans <- if (dataIssue) {
+    gettextf("bootnet crashed with the following error message:\n%s\n\nPlease check if there are variables in the network with little variance or few distinct observations.", errmsg)
+  } else {
+    gettextf("bootnet crashed with the following error message:\n%s", errmsg)
+  }
+
+  return(ans)
 
 }
 

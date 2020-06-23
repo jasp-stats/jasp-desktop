@@ -214,8 +214,8 @@ Form
 			}
 
 			AssignedVariablesList { name: "mgmVariableTypeContinuous";	title: qsTr("Continuous Variables");	suggestedColumns: ["scale"]}
-			AssignedVariablesList { name: "mgmVariableTypeCategorical";	title: qsTr("Categorical Variables");	suggestedColumns: ["ordinal"]}
-			AssignedVariablesList { name: "mgmVariableTypeCount";		title: qsTr("Count Variables");			suggestedColumns: ["nominal"]}
+			AssignedVariablesList { name: "mgmVariableTypeCategorical";	title: qsTr("Categorical Variables");	suggestedColumns: ["nominal"]}
+			AssignedVariablesList { name: "mgmVariableTypeCount";		title: qsTr("Count Variables");			suggestedColumns: ["ordinal"]}
 		}
 	}
 
