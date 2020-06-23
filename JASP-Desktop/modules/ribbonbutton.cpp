@@ -166,9 +166,6 @@ void RibbonButton::setEnabled(bool enabled)
 	_enabled = enabled;
 	emit enabledChanged();
 
-	if(_specialButtonFunc)
-		return;
-
 	if(DynamicModules::dynMods())
 	{
 
