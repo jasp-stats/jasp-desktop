@@ -683,6 +683,24 @@
 
   fitStats$dependOn(c(dependencies, "fitStats"))
 
+  
+  if (is.list(model$full_model)) {
+    is_REML <-
+      lme4::isREML(model$full_model[[length(model$full_model)]])
+  } else{
+    is_REML <- lme4::isREML(model$full_model)
+  }
+  
+  fitStats$addColumnInfo(name = "deviance",
+                         title = gettext("deviance"),
+                         type = "number")
+  if (is_REML) {
+    fitStats$addColumnInfo(
+      name = "devianceREML",
+      title = gettext("REML criterion/deviance"),
+      type = "number"
+    )
+  }
   fitStats$addColumnInfo(name = "loglik",
                          title = gettext("log Lik."),
                          type = "number")
@@ -699,26 +717,35 @@
   
   
   if (is.list(model$full_model)) {
-    
+
     temp_row <- list(
-      loglik = logLik(model$full_model[[length(model$full_model)]]),
-      df     = attr(logLik(model$full_model[[length(model$full_model)]]) , "df"),
-      aic    = AIC(model$full_model[[length(model$full_model)]]),
-      bic    = BIC(model$full_model[[length(model$full_model)]])      
+      deviance = deviance(model$full_model[[length(model$full_model)]], REML = FALSE),
+      loglik   = logLik(model$full_model[[length(model$full_model)]]),
+      df       = attr(logLik(model$full_model[[length(model$full_model)]]) , "df"),
+      aic      = AIC(model$full_model[[length(model$full_model)]]),
+      bic      = BIC(model$full_model[[length(model$full_model)]])
     )
   
+    if (is_REML)
+      temp_row$devianceREML <- lme4::REMLcrit(model$full_model[[length(model$full_model)]])
+    
   }else{
 
     temp_row <- list(
-      loglik = logLik(model$full_model),
-      df     = attr(logLik(model$full_model) , "df"),
-      aic    = AIC(model$full_model),
-      bic    = BIC(model$full_model)      
+      deviance = deviance(model$full_model, REML = FALSE),
+      loglik   = logLik(model$full_model),
+      df       = attr(logLik(model$full_model) , "df"),
+      aic      = AIC(model$full_model),
+      bic      = BIC(model$full_model)
     )
+    
+    if (is_REML)
+      temp_row$devianceREML <- lme4::REMLcrit(model$full_model)
     
   }
   
   fitStats$addRows(temp_row)
+  fitStats$addFootnote(.mmMessageFitType(is_REML))
 
   jaspResults[["fitStats"]] <- fitStats
   
@@ -3206,7 +3233,7 @@
 .mmMessageBadWAIC       <- function(n_bad) {
   sprintf(
     ngettext(
-      n_bad < 2,
+      n_bad,
       "There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO instead.",
       "There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO instead."
     ),
@@ -3216,10 +3243,14 @@
 .mmMessageBadLOO        <- function(n_bad) {
   sprintf(
     ngettext(
-      n_bad < 2,
+      n_bad,
       "There was %1.0f observation with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate.",
       "There were %1.0f observations with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate."
     ),
     n_bad
   )
+}
+.mmMessageFitType       <- function(REML) {
+  gettextf("The model was fitted using %s.",
+           ifelse(REML, gettext("restricted maximum likelihood"), gettext("maximum likelihood")))
 }
