@@ -149,5 +149,6 @@ Press the button to run the analysis. Model relevant changes in the settings wil
 - rstan
 - rstanarm
 - emmeans
+- loo
 - ggplot2
 - stats
