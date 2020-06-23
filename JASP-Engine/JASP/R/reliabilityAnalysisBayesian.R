@@ -643,7 +643,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	  g <- g + ggplot2::geom_line(data = datPrior, mapping = ggplot2::aes(x = x, y = y),
 	                              linetype = "dashed", size = .85) +
 	           ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, expand = xExpand,
-	                                       limits = c(min(xBreaks), max(xBreaks)))
+	                                       limits = c(range(xBreaks)))
 	  
 	}
 
@@ -887,7 +887,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 .BayesianReliabilityMakeTracePlot <- function(relyFit, i, nms) {
   
   dd <- relyFit$Bayes$chains[[i]]
-  xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, length(dd[1, ])+50))
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, length(dd[1, ])))
 
   dv <- cbind(dd[1, ], 1, seq(1, ncol(dd))) 
   for (j in 2:nrow(dd)) {
@@ -900,7 +900,9 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   g <- ggplot2::ggplot(dat, ggplot2::aes(x = Iterations, y = Value, colour = chain)) +
     ggplot2::geom_line(size = .3) +
     ggplot2::ylab(nms) +
-    ggplot2::scale_x_continuous(name = gettext("Iterations"), breaks = xBreaks)
+    ggplot2::scale_x_continuous(name = gettext("Iterations"), breaks = (xBreaks),
+                                limits = range(xBreaks), 
+                                expand = ggplot2::expand_scale(mult = c(0.05, 0.1)))
 
 
   return(JASPgraphs::themeJasp(g))
