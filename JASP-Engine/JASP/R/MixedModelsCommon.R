@@ -486,7 +486,6 @@
     }
     ANOVAsummary$dependOn(c(dependencies, seed_dependencies, "pvalVS"))
     
-    
     # some error managment for GLMMS - and oh boy, they can fail really easily
     if (type %in% c("LMM", "GLMM") && !is.null(model)) {
       if (any(attr(model, "class") %in% c("std::runtime_error", "C++Error", "error"))) {
@@ -552,7 +551,17 @@
     
     
     if (is.null(model)) {
-      ANOVAsummary$setExpectedSize(1)
+      if (options$dependentVariable != "" &&
+          length(options$fixedVariables) > 0 &&
+          length(options$randomVariables) == 0) {
+        ANOVAsummary$addFootnote(.mmMessageMissingRE)
+      }
+      if (type == "GLMM") {
+        if (options$family == "binomial_agg" &&
+            options$dependentVariableAggregation == "") {
+          ANOVAsummary$addFootnote(.mmMessageMissingAgg)
+        }
+      }
       return()
     }
     
@@ -591,6 +600,9 @@
       
       ANOVAsummary$addRows(temp_row)
     }
+    
+    # add message about (lack of) random effect grouping factors 
+    ANOVAsummary$addFootnote(.mmMessageREgrouping(options$randomVariables))
     
     # add warning messages
     # deal with type II multiple models stuff
@@ -633,7 +645,6 @@
         ANOVAsummary$addFootnote(.mmMessageAddedTerms(added_re[[i]], names(added_re)[i]), symbol = gettext("Warning:"))
       }
     }
-    
     
     ANOVAsummary$addFootnote(.mmMessageANOVAtype(ifelse(options$type == 3, gettext("III"), gettext("II"))))
     if (type == "GLMM") {
@@ -976,7 +987,7 @@
     # stop with message if there is no random effects grouping factor selected
     if (length(options$plotsAgregatedOver) == 0) {
       plots$setError(
-        gettext("At least one random effect grouping factor needs to be selected in field 'Background data show'.")
+        gettext("At least one random effects grouping factor needs to be selected in field 'Background data show'.")
       )
       jaspResults[["plots"]] <- plots
       return()
@@ -1860,7 +1871,6 @@
           eval(parse(text = x))))
     }
     if (length(contrs) == 0) {
-      EMMCsummary$setExpectedSize(1)
       jaspResults[[paste0("contrasts_", what)]] <- EMMCsummary
       return()
     }
@@ -2050,7 +2060,7 @@
         glmm_family <<- rstanarm::neg_binomial_2(link = glmm_link)
       } else if (options$family == "betar") {
         glmm_family <<- mgcv::betar(link = glmm_link)
-      } else{
+      } else if (options$family != "binomial_agg"){
         temp_family <<- options$family
         glmm_family <<- eval(call(temp_family, glmm_link))
       }
@@ -2059,7 +2069,7 @@
       if (options$family == "binomial_agg") {
         glmm_weight <<- dataset[, .v(options$dependentVariableAggregation)]
         
-        model <- stanova::stanova_lmer(
+        model <- stanova::stanova_glmer(
           formula           = as.formula(model_formula$model_formula),
           check_contrasts   = "contr.bayes",
           data              = dataset,
@@ -2429,7 +2439,17 @@
                                type = "number")
       
       if (table_name == "Model summary") {
-        temp_table$setExpectedSize(1)
+        if(options$dependentVariable != "" &&
+           length(options$fixedVariables) > 0 &&
+           length(options$randomVariables) == 0) {
+          temp_table$addFootnote(.mmMessageMissingRE)
+        }
+        if (type == "BGLMM") {
+          if (options$family == "binomial_agg" &&
+              options$dependentVariableAggregation == "") {
+            temp_table$addFootnote(.mmMessageMissingAgg)
+          }
+        }
         return()
       }
       
@@ -2467,6 +2487,9 @@
         
         temp_table$addRows(temp_row)
       }
+      
+      # add message about (lack of) random effects grouping factors
+      temp_table$addFootnote(.mmMessageREgrouping(options$randomVariables))
       
       # check model fit
       div_iterations <- rstan::get_num_divergent(model$stanfit)
@@ -2904,6 +2927,18 @@
 .mmMessageANOVAtype     <- function(type) {
   gettextf("Type %s Sum of Squares",type)
 }
+.mmMessageREgrouping    <- function(RE_grouping_factors) {
+  sprintf(
+    ngettext(
+      length(RE_grouping_factors),
+      "The following variable is used as a random effects grouping factor: %s.",
+      "The following variables are used as random effects grouping factors: %s."
+    ),
+    paste0("'", RE_grouping_factors, "'", collapse = ", ")
+  )
+}
+.mmMessageMissingRE     <- gettext("This analysis requires at least one random effects grouping factor to run.")
+.mmMessageMissingAgg    <- gettext("The 'Binomial (aggregated)' family requires the 'Number of trials' to be specified to run.")
 .mmMessageTestNull      <- function(value) {
   gettextf("P-values correspond to test of null hypothesis against %s.", value)
 }
@@ -2911,11 +2946,13 @@
   gettextf("Results are averaged over the levels of: %s.",paste(terms, collapse = ", "))
 }
 .mmMessageOmmitedTerms1 <- function(terms, grouping) {
-  gettextf(
-    "%s %s %s not vary within the levels of random effects grouping factor '%s'. All random slopes involving %s have been removed for '%s'.",
-    ifelse(length(terms) == 1, gettext("Factor"), gettext("Factors")),
+  sprintf(
+    ngettext(
+      length(terms),
+      "Factor %s does not vary within the levels of random effects grouping factor '%s'. All random slopes involving %s have been removed for '%s'.",
+      "Factors %s do not vary within the levels of random effects grouping factor '%s'. All random slopes involving %s have been removed for '%s'."
+    ),
     paste0("'", terms, "'", collapse = ", "),
-    ifelse(length(terms) == 1, gettext("does"), gettext("do")),
     grouping,
     paste0("'", terms, "'", collapse = ", "),
     grouping
@@ -2923,7 +2960,7 @@
 }
 .mmMessageOmmitedTerms2 <- function(terms, grouping) {
   gettextf(
-    "Number of observations not sufficient for estimating %s random slopes for random effects grouping factor '%s'. Consequently, random slopes for %s have been removed for '%s'.",
+    "Number of observations is not sufficient for estimating %s random slopes for random effects grouping factor '%s'. Consequently, random slopes for %s have been removed for '%s'.",
     paste0("'", terms, "'", collapse = ", "),
     grouping,
     paste0("'", terms, "'", collapse = ", "),
@@ -2931,17 +2968,24 @@
   )
 }
 .mmMessageAddedTerms    <- function(terms, grouping) {
-  gettextf(
-    "Lower order random effects terms need to be specified in presence of the higher order random effects terms. Therefore, the following random effects %s added to the '%s' random effects grouping factor: '%s.'",
-    ifelse(length(terms) == 1,gettext("term was"),gettext("terms were")),
+  sprintf(
+    ngettext(
+      length(terms),
+      "Lower order random effects terms need to be specified in presence of the higher order random effects terms. Therefore, the following random effects term was added to the '%s' random effects grouping factor: '%s.'",
+      "Lower order random effects terms need to be specified in presence of the higher order random effects terms. Therefore, the following random effects terms were added to the '%s' random effects grouping factor: '%s.'"
+    ),
     grouping,
     paste0("'", terms, "'", collapse = ", ")
   )
 }
 .mmMessageMissingRows   <- function(value) {
-  gettextf("%i %s removed due to missing values.",
-    value,
-    ifelse(value == 1, gettext("observation was"), gettext("observations were"))
+  sprintf(
+    ngettext(
+      value,
+      "%i observation was removed due to missing values.",
+      "%i observations were removed due to missing values."
+    ),
+    value
   )
 }
 .mmMessageGLMMtype      <- function(family, link) {
@@ -2988,26 +3032,33 @@
   return(gettextf("P-values are adjusted using %s adjustment.",adjustment))
 }
 .mmMessageDivergentIter <- function(iterations) {
-  gettextf(
-    "There %s %i divergent %s after warmup indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions.",
-    ifelse(iterations == 1, gettext("was"), gettext("were")),
-    iterations,
-    ifelse(iterations == 1, gettext("transition"), gettext("transitions"))
+  sprintf(
+    ngettext(
+      iterations,
+      "There was %i divergent transition after warmup indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions.",
+      "There were %i divergent transitions after warmup indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions."
+    ),
+    iterations
   )
 }
 .mmMessageLowBMFI       <- function(nChains) {
-  gettextf(
-    "Bayesian Fraction of Missing Information (BFMI) that was too low in %i %s indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Warmup' and 'Iterations'.",
-    nChains,
-    ifelse(nChains == 1, gettext("chain"), gettext("chains"))
+  sprintf(
+    ngettext(
+      nChains,
+      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chain indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Warmup' and 'Iterations'.",
+      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chains indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Warmup' and 'Iterations'."
+    ),
+    nChains
   )
 }
 .mmMessageMaxTreedepth  <- function(iterations) {
-  gettextf(
-    "There %s %i %s exceeding maximum treedepth indication problems with the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'.",
-    ifelse(iterations == 1, gettext("was"), gettext("were")),   
-    iterations,
-    ifelse(iterations == 1, gettext("transition"), gettext("transitions"))
+  sprintf(
+    ngettext(
+      iterations,
+      "There was %i transition exceeding maximum treedepth indication problems with the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'.",
+      "There were %i transitions exceeding maximum treedepth indication problems with the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'."
+    ),
+    iterations
   )
 }
 .mmMessageMaxRhat       <- function(Rhat) {

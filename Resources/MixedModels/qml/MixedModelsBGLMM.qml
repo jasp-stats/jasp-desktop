@@ -43,7 +43,7 @@ Form {
 
 		AssignedVariablesList
 		{
-			enabled:			family.value === "binomial_agg"
+			enabled:			family.currentText == "Binomial (aggregated)"
 			name:				"dependentVariableAggregation"
 			title:				qsTr("Number of trials")
 			singleVariable:		true
