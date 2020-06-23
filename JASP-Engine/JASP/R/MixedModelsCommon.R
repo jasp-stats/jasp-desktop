@@ -2930,7 +2930,7 @@
 .mmMessageREgrouping    <- function(RE_grouping_factors) {
   sprintf(
     ngettext(
-      length(RE_grouping_factors) < 2,
+      length(RE_grouping_factors),
       "The following variable is used as a random effects grouping factor: %s.",
       "The following variables are used as random effects grouping factors: %s."
     ),
@@ -2948,7 +2948,7 @@
 .mmMessageOmmitedTerms1 <- function(terms, grouping) {
   sprintf(
     ngettext(
-      length(terms) < 2,
+      length(terms),
       "Factor %s does not vary within the levels of random effects grouping factor '%s'. All random slopes involving %s have been removed for '%s'.",
       "Factors %s do not vary within the levels of random effects grouping factor '%s'. All random slopes involving %s have been removed for '%s'."
     ),
@@ -2970,7 +2970,7 @@
 .mmMessageAddedTerms    <- function(terms, grouping) {
   sprintf(
     ngettext(
-      length(terms) < 2,
+      length(terms),
       "Lower order random effects terms need to be specified in presence of the higher order random effects terms. Therefore, the following random effects term was added to the '%s' random effects grouping factor: '%s.'",
       "Lower order random effects terms need to be specified in presence of the higher order random effects terms. Therefore, the following random effects terms were added to the '%s' random effects grouping factor: '%s.'"
     ),
@@ -2981,7 +2981,7 @@
 .mmMessageMissingRows   <- function(value) {
   sprintf(
     ngettext(
-      value < 2,
+      value,
       "%i observation was removed due to missing values.",
       "%i observations were removed due to missing values."
     ),
@@ -3034,7 +3034,7 @@
 .mmMessageDivergentIter <- function(iterations) {
   sprintf(
     ngettext(
-      iterations < 2,
+      iterations,
       "There was %i divergent transition after warmup indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions.",
       "There were %i divergent transitions after warmup indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions."
     ),
@@ -3044,7 +3044,7 @@
 .mmMessageLowBMFI       <- function(nChains) {
   sprintf(
     ngettext(
-      nChains < 2,
+      nChains,
       "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chain indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Warmup' and 'Iterations'.",
       "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chains indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Warmup' and 'Iterations'."
     ),
@@ -3054,7 +3054,7 @@
 .mmMessageMaxTreedepth  <- function(iterations) {
   sprintf(
     ngettext(
-      iterations < 2,
+      iterations,
       "There was %i transition exceeding maximum treedepth indication problems with the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'.",
       "There were %i transitions exceeding maximum treedepth indication problems with the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'."
     ),
