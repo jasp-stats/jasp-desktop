@@ -25,7 +25,7 @@ import JASP				1.0
 Section
 {
 	title: qsTr("Prior")
-    property alias informedPriorsEnabled: informedPriors.enabled
+	property alias informedPriorsEnabled: informedPriors.enabled
 	property alias defaultPriorsChecked: defaultPriors.checked
 
 	RadioButtonGroup
