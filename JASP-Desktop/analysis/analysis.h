@@ -170,6 +170,7 @@ signals:
 	void				imageEditedSignal(		Analysis * analysis);
 	void				resultsChangedSignal(	Analysis * analysis);
 	void				userDataChangedSignal(	Analysis * analysis);
+	void				imageChanged();
 
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
 	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);
@@ -210,6 +211,7 @@ private:
 	bool					_setEditOptionsOfPlot(Json::Value & results, const std::string & uniqueName, const Json::Value & editOptions);
 	void					storeUserDataEtc();
 	void					fitOldUserDataEtc();
+	bool					updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root);
 
 protected:
 	Status					_status			= Initializing;

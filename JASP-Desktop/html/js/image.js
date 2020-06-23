@@ -84,7 +84,7 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 	onResized: function (w, h) {
 		if (this.resizer.isResizing() && !this.resizeEventTriggered) {
 			this.resizeEventTriggered = true;
-			this.model.trigger("EditImage:clicked", this, { data: this.model.get("data"), width: w, height: h, type: "resize" });
+			this.model.trigger("EditImage:clicked", this, { data: this.model.get("data"), width: w, height: h, type: "resize", name: this.model.get("name"), title: this.model.get("title") });
 			
 		}
 	},
