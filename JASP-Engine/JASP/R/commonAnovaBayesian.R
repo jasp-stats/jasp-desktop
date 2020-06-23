@@ -60,27 +60,81 @@
     fixed <- options$fixedFactors
     noVariables <- !(hasDV && hasIV)
     target <- c(options$covariates, options$dependent)
+
+    if (!noVariables) {
+      .hasErrors(
+        dataset = dataset,
+        type    = c("infinity", "observations", "variance", "factorLevels", "duplicateColumns"),
+        infinity.target     = target,
+        variance.target     = target,
+        observations.target = target,
+        observations.amount = paste("<", length(options$modelTerms) + 1),
+        factorLevels.target = fixed,
+        factorLevels.amount = " < 2",
+        exitAnalysisIfErrors = TRUE
+      )
+    }
+
   } else {
     hasDV  <- !any(options$repeatedMeasuresCells == "")
     hasIV  <- any(lengths(options[c("betweenSubjectFactors", "covariates")]) != 0)
     fixed  <- options$betweenSubjectFactors
-    target <- c(options$covariates, .BANOVAdependentName)
+    covariates <- c(options$covariates)
     noVariables <- !hasDV
+
+    if (length(covariates) > 0L || length(fixed) > 0L) {
+      .hasErrors(
+        dataset = dataset,
+        type    = c("infinity", "observations", "variance", "factorLevels", "duplicateColumns"),
+        infinity.target     = covariates,
+        variance.target     = covariates,
+        observations.target = covariates,
+        observations.amount = paste("<", length(options$modelTerms) + 1),
+        factorLevels.target = fixed,
+        factorLevels.amount = " < 2",
+        duplicateColumns.target = c(covariates, fixed),
+        exitAnalysisIfErrors = TRUE
+      )
+    }
+
+    if (!noVariables) {
+
+      customChecks <- list(
+        infinity = function() {
+          x <- dataset[, .BANOVAdependentName]
+          if (any(is.infinite(x)))
+            return(gettext("Infinity found in repeated measures cells."))
+          return(NULL)
+        },
+        observations = function() {
+          x <- dataset[, .BANOVAdependentName]
+          nObs <- length(options$modelTerms) + 1
+          if (length(na.omit(x)) <= nObs)
+            return(gettextf("Number of observations is < %s in repeated measures cells", nObs))
+          return(NULL)
+        },
+        variance = function() {
+          x <- dataset[, .BANOVAdependentName]
+          validValues <- x[is.finite(x)]
+          variance <- 0
+          if (length(validValues) > 1)
+            variance <- stats::var(validValues)
+          if (variance == 0)
+            return(gettext("The variance in the repeated measures cells is 0."))
+          return(NULL)
+        }
+      )
+
+      .hasErrors(
+        dataset = dataset,
+        custom = customChecks,
+        exitAnalysisIfErrors = TRUE
+      )
+
+    }
+
   }
 
-  if (!noVariables) {
-    .hasErrors(
-      dataset = dataset,
-      type    = c("infinity", "observations", "variance", "factorLevels", "duplicateColumns"),
-      infinity.target     = target,
-      variance.target     = target,
-      observations.target = target,
-      observations.amount = paste("<", length(options$modelTerms) + 1),
-      factorLevels.target = fixed,
-      factorLevels.amount = " < 2",
-      exitAnalysisIfErrors = TRUE
-    )
-  }
   return(list(noVariables = noVariables, hasIV = hasIV, hasDV = hasDV))
 }
 
