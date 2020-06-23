@@ -249,24 +249,24 @@ results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "Bush Tucker Food.csv
 test_that("Single Model Posterior Summary table results match", {
   table <- results[["results"]][["containerSingleModel"]][["collection"]][["containerSingleModel_SMItablePosteriorEstimates"]][["data"]]
   expect_equal_tables(table,
-                      list("", 4.66637117937209, 6.16416124973501, 0.753709372929632, 7.68768000305394,
-                           "Intercept", "Level 1", 0.784358809094558, 1.72524090821814,
-                           0.45987045937437, 2.560856603435, "RM.Factor.1", "Level 2",
-                           -2.560856603435, -1.72524090821814, 0.45987045937437, -0.784358809094558,
+                      list("", 4.58948410870924, 6.16450279524202, 0.745342080929142, 7.70351606555363,
+                           "Intercept", "Level 1", 0.732042615149814, 1.73232598619876,
+                           0.452456686599393, 2.5434859267573, "RM.Factor.1", "Level 2",
+                           -2.5434859267573, -1.73232598619876, 0.452456686599393, -0.732042615149814,
                            ""))
 })
 
 test_that("Single Model R² table results match", {
   table <- results[["results"]][["containerSingleModel"]][["collection"]][["containerSingleModel_tableSMICRI"]][["data"]]
   expect_equal_tables(table,
-                      list(0.303589273337922, 0.635529621583097, 0.807755734920037, "R<unicode>"
+                      list(0.308711456209889, 0.638172359225456, 0.815825511804337, "R<unicode>"
                       ))
 })
 
 test_that("Model Comparison table results match", {
   table <- results[["results"]][["tableModelComparison"]][["data"]]
   expect_equal_tables(table,
-                      list(1, 79.689528579468, "RM.Factor.1", 0.5, 0.987606818163336, "",
-                           0.0125487001595546, 0.0125487001595546, "Null model (incl. subject)",
-                           0.5, 0.0123931818366634, 1.37459086034136))
+                      list(1, 75.0836170114885, "RM.Factor.1", 0.5, 0.986856565982542, "",
+                           0.0133184846415562, 0.0133184846415562, "Null model (incl. subject)",
+                           0.5, 0.0131434340174574, 19.861508543733))
 })
