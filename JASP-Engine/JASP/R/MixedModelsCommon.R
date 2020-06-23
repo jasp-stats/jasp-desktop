@@ -1261,7 +1261,11 @@
       at      = at,
       options = list(level  = options$marginalMeansCIwidth),
       lmer.df = if (type == "LMM")
-        options$marginalMeansDf,
+        options$marginalMeansDf
+      else if (type == "GLMM" &&
+               options$family == "gaussian" &&
+               options$link == "identity")
+        "asymptotic",
       type    = if (type %in% c("GLMM", "BGLMM"))
         if (options$marginalMeansResponse)
           "response"
@@ -1495,10 +1499,21 @@
     # TODO: deal with the emtrends scoping problems
     trends_CI      <<- options$trendsCIwidth
     trends_at      <<- at
-    trends_type    <<- type
+    trends_type    <<- if (type == "LMM" || (type == "GLMM" &&
+                                             options$family == "gaussian" &&
+                                             options$link == "identity"))
+      "LMM"
+    else
+      type
     trends_dataset <<- dataset
     trends_model   <<- model
-    trends_df      <<- options$trendsDf
+    trends_df      <<-
+      if (type == "LMM")
+        options$trendsDf
+    else if (type == "GLMM" &&
+             options$family == "gaussian" &&
+             options$link == "identity")
+      "asymptotic"
     
     emm <- emmeans::emtrends(
       object  = trends_model,
