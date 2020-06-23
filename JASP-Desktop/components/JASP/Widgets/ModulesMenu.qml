@@ -50,125 +50,149 @@ FocusScope
 			z:				-6
 		}
 
-		Column
+		Flickable
 		{
-			id:			modules
-			spacing:	4  * preferencesModel.uiScale
-			width:		parent.width - jaspTheme.generalAnchorMargin
+			id:						modulesFlick
+			flickableDirection:		Flickable.VerticalFlick
+			contentHeight:			modules.height
+			contentWidth:			modules.width
+
 			anchors
 			{
 				top:				parent.top
-				topMargin:			5
-				horizontalCenter:	parent.horizontalCenter
+				topMargin:			5 * preferencesModel.uiScale
+				left:				parent.left
+				right:				vertScroller.left
 				bottom:				parent.bottom
 			}
 
-			property int buttonMargin:	3  * preferencesModel.uiScale
-			property int buttonWidth:	width - (buttonMargin * 2)
-			property int buttonHeight:	40  * preferencesModel.uiScale
-			
-			MenuButton
+			Column
 			{
-				id:					addModuleButton
-				text:				qsTr("Install Module")
-				width:				modules.buttonWidth
-				height:				modules.buttonHeight
-				anchors.leftMargin: modules.buttonMargin
-				anchors.left:		parent.left
-				onClicked: 			moduleInstallerDialog.open()
-				iconSource:			jaspTheme.iconPath + "/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
-				showIconAndText:	true
-				iconLeft:			false
-				toolTip:			qsTr("Install a module")
-				visible:			preferencesModel.developerMode
-			}
+				id:			modules
+				spacing:	4  * preferencesModel.uiScale
+				width:		parent.width - jaspTheme.generalAnchorMargin
 
-			ToolSeparator
-			{
-				orientation:				Qt.Horizontal
-				width:						modules.buttonWidth
-				anchors.horizontalCenter:	parent.horizontalCenter
-				visible:					preferencesModel.developerMode
-			}
-			
-			MenuButton
-			{
-				id:					addDeveloperModuleButton
-				text:				folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install Developer Module") : qsTr("Installing Developer Module")) : qsTr("Select a Developer Module")
-				width:				modules.buttonWidth
-				height:				modules.buttonHeight
-				anchors.leftMargin: modules.buttonMargin
-				anchors.left:		parent.left
-				onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
-				toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install selected developer module") : qsTr("Installing developer module now")) : qsTr("Select a developer module under Left menu->Preference->Advanced")
-				visible:			preferencesModel.developerMode
-				enabled:			dynamicModules.developersModuleInstallButtonEnabled
+				property int buttonMargin:	3  * preferencesModel.uiScale
+				property int buttonWidth:	width - (buttonMargin * 2)
+				property int buttonHeight:	40  * preferencesModel.uiScale
 
-				readonly property bool folderSelected: preferencesModel.developerFolder != ""
-			}
-			
-			ToolSeparator
-			{
-				orientation:				Qt.Horizontal
-				width:						modules.buttonWidth
-				anchors.horizontalCenter:	parent.horizontalCenter
-				visible:					preferencesModel.developerMode
-			}			
-
-			Repeater
-			{
-
-				model: ribbonModel
-
-				Rectangle
+				MenuButton
 				{
-					visible:			!isCommon
+					id:					addModuleButton
+					text:				qsTr("Install Module")
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin
 					anchors.left:		parent.left
-					color:				!isDynamic || dynamicModule.status !== "error" ? "transparent" : jaspTheme.red
+					onClicked: 			moduleInstallerDialog.open()
+					iconSource:			jaspTheme.iconPath + "/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
+					showIconAndText:	true
+					iconLeft:			false
+					toolTip:			qsTr("Install a module")
+					visible:			preferencesModel.developerMode
+				}
 
-					CheckBox
+				ToolSeparator
+				{
+					orientation:				Qt.Horizontal
+					width:						modules.buttonWidth
+					anchors.horizontalCenter:	parent.horizontalCenter
+					visible:					preferencesModel.developerMode
+				}
+
+				MenuButton
+				{
+					id:					addDeveloperModuleButton
+					text:				folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install Developer Module") : qsTr("Installing Developer Module")) : qsTr("Select a Developer Module")
+					width:				modules.buttonWidth
+					height:				modules.buttonHeight
+					anchors.leftMargin: modules.buttonMargin
+					anchors.left:		parent.left
+					onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
+					toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install selected developer module") : qsTr("Installing developer module now")) : qsTr("Select a developer module under Left menu->Preference->Advanced")
+					visible:			preferencesModel.developerMode
+					enabled:			dynamicModules.developersModuleInstallButtonEnabled
+
+					readonly property bool folderSelected: preferencesModel.developerFolder != ""
+				}
+
+				ToolSeparator
+				{
+					orientation:				Qt.Horizontal
+					width:						modules.buttonWidth
+					anchors.horizontalCenter:	parent.horizontalCenter
+					visible:					preferencesModel.developerMode
+				}
+
+				Repeater
+				{
+
+					model: ribbonModel
+
+					Rectangle
 					{
-						id:					moduleButton
-						label:				displayText
-						checked:			ribbonEnabled
-						onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
-						enabled:			!isDynamic || !(dynamicModule.loading || dynamicModule.installing)
-						font:				jaspTheme.fontRibbon
+						visible:			!isCommon
+						width:				modules.buttonWidth
+						height:				modules.buttonHeight
+						anchors.leftMargin: modules.buttonMargin
+						anchors.left:		parent.left
+						color:				!isDynamic || dynamicModule.status !== "error" ? "transparent" : jaspTheme.red
 
-						toolTip:			!isDynamic ? ""
-												: dynamicModule.installing ? qsTr("Installing:") + "\n" + dynamicModule.installLog
-													: dynamicModule.loading ? qsTr("Loading:") + "\n" + dynamicModule.loadLog
-														: dynamicModule.status === "readyForUse" ? qsTr("Loaded and ready for use!")
-															: dynamicModule.status === "error" ? qsTr("Error occurred!")
-																: qsTr("Not ready for use?")
-
-						anchors
+						CheckBox
 						{
-							left			: parent.left //minusButton.right //isDynamic ? minusButton.right : parent.left
-							right			: minusButton.left
-							verticalCenter	: parent.verticalCenter
+							id:					moduleButton
+							label:				displayText
+							checked:			ribbonEnabled
+							onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
+							enabled:			!isDynamic || !(dynamicModule.loading || dynamicModule.installing)
+							font:				jaspTheme.fontRibbon
+
+							toolTip:			!isDynamic ? ""
+													: dynamicModule.installing ? qsTr("Installing:") + "\n" + dynamicModule.installLog
+														: dynamicModule.loading ? qsTr("Loading:") + "\n" + dynamicModule.loadLog
+															: dynamicModule.status === "readyForUse" ? qsTr("Loaded and ready for use!")
+																: dynamicModule.status === "error" ? qsTr("Error occurred!")
+																	: qsTr("Not ready for use?")
+
+							anchors
+							{
+								left			: parent.left //minusButton.right //isDynamic ? minusButton.right : parent.left
+								right			: minusButton.left
+								verticalCenter	: parent.verticalCenter
+							}
 						}
-					}
 
-					MenuButton
-					{
-						z:				1
-						id:				minusButton
-						visible:		isDynamic
-						iconSource:		hovered ? jaspTheme.iconPath + "/delete_icon.png" : jaspTheme.iconPath + "/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
-						width:			visible ? height : 0
-						onClicked:		dynamicModules.uninstallJASPModule(moduleName)
-						toolTip:		qsTr("Uninstall module ") + displayText
-						anchors
+						MenuButton
 						{
-							right			: parent.right
-							verticalCenter	: parent.verticalCenter
+							z:				1
+							id:				minusButton
+							visible:		isDynamic
+							iconSource:		hovered ? jaspTheme.iconPath + "/delete_icon.png" : jaspTheme.iconPath + "/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
+							width:			visible ? height : 0
+							onClicked:		dynamicModules.uninstallJASPModule(moduleName)
+							toolTip:		qsTr("Uninstall module ") + displayText
+							anchors
+							{
+								right			: parent.right
+								verticalCenter	: parent.verticalCenter
+							}
 						}
 					}
 				}
+			}
+		}
+
+		JASPScrollBar
+		{
+			id:				vertScroller
+			flickable:		modulesFlick
+			manualAnchor:	true
+			vertical:		true
+			anchors
+			{
+				top:	modulesFlick.top
+				right:	parent.right
+				bottom:	modulesFlick.bottom
 			}
 		}
 
