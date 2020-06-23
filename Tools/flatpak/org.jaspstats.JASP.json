@@ -62,8 +62,8 @@
 			"sources": [
 				{
 					"type":   "archive",
-					"url":    "https://cran.r-project.org/src/base/R-3/R-3.6.1.tar.gz",
-					"sha256": "5baa9ebd3e71acecdcc3da31d9042fb174d55a42829f8315f2457080978b1389"
+					"url":    "http://cran.r-project.org/src/base/R-3/R-3.6.3.tar.gz",
+					"sha256": "89302990d8e8add536e12125ec591d6951022cf8475861b3690bc8bf1cefaa8f"
 				}
 			]
 		},	

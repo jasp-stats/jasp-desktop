@@ -35,9 +35,39 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-		<release version="0.13.0" date="2020-06-17">
+		<release version="0.13.0" date="2020-06-23">
                         <description>
-                                - some releasenotes here!
+                            New Features and improvements: 
+							- Engine improvements 
+
+							New modules and analyses: 
+							- Generalized Linear Mixed Models (both Bayesian and classical)
+							- Reliability module (both Bayesian and classical) 
+							- R-console (beta) 
+
+							Analyses improvements 
+							- SEM module: Allow ordinal variables in CFA 
+							- Network analysis module: Added expected influence 'centrality' (jasp-issue #411)
+							- Saving plots as powerpoint files
+
+							Bug fixes: 
+							- P value shown as 0.00 instead of <.001 (jasp-issue #706)
+							- JASP "quits unexpectedly" after opening a file and then quitting by closing the menu (jasp-issue #667)
+							- Pixelated user interface with JASP 0.12.2.0 (jasp-issue #720)
+							- Issue with Informed Prior for Bayesian Independent Samples T-Test (jasp-issue #730)
+							- Bug on Bayesian Repeated Measures ANOVA (jasp-issues #737 #774)
+							- JASP has difficulty handling extended missing value codes in Stata (jasp-issue #733) 
+							- Audit selection analysis (jasp-issue #699)
+							- Variable type not updated in Post Hoc Tests (jasp-issue #708) 
+							- Error in an independent sample T-test (jasp-issue #724) 
+							- JASP crashes on exit (jasp-issue #777)
+							- Very slow estimation of correlation matrix (jasp-issues #679 #712)
+							- Tjur R^2 wrongly calculated (jasp-issue #764)
+							- App does not display correctly (jasp-issue #775) 
+							- Mixed Modeling (Visual Modeling [BETA]) (jasp-issue #763)
+							- Network analysis: SPELLING MISTAKE (jasp-issue #751) 
+							- Network analysis - Changing Legend does not change the Centrality Plot (jasp-issue #702)
+							- Paired T-tests - Changing the hypothesis provides a more informative footnote (jasp-issue#758)
                         </description>
                 </release>
 		<release version="0.12.2" date="2020-04-22">

@@ -65,7 +65,8 @@ giveOrderedDependencies <- function()
         emmeans   		= { deps <- append(deps, c("estimability", "graphics", "methods", "numDeriv", "stats", "utils", "plyr", "mvtnorm", "xtable") ) },
 		fitdistrplus    = { deps <- append(deps, c("npsurv") ) }, # It seems there is some discrepancy between the dependencies of the version of CRAN and the one we use...
 		parcor			= { deps <- append(deps, c("glmnet", "ppls", "Epi", "GeneNet") ) },
-		dplyr			= { deps <- append(deps, c("plogr") ) }
+		dplyr			= { deps <- append(deps, c("plogr") ) },
+		mice			= { deps <- append(deps, c("mitml") ) }
       )
 
       pkgDeps[[curPkg]] <- deps
@@ -149,8 +150,8 @@ specials <- new.env(hash = TRUE, parent = parent.frame())
 specials[['abtest']]       <- list(type='github', commit='503c50e96768a0134b755747e0421d820cc1a115', repo='quentingronau/abtest'  )
 specials[['bstats']]       <- list(type='github', commit='a6fdbea42078b8d275a98dd1e37c113118555b6f', repo='AlexanderLyNL/bstats'  )
 specials[['flexplot']]     <- list(type='github', commit='15b5cae2b8d009b8a95c5f1d261e2077f53e8bd9', repo='dustinfife/flexplot'   )
-specials[['RoBMA']]        <- list(type='github', commit='662149c70530510c6a537b0130718a2481aa686d', repo='FBartos/RoBMA'         )
-specials[['Bayesrel']]     <- list(type='github', commit='906c44c93be8623e543b5a7d25d7246b4c465283', repo='juliuspf/Bayesrel'     )
+specials[['RoBMA']]        <- list(type='github', commit='83e68878469327501bc0f6cc964c69a13f6c5d81', repo='FBartos/RoBMA'         )
+specials[['Bayesrel']]     <- list(type='github', commit='39c25d21a118023a5ef46133c94ce8f9b3078f71', repo='juliuspf/Bayesrel'     )
 specials[['stanova']]      <- list(type='github', commit='2cb08223f957533103612e72055fa7063a1fb5ce', repo='bayesstuff/stanova'    )
 specials[['afex']]         <- list(type='github', commit='56359709a19a72f2f2088099cc6647b732ea2c71', repo='singmann/afex'         )
 specials[['emmeans']]      <- list(type='github', commit='1e6ab3e1e9eb47bb8a038221495463992f8dfb60', repo='rvlenth/emmeans'       )

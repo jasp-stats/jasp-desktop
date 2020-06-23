@@ -3167,7 +3167,7 @@
 				{
 					"type": "git",
 					"url": "https://github.com/FBartos/RoBMA",
-					"commit": "662149c70530510c6a537b0130718a2481aa686d"
+					"commit": "83e68878469327501bc0f6cc964c69a13f6c5d81"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3605,18 +3605,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "mice",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/mice_3.6.0.tar.gz",
-					"sha256": "7bc72bdb631bc9f67d8f76ffb48a7bb275228d861075e20c24c09c736bebec5d"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "mitml",
 			"buildsystem": "simple",
 			"sources": [
@@ -3707,7 +3695,7 @@
 				{
 					"type": "git",
 					"url": "https://github.com/juliuspf/Bayesrel",
-					"commit": "906c44c93be8623e543b5a7d25d7246b4c465283"
+					"commit": "39c25d21a118023a5ef46133c94ce8f9b3078f71"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3802,8 +3790,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/ggforce_0.3.1.tar.gz",
-					"sha256": "a05271da9b226c12ae5fe6bc6eddb9ad7bfe19e1737e2bfcd6d7a89631332211"
+					"url": "http://static.jasp-stats.org/RPkgs/ggforce_0.3.2.tar.gz",
+					"sha256": "4cce8acb60ce06af44c1c76bbacd7de129eed9b51ed6a85e03a9bf55b0eff4d2"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3852,6 +3840,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/metaBMA_0.6.2.tar.gz",
 					"sha256": "be225f719a3da4c61d91c3442291b819ea61c4a09cdc867b72c0e19cf2bb563c"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "mice",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/mice_3.6.0.tar.gz",
+					"sha256": "7bc72bdb631bc9f67d8f76ffb48a7bb275228d861075e20c24c09c736bebec5d"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
