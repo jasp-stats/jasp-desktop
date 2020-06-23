@@ -40,7 +40,7 @@
   if(type %in% c("BLMM", "BGLMM")).mmSummaryStanova(jaspResults, dataset, options, type)
 
   
-  if (!is.null(jaspResults[["mmModel"]])) {
+  if (!is.null(jaspResults[["mmModel"]]) && is.null(jaspResults[["hasERROR"]])) {
     
     # show fixed / random effects summary
     if (options$showFE){
@@ -491,18 +491,25 @@
       if (any(attr(model, "class") %in% c("std::runtime_error", "C++Error", "error"))) {
         if (model$message == "(maxstephalfit) PIRLS step-halvings failed to reduce deviance in pwrssUpdate") {
           ANOVAsummary$setError(
-            gettext("The optimizer failed to find solution. Probabably due to quasi-separation in the data. Try removing some of the predictors.")
+            gettext("The optimizer failed to find a solution. Probabably due to quasi-separation in the data. Try removing some of the predictors.")
           )
         } else if (model$message == "cannot find valid starting values: please specify some") {
           # currently no solution to this, it seems to be a problem with synthetic data only.
           # I will try silving it once someone actually has problem with real data.
-          ANOVAsummary$setError(gettext("Invalid starting values."))
+          ANOVAsummary$setError(gettext("The optimizer failed to find a solution due to invalid starting values. (JASP currently does not support specifying different starting values.)"))
         } else{
           ANOVAsummary$setError(model$message)
         }
         
-        jaspResults[["ANOVAsummary"]] <- ANOVAsummary
-        jaspResults[["mmModel"]]      <- NULL
+        
+        hasERROR <- createJaspState()
+        hasERROR$object <- TRUE
+        hasERROR$dependOn(c(dependencies, seed_dependencies))
+        jaspResults[["hasERROR"]] <- hasERROR
+        
+        
+        jaspResults[["ANOVAsummary"]]   <- ANOVAsummary
+
         return()
       }
       
