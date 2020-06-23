@@ -93,6 +93,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale"]
 			visible:		 measures_cohensd.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -104,6 +105,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale"]
 			visible:		measures_cohensd.checked || measures_general.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedPairsVariablesList
@@ -115,6 +117,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale"]
 			visible:		measures_cohensd.checked || measures_general.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -126,6 +129,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale", "ordinal"]
 			visible:		 measures_cohensd.checked || measures_correlation.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -137,6 +141,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale", "ordinal"]
 			visible:		 measures_cohensd.checked && cohensd_twoSample.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -148,6 +153,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale", "ordinal"]
 			visible:		 measures_cohensd.checked && cohensd_twoSample.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -1620,6 +1626,8 @@ Form
 			}
 ****************************************************/
 		}
+
+		Divider { }
 
 		Group
 		{
