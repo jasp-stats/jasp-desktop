@@ -380,7 +380,11 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
 
 
 .decorrelateStepTwoSample <- function(x, y, muProp, sigmaProp = 0.5) {
-  
+  # decorrelate step described in Morey, R. D., Rouder, J. N., and Speckman, P. L. (2008). 
+  # A statistical model for dis-criminating between subliminal and near-liminal performance.
+  # and
+  # van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2020). 
+  # Bayesian rank-based hypothesis testing for the rank sum test, the signed rank test, and Spearman's ρ.  
   thisZ <- rnorm(1, 0, sigmaProp)
   
   newX <- x + thisZ
