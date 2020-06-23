@@ -44,7 +44,8 @@ Form {
 
 		AssignedVariablesList
 		{
-			enabled:			family.currentValue == "binomial_agg"
+			visible:			family.currentText == "Binomial (aggregated)"
+			onVisibleChanged:	if (!visible && count > 0) itemDoubleClicked(0);
 			name:				"dependentVariableAggregation"
 			title:				qsTr("Number of trials")
 			singleVariable:		true
