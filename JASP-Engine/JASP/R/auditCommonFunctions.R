@@ -890,6 +890,11 @@
           analysisContainer$setError(gettext("Analysis not possible: Your expected errors are higher than materiality."))
           return(TRUE)
         }
+        if(.auditCalculateDetectionRisk(options) >= 1){
+          # Error if the detection risk of the analysis is higher than one
+          analysisContainer$setError(gettext("The detection risk is higher than 100%. Please re-specify your custom values for the Inherent risk and/or Control risk, or the confidence."))
+          return(TRUE)
+        }
       }
       # No error in the planning options
       return(FALSE)
@@ -962,6 +967,11 @@
       # Error if the record ID's are not unique
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
       analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      return(TRUE)
+    } else if(.auditCalculateDetectionRisk(options) >= 1){
+      # Error if the detection risk of the analysis is higher than one
+      analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
+      analysisContainer$setError(gettext("The detection risk is higher than 100%. Please re-specify your values for the Inherent risk and/or Control risk, or the confidence."))
       return(TRUE)
     } else {
       # No error in the evaluation options
@@ -1298,6 +1308,24 @@
 ################## Common functions for the Audit Risk Model ###################
 ################################################################################
 
+.auditCalculateDetectionRisk <- function(options){
+
+  inherentRisk <- 0
+  inherentRisk <- ifelse(options[["IR"]] == "High", yes = 1, no = inherentRisk)
+  inherentRisk <- ifelse(options[["IR"]] == "Medium", yes = 0.60, no = inherentRisk)
+  inherentRisk <- ifelse(options[["IR"]] == "Low", yes = 0.50, no = inherentRisk)
+  inherentRisk <- ifelse(options[["IR"]] == "Custom", yes = options[["irCustom"]], no = inherentRisk)
+
+  controlRisk <- 0
+  controlRisk <- ifelse(options[["CR"]] == "Custom", yes = options[["crCustom"]], no = controlRisk)
+  controlRisk <- ifelse(options[["CR"]] == "Low", yes = 0.50, no = controlRisk)
+  controlRisk <- ifelse(options[["CR"]] == "Medium", yes = 0.60, no = controlRisk)
+  controlRisk <- ifelse(options[["CR"]] == "High", yes = 1, no = controlRisk)
+
+  detectionRisk <- (1 - options[["confidence"]]) / inherentRisk / controlRisk
+  return(detectionRisk)
+}
+
 .auditRiskModelParagraph <- function(options, 
                                      jaspResults, 
                                      position){
@@ -1443,7 +1471,7 @@
   detectionRisk <- auditRisk / inherentRisk / controlRisk
 
   if(detectionRisk >= 1){
-    planningContainer$setError(gettextf("The detection risk is higher than 100%%. Please re-specify your custom values for the Inherent risk and/or Control risk."))  
+    planningContainer$setError(gettextf("The detection risk is higher than 100%. Please re-specify your custom values for the Inherent risk and/or Control risk."))  
     return()
   }
 
@@ -3570,7 +3598,7 @@
     
     if(options[["variableType"]] == "variableTypeAuditValues" && 
         options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
-
+      
       mle <- (planningOptions[["populationValue"]] - evaluationState[["pointEstimate"]]) / 
               planningOptions[["populationValue"]]
     
@@ -3657,7 +3685,16 @@
 
     yLimits <- c(0, 1.1 * max(values))
     yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), 
-                                               min.n = 4)
+                                            min.n = 4)
+
+    if(mle < 0 || bound < 0){
+      # Here we adjust the axes if the mle turns out to be negative
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(min(values), 1.1 * max(values), length.out = 100), 
+                                                min.n = 4)
+      x.labels <- format(JASPgraphs::getPrettyAxisBreaks(seq(min(values), 1.1 * max(values), length.out = 100), 
+                          min.n = 4), scientific = FALSE)
+      yLimits <- c(min(values), 1.1 * max(values))
+    }
 
     p <- ggplot2::ggplot(data = plotData, 
                         mapping = ggplot2::aes(x = x, y = y)) +
