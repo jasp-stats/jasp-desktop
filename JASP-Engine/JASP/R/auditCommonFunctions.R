@@ -879,7 +879,7 @@
       if(ready){
         if(options[["materiality"]] == "materialityAbsolute" && options[["materialityValue"]] >= analysisOptions[["populationValue"]]){
           # Error if the value of the performance materiality exceeds the total population value
-          analysisContainer$setError(gettext("Analysis not possible: Your materiality is higher than the total value of the observations."))
+          analysisContainer$setError(gettext("Analysis not possible: Your materiality is higher than, or equal to the total value of the observations."))
           return(TRUE)
         }
         expTMP <- ifelse(options[['expectedErrors']] == "expectedRelative", 
@@ -1411,7 +1411,7 @@
 
     return(planningContainer[["planningState"]]$object)
 
-  } else if(ready){
+  } else if(ready && !planningContainer$getError()){
 
   auditRisk <- 1 - options[["confidence"]]
 

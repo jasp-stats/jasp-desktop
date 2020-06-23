@@ -543,10 +543,8 @@ Form
 			id: 			toInterpretation
 			anchors.right:	parent.right
 			text:			qsTr("<b>Download Report</b>")
-			enabled: 		auditResult.count > 0
 			onClicked:
 			{
-				evaluationPhase.expanded = false
 				form.exportResults()
 			}
 		}
