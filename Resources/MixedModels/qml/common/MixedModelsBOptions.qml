@@ -86,6 +86,12 @@ Section
 		{
 			CheckBox
 			{
+				name:	"fitStats"
+				label:	qsTr("Model summary")
+			}
+
+			CheckBox
+			{
 				name:	"showFE"
 				label:	qsTr("Fixed effects estimates")
 			}
@@ -96,14 +102,13 @@ Section
 				label:	qsTr("Variance/correlation estimates")
 			}
 		}
+	}
 
-		CIField
-		{
-			name:	"summaryCI"
-			label:	qsTr("Confidence interval")
-		}
+	SetSeed{}
 
-		SetSeed{}
-
+	CIField
+	{
+		name:	"summaryCI"
+		label:	qsTr("Credible interval")
 	}
 }
