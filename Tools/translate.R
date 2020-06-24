@@ -8,5 +8,6 @@ if (length(args)!=1) {
   rootfolder<- args[1]
 }
 
-tools::update_pkg_po(rootfolder)
+Sys.setlocale(category = "LC_ALL", locale = "en_US.UTF-8")
 
+try(tools::update_pkg_po(rootfolder),silent=TRUE)
