@@ -38,6 +38,8 @@ Button
 	
 	text:			""
 	enabled:		false
+	visible:		source.visible && target.visible
+
 	iconSource:		leftToRight ? iconToRight : iconToLeft
 
 	control.buttonPadding:	2
@@ -50,39 +52,38 @@ Button
 	function setIconToLeft()	{ if (rightSource.activeFocus)	leftToRight = false;	}
 	function setState()
 	{
-		var result = source.enabled && target.enabled;
-		if (result && source.model && source.model.selectedItems().length > 0)
+		var isEnabled = source.enabled && target.enabled;
+		if (isEnabled && source.model && source.model.selectedItems().length > 0)
 		{
 			if (target.allowedColumns.length > 0)
 			{
-				result = false;
+				isEnabled = false;
 				var sourceSelectedItemsTypes = source.model.selectedItemsTypes()
 				for (var i = 0; i < sourceSelectedItemsTypes.length; i++)
 				{
 					var itemType = sourceSelectedItemsTypes[i];
 					if (target.allowedColumns.includes(itemType))
-						result = true;
+						isEnabled = true;
 				}
 			}
 		}
 
-		if (result && interactionControl)
+		if (isEnabled && interactionControl)
 		{
 			if (target.addInteractionOptions && source.model)
 			{
 				var nb = source.model.selectedItems().length
-				interactionControl.enabled = result
+				interactionControl.enabled = isEnabled
 				var enabledOptions = [ true, nb > 1, nb > 2, nb > 3, nb > 4, true ]
 				interactionControl.enabledOptions = enabledOptions
 				if (!enabledOptions[interactionControl.currentIndex])
-					result = false;
+					isEnabled = false;
 			}
 			else
 				interactionControl.enabled = false
 		}
 		
-		enabled = result
-		
+		enabled = isEnabled
 	}
 
 	onSourceChanged:	setState()

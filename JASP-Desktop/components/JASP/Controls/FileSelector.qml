@@ -17,6 +17,7 @@ TextField
 	{
 		id				: button
 		text			: qsTr("Browse")
+		z				: 5
 		anchors
 		{
 			leftMargin	: jaspTheme.generalAnchorMargin

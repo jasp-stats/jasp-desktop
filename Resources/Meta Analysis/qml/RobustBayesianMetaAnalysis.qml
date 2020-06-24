@@ -22,14 +22,13 @@ import JASP.Widgets 1.0
 import JASP 1.0
 Form
 {
- 	id: form
-
 	RadioButtonGroup
 	{
 		Layout.columnSpan:		2
 		name:					"measures"
 		radioButtonsOnSameRow:	true
-		
+		columns:				2
+
 		RadioButton
 		{
 			label: qsTr("Cohen's d / t-statistics & (N / SE)")
@@ -94,6 +93,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale"]
 			visible:		 measures_cohensd.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -105,6 +105,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale"]
 			visible:		measures_cohensd.checked || measures_general.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedPairsVariablesList
@@ -116,6 +117,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale"]
 			visible:		measures_cohensd.checked || measures_general.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -127,6 +129,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale", "ordinal"]
 			visible:		 measures_cohensd.checked || measures_correlation.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -138,6 +141,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale", "ordinal"]
 			visible:		 measures_cohensd.checked && cohensd_twoSample.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -149,6 +153,7 @@ Form
 			singleVariable: true
 			allowedColumns: ["scale", "ordinal"]
 			visible:		 measures_cohensd.checked && cohensd_twoSample.checked
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
 		AssignedVariablesList
@@ -165,7 +170,7 @@ Form
 		name:					"cohensd_testType"
 		visible:				measures_cohensd.checked
 		radioButtonsOnSameRow:	true
-		
+
 		RadioButton
 		{
 			label:		qsTr("One-sample t-tests")
@@ -189,7 +194,7 @@ Form
 		columns:		1
 
 		CheckBox
-		{	
+		{
 			name:		"priors_plot"
 			label:		qsTr("Plot priors")
 		}
@@ -216,7 +221,6 @@ Form
 				name:					"priors_mu"
 				optionKey:				"name"
 				defaultValues: 			[{"type": "normal"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -443,7 +447,6 @@ Form
 				name:					"priors_tau"
 				optionKey:				"name"
 				defaultValues: 			[{"type": "invgamma"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -677,7 +680,6 @@ Form
 					{"type": "Two-sided", "parCuts": "(.05)", "parAlpha": "(1,1)", "priorOdds": "1/2"},
 					{"type": "Two-sided", "parCuts": "(.05, .10)", "parAlpha": "(1,1,1)", "priorOdds": "1/2"}
 				]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -742,7 +744,7 @@ Form
 							name:				"parAlpha"
 							visible:			typeOmegatem.currentValue === "Two-sided"		||
 												typeOmegatem.currentValue === "One-sided (mon.)"
-							value:				"(1,1,1)" 
+							value:				"(1,1,1)"
 							fieldWidth: 		70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder: 		true
@@ -785,7 +787,7 @@ Form
 
 
 		CheckBox
-		{	
+		{
 			id:						priors_null
 			name:					"priors_null"
 			label:					qsTr("Set null priors")
@@ -815,7 +817,6 @@ Form
 				name:					"priors_mu_null"
 				optionKey:				"name"
 				defaultValues: 			[{"type": "spike"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -1040,7 +1041,6 @@ Form
 				name:					"priors_tau_null"
 				optionKey:				"name"
 				defaultValues: 			[{"type": "spike"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -1270,7 +1270,6 @@ Form
 				name:					"priors_omega_null"
 				optionKey:				"name"
 				defaultValues:			[{"type": "spike"}]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -1318,7 +1317,7 @@ Form
 							name:				"parAlpha"
 							visible:			typeOmegaNullItem.currentValue === "Two-sided"		||
 												typeOmegaNullItem.currentValue === "One-sided (mon.)"
-							value:				"(1,1,1)" 
+							value:				"(1,1,1)"
 							fieldWidth: 		70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder: 		true
@@ -1412,7 +1411,7 @@ Form
 				{
 					name: 		"results_models_order"
 					title:		qsTr("Order")
-					
+
 					RadioButton
 					{
 						name: 		"default"
@@ -1431,7 +1430,7 @@ Form
 					{
 						name: 		"posterior"
 						label: 		qsTr("Posterior prob.")
-						
+
 					}
 				}
 			}
@@ -1488,6 +1487,7 @@ Form
 		Group
 		{
 			title:	qsTr("Pooled estimates")
+			columns: 1
 
 			CheckBox
 			{
@@ -1495,56 +1495,55 @@ Form
 				label:		qsTr("Forest plot")
 				name:		"plots_theta"
 
-					RadioButtonGroup
+				RadioButtonGroup
+				{
+					name: "plots_theta_show"
+					title: qsTr("Show")
+
+					RadioButton
 					{
-						name: "plots_theta_show"
-						title: qsTr("Show")
-
-						RadioButton
-						{
-							name: 		"observed"
-							label: 		qsTr("Observed")
-							checked: 	true
-						}
-
-						RadioButton
-						{
-							name: 		"estimated"
-							label: 		qsTr("Estimated")
-						}
-
-						RadioButton
-						{
-							name: 		"both"
-							label: 		qsTr("Both")
-						}
+						name: 		"observed"
+						label: 		qsTr("Observed")
+						checked: 	true
 					}
 
-					RadioButtonGroup
+					RadioButton
 					{
-						name: 		"plots_theta_order"
-						title:		qsTr("Order")
-
-						RadioButton
-						{
-							name: 	"ascending"
-							label: 	qsTr("Ascending")
-						}
-
-						RadioButton
-						{
-							name: 	"descending"
-							label: 	qsTr("Descending")
-						}
-
-						RadioButton
-						{
-							name: 	"labels"
-							label: 	qsTr("Row order")
-							checked:true
-						}
+						name: 		"estimated"
+						label: 		qsTr("Estimated")
 					}
-				
+
+					RadioButton
+					{
+						name: 		"both"
+						label: 		qsTr("Both")
+					}
+				}
+
+				RadioButtonGroup
+				{
+					name: 		"plots_theta_order"
+					title:		qsTr("Order")
+
+					RadioButton
+					{
+						name: 	"ascending"
+						label: 	qsTr("Ascending")
+					}
+
+					RadioButton
+					{
+						name: 	"descending"
+						label: 	qsTr("Descending")
+					}
+
+					RadioButton
+					{
+						name: 	"labels"
+						label: 	qsTr("Row order")
+						checked:true
+					}
+				}
 			}
 
 			CheckBox
@@ -1571,12 +1570,13 @@ Form
 					checked:true
 				}
 			}
-
 		}
 
 		Group
 		{
-			title:	qsTr(" ") // just alligning one line lower ;)
+			title: " " // Add a line to align with the first column
+			columns: 1
+
 			RadioButtonGroup
 			{
 				name:	"plots_type"
@@ -1627,11 +1627,13 @@ Form
 ****************************************************/
 		}
 
+		Divider { }
+
 		Group
 		{
 			title:	qsTr("Individual models")
+			columns: 1
 
-			
 			CheckBox
 			{
 				label:	qsTr("Effect")
@@ -1649,17 +1651,15 @@ Form
 				label:	qsTr("Weights")
 				name:	"plots_individual_omega"
 			}
-
-				
 		}
 
 		Group
 		{
-			title:	qsTr(" ")
+			title: " "
+			columns: 1
 
 			CheckBox
 			{
-
 				name:	"plots_type_individual_conditional"
 				label:	qsTr("Conditional models only")
 				checked:true
@@ -1707,8 +1707,6 @@ Form
 				}
 			}
 		}
-
-
 	}
 
 	//// Diagnostics section ////
@@ -1810,80 +1808,92 @@ Form
 
 		DropDown
 		{
+			Layout.columnSpan: 2
 			enabled:	measures_correlation.checked
 			label:		qsTr("Transform correlations")
 			name:		"advanced_mu_transform"
 			values:
 			[
-				{ label: qsTr("Cohen's d"),			value: "cohens_d"},
-				{ label: qsTr("Fisher's z"),			value: "fishers_z"}
+				{ label: qsTr("Cohen's d"),		value: "cohens_d"},
+				{ label: qsTr("Fisher's z"),	value: "fishers_z"}
 			]
 		}
 
-		IntegerField
+		Group
 		{
-			label:  		qsTr("Bridge sampling iterations:")
-			name:     		"advanced_bridge_iter"
-			defaultValue: 	10000
-			max:			1000000
-			fieldWidth: 	100
-		}
+			rowSpacing: 10 * preferencesModel.uiScale
 
+			Group
+			{
+				title: 		qsTr("Estimation settings (MCMC)")
+
+				IntegerField
+				{
+					name:			"advanced_adapt"
+					label:			qsTr("Adaptation")
+					defaultValue:	1000
+					min:			100
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+				IntegerField
+				{
+					name:			"advanced_burnin"
+					label:			qsTr("Burnin")
+					defaultValue:	5000
+					min:			1000
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+				IntegerField
+				{
+					name:			"advanced_iteration"
+					label:			qsTr("Iterations")
+					defaultValue:	10000
+					min:			4000
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+				IntegerField
+				{
+					name:			"advanced_chains"
+					label:			qsTr("Chains")
+					defaultValue:	3
+					min:			2
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+				IntegerField
+				{
+					name:			"advanced_thin"
+					label:			qsTr("Thin")
+					defaultValue:	1
+					min:			1
+					fieldWidth:		55 * preferencesModel.uiScale
+				}
+
+			}
+
+			IntegerField
+			{
+				label:  		qsTr("Bridge sampling iterations:")
+				name:     		"advanced_bridge_iter"
+				defaultValue: 	10000
+				max:			1000000
+				fieldWidth: 	60
+			}
+
+			SetSeed{}
+		}
 
 		Group
 		{
-			title: 		qsTr("Estimation settings (MCMC)")
+			rowSpacing: 10 * preferencesModel.uiScale
 
-			IntegerField
-			{
-				name:			"advanced_adapt"
-				label:			qsTr("Adaptation")
-				defaultValue:	1000
-				min:			100
-			}
-			IntegerField
-			{
-				name:			"advanced_burnin"
-				label:			qsTr("Burnin")
-				defaultValue:	5000
-				min:			1000
-			}
-			IntegerField
-			{
-				name:			"advanced_iteration"
-				label:			qsTr("Iterations")
-				defaultValue:	10000
-				min:			4000
-			}
-			IntegerField
-			{
-				name:			"advanced_chains"
-				label:			qsTr("Chains")
-				defaultValue:	3
-				min:			2
-			}
-			IntegerField
-			{
-				name:			"advanced_thin"
-				label:			qsTr("Thin")
-				defaultValue:	1
-				min:			1
-			}
-
-		}
-
-
-		Group
-		{
 			CheckBox
 			{
 				label: 		qsTr("Autofit")
 				name:		"advanced_autofit"
 				checked:	false
-				Group
-				{
-					columns:	2
 
+				Row
+				{
 					IntegerField
 					{
 						name:			"advanced_autofit_time"
@@ -1907,6 +1917,7 @@ Form
 
 				PercentField
 				{
+					id:				advanced_autofit_error
 					name:			"advanced_autofit_error"
 					label:			qsTr("Target margin of error")
 					defaultValue:	1
@@ -1922,60 +1933,65 @@ Form
 				name:		"advanced_omit"
 				checked:	false
 
-
-				CheckBox
+				Group
 				{
-					childrenOnSameRow:	true
-					name:				"advanced_omit_error"
-					label:				qsTr("error % >")
-					checked:			false
+					columns: 2
+
+					CheckBox
+					{
+						id:					advanced_omit_error
+						name:				"advanced_omit_error"
+						label:				qsTr("error % >")
+						checked:			false
+					}
 
 					PercentField
 					{
+						enabled:		advanced_omit_error.checked
 						name: 			"advanced_omit_error_value"
 						defaultValue: 	1
 						decimals:		1
+						fieldWidth:		jaspTheme.numericFieldWidth
 					}
-				}
 
-
-				CheckBox
-				{
-					childrenOnSameRow:	true
-					name:				"advanced_omit_rhat"
-					label:				qsTr("R-hat >")
-					checked:			false
+					CheckBox
+					{
+						id:					advanced_omit_rhat
+						name:				"advanced_omit_rhat"
+						label:				qsTr("R-hat >")
+						checked:			false
+					}
 
 					DoubleField
 					{
+						enabled:		advanced_omit_rhat.checked
 						name: 			"advanced_omit_rhat_value"
 						defaultValue: 	1.05
 						min:			1
 					}
-				}
 
-
-				CheckBox
-				{
-					childrenOnSameRow:	true
-					name:				"advanced_omit_ESS"
-					label:				qsTr("Estimated sample size <")
+					CheckBox
+					{
+						id:				advanced_omit_ESS
+						name:			"advanced_omit_ESS"
+						label:			qsTr("Estimated sample size <")
+					}
 
 					DoubleField
 					{
+						enabled:		advanced_omit_ESS.checked
 						name: 			"advanced_omit_ESS_value"
 						defaultValue:	500
 						min: 			1
 					}
+
+					CheckBox
+					{
+						Layout.columnSpan: 2
+						label:			qsTr("Include theta")
+						name:			"advanced_omit_theta"
+					}
 				}
-
-
-				CheckBox
-				{
-					label:			qsTr("Include theta")
-					name:			"advanced_omit_theta"
-				}
-
 
 				DropDown
 				{
@@ -1988,20 +2004,18 @@ Form
 					]
 				}
 			}
-		}
 
-		SetSeed{}
-
-		DropDown
-		{
-			label: qsTr("Control")
-			name: "advanced_control"
-			values:
-			[
-				{ label: qsTr("Clever refitting"),	value: "clever",	default: true},
-				{ label: qsTr("Do not refit"),		value: "no_refit"},
-				{ label: qsTr("Always refit"),		value: "refit"}
-			]
+			DropDown
+			{
+				label: qsTr("Control")
+				name: "advanced_control"
+				values:
+				[
+					{ label: qsTr("Clever refitting"),	value: "clever",	default: true},
+					{ label: qsTr("Do not refit"),		value: "no_refit"},
+					{ label: qsTr("Always refit"),		value: "refit"}
+				]
+			}
 		}
 
 		FileSelector
@@ -2015,5 +2029,5 @@ Form
 
 
 	}
- 	
+
 }

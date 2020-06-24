@@ -104,6 +104,7 @@ JASPGridControl
 					id					: deleteMouseArea
 					anchors.fill		: parent
 					onClicked			: removeItem(index)
+					cursorShape			: Qt.PointingHandCursor
 				}
 			}
 		}
