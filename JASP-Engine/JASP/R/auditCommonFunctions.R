@@ -885,7 +885,7 @@
         expTMP <- ifelse(options[['expectedErrors']] == "expectedRelative", 
                           yes = options[["expectedPercentage"]], 
                           no = options[["expectedNumber"]] / analysisOptions[["populationValue"]])
-        if(expTMP > analysisOptions[["materiality"]]){
+        if(expTMP >= analysisOptions[["materiality"]]){
           # Error if the expected errors exceed the performance materiality
           analysisContainer$setError(gettext("Analysis not possible: Your expected errors are higher than materiality."))
           return(TRUE)
