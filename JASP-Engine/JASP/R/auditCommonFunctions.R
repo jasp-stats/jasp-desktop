@@ -904,17 +904,17 @@
     if(!is.null(dataset) && options[["sampleSize"]] >= nrow(dataset)){
       # Error if the sample size is larger than the population size.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your sample size is larger than (or equal to) your population size. Cannot take a sample larger than the population."))
+      analysisContainer$setError(gettext("Your sample size is larger than (or equal to) your population size. Cannot take a sample larger than the population."))
       return(TRUE)
     } else if(!is.null(dataset) && options[["sampleSize"]] == 1){
       # Error if the sample size is 1.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your sample size must be larger than 1."))
+      analysisContainer$setError(gettext("Your sample size must be larger than 1."))
       return(TRUE)
     } else if(options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
       # Error if the record ID's are not unique
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      analysisContainer$setError(gettext("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
       return(TRUE)
     } else {
       # No error in the selection options
@@ -926,7 +926,7 @@
     if(options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
       # Error if the record ID's are not unique
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      analysisContainer$setError(gettext("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
       return(TRUE)
     } else {
       # No error in the selection options
@@ -941,7 +941,7 @@
         !all(unique(dataset[, .v(options[["auditResult"]])]) %in% c(0, 1))){
       # Error if the audit result does not contain only zero's and one's.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
-      analysisContainer$setError(gettextf("Your audit result does not contain only 0's (correct) and 1's (incorrect)."))
+      analysisContainer$setError(gettext("Your audit result does not contain only 0's (correct) and 1's (incorrect)."))
       return(TRUE)
     } else if(type == "frequentist" && 
               options[["variableType"]] == "variableTypeCorrect" && 
@@ -949,24 +949,24 @@
               options[["populationSize"]] == 0){
       # Error if the population size is not defined when the hypergeometric bound is used.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
-      analysisContainer$setError(gettextf("The hypergeometric confidence bound requires that you specify the population size."))
+      analysisContainer$setError(gettext("The hypergeometric confidence bound requires that you specify the population size."))
       return(TRUE)
     } else if((!options[["useSumStats"]] && !is.null(dataset) && options[["populationSize"]] < nrow(dataset)) || 
               (options[["useSumStats"]] && options[["populationSize"]] < options[["nSumStats"]])){
       # Error if the sample size is larger than the population size.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
-      analysisContainer$setError(gettextf("Your sample size is larger than (or equal to) your population size. Please adjust your population size accordingly."))
+      analysisContainer$setError(gettext("Your sample size is larger than (or equal to) your population size. Please adjust your population size accordingly."))
       return(TRUE)
     } else if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound") && 
               (options[["populationValue"]] == 0 || options[["populationSize"]] == 0)){
       # Error if the population size or the population value are zero when using direct, difference, ratio, or regression.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
-      analysisContainer$setError(gettextf("The direct, difference, ratio, and regression confidence bound require that you specify the population size and the population value."))
+      analysisContainer$setError(gettext("The direct, difference, ratio, and regression confidence bound require that you specify the population size and the population value."))
       return(TRUE)
     } else if(!options[["useSumStats"]] && options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
       # Error if the record ID's are not unique
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      analysisContainer$setError(gettext("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
       return(TRUE)
     } else if(.auditCalculateDetectionRisk(options) >= 1){
       # Error if the detection risk of the analysis is higher than one
@@ -1310,17 +1310,17 @@
 
 .auditCalculateDetectionRisk <- function(options){
 
-  inherentRisk <- 0
-  inherentRisk <- ifelse(options[["IR"]] == "High", yes = 1, no = inherentRisk)
-  inherentRisk <- ifelse(options[["IR"]] == "Medium", yes = 0.60, no = inherentRisk)
-  inherentRisk <- ifelse(options[["IR"]] == "Low", yes = 0.50, no = inherentRisk)
-  inherentRisk <- ifelse(options[["IR"]] == "Custom", yes = options[["irCustom"]], no = inherentRisk)
+  inherentRisk <- base::switch(options[["IR"]],
+                                "High" = 1,
+                                "Medium" = 0.60,
+                                "Low" = 0.50,
+                                "Custom" = options[["irCustom"]])
 
-  controlRisk <- 0
-  controlRisk <- ifelse(options[["CR"]] == "Custom", yes = options[["crCustom"]], no = controlRisk)
-  controlRisk <- ifelse(options[["CR"]] == "Low", yes = 0.50, no = controlRisk)
-  controlRisk <- ifelse(options[["CR"]] == "Medium", yes = 0.60, no = controlRisk)
-  controlRisk <- ifelse(options[["CR"]] == "High", yes = 1, no = controlRisk)
+  controlRisk <- base::switch(options[["CR"]],
+                                "High" = 1,
+                                "Medium" = 0.60,
+                                "Low" = 0.50,
+                                "Custom" = options[["crCustom"]])
 
   detectionRisk <- (1 - options[["confidence"]]) / inherentRisk / controlRisk
   return(detectionRisk)
