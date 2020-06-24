@@ -94,10 +94,10 @@ Samenvatting model:
 - X2: Chi-kwadraat.
 - p: De p-waarde.
 - Determinatiecoëfficient waarde (de proportie van de variantie die wordt verklaard door het model). Er zijn drie pseudo R^2 waarden beschikbaar in JASP: 
-  - McFadden.
-  - Nagelkerke.
-  - Tjur.
-  - Cox & Snell.
+  - McFadden: berekend als 1 min de ratio van de log-likelihoods van het gespecificeerde model en het nul-model. Als het gespecificeerde model beter op de data past dan het nul-model, dan is McFadden's R2 in de buurt van 1. Als het nul-model ongeveer evengoed op de data past als het gespecificeerde model, dan is McFadden's R2 in de buurt van 0.
+  - Cox & Snell: berekend als 1 min de ratio van de log-likelihoods van het gespecificeerde model en het nul-model, waarbij de ratio verheven wordt tot de macht 2/n (steekproefgrootte). Hogere waarden geven aan dat het gespecificeerde model relatief beter op de data past dan het nul-model. De Cox & Snell index heeft echter als limiet 1 min de likelihood van het nul-model, verheven tot de macht 2/n, en kan zelfs onder ideale omstandigheden niet hoger zijn dan 0.75.
+  - Nagelkerke: dit is een correctie op de methode van Cox & Snell, zodat het als limiet 1 heeft. Deze index wordt berekend als de Cox & Snell R2, gedeeld door 1 min de likelihood van het nul-model verheven tot de macht 2/n. Waarden in de buurt van 1 geven aan dat het gespecificeerde model beter op de data past dan het nul-model.
+  - Tjur: berekend als de absolute waarde van het verschil tussen de gemiddelde voorspelde waarde voor alle gevallen waar de afhankelijke variabele gelijk is aan 0, en de gemiddelde voorspelde waarde voor alle gevallen waar de afhankelijke variabele gelijk is aan 1. In tegenstelling tot de andere pseudo R2 indices, is Tjur's R2 niet relatief aan het nul-model.
  
 Coëfficiënten
 - Schatting: Regressiecoëfficiënten.
