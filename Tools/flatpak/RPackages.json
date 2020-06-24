@@ -1145,18 +1145,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "polyclip",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/polyclip_1.10-0.tar.gz",
-					"sha256": "74dabc0dfe5a527114f0bb8f3d22f5d1ae694e6ea9345912909bae885525d34b"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "polynom",
 			"buildsystem": "simple",
 			"sources": [
@@ -1613,6 +1601,18 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
+			"name": "sn",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/sn_1.5-4.tar.gz",
+					"sha256": "46677ebc109263a68f62b5cf53ec59916cda490e5bc5bbb08276757a677f8674"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
 			"name": "snow",
 			"buildsystem": "simple",
 			"sources": [
@@ -1776,18 +1776,6 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/truncnorm_1.0-8.tar.gz",
 					"sha256": "49564e8d87063cf9610201fbc833859ed01935cc0581b9e21c42a0d21a47c87e"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "tweenr",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/tweenr_1.0.1.tar.gz",
-					"sha256": "efd68162cd6d5a4f6d833dbf785a2bbce1cb7b9f90ba3fb060931a4bd705096b"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -1992,6 +1980,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/zoo_1.8-6.tar.gz",
 					"sha256": "2217a4f362f2201443b5fdbfd9a77d9a6caeecb05f02d703ee8b3b9bf2af37cc"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "abtest",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "git",
+					"url": "https://github.com/quentingronau/abtest",
+					"commit": "503c50e96768a0134b755747e0421d820cc1a115"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -2681,18 +2681,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "sn",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/sn_1.5-4.tar.gz",
-					"sha256": "46677ebc109263a68f62b5cf53ec59916cda490e5bc5bbb08276757a677f8674"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "survey",
 			"buildsystem": "simple",
 			"sources": [
@@ -2712,6 +2700,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/svglite_1.2.2.tar.gz",
 					"sha256": "24bcbd891a1398ae92371ed944b23b474b5b0c8e7aab979ca8ef9a8b79289bbf"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "tidyselect",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/tidyselect_0.2.5.tar.gz",
+					"sha256": "5ce2e86230fa35cfc09aa71dcdd6e05e1554a5739c863ca354d241bfccb86c74"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -2957,18 +2957,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "graphlayouts",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/graphlayouts_0.7.0.tar.gz",
-					"sha256": "20464b60376d9f8d522eec6a7495054b1715e4919f10e9a049868d8866398c9e"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "hms",
 			"buildsystem": "simple",
 			"sources": [
@@ -3000,6 +2988,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/huge_1.3.4.tar.gz",
 					"sha256": "23165f49ec9e67ca3506cc83abbbf8eb3f38c5e19c092133189b7ca17690c31e"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "IsingSampler",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/IsingSampler_0.2.tar.gz",
+					"sha256": "1c3152763f3478a3f6ac165983c38fe2c0077f05413ecdd3d47b4bcc6e597c9b"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3257,18 +3257,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "tidyselect",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/tidyselect_0.2.5.tar.gz",
-					"sha256": "5ce2e86230fa35cfc09aa71dcdd6e05e1554a5739c863ca354d241bfccb86c74"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "TTR",
 			"buildsystem": "simple",
 			"sources": [
@@ -3341,198 +3329,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "htmlTable",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/htmlTable_1.13.2.tar.gz",
-					"sha256": "70578c3c286460c220c89bf9e953f5ec2ada931d0c9cd530fe2d740a19d5d240"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "IsingSampler",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/IsingSampler_0.2.tar.gz",
-					"sha256": "1c3152763f3478a3f6ac165983c38fe2c0077f05413ecdd3d47b4bcc6e597c9b"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "isoband",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/isoband_0.2.1.tar.gz",
-					"sha256": "18883606bea8352e04a4618bea4e5c9833269e73a46b50bc006dddf4c8b6b4d9"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "jomo",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/jomo_2.6-10.tar.gz",
-					"sha256": "4063d48e259e936dc0bd9dc616a09043f695703848cb1bf8faa08c07922034cd"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "mi",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/mi_1.0.tar.gz",
-					"sha256": "34f44353101e8c3cb6bf59c5f4ff5b2391d884dcbb9d23066a11ee756b9987c0"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "miniUI",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/miniUI_0.1.1.1.tar.gz",
-					"sha256": "452b41133289f630d8026507263744e385908ca025e9a7976925c1539816b0c0"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "qgam",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/qgam_1.3.2.tar.gz",
-					"sha256": "273a40d0bfdc340c049bcb85aea83acd887868d8a69c0062b8399e0b24137a52"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "quantmod",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/quantmod_0.4-15.tar.gz",
-					"sha256": "7ef2e798d4d8e4d2af0a5b2b9fecebec30568087afbd24bfd923cdeb8b53df53"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "readr",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/readr_1.3.1.tar.gz",
-					"sha256": "33f94de39bb7f2a342fbb2bd4e5afcfec08798eac39672ee18042ac0b349e4f3"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "readxl",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/readxl_1.3.1.tar.gz",
-					"sha256": "24b441713e2f46a3e7c6813230ad6ea4d4ddf7e0816ad76614f33094fbaaaa96"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "sem",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/sem_3.1-9.tar.gz",
-					"sha256": "4a33780202506543da85877cd2813250114420d6ec5e75457bc67477cd332cb9"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "tidyr",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/tidyr_1.0.0.tar.gz",
-					"sha256": "92a1a30b5636c3c1c68acbff0c1f5b301df64bf3198d23f1c9808ed43a900390"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "tseries",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/tseries_0.10-47.tar.gz",
-					"sha256": "202377df56806fe611c2e12c4d9732c71b71220726e2defa7e568d2b5b62fb7b"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "abtest",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "git",
-					"url": "https://github.com/quentingronau/abtest",
-					"commit": "503c50e96768a0134b755747e0421d820cc1a115"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "broom",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/broom_0.5.2.tar.gz",
-					"sha256": "16af7b446b24bc14461efbda9bea1521cf738c778c5e48fcc7bad45660a4ac62"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "conting",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/conting_1.7.tar.gz",
-					"sha256": "efa3242c24bc4a68ac76f4b1d77753caabb4c19e1301d5a02697f5376438c221"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "ggplot2",
 			"buildsystem": "simple",
 			"sources": [
@@ -3581,13 +3377,37 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "haven",
+			"name": "htmlTable",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/haven_2.2.0.tar.gz",
-					"sha256": "199ee9b14e1ff70a0b0c3b9ce33dfdec8ed3b5e857a2a36bfb82e78a7b352d3d"
+					"url": "http://static.jasp-stats.org/RPkgs/htmlTable_1.13.2.tar.gz",
+					"sha256": "70578c3c286460c220c89bf9e953f5ec2ada931d0c9cd530fe2d740a19d5d240"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "isoband",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/isoband_0.2.1.tar.gz",
+					"sha256": "18883606bea8352e04a4618bea4e5c9833269e73a46b50bc006dddf4c8b6b4d9"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "jomo",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/jomo_2.6-10.tar.gz",
+					"sha256": "4063d48e259e936dc0bd9dc616a09043f695703848cb1bf8faa08c07922034cd"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3605,25 +3425,61 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "mitml",
+			"name": "mi",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/mitml_0.3-7.tar.gz",
-					"sha256": "c6f796d0059f1b093b599a89d955982fa257de9c45763ecc2cbbce10fdec1e7b"
+					"url": "http://static.jasp-stats.org/RPkgs/mi_1.0.tar.gz",
+					"sha256": "34f44353101e8c3cb6bf59c5f4ff5b2391d884dcbb9d23066a11ee756b9987c0"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "rio",
+			"name": "miniUI",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/rio_0.5.16.tar.gz",
-					"sha256": "d3eb8d5a11e0a3d26169bb9d08f834a51a6516a349854250629072d59c29d465"
+					"url": "http://static.jasp-stats.org/RPkgs/miniUI_0.1.1.1.tar.gz",
+					"sha256": "452b41133289f630d8026507263744e385908ca025e9a7976925c1539816b0c0"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "quantmod",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/quantmod_0.4-15.tar.gz",
+					"sha256": "7ef2e798d4d8e4d2af0a5b2b9fecebec30568087afbd24bfd923cdeb8b53df53"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "readr",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/readr_1.3.1.tar.gz",
+					"sha256": "33f94de39bb7f2a342fbb2bd4e5afcfec08798eac39672ee18042ac0b349e4f3"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "readxl",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/readxl_1.3.1.tar.gz",
+					"sha256": "24b441713e2f46a3e7c6813230ad6ea4d4ddf7e0816ad76614f33094fbaaaa96"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3641,13 +3497,25 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "tidygraph",
+			"name": "sem",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/tidygraph_1.2.0.tar.gz",
-					"sha256": "057d6c42fc0144109f3ace7f5058cca7b2fe493c761daa991448b23f86b6129f"
+					"url": "http://static.jasp-stats.org/RPkgs/sem_3.1-9.tar.gz",
+					"sha256": "4a33780202506543da85877cd2813250114420d6ec5e75457bc67477cd332cb9"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "tidyr",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/tidyr_1.0.0.tar.gz",
+					"sha256": "92a1a30b5636c3c1c68acbff0c1f5b301df64bf3198d23f1c9808ed43a900390"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3660,6 +3528,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/TOSTER_0.3.4.tar.gz",
 					"sha256": "bae85b997c290487b31f5876e2ce9fc74d9f83615d18d3c0d601422b38ddacdf"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "tseries",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/tseries_0.10-47.tar.gz",
+					"sha256": "202377df56806fe611c2e12c4d9732c71b71220726e2defa7e568d2b5b62fb7b"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3701,13 +3581,13 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "car",
+			"name": "broom",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/car_3.0-4.tar.gz",
-					"sha256": "6e503be0632c2849383108cc1456d10b5b08d345c31267c65756796156ee0ed6"
+					"url": "http://static.jasp-stats.org/RPkgs/broom_0.5.2.tar.gz",
+					"sha256": "16af7b446b24bc14461efbda9bea1521cf738c778c5e48fcc7bad45660a4ac62"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3720,6 +3600,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/colourpicker_1.0.tar.gz",
 					"sha256": "f1dacbafb05c09f61b9bdd0fdcee5344409759b042a71ec46d7c9e3710107b7c"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "conting",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/conting_1.7.tar.gz",
+					"sha256": "efa3242c24bc4a68ac76f4b1d77753caabb4c19e1301d5a02697f5376438c221"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3785,37 +3677,13 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "ggforce",
+			"name": "haven",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/ggforce_0.3.2.tar.gz",
-					"sha256": "4cce8acb60ce06af44c1c76bbacd7de129eed9b51ed6a85e03a9bf55b0eff4d2"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "ggraph",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/ggraph_2.0.3.tar.gz",
-					"sha256": "78fb263fb7999c4c060efb6ee66c5de0547f17e2ec4bec066be612f58134e0df"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "heplots",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/heplots_1.3-5.tar.gz",
-					"sha256": "964629cba7feadbf3ac223e417310016e86067da4bbf11ad3c213e63ee74d0ef"
+					"url": "http://static.jasp-stats.org/RPkgs/haven_2.2.0.tar.gz",
+					"sha256": "199ee9b14e1ff70a0b0c3b9ce33dfdec8ed3b5e857a2a36bfb82e78a7b352d3d"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3845,25 +3713,13 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "mice",
+			"name": "mitml",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/mice_3.6.0.tar.gz",
-					"sha256": "7bc72bdb631bc9f67d8f76ffb48a7bb275228d861075e20c24c09c736bebec5d"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "onewaytests",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/onewaytests_2.4.tar.gz",
-					"sha256": "464da1ebac5c8909d2d694830118d84aa913ac0647eccbbf00505d5e8dab4ae7"
+					"url": "http://static.jasp-stats.org/RPkgs/mitml_0.3-7.tar.gz",
+					"sha256": "c6f796d0059f1b093b599a89d955982fa257de9c45763ecc2cbbce10fdec1e7b"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3876,6 +3732,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/qgraph_1.6.3.tar.gz",
 					"sha256": "363791067ae640cf4bd6f7ec4a84de9c4abaa468dfc18f21890e3f3fd1e45355"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "rio",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/rio_0.5.16.tar.gz",
+					"sha256": "d3eb8d5a11e0a3d26169bb9d08f834a51a6516a349854250629072d59c29d465"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3900,6 +3768,138 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/shinystan_2.5.0.tar.gz",
 					"sha256": "45f9c552a31035c5de8658bb9e5d72da7ec1f88fbddb520d15fe701c677154a1"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "car",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/car_3.0-4.tar.gz",
+					"sha256": "6e503be0632c2849383108cc1456d10b5b08d345c31267c65756796156ee0ed6"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "graphicalVAR",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/graphicalVAR_0.2.2.tar.gz",
+					"sha256": "681d218db5f4498efe387dbf45462fbddf96221953fc8d4443ec5feadbc2f0cb"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "heplots",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/heplots_1.3-5.tar.gz",
+					"sha256": "964629cba7feadbf3ac223e417310016e86067da4bbf11ad3c213e63ee74d0ef"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "IsingFit",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/IsingFit_0.3.1.tar.gz",
+					"sha256": "8741d65b63818c927819155f13a62d21f7d7f4942b9d218e6f93ce12eeff2ddf"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "mgm",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/mgm_1.2-7.tar.gz",
+					"sha256": "5a415cf32857a1862b78e025bec950bf556c07c2077526d43a063481654f15e8"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "mice",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/mice_3.6.0.tar.gz",
+					"sha256": "7bc72bdb631bc9f67d8f76ffb48a7bb275228d861075e20c24c09c736bebec5d"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "NetworkComparisonTest",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/NetworkComparisonTest_2.2.1.tar.gz",
+					"sha256": "1753961e9fb41d3aae6d12392445d7468d312a5e42629d34597ffa1e6e329b28"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "NetworkToolbox",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/NetworkToolbox_1.3.2.tar.gz",
+					"sha256": "6a8f5bd609b82a838515622b88f7a07f99418483d18fe89eb175bccda3600936"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "onewaytests",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/onewaytests_2.4.tar.gz",
+					"sha256": "464da1ebac5c8909d2d694830118d84aa913ac0647eccbbf00505d5e8dab4ae7"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "rstanarm",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/rstanarm_2.19.2.tar.gz",
+					"sha256": "3f1a625d435ff97cf729439acc7439b813d0e6b1a683992c58cefb7a09559acc"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "stanova",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "git",
+					"url": "https://github.com/bayesstuff/stanova",
+					"commit": "2cb08223f957533103612e72055fa7063a1fb5ce"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3941,78 +3941,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "graphicalVAR",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/graphicalVAR_0.2.2.tar.gz",
-					"sha256": "681d218db5f4498efe387dbf45462fbddf96221953fc8d4443ec5feadbc2f0cb"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "IsingFit",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/IsingFit_0.3.1.tar.gz",
-					"sha256": "8741d65b63818c927819155f13a62d21f7d7f4942b9d218e6f93ce12eeff2ddf"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "mgm",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/mgm_1.2-7.tar.gz",
-					"sha256": "5a415cf32857a1862b78e025bec950bf556c07c2077526d43a063481654f15e8"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "NetworkComparisonTest",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/NetworkComparisonTest_2.2.1.tar.gz",
-					"sha256": "1753961e9fb41d3aae6d12392445d7468d312a5e42629d34597ffa1e6e329b28"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "NetworkToolbox",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/NetworkToolbox_1.3.2.tar.gz",
-					"sha256": "6a8f5bd609b82a838515622b88f7a07f99418483d18fe89eb175bccda3600936"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "rstanarm",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/rstanarm_2.19.2.tar.gz",
-					"sha256": "3f1a625d435ff97cf729439acc7439b813d0e6b1a683992c58cefb7a09559acc"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "smacof",
 			"buildsystem": "simple",
 			"sources": [
@@ -4020,18 +3948,6 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/smacof_2.0-0.tar.gz",
 					"sha256": "de1f4b76f7b64828422757f18e8f6efbf62d085ef404a9b718ad869d1511fd19"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "stanova",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "git",
-					"url": "https://github.com/bayesstuff/stanova",
-					"commit": "2cb08223f957533103612e72055fa7063a1fb5ce"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
