@@ -885,9 +885,14 @@
         expTMP <- ifelse(options[['expectedErrors']] == "expectedRelative", 
                           yes = options[["expectedPercentage"]], 
                           no = options[["expectedNumber"]] / analysisOptions[["populationValue"]])
-        if(expTMP > analysisOptions[["materiality"]]){
+        if(expTMP >= analysisOptions[["materiality"]]){
           # Error if the expected errors exceed the performance materiality
           analysisContainer$setError(gettext("Analysis not possible: Your expected errors are higher than materiality."))
+          return(TRUE)
+        }
+        if(.auditCalculateDetectionRisk(options) >= 1){
+          # Error if the detection risk of the analysis is higher than one
+          analysisContainer$setError(gettext("The detection risk is equal to or higher than 100%. Please re-specify your custom values for the Inherent risk and/or Control risk, or the confidence."))
           return(TRUE)
         }
       }
@@ -899,17 +904,17 @@
     if(!is.null(dataset) && options[["sampleSize"]] >= nrow(dataset)){
       # Error if the sample size is larger than the population size.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your sample size is larger than (or equal to) your population size. Cannot take a sample larger than the population."))
+      analysisContainer$setError(gettext("Your sample size is larger than (or equal to) your population size. Cannot take a sample larger than the population."))
       return(TRUE)
     } else if(!is.null(dataset) && options[["sampleSize"]] == 1){
       # Error if the sample size is 1.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your sample size must be larger than 1."))
+      analysisContainer$setError(gettext("Your sample size must be larger than 1."))
       return(TRUE)
     } else if(options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
       # Error if the record ID's are not unique
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      analysisContainer$setError(gettext("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
       return(TRUE)
     } else {
       # No error in the selection options
@@ -921,7 +926,7 @@
     if(options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
       # Error if the record ID's are not unique
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      analysisContainer$setError(gettext("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
       return(TRUE)
     } else {
       # No error in the selection options
@@ -936,7 +941,7 @@
         !all(unique(dataset[, .v(options[["auditResult"]])]) %in% c(0, 1))){
       # Error if the audit result does not contain only zero's and one's.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
-      analysisContainer$setError(gettextf("Your audit result does not contain only 0's (correct) and 1's (incorrect)."))
+      analysisContainer$setError(gettext("Your audit result does not contain only 0's (correct) and 1's (incorrect)."))
       return(TRUE)
     } else if(type == "frequentist" && 
               options[["variableType"]] == "variableTypeCorrect" && 
@@ -944,24 +949,29 @@
               options[["populationSize"]] == 0){
       # Error if the population size is not defined when the hypergeometric bound is used.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
-      analysisContainer$setError(gettextf("The hypergeometric confidence bound requires that you specify the population size."))
+      analysisContainer$setError(gettext("The hypergeometric confidence bound requires that you specify the population size."))
       return(TRUE)
     } else if((!options[["useSumStats"]] && !is.null(dataset) && options[["populationSize"]] < nrow(dataset)) || 
               (options[["useSumStats"]] && options[["populationSize"]] < options[["nSumStats"]])){
       # Error if the sample size is larger than the population size.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
-      analysisContainer$setError(gettextf("Your sample size is larger than (or equal to) your population size. Please adjust your population size accordingly."))
+      analysisContainer$setError(gettext("Your sample size is larger than (or equal to) your population size. Please adjust your population size accordingly."))
       return(TRUE)
     } else if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound") && 
               (options[["populationValue"]] == 0 || options[["populationSize"]] == 0)){
       # Error if the population size or the population value are zero when using direct, difference, ratio, or regression.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
-      analysisContainer$setError(gettextf("The direct, difference, ratio, and regression confidence bound require that you specify the population size and the population value."))
+      analysisContainer$setError(gettext("The direct, difference, ratio, and regression confidence bound require that you specify the population size and the population value."))
       return(TRUE)
     } else if(!options[["useSumStats"]] && options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
       # Error if the record ID's are not unique
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      analysisContainer$setError(gettext("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      return(TRUE)
+    } else if(.auditCalculateDetectionRisk(options) >= 1){
+      # Error if the detection risk of the analysis is higher than one
+      analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
+      analysisContainer$setError(gettext("The detection risk is equal to or higher than 100%. Please re-specify your values for the Inherent risk and/or Control risk, or the confidence."))
       return(TRUE)
     } else {
       # No error in the evaluation options
@@ -1298,6 +1308,24 @@
 ################## Common functions for the Audit Risk Model ###################
 ################################################################################
 
+.auditCalculateDetectionRisk <- function(options){
+
+  inherentRisk <- base::switch(options[["IR"]],
+                                "High" = 1,
+                                "Medium" = 0.60,
+                                "Low" = 0.50,
+                                "Custom" = options[["irCustom"]])
+
+  controlRisk <- base::switch(options[["CR"]],
+                                "High" = 1,
+                                "Medium" = 0.60,
+                                "Low" = 0.50,
+                                "Custom" = options[["crCustom"]])
+
+  detectionRisk <- (1 - options[["confidence"]]) / inherentRisk / controlRisk
+  return(detectionRisk)
+}
+
 .auditRiskModelParagraph <- function(options, 
                                      jaspResults, 
                                      position){
@@ -1443,7 +1471,7 @@
   detectionRisk <- auditRisk / inherentRisk / controlRisk
 
   if(detectionRisk >= 1){
-    planningContainer$setError(gettextf("The detection risk is higher than 100%%. Please re-specify your custom values for the Inherent risk and/or Control risk."))  
+    planningContainer$setError(gettextf("The detection risk is equal to or higher than 100%. Please re-specify your custom values for the Inherent risk and/or Control risk."))  
     return()
   }
 
@@ -2580,7 +2608,7 @@
                                       jaspResults,
                                       positionInContainer){
 
-  if (!is.null(jaspResults[["plotHistograms"]]) || !options[["plotHistograms"]]) return()
+  if (!is.null(selectionContainer[["plotHistograms"]]) || !options[["plotHistograms"]]) return()
 
   .updateFigNumber(jaspResults)
 
@@ -2593,7 +2621,8 @@
                                       "selectionType",
                                       "seed",
                                       "intervalStartingPoint",
-                                      "sampleSize"))
+                                      "sampleSize",
+                                      "plotHistograms"))
   plotHistograms$position <- positionInContainer
 
   selectionContainer[["plotHistograms"]] <- plotHistograms
@@ -3386,8 +3415,17 @@
   evaluationContainer[["evaluationTable"]] <- evaluationTable
 
   if(is.null(evaluationState) || 
-      (options[["auditResult"]] == "" && !options[["useSumStats"]]))
+      (options[["auditResult"]] == "" && !options[["useSumStats"]])){
+
+    if(options[["workflow"]]){
+      evaluationTable$addFootnote(message = gettext("The audit result column is empty."), 
+                          symbol = gettext("<b>Analysis not ready.</b>"))
+    } else {
+      evaluationTable$addFootnote(message = gettext("Either the materiality, the population size, or the population value is defined as zero, or one of the required variables is missing."), 
+                          symbol = gettext("<b>Analysis not ready.</b>"))
+    }
     return()
+  }
 
   taintLabel <- round(evaluationState[["t"]], 2)
 
@@ -3570,7 +3608,7 @@
     
     if(options[["variableType"]] == "variableTypeAuditValues" && 
         options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
-
+      
       mle <- (planningOptions[["populationValue"]] - evaluationState[["pointEstimate"]]) / 
               planningOptions[["populationValue"]]
     
@@ -3657,7 +3695,16 @@
 
     yLimits <- c(0, 1.1 * max(values))
     yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), 
-                                               min.n = 4)
+                                            min.n = 4)
+
+    if(mle < 0 || bound < 0){
+      # Here we adjust the axes if the mle turns out to be negative
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(min(values), 1.1 * max(values), length.out = 100), 
+                                                min.n = 4)
+      x.labels <- format(JASPgraphs::getPrettyAxisBreaks(seq(min(values), 1.1 * max(values), length.out = 100), 
+                          min.n = 4), scientific = FALSE)
+      yLimits <- c(min(values), 1.1 * max(values))
+    }
 
     p <- ggplot2::ggplot(data = plotData, 
                         mapping = ggplot2::aes(x = x, y = y)) +
