@@ -78,7 +78,7 @@ Section
 		{
 			name:		"show"
 			title:		qsTr("Show")
-			RadioButton { value: "deviation";	label: qsTr("Deviations from mean"); checked: true}
+			RadioButton { value: "deviation";	label: qsTr("Differences from intercept"); checked: true}
 			RadioButton { value: "mmeans";		label: qsTr("Marginal means") }
 		}
 
