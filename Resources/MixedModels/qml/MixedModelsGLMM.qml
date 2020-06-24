@@ -20,6 +20,7 @@ import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP				1.0
 import QtQuick.Layouts	1.3
+import "./common"		as MM
 
 Form {
 	id: form
@@ -43,7 +44,7 @@ Form {
 
 		AssignedVariablesList
 		{
-			enabled:			family.currentText == "Binomial (aggregated)"
+			enabled:			family.currentValue == "binomial_agg"
 			name:				"dependentVariableAggregation"
 			title:				qsTr("Number of trials")
 			singleVariable:		true
@@ -77,12 +78,12 @@ Form {
 			indexDefaultValue:	0
 			values:
 			[
-				{ label: "Binomial",				value: "binomial"},
-				{ label: "Binomial (aggregated)",	value: "binomial_agg"},
-				{ label: "Gaussian",				value: "gaussian"},
-				{ label: "Gamma",					value: "Gamma"},
-				{ label: "Inverse Gaussian",		value: "inverse.gaussian"},
-				{ label: "Poisson",					value: "poisson"}
+				{ label: qsTr("Binomial"),				value: "binomial"},
+				{ label: qsTr("Binomial (aggregated)"),	value: "binomial_agg"},
+				{ label: qsTr("Gaussian"),				value: "gaussian"},
+				{ label: qsTr("Gamma"),					value: "Gamma"},
+				{ label: qsTr("Inverse Gaussian"),		value: "inverse.gaussian"},
+				{ label: qsTr("Poisson"),				value: "poisson"}
 			]
 
 			property var familyMap:
@@ -227,333 +228,9 @@ Form {
 
 	}
 
-	Section
-	{
-		title: qsTr("Options")
-		expanded: false
-	
-		RadioButtonGroup
-		{
-			columns:				2
-			name:					"type"
-			title:					qsTr("Type")
-			radioButtonsOnSameRow:	true
-			RadioButton { value: "2"; label: qsTr("II") }
-			RadioButton { value: "3"; label: qsTr("III"); checked: true }
-		}
+	MM.MixedModelsOptions { allMethodOptions: false }
 
-		CheckBox
-		{
-			enabled:	method.currentText == "parametric bootstrap" | method.currentText == "likelihood ratio tests"
-			name:		"test_intercept"
-			label:		qsTr("Test intercept")
-		}
-
-		Group
-		{
-			DropDown
-			{
-				name:	"method"
-				label:	qsTr("Test model terms")
-				id:		method
-				values:
-				[
-					{ label: "likelihood ratio tests",	value: "LRT"},
-					{ label: "parametric bootstrap",	value: "PB"}
-				]
-			}
-
-			IntegerField
-			{
-				enabled:		method.currentText == "parametric bootstrap"
-				name:			"bootstrap_samples"
-				label:			qsTr("No. samples")
-				defaultValue:	500
-				min:			1
-				fieldWidth:		60
-			}
-		}
-
-		Group
-		{
-			CheckBox
-			{
-				name:	"showFE"
-				label:	qsTr("Fixed effects estimates")
-			}
-
-			CheckBox
-			{
-				name:	"showRE"
-				label:	qsTr("Variance/correlation estimates")
-			}
-		}
-
-		SetSeed{}
-		
-		CheckBox
-		{
-			name:	"pvalVS"
-			label:	qsTr("Vovk-Sellke maximum p-ratio")
-		}
-
-	}
-
-	Section
-	{
-		title:		qsTr("Plots")
-		expanded:	false
-
-		VariablesForm
-		{
-			preferredHeight:	250
-
-			AvailableVariablesList
-			{
-				name:	"availableModelComponentsPlot"
-				title:	qsTr("Model factors")
-				source:	[ { name: "fixedEffects", use: "type=ordinal|nominal|nominalText"} ]
-			}
-
-			AssignedVariablesList
-			{
-				name:	"plotsX"
-				title:	qsTr("Horizontal axis")
-			}
-
-			AssignedVariablesList
-			{
-				name:	"plotsTrace"
-				id:		plotsTrace
-				title:	qsTr("Separate lines")
-			}
-
-			AssignedVariablesList
-			{
-				name:	"plotsPanel"
-				title:	qsTr("Separate plots")
-			}
-		}
-
-		VariablesForm
-		{
-			preferredHeight:	100
-
-			AvailableVariablesList
-			{
-				name:	"plotsRandom" 
-				title:	qsTr("Random effects grouping factors")
-				source:	"randomVariables"
-			}
-
-			AssignedVariablesList
-			{
-				name:	"plotsAgregatedOver"
-				title:	qsTr("Background data show")
-				addAvailableVariablesToAssigned: true
-			}
-		}
-
-		Group
-		{
-			DropDown
-			{
-				name:	"plotsCImethod"
-				id:		plotsCImethod
-				label:	qsTr("Confidence interval method")
-				values:
-				[
-					{ label: "Model",			value: "model"},
-					{ label: "None",			value: "none"},
-					{ label: "Mean",			value: "mean"},
-					{ label: "Within",			value: "within"},
-					{ label: "Between",			value: "between"}
-				]
-			}
-
-			CIField
-			{
-				enabled:	plotsCImethod.currentText != "None"
-				name:		"plotsCIwidth"
-				label:		"Confidence interval"
-			}
-		}
-
-		Group
-		{
-			title:		qsTr("Distinguish factor levels")
-			columns:	4
-
-			CheckBox
-			{
-				name:		"plotsMappingColor"
-				label:		qsTr("Color")
-				checked:	false
-			}
-
-			CheckBox
-			{
-				name:		"plotsMappingShape"
-				label:		qsTr("Shape")
-				checked:	true
-			}
-
-			CheckBox
-			{
-				name:		"plotsMappingLineType"
-				label:		qsTr("Linetype")
-				checked:	true
-			}
-
-			CheckBox
-			{
-				name:		"plotsMappingFill"
-				label:		qsTr("Fill")
-				checked:	false
-			}
-		}
-
-		Group
-		{
-			columns:	1
-
-			DropDown
-			{
-				name:	"plotsGeom"
-				label:	qsTr("Background geom")
-				id:		plotsGeom
-				values:
-				[
-					{ label: "Jitter",				value: "geom_jitter"},
-				//	{ label: "Beeswarm",			value: "geom_beeswarm"}, # enable once the package loading is changed
-					{ label: "Violin",				value: "geom_violin"},
-					{ label: "Boxplot",				value: "geom_boxplot"},
-					{ label: "Boxjitter",			value: "geom_boxjitter"},
-					{ label: "Count",				value: "geom_count"}
-				]
-			}
-
-			DoubleField
-			{
-				name:			"plotAlpha"
-				label:			qsTr("Transparency")
-				defaultValue:	.7
-				min:			0
-				max: 			1
-				inclusive:		JASP.None
-			}
-
-			DoubleField
-			{
-				visible:		plotsGeom.currentText == "Jitter" | plotsGeom.currentText == "Boxjitter"
-				name:			"plotJitterWidth"
-				label:			qsTr("Jitter width")
-				defaultValue:	0
-				min:			0
-			}
-
-			DoubleField
-			{
-				visible:		plotsGeom.currentText == "Jitter" | plotsGeom.currentText == "Boxjitter"
-				name:			"plotJitterHeight"
-				label:			qsTr("Jitter height")
-				defaultValue:	0
-				min:			0
-			}
-
-			DoubleField
-			{
-				visible:		plotsGeom.currentText == "Violin" | plotsGeom.currentText == "Boxplot" | plotsGeom.currentText == "Boxjitter"
-				name:			"plotGeomWidth"
-				label:			qsTr("Geom width")
-				defaultValue:	1
-				min:			0
-			}
-
-			DoubleField
-			{
-				visible:		plotsTrace.count != 0
-				name:			"plotDodge"
-				label:			qsTr("Dodge")
-				defaultValue:	0.3
-				min:			0
-			}
-		}
-
-		Group
-		{
-			columns:	1
-
-			DropDown
-			{
-				name:	"plotsTheme"
-				id:		plotsTheme
-				label:	qsTr("Theme")
-				values:
-				[
-					{ label: "JASP",			value: "JASP"},
-					{ label: "Black White",		value: "theme_bw"},
-					{ label: "Light",			value: "theme_light"},
-					{ label: "Minimal",			value: "theme_minimal"},
-					{ label: "APA", 			value: "jtools::theme_apa"},
-					{ label: "pubr",			value: "ggpubr::theme_pubr"}
-				]
-			}
-
-			DropDown
-			{
-				name:	"plotLegendPosition"
-				label:	qsTr("Legend position")
-				values:
-				[
-					{ label: "None",			value: "none"},
-					{ label: "Bottom",			value: "bottom"},
-					{ label: "Right",			value: "right"},
-					{ label: "Top",				value: "top"},
-					{ label: "Left", 			value: "left"}
-				]
-			}
-
-			DropDown
-			{
-				name:	"plotsBackgroundColor"
-				label:	qsTr("Color background data")
-				values:
-				[
-					{ label: "Dark grey",			value: "darkgrey"},
-					{ label: "None",				value: "none"},
-					{ label: "Black",				value: "black"},
-					{ label: "Light grey",			value: "lightgrey"},
-					{ label: "Blue",				value: "blue"},
-					{ label: "Red",					value: "red"},
-					{ label: "Violet",				value: "violet"}
-				]
-			}
-
-			DoubleField
-			{
-				enabled:		plotsTheme.currentText != "JASP"
-				name:			"plotRelativeSizeText"
-				label:			qsTr("Relative size text")
-				defaultValue:	1.5
-				min:			0
-			}
-
-			DoubleField
-			{
-				name:			"plotRelativeSize"
-				label:			qsTr("Relative size foreground data")
-				defaultValue:	1
-				min:			0
-			}
-
-			CheckBox
-			{
-				name:	"plotsEstimatesTable"
-				label:	qsTr("Estimates table")
-			}
-		}
-	}
+	MM.MixedModelsPlots {}
 
 	Section
 	{
@@ -582,14 +259,14 @@ Form {
 		CIField
 		{
 			name:	"marginalMeansCIwidth"
-			label:	"Confidence interval"
+			label:	qsTr("Confidence interval")
 		}
 
 		DoubleField
 		{
 			id:				marginalMeansSD
 			name:			"marginalMeansSD"
-			label:			"SD factor covariates"
+			label:			qsTr("SD factor covariates")
 			defaultValue: 	1
 			min:			0
 			enabled:		marginalMeans.columnsTypes.includes("scale")
@@ -633,13 +310,13 @@ Form {
 			label:	qsTr("P-value adjustment")
 			values:
 			[
-				{ label: "Holm",				value: "holm"},
-				{ label: "Multivariate-t",		value: "mvt"},
-				{ label: "Scheffe",				value: "scheffe"},
-				{ label: "Tukey",				value: "tukey"},
-				{ label: "None",				value: "none"},
-				{ label: "Bonferroni",			value: "bonferroni"},
-				{ label: "Hommel",				value: "hommel"}
+				{ label: "Holm",					value: "holm"},
+				{ label: qsTr("Multivariate-t"),		value: "mvt"},
+				{ label: "Scheffe",					value: "scheffe"},
+				{ label: "Tukey",					value: "tukey"},
+				{ label: qsTr("None"),				value: "none"},
+				{ label: "Bonferroni",				value: "bonferroni"},
+				{ label: "Hommel",					value: "hommel"}
 			]
 		}
 
@@ -699,14 +376,14 @@ Form {
 		CIField
 		{
 			name:	"trendsCIwidth"
-			label:	"Confidence interval"
+			label:	qsTr("Confidence interval")
 		}
 
 		DoubleField
 		{ 
 			id:				trendsSD
 			name:			"trendsSD"
-			label:			"SD factor covariates"
+			label:			qsTr("SD factor covariates")
 			defaultValue:	1
 			min:			0
 			enabled:		trendsVariables.columnsTypes.includes("scale")
@@ -743,13 +420,13 @@ Form {
 			label:	qsTr("P-value adjustment")
 			values:
 			[
-				{ label: "Holm",				value: "holm"},
-				{ label: "Multivariate-t",		value: "mvt"},
-				{ label: "Scheffe",				value: "scheffe"},
-				{ label: "Tukey",				value: "tukey"},
-				{ label: "None",				value: "none"},
-				{ label: "Bonferroni",			value: "bonferroni"},
-				{ label: "Hommel",				value: "hommel"}
+				{ label: "Holm",					value: "holm"},
+				{ label: qsTr("Multivariate-t"),	value: "mvt"},
+				{ label: "Scheffe",					value: "scheffe"},
+				{ label: "Tukey",					value: "tukey"},
+				{ label: qsTr("None"),				value: "none"},
+				{ label: "Bonferroni",				value: "bonferroni"},
+				{ label: "Hommel",					value: "hommel"}
 			]
 		}
 
