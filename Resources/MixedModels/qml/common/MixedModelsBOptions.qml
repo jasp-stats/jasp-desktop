@@ -41,7 +41,7 @@ Section
 		{
 			name:			"iteration"
 			label:			qsTr("Iterations")
-			defaultValue:	4000
+			defaultValue:	parseInt(warmup.value) + 2
 			min:			warmup.value
 		}
 
