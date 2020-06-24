@@ -1,6 +1,7 @@
 reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
-  
+  sink("~/Downloads/log_freq.txt")
+  on.exit(sink(NULL))
   
   dataset <- .reliabilityReadData(dataset, options)
   .reliabilityCheckErrors(dataset, options)
@@ -29,7 +30,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       tables_item = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6", 
                       "Greatest Lower Bound", "Item-rest correlation", "mean", "sd"),
       coefficients = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6", 
-                       "Greatest Lower Bound", "Item-rest correlation"),
+                       "Greatest Lower Bound"),
       plots = list(expression("McDonald's"~omega), expression("Cronbach\'s"~alpha), expression("Guttman's"~lambda[2]), 
                    expression("Guttman's"~lambda[6]), "Greatest Lower Bound")
     )
@@ -48,7 +49,8 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 .frequentistReliabilityMainResults <- function(jaspResults, dataset, options) {
   if (!options[["mcDonaldScalef"]] && !options[["alphaScalef"]] && !options[["guttman2Scalef"]]
       && !options[["guttman6Scalef"]] && !options[["glbScalef"]] && !options[["averageInterItemCorf"]]
-      && !options[["meanScalef"]] && !options[["sdScalef"]]) {
+      && !options[["meanScalef"]] && !options[["sdScalef"]] 
+      && !options[["itemRestCorf"]] && !options[["meanItemf"]] && !options[["sdItemf"]]) {
     variables <- options[["variables"]]
     if (length(options[["reverseScaledItems"]]) > 0L) {
       dataset <- .reverseScoreItems(dataset, options)
@@ -81,12 +83,12 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         if (options[["missingValuesf"]] == "excludeCasesPairwise") {
           missing <- "pairwise"
           use.cases <- "pairwise.complete.obs"
-          model[["footnote"]] <- gettextf("%s Using pairwise complete cases. ", model[["footnote"]])
+          model[["footnote"]] <- gettextf("%s Of the observations, pairwise complete cases were used. ", model[["footnote"]])
         } else {
           pos <- which(is.na(dataset), arr.ind = T)[, 1]
           dataset <- dataset[-pos, ] 
           use.cases <- "complete.obs"
-          model[["footnote"]] <- gettextf("%s Using %1.f complete cases. ", model[["footnote"]], nrow(dataset))
+          model[["footnote"]] <- gettextf("%s Of the observations, %1.f complete cases were used. ", model[["footnote"]], nrow(dataset))
         }
       } else {
         use.cases <- "everything"
@@ -351,7 +353,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   
   model[["derivedOptions"]] <- .frequentistReliabilityDerivedOptions(options)
   model[["itemsDropped"]] <- .unv(colnames(dataset))
-
+  
+  # when variables are deleted again, a model footnote is expected, but none produce, hence: 
+  if (is.null(model[["footnote"]])) model[["footnote"]] <- ""
+  
   return(model)
 }
 
@@ -533,8 +538,22 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     }
     itemTableF$setData(tb)
     
+    if (!is.null(unlist(options[["reverseScaledItems"]]))) {
+      itemTableF$addFootnote(sprintf(ngettext(length(options[["reverseScaledItems"]]),
+                                              "The following item was reverse scaled: %s. ",
+                                              "The following items were reverse scaled: %s. "),
+                                     paste(options[["reverseScaledItems"]], collapse = ", ")))
+    }
+    
   } else if (length(model[["itemsDropped"]]) > 0) {
     itemTableF[["variables"]] <- model[["itemsDropped"]]
+    
+    if (!is.null(unlist(options[["reverseScaledItems"]]))) {
+      itemTableF$addFootnote(sprintf(ngettext(length(options[["reverseScaledItems"]]),
+                                              "The following item was reverse scaled: %s. ",
+                                              "The following items were reverse scaled: %s. "),
+                                     paste(options[["reverseScaledItems"]], collapse = ", ")))
+    }
   }
   
   jaspResults[["itemTableF"]] <- itemTableF

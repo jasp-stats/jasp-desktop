@@ -1,6 +1,5 @@
 reliabilityBayesian <- function(jaspResults, dataset, options) {
   
-
   
 	dataset <- .reliabilityReadData(dataset, options)
 
@@ -87,7 +86,10 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     if (sidx == 0) {
       return("")
     } else {
-      footnote <- .footnoteNegativeCorrelation(variables, idx)
+      footnote <- sprintf(ngettext(length(variables[idx]),
+                                   "The following item correlated negatively with the scale: %s. ",
+                                   "The following items correlated negatively with the scale: %s. "),
+                          paste(variables[idx], collapse = ", "))
       return(footnote)
     }
   } else {
@@ -100,7 +102,8 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 .BayesianReliabilityMainResults <- function(jaspResults, dataset, options) {
   if (!options[["mcDonaldScale"]] && !options[["alphaScale"]] && !options[["guttman2Scale"]]
       && !options[["guttman6Scale"]] && !options[["glbScale"]] && !options[["averageInterItemCor"]]
-      && !options[["meanScale"]] && !options[["sdScale"]]) {
+      && !options[["meanScale"]] && !options[["sdScale"]]
+      && !options[["itemRestCor"]] && !options[["meanItem"]] && !options[["sdItem"]]) {
     variables <- options[["variables"]]
     if (length(options[["reverseScaledItems"]]) > 0L) {
       dataset <- .reverseScoreItems(dataset, options)
@@ -122,20 +125,24 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
         dataset <- .reverseScoreItems(dataset, options)
       }
       
-      missing <- "none" 
+      model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
+                                      
+      missing <- NULL 
       options[["missings"]] <- "everything"
       if (any(is.na(dataset))) {
         if (options[["missingValues"]] == "excludeCasesPairwise") {
           missing <- "pairwise"
           options[["missings"]] <- "pairwise.complete.obs"
+          model[["footnote"]] <- gettextf("%s Of the observations, pairwise complete cases. ", model[["footnote"]])
         } else if (options[["missingValues"]] == "excludeCasesListwise") {
           pos <- which(is.na(dataset), arr.ind = T)[, 1]
           dataset <- dataset[-pos, ] 
           missing <- "listwise"
           options[["missings"]] <- "complete.obs"
+          model[["footnote"]] <- gettextf("%s Of the observations, the analysis used %1.f complete cases. ", 
+                                          model[["footnote"]], nrow(dataset))
           }
       }
-      model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
       
       chains <- options[["noChains"]]
       samples <- options[["noSamples"]]
@@ -150,14 +157,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                      n.iter = options[["noSamples"]], n.burnin = options[["noBurnin"]], 
                                      n.chains = options[["noChains"]], thin = options[["noThin"]],
                                      freq = F, item.dropped = TRUE, missing = missing, callback = progressbarTick))
-      
-      if (any(is.na(dataset))) {
-        if (!is.null(relyFit[["miss_pairwise"]])) {
-          model[["footnote"]] <- gettextf("%s Using pairwise complete cases. ", model[["footnote"]])
-        } else {
-          model[["footnote"]] <- gettextf("%s Using %1.f complete cases. ", model[["footnote"]], nrow(dataset))
-        }
-      }
+
 
       
       # add the scale info
@@ -244,6 +244,9 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
   model[["derivedOptions"]] <- .BayesianReliabilityDerivedOptions(options)
   model[["itemsDropped"]] <- .unv(colnames(dataset))
+  
+  # when variables are deleted again, a model footnote is expected, but none produce, hence: 
+  if (is.null(model[["footnote"]])) model[["footnote"]] <- ""
   
 	return(model)
 }
@@ -435,9 +438,24 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       tb <- cbind(tb, newtb)
     }
 		itemTable$setData(tb)
+		
+		if (!is.null(unlist(options[["reverseScaledItems"]]))) {
+		  itemTable$addFootnote(sprintf(ngettext(length(options[["reverseScaledItems"]]),
+		                                          "The following item was reverse scaled: %s. ",
+		                                          "The following items were reverse scaled: %s. "),
+		                                 paste(options[["reverseScaledItems"]], collapse = ", ")))
+		}
 
   } else if (length(model[["itemsDropped"]]) > 0) {
     itemTable[["variable"]] <- model[["itemsDropped"]]
+    
+    if (!is.null(unlist(options[["reverseScaledItems"]]))) {
+      
+      itemTable$addFootnote(sprintf(ngettext(length(options[["reverseScaledItems"]]),
+                                              "The following item was reverse scaled: %s. ",
+                                              "The following items were reverse scaled: %s. "),
+                                     paste(options[["reverseScaledItems"]], collapse = ", ")))
+    }
   }
 
   jaspResults[["itemTable"]] <- itemTable
@@ -970,15 +988,9 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 .reverseScoreItems <- function(dataset, options) {
   dataset <- as.matrix(dataset) # fails for string factors!
   cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
-  total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
+  total <- apply(as.matrix(dataset[, cols]), 2, min, na.rm = T) + apply(as.matrix(dataset[, cols]), 2, max, na.rm = T)
   dataset[ ,cols] <- matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
   return(dataset)
 }
 
-.footnoteNegativeCorrelation <- function(variables, idx) {
-  footnote <- sprintf(ngettext(length(variables[idx]),
-                               "The following item correlated negatively with the scale: %s. ",
-                               "The following items correlated negatively with the scale: %s. "),
-                      paste(variables[idx], collapse = ", "))
-}
   
