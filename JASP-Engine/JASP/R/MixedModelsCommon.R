@@ -668,7 +668,7 @@
   
   model <- jaspResults[["mmModel"]]$object$model
   
-  fitStats <- createJaspTable(title = gettext("Fit Statistics"))
+  fitStats <- createJaspTable(title = gettext("Model summary"))
   fitStats$position <- 2
 
   if (type == "LMM") {
@@ -697,7 +697,7 @@
   if (is_REML) {
     fitStats$addColumnInfo(
       name = "devianceREML",
-      title = gettext("REML criterion/deviance"),
+      title = gettext("Deviance (REML)"),
       type = "number"
     )
   }
@@ -714,6 +714,8 @@
   fitStats$addColumnInfo(name = "bic",
                          title = gettext("BIC"),
                          type = "number")
+  
+  jaspResults[["fitStats"]] <- fitStats
   
   
   if (is.list(model$full_model)) {
@@ -746,8 +748,6 @@
   
   fitStats$addRows(temp_row)
   fitStats$addFootnote(.mmMessageFitType(is_REML))
-
-  jaspResults[["fitStats"]] <- fitStats
   
   return()
 }
@@ -2239,10 +2239,12 @@
                          type = "number")
   
 
+  jaspResults[["fitStats"]] <- fitStats
+  
   waic <- loo::waic(model)
   loo  <- loo::loo(model)
 
-  
+
   n_bad_waic <- sum(waic$pointwise[,2] > 0.4)
   n_bad_loo  <- length(loo::pareto_k_ids(loo, threshold = .7))
   
@@ -2263,7 +2265,7 @@
   )
   
   fitStats$addRows(temp_row)
-  jaspResults[["fitStats"]] <- fitStats
+
   
   return()
 }
