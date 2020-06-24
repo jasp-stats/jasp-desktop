@@ -2414,7 +2414,7 @@
           ))), collapse = "*")
         if (options$show == "deviation") {
           table_name <-
-            gettextf("%s (difference from intercept)",var_name)
+            gettextf("%s (differences from intercept)",var_name)
         } else if (options$show == "mmeans") {
           if (nrow(temp_summary) == 1) {
             table_name <- gettextf("%s (trend)",var_name)
