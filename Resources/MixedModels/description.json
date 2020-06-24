@@ -20,15 +20,11 @@
 			"icon":		"MixedModels_classical.svg"
 		},
 		{
-			"menu":		"Linear Mixed Models",
 			"title":	"Linear Mixed Models",
-			"qml":		"MixedModelsLMM.qml",
 			"function":	"MixedModelsLMM"
 		},
 		{
-			"menu":		"Generalized Linear Mixed Models",
 			"title":	"Generalized Linear Mixed Models",
-			"qml":		"MixedModelsGLMM.qml",
 			"function":	"MixedModelsGLMM"
 		},
 		{
@@ -36,15 +32,11 @@
 			"icon":		"MixedModels_bayesian.svg"
 		},
 		{
-			"menu":		"Linear Mixed Models",
 			"title":	"Bayesian Linear Mixed Models",
-			"qml":		"MixedModelsBLMM.qml",
 			"function":	"MixedModelsBLMM"
 		},
 		{
-			"menu":		"Generalized Linear Mixed Models",
 			"title":	"Bayesian Generalized Linear Mixed Models",
-			"qml":		"MixedModelsBGLMM.qml",
 			"function":	"MixedModelsBGLMM"
 		}
 	]

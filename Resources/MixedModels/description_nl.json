@@ -2,7 +2,7 @@
 	"moduleDescription" :
 	{
 		"name" :		"MixedModels",
-		"title" :		"Mixed Models",
+		"title" :		"Gemengde Modellen",
 		"description":	"This module offers the standard Frequentist and Bayesian Mixed Models analyses.",
 		"icon":			"MixedModels_classical.svg",
 		"version":		"1.0",
@@ -20,15 +20,11 @@
 			"icon":		"MixedModels_classical.svg"
 		},
 		{
-			"menu":		"Linear Mixed Models",
-			"title":	"Linear Mixed Models",
-			"qml":		"MixedModelsLMM.qml",
+			"title":	"Lineaire Gemengde Modellen",
 			"function":	"MixedModelsLMM"
 		},
 		{
-			"menu":		"Generalized Linear Mixed Models",
-			"title":	"Generalized Linear Mixed Models",
-			"qml":		"MixedModelsGLMM.qml",
+			"title":	"Gegeneraliseerde Lineaire Gemengde Modellen",
 			"function":	"MixedModelsGLMM"
 		},
 		{
@@ -36,15 +32,11 @@
 			"icon":		"MixedModels_bayesian.svg"
 		},
 		{
-			"menu":		"Linear Mixed Models",
-			"title":	"Bayesian Linear Mixed Models",
-			"qml":		"MixedModelsBLMM.qml",
+			"title":	"Bayesiaanse Lineaire Gemengde Modellen",
 			"function":	"MixedModelsBLMM"
 		},
 		{
-			"menu":		"Generalized Linear Mixed Models",
-			"title":	"Bayesian Generalized Linear Mixed Models",
-			"qml":		"MixedModelsBGLMM.qml",
+			"title":	"Bayesiaanse Gegeneraliseerde Lineaire Gemengde Modellen",
 			"function":	"MixedModelsBGLMM"
 		}
 	]
