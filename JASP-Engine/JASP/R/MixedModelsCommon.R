@@ -2517,8 +2517,11 @@
       div_iterations <- rstan::get_num_divergent(model$stanfit)
       low_bmfi       <- rstan::get_low_bfmi_chains(model$stanfit)
       max_treedepth  <- rstan::get_num_max_treedepth(model$stanfit)
-      max_Rhat       <-
-        max(rstan::summary(model$stanfit)$summary[, "Rhat"])
+      if(any(is.infinite(rstan::summary(model$stanfit)$summary[, "Rhat"]))){
+        max_Rhat     <- Inf
+      }else{
+        max_Rhat     <- max(rstan::summary(model$stanfit)$summary[, "Rhat"])
+      }
       min_ESS        <-
         min(rstan::summary(model$stanfit)$summary[, "n_eff"])
       if (div_iterations != 0) {
@@ -2533,7 +2536,7 @@
       if (max_Rhat > 1.01) {
         temp_table$addFootnote(.mmMessageMaxRhat(max_Rhat), symbol = gettext("Warning:"))
       }
-      if (min_ESS < 100 * options$chains) {
+      if (min_ESS < 100 * options$chains || is.nan(min_ESS)) {
         temp_table$addFootnote(.mmMessageMinESS(min_ESS), symbol = gettext("Warning:"))
       }
       
