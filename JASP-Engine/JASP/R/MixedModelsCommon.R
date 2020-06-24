@@ -141,13 +141,13 @@
   for(var in unlist(options$fixedEffects)) {
     if(is.factor(dataset[,.v(var)]) || is.character(dataset[,.v(var)])){
       if(length(unique(dataset[,.v(var)])) == nrow(dataset))
-        JASP:::.quitAnalysis(gettextf("Problem found in variable '%s': Categorical variables must have less levels than is the overall number of observations.",var))
+        JASP:::.quitAnalysis(gettextf("The categorical fixed effect '%s' must have fever levels than the overall number of observations.",var))
     }
   }
 
   for(var in unlist(options$randomVariables)) {
     if(length(unique(dataset[,.v(var)])) == nrow(dataset))
-      JASP:::.quitAnalysis(gettextf("The random effects grouping factor '%s' must have less levels than is the overall number of observations.",var))  
+      JASP:::.quitAnalysis(gettextf("The random effects grouping factor '%s' must have fever levels than the overall number of observations.",var))  
   }  
   
   
