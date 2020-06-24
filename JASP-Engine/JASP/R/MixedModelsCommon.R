@@ -1151,6 +1151,7 @@
       plot_data <- afex::afex_plot(
         model,
         x           = .v(unlist(options$plotsX)),
+        dv          = .v(options$dependentVariable),
         trace       = if (length(options$plotsTrace) != 0)
           .v(unlist(options$plotsTrace)),
         panel       = if (length(options$plotsPanel) != 0)
