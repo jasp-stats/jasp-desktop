@@ -72,7 +72,7 @@ Section
 			name:			"bootstrap_samples"
 			label:			qsTr("No. samples")
 			defaultValue:	500
-			min:			1
+			min:			100
 			fieldWidth:		60
 		}
 	}
