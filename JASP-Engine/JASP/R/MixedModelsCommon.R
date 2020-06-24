@@ -692,7 +692,7 @@
   }
   
   fitStats$addColumnInfo(name = "deviance",
-                         title = gettext("deviance"),
+                         title = gettext("Deviance"),
                          type = "number")
   if (is_REML) {
     fitStats$addColumnInfo(
