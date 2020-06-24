@@ -498,7 +498,7 @@
           # I will try silving it once someone actually has problem with real data.
           ANOVAsummary$setError(gettext("The optimizer failed to find a solution due to invalid starting values. (JASP currently does not support specifying different starting values.)"))
         } else{
-          ANOVAsummary$setError(model$message)
+          ANOVAsummary$setError(.unv(model$message))
         }
         
         
