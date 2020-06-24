@@ -2750,7 +2750,7 @@ msgstr "<b>Variabele definitie</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Record ID's"
-msgstr "Boeking ID's"
+msgstr "Transactie ID's"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Book Values <i>(required)</i>"
@@ -2795,7 +2795,7 @@ msgstr "Activeer"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Control Risk"
-msgstr "Controle risico"
+msgstr "Controlerisico"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Planning Distribution"
@@ -2987,7 +2987,7 @@ msgstr "Audit waarden"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Correct / Incorrect"
-msgstr "Correct / incorrect"
+msgstr "Correct / Incorrect"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Fill Variables</b>"
@@ -3031,7 +3031,7 @@ msgstr "Regressie"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Area Under Posterior"
-msgstr "Gebied onder posterior"
+msgstr "Gebied Onder Posterior"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Credible bound"
@@ -3124,7 +3124,7 @@ msgstr "Activeer"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Control Risk"
-msgstr "Controleer risico"
+msgstr "Controlerisico"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Planning Distribution"
@@ -3228,7 +3228,7 @@ msgstr "<b>Variabele definitie</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Record ID's"
-msgstr "Boeking ID's"
+msgstr "Transactie ID's"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Book Values <i>(required)</i>"
@@ -3273,7 +3273,7 @@ msgstr "Activeer"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Control Risk"
-msgstr "Controle risico"
+msgstr "Controlerisico"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Planning Distribution"
@@ -3445,7 +3445,7 @@ msgstr "Audit waarden"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Correct / Incorrect"
-msgstr "Correct / incorrect"
+msgstr "Correct / Incorrect"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Fill Variables</b>"
@@ -3586,7 +3586,7 @@ msgstr "Activeer"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Control Risk"
-msgstr "Controle risico"
+msgstr "Controlerisico"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Planning Distribution"
@@ -4679,10 +4679,6 @@ msgstr "Vergelijk met nulmodel"
 msgctxt "ABTestBayesian|"
 msgid "Advanced Options"
 msgstr "Geavanceerde opties"
-
-msgctxt "ABTestBayesian|"
-msgid "Prior Model Probability"
-msgstr "Prior model kans"
 
 msgctxt "ABTestBayesian|"
 msgid "Log odds ratio = 0"
@@ -7099,194 +7095,6 @@ msgstr "Residueel vs. afhankelijk"
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Profile Random Effects Parameters (takes time)"
 msgstr "Portretteer aselecte-effectenparameters (kost tijd)"
-
-msgctxt "LinearMixedModels|"
-msgid "Dependent Variable"
-msgstr "Afhankelijke variabele"
-
-msgctxt "LinearMixedModels|"
-msgid "Fixed Factors"
-msgstr "Fixed factoren"
-
-msgctxt "LinearMixedModels|"
-msgid "Fixed Covariates"
-msgstr "Fixed covariaten"
-
-msgctxt "LinearMixedModels|"
-msgid "Random Effects Grouping Factors"
-msgstr "Aselecte effecten groeperingsfactoren"
-
-msgctxt "LinearMixedModels|"
-msgid "Estimation method"
-msgstr "Schattingsmethode"
-
-msgctxt "LinearMixedModels|"
-msgid "Fixed Effects"
-msgstr "Fixed effecten"
-
-msgctxt "LinearMixedModels|"
-msgid "Components"
-msgstr "Componenten"
-
-msgctxt "LinearMixedModels|"
-msgid "Model Terms"
-msgstr "Modeltermen"
-
-msgctxt "LinearMixedModels|"
-msgid "Test intercept"
-msgstr "Toets intercept"
-
-msgctxt "LinearMixedModels|"
-msgid "Random Effects"
-msgstr "Aselecte effecten"
-
-msgctxt "LinearMixedModels|"
-msgid "Post Hoc Tests"
-msgstr "Post-hoc toets"
-
-msgctxt "LinearMixedModels|"
-msgid "Correction"
-msgstr "Correctie"
-
-msgctxt "LinearMixedModels|"
-msgid "No correction"
-msgstr "Geen correctie"
-
-msgctxt "LinearMixedModels|"
-msgid "Bonferroni"
-msgstr "Bonferroni"
-
-msgctxt "LinearMixedModels|"
-msgid "Holm"
-msgstr "Holm"
-
-msgctxt "LinearMixedModels|"
-msgid "Descriptives Plots"
-msgstr "Beschrijvende Diagrammen"
-
-msgctxt "LinearMixedModels|"
-msgid "Factors"
-msgstr "Factoren"
-
-msgctxt "LinearMixedModels|"
-msgid "Horizontal Axis"
-msgstr "Horizontale as"
-
-msgctxt "LinearMixedModels|"
-msgid "Separate Lines"
-msgstr "Gescheiden lijnen"
-
-msgctxt "LinearMixedModels|"
-msgid "Separate Plots"
-msgstr "Gescheiden grafieken"
-
-msgctxt "LinearMixedModels|"
-msgid "Assumption Checks"
-msgstr "Verificatie van aannames"
-
-msgctxt "LinearMixedModels|"
-msgid "Homogeneity tests"
-msgstr "Toets voor homogeniteit"
-
-msgctxt "LinearMixedModels|"
-msgid "Homogeneity corrections"
-msgstr "Homogeniteitscorrecties"
-
-msgctxt "LinearMixedModels|"
-msgid "None"
-msgstr "Geen"
-
-msgctxt "LinearMixedModels|"
-msgid "Brown-Forsythe"
-msgstr "Brown-Forsythe"
-
-msgctxt "LinearMixedModels|"
-msgid "Welch"
-msgstr "Welch"
-
-msgctxt "LinearMixedModels|"
-msgid "Q-Q plot of residuals"
-msgstr "Q-Q plot van residuen"
-
-msgctxt "LinearMixedModels|"
-msgid "Contrasts"
-msgstr "Contrasten"
-
-msgctxt "LinearMixedModels|"
-msgid "Assume equal variances"
-msgstr "Ga uit van gelijke varianties"
-
-msgctxt "LinearMixedModels|"
-msgid "Confidence intervals"
-msgstr "Betrouwbaarheidsintervallen"
-
-msgctxt "LinearMixedModels|"
-msgid "Additional Options"
-msgstr "Aanvullende opties"
-
-msgctxt "LinearMixedModels|"
-msgid "Marginal means"
-msgstr "Marginale gemiddeldes"
-
-msgctxt "LinearMixedModels|"
-msgid "Compare marginal means to 0"
-msgstr "Vergelijk marginale gemiddeldes met 0"
-
-msgctxt "LinearMixedModels|"
-msgid "Confidence interval adjustment"
-msgstr "Betrouwbaarheidsintervalaanpassing"
-
-msgctxt "LinearMixedModels|"
-msgid "Display"
-msgstr "Weergeven"
-
-msgctxt "LinearMixedModels|"
-msgid "Descriptive statistics"
-msgstr "Beschrijvende statistiek"
-
-msgctxt "LinearMixedModels|"
-msgid "Estimates of effect size"
-msgstr "Schattingen van effectgrootte"
-
-msgctxt "LinearMixedModels|"
-msgid "η²"
-msgstr "η²"
-
-msgctxt "LinearMixedModels|"
-msgid "partial η²"
-msgstr "partiële η²"
-
-msgctxt "LinearMixedModels|"
-msgid "ω²"
-msgstr "ω²"
-
-msgctxt "LinearMixedModels|"
-msgid "Vovk-Sellke maximum p-ratio"
-msgstr "Vovk-Sellke maximum p-ratio"
-
-msgctxt "LinearMixedModels|"
-msgid "Simple Main Effects"
-msgstr "Hoofdeffecten"
-
-msgctxt "LinearMixedModels|"
-msgid "Simple Effect Factor"
-msgstr "Simpele effectfactor"
-
-msgctxt "LinearMixedModels|"
-msgid "Moderator Factor 1"
-msgstr "Moderator factor 1"
-
-msgctxt "LinearMixedModels|"
-msgid "Moderator Factor 2"
-msgstr "Moderator factor 2"
-
-msgctxt "LinearMixedModels|"
-msgid "Non Parametrics"
-msgstr "Niet parametrisch"
-
-msgctxt "LinearMixedModels|"
-msgid "Kruskal-Wallis Test"
-msgstr "Kruskal-Wallis toets"
 
 msgctxt "NetworkAnalysis|"
 msgid "Dependent Variables"
@@ -10536,28 +10344,11 @@ msgstr "Een control heeft geen naam"
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
-"Component %1 was loaded with the wrong type of value and has been reset to its "
-"default value.<br>"
-msgstr ""
-"Component %1 werd geladen met een verkeerd soort waarde en kreeg zijn "
-"standaard waarde.<br>"
-
-#, qt-format
-msgctxt "AnalysisForm|"
-msgid ""
-"These components were loaded with the wrong type of value and have been reset to "
-"their default values:%1"
+"These components were loaded with the wrong type of value and have been "
+"reset to their default values:%1"
 msgstr ""
 "Deze componenten werden geladen met een verkeerd soort waarde en kregen hun "
 "standaard waarden:%1"
-
-msgctxt "AnalysisForm|"
-msgid ""
-"Many components were loaded with the wrong type of value and have been reset to "
-"their default values.<br>"
-msgstr ""
-"Veel componenten werden geladen met een verkeerd soort waarde en kregen hun "
-"standaard waarden.<br>"
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
@@ -10781,10 +10572,6 @@ msgid "Custom"
 msgstr "Aangepast"
 
 msgctxt "auditBayesianPlanning|"
-msgid "Report badges"
-msgstr "Meld badges"
-
-msgctxt "auditBayesianPlanning|"
 msgid "Gamma"
 msgstr "Gamma"
 
@@ -10823,10 +10610,6 @@ msgstr "Geen"
 msgctxt "auditBayesianWorkflow|"
 msgid "Custom"
 msgstr "Aangepast"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Report badges"
-msgstr "Meld badges"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Gamma"
@@ -10901,10 +10684,6 @@ msgid "Enable"
 msgstr "Activeer"
 
 msgctxt "auditClassicalBenfordsLaw|"
-msgid "Report badges"
-msgstr "Meld badges"
-
-msgctxt "auditClassicalBenfordsLaw|"
 msgid "Tables and Plots"
 msgstr "Tabellen en grafieken"
 
@@ -10928,17 +10707,9 @@ msgctxt "auditClassicalBenfordsLaw|"
 msgid "<b>Download Report</b>"
 msgstr "<b>Download verslag</b>"
 
-msgctxt "auditClassicalEstimation|"
-msgid "Report badges"
-msgstr "Meld badges"
-
 msgctxt "auditClassicalPlanning|"
 msgid "Custom"
 msgstr "Aangepast"
-
-msgctxt "auditClassicalPlanning|"
-msgid "Report badges"
-msgstr "Meld badges"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Sample size comparison"
@@ -10951,10 +10722,6 @@ msgstr "Impliciete steekproefverdeling"
 msgctxt "auditClassicalWorkflow|"
 msgid "Custom"
 msgstr "Aangepast"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Report badges"
-msgstr "Meld badges"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Sample size comparison"
@@ -15637,7 +15404,7 @@ msgstr "naar %1"
 
 msgctxt "auditSelection|"
 msgid "Record ID's"
-msgstr "Boeking ID's"
+msgstr "Transactie ID's"
 
 msgctxt "auditSelection|"
 msgid "Book Values <i>(required)</i>"
@@ -16078,10 +15845,2443 @@ msgctxt "RibbonModel|"
 msgid "R (Beta)"
 msgstr "R (Beta)"
 
+msgctxt "auditBayesianEvaluation|"
+msgid "Population Materiality"
+msgstr "Populatiematerialiteit"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Absolute"
+msgstr "Absoluut"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Relative"
+msgstr "Relatief"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Population"
+msgstr "Populatie"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Size"
+msgstr "Grootte"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Value"
+msgstr "Waarde"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Audit Risk"
+msgstr "Audit Risico"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Confidence"
+msgstr "Betrouwbaarheid"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Record ID's"
+msgstr "Transactie ID's"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Audit Result"
+msgstr "Auditresultaat"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Book Values <i>(required)</i>"
+msgstr "Boekwaarden <i>(verplicht)</i>"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Book Values <i>(optional)</i>"
+msgstr "Boekwaarden <i>(optioneel)</i>"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Selection Counter <i>(optional)</i>"
+msgstr "Selectieteller <i>(optioneel)</i>"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Annotation Method"
+msgstr "Annotatiemethode"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Audit values"
+msgstr "Audit waarden"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Correct / Incorrect"
+msgstr "Correct / Incorrect"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Use summary statistics"
+msgstr "Gebruik samenvattende statistieken"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Sample size"
+msgstr "Steekproefgrootte"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Found errors"
+msgstr "Gevonden fouten"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Prior Information"
+msgstr "Prior Informatie"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Inherent Risk"
+msgstr "Inherent Risico"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "High"
+msgstr "Hoog"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Medium"
+msgstr "Middel"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Low"
+msgstr "Laag"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Custom"
+msgstr "Aangepast"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Control Risk"
+msgstr "Controlerisico"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Expected Errors"
+msgstr "Verwachte Fouten"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Advanced Options"
+msgstr "Geavanceerde Opties"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Estimation Method"
+msgstr "Schattingsmethode"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Beta"
+msgstr "Beta"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Gamma"
+msgstr "Gamma"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Beta-binomial"
+msgstr "Beta-binomiaal"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Area Under Posterior"
+msgstr "Gebied Onder Posterior"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Credible bound"
+msgstr "Geloofwaardigheidsgrens"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Credible interval"
+msgstr "Geloofwaardigheidsinterval"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Explanatory Text"
+msgstr "Toelichtende Tekst"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Enable"
+msgstr "Activeer"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Show explanatory text and formulas"
+msgstr "Geef toelichtende tekst en formules weer"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Tables and Plots"
+msgstr "Tabellen en Grafieken"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Statistics"
+msgstr "Statistieken"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Most likely error (MLE)"
+msgstr "Meest waarschijnlijke fout (MLE)"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Evidence ratio"
+msgstr "Evidentieratio"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Bayes factor (BF₋₊)"
+msgstr "Bayes factor (BF₋₊)"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Tables"
+msgstr "Tabellen"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Prior and posterior descriptives"
+msgstr "Prior and posterior beschrijvingen"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Evaluation information"
+msgstr "Evaluatie informatie"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Correlation plot"
+msgstr "Correlatiediagram"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Prior and posterior"
+msgstr "Prior en posterior"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "x-axis limit"
+msgstr "x-as limiet"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Additional info"
+msgstr "Aanvullende info"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Shade"
+msgstr "Markeer"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Credible region"
+msgstr "Geloofwaardigheidsgebied"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "Support regions"
+msgstr "Ondersteuningsgebieden"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "None"
+msgstr "Geen"
+
+msgctxt "auditBayesianEvaluation|"
+msgid "<b>Download Report</b>"
+msgstr "<b>Download verslag</b>"
+
+msgctxt "auditBayesianPlanning|"
+msgid "Prior Information"
+msgstr "Prior Informatie"
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Prior Information"
+msgstr "Prior Informatie"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Population Materiality"
+msgstr "Populatiematerialiteit"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Absolute"
+msgstr "Absoluut"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Relative"
+msgstr "Relatief"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Population"
+msgstr "Populatie"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Size"
+msgstr "Grootte"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Value"
+msgstr "Waarde"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Audit Risk"
+msgstr "Audit Risico"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Confidence"
+msgstr "Betrouwbaarheid"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Record ID's"
+msgstr "Transactie ID's"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Audit Result"
+msgstr "Auditresultaat"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Book Values <i>(required)</i>"
+msgstr "Boekwaarden <i>(verplicht)</i>"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Book Values <i>(optional)</i>"
+msgstr "Boekwaarden <i>(optioneel)</i>"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Selection Counter <i>(optional)</i>"
+msgstr "Selectieteller <i>(optioneel)</i>"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Annotation Method"
+msgstr "Annotatiemethode"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Audit values"
+msgstr "Audit waarden"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Correct / Incorrect"
+msgstr "Correct / Incorrect"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Use summary statistics"
+msgstr "Gebruik samenvattende statistieken"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Sample size"
+msgstr "Steekproefgrootte"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Found errors"
+msgstr "Gevonden fouten"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Advanced Options"
+msgstr "Geavanceerde Opties"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Estimation Method"
+msgstr "Schattingsmethode"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Stringer"
+msgstr "Stringer"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "LTA adjustment"
+msgstr "LTA bijstelling"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Direct"
+msgstr "Direct"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Difference"
+msgstr "Verschil"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Ratio"
+msgstr "Ratio"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Regression"
+msgstr "Regressie"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Binomial"
+msgstr "Binomiaal"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Poisson"
+msgstr "Poisson"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Hypergeometric"
+msgstr "Hypergeometrisch"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Inherent Risk"
+msgstr "Inherent Risico"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "High"
+msgstr "Hoog"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Medium"
+msgstr "Middel"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Low"
+msgstr "Laag"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Custom"
+msgstr "Aangepast"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Control Risk"
+msgstr "Controlerisico"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Explanatory Text"
+msgstr "Toelichtende Tekst"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Enable"
+msgstr "Activeer"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Show explanatory text and formulas"
+msgstr "Geef toelichtende tekst en formules weer"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Tables and Plots"
+msgstr "Tabellen en Grafieken"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Statistics"
+msgstr "Statistieken"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Most likely error (MLE)"
+msgstr "Meest waarschijnlijke fout (MLE)"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Evaluation information"
+msgstr "Evaluatie informatie"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Correlation plot"
+msgstr "Correlatiediagram"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "<b>Download Report</b>"
+msgstr "<b>Download verslag</b>"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Cohen's d / t-statistics & (N / SE)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Correlations & (N / SE)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Effect sizes & SE"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Fitted model"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Path to the fitted model"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Effect Size"
+msgstr "Effectgrootte"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "t-statistic"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Effect Size Standard Error"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "95% CI Lower and Upper Bound"
+msgstr "95% Geloofwaardigheidsinterval"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "N"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "N (group 1)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "N (group 2)"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Study Labels"
+msgstr "Onderzoeklabels"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "One-sample t-tests"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Two-sample t-tests"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Priors"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Plot priors"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Effect"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Distribution"
+msgstr "Verdeling"
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Parameters"
+msgstr "Parameters"
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Truncation"
+msgstr "Afkapping"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Prior Odds"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Normal(μ,σ)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Student-t(μ,σ,v)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Cauchy(x₀,θ)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Gamma(α,β)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Gamma(k,θ)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Inverse-Gamma(α,β)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Spike(x₀)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Uniform(a,b)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "lower"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "upper"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Odds"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Heterogeneity"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Publication bias"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Weight function"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Cut-points"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Two-sided"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "One-sided (mon.)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "One-sided"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "None"
+msgstr "Geen"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "p-values"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Set null priors"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Effect (null)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Heterogeneity (null)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Publication bias (null)"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Inference"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Conditional estimates"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Models overview"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "BF"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Inclusion"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "vs Best"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "vs Previous"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Order"
+msgstr "Volgorde"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Marginal likelihood"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Posterior prob."
+msgstr "Posterior kans"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Individual models"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Single model"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "CI width"
+msgstr "CI wijdte"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Estimated studies' effects"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Pooled estimates"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Forest plot"
+msgstr "Forestgrafiek"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Show"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Observed"
+msgstr "Waargenomen"
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Estimated"
+msgstr "Geschat"
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Both"
+msgstr "Beiden"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Ascending"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Descending"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Row order"
+msgstr "Rijvolgorde"
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Weights"
+msgstr "Gewichten"
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid " "
+msgstr " "
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Type"
+msgstr "Type"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Model-averaged"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Conditional"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Show priors"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Conditional models only"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Model number"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "MCMC Diagnostics"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Overview"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Include theta"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Plot"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Trace"
+msgstr "Traceer"
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Autocorrelation"
+msgstr "Autocorrelatie"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Posterior samples densities"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Transform estimates"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Advanced"
+msgstr "Geavanceerd"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Transform correlations"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Cohen's d"
+msgstr "Cohen's d"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Fisher's z"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Bridge sampling iterations:"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Estimation settings (MCMC)"
+msgstr "Schattings instellingen (MCMC)"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Adaptation"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Burnin"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Iterations"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Chains"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Thin"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Autofit"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Maximum fitting time"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "hours"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "minutes"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "seconds"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Target margin of error"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Exclude models"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "error % >"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "R-hat >"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Estimated sample size <"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Redistribute prior probability"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Conditional models"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Model space"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Control"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Clever refitting"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Do not refit"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Always refit"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Save the fitted model"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Dependent variable"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Number of trials"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Fixed effects variables"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Random effects grouping factors"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Family"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Link"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Logit"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Probit"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Cauchit"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Complementary LogLog"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Identity"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Log"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Sqrt"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Inverse"
+msgstr "Inverse"
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Model"
+msgstr "Model"
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Model components"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Fixed effects"
+msgstr "Gefixeerde effecten"
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Random effects"
+msgstr "Willekeurige effecten"
+
+#, qt-format
+msgctxt "MixedModelsBGLMM|"
+msgid "Random slopes by %1"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Correlations"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Options"
+msgstr "Opties"
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Warmup"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Iterations"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Chains"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Adapt delta"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Maximum treedepth"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Show"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Deviations from mean"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Marginal means"
+msgstr "Marginale gemiddeldes"
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Fixed effects estimates"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Variance/correlation estimates"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "MCMC diagnostics"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Model terms"
+msgstr "Modeltermen"
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Selected term"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Plot type"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Model factors"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Horizontal axis"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Separate lines"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Separate plots"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Background data show"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Confidence interval method"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Distinguish factor levels"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Color"
+msgstr "Kleur"
+
+#, fuzzy
+msgctxt "MixedModelsBGLMM|"
+msgid "Shape"
+msgstr "Vorm"
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Linetype"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Fill"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Background geom"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Transparency"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Jitter width"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Jitter height"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Geom width"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Dodge"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Theme"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Legend position"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Color background data"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Relative size text"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Relative size foreground data"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Estimates table"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Estimated marginal means"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Model variables"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Selected variables"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Response scale"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Specify contrasts"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Estimated trends/conditional slopes"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Continous variables"
+msgstr ""
+
+msgctxt "MixedModelsBGLMM|"
+msgid "Trend variable"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Dependent variable"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Fixed effects variables"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Random effects grouping factors"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBLMM|"
+msgid "Model"
+msgstr "Model"
+
+msgctxt "MixedModelsBLMM|"
+msgid "Model components"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBLMM|"
+msgid "Fixed effects"
+msgstr "Gefixeerde effecten"
+
+#, fuzzy
+msgctxt "MixedModelsBLMM|"
+msgid "Random effects"
+msgstr "Willekeurige effecten"
+
+#, qt-format
+msgctxt "MixedModelsBLMM|"
+msgid "Random slopes by %1"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Correlations"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBLMM|"
+msgid "Options"
+msgstr "Opties"
+
+msgctxt "MixedModelsBLMM|"
+msgid "Warmup"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Iterations"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Chains"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Adapt delta"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Maximum treedepth"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Show"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Deviations from mean"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBLMM|"
+msgid "Marginal means"
+msgstr "Marginale gemiddeldes"
+
+msgctxt "MixedModelsBLMM|"
+msgid "Fixed effects estimates"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Variance/correlation estimates"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "MCMC diagnostics"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBLMM|"
+msgid "Model terms"
+msgstr "Modeltermen"
+
+msgctxt "MixedModelsBLMM|"
+msgid "Selected term"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Plot type"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBLMM|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "MixedModelsBLMM|"
+msgid "Model factors"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Horizontal axis"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Separate lines"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Separate plots"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Background data show"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Confidence interval method"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Distinguish factor levels"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsBLMM|"
+msgid "Color"
+msgstr "Kleur"
+
+#, fuzzy
+msgctxt "MixedModelsBLMM|"
+msgid "Shape"
+msgstr "Vorm"
+
+msgctxt "MixedModelsBLMM|"
+msgid "Linetype"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Fill"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Background geom"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Transparency"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Jitter width"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Jitter height"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Geom width"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Dodge"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Theme"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Legend position"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Color background data"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Relative size text"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Relative size foreground data"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Estimates table"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Estimated marginal means"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Model variables"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Selected variables"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Specify contrasts"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Estimated trends/conditional slopes"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Continous variables"
+msgstr ""
+
+msgctxt "MixedModelsBLMM|"
+msgid "Trend variable"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Dependent variable"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Number of trials"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Fixed effects variables"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Random effects grouping factors"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Family"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Link"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Logit"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Probit"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Cauchit"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Complementary LogLog"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Identity"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Log"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Sqrt"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Inverse"
+msgstr "Inverse"
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Model"
+msgstr "Model"
+
+msgctxt "MixedModelsGLMM|"
+msgid "Model components"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Fixed effects"
+msgstr "Gefixeerde effecten"
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Random effects"
+msgstr "Willekeurige effecten"
+
+#, qt-format
+msgctxt "MixedModelsGLMM|"
+msgid "Random slopes by %1"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Correlations"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Options"
+msgstr "Opties"
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Type"
+msgstr "Type"
+
+msgctxt "MixedModelsGLMM|"
+msgid "II"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "III"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Test intercept"
+msgstr "Toets intercept"
+
+msgctxt "MixedModelsGLMM|"
+msgid "Test model terms"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "No. samples"
+msgstr "Aantal steekproeven"
+
+msgctxt "MixedModelsGLMM|"
+msgid "Fixed effects estimates"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Variance/correlation estimates"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Vovk-Sellke maximum p-ratio"
+msgstr "Vovk-Sellke maximum p-ratio"
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "MixedModelsGLMM|"
+msgid "Model factors"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Horizontal axis"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Separate lines"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Separate plots"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Background data show"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Confidence interval method"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Distinguish factor levels"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Color"
+msgstr "Kleur"
+
+#, fuzzy
+msgctxt "MixedModelsGLMM|"
+msgid "Shape"
+msgstr "Vorm"
+
+msgctxt "MixedModelsGLMM|"
+msgid "Linetype"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Fill"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Background geom"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Transparency"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Jitter width"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Jitter height"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Geom width"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Dodge"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Theme"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Legend position"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Color background data"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Relative size text"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Relative size foreground data"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Estimates table"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Estimated marginal means"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Model variables"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Selected variables"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Compare marginal means to:"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Response scale"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Specify contrasts"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "P-value adjustment"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Estimated trends/conditional slopes"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Continous variables"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Trend variable"
+msgstr ""
+
+msgctxt "MixedModelsGLMM|"
+msgid "Compare trends to:"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Dependent variable"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Fixed effects variables"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Random effects grouping factors"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Model"
+msgstr "Model"
+
+msgctxt "MixedModelsLMM|"
+msgid "Model components"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Fixed effects"
+msgstr "Gefixeerde effecten"
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Random effects"
+msgstr "Willekeurige effecten"
+
+#, qt-format
+msgctxt "MixedModelsLMM|"
+msgid "Random slopes by %1"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Correlations"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Options"
+msgstr "Opties"
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Type"
+msgstr "Type"
+
+msgctxt "MixedModelsLMM|"
+msgid "II"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "III"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Test intercept"
+msgstr "Toets intercept"
+
+msgctxt "MixedModelsLMM|"
+msgid "Test model terms"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "No. samples"
+msgstr "Aantal steekproeven"
+
+msgctxt "MixedModelsLMM|"
+msgid "Fixed effects estimates"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Variance/correlation estimates"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Vovk-Sellke maximum p-ratio"
+msgstr "Vovk-Sellke maximum p-ratio"
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "MixedModelsLMM|"
+msgid "Model factors"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Horizontal axis"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Separate lines"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Separate plots"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Background data show"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Confidence interval method"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Distinguish factor levels"
+msgstr ""
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Color"
+msgstr "Kleur"
+
+#, fuzzy
+msgctxt "MixedModelsLMM|"
+msgid "Shape"
+msgstr "Vorm"
+
+msgctxt "MixedModelsLMM|"
+msgid "Linetype"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Fill"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Background geom"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Transparency"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Jitter width"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Jitter height"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Geom width"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Dodge"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Theme"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Legend position"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Color background data"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Relative size text"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Relative size foreground data"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Estimates table"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Estimated marginal means"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Model variables"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Selected variables"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Estimate df"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Force df estimation"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Compare marginal means to:"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Specify contrasts"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "P-value adjustment"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Estimated trends/conditional slopes"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Continous variables"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Trend variable"
+msgstr ""
+
+msgctxt "MixedModelsLMM|"
+msgid "Compare trends to:"
+msgstr ""
+
+msgctxt "ReliabilityBayesian|"
+msgid "Variables"
+msgstr "Variabelen"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Single-Test Reliability"
+msgstr "Enkelvoudige Toets Betrouwbaarheid"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Scale Statistics"
+msgstr "Schaalstatistieken"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Credible interval"
+msgstr "Geloofwaardigheidsinterval"
+
+msgctxt "ReliabilityBayesian|"
+msgid "McDonald's ω"
+msgstr "McDonald's ω"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Posterior predictive check"
+msgstr "Posterior voorspellende verificatie"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Cronbach's α"
+msgstr "Cronbach's α"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Guttman's λ2"
+msgstr "Guttman's λ2"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Guttman's λ6"
+msgstr "Guttman's λ6"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Greatest lower bound"
+msgstr "Grootste ondergrens"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Average interitem correlation"
+msgstr "Gemiddelde inter-item correlatie"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Mean"
+msgstr "Gemiddelde"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Standard deviation"
+msgstr "Standaardafwijking"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Individual Item Statistics"
+msgstr "Individuele Itemstatistieken"
+
+msgctxt "ReliabilityBayesian|"
+msgid "McDonald's ω  (if item dropped)"
+msgstr "McDonald's ω  (als item is verwijderd)"
+
+#, fuzzy
+msgctxt "ReliabilityBayesian|"
+msgid "Cronbach's α (if item dropped)"
+msgstr "Cronbach's α (als item is verwijderd)"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Guttman's λ2 (if item dropped)"
+msgstr "Guttman's λ2 (als item is verwijderd)"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Guttman's λ6 (if item dropped)"
+msgstr "Guttman's λ6 (als item is verwijderd)"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Greatest lower bound (if item dropped)"
+msgstr "Grootste ondergrens (als item is verwijderd)"
+
+msgctxt "ReliabilityBayesian|"
+msgid "If item dropped plot"
+msgstr "Als item is verwijderd"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Order items"
+msgstr "Rangschik items"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Order items by mean"
+msgstr "Rangschik items naar gemiddelde"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Order items by KL-divergence"
+msgstr "Rangschik items naar KL-divergentie"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Order items by KS-distance"
+msgstr "Rangschik items naar KS-afstand"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Item-rest correlation"
+msgstr "Item-rest correlatie"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Plot Posteriors"
+msgstr "Grafiek Posteriors"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Fix range to 0-1"
+msgstr "Zet bereik vast op 0-1"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Display Priors"
+msgstr "Toon Priors"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Probability for: "
+msgstr "Kans op: "
+
+msgctxt "ReliabilityBayesian|"
+msgid "< Reliability <"
+msgstr "< Betrouwbaarheid <"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Shade posterior region in plot"
+msgstr "Markeer posterior gebied in grafiek"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Convergence"
+msgstr "Convergentie"
+
+msgctxt "ReliabilityBayesian|"
+msgid "MCMC parameters"
+msgstr "MCMC parameters"
+
+msgctxt "ReliabilityBayesian|"
+msgid "No. samples"
+msgstr "Aantal steekproeven"
+
+msgctxt "ReliabilityBayesian|"
+msgid "No. burnin samples"
+msgstr "Aantal opwarmrondes"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Thinning"
+msgstr "Uitdunnen"
+
+msgctxt "ReliabilityBayesian|"
+msgid "No. chains"
+msgstr "Aantal ketens"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Diagnostics"
+msgstr "Diagnostieken"
+
+msgctxt "ReliabilityBayesian|"
+msgid "R-hat"
+msgstr "R-hat"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Traceplots"
+msgstr "Traceplots"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Repeatability"
+msgstr "Reproduceerbaarheid"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Set seed"
+msgstr "Gebruik toevalsgenerator beginwaarde"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Reverse-Scaled Items"
+msgstr "Omgekeerd geschaalde items"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Normal-Scaled Items"
+msgstr "Normaal geschaalde items"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Missing Data Handling"
+msgstr "Ontbrekende Gegevensbehandeling"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Missing Values"
+msgstr "Missende Waarden"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Exclude cases pairwise"
+msgstr "Sluit waarnemingen paarsgewijs uit"
+
+msgctxt "ReliabilityBayesian|"
+msgid "Exclude cases listwise"
+msgstr "Sluit waarnemingen uit per lijst"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Variables"
+msgstr "Variabelen"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Single-Test Reliability"
+msgstr "Enkelvoudige Toets Betrouwbaarheid"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Scale Statistics"
+msgstr "Schaalstatistieken"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Confidence Interval"
+msgstr "Betrouwbaarheidsinterval"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "McDonald's ω"
+msgstr "McDonald's ω"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Cronbach's α"
+msgstr "Cronbach's α"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Guttman's λ2"
+msgstr "Guttman's λ2"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Guttman's λ6"
+msgstr "Guttman's λ6"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Greatest lower bound"
+msgstr "Grootste ondergrens"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Average interitem correlation"
+msgstr "Gemiddelde inter-item correlatie"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Mean"
+msgstr "Gemiddelde"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Standard deviation"
+msgstr "Standaardafwijking"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Individual Item Statistics"
+msgstr "Individuele itemstatistieken"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "McDonald's ω  (if item dropped)"
+msgstr "McDonald's ω  (als item is verwijderd)"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Cronbach's α (if item dropped)"
+msgstr "Cronbach's α (als item is verwijderd)"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Guttman's λ2 (if item dropped)"
+msgstr "Guttman's λ2 (als item is verwijderd)"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Guttman's λ6 (if item dropped)"
+msgstr "Guttman's λ6 (als item is verwijderd)"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Greatest lower bound (if item dropped)"
+msgstr "Grootste ondergrens (als item is verwijderd)"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Item-rest correlation"
+msgstr "Item-rest correlatie"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Reverse-Scaled Items"
+msgstr "Omgekeerd geschaalde items"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Normal-Scaled Items"
+msgstr "Normaal geschaalde items"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Advanced Options"
+msgstr "Geavanceerde opties"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Missing Values"
+msgstr "Ontbrekende waarden"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Exclude cases pairwise"
+msgstr "Sluit waarnemingen paarsgewijs uit"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Exclude cases listwise"
+msgstr "Sluit waarnemingen uit per rij"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Bootstrap"
+msgstr "Bootstrap"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "No. of bootstrap samples"
+msgstr "Aantal bootstrap steekproeven"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Non-parametric bootstrap"
+msgstr "Niet-parametrische bootstrap"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Parametric bootstrap"
+msgstr "Parametrische bootstrap"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "McDonald's ω Estimation"
+msgstr "McDonald's ω Schatting"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "CFA"
+msgstr "CFA"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Single Factor Model Fit"
+msgstr "Enkele Factor Model Passing"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Interval"
+msgstr "Interval"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Analytic interval"
+msgstr "Analytisch interval"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Bootstrapped interval"
+msgstr "Bootstrap interval"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "PFA"
+msgstr "PFA"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Cronbach's α Estimation"
+msgstr "Cronbach's α Scahtting"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Unstandardized"
+msgstr "Niet gestandaardiseerd"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Standardized"
+msgstr "Gestandaardiseerd"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Repeatability"
+msgstr "Reproduceerbaarheid"
+
+msgctxt "ReliabilityFrequentist|"
+msgid "Set seed"
+msgstr "Gebruik toevalsgenerator beginwaarde"
+
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Group 1"
+msgstr "Groep 1"
+
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Successes"
+msgstr "Successen"
+
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Sample Size"
+msgstr "Steekproefgrootte"
+
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Group 2"
+msgstr "Groep 2"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Normal Prior on Log Odds Ratio"
+msgstr "Normale a priori verdeling voor de log odds ratio"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "μ:"
+msgstr "μ:"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "σ:"
+msgstr "σ:"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Descriptives"
+msgstr "Beschrijvende statistiek"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Plots"
+msgstr "Grafieken"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Prior and posterior"
+msgstr "Prior en posterior"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Sequential analysis"
+msgstr "Sequentiële analyse"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Prior"
+msgstr "Prior"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Bayes factor robustness check"
+msgstr "Bayes factor robuustheidsevaluatie"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Order"
+msgstr "Volgorde"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Compare to best model"
+msgstr "Vergelijk met beste model"
+
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Compare to null model"
+msgstr ""
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Advanced Options"
+msgstr "Geavanceerde opties"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Prior Model Probability"
+msgstr "Prior model kans"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Log odds ratio = 0"
+msgstr "Log odds ratio = 0"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Log odds ratio > 0"
+msgstr "Log odds ratio > 0"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Log odds ratio < 0"
+msgstr "Log odds ratio < 0"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Log odds ratio ≠ 0"
+msgstr "Log odds ratio ≠ 0"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Sampling"
+msgstr "Steekproef nemen"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "No. samples"
+msgstr "Aantal steekproeven"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Robustness Plot"
+msgstr "Robuustheid Diagram"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "No. Steps"
+msgstr "Aantal Stappen"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "Step Range"
+msgstr "Stappenreeks"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "lower:"
+msgstr "onder:"
+
+#, fuzzy
+msgctxt "SummaryStatsABTestBayesian|"
+msgid "upper:"
+msgstr "boven:"
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid ""
+"Component %1 was loaded with the wrong type of value and has been reset to "
+"its default value."
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid ""
+"Many components were loaded with the wrong type of value and have been reset "
+"to their default values."
+msgstr ""
+
+#, fuzzy
+msgctxt "ABTestBayesian|"
+msgid "Prior Model Probability"
+msgstr "Prior model kans"
+
 msgctxt "auditBayesianWorkflow|"
 msgid ""
 msgstr ""
 
 msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
 msgid ""
 msgstr ""

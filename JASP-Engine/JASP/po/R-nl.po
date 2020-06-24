@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2020-06-14 21:44\n"
+"POT-Creation-Date: 2020-06-24 13:22\n"
 "PO-Revision-Date: 2020-01-29 14:35\n"
 "Last-Translator: JASP <info@jasp-stats.org>\n"
 "Language-Team: JASP <info@jasp-stats.org>\n"
@@ -11,6 +11,398 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n==0 ? 0 : n==1 ? 0 : 1\n"
+
+msgid ""
+"Problem found in variable '%s': Categorical variables must have less levels "
+"than is the overall number of observations."
+msgstr ""
+
+msgid ""
+"The random effects grouping factor '%s' must have less levels than is the "
+"overall number of observations."
+msgstr ""
+
+msgid "%s requres that the dependent variable is positive."
+msgstr ""
+
+msgid "%s requres that the dependent variable is an integer."
+msgstr ""
+
+msgid "%s requres that the dependent variable contains only 0 and 1."
+msgstr ""
+
+msgid ""
+"%s requres that the dependent variable is higher than 0 and lower than 1."
+msgstr ""
+
+msgid "%s requres that the number of trials variable is an integer."
+msgstr ""
+
+msgid ""
+"%s requres that the dependent variable is proportion of successes out of the "
+"number of trials."
+msgstr ""
+
+#, fuzzy
+msgid "ANOVA Summary"
+msgstr "Model Samenvatting"
+
+msgid ""
+"The optimizer failed to find solution. Probabably due to quasi-separation in "
+"the data. Try removing some of the predictors."
+msgstr ""
+
+msgid "Invalid starting values."
+msgstr ""
+
+#, fuzzy
+msgid "Effect"
+msgstr "Effecten"
+
+msgid "df"
+msgstr "vg"
+
+msgid "F"
+msgstr "F"
+
+msgid "ChiSq"
+msgstr ""
+
+msgid "p"
+msgstr "p"
+
+#, fuzzy
+msgid "p (bootstrap)"
+msgstr "percentiel bootstrap"
+
+msgid "VS-MPR"
+msgstr "VS-MPR"
+
+msgid "VS-MPR (bootstrap)"
+msgstr ""
+
+#, fuzzy
+msgid "Intercept"
+msgstr "Intercepten"
+
+#, fuzzy
+msgid "Warning:"
+msgstr "<em>Waarschuwing:</em>"
+
+msgid "III"
+msgstr ""
+
+msgid "II"
+msgstr ""
+
+#, fuzzy
+msgid "Variance/Correlation Estimates"
+msgstr "Partiële Correlatietabel"
+
+#, fuzzy
+msgid "%s: Variance Estimates"
+msgstr "Parameterschattingen"
+
+msgid "Term"
+msgstr ""
+
+msgid "Std. Deviation"
+msgstr "Standaardafwijking"
+
+msgid "Variance"
+msgstr "Variantie"
+
+#, fuzzy
+msgid "%s: Correlation Estimates"
+msgstr "%s Correlaties"
+
+#, fuzzy
+msgid "Residual Variance Estimates"
+msgstr "Residu covariantie matrices"
+
+#, fuzzy
+msgid "Fixed Effects Estimates"
+msgstr "Gefixeerde effecten"
+
+msgid "Estimate"
+msgstr "Schatting"
+
+msgid "SE"
+msgstr "Std. Fout"
+
+msgid "t"
+msgstr "t"
+
+msgid "Plot"
+msgstr "Grafiek"
+
+msgid ""
+"At least one random effects grouping factor needs to be selected in field "
+"'Background data show'."
+msgstr ""
+
+msgid ""
+"Factor levels need to be distinguished by at least one feature. Please, "
+"check one of the 'Distinguish factor levels' options."
+msgstr ""
+
+#, fuzzy
+msgid "Estimated Means and Confidence Intervals"
+msgstr "%s%% Betrouwbaarheidsinterval"
+
+msgid "Mean"
+msgstr "Gemiddelde"
+
+msgid "Lower"
+msgstr "Onder"
+
+msgid "%s%% CI"
+msgstr "%s%% BI"
+
+msgid "Upper"
+msgstr "Boven"
+
+#, fuzzy
+msgid "Estimated Marginal Means"
+msgstr "Gebootstrapte Marginale Gemiddeldes -"
+
+#, fuzzy
+msgid "Row"
+msgstr "Ruw"
+
+msgid "z"
+msgstr "z"
+
+msgid "Median"
+msgstr "Mediaan"
+
+#, fuzzy
+msgid "%s%% HPD"
+msgstr "%s%% BI"
+
+#, fuzzy
+msgid "Estimated Trends"
+msgstr "Geschatte Parameters"
+
+msgid "%s (slope)"
+msgstr ""
+
+#, fuzzy
+msgid "Contrasts"
+msgstr "Geplande contrasten"
+
+msgid "Odds Ratio"
+msgstr "Odds Ratio"
+
+#, fuzzy
+msgid "Ratio"
+msgstr "Cov. Ratio"
+
+#, fuzzy
+msgid "Model summary"
+msgstr "Model Samenvatting"
+
+msgid "%s (difference from intercept)"
+msgstr ""
+
+msgid "%s (trend)"
+msgstr ""
+
+#, fuzzy
+msgid "%s (marginal means)"
+msgstr "Marginale Gemiddeldes"
+
+msgid "Level"
+msgstr "Niveau"
+
+msgid "R-hat"
+msgstr ""
+
+msgid "ESS (bulk)"
+msgstr ""
+
+msgid "ESS (tail)"
+msgstr ""
+
+#, fuzzy
+msgid "Sampling diagnostics"
+msgstr "Steekproef posteriors"
+
+#, fuzzy
+msgid "Avg. autocorrelation"
+msgstr "Auto-correlatie"
+
+msgid ""
+"The intercept corresponds to the (unweighted) grand mean and for each factor "
+"with k levels k - 1 parameters are added. Thus, estimates shown here cannot "
+"be mapped 1 to 1 to factors with more than two levels (as no such mapping "
+"exists). For factors with two levels, corresponding estimates represent half "
+"the difference between the factor levels, for factors with more than two "
+"levels estimates should not be interpreted!"
+msgstr ""
+
+msgid ""
+"Model fit is singular. Specified random effects parameters (random "
+"intercepts and random slopes) cannot be estimated from the available data. "
+"Carefully reduce the random effects structure, but be aware this may induce "
+"unknown risks of anti-conservative results (i.e., p-values might be lower "
+"than nominal)."
+msgstr ""
+
+#, fuzzy
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, "
+"the maximum possible odds in favor of H₁ over H₀ equals 1/(-e <em>p</em> "
+"log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op een tweezijdige <em>p</"
+"em>-waarde, het maximale aantal mogelijke kansen die H%1$s ondersteunen over "
+"H%2$s is gelijk aan 1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> "
+"%3$s .37 (Sellke, Bayarri, & Berger, 2001)."
+
+msgid ""
+"Numerical problems with the maximum-likelihood estimate (e.g., gradients too "
+"large). This may indicate that the specified random effects parameters "
+"(random intercepts and random slopes) cannot be estimated from the available "
+"data. Consider carefully reducing the random effects structure, but be aware "
+"this may induce unknown risks of anti-conservative results (i.e., p-values "
+"might be lower than nominal)."
+msgstr ""
+
+msgid ""
+"Estimation of degrees of freedom disabled (i.e., asymptotic results shown), "
+"because the number of observations is large. To force estimation, check "
+"corresponding option."
+msgstr ""
+
+msgid "Results are on the response scale."
+msgstr ""
+
+msgid "Results are not on the response scale and might be misleading."
+msgstr ""
+
+#, fuzzy
+msgid "Type %s Sum of Squares"
+msgstr "Type I Kwadratensom"
+
+msgid ""
+"This analysis requires at least one random effects grouping factor to run."
+msgstr ""
+
+msgid ""
+"The 'Binomial (aggregated)' family requires the 'Number of trials' to be "
+"specified to run."
+msgstr ""
+
+msgid "P-values correspond to test of null hypothesis against %s."
+msgstr ""
+
+#, fuzzy
+msgid "Results are averaged over the levels of: %s."
+msgstr "Resultaten zijn gemiddeld over de levels van: %s"
+
+msgid ""
+"Number of observations is not sufficient for estimating %s random slopes for "
+"random effects grouping factor '%s'. Consequently, random slopes for %s have "
+"been removed for '%s'."
+msgstr ""
+
+#, fuzzy
+msgid "binomial"
+msgstr "beta-binomiaal"
+
+#, fuzzy
+msgid "gaussian"
+msgstr "Gaussiaans"
+
+msgid "gamma"
+msgstr "gamma"
+
+#, fuzzy
+msgid "inverse gaussian"
+msgstr "inverse gamma verdeling"
+
+#, fuzzy
+msgid "poisson"
+msgstr "Poisson"
+
+#, fuzzy
+msgid "negative binomial"
+msgstr "negatief-binomiale verdeling"
+
+msgid "beta"
+msgstr "beta"
+
+msgid "Generalized linear mixed model with %s family and %s link function."
+msgstr ""
+
+msgid "Satterthwaite"
+msgstr ""
+
+msgid "Kenward-Roger"
+msgstr ""
+
+#, fuzzy
+msgid "likelihood ratio tests"
+msgstr "Likelihood ratio"
+
+#, fuzzy
+msgid "parametric bootstrap"
+msgstr "percentiel bootstrap"
+
+msgid "Model terms tested with %s method."
+msgstr ""
+
+msgid "P-values are not adjusted."
+msgstr ""
+
+msgid "Holm"
+msgstr ""
+
+msgid "Homel"
+msgstr ""
+
+msgid "Hochberg"
+msgstr ""
+
+#, fuzzy
+msgid "Multivariate-t"
+msgstr "Covariaat"
+
+msgid "Turkey"
+msgstr ""
+
+msgid "Benjamini-Hochberg"
+msgstr ""
+
+msgid "Benjamini-Yekutieli"
+msgstr ""
+
+msgid "Scheffe"
+msgstr ""
+
+msgid "Sidak"
+msgstr ""
+
+msgid "Dunnett"
+msgstr "Dunnett"
+
+msgid "Bonferroni"
+msgstr ""
+
+msgid "P-values are adjusted using %s adjustment."
+msgstr ""
+
+msgid ""
+"The largest R-hat is %.3f, indicating that chains have not mixed properly. "
+"Running chains for more iterations or increasing 'Adapt delta' may help."
+msgstr ""
+
+msgid ""
+"The smallest Effective Sample Size (ESS) is %.2f, indicating that low "
+"estimation accuracy. Running chains for more iterations or increasing 'Adapt "
+"delta' may help."
+msgstr ""
 
 msgid "Bayesian A/B Test"
 msgstr "Bayesiaanse A/B Toets"
@@ -118,17 +510,8 @@ msgstr "Waarnemingen"
 msgid "Sum of Squares"
 msgstr "Kwadratensom"
 
-msgid "df"
-msgstr "vg"
-
 msgid "Mean Square"
 msgstr "Gemiddelde kwadraatsom"
-
-msgid "F"
-msgstr "F"
-
-msgid "p"
-msgstr "p"
 
 msgid "VS-MPR%s"
 msgstr "VS-MPR%s"
@@ -163,23 +546,8 @@ msgstr "Onjuist aantal aangepaste contrastmatrixrijen."
 msgid "Please specify non-zero contrast weights."
 msgstr "Specificeer het aantal contrastgewichten ongelijk aan 0."
 
-msgid "Estimate"
-msgstr "Schatting"
-
 msgid "%s%% CI for Mean Difference"
 msgstr "%s%% BI voor Gemiddelde Verschil"
-
-msgid "Lower"
-msgstr "Onder"
-
-msgid "Upper"
-msgstr "Boven"
-
-msgid "SE"
-msgstr "Std. Fout"
-
-msgid "t"
-msgstr "t"
 
 msgid "%1$s Contrast Coefficients - %2$s"
 msgstr "%1$s Contrast Coëfficiënten - %2$s"
@@ -255,9 +623,6 @@ msgstr "%.0f%% CI voor Gemiddelde Verschil"
 msgid "p<sub>tukey</sub>"
 msgstr "p<sub>tukey</sub>"
 
-msgid "Dunnett"
-msgstr "Dunnett"
-
 msgid "Dunnett Post Hoc Comparisons - %s"
 msgstr "Dunnett Post-Hoc Vergelijkingen - %s"
 
@@ -269,9 +634,6 @@ msgid ""
 "level."
 msgstr ""
 "Betrouwbaarheidsinterval is te smal, kies een ander betrouwbaarheidslevel."
-
-msgid "Mean"
-msgstr "Gemiddelde"
 
 msgid "SD"
 msgstr "SD"
@@ -933,12 +1295,81 @@ msgstr ""
 "de auditwaardes, een indicator van de sterkte van de lineaire relatie tussen "
 "de twee variabelen."
 
+msgid "<b>percentage</b>"
+msgstr "<b>percentage</b>"
+
+msgid "<b>amount</b>"
+msgstr "<b>hoeveelheid</b>"
+
+msgid "<u>Planning</u>"
+msgstr "<u>Planning</u>"
+
+msgid "<u>Selection</u>"
+msgstr "<u>Selectie</u>"
+
+msgid "<u>Evaluation</u>"
+msgstr "<u>Evaluatie</u>"
+
 msgid ""
-"Your sample size is larger than your population size. Cannot take a sample "
-"larger than the population."
+"Analysis not possible: Your materiality is higher than, or equal to the "
+"total value of the observations."
 msgstr ""
-"Uw steekproefgrootte is groter dan de populatiegrootte. Kan geen steekproef "
+"Analyse niet mogelijk: De materialiteit is groter of gelijk aan dan de "
+"totale waarde van de observaties."
+
+msgid ""
+"Analysis not possible: Your expected errors are higher than materiality."
+msgstr ""
+"Analyse niet mogelijk: De verwachte fouten zijn groter dan de materialiteit."
+
+#, fuzzy
+msgid "Selection summary"
+msgstr "Selectie grootte"
+
+msgid ""
+"Your sample size is larger than (or equal to) your population size. Cannot "
+"take a sample larger than the population."
+msgstr ""
+"Uw steekproefgrootte is groter of gelijk aan de populatiegrootte. Kan geen steekproef "
 "nemen groter dan de populatie."
+
+msgid "Your sample size must be larger than 1."
+msgstr "Uw steekproefgrootte moet groter dan 1 zijn."
+
+msgid ""
+"Your must specify unique record ID's. The row numbers of the data set are "
+"sufficient."
+msgstr ""
+"U moet unieke transactie ID's specificeren. De rijnummers van de data set "
+"volstaat."
+
+#, fuzzy
+msgid "Evaluation summary"
+msgstr "Evaluatie Metriek"
+
+msgid ""
+"Your audit result does not contain only 0's (correct) and 1's (incorrect)."
+msgstr ""
+"Uw auditresultaat bevat niet alleen maar 0 (corerct) of 1 (incorrect)."
+
+msgid ""
+"The hypergeometric confidence bound requires that you specify the population "
+"size."
+msgstr ""
+
+msgid ""
+"Your sample size is larger than (or equal to) your population size. Please "
+"adjust your population size accordingly."
+msgstr ""
+"Uw steekproefgrootte is groter of gelijk aan de populatiegrootte. Pas uw "
+"populatiegrootte dienovereenkomstig aan."
+
+msgid ""
+"The direct, difference, ratio, and regression confidence bound require that "
+"you specify the population size and the population value."
+msgstr ""
+"De directe schatter, verschilschatter, ratioschatter, en regressieschatter "
+"vereisen dat u de populatiegrootte en de populatiewaarde specificieert."
 
 msgid ""
 "The objective of this substantive testing procedure is to determine with a "
@@ -949,131 +1380,6 @@ msgstr ""
 "betrouwbaarheid <b>(%1$s)</b> vast te stellen of de %2$s van genoemde fouten "
 "in de doelpopulatie lager is dan de gespecificeerde materialiteit van <b>"
 "%3$s</b>."
-
-msgid "<b>Table %1$i.</b> Book Value Descriptive Statistics"
-msgstr "<b>Tabel %1$i.</b> Boekwaarde Beschrijvende Statistieken"
-
-msgid "Population size"
-msgstr "Populatiegrootte"
-
-msgid "Total value"
-msgstr "Boekwaardes"
-
-msgid "Absolute value"
-msgstr "Absolute waarde"
-
-msgid "Std. deviation"
-msgstr "Standaardafwijking"
-
-msgid "25th"
-msgstr "25e"
-
-msgid "50th"
-msgstr "50e"
-
-msgid "Percentile"
-msgstr "Percentiel"
-
-msgid "75th"
-msgstr "75e"
-
-msgid "Book values (%1$s)"
-msgstr "Boekwaardes (%1$s)"
-
-msgid "Frequency"
-msgstr "Frequentie"
-
-msgid "Book Value Distribution"
-msgstr "Boekwaarde verdeling"
-
-msgid "Mean %1$s sd"
-msgstr "Gemiddelde %1$s sd"
-
-msgid "Quartile"
-msgstr "Kwartiel"
-
-msgid ""
-"<b>Figure %1$i.</b> The distribution of book values in the population. The "
-"red and blue dots respectively represent the mean and the values exactly one "
-"standard deviation from the mean. The orange dots represent the 25th, 50th "
-"(median) and 75th percentile of the book values."
-msgstr ""
-"<b>Figuur %1$i.</b> De verdeling van boekwaardes in de populatie. De rode en "
-"blauwe stippen, respectievelijk, representeren het gemiddelde en de waarden "
-"precies een standaarddeviatie van het gemiddelde. De oranje stippen "
-"representeren het 25e, 50e (mediaan) en 75e percentiel van de boekwaardes."
-
-msgid "<u>Audit Risk Model</u>"
-msgstr "<u>Audit Risico Model</u>"
-
-msgid ""
-"Audit risk (%1$s%%) = Inherent risk (%2$s%%) x Control risk (%3$s%%) x "
-"Detection risk (%4$s%%)"
-msgstr ""
-"Audit risico (%1$s%%) = Inherent risico (%2$s%%) x Controle risico (%3$s%%) "
-"x Detectie risico (%4$s%%)"
-
-msgid ""
-"Prior to the substantive testing phase, the inherent risk was determined to "
-"be <b>%1$s</b>. The internal control risk was determined to be <b>%2$s</b>. "
-"According to the Audit Risk Model, the required detection risk to maintain "
-"an audit risk of <b>%3$s</b> should be <b>%4$s</b>."
-msgstr ""
-"Voor de substantieve toetsfase is het inherente risico vastgesteld op <b>"
-"%1$s</b>. Het interne controle risico was vastgesteld op <b>%2$s</b>. "
-"Volgens het Audit Risico Model is het benodigde detectie risico om een audit "
-"risico van <b>%3$s</b> te behouden <b>%4$s</b>."
-
-msgid ""
-"%1$s The translation of High, Medium and Low to probabilities is done "
-"according custom preferences</b>."
-msgstr ""
-"%1$s De vertaling van Hoog, Medium en Laag naar kansen is gedaan op basis "
-"van handmatig ingestelde voorkeuren</b>."
-
-msgid ""
-"%1$s The translation of High, Medium and Low to probabilities is done "
-"according to <b>IODAD (2007)</b>."
-msgstr ""
-"%1$s De vertaling van Hoog, Medium en Laag naar kansen is gedaan op basis "
-"van <b>IODAD (2007)</b>."
-
-msgid "<u>Planning</u>"
-msgstr "<u>Planning</u>"
-
-msgid ""
-"Analysis not possible: Your materiality is higher than the total value of "
-"the observations."
-msgstr ""
-"Analyse niet mogelijk: De materialiteit is groter dan de totale waarde van "
-"de observaties."
-
-msgid ""
-"Analysis not possible: Your expected errors are higher than materiality."
-msgstr ""
-"Analyse niet mogelijk: De verwachte fouten zijn groter dan de materialiteit."
-
-msgid "<b>percentage</b>"
-msgstr "<b>percentage</b>"
-
-msgid "<b>amount</b>"
-msgstr "<b>hoeveelheid</b>"
-
-msgid ""
-"The detection risk is higher than 100%%. Please re-specify your custom "
-"values for the Inherent risk and/or Control risk."
-msgstr ""
-"Het detectie risico is hoger dan 100%%. Herspecificeer de handmatige waarden "
-"voor het Inherente risico en/of het Controle risico."
-
-msgid "The resulting sample size exceeds 5000."
-msgstr "De resulterende steekproefgrootte is groter dan 5000."
-
-msgid "An error occurred: %1$s"
-msgstr "Foutmelding: %1$s"
-
-msgid "The resulting sample size is larger than the population size."
-msgstr "De resulterende steekproefgrootte is groter dan de populatiegrootte."
 
 msgid ""
 "The most likely error in the data was expected to be <b>%1$s</b>. The sample "
@@ -1114,6 +1420,179 @@ msgstr ""
 "dan de materialiteit. Met als gevolg dat wanneer de som van fouten van de "
 "audit observaties beneden <b>%9$s</b> blijft, de maximale fout geschat wordt "
 "beneden materialiteit te zijn."
+
+msgid "random"
+msgstr "willekeurig"
+
+msgid "fixed interval"
+msgstr "vast interval"
+
+msgid "cell"
+msgstr "cel"
+
+msgid ""
+"From the population of <b>%1$s</b> observations, <b>%2$s</b> observations "
+"were selected using a <b>%3$s record sampling</b> method. <br><b>Warning:</"
+"b> A monetary unit sampling method was tried but failed."
+msgstr ""
+"Van de populatie van <b>%1$s</b> observaties, waren <b>%2$s</b> observaties "
+"geselecteerd met <b>%3$s steekproef nemen</b> methode. <br><b>Waarschuwing:</"
+"b>  Een munteenheid steekproef nemen is niet gelukt."
+
+msgid "%1$s record sampling"
+msgstr "%1$s record steekproef"
+
+msgid "%1$s monetary unit sampling"
+msgstr "%1$s munteenheid steekproef"
+
+msgid ""
+"From the population of <b>%1$s</b> observations, <b>%2$s</b> observations "
+"were selected using a <b>%3$s</b> method."
+msgstr ""
+"Van de populatie van <b>%1$s</b> observaties, waren <b>%2$s</b> observaties "
+"geselecteerd met de <b>%3$s</b> methode."
+
+msgid ""
+"%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned "
+"sample size (%3$s), as observations are selected multiple times due to their "
+"high value. These observations (%4$s) are counted multiple times in the "
+"evaluation."
+msgstr ""
+"%1$s <b>Let op:</b> De geselecteerde subset (%2$s) is kleiner dan de "
+"geplande steekproefgrootte (%3$s), aangezien observaties meerdere keren "
+"geselecteerd zijn door hun hoge waarde. Deze observaties (%4$s) zijn "
+"meerdere keren geteld in de evaluatie."
+
+msgid "below"
+msgstr "onder"
+
+msgid "lower"
+msgstr "lager"
+
+msgid "above"
+msgstr "boven"
+
+msgid "higher"
+msgstr "hoger"
+
+msgid ""
+"The objective of this substantive testing procedure was to determine with <b>"
+"%1$s</b> confidence whether the population misstatement is lower than "
+"materiality, in this case <b>%2$s</b>. For the current data, the <b>%3$s</b> "
+"confidence bound is <b>%4$s</b> materiality. The conclusion on the basis of "
+"these results is that, with <b>%5$s</b> confidence, the population "
+"misstatement is <b>%6$s</b> than materiality."
+msgstr ""
+"Het doel van deze substantieve test procedure was om te bepalen met <b>%1$s</"
+"b> zekerheid of de fout in de populatie lager is dan de materialiteit, in "
+"dit geval <b>%2$s</b>. Voor de huidige data is de <b>%3$s</b> "
+"zekerheidsgrens <b>%4$s</b> materialiteit. De conclusie op basis van deze "
+"resultaten is dat, met <b>%5$s</b> zekerheid, de populatie fout <b>%6$s</b> "
+"dan de materialiteit is."
+
+msgid "<b>Table %1$i.</b> Book Value Descriptive Statistics"
+msgstr "<b>Tabel %1$i.</b> Boekwaarde Beschrijvende Statistieken"
+
+msgid "Population size"
+msgstr "Populatiegrootte"
+
+msgid "Total value"
+msgstr "Boekwaardes"
+
+msgid "Absolute value"
+msgstr "Absolute waarde"
+
+msgid "Std. deviation"
+msgstr "Standaardafwijking"
+
+msgid "25th"
+msgstr "25e"
+
+msgid "50th"
+msgstr "50e"
+
+msgid "Percentile"
+msgstr "Percentiel"
+
+msgid "75th"
+msgstr "75e"
+
+msgid "Book Value Distribution"
+msgstr "Boekwaarde verdeling"
+
+msgid "Mean %1$s sd"
+msgstr "Gemiddelde %1$s sd"
+
+msgid "Quartile"
+msgstr "Kwartiel"
+
+msgid ""
+"<b>Figure %1$i.</b> The distribution of book values in the population. The "
+"red and blue dots respectively represent the mean and the values exactly one "
+"standard deviation from the mean. The orange dots represent the 25th, 50th "
+"(median) and 75th percentile of the book values."
+msgstr ""
+"<b>Figuur %1$i.</b> De verdeling van boekwaardes in de populatie. De rode en "
+"blauwe stippen, respectievelijk, representeren het gemiddelde en de waarden "
+"precies een standaarddeviatie van het gemiddelde. De oranje stippen "
+"representeren het 25e, 50e (mediaan) en 75e percentiel van de boekwaardes."
+
+msgid "Book values (%1$s)"
+msgstr "Boekwaardes (%1$s)"
+
+msgid "Frequency"
+msgstr "Frequentie"
+
+msgid "<u>Audit Risk Model</u>"
+msgstr "<u>Audit Risico Model</u>"
+
+msgid ""
+"Audit risk (%1$s%%) = Inherent risk (%2$s%%) x Control risk (%3$s%%) x "
+"Detection risk (%4$s%%)"
+msgstr ""
+"Audit risico (%1$s%%) = Inherent risico (%2$s%%) x Controle risico (%3$s%%) "
+"x Detectie risico (%4$s%%)"
+
+msgid ""
+"Prior to the substantive testing phase, the inherent risk was determined to "
+"be <b>%1$s</b>. The internal control risk was determined to be <b>%2$s</b>. "
+"According to the Audit Risk Model, the required detection risk to maintain "
+"an audit risk of <b>%3$s</b> should be <b>%4$s</b>."
+msgstr ""
+"Voor de substantieve toetsfase is het inherente risico vastgesteld op <b>"
+"%1$s</b>. Het interne controle risico was vastgesteld op <b>%2$s</b>. "
+"Volgens het Audit Risico Model is het benodigde detectie risico om een audit "
+"risico van <b>%3$s</b> te behouden <b>%4$s</b>."
+
+msgid ""
+"%1$s The translation of High, Medium and Low to probabilities is done "
+"according custom preferences</b>."
+msgstr ""
+"%1$s De vertaling van Hoog, Medium en Laag naar kansen is gedaan op basis "
+"van handmatig ingestelde voorkeuren</b>."
+
+msgid ""
+"%1$s The translation of High, Medium and Low to probabilities is done "
+"according to <b>IODAD (2007)</b>."
+msgstr ""
+"%1$s De vertaling van Hoog, Medium en Laag naar kansen is gedaan op basis "
+"van <b>IODAD (2007)</b>."
+
+msgid ""
+"The detection risk is higher than 100%%. Please re-specify your custom "
+"values for the Inherent risk and/or Control risk."
+msgstr ""
+"Het detectie risico is hoger dan 100%%. Herspecificeer de handmatige waarden "
+"voor het Inherente risico en/of het Controle risico."
+
+msgid "The resulting sample size exceeds 5000."
+msgstr "De resulterende steekproefgrootte is groter dan 5000."
+
+msgid "An error occurred: %1$s"
+msgstr "Foutmelding: %1$s"
+
+msgid "The resulting sample size is larger than the population size."
+msgstr "De resulterende steekproefgrootte is groter dan de populatiegrootte."
 
 msgid "<b>Table %1$i.</b> Planning Summary"
 msgstr "<b>Tabel %1$i.</b> Planningssamenvatting"
@@ -1261,51 +1740,6 @@ msgstr ""
 "foutvrije observaties groen. De totale kans van de fouten overschrijdt niet "
 "het detectie risico zoals gespecificeerd door het audit risicomodel."
 
-msgid "<u>Selection</u>"
-msgstr "<u>Selectie</u>"
-
-msgid "random"
-msgstr "willekeurig"
-
-msgid "fixed interval"
-msgstr "vast interval"
-
-msgid "cell"
-msgstr "cel"
-
-msgid ""
-"From the population of <b>%1$s</b> observations, <b>%2$s</b> observations "
-"were selected using a <b>%3$s record sampling</b> method. <br><b>Warning:</"
-"b> A monetary unit sampling method was tried but failed."
-msgstr ""
-"Van de populatie van <b>%1$s</b> observaties, waren <b>%2$s</b> observaties "
-"geselecteerd met <b>%3$s steekproef nemen</b> methode. <br><b>Waarschuwing:</"
-"b>  Een munteenheid steekproef neem methode lukte niet."
-
-msgid "%1$s record sampling"
-msgstr "%1$s record steekproef nemen"
-
-msgid "%1$s monetary unit sampling"
-msgstr "%1$s munteenheid steekproef nemen"
-
-msgid ""
-"From the population of <b>%1$s</b> observations, <b>%2$s</b> observations "
-"were selected using a <b>%3$s</b> method."
-msgstr ""
-"Van de populatie van <b>%1$s</b> observaties, waren <b>%2$s</b> observaties "
-"geselecteerd met de <b>%3$s</b> methode."
-
-msgid ""
-"%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned "
-"sample size (%3$s), as observations are selected multiple times due to their "
-"high value. These observations (%4$s) are counted multiple times in the "
-"evaluation."
-msgstr ""
-"%1$s <b>Let op:</b> De geselecteerde subset (%2$s) is kleiner dan de "
-"geplande steekproefgrootte (%3$s), aangezien observaties meerdere keren "
-"geselecteerd zijn door hun hoge waarde. Deze observaties (%4$s) zijn "
-"meerdere keren geteld in de evaluatie."
-
 msgid "Your specified starting point lies outside the selection interval."
 msgstr "Uw gespecificeerde startpunt ligt buiten het selectie interval."
 
@@ -1339,15 +1773,6 @@ msgstr "<b>Tabel %1$i.</b> Selectie Beschrijvende statistiek"
 msgid "Valid cases"
 msgstr "Geldige waarnemingen"
 
-msgid "Median"
-msgstr "Mediaan"
-
-msgid "Std. Deviation"
-msgstr "Standaardafwijking"
-
-msgid "Variance"
-msgstr "Variantie"
-
 msgid "Range"
 msgstr "Bereik"
 
@@ -1366,9 +1791,6 @@ msgid ""
 msgstr ""
 "<b>Figuur %1$i.</b> De verdelingen van numerieke variabelen in the populatie "
 "vergeleken met de verdelingen in de steekproef."
-
-msgid "<u>Evaluation</u>"
-msgstr "<u>Evaluatie</u>"
 
 msgid ""
 "probability that, when one would repeatedly sample from this population, the "
@@ -1492,6 +1914,10 @@ msgstr ""
 "De zekerheidsgrens is berekend volgens de <b>Stringer</b> methode met <b>LTA "
 "adjustment</b>."
 
+msgid "You must specify the population value to see the maximum misstatement."
+msgstr "U moet de populatiewaarde specificeren om de geschatte maximumfout te "
+"kunnen zien."
+
 msgid "Evaluation Information"
 msgstr "Evaluatie informatie"
 
@@ -1535,45 +1961,6 @@ msgstr ""
 "De waarde <i>r</i> is de Pearson correlatiecoëfficiënt van de boekwaardes en "
 "de auditwaardes, een indicator van de sterkte van de lineaire relatie tussen "
 "de twee variabelen."
-
-msgid "below"
-msgstr "onder"
-
-msgid "lower"
-msgstr "lager"
-
-msgid "above"
-msgstr "boven"
-
-msgid "higher"
-msgstr "hoger"
-
-msgid ""
-"The objective of this substantive testing procedure was to determine with <b>"
-"%1$s</b> confidence whether the population misstatement is lower than "
-"materiality, in this case <b>%2$s</b>. For the current data, the <b>%3$s</b> "
-"confidence bound is <b>%4$s</b> materiality. The conclusion on the basis of "
-"these results is that, with <b>%5$s</b> confidence, the population "
-"misstatement is <b>%6$s</b> than materiality."
-msgstr ""
-"Het doel van deze substantieve test procedure was om te bepalen met <b>%1$s</"
-"b> zekerheid of de fout in de populatie lager is dan de materialiteit, in "
-"dit geval <b>%2$s</b>. Voor de huidige data is de <b>%3$s</b> "
-"zekerheidsgrens <b>%4$s</b> materialiteit. De conclusie op basis van deze "
-"resultaten is dat, met <b>%5$s</b> zekerheid, de populatie fout <b>%6$s</b> "
-"dan de materialiteit is."
-
-msgid "<u>Report Badges</u>"
-msgstr "<u>Verslag Badges</u>"
-
-msgid "Badge: <i>Annotated</i>"
-msgstr "Badge: <i>Geannoteerd</i>"
-
-msgid "Badge: <i>Approved</i>"
-msgstr "Badge: <i>Goedgekeurd</i>"
-
-msgid "Badge: <i>Not approved</i>"
-msgstr "Badge: <i>Niet goedgekeurd</i>"
 
 msgid "<b>Table %i.</b> Implicit Sample"
 msgstr "<b>Tabel %i.</b> Impliciete Steekproef"
@@ -1690,12 +2077,6 @@ msgid ""
 msgstr ""
 "%1$s%% Posterior \n"
 "geloofwaardigheidsregio"
-
-msgid "gamma"
-msgstr "gamma"
-
-msgid "beta"
-msgstr "beta"
 
 msgid "beta-binomial"
 msgstr "beta-binomiaal"
@@ -2353,12 +2734,6 @@ msgstr "Binomiale Toets"
 msgid "Variable"
 msgstr "Variabele"
 
-msgid "Level"
-msgstr "Niveau"
-
-msgid "VS-MPR"
-msgstr "VS-MPR"
-
 msgid "%s%% CI for Proportion"
 msgstr "%s%% BI voor Proportie"
 
@@ -2414,9 +2789,6 @@ msgstr "<em>p</em>-waarden zijn benaderingen."
 
 msgid "Standard Error"
 msgstr "Standaardfout"
-
-msgid "z"
-msgstr "z"
 
 msgid "Wald test."
 msgstr "Wald toets."
@@ -2513,9 +2885,6 @@ msgstr "Rang toets"
 
 msgid "Cases marked with %s are influential."
 msgstr "Waarnemingen gemarkeerd met %s zijn invloedrijk."
-
-msgid "Plot"
-msgstr "Grafiek"
 
 msgid "Forest plot"
 msgstr "Forestgrafiek"
@@ -3033,9 +3402,6 @@ msgstr "Parameter"
 
 msgid "Standard errors are unavailable with this method"
 msgstr "Standaardfouten zijn niet beschikbaar met deze methode"
-
-msgid "%s%% CI"
-msgstr "%s%% BI"
 
 msgid "Confidence intervals are unavailable with this method."
 msgstr "Betrouwbaarheidsintervallen zijn niet beschikbaar met deze methode."
@@ -6207,9 +6573,6 @@ msgstr "Cox & Snell R%s"
 msgid "Standardized%s"
 msgstr "Gestandaardiseerd%s"
 
-msgid "Odds Ratio"
-msgstr "Odds Ratio"
-
 msgid "Wald Statistic"
 msgstr "Wald statistiek"
 
@@ -6337,64 +6700,349 @@ msgstr "Posterior Kengetallen Voor Submodel %s"
 msgid "%.0f%% Credible intervals"
 msgstr "%.0f%% Geloofwaardigheidsintervallen"
 
-msgid "Scale Reliability Statistics"
+msgid "Data covariance matrix is not positive semidefinite"
+msgstr ""
+
+msgid "%s Using pairwise complete cases."
+msgstr ""
+
+msgid "%s Using %1.f complete cases."
+msgstr ""
+
+#, fuzzy
+msgid "Bayesian Scale Reliability Statistics"
 msgstr "Schaal Betrouwbaarheidsstatistieken"
 
-msgid "mean"
-msgstr "Gemiddelde"
+#, fuzzy
+msgid "%s lower bound"
+msgstr "Ondergrens"
 
-msgid "sd"
-msgstr "sd"
+#, fuzzy
+msgid "%s upper bound"
+msgstr "Bovengrens"
 
-msgid "McDonald's %s"
-msgstr "McDonald's %s"
+#, fuzzy
+msgid "Please enter at least 3 variables to do an analysis. %s"
+msgstr "Geef a.u.b. minstens 2 variabelen."
 
-msgid "Cronbach's %s"
-msgstr "Cronbach's %s"
+msgid "footnote"
+msgstr ""
 
-msgid "Gutmann's %s"
-msgstr "Gutmann's %s"
+#, fuzzy
+msgid "Please enter at least 3 variables to do an analysis."
+msgstr "Geef a.u.b. minstens 2 variabelen."
 
-msgid "Greatest lower bound"
-msgstr "Grootste ondergrens"
+#, fuzzy
+msgid "%s (if item dropped)"
+msgstr "Als item wordt weggelaten"
 
-msgid "Average interitem correlation"
-msgstr "Gemiddelde inter-item correlatie"
+#, fuzzy
+msgid "Bayesian Individual Item Reliability Statistics"
+msgstr "Schaal Betrouwbaarheidsstatistieken"
 
-msgid "%.0f%% Confidence Interval"
-msgstr "%.0f%% Betrouwbaarheidsinterval"
+#, fuzzy
+msgid "Item-rest correlation"
+msgstr "item-rest correlatie"
 
 msgid ""
-"Of the observations, %1$i were used, %2$i were excluded %3$s, and %4$i were "
-"provided."
+"Probability that Reliability Statistic is Larger than %.2f and Smaller than "
+"%.2f"
 msgstr ""
-"%1$i van de observaties zijn gebruikt, %2$i zijn uitgesloten %3$s, en %4$i "
-"zijn gegeven."
+
+#, fuzzy
+msgid "Posterior Plots"
+msgstr "Posterior R%s"
+
+msgid "If Item Dropped Posterior Plots"
+msgstr ""
+
+#, fuzzy
+msgid "Item Dropped"
+msgstr "Als item wordt weggelaten"
+
+#, fuzzy
+msgid "Factors"
+msgstr "Factor"
+
+msgid "Convergence Traceplot"
+msgstr ""
+
+#, fuzzy
+msgid "Iterations"
+msgstr "Iteratie"
+
+msgid "%.2f"
+msgstr ""
+
+#, fuzzy
+msgid "The analysis crashed with the following error message:"
+msgstr ""
+"bootnet gecrasht met de volgende foutmelding:\n"
+"%s"
+
+#, fuzzy
+msgid "Frequentist Scale Reliability Statistics"
+msgstr "Schaal Betrouwbaarheidsstatistieken"
+
+#, fuzzy
+msgid "Point estimate"
+msgstr "Puntschatting."
 
 msgid ""
-"%s\n"
-"Warning: Greatest lower bound can only be calculated for three or more "
-"variables."
+"%sMcDonald's ω estimation method switched to PFA because the CFA\n"
+"                                          did not find a solution."
 msgstr ""
-"%s\n"
-"Waarschuwing: Grootste ondergrens kan alleen worden berekend voor drie of "
-"meervariabelen."
 
 msgid "If item dropped"
 msgstr "Als item wordt weggelaten"
 
-msgid "item-rest correlation"
-msgstr "item-rest correlatie"
+#, fuzzy
+msgid "Frequentist Individual Item Reliability Statistics"
+msgstr "Schaal Betrouwbaarheidsstatistieken"
 
 msgid ""
-"Warning: McDonald's %s if item dropped can only be calculated for three or "
-"more variables."
+"McDonald's ω estimation method for item-dropped statistics\n"
+"                                    switched to PFA because the CFA did not "
+"find a solution."
 msgstr ""
-"McDonald's %s Als item wordt weggelaten kan allen worden berekend voor drie "
-"of meer variabelen."
 
-msgid "reverse-scaled item"
-msgstr "Andersom-geschaald item"
+msgid "Fit Measures of Single Factor Model Fit"
+msgstr ""
+
+#, fuzzy
+msgid ""
+"Fit measures cannot be displayed because the McDonald's ω \n"
+"                                               estimation method switched \n"
+"                                               to PFA as the CFA did not "
+"find a solution."
+msgstr ""
+"%1$s\n"
+"                                %2$s\n"
+"                                %3$s\n"
+"                                %4$s\n"
+"                                %5$s"
+
+msgid "The priors for publication bias were set incorrectly."
+msgstr ""
+
+#, fuzzy
+msgid "MCMC error"
+msgstr "Maximale fout"
+
+#, fuzzy
+msgid "ESS"
+msgstr "WSS"
+
+msgid "%s is on %s scale."
+msgstr ""
+
+#, fuzzy
+msgid "<em>p</em>-values interval %s"
+msgstr "<em>p</em>-waarden zijn benaderingen."
+
+msgid "The weights (%s) correspond to %s <em>p</em>-values."
+msgstr ""
+
+msgid "Estimated studies' effects (%s) correspond to effect size %s."
+msgstr ""
+
+#, fuzzy
+msgid "Effect size (%s)"
+msgstr "Effectgrootte"
+
+#, fuzzy
+msgid "Heterogeneity (%s)"
+msgstr "Heterogeniteit"
+
+#, fuzzy
+msgid "Prior Plots"
+msgstr "Prior H"
+
+#, fuzzy
+msgid "Weight Function"
+msgstr "Kwantielfunctie"
+
+#, fuzzy
+msgid "Model Preview"
+msgstr "Model passing"
+
+msgid ""
+"At least one prior distribution per parameter must be specified (either null "
+"or alternative)."
+msgstr ""
+
+#, fuzzy
+msgid "Publication bias"
+msgstr "Populatiegrootte"
+
+#, fuzzy
+msgid "Models Overview"
+msgstr "Model Gemiddelde R%s"
+
+#, fuzzy
+msgid "Prior Distribution"
+msgstr "Posterior verdeling"
+
+#, fuzzy
+msgid "Publication Bias"
+msgstr "Populatiegrootte"
+
+msgid "The loaded object is not a RoBMA model."
+msgstr ""
+
+#, fuzzy
+msgid "Summary"
+msgstr "Model Samenvatting"
+
+#, fuzzy
+msgid "Exclusion"
+msgstr "Sluit Hu uit"
+
+#, fuzzy
+msgid "Inclusion"
+msgstr "Neem Hu mee"
+
+#, fuzzy
+msgid "log(BF)"
+msgstr "Log(BF%s)"
+
+msgid ""
+"All models failed to converge. Please, consider inspecting the 'MCMC "
+"diagnostics' and changing the 'Advanced options'."
+msgstr ""
+
+msgid "%i models failed to converge."
+msgstr ""
+
+#, fuzzy
+msgid "Model Averaged Estimates"
+msgstr "Model Gemiddelde R%s"
+
+#, fuzzy
+msgid "Model Averaged Weights (%s)"
+msgstr "Model Gemiddelde R%s"
+
+#, fuzzy
+msgid "Model Averaged Estimated Studies' Effects (%s)"
+msgstr "Geobserveerde en geschatte onderzoekseffecten"
+
+#, fuzzy
+msgid "Conditional Estimates"
+msgstr "Extra pasmaten"
+
+msgid ""
+"Estimates are model averaged over models assuming existence of effect / "
+"heterogeneity."
+msgstr ""
+
+#, fuzzy
+msgid "Conditional Weights (%s)"
+msgstr "Geconditioneerd op variabelen: %s"
+
+msgid ""
+"Estimated weights (%s) are model averaged over models assuming existence of "
+"publication bias."
+msgstr ""
+
+#, fuzzy
+msgid "Conditional Estimated Studies' Effects (%s)"
+msgstr "Geschatte onderzoekseffecten"
+
+msgid ""
+"Estimated studies effects (%s) are model averaged over models assuming "
+"existence of effect."
+msgstr ""
+
+msgid "BF01"
+msgstr ""
+
+#, fuzzy
+msgid "log(BF10)"
+msgstr "Log(BF%s)"
+
+msgid "BF10"
+msgstr ""
+
+msgid "log(MargLik)"
+msgstr ""
+
+#, fuzzy
+msgid "Individual Models Summary"
+msgstr "Model Samenvatting"
+
+#, fuzzy
+msgid "Model %i"
+msgstr "Model passing"
+
+msgid "Model %i does not exist. Select one of the models between 1 and %i."
+msgstr ""
+
+#, fuzzy
+msgid "Priors"
+msgstr "Prior"
+
+#, fuzzy
+msgid "Information"
+msgstr "Cluster Informatie"
+
+#, fuzzy
+msgid "Model Estimates"
+msgstr "Schatting"
+
+#, fuzzy
+msgid "Estimated Weights (%s)"
+msgstr "Schatting %1$s"
+
+#, fuzzy
+msgid "Estimated Studies' Effects (%s)"
+msgstr "Geschatte onderzoekseffecten"
+
+#, fuzzy
+msgid "Weight function"
+msgstr "Verliesfunctie"
+
+#, fuzzy
+msgid "Effect size vs Heterogeneity"
+msgstr "Toets van Residuen Heterogeniteit"
+
+#, fuzzy
+msgid "%s (%s)"
+msgstr "I%s (%%)"
+
+msgid "Individual Models Plots"
+msgstr ""
+
+#, fuzzy
+msgid "Diagnostics"
+msgstr "Diagnostische Grafieken"
+
+msgid "Models Diagnostics Overview"
+msgstr ""
+
+msgid "max(MCMC error)"
+msgstr ""
+
+msgid "min(ESS)"
+msgstr ""
+
+#, fuzzy
+msgid "max(Rhat)"
+msgstr "Rhat"
+
+#, fuzzy
+msgid "Trace plots"
+msgstr "Trace Plots"
+
+#, fuzzy
+msgid "Average autocorrelations"
+msgstr "Auto-correlatie"
+
+#, fuzzy
+msgid "Posterior samples densities"
+msgstr "Posterior kansen"
+
+msgid "Model %i does not contain any of the selected parameters."
+msgstr ""
 
 msgid "Model misspecified"
 msgstr "Model fout gespecificeerd"
@@ -6862,15 +7510,15 @@ msgid ""
 "For all tests, the alternative hypothesis specifies that %1s is less than "
 "%2s."
 msgstr ""
-"Voor alle toetsen specificeert de alternatieve hypothese dat %1s "
-"kleiner is dan %2s."
+"Voor alle toetsen specificeert de alternatieve hypothese dat %1s kleiner is "
+"dan %2s."
 
 msgid ""
 "For all tests, the alternative hypothesis specifies that %1s is greater than "
 "%2s."
 msgstr ""
-"Voor alle toetsen specificeert de alternatieve hypothese dat %1s "
-"groter is dan %2s."
+"Voor alle toetsen specificeert de alternatieve hypothese dat %1s groter is "
+"dan %2s."
 
 msgid ""
 "For all tests, the alternative hypothesis specifies that Measure 1 is less "
@@ -6914,6 +7562,71 @@ msgstr ""
 "kon niet genoeg geldige Bayes factoren berekenen voor verschillende waarden "
 "van de prior"
 
+#, fuzzy
+msgid "The following variable is used as a random effects grouping factor: %s."
+msgid_plural ""
+"The following variables are used as random effects grouping factors: %s."
+msgstr[0] "De volgende covariaat werd overwogen, maar niet meegenomen: %s."
+msgstr[1] "De volgende covariaten werden overwogen, maar niet meegenomen: %s."
+
+msgid ""
+"Factor %s does not vary within the levels of random effects grouping factor "
+"'%s'. All random slopes involving %s have been removed for '%s'."
+msgid_plural ""
+"Factors %s do not vary within the levels of random effects grouping factor "
+"'%s'. All random slopes involving %s have been removed for '%s'."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"Lower order random effects terms need to be specified in presence of the "
+"higher order random effects terms. Therefore, the following random effects "
+"term was added to the '%s' random effects grouping factor: '%s.'"
+msgid_plural ""
+"Lower order random effects terms need to be specified in presence of the "
+"higher order random effects terms. Therefore, the following random effects "
+"terms were added to the '%s' random effects grouping factor: '%s.'"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%i observation was removed due to missing values."
+msgid_plural "%i observations were removed due to missing values."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"There was %i divergent transition after warmup indicating problems with the "
+"validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until "
+"there are no divergent transitions."
+msgid_plural ""
+"There were %i divergent transitions after warmup indicating problems with "
+"the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' "
+"until there are no divergent transitions."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"Bayesian Fraction of Missing Information (BFMI) that was too low in %i chain "
+"indicating that the posterior distribution was not explored efficiently. Try "
+"increasing number of 'Warmup' and 'Iterations'."
+msgid_plural ""
+"Bayesian Fraction of Missing Information (BFMI) that was too low in %i "
+"chains indicating that the posterior distribution was not explored "
+"efficiently. Try increasing number of 'Warmup' and 'Iterations'."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"There was %i transition exceeding maximum treedepth indication problems with "
+"the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing "
+"'Maximum treedepth'."
+msgid_plural ""
+"There were %i transitions exceeding maximum treedepth indication problems "
+"with the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing "
+"'Maximum treedepth'."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "The following pair is duplicated: %s"
 msgid_plural "The following pairs are duplicated: %s"
 msgstr[0] "Het volgende paar is gedupliceerd: %s"
@@ -6943,3 +7656,71 @@ msgid "Partial Regression Plot"
 msgid_plural "Partial Regression Plots"
 msgstr[0] "Partiële Regressiegrafiek"
 msgstr[1] "Partiële Regressiegrafieken"
+
+#, fuzzy
+msgid "The following item correlated negatively with the scale: %s. "
+msgid_plural "The following items correlated negatively with the scale: %s. "
+msgstr[0] "De volgende covariaat werd overwogen, maar niet meegenomen: %s."
+msgstr[1] "De volgende covariaten werden overwogen, maar niet meegenomen: %s."
+
+#~ msgid "<u>Report Badges</u>"
+#~ msgstr "<u>Verslag Badges</u>"
+
+#~ msgid "Badge: <i>Annotated</i>"
+#~ msgstr "Badge: <i>Geannoteerd</i>"
+
+#~ msgid "Badge: <i>Approved</i>"
+#~ msgstr "Badge: <i>Goedgekeurd</i>"
+
+#~ msgid "Badge: <i>Not approved</i>"
+#~ msgstr "Badge: <i>Niet goedgekeurd</i>"
+
+#~ msgid "mean"
+#~ msgstr "Gemiddelde"
+
+#~ msgid "sd"
+#~ msgstr "sd"
+
+#~ msgid "McDonald's %s"
+#~ msgstr "McDonald's %s"
+
+#~ msgid "Cronbach's %s"
+#~ msgstr "Cronbach's %s"
+
+#~ msgid "Gutmann's %s"
+#~ msgstr "Gutmann's %s"
+
+#~ msgid "Greatest lower bound"
+#~ msgstr "Grootste ondergrens"
+
+#~ msgid "Average interitem correlation"
+#~ msgstr "Gemiddelde inter-item correlatie"
+
+#~ msgid "%.0f%% Confidence Interval"
+#~ msgstr "%.0f%% Betrouwbaarheidsinterval"
+
+#~ msgid ""
+#~ "Of the observations, %1$i were used, %2$i were excluded %3$s, and %4$i "
+#~ "were provided."
+#~ msgstr ""
+#~ "%1$i van de observaties zijn gebruikt, %2$i zijn uitgesloten %3$s, en "
+#~ "%4$i zijn gegeven."
+
+#~ msgid ""
+#~ "%s\n"
+#~ "Warning: Greatest lower bound can only be calculated for three or more "
+#~ "variables."
+#~ msgstr ""
+#~ "%s\n"
+#~ "Waarschuwing: Grootste ondergrens kan alleen worden berekend voor drie of "
+#~ "meervariabelen."
+
+#~ msgid ""
+#~ "Warning: McDonald's %s if item dropped can only be calculated for three "
+#~ "or more variables."
+#~ msgstr ""
+#~ "McDonald's %s Als item wordt weggelaten kan allen worden berekend voor "
+#~ "drie of meer variabelen."
+
+#~ msgid "reverse-scaled item"
+#~ msgstr "Andersom-geschaald item"
