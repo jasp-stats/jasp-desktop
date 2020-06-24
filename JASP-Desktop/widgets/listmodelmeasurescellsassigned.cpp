@@ -49,6 +49,9 @@ void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms
 		_terms = variables;
 
 	_fitTermsWithLevels();
+
+	if (source() != nullptr)
+		source()->removeTermsInAssignedList();
 	
 	endResetModel();
 }
