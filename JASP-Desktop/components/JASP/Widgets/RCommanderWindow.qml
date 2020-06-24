@@ -28,13 +28,13 @@ Window
     id:					rcmdRoot
 	title:				qsTr("R in JASP")
 	visible:			true
-	width:				1248
-	height:				768
+	width:				600 * preferencesModel.uiScale
+	height:				300 * preferencesModel.uiScale
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				jaspTheme.white
 
-	minimumWidth:		800 * preferencesModel.uiScale
-	minimumHeight:		600 * preferencesModel.uiScale
+	minimumWidth:		300 * preferencesModel.uiScale
+	minimumHeight:		200 * preferencesModel.uiScale
 
 	function toggleFullScreen()
 	{
@@ -162,7 +162,7 @@ Window
 		Item
 		{
 		    id:		codeEntryContainer
-			height: 100;// Math.min(Math.max(codeEntry.implicitHeight, 20 * jaspTheme.uiScale), 200 * jaspTheme.uiScale)
+			height: 100 * preferencesModel.uiScale;// Math.min(Math.max(codeEntry.implicitHeight, 20 * jaspTheme.uiScale), 200 * jaspTheme.uiScale)
 			anchors
 			{
 			    left:	parent.left
@@ -249,12 +249,12 @@ Window
 			JW.RectangularButton
 			{
 				id:				runButton
-				text:				qsTr("Run Code")
-				onClicked:			runCode();
-				width:				clearOutput.width
-				enabled:			codeEntry.text != "" && !rCmd.running
+				text:			qsTr("Run Code")
+				onClicked:		runCode();
+				width:			clearOutput.width
+				enabled:		codeEntry.text != "" && !rCmd.running
 
-				toolTip:	qsTr("Pressing Ctrl+Enter or F5 will also run the code")
+				toolTip:		qsTr("Pressing Ctrl+Enter or F5 will also run the code")
 
 				function runCode() { if(enabled && rCmd.runCode(codeEntry.text)) codeEntry.text = ""; }
 
