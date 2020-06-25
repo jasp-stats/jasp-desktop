@@ -18,10 +18,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   
   # order of appearance in Bayesrel
   derivedOptions <- list(
-    selectedEstimatorsF  = unlist(options[c("mcDonaldScalef","alphaScalef", "guttman2Scalef", "guttman6Scalef", 
-                                            "glbScalef", "averageInterItemCorf", "meanScalef", "sdScalef")]),
-    itemDroppedSelectedF = unlist(options[c("mcDonaldItemf", "alphaItemf", "guttman2Itemf", "guttman6Itemf",
-                                            "glbItemf", "itemRestCorf", "meanItemf", "sdItemf")]),
+    selectedEstimatorsF  = unlist(options[c("mcDonaldScale","alphaScale", "guttman2Scale", "guttman6Scale", 
+                                            "glbScale", "averageInterItemCor", "meanScale", "sdScale")]),
+    itemDroppedSelectedF = unlist(options[c("mcDonaldItem", "alphaItem", "guttman2Item", "guttman6Item",
+                                            "glbItem", "itemRestCor", "meanItem", "sdItem")]),
     namesEstimators     = list(
       tables = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6", 
                  "Greatest Lower Bound", "Average interitem correlation", "mean", "sd"),
@@ -45,9 +45,9 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 # estimate reliability ----
 # maybe in the future it would be easier to have one function for every estimator...
 .frequentistReliabilityMainResults <- function(jaspResults, dataset, options) {
-  if (!options[["mcDonaldScalef"]] && !options[["alphaScalef"]] && !options[["guttman2Scalef"]]
-      && !options[["guttman6Scalef"]] && !options[["glbScalef"]] && !options[["averageInterItemCorf"]]
-      && !options[["meanScalef"]] && !options[["sdScalef"]]) {
+  if (!options[["mcDonaldScale"]] && !options[["alphaScale"]] && !options[["guttman2Scale"]]
+      && !options[["guttman6Scale"]] && !options[["glbScale"]] && !options[["averageInterItemCor"]]
+      && !options[["meanScale"]] && !options[["sdScale"]]) {
     variables <- options[["variables"]]
     if (length(options[["reverseScaledItems"]]) > 0L) {
       dataset <- .reverseScoreItems(dataset, options)
@@ -63,7 +63,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     model <- list()
     variables <- options[["variables"]]
     
-    samples <- options[["noSamplesf"]]
+    samples <- options[["noSamples"]]
     p <- ncol(dataset)
     
     if (length(variables) > 2L) {
@@ -77,7 +77,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       
       model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
       if (any(is.na(dataset))) {
-        if (options[["missingValuesf"]] == "excludeCasesPairwise") {
+        if (options[["missingValues"]] == "excludeCasesPairwise") {
           missing <- "pairwise"
           use.cases <- "pairwise.complete.obs"
           model[["footnote"]] <- gettextf("%s Using pairwise complete cases. ", model[["footnote"]])
@@ -133,7 +133,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         if (options[["alphaMethod"]] == "alphaStand") {
           model[["dat_cov"]] <- Bayesrel:::make_symmetric(cov2cor(cov(dataset, use = use.cases)))
           relyFit <- try(Bayesrel::strel(data = dataset, estimates=c("lambda2", "lambda6", "glb", "omega"), 
-                                         Bayes = FALSE, n.boot = options[["noSamplesf"]],
+                                         Bayes = FALSE, n.boot = options[["noSamples"]],
                                          item.dropped = TRUE, omega.freq.method = options[["omegaEst"]], 
                                          omega.int.analytic = omegaAna,
                                          para.boot = para,
@@ -148,8 +148,8 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           relyFit$freq$ifitem$alpha <- apply(Ctmp, 1, Bayesrel:::applyalpha)
           
           if (!alphaAna) { # when standardized alpha, but bootstrapped alpha interval:
-            cors <- array(0, c(options[["noSamplesf"]], p, p))
-            for (i in 1:options[["noSamplesf"]]) {
+            cors <- array(0, c(options[["noSamples"]], p, p))
+            for (i in 1:options[["noSamples"]]) {
               cors[i, , ] <- .cov2cor.callback(relyFit$freq$covsamp[i, , ], progressbarTick)
             }
             relyFit$freq$boot$alpha <- apply(cors, 1, Bayesrel:::applyalpha)
@@ -166,7 +166,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         } else {
           model[["dat_cov"]] <- Bayesrel:::make_symmetric(cov(dataset, use = use.cases))
           relyFit <- try(Bayesrel::strel(data = dataset, estimates=c("alpha", "lambda2", "lambda6", "glb", "omega"), 
-                                         Bayes = FALSE, n.boot = options[["noSamplesf"]],
+                                         Bayes = FALSE, n.boot = options[["noSamples"]],
                                          item.dropped = TRUE, omega.freq.method = options[["omegaEst"]], 
                                          alpha.int.analytic = alphaAna, 
                                          omega.int.analytic = omegaAna,
@@ -286,7 +286,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         model[["relyFit"]] <- relyFit
         
         stateObj <- createJaspState(model)
-        stateObj$dependOn(options = c("variables", "reverseScaledItems", "noSamplesf", "missingValuesf", "omegaEst", 
+        stateObj$dependOn(options = c("variables", "reverseScaledItems", "noSamples", "missingValues", "omegaEst", 
                                         "alphaMethod", "alphaInterval", "omegaInterval", "bootType", 
                                         "setSeed", "seedValue", "intervalOn"))
 
@@ -379,9 +379,9 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     return()
   }
   scaleTableF <- createJaspTable(gettext("Frequentist Scale Reliability Statistics"))
-  scaleTableF$dependOn(options = c("variables", "mcDonaldScalef", "alphaScalef", "guttman2Scalef", "guttman6Scalef",
-                                   "glbScalef", "reverseScaledItems", "confidenceIntervalValue", "noSamplesf", 
-                                   "averageInterItemCorf", "meanScalef", "sdScalef", "missingValuesf", "omegaEst", 
+  scaleTableF$dependOn(options = c("variables", "mcDonaldScale", "alphaScale", "guttman2Scale", "guttman6Scale",
+                                   "glbScale", "reverseScaledItems", "confidenceIntervalValue", "noSamples", 
+                                   "averageInterItemCor", "meanScale", "sdScale", "missingValues", "omegaEst", 
                                    "alphaMethod", "alphaInterval", "omegaInterval", "bootType", 
                                    "setSeed", "seedValue", "intervalOn"))
   scaleTableF$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
@@ -401,9 +401,9 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   }
   
 # if no coefficients selected:
-  if ((!options[["mcDonaldScalef"]] && !options[["alphaScalef"]] && !options[["guttman2Scalef"]] 
-       && !options[["guttman6Scalef"]] && !options[["glbScalef"]] && !options[["averageInterItemCorf"]]
-       && !options[["meanScalef"]] && !options[["sdScalef"]])) {
+  if ((!options[["mcDonaldScale"]] && !options[["alphaScale"]] && !options[["guttman2Scale"]] 
+       && !options[["guttman6Scale"]] && !options[["glbScale"]] && !options[["averageInterItemCor"]]
+       && !options[["meanScale"]] && !options[["sdScale"]])) {
     
     scaleTableF$setData(allData)
     nvar <- length(options[["variables"]])
@@ -424,7 +424,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   selected <- derivedOptions[["selectedEstimatorsF"]]
   idxSelected <- which(selected)
   
-  if (options[["mcDonaldScalef"]] && !is.null(relyFit[["freq"]][["omega.error"]])) {
+  if (options[["mcDonaldScale"]] && !is.null(relyFit[["freq"]][["omega.error"]])) {
     model[["footnote"]] <- gettextf("%sMcDonald's \u03C9 estimation method switched to PFA because the CFA
                                           did not find a solution. ", model[["footnote"]])
   }
@@ -495,10 +495,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   
   itemTableF <- createJaspTable(gettext("Frequentist Individual Item Reliability Statistics"))
   itemTableF$dependOn(options = c("variables",
-                                  "mcDonaldScalef", "alphaScalef", "guttman2Scalef", "guttman6Scalef", "glbScalef", 
-                                  "averageInterItemCorf", "meanScalef", "sdScalef",
-                                  "mcDonaldItemf",  "alphaItemf",  "guttman2Itemf", "guttman6Itemf", "glbItemf",
-                                  "reverseScaledItems", "meanItemf", "sdItemf", "itemRestCorf", "missingValuesf", 
+                                  "mcDonaldScale", "alphaScale", "guttman2Scale", "guttman6Scale", "glbScale", 
+                                  "averageInterItemCor", "meanScale", "sdScale",
+                                  "mcDonaldItem",  "alphaItem",  "guttman2Item", "guttman6Item", "glbItem",
+                                  "reverseScaledItems", "meanItem", "sdItem", "itemRestCor", "missingValues", 
                                   "omegaEst", "alphaMethod", "setSeed", "seedValue"))
   itemTableF$addColumnInfo(name = "variable", title = "Item", type = "string")
   
@@ -516,7 +516,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   relyFit <- model[["relyFit"]]
 
   if (!is.null(relyFit)) {
-    if (options[["mcDonaldScalef"]] && !is.null(relyFit[["freq"]][["omega.item.error"]])) {
+    if (options[["mcDonaldScale"]] && !is.null(relyFit[["freq"]][["omega.item.error"]])) {
       itemTableF$addFootnote(gettext("McDonald's \u03C9 estimation method for item-dropped statistics
                                     switched to PFA because the CFA did not find a solution."))
     }
@@ -543,14 +543,14 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 # once the package is updated check this again and apply:
 .freqentistReliabilitySingleFactorFitTable <- function(jaspResults, model, options) {
 
-  if (!options[["fitMeasures"]] || !options[["mcDonaldScalef"]])
+  if (!options[["fitMeasures"]] || !options[["mcDonaldScale"]])
     return()
   if (!is.null(jaspResults[["fitTable"]]) || !options[["fitMeasures"]]) {
     return()
   }
 
   fitTable <- createJaspTable(gettextf("Fit Measures of Single Factor Model Fit"))
-  fitTable$dependOn(options = c("variables", "mcDonaldScalef", "reverseScaledItems", "fitMeasures", "missingValuesf", 
+  fitTable$dependOn(options = c("variables", "mcDonaldScale", "reverseScaledItems", "fitMeasures", "missingValues", 
                                 "omegaEst", "setSeed", "seedValue"))
   fitTable$addColumnInfo(name = "measure", title = "Fit Measure",   type = "string")
   fitTable$addColumnInfo(name = "value",  title = "Value", type = "number")
