@@ -41,8 +41,8 @@ Section
 		{
 			name:			"iteration"
 			label:			qsTr("Iterations")
-			defaultValue:	parseInt(warmup.value) + 2
-			min:			warmup.value
+			defaultValue:	4000
+			min:			parseInt(warmup.value) + 2
 		}
 
 		IntegerField
