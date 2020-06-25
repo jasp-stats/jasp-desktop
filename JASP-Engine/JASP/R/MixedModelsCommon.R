@@ -42,6 +42,13 @@
   
   if (!is.null(jaspResults[["mmModel"]])) {
     
+    # show fit statistics
+    if (options$fitStats) {
+      if(type %in% c("LMM", "GLMM")).mmFitStats(jaspResults, options, type)
+      if(type %in% c("BLMM", "BGLMM")).mmFitStatsB(jaspResults, options, type)
+    }
+    
+    
     # show fixed / random effects summary
     if (options$showFE){
       if(type %in% c("LMM", "GLMM")).mmSummaryFE(jaspResults, options, type)
@@ -655,6 +662,95 @@
     
     return()
   }
+.mmFitStats      <- function(jaspResults, options, type = "LMM") {
+  if (!is.null(jaspResults[["fitStats"]]))
+    return()
+  
+  model <- jaspResults[["mmModel"]]$object$model
+  
+  fitStats <- createJaspTable(title = gettext("Model summary"))
+  fitStats$position <- 2
+
+  if (type == "LMM") {
+    dependencies <- .mmDependenciesLMM
+  } else if (type == "GLMM") {
+    dependencies <- .mmDependenciesGLMM
+  }
+  if (options$method == "PB") {
+    dependencies <- c(dependencies, "seed", "setSeed")
+  }
+
+
+  fitStats$dependOn(c(dependencies, "fitStats"))
+
+  
+  if (is.list(model$full_model)) {
+    is_REML <-
+      lme4::isREML(model$full_model[[length(model$full_model)]])
+  } else{
+    is_REML <- lme4::isREML(model$full_model)
+  }
+  
+  fitStats$addColumnInfo(name = "deviance",
+                         title = gettext("Deviance"),
+                         type = "number")
+  if (is_REML) {
+    fitStats$addColumnInfo(
+      name = "devianceREML",
+      title = gettext("Deviance (REML)"),
+      type = "number"
+    )
+  }
+  fitStats$addColumnInfo(name = "loglik",
+                         title = gettext("log Lik."),
+                         type = "number")
+  fitStats$addColumnInfo(name = "df",
+                         title = gettext("df"),
+                         type = "integer")
+
+  fitStats$addColumnInfo(name = "aic",
+                         title = gettext("AIC"),
+                         type = "number")
+  fitStats$addColumnInfo(name = "bic",
+                         title = gettext("BIC"),
+                         type = "number")
+  
+  jaspResults[["fitStats"]] <- fitStats
+  
+  
+  if (is.list(model$full_model)) {
+
+    temp_row <- list(
+      deviance = deviance(model$full_model[[length(model$full_model)]], REML = FALSE),
+      loglik   = logLik(model$full_model[[length(model$full_model)]]),
+      df       = attr(logLik(model$full_model[[length(model$full_model)]]) , "df"),
+      aic      = AIC(model$full_model[[length(model$full_model)]]),
+      bic      = BIC(model$full_model[[length(model$full_model)]])
+    )
+  
+    if (is_REML)
+      temp_row$devianceREML <- lme4::REMLcrit(model$full_model[[length(model$full_model)]])
+    
+  }else{
+
+    temp_row <- list(
+      deviance = deviance(model$full_model, REML = FALSE),
+      loglik   = logLik(model$full_model),
+      df       = attr(logLik(model$full_model) , "df"),
+      aic      = AIC(model$full_model),
+      bic      = BIC(model$full_model)
+    )
+    
+    if (is_REML)
+      temp_row$devianceREML <- lme4::REMLcrit(model$full_model)
+    
+  }
+  
+  fitStats$addRows(temp_row)
+  fitStats$addFootnote(.mmMessageFitType(is_REML))
+  
+  return()
+}
 .mmSummaryRE     <- function(jaspResults, options, type = "LMM") {
   if (!is.null(jaspResults[["REsummary"]]))
     return()
@@ -664,7 +760,7 @@
   REsummary <-
     createJaspContainer(title = gettext("Variance/Correlation Estimates"))
   
-  REsummary$position <- 3
+  REsummary$position <- 4
   
   if (type == "LMM") {
     dependencies <- .mmDependenciesLMM
@@ -826,7 +922,7 @@
   
   FEsummary <- createJaspTable(title = gettext("Fixed Effects Estimates"))
   
-  FEsummary$position <- 2
+  FEsummary$position <- 3
   if (type == "LMM") {
     dependencies <- .mmDependenciesLMM
   } else if (type == "GLMM") {
@@ -942,7 +1038,7 @@
                      width = width,
                      height = height)
     
-    plots$position <- 4
+    plots$position <- 5
     if (type == "LMM") {
       dependencies <- .mmDependenciesLMM
     } else if (type == "GLMM") {
@@ -1272,7 +1368,7 @@
       createJaspTable(title = gettext("Estimated Marginal Means"))
     EMMresults <- createJaspState()
     
-    EMMsummary$position <- 6
+    EMMsummary$position <- 7
     if (type == "LMM") {
       dependencies <- .mmDependenciesLMM
     } else if (type == "GLMM") {
@@ -1514,7 +1610,7 @@
     trendsSummary <- createJaspTable(title = gettext("Estimated Trends"))
     EMTresults <- createJaspState()
     
-    trendsSummary$position <- 8
+    trendsSummary$position <- 9
     if (type == "LMM") {
       dependencies <- .mmDependenciesLMM
     } else if (type == "GLMM") {
@@ -1714,7 +1810,7 @@
     
     EMMCsummary <- createJaspTable(title = gettext("Contrasts"))
     
-    EMMCsummary$position <- ifelse(what == "Means", 7, 9)
+    EMMCsummary$position <- ifelse(what == "Means", 8, 10)
     if (type == "LMM") {
       dependencies <- .mmDependenciesLMM
     } else if (type == "GLMM") {
@@ -2110,6 +2206,69 @@
     
     return()
   }
+.mmFitStatsB     <- function(jaspResults, options, type = "BLMM") {
+  if (!is.null(jaspResults[["fitStats"]]))
+    return()
+  
+  model <- jaspResults[["mmModel"]]$object$model
+  
+  fitStats <- createJaspTable(title = gettext("Fit Statistics"))
+  fitStats$position <- 4
+  
+  if (type == "BLMM") {
+    dependencies <- .mmDependenciesBLMM
+  } else if (type == "BGLMM") {
+    dependencies <- .mmDependenciesBGLMM
+  }
+  
+
+  fitStats$dependOn(c(dependencies, "fitStats"))
+  
+
+  fitStats$addColumnInfo(name = "waic",
+                         title = gettext("WAIC"),
+                         type = "number")
+  fitStats$addColumnInfo(name = "waicSE",
+                         title = gettext("WAIC (SE)"),
+                         type = "number")
+  fitStats$addColumnInfo(name = "loo",
+                         title = gettext("LOO"),
+                         type = "number")
+  fitStats$addColumnInfo(name = "looSE",
+                         title = gettext("LOO (SE)"),
+                         type = "number")
+  
+
+  jaspResults[["fitStats"]] <- fitStats
+  
+  waic <- loo::waic(model)
+  loo  <- loo::loo(model)
+
+
+  n_bad_waic <- sum(waic$pointwise[,2] > 0.4)
+  n_bad_loo  <- length(loo::pareto_k_ids(loo, threshold = .7))
+  
+  
+  if(n_bad_waic > 0){
+    fitStats$addFootnote(.mmMessageBadWAIC(n_bad_waic), symbol = gettext("Warning:"))   
+  }
+  if(n_bad_loo > 0){
+    fitStats$addFootnote(.mmMessageBadLOO(n_bad_loo), symbol = gettext("Warning:"))    
+  }
+  
+  
+  temp_row <- list(
+    waic   = waic$estimates["waic", "Estimate"],
+    waicSE = waic$estimates["waic", "SE"],
+    loo    = loo$estimates["looic", "Estimate"],
+    looSE  = loo$estimates["looic", "SE"]
+  )
+  
+  fitStats$addRows(temp_row)
+
+  
+  return()
+}
 .mmSummaryREB    <- function(jaspResults, options, type = "BLMM") {
   if (!is.null(jaspResults[["REsummary"]]))
     return()
@@ -2119,7 +2278,7 @@
   REsummary <-
     createJaspContainer(title = gettext("Variance/Correlation Estimates"))
   
-  REsummary$position <- 3
+  REsummary$position <- 4
   
   if (type == "BLMM") {
     dependencies <- .mmDependenciesBLMM
@@ -2269,7 +2428,7 @@
   model <- jaspResults[["mmModel"]]$object$model
   
   FEsummary <- createJaspTable(title = "Fixed Effects Estimates")
-  FEsummary$position <- 2
+  FEsummary$position <- 3
   if (type == "BLMM") {
     dependencies <- .mmDependenciesBLMM
   } else if (type == "BGLMM") {
@@ -2577,7 +2736,7 @@
     diagnosticPlots <-
       createJaspContainer(title = gettext("Sampling diagnostics"))
     
-    diagnosticPlots$position <- 4
+    diagnosticPlots$position <- 5
     if (type == "BLMM") {
       dependencies <- .mmDependenciesBLMM
     } else if (type == "BGLMM") {
@@ -3072,4 +3231,28 @@
     "The smallest Effective Sample Size (ESS) is %.2f, indicating that low estimation accuracy. Running chains for more iterations or increasing 'Adapt delta' may help.",
     ESS
   )
+}
+.mmMessageBadWAIC       <- function(n_bad) {
+  sprintf(
+    ngettext(
+      n_bad,
+      "There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO instead.",
+      "There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO instead."
+    ),
+    n_bad
+  )
+}
+.mmMessageBadLOO        <- function(n_bad) {
+  sprintf(
+    ngettext(
+      n_bad,
+      "There was %1.0f observation with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate.",
+      "There were %1.0f observations with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate."
+    ),
+    n_bad
+  )
+}
+.mmMessageFitType       <- function(REML) {
+  gettextf("The model was fitted using %s.",
+           ifelse(REML, gettext("restricted maximum likelihood"), gettext("maximum likelihood")))
 }

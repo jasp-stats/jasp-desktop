@@ -10,6 +10,10 @@ Bayesian Linear Mixed Models allow you to model a linear relationship between on
 - Homoscedasticity: The error variance of each predictor is constant across all values of that predictor.
 - Normality of errors: The errors are normally distributed with mean zero.
 
+The analysis uses sum contrast encoding for categorical (nominal and ordinal) predictors (R uses dummy encoding by default). This scheme is used for better interpretability of models with interactions. However, the fixed and random effects estimates will differ from those obtained from R with default settings. We advise using the 'Estimated marginal means' section for obtaining mean estimates at individual factor levels. For comparing the mean estimates, use the contrasts option.
+
+The analysis uses a long data format.
+
 ### Input
 
 #### Assignment Box
@@ -137,5 +141,6 @@ Press the button to run the analysis. Model relevant changes in the settings wil
 - rstan
 - rstanarm
 - emmeans
+- loo
 - ggplot2
 - stats

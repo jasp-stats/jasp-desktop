@@ -81,6 +81,12 @@ Section
 	{
 		CheckBox
 		{
+			name:	"fitStats"
+			label:	qsTr("Model summary")
+		}
+
+		CheckBox
+		{
 			name:	"showFE"
 			label:	qsTr("Fixed effects estimates")
 		}
