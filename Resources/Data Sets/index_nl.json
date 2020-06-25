@@ -606,32 +606,46 @@
       "kind": "folder",
       "children": [
         {
-		  "name": "BuildIt Binary",
-          "path": "BuildIt_Binary.jasp",
-          "description": "BuildIt's niet-monetaire audit populatie bestaande uit 3500 gegevens. <br><br> Het voorbeeldbestand in JASP laat zien hoe binaire audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
-          "kind": "file",
-          "associated_datafile": "BuildIt_Monetary.csv"
+            "name": "Testen van de Interne Systemen",
+            "path": "controlTestBayesian.jasp",
+            "description": "Een fictieve populatie bestaande uit 100 observaties uit interne systemen en hun relevante criteria. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+            "kind": "file",
+            "associated_datafile": "controlTest.csv"
         },
         {
-		  "name": "BuildIt Monetair",
-          "path": "BuildIt_Monetary.jasp",
-          "description": "BuildIt's monetaire audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe monetaire audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
-          "kind": "file",
-          "associated_datafile": "BuildIt_Monetary.csv"
+            "name": "Testen voor Overwaarderingen",
+            "path": "substantiveTestBayesian.jasp",
+            "description": "Een fictieve populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+            "kind": "file",
+            "associated_datafile": "BuildIt_Monetary.csv"
         },
         {
-                  "name": "Selecteren van een Audit Steekproef",
-          "path": "selection.jasp",
-          "description": "BuildIt's monetaire audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP toont het gebruik van een selectie analyse. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
-          "kind": "file",
-          "associated_datafile": "BuildIt_Monetary.csv"
+            "name": "Plannen en Selecteren van een Steekproef",
+            "path": "planningAndSelectingBayesian.jasp",
+            "description": "Een fictieve populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse planning en de selectie kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+            "kind": "file",
+            "associated_datafile": "BuildIt_Monetary.csv"
         },
         {
-          "name": "Vaststellen van de Wet van Benford",
-          "path": "sinoForest.jasp",
-          "description": "Jaarrekening van het rapport van Sino Forest Corporation uit 2010. <br> <br> Het voorbeeldbestand in JASP toont het gebruik van een analyse met behulp van de wet van Benford. <br> <br> <i> Gegevensset gebruikt in R-package benford.analysis <\ / i>",
-          "kind": "file",
-          "associated_datafile": "sinoForest.csv"
+            "name": "Evalueren van een Steekproef",
+            "path": "evaluationBayesian.jasp",
+            "description": "Een fictieve steekproef bestaande uit 60 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse evaluatie kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+            "kind": "file",
+            "associated_datafile": "auditSample.csv"
+        },
+        {
+            "name": "Vaststellen van de Wet van Benford",
+            "path": "sinoForest.jasp",
+            "description": "Jaarrekening van het rapport van Sino Forest Corporation uit 2010. <br> <br> Het voorbeeldbestand in JASP toont het gebruik van een analyse met behulp van de wet van Benford. <br> <br> <i> Gegevensset gebruikt in R-package benford.analysis <\/i>",
+            "kind": "file",
+            "associated_datafile": "sinoForest.csv"
+        },
+        {
+            "name": "BuildIt Binary",
+            "path": "BuildIt_Binary.jasp",
+            "description": "BuildIt's audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+            "kind": "file",
+            "associated_datafile": "BuildIt_Monetary.csv"
         }
       ],
       "debug": false
