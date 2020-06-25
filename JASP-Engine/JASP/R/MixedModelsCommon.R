@@ -40,7 +40,9 @@
   if(type %in% c("BLMM", "BGLMM")).mmSummaryStanova(jaspResults, dataset, options, type)
 
   
-  if (!is.null(jaspResults[["mmModel"]])) {
+  if (!is.null(jaspResults[["mmModel"]]) &&
+      !jaspResults[[ifelse(type %in% c("LMM", "GLMM"), "ANOVAsummary", "STANOVAsummary")]]$getError()) {
+    
     
     # show fit statistics
     if (options$fitStats) {
@@ -142,22 +144,30 @@
     dataset[,.v(c(options$dependentVariable, options$fixedVariables, options$randomVariables))],
     type = c('variance', 'factorLevels'),
     factorLevels.amount  = "< 2",
-    exitAnalysisIfErrors = TRUE
+    exitAnalysisIfErrors = TRUE,
+    custom = .mmCustomChecks
   )
 
   for(var in unlist(options$fixedEffects)) {
     if(is.factor(dataset[,.v(var)]) || is.character(dataset[,.v(var)])){
       if(length(unique(dataset[,.v(var)])) == nrow(dataset))
-        JASP:::.quitAnalysis(gettextf("Problem found in variable '%s': Categorical variables must have less levels than is the overall number of observations.",var))
+        JASP:::.quitAnalysis(gettextf("The categorical fixed effect '%s' must have fewer levels than the overall number of observations.",var))
     }
   }
 
   for(var in unlist(options$randomVariables)) {
     if(length(unique(dataset[,.v(var)])) == nrow(dataset))
-      JASP:::.quitAnalysis(gettextf("The random effects grouping factor '%s' must have less levels than is the overall number of observations.",var))  
+      JASP:::.quitAnalysis(gettextf("The random effects grouping factor '%s' must have fewer levels than the overall number of observations.",var))  
   }  
   
+  # check hack-able options
+  if (type %in% c("BLMM", "BGLMM")) {
+    if (options$iteration - 1 <= options$warmup) {
+      JASP:::.quitAnalysis(gettext("The number of iterations must be at least 2 iterations higher than the warmup."))
+    }
+  }
   
+  # check families
   if (type %in% c("GLMM","BGLMM")) {
     family_text <- .mmMessageGLMMtype(options$family, options$link)
     family_text <- substr(family_text, 1, nchar(family_text) - 1)
@@ -498,18 +508,20 @@
       if (any(attr(model, "class") %in% c("std::runtime_error", "C++Error", "error"))) {
         if (model$message == "(maxstephalfit) PIRLS step-halvings failed to reduce deviance in pwrssUpdate") {
           ANOVAsummary$setError(
-            gettext("The optimizer failed to find solution. Probabably due to quasi-separation in the data. Try removing some of the predictors.")
+            gettext("The optimizer failed to find a solution. Probably due to quasi-separation in the data. Try removing some of the predictors.")
           )
         } else if (model$message == "cannot find valid starting values: please specify some") {
           # currently no solution to this, it seems to be a problem with synthetic data only.
           # I will try silving it once someone actually has problem with real data.
-          ANOVAsummary$setError(gettext("Invalid starting values."))
+          ANOVAsummary$setError(gettext("The optimizer failed to find a solution due to invalid starting values. (JASP currently does not support specifying different starting values.)"))
+        } else if (model$message == "Downdated VtV is not positive definite"){
+          ANOVAsummary$setError(gettext("The optimizer failed to find a solution. Probably due to scaling issues quasi-separation in the data. Try rescaling or removing some of the predictors."))
         } else{
-          ANOVAsummary$setError(model$message)
+          ANOVAsummary$setError(.unv(model$message))
         }
         
-        jaspResults[["ANOVAsummary"]] <- ANOVAsummary
-        jaspResults[["mmModel"]]      <- NULL
+        jaspResults[["ANOVAsummary"]]   <- ANOVAsummary
+
         return()
       }
       
@@ -1239,6 +1251,7 @@
       plot_data <- afex::afex_plot(
         model,
         x           = .v(unlist(options$plotsX)),
+        dv          = .v(options$dependentVariable),
         trace       = if (length(options$plotsTrace) != 0)
           .v(unlist(options$plotsTrace)),
         panel       = if (length(options$plotsPanel) != 0)
@@ -1350,7 +1363,11 @@
       at      = at,
       options = list(level  = options$marginalMeansCIwidth),
       lmer.df = if (type == "LMM")
-        options$marginalMeansDf,
+        options$marginalMeansDf
+      else if (type == "GLMM" &&
+               options$family == "gaussian" &&
+               options$link == "identity")
+        "asymptotic",
       type    = if (type %in% c("GLMM", "BGLMM"))
         if (options$marginalMeansResponse)
           "response"
@@ -1584,10 +1601,21 @@
     # TODO: deal with the emtrends scoping problems
     trends_CI      <<- options$trendsCIwidth
     trends_at      <<- at
-    trends_type    <<- type
+    trends_type    <<- if (type == "LMM" || (type == "GLMM" &&
+                                             options$family == "gaussian" &&
+                                             options$link == "identity"))
+      "LMM"
+    else
+      type
     trends_dataset <<- dataset
     trends_model   <<- model
-    trends_df      <<- options$trendsDf
+    trends_df      <<-
+      if (type == "LMM")
+        options$trendsDf
+    else if (type == "GLMM" &&
+             options$family == "gaussian" &&
+             options$link == "identity")
+      "asymptotic"
     
     emm <- emmeans::emtrends(
       object  = trends_model,
@@ -2119,6 +2147,8 @@
 }
 .mmFitModelB     <-
   function(jaspResults, dataset, options, type = "BLMM") {
+    # hopefully fixing the random errors
+    contr.bayes <<- stanova::contr.bayes
     if (!is.null(jaspResults[["mmModel"]]))
       return()
     
@@ -2134,11 +2164,9 @@
     
     model_formula <- .mmModelFormula(options, dataset)
     
-    contr.bayes <<- stanova::contr.bayes
-    
     JASP:::.setSeedJASP(options)
     if (type == "BLMM") {
-      model <- stanova::stanova_lmer(
+      model <- tryCatch(stanova::stanova_lmer(
         formula           = as.formula(model_formula$model_formula),
         check_contrasts   = "contr.bayes",
         data              = dataset,
@@ -2147,7 +2175,7 @@
         warmup            = options$warmup,
         adapt_delta       = options$adapt_delta,
         control           = list(max_treedepth = options$max_treedepth)
-      )
+      ), error = function(e)e)
       
     } else if (type == "BGLMM") {
       # needs to be evaluated in the global environment
@@ -2165,7 +2193,7 @@
       if (options$family == "binomial_agg") {
         glmm_weight <<- dataset[, .v(options$dependentVariableAggregation)]
         
-        model <- stanova::stanova_glmer(
+        model <- tryCatch(stanova::stanova_glmer(
           formula           = as.formula(model_formula$model_formula),
           check_contrasts   = "contr.bayes",
           data              = dataset,
@@ -2176,10 +2204,10 @@
           control           = list(max_treedepth = options$max_treedepth),
           weights           = glmm_weight,
           family            = eval(call("binomial", glmm_link))
-        )
+        ), error = function(e)e)
         
       } else{
-        model <- stanova::stanova_glmer(
+        model <- tryCatch(stanova::stanova_glmer(
           formula           = as.formula(model_formula$model_formula),
           check_contrasts   = "contr.bayes",
           data              = dataset,
@@ -2189,7 +2217,7 @@
           adapt_delta       = options$adapt_delta,
           control           = list(max_treedepth = options$max_treedepth),
           family            = glmm_family
-        )
+        ), error = function(e)e)
         
       }
       
@@ -2508,9 +2536,9 @@
   function(jaspResults, dataset, options, type = "BLMM") {
     if (!is.null(jaspResults[["STANOVAsummary"]]))
       return()
-    
+
     model <- jaspResults[["mmModel"]]$object$model
-    if (!is.null(model)) {
+    if (!is.null(model) && !class(jaspResults[["mmModel"]]$object$model) %in% c("simpleError", "error")) {
       model_summary <-
         summary(
           model,
@@ -2551,7 +2579,7 @@
           ))), collapse = "*")
         if (options$show == "deviation") {
           table_name <-
-            gettextf("%s (difference from intercept)",var_name)
+            gettextf("%s (differences from intercept)",var_name)
         } else if (options$show == "mmeans") {
           if (nrow(temp_summary) == 1) {
             table_name <- gettextf("%s (trend)",var_name)
@@ -2609,6 +2637,10 @@
             temp_table$addFootnote(.mmMessageMissingAgg)
           }
         }
+        
+        if(class(jaspResults[["mmModel"]]$object$model) %in% c("simpleError", "error")) {
+          STANOVAsummary$setError("The model could not be estimated. Please, check the options and dataset for errors.")
+        }
         return()
       }
       
@@ -2654,8 +2686,11 @@
       div_iterations <- rstan::get_num_divergent(model$stanfit)
       low_bmfi       <- rstan::get_low_bfmi_chains(model$stanfit)
       max_treedepth  <- rstan::get_num_max_treedepth(model$stanfit)
-      max_Rhat       <-
-        max(rstan::summary(model$stanfit)$summary[, "Rhat"])
+      if(any(is.infinite(rstan::summary(model$stanfit)$summary[, "Rhat"]))){
+        max_Rhat     <- Inf
+      }else{
+        max_Rhat     <- max(rstan::summary(model$stanfit)$summary[, "Rhat"])
+      }
       min_ESS        <-
         min(rstan::summary(model$stanfit)$summary[, "n_eff"])
       if (div_iterations != 0) {
@@ -2670,7 +2705,7 @@
       if (max_Rhat > 1.01) {
         temp_table$addFootnote(.mmMessageMaxRhat(max_Rhat), symbol = gettext("Warning:"))
       }
-      if (min_ESS < 100 * options$chains) {
+      if (min_ESS < 100 * options$chains || is.nan(min_ESS)) {
         temp_table$addFootnote(.mmMessageMinESS(min_ESS), symbol = gettext("Warning:"))
       }
       
@@ -3036,6 +3071,19 @@
 }
 
 
+.mmCustomChecks <- list(
+ collinCheck = function(dataset){
+   cor_mat       <- cor(apply(dataset,2,as.numeric))
+   diag(cor_mat) <- 0
+   cor_mat[lower.tri(cor_mat)] <- 0
+   nearOne <- 1 - abs(cor_mat) < sqrt(.Machine$double.eps)
+   if(any(nearOne)){
+     var_ind   <- which(nearOne, arr.ind = TRUE)
+     var_names <- paste("'", .unv(rownames(cor_mat)[var_ind[,"row"]]),"' and '", .unv(colnames(cor_mat)[var_ind[,"col"]]),"'", sep = "", collapse = ", ")
+     return(gettextf("The following variables are a linear combination of each other, please, remove one of them from the analysis: %s", var_names))
+   }
+ } 
+)
 .mmDependenciesLMM   <-
   c(
     "dependentVariable",
@@ -3214,8 +3262,8 @@
   sprintf(
     ngettext(
       iterations,
-      "There was %i transition exceeding maximum treedepth indication problems with the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'.",
-      "There were %i transitions exceeding maximum treedepth indication problems with the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'."
+      "There was %i transition exceeding maximum treedepth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'.",
+      "There were %i transitions exceeding maximum treedepth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'."
     ),
     iterations
   )

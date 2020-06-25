@@ -34,7 +34,7 @@ Section
 			id:				warmup
 			label:			qsTr("Warmup")
 			defaultValue:	2000
-			min:			1
+			min:			100
 		}
 
 		IntegerField
@@ -42,7 +42,7 @@ Section
 			name:			"iteration"
 			label:			qsTr("Iterations")
 			defaultValue:	4000
-			min:			warmup.value
+			min:			parseInt(warmup.value) + 2
 		}
 
 		IntegerField
@@ -58,7 +58,7 @@ Section
 			name:			"adapt_delta"
 			label:			qsTr("Adapt delta")
 			defaultValue:	0.80
-			min:			0
+			min:			0.5
 			max:			1
 		}
 
@@ -67,7 +67,7 @@ Section
 			name:			"max_treedepth"
 			label:			qsTr("Maximum treedepth")
 			defaultValue:	10
-			min:			1
+			min:			5
 		}
 	}
 
@@ -78,7 +78,7 @@ Section
 		{
 			name:		"show"
 			title:		qsTr("Show")
-			RadioButton { value: "deviation";	label: qsTr("Deviations from mean"); checked: true}
+			RadioButton { value: "deviation";	label: qsTr("Differences from intercept"); checked: true}
 			RadioButton { value: "mmeans";		label: qsTr("Marginal means") }
 		}
 
