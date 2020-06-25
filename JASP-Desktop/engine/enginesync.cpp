@@ -74,7 +74,7 @@ EngineSync::EngineSync(QObject *parent)
 EngineSync::~EngineSync()
 {
 	if (_engineStarted)
-	{		
+	{
 		try			{ stopEngines(); }
 		catch(...)	{ /* Whatever! */ }
 
@@ -519,7 +519,7 @@ void EngineSync::stopEngines()
 {
 	if(!_engineStarted) return;
 
-	auto timeout = QDateTime::currentSecsSinceEpoch() + 10;
+	auto timeout = QDateTime::currentSecsSinceEpoch() + KILLTIME;
 
 	//make sure we process any received messages first.
 	for(auto engine : _engines)

@@ -732,6 +732,7 @@ void AnalysisForm::_formCompletedHandler()
 	if (!analysisVariant.isNull())
 	{
 		_analysis	= qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
+		setParent(_analysis); //This object should be destroyed whenever it's Analysis is destroyed.
 
 		connect(_analysis, &Analysis::hasVolatileNotesChanged,	this, &AnalysisForm::hasVolatileNotesChanged);
 		connect(_analysis, &Analysis::needsRefreshChanged,		this, &AnalysisForm::needsRefreshChanged	);
