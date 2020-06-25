@@ -39,66 +39,79 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
     fact <- options$factor
     if (options$counts != "") {
       asnum <- options$counts
-      if (options$exProbVar != "") 
+      if (options$exProbVar != "")
         asnum <- c(asnum, options$exProbVar)
     }
   }
-  if (!is.null(dataset))
-    return(dataset)
-  else
-    return(.readDataSetToEnd(columns.as.numeric  = asnum, 
-                             columns.as.factor   = fact,
-                             exclude.na.listwise = NULL))
+  
+  if (is.null(dataset)) {
+    dataset <- .readDataSetToEnd(columns.as.numeric = asnum, columns.as.factor = fact,
+                                 exclude.na.listwise = NULL)
+  } else {
+    dataset <- .vdf(dataset, columns.as.numeric = asnum, columns.as.factor = fact)
+  }
+  
+  # Reorder the rows of counts (and expected probabilities) if the user changes the factor level order in JASP
+  if (options$factor != "" && options$counts != "") {
+    fact                  <- as.factor(dataset[[.v(options$factor)]])
+    
+    # If we have counts and the number of counts is not equal to the number of levels of the factor, then don't do anything so the error can be caught in .hasErrors()
+    if (nlevels(na.omit(fact)) == length(na.omit(dataset[[.v(options$counts)]]))) {
+      
+      levelOrderUserWants   <- options$tableWidget[[1]]$levels
+      whatUserWantsToWhatIs <- match(levelOrderUserWants, as.character(fact))
+      
+      if (!identical(sort(whatUserWantsToWhatIs), whatUserWantsToWhatIs))
+        dataset <- dataset[whatUserWantsToWhatIs, ]
+    }
+  }
+  
+  return(dataset)
 }
 
 .multinomCheckErrors <- function(dataset, options) {
-  # Test 1: Negatives and infinities
-  .hasErrors(dataset, 
-             type = c('negativeValues', 'infinity'), 
-             all.target = c(options$counts), 
-             exitAnalysisIfErrors = TRUE)
+  if (options$factor == "")
+    return()
   
-  # Test 2: Expected Counts
-  if (options$exProbVar != "" && options$counts == "") 
-    .quitAnalysis(gettext("Expected counts not supported without observed counts!"))
-  if(options$exProbVar != "" || options$hypothesis != "multinomialTest")
-     if(options$exProbVar == "" && length(options$tableWidget) == 0)
-       .quitAnalysis(gettext("No expected counts entered!"))
-  
-  # Test 3: Levels and integer check for counts
-  if(options$factor != ""){
+  customChecks <- list(
+    checkExpecAndObs = function() {
+      if (options$exProbVar != "" && options$counts == "") 
+        return(gettext("Expected counts not supported without observed counts."))
+    },
     
-    # Number of levels of the variables must be bigger than 1
-    .hasErrors(dataset              = dataset,
-               perform              = "run",
-               type                 = "factorLevels",
-               factorLevels.target  = options$factor,
-               factorLevels.amount  = '< 1',
-               exitAnalysisIfErrors = TRUE)
+    checkExpecNeeded = function() {
+      if (options$exProbVar != "" || options$hypothesis != "multinomialTest")
+        if (options$exProbVar == "" && length(options$tableWidget) == 0)
+          return(gettext("No expected counts entered."))
+    },
     
-    # first determine the hypotheses
-    factorVariable <- na.omit(dataset[[.v(options$factor)]])
-    factorVariable <- as.factor(factorVariable)
-    nlevels        <- nlevels(factorVariable)
-    
-    if (options$counts != "") {
-      counts   <- na.omit(dataset[[.v(options$counts)]])
-      countType <- ""
-     if (options$exProbVar != "") {
-        countType <- "expected"
-        counts   <- na.omit(dataset[.v(options$exProbVar)])
-      } 
-      # discard missing values
-      counts <- counts[!is.na(counts)]
-      
-      if (nlevels != length(counts)) 
-        .quitAnalysis(gettextf("Invalid %s counts: variable does not match the number of levels of factor.", countType))
-      
-      # only applies for observed counts, expected counts can be proportions
-      if (options$exProbVar == "" && !all(counts == round(counts)))
-        .quitAnalysis(gettextf("Invalid %s counts: variable must contain only integer values.", countType))
+    checkCounts = function() {
+      if (options$counts != "") {
+        dataset <- na.omit(dataset)
+        nlevels <- nlevels(as.factor(dataset[[.v(options$factor)]]))
+        counts  <- dataset[[.v(options$counts)]]
+        
+        if (nlevels != length(counts))
+          return(gettext("Invalid counts: variable does not match the number of levels of the factor."))
+
+        if (options$exProbVar != "" && nlevels != length(dataset[[.v(options$exProbVar)]]))
+          return(gettext("Invalid expected counts: variable does not match the number of levels of the factor."))
+        
+        # only applies for observed counts, expected counts can be proportions
+        if (options$exProbVar == "" && !all(counts == round(counts)))
+          return(gettext("Invalid counts: variable must contain only integer values."))
+      }
     }
-  }
+  )
+  
+  .hasErrors(dataset, 
+             type = c("factorLevels", "negativeValues", "infinity"), 
+             negativeValues.target = c(options$counts, options$exProbVar),
+             infinity.target = c(options$counts, options$exProbVar),
+             factorLevels.target  = options$factor,
+             factorLevels.amount  = "< 1",
+             custom = customChecks,
+             exitAnalysisIfErrors = TRUE)
 }
 
 # Results function ----

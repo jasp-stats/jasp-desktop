@@ -18,7 +18,7 @@
 
 MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
-  dataset            <- .multinomialBayesReadData(dataset, options)
+  dataset            <- .multinomReadData(dataset, options)
 
   .multinomCheckErrors(dataset, options)
 
@@ -63,14 +63,10 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   nlev           <- nlevels(fact)
   prior          <- options$priorCounts[[1]]
   a              <- setNames(prior$values, prior$levels)
-
-  # we want to reorder levels in the tables and plots if the user does that, so here we compute
-  # how to reorder the counts.
-  factNms        <- options$priorCounts[[1]]$levels
-  ord            <- match(factNms, as.character(fact))
+  factNms        <- levels(fact)
 
   if (options$counts != "") {
-    counts <- dataset[[.v(options$counts)]][ord]
+    counts <- dataset[[.v(options$counts)]]
     # omit count entries for which factor variable is NA
     counts <- counts[!is.na(fact)]
     dataTable        <- counts
@@ -455,37 +451,4 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   }
 
   return(specs)
-}
-
-
-#' Multiomial Bayes - Read dataset
-#'
-#' @param dataset
-#' @param options user input options
-#'
-#' @return dataset
-.multinomialBayesReadData <- function(dataset, options) {
-
-  # First, we load the variables into the R environment
-  asnum <- NULL
-  fact  <- NULL
-
-  if (options$factor != "") {
-    fact <- options$factor
-    if (options$counts != "") {
-      asnum <- options$counts
-      if (options$exProbVar != "") {
-        asnum <- c(asnum, options$exProbVar)
-      }
-    }
-  }
-
-  if (is.null(dataset)) {
-    dataset <- .readDataSetToEnd(columns.as.numeric = asnum, columns.as.factor = fact,
-                                 exclude.na.listwise = NULL)
-  } else {
-    dataset <- .vdf(dataset, columns.as.numeric = asnum, columns.as.factor = fact)
-  }
-
-  return(dataset)
 }
