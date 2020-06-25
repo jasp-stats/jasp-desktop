@@ -63,14 +63,14 @@ Form
 			CheckBox 
 			{    
 				id:     	mcdonaldf
-				name:   	"mcDonaldScalef"	
+				name:   	"mcDonaldScale"
 				label:  	qsTr("McDonald's ω")         
 				checked: 	true
 			}
 			
 			CheckBox 
 			{     
-				name: 	"alphaScalef";				
+				name: 	"alphaScale";
 				label: 	qsTr("Cronbach's α");         
 				id: 	cronbachf 
 			}
@@ -78,27 +78,27 @@ Form
 			CheckBox 
 			{     
 				id: 	guttman2f       	          
-				name: 	"guttman2Scalef";			
+				name: 	"guttman2Scale";
 				label: 	qsTr("Guttman's λ2");         
 			}
 
 			CheckBox 
 			{     
 				id: 	guttman6f       	          
-				name: 	"guttman6Scalef";			
+				name: 	"guttman6Scale";
 				label: 	qsTr("Guttman's λ6");         
 			}
 
 			CheckBox 
 			{     
 				id: 	glbf      	              
-				name: 	"glbScalef";				  
+				name: 	"glbScale";
 				label: 	qsTr("Greatest lower bound"); 
 			}
 
-			CheckBox { name: "averageInterItemCorf";	label: qsTr("Average interitem correlation")	}
-			CheckBox { name: "meanScalef";				label: qsTr("Mean")							}
-			CheckBox { name: "sdScalef";				label: qsTr("Standard deviation")			}
+			CheckBox { name: "averageInterItemCor";	label: qsTr("Average interitem correlation")	}
+			CheckBox { name: "meanScale";				label: qsTr("Mean")							}
+			CheckBox { name: "sdScale";				label: qsTr("Standard deviation")			}
 			
 		}
 		
@@ -108,42 +108,42 @@ Form
 
 			CheckBox 
 			{ 
-				name: 		"mcDonaldItemf";				
+				name: 		"mcDonaldItem";
 				label: 		qsTr("McDonald's ω  (if item dropped)");	        
 				enabled: 	mcdonaldf.checked 
 			}
 
 			CheckBox 
 			{ 
-				name: 		"alphaItemf";				
+				name: 		"alphaItem";
 				label: 		qsTr("Cronbach's α (if item dropped)");	     
 				enabled: 	cronbachf.checked 
 			}
 
 			CheckBox 
 			{ 
-				name: 		"guttman2Itemf";			
+				name: 		"guttman2Item";
 				label: 		qsTr("Guttman's λ2 (if item dropped)");	       
 				enabled: 	guttman2f.checked  
 			}
 
 			CheckBox 
 			{ 
-				name: 		"guttman6Itemf";			
+				name: 		"guttman6Item";
 				label: 		qsTr("Guttman's λ6 (if item dropped)");	       
 				enabled: 	guttman6f.checked  
 			}
 			
 			CheckBox 
 			{ 
-				name: 		"glbItemf";     		
+				name: 		"glbItem";
 				label: 		qsTr("Greatest lower bound (if item dropped)");	
 				enabled: 	glbf.checked     
 			}    
 			
-			CheckBox { name: "itemRestCorf";	label: qsTr("Item-rest correlation")		}
-			CheckBox { name: "meanItemf";	label: qsTr("Mean")							}
-			CheckBox { name: "sdItemf";		label: qsTr("Standard deviation")			}
+			CheckBox { name: "itemRestCor";	label: qsTr("Item-rest correlation")		}
+			CheckBox { name: "meanItem";	label: qsTr("Mean")							}
+			CheckBox { name: "sdItem";		label: qsTr("Standard deviation")			}
 		}
 	}
 
@@ -167,7 +167,7 @@ Form
 		RadioButtonGroup 
 		{
 				title: 	qsTr("Missing Values")
-				name: 	"missingValuesf"
+				name: 	"missingValues"
 
 				RadioButton { value: "excludeCasesPairwise"; label: qsTr("Exclude cases pairwise"); checked: true}
 				RadioButton { value: "excludeCasesListwise"; label: qsTr("Exclude cases listwise")}
@@ -179,7 +179,7 @@ Form
 			
 			IntegerField
 			{
-				name: 			"noSamplesf"
+				name: 			"noSamples"
 				label: 			qsTr("No. of bootstrap samples")
 				defaultValue: 	1000
 				fieldWidth: 	50

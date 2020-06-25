@@ -106,6 +106,11 @@ bool Upgrader::upgradeAnalysisData(Json::Value & analysis, UpgradeMsgs & msgs) c
 	try
 	{
 		_upgradeOptionsFromJaspFile(analysis, msgs, stepsTaken);
+
+#ifdef JASP_DEBUG
+		Log::log() << "Options are now: " << analysis["options"].toStyledString() << std::endl;
+#endif
+
 	}
 	catch(UpgradeChange::upgradeError & e)
 	{

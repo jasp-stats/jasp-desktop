@@ -379,14 +379,8 @@
 			{
 				"changes":
 				{
-					"mcDonaldScalef":			{ "_renamed":	"mcDonaldScale" 	},
-					"alphaScalef":				{ "_renamed":	"alphaScale" 		},
-					"guttman6Scalef":			{ "_renamed":	"gutmannScale" 		},
-					"glbScalef":				{ "_renamed":	"glbScale" 			},
-					"mcDonaldItemf":			{ "_renamed":	"mcDonaldItem" 		},
-					"alphaItemf":				{ "_renamed":	"alphaItem" 		},
-					"guttman6Itemf":			{ "_renamed":	"gutmannItem" 		},
-					"missingValuesf":			{ "_renamed":	"missingValues"		},
+					"guttman6Scale":			{ "_renamed":	"gutmannScale" 		},
+					"guttman6Item":				{ "_renamed":	"gutmannItem" 		},
 					"intervalOn":				{ "_renamed":	"confAlpha"			},
 					"confidenceIntervalValue":	{ "_renamed":	"confAlphaLevel"	}
 				}
