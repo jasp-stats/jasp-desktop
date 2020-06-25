@@ -40,7 +40,9 @@
   if(type %in% c("BLMM", "BGLMM")).mmSummaryStanova(jaspResults, dataset, options, type)
 
   
-  if (!is.null(jaspResults[["mmModel"]]) && is.null(jaspResults[["hasERROR"]])) {
+  if (!is.null(jaspResults[["mmModel"]]) &&
+      !jaspResults[[ifelse(type %in% c("LMM", "GLMM"), "ANOVAsummary", "STANOVAsummary")]]$getError()) {
+    
     
     # show fixed / random effects summary
     if (options$showFE){
@@ -503,13 +505,6 @@
         } else{
           ANOVAsummary$setError(.unv(model$message))
         }
-        
-        
-        hasERROR <- createJaspState()
-        hasERROR$object <- TRUE
-        hasERROR$dependOn(c(dependencies, seed_dependencies))
-        jaspResults[["hasERROR"]] <- hasERROR
-        
         
         jaspResults[["ANOVAsummary"]]   <- ANOVAsummary
 
