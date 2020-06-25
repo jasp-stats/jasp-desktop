@@ -50,13 +50,18 @@ test_that("Bayesian Multinomial Test table results match in short data format", 
   options <- jasptools::analysisOptions("MultinomialTestBayesian")
   options$factor <- "Month"
   options$counts <- "Stress.frequency"
-  options$priorCounts <- list(list(values = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-                                              1, 1, 1, 1), levels = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-                                                                      1, 1, 1, 1, 1)))
+  options$tableWidget <- list(list(levels = c("1", "2", "3", "4", "5", "6", "7", "8", 
+                                              "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"), name = "H₀ (a)", 
+                                   values = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                              1, 1)))
+  options$priorCounts <- list(list(levels = c("1", "2", "3", "4", "5", "6", "7", "8", 
+                                              "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"), name = "Counts", 
+                                   values = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                              1, 1)))
   set.seed(1)
   results <- jasptools::run("MultinomialTestBayesian", "Memory of Life Stresses.csv", options)
   table <- results[["results"]][["multinomialTable"]][["data"]]
   expect_equal_tables(table,
-                      list(1.49242615869171e-11, "Multinomial", 18))
+                      list(27.1062505863656, "Multinomial", 18))
 })
 
