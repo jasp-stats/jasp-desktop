@@ -153,7 +153,14 @@
       JASP:::.quitAnalysis(gettextf("The random effects grouping factor '%s' must have fewer levels than the overall number of observations.",var))  
   }  
   
+  # check hack-able options
+  if (type %in% c("BLMM", "BGLMM")) {
+    if (options$iteration - 1 <= options$warmup) {
+      JASP:::.quitAnalysis(gettext("The number of iterations must be at least 2 iterations higher than the warmup."))
+    }
+  }
   
+  # check families
   if (type %in% c("GLMM","BGLMM")) {
     family_text <- .mmMessageGLMMtype(options$family, options$link)
     family_text <- substr(family_text, 1, nchar(family_text) - 1)
