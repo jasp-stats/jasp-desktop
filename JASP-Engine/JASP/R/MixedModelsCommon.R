@@ -2063,7 +2063,7 @@
     
     JASP:::.setSeedJASP(options)
     if (type == "BLMM") {
-      model <- stanova::stanova_lmer(
+      model <- tryCatch(stanova::stanova_lmer(
         formula           = as.formula(model_formula$model_formula),
         check_contrasts   = "contr.bayes",
         data              = dataset,
@@ -2072,7 +2072,7 @@
         warmup            = options$warmup,
         adapt_delta       = options$adapt_delta,
         control           = list(max_treedepth = options$max_treedepth)
-      )
+      ), error = function(e)e)
       
     } else if (type == "BGLMM") {
       # needs to be evaluated in the global environment
@@ -2090,7 +2090,7 @@
       if (options$family == "binomial_agg") {
         glmm_weight <<- dataset[, .v(options$dependentVariableAggregation)]
         
-        model <- stanova::stanova_glmer(
+        model <- tryCatch(stanova::stanova_glmer(
           formula           = as.formula(model_formula$model_formula),
           check_contrasts   = "contr.bayes",
           data              = dataset,
@@ -2101,10 +2101,10 @@
           control           = list(max_treedepth = options$max_treedepth),
           weights           = glmm_weight,
           family            = eval(call("binomial", glmm_link))
-        )
+        ), error = function(e)e)
         
       } else{
-        model <- stanova::stanova_glmer(
+        model <- tryCatch(stanova::stanova_glmer(
           formula           = as.formula(model_formula$model_formula),
           check_contrasts   = "contr.bayes",
           data              = dataset,
@@ -2114,7 +2114,7 @@
           adapt_delta       = options$adapt_delta,
           control           = list(max_treedepth = options$max_treedepth),
           family            = glmm_family
-        )
+        ), error = function(e)e)
         
       }
       
@@ -2370,9 +2370,9 @@
   function(jaspResults, dataset, options, type = "BLMM") {
     if (!is.null(jaspResults[["STANOVAsummary"]]))
       return()
-    
+
     model <- jaspResults[["mmModel"]]$object$model
-    if (!is.null(model)) {
+    if (!is.null(model) && !class(jaspResults[["mmModel"]]$object$model) %in% c("simpleError", "error")) {
       model_summary <-
         summary(
           model,
@@ -2470,6 +2470,10 @@
               options$dependentVariableAggregation == "") {
             temp_table$addFootnote(.mmMessageMissingAgg)
           }
+        }
+        
+        if(class(jaspResults[["mmModel"]]$object$model) %in% c("simpleError", "error")) {
+          STANOVAsummary$setError("The model could not be estimated. Please, check the options and dataset for errors.")
         }
         return()
       }
