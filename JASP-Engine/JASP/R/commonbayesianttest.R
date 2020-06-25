@@ -745,8 +745,14 @@
 
 # inferential plots ----
 .ttestBayesianInferentialPlots <- function(jaspResults, dataset, options, ttestResults, errors) {
-
-  opts <- c("plotPriorAndPosterior", "plotBayesFactorRobustness", "plotSequentialAnalysis")
+  
+  # for default priors, we can do prior & posterior, robustness, and sequantial plots
+  # we cannot do robustness and sequential plots for informed priors, hence do only prior & posterior plot:
+  if(options[["effectSizeStandardized"]] == "default")
+    opts <- c("plotPriorAndPosterior", "plotBayesFactorRobustness", "plotSequentialAnalysis")
+  else 
+    opts <- c("plotPriorAndPosterior")
+  
   if (!any(unlist(options[opts])))
     return()
 
@@ -841,7 +847,7 @@
     )
   }
 
-  if (options[["plotBayesFactorRobustness"]]) {
+  if (options[["plotBayesFactorRobustness"]] && options[["effectSizeStandardized"]] == "default") {
     .ttestBayesianPlotRobustness(
       collection             = inferentialPlotsCollection,
       dependents             = dependents,
@@ -862,7 +868,7 @@
     )
   }
 
-  if (options[["plotSequentialAnalysis"]]) {
+  if (options[["plotSequentialAnalysis"]] && options[["effectSizeStandardized"]] == "default") {
     .ttestBayesianPlotSequential(
       collection             = inferentialPlotsCollection,
       dependents             = dependents,

@@ -55,14 +55,14 @@ Form {
 
 		CheckBox
 		{
-			enabled: student.checked
+			enabled: student.checked && priors.defaultPriorsChecked
 			name: "plotBayesFactorRobustness";	label: qsTr("Bayes factor robustness check")
 			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	label: qsTr("Additional info"); checked: true }
 		}
 
 		CheckBox
 		{
-			enabled: student.checked
+			enabled: student.checked && priors.defaultPriorsChecked
 			name: "plotSequentialAnalysis";		label: qsTr("Sequential analysis")
 			CheckBox { name: "plotSequentialAnalysisRobustness";		label: qsTr("Robustness check") }
 		}
@@ -108,5 +108,5 @@ Form {
 
 	SetSeed{enabled: testWilcoxon.checked}
 
-	SubjectivePriors { informedPriorsEnabled: student.checked }
+	SubjectivePriors { id: priors; informedPriorsEnabled: student.checked }
 }
