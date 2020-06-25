@@ -2044,6 +2044,8 @@
 }
 .mmFitModelB     <-
   function(jaspResults, dataset, options, type = "BLMM") {
+    # hopefully fixing the random errors
+    contr.bayes <<- stanova::contr.bayes
     if (!is.null(jaspResults[["mmModel"]]))
       return()
     
@@ -2058,8 +2060,6 @@
     mmModel$dependOn(dependencies)
     
     model_formula <- .mmModelFormula(options, dataset)
-    
-    contr.bayes <<- stanova::contr.bayes
     
     JASP:::.setSeedJASP(options)
     if (type == "BLMM") {
