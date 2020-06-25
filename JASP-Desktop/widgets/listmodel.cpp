@@ -92,18 +92,19 @@ void ListModel::_initTerms(const Terms &terms, const RowControlsOptions& allOpti
 			{
 				for (const QMLListView::SourceType::ConditionVariable& conditionVariable : sourceType->conditionVariables)
 					for (const Term& term : terms)
-						_connectControl(sourceModel->getRowControl(term.asQString(), conditionVariable.controlName));
+						_connectSourceControl(sourceModel->getRowControl(term.asQString(), conditionVariable.controlName));
 			}
 		}
 	}
 }
 
-void ListModel::_connectControl(JASPControlWrapper* control)
+void ListModel::_connectSourceControl(JASPControlWrapper* control)
 {
+	// Connect option changes from a control that influences the source of this model
 	BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
 	if (boundControl && !_rowControlsConnected.contains(boundControl))
 	{
-		boundControl->boundTo()->changed.connect(boost::bind(&ListModel::_rowControlOptionChangedHandler, this, _1));
+		boundControl->boundTo()->changed.connect(boost::bind(&ListModel::_sourceTermsChangedHandler, this, _1));
 		_rowControlsConnected.push_back(boundControl);
 	}
 }
@@ -154,7 +155,7 @@ Terms ListModel::getSourceTerms()
 							}
 
 							jsEngine.globalObject().setProperty(conditionVariable.name, value);
-							_connectControl(control);
+							_connectSourceControl(control);
 						}
 					}
 
@@ -327,7 +328,7 @@ void ListModel::_addSelectedItemType(int _index)
 		_selectedItemsTypes.insert(type);
 }
 
-void ListModel::_rowControlOptionChangedHandler(Option *)
+void ListModel::_sourceTermsChangedHandler(Option *)
 {
 	sourceTermsChanged(nullptr, nullptr);
 }

@@ -19,6 +19,7 @@
 #include "rowcontrols.h"
 #include "analysis/analysisform.h"
 #include "analysis/jaspcontrolbase.h"
+#include "qmllistview.h"
 
 #include "log.h"
 
@@ -101,10 +102,21 @@ bool RowControls::addJASPControl(JASPControlWrapper *control)
 		_rowControlsVarMap[control->name()] = QVariant::fromValue(control->item());
 		_rowJASPWrapperMap[control->name()] = control;
 		BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(control);
+
 		if (boundItem && !isDummy)
 		{
-			Option* option = _rowOptions.contains(boundItem->name()) ? _rowOptions[boundItem->name()] : boundItem->createOption();
+			bool hasOption = _rowOptions.contains(boundItem->name());
+			Option* option =  hasOption ? _rowOptions[boundItem->name()] : boundItem->createOption();
+
 			boundItem->bindTo(option);
+			if (!hasOption)
+			{
+				QMLListView* listView = dynamic_cast<QMLListView*>(boundItem);
+				// If a ListView depends on a source, it has to be initialized by this source
+				// For this just call the sourceTermsChanged handler.
+				if (listView && listView->hasSource())
+					listView->model()->sourceTermsChanged(nullptr, nullptr);
+			}
 		}
 
 		success = true;

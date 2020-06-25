@@ -103,9 +103,9 @@ public slots:
 
 private:
 			void	_addSelectedItemType(int _index);
-			void	_rowControlOptionChangedHandler(Option *option = nullptr);
+			void	_sourceTermsChangedHandler(Option *option = nullptr);
 			void	_initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap, bool setupRowConnections = true);
-			void	_connectControl(JASPControlWrapper* control);
+			void	_connectSourceControl(JASPControlWrapper* control);
 
 protected:
 	QMLListView*					_listView = nullptr;
