@@ -643,7 +643,7 @@
         {
             "name": "BuildIt Binary",
             "path": "BuildIt_Binary.jasp",
-            "description": "BuildIt's audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe binaire audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+            "description": "BuildIt's audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
             "kind": "file",
             "associated_datafile": "BuildIt_Monetary.csv"
         }
