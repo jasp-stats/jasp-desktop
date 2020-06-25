@@ -49,6 +49,8 @@ Form {
 			title:				qsTr("Number of trials")
 			singleVariable:		true
 			allowedColumns:		["ordinal"]
+
+			onEnabledChanged: if (!enabled && count > 0) itemDoubleClicked(0)
 		}
 
 		AssignedVariablesList
@@ -175,58 +177,7 @@ Form {
 		}
 	}
 
-
-	Section
-	{
-		title:			qsTr("Model")
-
-		VariablesForm
-		{
-			preferredHeight:	250
-
-			AvailableVariablesList
-			{
-				name:	"availableModelComponents"
-				title:	qsTr("Model components")
-				source:	"fixedVariables"
-			}
-
-			AssignedVariablesList
-			{
-				id:				fixedEffects
-				name:			"fixedEffects"
-				title:			qsTr("Fixed effects")
-				listViewType:	JASP.Interaction
-			}
-		}
-
-		ComponentsList
-		{
-			id:					randomEffetcs
-			title:				qsTr("Random effects")
-			name:				"randomEffects"
-			source:				"randomVariables"
-			visible:			count > 0
-
-			rowComponent: Group
-			{
-				RowLayout
-				{
-					Layout.preferredWidth:	randomEffetcs.width
-					Label { text: qsTr("Random slopes by %1").arg(rowValue); Layout.preferredWidth: parent.width / 2 }
-					CheckBox { label: qsTr("Correlations"); name: "correlations"; checked: true; Layout.preferredWidth: parent.width / 2 }
-				}
-				ComponentsList
-				{
-					name:				"randomComponents"
-					source:				"fixedEffects"
-
-					rowComponent: CheckBox { name: "randomSlopes"; label: rowValue; checked: true }
-				}
-			}
-		}		
-
-	}
+	MM.MixedModelsModel {}
 
 	MM.MixedModelsOptions { allMethodOptions: false }
 
