@@ -34,7 +34,7 @@ Section
 			id:				warmup
 			label:			qsTr("Warmup")
 			defaultValue:	2000
-			min:			1
+			min:			100
 		}
 
 		IntegerField
@@ -58,7 +58,7 @@ Section
 			name:			"adapt_delta"
 			label:			qsTr("Adapt delta")
 			defaultValue:	0.80
-			min:			0
+			min:			0.5
 			max:			1
 		}
 
@@ -67,7 +67,7 @@ Section
 			name:			"max_treedepth"
 			label:			qsTr("Maximum treedepth")
 			defaultValue:	10
-			min:			1
+			min:			5
 		}
 	}
 
