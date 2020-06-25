@@ -2911,8 +2911,9 @@
    cor_mat       <- cor(apply(dataset,2,as.numeric))
    diag(cor_mat) <- 0
    cor_mat[lower.tri(cor_mat)] <- 0
-   if(any(1 - abs(cor_mat) < 1e-5)){
-     var_ind   <- which(abs(cor_mat) == 1, arr.ind = TRUE)
+   nearOne <- 1 - abs(cor_mat) < sqrt(.Machine$double.eps)
+   if(any(nearOne)){
+     var_ind   <- which(nearOne, arr.ind = TRUE)
      var_names <- paste("'", .unv(rownames(cor_mat)[var_ind[,"row"]]),"' and '", .unv(colnames(cor_mat)[var_ind[,"col"]]),"'", sep = "", collapse = ", ")
      return(gettextf("The following variables are a linear combination of each other, please, remove one of them from the analysis: %s", var_names))
    }
