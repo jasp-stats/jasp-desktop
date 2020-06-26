@@ -1,5 +1,6 @@
 reliabilityBayesian <- function(jaspResults, dataset, options) {
-
+  
+  
 	dataset <- .reliabilityReadData(dataset, options)
 
 	.reliabilityCheckErrors(dataset, options)
@@ -88,7 +89,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       footnote <- sprintf(ngettext(length(variables[idx]),
                                    "The following item correlated negatively with the scale: %s. ",
                                    "The following items correlated negatively with the scale: %s. "),
-                          paste(variables[idx], collapse = ", "))      
+                          paste(variables[idx], collapse = ", "))
       return(footnote)
     }
   } else {
@@ -101,7 +102,8 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 .BayesianReliabilityMainResults <- function(jaspResults, dataset, options) {
   if (!options[["mcDonaldScale"]] && !options[["alphaScale"]] && !options[["guttman2Scale"]]
       && !options[["guttman6Scale"]] && !options[["glbScale"]] && !options[["averageInterItemCor"]]
-      && !options[["meanScale"]] && !options[["sdScale"]]) {
+      && !options[["meanScale"]] && !options[["sdScale"]]
+      && !options[["itemRestCor"]] && !options[["meanItem"]] && !options[["sdItem"]]) {
     variables <- options[["variables"]]
     if (length(options[["reverseScaledItems"]]) > 0L) {
       dataset <- .reverseScoreItems(dataset, options)
@@ -123,20 +125,24 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
         dataset <- .reverseScoreItems(dataset, options)
       }
       
+      model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
+                                      
       missing <- "none" 
       options[["missings"]] <- "everything"
       if (any(is.na(dataset))) {
         if (options[["missingValues"]] == "excludeCasesPairwise") {
           missing <- "pairwise"
           options[["missings"]] <- "pairwise.complete.obs"
+          model[["footnote"]] <- gettextf("%s Of the observations, pairwise complete cases. ", model[["footnote"]])
         } else if (options[["missingValues"]] == "excludeCasesListwise") {
           pos <- which(is.na(dataset), arr.ind = T)[, 1]
           dataset <- dataset[-pos, ] 
           missing <- "listwise"
           options[["missings"]] <- "complete.obs"
+          model[["footnote"]] <- gettextf("%s Of the observations, the analysis used %1.f complete cases. ", 
+                                          model[["footnote"]], nrow(dataset))
           }
       }
-      model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
       
       chains <- options[["noChains"]]
       samples <- options[["noSamples"]]
@@ -151,14 +157,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                      n.iter = options[["noSamples"]], n.burnin = options[["noBurnin"]], 
                                      n.chains = options[["noChains"]], thin = options[["noThin"]],
                                      freq = F, item.dropped = TRUE, missing = missing, callback = progressbarTick))
-      
-      if (any(is.na(dataset))) {
-        if (!is.null(relyFit[["miss_pairwise"]])) {
-          model[["footnote"]] <- gettextf("%s Using pairwise complete cases. ", model[["footnote"]])
-        } else {
-          model[["footnote"]] <- gettextf("%s Using %1.f complete cases. ", model[["footnote"]], nrow(dataset))
-        }
-      }
+
 
       
       # add the scale info
@@ -245,6 +244,9 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
   model[["derivedOptions"]] <- .BayesianReliabilityDerivedOptions(options)
   model[["itemsDropped"]] <- .unv(colnames(dataset))
+  
+  # when variables are deleted again, a model footnote is expected, but none produce, hence: 
+  if (is.null(model[["footnote"]])) model[["footnote"]] <- ""
   
 	return(model)
 }
@@ -436,9 +438,23 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       tb <- cbind(tb, newtb)
     }
 		itemTable$setData(tb)
+		
+		if (!is.null(unlist(options[["reverseScaledItems"]]))) {
+		  itemTable$addFootnote(sprintf(ngettext(length(options[["reverseScaledItems"]]),
+		                                         "The following item was reverse scaled: %s. ",
+		                                         "The following items were reverse scaled: %s. "),
+		                                paste(options[["reverseScaledItems"]], collapse = ", ")))
+		}
 
   } else if (length(model[["itemsDropped"]]) > 0) {
     itemTable[["variable"]] <- model[["itemsDropped"]]
+    
+    if (!is.null(unlist(options[["reverseScaledItems"]]))) {
+      itemTable$addFootnote(sprintf(ngettext(length(options[["reverseScaledItems"]]),
+                                             "The following item was reverse scaled: %s. ",
+                                             "The following items were reverse scaled: %s. "),
+                                    paste(options[["reverseScaledItems"]], collapse = ", ")))
+    }
   }
 
   jaspResults[["itemTable"]] <- itemTable
@@ -630,7 +646,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	ggplot2::geom_text(data = datTxt, mapping = ggplot2::aes(x = x, y = y, label = label), inherit.aes = FALSE, 
 	                   size = 5) +
 	ggplot2::scale_y_continuous(name = gettext("Density"), breaks = yBreaks, limits = range(yBreaks)) +
-	ggplot2::scale_x_continuous(name = nms, breaks = (xBreaks), expand = xExpand)
+	ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, expand = xExpand)
 
 	
 	if (!is.null(shade)) {
@@ -644,7 +660,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	  g <- g + ggplot2::geom_line(data = datPrior, mapping = ggplot2::aes(x = x, y = y),
 	                              linetype = "dashed", size = .85) +
 	           ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, expand = xExpand,
-	                                       limits = c(min(xBreaks), max(xBreaks)))
+	                                       limits = range(xBreaks))
 	  
 	}
 
@@ -860,7 +876,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     for (i in indices) {
       if (is.null(plotContainerTP[[nmsObjs[i]]])) {
         
-        p <- .BayesianReliabilityMakeTracePlot(relyFit, i, nmsLabs[[i]], xlim)
+        p <- .BayesianReliabilityMakeTracePlot(relyFit, i, nmsLabs[[i]])
         plotObjTP <- createJaspPlot(plot = p, title = nmsObjs[i], width = 400)
         plotObjTP$dependOn(options = names(indices[i]))
         plotObjTP$position <- i
@@ -885,11 +901,11 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 }
 
 
-.BayesianReliabilityMakeTracePlot <- function(relyFit, i, nms, xlim) {
+.BayesianReliabilityMakeTracePlot <- function(relyFit, i, nms) {
   
   dd <- relyFit$Bayes$chains[[i]]
-  xBreaks <- pretty(1:length(dd[1, ]), n=4)
-  
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, length(dd[1, ])))
+
   dv <- cbind(dd[1, ], 1, seq(1, ncol(dd))) 
   for (j in 2:nrow(dd)) {
     dv <- rbind(dv, cbind(dd[j, ], j, seq(1, ncol(dd))))
@@ -901,7 +917,10 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   g <- ggplot2::ggplot(dat, ggplot2::aes(x = Iterations, y = Value, colour = chain)) +
     ggplot2::geom_line(size = .3) +
     ggplot2::ylab(nms) +
-    ggplot2::scale_x_continuous(name = gettext("Iterations"), breaks = xBreaks)
+    ggplot2::scale_x_continuous(name = gettext("Iterations"), breaks = xBreaks,
+                                limits = range(xBreaks), 
+                                expand = ggplot2::expand_scale(mult = c(0.05, 0.1)))
+
 
   return(JASPgraphs::themeJasp(g))
   
@@ -968,7 +987,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 .reverseScoreItems <- function(dataset, options) {
   dataset <- as.matrix(dataset) # fails for string factors!
   cols <- match(unlist(options[["reverseScaledItems"]]), .unv(colnames(dataset)))
-  total <- apply(as.matrix(dataset[, cols]), 2, min) + apply(as.matrix(dataset[, cols]), 2, max)
+  total <- apply(as.matrix(dataset[, cols]), 2, min, na.rm = T) + apply(as.matrix(dataset[, cols]), 2, max, na.rm = T)
   dataset[ ,cols] <- matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
   return(dataset)
 }
