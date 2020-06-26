@@ -5,8 +5,8 @@
   "kind": "folder",
   "children": [
     {
-	  "name": "Boeken",
-	  "path": "Books",
+      "name": "Boeken",
+      "path": "Books",
       "description": "",
       "kind": "folder",
       "children": [
@@ -184,18 +184,11 @@
       "debug": false
     },
     {
-	  "name": "1. Beschrijvingen",
+      "name": "1. Beschrijvingen",
       "path": "1. Descriptives",
       "description": "",
       "kind": "folder",
       "children": [
-        {
-          "name": "Angst voor Statistiek",
-          "path": "Fear of Statistics.jasp",
-		  "description": "Antwoorden van 2571 studenten op een SPSS Angstvragenlijst. <br> <br> Het voorbeeld-JASP-bestand toont het gebruik van een betrouwbaarheidsanalyse. <br> <br> <i> Fictieve gegevens van Andy Field. <\ / i>",
-          "kind": "file",
-          "associated_datafile": "Fear of Statistics.csv"
-        },
         {
           "name": "Slaap",
           "path": "Sleep.jasp",
@@ -365,7 +358,7 @@
       "debug": false
     },
     {
-	  "name": "4. Regressie",
+      "name": "4. Regressie",
       "path": "4. Regression",
       "description": "",
       "kind": "folder",
@@ -451,7 +444,7 @@
       "debug": false
     },
     {
-	  "name": "5. Frequenties",
+      "name": "5. Frequenties",
       "path": "5. Frequencies",
       "description": "",
       "kind": "folder",
@@ -552,8 +545,162 @@
       "debug": false
     },
     {
-	  "name": "7. Meta-Analyse",
-      "path": "7. Meta-Analysis",
+        "name": "7. Audit",
+        "path": "7. Audit",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+              "name": "Testen van de Interne Systemen",
+              "path": "controlTestBayesian.jasp",
+              "description": "Een fictieve populatie bestaande uit 100 observaties uit interne systemen en hun relevante criteria. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "controlTest.csv"
+          },
+          {
+              "name": "Testen voor Overwaarderingen",
+              "path": "substantiveTestBayesian.jasp",
+              "description": "Een fictieve populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "BuildIt_Monetary.csv"
+          },
+          {
+              "name": "Plannen en Selecteren van een Steekproef",
+              "path": "planningAndSelectingBayesian.jasp",
+              "description": "Een fictieve populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse planning en de selectie kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "BuildIt_Monetary.csv"
+          },
+          {
+              "name": "Evalueren van een Steekproef",
+              "path": "evaluationBayesian.jasp",
+              "description": "Een fictieve steekproef bestaande uit 60 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse evaluatie kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "auditSample.csv"
+          },
+          {
+              "name": "Vaststellen van de Wet van Benford",
+              "path": "sinoForest.jasp",
+              "description": "Jaarrekening van het rapport van Sino Forest Corporation uit 2010. <br> <br> Het voorbeeldbestand in JASP toont het gebruik van een analyse met behulp van de wet van Benford. <br> <br> <i> Gegevensset gebruikt in R-package benford.analysis <\/i>",
+              "kind": "file",
+              "associated_datafile": "sinoForest.csv"
+          },
+          {
+              "name": "BuildIt Binary",
+              "path": "BuildIt_Binary.jasp",
+              "description": "BuildIt's audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "BuildIt_Monetary.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "8. Bain",
+        "path": "8. Bain",
+        "description": "",
+        "kind": "folder",
+        "children": [
+        {
+          "name": "One Sample T-Test",
+          "path": "bainOneSample.jasp",
+          "description":"Dit JASP-bestand toont een Bain T-Toets voor Eén Gemiddelde met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+           "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "Welch's T-Test",
+          "path": "bainIndependentSamples.jasp",
+          "description":"Dit JASP-bestand toont een Bain Welch's T-Toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "Paired Samples T-Test",
+          "path": "bainPairedSamples.jasp",
+          "description":"Dit JASP-bestand toont een Bain Gepaarde T-Toets toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+           "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "ANOVA",
+          "path": "bainAnova.jasp",
+          "description":"Dit JASP-bestand toont een Bain ANOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "ANCOVA",
+          "path": "bainAncova.jasp",
+          "description":"Dit JASP-bestand toont een Bain ANCOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "Regressie",
+          "path": "bainRegression.jasp",
+          "description": "Dit JASP-bestand toont een Bain regressie met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        }
+      ],
+        "debug": false
+      },
+      {
+        "name": "9. Ontdek Verdelingen",
+        "path": "9. Discover Distributions",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Distributions",
+            "path": "Normal distribution.jasp",
+            "description": "Synthetische gegevensset van variabelen gegenereerd uit verschillende waarschijnlijkheidsverdelingen. <br> <br> Het voorbeeld JASP-bestand toont de normale verdeling. <br> <br> <i> Fictieve gegevens gecreëerd door JASP Team. <\ / I>",
+            "kind": "file",
+            "associated_datafile": "Distributions.csv"
+          }
+        ]
+      },
+      {
+        "name": "10. Machine Learning",
+        "path": "10. Machine Learning",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Iris Bloemen",
+            "path": "iris.jasp",
+            "description": "Dit beroemde iris gegevensbestand (door Fisher of Anderson) geeft de maten (in centimeters) van de variabelen kelkbladlengte en breedte, en bloembladlengte en breedte respectievelijk, voor 50 bloemen van alle 3 soorten irissen. Deze soorten zijn Iris setosa, Iris versicolor, en Iris virginica. <br><br> <i>Dataset in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "iris.csv"
+          },
+          {
+            "name": "Telco's Overstappende Klanten",
+            "path": "telcoCustomerChurn.jasp",
+            "description": "Telecomdata van 7043 klanten van een telefoonprovider. Variabelen varieren van persoonlijke beschrijvingen tot subscriptiekosten en geven zo informatie over overstapgedrag van klanten. <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
+            "kind": "file",
+            "associated_datafile": "telcoCustomerChurn.csv"
+          },
+          {
+            "name": "Studentcijfers",
+            "path": "studentGrades.jasp",
+            "description": "De data bevat informatie van 357 middelbare scholieren in Portugal (Cortez & Silva, 2008). <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+            "kind": "file",
+            "associated_datafile": "studentGrades.csv"
+          },
+          {
+            "name": "Wijnsoorten",
+            "path": "wine.jasp",
+            "description": "De resultaten van chemische analyse van wijnen die worden ontwikkeld in een specifieke regio in Italië. Drie soorten wijn zijn gebruikt in de 178 monsters, en de resultaten van 13 chemische analyses zijn gerapporteerd voor iedere monster. <br><br> <i>Dataset in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "wine.csv"
+          }
+        ],
+        "debug": false
+      },
+    {
+      "name": "11. Meta-Analyse",
+      "path": "11. Meta-Analysis",
       "description": "",
       "kind": "folder",
       "children": [
@@ -568,8 +715,8 @@
       "debug": false
     },
     {
-	  "name": "8. Netwerk Analyse",
-      "path": "8. Network Analysis",
+      "name": "12. Netwerk Analyse",
+      "path": "12. Network Analysis",
       "description": "",
       "kind": "folder",
       "children": [
@@ -584,8 +731,24 @@
       "debug": false
     },
     {
-      "name": "9. SEM",
-      "path": "9. SEM",
+        "name": "13. Betrouwbaarheid",
+        "path": "13. Reliability",
+        "description": "",
+        "kind": "folder",
+        "children": [
+            {
+                "name": "Angst voor Statistiek",
+                "path": "Fear of Statistics.jasp",
+                "description": "Antwoorden van 2571 studenten op een SPSS Angstvragenlijst. <br> <br> Het voorbeeld-JASP-bestand toont het gebruik van een betrouwbaarheidsanalyse. <br> <br> <i> Fictieve gegevens van Andy Field. <\ / i>",
+                "kind": "file",
+                "associated_datafile": "Fear of Statistics.csv"
+              }
+        ],
+        "debug": false
+      },
+    {
+      "name": "14. SEM",
+      "path": "14. SEM",
       "description": "",
       "kind": "folder",
       "children": [
@@ -598,164 +761,10 @@
         }
       ],
       "debug": false
-    },
+    },	
     {
-      "name": "10. Audit",
-      "path": "10. Audit",
-      "description": "",
-      "kind": "folder",
-      "children": [
-        {
-            "name": "Testen van de Interne Systemen",
-            "path": "controlTestBayesian.jasp",
-            "description": "Een fictieve populatie bestaande uit 100 observaties uit interne systemen en hun relevante criteria. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
-            "kind": "file",
-            "associated_datafile": "controlTest.csv"
-        },
-        {
-            "name": "Testen voor Overwaarderingen",
-            "path": "substantiveTestBayesian.jasp",
-            "description": "Een fictieve populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
-            "kind": "file",
-            "associated_datafile": "BuildIt_Monetary.csv"
-        },
-        {
-            "name": "Plannen en Selecteren van een Steekproef",
-            "path": "planningAndSelectingBayesian.jasp",
-            "description": "Een fictieve populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse planning en de selectie kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
-            "kind": "file",
-            "associated_datafile": "BuildIt_Monetary.csv"
-        },
-        {
-            "name": "Evalueren van een Steekproef",
-            "path": "evaluationBayesian.jasp",
-            "description": "Een fictieve steekproef bestaande uit 60 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse evaluatie kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
-            "kind": "file",
-            "associated_datafile": "auditSample.csv"
-        },
-        {
-            "name": "Vaststellen van de Wet van Benford",
-            "path": "sinoForest.jasp",
-            "description": "Jaarrekening van het rapport van Sino Forest Corporation uit 2010. <br> <br> Het voorbeeldbestand in JASP toont het gebruik van een analyse met behulp van de wet van Benford. <br> <br> <i> Gegevensset gebruikt in R-package benford.analysis <\/i>",
-            "kind": "file",
-            "associated_datafile": "sinoForest.csv"
-        },
-        {
-            "name": "BuildIt Binary",
-            "path": "BuildIt_Binary.jasp",
-            "description": "BuildIt's audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe de Bayesiaanse audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
-            "kind": "file",
-            "associated_datafile": "BuildIt_Monetary.csv"
-        }
-      ],
-      "debug": false
-    },
-    {
-      "name": "11. Machine Learning",
-      "path": "11. Machine Learning",
-      "description": "",
-      "kind": "folder",
-      "children": [
-        {
-		  "name": "Iris Bloemen",
-          "path": "iris.jasp",
-          "description": "Dit beroemde iris gegevensbestand (door Fisher of Anderson) geeft de maten (in centimeters) van de variabelen kelkbladlengte en breedte, en bloembladlengte en breedte respectievelijk, voor 50 bloemen van alle 3 soorten irissen. Deze soorten zijn Iris setosa, Iris versicolor, en Iris virginica. <br><br> <i>Dataset in R.<\/i>",
-          "kind": "file",
-          "associated_datafile": "iris.csv"
-        },
-        {
-		  "name": "Telco's Overstappende Klanten",
-		  "path": "telcoCustomerChurn.jasp",
-		  "description": "Telecomdata van 7043 klanten van een telefoonprovider. Variabelen varieren van persoonlijke beschrijvingen tot subscriptiekosten en geven zo informatie over overstapgedrag van klanten. <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
-		  "kind": "file",
-		  "associated_datafile": "telcoCustomerChurn.csv"
-        },
-		{
-		  "name": "Studentcijfers",
-                  "path": "studentGrades.jasp",
-		  "description": "De data bevat informatie van 357 middelbare scholieren in Portugal (Cortez & Silva, 2008). <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
-                  "kind": "file",
-                  "associated_datafile": "studentGrades.csv"
-		},
-        {
-		  "name": "Wijnsoorten",
-          "path": "wine.jasp",
-          "description": "De resultaten van chemische analyse van wijnen die worden ontwikkeld in een specifieke regio in Italië. Drie soorten wijn zijn gebruikt in de 178 monsters, en de resultaten van 13 chemische analyses zijn gerapporteerd voor iedere monster. <br><br> <i>Dataset in R.<\/i>",
-          "kind": "file",
-          "associated_datafile": "wine.csv"
-        }
-      ],
-      "debug": false
-    },
-    {
-      "name": "12. Bain",
-      "path": "12. Bain",
-      "description": "",
-      "kind": "folder",
-      "children": [
-      {
-          "name": "One Sample T-Test",
-        "path": "bainOneSample.jasp",
-		"description":"Dit JASP-bestand toont een Bain T-Toets voor Eén Gemiddelde met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
-         "kind": "file",
-        "associated_datafile": "sesame.csv"
-      },
-      {
-          "name": "Welch's T-Test",
-        "path": "bainIndependentSamples.jasp",
-        "description":"Dit JASP-bestand toont een Bain Welch's T-Toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
-        "kind": "file",
-        "associated_datafile": "sesame.csv"
-      },
-      {
-          "name": "Paired Samples T-Test",
-        "path": "bainPairedSamples.jasp",
-        "description":"Dit JASP-bestand toont een Bain Gepaarde T-Toets toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
-         "kind": "file",
-        "associated_datafile": "sesame.csv"
-      },
-      {
-          "name": "ANOVA",
-        "path": "bainAnova.jasp",
-        "description":"Dit JASP-bestand toont een Bain ANOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
-        "kind": "file",
-        "associated_datafile": "sesame.csv"
-      },
-      {
-          "name": "ANCOVA",
-        "path": "bainAncova.jasp",
-        "description":"Dit JASP-bestand toont een Bain ANCOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
-        "kind": "file",
-        "associated_datafile": "sesame.csv"
-      },
-      {
-          "name": "Regressie",
-        "path": "bainRegression.jasp",
-        "description": "Dit JASP-bestand toont een Bain regressie met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
-        "kind": "file",
-        "associated_datafile": "sesame.csv"
-      }
-    ],
-      "debug": false
-    },
-    {
-      "name": "13. Ontdek Verdelingen",
-      "path": "13. Discover Distributions",
-      "description": "",
-      "kind": "folder",
-      "children": [
-        {
-          "name": "Distributions",
-          "path": "Normal distribution.jasp",
-          "description": "Synthetische gegevensset van variabelen gegenereerd uit verschillende waarschijnlijkheidsverdelingen. <br> <br> Het voorbeeld JASP-bestand toont de normale verdeling. <br> <br> <i> Fictieve gegevens gecreëerd door JASP Team. <\ / I>",
-          "kind": "file",
-          "associated_datafile": "Distributions.csv"
-        }
-      ]
-    },
-    {
-      "name": "14. Overig",
-      "path": "14. Miscellaneous",
+      "name": "15. Overig",
+      "path": "15. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
