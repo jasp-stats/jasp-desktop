@@ -28,7 +28,7 @@ Logistic regression allows the user to model a linear relationship between one o
     - Components: All the independent variables and covariates that can be included in the model.
     - Model terms: The independent variables and covariates included in the model. By default, all the main effects and interaction effects of the specified independent variables, and the covariates are included in the model. 
     - Add to null model: The independent variables included in the model can be selected to add to the null model. 
-- Include intercepts: Ticking this box will add a coefficient estimate of the intercept as well. This corresponds to the first (=reference) level for the independent variable.
+- Include intercept: Ticking this box will add a coefficient estimate of the intercept as well. This corresponds to the first (=reference) level for the independent variable.
 
  
 ### Statistics
