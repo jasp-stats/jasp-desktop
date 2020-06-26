@@ -79,26 +79,28 @@
     hasDV  <- !any(options$repeatedMeasuresCells == "")
     hasIV  <- any(lengths(options[c("betweenSubjectFactors", "covariates")]) != 0)
     fixed  <- options$betweenSubjectFactors
-    covariates <- c(options$covariates)
+    covariates <- unlist(options$covariates)
     noVariables <- !hasDV
+    target <- c(covariates, fixed)
 
-    if (length(covariates) > 0L || length(fixed) > 0L) {
+    if (length(target) > 0L) {
       .hasErrors(
         dataset = dataset,
         type    = c("infinity", "observations", "variance", "factorLevels", "duplicateColumns"),
-        infinity.target     = covariates,
+        infinity.target     = target,
         variance.target     = covariates,
-        observations.target = covariates,
+        observations.target = target,
         observations.amount = paste("<", length(options$modelTerms) + 1),
         factorLevels.target = fixed,
         factorLevels.amount = " < 2",
-        duplicateColumns.target = c(covariates, fixed),
+        duplicateColumns.target = target,
         exitAnalysisIfErrors = TRUE
       )
     }
 
     if (!noVariables) {
 
+      # messages from commonmessages.R
       customChecks <- list(
         infinity = function() {
           x <- dataset[, .BANOVAdependentName]
@@ -121,6 +123,21 @@
             variance <- stats::var(validValues)
           if (variance == 0)
             return(gettext("The variance in the repeated measures cells is 0."))
+          return(NULL)
+        },
+        duplicateColumns = function() {
+          datasetList <- as.list(dataset[, c(.BANOVAsubjectName, target)])
+          duplicatedCols <- duplicated(datasetList) | duplicated(datasetList, fromLast = TRUE)
+          if (any(duplicatedCols)) {
+            if (duplicatedCols[1L]) {
+              msg <- gettextf("Duplicate variables encountered in repeated measures cells, %s",
+                              paste(target[duplicatedCols[-1L]], collapse = ", "))
+            } else {
+              msg <- gettextf("Duplicate variables encountered in %s",
+                              paste(target[duplicatedCols[-1L]], collapse = ", "))
+            }
+            return(msg)
+          }
           return(NULL)
         }
       )

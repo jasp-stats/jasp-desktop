@@ -299,6 +299,22 @@ test_that("Field - Chapter 8 marginal means match", {
   expect_equal_tables(table, refTable)
 })
 
+# Error handling
+test_that("Analysis handles errors", {
+
+  options <- analysisOptions("AnovaRepeatedMeasures")
+  options[["betweenModelTerms"]] <- list(list(components = "Celebrity"))
+  options[["betweenSubjectFactors"]] <- "Celebrity"
+  options[["repeatedMeasuresCells"]] <- c("Stick Insect", "Kangaroo Testicle", "Fish Eye", "Witchetty Grub")
+  options[["repeatedMeasuresFactors"]] <- list(list(
+    levels = c("Stick Insect", "Kangaroo Testicle", "Fish Eye", "Witchetty Grub"),
+    name = "Animal"
+  ))
+
+  results <- run(options = options, dataset = "Bush Tucker Food.csv")
+  expect_identical(results$status, "validationError", label = "Duplicate variables in subject and betweenSubjectFactors")
+
+})
 
 
 # Mixed Effects
