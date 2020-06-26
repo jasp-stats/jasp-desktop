@@ -1555,7 +1555,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   dataIssue <- startsWith(errmsg, "y is constant") || endsWith(errmsg, "standardization step")
 
   ans <- if (dataIssue) {
-    gettextf("bootnet crashed with the following error message:\n%s\n\nPlease check if there are variables in the network with little variance or few distinct observations.", errmsg)
+    gettextf("bootnet crashed with the following error message:\n%s. <ul><li>Please check if there are variables in the network with little variance or few distinct observations.</li></ul>", errmsg)
   } else {
     gettextf("bootnet crashed with the following error message:\n%s", errmsg)
   }
