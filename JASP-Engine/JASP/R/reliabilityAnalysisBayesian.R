@@ -133,13 +133,14 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
         if (options[["missingValues"]] == "excludeCasesPairwise") {
           missing <- "pairwise"
           options[["missings"]] <- "pairwise.complete.obs"
-          model[["footnote"]] <- gettextf("%s Of the observations, pairwise complete cases. ", model[["footnote"]])
+          model[["footnote"]] <- gettextf("%s Of the observations, pairwise complete cases were used. ", 
+                                          model[["footnote"]])
         } else if (options[["missingValues"]] == "excludeCasesListwise") {
           pos <- which(is.na(dataset), arr.ind = T)[, 1]
           dataset <- dataset[-pos, ] 
           missing <- "listwise"
           options[["missings"]] <- "complete.obs"
-          model[["footnote"]] <- gettextf("%s Of the observations, the analysis used %1.f complete cases. ", 
+          model[["footnote"]] <- gettextf("%s Of the observations, %1.f complete cases were used. ", 
                                           model[["footnote"]], nrow(dataset))
           }
       }

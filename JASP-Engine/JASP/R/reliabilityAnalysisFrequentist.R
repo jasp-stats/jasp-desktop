@@ -82,12 +82,14 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         if (options[["missingValues"]] == "excludeCasesPairwise") {
           missing <- "pairwise"
           use.cases <- "pairwise.complete.obs"
-          model[["footnote"]] <- gettextf("%s Of the observations, pairwise complete cases were used. ", model[["footnote"]])
+          model[["footnote"]] <- gettextf("%s Of the observations, pairwise complete cases were used. ", 
+                                          model[["footnote"]])
         } else {
           pos <- which(is.na(dataset), arr.ind = T)[, 1]
           dataset <- dataset[-pos, ] 
           use.cases <- "complete.obs"
-          model[["footnote"]] <- gettextf("%s Of the observations, %1.f complete cases were used. ", model[["footnote"]], nrow(dataset))
+          model[["footnote"]] <- gettextf("%s Of the observations, %1.f complete cases were used. ", 
+                                          model[["footnote"]], nrow(dataset))
         }
       } else {
         use.cases <- "everything"
