@@ -51,19 +51,21 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
     dataset <- .vdf(dataset, columns.as.numeric = asnum, columns.as.factor = fact)
   }
   
-  # Reorder the rows of counts (and expected probabilities) if the user changes the factor level order in JASP
+  # Reorder the rows of the factor and the counts (and expected probabilities) if the user changes the factor level order in JASP.
+  # This ensures the ordering in tables and plots also changes appropriately.
   if (options$factor != "" && options$counts != "") {
-    fact                  <- as.factor(dataset[[.v(options$factor)]])
+    factLevelOrder        <- as.character(dataset[[.v(options$factor)]])
+    levelOrderUserWants   <- options$tableWidget[[1]]$levels
+    whatUserWantsToWhatIs <- match(levelOrderUserWants, factLevelOrder)
+      
+    if (!identical(sort(whatUserWantsToWhatIs), whatUserWantsToWhatIs))
+      dataset[seq_along(factLevelOrder), ] <- dataset[whatUserWantsToWhatIs, ]
     
-    # If we have counts and the number of counts is not equal to the number of levels of the factor, then don't do anything so the error can be caught in .hasErrors()
-    if (nlevels(na.omit(fact)) == length(na.omit(dataset[[.v(options$counts)]]))) {
-      
-      levelOrderUserWants   <- options$tableWidget[[1]]$levels
-      whatUserWantsToWhatIs <- match(levelOrderUserWants, as.character(fact))
-      
-      if (!identical(sort(whatUserWantsToWhatIs), whatUserWantsToWhatIs))
-        dataset <- dataset[whatUserWantsToWhatIs, ]
-    }
+    # For syntax mode the analysis will be called from RStudio and the factor levels may not match the tableWidget.
+    factValues <- as.character(dataset[[.v(options$factor)]])
+    facLevels  <- levels(dataset[[.v(options$factor)]])
+    if (length(facLevels) == length(factValues) && !identical(factValues, facLevels))
+      levels(dataset[[.v(options$factor)]]) <- factValues
   }
   
   return(dataset)

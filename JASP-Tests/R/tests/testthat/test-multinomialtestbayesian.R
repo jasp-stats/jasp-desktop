@@ -65,3 +65,23 @@ test_that("Bayesian Multinomial Test table results match in short data format", 
                       list(27.1062505863656, "Multinomial", 18))
 })
 
+test_that("Descriptives table correctly shows reordered factor levels", {
+  options <- jasptools::analysisOptions("MultinomialTestBayesian")
+  options$factor <- "Month"
+  options$counts <- "Stress.frequency"
+  options$exProbVar <- "Expected.counts"
+  options$descriptives <- TRUE
+  options$tableWidget <- list(list(levels = c("3", "1", "2", "4", "5", "6", "7", "8", 
+                                              "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"), name = "H₀ (a)", 
+                                   values = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                              1, 1)))
+  options$priorCounts <- list(list(levels = c("3", "1", "2", "4", "5", "6", "7", "8", 
+                                              "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"), name = "Counts", 
+                                   values = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                              1, 1)))
+  results <- jasptools::run("MultinomialTestBayesian", "Memory of Life Stresses.csv", options)
+  table <- results[["results"]][["multinomialDescriptivesTable"]][["data"]]
+  expect_equal_tables(table[1:4], list(7, 3, 14, 17, 1, 15, 5, 2, 11, 15, 4, 17))
+})
+
+
