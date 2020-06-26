@@ -153,7 +153,7 @@ Collineariteit Diagnostieken:
 
 Stapsgewijze Diagnostieken: 
   - Voor elk gemarkeerd geval (Geval nummer) geeft dit het volgende weer:
-	- Gestandaardiseerd residu.
+	- Gestandaardiseerd residu. Ook bekend als het gestudentiseerd residue.
 	- De waarde van de afhankelijke variabele.
 	- De voorspelde waarde.
 	- Residu 
