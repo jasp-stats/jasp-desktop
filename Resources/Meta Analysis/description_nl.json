@@ -26,11 +26,6 @@
 		{
 			"title": 		"Bayesiaanse Meta-Analyse",
 			"function":		"BayesianMetaAnalysis"
-		},
-		{
-			"title": 		"Robuste Bayesiaanse Meta-Analyse (beta)",
-			"function":		"RobustBayesianMetaAnalysis",
-			"requiresData":	false
 		}
 	]
 }
