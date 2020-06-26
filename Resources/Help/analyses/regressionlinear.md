@@ -155,7 +155,7 @@ Collinearity Diagnostics:
 
 Casewise Diagnostics:
  - For each flagged case (Case Number) displays:
-    - Standardized (Std.) residual.
+    - Standardized (Std.) residual. Alternatively called also studentized residual. 
     - The value on the dependent variable.
     - Predicted value.
     - Residual.
