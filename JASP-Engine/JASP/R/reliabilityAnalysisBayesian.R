@@ -609,19 +609,28 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	
 
 
-	# xBreaks <- JASPgraphs::getPrettyAxisBreaks(datDens$x)
-	xBreaks <- pretty(datDens$x, n = 4)
+	xBreaks <- JASPgraphs::getPrettyAxisBreaks(datDens$x)
+
 	# max height posterior is at 90% of plot area; remainder is for credible interval
 	ymax <- max(d$y) / .9
 	yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, ymax))
 	ymax <- max(yBreaks)
-	datCri <- data.frame(xmin = scaleCri[[i]][1L], xmax = scaleCri[[i]][2L], y = .925 * ymax)
+	scaleCriRound <- round(scaleCri[[i]], 3)
+	datCri <- data.frame(xmin = scaleCriRound[1L], xmax = scaleCriRound[2L], y = .925 * ymax)
 	height <- (ymax - .925 * ymax) / 2
 	if (fixXRange) {
-	  datTxt <- data.frame(x = c(datCri$xmin -.08, datCri$xmax + .08),
-	                       y = 0.985 * ymax,
-	                       label = sapply(c(datCri$xmin, datCri$xmax), format, digits = 3, scientific = -1),
-	                       stringsAsFactors = FALSE)
+	  if (datCri$xmin == datCri$xmax) { # if two zeros, the interval is merged together
+	    datTxt <- data.frame(x = c(datCri$xmin, datCri$xmax),
+	                         y = 0.985 * ymax,
+	                         label = sapply(c(datCri$xmin, datCri$xmax), format, digits = 3, scientific = -1),
+	                         stringsAsFactors = FALSE)
+	  } else {
+	    datTxt <- data.frame(x = c(datCri$xmin -.08, datCri$xmax + .08),
+	                         y = 0.985 * ymax,
+	                         label = sapply(c(datCri$xmin, datCri$xmax), format, digits = 3, scientific = -1),
+	                         stringsAsFactors = FALSE)
+	  }
+
 	} else {
 	  datTxt <- data.frame(x = c(datCri$xmin, datCri$xmax),
 	                       y = 0.985 * ymax,
@@ -634,11 +643,17 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	  datCri$xmin[1L] <- 0
 	  datTxt$x[1L] <- 0
 	  datTxt$label[1L] <- "< 0"
+	} else if (datCri$xmin[1L] == 0) {
+	  datCri$xmin[1L] <- 0
+	  datTxt$x[1L] <- 0
+	  datTxt$label[1L] <- "0"
 	}
 
 	# if the bounds are less than 0.05 away from 0 or 1, expand the axis by 0.1 so the credible interval text does not
 	# get chopped off.
 	xExpand <- .1 * ((c(0, 1) - datTxt$x) <= 0.05)
+	if (fixXRange && max(datDens$y, na.rm=T) >= 1000) xExpand <- c(xExpand[1], .05)
+	# with large numebrs on the y-axis, the x-axis labels to the right get cut off sometimes, when the range is fixed
 
 	g <- ggplot2::ggplot(data = datDens, mapping = ggplot2::aes(x = x, y = y)) +
 		ggplot2::geom_line(size = .85) +
@@ -647,7 +662,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	ggplot2::geom_text(data = datTxt, mapping = ggplot2::aes(x = x, y = y, label = label), inherit.aes = FALSE, 
 	                   size = 5) +
 	ggplot2::scale_y_continuous(name = gettext("Density"), breaks = yBreaks, limits = range(yBreaks)) +
-	ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, expand = xExpand)
+  ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, expand = xExpand, limits = range(xBreaks))
 
 	
 	if (!is.null(shade)) {
@@ -660,8 +675,8 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	if (priorTrue) {
 	  g <- g + ggplot2::geom_line(data = datPrior, mapping = ggplot2::aes(x = x, y = y),
 	                              linetype = "dashed", size = .85) +
-	           ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, expand = xExpand,
-	                                       limits = range(xBreaks))
+	           ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, limits = range(xBreaks), 
+	                                       expand = xExpand)
 	  
 	}
 
