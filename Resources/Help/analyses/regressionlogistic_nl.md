@@ -25,12 +25,12 @@ Met logistische regressie kan men een lineaire relatie tussen een of meer verkla
 
  
 ### Model
-- Neem intercept mee:
-  - Neem het intercept mee in het model.
 - Componenten en model termen:
 	- Componenten: Alle onafhankelijke variabelen die in het model worden meegenomen.
 	- Model termen: De onafhankelijke variabelen en covariaten in het model. De standaardoptie is om de hoofdeffecten en interactie-effecten van de geselecteerde onafhankelijke variabelen mee te nemen in het model, net zoals de covariaten.
 	- Voeg toe aan nul model: De onafhankelijke variabelen in het model kunnen ook aan het nulmodel worden toegevoegd. 
+- Neem intercept mee:
+  - Neem het intercept mee in het model.
 
  
 ### Statistieken
