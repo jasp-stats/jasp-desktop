@@ -126,7 +126,7 @@
           return(NULL)
         },
         duplicateColumns = function() {
-          datasetList <- as.list(dataset[, c(.BANOVAsubjectName, target)])
+          datasetList <- as.list(dataset[, c(.BANOVAsubjectName, .v(target))])
           duplicatedCols <- duplicated(datasetList) | duplicated(datasetList, fromLast = TRUE)
           if (any(duplicatedCols)) {
             if (duplicatedCols[1L]) {
