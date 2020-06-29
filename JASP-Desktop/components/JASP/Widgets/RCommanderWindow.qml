@@ -180,32 +180,41 @@ Window
 
 			Rectangle
 			{
+				id:				codeRect
 				border.color:	jaspTheme.uiBorder
 				color:			jaspTheme.white
+				clip:			true
 
 				//ScrollView
 				Flickable
 				{
 					id:					codeEntryFlickable
 
-					TextArea.flickable: TextArea
+					Item
 					{
-						id:						codeEntry
-						font:					jaspTheme.fontConsole
-						color:					jaspTheme.textEnabled
-						selectedTextColor:		jaspTheme.textDisabled
-						selectionColor:			jaspTheme.black
-						selectByMouse:			true
-						wrapMode:				TextEdit.Wrap
-						focus:					true
-						width:					codeEntryFlickable.width
+						width:					codeEntry.width
+						height:					codeEntry.implicitHeight
 
-						placeholderText:		mainWindow.dataAvailable ? qsTr("Enter your R code here.\nThe data is fully available as 'data' and filtered as 'filteredData'.") : qsTr("Enter your R code here.")
-						placeholderTextColor:	jaspTheme.grayDarker
+						TextArea
+						{
+							id:						codeEntry
+							font:					jaspTheme.fontConsole
+							color:					jaspTheme.textEnabled
+							selectedTextColor:		jaspTheme.textDisabled
+							selectionColor:			jaspTheme.black
+							selectByMouse:			true
+							wrapMode:				TextEdit.Wrap
+							focus:					true
+							width:					codeRect.width
 
-						Shortcut { onActivated: runButton.runCode();	sequences: ["Ctrl+Enter", "Ctrl+Return", Qt.Key_F5];}
-						Shortcut { onActivated: codeEntry.undo();		sequences: ["Ctrl+Z", ];}
-						Shortcut { onActivated: codeEntry.selectAll();	sequences: ["Ctrl+A", ];}
+
+							placeholderText:		mainWindow.dataAvailable ? qsTr("Enter your R code here.\nThe data is fully available as 'data' and filtered as 'filteredData'.") : qsTr("Enter your R code here.")
+							placeholderTextColor:	jaspTheme.grayDarker
+
+							Shortcut { onActivated: runButton.runCode();	sequences: ["Ctrl+Enter", "Ctrl+Return", Qt.Key_F5];}
+							Shortcut { onActivated: codeEntry.undo();		sequences: ["Ctrl+Z", ];}
+							Shortcut { onActivated: codeEntry.selectAll();	sequences: ["Ctrl+A", ];}
+						}
 					}
 
 					Keys.onUpPressed: codeEntry.text = rCmd.lastCmd
