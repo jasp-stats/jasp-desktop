@@ -605,6 +605,18 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
+			"name": "hexbin",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/hexbin_1.28.1.tar.gz",
+					"sha256": "42d092c709ebc84b18df8121beb6bd1d8a3f6f357afd5c3490757c4c4795c6e7"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
 			"name": "highr",
 			"buildsystem": "simple",
 			"sources": [
@@ -3156,18 +3168,6 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/relaimpo_2.2-3.tar.gz",
 					"sha256": "09f745fac3285c8633675687130357c279df80a1d1d069bd7fd155e8a9726e5d"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "RoBMA",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "git",
-					"url": "https://github.com/FBartos/RoBMA",
-					"commit": "83e68878469327501bc0f6cc964c69a13f6c5d81"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
