@@ -206,42 +206,43 @@ Form
 		}
 
 		Group
-        {
-			CheckBox 
-            {
-                id:                 probTable
-                name:               "probTable"
-                label:              qsTr("Probability for:")
-                childrenOnSameRow:  true
+		{
+			CheckBox
+			{
+				id:					probTable
+				name:				"probTable"
+				label:				qsTr("Probability for:")
+				childrenOnSameRow:	true
 
-                RowLayout
-                {
-                    DoubleField
-                    {
-                        name:           "probTableValueLow"
-                        label:          qsTr("")
-                        defaultValue:   0.70
-                        min:            0
-                        max:            1
-                        decimals:       2
-                        fieldWidth:     40
-                    }
+				RowLayout
+				{
+					DoubleField
+					{
+						name:			"probTableValueLow"
+						label:			qsTr("")
+						defaultValue:	0.70
+						min:			0
+						max:			1
+						decimals:		2
+						fieldWidth: 	40
+					}
 
-                    Label
-                    {   text: qsTr("< Reliability <")   }
+					Label
+					{	text: qsTr("< Reliability <")}
 
-                    DoubleField
-                    {
-                        name:           "probTableValueHigh"
-                        label:          qsTr("")
-                        defaultValue:   .90
-                        min:            0
-                        max:            1
-                        decimals:       2
-                        fieldWidth:     40
-                    }
-                }
-            }
+					DoubleField
+					{
+						name:			"probTableValueHigh"
+						label:			qsTr("")
+						defaultValue:	.90
+						min:			0
+						max:			1
+						decimals:		2
+						fieldWidth: 	40
+					}
+				}
+			}
+
 
 			Item
 			{
