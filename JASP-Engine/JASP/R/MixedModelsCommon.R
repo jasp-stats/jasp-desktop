@@ -2764,8 +2764,7 @@
     
     if (options$samplingPlot == "stan_scat" &&
         length(options$samplingVariable2) == 0) {
-      diagnosticPlots[["errorPlot"]] <- createJaspPlot()
-      diagnosticPlots$setError(gettext("Both 'Horizontal axis' and 'Vertical axis' variables need to be selected to produce a scatterplot."))
+      diagnosticPlots[["emptyPlot"]] <- createJaspPlot()
       return()
     }
     
