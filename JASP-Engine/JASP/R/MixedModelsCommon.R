@@ -16,7 +16,6 @@
 #
 
 
-# TODO: Estimated marginal means - contrasts widged - changing the the resolution removes the widget
 # TODO: Expose priors specification to users in Bxxx?
 # TODO: Add 3rd level random effects grouping factors ;) (not that difficult actually)
 
@@ -2744,8 +2743,29 @@
     if (!is.null(jaspResults[["diagnosticPlots"]]))
       return()
     
+    
+    diagnosticPlots <-
+      createJaspContainer(title = gettext("Sampling diagnostics"))
+    
+    diagnosticPlots$position <- 5
+    if (type == "BLMM") {
+      dependencies <- .mmDependenciesBLMM
+    } else if (type == "BGLMM") {
+      dependencies <- .mmDependenciesBGLMM
+    }
+    diagnosticPlots$dependOn(c(
+      dependencies,
+      "samplingPlot",
+      "samplingVariable1",
+      "samplingVariable2"
+    ))
+    jaspResults[["diagnosticPlots"]] <- diagnosticPlots
+    
+    
     if (options$samplingPlot == "stan_scat" &&
         length(options$samplingVariable2) == 0) {
+      diagnosticPlots[["errorPlot"]] <- createJaspPlot()
+      diagnosticPlots$setError(gettext("Both variables need to be selected to produce a scatterplot."))
       return()
     }
     
@@ -2767,22 +2787,6 @@
       .mmGetPlotSamples(model = model,
                         pars = pars,
                         options = options)
-    
-    diagnosticPlots <-
-      createJaspContainer(title = gettext("Sampling diagnostics"))
-    
-    diagnosticPlots$position <- 5
-    if (type == "BLMM") {
-      dependencies <- .mmDependenciesBLMM
-    } else if (type == "BGLMM") {
-      dependencies <- .mmDependenciesBGLMM
-    }
-    diagnosticPlots$dependOn(c(
-      dependencies,
-      "samplingPlot",
-      "samplingVariable1",
-      "samplingVariable2"
-    ))
     
     
     for (i in 1:length(plot_data)) {
@@ -2852,8 +2856,6 @@
       
       diagnosticPlots[[names(plot_data)[i]]] <- plots
     }
-    
-    jaspResults[["diagnosticPlots"]] <- diagnosticPlots
     
   }
 
