@@ -3263,8 +3263,8 @@
   sprintf(
     ngettext(
       iterations,
-      "There was %i transition exceeding maximum treedepth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'.",
-      "There were %i transitions exceeding maximum treedepth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'."
+      "There was %i transition exceeding maximum tree depth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum tree depth'.",
+      "There were %i transitions exceeding maximum tree depth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum tree depth'."
     ),
     iterations
   )
