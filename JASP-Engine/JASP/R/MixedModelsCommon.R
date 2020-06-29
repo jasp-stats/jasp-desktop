@@ -2256,13 +2256,13 @@
                          title = gettext("WAIC"),
                          type = "number")
   fitStats$addColumnInfo(name = "waicSE",
-                         title = gettext("WAIC (SE)"),
+                         title = gettext("SE (WAIC)"),
                          type = "number")
   fitStats$addColumnInfo(name = "loo",
                          title = gettext("LOO"),
                          type = "number")
   fitStats$addColumnInfo(name = "looSE",
-                         title = gettext("LOO (SE)"),
+                         title = gettext("SE (LOO)"),
                          type = "number")
   
 
