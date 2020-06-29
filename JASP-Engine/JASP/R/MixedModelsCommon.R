@@ -1090,13 +1090,14 @@
       )
     )
     
+    jaspResults[["plots"]] <- plots
+
     
     # stop with message if there is no random effects grouping factor selected
     if (length(options$plotsAgregatedOver) == 0) {
       plots$setError(
         gettext("At least one random effects grouping factor needs to be selected in field 'Background data show'.")
       )
-      jaspResults[["plots"]] <- plots
       return()
     }
     if (all(
@@ -1110,7 +1111,6 @@
       plots$setError(
         gettext("Factor levels need to be distinguished by at least one feature. Please, check one of the 'Distinguish factor levels' options.")
       )
-      jaspResults[["plots"]] <- plots
       return()
     }
     
