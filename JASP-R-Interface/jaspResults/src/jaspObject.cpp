@@ -145,14 +145,14 @@ void jaspObject::childFinalized(jaspObject * child)
 	removeChild(child);
 }
 
-void jaspObject::notifyParentOfChanges(bool ignoreSendTimer)
+void jaspObject::notifyParentOfChanges()
 {
 #ifdef JASP_RESULTS_DEBUG_TRACES
 	std::cout << "notifyParentOfChanges()! parent is " << ( parent == NULL ? "NULL" : parent->title) << "\n" << std::flush;
 #endif
 
 	if(parent != NULL)
-		parent->childrenUpdatedCallback(ignoreSendTimer);
+		parent->childrenUpdatedCallback(false);
 }
 
 void jaspObject::childrenUpdatedCallback(bool ignoreSendTimer)

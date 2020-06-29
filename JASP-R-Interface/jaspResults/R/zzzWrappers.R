@@ -165,6 +165,7 @@ jaspResultsR <- R6Class(
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)), domain = NA)
 			))
 		},
+    #These two functions should be the exact same as those on jaspContainer
 		setField	= function(field, value) {
 			private$jaspObject[[field]] <- private$getJaspObject(value);
 			private$children[[field]]   <- value;
@@ -397,6 +398,7 @@ jaspContainerR <- R6Class(
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)), domain = NA)
 			))
 		},
+    #These two functions should be the exact same as those for jaspResults
 		setField   = function(field, value) {
 			private$jaspObject[[field]] <- private$getJaspObject(value);
 			private$children[[field]]   <- value;
@@ -429,15 +431,22 @@ jaspPlotR <- R6Class(
 	public    = list(
 		initialize = function(plot=NULL, title="", width=320, height=320, aspectRatio=0, error=NULL, 
 							  dependencies=NULL, position=NULL, jaspObject = NULL) {
-			if (!is.null(jaspObject)) {
+      if (!is.null(jaspObject))
+      {
 			  private$jaspObject <- jaspObject
 			  return()
-			} else if (jaspResultsCalledFromJasp()) {
-				jaspPlotObj <- jaspResultsModule$create_cpp_jaspPlot(title)
-			} else {
+      }
+      else if (jaspResultsCalledFromJasp())
+      {
+        private$jaspObject <- jaspResultsModule$create_cpp_jaspPlot(title)
+      }
+      else
+      {
 				checkForJaspResultsInit()
-				jaspPlotObj  <- create_cpp_jaspPlot(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspPlot, title)
+        private$jaspObject  <- create_cpp_jaspPlot(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspPlot, title)
 			}
+
+      jaspPlotObj <- private$jaspObject
 			
 			if (aspectRatio > 0 && !is.null(width) && width != 0)
 				height = aspectRatio * width
@@ -460,7 +469,6 @@ jaspPlotR <- R6Class(
 			if(is.numeric(position))
 				jaspPlotObj$position = position
 			
-			private$jaspObject <- jaspPlotObj
 			return()
 		}
 	),

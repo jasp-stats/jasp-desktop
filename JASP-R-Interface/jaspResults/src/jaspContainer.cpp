@@ -11,7 +11,7 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 		return;
 	}
 
-	jaspObject * obj;
+	jaspObject * obj = nullptr;
 
 
 	if(Rcpp::is<jaspObject_Interface>(value))			obj = Rcpp::as<jaspObject_Interface>(value).returnMyJaspObject();
@@ -39,7 +39,10 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 		_data_order[field] = _order_increment++;
 
 	addChild(obj);
-	notifyParentOfChanges(true);
+
+	//jaspResults doesn't have any parents
+	if(getType() == jaspObjectType::results)	childrenUpdatedCallback(true);
+	else										notifyParentOfChanges();
 }
 
 jaspContainer * jaspContainer::jaspContainerFromRcppList(Rcpp::List convertThis)

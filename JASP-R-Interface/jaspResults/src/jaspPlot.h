@@ -32,7 +32,7 @@ public:
 
 	bool		canShowErrorMessage()						const	override { return true; }
 
-	void		complete()	{ if(_status == "running") _status = "complete"; }
+	void		complete()	{ if(_status == "running" || _status == "waiting") _status = "complete"; }
 	void		letRun()	{ _status = "running"; }
 
 private:

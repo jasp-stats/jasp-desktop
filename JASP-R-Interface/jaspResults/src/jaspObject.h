@@ -121,7 +121,7 @@ public:
 
 	static Json::Value currentOptions;
 
-	void			notifyParentOfChanges(bool ignoreSendTimer = false); ///let ancestors know about updates
+	void			notifyParentOfChanges(); ///let ancestors know about updates
 
 	static int getCurrentTimeMs();
 	static void setDeveloperMode(bool developerMode);

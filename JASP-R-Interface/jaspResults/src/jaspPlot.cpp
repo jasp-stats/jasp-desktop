@@ -88,8 +88,7 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 			_errorMessage	= Rcpp::as<std::string>(writeResult["error"]);
 		}
 
-		if(_status == "waiting" || _status == "running")
-			_status = "complete";
+		complete();
 	}
 
 	jaspResults::setObjectInEnv(_envName, plotInfo);

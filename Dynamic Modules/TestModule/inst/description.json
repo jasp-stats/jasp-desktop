@@ -47,6 +47,11 @@
 			"function":							"testContainerFunc"
 		},
 		{
+			"title":							"Test plot status",
+			"qml":								"TestPlotStatus.qml",
+			"function":							"testPlotStatus"
+		},
+		{
 			"title":							"Test encoding",
 			"qml":								"testEncoding.qml",
 			"function":							"testEncodingFunc"
