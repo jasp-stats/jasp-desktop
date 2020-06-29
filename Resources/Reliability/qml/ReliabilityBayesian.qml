@@ -251,12 +251,12 @@ Form
 
 				CheckBox 
 				{ 
-					id:       shadePlots
-					name:     "shadePlots";              
-					indent:   true
-					label:    qsTr("Shade posterior region in plot"); 
-					enabled:  probTable.checked    
-					x:        Theme.subOptionOffset
+					id:			shadePlots
+					name:		"shadePlots";
+					indent:		true
+					label:		qsTr("Shade posterior region in plot");
+					enabled:	probTable.checked
+					x:			Theme.subOptionOffset
 				}
 			}
 		}
