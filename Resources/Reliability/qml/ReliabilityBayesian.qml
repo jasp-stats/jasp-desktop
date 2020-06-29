@@ -218,13 +218,13 @@ Form
                 {
                     DoubleField
                     {
-                        name: 			"probTableValueLow"
+                        name:           "probTableValueLow"
                         label:          qsTr("")
                         defaultValue:   0.70
-                        min: 			0
-                        max: 			1
-                        decimals: 		2
-                        fieldWidth: 	40
+                        min:            0
+                        max:            1
+                        decimals:       2
+                        fieldWidth:     40
                     }
 
                     Label
@@ -237,8 +237,8 @@ Form
                         defaultValue:   .90
                         min:            0
                         max:            1
-                        decimals: 		2
-                        fieldWidth: 	40
+                        decimals:       2
+                        fieldWidth:     40
                     }
                 }
             }
