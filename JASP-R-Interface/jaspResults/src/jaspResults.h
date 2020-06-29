@@ -35,7 +35,7 @@ public:
 	Json::Value		dataEntry(std::string & errorMessage)	const override;
 	Json::Value		dataEntry()								const			{ std::string dummy(""); return dataEntry(dummy); }
 
-	void			childrenUpdatedCallbackHandler() override;
+	void			childrenUpdatedCallbackHandler(bool ignoreSendTimer) override;
 
 	void			finalizedHandler() override { complete(); }
 	void			complete();

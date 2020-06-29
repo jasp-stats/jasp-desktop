@@ -39,7 +39,7 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 		_data_order[field] = _order_increment++;
 
 	addChild(obj);
-	notifyParentOfChanges();
+	notifyParentOfChanges(true);
 }
 
 jaspContainer * jaspContainer::jaspContainerFromRcppList(Rcpp::List convertThis)

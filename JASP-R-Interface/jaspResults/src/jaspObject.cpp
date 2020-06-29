@@ -145,26 +145,26 @@ void jaspObject::childFinalized(jaspObject * child)
 	removeChild(child);
 }
 
-void jaspObject::notifyParentOfChanges()
+void jaspObject::notifyParentOfChanges(bool ignoreSendTimer)
 {
 #ifdef JASP_RESULTS_DEBUG_TRACES
 	std::cout << "notifyParentOfChanges()! parent is " << ( parent == NULL ? "NULL" : parent->title) << "\n" << std::flush;
 #endif
 
 	if(parent != NULL)
-		parent->childrenUpdatedCallback();
+		parent->childrenUpdatedCallback(ignoreSendTimer);
 }
 
-void jaspObject::childrenUpdatedCallback()
+void jaspObject::childrenUpdatedCallback(bool ignoreSendTimer)
 {
 #ifdef JASP_RESULTS_DEBUG_TRACES
 	std::cout << "childrenUpdatedCallback()! parent is " << ( parent == NULL ? "NULL" : parent->title) << "\n" << std::flush;
 #endif
 
-	childrenUpdatedCallbackHandler();
+	childrenUpdatedCallbackHandler(ignoreSendTimer);
 
 	if(parent != NULL)
-		parent->childrenUpdatedCallback();
+		parent->childrenUpdatedCallback(ignoreSendTimer);
 }
 
 std::string jaspObject::toString(std::string prefix) const

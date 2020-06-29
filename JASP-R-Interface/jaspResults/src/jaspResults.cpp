@@ -276,7 +276,7 @@ void jaspResults::checkForAnalysisChanged()
 }
 
 
-void jaspResults::childrenUpdatedCallbackHandler()
+void jaspResults::childrenUpdatedCallbackHandler(bool ignoreSendTimer)
 {
 #ifdef JASP_RESULTS_DEBUG_TRACES
 	JASPprint("One of jaspResults children was updated!\n");
@@ -288,7 +288,11 @@ void jaspResults::childrenUpdatedCallbackHandler()
 		return;
 
 	int curTime = getCurrentTimeMs();
-	if(_sendingFeedbackLastTime == -1 || (curTime - _sendingFeedbackLastTime) > _sendingFeedbackInterval)
+	if(
+		ignoreSendTimer													||
+		_sendingFeedbackLastTime == -1									||
+		(curTime - _sendingFeedbackLastTime) > _sendingFeedbackInterval
+	)
 	{
 		send();
 		_sendingFeedbackLastTime = curTime;

@@ -50,7 +50,7 @@ public:
 
 			void		print()									{ try { jaspPrint(toString()); } catch(std::exception e) { jaspPrint(std::string("toString failed because of: ") + e.what()); } }
 			void		addMessage(std::string msg)				{ _messages.push_back(msg); }
-	virtual void		childrenUpdatedCallbackHandler()		{} ///Can be called by jaspResults to send changes and stuff like that.
+	virtual void		childrenUpdatedCallbackHandler(bool)	{} ///Can be called by jaspResults to send changes and stuff like that.
 
 			void		setOptionMustBeDependency(std::string optionName, Rcpp::RObject mustBeThis);
 			void		setOptionMustContainDependency(std::string optionName, Rcpp::RObject mustContainThis);
@@ -89,7 +89,7 @@ public:
 			std::string getUniqueNestedName() const;
 			void		setName(std::string name) { _name = name; }
 
-			void		childrenUpdatedCallback();
+			void		childrenUpdatedCallback(bool ignoreSendTimer);
 	virtual void		childFinalizedHandler(jaspObject * child) {}
 			void		childFinalized(jaspObject * child);
 			void		finalized();
@@ -121,7 +121,7 @@ public:
 
 	static Json::Value currentOptions;
 
-	void			notifyParentOfChanges(); ///let ancestors know about updates
+	void			notifyParentOfChanges(bool ignoreSendTimer = false); ///let ancestors know about updates
 
 	static int getCurrentTimeMs();
 	static void setDeveloperMode(bool developerMode);
