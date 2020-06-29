@@ -1,22 +1,22 @@
 reliabilityBayesian <- function(jaspResults, dataset, options) {
   
   
-	dataset <- .reliabilityReadData(dataset, options)
+  dataset <- .reliabilityReadData(dataset, options)
 
-	.reliabilityCheckErrors(dataset, options)
+  .reliabilityCheckErrors(dataset, options)
   
-	model <- .BayesianReliabilityMainResults(jaspResults, dataset, options)
+  model <- .BayesianReliabilityMainResults(jaspResults, dataset, options)
 
-	.BayesianReliabilityScaleTable(         jaspResults, model, options)
-	.BayesianReliabilityItemTable(          jaspResults, model, options)
-	.BayesianReliabilityProbTable(          jaspResults, model, options)
-	.BayesianReliabilityPosteriorPlot(      jaspResults, model, options)
-	.BayesianReliabilityPosteriorPredictive(jaspResults, model, options)
-	.BayesianReliabilityIfItemPlot(         jaspResults, model, options)
-	.BayesianReliabilityTracePlot(          jaspResults, model, options)
-	  
+  .BayesianReliabilityScaleTable(         jaspResults, model, options)
+  .BayesianReliabilityItemTable(          jaspResults, model, options)
+  .BayesianReliabilityProbTable(          jaspResults, model, options)
+  .BayesianReliabilityPosteriorPlot(      jaspResults, model, options)
+  .BayesianReliabilityPosteriorPredictive(jaspResults, model, options)
+  .BayesianReliabilityIfItemPlot(         jaspResults, model, options)
+  .BayesianReliabilityTracePlot(          jaspResults, model, options)
+  
 
-	return()
+  return()
 
 }
 
@@ -56,9 +56,9 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 .reliabilityReadData <- function(dataset, options) {
 
   variables <- unlist(options[["variables"]])
-	if (is.null(dataset)) {
-		dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = NULL, exclude.na.listwise = NULL)
-	}
+  if (is.null(dataset)) {
+    dataset <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = NULL, exclude.na.listwise = NULL)
+  }
   return(dataset)
 }
 
@@ -223,25 +223,25 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     }
   }
 
-	if (is.null(model[["error"]])) {
-	  criState <- jaspResults[["criObj"]]$object
-	  if (is.null(criState) && !is.null(relyFit)) {
-
-	    scaleCri <- .BayesianReliabilityCalcCri(relyFit[["Bayes"]][["samp"]],             
-	                                            options[["credibleIntervalValueScale"]])
-	    itemCri  <- .BayesianReliabilityCalcCri(relyFit[["Bayes"]][["ifitem"]][["samp"]], 
-	                                            options[["credibleIntervalValueItem"]])
+  if (is.null(model[["error"]])) {
+    criState <- jaspResults[["criObj"]]$object
+    if (is.null(criState) && !is.null(relyFit)) {
+      scaleCri <- .BayesianReliabilityCalcCri(relyFit[["Bayes"]][["samp"]],             
+                                              options[["credibleIntervalValueScale"]])
+      itemCri  <- .BayesianReliabilityCalcCri(relyFit[["Bayes"]][["ifitem"]][["samp"]], 
+                                              options[["credibleIntervalValueItem"]])
       
-	    
-	    criState <- list(scaleCri = scaleCri, itemCri  = itemCri)
-	    jaspCriState <- createJaspState(criState)
-	    jaspCriState$dependOn(options = c("credibleIntervalValueScale", "credibleIntervalValueItem"), 
-	                                      optionsFromObject = jaspResults[["modelObj"]])
-	    jaspResults[["criObj"]] <- jaspCriState
+      
+      criState <- list(scaleCri = scaleCri, itemCri  = itemCri)
+      jaspCriState <- createJaspState(criState)
+      jaspCriState$dependOn(options = c("credibleIntervalValueScale", "credibleIntervalValueItem"), 
+                            optionsFromObject = jaspResults[["modelObj"]])
+      jaspResults[["criObj"]] <- jaspCriState
 
-	  }
-	  model[["cri"]] <- criState
-	}
+    }
+    model[["cri"]] <- criState
+    
+  }
 
   model[["derivedOptions"]] <- .BayesianReliabilityDerivedOptions(options)
   model[["itemsDropped"]] <- .unv(colnames(dataset))
@@ -249,7 +249,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   # when variables are deleted again, a model footnote is expected, but none produce, hence: 
   if (is.null(model[["footnote"]])) model[["footnote"]] <- ""
   
-	return(model)
+  return(model)
 }
 
 .BayesianReliabilityCalcCri <- function(samps, criValue) {
@@ -370,9 +370,8 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 .BayesianReliabilityItemTable <- function(jaspResults, model, options) {
   
-	if (!is.null(jaspResults[["itemTable"]]) || !any(model[["derivedOptions"]][["itemDroppedSelected"]])) {
-		return()
-	}
+  if (!is.null(jaspResults[["itemTable"]]) || !any(model[["derivedOptions"]][["itemDroppedSelected"]])) 
+    return()
 
   derivedOptions <- model[["derivedOptions"]]
 
@@ -438,14 +437,14 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       colnames(newtb) <- paste0(colnames(newtb), i)
       tb <- cbind(tb, newtb)
     }
-		itemTable$setData(tb)
-		
-		if (!is.null(unlist(options[["reverseScaledItems"]]))) {
-		  itemTable$addFootnote(sprintf(ngettext(length(options[["reverseScaledItems"]]),
-		                                         "The following item was reverse scaled: %s. ",
-		                                         "The following items were reverse scaled: %s. "),
-		                                paste(options[["reverseScaledItems"]], collapse = ", ")))
-		}
+    itemTable$setData(tb)
+    
+    if (!is.null(unlist(options[["reverseScaledItems"]]))) {
+      itemTable$addFootnote(sprintf(ngettext(length(options[["reverseScaledItems"]]),
+                                             "The following item was reverse scaled: %s. ",
+                                             "The following items were reverse scaled: %s. "),
+                                    paste(options[["reverseScaledItems"]], collapse = ", ")))
+    }
 
   } else if (length(model[["itemsDropped"]]) > 0) {
     itemTable[["variable"]] <- model[["itemsDropped"]]
@@ -461,15 +460,15 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   jaspResults[["itemTable"]] <- itemTable
   
   itemTable$position = 2
-	return()
+  return()
 }
 
 
 .BayesianReliabilityProbTable <- function(jaspResults, model, options) {
 
-  if (!is.null(jaspResults[["probTable"]]) || !options[["probTable"]]) {
-		return()
-  }
+  if (!is.null(jaspResults[["probTable"]]) || !options[["probTable"]]) 
+    return()
+  
 
   probTable <- createJaspTable(
     gettextf("Probability that Reliability Statistic is Larger than %.2f and Smaller than %.2f", 
@@ -480,31 +479,30 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   overTitle <- format("Probability",
                       digits = 3, drop0trailing = T)
   probTable$addColumnInfo(name = "statistic", title = "Statistic",   type = "string")
-	probTable$addColumnInfo(name = "prior",     title = "Prior", type = "number", overtitle = overTitle )
-	probTable$addColumnInfo(name = "posterior", title = "Posterior", type = "number", overtitle = overTitle )
-	
+  probTable$addColumnInfo(name = "prior",     title = "Prior", type = "number", overtitle = overTitle )
+  probTable$addColumnInfo(name = "posterior", title = "Posterior", type = "number", overtitle = overTitle )
 
   relyFit <- model[["relyFit"]]
-	derivedOptions <- model[["derivedOptions"]]
-	order    <- derivedOptions[["order"]]
-	order <- order[1:(length(order)-3)] # dont need avgCor, mean and sd 
-	opts     <- derivedOptions[["namesEstimators"]][["tables"]]
-	selected <- derivedOptions[["selectedEstimatorsPlots"]]
-	idxSelected  <- which(selected)
+  derivedOptions <- model[["derivedOptions"]]
+  order    <- derivedOptions[["order"]]
+  order <- order[1:(length(order)-3)] # dont need avgCor, mean and sd 
+  opts     <- derivedOptions[["namesEstimators"]][["tables"]]
+  selected <- derivedOptions[["selectedEstimatorsPlots"]]
+  idxSelected  <- which(selected)
 
 
 
-	if (!is.null(relyFit)) {
-	  n.item <- dim(relyFit$Bayes$covsamp)[3]
-	  prior <- Bayesrel:::priors[[as.character(n.item)]] 
-	  prior <- prior[order]
-	  end <- length(prior[[1]][["x"]])
-	  poslow <- end - sum(prior[[1]][["x"]] > options[["probTableValueLow"]]) 
-	  poshigh <- end - sum(prior[[1]][["x"]] > options[["probTableValueHigh"]]) 
-	  # since the priors are only available in density form, the prior probability for the estimator being larger than
-	  # a cutoff is given by caculating the relative probability of the density from the cutoff to 1.
-	  # maybe check this with someone though
-	  
+  if (!is.null(relyFit)) {
+    n.item <- dim(relyFit$Bayes$covsamp)[3]
+    prior <- Bayesrel:::priors[[as.character(n.item)]] 
+    prior <- prior[order]
+    end <- length(prior[[1]][["x"]])
+    poslow <- end - sum(prior[[1]][["x"]] > options[["probTableValueLow"]]) 
+    poshigh <- end - sum(prior[[1]][["x"]] > options[["probTableValueHigh"]]) 
+    # since the priors are only available in density form, the prior probability for the estimator being larger than
+    # a cutoff is given by caculating the relative probability of the density from the cutoff to 1.
+    # maybe check this with someone though
+    
     probsPost <- numeric(sum(selected))
     probsPrior <- numeric(sum(selected))
     z <- 1
@@ -531,8 +529,8 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 # -------------------------------------------- plots ---------------------------------
 .BayesianReliabilityPosteriorPlot <- function(jaspResults, model, options) {
 
-	if (!options[["plotPosterior"]])
-		return()
+  if (!options[["plotPosterior"]])
+    return()
 
   plotContainer <- jaspResults[["plotContainer"]]
   if (is.null(plotContainer)) {
@@ -545,52 +543,53 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     jaspResults[["plotContainer"]] <- plotContainer
   }
 
-	derivedOptions <- model[["derivedOptions"]]
-	order     <- derivedOptions[["order"]]
-	order <- order[1:(length(order)-3)] # dont need avgCor, mean and sd 
-	indices   <- which(derivedOptions[["selectedEstimatorsPlots"]])
-	nmsLabs   <- derivedOptions[["namesEstimators"]][["plots"]]
-	nmsObjs   <- derivedOptions[["namesEstimators"]][["tables"]]
+  derivedOptions <- model[["derivedOptions"]]
+  order     <- derivedOptions[["order"]]
+  order <- order[1:(length(order)-3)] # dont need avgCor, mean and sd 
+  indices   <- which(derivedOptions[["selectedEstimatorsPlots"]])
+  nmsLabs   <- derivedOptions[["namesEstimators"]][["plots"]]
+  nmsObjs   <- derivedOptions[["namesEstimators"]][["tables"]]
 
-	relyFit  <- model[["relyFit"]]
-	scaleCri <- model[["cri"]][["scaleCri"]]
-
-
-	if (options[["shadePlots"]] && options[["probTable"]]) {
-	  shadePlots <- c(options[["probTableValueLow"]], options[["probTableValueHigh"]])
-	} else {
-	  shadePlots <- NULL
-	}
+  relyFit  <- model[["relyFit"]]
+  scaleCri <- model[["cri"]][["scaleCri"]]
 
 
-	if (!is.null(relyFit)) {
-	  n.item <- dim(relyFit$Bayes$covsamp)[3]
-	  prior <- Bayesrel:::priors[[as.character(n.item)]][order] ##### change this when more estimators are included!!!
-	  
-	  for (i in indices) {
-	    if (is.null(plotContainer[[nmsObjs[i]]])) {
+  if (options[["shadePlots"]] && options[["probTable"]]) 
+    shadePlots <- c(options[["probTableValueLow"]], options[["probTableValueHigh"]])
+  else 
+    shadePlots <- NULL
+      
 
-	      p <- .BayesianReliabilityMakeSinglePosteriorPlot(relyFit, scaleCri, i, nmsLabs[[i]], options[["fixXRange"]],
-	                                                       shadePlots, options[["dispPrior"]], prior)
-	      plotObj <- createJaspPlot(plot = p, title = nmsObjs[i])
-	      plotObj$dependOn(options = names(indices[i]))
-	      plotObj$position <- i
-	      plotContainer[[nmsObjs[i]]] <- plotObj
 
-	    } 
-	  }
-	} else if (length(indices) > 0) {
-	  for (i in indices) {
-	    plotObj <- createJaspPlot(title = nmsObjs[i])
-	    plotObj$dependOn(options = names(indices[i]))
-	    plotObj$position <- i
-	    plotContainer[[nmsObjs[i]]] <- plotObj
-	  }
-	} else {
-	  plotContainer[["Posterior Plots"]] <- createJaspPlot()
-	}
+  if (!is.null(relyFit)) {
+    n.item <- dim(relyFit$Bayes$covsamp)[3]
+    prior <- Bayesrel:::priors[[as.character(n.item)]][order] ##### change this when more estimators are included!!!
+    
+      for (i in indices) {
+        if (is.null(plotContainer[[nmsObjs[i]]])) {
+
+                p <- .BayesianReliabilityMakeSinglePosteriorPlot(relyFit, scaleCri, i, nmsLabs[[i]], 
+                                                                 options[["fixXRange"]], shadePlots, 
+                                                                 options[["dispPrior"]], prior)
+                plotObj <- createJaspPlot(plot = p, title = nmsObjs[i])
+                plotObj$dependOn(options = names(indices[i]))
+                plotObj$position <- i
+                plotContainer[[nmsObjs[i]]] <- plotObj
+
+        } 
+      }
+  } else if (length(indices) > 0) {
+    for (i in indices) {
+      plotObj <- createJaspPlot(title = nmsObjs[i])
+      plotObj$dependOn(options = names(indices[i]))
+      plotObj$position <- i
+      plotContainer[[nmsObjs[i]]] <- plotObj
+    }
+  } else {
+    plotContainer[["Posterior Plots"]] <- createJaspPlot()
+    }
   plotContainer$position <- 5 
-	return()
+  return()
 }
 
 
@@ -604,86 +603,85 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   } else {
     d <- stats::density(relyFit$Bayes$samp[[i]], n = 2^10)
   }
-	datDens <- data.frame(x = d$x, y = d$y)
-	datPrior <- data.frame(x = pr$x, y = pr$y)
-	
+  datDens <- data.frame(x = d$x, y = d$y)
+  datPrior <- data.frame(x = pr$x, y = pr$y)
 
 
-	xBreaks <- JASPgraphs::getPrettyAxisBreaks(datDens$x)
 
-	# max height posterior is at 90% of plot area; remainder is for credible interval
-	ymax <- max(d$y) / .9
-	yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, ymax))
-	ymax <- max(yBreaks)
-	scaleCriRound <- round(scaleCri[[i]], 3)
-	datCri <- data.frame(xmin = scaleCriRound[1L], xmax = scaleCriRound[2L], y = .925 * ymax)
-	height <- (ymax - .925 * ymax) / 2
-	if (fixXRange) {
-	  if (datCri$xmin == datCri$xmax) { # if two zeros, the interval is merged together
-	    datTxt <- data.frame(x = c(datCri$xmin, datCri$xmax),
-	                         y = 0.985 * ymax,
-	                         label = sapply(c(datCri$xmin, datCri$xmax), format, digits = 3, scientific = -1),
-	                         stringsAsFactors = FALSE)
-	  } else {
-	    datTxt <- data.frame(x = c(datCri$xmin -.08, datCri$xmax + .08),
-	                         y = 0.985 * ymax,
-	                         label = sapply(c(datCri$xmin, datCri$xmax), format, digits = 3, scientific = -1),
-	                         stringsAsFactors = FALSE)
-	  }
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(datDens$x)
 
-	} else {
-	  datTxt <- data.frame(x = c(datCri$xmin, datCri$xmax),
-	                       y = 0.985 * ymax,
-	                       label = sapply(c(datCri$xmin, datCri$xmax), format, digits = 3, scientific = -1),
-	                       stringsAsFactors = FALSE)
-	}
+  # max height posterior is at 90% of plot area; remainder is for credible interval
+  ymax <- max(d$y) / .9
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, ymax))
+  ymax <- max(yBreaks)
+  scaleCriRound <- round(scaleCri[[i]], 3)
+  datCri <- data.frame(xmin = scaleCriRound[1L], xmax = scaleCriRound[2L], y = .925 * ymax)
+  height <- (ymax - .925 * ymax) / 2
+  if (fixXRange) {
+    if (datCri$xmin == datCri$xmax) { # if two zeros, the interval is merged together
+      datTxt <- data.frame(x = c(datCri$xmin, datCri$xmax),
+                           y = 0.985 * ymax,
+                           label = sapply(c(datCri$xmin, datCri$xmax), format, digits = 3, scientific = -1),
+                           stringsAsFactors = FALSE)
+    } else {
+      datTxt <- data.frame(x = c(datCri$xmin -.08, datCri$xmax + .08),
+                           y = 0.985 * ymax,
+                           label = sapply(c(datCri$xmin, datCri$xmax), format, digits = 3, scientific = -1),
+                           stringsAsFactors = FALSE)
+    }
+
+  } else {
+    datTxt <- data.frame(x = c(datCri$xmin, datCri$xmax),
+                         y = 0.985 * ymax,
+                         label = sapply(c(datCri$xmin, datCri$xmax), format, digits = 3, scientific = -1),
+                         stringsAsFactors = FALSE)
+  }
 
 
-	if (datCri$xmin[1L] < 0) {
-	  datCri$xmin[1L] <- 0
-	  datTxt$x[1L] <- 0
-	  datTxt$label[1L] <- "< 0"
-	} else if (datCri$xmin[1L] == 0) {
-	  datCri$xmin[1L] <- 0
-	  datTxt$x[1L] <- 0
-	  datTxt$label[1L] <- "0"
-	}
+  if (datCri$xmin[1L] < 0) {
+    datCri$xmin[1L] <- 0
+    datTxt$x[1L] <- 0
+    datTxt$label[1L] <- "< 0"
+  } else if (datCri$xmin[1L] == 0) {
+    datCri$xmin[1L] <- 0
+    datTxt$x[1L] <- 0
+    datTxt$label[1L] <- "0"
+  }
 
-	# if the bounds are less than 0.05 away from 0 or 1, expand the axis by 0.1 so the credible interval text does not
-	# get chopped off.
-	xExpand <- .1 * ((c(0, 1) - datTxt$x) <= 0.05)
-	if (fixXRange && max(datDens$y, na.rm=T) >= 1000) xExpand <- c(xExpand[1], .05)
-	# with large numebrs on the y-axis, the x-axis labels to the right get cut off sometimes, when the range is fixed
+  # if the bounds are less than 0.05 away from 0 or 1, expand the axis by 0.1 so the credible interval text does not
+  # get chopped off.
+  xExpand <- .1 * ((c(0, 1) - datTxt$x) <= 0.05)
+  if (fixXRange && max(datDens$y, na.rm=T) >= 1000) xExpand <- c(xExpand[1], .05)
+  # with large numebrs on the y-axis, the x-axis labels to the right get cut off sometimes, when the range is fixed
 
-	g <- ggplot2::ggplot(data = datDens, mapping = ggplot2::aes(x = x, y = y)) +
-		ggplot2::geom_line(size = .85) +
-		ggplot2::geom_errorbarh(data = datCri, mapping = ggplot2::aes(xmin = xmin, xmax = xmax, y = y),
-		                        height = height, inherit.aes = FALSE) +
-	ggplot2::geom_text(data = datTxt, mapping = ggplot2::aes(x = x, y = y, label = label), inherit.aes = FALSE, 
-	                   size = 5) +
-	ggplot2::scale_y_continuous(name = gettext("Density"), breaks = yBreaks, limits = range(yBreaks)) +
+  g <- ggplot2::ggplot(data = datDens, mapping = ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_line(size = .85) +
+    ggplot2::geom_errorbarh(data = datCri, mapping = ggplot2::aes(xmin = xmin, xmax = xmax, y = y),
+                            height = height, inherit.aes = FALSE) +
+    ggplot2::geom_text(data = datTxt, mapping = ggplot2::aes(x = x, y = y, label = label), inherit.aes = FALSE, 
+                       size = 5) +
+    ggplot2::scale_y_continuous(name = gettext("Density"), breaks = yBreaks, limits = range(yBreaks)) +
   ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, expand = xExpand, limits = range(xBreaks))
 
-	
-	if (!is.null(shade)) {
-	  datFilter <- datDens[datDens[["x"]] >= shade[1] & datDens[["x"]] <= shade[2], ]
-	  g <- g + ggplot2::geom_ribbon(data = datFilter, mapping = ggplot2::aes(ymin = 0, ymax = y), 
-	                                fill = "grey", alpha = 0.95) +
-	           ggplot2::geom_line(size = .85)
-	}
-	
-	if (priorTrue) {
-	  g <- g + ggplot2::geom_line(data = datPrior, mapping = ggplot2::aes(x = x, y = y),
-	                              linetype = "dashed", size = .85) +
-	           ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, limits = range(xBreaks), 
-	                                       expand = xExpand)
-	  
-	}
+  if (!is.null(shade)) {
+    datFilter <- datDens[datDens[["x"]] >= shade[1] & datDens[["x"]] <= shade[2], ]
+    g <- g + ggplot2::geom_ribbon(data = datFilter, mapping = ggplot2::aes(ymin = 0, ymax = y), 
+                                  fill = "grey", alpha = 0.95) +
+      ggplot2::geom_line(size = .85)
+  }
 
-	
+  if (priorTrue) {
+    g <- g + ggplot2::geom_line(data = datPrior, mapping = ggplot2::aes(x = x, y = y),
+                                linetype = "dashed", size = .85) +
+      ggplot2::scale_x_continuous(name = nms, breaks = xBreaks, limits = range(xBreaks), 
+                                  expand = xExpand)
+    
+  }
 
 
-	return(JASPgraphs::themeJasp(g))
+
+
+  return(JASPgraphs::themeJasp(g))
 
 }
 

@@ -210,7 +210,7 @@ Form
 			CheckBox 
             {
                 id:                 probTable
-                name:               "probTable";
+                name:               "probTable"
                 label:              qsTr("Probability for:")
                 childrenOnSameRow:  true
 
