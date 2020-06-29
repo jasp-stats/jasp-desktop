@@ -293,24 +293,24 @@ Form
 					name: 		"planningModel"
 					enabled:	!pasteVariables.checked
 
-					RadioButton 
-					{ 
+					RadioButton
+					{
 						text: qsTr("Binomial")
 						name: "binomial"
-						id: binomial		
-						checked: true 
+						id: binomial
+						checked: true
 					}
 
-					RadioButton { 
-						text: qsTr("Poisson")        
-						name: "Poisson" 
-						id: poisson			
+					RadioButton {
+						text: qsTr("Poisson")
+						name: "Poisson"
+						id: poisson
 					}
 
-					RadioButton { 
-						text: qsTr("Hypergeometric") 
-						name: "hypergeometric" 
-						id: hypergeometric	
+					RadioButton {
+						text: qsTr("Hypergeometric")
+						name: "hypergeometric"
+						id: hypergeometric
 					}
 				}
 
@@ -491,39 +491,34 @@ Form
 					id: 	selectionType
 					title:	qsTr("Sampling Units")
 					name: 	"selectionType"
+					columns: 2
 
-					RowLayout
+					RadioButton
 					{
-						RadioButton
-						{
-							id: 		musSampling
-							text: 		qsTr("Monetary unit sampling")
-							name: 		"musSampling"
-							enabled: 	monetaryVariable.count > 0
-							checked: 	true
-						}
-
-						HelpButton
-						{
-							helpPage:			"Audit/monetaryUnitSampling"
-							toolTip: 			qsTr("Select observations with probability proportional to their value")
-						}
+						id: 		musSampling
+						text: 		qsTr("Monetary unit sampling")
+						name: 		"musSampling"
+						enabled: 	monetaryVariable.count > 0
+						checked: 	true
 					}
 
-					RowLayout
+					HelpButton
 					{
-						RadioButton
-						{
-							id: 	recordSampling
-							text: 	qsTr("Record sampling")
-							name: 	"recordSampling"
-						}
+						helpPage:			"Audit/monetaryUnitSampling"
+						toolTip: 			qsTr("Select observations with probability proportional to their value")
+					}
 
-						HelpButton
-						{
-							toolTip: 			qsTr("Select observations with equal probability")
-							helpPage:			"Audit/recordSampling"
-						}
+					RadioButton
+					{
+						id: 	recordSampling
+						text: 	qsTr("Record sampling")
+						name: 	"recordSampling"
+					}
+
+					HelpButton
+					{
+						toolTip: 			qsTr("Select observations with equal probability")
+						helpPage:			"Audit/recordSampling"
 					}
 				}
 
@@ -532,54 +527,46 @@ Form
 					id: 	selectionMethod
 					title:	qsTr("Selection Method")
 					name: 	"selectionMethod"
+					columns: 2
 
-					RowLayout
+					RadioButton
 					{
-						RadioButton
-						{
-							id: 	randomSampling
-							text: 	qsTr("Random sampling")
-							name: 	"randomSampling"
-						}
-
-						HelpButton
-						{
-							toolTip: 			qsTr("Select observations by random sampling")
-							helpPage:			"Audit/randomSampling"
-						}
+						id: 	randomSampling
+						text: 	qsTr("Random sampling")
+						name: 	"randomSampling"
 					}
 
-					RowLayout
+					HelpButton
 					{
-						RadioButton
-						{
-							id: 	cellSampling
-							text: 	qsTr("Cell sampling")
-							name: 	"cellSampling"
-						}
-
-						HelpButton
-						{
-							toolTip: 	qsTr("Select observations by cell sampling")
-							helpPage:	"Audit/cellSampling"
-						}
+						toolTip: 			qsTr("Select observations by random sampling")
+						helpPage:			"Audit/randomSampling"
 					}
 
-					RowLayout
+					RadioButton
 					{
-						RadioButton
-						{
-							id: 		systematicSampling
-							text: 		qsTr("Fixed interval sampling")
-							name: 		"systematicSampling"
-							checked: 	true
-						}
+						id: 	cellSampling
+						text: 	qsTr("Cell sampling")
+						name: 	"cellSampling"
+					}
 
-						HelpButton
-						{
-							toolTip: 	qsTr("Select observations by fixed interval sampling")
-							helpPage:	"Audit/fixedIntervalSampling"
-						}
+					HelpButton
+					{
+						toolTip: 	qsTr("Select observations by cell sampling")
+						helpPage:	"Audit/cellSampling"
+					}
+
+					RadioButton
+					{
+						id: 		systematicSampling
+						text: 		qsTr("Fixed interval sampling")
+						name: 		"systematicSampling"
+						checked: 	true
+					}
+
+					HelpButton
+					{
+						toolTip: 	qsTr("Select observations by fixed interval sampling")
+						helpPage:	"Audit/fixedIntervalSampling"
 					}
 				}
 
@@ -846,7 +833,7 @@ Form
 				Layout.fillWidth: 	true
 				modelType:					"FilteredDataEntryModel"
 				source:     				["recordNumberVariable", "monetaryVariable", "additionalVariables"]
-        colName:						"Filter"
+		colName:						"Filter"
 				itemType:						"double"
 			}
 		}
@@ -968,62 +955,62 @@ Form
 						}
 					}
 
-					RadioButton 
-					{ 
-						name: "directBound"		
-						text: qsTr("Direct") 			
-						id: directBound		
-						visible: recordSampling.checked && 
-											variableTypeAuditValues.checked && 
-											evaluationChecked.checked 
+					RadioButton
+					{
+						name: "directBound"
+						text: qsTr("Direct")
+						id: directBound
+						visible: recordSampling.checked &&
+											variableTypeAuditValues.checked &&
+											evaluationChecked.checked
 					}
-					
-					RadioButton 
-					{ 
+
+					RadioButton
+					{
 						name: "differenceBound"
 						text: qsTr("Difference")
 						id: differenceBound
-						visible: directBound.visible 
+						visible: directBound.visible
 					}
 
-					RadioButton 
-					{ 
+					RadioButton
+					{
 						name: "ratioBound"
 						text: qsTr("Ratio")
 						id: ratioBound
-						visible: directBound.visible 
+						visible: directBound.visible
 					}
 
-					RadioButton 
-					{ 
+					RadioButton
+					{
 						name: "regressionBound"
 						text: qsTr("Regression")
 						id: regressionBound
-						visible: directBound.visible 
+						visible: directBound.visible
 					}
-					
-					RadioButton 
-					{ 
+
+					RadioButton
+					{
 						name: "binomialBound"
 						text: qsTr("Binomial")
 						id: binomialBound
 						visible: variableTypeCorrect.checked && binomial.checked
 					}
-					
-					RadioButton 
-					{ 
+
+					RadioButton
+					{
 						name: "poissonBound"
 						text: qsTr("Poisson")
 						id: poissonBound
 						visible: variableTypeCorrect.checked && poisson.checked
 					}
-					
-					RadioButton 
-					{ 
+
+					RadioButton
+					{
 						name: "hyperBound"
 						text: qsTr("Hypergeometric")
 						id: hyperBound
-						visible: variableTypeCorrect.checked && hypergeometric.checked 
+						visible: variableTypeCorrect.checked && hypergeometric.checked
 					}
 				}
 			}
@@ -1053,17 +1040,17 @@ Form
 				{
 					title: qsTr("Plots")
 
-					CheckBox 
-					{ 
+					CheckBox
+					{
 						text: qsTr("Evaluation information")
-						name: "evaluationInformation" 												
+						name: "evaluationInformation"
 					}
 
-					CheckBox 
-					{ 
+					CheckBox
+					{
 						text: qsTr("Correlation plot")
 						name: "correlationPlot"
-						visible: variableTypeAuditValues.checked 	
+						visible: variableTypeAuditValues.checked
 					}
 				}
 			}
