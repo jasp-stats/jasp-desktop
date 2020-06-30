@@ -32,14 +32,12 @@ The input data needs to contain the following elements:
     - Relative Risk: the ratio of the latent "success" probabilities in the experimental and control condition
     - Absolute Risk: the difference of the "success" probability in the experimental and control condition
     - p1&p2: the marginal posteriors of the latent "success" probabilities in the experimental and control condition
-    - p1
-    - p2
 
     (In addition, posterior median and central credible interval are also displayed in the plot)
   - Sequential analysis: Displays the development of posterior probabilities as the data come in. The probability wheels visualize prior and posterior probabilities of the hypotheses.
   - Bayes factor robustness check: Displays the prior sensitivity analysis.
      - Bayes factor type: Specifies which Bayes factor is plotted. Options include "BF10", "BF+0" and "BF-0".
-  - Prior: Plot parameter prior distributions. Available quantities are the same as mentioned for Prior and posterior plot.
+  - Prior: Plot parameter prior distributions. The available quantities are the same as the ones mentioned for the Prior and posterior plot with the additional possibility of displaying p1 and p2 separately.
 
 
 #### Normal prior on Log Odds Ratio

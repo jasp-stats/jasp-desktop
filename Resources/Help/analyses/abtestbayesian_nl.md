@@ -30,14 +30,12 @@ De ingevoerde data moet de volgende elementen bevatten:
     - Relatief risico: de ratio van de onderliggende succeskansen in de experimentele- en controleconditie.
 	- Absoluut risico: het verschil tussen de succeskansen in de experimentele- en controleconditie. 
     - p1&p2: de marginale posteriors van de latente succeskansen in de experimentele- en controleconditie.
-    - p1
-    - p2
 
 	(Aanvullend aan deze opties worden de mediaan en het centrale geloofwaardigheidsinterval van de posterior ook weergegeven in de grafiek.)
   - Sequentiële analyse: Geeft de ontwikkeling van de posterior terwijl de data binnenkomt. De kanswielen geven de prior en posterior kansen op de hypothese weer.
   - Bayes Factor robuustheidscheck: Geeft een analyse van de gevoeligheid voor de prior.
     - Bayes factor type: Bepaal het type Bayes factor dat weergegeven wordt in de grafiek. De mogelijkheden zijn "BF10", "BF+0" en "BF-0".
-  - Prior: Maakt een grafiek van de prior verdelingen van de parameters. Beschikbare grootheden zijn hetzelfde als voor de prior en posterior grafiek.
+  - Prior: Maakt een grafiek van de prior verdelingen van de parameters. De beschikbare grootheden zijn hetzelfde als voor de prior en posterior grafiek met de extra mogelijkheid om p1 and p2 apart weer te geven.
 
 #### Normale a priori verdeling voor de log odds ratio
 Staat toe dat een gemiddelde an standaardafwijking van de normale prior voor test-relevante log odds ratio wordt gespecificeerd.
