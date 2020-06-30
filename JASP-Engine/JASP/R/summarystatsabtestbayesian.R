@@ -18,7 +18,7 @@
 
 SummaryStatsABTestBayesian <- function(jaspResults, dataset = NULL, options) {
   
-  ready <- (options$n1 != 0 && options$y1 != 0 && options$n2 != 0 && options$y2 != 0)
+  ready <- options$n1 != 0 && options$n2 != 0
   
   ### READ DATA                ###
   if (ready)
