@@ -2635,7 +2635,7 @@
         temp_table$addFootnote(.mmMessageMaxRhat(max_Rhat), symbol = gettext("Warning:"))
       }
       if (min_ESS < 100 * options$chains || is.nan(min_ESS)) {
-        temp_table$addFootnote(.mmMessageMinESS(min_ESS), symbol = gettext("Warning:"))
+        temp_table$addFootnote(.mmMessageMinESS(min_ESS, 100 * options$chains), symbol = gettext("Warning:"))
       }
       
       removed_me <- jaspResults[["mmModel"]]$object$removed_me
@@ -3081,7 +3081,7 @@
                           "link")
 # texts and messages
 .mmMessageInterpretability <-
-  gettext("The intercept corresponds to the (unweighted) grand mean and for each factor with k levels k - 1 parameters are added. Thus, estimates shown here cannot be mapped 1 to 1 to factors with more than two levels (as no such mapping exists). For factors with two levels, corresponding estimates represent half the difference between the factor levels, for factors with more than two levels estimates should not be interpreted!")
+  gettext("The intercept corresponds to the (unweighted) grand mean; for each factor with k levels, k - 1 parameters are estimated. Consequently, the estimates cannot be directly mapped to factor levels.")
 .mmMessageSingularFit <-
   gettext("Model fit is singular. Specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Carefully reduce the random effects structure, but be aware this may induce unknown risks of anti-conservative results (i.e., p-values might be lower than nominal).")
 .mmMessageVovkSellke <-
@@ -3204,8 +3204,8 @@
   sprintf(
     ngettext(
       iterations,
-      "There was %i divergent transition after burnin indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions.",
-      "There were %i divergent transitions after burnin indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions."
+      "The Hamiltonian Monte Carlo procedure might be invalid -- There was %i divergent transition after warmup. This can be solved by carefully increasing 'Adapt delta' until there are no divergent transitions.",
+      "The Hamiltonian Monte Carlo procedure might be invalid -- There were %i divergent transitions after warmup. This can be solved by carefully increasing 'Adapt delta' until there are no divergent transitions."
     ),
     iterations
   )
@@ -3224,30 +3224,31 @@
   sprintf(
     ngettext(
       iterations,
-      "There was %i transition exceeding maximum tree depth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum tree depth'.",
-      "There were %i transitions exceeding maximum tree depth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum tree depth'."
+      "The Hamiltonian Monte Carlo procedure might be inefficient -- %i transition exceeded the maximum tree depth. This can be solved by carefully increasing 'Maximum tree depth",
+      "The Hamiltonian Monte Carlo procedure might be inefficient -- %i transitions exceeded the maximum tree depth. This can be solved by carefully increasing 'Maximum tree depth"
     ),
     iterations
   )
 }
 .mmMessageMaxRhat       <- function(Rhat) {
   gettextf(
-    "The largest R-hat is %.3f, indicating that chains have not mixed properly. Running chains for more iterations or increasing 'Adapt delta' may help.",
+    "Inference possibly unreliable -- MCMC chains might not have converged; The largest R-hat is %.3f > 1.01. To lower R-hat please increase 'Iterations', or 'Adapt delta' in the Options section.",
     Rhat
   )
 }
-.mmMessageMinESS        <- function(ESS) {
+.mmMessageMinESS        <- function(ESS, treshold) {
   gettextf(
-    "The smallest Effective Sample Size (ESS) is %.2f, indicating that low estimation accuracy. Running chains for more iterations or increasing 'Adapt delta' may help.",
-    ESS
+    "Low estimation accuracy -- The smallest Effective Sample Size (ESS) is %.2f < %1.0f. To increase accuracy please increase 'Iterations', or 'Adapt delta' in the Options section.",
+    ESS,
+    treshold
   )
 }
 .mmMessageBadWAIC       <- function(n_bad) {
   sprintf(
     ngettext(
       n_bad,
-      "There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO instead.",
-      "There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO instead."
+      "WAIC estimate unreliable -- There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO instead.",
+      "WAIC estimate unreliable -- There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO instead."
     ),
     n_bad
   )
@@ -3256,8 +3257,8 @@
   sprintf(
     ngettext(
       n_bad,
-      "There was %1.0f observation with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate.",
-      "There were %1.0f observations with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate."
+      "LOO estimate unreliable -- There was %1.0f observation with the shape parameter (k) of the generalized Pareto distribution higher than > .5.",
+      "LOO estimate unreliable -- There were %1.0f observations with the shape parameter (k) of the generalized Pareto distribution higher than > .5."
     ),
     n_bad
   )
