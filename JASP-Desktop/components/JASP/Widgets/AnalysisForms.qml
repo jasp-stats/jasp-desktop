@@ -7,7 +7,7 @@ import JASP.Controls	1.0
 FocusScope
 {
 	id:				analysisFormsFocusScope
-	implicitWidth:	extraSpace + (analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + jaspTheme.scrollbarBoxWidth : 0)
+	implicitWidth:	extraSpace + (analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + verticalScrollbar.width : 0)
 	width:			implicitWidth
 
 	property int	extraSpace:	analysesModel.count > 0 ? openCloseButton.width : 0
@@ -74,9 +74,9 @@ FocusScope
 				onArrowClicked:			analysesModel.visible = !analysesModel.visible
 				anchors
 				{
-					fill:			parent
-					leftMargin:		openCloseButton.border.width
-					rightMargin:	openCloseButton.border.width
+					fill:				parent
+					leftMargin:			openCloseButton.border.width
+					rightMargin:		openCloseButton.border.width
 				}
 				toolTipDrag:			mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? qsTr("Resize data/results")  : qsTr("Drag to show data")) : ""
 				toolTipArrow:			analysesModel.visible		? qsTr("Hide input options") : qsTr("Show input options")
@@ -89,6 +89,7 @@ FocusScope
 			id:				scrollAnalyses
 			visible:		analysisFormsFocusScope.width > analysisFormsFocusScope.extraSpace
 			z:				2
+			clip:			true
 
 			anchors
 			{
@@ -120,12 +121,16 @@ FocusScope
 				contentWidth:	analysesColumn.width
 				contentHeight:	analysesColumn.height
 				boundsBehavior: Flickable.StopAtBounds
-				clip:			true
+				width:			jaspTheme.formWidth
 
 				anchors
 				{
-					fill:			parent
-					rightMargin:	verticalScrollbar.width
+					//fill:			parent
+					//rightMargin:	verticalScrollbar.width
+					top:			parent.top
+					left:			parent.left
+					bottom:			parent.bottom
+					margins:		formsBackground.border.width
 				}
 
 				Behavior on contentY
