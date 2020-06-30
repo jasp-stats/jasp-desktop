@@ -1,6 +1,6 @@
 setwd('./flatpak')
 source('gather-r-package-info.R')
-installRequiredPackages()
+installRequiredPackages(FALSE)
 
 # For anybody that wants to install all R packages in a custom directory, try the script below:
 #
