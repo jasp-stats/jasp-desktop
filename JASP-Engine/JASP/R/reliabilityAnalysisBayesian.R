@@ -64,19 +64,35 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 .reliabilityCheckErrors <- function(dataset, options) {
 
-  .hasErrors(dataset = dataset, perform = "run",
+  # check for existing inverse
+  .checkInverse <- function() {
+    if (length(options[["variables"]]) > 2) {
+      use.cases <- "everything"
+      if (any(is.na(dataset))) {
+        if (options[["missingValues"]] == "excludeCasesPairwise") 
+          use.cases <- "pairwise.complete.obs"
+        else if (options[["missingValues"]] == "excludeCasesListwise")
+          use.cases <- "complete.obs"
+      }
+      if (!("matrix" %in% class(try(solve(cov(dataset, use = use.cases)),silent=TRUE)))) {
+        return(gettext("Data covariance matrix is not invertible"))
+      } else {
+        return(NULL)
+      }
+        
+    } else {
+      return(NULL)
+    }
+  }
+
+  .hasErrors(dataset = dataset, options = options, perform = "run",
              type = c("infinity", "variance", "observations", "varCovData"),
              observations.amount = " < 3",
-             custom = .checkEigen,
+             custom = .checkInverse,
              exitAnalysisIfErrors = TRUE)
   
 }
-# check for negative eigenvalues, positive semidefiniteness
-.checkEigen <- function() {
-  if (any(eigen(cov(x))$values < 0)) {
-    return(gettext("Data covariance matrix is not positive semidefinite"))
-  }
-}
+
 
 .reliabilityCheckLoadings <- function(dataset, variables) {
   if (ncol(dataset > 2)) {

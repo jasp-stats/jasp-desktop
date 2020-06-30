@@ -1,6 +1,5 @@
 reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
-
   
   dataset <- .reliabilityReadData(dataset, options)
   .reliabilityCheckErrors(dataset, options)
