@@ -28,6 +28,11 @@ The independent samples t-test allows the user to estimate the effect size and t
 -  BF01 : Bayes factor to quantify evidence for the null hypothesis relative to the alternative hypothesis.
 -  Log(BF10) : Natural logarithm of BF10.
 
+#### Tests 
+- Student: Student's t-test. This option is selected by default. 
+- Mann-Whitney: Mann-Whitney test. 
+  - No. samples: The number of MCMC samples to use.
+  
 #### Additional Statistics
 -  Descriptives : Sample size, sample mean, sample standard deviation, standard error of the mean for each group.
 
@@ -67,6 +72,8 @@ The independent samples t-test allows the user to estimate the effect size and t
   - BF0+: Bayes factor that quantifies evidence for the null hypothesis, relative to the one-sided alternative hypothesis that group one > group two.
   - BF0-: Bayes factor that quantifies evidence for the null hypothesis, relative to the one-sided alternative hypothesis that group one < group two.
 - error %: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor.
+- W: The test statistic of the Wilcoxon test.
+- Rhat: A measure of MCMC convergence for the Wilcoxon test. The ratio of within chain variance and total variance of the MCMC chains for the delta parameter. Values equal to 1 indicate convergence.
 
 #### Group Descriptives
 - N: Sample size.
@@ -90,7 +97,8 @@ The independent samples t-test allows the user to estimate the effect size and t
 - Jeffreys, H. (1961).  *Theory of probability (3rd ed.)*. Oxford, UK: Oxford University Press.
 - Morey, R. D., Rouder, J. N., Pratte, M. S., & Speckman, P. L. (2011). Using MCMC chain outputs to efficiently estimate Bayes factors.  *Journal of Mathematical Psychology, 55*, 368-378.
 - Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis.  *Psychonomic Bulletin & Review, 16*, 225-237.
-- van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2019). Bayesian Rank-Based Hypothesis Testing for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Manuscript submitted for publication and uploaded to arXiv: <a href="https://arxiv.org/abs/1712.06941">https://arxiv.org/abs/1712.06941</a> 
+- van Doorn, J, Ly, A, Marsman, M, & Wagenmakers, E.-J. (2020). Bayesian rank-based hypothesis testing for the rank sum test, the signed rank test, and Spearman's rho. *Journal of Applied Statistics*.
+
 
 
 ### R Packages

@@ -231,7 +231,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
   if (derivedOptions[["wilcoxTest"]]) {
     jaspTable$addColumnInfo(name = "error", type = "number", title = "W")
-    jaspTable$addColumnInfo(name = "rHat", type = "number", title = "R<sup>2</sup>")
+    jaspTable$addColumnInfo(name = "rHat", type = "number", title = "Rhat")
     jaspTable$addFootnote(gettextf("Result based on data augmentation algorithm with 5 chains of %.0f iterations.", options[["wilcoxonSamplesNumber"]]))
   } else {
     if (options[["hypothesis"]] == "notEqualToTestValue") {

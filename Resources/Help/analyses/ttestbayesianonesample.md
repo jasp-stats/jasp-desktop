@@ -26,6 +26,11 @@ Test value specified in the null hypothesis.
 - BF01: Bayes factor to quantify evidence for the null hypothesis relative to the alternative hypothesis.
 - Log(BF10): Natural logarithm of BF10.
 
+#### Tests 
+- Student: Student's t-test. This option is selected by default. 
+- Wilcoxon signed-rank: Wilcoxon signed-rank test. 
+  - No. samples: The number of MCMC samples to use.
+
 #### Prior
 - Standardized effect size
   - Default
@@ -65,13 +70,15 @@ Test value specified in the null hypothesis.
 
 #### Bayesian One Sample T-Test
 - Bayes factor: If one-sided test is requested:
-  - BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is larger than the test value
-  - BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is smaller than the test value
+  - BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is larger than the test value.
+  - BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is smaller than the test value.
   - BF0+: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that the population mean is larger
-   than the test value
+   than the test value.
   - BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that that the population mean is
-  smaller than the test value
-- error %: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor
+  smaller than the test value.
+- error %: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor.
+- W: The test statistic of the signed rank test.
+- Rhat: A measure of MCMC convergence for the signed rank test. The ratio of within chain variance and total variance of the MCMC chains for the delta parameter. Values equal to 1 indicate convergence.
 
 #### Descriptives
 - N: Sample size
@@ -94,6 +101,7 @@ Test value specified in the null hypothesis.
 - Jeffreys, H. (1961). *Theory of probability (3rd ed.)*. Oxford, UK: Oxford University Press.
 - Morey, R. D., Rouder, J. N., Pratte, M. S., & Speckman, P. L. (2011). Using MCMC chain outputs to efficiently estimate Bayes factors. *Journal of Mathematical Psychology, 55*, 368-378.
 - Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis. *Psychonomic Bulletin & Review, 16*, 225-237.
+- van Doorn, J, Ly, A, Marsman, M, & Wagenmakers, E.-J. (2020). Bayesian rank-based hypothesis testing for the rank sum test, the signed rank test, and Spearman's rho. *Journal of Applied Statistics*.
 
 ### R-packages 
 ---

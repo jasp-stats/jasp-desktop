@@ -24,6 +24,11 @@ Met de gepaarde t-toets kan de gebruiker de effectgrootte schatten en de nulhypo
 -  BF01: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. 
 -  Log(BF10): Natuurlijk logaritme van BF10. 
 
+#### Toetsen
+- Student: De student t-toets. Dit is de standaardoptie. 
+- Wilcoxon rangtekentoets: Wilcoxon rangtekentoets. 
+  - Aantal steekproeven: Het aantal MCMC steekproeven.
+
 #### Aanvullende Statistieken
 -  Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaardafwijking, standaardfout van het gemiddelde voor iedere maat.
 
@@ -57,6 +62,8 @@ Met de gepaarde t-toets kan de gebruiker de effectgrootte schatten en de nulhypo
   - BF0+: De Bayes factor die bewijs geeft voor de nulhypothese, ten opzichte van de eenzijdige alternatieve hypothese dat het verschil groter is dan 0.
   - BF0-: De Bayes factor die bewijs geeft voor de nulhypothese, ten opzichte van de eenzijdige alternatieve hypothese dat het verschil kleiner is dan 0.
 - error %: De fout van de Gaussiaanse kwadratuur intergratie methode die wordt gebruikt op de Bayes factor te berekenen.
+- W: The toets statistiek van de rangtekentoets.
+- Rhat: Indicatie van convergentie voor de rangtekentoets. De ratio van variantie binnen elke MCMC keten, en de totale variantie van de MCMC ketens voor de delta parameter. Waarden gelijk aan 1 duiden op convergentie.
 
 #### Beschrijvende Statistiek
 - N: De steekproefgrootte.
@@ -79,6 +86,7 @@ Met de gepaarde t-toets kan de gebruiker de effectgrootte schatten en de nulhypo
 - Jeffreys, H. (1961). *Theory of probability (3rd ed.)*. Oxford, UK: Oxford University Press.
 - Morey, R. D., Rouder, J. N., Pratte, M. S., & Speckman, P. L. (2011). Using MCMC chain outputs to efficiently estimate Bayes factors. *Journal of Mathematical Psychology, 55*, 368-378.
 - Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis. *Psychonomic Bulletin & Review, 16*, 225-237.
+- van Doorn, J, Ly, A, Marsman, M, & Wagenmakers, E.-J. (2020). Bayesian rank-based hypothesis testing for the rank sum test, the signed rank test, and Spearman's rho. *Journal of Applied Statistics*.
 
 ### R-packages 
 ---
