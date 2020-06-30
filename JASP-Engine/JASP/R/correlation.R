@@ -396,7 +396,7 @@ Correlation <- function(jaspResults, dataset, options){
         result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, obsCor = result$estimate,
                                                                    hypothesis = alternative, confLevel = conf.level,
                                                                    method = method)
-      } else if(method != "pearson"){
+      } else if(is.null(result$conf.int)){
         result$conf.int <- c(NA, NA)
       }
       
