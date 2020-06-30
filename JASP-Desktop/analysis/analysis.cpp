@@ -383,9 +383,10 @@ Json::Value Analysis::asJSON() const
 	return analysisAsJson;
 }
 
-void Analysis::loadExtraFromJSON(Json::Value & options)
+void Analysis::loadExtraFromJSON(Json::Value & analysisData)
 {
-	_titleDefault = options.get("titleDef", _titleDefault).asString();
+	_titleDefault	= analysisData.get("titleDef", _titleDefault).asString();
+	_oldVersion		= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();
 	//The rest is already taken in from Analyses::createFromJaspFileEntry
 }
 
@@ -749,12 +750,12 @@ void Analysis::fitOldUserDataEtc()
 	_tryToFixNotes = false;
 
 	try {
-
 		const Json::Value & currMetaData = _results.get(".meta", Json::arrayValue);
 
 		std::map<std::string, std::string> oldToNew;
 
-		if(module() == "ANOVA")
+		//Only do special fix for older ANOVA's
+		if(module() == "ANOVA" && Modules::Version(_oldVersion) < Modules::Version("0.12"))
 		{
 			//Gotta do some manual repairing for https://github.com/jasp-stats/jasp-test-release/issues/649
 			//All of these replacements are based on the unittests.

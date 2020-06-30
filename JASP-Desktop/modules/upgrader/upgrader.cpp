@@ -103,6 +103,8 @@ bool Upgrader::upgradeAnalysisData(Json::Value & analysis, UpgradeMsgs & msgs) c
 {
 	StepsTaken	stepsTaken;
 
+	analysis["preUpgradeVersion"] = analysis["version"];
+
 	try
 	{
 		_upgradeOptionsFromJaspFile(analysis, msgs, stepsTaken);

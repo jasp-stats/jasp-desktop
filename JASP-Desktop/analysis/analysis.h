@@ -228,6 +228,7 @@ protected:
 							_progress		= Json::nullValue,
 							_oldUserData	= Json::nullValue,
 							_oldMetaData	= Json::nullValue;
+	std::string				_oldVersion		= "0";
 
 private:
 	size_t					_id,
