@@ -2777,7 +2777,8 @@
         p <- JASPgraphs::themeJasp(p)
       }
       if (options$samplingPlot == "stan_trace") {
-        p <- p + ggplot2::labs(y = var_name)
+        p <- p + ggplot2::labs(y = var_name) + 
+          ggplot2::theme(plot.margin = ggplot2::margin(r = 10 * (nchar(options$iteration - options$warmup) - 2)))
       }
       plots$plotObject <- p
       
@@ -2922,9 +2923,11 @@
   
   graph <-
     base + ggplot2::geom_path() + ggplot2::scale_color_manual(values = clrs) +
-    ggplot2::labs(x = "", y = "") + thm
-  
-  graph <- graph + ggplot2::ylab(unique(plot_data$samp$parameter))
+    ggplot2::labs(x = "", y = unique(plot_data$samp$parameter)) + thm
+
+  graph <- graph + ggplot2::scale_x_continuous(
+    breaks = JASPgraphs::getPrettyAxisBreaks(c(1,max(plot_data$samp$iteration))))
+
   
   graph
 }
