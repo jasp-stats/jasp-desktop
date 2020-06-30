@@ -2097,8 +2097,7 @@
     mmModel$dependOn(dependencies)
     
     model_formula <- .mmModelFormula(options, dataset)
-    
-    JASP:::.setSeedJASP(options)
+
     if (type == "BLMM") {
       model <- stanova::stanova_lmer(
         formula           = as.formula(model_formula$model_formula),
@@ -2108,7 +2107,8 @@
         iter              = options$iteration,
         warmup            = options$warmup,
         adapt_delta       = options$adapt_delta,
-        control           = list(max_treedepth = options$max_treedepth)
+        control           = list(max_treedepth = options$max_treedepth),
+        seed              = if (isTRUE(options[["setSeed"]])) set.seed(options[["seed"]])
       )
       
     } else if (type == "BGLMM") {
@@ -2137,7 +2137,8 @@
           adapt_delta       = options$adapt_delta,
           control           = list(max_treedepth = options$max_treedepth),
           weights           = glmm_weight,
-          family            = eval(call("binomial", glmm_link))
+          family            = eval(call("binomial", glmm_link)),
+          seed              = if (isTRUE(options[["setSeed"]])) set.seed(options[["seed"]])
         )
         
       } else{
@@ -2150,7 +2151,8 @@
           warmup            = options$warmup,
           adapt_delta       = options$adapt_delta,
           control           = list(max_treedepth = options$max_treedepth),
-          family            = glmm_family
+          family            = glmm_family,
+          seed              = if (isTRUE(options[["setSeed"]])) set.seed(options[["seed"]])
         )
         
       }
