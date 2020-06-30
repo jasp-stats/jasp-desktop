@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2020-06-24 13:22\n"
+"POT-Creation-Date: 2020-06-30 14:06\n"
 "PO-Revision-Date: 2020-01-29 14:35\n"
 "Last-Translator: JASP <info@jasp-stats.org>\n"
 "Language-Team: JASP <info@jasp-stats.org>\n"
@@ -13,13 +13,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n==0 ? 0 : n==1 ? 0 : 1\n"
 
 msgid ""
-"Problem found in variable '%s': Categorical variables must have less levels "
-"than is the overall number of observations."
+"The categorical fixed effect '%s' must have fewer levels than the overall "
+"number of observations."
 msgstr ""
 
 msgid ""
-"The random effects grouping factor '%s' must have less levels than is the "
+"The random effects grouping factor '%s' must have fewer levels than the "
 "overall number of observations."
+msgstr ""
+
+msgid ""
+"The number of iterations must be at least 2 iterations higher than the "
+"warmup."
 msgstr ""
 
 msgid "%s requres that the dependent variable is positive."
@@ -48,11 +53,19 @@ msgid "ANOVA Summary"
 msgstr "Model Samenvatting"
 
 msgid ""
-"The optimizer failed to find solution. Probabably due to quasi-separation in "
+"The optimizer failed to find a solution. Probably due to quasi-separation in "
 "the data. Try removing some of the predictors."
 msgstr ""
 
-msgid "Invalid starting values."
+msgid ""
+"The optimizer failed to find a solution due to invalid starting values. "
+"(JASP currently does not support specifying different starting values.)"
+msgstr ""
+
+msgid ""
+"The optimizer failed to find a solution. Probably due to scaling issues "
+"quasi-separation in the data. Try rescaling or removing some of the "
+"predictors."
 msgstr ""
 
 #, fuzzy
@@ -94,6 +107,26 @@ msgstr ""
 
 msgid "II"
 msgstr ""
+
+#, fuzzy
+msgid "Model summary"
+msgstr "Model Samenvatting"
+
+msgid "Deviance"
+msgstr "Afwijking"
+
+#, fuzzy
+msgid "Deviance (REML)"
+msgstr "Afwijking"
+
+msgid "log Lik."
+msgstr ""
+
+msgid "AIC"
+msgstr "AIC"
+
+msgid "BIC"
+msgstr "BIC"
 
 #, fuzzy
 msgid "Variance/Correlation Estimates"
@@ -198,11 +231,22 @@ msgstr "Odds Ratio"
 msgid "Ratio"
 msgstr "Cov. Ratio"
 
-#, fuzzy
-msgid "Model summary"
-msgstr "Model Samenvatting"
+msgid "Fit Statistics"
+msgstr "Pasmaten"
 
-msgid "%s (difference from intercept)"
+msgid "WAIC"
+msgstr ""
+
+msgid "WAIC (SE)"
+msgstr ""
+
+msgid "LOO"
+msgstr ""
+
+msgid "LOO (SE)"
+msgstr ""
+
+msgid "%s (differences from intercept)"
 msgstr ""
 
 msgid "%s (trend)"
@@ -231,6 +275,11 @@ msgstr "Steekproef posteriors"
 #, fuzzy
 msgid "Avg. autocorrelation"
 msgstr "Auto-correlatie"
+
+msgid ""
+"The following variables are a linear combination of each other, please, "
+"remove one of them from the analysis: %s"
+msgstr ""
 
 msgid ""
 "The intercept corresponds to the (unweighted) grand mean and for each factor "
@@ -403,6 +452,10 @@ msgid ""
 "estimation accuracy. Running chains for more iterations or increasing 'Adapt "
 "delta' may help."
 msgstr ""
+
+#, fuzzy
+msgid "The model was fitted using %s."
+msgstr "Het model is niet geoorloofd: %s"
 
 msgid "Bayesian A/B Test"
 msgstr "Bayesiaanse A/B Toets"
@@ -807,8 +860,9 @@ msgstr "Huynh-Feldt %s"
 msgid "Lower Bound %s"
 msgstr "Bovengrens %s"
 
+#, fuzzy
 msgid ""
-"Cannot perform sphericity tests because there only two levels of the RM "
+"Cannot perform sphericity tests because there are only two levels of the RM "
 "factor."
 msgstr ""
 "Kan geen sfericiteitstoets uitvoeren omdat de BP factor slechts twee niveaus "
@@ -1323,6 +1377,14 @@ msgstr ""
 "Analyse niet mogelijk: De verwachte fouten zijn groter dan de materialiteit."
 
 #, fuzzy
+msgid ""
+"The detection risk is equal to or higher than 100%. Please re-specify your "
+"custom values for the Inherent risk and/or Control risk, or the confidence."
+msgstr ""
+"Het detectie risico is hoger dan 100%%. Herspecificeer de handmatige waarden "
+"voor het Inherente risico en/of het Controle risico."
+
+#, fuzzy
 msgid "Selection summary"
 msgstr "Selectie grootte"
 
@@ -1330,8 +1392,8 @@ msgid ""
 "Your sample size is larger than (or equal to) your population size. Cannot "
 "take a sample larger than the population."
 msgstr ""
-"Uw steekproefgrootte is groter of gelijk aan de populatiegrootte. Kan geen steekproef "
-"nemen groter dan de populatie."
+"Uw steekproefgrootte is groter of gelijk aan de populatiegrootte. Kan geen "
+"steekproef nemen groter dan de populatie."
 
 msgid "Your sample size must be larger than 1."
 msgstr "Uw steekproefgrootte moet groter dan 1 zijn."
@@ -1349,8 +1411,7 @@ msgstr "Evaluatie Metriek"
 
 msgid ""
 "Your audit result does not contain only 0's (correct) and 1's (incorrect)."
-msgstr ""
-"Uw auditresultaat bevat niet alleen maar 0 (corerct) of 1 (incorrect)."
+msgstr "Uw auditresultaat bevat niet alleen maar 0 (corerct) of 1 (incorrect)."
 
 msgid ""
 "The hypergeometric confidence bound requires that you specify the population "
@@ -1370,6 +1431,14 @@ msgid ""
 msgstr ""
 "De directe schatter, verschilschatter, ratioschatter, en regressieschatter "
 "vereisen dat u de populatiegrootte en de populatiewaarde specificieert."
+
+#, fuzzy
+msgid ""
+"The detection risk is equal to or higher than 100%. Please re-specify your "
+"values for the Inherent risk and/or Control risk, or the confidence."
+msgstr ""
+"Het detectie risico is hoger dan 100%%. Herspecificeer de handmatige waarden "
+"voor het Inherente risico en/of het Controle risico."
 
 msgid ""
 "The objective of this substantive testing procedure is to determine with a "
@@ -1578,9 +1647,10 @@ msgstr ""
 "%1$s De vertaling van Hoog, Medium en Laag naar kansen is gedaan op basis "
 "van <b>IODAD (2007)</b>."
 
+#, fuzzy
 msgid ""
-"The detection risk is higher than 100%%. Please re-specify your custom "
-"values for the Inherent risk and/or Control risk."
+"The detection risk is equal to or higher than 100%. Please re-specify your "
+"custom values for the Inherent risk and/or Control risk."
 msgstr ""
 "Het detectie risico is hoger dan 100%%. Herspecificeer de handmatige waarden "
 "voor het Inherente risico en/of het Controle risico."
@@ -1914,9 +1984,21 @@ msgstr ""
 "De zekerheidsgrens is berekend volgens de <b>Stringer</b> methode met <b>LTA "
 "adjustment</b>."
 
+msgid "The audit result column is empty."
+msgstr ""
+
+#, fuzzy
+msgid ""
+"Either the materiality, the population size, or the population value is "
+"defined as zero, or one of the required variables is missing."
+msgstr ""
+"De materialiteit, de populatiegrootte, óf de populatiewaarde is gedefinieerd "
+"als nul."
+
 msgid "You must specify the population value to see the maximum misstatement."
-msgstr "U moet de populatiewaarde specificeren om de geschatte maximumfout te "
-"kunnen zien."
+msgstr ""
+"U moet de populatiewaarde specificeren om de geschatte maximumfout te kunnen "
+"zien."
 
 msgid "Evaluation Information"
 msgstr "Evaluatie informatie"
@@ -2862,15 +2944,6 @@ msgstr "Toets van Residuen Heterogeniteit"
 msgid "Log-likelihood"
 msgstr "Log-likelihood"
 
-msgid "Deviance"
-msgstr "Afwijking"
-
-msgid "AIC"
-msgstr "AIC"
-
-msgid "BIC"
-msgstr "BIC"
-
 msgid "AICc"
 msgstr "AICc"
 
@@ -3158,6 +3231,24 @@ msgstr "Het object gegeven in 'cluster' is niet van de klasse cluster"
 msgid "Cancelled by callback"
 msgstr "Geannuleerd door callback"
 
+#, fuzzy
+msgid "Infinity found in repeated measures cells."
+msgstr "Oneindigheid gevonden in %s"
+
+#, fuzzy
+msgid "Number of observations is < %s in repeated measures cells"
+msgstr "Aantal observaties is %s in %s"
+
+msgid "The variance in the repeated measures cells is 0."
+msgstr ""
+
+#, fuzzy
+msgid "Duplicate variables encountered in repeated measures cells, %s"
+msgstr "Dubbele variabelen gevonden in %s"
+
+msgid "Duplicate variables encountered in %s"
+msgstr "Dubbele variabelen gevonden in %s"
+
 msgid "Bayes factor is undefined -- all effects are specified as nuisance."
 msgstr ""
 "Bayes factor is niet gedefinieerd -- alle effecten zijn gespecificeerd als "
@@ -3418,9 +3509,6 @@ msgid ""
 msgstr ""
 "Standaardfouten betrouwbaarheidsintervallen zijn berekend met de "
 "deltamethode."
-
-msgid "Fit Statistics"
-msgstr "Pasmaten"
 
 msgid "Test"
 msgstr "Toets"
@@ -4381,9 +4469,6 @@ msgstr "Negatieve aantallen gevonden in %s"
 
 msgid "Missing values encountered in %s"
 msgstr "Ontbrekende waarden gevonden in %s"
-
-msgid "Duplicate variables encountered in %s"
-msgstr "Dubbele variabelen gevonden in %s"
 
 msgid ""
 "Levene's test is significant (p < .05), suggesting a violation of the equal "
@@ -5873,19 +5958,31 @@ msgstr "%s 1 Std. Fout"
 msgid "Variance Components"
 msgstr "Variantie Componenten"
 
-msgid "Expected counts not supported without observed counts!"
+#, fuzzy
+msgid "Expected counts not supported without observed counts."
 msgstr "Verwachte aantallen niet ondersteund zonder geobserveerde aantallen!"
 
-msgid "No expected counts entered!"
+#, fuzzy
+msgid "No expected counts entered."
 msgstr "Geen verwachte aantallen ingevoerd!"
 
+#, fuzzy
 msgid ""
-"Invalid %s counts: variable does not match the number of levels of factor."
+"Invalid counts: variable does not match the number of levels of the factor."
 msgstr ""
 "Ongeldig %s tellingen: variabele stemt niet overeen met aantal niveaus van "
 "factor."
 
-msgid "Invalid %s counts: variable must contain only integer values."
+#, fuzzy
+msgid ""
+"Invalid expected counts: variable does not match the number of levels of the "
+"factor."
+msgstr ""
+"Ongeldig %s tellingen: variabele stemt niet overeen met aantal niveaus van "
+"factor."
+
+#, fuzzy
+msgid "Invalid counts: variable must contain only integer values."
 msgstr "Ongeldig %s tellingen: variabele mag alleen gehele waarden bevatten."
 
 msgid "Confidence intervals are based on independent binomial distributions."
@@ -6149,6 +6246,12 @@ msgid ""
 msgstr ""
 "Sommige waarnemingen van %1$s zijn niet begrepen. Deze zijn nu gegroepeerd "
 "onder '%2$s'."
+
+msgid ""
+"bootnet crashed with the following error message:\n"
+"%s. <ul><li>Please check if there are variables in the network with little "
+"variance or few distinct observations.</li></ul>"
+msgstr ""
 
 msgid ""
 "'data' can only be missing if type = 'parametric'. Setting type = "
@@ -7618,12 +7721,32 @@ msgstr[1] ""
 
 msgid ""
 "There was %i transition exceeding maximum treedepth indication problems with "
-"the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing "
+"the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing "
 "'Maximum treedepth'."
 msgid_plural ""
 "There were %i transitions exceeding maximum treedepth indication problems "
-"with the efficiacy of Hamiltonian Monte Carlo. Consider carefully increasing "
-"'Maximum treedepth'."
+"with the efficiency of Hamiltonian Monte Carlo. Consider carefully "
+"increasing 'Maximum treedepth'."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO "
+"instead."
+msgid_plural ""
+"There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO "
+"instead."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"There was %1.0f observation with the shape parameter of k of the generalized "
+"Pareto distribution higher than > .5, indicating convergence problems for "
+"the LOO estimate."
+msgid_plural ""
+"There were %1.0f observations with the shape parameter of k of the "
+"generalized Pareto distribution higher than > .5, indicating convergence "
+"problems for the LOO estimate."
 msgstr[0] ""
 msgstr[1] ""
 
