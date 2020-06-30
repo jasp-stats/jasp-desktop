@@ -26,12 +26,12 @@ Linear regression allows the user to model a linear relationship between one or 
 - WLS Weights: The weights used for weighted least square regression.
 
 ### Model
-- Include intercept:
-  - Include the intercept in the regression model.
 - Components and model terms: 
     - Components: All the independent variables that can be included in the model. 
     - Model terms: The independent variables in the model. By default, all the main effects of the specified independent variables are included in the model. To include interactions, click multiple variables (e.g., by holding the ctrl/cmd button on your keyboard while clicking) and drag those into the `Model Terms` box. 
     - Add to null model: The independent variables included in the model can be selected to add to the null model. 
+- Include intercept:
+  - Include the intercept in the regression model.
 
 ### Statistics
 - Regression coefficients:
@@ -155,7 +155,7 @@ Collinearity Diagnostics:
 
 Casewise Diagnostics:
  - For each flagged case (Case Number) displays:
-    - Standardized (Std.) residual.
+    - Standardized (Std.) residual. Alternatively called also studentized residual. 
     - The value on the dependent variable.
     - Predicted value.
     - Residual.

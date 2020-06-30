@@ -26,12 +26,12 @@ Met een lineaire regressie kan een lineaire relatie tussen een of meer verklaren
 - WLS gewichten: De gewichten die worden gebruikt voor de laagste-kwadratenregressie.
 
 ### Model
-- Neem intercept mee:
-  - Neem het intercept mee in het model.
 - Componenten en model termen:
 	- Componenten: Alle onafhankelijke variabelen die in het model worden meegenomen.
 	- Model termen: De onafhankelijke variabelen in het model. De standaardoptie is om de hoofdeffecten van de gespecificeerde onafhankelijke variabelen in het model te betrekken. Vink meerdere variabelen aan om interacties mee te nemen (bijv., door de ctrl/cmd knop op uw toetsenbord ingedrukt te houden terwijl u klikt, en sleep de variabelen naar het `Model Termen` veld.
 	- Voeg toe aan nul model: De onafhankelijke variabelen in het model kunnen ook aan het nulmodel worden toegevoegd. 
+- Neem intercept mee:
+  - Neem het intercept mee in het model.
 
 ### Statistieken
 - Regressiecoëfficiënten:
@@ -153,7 +153,7 @@ Collineariteit Diagnostieken:
 
 Stapsgewijze Diagnostieken: 
   - Voor elk gemarkeerd geval (Geval nummer) geeft dit het volgende weer:
-	- Gestandaardiseerd residu.
+	- Gestandaardiseerd residu. Ook bekend als het gestudentiseerd residue.
 	- De waarde van de afhankelijke variabele.
 	- De voorspelde waarde.
 	- Residu 
