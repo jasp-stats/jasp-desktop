@@ -60,27 +60,98 @@
     fixed <- options$fixedFactors
     noVariables <- !(hasDV && hasIV)
     target <- c(options$covariates, options$dependent)
+
+    if (!noVariables) {
+      .hasErrors(
+        dataset = dataset,
+        type    = c("infinity", "observations", "variance", "factorLevels", "duplicateColumns"),
+        infinity.target     = target,
+        variance.target     = target,
+        observations.target = target,
+        observations.amount = paste("<", length(options$modelTerms) + 1),
+        factorLevels.target = fixed,
+        factorLevels.amount = " < 2",
+        exitAnalysisIfErrors = TRUE
+      )
+    }
+
   } else {
     hasDV  <- !any(options$repeatedMeasuresCells == "")
     hasIV  <- any(lengths(options[c("betweenSubjectFactors", "covariates")]) != 0)
     fixed  <- options$betweenSubjectFactors
-    target <- c(options$covariates, .BANOVAdependentName)
+    covariates <- unlist(options$covariates)
     noVariables <- !hasDV
+    target <- c(covariates, fixed)
+
+    if (length(target) > 0L) {
+      .hasErrors(
+        dataset = dataset,
+        type    = c("infinity", "observations", "variance", "factorLevels", "duplicateColumns"),
+        infinity.target     = target,
+        variance.target     = covariates,
+        observations.target = target,
+        observations.amount = paste("<", length(options$modelTerms) + 1),
+        factorLevels.target = fixed,
+        factorLevels.amount = " < 2",
+        duplicateColumns.target = target,
+        exitAnalysisIfErrors = TRUE
+      )
+    }
+
+    if (!noVariables) {
+
+      # messages from commonmessages.R
+      customChecks <- list(
+        infinity = function() {
+          x <- dataset[, .BANOVAdependentName]
+          if (any(is.infinite(x)))
+            return(gettext("Infinity found in repeated measures cells."))
+          return(NULL)
+        },
+        observations = function() {
+          x <- dataset[, .BANOVAdependentName]
+          nObs <- length(options$modelTerms) + 1
+          if (length(na.omit(x)) <= nObs)
+            return(gettextf("Number of observations is < %s in repeated measures cells", nObs))
+          return(NULL)
+        },
+        variance = function() {
+          x <- dataset[, .BANOVAdependentName]
+          validValues <- x[is.finite(x)]
+          variance <- 0
+          if (length(validValues) > 1)
+            variance <- stats::var(validValues)
+          if (variance == 0)
+            return(gettext("The variance in the repeated measures cells is 0."))
+          return(NULL)
+        },
+        duplicateColumns = function() {
+          datasetList <- as.list(dataset[, c(.BANOVAsubjectName, .v(target))])
+          duplicatedCols <- duplicated(datasetList) | duplicated(datasetList, fromLast = TRUE)
+          if (any(duplicatedCols)) {
+            if (duplicatedCols[1L]) {
+              msg <- gettextf("Duplicate variables encountered in repeated measures cells, %s",
+                              paste(target[duplicatedCols[-1L]], collapse = ", "))
+            } else {
+              msg <- gettextf("Duplicate variables encountered in %s",
+                              paste(target[duplicatedCols[-1L]], collapse = ", "))
+            }
+            return(msg)
+          }
+          return(NULL)
+        }
+      )
+
+      .hasErrors(
+        dataset = dataset,
+        custom = customChecks,
+        exitAnalysisIfErrors = TRUE
+      )
+
+    }
+
   }
 
-  if (!noVariables) {
-    .hasErrors(
-      dataset = dataset,
-      type    = c("infinity", "observations", "variance", "factorLevels", "duplicateColumns"),
-      infinity.target     = target,
-      variance.target     = target,
-      observations.target = target,
-      observations.amount = paste("<", length(options$modelTerms) + 1),
-      factorLevels.target = fixed,
-      factorLevels.amount = " < 2",
-      exitAnalysisIfErrors = TRUE
-    )
-  }
   return(list(noVariables = noVariables, hasIV = hasIV, hasDV = hasDV))
 }
 
@@ -348,7 +419,8 @@
   if (!is.null(jaspResults[["tableEffects"]]) || !options[["effects"]])
     return()
 
-  if (model[["analysisType"]] != "RM-ANOVA" && options[["dependent"]] != "") {
+  # isTRUE should handle a state issue, see https://github.com/jasp-stats/jasp-test-release/issues/839
+  if (isTRUE(model[["analysisType"]] != "RM-ANOVA" && options[["dependent"]] != "")) {
     title <- gettextf("Analysis of Effects - %s", options[["dependent"]])
   } else {
     title <- gettext("Analysis of Effects")
@@ -2401,7 +2473,7 @@
   rscaleRandom  <- options$priorRandomEffects
 
   if (analysisType == "RM-ANOVA") {
-    dependent <- "dependent"
+    dependent <- .BANOVAdependentName
     rscaleCont <- options[["priorCovariates"]]
     randomFactors <- .BANOVAsubjectName
     modelTerms[[length(modelTerms) + 1L]] <- list(components = .BANOVAsubjectName, isNuisance = TRUE)
