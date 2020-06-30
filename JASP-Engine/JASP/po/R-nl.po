@@ -7113,48 +7113,48 @@ msgid "%s (%s)"
 msgstr "I%s (%%)"
 
 msgid "Individual Models Plots"
-msgstr ""
+msgstr "Individuele modellengrafiek"
 
 #, fuzzy
 msgid "Diagnostics"
 msgstr "Diagnostische Grafieken"
 
 msgid "Models Diagnostics Overview"
-msgstr ""
+msgstr "Modellen Diagnostiek Overzicht"
 
 msgid "max(MCMC error)"
-msgstr ""
+msgstr "max(MCMC fout)"
 
 msgid "min(ESS)"
-msgstr ""
+msgstr "min(ESS)"
 
 #, fuzzy
 msgid "max(Rhat)"
-msgstr "Rhat"
+msgstr "max(Rhat)"
 
 #, fuzzy
 msgid "Trace plots"
-msgstr "Trace Plots"
+msgstr "Spoordiagram"
 
 #, fuzzy
 msgid "Average autocorrelations"
-msgstr "Auto-correlatie"
+msgstr "Gemiddelde autocorrelatie"
 
 #, fuzzy
 msgid "Posterior samples densities"
 msgstr "Posterior kansen"
 
 msgid "Model %i does not contain any of the selected parameters."
-msgstr ""
+msgstr "De geselecteerd parameter zit niet in Model %i."
 
 msgid "Model misspecified"
-msgstr "Model fout gespecificeerd"
+msgstr "Model verkeerd gespecificeerd"
 
 msgid ""
 "Mean structure can not be included when data is variance-covariance matrix"
 msgstr ""
-"Structuur van gemiddelde kan niet worden meegenomen wanneer data variantie-"
-"covariantie matrix is"
+"Structuur van het gemiddelde kan niet worden meegenomen wanneer de data uit een variantie-"
+"covariantie matrix bestaat"
 
 msgid "Please set the sample size!"
 msgstr "Selecteer a.u.b een steekproefgrootte!"
@@ -7163,8 +7163,8 @@ msgid ""
 "Multiple group analysis not (yet) supported when data is variance-covariance "
 "matrix"
 msgstr ""
-"Meerdere groepen analyse (nog) niet ondersteund als data in variantie-"
-"covariantie matrix staat"
+"Meerdere groepen analyse (nog) niet ondersteund als data een variantie-"
+"covariantie matrix is"
 
 msgid ""
 "Not more cases than number of variables. Is your data a variance-covariance "
@@ -7189,10 +7189,10 @@ msgid "se"
 msgstr "se"
 
 msgid "CI (lower)"
-msgstr "CI (onder)"
+msgstr "BI (onder)"
 
 msgid "CI (upper)"
-msgstr "CI (boven)"
+msgstr "BI (boven)"
 
 msgid "std (lv)"
 msgstr "std (lv)"
@@ -7213,16 +7213,16 @@ msgid "Degrees of freedom"
 msgstr "Vrijheidsgraden"
 
 msgid "Loglikelihood and Information Criteria"
-msgstr "Loglikelihood en Informatie Criteria"
+msgstr "Log waarschijnlijkheid en Informatie Criteria"
 
 msgid "Loglikelihood user model (H0)"
-msgstr "Loglikelihood gebruiker model (H0)"
+msgstr "Log waarschijnlijkheid gebruikersmodel (H0)"
 
 msgid "Loglikelihood unrestricted model (H1)"
-msgstr "Loglikelihood ongelimiteerd model (H1)"
+msgstr "Log waarschijnlijkheid niet-beperkte model (H1)"
 
 msgid "Sample-size adjusted Bayesian (BIC)"
-msgstr "Voor steekproef grootte bijgesteld Bayesiaans (BIC)"
+msgstr "Voor steekproefgrootte bijgesteld Bayesiaans (BIC)"
 
 msgid "Root Mean Square Error of Approximation"
 msgstr "Wortel van de gemiddelde foutkwadraat van benadering (RMSEA)"
