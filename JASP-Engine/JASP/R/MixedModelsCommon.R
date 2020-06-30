@@ -162,7 +162,7 @@
   # check hack-able options
   if (type %in% c("BLMM", "BGLMM")) {
     if (options$iteration - 1 <= options$warmup) {
-      JASP:::.quitAnalysis(gettext("The number of iterations must be at least 2 iterations higher than the warmup."))
+      JASP:::.quitAnalysis(gettext("The number of iterations must be at least 2 iterations higher than the burnin"))
     }
   }
   
@@ -3204,8 +3204,8 @@
   sprintf(
     ngettext(
       iterations,
-      "There was %i divergent transition after warmup indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions.",
-      "There were %i divergent transitions after warmup indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions."
+      "There was %i divergent transition after burnin indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions.",
+      "There were %i divergent transitions after burnin indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions."
     ),
     iterations
   )
@@ -3214,8 +3214,8 @@
   sprintf(
     ngettext(
       nChains,
-      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chain indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Warmup' and 'Iterations'.",
-      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chains indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Warmup' and 'Iterations'."
+      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chain indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Burnin' and 'Iterations'.",
+      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chains indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Burnin' and 'Iterations'."
     ),
     nChains
   )
