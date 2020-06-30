@@ -133,6 +133,8 @@ Section
 			name:		"plotsMappingFill"
 			label:		qsTr("Fill")
 			checked:	false
+			enabled:	plotsGeom.currentValue != "geom_jitter"
+			onEnabledChanged:  checked = false
 		}
 	}
 
@@ -171,7 +173,7 @@ Section
 			visible:		plotsGeom.currentValue == "geom_jitter" | plotsGeom.currentValue == "geom_boxjitter"
 			name:			"plotJitterWidth"
 			label:			qsTr("Jitter width")
-			defaultValue:	0
+			defaultValue:	0.1
 			min:			0
 		}
 
@@ -241,6 +243,7 @@ Section
 		{
 			name:	"plotsBackgroundColor"
 			label:	qsTr("Color background data")
+			enabled:plotsGeom.currentValue != "geom_jitter"
 			values:
 			[
 				{ label: qsTr("Dark grey"),			value: "darkgrey"},

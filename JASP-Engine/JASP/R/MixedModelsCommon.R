@@ -1102,7 +1102,7 @@
         outlier.intersect = TRUE
       )
     }
-    if (options$plotsBackgroundColor != "none")
+    if (options$plotsBackgroundColor != "none" && options$plotsGeom != "geom_jitter" && "color" %in% mapping)
       data_arg$color <- options$plotsBackgroundColor
     
     
