@@ -87,8 +87,9 @@ AnalysisForm
 				width:				parent.width - 10 * jaspTheme.uiScale
 				verticalAlignment:	Text.AlignVCenter
 				text:				qsTr("This analysis was created with an older version of JASP (or a dynamic module)") + //I do not want to bother with formatting strings here to be honest
-									( myAnalysis !== null && !myAnalysis.hasVolatileNotes ? qsTr(", refreshing could give a slightly different result.") :
-																	 qsTr(", to keep your notes where they are it is highly recommended to first refresh your analyses!"))
+									( myAnalysis !== null && !myAnalysis.hasVolatileNotes ?
+										qsTr(", refreshing could give a slightly different result.") :
+										qsTr(", to keep your notes where they are it is highly recommended to first refresh your analyses!"))
 
 			}
 		}
