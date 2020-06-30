@@ -40,7 +40,7 @@ Section
 		{
 			singleVariable:	true
 			name:			"samplingVariable1"
-			title:			if(samplingPlot.currentValue == "stan_scat"){qsTr("Horizontal axis")}else{qsTr("Plotted term")}
+			title:			samplingPlot.currentValue == "stan_scat" ? qsTr("Horizontal axis") : qsTr("Plotted term")
 		}
 
 		AssignedVariablesList
@@ -68,5 +68,4 @@ Section
 		]
 	}
 }
-
 
