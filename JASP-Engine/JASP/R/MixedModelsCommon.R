@@ -2720,34 +2720,24 @@
       if (names(plot_data)[i] == "Intercept") {
         var_name <- gettext("Intercept")
       } else{
-        if (length(pars) == 1) {
-          var_name <-
-            paste(.unv(unlist(strsplit(
-              as.character(names(plot_data)[i]), ","
-            ))), collapse = ":")
-          var_name <- gsub(" ", "", var_name, fixed = TRUE)
-          var_name <-
-            .mmVariableNames(var_name, options$fixedVariables)
-        } else{
-          var_name <- strsplit(as.character(pars), ":")
-          var_name <-
-            sapply(var_name, function(x)
-              paste(.unv(unlist(
-                strsplit(x, ",")
-              )), collapse = ":"))
-          var_name <-
-            sapply(var_name, function(x)
-              gsub(" ", "", x, fixed = TRUE))
-          var_name <-
-            sapply(var_name, function(x)
-              .mmVariableNames(x, options$fixedVariables))
-        }
-        
+        var_name <- strsplit(as.character(pars), ":")
+        var_name <-
+          sapply(var_name, function(x)
+            paste(.unv(unlist(
+              strsplit(x, ",")
+            )), collapse = ":"))
+        var_name <-
+          sapply(var_name, function(x)
+            gsub(" ", "", x, fixed = TRUE))
+        var_name <-
+          sapply(var_name, function(x)
+            .mmVariableNames(x, options$fixedVariables))
+        var_name <- paste0(var_name, collapse = " by ")
       }
       
       plots  <-
         createJaspPlot(
-          title = paste(var_name, collapse = " by "),
+          title = var_name,
           width = 400,
           height = 300
         )
@@ -2777,8 +2767,7 @@
         p <- JASPgraphs::themeJasp(p)
       }
       if (options$samplingPlot == "stan_trace") {
-        p <- p + ggplot2::labs(y = var_name) + 
-          ggplot2::theme(plot.margin = ggplot2::margin(r = 10 * (nchar(options$iteration - options$warmup) - 2)))
+        p <- p + ggplot2::theme(plot.margin = ggplot2::margin(r = 10 * (nchar(options$iteration - options$warmup) - 2)))
       }
       plots$plotObject <- p
       
@@ -2822,10 +2811,33 @@
     plot_data <- list()
     
     for (cf in 1:coefs) {
+      
+      # this is a mess but the stanova::stanova_samples returns an incomplete variable names
+      coefs_trend <- attr(samples, "estimate")
+      coefs_trend <- gsub("trend ('", "", coefs_trend, fixed = TRUE)
+      coefs_trend <- gsub("')", "", coefs_trend, fixed = TRUE)
+      coefs_trend <- strsplit(coefs_trend, ",")
+      
+      coefs_name <-
+        paste(.unv(unlist(
+          strsplit(dimnames(samples)$Parameter[cf], ",")
+        )), collapse = ":")
+      coefs_name <- gsub(" ", "", coefs_name, fixed = TRUE)
+      coefs_name <-
+        .mmVariableNames(coefs_name, options$fixedVariables)
+      
+      if(length(coefs_trend) > 0){
+        for(cft in coefs_trend){
+          if(cft %in% strsplit(pars, ":")[[1]] && !grepl(.unv(cft), coefs_name)){
+            coefs_name <- paste0(coefs_name, ":", .unv(cft))
+          }
+        }
+      }
+      
       plot_data[[dimnames(samples)$Parameter[cf]]] <- list(
         samp = data.frame(
           value     = as.vector(samples[, cf,]),
-          parameter = dimnames(samples)$Parameter[cf],
+          parameter = as.factor(rep(coefs_name, length(as.vector(samples[, cf,])))),
           chain     = as.factor(c(unlist(
             sapply(1:dim(samples)[3], function(x)
               rep(x, dim(samples)[1]))
@@ -2848,21 +2860,40 @@
     
     for (cf1 in 1:coefs1) {
       for (cf2 in 1:coefs2) {
+
+        coefs_trend <- attr(samples1, "estimate")
+        coefs_trend <- gsub("trend ('", "", coefs_trend, fixed = TRUE)
+        coefs_trend <- gsub("')", "", coefs_trend, fixed = TRUE)
+        coefs_trend <- strsplit(coefs_trend, ",")
+        
         coefs1_name <-
           paste(.unv(unlist(
             strsplit(dimnames(samples1)$Parameter[cf1], ",")
           )), collapse = ":")
         coefs1_name <- gsub(" ", "", coefs1_name, fixed = TRUE)
-        coefs1_name <-
-          .mmVariableNames(coefs1_name, options$fixedVariables)
+        coefs1_name <- .mmVariableNames(coefs1_name, options$fixedVariables)
         coefs2_name <-
           paste(.unv(unlist(
             strsplit(dimnames(samples2)$Parameter[cf2], ",")
           )), collapse = ":")
         coefs2_name <- gsub(" ", "", coefs2_name, fixed = TRUE)
-        coefs2_name <-
-          .mmVariableNames(coefs2_name, options$fixedVariables)
+        coefs2_name <- .mmVariableNames(coefs2_name, options$fixedVariables)
         
+        if(length(coefs_trend) > 0){
+          for(cft in coefs_trend){
+            if(cft %in% strsplit(pars[[1]], ":")[[1]] && !grepl(.unv(cft), coefs1_name)){
+              coefs1_name <- paste0(coefs1_name, ":", .unv(cft))
+            }
+          }
+        }
+        if(length(coefs_trend) > 0){
+          for(cft in coefs_trend){
+            if(cft %in% strsplit(pars[[2]], ":")[[1]] && !grepl(.unv(cft), coefs2_name)){
+              coefs2_name <- paste0(coefs2_name, ":", .unv(cft))
+            }
+          }
+        }
+
         plot_data[[paste0(coefs1_name, ":", coefs2_name)]] <- list(
           samp = data.frame(
             value     = c(as.vector(samples1[, cf1,]),
@@ -2870,8 +2901,7 @@
             parameter = factor(c(
               rep(coefs1_name, dim(samples1)[1] * dim(samples1)[3]),
               rep(coefs2_name, dim(samples2)[1] * dim(samples2)[3])
-            ),
-            levels = c(coefs1_name, coefs2_name)),
+            ), levels = c(coefs1_name, coefs2_name)),
             chain     = as.factor(c(
               unlist(sapply(1:dim(samples1)[3], function(x)
                 rep(x, dim(samples2)[1]))),
@@ -2923,7 +2953,7 @@
   
   graph <-
     base + ggplot2::geom_path() + ggplot2::scale_color_manual(values = clrs) +
-    ggplot2::labs(x = "", y = unique(plot_data$samp$parameter)) + thm
+    ggplot2::labs(x = "", y = levels(plot_data$samp$parameter)) + thm
 
   graph <- graph + ggplot2::scale_x_continuous(
     breaks = JASPgraphs::getPrettyAxisBreaks(c(1,max(plot_data$samp$iteration))))
