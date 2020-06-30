@@ -62,11 +62,9 @@ defineSpecials <- function()
   specials[['abtest']]       <- list(type='github', commit='503c50e96768a0134b755747e0421d820cc1a115', repo='quentingronau/abtest'  )
   specials[['bstats']]       <- list(type='github', commit='a6fdbea42078b8d275a98dd1e37c113118555b6f', repo='AlexanderLyNL/bstats'  )
   specials[['flexplot']]     <- list(type='github', commit='15b5cae2b8d009b8a95c5f1d261e2077f53e8bd9', repo='dustinfife/flexplot'   )
-  specials[['RoBMA']]        <- list(type='github', commit='83e68878469327501bc0f6cc964c69a13f6c5d81', repo='FBartos/RoBMA'         )
   specials[['Bayesrel']]     <- list(type='github', commit='39c25d21a118023a5ef46133c94ce8f9b3078f71', repo='juliuspf/Bayesrel'     )
   specials[['stanova']]      <- list(type='github', commit='2cb08223f957533103612e72055fa7063a1fb5ce', repo='bayesstuff/stanova'    )
-  specials[['afex']]         <- list(type='github', commit='56359709a19a72f2f2088099cc6647b732ea2c71', repo='singmann/afex'         )
-  specials[['emmeans']]      <- list(type='github', commit='1e6ab3e1e9eb47bb8a038221495463992f8dfb60', repo='rvlenth/emmeans'       )
+  specials[['afex']]         <- list(type='github', commit='1acc5eec8c4d8d7e20c575f71892d1ab508f8d86', repo='singmann/afex'         )
   specials[['ggpol']]        <- list(type='github', commit='dea9db2503b04b81dbc746fdeccf92e9849ce64b', repo='jasp-stats/ggpol'      ) # temporary fix for conflicting ggplot2 dependencies in jasp 0.12.2. Should be removed after that release and shit should be fixed!
 }
 
