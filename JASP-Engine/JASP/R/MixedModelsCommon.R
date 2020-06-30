@@ -2810,6 +2810,25 @@
   var_name <- gsub(" ()", "", var_name, fixed = TRUE)
   return(var_name)
 }
+.mmAddCoefNameStanova <- function(samples, par, coefs_name){
+  # this is a mess but the stanova::stanova_samples returns an incomplete variable names
+  
+  coefs_trend <- attr(samples, "estimate")
+  coefs_trend <- gsub("trend ('", "", coefs_trend, fixed = TRUE)
+  coefs_trend <- gsub("')", "", coefs_trend, fixed = TRUE)
+  coefs_trend <- strsplit(coefs_trend, ",")
+  
+  if(length(coefs_trend) > 0){
+    for(cft in coefs_trend){
+      if(cft %in% strsplit(par, ":")[[1]] && !grepl(.unv(cft), coefs_name)){
+        coefs_name <- paste0(coefs_name, ":", .unv(cft))
+      }
+    }
+  }
+  
+  return(coefs_name)
+  
+}
 .mmGetPlotSamples <- function(model, pars, options) {
   matrix_diff <-
     stanova::stanova_samples(model,
@@ -2824,27 +2843,14 @@
     
     for (cf in 1:coefs) {
       
-      # this is a mess but the stanova::stanova_samples returns an incomplete variable names
-      coefs_trend <- attr(samples, "estimate")
-      coefs_trend <- gsub("trend ('", "", coefs_trend, fixed = TRUE)
-      coefs_trend <- gsub("')", "", coefs_trend, fixed = TRUE)
-      coefs_trend <- strsplit(coefs_trend, ",")
-      
       coefs_name <-
         paste(.unv(unlist(
           strsplit(dimnames(samples)$Parameter[cf], ",")
         )), collapse = ":")
       coefs_name <- gsub(" ", "", coefs_name, fixed = TRUE)
-      coefs_name <-
-        .mmVariableNames(coefs_name, options$fixedVariables)
-      
-      if(length(coefs_trend) > 0){
-        for(cft in coefs_trend){
-          if(cft %in% strsplit(pars, ":")[[1]] && !grepl(.unv(cft), coefs_name)){
-            coefs_name <- paste0(coefs_name, ":", .unv(cft))
-          }
-        }
-      }
+      coefs_name <- .mmVariableNames(coefs_name, options$fixedVariables)
+      coefs_name <- .mmAddCoefNameStanova(samples, pars, coefs_name)
+
       
       plot_data[[dimnames(samples)$Parameter[cf]]] <- list(
         samp = data.frame(
@@ -2873,39 +2879,23 @@
     for (cf1 in 1:coefs1) {
       for (cf2 in 1:coefs2) {
 
-        coefs_trend <- attr(samples1, "estimate")
-        coefs_trend <- gsub("trend ('", "", coefs_trend, fixed = TRUE)
-        coefs_trend <- gsub("')", "", coefs_trend, fixed = TRUE)
-        coefs_trend <- strsplit(coefs_trend, ",")
-        
         coefs1_name <-
           paste(.unv(unlist(
             strsplit(dimnames(samples1)$Parameter[cf1], ",")
           )), collapse = ":")
         coefs1_name <- gsub(" ", "", coefs1_name, fixed = TRUE)
         coefs1_name <- .mmVariableNames(coefs1_name, options$fixedVariables)
+        coefs1_name <- .mmAddCoefNameStanova(samples1, pars[[1]], coefs1_name)
+        
         coefs2_name <-
           paste(.unv(unlist(
             strsplit(dimnames(samples2)$Parameter[cf2], ",")
           )), collapse = ":")
         coefs2_name <- gsub(" ", "", coefs2_name, fixed = TRUE)
         coefs2_name <- .mmVariableNames(coefs2_name, options$fixedVariables)
-        
-        if(length(coefs_trend) > 0){
-          for(cft in coefs_trend){
-            if(cft %in% strsplit(pars[[1]], ":")[[1]] && !grepl(.unv(cft), coefs1_name)){
-              coefs1_name <- paste0(coefs1_name, ":", .unv(cft))
-            }
-          }
-        }
-        if(length(coefs_trend) > 0){
-          for(cft in coefs_trend){
-            if(cft %in% strsplit(pars[[2]], ":")[[1]] && !grepl(.unv(cft), coefs2_name)){
-              coefs2_name <- paste0(coefs2_name, ":", .unv(cft))
-            }
-          }
-        }
+        coefs2_name <- .mmAddCoefNameStanova(samples2, pars[[2]], coefs2_name)
 
+        
         plot_data[[paste0(coefs1_name, ":", coefs2_name)]] <- list(
           samp = data.frame(
             value     = c(as.vector(samples1[, cf1,]),
