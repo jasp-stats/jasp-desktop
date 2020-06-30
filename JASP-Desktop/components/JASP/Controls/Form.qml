@@ -73,7 +73,7 @@ AnalysisForm
 			id:				oldFileMessagesBox
 			visible:		myAnalysis !== null && myAnalysis.needsRefresh && myAnalysis.hasVolatileNotes //Ill leave the text as is for now to avoid having to go back to the po again
 			color:			jaspTheme.controlWarningBackgroundColor
-			width:			parent.width
+			width:			form.implicitWidth
 			height:			visible ? oldAnalysisText.height : 0
 			anchors.top:	parent.top
 

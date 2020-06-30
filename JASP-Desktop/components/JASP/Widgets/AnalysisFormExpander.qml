@@ -387,9 +387,9 @@ DropArea
 
 			Item
 			{
-				id:		loaderAndError
-				height:	Math.max(loader.height, errorRect.height * preferencesModel.uiScale)
-				visible: !expanderButton.imploded
+				id:			loaderAndError
+				height:		Math.max(loader.height, errorRect.height * preferencesModel.uiScale)
+				visible:	!expanderButton.imploded
 
 				anchors
 				{
@@ -405,7 +405,7 @@ DropArea
 					visible:		loader.status === Loader.Error
 					anchors.top:	parent.top
 					color:			jaspTheme.errorMessagesBackgroundColor
-					width:			parent.width
+					width:			jaspTheme.formWidth - ( 2 * jaspTheme.formMargin )
 					height:			visible ? errorMessagesText.height : 0
 
 					Text
