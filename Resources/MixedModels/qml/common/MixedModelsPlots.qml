@@ -170,7 +170,7 @@ Section
 
 		DoubleField
 		{
-			visible:		plotsGeom.currentValue == "geom_jitter" | plotsGeom.currentValue == "geom_boxjitter"
+			visible:		plotsGeom.currentValue == "geom_jitter" || plotsGeom.currentValue == "geom_boxjitter"
 			name:			"plotJitterWidth"
 			label:			qsTr("Jitter width")
 			defaultValue:	0.1
@@ -280,4 +280,3 @@ Section
 		}
 	}
 }
-
