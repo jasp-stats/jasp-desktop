@@ -378,8 +378,7 @@
   }
   return(added)
 }
-
-.mmFitModel <- function(jaspResults, dataset, options, type = "LMM") {
+.mmFitModel      <- function(jaspResults, dataset, options, type = "LMM") {
   if (!is.null(jaspResults[["mmModel"]]))
     return()
 
@@ -480,7 +479,6 @@
 
   return()
 }
-
 .mmSummaryAnova  <- function(jaspResults, dataset, options, type = "LMM") {
     if (!is.null(jaspResults[["ANOVAsummary"]]))
       return()
@@ -654,8 +652,6 @@
     
     return()
   }
-
-
 .mmFitStats      <- function(jaspResults, options, type = "LMM") {
   if (!is.null(jaspResults[["fitStats"]]))
     return()
@@ -893,7 +889,6 @@
   jaspResults[["REsummary"]] <- REsummary
   return()
 }
-
 .mmSummaryFE     <- function(jaspResults, options, type = "LMM") {
   if (!is.null(jaspResults[["FEsummary"]]))
     return()
@@ -976,9 +971,7 @@
   
 
 }
-
-.mmPlot          <-
-  function(jaspResults, dataset, options, type = "LMM") {
+.mmPlot          <- function(jaspResults, dataset, options, type = "LMM") {
     model <- jaspResults[["mmModel"]]$object$model
     
     # automatic size specification will somewhat work unless there is more than 2 variables in panel
@@ -1277,9 +1270,7 @@
     
     return()
   }
-
-.mmMarginalMeans <-
-  function(jaspResults, dataset, options, type = "LMM") {
+.mmMarginalMeans <- function(jaspResults, dataset, options, type = "LMM") {
     if (!is.null(jaspResults[["EMMresults"]]))
       return()
     
@@ -1518,8 +1509,7 @@
     
     return()
   }
-.mmTrends        <-
-  function(jaspResults, dataset, options, type = "LMM") {
+.mmTrends        <- function(jaspResults, dataset, options, type = "LMM") {
     if (!is.null(jaspResults[["contrasts_Trends"]]))
       return()
     
@@ -1768,11 +1758,7 @@
     
     return()
   }
-.mmContrasts     <-
-  function(jaspResults,
-           options,
-           type = "LMM",
-           what = "Means") {
+.mmContrasts     <- function(jaspResults, options, type = "LMM", what = "Means") {
     if (what == "Means") {
       if (!is.null(jaspResults[["contrasts_Means"]]))
         return()
@@ -2061,7 +2047,7 @@
 
 
 # specific Bayesian
-.mmReadDataB     <- function(dataset, options, type = "BLMM") {
+.mmReadDataB      <- function(dataset, options, type = "BLMM") {
   if (!is.null(dataset)) {
     return(dataset)
   } else{
@@ -2094,8 +2080,7 @@
     }
   }
 }
-.mmFitModelB     <-
-  function(jaspResults, dataset, options, type = "BLMM") {
+.mmFitModelB      <- function(jaspResults, dataset, options, type = "BLMM") {
     # hopefully fixing the random errors
     contr.bayes <<- stanova::contr.bayes
     if (!is.null(jaspResults[["mmModel"]]))
@@ -2184,7 +2169,7 @@
     
     return()
   }
-.mmFitStatsB     <- function(jaspResults, options, type = "BLMM") {
+.mmFitStatsB      <- function(jaspResults, options, type = "BLMM") {
   if (!is.null(jaspResults[["fitStats"]]))
     return()
   
@@ -2247,7 +2232,7 @@
   
   return()
 }
-.mmSummaryREB    <- function(jaspResults, options, type = "BLMM") {
+.mmSummaryREB     <- function(jaspResults, options, type = "BLMM") {
   if (!is.null(jaspResults[["REsummary"]]))
     return()
   
@@ -2394,7 +2379,7 @@
     
   return()
 }
-.mmSummaryFEB    <- function(jaspResults, options, type = "BLMM") {
+.mmSummaryFEB     <- function(jaspResults, options, type = "BLMM") {
   if (!is.null(jaspResults[["FEsummary"]]))
     return()
   
@@ -2477,9 +2462,7 @@
   # add warning messages
   FEsummary$addFootnote(.mmMessageInterpretability)
 }
-
-.mmSummaryStanova <-
-  function(jaspResults, dataset, options, type = "BLMM") {
+.mmSummaryStanova <- function(jaspResults, dataset, options, type = "BLMM") {
     if (!is.null(jaspResults[["STANOVAsummary"]]))
       return()
 
@@ -2685,8 +2668,7 @@
     }
     
   }
-.mmDiagnostics   <-
-  function(jaspResults, options, dataset, type = "BLMM") {
+.mmDiagnostics    <- function(jaspResults, options, dataset, type = "BLMM") {
     if (!is.null(jaspResults[["diagnosticPlots"]]))
       return()
     
