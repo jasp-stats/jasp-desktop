@@ -626,21 +626,16 @@
     removed_me <- jaspResults[["mmModel"]]$object$removed_me
     removed_te <- jaspResults[["mmModel"]]$object$removed_te
     added_re   <- jaspResults[["mmModel"]]$object$added_re
-    if (length(removed_me) > 0) {
-      for (i in 1:length(removed_me)) {
-        ANOVAsummary$addFootnote(.mmMessageOmmitedTerms1(removed_me[[i]], names(removed_me)[i]), symbol = gettext("Warning:"))
-      }
-    }
-    if (length(removed_te) > 0) {
-      for (i in 1:length(removed_te)) {
-        ANOVAsummary$addFootnote(.mmMessageOmmitedTerms2(removed_te[[i]], names(removed_te)[i]), symbol = gettext("Warning:"))
-      }
-    }
-
-    if (length(added_re) > 0)
-      for (i in 1:length(added_re))
-        ANOVAsummary$addFootnote(.mmMessageAddedTerms(added_re[[i]], names(added_re)[i]), symbol = gettext("Warning:"))
-
+    
+    for (i in seq_along(removed_me))
+      ANOVAsummary$addFootnote(.mmMessageOmmitedTerms1(removed_me[[i]], names(removed_me)[i]), symbol = gettext("Warning:"))
+    
+    for (i in seq_along(removed_te))
+      ANOVAsummary$addFootnote(.mmMessageOmmitedTerms2(removed_te[[i]], names(removed_te)[i]), symbol = gettext("Warning:"))
+    
+    for (i in seq_along(added_re))
+      ANOVAsummary$addFootnote(.mmMessageAddedTerms(added_re[[i]], names(added_re)[i]), symbol = gettext("Warning:"))
+    
 
     
     ANOVAsummary$addFootnote(.mmMessageANOVAtype(ifelse(options$type == 3, gettext("III"), gettext("II"))))
