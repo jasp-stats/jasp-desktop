@@ -1385,9 +1385,13 @@
       EMMsummary$addColumnInfo(name = "se",
                                title = gettext("SE"),
                                type = "number")
-      EMMsummary$addColumnInfo(name = "df",
-                               title = gettext("df"),
-                               type = "number")
+      if(type == "LMM"){
+        if(options$marginalMeansDf != "asymptotic"){
+          EMMsummary$addColumnInfo(name = "df",
+                                   title = gettext("df"),
+                                   type = "number")
+        }
+      }
       EMMsummary$addColumnInfo(
         name = "lowerCI",
         title = gettext("Lower"),
@@ -1459,8 +1463,11 @@
         temp_row$estimate <-
           emm_table[i, grep("SE", colnames(emm_table)) - 1]
         temp_row$se       <- emm_table[i, "SE"]
-        temp_row$df       <- emm_table[i, "df"]
-        
+        if(type == "LMM"){
+          if(options$marginalMeansDf != "asymptotic"){
+            temp_row$df       <- emm_table[i, "df"]            
+          }
+        }
         if (options$marginalMeansCompare) {
           temp_row$stat <- emm_test[i, grep("ratio", colnames(emm_test))]
           temp_row$pval <- emm_test[i, "p.value"]
@@ -1643,9 +1650,13 @@
       trendsSummary$addColumnInfo(name = "se",
                                   title = gettext("SE"),
                                   type = "number")
-      trendsSummary$addColumnInfo(name = "df",
-                                  title = gettext("df"),
-                                  type = "number")
+      if(type == "LMM"){
+        if(options$trendsDf != "asymptotic"){
+          trendsSummary$addColumnInfo(name = "df",
+                                      title = gettext("df"),
+                                      type = "number")
+        }
+      }
       trendsSummary$addColumnInfo(
         name = "lowerCI",
         title = gettext("Lower"),
@@ -1714,7 +1725,11 @@
       if (type %in% c("LMM", "GLMM")) {
         # the estimate is before SE (names change for GLMM)
         temp_row$se       <- emm_table[i, "SE"]
-        temp_row$df       <- emm_table[i, "df"]
+        if(type == "LMM"){
+          if(options$trendsDf != "asymptotic"){
+            temp_row$df       <- emm_table[i, "df"]
+          }
+        }
         
         if (options$trendsCompare) {
           temp_row$stat <- emm_test[i, grep("ratio", colnames(emm_test))]
@@ -3085,7 +3100,7 @@
 .mmMessageInterpretability <-
   gettext("The intercept corresponds to the (unweighted) grand mean; for each factor with k levels, k - 1 parameters are estimated. Consequently, the estimates cannot be directly mapped to factor levels.")
 .mmMessageSingularFit <-
-  gettext("Model fit is singular. Specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Carefully reduce the random effects structure, but be aware this may induce unknown risks of anti-conservative results (i.e., p-values might be lower than nominal).")
+  gettext("Model fit is singular. Specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Carefully reduce the random effects structure, but this practice might inflate the reported p-value, and invalidates the analysis.")
 .mmMessageVovkSellke <-
   gettext("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001).")
 .mmMessageNumericalProblems <-
@@ -3120,8 +3135,8 @@
   sprintf(
     ngettext(
       length(terms),
-      "Factor %s does not vary within the levels of random effects grouping factor '%s'. All random slopes involving %s have been removed for '%s'.",
-      "Factors %s do not vary within the levels of random effects grouping factor '%s'. All random slopes involving %s have been removed for '%s'."
+      "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factor %s does not vary within the levels of random effects grouping factor '%s'.",
+      "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factors %s do not vary within the levels of random effects grouping factor '%s'.",
     ),
     paste0("'", terms, "'", collapse = ", "),
     grouping,
@@ -3130,8 +3145,12 @@
   )
 }
 .mmMessageOmmitedTerms2 <- function(terms, grouping) {
-  gettextf(
-    "Number of observations is not sufficient for estimating %s random slopes for random effects grouping factor '%s'. Consequently, random slopes for %s have been removed for '%s'.",
+  sprintf(
+    ngettext(
+      length(terms),
+      "Random slopes of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slopes of '%s' for random effects grouping factor '%s'.",
+      "Random slope of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slope of '%s' for random effects grouping factor '%s'.",
+    ),
     paste0("'", terms, "'", collapse = ", "),
     grouping,
     paste0("'", terms, "'", collapse = ", "),
