@@ -860,10 +860,19 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     postHocCorrections <- c("tukey", "scheffe", "bonferroni", "holm", "sidak")
 
     ## Computation
-    resultPostHoc <- lapply(postHocCorrections, function(x)
-      summary(emmeans::contrast(postHocRef[[postHocVarIndex]], method = "pairwise"), 
-              adjust = x, infer = c(TRUE, TRUE), level = options$confidenceIntervalIntervalPostHoc))
-
+    resultPostHoc <- lapply(postHocCorrections, function(x) {
+      post <- summary(emmeans::contrast(postHocRef[[postHocVarIndex]], method = "pairwise"), 
+                      adjust = x, infer = c(TRUE, TRUE), level = options$confidenceIntervalIntervalPostHoc)
+      
+      # some p-value corrections can underflow: we replace them with the smalles representable number
+      if(any(post$p.value == 0)) 
+        postHocStandardContainer[[thisVarName]]$addFootnote(message = gettext("Some p-values are approximate."))
+      
+      post$p.value[post$p.value == 0] <- .Machine$double.xmin
+      
+      return(post)
+    })
+    
     allContrasts <- strsplit(as.character(resultPostHoc[[1]]$contrast), split = " - ")
     
     if (nrow(resultPostHoc[[1]]) > 1)
