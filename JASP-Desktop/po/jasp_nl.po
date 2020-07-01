@@ -2871,7 +2871,7 @@ msgstr "Verwachte posterior"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Download Report</b>"
-msgstr "<b>Download verslag</b>"
+msgstr "<b>Download Verslag</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>To Selection</b>"
@@ -10262,7 +10262,7 @@ msgstr "Inverse"
 
 msgctxt "mlClassificationKnn|"
 msgid "Gaussian"
-msgstr "Gaussiaans"
+msgstr "Gaussische"
 
 msgctxt "mlClassificationKnn|"
 msgid "Rank"
@@ -13323,7 +13323,7 @@ msgstr "Inverse"
 
 msgctxt "mlRegressionKnn|"
 msgid "Gaussian"
-msgstr "Gaussiaans"
+msgstr "Gaussische"
 
 msgctxt "mlRegressionKnn|"
 msgid "Rank"
@@ -16347,7 +16347,7 @@ msgstr "Afkapping"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Prior Odds"
-msgstr "Prior kansratio"
+msgstr "Prior Kansratio"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Normal(μ,σ)"
@@ -16375,7 +16375,7 @@ msgstr "Inverse-Gamma(α,β)"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Spike(x₀)"
-msgstr "Puntmassa((x₀)"
+msgstr "Puntmassa(x₀)"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Uniform(a,b)"
@@ -16447,7 +16447,7 @@ msgstr "Publicatieonzuiverheid (null)"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Inference"
-msgstr "Ineferentie"
+msgstr "Inferentie"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Conditional estimates"
@@ -16467,7 +16467,7 @@ msgstr "Inclusie"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "vs Best"
-msgstr "vs Best"
+msgstr "vs Beste"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "vs Previous"
@@ -16527,7 +16527,7 @@ msgstr "Geschat"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Both"
-msgstr "Beiden"
+msgstr "Beide"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Ascending"
@@ -16731,7 +16731,7 @@ msgstr "Vaste-effecten variabelen"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Random effects grouping factors"
-msgstr "Willekeurige effect grouperingsfactoren"
+msgstr "Willekeurige effect groeperingsfactoren"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Family"
@@ -16815,7 +16815,7 @@ msgstr "Vaste effect variabelen"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Random effects grouping factors"
-msgstr "Willekeurige effect grouperingsfactoren"
+msgstr "Willekeurige effect groeperingsfactoren"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Estimated marginal means"
@@ -16859,7 +16859,7 @@ msgstr "Vaste effecten variabelen"
 
 msgctxt "MixedModelsGLMM|"
 msgid "Random effects grouping factors"
-msgstr "Willekeurige effect grouperingsfactoren"
+msgstr "Willekeurige effect groeperingsfactoren"
 
 msgctxt "MixedModelsGLMM|"
 msgid "Family"
@@ -16955,7 +16955,7 @@ msgstr "Vaste effect variabelen"
 
 msgctxt "MixedModelsLMM|"
 msgid "Random effects grouping factors"
-msgstr "Willekeurige effect grouperingsfactoren"
+msgstr "Willekeurige effect groeperingsfactoren"
 
 msgctxt "MixedModelsLMM|"
 msgid "Estimated marginal means"
@@ -17512,7 +17512,7 @@ msgstr "Opties"
 
 msgctxt "MixedModelsBOptions|"
 msgid "Warmup"
-msgstr "Opwarm"
+msgstr "Opwarming"
 
 msgctxt "MixedModelsBOptions|"
 msgid "Iterations"
@@ -17613,7 +17613,7 @@ msgstr "Willekeurige effecten"
 #, qt-format
 msgctxt "MixedModelsModel|"
 msgid "Random slopes by %1"
-msgstr "Willekeurige hellingen by %1"
+msgstr "Willekeurige hellingen van %1"
 
 msgctxt "MixedModelsModel|"
 msgid "Correlations"
@@ -17693,7 +17693,7 @@ msgstr "Onderscheidende grafieken"
 
 msgctxt "MixedModelsPlots|"
 msgid "Random effects grouping factors"
-msgstr "Willekeurige effecten grouperingsfactoren"
+msgstr "Willekeurige effecten groeperingsfactoren"
 
 msgctxt "MixedModelsPlots|"
 msgid "Background data show"
@@ -17729,7 +17729,7 @@ msgstr "Betrouwbaarheidsinterval"
 
 msgctxt "MixedModelsPlots|"
 msgid "Distinguish factor levels"
-msgstr "Onderscheid factorniveau's"
+msgstr "Onderscheid factorniveaus"
 
 msgctxt "MixedModelsPlots|"
 msgid "Color"
@@ -17861,7 +17861,7 @@ msgstr "Relatieve tekstgrootte"
 
 msgctxt "MixedModelsPlots|"
 msgid "Relative size foreground data"
-msgstr "Relatieve voorgrond gegevensgrootte"
+msgstr "Relatieve voorgrondgegevensgrootte"
 
 msgctxt "MixedModelsPlots|"
 msgid "Estimates table"
@@ -17885,7 +17885,7 @@ msgstr "Gamma"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Inverse Gaussian"
-msgstr "Inverse Gaussiaans"
+msgstr "Inverse Gaussische"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Poisson"
@@ -17925,7 +17925,7 @@ msgstr "Gamma"
 
 msgctxt "MixedModelsGLMM|"
 msgid "Inverse Gaussian"
-msgstr "Inverse Gaussiaans"
+msgstr "Inverse Gaussische"
 
 msgctxt "MixedModelsGLMM|"
 msgid "Poisson"
