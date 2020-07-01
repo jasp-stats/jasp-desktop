@@ -352,7 +352,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			else {
 				var strContent;
 
-				if (content != 0 && Math.abs(content) <= 1/(Math.pow(10,dp))) {
+				if (content != 0 && Math.abs(content) < 1/(Math.pow(10,dp))) {
 					strContent = toExponential(content, dp, 0, html)
 				} else {
 					let _content = (html) ? "&minus;" : "-";
