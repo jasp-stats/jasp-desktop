@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-07-01 15:05\n"
+"POT-Creation-Date: 2020-07-01 15:56\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5176,13 +5176,13 @@ msgstr ""
 msgid "%.0f%% Credible intervals"
 msgstr ""
 
-msgid "Data covariance matrix is not positive semidefinite"
+msgid "The covariance matrix of the data is not invertible"
 msgstr ""
 
-msgid "%s Using pairwise complete cases."
+msgid "%s Of the observations, pairwise complete cases were used."
 msgstr ""
 
-msgid "%s Using %1.f complete cases."
+msgid "%s Of the observations, %1.f complete cases were used."
 msgstr ""
 
 msgid "Bayesian Scale Reliability Statistics"
@@ -5245,7 +5245,7 @@ msgstr ""
 msgid "Point estimate"
 msgstr ""
 
-msgid "%sMcDonald's ω estimation method switched to PFA because the CFA\n                                          did not find a solution."
+msgid "%sMcDonald's ω estimation method switched to PFA because the CFA\n                                    did not find a solution."
 msgstr ""
 
 msgid "If item dropped"
@@ -5254,13 +5254,13 @@ msgstr ""
 msgid "Frequentist Individual Item Reliability Statistics"
 msgstr ""
 
-msgid "McDonald's ω estimation method for item-dropped statistics\n                                    switched to PFA because the CFA did not find a solution."
+msgid "McDonald's ω estimation method for item-dropped statistics \n                                     switched to PFA because the CFA did not find a solution."
 msgstr ""
 
 msgid "Fit Measures of Single Factor Model Fit"
 msgstr ""
 
-msgid "Fit measures cannot be displayed because the McDonald's ω \n                                               estimation method switched \n                                               to PFA as the CFA did not find a solution."
+msgid "Fit measures cannot be displayed because the McDonald's ω \n                                       estimation method switched to PFA as the CFA did not find a solution."
 msgstr ""
 
 msgid "The priors for publication bias were set incorrectly."
@@ -5912,5 +5912,10 @@ msgstr[1]    ""
 
 msgid        "The following item correlated negatively with the scale: %s. "
 msgid_plural "The following items correlated negatively with the scale: %s. "
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "The following item was reverse scaled: %s. "
+msgid_plural "The following items were reverse scaled: %s. "
 msgstr[0]    ""
 msgstr[1]    ""
