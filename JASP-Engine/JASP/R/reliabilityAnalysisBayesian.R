@@ -295,7 +295,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                   "noChains", "noThin", "setSeed", "seedValue",
                                   "averageInterItemCor", "meanScale", "sdScale", "missingValues", "rHat"))
   
-  scaleTable$addColumnInfo(name = "estimate", title = "Estimate", type = "string")
+  scaleTable$addColumnInfo(name = "estimate", title = gettext("Estimate"), type = "string")
   intervalLow <- gettextf("%s%% CI",
                           format(100*options[["credibleIntervalValueScale"]], digits = 3, drop0trailing = TRUE))
   intervalUp <- gettextf("%s%% CI",
