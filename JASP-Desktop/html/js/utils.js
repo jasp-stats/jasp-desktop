@@ -274,31 +274,9 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
 
 				var decimalsExpon = fixDecimals ? dp : sf - 1;
-				let _sign = (html) ? "&minus;" : "-";
-				var exponentiated = content.toExponential(decimalsExpon).replace(/-/g, _sign)
 				var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
 
-				var split = exponentiated.split("e")
-				var mantissa = split[0]
-				var exponent = split[1]
-				var exponentSign = exponent.substr(0, 1)
-				var exponentNum = exponent.substr(1)
-
-				var padding
-
-				if (paddingNeeded)
-					padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
-				else
-					padding = ''
-
-
-				let reassembled;
-				if (html) {
-					reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum;
-				} else {
-					reassembled = mantissa + "e" + exponentSign + exponentNum;
-				}
-
+				let reassembled = toExponential(content, decimalsExpon, paddingNeeded, html)
 				formatted = { content: reassembled, "class": "number" }
 
 				isNumber = true
@@ -374,22 +352,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			else {
 				var strContent;
 
-				if (content < 1/(Math.pow(10,dp))) {
-					let _sign = (html) ? "&minus;" : "-";
-					var exponentiated = content.toExponential(dp).replace(/-/g, _sign)
-
-					var split = exponentiated.split("e")
-					var mantissa = split[0]
-					var exponent = split[1]
-					var exponentSign = exponent.substr(0, 1)
-					var exponentNum = exponent.substr(1)
-
-					if (html) {
-						strContent = mantissa + "e&thinsp;" + exponentSign + exponentNum;
-					} else {
-						strContent = mantissa + "e" + exponentSign + exponentNum;
-					}
-
+				if (content != 0 && Math.abs(content) < 1/(Math.pow(10,dp))) {
+					strContent = toExponential(content, dp, 0, html)
 				} else {
 					let _content = (html) ? "&minus;" : "-";
 					strContent = content.toFixed(dp).replace(/-/g, _content)
@@ -885,4 +849,32 @@ function camelize (str) {
 		if (+match === 0) return "";
 		return index == 0 ? match.toLowerCase() : match.toUpperCase();
 	});
+}
+
+function toExponential(number, decimalsExpon, paddingNeeded, html) {
+	let _sign = (html) ? "&minus;" : "-";
+	var exponentiated = number.toExponential(decimalsExpon).replace(/-/g, _sign)
+
+	var split = exponentiated.split("e")
+	var mantissa = split[0]
+	var exponent = split[1]
+	var exponentSign = exponent.substr(0, 1)
+	var exponentNum = exponent.substr(1)
+
+	var padding
+
+	if (paddingNeeded)
+		padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
+	else
+		padding = ''
+
+
+	let reassembled;
+	if (html) {
+		reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum;
+	} else {
+		reassembled = mantissa + "e" + exponentSign + exponentNum;
+	}
+
+	return reassembled;
 }
