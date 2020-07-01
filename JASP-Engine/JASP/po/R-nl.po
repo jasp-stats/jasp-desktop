@@ -6801,17 +6801,14 @@ msgstr "Posterior Kengetallen Voor Submodel %s"
 msgid "%.0f%% Credible intervals"
 msgstr "%.0f%% Geloofwaardigheidsintervallen"
 
-#, fuzzy
 msgid "The covariance matrix of the data is not invertible"
-msgstr "De covariantie matrix is niet positief semidefiniet."
+msgstr "De covariantiematrix is niet positief semidefiniet."
 
-#, fuzzy
 msgid "%s Of the observations, pairwise complete cases were used."
-msgstr "%s Gebruikt pairgewijs volledige gevallen."
+msgstr "%s Alleen paarsgewijze volledige observaties zijn gebruikt."
 
-#, fuzzy
 msgid "%s Of the observations, %1.f complete cases were used."
-msgstr "%s Gebruikt %1.f volledige gevallen."
+msgstr "%s alleen de volledige observaties van %1.f zijn gebruikt."
 
 msgid "Bayesian Scale Reliability Statistics"
 msgstr "Bayesiaanse Schaal Validiteitsstatistieken"
@@ -6877,7 +6874,6 @@ msgstr "Frequentistische Schaal Validiteitsstatistieken"
 msgid "Point estimate"
 msgstr "Puntschatting."
 
-#, fuzzy
 msgid ""
 "%sMcDonald's ω estimation method switched to PFA because the CFA\n"
 "                                    did not find a solution."
@@ -6891,25 +6887,23 @@ msgstr "Als item wordt weggelaten"
 msgid "Frequentist Individual Item Reliability Statistics"
 msgstr "Frequentistische Individuele Item Validiteitsstatistieken"
 
-#, fuzzy
 msgid ""
 "McDonald's ω estimation method for item-dropped statistics \n"
 "                                     switched to PFA because the CFA did not "
 "find a solution."
 msgstr ""
-"McDonald's ω schattingsmethode is omgeschakeld naar PFA omdat de CFA\n"
-"                                          geen oplossing vond."
+"McDonald's ω schattingsmethode voor item-weggelaten statistiek \n"
+" is omgeschakeld naar PFA omdat de CFA geen oplossing vond."
 
 msgid "Fit Measures of Single Factor Model Fit"
 msgstr "Pasmaat van Enkele Factor Model passing"
 
-#, fuzzy
 msgid ""
 "Fit measures cannot be displayed because the McDonald's ω \n"
 "                                       estimation method switched to PFA as "
 "the CFA did not find a solution."
 msgstr ""
-"De passingmaat kan niet worden getoond omdat de schattingsmethode voor "
+"De pasmaat kan niet worden getoond omdat de schattingsmethode voor "
 "McDonald's ω \n"
 "veranderd is naar PFA, want de CFA leidde niet tot een oplossing."
 
@@ -7788,11 +7782,10 @@ msgid_plural "The following items correlated negatively with the scale: %s. "
 msgstr[0] "De volgende item is negatief gecorreleerd met: %s."
 msgstr[1] "De volgende items zijn negatief gecorreleerd met: %s."
 
-#, fuzzy
 msgid "The following item was reverse scaled: %s. "
 msgid_plural "The following items were reverse scaled: %s. "
-msgstr[0] "De volgende item is negatief gecorreleerd met: %s."
-msgstr[1] "De volgende items zijn negatief gecorreleerd met: %s."
+msgstr[0] "De volgende item is omgekeerd geschaald: %s."
+msgstr[1] "De volgende items zijn omgekeerd geschaald: %s."
 
 #~ msgid "WAIC (SE)"
 #~ msgstr "WAIC (SE)"
