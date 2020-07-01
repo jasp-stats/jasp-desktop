@@ -206,36 +206,43 @@ Form
 		}
 
 		Group
-        {
-			CheckBox 
-			{ 
-				id:                 probTable
-				name:               "probTable"; 
-				label:              qsTr("Probability for: ")
-				childrenOnSameRow:  true
+		{
+			CheckBox
+			{
+				id:					probTable
+				name:				"probTable"
+				label:				qsTr("Probability for:")
+				childrenOnSameRow:	true
 
-				DoubleField
+				RowLayout
 				{
-					name: 			"probTableValueLow"
-					afterLabel: 	qsTr("< Reliability <")
-					defaultValue: 	0.70
-					min: 			0
-					max: 			1
-					decimals: 		2
-					fieldWidth: 	40
-				}
+					DoubleField
+					{
+						name:			"probTableValueLow"
+						label:			qsTr("")
+						defaultValue:	0.70
+						min:			0
+						max:			1
+						decimals:		2
+						fieldWidth: 	40
+					}
 
-				DoubleField
-				{
-					name: 			"probTableValueHigh"
-					defaultValue: 	.90
-					min: 			0
-					max: 			1
-					decimals: 		2
-					fieldWidth: 	40
+					Label
+					{	text: qsTr("< Reliability <")}
 
+					DoubleField
+					{
+						name:			"probTableValueHigh"
+						label:			qsTr("")
+						defaultValue:	.90
+						min:			0
+						max:			1
+						decimals:		2
+						fieldWidth: 	40
+					}
 				}
 			}
+
 
 			Item
 			{
@@ -244,12 +251,12 @@ Form
 
 				CheckBox 
 				{ 
-					id:       shadePlots
-					name:     "shadePlots";              
-					indent:   true
-					label:    qsTr("Shade posterior region in plot"); 
-					enabled:  probTable.checked    
-					x:        Theme.subOptionOffset
+					id:			shadePlots
+					name:		"shadePlots";
+					indent:		true
+					label:		qsTr("Shade posterior region in plot");
+					enabled:	probTable.checked
+					x:			Theme.subOptionOffset
 				}
 			}
 		}
