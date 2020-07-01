@@ -68,21 +68,17 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   .checkInverse <- function() {
     if (length(options[["variables"]]) > 2) {
       use.cases <- "everything"
-      if (any(is.na(dataset))) {
+      if (anyNA(dataset)) {
         if (options[["missingValues"]] == "excludeCasesPairwise") 
           use.cases <- "pairwise.complete.obs"
         else if (options[["missingValues"]] == "excludeCasesListwise")
           use.cases <- "complete.obs"
       }
-      if (!("matrix" %in% class(try(solve(cov(dataset, use = use.cases)),silent=TRUE)))) {
-        return(gettext("Data covariance matrix is not invertible"))
-      } else {
-        return(NULL)
-      }
-        
-    } else {
-      return(NULL)
-    }
+      if (isTryError(try(solve(cov(dataset, use = use.cases)),silent=TRUE))) {
+        return(gettext("The covariance matrix of the data is not invertible"))
+      } 
+    } 
+    return(NULL)
   }
 
   .hasErrors(dataset = dataset, options = options, perform = "run",
@@ -145,7 +141,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                       
       missing <- "none" 
       options[["missings"]] <- "everything"
-      if (any(is.na(dataset))) {
+      if (anyNA(dataset)) {
         if (options[["missingValues"]] == "excludeCasesPairwise") {
           missing <- "pairwise"
           options[["missings"]] <- "pairwise.complete.obs"
@@ -274,7 +270,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   names(cri) <- names(samps)
   
   for (nm in names(samps)) {
-    if (any(is.na(samps[[nm]]))) {
+    if (anyNA(samps[[nm]])) {
       cri[[nm]] <- c(NA_real_, NA_real_)
     } else {
       cri[[nm]] <- coda::HPDinterval(coda::mcmc(samps[[nm]]), prob = criValue)
