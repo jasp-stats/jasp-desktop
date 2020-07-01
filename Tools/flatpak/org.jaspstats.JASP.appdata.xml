@@ -35,7 +35,7 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-		<release version="0.13.0" date="2020-06-30">
+		<release version="0.13.0" date="2020-07-01">
                         <description>
                             New Features and improvements: 
 							- Engine improvements 
