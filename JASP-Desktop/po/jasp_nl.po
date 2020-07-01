@@ -1434,7 +1434,7 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "Ancova|"
 msgid "Fixed Factors"
-msgstr "Vaste factoren"
+msgstr "Gefixeerde factoren"
 
 msgctxt "Ancova|"
 msgid "Random Factors"
@@ -1646,7 +1646,7 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "AncovaBayesian|"
 msgid "Fixed Factors"
-msgstr "Vaste factoren"
+msgstr "Gefixeerde factoren"
 
 msgctxt "AncovaBayesian|"
 msgid "Random Factors"
@@ -1826,7 +1826,7 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "Anova|"
 msgid "Fixed Factors"
-msgstr "Vaste factoren"
+msgstr "Gefixeerde factoren"
 
 msgctxt "Anova|"
 msgid "Random Factors"
@@ -2046,7 +2046,7 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "AnovaBayesian|"
 msgid "Fixed Factors"
-msgstr "Vaste factoren"
+msgstr "Gefixeerde factoren"
 
 msgctxt "AnovaBayesian|"
 msgid "Random Factors"
@@ -2646,7 +2646,7 @@ msgstr "Afhankelijke variabelen"
 
 msgctxt "Manova|"
 msgid "Fixed Factors"
-msgstr "Vaste factoren"
+msgstr "Gefixeerde factoren"
 
 msgctxt "Manova|"
 msgid "Random Factors"
@@ -3634,7 +3634,7 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Fixed Factors"
-msgstr "Vaste factoren"
+msgstr "Gefixeerde factoren"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Covariates"
@@ -3686,7 +3686,7 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Fixed Factors"
-msgstr "Vaste factoren"
+msgstr "Gefixeerde factoren"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Tables"
@@ -5518,7 +5518,7 @@ msgstr "Aantal bomen"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Fixed"
-msgstr "Vast"
+msgstr "Gefixeerd"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Trees:"
@@ -5630,7 +5630,7 @@ msgstr "Aantal naaste buren"
 
 msgctxt "mlClassificationKnn|"
 msgid "Fixed"
-msgstr "Vast"
+msgstr "Gefixeerd"
 
 msgctxt "mlClassificationKnn|"
 msgid "Nearest neighbors:"
@@ -5878,7 +5878,7 @@ msgstr "Aantal bomen"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Fixed"
-msgstr "Vast"
+msgstr "Gefixeerd"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Trees:"
@@ -5986,7 +5986,7 @@ msgstr "Modeloptimalisatie"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Fixed"
-msgstr "Vast"
+msgstr "Gefixeerd"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Add predicted clusters to data"
@@ -6082,7 +6082,7 @@ msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Fixed"
-msgstr "Vast"
+msgstr "Gefixeerd"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Clusters:"
@@ -6190,7 +6190,7 @@ msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Fixed"
-msgstr "Vast"
+msgstr "Gefixeerd"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Clusters:"
@@ -6302,7 +6302,7 @@ msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Fixed"
-msgstr "Vast"
+msgstr "Gefixeerd"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Clusters:"
@@ -6406,7 +6406,7 @@ msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Fixed"
-msgstr "Vast"
+msgstr "Gefixeerd"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Clusters:"
@@ -10985,7 +10985,7 @@ msgstr "p"
 
 msgctxt "LDbinomial|"
 msgid "Fixed parameter"
-msgstr "Vaste parameter"
+msgstr "Gefixeerde parameter"
 
 msgctxt "LDbinomial|"
 msgid "n"
@@ -12581,7 +12581,7 @@ msgstr "Prior en posterior"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Add fixed and random effects posterior"
-msgstr "Voeg vaste en willekeurige effecten posterior toe"
+msgstr "Voeg gefixeerde en willekeurige effecten posterior toe"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Shade 95% CI"
@@ -12897,7 +12897,7 @@ msgstr "Componenten"
 
 msgctxt "mixedmod|"
 msgid "Fixed terms"
-msgstr "Vaste termen"
+msgstr "Gefixeerde termen"
 
 msgctxt "mixedmod|"
 msgid "Results Displays"
@@ -16679,7 +16679,7 @@ msgstr "fout % >"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "R-hat >"
-msgstr "R-hat >"
+msgstr "R-dakje >"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Estimated sample size <"
@@ -16691,7 +16691,7 @@ msgstr "Herverdeel prior kans"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Conditional models"
-msgstr "Conditioneel modellen"
+msgstr "Conditionele modellen"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Model space"
@@ -16715,7 +16715,7 @@ msgstr "Pas het altijd opnieuw"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Save the fitted model"
-msgstr "Sla de gefitte model op"
+msgstr "Sla het gepaste model op"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Dependent variable"
@@ -16727,7 +16727,7 @@ msgstr "Aantal proeven"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Fixed effects variables"
-msgstr "Vaste-effecten variabelen"
+msgstr "Gefixeerde effecten variabelen"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Random effects grouping factors"
@@ -16811,7 +16811,7 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Fixed effects variables"
-msgstr "Vaste effect variabelen"
+msgstr "Gefixeerde effect variabelen"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Random effects grouping factors"
@@ -16827,7 +16827,7 @@ msgstr "Model variabelen"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Selected variables"
-msgstr "Geselecteerd variabelen"
+msgstr "Geselecteerde variabelen"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Specify contrasts"
@@ -16855,7 +16855,7 @@ msgstr "Aantal proeven"
 
 msgctxt "MixedModelsGLMM|"
 msgid "Fixed effects variables"
-msgstr "Vaste effecten variabelen"
+msgstr "Gefixeerde effecten variabelen"
 
 msgctxt "MixedModelsGLMM|"
 msgid "Random effects grouping factors"
@@ -16951,7 +16951,7 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "MixedModelsLMM|"
 msgid "Fixed effects variables"
-msgstr "Vaste effect variabelen"
+msgstr "Gefixeerde effecten variabelen"
 
 msgctxt "MixedModelsLMM|"
 msgid "Random effects grouping factors"
@@ -17159,7 +17159,7 @@ msgstr "Diagnostieken"
 
 msgctxt "ReliabilityBayesian|"
 msgid "R-hat"
-msgstr "R-hat"
+msgstr "R-dakje"
 
 msgctxt "ReliabilityBayesian|"
 msgid "Traceplots"
@@ -17488,7 +17488,7 @@ msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
-msgstr "Verschillende componenten hebben een verkeerde type, de standaardwaarden zijn herstelt."
+msgstr "Verschillende componenten hebben een verkeerd type, de standaardwaarden zijn hersteld."
 
 msgctxt "ABTestBayesian|"
 msgid "Prior Model Probability"
@@ -17548,7 +17548,7 @@ msgstr "Model samenvatting"
 
 msgctxt "MixedModelsBOptions|"
 msgid "Fixed effects estimates"
-msgstr "Vaste effecten schattingen"
+msgstr "Gefixeerde effecten schattingen"
 
 msgctxt "MixedModelsBOptions|"
 msgid "Variance/correlation estimates"
@@ -17604,7 +17604,7 @@ msgstr "Model componenten"
 
 msgctxt "MixedModelsModel|"
 msgid "Fixed effects"
-msgstr "Vaste effecten"
+msgstr "Gefixeerde effecten"
 
 msgctxt "MixedModelsModel|"
 msgid "Random effects"
@@ -17661,7 +17661,7 @@ msgstr "Model samenvatting"
 
 msgctxt "MixedModelsOptions|"
 msgid "Fixed effects estimates"
-msgstr "Vaste effecten schattingen"
+msgstr "Gefixeerde effecten schattingen"
 
 msgctxt "MixedModelsOptions|"
 msgid "Variance/correlation estimates"
