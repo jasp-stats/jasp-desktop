@@ -7033,7 +7033,7 @@ msgid ""
 "Estimated studies effects (%s) are model averaged over models assuming "
 "existence of effect."
 msgstr ""
-"Geschatte onderzoekseffecten (%s) zijn gemiddeld over die modelleen waarin "
+"Geschatte onderzoekseffecten (%s) zijn gemiddeld over die modellen waarin "
 "het effect bestaat."
 
 msgid "BF01"
