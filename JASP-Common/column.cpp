@@ -768,12 +768,24 @@ bool Column::setColumnAsScale(const std::vector<double> &values)
 		if(doubleInputItr == AsDoubles.end())
 			throw std::runtime_error("Column::setColumnAsScale ran out of Doubles in assigning..");
 
-		if(*doubleInputItr != value && (isnan(*doubleInputItr) != isnan(value))) //clang warns us this is unsafe but what does IT know?! If it changes it changes! Maybe clang was right after all, (nan != nan) == true...
+		//Apparently checking a double can lead to a problem if they are both nan because nan != nan -> true
+		bool valChanged = (isnan(*doubleInputItr) != isnan(value));
+
+		if(!valChanged && !isnan(value)) //So if they are equally nan and one is not nan they must both have a sensible value which can be compared and otherwise there was already a change
+			valChanged = *doubleInputItr != value;
+
+		/*std::cout << "Old value was: '" << *doubleInputItr << "'\t new: '" << value <<
+					 "'\tand are they nan? old: " << (isnan(*doubleInputItr) ? "nan": "not") << " new: " << (isnan(*doubleInputItr) ? "nan": "not") <<
+					 " considered changed: " << (valChanged ? "yes" : "no") << std::endl;*/
+
+		if(valChanged)
 			changedSomething = true;
 
 		*doubleInputItr = value;
 		doubleInputItr++;
 	}
+
+	std::cout << "So the entire column had a change? " << (changedSomething ? "yes" : "no" ) << std::endl;
 
 	setColumnType(columnType::scale);
 
