@@ -2818,11 +2818,9 @@
   coefs_trend <- gsub("')", "", coefs_trend, fixed = TRUE)
   coefs_trend <- strsplit(coefs_trend, ",")
   
-  if(length(coefs_trend) > 0){
-    for(cft in coefs_trend){
-      if(cft %in% strsplit(par, ":")[[1]] && !grepl(.unv(cft), coefs_name)){
-        coefs_name <- paste0(coefs_name, ":", .unv(cft))
-      }
+  for(cft in coefs_trend){
+    if(cft %in% strsplit(par, ":")[[1]] && !grepl(.unv(cft), coefs_name)){
+      coefs_name <- paste0(coefs_name, ":", .unv(cft))
     }
   }
   
