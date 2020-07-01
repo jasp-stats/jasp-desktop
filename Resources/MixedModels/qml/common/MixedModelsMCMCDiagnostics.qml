@@ -40,17 +40,16 @@ Section
 		{
 			singleVariable:	true
 			name:			"samplingVariable1"
-			title:			qsTr("Selected term")
+			title:			samplingPlot.currentValue == "stan_scat" ? qsTr("Horizontal axis") : qsTr("Plotted term")
 		}
 
 		AssignedVariablesList
 		{
 			singleVariable:	true
 			name:			"samplingVariable2"
-			title:			qsTr("Selected term")
-			enabled:		samplingPlot.currentValue == "stan_scat"
-
-			onEnabledChanged: if (!enabled && count > 0) itemDoubleClicked(0)
+			title:			qsTr("Vertical axis")
+			visible:		samplingPlot.currentValue == "stan_scat"
+			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0)
 		}
 	}
 
@@ -69,5 +68,4 @@ Section
 		]
 	}
 }
-
 

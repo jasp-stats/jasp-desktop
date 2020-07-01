@@ -16,7 +16,6 @@
 #
 
 
-# TODO: Estimated marginal means - contrasts widged - changing the the resolution removes the widget
 # TODO: Expose priors specification to users in Bxxx?
 # TODO: Add 3rd level random effects grouping factors ;) (not that difficult actually)
 
@@ -163,7 +162,7 @@
   # check hack-able options
   if (type %in% c("BLMM", "BGLMM")) {
     if (options$iteration - 1 <= options$warmup) {
-      JASP:::.quitAnalysis(gettext("The number of iterations must be at least 2 iterations higher than the warmup."))
+      JASP:::.quitAnalysis(gettext("The number of iterations must be at least 2 iterations higher than the burnin"))
     }
   }
   
@@ -379,31 +378,55 @@
   }
   return(added)
 }
-.mmFitModel      <-
-  function(jaspResults, dataset, options, type = "LMM") {
-    if (!is.null(jaspResults[["mmModel"]]))
-      return()
-    
-    mmModel <- createJaspState()
-    jaspResults[["mmModel"]] <- mmModel
-    
-    if (options$method == "PB") {
-      seed_dependencies <- c("seed", "setSeed")
-      JASP:::.setSeedJASP(options)
-    } else{
-      seed_dependencies <- NULL
-    }
-    if (type == "LMM") {
-      dependencies <- c(.mmDependenciesLMM, seed_dependencies)
-    } else if (type == "GLMM") {
-      dependencies <- c(.mmDependenciesGLMM, seed_dependencies)
-    }
-    mmModel$dependOn(dependencies)
-    
-    
-    model_formula <- .mmModelFormula(options, dataset)
-    
-    if (type == "LMM") {
+.mmFitModel      <- function(jaspResults, dataset, options, type = "LMM") {
+  if (!is.null(jaspResults[["mmModel"]]))
+    return()
+
+  mmModel <- createJaspState()
+  #maybe you should define some columns here
+  jaspResults[["mmModel"]] <- mmModel
+
+  if (options$method == "PB") {
+    seed_dependencies <- c("seed", "setSeed")
+    JASP:::.setSeedJASP(options)
+  } else{
+    seed_dependencies <- NULL
+  }
+  if (type == "LMM") {
+    dependencies <- c(.mmDependenciesLMM, seed_dependencies)
+  } else if (type == "GLMM") {
+    dependencies <- c(.mmDependenciesGLMM, seed_dependencies)
+  }
+  mmModel$dependOn(dependencies)
+
+
+  model_formula <- .mmModelFormula(options, dataset)
+
+  if (type == "LMM") {
+    model <- tryCatch(
+      afex::mixed(
+        formula         = as.formula(model_formula$model_formula),
+        data            = dataset,
+        type            = options$type,
+        method          = options$method,
+        test_intercept  = if (options$method %in% c("LRT", "PB"))
+          options$test_intercept
+        else
+          FALSE,
+        args_test       = list(nsim = options$bootstrap_samples),
+        check_contrasts = TRUE
+      ),
+      error = function(e)
+        return(e)
+    )
+  } else if (type == "GLMM") {
+    # needs to be avaluated in the global environment
+    glmm_family <<- options$family
+    glmm_link   <<- options$link
+
+    # I wish there was a better way to do this
+    if (options$family == "binomial_agg") {
+      glmm_weight <<- dataset[, .v(options$dependentVariableAggregation)]
       model <- tryCatch(
         afex::mixed(
           formula         = as.formula(model_formula$model_formula),
@@ -415,79 +438,73 @@
           else
             FALSE,
           args_test       = list(nsim = options$bootstrap_samples),
-          check_contrasts = TRUE
+          check_contrasts = TRUE,
+          family          = eval(call("binomial", glmm_link)),
+          weights         = glmm_weight
         ),
         error = function(e)
           return(e)
       )
-    } else if (type == "GLMM") {
-      # needs to be avaluated in the global environment
-      glmm_family <<- options$family
-      glmm_link   <<- options$link
-      
-      # I wish there was a better way to do this
-      if (options$family == "binomial_agg") {
-        glmm_weight <<- dataset[, .v(options$dependentVariableAggregation)]
-        model <- tryCatch(
-          afex::mixed(
-            formula         = as.formula(model_formula$model_formula),
-            data            = dataset,
-            type            = options$type,
-            method          = options$method,
-            test_intercept  = if (options$method %in% c("LRT", "PB"))
-              options$test_intercept
-            else
-              FALSE,
-            args_test       = list(nsim = options$bootstrap_samples),
-            check_contrasts = TRUE,
-            family          = eval(call("binomial", glmm_link)),
-            weights         = glmm_weight
-          ),
-          error = function(e)
-            return(e)
-        )
-      } else{
-        model <- tryCatch(
-          afex::mixed(
-            formula         = as.formula(model_formula$model_formula),
-            data            = dataset,
-            type            = options$type,
-            method          = options$method,
-            test_intercept  = if (options$method %in% c("LRT", "PB"))
-              options$test_intercept
-            else
-              FALSE,
-            args_test       = list(nsim = options$bootstrap_samples),
-            check_contrasts = TRUE,
-            #start           = start,
-            family          = eval(call(glmm_family, glmm_link))
-          ),
-          error = function(e)
-            return(e)
-        )
-      }
+    } else{
+      model <- tryCatch(
+        afex::mixed(
+          formula         = as.formula(model_formula$model_formula),
+          data            = dataset,
+          type            = options$type,
+          method          = options$method,
+          test_intercept  = if (options$method %in% c("LRT", "PB"))
+            options$test_intercept
+          else
+            FALSE,
+          args_test       = list(nsim = options$bootstrap_samples),
+          check_contrasts = TRUE,
+          #start           = start,
+          family          = eval(call(glmm_family, glmm_link))
+        ),
+        error = function(e)
+          return(e)
+      )
     }
-    
-    
-    object <- list(
-      model             = model,
-      removed_me        = model_formula$removed_me,
-      removed_te        = model_formula$removed_te,
-      added_re          = model_formula$added_re
-    )
-    
-    mmModel$object <- object
-    
-    return()
   }
-.mmSummaryAnova  <-
-  function(jaspResults, dataset, options, type = "LMM") {
+
+
+  object <- list(
+    model             = model,
+    removed_me        = model_formula$removed_me,
+    removed_te        = model_formula$removed_te,
+    added_re          = model_formula$added_re
+  )
+
+  mmModel$object <- object
+
+  return()
+}
+.mmSummaryAnova  <- function(jaspResults, dataset, options, type = "LMM") {
     if (!is.null(jaspResults[["ANOVAsummary"]]))
       return()
     
     model <- jaspResults[["mmModel"]]$object$model
     
     ANOVAsummary <- createJaspTable(title = gettext("ANOVA Summary"))
+    #defining columns first to give the user something nice to look at
+                                            ANOVAsummary$addColumnInfo(name = "effect",     title = gettext("Effect"),             type = "string")
+    if (options$method %in% c("S", "KR")) {
+                                            ANOVAsummary$addColumnInfo(name = "df",         title = gettext("df"),                 type = "string")
+                                            ANOVAsummary$addColumnInfo(name = "stat",       title = gettext("F"),                  type = "number")
+    } else if
+     (options$method %in% c("PB", "LRT")) {
+                                            ANOVAsummary$addColumnInfo(name = "df",         title = gettext("df"),                 type = "integer")
+                                            ANOVAsummary$addColumnInfo(name = "stat",       title = gettext("ChiSq"),              type = "number")
+    }
+                                            ANOVAsummary$addColumnInfo(name = "pval",       title = gettext("p"),                  type = "pvalue")
+    if (options$method == "PB")             ANOVAsummary$addColumnInfo(name = "pvalBoot",   title = gettext("p (bootstrap)"),      type = "pvalue")
+    if (options$pvalVS) {
+                                            ANOVAsummary$addColumnInfo(name = "pvalVS",     title = gettext("VS-MPR"),             type = "number")
+      if (options$method == "PB")           ANOVAsummary$addColumnInfo(name = "pvalBootVS", title = gettext("VS-MPR (bootstrap)"), type = "number")
+
+      ANOVAsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A", colNames = c("pvalVS", "pvalBootVS"))
+    }
+
     jaspResults[["ANOVAsummary"]] <- ANOVAsummary
     
     ANOVAsummary$position <- 1
@@ -506,69 +523,29 @@
     # some error managment for GLMMS - and oh boy, they can fail really easily
     if (type %in% c("LMM", "GLMM") && !is.null(model)) {
       if (any(attr(model, "class") %in% c("std::runtime_error", "C++Error", "error"))) {
-        if (model$message == "(maxstephalfit) PIRLS step-halvings failed to reduce deviance in pwrssUpdate") {
+        if (model$message == "(maxstephalfit) PIRLS step-halvings failed to reduce deviance in pwrssUpdate")
           ANOVAsummary$setError(
             gettext("The optimizer failed to find a solution. Probably due to quasi-separation in the data. Try removing some of the predictors.")
           )
-        } else if (model$message == "cannot find valid starting values: please specify some") {
+
+        else if (model$message == "cannot find valid starting values: please specify some")
           # currently no solution to this, it seems to be a problem with synthetic data only.
           # I will try silving it once someone actually has problem with real data.
           ANOVAsummary$setError(gettext("The optimizer failed to find a solution due to invalid starting values. (JASP currently does not support specifying different starting values.)"))
-        } else if (model$message == "Downdated VtV is not positive definite"){
-          ANOVAsummary$setError(gettext("The optimizer failed to find a solution. Probably due to scaling issues quasi-separation in the data. Try rescaling or removing some of the predictors."))
-        } else{
-          ANOVAsummary$setError(.unv(model$message))
-        }
-        
-        jaspResults[["ANOVAsummary"]]   <- ANOVAsummary
 
+        else if (model$message == "Downdated VtV is not positive definite")
+          ANOVAsummary$setError(gettext("The optimizer failed to find a solution. Probably due to scaling issues quasi-separation in the data. Try rescaling or removing some of the predictors."))
+
+        else
+          ANOVAsummary$setError(.unv(model$message))
+
+        
         return()
       }
       
     }
-    
-    ANOVAsummary$addColumnInfo(name = "effect",
-                               title = gettext("Effect"),
-                               type = "string")
-    
-    if (options$method %in% c("S", "KR")) {
-      ANOVAsummary$addColumnInfo(name = "df",
-                                 title = gettext("df"),
-                                 type = "string")
-      ANOVAsummary$addColumnInfo(name = "stat",
-                                 title = gettext("F"),
-                                 type = "number")
-    } else if (options$method %in% c("PB", "LRT")) {
-      ANOVAsummary$addColumnInfo(name = "df",
-                                 title = gettext("df"),
-                                 type = "integer")
-      ANOVAsummary$addColumnInfo(name = "stat",
-                                 title = gettext("ChiSq"),
-                                 type = "number")
-    }
-    
-    ANOVAsummary$addColumnInfo(name = "pval",
-                               title = gettext("p"),
-                               type = "pvalue")
-    if (options$method == "PB") {
-      ANOVAsummary$addColumnInfo(name = "pvalBoot",
-                                 title = gettext("p (bootstrap)"),
-                                 type = "pvalue")
-    }
-    
-    if (options$pvalVS) {
-      ANOVAsummary$addColumnInfo(name = "pvalVS",
-                                 title = gettext("VS-MPR"),
-                                 type = "number")
-      if (options$method == "PB") {
-        ANOVAsummary$addColumnInfo(name = "pvalBootVS",
-                                   title = gettext("VS-MPR (bootstrap)"),
-                                   type = "number")
-      }
-      ANOVAsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A", colNames = c("pvalVS", "pvalBootVS"))
-    }
-    
-    
+
+
     if (is.null(model)) {
       if (options$dependentVariable != "" &&
           length(options$fixedVariables) > 0 &&
@@ -649,26 +626,22 @@
     removed_me <- jaspResults[["mmModel"]]$object$removed_me
     removed_te <- jaspResults[["mmModel"]]$object$removed_te
     added_re   <- jaspResults[["mmModel"]]$object$added_re
-    if (length(removed_me) > 0) {
-      for (i in 1:length(removed_me)) {
-        ANOVAsummary$addFootnote(.mmMessageOmmitedTerms1(removed_me[[i]], names(removed_me)[i]), symbol = gettext("Warning:"))
-      }
-    }
-    if (length(removed_te) > 0) {
-      for (i in 1:length(removed_te)) {
-        ANOVAsummary$addFootnote(.mmMessageOmmitedTerms2(removed_te[[i]], names(removed_te)[i]), symbol = gettext("Warning:"))
-      }
-    }
-    if (length(added_re) > 0) {
-      for (i in 1:length(added_re)) {
-        ANOVAsummary$addFootnote(.mmMessageAddedTerms(added_re[[i]], names(added_re)[i]), symbol = gettext("Warning:"))
-      }
-    }
+    
+    for (i in seq_along(removed_me))
+      ANOVAsummary$addFootnote(.mmMessageOmmitedTerms1(removed_me[[i]], names(removed_me)[i]), symbol = gettext("Warning:"))
+    
+    for (i in seq_along(removed_te))
+      ANOVAsummary$addFootnote(.mmMessageOmmitedTerms2(removed_te[[i]], names(removed_te)[i]), symbol = gettext("Warning:"))
+    
+    for (i in seq_along(added_re))
+      ANOVAsummary$addFootnote(.mmMessageAddedTerms(added_re[[i]], names(added_re)[i]), symbol = gettext("Warning:"))
+    
+
     
     ANOVAsummary$addFootnote(.mmMessageANOVAtype(ifelse(options$type == 3, gettext("III"), gettext("II"))))
-    if (type == "GLMM") {
+    if (type == "GLMM")
       ANOVAsummary$addFootnote(.mmMessageGLMMtype(options$family, options$link))
-    }
+
     ANOVAsummary$addFootnote(.mmMessageTermTest(options$method))
     
     
@@ -713,19 +686,11 @@
       type = "number"
     )
   }
-  fitStats$addColumnInfo(name = "loglik",
-                         title = gettext("log Lik."),
-                         type = "number")
-  fitStats$addColumnInfo(name = "df",
-                         title = gettext("df"),
-                         type = "integer")
 
-  fitStats$addColumnInfo(name = "aic",
-                         title = gettext("AIC"),
-                         type = "number")
-  fitStats$addColumnInfo(name = "bic",
-                         title = gettext("BIC"),
-                         type = "number")
+  fitStats$addColumnInfo(name = "loglik", title = gettext("log Lik."), type = "number")
+  fitStats$addColumnInfo(name = "df",     title = gettext("df"),       type = "integer")
+  fitStats$addColumnInfo(name = "aic",    title = gettext("AIC"),      type = "number")
+  fitStats$addColumnInfo(name = "bic",    title = gettext("BIC"),      type = "number")
   
   jaspResults[["fitStats"]] <- fitStats
   
@@ -935,49 +900,32 @@
   FEsummary <- createJaspTable(title = gettext("Fixed Effects Estimates"))
   
   FEsummary$position <- 3
-  if (type == "LMM") {
-    dependencies <- .mmDependenciesLMM
-  } else if (type == "GLMM") {
-    dependencies <- .mmDependenciesGLMM
-  }
-  if (options$method == "PB") {
+  if (type == "LMM")       dependencies <- .mmDependenciesLMM
+  else if (type == "GLMM") dependencies <- .mmDependenciesGLMM
+
+  if(options$method == "PB"){
     seed_dependencies <- c("seed", "setSeed")
-  } else{
+  }else{
     seed_dependencies <- NULL
   }
+  
+
   FEsummary$dependOn(c(dependencies, seed_dependencies, "showFE", "pvalVS"))
   
-  FEsummary$addColumnInfo(name = "term",
-                          title = gettext("Term"),
-                          type = "string")
-  FEsummary$addColumnInfo(name = "estimate",
-                          title = gettext("Estimate"),
-                          type = "number")
-  FEsummary$addColumnInfo(name = "se",
-                          title = gettext("SE"),
-                          type = "number")
-  if (type == "LMM") {
-    FEsummary$addColumnInfo(name = "df",
-                            title = gettext("df"),
-                            type = "number")
-  }
-  FEsummary$addColumnInfo(name = "stat",
-                          title = gettext("t"),
-                          type = "number")
-  if (ncol(FE_coef) >= 4) {
-    FEsummary$addColumnInfo(name = "pval",
-                            title = gettext("p"),
-                            type = "pvalue")
-  }
-  
+                          FEsummary$addColumnInfo(name = "term",       title = gettext("Term"),       type = "string")
+                          FEsummary$addColumnInfo(name = "estimate",   title = gettext("Estimate"),   type = "number")
+                          FEsummary$addColumnInfo(name = "se",         title = gettext("SE"),         type = "number")
+  if (type == "LMM")      FEsummary$addColumnInfo(name = "df",         title = gettext("df"),         type = "number")
+                          FEsummary$addColumnInfo(name = "stat",       title = gettext("t"),          type = "number")
+  if (ncol(FE_coef) >= 4) FEsummary$addColumnInfo(name = "pval",       title = gettext("p"),          type = "pvalue")
+
   if (options$pvalVS) {
-    FEsummary$addColumnInfo(name = "pvalVS",
-                            title = gettext("VS-MPR"),
-                            type = "number")
+                          FEsummary$addColumnInfo(name = "pvalVS",     title = gettext("VS-MPR"),     type = "number")
     FEsummary$addFootnote(.mmMessageVovkSellke, symbol = "\u002A", colNames = "pvalVS")
   }
   
-  
+  jaspResults[["FEsummary"]] <- FEsummary
+
   for (i in 1:nrow(FE_coef)) {
     if (rownames(FE_coef)[i] == "(Intercept)") {
       effect_name <- gettext("Intercept")
@@ -1021,17 +969,15 @@
   # add warning messages
   FEsummary$addFootnote(.mmMessageInterpretability)
   
-  jaspResults[["FEsummary"]] <- FEsummary
+
 }
-.mmPlot          <-
-  function(jaspResults, dataset, options, type = "LMM") {
+.mmPlot          <- function(jaspResults, dataset, options, type = "LMM") {
     model <- jaspResults[["mmModel"]]$object$model
     
     # automatic size specification will somewhat work unless there is more than 2 variables in panel
     height <- 350
-    width  <-
-      450 * prod(sapply(unlist(options$plotsX), function(x)
-        length(unique(dataset[, .v(x)])) / 2))
+    width  <- 450 * prod(sapply(unlist(options$plotsX), function(x) length(unique(dataset[, .v(x)])) / 2))
+
     if (length(options$plotsPanel) > 0) {
       width  <-
         width * length(unique(dataset[, .v(unlist(options$plotsPanel)[1])]))
@@ -1045,21 +991,16 @@
       width  <- width + 100
     }
     
-    plots  <-
-      createJaspPlot(title = gettext("Plot"),
-                     width = width,
-                     height = height)
+    plots  <- createJaspPlot(title = gettext("Plot"), width = width, height = height)
     
     plots$position <- 5
-    if (type == "LMM") {
-      dependencies <- .mmDependenciesLMM
-    } else if (type == "GLMM") {
-      dependencies <- .mmDependenciesGLMM
-    } else  if (type == "BLMM") {
-      dependencies <- .mmDependenciesBLMM
-    } else if (type == "BGLMM") {
-      dependencies <- .mmDependenciesBGLMM
-    }
+    switch(type,
+      LMM   = dependencies <- .mmDependenciesLMM,
+      GLMM  = dependencies <- .mmDependenciesGLMM,
+      BLMM  = dependencies <- .mmDependenciesBLMM,
+      BGLMM = dependencies <- .mmDependenciesBGLMM
+    )
+
     plots$dependOn(
       c(
         dependencies,
@@ -1090,14 +1031,15 @@
         "setSeed"
       )
     )
-    
-    
+
+    jaspResults[["plots"]] <- plots
+    plots$status <- "running"
+
     # stop with message if there is no random effects grouping factor selected
     if (length(options$plotsAgregatedOver) == 0) {
       plots$setError(
         gettext("At least one random effects grouping factor needs to be selected in field 'Background data show'.")
       )
-      jaspResults[["plots"]] <- plots
       return()
     }
     if (all(
@@ -1111,7 +1053,6 @@
       plots$setError(
         gettext("Factor levels need to be distinguished by at least one feature. Please, check one of the 'Distinguish factor levels' options.")
       )
-      jaspResults[["plots"]] <- plots
       return()
     }
     
@@ -1161,7 +1102,7 @@
         outlier.intersect = TRUE
       )
     }
-    if (options$plotsBackgroundColor != "none")
+    if (options$plotsBackgroundColor != "none" && options$plotsGeom != "geom_jitter" && "color" %in% mapping)
       data_arg$color <- options$plotsBackgroundColor
     
     
@@ -1200,7 +1141,6 @@
     
     if (class(p) %in% c("simpleError", "error")) {
       plots$setError(p$message)
-      jaspResults[["plots"]] <- plots
       return()
     }
     
@@ -1243,9 +1183,6 @@
     
     
     plots$plotObject <- p
-    
-    jaspResults[["plots"]] <- plots
-    
     
     if (options$plotsEstimatesTable) {
       plot_data <- afex::afex_plot(
@@ -1310,6 +1247,8 @@
           overtitle = gettextf("%s%% CI", 100 * options$plotsCIwidth)
         )
       }
+
+      jaspResults[["EstimatesTable"]] <- EstimatesTable
       
       for (i in 1:nrow(plot_data)) {
         temp_row <- list()
@@ -1326,13 +1265,12 @@
         EstimatesTable$addRows(temp_row)
       }
       
-      jaspResults[["EstimatesTable"]] <- EstimatesTable
+
     }
     
     return()
   }
-.mmMarginalMeans <-
-  function(jaspResults, dataset, options, type = "LMM") {
+.mmMarginalMeans <- function(jaspResults, dataset, options, type = "LMM") {
     if (!is.null(jaspResults[["EMMresults"]]))
       return()
     
@@ -1381,8 +1319,7 @@
       }
     }
     
-    EMMsummary <-
-      createJaspTable(title = gettext("Estimated Marginal Means"))
+    EMMsummary <- createJaspTable(title = gettext("Estimated Marginal Means"))
     EMMresults <- createJaspState()
     
     EMMsummary$position <- 7
@@ -1448,9 +1385,13 @@
       EMMsummary$addColumnInfo(name = "se",
                                title = gettext("SE"),
                                type = "number")
-      EMMsummary$addColumnInfo(name = "df",
-                               title = gettext("df"),
-                               type = "number")
+      if(type == "LMM"){
+        if(options$marginalMeansDf != "asymptotic"){
+          EMMsummary$addColumnInfo(name = "df",
+                                   title = gettext("df"),
+                                   type = "number")
+        }
+      }
       EMMsummary$addColumnInfo(
         name = "lowerCI",
         title = gettext("Lower"),
@@ -1499,7 +1440,8 @@
         overtitle = gettextf("%s%% HPD", 100 * options$marginalMeansCIwidth)
       )
     }
-    
+
+    jaspResults[["EMMsummary"]] <- EMMsummary
     
     for (i in 1:nrow(emm_table)) {
       temp_row <- list()
@@ -1521,8 +1463,11 @@
         temp_row$estimate <-
           emm_table[i, grep("SE", colnames(emm_table)) - 1]
         temp_row$se       <- emm_table[i, "SE"]
-        temp_row$df       <- emm_table[i, "df"]
-        
+        if(type == "LMM"){
+          if(options$marginalMeansDf != "asymptotic"){
+            temp_row$df       <- emm_table[i, "df"]            
+          }
+        }
         if (options$marginalMeansCompare) {
           temp_row$stat <- emm_test[i, grep("ratio", colnames(emm_test))]
           temp_row$pval <- emm_test[i, "p.value"]
@@ -1561,18 +1506,17 @@
       )
     }
     
-    jaspResults[["EMMsummary"]] <- EMMsummary
-    jaspResults[["EMMresults"]] <- EMMresults
+
     
     
     object <- list(emm         = emm,
                    emm_table   = emm_table)
     EMMresults$object <- object
+    jaspResults[["EMMresults"]] <- EMMresults
     
     return()
   }
-.mmTrends        <-
-  function(jaspResults, dataset, options, type = "LMM") {
+.mmTrends        <- function(jaspResults, dataset, options, type = "LMM") {
     if (!is.null(jaspResults[["contrasts_Trends"]]))
       return()
     
@@ -1706,9 +1650,13 @@
       trendsSummary$addColumnInfo(name = "se",
                                   title = gettext("SE"),
                                   type = "number")
-      trendsSummary$addColumnInfo(name = "df",
-                                  title = gettext("df"),
-                                  type = "number")
+      if(type == "LMM"){
+        if(options$trendsDf != "asymptotic"){
+          trendsSummary$addColumnInfo(name = "df",
+                                      title = gettext("df"),
+                                      type = "number")
+        }
+      }
       trendsSummary$addColumnInfo(
         name = "lowerCI",
         title = gettext("Lower"),
@@ -1753,6 +1701,8 @@
         overtitle = gettextf("%s%% HPD", 100 * options$trendsCIwidth)
       )
     }
+
+    jaspResults[["trendsSummary"]] <- trendsSummary
     
     
     for (i in 1:nrow(emm_table)) {
@@ -1775,7 +1725,11 @@
       if (type %in% c("LMM", "GLMM")) {
         # the estimate is before SE (names change for GLMM)
         temp_row$se       <- emm_table[i, "SE"]
-        temp_row$df       <- emm_table[i, "df"]
+        if(type == "LMM"){
+          if(options$trendsDf != "asymptotic"){
+            temp_row$df       <- emm_table[i, "df"]
+          }
+        }
         
         if (options$trendsCompare) {
           temp_row$stat <- emm_test[i, grep("ratio", colnames(emm_test))]
@@ -1807,22 +1761,19 @@
     if (type == "GLMM") {
       trendsSummary$addFootnote(.mmMessageNotResponse)
     }
-    
-    jaspResults[["trendsSummary"]] <- trendsSummary
-    jaspResults[["EMTresults"]]    <- EMTresults
+
+
     
     
     object <- list(emm         = emm,
                    emm_table   = emm_table)
     EMTresults$object <- object
+
+    jaspResults[["EMTresults"]]    <- EMTresults
     
     return()
   }
-.mmContrasts     <-
-  function(jaspResults,
-           options,
-           type = "LMM",
-           what = "Means") {
+.mmContrasts     <- function(jaspResults, options, type = "LMM", what = "Means") {
     if (what == "Means") {
       if (!is.null(jaspResults[["contrasts_Means"]]))
         return()
@@ -1968,6 +1919,9 @@
         )
       )
     }
+
+    # Columns have been specified, show to user
+    jaspResults[[paste0("contrasts_", what)]] <- EMMCsummary
     
     if (what == "Means") {
       selectedContrasts  <- options$Contrasts
@@ -1995,7 +1949,6 @@
           eval(parse(text = x))))
     }
     if (length(contrs) == 0) {
-      jaspResults[[paste0("contrasts_", what)]] <- EMMCsummary
       return()
     }
     
@@ -2040,7 +1993,6 @@
     
     if (length(emm_contrast) == 2) {
       EMMCsummary$setError(emm_contrast$message)
-      jaspResults[[paste0("contrasts_", what)]] <- EMMCsummary
       return()
     }
     
@@ -2106,13 +2058,11 @@
       EMMCsummary$addRows(temp_row)
       
     }
-    
-    jaspResults[[paste0("contrasts_", what)]] <- EMMCsummary
-    
-    
   }
+
+
 # specific Bayesian
-.mmReadDataB     <- function(dataset, options, type = "BLMM") {
+.mmReadDataB      <- function(dataset, options, type = "BLMM") {
   if (!is.null(dataset)) {
     return(dataset)
   } else{
@@ -2145,15 +2095,14 @@
     }
   }
 }
-.mmFitModelB     <-
-  function(jaspResults, dataset, options, type = "BLMM") {
+.mmFitModelB      <- function(jaspResults, dataset, options, type = "BLMM") {
     # hopefully fixing the random errors
     contr.bayes <<- stanova::contr.bayes
     if (!is.null(jaspResults[["mmModel"]]))
       return()
     
     mmModel <- createJaspState()
-    jaspResults[["mmModel"]] <- mmModel
+
     
     if (type == "BLMM") {
       dependencies <- .mmDependenciesBLMM
@@ -2163,8 +2112,7 @@
     mmModel$dependOn(dependencies)
     
     model_formula <- .mmModelFormula(options, dataset)
-    
-    JASP:::.setSeedJASP(options)
+
     if (type == "BLMM") {
       model <- stanova::stanova_lmer(
         formula           = as.formula(model_formula$model_formula),
@@ -2174,7 +2122,8 @@
         iter              = options$iteration,
         warmup            = options$warmup,
         adapt_delta       = options$adapt_delta,
-        control           = list(max_treedepth = options$max_treedepth)
+        control           = list(max_treedepth = options$max_treedepth),
+        seed              = if (isTRUE(options[["setSeed"]])) options[["seed"]]
       )
       
     } else if (type == "BGLMM") {
@@ -2203,7 +2152,8 @@
           adapt_delta       = options$adapt_delta,
           control           = list(max_treedepth = options$max_treedepth),
           weights           = glmm_weight,
-          family            = eval(call("binomial", glmm_link))
+          family            = eval(call("binomial", glmm_link)),
+          seed              = if (isTRUE(options[["setSeed"]])) options[["seed"]]
         )
         
       } else{
@@ -2216,7 +2166,8 @@
           warmup            = options$warmup,
           adapt_delta       = options$adapt_delta,
           control           = list(max_treedepth = options$max_treedepth),
-          family            = glmm_family
+          family            = glmm_family,
+          seed              = if (isTRUE(options[["setSeed"]])) options[["seed"]]
         )
         
       }
@@ -2231,10 +2182,11 @@
     )
     
     mmModel$object <- object
+    jaspResults[["mmModel"]] <- mmModel
     
     return()
   }
-.mmFitStatsB     <- function(jaspResults, options, type = "BLMM") {
+.mmFitStatsB      <- function(jaspResults, options, type = "BLMM") {
   if (!is.null(jaspResults[["fitStats"]]))
     return()
   
@@ -2257,13 +2209,13 @@
                          title = gettext("WAIC"),
                          type = "number")
   fitStats$addColumnInfo(name = "waicSE",
-                         title = gettext("WAIC (SE)"),
+                         title = gettext("SE (WAIC)"),
                          type = "number")
   fitStats$addColumnInfo(name = "loo",
                          title = gettext("LOO"),
                          type = "number")
   fitStats$addColumnInfo(name = "looSE",
-                         title = gettext("LOO (SE)"),
+                         title = gettext("SE (LOO)"),
                          type = "number")
   
 
@@ -2297,14 +2249,13 @@
   
   return()
 }
-.mmSummaryREB    <- function(jaspResults, options, type = "BLMM") {
+.mmSummaryREB     <- function(jaspResults, options, type = "BLMM") {
   if (!is.null(jaspResults[["REsummary"]]))
     return()
   
   model <- jaspResults[["mmModel"]]$object$model
   
-  REsummary <-
-    createJaspContainer(title = gettext("Variance/Correlation Estimates"))
+  REsummary <- createJaspContainer(title = gettext("Variance/Correlation Estimates"))
   
   REsummary$position <- 4
   
@@ -2430,12 +2381,10 @@
   REres <-
     createJaspTable(title = gettext("Residual Variance Estimates"))
   
-  REres$addColumnInfo(name = "std",
-                      title = gettext("Std. Deviation"),
-                      type = "number")
-  REres$addColumnInfo(name = "var",
-                      title = gettext("Variance"),
-                      type = "number")
+  REres$addColumnInfo(name = "std",   title = gettext("Std. Deviation"), type = "number")
+  REres$addColumnInfo(name = "var",   title = gettext("Variance"),       type = "number")
+
+  jaspResults[["REsummary"]] <- REsummary
   
   temp_row <- list(
     std      = rstanarm:::sigma.stanreg(model),
@@ -2444,12 +2393,10 @@
   
   REres$addRows(temp_row)
   REsummary[["RES"]] <- REres
-  
-  
-  jaspResults[["REsummary"]] <- REsummary
+    
   return()
 }
-.mmSummaryFEB    <- function(jaspResults, options, type = "BLMM") {
+.mmSummaryFEB     <- function(jaspResults, options, type = "BLMM") {
   if (!is.null(jaspResults[["FEsummary"]]))
     return()
   
@@ -2491,6 +2438,8 @@
   FEsummary$addColumnInfo(name = "neff",
                           title = "ESS",
                           type = "number")
+
+  jaspResults[["FEsummary"]] <- FEsummary
   
   model_summary <-
     rstan::summary(model$stanfit,
@@ -2529,11 +2478,8 @@
   
   # add warning messages
   FEsummary$addFootnote(.mmMessageInterpretability)
-  
-  jaspResults[["FEsummary"]] <- FEsummary
 }
-.mmSummaryStanova <-
-  function(jaspResults, dataset, options, type = "BLMM") {
+.mmSummaryStanova <- function(jaspResults, dataset, options, type = "BLMM") {
     if (!is.null(jaspResults[["STANOVAsummary"]]))
       return()
 
@@ -2706,7 +2652,7 @@
         temp_table$addFootnote(.mmMessageMaxRhat(max_Rhat), symbol = gettext("Warning:"))
       }
       if (min_ESS < 100 * options$chains || is.nan(min_ESS)) {
-        temp_table$addFootnote(.mmMessageMinESS(min_ESS), symbol = gettext("Warning:"))
+        temp_table$addFootnote(.mmMessageMinESS(min_ESS, 100 * options$chains), symbol = gettext("Warning:"))
       }
       
       removed_me <- jaspResults[["mmModel"]]$object$removed_me
@@ -2739,13 +2685,31 @@
     }
     
   }
-.mmDiagnostics   <-
-  function(jaspResults, options, dataset, type = "BLMM") {
+.mmDiagnostics    <- function(jaspResults, options, dataset, type = "BLMM") {
     if (!is.null(jaspResults[["diagnosticPlots"]]))
       return()
     
+    
+    diagnosticPlots <- createJaspContainer(title = gettext("Sampling diagnostics"))
+    
+    diagnosticPlots$position <- 5
+    if (type == "BLMM") {
+      dependencies <- .mmDependenciesBLMM
+    } else if (type == "BGLMM") {
+      dependencies <- .mmDependenciesBGLMM
+    }
+    diagnosticPlots$dependOn(c(
+      dependencies,
+      "samplingPlot",
+      "samplingVariable1",
+      "samplingVariable2"
+    ))
+    jaspResults[["diagnosticPlots"]] <- diagnosticPlots
+    
+    
     if (options$samplingPlot == "stan_scat" &&
         length(options$samplingVariable2) == 0) {
+      diagnosticPlots[["emptyPlot"]] <- createJaspPlot()
       return()
     }
     
@@ -2768,55 +2732,29 @@
                         pars = pars,
                         options = options)
     
-    diagnosticPlots <-
-      createJaspContainer(title = gettext("Sampling diagnostics"))
-    
-    diagnosticPlots$position <- 5
-    if (type == "BLMM") {
-      dependencies <- .mmDependenciesBLMM
-    } else if (type == "BGLMM") {
-      dependencies <- .mmDependenciesBGLMM
-    }
-    diagnosticPlots$dependOn(c(
-      dependencies,
-      "samplingPlot",
-      "samplingVariable1",
-      "samplingVariable2"
-    ))
-    
     
     for (i in 1:length(plot_data)) {
       if (names(plot_data)[i] == "Intercept") {
         var_name <- gettext("Intercept")
       } else{
-        if (length(pars) == 1) {
-          var_name <-
-            paste(.unv(unlist(strsplit(
-              as.character(names(plot_data)[i]), ","
-            ))), collapse = ":")
-          var_name <- gsub(" ", "", var_name, fixed = TRUE)
-          var_name <-
-            .mmVariableNames(var_name, options$fixedVariables)
-        } else{
-          var_name <- strsplit(as.character(pars), ":")
-          var_name <-
-            sapply(var_name, function(x)
-              paste(.unv(unlist(
-                strsplit(x, ",")
-              )), collapse = ":"))
-          var_name <-
-            sapply(var_name, function(x)
-              gsub(" ", "", x, fixed = TRUE))
-          var_name <-
-            sapply(var_name, function(x)
-              .mmVariableNames(x, options$fixedVariables))
-        }
-        
+        var_name <- strsplit(as.character(pars), ":")
+        var_name <-
+          sapply(var_name, function(x)
+            paste(.unv(unlist(
+              strsplit(x, ",")
+            )), collapse = ":"))
+        var_name <-
+          sapply(var_name, function(x)
+            gsub(" ", "", x, fixed = TRUE))
+        var_name <-
+          sapply(var_name, function(x)
+            .mmVariableNames(x, options$fixedVariables))
+        var_name <- paste0(var_name, collapse = " by ")
       }
       
       plots  <-
         createJaspPlot(
-          title = paste(var_name, collapse = " by "),
+          title = var_name,
           width = 400,
           height = 300
         )
@@ -2846,14 +2784,12 @@
         p <- JASPgraphs::themeJasp(p)
       }
       if (options$samplingPlot == "stan_trace") {
-        p <- p + ggplot2::labs(y = var_name)
+        p <- p + ggplot2::theme(plot.margin = ggplot2::margin(r = 10 * (nchar(options$iteration - options$warmup) - 2)))
       }
       plots$plotObject <- p
       
       diagnosticPlots[[names(plot_data)[i]]] <- plots
     }
-    
-    jaspResults[["diagnosticPlots"]] <- diagnosticPlots
     
   }
 
@@ -2879,6 +2815,23 @@
   var_name <- gsub(" ()", "", var_name, fixed = TRUE)
   return(var_name)
 }
+.mmAddCoefNameStanova <- function(samples, par, coefs_name){
+  # this is a mess but the stanova::stanova_samples returns an incomplete variable names
+  
+  coefs_trend <- attr(samples, "estimate")
+  coefs_trend <- gsub("trend ('", "", coefs_trend, fixed = TRUE)
+  coefs_trend <- gsub("')", "", coefs_trend, fixed = TRUE)
+  coefs_trend <- strsplit(coefs_trend, ",")
+  
+  for(cft in coefs_trend){
+    if(cft %in% strsplit(par, ":")[[1]] && !grepl(.unv(cft), coefs_name)){
+      coefs_name <- paste0(coefs_name, ":", .unv(cft))
+    }
+  }
+  
+  return(coefs_name)
+  
+}
 .mmGetPlotSamples <- function(model, pars, options) {
   matrix_diff <-
     stanova::stanova_samples(model,
@@ -2892,10 +2845,20 @@
     plot_data <- list()
     
     for (cf in 1:coefs) {
+      
+      coefs_name <-
+        paste(.unv(unlist(
+          strsplit(dimnames(samples)$Parameter[cf], ",")
+        )), collapse = ":")
+      coefs_name <- gsub(" ", "", coefs_name, fixed = TRUE)
+      coefs_name <- .mmVariableNames(coefs_name, options$fixedVariables)
+      coefs_name <- .mmAddCoefNameStanova(samples, pars, coefs_name)
+
+      
       plot_data[[dimnames(samples)$Parameter[cf]]] <- list(
         samp = data.frame(
           value     = as.vector(samples[, cf,]),
-          parameter = dimnames(samples)$Parameter[cf],
+          parameter = as.factor(rep(coefs_name, length(as.vector(samples[, cf,])))),
           chain     = as.factor(c(unlist(
             sapply(1:dim(samples)[3], function(x)
               rep(x, dim(samples)[1]))
@@ -2918,20 +2881,23 @@
     
     for (cf1 in 1:coefs1) {
       for (cf2 in 1:coefs2) {
+
         coefs1_name <-
           paste(.unv(unlist(
             strsplit(dimnames(samples1)$Parameter[cf1], ",")
           )), collapse = ":")
         coefs1_name <- gsub(" ", "", coefs1_name, fixed = TRUE)
-        coefs1_name <-
-          .mmVariableNames(coefs1_name, options$fixedVariables)
+        coefs1_name <- .mmVariableNames(coefs1_name, options$fixedVariables)
+        coefs1_name <- .mmAddCoefNameStanova(samples1, pars[[1]], coefs1_name)
+        
         coefs2_name <-
           paste(.unv(unlist(
             strsplit(dimnames(samples2)$Parameter[cf2], ",")
           )), collapse = ":")
         coefs2_name <- gsub(" ", "", coefs2_name, fixed = TRUE)
-        coefs2_name <-
-          .mmVariableNames(coefs2_name, options$fixedVariables)
+        coefs2_name <- .mmVariableNames(coefs2_name, options$fixedVariables)
+        coefs2_name <- .mmAddCoefNameStanova(samples2, pars[[2]], coefs2_name)
+
         
         plot_data[[paste0(coefs1_name, ":", coefs2_name)]] <- list(
           samp = data.frame(
@@ -2940,8 +2906,7 @@
             parameter = factor(c(
               rep(coefs1_name, dim(samples1)[1] * dim(samples1)[3]),
               rep(coefs2_name, dim(samples2)[1] * dim(samples2)[3])
-            ),
-            levels = c(coefs1_name, coefs2_name)),
+            ), levels = c(coefs1_name, coefs2_name)),
             chain     = as.factor(c(
               unlist(sapply(1:dim(samples1)[3], function(x)
                 rep(x, dim(samples2)[1]))),
@@ -2993,9 +2958,11 @@
   
   graph <-
     base + ggplot2::geom_path() + ggplot2::scale_color_manual(values = clrs) +
-    ggplot2::labs(x = "", y = "") + thm
-  
-  graph <- graph + ggplot2::ylab(unique(plot_data$samp$parameter))
+    ggplot2::labs(x = "", y = levels(plot_data$samp$parameter)) + thm
+
+  graph <- graph + ggplot2::scale_x_continuous(
+    breaks = JASPgraphs::getPrettyAxisBreaks(c(1,max(plot_data$samp$iteration))))
+
   
   graph
 }
@@ -3119,9 +3086,9 @@
                           "link")
 # texts and messages
 .mmMessageInterpretability <-
-  gettext("The intercept corresponds to the (unweighted) grand mean and for each factor with k levels k - 1 parameters are added. Thus, estimates shown here cannot be mapped 1 to 1 to factors with more than two levels (as no such mapping exists). For factors with two levels, corresponding estimates represent half the difference between the factor levels, for factors with more than two levels estimates should not be interpreted!")
+  gettext("The intercept corresponds to the (unweighted) grand mean; for each factor with k levels, k - 1 parameters are estimated. Consequently, the estimates cannot be directly mapped to factor levels.")
 .mmMessageSingularFit <-
-  gettext("Model fit is singular. Specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Carefully reduce the random effects structure, but be aware this may induce unknown risks of anti-conservative results (i.e., p-values might be lower than nominal).")
+  gettext("Model fit is singular. Specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Carefully reduce the random effects structure, but this practice might inflate the reported p-value, and invalidates the analysis.")
 .mmMessageVovkSellke <-
   gettext("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001).")
 .mmMessageNumericalProblems <-
@@ -3156,8 +3123,8 @@
   sprintf(
     ngettext(
       length(terms),
-      "Factor %s does not vary within the levels of random effects grouping factor '%s'. All random slopes involving %s have been removed for '%s'.",
-      "Factors %s do not vary within the levels of random effects grouping factor '%s'. All random slopes involving %s have been removed for '%s'."
+      "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factor %s does not vary within the levels of random effects grouping factor '%s'.",
+      "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factors %s do not vary within the levels of random effects grouping factor '%s'.",
     ),
     paste0("'", terms, "'", collapse = ", "),
     grouping,
@@ -3166,8 +3133,12 @@
   )
 }
 .mmMessageOmmitedTerms2 <- function(terms, grouping) {
-  gettextf(
-    "Number of observations is not sufficient for estimating %s random slopes for random effects grouping factor '%s'. Consequently, random slopes for %s have been removed for '%s'.",
+  sprintf(
+    ngettext(
+      length(terms),
+      "Random slopes of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slopes of '%s' for random effects grouping factor '%s'.",
+      "Random slope of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slope of '%s' for random effects grouping factor '%s'.",
+    ),
     paste0("'", terms, "'", collapse = ", "),
     grouping,
     paste0("'", terms, "'", collapse = ", "),
@@ -3242,8 +3213,8 @@
   sprintf(
     ngettext(
       iterations,
-      "There was %i divergent transition after warmup indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions.",
-      "There were %i divergent transitions after warmup indicating problems with the validity of Hamiltonian Monte Carlo. Carefully increase 'Adapt delta' until there are no divergent transitions."
+      "The Hamiltonian Monte Carlo procedure might be invalid -- There was %i divergent transition after warmup. This can be solved by carefully increasing 'Adapt delta' until there are no divergent transitions.",
+      "The Hamiltonian Monte Carlo procedure might be invalid -- There were %i divergent transitions after warmup. This can be solved by carefully increasing 'Adapt delta' until there are no divergent transitions."
     ),
     iterations
   )
@@ -3252,8 +3223,8 @@
   sprintf(
     ngettext(
       nChains,
-      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chain indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Warmup' and 'Iterations'.",
-      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chains indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Warmup' and 'Iterations'."
+      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chain indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Burnin' and 'Iterations'.",
+      "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chains indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Burnin' and 'Iterations'."
     ),
     nChains
   )
@@ -3262,30 +3233,31 @@
   sprintf(
     ngettext(
       iterations,
-      "There was %i transition exceeding maximum treedepth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'.",
-      "There were %i transitions exceeding maximum treedepth indication problems with the efficiency of Hamiltonian Monte Carlo. Consider carefully increasing 'Maximum treedepth'."
+      "The Hamiltonian Monte Carlo procedure might be inefficient -- %i transition exceeded the maximum tree depth. This can be solved by carefully increasing 'Maximum tree depth",
+      "The Hamiltonian Monte Carlo procedure might be inefficient -- %i transitions exceeded the maximum tree depth. This can be solved by carefully increasing 'Maximum tree depth"
     ),
     iterations
   )
 }
 .mmMessageMaxRhat       <- function(Rhat) {
   gettextf(
-    "The largest R-hat is %.3f, indicating that chains have not mixed properly. Running chains for more iterations or increasing 'Adapt delta' may help.",
+    "Inference possibly unreliable -- MCMC chains might not have converged; The largest R-hat is %.3f > 1.01. To lower R-hat please increase 'Iterations', or 'Adapt delta' in the Options section.",
     Rhat
   )
 }
-.mmMessageMinESS        <- function(ESS) {
+.mmMessageMinESS        <- function(ESS, treshold) {
   gettextf(
-    "The smallest Effective Sample Size (ESS) is %.2f, indicating that low estimation accuracy. Running chains for more iterations or increasing 'Adapt delta' may help.",
-    ESS
+    "Low estimation accuracy -- The smallest Effective Sample Size (ESS) is %.2f < %1.0f. To increase accuracy please increase 'Iterations', or 'Adapt delta' in the Options section.",
+    ESS,
+    treshold
   )
 }
 .mmMessageBadWAIC       <- function(n_bad) {
   sprintf(
     ngettext(
       n_bad,
-      "There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO instead.",
-      "There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO instead."
+      "WAIC estimate unreliable -- There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO instead.",
+      "WAIC estimate unreliable -- There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO instead."
     ),
     n_bad
   )
@@ -3294,8 +3266,8 @@
   sprintf(
     ngettext(
       n_bad,
-      "There was %1.0f observation with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate.",
-      "There were %1.0f observations with the shape parameter of k of the generalized Pareto distribution higher than > .5, indicating convergence problems for the LOO estimate."
+      "LOO estimate unreliable -- There was %1.0f observation with the shape parameter (k) of the generalized Pareto distribution higher than > .5.",
+      "LOO estimate unreliable -- There were %1.0f observations with the shape parameter (k) of the generalized Pareto distribution higher than > .5."
     ),
     n_bad
   )

@@ -48,7 +48,7 @@ Press the button to run the analysis. Model relevant changes in the settings wil
 
 
 ### Options
-- Warmup: Number of iterations reserved for warm-up.
+- Burnin: Number of iterations reserved for burnin.
 - Iterations: Total number of iterations.
 - Chains: Number of chains.
 - Adapt delta: Average targer proposal acceptance of each step. Increasing `Adapt delta` results in better-behaved chains, but also longer fitting times.

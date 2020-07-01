@@ -32,7 +32,7 @@ Section
 		{
 			name:			"warmup"
 			id:				warmup
-			label:			qsTr("Warmup")
+			label:			qsTr("Burnin")
 			defaultValue:	2000
 			min:			100
 		}
