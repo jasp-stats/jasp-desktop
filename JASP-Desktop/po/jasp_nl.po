@@ -17945,27 +17945,25 @@ msgctxt "MixedModelsLMM|"
 msgid "None"
 msgstr "Geen"
 
-#, fuzzy
 msgctxt "MixedModelsBOptions|"
 msgid "Burnin"
 msgstr "Opwarming"
 
-#, fuzzy
 msgctxt "MixedModelsMCMCDiagnostics|"
 msgid "Horizontal axis"
 msgstr "Horizontale as"
 
 msgctxt "MixedModelsMCMCDiagnostics|"
 msgid "Plotted term"
-msgstr ""
+msgstr "Uitgezette term"
 
 msgctxt "MixedModelsMCMCDiagnostics|"
 msgid "Vertical axis"
-msgstr ""
+msgstr "Vertikale as"
 
 msgctxt "ReliabilityBayesian|"
 msgid "Probability for:"
-msgstr ""
+msgstr "Kans op:"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
