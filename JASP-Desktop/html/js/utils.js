@@ -79,7 +79,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
             if (window.globSet.pExact) {
                 sf = 4;
 			} else {
-				p = 1/(Math.pow(10,dp));
+				p = f.substring(2);
             }
         }
 
@@ -276,7 +276,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
                 var decimalsExpon = fixDecimals ? dp : sf - 1;
                 let _sign = (html) ? "&minus;" : "-";
                 var exponentiated = content.toExponential(decimalsExpon).replace(/-/g, _sign)
-                var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
+				var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
 
                 var split = exponentiated.split("e")
                 var mantissa = split[0]
@@ -372,8 +372,29 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
                 isNumber = true
             }
             else {
-                let _content = (html) ? "&minus;" : "-";
-                formatted = { content: content.toFixed(dp).replace(/-/g, _content), "class": "number" }
+				var strContent;
+
+				if (content < 1/(Math.pow(10,dp))) {
+					let _sign = (html) ? "&minus;" : "-";
+					var exponentiated = content.toExponential(dp).replace(/-/g, _sign)
+
+					var split = exponentiated.split("e")
+					var mantissa = split[0]
+					var exponent = split[1]
+					var exponentSign = exponent.substr(0, 1)
+					var exponentNum = exponent.substr(1)
+
+					if (html) {
+						strContent = mantissa + "e&thinsp;" + exponentSign + exponentNum;
+					} else {
+						strContent = mantissa + "e" + exponentSign + exponentNum;
+					}
+
+				} else {
+					let _content = (html) ? "&minus;" : "-";
+					strContent = content.toFixed(dp).replace(/-/g, _content)
+				}
+				formatted = { content: strContent, "class": "number" }
                 isNumber = true
             }
 
