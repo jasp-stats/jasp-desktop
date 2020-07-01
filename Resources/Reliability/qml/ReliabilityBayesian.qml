@@ -219,7 +219,7 @@ Form
 					DoubleField
 					{
 						name:			"probTableValueLow"
-						label:			qsTr("")
+						label:			""
 						defaultValue:	0.70
 						min:			0
 						max:			1
@@ -233,7 +233,7 @@ Form
 					DoubleField
 					{
 						name:			"probTableValueHigh"
-						label:			qsTr("")
+						label:			""
 						defaultValue:	.90
 						min:			0
 						max:			1

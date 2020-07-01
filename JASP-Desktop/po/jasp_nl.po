@@ -17118,10 +17118,6 @@ msgid "Display Priors"
 msgstr "Toon Priors"
 
 msgctxt "ReliabilityBayesian|"
-msgid "Probability for: "
-msgstr "Kans op: "
-
-msgctxt "ReliabilityBayesian|"
 msgid "< Reliability <"
 msgstr "< Betrouwbaarheid <"
 
@@ -17488,31 +17484,17 @@ msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
-msgstr "Verschillende componenten hebben een verkeerd type, de standaardwaarden zijn hersteld."
+msgstr ""
+"Verschillende componenten hebben een verkeerd type, de standaardwaarden zijn "
+"hersteld."
 
 msgctxt "ABTestBayesian|"
 msgid "Prior Model Probability"
 msgstr "Prior Model Kans"
 
-msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid ""
-msgstr ""
-
 msgctxt "MixedModelsBOptions|"
 msgid "Options"
 msgstr "Opties"
-
-msgctxt "MixedModelsBOptions|"
-msgid "Warmup"
-msgstr "Opwarming"
 
 msgctxt "MixedModelsBOptions|"
 msgid "Iterations"
@@ -17565,10 +17547,6 @@ msgstr "MCMC diagnostiek"
 msgctxt "MixedModelsMCMCDiagnostics|"
 msgid "Model terms"
 msgstr "Modeltermen"
-
-msgctxt "MixedModelsMCMCDiagnostics|"
-msgid "Selected term"
-msgstr "Geselecteerde term"
 
 msgctxt "MixedModelsMCMCDiagnostics|"
 msgid "Plot type"
@@ -17966,3 +17944,37 @@ msgstr "Multivariaat-t"
 msgctxt "MixedModelsLMM|"
 msgid "None"
 msgstr "Geen"
+
+#, fuzzy
+msgctxt "MixedModelsBOptions|"
+msgid "Burnin"
+msgstr "Opwarming"
+
+#, fuzzy
+msgctxt "MixedModelsMCMCDiagnostics|"
+msgid "Horizontal axis"
+msgstr "Horizontale as"
+
+msgctxt "MixedModelsMCMCDiagnostics|"
+msgid "Plotted term"
+msgstr ""
+
+msgctxt "MixedModelsMCMCDiagnostics|"
+msgid "Vertical axis"
+msgstr ""
+
+msgctxt "ReliabilityBayesian|"
+msgid "Probability for:"
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid ""
+msgstr ""
