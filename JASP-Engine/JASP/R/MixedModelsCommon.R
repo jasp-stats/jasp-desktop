@@ -2118,7 +2118,7 @@
         warmup            = options$warmup,
         adapt_delta       = options$adapt_delta,
         control           = list(max_treedepth = options$max_treedepth),
-        seed              = if (isTRUE(options[["setSeed"]])) set.seed(options[["seed"]])
+        seed              = if (isTRUE(options[["setSeed"]])) options[["seed"]]
       )
       
     } else if (type == "BGLMM") {
@@ -2148,7 +2148,7 @@
           control           = list(max_treedepth = options$max_treedepth),
           weights           = glmm_weight,
           family            = eval(call("binomial", glmm_link)),
-          seed              = if (isTRUE(options[["setSeed"]])) set.seed(options[["seed"]])
+          seed              = if (isTRUE(options[["setSeed"]])) options[["seed"]]
         )
         
       } else{
@@ -2162,7 +2162,7 @@
           adapt_delta       = options$adapt_delta,
           control           = list(max_treedepth = options$max_treedepth),
           family            = glmm_family,
-          seed              = if (isTRUE(options[["setSeed"]])) set.seed(options[["seed"]])
+          seed              = if (isTRUE(options[["setSeed"]])) options[["seed"]]
         )
         
       }
