@@ -904,7 +904,7 @@
   else if (type == "GLMM") dependencies <- .mmDependenciesGLMM
 
   if(options$method == "PB"){
-    seed_dependencies <- "seed", "setSeed"
+    seed_dependencies <- c("seed", "setSeed")
   }else{
     seed_dependencies <- NULL
   }
