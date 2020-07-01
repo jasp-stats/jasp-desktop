@@ -2571,7 +2571,7 @@
                                title = gettext("ESS (tail)"),
                                type = "number")
       
-      if (table_name == "Model summary") {
+      if (table_name == gettext("Model summary")) {
         if(options$dependentVariable != "" &&
            length(options$fixedVariables) > 0 &&
            length(options$randomVariables) == 0) {
@@ -2585,7 +2585,7 @@
         }
         
         if(class(jaspResults[["mmModel"]]$object$model) %in% c("simpleError", "error")) {
-          STANOVAsummary$setError("The model could not be estimated. Please, check the options and dataset for errors.")
+          STANOVAsummary$setError(gettext("The model could not be estimated. Please, check the options and dataset for errors."))
         }
         return()
       }

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-06-14 21:44\n"
+"POT-Creation-Date: 2020-07-01 17:19\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -9,6 +9,357 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+
+msgid "The categorical fixed effect '%s' must have fewer levels than the overall number of observations."
+msgstr ""
+
+msgid "The random effects grouping factor '%s' must have fewer levels than the overall number of observations."
+msgstr ""
+
+msgid "The number of iterations must be at least 2 iterations higher than the burnin"
+msgstr ""
+
+msgid "%s requres that the dependent variable is positive."
+msgstr ""
+
+msgid "%s requres that the dependent variable is an integer."
+msgstr ""
+
+msgid "%s requres that the dependent variable contains only 0 and 1."
+msgstr ""
+
+msgid "%s requres that the dependent variable is higher than 0 and lower than 1."
+msgstr ""
+
+msgid "%s requres that the number of trials variable is an integer."
+msgstr ""
+
+msgid "%s requres that the dependent variable is proportion of successes out of the number of trials."
+msgstr ""
+
+msgid "ANOVA Summary"
+msgstr ""
+
+msgid "Effect"
+msgstr ""
+
+msgid "df"
+msgstr ""
+
+msgid "F"
+msgstr ""
+
+msgid "ChiSq"
+msgstr ""
+
+msgid "p"
+msgstr ""
+
+msgid "p (bootstrap)"
+msgstr ""
+
+msgid "VS-MPR"
+msgstr ""
+
+msgid "VS-MPR (bootstrap)"
+msgstr ""
+
+msgid "The optimizer failed to find a solution. Probably due to quasi-separation in the data. Try removing some of the predictors."
+msgstr ""
+
+msgid "The optimizer failed to find a solution due to invalid starting values. (JASP currently does not support specifying different starting values.)"
+msgstr ""
+
+msgid "The optimizer failed to find a solution. Probably due to scaling issues quasi-separation in the data. Try rescaling or removing some of the predictors."
+msgstr ""
+
+msgid "Intercept"
+msgstr ""
+
+msgid "Warning:"
+msgstr ""
+
+msgid "III"
+msgstr ""
+
+msgid "II"
+msgstr ""
+
+msgid "Model summary"
+msgstr ""
+
+msgid "Deviance"
+msgstr ""
+
+msgid "Deviance (REML)"
+msgstr ""
+
+msgid "log Lik."
+msgstr ""
+
+msgid "AIC"
+msgstr ""
+
+msgid "BIC"
+msgstr ""
+
+msgid "Variance/Correlation Estimates"
+msgstr ""
+
+msgid "%s: Variance Estimates"
+msgstr ""
+
+msgid "Term"
+msgstr ""
+
+msgid "Std. Deviation"
+msgstr ""
+
+msgid "Variance"
+msgstr ""
+
+msgid "%s: Correlation Estimates"
+msgstr ""
+
+msgid "Residual Variance Estimates"
+msgstr ""
+
+msgid "Fixed Effects Estimates"
+msgstr ""
+
+msgid "Estimate"
+msgstr ""
+
+msgid "SE"
+msgstr ""
+
+msgid "t"
+msgstr ""
+
+msgid "Plot"
+msgstr ""
+
+msgid "At least one random effects grouping factor needs to be selected in field 'Background data show'."
+msgstr ""
+
+msgid "Factor levels need to be distinguished by at least one feature. Please, check one of the 'Distinguish factor levels' options."
+msgstr ""
+
+msgid "Estimated Means and Confidence Intervals"
+msgstr ""
+
+msgid "Mean"
+msgstr ""
+
+msgid "Lower"
+msgstr ""
+
+msgid "%s%% CI"
+msgstr ""
+
+msgid "Upper"
+msgstr ""
+
+msgid "Estimated Marginal Means"
+msgstr ""
+
+msgid "Row"
+msgstr ""
+
+msgid "z"
+msgstr ""
+
+msgid "Median"
+msgstr ""
+
+msgid "%s%% HPD"
+msgstr ""
+
+msgid "Estimated Trends"
+msgstr ""
+
+msgid "%s (slope)"
+msgstr ""
+
+msgid "Contrasts"
+msgstr ""
+
+msgid "Odds Ratio"
+msgstr ""
+
+msgid "Ratio"
+msgstr ""
+
+msgid "Fit Statistics"
+msgstr ""
+
+msgid "WAIC"
+msgstr ""
+
+msgid "SE (WAIC)"
+msgstr ""
+
+msgid "LOO"
+msgstr ""
+
+msgid "SE (LOO)"
+msgstr ""
+
+msgid "%s (differences from intercept)"
+msgstr ""
+
+msgid "%s (trend)"
+msgstr ""
+
+msgid "%s (marginal means)"
+msgstr ""
+
+msgid "Level"
+msgstr ""
+
+msgid "R-hat"
+msgstr ""
+
+msgid "ESS (bulk)"
+msgstr ""
+
+msgid "ESS (tail)"
+msgstr ""
+
+msgid "The model could not be estimated. Please, check the options and dataset for errors."
+msgstr ""
+
+msgid "Sampling diagnostics"
+msgstr ""
+
+msgid "Avg. autocorrelation"
+msgstr ""
+
+msgid "The following variables are a linear combination of each other, please, remove one of them from the analysis: %s"
+msgstr ""
+
+msgid "The intercept corresponds to the (unweighted) grand mean; for each factor with k levels, k - 1 parameters are estimated. Consequently, the estimates cannot be directly mapped to factor levels."
+msgstr ""
+
+msgid "Model fit is singular. Specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Carefully reduce the random effects structure, but this practice might inflate the reported p-value, and invalidates the analysis."
+msgstr ""
+
+msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum possible odds in favor of H₁ over H₀ equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+
+msgid "Numerical problems with the maximum-likelihood estimate (e.g., gradients too large). This may indicate that the specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Consider carefully reducing the random effects structure, but be aware this may induce unknown risks of anti-conservative results (i.e., p-values might be lower than nominal)."
+msgstr ""
+
+msgid "Estimation of degrees of freedom disabled (i.e., asymptotic results shown), because the number of observations is large. To force estimation, check corresponding option."
+msgstr ""
+
+msgid "Results are on the response scale."
+msgstr ""
+
+msgid "Results are not on the response scale and might be misleading."
+msgstr ""
+
+msgid "Type %s Sum of Squares"
+msgstr ""
+
+msgid "This analysis requires at least one random effects grouping factor to run."
+msgstr ""
+
+msgid "The 'Binomial (aggregated)' family requires the 'Number of trials' to be specified to run."
+msgstr ""
+
+msgid "P-values correspond to test of null hypothesis against %s."
+msgstr ""
+
+msgid "Results are averaged over the levels of: %s."
+msgstr ""
+
+msgid "binomial"
+msgstr ""
+
+msgid "gaussian"
+msgstr ""
+
+msgid "gamma"
+msgstr ""
+
+msgid "inverse gaussian"
+msgstr ""
+
+msgid "poisson"
+msgstr ""
+
+msgid "negative binomial"
+msgstr ""
+
+msgid "beta"
+msgstr ""
+
+msgid "Generalized linear mixed model with %s family and %s link function."
+msgstr ""
+
+msgid "Satterthwaite"
+msgstr ""
+
+msgid "Kenward-Roger"
+msgstr ""
+
+msgid "likelihood ratio tests"
+msgstr ""
+
+msgid "parametric bootstrap"
+msgstr ""
+
+msgid "Model terms tested with %s method."
+msgstr ""
+
+msgid "P-values are not adjusted."
+msgstr ""
+
+msgid "Holm"
+msgstr ""
+
+msgid "Homel"
+msgstr ""
+
+msgid "Hochberg"
+msgstr ""
+
+msgid "Multivariate-t"
+msgstr ""
+
+msgid "Turkey"
+msgstr ""
+
+msgid "Benjamini-Hochberg"
+msgstr ""
+
+msgid "Benjamini-Yekutieli"
+msgstr ""
+
+msgid "Scheffe"
+msgstr ""
+
+msgid "Sidak"
+msgstr ""
+
+msgid "Dunnett"
+msgstr ""
+
+msgid "Bonferroni"
+msgstr ""
+
+msgid "P-values are adjusted using %s adjustment."
+msgstr ""
+
+msgid "Inference possibly unreliable -- MCMC chains might not have converged; The largest R-hat is %.3f > 1.01. To lower R-hat please increase 'Iterations', or 'Adapt delta' in the Options section."
+msgstr ""
+
+msgid "Low estimation accuracy -- The smallest Effective Sample Size (ESS) is %.2f < %1.0f. To increase accuracy please increase 'Iterations', or 'Adapt delta' in the Options section."
+msgstr ""
+
+msgid "The model was fitted using %s."
+msgstr ""
 
 msgid "Bayesian A/B Test"
 msgstr ""
@@ -97,16 +448,7 @@ msgstr ""
 msgid "Sum of Squares"
 msgstr ""
 
-msgid "df"
-msgstr ""
-
 msgid "Mean Square"
-msgstr ""
-
-msgid "F"
-msgstr ""
-
-msgid "p"
 msgstr ""
 
 msgid "VS-MPR%s"
@@ -139,22 +481,7 @@ msgstr ""
 msgid "Please specify non-zero contrast weights."
 msgstr ""
 
-msgid "Estimate"
-msgstr ""
-
 msgid "%s%% CI for Mean Difference"
-msgstr ""
-
-msgid "Lower"
-msgstr ""
-
-msgid "Upper"
-msgstr ""
-
-msgid "SE"
-msgstr ""
-
-msgid "t"
 msgstr ""
 
 msgid "%1$s Contrast Coefficients - %2$s"
@@ -223,9 +550,6 @@ msgstr ""
 msgid "p<sub>tukey</sub>"
 msgstr ""
 
-msgid "Dunnett"
-msgstr ""
-
 msgid "Dunnett Post Hoc Comparisons - %s"
 msgstr ""
 
@@ -233,9 +557,6 @@ msgid "p<sub>dunnett</sub>"
 msgstr ""
 
 msgid "Confidence interval is too narrow, please select a different confidence level."
-msgstr ""
-
-msgid "Mean"
 msgstr ""
 
 msgid "SD"
@@ -382,7 +703,7 @@ msgstr ""
 msgid "Lower Bound %s"
 msgstr ""
 
-msgid "Cannot perform sphericity tests because there only two levels of the RM factor."
+msgid "Cannot perform sphericity tests because there are only two levels of the RM factor."
 msgstr ""
 
 msgid "Unpooled error term only allowed in balanced designs."
@@ -508,7 +829,7 @@ msgstr ""
 msgid "(10 - 99)"
 msgstr ""
 
-msgid "The null hypothesis specifies that the distribution of first numbers %1$s in the population conforms to Benford\342\200\231s law."
+msgid "The null hypothesis specifies that the distribution of first numbers %1$s in the population conforms to Benford’s law."
 msgstr ""
 
 msgid "Chi-square"
@@ -703,10 +1024,106 @@ msgstr ""
 msgid "<b>Figure 1.</b> Scatter plot of the book values in the selection and their audit values. Red dots indicate observations that did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables."
 msgstr ""
 
-msgid "Your sample size is larger than your population size. Cannot take a sample larger than the population."
+msgid "<b>percentage</b>"
+msgstr ""
+
+msgid "<b>amount</b>"
+msgstr ""
+
+msgid "<u>Planning</u>"
+msgstr ""
+
+msgid "<u>Selection</u>"
+msgstr ""
+
+msgid "<u>Evaluation</u>"
+msgstr ""
+
+msgid "Analysis not possible: Your materiality is higher than, or equal to the total value of the observations."
+msgstr ""
+
+msgid "Analysis not possible: Your expected errors are higher than materiality."
+msgstr ""
+
+msgid "The detection risk is equal to or higher than 100%%. Please re-specify your custom values for the Inherent risk and/or Control risk, or the confidence."
+msgstr ""
+
+msgid "Selection summary"
+msgstr ""
+
+msgid "Your sample size is larger than (or equal to) your population size. Cannot take a sample larger than the population."
+msgstr ""
+
+msgid "Your sample size must be larger than 1."
+msgstr ""
+
+msgid "Your must specify unique record ID's. The row numbers of the data set are sufficient."
+msgstr ""
+
+msgid "Evaluation summary"
+msgstr ""
+
+msgid "Your audit result does not contain only 0's (correct) and 1's (incorrect)."
+msgstr ""
+
+msgid "The hypergeometric confidence bound requires that you specify the population size."
+msgstr ""
+
+msgid "Your sample size is larger than (or equal to) your population size. Please adjust your population size accordingly."
+msgstr ""
+
+msgid "The direct, difference, ratio, and regression confidence bound require that you specify the population size and the population value."
+msgstr ""
+
+msgid "The detection risk is equal to or higher than 100%%. Please re-specify your values for the Inherent risk and/or Control risk, or the confidence."
 msgstr ""
 
 msgid "The objective of this substantive testing procedure is to determine with a specified confidence <b>(%1$s)</b> whether the %2$s of misstatement in the target population is lower than the specified materiality of <b>%3$s</b>."
+msgstr ""
+
+msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the control risk <b>(%7$s)</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>%8$s</b>, the maximum misstatement is estimated to be below materiality."
+msgstr ""
+
+msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains below <b>%9$s</b> the maximum misstatement is estimated to be below materiality."
+msgstr ""
+
+msgid "random"
+msgstr ""
+
+msgid "fixed interval"
+msgstr ""
+
+msgid "cell"
+msgstr ""
+
+msgid "From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s record sampling</b> method. <br><b>Warning:</b> A monetary unit sampling method was tried but failed."
+msgstr ""
+
+msgid "%1$s record sampling"
+msgstr ""
+
+msgid "%1$s monetary unit sampling"
+msgstr ""
+
+msgid "From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s</b> method."
+msgstr ""
+
+msgid "%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned sample size (%3$s), as observations are selected multiple times due to their high value. These observations (%4$s) are counted multiple times in the evaluation."
+msgstr ""
+
+msgid "below"
+msgstr ""
+
+msgid "lower"
+msgstr ""
+
+msgid "above"
+msgstr ""
+
+msgid "higher"
+msgstr ""
+
+msgid "The objective of this substantive testing procedure was to determine with <b>%1$s</b> confidence whether the population misstatement is lower than materiality, in this case <b>%2$s</b>. For the current data, the <b>%3$s</b> confidence bound is <b>%4$s</b> materiality. The conclusion on the basis of these results is that, with <b>%5$s</b> confidence, the population misstatement is <b>%6$s</b> than materiality."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Book Value Descriptive Statistics"
@@ -736,12 +1153,6 @@ msgstr ""
 msgid "75th"
 msgstr ""
 
-msgid "Book values (%1$s)"
-msgstr ""
-
-msgid "Frequency"
-msgstr ""
-
 msgid "Book Value Distribution"
 msgstr ""
 
@@ -752,6 +1163,12 @@ msgid "Quartile"
 msgstr ""
 
 msgid "<b>Figure %1$i.</b> The distribution of book values in the population. The red and blue dots respectively represent the mean and the values exactly one standard deviation from the mean. The orange dots represent the 25th, 50th (median) and 75th percentile of the book values."
+msgstr ""
+
+msgid "Book values (%1$s)"
+msgstr ""
+
+msgid "Frequency"
 msgstr ""
 
 msgid "<u>Audit Risk Model</u>"
@@ -769,22 +1186,7 @@ msgstr ""
 msgid "%1$s The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>."
 msgstr ""
 
-msgid "<u>Planning</u>"
-msgstr ""
-
-msgid "Analysis not possible: Your materiality is higher than the total value of the observations."
-msgstr ""
-
-msgid "Analysis not possible: Your expected errors are higher than materiality."
-msgstr ""
-
-msgid "<b>percentage</b>"
-msgstr ""
-
-msgid "<b>amount</b>"
-msgstr ""
-
-msgid "The detection risk is higher than 100%%. Please re-specify your custom values for the Inherent risk and/or Control risk."
+msgid "The detection risk is equal to or higher than 100%%. Please re-specify your custom values for the Inherent risk and/or Control risk."
 msgstr ""
 
 msgid "The resulting sample size exceeds 5000."
@@ -794,12 +1196,6 @@ msgid "An error occurred: %1$s"
 msgstr ""
 
 msgid "The resulting sample size is larger than the population size."
-msgstr ""
-
-msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the control risk <b>(%7$s)</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>%8$s</b>, the maximum misstatement is estimated to be below materiality."
-msgstr ""
-
-msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains below <b>%9$s</b> the maximum misstatement is estimated to be below materiality."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Planning Summary"
@@ -892,33 +1288,6 @@ msgstr ""
 msgid "<b>Figure %1$i.</b> The implied <b>%2$s</b> sampling distribution. The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green. The total probability of the errors does not exceed the detection risk as specified through the audit risk model."
 msgstr ""
 
-msgid "<u>Selection</u>"
-msgstr ""
-
-msgid "random"
-msgstr ""
-
-msgid "fixed interval"
-msgstr ""
-
-msgid "cell"
-msgstr ""
-
-msgid "From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s record sampling</b> method. <br><b>Warning:</b> A monetary unit sampling method was tried but failed."
-msgstr ""
-
-msgid "%1$s record sampling"
-msgstr ""
-
-msgid "%1$s monetary unit sampling"
-msgstr ""
-
-msgid "From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s</b> method."
-msgstr ""
-
-msgid "%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned sample size (%3$s), as observations are selected multiple times due to their high value. These observations (%4$s) are counted multiple times in the evaluation."
-msgstr ""
-
 msgid "Your specified starting point lies outside the selection interval."
 msgstr ""
 
@@ -952,15 +1321,6 @@ msgstr ""
 msgid "Valid cases"
 msgstr ""
 
-msgid "Median"
-msgstr ""
-
-msgid "Std. Deviation"
-msgstr ""
-
-msgid "Variance"
-msgstr ""
-
 msgid "Range"
 msgstr ""
 
@@ -974,9 +1334,6 @@ msgid "Population and sample histograms"
 msgstr ""
 
 msgid "<b>Figure %1$i.</b> The distributions of numeric variables in the population compared to the distributions in the sample."
-msgstr ""
-
-msgid "<u>Evaluation</u>"
 msgstr ""
 
 msgid "probability that, when one would repeatedly sample from this population, the maximum misstatement is calculated to be lower than"
@@ -1051,6 +1408,15 @@ msgstr ""
 msgid "The confidence bound is calculated according to the <b>Stringer</b> method with <b>LTA adjustment</b>."
 msgstr ""
 
+msgid "The audit result column is empty."
+msgstr ""
+
+msgid "Either the materiality, the population size, or the population value is defined as zero, or one of the required variables is missing."
+msgstr ""
+
+msgid "You must specify the population value to see the maximum misstatement."
+msgstr ""
+
 msgid "Evaluation Information"
 msgstr ""
 
@@ -1067,33 +1433,6 @@ msgid "Audit values (%1$s)"
 msgstr ""
 
 msgid "<b>Figure %1$i.</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables."
-msgstr ""
-
-msgid "below"
-msgstr ""
-
-msgid "lower"
-msgstr ""
-
-msgid "above"
-msgstr ""
-
-msgid "higher"
-msgstr ""
-
-msgid "The objective of this substantive testing procedure was to determine with <b>%1$s</b> confidence whether the population misstatement is lower than materiality, in this case <b>%2$s</b>. For the current data, the <b>%3$s</b> confidence bound is <b>%4$s</b> materiality. The conclusion on the basis of these results is that, with <b>%5$s</b> confidence, the population misstatement is <b>%6$s</b> than materiality."
-msgstr ""
-
-msgid "<u>Report Badges</u>"
-msgstr ""
-
-msgid "Badge: <i>Annotated</i>"
-msgstr ""
-
-msgid "Badge: <i>Approved</i>"
-msgstr ""
-
-msgid "Badge: <i>Not approved</i>"
 msgstr ""
 
 msgid "<b>Table %i.</b> Implicit Sample"
@@ -1172,12 +1511,6 @@ msgid "Posterior"
 msgstr ""
 
 msgid "%1$s%% Posterior \ncredible region"
-msgstr ""
-
-msgid "gamma"
-msgstr ""
-
-msgid "beta"
 msgstr ""
 
 msgid "beta-binomial"
@@ -1609,12 +1942,6 @@ msgstr ""
 msgid "Variable"
 msgstr ""
 
-msgid "Level"
-msgstr ""
-
-msgid "VS-MPR"
-msgstr ""
-
 msgid "%s%% CI for Proportion"
 msgstr ""
 
@@ -1661,9 +1988,6 @@ msgid "<em>p</em>-values are approximate."
 msgstr ""
 
 msgid "Standard Error"
-msgstr ""
-
-msgid "z"
 msgstr ""
 
 msgid "Wald test."
@@ -1738,15 +2062,6 @@ msgstr ""
 msgid "Log-likelihood"
 msgstr ""
 
-msgid "Deviance"
-msgstr ""
-
-msgid "AIC"
-msgstr ""
-
-msgid "BIC"
-msgstr ""
-
 msgid "AICc"
 msgstr ""
 
@@ -1760,9 +2075,6 @@ msgid "Rank test"
 msgstr ""
 
 msgid "Cases marked with %s are influential."
-msgstr ""
-
-msgid "Plot"
 msgstr ""
 
 msgid "Forest plot"
@@ -2008,6 +2320,21 @@ msgstr ""
 msgid "Cancelled by callback"
 msgstr ""
 
+msgid "Infinity found in repeated measures cells."
+msgstr ""
+
+msgid "Number of observations is < %s in repeated measures cells"
+msgstr ""
+
+msgid "The variance in the repeated measures cells is 0."
+msgstr ""
+
+msgid "Duplicate variables encountered in repeated measures cells, %s"
+msgstr ""
+
+msgid "Duplicate variables encountered in %s"
+msgstr ""
+
 msgid "Bayes factor is undefined -- all effects are specified as nuisance."
 msgstr ""
 
@@ -2050,7 +2377,7 @@ msgstr ""
 msgid "P(incl|data)"
 msgstr ""
 
-msgid "Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Math\303\264t."
+msgid "Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."
 msgstr ""
 
 msgid "Some Bayes factors could not be calculated. Inclusion probabilities and Bayes factors are calculated while excluding these models. The results may be uninterpretable!"
@@ -2197,9 +2524,6 @@ msgstr ""
 msgid "Standard errors are unavailable with this method"
 msgstr ""
 
-msgid "%s%% CI"
-msgstr ""
-
 msgid "Confidence intervals are unavailable with this method."
 msgstr ""
 
@@ -2212,16 +2536,13 @@ msgstr ""
 msgid "Standard errors and confidence intervals were calculated using the delta method."
 msgstr ""
 
-msgid "Fit Statistics"
-msgstr ""
-
 msgid "Test"
 msgstr ""
 
 msgid "Kolmogorov-Smirnov"
 msgstr ""
 
-msgid "Cram\303\251r-von Mises"
+msgid "Cramér-von Mises"
 msgstr ""
 
 msgid "Anderson-Darling"
@@ -2308,7 +2629,7 @@ msgstr ""
 msgid "The quantile function, usually denoted as Q(p), is the inverse of the cumulative distribution function.\n    The function gives the quantile such that the probability of the random variable being less than or equal to that value equals the given probability p.   \n    \n    The quantile plot displays the quantile function.\n    The <i>y</i>-axis displays the quantile of which the probability that the random variable is less or equal to that value is equal to p (displayed on the <i>x</i>-axis)."
 msgstr ""
 
-msgid "<h3> Demonstration of the %1$s </h3>\nThis demonstration is divided into four parts.\nThe first part displays the %2$s, its probability density function, cumulative distribution function, and quantile function.\nThe second part allows you to generate data from the %3$s, compute descriptive statistics, and display descriptive plots.\nThe third part allows you to estimate the parameters of the %4$s.\nThe fourth part allows you to check the fit of the %5$s to the data.\n\n<b>References</b>\n\nBlitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> Chapman and Hall/CRC.\n\nLeemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8\342\200\2239.\n\nFor relationships with other distributions, visit www.math.wm.edu/~leemis/chart/UDR/UDR.html.\n\nhttps://en.wikipedia.org/wiki/List_of_probability_distributions"
+msgid "<h3> Demonstration of the %1$s </h3>\nThis demonstration is divided into four parts.\nThe first part displays the %2$s, its probability density function, cumulative distribution function, and quantile function.\nThe second part allows you to generate data from the %3$s, compute descriptive statistics, and display descriptive plots.\nThe third part allows you to estimate the parameters of the %4$s.\nThe fourth part allows you to check the fit of the %5$s to the data.\n\n<b>References</b>\n\nBlitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> Chapman and Hall/CRC.\n\nLeemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8–9.\n\nFor relationships with other distributions, visit www.math.wm.edu/~leemis/chart/UDR/UDR.html.\n\nhttps://en.wikipedia.org/wiki/List_of_probability_distributions"
 msgstr ""
 
 msgid "Estimation failed: Optimization did not converge. <ul><li>Try adjusting parameter values, check outliers or feasibility of the distribution fitting the data.</li></ul>"
@@ -2888,9 +3209,6 @@ msgid "Negative numbers found in %s"
 msgstr ""
 
 msgid "Missing values encountered in %s"
-msgstr ""
-
-msgid "Duplicate variables encountered in %s"
 msgstr ""
 
 msgid "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
@@ -4192,16 +4510,19 @@ msgstr ""
 msgid "Variance Components"
 msgstr ""
 
-msgid "Expected counts not supported without observed counts!"
+msgid "Expected counts not supported without observed counts."
 msgstr ""
 
-msgid "No expected counts entered!"
+msgid "No expected counts entered."
 msgstr ""
 
-msgid "Invalid %s counts: variable does not match the number of levels of factor."
+msgid "Invalid counts: variable does not match the number of levels of the factor."
 msgstr ""
 
-msgid "Invalid %s counts: variable must contain only integer values."
+msgid "Invalid expected counts: variable does not match the number of levels of the factor."
+msgstr ""
+
+msgid "Invalid counts: variable must contain only integer values."
 msgstr ""
 
 msgid "Confidence intervals are based on independent binomial distributions."
@@ -4397,6 +4718,9 @@ msgid "Data supplied in %s could not be used to determine variables types. Data 
 msgstr ""
 
 msgid "Some entries of %1$s were not understood. These are now grouped under '%2$s'."
+msgstr ""
+
+msgid "bootnet crashed with the following error message:\n%s. <ul><li>Please check if there are variables in the network with little variance or few distinct observations.</li></ul>"
 msgstr ""
 
 msgid "'data' can only be missing if type = 'parametric'. Setting type = 'parametric' and performing parametric bootstrap instead."
@@ -4744,9 +5068,6 @@ msgstr ""
 msgid "Standardized%s"
 msgstr ""
 
-msgid "Odds Ratio"
-msgstr ""
-
 msgid "Wald Statistic"
 msgstr ""
 
@@ -4858,49 +5179,265 @@ msgstr ""
 msgid "%.0f%% Credible intervals"
 msgstr ""
 
-msgid "Scale Reliability Statistics"
+msgid "The covariance matrix of the data is not invertible"
 msgstr ""
 
-msgid "mean"
+msgid "%s Of the observations, pairwise complete cases were used."
 msgstr ""
 
-msgid "sd"
+msgid "%s Of the observations, %1.f complete cases were used."
 msgstr ""
 
-msgid "McDonald's %s"
+msgid "Bayesian Scale Reliability Statistics"
 msgstr ""
 
-msgid "Cronbach's %s"
+msgid "%s lower bound"
 msgstr ""
 
-msgid "Gutmann's %s"
+msgid "%s upper bound"
 msgstr ""
 
-msgid "Greatest lower bound"
+msgid "Please enter at least 3 variables to do an analysis. %s"
 msgstr ""
 
-msgid "Average interitem correlation"
+msgid "footnote"
 msgstr ""
 
-msgid "%.0f%% Confidence Interval"
+msgid "Please enter at least 3 variables to do an analysis."
 msgstr ""
 
-msgid "Of the observations, %1$i were used, %2$i were excluded %3$s, and %4$i were provided."
+msgid "%s (if item dropped)"
 msgstr ""
 
-msgid "%s\nWarning: Greatest lower bound can only be calculated for three or more variables."
+msgid "Bayesian Individual Item Reliability Statistics"
+msgstr ""
+
+msgid "Item-rest correlation"
+msgstr ""
+
+msgid "Probability that Reliability Statistic is Larger than %.2f and Smaller than %.2f"
+msgstr ""
+
+msgid "Posterior Plots"
+msgstr ""
+
+msgid "If Item Dropped Posterior Plots"
+msgstr ""
+
+msgid "Item Dropped"
+msgstr ""
+
+msgid "Factors"
+msgstr ""
+
+msgid "Convergence Traceplot"
+msgstr ""
+
+msgid "Iterations"
+msgstr ""
+
+msgid "%.2f"
+msgstr ""
+
+msgid "The analysis crashed with the following error message:"
+msgstr ""
+
+msgid "Frequentist Scale Reliability Statistics"
+msgstr ""
+
+msgid "Point estimate"
+msgstr ""
+
+msgid "%sMcDonald's ω estimation method switched to PFA because the CFA\n                                    did not find a solution."
 msgstr ""
 
 msgid "If item dropped"
 msgstr ""
 
-msgid "item-rest correlation"
+msgid "Frequentist Individual Item Reliability Statistics"
 msgstr ""
 
-msgid "Warning: McDonald's %s if item dropped can only be calculated for three or more variables."
+msgid "McDonald's ω estimation method for item-dropped statistics \n                                     switched to PFA because the CFA did not find a solution."
 msgstr ""
 
-msgid "reverse-scaled item"
+msgid "Fit Measures of Single Factor Model Fit"
+msgstr ""
+
+msgid "Fit measures cannot be displayed because the McDonald's ω \n                                       estimation method switched to PFA as the CFA did not find a solution."
+msgstr ""
+
+msgid "The priors for publication bias were set incorrectly."
+msgstr ""
+
+msgid "MCMC error"
+msgstr ""
+
+msgid "ESS"
+msgstr ""
+
+msgid "%s is on %s scale."
+msgstr ""
+
+msgid "<em>p</em>-values interval %s"
+msgstr ""
+
+msgid "The weights (%s) correspond to %s <em>p</em>-values."
+msgstr ""
+
+msgid "Estimated studies' effects (%s) correspond to effect size %s."
+msgstr ""
+
+msgid "Effect size (%s)"
+msgstr ""
+
+msgid "Heterogeneity (%s)"
+msgstr ""
+
+msgid "Prior Plots"
+msgstr ""
+
+msgid "Weight Function"
+msgstr ""
+
+msgid "Model Preview"
+msgstr ""
+
+msgid "At least one prior distribution per parameter must be specified (either null or alternative)."
+msgstr ""
+
+msgid "Publication bias"
+msgstr ""
+
+msgid "Models Overview"
+msgstr ""
+
+msgid "Prior Distribution"
+msgstr ""
+
+msgid "Publication Bias"
+msgstr ""
+
+msgid "The loaded object is not a RoBMA model."
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "Exclusion"
+msgstr ""
+
+msgid "Inclusion"
+msgstr ""
+
+msgid "log(BF)"
+msgstr ""
+
+msgid "All models failed to converge. Please, consider inspecting the 'MCMC diagnostics' and changing the 'Advanced options'."
+msgstr ""
+
+msgid "%i models failed to converge."
+msgstr ""
+
+msgid "Model Averaged Estimates"
+msgstr ""
+
+msgid "Model Averaged Weights (%s)"
+msgstr ""
+
+msgid "Model Averaged Estimated Studies' Effects (%s)"
+msgstr ""
+
+msgid "Conditional Estimates"
+msgstr ""
+
+msgid "Estimates are model averaged over models assuming existence of effect / heterogeneity."
+msgstr ""
+
+msgid "Conditional Weights (%s)"
+msgstr ""
+
+msgid "Estimated weights (%s) are model averaged over models assuming existence of publication bias."
+msgstr ""
+
+msgid "Conditional Estimated Studies' Effects (%s)"
+msgstr ""
+
+msgid "Estimated studies effects (%s) are model averaged over models assuming existence of effect."
+msgstr ""
+
+msgid "BF01"
+msgstr ""
+
+msgid "log(BF10)"
+msgstr ""
+
+msgid "BF10"
+msgstr ""
+
+msgid "log(MargLik)"
+msgstr ""
+
+msgid "Individual Models Summary"
+msgstr ""
+
+msgid "Model %i"
+msgstr ""
+
+msgid "Model %i does not exist. Select one of the models between 1 and %i."
+msgstr ""
+
+msgid "Priors"
+msgstr ""
+
+msgid "Information"
+msgstr ""
+
+msgid "Model Estimates"
+msgstr ""
+
+msgid "Estimated Weights (%s)"
+msgstr ""
+
+msgid "Estimated Studies' Effects (%s)"
+msgstr ""
+
+msgid "Weight function"
+msgstr ""
+
+msgid "Effect size vs Heterogeneity"
+msgstr ""
+
+msgid "%s (%s)"
+msgstr ""
+
+msgid "Individual Models Plots"
+msgstr ""
+
+msgid "Diagnostics"
+msgstr ""
+
+msgid "Models Diagnostics Overview"
+msgstr ""
+
+msgid "max(MCMC error)"
+msgstr ""
+
+msgid "min(ESS)"
+msgstr ""
+
+msgid "max(Rhat)"
+msgstr ""
+
+msgid "Trace plots"
+msgstr ""
+
+msgid "Average autocorrelations"
+msgstr ""
+
+msgid "Posterior samples densities"
+msgstr ""
+
+msgid "Model %i does not contain any of the selected parameters."
 msgstr ""
 
 msgid "Model misspecified"
@@ -5296,6 +5833,56 @@ msgstr ""
 msgid "could not calculate enough valid Bayes Factors for different values of the prior"
 msgstr ""
 
+msgid        "The following variable is used as a random effects grouping factor: %s."
+msgid_plural "The following variables are used as random effects grouping factors: %s."
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factor %s does not vary within the levels of random effects grouping factor '%s'."
+msgid_plural "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factors %s do not vary within the levels of random effects grouping factor '%s'."
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "Random slopes of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slopes of '%s' for random effects grouping factor '%s'."
+msgid_plural "Random slope of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slope of '%s' for random effects grouping factor '%s'."
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "Lower order random effects terms need to be specified in presence of the higher order random effects terms. Therefore, the following random effects term was added to the '%s' random effects grouping factor: '%s.'"
+msgid_plural "Lower order random effects terms need to be specified in presence of the higher order random effects terms. Therefore, the following random effects terms were added to the '%s' random effects grouping factor: '%s.'"
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "%i observation was removed due to missing values."
+msgid_plural "%i observations were removed due to missing values."
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "The Hamiltonian Monte Carlo procedure might be invalid -- There was %i divergent transition after warmup. This can be solved by carefully increasing 'Adapt delta' until there are no divergent transitions."
+msgid_plural "The Hamiltonian Monte Carlo procedure might be invalid -- There were %i divergent transitions after warmup. This can be solved by carefully increasing 'Adapt delta' until there are no divergent transitions."
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chain indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Burnin' and 'Iterations'."
+msgid_plural "Bayesian Fraction of Missing Information (BFMI) that was too low in %i chains indicating that the posterior distribution was not explored efficiently. Try increasing number of 'Burnin' and 'Iterations'."
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "The Hamiltonian Monte Carlo procedure might be inefficient -- %i transition exceeded the maximum tree depth. This can be solved by carefully increasing 'Maximum tree depth"
+msgid_plural "The Hamiltonian Monte Carlo procedure might be inefficient -- %i transitions exceeded the maximum tree depth. This can be solved by carefully increasing 'Maximum tree depth"
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "WAIC estimate unreliable -- There was %1.0f p_waic estimate larger than 0.4. We recommend using LOO instead."
+msgid_plural "WAIC estimate unreliable -- There were %1.0f p_waic estimates larger than 0.4. We recommend using LOO instead."
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "LOO estimate unreliable -- There was %1.0f observation with the shape parameter (k) of the generalized Pareto distribution higher than > .5."
+msgid_plural "LOO estimate unreliable -- There were %1.0f observations with the shape parameter (k) of the generalized Pareto distribution higher than > .5."
+msgstr[0]    ""
+msgstr[1]    ""
+
 msgid        "The following pair is duplicated: %s"
 msgid_plural "The following pairs are duplicated: %s"
 msgstr[0]    ""
@@ -5323,5 +5910,15 @@ msgstr[1]    ""
 
 msgid        "Partial Regression Plot"
 msgid_plural "Partial Regression Plots"
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "The following item correlated negatively with the scale: %s. "
+msgid_plural "The following items correlated negatively with the scale: %s. "
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "The following item was reverse scaled: %s. "
+msgid_plural "The following items were reverse scaled: %s. "
 msgstr[0]    ""
 msgstr[1]    ""
