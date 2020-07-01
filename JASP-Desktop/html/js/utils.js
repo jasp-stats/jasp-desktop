@@ -271,7 +271,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					isNumber = true
 				}
 			}
-			else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
+			else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp)) {
 
 				var decimalsExpon = fixDecimals ? dp : sf - 1;
 				var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
@@ -352,7 +352,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			else {
 				var strContent;
 
-				if (content != 0 && Math.abs(content) < 1/(Math.pow(10,dp))) {
+				if (p && content != 0 && Math.abs(content) < 1/(Math.pow(10,dp))) {
 					strContent = toExponential(content, dp, 0, html)
 				} else {
 					let _content = (html) ? "&minus;" : "-";
