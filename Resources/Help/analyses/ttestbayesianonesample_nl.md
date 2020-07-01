@@ -75,8 +75,8 @@ De toetswaarde gespecificeerd in de nulhypothese.
   - BF0+: De Bayes factor die bewijs geeft voor de nulhypothese ten opzichte van de eenzijdige hypothese dat het populatiegemiddelde hoger is dan de toetswaarde.
   - BF0-: De Bayes factor die bewijs geeft voor de nulhypothese ten opzichte van de eenzijdige hypothese dat het populatiegemiddelde lager is dan de toetswaarde.
 - fout %: De fout van de Gaussiaanse kwadratuur intergratie methode die wordt gebruikt op de Bayes factor te berekenen.
-- W: The toets statistiek van de rangtekentoets.
-- Rhat: Indicatie van convergentie voor de rangtekentoets. De ratio van variantie binnen elke MCMC keten, en de totale variantie van de MCMC ketens voor de delta parameter. Waarden gelijk aan 1 duiden op convergentie.
+- W: De toets statistiek van de rangtekentoets.
+- Rhat: Indicatie van convergentie voor de rangtekentoets. Een ratio die de varianties vergelijkt binnen en tussen de MCMC ketens voor de delta parameter. Waarden minder dan, of gelijk aan, 1 duiden op convergentie.
 
 #### Beschrijvende Statistiek
 - N: De steekproefgrootte.

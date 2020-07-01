@@ -73,7 +73,7 @@ The independent samples t-test allows the user to estimate the effect size and t
   - BF0-: Bayes factor that quantifies evidence for the null hypothesis, relative to the one-sided alternative hypothesis that group one < group two.
 - error %: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor.
 - W: The test statistic of the Wilcoxon test.
-- Rhat: A measure of MCMC convergence for the Wilcoxon test. The ratio of within chain variance and total variance of the MCMC chains for the delta parameter. Values equal to 1 indicate convergence.
+- Rhat: A measure of MCMC convergence for the Wilcoxon test. A ratio comparing the between- and within-chain variance of the MCMC estimates for the delta parameter. Values less than or equal to 1 indicate convergence.
 
 #### Group Descriptives
 - N: Sample size.
