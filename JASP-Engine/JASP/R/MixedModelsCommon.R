@@ -903,7 +903,12 @@
   if (type == "LMM")       dependencies <- .mmDependenciesLMM
   else if (type == "GLMM") dependencies <- .mmDependenciesGLMM
 
-  seed_dependencies <- ifelse(options$method == "PB", yes=c("seed", "setSeed"), no=NULL)
+  if(options$method == "PB"){
+    seed_dependencies <- "seed", "setSeed"
+  }else{
+    seed_dependencies <- NULL
+  }
+  
 
   FEsummary$dependOn(c(dependencies, seed_dependencies, "showFE", "pvalVS"))
   
