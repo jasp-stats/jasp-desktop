@@ -16852,10 +16852,6 @@ msgid "Display Priors"
 msgstr ""
 
 msgctxt "ReliabilityBayesian|"
-msgid "Probability for: "
-msgstr ""
-
-msgctxt "ReliabilityBayesian|"
 msgid "< Reliability <"
 msgstr ""
 
@@ -17211,24 +17207,8 @@ msgctxt "SummaryStatsABTestBayesian|"
 msgid "upper:"
 msgstr ""
 
-msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid ""
-msgstr ""
-
 msgctxt "MixedModelsBOptions|"
 msgid "Options"
-msgstr ""
-
-msgctxt "MixedModelsBOptions|"
-msgid "Warmup"
 msgstr ""
 
 msgctxt "MixedModelsBOptions|"
@@ -17281,10 +17261,6 @@ msgstr ""
 
 msgctxt "MixedModelsMCMCDiagnostics|"
 msgid "Model terms"
-msgstr ""
-
-msgctxt "MixedModelsMCMCDiagnostics|"
-msgid "Selected term"
 msgstr ""
 
 msgctxt "MixedModelsMCMCDiagnostics|"
@@ -17682,4 +17658,36 @@ msgstr ""
 
 msgctxt "MixedModelsLMM|"
 msgid "None"
+msgstr ""
+
+msgctxt "MixedModelsBOptions|"
+msgid "Burnin"
+msgstr ""
+
+msgctxt "MixedModelsMCMCDiagnostics|"
+msgid "Horizontal axis"
+msgstr ""
+
+msgctxt "MixedModelsMCMCDiagnostics|"
+msgid "Plotted term"
+msgstr ""
+
+msgctxt "MixedModelsMCMCDiagnostics|"
+msgid "Vertical axis"
+msgstr ""
+
+msgctxt "ReliabilityBayesian|"
+msgid "Probability for:"
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid ""
 msgstr ""
