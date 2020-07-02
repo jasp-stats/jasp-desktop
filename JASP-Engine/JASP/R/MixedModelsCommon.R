@@ -188,7 +188,7 @@
       if (any(!.is.wholenumber(dataset[, .v(options$dependentVariable)] * dataset[, .v(options$dependentVariableAggregation)])))
         JASP:::.quitAnalysis(gettextf("%s requres that the dependent variable is proportion of successes out of the number of trials.",family_text))
     } else if (options$family == "betar") {
-      if (any(dataset[, .v(options$dependentVariable)] < 0 | dataset[, .v(options$dependentVariable)] > 1))
+      if (any(dataset[, .v(options$dependentVariable)] <= 0 | dataset[, .v(options$dependentVariable)] >= 1))
         JASP:::.quitAnalysis(gettextf("%s requres that the dependent variable is higher than 0 and lower than 1.",family_text))
     }
   }
@@ -2193,7 +2193,7 @@
   model <- jaspResults[["mmModel"]]$object$model
   
   fitStats <- createJaspTable(title = gettext("Fit Statistics"))
-  fitStats$position <- 4
+  fitStats$position <- 2
   
   if (type == "BLMM") {
     dependencies <- .mmDependenciesBLMM
