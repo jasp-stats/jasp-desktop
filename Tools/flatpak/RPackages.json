@@ -2001,9 +2001,9 @@
 			"buildsystem": "simple",
 			"sources": [
 				{
-					"type": "git",
-					"url": "https://github.com/quentingronau/abtest",
-					"commit": "503c50e96768a0134b755747e0421d820cc1a115"
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/abtest_0.2.0.tar.gz",
+					"sha256": "9abfaba3fb53b2e055401d28f6428cb3c9427fd900cccbe02242ce239063c3cf"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -2831,7 +2831,7 @@
 				{
 					"type": "git",
 					"url": "https://github.com/AlexanderLyNL/bstats",
-					"commit": "a6fdbea42078b8d275a98dd1e37c113118555b6f"
+					"commit": "1b0b925d0404537b908a6380b70d80382df2d374"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
