@@ -149,8 +149,9 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 	}
 	case JASPControlBase::ControlType::TextArea:
 	{
-		BoundQMLTextArea* boundQMLTextArea = dynamic_cast<BoundQMLTextArea*>(controlWrapper);
-		ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLTextArea->model());
+		BoundQMLTextArea		* boundQMLTextArea	= dynamic_cast<BoundQMLTextArea*>(controlWrapper);
+		ListModelTermsAvailable	* availableModel	= dynamic_cast<ListModelTermsAvailable*>(boundQMLTextArea->model());
+
 		if (availableModel)
 		{
 			if (boundQMLTextArea->modelHasAllVariables())
@@ -162,8 +163,9 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 	}
 	case JASPControlBase::ControlType::ComboBox:
 	{
-		BoundQMLComboBox* boundQMLComboBox = dynamic_cast<BoundQMLComboBox*>(controlWrapper);
-		ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
+		BoundQMLComboBox		* boundQMLComboBox	= dynamic_cast<BoundQMLComboBox*>(controlWrapper);
+		ListModelTermsAvailable	* availableModel	= dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
+
 		if (availableModel)
 		{
 			if (boundQMLComboBox->modelHasAllVariables())
@@ -181,7 +183,9 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 	case JASPControlBase::ControlType::VariablesListView:
 	{
 		QMLListView* listView = dynamic_cast<QMLListView*>(controlWrapper);
-		_modelMap[controlWrapper->name()] = listView->model();
+
+		if(listView->model())
+			_modelMap[controlWrapper->name()] = listView->model();
 
 		QMLListViewTermsAvailable* listViewTermsAvailable = dynamic_cast<QMLListViewTermsAvailable*>(listView);
 		if (listViewTermsAvailable)
@@ -190,10 +194,8 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 
 			if (availableModel)
 			{
-				if (!listViewTermsAvailable->hasSource())
-					_allAvailableVariablesModels.push_back(availableModel);
-				else
-					_allAvailableVariablesModelsWithSource.push_back(availableModel);
+				if (!listViewTermsAvailable->hasSource())	_allAvailableVariablesModels.push_back(availableModel);
+				else										_allAvailableVariablesModelsWithSource.push_back(availableModel);
 			}
 		}
 		break;
@@ -255,11 +257,10 @@ void AnalysisForm::_setUpRelatedModels()
 
 		if (!dropKey.isEmpty())
 		{
-			ListModel* targetModel = _modelMap[dropKey];
-			if (targetModel)
-				_relatedModelMap[listView] = targetModel;
-			else
-				_formErrorMessages.append(tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name()));
+			//ListModel* targetModel = _modelMap[dropKey]; //Indexing on a map creates elements if they do not exist yet...
+
+			if (_modelMap.count(dropKey))		_relatedModelMap[listView] = _modelMap[dropKey];
+			else								_formErrorMessages.append(tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name()));
 		}
 		else
 		{
@@ -339,9 +340,11 @@ void AnalysisForm::_orderExpanders()
 
 void AnalysisForm::addListView(QMLListView* listView, QMLListView* source)
 {
-	_modelMap[listView->name()] = listView->model();
-	_relatedModelMap[listView] = source->model();
-	_relatedModelMap[source] = listView->model();
+	if(listView->model())							_modelMap[listView->name()] = listView->model();
+	else if(_modelMap.count(listView->name()) > 0)	_modelMap.remove(listView->name());
+
+	_relatedModelMap[listView]	= source->model();
+	_relatedModelMap[source]	= listView->model();
 }
 
 void AnalysisForm::reset()

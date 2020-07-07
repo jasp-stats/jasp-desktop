@@ -95,7 +95,7 @@ protected:
 
 public:
 	ListModel			*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
-	ListModel			*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
+	ListModel			*	getModel(const QString& modelName)		{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr; } // Maps create elements if they do not exist yet
 	Options				*	getAnalysisOptions()					{ return _analysis->options(); }
 	JASPControlWrapper	*	getControl(const QString& name)			{ return _controls[name]; }
 	void					addListView(QMLListView* listView, QMLListView* sourceListView);
