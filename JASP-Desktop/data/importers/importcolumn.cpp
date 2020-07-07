@@ -1,10 +1,9 @@
 #include "importcolumn.h"
 #include <cmath>
 #include "utils.h"
+#include "log.h"
 
-using namespace std;
-
-ImportColumn::ImportColumn(ImportDataSet* importDataSet, string name)
+ImportColumn::ImportColumn(ImportDataSet* importDataSet, std::string name)
 	: _importDataSet(importDataSet), _name(name)
 {
 }
@@ -14,13 +13,13 @@ ImportColumn::~ImportColumn()
 }
 
 
-string ImportColumn::name() const
+std::string ImportColumn::name() const
 {
 	return _name;
 }
 
 
-bool ImportColumn::convertVecToInt(const vector<string> &values, vector<int> &intValues, set<int> &uniqueValues, map<int, string> &emptyValuesMap)
+bool ImportColumn::convertVecToInt(const std::vector<std::string> &values, std::vector<int> &intValues, std::set<int> &uniqueValues, std::map<int, std::string> &emptyValuesMap)
 {
 	emptyValuesMap.clear();
 	uniqueValues.clear();
@@ -29,7 +28,7 @@ bool ImportColumn::convertVecToInt(const vector<string> &values, vector<int> &in
 
 	int row = 0;
 
-	for (const string &value : values)
+	for (const std::string &value : values)
 	{
 		int intValue = INT_MIN;
 
@@ -49,14 +48,14 @@ bool ImportColumn::convertVecToInt(const vector<string> &values, vector<int> &in
 	return true;
 }
 
-bool ImportColumn::convertVecToDouble(const vector<string> &values, vector<double> &doubleValues, map<int, string> &emptyValuesMap)
+bool ImportColumn::convertVecToDouble(const std::vector<std::string> &values, std::vector<double> &doubleValues, std::map<int, std::string> &emptyValuesMap)
 {
 	emptyValuesMap.clear();
 	doubleValues.clear();
 	doubleValues.reserve(values.size());
 
 	int row = 0;
-	for (const string &value : values)
+	for (const std::string &value : values)
 	{
 		double doubleValue = static_cast<double>(NAN);
 
@@ -65,7 +64,7 @@ bool ImportColumn::convertVecToDouble(const vector<string> &values, vector<doubl
 			doubleValues.push_back(doubleValue);
 
 			if (std::isnan(doubleValue) && value != Utils::emptyValue)
-				emptyValuesMap.insert(make_pair(row, value));
+				emptyValuesMap.insert(std::make_pair(row, value));
 		}
 		else
 			return false;
@@ -74,4 +73,11 @@ bool ImportColumn::convertVecToDouble(const vector<string> &values, vector<doubl
 	}
 
 	return true;
+}
+
+void ImportColumn::changeName(const std::string & name)
+{
+	Log::log() << "Changing name of column from '" << _name << "' to '" << name << "'\n." << std::endl;
+
+	_name = name;
 }

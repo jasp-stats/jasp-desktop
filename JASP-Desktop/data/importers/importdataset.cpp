@@ -76,6 +76,20 @@ void ImportDataSet::buildDictionary()
 {
 	_nameToColMap.clear();
 	for(ImportColumn * col : *this)
-		_nameToColMap[col->name()] = col;
+		if(col->name() != "")
+			_nameToColMap[col->name()] = col;
+
+	size_t unnamedColumns = 0;
+
+	for(ImportColumn * col : *this)
+		if(col->name() == "")
+		{
+			std::string newName = "";
+			while(newName == "" || _nameToColMap.count(newName) > 0)
+				newName = "Unnamed Column #" + std::to_string(++unnamedColumns);
+			col->changeName(newName);
+
+			_nameToColMap[col->name()] = col;
+		}
 }
 

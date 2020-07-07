@@ -425,12 +425,12 @@ void ReadStatImportColumn::addMissingValue()
 	}
 }
 
-bool ReadStatImportColumn::isMissingValue(std::string s) const
+bool ReadStatImportColumn::isMissingValue(std::string s)
 {
 	return s == Utils::emptyValue;
 }
 
-std::string  ReadStatImportColumn::missingValueString()	const
+std::string  ReadStatImportColumn::missingValueString()
 {
 	return Utils::emptyValue;
 }

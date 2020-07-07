@@ -29,13 +29,13 @@ public:
 	void						addLabel(const double			& val,	const std::string & label);
 	void						addLabel(const std::string		& val,	const std::string & label);
 
-	bool						isMissingValue(double d)		const { return isnan(d);				}
-	bool						isMissingValue(int i)			const { return i == INT_MIN;			}
-	bool						isMissingValue(std::string s)	const;
+	static bool						isMissingValue(double d)		{ return isnan(d);				}
+	static bool						isMissingValue(int i)			{ return i == INT_MIN;			}
+	static bool						isMissingValue(std::string s);
 
-	int							missingValueInt()		const { return INT_MIN;		}
-	double						missingValueDouble()	const { return NAN; }
-	std::string					missingValueString()	const;
+	static int							missingValueInt()			{ return INT_MIN;		}
+	static double						missingValueDouble()		{ return NAN; }
+	static std::string					missingValueString();
 
 	void						addMissingValue();
 	void						addLeadingMissingValues();

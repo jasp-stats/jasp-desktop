@@ -132,7 +132,8 @@ void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 		break;
 
 	default:
-		Log::log() << "Column " << col->name() << " has unknown type after loading so presumably doesn't contain any data whatsoever, this error should probably not occur!\n";
+		Log::log() << "Column " << col->name() << " has unknown type after loading so presumably doesn't contain any data whatsoever. We will make it into a scalar column to get it to show up.\n";
+		DataSetPackage::pkg()->initColumnAsScale(colId, col->name(), std::vector<double>(DataSetPackage::pkg()->rowCount(), ReadStatImportColumn::missingValueDouble()));
 		break;
 	}
 }

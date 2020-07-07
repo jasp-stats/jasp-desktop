@@ -16,7 +16,8 @@ public:
 
 	virtual size_t						size()									const = 0;
 	virtual std::vector<std::string>	allValuesAsStrings()					const = 0;
-	virtual std::string					name()									const;
+			std::string					name()									const;
+			void						changeName(const std::string & name);
 
 	static bool convertVecToInt(	const std::vector<std::string> & values, std::vector<int>		& intValues,	std::set<int> &uniqueValues,	std::map<int, std::string> &emptyValuesMap);
 	static bool convertVecToDouble(	const std::vector<std::string> & values, std::vector<double>	& doubleValues,									std::map<int, std::string> &emptyValuesMap);
