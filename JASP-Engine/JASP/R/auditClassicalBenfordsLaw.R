@@ -448,6 +448,11 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                   99)
     }
 
+    axisName <- base::switch(options[["digits"]],
+                              "first" = gettext("Leading digit"),
+                              "firstSecond" = gettext("Leading digits"),
+                              "last" = gettext("Last digit"))
+
     p <- ggplot2::ggplot(data = data.frame(x = c(0,0), y = c(0,1), type = c(gettext("Observed"), gettext("Benford's law"))), 
                         mapping = ggplot2::aes(x = x, y = y, fill = type)) +
           ggplot2::geom_point(alpha = 0) +
@@ -466,7 +471,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                 fill = "dodgerblue", 
                                 size = pointSize, 
                                 stroke = 1.5) +
-          ggplot2::scale_x_continuous(name = gettext("Leading digit"),
+          ggplot2::scale_x_continuous(name = axisName,
                                       breaks = xBreaks, 
                                       labels = xLabels,
                                       limits = c(min(state[["digits"]]) - 0.5, 
