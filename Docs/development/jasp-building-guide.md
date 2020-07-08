@@ -19,7 +19,7 @@ JASP requires several dependencies which are documented below.
 
 JASP depends on:
 
- - [Qt (5.12.6 + QtWebEngine)](http://qt-project.org)
+ - [Qt (5.15 + QtWebEngine)](http://qt-project.org)
  - [R](http://cran.r-project.org)
  - [boost](http://boost.org)
  - [libarchive](http://libarchive.org/)
@@ -38,7 +38,7 @@ Windows
 
 Building JASP under windows is most temperamental but should pose no large problems. Besides the above described GitHub repositories, you will need to install the following preliminaries to build JASP on Windows, later on described in more detail:
 
-- [Qt 5.13.1](https://www.qt.io/download) Download the Open Source version from (https://www.qt.io/download).
+- [Qt 5.15](https://www.qt.io/download) Download the Open Source version from (https://www.qt.io/download).
 - [Visual Studio 2017](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=15) Download the community version. (Going to https://www.visualstudio.com/downloads/ only gives you 2019...)
 - [R Tools 3.5](https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe) Download from (https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe)
 
