@@ -51,8 +51,9 @@ Form {
 				label: 							qsTr("Check numbers:")
 				values:
 				[
-						{ label: "1 - 9", value: "first"},
-						{ label: "10 - 99", value: "firstSecond"},
+						{ label: "First", value: "first"},
+						{ label: "First and second", value: "firstSecond"},
+						{ label: "Last", value: "last"}
 				]
 		}
 	}

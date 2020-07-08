@@ -111,12 +111,16 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
     confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
 
-    procedureText <- gettextf("Benford's law states that in many naturally occurring collections of numbers, the leading significant number is likely to be small. The goal of this procedure is to determine to which extent the leading numbers in the population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification.", confidenceLabel)
+    procedureText <- base::switch(options[["digits"]],
+                                  "first" = gettextf("Benford's law states that in many naturally occurring collections of numbers, the leading significant number is likely to be small. The goal of this procedure is to determine to which extent the first leading numbers in the population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification.", confidenceLabel),
+                                  "firstSecond" = gettextf("Benford's law states that in many naturally occurring collections of numbers, the leading significant number is likely to be small. The goal of this procedure is to determine to which extent the first two leading numbers in the population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification.", confidenceLabel),
+                                  "last" = gettextf("Benford's law states that in many naturally occurring collections of numbers, the leading significant number is likely to be small. The goal of this procedure is to determine to which extent the last numbers in the population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification.", confidenceLabel))
 
     procedureContainer[["procedureParagraph"]] <- createJaspHtml(procedureText, "p")
     procedureContainer[["procedureParagraph"]]$position <- 1
     procedureContainer$dependOn(options = c("explanatoryText", 
-                                            "confidence"))
+                                            "confidence",
+                                            "digits"))
 
     jaspResults[["procedureContainer"]] <- procedureContainer
   }
@@ -182,6 +186,12 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
       leadingDigits <- table(as.numeric(substring(format(abs(obs), scientific = TRUE), 1, 3)) * 10)
       digits <- 10:99
 
+    } else if(options[["digits"]] == "last"){
+
+      stringedObs <- format(abs(obs), scientific = TRUE)
+      leadingDigits <- table(as.numeric(substring(stringedObs, nchar(stringedObs), nchar(stringedObs))))
+      digits <- 1:9
+
     }
 
     counts <- rep(0, length(digits))
@@ -189,7 +199,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
     includedNumbers <- as.numeric(names(leadingDigits))
 
-    if(options[["digits"]] == "first"){
+    if(options[["digits"]] == "first" || options[["digits"]] == "last"){
       counts[includedNumbers] <- as.numeric(leadingDigits)
     } else if(options[["digits"]] == "firstSecond"){
       counts[includedNumbers - 9] <- as.numeric(leadingDigits)
@@ -265,16 +275,15 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                      title = gettext("N"), 
                                      type = 'integer')
 
-  digits <- ifelse(options[["digits"]] == "first",
-                   yes = gettext(" (1 - 9) "),
-                   no = gettext(" (10 - 99) "))
-
-  message <- gettextf("The null hypothesis specifies that the distribution of first numbers %1$s in the population conforms to Benford’s law.", digits)
+  message <- base::switch(options[["digits"]],
+                          "first" = gettext("The null hypothesis specifies that the distribution of first numbers (1 - 9) in the population conforms to Benford’s law."),
+                          "firstSecond" = gettext("The null hypothesis specifies that the distribution of the first two numbers (10 - 99) in the population conforms to Benford’s law."),
+                          "last" = gettext("The null hypothesis specifies that the distribution of last numbers (1 - 9) in the population conforms to Benford’s law."))
   benfordsLawTestTable$addFootnote(message)
 
   benfordsLawContainer[["benfordsLawTestTable"]] <- benfordsLawTestTable
 
-  df <- ifelse(options[["digits"]] == "first", 
+  df <- ifelse(options[["digits"]] == "first" || options[["digits"]] == "last", 
               yes = 8,
               no = 89)
 
@@ -341,7 +350,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
     benfordsLawContainer[["benfordsLawTable"]] <- benfordsLawTable
 
-    if(options[["digits"]] == "first"){
+    if(options[["digits"]] == "first" || options[["digits"]] == "last"){
       digits <- 1:9
     } else {
       digits <- 10:99
@@ -402,7 +411,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
     if(!ready) 
       return()
 
-    if(options[["digits"]] == "first"){
+    if(options[["digits"]] == "first" || options[["digits"]] == "last"){
       pointSize     <- 5
       lineSize      <- 1.5
     } else if(options[["digits"]] == "firstSecond"){
@@ -422,7 +431,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
     yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
 
-    if(options[["digits"]] == "first"){
+    if(options[["digits"]] == "first" || options[["digits"]] == "last"){
       xBreaks <- state[["digits"]]
       xLabels <- state[["digits"]]
     } else {
@@ -438,6 +447,11 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                   90, rep("", 8),
                   99)
     }
+
+    axisName <- base::switch(options[["digits"]],
+                              "first" = gettext("Leading digit"),
+                              "firstSecond" = gettext("Leading digits"),
+                              "last" = gettext("Last digit"))
 
     p <- ggplot2::ggplot(data = data.frame(x = c(0,0), y = c(0,1), type = c(gettext("Observed"), gettext("Benford's law"))), 
                         mapping = ggplot2::aes(x = x, y = y, fill = type)) +
@@ -457,7 +471,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                 fill = "dodgerblue", 
                                 size = pointSize, 
                                 stroke = 1.5) +
-          ggplot2::scale_x_continuous(name = gettext("Leading digit"),
+          ggplot2::scale_x_continuous(name = axisName,
                                       breaks = xBreaks, 
                                       labels = xLabels,
                                       limits = c(min(state[["digits"]]) - 0.5, 
@@ -485,7 +499,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   if(options[["explanatoryText"]]){
 
-    benfordsLawPlotText <- createJaspHtml(gettextf("<b>Figure %i:</b> The observed percentages of each leading number in the population compared to the expected percentage under Benford's law. The more the blue dots lie near the top of the grey bars, the more the population conforms to Benford's law.", jaspResults[["figNumber"]]$object), "p")
+    benfordsLawPlotText <- createJaspHtml(gettextf("<b>Figure %i:</b> The observed percentages of each number in the population compared to the expected percentage under Benford's law. The more the blue dots lie near the top of the grey bars, the more the population conforms to Benford's law.", jaspResults[["figNumber"]]$object), "p")
     
     benfordsLawPlotText$position <- positionInContainer + 1
     benfordsLawPlotText$dependOn(optionsFromObject = benfordsLawContainer[["benfordsLawPlot"]])
@@ -527,7 +541,10 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   if(pvalue < 0.01)
     pvalue <- "< .01"
 
-  conclusionText <- gettextf("The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of first numbers in the population conforms to Benford's law <b>%2$s</b> with <b>%3$s</b> confidence.", pvalue, conclusion, confidenceLabel)
+  conclusionText <- base::switch(options[["digits"]],
+                                  "first" = gettextf("The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of first numbers in the population conforms to Benford's law <b>%2$s</b> with <b>%3$s</b> confidence.", pvalue, conclusion, confidenceLabel),
+                                  "firstSecond" = gettextf("The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of the two first numbers in the population conforms to Benford's law <b>%2$s</b> with <b>%3$s</b> confidence.", pvalue, conclusion, confidenceLabel),
+                                  "last" = gettextf("The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of last numbers in the population conforms to Benford's law <b>%2$s</b> with <b>%3$s</b> confidence.", pvalue, conclusion, confidenceLabel))
 
   conclusionContainer[["conclusionParagraph"]] <- createJaspHtml(conclusionText, "p")
   conclusionContainer[["conclusionParagraph"]]$position <- 1
