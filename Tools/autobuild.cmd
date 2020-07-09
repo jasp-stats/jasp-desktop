@@ -313,7 +313,13 @@ echo Melting and Coalescing MSI
 
 cd %JASP_BASE_DIR%\%JASP_WIX_DIR%
 
-SET MERGEMODULENAME=Microsoft_VC141_CRT_%WIXARCH%.msm
+SET MERGEMODULENAME=Microsoft_VC142_CRT_%WIXARCH%.msm
+
+REM a workaround because for some reason they decided nobody needs VCToolsRedistDir in vs 2019...  https://developercommunity.visualstudio.com/content/problem/544305/vs2019-vctoolsredistdir-environment-variable-incor.html
+if "%VCToolsRedistDir%"=="" (
+    set VCToolsRedistDir="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.24.28127"
+)
+
 
 COPY "%VCToolsRedistDir%\MergeModules\%MERGEMODULENAME%" /Y
 "%WIX%\bin\heat.exe" dir .\%JASP_INSTALL_DIR% -cg JASPFiles -gg -scom -sreg -sfrag -srd -dr INSTALLLOCATION -var var.JASP_INSTALL_DIR -out JASPFilesFragment.wxs || exit /B 7
