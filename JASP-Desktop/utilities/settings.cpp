@@ -34,11 +34,7 @@ const Settings::Setting Settings::Values[] = {
 	{"maxFlickVelocity",			800},
 	{"modulesRemember",				true},
 	{"modulesRemembered",			""},
-#ifdef __APPLE__
-	{"safeGraphicsModeMac",			true}, //Renamed and turned on to make mac always start in safe graphics mode by default to avoid (as much as possible) the crashes on mac reported in https://github.com/jasp-stats/INTERNAL-jasp/issues/720
-#else
 	{"safeGraphicsMode",			false},
-#endif
 	{"cranRepositoryURL",			"https://cloud.r-project.org"},
 	{"userHasGitHubAccount",		false},
 	{"preferredLanguage",			QLocale::English},
