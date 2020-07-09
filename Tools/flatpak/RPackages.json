@@ -3575,7 +3575,7 @@
 				{
 					"type": "git",
 					"url": "https://github.com/juliuspf/Bayesrel",
-					"commit": "39c25d21a118023a5ef46133c94ce8f9b3078f71"
+					"commit": "32aebfd270231faded9d62ca419839d06c229456"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3635,7 +3635,7 @@
 				{
 					"type": "git",
 					"url": "https://github.com/dustinfife/flexplot",
-					"commit": "15b5cae2b8d009b8a95c5f1d261e2077f53e8bd9"
+					"commit": "b36b94d585478b352815e8fb1c53d84c21908a5a"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]

@@ -56,12 +56,13 @@ initialize <- function()
     dir.create(destTmpDir)
 }
 
+
 defineSpecials <- function()
 {
   specials <<- new.env(hash = TRUE, parent = parent.frame())
   specials[['bstats']]       <- list(type='github', commit='1b0b925d0404537b908a6380b70d80382df2d374', repo='AlexanderLyNL/bstats'  )
-  specials[['flexplot']]     <- list(type='github', commit='15b5cae2b8d009b8a95c5f1d261e2077f53e8bd9', repo='dustinfife/flexplot'   )
-  specials[['Bayesrel']]     <- list(type='github', commit='39c25d21a118023a5ef46133c94ce8f9b3078f71', repo='juliuspf/Bayesrel'     )
+  specials[['flexplot']]     <- list(type='github', commit='b36b94d585478b352815e8fb1c53d84c21908a5a', repo='dustinfife/flexplot'   )
+  specials[['Bayesrel']]     <- list(type='github', commit='32aebfd270231faded9d62ca419839d06c229456', repo='juliuspf/Bayesrel'     )
   specials[['stanova']]      <- list(type='github', commit='2cb08223f957533103612e72055fa7063a1fb5ce', repo='bayesstuff/stanova'    )
   specials[['afex']]         <- list(type='github', commit='1acc5eec8c4d8d7e20c575f71892d1ab508f8d86', repo='singmann/afex'         )
   specials[['ggpol']]        <- list(type='github', commit='dea9db2503b04b81dbc746fdeccf92e9849ce64b', repo='jasp-stats/ggpol'      ) # temporary fix for conflicting ggplot2 dependencies in jasp 0.12.2. Should be removed after that release and shit should be fixed!
