@@ -1,5 +1,7 @@
 reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
+  sink("~/Downloads/log_freq.txt")
+  on.exit(sink(NULL))
   
   dataset <- .reliabilityReadData(dataset, options)
   .reliabilityCheckErrors(dataset, options)
@@ -450,9 +452,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           addSingularFootnote <- TRUE
       }
       if (addSingularFootnote) {
-        model[["footnote"]] <- gettextf("%s Some confidence intervals could not be computed because 
-                                        out of the bootstrapped matrices non were invertible. ",
-                                        model[["footnote"]])
+        model[["footnote"]] <- gettextf("%s Some confidence intervals could not be computed because out of the bootstrapped matrices non were invertible. ", model[["footnote"]])
       }
 
     } else {
