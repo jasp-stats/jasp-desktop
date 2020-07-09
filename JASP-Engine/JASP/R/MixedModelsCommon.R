@@ -140,12 +140,12 @@
   dataset <- dataset[,used_variables]
   
   # omit NAs/NaN/Infs and store the number of omitted observations
-  full_rows <- !apply(dataset, 1, function(x){anyNA(x) || any(is.infinite(x)) || any(is.nan(x))})
-  dataset   <- dataset[full_rows, ]
+  all_rows <- nrow(dataset)
+  dataset  <- na.omit(dataset)
   
   # store the number of missing values into a jaspState object
   n_missing <- createJaspState()
-  n_missing$object <- sum(!full_rows)
+  n_missing$object <- all_rows - nrow(dataset)
   jaspResults[["n_missing"]] <- n_missing
   
   return(dataset)
@@ -158,6 +158,13 @@
   if(type %in% c("GLMM", "BGLMM"))
     if(options$dependentVariableAggregation != "")
       check_variables <- check_variables[-which(.v(options$dependentVariableAggregation) == colnames(dataset))]
+  
+  
+  .hasErrors(
+    dataset,
+    type = 'infinity',
+    exitAnalysisIfErrors = TRUE
+  )
   
   # the aggregation variable for binomial can have zero variance and can be without factor levels
   .hasErrors(
