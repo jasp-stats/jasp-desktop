@@ -113,7 +113,7 @@ sign "$APP_PATH"
 
 echo "Making the R library readonly"  #https://github.com/jasp-stats/INTERNAL-jasp/issues/896
 chmod -R a-w $APP_FRAMEWORKS/R.framework/Versions/*/Resources/library
-
+chmod -R a+w $APP_FRAMEWORKS/R.framework/Versions/*/Resources/library/officer # Fixes https://github.com/jasp-stats/INTERNAL-jasp/issues/972 (Can't save as pptx on mac)
 popd
 
 echo "Figure out the size of the DMG"
