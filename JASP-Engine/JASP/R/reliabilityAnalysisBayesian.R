@@ -418,16 +418,16 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       if (estimators[i] == "Item-rest correlation") { # no item deleted for item rest cor
         itemTable$addColumnInfo(name = paste0("postMean", i), title = gettext("Posterior Mean"), type = "number", 
                                 overtitle = gettext("Item-rest correlation"))
-        itemTable$addColumnInfo(name = paste0("lower", i), title = gettextf("Lower %s %%", cred), type = "number", 
+        itemTable$addColumnInfo(name = paste0("lower", i), title = gettextf("Lower %s%% CI", cred), type = "number", 
                                 overtitle = gettext("Item-rest correlation"))
-        itemTable$addColumnInfo(name = paste0("upper", i), title = gettextf("Upper %s %%", cred), type = "number", 
+        itemTable$addColumnInfo(name = paste0("upper", i), title = gettextf("Upper %s%% CI", cred), type = "number", 
                                 overtitle = gettext("Item-rest correlation"))
       } else {
         itemTable$addColumnInfo(name = paste0("postMean", i), title = gettext("Posterior Mean"), type = "number", 
                                 overtitle = overTitles[i])
-        itemTable$addColumnInfo(name = paste0("lower", i), title = gettextf("Lower %s %%", cred), type = "number", 
+        itemTable$addColumnInfo(name = paste0("lower", i), title = gettextf("Lower %s%% CI", cred), type = "number", 
                                 overtitle = overTitles[i])
-        itemTable$addColumnInfo(name = paste0("upper", i), title = gettextf("Upper %s %%", cred), type = "number", 
+        itemTable$addColumnInfo(name = paste0("upper", i), title = gettextf("Upper %s%% CI", cred), type = "number", 
                                 overtitle = overTitles[i])
       }
     } else {

@@ -1,7 +1,5 @@
 reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
-  sink("~/Downloads/log_freq.txt")
-  on.exit(sink(NULL))
   
   dataset <- .reliabilityReadData(dataset, options)
   .reliabilityCheckErrors(dataset, options)
@@ -86,7 +84,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           model[["footnote"]] <- gettextf("%s Of the observations, pairwise complete cases were used. ", 
                                           model[["footnote"]])
         } else {
-          pos <- which(is.na(dataset), arr.ind = T)[, 1]
+          pos <- which(is.na(dataset), arr.ind = TRUE)[, 1]
           dataset <- dataset[-pos, ] 
           use.cases <- "complete.obs"
           model[["footnote"]] <- gettextf("%s Of the observations, %1.f complete cases were used. ", 
@@ -264,7 +262,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         relyFit$freq$est <- list(freq_omega = omega.est, freq_alpha = alpha, 
                                  freq_lambda2 = Bayesrel:::applylambda2(cv), freq_lambda6 = Bayesrel:::applylambda6(cv),
                                  freq_glb = Bayesrel:::glbOnArray(cv), avg_cor = mean(cordat[lower.tri(cordat)]), 
-                                 mean = mean(rowMeans(dataset, na.rm = T)), sd = sd(colMeans(dataset, na.rm = T)))
+                                 mean = mean(rowMeans(dataset, na.rm = TRUE)), sd = sd(colMeans(dataset, na.rm = TRUE)))
 
         relyFit$freq$ifitem <- list(omega = omega.item, alpha = alpha.item, 
                                           lambda2 = apply(Cvtmp, 1, Bayesrel:::applylambda2), 
@@ -272,10 +270,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
                                           glb = apply(Cvtmp, 1, Bayesrel:::glbOnArray))
         relyFit$freq$ifitem$ircor <- NULL
         for (i in 1:ncol(dataset)) {
-          relyFit$freq$ifitem$ircor[i] <- cor(dataset[, i], rowMeans(dataset[, -i], na.rm = T), use = use.cases)
+          relyFit$freq$ifitem$ircor[i] <- cor(dataset[, i], rowMeans(dataset[, -i], na.rm = TRUE), use = use.cases)
         }
-        relyFit$freq$ifitem$mean <- colMeans(dataset, na.rm = T)
-        relyFit$freq$ifitem$sd <- apply(dataset, 2, sd, na.rm = T)  
+        relyFit$freq$ifitem$mean <- colMeans(dataset, na.rm = TRUE)
+        relyFit$freq$ifitem$sd <- apply(dataset, 2, sd, na.rm = TRUE)  
       }
       
       
@@ -364,12 +362,12 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   cfi <- vector("list", length(boot))
   names(cfi) <- names(boot)
   for (nm in names(boot)) {
-    if (nm == "mean" | nm == "sd")
+    if (nm %in% c("mean", "sd"))
       cfi[[nm]] <- c(NA_real_, NA_real_)
     else if (all(is.na(boot[[nm]])))
       cfi[[nm]] <- c(NaN, NaN)
     else 
-      cfi[[nm]] <- quantile(boot[[nm]], prob = c((1-cfiValue)/2, 1-(1-cfiValue)/2), na.rm = T)
+      cfi[[nm]] <- quantile(boot[[nm]], prob = c((1-cfiValue)/2, 1-(1-cfiValue)/2), na.rm = TRUE)
     
     names(cfi[[nm]]) <- c("lower", "upper")
   }
