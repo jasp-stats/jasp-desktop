@@ -22,7 +22,7 @@
 .mmRunAnalysis   <- function(jaspResults, dataset, options, type){
   
   if (.mmReady(options, type))
-    dataset <- .mmReadData(dataset, options, type)
+    dataset <- .mmReadData(jaspResults, dataset, options, type)
   if (.mmReady(options, type))
     .mmCheckData(dataset, options, type)
 
@@ -97,40 +97,68 @@
 }
 
 ### common mixed-models functions
-.mmReadData      <- function(dataset, options, type = "LMM") {
-  if (!is.null(dataset)) {
-    return(dataset)
-  } else{
+.mmReadData      <- function(jaspResults, dataset, options, type = "LMM") {
+  if (is.null(dataset)) {
     if (type %in% c("LMM","BLMM")) {
-      return(readDataSetToEnd(
+      dataset <- readDataSetToEnd(
         columns.as.numeric = options$dependentVariable,
         columns = c(
           options$fixedVariables,
           options$randomVariables
         )
-      ))
+      )
     } else if (type %in% c("GLMM","BGLMM")) {
       if (options$family == "binomial_agg"){
-        return(readDataSetToEnd(
+        dataset <- readDataSetToEnd(
           columns.as.numeric = c(options$dependentVariable, options$dependentVariableAggregation),
           columns = c(
             options$fixedVariables,
             options$randomVariables
           )
-        ))
+        )
       } else  if (options$dependentVariableAggregation == "") {
-        return(readDataSetToEnd(
+        dataset <- readDataSetToEnd(
           columns.as.numeric = options$dependentVariable,
           columns = c(
             options$fixedVariables,
             options$randomVariables
           )
-        ))
+        )
       }  
     }
   }
+
+  dataset <- data.frame(dataset)
+
+  # check and use only the variables that actually used for modeling
+  used_variables <- .v(c(
+    options$dependentVariable,
+    if(type %in% c("GLMM", "BGLMM")) if(options$dependentVariableAggregation != "") options$dependentVariableAggregation,
+    unique(unlist(options$fixedEffects)),
+    if(length(options$randomVariables) != 0) options$randomVariables
+  ))
+  dataset <- dataset[,used_variables]
+  
+  # omit NAs/NaN/Infs and store the number of omitted observations
+  all_rows <- nrow(dataset)
+  dataset  <- na.omit(dataset)
+  
+  # store the number of missing values into a jaspState object
+  n_missing <- createJaspState()
+  n_missing$object <- all_rows - nrow(dataset)
+  jaspResults[["n_missing"]] <- n_missing
+  
+  return(dataset)
 }
 .mmCheckData     <- function(dataset, options, type = "LMM") {
+ 
+  if(nrow(dataset) < length(options$fixedEffects))JASP:::.quitAnalysis("The dataset contains fewer observations than predictors (after excluding NAs/NaN/Inf).")
+  
+  check_variables <- 1:ncol(dataset)
+  if(type %in% c("GLMM", "BGLMM"))
+    if(options$dependentVariableAggregation != "")
+      check_variables <- check_variables[-which(.v(options$dependentVariableAggregation) == colnames(dataset))]
+  
   
   .hasErrors(
     dataset,
@@ -138,9 +166,9 @@
     exitAnalysisIfErrors = TRUE
   )
   
-  # the aggregation variable for binomial can have zero variance and be without factor levels
+  # the aggregation variable for binomial can have zero variance and can be without factor levels
   .hasErrors(
-    dataset[,.v(c(options$dependentVariable, options$fixedVariables, options$randomVariables))],
+    dataset[,check_variables],
     type = c('variance', 'factorLevels'),
     factorLevels.amount  = "< 2",
     exitAnalysisIfErrors = TRUE,
@@ -608,20 +636,16 @@
       } else if (!is.null(model$full_model[[length(model$full_model)]]@optinfo$conv$lme4$messages)) {
         ANOVAsummary$addFootnote(.mmMessageNumericalProblems, symbol = gettext("Warning:"))
       }
-      if (nrow(dataset) - nrow(model$full_model[[length(model$full_model)]]@frame) != 0) {
-        ANOVAsummary$addFootnote(.mmMessageMissingRows(nrow(dataset) - nrow(model$full_model[[length(model$full_model)]]@frame)))
-      }
     } else{
       if (lme4::isSingular(model$full_model)) {
         ANOVAsummary$addFootnote(.mmMessageSingularFit, symbol = gettext("Warning:"))
       } else if (!is.null(model$full_model@optinfo$conv$lme4$messages)) {
         ANOVAsummary$addFootnote(.mmMessageNumericalProblems, symbol = gettext("Warning:"))
       }
-      if (nrow(dataset) - nrow(model$full_model@frame) != 0) {
-        ANOVAsummary$addFootnote(.mmMessageMissingRows(nrow(dataset) - nrow(model$full_model@frame)))
-      }
     }
-    
+    if (jaspResults[["n_missing"]]$object != 0) {
+      ANOVAsummary$addFootnote(.mmMessageMissingRows(jaspResults[["n_missing"]]$object))
+    }
     
     removed_me <- jaspResults[["mmModel"]]$object$removed_me
     removed_te <- jaspResults[["mmModel"]]$object$removed_te
@@ -2672,11 +2696,11 @@
       }
       if (length(added_re) > 0) {
         for (i in 1:length(added_re)) {
-          ANOVAsummary$addFootnote(.mmMessageAddedTerms(added_re[[i]], names(added_re)[i]), symbol = gettext("Warning:"))
+          temp_table$addFootnote(.mmMessageAddedTerms(added_re[[i]], names(added_re)[i]), symbol = gettext("Warning:"))
         }
       }
-      if (nrow(dataset) - length(model$y) != 0) {
-        temp_table$addFootnote(.mmMessageMissingRows(nrow(dataset) - length(model$y)))
+      if (jaspResults[["n_missing"]]$object != 0) {
+        temp_table$addFootnote(.mmMessageMissingRows(jaspResults[["n_missing"]]$object))
       }
       if (type == "BGLMM") {
         temp_table$addFootnote(.mmMessageGLMMtype(options$family, options$link))
