@@ -62,42 +62,42 @@ Form
 
 			CheckBox 
 			{    
-				id:     	mcdonaldf
+				id:     	mcdonald
 				name:   	"mcDonaldScale"
 				label:  	qsTr("McDonald's ω")         
 				checked: 	true
 			}
 			
 			CheckBox 
-			{     
+			{
+				id: 	cronbach
 				name: 	"alphaScale";
 				label: 	qsTr("Cronbach's α");         
-				id: 	cronbachf 
 			}
 
 			CheckBox 
 			{     
-				id: 	guttman2f       	          
+				id: 	guttman2
 				name: 	"guttman2Scale";
 				label: 	qsTr("Guttman's λ2");         
 			}
 
 			CheckBox 
 			{     
-				id: 	guttman6f       	          
+				id: 	guttman6
 				name: 	"guttman6Scale";
 				label: 	qsTr("Guttman's λ6");         
 			}
 
 			CheckBox 
 			{     
-				id: 	glbf      	              
+				id: 	glb
 				name: 	"glbScale";
 				label: 	qsTr("Greatest lower bound"); 
 			}
 
-			CheckBox { name: "averageInterItemCor";	label: qsTr("Average interitem correlation")	}
-			CheckBox { name: "meanScale";				label: qsTr("Mean")							}
+			CheckBox { name: "averageInterItemCor";	label: qsTr("Average interitem correlation")}
+			CheckBox { name: "meanScale";			label: qsTr("Mean")							}
 			CheckBox { name: "sdScale";				label: qsTr("Standard deviation")			}
 			
 		}
@@ -110,35 +110,35 @@ Form
 			{ 
 				name: 		"mcDonaldItem";
 				label: 		qsTr("McDonald's ω  (if item dropped)");	        
-				enabled: 	mcdonaldf.checked 
+				enabled: 	mcdonald.checked
 			}
 
 			CheckBox 
 			{ 
 				name: 		"alphaItem";
 				label: 		qsTr("Cronbach's α (if item dropped)");	     
-				enabled: 	cronbachf.checked 
+				enabled: 	cronbach.checked
 			}
 
 			CheckBox 
 			{ 
 				name: 		"guttman2Item";
 				label: 		qsTr("Guttman's λ2 (if item dropped)");	       
-				enabled: 	guttman2f.checked  
+				enabled: 	guttman2.checked
 			}
 
 			CheckBox 
 			{ 
 				name: 		"guttman6Item";
 				label: 		qsTr("Guttman's λ6 (if item dropped)");	       
-				enabled: 	guttman6f.checked  
+				enabled: 	guttman6.checked
 			}
 			
 			CheckBox 
 			{ 
 				name: 		"glbItem";
 				label: 		qsTr("Greatest lower bound (if item dropped)");	
-				enabled: 	glbf.checked     
+				enabled: 	glb.checked
 			}    
 			
 			CheckBox { name: "itemRestCor";	label: qsTr("Item-rest correlation")		}
@@ -200,8 +200,9 @@ Form
 
 		RadioButtonGroup 
 		{
-			title: 	qsTr("McDonald's ω Estimation")
-			name: 	"omegaEst"
+			title: 		qsTr("McDonald's ω Estimation")
+			name: 		"omegaEst"
+			enabled: 	mcdonald.checked
 
 			RadioButton 
 			{
@@ -211,9 +212,8 @@ Form
 
 					CheckBox
 					{
-						name:     "fitMeasures"	
-						label:    qsTr("Single Factor Model Fit")         
-						enabled:  mcdonaldf.checked
+						name: 		"fitMeasures"
+						label: 		qsTr("Single Factor Model Fit")
 					}
 
 					RadioButtonGroup 
@@ -224,15 +224,15 @@ Form
 						RadioButton
 						{
 						
-							value:	"omegaAnalytic"	
-							label:  	qsTr("Analytic interval")         
+							value: 		"omegaAnalytic"
+							label: 		qsTr("Analytic interval")
 							checked: 	true
 						}
 						
 						RadioButton
 						{
 							value: 	"omegaBoot"	
-							label:  	qsTr("Bootstrapped interval")         
+							label: 	qsTr("Bootstrapped interval")
 						}
 					}
 				}
@@ -241,7 +241,8 @@ Form
 		
 		Group
 		{
-			title: qsTr("Cronbach's α Estimation")
+			title: 		qsTr("Cronbach's α Estimation")
+			enabled: 	cronbach.checked
 			
 			RadioButtonGroup 
 			{

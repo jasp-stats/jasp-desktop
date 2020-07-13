@@ -335,7 +335,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   if (!is.null(relyFit)) {
 
     for (i in idxSelected) {
-      scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
+      scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
       if (options[["rHat"]]) {
         if (opts[i] == "mean" || opts[i] == "sd") {
           rhat <- NA_real_
@@ -361,7 +361,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   } else if (sum(selected) > 0L) {
     
     for (i in idxSelected) {
-      scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
+      scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
     }
     
     nvar <- length(options[["variables"]])
@@ -407,7 +407,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                  "reverseScaledItems", "credibleIntervalValueItem", 
                                  "itemRestCor", "meanItem", "sdItem", "missingValues", "setSeed", "seedValue"))
   
-  itemTable$addColumnInfo(name = "variable", title = "Item", type = "string")
+  itemTable$addColumnInfo(name = "variable", title = gettext("Item"), type = "string")
 
   idxSelected <- which(itemDroppedSelected)
   estimators <- derivedOptions[["namesEstimators"]][["tables_item"]]
@@ -416,22 +416,22 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   for (i in idxSelected) {
     if (estimators[i] %in% coefficients) {
       if (estimators[i] == "Item-rest correlation") { # no item deleted for item rest cor
-        itemTable$addColumnInfo(name = paste0("postMean", i), title = "Posterior Mean", type = "number", 
+        itemTable$addColumnInfo(name = paste0("postMean", i), title = gettext("Posterior Mean"), type = "number", 
                                 overtitle = gettext("Item-rest correlation"))
-        itemTable$addColumnInfo(name = paste0("lower", i), title = paste0("Lower ", cred, "%"), type = "number", 
+        itemTable$addColumnInfo(name = paste0("lower", i), title = gettextf("Lower %s%% CI", cred), type = "number", 
                                 overtitle = gettext("Item-rest correlation"))
-        itemTable$addColumnInfo(name = paste0("upper", i), title = paste0("Upper ", cred, "%"), type = "number", 
+        itemTable$addColumnInfo(name = paste0("upper", i), title = gettextf("Upper %s%% CI", cred), type = "number", 
                                 overtitle = gettext("Item-rest correlation"))
       } else {
-        itemTable$addColumnInfo(name = paste0("postMean", i), title = "Posterior Mean", type = "number", 
+        itemTable$addColumnInfo(name = paste0("postMean", i), title = gettext("Posterior Mean"), type = "number", 
                                 overtitle = overTitles[i])
-        itemTable$addColumnInfo(name = paste0("lower", i), title = paste0("Lower ", cred, "%"), type = "number", 
+        itemTable$addColumnInfo(name = paste0("lower", i), title = gettextf("Lower %s%% CI", cred), type = "number", 
                                 overtitle = overTitles[i])
-        itemTable$addColumnInfo(name = paste0("upper", i), title = paste0("Upper ", cred, "%"), type = "number", 
+        itemTable$addColumnInfo(name = paste0("upper", i), title = gettextf("Upper %s%% CI", cred), type = "number", 
                                 overtitle = overTitles[i])
       }
     } else {
-      itemTable$addColumnInfo(name = paste0("postMean", i), title = estimators[i], type = "number")
+      itemTable$addColumnInfo(name = paste0("postMean", i), title = gettext(estimators[i]), type = "number")
     }
 
   }
@@ -488,11 +488,10 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   probTable$dependOn(options = c("variables", "mcDonaldScale", "alphaScale", "guttman2Scale", "guttman6Scale",
                                  "glbScale", "reverseScaledItems", "probTableValueLow", "probTable",
                                  "probTableValueHigh", "missingValues", "setSeed", "seedValue"))
-  overTitle <- format("Probability",
-                      digits = 3, drop0trailing = T)
-  probTable$addColumnInfo(name = "statistic", title = "Statistic",   type = "string")
-  probTable$addColumnInfo(name = "prior",     title = "Prior", type = "number", overtitle = overTitle )
-  probTable$addColumnInfo(name = "posterior", title = "Posterior", type = "number", overtitle = overTitle )
+  overTitle <- gettext("Probability")
+  probTable$addColumnInfo(name = "statistic", title = gettext("Statistic"),   type = "string")
+  probTable$addColumnInfo(name = "prior",     title = gettext("Prior"), type = "number", overtitle = overTitle )
+  probTable$addColumnInfo(name = "posterior", title = gettext("Posterior"), type = "number", overtitle = overTitle )
 
   relyFit <- model[["relyFit"]]
   derivedOptions <- model[["derivedOptions"]]
