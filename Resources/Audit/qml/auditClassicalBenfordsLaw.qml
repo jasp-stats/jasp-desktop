@@ -48,12 +48,23 @@ Form {
 		DropDown {
 				name: 							"digits"
 				indexDefaultValue: 	0
-				label: 							qsTr("Check numbers:")
+				label: 							qsTr("Check digits:")
 				values:
 				[
 						{ label: "First", value: "first"},
 						{ label: "First and second", value: "firstSecond"},
 						{ label: "Last", value: "last"}
+				]
+		}
+
+		DropDown {
+				name: 							"distribution"
+				indexDefaultValue: 	0
+				label: 							qsTr("Compare to:")
+				values:
+				[
+						{ label: "Benford's law", value: "benford"},
+						{ label: "Uniform distribution", value: "uniform"}
 				]
 		}
 	}
@@ -123,7 +134,7 @@ Form {
 
 				CheckBox
 				{
-					text: qsTr("Compare vs. Benford's law")
+					text: qsTr("Compare to expected distribution")
 					name: "benfordsLawPlot"
 				}
 			}
