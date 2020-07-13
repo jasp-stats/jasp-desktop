@@ -29,38 +29,41 @@ static			cetype_t	Encoding			= CE_NATIVE;// CE_UTF8;
 #define CSTRING_TO_R_CHARSXP(constchar) Rf_mkCharCE(constchar, Encoding)
 #define CSTRING_TO_R(constchar) Rf_ScalarString(CSTRING_TO_R_CHARSXP(constchar))
 
-RInside						*rinside;
-ReadDataSetCB				readDataSetCB;
-RunCallbackCB				runCallbackCB;
-ReadADataSetCB				readFullDataSetCB,
-							readFullFilteredDataSetCB,
-							readFilterDataSetCB;
-ReadDataColumnNamesCB		readDataColumnNamesCB;
-RequestTempFileNameCB		requestTempFileNameCB,
-							requestSpecificFileNameCB;
-RequestTempRootNameCB		requestTempRootNameCB;
-ReadDataSetDescriptionCB	readDataSetDescriptionCB;
-RequestPredefinedFileSourceCB requestStateFileSourceCB,
-							requestJaspResultsFileSourceCB;
+#define CSTRING_TO_R_CHARSXP_UTF8(constchar) Rf_mkCharCE(constchar, CE_UTF8)
+#define CSTRING_TO_R_UTF8(constchar) Rf_ScalarString(CSTRING_TO_R_CHARSXP_UTF8(constchar))
 
-GetColumnType				dataSetGetColumnType;
-SetColumnAsScale			dataSetColumnAsScale;
-SetColumnAsOrdinal			dataSetColumnAsOrdinal;
-SetColumnAsNominal			dataSetColumnAsNominal;
-SetColumnAsNominalText		dataSetColumnAsNominalText;
+RInside							*rinside;
+ReadDataSetCB					readDataSetCB;
+RunCallbackCB					runCallbackCB;
+ReadADataSetCB					readFullDataSetCB,
+								readFullFilteredDataSetCB,
+								readFilterDataSetCB;
+ReadDataColumnNamesCB			readDataColumnNamesCB;
+RequestTempFileNameCB			requestTempFileNameCB,
+								requestSpecificFileNameCB;
+RequestTempRootNameCB			requestTempRootNameCB;
+ReadDataSetDescriptionCB		readDataSetDescriptionCB;
+RequestPredefinedFileSourceCB	requestStateFileSourceCB,
+								requestJaspResultsFileSourceCB;
 
-DataSetRowCount				dataSetRowCount;
+GetColumnType					dataSetGetColumnType;
+SetColumnAsScale				dataSetColumnAsScale;
+SetColumnAsOrdinal				dataSetColumnAsOrdinal;
+SetColumnAsNominal				dataSetColumnAsNominal;
+SetColumnAsNominalText			dataSetColumnAsNominalText;
 
-EnDecodeDef					encodeColumnName,
-							decodeColumnName,
-							encodeAllColumnNames,
-							decodeAllColumnNames;
+DataSetRowCount					dataSetRowCount;
 
-static logFlushDef			_logFlushFunction		= nullptr;
-static logWriteDef			_logWriteFunction		= nullptr;
-static sendFuncDef			_sendToDesktop			= nullptr;
+EnDecodeDef						encodeColumnName,
+								decodeColumnName,
+								encodeAllColumnNames,
+								decodeAllColumnNames;
 
-static std::string			_R_HOME = "";
+static logFlushDef				_logFlushFunction		= nullptr;
+static logWriteDef				_logWriteFunction		= nullptr;
+static sendFuncDef				_sendToDesktop			= nullptr;
+
+static std::string				_R_HOME = "";
 
 bool shouldCrashSoon = false; //Simply here to allow a developer to force a crash
 
@@ -516,8 +519,8 @@ SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension)
 		return R_NilValue;
 
 	Rcpp::List paths;
-	paths["root"] = root;
-	paths["relativePath"] = relativePath;
+	paths["root"]			= CSTRING_TO_R_UTF8(root);
+	paths["relativePath"]	= CSTRING_TO_R_UTF8(relativePath);
 
 	return paths;
 }
@@ -531,8 +534,8 @@ SEXP jaspRCPP_requestSpecificFileNameSEXP(SEXP filename)
 		return R_NilValue;
 
 	Rcpp::List paths;
-	paths["root"] = root;
-	paths["relativePath"] = relativePath;
+	paths["root"]			= CSTRING_TO_R_UTF8(root);
+	paths["relativePath"]	= CSTRING_TO_R_UTF8(relativePath);
 
 	return paths;
 }
@@ -542,7 +545,7 @@ SEXP jaspRCPP_requestTempRootNameSEXP()
 	const char* root = requestTempRootNameCB();
 
 	Rcpp::List paths;
-	paths["root"] = root;
+	paths["root"] = CSTRING_TO_R_UTF8(root);
 	return paths;
 }
 
@@ -590,8 +593,8 @@ SEXP jaspRCPP_requestStateFileNameSEXP()
 		return R_NilValue;
 
 	Rcpp::List paths;
-	paths["root"]			= root;
-	paths["relativePath"]	= relativePath;
+	paths["root"]			= CSTRING_TO_R_UTF8(root);
+	paths["relativePath"]	= CSTRING_TO_R_UTF8(relativePath);
 
 	return paths;
 }

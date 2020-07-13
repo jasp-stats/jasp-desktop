@@ -20,6 +20,8 @@
 #include "log.h"
 #include <fstream>
 #include <boost/nowide/args.hpp>
+#include <boost/filesystem.hpp>
+#include <codecvt>
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -64,6 +66,9 @@ int main(int argc, char *argv[])
 
 		Log::log() << "Log and possible redirects initialized!" << std::endl;
 		Log::log() << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
+
+		//Should help with converting korean/japanese/etc to utf-8.
+		boost::filesystem::path::imbue(std::locale( std::locale(), new std::codecvt_utf8_utf16<wchar_t>() ) );
 
 		try
 		{

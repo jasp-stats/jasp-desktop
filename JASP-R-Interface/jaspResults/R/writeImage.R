@@ -43,8 +43,6 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   fullPathpng                     <- paste(location$root, relativePathpng, sep="/")
   plotEditingOptions              <- NULL
   root                            <- location$root
-  base::Encoding(relativePathpng) <- "UTF-8"
-  base::Encoding(root)            <- "UTF-8"
   oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))

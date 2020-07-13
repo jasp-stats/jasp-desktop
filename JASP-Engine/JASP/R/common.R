@@ -32,10 +32,8 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
   if (base::exists(".requestStateFileNameNative")) {
     location              <- .fromRCPP(".requestStateFileNameNative")
-    root                  <- location$root
-    base::Encoding(root)  <- "UTF-8"
     oldwd                 <- getwd()
-    setwd(root)
+    setwd(location$root)
     on.exit(setwd(oldwd))
   }
 
@@ -194,10 +192,8 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
   if (base::exists(".requestStateFileNameNative")) {
     location              <- .fromRCPP(".requestStateFileNameNative")
-    root                  <- location$root
-    base::Encoding(root)  <- "UTF-8"
     oldwd                 <- getwd()
-    setwd(root)
+    setwd(location$root)
     on.exit(setwd(oldwd))
   }
 
@@ -276,9 +272,7 @@ initEnvironment <- function() {
 
   if (base::exists(".requestTempRootNameNative")) {
     paths <- .fromRCPP(".requestTempRootNameNative")
-    root = paths$root
-    base::Encoding(root) <- "UTF-8"
-    setwd(root)
+    setwd(paths$root)
   } else
     print("Could not set the working directory!")
 }
@@ -1335,15 +1329,15 @@ isTryError <- function(obj){
 
     cite <- c(.fromRCPP(".baseCitation"), table$citation)
 
-    for (i in seq_along(cite))
-      base::Encoding(cite[[i]]) <- "UTF-8"
+   # for (i in seq_along(cite))
+   #   base::Encoding(cite[[i]]) <- "UTF-8" why?
 
     table$citation <- cite
 
   } else {
 
     cite <- .fromRCPP(".baseCitation")
-    base::Encoding(cite) <- "UTF-8"
+    #base::Encoding(cite) <- "UTF-8"
 
     table$citation <- list(cite)
   }
@@ -1664,8 +1658,6 @@ isTryError <- function(obj){
     return(list(relativePath = relativePath))
   }
 
-  base::Encoding(relativePath) <- "UTF-8"
-
   try(suppressWarnings(base::save(state, file=relativePath, compress=FALSE)), silent = FALSE)
 
   return(list(relativePath = relativePath))
@@ -1679,12 +1671,8 @@ isTryError <- function(obj){
 
     location <- .fromRCPP(".requestStateFileNameNative")
 
-    relativePath <- location$relativePath
-
-    base::Encoding(relativePath) <- "UTF-8"
-
     base::tryCatch(
-      base::load(relativePath),
+      base::load(location$relativePath),
       error=function(e) e,
       warning=function(w) w
     )
@@ -2285,8 +2273,6 @@ openGrDevice <- function(...) {
   fullPathpng                     <- paste(location$root, relativePathpng, sep="/")
   plotEditingOptions              <- NULL
   root                            <- location$root
-  base::Encoding(relativePathpng) <- "UTF-8"
-  base::Encoding(root)            <- "UTF-8"
   oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))

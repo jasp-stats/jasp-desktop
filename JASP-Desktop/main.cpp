@@ -23,6 +23,8 @@
 #include <QQuickWindow>
 #include "utilities/settings.h"
 #include <QtWebEngine>
+#include <boost/filesystem.hpp>
+#include <codecvt>
 
 const std::string	jaspExtension	= ".jasp",
 					unitTestArg		= "--unitTest",
@@ -271,6 +273,8 @@ int main(int argc, char *argv[])
 
 	//Now, to allow us to add some arguments we store the ones we got in a vector
 	std::vector<std::string> args(argv, argv + argc);
+
+	boost::filesystem::path::imbue(std::locale( std::locale(), new std::codecvt_utf8_utf16<wchar_t>() ) );
 
 	if(!dirTest)
 		//try
