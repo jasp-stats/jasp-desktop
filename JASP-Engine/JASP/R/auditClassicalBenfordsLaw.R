@@ -188,7 +188,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
     } else if(options[["digits"]] == "last"){
 
-      stringedObs <- format(abs(obs), scientific = TRUE)
+      stringedObs <- as.character(abs(obs))
       leadingDigits <- table(as.numeric(substring(stringedObs, nchar(stringedObs), nchar(stringedObs))))
       digits <- 1:9
 
