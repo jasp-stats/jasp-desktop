@@ -149,7 +149,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
               type=c("infinity", "variance", "observations"),
               all.target = values, 
               message = "short", 
-              observations.amount= "< 10",
+              observations.amount= "< 2",
               exitAnalysisIfErrors = TRUE)
 }
 
@@ -366,8 +366,13 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
     benfordsLawTable$dependOn(options = "summaryTable")
 
+    whichDigit <- base::switch(options[["digits"]],
+                                "first" = gettext('Leading digit'),
+                                "firstSecond" = gettext('Leading digits'),
+                                "last" = gettext('Last digit'))
+                                
     benfordsLawTable$addColumnInfo(name = 'digit', 
-                                  title = gettext('Leading digit'), 
+                                  title = whichDigit, 
                                   type = 'integer')
     benfordsLawTable$addColumnInfo(name = 'count', 
                                   title = gettext('Count'), 
