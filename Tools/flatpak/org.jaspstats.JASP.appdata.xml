@@ -35,9 +35,20 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+		<release version="0.13.1" date="2020-07-13">
+					<description>
+						Bug fixing release for 0.13
+
+						Fixes:
+							- Make sure analyses actually work on (windows) systems where the user has non-ascii characters in their name
+							- PPTX not save saved on signed mac
+							- Fixed a bug with changing column type
+							- Stabilised the macOS intel iris GPU bug (upgrade to Qt 5.15)
+			</description>
+		</release>
 		<release version="0.13.0" date="2020-07-01">
-                        <description>
-                            New Features and improvements: 
+						<description>
+							New Features and improvements: 
 							- Engine improvements 
 
 							New modules and analyses: 
@@ -68,8 +79,8 @@
 							- Network analysis: SPELLING MISTAKE (jasp-issue #751) 
 							- Network analysis - Changing Legend does not change the Centrality Plot (jasp-issue #702)
 							- Paired T-tests - Changing the hypothesis provides a more informative footnote (jasp-issue#758)
-                        </description>
-                </release>
+				</description>
+		</release>
 		<release version="0.12.2" date="2020-04-22">
 			<description>
 				- Fix a bug where ANOVA RM would crash if there were columns named with certain single letters
