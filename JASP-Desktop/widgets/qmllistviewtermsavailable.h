@@ -41,6 +41,9 @@ public:
 	void							addAssignedModel(ListModelAssignedInterface* model);
 	
 	const QList<ListModelAssignedInterface*>& assignedModel()	const		{ return _assignedModels; }
+
+private slots:
+	void removeAssignedModel(ListModelDraggable* model);
 	
 	
 protected:

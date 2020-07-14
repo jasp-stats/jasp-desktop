@@ -27,6 +27,11 @@ ListModelDraggable::ListModelDraggable(QMLListView* listView)
 	_addNewAvailableTermsToAssignedModel = listView->getItemProperty("addAvailableVariablesToAssigned").toBool();
 }
 
+ListModelDraggable::~ListModelDraggable()
+{
+	emit destroyed(this);
+}
+
 Terms ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
 {
 	Terms result;

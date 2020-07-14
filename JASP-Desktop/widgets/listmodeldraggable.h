@@ -31,7 +31,8 @@ class ListModelDraggable : public ListModel
 	
 public:
 	ListModelDraggable(QMLListView* listView);
-	
+	~ListModelDraggable();
+
 	bool copyTermsWhenDropped() const						{ return _copyTermsWhenDropped; }
 	JASPControlBase::DropMode dropMode() const				{ return _dropMode; }
 	
@@ -43,6 +44,9 @@ public:
 	virtual Terms addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault) ;
 	virtual void removeTerms(const QList<int>& indexes);
 	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1);
+
+signals:
+	void destroyed(ListModelDraggable * me);
 
 protected:
 	bool						_copyTermsWhenDropped;

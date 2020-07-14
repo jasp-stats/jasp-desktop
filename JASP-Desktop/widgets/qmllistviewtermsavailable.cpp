@@ -26,10 +26,8 @@ QMLListViewTermsAvailable::QMLListViewTermsAvailable(JASPControlBase* item, bool
 	, QMLListViewDraggable(item)
 
 {
-	if (isInteraction)
-		_availableModel = new ListModelInteractionAvailable(this);
-	else
-		_availableModel = new ListModelTermsAvailable(this);
+	if (isInteraction)	_availableModel = new ListModelInteractionAvailable(this);
+	else				_availableModel = new ListModelTermsAvailable(this);
 
 	_sortedMenuModel = new SortMenuModel(_availableModel, {Sortable::None, Sortable::SortByName, Sortable::SortByType});
 }
@@ -43,15 +41,22 @@ void QMLListViewTermsAvailable::setUp()
 void QMLListViewTermsAvailable::addAssignedModel(ListModelAssignedInterface *model)
 {
 	_assignedModels.push_back(model);
-	 if (!_availableModel->areTermsVariables())
-		 model->listView()->setTermsAreNotVariables();
-	 if (_availableModel->areTermsInteractions())
-		 model->listView()->setTermsAreInteractions();
+
+	connect(model, &ListModelDraggable::destroyed, this, &QMLListViewTermsAvailable::removeAssignedModel);
+
+	 if (!_availableModel->areTermsVariables())		 model->listView()->setTermsAreNotVariables();
+	 if (_availableModel->areTermsInteractions())	 model->listView()->setTermsAreInteractions();
+}
+
+void QMLListViewTermsAvailable::removeAssignedModel(ListModelDraggable* model)
+{
+	_assignedModels.removeAll(static_cast<ListModelAssignedInterface*>(model));
 }
 
 void QMLListViewTermsAvailable::setTermsAreNotVariables()
 {
 	QMLListView::setTermsAreNotVariables();
+
 	for (ListModelAssignedInterface* model : _assignedModels)
 		model->listView()->setTermsAreNotVariables();
 }
@@ -59,6 +64,7 @@ void QMLListViewTermsAvailable::setTermsAreNotVariables()
 void QMLListViewTermsAvailable::setTermsAreInteractions()
 {
 	QMLListView::setTermsAreInteractions();
+
 	for (ListModelAssignedInterface* model : _assignedModels)
 		model->listView()->setTermsAreInteractions();
 }
