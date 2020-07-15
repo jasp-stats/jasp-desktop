@@ -124,6 +124,7 @@ public slots:
 	void setMoving(bool moving);
 	void removeAnalysesOfDynamicModule(Modules::DynamicModule * module);
 	void refreshAnalysesOfDynamicModule(Modules::DynamicModule * module);
+	void replaceAnalysesOfDynamicModule(Modules::DynamicModule * oldModule, Modules::DynamicModule * newModule);
 	void rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * module);
 	void setChangedAnalysisTitle();
 	void analysisTitleChangedInResults(int id, QString title);

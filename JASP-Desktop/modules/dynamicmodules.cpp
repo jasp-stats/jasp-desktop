@@ -27,6 +27,7 @@
 #include "log.h"
 #include "modules/description/description.h"
 #include "gui/preferencesmodel.h"
+#include "dirs.h"
 
 DynamicModules * DynamicModules::_singleton = nullptr;
 
@@ -66,7 +67,7 @@ void DynamicModules::initializeInstalledModules()
 	}
 }
 
-bool DynamicModules::initializeModuleFromDir(std::string moduleDir)
+bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled, bool isCommon)
 {
 	if(moduleDir.size() == 0)
 		throw std::runtime_error("Empty path was supplied to DynamicsModules::loadModule..");
@@ -74,18 +75,26 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir)
 	if(moduleDir[moduleDir.size() - 1] != '/')
 		moduleDir += '/';
 
-	Modules::DynamicModule	*newMod		= new Modules::DynamicModule(QString::fromStdString(moduleDir), this);
+	Modules::DynamicModule	*newMod		= new Modules::DynamicModule(QString::fromStdString(moduleDir), this, bundled, isCommon);
 
-	return initializeModule(newMod);
+	_commonModuleNames.insert(newMod->name());
+
+	if(!initializeModule(newMod))
+		return false;
+
+	if(isCommon)
+		newMod->setLoadingNeeded();
+
+	return true;
 }
 
 bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 {
 	try
 	{
-		std::string	moduleName				= module->name();
-		bool		wasAddedAlready			= true;
-					_modules[moduleName]	= module;
+		std::string					moduleName				= module->name();
+		Modules::DynamicModule	*	oldModule				= _modules.count(moduleName) > 0 && _modules[moduleName] != module ? _modules[moduleName] : nullptr;
+		bool						wasAddedAlready			= true;
 
 		if(std::count(_moduleNames.begin(), _moduleNames.end(), moduleName) == 0)
 		{
@@ -93,13 +102,21 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 			wasAddedAlready = false;
 		}
 
+		if(oldModule) //I guess we could also check wasAddedAlready because I assume the only way oldModule can exist is if _moduleNames already contains moduleName.
+		{
+			stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
+			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
+		}
+
+		_modules[moduleName] = module;
 
 		if(!module->initialized())
 		{
-			connect(module, &Modules::DynamicModule::registerForLoading,			this, &DynamicModules::registerForLoading);
-			connect(module, &Modules::DynamicModule::registerForInstalling,			this, &DynamicModules::registerForInstalling);
-			connect(module, &Modules::DynamicModule::registerForInstallingModPkg,	this, &DynamicModules::registerForInstallingModPkg);
-			connect(module, &Modules::DynamicModule::descriptionReloaded,			this, &DynamicModules::descriptionReloaded);
+			connect(module, &Modules::DynamicModule::registerForLoading,			this, &DynamicModules::registerForLoading			);
+			connect(module, &Modules::DynamicModule::registerForInstalling,			this, &DynamicModules::registerForInstalling		);
+			connect(module, &Modules::DynamicModule::registerForInstallingModPkg,	this, &DynamicModules::registerForInstallingModPkg	);
+			connect(module, &Modules::DynamicModule::descriptionReloaded,			this, &DynamicModules::descriptionReloaded			);
+			connect(module, &Modules::DynamicModule::requiredModulesLibPaths,		this, &DynamicModules::requiredModulesLibPaths		);
 
 			module->initialize();
 		}
@@ -108,6 +125,14 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 		{
 			emit dynamicModuleAdded(module);
 			emit loadModuleTranslationFile(module);
+		}
+		else if(oldModule)
+		{
+			emit dynamicModuleReplaced(oldModule, module);
+			delete oldModule;
+			emit dynamicModuleChanged(module);
+			emit loadModuleTranslationFile(module);
+			restartEngines();
 		}
 
 		return true;
@@ -156,36 +181,67 @@ void DynamicModules::registerForInstallingModPkg(const std::string & moduleName)
 	registerForInstallingSubFunc(moduleName, true);
 }
 
+void DynamicModules::stopAndRestartEngines()
+{
+	stopEngines();
+	_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
+	restartEngines();
+}
 
 void DynamicModules::registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg)
 {
+	Log::log() << "Module '" << moduleName << "' being registered for installing (onlyModPkg? " << (onlyModPkg ? "true" : "false") << ")!" << std::endl;
+
 	_modulesToBeUnloaded.erase(moduleName);
 	_modulesToBeLoaded.erase(moduleName);
 	_modulesInstallPackagesNeeded[moduleName] = onlyModPkg;
 
 	if(_modules[moduleName]->loaded())	//If the package is already loaded it might be hard to convince R to reinstall it properly, so let's restart the engines
 	{
-		stopEngines();
-		_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
-		restartEngines();
-
+		stopAndRestartEngines();
 		_modules[moduleName]->setUnloaded();
 	}
 }
 
 void DynamicModules::registerForLoading(const std::string & moduleName)
 {
+	Log::log() << "Module '" << moduleName << "' being registered for loading!" << std::endl;
+
 	if(_modulesInstallPackagesNeeded.count(moduleName) > 0)
 		return; //When the install is done it will trigger the need for loading anyway.
 
 	_modulesToBeUnloaded.erase(moduleName);
-	_modulesToBeLoaded.insert(moduleName);
+
+	//Ok, it might be the case that this module depends on some other module that isn't loaded yet.
+
+	if(!requiredModulesForModuleReady(moduleName))
+	{
+		Log::log() << "Required modules for module '" << moduleName << "' not ready, so will not load it now." << std::endl;
+		_modulesWaitingForDependency.insert(moduleName);
+	}
+	else
+		_modulesToBeLoaded.insert(moduleName);
+}
+
+bool DynamicModules::requiredModulesForModuleReady(const std::string & moduleName) const
+{
+	Modules::DynamicModule	*	dynMod	= _modules.at(moduleName);
+	std::set<std::string>		reqMods	= dynMod->requiredModules();
+
+	for(const std::string & reqMod : reqMods)
+		if(_modules.count(reqMod) == 0 || !_modules.at(reqMod)->readyForUse())
+			return false;
+
+	return true;
 }
 
 void DynamicModules::unloadModule(const std::string & moduleName)
 {
-	_modulesInstallPackagesNeeded.erase(moduleName);
-	_modulesToBeLoaded.erase(moduleName);
+	Log::log() << "Module '" << moduleName << "' being registered for unloading!" << std::endl;
+
+	_modulesInstallPackagesNeeded	.erase(moduleName);
+	_modulesToBeLoaded				.erase(moduleName);
+	_modulesWaitingForDependency	.erase(moduleName);
 
 	if(_modules.count(moduleName) > 0)
 	{
@@ -196,6 +252,32 @@ void DynamicModules::unloadModule(const std::string & moduleName)
 
 		emit dynamicModuleUnloadBegin(dynMod);
 	}
+}
+
+void DynamicModules::replaceModule(Modules::DynamicModule * module)
+{
+	std::string moduleName = module->name();
+
+	if(_modules[moduleName] == module)
+		return;
+
+	Modules::DynamicModule * oldModule = _modules[moduleName];
+
+	stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
+	_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
+
+	_modules[moduleName] = module;
+
+	//Tmp folder with pkg data was removed so lets unpackage (again)
+	module->unpackage();
+
+	//registerForInstalling(moduleName);
+
+	emit dynamicModuleReplaced(oldModule, module);
+	emit dynamicModuleChanged(module);
+	delete oldModule;
+
+	restartEngines();
 }
 
 void DynamicModules::uninstallModule(const std::string & moduleName)
@@ -209,10 +291,18 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 		_devModRWatcher				= nullptr;
 	}
 
-	if(_modules.count(moduleName) > 0)
+	bool	removeFolder		= true,
+			replacedWithBundled = bundledModuleInFilesystem(moduleName);
+
+	if(replacedWithBundled)
+		initializeModuleFromDir(bundledModuleLibraryPath(moduleName), true, _commonModuleNames.count(moduleName) > 0);
+	else if(_modules.count(moduleName) > 0)
 	{
 		unloadModule(moduleName);
 		_modules[moduleName]->setInstalled(false);
+
+		if(_modules[moduleName]->isBundled())
+			removeFolder = false;
 
 		for(int i=int(_moduleNames.size()) - 1; i>=0; i--)
 			if(_moduleNames[size_t(i)] == moduleName)
@@ -222,7 +312,11 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 		_modules.erase(moduleName);
 	}
 
-	removeUninstalledModuleFolder(moduleName);
+	if(removeFolder)
+		removeUninstalledModuleFolder(moduleName);
+
+	if(!replacedWithBundled)	emit dynamicModuleUninstalled(QString::fromStdString(moduleName));
+
 }
 
 void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleName, bool enginesStopped)
@@ -234,7 +328,7 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 	try
 	{
 		if(boost::filesystem::exists(modulePath))
-			boost::filesystem::remove_all(modulePath); //Can fail because R might have a library from this folder still loaded. On Windows (and perhaps other OSs) these openend files can't be removed.
+			boost::filesystem::remove_all(modulePath); //Can fail because R might have a library from this folder still loaded. On Windows (and perhaps other OSs) these opened files can't be removed.
 
 	}
 	catch (boost::filesystem::filesystem_error & e)
@@ -253,8 +347,6 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 
 		return;
 	}
-
-	emit dynamicModuleUninstalled(QString::fromStdString(moduleName));
 }
 
 Modules::DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet)
@@ -321,10 +413,12 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 	{
 		if(wasInitialized)
 			emit dynamicModuleChanged(dynMod);
-		startWatchingDevelopersModule();
 
+		startWatchingDevelopersModule();
 		setDevelopersModuleInstallButtonEnabled(true);
 	}
+	else
+		emit dynamicModuleChanged(dynMod);
 }
 
 
@@ -344,7 +438,22 @@ void DynamicModules::loadingSucceeded(const QString & moduleName)
 	Log::log() << "Loading packages for module (" << moduleName.toStdString() << ") succeeded!" << std::endl;
 
 	if(moduleName != "*")
+	{
 		_modules[moduleName.toStdString()]->setLoadingSucces(true);
+
+		std::set<std::string> removeThese;
+
+		for(const std::string & modWait : _modulesWaitingForDependency)
+			if(requiredModulesForModuleReady(modWait))
+			{
+				Log::log() << "Required modules for module '" << modWait << "' ready, so now registering it for loading!" << std::endl;
+				removeThese.insert(modWait);
+				_modulesToBeLoaded.insert(modWait);
+			}
+
+		for(const std::string & modWait : removeThese)
+			_modulesWaitingForDependency.erase(modWait);
+	}
 }
 
 Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)
@@ -385,7 +494,8 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 		return;
 	}
 
-	Modules::DynamicModule * dynMod = new Modules::DynamicModule(moduleZipFilename.toStdString(), this);
+	//Do not unpack yet! replaceModule might restart the engine which might clean up the tmp folder
+	Modules::DynamicModule * dynMod = new Modules::DynamicModule(moduleZipFilename.toStdString(), this, false);
 
 	std::string moduleName = dynMod->name();
 
@@ -396,14 +506,20 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 		return;
 	}
 
-	if(moduleIsInstalled(moduleName))
+	if(moduleIsInstalledInItsOwnLibrary(moduleName))
 		uninstallModule(moduleName);
 
 	auto modNameQ = QString::fromStdString(moduleName);
 	if(!QDir(AppDirs::modulesDir() + "/" + modNameQ).exists())
 		QDir(AppDirs::modulesDir()).mkdir(modNameQ);
 
-	_modules[moduleName] = dynMod;
+	if(_modules.count(moduleName) > 0 && _modules[moduleName]->isBundled())
+		replaceModule(dynMod);
+	else
+	{
+		dynMod->unpackage();
+		_modules[moduleName] = dynMod;
+	}
 
 	registerForInstalling(moduleName);
 
@@ -432,10 +548,9 @@ void DynamicModules::installJASPDeveloperModule()
 					name	= devMod->name(),
 					dest	= devMod->moduleRLibrary().toStdString();
 
-		if(moduleIsInstalled(name))
+		if(moduleIsInstalledInItsOwnLibrary(name))
 		{
 			uninstallModule(name);
-
 			stopEngines();
 			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
 			restartEngines();
@@ -731,3 +846,27 @@ void DynamicModules::setDataLoaded(bool dataLoaded)
 	_dataLoaded = dataLoaded;
 	emit dataLoadedChanged(_dataLoaded);
 }
+
+bool DynamicModules::bundledModuleInFilesystem(const std::string & moduleName)
+{
+	return QDir(tq(bundledModuleLibraryPath(moduleName))).exists();
+}
+
+std::string DynamicModules::bundledModuleLibraryPath(const std::string & moduleName)
+{
+	return Dirs::bundledDir() + moduleName + "/";
+}
+
+QStringList DynamicModules::requiredModulesLibPaths(QString moduleName)
+{
+	QStringList returnThis;
+
+	std::set<std::string> requiredModules = _modules[moduleName.toStdString()]->requiredModules();
+
+	for(const std::string & reqMod : requiredModules)
+		returnThis.append(_modules[reqMod]->moduleRLibrary());
+
+	return returnThis;
+}
+
+

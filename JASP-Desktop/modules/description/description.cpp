@@ -3,6 +3,7 @@
 #include "descriptionchildbase.h"
 #include "entrybase.h"
 #include "requiredpackage.h"
+#include "requiredmodule.h"
 #include "../analysisentry.h"
 #include "../dynamicmodule.h"
 
@@ -25,8 +26,12 @@ Description::~Description()
 	for(RequiredPackage * pkg : _reqPkgs)
 		delete pkg;
 
+	for(RequiredModule * mod : _reqMods)
+		delete mod;
+
 	_entries.clear();
 	_reqPkgs.clear();
+	_reqMods.clear();
 }
 
 void Description::setUpDelayedUpdate()
@@ -79,6 +84,7 @@ void Description::addChild(DescriptionChildBase * child)
 
 	if(dynamic_cast<EntryBase*>(child))			_entries.push_back(dynamic_cast<EntryBase*>			(child));
 	if(dynamic_cast<RequiredPackage*>(child))	_reqPkgs.push_back(dynamic_cast<RequiredPackage*>	(child));
+	if(dynamic_cast<RequiredModule*>(child))	_reqMods.push_back(dynamic_cast<RequiredModule*>	(child));
 
 	connect(child, &DescriptionChildBase::somethingChanged, this, &Description::childChanged, Qt::UniqueConnection);
 }
@@ -90,6 +96,7 @@ void Description::removeChild(DescriptionChildBase * child)
 
 	if(dynamic_cast<EntryBase*>(child))			_entries.removeAll(dynamic_cast<EntryBase*>			(child));
 	if(dynamic_cast<RequiredPackage*>(child))	_reqPkgs.removeAll(dynamic_cast<RequiredPackage*>	(child));
+	if(dynamic_cast<RequiredModule*>(child))	_reqMods.removeAll(dynamic_cast<RequiredModule*>	(child));
 
 	disconnect(child, &DescriptionChildBase::somethingChanged, this, &Description::childChanged);
 }
@@ -211,6 +218,16 @@ Json::Value Description::requiredPackages() const
 		array.append(pkg->asJson());
 
 	return array;
+}
+
+std::set<std::string> Description::requiredModules() const
+{
+	std::set<std::string> setje;
+
+	for(Modules::RequiredModule * reqMod : _reqMods)
+		setje.insert(fq(reqMod->name()));
+
+	return setje;
 }
 
 std::vector<AnalysisEntry*> Description::menuEntries() const

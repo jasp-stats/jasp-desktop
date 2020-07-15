@@ -105,7 +105,7 @@ Rectangle
 
 		Image
 		{
-			id: menuIndicator
+			id:					menuIndicator
 
 			anchors.left:		backgroundImage.right
 			anchors.leftMargin: 5   * preferencesModel.uiScale
@@ -119,7 +119,7 @@ Rectangle
 
 		Text
 		{
-			id	: innerText
+			id							: innerText
 
 			anchors.horizontalCenter	: backgroundImage.horizontalCenter
 			anchors.top					: backgroundImage.bottom
@@ -144,7 +144,12 @@ Rectangle
 				modulesMenu.opened		= false;
 				mouse.accepted			= false;
 				
-				if (ribbonButton.menu.rowCount() === 1)
+				if (ribbonButton.menu.rowCount() === 0) //Probably special?
+				{
+					customMenu.hide()
+					ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
+				}
+				else if (ribbonButton.menu.rowCount() === 1)
 				{
 					customMenu.hide()
 					ribbonModel.analysisClicked(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
@@ -160,7 +165,8 @@ Rectangle
 						customMenu.hide();
 					}
 
-					var props = {
+					var props =
+					{
 						"model"			: ribbonButton.menu,
 						"functionCall"	: functionCall,
 						"hasIcons"		: ribbonButton.menu.hasIcons()

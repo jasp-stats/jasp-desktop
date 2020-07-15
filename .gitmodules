@@ -1,0 +1,63 @@
+[submodule "Modules/Common/Descriptives"]
+	path = Modules/Common/Descriptives
+	url = https://github.com/jasp-stats/Descriptives
+[submodule "Modules/Common/TTests"]
+	path = Modules/Common/TTests
+	url = https://github.com/jasp-stats/TTests
+[submodule "Modules/Common/ANOVA"]
+	path = Modules/Common/ANOVA
+	url = https://github.com/jasp-stats/ANOVA
+[submodule "Modules/Common/Regression"]
+	path = Modules/Common/Regression
+	url = https://github.com/jasp-stats/Regression
+[submodule "Modules/Common/Frequencies"]
+	path = Modules/Common/Frequencies
+	url = https://github.com/jasp-stats/Frequencies
+[submodule "Modules/Common/Factor"]
+	path = Modules/Common/Factor
+	url = https://github.com/jasp-stats/Factor
+[submodule "Modules/Extra/Audit"]
+	path = Modules/Extra/Audit
+	url = https://github.com/jasp-stats/Audit
+[submodule "Modules/Extra/BAIN"]
+	path = Modules/Extra/BAIN
+	url = https://github.com/jasp-stats/BAIN
+[submodule "Modules/Extra/Network"]
+	path = Modules/Extra/Network
+	url = https://github.com/jasp-stats/Network
+[submodule "Modules/Extra/MachineLearning"]
+	path = Modules/Extra/MachineLearning
+	url = https://github.com/jasp-stats/MachineLearning
+[submodule "Modules/Extra/MetaAnalysis"]
+	path = Modules/Extra/MetaAnalysis
+	url = https://github.com/jasp-stats/MetaAnalysis
+[submodule "Modules/Extra/SEM"]
+	path = Modules/Extra/SEM
+	url = https://github.com/jasp-stats/SEM
+[submodule "Modules/Extra/SummaryStatistics"]
+	path = Modules/Extra/SummaryStatistics
+	url = https://github.com/jasp-stats/SummaryStatistics
+[submodule "Modules/Common/MixedModels"]
+	path = Modules/Common/MixedModels
+	url = https://github.com/jasp-stats/MixedModels
+[submodule "Modules/Extra/DiscoverDistributions"]
+	path = Modules/Extra/DiscoverDistributions
+	url = https://github.com/jasp-stats/DiscoverDistributions
+[submodule "Modules/Extra/EquivalenceTTests"]
+	path = Modules/Extra/EquivalenceTTests
+	url = https://github.com/jasp-stats/EquivalenceTTests
+[submodule "Modules/Extra/JAGS"]
+	path = Modules/Extra/JAGS
+	url = https://github.com/jasp-stats/JAGS
+[submodule "Modules/Extra/Reliability"]
+	path = Modules/Extra/Reliability
+	url = https://github.com/jasp-stats/Reliability
+[submodule "Modules/Extra/VisualModeling"]
+	path = Modules/Extra/VisualModeling
+	url = https://github.com/jasp-stats/VisualModeling
+[submodule "JASP-Engine/jasp-graphs"]
+	path = JASP-Engine/jasp-graphs
+	url = https://github.com/jasp-stats/jasp-graphs.git
+[submodule "JASP-Engine/jasp-r-pkg"]
+	path = JASP-Engine/jasp-r-pkg
+	url = https://github.com/jasp-stats/jasp-r-pkg.git

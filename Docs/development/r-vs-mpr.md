@@ -28,7 +28,7 @@ if (options$VovkSellkeMPR) {
 ##### Within row for-loop (*p*-value needs to be available)
 ```r
 if (options$VovkSellkeMPR){
-  res[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
+  res[["VovkSellkeMPR"]] <- VovkSellkeMPR(p)
 }
 ```
 

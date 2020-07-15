@@ -56,6 +56,7 @@
 #include "modules/analysismenumodel.h"
 #include "modules/description/entrybase.h"
 #include "modules/description/requiredpackage.h"
+#include "modules/description/requiredmodule.h"
 
 #include "qquick/datasetview.h"
 #include "qquick/rcommander.h"
@@ -135,8 +136,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_columnsModel			= new ColumnsModel(_datasetTableModel);
 	_computedColumnsModel	= new ComputedColumnsModel();
 	_filterModel			= new FilterModel(_labelFilterGenerator);
-	_ribbonModel			= new RibbonModel();
+	_ribbonModel			= new RibbonModel(this);
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
+	_ribbonModelUncommon	= new RibbonModelUncommon(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
@@ -166,11 +168,12 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator");
 	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle");
 	qmlRegisterType<Modules::RequiredPackage>					("JASP.Module", 1, 0, "Package");
+	qmlRegisterType<Modules::RequiredModule>					("JASP.Module", 1, 0, "Module");
 	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",				"Superclass for menu entries, shouldn't be instantiated manually");
 	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",			"Can only be instantiated by JASP");
 	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",	"Superclass for Description info, shouldn't be instantiated manually");
 
-	QTimer::singleShot(0, [&](){ loadQML(); });
+	QTimer::singleShot(0, [&]() { loadQML(); });
 
 	_languageModel->setApplicationEngine(_qml);
 
@@ -361,6 +364,7 @@ void MainWindow::makeConnections()
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);
+	connect(_dynamicModules,		&DynamicModules::dynamicModuleReplaced,				_analyses,				&Analyses::replaceAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule				);
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
 	connect(_dynamicModules,		&DynamicModules::moduleEnabledChanged,				_preferences,			&PreferencesModel::moduleEnabledChanged						);
@@ -398,6 +402,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel	);
 	_qml->rootContext()->setContextProperty("ribbonModelFiltered",		_ribbonModelFiltered	);
 	_qml->rootContext()->setContextProperty("columnTypesModel",			_columnTypesModel		);
+	_qml->rootContext()->setContextProperty("ribbonModelUncommon",		_ribbonModelUncommon	);
 	_qml->rootContext()->setContextProperty("resultMenuModel",			_resultMenuModel		);
 	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu				);
 	_qml->rootContext()->setContextProperty("filterModel",				_filterModel			);
@@ -491,8 +496,8 @@ void MainWindow::loadQML()
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
 	_ribbonModel->loadModules(	
 		{ 	"Descriptives", "T-Tests", "ANOVA", "MixedModels", "Regression", "Frequencies", "Factor" },
-		{ 	"Audit", "BAIN", "Discover Distributions", "Equivalence T-Tests", "JAGS", "Machine Learning", 
-            "Meta Analysis", "Network", "Reliability", "SEM", "Summary Statistics", "Visual Modeling", "Learn Bayes"});
+		{ 	"Audit", "BAIN", "Discover Distributions", "Equivalence T-Tests", "JAGS", "Learn Bayes", "Machine Learning", 
+            "Meta Analysis", "Network", "Reliability", "SEM", "Summary Statistics", "Visual Modeling"});
 	
 }
 
@@ -1015,7 +1020,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				//Make sure the engine gets enough time to load data
 				_engineSync->pause();
 				_engineSync->resume();
-				QTimer::singleShot(666, this, &MainWindow::startComparingResults);
+
+				//Also give it like 3secs to have the ribbon load
+				QTimer::singleShot(3000, this, &MainWindow::startComparingResults);
 			}
 
 		}

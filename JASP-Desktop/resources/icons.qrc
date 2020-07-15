@@ -1,31 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/analysis-classical-regression.svg</file>
-        <file>icons/analysis-classical-anova.svg</file>
-        <file>icons/analysis-classical-ttest.svg</file>
-        <file>icons/analysis-bayesian-ttest.svg</file>
-        <file>icons/analysis-bayesian-anova.svg</file>
-        <file>icons/analysis-bayesian-crosstabs.svg</file>
-        <file>icons/analysis-classical-crosstabs.svg</file>
-        <file>icons/analysis-bayesian-regression.svg</file>
-        <file>icons/analysis-network.svg</file>
-        <file>icons/analysis-descriptives.svg</file>
-        <file>icons/analysis-classical-sem.svg</file>
-        <file>icons/analysis-bain-anova.svg</file>
-        <file>icons/analysis-bain-regression.svg</file>
-        <file>icons/analysis-bain-ttest.svg</file>
-        <file>icons/analysis-JAGS.svg</file>
-        <file>icons/analysis-ml-classification.svg</file>
-        <file>icons/analysis-ml-regression.svg</file>
-        <file>icons/analysis-ml-clustering.svg</file>
-        <file>icons/analysis-ml-ribbon.svg</file>
-        <file>icons/meta-analysis.svg</file>
-        <file>icons/sem-latreg.svg</file>
-        <file>icons/bain-module.svg</file>
-        <file>icons/audit-module.svg</file>
-        <file>icons/audit-workflow.svg</file>
-        <file>icons/audit-planning.svg</file>
-        <file>icons/audit-estimation.svg</file>
         <file>icons/lightTheme/document-save-as.png</file>
         <file>icons/lightTheme/variable-scale.png</file>
         <file>icons/lightTheme/variable-ordinal.png</file>
@@ -231,19 +205,6 @@
         <file>icons/lightTheme/jasp-logo-black.svg</file>
         <file>icons/darkTheme/code-icon.png</file>
         <file>icons/lightTheme/code-icon.png</file>
-        <file>icons/FlexplotLogo.svg</file>
-        <file>icons/discoverdistributions-continuousDist.svg</file>
-        <file>icons/discoverdistributions-discreteDist.svg</file>
-        <file>icons/discoverdistributions-distributions.svg</file>
-        <file>icons/meta-analysis-bayesian.svg</file>
-        <file>icons/equivalence-module.svg</file>
-        <file>icons/audit-selection.svg</file>
         <file>icons/Rlogo.svg</file>
-        <file>icons/audit-other.svg</file>
-        <file>icons/reliability_icon_bayesian.svg</file>
-        <file>icons/reliability_icon_classic.svg</file>
-        <file>icons/MixedModels_bayesian.svg</file>
-        <file>icons/MixedModels_classical.svg</file>
-        <file>icons/learn-bayes.svg</file>
     </qresource>
 </RCC>

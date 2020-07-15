@@ -46,6 +46,7 @@ isEmpty(_RLibrary) {
     message(using custom R library of "$$_RLibrary")
 }
 
+include(R_INSTALL_CMDS.pri)
 
 INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \

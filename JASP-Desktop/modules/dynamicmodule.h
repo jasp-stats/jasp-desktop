@@ -35,6 +35,8 @@
 namespace Modules
 {
 
+typedef std::set<std::string> stringset;
+
 struct ModuleException : public std::runtime_error
 {
 	ModuleException(std::string moduleName, std::string problemDescription);
@@ -54,13 +56,16 @@ class DynamicModule : public QObject
 	Q_PROPERTY(bool			installing			READ installing			WRITE setInstalling			NOTIFY installingChanged		)
 	Q_PROPERTY(Json::Value	requiredPackages	READ requiredPackages	WRITE setRequiredPackages	NOTIFY requiredPackagesChanged	)
 	Q_PROPERTY(bool			initialized			READ initialized		WRITE setInitialized		NOTIFY initializedChanged		)
+	Q_PROPERTY(bool			isBundled			READ isBundled			WRITE setBundled			NOTIFY bundledChanged			)
+	Q_PROPERTY(QStringList	requiredModules		READ requiredModulesQ								NOTIFY requiredModulesChanged	)
 
 public:
+	//To do make the constructors less misleading (std::string vs QString does not do the same thing at all!) Some kind of a static MakeDynamicModule function and making the constructors private should do the trick
 	///This constructor takes the path to an installed jasp-module as path (aka a directory that contains a library of R packages, one of which is the actual module with QML etc)
-	explicit DynamicModule(QString moduleDirectory, QObject *parent);
+	explicit DynamicModule(QString moduleDirectory, QObject *parent, bool isBundled, bool isCommon);
 
 	///This constructor takes the path to an R-package as first argument, this R-package must also be a jasp-module and will be installed to the app-directory for the particular OS it runs on.
-	explicit DynamicModule(std::string modulePackageFile, QObject *parent);
+	explicit DynamicModule(std::string modulePackageFile, QObject *parent, bool unpack = true);
 
 	///This constructor is meant specifically for the development module and only *it*!
 	explicit DynamicModule(QObject * parent);
@@ -89,11 +94,13 @@ public:
 	bool				requiresData()		const;
 	std::string			author()			const { return _author;									}
 	std::string			version()			const { return _version;								}
+	QString				versionQ()			const { return QString::fromStdString(_version);		}
 	std::string			website()			const { return _website;								}
 	std::string			license()			const { return _license;								}
 	std::string			maintainer()		const { return _maintainer;								}
 	std::string			description()		const { return _description;							}
 	std::string			modulePackage()		const { return _modulePackage;							}
+	bool				isCommon()			const { return _isCommon;								}
 
 	bool				isDevMod()			const { return _isDeveloperMod;							}
 	bool				error()				const { return _status == moduleStatus::error;			}
@@ -102,6 +109,11 @@ public:
 	bool				loadingNeeded()		const { return _status == moduleStatus::loadingNeeded;	}
 	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath();			}
 	Json::Value			requiredPackages()	const { return _requiredPackages;						}
+	QStringList			requiredModulesQ()	const;
+	std::string			getLibPathsToUse();
+
+	bool				requiresModule(const std::string & moduleName) { return _requiredModules.count(moduleName) > 0; }
+	const stringset &	requiredModules() { return _requiredModules; }
 
 	std::string			moduleInstFolder()									const; //Where is the "inst" folder?
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
@@ -128,7 +140,7 @@ public:
 	void				setLoadingNeeded();
 	void				setStatus(moduleStatus newStatus);
 
-	const AnalysisEntries menu()		const	{ return _menuEntries; }
+	const AnalysisEntries & menu()		const	{ return _menuEntries; }
 
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)	const;
 	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & codedReference)		const;
@@ -142,10 +154,12 @@ public:
 
 	bool shouldUninstallPackagesInRForUninstall();
 
-	bool loaded()		const { return _loaded;		}
-	bool installed()	const { return _installed;	}
-	bool loading()		const { return _loading;	}
-	bool installing()	const { return _installing;	}
+	bool loaded()		const { return _loaded;			}
+	bool installed()	const { return _installed;		}
+	bool loading()		const { return _loading;		}
+	bool installing()	const { return _installing;		}
+	bool initialized()	const { return _initialized;	}
+	bool isBundled()	const { return _bundled;		}
 
 	void initialize(); //returns true if install of package(s) should be done
 	void parseDescriptionFile(std::string descriptionTxt);
@@ -155,7 +169,7 @@ public:
 	void loadDescriptionFromFolder( const std::string & folderPath);
 	void loadDescriptionFromArchive(const std::string & archivePath);
 
-	static QString		getFileFromFolder(				const QString &  filepath,		const QString & searchMe);
+	static QString		getFileFromFolder(				const QString     & filepath,	const QString     & searchMe);
 	static std::string	getFileFromFolder(				const std::string & folderPath, const std::string & searchMe);
 	static std::string	getDESCRIPTIONFromArchive(		const std::string & archivePath);
 	static std::string	getDESCRIPTIONFromFolder(		const std::string & folderPath);
@@ -170,36 +184,40 @@ public:
 	static std::string	extractPackageNameFromDescriptionJsonTxt(	const std::string & descriptionJsonTxt);
 
 	void unpackage();
-	bool initialized() const { return _initialized;	}
 	///Make sure url ends with the actual filename of the qml you are loading, otherwise translations will not work! Also make it with QUrl::fromLocalFile otherwise Windows messes things up
 	static Description * instantiateDescriptionQml(QString descriptionTxt, QUrl url, const std::string & moduleName);
 
-public slots:
-	void setInstallLog(std::string installLog);
-	void setLoadLog(std::string loadLog);
-
-	void setLoading(bool loading);
-	void setInstalling(bool installing);
-	void setInitialized(bool initialized);
-	void setRequiredPackages(Json::Value requiredPackages);
-	void reloadDescription();
+	std::string toString();
 	void loadInfoFromDescriptionItem(Description * description);
 
+public slots:
+	void reloadDescription();
+	void setLoading(			bool		loading);
+	void setInstalling(			bool		installing);
+	void setInitialized(		bool		initialized);
+	void setBundled(			bool		isBundled);
+	void setInstallLog(			std::string installLog);
+	void setLoadLog(			std::string loadLog);
+	void setRequiredPackages(	Json::Value requiredPackages);
+	void setRequiredModules(	stringset	requiredModules);
 
 signals:
-	void installLogChanged();
-	void loadLogChanged();
-	void statusChanged();
-	void loadedChanged(bool loaded);
-	void installedChanged(bool installed);
-	void loadingChanged(bool loading);
-	void installingChanged(bool installing);
-	void requiredPackagesChanged();
-	void registerForLoading(const std::string & moduleName);
-	void registerForInstalling(const std::string & moduleName);
-	void registerForInstallingModPkg(const std::string & moduleName);
-	void descriptionReloaded(Modules::DynamicModule * dynMod);
-	void initializedChanged(bool initialized);
+	void		installLogChanged();
+	void		loadLogChanged();
+	void		statusChanged();
+	void		requiredPackagesChanged();
+	void		loadedChanged(		bool loaded);
+	void		installedChanged(	bool installed);
+	void		loadingChanged(		bool loading);
+	void		installingChanged(	bool installing);
+	void		initializedChanged(	bool initialized);
+	void		bundledChanged(		bool isBundled);
+	void		registerForLoading(				const std::string & moduleName);
+	void		registerForInstalling(			const std::string & moduleName);
+	void		registerForInstallingModPkg(	const std::string & moduleName);
+	void		descriptionReloaded(Modules::DynamicModule * dynMod);
+	void		requiredModulesChanged();
+	QStringList requiredModulesLibPaths(QString moduleName);
 
 private:
 	void		generateRPackageMetadata(QDir packageDir);
@@ -226,19 +244,23 @@ private:
 						_loaded				= false,
 						_loading			= false,
 						_isDeveloperMod		= false,
-						_initialized		= false;
+						_initialized		= false,
+						_bundled			= false,
+						_isCommon			= false;
 	Json::Value			_requiredPackages,
 						_previousReqPkgs;
 	AnalysisEntries		_menuEntries;
+	stringset			_requiredModules;
+
 	const char			*_modulePostFix		= "_module",
 						*_exposedPostFix	= "_exposed";
 
-	static std::string	_developmentModuleName;
+	static std::string			_developmentModuleName;
+	static const std::string	_moduleDirPostfix;
 
 	Description		*	_descriptionObj		= nullptr;
 };
 
-typedef std::vector<DynamicModule*> DynamicModuleVec;
 
 }
 

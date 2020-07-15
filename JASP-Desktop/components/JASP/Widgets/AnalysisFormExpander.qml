@@ -65,23 +65,33 @@ DropArea
 		Drag.hotSpot.x:		width/2
 		Drag.hotSpot.y:		height/2
 
-		states: [
-			State {
-				name: "dragging"
-				when: draggableItem.Drag.active
-				ParentChange {
+		states:
+		[
+			State
+			{
+				name:	"dragging"
+				when:	draggableItem.Drag.active
+
+				ParentChange
+				{
 					target:			draggableItem
 					parent:			backgroundFlickable
 				}
-				PropertyChanges {
+
+				PropertyChanges
+				{
 					target:			shadow
 					visible:		true
 				}
-				PropertyChanges {
+
+				PropertyChanges
+				{
 					target:			mouseArea
 					cursorShape:	Qt.ClosedHandCursor
 				}
-				AnchorChanges {
+
+				AnchorChanges
+				{
 					target:			draggableItem
 					anchors.top:	undefined
 					anchors.left:	undefined

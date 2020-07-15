@@ -15,6 +15,7 @@ namespace Modules
 class DescriptionChildBase;
 class EntryBase;
 class RequiredPackage;
+class RequiredModule;
 class AnalysisEntry;
 class DynamicModule;
 
@@ -53,10 +54,9 @@ public:
 	void	addChild(	DescriptionChildBase * child);
 	void	removeChild(DescriptionChildBase * child);
 
-	std::vector<AnalysisEntry *>	menuEntries() const;
-	Json::Value						requiredPackages() const;
-
-
+	std::vector<AnalysisEntry *>	menuEntries()		const;
+	Json::Value						requiredPackages()	const;
+	std::set<std::string>			requiredModules()	const;
 
 public slots:
 	void setName(				QString			name		);
@@ -106,6 +106,7 @@ private:
 	DynamicModule		*	_dynMod			= nullptr;
 	QList<EntryBase*>		_entries;
 	QList<RequiredPackage*>	_reqPkgs;
+	QList<RequiredModule*>	_reqMods;
 	QTimer					_timer;
 };
 

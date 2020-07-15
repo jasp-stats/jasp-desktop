@@ -48,6 +48,7 @@
 #include "qquick/jasptheme.h"
 #include "results/ploteditormodel.h"
 #include "results/resultsjsinterface.h"
+#include "modules/ribbonmodeluncommon.h"
 #include "results/resultmenumodel.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
@@ -259,6 +260,7 @@ private:
 	DynamicModules				*	_dynamicModules			= nullptr;
 	RibbonModel					*	_ribbonModel			= nullptr;
 	RibbonModelFiltered			*	_ribbonModelFiltered	= nullptr;
+	RibbonModelUncommon			*	_ribbonModelUncommon	= nullptr;
 	QApplication				*	_application 			= nullptr;
 	FileMenu					*	_fileMenu				= nullptr;
 	HelpModel					*	_helpModel				= nullptr;

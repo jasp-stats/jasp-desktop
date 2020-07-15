@@ -44,17 +44,21 @@ public:
 	bool			unpackAndInstallModule(		const	std::string & moduleZipFilename);
 	void			uninstallModule(			const	std::string & moduleName);
 	std::string		loadModule(					const	std::string & moduleName);
-	bool			initializeModuleFromDir(			std::string   moduleDir);
 	void			unloadModule(				const	std::string & moduleName);
+	bool			initializeModuleFromDir(			std::string   moduleDir,	bool bundled = false, bool isCommon = false);
 	bool			initializeModule(					Modules::DynamicModule * module);
+	void			replaceModule(						Modules::DynamicModule * module);
 
-	std::string		moduleDirectory(			const	std::string & moduleName)	const;
-	std::wstring	moduleDirectoryW(			const	std::string & moduleName)	const;
-	bool			moduleIsInstalled(			const	std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
+	bool			bundledModuleInFilesystem(	const	std::string & moduleName);
+	std::string		bundledModuleLibraryPath(	const	std::string & moduleName);
+	std::string		moduleDirectory(		const	std::string & moduleName)	const;
+	std::wstring	moduleDirectoryW(		const	std::string & moduleName)	const;
 
-	bool			aModuleNeedsToBeLoadedInR()				{ return !_modulesToBeLoaded.empty();				}
-	bool			aModuleNeedsToBeUnloadedFromR()			{ return !_modulesToBeUnloaded.empty();				}
-	bool			aModuleNeedsPackagesInstalled()			{ return !_modulesInstallPackagesNeeded.empty();	}
+	bool			moduleIsInstalledInItsOwnLibrary(const std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
+
+	bool			aModuleNeedsToBeLoadedInR()					{ return !_modulesToBeLoaded.empty();				}
+	bool			aModuleNeedsToBeUnloadedFromR()				{ return !_modulesToBeUnloaded.empty();				}
+	bool			aModuleNeedsPackagesInstalled()				{ return !_modulesInstallPackagesNeeded.empty();	}
 
 	Json::Value		getJsonForPackageLoadingRequest()		{ return requestModuleForSomethingAndRemoveIt(_modulesToBeLoaded)->requestJsonForPackageLoadingRequest();					}
 	Json::Value		getJsonForPackageUnloadingRequest();
@@ -88,6 +92,10 @@ public:
 	bool developersModuleInstallButtonEnabled() const { return _developersModuleInstallButtonEnabled; }
 	bool dataLoaded()							const { return _dataLoaded;	}
 
+	void stopAndRestartEngines();
+
+	void insertCommonModuleNames(std::set<std::string> commonModules) { for(const std::string & common : commonModules) _commonModuleNames.insert(common); };
+
 public slots:
 	void installationPackagesSucceeded(	const QString		& moduleName);
 	void installationPackagesFailed(	const QString		& moduleName, const QString & errorMessage);
@@ -100,13 +108,16 @@ public slots:
 	void setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled);
 	void setDataLoaded(bool dataLoaded);
 
+	QStringList requiredModulesLibPaths(QString moduleName);
+
 signals:
 	void dynamicModuleUninstalled(const QString & moduleName);
-	void dynamicModuleAdded(		Modules::DynamicModule * dynamicModule);
-	void dynamicModuleUnloadBegin(	Modules::DynamicModule * dynamicModule);
-	void dynamicModuleChanged(		Modules::DynamicModule * dynamicModule);
-	void descriptionReloaded(		Modules::DynamicModule * dynamicModule);
-	void loadModuleTranslationFile(	Modules::DynamicModule * dynamicModule);
+	void dynamicModuleAdded(			Modules::DynamicModule * dynamicModule);
+	void dynamicModuleUnloadBegin(		Modules::DynamicModule * dynamicModule);
+	void dynamicModuleChanged(			Modules::DynamicModule * dynamicModule);
+	void descriptionReloaded(			Modules::DynamicModule * dynamicModule);
+	void loadModuleTranslationFile(		Modules::DynamicModule * dynamicModule);
+	void dynamicModuleReplaced(			Modules::DynamicModule * oldMod, Modules::DynamicModule *  newMod);
 
 	void stopEngines();
 	void restartEngines();
@@ -132,13 +143,16 @@ private:
 	void						regenerateDeveloperModuleRPackage();
 	void						registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg);
 	void						checkAndWarnForLC_CTYPE_C() const;
+	bool						requiredModulesForModuleReady(const std::string & moduleName)	const;
 
 private:
 	static DynamicModules								*	_singleton;
+	std::set<std::string>									_commonModuleNames;
 	std::vector<std::string>								_moduleNames;
 	std::map<std::string, Modules::DynamicModule*>			_modules;
 	std::map<std::string, bool>								_modulesInstallPackagesNeeded; //bool true ==> only modPkg
-	std::set<std::string>									_modulesToBeLoaded;
+	std::set<std::string>									_modulesToBeLoaded,
+															_modulesWaitingForDependency;
 	std::map<std::string, Json::Value>						_modulesToBeUnloaded;
 	boost::filesystem::path									_modulesInstallDirectory;
 	QString													_currentInstallMsg = "",

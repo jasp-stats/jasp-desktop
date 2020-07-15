@@ -70,7 +70,7 @@ Item
 		{
 			text:			model.moduleTitle
 			moduleName:		model.moduleName
-			source:			!model.ribbonButton ? ""		: (model.isDynamic ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource
+			source:			!model.ribbonButton ? ""		: (!model.ribbonButton.special ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource
 			menu:			!model.ribbonButton ? undefined : model.ribbonButton.analysisMenu
 			toolTip:		!model.ribbonButton ? undefined : model.ribbonButton.toolTip
 			enabled:		!model.ribbonButton ? false		: model.active

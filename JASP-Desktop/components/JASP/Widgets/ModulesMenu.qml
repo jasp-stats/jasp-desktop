@@ -127,36 +127,35 @@ FocusScope
 				Repeater
 				{
 
-					model: ribbonModel
+					model: ribbonModelUncommon
 
 					Rectangle
 					{
-						visible:			!isCommon
 						width:				modules.buttonWidth
 						height:				modules.buttonHeight
 						anchors.leftMargin: modules.buttonMargin
 						anchors.left:		parent.left
-						color:				!isDynamic || dynamicModule.status !== "error" ? "transparent" : jaspTheme.red
+						color:				isSpecial || dynamicModule.status !== "error" ? "transparent" : jaspTheme.red
 
 						CheckBox
 						{
 							id:					moduleButton
 							label:				displayText
 							checked:			ribbonEnabled
-							onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
-							enabled:			!isDynamic || !(dynamicModule.loading || dynamicModule.installing)
+							onCheckedChanged:	ribbonModelUncommon.setModuleEnabled(index, checked)
+							enabled:			isSpecial || !(dynamicModule.loading || dynamicModule.installing)
 							font:				jaspTheme.fontRibbon
 
-							toolTip:			!isDynamic ? ""
-													: dynamicModule.installing ? qsTr("Installing:") + "\n" + dynamicModule.installLog
-														: dynamicModule.loading ? qsTr("Loading:") + "\n" + dynamicModule.loadLog
-															: dynamicModule.status === "readyForUse" ? qsTr("Loaded and ready for use!")
-																: dynamicModule.status === "error" ? qsTr("Error occurred!")
-																	: qsTr("Not ready for use?")
+							toolTip:			isSpecial									? qsTr("Ready") //Always ready!
+												: dynamicModule.installing					? qsTr("Installing: %1\n").arg(dynamicModule.installLog)
+												: dynamicModule.loading						? qsTr("Loading: %1\n").arg(dynamicModule.loadLog)
+												: dynamicModule.status === "readyForUse"	? qsTr("Loaded and ready for use!")
+												: dynamicModule.status === "error"			? qsTr("Error occurred!")
+																							: qsTr("Not ready for use?")
 
 							anchors
 							{
-								left			: parent.left //minusButton.right //isDynamic ? minusButton.right : parent.left
+								left			: parent.left
 								right			: minusButton.left
 								verticalCenter	: parent.verticalCenter
 							}
@@ -166,7 +165,7 @@ FocusScope
 						{
 							z:				1
 							id:				minusButton
-							visible:		isDynamic
+							visible:		!isBundled && !isSpecial
 							iconSource:		hovered ? jaspTheme.iconPath + "/delete_icon.png" : jaspTheme.iconPath + "/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
 							width:			visible ? height : 0
 							onClicked:		dynamicModules.uninstallJASPModule(moduleName)

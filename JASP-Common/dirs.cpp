@@ -290,17 +290,30 @@ string Dirs::rHomeDir()
 
 string Dirs::resourcesDir()
 {
-    string dir = exeDir();
+	string dir = exeDir();
 
 #ifdef __APPLE__
 	static bool isQtBuild = filesystem::exists("Makefile");
-	if (isQtBuild)
-		dir += "/Resources/";
-	else
-		dir += "/../Resources/";
-#else
-	dir += "/Resources/";
+	if (!isQtBuild)
+		dir += "/..";
 #endif
 
-    return dir;
+	dir += "/Resources/";
+
+	return dir;
+}
+
+string Dirs::bundledDir()
+{
+	string dir = exeDir();
+
+#ifdef __APPLE__
+	static bool isQtBuild = filesystem::exists("Makefile");
+	if (!isQtBuild)
+		dir += "/..";
+#endif
+
+	dir += "/Modules/";
+
+	return dir;
 }

@@ -47,17 +47,6 @@ QStringList tql(const std::vector<string> &from)
 	return result;
 }
 
-
-QStringList tql(const std::set<string> &from)
-{
-	QStringList result;
-
-	for(const std::string &str : from)
-		result.append(tq(str));
-
-	return result;
-}
-
 vector<string> fromQstringToStdVector(const QString &input, const QString &delimeter)
 {
 	QStringList list;

@@ -41,11 +41,12 @@ public:
 	std::string		function()				const { return _function;								}
 	std::string		qml()					const { return _qml != "" ? _qml : _function + ".qml";	}
 	std::string		icon()					const;
-	bool			isSeparator()			const { return _isSeparator;							}
-	bool			isGroupTitle()			const { return _isGroupTitle;							}
-	bool			isAnalysis()			const { return _isAnalysis;								}
-	bool			isEnabled()				const { return _isEnabled;								}
-	bool			requiresData()			const { return _requiresData;							}
+	bool			isSeparator()			const { return _isSeparator;		}
+	bool			isGroupTitle()			const { return _isGroupTitle;		}
+	bool			isAnalysis()			const { return _isAnalysis;			}
+	bool			isEnabled()				const { return _isEnabled;			}
+	bool			requiresData()			const { return _requiresData;		}
+	bool			shouldBeExposed()		const { return _isAnalysis && !_isSeparator && _function != "???"; }
 
 	DynamicModule*	dynamicModule()			const;
 	std::string		qmlFilePath()			const;

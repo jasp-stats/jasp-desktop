@@ -27,22 +27,38 @@ RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
 {
 	if(_singleton) throw std::runtime_error("RibbonModel can only be instantiated once!");
 	_singleton = this;	
+
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleAdded,			this, &RibbonModel::addDynamicRibbonButtonModel		);
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel	);
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleReplaced,		this, &RibbonModel::dynamicModuleReplaced			);
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleChanged,		this, &RibbonModel::dynamicModuleChanged			);
 }
 
 void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
 {
+	DynamicModules::dynMods()->insertCommonModuleNames(std::set<std::string>(commonModulesToLoad.begin(), commonModulesToLoad.end()));
 
 	for(const std::string & moduleName : commonModulesToLoad)
-		addRibbonButtonModelFromModulePath(moduleName, true);
+		if(DynamicModules::dynMods()->moduleIsInstalledInItsOwnLibrary(moduleName)) //Only load bundled if the user did not install a newer/other version
+			addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[moduleName]);
+		else
+		{
+			std::string moduleLibrary = Dirs::bundledDir() + moduleName + "/" ;
+			DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, true);
+		}
 
 	for(const std::string & moduleName : extraModulesToLoad)
-		addRibbonButtonModelFromModulePath(moduleName, false);
-
-	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleAdded,			this, &RibbonModel::addDynamicRibbonButtonModel);
-	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel);
+		if(DynamicModules::dynMods()->moduleIsInstalledInItsOwnLibrary(moduleName)) //Only load bundled if the user did not install a newer/other version
+			addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[moduleName]);
+		else
+		{
+			std::string moduleLibrary = Dirs::bundledDir() + moduleName + "/" ;
+			DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, false);
+		}
 
 	for(const std::string & modName : DynamicModules::dynMods()->moduleNames())
-		addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[modName]);
+		if(!isModuleName(modName)) //Was it already added from commonModulesToLoad or extraModulesToLoad?
+			addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[modName]);
 
 	addRibbonButtonRPrompt();
 
@@ -62,7 +78,9 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 
 void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module)
 {
-	addRibbonButtonModel(new RibbonButton(this, module));
+	RibbonButton * button = new RibbonButton(this, module);
+
+	addRibbonButtonModel(button);
 }
 
 void RibbonModel::addRibbonButtonRPrompt()
@@ -70,17 +88,13 @@ void RibbonModel::addRibbonButtonRPrompt()
 	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R (Beta)")), "Rlogo.svg", false, [&](){ emit showRCommander(); }));
 }
 
-void RibbonModel::addRibbonButtonModelFromModulePath(std::string moduleName, bool isCommon)
+void RibbonModel::dynamicModuleChanged(Modules::DynamicModule * dynMod)
 {
-	QFileInfo modulePath = QFileInfo(tq(Dirs::resourcesDir() + moduleName + "/"));
+	Log::log() << "void RibbonModel::dynamicModuleChanged(" << dynMod->toString() << ")" << std::endl;
 
-	if(!modulePath.exists())
-	{
-		Log::log() << "Path " << modulePath.absoluteFilePath().toStdString() << " does not exist!" << std::endl;
-		return;
-	}
-
-	addRibbonButtonModel(new RibbonButton(this, moduleName, isCommon));
+	for(const auto & nameButton : _buttonModelsByName)
+		if(nameButton.second->dynamicModule() == dynMod)
+			nameButton.second->reloadDynamicModule(dynMod);
 }
 
 void RibbonModel::addRibbonButtonModel(RibbonButton* model)
@@ -99,6 +113,13 @@ void RibbonModel::addRibbonButtonModel(RibbonButton* model)
 	connect(model, &RibbonButton::analysisTitleChanged, this, &RibbonModel::analysisTitleChanged	);
 }
 
+void RibbonModel::dynamicModuleReplaced(Modules::DynamicModule * oldModule, Modules::DynamicModule * module)
+{
+	for(const auto & nameButton : _buttonModelsByName)
+		if(nameButton.second->dynamicModule() == oldModule || nameButton.first == oldModule->name())
+			nameButton.second->reloadDynamicModule(module);
+}
+
 QVariant RibbonModel::data(const QModelIndex &index, int role) const
 {
 	if (index.row() >= rowCount())
@@ -113,11 +134,13 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 	case RibbonRole:		return QVariant::fromValue(ribbonButtonModelAt(row));
 	case EnabledRole:		return ribbonButtonModelAt(row)->enabled();
 	case ActiveRole:		return ribbonButtonModelAt(row)->active();
-	case DynamicRole:		return ribbonButtonModelAt(row)->isDynamic();
 	case CommonRole:		return ribbonButtonModelAt(row)->isCommon();
 	case ModuleNameRole:	return ribbonButtonModelAt(row)->moduleNameQ();
-	case ModuleRole:		return QVariant::fromValue(ribbonButtonModelAt(row)->myDynamicModule());
-	case ClusterRole:		//To Do!
+	case ModuleRole:		return QVariant::fromValue(ribbonButtonModelAt(row)->dynamicModule());
+	case BundledRole:		return ribbonButtonModelAt(row)->isBundled();
+	case VersionRole:		return ribbonButtonModelAt(row)->version();
+	case SpecialRole:		return ribbonButtonModelAt(row)->isSpecial();
+	case ClusterRole:		//To Do!?
 	default:				return QVariant();
 	}
 }
@@ -130,12 +153,15 @@ QHash<int, QByteArray> RibbonModel::roleNames() const
 		{ DisplayRole,		"displayText"		},
 		{ RibbonRole,		"ribbonButton"		},
 		{ EnabledRole,		"ribbonEnabled"		},
-		{ DynamicRole,		"isDynamic"			},
 		{ CommonRole,		"isCommon"			},
 		{ ModuleNameRole,	"moduleName"		},
 		{ ModuleTitleRole,	"moduleTitle"		},
 		{ ModuleRole,		"dynamicModule"		},
-		{ ActiveRole,		"active"			} };
+		{ ActiveRole,		"active"			},
+		{ BundledRole,		"isBundled"			},
+		{ VersionRole,		"moduleVersion"		},
+		{ SpecialRole,		"isSpecial"			}
+	};
 
 	return roles;
 }
@@ -214,38 +240,35 @@ QStringList RibbonModel::getModulesEnabled() const
 	return list;
 }
 
-Modules::AnalysisEntry *RibbonModel::getAnalysis(const std::string& moduleName, const std::string& analysisName)
+Modules::AnalysisEntry *RibbonModel::getAnalysis(const std::string & moduleName, const std::string & analysisName)
 {
-	Modules::AnalysisEntry* analysis = nullptr;
-	RibbonButton* ribbonButton = ribbonButtonModel(moduleName);
+	if(moduleName == "Common")
+		moduleName = getModuleNameFromAnalysisName(analysisName);
+
+	RibbonButton			* ribbonButton	= ribbonButtonModel(moduleName);
+
 	if (ribbonButton)
-		analysis = ribbonButton->getAnalysis(analysisName);
-	
-	return analysis;
-}
-
-QString RibbonModel::getModuleNameFromAnalysisName(const QString analysisName)
-{
-	QString result = "Common";
-	std::string searchName = analysisName.toStdString();
-	// This function is needed for old JASP file: they still have a reference to the common mondule that does not exist anymore.
-	for (const std::string& myModuleName : _moduleNames)
+		return ribbonButton->getAnalysis(analysisName);
+	else
 	{
-		RibbonButton* button = _buttonModelsByName[myModuleName];
-		for (const std::string& name : button->getAllAnalysisNames())
-		{
-			if (name == searchName)
-			{
-				result = QString::fromStdString(myModuleName);
-				break;
-			}
-		}
-		if (result != "Common")
-			break;
+		std::string strippedModuleName = stringUtils::stripNonAlphaNum(moduleName);
 
+		if(strippedModuleName != moduleName)
+			return getAnalysis(strippedModuleName, analysisName);
 	}
 
-	return result;
+	return nullptr;
+}
+
+std::string RibbonModel::getModuleNameFromAnalysisName(const std::string & analysisName)
+{
+	// This function is needed for old JASP file: they still have a reference to the common module that does not exist anymore.
+	for (const std::string & moduleName : _moduleNames)
+		for (const std::string & name : _buttonModelsByName[moduleName]->getAllAnalysisNames())
+			if (name == analysisName)
+				return moduleName;
+
+	return "Common";
 }
 
 void RibbonModel::toggleModuleEnabled(int ribbonButtonModelIndex)

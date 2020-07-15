@@ -26,6 +26,7 @@
 #include "dirs.h"
 #include "analyses.h"
 #include "analysisform.h"
+#include "utilities/qutils.h"
 #include "log.h"
 
 
@@ -392,6 +393,11 @@ void Analysis::loadExtraFromJSON(Json::Value & analysisData)
 {
 	_titleDefault	= analysisData.get("titleDef", _titleDefault).asString();
 	_oldVersion		= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();
+
+	Log::log() << "Now loading userdata and results for analysis " << _name << " from file." << std::endl;
+	setUserData(analysisData["userdata"]);
+	setResults(analysisData["results"], _status);
+
 	//The rest is already taken in from Analyses::createFromJaspFileEntry
 }
 
@@ -412,8 +418,16 @@ void Analysis::setStatus(Analysis::Status status)
 
 	if ((status == Analysis::Running || status == Analysis::Initing) && needsRefresh())
 	{
+		bool neededRefresh = needsRefresh();
+
 		TempFiles::deleteList(TempFiles::retrieveList(_id));
 		setVersion(AppInfo::version, true);
+
+		if(_dynamicModule)
+			_moduleVersion = _dynamicModule->version();
+
+		if(neededRefresh != needsRefresh())
+			emit needsRefreshChanged();
 
 	}
 
@@ -979,4 +993,12 @@ void Analysis::setUserData(Json::Value userData)
 	};
 
 	setHasVolatileNotes(checkForVolatileNotes(_userData));
+}
+
+void Analysis::setDynamicModule(Modules::DynamicModule * module)
+{
+	Log::log() << "Replacing module connected to analysis " << title() << " (" << id() << ") for module " << module->name() << std::endl;
+	_dynamicModule = module;
+
+	checkAnalysisEntry();
 }

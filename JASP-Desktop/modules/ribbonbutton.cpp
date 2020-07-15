@@ -20,49 +20,53 @@
 #include "enginedefinitions.h"
 #include "modules/dynamicmodule.h"
 #include "modules/analysisentry.h"
-#include "modules/description/description.h"
-#include "utilities/languagemodel.h"
-
-
-RibbonButton::RibbonButton(QObject *parent, std::string moduleName, bool isCommon)
-	: QObject(parent), _isDynamicModule(false), _isCommonModule(isCommon), _moduleName(moduleName)
-{
-	_analysisMenuModel = new AnalysisMenuModel(this);
-
-	reloadMenuFromDescriptionQml();
-
-	if (isCommon)
-		setEnabled(true);
-
-	bindYourself();
-}
+#include "utilities/qutils.h"
+#include "log.h"
 
 RibbonButton::RibbonButton(QObject *parent, Modules::DynamicModule * module)  : QObject(parent), _module(module)
 {
-	_analysisMenuModel = new AnalysisMenuModel(this);
-	setMenu(			_module->menu()	);
-	setTitle(			_module->title()			);
-	setRequiresData(	_module->requiresData()	);
-	setIsDynamic(		true						);
-	setIsCommon(		false						);
-	setModuleName(		_module->name()				);
-	setIconSource(QString::fromStdString(_module->iconFilePath()));
-
+	setTitle(			_module->title()					);
+	setRequiresData(	_module->requiresData()				);
+	setIsCommon(		_module->isCommon()					);
+	setModuleName(		_module->name()						);
+	setIconSource(tq(	_module->iconFilePath())			);
 
 	bindYourself();
 
-	connect(_module, &Modules::DynamicModule::DynamicModule::descriptionReloaded, this, &RibbonButton::descriptionReloaded);
+	_analysisMenuModel = new AnalysisMenuModel(this, _module);
+
+	setDynamicModule(_module);
+}
+
+void RibbonButton::setDynamicModule(Modules::DynamicModule * module)
+{
+	_module = module;
+	connect(_module, &Modules::DynamicModule::descriptionReloaded, this, &RibbonButton::reloadDynamicModule, Qt::QueuedConnection);
+	_analysisMenuModel->setDynamicModule(_module);
+}
+
+void RibbonButton::reloadDynamicModule(Modules::DynamicModule * dynMod)
+{
+	bool dynamicModuleChanged = _module != dynMod;
+
+	if(dynamicModuleChanged)
+		setDynamicModule(dynMod);
+
+	setTitle(			_module->title()		);
+	setRequiresData(	_module->requiresData()	);
+	setIconSource(tq(	_module->iconFilePath()));
+
+	//if(dynamicModuleChanged)
+	emit iChanged(this);
 }
 
 RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction)
 	: QObject(parent), _module(nullptr), _specialButtonFunc(justThisFunction)
 {
-	_analysisMenuModel = new AnalysisMenuModel(this);
+	_analysisMenuModel = new AnalysisMenuModel(this, nullptr);
 	setModuleName(name);
 	setTitle(title);
 	setIconSource(tq(icon));
-
-	setIsDynamic(false);
 
 	setMenu({ new Modules::AnalysisEntry() }); //Just a single dummy
 	setRequiresData(requiresData); //setRequiresData because setMenu changes it based on the menu entries, but that doesnt work for this special dummy
@@ -70,28 +74,10 @@ RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title,
 	bindYourself();
 }
 
-RibbonButton::~RibbonButton()
-{
-	if(_description)
-		delete _description;
-	_description	= nullptr;
-}
-
-
-void RibbonButton::descriptionReloaded(Modules::DynamicModule * dynMod)
-{
-	assert(dynMod == _module);
-
-	setMenu(			_module->menu()	);
-	setTitle(			_module->title()			);
-	setRequiresData(	_module->requiresData()	);
-}
-
 void RibbonButton::bindYourself()
 {
 	connect(this,						&RibbonButton::enabledChanged,		this, &RibbonButton::somePropertyChanged);
 	connect(this,						&RibbonButton::titleChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this,						&RibbonButton::isDynamicChanged,	this, &RibbonButton::somePropertyChanged);
 	connect(this,						&RibbonButton::titleChanged,		this, &RibbonButton::somePropertyChanged);
 	connect(this,						&RibbonButton::moduleNameChanged,	this, &RibbonButton::somePropertyChanged);
 	connect(this,						&RibbonButton::dataLoadedChanged,	this, &RibbonButton::somePropertyChanged);
@@ -151,8 +137,7 @@ void RibbonButton::setTitle(std::string title)
 
 void RibbonButton::setIconSource(QString iconSource)
 {
-	if(_iconSource == iconSource)
-		return;
+	Log::log() << "Iconsource ribbonbutton changed to: " << iconSource.toStdString() << std::endl;
 
 	_iconSource = iconSource;
 	emit iconSourceChanged();
@@ -168,24 +153,14 @@ void RibbonButton::setEnabled(bool enabled)
 
 	if(DynamicModules::dynMods())
 	{
-
-		if(isDynamic())
+		if(!isSpecial())
 		{
 			if(enabled)	DynamicModules::dynMods()->loadModule(moduleName());
 			else		DynamicModules::dynMods()->unloadModule(moduleName());
-
 		}
+
 		emit DynamicModules::dynMods()->moduleEnabledChanged(moduleNameQ(), enabled);
 	}
-}
-
-void RibbonButton::setIsDynamic(bool isDynamic)
-{
-	if (_isDynamicModule == isDynamic)
-		return;
-
-	_isDynamicModule = isDynamic;
-	emit isDynamicChanged();
 }
 
 void RibbonButton::setIsCommon(bool isCommon)
@@ -195,6 +170,9 @@ void RibbonButton::setIsCommon(bool isCommon)
 
 	_isCommonModule = isCommon;
 	emit isCommonChanged();
+
+	if(!_enabled && _isCommonModule)
+		_enabled = true;
 }
 
 void RibbonButton::setModuleName(std::string moduleName)
@@ -206,9 +184,9 @@ void RibbonButton::setModuleName(std::string moduleName)
 	emit moduleNameChanged();
 }
 
-Modules::DynamicModule * RibbonButton::myDynamicModule()
+Modules::DynamicModule * RibbonButton::dynamicModule()
 {
-	return !isDynamic() ? nullptr : DynamicModules::dynMods()->dynamicModule(_moduleName);
+	return DynamicModules::dynMods()->dynamicModule(_moduleName);
 }
 
 Modules::AnalysisEntry *RibbonButton::getAnalysis(const std::string &name)
@@ -222,15 +200,14 @@ Modules::AnalysisEntry *RibbonButton::getAnalysis(const std::string &name)
 std::vector<std::string> RibbonButton::getAllAnalysisNames() const
 {
 	std::vector<std::string> allAnalyses;
-	for (Modules::AnalysisEntry* menuEntry : _menuEntries)
-	{
+	for (Modules::AnalysisEntry* menuEntry : _module->menu())
 		if (menuEntry->isAnalysis())
 			allAnalyses.push_back(menuEntry->function());
-	}
 
 	return allAnalyses;
 }
 
+/*
 void RibbonButton::reloadMenuFromDescriptionQml()
 {
 	//Find the location of the module path
@@ -294,7 +271,7 @@ void RibbonButton::descriptionChanged(Modules::Description * desc)
 	setIconSource(			_description->icon()		);
 	setMenu(				_description->menuEntries() );
 	setToolTip(				_description->description()	);
-}
+}*/
 
 void RibbonButton::setToolTip(QString toolTip)
 {
