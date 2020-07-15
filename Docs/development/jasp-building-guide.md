@@ -272,7 +272,7 @@ Linux
 Besides the packages mentioned under Ubuntu and Fedora one needs a multitude of R-packages to run every analysis. To make life easier a script has been added: `jasp-desktop/Tools/installExpectedPackages.R` which can be used to install all required R-packages. To run it simply open a terminal, make sure you are running as administrator and execute the following in your jasp-desktop source directory:
 ```
 cd Tools
-Rscript installRequiredPackages.R
+Rscript installExpectedPackages.R
 ```
 At certain points this may fail when it misses some kind of header or something. For instance, an R-package might need `#include <png.h>` or something. In this example you should install would the Fedora-package `libpng-devel` or the Ubuntu-package `libpng-dev`. In other cases you should figure out which development distribution-package you would need on the linux-distribution you're running on and install that.
 
