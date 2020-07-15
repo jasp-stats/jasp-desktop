@@ -27,6 +27,11 @@
 #include "log.h"
 #include "utilities/qutils.h"
 #include "utilities/languagemodel.h"
+#include "dynamicmodules.h"
+#include <QQmlContext>
+#include <QQmlIncubator>
+#include "description/description.h"
+#include <QThread>
 
 namespace Modules
 {
@@ -54,7 +59,7 @@ DynamicModule::DynamicModule(std::string modulePackageFile, QObject *parent) : Q
 	_moduleFolder	= QFileInfo(AppDirs::modulesDir() + QString::fromStdString(_name) + "/");
 	unpackage();
 
-	parseDescriptionFile(getDescriptionJsonFromFolder(_modulePackage));
+	loadDescriptionFromFolder(_modulePackage);
 }
 
 QFileInfo DynamicModule::developmentModuleFolder()
@@ -116,18 +121,71 @@ void DynamicModule::initialize()
 		return checkInfo;
 	};
 
-	QFileInfo descriptionInfo = checkForExistence(getJsonDescriptionFilename().toStdString(), true);
-								checkForExistence("icons");
-								checkForExistence("qml");
-								//checkForExistence("R"); The module is now a package so there is no point in checking for R code because what kind of R package has *no* r-code?
+	checkForExistence("icons");
+	checkForExistence("qml");
+	//checkForExistence("R"); The module is now a package so there is no point in checking for R code because what kind of R package has *no* r-code?
 
 	//Ok everything seems to be in order, let's load!
+	QString qmlTxt = "", jsonTxt = "";
+	try
+	{
+		QFileInfo descriptionInfo = checkForExistence(getQmlDescriptionFilename(), true);
 
-	QFile descriptionFile(descriptionInfo.absoluteFilePath());
-	descriptionFile.open(QFile::ReadOnly);
-	std::string	descriptionTxt(descriptionFile.readAll().toStdString());
+		QFile descriptionFile(descriptionInfo.absoluteFilePath());
+		descriptionFile.open(QFile::ReadOnly);
 
-	parseDescriptionFile(descriptionTxt);
+		qmlTxt = descriptionFile.readAll();
+
+		if(qmlTxt == "")
+			throw std::runtime_error(getQmlDescriptionFilename() + " is empty!");
+	}
+	catch(std::runtime_error & qmlNotFound)
+	{
+		try
+		{
+			QFileInfo descriptionInfo = checkForExistence(getJsonDescriptionFilename(), true);
+
+			QFile descriptionFile(descriptionInfo.absoluteFilePath());
+			descriptionFile.open(QFile::ReadOnly);
+
+			jsonTxt = descriptionFile.readAll();
+
+			if(jsonTxt == "")
+				throw std::runtime_error(getJsonDescriptionFilename() + " is empty!");
+
+		}
+		catch(std::runtime_error & jsonNotFound)
+		{
+			throw std::runtime_error("Couldn't find a " + getJsonDescriptionFilename() + " *or* " + getQmlDescriptionFilename());
+		}
+	}
+
+	if(qmlTxt != "")	loadDescriptionQml(qmlTxt);
+	else				parseDescriptionFile(jsonTxt.toStdString());
+}
+
+void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath)
+{
+	std::string descriptionJson = getDescriptionJsonFromFolder(folderPath),
+				descriptionQml  = getDescriptionQmlFromFolder(folderPath);
+
+	if(descriptionQml == "" && descriptionJson == "")
+		throw std::runtime_error("No description found in folder " + folderPath);
+
+	if(descriptionQml != "")	loadDescriptionQml(tq(descriptionQml));
+	else						parseDescriptionFile(descriptionJson);
+}
+
+void DynamicModule::loadDescriptionFromArchive(const std::string & archivePath)
+{
+	std::string descriptionJson = getDescriptionJsonFromArchive(archivePath),
+				descriptionQml  = getDescriptionQmlFromArchive(archivePath);
+
+	if(descriptionQml == "" && descriptionJson == "")
+		throw std::runtime_error("No description found in archive " + archivePath);
+
+	if(descriptionQml != "")	loadDescriptionQml(tq(descriptionQml));
+	else						parseDescriptionFile(descriptionJson);
 }
 
 void DynamicModule::parseDescriptionFile(std::string descriptionTxt)
@@ -166,6 +224,104 @@ void DynamicModule::parseDescriptionFile(std::string descriptionTxt)
 	{
 		throw std::runtime_error("During the parsing of the description.json of the Module " + _name + " something went wrong: " + e.what());
 	}
+}
+
+//Turning QMLENGINE_DOES_ALL_THE_WORK on also works fine, but has slightly less transparent errormsgs so isn't recommended
+//#define QMLENGINE_DOES_ALL_THE_WORK
+
+Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, QUrl url, const std::string & moduleName)
+{	
+	QObject * obj = nullptr;
+#ifdef QMLENGINE_DOES_ALL_THE_WORK
+	obj = DynamicModules::dynMods()->loadQmlData(descriptionTxt, url);
+#else
+	QQmlContext * ctxt = DynamicModules::dynMods()->requestRootContext();
+
+	QQmlComponent descriptionQmlComp(ctxt->engine());
+
+	Log::log() << "Setting url to '" << url.toString() << "' for Description.qml.\n" << std::endl;// data: '" << descriptionTxt << "'\n"<< std::endl;
+
+	descriptionQmlComp.setData(descriptionTxt.toUtf8(), url);
+
+	if(descriptionQmlComp.isLoading())
+		Log::log() << "Description for module " << moduleName << " is still loading, make sure you load a local file and that Windows doesnt mess this up for you..." << std::endl;
+
+
+	auto errorLogger =[&](bool isError, QList<QQmlError> errors)
+	{
+		if(!isError) return;
+
+		std::stringstream out;
+
+		out << "Loading "+ getQmlDescriptionFilename() + " for module " + moduleName << " had errors:\n";
+
+		for(const QQmlError error : errors)
+			out << error.toString() << "\n";
+
+		Log::log() << out.str() << std::flush;
+
+		throw ModuleException(moduleName, "There were errors loading " + getQmlDescriptionFilename() + ":\n" + out.str());
+	};
+
+	errorLogger(descriptionQmlComp.isError(), descriptionQmlComp.errors());
+
+	if(!descriptionQmlComp.isReady())
+		throw ModuleException(moduleName, "Description Component is not ready!");
+
+	QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
+	descriptionQmlComp.create(localIncubator, ctxt);
+
+	errorLogger(localIncubator.isError(), localIncubator.errors());
+
+	obj = localIncubator.object();
+
+#endif
+
+	Description * description = qobject_cast<Description*>(obj);
+
+	return description;
+}
+
+void DynamicModule::loadDescriptionQml(QString descriptionTxt)
+{
+	Description * description = instantiateDescriptionQml(descriptionTxt, QUrl("."), name());
+
+	if(!description)
+		throw ModuleException(name(), getQmlDescriptionFilename() + " must have Description object as root!");
+
+	description->setDynMod(this);
+
+	loadInfoFromDescriptionItem(description);
+}
+
+void DynamicModule::loadInfoFromDescriptionItem(Description * description)
+{
+	if(_descriptionObj && _descriptionObj != description)
+		delete _descriptionObj;
+
+	_descriptionObj = description;
+
+	if(_name != fq(description->name()))
+		Log::log() << "Description has different name (" << description->name() << ") from DynMod (" << _name << ")" << std::endl;
+
+	_title							= fq(description->title());
+	_icon							= fq(description->icon());
+	_author							= fq(description->author());
+	_license						= fq(description->license());
+	_website						= fq(description->website().toString());
+	_maintainer						= fq(description->maintainer());
+	_description					= fq(description->description());
+	_version						= fq(description->version());
+
+	setRequiredPackages(description->requiredPackages());
+
+	for(auto * menuEntry : _menuEntries)
+		delete menuEntry;
+	_menuEntries.clear();
+
+	_menuEntries = description->menuEntries();
+
+	emit descriptionReloaded(this);
 }
 
 void DynamicModule::setLoadingNeeded()
@@ -267,7 +423,7 @@ Json::Value	DynamicModule::requestJsonForPackageInstallationRequest(bool onlyMod
 {
 	if(!installNeeded())
 	{
-		Log::log() << "DynamicModule::requestJsonForPackageInstallationRequest(): Module (" << _name << ") is already installed!" << std::endl;
+		Log::log() << "DynamicModule::requestJsonForPackageInstallationRequest(): Module (" << _name << ") thinks an install isn't needed, but requesting it anyway!" << std::endl;
 	}
 
 	Json::Value requestJson(Json::objectValue);
@@ -334,29 +490,30 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 
 	if(_modulePackage == "")
 	{
-		Log::log() << "generateModuleInstallingR has some trouble because package was not unpacked anywehere..." << std::endl;
+		Log::log() << "generateModuleInstallingR has some trouble because package was not unpacked anywhere..." << std::endl;
 
 		setInstallLog("Installing module " + _name + " failed because package filepath was not specified");
 		setStatus(moduleStatus::error);
 		return "stop('No package specified!')";
 	}
 
-	parseDescriptionFile(getDescriptionJsonFromFolder(_modulePackage));
-
 	try
 	{
+		loadDescriptionFromFolder(_modulePackage);
+
 		generateRPackageMetadata(QDir(_modulePackage.c_str())); //Generate DESCRIPTION and NAMESPACE in case they are missing
 	}
-	catch(std::runtime_error & e)
+	catch(ModuleException & e)
 	{
 		setInstallLog(e.what());
 		setStatus(moduleStatus::error);
-		return "stop('Something went wrong parsing the required packages in description.json! Make sure they follow the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionjson')";
+		return "stop('Something went wrong during intialization of the Description!\nMake sure it follows the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionqml\n')";
 	}
 	setInstallLog("Installing module " + _name + ".\n");
 
 	std::string typeInstall = "'source'";
-//<< ".runSeparateR(\"{"
+
+	//<< ".runSeparateR(\"{"
 
 	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths())";
 
@@ -404,7 +561,7 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 	auto filler = [](size_t spaces)
 	{
 		std::stringstream out;
-		for(int i=0; i<spaces; i++)
+		for(size_t i=0; i<spaces; i++)
 			out << " ";
 		return out.str();
 	};
@@ -457,16 +614,22 @@ std::string DynamicModule::generateModuleUninstallingR()
 	return "remove.packages(c(" + out.str() + ", lib='" + moduleRLibrary().toStdString() + "'); R.utils::gcDLLs(gc=TRUE, quiet=TRUE);";
 }
 
+std::string DynamicModule::moduleInstFolder() const
+{
+	//Because in a developer mod everything is loaded directly from the source folder we give an actual inst folder:
+	if(_isDeveloperMod)	return _modulePackage + "/inst";
+	//But after install this is in a R-library and therefore there is no more inst folder:
+	else				return moduleRLibrary().toStdString() + "/" + _name + "/";
+}
+
 std::string	DynamicModule::qmlFilePath(const std::string & qmlFileName)	const
 {
-	if(_isDeveloperMod)	return _modulePackage + "/inst/qml/" + qmlFileName;
-	else				return moduleRLibrary().toStdString() + "/" + _name + "/qml/" + qmlFileName;
+	return moduleInstFolder() + "/qml/" + qmlFileName;
 }
 
 std::string DynamicModule::iconFolder() const
 {
-	if(_isDeveloperMod)	return _modulePackage + "/inst/icons/";
-	else				return moduleRLibrary().toStdString() + "/" + _name + "/icons/";
+	return moduleInstFolder() + "/icons/";
 }
 
 std::string	DynamicModule::iconFilePath(std::string whichIcon)	const
@@ -476,8 +639,7 @@ std::string	DynamicModule::iconFilePath(std::string whichIcon)	const
 
 QString DynamicModule::helpFolderPath() const
 {
-	if(_isDeveloperMod)	return QString::fromStdString(_modulePackage + "/inst/help/");
-	else				return moduleRLibrary() + "/" + QString::fromStdString(_name) + "/help/";
+	return tq(moduleInstFolder() + "/help/");
 }
 
 AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile) const
@@ -645,16 +807,11 @@ void  DynamicModule::setRequiredPackages(Json::Value requiredPackages)
 
 void DynamicModule::reloadDescription()
 {
-	QFile descriptionFile(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/" + getJsonDescriptionFilename());
-
-	descriptionFile.open(QIODevice::ReadOnly);
-
-	Json::Value descriptionJson;
-	std::string descriptionFileText = descriptionFile.readAll().toStdString();
-	if(descriptionFileText.size() == 0) //ignore it when it is empty
-		return;
-
-	parseDescriptionFile(descriptionFileText);
+	try
+	{
+		loadDescriptionFromFolder(fq(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/"));
+	}
+	catch(std::runtime_error e) { return; } //If it doesnt work then never mind.
 
 	if(_requiredPackages != _previousReqPkgs)
 	{
@@ -680,7 +837,7 @@ std::string DynamicModule::getDESCRIPTIONFromFolder(const std::string & filepath
 std::string DynamicModule::getDescriptionJsonFromArchive(const std::string &  filepath)
 {
 	try {
-		return ExtractArchive::extractSingleTextFileFromArchive(filepath, getJsonDescriptionFilename().toStdString());
+		return ExtractArchive::extractSingleTextFileFromArchive(filepath, getJsonDescriptionFilename());
 	} catch (...) {
 		return "";
 	}
@@ -688,7 +845,22 @@ std::string DynamicModule::getDescriptionJsonFromArchive(const std::string &  fi
 
 std::string DynamicModule::getDescriptionJsonFromFolder(const std::string &  filepath)
 {
-	return getFileFromFolder(QString::fromStdString(filepath), getJsonDescriptionFilename()).toStdString();
+	return getFileFromFolder(filepath, getJsonDescriptionFilename());
+}
+
+
+std::string DynamicModule::getDescriptionQmlFromArchive(const std::string &  filepath)
+{
+	try {
+		return ExtractArchive::extractSingleTextFileFromArchive(filepath, getQmlDescriptionFilename());
+	} catch (...) {
+		return "";
+	}
+}
+
+std::string DynamicModule::getDescriptionQmlFromFolder(const std::string &  filepath)
+{
+	return getFileFromFolder(filepath, getQmlDescriptionFilename());
 }
 
 QString DynamicModule::getFileFromFolder(const QString &  filepath, const QString & searchMe)
@@ -703,6 +875,7 @@ QString DynamicModule::getFileFromFolder(const QString &  filepath, const QStrin
 	for(QString entry : dir.entryList(QDir::Filter::NoDotAndDotDot | QDir::Filter::Files))
 		if(entry == searchMe)
 		{
+			Log::log() << "Found " << searchMe << "!" << std::endl;
 			QFile foundIt(dir.absoluteFilePath(entry));
 			foundIt.open(QFile::ReadOnly);
 			return foundIt.readAll();
@@ -721,6 +894,28 @@ QString DynamicModule::getFileFromFolder(const QString &  filepath, const QStrin
 std::string DynamicModule::getFileFromFolder(const std::string &  filepath, const std::string & searchMe)
 {
 	return getFileFromFolder(QString::fromStdString(filepath), QString::fromStdString(searchMe)).toStdString();
+}
+
+
+std::string DynamicModule::extractPackageNameFromDescriptionQmlTxt(const std::string & descriptionTxt)
+{
+	std::string foundName = "";
+
+	if(descriptionTxt == "")
+		return foundName;
+
+	try
+	{
+		Description * desc = instantiateDescriptionQml(tq(descriptionTxt), QUrl::fromLocalFile(tq(getQmlDescriptionFilename())), "???");
+
+		foundName = fq(desc->name());
+
+		delete desc;
+	}
+	catch(Modules::ModuleException & e) { throw e; } //If qml cannot be parsed I want this error  in the users face
+	catch(...){}
+
+	return foundName;
 }
 
 std::string DynamicModule::extractPackageNameFromDescriptionJsonTxt(const std::string & descriptionTxt)
@@ -780,6 +975,9 @@ std::string DynamicModule::extractPackageNameFromArchive(const std::string & arc
 	if(foundName == "") //Ok lets try to find description.json then
 		foundName = extractPackageNameFromDescriptionJsonTxt(getDescriptionJsonFromArchive(archiveFilepath));
 
+	if(foundName == "") //Ok, so lets find it in QML ?
+		foundName = extractPackageNameFromDescriptionQmlTxt(getDescriptionQmlFromArchive(archiveFilepath));
+
 	if(foundName == "") //Then we will just use the archive name and see if that works..
 	{
 		const std::string	targz	= ".tar.gz",
@@ -812,7 +1010,10 @@ std::string DynamicModule::extractPackageNameFromFolder(const std::string & fold
 {
 	Log::log() << "Trying to extract package name from folder '" << folderFilepath << "'" << std::endl;
 
-	std::string foundName = extractPackageNameFromDESCRIPTIONTxt(getDESCRIPTIONFromFolder(folderFilepath));
+	std::string foundName = extractPackageNameFromDescriptionQmlTxt(getDescriptionQmlFromFolder(folderFilepath));
+
+	if(foundName == "") //Ok lets try to find DESCRIPTION then
+		foundName = extractPackageNameFromDescriptionJsonTxt(getDescriptionJsonFromFolder(folderFilepath));
 
 	if(foundName == "") //Ok lets try to find description.json then
 		foundName = extractPackageNameFromDescriptionJsonTxt(getDescriptionJsonFromFolder(folderFilepath));
@@ -852,6 +1053,22 @@ Json::Value DynamicModule::asJsonForJaspFile(const std::string & analysisFunctio
 	json["analysisEntry"]		= analysisFunction;
 
 	return json;
+}
+
+bool DynamicModule::isDescriptionFile(const std::string & filename)
+{
+	return isDescriptionFile(tq(filename));
+}
+
+bool DynamicModule::isDescriptionFile(const QString & filename)
+{
+	//We force it all to lower to make sure we get the right result on mac or windows because their filesystems aren't case sensitive... But it would still be wrong I guess?
+	QString low = filename.toLower();
+
+	static QString	descJson	= tq(getJsonDescriptionFilename()).toLower(),
+	                descQml		= tq(getQmlDescriptionFilename()).toLower();
+
+	return descJson == low || descQml == low;
 }
 
 }

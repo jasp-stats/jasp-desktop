@@ -12,13 +12,13 @@ JASPControl
 	implicitWidth:		control.width + ((controlLabel.visible && !setLabelAbove) ? jaspTheme.labelSpacing + controlLabel.width : 0)
 	background:			useExternalBorder ? externalControlBackground : control.background
 	innerControl:		control
-
+	title:				label
 
 	property alias	control:				control
 	property alias	controlLabel:			controlLabel
 	property alias	label:					controlLabel.text
 	// The 4 following properties should be set only from the backend. Unfortunately they cannot be set readonly
-	property string currentText:			""	// This is the current label displayed. currentText is the official name for a ComboBox in QML
+	property string currentText:			""	// This is the current label displayed. currentText is the official name for this property in a ComboBox in QML
 	property alias	currentLabel:			comboBox.currentText
 	property string currentValue:			"" // This is the current value (what is used by R)
 	property string currentColumnType:		"" // When the values come from column names, this property gives the column type of the current selected column

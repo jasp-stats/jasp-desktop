@@ -193,7 +193,8 @@ jaspResultsR <- R6Class(
     getOtherObjectsForState = function()        private$jaspObject$getOtherObjectsForState()
 	),
 	active = list(
-	  status = function(x) { if (missing(x)) private$jaspObject$status else private$jaspObject$status <- x }
+	  status = function(x) { if (missing(x)) private$jaspObject$status else private$jaspObject$status <- x },
+	  info   = function(x) { if (missing(x)) private$jaspObject$info   else private$jaspObject$info   <- x }
 	)
 )
 
@@ -300,7 +301,8 @@ jaspOutputObjR <- R6Class(
 	),
 	active	= list(
 		position = function(x) { if (missing(x)) private$jaspObject$position else private$jaspObject$position <- as.numeric(x) },
-		title    = function(x) { if (missing(x)) private$jaspObject$title    else private$jaspObject$title    <- x }
+		title    = function(x) { if (missing(x)) private$jaspObject$title    else private$jaspObject$title    <- x },
+		info     = function(x) { if (missing(x)) private$jaspObject$info     else private$jaspObject$info     <- x }
 	)
 )
 
@@ -315,7 +317,7 @@ jaspHtmlR <- R6Class(
 	inherit   = jaspOutputObjR,
 	cloneable = FALSE,
 	public    = list(
-    initialize = function(text="", elementType="p", maxWidth="15cm", class="", dependencies=NULL, title="hide me", position=NULL, jaspObject = NULL) {
+	initialize = function(text="", elementType="p", maxWidth="15cm", class="", dependencies=NULL, title="hide me", position=NULL , info=NULL, jaspObject = NULL) {
 			# if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
 			if (!is.null(jaspObject)) {
 			  private$jaspObject <- jaspObject
@@ -328,16 +330,19 @@ jaspHtmlR <- R6Class(
 			}
 			
 			htmlObj$elementType <- elementType
-      htmlObj$class       <- class
-      htmlObj$maxWidth    <- .jaspHtmlPixelizer(maxWidth)
+			htmlObj$class       <- class
+			htmlObj$maxWidth    <- .jaspHtmlPixelizer(maxWidth)
 			htmlObj$title       <- title
 			
-			if (!is.null(dependencies))
-				htmlObj$dependOnOptions(dependencies)
+            if (!is.null(dependencies))
+			    htmlObj$dependOnOptions(dependencies)
+
+            if (!is.null(info))
+			    htmlObj$info <- info
 			
 			if (is.numeric(position))
 				htmlObj$position = position
-			
+
 			private$jaspObject <- htmlObj
 			return()
 		}
@@ -355,26 +360,29 @@ jaspContainerR <- R6Class(
 	inherit   = jaspOutputObjR,
 	cloneable = FALSE,
 	public    = list(
-    initialize = function(title = "", dependencies = NULL, position = NULL, initCollapsed = FALSE, jaspObject = NULL) {
+		initialize = function(title = "", dependencies = NULL, position = NULL, info=NULL, initCollapsed = FALSE, jaspObject = NULL) {
 			if (!is.null(jaspObject)) {
-			  private$jaspObject <- jaspObject
-			  return()
+				private$jaspObject <- jaspObject
+				return()
 			} else if (jaspResultsCalledFromJasp()) {
 				container <- jaspResultsModule$create_cpp_jaspContainer(title)
 			} else {
 				checkForJaspResultsInit()
 				container <- create_cpp_jaspContainer(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspContainer, title))
 			}
-			
+
 			if (!is.null(dependencies))
 				container$dependOnOptions(dependencies)
-			
-      if (is.numeric(position))
-        container$position <- position
 
-      if (is.logical(initCollapsed))
-        container$initCollapsed <- initCollapsed
-			
+			if (is.numeric(position))
+				container$position <- position
+
+			if (is.logical(initCollapsed))
+				container$initCollapsed <- initCollapsed
+
+			if (!is.null(info))
+				container$info <- info
+
 			private$jaspObject <- container
 			return()
 		},
@@ -430,9 +438,8 @@ jaspPlotR <- R6Class(
 	cloneable = FALSE,
 	public    = list(
 		initialize = function(plot=NULL, title="", width=320, height=320, aspectRatio=0, error=NULL, 
-							  dependencies=NULL, position=NULL, jaspObject = NULL) {
-      if (!is.null(jaspObject))
-      {
+		                      dependencies=NULL, position=NULL , info=NULL, jaspObject = NULL) {
+			if (!is.null(jaspObject)) {
 			  private$jaspObject <- jaspObject
 			  return()
       }
@@ -465,6 +472,9 @@ jaspPlotR <- R6Class(
 			
 			if(!is.null(dependencies))
 				jaspPlotObj$dependOnOptions(dependencies)
+
+            if (!is.null(info))
+			    jaspPlotObj$info <- info
 			
 			if(is.numeric(position))
 				jaspPlotObj$position = position
@@ -503,7 +513,7 @@ jaspTableR <- R6Class(
 	cloneable = FALSE,
 
 	public    = list(
-    initialize = function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL, expectedRows=NULL, expectedColumns=NULL, jaspObject=NULL) {
+	initialize = function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL , info=NULL, expectedRows=NULL, expectedColumns=NULL, jaspObject=NULL) {
 			if (!is.null(jaspObject)) {
 			  private$jaspObject <- jaspObject
 			  return()
@@ -537,6 +547,9 @@ jaspTableR <- R6Class(
 			
 			if (!is.null(dependencies))
 				jaspObj$dependOnOptions(dependencies)
+
+            if (!is.null(info))
+			    jaspObj$info <- info
 			
 			if (is.numeric(position))
 				jaspObj$position <- position
@@ -643,7 +656,7 @@ jaspColumnR <- R6Class(
   inherit   = jaspOutputObjR,
   cloneable = FALSE,
   public    = list(
-    initialize = function(columnName="", dependencies=NULL, scalarData=NULL, ordinalData=NULL, nominalData=NULL, nominalTextData=NULL, jaspObject = NULL) {
+    initialize = function(columnName="", dependencies=NULL, scalarData=NULL, ordinalData=NULL, nominalData=NULL, nominalTextData=NULL, info=NULL, jaspObject = NULL) {
       if (!is.null(jaspObject)) {
         private$jaspObject <- jaspObject
         return()
@@ -663,6 +676,7 @@ jaspColumnR <- R6Class(
       if(!is.null(ordinalData))     columnObj$setOrdinal(ordinalData)
       if(!is.null(nominalData))     columnObj$setNominal(nominalData)
       if(!is.null(nominalTextData)) columnObj$setNominalText(nominalTextData)
+	  if (!is.null(info))			columnObj$info <- info
 
       if (!is.null(dependencies))
         columnObj$dependOnOptions(dependencies)

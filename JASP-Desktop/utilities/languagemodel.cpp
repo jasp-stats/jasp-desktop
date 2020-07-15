@@ -35,7 +35,7 @@ QString LanguageInfo::toString()
 
 LanguageModel * LanguageModel::_singleton = nullptr;
 
-LanguageModel::LanguageModel(QString qmresourcepath, QApplication *app, QQmlApplicationEngine *qml, QObject *parent)
+LanguageModel::LanguageModel(QApplication *app, QQmlApplicationEngine *qml, QObject *parent)
 	: QAbstractListModel(parent),
 	  _mApp(app),
 	  _mTranslator(new QTranslator(this)),
@@ -44,7 +44,7 @@ LanguageModel::LanguageModel(QString qmresourcepath, QApplication *app, QQmlAppl
 	assert(!_singleton);
 
 	_singleton = this;
-	_qmlocation = tq(Dirs::resourcesDir()) + qmresourcepath;
+	_qmlocation = tq(Dirs::resourcesDir()) + "Translations";
 
 	initialize();
 }
@@ -277,7 +277,7 @@ void LanguageModel::loadModuleTranslationFile(Modules::DynamicModule *dyn)
 
 void LanguageModel::findQmFiles(QString qmlocation)
 {	
-	Log::log() << "findQmlFiles(qmlocation = " << qmlocation << ") called" << std::endl;
+	Log::log() << "findQmFiles(qmlocation = " << qmlocation << ") called" << std::endl;
 
 	QDir dir(qmlocation);
 	QLocale loc;
@@ -285,7 +285,7 @@ void LanguageModel::findQmFiles(QString qmlocation)
 	QDirIterator qdi(qmlocation, QStringList() << "*.qm" << "*.QM");
 
 	if(!qdi.hasNext())
-		throw std::runtime_error("Could not find *any* qml-files!");
+		throw std::runtime_error("Could not find *any* qm-files!");
 
 	while (qdi.hasNext())
 	{

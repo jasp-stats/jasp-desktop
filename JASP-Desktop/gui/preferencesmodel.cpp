@@ -106,6 +106,8 @@ GET_PREF_FUNC_STR(	cranRepoURL,				Settings::CRAN_REPO_URL								)
 GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
 GET_PREF_FUNC_BOOL(	useNativeFileDialog,		Settings::USE_NATIVE_FILE_DIALOG					)
 GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
+GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
+
 
 double PreferencesModel::uiScale()
 {
@@ -224,6 +226,7 @@ SET_PREF_FUNCTION(QString,	setCurrentThemeName,		currentThemeName,			currentThem
 SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroundChanged,			Settings::IMAGE_BACKGROUND							)
 SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativeFileDialogChanged,		Settings::USE_NATIVE_FILE_DIALOG					)
 SET_PREF_FUNCTION(bool,		setDisableAnimations,		disableAnimations,			disableAnimationsChanged,		Settings::DISABLE_ANIMATIONS						)
+SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkdownChanged,		Settings::GENERATE_MARKDOWN_HELP					)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
@@ -292,7 +295,6 @@ void PreferencesModel::zoomReset()
 {
 	setUiScale(1.0);
 }
-
 
 void PreferencesModel::removeMissingValue(QString value)
 {

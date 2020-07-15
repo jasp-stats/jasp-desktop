@@ -181,8 +181,8 @@ ScrollView
 						font:				jaspTheme.font
 						onTextChanged:		preferencesModel.cranRepoURL = text
 						color:				jaspTheme.textEnabled
-						KeyNavigation.tab:	logToFile
-						KeyNavigation.down:	logToFile
+						KeyNavigation.tab:	generateMarkdown
+						KeyNavigation.down:	generateMarkdown
 						selectByMouse:		true
 						selectedTextColor:	jaspTheme.white
 						selectionColor:		jaspTheme.itemSelectedColor
@@ -197,6 +197,18 @@ ScrollView
 						}
 					}
 				}
+			}
+
+			CheckBox
+			{
+				id:					generateMarkdown
+				label:				qsTr("Generate markdown files for help")
+				checked:			preferencesModel.generateMarkdown
+				onCheckedChanged:	preferencesModel.generateMarkdown = checked
+				toolTip:			qsTr("Enabling this will generate markdown helpfile from the info at qml options.")
+				KeyNavigation.tab:	logToFile
+				KeyNavigation.down:	logToFile
+
 			}
 		}
 

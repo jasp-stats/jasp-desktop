@@ -57,7 +57,7 @@ Window
 		Connections
 		{
 			target:				helpModel
-			onRunJavaScript:
+			onRunJavaScriptSignal:
 			{
 				helpView.runJavaScript(helpJS);
 				searchBar.search();

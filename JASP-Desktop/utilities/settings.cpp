@@ -40,7 +40,8 @@ const Settings::Setting Settings::Values[] = {
 	{"preferredLanguage",			QLocale::English},
 	{"themeName",					"lightTheme"},
 	{"useNativeFileDialog",			true},
-	{"disableAnimations",			false}
+	{"disableAnimations",			false},
+	{"generateMarkdownHelp",		false}
 };
 
 QVariant Settings::value(Settings::Type key)

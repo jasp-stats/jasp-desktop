@@ -29,7 +29,7 @@ JASPControl
 	controlType				: JASPControlBase.TabView
 	background				: rectangleItem
 	implicitWidth 			: parent.width
-	implicitHeight			: itemTitle.height + itemTabBar.height + itemStack.height
+	implicitHeight			: itemStack.y + itemStack.height
 	useControlMouseArea		: false
 	shouldStealHover		: false
 	innerControl			: itemTabBar
@@ -94,15 +94,29 @@ JASPControl
 				horizontalAlignment	: Text.AlignLeft
 				verticalAlignment	: Text.AlignVCenter
 				elide				: Text.ElideRight
-				width				: parent.width - (removeIconItem.visible ? removeIconItem.width : 0)
+				width				: parent.width - (removeIconItem.visible ? (removeIconItem.width + 2 * jaspTheme.labelSpacing) : 0)
 			}
 
 			background: Rectangle
 			{
-				color			: itemTabBar.currentIndex === index ? jaspTheme.analysisBackgroundColor : jaspTheme.buttonColor
-				radius			: jaspTheme.borderRadius
-				border.color	: jaspTheme.borderColor
-				border.width	: itemTabBar.currentIndex === index ? 0 : 1
+				color		: itemTabBar.currentIndex === index ? jaspTheme.analysisBackgroundColor : jaspTheme.grayLighter
+
+				Rectangle
+				{
+					anchors
+					{
+						right			: parent.right
+						bottom			: parent.bottom
+						top				: parent.top
+						bottomMargin	: 4 * preferencesModel.uiScale
+						topMargin		: 4 * preferencesModel.uiScale
+					}
+
+					visible: index == tabView.count - 1 || (itemTabBar.currentIndex != index && itemTabBar.currentIndex != index + 1)
+
+					width	: 1
+					color	: jaspTheme.gray
+				}
 			}
 
 			onDoubleClicked:
@@ -134,6 +148,7 @@ JASPControl
 				id						: removeIconItem
 				source					: jaspTheme.iconPath + tabView.removeIcon
 				anchors.right			: parent.right
+				anchors.rightMargin		: 4 * preferencesModel.uiScale
 				anchors.verticalCenter	: parent.verticalCenter
 				visible					: tabView.showRemoveIcon && tabView.minimumItems < tabView.count
 				height					: jaspTheme.iconSize * preferencesModel.uiScale
@@ -162,10 +177,10 @@ JASPControl
 
 		anchors.top		: itemTitle.bottom
 		anchors.left	: parent.left
-		height			: itemTabBar.height + itemStack.height
+		height			: itemTabBar.height + itemStack.height + 2 * preferencesModel.uiScale
 		width			: parent.width
 
-		color			: "transparent" //debug ? jaspTheme.debugBackgroundColor : jaspTheme.analysisBackgroundColor
+		color			: "transparent"
 		radius			: jaspTheme.borderRadius
 		border.color	: jaspTheme.borderColor
 		border.width	: 1
@@ -175,8 +190,16 @@ JASPControl
 	QtControls.TabBar
 	{
 		id				: itemTabBar
-		anchors.top		: itemTitle.bottom
-		anchors.left	: parent.left
+		anchors
+		{
+			top			: itemTitle.bottom
+			left		: parent.left
+		}
+
+		background: Rectangle
+		{
+			color: jaspTheme.grayLighter
+		}
 
 		Repeater
 		{
@@ -189,22 +212,30 @@ JASPControl
 	MenuButton
 	{
 		id				: addIconItem
+		height			: 28 * preferencesModel.uiScale //jaspTheme.defaultRectangularButtonHeight
 		width			: height
 		radius			: height
 		visible			: tabView.showAddIcon && (tabView.maximumItems <= 0 || tabView.maximumItems >= tabView.count)
 		iconSource		: jaspTheme.iconPath + tabView.addIcon
 		onClicked		: addItem()
 		toolTip			: tabView.addTooltip
-		anchors.left	: itemTabBar.right
-		anchors.top		: parent.top
+		anchors
+		{
+			left			: itemTabBar.right
+			verticalCenter	: itemTabBar.verticalCenter
+		}
 	}
 
 	StackLayout
 	{
-		id					: itemStack
-		anchors.top			: itemTabBar.bottom
-		anchors.left		: parent.left
-		anchors.right		: parent.right
+		id				: itemStack
+		anchors
+		{
+			top			: itemTabBar.bottom
+			topMargin	: 2 * preferencesModel.uiScale
+			left		: parent.left
+			right		: parent.right
+		}
 
 		currentIndex		: itemTabBar.currentIndex
 

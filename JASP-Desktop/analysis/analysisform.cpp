@@ -55,7 +55,8 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
 	setObjectName("AnalysisForm");
 
-	connect(this, &AnalysisForm::formCompleted, this, &AnalysisForm::formCompletedHandler);
+	connect(this, &AnalysisForm::formCompleted, this, &AnalysisForm::formCompletedHandler	);
+	connect(this, &AnalysisForm::infoChanged,	this, &AnalysisForm::helpMDChanged			);
 }
 
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
@@ -107,7 +108,7 @@ void AnalysisForm::cleanUpForm()
 	if (!_removed)
 	{
 		_removed = true;
-		for (JASPControlWrapper* control : _orderedControls)
+		for (JASPControlWrapper* control : _dependsOrderedCtrls)
 			// controls will be automatically deleted by the deletion of AnalysisForm
 			// But they must be first disconnected: sometimes an event seems to be triggered before the item is completely destroyed
 			control->cleanUp();
@@ -235,6 +236,7 @@ void AnalysisForm::addControl(JASPControlBase *control)
 
 void AnalysisForm::_setUpControls()
 {
+	//Todo: remove anything that thinks we aren't using jaspResults
 	_analysis->setUsesJaspResults(QQmlProperty(this, "usesJaspResults").read().toBool());
 
 	_orderExpanders();
@@ -275,40 +277,43 @@ void AnalysisForm::_setUpRelatedModels()
 void AnalysisForm::_setUpItems()
 {
 	QList<JASPControlWrapper*> controls = _controls.values();
+
 	for (JASPControlWrapper* control : controls)
 		control->setUp();
 
 	// set the order of the BoundItems according to their dependencies (for binding purpose)
 	for (JASPControlWrapper* control : controls)
 	{
-		QVector<JASPControlWrapper*> depends = control->depends();
-		int index = 0;
-		while (index < depends.length())
+		std::vector<JASPControlWrapper*> depends(control->depends().begin(), control->depends().end());
+
+		// This looks like a for-each loop right? Except that we add a dependency to control.depends and also to our local copy...
+		// Which means that won't work because then we invalidate the loop, instead we do it old-school with an index.
+		// But I thought it would be nice to add a comment here describing the magic going on here for the next forlorn soul looking into this.
+		for (size_t index = 0; index < depends.size(); index++)
 		{
-			JASPControlWrapper* depend = depends[index];
-			const QVector<JASPControlWrapper*>& dependdepends = depend->depends();
+			JASPControlWrapper					* depend		= depends[index];
+			const std::set<JASPControlWrapper*>	& dependdepends = depend->depends();
+
 			for (JASPControlWrapper* dependdepend : dependdepends)
-			{
 				if (dependdepend == control)
 					addFormError(tq("Circular dependency between control ") + control->name() + tq(" and ") + depend->name());
-				else
-				{
-					if (control->addDependency(dependdepend))
-						depends.push_back(dependdepend);
-				}
-			}
-			index++;
+				else if (control->addDependency(dependdepend))
+					depends.push_back(dependdepend);
 		}
 	}
+
 	std::sort(controls.begin(), controls.end(), 
-			  [](JASPControlWrapper* a, JASPControlWrapper* b) {
-					return a->depends().length() < b->depends().length(); 
-			});
+		[](JASPControlWrapper* a, JASPControlWrapper* b) {
+			return a->depends().size() < b->depends().size();
+		});
 
 	for (JASPControlWrapper* control : controls)
 	{
-		_orderedControls.push_back(control);
+		_dependsOrderedCtrls.push_back(control);
+		connect(control->item(), &JASPControlBase::helpMDChanged, this, &AnalysisForm::helpMDChanged);
 	}
+
+	emit helpMDChanged(); //Because we just got info on our lovely children in _orderedControls
 }
 
 void AnalysisForm::_orderExpanders()
@@ -401,6 +406,14 @@ void AnalysisForm::replaceVariableNameInListModels(const std::string & oldName, 
 	}
 }
 
+void AnalysisForm::setInfo(QString info)
+{
+	if (_info == info)
+		return;
+
+	_info = info;
+	emit infoChanged();
+}
 
 void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 {
@@ -497,7 +510,7 @@ void AnalysisForm::bindTo()
 	
 	_setAllAvailableVariablesModel();	
 	
-	for (JASPControlWrapper* control : _orderedControls)
+	for (JASPControlWrapper* control : _dependsOrderedCtrls)
 	{
 		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
 		if (boundControl)
@@ -568,7 +581,7 @@ void AnalysisForm::bindTo()
 	_options->blockSignals(false, false);
 
 	//Ok we can only set the warnings on the components now, because otherwise _addLoadingError() will add a big fat red warning on top of the analysisform without reason...
-	for (JASPControlWrapper* control : _orderedControls)
+	for (JASPControlWrapper* control : _dependsOrderedCtrls)
 	{
 		QString upgradeMsg(tq(_analysis->upgradeMsgsForOption(fq(control->name()))));
 
@@ -589,7 +602,7 @@ void AnalysisForm::unbind()
 	if (_options == nullptr)
 		return;
 	
-	for (JASPControlWrapper* control : _orderedControls)
+	for (JASPControlWrapper* control : _dependsOrderedCtrls)
 	{
 		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
 		if (boundControl)
@@ -848,4 +861,58 @@ bool AnalysisForm::needsRefresh() const
 bool AnalysisForm::hasVolatileNotes() const
 {
 	return _analysis ? _analysis->hasVolatileNotes() : false;
+}
+
+QString AnalysisForm::metaHelpMD() const
+{
+	std::function<QString(const Json::Value & meta, int deep)> metaMDer = [&metaMDer](const Json::Value & meta, int deep)
+	{
+		QStringList markdown;
+
+		for(const Json::Value & entry : meta)
+		{
+			std::string entryType	= entry.get("type", "").asString();
+			//Sadly enough the following "meta-types" aren't defined properly anywhere, this would be good to do at some point. The types are: table, image, collection, and optionally: htmlNode, column, json
+			QString friendlyObject	= entryType == "table"		? tr("Table")
+									: entryType == "image"		? tr("Plot")
+									: entryType == "collection"	? tr("Collection")
+									: tr("Result"); //Anything else we just call "Result"
+
+			if(entry.get("info", "") != "")
+			{
+				for(int i=0; i<deep; i++) markdown << "#";
+				markdown << " " << friendlyObject;
+				if(entry.get("title", "") != "")	markdown << tq(" - *" + entry["title"].asString() + "*:\n");
+				else								markdown << "\n";
+				markdown << tq(entry["info"].asString() + "\n");
+			}
+
+			if(entry.get("meta", Json::nullValue).isArray())
+				markdown << "\n" << metaMDer(entry["meta"], deep + 1);
+		}
+
+		return markdown.join("");
+	};
+
+	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->meta(), 2);
+}
+
+QString AnalysisForm::helpMD() const
+{
+	QStringList markdown =
+	{
+		_analysis->titleQ(), "\n",
+		"=====================\n",
+		_info, "\n\n",
+		"---\n# ", tr("Input"), "\n"
+	};
+
+	QList<JASPControlBase*> orderedControls = JASPControlBase::getChildJASPControls(this);
+
+	for(JASPControlBase * control : orderedControls)
+		markdown.push_back(control->helpMD());
+
+	markdown.push_back(metaHelpMD());
+
+	return markdown.join("");
 }

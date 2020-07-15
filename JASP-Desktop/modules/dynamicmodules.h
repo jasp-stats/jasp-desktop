@@ -120,13 +120,17 @@ signals:
 	void moduleEnabledChanged(QString moduleName, bool enabled);
 	void dataLoadedChanged(bool dataLoaded);
 
+	QObject * loadQmlData(QString data, QUrl url);
+
+	QQmlContext * requestRootContext();
+
 private slots:
 	void enginesStopped();
 
 private:
 	void						removeUninstalledModuleFolder(const std::string & moduleName, bool enginesStopped = false);
 	Modules::DynamicModule	*	requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
-	void						devModCopyDescription();
+	void						devModCopyDescription(QString filename);
 	void						devModWatchFolder(QString folder, QFileSystemWatcher * & watcher);
 	void						regenerateDeveloperModuleRPackage();
 	void						registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg);

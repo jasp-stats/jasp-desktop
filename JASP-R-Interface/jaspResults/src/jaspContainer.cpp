@@ -202,7 +202,8 @@ std::string jaspContainer::getCommonDenominatorMetaType() const
 
 Json::Value jaspContainer::metaEntry(jaspObject * oldResult) const
 {
-	Json::Value submeta(Json::arrayValue), meta = constructMetaEntry("collection", getCommonDenominatorMetaType());
+	Json::Value submeta = Json::arrayValue,
+				meta	= constructMetaEntry("collection", getCommonDenominatorMetaType());
 
 	jaspContainer * oldContainer = dynamic_cast<jaspContainer*>(oldResult); //dynamic_cast returns nullptr if not right type
 

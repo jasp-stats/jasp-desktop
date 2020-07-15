@@ -22,6 +22,7 @@
 #include "jaspcontrolwrapper.h"
 #include "common.h"
 #include <QObject>
+#include <QVector>
 
 class ListModel;
 class BoundQMLItem;

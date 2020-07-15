@@ -44,6 +44,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
 	Q_PROPERTY(bool			disableAnimations		READ disableAnimations			WRITE setDisableAnimations			NOTIFY disableAnimationsChanged			)
 	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
+	Q_PROPERTY(bool			generateMarkdown		READ generateMarkdown			WRITE setGenerateMarkdown			NOTIFY generateMarkdownChanged			)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
@@ -85,10 +86,12 @@ public:
 	bool		useNativeFileDialog()		const;
 	bool		disableAnimations()			const;
 	bool		animationsOn()				const { return !disableAnimations() && !safeGraphics(); }
+	bool		generateMarkdown()			const;
 
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
+
 
 public slots:
 	void setUiScale(					double		uiScale);
@@ -121,7 +124,6 @@ public slots:
 	void setModulesRemembered(			QStringList modulesRemembered);
 	void setSafeGraphics(				bool		safeGraphics);
 	void setCranRepoURL(				QString		cranRepoURL);
-
 	void moduleEnabledChanged(			QString		moduleName, bool enabled);
 	void onUseDefaultPPIChanged(		bool		useDefault);
 	void onCustomPPIChanged(			int);
@@ -131,8 +133,10 @@ public slots:
 	void setDefaultFont(				QFont		defaultFont);
 	void setUseNativeFileDialog(		bool		useNativeFileDialog);
 	void setDisableAnimations(			bool		disableAnimations);
+	void setGenerateMarkdown(			bool		generateMarkdown);
 
 	void onCurrentThemeNameChanged(QString newThemeName);
+
 
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);
@@ -167,13 +171,16 @@ signals:
 	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
 	void languageCodeChanged();
-
 	void useNativeFileDialogChanged(	bool		useNativeFileDialog);
 	void disableAnimationsChanged(		bool		disableAnimations);
+	void generateMarkdownChanged(		bool		generateMarkdown);
+
 	void animationsOnChanged();
+
 
 private:
 	static PreferencesModel * _singleton;
+
 	int		_defaultPPI		= 192;
 	QFont	_defaultFont	= QFont("SansSerif");
 	double	_uiScale		= -1;

@@ -44,7 +44,7 @@ public:
 		LocalNameRole
 	};
 
-	explicit LanguageModel(QString qsources, QApplication *app = nullptr, QQmlApplicationEngine *qml = nullptr, QObject *parent = nullptr) ;
+	explicit LanguageModel(QApplication *app = nullptr, QQmlApplicationEngine *qml = nullptr, QObject *parent = nullptr) ;
 	~LanguageModel() { _singleton = nullptr; }
 
 	int						rowCount(const QModelIndex &parent = QModelIndex())			const override { return _languages.size(); }

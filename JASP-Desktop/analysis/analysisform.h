@@ -52,7 +52,9 @@ class AnalysisForm : public QQuickItem, public VariableInfoProvider
 	Q_PROPERTY(QQuickItem * errorMessagesItem	READ errorMessagesItem	WRITE setErrorMessagesItem	NOTIFY errorMessagesItemChanged	)
 	Q_PROPERTY(bool			needsRefresh		READ needsRefresh									NOTIFY needsRefreshChanged		)
 	Q_PROPERTY(bool			hasVolatileNotes	READ hasVolatileNotes								NOTIFY hasVolatileNotesChanged	)
-	Q_PROPERTY(bool			runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged )
+	Q_PROPERTY(bool			runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged		)
+	Q_PROPERTY(QString		info				READ info				WRITE setInfo				NOTIFY infoChanged				)
+	Q_PROPERTY(QString		helpMD				READ helpMD											NOTIFY helpMDChanged			)
 
 public:
 	explicit					AnalysisForm(QQuickItem * = nullptr);
@@ -76,6 +78,7 @@ public slots:
 				void			dataSetChangedHandler();
 				void			dataSetColumnsChangedHandler();
 				void			replaceVariableNameInListModels(const std::string & oldName, const std::string & newName);
+				void			setInfo(QString info);
 
 signals:
 				void			sendRScript(QString script, int key);
@@ -89,6 +92,8 @@ signals:
 				void			hasVolatileNotesChanged();
 				void			runOnChangeChanged();
 				void			valueChanged(JASPControlBase* item);
+				void			infoChanged();
+				void			helpMDChanged();
 
 protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
@@ -131,6 +136,10 @@ public:
 	bool		needsRefresh()		const;
 	bool		hasVolatileNotes()	const;
 
+	QString		info()				const { return _info; }
+	QString		helpMD()			const;
+	QString		metaHelpMD()		const;
+
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
 
@@ -159,7 +168,8 @@ protected:
 	Options									*	_options			= nullptr;
 	QMap<QString, JASPControlWrapper* >			_controls;
 
-	QVector<JASPControlWrapper*>				_orderedControls;
+	///Ordered on dependencies within QML, aka an assigned variables list depends on the available list it is connected to.
+	QVector<JASPControlWrapper*>				_dependsOrderedCtrls;
 	QMap<Option*, BoundQMLItem*>				_optionControlMap;
 	QMap<QMLListView*, ListModel* >				_relatedModelMap;
 	QMap<QString, ListModel* >					_modelMap;
@@ -178,10 +188,11 @@ private:
 	long										_lastAddedErrorTimestamp = 0;
 	QQmlComponent*								_controlErrorMessageComponent = nullptr;
 	QList<QQuickItem*>							_controlErrorMessageCache;
-	QSet<JASPControlBase*>						_jaspControlsWithErrorSet;
-	QSet<JASPControlBase*>						_jaspControlsWithWarningSet;
+	QSet<JASPControlBase*>						_jaspControlsWithErrorSet,
+												_jaspControlsWithWarningSet;
 	QList<QString>								_computedColumns;
 	bool										_runOnChange = true;
+	QString										_info;
 };
 
 #endif // ANALYSISFORM_H
