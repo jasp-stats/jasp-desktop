@@ -19,26 +19,28 @@ class RequiredPackage : public DescriptionChildBase
 	Q_OBJECT
 
 	Q_PROPERTY(QString name		READ name		WRITE setName		NOTIFY nameChanged		)
-	Q_PROPERTY(Version version	READ version	WRITE setVersion	NOTIFY versionChanged	)
+	Q_PROPERTY(QString version	READ versionStr	WRITE setVersionStr	NOTIFY versionChanged	)
 	Q_PROPERTY(QString github	READ github		WRITE setGithub		NOTIFY githubChanged	)
 
 public:
 	RequiredPackage() : DescriptionChildBase() {}
 
-	QString name()		const { return _name;		}
-	Version version()	const { return _version;	}
-	QString github()	const { return _github;		}
+	QString name()			const { return _name;						}
+	Version version()		const { return _version;					}
+	QString versionStr()	const { return tq(_version.toString(3));	}
+	QString github()		const { return _github;						}
 
 	Json::Value	asJson() const;
 
 public slots:
-	void setName(	QString name);
-	void setVersion(Version version);
-	void setGithub(	QString github);
+	void setName(		QString name);
+	void setVersion(	Version version);
+	void setVersionStr(	QString version) { setVersion(Version(fq(version))); }
+	void setGithub(		QString github);
 
 signals:
 	void nameChanged(	QString name);
-	void versionChanged(Version version);
+	void versionChanged();
 	void githubChanged(	QString github);
 
 private:

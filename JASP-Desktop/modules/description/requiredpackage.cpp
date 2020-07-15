@@ -26,7 +26,7 @@ void RequiredPackage::setVersion(Version version)
 		return;
 
 	_version = version;
-	emit versionChanged(_version);
+	emit versionChanged();
 	emit somethingChanged(this);
 }
 
