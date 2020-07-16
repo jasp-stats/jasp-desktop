@@ -272,11 +272,11 @@ Linux
 Besides the packages mentioned under Ubuntu and Fedora one needs a multitude of R-packages to run every analysis. To make life easier a script has been added: `jasp-desktop/Tools/installExpectedPackages.R` which can be used to install all required R-packages. To run it simply open a terminal, make sure you are running as administrator and execute the following in your jasp-desktop source directory:
 ```
 cd Tools
-Rscript installRequiredPackages.R
+Rscript installExpectedPackages.R
 ```
-At certain points this may fail when it misses some kind of header or something. For instance, an R-package might need `#include <png.h>` or something. In this example you should install would the Fedora-package `libpng-devel` or the Ubuntu-package `libpng-dev`. In other cases you should figure out which development distribution-package you would need on the linux-distribution you're running on and install that.
+At certain points this may fail when it misses some kind of header or something. For instance, an R-package might need `#include <png.h>` or something. In this example you should install the Fedora-package `libpng-devel` or the Ubuntu-package `libpng-dev`. In other cases you should figure out which development distribution-package you would need on the linux-distribution you're running and install that.
 
-After installing the missing sources you can try to run `installRequiredPackages.R` again and see if it stops complaining, it will skip all packages that are already installed to save you time. And hopefully after some time it will be done and you can try everything included with JASP.
+After installing the missing sources you can try to run `installExpectedPackages.R` again and see if it stops complaining, it will skip all packages that are already installed to save you time. And hopefully after some time it will be done and you can try everything included with JASP.
 
 Besides this we now use [ReadStat](https://github.com/WizardMac/ReadStat) to read a variety of data-formats into JASP. This is however not available as a package on (most) linuxes. Instead you can either build it yourself like:
 ```
