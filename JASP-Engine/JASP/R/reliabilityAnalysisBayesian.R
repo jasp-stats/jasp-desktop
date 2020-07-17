@@ -43,12 +43,12 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                        "Greatest Lower Bound", "Item-rest correlation"),
       plots = list(expression("McDonald's"~omega), expression("Cronbach\'s"~alpha), expression("Guttman's"~lambda[2]), 
                    expression("Guttman's"~lambda[6]), "Greatest Lower Bound")
-    )
+    ),
+    
+    order_end = c(5, 1, 2, 3, 4) # order for plots and such, put omega to the front
 
   )
 
-  # order to show in JASP : check that again when more or different estimators are included
-  derivedOptions[["order"]] <- c(5, 1, 2, 3, 4, 6, 7, 8)
 
   return(derivedOptions)
 }
@@ -204,14 +204,17 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       relyFit$Bayes$ifitem$samp$mean <- (matrix(NA_real_, ncol(dataset), 2))
       relyFit$Bayes$ifitem$samp$sd <- (matrix(NA_real_, ncol(dataset), 2))
       
-      ops <- .BayesianReliabilityDerivedOptions(options)
-      order <- ops[["order"]]
-      relyFit[["Bayes"]][["samp"]] <- relyFit[["Bayes"]][["samp"]][order]
-      relyFit[["Bayes"]][["chains"]] <- relyFit[["Bayes"]][["chains"]][order]
-      relyFit[["Bayes"]][["est"]] <- relyFit[["Bayes"]][["est"]][order]
+      # reorder for JASP
+      names_est <- names(relyFit$Bayes$est)
+      order_est <- c("Bayes_omega", "Bayes_alpha", "Bayes_lambda2", "Bayes_lambda6", "Bayes_glb", 
+                     "avg_cor", "mean", "sd")
+      order_end <- match(order_est, names_est)
+      relyFit[["Bayes"]][["samp"]] <- relyFit[["Bayes"]][["samp"]][order_end]
+      relyFit[["Bayes"]][["chains"]] <- relyFit[["Bayes"]][["chains"]][order_end]
+      relyFit[["Bayes"]][["est"]] <- relyFit[["Bayes"]][["est"]][order_end]
       
-      relyFit[["Bayes"]][["ifitem"]][["samp"]] <- relyFit[["Bayes"]][["ifitem"]][["samp"]][order]
-      relyFit[["Bayes"]][["ifitem"]][["est"]] <- relyFit[["Bayes"]][["ifitem"]][["est"]][order]
+      relyFit[["Bayes"]][["ifitem"]][["samp"]] <- relyFit[["Bayes"]][["ifitem"]][["samp"]][order_end]
+      relyFit[["Bayes"]][["ifitem"]][["est"]] <- relyFit[["Bayes"]][["ifitem"]][["est"]][order_end]
       
 
       # Consider stripping some of the contents of relyFit to reduce memory load
@@ -328,7 +331,6 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   relyFit <- model[["relyFit"]]
   derivedOptions <- model[["derivedOptions"]]
   opts     <- derivedOptions[["namesEstimators"]][["tables"]]
-  order    <- derivedOptions[["order"]]
   selected <- derivedOptions[["selectedEstimators"]]
   idxSelected <- which(selected)
   
@@ -495,8 +497,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
   relyFit <- model[["relyFit"]]
   derivedOptions <- model[["derivedOptions"]]
-  order    <- derivedOptions[["order"]]
-  order <- order[1:(length(order)-3)] # dont need avgCor, mean and sd 
+  order_end    <- derivedOptions[["order_end"]]
   opts     <- derivedOptions[["namesEstimators"]][["tables"]]
   selected <- derivedOptions[["selectedEstimatorsPlots"]]
   idxSelected  <- which(selected)
@@ -506,7 +507,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   if (!is.null(relyFit)) {
     n.item <- dim(relyFit$Bayes$covsamp)[3]
     prior <- Bayesrel:::priors[[as.character(n.item)]] 
-    prior <- prior[order]
+    prior <- prior[order_end]
     end <- length(prior[[1]][["x"]])
     poslow <- end - sum(prior[[1]][["x"]] > options[["probTableValueLow"]]) 
     poshigh <- end - sum(prior[[1]][["x"]] > options[["probTableValueHigh"]]) 
@@ -555,8 +556,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   }
 
   derivedOptions <- model[["derivedOptions"]]
-  order     <- derivedOptions[["order"]]
-  order <- order[1:(length(order)-3)] # dont need avgCor, mean and sd 
+  order_end     <- derivedOptions[["order_end"]]
   indices   <- which(derivedOptions[["selectedEstimatorsPlots"]])
   nmsLabs   <- derivedOptions[["namesEstimators"]][["plots"]]
   nmsObjs   <- derivedOptions[["namesEstimators"]][["tables"]]
@@ -574,7 +574,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
   if (!is.null(relyFit)) {
     n.item <- dim(relyFit$Bayes$covsamp)[3]
-    prior <- Bayesrel:::priors[[as.character(n.item)]][order] ##### change this when more estimators are included!!!
+    prior <- Bayesrel:::priors[[as.character(n.item)]][order_end] ##### change this when more estimators are included!!!
     
       for (i in indices) {
         if (is.null(plotContainer[[nmsObjs[i]]])) {
@@ -712,8 +712,6 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   } 
   
   derivedOptions <- model[["derivedOptions"]]
-  order     <- derivedOptions[["order"]]
-  order <- order[1:(length(order)-3)] # dont need itemrestCor, mean and sd 
   indices   <- which(derivedOptions[["itemDroppedSelectedItem"]])
   nmsLabs   <- derivedOptions[["namesEstimators"]][["plots"]]
   nmsObjs   <- derivedOptions[["namesEstimators"]][["tables_item"]]
@@ -888,8 +886,6 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   } 
   
   derivedOptions <- model[["derivedOptions"]]
-  order     <- derivedOptions[["order"]]
-  order <- order[1:(length(order)-3)] # dont need avgCor, mean and sd 
   indices   <- which(derivedOptions[["selectedEstimatorsPlots"]])
   nmsLabs   <- derivedOptions[["namesEstimators"]][["plots"]]
   nmsObjs   <- derivedOptions[["namesEstimators"]][["tables"]]
