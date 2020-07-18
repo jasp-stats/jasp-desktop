@@ -1,5 +1,5 @@
 reliabilityFrequentist <- function(jaspResults, dataset, options) {
-
+  
   
   dataset <- .reliabilityReadData(dataset, options)
   .reliabilityCheckErrors(dataset, options)
@@ -34,9 +34,6 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     )
   )
 
-  # order to show in JASP
-  derivedOptions[["order"]] <- c(5, 1, 2, 3, 4, 6, 7, 8)
-  
   return(derivedOptions)
 }
 
@@ -144,13 +141,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
                                          missing = missing, callback = progressbarTick))
           
           relyFit$freq$est$freq_alpha <- Bayesrel:::applyalpha(model[["dat_cov"]])
-          relyFit[["freq"]][["est"]] <- relyFit[["freq"]][["est"]][c(5, 1, 2, 3, 4)]
-            
+
           Ctmp <- .itemDeletedM(model[["dat_cov"]])
           
           relyFit$freq$ifitem$alpha <- apply(Ctmp, 1, Bayesrel:::applyalpha)
-          relyFit[["freq"]][["ifitem"]] <- relyFit[["freq"]][["ifitem"]][c(5, 1, 2, 3, 4)]
-          
           
           if (!alphaAna) { # when standardized alpha, but bootstrapped alpha interval:
             cors <- array(0, c(options[["noSamples"]], p, p))
@@ -158,10 +152,6 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
               cors[i, , ] <- .cov2cor.callback(relyFit$freq$covsamp[i, , ], progressbarTick)
             }
             relyFit$freq$boot$alpha <- apply(cors, 1, Bayesrel:::applyalpha)
-            if (length(relyFit[["freq"]][["boot"]]) == 4)
-              relyFit[["freq"]][["boot"]] <- relyFit[["freq"]][["boot"]][c(4, 1, 2, 3)]
-            else if (length(relyFit[["freq"]][["boot"]]) == 5)
-              relyFit[["freq"]][["boot"]] <- relyFit[["freq"]][["boot"]][c(5, 1, 2, 3, 4)]
             
           }
           
@@ -197,11 +187,19 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         }
         relyFit$freq$ifitem$mean <- colMeans(dataset, na.rm = T)
         relyFit$freq$ifitem$sd <- apply(dataset, 2, sd, na.rm = T)  
+
+        # reorder for JASP
+        names_est <- names(relyFit$freq$est)
+        order_est <- c("freq_omega", "freq_alpha", "freq_lambda2", "freq_lambda6", "freq_glb", 
+                       "avg_cor", "mean", "sd")
+        new_order_est <- match(order_est, names_est)
+        relyFit$freq$est <- relyFit$freq$est[new_order_est]
         
-        ops <- .BayesianReliabilityDerivedOptions(options)
-        order <- ops[["order"]]
-        relyFit[["freq"]][["est"]] <- relyFit[["freq"]][["est"]][order]
-        relyFit[["freq"]][["ifitem"]] <- relyFit[["freq"]][["ifitem"]][order]
+        names_item <- names(relyFit$freq$ifitem)
+        order_item <- c("omega", "alpha", "lambda2", "lambda6", "glb", 
+                       "ircor", "mean", "sd")
+        new_order_item <- match(order_item, names_item)
+        relyFit$freq$ifitem <- relyFit$freq$ifitem[new_order_item]
         
         # ------------------------ only point estimates, no intervals: ---------------------------
       } else { 
@@ -306,7 +304,6 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       if (is.null(cfiState) && !is.null(relyFit)) {
         scaleCfi <- .frequentistReliabilityCalcCfi(relyFit[["freq"]][["boot"]],             
                                                    options[["confidenceIntervalValue"]])
-
         # alpha int is analytical, not from the boot sample, so:
         if (options[["alphaInterval"]] == "alphaAnalytic") {
           
@@ -325,18 +322,13 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           omegaCfi <- c(om_low, om_up)
           names(omegaCfi) <- c("lower", "upper")
           scaleCfi$omega <- omegaCfi
-          if (options[["alphaInterval"]] == "alphaAnalytic") {
-            scaleCfi <- scaleCfi[c(8, 7, 1, 2, 3, 4, 5, 6)] # check this when more estimators come in
-          } else {
-            scaleCfi <- scaleCfi[c(8, 1, 2, 3, 4, 5, 6, 7)] # check this when more estimators come in
-          }
-        } else {
-          if (options[["alphaInterval"]] == "alphaAnalytic") {
-            scaleCfi <- scaleCfi[c(4, 8, 1, 2, 3, 5, 6, 7)] # check this when more estimators come in
-          } else {
-            scaleCfi <- scaleCfi[c(5, 1, 2, 3, 4, 6, 7, 8)] # check this when more estimators come in
-          }
-        }
+        } 
+        # reorder for JASP:
+        names_cfi <- names(scaleCfi)
+        order_cfi <- c("omega", "alpha", "lambda2", "lambda6", "glb", 
+                        "avg_cor", "mean", "sd")
+        new_order_cfi <- match(order_cfi, names_cfi)
+        scaleCfi <- scaleCfi[new_order_cfi]
         
         cfiState <- list(scaleCfi = scaleCfi)
         jaspCfiState <- createJaspState(cfiState)
@@ -426,7 +418,6 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   relyFit <- model[["relyFit"]]
   derivedOptions <- model[["derivedOptions"]]
   opts     <- derivedOptions[["namesEstimators"]][["tables"]]
-  order    <- derivedOptions[["order"]]
   selected <- derivedOptions[["selectedEstimatorsF"]]
   idxSelected <- which(selected)
   
@@ -436,6 +427,8 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   }
 
   if (!is.null(relyFit)) {
+    
+    
     if (options[["intervalOn"]]) {
       addSingularFootnote <- FALSE
       for (i in idxSelected) {
@@ -506,7 +499,6 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     }
   }
   itemDroppedSelectedF <- derivedOptions[["itemDroppedSelectedF"]]
-  # order <- derivedOptions[["order_item"]]
   estimators <- derivedOptions[["namesEstimators"]][["tables_item"]]
   overTitle <- gettext("If item dropped")
   
