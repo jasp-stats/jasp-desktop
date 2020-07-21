@@ -676,10 +676,15 @@
     return()
   
   model <- jaspResults[["mmModel"]]$object$model
+  if (is.list(model$full_model)) {
+    full_model <- model$full_model[[length(model$full_model)]]
+  } else{
+    full_model <- model$full_model
+  }
+    
+  fitSummary <- createJaspContainer("Model summary")
+  fitSummary$position <- 2
   
-  fitStats <- createJaspTable(title = gettext("Model summary"))
-  fitStats$position <- 2
-
   if (type == "LMM") {
     dependencies <- .mmDependenciesLMM
   } else if (type == "GLMM") {
@@ -688,67 +693,54 @@
   if (options$method == "PB") {
     dependencies <- c(dependencies, "seed", "setSeed")
   }
-
-
-  fitStats$dependOn(c(dependencies, "fitStats"))
-
+  fitSummary$dependOn(c(dependencies, "fitStats"))
+  jaspResults[["fitSummary"]] <- fitSummary
   
-  if (is.list(model$full_model)) {
-    is_REML <-
-      lme4::isREML(model$full_model[[length(model$full_model)]])
-  } else{
-    is_REML <- lme4::isREML(model$full_model)
-  }
   
-  fitStats$addColumnInfo(name = "deviance",
-                         title = gettext("Deviance"),
-                         type = "number")
-  if (is_REML) {
-    fitStats$addColumnInfo(
-      name = "devianceREML",
-      title = gettext("Deviance (REML)"),
-      type = "number"
-    )
+  ### fit statistics
+  fitStats <- createJaspTable(title = gettext("Fit statistics"))
+  fitStats$position <- 1
+  
+  fitStats$addColumnInfo(name = "deviance", title = gettext("Deviance"), type = "number")
+  if (lme4::isREML(full_model)) {
+    fitStats$addColumnInfo(name = "devianceREML", title = gettext("Deviance (REML)"), type = "number")
   }
-
   fitStats$addColumnInfo(name = "loglik", title = gettext("log Lik."), type = "number")
   fitStats$addColumnInfo(name = "df",     title = gettext("df"),       type = "integer")
   fitStats$addColumnInfo(name = "aic",    title = gettext("AIC"),      type = "number")
   fitStats$addColumnInfo(name = "bic",    title = gettext("BIC"),      type = "number")
+  jaspResults[["fitSummary"]][["fitStats"]] <- fitStats
   
-  jaspResults[["fitStats"]] <- fitStats
   
+  temp_row <- list(
+    deviance = deviance(full_model, REML = FALSE),
+    loglik   = logLik(full_model),
+    df       = attr(logLik(full_model) , "df"),
+    aic      = AIC(full_model),
+    bic      = BIC(full_model)
+  )
   
-  if (is.list(model$full_model)) {
-
-    temp_row <- list(
-      deviance = deviance(model$full_model[[length(model$full_model)]], REML = FALSE),
-      loglik   = logLik(model$full_model[[length(model$full_model)]]),
-      df       = attr(logLik(model$full_model[[length(model$full_model)]]) , "df"),
-      aic      = AIC(model$full_model[[length(model$full_model)]]),
-      bic      = BIC(model$full_model[[length(model$full_model)]])
-    )
-  
-    if (is_REML)
-      temp_row$devianceREML <- lme4::REMLcrit(model$full_model[[length(model$full_model)]])
-    
-  }else{
-
-    temp_row <- list(
-      deviance = deviance(model$full_model, REML = FALSE),
-      loglik   = logLik(model$full_model),
-      df       = attr(logLik(model$full_model) , "df"),
-      aic      = AIC(model$full_model),
-      bic      = BIC(model$full_model)
-    )
-    
-    if (is_REML)
-      temp_row$devianceREML <- lme4::REMLcrit(model$full_model)
-    
-  }
+  if (lme4::isREML(full_model))
+    temp_row$devianceREML <- lme4::REMLcrit(full_model)
   
   fitStats$addRows(temp_row)
-  fitStats$addFootnote(.mmMessageFitType(is_REML))
+  fitStats$addFootnote(.mmMessageFitType(lme4::isREML(full_model)))
+  
+  
+  ### sample sizes
+  fitSizes <- createJaspTable(title = gettext("Sample sizes"))
+  fitSizes$position <- 2
+  
+  fitSizes$addColumnInfo(name = "observations", title = gettext("Observations"), type = "integer")
+  temp_row <- list(
+    observations = nrow(full_model@frame)
+  )
+  for(n in names(full_model@flist)){
+    fitSizes$addColumnInfo(name = n, title = .unv(n), type = "integer", overtitle = gettext("Random effects grouping factors"))
+    temp_row[[n]] <- length(levels(full_model@flist[[n]]))
+  }
+  fitSizes$addRows(temp_row)
+  jaspResults[["fitSummary"]][["fitSizes"]] <- fitSizes
   
   return()
 }
@@ -2216,8 +2208,8 @@
   
   model <- jaspResults[["mmModel"]]$object$model
   
-  fitStats <- createJaspTable(title = gettext("Fit Statistics"))
-  fitStats$position <- 2
+  fitSummary <- createJaspContainer("Model summary")
+  fitSummary$position <- 2
   
   if (type == "BLMM") {
     dependencies <- .mmDependenciesBLMM
@@ -2225,25 +2217,19 @@
     dependencies <- .mmDependenciesBGLMM
   }
   
-
-  fitStats$dependOn(c(dependencies, "fitStats"))
+  fitSummary$dependOn(c(dependencies, "fitStats"))
+  jaspResults[["fitSummary"]] <- fitSummary
   
-
-  fitStats$addColumnInfo(name = "waic",
-                         title = gettext("WAIC"),
-                         type = "number")
-  fitStats$addColumnInfo(name = "waicSE",
-                         title = gettext("SE (WAIC)"),
-                         type = "number")
-  fitStats$addColumnInfo(name = "loo",
-                         title = gettext("LOO"),
-                         type = "number")
-  fitStats$addColumnInfo(name = "looSE",
-                         title = gettext("SE (LOO)"),
-                         type = "number")
+  ### fit statistics
+  fitStats <- createJaspTable(title = gettext("Fit Statistics"))
+  fitStats$position <- 1
   
-
-  jaspResults[["fitStats"]] <- fitStats
+  fitStats$addColumnInfo(name = "waic",   title = gettext("WAIC"),      type = "number")
+  fitStats$addColumnInfo(name = "waicSE", title = gettext("SE (WAIC)"), type = "number")
+  fitStats$addColumnInfo(name = "loo",    title = gettext("LOO"),       type = "number")
+  fitStats$addColumnInfo(name = "looSE",  title = gettext("SE (LOO)"),  type = "number")
+  
+  jaspResults[["fitSummary"]][["fitStats"]] <- fitStats
   
   waic <- loo::waic(model)
   loo  <- loo::loo(model)
@@ -2260,7 +2246,6 @@
     fitStats$addFootnote(.mmMessageBadLOO(n_bad_loo), symbol = gettext("Warning:"))    
   }
   
-  
   temp_row <- list(
     waic   = waic$estimates["waic", "Estimate"],
     waicSE = waic$estimates["waic", "SE"],
@@ -2270,6 +2255,22 @@
   
   fitStats$addRows(temp_row)
 
+  ### sample sizes
+  stanova_summary <- stanova:::summary.stanova(model)
+  
+  fitSizes <- createJaspTable(title = gettext("Sample sizes"))
+  fitSizes$position <- 2
+  
+  fitSizes$addColumnInfo(name = "observations", title = gettext("Observations"), type = "integer")
+  temp_row <- list(
+    observations = attr(stanova_summary, "nobs")
+  )
+  for(n in names(attr(stanova_summary, "ngrps"))){
+    fitSizes$addColumnInfo(name = n, title = .unv(n), type = "integer", overtitle = gettext("Random effects grouping factors"))
+    temp_row[[n]] <- attr(stanova_summary, "ngrps")[[n]]
+  }
+  fitSizes$addRows(temp_row)
+  jaspResults[["fitSummary"]][["fitSizes"]] <- fitSizes
   
   return()
 }
