@@ -18,7 +18,7 @@
 
   <Product Id="*" Name="$(var.ApplicationName)" Language="1033" Version="$(var.VersionNumber)" Manufacturer="Universiteit van Amsterdam" UpgradeCode="$(var.UpgradeCode)">
     <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine"/>
-    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />    
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" CompressionLevel="high"/>    
     
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion OnlyDetect="yes"  Minimum="$(var.VersionNumber)"  IncludeMinimum="no"                                                         Property="NEWER_VERSION_FOUND" />
