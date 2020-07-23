@@ -57,7 +57,8 @@ To do so you can simply add a `Package {}` QML object inside of your `Descriptio
   |---------------|-------------|
   | `name`        | Specifies the name of the R package, exactly as in R. Quite reasonably obligatory. |
   | `version`     | A string with the version of the package you would like to use, optional. |
-  | `github`      | A GitHub repository with the sources of the package, probably only used in developers mode because it is kind of dangerous to let random repositories install stuff on your computer. Also not implemented yet (as of 2020-05-07). |
+  | `github`      | A GitHub user that has a repository called `name` with the sources of the package, only supported in developers mode because it is kind of dangerous to let random repositories install stuff on your computer. To install from (for instance) `github.com/FBartos/RoBMA` you would set `github` to `FBartos` and `name` to `RoBMA`. |
+  | `gitref`	  | A specific reference you want to install, optional and can refer to a commit, tag, branch or something else, check the documentation for `remotes::install_github`. |
 
 #### Description Menu
 A very important part of [Description.qml](#Description.qml) is the menu specification, as this makes it possible for a user of your module to actually run your analyses. You specify the analyses your module offers, what their titles are, which [options form](#qml) they use and which R-functions should be called to run them. Furthermore you can add separators between groups of analyses and you can add headers with icons inside the menu to make it clearer what category each group of analyses embodies. 

@@ -524,10 +524,27 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 							"binary";
 #endif
 
-	if(!onlyModPkg)	//First install dependencies:
-		R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', type='" << pkgType << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n"
+	if(!onlyModPkg)
+	{
+		//Install dependencies:
+		//First the ones from github if they are there:
+		for(const Json::Value & reqPkg : _requiredPackages)
+			if(reqPkg.isMember("github"))
+			{
+				//We do not install the dependencies because it takes forever
+				//First we install the github repo with upgrade=FALSE and dependencies=NA so that it takes any missing pkgs and installs them
+				//R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_github(repo= '"	<< reqPkg["github"].asString() << "', " << (reqPkg.isMember("gitref") ? "ref='" + reqPkg["gitref"].asString() + "', " : "") << "  lib='" << moduleRLibrary().toStdString() << "', INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=FALSE, dependencies=NA,    repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
+
+				//After that we install the github again, with upgrade=TRUE and  dependencies=FALSE, so that it installs another ref from github if the specification changed but doesnt try to upgrade all the dependencies because that might take forever
+				R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_github(repo= '"	<< reqPkg["github"].asString() << "', " << (reqPkg.isMember("gitref") ? "ref='" + reqPkg["gitref"].asString() + "', " : "") << "  lib='" << moduleRLibrary().toStdString() << "', INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=TRUE,  dependencies=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
+			}
+
+		//Then the rest mentioned in DESCRIPTION
+		R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', type='" << pkgType << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
+
 		//And fix Mac OS libraries of dependencies:
-		<< standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n";
+		R << standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n";
+	}
 
 		//Remove old copy of library (because we might be reinstalling and want the find.package check on the end to fail if something went wrong)
 	R	<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", { find.package(package='" << _name << "'); remove.packages(pkg='"	<< _name << "', lib='" << moduleRLibrary().toStdString() << "');})}, error=function(e) {});\n"

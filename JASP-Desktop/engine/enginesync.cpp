@@ -395,6 +395,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	args << QString::number(no) << QString::number(ProcessInfo::currentPID()) << QString::fromStdString(Log::logFileNameBase) << QString::fromStdString(Log::whereStr());
 
 	env.insert("TMPDIR", tq(TempFiles::createTmpFolder()));
+	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warning like "R_REMOTES_NO_ERRORS_FROM_WARNINGS"
 
 #ifdef _WIN32
 	QString rHomePath = programDir.absoluteFilePath("R");

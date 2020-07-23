@@ -35,13 +35,21 @@ void RequiredPackage::setGithub(QString github)
 	if(github != "" && !PreferencesModel::prefs()->developerMode())
 		throw PackageError(_name, "installing from GitHub is only allowed in Developer Mode!");
 
-	throw std::runtime_error("RequiredPacakge::setGithub NOT IMPLEMENTED! well it is, but it isnt used anywhere so it wont work...");
-
 	if (_github == github)
 		return;
 
 	_github = github;
 	emit githubChanged(_github);
+	emit somethingChanged(this);
+}
+
+void RequiredPackage::setGitref(QString gitref)
+{
+	if (_gitref == gitref)
+		return;
+
+	_gitref = gitref;
+	emit gitrefChanged(_gitref);
 	emit somethingChanged(this);
 }
 
@@ -53,6 +61,14 @@ Json::Value RequiredPackage::asJson() const
 
 	if(_version != Version())
 		json["version"] = _version.toString();
+
+	if(_github != "")
+	{
+		json["github"] = fq(_github + "/" + _name);
+
+		if(_gitref != "")
+			json["gitref"] = fq(_gitref);
+	}
 
 	return json;
 }

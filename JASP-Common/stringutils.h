@@ -9,6 +9,9 @@
 #include <locale>
 #include <cctype>
 
+typedef std::set<std::string>		stringset;
+typedef std::vector<std::string>	stringvec;
+
 ///All functions are inline and here to avoid problems through the mixing of MSVC and GCC on Windows. (Because this code can be used from JASP-R-Interface which can only be compiled with RTools and JASP-Common with MSVC...)
 class stringUtils
 {
