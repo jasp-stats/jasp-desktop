@@ -38,7 +38,7 @@ Windows
 
 Building JASP under windows is most temperamental but should pose no large problems. Besides the above described GitHub repositories, you will need to install the following preliminaries to build JASP on Windows, later on described in more detail:
 
-- [Qt 5.15](https://www.qt.io/download) Download the Open Source version from (https://www.qt.io/download).
+- [Qt 5.12.7](https://www.qt.io/download) Download the Open Source version from (https://www.qt.io/download).
 - [Visual Studio 2019](https://www.visualstudio.com/downloads/) Download the community version
 - [R Tools 3.5](https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe) Download from (https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe)
 
@@ -115,7 +115,7 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 	\<JASP\>\build-release-64\*.lib and *.dll  
 	\<JASP\>\build-release-64\JAGS\*
    
-6.	**Install Qt 5.15**  
+6.	**Install Qt 5.12.7**  
 	Go to https://www.qt.io/download  
 	Choose Open Source and Download.  
 	Start qt-unified-windows-x86-?.?.?-online.exe from your download folder.  
