@@ -51,11 +51,7 @@ public:
 
 	RibbonButton(QObject *parent, Modules::DynamicModule * module);
 	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction);
-<<<<<<< HEAD
-	~RibbonButton();
-=======
 	~RibbonButton() {}
->>>>>>> 0c2fe2d30... - All modules are made dynamic
 
 
 	bool							requiresData()												const			{ return _requiresData;									}

@@ -51,7 +51,8 @@ public:
 		INTERFACE_FONT,
 		CODE_FONT,
 		RESULT_FONT,
-		LC_CTYPE_C_WIN
+		LC_CTYPE_C_WIN,
+		MAX_ENGINE_COUNT
 	};
 
 	static QVariant value(Settings::Type key);

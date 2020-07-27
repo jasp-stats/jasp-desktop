@@ -108,12 +108,9 @@ private: // fields
 	std::map<std::string, RibbonButton*>	_buttonModelsByName;
 	std::vector<std::string>				_moduleNames;
 	int										_highlightedModuleIndex = -1;
-<<<<<<< HEAD
 	std::vector<std::string>				_commonModulesToLoad;
 	
 	static RibbonModel * _singleton;
-=======
->>>>>>> 0c2fe2d30... - All modules are made dynamic
 };
 
 

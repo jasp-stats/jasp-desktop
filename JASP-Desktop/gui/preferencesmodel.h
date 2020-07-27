@@ -45,7 +45,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
 	Q_PROPERTY(bool			disableAnimations		READ disableAnimations			WRITE setDisableAnimations			NOTIFY disableAnimationsChanged			)
 	Q_PROPERTY(bool			generateMarkdown		READ generateMarkdown			WRITE setGenerateMarkdown			NOTIFY generateMarkdownChanged			)
-	Q_PROPERTY(int			lcCtypeWin			READ lcCtypeWin				WRITE setLcCtypeWin				NOTIFY lcCtypeChanged					)
+	Q_PROPERTY(int			lcCtypeWin				READ lcCtypeWin					WRITE setLcCtypeWin					NOTIFY lcCtypeChanged					)
 	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
 	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
@@ -56,6 +56,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QString		defaultResultFont		READ defaultResultFont			CONSTANT																	)
 	Q_PROPERTY(QStringList	allInterfaceFonts		READ allInterfaceFonts			CONSTANT																	)
 	Q_PROPERTY(QStringList	allResultFonts			READ allResultFonts				CONSTANT																	)
+	Q_PROPERTY(int			maxEngines				READ maxEngines					WRITE setMaxEngines					NOTIFY maxEnginesChanged				)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
@@ -107,12 +108,12 @@ public:
 	QString		defaultCodeFont()			const;
 	bool		setLC_CTYPE_C()				const;
 	int			lcCtypeWin()				const;
+	int			maxEngines()				const;
 
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
-	
-	
+
 public slots:
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
@@ -159,7 +160,9 @@ public slots:
 	void onCurrentThemeNameChanged(		QString		newThemeName);
 	void resetRememberedModules(		bool		clear);
 	void setLcCtypeWin(					int			lcCtypeWin);
-	
+	void setMaxEngines(					int			maxEngines);
+	void onCurrentThemeNameChanged(QString newThemeName);
+
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -201,8 +204,8 @@ signals:
 	void animationsOnChanged();
 	void lcCtypeChanged();
 	void restartAllEngines();
-	
-	
+	void maxEnginesChanged(				int			maxEngines);
+
 private:
 	static PreferencesModel * _singleton;
 

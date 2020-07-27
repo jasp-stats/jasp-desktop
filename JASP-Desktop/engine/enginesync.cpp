@@ -398,7 +398,6 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warnings
 
 	QString rHomePath = AppDirs::rHome();
-
 	QDir rHome(rHomePath);
 	
 

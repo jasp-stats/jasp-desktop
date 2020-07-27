@@ -69,25 +69,25 @@ public slots:
 	void		haveYouTriedTurningItOffAndOnAgain() { stopEngines(); restartEngines(); } // https://www.youtube.com/watch?v=DPqdyoTpyEs
 	
 signals:
-	void	processNewFilterResult(const std::vector<bool> & filterResult, int requestID);
-	void	processFilterErrorMsg(const QString & error, int requestID);
-	void	engineTerminated();
-	void	filterUpdated(int requestID);
-	void	filterErrorTextChanged(const QString & error);
+	void		processNewFilterResult(const std::vector<bool> & filterResult, int requestID);
+	void		processFilterErrorMsg(const QString & error, int requestID);
+	void		engineTerminated();
+	void		filterUpdated(int requestID);
+	void		filterErrorTextChanged(const QString & error);
 
-	void	computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
-	void	computeColumnFailed(		const QString & columnName, const QString & error);
-	void	columnDataTypeChanged(		const QString & columnName);
+	void		computeColumnSucceeded(			const QString & columnName, const QString & warning, bool dataChanged);
+	void		computeColumnFailed(			const QString & columnName, const QString & error);
+	void		columnDataTypeChanged(			const QString & columnName);
 
-	void	moduleInstallationSucceeded(	const QString & moduleName);
-	void	moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
-	void	moduleLoadingSucceeded(			const QString & moduleName);
-	void	moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage);
-	void	moduleUninstallingFinished(		const QString & moduleName);
+	void		moduleInstallationSucceeded(	const QString & moduleName);
+	void		moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
+	void		moduleLoadingSucceeded(			const QString & moduleName);
+	void		moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage);
+	void		moduleUninstallingFinished(		const QString & moduleName);
 
-	void	refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
-	void	plotEditorRefresh();
-	void	settingsChanged();
+	void		refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
+	void		plotEditorRefresh();
+	void		settingsChanged();
 
 private:
 	bool		allEnginesStopped();
