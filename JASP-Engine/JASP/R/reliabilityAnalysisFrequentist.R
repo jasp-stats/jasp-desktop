@@ -70,7 +70,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         dataset <- .reverseScoreItems(dataset, options)
       }
 
-      # observations for alpha interval need to be speccified: 
+      # observations for alpha interval need to be specified: 
       model[["obs"]] <- nrow(dataset)
       
       model[["footnote"]] <- .reliabilityCheckLoadings(dataset, variables)
@@ -140,18 +140,18 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
                                          para.boot = para,
                                          missing = missing, callback = progressbarTick))
           
-          relyFit$freq$est$freq_alpha <- Bayesrel:::applyalpha(model[["dat_cov"]])
+          relyFit[["freq"]][["est"]][["freq_alpha"]] <- Bayesrel:::applyalpha(model[["dat_cov"]])
 
           Ctmp <- .itemDeletedM(model[["dat_cov"]])
           
-          relyFit$freq$ifitem$alpha <- apply(Ctmp, 1, Bayesrel:::applyalpha)
+          relyFit[["freq"]][["ifitem"]][["alpha"]] <- apply(Ctmp, 1, Bayesrel:::applyalpha)
           
           if (!alphaAna) { # when standardized alpha, but bootstrapped alpha interval:
             cors <- array(0, c(options[["noSamples"]], p, p))
             for (i in 1:options[["noSamples"]]) {
-              cors[i, , ] <- .cov2cor.callback(relyFit$freq$covsamp[i, , ], progressbarTick)
+              cors[i, , ] <- .cov2cor.callback(relyFit[["freq"]][["covsamp"]][i, , ], progressbarTick)
             }
-            relyFit$freq$boot$alpha <- apply(cors, 1, Bayesrel:::applyalpha)
+            relyFit[["freq"]][["boot"]][["alpha"]] <- apply(cors, 1, Bayesrel:::applyalpha)
             
           }
           
@@ -169,37 +169,37 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         
         # first the scale statistics
         cordat <- cor(dataset, use = use.cases)
-        relyFit$freq$est$avg_cor <- mean(cordat[lower.tri(cordat)])
-        relyFit$freq$est$mean <- mean(rowMeans(dataset, na.rm = T))
-        relyFit$freq$est$sd <- sd(colMeans(dataset, na.rm = T))
+        relyFit[["freq"]][["est"]][["avg_cor"]] <- mean(cordat[lower.tri(cordat)])
+        relyFit[["freq"]][["est"]][["mean"]] <- mean(rowMeans(dataset, na.rm = T))
+        relyFit[["freq"]][["est"]][["sd"]] <- sd(colMeans(dataset, na.rm = T))
         
-        corsamp <- apply(relyFit$freq$covsamp, c(1), .cov2cor.callback, progressbarTick)
-        relyFit$freq$boot$avg_cor <- apply(corsamp, 2, function(x) mean(x[x!=1]))
-        relyFit$freq$boot$mean <- c(NA_real_, NA_real_)
-        relyFit$freq$boot$sd <- c(NA_real_, NA_real_)
+        corsamp <- apply(relyFit[["freq"]][["covsamp"]], c(1), .cov2cor.callback, progressbarTick)
+        relyFit[["freq"]][["boot"]][["avg_cor"]] <- apply(corsamp, 2, function(x) mean(x[x!=1]))
+        relyFit[["freq"]][["boot"]][["mean"]] <- c(NA_real_, NA_real_)
+        relyFit[["freq"]][["boot"]][["sd"]] <- c(NA_real_, NA_real_)
         
         
         # now the item statistics
-        relyFit$freq$ifitem$ircor <- NULL
+        relyFit[["freq"]][["ifitem"]][["ircor"]] <- NULL
         
         for (i in 1:ncol(dataset)) {
-          relyFit$freq$ifitem$ircor[i] <- cor(dataset[, i], rowMeans(dataset[, -i], na.rm = T), use = use.cases)
+          relyFit[["freq"]][["ifitem"]][["ircor"]][i] <- cor(dataset[, i], rowMeans(dataset[, -i], na.rm = T), use = use.cases)
         }
-        relyFit$freq$ifitem$mean <- colMeans(dataset, na.rm = T)
-        relyFit$freq$ifitem$sd <- apply(dataset, 2, sd, na.rm = T)  
+        relyFit[["freq"]][["ifitem"]][["mean"]] <- colMeans(dataset, na.rm = T)
+        relyFit[["freq"]][["ifitem"]][["sd"]] <- apply(dataset, 2, sd, na.rm = T)  
 
         # reorder for JASP
-        names_est <- names(relyFit$freq$est)
+        names_est <- names(relyFit[["freq"]][["est"]])
         order_est <- c("freq_omega", "freq_alpha", "freq_lambda2", "freq_lambda6", "freq_glb", 
                        "avg_cor", "mean", "sd")
         new_order_est <- match(order_est, names_est)
-        relyFit$freq$est <- relyFit$freq$est[new_order_est]
+        relyFit[["freq"]][["est"]] <- relyFit[["freq"]][["est"]][new_order_est]
         
-        names_item <- names(relyFit$freq$ifitem)
+        names_item <- names(relyFit[["freq"]][["ifitem"]])
         order_item <- c("omega", "alpha", "lambda2", "lambda6", "glb", 
                        "ircor", "mean", "sd")
         new_order_item <- match(order_item, names_item)
-        relyFit$freq$ifitem <- relyFit$freq$ifitem[new_order_item]
+        relyFit[["freq"]][["ifitem"]] <- relyFit[["freq"]][["ifitem"]][new_order_item]
         
         # ------------------------ only point estimates, no intervals: ---------------------------
       } else { 
@@ -220,26 +220,26 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         } else {
           if (use.cases == "pairwise.complete.obs") {
             omega <- Bayesrel:::omegaFreqData(dataset, interval=.95, omega.int.analytic = T, pairwise = T)
-            omega.est <- omega$omega
-            relyFit$freq$omega.fit <- omega$indices
+            omega.est <- omega[["omega"]]
+            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
             omega.item <- apply(Dtmp, 1, Bayesrel:::applyomega_cfa_data, interval = .95, pairwise = T)
             if (any(is.na(omega))) {
               omega.est <- Bayesrel:::applyomega_pfa(cv)
-              relyFit$freq$omega.error <- TRUE
+              relyFit[["freq"]][["omega.error"]] <- TRUE
               omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
             }
           } else {
             omega <- Bayesrel:::omegaFreqData(dataset, interval=.95, omega.int.analytic = T, pairwise = F)
-            omega.est <- omega$omega
-            relyFit$freq$omega.fit <- omega$indices
+            omega.est <- omega[["omega"]]
+            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
             omega.item <- apply(Dtmp, 1, Bayesrel:::applyomega_cfa_data, interval = .95, pairwise = F)
             if (any(is.na(omega))) {
               omega.est <- Bayesrel:::applyomega_pfa(cv)
-              relyFit$freq$omega.error <- TRUE
+              relyFit[["freq"]][["omega.error"]] <- TRUE
               omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
             }
             if (any(is.na(omega.item))) {
-              relyFit$freq$omega.item.error <- TRUE
+              relyFit[["freq"]][["omega.item.error"]] <- TRUE
               omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
             }
           }
@@ -257,21 +257,21 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           alpha.item <- apply(Cvtmp, 1, Bayesrel:::applyalpha)
           
         }
-        relyFit$freq$est <- list(freq_omega = omega.est, freq_alpha = alpha, 
+        relyFit[["freq"]][["est"]] <- list(freq_omega = omega.est, freq_alpha = alpha, 
                                  freq_lambda2 = Bayesrel:::applylambda2(cv), freq_lambda6 = Bayesrel:::applylambda6(cv),
                                  freq_glb = Bayesrel:::glbOnArray(cv), avg_cor = mean(cordat[lower.tri(cordat)]), 
                                  mean = mean(rowMeans(dataset, na.rm = TRUE)), sd = sd(colMeans(dataset, na.rm = TRUE)))
 
-        relyFit$freq$ifitem <- list(omega = omega.item, alpha = alpha.item, 
+        relyFit[["freq"]][["ifitem"]] <- list(omega = omega.item, alpha = alpha.item, 
                                           lambda2 = apply(Cvtmp, 1, Bayesrel:::applylambda2), 
                                           lambda6 = apply(Cvtmp, 1, Bayesrel:::applylambda6), 
                                           glb = apply(Cvtmp, 1, Bayesrel:::glbOnArray))
-        relyFit$freq$ifitem$ircor <- NULL
+        relyFit[["freq"]][["ifitem"]][["ircor"]] <- NULL
         for (i in 1:ncol(dataset)) {
-          relyFit$freq$ifitem$ircor[i] <- cor(dataset[, i], rowMeans(dataset[, -i], na.rm = TRUE), use = use.cases)
+          relyFit[["freq"]][["ifitem"]][["ircor"]][i] <- cor(dataset[, i], rowMeans(dataset[, -i], na.rm = TRUE), use = use.cases)
         }
-        relyFit$freq$ifitem$mean <- colMeans(dataset, na.rm = TRUE)
-        relyFit$freq$ifitem$sd <- apply(dataset, 2, sd, na.rm = TRUE)  
+        relyFit[["freq"]][["ifitem"]][["mean"]] <- colMeans(dataset, na.rm = TRUE)
+        relyFit[["freq"]][["ifitem"]][["sd"]] <- apply(dataset, 2, sd, na.rm = TRUE)  
       }
       
       
@@ -309,7 +309,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           
           alphaCfi <- Bayesrel:::ciAlpha(1 - options[["confidenceIntervalValue"]], model[["obs"]], model[["dat_cov"]])
           names(alphaCfi) <- c("lower", "upper")
-          scaleCfi$alpha <- alphaCfi
+          scaleCfi[["alpha"]] <- alphaCfi
         }
         
         
@@ -321,7 +321,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           om_up <- params$ci.upper[params$lhs=="omega"]
           omegaCfi <- c(om_low, om_up)
           names(omegaCfi) <- c("lower", "upper")
-          scaleCfi$omega <- omegaCfi
+          scaleCfi[["omega"]] <- omegaCfi
         } 
         # reorder for JASP:
         names_cfi <- names(scaleCfi)
@@ -433,7 +433,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       addSingularFootnote <- FALSE
       for (i in idxSelected) {
         scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
-        newData <- data.frame(est = c(unlist(relyFit$freq$est[[i]], use.names = F), 
+        newData <- data.frame(est = c(unlist(relyFit[["freq"]][["est"]][[i]], use.names = F), 
                                       unlist(model[["cfi"]][["scaleCfi"]][[i]], use.names = F)))
         colnames(newData) <- paste0(colnames(newData), i)
         allData <- cbind(allData, newData)
@@ -451,7 +451,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     } else {
       for (i in idxSelected) {
         scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
-        newData <- data.frame(est = c(unlist(relyFit$freq$est[[i]], use.names = F)))
+        newData <- data.frame(est = c(unlist(relyFit[["freq"]][["est"]][[i]], use.names = F)))
         colnames(newData) <- paste0(colnames(newData), i)
         allData <- cbind(allData, newData)
       }
@@ -532,7 +532,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     
     tb <- data.frame(variable = model[["itemsDropped"]])
     for (i in idxSelectedF) {
-      newtb <- cbind(pointEst = relyFit$freq$ifitem[[i]])
+      newtb <- cbind(pointEst = relyFit[["freq"]][["ifitem"]][[i]])
       colnames(newtb) <- paste0(colnames(newtb), i)
       tb <- cbind(tb, newtb)
       
@@ -580,7 +580,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
   relyFit <- model[["relyFit"]]
   derivedOptions <- model[["derivedOptions"]]
-  opts <- names(relyFit$freq$omega_fit)
+  opts <- names(relyFit[["freq"]][["omega_fit"]])
 
   if (!is.null(relyFit)) {
     if (is.null(opts)) {
@@ -596,7 +596,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       opts <- c("Chi-Square", "df", "p.value", "RMSEA", "Lower CI RMSEA", "Upper CI RMSEA", "SRMR")
       allData <- data.frame(
         measure = opts,
-        value = as.vector(unlist(relyFit$freq$omega_fit, use.names = FALSE))
+        value = as.vector(unlist(relyFit[["freq"]][["omega_fit"]], use.names = FALSE))
       )
     }
 
@@ -617,7 +617,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 .applyomega_cfa_cov <- function(cov, n){
   data <- MASS::mvrnorm(n, numeric(ncol(cov)), cov)
   out <- Bayesrel:::omegaFreqData(data, pairwise = F)
-  om <- out$omega
+  om <- out[["omega"]]
   return(om)
 }
 
