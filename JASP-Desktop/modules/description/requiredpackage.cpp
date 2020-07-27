@@ -20,7 +20,7 @@ void RequiredPackage::setName(QString name)
 	emit somethingChanged(this);
 }
 
-void RequiredPackage::setVersion(Version version)
+void RequiredPackage::setVersion(QString version)
 {
 	if (_version == version)
 		return;
@@ -59,8 +59,8 @@ Json::Value RequiredPackage::asJson() const
 
 	json["package"] = fq(_name);
 
-	if(_version != Version())
-		json["version"] = _version.toString();
+	if(_version != "")
+		json["version"] = fq(_version);
 
 	if(_github != "")
 	{

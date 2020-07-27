@@ -348,14 +348,9 @@ void EngineSync::processDynamicModules()
 			}
 		}
 	}
-	catch(Modules::ModuleException e)
-	{
-		Log::log() << "Exception thrown in processDynamicModules: " <<  e.what() << std::endl;
-	}
-	catch(...)
-	{
-		Log::log() << "Exception thrown in processDynamicModules" << std::endl;
-	}
+	catch(Modules::ModuleException & e)	{ Log::log() << "Exception thrown in processDynamicModules: " <<  e.what() << std::endl;	}
+	catch(std::exception & e)			{ Log::log() << "Exception thrown in processDynamicModules: " << e.what() << std::endl;		}
+	catch(...)							{ Log::log() << "Unknown Exception thrown in processDynamicModules..." << std::endl;		}
 
 }
 
@@ -395,7 +390,9 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	args << QString::number(no) << QString::number(ProcessInfo::currentPID()) << QString::fromStdString(Log::logFileNameBase) << QString::fromStdString(Log::whereStr());
 
 	env.insert("TMPDIR", tq(TempFiles::createTmpFolder()));
-	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warning like "R_REMOTES_NO_ERRORS_FROM_WARNINGS"
+	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warnings
+
+
 
 #ifdef _WIN32
 	QString rHomePath = programDir.absoluteFilePath("R");
@@ -438,7 +435,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 #define ARCH_SUBPATH "x64"
 #endif
 
-	env.insert("PATH",				programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
+	env.insert("PATH",				programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH) + ";" + env.value("PATH")) ;
 	env.insert("R_HOME",			rHomeWin);
 	env.insert("JAGS_HOME",			programDir.absoluteFilePath("JAGS/"));
 

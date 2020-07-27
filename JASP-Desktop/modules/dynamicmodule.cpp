@@ -166,8 +166,8 @@ void DynamicModule::initialize()
 
 void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath)
 {
-	std::string descriptionJson = getDescriptionJsonFromFolder(folderPath),
-				descriptionQml  = getDescriptionQmlFromFolder(folderPath);
+	std::string descriptionQml  = getDescriptionQmlFromFolder(folderPath),
+				descriptionJson = descriptionQml == "" ? getDescriptionJsonFromFolder(folderPath) : "";
 
 	if(descriptionQml == "" && descriptionJson == "")
 		throw std::runtime_error("No description found in folder " + folderPath);
@@ -178,8 +178,8 @@ void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath)
 
 void DynamicModule::loadDescriptionFromArchive(const std::string & archivePath)
 {
-	std::string descriptionJson = getDescriptionJsonFromArchive(archivePath),
-				descriptionQml  = getDescriptionQmlFromArchive(archivePath);
+	std::string descriptionQml  = getDescriptionQmlFromArchive(archivePath),
+				descriptionJson = descriptionQml == "" ? getDescriptionJsonFromArchive(archivePath) : "";
 
 	if(descriptionQml == "" && descriptionJson == "")
 		throw std::runtime_error("No description found in archive " + archivePath);
@@ -517,43 +517,51 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 
 	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths())";
 
-	const char * pkgType =
-#ifdef __linux__
-							"source";
-#else
-							"binary";
-#endif
+	R << standardRIndent << "loadLog <- '';\n";
+
+	auto installDeps = [&](const std::string & pkg)
+	{
+		R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= "	<< pkg << ",   lib='" << moduleRLibrary().toStdString() << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
+	};
+
+	auto installLocal = [&](std::string pkgPath)
+	{
+		R	<< standardRIndent << "pkgPath <- sub('\\\\', '/', " << pkgPath << ", fixed=TRUE);\n"; //replace any backslashes by forward slashes...
+		R	<< standardRIndent << "print(paste0(\"pkgPath: '\", pkgPath, \"'\"));\n";
+		R	<< standardRIndent << "loadLog <- paste0(loadLog, '\n', .runSeparateR(paste0(\"withr::with_libpaths(new=" << libPathsToUse << ", pkgbuild::with_build_tools(install.packages(pkgs='\", pkgPath, \"', lib='" << moduleRLibrary().toStdString() << "', type='source', repos=NULL, INSTALL_opts=c('--no-multiarch'))))\")));\n";
+	};
 
 	if(!onlyModPkg)
 	{
 		//Install dependencies:
-		//First the ones from github if they are there:
+		//First the ones from CRAN because they cant depend on one from github
+		installDeps("'" + _modulePackage + "/.'");
+
+		//Then the specials from github
 		for(const Json::Value & reqPkg : _requiredPackages)
 			if(reqPkg.isMember("github"))
 			{
-				//We do not install the dependencies because it takes forever
-				//First we install the github repo with upgrade=FALSE and dependencies=NA so that it takes any missing pkgs and installs them
-				//R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_github(repo= '"	<< reqPkg["github"].asString() << "', " << (reqPkg.isMember("gitref") ? "ref='" + reqPkg["gitref"].asString() + "', " : "") << "  lib='" << moduleRLibrary().toStdString() << "', INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=FALSE, dependencies=NA,    repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
-
-				//After that we install the github again, with upgrade=TRUE and  dependencies=FALSE, so that it installs another ref from github if the specification changed but doesnt try to upgrade all the dependencies because that might take forever
-				R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_github(repo= '"	<< reqPkg["github"].asString() << "', " << (reqPkg.isMember("gitref") ? "ref='" + reqPkg["gitref"].asString() + "', " : "") << "  lib='" << moduleRLibrary().toStdString() << "', INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=TRUE,  dependencies=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
+				R	 << standardRIndent << "print('Downloading pkg \"" << reqPkg["github"].asString() << "\" from github!');\n"
+					 << standardRIndent << "pkgdownload <- remotes::remote_download(remotes::github_remote(repo= '"	<< reqPkg["github"].asString() << "'" << (reqPkg.isMember("gitref") ? ", ref='" + reqPkg["gitref"].asString() + "'" : "") << "));\n";
+				installDeps("pkgdownload");
+				installLocal("pkgdownload");
 			}
-
-		//Then the rest mentioned in DESCRIPTION
-		R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', type='" << pkgType << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
 
 		//And fix Mac OS libraries of dependencies:
 		R << standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n";
 	}
 
 		//Remove old copy of library (because we might be reinstalling and want the find.package check on the end to fail if something went wrong)
-	R	<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", { find.package(package='" << _name << "'); remove.packages(pkg='"	<< _name << "', lib='" << moduleRLibrary().toStdString() << "');})}, error=function(e) {});\n"
+	R	<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", { find.package(package='" << _name << "'); remove.packages(pkg='"	<< _name << "', lib='" << moduleRLibrary().toStdString() << "');})}, error=function(e) {});\n";
+
+	R	<< standardRIndent << "print('Module library now looks like: ');\n" << standardRIndent << "print(list.files(path='" << moduleRLibrary().toStdString() << "', recursive=FALSE));\n";
 
 		//Install module
-		<< standardRIndent << "loadLog <- .runSeparateR(\""	"withr::with_libpaths(new=" << libPathsToUse << ", install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL, INSTALL_opts=c('--no-multiarch')))\");\n" //Running in separate R because otherwise we cannot capture output :s
+	installLocal("'" + _modulePackage + "/.'");
+
 
 		//Check if install worked and through loadlog as error otherwise
-		<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setLog(loadLog); return('fail'); });\n";
+	R << standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setLog(loadLog); return('fail'); });\n";
 
 
 	Log::log() << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << R.str() << std::endl;
