@@ -204,7 +204,30 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"xtabs",
 	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText", "function", "stop",
 	"normalDist", "tDist", "chiSqDist", "fDist", "binomDist", "negBinomDist", "geomDist", "poisDist", "integerDist", "betaDist", "unifDist", "gammaDist", "expDist", "logNormDist", "weibullDist",
-	"replaceNA"
+	"replaceNA",
+	//Some distribution related stuff:
+	"dbeta",		"pbeta",		"qbeta",		"rbeta",
+	"dbinom",		"pbinom",		"qbinom",		"rbinom",
+	"dcauchy",		"pcauchy",		"qcauchy",		"rcauchy",
+	"dchisq",		"pchisq",		"qchisq",		"rchisq",
+	"dexp",			"pexp",			"qexp",			"rexp",
+	"df",			"pf",			"qf",			"rf",
+	"dgamma",		"pgamma",		"qgamma",		"rgamma",
+	"dgeom",		"pgeom",		"qgeom",		"rgeom",
+	"dhyper",		"phyper",		"qhyper",		"rhyper",
+	"dlnorm",		"plnorm",		"qlnorm",		"rlnorm",
+	"dmultinom",	"pmultinom",	"qmultinom",	"rmultinom",
+	"dnbinom",		"pnbinom",		"qnbinom",		"rnbinom",
+	"dnorm",		"pnorm",		"qnorm",		"rnorm",
+	"dpois",		"ppois",		"qpois",		"rpois",
+	"dt",			"pt",			"qt",			"rt",
+	"dunif",		"punif",		"qunif",		"runif",
+	"dweibull",		"pweibull",		"qweibull",		"rweibull",
+	"dsignrank",	"psignrank",	"qsignrank",	"rsignrank",
+
+	"pbirthday",
+	"ptukey",
+	"dwilcox"
 #ifdef JASP_DEBUG
 	,"Sys.sleep", ".crashPlease", "stringi::stri_enc_mark", "stringi::stri_enc_toutf8", "Encoding"
 #endif
