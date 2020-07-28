@@ -1,5 +1,3 @@
-cache()
-
 TEMPLATE = subdirs
 
 DESTDIR = ..

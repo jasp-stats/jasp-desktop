@@ -11,7 +11,7 @@ CONFIG += c++11
 include(../JASP.pri)
 
 
-macx:QMAKE_CXXFLAGS += -DBOOST_INTERPROCESS_SHARED_DIR_FUNC
+macx: QMAKE_CXXFLAGS += -DBOOST_INTERPROCESS_SHARED_DIR_FUNC
 
 windows {
 	LIBS			+= -lole32 -loleaut32 -larchive.dll
@@ -23,7 +23,7 @@ INCLUDEPATH += $$PWD/
 SOURCES += \
 	appinfo.cpp \
 	column.cpp \
-  columnencoder.cpp \
+	columnencoder.cpp \
 	columns.cpp \
 	datablock.cpp \
 	dataset.cpp \
@@ -39,8 +39,8 @@ SOURCES += \
     utilenums.cpp \
 	utils.cpp \
 	version.cpp \
-  enginedefinitions.cpp \
-  timers.cpp \
+	enginedefinitions.cpp \
+	timers.cpp \
     log.cpp \
     columntype.cpp
 
@@ -59,7 +59,7 @@ HEADERS += \
 	boost/nowide/system.hpp \
 	boost/nowide/windows.hpp \
 	column.h \
-  columnencoder.h \
+	columnencoder.h \
 	columns.h \
 	common.h \
 	datablock.h \
@@ -78,10 +78,10 @@ HEADERS += \
     utilenums.h \
 	utils.h \
 	version.h \
-  jsonredirect.h \
-  enginedefinitions.h \
-  timers.h \
-  enumutilities.h \
+	jsonredirect.h \
+	enginedefinitions.h \
+	timers.h \
+	enumutilities.h \
     stringutils.h \
     log.h \
     columntype.h

@@ -1,6 +1,7 @@
 QT -= core gui
 
 JASP_BUILDROOT_DIR = $$OUT_PWD/../..
+
 include(../../JASP.pri)
 include(../../R_HOME.pri)
 

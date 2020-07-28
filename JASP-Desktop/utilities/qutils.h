@@ -21,6 +21,7 @@
 
 #include <QStringList>
 #include <QString>
+#include <QVector>
 #include <QProcess>
 #include <QMap>
 #include <map>

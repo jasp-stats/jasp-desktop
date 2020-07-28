@@ -14,7 +14,7 @@ Description
 	icon:			"equivalence-module.svg"
 
 	Package { name: "TOSTER"	}
-	Package { name: "metaBMA"	}
+	Package { name: "metaBMA"; version: "0.6.2"	}
 
 	Analysis
 	{

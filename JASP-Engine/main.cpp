@@ -22,6 +22,7 @@
 #include <boost/nowide/args.hpp>
 #include <boost/filesystem.hpp>
 #include <codecvt>
+#include "otoolstuff.h"
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -60,6 +61,8 @@ int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
 #else*/
 int main(int argc, char *argv[])
 {
+	boost::nowide::args a(argc,argv); //This gets the arguments again through GetCommandLineW apparently, so theoretically this might gives us actual unicode? (utf-8)
+
 	if(argc > 4)
 	{
 		unsigned long	slaveNo			= strtoul(argv[1], NULL, 10),
@@ -97,6 +100,16 @@ int main(int argc, char *argv[])
 		JASPTIMER_PRINTALL();
 
 		Log::log() << "jaspEngine " << slaveNo << " child of " << parentPID << " stops." << std::endl;
+		exit(0);
+	}
+	else if(argc == 2)
+	{
+		std::cout << "Engine started in R (Module) Library Fixer mode because it received a single argument: '" << argv[1] << "'." << std::endl;
+		
+		Engine e(0, 0); //It needs to start to make sure rbridge functions work
+		
+		_moduleLibraryFixer(argv[1], true);
+
 		exit(0);
 	}
 

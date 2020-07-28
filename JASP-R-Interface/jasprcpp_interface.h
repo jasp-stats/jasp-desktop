@@ -82,6 +82,8 @@ typedef bool						(STDCALL *SetColumnAsNominal)           (const char* columnNam
 typedef bool						(STDCALL *SetColumnAsNominalText)       (const char* columnName, const char **	nominalData,	size_t length);
 typedef int							(STDCALL *DataSetRowCount)              ();
 typedef const char *				(STDCALL *EnDecodeDef)					(const char *);
+typedef const char *				(STDCALL *systemDef)					(const char *);
+typedef void						(STDCALL *libraryFixerDef)				(const char *);
 
 struct RBridgeCallBacks {
 	ReadDataSetCB					readDataSetCB;
@@ -115,7 +117,7 @@ typedef size_t			(*logWriteDef)			(const void * buf, size_t len);
 
 
 // Calls from rbridge to jaspRCPP
-RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, logFlushDef logFlushFunction, logWriteDef logWriteFunction);
+RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, logFlushDef logFlushFunction, logWriteDef logWriteFunction, systemDef systemFunc, libraryFixerDef libraryFixerFunc);
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground, bool developerMode);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_check();

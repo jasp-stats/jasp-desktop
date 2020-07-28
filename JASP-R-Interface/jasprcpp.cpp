@@ -62,6 +62,8 @@ EnDecodeDef						encodeColumnName,
 static logFlushDef				_logFlushFunction		= nullptr;
 static logWriteDef				_logWriteFunction		= nullptr;
 static sendFuncDef				_sendToDesktop			= nullptr;
+static systemDef				_systemFunc				= nullptr;
+static libraryFixerDef			_libraryFixerFunc		= nullptr;
 
 static std::string				_R_HOME = "";
 
@@ -70,12 +72,15 @@ bool shouldCrashSoon = false; //Simply here to allow a developer to force a cras
 extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
-	logFlushDef logFlushFunction, logWriteDef logWriteFunction)
+	logFlushDef logFlushFunction, logWriteDef logWriteFunction,
+	systemDef systemFunc, libraryFixerDef libraryFixerFunc)
 {
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
 	_sendToDesktop			= sendToDesktopFunction;
-	
+	_systemFunc				= systemFunc;
+	_libraryFixerFunc		= libraryFixerFunc;
+
 	rinside = new RInside();
 	
 	RInside &rInside = rinside->instance();
@@ -1131,35 +1136,7 @@ RInside::Proxy jaspRCPP_parseEval(const std::string & code,	bool preface)
 
 std::string _jaspRCPP_System(std::string cmd)
 {
-	const char *root, *relativePath;
-
-	if (!requestTempFileNameCB("log", &root, &relativePath))
-		Rf_error("Cannot open output file for separate R/System cmd!");
-
-	std::string path = std::string(root) + "/" + relativePath;
-
-	cmd += " > " + path + " 2>&1 ";
-
-#ifdef WIN32
-	cmd = '"' + cmd + '"'; // See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
-#endif
-
-	jaspRCPP_parseEvalPreface(cmd, "Evaluating system call:\n");
-	
-	boost::nowide::system(cmd.c_str());
-
-	std::ifstream readLog(path);
-	std::stringstream out;
-
-	if(readLog)
-	{
-		out << readLog.rdbuf();
-		readLog.close();
-	}
-	else
-		out << "\nProblem reading output-log...\n";
-
-	return out.str();
+	return _systemFunc(cmd.c_str());
 }
 
 ///This function runs *code* in a separate instance of R, because the output of install.packages (and perhaps other functions) cannot be captured through the outputsink...
@@ -1195,58 +1172,12 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 #define xstr(s) str(s)
 #define str(s)  #s
 
-void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames)
+void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibrary)
 {
-#ifdef __APPLE__
-	Rcpp::CharacterVector libDirs = moduleLibFileNames;
-
-	for(Rcpp::String libDirStr : libDirs)
-	{
-		std::string libDir		= stringUtils::replaceBy(libDirStr, " ", "\\ "),
-					otoolCmd	= "otool -L " + libDir,
-					otoolOut	= _jaspRCPP_System(otoolCmd);
-		auto		otoolLines	= stringUtils::splitString(otoolOut, '\n');
-
-		/*std::cout << "jaspRCPP_postProcessLocalPackageInstall used otool -L on " << libDir << " and found this output:" << std::endl;
-
-		for(const auto & line : otoolLines)
-			std::cout << line << std::endl;*/
-
-		//ok otoolLines[1] represents the "id" of the lib but we do not need to change it because it probably points directly back to itself. The other lines however we should change
-
-		for(size_t i=2; i<otoolLines.size(); i++)
-		{
-			std::string line = otoolLines[i];
-			line = line.substr(0, line.find_first_of('('));
-			stringUtils::trim(line);
-			line = stringUtils::replaceBy(line, " ", "\\ ");
-
-			const std::string libStart = "/Library/Frameworks/R.framework/Versions/";
-
-			if(stringUtils::startsWith(line, libStart))
-			{
-
-				std::string newLine = stringUtils::replaceBy("@executable_path/../Frameworks/R.framework/Versions/" + line.substr(libStart.size()), " ", "\\ "),
-							cmd		= "install_name_tool -change " + line + " " + newLine + " " + libDir;
-
-				_jaspRCPP_System(cmd);
-			}
-			else if(stringUtils::startsWith(line, "/opt/") || stringUtils::startsWith(line, "/usr/local/"))
-			{
-				std::string baseName = line.substr(line.find_last_of('/') == std::string::npos ? 0 : line.find_last_of('/') + 1);
-
-				std::string newLine = stringUtils::replaceBy("@executable_path/../Frameworks/R.framework/Versions/"  xstr(CURRENT_R_VERSION) "/Resources/lib/" + baseName, " ", "\\ "),
-							cmd		= "install_name_tool -change " + line + " " + newLine + " " + libDir;
-
-				_jaspRCPP_System(cmd);
-			}
-			else if(line == "/usr/lib/libc++.1.dylib") //This could be done cleaner but I already rewrote this code in development so I will solve it through a merge conflict later
-			{
-				_jaspRCPP_System("install_name_tool -change " + line + " @executable_path/../Frameworks/R.framework/Versions/3.6/Resources/lib/libc++.1.dylib " + libDir);
-			}
-		}
-	}
-#endif
+	if(Rcpp::is<std::string>(moduleLibrary))
+		_libraryFixerFunc(Rcpp::as<std::string>(moduleLibrary).c_str());
+	else
+		Rf_error("jaspRCPP_postProcessLocalPackageInstall did not receive a string, it should get that and the string should represent some kind of R library path.");
 }
 
 std::string jaspRCPP_encodeColumnName(std::string in)

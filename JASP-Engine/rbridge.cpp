@@ -24,6 +24,7 @@
 #include "log.h"
 #include "timers.h"
 #include "r_functionwhitelist.h"
+#include "otoolstuff.h"
 
 DataSet						*	rbridge_dataSet		= nullptr;
 RCallback						rbridge_callback	= NULL;
@@ -99,7 +100,9 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					sendToDesktopFunction,
 					pollMessagesFunction,
 					[](){ Log::log(false).flush(); return 0;},
-					_logWriteFunction
+					_logWriteFunction,
+					rbridge_system,
+					rbridge_moduleLibraryFixer
 	);
 	JASPTIMER_STOP(jaspRCPP_init);
 
@@ -937,4 +940,18 @@ bool rbridge_rCodeSafe(const char * rCode)
 void rbridge_setLANG(const std::string & lang)
 {
 	jaspRCPP_evalRCode(("Sys.setenv(LANG='" + lang + "');\nSys.setenv(LANGUAGE='" + lang + "');\nprint(Sys.getlocale());").c_str());
+}
+
+extern "C" const char *	 STDCALL rbridge_system(const char * cmd)
+{
+	static std::string storage;
+
+	storage = _system(cmd);
+
+	return storage.c_str();
+}
+
+extern "C" void STDCALL rbridge_moduleLibraryFixer(const char * moduleLibrary)
+{
+	_moduleLibraryFixer(moduleLibrary);
 }

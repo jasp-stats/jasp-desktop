@@ -12,9 +12,6 @@ TEMPLATE   = lib
 
 include(../R_HOME.pri)
 
-message(using R Frameworks of $$JASP_REQUIRED_FILES/Frameworks)
-message(using R_HOME of $$_R_HOME)
-
 unix{
   CONFIG      += staticlib
   QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'
@@ -74,7 +71,6 @@ HEADERS += \
 
 macx:		INCLUDEPATH += ../../boost_1_71_0
 windows:	INCLUDEPATH += ../../boost_1_71_0
-
 
 windows{
 	QMAKE_CXXFLAGS += -Og -municode #for big object files & support for unicode/utf16 in mingw maybe?

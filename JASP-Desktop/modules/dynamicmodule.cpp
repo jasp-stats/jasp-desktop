@@ -504,6 +504,7 @@ std::string DynamicModule::getLibPathsToUse()
 	return libPathsToUse;
 }
 
+///It would probably be better to move all of this code to jasp-r-pkg or something, but for now this works fine.
 std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 {
 	std::stringstream R;
@@ -546,7 +547,7 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 
 	auto installDeps = [&](const std::string & pkg)
 	{
-		R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= "	<< pkg << ",   lib='" << moduleRLibrary().toStdString() << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade='never', repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
+		R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= "	<< pkg << ", lib='" << moduleRLibrary().toStdString() << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade='never', repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
 	};
 
 	auto installLocal = [&](std::string pkgPath)
@@ -573,7 +574,7 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 			}
 
 		//And fix Mac OS libraries of dependencies:
-		R << standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n";
+		R << standardRIndent << ".postProcessLibraryModule(\"" << moduleRLibrary().toStdString() << "\");\n";
 	}
 
 		//Remove old copy of library (because we might be reinstalling and want the find.package check on the end to fail if something went wrong)
