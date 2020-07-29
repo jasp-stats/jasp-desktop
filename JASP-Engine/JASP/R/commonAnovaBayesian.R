@@ -1384,6 +1384,7 @@
     conf.interval <- options$confidenceIntervalInterval
     descriptivesPlotContainer$dependOn(c("dependent", "plotErrorBars", "errorBarType", "confidenceIntervalInterval",
                                          "usePooledStandErrorCI"))
+    if(is.null(options[["usePooledStandErrorCI"]]))  usePooledSE <- FALSE else usePooledSE <- options[["usePooledStandErrorCI"]]
     
   }
 
@@ -1404,10 +1405,23 @@
   } else {
     yLabel <- options[["dependent"]]
   }
-
-  summaryStat <- .summarySE(as.data.frame(dataset), measurevar = dependentV, groupvars = groupVarsV,
-                            conf.interval = conf.interval, na.rm = TRUE, .drop = FALSE,
-                            errorBarType = errorBarType)
+  
+  betweenSubjectFactors <- groupVars[groupVars %in% options$betweenSubjectFactors]
+  repeatedMeasuresFactors <- groupVars[groupVars %in% sapply(options$repeatedMeasuresFactors,function(x)x$name)]
+  
+  if (length(repeatedMeasuresFactors) == 0) {
+    summaryStat <- .summarySE(as.data.frame(dataset), measurevar = dependentV, groupvars = groupVarsV,
+                              conf.interval = conf.interval, na.rm = TRUE, .drop = FALSE,
+                              errorBarType = errorBarType)
+  } else {
+    summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar= .BANOVAdependentName,
+                                  betweenvars=betweenSubjectFactors,
+                                  withinvars= repeatedMeasuresFactors,
+                                  idvar= .BANOVAsubjectName,
+                                  conf.interval=options$confidenceIntervalInterval,
+                                  na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType,
+                                  usePooledSE=usePooledSE)
+  }
 
   if (options[["plotHorizontalAxis"]] %in% options[["covariates"]]) {
     splitScatterOptions <- options
