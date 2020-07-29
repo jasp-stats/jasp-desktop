@@ -1764,17 +1764,17 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   # This does the summary. For each group's data frame, return a vector with
   # N, mean, and sd
   # First aggregate over unused RM factors, if desired:
-  if (usePooledSE && measurevar == "dependent") {
+  if (usePooledSE && measurevar == .BANOVAdependentName) {
 
-    data <- plyr::ddply(data, c(.BANOVAsubjectName, groupvars), plyr::summarise, dependent = mean(dependent))
+    data <- plyr::ddply(data, c(.BANOVAsubjectName, groupvars), plyr::summarise, dependent = mean(JaspColumn_.dependent._Encoded))
     names(data)[which(names(data) == "dependent")] <- measurevar
 
-  } else if (usePooledSE && measurevar == "dependent_norm") {
+  } else if (usePooledSE && measurevar == paste0(.BANOVAdependentName, "_norm")) {
 
-    data <- plyr::ddply(data, c(.BANOVAsubjectName, groupvars), plyr::summarise, dependent = mean(dependent_norm))
+    data <- plyr::ddply(data, c(.BANOVAsubjectName, groupvars), plyr::summarise, dependent = mean(JaspColumn_.dependent._Encoded_norm))
     names(data)[which(names(data) == "dependent")] <- measurevar
   }
-  
+
   datac <- plyr::ddply(data, groupvars, .drop=.drop,
                        .fun = function(xx, col) {
                          c(N    = length2(xx[[col]], na.rm=na.rm),

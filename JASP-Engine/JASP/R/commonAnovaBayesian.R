@@ -1406,8 +1406,8 @@
     yLabel <- options[["dependent"]]
   }
   
-  betweenSubjectFactors <- groupVars[groupVars %in% options$betweenSubjectFactors]
-  repeatedMeasuresFactors <- groupVars[groupVars %in% sapply(options$repeatedMeasuresFactors,function(x)x$name)]
+  betweenSubjectFactors <- groupVarsV[groupVars %in% options$betweenSubjectFactors]
+  repeatedMeasuresFactors <- groupVarsV[groupVars %in% sapply(options$repeatedMeasuresFactors,function(x)x$name)]
   
   if (length(repeatedMeasuresFactors) == 0) {
     summaryStat <- .summarySE(as.data.frame(dataset), measurevar = dependentV, groupvars = groupVarsV,
@@ -1415,12 +1415,12 @@
                               errorBarType = errorBarType)
   } else {
     summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar= .BANOVAdependentName,
-                                  betweenvars=betweenSubjectFactors,
-                                  withinvars= repeatedMeasuresFactors,
-                                  idvar= .BANOVAsubjectName,
-                                  conf.interval=options$confidenceIntervalInterval,
-                                  na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType,
-                                  usePooledSE=usePooledSE)
+                                  betweenvars = betweenSubjectFactors,
+                                  withinvars = repeatedMeasuresFactors,
+                                  idvar = .BANOVAsubjectName,
+                                  conf.interval = options$confidenceIntervalInterval,
+                                  na.rm=TRUE, .drop = FALSE, errorBarType = options$errorBarType,
+                                  usePooledSE = usePooledSE)
   }
 
   if (options[["plotHorizontalAxis"]] %in% options[["covariates"]]) {
