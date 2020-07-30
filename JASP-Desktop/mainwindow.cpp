@@ -502,7 +502,7 @@ void MainWindow::loadQML()
 	_ribbonModel->loadModules(	
 		{ 	"Descriptives", "T-Tests", "ANOVA", "MixedModels", "Regression", "Frequencies", "Factor" },
 		{ 	"Audit", "BAIN", "Discover Distributions", "Equivalence T-Tests", "JAGS", "Machine Learning", 
-			"Meta Analysis", "Network", "Reliability", "SEM", "Summary Statistics", "Visual Modeling"});
+            "Meta Analysis", "Network", "Reliability", "SEM", "Summary Statistics", "Visual Modeling", "Learn Bayes"});
 }
 
 QObject * MainWindow::loadQmlData(QString data, QUrl url)
