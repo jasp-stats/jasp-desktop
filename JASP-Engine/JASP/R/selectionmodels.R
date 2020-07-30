@@ -402,8 +402,8 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   }
   
   models[["object"]] <- list(
-   FE = fit_FE,
-   RE = fit_RE
+    FE = fit_FE,
+    RE = fit_RE
   )
 
   return()
@@ -556,7 +556,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   # mean estimates
   if(is.null(FE_estimates[["FE_estimates"]]) && options[["FE_estimates"]]){
-    FE_estimates_mean <- createJaspTable(title = gettext("Mean Estimates (μ)"))
+    FE_estimates_mean <- createJaspTable(title = gettextf("Mean Estimates (%s)", "\u03BC"))
     FE_estimates_mean$position  <- 1
     FE_estimates[["FE_mean"]] <- FE_estimates_mean
     FE_mean <- .SM_fill_estimates(jaspResults, FE_estimates_mean, models[["FE"]], options)    
@@ -585,7 +585,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   # mean estimates
   if(is.null(RE_estimates[["RE_mean"]]) && options[["RE_estimates"]]){
-    RE_estimates_mean <- createJaspTable(title = gettextf("Mean Estimates(%s)", "\u03BC"))
+    RE_estimates_mean <- createJaspTable(title = gettextf("Mean Estimates (%s)", "\u03BC"))
     RE_estimates_mean$position <- 1
     RE_estimates[["RE_mean"]] <- RE_estimates_mean
     RE_estimates_mean <- .SM_fill_estimates(jaspResults, RE_estimates_mean, models[["RE"]], options)    
@@ -761,12 +761,12 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     return()
   }else{
     plot_estimates <- createJaspPlot(
-      title  = gettextf("Mean Model Estimates (μ)"),
-      width  = 500,
-      height = 200)
-    plot_estimates$dependOn(c(.SM_dependencies, "plot_models"))
-    plot_estimates$position <- 7
-    jaspResults[["plot_estimates"]] <- plot_estimates
+      title  = gettextf("Mean Model Estimates (%s)", "\u03BC"),
+    width  = 500,
+    height = 200)
+plot_estimates$dependOn(c(.SM_dependencies, "plot_models"))
+plot_estimates$position <- 7
+jaspResults[["plot_estimates"]] <- plot_estimates
   }
   
   if(!.SM_ready(options)){
@@ -816,7 +816,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     shape = 15)
   plot <- plot + ggplot2::geom_line(ggplot2::aes(x = c(0,0), y = c(.5, 4.5)), linetype = "dotted")
   plot <- plot + ggplot2::scale_x_continuous(
-    gettext("Mean Estimate (μ)"),
+    gettextf("Mean Estimates (%s)", "\u03BC"),
     breaks = JASPgraphs::getPrettyAxisBreaks(range(c(0, estimates[,"lCI"], estimates[,"uCI"]))),
     limits = range(c(0, estimates[,"lCI"], estimates[,"uCI"])))
   plot <- plot + ggplot2::scale_y_continuous(
