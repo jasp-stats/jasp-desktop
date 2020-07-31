@@ -749,6 +749,9 @@ void AnalysisForm::_formCompletedHandler()
 	{
 		_analysis	= qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
 
+		QQmlContext* context = qmlContext(this);
+		context->setContextProperty("form", this);
+
 		connect(_analysis, &Analysis::hasVolatileNotesChanged,	this, &AnalysisForm::hasVolatileNotesChanged);
 		connect(_analysis, &Analysis::needsRefreshChanged,		this, &AnalysisForm::needsRefreshChanged	);
 
@@ -899,6 +902,9 @@ QString AnalysisForm::metaHelpMD() const
 
 QString AnalysisForm::helpMD() const
 {
+	if (!PreferencesModel::prefs()->generateMarkdown())
+		return ""; // It should not come here, but when debugging QML, it crashes here because apparently _analysis is not set yet. Weird...
+
 	QStringList markdown =
 	{
 		_analysis->titleQ(), "\n",
