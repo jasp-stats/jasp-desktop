@@ -409,7 +409,7 @@ Correlation <- function(jaspResults, dataset, options){
     result <- try(expr = {ppcor::pcor.test(x = x, y = y, z = z, method = method)}, silent = TRUE)
     if(isTryError(result)) {
       errors <- .extractErrorMessage(result)
-      if(startsWith(errors, "reciprocal condition number")) errors <- "System is computationally singular"
+      if(startsWith(errors, "reciprocal condition number")) errors <- gettext("Partial correlation cannot be computed: covariance matrix is computationally singular.")
       result <- rep(NaN, length(statsNames))
       names(result) <- statsNames
       result$lower.ci <- NA
@@ -572,7 +572,7 @@ Correlation <- function(jaspResults, dataset, options){
   }
   
   if(length(options$conditioningVariables) != 0 && isTRUE(options$confidenceIntervals))
-    mainTable$addFootnote(message = gettext("Confidence intervals for partial correlations are not available."))
+    mainTable$addFootnote(message = gettext("Confidence intervals for partial correlations not yet available."))
 }
 
 .corrFillPairwiseTable <- function(mainTable, corrResults, options){
@@ -698,8 +698,8 @@ Correlation <- function(jaspResults, dataset, options){
     }
     
     # display test errors (i.e., during calculating results, such as failure to invert a correlation matrix, etc.)
-    for(test in c("pearson", "spearman", "kendall")){
-      if(!isFALSE(testErrors[[i]][[test]])){
+    for (test in c("pearson", "spearman", "kendall")) {
+      if (!isFALSE(testErrors[[i]][[test]])) {
         pair <- pairs[[i]]
         colNames <- statsNames[startsWith(statsNames, test)]
         colNames <- paste(pair[2], colNames, sep = "_")
@@ -894,13 +894,13 @@ Correlation <- function(jaspResults, dataset, options){
   
   for(i in seq_along(tests)){
     estimate <- res[[tests[i]]][['estimate']]
-    if(is.nan(estimate) || is.na(estimate)){
+    if (is.na(estimate)) {
       CIPossible[i] <- FALSE
       lab[i] <- switch(tests[i],
                        pearson =  paste(  "italic(r) == 'NA'"),
                        spearman = paste("italic(rho) == 'NA'"),
                        kendall =  paste("italic(tau) == 'NA'"))
-    } else if(round(estimate, 8) == 1) {
+    } else if (round(estimate, 8) == 1) {
       CIPossible[i] <- FALSE
       
       #no clue as to what is going on down there... Should this be translated?
