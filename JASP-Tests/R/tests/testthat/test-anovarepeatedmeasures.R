@@ -2,8 +2,6 @@ context("Repeated Measures ANOVA")
 
 # Does not test:
 #    - type I and type II sum of squares
-#    - Simple effects
-#    - Plots
 #    - Contrasts apart from 'repeated'
 
 opts <- options()
@@ -405,6 +403,43 @@ test_that("Contrast table match", {
   expect_equal_tables(table, refTable)
 })
 
+test_that("Descriptives Plots match", {
+  options <- initOpts()
+  options$sphericityCorrections <- TRUE
+  options$sphericityTests <- TRUE
+  options$plotHorizontalAxis <- "Charisma"
+  options$plotSeparateLines <- "gender"
+  options$plotErrorBars <- TRUE
+  
+  options$usePooledStandErrorCI <- FALSE
+  options$errorBarType <- "confidenceInterval"
+  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+                            dataset = "AnovaMixedEffects.csv", options = options)
+  descPlot <-  results$state$figures[[1]]$obj
+  expect_equal_plots(descPlot, "mixedRMANOVA1", "AnovaRepeatedMeasures")
+  
+  options$usePooledStandErrorCI <- TRUE
+  options$errorBarType <- "confidenceInterval"
+  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+                            dataset = "AnovaMixedEffects.csv", options = options)
+  descPlot <-  results$state$figures[[1]]$obj
+  expect_equal_plots(descPlot, "mixedRMANOVA2", "AnovaRepeatedMeasures")
+  
+  options$usePooledStandErrorCI <- FALSE
+  options$errorBarType <- "standardError"
+  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+                            dataset = "AnovaMixedEffects.csv", options = options)
+  descPlot <-  results$state$figures[[1]]$obj
+  expect_equal_plots(descPlot, "mixedRMANOVA3", "AnovaRepeatedMeasures")
+  
+  options$usePooledStandErrorCI <- TRUE
+  options$errorBarType <- "standardError"
+  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+                            dataset = "AnovaMixedEffects.csv", options = options)
+  descPlot <-  results$state$figures[[1]]$obj
+  expect_equal_plots(descPlot, "mixedRMANOVA4", "AnovaRepeatedMeasures")
+
+})
 
 test_that("Effect Size Calculation correct", {
   options <- jasptools::analysisOptions("AnovaRepeatedMeasures")
