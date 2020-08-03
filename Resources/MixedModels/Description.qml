@@ -4,7 +4,7 @@ import JASP.Module 	1.0
 Description
 {
 	title		: "Mixed Models"
-	icon		: "analysis-descriptives.svg"
+	icon		: "MixedModels_classical.svg"
 	description	: "This module offers the Linear Mixed Models analysis."
 	version		: "0.13"
 	author		: "JASP Team"
