@@ -29,5 +29,53 @@ GridLayout
 	Layout.minimumWidth:	parent.width
 	Layout.alignment:		Qt.AlignTop | Qt.AlignLeft
 	
-	property int count:	children.length	
+	property int count									: children.length
+	property bool checkFormOverflowWhenLanguageChanged	: true
+
+	property int _initialColumns	: 2
+
+	Component.onCompleted: _initialColumns = columns; // Do not bind it!
+
+	Connections
+	{
+		enabled:				checkFormOverflowWhenLanguageChanged
+		target:					preferencesModel
+		onLanguageCodeChanged:	checkFormOverflowTimer.restart()
+	}
+
+	Timer
+	{
+		id: checkFormOverflowTimer
+		interval: 50
+		onTriggered: checkFormOverflow()
+	}
+
+
+	function checkFormOverflow()
+	{
+		if (!form) return false;
+
+		var startColumns = gridLayout.columns;
+
+		if (gridLayout.columns !== gridLayout._initialColumns)
+			gridLayout.columns = gridLayout._initialColumns;
+
+		var decrementColumns = true;
+
+		while (decrementColumns && gridLayout.columns >= 2)
+		{
+			decrementColumns = false;
+			for (var i = 0; i < gridLayout.children.length; i++)
+			{
+				var child = gridLayout.children[i];
+				if (child.mapToItem(form, child.width, 0).x > form.width)
+					decrementColumns = true;
+			}
+
+			if (decrementColumns)
+				gridLayout.columns--;
+		}
+
+		return startColumns !== gridLayout.columns;
+	}
 }

@@ -41,6 +41,7 @@ JASPControl
 			property alias	label:				label
 
 			property var	_allTextFields:		[]
+			property bool	_childrenConnected:	false
 
 	Label
 	{
@@ -67,6 +68,7 @@ JASPControl
 		anchors.leftMargin: groupBox.title ? jaspTheme.groupContentPadding : 0
 		rowSpacing:			groupBox.rowSpacing
 		columnSpacing:		groupBox.columnSpacing
+		checkFormOverflowWhenLanguageChanged: false // the checkFormOverflow is done with the alignment.
     }
 
 	Connections
@@ -78,7 +80,7 @@ JASPControl
 	Connections
 	{
 		target:					preferencesModel
-		onLanguageCodeChanged:	alignTextFieldTimer.restart()
+		onLanguageCodeChanged:	checkFormOverflowAndAlignTimer.restart()
 	}
 
 	Timer
@@ -86,50 +88,101 @@ JASPControl
 		// The alignment should be done when the scaling of the TextField's are done
 		id: alignTextFieldTimer
 		interval: 50
-		onTriggered: _alignTextField()
+		onTriggered: _alignTextFields()
 	}
-    
+
+	Timer
+	{
+		id: checkFormOverflowAndAlignTimer
+		interval: 50
+		onTriggered: _checkFormOverflowAndAlign()
+	}
+
 	Component.onCompleted:
 	{
 		for (var i = 0; i < contentArea.children.length; i++)
 		{
 			var child = contentArea.children[i];
 			if (child.hasOwnProperty('controlType') && child.controlType === JASPControlBase.TextField)
-			{
-				child.visibleChanged.connect(_alignTextField);
 				_allTextFields.push(child)
-			}
 		}
 
-		alignTextFieldTimer.start()
+		checkFormOverflowAndAlignTimer.start()
 	}
 
-	function _alignTextField()
+	function _alignTextFields()
 	{
-		if (alignTextFields && _allTextFields.length > 1)
-		{
-			var i;
-			_allTextFields[0].controlXOffset = 0;
-			var xMax = _allTextFields[0].innerControl.x;
-			var longestControl = _allTextFields[0].innerControl;
-			for (i = 1; i < _allTextFields.length; i++)
-			{
-				_allTextFields[i].controlXOffset = 0;
-				if (xMax < _allTextFields[i].innerControl.x)
-				{
-					longestControl = _allTextFields[i].innerControl;
-					xMax = _allTextFields[i].innerControl.x;
-				}
-            }
-            
-			for (i = 0; i < _allTextFields.length; i++)
-			{
-				if (_allTextFields[i].innerControl !== longestControl)
-					// Cannot use binding here, since innerControl.x depends on the controlXOffset,
-					// that would generate a binding loop
-					_allTextFields[i].controlXOffset = (xMax - _allTextFields[i].innerControl.x);
+		if (!alignTextFields || _allTextFields.length < 1) return;
 
+		var allTextFieldsPerColumn = {}
+		var columns = [];
+		var i, j, textField;
+
+		for (i = 0; i < _allTextFields.length; i++)
+		{
+			textField = _allTextFields[i];
+			if (!_childrenConnected)
+				// Do not connect visible when component is just completed: the visible value is aparently not yet set for all children.
+				// So do it with the first time it is aligned.
+				textField.visibleChanged.connect(_alignTextFields);
+
+			if (textField.visible)
+			{
+				if (!allTextFieldsPerColumn.hasOwnProperty(textField.x))
+				{
+					// Cannot use Layout.column to know in which column is the textField.
+					// Then its x value is used.
+					allTextFieldsPerColumn[textField.x] = []
+					columns.push(textField.x)
+				}
+				allTextFieldsPerColumn[textField.x].push(textField)
 			}
 		}
+
+		for (i = 0; i < columns.length; i++)
+		{
+			var textFields = allTextFieldsPerColumn[columns[i]]
+
+			// To align all the textfields on one column:
+			// . First search for the Textfield with the longest label (its innerControl x position).
+			// . Then add an offset (the controlXOffset) to all other textfields so that they are aligned with the longest TextField
+			if (textFields.length >= 1)
+			{
+				textField = textFields[0];
+				textField.controlXOffset = 0;
+				var xMax = textField.innerControl.x;
+				var longestControl = textField.innerControl;
+
+				for (j = 1; j < textFields.length; j++)
+				{
+					textField = textFields[j];
+					textField.controlXOffset = 0;
+					if (xMax < textField.innerControl.x)
+					{
+						longestControl = textField.innerControl;
+						xMax = textField.innerControl.x;
+					}
+				}
+
+				for (j = 0; j < textFields.length; j++)
+				{
+					textField = textFields[j];
+					if (textField.innerControl !== longestControl)
+						// Cannot use binding here, since innerControl.x depends on the controlXOffset,
+						// that would generate a binding loop
+						textField.controlXOffset = (xMax - textField.innerControl.x);
+
+				}
+			}
+		}
+
+		_childrenConnected = true;
     }
+
+	function _checkFormOverflowAndAlign()
+	{
+		_alignTextFields();
+		if (contentArea.checkFormOverflow())
+			_alignTextFields();
+	}
 }
