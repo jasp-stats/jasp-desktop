@@ -690,9 +690,9 @@
   } else if (type == "GLMM") {
     dependencies <- .mmDependenciesGLMM
   }
-  if (options$method == "PB") {
+  if (options$method == "PB")
     dependencies <- c(dependencies, "seed", "setSeed")
-  }
+
   fitSummary$dependOn(c(dependencies, "fitStats"))
   jaspResults[["fitSummary"]] <- fitSummary
   
@@ -702,9 +702,8 @@
   fitStats$position <- 1
   
   fitStats$addColumnInfo(name = "deviance", title = gettext("Deviance"), type = "number")
-  if (lme4::isREML(full_model)) {
+  if (lme4::isREML(full_model))
     fitStats$addColumnInfo(name = "devianceREML", title = gettext("Deviance (REML)"), type = "number")
-  }
   fitStats$addColumnInfo(name = "loglik", title = gettext("log Lik."), type = "number")
   fitStats$addColumnInfo(name = "df",     title = gettext("df"),       type = "integer")
   fitStats$addColumnInfo(name = "aic",    title = gettext("AIC"),      type = "number")
@@ -735,8 +734,8 @@
   temp_row <- list(
     observations = nrow(full_model@frame)
   )
-  for(n in names(full_model@flist)){
-    fitSizes$addColumnInfo(name = n, title = .unv(n), type = "integer", overtitle = gettext("Random effects grouping factors"))
+  for (n in names(full_model@flist)) {
+    fitSizes$addColumnInfo(name = n, title = .unv(n), type = "integer", overtitle = gettext("Levels of RE grouping factors"))
     temp_row[[n]] <- length(levels(full_model@flist[[n]]))
   }
   fitSizes$addRows(temp_row)
@@ -2239,12 +2238,11 @@
   n_bad_loo  <- length(loo::pareto_k_ids(loo, threshold = .7))
   
   
-  if(n_bad_waic > 0){
+  if (n_bad_waic > 0)
     fitStats$addFootnote(.mmMessageBadWAIC(n_bad_waic), symbol = gettext("Warning:"))   
-  }
-  if(n_bad_loo > 0){
+  if (n_bad_loo > 0)
     fitStats$addFootnote(.mmMessageBadLOO(n_bad_loo), symbol = gettext("Warning:"))    
-  }
+  
   
   temp_row <- list(
     waic   = waic$estimates["waic", "Estimate"],
@@ -2265,8 +2263,8 @@
   temp_row <- list(
     observations = attr(stanova_summary, "nobs")
   )
-  for(n in names(attr(stanova_summary, "ngrps"))){
-    fitSizes$addColumnInfo(name = n, title = .unv(n), type = "integer", overtitle = gettext("Random effects grouping factors"))
+  for (n in names(attr(stanova_summary, "ngrps"))) {
+    fitSizes$addColumnInfo(name = n, title = .unv(n), type = "integer", overtitle = gettext("Levels of RE grouping factors"))
     temp_row[[n]] <- attr(stanova_summary, "ngrps")[[n]]
   }
   fitSizes$addRows(temp_row)
