@@ -409,8 +409,11 @@ Correlation <- function(jaspResults, dataset, options){
     result <- try(expr = {ppcor::pcor.test(x = x, y = y, z = z, method = method)}, silent = TRUE)
     if(isTryError(result)) {
       errors <- .extractErrorMessage(result)
+      if(startsWith(errors, "reciprocal condition number")) errors <- gettext("Partial correlation cannot be computed: covariance matrix is computationally singular.")
       result <- rep(NaN, length(statsNames))
       names(result) <- statsNames
+      result$lower.ci <- NA
+      result$upper.ci <- NA
     } else{
       errors <- FALSE
       result <- as.list(result)
@@ -567,6 +570,9 @@ Correlation <- function(jaspResults, dataset, options){
   } else{
     .corrFillCorrelationMatrix(mainTable, corrResults, options)
   }
+  
+  if(length(options$conditioningVariables) != 0 && isTRUE(options$confidenceIntervals))
+    mainTable$addFootnote(message = gettext("Confidence intervals for partial correlations not yet available."))
 }
 
 .corrFillPairwiseTable <- function(mainTable, corrResults, options){
@@ -574,6 +580,7 @@ Correlation <- function(jaspResults, dataset, options){
   pairs <- names(corrResults)
   results <- lapply(corrResults, function(x) x[['res']])
   errors <- lapply(corrResults,function(x) x[['errors']])
+  testErrors     <- lapply(corrResults, function(x) x[['testErrors']])
   
   mainTable[['sample.size']] <- sapply(results, function(x) x[['sample.size']])
   
@@ -589,11 +596,21 @@ Correlation <- function(jaspResults, dataset, options){
     
     colNames <- c(colNames, paste(test, colnames(res), sep="_"))
   }
-  # add footnotes for errors
   for(i in seq_along(errors)){
+    # add footnotes for general errors
     if(!isFALSE(errors[[i]])) mainTable$addFootnote(message = errors[[i]]$message, rowNames = pairs[i],
                                                     colNames = colNames)
+    
+    # add footnotes for test specific errors
+    for(test in c("pearson", "spearman", "kendall")){
+      if(!isFALSE(testErrors[[i]][[test]])){
+        errorColNames <- colNames[startsWith(colNames, test)]
+        mainTable$addFootnote(message = testErrors[[i]][[test]], rowNames = pairs[i], colNames = errorColNames)
+      }
+    }
   }
+  
+
 }
 
 .corrFlagSignificant <- function(table, p.values, colName, rowNames){
@@ -629,9 +646,10 @@ Correlation <- function(jaspResults, dataset, options){
     res
     })
   
-  errors     <- lapply(corrResults, function(x) x[['errors']])
-  statsNames <- names(results[[1]])
-  nStats     <- length(statsNames)
+  errors         <- lapply(corrResults, function(x) x[['errors']])
+  testErrors     <- lapply(corrResults, function(x) x[['testErrors']])
+  statsNames     <- names(results[[1]])
+  nStats         <- length(statsNames)
   
   # would be really (!) nice to be able to fill table cell-wise, i.e., mainTable[[row, col]] <- value
   # in the meantime we have to collect and fill the entire table in the resultList
@@ -671,11 +689,22 @@ Correlation <- function(jaspResults, dataset, options){
   
   # Report errors as footnotes
   for(i in seq_along(errors)){
+    # display general errors (i.e., too much missing data, etc. identified from .hasErrors)
     if(is.list(errors[[i]])){
       pair <- pairs[[i]]
-      statsNames <- statsNames[statsNames != "sample.size"]
-      colNames <- paste(pair[1], statsNames, sep = "_")
-      mainTable$addFootnote(message = errors[[i]]$message, colNames = colNames, rowNames = pair[2])
+      colNames <- statsNames[statsNames != "sample.size"]
+      colNames <- paste(pair[2], colNames, sep = "_")
+      mainTable$addFootnote(message = errors[[i]]$message, colNames = colNames, rowNames = pair[1])
+    }
+    
+    # display test errors (i.e., during calculating results, such as failure to invert a correlation matrix, etc.)
+    for (test in c("pearson", "spearman", "kendall")) {
+      if (!isFALSE(testErrors[[i]][[test]])) {
+        pair <- pairs[[i]]
+        colNames <- statsNames[startsWith(statsNames, test)]
+        colNames <- paste(pair[2], colNames, sep = "_")
+        mainTable$addFootnote(message = testErrors[[i]][[test]], colNames = colNames, rowNames = pair[1])
+      }
     }
   }
 }
@@ -865,7 +894,13 @@ Correlation <- function(jaspResults, dataset, options){
   
   for(i in seq_along(tests)){
     estimate <- res[[tests[i]]][['estimate']]
-    if(round(estimate, 8) == 1) {
+    if (is.na(estimate)) {
+      CIPossible[i] <- FALSE
+      lab[i] <- switch(tests[i],
+                       pearson =  paste(  "italic(r) == 'NA'"),
+                       spearman = paste("italic(rho) == 'NA'"),
+                       kendall =  paste("italic(tau) == 'NA'"))
+    } else if (round(estimate, 8) == 1) {
       CIPossible[i] <- FALSE
       
       #no clue as to what is going on down there... Should this be translated?
@@ -954,7 +989,11 @@ Correlation <- function(jaspResults, dataset, options){
   
   #TODO: The following looks rather familiar and all these defines should, I think, all be put together in one place instead of scattered throughout this file...
   tests <- c("pearson", "spearman", "kendall")
-  names(tests) <- c(gettext("Pearson's r"), gettext("Spearman's rho"), gettext("Kendall's tau B"))
+  if(length(options$conditioningVariables) == 0){
+    names(tests) <- c(gettext("Pearson's r"), gettext("Spearman's rho"), gettext("Kendall's tau B"))
+  } else{
+    names(tests) <- c(gettext("Partial Pearson's r"), gettext("Partial Spearman's rho"), gettext("Partial Kendall's tau B"))
+  }
   tests <- tests[c(options$pearson, options$spearman, options$kendallsTauB)]
   
   if(length(tests) == 0){

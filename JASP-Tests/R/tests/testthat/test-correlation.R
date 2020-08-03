@@ -176,3 +176,18 @@ test_that("Analysis handles errors", {
                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "NaN", "NaN", "-", "debMiss99",
                            "debSame"))
 })
+
+
+test_that("Pearson's partial correlation correct", {
+  # Validated against Field, A. Discovering Statistics (5th edition). Chapter 8.5
+  options <- jasptools::analysisOptions("Correlation")
+  options$displayPairwise <- TRUE
+  options$variables <- list("Exam", "Anxiety")
+  options$conditioningVariables <- list("Revise")
+  
+  results <- jasptools::run("Correlation", "Exam Anxiety.csv", options)
+  table <- results[["results"]][["mainTable"]][["data"]]
+  expect_equal_tables(table,
+                      list(-0.246665820246124, 0.0124458135120866, "-", "Exam", "Anxiety"
+                      ))
+})
