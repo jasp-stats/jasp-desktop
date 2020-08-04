@@ -64,9 +64,7 @@ The Bayes factor used here is a more general case, assuming a beta prior on the 
 		{
 			name: "plotPriorAndPosterior";		label: qsTr("Prior and posterior")
 
-			info: qsTr("Displays the prior (dashed line) and posterior (solid line) density of the effect size under the alternative hypothesis;
-			the gray circles represent the height of the prior and the posterior density at effect size delta = 0. 
-			The horizontal solid line represents the width of the 95% credible interval of the posterior.")
+			info: qsTr("Displays the prior (dashed line) and posterior (solid line) density of the effect size under the alternative hypothesis; the gray circles represent the height of the prior and the posterior density at effect size delta = 0. The horizontal solid line represents the width of the 95% credible interval of the posterior.")
 
 			CheckBox 
 			{ 

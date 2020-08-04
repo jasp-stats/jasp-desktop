@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-07-01 17:19\n"
+"POT-Creation-Date: 2020-07-22 16:43\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -808,10 +808,28 @@ msgstr ""
 msgid "<u>Procedure</u>"
 msgstr ""
 
-msgid "Benford's law states that in many naturally occurring collections of numbers, the leading significant number is likely to be small. The goal of this procedure is to determine to which extent the leading numbers in the population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification."
+msgid "Benford's law states that in many naturally occurring collections of numbers, the leading significant number is likely to be small. The goal of this procedure is to determine to which extent the first leading numbers in the population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification."
+msgstr ""
+
+msgid "Benford's law states that in many naturally occurring collections of numbers, the leading significant number is likely to be small. The goal of this procedure is to determine to which extent the first two leading numbers in the population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification."
+msgstr ""
+
+msgid "Benford's law states that in many naturally occurring collections of numbers, the leading significant number is likely to be small. The goal of this procedure is to determine to which extent the last numbers in the population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification."
+msgstr ""
+
+msgid "The uniform distribution assigns equal probability to all values that may occur. The goal of this procedure is to determine to which extent the first leading numbers in the population follow the uniform distribution, and to test this relation with <b>%1$s</b> confidence. Supposedly random data that do not conform to the uniform distribution might need further verification."
+msgstr ""
+
+msgid "The uniform distribution assigns equal probability to all values that may occur. The goal of this procedure is to determine to which extent the first two leading numbers in the population follow the uniform distribution, and to test this relation with <b>%1$s</b> confidence. Supposedly random data that do not conform to the uniform distribution might need further verification."
+msgstr ""
+
+msgid "The uniform distribution assigns equal probability to all values that may occur. The goal of this procedure is to determine to which extent the last numbers in the population follow the uniform distribution, and to test this relation with <b>%1$s</b> confidence. Supposedly random data that do not conform to the uniform distribution might need further verification."
 msgstr ""
 
 msgid "<u>Assessing Benford's Law</u>"
+msgstr ""
+
+msgid "<u>Assessing the Uniform Distribution</u>"
 msgstr ""
 
 msgid "<b>Table %i.</b> Goodness-of-fit Test"
@@ -823,13 +841,13 @@ msgstr ""
 msgid "<i>p</i> value"
 msgstr ""
 
-msgid "(1 - 9)"
+msgid "The null hypothesis specifies that the distribution of first numbers (1 - 9) in the population conforms to %1$s."
 msgstr ""
 
-msgid "(10 - 99)"
+msgid "The null hypothesis specifies that the distribution of the first two numbers (10 - 99) in the population conforms to %1$s."
 msgstr ""
 
-msgid "The null hypothesis specifies that the distribution of first numbers %1$s in the population conforms to Benford’s law."
+msgid "The null hypothesis specifies that the distribution of last numbers (1 - 9) in the population conforms to %1$s."
 msgstr ""
 
 msgid "Chi-square"
@@ -841,7 +859,19 @@ msgstr ""
 msgid "<b>Table %i.</b> Descriptive Statistics"
 msgstr ""
 
+msgid "Benford's law"
+msgstr ""
+
+msgid "Uniform distribution"
+msgstr ""
+
 msgid "Leading digit"
+msgstr ""
+
+msgid "Leading digits"
+msgstr ""
+
+msgid "Last digit"
 msgstr ""
 
 msgid "Count"
@@ -850,16 +880,13 @@ msgstr ""
 msgid "Percentage"
 msgstr ""
 
-msgid "Benford's law"
-msgstr ""
-
-msgid "Observed Percentages vs. Benford's Law"
+msgid "Observed Percentages vs. Expected Percentages"
 msgstr ""
 
 msgid "Observed"
 msgstr ""
 
-msgid "<b>Figure %i:</b> The observed percentages of each leading number in the population compared to the expected percentage under Benford's law. The more the blue dots lie near the top of the grey bars, the more the population conforms to Benford's law."
+msgid "<b>Figure %i:</b> The observed percentages of each number in the population compared to the expected percentage under %2$s. The more the blue dots lie near the top of the grey bars, the more the population conforms to %2$s."
 msgstr ""
 
 msgid "<u>Conclusion</u>"
@@ -871,7 +898,13 @@ msgstr ""
 msgid "can not be rejected"
 msgstr ""
 
-msgid "The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of first numbers in the population conforms to Benford's law <b>%2$s</b> with <b>%3$s</b> confidence."
+msgid "The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of first numbers in the population conforms to %2$s <b>%3$s</b> with <b>%4$s</b> confidence."
+msgstr ""
+
+msgid "The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of the two first numbers in the population conforms to %2$s <b>%3$s</b> with <b>%4$s</b> confidence."
+msgstr ""
+
+msgid "The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of last numbers in the population conforms to %2$s <b>%3$s</b> with <b>%4$s</b> confidence."
 msgstr ""
 
 msgid "Direct estimator"
@@ -5212,6 +5245,12 @@ msgstr ""
 msgid "Bayesian Individual Item Reliability Statistics"
 msgstr ""
 
+msgid "Item"
+msgstr ""
+
+msgid "Posterior Mean"
+msgstr ""
+
 msgid "Item-rest correlation"
 msgstr ""
 
@@ -5251,6 +5290,9 @@ msgstr ""
 msgid "%sMcDonald's ω estimation method switched to PFA because the CFA\n                                    did not find a solution."
 msgstr ""
 
+msgid "%s Some confidence intervals could not be computed because out of the bootstrapped matrices none were invertible."
+msgstr ""
+
 msgid "If item dropped"
 msgstr ""
 
@@ -5261,6 +5303,9 @@ msgid "McDonald's ω estimation method for item-dropped statistics \n           
 msgstr ""
 
 msgid "Fit Measures of Single Factor Model Fit"
+msgstr ""
+
+msgid "Fit Measure"
 msgstr ""
 
 msgid "Fit measures cannot be displayed because the McDonald's ω \n                                       estimation method switched to PFA as the CFA did not find a solution."
@@ -5576,6 +5621,9 @@ msgid "Not all used variables are numeric. Mardia's coefficients not available."
 msgstr ""
 
 msgid "Path Diagrams"
+msgstr ""
+
+msgid "- *Bayes factor*: If one-sided test is requested:\n- BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is larger than the test value\n- BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is smaller than the test value\n- BF0+: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that the population mean is larger than the test value\n- BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that that the population mean is smaller than the test value\n- **p**: p-value corresponding to t-statistic."
 msgstr ""
 
 msgid "Successes"

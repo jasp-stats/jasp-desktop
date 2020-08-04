@@ -6,7 +6,7 @@ Description
 	name		: "Factor"
 	title		: qsTr("Factor")
 	icon		: "analysis-classical-sem.svg"
-	description	: qsTr("This module offers the Principal Component, Confirmatory and Exploratory Factor analyses")
+	description	: qsTr("This module offers the Principal Component, Confirmatory and Exploratory Factor analyses.")
 	version		: "0.13"
 	author		: "JASP Team"
 	maintainer	: "JASP Team <info@jasp-stats.org>"
