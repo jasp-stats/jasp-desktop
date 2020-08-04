@@ -97,6 +97,7 @@ public:
 signals:
 			void modelChanged(const Terms* added = nullptr, const Terms* removed = nullptr);
 			void selectedItemsChanged();
+			void termChanged(const QString& oldName, const QString& newName);
 
 public slots:	
 	virtual void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved);

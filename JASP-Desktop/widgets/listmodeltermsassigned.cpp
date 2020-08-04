@@ -138,6 +138,7 @@ void ListModelTermsAssigned::changeTerm(int index, const QString& name)
 		_rowControlsOptions.remove(oldName);
 		_terms.replace(index, Term(name));
 
+		emit termChanged(oldName, name);
 		emit modelChanged();
 		QModelIndex modelIndex = ListModelTermsAssigned::index(index, 0);
 		emit dataChanged(modelIndex, modelIndex);
