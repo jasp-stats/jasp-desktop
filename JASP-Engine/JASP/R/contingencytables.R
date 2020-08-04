@@ -362,7 +362,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     else  lvls <- unique(dataset[[ .v(analysis$columns) ]])
       
     if (options$columnOrder == "descending")
-        lvls <- sort(lvls, decreasing = TRUE)
+        lvls <- rev(lvls)
 
     overTitle            <- unlist(analysis$columns)
     useColumnNameAsTitle <- TRUE
