@@ -783,18 +783,19 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 	parser.parse(utf8, root);
 
 	QString selectedFilter;
-	QString finalPath = MessageForwarder::browseSaveFile(tr("Save JASP Image"), "", tr("Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;PowerPoint (*.pptx)"), &selectedFilter);
+	QString finalPath = MessageForwarder::browseSaveFile(tr("Save JASP Image"), "", tr("Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"), &selectedFilter);
 
 	if (!finalPath.isEmpty())
 	{
-		root["type"] = "png";
+		root["type"] = "svg";
 
-		if		(selectedFilter == "Encapsulated PostScript (*.eps)")		root["type"] = "eps";
+		if		(selectedFilter == "Portable Network Graphics (*.png)")		root["type"] = "png";
+		else if	(selectedFilter == "Encapsulated PostScript (*.eps)")		root["type"] = "eps";
 		else if (selectedFilter == "Portable Document Format (*.pdf)")		root["type"] = "pdf";
 		else if (selectedFilter == "300 dpi Tagged Image File (*.tiff)")	root["type"] = "tiff";
 		else if (selectedFilter == "PowerPoint (*.pptx)")					root["type"] = "pptx";
 
-		if(root["type"].asString() != "png")
+		if(root["type"].asString() != "svg")
 		{
 			root["finalPath"] = finalPath.toStdString();
 			analysis->saveImage(root);
