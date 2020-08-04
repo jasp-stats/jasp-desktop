@@ -1046,7 +1046,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   # JASP theme
   p <- JASPgraphs::themeJasp(p,
                              axisTickWidth = .7,
-                             bty = list(type = "n", ldwX = .7, lwdY = 1))
+                             bty = list(type = "n", ldwX = .7, lwdY = 1),
+                             family = if (displayDensity) NULL else "wasy10")
   # TODO: Fix jaspgraphs axis width X vs Y. See @vandenman.
 
   if (displayDensity)

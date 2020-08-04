@@ -175,6 +175,10 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
 runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall=name)
 {
+  sink("~/jaspDeletable/log.txt")
+  on.exit(sink(NULL))
+  print(.libPaths())
+  
   if (identical(.Platform$OS.type, "windows"))
     compiler::enableJIT(0)
 
@@ -207,6 +211,13 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
   oldGraphOptions <- JASPgraphs::graphOptions()
   on.exit(JASPgraphs::graphOptions(oldGraphOptions), add = TRUE)
+
+  if ("ragg" %in% unique(unlist(lapply(.libPaths(), dir)))) {
+    print("registered FreeSansJASP")
+    systemfonts::register_font("FreeSansJASP", "~/github/jasp-desktop/JASP-Desktop/resources/fonts/FreeSans.ttf")
+  } else {
+    print("on FreeSansJASP")
+  }
 
   analysisResult <-
     tryCatch(
