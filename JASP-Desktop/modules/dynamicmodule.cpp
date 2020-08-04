@@ -518,10 +518,14 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths())";
 
 	R << standardRIndent << "loadLog <- '';\n";
+	
+#if  defined(_WIN32) || defined(__APPLE__)
+	R << "options(install.packages.compile.from.source = 'never')\n";
+#endif
 
 	auto installDeps = [&](const std::string & pkg)
 	{
-		R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= "	<< pkg << ",   lib='" << moduleRLibrary().toStdString() << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
+		R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= "	<< pkg << ",   lib='" << moduleRLibrary().toStdString() << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade='never', repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
 	};
 
 	auto installLocal = [&](std::string pkgPath)
