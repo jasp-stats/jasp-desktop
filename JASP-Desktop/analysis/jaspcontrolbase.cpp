@@ -126,7 +126,14 @@ void JASPControlBase::componentComplete()
 		if (listView)
 		{
 			_parentListView = listView->item();
-			_parentListViewKey = context->contextProperty(!listViewVar.isNull() ? "rowValue" : "rowIndex").toString();
+
+			if (!listViewVar.isNull())
+			{
+				_parentListViewKey = context->contextProperty("rowValue").toString();
+				connect(listView->model(), &ListModel::termChanged, this, &JASPControlBase::listViewKeyChanged);
+			}
+			else
+				_parentListViewKey = context->contextProperty("rowIndex").toString();
 
 			listView->addRowControl(_parentListViewKey, _wrapper);
 
@@ -378,4 +385,10 @@ void JASPControlBase::reconnectWithYourChildren()
 		connect(child, &JASPControlBase::helpMDChanged, this, &JASPControlBase::helpMDChanged, Qt::UniqueConnection); //Unique so that it doesn't matter how many times we connect
 
 	emit helpMDChanged();
+}
+
+void JASPControlBase::listViewKeyChanged(const QString &oldName, const QString &newName)
+{
+	if (oldName == _parentListViewKey)
+		_parentListViewKey = newName;
 }

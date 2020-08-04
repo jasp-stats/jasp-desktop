@@ -125,6 +125,7 @@ public slots:
 	void	clearControlError();
 
 	void	reconnectWithYourChildren();
+	void	listViewKeyChanged(const QString& oldName, const QString& newName);
 
 	GENERIC_SET_FUNCTION(Name			, _name			, nameChanged			, QString		)
 	GENERIC_SET_FUNCTION(Info			, _info			, infoChanged			, QString		)
