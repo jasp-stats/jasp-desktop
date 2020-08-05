@@ -25,12 +25,12 @@ replicateOrStop <- function(x, n) {
   return(x)
 }
 
-makeLabels <- function(label, angle = 0, size = 1, family = graphOptions("family"),
+makeLabels <- function(label, angle = 0, size = 1, family = getGraphOption("family"),
                        vjust = "center", hjust = "center", x = .5, y = .5) {
   UseMethod("makeLabels", label)
 }
 
-makeLabels.default <- function(label, angle = 0, size = 1, family = graphOptions("family"),
+makeLabels.default <- function(label, angle = 0, size = 1, family = getGraphOption("family"),
                                vjust = "center", hjust = "center", x = .5, y = .5) {
 
   if (is.null(label))
@@ -70,7 +70,7 @@ makeLabels.default <- function(label, angle = 0, size = 1, family = graphOptions
   }
 }
 
-makeLabels.list <- function(label, angle = 0, size = 1, family = graphOptions("family"),
+makeLabels.list <- function(label, angle = 0, size = 1, family = getGraphOption("family"),
                             vjust = "center", hjust = "center", x = .5, y = .5) {
 
   nLabels <- length(label)
@@ -189,8 +189,8 @@ scaleAxesLabels <- function(scaleXYlabels, plotList) {
     scaleXYlabels <- matrix(scaleXYlabels, nrow = prod(d1), ncol = 2, byrow = TRUE)
   }
 
-  fontsize <- graphOptions("fontsize")
-  fam <- graphOptions("family")
+  fontsize <- getGraphOption("fontsize")
+  fam <- getGraphOption("family")
   for (i in seq_along(plotList)) {
 
     axesLabels <- getAxesLabels(plotList[[i]])

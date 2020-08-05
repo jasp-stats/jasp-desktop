@@ -28,7 +28,13 @@ getFamily <- function() if (hasFont("JASP_FONT")) "JASP_FONT" else NULL
 
 #' @rdname graphOptions
 #' @export
-getGraphOption <- function(name) return(get(name, envir = .graphOptions))
+getGraphOption <- function(name) {
+  ans <- get(name, envir = .graphOptions)
+  # this allows family to be a function that is only evaluated when requested, like an active method of an R6 object
+  if (identical(name, "family") && is.function(ans))
+    ans <- ans()
+  return(ans)
+}
 
 #' @rdname graphOptions
 #' @export
