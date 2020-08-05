@@ -2252,19 +2252,16 @@ as.list.footnotes <- function(footnotes) {
 }
 
 openGrDevice <- function(...) {
-  if (jaspResultsCalledFromJasp()) {
-    print("using svglite::svglite")
-    svglite::svglite(...)
-  } else {
-    print("using grDevices::png")
-    grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
-  }
+  #if (jaspResultsCalledFromJasp())
+  #  svglite::svglite(...)
+  #else
+  grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
 }
 
 .writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL) {
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
-    location        <- .fromRCPP(".requestTempFileNameNative", "svg")
+    location        <- .fromRCPP(".requestTempFileNameNative", "png")
     backgroundColor <- .fromRCPP(".imageBackground")
     ppi             <- .fromRCPP(".ppi")
   }
@@ -2284,22 +2281,30 @@ openGrDevice <- function(...) {
   # # convert width & height from pixels to inches. ppi = pixels per inch. 72 is a magic number inherited from the past.
   # # originally, this number was 96 but svglite scales this by (72/96 = 0.75). 0.75 * 96 = 72.
   # # for reference see https://cran.r-project.org/web/packages/svglite/vignettes/scaling.html
-  width  <- width / 72
-  height <- height / 72
+  # width  <- width / 72
+  # height <- height / 72
 
-  # width  <- width * (ppi / 96)
-  # height <- height * (ppi / 96)
+  width  <- width * (ppi / 96)
+  height <- height * (ppi / 96)
   image <- list()
 
   plot2draw <- decodeplot(plot)
 
-  svglite::svglite(filename = relativePathpng, width = width, height = height, bg = backgroundColor)
-  on.exit(dev.off())
-
-  # this should all be plot(plot2draw) and S3 dispatching should handle the rest
   if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable"))) {
 
-    print(plot2draw)
+    # TODO: ggsave adds very little when we use a function as device...
+    ggplot2::ggsave(
+      filename  = relativePathpng,
+      plot      = plot2draw,
+      device    = grDevices::png,
+      dpi       = ppi,
+      width     = width,
+      height    = height,
+      bg        = backgroundColor,
+      res       = 72 * (ppi / 96),
+      type      = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"),
+      limitsize = FALSE # only necessary if users make the plot ginormous.
+    )
 
     #If we have JASPgraphs available we can get the plotEditingOptions for this plot
     if(requireNamespace("JASPgraphs", quietly = TRUE))
@@ -2308,6 +2313,10 @@ openGrDevice <- function(...) {
   } else {
 
     isRecordedPlot <- inherits(plot2draw, "recordedplot")
+
+    # Open graphics device and plot
+    openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), bg = backgroundColor)
+    on.exit(dev.off())
 
     if (is.function(plot2draw) && !isRecordedPlot) {
 
@@ -2439,6 +2448,15 @@ saveImage <- function(plotName, format, height, width)
           type     = type
         )
         
+      } else if (format == "svg") {
+
+        # convert width & height from pixels to inches. ppi = pixels per inch. 72 is a magic number inherited from the past.
+        # originally, this number was 96 but svglite scales this by (72/96 = 0.75). 0.75 * 96 = 72.
+        # for reference see https://cran.r-project.org/web/packages/svglite/vignettes/scaling.html
+        width  <- width  / 72
+        height <- height / 72
+        svglite::svglite(file = relativePath, width = width, height = height)
+
       } else { # add optional other formats here in "else if"-statements
         
         stop("Format incorrectly specified")

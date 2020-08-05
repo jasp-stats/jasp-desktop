@@ -787,15 +787,15 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 
 	if (!finalPath.isEmpty())
 	{
-		root["type"] = "svg";
+		root["type"] = "png";
 
-		if		(selectedFilter == "Portable Network Graphics (*.png)")		root["type"] = "png";
-		else if	(selectedFilter == "Encapsulated PostScript (*.eps)")		root["type"] = "eps";
+		if		(selectedFilter == "Encapsulated PostScript (*.eps)")		root["type"] = "eps";
 		else if (selectedFilter == "Portable Document Format (*.pdf)")		root["type"] = "pdf";
 		else if (selectedFilter == "300 dpi Tagged Image File (*.tiff)")	root["type"] = "tiff";
 		else if (selectedFilter == "PowerPoint (*.pptx)")					root["type"] = "pptx";
+		else if (selectedFilter == "Scalable Vector Graphics (*.svg)")		root["type"] = "svg";
 
-		if(root["type"].asString() != "svg")
+		if(root["type"].asString() != "png")
 		{
 			root["finalPath"] = finalPath.toStdString();
 			analysis->saveImage(root);
