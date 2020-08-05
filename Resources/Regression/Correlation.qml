@@ -29,7 +29,7 @@ Form
 		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 		AvailableVariablesList{  name: "allVariablesList" }
 		AssignedVariablesList {  name: "variables";				title: qsTr("Variables");	 suggestedColumns: ["ordinal", "scale"] }
-		AssignedVariablesList {  name: "conditioningVariables"; title: qsTr("Condition on"); suggestedColumns: ["ordinal", "scale"] }
+		AssignedVariablesList {  name: "conditioningVariables"; title: qsTr("Condition on"); suggestedColumns: ["ordinal", "scale"]; debug: true }
 	}
 
 	Group
@@ -69,9 +69,9 @@ Form
 		title: qsTr("Plots")
 		CheckBox
 		{
-            name: "plotCorrelationMatrix";			label: qsTr("Scatter plots")
-            CheckBox { name: "plotDensities";		label: qsTr("Densities for variables")	}
-            CheckBox { name: "plotStatistics";		label: qsTr("Statistics")				}
+			name: "plotCorrelationMatrix";			label: qsTr("Scatter plots")
+			CheckBox { name: "plotDensities";		label: qsTr("Densities for variables")	}
+			CheckBox { name: "plotStatistics";		label: qsTr("Statistics")				}
             CheckBox {
                 name: "plotConfidenceIntervals"; label: qsTr("Confidence intervals")
                 childrenOnSameRow: true
