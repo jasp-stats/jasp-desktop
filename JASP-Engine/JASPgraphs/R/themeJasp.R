@@ -86,6 +86,8 @@ themeJaspRaw = function(legend.position = "none",
                         legend.title = element_text(family = family, size = fontsize, hjust = 0.5),
                         Xvjust = NULL, Yvjust = NULL) {
 
+  if (is.function(family))
+    family <- family()
     theme(
         # generics
         rect = getBackgroundRect(getGraphOption("debug")),

@@ -1,6 +1,8 @@
 hasFont <- function(font)
   font %in% sysfonts::font_families()
 
+getFamily <- function() if (hasFont("JASP_FONT")) "JASP_FONT" else NULL
+
 #' @rdname graphOptions
 #' @export
 .graphOptions <- list2env(list(
@@ -8,7 +10,7 @@ hasFont <- function(font)
   fontsize        = 17L,
   legend.cex      = 1.25,
   axis.title.cex  = 1.2,
-  family          = if (hasFont("JASP_FONT")) "JASP_FONT" else NULL,
+  family          = getFamily,
   legend.coordinates = list(left = .15,
                             mid = .5,
                             right = .8,
