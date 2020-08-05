@@ -25,7 +25,7 @@ themeJaspRaw(
   legend.position = "none",
   legend.cex = 1,
   axis.title.cex = 1,
-  family = NULL,
+  family = getGraphOption("family"),
   axisTickLength = getGraphOption("axisTickLength"),
   axisTickWidth = getGraphOption("axisTickWidth"),
   fontsize = getGraphOption("fontsize"),

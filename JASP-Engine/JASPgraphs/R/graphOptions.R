@@ -1,3 +1,6 @@
+hasFont <- function(font)
+  font %in% sysfonts::font_families()
+
 #' @rdname graphOptions
 #' @export
 .graphOptions <- list2env(list(
@@ -5,7 +8,7 @@
   fontsize        = 17L,
   legend.cex      = 1.25,
   axis.title.cex  = 1.2,
-  family          = if ("ragg" %in% unique(unlist(lapply(.libPaths(), dir)))) "FreeSansJASP" else NULL,
+  family          = if (hasFont("JASP_FONT")) "JASP_FONT" else NULL,
   legend.coordinates = list(left = .15,
                             mid = .5,
                             right = .8,
@@ -37,7 +40,7 @@ setGraphOption <- function(name, value) {
 #' @param ... modify options using name = value.
 #' @param name characyer string of the value to get or set.
 #' @param value the value to change x into.
-#'
+#' @param path path to use for JASP_FONT
 #' @export
 graphOptions <- function(...) {
   
@@ -73,3 +76,7 @@ graphOptions <- function(...) {
   assign(".graphOptions", .graphOptions, envir = as.environment("package:JASPgraphs"))
 
 
+#' @rdname graphOptions
+#' @export
+setJASPFont <- function(path)
+  sysfonts::font_add("JASP_FONT", fontPath)

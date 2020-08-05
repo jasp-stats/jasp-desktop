@@ -11,7 +11,7 @@ PlotPriorAndPosterior(
   CRI = NULL,
   median = NULL,
   xName = NULL,
-  yName = gettext("Density"),
+  yName = gettext("Density", domain = "R-JASPgraphs"),
   drawPizzaTxt = !is.null(BF),
   drawCRItxt = !is.null(CRI),
   bfType = c("BF01", "BF10", "LogBF10"),
@@ -21,7 +21,7 @@ PlotPriorAndPosterior(
   bty = list(type = "n", ldwX = 0.5, lwdY = 0.5),
   lineColors = NULL,
   CRItxt = "95\% CI: ",
-  medianTxt = "Median:",
+  medianTxt = gettext("Median:", domain = "R-JASPgraphs"),
   ...
 )
 }

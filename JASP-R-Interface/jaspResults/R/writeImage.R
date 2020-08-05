@@ -19,12 +19,21 @@ getImageLocation <- function() {
   )
 }
 
-openGrDevice <- function(...) {
+openGrDevice <- function(..., dpi) {
   #if (jaspResultsCalledFromJasp())
   #  svglite::svglite(...)
   #else
-  ragg::agg_png(...)
-  # grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+
+  # showtext divides by 72 internally, see ?showtext::showtext_opts
+  # 1 + 1 / 3 is a magic number to compensate font size scaling
+  showtext::showtext_opts(dpi = dpi / (1 + 1 / 3))
+  grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+  showtext::showtext_begin()
+}
+
+closeGrDevice <- function() {
+  showtext::showtext_end()
+  dev.off()
 }
 
 writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathpng=NULL, ppi=300, backgroundColor="white", location=getImageLocation())
@@ -60,23 +69,12 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
 
   plot2draw <- decodeplot(plot)
 
+  openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), bg = backgroundColor, dpi = ppi)
+  on.exit(closeGrDevice())
+
   if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable"))) {
 
-    # TODO: ggsave adds very little when we use a function as device...
-    ggplot2::ggsave(
-      filename  = relativePathpng, 
-      plot      = plot2draw,
-      # device    = grDevices::png,
-      # ragg detects ggsave and messes things up so we use a lambda
-      device    = function(...) ragg::agg_png(...),
-      dpi       = ppi,
-      width     = width,
-      height    = height,
-      bg        = backgroundColor,
-      res       = 72 * (ppi / 96),
-      # type      = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"),
-      limitsize = FALSE # only necessary if users make the plot ginormous.
-    )
+    grid::grid.draw(plot2draw) # inherited from ggplot2::ggsave
 
     #If we have JASPgraphs available we can get the plotEditingOptions for this plot
     if(requireNamespace("JASPgraphs", quietly = TRUE))
@@ -85,10 +83,6 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   } else {
     
     isRecordedPlot <- inherits(plot2draw, "recordedplot")
-
-    # Open graphics device and plot
-    openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), bg = backgroundColor)
-    on.exit(dev.off())
 
     if (is.function(plot2draw) && !isRecordedPlot) {
 

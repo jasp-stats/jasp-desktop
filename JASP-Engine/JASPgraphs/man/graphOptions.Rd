@@ -6,8 +6,11 @@
 \alias{getGraphOption}
 \alias{setGraphOption}
 \alias{graphOptions}
+\alias{setJASPFont}
 \title{Global graph options}
-\format{An object of class \code{environment} of length 13.}
+\format{
+An object of class \code{environment} of length 13.
+}
 \usage{
 .graphOptions
 
@@ -16,6 +19,8 @@ getGraphOption(name)
 setGraphOption(name, value)
 
 graphOptions(...)
+
+setJASPFont(path)
 }
 \arguments{
 \item{name}{characyer string of the value to get or set.}
@@ -23,6 +28,8 @@ graphOptions(...)
 \item{value}{the value to change x into.}
 
 \item{...}{modify options using name = value.}
+
+\item{path}{path to use for JASP_FONT}
 }
 \description{
 Global graph options
