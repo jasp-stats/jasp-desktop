@@ -46,7 +46,8 @@ Form
 
 			Group
 			{
-				columns: 1
+				columns: 2
+				Text { text: [qsTr("Rate:"), qsTr("Scale:")][parametrization.currentIndex] }
 				DoubleField{ name:  "par"; label: ["λ", "β"][parametrization.currentIndex]; id: par; negativeValues: false; defaultValue: 1 }
 			}
 
@@ -78,11 +79,13 @@ Form
 	{
 		distributionName		: "Exponential"
 		formula					: ["λ = ", "β = "][parametrization.currentIndex] + par.value
+		enabled					: mainWindow.dataAvailable
 	}
 
 	Section
 	{
 		title: qsTr("Estimate Parameters")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{
@@ -112,6 +115,7 @@ Form
 	Section
 	{
 		title: qsTr("Assess Fit")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{

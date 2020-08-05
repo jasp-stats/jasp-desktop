@@ -34,8 +34,10 @@ Form
 			title: "Parameters"
 			Group
 			{
-				columns: 1
+				columns: 2
+				Text { text: qsTr("Degree of freedom:") }
 				DoubleField{ name: "df"; label: qsTr("k"); id: df; min: 1; defaultValue: 5 }
+				Text { text: qsTr("Non-centrality:") }
 				DoubleField{ name: "ncp";  label: qsTr("λ"); id: ncp; negativeValues: true; defaultValue: 0}
 			}
 
@@ -69,11 +71,13 @@ Form
 		distributionName		: "χ²"
 		distributionSimpleName	: "chisq"
 		formula					: "k = " + df.value + ", λ = " + ncp.value
+		enabled					: mainWindow.dataAvailable
 	}
 
 	Section
 	{
 		title: qsTr("Estimate Parameters")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{
@@ -103,6 +107,7 @@ Form
 	Section
 	{
 		title: qsTr("Assess Fit")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{

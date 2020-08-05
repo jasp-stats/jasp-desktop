@@ -34,6 +34,8 @@ Form
 		{
 			title: qsTr("Parameter")
 			Layout.columnSpan: 2
+			columns: 2
+			Text { text: qsTr("Probability of success:") }
 			DoubleField{ name: "prob"; label: qsTr("p"); id: prob; min: 0; max: 1; defaultValue: 0.5 }
 		}
 
@@ -88,11 +90,13 @@ Form
 		showCumulativeDistribution	: false
 		histogramIsBarPlot			: true
 		allowOnlyScaleColumns		: false
+		enabled						: mainWindow.dataAvailable
 	}
 
 	Section
 	{
 		title: qsTr("Estimate Parameters")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{
@@ -122,6 +126,7 @@ Form
 	Section
 	{
 		title: qsTr("Assess Fit")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{

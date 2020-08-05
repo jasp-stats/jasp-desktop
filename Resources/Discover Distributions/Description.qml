@@ -4,7 +4,7 @@ import JASP.Module 	1.0
 Description
 {
 	title :			qsTr("Distributions")
-	name:			"Discover Distributions"
+	name:			"Distributions"
 	icon:			"discoverdistributions-distributions.svg"
 	description: 	qsTr("Discover distributions with JASP")
 	version:		"0.1"
@@ -12,6 +12,7 @@ Description
 	maintainer:		"JASP Team <info@jasp-stats.org>"
 	website:		"www.jasp-stats.org"
 	license:		"GPL (>= 2)"
+	requiresData:	false
 
 	Package	{ name:	"goftest"		}
 	Package	{ name:	"fitdistrplus"	}
@@ -77,6 +78,18 @@ Description
 		title:	qsTr("Exponential")
 		qml:	"LDexponential.qml"
 		func:	"LDexponential"
+	}
+	Analysis
+	{
+		title:	qsTr("Log-normal")
+		qml:	"LDlognormal.qml"
+		func:	"LDlognormal"
+	}
+	Analysis
+	{
+		title:	qsTr("Logistic")
+		qml:	"LDlogistic.qml"
+		func:	"LDlogistic"
 	}
 
 	GroupTitle

@@ -47,8 +47,11 @@ Form
 
 			Group
 			{
-				columns: 1
+				columns: 2
+				Text { text: qsTr("Mean:") }
 				DoubleField{ name:  "mu"; label: qsTr("μ"); id: mu; negativeValues: true }
+
+				Text { text: [qsTr("Variance:"), qsTr("Std. deviation:"), qsTr("Precision:"), qsTr("Square root of precision:")][parametrization.currentIndex] }
 				DoubleField
 				{
 					name: "varValue"
@@ -92,12 +95,14 @@ Form
 	LD.LDGenerateDisplayData
 	{
 		distributionName		: "Normal"
-		formula					: "μ = " + mu.value + ", " + parametrization.currentText.replace("μ, ", "") + " = " + varValue.value
+		formula					: mu.label + " = " + mu.value + ", " + varValue.label + " = " + varValue.value
+		enabled					: mainWindow.dataAvailable
 	}
 
 	Section
 	{
 		title: qsTr("Estimate Parameters")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{
@@ -154,6 +159,7 @@ Form
 	Section
 	{
 		title: qsTr("Assess Fit")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{

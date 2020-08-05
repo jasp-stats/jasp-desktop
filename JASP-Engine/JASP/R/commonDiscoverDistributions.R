@@ -909,7 +909,7 @@
   explanation$position <- 1
   
   if(is.null(explanationText)){
-    explanationText <- .ldAllTextsList()$explanations$cdf
+    explanationText <- .ldAllTextsList()$explanations$qf
   }
   
   explanation[['text']] <- explanationText
