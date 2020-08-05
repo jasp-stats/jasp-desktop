@@ -12,6 +12,7 @@ Description
 	website:			"www.github.com/koenderks/jfa"
 	license:			"GPL (>= 2)"
 	icon:				"audit-module.svg"
+	requiresData: false
 
 	GroupTitle
 	{
