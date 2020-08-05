@@ -48,6 +48,8 @@ Form
 	{
 		title: qsTr("Model")
 		
+		CheckBox { name: "includeConstant"; label: qsTr("Include intercept"); checked: true }
+		
 		VariablesForm
 		{
 			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
@@ -60,8 +62,6 @@ Form
 			}
 			ModelTermsList { width: parent.width * 5 / 9 }
 		}
-
-		CheckBox { name: "includeConstant"; label: qsTr("Include intercept"); checked: true }
 		
 	}
 	
@@ -200,7 +200,22 @@ Form
                 CheckBox { name: "plotResidualsHistogramStandardized";	label: qsTr("Standardized residuals"); checked: true	}
 			}
 			CheckBox { name: "plotResidualsQQ";			label: qsTr("Q-Q plot standardized residuals")			}
-			CheckBox { name: "plotsPartialRegression";	label: qsTr("Partial plots")								}
+            CheckBox
+            {
+                name: "plotsPartialRegression";	label: qsTr("Partial plots")
+                CheckBox
+                {
+                    name: "plotsPartialConfidenceIntervals";   label: qsTr("Confidence intervals")
+                    childrenOnSameRow: true
+                    CIField { name: "plotsPartialConfidenceIntervalsInterval"; }
+                }
+                CheckBox
+                {
+                    name: "plotsPartialPredictionIntervals";   label: qsTr("Prediction intervals")
+                    childrenOnSameRow: true
+                    CIField { name: "plotsPartialPredictionIntervalsInterval"; }
+                }
+            }
 		}
 	}
 }
