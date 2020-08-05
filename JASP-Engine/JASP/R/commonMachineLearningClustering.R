@@ -356,7 +356,7 @@
     colSize <- clusterResult[["clusters"]]
   }
 
-  clusterAssignment <- factor(pred.values)
+  clusterAssignment <- factor(pred.values, levels = sort(unique(pred.values), decreasing = FALSE))
   if(type=="densitybased")
     levels(clusterAssignment)[levels(clusterAssignment)=="0"] <- gettext("Noisepoint")
   tsne_plot <- data.frame(x = tsne_out$Y[,1], y = tsne_out$Y[,2], Cluster = clusterAssignment)
