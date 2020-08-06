@@ -444,7 +444,15 @@
 
   effectsTable$addColumnInfo(name = "Effects",      title = gettext("Effects"),      type = "string")
   effectsTable$addColumnInfo(name = "P(incl)",      title = gettext("P(incl)"),      type = "number")
+
+  if (options[["effectsType"]] == "matchedModels")
+    effectsTable$addColumnInfo(name = "P(excl)",      title = gettext("P(excl)"),      type = "number")
+
   effectsTable$addColumnInfo(name = "P(incl|data)", title = gettext("P(incl|data)"), type = "number")
+
+  if (options[["effectsType"]] == "matchedModels")
+    effectsTable$addColumnInfo(name = "P(excl|data)", title = gettext("P(excl|data)"), type = "number")
+
   effectsTable$addColumnInfo(name = "BFInclusion",  title = inclusion.title,         type = "number")
 
   if (options$effectsType == "matchedModels") {
@@ -483,6 +491,8 @@
     priorInclProb <- tmp[["priorInclProb"]]
     postInclProb  <- tmp[["postInclProb"]]
     bfIncl        <- tmp[["bfIncl"]]
+    priorExclProb <- tmp[["priorExclProb"]]
+    postExclProb  <- tmp[["postExclProb"]]
     
     # show BFinclusion for nuisance predictors as 1, rather than NaN
     priorInclIs1 <- is.nan(bfIncl) & abs(1 - priorInclProb) <= sqrt(.Machine$double.eps)
@@ -505,6 +515,12 @@
     "BF01"    = 1 / bfIncl,
     "BF10"    = bfIncl  
   )
+
+  if (options[["effectsType"]] == "matchedModels") {
+    effectsTable[["P(excl)"]]      <- priorExclProb
+    effectsTable[["P(excl|data)"]] <- postExclProb
+  }
+
   jaspResults[["tableEffects"]] <- effectsTable
   return()
 }
@@ -513,7 +529,9 @@
                                           priorProbs, postProbs) {
   # this method is inspired by this post: https://www.cogsci.nl/blog/interpreting-bayesian-repeated-measures-in-jasp
  
-  priorInclProb <- postInclProb <- bfIncl <- numeric(length(effectNames))
+  priorInclProb <- postInclProb <- bfIncl <- priorExclProb <- postExclProb <-
+    numeric(length(effectNames))
+
   for (i in seq_along(effectNames)) {
     effect <- effectNames[i]
     
@@ -537,15 +555,17 @@
     # idx5 includes models that have: all subcomponents & no higher order interaction & not the effect
     idx5 <- matrixStats::rowAlls(effects.matrix[, idx2, drop = FALSE]) & idx3 & !effects.matrix[, i]
     
-    priorExclProb <- sum(idx5 * priorProbs)
-    postExclProb  <- sum(idx5 * postProbs)
+    priorExclProb[i] <- sum(idx5 * priorProbs)
+    postExclProb[i]  <- sum(idx5 * postProbs)
     
     # compute inclusion BF
-    bfIncl[i]     <- (postInclProb[i] / postExclProb) / (priorInclProb[i] / priorExclProb)
+    bfIncl[i]     <- (postInclProb[i] / postExclProb[i]) / (priorInclProb[i] / priorExclProb[i])
   }
   return(list(
     priorInclProb = priorInclProb,
     postInclProb  = postInclProb,
+    priorExclProb = priorExclProb,
+    postExclProb  = postExclProb,
     bfIncl        = bfIncl
   ))
 }
