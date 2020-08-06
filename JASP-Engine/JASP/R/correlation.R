@@ -1198,7 +1198,7 @@ Correlation <- function(jaspResults, dataset, options){
   	dfLine <- data.frame(x = xr, y = rangeLineObj)
     p <- p + ggplot2::geom_line(data = dfLine, ggplot2::aes(x = x, y = y), size = .7, inherit.aes = FALSE)
     
-    if (options$plotConfidenceIntervals) {
+    if (isTRUE(options$plotConfidenceIntervals)) {
       ci <- as.data.frame(stats::predict(fit, interval = "confidence", level = options$plotConfidenceIntervalsInterval))
       ci[["x"]] <- d$x
       
@@ -1206,7 +1206,7 @@ Correlation <- function(jaspResults, dataset, options){
         ggplot2::geom_line(data = ci, ggplot2::aes(x = x, y = upr), size = 1, color = "darkblue", linetype = "dashed")
     }
     
-    if (options$plotPredictionIntervals) {
+    if (isTRUE(options$plotPredictionIntervals)) {
       pi <- as.data.frame(stats::predict(fit, interval = "prediction", level = options$plotPredictionIntervalsInterval))
       pi[["x"]] <- d$x
       
