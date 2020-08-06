@@ -72,10 +72,10 @@ Form
 			name: "plotCorrelationMatrix";			label: qsTr("Scatter plots")
 			CheckBox { name: "plotDensities";		label: qsTr("Densities for variables")	}
 			CheckBox { name: "plotStatistics";		label: qsTr("Statistics")				}
-            CheckBox {
-                name: "plotConfidenceIntervals"; label: qsTr("Confidence intervals")
-                childrenOnSameRow: true
-                CIField { name: "plotConfidenceIntervalsInterval"; }
+            CheckBox 
+            {
+                name: "plotConfidenceIntervals"; label: qsTr("Confidence intervals"); childrenOnSameRow: true
+                CIField { name: "plotConfidenceIntervalsInterval" }
             }
             CheckBox {
                 name: "plotPredictionIntervals"; label: qsTr("Prediction intervals")
