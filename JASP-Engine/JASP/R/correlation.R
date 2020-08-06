@@ -1155,7 +1155,7 @@ Correlation <- function(jaspResults, dataset, options){
     }
 }
 
-.plotScatter <- function(xVar, yVar, options, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL, drawAxes = TRUE) {
+.plotScatter <- function(xVar, yVar, options = NULL, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL, drawAxes = TRUE) {
   
 	isNumericX <- !(is.factor(xVar) || (is.integer(xVar) && length(unique(xVar)) <= 10))
 	isNumericY <- !(is.factor(yVar) || (is.integer(yVar) && length(unique(yVar)) <= 10))
