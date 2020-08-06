@@ -1432,7 +1432,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   return(data.frame(residualsPred = residualsPred, residualsDep = residualsDep))
 }
 
-.linregPlotResiduals <- function(xVar = NULL, res = NULL, dfRes = Inf, xlab, ylab = gettext("Residuals"), cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine = TRUE, confidenceIntervals = TRUE, confidenceIntervalsInterval = 0.95, predictionIntervals = TRUE, predictionIntervalsInterval = 0.95, standardizedResiduals = TRUE, intercept = 0, slope = 0) {
+.linregPlotResiduals <- function(xVar = NULL, res = NULL, dfRes = Inf, xlab, ylab = gettext("Residuals"), cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine = TRUE, confidenceIntervals = FALSE, confidenceIntervalsInterval = 0.95, predictionIntervals = FALSE, predictionIntervalsInterval = 0.95, standardizedResiduals = TRUE, intercept = 0, slope = 0) {
   d     <- data.frame(xx= xVar, yy= res)
   d     <- na.omit(d)
   xVar  <- d$xx
