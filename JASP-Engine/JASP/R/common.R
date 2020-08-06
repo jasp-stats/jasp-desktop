@@ -2448,6 +2448,15 @@ saveImage <- function(plotName, format, height, width)
           type     = type
         )
         
+      } else if (format == "svg") {
+
+        # convert width & height from pixels to inches. ppi = pixels per inch. 72 is a magic number inherited from the past.
+        # originally, this number was 96 but svglite scales this by (72/96 = 0.75). 0.75 * 96 = 72.
+        # for reference see https://cran.r-project.org/web/packages/svglite/vignettes/scaling.html
+        width  <- width  / 72
+        height <- height / 72
+        svglite::svglite(file = relativePath, width = width, height = height)
+
       } else { # add optional other formats here in "else if"-statements
         
         stop("Format incorrectly specified")
