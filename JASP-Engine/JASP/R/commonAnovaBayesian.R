@@ -57,7 +57,7 @@
   if (analysisType != "RM-ANOVA") {
     hasDV <- options$dependent != ""
     hasIV <- any(lengths(options[c("fixedFactors", "covariates")]) != 0)
-    fixed <- options$fixedFactors
+    fixed  <- unlist(options$betweenSubjectFactors)
     noVariables <- !(hasDV && hasIV)
     target <- c(options$covariates, options$dependent)
 
@@ -126,7 +126,11 @@
           return(NULL)
         },
         duplicateColumns = function() {
-          datasetList <- as.list(dataset[, c(.BANOVAsubjectName, .v(target))])
+          cols <- c(.BANOVAsubjectName, .v(target))
+          if (length(cols) == 1L)
+            return()
+
+          datasetList <- as.list(dataset[, cols])
           duplicatedCols <- duplicated(datasetList) | duplicated(datasetList, fromLast = TRUE)
           if (any(duplicatedCols)) {
             if (duplicatedCols[1L]) {
@@ -144,6 +148,7 @@
 
       .hasErrors(
         dataset = dataset,
+        target = target,
         custom = customChecks,
         exitAnalysisIfErrors = TRUE
       )
