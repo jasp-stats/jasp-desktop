@@ -159,7 +159,11 @@ Form {
 					{ label: qsTr("Average"), value: "average"},
 					{ label: qsTr("Single"), value: "single"},
 					{ label: qsTr("Complete"), value: "complete"},
-					{ label: qsTr("Centroid"), value: "centroid"}
+					{ label: qsTr("Centroid"), value: "centroid"},
+                    { label: qsTr("Median"), value: "median"},
+                    { label: qsTr("Ward.D"), value: "ward.D"},
+                    { label: qsTr("Ward.D2"), value: "ward.D2"},
+                    { label: qsTr("McQuitty"), value: "mcquitty"}
                 ]
             }   
 
