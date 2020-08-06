@@ -67,9 +67,10 @@ test_that("Effects table results match", {
     allModels = list(0.195147508378383, "contGamma", 0.6, 0.226438035053418, 0.215922578651088,
                      "contBinom", 0.6, 0.24464673662928, 0.148059370442442, "contGamma<unicode><unicode><unicode>contBinom",
                      0.2, 0.0356936478531284),
-    matchedModels = list(0.251463756140854, "contGamma", 0.4, 0.193766080181002, 0.281631799589675,
-                         "contBinom", 0.4, 0.211903947712592, 0.784742840790345, "contGamma<unicode><unicode><unicode>contBinom",
-                         0.2, 0.0356812041725068)
+    matchedModels = list(0.251463756140853, "contGamma", 0.4, 0.770552715646492, 0.4, 0.193766080181001,
+                         0.281631799589681, "contBinom", 0.4, 0.752414848114898, 0.4,
+                         0.211903947712595, 0.784742840790344, "contGamma<unicode><unicode><unicode>contBinom",
+                         0.2, 0.0454686584162663, 0.2, 0.0356812041725066)
   )
 
   for (effectsType in c("allModels", "matchedModels")) {

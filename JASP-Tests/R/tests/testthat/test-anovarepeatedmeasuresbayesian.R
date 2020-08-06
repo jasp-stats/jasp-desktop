@@ -93,9 +93,10 @@ test_that("Effects table results match", {
     allModels = list(1000799917193443, "RM_FACTOR_1", 0.6, 0.999999999999999, 2.08122183080565,
                      "facGender", 0.6, 0.757389476581779, 0.343504623304608, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
                      0.2, 0.0790846685097493),
-    matchedModels = list(1.02806369879075e+24, "RM_FACTOR_1", 0.4, 0.92091533149025, 2.79585896982196,
-                         "facGender", 0.4, 0.67830480807203, 0.116591637813293, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                         0.2, 0.0790846685097493)
+    matchedModels = list(1.02806369879077e+24, "RM_FACTOR_1", 0.4, 8.95776528802106e-25,
+                         0.4, 0.920915331490253, 2.795858969822, "facGender", 0.4, 0.242610523418218,
+                         0.4, 0.678304808072035, 0.116591637813293, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
+                         0.2, 0.678304808072035, 0.2, 0.0790846685097499)
   )
 
   effectsTypes <- c("allModels", "matchedModels")

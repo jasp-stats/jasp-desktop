@@ -45,6 +45,104 @@ test_that("Main tables results match", {
     )
 })
 
+test_that("summary tables match", {
+  options <- jasptools::analysisOptions("RegressionLinearBayesian")
+  options$covariates <- c("adverts", "airplay", "attract")
+  options$dependent <- "sales"
+  options$modelPrior <- "beta.binomial"
+  options$modelTerms <- list(list(components = "adverts", isNuisance = FALSE), list(components = "airplay",
+                                                                                    isNuisance = FALSE), list(components = "attract", isNuisance = FALSE),
+                             list(components = c("adverts", "airplay"), isNuisance = FALSE),
+                             list(components = c("adverts", "attract"), isNuisance = FALSE),
+                             list(components = c("airplay", "attract"), isNuisance = FALSE),
+                             list(components = c("adverts", "airplay", "attract"), isNuisance = FALSE))
+  options$postSummaryTable <- TRUE
+  set.seed(1)
+  results <- jasptools::run("RegressionLinearBayesian", "Album Sales.csv", options)
+
+  test_that("Model Comparison - sales table results match", {
+    table <- results[["results"]][["basreg"]][["collection"]][["basreg_modelComparisonTable"]][["data"]]
+    expect_equal_tables(table,
+                        list(1, 174.417226359448, "adverts + airplay + attract", 0.664667686974516,
+                             0.621991839174225, 0.00934579439252337, 0.186047794498428, 13.8715623535198,
+                             "adverts + airplay + attract + airplay<unicode><unicode><unicode>attract",
+                             0.66707467853794, 0.115720209874385, 0.00934579439252337, 0.142997743978807,
+                             10.3484282582346, "adverts + airplay + attract + adverts<unicode><unicode><unicode>airplay",
+                             0.666160366889052, 0.0889434297751434, 0.00934579439252337,
+                             0.107406332340749, 7.58836892068143, "adverts + airplay + attract + adverts<unicode><unicode><unicode>attract",
+                             0.665163133892889, 0.0668058621915803, 0.00934579439252337,
+                             0.0272649838741297, 1.83826286627873, "adverts + airplay + attract + adverts<unicode><unicode><unicode>airplay + airplay<unicode><unicode><unicode>attract",
+                             0.668232187780119, 0.0282643291082092, 0.0155763239875389, 0.0244460302418582,
+                             1.64326131197498, "adverts + airplay + attract + adverts<unicode><unicode><unicode>attract + airplay<unicode><unicode><unicode>attract",
+                             0.66785188769348, 0.0253420521844035, 0.0155763239875389, 0.000965925271001277,
+                             0.0441865815594237, "adverts + airplay + attract + adverts<unicode><unicode><unicode>airplay + adverts<unicode><unicode><unicode>attract + airplay<unicode><unicode><unicode>attract + adverts<unicode><unicode><unicode>airplay<unicode><unicode><unicode>attract",
+                             0.671330894983083, 0.0210279172535231, 0.327102803738318, 0.0178304900522086,
+                             1.19019034974452, "adverts + airplay + attract + adverts<unicode><unicode><unicode>airplay + adverts<unicode><unicode><unicode>attract",
+                             0.666749775458152, 0.0184840321682516, 0.0155763239875389, 0.00404508705638788,
+                             0.259902726835239, "adverts + airplay + attract + adverts<unicode><unicode><unicode>airplay + adverts<unicode><unicode><unicode>attract + airplay<unicode><unicode><unicode>attract",
+                             0.669090708597362, 0.0125800556891127, 0.0467289719626168, 0.000729479900775137,
+                             0.047829119974167, "adverts + airplay", 0.629285746598297, 0.000756217575206264,
+                             0.0155763239875389),
+                        label = "regressionTable")
+  })
+
+  test_that("Posterior Summaries of Coefficients table results match", {
+    table <- results[["results"]][["basreg"]][["collection"]][["basreg_postSumContainer"]][["collection"]][["basreg_postSumContainer_postSumTable"]][["data"]]
+    expect_equal_tables(table,
+                        list(1, "Intercept", 185.9359109822, 193.2, 1, 1, 3.33001519392629,
+                             199.230069179688, 5.32503141479899e+22, "adverts", 0.0550921437820945,
+                             0.0870677283108485, 1, 0.554517133956386, 0.0330086923987083,
+                             0.150459099025842, 2.01764580197328e+22, "airplay", 0.457724418488145,
+                             2.97961262311916, 1, 0.554517133956386, 1.1461062869467, 4.524690591752,
+                             955.280172249543, "attract", -0.102388179038019, 9.67945340083919,
+                             0.999159727418835, 0.554517133956386, 4.7776099631142, 17.4065595563688,
+                             0.277398656420613, "adverts<unicode><unicode><unicode>airplay",
+                             -0.00179349545935815, 2.16219311069655e-06, 0.169383819000199,
+                             0.423676012461059, 0.000995345061743704, 1.64427677195647e-05,
+                             0.22928004995305, "adverts<unicode><unicode><unicode>attract",
+                             -0.00681136356232946, 1.93623197708716e-05, 0.144239919486871,
+                             0.423676012461059, 0.00453577686425953, 0.00427686124707723,
+                             0.346333790672081, "airplay<unicode><unicode><unicode>attract",
+                             -0.000699936303713344, 0.0579310693810951, 0.202934564109634,
+                             0.423676012461059, 0.160646671460175, 0.555676707155026, 0.0441865815594237,
+                             "adverts<unicode><unicode><unicode>airplay<unicode><unicode><unicode>attract",
+                             0, -1.5448872845036e-05, 0.0210279172535231, 0.327102803738318,
+                             0.000141268474333337, 0),
+                        label = "posteriorSummaryTable - all models")
+  })
+
+  options$effectsType <- "matchedModels"
+  results <- jasptools::run("RegressionLinearBayesian", "Album Sales.csv", options)
+
+  test_that("Posterior Summaries of Coefficients table results match", {
+    table <- results[["results"]][["basreg"]][["collection"]][["basreg_postSumContainer"]][["collection"]][["basreg_postSumContainer_postSumTable"]][["data"]]
+    expect_equal_tables(table,
+                        list(1, "Intercept", 186.161290509004, 193.2, 0, 0, 1, 1, 3.33001519392629,
+                             199.488123662299, 2.25793959971455e+23, "adverts", 0.0507687008869569,
+                             0.0870677283108485, 1.50866863298529e-23, 0.445482866043614,
+                             0.738468266623817, 0.0965732087227414, 0.0330086923987083, 0.144952448077947,
+                             7.98861456199448e+22, "airplay", -0.0993815024762557, 2.97961262311916,
+                             3.98172357968454e-23, 0.445482866043614, 0.689553918941012,
+                             0.0965732087227414, 1.1461062869467, 4.32488778911079, 3902.87112656581,
+                             "attract", -1.94856184146502, 9.67945340083919, 0.000840272581165592,
+                             0.445482866043614, 0.710935268949368, 0.0965732087227414, 4.7776099631142,
+                             17.5457886962235, 0.0284895917404954, "adverts<unicode><unicode><unicode>airplay",
+                             -0.00139780263317473, 2.16219311069654e-06, 0.830616180999801,
+                             0.059190031152648, 0.169383819000199, 0.423676012461059, 0.000995345061743704,
+                             0.000155332500540226, 0.023570825047528, "adverts<unicode><unicode><unicode>attract",
+                             -0.00917102096072798, 1.93623197708715e-05, 0.854919807931963,
+                             0.059190031152648, 0.144239919486871, 0.423676012461059, 0.00453577686425953,
+                             0.00332597634990196, 0.0356069534665488, "airplay<unicode><unicode><unicode>attract",
+                             -0.0124131272141111, 0.0579310693810951, 0.7962251633092, 0.059190031152648,
+                             0.202934564109634, 0.423676012461059, 0.160646671460175, 0.52580208102547,
+                             0.00859921619355953, "adverts<unicode><unicode><unicode>airplay<unicode><unicode><unicode>attract",
+                             0, -1.5448872845036e-05, 0.978131810165311, 0.130841121495327,
+                             0.0210279172535231, 0.327102803738318, 0.000141268474333337,
+                             0),
+                        label = "posteriorSummaryTable - matched models")
+  })
+})
+
 test_that("Coefficient plots match", {
     set.seed(1)
     options <- jasptools::analysisOptions("RegressionLinearBayesian")
