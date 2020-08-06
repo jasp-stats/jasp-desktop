@@ -106,7 +106,7 @@ private:
 			void	_addSelectedItemType(int _index);
 			void	_sourceTermsChangedHandler(Option *option = nullptr);
 			void	_initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap, bool setupRowConnections = true);
-			void	_connectSourceControl(JASPControlWrapper* control);
+			void	_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls);
 
 protected:
 	QMLListView*					_listView = nullptr;
