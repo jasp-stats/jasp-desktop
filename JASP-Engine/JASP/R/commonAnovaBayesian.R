@@ -57,7 +57,7 @@
   if (analysisType != "RM-ANOVA") {
     hasDV <- options$dependent != ""
     hasIV <- any(lengths(options[c("fixedFactors", "covariates")]) != 0)
-    fixed  <- unlist(options$betweenSubjectFactors)
+    fixed <- options$fixedFactors
     noVariables <- !(hasDV && hasIV)
     target <- c(options$covariates, options$dependent)
 
@@ -78,7 +78,7 @@
   } else {
     hasDV  <- !any(options$repeatedMeasuresCells == "")
     hasIV  <- any(lengths(options[c("betweenSubjectFactors", "covariates")]) != 0)
-    fixed  <- options$betweenSubjectFactors
+    fixed  <- unlist(options$betweenSubjectFactors)
     covariates <- unlist(options$covariates)
     noVariables <- !hasDV
     target <- c(covariates, fixed)
