@@ -72,11 +72,6 @@ test_that("Model Comparison - sales table results match", {
 
 test_that("Posterior Summaries of Coefficients table (all models) results match", {
   table <- results[["results"]][["basreg"]][["collection"]][["basreg_postSumContainer"]][["collection"]][["basreg_postSumContainer_postSumTable"]][["data"]]
-  cat("\n")
-  makeTestTable(table)
-  cat("\n")
-  print(sapply(table, names))
-  print("HOOI1")
   expect_equal_tables(table,
                       list(1, "Intercept", 186.563558446396, 193.2, 1, 1, 3.49006833453854,
                            200.13212185122, 1.48905726277147e+22, "adverts", 0.0687198991720945,
@@ -95,11 +90,6 @@ results <- jasptools::run("RegressionLinearBayesian", "Album Sales.csv", options
 
 test_that("Posterior Summaries of Coefficients table (matched models) results match", {
   table <- results[["results"]][["basreg"]][["collection"]][["basreg_postSumContainer"]][["collection"]][["basreg_postSumContainer_postSumTable"]][["data"]]
-  cat("\n")
-  makeTestTable(table)
-  cat("\n")
-  print(sapply(table, names))
-  print("HOOI2")
   expect_equal_tables(table,
                       list(1, "Intercept", 186.563558446396, 193.2, 0, 0, 1, 1, 3.49006833453854,
                            200.13212185122, 2.39281417453861e+22, "adverts", 0.0687198991720945,
