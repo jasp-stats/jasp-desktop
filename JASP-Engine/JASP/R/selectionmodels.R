@@ -88,8 +88,8 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
 
   if(options[["input_p"]] != ""){
-    if(any(dataset[,options[["input_p"]]] <= 0 | dataset[,options[["input_p"]]] >= 1)){
-      JASP:::.quitAnalysis(gettextf("Error in %s: All p-value needs to be between 0 and 1.", .unv(options[["input_p"]])))
+    if(any(dataset[,.v(options[["input_p"]])] <= 0 | dataset[,.v(options[["input_p"]])] >= 1)){
+      JASP:::.quitAnalysis(gettextf("Error in %s: All p-value needs to be between 0 and 1.", options[["input_p"]]))
     }
   }
 
