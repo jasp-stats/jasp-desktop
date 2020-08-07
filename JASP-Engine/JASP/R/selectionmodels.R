@@ -472,6 +472,10 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     for(i in seq_along(error_messages)){
       heterogeneity_test$addFootnote(symbol = gettext("Error:"),   error_messages[i])
     }
+  }else{
+    if(!.SM_ready(options) && options[["input_p"]] != ""){
+      heterogeneity_test$addFootnote(symbol = gettext("Note:"), .SM_notes(NULL, NULL, options))
+    }
   }
   
   
@@ -529,12 +533,16 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
       bias_test$addFootnote(symbol = gettext("Note:"),    note_messages[i])
     }
     for(i in seq_along(warning_messages)){
-      bias_test$addFootnote(symbol = gettext("Warning:"), warning_messages[i])      
+      bias_test$addFootnote(symbol = gettext("Warning:"), warning_messages[i])
     }
     for(i in seq_along(error_messages)){
       bias_test$addFootnote(symbol = gettext("Error:"),   error_messages[i])
     }
 
+  }else{
+    if(!.SM_ready(options) && options[["input_p"]] != ""){
+      bias_test$addFootnote(symbol = gettext("Note:"), .SM_notes(NULL, NULL, options))
+    }
   }
   
   return()
@@ -896,7 +904,11 @@ jaspResults[["plot_estimates"]] <- plot_estimates
   
   messages <- NULL
   
-  if(!class(fit) %in% c("simpleError","error")){
+  if(!.SM_ready(options) && options[["input_p"]] != ""){
+    
+    messages <- gettext("The analysis requires both 'Effect Site' and 'Effect Size Standard Error' to be specified.")
+    
+  }else if(!class(fit) %in% c("simpleError","error")){
     
     # add note about the ommited steps
     steps <- fit[["steps"]]
@@ -923,6 +935,7 @@ jaspResults[["plot_estimates"]] <- plot_estimates
     }
     
   }
+  
   
   return(messages)
 }
