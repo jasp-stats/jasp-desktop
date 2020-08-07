@@ -46,6 +46,7 @@ void BoundQMLTextInput::initTextInput()
 	else if (type == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
 	else if (type == "addColumn")		_inputType = TextInputType::AddColumnType;
 	else if (type == "formula")			_inputType = TextInputType::FormulaType;
+	else if (type == "formulaArray")	_inputType = TextInputType::FormulaArrayType;
 	else								_inputType = TextInputType::StringInputType;
 
 	_parseDefaultValue = getItemProperty("parseDefaultValue").toBool();
@@ -173,12 +174,16 @@ void BoundQMLTextInput::bindTo(Option *option)
 		_value	= QString::fromStdString(_computedColumn->value());
 		break;
 	case TextInputType::FormulaType:
+	case TextInputType::FormulaArrayType:
 		_formula = dynamic_cast<OptionString *>(option);
 		if (!_formula)
 			_formula = new OptionString();
 		_option = _formula;
 		_value = QString::fromStdString(_formula ? _formula->value() : "");
-		runRScript("as.character(" + _value + ")", true);
+		if (_inputType == TextInputType::FormulaType)
+			runRScript("as.character(" + _value + ")", true);
+		else
+			runRScript("paste(as.array(" + _value + "), collapse=\"|\")", true);
 		break;
 
 	default:
@@ -204,7 +209,6 @@ Option *BoundQMLTextInput::createOption()
 	case TextInputType::PercentIntputType:		option = new OptionNumber();			break;
 	case TextInputType::IntegerArrayInputType:	option = new OptionIntegerArray();		break;
 	case TextInputType::DoubleArrayInputType:	option = new OptionDoubleArray();		break;
-	case TextInputType::FormulaType:			option = new OptionString();			break;
 	case TextInputType::ComputedColumnType:
 	{
 		option = new OptionComputedColumn();
@@ -221,6 +225,8 @@ Option *BoundQMLTextInput::createOption()
 		break;
 	}
 	case TextInputType::StringInputType:
+	case TextInputType::FormulaType:
+	case TextInputType::FormulaArrayType:
 	default:									option = new OptionString();			break;
 	}
 
@@ -240,7 +246,8 @@ bool BoundQMLTextInput::isOptionValid(Option *option)
 	case TextInputType::DoubleArrayInputType:	return dynamic_cast<OptionDoubleArray*>(option)		!= nullptr;
 	case TextInputType::AddColumnType:
 	case TextInputType::ComputedColumnType:		return dynamic_cast<OptionComputedColumn*>(option)	!= nullptr;
-	case TextInputType::FormulaType:			return dynamic_cast<OptionString*>(option)			!= nullptr;
+	case TextInputType::FormulaType:
+	case TextInputType::FormulaArrayType:
 	case TextInputType::StringInputType:
 	default:									return dynamic_cast<OptionString*>(option)			!= nullptr;
 	}
@@ -270,6 +277,7 @@ bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
 	case TextInputType::PercentIntputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
 	case TextInputType::IntegerArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
 	case TextInputType::DoubleArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
+	case TextInputType::FormulaArrayType:		valid = (optionValue.type() == Json::stringValue);			break;
 	case TextInputType::FormulaType:
 	case TextInputType::StringInputType:
 	default:									valid = (optionValue.type() == Json::stringValue || optionValue.type() == Json::intValue || optionValue.type() == Json::realValue); break;
@@ -302,19 +310,41 @@ void BoundQMLTextInput::resetQMLItem(JASPControlBase *item)
 
 void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 {
-	bool succes;
-	double val = result.toDouble(&succes);
+	QStringList results;
+	QVariantList values;
 
-	if (!succes)
-	{
-		item()->addControlError(tr("The expression did not return a number."));
-		setItemProperty("hasScriptError", true);
-	}
+	if (_inputType == TextInputType::FormulaType)
+		results.push_back(result);
 	else
+		results = result.split("|");
+
+	bool succes = true;
+	for (const QString& valStr : results)
 	{
-		setItemProperty("realValue", val);
-		if (_formulaResultInBounds(val))
-			emit formulaCheckSucceeded();
+		double val = valStr.toDouble(&succes);
+
+		if (!succes)
+		{
+			item()->addControlError(tr("The expression did not return a number."));
+			setItemProperty("hasScriptError", true);
+			break;
+		}
+
+		if (!_formulaResultInBounds(val))
+		{
+			succes = false;
+			break;
+		}
+
+		values.push_back(val);
+	}
+
+	if (succes)
+	{
+		emit formulaCheckSucceeded();
+		setItemProperty("realValues", values);
+		if (values.length() > 0)
+			setItemProperty("realValue", values[0]);
 	}
 
 	if (_formula)
@@ -333,6 +363,7 @@ QString BoundQMLTextInput::friendlyName() const
 	case TextInputType::AddColumnType:			return tr("Add Column Field");
 	case TextInputType::ComputedColumnType:		return tr("Add Computed Column Field");
 	case TextInputType::FormulaType:			return tr("Formula Field");
+	case TextInputType::FormulaArrayType:		return tr("Formulas Field");
 	case TextInputType::StringInputType:
 	default:									return tr("Text Field");
 	}
@@ -424,6 +455,7 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 		break;
 
 	case TextInputType::FormulaType:
+	case TextInputType::FormulaArrayType:
 	default:
 		dynamic_cast<OptionString*>(option)->setValue(text.toStdString());
 		break;
@@ -432,7 +464,7 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 
 void BoundQMLTextInput::textChangedSlot()
 {
-	if (!isBound() && _inputType != TextInputType::FormulaType)
+	if (!isBound() && _inputType != TextInputType::FormulaType && _inputType != TextInputType::FormulaArrayType)
 		// In a TabView, if the name of the tab is edited and, before validating, a new tab is added, the model is first changed because of adding a tab,
 		// making possibly the QML item of the TextField invalid (as this TextField depends on the TabView model).
 		// But as this TextField is anyway not bound (_option is null), and is not a Formula, we don't need anyway to fetch the value of the item.
@@ -440,7 +472,7 @@ void BoundQMLTextInput::textChangedSlot()
 
 	_value = getItemProperty("value").toString();
 
-	if (_inputType == TextInputType::FormulaType)
+	if (_inputType == TextInputType::FormulaType || _inputType == TextInputType::FormulaArrayType)
 	{
 		// _formula might be empty (in TableView the FormulaType is not directly bound, and has its own model).
 		if (!_formula || (_formula->value() != _value.toStdString()))
@@ -451,8 +483,11 @@ void BoundQMLTextInput::textChangedSlot()
 					_formula->setValue(_value.toStdString());
 				emit formulaCheckSucceeded();
 			}
-			else
+			else if (_inputType == TextInputType::FormulaType)
 				runRScript("as.character(" + _value + ")", true);
+			else
+				runRScript("paste(as.array(" + _value + "), collapse=\"|\")", true);
+
 		}
 	}
 	else if (_option)
