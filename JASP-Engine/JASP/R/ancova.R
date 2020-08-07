@@ -290,15 +290,17 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   model <- .anovaModel(dataset, options)
 
-  if (.extractErrorMessage(model$modelError) == "singular fit encountered") {
-    anovaContainer$setError(gettext("Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables"))
-    return()
-  } else if (.extractErrorMessage(model$modelError) == "residual sum of squares is 0 (within rounding error)") {
-    anovaContainer$setError(gettext("Residual sum of squares is 0; this might be due to extremely low variance of your dependent variable"))
-    return()
-  } else if (isTryError(model$modelError)) {
-    anovaContainer$setError(gettextf("An error occurred while computing the ANOVA: %s", .extractErrorMessage(model$modelError)))
-    return()
+  if (isTryError(model$modelError)) {
+    if (.extractErrorMessage(model$modelError) == "singular fit encountered") {
+      anovaContainer$setError(gettext("Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables"))
+      return()
+    } else if (.extractErrorMessage(model$modelError) == "residual sum of squares is 0 (within rounding error)") {
+      anovaContainer$setError(gettext("Residual sum of squares is 0; this might be due to extremely low variance of your dependent variable"))
+      return()
+    } else {
+      anovaContainer$setError(gettextf("An error occurred while computing the ANOVA: %s", .extractErrorMessage(model$modelError)))
+      return()
+    }
   }
   
   # Save model to state
