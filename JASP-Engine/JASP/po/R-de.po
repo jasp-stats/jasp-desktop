@@ -1792,13 +1792,9 @@ msgid ""
 "distributions. The number of expected errors in the selection is colored in "
 "red and the number of expected error-free observations is colored in green."
 msgstr ""
-"<b>Figuur %1$i.</b> Steekproefgrootte vergelijking voor huidige opties. De "
-"balken geven de steekproefgrootte weer die nodig is voor diverse "
-"planningsverdelingen.Het aantal verwachte fouten van de selectie is rood "
-"gekleurd en het aantal verwachte foutvrije observaties is groen gekleurd."
 
 msgid "Implied %1$s Sampling Distribution"
-msgstr "Geïmpliceerde %1$s Steekproefverdeling"
+msgstr "Implizierte %1$s Stichprobenverteilung"
 
 msgid "Errors"
 msgstr "Fehler"
@@ -2079,7 +2075,7 @@ msgid "%1$s%% Prior credible region"
 msgstr ""
 
 msgid "Support"
-msgstr ""
+msgstr "Träger"
 
 msgid ""
 "The expected errors (grey dot) receive the highest probability. The red dot "
@@ -3621,7 +3617,6 @@ msgstr "OOB Genauigkeit"
 
 msgid "Please provide a target variable and at least %i predictor variable(s)."
 msgstr ""
-"Geef a.u.b. een doelvariabele en minstens %i voorspellende variabele(n)."
 
 msgid ""
 "The model is optimized with respect to the <i>validation set accuracy</i>."
@@ -5158,13 +5153,12 @@ msgstr "Bitte spezifiziere, welche Parameter beobachtet werden sollen!"
 
 msgid "Please specify which parameters to show output for!"
 msgstr ""
-"Specificeer a.u.b. voor welke parameters de uitvoer moet worden getoond!"
 
 msgid "Rhat"
-msgstr "Rhat"
+msgstr "R-Dach"
 
 msgid "Point est."
-msgstr "Puntschatting."
+msgstr "Punktschätzung"
 
 msgid "Upper CI"
 msgstr "Obergrenze KI"
@@ -5960,7 +5954,7 @@ msgid ";"
 msgstr ";"
 
 msgid "Jacknife overwrites nBoot to sample size"
-msgstr "Jacknife overschrijft nBoot naar steekproefgrootte"
+msgstr ""
 
 msgid "Node-wise bootstrapping requires at least three nodes."
 msgstr ""
@@ -6689,7 +6683,7 @@ msgid "Model %i does not exist. Select one of the models between 1 and %i."
 msgstr "Modell %i existiert nicht. Wähle eins der Modelle zwischen 1 und %i."
 
 msgid "Priors"
-msgstr "Priors"
+msgstr "Prior"
 
 msgid "Information"
 msgstr "Information"
@@ -6813,7 +6807,7 @@ msgid "Loglikelihood unrestricted model (H1)"
 msgstr "Log-Likelihood unbeschränktes Modell (H1)"
 
 msgid "Sample-size adjusted Bayesian (BIC)"
-msgstr "Voor steekproef grootte bijgesteld Bayesiaans (BIC)"
+msgstr ""
 
 msgid "Root Mean Square Error of Approximation"
 msgstr "Wurzel des mittleren quadratischen Fehlers der Anpassung (RMSEA)"
@@ -6849,7 +6843,7 @@ msgid "Goodness of Fit Index (GFI)"
 msgstr "Anpassungsgüte-Index (GFI)"
 
 msgid "Parsimony Goodness of Fit Index (GFI)"
-msgstr "Spaarzaamheidspasmaat index (GFI)"
+msgstr ""
 
 msgid "McDonald Fit Index (MFI)"
 msgstr "McDonald-Fit-Index (MFI)"
@@ -7034,7 +7028,7 @@ msgid "Hodges-Lehmann Estimate"
 msgstr "Hodges-Lehmann-Schätzung"
 
 msgid "Rank-Biserial Correlation"
-msgstr "Rank-Biseriale Korrelation"
+msgstr "Rang-Biseriale Korrelation"
 
 msgid "Location Parameter"
 msgstr "Lageparameter"
