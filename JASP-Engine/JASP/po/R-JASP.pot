@@ -19,22 +19,22 @@ msgstr ""
 msgid "The number of iterations must be at least 2 iterations higher than the burnin"
 msgstr ""
 
-msgid "%s requres that the dependent variable is positive."
+msgid "%s requires that the dependent variable is positive."
 msgstr ""
 
-msgid "%s requres that the dependent variable is an integer."
+msgid "%s requires that the dependent variable is an integer."
 msgstr ""
 
-msgid "%s requres that the dependent variable contains only 0 and 1."
+msgid "%s requires that the dependent variable contains only 0 and 1."
 msgstr ""
 
-msgid "%s requres that the dependent variable is higher than 0 and lower than 1."
+msgid "%s requires that the dependent variable is higher than 0 and lower than 1."
 msgstr ""
 
-msgid "%s requres that the number of trials variable is an integer."
+msgid "%s requires that the number of trials variable is an integer."
 msgstr ""
 
-msgid "%s requres that the dependent variable is proportion of successes out of the number of trials."
+msgid "%s requires that the dependent variable is proportion of successes out of the number of trials."
 msgstr ""
 
 msgid "ANOVA Summary"
@@ -328,7 +328,7 @@ msgstr ""
 msgid "Multivariate-t"
 msgstr ""
 
-msgid "Turkey"
+msgid "Tukey"
 msgstr ""
 
 msgid "Benjamini-Hochberg"
