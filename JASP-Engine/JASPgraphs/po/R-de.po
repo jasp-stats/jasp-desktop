@@ -1,0 +1,222 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: R 3.6.1\n"
+"Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
+"POT-Creation-Date: 2020-04-05 00:03\n"
+"PO-Revision-Date: 2020-01-29 14:35\n"
+"Last-Translator: Johannes Keyser <johannes.keyser@uni-giessen.de>\n"
+"Language-Team: JASP <info@jasp-stats.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "all subplots should be of class ggplot!"
+msgstr "Alle Teilabbildungen müssen von Klasse ggplot sein!"
+
+msgid "plotFunction should be a function!"
+msgstr "plotFunction muss eine Funktion sein!"
+
+msgid "all arguments in ... should be named."
+msgstr "Alle Argumente in ... müssen benannt sein."
+
+msgid "value should be numeric!"
+msgstr "Wert muss numerisch sein!"
+
+msgid "group should be a character or factor!"
+msgstr "Gruppe muss ein Zeichen oder Faktor sein!"
+
+msgid "value and group should have the same length!"
+msgstr "Werte und Gruppe müssen dieselbe Länge haben!"
+
+msgid "scaleText should be positive!"
+msgstr "scaleText muss positiv sein!"
+
+msgid "linewidth should be positive!"
+msgstr "linewidth muss positiv sein!"
+
+msgid "Not implemented"
+msgstr "Nicht implementiert"
+
+msgid "incorrect class for align. Expected character of numeric."
+msgstr "inkorrekte Klasse für align. Zeichen oder Zahl erwartet."
+
+msgid "dfLines should be a data.frame with $x, $y, and $g!"
+msgstr "dfLines muss ein data.frame mit $x, $y und $g sein!"
+
+msgid "dfPoints should be a data.frame with $x, $y, and $g!"
+msgstr "dfPoints moet een data.frame zijn met $x, $y en $g!"
+
+msgid "CRI should be numeric and have length 2! (left bound, right bound)"
+msgstr ""
+"CRI muss numerisch sein und Länge 2 haben! (linke Grenze, rechte Grenze)"
+
+msgid "median should be numeric and have length 1!"
+msgstr "Median muss numerisch sein und Länge 1 haben!"
+
+msgid "BF should be numeric and have length 1!"
+msgstr "BF muss numerisch sein und Länge 1 haben!"
+
+msgid "bfSubscripts and BFvalues have different length!"
+msgstr "bfSubscripts und BFvalues haben verschiedene Längen!"
+
+msgid "data | H0"
+msgstr "Daten | H0"
+
+msgid "data | H1"
+msgstr "Daten | H1"
+
+msgid "data | H-"
+msgstr "Daten | H-"
+
+msgid "data | H+"
+msgstr "Daten | H+"
+
+msgid "BF%s"
+msgstr "BF%s"
+
+msgid "log(BF%s)"
+msgstr "log(BF%s)"
+
+msgid "Density"
+msgstr "Dichte"
+
+msgid "Median:"
+msgstr "Median:"
+
+msgid "Cannot provide both a BF pizzaplot and a points legend!"
+msgstr "Kann nicht sowohl ein BF-Tortendiagramm als auch eine Punktlegende liefern!"
+
+msgid "Anecdotal"
+msgstr "Anekdotisch"
+
+msgid "Moderate"
+msgstr "Moderat"
+
+msgid "Strong"
+msgstr "Stark"
+
+msgid "Very Strong"
+msgstr "Sehr Stark"
+
+msgid "Extreme"
+msgstr "Extrem"
+
+msgid "Evidence"
+msgstr "Evidenz"
+
+msgid ""
+"lineColors and lineTypes must have the same length as the number of groups "
+"in dfLines."
+msgstr ""
+"lineColors und lineTypes müssen dieselbe Länge wie die Anzahl der Gruppen "
+"in dfLines haben."
+
+msgid "Evidence for H%s:"
+msgstr "Evidenz für H%s:"
+
+msgid "Evidence for H%s"
+msgstr "Evidenz für H%s"
+
+msgid "palette must be character!"
+msgstr "Palette muss ein Zeichen sein!"
+
+msgid "palette was %s but must be one of %s"
+msgstr "Palette war %s aber muss eine von %s sein"
+
+msgid ","
+msgstr ","
+
+msgid "This function will be deprecated."
+msgstr "Diese Funktion wird überholt werden - nicht mehr gebrauchen."
+
+msgid "Argument dat and graph cannot both be NULL."
+msgstr "Argument dat und graph dürfen nicht beide NULL sein."
+
+msgid "You must specify either `position` or `nudge_x`/`nudge_y`."
+msgstr "Du musst entweder `position` oder `nudge_x`/`nudge_y` angeben."
+
+msgid "Argument %s should either have length 1 or length %d."
+msgstr "Argument %s muss Länge 1 haben oder Länge %d."
+
+msgid ""
+"removeXYlabels must be a character and contain either 'x', 'y', 'xy', or "
+"'none'"
+msgstr ""
+"removeXYlabels muss ein Zeichen sein und entweder 'x', 'y', 'xy', oder 'none' "
+"enthalten"
+
+msgid ""
+"Dim(removeXYlabels) does not match dim(plotList) / layout. Got (%d, %d) and "
+"expected: (%d, %d)."
+msgstr ""
+"Dim(removeXYlabels) stimmt nicht mit dim(plotList) / layout überein. Bekam "
+"(%d, %d) und erwartete: (%d, %d)."
+
+msgid "removeXYlabels should either have length 1 or length(plotList)."
+msgstr "removeXYlabels muss entweder Länge 1 oder length(plotList) haben."
+
+msgid "JASPgraphs could not obtain axes labels from graph"
+msgstr "JASPgraphs konnte keine Achsenbeschriftung von der Abbildung bekommen"
+
+msgid "removeXYlabels must be numeric, larger than 0 and smaller than 1"
+msgstr "removeXYlabels muss numerisch, und größer als 0 und kleiner als 1 sein"
+
+msgid ""
+"dim(removeXYlabels)[1] does not match prod(dim(plotList)) / layout. Got (%d, "
+"%d) and expected: prod(%d, %d)."
+msgstr ""
+"dim(removeXYlabels)[1] stimmt nicht mit prod(dim(plotList)) / layout überein. "
+"Bekam (%d, %d) und erwartete: prod(%d, %d)."
+
+msgid "removeXYlabels should either have length 2 or length(plotList)."
+msgstr "removeXYlabels muss entweder Länge 2 oder length(plotList) haben."
+
+msgid "Either supply plotList as a matrix or provide a layout argument"
+msgstr "Übergib plotList entweder als eine Matrix oder als layout-Argument"
+
+msgid "layout must be a matrix but instead was of mode %s and class %s"
+msgstr ""
+"layout muss eine Matrix sein aber war stattdessen von Mode %s und Klasse %s"
+
+msgid ""
+"length of layout (%d) does not match length of plotList (%d). Use NULL "
+"entries in plotList to specify empty plots."
+msgstr ""
+"Länge von layout (%d) stimmt nicht mit plotList (%d) überein. Benutze NULL "
+"als Argumente in plotList um leere Abbildungen zu spezifizieren."
+
+msgid "Layout must consist of unique integers starting from 1."
+msgstr "Layout muss aus einzigartigen ganzen Zahlen bestehen, beginnend mit 1."
+
+msgid "x must be length 1 or 2"
+msgstr "Länge von x muss 1 oder 2 sein"
+
+msgid "Secondary axes must be specified using 'sec_axis()'"
+msgstr "Zweite Achsen müssen mit 'sec_axis()' angegeben werden"
+
+msgid "options should be an R list or a json string!"
+msgstr "Optionen müssen eine R-Liste oder ein JSON-String sein!"
+
+msgid "The axis type in the new options list does not match the graph!"
+msgstr "Der Achsentyp in der neuen Optionenliste passt nicht zur Abbildung!"
+
+msgid "graph should be a ggplot2"
+msgstr "Abbildung muss ein ggplot2 sein"
+
+msgid "Theoretical quantiles"
+msgstr "Theoretische Quantile"
+
+msgid "Observed quantiles"
+msgstr "Beobachtete Quantile"
+
+msgid "unsupported plot object of class: %s"
+msgstr "nicht unterstütztes Abbildungsobjekt mit Klasse: %s"
+
+msgid ""
+"Arguments xAxis and yAxis of themeJasp will be deprecated. Please use the "
+"argument \"sides\" instead."
+msgstr ""
+"Argumente xAxis und yAxis von themeJasp werden überholt werden. "
+"Bitte benutze stattdessen das Argument \"sides\"."
+
