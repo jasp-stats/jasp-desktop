@@ -170,7 +170,8 @@ QModelIndex DataSetPackage::parent(const QModelIndex & index) const
 
 QModelIndex DataSetPackage::parentModelForType(parIdxType type, int column) const
 {
-	if(type == parIdxType::root) return QModelIndex();
+	if(type == parIdxType::root || column < 0)
+		return QModelIndex();
 
 	return index(int(type), column, QModelIndex());
 }
@@ -409,10 +410,10 @@ void DataSetPackage::resetFilterAllows(size_t columnIndex)
 	_dataSet->column(columnIndex).resetFilter();
 
 	QModelIndex parentModel = parentModelForType(parIdxType::data);
-	emit dataChanged(index(0, columnIndex,	parentModel),	index(rowCount(), columnIndex, parentModel), {int(specialRoles::filter)} );
+	emit dataChanged(DataSetPackage::index(0, columnIndex,	parentModel),	DataSetPackage::index(rowCount(), columnIndex, parentModel), {int(specialRoles::filter)} );
 
 	parentModel = parentModelForType(parIdxType::label, columnIndex);
-	emit dataChanged(index(0, 0,	parentModel),			index(rowCount(parentModel), columnCount(parentModel), parentModel), {int(specialRoles::filter)} );
+	emit dataChanged(DataSetPackage::index(0, 0,	parentModel),			DataSetPackage::index(rowCount(parentModel), columnCount(parentModel), parentModel), {int(specialRoles::filter)} );
 
 }
 
@@ -717,9 +718,11 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 
 	if (changed)
 	{
+		std::string colName = _dataSet->column(columnIndex).name();
+
 		emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
-		emit columnDataTypeChanged(_dataSet->column(columnIndex).name());
-		emit refreshAnalysesWithColumn(tq(_dataSet->column(columnIndex).name()));
+		emit columnDataTypeChanged(colName);
+		emit refreshAnalysesWithColumn(tq(colName));
 	}
 
 	return changed;

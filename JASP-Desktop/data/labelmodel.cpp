@@ -9,6 +9,7 @@ LabelModel::LabelModel() : DataSetTableProxy(parIdxType::label)
 	connect(DataSetPackage::pkg(),	&DataSetPackage::allFiltersReset,				this, &LabelModel::allFiltersReset			);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &LabelModel::labelFilterChanged		);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnAboutToBeRemoved,		this, &LabelModel::columnAboutToBeRemoved	);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &LabelModel::columnDataTypeChanged	);
 }
 
 bool LabelModel::labelNeedsFilter(size_t col)
@@ -116,4 +117,12 @@ void LabelModel::columnAboutToBeRemoved(int column)
 {
 	if(proxyParentColumn() == column)
 		setVisible(false);
+}
+
+void LabelModel::columnDataTypeChanged(std::string colName)
+{
+	int colIndex = DataSetPackage::pkg()->getColumnIndex(colName);
+
+	if(colIndex == proxyParentColumn())
+		invalidate();
 }

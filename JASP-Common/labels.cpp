@@ -135,25 +135,16 @@ bool Labels::syncInts(const map<int, string> &values)
 
 bool Labels::syncInts(const std::set<int> &values)
 {
-	std::set<int> valuesToAdd = values;
-	std::set<int> valuesToRemove;
+	std::set<int>	valuesToAdd		= values,
+					valuesToRemove;
 
-	for (const Label& label : _labels)
+	for (const Label & label : _labels)
 	{
 		int value = label.value();
-		if (std::find(values.begin(), values.end(), value) != values.end())
-		{
-			std::set<int>::iterator value_it = std::find(valuesToAdd.begin(), valuesToAdd.end(), value);
-			if (value_it != valuesToAdd.end())
-				valuesToAdd.erase(value_it);
-		}
-		else
-		{
-			Log::log() << "Remove label " << label.text() << std::endl;
-			valuesToRemove.insert(value);
-		}
-	}
 
+		if(values.count(value) > 0)	valuesToAdd.erase(value);
+		else						valuesToRemove.insert(value);
+	}
 
 	removeValues(valuesToRemove);	
 

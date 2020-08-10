@@ -20,7 +20,7 @@ public:
 	QString		columnNameQ()			{ return QString::fromStdString(columnName(proxyParentColumn()));	}
 	bool		setData(const QModelIndex & index, const QVariant & value, int role)			override;
 
-	void		moveUp(	std::vector<size_t> selection);
+	void		moveUp(		std::vector<size_t> selection);
 	void		moveDown(	std::vector<size_t> selection);
 	bool		visible()			const {	return _visible; }
 	int			filteredOut()		const;
@@ -41,7 +41,7 @@ public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
 	void columnAboutToBeRemoved(int column);
-
+	void columnDataTypeChanged(std::string colName);
 
 signals:
 	void visibleChanged(bool visible);
