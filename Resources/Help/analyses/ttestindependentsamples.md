@@ -54,6 +54,7 @@ The independent samples t-test allows the user to estimate the effect size and t
 - The first column contains the dependent variable. 
 - Test: The type of t-test that is selected. If only one test is selected, this column will not be displayed. In this scenario, the table only displays the results for the selected test. 
 - t: The value of the t-value. 
+- W: The test statistic of the Wilcoxon test. The two most common definitions correspond to the sum of the ranks of the first sample with the minimum value subtracted or not. JASP uses the definition with the subtraction (also used by R).
 - df: Degrees of freedom. 
 - p: The p-value. 
 - Mean difference: Difference in sample means. This column is only named 'Mean difference' when the tests `Student` or `Welch` are selected. When the test `Mann-Whitney` is selected, this column is called 'Location parameter'. 

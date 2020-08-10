@@ -287,10 +287,6 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
         currentVals[i] <- .truncNormSample(currentBounds[["under"]], currentBounds[["upper"]], mu=oldDeltaProp, sd=1)
 
       }
-
-      decorStepResult <- .decorrelateStepTwoSample(currentVals[1:n1], currentVals[(n1+1):(n1+n2)], oldDeltaProp, sigmaProp = 0.5)
-      xVals <- decorStepResult[[1]]
-      yVals <- decorStepResult[[2]]
       
       gibbsResult <- .sampleGibbsTwoSampleWilcoxon(x = xVals, y = yVals, nIter = nGibbsIterations,
                                                    rscale = cauchyPriorParameter)
@@ -376,27 +372,4 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
   bf <- if (isFALSE(oneSided)) priorDensZeroPoint / densZeroPoint else (priorDensZeroPoint / corFactorPrior) / (densZeroPoint / corFactorPosterior)
 
   return(bf)
-}
-
-
-.decorrelateStepTwoSample <- function(x, y, muProp, sigmaProp = 0.5) {
-  # decorrelate step described in Morey, R. D., Rouder, J. N., and Speckman, P. L. (2008). 
-  # A statistical model for dis-criminating between subliminal and near-liminal performance.
-  # and
-  # van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2020). 
-  # Bayesian rank-based hypothesis testing for the rank sum test, the signed rank test, and Spearman's ρ.  
-  thisZ <- rnorm(1, 0, sigmaProp)
-  
-  newX <- x + thisZ
-  newY <- y + thisZ
-  
-  denom <- sum(dnorm(x, (muProp-thisZ) * -0.5, log = TRUE)) + sum(dnorm(y, (muProp-thisZ) * 0.5, log = TRUE))
-  num <- sum(dnorm(newX, muProp * -0.5, log = TRUE)) + sum(dnorm(newY, muProp * 0.5, log = TRUE))
-  
-  if(runif(1) < exp(num - denom) ) {
-    return(list(x = newX, y = newY, accept = TRUE))
-  } else {
-    return(list(x = x, y = y, accept = FALSE))
-  }
-  
 }
