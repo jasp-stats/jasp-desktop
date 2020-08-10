@@ -115,16 +115,16 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
     if(options[["distribution"]] == "benford"){
 
       procedureText <- base::switch(options[["digits"]],
-                                    "first" = gettextf("Benford's law states that in many naturally occurring collections of numerical observations, the leading significant digit is likely to be small. The goal of this procedure is to determine to which extent the first leading digits in the data set follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification.", confidenceLabel),
-                                    "firstSecond" = gettextf("Benford's law states that in many naturally occurring collections of numerical observations, the leading significant digit is likely to be small. The goal of this procedure is to determine to which extent the first two leading digits in the data set follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification.", confidenceLabel),
-                                    "last" = gettextf("Benford's law states that in many naturally occurring collections of numerical observations, the leading significant digit is likely to be small. The goal of this procedure is to determine to which extent the last digits in the data set follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification.", confidenceLabel))
+                                    "first" = gettextf("Benford's law states that in many naturally occurring collections of numerical observations, the leading significant digit is likely to be small. The goal of this procedure is to determine to what extent the first leading digits in the data set follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further investigation.", confidenceLabel),
+                                    "firstSecond" = gettextf("Benford's law states that in many naturally occurring collections of numerical observations, the leading significant digit is likely to be small. The goal of this procedure is to determine to what extent the first two leading digits in the data set follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further investigation.", confidenceLabel),
+                                    "last" = gettextf("Benford's law states that in many naturally occurring collections of numerical observations, the leading significant digit is likely to be small. The goal of this procedure is to determine to what extent the last digits in the data set follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further investigation.", confidenceLabel))
     
     } else if (options[["distribution"]] == "uniform"){
 
       procedureText <- base::switch(options[["digits"]],
-                                    "first" = gettextf("The uniform distribution assigns equal probability to all values that may occur. The goal of this procedure is to determine to which extent the first leading digits in the data set follow the uniform distribution, and to test this relation with <b>%1$s</b> confidence. Supposedly random data that do not conform to the uniform distribution might need further verification.", confidenceLabel),
-                                    "firstSecond" = gettextf("The uniform distribution assigns equal probability to all values that may occur. The goal of this procedure is to determine to which extent the first two leading digits in the data set follow the uniform distribution, and to test this relation with <b>%1$s</b> confidence. Supposedly random data that do not conform to the uniform distribution might need further verification.", confidenceLabel),
-                                    "last" = gettextf("The uniform distribution assigns equal probability to all values that may occur. The goal of this procedure is to determine to which extent the last digits in the data set follow the uniform distribution, and to test this relation with <b>%1$s</b> confidence. Supposedly random data that do not conform to the uniform distribution might need further verification.", confidenceLabel))
+                                    "first" = gettextf("The uniform distribution assigns equal probability to all values that may occur. The goal of this procedure is to determine to what extent the first leading digits in the data set follow the uniform distribution, and to test this relation with <b>%1$s</b> confidence. Supposedly random data that do not conform to the uniform distribution might need further investigation.", confidenceLabel),
+                                    "firstSecond" = gettextf("The uniform distribution assigns equal probability to all values that may occur. The goal of this procedure is to determine to what extent the first two leading digits in the data set follow the uniform distribution, and to test this relation with <b>%1$s</b> confidence. Supposedly random data that do not conform to the uniform distribution might need further investigation.", confidenceLabel),
+                                    "last" = gettextf("The uniform distribution assigns equal probability to all values that may occur. The goal of this procedure is to determine to what extent the last digits in the data set follow the uniform distribution, and to test this relation with <b>%1$s</b> confidence. Supposedly random data that do not conform to the uniform distribution might need further investigation.", confidenceLabel))
 
     }
     procedureContainer[["procedureParagraph"]] <- createJaspHtml(procedureText, "p")
@@ -582,18 +582,18 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   approve <- state[["pvalue"]] >= (1 - options[["confidence"]])
 
   conclusion <- ifelse(approve, no = gettext("can be rejected"), yes = gettext("can not be rejected"))
-  confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
   
   pvalue <- round(state[["pvalue"]], 4)
   if(pvalue < 0.01)
     pvalue <- "< .01"
+  pvalue <- ifelse(approve, no = paste0(pvalue, " < \u03B1"), yes = paste0(pvalue, " >= \u03B1"))
 
   distribution <- base::switch(options[["distribution"]], "benford" = "Benford's law", "uniform" = "the uniform distribution")
 
   conclusionText <- base::switch(options[["digits"]],
-                                  "first" = gettextf("The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of first digits in the data set conforms to %2$s <b>%3$s</b> with <b>%4$s</b> confidence.", pvalue, distribution, conclusion, confidenceLabel),
-                                  "firstSecond" = gettextf("The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of the two first digits in the data set conforms to %2$s <b>%3$s</b> with <b>%4$s</b> confidence.", pvalue, distribution, conclusion, confidenceLabel),
-                                  "last" = gettextf("The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of last digits in the data set conforms to %2$s <b>%3$s</b> with <b>%4$s</b> confidence.", pvalue, distribution, conclusion, confidenceLabel))
+                                  "first" = gettextf("The <i>p</i> value is observed to be %1$s and the null hypothesis that the distribution of first digits in the data set conforms to %2$s <b>%3$s</b>.", pvalue, distribution, conclusion),
+                                  "firstSecond" = gettextf("The <i>p</i> value is observed to be %1$s and the null hypothesis that the distribution of the two first digits in the data set conforms to %2$s <b>%3$s</b>.", pvalue, distribution, conclusion),
+                                  "last" = gettextf("The <i>p</i> value is observed to be %1$s and the null hypothesis that the distribution of last digits in the data set conforms to %2$s <b>%3$s</b>.", pvalue, distribution, conclusion))
 
   conclusionContainer[["conclusionParagraph"]] <- createJaspHtml(conclusionText, "p")
   conclusionContainer[["conclusionParagraph"]]$position <- 1
