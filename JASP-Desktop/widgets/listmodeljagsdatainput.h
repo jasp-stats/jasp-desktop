@@ -35,7 +35,7 @@ public:
 	OptionsTable *	createOption()										override;
 	void			initValues(OptionsTable * bindHere)					override;
 	bool			isEditable(const QModelIndex& index)		const	override	{ return _tableType == "initialValues" ? (index.column() >= 1) : true; }
-	QString			getItemInputType(const QModelIndex& index)	const	override	{ return index.column() == 1 ? "formula" : "string"; }
+	QString			getItemInputType(const QModelIndex& index)	const	override	{ return index.column() == 1 ? "formulaArray" : "string"; }
 
 public slots:
 	void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)	override;
