@@ -32,7 +32,7 @@ BoundQMLLavaanTextArea::BoundQMLLavaanTextArea(JASPControlBase* item)
 	connect(form(), &AnalysisForm::dataSetChanged,	this, &BoundQMLTextArea::dataSetChangedHandler,	Qt::QueuedConnection	);
 
 	_model = new ListModelTermsAvailable(this);
-	_modelHasAllVariables = true;
+	_modelNeedsAllVariables = true;
 
 	QVariant textDocumentVariant = _item->property("textDocument");
 	QQuickTextDocument* textDocumentQQuick = textDocumentVariant.value<QQuickTextDocument *>();

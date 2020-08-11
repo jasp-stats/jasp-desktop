@@ -32,10 +32,8 @@ BoundQMLComponentsList::BoundQMLComponentsList(JASPControlBase *item)
 {
 	_termsModel = new ListModelTermsAssigned(this);
 	setTermsAreNotVariables();
-	_termsModel->readModelProperty(this);
 
 	QQuickItem::connect(_item, SIGNAL(nameChanged(int, QString)), this, SLOT(nameChangedHandler(int, QString)));
-	QQuickItem::connect(_item, SIGNAL(valuesChanged()), this, SLOT(valuesChangedHandler()));
 	QQuickItem::connect(_item, SIGNAL(addItem()), this, SLOT(addItemHandler()));
 	QQuickItem::connect(_item, SIGNAL(removeItem(int)), this, SLOT(removeItemHandler(int)));
 }
@@ -240,12 +238,6 @@ void BoundQMLComponentsList::modelChangedHandler()
 
 		_boundTo->connectOptions(allOptions);
 	}
-}
-
-void BoundQMLComponentsList::valuesChangedHandler()
-{
-	_termsModel->readModelProperty(this);
-	modelChangedHandler();
 }
 
 void BoundQMLComponentsList::addItemHandler()

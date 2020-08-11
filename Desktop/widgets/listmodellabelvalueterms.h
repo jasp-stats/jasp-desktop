@@ -25,21 +25,22 @@ class ListModelLabelValueTerms : public ListModelTermsAvailable
 {
 	Q_OBJECT
 public:
-	ListModelLabelValueTerms(QMLListView* listView);
+	ListModelLabelValueTerms(QMLListView* listView, const QMLListView::LabelValueMap& values = QMLListView::LabelValueMap());
 
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
-
-	void						readModelProperty(QMLListView* item)						override;
 
 	std::vector<std::string>	getValues();
 	QString						getValue(const QString& label);
 	QString						getLabel(const QString& value);
 	int							getIndexOfValue(const QString& value);
 
+	void						setLabelValues(const QMLListView::LabelValueMap& values);
+
 protected:
 
 	QMap<QString, QString>		_valueToLabelMap;
 	QMap<QString, QString>		_labelToValueMap;
+
 
 };
 

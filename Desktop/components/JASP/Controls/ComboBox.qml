@@ -27,12 +27,12 @@ JASPControl
 	property alias	currentIndex:			control.currentIndex
 	property alias	indexDefaultValue:		control.currentIndex
 	property alias	model:					control.model
-	property alias	values:					control.model
 	property alias	fieldWidth:				control.modelWidth
 	property string	textRole:				"label"
 	property string	valueRole:				"value"
 	property bool	showVariableTypeIcon:	false
-	property var	source					//defaults would be nice
+	property var	values:					undefined
+	property var	source:					undefined // Do not set a default: if nothing is set, it gets all variables per default.
 	property alias	syncModels:				comboBox.source
 	property bool	addEmptyValue:			false
 	property string	placeholderText:		qsTr("<no choice>")

@@ -108,64 +108,18 @@ void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QStrin
 
 Terms ListModel::getSourceTerms()
 {
-	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
-
 	Terms termsAvailable;
-	if (sourceItems.size() == 0)
-		return termsAvailable;
-
 	Terms termsToCombine;
 	Terms termsToBeCombinedWith;
 
-	for (QMLListView::SourceType* sourceItem : sourceItems)
+	for (const std::pair<QMLListView::SourceType *, Terms>& source : listView()->getTermsPerSource())
 	{
+		QMLListView::SourceType* sourceItem = source.first;
+		const Terms& sourceTerms = source.second;
 		ListModel* sourceModel = sourceItem->model;
 		if (sourceModel)
 		{
-			Terms sourceTerms = sourceModel->terms(sourceItem->modelUse);
-
-			for (const QMLListView::SourceType& discardModel : sourceItem->getDiscardModels())
-				sourceTerms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
-
 			_connectSourceControls(sourceModel, sourceItem->usedControls);
-
-			if (!sourceItem->conditionExpression.isEmpty())
-			{
-				Terms filteredTerms;
-				QJSEngine jsEngine;
-
-				for (const Term& term : sourceTerms)
-				{
-					for (const QMLListView::SourceType::ConditionVariable& conditionVariable : sourceItem->conditionVariables)
-					{
-						JASPControlWrapper* control = sourceModel->getRowControl(term.asQString(), conditionVariable.controlName);
-						if (control)
-						{
-							QJSValue value;
-							QVariant valueVar = control->getItemProperty(conditionVariable.propertyName);
-
-							switch (valueVar.type())
-							{
-							case QVariant::Type::Int:
-							case QVariant::Type::UInt:		value = valueVar.toInt();		break;
-							case QVariant::Type::Double:	value = valueVar.toDouble();	break;
-							case QVariant::Type::Bool:		value = valueVar.toBool();		break;
-							default:						value = valueVar.toString();	break;
-							}
-
-							jsEngine.globalObject().setProperty(conditionVariable.name, value);
-						}
-					}
-
-					QJSValue result = jsEngine.evaluate(sourceItem->conditionExpression);
-					if (result.isError())
-							addControlError("Error when evaluating : " + sourceItem->conditionExpression + ": " + result.toString());
-					else if (result.toBool())
-						filteredTerms.add(term);
-				}
-
-				sourceTerms = filteredTerms;
-			}
 
 			if (sourceItem->combineWithOtherModels)
 				termsToCombine = sourceTerms;
@@ -192,41 +146,14 @@ Terms ListModel::getSourceTerms()
 	return termsAvailable;
 }
 
-QMap<ListModel*, Terms> ListModel::getSourceTermsPerModel()
-{
-	QMap<ListModel*, Terms> result;
-	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
-
-	if (sourceItems.size() == 0)
-		return result;
-
-	for (QMLListView::SourceType* sourceItem : sourceItems)
-	{
-		ListModel* sourceModel = sourceItem->model;
-		if (sourceModel)
-		{
-			Terms terms = sourceModel->terms(sourceItem->modelUse);
-
-			for (const QMLListView::SourceType& discardModel : sourceItem->getDiscardModels())
-				terms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
-
-			result[sourceModel] = terms;
-		}
-	}
-
-	return result;
-}
-
 ListModel *ListModel::getSourceModelOfTerm(const Term &term)
 {
 	ListModel* result = nullptr;
-	QMap<ListModel*, Terms> map = getSourceTermsPerModel();
-	QMapIterator<ListModel*, Terms> it(map);
-	while (it.hasNext())
+
+	for (const std::pair<QMLListView::SourceType *, Terms>& source : listView()->getTermsPerSource())
 	{
-		it.next();
-		if (it.value().contains(term))
-			result = it.key();
+		if (source.second.contains(term))
+			result = source.first->model;
 	}
 	return result;
 }
@@ -575,38 +502,4 @@ void ListModel::replaceVariableName(const std::string & oldName, const std::stri
 	for(const QString & key : _rowControlsOptions.keys())
 		for(const QString & key2 : _rowControlsOptions[key].keys())
 			_rowControlsOptions[key][key2]->replaceVariableName(oldName, newName);
-}
-
-void ListModel::readModelProperty(QMLListView* item)
-{
-	QVariant modelVar = item->getItemProperty("values");
-
-	if (modelVar.isNull())
-	{
-		if (item->getItemProperty("source").isNull())
-			item->setModelHasAllVariables(true);
-	}
-	else
-	{
-		Terms terms;
-		QList<QVariant> list = modelVar.toList();
-		if (!list.isEmpty())
-		{
-			for (const QVariant& itemVariant : list)
-				terms.add(itemVariant.toString());
-		}
-		else
-		{
-			QAbstractItemModel *srcModel = qobject_cast<QAbstractItemModel *>(modelVar.value<QObject *>());
-			if (srcModel)
-			{
-				for (int i = 0; i < srcModel->rowCount(); i++)
-					terms.add(srcModel->data(srcModel->index(i, 0)).toString());
-			}
-			else
-				Log::log() << "Could not read model of " << name() << std::endl;
-		}
-
-		initTerms(terms);
-	}
 }

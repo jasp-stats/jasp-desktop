@@ -43,10 +43,8 @@ public:
 	
 protected slots:
 	void modelChangedHandler() override;
-	void valuesChangedHandler();
 	void comboBoxChangeValueSlot(int index);
 	void languageChangedHandler();
-	void resetValues();
 
 protected:
 	OptionList*					_boundTo				= nullptr;
@@ -55,6 +53,7 @@ protected:
 	QString						_currentColumnType;
 	ListModelLabelValueTerms*	_model					= nullptr;
 
+	void _setLabelValues();
 	void _resetItemWidth();
 	void _resetOptions();
 	void _setCurrentValue(int index, bool setComboBoxIndex = true, bool setOption = true);

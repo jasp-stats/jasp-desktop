@@ -20,6 +20,7 @@
 #include "../analysis/analysisform.h"
 #include "../analysis/jaspcontrolbase.h"
 #include "listmodel.h"
+#include "listmodellabelvalueterms.h"
 #include "log.h"
 #include "rowcontrols.h"
 
@@ -29,18 +30,21 @@ const QString QMLListView::_defaultKey = "_JASPDefaultKey";
 
 
 QMLListView::QMLListView(JASPControlBase *item)
-	: QObject(item)
-	, _needsSourceModels(false)
-	  
+	: QObject(item)	  
 {
-	_hasSource = !getItemProperty("source").isNull(); // sourceModels are only known after setup is called, but the method hasSource() is needed before in AnalysisForm
+	_hasSource = !getItemProperty("source").isNull() || !getItemProperty("values").isNull(); // sourceModels are only known after setup is called, but the method hasSource() is needed before in AnalysisForm
 	_hasRowComponents = item->rowComponentsCount() > 0;
 	_optionKeyName = getItemProperty("optionKey").toString().toStdString();
 }
 
 QList<QVariant> QMLListView::_getListVariant(QVariant var)
 {
-	QList<QVariant> listVar = var.toList();
+	QList<QVariant> listVar;
+
+	if (!var.isValid() || var.isNull())
+		return listVar;
+
+	listVar = var.toList();
 
 	if (listVar.isEmpty())
 	{
@@ -76,7 +80,7 @@ QString QMLListView::_readSourceName(const QString& sourceNameExt, QString& sour
 	return nameSplit[0];
 }
 
-QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString& sourceName, QString& sourceControl, QString& sourceUse)
+QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString& sourceName, QString& sourceControl, QString& sourceUse, LabelValueMap& sourceValues)
 {
 	QMap<QString, QVariant> map;
 
@@ -104,32 +108,94 @@ QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString
 				sourceUse += ",";
 			sourceUse += map["use"].toString();
 		}
+
+		if (map.contains("values"))
+			sourceValues = _readValues(map["values"]);
 	}
 
 	return map;
 }
 
-void QMLListView::setSources()
+QMLListView::LabelValueMap QMLListView::_readValues(const QVariant& values)
 {
+	LabelValueMap result;
+
+	bool isInteger = false;
+	int count =  values.toInt(&isInteger);
+
+	if (isInteger)
+	{
+		for (int i = 1; i <= count; i++)
+		{
+			QString number = QString::number(i);
+			result[number] = number;
+		}
+	}
+	else
+	{
+		QList<QVariant> list = values.toList();
+		if (!list.isEmpty())
+		{
+			QString textRole = getItemProperty("textRole").toString();
+			QString valueRole = getItemProperty("valueRole").toString();
+			if (textRole.isEmpty()) textRole = "label";
+			if (valueRole.isEmpty()) valueRole = "value";
+
+
+			for (const QVariant& itemVariant : list)
+			{
+				QMap<QString, QVariant> labelValuePair = itemVariant.toMap();
+				if (labelValuePair.isEmpty())
+				{
+					QString value = itemVariant.toString();
+					result[value] = value;
+				}
+				else
+				{
+					QString label = labelValuePair[textRole].toString();
+					QString value = labelValuePair[valueRole].toString();
+					result[label] = value;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+void QMLListView::setupSources()
+{
+	for (SourceType* sourceType : _sourceModels)
+	{
+		if (sourceType->isValuesSource)
+			delete sourceType->model; // In case of values, the model is created just to contain the values, and does not come from another listview.
+		delete sourceType;
+	}
 	_sourceModels.clear();
 
+	QVariant valuesVar = getItemProperty("values");
 	QVariant sourcesVar = getItemProperty("source");
-	if (sourcesVar.isNull())
+
+	if ((!sourcesVar.isValid() || sourcesVar.isNull()) && (!valuesVar.isValid() || valuesVar.isNull()))
 		return;
+
+	if (valuesVar.isValid() && !valuesVar.isNull())
+		_sourceModels.append(new SourceType(_readValues(valuesVar)));
 
 	QList<QVariant> sources = _getListVariant(sourcesVar);
 	
 	for (const QVariant& source : sources)
 	{
 		QString sourceName, sourceControl, sourceUse;
-		QMap<QString, QVariant> map = _readSource(source, sourceName, sourceControl, sourceUse);
+		LabelValueMap sourceValues;
+		QMap<QString, QVariant> map = _readSource(source, sourceName, sourceControl, sourceUse, sourceValues);
 
 		QString conditionExpression = map["condition"].toString();
-		QVector<std::tuple<QString, QString, QString> > discards;
+		QVector<std::tuple<QString, QString, QString, LabelValueMap, bool> > discards;
 		QVector<QMap<QString, QVariant> > conditionVariables;
 		bool combineWithOtherModels = false;
 
-		if (sourceName.isEmpty())
+		if (sourceName.isEmpty() && !map.contains("values"))
 		{
 			addControlError(tr("No name given in source attribute of List %1").arg(name()));
 			continue;
@@ -142,12 +208,13 @@ void QMLListView::setSources()
 			for (const QVariant& discardSource : discardSources)
 			{
 				QString discardName, discardControl, discardUse;
-				_readSource(discardSource, discardName, discardControl, discardUse);
+				LabelValueMap discardValues;
+				QMap<QString, QVariant> discardMap = _readSource(discardSource, discardName, discardControl, discardUse, discardValues);
 
 				if (discardName.isEmpty())
 					addControlError(tr("No name given in discard source attribute of VariableList %1" ).arg(name()));
 
-				discards.push_back(std::make_tuple(discardName, discardControl, discardUse));
+				discards.push_back(std::make_tuple(discardName, discardControl, discardUse, discardValues, discardMap.contains("values")));
 			}
 		}
 
@@ -163,7 +230,8 @@ void QMLListView::setSources()
 		if (map.contains("combineWithOtherModels"))
 			combineWithOtherModels = map["combineWithOtherModels"].toBool();
 
-		_sourceModels.append(new SourceType(sourceName, sourceControl, sourceUse, discards, conditionExpression, conditionVariables, combineWithOtherModels));
+		bool isValuesSource = map.contains("values");
+		_sourceModels.append(new SourceType(sourceName, sourceControl, sourceUse, sourceValues, isValuesSource, discards, conditionExpression, conditionVariables, combineWithOtherModels));
 	}
 	
 	ListModel* listModel = model();
@@ -179,7 +247,17 @@ void QMLListView::setSources()
 		bool termsAreInteractions = false;
 		for (SourceType* sourceItem : _sourceModels)
 		{
-			ListModel* sourceModel = form()->getModel(sourceItem->name);
+			ListModel* sourceModel = nullptr;
+			if (!sourceItem->isValuesSource)
+			{
+				if (form())
+					sourceModel = form()->getModel(sourceItem->name);
+				else
+					Log::log() << "Cannot use a source property outside of an Anlysis Form" << std::endl;
+			}
+			else
+				sourceModel = new ListModelLabelValueTerms(this, sourceItem->values);
+
 			if (sourceModel)
 			{
 				if (!sourceModel->areTermsVariables() || !sourceItem->controlName.isEmpty() || sourceItem->modelUse == "levels")
@@ -192,7 +270,18 @@ void QMLListView::setSources()
 
 				for (SourceType& discardSource : sourceItem->discardModels)
 				{
-					ListModel* discardModel = form()->getModel(discardSource.name);
+					ListModel* discardModel = nullptr;
+					if (!sourceItem->isValuesSource)
+					{
+						if (form())
+							discardModel = form()->getModel(discardSource.name);
+						else
+							Log::log() << "Cannot use a source property outside of an Anlysis Form" << std::endl;
+					}
+
+					else
+						discardModel = new ListModelLabelValueTerms(this, discardSource.values);
+
 					if (discardModel)
 					{
 						discardSource.model = discardModel;
@@ -263,10 +352,15 @@ void QMLListView::setUp()
 		return;
 
 	listModel->setRowComponents(item()->getRowComponents());
-	setSources();
+	setupSources();
 
-	if (!getItemProperty("source").isNull())
+	QVariant sourceVar = getItemProperty("source");
+	if (sourceVar.isValid() && !sourceVar.isNull())
 		QQuickItem::connect(_item, SIGNAL(sourceChanged()), this, SLOT(sourceChangedHandler()));
+
+	QVariant valuesVar = getItemProperty("values");
+	if (valuesVar.isValid() && !valuesVar.isNull())
+		QQuickItem::connect(_item, SIGNAL(valuesChanged()), this, SLOT(sourceChangedHandler()));
 
 	connect(listModel, &ListModel::modelChanged, this, &QMLListView::modelChangedHandler);
 
@@ -290,6 +384,65 @@ void QMLListView::setTermsAreNotVariables()
 void QMLListView::setTermsAreInteractions()
 {
 	model()->setTermsAreInteractions(true);
+}
+
+QList<std::pair<QMLListView::SourceType*, Terms> > QMLListView::getTermsPerSource()
+{
+	QList<std::pair<SourceType*, Terms> > result; // Do not use a map in order to keep the order of the sources.
+
+	for (SourceType* sourceItem : _sourceModels)
+	{
+		ListModel* sourceModel = sourceItem->model;
+		if (sourceModel)
+		{
+			Terms sourceTerms = sourceModel->terms(sourceItem->modelUse);
+
+			for (const SourceType& discardModel : sourceItem->getDiscardModels())
+				sourceTerms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
+
+			if (!sourceItem->conditionExpression.isEmpty())
+			{
+				Terms filteredTerms;
+				QJSEngine jsEngine;
+
+				for (const Term& term : sourceTerms)
+				{
+					for (const SourceType::ConditionVariable& conditionVariable : sourceItem->conditionVariables)
+					{
+						JASPControlWrapper* control = sourceModel->getRowControl(term.asQString(), conditionVariable.controlName);
+						if (control)
+						{
+							QJSValue value;
+							QVariant valueVar = control->getItemProperty(conditionVariable.propertyName);
+
+							switch (valueVar.type())
+							{
+							case QVariant::Type::Int:
+							case QVariant::Type::UInt:		value = valueVar.toInt();		break;
+							case QVariant::Type::Double:	value = valueVar.toDouble();	break;
+							case QVariant::Type::Bool:		value = valueVar.toBool();		break;
+							default:						value = valueVar.toString();	break;
+							}
+
+							jsEngine.globalObject().setProperty(conditionVariable.name, value);
+						}
+					}
+
+					QJSValue result = jsEngine.evaluate(sourceItem->conditionExpression);
+					if (result.isError())
+							addControlError("Error when evaluating : " + sourceItem->conditionExpression + ": " + result.toString());
+					else if (result.toBool())
+						filteredTerms.add(term);
+				}
+
+				sourceTerms = filteredTerms;
+			}
+
+			result.append(std::make_pair(sourceItem, sourceTerms));
+		}
+	}
+
+	return result;
 }
 
 bool QMLListView::addRowControl(const QString &key, JASPControlWrapper *control)
@@ -324,9 +477,6 @@ QString QMLListView::getSourceType(QString name)
 
 void QMLListView::sourceChangedHandler()
 {
-	if (getItemProperty("source").isNull())
-		return;
-
 	ListModel* listModel = model();
 	if (!listModel)
 		return;
@@ -343,7 +493,7 @@ void QMLListView::sourceChangedHandler()
 		}
 	}
 
-	setSources();
+	setupSources();
 	listModel->sourceTermsChanged(nullptr, nullptr);
 }
 
@@ -389,17 +539,20 @@ QMLListView::SourceType::SourceType(
 		  const QString& _name
 		, const QString& _controlName
 		, const QString& _modelUse
-		, const QVector<std::tuple<QString, QString, QString> >& _discardModels
+		, const LabelValueMap& _values
+		, bool _isValuesSource
+		, const QVector<std::tuple<QString, QString, QString, LabelValueMap, bool> >& _discardModels
 		, const QString& _conditionExpression
 		, const QVector<QMap<QString, QVariant> >& _conditionVariables
-		, bool _combineWithOtherModels)
-	: name(_name), controlName(_controlName), modelUse(_modelUse), model(nullptr), conditionExpression(_conditionExpression), combineWithOtherModels(_combineWithOtherModels)
+		, bool _combineWithOtherModels
+		)
+	: name(_name), controlName(_controlName), modelUse(_modelUse), values(_values), isValuesSource(_isValuesSource), model(nullptr), conditionExpression(_conditionExpression), combineWithOtherModels(_combineWithOtherModels)
 {
 	if (!_controlName.isEmpty()) usedControls.insert(_controlName);
 
-	for (const std::tuple<QString, QString, QString>& discardModel : _discardModels)
+	for (const std::tuple<QString, QString, QString, LabelValueMap, bool>& discardModel : _discardModels)
 	{
-		discardModels.push_back(SourceType(std::get<0>(discardModel), std::get<1>(discardModel), std::get<2>(discardModel)));
+		discardModels.push_back(SourceType(std::get<0>(discardModel), std::get<1>(discardModel), std::get<2>(discardModel), std::get<3>(discardModel), std::get<4>(discardModel)));
 		if (!std::get<1>(discardModel).isEmpty()) usedControls.insert(std::get<1>(discardModel));
 	}
 

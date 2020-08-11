@@ -19,13 +19,13 @@
 #include "listmodellabelvalueterms.h"
 #include "log.h"
 
-ListModelLabelValueTerms::ListModelLabelValueTerms(QMLListView* listView)
+ListModelLabelValueTerms::ListModelLabelValueTerms(QMLListView* listView, const QMLListView::LabelValueMap& values)
 	: ListModelTermsAvailable(listView)
 {
 	if (listView->getItemProperty("addEmptyValue").toBool())
 		addEmptyValue();
 
-	readModelProperty(listView);
+	setLabelValues(values);
 }
 
 QVariant ListModelLabelValueTerms::data(const QModelIndex &index, int role) const
@@ -49,82 +49,6 @@ QVariant ListModelLabelValueTerms::data(const QModelIndex &index, int role) cons
 	return ListModelTermsAvailable::data(index, role);
 }
 
-void ListModelLabelValueTerms::readModelProperty(QMLListView *item)
-{
-	QVariant modelVar = item->getItemProperty("values");
-
-	if (modelVar.isNull())
-	{
-		if (item->getItemProperty("source").isNull())
-			item->setModelHasAllVariables(true);
-
-		return;
-	}
-
-	QString textRole = item->getItemProperty("textRole").toString();
-	QString valueRole = item->getItemProperty("valueRole").toString();
-	Terms terms;
-	QMap<QString, QString> labelToValueMap;
-
-	QList<QVariant> list = modelVar.toList();
-	if (!list.isEmpty())
-	{
-		for (const QVariant& itemVariant : list)
-		{
-			QMap<QString, QVariant> labelValuePair = itemVariant.toMap();
-			if (labelValuePair.isEmpty())
-				terms.add(itemVariant.toString());
-			else
-			{
-				QString label = labelValuePair[textRole].toString();
-				QString value = labelValuePair[valueRole].toString();
-				terms.add(label);
-				labelToValueMap[label] = value;
-			}
-		}
-	}
-	else
-	{
-		QAbstractItemModel *srcModel = qobject_cast<QAbstractItemModel *>(modelVar.value<QObject *>());
-		if (srcModel)
-		{
-			if (srcModel == this)
-				return;
-
-			QMap<QString, int> roleMap;
-			QHash<int, QByteArray> roles = srcModel->roleNames();
-			QHashIterator<int, QByteArray> i(roles);
-			while (i.hasNext())
-			{
-				i.next();
-				QString valueStr = i.value();
-				roleMap[valueStr] = i.key();
-			}
-			for (int i = 0; i < srcModel->rowCount(); i++)
-			{
-				QModelIndex ind(srcModel->index(i, 0));
-				QString label = srcModel->data(ind, roleMap[textRole]).toString();
-				QString value = srcModel->data(ind, roleMap[valueRole]).toString();
-				terms.add(label);
-				labelToValueMap[label] = value;
-			}
-		}
-		else
-			Log::log() << "Could not read model of " << name() << std::endl;
-	}
-
-	initTerms(terms);
-
-	_labelToValueMap = labelToValueMap;
-	_valueToLabelMap.clear();
-
-	QMapIterator<QString, QString> it(_labelToValueMap);
-	while (it.hasNext())
-	{
-		it.next();
-		_valueToLabelMap[it.value()] = it.key();
-	}
-}
 
 std::vector<std::string> ListModelLabelValueTerms::getValues()
 {
@@ -150,6 +74,7 @@ QString ListModelLabelValueTerms::getLabel(const QString &value)
 	return _valueToLabelMap.contains(value) ? _valueToLabelMap[value] : value;
 }
 
+
 int ListModelLabelValueTerms::getIndexOfValue(const QString &value)
 {
 	int index = 0;
@@ -162,5 +87,22 @@ int ListModelLabelValueTerms::getIndexOfValue(const QString &value)
 	}
 
 	return -1;
+}
+
+void ListModelLabelValueTerms::setLabelValues(const QMLListView::LabelValueMap &labelvalues)
+{
+	_valueToLabelMap.clear();
+	_labelToValueMap = labelvalues;
+	_terms.clear();
+
+	QMapIterator<QString, QString> it(labelvalues);
+	while (it.hasNext())
+	{
+		it.next();
+		const QString& label = it.key();
+		const QString& value = it.value();
+		_terms.add(label);
+		_valueToLabelMap[value] = label;
+	}
 }
 

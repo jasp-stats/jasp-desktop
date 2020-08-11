@@ -156,7 +156,7 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 
 		if (availableModel)
 		{
-			if (boundQMLTextArea->modelHasAllVariables())
+			if (boundQMLTextArea->modelNeedsAllVariables())
 				_allAvailableVariablesModels.push_back(availableModel);
 			_modelMap[controlWrapper->name()] = availableModel;
 		}
@@ -164,18 +164,6 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 		break;
 	}
 	case JASPControlBase::ControlType::ComboBox:
-	{
-		BoundQMLComboBox		* boundQMLComboBox	= dynamic_cast<BoundQMLComboBox*>(controlWrapper);
-		ListModelTermsAvailable	* availableModel	= dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
-
-		if (availableModel)
-		{
-			if (boundQMLComboBox->modelHasAllVariables())
-				_allAvailableVariablesModels.push_back(availableModel);
-			_modelMap[controlWrapper->name()] = availableModel;
-		}
-		break;
-	}
 	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:
 	case JASPControlBase::ControlType::InputListView:
 	case JASPControlBase::ControlType::TabView:
@@ -186,18 +174,16 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 	{
 		QMLListView* listView = dynamic_cast<QMLListView*>(controlWrapper);
 
-		if(listView->model())
+		if (listView->model())
+		{
 			_modelMap[controlWrapper->name()] = listView->model();
 
-		QMLListViewTermsAvailable* listViewTermsAvailable = dynamic_cast<QMLListViewTermsAvailable*>(listView);
-		if (listViewTermsAvailable)
-		{
-			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(listViewTermsAvailable->model());
+			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(listView->model());
 
 			if (availableModel)
 			{
-				if (!listViewTermsAvailable->hasSource())	_allAvailableVariablesModels.push_back(availableModel);
-				else										_allAvailableVariablesModelsWithSource.push_back(availableModel);
+				if (!listView->hasSource())	_allAvailableVariablesModels.push_back(availableModel);
+				else						_allAvailableVariablesModelsWithSource.push_back(availableModel);
 			}
 		}
 		break;
@@ -530,25 +516,23 @@ void AnalysisForm::bindTo()
 			boundControl->bindTo(option);
 			_optionControlMap[option] = boundControl;
 		}
-		else
+
+		QMLListView* listControl = dynamic_cast<QMLListView *>(control);
+		if (listControl && listControl->hasSource())
 		{
-			QMLListViewTermsAvailable* availableListControl = dynamic_cast<QMLListViewTermsAvailable *>(control);
-			if (availableListControl && availableListControl->hasSource())
+			ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(listControl->model());
+			// The availableList control are not bound with options, but they have to be updated from their sources when the form is initialized.
+			// The availableList cannot signal their assigned models now because they are not yet bound (the controls are ordered by dependency)
+			// When the options come from a JASP file, an assigned model needs sometimes the available model (eg. to determine the kind of terms they have).
+			// So in this case resetTermsFromSourceModels has to be called now but with updateAssigned argument set to false.
+			// When the options come from default options (from source models), the availableList needs sometimes to signal their assigned models (e.g. when addAvailableVariablesToAssigned if true).
+			// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
+			if (availableModel)
 			{
-				ListModelAvailableInterface* availableModel = availableListControl->availableModel();
-				// The availableList control are not bound with options, but they have to be updated from their sources when the form is initialized.
-				// The availableList cannot signal their assigned models now because they are not yet bound (the controls are ordered by dependency)
-				// When the options come from a JASP file, an assigned model needs sometimes the available model (eg. to determine the kind of terms they have).
-				// So in this case resetTermsFromSourceModels has to be called now but with updateAssigned argument set to false.
-				// When the options come from default options (from source models), the availableList needs sometimes to signal their assigned models (e.g. when addAvailableVariablesToAssigned if true).
-				// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
-				if (availableModel)
-				{
-					if (optionsFromJASPFile != Json::nullValue || _analysis->isDuplicate())
-						availableModel->resetTermsFromSourceModels(false);
-					else
-						availableModelsToBeReset.push_back(availableModel);
-				}
+				if (optionsFromJASPFile != Json::nullValue || _analysis->isDuplicate())
+					availableModel->resetTermsFromSourceModels(false);
+				else
+					availableModelsToBeReset.push_back(availableModel);
 			}
 		}
 

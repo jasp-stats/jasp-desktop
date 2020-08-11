@@ -117,17 +117,23 @@ bool BoundQMLComboBox::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::stringValue;
 }
 
-void BoundQMLComboBox::setUp()
+void BoundQMLComboBox::_setLabelValues()
 {
-	QMLListView::setUp();
+	LabelValueMap values;
 
-	if (form())
-		connect(form(), &AnalysisForm::languageChanged, this, &BoundQMLComboBox::languageChangedHandler);
-
-	if (hasSource())
+	for (const std::pair<QMLListView::SourceType *, Terms>& source : getTermsPerSource())
 	{
-		_model->resetTermsFromSourceModels(false);
-		_resetItemWidth();
+		ListModel* sourceModel = source.first->model;
+		if (source.first->isValuesSource)
+		{
+			ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceModel);
+			for (const Term& term : source.second)
+			{
+				QString label = term.asQString();
+				QString value = labelValueSourceModel ? labelValueSourceModel->getValue(label) : label;
+				values[label] = value;
+			}
+		}
 	}
 
 	if (_currentIndex == -1)
@@ -140,36 +146,34 @@ void BoundQMLComboBox::setUp()
 	
 	_setCurrentValue(_currentIndex, true, false);
 
-	QQuickItem::connect(_item, SIGNAL(valuesChanged()), this, SLOT(valuesChangedHandler()));
+	_model->setLabelValues(values);
 }
 
-void BoundQMLComboBox::valuesChangedHandler()
+void BoundQMLComboBox::setUp()
 {
-	resetValues();
-	_resetOptions();
+	QMLListView::setUp();
+
+	_setLabelValues();
+
+	_resetItemWidth();
+	
+	_setCurrentValue(_currentIndex, true, false);
+
+	if (form())
+		connect(form(), &AnalysisForm::languageChanged, this, &BoundQMLComboBox::languageChangedHandler);
 }
 
 void BoundQMLComboBox::languageChangedHandler()
 {
-	resetValues();
+	setupSources();
 
-	// In case of retranslation, QML sets back its original model, so we have to set it again to our own model.
-	// But setting the model will generate a valueChanged signal, that would re-reset the values.
-	// So the valuesChangedHandler is temporary disconnected.
-	disconnect(_item, SIGNAL(valuesChanged()), this, SLOT(valuesChangedHandler()));
-	setItemProperty("model", QVariant::fromValue(_model));
-	connect(_item, SIGNAL(valuesChanged()), this, SLOT(valuesChangedHandler()));
-
-	_resetOptions();
-}
-
-void BoundQMLComboBox::resetValues()
-{
-	_model->readModelProperty(this);
+	_setLabelValues();
 
 	_resetItemWidth();
 
 	_setCurrentValue(_currentIndex, true, false);
+
+	_resetOptions();
 }
 
 void BoundQMLComboBox::modelChangedHandler()

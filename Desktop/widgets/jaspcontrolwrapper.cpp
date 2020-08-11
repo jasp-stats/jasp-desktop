@@ -137,7 +137,7 @@ void JASPControlWrapper::addControlError(const QString &error)
 
 bool JASPControlWrapper::addDependency(JASPControlWrapper *item)
 {
-	if (_depends.count(item) > 0)
+	if (_depends.count(item) > 0 || this == item)
 		return false;
 	
 	_depends.insert(item);

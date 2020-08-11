@@ -54,7 +54,9 @@ void RowControls::init(int row, const Term& key, bool isNew)
 		context->setContextProperty("rowValue", key.asQString());
 		context->setContextProperty("rowValueIsInteraction", key.components().size() > 1);
 
-		QQuickItem* obj = qobject_cast<QQuickItem*>(comp->create(context));
+		QVariantMap prop;
+		if (_isDummy)	prop["visible"] = false;
+		QQuickItem* obj = qobject_cast<QQuickItem*>(comp->createWithInitialProperties(prop, context));
 
 		if (obj)
 		{

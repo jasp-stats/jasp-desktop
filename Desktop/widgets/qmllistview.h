@@ -23,18 +23,21 @@
 #include "common.h"
 #include <QObject>
 #include <QVector>
+#include <QMap>
 #include <QSet>
 
 class ListModel;
 class BoundQMLItem;
 class Options;
 class RowControls;
+class Terms;
 
 class QMLListView : public QObject, public virtual JASPControlWrapper
 {
 Q_OBJECT
 
 public:
+	typedef QMap<QString, QString> LabelValueMap;
 	struct SourceType
 	{
 		struct ConditionVariable
@@ -54,21 +57,27 @@ public:
 		QString						name,
 									controlName,
 									modelUse;
-		ListModel	*				model;
 		QVector<SourceType>			discardModels;
+		LabelValueMap					values;
+		bool						isValuesSource = false;
+		ListModel	*				model = nullptr;
 		QString						conditionExpression;
 		QVector<ConditionVariable>	conditionVariables;
 		bool						combineWithOtherModels = false;
 		QSet<QString>				usedControls;
 
 		SourceType(
-				  const QString& _name = ""
-				, const QString& _controlName = ""
-				, const QString& _modelUse = ""
-				, const QVector<std::tuple<QString, QString, QString> >& _discardModels = QVector<std::tuple<QString, QString, QString> >()
+				  const QString& _name
+				, const QString& _controlName
+				, const QString& _modelUse
+				, const LabelValueMap& _values
+				, bool isValuesSource
+				, const QVector<std::tuple<QString, QString, QString, LabelValueMap, bool> >& _discardModels = QVector<std::tuple<QString, QString, QString, LabelValueMap, bool> >()
 				, const QString& _conditionExpression = ""
 				, const QVector<QMap<QString, QVariant> >& _conditionVariables = QVector<QMap<QString, QVariant> >()
 				, bool _combineWithOtherModels = false);
+
+		SourceType(const LabelValueMap& _values) : values(_values), isValuesSource(true) {}
 
 		QVector<SourceType> getDiscardModels(bool onlyNotNullModel = true)	const;
 	};
@@ -85,9 +94,8 @@ public:
 			int					variableTypesAllowed()		const	{ return _variableTypesAllowed; }
 
 	const QList<SourceType*>&	sourceModels()				const	{ return _sourceModels; }
+	QList<std::pair<SourceType*, Terms> >	getTermsPerSource();
 			bool				hasSource()					const	{ return _hasSource; }
-			bool				modelHasAllVariables()		const	{ return _modelHasAllVariables; }
-			void				setModelHasAllVariables(bool b)		{ _modelHasAllVariables = b; }
 
 			JASPControlWrapper*	getRowControl(const QString& key, const QString& name)		const;
 			bool				addRowControl(const QString& key, JASPControlWrapper* control);
@@ -101,17 +109,16 @@ protected slots:
 			void				sourceChangedHandler();
 
 protected:
-	virtual void				setSources();
+	virtual void				setupSources();
 			void				addRowComponentsDefaultOptions(Options* optionTable);
 
 protected:
 	QList<SourceType*>	_sourceModels;
 	bool				_hasSource				= false;
-	bool				_needsSourceModels;
+	bool				_needsSourceModels		= false;
 	int					_variableTypesAllowed;
 	bool				_hasRowComponents		= false;
 	std::string			_optionKeyName;
-	bool				_modelHasAllVariables	= false;
 	RowControls*		_defaultRowControls		= nullptr;
 
 	static const QString _defaultKey;
@@ -120,12 +127,9 @@ private:
 	int						_getAllowedColumnsTypes();
 	void					_setAllowedVariables();
 	QString					_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse);
-	QMap<QString, QVariant> _readSource(const QVariant& source, QString& sourceName, QString& sourceControl, QString& sourceUse);
-
-
-
-
-	QList<QVariant> _getListVariant(QVariant var);
+	QMap<QString, QVariant>	_readSource(const QVariant& source, QString& sourceName, QString& sourceControl, QString& sourceUse, LabelValueMap& sourceValues);
+	LabelValueMap				_readValues(const QVariant& values);
+	QList<QVariant>			_getListVariant(QVariant var);
 };
 
 #endif // QMLLISTVIEW_H
