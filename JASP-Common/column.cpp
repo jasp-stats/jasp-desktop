@@ -760,7 +760,7 @@ bool Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ord
 bool Column::setColumnAsScale(const std::vector<double> &values)
 {
 	bool changedSomething = false;
-	_labels.clear();
+	//_labels.clear(); //Don't clear the labels otherwise they will be lost if we do something like ordinal -> scale -> ordinal
 	Doubles::iterator doubleInputItr = AsDoubles.begin();
 
 	for(double value : values)

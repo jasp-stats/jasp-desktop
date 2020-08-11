@@ -272,7 +272,7 @@ FocusScope
 
 							if(dataSetModel.columnIcon(columnIndex)  !== columnTypeScale)
 							{
-								var changedIndex		= labelModel.chosenColumn	!= columnIndex
+								var changedIndex		= labelModel.chosenColumn	!== columnIndex
 								labelModel.chosenColumn	= columnIndex;
 								labelModel.visible		= changedIndex ? true : !labelModel.visible;
 							}

@@ -38,7 +38,6 @@ FocusScope
 			{
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
 				levelsTableViewRectangle.focus = true //So we just put it somewhere
-				columnNameVariablesWindow.text = labelModel.columnName
 				levelsTableView.selection.clear()
 			}
 		}
@@ -61,7 +60,7 @@ FocusScope
 		Text
 		{
 			id:				columnNameVariablesWindow
-			text:			"Column Name/Title here"
+			text:			labelModel.columnName
 			color:			jaspTheme.textEnabled
 			font:			jaspTheme.fontGroupTitle
 			anchors.top:	parent.top
