@@ -4,7 +4,7 @@ import JASP.Module 	1.0
 Description
 {
 	name:			"Learn Bayes"
-	title : 		qsTr("Meta-Analysis")
+	title : 		qsTr("Learn Bayes")
 	description:	qsTr("Learning Bayesian Statistics with JASP")
 	icon:			"learn-bayes.svg"
 	version:		"0.14"
