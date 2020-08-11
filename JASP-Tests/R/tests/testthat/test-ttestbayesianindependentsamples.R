@@ -33,7 +33,7 @@ test_that("Main table results match for Wilcoxon test", {
   options$hypothesis <- "groupOneGreater"
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
   table <- getTtestTable(results)[["data"]]
-  expect_equal_tables(table, list(0.395004853845122, 1146, 0.999374433542238, "contNormal"))
+  expect_equal_tables(table, list(0.277730185316155, 1290, 1.00447417926979, "contNormal"))
 })
 
 test_that("Inferential and descriptives plots match", {

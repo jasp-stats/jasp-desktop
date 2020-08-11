@@ -54,6 +54,7 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 - De eerste kolom bevat de variabelen waarvoor de analyse is uitgevoerd.
 - Toets: Het type toets dat is geselecteerd. Als er maar een toets is geselecteerd wordt deze kolom niet weergegeven. In dit geval geeft de tabel alleen de resultaten van de geselecteerde toets weer. 
 - t: De waarde van de t-waarde. 
+- W: De toets statistiek van de Wilcoxon toets. Deze wordt berekend door de rangordes van de eerste groep op te tellen (dezelfde procedure als door R wordt gebruikt). 
 - vg: Vrijheidsgraden.
 - p: De p-waarde.
 - Gemiddelde verschil: Gemiddeld verschil tussen de steekproefgemiddelden. Deze kolom heet alleen 'Gemiddelde verschil' wanneer de toets `Student` of `Welch` is geselecteerd. Wanneer de toets `Mann-Whitney` is geselecteerd, heet deze kolom 'Locatieparameter'. 

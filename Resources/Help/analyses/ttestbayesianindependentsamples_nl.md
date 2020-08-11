@@ -72,7 +72,7 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
   - BF0+: De Bayes factor die bewijs geeft voor de nulhypothese, ten opzichte van de eenzijdige alternatieve hypothese dat groep een > groep twee.
   - BF0-: De Bayes factor die bewijs geeft voor de nulhypothese, ten opzichte van de eenzijdige alternatieve hypothese dat groep een < groep twee.
 - error %: De fout van de Gaussiaanse kwadratuur intergratie methode die wordt gebruikt op de Bayes factor te berekenen.
-- W: De toets statistiek van de Wilcoxon toets.
+- W: De toets statistiek van de Wilcoxon toets. Deze wordt berekend door de rangordes van de eerste groep op te tellen (dezelfde procedure als door R wordt gebruikt). 
 - R-dakje: Mate van convergentie voor de MCMC procedure van de Wilcoxon toets. Een ratio die de varianties vergelijkt binnen en tussen de MCMC ketens voor de delta parameter. Waarden minder dan, of gelijk aan, 1 duiden op convergentie.
 
 
