@@ -635,7 +635,8 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   title <- ngettext(length(predictors), "Partial Regression Plot", "Partial Regression Plots")
 
   partialPlotContainer <- createJaspContainer(title)
-  partialPlotContainer$dependOn("plotsPartialRegression")
+  partialPlotContainer$dependOn(c("plotsPartialRegression", "plotsPartialConfidenceIntervals", "plotsPartialConfidenceIntervalsInterval", 
+                                  "plotsPartialPredictionIntervals", "plotsPartialPredictionIntervalsInterval"))
   partialPlotContainer$position <- position
   modelContainer[["partialPlotContainer"]] <- partialPlotContainer
 
@@ -660,7 +661,8 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   plotData  <- .linregGetPartialPlotData(predictor, predictors, dataset, options)
   xVar      <- plotData[["residualsPred"]]
   resid     <- plotData[["residualsDep"]]
-
+  dfResid   <- length(resid) - length(predictors) - 1
+  
   xlab      <- gettextf("Residuals %s", .unvf(predictor))
   ylab      <- gettextf("Residuals %s", options$dependent)
   
@@ -670,8 +672,12 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
                            c("intercept", "slope"))
                   )
   
-  .linregInsertPlot(partialPlot, .linregPlotResiduals, xVar = xVar, res = resid, xlab = xlab, ylab = ylab,
-                    regressionLine = TRUE, standardizedResiduals = FALSE, intercept = line[['intercept']], slope = line[['slope']])
+  .linregInsertPlot(partialPlot, .linregPlotResiduals, xVar = xVar, res = resid, dfRes = dfResid, xlab = xlab, ylab = ylab,
+                    regressionLine = TRUE, confidenceIntervals = options$plotsPartialConfidenceIntervals, 
+                    confidenceIntervalsInterval = options$plotsPartialConfidenceIntervalsInterval,
+                    predictionIntervals = options$plotsPartialPredictionIntervals, 
+                    predictionIntervalsInterval = options$plotsPartialPredictionIntervalsInterval,
+                    standardizedResiduals = FALSE, intercept = line[['intercept']], slope = line[['slope']])
 }
 
 .linregCreateDescriptivesTable <- function(modelContainer, dataset, options, position) {
@@ -1426,7 +1432,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   return(data.frame(residualsPred = residualsPred, residualsDep = residualsDep))
 }
 
-.linregPlotResiduals <- function(xVar = NULL, res = NULL, xlab, ylab = gettext("Residuals"), cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine = TRUE, standardizedResiduals = TRUE, intercept = 0, slope = 0) {
+.linregPlotResiduals <- function(xVar = NULL, res = NULL, dfRes = Inf, xlab, ylab = gettext("Residuals"), cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine = TRUE, confidenceIntervals = FALSE, confidenceIntervalsInterval = 0.95, predictionIntervals = FALSE, predictionIntervalsInterval = 0.95, standardizedResiduals = TRUE, intercept = 0, slope = 0) {
   d     <- data.frame(xx= xVar, yy= res)
   d     <- na.omit(d)
   xVar  <- d$xx
@@ -1473,7 +1479,49 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)),
                                                   y = intercept + slope * c(min(xticks), max(xticks))),
                                 mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = .5)
-
+  
+  if (regressionLine && confidenceIntervals) {
+    
+    seConf <- sqrt(sum(res^2) / dfRes) * 
+      sqrt(1 / length(res) + (xVar - mean(xVar))^2 / sum((xVar - mean(xVar))^2))
+    
+    ciConf <- 1 - (1 - confidenceIntervalsInterval)/2
+    
+    upperConfInt <- (intercept + slope * xVar) + qt(ciConf, dfRes) *  seConf
+    lowerConfInt <- (intercept + slope * xVar) - qt(ciConf, dfRes) *  seConf
+    
+    p <- p + ggplot2::geom_line(data = data.frame(x = xVar,
+                                                  y = upperConfInt),
+                                mapping = ggplot2::aes(x = x, y = y), 
+                                col = "darkblue", linetype = "dashed", size = 1) + 
+      ggplot2::geom_line(data = data.frame(x = xVar,
+                                           y = lowerConfInt),
+                                mapping = ggplot2::aes(x = x, y = y), 
+                                col = "darkblue", linetype = "dashed", size = 1)
+    
+  }
+  
+  if (regressionLine && predictionIntervals) {
+    
+    sePred <- sqrt(sum(res^2) / dfRes) * 
+      sqrt(1 + 1 / length(res) + (xVar - mean(xVar))^2 / sum((xVar - mean(xVar))^2))
+    
+    ciPred <- 1 - (1 - predictionIntervalsInterval)/2
+    
+    upperPredInt <- (intercept + slope * xVar) + qt(ciPred, dfRes) *  sePred
+    lowerPredInt <- (intercept + slope * xVar) - qt(ciPred, dfRes) *  sePred
+    
+    p <- p + ggplot2::geom_line(data = data.frame(x = xVar,
+                                                  y = upperPredInt),
+                                mapping = ggplot2::aes(x = x, y = y), 
+                                col = "darkgreen", linetype = "longdash", size = 1) + 
+      ggplot2::geom_line(data = data.frame(x = xVar,
+                                           y = lowerPredInt),
+                                mapping = ggplot2::aes(x = x, y = y), 
+                                col = "darkgreen", linetype = "longdash", size = 1)
+    
+  }
+  
   p <- JASPgraphs::drawPoints(p, dat = data.frame(x = xVar, y = res), size = 3)
 
   # JASP theme

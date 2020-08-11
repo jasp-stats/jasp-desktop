@@ -460,7 +460,7 @@ Correlation <- function(jaspResults, dataset, options){
   
   if(isTRUE(options$multivariateShapiro) && is.null(assumptionsContainer[['multivariateShapiro']]))
     .corrMultivariateShapiro(assumptionsContainer, dataset, options, ready, corrResults)
-  
+
   if(isTRUE(options$pairwiseShapiro) && is.null(assumptionsContainer[['pairwiseShapiro']]))
     .corrPairwiseShapiro(assumptionsContainer, dataset, options, ready, corrResults)
   
@@ -471,30 +471,30 @@ Correlation <- function(jaspResults, dataset, options){
   shapiroTable$dependOn("multivariateShapiro")
   shapiroTable$position <- 1
   shapiroTable$showSpecifiedColumnsOnly <- TRUE
-  
+
   if(length(options$conditioningVariables) == 0){
-    
+
     shapiroTable$addColumnInfo(name = "W", title = gettext("Shapiro-Wilk"), type = "number")
     shapiroTable$addColumnInfo(name = "p", title = gettext("p"), type = "pvalue")
-    
+
     assumptionsContainer[['multivariateShapiro']] <- shapiroTable
-    
+
     if(ready) {
       dataset <- dataset[complete.cases(dataset),,drop=FALSE]
       shapiroResult <- .multivariateShapiroComputation(dataset, list(dependent = options$variables))
       shapiroErrors <- shapiroResult$errors
       shapiroResult <- shapiroResult$result
       shapiroTable$addRows(list(W = shapiroResult$statistic, p = shapiroResult$p.value))
-      
+
       if (!is.null(shapiroErrors))shapiroTable$setError(shapiroErrors)
     }
   } else{
     shapiroTable$addColumnInfo(name = "vars", title = gettext("Variables"),    type = "string")
     shapiroTable$addColumnInfo(name = "W",    title = gettext("Shapiro-Wilk"), type = "number")
     shapiroTable$addColumnInfo(name = "p",    title = gettext("p"),            type = "pvalue")
-    
+
     assumptionsContainer[['multivariateShapiro']] <- shapiroTable
-    
+
     if(ready){
       dataset <- dataset[complete.cases(dataset),,drop=FALSE]
       shapiroResult <- list()
@@ -502,18 +502,18 @@ Correlation <- function(jaspResults, dataset, options){
                                                                                                      options$conditioningVariables)))
       shapiroResult[['Conditioned']]  <- .multivariateShapiroComputation(dataset, list(dependent = options$variables))
       shapiroResult[['Conditioning']] <- .multivariateShapiroComputation(dataset, list(dependent = options$conditioningVariables))
-      
+
       form <- sprintf("cbind(%s) ~ %s",
                       paste(.v(options$variables), collapse = ", "),
                       paste(.v(options$conditioningVariables), collapse = " + "))
       resids <- try(expr = {residuals(lm(formula = form, data = dataset))}, silent = TRUE)
-      
+
       if(isTryError(resids)){
         shapiroResult[['Residuals']] <- list(errors = .extractErrorMessage(resids))
       } else{
         shapiroResult[['Residuals']] <- .multivariateShapiroComputation(resids, list(dependent = options$variables))
       }
-      
+
       for(i in seq_along(shapiroResult)){
         if(!is.null(shapiroResult[[i]]$errors)){
           shapiroTable$setError(shapiroResult[[i]]$errors)
@@ -532,30 +532,30 @@ Correlation <- function(jaspResults, dataset, options){
   shapiroTable$dependOn(c("pairwiseShapiro", "missingValues"))
   shapiroTable$position <- 2
   shapiroTable$showSpecifiedColumnsOnly <- TRUE
-  
+
   shapiroTable$addColumnInfo(name = "var1",      title = "",                      type = "string")
   shapiroTable$addColumnInfo(name = "separator", title = "",                      type = "separator")
   shapiroTable$addColumnInfo(name = "var2",      title = "",                      type = "string")
   shapiroTable$addColumnInfo(name = "W",         title = gettext("Shapiro-Wilk"), type = "number")
   shapiroTable$addColumnInfo(name = "p",         title = gettext("p"),            type = "pvalue")
-  
+
   shapiroTable$setExpectedSize(rows = max(1, choose(length(options$variables), 2)))
-  
+
   assumptionsContainer[['pairwiseShapiro']] <- shapiroTable
-  
+
   if(ready){
     for(i in seq_along(corrResults)){
       res <- corrResults[[i]]
-      
+
       shapiroTable$addRows(list(
         var1 = res$vars[1], separator = "-", var2 = res$vars[2],
         W = res$shapiro$result$statistic, p = res$shapiro$result$p.value
       ))
-      
-      
+
+
       name <- paste(res$vvars, collapse = "_")
       shapiroTable$setRowName(rowIndex = i, newName = name)
-      
+
       if(!is.null(res$shapiro$errors))  shapiroTable$addFootnote(message = res$shapiro$errors, rowNames = name)
     }
   }
@@ -726,7 +726,9 @@ Correlation <- function(jaspResults, dataset, options){
   plotContainer <- createJaspContainer(title = gettext("Scatter plots"))
   plotContainer$dependOn(options = c("variables", "conditioningVariables", "pearson", "spearman", "kendallsTauB",
                                      "displayPairwise", "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis",
-                                     "plotCorrelationMatrix", "plotDensities", "plotStatistics", "missingValues"))
+                                     "plotCorrelationMatrix", "plotDensities", "plotStatistics", "plotConfidenceIntervals", 
+                                     "plotConfidenceIntervalsInterval", "plotPredictionIntervalsInterval",
+                                     "plotPredictionIntervals", "missingValues"))
   plotContainer$position <- 3
   jaspResults[['corrPlot']] <- plotContainer
   
@@ -814,7 +816,9 @@ Correlation <- function(jaspResults, dataset, options){
   plot <- createJaspPlot(title = gettext("Correlation plot"))
   plot$dependOn(options = c("variables", "conditioningVariables", "pearson", "spearman", "kendallsTauB", 
                             "displayPairwise", "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis",
-                            "plotCorrelationMatrix", "plotDensities", "plotStatistics", "missingValues"))
+                            "plotCorrelationMatrix", "plotDensities", "plotStatistics", "plotConfidenceIntervals", 
+                            "plotConfidenceIntervalsInterval", "plotPredictionIntervalsInterval",
+                            "plotPredictionIntervals", "missingValues"))
   plot$position <- 3
   
   if (len <= 2 && (options$plotDensities || options$plotStatistics)) {
@@ -978,7 +982,7 @@ Correlation <- function(jaspResults, dataset, options){
     xVar <- rank(xVar)
     yVar <- rank(yVar)
   }
-  .plotScatter(xVar = xVar, yVar = yVar, xBreaks = xBreaks, yBreaks = yBreaks, xName = xName, yName = yName, 
+  .plotScatter(xVar = xVar, yVar = yVar, options, xBreaks = xBreaks, yBreaks = yBreaks, xName = xName, yName = yName, 
                drawAxes = drawAxes)
 }
 
@@ -1151,7 +1155,7 @@ Correlation <- function(jaspResults, dataset, options){
     }
 }
 
-.plotScatter <- function(xVar, yVar, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL, drawAxes = TRUE) {
+.plotScatter <- function(xVar, yVar, options = NULL, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL, drawAxes = TRUE) {
   
 	isNumericX <- !(is.factor(xVar) || (is.integer(xVar) && length(unique(xVar)) <= 10))
 	isNumericY <- !(is.factor(yVar) || (is.integer(yVar) && length(unique(yVar)) <= 10))
@@ -1193,6 +1197,22 @@ Correlation <- function(jaspResults, dataset, options){
   	xr <- range(xBreaks)
   	dfLine <- data.frame(x = xr, y = rangeLineObj)
     p <- p + ggplot2::geom_line(data = dfLine, ggplot2::aes(x = x, y = y), size = .7, inherit.aes = FALSE)
+    
+    if (isTRUE(options$plotConfidenceIntervals)) {
+      ci <- as.data.frame(stats::predict(fit, interval = "confidence", level = options$plotConfidenceIntervalsInterval))
+      ci[["x"]] <- d$x
+      
+      p <- p + ggplot2::geom_line(data = ci, ggplot2::aes(x = x, y = lwr), size = 1, color = "darkblue", linetype = "dashed") +
+        ggplot2::geom_line(data = ci, ggplot2::aes(x = x, y = upr), size = 1, color = "darkblue", linetype = "dashed")
+    }
+    
+    if (isTRUE(options$plotPredictionIntervals)) {
+      pi <- as.data.frame(stats::predict(fit, interval = "prediction", level = options$plotPredictionIntervalsInterval))
+      pi[["x"]] <- d$x
+      
+      p <- p + ggplot2::geom_line(data = pi, ggplot2::aes(x = x, y = lwr), size = 1, color = "darkgreen", linetype = "longdash") +
+        ggplot2::geom_line(data = pi, ggplot2::aes(x = x, y = upr), size = 1, color = "darkgreen", linetype = "longdash")
+    }
   }
 
   if(drawAxes){
