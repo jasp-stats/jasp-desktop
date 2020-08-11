@@ -83,6 +83,8 @@ QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString
 	JASPControlBase* sourceItem = source.value<JASPControlBase*>();
 	if (sourceItem)
 		sourceName = sourceItem->name();
+	else if (source.type() == QVariant::Type::String)
+		sourceName = _readSourceName(source.toString(), sourceControl, sourceUse);
 	else if (source.canConvert<QMap<QString, QVariant> >())
 	{
 		map = source.toMap();
@@ -103,8 +105,6 @@ QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString
 			sourceUse += map["use"].toString();
 		}
 	}
-	else if (source.canConvert<QString>())
-		sourceName = _readSourceName(source.toString(), sourceControl, sourceUse);
 
 	return map;
 }
