@@ -777,23 +777,15 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 
 void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 {
-	string utf8 = fq(options);
 	Json::Value root;
-	Json::Reader parser;
-	parser.parse(utf8, root);
+	Json::Reader().parse(fq(options), root);
 
-	QString selectedFilter;
-	QString finalPath = MessageForwarder::browseSaveFile(tr("Save JASP Image"), "", tr("Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"), &selectedFilter);
+	QString selectedExtension,
+			finalPath			= MessageForwarder::browseSaveFile(tr("Save JASP Image"), "", tr("Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"), &selectedExtension);
 
 	if (!finalPath.isEmpty())
 	{
-		root["type"] = "png";
-
-		if		(selectedFilter == "Encapsulated PostScript (*.eps)")		root["type"] = "eps";
-		else if (selectedFilter == "Portable Document Format (*.pdf)")		root["type"] = "pdf";
-		else if (selectedFilter == "300 dpi Tagged Image File (*.tiff)")	root["type"] = "tiff";
-		else if (selectedFilter == "PowerPoint (*.pptx)")					root["type"] = "pptx";
-		else if (selectedFilter == "Scalable Vector Graphics (*.svg)")		root["type"] = "svg";
+		root["type"] = fq(selectedExtension);
 
 		if(root["type"].asString() != "png")
 		{

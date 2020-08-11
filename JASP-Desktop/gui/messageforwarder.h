@@ -37,7 +37,7 @@ public:
 	static DialogResponse showYesNoCancel(		QString title, QString message, QString YesButtonText = "", QString NoButtonText = "",	QString CancelButtonText = "");
 
 	static QString browseOpenFile(			QString caption, QString browsePath,	QString filter);
-	static QString browseSaveFile(			QString caption, QString browsePath,	QString filter, QString * selectedFilter = nullptr);
+	static QString browseSaveFile(			QString caption, QString browsePath,	QString filter, QString * selectedExtension = nullptr);
 	static QString browseOpenFolder(		QString caption, QString browsePath);
 	static QString browseOpenFileDocuments(	QString caption,						QString filter);
 	static QString browseSaveFileDocuments(	QString caption,						QString filter);

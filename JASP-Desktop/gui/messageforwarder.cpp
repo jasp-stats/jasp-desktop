@@ -92,28 +92,33 @@ QString MessageForwarder::browseSaveFileDocuments(QString caption, QString filte
 	return browseSaveFile(caption, AppDirs::documents(), filter);
 }
 
-QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter)
+QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedExtension)
 {
-	QString saveFileName, selectedLocal;
-	if(!selectedFilter) selectedFilter = & selectedLocal;
+	QString saveFileName, selectedFilter;
 
-	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter);
-	else															saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter, QFileDialog::DontUseNativeDialog);
+	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter);
+	else															saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter, QFileDialog::DontUseNativeDialog);
 
-	Log::log() << "Selected save file: " << saveFileName << " and selected filter: " << *selectedFilter << std::endl;
+	Log::log() << "Selected save file: " << saveFileName << " and selected filter: " << selectedFilter << std::endl;
 
 	//Lets make sure the extension is added:
-	selectedLocal = *selectedFilter; //In case one was actually passed *to* this function
-
-	const QRegularExpression extReg("\\*(\\.\\w+)");
-	QRegularExpressionMatch  possibleMatch = extReg.match(selectedLocal);
+	const QRegularExpression extReg("\\*\\.(\\w+)");
+	QRegularExpressionMatch  possibleMatch = extReg.match(selectedFilter);
 
 	if(possibleMatch.hasMatch())
 	{
 		QString ext = possibleMatch.captured(1);
 
 		if(!saveFileName.endsWith(ext))
-			saveFileName += ext;
+			saveFileName += "." + ext;
+
+		if(selectedExtension)
+			*selectedExtension = ext;
+	}
+	else if(selectedExtension)//So the filter doesnt tell us the extension but the caller expects to know what is what
+	{
+		if(saveFileName.lastIndexOf('.') >= 0)	*selectedExtension = selectedFilter.mid(selectedFilter.lastIndexOf('.') + 1);
+		else									*selectedExtension = ""; //???
 	}
 
 	return saveFileName;
