@@ -25,7 +25,7 @@ Section
 {
 	expanded: false
 	title: qsTr("Sequential analysis")
-	enabled: dataTypeB.checked || dataTypeC.checked
+
 
 	CheckBox
 	{

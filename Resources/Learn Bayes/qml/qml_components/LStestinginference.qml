@@ -27,6 +27,7 @@ Section
 	title: qsTr("Inference")
 	columns: 2
 
+	property alias plotsBothSampleProportion: plotsBothSampleProportion.label
 
 	DropDown
 	{
@@ -44,9 +45,61 @@ Section
 			]
 	}
 
+
+	Group
+	{
+		Layout.columnSpan:	2
+		columns:			2
+		title:	qsTr("Bayes factor")
+
+		RadioButtonGroup
+		{
+			name:	"bfType"
+			RadioButton
+			{
+				value:	"inclusion"
+				label:	qsTr("vs. all")
+				checked: true
+			}
+
+			RadioButton
+			{
+				value:	"best"
+				label:	qsTr("vs. best")
+			}
+
+			RadioButton
+			{
+				name:	"vs"
+				label:	qsTr("vs.")
+				childrenOnSameRow: true
+
+				DropDown
+				{
+					name:				"bfTypevsName"
+					indexDefaultValue:	0
+					source:				"priors"
+				}
+			}
+		}
+
+		RadioButtonGroup
+		{
+			name: "bayesFactorType"
+
+			RadioButton { label: qsTr("BF\u2081\u2080")			; name: "BF10"; checked: true}
+			RadioButton { label: qsTr("BF\u2080\u2081")			; name: "BF01"}
+			RadioButton { label: qsTr("log(BF\u2081\u2080)")	; name: "LogBF10"}
+		}
+	}
+
+
 	CheckBox
 	{
-		name: "plotsPrior"; label: qsTr("Prior distribution"); checked: false	;
+		name:		"plotsPrior"
+		label:		qsTr("Prior distribution")
+		checked:	false
+
 		RadioButtonGroup
 		{
 			name: "plotsPriorType"
@@ -203,7 +256,10 @@ Section
 
 	CheckBox
 	{
-		name: "plotsPredictions"; label: qsTr("Prior predictive distribution"); checked: false	;
+		name:		"plotsPredictions"
+		label:		qsTr("Prior predictive distribution")
+		checked:	false
+
 		RadioButtonGroup
 		{
 			name: "plotsPredictionType"
@@ -358,17 +414,25 @@ Section
 
 		}
 
-		CheckBox{name: "plotsPredictionsObserved"; label: qsTr("Observed data"); checked: false	}
+		CheckBox
+		{
+			name:		"plotsPredictionsObserved"
+			label:		qsTr("Observed data")
+			checked:	false
+		}
 	}
 
 
 	CheckBox
 	{
 		Layout.columnSpan: 2
-		name: "plotsPredictiveAccuracy"; label: qsTr("Predictive Accuracy"); checked: false	;
+		name:		"plotsPredictiveAccuracy"
+		label:		qsTr("Predictive accuracy")
+		checked:	false
+
 		RadioButtonGroup
 		{
-			name: "predictiveAccuracyType"
+			name: "plotsPredictiveAccuracyType"
 			RadioButton { value: "conditional"; label: qsTr("Conditional"); checked: true}
 			RadioButton { value: "joint";		label: qsTr("Joint")}
 			RadioButton { value: "marginal"; 	label: qsTr("Normalized")}
@@ -589,7 +653,12 @@ Section
 
 		}
 
-		CheckBox{name: "plotsBothSampleProportion"; label: qsTr("Sample proportion"); checked: false}
+		CheckBox
+		{
+			name:		"plotsBothSampleProportion"
+			id:			plotsBothSampleProportion
+			label:		qsTr("Observed proportion")
+			checked:	false}
 	}
 
 }

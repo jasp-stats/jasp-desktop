@@ -23,15 +23,15 @@ import JASP.Theme 1.0
 
 Section
 {
-	expanded: false
-	title: qsTr("Sequential analysis")
-	enabled: dataTypeB.checked || dataTypeC.checked
+	expanded:	false
+	title:		qsTr("Sequential analysis")
+	enabled:	dataTypeB.checked || dataTypeC.checked
 
 	CheckBox
 	{
-		name: "plotsIterative"
-		label: qsTr("Test results")
-		checked: false
+		name:		"plotsIterative"
+		label:		qsTr("Test results")
+		checked:	false
 
 		RadioButtonGroup
 		{
@@ -41,22 +41,51 @@ Section
 			RadioButton { value: "marginal";		label: qsTr("Normalized")}
 			RadioButton
 			{
-				value: "BF"
-				label: qsTr("Bayes factor")
+				value:	"BF"
+				label:	qsTr("Bayes factor")
 
-				DropDown
-					{
-					name: "BF_comparison"
-					label: qsTr("Against")
-					indexDefaultValue: 0
-					source: "priors"
-				}
-
-				CheckBox
+				Group
 				{
-					name: "BF_log"
-					label: qsTr("log(BF)")
-					checked: false
+					columns: 2
+					RadioButtonGroup
+					{
+						name:	"bfTypeSequential"
+						RadioButton
+						{
+							value:	"inclusion"
+							label:	qsTr("vs. all")
+							checked: true
+						}
+
+						RadioButton
+						{
+							value:	"best"
+							label:	qsTr("vs. best")
+						}
+
+						RadioButton
+						{
+							name:	"vs"
+							label:	qsTr("vs.")
+							childrenOnSameRow: true
+
+							DropDown
+							{
+								name:				"bfTypevsNameSequential"
+								indexDefaultValue:	0
+								source:				"priors"
+							}
+						}
+					}
+
+					RadioButtonGroup
+					{
+						name: "bayesFactorTypeSequential"
+
+						RadioButton { label: qsTr("BF\u2081\u2080")			; name: "BF10"; checked: true}
+						RadioButton { label: qsTr("BF\u2080\u2081")			; name: "BF01"}
+						RadioButton { label: qsTr("log(BF\u2081\u2080)")	; name: "LogBF10"}
+					}
 				}
 
 			}
@@ -64,8 +93,8 @@ Section
 
 		CheckBox
 		{
-			name:  "plotsIterativeUpdatingTable"
-			label: qsTr("Updating table")
+			name:	"plotsIterativeUpdatingTable"
+			label:	qsTr("Updating table")
 		}
 
 	}
