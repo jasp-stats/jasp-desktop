@@ -2,6 +2,7 @@
 #include "mainwindow.h"
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QRegularExpression>
 #include "utilities/settings.h"
 #include "utilities/appdirs.h"
 
@@ -105,9 +106,13 @@ QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QS
 	//Lets make sure the extension is added:
 	selectedLocal = *selectedFilter; //In case one was actually passed *to* this function
 
-	if(selectedLocal.trimmed().startsWith("*."))
+	const QRegularExpression extReg("\\*(\\.\\w+)");
+	QRegularExpressionMatch  possibleMatch = extReg.match(selectedLocal);
+
+	if(possibleMatch.hasMatch())
 	{
-		QString ext = selectedLocal.right(selectedLocal.size() - 1);
+		QString ext = possibleMatch.captured(1);
+
 		if(!saveFileName.endsWith(ext))
 			saveFileName += ext;
 	}
