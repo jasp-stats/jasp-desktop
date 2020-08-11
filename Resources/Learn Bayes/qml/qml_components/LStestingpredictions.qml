@@ -26,6 +26,8 @@ Section
 	expanded: false
 	title: qsTr("Posterior prediction")
 
+	property alias predictionPlotProp: predictionPlotProp.label
+
 	Group
 	{
 		IntegerField
@@ -218,7 +220,12 @@ Section
 						}
 					}
 
-					CheckBox{ name: "predictionPostPlotProp"; label: qsTr("Show sample proportions")}
+					CheckBox
+					{
+						name:	"predictionPostPlotProp"
+						id:		predictionPlotProp
+						label:	qsTr("Show sample proportions")
+					}
 				}
 
 			}
