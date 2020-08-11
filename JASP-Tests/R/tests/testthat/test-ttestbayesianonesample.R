@@ -85,6 +85,33 @@ test_that("Inferential plots with additional info match", {
   
 })
 
+test_that("Prior and posterior plot custom CI level match", {
+  options <- jasptools::analysisOptions("TTestBayesianOneSample")
+  options$variables <- "contcor1"
+  options$plotPriorAndPosterior <- TRUE
+  
+  options$priorAndPosteriorPlotsCredibleInterval <- 0.8
+  
+  results  <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_inferentialPlots"]][["collection"]][["ttestContainer_inferentialPlots_contcor1"]][["collection"]][["ttestContainer_inferentialPlots_contcor1_plotPriorAndPosterior"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior-ci-level-80", dir="TTestBayesianOneSample")
+  
+  options$priorAndPosteriorPlotsCredibleInterval <- 0.99
+
+  results  <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_inferentialPlots"]][["collection"]][["ttestContainer_inferentialPlots_contcor1"]][["collection"]][["ttestContainer_inferentialPlots_contcor1_plotPriorAndPosterior"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior-ci-level-99", dir="TTestBayesianOneSample")
+  
+  options$priorAndPosteriorPlotsCredibleInterval <- 0.999
+  
+  results  <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_inferentialPlots"]][["collection"]][["ttestContainer_inferentialPlots_contcor1"]][["collection"]][["ttestContainer_inferentialPlots_contcor1_plotPriorAndPosterior"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior-ci-level-99.9", dir="TTestBayesianOneSample")
+})
+
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("TTestBayesianOneSample")
 

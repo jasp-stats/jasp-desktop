@@ -47,6 +47,7 @@ Form
 		{
 			name: "plotPriorAndPosterior";		label: qsTr("Prior and posterior")
 			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		label: qsTr("Additional info"); checked: true }
+			CIField  { name: "priorAndPosteriorPlotsCredibleInterval";	label: qsTr("Credible interval") }
 		}
 
 		CheckBox

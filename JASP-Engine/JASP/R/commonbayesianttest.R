@@ -788,7 +788,7 @@
 
   # create all empty plots and containers before filling them in one-by-one, to avoid the screen from flashing
   dependencies <- list(
-    c("plotPriorAndPosterior",     "plotPriorAndPosteriorAdditionalInfo"),
+    c("plotPriorAndPosterior",     "plotPriorAndPosteriorAdditionalInfo", "priorAndPosteriorPlotsCredibleInterval"),
     c("plotBayesFactorRobustness", "plotBayesFactorRobustnessAdditionalInfo", "bayesFactorType"),
     c("plotSequentialAnalysis",    "plotSequentialAnalysisRobustness",        "bayesFactorType")
   )
@@ -843,6 +843,7 @@
       wilcoxTest             = ttestResults[["derivedOptions"]][["wilcoxTest"]],
       rscale                 = options[["priorWidth"]],
       addInformation         = options[["plotPriorAndPosteriorAdditionalInfo"]],
+      ciValue                = options[["priorAndPosteriorPlotsCredibleInterval"]],
       options                = options
     )
   }
@@ -897,7 +898,8 @@
                                                 addInformation = TRUE,
                                                 plottingError = NULL,
                                                 paired = FALSE, pairs = NULL,
-                                                wilcoxTest = FALSE, options, ...) {
+                                                wilcoxTest = FALSE, ciValue = 0.95,
+                                                options, ...) {
 
   for (var in dependents) {
     if (is.null(collection[[var]][["plotPriorAndPosterior"]]$plotObject)) {
@@ -919,6 +921,7 @@
           delta                  = delta[[var]],
           addInformation         = addInformation,
           wilcoxTest             = wilcoxTest,
+          ciValue               = ciValue,
           options                = options,
           ...
         ))
@@ -1783,7 +1786,7 @@
 
 .plotPriorPosterior <- function(
   t = NULL, n1 = NULL, n2 = NULL, paired = FALSE, oneSided = FALSE, BF, BFH1H0, iterations = 10000, rscale = "medium",
-  addInformation = TRUE, delta = NULL, nullInterval = c(-Inf, Inf),
+  addInformation = TRUE, delta = NULL, nullInterval = c(-Inf, Inf), ciValue = 0.95,
   wilcoxTest = FALSE, options = NULL) {
 
   r <- .ttestBayesianGetRScale(rscale)
@@ -1808,13 +1811,13 @@
                                                    options[["priorWidth"]],
                                                    1), oneSided = oneSided)
       # compute 95% credible interval & median:
-      ci95PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                        prior.location = 0,
-                                        prior.scale = options[["priorWidth"]],
-                                        prior.df = 1, ci = .95, oneSided = oneSided)
-      CIlow <- ci95PlusMedian[["ciLower"]]
-      CIhigh <- ci95PlusMedian[["ciUpper"]]
-      medianPosterior <- ci95PlusMedian[["median"]]
+      ciPlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                      prior.location = 0,
+                                      prior.scale = options[["priorWidth"]],
+                                      prior.df = 1, ci = ciValue, oneSided = oneSided)
+      CIlow <- ciPlusMedian[["ciLower"]]
+      CIhigh <- ciPlusMedian[["ciUpper"]]
+      medianPosterior <- ciPlusMedian[["median"]]
       
     }else if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
       ci99PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
@@ -1828,13 +1831,13 @@
                                                     options[["informativeCauchyScale"]],
                                                     1), oneSided = oneSided)
       # compute 95% credible interval & median:
-      ci95PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                        prior.location = options[["informativeCauchyLocation"]],
-                                        prior.scale = options[["informativeCauchyScale"]],
-                                        prior.df = 1, ci = .95, oneSided = oneSided)
-      CIlow <- ci95PlusMedian[["ciLower"]]
-      CIhigh <- ci95PlusMedian[["ciUpper"]]
-      medianPosterior <- ci95PlusMedian[["median"]]
+      ciPlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                      prior.location = options[["informativeCauchyLocation"]],
+                                      prior.scale = options[["informativeCauchyScale"]],
+                                      prior.df = 1, ci = ciValue, oneSided = oneSided)
+      CIlow <- ciPlusMedian[["ciLower"]]
+      CIhigh <- ciPlusMedian[["ciUpper"]]
+      medianPosterior <- ciPlusMedian[["median"]]
 
     } else if (options[["informativeStandardizedEffectSize"]] == "t") {
       ci99PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
@@ -1851,13 +1854,13 @@
                                                     options[["informativeTDf"]]),
                                oneSided = oneSided)
       # compute 95% credible interval & median:
-      ci95PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                        prior.location = options[["informativeTLocation"]],
-                                        prior.scale = options[["informativeTScale"]],
-                                        prior.df = options[["informativeTDf"]], ci = .95, oneSided = oneSided)
-      CIlow <- ci95PlusMedian[["ciLower"]]
-      CIhigh <- ci95PlusMedian[["ciUpper"]]
-      medianPosterior <- ci95PlusMedian[["median"]]
+      ciPlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                      prior.location = options[["informativeTLocation"]],
+                                      prior.scale = options[["informativeTScale"]],
+                                      prior.df = options[["informativeTDf"]], ci = ciValue, oneSided = oneSided)
+      CIlow <- ciPlusMedian[["ciLower"]]
+      CIhigh <- ciPlusMedian[["ciUpper"]]
+      medianPosterior <- ciPlusMedian[["median"]]
     } else if (options[["informativeStandardizedEffectSize"]] == "normal") {
       ci99PlusMedian <- .ciPlusMedian_normal(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                                              prior.mean = options[["informativeNormalMean"]],
@@ -1880,18 +1883,18 @@
       priorUpper <- qnorm(upperp, options[["informativeNormalMean"]], options[["informativeNormalStd"]])
 
       # compute 95% credible interval & median:
-      ci95PlusMedian <- .ciPlusMedian_normal(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                             prior.mean = options[["informativeNormalMean"]],
-                                             prior.variance = options[["informativeNormalStd"]]^2,
-                                             ci = .95, oneSided = oneSided)
-      CIlow <- ci95PlusMedian[["ciLower"]]
-      CIhigh <- ci95PlusMedian[["ciUpper"]]
-      medianPosterior <- ci95PlusMedian[["median"]]
+      ciPlusMedian <- .ciPlusMedian_normal(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                           prior.mean = options[["informativeNormalMean"]],
+                                           prior.variance = options[["informativeNormalStd"]]^2,
+                                           ci = ciValue, oneSided = oneSided)
+      CIlow <- ciPlusMedian[["ciLower"]]
+      CIhigh <- ciPlusMedian[["ciUpper"]]
+      medianPosterior <- ciPlusMedian[["median"]]
 
     }
 
-    xlim[1] <- min(-2, ci99PlusMedian[["ciLower"]], priorLower)
-    xlim[2] <- max(2, ci99PlusMedian[["ciUpper"]], priorUpper)
+    xlim[1] <- min(-2, ci99PlusMedian[["ciLower"]], CIlow,  priorLower)
+    xlim[2] <- max( 2, ci99PlusMedian[["ciUpper"]], CIhigh, priorUpper)
     xticks <- pretty(xlim)
 
     ylim <- vector("numeric", 2)
@@ -2002,37 +2005,37 @@
 
     # compute 95% credible interval & median:
     if (oneSided == FALSE) {
-      CIlow <- quantile(delta, probs = 0.025)[[1]]
-      CIhigh <- quantile(delta, probs = 0.975)[[1]]
+      CIlow  <- quantile(delta, probs =   (1-ciValue)/2)[[1]]
+      CIhigh <- quantile(delta, probs = 1-(1-ciValue)/2)[[1]]
       medianPosterior <- median(delta)
 
       if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
-        CIlow <- .qShiftedT(0.025, parameters, oneSided=FALSE)
-        CIhigh <- .qShiftedT(0.975, parameters, oneSided=FALSE)
+        CIlow  <- .qShiftedT(  (1-ciValue)/2, parameters, oneSided=FALSE)
+        CIhigh <- .qShiftedT(1-(1-ciValue)/2, parameters, oneSided=FALSE)
         medianPosterior <- .qShiftedT(0.5, parameters, oneSided=FALSE)
       }
     }
 
     if (oneSided == "right") {
-      CIlow <- quantile(delta[delta >= 0], probs = 0.025)[[1]]
-      CIhigh <- quantile(delta[delta >= 0], probs = 0.975)[[1]]
+      CIlow  <- quantile(delta[delta >= 0], probs =   (1-ciValue)/2)[[1]]
+      CIhigh <- quantile(delta[delta >= 0], probs = 1-(1-ciValue)/2)[[1]]
       medianPosterior <- median(delta[delta >= 0])
 
       if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
-        CIlow <- .qShiftedT(0.025, parameters, oneSided="right")
-        CIhigh <- .qShiftedT(0.975, parameters, oneSided="right")
+        CIlow  <- .qShiftedT(  (1-ciValue)/2, parameters, oneSided="right")
+        CIhigh <- .qShiftedT(1-(1-ciValue)/2, parameters, oneSided="right")
         medianPosterior <- .qShiftedT(0.5, parameters, oneSided="right")
       }
     }
 
     if (oneSided == "left") {
-      CIlow <- quantile(delta[delta <= 0], probs = 0.025)[[1]]
-      CIhigh <- quantile(delta[delta <= 0], probs = 0.975)[[1]]
+      CIlow  <- quantile(delta[delta <= 0], probs =   (1-ciValue)/2)[[1]]
+      CIhigh <- quantile(delta[delta <= 0], probs = 1-(1-ciValue)/2)[[1]]
       medianPosterior <- median(delta[delta <= 0])
 
       if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
-        CIlow <- .qShiftedT(0.025, parameters, oneSided="left")
-        CIhigh <- .qShiftedT(0.975, parameters, oneSided="left")
+        CIlow  <- .qShiftedT(  (1-ciValue)/2, parameters, oneSided="left")
+        CIhigh <- .qShiftedT(1-(1-ciValue)/2, parameters, oneSided="left")
         medianPosterior <- .qShiftedT(0.5, parameters, oneSided="left")
       }
     }
@@ -2103,6 +2106,7 @@
     dfPoints   = dfPoints,
     BF         = BF,
     CRI        = CRI,
+    CRItxt     = gettextf("%s%% CI: ", 100*ciValue),
     bfType     = bfType,
     hypothesis = hypothesis,
     median     = median,
