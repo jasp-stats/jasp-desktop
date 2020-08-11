@@ -164,6 +164,13 @@ Item
 				onContextMenuRequested: request.accepted = true
 				backgroundColor:		jaspTheme.uiBackground
 
+				Keys.onPressed:
+					switch(event)
+					{
+					case Qt.Key_PageDown:	resultsView.runJavaScript("windows.pageDown();");
+					case Qt.Key_PageUp:		resultsView.runJavaScript("windows.pageUp();");
+					}
+
 				onNavigationRequested:
 					if(request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == resultsJsInterface.resultsPageUrl)
 						request.action = WebEngineNavigationRequest.AcceptRequest

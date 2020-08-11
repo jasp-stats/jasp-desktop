@@ -27,6 +27,7 @@ bool MessageForwarder::showYesNo(QString title, QString message, QString YesButt
 {
 	if(YesButtonText == "")		YesButtonText	= tr("Yes");
 	if(NoButtonText == "")		NoButtonText	= tr("No");
+
 	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Yes | QMessageBox::No);
 
 	box.setButtonText(QMessageBox::Yes,		YesButtonText);
@@ -91,10 +92,8 @@ QString MessageForwarder::browseSaveFileDocuments(QString caption, QString filte
 	return browseSaveFile(caption, AppDirs::documents(), filter);
 }
 
-
 QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter)
 {
-
 	QString saveFileName, selectedLocal;
 	if(!selectedFilter) selectedFilter = & selectedLocal;
 

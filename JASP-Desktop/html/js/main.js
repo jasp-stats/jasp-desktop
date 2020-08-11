@@ -212,6 +212,9 @@ $(document).ready(function () {
 		$("html, body").animate({ scrollTop: item.offset().top  }, { duration: 'slow', easing: 'swing' });
 	}
 
+	window.pageDown = function ()	{ window.scrollBy(0,  window.innerHeight ); }
+	window.pageUp   = function ()	{ window.scrollBy(0, -window.innerHeight); }
+
 	window.slideAlpha = function (item, time, cssProperties, targetAlphas, divisions, clearStyleOnZero, completeCallback) {
 
 		var params = {
