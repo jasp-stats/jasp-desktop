@@ -120,6 +120,14 @@ void RibbonButton::setMenu(const Modules::AnalysisEntries& entries)
 	_oldTitles.clear();
 	for(const Modules::AnalysisEntry * entry : _menuEntries)
 		_oldTitles.push_back(entry->title());
+
+	///If any single analysis can run without data the button should be pressible without data
+	bool requiresData = true;
+	for(const Modules::AnalysisEntry * entry : _menuEntries)
+		if(!entry->requiresData())
+			requiresData = false;
+
+	setRequiresData(requiresData);
 }
 
 void RibbonButton::setRequiresData(bool requiresDataset)
@@ -253,13 +261,10 @@ void RibbonButton::reloadMenuFromDescriptionQml()
 	{
 		desc = Modules::DynamicModule::instantiateDescriptionQml(descriptionFile.readAll(), QUrl::fromLocalFile(descriptionFileInfo.absoluteFilePath()), _moduleName);
 
-		setRequiresData(		desc->requiresData());
 		setTitle(			fq(	desc->title()	)	);
 		setIconSource(			desc->icon()		);
 		setToolTip(				desc->description() );
-
-		setMenu(desc->menuEntries());
-
+		setMenu(				desc->menuEntries());
 
 		if(_description)
 			delete _description;
@@ -284,7 +289,6 @@ void RibbonButton::descriptionChanged(Modules::Description * desc)
 
 	Log::log() << "RibbonButton for module " << _moduleName << " will read from Description again!" << std::endl;
 
-	setRequiresData(		_description->requiresData());
 	setTitle(			fq(	_description->title()	)	);
 	setIconSource(			_description->icon()		);
 	setMenu(				_description->menuEntries() );

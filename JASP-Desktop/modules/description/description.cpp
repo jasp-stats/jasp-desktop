@@ -69,7 +69,7 @@ void Description::connectChangesToDelay()
 	connect(this, &Description::websiteChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::licenseChanged,			this, &Description::delayedUpdate);
 	connect(this, &Description::nameChanged,			this, &Description::delayedUpdate);
-	connect(this, &Description::requiresDataChanged,	this, &Description::delayedUpdate);
+	connect(this, &Description::requiresDataDefChanged,	this, &Description::delayedUpdate);
 	connect(this, &Description::dynModChanged,			this, &Description::delayedUpdate);
 }
 
@@ -181,13 +181,13 @@ void Description::setLicense(QString license)
 	emit licenseChanged(_license);
 }
 
-void Description::setRequiresData(bool requiresData)
+void Description::setRequiresDataDef(bool requiresData)
 {
-	if (_requiresData == requiresData)
+	if (_requiresDataDef == requiresData)
 		return;
 
-	_requiresData = requiresData;
-	emit requiresDataChanged(_requiresData);
+	_requiresDataDef = requiresData;
+	emit requiresDataDefChanged(_requiresDataDef);
 }
 
 void Description::setDynMod(DynamicModule * dynMod)
@@ -219,7 +219,7 @@ std::vector<AnalysisEntry*> Description::menuEntries() const
 
 	for(EntryBase * entry : _entries)
 		if(entry->shouldBeAdded())
-			entries.push_back(entry->convertToAnalysisEntry(requiresData()));
+			entries.push_back(entry->convertToAnalysisEntry(requiresDataDef()));
 
 	return entries;
 }
