@@ -21,6 +21,7 @@ JASPControl
 	property string currentText:			""	// This is the current label displayed. currentText is the official name for this property in a ComboBox in QML
 	property alias	currentLabel:			comboBox.currentText
 	property string currentValue:			"" // This is the current value (what is used by R)
+	property alias	value:					comboBox.currentText
 	property string currentColumnType:		"" // When the values come from column names, this property gives the column type of the current selected column
 	property alias	currentIndex:			control.currentIndex
 	property alias	indexDefaultValue:		control.currentIndex

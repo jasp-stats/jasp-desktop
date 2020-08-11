@@ -27,6 +27,7 @@
 
 const QString QMLListView::_defaultKey = "_JASPDefaultKey";
 
+
 QMLListView::QMLListView(JASPControlBase *item)
 	: QObject(item)
 	, _needsSourceModels(false)
@@ -63,6 +64,51 @@ QList<QVariant> QMLListView::_getListVariant(QVariant var)
 	return listVar;
 }
 
+QString QMLListView::_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse)
+{
+	QStringList nameSplit = sourceNameExt.split(".");
+	if (nameSplit.length() > 1)
+	{
+		sourceControl = nameSplit[1];
+		sourceUse = "control=" + nameSplit[1];
+	}
+
+	return nameSplit[0];
+}
+
+QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString& sourceName, QString& sourceControl, QString& sourceUse)
+{
+	QMap<QString, QVariant> map;
+
+	JASPControlBase* sourceItem = source.value<JASPControlBase*>();
+	if (sourceItem)
+		sourceName = sourceItem->name();
+	else if (source.type() == QVariant::Type::String)
+		sourceName = _readSourceName(source.toString(), sourceControl, sourceUse);
+	else if (source.canConvert<QMap<QString, QVariant> >())
+	{
+		map = source.toMap();
+		if (map.contains("id"))
+		{
+			JASPControlBase* sourceItem2 = map["id"].value<JASPControlBase*>();
+			if (sourceItem2)
+				sourceName = sourceItem2->name();
+		}
+
+		if (map.contains("name"))
+			sourceName = _readSourceName(map["name"].toString(), sourceControl, sourceUse);
+
+		if (map.contains("use"))
+		{
+			if (!sourceUse.isEmpty())
+				sourceUse += ",";
+			sourceUse += map["use"].toString();
+		}
+	}
+
+	return map;
+}
+
 void QMLListView::setSources()
 {
 	_sourceModels.clear();
@@ -75,86 +121,49 @@ void QMLListView::setSources()
 	
 	for (const QVariant& source : sources)
 	{
-		JASPControlBase* sourceItem = source.value<JASPControlBase*>();
-		if (sourceItem)
-			_sourceModels.append(new SourceType(sourceItem->name()));
-		else if (source.canConvert<QString>())
-			_sourceModels.append(new SourceType(source.toString()));
-		else if (source.canConvert<QMap<QString, QVariant> >())
+		QString sourceName, sourceControl, sourceUse;
+		QMap<QString, QVariant> map = _readSource(source, sourceName, sourceControl, sourceUse);
+
+		QString conditionExpression = map["condition"].toString();
+		QVector<std::tuple<QString, QString, QString> > discards;
+		QVector<QMap<QString, QVariant> > conditionVariables;
+		bool combineWithOtherModels = false;
+
+		if (sourceName.isEmpty())
 		{
-			QMap<QString, QVariant> map = source.toMap();
-			QString sourceName;
-			if (map.contains("id"))
-			{
-				JASPControlBase* sourceItem2 = map["id"].value<JASPControlBase*>();
-				if (sourceItem2)
-					sourceName = sourceItem2->name();
-			}
-			else
-				sourceName = map["name"].toString();
-			QString modelUse = map["use"].toString();
-			QString conditionExpression = map["condition"].toString();
-			QVector<QPair<QString, QString> > discards;
-			QVector<QMap<QString, QVariant> > conditionVariables;
-			bool combineWithOtherModels = false;
-
-			if (sourceName.isEmpty())
-			{
-				addControlError(tr("No name given in source attribute of VariableList %1").arg(name()));
-				continue;
-			}
-
-			if (map.contains("discard"))
-			{
-				QList<QVariant> discardSources = _getListVariant(map["discard"]);
-
-				for (const QVariant& discardSource : discardSources)
-				{
-					QString discardName;
-					QString discardUse;
-
-					JASPControlBase* discardItem = source.value<JASPControlBase*>();
-					if (discardItem)
-						discardName = discardItem->name();
-					else if (discardSource.canConvert<QString>())
-						discardName = discardSource.toString();
-					else if (discardSource.canConvert<QMap<QString, QVariant> >())
-					{
-						QMap<QString, QVariant> discardMap = discardSource.toMap();
-						if (discardMap.contains("id"))
-						{
-							JASPControlBase* discardItem2 = map["id"].value<JASPControlBase*>();
-							if (discardItem2)
-								discardName = discardItem2->name();
-						}
-						else
-							discardName = discardMap["name"].toString();
-						if (discardName.isEmpty())
-							addControlError(tr("No name given in discard source attribute of VariableList %1" ).arg(name()));
-						discardUse = discardMap["use"].toString();
-					}
-					else
-						addControlError(tr("Wrong parameter discard in VariablesList %1").arg(name()));
-					discards.push_back(QPair<QString, QString>(discardName, discardUse));
-				}
-			}
-
-			if (map.contains("conditionVariables"))
-			{
-				QList<QVariant> conditionVariablesList = _getListVariant(map["conditionVariables"]);
-
-				for (const QVariant& conditionVariablesVar : conditionVariablesList)
-				{
-					if (conditionVariablesVar.canConvert<QMap<QString, QVariant> >())
-						conditionVariables.push_back(conditionVariablesVar.toMap());
-				}
-			}
-
-			if (map.contains("combineWithOtherModels"))
-				combineWithOtherModels = map["combineWithOtherModels"].toBool();
-
-			_sourceModels.append(new SourceType(sourceName, modelUse, discards, conditionExpression, conditionVariables, combineWithOtherModels));
+			addControlError(tr("No name given in source attribute of List %1").arg(name()));
+			continue;
 		}
+
+		if (map.contains("discard"))
+		{
+			QList<QVariant> discardSources = _getListVariant(map["discard"]);
+
+			for (const QVariant& discardSource : discardSources)
+			{
+				QString discardName, discardControl, discardUse;
+				_readSource(discardSource, discardName, discardControl, discardUse);
+
+				if (discardName.isEmpty())
+					addControlError(tr("No name given in discard source attribute of VariableList %1" ).arg(name()));
+
+				discards.push_back(std::make_tuple(discardName, discardControl, discardUse));
+			}
+		}
+
+		if (map.contains("conditionVariables"))
+		{
+			QList<QVariant> conditionVariablesList = _getListVariant(map["conditionVariables"]);
+
+			for (const QVariant& conditionVariablesVar : conditionVariablesList)
+				if (conditionVariablesVar.canConvert<QMap<QString, QVariant> >())
+					conditionVariables.push_back(conditionVariablesVar.toMap());
+		}
+
+		if (map.contains("combineWithOtherModels"))
+			combineWithOtherModels = map["combineWithOtherModels"].toBool();
+
+		_sourceModels.append(new SourceType(sourceName, sourceControl, sourceUse, discards, conditionExpression, conditionVariables, combineWithOtherModels));
 	}
 	
 	ListModel* listModel = model();
@@ -173,7 +182,7 @@ void QMLListView::setSources()
 			ListModel* sourceModel = form()->getModel(sourceItem->name);
 			if (sourceModel)
 			{
-				if (!sourceModel->areTermsVariables())
+				if (!sourceModel->areTermsVariables() || !sourceItem->controlName.isEmpty())
 					termsAreVariables = false;
 				if (sourceModel->areTermsInteractions() || sourceItem->combineWithOtherModels)
 					termsAreInteractions = true;
@@ -309,22 +318,6 @@ QString QMLListView::getSourceType(QString name)
 	return model()->getItemType(name);
 }
 
-QMLListView::SourceType* QMLListView::getSourceTypeFromModel(ListModel* model)
-{
-	QMLListView::SourceType* result = nullptr;
-	const QList<QMLListView::SourceType*>& sourceTypes = sourceModels();
-
-	for (QMLListView::SourceType* sourceType : sourceTypes)
-	{
-		if (sourceType->model == model)
-			result = sourceType;
-	}
-
-	return result;
-}
-
-
-
 void QMLListView::sourceChangedHandler()
 {
 	if (getItemProperty("source").isNull())
@@ -386,6 +379,35 @@ void QMLListView::_setAllowedVariables()
 	
 	if (allowedColumnsTypes >= 0)
 		_variableTypesAllowed = allowedColumnsTypes;
+}
+
+QMLListView::SourceType::SourceType(
+		  const QString& _name
+		, const QString& _controlName
+		, const QString& _modelUse
+		, const QVector<std::tuple<QString, QString, QString> >& _discardModels
+		, const QString& _conditionExpression
+		, const QVector<QMap<QString, QVariant> >& _conditionVariables
+		, bool _combineWithOtherModels)
+	: name(_name), controlName(_controlName), modelUse(_modelUse), model(nullptr), conditionExpression(_conditionExpression), combineWithOtherModels(_combineWithOtherModels)
+{
+	if (!_controlName.isEmpty()) usedControls.insert(_controlName);
+
+	for (const std::tuple<QString, QString, QString>& discardModel : _discardModels)
+	{
+		discardModels.push_back(SourceType(std::get<0>(discardModel), std::get<1>(discardModel), std::get<2>(discardModel)));
+		if (!std::get<1>(discardModel).isEmpty()) usedControls.insert(std::get<1>(discardModel));
+	}
+
+	for (const QMap<QString, QVariant>& conditionVariable : _conditionVariables)
+	{
+		conditionVariables.push_back(ConditionVariable(conditionVariable["name"].toString()
+									, conditionVariable["component"].toString()
+									, conditionVariable["property"].toString()
+									, conditionVariable["addQuotes"].toBool())
+					);
+		if (!conditionVariable["component"].toString().isEmpty()) usedControls.insert(conditionVariable["component"].toString());
+	}
 }
 
 QVector<QMLListView::SourceType> QMLListView::SourceType::getDiscardModels(bool onlyNotNullModel) const

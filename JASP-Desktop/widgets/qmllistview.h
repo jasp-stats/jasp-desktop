@@ -23,6 +23,7 @@
 #include "common.h"
 #include <QObject>
 #include <QVector>
+#include <QSet>
 
 class ListModel;
 class BoundQMLItem;
@@ -51,34 +52,23 @@ public:
 		};
 
 		QString						name,
+									controlName,
 									modelUse;
 		ListModel	*				model;
 		QVector<SourceType>			discardModels;
 		QString						conditionExpression;
 		QVector<ConditionVariable>	conditionVariables;
 		bool						combineWithOtherModels = false;
+		QSet<QString>				usedControls;
 
 		SourceType(
 				  const QString& _name = ""
+				, const QString& _controlName = ""
 				, const QString& _modelUse = ""
-				, const QVector<QPair<QString, QString> >& _discardModels = QVector<QPair<QString, QString> >()
+				, const QVector<std::tuple<QString, QString, QString> >& _discardModels = QVector<std::tuple<QString, QString, QString> >()
 				, const QString& _conditionExpression = ""
 				, const QVector<QMap<QString, QVariant> >& _conditionVariables = QVector<QMap<QString, QVariant> >()
-				, bool _combineWithOtherModels = false)
-			: name(_name), modelUse(_modelUse), model(nullptr), conditionExpression(_conditionExpression), combineWithOtherModels(_combineWithOtherModels)
-		{
-			for (const QPair<QString, QString>& discardModel : _discardModels)
-				discardModels.push_back(SourceType(discardModel.first, discardModel.second));
-
-			for (const QMap<QString, QVariant>& conditionVariable : _conditionVariables)
-			{
-				conditionVariables.push_back(ConditionVariable(conditionVariable["name"].toString()
-											, conditionVariable["component"].toString()
-											, conditionVariable["property"].toString()
-											, conditionVariable["addQuotes"].toBool())
-							);
-			}
-		}
+				, bool _combineWithOtherModels = false);
 
 		QVector<SourceType> getDiscardModels(bool onlyNotNullModel = true)	const;
 	};
@@ -106,8 +96,6 @@ public:
 
 	Q_INVOKABLE QString			getSourceType(QString name);
 
-			QMLListView::SourceType* getSourceTypeFromModel(ListModel* model);
-
 protected slots:
 	virtual void				modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
 			void				sourceChangedHandler();
@@ -129,8 +117,12 @@ protected:
 	static const QString _defaultKey;
 	
 private:
-	int		_getAllowedColumnsTypes();
-	void	_setAllowedVariables();
+	int						_getAllowedColumnsTypes();
+	void					_setAllowedVariables();
+	QString					_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse);
+	QMap<QString, QVariant> _readSource(const QVariant& source, QString& sourceName, QString& sourceControl, QString& sourceUse);
+
+
 
 
 	QList<QVariant> _getListVariant(QVariant var);

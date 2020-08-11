@@ -45,6 +45,7 @@ public:
 	void										setContext(int row, const QString& key);
 	const QList<QVariant>&						getObjects()								const	{ return _rowObjects;			}
 	const QMap<QString, JASPControlWrapper*>&	getJASPControlsMap()						const	{ return _rowJASPWrapperMap;	}
+	JASPControlWrapper*							getJASPControl(const QString& name)					{ return _rowJASPWrapperMap.contains(name) ? _rowJASPWrapperMap[name] : nullptr; }
 	bool										addJASPControl(JASPControlWrapper* control);
 
 private:

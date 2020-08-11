@@ -77,35 +77,32 @@ void ListModel::_initTerms(const Terms &terms, const RowControlsOptions& allOpti
 	_rowControlsOptions = allOptionsMap;
 	endResetModel();
 
-	if (setupControlConnections && listView()->sourceModels().size() > 0)
-	{
-		QMap<ListModel*, Terms> map = getSourceTermsPerModel();
-		QMapIterator<ListModel*, Terms> it(map);
-
-		while (it.hasNext())
-		{
-			it.next();
-			ListModel* sourceModel = it.key();
-			const Terms& terms = it.value();
-			QMLListView::SourceType* sourceType = listView()->getSourceTypeFromModel(sourceModel);
-			if (sourceType)
-			{
-				for (const QMLListView::SourceType::ConditionVariable& conditionVariable : sourceType->conditionVariables)
-					for (const Term& term : terms)
-						_connectSourceControl(sourceModel->getRowControl(term.asQString(), conditionVariable.controlName));
-			}
-		}
-	}
+	if (setupControlConnections)
+		for (QMLListView::SourceType* sourceType : listView()->sourceModels())
+			_connectSourceControls(sourceType->model, sourceType->usedControls);
 }
 
-void ListModel::_connectSourceControl(JASPControlWrapper* control)
+
+
+void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls)
 {
-	// Connect option changes from a control that influences the source of this model
-	BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
-	if (boundControl && !_rowControlsConnected.contains(boundControl))
+	// Connect option changes from controls in sourceModel that influence the terms of this model
+	if (!sourceModel || controls.size() == 0) return;
+
+	const Terms& terms = sourceModel->terms();
+
+	for (const QString& controlName : controls)
 	{
-		boundControl->boundTo()->changed.connect(boost::bind(&ListModel::_sourceTermsChangedHandler, this, _1));
-		_rowControlsConnected.push_back(boundControl);
+		for (const Term& term : terms)
+		{
+			JASPControlWrapper* control = sourceModel->getRowControl(term.asQString(), controlName);
+			BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
+			if (boundControl && !_rowControlsConnected.contains(boundControl))
+			{
+				boundControl->boundTo()->changed.connect(boost::bind(&ListModel::_sourceTermsChangedHandler, this, _1));
+				_rowControlsConnected.push_back(boundControl);
+			}
+		}
 	}
 }
 
@@ -129,6 +126,8 @@ Terms ListModel::getSourceTerms()
 
 			for (const QMLListView::SourceType& discardModel : sourceItem->getDiscardModels())
 				sourceTerms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
+
+			_connectSourceControls(sourceModel, sourceItem->usedControls);
 
 			if (!sourceItem->conditionExpression.isEmpty())
 			{
@@ -155,7 +154,6 @@ Terms ListModel::getSourceTerms()
 							}
 
 							jsEngine.globalObject().setProperty(conditionVariable.name, value);
-							_connectSourceControl(control);
 						}
 					}
 
@@ -506,12 +504,31 @@ const QString &ListModel::name() const
 const Terms &ListModel::terms(const QString &what) const
 {
 	const QString typeIs = "type=";
+	const QString controlIs = "control=";
 
-	if (what.startsWith(typeIs))
+	if (!what.startsWith(controlIs) && !what.startsWith(typeIs))
+		return _terms; // in most cases, it comes here.
+
+	// This method was defined as const (it is used in other const methods), and returns a reference to a const Terms
+	// It returns 99% of the cases _terms
+	// But in case that a condition is used (what is not empty), then it cannot return a local variable nor a member of this class
+	// So a static variable is used.
+	static Terms specialTerms;
+
+	QStringList allConditions = what.split(",");
+	QString useTheseVariableTypes, useThisControl;
+
+	for (const QString& condition : allConditions)
 	{
-		static Terms terms;
+		if (condition.startsWith(typeIs))		useTheseVariableTypes	= condition.right(condition.length() - typeIs.length());
+		if (condition.startsWith(controlIs))	useThisControl			= condition.right(condition.length() - controlIs.length());
+	}
 
-		QStringList typesStr = what.right(what.length() - typeIs.length()).split("|");
+	if (!useTheseVariableTypes.isEmpty())
+	{
+		specialTerms.clear();
+
+		QStringList typesStr = useTheseVariableTypes.split("|");
 		QList<columnType> types;
 
 		for (const QString& typeStr : typesStr)
@@ -521,18 +538,34 @@ const Terms &ListModel::terms(const QString &what) const
 				types.push_back(type);
 		}
 
-		terms.clear();
 		for (const Term& term : _terms)
 		{
 			columnType type = DataSetPackage::pkg()->getColumnType(term.asString());
 			if (types.contains(type))
-				terms.add(term);
+				specialTerms.add(term);
 		}
+	}
+	else
+		specialTerms = _terms;
 
-		return terms;
+	if (!useThisControl.isEmpty())
+	{
+		Terms controlTerms;
+		for (const Term& term : specialTerms)
+		{
+			RowControls* rowControls = _rowControlsMap[term.asQString()];
+			if (rowControls)
+			{
+				JASPControlWrapper* controlWrapper = rowControls->getJASPControl(useThisControl);
+
+				if (controlWrapper)	controlTerms.add(controlWrapper->getItemProperty("value").toString());
+				else				Log::log() << "Could not find control " << useThisControl << " in list view " << name() << std::endl;
+			}
+		}
+		specialTerms = controlTerms;
 	}
 
-	return _terms;
+	return specialTerms;
 }
 
 void ListModel::replaceVariableName(const std::string & oldName, const std::string & newName)
