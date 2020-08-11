@@ -158,7 +158,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
           if (!is.null(ttestResults[["delta"]][[var]]))
             ttestResults[["tValue"]][[var]] <- median(ttestResults[["delta"]][[var]])
           ttestResults[["n1"]][var]       <- length(x)
-          wValue <- unname(wilcox.test(y, x, paired = TRUE)[["statistic"]])
+          wValue <- unname(wilcox.test(x, y, paired = TRUE)[["statistic"]])
           error <- wValue
           ttestRows[var, "rHat"] <- rHat
           
