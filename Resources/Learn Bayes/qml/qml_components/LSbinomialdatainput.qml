@@ -28,11 +28,14 @@ Section
 	title:		qsTr("Data")
 	columns:	1
 
+	property alias dataType: dataType
+
 	RadioButtonGroup
 	{
 		columns:	3
 		name:		"dataType"
 		title:		qsTr("Input type")
+		id:			dataType
 
 		RadioButton
 		{

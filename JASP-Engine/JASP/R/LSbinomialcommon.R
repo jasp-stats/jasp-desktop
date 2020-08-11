@@ -140,32 +140,60 @@
   
   return(as.numeric(x))
 }
-.summaryBinomialLS     <- function(jaspResults, data, ready){
-  summaryTable <- createJaspTable(title = gettext("Data Summary"))
+.summaryBinomialLS     <- function(jaspResults, data, options, analysis){
   
-  summaryTable$position <- 1
-  summaryTable$dependOn(c("dataSummary", .BinomialLS_data_dependencies))
+  if(!options[["dataSummary"]] && !options[["introText"]])
+    return()
   
-  summaryTable$addColumnInfo(name = "variable",   title = "",                     type = "string")
-  summaryTable$addColumnInfo(name = "counts",     title = gettext("Counts"),      type = "integer")
-  summaryTable$addColumnInfo(name = "proportion", title = gettext("Proportion"),  type = "number")
+  if(is.null(jaspResults[["summaryContainer"]])){
+    summaryContainer <- createJaspContainer("Data Input")
+    summaryContainer$position <- 1
+    jaspResults[["summaryContainer"]] <- summaryContainer 
+  }else{
+    summaryContainer <- jaspResults[["summaryContainer"]]
+  }
+
   
-  summaryTable$setExpectedSize(3)
+  if(options[["introText"]] && is.null(summaryContainer[['summaryText']])){
+    
+    summaryText <- createJaspHtml()
+    summaryText$dependOn(c("introText", "dataSummary"))
+    summaryText$position <- 1
+    
+    summaryText[['text']] <- .explanatoryTextLS("data", options, analysis)
+    
+    summaryContainer[['summaryText']] <- summaryText    
+  }
   
-  jaspResults[["summaryTable"]] <- summaryTable
   
-  if(ready[1]){
-    summaryTable$addRows(list(variable   = gettext("Successes"), 
-                              counts     = data$nSuccesses, 
-                              proportion = ifelse(is.nan(data$nSuccesses / (data$nSuccesses + data$nFailures)), "",
-                                                  data$nSuccesses / (data$nSuccesses + data$nFailures))))
-    summaryTable$addRows(list(variable   = gettext("Failures"),
-                              counts     = data$nFailures, 
-                              proportion = ifelse(is.nan(data$nFailures / (data$nSuccesses + data$nFailures)), "",
-                                                  data$nFailures / (data$nSuccesses + data$nFailures))))
-    summaryTable$addRows(list(variable   = gettext("Total"),
-                              counts     = data$nSuccesses + data$nFailures, 
-                              proportion = ""))
+  if(options[["dataSummary"]] && options[["dataType"]] != "dataCounts" && is.null(summaryContainer[['summaryTable']])){
+    
+    summaryTable <- createJaspTable(title = gettext("Data Summary"))
+    
+    summaryTable$position <- 2
+    summaryTable$dependOn(c("dataSummary", .BinomialLS_data_dependencies))
+    
+    summaryTable$addColumnInfo(name = "variable",   title = "",                     type = "string")
+    summaryTable$addColumnInfo(name = "counts",     title = gettext("Counts"),      type = "integer")
+    summaryTable$addColumnInfo(name = "proportion", title = gettext("Proportion"),  type = "number")
+    
+    summaryTable$setExpectedSize(3)
+    
+    summaryContainer[["summaryTable"]] <- summaryTable
+    
+    if(.readyBinomialLS(options)[1]){
+      summaryTable$addRows(list(variable   = gettext("Successes"), 
+                                counts     = data$nSuccesses, 
+                                proportion = ifelse(is.nan(data$nSuccesses / (data$nSuccesses + data$nFailures)), "",
+                                                    data$nSuccesses / (data$nSuccesses + data$nFailures))))
+      summaryTable$addRows(list(variable   = gettext("Failures"),
+                                counts     = data$nFailures, 
+                                proportion = ifelse(is.nan(data$nFailures / (data$nSuccesses + data$nFailures)), "",
+                                                    data$nFailures / (data$nSuccesses + data$nFailures))))
+      summaryTable$addRows(list(variable   = gettext("Total"),
+                                counts     = data$nSuccesses + data$nFailures, 
+                                proportion = ""))
+    }
   }
   
   return()
@@ -782,5 +810,6 @@
 .BinomialLS_data_dependencies <- c("dataType",
                                    "nSuccesses", "nFailures",                                 # for Counts
                                    "data_sequence",    "key_success_Seq", "key_failure_Seq",  # for Sequence
-                                   "selectedVariable", "key_success_Var", "key_failure_Var")  # for Variable
+                                   "selectedVariable", "key_success_Var", "key_failure_Var",  # for Variable
+                                   "priors") 
 

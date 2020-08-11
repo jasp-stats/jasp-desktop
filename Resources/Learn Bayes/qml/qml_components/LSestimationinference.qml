@@ -27,6 +27,8 @@ Section
 	title: qsTr("Inference")
 	columns: 2
 
+	property alias plotsBothSampleProportion: plotsBothSampleProportion.label
+
 	Group
 	{
 		Layout.columnSpan: 2
@@ -200,7 +202,13 @@ Section
 		label: qsTr("Prior and posterior distribution")
 		checked: false
 
-		CheckBox{name: "plotsBothSampleProportion"; label: qsTr("Observed data"); checked: false}
+		CheckBox
+		{
+			name:		"plotsBothSampleProportion"
+			label:		qsTr("Observed proportion")
+			id:			plotsBothSampleProportion
+			checked:	false
+		}
 	}
 
 }

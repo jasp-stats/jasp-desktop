@@ -20,12 +20,17 @@ import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
 import JASP.Theme 1.0
-import "../qml" as LS
+import "../qml/qml_components" as LS
 
 Form {
 	id: form
 
-	LS.LSbinomialdatainput{}
+	LS.LSintrotext{}
+	
+	LS.LSbinomialdatainput
+	{
+		id:	binomialDataInput
+	}
 
 	Section
 	{
@@ -37,14 +42,13 @@ Form {
 			spacing:				0
 			Layout.preferredWidth:	parent.width
 
-			//Label { text: qsTr("Effect"); Layout.preferredHeight: 20 * preferencesModel.uiScale}
-
 			RowLayout
 			{
 				Label { text: qsTr("Model");				Layout.preferredWidth: 280 * preferencesModel.uiScale}
 				Label { text: qsTr("Distribution");			Layout.preferredWidth: 130 * preferencesModel.uiScale}
 				Label { text: qsTr("Parameter (θ)");		Layout.preferredWidth: 150 * preferencesModel.uiScale}
 			}
+
 			ComponentsList
 			{
 				name:					"priors"
@@ -61,7 +65,7 @@ Form {
 						{
 							label: 				""
 							name: 				"name"
-							value:				""
+							value:				"Models " + rowIndex
 							fieldWidth:			140 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
@@ -113,7 +117,7 @@ Form {
 						}
 						FormulaField
 						{
-							label:				qsTr("θ")
+							label:				qsTr("θ₀")
 							name:				"parPoint"
 							visible:			typeItem.currentValue === "spike"
 							value:				"0.5"
@@ -132,7 +136,11 @@ Form {
 
 	LS.LSestimationinference{}
 
-	LS.LSestimationsequential{}
+	LS.LSestimationsequential
+	{
+		enabled: binomialDataInput.dataType.value !== "dataCounts"
+		onEnabledChanged: if(!enabled) expanded = false
+	}
 
 	LS.LSestimationpredictions{}
 }
