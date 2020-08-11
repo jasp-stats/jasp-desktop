@@ -201,23 +201,23 @@
     
     if (options$family %in% c("Gamma", "inverse.gaussian")) {
       if (any(dataset[, .v(options$dependentVariable)] <= 0))
-        JASP:::.quitAnalysis(gettextf("%s requres that the dependent variable is positive.",family_text))
+        JASP:::.quitAnalysis(gettextf("%s requires that the dependent variable is positive.",family_text))
     } else if (options$family %in% c("neg_binomial_2", "poisson")) {
       if (any(dataset[, .v(options$dependentVariable)] < 0 | any(!.is.wholenumber(dataset[, .v(options$dependentVariable)]))))
-        JASP:::.quitAnalysis(gettextf("%s requres that the dependent variable is an integer.",family_text))
+        JASP:::.quitAnalysis(gettextf("%s requires that the dependent variable is an integer.",family_text))
     } else if (options$family == "binomial") {
       if (any(!dataset[, .v(options$dependentVariable)] %in% c(0, 1)))
-        JASP:::.quitAnalysis(gettextf("%s requres that the dependent variable contains only 0 and 1.",family_text))
+        JASP:::.quitAnalysis(gettextf("%s requires that the dependent variable contains only 0 and 1.",family_text))
     } else if (options$family == "binomial_agg") {
       if (any(dataset[, .v(options$dependentVariable)] < 0 | dataset[, .v(options$dependentVariable)] > 1))
-        JASP:::.quitAnalysis(gettextf("%s requres that the dependent variable is higher than 0 and lower than 1.",family_text))
+        JASP:::.quitAnalysis(gettextf("%s requires that the dependent variable is higher than 0 and lower than 1.",family_text))
       if (any(dataset[, .v(options$dependentVariableAggregation)] < 0) || any(!.is.wholenumber(dataset[, .v(options$dependentVariableAggregation)])))
-        JASP:::.quitAnalysis(gettextf("%s requres that the number of trials variable is an integer.",family_text))
+        JASP:::.quitAnalysis(gettextf("%s requires that the number of trials variable is an integer.",family_text))
       if (any(!.is.wholenumber(dataset[, .v(options$dependentVariable)] * dataset[, .v(options$dependentVariableAggregation)])))
-        JASP:::.quitAnalysis(gettextf("%s requres that the dependent variable is proportion of successes out of the number of trials.",family_text))
+        JASP:::.quitAnalysis(gettextf("%s requires that the dependent variable is proportion of successes out of the number of trials.",family_text))
     } else if (options$family == "betar") {
       if (any(dataset[, .v(options$dependentVariable)] <= 0 | dataset[, .v(options$dependentVariable)] >= 1))
-        JASP:::.quitAnalysis(gettextf("%s requres that the dependent variable is higher than 0 and lower than 1.",family_text))
+        JASP:::.quitAnalysis(gettextf("%s requires that the dependent variable is higher than 0 and lower than 1.",family_text))
     }
   }
 }
@@ -3223,7 +3223,7 @@
   "hommel"     = gettext("Homel"),
   "hochberg"   = gettext("Hochberg"),
   "mvt"        = gettext("Multivariate-t"),
-  "tukey"      = gettext("Turkey"),
+  "tukey"      = gettext("Tukey"),
   "BH"         = gettext("Benjamini-Hochberg"),
   "BY"         = gettext("Benjamini-Yekutieli"),
   "scheffe"    = gettext("Scheffe"),
