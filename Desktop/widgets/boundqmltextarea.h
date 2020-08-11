@@ -48,6 +48,7 @@ public:
 	bool		isJsonValid(const Json::Value& optionValue) override;
 	Option*		boundTo()									override { return _boundTo; }
 	ListModel*	model()								const	override { return _model; }
+	bool		modelNeedsAllVariables()			const			 { return _modelNeedsAllVariables; }
 
 	void		resetQMLItem(JASPControlBase *item)			override;
 	void		rScriptDoneHandler(const QString &result)	override;
@@ -66,6 +67,7 @@ protected:
 	
 	LavaanSyntaxHighlighter*	_lavaanHighlighter = nullptr;
 	ListModelTermsAvailable*	_model = nullptr;
+	bool						_modelNeedsAllVariables = false;
 	
 };
 

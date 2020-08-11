@@ -39,13 +39,10 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssign
 	Terms randomFactors;
 	Terms covariates;
 
-	QMap<ListModel*, Terms> sourceTerms = getSourceTermsPerModel();
-	QMapIterator<ListModel*, Terms> it(sourceTerms);
-	while (it.hasNext())
+	for (const std::pair<QMLListView::SourceType *, Terms>& source : listView()->getTermsPerSource())
 	{
-		it.next();
-		ListModel* sourceModel = it.key();
-		const Terms& terms = it.value();
+		ListModel* sourceModel = source.first->model;
+		const Terms& terms = source.second;
 		for (const Term& term : terms)
 		{
 			QString itemType = sourceModel->getItemType(term);

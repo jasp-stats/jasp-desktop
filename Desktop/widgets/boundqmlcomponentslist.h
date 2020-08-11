@@ -39,7 +39,6 @@ public:
 
 protected slots:
 	void		modelChangedHandler()						override;
-	void		valuesChangedHandler();
 	void		addItemHandler();
 	void		removeItemHandler(int index);
 	void		nameChangedHandler(int index, QString name);

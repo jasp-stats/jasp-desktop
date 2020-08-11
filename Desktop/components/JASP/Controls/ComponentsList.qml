@@ -30,7 +30,7 @@ JASPGridControl
 	implicitHeight		: itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
 
 
-	property bool	addItemManually	: !source
+	property bool	addItemManually	: !source && !values
 	property bool	showAddIcon		: addItemManually
 	property int	minimumItems	: 0
 	property int	maximumItems	: -1
