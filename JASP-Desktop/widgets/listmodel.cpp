@@ -520,10 +520,8 @@ const Terms &ListModel::terms(const QString &what) const
 
 	for (const QString& condition : allConditions)
 	{
-		if (condition.startsWith(typeIs))
-			useTheseVariableTypes = condition.right(condition.length() - typeIs.length());
-		if (condition.startsWith(controlIs))
-			useThisControl = condition.right(condition.length() - controlIs.length());
+		if (condition.startsWith(typeIs))		useTheseVariableTypes	= condition.right(condition.length() - typeIs.length());
+		if (condition.startsWith(controlIs))	useThisControl			= condition.right(condition.length() - controlIs.length());
 	}
 
 	if (!useTheseVariableTypes.isEmpty())
@@ -559,10 +557,9 @@ const Terms &ListModel::terms(const QString &what) const
 			if (rowControls)
 			{
 				JASPControlWrapper* controlWrapper = rowControls->getJASPControl(useThisControl);
-				if (controlWrapper)
-					controlTerms.add(controlWrapper->getItemProperty("value").toString());
-				else
-					Log::log() << "Could not find control " << useThisControl << " in list view " << name() << std::endl;
+
+				if (controlWrapper)	controlTerms.add(controlWrapper->getItemProperty("value").toString());
+				else				Log::log() << "Could not find control " << useThisControl << " in list view " << name() << std::endl;
 			}
 		}
 		specialTerms = controlTerms;

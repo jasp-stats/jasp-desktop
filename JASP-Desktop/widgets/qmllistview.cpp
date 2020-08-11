@@ -83,8 +83,6 @@ QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString
 	JASPControlBase* sourceItem = source.value<JASPControlBase*>();
 	if (sourceItem)
 		sourceName = sourceItem->name();
-	else if (source.canConvert<QString>())
-		sourceName = _readSourceName(source.toString(), sourceControl, sourceUse);
 	else if (source.canConvert<QMap<QString, QVariant> >())
 	{
 		map = source.toMap();
@@ -105,6 +103,8 @@ QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString
 			sourceUse += map["use"].toString();
 		}
 	}
+	else if (source.canConvert<QString>())
+		sourceName = _readSourceName(source.toString(), sourceControl, sourceUse);
 
 	return map;
 }
@@ -156,10 +156,8 @@ void QMLListView::setSources()
 			QList<QVariant> conditionVariablesList = _getListVariant(map["conditionVariables"]);
 
 			for (const QVariant& conditionVariablesVar : conditionVariablesList)
-			{
 				if (conditionVariablesVar.canConvert<QMap<QString, QVariant> >())
 					conditionVariables.push_back(conditionVariablesVar.toMap());
-			}
 		}
 
 		if (map.contains("combineWithOtherModels"))
