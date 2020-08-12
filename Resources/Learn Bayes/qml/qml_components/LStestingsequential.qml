@@ -27,6 +27,8 @@ Section
 	title:		qsTr("Sequential analysis")
 	enabled:	dataTypeB.checked || dataTypeC.checked
 
+	property alias bfTypevsNameSequential: 	bfTypevsNameSequential.source
+
 	CheckBox
 	{
 		name:		"plotsIterative"
@@ -72,8 +74,8 @@ Section
 							DropDown
 							{
 								name:				"bfTypevsNameSequential"
+								id:					bfTypevsNameSequential
 								indexDefaultValue:	0
-								source:				"priors"
 							}
 						}
 					}

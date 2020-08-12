@@ -16,10 +16,10 @@
 #
 
 LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
-saveOptions(options)
+
   # a vector of two, first for data, second for hypotheses
   ready <- .readyBinomialLS(options)
-  
+
   # introductory text
   if(options[["introText"]]).introductoryTextLS(jaspResults, options, "bin_test")
   
@@ -153,7 +153,7 @@ saveOptions(options)
         }else if(options[["bfType"]] == "best"){
           temp_bf <- exp(temp_results$log_lik[i]) / exp(temp_results$log_lik[which.max(temp_results$log_lik)])
         }else if(options[["bfType"]] == "vs"){
-          temp_bf <- exp(temp_results$log_lik[i]) / exp(temp_results$log_lik[sapply(options[["priors"]][[i]], function(p)p$n) == options[["bfTypevsName"]]])
+          temp_bf <- exp(temp_results$log_lik[i]) / exp(temp_results$log_lik[sapply(options[["priors"]], function(p)p$name) == options[["bfTypevsName"]]])
         }
         
         if(options[["bayesFactorType"]] == "BF10"){
@@ -478,10 +478,11 @@ saveOptions(options)
     
     plotsPredictions$position <- 2
     plotsPredictions$dependOn(c(.BinomialLS_data_dependencies,
-                                ifelse(type == "Prior", "plotsPredictionPostMarginalTypeCI", "plotsPredictionPostMarginalTypeCI"),
+                                ifelse(type == "Prior", "plotsPredictionMarginalTypeCI",     "plotsPredictionPostMarginalTypeCI"),
                                 ifelse(type == "Prior", "plotsPredictionMarginalCoverage",   "plotsPredictionPostMarginalCoverage"),
                                 ifelse(type == "Prior", "plotsPredictionMarginalLower",      "plotsPredictionPostMarginalLower"),
                                 ifelse(type == "Prior", "plotsPredictionMarginalUpper",      "plotsPredictionPostMarginalUpper"),
+                                ifelse(type == "Prior", "plotsPredictionJointType",          "plotsPredictionPostJointType"),
                                 ifelse(type == "Prior", "plotsPredictionsObserved",          "predictionPostPlotProp"),
                                 ifelse(type == "Prior", "colorPalette",                      "colorPalettePrediction")
     ))
@@ -899,7 +900,7 @@ saveOptions(options)
     }
     if(options[["plotsIterativeType"]] == "BF"){
       if(options[["bfTypeSequential"]] == "vs" &&  options[["bfTypevsNameSequential"]] == ""){
-        tableIterative$setError(gettext("Please specify a hypothesis for comparison."))
+        plotsIterative$setError(gettext("Please specify a hypothesis for comparison."))
         return()
       }
       if(length(options[["priors"]]) < 2){
@@ -948,7 +949,7 @@ saveOptions(options)
           )
         }else if(options[["bfTypeSequential"]] == "vs"){
           temp_bf <- sapply(1:nrow(temp_results), function(h)
-            exp(temp_results$log_lik[h]) / exp(temp_results$log_lik[sapply(options[["priors"]][[h]], function(p)p$n) == options[["bfTypevsNameSequential"]]])
+            exp(temp_results$log_lik[h]) / exp(temp_results$log_lik[sapply(options[["priors"]], function(p)p$name) == options[["bfTypevsNameSequential"]]])
           )
         }
 
@@ -1082,7 +1083,7 @@ saveOptions(options)
           )
         }else if(options[["bfTypeSequential"]] == "vs"){
           temp_bf <- sapply(1:nrow(temp_results), function(h)
-            exp(temp_results$log_lik[h]) / exp(temp_results$log_lik[sapply(options[["priors"]][[h]], function(p)p$n) == options[["bfTypevsNameSequential"]]])
+            exp(temp_results$log_lik[h]) / exp(temp_results$log_lik[sapply(options[["priors"]], function(p)p$name) == options[["bfTypevsNameSequential"]]])
           )
         }
         

@@ -27,7 +27,8 @@ Section
 	title: qsTr("Inference")
 	columns: 2
 
-	property alias plotsBothSampleProportion: plotsBothSampleProportion.label
+	property alias plotsBothSampleProportion:	plotsBothSampleProportion.label
+	property alias bfTypevsName: 				bfTypevsName.source
 
 	DropDown
 	{
@@ -77,8 +78,8 @@ Section
 				DropDown
 				{
 					name:				"bfTypevsName"
+					id:					bfTypevsName
 					indexDefaultValue:	0
-					source:				"priors"
 				}
 			}
 		}
@@ -658,7 +659,8 @@ Section
 			name:		"plotsBothSampleProportion"
 			id:			plotsBothSampleProportion
 			label:		qsTr("Observed proportion")
-			checked:	false}
+			checked:	false
+		}
 	}
 
 }
