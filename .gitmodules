@@ -1,84 +1,84 @@
 [submodule "Modules/Common/Descriptives"]
 	path = Modules/Common/Descriptives
-	url = https://github.com/jasp-stats/Descriptives
+	url = https://github.com/jasp-stats/jaspDescriptives
 	branch = master
 [submodule "Modules/Common/TTests"]
 	path = Modules/Common/TTests
-	url = https://github.com/jasp-stats/TTests
+	url = https://github.com/jasp-stats/jaspTTests
 	branch = master
 [submodule "Modules/Common/ANOVA"]
 	path = Modules/Common/ANOVA
-	url = https://github.com/jasp-stats/ANOVA
+	url = https://github.com/jasp-stats/jaspAnova
 	branch = master
 [submodule "Modules/Common/Regression"]
 	path = Modules/Common/Regression
-	url = https://github.com/jasp-stats/Regression
+	url = https://github.com/jasp-stats/jaspRegression
 	branch = master
 [submodule "Modules/Common/Frequencies"]
 	path = Modules/Common/Frequencies
-	url = https://github.com/jasp-stats/Frequencies
+	url = https://github.com/jasp-stats/jaspFrequencies
 	branch = master
 [submodule "Modules/Common/Factor"]
 	path = Modules/Common/Factor
-	url = https://github.com/jasp-stats/Factor
+	url = https://github.com/jasp-stats/jaspFactor
 	branch = master
 [submodule "Modules/Extra/Audit"]
 	path = Modules/Extra/Audit
-	url = https://github.com/jasp-stats/Audit
+	url = https://github.com/jasp-stats/jaspAudit
 	branch = master
 [submodule "Modules/Extra/BAIN"]
 	path = Modules/Extra/BAIN
-	url = https://github.com/jasp-stats/BAIN
+	url = https://github.com/jasp-stats/jaspBain
 	branch = master
 [submodule "Modules/Extra/Network"]
 	path = Modules/Extra/Network
-	url = https://github.com/jasp-stats/Network
+	url = https://github.com/jasp-stats/jaspNetwork
 	branch = master
 [submodule "Modules/Extra/MachineLearning"]
 	path = Modules/Extra/MachineLearning
-	url = https://github.com/jasp-stats/MachineLearning
+	url = https://github.com/jasp-stats/jaspMachineLearning
 	branch = master
 [submodule "Modules/Extra/MetaAnalysis"]
 	path = Modules/Extra/MetaAnalysis
-	url = https://github.com/jasp-stats/MetaAnalysis
+	url = https://github.com/jasp-stats/jaspMetaAnalysis
 	branch = master
 [submodule "Modules/Extra/SEM"]
 	path = Modules/Extra/SEM
-	url = https://github.com/jasp-stats/SEM
+	url = https://github.com/jasp-stats/jaspSem
 	branch = master
 [submodule "Modules/Extra/SummaryStatistics"]
 	path = Modules/Extra/SummaryStatistics
-	url = https://github.com/jasp-stats/SummaryStatistics
+	url = https://github.com/jasp-stats/jaspSummaryStatistics
 	branch = master
 [submodule "Modules/Common/MixedModels"]
 	path = Modules/Common/MixedModels
-	url = https://github.com/jasp-stats/MixedModels
+	url = https://github.com/jasp-stats/jaspMixedModels
 	branch = master
 [submodule "Modules/Extra/DiscoverDistributions"]
 	path = Modules/Extra/DiscoverDistributions
-	url = https://github.com/jasp-stats/DiscoverDistributions
+	url = https://github.com/jasp-stats/jaspDistributions
 	branch = master
 [submodule "Modules/Extra/EquivalenceTTests"]
 	path = Modules/Extra/EquivalenceTTests
-	url = https://github.com/jasp-stats/EquivalenceTTests
+	url = https://github.com/jasp-stats/jaspEquivalenceTTests
 	branch = master
 [submodule "Modules/Extra/JAGS"]
 	path = Modules/Extra/JAGS
-	url = https://github.com/jasp-stats/JAGS
+	url = https://github.com/jasp-stats/jaspJags
 	branch = master
 [submodule "Modules/Extra/Reliability"]
 	path = Modules/Extra/Reliability
-	url = https://github.com/jasp-stats/Reliability
+	url = https://github.com/jasp-stats/jaspReliability
 	branch = master
 [submodule "Modules/Extra/VisualModeling"]
 	path = Modules/Extra/VisualModeling
-	url = https://github.com/jasp-stats/VisualModeling
+	url = https://github.com/jasp-stats/jaspVisualModeling
 	branch = master
-[submodule "JASP-Engine/jasp-graphs"]
-	path = JASP-Engine/jasp-graphs
-	url = https://github.com/jasp-stats/jasp-graphs.git
+[submodule "JASP-Engine/jaspGraphs"]
+	path = JASP-Engine/jaspGraphs
+	url = https://github.com/jasp-stats/jaspGraphs.git
 	branch = master
-[submodule "JASP-Engine/jasp-r-pkg"]
-	path = JASP-Engine/jasp-r-pkg
-	url = https://github.com/jasp-stats/jasp-r-pkg.git
+[submodule "JASP-Engine/jaspBase"]
+	path = JASP-Engine/jaspBase
+	url = https://github.com/jasp-stats/jaspBase.git
 	branch = master
