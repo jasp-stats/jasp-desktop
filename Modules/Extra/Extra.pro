@@ -9,42 +9,42 @@ TEMPLATE = aux
 CONFIG -= app_bundle
 
 MODULE_DIR  = $$PWD
-MODULE_NAME = Audit
+MODULE_NAME = jaspAudit
 include(../InstallModule.pri)
 
-MODULE_NAME = BAIN
+MODULE_NAME = jaspBain
 include(../InstallModule.pri)
 
-MODULE_NAME = Network
+MODULE_NAME = jaspNetwork
 include(../InstallModule.pri)
 
-MODULE_NAME = SEM
+MODULE_NAME = jaspSem
 include(../InstallModule.pri)
 
 R_MODULES_INSTALL_DEPENDENCIES = true
-MODULE_NAME = MachineLearning
+MODULE_NAME = jaspMachineLearning
 include(../InstallModule.pri)
 
 R_MODULES_INSTALL_DEPENDENCIES = false
 
-MODULE_NAME = SummaryStatistics
+MODULE_NAME = jaspSummaryStatistics
 include(../InstallModule.pri)
 
-MODULE_NAME = MetaAnalysis
+MODULE_NAME = jaspMetaAnalysis
 include(../InstallModule.pri)
 
-MODULE_NAME = DiscoverDistributions
+MODULE_NAME = jaspDistributions
 include(../InstallModule.pri)
 
-MODULE_NAME = EquivalenceTTests
+MODULE_NAME = jaspEquivalenceTTests
 include(../InstallModule.pri)
 
-MODULE_NAME = JAGS
+MODULE_NAME = jaspJags
 include(../InstallModule.pri)
 
-MODULE_NAME = Reliability
+MODULE_NAME = jaspReliability
 include(../InstallModule.pri)
 
-MODULE_NAME = VisualModeling
+MODULE_NAME = jaspVisualModeling
 include(../InstallModule.pri)
 

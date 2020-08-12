@@ -42,8 +42,8 @@
 	path = Modules/Extra/jaspMetaAnalysis
 	url = https://github.com/jasp-stats/jaspMetaAnalysis
 	branch = master
-[submodule "Modules/Extra/jaspSEM"]
-	path = Modules/Extra/jaspSEM
+[submodule "Modules/Extra/jaspSem"]
+	path = Modules/Extra/jaspSem
 	url = https://github.com/jasp-stats/jaspSem
 	branch = master
 [submodule "Modules/Extra/jaspSummaryStatistics"]

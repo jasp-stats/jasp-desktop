@@ -147,23 +147,26 @@ void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs &
 	const StepsPerVersion & perVersion = _searcher.at(module);
 
 	Version closestVersion = version;
-	if(perVersion.count(version) == 0 || perVersion.at(version).count(function) == 0) //If this specific version has no upgrades then maybe a later version does!
+	if(		perVersion.count(version)				== 0	||	//There is nothing registered for this version
+			perVersion.at(version).count(function)	== 0	||	//Or there is nothing registered for this version + function
+			perVersion.at(version).count("*")		== 0	)	//Or there is nothing registered for this version and module (function == "*" which means all functions)
 		for(auto & versionSteps : perVersion)
-			if(versionSteps.first > version && versionSteps.second.count(function) > 0)
+			if(versionSteps.first > version && (versionSteps.second.count(function) > 0 || versionSteps.second.count("*") > 0))
 			{
 				closestVersion = versionSteps.first;
 				break;
 			}
 
-	if(perVersion.count(closestVersion) > 0 && perVersion.at(closestVersion).count(function) > 0) //apply step!
+	if(perVersion.count(closestVersion) > 0 && (perVersion.at(closestVersion).count(function) > 0 || perVersion.at(closestVersion).count("*") > 0)) //apply step!
 	{
 		Log::log() << "Closest (from) version found was: '" << closestVersion.toString() << "'" << std::endl;
 
-		const UpgradeStep * step = perVersion.at(closestVersion).at(function);
+		const UpgradeStep * step = perVersion.at(closestVersion).count(function) > 0 ? perVersion.at(closestVersion).at(function) : perVersion.at(closestVersion).at("*");
 
+		const std::string toFunction = step->toFunction() == "*" ? function : step->toFunction();
 		//Do some loop detection
-		StepTaken	fromStep(		{module,			function,			closestVersion}),
-					aboutToStep(	{step->toModule(),	step->toFunction(), step->toVersion()});
+		StepTaken	fromStep(		{module,			function,	closestVersion}),
+					aboutToStep(	{step->toModule(),	toFunction,	step->toVersion()});
 
 		stepsTaken.insert(fromStep); //We want to remember where we come from
 
@@ -179,7 +182,7 @@ void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs &
 
 		analysis["module"]	= step->toModule();
 		analysis["version"] = step->toVersion().toString();
-		analysis["name"]	= step->toFunction();
+		analysis["name"]	= toFunction;
 
 		for(const std::string & optionLog : msgs[logId])
 			Log::log() << optionLog << std::endl;
@@ -212,7 +215,7 @@ void Upgrader::loadOldSchoolUpgrades()
 	}
 
 	MessageForwarder::showWarning(tr("Upgrades couldn't be read"),
-		tr("The necessary upgrades for reading older (<0.12) JASP-files could not be read...\nYou can still use JASP and even read (some) older files but some options might not be understood properly and some analyses might fail to load entirely."));
+		tr("The necessary upgrades for reading older JASP-files could not be read...\nYou can still use JASP and even read (some) older files but some options might not be understood properly and some analyses might fail to load entirely."));
 }
 
 }

@@ -495,10 +495,9 @@ void MainWindow::loadQML()
 
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
 	_ribbonModel->loadModules(	
-		{ 	"Descriptives", "T-Tests", "ANOVA", "MixedModels", "Regression", "Frequencies", "Factor" },
-		{ 	"Audit", "BAIN", "Discover Distributions", "Equivalence T-Tests", "JAGS", "Learn Bayes", "Machine Learning", 
-            "Meta Analysis", "Network", "Reliability", "SEM", "Summary Statistics", "Visual Modeling"});
-	
+		{ 	"jaspDescriptives", "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },
+		{ 	"jaspAudit", "jaspBain", "jaspDistributions" , "jaspEquivalenceTTests", "jaspJags", "jaspLearnBayes", "jaspMachineLearning",
+			"jaspMetaAnalysis", "jaspNetwork", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
 }
 
 QObject * MainWindow::loadQmlData(QString data, QUrl url)

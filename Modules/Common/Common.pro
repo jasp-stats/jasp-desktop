@@ -10,24 +10,24 @@ CONFIG -= app_bundle
 
 MODULE_DIR  = $$PWD
 
-MODULE_NAME = Descriptives
+MODULE_NAME = jaspDescriptives
 include(../InstallModule.pri)
 
-MODULE_NAME = ANOVA
+MODULE_NAME = jaspAnova
 include(../InstallModule.pri)
 
-MODULE_NAME = Factor
+MODULE_NAME = jaspFactor
 include(../InstallModule.pri)
 
-MODULE_NAME = Frequencies
+MODULE_NAME = jaspFrequencies
 include(../InstallModule.pri)
 
-MODULE_NAME = Regression
+MODULE_NAME = jaspRegression
 include(../InstallModule.pri)
 
-MODULE_NAME = TTests
+MODULE_NAME = jaspTTests
 include(../InstallModule.pri)
 
-MODULE_NAME = MixedModels
+MODULE_NAME = jaspMixedModels
 include(../InstallModule.pri)
 

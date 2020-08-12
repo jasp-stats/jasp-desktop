@@ -33,12 +33,13 @@ UpgradeStep::UpgradeStep(const Json::Value & upgradeEntry, const std::string & m
 		_fromFunction	= from["function"].asString();
 		_fromModule		= from.get("module", module).asString();
 
-		_toFunction		= to.get("function", _fromFunction).asString();
+		_toFunction		= _fromFunction == "*" ? "*" : to.get("function", _fromFunction).asString();
 		_toModule		= to.get("module", module).asString();
 	}
 
-	for(const Json::Value & change : upgradeEntry.get("options", Json::arrayValue))
-		_changes.push_back(new UpgradeChange(change));
+	if(_fromFunction != "") //If we don't specify the particular function it is a general module renaming!
+		for(const Json::Value & change : upgradeEntry.get("options", Json::arrayValue))
+			_changes.push_back(new UpgradeChange(change));
 
 	if(upgradeEntry.isMember("msg") && upgradeEntry["msg"].isString())
 		_msgs.push_back(upgradeEntry["msg"].asString());
