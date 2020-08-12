@@ -351,7 +351,7 @@ test_that("Performance plots match", {
   options$rocPlotOpt <- TRUE
   options$prPlotOpt  <- TRUE
 
-  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options, makeTests = TRUE)
+  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options)
   
   plotName <- results[["results"]][["performancePlots"]][["collection"]][["performancePlots_rocPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
