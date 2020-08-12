@@ -1274,7 +1274,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
               ROC = p + ggplot2::labs(x = gettext("False positive rate"),      
                                       y = gettext("True positive rate")),
               PR  = p + ggplot2::labs(x = gettext("True positive rate"), 
-                                      y = gettext("Positive predicted value")))
+                                      y = gettext("Positive predictive value")))
   
   if(isTRUE(addCutoffLabels)) p <- p + 
     ggrepel::geom_text_repel(mapping = ggplot2::aes(label = gettext(as.character(z))),
