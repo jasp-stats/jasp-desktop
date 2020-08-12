@@ -26,11 +26,11 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       tables = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6", 
                  "Greatest Lower Bound", "Average interitem correlation", "mean", "sd"),
       tables_item = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6", 
-                      "Greatest Lower Bound", "Item-rest correlation", "mean", "sd"),
+                      gettext("Greatest Lower Bound"), gettext("Item-rest correlation"), gettext("mean"), gettext("sd")),
       coefficients = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6", 
-                       "Greatest Lower Bound"),
+                       gettext("Greatest Lower Bound")),
       plots = list(expression("McDonald's"~omega), expression("Cronbach\'s"~alpha), expression("Guttman's"~lambda[2]), 
-                   expression("Guttman's"~lambda[6]), "Greatest Lower Bound")
+                   expression("Guttman's"~lambda[6]), gettext("Greatest Lower Bound"))
     )
   )
 
@@ -408,7 +408,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     if (nvar > 0L && nvar < 3L)
       scaleTable$addFootnote(gettextf("Please enter at least 3 variables to do an analysis. %s", model[["footnote"]]))
     else
-      scaleTable$addFootnote(gettext(model[["footnote"]]))
+      scaleTable$addFootnote(model[["footnote"]])
     jaspResults[["scaleTable"]] <- scaleTable
     scaleTable$position <- 1
     return()
@@ -432,7 +432,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     if (options[["intervalOn"]]) {
       addSingularFootnote <- FALSE
       for (i in idxSelected) {
-        scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+        scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
         newData <- data.frame(est = c(unlist(relyFit[["freq"]][["est"]][[i]], use.names = F), 
                                       unlist(model[["cfi"]][["scaleCfi"]][[i]], use.names = F)))
         colnames(newData) <- paste0(colnames(newData), i)
@@ -449,7 +449,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
     } else {
       for (i in idxSelected) {
-        scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+        scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
         newData <- data.frame(est = c(unlist(relyFit[["freq"]][["est"]][[i]], use.names = F)))
         colnames(newData) <- paste0(colnames(newData), i)
         allData <- cbind(allData, newData)
@@ -459,11 +459,11 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     scaleTable$setData(allData)
     
     if (!is.null(model[["footnote"]]))
-      scaleTable$addFootnote(gettext(model[["footnote"]]))
+      scaleTable$addFootnote(model[["footnote"]])
   } else if (sum(selected) > 0L) {
     
     for (i in idxSelected) {
-      scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+      scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
     }
     nvar <- length(options[["variables"]])
     if (nvar > 0L && nvar < 3L){
@@ -475,7 +475,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     scaleTable$setError(model[["error"]])
   
   if (!is.null(model[["footnote"]]))
-    scaleTable$addFootnote(gettext(model[["footnote"]]))
+    scaleTable$addFootnote(model[["footnote"]])
   
   jaspResults[["scaleTable"]] <- scaleTable
   scaleTable$position <- 1
@@ -514,10 +514,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   coefficients <- derivedOptions[["namesEstimators"]][["coefficients"]]
   for (i in idxSelectedF) {
     if (estimators[i] %in% coefficients) {
-      itemTable$addColumnInfo(name = paste0("pointEst", i), title = gettext(estimators[i]), type = "number", 
+      itemTable$addColumnInfo(name = paste0("pointEst", i), title = estimators[i], type = "number",
                                overtitle = overTitle)
     } else {
-      itemTable$addColumnInfo(name = paste0("pointEst", i), title = gettext(estimators[i]), type = "number")
+      itemTable$addColumnInfo(name = paste0("pointEst", i), title = estimators[i], type = "number")
     }
   }
 
