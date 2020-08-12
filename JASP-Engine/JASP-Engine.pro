@@ -61,25 +61,25 @@ mkpath($$OUT_PWD/../R/library)
 exists(/app/lib/*) {
     # org.jaspstats.JASP.json and flatpakbuilder do all this
 } else {
-    InstallJASPRPackage.commands        =  $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jasp-r-pkg$${INSTALL_R_PKG_CMD_POSTFIX}
-	InstallJASPgraphsRPackage.commands  =  $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jasp-graphs$${INSTALL_R_PKG_CMD_POSTFIX}
+    InstallJASPRPackage.commands        =  $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_CMD_POSTFIX}
+	InstalljaspGraphsRPackage.commands  =  $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspGraphs$${INSTALL_R_PKG_CMD_POSTFIX}
 
 	win32 {
-	    RemoveJASPRPkgLock       = $${PKG_LOCK_CMD_PREFIX}00LOCK-jasp-r-pkg$${PKG_LOCK_CMD_INFIX}00LOCK-jasp-r-pkg$${PKG_LOCK_CMD_POSTFIX}
-		RemoveJASPgraphsRPkgLock = $${PKG_LOCK_CMD_PREFIX}00LOCK-jasp-graphs$${PKG_LOCK_CMD_INFIX}00LOCK-jasp-graphs$${PKG_LOCK_CMD_POSTFIX}
+	    RemoveJASPRPkgLock       = $${PKG_LOCK_CMD_PREFIX}00LOCK-jaspBase$${PKG_LOCK_CMD_INFIX}00LOCK-jaspBase$${PKG_LOCK_CMD_POSTFIX}
+		RemovejaspGraphsRPkgLock = $${PKG_LOCK_CMD_PREFIX}00LOCK-jaspGraphs$${PKG_LOCK_CMD_INFIX}00LOCK-jaspGraphs$${PKG_LOCK_CMD_POSTFIX}
 
-		InstallJASPgraphsRPackage.depends	= RemoveJASPgraphsRPkgLock
+		InstalljaspGraphsRPackage.depends	= RemovejaspGraphsRPkgLock
 		InstallJASPRPackage.depends 		= RemoveJASPRPkgLock
 
-        QMAKE_EXTRA_TARGETS += RemoveJASPgraphsRPkgLock
-		POST_TARGETDEPS     += RemoveJASPgraphsRPkgLock
+        QMAKE_EXTRA_TARGETS += RemovejaspGraphsRPkgLock
+		POST_TARGETDEPS     += RemovejaspGraphsRPkgLock
 
         QMAKE_EXTRA_TARGETS += RemoveJASPRPkgLock
 		POST_TARGETDEPS     += RemoveJASPRPkgLock
 	}
 
-	QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
-	POST_TARGETDEPS     += InstallJASPgraphsRPackage
+	QMAKE_EXTRA_TARGETS += InstalljaspGraphsRPackage
+	POST_TARGETDEPS     += InstalljaspGraphsRPackage
 
 	QMAKE_EXTRA_TARGETS += InstallJASPRPackage
 	POST_TARGETDEPS     += InstallJASPRPackage

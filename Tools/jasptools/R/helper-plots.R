@@ -9,7 +9,7 @@ expect_equal_plots <- function(test, name, dir) {
   skip_if_grob(test)
   skip_if_recordedPlot(test)
 
-  if (inherits(test, "JASPgraphsPlot")) {
+  if (inherits(test, "jaspGraphsPlot")) {
     subplots <- test$subplots
 
     for (i in seq_along(subplots))

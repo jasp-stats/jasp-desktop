@@ -75,7 +75,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
       limitsize = FALSE # only necessary if users make the plot ginormous.
     )
 
-    #If we have JASPgraphs available we can get the plotEditingOptions for this plot
+    #If we have jaspGraphs available we can get the plotEditingOptions for this plot
     if(requireNamespace("jaspGraphs", quietly = TRUE))
       plotEditingOptions <- jaspGraphs::plotEditingOptions(graph=plot, asJSON=TRUE)
 
@@ -158,7 +158,7 @@ decodeplot <- function(x, ...) {
   UseMethod("decodeplot", x)
 }
 
-decodeplot.JASPgraphsPlot <- function(x) {
+decodeplot.jaspGraphsPlot <- function(x) {
   for (i in seq_along(x$subplots))
     x$subplots[[i]] <- decodeplot(x$subplots[[i]], returnGrob = FALSE)
   return(x)

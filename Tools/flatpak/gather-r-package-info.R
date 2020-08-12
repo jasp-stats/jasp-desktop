@@ -39,7 +39,7 @@ initialize <- function()
   base_pkgs      <<- unname(utils::installed.packages()[utils::installed.packages()[, "Priority"] %in% c("base", "recommended"), "Package"])
 
   cat('get the packages that JASP expects and put them in an env that includes a specific version\n')
-  source("../../JASP-Engine/jasp-r-pkg/R/packagecheck.R", local=TRUE)
+  source("../../JASP-Engine/jaspBase/R/packagecheck.R", local=TRUE)
   expected   <- .expectedPackages()
   pkgs       <<- expected[,1]
 

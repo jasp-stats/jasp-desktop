@@ -11,7 +11,7 @@ Description: This package helps you build your analysis for JASP (http://jasp-st
         When developing your analysis in R(-Studio) you can see a simpler representation by using $print().
 License: GPL (>= 2)
 Imports: methods, Rcpp (>= 0.12.14), R6
-Suggests: JASPgraphs
+Suggests: jaspGraphs
 LinkingTo: Rcpp, BH
 RcppModules: jaspResults
 NeedsCompilation: yes

@@ -105,7 +105,7 @@ On Windows:<br>
 Download Windows binaries from: http://gnuwin32.sourceforge.net/packages/gettext.htm<br>
 Unzip gettext-0.14.4-bin.zip and its location needs to be added to the PATH environment.
 
-##### Structuring the R code (especially for JASP and JASPgraphs package).<br>
+##### Structuring the R code (especially for JASP and jaspGraphs package).<br>
 This subject is intended for developers who wish to add new translatable R-packages to JASP. Each R package/dynamic module needs to be structured as follows:
 
 * DESCRIPTION
@@ -135,7 +135,7 @@ As described above, most user interfaces, messages and errors shown by JASP are 
 Translaters familiar with github:<br> could clone or fork the jasp-desktop repository and will find then<br>
 ..../jasp-desktop/JASP-Desktop/po/jasp.po (and jasp\_nl.po for the Dutch version) Copy this jasp.po file, rename it to jasp\_xx.po, and adjust the header.<br>
 ..../jasp-desktop/JASP-Engine/JASP/po/R-JASP.pot. Copy this R-JASP.pot file, rename the copy to R-xx.po and adjust the header.<br>
-..../jasp-desktop/JASP-Engine/JASPgraphs/po/R-JASPgraphs.pot. Copy this R-JASPgraphs.pot file, rename the copy to R-xx.po, and adjust the header.
+..../jasp-desktop/JASP-Engine/jaspGraphs/po/R-jaspGraphs.pot. Copy this R-jaspGraphs.pot file, rename the copy to R-xx.po, and adjust the header.
 
 Alternatively, a prepared zip file with the jasp-desktop structure can downloaded:<br>
 This compressed zip can be downloaded from:  https://static.jasp-stats.org/PO-Files-JASP-0.12.1-S.zip<br>
@@ -157,7 +157,7 @@ See https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for the complete list.
 	The first version of this file is in fact a generated template file, without any translated message strings. All the message strings entries starting with 'msgstr' should be filled out with the proper translated string.
 
 2. Translate the JASP R .po file: 	R-xx.po (located in jasp-desktop/JASP-Engine/JASP/po)
-3. Translate the JASPgraphs .po file:	R-xx.po (located in jasp-desktop/JASP-Engine/JASPgraphs/po)
+3. Translate the jaspGraphs .po file:	R-xx.po (located in jasp-desktop/JASP-Engine/jaspGraphs/po)
 
 #### *Create the binary .mo and .qm files*
 For translators that might have a complete build environment of JASP: edit JASP-Desktop.pro and almost on top set the  GENERATE\_LANGUAGE\_FILES = true. Then you need to specify the target language to translate. You can do this by defining it in the project build environment: Project\->Build Setrings\->Build environment and add the item: <br>
@@ -171,8 +171,8 @@ This creates a jasp\_xx.qm.<br>
 2.	The JASP R related .mo file: R-JASP.mo<br>Start R from a terminal run: <br> > tools::update_pkg_po(paste0(getwd(),"/JASP-Engine/JASP"))<br>
 This creates a R-JASP.mo in ./JASP-Engine/JASP/inst/po/xx/LC_MESSAGES
 
-3. The JASPgraphs R related .mo file: R-JASPgraphs.mo<br>Start R from a terminal run: <br> > tools::update_pkg_po(paste0(getwd(),"/JASP-Engine/JASPgraphs"))<br>
-This creates a R-JASPgraphs.mo in ./JASP-Engine/JASPgraphs/inst/po/nl/LC_MESSAGES
+3. The jaspGraphs R related .mo file: R-jaspGraphs.mo<br>Start R from a terminal run: <br> > tools::update_pkg_po(paste0(getwd(),"/JASP-Engine/jaspGraphs"))<br>
+This creates a R-jaspGraphs.mo in ./JASP-Engine/jaspGraphs/inst/po/nl/LC_MESSAGES
 
 #### *Test binary translation files by copying them to an already installed JASP version*
 Once the binaries are successfully created it is possible to test them in an already installed version of JASP. On startup JASP searches for all the typical language coded names, like JASP_nl.qm, and then tries to load that file with that specific language code. If one of those is found with a recognized language code it is added to the language preference menu, so that it can be chosen even at runtime.
@@ -181,13 +181,13 @@ Copy the files to the runtime environment:<br><br>
 On  MacOS in a standard installation:<br>
 Location of jasp\_xx.qm files: /Applications/JASP.app/Contents/Resources/Translations  
 Location of .R-JASP.mo /Applications/JASP.app/Contents/MacOS/R/library/JASP/po/xx/LC\_MESSAGES<br>
-Location of .R-JASPgraphs.mo /Applications/JASP.app/Contents/MacOS/R/library/JASPgraphs/po/xx/LC\_MESSAGES<br>
+Location of .R-jaspGraphs.mo /Applications/JASP.app/Contents/MacOS/R/library/jaspGraphs/po/xx/LC\_MESSAGES<br>
 
 
 On  Windows in a standard installation:<br>
 Location of jasp\_xx.qm: C:\Program Files\JASP\resources\Translations  
 Location of R-JASP.mo C:\Program Files\JASP\R\library\JASP\R\xx\LC\_MESSAGES<br>
-Location of R-JASPgraphs.mo C:\Program Files\JASP\R\library\JASPgraphs\R\xx\LC\_MESSAGES
+Location of R-jaspGraphs.mo C:\Program Files\JASP\R\library\jaspGraphs\R\xx\LC\_MESSAGES
 
 #### *Putting the translations into production*
 Translators familiar with  Github:<br> Can make a Pull Request containing their translated .po file. If this pull request is merged, the new language appears the next day in the nightly build. The new language is then activated by going to Preferences->Interface->Preferred Language and should appear in the dropdown menu.

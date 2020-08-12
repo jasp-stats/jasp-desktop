@@ -114,8 +114,8 @@
 						"echo \"Now we will try to install all JASP's R packages!\"",
 						"R CMD INSTALL ./JASP-Engine/JASP",
 
-						"echo \"After that it is time for JASPgraphs!\"",
-						"R CMD INSTALL ./JASP-Engine/JASPgraphs",
+						"echo \"After that it is time for jaspGraphs!\"",
+						"R CMD INSTALL ./JASP-Engine/jaspGraphs",
 
 						"echo \"And building JASP isn't a bad idea either.\"",
 						"echo \"First we need to remove JASP-R-Interface-Windows.pro...\"",
