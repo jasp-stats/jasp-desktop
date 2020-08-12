@@ -1,6 +1,6 @@
 context("Bain One Sample T-Test")
 
-options <- jasptools::analysisOptions("BainTTestBayesianOneSample")
+options <- jaspTools::analysisOptions("BainTTestBayesianOneSample")
 options$bayesFactorPlot <- TRUE
 options$bayesFactorType <- "BF01"
 options$descriptives <- TRUE
@@ -9,7 +9,7 @@ options$hypothesis <- "equalBiggerSmaller"
 options$testValue <- 51
 options$variables <- list("age")
 set.seed(1)
-results <- jasptools::run("BainTTestBayesianOneSample", "sesame.csv", options)
+results <- jaspTools::run("BainTTestBayesianOneSample", "sesame.csv", options)
 
 test_that("Bain One Sample T-test table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_bainTable"]][["data"]]

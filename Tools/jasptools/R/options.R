@@ -8,19 +8,19 @@
 #'
 #' @param source String containing valid json, or the name of a JASP analysis.
 #' If you provide json, be sure to use single quotes.
-#' @return A list containing options you can supply to \code{jasptools::run}.
+#' @return A list containing options you can supply to \code{jaspTools::run}.
 #' If \code{source} is an analysis name then all default options have been
 #' filled in and booleans set to FALSE. The options that have no default are
 #' left empty. If \code{hint} is set to TRUE then hints are set for these empty
 #' options; they are placed between \%'s.
 #' @examples
 #'
-#' options <- jasptools::analysisOptions("BinomialTest")
+#' options <- jaspTools::analysisOptions("BinomialTest")
 #' options[["variables"]] <- "contBinom"
 #'
 #' # Above and below are identical (below is taken from the Qt terminal)
 #'
-#' options <- jasptools::analysisOptions('{
+#' options <- jaspTools::analysisOptions('{
 #' "id" : 0,
 #' "name" : "BinomialTest",
 #' "options" : {

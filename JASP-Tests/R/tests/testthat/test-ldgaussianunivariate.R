@@ -1,6 +1,6 @@
 context("Discover Distributions - Normal")
 
-options <- jasptools::analysisOptions("LDgaussianunivariate")
+options <- jaspTools::analysisOptions("LDgaussianunivariate")
 options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
   containsColumn = TRUE))
 options$andersonDarling <- TRUE
@@ -30,7 +30,7 @@ options$shapiroWilk <- TRUE
 options$summary <- TRUE
 options$variable <- "Normal100(mu=0,sigma=1)"
 set.seed(1)
-results <- jasptools::run("LDgaussianunivariate", "Distributions.csv", options)
+results <- jaspTools::run("LDgaussianunivariate", "Distributions.csv", options)
 
 
 test_that("Empirical Cumulative Distribution plot matches", {

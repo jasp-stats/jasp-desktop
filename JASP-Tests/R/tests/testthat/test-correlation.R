@@ -1,7 +1,7 @@
 context("Correlation")
 
 # test general results ----
-options <- jasptools::analysisOptions("Correlation")
+options <- jaspTools::analysisOptions("Correlation")
 options$VovkSellkeMPR <- TRUE
 options$confidenceIntervals <- TRUE
 options$flagSignificant <- TRUE
@@ -16,7 +16,7 @@ options$sampleSize <- TRUE
 options$spearman <- TRUE
 options$variables <- list("contNormal", "contGamma", "contcor1", "debMiss30")
 set.seed(1)
-results <- jasptools::run("Correlation", "debug.csv", options)
+results <- jaspTools::run("Correlation", "debug.csv", options)
 
 
 test_that("Shapiro-Wilk Test for Multivariate Normality table results match", {
@@ -112,7 +112,7 @@ test_that("Correlation Table results match", {
 })
 
 test_that("Correlation Table hypothesis correlated positively match", {
-  options <- jasptools::analysisOptions("Correlation")
+  options <- jaspTools::analysisOptions("Correlation")
   options$confidenceIntervals <- TRUE
   options$displayPairwise <- TRUE
   options$hypothesis <- "correlatedPositively"
@@ -120,7 +120,7 @@ test_that("Correlation Table hypothesis correlated positively match", {
   options$spearman <- TRUE
   options$variables <- list("contNormal", "contGamma", "contExpon")
   set.seed(1)
-  results <- jasptools::run("Correlation", "debug.csv", options)
+  results <- jaspTools::run("Correlation", "debug.csv", options)
   table <- results[["results"]][["mainTable"]][["data"]]
   expect_equal_tables(table,
                       list(-0.0266666666666667, -0.130518567835555, 0.652881403621106, 1,
@@ -137,7 +137,7 @@ test_that("Correlation Table hypothesis correlated positively match", {
 })
 
 test_that("Correlation Table hypothesis correlated negatively match", {
-  options <- jasptools::analysisOptions("Correlation")
+  options <- jaspTools::analysisOptions("Correlation")
   options$confidenceIntervals <- TRUE
   options$displayPairwise <- TRUE
   options$hypothesis <- "correlatedNegatively"
@@ -145,7 +145,7 @@ test_that("Correlation Table hypothesis correlated negatively match", {
   options$spearman <- TRUE
   options$variables <- list("contNormal", "contGamma", "contExpon")
   set.seed(1)
-  results <- jasptools::run("Correlation", "debug.csv", options)
+  results <- jaspTools::run("Correlation", "debug.csv", options)
   table <- results[["results"]][["mainTable"]][["data"]]
   expect_equal_tables(table,
                       list(-0.0266666666666667, -1, 0.347118596378894, 0.0771852345022219,
@@ -163,11 +163,11 @@ test_that("Correlation Table hypothesis correlated negatively match", {
 
 # test error handling
 test_that("Analysis handles errors", {
-  options <- jasptools::analysisOptions("Correlation")
+  options <- jaspTools::analysisOptions("Correlation")
   options$displayPairwise <- TRUE
   options$variables <- list("contNormal", "debMiss99", "debSame")
   set.seed(1)
-  results <- jasptools::run("Correlation", "debug.csv", options)
+  results <- jaspTools::run("Correlation", "debug.csv", options)
   table <- results[["results"]][["mainTable"]][["data"]]
   expect_equal_tables(table,
                       list(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "NaN", "NaN", "-",

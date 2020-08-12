@@ -1,6 +1,6 @@
 context("Machine Learning KNN Classification")
 
-options <- jasptools::analysisOptions("mlClassificationKnn")
+options <- jaspTools::analysisOptions("mlClassificationKnn")
 options$addClasses <- FALSE
 options$addIndicator <- FALSE
 options$andrewsCurve <- TRUE
@@ -23,7 +23,7 @@ options$testSetIndicatorVariable <- ""
 options$validationDataManual <- 0.2
 options$validationMeasures <- TRUE
 set.seed(1)
-results <- jasptools::run("mlClassificationKnn", "wine.csv", options)
+results <- jaspTools::run("mlClassificationKnn", "wine.csv", options)
 
 
 test_that("Andrews Curves Plot matches", {

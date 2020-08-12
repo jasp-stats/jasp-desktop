@@ -1,6 +1,6 @@
 context("Machine Learning Boosting Regression")
 
-options <- jasptools::analysisOptions("mlRegressionBoosting")
+options <- jaspTools::analysisOptions("mlRegressionBoosting")
 options$addIndicator <- FALSE
 options$addValues <- FALSE
 options$classBoostRelInfTable <- TRUE
@@ -24,7 +24,7 @@ options$validationDataManual <- 0.2
 options$validationMeasures <- TRUE
 options$valueColumn <- ""
 set.seed(1)
-results <- jasptools::run("mlRegressionBoosting", "wine.csv", options)
+results <- jaspTools::run("mlRegressionBoosting", "wine.csv", options)
 
 
 test_that("Relative Influence table results match", {

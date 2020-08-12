@@ -1,6 +1,6 @@
 context("Machine Learning Hierarchical Clustering")
 
-options <- jasptools::analysisOptions("mlClusteringHierarchical")
+options <- jaspTools::analysisOptions("mlClusteringHierarchical")
 options$addClusters <- FALSE
 options$clusterColumn <- ""
 options$clusterEvaluationMetrics <- TRUE
@@ -19,7 +19,7 @@ options$plotClusterMeans <- TRUE
 options$showBars <- TRUE
 options$oneFigure <- TRUE
 set.seed(1)
-results <- jasptools::run("mlClusteringHierarchical", "wine.csv", options)
+results <- jaspTools::run("mlClusteringHierarchical", "wine.csv", options)
 
 
 test_that("Evaluation Metrics table results match", {

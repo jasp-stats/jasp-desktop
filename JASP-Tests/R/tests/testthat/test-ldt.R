@@ -1,6 +1,6 @@
 context("Discover Distributions - t distribution")
 
-options <- jasptools::analysisOptions("LDt")
+options <- jaspTools::analysisOptions("LDt")
 options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
   containsColumn = TRUE))
 options$andersonDarling <- TRUE
@@ -24,7 +24,7 @@ options$qqplot <- TRUE
 options$summary <- TRUE
 options$variable <- "t100(df=1,ncp=0)"
 set.seed(1)
-results <- jasptools::run("LDt", "Distributions.csv", options)
+results <- jaspTools::run("LDt", "Distributions.csv", options)
 
 
 test_that("Empirical Cumulative Distribution plot matches", {

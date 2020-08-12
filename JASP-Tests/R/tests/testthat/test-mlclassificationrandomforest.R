@@ -1,6 +1,6 @@
 context("Machine Learning Random Forest Classification")
 
-options <- jasptools::analysisOptions("mlClassificationRandomForest")
+options <- jaspTools::analysisOptions("mlClassificationRandomForest")
 options$addClasses <- FALSE
 options$addIndicator <- FALSE
 options$andrewsCurve <- TRUE
@@ -26,7 +26,7 @@ options$testSetIndicatorVariable <- ""
 options$validationDataManual <- 0.2
 options$validationMeasures <- TRUE
 set.seed(1)
-results <- jasptools::run("mlClassificationRandomForest", "wine.csv", options)
+results <- jaspTools::run("mlClassificationRandomForest", "wine.csv", options)
 
 
 test_that("Andrews Curves Plot matches", {

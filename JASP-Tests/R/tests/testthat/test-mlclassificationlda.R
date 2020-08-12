@@ -1,6 +1,6 @@
 context("Machine Learning LDA Classification")
 
-options <- jasptools::analysisOptions("mlClassificationLda")
+options <- jaspTools::analysisOptions("mlClassificationLda")
 options$addClasses <- FALSE
 options$addIndicator <- FALSE
 options$andrewsCurve <- TRUE
@@ -29,7 +29,7 @@ options$testSetIndicatorVariable <- ""
 options$validationDataManual <- 0.2
 options$validationMeasures <- TRUE
 set.seed(1)
-results <- jasptools::run("mlClassificationLda", "wine.csv", options)
+results <- jaspTools::run("mlClassificationLda", "wine.csv", options)
 
 
 test_that("Andrews Curves Plot matches", {

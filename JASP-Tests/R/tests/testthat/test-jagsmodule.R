@@ -1,6 +1,6 @@
 context("JAGS")
 skip("JAGS doesn't work on Travis")
-options <- jasptools::analysisOptions("JAGS")
+options <- jaspTools::analysisOptions("JAGS")
 options$.meta <- list(initialValues = list(list(levels = list(containsColumn = TRUE)), 
                                            list(levels = list(containsColumn = TRUE))), model = list(
                                              columns = list(containsColumn = TRUE), parameters = list(
@@ -26,7 +26,7 @@ options$userData <- list(list(levels = c("Row 0", "Row 1"), name = "Parameter", 
                                                                                                                                                                  "100")))
 options$parameters <- c("\"theta\"", "\"mu\"")
 set.seed(1)
-results <- jasptools::run("JAGS", "debug.csv", options)
+results <- jaspTools::run("JAGS", "debug.csv", options)
 print(results)
 test_that("MCMC summary table results match", {
   table <- results[["results"]][["mainContainer"]][["collection"]][["mainContainer_mainTable"]][["data"]]

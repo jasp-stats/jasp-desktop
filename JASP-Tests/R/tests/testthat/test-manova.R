@@ -3,7 +3,7 @@ context("MANOVA")
 # Also verified with Andy Field example (OCD.sav)
 
 test_that("Main table results match", {
-  options <- jasptools::analysisOptions("Manova")
+  options <- jaspTools::analysisOptions("Manova")
   options$dependent <- c("contNormal", "contGamma")
   options$fixedFactors <- c("contBinom", "facGender")
   options$modelTerms <- list(
@@ -13,7 +13,7 @@ test_that("Main table results match", {
   options$VovkSellkeMPR <- TRUE
   options$testWilks <- TRUE
 
-  results <- jasptools::run("Manova", "test.csv", options, view = TRUE)
+  results <- jaspTools::run("Manova", "test.csv", options, view = TRUE)
   table <- results[["results"]][["manovaContainer"]][["collection"]][["manovaContainer_Pillai"]][["data"]]
   expect_equal_tables(table,
                       list(33580470860819210240, 87.6607294486356, "(Intercept)", 1, 96,
@@ -26,7 +26,7 @@ test_that("Main table results match", {
 })
 
 test_that("Andy Field results match", {
-  options <- jasptools::analysisOptions("Manova")
+  options <- jaspTools::analysisOptions("Manova")
   options$dependent <- c("Actions", "Thoughts")
   options$fixedFactors <- c("Group")
   options$modelTerms <- list(
@@ -38,7 +38,7 @@ test_that("Andy Field results match", {
   options$testHotellingLawley <- TRUE
   options$testRoy             <- TRUE
   options$includeAnovaTables  <- TRUE
-  results <- jasptools::run("Manova", "manova_ocd.csv", options)
+  results <- jaspTools::run("Manova", "manova_ocd.csv", options)
   
   # Pillai table
   table <- results[['results']][['manovaContainer']][['collection']][['manovaContainer_Pillai']][['data']]

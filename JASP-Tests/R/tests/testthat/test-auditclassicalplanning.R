@@ -1,6 +1,6 @@
 context("[Audit] Classical Planning")
 
-options <- jasptools::analysisOptions("auditClassicalPlanning")
+options <- jaspTools::analysisOptions("auditClassicalPlanning")
 options$.meta <- list()
 options$CR <- "High"
 options$IR <- "High"
@@ -14,7 +14,7 @@ options$samplingDistribution <- TRUE
 options$valuta <- "euroValuta"
 set.seed(1)
 dataset <- NULL
-results <- jasptools::run("auditClassicalPlanning", dataset, options)
+results <- jaspTools::run("auditClassicalPlanning", dataset, options)
 
 ### TEST 1: PLAN USING BINOMIAL DISTRIBUTION
 
@@ -38,7 +38,7 @@ test_that("Test 1: <b>Table 1.</b> Planning Summary results match", {
 
 ### TEST 2: PLAN USING POISSON DISTRIBUTION
 
-options <- jasptools::analysisOptions("auditClassicalPlanning")
+options <- jaspTools::analysisOptions("auditClassicalPlanning")
 options$.meta <- list()
 options$CR <- "High"
 options$IR <- "Medium"
@@ -53,7 +53,7 @@ options$samplingDistribution <- TRUE
 options$valuta <- "euroValuta"
 set.seed(1)
 dataset <- NULL
-results <- jasptools::run("auditClassicalPlanning", dataset, options)
+results <- jaspTools::run("auditClassicalPlanning", dataset, options)
 
 
 test_that("Test 2: Sample Size Comparison plot matches", {
@@ -77,7 +77,7 @@ test_that("Test 2: <b>Table 1.</b> Planning Summary results match", {
 
 ### TEST 3: PLAN USING HYPERGEOMETRIC DISTRIBUTION
 
-options <- jasptools::analysisOptions("auditClassicalPlanning")
+options <- jaspTools::analysisOptions("auditClassicalPlanning")
 options$.meta <- list()
 options$CR <- "High"
 options$IR <- "High"
@@ -93,7 +93,7 @@ options$samplingDistribution <- TRUE
 options$valuta <- "euroValuta"
 set.seed(1)
 dataset <- NULL
-results <- jasptools::run("auditClassicalPlanning", dataset, options)
+results <- jaspTools::run("auditClassicalPlanning", dataset, options)
 
 
 test_that("Test 3: Sample Size Comparison plot matches", {

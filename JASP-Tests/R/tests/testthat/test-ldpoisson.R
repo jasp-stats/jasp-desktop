@@ -1,6 +1,6 @@
 context("Discover Distributions - Poisson")
 
-options <- jasptools::analysisOptions("LDpoisson")
+options <- jaspTools::analysisOptions("LDpoisson")
 options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
   containsColumn = TRUE))
 options$chiSquare <- TRUE
@@ -27,7 +27,7 @@ options$qqplot <- TRUE
 options$summary <- TRUE
 options$variable <- "Pois100(lambda=1)"
 set.seed(1)
-results <- jasptools::run("LDpoisson", "Distributions.csv", options)
+results <- jaspTools::run("LDpoisson", "Distributions.csv", options)
 
 
 test_that("Empirical Cumulative Distribution plot matches", {

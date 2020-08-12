@@ -21,7 +21,7 @@ test_that("Main table results match with one model", {
   options$unadjustedRSquaredAlternative <- 0.82
   options$priorWidth                    <- 0.5
   options$bayesFactorType               <- "LogBF10"
-  results <- jasptools::run("SummaryStatsRegressionLinearBayesian", "debug.csv", options)
+  results <- jaspTools::run("SummaryStatsRegressionLinearBayesian", "debug.csv", options)
   
   table <- getMainTable(results)
   # fill in expected values
@@ -38,7 +38,7 @@ test_that("Main table results match with model comparison", {
   options$unadjustedRSquaredAlternative <- 0.82
   options$priorWidth                    <- 0.5
   options$bayesFactorType               <- "LogBF10"
-  results <- jasptools::run("SummaryStatsRegressionLinearBayesian", "debug.csv", options)
+  results <- jaspTools::run("SummaryStatsRegressionLinearBayesian", "debug.csv", options)
   
   table <- getMainTable(results)
   # fill in expected values
@@ -48,7 +48,7 @@ test_that("Main table results match with model comparison", {
 })
 
 test_that("Main table and plots match without additional info", {
-  options <- jasptools::analysisOptions("SummaryStatsRegressionLinearBayesian")
+  options <- jaspTools::analysisOptions("SummaryStatsRegressionLinearBayesian")
   options$bayesFactorType <- "LogBF10"
   options$numberOfCovariatesAlternative <- 5
   options$numberOfCovariatesNull <- 4
@@ -58,7 +58,7 @@ test_that("Main table and plots match without additional info", {
   options$unadjustedRSquaredAlternative <- 0.55
   options$unadjustedRSquaredNull <- 0.45
   set.seed(1)
-  results <- jasptools::run("SummaryStatsRegressionLinearBayesian", "debug.csv", options)
+  results <- jaspTools::run("SummaryStatsRegressionLinearBayesian", "debug.csv", options)
 
   table <- getMainTable(results)
   expect_equal_tables(table,
@@ -71,10 +71,10 @@ test_that("Main table and plots match without additional info", {
 })
 
 test_that("Main table and plots match with additional info", {
-  options <- jasptools::analysisOptions("SummaryStatsRegressionLinearBayesian")
+  options <- jaspTools::analysisOptions("SummaryStatsRegressionLinearBayesian")
   options$plotBayesFactorRobustness <- TRUE
   set.seed(1)
-  results <- jasptools::run("SummaryStatsRegressionLinearBayesian", "debug.csv", options)
+  results <- jaspTools::run("SummaryStatsRegressionLinearBayesian", "debug.csv", options)
   
   table <- getMainTable(results)
   expect_equal_tables(table,

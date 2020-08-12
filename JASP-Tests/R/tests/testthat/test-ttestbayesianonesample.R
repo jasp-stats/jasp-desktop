@@ -10,19 +10,19 @@ getTtestTable <- function(x) x[["results"]][["ttestContainer"]][["collection"]][
 getDescriptivesTable <- function(x) x[["results"]][["descriptivesContainer"]][["collection"]][["descriptivesContainer_table"]]
 
 test_that("Main table results match", {
-  options <- jasptools::analysisOptions("TTestBayesianOneSample")
+  options <- jaspTools::analysisOptions("TTestBayesianOneSample")
   options$variables <- "contNormal"
   options$effectSizeStandardized <- "default"
   options$defaultStandardizedEffectSize <- "cauchy"
   options$priorWidth <- 0.707
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianOneSample", "test.csv", options)
   table <- getTtestTable(results)[["data"]]
   expect_equal_tables(table, list(0.508160332089536, "contNormal", 2.80907441042415e-05))
 })
 
 test_that("Inferential and descriptives plots match", {
   set.seed(0)
-  options <- jasptools::analysisOptions("TTestBayesianOneSample")
+  options <- jaspTools::analysisOptions("TTestBayesianOneSample")
   options$variables <- "contNormal"
   options$plotPriorAndPosterior <- TRUE
   options$plotPriorAndPosteriorAdditionalInfo <- FALSE
@@ -37,7 +37,7 @@ test_that("Inferential and descriptives plots match", {
   options$descriptivesPlots <- TRUE
   options$descriptivesPlotsCredibleInterval <- 0.90
   
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianOneSample", "test.csv", options)
   
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianOneSample")
@@ -61,7 +61,7 @@ test_that("Inferential and descriptives plots match", {
 
 test_that("Inferential plots with additional info match", {
   set.seed(0)
-  options <- jasptools::analysisOptions("TTestBayesianOneSample")
+  options <- jaspTools::analysisOptions("TTestBayesianOneSample")
   options$variables <- "contcor1"
   options$plotPriorAndPosterior <- TRUE
   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
@@ -72,7 +72,7 @@ test_that("Inferential plots with additional info match", {
   options$plotSequentialAnalysis <- TRUE
   options$plotSequentialAnalysisRobustness <- TRUE
   
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianOneSample", "test.csv", options)
 
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "prior-posterior-additional", dir="TTestBayesianOneSample")
@@ -113,21 +113,21 @@ test_that("Prior and posterior plot custom CI level match", {
 })
 
 test_that("Analysis handles errors", {
-  options <- jasptools::analysisOptions("TTestBayesianOneSample")
+  options <- jaspTools::analysisOptions("TTestBayesianOneSample")
 
   options$variables <- "debInf"
 
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianOneSample", "test.csv", options)
   notes <- unlist(getTtestTable(results)[["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$variables <- "debSame"
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianOneSample", "test.csv", options)
   notes <- unlist(getTtestTable(results)[["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$variables <- "debMiss99"
-  results <- jasptools::run("TTestBayesianOneSample", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianOneSample", "test.csv", options)
   notes <- unlist(getTtestTable(results)[["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })

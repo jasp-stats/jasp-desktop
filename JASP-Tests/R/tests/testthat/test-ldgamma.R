@@ -1,6 +1,6 @@
 context("Discover Distributions - Gamma")
 
-options <- jasptools::analysisOptions("LDgamma")
+options <- jaspTools::analysisOptions("LDgamma")
 options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
   containsColumn = TRUE))
 options$andersonDarling <- TRUE
@@ -29,7 +29,7 @@ options$qqplot <- TRUE
 options$summary <- TRUE
 options$variable <- "Gamma100(shape=1,scale=1)"
 set.seed(1)
-results <- jasptools::run("LDgamma", "Distributions.csv", options)
+results <- jaspTools::run("LDgamma", "Distributions.csv", options)
 
 
 test_that("Empirical Cumulative Distribution plot matches", {

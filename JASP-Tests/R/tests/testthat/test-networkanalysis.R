@@ -5,14 +5,14 @@ context("Network Analysis")
 # - bootstrapping
 # - plots or graphical options
 
-options <- jasptools::analysisOptions("NetworkAnalysis")
+options <- jaspTools::analysisOptions("NetworkAnalysis")
 options$estimator <- "EBICglasso"
 options$variables <- c("contNormal", "contcor1", "contcor2")
 options$tableCentrality <- TRUE
 options$tableClustering <- TRUE
 options$tableWeightsMatrix <- TRUE
 options$tableLayout <- TRUE
-results <- jasptools::run("NetworkAnalysis", "test.csv", options)
+results <- jaspTools::run("NetworkAnalysis", "test.csv", options)
 
 test_that("generalTB table results match", {
   table <- results[["results"]][["mainContainer"]][["collection"]][["mainContainer_generalTable"]][["data"]]
@@ -48,7 +48,7 @@ test_that("weightmatrixTB table results match", {
 })
 
 
-options <- jasptools::analysisOptions("NetworkAnalysis")
+options <- jaspTools::analysisOptions("NetworkAnalysis")
 options$bootstrapOnOff <- TRUE
 options$numberOfBootstraps <- 2
 options$plotCentrality <- TRUE
@@ -61,7 +61,7 @@ options$tableClustering <- TRUE
 options$tableWeightsMatrix <- TRUE
 options$variables <- list("A1", "A2", "A3", "A4", "A5")
 estimators <- c("EBICglasso","cor","pcor","IsingFit","IsingSampler","huge","adalasso")
-file <- file.path(jasptools:::.pkgOptions$tests.dir, "networkResults.rds")
+file <- file.path(jaspTools:::.pkgOptions$tests.dir, "networkResults.rds")
 
 # run the code below to create the .rds object
 # clearEverythingButData <- function(x) {
@@ -79,7 +79,7 @@ file <- file.path(jasptools:::.pkgOptions$tests.dir, "networkResults.rds")
 # for (e in estimators) {
 #   options$estimator <- e
 #   set.seed(1)
-#   results[[e]] <- jasptools::run(options = options, data = "BFI Network.csv", view = FALSE)["results"]
+#   results[[e]] <- jaspTools::run(options = options, data = "BFI Network.csv", view = FALSE)["results"]
 #   results[[e]] <- clearEverythingButData(results[[e]])
 # }
 # saveRDS(results, file = file)
@@ -89,30 +89,30 @@ for (estimator in estimators) {
   
   options$estimator <- estimator
   set.seed(1)
-  results <- jasptools::run("NetworkAnalysis", "BFI Network.csv", options)
+  results <- jaspTools::run("NetworkAnalysis", "BFI Network.csv", options)
 
   test_that(paste0(estimator, ": Centrality measures per variable table results match"), {
     table    <- results                   [["results"]][["mainContainer"]][["collection"]][["mainContainer_centralityTable"]][["data"]]
     oldTable <- storedResults[[estimator]][["results"]][["mainContainer"]][["collection"]][["mainContainer_centralityTable"]][["data"]]
-    expect_equal_tables(table, jasptools:::collapseTable(oldTable))
+    expect_equal_tables(table, jaspTools:::collapseTable(oldTable))
   })
   
   test_that(paste0(estimator, ": Clustering measures per variable table results match"), {
     table    <- results                   [["results"]][["mainContainer"]][["collection"]][["mainContainer_clusteringTable"]][["data"]]
     oldTable <- storedResults[[estimator]][["results"]][["mainContainer"]][["collection"]][["mainContainer_clusteringTable"]][["data"]]
-    expect_equal_tables(table, jasptools:::collapseTable(oldTable))
+    expect_equal_tables(table, jaspTools:::collapseTable(oldTable))
   })
   
   test_that(paste0(estimator, ": Summary of Network table results match"), {
     table    <- results                   [["results"]][["mainContainer"]][["collection"]][["mainContainer_generalTable"]][["data"]]
     oldTable <- storedResults[[estimator]][["results"]][["mainContainer"]][["collection"]][["mainContainer_generalTable"]][["data"]]
-    expect_equal_tables(table, jasptools:::collapseTable(oldTable))
+    expect_equal_tables(table, jaspTools:::collapseTable(oldTable))
   })
   
   test_that(paste0(estimator, ": Weights matrix table results match"), {
     table    <- results                   [["results"]][["mainContainer"]][["collection"]][["mainContainer_weightsTable"]][["data"]]
     oldTable <- storedResults[[estimator]][["results"]][["mainContainer"]][["collection"]][["mainContainer_weightsTable"]][["data"]]
-    expect_equal_tables(table, jasptools:::collapseTable(oldTable))
+    expect_equal_tables(table, jaspTools:::collapseTable(oldTable))
   })
   
   test_that(paste0(estimator, ": Bootstrapped edge plot matches"), {

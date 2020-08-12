@@ -2,7 +2,7 @@ context("[Audit] Bayesian Evaluation")
 
 ### TEST 1: EVALUATION USING SUMMARY STATISTICS
 
-options <- jasptools::analysisOptions("auditBayesianEvaluation")
+options <- jaspTools::analysisOptions("auditBayesianEvaluation")
 options$.meta <- list(auditResult = list(containsColumn = TRUE), monetaryVariable = list(
     containsColumn = TRUE), recordNumberVariable = list(containsColumn = TRUE), 
     sampleCounter = list(containsColumn = TRUE))
@@ -29,7 +29,7 @@ options$useSumStats <- TRUE
 options$variableType <- "variableTypeCorrect"
 set.seed(1)
 dataset <- NULL
-results <- jasptools::run("auditBayesianEvaluation", dataset, options)
+results <- jaspTools::run("auditBayesianEvaluation", dataset, options)
 
 
 test_that("Test 1: Evaluation Information plot matches", {
@@ -61,7 +61,7 @@ test_that("Test 1: <b>Table 2.</b> Prior and Posterior Descriptive Statistics re
 
 ### TEST 2: EVALUATION USING CORRECT / INCORRECT
 
-options <- jasptools::analysisOptions("auditBayesianEvaluation")
+options <- jaspTools::analysisOptions("auditBayesianEvaluation")
 options$.meta <- list(auditResult = list(containsColumn = TRUE), monetaryVariable = list(
     containsColumn = TRUE), recordNumberVariable = list(containsColumn = TRUE), 
     sampleCounter = list(containsColumn = TRUE))
@@ -85,7 +85,7 @@ options$recordNumberVariable <- "ID"
 options$shadePosterior <- "shadePosteriorCredibleRegion"
 options$variableType <- "variableTypeCorrect"
 set.seed(1)
-results <- jasptools::run("auditBayesianEvaluation", "auditRattle.csv", options)
+results <- jaspTools::run("auditBayesianEvaluation", "auditRattle.csv", options)
 
 
 test_that("Test 2: Evaluation Information plot matches", {
@@ -117,7 +117,7 @@ test_that("Test 2: <b>Table 2.</b> Prior and Posterior Descriptive Statistics re
 
 ### TEST 3: EVALUATION USING AUDIT VALUES
 
-options <- jasptools::analysisOptions("auditBayesianEvaluation")
+options <- jaspTools::analysisOptions("auditBayesianEvaluation")
 options$.meta <- list(auditResult = list(containsColumn = TRUE), monetaryVariable = list(
     containsColumn = TRUE), recordNumberVariable = list(containsColumn = TRUE), 
     sampleCounter = list(containsColumn = TRUE))
@@ -145,7 +145,7 @@ options$sampleCounter <- "selectionResult"
 options$shadePosterior <- "shadePosteriorHypotheses"
 options$variableType <- "variableTypeAuditValues"
 set.seed(1)
-results <- jasptools::run("auditBayesianEvaluation", "test-auditClassicalWorkflow.csv", options)
+results <- jaspTools::run("auditBayesianEvaluation", "test-auditClassicalWorkflow.csv", options)
 
 
 test_that("Test 3: Correlation Plot matches", {

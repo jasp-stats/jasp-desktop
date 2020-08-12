@@ -4,7 +4,7 @@
 ## - missing values exclusion
 #
 #test_that("Main table results match", {
-#  options <- jasptools::analysisOptions("ReliabilityAnalysis")
+#  options <- jaspTools::analysisOptions("ReliabilityAnalysis")
 #  options$variables <- c("contcor1", "contcor2", "contNormal")
 #  options$reverseScaledItems <- "contcor2"
 #  options$alphaScale <- TRUE
@@ -15,7 +15,7 @@
 #  options$mcDonaldScale <- TRUE
 #  options$meanScale <- TRUE
 #  options$sdScale <- TRUE
-#  results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
+#  results <- jaspTools::run("ReliabilityAnalysis", "test.csv", options)
 #  table <- results[["results"]][["scaleTable"]][["data"]]
 #  expect_equal_tables(table,
 #    list("scale", -0.757822989578577, -0.0677657928415725, 0.197235966525379,
@@ -25,7 +25,7 @@
 #})
 #
 #test_that("Item Statistics table matches", {
-#  options <- jasptools::analysisOptions("ReliabilityAnalysis")
+#  options <- jaspTools::analysisOptions("ReliabilityAnalysis")
 #  options$variables <- c("contcor1", "contcor2", "contNormal")
 #  options$alphaItem <- TRUE
 #  options$confAlpha <- TRUE
@@ -34,7 +34,7 @@
 #  options$mcDonaldItem <- TRUE
 #  options$meanItem <- TRUE
 #  options$sdItem <- TRUE
-#  results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
+#  results <- jaspTools::run("ReliabilityAnalysis", "test.csv", options)
 #  table <- results[["results"]][["itemTable"]][["data"]]
 #  expect_equal_tables(table,
 #    list("contcor1", 0.0618194975467092, 0.0319398198963565, 0.061902485553013,
@@ -47,7 +47,7 @@
 #})
 #
 #test_that("Reverse scaled items match", {
-#  options <- jasptools::analysisOptions("ReliabilityAnalysis")
+#  options <- jaspTools::analysisOptions("ReliabilityAnalysis")
 #  options$variables <- c("Q01", "Q03", "Q04", "Q05", "Q12", "Q16", "Q20", "Q21")
 #  options$reverseScaledItems <- "Q03"
 #  options$alphaScale <- TRUE
@@ -59,7 +59,7 @@
 #  options$meanScale <- TRUE
 #  options$sdScale <- TRUE
 #  
-#  results <- jasptools::run("ReliabilityAnalysis", "Fear of Statistics.csv", options)
+#  results <- jaspTools::run("ReliabilityAnalysis", "Fear of Statistics.csv", options)
 #  table <- results[["results"]][["scaleTable"]][["data"]]
 #  expect_equal_tables(table,
 #    list("scale", 0.820836210468446, 0.813045844410605, 0.824827780086911,
@@ -69,9 +69,9 @@
 #})
 #
 #test_that("Analysis handles errors - Infinity", {
-#  options <- jasptools::analysisOptions("ReliabilityAnalysis")
+#  options <- jaspTools::analysisOptions("ReliabilityAnalysis")
 #  options$variables <- c("debInf")
-#  results <- jasptools::run("ReliabilityAnalysis", "test.csv", options)
+#  results <- jaspTools::run("ReliabilityAnalysis", "test.csv", options)
 #  status <- results[["status"]]
 #  expect_identical(status, "validationError")
 #})

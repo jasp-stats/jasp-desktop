@@ -8,7 +8,7 @@ develop <- function(path, makePersistent = TRUE) {
                "JASP-Common and JASP-Desktop should be subdirectories."))
   
   if (makePersistent) {
-    jasptoolsDir <- path.package("jasptools", quiet = FALSE)
+    jasptoolsDir <- path.package("jaspTools", quiet = FALSE)
     file <- file.path(jasptoolsDir, "jasp-desktop_Location.txt")
     if (file.exists(file))
       message(sprintf("Overwriting existing path at %s.", file))
@@ -54,7 +54,7 @@ isJaspDesktopDir <- function(path) {
   potentialPkgDirs <- .getPotentialPackageDirs(pathJaspBuildEnvir)
   
   if (os == "osx")
-    hasPkg <- "JASPgraphs"
+    hasPkg <- "jaspGraphs"
   else
     hasPkg <- "Rcpp"
     
@@ -157,7 +157,7 @@ isJaspDesktopDir <- function(path) {
     
     # set locations of all required resources (json, analyses, html, packages)
     relativePaths <- list(
-      common.r.dir = file.path("JASP-Engine", "JASP", "R"),
+      common.r.dir = file.path("JASP-Engine", "jaspBase", "R"),
       html.dir = file.path("JASP-Desktop", "html"),
       common.qml.dir = file.path("Resources"),
       data.dir = file.path("Resources", "Data Sets"),
@@ -174,7 +174,7 @@ isJaspDesktopDir <- function(path) {
     pathsToResources <- absolutePaths
 
     # create the temp (html) directory for the output
-    pathToTools <- file.path(tempdir(), "jasptools")
+    pathToTools <- file.path(tempdir(), "jaspTools")
     if (!dir.exists(pathToTools)) {
       dir.create(file.path(pathToTools, "html", "plots"), recursive = TRUE)
       dir.create(file.path(pathToTools, "state"))

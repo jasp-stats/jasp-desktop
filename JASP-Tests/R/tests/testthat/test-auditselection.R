@@ -2,7 +2,7 @@ context("[Audit] Selection")
 
 ### TEST 1: TAKING A MONETARY UNIT SAMPLE OF SIZE n = 200
 
-options <- jasptools::analysisOptions("auditSelection")
+options <- jaspTools::analysisOptions("auditSelection")
 options$.meta <- list(additionalVariables = list(containsColumn = TRUE), monetaryVariable = list(
     containsColumn = TRUE), rankingVariable = list(containsColumn = TRUE), 
     recordNumberVariable = list(containsColumn = TRUE), sampleIndicatorColumn = list(
@@ -18,7 +18,7 @@ options$sampleSize <- 200
 options$selectionMethod <- "randomSampling"
 options$selectionType <- "musSampling"
 set.seed(1)
-results <- jasptools::run("auditSelection", "BuildIt_Monetary.csv", options)
+results <- jaspTools::run("auditSelection", "BuildIt_Monetary.csv", options)
 
 
 test_that("Test 1: Book values plot matches", {
@@ -123,7 +123,7 @@ test_that("Test 1: <b>Table 1.</b> Selection Summary results match", {
 
 options <- NULL
 
-options <- jasptools::analysisOptions("auditSelection")
+options <- jaspTools::analysisOptions("auditSelection")
 options$.meta <- list(additionalVariables = list(containsColumn = TRUE), monetaryVariable = list(
     containsColumn = TRUE), rankingVariable = list(containsColumn = TRUE), 
     recordNumberVariable = list(containsColumn = TRUE), sampleIndicatorColumn = list(
@@ -139,7 +139,7 @@ options$seed <- 2
 options$selectionMethod <- "systematicSampling"
 options$selectionType <- "recordSampling"
 set.seed(1)
-results <- jasptools::run("auditSelection", "BuildIt_Monetary.csv", options)
+results <- jaspTools::run("auditSelection", "BuildIt_Monetary.csv", options)
 
 
 test_that("Test 2: <b>Table 2.</b> Selection Descriptive Statistics results match", {
@@ -361,7 +361,7 @@ test_that("Test 2: <b>Table 1.</b> Selection Summary results match", {
 
 ### TEST 3: SELECTION USING auditRattle.csv DATASET
 
-options <- jasptools::analysisOptions("auditSelection")
+options <- jaspTools::analysisOptions("auditSelection")
 options$.meta <- list(additionalVariables = list(containsColumn = TRUE), monetaryVariable = list(
     containsColumn = TRUE), rankingVariable = list(containsColumn = TRUE), 
     recordNumberVariable = list(containsColumn = TRUE), sampleIndicatorColumn = list(
@@ -377,7 +377,7 @@ options$sampleSize <- 40
 options$selectionMethod <- "randomSampling"
 options$selectionType <- "musSampling"
 set.seed(1)
-results <- jasptools::run("auditSelection", "auditRattle.csv", options)
+results <- jaspTools::run("auditSelection", "auditRattle.csv", options)
 
 
 test_that("Test 3: Book values plot matches", {

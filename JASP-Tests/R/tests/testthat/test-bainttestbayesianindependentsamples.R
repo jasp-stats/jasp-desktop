@@ -1,6 +1,6 @@
 context("Bain Independent Samples T-Test")
 
-options <- jasptools::analysisOptions("BainTTestBayesianIndependentSamples")
+options <- jaspTools::analysisOptions("BainTTestBayesianIndependentSamples")
 options$bayesFactorPlot <- TRUE
 options$bayesFactorType <- "BF01"
 options$descriptives <- TRUE
@@ -9,7 +9,7 @@ options$groupingVariable <- "sex"
 options$hypothesis <- "equalBiggerSmaller"
 options$variables <- list("age")
 set.seed(1)
-results <- jasptools::run("BainTTestBayesianIndependentSamples", "sesame.csv", options)
+results <- jaspTools::run("BainTTestBayesianIndependentSamples", "sesame.csv", options)
 
 test_that("Bain Independent Samples Welch's T-Test table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_bainTable"]][["data"]]

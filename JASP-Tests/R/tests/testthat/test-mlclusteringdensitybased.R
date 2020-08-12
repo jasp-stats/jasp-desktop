@@ -1,6 +1,6 @@
 context("Machine Learning Density-Based Clustering")
 
-options <- jasptools::analysisOptions("mlClusteringDensityBased")
+options <- jaspTools::analysisOptions("mlClusteringDensityBased")
 options$addClusters <- FALSE
 options$clusterColumn <- ""
 options$clusterEvaluationMetrics <- TRUE
@@ -19,7 +19,7 @@ options$plotClusterMeans <- TRUE
 options$showBars <- TRUE
 options$oneFigure <- TRUE
 set.seed(1)
-results <- jasptools::run("mlClusteringDensityBased", "wine.csv", options)
+results <- jaspTools::run("mlClusteringDensityBased", "wine.csv", options)
 
 
 test_that("Evaluation Metrics table results match", {

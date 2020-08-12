@@ -2,7 +2,7 @@ context("SummaryStatsCorrelationBayesianPairs")
 ## Kendall
 
 test_that("Kendall Bayesian Correlation Table results match", {
-  options <- jasptools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
+  options <- jaspTools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
   options$method <- "kendall"
   options$n <- 50
   options$tauObs <- -0.3
@@ -13,7 +13,7 @@ test_that("Kendall Bayesian Correlation Table results match", {
   options$bayesFactorType <- "BF01"
   
   set.seed(1)
-  results <- jasptools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
+  results <- jaspTools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
   
   table <- results[["results"]][["correlationContainer"]][["collection"]][["correlationContainer_corBayesTable"]][["data"]]
   expect_equal_tables(table,
@@ -22,7 +22,7 @@ test_that("Kendall Bayesian Correlation Table results match", {
 })
 
 test_that("Kendall Bayes Factor Robustness Check plot matches", {
-  options <- jasptools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
+  options <- jaspTools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
   options$method <- "kendall"
   options$n <- 50
   options$tauObs <- -0.3
@@ -34,7 +34,7 @@ test_that("Kendall Bayes Factor Robustness Check plot matches", {
   options$plotBfRobustness <- TRUE
   
   set.seed(1)
-  results <- jasptools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
+  results <- jaspTools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
   
   plotName <- results[["results"]][["correlationContainer"]][["collection"]][["correlationContainer_plotContainer"]][["collection"]][["correlationContainer_plotContainer_plotBfRobustness"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
@@ -42,7 +42,7 @@ test_that("Kendall Bayes Factor Robustness Check plot matches", {
 })
 
 test_that("Kendall Prior and Posterior plot matches", {
-  options <- jasptools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
+  options <- jaspTools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
   options$method <- "kendall"
   options$n <- 50
   options$tauObs <- -0.3
@@ -54,7 +54,7 @@ test_that("Kendall Prior and Posterior plot matches", {
   options$plotPriorPosterior <- TRUE
   
   set.seed(1)
-  results <- jasptools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
+  results <- jaspTools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
   
   plotName <- results[["results"]][["correlationContainer"]][["collection"]][["correlationContainer_plotContainer"]][["collection"]][["correlationContainer_plotContainer_plotPriorPosterior"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
@@ -65,7 +65,7 @@ test_that("Kendall Prior and Posterior plot matches", {
 # context("SummaryStatsCorrelationBayesianPairs")
 # ## Pearson 
 # test_that("Pearson Bayesian Correlation Table results match", {
-#   options <- jasptools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
+#   options <- jaspTools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
 #   options$method <- "pearson"
 #   options$n <- 120
 #   options$rObs <- 0.7
@@ -75,7 +75,7 @@ test_that("Kendall Prior and Posterior plot matches", {
 #   options$bayesFactorType <- "LogBF10"
 #   
 #   set.seed(1)
-#   results <- jasptools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
+#   results <- jaspTools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
 #   
 #   table <- results[["results"]][["correlationContainer"]][["collection"]][["correlationContainer_corBayesTable"]][["data"]]
 #   expect_equal_tables(table,
@@ -87,7 +87,7 @@ test_that("Kendall Prior and Posterior plot matches", {
 # 
 # 
 # test_that("Pearson Bayes Factor Robustness Check plot matches", {
-#   options <- jasptools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
+#   options <- jaspTools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
 #   options$method <- "pearson"
 #   options$n <- 120
 #   options$rObs <- 0.7
@@ -98,7 +98,7 @@ test_that("Kendall Prior and Posterior plot matches", {
 #   options$plotBfRobustness <- TRUE
 #   
 #   set.seed(1)
-#   results <- jasptools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
+#   results <- jaspTools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
 #   
 #   plotName <- results[["results"]][["correlationContainer"]][["collection"]][["correlationContainer_plotContainer"]][["collection"]][["correlationContainer_plotContainer_plotBfRobustness"]][["data"]]
 #   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
@@ -106,7 +106,7 @@ test_that("Kendall Prior and Posterior plot matches", {
 # })
 # 
 # test_that("Pearson Prior and Posterior plot matches", {
-#   options <- jasptools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
+#   options <- jaspTools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
 #   options$method <- "pearson"
 #   options$n <- 120
 #   options$rObs <- 0.7
@@ -117,7 +117,7 @@ test_that("Kendall Prior and Posterior plot matches", {
 #   options$plotPriorPosterior <- TRUE
 #   
 #   set.seed(1)
-#   results <- jasptools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
+#   results <- jaspTools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
 #   
 #   plotName <- results[["results"]][["correlationContainer"]][["collection"]][["correlationContainer_plotContainer"]][["collection"]][["correlationContainer_plotContainer_plotPriorPosterior"]][["data"]]
 #   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]

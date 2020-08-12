@@ -1,7 +1,7 @@
 context("Multinomial Test")
 
 test_that("Main table results match", {
-  options <- jasptools::analysisOptions("MultinomialTest")
+  options <- jaspTools::analysisOptions("MultinomialTest")
   options$VovkSellkeMPR <- TRUE
   options$countProp <- "descProps"
   options$descriptives <- TRUE
@@ -14,12 +14,12 @@ test_that("Main table results match", {
       values = list(50, 42, 5, 3)
     )
   )
-  results <- jasptools::run("MultinomialTest",
+  results <- jaspTools::run("MultinomialTest",
                             "test.csv", options)
   maintable <- results[["results"]][["chisqTable"]][["data"]]
   desctable <- results[["results"]][["descriptivesTable"]][["data"]]
 
-  expected <- jasptools:::collapseTable(
+  expected <- jaspTools:::collapseTable(
       list(list(case = "H\u2080 (a)",
                 chisquare = 5.72,
                 df = 3,
@@ -35,16 +35,16 @@ test_that("Main table results match", {
 })
 
 test_that("Descriptives plot matches", {
-  options <- jasptools::analysisOptions("MultinomialTest")
+  options <- jaspTools::analysisOptions("MultinomialTest")
   options$factor <- "facFive"
   options$descriptivesPlot <- TRUE
-  results <- jasptools::run("MultinomialTest", "test.csv", options)
+  results <- jaspTools::run("MultinomialTest", "test.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives-1", dir="MultinomialTest")
 })
 
 test_that("Analysis handles errors - Negative Values", {
-  options <- jasptools::analysisOptions("MultinomialTest")
+  options <- jaspTools::analysisOptions("MultinomialTest")
   options$factor <- "facExperim"
   options$counts <- "contNormal"
   options$tableWidget <- list(
@@ -54,13 +54,13 @@ test_that("Analysis handles errors - Negative Values", {
       values = list(50, 50)
     )
   )
-  results <- jasptools::run("MultinomialTest", "test.csv", options)
+  results <- jaspTools::run("MultinomialTest", "test.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - wrong levels", {
-  options <- jasptools::analysisOptions("MultinomialTest")
+  options <- jaspTools::analysisOptions("MultinomialTest")
   options$factor <- "facExperim"
   options$counts <- "debSame"
   options$tableWidget <- list(
@@ -70,13 +70,13 @@ test_that("Analysis handles errors - wrong levels", {
       values = list(50, 50)
     )
   )
-  results <- jasptools::run("MultinomialTest", "test.csv", options)
+  results <- jaspTools::run("MultinomialTest", "test.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - Infinities", {
-  options <- jasptools::analysisOptions("MultinomialTest")
+  options <- jaspTools::analysisOptions("MultinomialTest")
   options$factor <- "facExperim"
   options$counts <- "debInf"
   options$tableWidget <- list(
@@ -86,7 +86,7 @@ test_that("Analysis handles errors - Infinities", {
       values = list(50, 50)
     )
   )
-  results <- jasptools::run("MultinomialTest", "test.csv", options)
+  results <- jaspTools::run("MultinomialTest", "test.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })

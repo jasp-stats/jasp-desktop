@@ -4,7 +4,7 @@ context("Contingency Tables")
 # - row/column order (ascending/descending)
 
 test_that("Main table results match", {
-  options <- jasptools::analysisOptions("ContingencyTables")
+  options <- jaspTools::analysisOptions("ContingencyTables")
   options$rows <- "facExperim"
   options$columns <- "contBinom"
   options$counts <- "facFifty"
@@ -16,7 +16,7 @@ test_that("Main table results match", {
   options$percentagesRow <- TRUE
   options$percentagesColumn <- TRUE
   options$percentagesTotal <- TRUE
-  results <- jasptools::run("ContingencyTables", "test.csv", options)
+  results <- jaspTools::run("ContingencyTables", "test.csv", options)
   table   <- results[["results"]][["container1"]][["collection"]][["container1_crossTabMain"]][["data"]]
   expect_equal_tables(table,
       list(0.489296636085627, 320, 394.529977794227, 0.236861584011843, 0.392638036809816,
@@ -60,10 +60,10 @@ test_that("Main table results match", {
 })
 
 test_that("Multiple row and column variables give multiple main tables", {
-  options <- jasptools::analysisOptions("ContingencyTables")
+  options <- jaspTools::analysisOptions("ContingencyTables")
   options$rows <- c("facExperim", "facGender")
   options$columns <- c("contBinom", "facFive")
-  results <- jasptools::run("ContingencyTables", "test.csv", options)
+  results <- jaspTools::run("ContingencyTables", "test.csv", options)
 
   pairs <- list(
     c("facExperim", "contBinom"),
@@ -80,7 +80,7 @@ test_that("Multiple row and column variables give multiple main tables", {
 })
 
 test_that("Chi-Squared test table results match", {
-  options <- jasptools::analysisOptions("ContingencyTables")
+  options <- jaspTools::analysisOptions("ContingencyTables")
   options$rows <- "facExperim"
   options$columns <- "contBinom"
   options$counts <- "facFifty"
@@ -88,7 +88,7 @@ test_that("Chi-Squared test table results match", {
   options$chiSquaredContinuityCorrection <- TRUE
   options$likelihoodRatio <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("ContingencyTables", "test.csv", options)
+  results <- jaspTools::run("ContingencyTables", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabChisq"]][["data"]]
   expect_equal_tables(table,
     list("N", "", "", "", 2550, 
@@ -99,12 +99,12 @@ test_that("Chi-Squared test table results match", {
 })
 
 test_that("Nominal table results match", {
-  options <- jasptools::analysisOptions("ContingencyTables")
+  options <- jaspTools::analysisOptions("ContingencyTables")
   options$rows <- "facExperim"
   options$columns <- "contBinom"
   options$contingencyCoefficient <- TRUE
   options$phiAndCramersV <- TRUE
-  results <- jasptools::run("ContingencyTables", "test.csv", options)
+  results <- jaspTools::run("ContingencyTables", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabNominal"]][["data"]]
   expect_equal_tables(table,
     list("Contingency coefficient", 0.0807792391722019, "Phi-coefficient",
@@ -113,12 +113,12 @@ test_that("Nominal table results match", {
 })
 
 test_that("Log Odds Ratio table results match", {
-  options <- jasptools::analysisOptions("ContingencyTables")
+  options <- jaspTools::analysisOptions("ContingencyTables")
   options$rows <- "facExperim"
   options$columns <- "contBinom"
   options$oddsRatio <- TRUE
   options$oddsRatioConfidenceIntervalInterval <- 0.90
-  results <- jasptools::run("ContingencyTables", "test.csv", options)
+  results <- jaspTools::run("ContingencyTables", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabLogOdds"]][["data"]]
   expect_equal_tables(table,
     list("Odds ratio", -0.329205575243527, -0.998167649205055, 0.339756498718001,"",
@@ -128,11 +128,11 @@ test_that("Log Odds Ratio table results match", {
 })
 
 test_that("Ordinal Gamma table results match", {
-  options <- jasptools::analysisOptions("ContingencyTables")
+  options <- jaspTools::analysisOptions("ContingencyTables")
   options$rows <- "facExperim"
   options$columns <- "contBinom"
   options$gamma <- TRUE
-  results <- jasptools::run("ContingencyTables", "test.csv", options)
+  results <- jaspTools::run("ContingencyTables", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabGamma"]][["data"]]
   expect_equal_tables(table,
     list(-0.163132137030995, 0.197938461395245, -0.551084392520947, 0.224820118458957)
@@ -140,12 +140,12 @@ test_that("Ordinal Gamma table results match", {
 })
 
 test_that("Kendall's Tau table results match", {
-  options <- jasptools::analysisOptions("ContingencyTables")
+  options <- jaspTools::analysisOptions("ContingencyTables")
   options$rows <- "facExperim"
   options$columns <- "contBinom"
   options$kendallsTauB <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("ContingencyTables", "test.csv", options)
+  results <- jaspTools::run("ContingencyTables", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabKendallTau"]][["data"]]
   expect_equal_tables(table,
     list(-0.0810440898473108, 0.420024632711394, 1, -0.806378512498144)
@@ -153,11 +153,11 @@ test_that("Kendall's Tau table results match", {
 })
 
 test_that("Analysis handles errors", {
-  options <- jasptools::analysisOptions("ContingencyTables")
+  options <- jaspTools::analysisOptions("ContingencyTables")
   options$rows <- "facExperim"
   options$columns <- "contBinom"
   options$counts <- "contNormal"
-  results <- jasptools::run("ContingencyTables", "test.csv", options)
+  results <- jaspTools::run("ContingencyTables", "test.csv", options)
   errorMsg <- results[["results"]][["errorMessage"]]
   expect_is(errorMsg, "character")
 })

@@ -23,7 +23,7 @@ options(list(
 
 
 initOpts <- function(){
-  options <- jasptools::analysisOptions("AnovaRepeatedMeasures")
+  options <- jaspTools::analysisOptions("AnovaRepeatedMeasures")
   
   options$repeatedMeasuresFactors <- list(
     list(name = "Drink", levels = c("Beer", "Wine", "Water")),
@@ -49,7 +49,7 @@ test_that("Within subjects table results match", {
   options$sphericityHuynhFeldt <- TRUE
   options$sphericityGreenhouseGeisser <- TRUE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options)
   table <- results[["results"]]$rmAnovaContainer$collection$rmAnovaContainer_withinAnovaTable$data
   
@@ -93,7 +93,7 @@ test_that("Sphericity Assumptions table match (Field Chapter 8)", {
   
   options$sphericityTests <- TRUE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options)
   
   # isNewgroup is FALSE now, so changed here
@@ -121,7 +121,7 @@ test_that("Post-hoc tests match (Field Chapter 8)", {
   
   options$postHocTestPooledError <- FALSE
   options$confidenceIntervalsPostHoc <- TRUE
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options)
   
   refTable <- list("TRUE", 2.84948954082566, 0.703009687611414, 0.274654032208925,
@@ -249,7 +249,7 @@ test_that("Descriptives Match", {
   
   options$descriptives <- TRUE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options)
   
   refTable <- list(4.45, 20, 17.3037111930543, "Beer", "Negative", 10, 20, 10.295630140987,
@@ -273,7 +273,7 @@ test_that("Field - Chapter 8 marginal means match", {
   options$marginalMeansBootstrapping <- TRUE
   options$marginalMeansBootstrappingReplicates <- 500
   set.seed(1)
-  results <- jasptools::run("AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv", 
+  results <- jaspTools::run("AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv", 
                             options = options)
   
   table <- results$results$rmAnovaContainer$collection$rmAnovaContainer_marginalMeansContainer$collection[[1]]$data
@@ -317,7 +317,7 @@ test_that("Analysis handles errors", {
 
 # Mixed Effects
 initOpts <- function(){
-  options <- jasptools::analysisOptions("AnovaRepeatedMeasures")
+  options <- jaspTools::analysisOptions("AnovaRepeatedMeasures")
   
   options$repeatedMeasuresFactors <- list(
     list(name = "Looks", levels = c("Attractive", "Average" , "Ugly")),
@@ -344,7 +344,7 @@ test_that("Between Subjects table match", {
   options <- initOpts()
   options$sphericityCorrections <- TRUE
   options$sphericityTests <- TRUE
-  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv", options = options)
     
   refTable <- list("gender", 0.200000000000001, 1, 0.200000000000001, 0.00473545746857648,
@@ -360,7 +360,7 @@ test_that("Homogeneity tests correct", {
 
   options$homogeneityTests <- TRUE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv", options = options)
   
   refTable <- list("att_high", 1.13105200239091, 1, 18, 0.301611198987337, "TRUE",
@@ -385,7 +385,7 @@ test_that("Contrast table match", {
   options$contrasts <- list(list(contrast = "repeated", variable = "Looks"),
                             list(contrast = "difference", variable = "Charisma"))
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv", options = options)
   
   # Difference contrast
@@ -442,7 +442,7 @@ test_that("Descriptives Plots match", {
 })
 
 test_that("Effect Size Calculation correct", {
-  options <- jasptools::analysisOptions("AnovaRepeatedMeasures")
+  options <- jaspTools::analysisOptions("AnovaRepeatedMeasures")
   
   options$repeatedMeasuresFactors <- list(
     list(name = "Animal", levels = c("Stick", "Kangaroo", "Fish", "Grub"))
@@ -460,7 +460,7 @@ test_that("Effect Size Calculation correct", {
   options$effectSizeOmegaSquared <- TRUE
   options$effectSizeGenEtaSquared <- TRUE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaRepeatedMeasuresOneWay.csv",
                             options = options)
   
@@ -487,7 +487,7 @@ test_that("Simple Effects table match", {
   options$moderatorFactorOne <- "gender"
   options$moderatorFactorTwo <- "Charisma"
 
-  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv",
                             options = options)
   
@@ -516,7 +516,7 @@ test_that("Nonparametric table match", {
   
   options$friedmanWithinFactor <- "Charisma"
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv",
                             options = options)
   
@@ -542,7 +542,7 @@ test_that("Conover table match", {
   
   options$friedmanWithinFactor <- "Charisma"
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv",
                             options = options)
   
@@ -559,7 +559,7 @@ test_that("Conover table match", {
 ### Andy Field tests ---
 
 test_that("Field - Chapter 8 results match", {
-  options <- jasptools::analysisOptions("anovarepeatedmeasures")
+  options <- jaspTools::analysisOptions("anovarepeatedmeasures")
   
   options$repeatedMeasuresFactors <- list(
     list(name = "Animal", levels = c("Stick", "Kangaroo", "Fish", "Grub"))
@@ -582,7 +582,7 @@ test_that("Field - Chapter 8 results match", {
   options$confidenceIntervalsPostHoc <- TRUE
   options$postHocTestEffectSize <- TRUE
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaRepeatedMeasuresOneWay.csv",
                             options = options)
   
@@ -645,7 +645,7 @@ test_that("Field - Chapter 9 match",  {
     list(components = c("Charisma", "Looks", "gender"))
   )
   
-  results <- jasptools::run(name = "AnovaRepeatedMeasures",
+  results <- jaspTools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv",
                             options = options)
   

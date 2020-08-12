@@ -1,6 +1,6 @@
 context("Meta Analysis")
 
-options <- jasptools::analysisOptions("ClassicalMetaAnalysis")
+options <- jaspTools::analysisOptions("ClassicalMetaAnalysis")
 options$covariates <- "contcor2"
 options$dependent  <- "contNormal"
 options$factors    <- c("facGender", "facExperim")
@@ -23,7 +23,7 @@ options$studyLabels  <- "contBinom"
 options$trimFillPlot <- TRUE
 options$wlsWeights   <- "debCollin1"
 set.seed(1)
-results <- jasptools::run("ClassicalMetaAnalysis", "debug.csv", options)
+results <- jaspTools::run("ClassicalMetaAnalysis", "debug.csv", options)
 
 test_that("Influence Measures table results match", {
   table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_casewiseTable"]][["data"]]
@@ -347,37 +347,37 @@ test_that("Residual Heterogeneity Estimates table results match", {
 })
 
 test_that("Analysis handles errors", {
-  options <- jasptools::analysisOptions("ClassicalMetaAnalysis")
+  options <- jaspTools::analysisOptions("ClassicalMetaAnalysis")
   
   options$dependent  <- "debInf"
   options$wlsWeights <- "contGamma"
-  results <- jasptools::run("ClassicalMetaAnalysis", "test.csv", options)
+  results <- jaspTools::run("ClassicalMetaAnalysis", "test.csv", options)
   expect_identical(results[["status"]], "validationError", label="Inf dependent check")
   
   options$dependent <- "contNormal"
   options$wlsWeights <- "debInf"
-  results <- jasptools::run("ClassicalMetaAnalysis", "test.csv", options)
+  results <- jaspTools::run("ClassicalMetaAnalysis", "test.csv", options)
   expect_identical(results[["status"]], "validationError", label="Inf covariate check")
   
   options$dependent <- "debSame"
   options$wlsWeights <- "contGamma"
-  results <- jasptools::run("ClassicalMetaAnalysis", "test.csv", options)
+  results <- jaspTools::run("ClassicalMetaAnalysis", "test.csv", options)
   expect_identical(results[["status"]], "validationError", label="No variance dependent check")
   
   options$dependent <- "contNormal"
   options$wlsWeights <- "debSame"
-  results <- jasptools::run("ClassicalMetaAnalysis", "test.csv", options)
+  results <- jaspTools::run("ClassicalMetaAnalysis", "test.csv", options)
   expect_identical(results[["status"]], "validationError", label="No variance covariate check")
   
   options$dependent <- "contGamma"
   options$wlsWeights <- "contcor1"
-  results <- jasptools::run("RegressionLinear", "test.csv", options)
+  results <- jaspTools::run("RegressionLinear", "test.csv", options)
   expect_identical(results[["status"]], "validationError", label="Negative wlsWeights check")
   
 })
 
 #model interaction tests
-options <- jasptools::analysisOptions("ClassicalMetaAnalysis")
+options <- jaspTools::analysisOptions("ClassicalMetaAnalysis")
 options$covariates <- c("contcor1", "contcor2")
 options$dependent <- "contNormal"
 options$factors <- c("facGender", "facExperim")
@@ -411,7 +411,7 @@ options$studyLabels <- "contBinom"
 options$trimFillPlot <- TRUE
 options$wlsWeights <- "contGamma"
 set.seed(1)
-results <- jasptools::run("ClassicalMetaAnalysis", "debug.csv", options)
+results <- jaspTools::run("ClassicalMetaAnalysis", "debug.csv", options)
 
 
 test_that("Influence Measures table results match - model interactions", {
@@ -842,7 +842,7 @@ test_that("Residual Heterogeneity Estimates table results match - model interact
 
 
 # test the diagnostic plot without the Q-Q plot
-options <- jasptools::analysisOptions("ClassicalMetaAnalysis")
+options <- jaspTools::analysisOptions("ClassicalMetaAnalysis")
 options$.meta <- list(covariates = list(containsColumn = TRUE), dependent = list(
   containsColumn = TRUE), factors = list(containsColumn = TRUE), 
   studyLabels = list(containsColumn = TRUE), wlsWeights = list(
@@ -855,7 +855,7 @@ options$regressionCoefficientsEstimates <- FALSE
 options$residualsParameters <- FALSE
 options$wlsWeights <- "SE"
 set.seed(1)
-results <- jasptools::run("ClassicalMetaAnalysis", "BCG Vaccine", options)
+results <- jaspTools::run("ClassicalMetaAnalysis", "BCG Vaccine", options)
 
 test_that("Diagnostic Plots matches without Q-Q plot", {
   plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_diagnosticPlot"]][["data"]]

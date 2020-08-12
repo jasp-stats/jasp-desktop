@@ -1,7 +1,7 @@
 context("Bayesian Log-Linear Regression")
 
 initOpts <- function() {
-  options <- jasptools::analysisOptions("RegressionLogLinearBayesian")
+  options <- jaspTools::analysisOptions("RegressionLogLinearBayesian")
   options$sampleMode <- "manual"
   options$fixedSamplesNumber <- 100
   return(options)
@@ -21,7 +21,7 @@ test_that("Main table results match", {
   options$priorShape <- 0
   options$maxModels <- 2
   options$posteriorProbabilityCutOff <- 0.001
-  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinearBayesian", "test.csv", options)
   table <- results[["results"]][["Container"]][["collection"]][["Container_MainTable"]][["data"]]
   expect_equal_tables(table,
     list(1, "contBinom + facGender", 0.963333333333333, 1, 2,
@@ -42,7 +42,7 @@ test_that("General summary statistics table matches", {
   options$regressionCoefficientsEstimates <- TRUE
   options$regressionCoefficientsCredibleIntervals <- TRUE
   options$regressionCoefficientsCredibleIntervalsInterval <- 0.90
-  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinearBayesian", "test.csv", options)
   table <- results[["results"]][["Container"]][["collection"]][["Container_SummaryTable"]][["data"]]
   expect_equal_tables(table,
     list("(Intercept)", 1, 2.28941355597128, 0.0114477565469203, 2.12177466183418,
@@ -78,7 +78,7 @@ test_that("Submodel summary statistics table matches", {
   options$regressionCoefficientsSubmodelCredibleIntervals <- TRUE
   options$regressionCoefficientsSubmodelEstimates <- TRUE
   options$regressionCoefficientsSubmodelNo <- 2
-  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinearBayesian", "test.csv", options)
   table <- results[["results"]][["Container"]][["collection"]][["Container_SubSummaryTable"]][["data"]]
   expect_equal_tables(table,
     list("(Intercept)", 2.29560729883006, 0.00945972825329099, 2.12809954463567,
@@ -97,7 +97,7 @@ test_that("Analysis handles errors - Infinity", {
   options <- initOpts()
   options$factors <- c("contBinom", "facFive")
   options$counts <- "debInf"
-  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinearBayesian", "test.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })
@@ -109,7 +109,7 @@ test_that("Analysis handles errors - Missing values (factor)", {
   options$modelTerms <- list(
     list(components="debBinMiss20")
   )
-  results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinearBayesian", "test.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })

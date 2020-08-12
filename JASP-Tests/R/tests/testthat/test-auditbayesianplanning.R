@@ -2,7 +2,7 @@ context("[Audit] Bayesian Planning")
 
 ### TEST 1: PLAN USING BETA DISTRIBUTION
 
-options <- jasptools::analysisOptions("auditBayesianPlanning")
+options <- jaspTools::analysisOptions("auditBayesianPlanning")
 options$.meta <- list()
 options$CR <- "High"
 options$IR <- "High"
@@ -22,7 +22,7 @@ options$priorStatistics <- TRUE
 options$valuta <- "euroValuta"
 set.seed(1)
 dataset <- NULL
-results <- jasptools::run("auditBayesianPlanning", dataset, options)
+results <- jaspTools::run("auditBayesianPlanning", dataset, options)
 
 
 test_that("Test 1: Sample Size Comparison plot matches", {
@@ -60,7 +60,7 @@ test_that("Test 1: <b>Table 1.</b> Planning Summary results match", {
 
 ### TEST 2: PLAN USING GAMMA DISTRIBUTION
 
-options <- jasptools::analysisOptions("auditBayesianPlanning")
+options <- jaspTools::analysisOptions("auditBayesianPlanning")
 options$.meta <- list()
 options$CR <- "Medium"
 options$IR <- "High"
@@ -82,7 +82,7 @@ options$shadePrior <- "shadePriorCredibleRegion"
 options$valuta <- "dollarValuta"
 set.seed(1)
 dataset <- NULL
-results <- jasptools::run("auditBayesianPlanning", dataset, options)
+results <- jaspTools::run("auditBayesianPlanning", dataset, options)
 
 
 test_that("Test 2: Sample Size Comparison plot matches", {
@@ -120,7 +120,7 @@ test_that("Test 2: <b>Table 1.</b> Planning Summary results match", {
 
 ### TEST 3: PLAN USING BETA-BINOMIAL DISTRIBUTION
 
-options <- jasptools::analysisOptions("auditBayesianPlanning")
+options <- jaspTools::analysisOptions("auditBayesianPlanning")
 options$.meta <- list()
 options$CR <- "Medium"
 options$IR <- "High"
@@ -143,7 +143,7 @@ options$shadePrior <- "shadePriorCredibleRegion"
 options$valuta <- "dollarValuta"
 set.seed(1)
 dataset <- NULL
-results <- jasptools::run("auditBayesianPlanning", dataset, options)
+results <- jaspTools::run("auditBayesianPlanning", dataset, options)
 
 
 test_that("Test 3: Sample Size Comparison plot matches", {

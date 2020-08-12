@@ -11,34 +11,34 @@ getDescriptivesTable <- function(x) x[["results"]][["descriptivesContainer"]][["
 
 test_that("Main table results match for Student test", {
   set.seed(0)
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+  options <- jaspTools::analysisOptions("TTestBayesianIndependentSamples")
   options$variables <- "contNormal"
   options$groupingVariable <- "contBinom"
   options$hypothesis <- "groupOneGreater"
   options$effectSizeStandardized <- "informative"
   options$informativeCauchyLocation <- 1
   options$informativeCauchyScale <- 0.5
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianIndependentSamples", "test.csv", options)
   table <- getTtestTable(results)[["data"]]
   expect_equal_tables(table, list(0.123677493243643, 0.0217437890351034, "contNormal"))
 })
 
 test_that("Main table results match for Wilcoxon test", {
   set.seed(0)
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+  options <- jaspTools::analysisOptions("TTestBayesianIndependentSamples")
   options$variables <- "contNormal"
   options$groupingVariable <- "contBinom"
   options$testStatistic <- "Wilcoxon"
   options$wilcoxonSamplesNumber <- 100
   options$hypothesis <- "groupOneGreater"
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianIndependentSamples", "test.csv", options)
   table <- getTtestTable(results)[["data"]]
   expect_equal_tables(table, list(0.354513046015919, 1290, 1.00753043165554, "contNormal"))
 })
 
 test_that("Inferential and descriptives plots match", {
   set.seed(0)
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+  options <- jaspTools::analysisOptions("TTestBayesianIndependentSamples")
   options$variables <- "contNormal"
   options$groupingVariable <- "contBinom"
   options$plotPriorAndPosterior <- TRUE
@@ -54,7 +54,7 @@ test_that("Inferential and descriptives plots match", {
   options$descriptivesPlots <- TRUE
   options$descriptivesPlotsCredibleInterval <- 0.90
   
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianIndependentSamples", "test.csv", options)
 
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "descriptives", dir="TTestBayesianIndependentSamples")
@@ -81,7 +81,7 @@ test_that("Inferential and descriptives plots match", {
 
 test_that("Inferential plots with additional info match", {
   set.seed(0)
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+  options <- jaspTools::analysisOptions("TTestBayesianIndependentSamples")
   options$variables <- "contcor1"
   options$groupingVariable <- "facGender"
   options$plotPriorAndPosterior <- TRUE
@@ -93,7 +93,7 @@ test_that("Inferential plots with additional info match", {
   options$plotSequentialAnalysis <- TRUE
   options$plotSequentialAnalysisRobustness <- TRUE
 
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianIndependentSamples", "test.csv", options)
 
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "prior-posterior-additional", dir="TTestBayesianIndependentSamples")
@@ -108,11 +108,11 @@ test_that("Inferential plots with additional info match", {
 })
 
 test_that("Analysis handles errors", {
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+  options <- jaspTools::analysisOptions("TTestBayesianIndependentSamples")
 
   options$variables <- c("debInf", "debSame")
   options$groupingVariable <- "contBinom"
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianIndependentSamples", "test.csv", options)
   notes <- unlist(getTtestTable(results)[["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "variance check")
@@ -120,13 +120,13 @@ test_that("Analysis handles errors", {
 
   options$variables <- "debMiss99"
   options$groupingVariable <- "contBinom"
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianIndependentSamples", "test.csv", options)
   notes <- unlist(getTtestTable(results)[["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 
   options$dependent <- "contNormal"
   options$groupingVariable <- "debSame"
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
+  results <- jaspTools::run("TTestBayesianIndependentSamples", "test.csv", options)
   msg <- results[["results"]][["errorMessage"]]
   expect_true(any(grepl("levels", msg, ignore.case=TRUE)), label = "1-level factor check")
 })
@@ -137,10 +137,10 @@ test_that("Analysis handles integer overflow", {
   dat <- data.frame(dependent_var = rnorm(2e5),
                     grouping      = rep(c(1, 2), each = 1e5))
 
-  options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+  options <- jaspTools::analysisOptions("TTestBayesianIndependentSamples")
   options$variables <- "dependent_var"
   options$groupingVariable <- "grouping"
-  results <- jasptools::run("TTestBayesianIndependentSamples", dat, options)
+  results <- jaspTools::run("TTestBayesianIndependentSamples", dat, options)
 
   table <- getTtestTable(results)[["data"]]
   # the error statistic differs between osx <-> windows. if anyone can figure out why i'd be interested (especially because the BF is the same)
@@ -151,7 +151,7 @@ test_that("Analysis handles integer overflow", {
 })
 
 # all combinations of hypotheses and Bayes factor type
-options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+options <- jaspTools::analysisOptions("TTestBayesianIndependentSamples")
 options$groupingVariable <- "Rotation"
 options$plotBayesFactorRobustness <- TRUE
 options$plotPriorAndPosterior <- TRUE
@@ -191,7 +191,7 @@ for (hypo in hypotheses) {
 
     options$bayesFactorType <- bftype
 
-    results <- jasptools::run("TTestBayesianIndependentSamples", "Kitchen Rolls", options)
+    results <- jaspTools::run("TTestBayesianIndependentSamples", "Kitchen Rolls", options)
     # run once with this uncommented to generate tables, afterwards call makeTables(tables)
     # tables[[bftype, hypo]] <<- makeTestTable(getTtestTable(results)[["data"]], print = FALSE)
 

@@ -1,6 +1,6 @@
 context("Bain ANOVA")
 
-options <- jasptools::analysisOptions("BainAnovaBayesian")
+options <- jaspTools::analysisOptions("BainAnovaBayesian")
 options$bayesFactorMatrix <- TRUE
 options$bayesFactorPlot <- TRUE
 options$dependent <- "age"
@@ -9,7 +9,7 @@ options$descriptivesPlot <- TRUE
 options$fixedFactors <- "site"
 options$model <- "site1 = site2 = site3 = site4 = site5;site1 < site2 < site3 < site4 < site5;site1 > site2 > site3 > site4 > site5"
 set.seed(1)
-results <- jasptools::run("BainAnovaBayesian", "sesame.csv", options)
+results <- jaspTools::run("BainAnovaBayesian", "sesame.csv", options)
 
 test_that("Bain ANOVA table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_bainTable"]][["data"]]

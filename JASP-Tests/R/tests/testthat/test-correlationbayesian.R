@@ -6,14 +6,14 @@ context("Bayesian Correlation")
 # - errors whilst plotting
 
 test_that("Bayesian Correlation Table results match", {
-  options <- jasptools::analysisOptions("CorrelationBayesian")
+  options <- jaspTools::analysisOptions("CorrelationBayesian")
   options$variables <- c("contcor1", "contcor2")
   options$kendall <- TRUE
   options$flagSupported <- TRUE
   options$ci <- TRUE
   options$kappa <- 1.5
   set.seed(1)
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
+  results <- jaspTools::run("CorrelationBayesian", "test.csv", options)
   table <- results[["results"]][["corBayesTable"]][["data"]]
   expect_equal_tables(table,
                       list("TRUE", "<unicode>", "Pearson's r", "1. contcor1", "FALSE", "<unicode>",
@@ -36,14 +36,14 @@ test_that("Bayesian Correlation Table results match", {
 # a larger number of samplers.
 # 
 # test_that("Main table results match", {
-#   options <- jasptools::analysisOptions("CorrelationBayesian")
+#   options <- jaspTools::analysisOptions("CorrelationBayesian")
 #   options$variables <- c("contcor1", "contcor2")
 #   options$kendallsTauB <- TRUE
 #   options$reportBayesFactors <- TRUE
 #   options$flagSupported <- TRUE
 #   options$credibleInterval <- TRUE
 #   options$priorWidth <- 1.5
-#   results <- jasptools::run("CorrelationBayesian", "test.csv", options)
+#   results <- jaspTools::run("CorrelationBayesian", "test.csv", options)
 #   table <- results[["results"]][["correlations"]][["data"]]
 #   expect_equal_tables(table,
 #     list("Pearson's r", "<unicode>", "", "BF<unicode><unicode>", "<unicode>",
@@ -62,34 +62,34 @@ test_that("Bayesian Correlation Table results match", {
 
 
 test_that("Bayesian Correlation Matrix Plot matches", {
-  options <- jasptools::analysisOptions("CorrelationBayesian")
+  options <- jaspTools::analysisOptions("CorrelationBayesian")
   options$variables <- c("contcor1", "contcor2")
   options$plotMatrix <- TRUE
   options$plotMatrixDensities <- TRUE
   options$plotMatrixPosteriors <- TRUE
   options$kappa <- 1.0
   set.seed(1)
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
+  results <- jaspTools::run("CorrelationBayesian", "test.csv", options)
   plotName <- results[["results"]][["matrixPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "bayesian-correlation-matrix-plot", dir="CorrelationBayesian")
 })
 
 test_that("Analysis handles errors", {
-  options <- jasptools::analysisOptions("CorrelationBayesian")
+  options <- jaspTools::analysisOptions("CorrelationBayesian")
 
   options$variables <- c("contNormal", "debInf")
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
+  results <- jaspTools::run("CorrelationBayesian", "test.csv", options)
   notes <- unlist(results[["results"]][["corBayesTable"]][["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
 
   options$variables <- c("contNormal", "debSame")
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
+  results <- jaspTools::run("CorrelationBayesian", "test.csv", options)
   notes <- unlist(results[["results"]][["corBayesTable"]][["footnotes"]])
   expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "No variance check")
 
   options$variables <- c("contNormal", "debMiss99")
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
+  results <- jaspTools::run("CorrelationBayesian", "test.csv", options)
   notes <- unlist(results[["results"]][["corBayesTable"]][["footnotes"]])
   expect_true(any(grepl("observations", notes, ignore.case=TRUE)), label = "Too few obs check")
 })
@@ -97,13 +97,13 @@ test_that("Analysis handles errors", {
 
 # Bayesian correlation pairs 
 test_that("Bayesian Pearson Correlation PAIRWISE table results match", {
-  options <- jasptools::analysisOptions("CorrelationBayesian")
+  options <- jaspTools::analysisOptions("CorrelationBayesian")
   options$variables <- list("contcor1", "contcor2")
   options$displayPairwise <- TRUE
   options$ci <- TRUE
   options$kappa <- 2
   set.seed(1)
-  results <- jasptools::run("CorrelationBayesian", "test.csv", options)
+  results <- jaspTools::run("CorrelationBayesian", "test.csv", options)
   table <- results[["results"]][["corBayesTable"]][["data"]]
   expect_equal_tables(table,
                       list(64323420095.6647, 0.526024457777766, 0.657010063712354, 0.754530668995199,
@@ -111,7 +111,7 @@ test_that("Bayesian Pearson Correlation PAIRWISE table results match", {
 })
 
 # Pairs plot
-options <- jasptools::analysisOptions("CorrelationBayesian")
+options <- jaspTools::analysisOptions("CorrelationBayesian")
 options$variables <- list("contcor1", "contcor2")
 options$pairs <- list(c("contcor1", "contcor2"))
 options$plotPriorPosterior <- TRUE
@@ -119,7 +119,7 @@ options$plotBfRobustness <- TRUE
 options$plotBfSequential <- TRUE
 options$kappa <- 1.0
 set.seed(1)
-results <- jasptools::run("CorrelationBayesian", "test.csv", options)
+results <- jaspTools::run("CorrelationBayesian", "test.csv", options)
 
 test_that("Bayes Factor Robustness Check plot matches", {
   plotName <- results[["results"]][["pairsPlotCollection"]][["collection"]][["pairsPlotCollection_contcor1-contcor2"]][["collection"]][["pairsPlotCollection_contcor1-contcor2_plotBfRobustness"]][["data"]]

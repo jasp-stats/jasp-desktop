@@ -5,7 +5,7 @@ context("ANCOVA")
 # - if analysis handles too few observations
 
 test_that("Main table results match", {
-  options <- jasptools::analysisOptions("Ancova")
+  options <- jaspTools::analysisOptions("Ancova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "facFive"
   options$covariates <- "contGamma"
@@ -46,14 +46,14 @@ test_that("Main table results match", {
 
   for (type in c("type1", "type2", "type3")) {
     options$sumOfSquares <- type
-    results <- jasptools::run("Ancova", "test.csv", options)
+    results <- jaspTools::run("Ancova", "test.csv", options)
     table <- results[["results"]][["anovaContainer"]][["collection"]][["anovaContainer_anovaTable"]][["data"]]
     expect_equal_tables(table, refTables[[type]], label=paste("Table with SS", type))
   }
 })
 
 test_that("Homogeneity of Variances table results match", {
-  options <- jasptools::analysisOptions("Ancova")
+  options <- jaspTools::analysisOptions("Ancova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "facExperim"
   options$covariates <- "contGamma"
@@ -63,14 +63,14 @@ test_that("Homogeneity of Variances table results match", {
   )
   options$homogeneityTests <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("Ancova", "test.csv", options)
+  results <- jaspTools::run("Ancova", "test.csv", options)
   table <- results[["results"]][["anovaContainer"]][["collection"]][["anovaContainer_assumptionsContainer"]][["collection"]][["anovaContainer_assumptionsContainer_leveneTable"]][["data"]]
   expect_equal_tables(table, list(2.72159218177061, 1, 98, 0.102201011380302, 1.57819444559362))
 })
 
 # Contrasts verified with SPSS
 test_that("Contrasts table results match", {
-  options <- jasptools::analysisOptions("Ancova")
+  options <- jaspTools::analysisOptions("Ancova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "facFive"
   options$covariates <- "contGamma"
@@ -122,7 +122,7 @@ test_that("Contrasts table results match", {
   contrasts <- c("deviation", "simple", "difference", "Helmert", "repeated", "polynomial")
   for (contrast in contrasts) {
     options$contrasts <- list(list(contrast=contrast, variable="facFive"))
-    results <- jasptools::run("Ancova", "test.csv", options)
+    results <- jaspTools::run("Ancova", "test.csv", options)
     # table <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
     table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
     expect_equal_tables(table, refTables[[contrast]], label=paste("Table with contrast", contrast))
@@ -130,7 +130,7 @@ test_that("Contrasts table results match", {
 })
 
 test_that("Post Hoc table results match", {
-  options <- jasptools::analysisOptions("Ancova")
+  options <- jaspTools::analysisOptions("Ancova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "facExperim"
   options$covariates <- "contGamma"
@@ -147,7 +147,7 @@ test_that("Post Hoc table results match", {
   options$postHocTestsVariables <- list("facExperim")
   options$postHocTestsTypeStandard <- TRUE
   options$confidenceIntervalsPostHoc <- TRUE
-  results <- jasptools::run("Ancova", "test.csv", options)
+  results <- jaspTools::run("Ancova", "test.csv", options)
   table <- results$results$anovaContainer$collection$anovaContainer_postHocContainer$collection$anovaContainer_postHocContainer_postHocStandardContainer$collection[[1]]$data
   expect_equal_tables(table,
                       list("control", "experimental", -0.0830902357515323, 0.21391801479091,
@@ -158,7 +158,7 @@ test_that("Post Hoc table results match", {
 })
 
 test_that("Marginal Means table results match", {
-  options <- jasptools::analysisOptions("Ancova")
+  options <- jaspTools::analysisOptions("Ancova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "facExperim"
   options$covariates <- "contGamma"
@@ -186,14 +186,14 @@ test_that("Marginal Means table results match", {
 
   for (adjustment in c("none", "Bonferroni", "Sidak")) {
     options$marginalMeansCIAdjustment <- adjustment
-    results <- jasptools::run("Ancova", "test.csv", options)
+    results <- jaspTools::run("Ancova", "test.csv", options)
     table <- results[["results"]]$anovaContainer$collection$anovaContainer_marginalMeansContainer$collection[[1]]$data
     expect_equal_tables(table, refTables[[adjustment]], label=paste("Table with CI adjustment", adjustment))
   }
 })
 
 test_that("Simple Main Effects table results match", {
-  options <- jasptools::analysisOptions("Ancova")
+  options <- jaspTools::analysisOptions("Ancova")
   options$dependent <- "contNormal"
   options$fixedFactors <- c( "facFive", "facExperim")
   options$covariates <- "contGamma"
@@ -208,7 +208,7 @@ test_that("Simple Main Effects table results match", {
   options$homogeneityTests <- TRUE
   options$sumOfSquares <- "type1"
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("Ancova", "debug.csv", options)
+  results <- jaspTools::run("Ancova", "debug.csv", options)
   # table <- results[["results"]][["simpleEffects"]][["data"]]
   table <- results$results$anovaContainer$collection$anovaContainer_simpleEffectsContainer$collection$anovaContainer_simpleEffectsContainer_simpleEffectsTable$data
   expect_equal_tables(table, list(1, 0.350864897951646, 1, 0.350864897951646, 0.307765411627339,
@@ -224,12 +224,12 @@ test_that("Analysis handles errors", {
   
   # Same as ANOVA
 
- options <- jasptools::analysisOptions("Ancova")
+ options <- jaspTools::analysisOptions("Ancova")
  options$dependent <- "contNormal"
  options$covariates <- "debInf"
  options$fixedFactors <- "contBinom"
  options$modelTerms <- list(list(components="contBinom"))
- results <- jasptools::run("Ancova", "test.csv", options)
+ results <- jaspTools::run("Ancova", "test.csv", options)
  expect_identical(results[["results"]][["errorMessage"]], 
                   "The following problem(s) occurred while running the analysis:<ul><li>Infinity found in debInf</li></ul>",
                   label="Inf covariate check")
@@ -240,7 +240,7 @@ test_that("Analysis handles errors", {
 
 #### Chapter 6 ---
 test_that("Field - Chapter 6 results match", {
-  options <- jasptools::analysisOptions("Ancova")
+  options <- jaspTools::analysisOptions("Ancova")
   
   options$dependent <- "Happiness"
   options$fixedFactors <- "Dose"
@@ -269,7 +269,7 @@ test_that("Field - Chapter 6 results match", {
   options$postHocTestsBootstrappingReplicates <- 500
   
   set.seed(1) # seed for bootstrapping
-  results <- jasptools::run("Ancova", "Puppy Love.csv", options)
+  results <- jaspTools::run("Ancova", "Puppy Love.csv", options)
   # main table
   table <- results$result$anovaContainer$collection$anovaContainer_anovaTable$data
   expect_equal_tables(table,
@@ -310,7 +310,7 @@ test_that("Field - Chapter 6 results match", {
                       ))
   
   # interaction with covariate
-  options <- jasptools::analysisOptions("Ancova")
+  options <- jaspTools::analysisOptions("Ancova")
   
   options$dependent <- "Happiness"
   options$fixedFactors <- "Dose"
@@ -327,7 +327,7 @@ test_that("Field - Chapter 6 results match", {
   options$plotHorizontalAxis <- "Puppy_love"
   options$plotSeparatePlots <- "Dose"
   options$plotErrorBars <- TRUE
-  results <- jasptools::run("Ancova", "Puppy Love.csv", options)
+  results <- jaspTools::run("Ancova", "Puppy Love.csv", options)
   
   table <- results$result$anovaContainer$collection$anovaContainer_anovaTable$data
   expect_equal_tables(table,

@@ -1,7 +1,7 @@
 context("Mediation Analysis")
 
 test_that("Simple mediation analysis works", {
-  options <- jasptools::analysisOptions("MediationAnalysis")
+  options <- jaspTools::analysisOptions("MediationAnalysis")
   options$predictor <- "contcor1"
   options$mediators <- "contcor2"
   options$dependent <- "contNormal"
@@ -9,7 +9,7 @@ test_that("Simple mediation analysis works", {
   options$estimator <- "ML"
   options$se        <- "standard"
   options$missing   <- "FIML"
-  results <- jasptools::run("MediationAnalysis","test.csv", options)
+  results <- jaspTools::run("MediationAnalysis","test.csv", options)
   
   dir_tab <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_parest"]][["collection"]][["modelContainer_parest_dir"]][["data"]]
   ind_tab <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_parest"]][["collection"]][["modelContainer_parest_ind"]][["data"]]
@@ -35,7 +35,7 @@ test_that("Simple mediation analysis works", {
 })
 
 test_that("Categorical confounders work", {
-  options <- jasptools::analysisOptions("MediationAnalysis")
+  options <- jaspTools::analysisOptions("MediationAnalysis")
   options$predictor <- "contcor1"
   options$mediators <- "contcor2"
   options$dependent <- "contNormal"
@@ -44,7 +44,7 @@ test_that("Categorical confounders work", {
   options$estimator <- "ML"
   options$se        <- "standard"
   options$missing   <- "FIML"
-  results <- jasptools::run("MediationAnalysis","test.csv", options)
+  results <- jaspTools::run("MediationAnalysis","test.csv", options)
   
   ind_tab <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_parest"]][["collection"]][["modelContainer_parest_ind"]][["data"]]
 
@@ -57,7 +57,7 @@ test_that("Categorical confounders work", {
 })
 
 test_that("Multiple mediation with missing values works", {
-  options <- jasptools::analysisOptions("MediationAnalysis")
+  options <- jaspTools::analysisOptions("MediationAnalysis")
   options$predictor <- c("contcor1", "contOutlier")
   options$mediators <- c("contcor2", "debMiss1")
   options$dependent <- c("contNormal", "debMiss30")
@@ -65,7 +65,7 @@ test_that("Multiple mediation with missing values works", {
   options$estimator <- "ML"
   options$se        <- "standard"
   options$missing   <- "FIML"
-  results <- jasptools::run("MediationAnalysis","test.csv", options)
+  results <- jaspTools::run("MediationAnalysis","test.csv", options)
   
   ind_tab <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_parest"]][["collection"]][["modelContainer_parest_ind"]][["data"]]
  

@@ -1,6 +1,6 @@
 context("Machine Learning Regularized Linear Regression")
 
-options <- jasptools::analysisOptions("mlRegressionRegularized")
+options <- jaspTools::analysisOptions("mlRegressionRegularized")
 options$addIndicator <- FALSE
 options$addValues <- FALSE
 options$coefTable <- TRUE
@@ -24,7 +24,7 @@ options$validationMeasures <- TRUE
 options$valueColumn <- ""
 options$variableTrace <- TRUE
 set.seed(1)
-results <- jasptools::run("mlRegressionRegularized", "wine.csv", options)
+results <- jaspTools::run("mlRegressionRegularized", "wine.csv", options)
 
 
 test_that("Regression Coefficients table results match", {

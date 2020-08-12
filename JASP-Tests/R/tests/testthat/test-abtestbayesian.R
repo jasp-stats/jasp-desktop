@@ -4,13 +4,13 @@ context("AB Test Bayesian")
 test_that("Main table results match", {
   set.seed(0)
 
-  options <- jasptools::analysisOptions("ABTestBayesian")
+  options <- jaspTools::analysisOptions("ABTestBayesian")
   options$n1 <- "n1"
   options$y1 <- "y1"
   options$n2 <- "n2"
   options$y2 <- "y2"
 
-  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  results  <- jaspTools::run("ABTestBayesian", "ab_data.csv", options)
   table    <- results[["results"]][["abTestBayesianTable"]][["data"]]
   refTable <- list("Log odds ratio = 0", 1                , 0.517752872701024, 0.5,
                    "Log odds ratio &gt; 0", 1.23201979244712 , 0.318940893382007, 0.25,
@@ -21,14 +21,14 @@ test_that("Main table results match", {
 
 
 test_that("Descriptives table results match", {
-  options <- jasptools::analysisOptions("ABTestBayesian")
+  options <- jaspTools::analysisOptions("ABTestBayesian")
   options$n1 <- "n1"
   options$y1 <- "y1"
   options$n2 <- "n2"
   options$y2 <- "y2"
   options$descriptives <- TRUE
 
-  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  results  <- jaspTools::run("ABTestBayesian", "ab_data.csv", options)
   table    <- results[["results"]][["abTestBayesianDescriptivesTable"]][["data"]]
 
   refTable <- list("Group 1", 2, 4, 0.500,
@@ -41,7 +41,7 @@ test_that("Descriptives table results match", {
 test_that("Main table results, log odds neq 0", {
   set.seed(0)
 
-  options <- jasptools::analysisOptions("ABTestBayesian")
+  options <- jaspTools::analysisOptions("ABTestBayesian")
   options$n1 <- "n1"
   options$y1 <- "y1"
   options$n2 <- "n2"
@@ -51,7 +51,7 @@ test_that("Main table results, log odds neq 0", {
   options$orLessThan1Prob    <- 0.168
   options$orNotEqualTo1Prob  <- 0.168
 
-  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  results  <- jaspTools::run("ABTestBayesian", "ab_data.csv", options)
   table    <- results[["results"]][["abTestBayesianTable"]][["data"]]
 
   refTable <- list("Log odds ratio = 0"        , 1                , 0.51649969761886 , 0.495495495495495,
@@ -66,7 +66,7 @@ test_that("Main table results, log odds neq 0", {
 test_that("Main table results, only 2 hypotheses", {
   set.seed(0)
 
-  options <- jasptools::analysisOptions("ABTestBayesian")
+  options <- jaspTools::analysisOptions("ABTestBayesian")
   options$n1 <- "n1"
   options$y1 <- "y1"
   options$n2 <- "n2"
@@ -76,7 +76,7 @@ test_that("Main table results, only 2 hypotheses", {
   options$orLessThan1Prob    <- 0
   options$orNotEqualTo1Prob  <- 0
 
-  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  results  <- jaspTools::run("ABTestBayesian", "ab_data.csv", options)
   table    <- results[["results"]][["abTestBayesianTable"]][["data"]]
 
   refTable <- list("Log odds ratio &gt; 0", 1                , 0.55197529906147, 0.5,
@@ -89,14 +89,14 @@ test_that("Main table results, only 2 hypotheses", {
 test_that("Prior plot matches", {
   set.seed(0)
 
-  options <- jasptools::analysisOptions("ABTestBayesian")
+  options <- jaspTools::analysisOptions("ABTestBayesian")
   options$orEqualTo1Prob     <- 0.5
   options$orGreaterThan1Prob <- 0.5
   options$orLessThan1Prob    <- 0
   options$orNotEqualTo1Prob  <- 0
   options$plotPriorOnly      <- TRUE
 
-  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  results  <- jaspTools::run("ABTestBayesian", "ab_data.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]]
 
   expect_equal_plots(testPlot, "prioronly", dir="ABTestBayesian")
@@ -107,7 +107,7 @@ test_that("Posterior plot matches", {
   skip("Needs to be verified.")
   set.seed(0)
 
-  options <- jasptools::analysisOptions("ABTestBayesian")
+  options <- jaspTools::analysisOptions("ABTestBayesian")
   options$n1 <- "n1"
   options$y1 <- "y1"
   options$n2 <- "n2"
@@ -118,7 +118,7 @@ test_that("Posterior plot matches", {
   options$orNotEqualTo1Prob  <- 0
   options$plotPriorAndPosterior <- TRUE
 
-  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  results  <- jaspTools::run("ABTestBayesian", "ab_data.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]]
 
   expect_equal_plots(testPlot, "posterior", dir="ABTestBayesian")
@@ -129,7 +129,7 @@ test_that("Sequential plot matches", {
   skip("This test need to be verified")
   set.seed(0)
 
-  options <- jasptools::analysisOptions("ABTestBayesian")
+  options <- jaspTools::analysisOptions("ABTestBayesian")
   options$n1 <- "n1"
   options$y1 <- "y1"
   options$n2 <- "n2"
@@ -140,7 +140,7 @@ test_that("Sequential plot matches", {
   options$orNotEqualTo1Prob  <- 0
   options$plotSequentialAnalysis <- TRUE
 
-  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  results  <- jaspTools::run("ABTestBayesian", "ab_data.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]]
 
   expect_equal_plots(testPlot, "sequential", dir="ABTestBayesian")
@@ -151,7 +151,7 @@ test_that("plotRobustness plot matches", {
   skip("Have to set a global theme.")
   set.seed(0)
 
-  options <- jasptools::analysisOptions("ABTestBayesian")
+  options <- jaspTools::analysisOptions("ABTestBayesian")
   options$n1 <- "n1"
   options$y1 <- "y1"
   options$n2 <- "n2"
@@ -162,7 +162,7 @@ test_that("plotRobustness plot matches", {
   options$orNotEqualTo1Prob  <- 0
   options$plotRobustness     <- TRUE
 
-  results  <- jasptools::run("ABTestBayesian", "ab_data.csv", options)
+  results  <- jaspTools::run("ABTestBayesian", "ab_data.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]]
 
   expect_equal_plots(testPlot, "robustness", dir="ABTestBayesian")

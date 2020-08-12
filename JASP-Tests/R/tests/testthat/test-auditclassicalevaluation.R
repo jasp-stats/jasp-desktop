@@ -2,7 +2,7 @@ context("[Audit] Classical Evaluation")
 
 ### TEST 1: EVALUATION USING SUMMARY STATISTICS
 
-options <- jasptools::analysisOptions("auditClassicalEvaluation")
+options <- jaspTools::analysisOptions("auditClassicalEvaluation")
 options$.meta <- list(auditResult = list(containsColumn = TRUE), monetaryVariable = list(
     containsColumn = TRUE), recordNumberVariable = list(containsColumn = TRUE), 
     sampleCounter = list(containsColumn = TRUE))
@@ -23,7 +23,7 @@ options$useSumStats <- TRUE
 options$variableType <- "variableTypeCorrect"
 set.seed(1)
 dataset <- NULL
-results <- jasptools::run("auditClassicalEvaluation", dataset, options)
+results <- jaspTools::run("auditClassicalEvaluation", dataset, options)
 
 
 test_that("Test 1: Evaluation Information plot matches", {
@@ -40,7 +40,7 @@ test_that("Test 1: <b>Table 1.</b> Evaluation Summary results match", {
 
 ### TEST 2: EVALUATION USING CORRECT / INCORRECT
 
-options <- jasptools::analysisOptions("auditClassicalEvaluation")
+options <- jaspTools::analysisOptions("auditClassicalEvaluation")
 options$.meta <- list(auditResult = list(containsColumn = TRUE), monetaryVariable = list(
     containsColumn = TRUE), recordNumberVariable = list(containsColumn = TRUE), 
     sampleCounter = list(containsColumn = TRUE))
@@ -58,7 +58,7 @@ options$populationSize <- 2000
 options$recordNumberVariable <- "ID"
 options$variableType <- "variableTypeCorrect"
 set.seed(1)
-results <- jasptools::run("auditClassicalEvaluation", "auditRattle.csv", options)
+results <- jaspTools::run("auditClassicalEvaluation", "auditRattle.csv", options)
 
 
 test_that("Test 2: Evaluation Information plot matches", {
@@ -75,7 +75,7 @@ test_that("Test 2: <b>Table 1.</b> Evaluation Summary results match", {
 
 ### TEST 3: EVALUATION USING AUDIT VALUES
 
-options <- jasptools::analysisOptions("auditClassicalEvaluation")
+options <- jaspTools::analysisOptions("auditClassicalEvaluation")
 options$.meta <- list(auditResult = list(containsColumn = TRUE), monetaryVariable = list(
     containsColumn = TRUE), recordNumberVariable = list(containsColumn = TRUE), 
     sampleCounter = list(containsColumn = TRUE))
@@ -95,7 +95,7 @@ options$recordNumberVariable <- "ID"
 options$sampleCounter <- "selectionResult"
 options$variableType <- "variableTypeAuditValues"
 set.seed(1)
-results <- jasptools::run("auditClassicalEvaluation", "test-auditClassicalWorkflow.csv", options)
+results <- jaspTools::run("auditClassicalEvaluation", "test-auditClassicalWorkflow.csv", options)
 
 
 test_that("Test 3: Correlation Plot matches", {

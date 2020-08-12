@@ -1,6 +1,6 @@
 context("[Audit] Bayesian Workflow")
 
-options <- jasptools::analysisOptions("auditBayesianWorkflow")
+options <- jaspTools::analysisOptions("auditBayesianWorkflow")
 options$.meta <- list(additionalVariables = list(containsColumn = TRUE), auditResult = list(
   containsColumn = TRUE), monetaryVariable = list(containsColumn = TRUE), 
   performAudit = list(list(dataCols = list(containsColumn = TRUE), 
@@ -83,7 +83,7 @@ options$var <- TRUE
 options$variableName <- "auditResult"
 options$variableType <- "variableTypeAuditValues"
 set.seed(1)
-results <- jasptools::run("auditBayesianWorkflow", "test-auditBayesianWorkflow.csv", options)
+results <- jaspTools::run("auditBayesianWorkflow", "test-auditBayesianWorkflow.csv", options)
 
 
 test_that("Correlation Plot matches", {

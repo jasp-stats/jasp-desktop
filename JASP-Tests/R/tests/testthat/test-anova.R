@@ -4,7 +4,7 @@ context("ANOVA")
 # - if analysis handles too few observations
 
 test_that("Main table results match", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- c("facFive", "contBinom")
   options$wlsWeights <- "facFifty"
@@ -55,27 +55,27 @@ test_that("Main table results match", {
 
   for (type in c("type1", "type2", "type3")) {
     options$sumOfSquares <- type
-    results <- jasptools::run("Anova", "test.csv", options)
+    results <- jaspTools::run("Anova", "test.csv", options)
     table <- results[["results"]][["anovaContainer"]][["collection"]][["anovaContainer_anovaTable"]][["data"]]
     expect_equal_tables(table, refTables[[type]], label=paste("Table with SS", type))
   }
 })
 
 test_that("Homogeneity of Variances table results match", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "facExperim"
   options$modelTerms <- list(list(components="facExperim"))
   options$homogeneityTests <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   table <- results[["results"]][["anovaContainer"]][["collection"]][["anovaContainer_assumptionsContainer"]][["collection"]][["anovaContainer_assumptionsContainer_leveneTable"]][["data"]]
   expect_equal_tables(table, list(3.1459013381035, 1, 98, 0.0792241296904395, 1.83142365040653))
 })
 
 # Contrasts verified with SPSS
 test_that("Contrasts table results match", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "facFive"
   options$confidenceIntervalsContrast <- TRUE
@@ -123,7 +123,7 @@ test_that("Contrasts table results match", {
   contrasts <- c("deviation", "simple", "difference", "Helmert", "repeated", "polynomial")
   for (contrast in contrasts) {
     options$contrasts <- list(list(contrast=contrast, variable="facFive"))
-    results <- jasptools::run("Anova", "test.csv", options)
+    results <- jaspTools::run("Anova", "test.csv", options)
     table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
     # table <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
     expect_equal_tables(table, refTables[[contrast]], label=paste("Table with contrast", contrast))
@@ -131,7 +131,7 @@ test_that("Contrasts table results match", {
 })
 
 test_that("Post Hoc table results match", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "contBinom"
   options$modelTerms <- list(list(components="contBinom"))
@@ -143,7 +143,7 @@ test_that("Post Hoc table results match", {
   options$postHocTestsSidak <- TRUE
   options$confidenceIntervalsPostHoc <- TRUE
   options$postHocTestsVariables <- "contBinom"
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   table <- results$results$anovaContainer$collection$anovaContainer_postHocContainer$collection$anovaContainer_postHocContainer_postHocStandardContainer$collection$anovaContainer_postHocContainer_postHocStandardContainer_contBinom$data
   expect_equal_tables(table,
                       list(0, 1, 0.163364220743842, 0.214904085649005, 0.760172707980337,
@@ -154,7 +154,7 @@ test_that("Post Hoc table results match", {
 })
 
 test_that("Marginal Means table results match", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "contBinom"
   options$modelTerms <- list(list(components="contBinom"))
@@ -179,7 +179,7 @@ test_that("Marginal Means table results match", {
 
   for (adjustment in c("none", "Bonferroni", "Sidak")) {
     options$marginalMeansCIAdjustment <- adjustment
-    results <- jasptools::run("Anova", "test.csv", options)
+    results <- jaspTools::run("Anova", "test.csv", options)
     table <- results[["results"]]$anovaContainer$collection$anovaContainer_marginalMeansContainer$collection[[1]]$data
     expect_equal_tables(table, refTables[[adjustment]], label=paste("Table with CI adjustment", adjustment))
   }
@@ -187,12 +187,12 @@ test_that("Marginal Means table results match", {
 
 
 test_that("Descriptives table results match", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "contBinom"
   options$modelTerms <- list(list(components="contBinom"))
   options$descriptives <- TRUE
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   table <- results[["results"]]$anovaContainer$collection$anovaContainer_descriptivesContainer$collection$anovaContainer_descriptivesContainer_tableDescriptives$data
   # removed new group booleans
   expect_equal_tables(table,
@@ -202,18 +202,18 @@ test_that("Descriptives table results match", {
 })
 
 test_that("Q-Q plot matches", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- "contBinom"
   options$modelTerms <- list(list(components="contBinom"))
   options$qqPlot <- TRUE
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   testPlot <- results$state$figures[[1]]$obj
   expect_equal_plots(testPlot, "q-q", dir="Anova")
 })
 
 test_that("Descriptives plots match", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- c("facFive", "contBinom")
   options$wlsWeights <- "facFifty"
@@ -227,18 +227,18 @@ test_that("Descriptives plots match", {
   options$plotErrorBars <- TRUE
   options$confidenceIntervalInterval <- 0.90
   options$errorBarType <- "confidenceInterval"
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   testPlot <- results$state$figures[[1]]$obj
   expect_equal_plots(testPlot, "descriptives-ci", dir="Anova")
 
   options$errorBarType <- "standardError"
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   testPlot <-  results$state$figures[[1]]$obj
   expect_equal_plots(testPlot, "descriptives-se", dir="Anova")
 })
 
 test_that("Simple Main Effects table results match", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- c( "facFive", "facExperim")
   options$modelTerms <- list(
@@ -250,7 +250,7 @@ test_that("Simple Main Effects table results match", {
   options$moderatorFactorTwo <- ""
   options$homogeneityTests <- TRUE
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("Anova", "debug.csv", options)
+  results <- jaspTools::run("Anova", "debug.csv", options)
   table <- results$results$anovaContainer$collection$anovaContainer_simpleEffectsContainer$collection$anovaContainer_simpleEffectsContainer_simpleEffectsTable$data
   expect_equal_tables(table, list(1, 0.350864897951646, 1, 0.350864897951646, 0.310783783968887,
                                   0.578524772558188, "TRUE", 2, 2.72259751707838, 1, 2.72259751707838,
@@ -263,7 +263,7 @@ test_that("Simple Main Effects table results match", {
 
 
 test_that("Nonparametric table results match", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "contNormal"
   options$fixedFactors <- c( "facFive", "facExperim")
   options$kruskalVariablesAssigned <- c( "facFive", "facExperim")
@@ -271,7 +271,7 @@ test_that("Nonparametric table results match", {
     list(components="facExperim"),
     list(components="facFive")
   )  
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   table <- results[["results"]]$anovaContainer$collection$anovaContainer_kruskalContainer$collection$anovaContainer_kruskalContainer_kruskalTable$data
   expect_equal_tables(table,
                       list("facFive", 3.39599999999996, 4, 0.493866894607871, "facExperim",       
@@ -280,11 +280,11 @@ test_that("Nonparametric table results match", {
 })
 
 test_that("Analysis handles errors", {
-  options <- jasptools::analysisOptions("Anova")
+  options <- jaspTools::analysisOptions("Anova")
   options$dependent <- "debInf"
   options$fixedFactors <- "contBinom"
   options$modelTerms <- list(list(components="contBinom"))
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["errorMessage"]],
                    "The following problem(s) occurred while running the analysis:<ul><li>Infinity found in debInf</li></ul>",
                    label="Inf dependent check")
@@ -293,7 +293,7 @@ test_that("Analysis handles errors", {
   options$fixedFactors <- "contBinom"
   options$wlsWeights <- "debInf"
   options$modelTerms <- list(list(components="contBinom"))
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["errorMessage"]], 
                    "The following problem(s) occurred while running the analysis:<ul><li>Infinity found in debInf</li></ul>",
                   label="Inf WLS weights check")
@@ -302,7 +302,7 @@ test_that("Analysis handles errors", {
   options$dependent <- "contNormal"
   options$fixedFactors <- "debSame"
   options$modelTerms <- list(list(components="debSame"))
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["errorMessage"]], 
                    "The following problem(s) occurred while running the analysis:<ul><li>Number of factor levels is < 2 in debSame</li></ul>",
                   label="1-level factor check")
@@ -310,7 +310,7 @@ test_that("Analysis handles errors", {
   options$dependent <- "debSame"
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(list(components="facFive"))
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["errorMessage"]], 
                    "The following problem(s) occurred while running the analysis:<ul><li>The variance in debSame is equal to 0 after grouping on facFive</li></ul>",
                   label="No variance check")
@@ -319,7 +319,7 @@ test_that("Analysis handles errors", {
   options$fixedFactors <- "facFive"
   options$wlsWeights <- "contNormal"
   options$modelTerms <- list(list(components="facFive"))
-  results <- jasptools::run("Anova", "test.csv", options)
+  results <- jaspTools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["errorMessage"]], 
                    "The following problem(s) occurred while running the analysis:<ul><li>The WLS weights contain negative and/or zero values.<br><br>(only positive WLS weights allowed).</li></ul>",
                   label="Negative WLS weights check")
@@ -329,7 +329,7 @@ test_that("Analysis handles errors", {
 
 #### Chapter 4 -----
 test_that("Field - Chapter 4 results match", {
-  options <- jasptools::analysisOptions("ANOVA")
+  options <- jaspTools::analysisOptions("ANOVA")
   options$dependent <- "Happiness"
   options$fixedFactors <- "Dose"
   options$modelTerms <- list(list(components = "Dose"))
@@ -338,7 +338,7 @@ test_that("Field - Chapter 4 results match", {
   options$homogeneityBrown <- TRUE
   options$homogeneityWelch <- TRUE
   
-  results <- jasptools::run("Anova", "Puppies Dummy.csv", options)
+  results <- jaspTools::run("Anova", "Puppies Dummy.csv", options)
   table <- results[["results"]][["anovaContainer"]][["collection"]][["anovaContainer_anovaTable"]][["data"]]
 
   # this table is also in the chapter 5
@@ -356,7 +356,7 @@ test_that("Field - Chapter 4 results match", {
 #### Chapter 5 ----
 
 test_that("Field - Chapter 5 results match", {
-  options <- jasptools::analysisOptions("ANOVA")
+  options <- jaspTools::analysisOptions("ANOVA")
   options$dependent <- "Happiness"
   options$fixedFactors <- "Dose"
   options$modelTerms <- list(list(components = "Dose"))
@@ -370,7 +370,7 @@ test_that("Field - Chapter 5 results match", {
   options$postHocTestsTypeGames <- TRUE
   options$postHocTestsTypeDunnett <- TRUE
   options$confidenceIntervalsPostHoc <- TRUE
-  results <- jasptools::run("Anova", "Puppies Dummy.csv", options)
+  results <- jaspTools::run("Anova", "Puppies Dummy.csv", options)
   
   # contrast 
   table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
@@ -410,7 +410,7 @@ test_that("Field - Chapter 5 results match", {
 #### Chapter 7 ----
 
 test_that("Field - Chapter 7 results match", {
-  options <- jasptools::analysisOptions("ANOVA")
+  options <- jaspTools::analysisOptions("ANOVA")
   
   options$dependent <- "Attractiveness"
   options$fixedFactors <- list("FaceType", "Alcohol")
@@ -439,7 +439,7 @@ test_that("Field - Chapter 7 results match", {
   options$marginalMeansBootstrappingReplicates <- 500
   options$marginalMeansCompareMainEffects <- FALSE 
   set.seed(1)
-  results <- jasptools::run("Anova", "Beer Goggles.csv", options)
+  results <- jaspTools::run("Anova", "Beer Goggles.csv", options)
    
   table <- results[["results"]][["anovaContainer"]][["collection"]][["anovaContainer_anovaTable"]][["data"]]
   expect_equal_tables(table,

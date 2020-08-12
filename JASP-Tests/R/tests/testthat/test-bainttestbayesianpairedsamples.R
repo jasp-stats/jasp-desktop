@@ -1,6 +1,6 @@
 context("Bain Paired Samples T-Test")
 
-options <- jasptools::analysisOptions("BainTTestBayesianPairedSamples")
+options <- jaspTools::analysisOptions("BainTTestBayesianPairedSamples")
 options$bayesFactorPlot <- TRUE
 options$bayesFactorType <- "BF01"
 options$descriptives <- TRUE
@@ -8,7 +8,7 @@ options$descriptivesPlots <- TRUE
 options$hypothesis <- "equalBiggerSmaller"
 options$pairs <- list(list("prenumb", "postnumb"))
 set.seed(1)
-results <- jasptools::run("BainTTestBayesianPairedSamples", "sesame.csv", options)
+results <- jaspTools::run("BainTTestBayesianPairedSamples", "sesame.csv", options)
 
 test_that("Bain Paired Samples T-Test table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_bainTable"]][["data"]]

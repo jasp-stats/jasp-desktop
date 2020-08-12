@@ -1,6 +1,6 @@
 context("Discover Distributions - Chi-square")
 
-options <- jasptools::analysisOptions("LDchisq")
+options <- jaspTools::analysisOptions("LDchisq")
 options$explanatoryText <- TRUE
 options$parsSupportMoments <- TRUE
 options$plotCDF <- TRUE
@@ -24,7 +24,7 @@ options$moments <- TRUE
 options$ecdf <- TRUE
 options$newVariableName <- ""
 set.seed(1)
-results <- jasptools::run("LDchisq", "Distributions.csv", options)
+results <- jaspTools::run("LDchisq", "Distributions.csv", options)
 
 
 test_that("Empirical Cumulative Distribution plot matches", {

@@ -1,6 +1,6 @@
 context("Machine Learning Random Forest Regression")
 
-options <- jasptools::analysisOptions("mlRegressionRandomForest")
+options <- jaspTools::analysisOptions("mlRegressionRandomForest")
 options$addIndicator <- FALSE
 options$addValues <- FALSE
 options$holdoutData <- "holdoutManual"
@@ -24,7 +24,7 @@ options$validationDataManual <- 0.2
 options$validationMeasures <- TRUE
 options$valueColumn <- ""
 set.seed(1)
-results <- jasptools::run("mlRegressionRandomForest", "wine.csv", options)
+results <- jaspTools::run("mlRegressionRandomForest", "wine.csv", options)
 
 
 test_that("Data Split plot matches", {

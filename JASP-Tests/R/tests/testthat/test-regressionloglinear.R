@@ -1,7 +1,7 @@
 context("Log-Linear Regression")
 
 test_that("Main table results match", {
-  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options <- jaspTools::analysisOptions("RegressionLogLinear")
   options$counts <- "facFifty"
   options$factors <- c("contBinom", "facGender")
   options$modelTerms <- list(
@@ -9,7 +9,7 @@ test_that("Main table results match", {
     list(components="facGender"),
     list(components=c("contBinom", "facGender"))
   )
-  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinear", "test.csv", options)
   table <- results[["results"]][["AnovaTable"]][["data"]]
   expect_equal_tables(table,
     list(" ", " ", "NULL", " ", 936.356249443911, 99, 9.73545292814663,
@@ -21,7 +21,7 @@ test_that("Main table results match", {
 })
 
 test_that("Coefficients table matches", {
-  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options <- jaspTools::analysisOptions("RegressionLogLinear")
   options$counts <- "facFifty"
   options$factors <- c("contBinom", "facFive")
   options$modelTerms <- list(
@@ -32,7 +32,7 @@ test_that("Coefficients table matches", {
   options$regressionCoefficientsEstimates <- TRUE
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   options$regressionCoefficientsConfidenceIntervalsInterval <- 0.95
-  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinear", "test.csv", options)
   table <- results[["results"]][["CoefficientsTable"]][["data"]]
   expect_equal_tables(table,
     list("(Intercept)", 3.36441813015886, 0.0536828127084252, 3.25920175066154,
@@ -58,39 +58,39 @@ test_that("Coefficients table matches", {
 })
 
 test_that("Analysis handles errors - infinity", {
-  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options <- jaspTools::analysisOptions("RegressionLogLinear")
   options$factors <- "facGender"
   options$counts <- "debInf"
-  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinear", "test.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - missing values (factors)", {
-  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options <- jaspTools::analysisOptions("RegressionLogLinear")
   options$factors <- "debBinMiss20"
   options$modelTerms <- list(
     list(components="debBinMiss20")
   )
-  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinear", "test.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - missing values (counts)", {
-  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options <- jaspTools::analysisOptions("RegressionLogLinear")
   options$factors <- "contBinom"
   options$counts <- "debMiss30"
-  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinear", "test.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - negatives", {
-  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options <- jaspTools::analysisOptions("RegressionLogLinear")
   options$factors <- "facGender"
   options$counts <- "contNormal"
-  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  results <- jaspTools::run("RegressionLogLinear", "test.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })

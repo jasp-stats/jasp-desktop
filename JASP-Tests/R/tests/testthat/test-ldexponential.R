@@ -1,6 +1,6 @@
 context("Discover Distributions - Exponential")
 
-options <- jasptools::analysisOptions("LDexponential")
+options <- jaspTools::analysisOptions("LDexponential")
 options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
   containsColumn = TRUE))
 options$andersonDarling <- TRUE
@@ -28,7 +28,7 @@ options$qqplot <- TRUE
 options$summary <- TRUE
 options$variable <- "Exp100(rate=1)"
 set.seed(1)
-results <- jasptools::run("LDexponential", "Distributions.csv", options)
+results <- jaspTools::run("LDexponential", "Distributions.csv", options)
 
 
 test_that("Empirical Cumulative Distribution plot matches", {

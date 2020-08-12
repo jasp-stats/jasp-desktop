@@ -217,6 +217,14 @@ Json::Value Description::requiredPackages() const
 	for(RequiredPackage * pkg : _reqPkgs)
 		array.append(pkg->asJson());
 
+	static Json::Value jaspBase(Json::nullValue);
+	if(jaspBase.isNull())
+	{
+		jaspBase			= Json::objectValue;
+		jaspBase["package"] = "jaspBase";
+	}
+	array.append(jaspBase);
+
 	return array;
 }
 

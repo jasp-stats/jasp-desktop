@@ -1,6 +1,6 @@
 # first the externally accessible options
 .pkgOptions <- list2env(list(
-  common.r.dir = file.path("..", "JASP-Engine", "JASP", "R"),
+  common.r.dir = file.path("..", "JASP-Engine", "jaspBase", "R"),
   html.dir = file.path("..", "JASP-Desktop", "html"),
   common.qml.dir = file.path("..", "Resources"),
   module.dir = "",
@@ -21,7 +21,7 @@
 #' should be configured automatically. If the configuration is correct (you
 #' will be notified if it is not) then the only option you should ever change
 #' is .ppi. Setting .ppi to a higher value (through
-#' \code{jasptools::setPkgOption}) results in higher resolution images.
+#' \code{jaspTools::setPkgOption}) results in higher resolution images.
 #'
 #'
 #' @return A print of the configurable options.
@@ -43,7 +43,7 @@ viewPkgOptions <- function() {
 #' Change the value of an option in jasptools.
 #'
 #' Sets a package option to a new value (to see what is available use
-#' \code{jasptools::viewPkgOptions}). Value changes are automatically
+#' \code{jaspTools::viewPkgOptions}). Value changes are automatically
 #' incorporated when any jasptools function is called.
 #'
 #'
@@ -51,7 +51,7 @@ viewPkgOptions <- function() {
 #' @param value Value the option should be set to.
 #' @examples
 #'
-#' jasptools::setPkgOption(".ppi", 196)
+#' jaspTools::setPkgOption(".ppi", 196)
 #'
 #' @export setPkgOption
 setPkgOption <- function(name, value) {
@@ -61,12 +61,12 @@ setPkgOption <- function(name, value) {
 .getPkgOption <- function(name, run = TRUE) {
   if (.jasptoolsReady() == FALSE) {
     if (run) {
-      stop("jasptools is not configured correctly. Did you run `jasptools::develop(\"path_to_jasp_desktop\")`?
+      stop("jasptools is not configured correctly. Did you run `jaspTools::develop(\"path_to_jasp_desktop\")`?
             If you did, then please manually ensure the paths in viewPkgOptions() are correct.
             (If the paths are relative, you only need to set your working directory to path_to_jasp_desktop/Tools)")
     } else {
       warning("jasptools is not configured correctly. It will not find the needed resources.
-              Please run `jasptools::develop(\"path_to_jasp_desktop\")` or set your working directory to path_to_jasp_desktop/Tools.")
+              Please run `jaspTools::develop(\"path_to_jasp_desktop\")` or set your working directory to path_to_jasp_desktop/Tools.")
     }
   }
   return(get(name, envir = .pkgOptions))

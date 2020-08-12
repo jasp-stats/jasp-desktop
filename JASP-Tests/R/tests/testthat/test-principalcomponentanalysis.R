@@ -6,7 +6,7 @@ context("Principal Component Analysis")
 # - Parallel analysis / manual
 # - slider
 
-options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
+options <- jaspTools::analysisOptions("PrincipalComponentAnalysis")
 options$variables <- list("contNormal", "contGamma", "debCollin1", "contcor1", "facFifty")
 options$eigenValuesBox <- 0.95
 options$orthogonalSelector <- "varimax"
@@ -14,7 +14,7 @@ options$incl_pathDiagram <- TRUE
 options$incl_screePlot <- TRUE
 options$factorMethod <- "eigenValues"
 set.seed(1)
-results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
+results <- jaspTools::run("PrincipalComponentAnalysis", "test.csv", options)
 
 
 test_that("Chi-squared Test table results match", {

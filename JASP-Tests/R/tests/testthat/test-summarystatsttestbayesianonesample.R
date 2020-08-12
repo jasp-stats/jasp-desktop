@@ -7,7 +7,7 @@ test_that("Main table results match", {
   options$n1Size          <- 23
   options$bayesFactorType <- "LogBF10"
   options$hypothesis      <- "greaterThanTestValue"
-  results <- jasptools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
+  results <- jaspTools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
   
   table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
   expect_equal_tables(table, list(1.32450670641619, 3.95778537281638e-05, 23,  0.015654342509863, 2.3))
@@ -22,21 +22,21 @@ test_that("BF for Informed and Default Prior Matches", {
   options$hypothesis                        <- "greaterThanTestValue"
   options$effectSizeStandardized            <- "informative"
   options$informativeStandardizedEffectSize <- "cauchy"
-  results <- jasptools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
+  results <- jaspTools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
   
   table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
   BF    <- table[[1]]$BF
   expect_equal(BF, 1.32450670641619)
 })
 
-options <- jasptools::analysisOptions("SummaryStatsTTestBayesianOneSample")
+options <- jaspTools::analysisOptions("SummaryStatsTTestBayesianOneSample")
 options$tStatistic <- 6
 options$n1Size <- 20
 options$plotPriorAndPosterior <- TRUE
 options$plotBayesFactorRobustness <- TRUE
 options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
 set.seed(1)
-results <- jasptools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
+results <- jaspTools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
 
 
 test_that("Bayes Factor Robustness Check plot matches", {
@@ -58,7 +58,7 @@ test_that("Default Prior and Posterior plot matches", {
   expect_equal_plots(testPlot, "prior-and-posterior", dir="SummaryStatsTTestBayesianOneSample")
 })
 
-options <- jasptools::analysisOptions("SummaryStatsTTestBayesianOneSample")
+options <- jaspTools::analysisOptions("SummaryStatsTTestBayesianOneSample")
 options$tStatistic <- 6
 options$n1Size <- 20
 options$plotPriorAndPosterior <- TRUE
@@ -67,7 +67,7 @@ options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
 options$informativeCauchyLocation <- 1
 options$effectSizeStandardized <- "informative"
 set.seed(1)
-results <- jasptools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
+results <- jaspTools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
 
 test_that("Informative Cauchy Prior and Posterior plot matches", {
   plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_priorPosteriorPlot"]][["data"]]

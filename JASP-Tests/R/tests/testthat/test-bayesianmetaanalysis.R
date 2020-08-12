@@ -1,6 +1,6 @@
 context("Bayesian Meta Analysis")
 
-options <- jasptools::analysisOptions("BayesianMetaAnalysis")
+options <- jaspTools::analysisOptions("BayesianMetaAnalysis")
 options$effectSize <- "ES"
 options$standardError <- "SE"
 options$postTable <- TRUE
@@ -25,7 +25,7 @@ options$.meta <- list(confidenceInterval = list(containsColumn = TRUE), effectSi
   studyLabels = list(containsColumn = TRUE))
 options$confidenceInterval <- list()
 set.seed(1)
-results <- jasptools::run("BayesianMetaAnalysis", "BCG Vaccine.csv", options)
+results <- jaspTools::run("BayesianMetaAnalysis", "BCG Vaccine.csv", options)
 
 
 test_that("Posterior Estimates per Model table results match", {

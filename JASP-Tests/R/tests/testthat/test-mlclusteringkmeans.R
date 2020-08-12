@@ -1,6 +1,6 @@
 context("Machine Learning K-Means Clustering")
 
-options <- jasptools::analysisOptions("mlClusteringKMeans")
+options <- jaspTools::analysisOptions("mlClusteringKMeans")
 options$addClusters <- FALSE
 options$clusterColumn <- ""
 options$clusterEvaluationMetrics <- TRUE
@@ -19,7 +19,7 @@ options$plotClusterMeans <- TRUE
 options$showBars <- TRUE
 options$oneFigure <- TRUE
 set.seed(1)
-results <- jasptools::run("mlClusteringKMeans", "wine.csv", options)
+results <- jaspTools::run("mlClusteringKMeans", "wine.csv", options)
 
 
 test_that("Evaluation Metrics table results match", {

@@ -1,6 +1,6 @@
 context("Machine Learning KNN Regression")
 
-options <- jasptools::analysisOptions("mlRegressionKnn")
+options <- jaspTools::analysisOptions("mlRegressionKnn")
 options$addIndicator <- FALSE
 options$addValues <- FALSE
 options$holdoutData <- "holdoutManual"
@@ -21,7 +21,7 @@ options$validationDataManual <- 0.2
 options$validationMeasures <- TRUE
 options$valueColumn <- ""
 set.seed(1)
-results <- jasptools::run("mlRegressionKnn", "wine.csv", options)
+results <- jaspTools::run("mlRegressionKnn", "wine.csv", options)
 
 
 test_that("Data Split plot matches", {

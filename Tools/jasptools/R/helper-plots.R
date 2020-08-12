@@ -1,5 +1,5 @@
 expect_equal_plots <- function(test, name, dir) {
-  errorMsg <- jasptools:::.getErrorMsgFromLastResults()
+  errorMsg <- jaspTools:::.getErrorMsgFromLastResults()
   if (!is.null(errorMsg))
     stop(paste("Tried retrieving plot from results, but last run of jasptools exited with an error:\n", errorMsg), call.=FALSE)
     

@@ -29,7 +29,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
 
 ### prior distibutions plots 
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
     containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
     input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
@@ -102,7 +102,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
   options$save_path <- ""
   set.seed(1)
   dataset <- NULL
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   test_that("Models Overview table results match", {
     table <- results[["results"]][["model_preview"]][["collection"]][["model_preview_models_summary"]][["data"]]
@@ -207,7 +207,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
   
 }
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$advanced_control <- "clever"
   options$advanced_mu_transform <- "cohens_d"
   options$fitted_path <- ""
@@ -247,7 +247,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
   options$save_path <- ""
   set.seed(1)
   dataset <- NULL
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
   test_that("Models Overview table results match", {
@@ -396,7 +396,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
 
 ### fit a default model using d + se, (wihout the more complex weight function) and main output
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
     containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
     input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
@@ -463,7 +463,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
                                                                                                                                                                                             0.08, 0.1), N1 = c(50L, 75L, 49L), N2 = c(50L, 75L, 48L), lCI = c(0.05, 
                                                                                                                                                                                                                                                               0.04, 0.06), uCI = c(0.45, 0.41, 0.38)), class = "data.frame", row.names = c(NA, 
                                                                                                                                                                                                                                                                                                                                            -3L))
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
   test_that("Model Averaged Estimates table results match", {
@@ -573,7 +573,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
 
 ### fit models with a truncated priors and t + se
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
     containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
     input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
@@ -632,7 +632,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
                                                                                                                                                                                             0.08, 0.1), N1 = c(50L, 75L, 49L), N2 = c(50L, 75L, 48L), lCI = c(0.05, 
                                                                                                                                                                                                                                                               0.04, 0.06), uCI = c(0.45, 0.41, 0.38)), class = "data.frame", row.names = c(NA, 
                                                                                                                                                                                                                                                                                                                                            -3L))
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
   test_that("Model Averaged Estimates table results match", {
@@ -672,7 +672,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
 
 ### fit models with only an effect size, d + (N1 + N2) and names
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
     containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
     input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
@@ -729,7 +729,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
                                                                                                                                                                                             0.08, 0.1), N1 = c(50L, 75L, 49L), N2 = c(50L, 75L, 48L), lCI = c(0.05, 
                                                                                                                                                                                                                                                               0.04, 0.06), uCI = c(0.45, 0.41, 0.38)), class = "data.frame", row.names = c(NA, 
                                                                                                                                                                                                                                                                                                                                            -3L))
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
   test_that("Model Averaged Estimates table results match", {
@@ -769,7 +769,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
 
 ### fit models with only one publication bias function, y + (lCI & uCI)
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
     containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
     input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
@@ -824,7 +824,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
                                                                                                                                                                                             0.08, 0.1), N1 = c(50L, 75L, 49L), N2 = c(50L, 75L, 48L), lCI = c(0.05, 
                                                                                                                                                                                                                                                               0.04, 0.06), uCI = c(0.45, 0.41, 0.38)), class = "data.frame", row.names = c(NA, 
                                                                                                                                                                                                                                                                                                                                            -3L))
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
   test_that("Model Averaged Estimates table results match", {
@@ -876,7 +876,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
 
 ### fit models with OR
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$advanced_adapt <- 100
   options$advanced_burnin <- 1000
   options$advanced_chains <- 2
@@ -927,7 +927,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
                                                                                                                               75L, 48L), lCI = c(0.05, 0.04, 0.06), uCI = c(0.45, 0.41, 0.38
                                                                                                                               ), OR = c(1.1, 1.05, 1.2), ORlCI = c(1, 0.98, 1.1), ORuCI = c(1.2, 
                                                                                                                                                                                             1.1, 1.3)), class = "data.frame", row.names = c(NA, -3L))
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
   test_that("Model Averaged Estimates table results match", {
@@ -1065,7 +1065,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
 
 ### more options tested using a preloaded model
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
     containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
     input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
@@ -1133,7 +1133,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
   options$save_path <- ""
   set.seed(1)
   dataset <- NULL
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
   test_that("Diagnostics autocorrelations (mu) plot matches", {
@@ -1337,7 +1337,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
   })
 }
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
     containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
     input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
@@ -1398,7 +1398,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
   options$save_path <- ""
   set.seed(1)
   dataset <- NULL
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
   test_that("Model Averaged Estimates (different CI + BF01) table results match", {
@@ -1456,7 +1456,7 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
   })
 }
 {
-  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options <- jaspTools::analysisOptions("RobustBayesianMetaAnalysis")
   options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
     containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
     input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
@@ -1518,12 +1518,8 @@ fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
   options$save_path <- ""
   set.seed(1)
   dataset <- NULL
+  results <- jaspTools::run("RobustBayesianMetaAnalysis", dataset, options)
   
-  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
-  
-  
-  test_that("Model Averaged Estimates (log BF & different CI) table results match", {
-    table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_summary"]][["data"]]
     expect_equal_tables(table,
                         list(0, 0.038323039556351, 0, "Effect size (<unicode><unicode>)", 0.207512189502431,
                              0, 0.073578226708627, 0, "Heterogeneity (<unicode><unicode>)",

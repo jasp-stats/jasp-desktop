@@ -76,11 +76,11 @@
 }
 
 .initModuleRequisites <- function(envir) {
-  if (!"JASP" %in% installed.packages()) {
+  if (!"jaspBase" %in% installed.packages()) {
     if (dir.exists(.getPkgOption("common.r.dir")))
       install.packages(file.path(.getPkgOption("common.r.dir"), ".."), type="source", repos=NULL)
     else
-      warning("Cannot find jasp-desktop/JASP-Engine/JASP; it won't be possible to evaluate JASP:: calls in your code.\n
+      warning("Cannot find jasp-desktop/JASP-Engine/JASP; it won't be possible to evaluate jaspBase:: calls in your code.\n
               Is the `common.r.dir` specified correctly in `viewPkgOptions()`?")
   }
   .sourceModuleCode(envir)
@@ -182,7 +182,7 @@
 
 .transferPlotsFromjaspResults <- function() {
   pathPlotsjaspResults <- file.path(tempdir(), "jaspResults", "plots")
-  pathPlotsjasptools <- file.path(tempdir(), "jasptools", "html")
+  pathPlotsjasptools <- file.path(tempdir(), "jaspTools", "html")
   if (dir.exists(pathPlotsjaspResults)) {
     plots <- list.files(pathPlotsjaspResults)
     if (length(plots) > 0) {
@@ -251,7 +251,7 @@
 }
 
 .restoreNamespaces <- function(nms) {
-  nms <- unique(c(nms, "jasptools", "jaspResults", "JASPgraphs", "Rcpp", "vdiffr", "testthat", "jsonlite"))
+  nms <- unique(c(nms, "jaspTools", "jaspResults", "jaspGraphs", "Rcpp", "vdiffr", "testthat", "jsonlite"))
   for (i in 1:2) {
     if (length(setdiff(loadedNamespaces(), nms)) == 0)
       break

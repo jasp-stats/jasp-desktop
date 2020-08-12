@@ -6,7 +6,7 @@ context("Exploratory Factor Analysis")
 # - Eigen values above / manual
 # - contents of screeplot (set.seed does not work)
 
-options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
+options <- jaspTools::analysisOptions("ExploratoryFactorAnalysis")
 options$factorMethod <- "manual"
 options$fitmethod <- "minres"
 options$highlightText <- 0.4
@@ -21,7 +21,7 @@ options$rotationMethod <- "oblique"
 options$variables <- list("contWide", "contcor1", "contcor2", "facFifty", "contExpon", 
                           "debCollin1", "debEqual1")
 set.seed(1)
-results <- jasptools::run("ExploratoryFactorAnalysis", "debug.csv", options)
+results <- jaspTools::run("ExploratoryFactorAnalysis", "debug.csv", options)
 
 
 
@@ -83,17 +83,17 @@ test_that("Factor Loadings (Structure Matrix) table results match", {
 })
 
 test_that("Missing values works", {
-  options <- jasptools::analysisOptions("ExploratoryFactorAnalysis")
+  options <- jaspTools::analysisOptions("ExploratoryFactorAnalysis")
   options$variables <- list("contNormal", "contGamma", "contcor1", "debMiss30")
   options$incl_correlations <- TRUE
   
   options$missingValues <- "pairwise"
-  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options)
+  results <- jaspTools::run("ExploratoryFactorAnalysis", "test.csv", options)
   table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_goftab"]][["data"]]
   expect_equal_tables(table, list("Model", 1.42781053334818, 2L, 0.489727939944839), label = "pairwise")
   
   options$missingValues <- "listwise"
-  results <- jasptools::run("ExploratoryFactorAnalysis", "test.csv", options)
+  results <- jaspTools::run("ExploratoryFactorAnalysis", "test.csv", options)
   table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_goftab"]][["data"]]
   expect_equal_tables(table, list("Model", 0.491396758561133, 2L, 0.782158104440787), label = "listwise")
 })

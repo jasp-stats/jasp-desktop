@@ -38,7 +38,7 @@
 }
 
 .requestTempFileNameNative <- function(...) {
-  root <- file.path(tempdir(), "jasptools", "html")
+  root <- file.path(tempdir(), "jaspTools", "html")
   numPlots <- length(list.files(file.path(root, "plots")))
   list(
     root = root,
@@ -47,7 +47,7 @@
 }
 
 .requestStateFileNameNative <- function() {
-  root <- file.path(tempdir(), "jasptools", "state")
+  root <- file.path(tempdir(), "jaspTools", "state")
   name <- "state"
   list(
     root = root,

@@ -24,7 +24,7 @@
 
 .checkDuplicates <- function() {
   libs <- c(.getPkgOption("pkgs.dir"), .libPaths())
-  deps <- c("jasptools", "JASPgraphs", "jaspResults")
+  deps <- c("jaspTools", "jaspGraphs", "jaspResults")
   libsPerPkg <- setNames(vector("list", length(deps)), deps)
   
   for (lib in libs)
@@ -39,7 +39,7 @@
 }
 
 .checkVersions <- function(jaspDir) {
-  deps <- c("jasptools", "JASPgraphs", "jaspResults")
+  deps <- c("jaspTools", "jaspGraphs", "jaspResults")
   dirs <- setNames(c(file.path(jaspDir, "Tools"), file.path(jaspDir, "JASP-Engine"), file.path(jaspDir, "JASP-R-Interface")), deps)
   
   for (dep in deps) {

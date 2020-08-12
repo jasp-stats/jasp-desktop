@@ -112,7 +112,7 @@ expect_equal_tables <- function(test, ref, label=NULL) {
   if (is.null(label))
     label <- "New table"
     
-  errorMsg <- jasptools:::.getErrorMsgFromLastResults()
+  errorMsg <- jaspTools:::.getErrorMsgFromLastResults()
   if (!is.null(errorMsg))
     stop(paste("Tried retrieving table from results, but last run of jasptools exited with an error:\n", errorMsg), call.=FALSE)
     
@@ -122,7 +122,7 @@ expect_equal_tables <- function(test, ref, label=NULL) {
   nRows <- length(test)
   nCols <- length(test[[1]])
   cellNames <- names(unlist(test))
-  test <- jasptools:::collapseTable(test)
+  test <- jaspTools:::collapseTable(test)
 
   if (length(test) == length(ref)) {
     mismatches <- getMismatchesEqualSizeTables(test, ref, nRows, nCols, cellNames)

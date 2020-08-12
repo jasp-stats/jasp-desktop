@@ -1,6 +1,6 @@
 context("SummaryStatsABTestBayesian")
 
-options <- jasptools::analysisOptions("SummaryStatsABTestBayesian")
+options <- jaspTools::analysisOptions("SummaryStatsABTestBayesian")
 options$.meta <- list()
 options$descriptives <- TRUE
 options$n1 <- 25
@@ -10,7 +10,7 @@ options$setSeed <- TRUE
 options$y1 <- 5
 options$y2 <- 10
 set.seed(1)
-results <- jasptools::run("SummaryStatsABTestBayesian", "", options)
+results <- jaspTools::run("SummaryStatsABTestBayesian", "", options)
 
 
 test_that("Descriptives table results match", {

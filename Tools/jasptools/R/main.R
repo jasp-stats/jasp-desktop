@@ -2,7 +2,7 @@
 #'
 #' \code{view} allows you to view output independently of Qt. It uses the same
 #' javascript/css/html and should generate identical output. This function may
-#' be called directly, but it is more convenient to use \code{jasptools::run}.
+#' be called directly, but it is more convenient to use \code{jaspTools::run}.
 #'
 #'
 #' @param results A named R list returned from a JASP analysis, or a json
@@ -10,13 +10,13 @@
 #' @return A html page is generated and placed in a temp folder.
 #' @examples
 #'
-#' options <- jasptools::analysisOptions("BinomialTest")
-#' results <- jasptools::run("BinomialTest", "debug", options, view=FALSE)
-#' jasptools::view(results)
+#' options <- jaspTools::analysisOptions("BinomialTest")
+#' results <- jaspTools::run("BinomialTest", "debug", options, view=FALSE)
+#' jaspTools::view(results)
 #'
 #' # Above and below are identical (below is taken from the Qt terminal)
 #'
-#' jasptools::view('{
+#' jaspTools::view('{
 #'    "id" : 6,
 #'    "name" : "BinomialTest",
 #'    "results" : {
@@ -115,9 +115,9 @@ view <- function(results) {
   )
   json <- .convertResultsListToJson(content)
   
-  .initializeOutputFolder(file.path(tempdir(), "jasptools", "html"))
+  .initializeOutputFolder(file.path(tempdir(), "jaspTools", "html"))
   
-  htmlFile <- file.path(tempdir(), "jasptools", "html", "tmp-index.html")
+  htmlFile <- file.path(tempdir(), "jaspTools", "html", "tmp-index.html")
   .insertJsonInHtml(json, htmlFile)
   utils::browseURL(htmlFile)
 }
@@ -132,7 +132,7 @@ view <- function(results) {
 #' replaced in the jasptools so you do not have to deal with them. Note that
 #' \code{run} sources JASP analyses every time it runs, so any change in
 #' analysis code between calls is incorporated. The output of the analysis is
-#' shown automatically through a call to \code{jasptools::view} and returned
+#' shown automatically through a call to \code{jaspTools::view} and returned
 #' invisibly.
 #'
 #'
@@ -142,7 +142,7 @@ view <- function(results) {
 #' first checks if it's valid path and if it isn't if the string matches one of the JASP datasets (e.g., "debug.csv").
 #' By default the folder in Resources is checked first, unless called within a testthat environment, in which case tests/datasets is checked first.
 #' @param options List of options to supply to the analysis (see also
-#' \code{jasptools::analysisOptions}).
+#' \code{jaspTools::analysisOptions}).
 #' @param perform String containing either "run" (default) or "init".
 #' @param view Boolean indicating whether to view the results in a webbrowser.
 #' @param quiet Boolean indicating whether to suppress messages from the
@@ -158,13 +158,13 @@ view <- function(results) {
 #' set to FALSE)
 #' @examples
 #'
-#' options <- jasptools::analysisOptions("BinomialTest")
+#' options <- jaspTools::analysisOptions("BinomialTest")
 #' options[["variables"]] <- "contBinom"
-#' jasptools::run("BinomialTest", "debug", options)
+#' jaspTools::run("BinomialTest", "debug", options)
 #'
 #' # Above and below are identical (below is taken from the Qt terminal)
 #'
-#' options <- jasptools::analysisOptions('{
+#' options <- jaspTools::analysisOptions('{
 #'    "id" : 6,
 #'    "name" : "BinomialTest",
 #'    "options" : {
@@ -185,13 +185,13 @@ view <- function(results) {
 #'       "ppi" : 192
 #'    }
 #' }')
-#' jasptools::run("BinomialTest", "debug.csv", options)
+#' jaspTools::run("BinomialTest", "debug.csv", options)
 #'
 #' # If we want R functions sourced to the global env
-#' jasptools::run("BinomialTest", "debug.csv", options, sideEffects="globalEnv")
+#' jaspTools::run("BinomialTest", "debug.csv", options, sideEffects="globalEnv")
 #'
 #' # Or additionally have the .libPaths() set to the JASP R packages
-#' jasptools::run("BinomialTest", "debug.csv", options, sideEffects=c("globalEnv", "libPaths"))
+#' jaspTools::run("BinomialTest", "debug.csv", options, sideEffects=c("globalEnv", "libPaths"))
 #'
 #' @export run
 run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FALSE, makeTests = FALSE, sideEffects = FALSE) {

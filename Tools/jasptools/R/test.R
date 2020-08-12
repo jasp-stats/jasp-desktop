@@ -7,7 +7,7 @@
 #' @param analysis String name of the analysis to test.
 #' @examples
 #'
-#' jasptools::testAnalysis("AnovaBayesian")
+#' jaspTools::testAnalysis("AnovaBayesian")
 #'
 #' @export testAnalysis
 testAnalysis <- function(analysis) {
@@ -98,7 +98,7 @@ testAll <- function() {
 #' folder and used as a reference for future tests.
 #' @examples
 #'
-#' # jasptools::manageTestPlots("Anova")
+#' # jaspTools::manageTestPlots("Anova")
 #'
 #' @export manageTestPlots
 manageTestPlots <- function(analysis = NULL) {
@@ -148,7 +148,7 @@ manageTestPlots <- function(analysis = NULL) {
 #' @return This function only has a side effect: updating figs/jasp-deps.txt
 #' @examples
 #'
-#' addTestDependency("JASPgraphs")
+#' addTestDependency("jaspGraphs")
 #'
 #' @export addTestDependency
 addTestDependency <- function(dep) {
@@ -183,10 +183,10 @@ addTestDependency <- function(dep) {
 #' tables against.
 #' @examples
 #'
-#' options <- jasptools::analysisOptions("BinomialTest")
+#' options <- jaspTools::analysisOptions("BinomialTest")
 #' options[["variables"]] <- "contBinom"
-#' results <- jasptools::run("BinomialTest", "debug", options, view=FALSE)
-#' jasptools::makeTestTable(results[["results"]][["binomial"]][["data"]])
+#' results <- jaspTools::run("BinomialTest", "debug", options, view=FALSE)
+#' jaspTools::makeTestTable(results[["results"]][["binomial"]][["data"]])
 #'
 #' @export makeTestTable
 makeTestTable <- function(rows, print=TRUE) {
@@ -316,7 +316,7 @@ approxMatch <- function(new, old, tol = 1e-5) {
       print("The installed packages on your system are newer than the ones used to create the library of test plots. Automatically updated the dependencies file; please make sure there are no plot mismatches in the Shiny app")
       .writeUpdatedDeps(versionMismatches[["newer"]])
     } else {
-      stop("The library of test plots was created using older packages; to avoid version mismatches between plots from different analyses please validate ALL plots by running `jasptools::manageTestPlots()`")
+      stop("The library of test plots was created using older packages; to avoid version mismatches between plots from different analyses please validate ALL plots by running `jaspTools::manageTestPlots()`")
     }
   } else {
     stop("Some of your installed packages are outdated (the library of test plots was created with a newer version). Please update these packages:\n", .makeOutdatedDepsMsg(versionMismatches[["older"]]))
@@ -397,7 +397,7 @@ approxMatch <- function(new, old, tol = 1e-5) {
   analysisName <- ""
   if (!is.null(analysis))
     analysisName <- paste0('"', analysis,'"')
-  message("To more easily validate new plots use jasptools::manageTestPlots(", analysisName, ")")
+  message("To more easily validate new plots use jaspTools::manageTestPlots(", analysisName, ")")
 }
 
 
@@ -583,7 +583,7 @@ approxMatch <- function(new, old, tol = 1e-5) {
 
   readingData <- paste0('dataset <- ', paste(capture.output(dput(dataset)), collapse="\n"))
   
-  running <- paste0('results <- jasptools::run("', analysis, '", ', dataArg, ', options)')
+  running <- paste0('results <- jaspTools::run("', analysis, '", ', dataArg, ', options)')
   
   if (is.character(dataset))
     return(running)
@@ -614,7 +614,7 @@ approxMatch <- function(new, old, tol = 1e-5) {
 
 
 .addOptionSpecificationLines <- function(analysis, options) {
-  settingOfOptions <- paste0('options <- jasptools::analysisOptions("', analysis, '")')
+  settingOfOptions <- paste0('options <- jaspTools::analysisOptions("', analysis, '")')
   
   nonDefaultOpts <- .getNonDefaultOptions(analysis, options)
   if (length(nonDefaultOpts) > 0) {

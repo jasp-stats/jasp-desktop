@@ -1,7 +1,7 @@
 context("Confirmatory Factor Analysis")
 
 # 3-factor run
-options <- jasptools::analysisOptions("ConfirmatoryFactorAnalysis")
+options <- jaspTools::analysisOptions("ConfirmatoryFactorAnalysis")
 options$groupvar <- ""
 options$invariance <- "configural"
 options$mimic <- "lavaan"
@@ -16,7 +16,7 @@ options$factors <- list(
 options$identify <- "factor"
 options$missing <- "FIML"
 set.seed(1)
-results <- jasptools::run("ConfirmatoryFactorAnalysis", "holzingerswineford.csv", options)
+results <- jaspTools::run("ConfirmatoryFactorAnalysis", "holzingerswineford.csv", options)
 
 
 test_that("[CFA 3-Factor] Factor Covariances table results match", {
@@ -93,7 +93,7 @@ test_that("[CFA 3-Factor] Chi-square test table results match", {
 
 
 # Second-order factor 
-options <- jasptools::analysisOptions("ConfirmatoryFactorAnalysis")
+options <- jaspTools::analysisOptions("ConfirmatoryFactorAnalysis")
 options$secondOrder <- list("Factor 1", "Factor 2", "Factor 3")
 options$groupvar <- ""
 options$invariance <- "configural"
@@ -109,7 +109,7 @@ options$factors <- list(
 options$identify <- "factor"
 options$missing <- "FIML"
 set.seed(1)
-results <- jasptools::run("ConfirmatoryFactorAnalysis", "holzingerswineford.csv", options)
+results <- jaspTools::run("ConfirmatoryFactorAnalysis", "holzingerswineford.csv", options)
 
 
 test_that("[CFA Second order] Factor loadings table results match", {

@@ -1,13 +1,13 @@
 context("Summary Statistics Bayesian Paired Samples T-Test")
 
-options <- jasptools::analysisOptions("SummaryStatsTTestBayesianPairedSamples")
+options <- jaspTools::analysisOptions("SummaryStatsTTestBayesianPairedSamples")
 options$tStatistic <- 2.3
 options$n1Size <- 20
 options$plotPriorAndPosterior <- TRUE
 options$plotBayesFactorRobustness <- TRUE
 options$hypothesis <- "groupTwoGreater"
 set.seed(1)
-results <- jasptools::run("SummaryStatsTTestBayesianPairedSamples", "debug.csv", options)
+results <- jaspTools::run("SummaryStatsTTestBayesianPairedSamples", "debug.csv", options)
 
 
 test_that("Bayes Factor Robustness Check plot matches", {
@@ -29,7 +29,7 @@ test_that("Default Prior and Posterior plot matches", {
   expect_equal_plots(testPlot, "prior-and-posterior", dir="SummaryStatsTTestBayesianPairedSamples")
 })
 
-options <- jasptools::analysisOptions("SummaryStatsTTestBayesianPairedSamples")
+options <- jaspTools::analysisOptions("SummaryStatsTTestBayesianPairedSamples")
 options$tStatistic <- 2.3
 options$n1Size <- 20
 options$plotPriorAndPosterior <- TRUE
@@ -38,7 +38,7 @@ options$hypothesis <- "groupTwoGreater"
 options$informativeCauchyLocation <- 1
 options$effectSizeStandardized <- "informative"
 set.seed(1)
-results <- jasptools::run("SummaryStatsTTestBayesianPairedSamples", "debug.csv", options)
+results <- jaspTools::run("SummaryStatsTTestBayesianPairedSamples", "debug.csv", options)
 
 
 test_that("Bayesian Paired Samples T-Test table results match", {

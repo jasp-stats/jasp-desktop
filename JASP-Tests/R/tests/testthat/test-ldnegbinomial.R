@@ -1,6 +1,6 @@
 context("Discover Distributions - Negative Binomial")
 
-options <- jasptools::analysisOptions("LDnegbinomial")
+options <- jaspTools::analysisOptions("LDnegbinomial")
 options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
   containsColumn = TRUE))
 options$chiSquare <- TRUE
@@ -27,7 +27,7 @@ options$qqplot <- TRUE
 options$summary <- TRUE
 options$variable <- "NBinom100(nsuccess=1,p=0.5)"
 set.seed(1)
-results <- jasptools::run("LDnegbinomial", "Distributions.csv", options)
+results <- jaspTools::run("LDnegbinomial", "Distributions.csv", options)
 
 
 test_that("Empirical Cumulative Distribution plot matches", {

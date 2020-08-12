@@ -1,11 +1,11 @@
 context("[Audit] Classical Benford's Law")
 
-options <- jasptools::analysisOptions("auditClassicalBenfordsLaw")
+options <- jaspTools::analysisOptions("auditClassicalBenfordsLaw")
 options$.meta <- list(values = list(containsColumn = TRUE))
 options$benfordsLawPlot <- TRUE
 options$values <- "value"
 set.seed(1)
-results <- jasptools::run("auditClassicalBenfordsLaw", "sinoForest.csv", options)
+results <- jaspTools::run("auditClassicalBenfordsLaw", "sinoForest.csv", options)
 
 test_that("Observed Percentages vs. Benford's Law plot matches", {
 	plotName <- results[["results"]][["benfordsLawContainer"]][["collection"]][["benfordsLawContainer_benfordsLawPlot"]][["data"]]

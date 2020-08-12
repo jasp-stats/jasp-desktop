@@ -1,6 +1,6 @@
 context("Summary Statistics Bayesian Independent Samples T-Test")
 
-options <- jasptools::analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
+options <- jaspTools::analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
 options$tStatistic <- 2.3
 options$n1Size <- 20
 options$n2Size <- 20
@@ -10,7 +10,7 @@ options$hypothesis <- "groupTwoGreater"
 options$informativeCauchyLocation <- 1
 options$effectSizeStandardized <- "informative"
 set.seed(1)
-results <- jasptools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
+results <- jaspTools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
 
 
 test_that("Prior and Posterior plot matches", {
@@ -26,7 +26,7 @@ test_that("Bayesian Independent Samples T-Test table results match", {
                            2.3))
 })
 
-options <- jasptools::analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
+options <- jaspTools::analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
 options$hypothesis <- "groupTwoGreater"
 options$tStatistic <- 2.3
 options$n1Size <- 20
@@ -36,7 +36,7 @@ options$plotBayesFactorRobustnessAdditionalInfo <- TRUE
 options$plotBayesFactorRobustness <- TRUE
 options$plotBayesFactorRobustnessAdditionalInfo <- TRUE
 set.seed(1)
-results <- jasptools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
+results <- jaspTools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
 
 test_that("Bayes Factor Robustness Check plot matches", {
   plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_BayesFactorRobustnessPlot"]][["data"]]

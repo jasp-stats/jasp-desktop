@@ -1,6 +1,6 @@
 context("[Audit] Classical Workflow")
 
-options <- jasptools::analysisOptions("auditClassicalWorkflow")
+options <- jaspTools::analysisOptions("auditClassicalWorkflow")
 options$.meta <- list(additionalVariables = list(containsColumn = TRUE), auditResult = list(
   containsColumn = TRUE), monetaryVariable = list(containsColumn = TRUE), 
   performAudit = list(list(dataCols = list(containsColumn = TRUE), 
@@ -75,7 +75,7 @@ options$valuta <- "dollarValuta"
 options$variableName <- "auditResult"
 options$variableType <- "variableTypeAuditValues"
 set.seed(1)
-results <- jasptools::run("auditClassicalWorkflow", "test-auditClassicalWorkflow.csv", options)
+results <- jaspTools::run("auditClassicalWorkflow", "test-auditClassicalWorkflow.csv", options)
 
 
 test_that("Correlation Plot matches", {

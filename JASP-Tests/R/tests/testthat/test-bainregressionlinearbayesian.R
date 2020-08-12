@@ -1,6 +1,6 @@
 context("Bain Linear Regression")
 
-options <- jasptools::analysisOptions("BainRegressionLinearBayesian")
+options <- jaspTools::analysisOptions("BainRegressionLinearBayesian")
 options$bayesFactorMatrix <- TRUE
 options$bayesFactorPlot <- TRUE
 options$coefficients <- TRUE
@@ -8,7 +8,7 @@ options$covariates <- list("peabody", "prenumb", "postnumb", "funumb")
 options$dependent <- "age"
 options$model <- "peabody < 0 & prenumb > 0;peabody = 0 & postnumb = 0;postnumb > 0 & funumb > 0"
 set.seed(1)
-results <- jasptools::run("BainRegressionLinearBayesian", "sesame.csv", options)
+results <- jaspTools::run("BainRegressionLinearBayesian", "sesame.csv", options)
 
 test_that("Bain Linear Regression table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_bainTable"]][["data"]]

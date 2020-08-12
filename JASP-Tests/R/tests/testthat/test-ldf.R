@@ -1,6 +1,6 @@
 context("Discover Distributions - F distribution")
 
-options <- jasptools::analysisOptions("LDf")
+options <- jaspTools::analysisOptions("LDf")
 options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
   containsColumn = TRUE))
 options$andersonDarling <- TRUE
@@ -28,7 +28,7 @@ options$qqplot <- TRUE
 options$summary <- TRUE
 options$variable <- "F1000(df1=5,df2=5,ncp=0)"
 set.seed(1)
-results <- jasptools::run("LDf", "Distributions.csv", options)
+results <- jaspTools::run("LDf", "Distributions.csv", options)
 
 
 test_that("Empirical Cumulative Distribution plot matches", {

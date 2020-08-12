@@ -6,7 +6,7 @@ context("Bayesian ANCOVA")
 # - bftype (01, 10)
 
 initOpts <- function() {
-  options <- jasptools::analysisOptions("AncovaBayesian")
+  options <- jaspTools::analysisOptions("AncovaBayesian")
   options$sampleModeNumAcc <- "manual"
   options$fixedNumAcc <- 50
   return(options)
@@ -44,7 +44,7 @@ test_that("Main table results match", {
 
   for (order in c("nullModelTop", "bestModelTop")) {
     options$bayesFactorOrder <- order
-    results <- jasptools::run("AncovaBayesian", "test.csv", options)
+    results <- jaspTools::run("AncovaBayesian", "test.csv", options)
     table <- results[["results"]][["tableModelComparison"]][["data"]]
     expect_equal_tables(table, refTables[[order]], label=paste("Table with order", order))
   }
@@ -76,14 +76,14 @@ test_that("Effects table results match", {
 
   for (effectsType in c("allModels", "matchedModels")) {
     options$effectsType <- effectsType
-    results <- jasptools::run("AncovaBayesian", "test.csv", options)
+    results <- jaspTools::run("AncovaBayesian", "test.csv", options)
     table <- results[["results"]][["tableEffects"]][["data"]]
     expect_equal_tables(table, refTables[[effectsType]], label=paste("Table with effects type", effectsType))
   }
 })
 
 test_that("Post-hoc Comparisons table results match", {
-  options <- jasptools::analysisOptions("AncovaBayesian")
+  options <- jaspTools::analysisOptions("AncovaBayesian")
   options$dependent <- "contNormal"
   options$fixedFactors <- "facFive"
   options$modelTerms <- list(
@@ -91,7 +91,7 @@ test_that("Post-hoc Comparisons table results match", {
   )
   options$postHocTestsNullControl <- TRUE
   options$postHocTestsVariables <- "facFive"
-  results <- jasptools::run("AncovaBayesian", "test.csv", options)
+  results <- jaspTools::run("AncovaBayesian", "test.csv", options)
   table <- results[["results"]][["collectionPosthoc"]][["collection"]][["collectionPosthoc_postHoc_facFive"]][["data"]]
   expect_equal_tables(table,
     list(1, 2, 0.312140273352768, 0.099731286607023, 0.319507910772894,
@@ -120,14 +120,14 @@ test_that("Analysis handles errors", {
   options$fixedFactors <- list()
   options$covariates <- "debInf"
   options$modelTerms <- list(list(components="debInf", isNuisance=FALSE))
-  results <- jasptools::run("AncovaBayesian", "test.csv", options)
+  results <- jaspTools::run("AncovaBayesian", "test.csv", options)
   expect_true(results[["results"]][["error"]], label="Inf covariate check")
 
   options$dependent <- "contNormal"
   options$covariates <- c("debEqual1", "debEqual2")
   options$modelTerms <- list(list(components="debEqual1", isNuisance=FALSE),
                              list(components="debEqual2", isNuisance=FALSE))
-  results <- jasptools::run("AnovaBayesian", "test.csv", options)
+  results <- jaspTools::run("AnovaBayesian", "test.csv", options)
   expect_true(results[["results"]][["error"]], label = "Identical covariates check")
 })
 
@@ -142,7 +142,7 @@ options$plotHorizontalAxis <- "contcor1"
 options$plotSeparateLines <- "facGender"
 options$singleModelTerms <- list(list(components = "facGender"), list(components = "contcor1"))
 set.seed(1)
-results <- jasptools::run("AncovaBayesian", "debug.csv", options)
+results <- jaspTools::run("AncovaBayesian", "debug.csv", options)
 
 
 test_that("contcor1 - contNormal plot matches", {

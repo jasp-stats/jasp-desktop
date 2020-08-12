@@ -1,6 +1,6 @@
 context("Discover Distributions - Beta")
 
-options <- jasptools::analysisOptions("LDbeta")
+options <- jaspTools::analysisOptions("LDbeta")
 options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
   containsColumn = TRUE))
 options$alpha <- 3
@@ -30,7 +30,7 @@ options$qqplot <- TRUE
 options$summary <- TRUE
 options$variable <- "Beta100(alpha=1,beta=1)"
 set.seed(1)
-results <- jasptools::run("LDbeta", "Distributions.csv", options)
+results <- jaspTools::run("LDbeta", "Distributions.csv", options)
 
 
 test_that("Empirical Cumulative Distribution plot matches", {
