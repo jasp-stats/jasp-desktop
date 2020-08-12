@@ -117,7 +117,7 @@ QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QS
 	}
 	else if(selectedExtension)//So the filter doesnt tell us the extension but the caller expects to know what is what
 	{
-		if(saveFileName.lastIndexOf('.') >= 0)	*selectedExtension = selectedFilter.mid(selectedFilter.lastIndexOf('.') + 1);
+		if(saveFileName.lastIndexOf('.') >= 0)	*selectedExtension = saveFileName.mid(saveFileName.lastIndexOf('.') + 1);
 		else									*selectedExtension = ""; //???
 	}
 
