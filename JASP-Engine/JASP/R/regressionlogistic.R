@@ -35,6 +35,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   .reglogisticPredictedResidualsPlot(     jaspResults, dataset, options, ready)
   .reglogisticPredictorResidualsPlot(     jaspResults, dataset, options, ready)
   .reglogisticSquaredPearsonResidualsPlot(jaspResults, dataset, options, ready)
+  .reglogisticPerformancePlot(            jaspResults, dataset, options, ready)
   return()
 }
 
@@ -977,6 +978,67 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   return()
 }
 
+.reglogisticPerformancePlot <- function(jaspResults, dataset, options, ready) {
+  if (!options$rocPlotOpt && !options$prPlotOpt)
+    return()
+  
+  jaspResults[["performancePlots"]] <- createJaspContainer(gettext("Performance plots"))
+  container <- jaspResults[["performancePlots"]]
+  
+  if (options$rocPlotOpt) {
+    
+    title <- gettext("ROC plot")
+    rocPlot <- createJaspPlot(title = title, width = 480, height = 320)
+    rocPlot$dependOn(c("rocPlotOpt", "rocPlotStep"))
+    
+    if (ready) {
+      glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
+      mObj   <- glmObj[[length(glmObj)]]
+      
+      cutoffInt <- seq(0, 1, by = options$rocPlotStep)
+      
+      tprate <- numeric(length(cutoffInt))
+      fprate <- numeric(length(cutoffInt))
+      
+      p      <- try(.reglogisticPerformancePlotFill(mObj, options$rocPlotAddCutoffLabels, cutoffInt, type = "ROC"))
+      
+      if (isTryError(p))
+        rocPlot$setError(.extractErrorMessage(p))
+      else
+        rocPlot$plotObject <- p
+    }
+    
+    container[["rocPlot"]] <- rocPlot
+  }
+  
+  if (options$prPlotOpt) {
+    
+    title <- gettext("PR plot")
+    prPlot <- createJaspPlot(title = title, width = 480, height = 320)
+    prPlot$dependOn(c("prPlotOpt", "prPlotStep"))
+    
+    if (ready) {
+      glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
+      mObj   <- glmObj[[length(glmObj)]]
+      
+      cutoffInt <- seq(0, 1, by = options$prPlotStep)
+      
+      tprate <- numeric(length(cutoffInt))
+      fprate <- numeric(length(cutoffInt))
+      
+      p      <- try(.reglogisticPerformancePlotFill(mObj, options$prPlotAddCutoffLabels, cutoffInt, type = "PR"))
+      
+      if (isTryError(p))
+        prPlot$setError(.extractErrorMessage(p))
+      else
+        prPlot$plotObject <- p
+    }
+    
+    container[["prPlot"]] <- prPlot
+  }
+  return()
+}
+
 # Plot Filling
 .reglogisticEstimatesPlotFill <- function(options, mObj, pred){
   # If user wants raw data points, get them from data
@@ -1168,6 +1230,59 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
     ggplot2::labs(x = gettext("Predicted Probability"), y = gettext("Squared Pearson Residual"))
   
   p <- JASPgraphs::themeJasp(p, legend.position = "none")
+  
+  return(p)
+}
+
+.reglogisticPerformancePlotFill <- function(glmModel, addCutoffLabels = FALSE, cutoffInt = seq(0, 1, length.out = 5), type = c("ROC", "PR")) {
+  
+  if (type == "ROC") {
+    tprate <- numeric(length(cutoffInt))
+    fprate <- numeric(length(cutoffInt))
+    
+    for (step in 1:length(cutoffInt)) {
+      h <- .confusionMatrix(glmModel, cutoff = cutoffInt[step])[["metrics"]]
+      tprate[step] <- h[["Sens"]]
+      fprate[step] <- 1 - h[["Spec"]]
+    }
+    
+    plotDat <- data.frame(x = fprate, y = tprate, z = cutoffInt)
+    
+  } else {
+    precision <- numeric(length(cutoffInt))
+    recall <- numeric(length(cutoffInt))
+    
+    for (step in 1:length(cutoffInt)) {
+      h <- .confusionMatrix(glmModel, cutoff = cutoffInt[step])[["metrics"]]
+      precision[step] <- h[["Precision"]]
+      recall[step]    <- h[["Sens"]]
+    }
+    
+    plotDat <- data.frame(x = recall, y = precision, z = cutoffInt)
+  }
+  
+  
+  
+  p <- ggplot2::ggplot(data = plotDat, mapping = ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_line() +
+    ggplot2::geom_point(mapping = ggplot2::aes(x = x, y = y), 
+                        size = 3, shape = 21, fill = "gray") +
+    ggplot2::lims(x = c(0, 1), y = c(0, 1)) +
+    ggplot2::scale_color_gradient(breaks = c(0, 0.5, 1))
+  
+  p <- switch(type,
+              ROC = p + ggplot2::labs(x = gettext("False positive rate"),      
+                                      y = gettext("True positive rate")),
+              PR  = p + ggplot2::labs(x = gettext("True positive rate"), 
+                                      y = gettext("Positive predicted value")))
+  
+  if(isTRUE(addCutoffLabels)) p <- p + 
+    ggrepel::geom_text_repel(mapping = ggplot2::aes(label = gettext(as.character(z))),
+                             nudge_y = 0.02,
+                             point.padding = 0.5,
+                             size = 6)
+  
+  p <- JASPgraphs::themeJasp(p, legend.position = "none") 
   
   return(p)
 }

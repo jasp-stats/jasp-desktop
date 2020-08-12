@@ -336,3 +336,34 @@ test_that("Pseudo R-squared are correct", {
                       list(0.0856291418878957, 0.141844242772774, 0.0962310669224921, 0.100864461712579)
                       )
 })
+
+test_that("Performance plots match", {
+  options <- jasptools::analysisOptions("regressionlogistic")
+  options$dependent  <- "low"
+  options$covariates <- c("age", "lwt")
+  options$factors    <- c("race", "smoke")
+  options$modelTerms <- list(list(components = "age",   isNuisance = FALSE),
+                             list(components = "lwt",   isNuisance = FALSE),
+                             list(components = "race",  isNuisance = FALSE),
+                             list(components = "smoke", isNuisance = FALSE)
+  )
+  
+  options$rocPlotOpt <- TRUE
+  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]]
+  expect_equal_plots(testPlot, "rocPlot", dir="RegressionLogistic")
+  
+  options$rocPlotOpt <- FALSE
+  options$prPlotOpt <- TRUE
+  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]]
+  expect_equal_plots(testPlot, "prPlot", dir="RegressionLogistic")
+  
+  options$rocPlotOpt <- TRUE
+  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]]
+  expect_equal_plots(testPlot, "rocPlot", dir="RegressionLogistic")
+  testPlot <- results[["state"]][["figures"]][[2]]
+  expect_equal_plots(testPlot, "prPlot", dir="RegressionLogistic")
+  
+})

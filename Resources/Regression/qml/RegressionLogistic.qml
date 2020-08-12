@@ -188,5 +188,22 @@ Form
 			RadioButton { value: "deviance";	label: qsTr("Deviance");	checked: true   }
 			RadioButton { value: "pearson";		label: qsTr("Pearson")					}
 		}
+
+        Group
+        {
+            title: qsTr("Performance Plots")
+            CheckBox
+            {
+                              name: "rocPlotOpt";               label: qsTr("ROC plot")
+                DoubleField { name: "rocPlotStep";              label: qsTr("Cutoff step"); defaultValue: 0.2; min: 0.05; max: 0.5; decimals: 3     }
+                CheckBox    { name: "rocPlotAddCutoffLabels";   label: qsTr("Add cutoff labels")                                                    }
+            }
+            CheckBox
+            {
+                              name: "prPlotOpt";                label: qsTr("PR plot")
+                DoubleField { name: "prPlotStep";               label: qsTr("Cutoff step"); defaultValue: 0.2; min: 0.05; max: 0.5; decimals: 3     }
+                CheckBox    { name: "prPlotAddCutoffLabels";    label: qsTr("Add cutoff labels")                                                    }
+            }
+        }
 	}
 }
