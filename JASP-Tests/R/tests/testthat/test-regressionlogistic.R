@@ -349,21 +349,16 @@ test_that("Performance plots match", {
   )
   
   options$rocPlotOpt <- TRUE
-  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
+  options$prPlotOpt  <- TRUE
+
+  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options, makeTests = TRUE)
+  
+  plotName <- results[["results"]][["performancePlots"]][["collection"]][["performancePlots_rocPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "rocPlot", dir="RegressionLogistic")
   
-  options$rocPlotOpt <- FALSE
-  options$prPlotOpt <- TRUE
-  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "prPlot", dir="RegressionLogistic")
-  
-  options$rocPlotOpt <- TRUE
-  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "rocPlot", dir="RegressionLogistic")
-  testPlot <- results[["state"]][["figures"]][[2]]
+  plotName <- results[["results"]][["performancePlots"]][["collection"]][["performancePlots_prPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "prPlot", dir="RegressionLogistic")
   
 })
