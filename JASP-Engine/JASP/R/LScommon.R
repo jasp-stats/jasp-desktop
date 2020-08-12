@@ -15,21 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# developmental stuff
-RDEBUG <- function(message){
-  if(file.exists("D:/Projects/jasp/jasp-R-debug/RDEBUG.txt")){
-    sink(file = "D:/Projects/jasp/jasp-R-debug/RDEBUG.txt", append = TRUE)
-    cat(message)
-    cat("\n")
-    sink(file = NULL) 
-  }
-}
-saveOptions <- function(options){
-  if(file.exists("D:/Projects/jasp/jasp-R-debug/options.RDS"))
-    saveRDS(options, file = "D:/Projects/jasp/jasp-R-debug/options.RDS")
-}
-
-
 # general functions
 .evaluate_priors       <- function(priors){
   for(p in 1:length(priors)){

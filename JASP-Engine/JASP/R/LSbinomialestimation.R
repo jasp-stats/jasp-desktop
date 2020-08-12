@@ -18,7 +18,7 @@
 
 
 LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
-  saveOptions(options)
+
   # a vector of two, first for data, second for hypotheses
   ready <- .readyBinomialLS(options)
   
@@ -310,10 +310,11 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     
     plotsIndividual$position <- 2
     plotsIndividual$dependOn(c(.BinomialLS_data_dependencies,
-                               ifelse(type == "Prior", "plotsPriorIndividualCI", "plotsPosteriorIndividualCI"),
-                               ifelse(type == "Prior", "plotsPriorCoverage",     "plotsPosteriorCoverage"),
-                               ifelse(type == "Prior", "plotsPriorLower",        "plotsPosteriorLower"),
-                               ifelse(type == "Prior", "plotsPriorUpper",        "plotsPosteriorUpper")))
+                               ifelse(type == "Prior", "plotsPriorIndividualCI",   "plotsPosteriorIndividualCI"),
+                               ifelse(type == "Prior", "plotsPriorIndividualType", "plotsPosteriorIndividualType"),
+                               ifelse(type == "Prior", "plotsPriorCoverage",       "plotsPosteriorCoverage"),
+                               ifelse(type == "Prior", "plotsPriorLower",          "plotsPosteriorLower"),
+                               ifelse(type == "Prior", "plotsPriorUpper",          "plotsPosteriorUpper")))
     
     containerPlots[[paste0("plots",type)]] <- plotsIndividual
     
@@ -506,7 +507,8 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     
     plotsIterative$position <- 2
     plotsIterative$dependOn(c(.BinomialLS_data_dependencies, "plotsIterativeCenter",
-                              "plotsIterativeIndividualCI", "plotsIterativeCoverage", "colorPalette"))
+                              "plotsIterativeIndividualCI", "plotsIterativeCoverage", "plotsIterativeIndividualType", "plotsIterativeBF",
+                              "colorPalette"))
     containerIterative[["plotsIterative"]] <- plotsIterative
     
     if (!all(ready)){
@@ -904,7 +906,8 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     
     tableIterative$position <- 3
     tableIterative$dependOn(c(.BinomialLS_data_dependencies, "plotsIterativeCenter",
-                              "plotsIterativeIndividualCI", "plotsIterativeCoverage", "colorPalette", "plotsIterativeUpdatingTable"))
+                              "plotsIterativeIndividualCI", "plotsIterativeCoverage", "plotsIterativeIndividualType", "plotsIterativeBF",
+                              "colorPalette", "plotsIterativeUpdatingTable"))
     containerIterative[["tableIterative"]] <- tableIterative
     
     tableIterative$addColumnInfo(name = "iteration", title = gettext("Observation"), type = "integer")
@@ -1124,8 +1127,9 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     
     plotsPredictions$position <- 2
     plotsPredictions$dependOn(c(.BinomialLS_data_dependencies, "predictionN",
-                                          "plotsPredictionCI", "plotsPredictionCoverage",
-                                          "plotsPredictionLower", "plotsPredictionUpper","predictionPlotProp"))
+                                "plotsPredictionCI", "plotsPredictionType",
+                                "plotsPredictionCoverage", "plotsPredictionLower", "plotsPredictionUpper",
+                                "predictionPlotProp"))
     
     containerPredictionPlots[["plotsPredictions"]] <- plotsPredictions
     
