@@ -7,7 +7,8 @@ The robust Bayesian meta-analysis allows the user to specify a wide range of met
 ---
 #### Input type
 - Cohen's d / t-statistics & (N / SE): Specifying input using either Cohen's d effect sizes and the sample size or standard errors, or reported t-statistics and sample sizes.
-- Correlations & (N / SE): Specifying input using correlations and the sample size. Note that the effect size is internally transformed to Cohen's d scale for model estimation (see Advanced tab for additional options). The prior distributions are specified on the transformed scale, with the provided visualization transforming the priors back to the correlation scale. The output for the mean parameter is transformed back for easier interpretability, however, the heterogeneity parameter is always summarized on the transformed scale.
+- Correlations & N: Specifying input using correlations and the sample size. Note that the effect size is internally transformed to Cohen's d scale for model estimation (see Advanced tab for additional options). The prior distributions are specified on the transformed scale, with the provided visualization transforming the priors back to the correlation scale. The output for the mean parameter is transformed back for easier interpretability, however, the heterogeneity parameter is always summarized on the transformed scale.
+- Odds ratios & CI: Specifying input using odds rations and their confidence intervals. Note that the effect size is internally transformed to log odds ratios for model estimation (see Advanced tab for additional options). The prior distributions are specified on the transformed scale, with the provided visualization transforming the priors back to the correlation scale. Analysing odds ratios is an experimental features and the default prior distribution were not verified to work with them. The output for the mean parameter is transformed back for easier interpretability, however, the heterogeneity parameter is always summarized on the transformed scale.
 - Effect sizes & SE: Specifying input using any other types of effect sizes and standard errors. Note that effect sizes supplied in this way will result in approximating the corresponding test statistics distribution using a normal distribution.
 - Fitted model: Specify a path to already fitted RoBMA model using R. The model must be saved as an RDS file.
 
@@ -111,6 +112,7 @@ Display the estimated effects of individual studies. These correspond to the 'ra
 - Heterogeneity: Display a plot with the estimated heterogeneity parameter tau.
 - Weights: Display a plot with the estimated weights corresponding to the p-values cut-offs.
   - Weight function: Combine the weights into a weight function and display that instead.
+    - Rescale x-axis: Make the differences between the individual ticks on x-axis equal for easier interpretability. 
 
 #### Type
 - Model averaged: Pooled estimates will contain model averaged estimates across all models.

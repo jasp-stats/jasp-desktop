@@ -28,6 +28,16 @@ Form
 		name:					"measures"
 		radioButtonsOnSameRow:	true
 		columns:				2
+		onValueChanged:	if(measures_correlation.checked) {
+			advanced_mu_transform.value				= "cohens_d"
+			// TODO: make this work >>
+			advanced_mu_transform_log_OR.enabled	= true
+			advanced_mu_transform_fishers_z.enabled	= false
+		} else if (measures_OR.checked){
+			advanced_mu_transform.value				= "log_OR"
+			advanced_mu_transform_log_OR.enabled	= false
+			advanced_mu_transform_fishers_z.enabled	= true
+		}
 
 		RadioButton
 		{
@@ -36,11 +46,19 @@ Form
 			id: 	measures_cohensd
 			checked:true
 		}
+
 		RadioButton
 		{
-			label: qsTr("Correlations & (N / SE)")
+			label: qsTr("Correlations & N")
 			value: "correlation"
 			id: 	measures_correlation
+		}
+
+		RadioButton
+		{
+			label: qsTr("Odds ratios & CI")
+			value: "OR"
+			id: 	measures_OR
 		}
 
 		RadioButton
@@ -116,7 +134,7 @@ Form
 			title: 			qsTr("95% CI Lower and Upper Bound")
 			singleVariable: true
 			allowedColumns: ["scale"]
-			visible:		measures_cohensd.checked || measures_general.checked
+			visible:		measures_cohensd.checked || measures_general.checked || measures_OR.checked
 			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
 		}
 
@@ -190,8 +208,27 @@ Form
 	//// Priors ////
 	Section
 	{
-		title: 			qsTr("Priors")
+		title: 			qsTr("Models")
 		columns:		1
+
+		RadioButtonGroup
+		{
+			name:		"effect_direction"
+			title:		qsTr("Expected effect size direction")
+
+			RadioButton
+			{
+				value:		"positive"
+				label:		qsTr("Positive")
+				checked: 	true
+			}
+
+			RadioButton
+			{
+				value:		"negative"
+				label:		qsTr("Negative")
+			}
+		}
 
 		CheckBox
 		{
@@ -1568,6 +1605,12 @@ Form
 					label:	qsTr("Weight function")
 					name:	"plots_omega_function"
 					checked:true
+
+					CheckBox
+					{
+						name:	"rescale_weightfunction"
+						text:	qsTr("Rescale x-axis")
+					}
 				}
 			}
 		}
@@ -1584,7 +1627,7 @@ Form
 				RadioButton
 				{
 					value:	"averaged"
-					label:	qsTr("Model-averaged")
+					label:	qsTr("Model averaged")
 					checked:true
 				}
 				RadioButton
@@ -1809,13 +1852,15 @@ Form
 		DropDown
 		{
 			Layout.columnSpan: 2
-			enabled:	measures_correlation.checked
+			enabled:	measures_correlation.checked || measures_OR.checked
 			label:		qsTr("Transform correlations")
 			name:		"advanced_mu_transform"
+			id:			advanced_mu_transform
 			values:
 			[
 				{ label: qsTr("Cohen's d"),		value: "cohens_d"},
-				{ label: qsTr("Fisher's z"),	value: "fishers_z"}
+				{ label: qsTr("Fisher's z"),	value: "fishers_z"},//,			id: advanced_mu_transform_fishers_z},
+				{ label: qsTr("log(OR)"),		value: "log_OR"}//				id: advanced_mu_transform_log_OR}
 			]
 		}
 
