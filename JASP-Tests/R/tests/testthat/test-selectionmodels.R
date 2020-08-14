@@ -589,10 +589,10 @@ context("Meta Analysis - Selection Models")
   test_that("Mean Estimates (mu) table results match", {
     table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_mean"]][["data"]]
     expect_equal_tables(table,
-                        list(0.662597315593419, 0.681314124633779, 0, 0.0470387015263903, 37.6146078689525,
-                             "Unadjusted", 0.642551263321564, 0.655407160977405, 0.675800956676966,
+                        list(0.662597315593419, 0.642551263321564, 0, 0.0470387015263903, 37.6146078689525,
+                             "Unadjusted", 0.681314124633779, 0.655407160977405, 0.633471815965987,
                              4.47036589833477e-263, 0.050087882861576, 34.6499780541257,
-                             "Adjusted", 0.633471815965987))
+                             "Adjusted", 0.675800956676966))
   })
   
   test_that("Estimated Weights table results match", {
@@ -613,10 +613,10 @@ context("Meta Analysis - Selection Models")
   test_that("Mean Estimates (rho) table results match", {
     table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_mean"]][["data"]]
     expect_equal_tables(table,
-                        list(0.662597315593418, 0.681714072749364, 1.85168846263159e-296, 0.0480800583300569,
-                             36.7999202587027, "Unadjusted", 0.642091807205727, 0.655407161618698,
-                             0.67580125035602, 4.55117028865932e-263, 0.0500886296911645,
-                             34.6494614767693, "Adjusted", 0.63347147760193))
+                        list(0.662597315593418, 0.642091807205727, 1.85168846263159e-296, 0.0480800583300569,
+                             36.7999202587027, "Unadjusted", 0.681714072749364, 0.655407161618698,
+                             0.63347147760193, 4.55117028865932e-263, 0.0500886296911645,
+                             34.6494614767693, "Adjusted", 0.67580125035602))
   })
   
   test_that("Estimated Weights table results match", {
