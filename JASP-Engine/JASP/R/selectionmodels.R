@@ -1023,12 +1023,12 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     
     
     fit[["unadj_est"]][mean_pos,1] <- .SM_inv_transform(fit_old[["unadj_est"]][mean_pos,1], options[["mu_transform"]])
-    fit[["ci.lb_adj"]][mean_pos,1] <- .SM_inv_transform(fit_old[["ci.ub_adj"]][mean_pos,1], options[["mu_transform"]])
-    fit[["ci.ub_adj"]][mean_pos,1] <- .SM_inv_transform(fit_old[["ci.lb_adj"]][mean_pos,1], options[["mu_transform"]])
+    fit[["ci.lb_adj"]][mean_pos,1] <- .SM_inv_transform(fit_old[["ci.lb_adj"]][mean_pos,1], options[["mu_transform"]])
+    fit[["ci.ub_adj"]][mean_pos,1] <- .SM_inv_transform(fit_old[["ci.ub_adj"]][mean_pos,1], options[["mu_transform"]])
     
     fit[["adj_est"]][mean_pos,1]     <- .SM_inv_transform(fit_old[["adj_est"]][mean_pos,1],     options[["mu_transform"]])
-    fit[["ci.lb_unadj"]][mean_pos,1] <- .SM_inv_transform(fit_old[["ci.ub_unadj"]][mean_pos,1], options[["mu_transform"]])
-    fit[["ci.ub_unadj"]][mean_pos,1] <- .SM_inv_transform(fit_old[["ci.lb_unadj"]][mean_pos,1], options[["mu_transform"]])
+    fit[["ci.lb_unadj"]][mean_pos,1] <- .SM_inv_transform(fit_old[["ci.lb_unadj"]][mean_pos,1], options[["mu_transform"]])
+    fit[["ci.ub_unadj"]][mean_pos,1] <- .SM_inv_transform(fit_old[["ci.ub_unadj"]][mean_pos,1], options[["mu_transform"]])
     
     fit[["output_unadj"]][["par"]][mean_pos] <- .SM_inv_transform(fit_old[["output_unadj"]][["par"]][mean_pos], options[["mu_transform"]])
     fit[["output_adj"]][["par"]][mean_pos]   <- .SM_inv_transform(fit_old[["output_adj"]][["par"]][mean_pos],   options[["mu_transform"]])
