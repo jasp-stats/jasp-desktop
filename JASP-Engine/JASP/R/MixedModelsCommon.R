@@ -734,9 +734,9 @@
   temp_row <- list(
     observations = nrow(full_model@frame)
   )
-  for (n in names(full_model@flist)) {
-    fitSizes$addColumnInfo(name = n, title = .unv(n), type = "integer", overtitle = gettext("Levels of RE grouping factors"))
-    temp_row[[n]] <- length(levels(full_model@flist[[n]]))
+  for (thisName in names(full_model@flist)) {
+    fitSizes$addColumnInfo(name = thisName, title = .unv(thisName), type = "integer", overtitle = gettext("Levels of RE grouping factors"))
+    temp_row[[thisName]] <- length(levels(full_model@flist[[thisName]]))
   }
   fitSizes$addRows(temp_row)
   jaspResults[["fitSummary"]][["fitSizes"]] <- fitSizes
@@ -2234,14 +2234,14 @@
   loo  <- loo::loo(model)
 
 
-  n_bad_waic <- sum(waic$pointwise[,2] > 0.4)
-  n_bad_loo  <- length(loo::pareto_k_ids(loo, threshold = .7))
+  nBadWAIC <- sum(waic$pointwise[,2] > 0.4)
+  nBadLOO  <- length(loo::pareto_k_ids(loo, threshold = .7))
   
   
-  if (n_bad_waic > 0)
-    fitStats$addFootnote(.mmMessageBadWAIC(n_bad_waic), symbol = gettext("Warning:"))   
-  if (n_bad_loo > 0)
-    fitStats$addFootnote(.mmMessageBadLOO(n_bad_loo), symbol = gettext("Warning:"))    
+  if (nBadWAIC > 0)
+    fitStats$addFootnote(.mmMessageBadWAIC(nBadWAIC), symbol = gettext("Warning:"))   
+  if (nBadLOO > 0)
+    fitStats$addFootnote(.mmMessageBadLOO(nBadLOO), symbol = gettext("Warning:"))    
   
   
   temp_row <- list(
