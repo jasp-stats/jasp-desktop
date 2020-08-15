@@ -105,13 +105,13 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   
   if (options[["input_p"]] != "") 
-    if (any(dataset[, .v(options[["input_p"]])] <= 0 | dataset[, .v(options[["input_p"]])] >= 1)) 
+    if (any(dataset[, .v(options[["input_p"]])] <= 0) || any(dataset[, .v(options[["input_p"]])] >= 1))
       JASP:::.quitAnalysis(gettextf("Error in %s: All p-values need to be between 0 and 1.", options[["input_p"]]))
   
   
   
   if (options[["input_ES"]] != "" && options[["measures"]] == "correlation")
-    if (any(dataset[, .v(options[["input_ES"]])] <= -1 | dataset[, .v(options[["input_ES"]])] >= 1))
+    if (any(dataset[, .v(options[["input_ES"]])] <= -1) || any(dataset[, .v(options[["input_ES"]])] >= 1))
       JASP:::.quitAnalysis(gettextf("Error in %s: All correlation coefficients need to be between -1 and 1.", options[["input_ES"]]))
   
   
