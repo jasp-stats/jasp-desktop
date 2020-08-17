@@ -201,6 +201,7 @@ JASPControl
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value, inputType)
 						editable:				itemEditable
+						multiple:				itemInputType === "formulaArray"
 					}
 				}
 

@@ -36,7 +36,7 @@ class BoundQMLTextInput : public QObject, public BoundQMLItem
 	Q_OBJECT
 
 public:
-	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType};
+	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType, FormulaArrayType};
 
 	BoundQMLTextInput(JASPControlBase* item);
 	void initTextInput();
