@@ -3,6 +3,7 @@
 #include "analysisform.h"
 #include <QQmlProperty>
 #include <QQmlContext>
+#include <QTimer>
 
 JASPControlBase::JASPControlBase(QQuickItem *parent) : QQuickItem(parent)
 {
@@ -26,12 +27,6 @@ void JASPControlBase::setFocusOnTab(bool focus)
 
 void JASPControlBase::setHasError(bool hasError)
 {
-	if (section())
-		QMetaObject::invokeMethod(section(), "addControlWithError", Qt::DirectConnection, Q_ARG(QVariant, name()), Q_ARG(QVariant, hasError));
-
-	if (form())
-		form()->addControlErrorSet(this, hasError);
-
 	if (hasError != _hasError)
 	{
 		_hasError = hasError;
@@ -41,13 +36,6 @@ void JASPControlBase::setHasError(bool hasError)
 
 void JASPControlBase::setHasWarning(bool hasWarning)
 {
-	if (section())
-		QMetaObject::invokeMethod(section(), "addControlWithWarning", Qt::DirectConnection, Q_ARG(QVariant, name()), Q_ARG(QVariant, hasWarning));
-
-	// the call to addControlWithWarning to an expander (section) calls setHasWarning, but this warning does nog have to be added to the form.
-	if (form() && (controlType() != JASPControlBase::ControlType::Expander))
-		form()->addControlWarningSet(this, hasWarning);
-
 	if (hasWarning != _hasWarning)
 	{
 		_hasWarning = hasWarning;
@@ -199,10 +187,9 @@ QList<JASPControlBase*> JASPControlBase::getChildJASPControls(const QQuickItem *
 	for (QQuickItem* childItem : childItems)
 	{
 		JASPControlBase* childControl = qobject_cast<JASPControlBase*>(childItem);
-		if (childControl)
-			result.push_back(childControl);
-		else
-			result.append(getChildJASPControls(childItem));
+
+		if (childControl)	result.push_back(childControl);
+		else				result.append(getChildJASPControls(childItem));
 	}
 
 	return result;
@@ -241,6 +228,7 @@ void JASPControlBase::setRowComponent(QQmlComponent *newRowComponent)
 	{
 		for (QQmlComponent* rowComponent : _rowComponents)
 			delete rowComponent;
+
 		_rowComponents.clear();
 		_rowComponents.push_back(newRowComponent);
 		emit rowComponentChanged();
@@ -377,18 +365,79 @@ void JASPControlBase::setChildControlsArea(QQuickItem * childControlsArea)
 	//If there is a child control we would like to be kept informed of it
 	if(_childControlsArea)
 		connect(_childControlsArea, &QQuickItem::childrenChanged, this, &JASPControlBase::reconnectWithYourChildren, Qt::UniqueConnection);
+
+	//Just in case the children are there already:
+	reconnectWithYourChildren();
 }
 
 void JASPControlBase::reconnectWithYourChildren()
 {
 	for (JASPControlBase* child : getChildJASPControls(_childControlsArea))
-		connect(child, &JASPControlBase::helpMDChanged, this, &JASPControlBase::helpMDChanged, Qt::UniqueConnection); //Unique so that it doesn't matter how many times we connect
+	{
+		//Unique so that it doesn't matter how many times we connect
+		connect(child, &JASPControlBase::helpMDChanged,		this, &JASPControlBase::helpMDChanged,		Qt::UniqueConnection);
+		connect(child, &JASPControlBase::hasErrorChanged,	this, &JASPControlBase::hasErrorChanged,	Qt::UniqueConnection);
+		connect(child, &JASPControlBase::hasWarningChanged, this, &JASPControlBase::hasWarningChanged,	Qt::UniqueConnection);
+	}
 
+	//Just in case:
 	emit helpMDChanged();
+	emit hasErrorChanged();
+	emit hasWarningChanged();
 }
 
 void JASPControlBase::listViewKeyChanged(const QString &oldName, const QString &newName)
 {
 	if (oldName == _parentListViewKey)
 		_parentListViewKey = newName;
+}
+
+
+bool JASPControlBase::hasError() const
+{
+	if(_controlType != ControlType::Expander)	return _hasError;
+	else										return childHasError();
+}
+
+bool JASPControlBase::hasWarning() const
+{
+	if(_controlType != ControlType::Expander)	return _hasWarning;
+	else										return childHasWarning();
+}
+
+bool JASPControlBase::childHasError() const
+{
+	for (JASPControlBase* child : getChildJASPControls(_childControlsArea))
+		if(child->childHasError())
+			return true;
+
+	return _hasError;
+}
+
+bool JASPControlBase::childHasWarning() const
+{
+	for (JASPControlBase* child : getChildJASPControls(_childControlsArea))
+		if(child->childHasWarning())
+			return true;
+
+	return _hasWarning;
+}
+
+QString JASPControlBase::humanFriendlyLabel() const
+{
+
+	QString label = property("label").toString();
+
+	if (label.isEmpty())
+		label = property("title").toString();
+
+	if (label.isEmpty())
+		label = name();
+
+	label = label.simplified();
+	if (label.right(1) == ":")
+		label = label.chopped(1);
+
+	return label;
+
 }

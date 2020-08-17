@@ -320,8 +320,8 @@ void AnalysisForm::_orderExpanders()
 		{
 			if (sibling->objectName() == "Section")
 			{
-				QObject* button = sibling->property("button").value<QObject*>();
-				JASPControlBase* control = qobject_cast<JASPControlBase*>(button);
+				QObject			* button	= sibling->property("button").value<QObject*>();
+				JASPControlBase	* control	= qobject_cast<JASPControlBase*>(button);
 				if (control && control->controlType() == JASPControlBase::ControlType::Expander)
 				{
 					if (foundExpander)
@@ -428,40 +428,26 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 
 }
 
-QString AnalysisForm::_getControlLabel(JASPControlBase* control)
+QString AnalysisForm::_getControlLabel(QString controlName)
 {
-	QString label = control->property("label").toString();
-
-	if (label.isEmpty())
-		label = control->property("title").toString();
-
-	if (label.isEmpty())
-		label = control->name();
-
-	label = label.simplified();
-	if (label.right(1) == ":")
-		label = label.chopped(1);
-
-	return label;
+	return _controls[controlName]->item()->humanFriendlyLabel();
 }
 
-void AnalysisForm::_addLoadingError()
+void AnalysisForm::_addLoadingError(QStringList wrongJson)
 {
-	if (_jaspControlsWithWarningSet.size() > 0)
+	if (wrongJson.size() > 0)
 	{
 		QString errorMsg;
-		if (_jaspControlsWithWarningSet.size() == 1)
+		if (wrongJson.size() == 1)
 		{
-			JASPControlBase* control = _jaspControlsWithWarningSet.values()[0];
-			errorMsg = tr("Component %1 was loaded with the wrong type of value and has been reset to its default value.").arg(control->name());
+			errorMsg = tr("Component %1 was loaded with the wrong type of value and has been reset to its default value.").arg(_getControlLabel(wrongJson[0]));
 			errorMsg += "<br>";
 		}
-		else if (_jaspControlsWithWarningSet.size() < 4)
+		else if (wrongJson.size() < 4)
 		{
 			QString names = "<ul>";
-			QSetIterator<JASPControlBase *> it(_jaspControlsWithWarningSet);
-			while (it.hasNext())
-				names += "<li>" + _getControlLabel(it.next()) + "</li>";
+			for(const QString & controlName : wrongJson)
+				names += "<li>" + _getControlLabel(controlName) + "</li>";
 			names += "</ul>";
 
 			errorMsg = tr("These components were loaded with the wrong type of value and have been reset to their default values:%1").arg(names);
@@ -491,6 +477,8 @@ void AnalysisForm::bindTo()
 	_options->blockSignals(true);
 	
 	_setAllAvailableVariablesModel();	
+
+	std::set<std::string> controlsJsonWrong;
 	
 	for (JASPControlWrapper* control : _dependsOrderedCtrls)
 	{
@@ -504,6 +492,7 @@ void AnalysisForm::bindTo()
 			{
 				option = nullptr;
 				boundControl->item()->setHasWarning(true);
+				controlsJsonWrong.insert(name);
 			}
 
 			if (!option && optionsFromJASPFile != Json::nullValue)
@@ -512,7 +501,10 @@ void AnalysisForm::bindTo()
 				if (optionValue != Json::nullValue)
 				{
 					if (!boundControl->isJsonValid(optionValue))
+					{
 						boundControl->item()->setHasWarning(true);
+						controlsJsonWrong.insert(name);
+					}
 					else
 					{
 						// call createOption after checking Json options in isJsonValid: if Json comes from an older version of JASP, createOption can take care of backward compatibility issues.
@@ -558,7 +550,7 @@ void AnalysisForm::bindTo()
 	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)
 		availableModel->resetTermsFromSourceModels(true);
 	
-	_addLoadingError();
+	_addLoadingError(tql(controlsJsonWrong));
 
 	_options->blockSignals(false, false);
 
@@ -600,7 +592,7 @@ void AnalysisForm::addFormError(const QString &error)
 	emit errorsChanged();
 }
 
-QQuickItem* AnalysisForm::_getControlErrorMessageUsingThisJaspControl(JASPControlBase* jaspControl)
+QQuickItem* AnalysisForm::_getControlErrorMessageOfControl(JASPControlBase* jaspControl)
 {
 	QQuickItem* result = nullptr;
 
@@ -614,7 +606,8 @@ QQuickItem* AnalysisForm::_getControlErrorMessageUsingThisJaspControl(JASPContro
 	return result;
 }
 
-//This should be moved to BoundQML
+//This should be moved to JASPControlBase maybe?
+//Maybe even to full QML? Why don't we just use a loader...
 void AnalysisForm::addControlError(JASPControlBase* control, QString message, bool temporary, bool warning)
 {
 	if (!control) return;
@@ -664,26 +657,17 @@ void AnalysisForm::addControlError(JASPControlBase* control, QString message, bo
 		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::QueuedConnection, Q_ARG(QVariant, message), Q_ARG(QVariant, temporary));
 	}
 
-	if (warning)
-		control->setHasWarning(true);
-	else
-		control->setHasError(true);
+	if (warning)	control->setHasWarning(true);
+	else			control->setHasError(true);
 }
 
-void AnalysisForm::addControlErrorSet(JASPControlBase *control, bool add)
+bool AnalysisForm::hasError()
 {
-	if (!control) return;
+	for(auto & nameControl : _controls)
+		if(nameControl->item()->hasError())
+			return true;
 
-	if (add)	_jaspControlsWithErrorSet.insert(control);
-	else		_jaspControlsWithErrorSet.remove(control);
-}
-
-void AnalysisForm::addControlWarningSet(JASPControlBase *control, bool add)
-{
-	if (!control) return;
-
-	if (add)	_jaspControlsWithWarningSet.insert(control);
-	else		_jaspControlsWithWarningSet.remove(control);
+	return false;
 }
 
 void AnalysisForm::clearControlError(JASPControlBase* control)
@@ -706,14 +690,11 @@ void AnalysisForm::clearFormErrors()
 	_formErrors.clear();
 	emit errorsChanged();
 
-	// Remove also warning without text
-	QSet<JASPControlBase*> controlsWithWarning = _jaspControlsWithWarningSet; // Copy the set: the setHasWarning method changes it.
+	_formWarnings.clear();
+	emit warningsChanged();
 
-	for (JASPControlBase* control : controlsWithWarning)
-	{
-		if (!_getControlErrorMessageUsingThisJaspControl(control))
-			control->setHasWarning(false);
-	}
+	for(auto & control : _controls)
+		control->item()->setHasWarning(false);
 }
 
 void AnalysisForm::setAnalysis(QVariant analysis)

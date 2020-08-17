@@ -127,11 +127,9 @@ public:
 	void		addControlError(JASPControlBase* control, QString message, bool temporary = false, bool warning = false);
 	void		clearControlError(JASPControlBase* control);
 	void		cleanUpForm();
-	void		addControlErrorSet(JASPControlBase* control, bool add);
-	void		addControlWarningSet(JASPControlBase* control, bool add);
 	void		refreshAvailableVariablesModels() { _setAllAvailableVariablesModel(true); }
 
-	bool		hasError() { return _jaspControlsWithErrorSet.size() > 0; }
+	bool		hasError();
 
 	bool		isOwnComputedColumn(const QString& col)			const	{ return _computedColumns.contains(col); }
 	void		addOwnComputedColumn(const QString& col)				{ _computedColumns.push_back(col); }
@@ -157,13 +155,13 @@ private:
 	void		_setUpRelatedModels();
 	void		_setUpItems();
 	void		_orderExpanders();
-	QString		_getControlLabel(JASPControlBase* boundControl);
-	void		_addLoadingError();
-	void		setControlIsDependency(QString controlName, bool isDependency);
-	void		setControlMustContain(QString controlName, QStringList containThis);
-	void		setControlIsDependency(std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
-	void		setControlMustContain(std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
-	QQuickItem* _getControlErrorMessageUsingThisJaspControl(JASPControlBase* jaspControl);
+	QString		_getControlLabel(QString controlName);
+	void		_addLoadingError(QStringList wrongJson);
+	void		setControlIsDependency(	QString controlName, bool isDependency);
+	void		setControlMustContain(	QString controlName, QStringList containThis);
+	void		setControlIsDependency(	std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
+	void		setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
+	QQuickItem* _getControlErrorMessageOfControl(JASPControlBase* jaspControl);
 	void		setAnalysisUp();
 
 private slots:
@@ -195,8 +193,6 @@ private:
 
 	QQmlComponent*								_controlErrorMessageComponent = nullptr;
 	QList<QQuickItem*>							_controlErrorMessageCache;
-	QSet<JASPControlBase*>						_jaspControlsWithErrorSet,
-												_jaspControlsWithWarningSet;
 	QList<QString>								_computedColumns;
 	bool										_runOnChange	= true,
 												_formCompleted = false;
