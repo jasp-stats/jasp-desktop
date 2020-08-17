@@ -30,7 +30,7 @@ AnalysisForm
 	implicitHeight		: formContent.height + (jaspTheme.formMargin * 2)
 	width				: implicitWidth
 	height				: implicitHeight
-	errorMessagesItem	: errorMessagesBox
+	//errorMessagesItem	: errorMessagesBox
 	
 	default property alias	content		: contentArea.children
 	property alias	form				: form
@@ -38,7 +38,7 @@ AnalysisForm
 	property int	majorVersion		: 1
 	property int	minorVersion		: 0
 	property int	availableWidth		: form.width - 2 * jaspTheme.formMargin
-	property var    analysis			: myAnalysis
+					analysis			: myAnalysis
 	property var	backgroundForms		: backgroundFlickable
 	property alias	columns				: contentArea.columns
 	property bool	runAnalysisWhenOptionChange : true
@@ -96,12 +96,9 @@ AnalysisForm
 				
 		Rectangle
 		{
-			property alias text:	errorMessagesText.text
-			
 			id:				errorMessagesBox
-			objectName:		"errorMessagesBox"
-			visible:		false
-			color:			jaspTheme.errorMessagesBackgroundColor
+			visible:		form.errors !== ""
+			color:			jaspTheme.controlErrorBackgroundColor
 			width:			parent.width
 			height:			visible ? errorMessagesText.height : 0
 			anchors.top:	oldFileMessagesBox.bottom
@@ -114,14 +111,37 @@ AnalysisForm
 				wrapMode:			Text.Wrap
 				width:				parent.width - 10 * jaspTheme.uiScale
 				verticalAlignment:	Text.AlignVCenter
-				//Should we maybe set a color here?
+				text:				form.errors
+				color:				jaspTheme.controlErrorTextColor
 			}
 		}
-		
+
+		Rectangle
+		{
+			id:				warningMessagesBox
+			visible:		form.warnings !== ""
+			color:			jaspTheme.controlWarningBackgroundColor
+			width:			parent.width
+			height:			visible ? warningMessagesText.height : 0
+			anchors.top:	errorMessagesBox.bottom
+
+			Text
+			{
+				id:					warningMessagesText
+				anchors.centerIn:	parent
+				padding:			5 * jaspTheme.uiScale
+				wrapMode:			Text.Wrap
+				width:				parent.width - 10 * jaspTheme.uiScale
+				verticalAlignment:	Text.AlignVCenter
+				text:				form.warnings
+				color:				jaspTheme.controlWarningTextColor
+			}
+		}
+
 		GridLayout
 		{
 			id:				contentArea
-			anchors.top:	errorMessagesBox.bottom
+			anchors.top:	warningMessagesBox.bottom
 			width:			parent.width
 		}
 	}
