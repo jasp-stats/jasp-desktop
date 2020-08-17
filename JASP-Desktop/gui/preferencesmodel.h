@@ -38,7 +38,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			safeGraphics			READ safeGraphics				WRITE setSafeGraphics				NOTIFY safeGraphicsChanged				)
 	Q_PROPERTY(QString		cranRepoURL				READ cranRepoURL				WRITE setCranRepoURL				NOTIFY cranRepoURLChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
-	Q_PROPERTY(QFont		defaultFont				READ defaultFont				WRITE setDefaultFont				NOTIFY defaultFontChanged				)
+	Q_PROPERTY(QString		interfaceFont			READ interfaceFont				WRITE setInterfaceFont				NOTIFY interfaceFontChanged				)
+	Q_PROPERTY(QString		resultFont				READ resultFont					WRITE setResultFont					NOTIFY resultFontChanged				)
 	Q_PROPERTY(QString		currentThemeName		READ currentThemeName			WRITE setCurrentThemeName			NOTIFY currentThemeNameChanged			)
 	Q_PROPERTY(QString		languageCode			READ languageCode													NOTIFY languageCodeChanged				)
 	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
@@ -80,7 +81,8 @@ public:
 	QStringList	modulesRemembered()			const;
 	bool		safeGraphics()				const;
 	QString		cranRepoURL()				const;
-	QFont		defaultFont()				const	{ return _defaultFont;	}
+	QString		interfaceFont()				const;
+	QString		resultFont()				const;
 	QString		currentThemeName()			const;
 	QString		languageCode()				const;
 	bool		useNativeFileDialog()		const;
@@ -130,7 +132,8 @@ public slots:
 	void onDefaultPPIChanged(			int);
 	void setCurrentThemeName(			QString		currentThemeName);
 	void setCurrentThemeNameFromClass(	JaspTheme * theme);
-	void setDefaultFont(				QFont		defaultFont);
+	void setInterfaceFont(				QString		interfaceFont);
+	void setResultFont(					QString		resultFont);
 	void setUseNativeFileDialog(		bool		useNativeFileDialog);
 	void setDisableAnimations(			bool		disableAnimations);
 	void setGenerateMarkdown(			bool		generateMarkdown);
@@ -167,7 +170,8 @@ signals:
 	void modulesRememberedChanged();
 	void safeGraphicsChanged(			bool		safeGraphics);
 	void cranRepoURLChanged(			QString		cranRepoURL);
-	void defaultFontChanged(			QFont		defaultFont);
+	void interfaceFontChanged(			QString		interfaceFont);
+	void resultFontChanged(				QString		resultFont);
 	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
 	void languageCodeChanged();
@@ -182,7 +186,6 @@ private:
 	static PreferencesModel * _singleton;
 
 	int		_defaultPPI		= 192;
-	QFont	_defaultFont	= QFont("SansSerif");
 	double	_uiScale		= -1;
 };
 

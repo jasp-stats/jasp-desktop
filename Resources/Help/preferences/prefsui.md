@@ -32,3 +32,6 @@ If this is enabled JASP will run in software rendering mode, which means your in
 Some users on certain systems (Windows) can run into trouble with the default native (or system) file dialogs.
 When they try to open or save a file in JASP by clicking "Browse" in one of the file menus JASP crashes.
 If you disable this option we use Qt file dialogs and they might not crash. Most users will not need this option disabled though.
+
+### Font
+You can specify here which font will be used by the interface. Default is `SansSerif`

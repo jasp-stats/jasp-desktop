@@ -38,6 +38,7 @@ DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadColumnHeaders);
 
 	connect(PreferencesModel::prefs(), &PreferencesModel::uiScaleChanged, this, &DataSetView::resetItems);
+	connect(PreferencesModel::prefs(), &PreferencesModel::interfaceFontChanged, this, &DataSetView::resetItems);
 
 	setZ(10);
 

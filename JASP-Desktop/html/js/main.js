@@ -583,3 +583,7 @@ window.displayWarningMessage = function (msg) {
 window.setTheme = function(themeName) {
 	document.getElementById("style").setAttribute("href", "css/" + themeName + "-jasp.css");
 }
+
+window.setFontFamily = function(fontFamily) {
+	document.getElementsByTagName("body")[0].style["font-family"] = fontFamily;
+}

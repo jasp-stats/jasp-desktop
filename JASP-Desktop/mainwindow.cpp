@@ -342,6 +342,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::developerModeChanged,			_analyses,				&Analyses::refreshAllAnalyses								);
 	connect(_preferences,			&PreferencesModel::jaspThemeChanged,				this,					&MainWindow::jaspThemeChanged								);
 	connect(_preferences,			&PreferencesModel::currentThemeNameChanged,			_resultsJsInterface,	&ResultsJsInterface::setThemeCss							);
+	connect(_preferences,			&PreferencesModel::resultFontChanged,				_resultsJsInterface,	&ResultsJsInterface::setFontFamily							);
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _package,				&DataSetPackage::setColumnsUsedInEasyFilter					);
@@ -389,7 +390,7 @@ void MainWindow::loadDefaultFont()
 		Log::log() << "Loading custom font '" << QFontDatabase::applicationFontFamilies(id).at(0) << "'\n";
 
 		_defaultFont = QFont(fontFam);
-		_preferences->setDefaultFont(_defaultFont);
+		_preferences->setInterfaceFont(fontFam);
 	}
 }
 

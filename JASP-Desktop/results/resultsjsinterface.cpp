@@ -73,6 +73,7 @@ void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 		emit runJavaScript("window.setAppVersion('" + version + "')");
 
 		setGlobalJsValues();
+		setFontFamily(Settings::value(Settings::RESULT_FONT).toString());
 
 		emit resultsPageLoadedSignal();
 		emit zoomChanged();
@@ -381,4 +382,10 @@ void ResultsJsInterface::setThemeCss(QString themeName)
 {
 	if(_resultsLoaded)
 		runJavaScript("window.setTheme(\"" + themeName + "\");");
+}
+
+void ResultsJsInterface::setFontFamily(QString fontFamily)
+{
+	if (_resultsLoaded)
+		runJavaScript("window.setFontFamily(\"" + escapeJavascriptString(fontFamily) + "\");");
 }

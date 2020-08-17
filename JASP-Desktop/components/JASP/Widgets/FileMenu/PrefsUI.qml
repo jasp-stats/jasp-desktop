@@ -69,10 +69,40 @@ ScrollView
 					checked:			preferencesModel.currentThemeName === "darkTheme"
 					onCheckedChanged:	preferencesModel.currentThemeName  =  "darkTheme"
 					toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
-					KeyNavigation.tab:	languages
-					KeyNavigation.down:	languages
+					KeyNavigation.tab:	uiFont
+					KeyNavigation.down:	uiFont
 				}
 			}
+		}
+
+		PrefsGroupRect
+		{
+			id:		fontGroup
+			title:	qsTr("Font")
+
+			TextArea
+			{
+				id:					uiFont
+				width:				300 * jaspTheme.uiScale
+				height:				150 * jaspTheme.uiScale
+				title:				qsTr("List of Font")
+				toolTip:			qsTr("Font family used by the interface")
+				text:				preferencesModel.interfaceFont.replace(/,/g, "\n")
+				onApplyRequest:
+				{
+					preferencesModel.interfaceFont = text.split("\n")
+						.map(function(elt) { return elt.trim(); } )
+						.filter(function(elt) { return elt.trim("\"") !== ""; } )
+						.map(function(elt) { return elt.indexOf(" ") > 0 ? ((elt.startsWith('"') ? '' : '"') + elt + (elt.endsWith('"') ? '' : '"')) : elt; } )
+						.join(",")
+				}
+
+				KeyNavigation.tab:		languages
+				KeyNavigation.down:		languages
+			}
+
+			Text { text: qsTr("Actual font: " + fontInfo.family) }
+
 		}
 
 		PrefsGroupRect

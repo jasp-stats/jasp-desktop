@@ -130,10 +130,39 @@ ScrollView
 					checked:			!preferencesModel.whiteBackground
 					onCheckedChanged:	preferencesModel.whiteBackground = !checked
 					toolTip:			qsTr("This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white.")
-					KeyNavigation.tab:	displayExactPVals
-					KeyNavigation.down:	displayExactPVals
+					KeyNavigation.tab:	resultFont
+					KeyNavigation.down:	resultFont
 				}
 			}
+		}
+
+		PrefsGroupRect
+		{
+			id:		fontGroup
+			title:	qsTr("Font")
+
+			TextArea
+			{
+				id:					resultFont
+				width:				300 * jaspTheme.uiScale
+				height:				150 * jaspTheme.uiScale
+				title:				qsTr("List of Font")
+				toolTip:			qsTr("Font family used by the results")
+				text:				preferencesModel.resultFont.replace(/,/g, "\n")
+				onApplyRequest:
+				{
+					preferencesModel.resultFont = text.split("\n")
+						.map(function(elt) { return elt.trim(); } )
+						.filter(function(elt) { return elt.trim("\"") !== ""; } )
+						.map(function(elt) { return elt.indexOf(" ") > 0 ? ((elt.startsWith('"') ? '' : '"') + elt + (elt.endsWith('"') ? '' : '"')) : elt; } )
+						.join(",")
+				}
+
+				KeyNavigation.tab:		displayExactPVals
+				KeyNavigation.down:		displayExactPVals
+			}
+
+
 		}
 
 		Item

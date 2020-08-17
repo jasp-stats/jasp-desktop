@@ -33,22 +33,22 @@ JaspTheme
 
 	fontLabel.bold:										true
 	fontLabel.pixelSize:								Math.round(18 * uiScale)
-	fontLabel.family:									jaspFont + (MACOS ? " Bold" : "")
+	fontLabel.family:									jaspFont
 	fontLabel.weight:									Font.Bold
 
 	fontRibbon.bold:									false
 	fontRibbon.pixelSize:								Math.round(14 * uiScale)
-	fontRibbon.family:									jaspFont + (MACOS ? " DemiBold" : "")
+	fontRibbon.family:									jaspFont
 	fontRibbon.weight:									Font.DemiBold
 
 	fontGroupTitle.bold:								true
 	fontGroupTitle.pixelSize:							Math.round(14 * uiScale)
-	fontGroupTitle.family:								jaspFont + (MACOS ? " Medium" : "")
+	fontGroupTitle.family:								jaspFont
 	fontGroupTitle.weight:								Font.Medium
 
 	fontPrefOptionsGroupTitle.bold:						true
 	fontPrefOptionsGroupTitle.pixelSize:				Math.round(13 * uiScale)
-	fontPrefOptionsGroupTitle.family:					jaspFont + (MACOS ? " Bold" : "")
+	fontPrefOptionsGroupTitle.family:					jaspFont
 	fontPrefOptionsGroupTitle.weight:					Font.Bold
 
 	fontConsole.pixelSize:								Math.round(14 * uiScale)

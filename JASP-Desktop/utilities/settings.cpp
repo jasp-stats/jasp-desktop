@@ -41,7 +41,9 @@ const Settings::Setting Settings::Values[] = {
 	{"themeName",					"lightTheme"},
 	{"useNativeFileDialog",			true},
 	{"disableAnimations",			false},
-	{"generateMarkdownHelp",		false}
+	{"generateMarkdownHelp",		false},
+	{"interfaceFont",				"SansSerif"},
+	{"resultFont",					"Lucida Grande,Helvetica,Arial,sans-serif,Helvetica Neue,freesans,Segoe UI"}
 };
 
 QVariant Settings::value(Settings::Type key)

@@ -563,6 +563,7 @@ public slots:
 	void setIconPath(QString iconPath);
 	void setThemeName(QString themeName);
 	void setFontConsole(QFont fontConsole);
+	void setDefaultFont(QString font);
 
 private:
 	void connectSizeDistancesToUiScaleChanged();
