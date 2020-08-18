@@ -45,7 +45,7 @@ QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
 	int		column	= index.column(),
 			row		= index.row();
 
-	if (column < 0 || column >= columnCount() || row < 0 || row >= _rowNames.length())
+	if (column < 0 || column >= columnCount() || row < 0 || row >= rowCount())
 		return QVariant();
 
 	switch(role)
@@ -64,8 +64,8 @@ QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
 				(down ?		8 : 0);
 	}		
 	case int(specialRoles::itemInputType):	return getItemInputType(index);
-	case Qt::DisplayRole:				return QVariant(_values[column][row]);
-	default:							return QVariant();
+	case Qt::DisplayRole:					return QVariant(_values[column][row]);
+	default:								return QVariant();
 	}
 }
 

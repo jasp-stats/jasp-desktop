@@ -47,28 +47,34 @@ void ListModelJAGSDataInput::sourceTermsChanged(const Terms *, const Terms *)
 	if (_values.length() > 0)
 	{
 		QMap<QString, QVariant> mapping;
-		const QVector<QVariant>& firstCol = _values[0];
-		const QVector<QVariant>& secondCol = _values[1];
+		const QVector<QVariant> & firstCol  = _values[0],
+								& secondCol = _values[1];
 		int row = 0;
+
 		for (const QVariant& key : firstCol)
 		{
 			mapping[key.toString()] = secondCol[row];
 			row++;
 		}
+
 		_values.clear();
 		_rowNames.clear();
 		_rowCount = sourceTerms.size();
-		for (size_t colNb = 1; colNb <= _rowCount; colNb++)
-			_rowNames.push_back(getDefaultRowName(colNb));
-		QList<QString> firstColumnValues = sourceTerms.asQList();
-		QVector<QVariant> firstColumn;
-		QVector<QVariant> secondColumn;
+
+		for (size_t row = 1; row <= _rowCount; row++)
+			_rowNames.push_back(getDefaultRowName(row));
+
+		QList<QString>		firstColumnValues = sourceTerms.asQList();
+		QVector<QVariant>	firstColumn,
+							secondColumn;
+
 		for (const QString& firstValue : firstColumnValues)
 		{
 			firstColumn.push_back(firstValue);
 			QVariant secondValue = mapping.contains(firstValue) ? mapping[firstValue] : _defaultCellVal;
 			secondColumn.push_back(secondValue);
 		}
+
 		_values.push_back(firstColumn);
 		_values.push_back(secondColumn);
 	}
@@ -152,6 +158,7 @@ void ListModelJAGSDataInput::initValues(OptionsTable * bindHere)
 		_colNames.push_back(QString::fromStdString(optionName->value()));
 		//levels = optionLevels->variables(); //The old code (in boundqmltableview.cpp) seemed to specify to simply use the *last* OptionVariables called "levels" in the binding option. So I'll just repeat that despite not getting it.
 		_values.push_back({});
+
 		for (const std::string & val : optionValues->term())
 			_values[_values.size()-1].push_back(tq(val));
 	}
@@ -164,10 +171,10 @@ void ListModelJAGSDataInput::initValues(OptionsTable * bindHere)
 	if (_values.size() > 0 && int(_values[0].size()) != _rowNames.size())
 		Log::log() << "Number of rows specifed in Options for ListModelJAGSDataInput does not match number of rows in values!" << std::endl;
 
-
 	beginResetModel();
 
-	_columnCount = _colNames.size();
+	_rowCount		= _rowNames.size();
+	_columnCount	= _colNames.size();
 
 	for(auto & col : _values)
 		if(_rowNames.size() < col.size())
