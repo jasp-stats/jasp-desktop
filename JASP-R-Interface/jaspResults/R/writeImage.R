@@ -263,10 +263,10 @@ decodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
     obj <- eval(parse(text = name))
   
   if (!exists(name) || !is.function(obj)) {
-    location <- getAnywhere(name)
-    for (i in seq_along(location[["objs"]]))
-      if (is.function(location[["objs"]][[i]]))
-        return(location[["objs"]][[i]])
+    if (jaspResultsCalledFromJasp())
+      return(get(name, .GlobalEnv))
+    else
+      return(getFromNamespace(name, asNamespace("jasptools")))
   }
   
   if (!is.function(obj))

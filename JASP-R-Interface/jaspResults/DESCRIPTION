@@ -1,7 +1,7 @@
 Package: jaspResults
 Type: Package
 Title: Easy results for your JASP analysis
-Version: 1.14
+Version: 1.15
 Date: 2018-12-07
 Author: Joris Goosen
 Maintainer: Joris Goosen <j.c.goosen@uva.nl>

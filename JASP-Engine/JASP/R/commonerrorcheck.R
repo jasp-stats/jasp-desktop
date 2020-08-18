@@ -335,13 +335,16 @@
     result <- func(dataset[[.v(target)]])
     
   } else {
-    
-    result <- plyr::ddply(dataset, .v(grouping), 
-      function(data, target) {
-        if (any(is.na(data[.v(grouping)])) == FALSE) {
-          func(data[[.v(target)]])
+
+    vgrouping <- .v(grouping)
+    vtarget   <- .v(target)
+
+    result <- plyr::ddply(dataset, vgrouping,
+      function(data, vtarget) {
+        if (anyNA(data[vgrouping]) == FALSE) {
+          func(data[[vtarget]])
         }
-      },  target)
+      },  vtarget)
     result <- result[[ncol(result)]] # The last column holds the func results.
     
   }
