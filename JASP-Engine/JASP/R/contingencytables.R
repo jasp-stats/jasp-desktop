@@ -214,7 +214,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 
     # Create table
     crossTabLogOdds <- createJaspTable(title = gettext("Log Odds Ratio"))
-    crossTabLogOdds$dependOn(c("oddsRatio", "oddsRatioConfidenceIntervalInterval", "oddsRatioHypothesis"))
+    crossTabLogOdds$dependOn(c("oddsRatio", "oddsRatioConfidenceIntervalInterval", "oddsRatioHypothesis", "rowOrder", "columnOrder"))
     crossTabLogOdds$showSpecifiedColumnsOnly <- TRUE
     crossTabLogOdds$position <- 3
     
@@ -288,7 +288,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 
     # Create table
     crossTabGamma <- createJaspTable(title = gettext("Ordinal Gamma"))
-    crossTabGamma$dependOn(c("gamma"))
+    crossTabGamma$dependOn(c("gamma", "rowOrder", "columnOrder"))
     crossTabGamma$showSpecifiedColumnsOnly <- TRUE
     crossTabGamma$position <- 5
     
@@ -322,7 +322,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     # Create table
     crossTabKendallTau <- createJaspTable(title = "Kendall's Tau")
-    crossTabKendallTau$dependOn(c("kendallsTauB", "VovkSellkeMPR"))
+    crossTabKendallTau$dependOn(c("kendallsTauB", "VovkSellkeMPR", "rowOrder", "columnOrder"))
     crossTabKendallTau$showSpecifiedColumnsOnly <- TRUE
     crossTabKendallTau$position <- 6
     
