@@ -34,6 +34,7 @@ public:
 	std::vector<std::string>	getValues();
 	QString						getValue(const QString& label);
 	QString						getLabel(const QString& value);
+	int							getIndexOfValue(const QString& value);
 
 protected:
 

@@ -131,6 +131,14 @@ void BoundQMLComboBox::setUp()
 		_model->resetTermsFromSourceModels(false);
 		_resetItemWidth();
 	}
+
+	if (_currentIndex == -1)
+	{
+		// In case a value is given per default, find its index and sets it.
+		QString value = getItemProperty("value").toString();
+		if (!value.isEmpty())
+			_currentIndex = _model->getIndexOfValue(value);
+	}
 	
 	_setCurrentValue(_currentIndex, true, false);
 

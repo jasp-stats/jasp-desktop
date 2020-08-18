@@ -5,6 +5,7 @@
 #include "gui/messageforwarder.h"
 #include "qquick/jasptheme.h"
 #include "utilities/languagemodel.h"
+#include <QFontDatabase>
 
 using namespace std;
 
@@ -33,6 +34,13 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
 
 	connect(LanguageModel::lang(),	&LanguageModel::currentIndexChanged,			this, &PreferencesModel::languageCodeChanged);
+
+	connect(this,					&PreferencesModel::useDefaultInterfaceFontChanged,	[&](){	emit realInterfaceFontChanged(realInterfaceFont()); } );
+	connect(this,					&PreferencesModel::interfaceFontChanged,			[&](){	emit realInterfaceFontChanged(realInterfaceFont()); } );
+	connect(this,					&PreferencesModel::useDefaultResultFontChanged,		[&](){	emit realResultFontChanged(realResultFont());		} );
+	connect(this,					&PreferencesModel::resultFontChanged,				[&](){	emit realResultFontChanged(realResultFont());		} );
+
+	_loadDatabaseFont();
 }
 
 void PreferencesModel::browseSpreadsheetEditor()
@@ -108,9 +116,40 @@ GET_PREF_FUNC_BOOL(	useNativeFileDialog,		Settings::USE_NATIVE_FILE_DIALOG					)
 GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
 GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
 GET_PREF_FUNC_STR(	interfaceFont,				Settings::INTERFACE_FONT							)
-GET_PREF_FUNC_STR(	resultFont,					Settings::RESULT_FONT								)
+GET_PREF_FUNC_BOOL( useDefaultInterfaceFont,	Settings::USE_DEFAULT_INTERFACE_FONT				)
+GET_PREF_FUNC_BOOL( useDefaultResultFont,		Settings::USE_DEFAULT_RESULT_FONT					)
 
+QString PreferencesModel::resultFont() const
+{
+	QString result = Settings::value(Settings::RESULT_FONT).toString();
 
+	if (result.contains(","))
+	{
+		// The default is a list of fonts.
+		// Select the first one which is available.
+		for (const QString& font : result.split(","))
+		{
+			if (_allFonts.contains(font))
+				return font;
+		}
+
+		return "SansSerif";
+	}
+
+	return result;
+}
+
+QString PreferencesModel::realInterfaceFont() const
+{
+	if (useDefaultInterfaceFont())	return "SansSerif";
+	else							return interfaceFont();
+}
+
+QString PreferencesModel::realResultFont() const
+{
+	if (useDefaultResultFont())		return "SansSerif";
+	else							return resultFont();
+}
 
 double PreferencesModel::uiScale()
 {
@@ -230,8 +269,10 @@ SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroun
 SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativeFileDialogChanged,		Settings::USE_NATIVE_FILE_DIALOG					)
 SET_PREF_FUNCTION(bool,		setDisableAnimations,		disableAnimations,			disableAnimationsChanged,		Settings::DISABLE_ANIMATIONS						)
 SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkdownChanged,		Settings::GENERATE_MARKDOWN_HELP					)
-SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT								)
+SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT							)
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
+SET_PREF_FUNCTION(bool,		setUseDefaultInterfaceFont,	useDefaultInterfaceFont,	useDefaultInterfaceFontChanged,	Settings::USE_DEFAULT_INTERFACE_FONT				)
+SET_PREF_FUNCTION(bool,		setUseDefaultResultFont,	useDefaultResultFont,		useDefaultResultFontChanged,	Settings::USE_DEFAULT_RESULT_FONT					)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
@@ -368,4 +409,15 @@ void PreferencesModel::setCurrentThemeNameFromClass(JaspTheme * theme)
 void PreferencesModel::onCurrentThemeNameChanged(QString newThemeName)
 {
 	JaspTheme::setCurrentThemeFromName(currentThemeName());
+}
+
+void PreferencesModel::_loadDatabaseFont()
+{
+	QFontDatabase fontDatabase;
+
+	fontDatabase.addApplicationFont(":/resources/fonts/FreeSans.ttf");
+
+	_allFonts = fontDatabase.families();
+
+	emit allFontsChanged(_allFonts);
 }

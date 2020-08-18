@@ -147,3 +147,17 @@ QString ListModelLabelValueTerms::getLabel(const QString &value)
 	return _valueToLabelMap.contains(value) ? _valueToLabelMap[value] : value;
 }
 
+int ListModelLabelValueTerms::getIndexOfValue(const QString &value)
+{
+	int index = 0;
+	QString label = getLabel(value);
+	for (const Term& term : _terms)
+	{
+		if (term.asQString() == label)
+			return index;
+		index++;
+	}
+
+	return -1;
+}
+

@@ -16,7 +16,7 @@ JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 	connect(this,			&JaspTheme::jaspThemeChanged,				PreferencesModel::prefs(),	&PreferencesModel::jaspThemeChanged		);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this,			&JaspTheme::uiScaleChanged				);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::maxFlickVelocityChanged, this,			&JaspTheme::maximumFlickVelocity		);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::interfaceFontChanged,		this,		&JaspTheme::setDefaultFont				);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::realInterfaceFontChanged,this,			&JaspTheme::setDefaultFont				);
 
 	connectSizeDistancesToUiScaleChanged();
 

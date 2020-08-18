@@ -130,8 +130,8 @@ ScrollView
 					checked:			!preferencesModel.whiteBackground
 					onCheckedChanged:	preferencesModel.whiteBackground = !checked
 					toolTip:			qsTr("This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white.")
-					KeyNavigation.tab:	resultFont
-					KeyNavigation.down:	resultFont
+					KeyNavigation.tab:	defaultFont
+					KeyNavigation.down:	defaultFont
 				}
 			}
 		}
@@ -141,28 +141,35 @@ ScrollView
 			id:		fontGroup
 			title:	qsTr("Font")
 
-			TextArea
+			RowLayout
 			{
-				id:					resultFont
-				width:				300 * jaspTheme.uiScale
-				height:				150 * jaspTheme.uiScale
-				title:				qsTr("List of Font")
-				toolTip:			qsTr("Font family used by the results")
-				text:				preferencesModel.resultFont.replace(/,/g, "\n")
-				onApplyRequest:
+				spacing: 5
+				CheckBox
 				{
-					preferencesModel.resultFont = text.split("\n")
-						.map(function(elt) { return elt.trim(); } )
-						.filter(function(elt) { return elt.trim("\"") !== ""; } )
-						.map(function(elt) { return elt.indexOf(" ") > 0 ? ((elt.startsWith('"') ? '' : '"') + elt + (elt.endsWith('"') ? '' : '"')) : elt; } )
-						.join(",")
+					id					: defaultFont
+					label				: qsTr("Use default font: ")
+					checked				: preferencesModel.useDefaultResultFont
+					onCheckedChanged	: preferencesModel.useDefaultResultFont = checked
+
+					KeyNavigation.tab	: allFonts
+					KeyNavigation.down	: allFonts
 				}
 
-				KeyNavigation.tab:		displayExactPVals
-				KeyNavigation.down:		displayExactPVals
+				Text { font.family: "SansSerif"; text: fontInfo.family }
 			}
 
+			ComboBox
+			{
+				id						: allFonts
+				enabled					: !defaultFont.checked
+				values					: preferencesModel.allFonts
+				addEmptyValue			: true
+				value					: preferencesModel.resultFont
+				onValueChanged			: if (value) preferencesModel.resultFont = value
 
+				KeyNavigation.tab		: displayExactPVals
+				KeyNavigation.down		: displayExactPVals
+			}
 		}
 
 		Item

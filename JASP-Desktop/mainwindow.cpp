@@ -146,8 +146,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	//loadDefaultFont(); //Maybe later?
-
 	qmlRegisterUncreatableType<JASPControlBase>					("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
 	qmlRegisterUncreatableType<MessageForwarder>				("JASP",		1, 0, "MessageForwarder",	"You can't touch this"				);
 
@@ -342,7 +340,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::developerModeChanged,			_analyses,				&Analyses::refreshAllAnalyses								);
 	connect(_preferences,			&PreferencesModel::jaspThemeChanged,				this,					&MainWindow::jaspThemeChanged								);
 	connect(_preferences,			&PreferencesModel::currentThemeNameChanged,			_resultsJsInterface,	&ResultsJsInterface::setThemeCss							);
-	connect(_preferences,			&PreferencesModel::resultFontChanged,				_resultsJsInterface,	&ResultsJsInterface::setFontFamily							);
+	connect(_preferences,			&PreferencesModel::realResultFontChanged,			_resultsJsInterface,	&ResultsJsInterface::setFontFamily							);
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _package,				&DataSetPackage::setColumnsUsedInEasyFilter					);
@@ -376,22 +374,6 @@ void MainWindow::makeConnections()
 		Log::log() << "Cannot watch plot editing file" << _plotEditingFilePath << std::endl;
 	connect(&_plotEditingFileWatcher, &QFileSystemWatcher::fileChanged,					this,					&MainWindow::plotEditingFileChanged							);
 
-}
-
-void MainWindow::loadDefaultFont()
-{
-	int id = QFontDatabase::addApplicationFont(":/resources/fonts/FreeSans.ttf");
-
-	if(id == -1)
-		Log::log() << "Loading default font did not work!\n";
-	else
-	{
-		QString fontFam = QFontDatabase::applicationFontFamilies(id).at(0);
-		Log::log() << "Loading custom font '" << QFontDatabase::applicationFontFamilies(id).at(0) << "'\n";
-
-		_defaultFont = QFont(fontFam);
-		_preferences->setInterfaceFont(fontFam);
-	}
 }
 
 void MainWindow::loadQML()

@@ -108,7 +108,7 @@ JASPControl
 						anchors.top:	rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top
 
 						focus:			true
-
+						currentIndex:	-1
 						padding:		2 * preferencesModel.uiScale //jaspTheme.jaspControlPadding
 
 						width:			modelWidth + extraWidth
@@ -149,7 +149,8 @@ JASPControl
 
 			Text
 			{
-				x:							(contentIcon.visible ? 23 : 4) * preferencesModel.uiScale
+				anchors.left:				contentIcon.visible ? contentIcon.right : parent.left
+				anchors.leftMargin:			4 * preferencesModel.uiScale
 				text:						control.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? control.currentText : comboBox.currentText)
 				font:						control.font
 				anchors.verticalCenter:		parent.verticalCenter

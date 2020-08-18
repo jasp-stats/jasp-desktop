@@ -8,6 +8,9 @@ With the user interface parameters in JASP you can specify the following options
 ### Themes
 Here you can specify if you would like to have a "light" or a "dark" theme on the interface of JASP. The dark theme is much easier on the eyes if you are in a dark environment while the light (and default) theme is clearer in bright light.
 
+### Font
+Here you can specify which font will be used by the interface. Default is `SansSerif`. If you want the default font of your system, click on the 'Use default font' checkbox.
+
 ### Preferred Language
 Select the language in which you would like to use JASP.
 
@@ -32,6 +35,3 @@ If this is enabled JASP will run in software rendering mode, which means your in
 Some users on certain systems (Windows) can run into trouble with the default native (or system) file dialogs.
 When they try to open or save a file in JASP by clicking "Browse" in one of the file menus JASP crashes.
 If you disable this option we use Qt file dialogs and they might not crash. Most users will not need this option disabled though.
-
-### Font
-You can specify here which font will be used by the interface. Default is `SansSerif`

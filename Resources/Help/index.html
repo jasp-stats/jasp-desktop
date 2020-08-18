@@ -9,6 +9,7 @@
     window.render     = function(content)   { document.body.innerHTML = marked(content);  window.scrollTo(0, 0); }
     window.renderHtml = function(content)   { document.body.innerHTML = content;          window.scrollTo(0, 0); }
     window.setTheme   = function(themeName) { document.getElementById("style").setAttribute("href", themeName + ".css");  }
+    window.setFont    = function(fontName)  { document.getElementsByTagName("body")[0].style["font-family"] = fontName; }
 	</script>
 </head>
 <body>

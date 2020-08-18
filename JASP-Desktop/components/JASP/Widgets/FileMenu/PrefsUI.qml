@@ -69,8 +69,8 @@ ScrollView
 					checked:			preferencesModel.currentThemeName === "darkTheme"
 					onCheckedChanged:	preferencesModel.currentThemeName  =  "darkTheme"
 					toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
-					KeyNavigation.tab:	uiFont
-					KeyNavigation.down:	uiFont
+					KeyNavigation.tab:	defaultFont
+					KeyNavigation.down:	defaultFont
 				}
 			}
 		}
@@ -80,29 +80,35 @@ ScrollView
 			id:		fontGroup
 			title:	qsTr("Font")
 
-			TextArea
+			RowLayout
 			{
-				id:					uiFont
-				width:				300 * jaspTheme.uiScale
-				height:				150 * jaspTheme.uiScale
-				title:				qsTr("List of Font")
-				toolTip:			qsTr("Font family used by the interface")
-				text:				preferencesModel.interfaceFont.replace(/,/g, "\n")
-				onApplyRequest:
+				spacing: 5
+				CheckBox
 				{
-					preferencesModel.interfaceFont = text.split("\n")
-						.map(function(elt) { return elt.trim(); } )
-						.filter(function(elt) { return elt.trim("\"") !== ""; } )
-						.map(function(elt) { return elt.indexOf(" ") > 0 ? ((elt.startsWith('"') ? '' : '"') + elt + (elt.endsWith('"') ? '' : '"')) : elt; } )
-						.join(",")
+					id					: defaultFont
+					label				: qsTr("Use default font: ")
+					checked				: preferencesModel.useDefaultInterfaceFont
+					onCheckedChanged	: preferencesModel.useDefaultInterfaceFont = checked
+
+					KeyNavigation.tab	: allFonts
+					KeyNavigation.down	: allFonts
 				}
 
-				KeyNavigation.tab:		languages
-				KeyNavigation.down:		languages
+				Text { font.family: "SansSerif"; text: fontInfo.family }
 			}
 
-			Text { text: qsTr("Actual font: " + fontInfo.family) }
+			ComboBox
+			{
+				id						: allFonts
+				enabled					: !defaultFont.checked
+				values					: preferencesModel.allFonts
+				addEmptyValue			: true
+				value					: preferencesModel.interfaceFont
+				onValueChanged			: if (value) preferencesModel.interfaceFont = value
 
+				KeyNavigation.tab		: languages
+				KeyNavigation.down		: languages
+			}
 		}
 
 		PrefsGroupRect

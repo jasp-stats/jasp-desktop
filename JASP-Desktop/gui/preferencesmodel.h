@@ -38,7 +38,11 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			safeGraphics			READ safeGraphics				WRITE setSafeGraphics				NOTIFY safeGraphicsChanged				)
 	Q_PROPERTY(QString		cranRepoURL				READ cranRepoURL				WRITE setCranRepoURL				NOTIFY cranRepoURLChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
+	Q_PROPERTY(bool			useDefaultInterfaceFont	READ useDefaultInterfaceFont	WRITE setUseDefaultInterfaceFont	NOTIFY useDefaultInterfaceFontChanged	)
+	Q_PROPERTY(QString		realInterfaceFont		READ realInterfaceFont												NOTIFY realInterfaceFontChanged			)
 	Q_PROPERTY(QString		interfaceFont			READ interfaceFont				WRITE setInterfaceFont				NOTIFY interfaceFontChanged				)
+	Q_PROPERTY(bool			useDefaultResultFont	READ useDefaultResultFont		WRITE setUseDefaultResultFont		NOTIFY useDefaultResultFontChanged		)
+	Q_PROPERTY(QString		realResultFont			READ realResultFont													NOTIFY realResultFontChanged			)
 	Q_PROPERTY(QString		resultFont				READ resultFont					WRITE setResultFont					NOTIFY resultFontChanged				)
 	Q_PROPERTY(QString		currentThemeName		READ currentThemeName			WRITE setCurrentThemeName			NOTIFY currentThemeNameChanged			)
 	Q_PROPERTY(QString		languageCode			READ languageCode													NOTIFY languageCodeChanged				)
@@ -46,6 +50,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			disableAnimations		READ disableAnimations			WRITE setDisableAnimations			NOTIFY disableAnimationsChanged			)
 	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
 	Q_PROPERTY(bool			generateMarkdown		READ generateMarkdown			WRITE setGenerateMarkdown			NOTIFY generateMarkdownChanged			)
+	Q_PROPERTY(QStringList	allFonts				READ allFonts														NOTIFY allFontsChanged					)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
@@ -81,19 +86,23 @@ public:
 	QStringList	modulesRemembered()			const;
 	bool		safeGraphics()				const;
 	QString		cranRepoURL()				const;
+	bool		useDefaultInterfaceFont()	const;
 	QString		interfaceFont()				const;
+	QString		realInterfaceFont()			const;
+	bool		useDefaultResultFont()		const;
 	QString		resultFont()				const;
+	QString		realResultFont()			const;
 	QString		currentThemeName()			const;
 	QString		languageCode()				const;
 	bool		useNativeFileDialog()		const;
 	bool		disableAnimations()			const;
 	bool		animationsOn()				const { return !disableAnimations() && !safeGraphics(); }
 	bool		generateMarkdown()			const;
+	QStringList allFonts()					const { return _allFonts; }
 
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
-
 
 public slots:
 	void setUiScale(					double		uiScale);
@@ -132,8 +141,10 @@ public slots:
 	void onDefaultPPIChanged(			int);
 	void setCurrentThemeName(			QString		currentThemeName);
 	void setCurrentThemeNameFromClass(	JaspTheme * theme);
-	void setInterfaceFont(				QString		interfaceFont);
+	void setUseDefaultInterfaceFont(	bool		useDefaultInterfaceFont);
+	void setUseDefaultResultFont(		bool		useDefaultResultFont);
 	void setResultFont(					QString		resultFont);
+	void setInterfaceFont(				QString		interfaceFont);
 	void setUseNativeFileDialog(		bool		useNativeFileDialog);
 	void setDisableAnimations(			bool		disableAnimations);
 	void setGenerateMarkdown(			bool		generateMarkdown);
@@ -170,14 +181,19 @@ signals:
 	void modulesRememberedChanged();
 	void safeGraphicsChanged(			bool		safeGraphics);
 	void cranRepoURLChanged(			QString		cranRepoURL);
+	void useDefaultInterfaceFontChanged(bool		useDefaultInterfaceFont);
 	void interfaceFontChanged(			QString		interfaceFont);
+	void realInterfaceFontChanged(		QString		realInterfaceFont);
+	void useDefaultResultFontChanged(	bool		useDefaultResultFont);
 	void resultFontChanged(				QString		resultFont);
+	void realResultFontChanged(			QString		realResultFont);
 	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
 	void languageCodeChanged();
 	void useNativeFileDialogChanged(	bool		useNativeFileDialog);
 	void disableAnimationsChanged(		bool		disableAnimations);
 	void generateMarkdownChanged(		bool		generateMarkdown);
+	void allFontsChanged(				QStringList	allFonts);
 
 	void animationsOnChanged();
 
@@ -185,8 +201,11 @@ signals:
 private:
 	static PreferencesModel * _singleton;
 
-	int		_defaultPPI		= 192;
-	double	_uiScale		= -1;
+	int				_defaultPPI		= 192;
+	double			_uiScale		= -1;
+	QStringList		_allFonts;
+
+	void			_loadDatabaseFont();
 };
 
 #endif // PREFERENCESDIALOG_H
