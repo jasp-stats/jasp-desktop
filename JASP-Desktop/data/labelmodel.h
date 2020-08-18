@@ -16,7 +16,7 @@ public:
 				LabelModel();
 
 	bool		labelNeedsFilter(size_t col);
-	std::string columnName(size_t col)	{ return DataSetPackage::pkg()->getColumnName(col);								}
+	std::string columnName(size_t col);
 	QString		columnNameQ()			{ return QString::fromStdString(columnName(proxyParentColumn()));	}
 	bool		setData(const QModelIndex & index, const QVariant & value, int role)			override;
 
