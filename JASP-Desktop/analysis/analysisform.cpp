@@ -17,7 +17,7 @@
 //
 
 #include "analysisform.h"
-
+#include "knownissues.h"
 
 #include <boost/bind.hpp>
 
@@ -54,9 +54,10 @@ using namespace std;
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
 	setObjectName("AnalysisForm");
-	connect(this, &AnalysisForm::infoChanged,	this, &AnalysisForm::helpMDChanged			);
-	connect(this, &AnalysisForm::formCompleted, this, &AnalysisForm::formCompletedHandler   );
-
+	connect(this,					&AnalysisForm::infoChanged,			this, &AnalysisForm::helpMDChanged			);
+	connect(this,					&AnalysisForm::formCompleted,		this, &AnalysisForm::formCompletedHandler   );
+	connect(this,					&AnalysisForm::analysisChanged,		this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
+	connect(KnownIssues::issues(),	&KnownIssues::knownIssuesUpdated,	this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 }
 
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
@@ -701,6 +702,11 @@ void AnalysisForm::clearFormWarnings()
 {
 	_formWarnings.clear();
 	emit warningsChanged();
+
+	for(auto & control : _controls)
+		control->item()->setHasWarning(false);
+
+	knownIssuesUpdated(); //Otherwise the user does not get to see any warnings
 }
 
 void AnalysisForm::setAnalysis(QVariant analysis)
@@ -741,6 +747,30 @@ void AnalysisForm::setAnalysisUp()
 
 	_analysis->resetOptionsFromJASPFile();
 	_analysis->initialized(this, isNewAnalysis);
+
+	emit analysisChanged();
+}
+
+void AnalysisForm::knownIssuesUpdated()
+{
+	if(!_formCompleted || !_analysis)
+		return;
+
+	if(KnownIssues::issues()->hasIssues(_analysis->module(), _analysis->name()))
+	{
+		const std::vector<KnownIssues::issue> & issues = KnownIssues::issues()->getIssues(_analysis->module(), _analysis->name());
+
+		for(const KnownIssues::issue & issue : issues)
+		{
+			for(const std::string & option : issue.options)
+				if(_controls.count(tq(option)) > 0)
+					_controls[tq(option)]->item()->setHasWarning(true);
+
+			_formWarnings.append(tq(issue.info));
+		}
+
+		emit warningsChanged();
+	}
 }
 
 void AnalysisForm::dataSetChangedHandler()

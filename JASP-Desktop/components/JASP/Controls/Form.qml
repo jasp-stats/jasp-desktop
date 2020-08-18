@@ -97,13 +97,14 @@ AnalysisForm
 				
 		Rectangle
 		{
-			id:				errorMessagesBox
-			visible:		form.errors !== ""
-			color:			jaspTheme.controlErrorBackgroundColor
-			width:			parent.width
-			height:			visible ? errorMessagesText.height : 0
-			radius:			jaspTheme.borderRadius
-			anchors.top:	oldFileMessagesBox.bottom
+			id:					errorMessagesBox
+			visible:			form.errors !== ""
+			color:				jaspTheme.controlErrorBackgroundColor
+			width:				parent.width
+			height:				visible ? errorMessagesText.height : 0
+			anchors.top:		oldFileMessagesBox.bottom
+			anchors.margins:	visible ? jaspTheme.generalAnchorMargin : 0
+			radius:				jaspTheme.borderRadius
 
 			Text
 			{
@@ -114,21 +115,35 @@ AnalysisForm
 				width:				parent.width - 10 * jaspTheme.uiScale
 				verticalAlignment:	Text.AlignVCenter
 				text:				form.errors
+				textFormat:			Text.StyledText
 				color:				jaspTheme.controlErrorTextColor
+				linkColor:			jaspTheme.controlErrorTextColor
+				onLinkActivated:	Qt.openUrlExternally(link)
+
+				MouseArea
+				{
+					anchors.fill:		parent
+					z:					20
+					acceptedButtons:	Qt.NoButton
+					cursorShape:		parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+				}
 			}
 
 			CrossButton { onCrossClicked: form.clearFormErrors() }
 		}
 
+
+
 		Rectangle
 		{
-			id:				warningMessagesBox
-			visible:		form.warnings !== ""
-			color:			jaspTheme.controlWarningBackgroundColor
-			width:			parent.width
-			radius:			jaspTheme.borderRadius
-			height:			visible ? warningMessagesText.height : 0
-			anchors.top:	errorMessagesBox.bottom
+			id:					warningMessagesBox
+			visible:			form.warnings !== ""
+			color:				jaspTheme.controlWarningBackgroundColor
+			width:				parent.width
+			height:				visible ? warningMessagesText.height : 0
+			anchors.top:		errorMessagesBox.bottom
+			anchors.margins:	visible ? jaspTheme.generalAnchorMargin : 0
+			radius:				jaspTheme.borderRadius
 
 			Text
 			{
@@ -139,7 +154,18 @@ AnalysisForm
 				width:				parent.width - 10 * jaspTheme.uiScale
 				verticalAlignment:	Text.AlignVCenter
 				text:				form.warnings
+				onLinkActivated:	Qt.openUrlExternally(link)
+				textFormat:			Text.StyledText
 				color:				jaspTheme.controlWarningTextColor
+				linkColor:			jaspTheme.controlWarningTextColor
+
+				MouseArea
+				{
+					anchors.fill:		parent
+					z:					20
+					acceptedButtons:	Qt.NoButton
+					cursorShape:		parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+				}
 			}
 
 			CrossButton { onCrossClicked: form.clearFormWarnings(); warning: true; }
@@ -147,9 +173,10 @@ AnalysisForm
 
 		GridLayout
 		{
-			id:				contentArea
-			anchors.top:	warningMessagesBox.bottom
-			width:			parent.width
+			id:					contentArea
+			anchors.top:		warningMessagesBox.bottom
+			anchors.margins:	warningMessagesBox.visible || errorMessagesBox.visible ? jaspTheme.generalAnchorMargin : 0
+			width:				parent.width
 		}
 	}
 	

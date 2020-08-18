@@ -91,3 +91,17 @@ void JsonUtilities::replaceColumnNamesInDragNDropFilterJSON(Json::Value & json, 
 				replaceColumnNamesInDragNDropFilterJSON(json[key], changeNameColumns);
 	}
 }
+
+stringvec JsonUtilities::jsonStringArrayToVec(Json::Value & jsonStrings)
+{
+	if(!jsonStrings.isArray())	throw std::runtime_error("jsonStringArrayToVec expected array!");
+
+	stringvec out;
+	out.reserve(jsonStrings.size());
+
+	for(const Json::Value & entry: jsonStrings)
+		if(!entry.isString())	throw std::runtime_error("jsonStringArrayToVec expected array of strings!");
+		else					out.push_back(entry.asString());
+
+	return out;
+}
