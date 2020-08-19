@@ -111,18 +111,19 @@ public:
 	Options				*	getAnalysisOptions()					{ return _analysis->options(); }
 	JASPControlWrapper	*	getControl(const QString& name)			{ return _controls[name]; }
 	void					addListView(QMLListView* listView, QMLListView* sourceListView);
-	void					clearFormErrors();
 	QMLExpander			*	nextExpander(QMLExpander* expander)		{ return _nextExpanderMap[expander]; }
 	BoundQMLItem		*	getBoundItem(Option* option)			{ return _optionControlMap[option]; }
 
 	Options				*	options() { return _options; }
 	void					addControl(JASPControlBase* control);
 
-	Q_INVOKABLE void reset();
-    Q_INVOKABLE void exportResults();
-	Q_INVOKABLE void addFormError(const QString& message);
-	Q_INVOKABLE void refreshAnalysis();
-	Q_INVOKABLE void runAnalysis();
+	Q_INVOKABLE void		clearFormErrors();
+	Q_INVOKABLE void		clearFormWarnings();
+	Q_INVOKABLE void		reset();
+	Q_INVOKABLE void		exportResults();
+	Q_INVOKABLE void		addFormError(const QString& message);
+	Q_INVOKABLE void		refreshAnalysis();
+	Q_INVOKABLE void		runAnalysis();
 
 	void		addControlError(JASPControlBase* control, QString message, bool temporary = false, bool warning = false);
 	void		clearControlError(JASPControlBase* control);

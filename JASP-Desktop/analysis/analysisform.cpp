@@ -211,18 +211,23 @@ void AnalysisForm::addControl(JASPControlBase *control)
 {
 	if (control->isBound())
 	{
-		const QString& name = control->name();
+		const QString & name = control->name();
+
 		if (name.isEmpty())
 		{
-			QString label = control->property("label").toString();
-			if (label.isEmpty())
-				label = control->property("title").toString();
+			QString label = control->humanFriendlyLabel();
 
-			if (label.isEmpty())	_formErrors.append(tr("Control with label '%1' has no name").arg(label));
-			else					_formErrors.append(tr("A control has no name"));
+			if (!label.isEmpty())	addFormError(tr("Control with label '%1' has no name").arg(label));
+			else					addFormError(tr("A control has no name"));
+
+			control->setHasError(true);
 		}
 		else if (_controls.keys().contains(name))
-			_formErrors.append(tr("2 controls have the same name: %1").arg(name));
+		{
+			addFormError(tr("2 controls have the same name: %1").arg(name));
+			control					->	setHasWarning(true);
+			_controls[name]->item()	->	setHasWarning(true);
+		}
 		else
 		{
 			JASPControlWrapper* wrapper = control->getWrapper();
@@ -257,13 +262,13 @@ void AnalysisForm::_setUpRelatedModels()
 			//ListModel* targetModel = _modelMap[dropKey]; //Indexing on a map creates elements if they do not exist yet...
 
 			if (_modelMap.count(dropKey))		_relatedModelMap[listView] = _modelMap[dropKey];
-			else								_formErrors.append(tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name()));
+			else								addFormError(tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name()));
 		}
 		else
 		{
 			bool draggable = listView->getItemProperty("draggabble").toBool();
 			if (draggable)
-				_formErrors.append(tr("No drop key found for %1").arg(listView->name()));
+				addFormError(tr("No drop key found for %1").arg(listView->name()));
 		}
 
 	}
@@ -689,12 +694,13 @@ void AnalysisForm::clearFormErrors()
 {
 	_formErrors.clear();
 	emit errorsChanged();
+}
 
+
+void AnalysisForm::clearFormWarnings()
+{
 	_formWarnings.clear();
 	emit warningsChanged();
-
-	for(auto & control : _controls)
-		control->item()->setHasWarning(false);
 }
 
 void AnalysisForm::setAnalysis(QVariant analysis)
@@ -715,9 +721,7 @@ void AnalysisForm::setAnalysis(QVariant analysis)
 void AnalysisForm::formCompletedHandler()  { QTimer::singleShot(0, this, &AnalysisForm::_formCompletedHandler); }
 void AnalysisForm::_formCompletedHandler()
 {
-	qmlContext(this)->setContextProperty("form", this);
 	_formCompleted = true;
-
 	setAnalysisUp();
 }
 

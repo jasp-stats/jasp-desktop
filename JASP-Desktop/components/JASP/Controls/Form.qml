@@ -76,6 +76,7 @@ AnalysisForm
 			width:			form.implicitWidth
 			height:			visible ? oldAnalysisText.height : 0
 			anchors.top:	parent.top
+			radius:			jaspTheme.borderRadius
 
 			Text
 			{
@@ -101,6 +102,7 @@ AnalysisForm
 			color:			jaspTheme.controlErrorBackgroundColor
 			width:			parent.width
 			height:			visible ? errorMessagesText.height : 0
+			radius:			jaspTheme.borderRadius
 			anchors.top:	oldFileMessagesBox.bottom
 
 			Text
@@ -114,6 +116,8 @@ AnalysisForm
 				text:				form.errors
 				color:				jaspTheme.controlErrorTextColor
 			}
+
+			CrossButton { onCrossClicked: form.clearFormErrors() }
 		}
 
 		Rectangle
@@ -122,6 +126,7 @@ AnalysisForm
 			visible:		form.warnings !== ""
 			color:			jaspTheme.controlWarningBackgroundColor
 			width:			parent.width
+			radius:			jaspTheme.borderRadius
 			height:			visible ? warningMessagesText.height : 0
 			anchors.top:	errorMessagesBox.bottom
 
@@ -136,6 +141,8 @@ AnalysisForm
 				text:				form.warnings
 				color:				jaspTheme.controlWarningTextColor
 			}
+
+			CrossButton { onCrossClicked: form.clearFormWarnings(); warning: true; }
 		}
 
 		GridLayout
