@@ -443,7 +443,8 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           addSingularFootnote <- TRUE
       }
       if (addSingularFootnote) {
-        model[["footnote"]] <- gettextf("%s Some confidence intervals could not be computed because out of the bootstrapped matrices none were invertible. ",
+        model[["footnote"]] <- gettextf("%s Some confidence intervals could not be computed because 
+                                        out of the bootstrapped matrices non were invertible. ",
                                         model[["footnote"]])
       }
 
@@ -565,7 +566,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 # once the package is updated check this again and apply:
 .freqentistReliabilitySingleFactorFitTable <- function(jaspResults, model, options) {
 
-  if (!options[["fitMeasures"]] || !options[["mcDonaldScale"]])
+  if (!options[["fitMeasures"]] || !options[["mcDonaldScale"]] || options[["omegaEst"]]=="pfa")
     return()
   if (!is.null(jaspResults[["fitTable"]]) || !options[["fitMeasures"]]) {
     return()

@@ -180,7 +180,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       
       # get rid of multiple chains, first save the chains:
       relyFit[["Bayes"]][["chains"]] <- relyFit[["Bayes"]][["samp"]]
-      relyFit[["Bayes"]][["samp"]] <- lapply(relyFit[["Bayes"]][["chains"]], .chainSmoker)
+      relyFit[["Bayes"]][["samp"]] <- lapply(relyFit[["Bayes"]][["chains"]], as.vector)
 
       # mean and sd
       relyFit[["Bayes"]][["samp"]][["mean"]] <- NA_real_
@@ -190,7 +190,8 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       
       # get rid of multiple chains, first save the chains:
       relyFit[["Bayes"]][["ifitem"]][["chains"]] <- relyFit[["Bayes"]][["ifitem"]][["samp"]]
-      relyFit[["Bayes"]][["ifitem"]][["samp"]] <- lapply(relyFit[["Bayes"]][["ifitem"]][["chains"]], .chainSmoker)
+      relyFit[["Bayes"]][["ifitem"]][["samp"]] <- lapply(relyFit[["Bayes"]][["ifitem"]][["chains"]], 
+                                                         function(x) apply(x, 3, as.vector))
 
       # now the item statistics
       relyFit[["Bayes"]][["ifitem"]][["samp"]][["ircor"]] <- .reliabilityItemRestCor(dataset, options[["noSamples"]], options[["noBurnin"]], 
@@ -707,11 +708,19 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     plotContainerItem <- createJaspContainer(gettext("If Item Dropped Posterior Plots"))
     plotContainerItem$dependOn(options = c("variables", "plotItem", "noSamples", "noBurnin", "noChains", "noThin",
                                            "credibleIntervalValueItem", "orderType", "orderItem",
-                                           "reverseScaledItems", "missingValues", "setSeed", "seedValue"))
+                                           "reverseScaledItems", "missingValues", "setSeed", "seedValue", 
+                                           "alphaScale", "guttman2Scale", "guttman6Scale", 
+                                           "glbScale", "mcDonaldScale"))
     jaspResults[["plotContainerItem"]] <- plotContainerItem
   } 
   
   derivedOptions <- model[["derivedOptions"]]
+  # fixes issue that unchecking the scale coefficient box, does not uncheck the item-dropped coefficient box:
+  for (i in 1:5) {
+    if (!derivedOptions[["selectedEstimators"]][i]) {
+      derivedOptions[["itemDroppedSelectedItem"]][i] <- derivedOptions[["selectedEstimators"]][i]
+    }
+  }
   indices   <- which(derivedOptions[["itemDroppedSelectedItem"]])
   nmsLabs   <- derivedOptions[["namesEstimators"]][["plots"]]
   nmsObjs   <- derivedOptions[["namesEstimators"]][["tables_item"]]
@@ -988,16 +997,6 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 .KLD.statistic <- function(x, y) {
   t <- LaplacesDemon::KLD(x, y)
   t$sum.KLD.py.px
-}
-
-.chainSmoker <- function(A) {
-  d <- dim(A)
-  if (length(d) == 2) {
-    Av <- as.vector(A)
-  } else {
-    Av <- apply(A, seq(3, length(d), 1), as.vector)
-  }
-  return(coda::mcmc(Av))
 }
 
 .cov2cor.callback <- function(C, callback) {
