@@ -69,9 +69,11 @@ void LanguageModel::initialize()
 	findQmFiles(_qmlocation);
 
 	QLocale::Language prefLanguage = static_cast<QLocale::Language>(Settings::value(Settings::PREFERRED_LANGUAGE).toInt());
+	if (!isJaspSupportedLanguage(prefLanguage)) prefLanguage =  QLocale::English; //If some preferred language in the settings is not supported any more (could crash)
+	
 	LanguageInfo & li = _languagesInfo[prefLanguage];
 	_currentLanguageInfo = li;
-
+		
 	if (prefLanguage == 0 || prefLanguage == QLocale::English) // No preferred language yet set or native JASP language English
 	{
 		Settings::setValue(Settings::PREFERRED_LANGUAGE, QLocale::English);
