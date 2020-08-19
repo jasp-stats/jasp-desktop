@@ -1,61 +1,74 @@
 Unit Tests
 ==========
 
-Running the tests
------------------
+This guide will first explain how to setup the folder structure in your module to allow testing.
+Afterwards the method of creating and running tests is explained.
 
-Currently, the analysis unit tests are not integrated into the JASP-Tests app.  
-To run the tests, the R package [jasptools](https://github.com/jasp-stats/jasptools) is required. 
-This package is included with your clone of the jasp-desktop repository.
-However, before you install it, make sure you install jaspResults first.
+## Folder structure
+Your module should include the following structure:
+- ModuleName/
+  - tests/
+    - [figs/](#figs)
+    - [testthat/](#testthat)
+    - [testthat.R](#testthatr)
+  - [travis.yml](#travisyml)
+  
+#### figs
+Can be an empty folder, will be automatically filled as described in [Creating tests](#Creatingtests).
 
-To install jaspResults:
-- `install.packages("/path/to/jasp-desktop/JASP-R-Interface/jaspResults", type="source", repos=NULL)`
+#### testthat
+Can be an empty folder until you add tests, at that point it will contain a number of test-<analysisName>.R files as described in [Creating tests](#Creatingtests).
 
-To install and use jasptools type:
-- `install.packages("/path/to/jasp-desktop/Tools/jasptools", type="source", repos=NULL)`
-- `library(jasptools)`
-- `develop("path/to/jasp-desktop")`
-
-To run all tests type
+#### testthat.R:
 ```
-testAll()
-```
+library(jaspTools)
+library(testthat)
 
-Any test that fails is shown in the console.  
-Warnings may be ignored, but should be minimized.
-
-It is also possible to test a specific analysis, as running all unit tests may take some time
-```
-testAnalysis("Anova")
+jaspTools::runTestsTravis(module = getwd())
 ```
 
-Fixing the tests
-----------------
-If a test shows up as failed, you should verify why this is and fix it before making a pull request.  
-If you made a legitimate change that the test does not cover, then the unit test should be updated.  
-Locate it under [JASP-Tests/R/tests/testthat](https://github.com/jasp-stats/jasp-desktop/tree/development/JASP-Tests/R/tests/testthat) and change the offending test.  
-Note that if the failed test was related to plotting, then you may use
+#### travis.yml:
 ```
-manageTestPlots("Anova")
-```
-to inspect differences between the saved reference plot and the failing plot.  
-If you validate the failing plot (because it was a legitimate change), it will replace the reference plot in the figs folder.
-Please ensure that there are no changes to figs/deps.txt as a result of your change (see the section below about "Dependencies related to plots").
+os: osx
+language: r
+r: 3.6.1
+before_install: 
+  - "git clone --branch=MacOS-Original https://github.com/jasp-stats/jasp-required-files.git ~/pkgs"
+install:
+  - RScript -e ".libPaths(c(.libPaths(), '~/pkgs')); install.packages('remotes'); remotes::install_github('jasp-stats/jaspTools')"
+script:
+  - R < tests/testthat.R --no-save
+env:
+  global:
+    - R_REMOTES_NO_ERRORS_FROM_WARNINGS=true
+    - VDIFFR_RUN_TESTS=true
+    - REQUIRED_PKGS=~/pkgs
 
-Writing new tests
------------------
-The analysis tests in JASP are based on the R package testthat.  
+```
+
+## Creating and running unit tests
+
+### Obtaining jaspTools
+To run tests in a module, the R package jaspTools is required. 
+Click [here](https://github.com/jasp-stats/jaspTools) for instructions regarding installing and running jaspTools.
+
+### Creating tests
+The analysis tests in modules are based on the R package testthat.  
 For more information about this package see [this online book chapter by Hadley Wickam](http://r-pkgs.had.co.nz/tests.html).
+It's advised to learn about testthat before continuing with this guide.
 
-The general structure of the tests is as follows:  
-\- A folder titled testthat contains a number of test-analysisName.R files.  
--- Each test file has an analysis specific context and consists of tests that check that specific analysis.  
+#### Creating a test file
+Each test file will be build up as follows:
+-- They contain an analysis specific context and consists of tests that check that specific analysis.  
 --- Each test in a file checks a specific expectation of a small portion of analysis functionality (e.g., a table, a plot, error handling, etc.)
 
-It is possible to automatically generate the tests, but we'll first show how to do it manually.
+To start you can create an empty R file titled test-<analysisName>.R in the testthat folder (e.g., test-Anova.R).
+The first line should read `context("analysisName")`.
 
-#### Manually
+#### Adding checks
+You can then start adding checks to it, for which there are two methods. The manual one and the - somewhat - automatic one.
+
+##### Manually
 The testthat package offers a number of expectations useful for testing.  
 JASP offers two additional expectations:
 ```
@@ -63,13 +76,15 @@ expect_equal_tables(test, ref, ...)
 expect_equal_plots(test, name, dir)
 ```
 `expect_equal_tables` takes the data of a JASP table list and compares it to a reference list.  
-This reference list can be created by supplying a table to jasptools.
+This reference list can be created by supplying a table to jaspTools.
 ```
-options <- jasptools::analysisOptions("BinomialTest")
+setPkgOption("module.dirs" = "path/to/jaspFrequencies")
+
+options <- jaspTools::analysisOptions("BinomialTest")
 options[["variables"]] <- "contBinom"
-results <- jasptools::run("BinomialTest", "debug.csv", options)
+results <- jaspTools::runAnalysis("BinomialTest", "test.csv", options)
 table <- results[["results"]][["binomial"]][["data"]]
-jasptools::makeTestTable(table)
+jaspTools::makeTestTable(table)
 ```
 The above returns the output
 
@@ -80,11 +95,11 @@ The above returns the output
 We can now write the expectation
 ```
 test_that("Binomial table results match", {
-  options <- jasptools::analysisOptions("BinomialTest")
+  options <- jaspTools::analysisOptions("BinomialTest")
   options[["variables"]] <- "contBinom"
-  results <- jasptools::run("BinomialTest", "debug.csv", options)
+  results <- jaspTools::runAnalysis("BinomialTest", "test.csv", options)
   table <- results[["results"]][["binomial"]][["data"]]
-  expect_equal_tables(table,
+  jaspTools::expect_equal_tables(table,
 		 list(1.36997960729505, 58, 0, 0.477119195723914, 0.133210619207213,
 			  0.58, 100, 0.678014460645203, "contBinom", 1.36997960729505,
 			  42, 1, 0.321985539354797, 0.133210619207213, 0.42, 100, 0.522880804276086,
@@ -98,13 +113,13 @@ The function takes a plot object or recorded plot and compares it to a stored .s
 This results in an expectation like
 ```
 test_that("Descriptives plot matches", {
-  options <- jasptools::analysisOptions("TTestIndependentSamples")
+  options <- jaspTools::analysisOptions("TTestIndependentSamples")
   options$variables <- "contNormal"
   options$groupingVariable <- "contBinom"
   options$descriptivesPlots <- TRUE
-  results <- jasptools::run("TTestIndependentSamples", "debug.csv", options)
+  results <- jaspTools::runAnalysis("TTestIndependentSamples", "test.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]]
-  expect_equal_plots(testPlot, "descriptives", dir="TTestIndependentSamples")
+  jaspTools::expect_equal_plots(testPlot, "descriptives", dir="TTestIndependentSamples")
 })
 ```
 To validate a plot for a newly created test, run
@@ -118,22 +133,23 @@ As noted earlier, testthat offers a number of expectations as well.
 You should use whatever is most suitable for the situation.
 
 #### Automatically
-Of course, the above set of steps might be a bit tedious to perform for every table and plot. There are two things you can do to make your life easier. Firstly, you can let `jasptools::run()` take care of making expectations by setting `makeTests=TRUE`. So if we take the example from the manual section, this would yield
+Of course, the above set of steps might be a bit tedious to perform for every table and plot. There are two things you can do to make your life easier. Firstly, you can let `jaspTools::runAnalysis()` take care of making expectations by setting `makeTests=TRUE`. So if we take the example from the manual section, this would yield
 ```
-  options <- jasptools::analysisOptions("BinomialTest")
+  setPkgOption("module.dirs" = "path/to/jaspFrequencies")
+  options <- jaspTools::analysisOptions("BinomialTest")
   options[["variables"]] <- "contBinom"
-  results <- jasptools::run("BinomialTest", "debug.csv", options, makeTests=TRUE)
+  jaspTools::runAnalysis("BinomialTest", "test.csv", options, makeTests=TRUE)
 ```
 Which gives the expectation as the output:
 
 ```
 test_that("Binomial Test table results match", {
-	options <- jasptools::analysisOptions("BinomialTest")
+	options <- jaspTools::analysisOptions("BinomialTest")
 	options$variables <- "contBinom"
 	set.seed(1)
-	results <- jasptools::run("BinomialTest", "debug.csv", options)
+	results <- jaspTools::runAnalysis("BinomialTest", "test.csv", options)
 	table <- results[["results"]][["binomialTable"]][["data"]]
-	expect_equal_tables(table,
+	jaspTools::expect_equal_tables(table,
 		list(1.36997960729505, 58, 0, 0.477119195723914, 0.133210619207213,
 			 0.58, 100, 0.678014460645203, "contBinom", 1.36997960729505,
 			 42, 1, 0.321985539354797, 0.133210619207213, 0.42, 100, 0.522880804276086,
@@ -141,74 +157,66 @@ test_that("Binomial Test table results match", {
 })
 ```
 
-A second thing we can do to make our life's easier is to use JASP to create the options for us. These options can then be supplied to `jasptools::analysisOptions()`. To get the options from JASP you first need to build it in debug mode from QtCreator. Once it is built, navigate to your analysis of choice and set all options as you would like them for your unit tests. Proceed to the "Application Output" in QtCreator and search for the last occurrence of `Engine::receiveAnalysisMessage:`. Now copy the json that follows after `Engine::receiveAnalysisMessage:` and make sure to include both `{` and `}` that surround the analysis call. The json should look something like
+A second thing we can do to make our life's easier is to use JASP to create the options for us. These options can then be supplied to `jaspTools::analysisOptions()`. To get the options from JASP. Open your JASP executable, navigate to your analysis of choice and set all options as you would like them for your unit tests. You can create multiple analyses at once. Now store your analyses as a .jasp file.
+Head back to RStudio and supply the path of the .jasp file to `jaspTools::analysisOptions()`. Afterwards you can tell jaspTools to use these options to create unit tests. Your syntax should look like the following:
 ```
-{
-   "dynamicModuleCall" : "",
-   "id" : 13,
-   "imageBackground" : "white",
-   "jaspResults" : true,
-   "name" : "BinomialTest",
-   "options" : {
-      "VovkSellkeMPR" : true,
-      "confidenceInterval" : true,
-      "confidenceIntervalInterval" : 0.950,
-      "descriptivesPlots" : true,
-      "descriptivesPlotsConfidenceInterval" : 0.950,
-      "hypothesis" : "notEqualToTestValue",
-      "plotHeight" : 320,
-      "plotWidth" : 480,
-      "testValue" : 0.50,
-      "variables" : [ "contBinom" ]
-   },
-   "perform" : "run",
-   "ppi" : 192,
-   "revision" : 4,
-   "rfile" : "",
-   "title" : "Binomial Test",
-   "typeRequest" : "analysis"
-}
-```
-Now head back to RStudio and supply this json string to `jasptools::analysisOptions()` -- make sure to use single quotes when doing so! Afterwards you can tell jasptools to use these options to create unit tests. Your syntax should look like the following:
-```
-options <- analysisOptions('{
-   "dynamicModuleCall" : "",
-   "id" : 13,
-   "imageBackground" : "white",
-   "jaspResults" : true,
-   "name" : "BinomialTest",
-   "options" : {
-      "VovkSellkeMPR" : true,
-      "confidenceInterval" : true,
-      "confidenceIntervalInterval" : 0.950,
-      "descriptivesPlots" : true,
-      "descriptivesPlotsConfidenceInterval" : 0.950,
-      "hypothesis" : "notEqualToTestValue",
-      "plotHeight" : 320,
-      "plotWidth" : 480,
-      "testValue" : 0.50,
-      "variables" : [ "contBinom" ]
-   },
-   "perform" : "run",
-   "ppi" : 192,
-   "revision" : 4,
-   "rfile" : "",
-   "title" : "Binomial Test",
-   "typeRequest" : "analysis"
-}')
-jasptools::run(options=options, dataset="debug.csv", makeTests=TRUE)
+options <- jaspTools::analysisOptions("path/to/file.jasp")
+
+# if there is a single analysis in the .jasp file you can run
+jaspTools::runAnalysis(options=options, dataset="test.csv", makeTests=TRUE)
+
+# if there are multiple analyses, you need to subset them one at a time
+jaspTools::runAnalysis(options=options[[1]], dataset="test.csv", makeTests=TRUE)
+jaspTools::runAnalysis(options=options[[2]], dataset="test.csv", makeTests=TRUE)
 ```
 
-You will be able to copy-paste the output directly in a test-file. You can do this for how ever many `jasptools::run()`'s to get a good coverage. Just make sure that (1) each expectation title somewhat makes sense (e.g., `"Binomial Test table results match"` makes sense but `"1 plot matches"` could use some work), and (2) that the first line of the test-file defines the analysis specific context. This literally means having this as the first line of your testfile: `context("analysis name")` -- if this is not the case then testthat might throw an error.
+You will be able to copy-paste the output directly into a test-file. You can do this for how ever many `jaspTools::runAnalysis()`'s to get a good coverage. Just make sure that (1) each expectation title somewhat makes sense (e.g., `"Binomial Test table results match"` makes sense but `"1 plot matches"` could use some work), and (2) that the first line of the test-file defines the analysis specific context. This literally means having this as the first line of your testfile: `context("analysis name")` -- if this is not the case then testthat might throw an error.
+
+As explained under the manual method, to validate the new plots you should run:
+```
+jaspTools::manageTestPlots()
+```
+
+### Running the tests
+-----------------
+To run all tests in a module, type
+```
+setPkgOption("module.dirs" = "path/to/jaspAnova")
+testAll()
+```
+Note that if you include several module.dirs, then all tests in all of these modules will be run.
+
+Any test that fails is shown in the console.  
+Warnings may be ignored, but should be minimized.
+
+It is also possible to test a specific analysis, as running all unit tests may take some time
+```
+setPkgOption("module.dirs" = "path/to/jaspAnova")
+testAnalysis("Anova")
+```
+
+Fixing the tests
+----------------
+If a test shows up as failed, you should verify why this is and fix it before making a pull request.  
+If you made a legitimate change that the test does not cover, then the unit test should be updated.  
+Locate it in your testthat and change the offending test.  
+Note that if the failed test was related to plotting, then you may use
+```
+manageTestPlots("Anova")
+```
+to inspect differences between the saved reference plot and the failing plot.  
+If you validate the failing plot (because it was a legitimate change), it will replace the reference plot in the figs folder.
+Please ensure that there are no changes to figs/deps.txt as a result of your change (see the section below about "Dependencies related to plots").
+
 
 #### Dependencies related to plots
 Note that it is very important that all plots are created with equal versions of certain dependencies.  
-If this is not the case, then we cannot compare plots across different systems.  
-The settings you must use can be found in [figs/deps.txt](https://github.com/jasp-stats/jasp-desktop/blob/development/JASP-Tests/R/tests/figs/deps.txt) and [figs/jasp-deps.txt](https://github.com/jasp-stats/jasp-desktop/blob/development/JASP-Tests/R/tests/figs/jasp-deps.txt). The former should be automatically installed with `vdiffr`. The latter should be automatically installed when you first build JASP.
+If this is not the case, then we cannot compare plots across different systems.
+The settings used to create plots can be found in figs/deps.txt and figs/jasp-deps.txt. It's good practice to look at the dependencies of other modules and to match these on your system. The former should be automatically installed with `vdiffr`. The latter should be automatically installed when you first build JASP.
 The files will look something like (but not necessarily the same as)
 ```
 - vdiffr-svg-engine: 1.0
-- vdiffr: 0.3.0
+- vdiffr: 0.3.2.2
 - freetypeharfbuzz: 0.2.5
 ```
-You must never edit these files directly. If `jasptools::manageTestPlots()` tells you that you have a newer version of some dependency, then that version will automatically be included in .the txt file. All you must do is ensure that the newer version of the dependency does not have any adverse effects (i.e., the Shiny application showing plot changes that are not correct).
+You must never edit these files directly. If `jaspTools::manageTestPlots()` tells you that you have a newer version of some dependency, then that version will automatically be included in .the txt file. All you must do is ensure that the newer version of the dependency does not have any adverse effects (i.e., the Shiny application showing plot changes that are not correct).
