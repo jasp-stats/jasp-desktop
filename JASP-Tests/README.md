@@ -4,6 +4,24 @@ Unit Tests
 This guide will first explain how to setup the folder structure in your module to allow testing.
 Afterwards the method of creating and running tests is explained.
 
+- [Unit Tests](#unit-tests)
+  * [Folder structure](#folder-structure)
+      - [figs](#figs)
+      - [testthat](#testthat)
+      - [testthat.R:](#testthatr)
+      - [travis.yml:](#travisyml)
+  * [Creating and running unit tests](#creating-and-running-unit-tests)
+    + [Obtaining jaspTools](#obtaining-jasptools)
+    + [Creating tests](#creating-tests)
+      - [Creating a test file](#creating-a-test-file)
+      - [Adding checks](#adding-checks)
+        * [Manually](#manually)
+        * [Automatically](#automatically)
+    + [Running the tests](#running-the-tests)
+  * [Fixing the tests](#fixing-the-tests)
+    + [Dependencies related to plots](#dependencies-related-to-plots)
+
+
 ## Folder structure
 Your module should include the following structure:
 - ModuleName/
@@ -14,10 +32,10 @@ Your module should include the following structure:
   - [travis.yml](#travisyml)
   
 #### figs
-Can be an empty folder, will be automatically filled as described in [Creating tests](#Creatingtests).
+Can be an empty folder, will be automatically filled as described in [Creating-tests](#Creatingtests).
 
 #### testthat
-Can be an empty folder until you add tests, at that point it will contain a number of test-<analysisName>.R files as described in [Creating tests](#Creatingtests).
+Can be an empty folder until you add tests, at that point it will contain a number of test-<analysisName>.R files as described in [Creating-tests](#Creatingtests).
 
 #### testthat.R:
 ```
@@ -132,7 +150,7 @@ Validating a plot places it in figs/analysisName.
 As noted earlier, testthat offers a number of expectations as well.  
 You should use whatever is most suitable for the situation.
 
-#### Automatically
+##### Automatically
 Of course, the above set of steps might be a bit tedious to perform for every table and plot. There are two things you can do to make your life easier. Firstly, you can let `jaspTools::runAnalysis()` take care of making expectations by setting `makeTests=TRUE`. So if we take the example from the manual section, this would yield
 ```
   setPkgOption("module.dirs" = "path/to/jaspFrequencies")
@@ -195,8 +213,7 @@ setPkgOption("module.dirs" = "path/to/jaspAnova")
 testAnalysis("Anova")
 ```
 
-Fixing the tests
-----------------
+## Fixing the tests
 If a test shows up as failed, you should verify why this is and fix it before making a pull request.  
 If you made a legitimate change that the test does not cover, then the unit test should be updated.  
 Locate it in your testthat and change the offending test.  
@@ -209,7 +226,7 @@ If you validate the failing plot (because it was a legitimate change), it will r
 Please ensure that there are no changes to figs/deps.txt as a result of your change (see the section below about "Dependencies related to plots").
 
 
-#### Dependencies related to plots
+### Dependencies related to plots
 Note that it is very important that all plots are created with equal versions of certain dependencies.  
 If this is not the case, then we cannot compare plots across different systems.
 The settings used to create plots can be found in figs/deps.txt and figs/jasp-deps.txt. It's good practice to look at the dependencies of other modules and to match these on your system. The former should be automatically installed with `vdiffr`. The latter should be automatically installed when you first build JASP.
