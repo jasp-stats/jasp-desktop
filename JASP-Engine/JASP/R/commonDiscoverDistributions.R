@@ -537,7 +537,7 @@
 }
 
 .ldFillQQPlot <- function(qqplot, estParameters, options, variable){
-  p <- ggplot2::ggplot(data = NULL, ggplot2::aes(sample = variable)) +
+  p <- ggplot2::ggplot(data = data.frame(variable = variable), ggplot2::aes(sample = variable)) +
     ggplot2::stat_qq(distribution = options[['qFun']], dparams = estParameters, shape = 21, fill = "grey", size = 3) +
     ggplot2::stat_qq_line(distribution = options[['qFun']], dparams = estParameters) +
     ggplot2::xlab(gettext("Theoretical")) + ggplot2::ylab(gettext("Sample")) +
@@ -551,7 +551,7 @@
 }
 
 .ldFillEstPDFPlot <- function(pdfplot, estParameters, options, variable){
-  p <- ggplot2::ggplot(data = NULL, ggplot2::aes(x = variable)) +
+  p <- ggplot2::ggplot(data = data.frame(variable = variable), ggplot2::aes(x = variable)) +
     ggplot2::geom_histogram(ggplot2::aes(y = ..density..), fill = "grey", col = "black") +
     ggplot2::stat_function(fun = options[['pdfFun']], args = as.list(estParameters), size = 1.5) + 
     ggplot2::geom_rug() +
@@ -597,7 +597,7 @@
   args[['q']] <- variable
   TheoreticalProp <- sort(do.call(options[['cdfFun']], args))
   
-  p <- ggplot2::ggplot(data = NULL) +
+  p <- ggplot2::ggplot(data = data.frame(TheoreticalProp = TheoreticalProp, ObservedProp = ObservedProp)) +
     ggplot2::geom_abline(slope = 1, intercept = 0) +
     JASPgraphs::geom_point(ggplot2::aes(x = TheoreticalProp, y = ObservedProp)) +
     ggplot2::xlab(gettext("Theoretical")) + ggplot2::ylab(gettext("Sample")) +
@@ -612,7 +612,7 @@
 }
 
 .ldFillEstCDFPlot <- function(cdfplot, estParameters, options, variable){
-  p <- ggplot2::ggplot(data = NULL, ggplot2::aes(x = variable)) +
+  p <- ggplot2::ggplot(data = data.frame(variable = variable), ggplot2::aes(x = variable)) +
     ggplot2::stat_ecdf(geom = "step") +
     ggplot2::geom_rug() +
     ggplot2::stat_function(fun = options[['cdfFun']], args = as.list(estParameters), size = 1.5) + 
@@ -1303,7 +1303,7 @@
 }
 
 .ldFillPlotECDF <- function(plot, options, variable){
-  p <- ggplot2::ggplot(data = NULL, ggplot2::aes(x = variable)) +
+  p <- ggplot2::ggplot(data = data.frame(variable = variable), ggplot2::aes(x = variable)) +
     ggplot2::stat_ecdf(geom = "step", size = 1.5) +
     ggplot2::geom_rug() +
     ggplot2::scale_x_continuous(limits = range(variable)*1.1) +
