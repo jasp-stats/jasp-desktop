@@ -40,7 +40,7 @@ public:
 
 	QHash<int, QByteArray>			roleNames() const override;
 
-				int					rowCount(	const QModelIndex & = QModelIndex())									const	override {	return _rowNames.length();				}
+				int					rowCount(	const QModelIndex & = QModelIndex())									const	override {	return _rowNames.length();				} //This should probably be _rowCount but who knows what will break if I change that now...
 				int					columnCount(const QModelIndex & = QModelIndex())									const	override {	return static_cast<int>(_columnCount);	}
 				QVariant			data(		const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
 				Qt::ItemFlags		flags(		const QModelIndex &index)												const	override;

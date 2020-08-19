@@ -103,10 +103,8 @@ void ListModelANOVACustomContrasts::setColLabels()
 
 	if (!_colName.isEmpty())
 	{
-		if (_factors.contains(_colName))
-			colLabels = _factors[_colName].toVector();
-		else
-			colLabels = (_colName == "" ? QStringList() : DataSetPackage::pkg()->getColumnLabelsAsStringList(_colName.toStdString())).toVector();
+		if (_factors.contains(_colName))	colLabels = _factors[_colName].toVector();
+		else								colLabels = (_colName == "" ? QStringList() : DataSetPackage::pkg()->getColumnLabelsAsStringList(_colName.toStdString())).toVector();
 	}
 
 
