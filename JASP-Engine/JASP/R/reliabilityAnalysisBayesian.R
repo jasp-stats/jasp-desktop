@@ -513,7 +513,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     poslow <- end - sum(prior[[1]][["x"]] > options[["probTableValueLow"]]) 
     poshigh <- end - sum(prior[[1]][["x"]] > options[["probTableValueHigh"]]) 
     # since the priors are only available in density form, the prior probability for the estimator being larger than
-    # a cutoff is given by caculating the relative probability of the density from the cutoff to 1.
+    # a cutoff is given by calculating the relative probability of the density from the cutoff to 1.
     # maybe check this with someone though
     
     probsPost <- numeric(sum(selected))
@@ -986,17 +986,21 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   return(out)
 }
 
+# calculate the kublack leibler distance between two samples
+.KLD.statistic <- function(x, y) {
+  # transform the samples to PDFs:
+  xdf <- .get_approx_density(x)
+  ydf <- .get_approx_density(y)
+  
+  xx <- seq(0, 1, length.out = 1e4)
+  t <- LaplacesDemon::KLD(xdf(xx), ydf(xx))
+  t$sum.KLD.py.px
+}
 
 # calculate the kolomogorov smirnov distances between some samples and the original sample
 .ks.test.statistic <- function(x, y) {
   t <- stats::ks.test(x, y)
   t$statistic
-}
-
-# calculate the kublack leibler distance between two samples
-.KLD.statistic <- function(x, y) {
-  t <- LaplacesDemon::KLD(x, y)
-  t$sum.KLD.py.px
 }
 
 .cov2cor.callback <- function(C, callback) {
@@ -1010,6 +1014,17 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   total <- apply(as.matrix(dataset[, cols]), 2, min, na.rm = T) + apply(as.matrix(dataset[, cols]), 2, max, na.rm = T)
   dataset[ ,cols] <- matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
   return(dataset)
+}
+
+.get_approx_density <- function(x) {
+  d <- density(x, n = 2^12)
+  f <- approxfun(d$x, d$y, yleft = 0, yright = 0)
+  c <- integrate(f, 0, 1)$value
+  return(
+    function(x) {
+      return(f(x) / c)
+    }
+  )
 }
 
   
