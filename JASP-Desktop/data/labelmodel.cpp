@@ -20,6 +20,14 @@ bool LabelModel::labelNeedsFilter(size_t col)
 	return false;
 }
 
+std::string LabelModel::columnName(size_t col)
+{
+	if(DataSetPackage::pkg()->columnCount() <= int(col))
+		return "";
+
+	return DataSetPackage::pkg()->getColumnName(col);
+}
+
 std::vector<bool> LabelModel::filterAllows(size_t col)
 {
 	DataSetPackage *	pkg = DataSetPackage::pkg();
