@@ -57,12 +57,13 @@ h6, .h6-toolbar .jasp-menu {
   padding-right:  0px ;
 }
 
-.jasp-display-item {
-        margin-top:       0.1em ;
-        margin-bottom:    0.6em ;
-        padding-left:     0.6em ;
-        margin-right:     0.6em ;
-        padding-right:    0.6em ;
+.jasp-display-item
+{
+    margin-top:			0.1em ;
+	margin-bottom:		0.6em ;
+	padding-left:		0.6em ;
+	margin-right:		0.6em ;
+	padding-right:		0.6em ;
 }
 
 .jasp-display-item ~ .jasp-display-item {
@@ -78,17 +79,17 @@ h6, .h6-toolbar .jasp-menu {
 }
 
 .jasp-collapsed {
-  max-width: 70em;
-  min-width: 40em;
-        background-color: #404040; /*grayLighter*/
-        border: 1px solid #747677  ; /*grayDarker but not really because this is #696969 */
+    max-width:			70em;
+	min-width:			40em;
+	background-color:	#404040; /*grayLighter*/
+	border:				1px solid #747677  ; /*grayDarker but not really because this is #696969 */
 }
 
 table {
-  font-style: normal ;
-  border-collapse: collapse ;
-  margin-bottom: 2em ;
-  cursor: default;
+  font-style:			normal ;
+  border-collapse:		collapse ;
+  margin-bottom:		2em ;
+  cursor:				default;
 }
 
 th {
@@ -145,39 +146,38 @@ tbody th {
 }
 
 tbody th,
-tbody td {
-
-  border-bottom : none ;
-  border-top : none;
-  white-space: nowrap;
+tbody td
+{
+  border-bottom:	none ;
+  border-top:		none;
+  white-space:		nowrap;
 }
 
 thead tr th {
-
-  border-bottom: thin solid ;
+    border-bottom: thin solid ;
 }
 
 thead tr.over-title th:empty {
-  border-bottom: none;
+    border-bottom:	none;
 }
 
 thead tr.over-title-space th {
-  border-bottom: none;
-  padding: 0 .25em 0 .25em;
+    border-bottom:	none;
+	padding:		0 .25em 0 .25em;
 }
 
 thead tr.over-title-space th:last-child {
-  border-bottom: none;
-  padding: 0 0 0 .25em;
+    border-bottom:	none;
+	padding:		0 0 0 .25em;
 }
 
 div.over-title-space {
-  padding-top: .25em;
-  padding-bottom: .25em;
-  vertical-align: middle;
-  margin: 0 0 0 0;
-  text-align: center;
-  border-bottom: thin solid;
+    padding-top:	.25em;
+	padding-bottom:	.25em;
+	vertical-align:	middle;
+	margin:			0 0 0 0;
+	text-align:		center;
+	border-bottom:	thin solid;
 }
 
 div.over-title-space:empty {
@@ -217,21 +217,21 @@ tr:nth-child(odd) td {
 
 tr:nth-child(even) th,
 tr:nth-child(even) td {
-        background: #555
+    background: #555
 }
 
 .jasp-analysis.selected {
-        color: #EEE;
+    color: #EEE;
 }
 
 .jasp-analysis.unselected:not(.jasp-menu-selected) {
 
-        background-color: #404040 ;
+    background-color: #404040 ;
 }
 
 .jasp-analysis.selected:not(.jasp-menu-selected) {
 
-        background-color: #222 ;
+    background-color: #222 ;
 }
 
 td.text {
@@ -253,14 +253,14 @@ svg > text
 }
 
 .jasp-collection-image {
-  display:            inline-block;
-  background-color:   #000;
+  display:				block;
+  background-color:		#000;
 }
 
 .jasp-image {
-  position:           relative ;
-  background-color:   #000;
-  border-radius:      2px;
+  position:				relative ;
+  background-color:		#000;
+  border-radius:		2px;
 }
 
 .jasp-image-image {
@@ -287,22 +287,16 @@ svg > text
 
 .jasp-image-resizable {
 
-  border: 2px solid #5F89A7 ;
-  border-radius : 2px ;
+  border:			2px solid #5F89A7 ;
+  border-radius:	2px ;
 }
 
 .jasp_top_level {
 
-  margin-left: 1.7em ;
+  margin-left:	1.7em ;
   margin-right: 1.7em ;
 }
 
-:not(.error-state) > .jasp-analysis {
-
-  margin: 0 .7em .7em .7em ;
-  padding: 0 1em 1em 1em ;
-  position: relative;
-}
 
 #instructions {
 
@@ -313,31 +307,31 @@ svg > text
 
 div.toolbar {
 
-  display: block ;
+  display:	block ;
   position: relative;
 }
 
 div.image-status {
 
-  position: absolute ;
-  top : 0 ;
-  left: 0 ;
-  width: 100% ;
-  height: 100% ;
-  background-repeat:no-repeat;
-  background-position: center center;
-  visibility: hidden ;
-  z-index: 50 ;
+  position:				absolute ;
+  top :					0 ;
+  left:					0 ;
+  width:				100% ;
+  height:				100% ;
+  background-repeat:	no-repeat;
+  background-position:	center center;
+  visibility:			hidden ;
+  z-index:				50 ;
 }
 
 div.status {
 
-  width: 16px ;
-  height: 16px ;
-  background-size : 100% ;
-  display: inline-block ;
-  margin-left : 6px ;
-  visibility: hidden ;
+  width:			16px ;
+  height:			16px ;
+  background-size:	100% ;
+  display:			inline-block ;
+  margin-left:		6px ;
+  visibility:		hidden ;
 }
 
 div.status.running {
@@ -365,16 +359,16 @@ div.image-status.waiting {
 }
 
 div.jasp-image-image.no-data {
-        background-image: url('images/darkTheme/empty-plot.png') ;
-  background-repeat: no-repeat;
-  background-size: contain;
-  position: relative;
-  max-height: 480px;
-  max-width: 480px;
+    background-image:	url('images/darkTheme/empty-plot.png') ;
+	background-repeat:	no-repeat;
+	background-size:	contain;
+	position:			relative;
+	max-height:			480px;
+	max-width:			480px;
 }
 
 div.jasp-image-image.no-data.error {
-        background-image: linear-gradient(rgba(0,0,0,0.67), rgba(0,0,0,0.67)), url('images/darkTheme/empty-plot.png');
+    background-image: linear-gradient(rgba(0,0,0,0.67), rgba(0,0,0,0.67)), url('images/darkTheme/empty-plot.png');
 }
 
 .jasp-analysis.error-state div.jasp-image-image {
@@ -386,9 +380,18 @@ div.jasp-image-image.no-data.error {
 }
 
 .jasp-analysis.error-state {
-  min-width: 500px;
-  min-height: 200px;
+  min-width:			500px;
+  min-height:			200px;
 }
+
+
+:not(.error-state) > .jasp-analysis {
+
+    margin:				0 .7em .7em .7em ;
+	padding:			0 1em 1em 1em ;
+	position:			relative;
+}
+
 
 .fatalError.error-message-box {
   border: 3px double  #faa;
@@ -400,57 +403,57 @@ div.jasp-image-image.no-data.error {
   min-width: 400px;
   max-width: 1000px;
   position: absolute;
-  top: 60px;
-  left: 50px;
+  top:			60px;
+  left:			50px;
   margin-right: 50px;
 }
 
 .error-message-positioner {
 
-  height: 0px ;
-  overflow: visible ;
-  position: relative;
-  top: 10px ;
-  float: left ;
-  z-index: 100 ;
+  height:	0px ;
+  overflow:	visible ;
+  position:	relative;
+  top:		10px ;
+  float:	left ;
+  z-index:	100 ;
 }
 
 .jasp-image-image .error-message-positioner {
 
   position: absolute ;
-  top: 25% ;
+  top:		25% ;
 }
 
 .error-message-symbol {
 
-  float: left;
+  float:		left;
   margin-right: .3em;
 }
 
 .error-message-box {
 
-  z-index: 100 ;
-  padding: 1em ;
-  border-radius: .4em ;
-  min-width: 300px ;
-  white-space: normal;
+  z-index:			100 ;
+  padding:			1em ;
+  border-radius:	.4em ;
+  min-width:		300px ;
+  white-space:		normal;
 }
 
 .stack-trace-selector div,
 .stack-trace-selector span {
 
-  cursor: pointer ;
-  display: inline-block ;
-  vertical-align: middle ;
+  cursor:			pointer ;
+  display:			inline-block ;
+  vertical-align:	middle ;
 }
 
 .stack-trace-arrow {
 
-  background: center no-repeat url("images/darkTheme/expand.png") ;
-  background-size: 70% ;
-  width: 16px ;
-  height: 16px ;
-  margin-left: 2px ;
+  background:		center no-repeat url("images/darkTheme/expand.png") ;
+  background-size:	70% ;
+  width:			16px ;
+  height:			16px ;
+  margin-left:		2px ;
 }
 
 .stack-trace {
@@ -465,20 +468,20 @@ td.squash-left
 
 #intro {
 
-  padding: 1em 2em ;
-  margin: 50px auto ;
-  min-width: 300px ;
-  max-width: 500px ;
-  width: 50% ;
-  border: 3px dashed #3CAAE7 ;
-  border-radius: 10px ;
-  color: #3CAAE7 ;
+  padding:			1em 2em ;
+  margin:			50px auto ;
+  min-width:		300px ;
+  max-width:		500px ;
+  width:			50% ;
+  border:			3px dashed #3CAAE7 ;
+  border-radius:	10px ;
+  color:			#3CAAE7 ;
 
 }
 
 .jasp-hide {
-    display: none;
-  visibility: hidden ;
+    display:	none;
+	visibility: hidden ;
 }
 
 .jasp-image-holder {
@@ -488,36 +491,37 @@ td.squash-left
 
 .jasp-resize {
     background: top left no-repeat url(images/darkTheme/resizer.png);
-    right: 2px;
-    cursor: nw-resize;
-  bottom: 2px;
-  position: absolute;
-    width: 16px;
-    height: 16px;
+	right:		2px;
+	cursor:		nw-resize;
+	bottom:		2px;
+	position:	absolute;
+	width:		16px;
+	height:		16px;
 }
 
 .jasp-closer {
-    background: top left no-repeat url(images/darkTheme/closer.png);
-    background-size: 16px;
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    width: 16px;
-    height: 16px;
-    bottom: 1px;
-    float: right;
-    border: 8px solid;
-    border-color: transparent;
-    z-index: 1;
+    background:			top left no-repeat url(images/darkTheme/closer.png);
+	background-size:	16px;
+	position:			absolute;
+	right:				5px;
+	top:				5px;
+	width:				16px;
+	height:				16px;
+	bottom:				1px;
+	float:				right;
+	border:				8px solid;
+	border-color:		transparent;
+	z-index:			1;
 }
 
-.jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar h4, .jasp-toolbar h5, .jasp-toolbar h6, .jasp-toolbar div , .jasp-toolbar span {
-  display: inline-block;
-  vertical-align: middle;
+.jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar h4, .jasp-toolbar h5, .jasp-toolbar h6, .jasp-toolbar div , .jasp-toolbar span
+{
+    display:			inline-block;
+	vertical-align:		middle;
 }
 
-.jasp-menu {
-
+.jasp-menu
+{
   background: center no-repeat url(images/darkTheme/menu-indicator.svg);
   background-size: 70% ;
   width:  16px ;
@@ -526,15 +530,15 @@ td.squash-left
 }
 
 .jasp-collapsed .jasp-menu {
-  background: center no-repeat url(images/darkTheme/expand.png);
-  background-size: 70% ;
-  width:  16px ;
-  height: 16px ;
-  margin-left: 4px ;
+  background:		center no-repeat url(images/darkTheme/expand.png);
+  background-size:	70% ;
+  width:			16px ;
+  height:			16px ;
+  margin-left:		4px ;
 }
 
 .jasp-toolbar {
-  display: block ;
+  display:				block ;
 }
 
 .toolbar-clickable {
@@ -542,9 +546,9 @@ td.squash-left
 }
 
 .toolbar-editing {
-  cursor: text;
-  border-top: 1px solid 	#5c5c5c;	/*rgb(205, 205, 205); #CDCDCD gray*/
-  border-bottom: 1px solid #5c5c5c;
+  cursor:			text;
+  border-top:		1px solid #5c5c5c;	/*rgb(205, 205, 205); #CDCDCD gray*/
+  border-bottom:	1px solid #5c5c5c;
 }
 
 .jasp-menu-selected {
@@ -552,10 +556,10 @@ td.squash-left
 }
 
 .jasp-editable {
-  padding-top: .5em ;
-  padding-bottom: .5em ;
-  background-color : inherit ;
-  word-wrap: break-word;
+  padding-top:		.5em ;
+  padding-bottom:	.5em ;
+  background-color:	inherit ;
+  word-wrap:		break-word;
 }
 
 .jasp-editable, .jasp-editable * {
@@ -564,15 +568,15 @@ td.squash-left
 
 
 .jasp-notes {
-  border-bottom:  1px solid #5c5c5c;
-  border-radius:  0;
-  color:          #000;
-  max-width:      70em;
-  min-width:      40em;
-  position:       relative ;
-  margin-top:     0.6em ;
-  margin-bottom:  0.6em ;
-  filter:         invert(1);
+  border-bottom:		1px solid #5c5c5c;
+  border-radius:		0;
+  color:				#000;
+  max-width:			70em;
+  min-width:			40em;
+  position:				relative ;
+  margin-top:			0.6em ;
+  margin-bottom:		0.6em ;
+  filter:				invert(1);
 }
 
 .jasp-notes-border {
@@ -592,11 +596,11 @@ td.squash-left
 
 
 .jasp-ghost-text {
-  font-weight: bold ;
-  color: #212121;
-  cursor: text;
-  padding-top: .5em ;
-  padding-bottom: .5em ;
+  font-weight:		bold ;
+  color:			#212121;
+  cursor:			text;
+  padding-top:		.5em ;
+  padding-bottom:	.5em ;
 }
 
 pre {
@@ -608,7 +612,7 @@ pre {
 }
 
 .jasp-progressbar-container {
-  min-height: 1.25em;
+  min-height:			1.25em;
 }
 
 .jasp-progressbar {
@@ -616,10 +620,10 @@ pre {
 }
 
 .jasp-progressbar-label {
-  display: table-cell;
-  vertical-align: middle;
-  padding-left: 15px;
-  color: #5c5c5c;
+  display:			table-cell;
+  vertical-align:	middle;
+  padding-left:		15px;
+  color:			#5c5c5c;
 }
 
 .jasp-progressbar-label-sep {

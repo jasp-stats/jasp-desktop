@@ -39,13 +39,14 @@ class ResultsJsInterface : public QObject
 public:
 	explicit ResultsJsInterface(QObject *parent = 0);
 
+	static ResultsJsInterface * singleton() { return _singleton; }
+
 	void setStatus(			Analysis *	analysis);
 	void changeTitle(		Analysis *	analysis);
 	void analysisChanged(	Analysis *	analysis);
 	void overwriteUserdata(	Analysis *	analysis);
 	void showAnalysis(		int			id);
 	void setResultsMeta(	QString		str);
-	void unselect();
 	void showInstruction();
 	void exportPreviewHTML();
 	void exportHTML();
@@ -56,6 +57,7 @@ public:
 	bool			resultsLoaded()		const { return _resultsLoaded;	}
 	bool			scrollAtAll()		const {	return _scrollAtAll;	}
 
+	Q_INVOKABLE void unselect();
 	Q_INVOKABLE void purgeClipboard();
 	Q_INVOKABLE void analysisEditImage(int id, QString options);
 
@@ -76,6 +78,8 @@ signals:
 	Q_INVOKABLE void packageModified();
 	Q_INVOKABLE void refreshAllAnalyses();
 	Q_INVOKABLE void removeAllAnalyses();
+	Q_INVOKABLE void pdfPrintingFinished(	QString pdfPath);
+	Q_INVOKABLE void exportToPDF(			QString pdfPath);
 
 public slots:
 	void resultsDocumentChanged()		{ emit packageModified(); }
@@ -103,10 +107,9 @@ signals:
 	void runJavaScript(			QString js);
 	void zoomChanged();
 	void resultsPageLoadedSignal();
-
 	void resultsLoadedChanged(bool resultsLoaded);
-
 	void scrollAtAllChanged(bool scrollAtAll);
+
 
 public slots:
 	void setExactPValuesHandler(	bool			exact);
@@ -123,6 +126,7 @@ private:
 	void	setGlobalJsValues();
 	QString escapeJavascriptString(const QString &str);
 
+
 private slots:
 	void menuHidding();
 
@@ -131,6 +135,8 @@ private:
 	QString			_resultsPageUrl = "qrc:///html/index.html";
 	bool			_resultsLoaded	= false,
 					_scrollAtAll	= true;
+
+	static ResultsJsInterface * _singleton;
 };
 
 

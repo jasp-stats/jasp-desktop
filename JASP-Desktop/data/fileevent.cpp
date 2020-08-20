@@ -39,8 +39,8 @@ FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 
 FileEvent::~FileEvent()
 {
-	delete _exporter;
-	_exporter = nullptr;
+	   delete _exporter;
+	   _exporter = nullptr;
 }
 
 void FileEvent::setDataFilePath(const QString &path)

@@ -94,6 +94,8 @@ QString MessageForwarder::browseSaveFileDocuments(QString caption, QString filte
 
 QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedExtension)
 {
+	Log::log() << "MessageForwarder::browseSaveFile(\"" << caption.toStdString() << "\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
+
 	QString saveFileName, selectedFilter;
 
 	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter);
@@ -120,6 +122,9 @@ QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QS
 		if(saveFileName.lastIndexOf('.') >= 0)	*selectedExtension = saveFileName.mid(saveFileName.lastIndexOf('.') + 1);
 		else									*selectedExtension = ""; //???
 	}
+
+	if(selectedExtension)
+		Log::log() << "Selected extension: '" << *selectedExtension << "'" << std::endl;
 
 	return saveFileName;
 }

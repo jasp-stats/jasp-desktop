@@ -204,7 +204,7 @@ $(document).ready(function () {
 
 	window.scrollToTopView = function (item)
 	{
-		console.log("window.scrollToTopView called and jasp.scrollAtAll: " + (jasp.scrollAtAll === undefined ? "undefined" : jasp.scrollAtAll ? "true" : "false"))
+		//console.log("window.scrollToTopView called and scrollAtAll: " + (scrollAtAll === undefined ? "undefined" : scrollAtAll ? "true" : "false"))
 
 		if(!scrollAtAll)
 			return;

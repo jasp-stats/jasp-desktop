@@ -26,12 +26,13 @@
 using namespace std;
 
 
-DataExporter::DataExporter(bool includeComputeColumns) : _includeComputeColumns(includeComputeColumns) {
-	_defaultFileType = Utils::FileType::csv;
-	_allowedFileTypes.push_back(Utils::FileType::csv);
-	_allowedFileTypes.push_back(Utils::FileType::txt);
-	_allowedFileTypes.push_back(Utils::FileType::tsv);
+DataExporter::DataExporter(bool includeComputeColumns) : _includeComputeColumns(includeComputeColumns)
+{
+	_defaultFileType  = Utils::FileType::csv;
+	_allowedFileTypes = { Utils::FileType::csv, Utils::FileType::txt, Utils::FileType::tsv };
 }
+
+DataExporter::~DataExporter() {}
 
 void DataExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
 {

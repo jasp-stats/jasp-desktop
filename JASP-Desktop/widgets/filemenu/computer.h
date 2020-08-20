@@ -54,7 +54,7 @@ signals:
 
 private:
 	// these two variables are a hack!
-	bool _hasFileName;
+	bool	_hasFileName;
 	QString _fileName;	
 	
 	ComputerListModel *_computerListModel = nullptr;

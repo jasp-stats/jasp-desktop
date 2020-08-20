@@ -37,10 +37,15 @@
 #include "gui/messageforwarder.h"
 #include <QApplication>
 #include "gui/preferencesmodel.h"
+#include <QThread>
+
+ResultsJsInterface * ResultsJsInterface::_singleton = nullptr;
 
 ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 {
-	connect(this, &ResultsJsInterface::zoomChanged,				this, &ResultsJsInterface::setZoomInWebEngine);
+	_singleton = this;
+
+	connect(this, &ResultsJsInterface::zoomChanged,					this, &ResultsJsInterface::setZoomInWebEngine);
 
 	setZoom(Settings::value(Settings::UI_SCALE).toDouble());
 }

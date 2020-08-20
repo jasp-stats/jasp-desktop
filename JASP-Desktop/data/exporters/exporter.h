@@ -18,6 +18,7 @@
 #ifndef EXPORTER_H
 #define EXPORTER_H
 
+#include <QObject>
 #include <string>
 #include "../datasetpackage.h"
 #include <boost/function.hpp>
@@ -31,13 +32,13 @@
 class Exporter
 {
 protected:
+	Exporter(){}
+
 	Utils::FileType			_defaultFileType;
 	Utils::FileTypeVector	_allowedFileTypes;
 	Utils::FileType			_currentFileType;
-	Exporter();
 
 public:
-
 	virtual ~Exporter();
 	virtual void saveDataSet(const std::string &path, boost::function<void (int)> progressCallback) = 0;
 

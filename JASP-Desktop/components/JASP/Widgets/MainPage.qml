@@ -167,8 +167,8 @@ Item
 				Keys.onPressed:
 					switch(event)
 					{
-					case Qt.Key_PageDown:	resultsView.runJavaScript("windows.pageDown();");
-					case Qt.Key_PageUp:		resultsView.runJavaScript("windows.pageUp();");
+					case Qt.Key_PageDown:	resultsView.runJavaScript("windows.pageDown();");	break;
+					case Qt.Key_PageUp:		resultsView.runJavaScript("windows.pageUp();");		break;
 					}
 
 				onNavigationRequested:
@@ -187,12 +187,21 @@ Item
 					setTranslatedResultsString();
 				}
 
+
+
 				Connections
 				{
 					target:					resultsJsInterface
 					onRunJavaScript:		resultsView.runJavaScript(js)
 					onScrollAtAllChanged:	resultsView.runJavaScript("window.setScrollAtAll("+(scrollAtAll ? "true" : "false")+")");
+
+					onExportToPDF:
+					{
+						resultsJsInterface.unselect(); //Otherwise we get the selected analysis highlighted in the pdf...
+						resultsView.printToPdf(pdfPath);
+					}
 				}
+				onPdfPrintingFinished:	resultsJsInterface.pdfPrintingFinished(filePath);
 
 				webChannel.registeredObjects:	[ resultsJsInterfaceInterface ]
 

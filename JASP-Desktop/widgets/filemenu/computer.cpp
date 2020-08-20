@@ -77,14 +77,8 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 	switch(mode)
 	{
 	case FileEvent::FileExportResults:
-		caption = "Export Result as HTML";
-#ifdef JASP_DEBUG
-		// In debug mode enable pdf export
-		filter = "HTML Files (*.html *.pdf)";
-#else
-		// For future use of pdf export switch to line above
-		filter = "HTML Files (*.html)";
-#endif
+		caption = "Export Result as HTML or PDF";
+		filter = "HTML Files (*.html);;Portable Document Format (*.pdf)";
 		break;
 
 	case FileEvent::FileGenerateData:
@@ -105,9 +99,9 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 		throw std::runtime_error("Wrong FileEvent type for saving!");
 	}
 
-	Log::log() << "Now calling MessageForwarder::browseSaveFile(\"" << caption.toStdString() << "\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
-	QString finalPath = MessageForwarder::browseSaveFile(caption, browsePath, filter);
-	Log::log() << "Chosen path: \"" << finalPath.toStdString() << "\"" << std::endl;
+
+	QString extension,
+			finalPath = MessageForwarder::browseSaveFile(caption, browsePath, filter, &extension);
 
 	FileEvent *event = new FileEvent(this, mode);
 

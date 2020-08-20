@@ -17,13 +17,7 @@
 
 #include "exporter.h"
 
-Exporter::Exporter()
-{
-}
-
-Exporter::~Exporter() {
-
-}
+Exporter::~Exporter() {}
 
 Utils::FileType Exporter::getDefaultFileType()
 {
