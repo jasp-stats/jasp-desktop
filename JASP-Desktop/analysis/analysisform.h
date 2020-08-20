@@ -49,12 +49,14 @@ class QMLExpander;
 class AnalysisForm : public QQuickItem, public VariableInfoProvider
 {
 	Q_OBJECT
-	Q_PROPERTY(QQuickItem * errorMessagesItem	READ errorMessagesItem	WRITE setErrorMessagesItem	NOTIFY errorMessagesItemChanged	)
+	Q_PROPERTY(QString		errors				READ errors											NOTIFY errorsChanged			)
+	Q_PROPERTY(QString		warnings			READ warnings										NOTIFY warningsChanged			)
 	Q_PROPERTY(bool			needsRefresh		READ needsRefresh									NOTIFY needsRefreshChanged		)
 	Q_PROPERTY(bool			hasVolatileNotes	READ hasVolatileNotes								NOTIFY hasVolatileNotesChanged	)
 	Q_PROPERTY(bool			runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged		)
 	Q_PROPERTY(QString		info				READ info				WRITE setInfo				NOTIFY infoChanged				)
 	Q_PROPERTY(QString		helpMD				READ helpMD											NOTIFY helpMDChanged			)
+	Q_PROPERTY(QVariant		analysis			READ analysis			WRITE setAnalysis			NOTIFY analysisChanged			)
 
 public:
 	explicit					AnalysisForm(QQuickItem * = nullptr);
@@ -79,6 +81,8 @@ public slots:
 				void			dataSetColumnsChangedHandler();
 				void			replaceVariableNameInListModels(const std::string & oldName, const std::string & newName);
 				void			setInfo(QString info);
+				void			setAnalysis(QVariant analysis);
+
 
 signals:
 				void			sendRScript(QString script, int key);
@@ -94,6 +98,9 @@ signals:
 				void			valueChanged(JASPControlBase* item);
 				void			infoChanged();
 				void			helpMDChanged();
+				void			errorsChanged();
+				void			warningsChanged();
+				void			analysisChanged();
 
 protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
@@ -104,30 +111,26 @@ public:
 	Options				*	getAnalysisOptions()					{ return _analysis->options(); }
 	JASPControlWrapper	*	getControl(const QString& name)			{ return _controls[name]; }
 	void					addListView(QMLListView* listView, QMLListView* sourceListView);
-	void					clearFormErrors();
 	QMLExpander			*	nextExpander(QMLExpander* expander)		{ return _nextExpanderMap[expander]; }
 	BoundQMLItem		*	getBoundItem(Option* option)			{ return _optionControlMap[option]; }
 
 	Options				*	options() { return _options; }
 	void					addControl(JASPControlBase* control);
 
-	Q_INVOKABLE void reset();
-    Q_INVOKABLE void exportResults();
-	Q_INVOKABLE void addFormError(const QString& message);
-	Q_INVOKABLE void refreshAnalysis();
-	Q_INVOKABLE void runAnalysis();
+	Q_INVOKABLE void		clearFormErrors();
+	Q_INVOKABLE void		clearFormWarnings();
+	Q_INVOKABLE void		reset();
+	Q_INVOKABLE void		exportResults();
+	Q_INVOKABLE void		addFormError(const QString& message);
+	Q_INVOKABLE void		refreshAnalysis();
+	Q_INVOKABLE void		runAnalysis();
 
 	void		addControlError(JASPControlBase* control, QString message, bool temporary = false, bool warning = false);
 	void		clearControlError(JASPControlBase* control);
 	void		cleanUpForm();
-	void		addControlErrorSet(JASPControlBase* control, bool add);
-	void		addControlWarningSet(JASPControlBase* control, bool add);
 	void		refreshAvailableVariablesModels() { _setAllAvailableVariablesModel(true); }
 
-	QQuickItem*	errorMessagesItem()		{ return _formErrorMessagesItem;	}
-	GENERIC_SET_FUNCTION(ErrorMessagesItem, _formErrorMessagesItem, errorMessagesItemChanged, QQuickItem*)
-
-	bool		hasError() { return _jaspControlsWithErrorSet.size() > 0; }
+	bool		hasError();
 
 	bool		isOwnComputedColumn(const QString& col)			const	{ return _computedColumns.contains(col); }
 	void		addOwnComputedColumn(const QString& col)				{ _computedColumns.push_back(col); }
@@ -139,10 +142,13 @@ public:
 	QString		info()				const { return _info; }
 	QString		helpMD()			const;
 	QString		metaHelpMD()		const;
+	QString		errors()			const {	return msgsListToString(_formErrors);	}
+	QString		warnings()			const { return msgsListToString(_formWarnings);	}
+	QVariant	analysis()			const { return QVariant::fromValue(_analysis);	}
 
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
-
+	QString		msgsListToString(const QStringList & list) const;
 
 private:
 	void		_addControlWrapper(JASPControlWrapper* controlWrapper);
@@ -150,18 +156,18 @@ private:
 	void		_setUpRelatedModels();
 	void		_setUpItems();
 	void		_orderExpanders();
-	void		_setErrorMessages();
-	QString		_getControlLabel(JASPControlBase* boundControl);
-	void		_addLoadingError();
-	void		setControlIsDependency(QString controlName, bool isDependency);
-	void		setControlMustContain(QString controlName, QStringList containThis);
-	void		setControlIsDependency(std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
-	void		setControlMustContain(std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
-	QQuickItem* _getControlErrorMessageUsingThisJaspControl(JASPControlBase* jaspControl);
+	QString		_getControlLabel(QString controlName);
+	void		_addLoadingError(QStringList wrongJson);
+	void		setControlIsDependency(	QString controlName, bool isDependency);
+	void		setControlMustContain(	QString controlName, QStringList containThis);
+	void		setControlIsDependency(	std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
+	void		setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
+	QQuickItem* _getControlErrorMessageOfControl(JASPControlBase* jaspControl);
+	void		setAnalysisUp();
 
 private slots:
-	void		formCompletedHandler();
-	void		_formCompletedHandler();
+	   void		formCompletedHandler();
+	   void		_formCompletedHandler();
 
 protected:
 	Analysis								*	_analysis			= nullptr;
@@ -181,17 +187,16 @@ protected:
 	std::map<std::string,std::set<std::string>>	_mustContain;
 	
 private:
-	QQuickItem								*	_formErrorMessagesItem	= nullptr;
 	std::vector<ListModelTermsAvailable*>		_allAvailableVariablesModels,
 												_allAvailableVariablesModelsWithSource;
-	QList<QString>								_formErrorMessages;
-	long										_lastAddedErrorTimestamp = 0;
+	QStringList									_formErrors,
+												_formWarnings;
+
 	QQmlComponent*								_controlErrorMessageComponent = nullptr;
 	QList<QQuickItem*>							_controlErrorMessageCache;
-	QSet<JASPControlBase*>						_jaspControlsWithErrorSet,
-												_jaspControlsWithWarningSet;
 	QList<QString>								_computedColumns;
-	bool										_runOnChange = true;
+	bool										_runOnChange	= true,
+												_formCompleted = false;
 	QString										_info;
 };
 

@@ -42,30 +42,6 @@ FocusScope
 	readonly	property string	expanderButtonIcon		: "expander-arrow-up.png"
 				property alias	columns					: expanderArea.columns
 				property alias	runOnChange				: expanderButton.runOnChange
-
-	function addControlWithError(name, add)
-	{
-		if (!name) return;
-
-		var index = expanderButton.controlsWithError.indexOf(name);
-
-		if (add  && index <  0)	expanderButton.controlsWithError.push(name);
-		if (!add && index >= 0) expanderButton.controlsWithError.splice(index, 1);
-
-		expanderButton.nbControlsWithError = expanderButton.controlsWithError.length;
-	}
-
-	function addControlWithWarning(name, add)
-	{
-		if (!name) return;
-
-		var index = expanderButton.controlsWithWarning.indexOf(name);
-
-		if (add  && index <  0)	expanderButton.controlsWithWarning.push(name);
-		if (!add && index >= 0) expanderButton.controlsWithWarning.splice(index, 1);
-
-		expanderButton.nbControlsWithWarning = expanderButton.controlsWithWarning.length;
-	}
 	
 	states: [
 		State
@@ -97,16 +73,9 @@ FocusScope
 		Keys.onSpacePressed		: toggleExpander()
 		Keys.onReturnPressed	: toggleExpander()
 		KeyNavigation.tab		: expanderWrapper.expanded ? firstControl : nextExpander
-		hasError				: nbControlsWithError   > 0 && !expanderWrapper.expanded
-		hasWarning				: nbControlsWithWarning > 0 && !expanderWrapper.expanded
-
 
 		property var nextExpander			: null
 		property var firstControl			: null
-		property int nbControlsWithError	: 0
-		property int nbControlsWithWarning	: 0
-		property var controlsWithError		: []
-		property var controlsWithWarning	: []
 
 		function toggleExpander() { expanderWrapper.expanded = !expanderWrapper.expanded; }
         

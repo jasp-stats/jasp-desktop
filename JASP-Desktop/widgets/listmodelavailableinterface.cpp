@@ -27,24 +27,19 @@ void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControl
 	
 	_allTerms = _allSortedTerms = _terms = terms;
 	_terms.setSortParent(_allSortedTerms);
+
 	if (currentSortType() != SortType::None)
 		Sortable::sortItems();
 
-	if (_addEmptyValue)
+	if (_addEmptyValue && _allSortedTerms.size() > 0 && !_allSortedTerms[0].asQString().isEmpty())
 	{
-		if (_allSortedTerms.size() > 0 && !_allSortedTerms[0].asQString().isEmpty())
-		{
-			_allSortedTerms.insert(0, QString());
-			_allTerms.insert(0, QString());
-			_terms.add(QString());
-		}
+		_allSortedTerms.insert(0, QString());
+		_allTerms.insert(0, QString());
+		_terms.add(QString());
 	}
 
 	removeTermsInAssignedList();
-	
 	endResetModel();
-
-
 }
 
 QVariant ListModelAvailableInterface::requestInfo(const Term &term, VariableInfo::InfoType info) const
@@ -61,6 +56,7 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 	case SortType::None:
 		_allSortedTerms = _allTerms;
 		break;
+
 	case SortType::SortByName:
 	{
 		QList<QString> sortedTerms = _allSortedTerms.asQList();
@@ -71,24 +67,32 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 		_allSortedTerms = Terms(sortedTerms);
 		break;
 	}
+
 	case SortType::SortByType:
 	{
-		QList<QString> termsList = _allSortedTerms.asQList();
+		QList<QString>				termsList = _allSortedTerms.asQList();
 		QList<QPair<QString, int> > termsTypeList;
+
 		for (const QString& term : termsList)
 			termsTypeList.push_back(QPair<QString, int>(term, requestInfo(term, VariableInfo::VariableType).toInt()));
+
 		std::sort(termsTypeList.begin(), termsTypeList.end(),
 				  [&](const QPair<QString, int>& a, const QPair<QString, int>& b) {
 						return a.second - b.second > 0;
 					});
+
 		QList<QString> sortedTerms;
+
 		for (const auto& term : termsTypeList)
 			sortedTerms.push_back(term.first);
+
 		_allSortedTerms = Terms(sortedTerms);
 		break;
 	}
+
 	default:
-		Log::log() << "Unimplemented sort!";
+		Log::log() << "Unimplemented sort in ListModelAvailableInterface::sortItems!";
+		break;
 	}
 
 	Terms orgTerms = _terms;
@@ -110,17 +114,14 @@ void ListModelAvailableInterface::setChangedTerms(const Terms &newTerms)
 {
 	_tempRemovedTerms.clear();
 	_tempAddedTerms.clear();
+
 	for (const Term& term : _allTerms)
-	{
 		if (!newTerms.contains(term))
 			_tempRemovedTerms.add(term);
-	}
-	
+
 	for (const Term& term : newTerms)
-	{
 		if (!_allTerms.contains(term))
 			_tempAddedTerms.add(term);
-	}
 }
 
 void ListModelAvailableInterface::removeTermsInAssignedList()
@@ -131,10 +132,9 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 	_terms.setSortParent(_allSortedTerms);
 	
 	QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(listView());
+
 	if (qmlAvailableListView)
-	{
-		const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();	
-		for (ListModelAssignedInterface* modelAssign : assignedModels)
+		for (ListModelAssignedInterface* modelAssign : qmlAvailableListView->assignedModel())
 		{
 			Terms assignedTerms = modelAssign->terms();
 			if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
@@ -145,7 +145,7 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 			else if (!modelAssign->copyTermsWhenDropped())
 				_terms.remove(assignedTerms);
 		}
-	}
+
 	
 	endResetModel();
 }

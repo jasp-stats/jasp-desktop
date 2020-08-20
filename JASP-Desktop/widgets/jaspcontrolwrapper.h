@@ -35,7 +35,7 @@ public:
 			 JASPControlWrapper(JASPControlBase* item);
 	virtual ~JASPControlWrapper() {}
 
-	virtual void				setUp();
+	virtual void				setUp() {}
 	virtual void				cleanUp();
 	virtual void				resetQMLItem(JASPControlBase* item);
 

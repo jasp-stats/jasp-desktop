@@ -46,16 +46,6 @@ JASPControlWrapper::JASPControlWrapper(JASPControlBase *item)
 {
 }
 
-void JASPControlWrapper::setUp()
-{
-	QQuickItem* parent = item();
-	while (parent && parent->objectName() != "Section")
-		parent = parent->parentItem();
-
-	if (parent && parent->objectName() == "Section")
-		item()->setSection(parent);	
-}
-
 JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase* control)
 {
 	JASPControlWrapper* controlWrapper = nullptr;
@@ -78,7 +68,7 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 	case JASPControlBase::ControlType::TextArea:
 	{
 		QString textType = control->property("textType").toString();
-		if (textType == "lavaan")									controlWrapper		= new BoundQMLLavaanTextArea(control);
+		if		(textType == "lavaan")								controlWrapper		= new BoundQMLLavaanTextArea(control);
 		else if (textType == "JAGSmodel")							controlWrapper		= new BoundQMLJAGSTextArea(control);
 		else														controlWrapper		= new BoundQMLTextArea(control);
 		break;

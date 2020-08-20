@@ -112,64 +112,13 @@ Rectangle
 		if (temporary) messageTimer.start();
 	}
 
-	Item
+	CrossButton
 	{
-		id				: crossRectangle
-		width			: 12
-		height			: 12
-		anchors.top		: parent.top
-		anchors.right	: parent.right
-
-		property int crossThickness		: 2
-		property int crossLengthOffset	: -4
-
-		function closeMessage()
+		onCrossClicked:
 		{
 			controlErrorMessage.opacity = 0
 			if (controlErrorMessage.control)
 				controlErrorMessage.control.forceActiveFocus()
-		}
-
-
-		Rectangle
-		{
-			anchors.centerIn	: parent
-			height				: crossRectangle.crossThickness
-			width				: parent.width + crossRectangle.crossLengthOffset
-			rotation			: 45
-			color				: controlErrorMessage.foreCol
-		}
-
-		Rectangle
-		{
-			anchors.centerIn	: parent
-			height				: crossRectangle.crossThickness
-			width				: parent.width + crossRectangle.crossLengthOffset
-			rotation			: -45
-			color				: controlErrorMessage.foreCol
-		}
-
-		states:
-		[
-			State
-			{
-				when: crossArea.containsMouse
-				PropertyChanges
-				{
-					target				: crossRectangle
-					crossThickness		: 3
-					crossLengthOffset	: -2
-				}
-			}
-		]
-
-		MouseArea
-		{
-			id				: crossArea
-			anchors.fill	: parent
-			onClicked		: crossRectangle.closeMessage()
-			hoverEnabled	: true
-			cursorShape		: Qt.PointingHandCursor
 		}
 	}
 
