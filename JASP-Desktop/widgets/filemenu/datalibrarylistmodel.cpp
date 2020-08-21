@@ -55,4 +55,6 @@ void DataLibraryListModel::openFile(const QString &path)
 	event->setReadOnly();
 
 	emit openFileEvent(event);
+	
+	changePathCrumbIndex(0);  //Reset begin screen datalibrary (the same as with key navigation).
 }
