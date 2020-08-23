@@ -54,6 +54,36 @@ Section
 		}
 	}
 
+	Group
+	{
+		Layout.columnSpan:	2
+		title:	qsTr("Point estimate")
+
+		RadioButtonGroup
+		{
+			name:	"pointEstimate"
+			RadioButton
+			{
+				value:	"mean"
+				label:	qsTr("Mean")
+				checked: true
+			}
+
+			RadioButton
+			{
+				value:	"median"
+				label:	qsTr("Median")
+			}
+
+			RadioButton
+			{
+				name:	"mode"
+				label:	qsTr("Mode")
+			}
+		}
+	}
+
+
 	CheckBox
 	{
 		name: "plotsPrior"; label: qsTr("Prior distribution"); checked: false	;
@@ -65,6 +95,20 @@ Section
 			RadioButton {
 				value: "individual"
 				label: qsTr("Individual")
+
+				CheckBox
+				{
+					label:	qsTr("Point estimate")
+					name: "plotsPriorIndividualEstimate"
+					childrenOnSameRow: true
+
+					DropDown
+					{
+						name: "plotsPriorIndividualEstimateType"
+						label: ""
+						values: ["mean", "median", "mode"]
+					}
+				}
 
 				CheckBox
 				{
@@ -90,8 +134,8 @@ Section
 									plotsPriorIndividualType.currentText == "HPD"
 						enabled: plotsPriorIndividualCI.checked
 						name: "plotsPriorCoverage"
-						label: qsTr("probability")
-						fieldWidth: 40
+						label: qsTr("coverage")
+						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
 
@@ -133,6 +177,20 @@ Section
 
 				CheckBox
 				{
+					label:	qsTr("Point estimate")
+					name: "plotsPosteriorIndividualEstimate"
+					childrenOnSameRow: true
+
+					DropDown
+					{
+						name: "plotsPosteriorIndividualEstimateType"
+						label: ""
+						values: ["mean", "median", "mode"]
+					}
+				}
+
+				CheckBox
+				{
 					name: "plotsPosteriorIndividualCI"
 					label: qsTr("CI")
 					id: plotsPosteriorIndividualCI
@@ -140,7 +198,6 @@ Section
 
 					DropDown
 					{
-						visible: plotsPosteriorIndividualCI.checked
 						name: "plotsPosteriorIndividualType"
 						label: ""
 						values: ["central", "HPD", "custom", "support"]
@@ -156,8 +213,8 @@ Section
 									plotsPosteriorIndividualType.currentText == "HPD"
 						enabled: plotsPosteriorIndividualCI.checked
 						name: "plotsPosteriorCoverage"
-						label: qsTr("probability")
-						fieldWidth: 40
+						label: qsTr("coverage")
+						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
 
