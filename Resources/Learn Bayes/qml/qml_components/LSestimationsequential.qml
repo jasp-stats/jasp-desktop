@@ -41,12 +41,11 @@ Section
 				value: "overlying"
 				label: qsTr("All")
 
-			
-				RadioButtonGroup
+				DropDown
 				{
-					name: "plotsIterativeCenter"
-					RadioButton{value: "mean"; label: qsTr("Mean")}
-					RadioButton{value: "median"; label: qsTr("Median")}
+					label: qsTr("Point estimate")
+					name: "plotsIterativeEstimateType"
+					values: ["mean", "median", "mode"]
 				}
 
 				Group
@@ -74,8 +73,8 @@ Section
 									plotsIterativeIndividualType.currentText == "HPD"
 						enabled: plotsIterativeIndividualCI.checked
 						name: "plotsIterativeCoverage"
-						label: qsTr("probability")
-						fieldWidth: 40
+						label: qsTr("coverage")
+						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
 
