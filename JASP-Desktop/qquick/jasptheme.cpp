@@ -5,18 +5,21 @@
 
 JaspTheme			*	JaspTheme::_currentTheme	= nullptr;
 QFont					JaspTheme::_jaspFont		= QFont("SansSerif");
+QFont					JaspTheme::_jaspConsoleFont	= QFont("SansSerif");
 
 std::map<QString, JaspTheme *> JaspTheme::_themes;
 
 JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 {
-	_jaspFont = PreferencesModel::prefs()->interfaceFont();
+	_jaspFont			= PreferencesModel::prefs()->realInterfaceFont();
+	_jaspConsoleFont	= PreferencesModel::prefs()->realConsoleFont();
 
 	connect(this,			&JaspTheme::currentThemeNameChanged,		PreferencesModel::prefs(),	&PreferencesModel::setCurrentThemeName	);
 	connect(this,			&JaspTheme::jaspThemeChanged,				PreferencesModel::prefs(),	&PreferencesModel::jaspThemeChanged		);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this,			&JaspTheme::uiScaleChanged				);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::maxFlickVelocityChanged, this,			&JaspTheme::maximumFlickVelocity		);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::realInterfaceFontChanged,this,			&JaspTheme::setDefaultFont				);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::realConsoleFontChanged,	this,			&JaspTheme::setDefaultConsoleFont		);
 
 	connectSizeDistancesToUiScaleChanged();
 
@@ -39,11 +42,28 @@ JaspTheme::~JaspTheme()
 		setCurrentTheme(nullptr);
 }
 
-void JaspTheme::setDefaultFont(QString font)
+void JaspTheme::setDefaultFont()
 {
-	_jaspFont = font;
+	QString font = PreferencesModel::prefs()->realInterfaceFont();
 
-	emit jaspFontChanged(_jaspFont);
+	if (_jaspFont != font)
+	{
+		_jaspFont = font;
+
+		emit jaspFontChanged(_jaspFont);
+	}
+}
+
+void JaspTheme::setDefaultConsoleFont()
+{
+	QString font = PreferencesModel::prefs()->realConsoleFont();
+
+	if (_jaspConsoleFont != font)
+	{
+		_jaspConsoleFont = font;
+
+		emit jaspConsoleFontChanged(_jaspConsoleFont);
+	}
 }
 
 #define CONNECT_UISCALE(toThis) connect(this, &JaspTheme::uiScaleChanged, this, &JaspTheme::toThis)
@@ -1211,6 +1231,15 @@ void JaspTheme::setJaspFont(QFont jaspFont)
 
 	_jaspFont = jaspFont;
 	emit jaspFontChanged(_jaspFont);
+}
+
+void JaspTheme::setJaspConsoleFont(QFont jaspConsoleFont)
+{
+	if (_jaspConsoleFont == jaspConsoleFont)
+		return;
+
+	_jaspConsoleFont = jaspConsoleFont;
+	emit jaspConsoleFontChanged(_jaspConsoleFont);
 }
 
 void JaspTheme::setIconPath(QString iconPath)

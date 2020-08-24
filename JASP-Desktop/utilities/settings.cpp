@@ -43,9 +43,11 @@ const Settings::Setting Settings::Values[] = {
 	{"disableAnimations",			false},
 	{"generateMarkdownHelp",		false},
 	{"interfaceFont",				"SansSerif"},
-	{"resultFont",					"Lucida Grande,Helvetica,Arial,sans-serif,Helvetica Neue,freesans,Segoe UI"},
+	{"consoleFont",					"SansSerif"},
+	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans,Segoe UI"},
 	{"useDefaultInterfaceFont",		true},
-	{"useDefaultResultFont",		false}
+	{"useDefaultConsoleFont",		true},
+	{"useDefaultResultFont",		true}
 };
 
 QVariant Settings::value(Settings::Type key)

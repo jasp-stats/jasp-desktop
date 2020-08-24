@@ -25,6 +25,3 @@ Here you can specify the number of pixels per inch your plots should have. By de
 ### Image background colour
 
 This option let's you toggle the background colour of plots between white and transparant. You may find this especially useful when copying and/or pasting plots.
-
-### Font
-Here you can specify which font will be used by the analysis result panel. Default is Lucida Grande. If you want the default font of your system, click on the 'Use default font' checkbox.

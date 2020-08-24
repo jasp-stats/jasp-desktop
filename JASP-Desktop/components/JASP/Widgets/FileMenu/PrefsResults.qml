@@ -26,6 +26,7 @@ ScrollView
 			x:				jaspTheme.generalMenuMargin
 		}
 
+
 		PrefsGroupRect
 		{
 			title:			qsTr("Table options")
@@ -130,45 +131,9 @@ ScrollView
 					checked:			!preferencesModel.whiteBackground
 					onCheckedChanged:	preferencesModel.whiteBackground = !checked
 					toolTip:			qsTr("This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white.")
-					KeyNavigation.tab:	defaultFont
-					KeyNavigation.down:	defaultFont
+					KeyNavigation.tab:	displayExactPVals
+					KeyNavigation.down:	displayExactPVals
 				}
-			}
-		}
-
-		PrefsGroupRect
-		{
-			id:		fontGroup
-			title:	qsTr("Font")
-
-			RowLayout
-			{
-				spacing: 5
-				CheckBox
-				{
-					id					: defaultFont
-					label				: qsTr("Use default font: ")
-					checked				: preferencesModel.useDefaultResultFont
-					onCheckedChanged	: preferencesModel.useDefaultResultFont = checked
-
-					KeyNavigation.tab	: allFonts
-					KeyNavigation.down	: allFonts
-				}
-
-				Text { font.family: "SansSerif"; text: fontInfo.family }
-			}
-
-			ComboBox
-			{
-				id						: allFonts
-				enabled					: !defaultFont.checked
-				values					: preferencesModel.allFonts
-				addEmptyValue			: true
-				value					: preferencesModel.resultFont
-				onValueChanged			: if (value) preferencesModel.resultFont = value
-
-				KeyNavigation.tab		: displayExactPVals
-				KeyNavigation.down		: displayExactPVals
 			}
 		}
 

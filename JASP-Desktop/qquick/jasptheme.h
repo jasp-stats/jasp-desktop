@@ -158,6 +158,7 @@ class JaspTheme : public QQuickItem
 
 	//Fonts:
 	Q_PROPERTY(QFont              jaspFont                        READ jaspFont                        WRITE setJaspFont                        NOTIFY jaspFontChanged                        )
+	Q_PROPERTY(QFont              jaspConsoleFont                 READ jaspConsoleFont                 WRITE setJaspConsoleFont                 NOTIFY jaspConsoleFontChanged                 )
 
 	Q_PROPERTY(QFont              font                            READ font                            WRITE setFont                            NOTIFY fontChanged                            )
 	Q_PROPERTY(QFont              fontLabel                       READ fontLabel                       WRITE setFontLabel                       NOTIFY fontLabelChanged                       )
@@ -302,6 +303,7 @@ public:
 	QFont				fontPrefOptionsGroupTitle()			const	{ return _fontPrefOptionsGroupTitle;	}
 	QFont				fontConsole()						const	{ return _fontConsole;	}
 	QFont				jaspFont()							const	{ return _jaspFont;				}
+	QFont				jaspConsoleFont()					const	{ return _jaspConsoleFont; }
 	QString				iconPath()							const	{ return _iconPath; }
 	QString				themeName()							const	{ return _themeName;	}
 	static QString		currentIconPath();
@@ -433,6 +435,7 @@ signals:
 	void fontGroupTitleChanged(QFont fontGroupTitle);
 	void fontPrefOptionsGroupTitleChanged(QFont fontPrefOptionsGroupTitle);
 	void jaspFontChanged(QFont jaspFont);
+	void jaspConsoleFontChanged(QFont jaspConsoleFont);
 	void fontConsoleChanged(QFont fontConsole);
 	void iconPathChanged(QString iconPath);
 	void themeNameChanged(QString themeName);
@@ -560,10 +563,12 @@ public slots:
 	void setFontGroupTitle(QFont fontGroupTitle);
 	void setFontPrefOptionsGroupTitle(QFont fontPrefOptionsGroupTitle);
 	void setJaspFont(QFont jaspFont);
+	void setJaspConsoleFont(QFont jaspConsoleFont);
 	void setIconPath(QString iconPath);
 	void setThemeName(QString themeName);
 	void setFontConsole(QFont fontConsole);
-	void setDefaultFont(QString font);
+	void setDefaultFont();
+	void setDefaultConsoleFont();
 
 private:
 	void connectSizeDistancesToUiScaleChanged();
@@ -700,7 +705,8 @@ private:
 						_fontGroupTitle,
 						_fontPrefOptionsGroupTitle;
 
-	static QFont		_jaspFont;
+	static QFont		_jaspFont,
+						_jaspConsoleFont;
 
 	QString				_iconPath,
 						_themeName;

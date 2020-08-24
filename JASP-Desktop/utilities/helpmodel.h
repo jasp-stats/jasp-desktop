@@ -28,7 +28,7 @@ public slots:
 	QString	indexURL();
 	void	reloadPage();
 	void	setThemeCss(QString themeName);
-	void	setFont(QString fontFamily);
+	void	setFont();
 	void	loadingSucceeded();
 	void	setMarkdown(QString markdown);
 	void	loadMarkdown(QString md);

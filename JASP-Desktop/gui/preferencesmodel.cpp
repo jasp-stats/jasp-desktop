@@ -33,12 +33,14 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this,					&PreferencesModel::safeGraphicsChanged,			this, &PreferencesModel::animationsOnChanged			); // So animationsOn *might* not be changed, but it  doesnt matter
 	connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
 
-	connect(LanguageModel::lang(),	&LanguageModel::currentIndexChanged,			this, &PreferencesModel::languageCodeChanged);
+	connect(LanguageModel::lang(),	&LanguageModel::currentIndexChanged,			this, &PreferencesModel::languageCodeChanged			);
 
-	connect(this,					&PreferencesModel::useDefaultInterfaceFontChanged,	[&](){	emit realInterfaceFontChanged(realInterfaceFont()); } );
-	connect(this,					&PreferencesModel::interfaceFontChanged,			[&](){	emit realInterfaceFontChanged(realInterfaceFont()); } );
-	connect(this,					&PreferencesModel::useDefaultResultFontChanged,		[&](){	emit realResultFontChanged(realResultFont());		} );
-	connect(this,					&PreferencesModel::resultFontChanged,				[&](){	emit realResultFontChanged(realResultFont());		} );
+	connect(this,					&PreferencesModel::useDefaultInterfaceFontChanged, this, &PreferencesModel::realInterfaceFontChanged	);
+	connect(this,					&PreferencesModel::interfaceFontChanged,		this, &PreferencesModel::realInterfaceFontChanged		);
+	connect(this,					&PreferencesModel::useDefaultConsoleFontChanged, this, &PreferencesModel::realConsoleFontChanged		);
+	connect(this,					&PreferencesModel::consoleFontChanged,			this, &PreferencesModel::realConsoleFontChanged		);
+	connect(this,					&PreferencesModel::useDefaultResultFontChanged,	this, &PreferencesModel::realResultFontChanged			);
+	connect(this,					&PreferencesModel::resultFontChanged,			this, &PreferencesModel::realResultFontChanged			);
 
 	_loadDatabaseFont();
 }
@@ -117,6 +119,8 @@ GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
 GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
 GET_PREF_FUNC_STR(	interfaceFont,				Settings::INTERFACE_FONT							)
 GET_PREF_FUNC_BOOL( useDefaultInterfaceFont,	Settings::USE_DEFAULT_INTERFACE_FONT				)
+GET_PREF_FUNC_STR(	consoleFont,				Settings::CONSOLE_FONT								)
+GET_PREF_FUNC_BOOL( useDefaultConsoleFont,		Settings::USE_DEFAULT_CONSOLE_FONT					)
 GET_PREF_FUNC_BOOL( useDefaultResultFont,		Settings::USE_DEFAULT_RESULT_FONT					)
 
 QString PreferencesModel::resultFont() const
@@ -145,9 +149,15 @@ QString PreferencesModel::realInterfaceFont() const
 	else							return interfaceFont();
 }
 
+QString PreferencesModel::realConsoleFont() const
+{
+	if (useDefaultConsoleFont())	return "SansSerif";
+	else							return consoleFont();
+}
+
 QString PreferencesModel::realResultFont() const
 {
-	if (useDefaultResultFont())		return "SansSerif";
+	if (useDefaultResultFont())		return defaultResultFont();
 	else							return resultFont();
 }
 
@@ -270,8 +280,10 @@ SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativ
 SET_PREF_FUNCTION(bool,		setDisableAnimations,		disableAnimations,			disableAnimationsChanged,		Settings::DISABLE_ANIMATIONS						)
 SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkdownChanged,		Settings::GENERATE_MARKDOWN_HELP					)
 SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT							)
+SET_PREF_FUNCTION(QString,	setConsoleFont,				consoleFont,				consoleFontChanged,				Settings::CONSOLE_FONT								)
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
 SET_PREF_FUNCTION(bool,		setUseDefaultInterfaceFont,	useDefaultInterfaceFont,	useDefaultInterfaceFontChanged,	Settings::USE_DEFAULT_INTERFACE_FONT				)
+SET_PREF_FUNCTION(bool,		setUseDefaultConsoleFont,	useDefaultConsoleFont,		useDefaultConsoleFontChanged,	Settings::USE_DEFAULT_CONSOLE_FONT					)
 SET_PREF_FUNCTION(bool,		setUseDefaultResultFont,	useDefaultResultFont,		useDefaultResultFontChanged,	Settings::USE_DEFAULT_RESULT_FONT					)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
@@ -420,4 +432,9 @@ void PreferencesModel::_loadDatabaseFont()
 	_allFonts = fontDatabase.families();
 
 	emit allFontsChanged(_allFonts);
+}
+
+QString PreferencesModel::defaultResultFont() const
+{
+	return Settings::defaultValue(Settings::RESULT_FONT).toString();
 }

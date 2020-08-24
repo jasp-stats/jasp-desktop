@@ -45,7 +45,7 @@ void HelpModel::setVisible(bool visible)
 void HelpModel::loadingSucceeded()
 {
 	setThemeCss(PreferencesModel::prefs()->currentThemeName());
-	setFont(PreferencesModel::prefs()->resultFont());
+	setFont();
 	generateJavascript();
 }
 
@@ -144,8 +144,9 @@ void HelpModel::setThemeCss(QString themeName)
 	runJavaScript("window.setTheme", themeName);
 }
 
-void HelpModel::setFont(QString fontFamily)
+void HelpModel::setFont()
 {
+	QString fontFamily = PreferencesModel::prefs()->realResultFont();
 	runJavaScript("window.setFont", fontFamily);
 }
 

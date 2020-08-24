@@ -51,6 +51,7 @@ JaspTheme
 	fontPrefOptionsGroupTitle.family:					jaspFont
 	fontPrefOptionsGroupTitle.weight:					Font.Bold
 
+	fontConsole.family:									jaspConsoleFont
 	fontConsole.pixelSize:								Math.round(14 * uiScale)
 	fontConsole.weight:									Font.Normal
 

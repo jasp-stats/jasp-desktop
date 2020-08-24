@@ -4,6 +4,9 @@ Gebruikersinterface
 Met de gebruikersinterface parameters in JASP kunnen de volgende opties gespecificeerd worden:
 (Al deze instellingen blijven werken, zelfs na het opnieuw opstarten van JASP.)
 
+## Lettertype
+Hier kun je aangeven welke lettertype wordt gebruikt door de interface (file menu, ribbon bar en analysisopties paneel), de R console of de analyseresultaat paneel. Als je de standaard lettertype van jouw systeem wilt, klik op het 'Standaard lettertype' optie.
+
 ### Thema's
 Hier kan worden gespecificeerd of de gebruiker liever een 'licht' of 'donker' thema heeft op de interface van JASP. Het donkere thema is fijner om naar te kijken in donkere omgevingen, terwijl het lichte (en standaard) thema duidelijker is in lichte omgevingen. 
 

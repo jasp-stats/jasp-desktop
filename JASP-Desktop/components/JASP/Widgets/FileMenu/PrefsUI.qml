@@ -45,6 +45,100 @@ ScrollView
 
 		PrefsGroupRect
 		{
+			id:		fontGroup
+			title:	qsTr("Fonts")
+
+			GridLayout
+			{
+				columns			: 3
+				rowSpacing		: 3 * preferencesModel.uiScale
+				columnSpacing	: 4 * preferencesModel.uiScale
+
+				Text { text: qsTr("Interface:") }
+
+				CheckBox
+				{
+					id					: defaultInterfaceFont
+					label				: qsTr("Default font (%1)").arg(fontInfo.family)
+					font.family			: "SansSerif"
+					checked				: preferencesModel.useDefaultInterfaceFont
+					onCheckedChanged	: preferencesModel.useDefaultInterfaceFont = checked
+
+					KeyNavigation.tab	: allInterfaceFonts
+					KeyNavigation.down	: allInterfaceFonts
+				}
+
+				ComboBox
+				{
+					id						: allInterfaceFonts
+					enabled					: !defaultInterfaceFont.checked
+					values					: preferencesModel.allFonts
+					addEmptyValue			: true
+					value					: preferencesModel.interfaceFont
+					onValueChanged			: if (value) preferencesModel.interfaceFont = value
+
+					KeyNavigation.tab		: defaultRConsoleFont
+					KeyNavigation.down		: defaultRConsoleFont
+				}
+
+				Text { text: qsTr("R Console:") }
+
+				CheckBox
+				{
+					id					: defaultRConsoleFont
+					label				: qsTr("Default font (%1)").arg(fontInfo.family)
+					font.family			: "SansSerif"
+					checked				: preferencesModel.useDefaultConsoleFont
+					onCheckedChanged	: preferencesModel.useDefaultConsoleFont = checked
+
+					KeyNavigation.tab	: allConsoleFonts
+					KeyNavigation.down	: allConsoleFonts
+				}
+
+				ComboBox
+				{
+					id						: allConsoleFonts
+					enabled					: !defaultRConsoleFont.checked
+					values					: preferencesModel.allFonts
+					addEmptyValue			: true
+					value					: preferencesModel.consoleFont
+					onValueChanged			: if (value) preferencesModel.consoleFont = value
+
+					KeyNavigation.tab		: lightThemeButton
+					KeyNavigation.down		: lightThemeButton
+				}
+
+				Text { text: qsTr("Result & Help:") }
+
+				CheckBox
+				{
+					id					: defaultResultFont
+					label				: qsTr("Default font (%1)").arg(fontInfo.family)
+					font.family			: preferencesModel.defaultResultFont
+					checked				: preferencesModel.useDefaultResultFont
+					onCheckedChanged	: preferencesModel.useDefaultResultFont = checked
+
+					KeyNavigation.tab	: allResultFonts
+					KeyNavigation.down	: allResultFonts
+				}
+
+				ComboBox
+				{
+					id						: allResultFonts
+					enabled					: !defaultResultFont.checked
+					values					: preferencesModel.allFonts
+					addEmptyValue			: true
+					value					: preferencesModel.resultFont
+					onValueChanged			: if (value) preferencesModel.resultFont = value
+
+					KeyNavigation.tab		: lightThemeButton
+					KeyNavigation.down		: lightThemeButton
+				}
+			}
+		}
+
+		PrefsGroupRect
+		{
 			title:		qsTr("Themes")
 
 			RadioButtonGroup
@@ -69,45 +163,9 @@ ScrollView
 					checked:			preferencesModel.currentThemeName === "darkTheme"
 					onCheckedChanged:	preferencesModel.currentThemeName  =  "darkTheme"
 					toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
-					KeyNavigation.tab:	defaultFont
-					KeyNavigation.down:	defaultFont
+					KeyNavigation.tab:	languages
+					KeyNavigation.down:	languages
 				}
-			}
-		}
-
-		PrefsGroupRect
-		{
-			id:		fontGroup
-			title:	qsTr("Font")
-
-			RowLayout
-			{
-				spacing: 5
-				CheckBox
-				{
-					id					: defaultFont
-					label				: qsTr("Use default font: ")
-					checked				: preferencesModel.useDefaultInterfaceFont
-					onCheckedChanged	: preferencesModel.useDefaultInterfaceFont = checked
-
-					KeyNavigation.tab	: allFonts
-					KeyNavigation.down	: allFonts
-				}
-
-				Text { font.family: "SansSerif"; text: fontInfo.family }
-			}
-
-			ComboBox
-			{
-				id						: allFonts
-				enabled					: !defaultFont.checked
-				values					: preferencesModel.allFonts
-				addEmptyValue			: true
-				value					: preferencesModel.interfaceFont
-				onValueChanged			: if (value) preferencesModel.interfaceFont = value
-
-				KeyNavigation.tab		: languages
-				KeyNavigation.down		: languages
 			}
 		}
 
@@ -215,8 +273,8 @@ ScrollView
 				onCheckedChanged:	preferencesModel.useNativeFileDialog = checked
 				toolTip:			qsTr("If disabled it will not use your operating system's file dialogs but those made by Qt. This might solve some problems on Windows where JASP crashes on pressing \"Browse\".")
 
-				KeyNavigation.tab:		lightThemeButton
-				KeyNavigation.down:		lightThemeButton
+				KeyNavigation.tab:		defaultInterfaceFont
+				KeyNavigation.down:		defaultInterfaceFont
 			}
 		}
 	}

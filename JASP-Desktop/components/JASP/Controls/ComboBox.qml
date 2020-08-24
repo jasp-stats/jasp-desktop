@@ -176,7 +176,7 @@ JASPControl
 			border.width:	comboBox.showBorder && !control.activeFocus ? 1					: 0
 			border.color:	comboBox.showBorder							? jaspTheme.borderColor : "transparent"
 			radius:			2
-			color:			enabled ? jaspTheme.controlBackgroundColor : jaspTheme.disableControlBackgroundColor
+			color:			jaspTheme.controlBackgroundColor
 		}
 
 		Rectangle

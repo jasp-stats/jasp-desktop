@@ -41,7 +41,11 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			useDefaultInterfaceFont	READ useDefaultInterfaceFont	WRITE setUseDefaultInterfaceFont	NOTIFY useDefaultInterfaceFontChanged	)
 	Q_PROPERTY(QString		realInterfaceFont		READ realInterfaceFont												NOTIFY realInterfaceFontChanged			)
 	Q_PROPERTY(QString		interfaceFont			READ interfaceFont				WRITE setInterfaceFont				NOTIFY interfaceFontChanged				)
+	Q_PROPERTY(bool			useDefaultConsoleFont	READ useDefaultConsoleFont		WRITE setUseDefaultConsoleFont		NOTIFY useDefaultConsoleFontChanged		)
+	Q_PROPERTY(QString		realConsoleFont			READ realConsoleFont												NOTIFY realConsoleFontChanged			)
+	Q_PROPERTY(QString		consoleFont				READ consoleFont				WRITE setConsoleFont				NOTIFY consoleFontChanged				)
 	Q_PROPERTY(bool			useDefaultResultFont	READ useDefaultResultFont		WRITE setUseDefaultResultFont		NOTIFY useDefaultResultFontChanged		)
+	Q_PROPERTY(QString		defaultResultFont		READ defaultResultFont			CONSTANT																	)
 	Q_PROPERTY(QString		realResultFont			READ realResultFont													NOTIFY realResultFontChanged			)
 	Q_PROPERTY(QString		resultFont				READ resultFont					WRITE setResultFont					NOTIFY resultFontChanged				)
 	Q_PROPERTY(QString		currentThemeName		READ currentThemeName			WRITE setCurrentThemeName			NOTIFY currentThemeNameChanged			)
@@ -89,6 +93,9 @@ public:
 	bool		useDefaultInterfaceFont()	const;
 	QString		interfaceFont()				const;
 	QString		realInterfaceFont()			const;
+	bool		useDefaultConsoleFont()	const;
+	QString		consoleFont()				const;
+	QString		realConsoleFont()			const;
 	bool		useDefaultResultFont()		const;
 	QString		resultFont()				const;
 	QString		realResultFont()			const;
@@ -99,6 +106,7 @@ public:
 	bool		animationsOn()				const { return !disableAnimations() && !safeGraphics(); }
 	bool		generateMarkdown()			const;
 	QStringList allFonts()					const { return _allFonts; }
+	QString		defaultResultFont()			const;
 
 	void		zoomIn();
 	void		zoomOut();
@@ -142,9 +150,11 @@ public slots:
 	void setCurrentThemeName(			QString		currentThemeName);
 	void setCurrentThemeNameFromClass(	JaspTheme * theme);
 	void setUseDefaultInterfaceFont(	bool		useDefaultInterfaceFont);
+	void setInterfaceFont(				QString		interfaceFont);
+	void setUseDefaultConsoleFont(		bool		useDefaultConsoleFont);
+	void setConsoleFont(				QString		consoleFont);
 	void setUseDefaultResultFont(		bool		useDefaultResultFont);
 	void setResultFont(					QString		resultFont);
-	void setInterfaceFont(				QString		interfaceFont);
 	void setUseNativeFileDialog(		bool		useNativeFileDialog);
 	void setDisableAnimations(			bool		disableAnimations);
 	void setGenerateMarkdown(			bool		generateMarkdown);
@@ -183,10 +193,13 @@ signals:
 	void cranRepoURLChanged(			QString		cranRepoURL);
 	void useDefaultInterfaceFontChanged(bool		useDefaultInterfaceFont);
 	void interfaceFontChanged(			QString		interfaceFont);
-	void realInterfaceFontChanged(		QString		realInterfaceFont);
+	void realInterfaceFontChanged();
+	void useDefaultConsoleFontChanged(	bool		useDefaultConsoleFont);
+	void consoleFontChanged(			QString		consoleFont);
+	void realConsoleFontChanged();
 	void useDefaultResultFontChanged(	bool		useDefaultResultFont);
 	void resultFontChanged(				QString		resultFont);
-	void realResultFontChanged(			QString		realResultFont);
+	void realResultFontChanged();
 	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
 	void languageCodeChanged();
