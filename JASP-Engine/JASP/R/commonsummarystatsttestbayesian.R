@@ -338,12 +338,12 @@
     ttestTableMessage  <- NULL
   }
 
-  # Add information for plots; never show the log Bayes factor in the plots (it interferes with the pie charts)
-  if(options$bayesFactorType == "BF01"){
-    BFPlots <- "BF01"
-  } else {
-    BFPlots <- "BF10"
-  }
+ # Add BF10 or BF01 label for plots; never show the log Bayes factor in the plots (it interferes with the pie charts)
+  if (options$bayesFactorType == "BF01")
+    bfPlotsH1H0 <- FALSE
+  else 
+    bfPlotsH1H0 <- TRUE
+
 
   ttestPriorPosteriorPlot <- list(
     t        = t,
@@ -351,8 +351,8 @@
     n2       = NULL,
     paired   = TRUE,
     oneSided = hypothesisList$oneSided,
-    BF       = BFlist[[BFPlots]],
-    BFH1H0   = BFlist[["BF10"]]
+    BF       = BFlist[["BF10"]],
+    BFH1H0   = bfPlotsH1H0
   )
 
   ttestRobustnessPlot <- list(
@@ -361,7 +361,7 @@
     n2                        = 0 ,
     paired                    = FALSE,
     BF10user                  = BFlist[["BF10"]],
-    yAxisLegendRobustnessPlot = BFPlots,
+    yAxisLegendRobustnessPlot = bfPlotsH1H0,
     nullInterval              = hypothesisList$nullInterval,
     rscale                    = options$priorWidth,
     oneSided                  = hypothesisList$oneSided
@@ -564,8 +564,8 @@
       x = c(maxBFrVal, rscale, 1, sqrt(2)),
       y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
       g = label1,
-      label1 = JASPgraphs::parseThis(label1),
-      label2 = JASPgraphs::parseThis(label2),
+      label1 = jaspGraphs::parseThis(label1),
+      label2 = jaspGraphs::parseThis(label2),
       stringsAsFactors = FALSE
     )
   } else {
@@ -578,7 +578,7 @@
                        "equal"
   )
 
-  p <- JASPgraphs::PlotRobustnessSequential(
+  p <- jaspGraphs::PlotRobustnessSequential(
     dfLines      = dfLines,
     dfPoints     = dfPoints,
     pointLegend  = additionalInformation,
