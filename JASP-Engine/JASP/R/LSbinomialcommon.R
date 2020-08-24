@@ -854,7 +854,7 @@
   dat       <- data.frame(x = prior[["parPoint"]], y_start = 0, y_end = 1, g = "Prior = Posterior")
   return(dat)
 }
-.dataPointEstimateBinomial  <- function(data, prior, N, type = c("parameter", "prediction"), estimate = c("mean", "median", "mode"), prop = FALSE){
+.estimateDataPointBinomial  <- function(data, prior, N, type = c("parameter", "prediction"), estimate = c("mean", "median", "mode"), prop = FALSE){
   
   if (type == "parameter"){
     l <- .estimateBinomialLS(data, prior)[[estimate]]

@@ -73,7 +73,7 @@ Section
 									plotsIterativeIndividualType.currentText == "HPD"
 						enabled: plotsIterativeIndividualCI.checked
 						name: "plotsIterativeCoverage"
-						label: qsTr("coverage")
+						label: qsTr("mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
