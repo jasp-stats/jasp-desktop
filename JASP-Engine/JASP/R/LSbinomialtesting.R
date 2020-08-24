@@ -449,7 +449,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
         }
         
         if (options[[ifelse(type == "Prior", "plotsPriorEstimate", "plotsPosteriorEstimate")]]){
-          dfPointEstimate <- .dataPointEstimateBinomial(temp_data, options[["priors"]][[i]], N = NULL, type = "parameter",
+          dfPointEstimate <- .estimateDataPointBinomial(temp_data, options[["priors"]][[i]], N = NULL, type = "parameter",
                                                         estimate = options[[ifelse(type == "Prior", "plotsPriorEstimateType", "plotsPosteriorEstimateType")]])
         } else
           dfPointEstimate <- NULL
@@ -812,7 +812,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
           nRound <- 0
         
         if (options[[ifelse(type == "Prior", "plotsPredictionEstimate", "plotsPredictionPostEstimate")]]){
-          dfPointEstimate <- .dataPointEstimateBinomial(temp_data, options[["priors"]][[i]], N = predictionN, type = "prediction",
+          dfPointEstimate <- .estimateDataPointBinomial(temp_data, options[["priors"]][[i]], N = predictionN, type = "prediction",
                                                         estimate = options[[ifelse(type == "Prior", "plotsPredictionEstimateType", "plotsPredictionPostEstimateType")]],
                                                         prop = ifelse(type == "Prior", FALSE, options[["predictionPostPlotProp"]])
           )

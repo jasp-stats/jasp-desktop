@@ -134,7 +134,7 @@ Section
 									plotsPriorIndividualType.currentText == "HPD"
 						enabled: plotsPriorIndividualCI.checked
 						name: "plotsPriorCoverage"
-						label: qsTr("coverage")
+						label: qsTr("mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -213,7 +213,7 @@ Section
 									plotsPosteriorIndividualType.currentText == "HPD"
 						enabled: plotsPosteriorIndividualCI.checked
 						name: "plotsPosteriorCoverage"
-						label: qsTr("coverage")
+						label: qsTr("mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
