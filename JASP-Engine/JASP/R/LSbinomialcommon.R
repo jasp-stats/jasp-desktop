@@ -18,39 +18,12 @@
 # data load and summary
 .readyBinomialLS       <- function(options){
   # are data ready
-  if (options[["dataType"]] == "dataCounts"){
-    
+  if (options[["dataType"]] == "dataCounts")
     ready <- TRUE
-    
-  } else if (options[["dataType"]] == "dataSequence"){
-    
-    if (nchar(options[["data_sequence"]]) > 0){
-      
-      if (length(options[["key_success_Seq"]]) == 0){
-        ready <- FALSE
-      } else {
-        ready <- TRUE
-      }
-      
-    } else {
-      ready <- TRUE
-    }
-    
-  } else if (options[["dataType"]] == "dataVariable"){
-    
-    if (options[["selectedVariable"]] != ""){
-      
-      if (length(options[["key_success_Var"]]) == 0){
-        ready <- FALSE
-      } else {
-        ready <- TRUE
-      }
-      
-    } else {
-      ready <- TRUE
-    }
-    
-  }
+  else if (options[["dataType"]] == "dataSequence")
+    ready <- length(options[["key_success_Seq"]]) > 0 || length(options[["key_failure_Seq"]]) > 0
+  else if (options[["dataType"]] == "dataVariable")
+    ready <- length(options[["key_success_Var"]]) > 0 || length(options[["key_failure_Var"]]) > 0
   
   # are priors ready
   ready <- c(ready, length(options[["priors"]]) > 0)
@@ -117,13 +90,20 @@
   x <- na.omit(x)
   x <- as.character(x)
   
-  # treat everything else then success as a failure ifonly successes are supplied
-  if (length(key_failure) == 0){
+  # treat everything else then success as a failure if only successes are supplied
+  if (length(key_failure) == 0 && length(key_success) > 0){
     
     temp_ks <- x %in% key_success
     
     x[temp_ks]  <- 1
     x[!temp_ks] <- 0
+    
+  } else if (length(key_success) == 0 && length(key_failure) > 0){
+    
+    temp_kf <- x %in% key_failure
+    
+    x[!temp_kf] <- 1
+    x[temp_kf]  <- 0
     
   } else {
     # use only variables specified in successes or failures

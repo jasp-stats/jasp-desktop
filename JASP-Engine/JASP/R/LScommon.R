@@ -348,9 +348,9 @@
   
   
   if (xmax > mean(xr)) {
-    legend.position = c(0.2, 0.875)
+    legend.position = c(0.2, 0.8)
   } else {
-    legend.position = c(0.8, 0.875)
+    legend.position = c(0.8, 0.8)
   }
   
   if (no_legend == FALSE){
@@ -757,7 +757,6 @@
     temp_label <- NULL
   }
   
-  yBreaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, dfHist$y))
   if (proportions){
     xBreaks    <- JASPgraphs::getPrettyAxisBreaks(xRange)
     xBreaks[1] <- 0
@@ -771,6 +770,9 @@
   if (xBreaks[length(xBreaks)] > xRange[2])xBreaks[length(xBreaks)] <- xRange[2]
   
   obsYmax    <- max(dfHist$y)
+  if (all(round(dfHist$y[1], 5) == round(dfHist$y, 5)))
+    obsYmax <- obsYmax * 1.2
+  yBreaks    <- JASPgraphs::getPrettyAxisBreaks(c(0, obsYmax))
   breaksYmax <- yBreaks[length(yBreaks)]
   newymax    <- max(ifelse(!is.null(CI) || !is.null(point_estimate), y_max_multiplier + .05, 1.10) * obsYmax, breaksYmax)
   
@@ -997,11 +999,18 @@
   return(temp_label)
 }
 .getYMax               <- function(all_lines, all_arrows){
+  if (!is.null(all_lines)){
+    max_x_lines <- max(all_lines$y)
+    if (all(round(all_lines$y[1], 5) == round(all_lines$y, 5)))
+        max_x_lines <- max_x_lines * 1.2
+  }
+    
+  
   if (!is.null(all_lines) & !is.null(all_arrows)){
-    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, max(all_lines$y)))
+    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, max_x_lines))
     y_max     <- max(c(all_lines$y, y_breaks))
   } else if (!is.null(all_lines)){
-    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, max(all_lines$y)))
+    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, max_x_lines))
     y_max     <- max(c(all_lines$y, y_breaks))
   } else {
     y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, max(all_arrows$y_end)))
@@ -1039,13 +1048,13 @@
   y_max <- .getYMax(all_lines, all_arrows)
   
   if (!is.null(all_lines) & !is.null(all_arrows)){
-    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, max(all_lines$y)))
+    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, y_max))
     y_breaks2 <- JASPgraphs::getPrettyAxisBreaks(c(0, max(all_arrows$y_end)))
     y_pos2    <- y_breaks2/(max(y_breaks2)/y_max)
   } else if (!is.null(all_lines)){
-    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, max(all_lines$y)))
+    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, y_max))
   } else {
-    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, max(all_arrows$y_end)))
+    y_breaks  <- JASPgraphs::getPrettyAxisBreaks(c(0, y_max))
   }
   
   # set the y-scale plotting range
@@ -1988,7 +1997,7 @@
 }
 .CIsTextLS          <- function(SI = FALSE){
   return(gettextf(
-    "<ul><li>'central' - a central interval (or quantile) that covers the central 'coverage'%% area of the distribution</li><li>''HPD' - a highest posterior density interval that covers 'coverage'%% area with the shortest range</li><li>'custom' - an interval defined by a ‘lower’ and ‘upper’ bound. It returns the posterior mass of the parameter falling inside the custom interval.</li>%s</ul>",
+    "<ul><li>'central' - a central interval (or quantile) that covers the central 'mass'%% area of the distribution</li><li>''HPD' - a highest posterior density interval that covers 'mass'%% area with the shortest range</li><li>'custom' - an interval defined by a ‘lower’ and ‘upper’ bound. It returns the posterior mass of the parameter falling inside the custom interval.</li>%s</ul>",
     ifelse(SI, gettext("<li>'support' - a support interval that covers a range of all parameter values which BF is higher than 'BF'</li>"),"")
   ))
 }
