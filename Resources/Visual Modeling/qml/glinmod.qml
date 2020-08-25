@@ -28,7 +28,7 @@ Form
 		enabled: vars.count > 1
 		VariablesForm
 		{
-			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
+			height: 150
 			AvailableVariablesList	{ name: "components"	; title: qsTr("Components")		; source: ["variables"]				}
 			AssignedVariablesList	{ name: "interactions"	; title: qsTr("Model terms")	; listViewType: JASP.Interaction	}
 		}

@@ -88,6 +88,12 @@ Form
 					values: ["JASP", "Black and white", "Minimal", "Classic", "Dark"]
 					label: qsTr("GGplot theme")
 				}
+			CheckBox
+			{
+				name:"bw";
+				label: qsTr("Convert to grayscale");
+				checked: false
+			}
 				CheckBox
 				{
 					name:"ghost";
