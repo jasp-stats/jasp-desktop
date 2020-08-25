@@ -6,7 +6,7 @@ With the user interface parameters in JASP you can specify the following options
 (All these settings will remain after restarting JASP.)
 
 ### Fonts
-Here you can specify which font will be used by the interface (File Menu, Ribbon bar, Analysis options panel), the R Console or the results. If you want the default font of your system, click on the 'Default font' checkbox.
+Here you can specify which font will be used by the interface (File Menu, Ribbon bar, Analysis options panel), the R, Lavaan or JAGS Code, or the results. If you want the default font, click on the 'Default font' checkbox.
 
 ### Themes
 Here you can specify if you would like to have a "light" or a "dark" theme on the interface of JASP. The dark theme is much easier on the eyes if you are in a dark environment while the light (and default) theme is clearer in bright light.

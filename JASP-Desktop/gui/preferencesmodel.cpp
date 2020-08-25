@@ -37,8 +37,8 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 
 	connect(this,					&PreferencesModel::useDefaultInterfaceFontChanged, this, &PreferencesModel::realInterfaceFontChanged	);
 	connect(this,					&PreferencesModel::interfaceFontChanged,		this, &PreferencesModel::realInterfaceFontChanged		);
-	connect(this,					&PreferencesModel::useDefaultConsoleFontChanged, this, &PreferencesModel::realConsoleFontChanged		);
-	connect(this,					&PreferencesModel::consoleFontChanged,			this, &PreferencesModel::realConsoleFontChanged		);
+	connect(this,					&PreferencesModel::useDefaultCodeFontChanged, this, &PreferencesModel::realCodeFontChanged		);
+	connect(this,					&PreferencesModel::codeFontChanged,			this, &PreferencesModel::realCodeFontChanged		);
 	connect(this,					&PreferencesModel::useDefaultResultFontChanged,	this, &PreferencesModel::realResultFontChanged			);
 	connect(this,					&PreferencesModel::resultFontChanged,			this, &PreferencesModel::realResultFontChanged			);
 
@@ -119,8 +119,8 @@ GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
 GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
 GET_PREF_FUNC_STR(	interfaceFont,				Settings::INTERFACE_FONT							)
 GET_PREF_FUNC_BOOL( useDefaultInterfaceFont,	Settings::USE_DEFAULT_INTERFACE_FONT				)
-GET_PREF_FUNC_STR(	consoleFont,				Settings::CONSOLE_FONT								)
-GET_PREF_FUNC_BOOL( useDefaultConsoleFont,		Settings::USE_DEFAULT_CONSOLE_FONT					)
+GET_PREF_FUNC_STR(	codeFont,					Settings::CODE_FONT									)
+GET_PREF_FUNC_BOOL( useDefaultCodeFont,			Settings::USE_DEFAULT_CODE_FONT						)
 GET_PREF_FUNC_BOOL( useDefaultResultFont,		Settings::USE_DEFAULT_RESULT_FONT					)
 
 QString PreferencesModel::resultFont() const
@@ -145,14 +145,14 @@ QString PreferencesModel::resultFont() const
 
 QString PreferencesModel::realInterfaceFont() const
 {
-	if (useDefaultInterfaceFont())	return "SansSerif";
+	if (useDefaultInterfaceFont())	return defaultInterfaceFont();
 	else							return interfaceFont();
 }
 
-QString PreferencesModel::realConsoleFont() const
+QString PreferencesModel::realCodeFont() const
 {
-	if (useDefaultConsoleFont())	return "SansSerif";
-	else							return consoleFont();
+	if (useDefaultCodeFont())	return defaultCodeFont();
+	else							return codeFont();
 }
 
 QString PreferencesModel::realResultFont() const
@@ -280,10 +280,10 @@ SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativ
 SET_PREF_FUNCTION(bool,		setDisableAnimations,		disableAnimations,			disableAnimationsChanged,		Settings::DISABLE_ANIMATIONS						)
 SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkdownChanged,		Settings::GENERATE_MARKDOWN_HELP					)
 SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT							)
-SET_PREF_FUNCTION(QString,	setConsoleFont,				consoleFont,				consoleFontChanged,				Settings::CONSOLE_FONT								)
+SET_PREF_FUNCTION(QString,	setCodeFont,				codeFont,					codeFontChanged,				Settings::CODE_FONT									)
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
 SET_PREF_FUNCTION(bool,		setUseDefaultInterfaceFont,	useDefaultInterfaceFont,	useDefaultInterfaceFontChanged,	Settings::USE_DEFAULT_INTERFACE_FONT				)
-SET_PREF_FUNCTION(bool,		setUseDefaultConsoleFont,	useDefaultConsoleFont,		useDefaultConsoleFontChanged,	Settings::USE_DEFAULT_CONSOLE_FONT					)
+SET_PREF_FUNCTION(bool,		setUseDefaultCodeFont,		useDefaultCodeFont,			useDefaultCodeFontChanged,		Settings::USE_DEFAULT_CODE_FONT						)
 SET_PREF_FUNCTION(bool,		setUseDefaultResultFont,	useDefaultResultFont,		useDefaultResultFontChanged,	Settings::USE_DEFAULT_RESULT_FONT					)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
@@ -427,7 +427,8 @@ void PreferencesModel::_loadDatabaseFont()
 {
 	QFontDatabase fontDatabase;
 
-	fontDatabase.addApplicationFont(":/resources/fonts/FreeSans.ttf");
+	fontDatabase.addApplicationFont(":/fonts/FreeSans.ttf");
+	fontDatabase.addApplicationFont(":/fonts/FiraCode-Retina.ttf");
 
 	_allFonts = fontDatabase.families();
 
@@ -437,4 +438,14 @@ void PreferencesModel::_loadDatabaseFont()
 QString PreferencesModel::defaultResultFont() const
 {
 	return Settings::defaultValue(Settings::RESULT_FONT).toString();
+}
+
+QString PreferencesModel::defaultInterfaceFont() const
+{
+	return Settings::defaultValue(Settings::INTERFACE_FONT).toString();
+}
+
+QString PreferencesModel::defaultCodeFont() const
+{
+	return Settings::defaultValue(Settings::CODE_FONT).toString();
 }

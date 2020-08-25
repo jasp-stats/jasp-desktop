@@ -43,10 +43,10 @@ const Settings::Setting Settings::Values[] = {
 	{"disableAnimations",			false},
 	{"generateMarkdownHelp",		false},
 	{"interfaceFont",				"SansSerif"},
-	{"consoleFont",					"SansSerif"},
+	{"codeFont",					"Fira Code"},
 	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans,Segoe UI"},
 	{"useDefaultInterfaceFont",		true},
-	{"useDefaultConsoleFont",		true},
+	{"useDefaultCodeFont",			true},
 	{"useDefaultResultFont",		true}
 };
 

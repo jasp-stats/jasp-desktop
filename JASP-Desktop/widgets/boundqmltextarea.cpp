@@ -46,39 +46,15 @@ BoundQMLTextArea::BoundQMLTextArea(JASPControlBase* item)
 			_separators.push_back(separator.toString());
 	}
 
-	if (textType == "model")
-	{
-		_textType = TextType::Model;
-
-		int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
-		QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-
-		QFont font(family);
-		font.setStyleHint(QFont::Monospace);
-		font.setPointSize(10);
-		setItemProperty("font", font);
-	}
-	else if (textType == "Rcode")
-	{
-		_textType = TextType::Rcode;
-
-		int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
-		QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-
-		QFont font(family);
-		font.setStyleHint(QFont::Monospace);
-		font.setPointSize(10);
-		setItemProperty("font", font);
-				
-	}
-	else if (textType == "source")
+	if (textType == "source")
 	{
 		_textType = TextType::Source;
 		_model = new ListModelTermsAvailable(this);
 		setTermsAreNotVariables();
 	}
-	else
-		_textType = TextType::Default;
+	else if (textType == "model")	_textType = TextType::Model;
+	else if (textType == "Rcode")	_textType = TextType::Rcode;
+	else							_textType = TextType::Default;
 
 	QQuickItem::connect(item, SIGNAL(applyRequest()), this, SLOT(checkSyntax()));
 	

@@ -71,7 +71,7 @@ JASPControl
 				selectedTextColor:	jaspTheme.white
 				selectionColor:		jaspTheme.itemSelectedColor
 
-				font:				jaspTheme.font
+				font:				["JAGSmodel", "lavaan", "Rcode", "model"].includes(textArea.textType) ? jaspTheme.fontCode : jaspTheme.font
 				color:				textArea.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 				wrapMode:			TextArea.Wrap
 

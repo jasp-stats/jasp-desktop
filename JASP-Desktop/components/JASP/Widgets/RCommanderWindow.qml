@@ -117,7 +117,7 @@ Window
 					{
 						id:					outputWindow
 						text:				rCmd.output
-						font:				jaspTheme.fontConsole
+						font:				jaspTheme.fontRCode
 						wrapMode:			TextEdit.Wrap
 						color:				jaspTheme.textEnabled
 						selectedTextColor:	jaspTheme.textDisabled
@@ -198,7 +198,7 @@ Window
 						TextArea
 						{
 							id:						codeEntry
-							font:					jaspTheme.fontConsole
+							font:					jaspTheme.fontRCode
 							color:					jaspTheme.textEnabled
 							selectedTextColor:		jaspTheme.textDisabled
 							selectionColor:			jaspTheme.black

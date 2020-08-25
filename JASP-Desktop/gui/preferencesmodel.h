@@ -39,11 +39,13 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QString		cranRepoURL				READ cranRepoURL				WRITE setCranRepoURL				NOTIFY cranRepoURLChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
 	Q_PROPERTY(bool			useDefaultInterfaceFont	READ useDefaultInterfaceFont	WRITE setUseDefaultInterfaceFont	NOTIFY useDefaultInterfaceFontChanged	)
+	Q_PROPERTY(QString		defaultInterfaceFont	READ defaultInterfaceFont		CONSTANT																	)
 	Q_PROPERTY(QString		realInterfaceFont		READ realInterfaceFont												NOTIFY realInterfaceFontChanged			)
 	Q_PROPERTY(QString		interfaceFont			READ interfaceFont				WRITE setInterfaceFont				NOTIFY interfaceFontChanged				)
-	Q_PROPERTY(bool			useDefaultConsoleFont	READ useDefaultConsoleFont		WRITE setUseDefaultConsoleFont		NOTIFY useDefaultConsoleFontChanged		)
-	Q_PROPERTY(QString		realConsoleFont			READ realConsoleFont												NOTIFY realConsoleFontChanged			)
-	Q_PROPERTY(QString		consoleFont				READ consoleFont				WRITE setConsoleFont				NOTIFY consoleFontChanged				)
+	Q_PROPERTY(bool			useDefaultCodeFont		READ useDefaultCodeFont			WRITE setUseDefaultCodeFont			NOTIFY useDefaultCodeFontChanged		)
+	Q_PROPERTY(QString		defaultCodeFont			READ defaultCodeFont			CONSTANT																	)
+	Q_PROPERTY(QString		realCodeFont			READ realCodeFont													NOTIFY realCodeFontChanged				)
+	Q_PROPERTY(QString		codeFont				READ codeFont					WRITE setCodeFont					NOTIFY codeFontChanged					)
 	Q_PROPERTY(bool			useDefaultResultFont	READ useDefaultResultFont		WRITE setUseDefaultResultFont		NOTIFY useDefaultResultFontChanged		)
 	Q_PROPERTY(QString		defaultResultFont		READ defaultResultFont			CONSTANT																	)
 	Q_PROPERTY(QString		realResultFont			READ realResultFont													NOTIFY realResultFontChanged			)
@@ -93,9 +95,9 @@ public:
 	bool		useDefaultInterfaceFont()	const;
 	QString		interfaceFont()				const;
 	QString		realInterfaceFont()			const;
-	bool		useDefaultConsoleFont()	const;
-	QString		consoleFont()				const;
-	QString		realConsoleFont()			const;
+	bool		useDefaultCodeFont()		const;
+	QString		codeFont()					const;
+	QString		realCodeFont()				const;
 	bool		useDefaultResultFont()		const;
 	QString		resultFont()				const;
 	QString		realResultFont()			const;
@@ -107,6 +109,8 @@ public:
 	bool		generateMarkdown()			const;
 	QStringList allFonts()					const { return _allFonts; }
 	QString		defaultResultFont()			const;
+	QString		defaultInterfaceFont()		const;
+	QString		defaultCodeFont()			const;
 
 	void		zoomIn();
 	void		zoomOut();
@@ -151,8 +155,8 @@ public slots:
 	void setCurrentThemeNameFromClass(	JaspTheme * theme);
 	void setUseDefaultInterfaceFont(	bool		useDefaultInterfaceFont);
 	void setInterfaceFont(				QString		interfaceFont);
-	void setUseDefaultConsoleFont(		bool		useDefaultConsoleFont);
-	void setConsoleFont(				QString		consoleFont);
+	void setUseDefaultCodeFont(			bool		useDefaultCodeFont);
+	void setCodeFont(					QString		codeFont);
 	void setUseDefaultResultFont(		bool		useDefaultResultFont);
 	void setResultFont(					QString		resultFont);
 	void setUseNativeFileDialog(		bool		useNativeFileDialog);
@@ -194,9 +198,9 @@ signals:
 	void useDefaultInterfaceFontChanged(bool		useDefaultInterfaceFont);
 	void interfaceFontChanged(			QString		interfaceFont);
 	void realInterfaceFontChanged();
-	void useDefaultConsoleFontChanged(	bool		useDefaultConsoleFont);
-	void consoleFontChanged(			QString		consoleFont);
-	void realConsoleFontChanged();
+	void useDefaultCodeFontChanged(		bool		useDefaultCodeFont);
+	void codeFontChanged(				QString		codeFont);
+	void realCodeFontChanged();
 	void useDefaultResultFontChanged(	bool		useDefaultResultFont);
 	void resultFontChanged(				QString		resultFont);
 	void realResultFontChanged();

@@ -5,21 +5,21 @@
 
 JaspTheme			*	JaspTheme::_currentTheme	= nullptr;
 QFont					JaspTheme::_jaspFont		= QFont("SansSerif");
-QFont					JaspTheme::_jaspConsoleFont	= QFont("SansSerif");
+QFont					JaspTheme::_jaspCodeFont	= QFont("FiraCode-Retina");
 
 std::map<QString, JaspTheme *> JaspTheme::_themes;
 
 JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 {
 	_jaspFont			= PreferencesModel::prefs()->realInterfaceFont();
-	_jaspConsoleFont	= PreferencesModel::prefs()->realConsoleFont();
+	_jaspCodeFont		= PreferencesModel::prefs()->realCodeFont();
 
 	connect(this,			&JaspTheme::currentThemeNameChanged,		PreferencesModel::prefs(),	&PreferencesModel::setCurrentThemeName	);
 	connect(this,			&JaspTheme::jaspThemeChanged,				PreferencesModel::prefs(),	&PreferencesModel::jaspThemeChanged		);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this,			&JaspTheme::uiScaleChanged				);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::maxFlickVelocityChanged, this,			&JaspTheme::maximumFlickVelocity		);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::realInterfaceFontChanged,this,			&JaspTheme::setDefaultFont				);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::realConsoleFontChanged,	this,			&JaspTheme::setDefaultConsoleFont		);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::realCodeFontChanged,		this,			&JaspTheme::setDefaultCodeFont			);
 
 	connectSizeDistancesToUiScaleChanged();
 
@@ -31,9 +31,10 @@ JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 	setFontRibbon(_jaspFont);
 	setFontGroupTitle(_jaspFont);
 	setFontPrefOptionsGroupTitle(_jaspFont);
+	setFontCode(_jaspCodeFont);
+	setFontRCode(_jaspCodeFont);
 
-	int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
-	setFontConsole(QFont(QFontDatabase::applicationFontFamilies(id).at(0)));
+	_fontCode.setStyleHint(QFont::Monospace); // Cannot be set in QML https://bugreports.qt.io/browse/QTBUG-38931
 }
 
 JaspTheme::~JaspTheme()
@@ -54,15 +55,15 @@ void JaspTheme::setDefaultFont()
 	}
 }
 
-void JaspTheme::setDefaultConsoleFont()
+void JaspTheme::setDefaultCodeFont()
 {
-	QString font = PreferencesModel::prefs()->realConsoleFont();
+	QString font = PreferencesModel::prefs()->realCodeFont();
 
-	if (_jaspConsoleFont != font)
+	if (_jaspCodeFont != font)
 	{
-		_jaspConsoleFont = font;
+		_jaspCodeFont = font;
 
-		emit jaspConsoleFontChanged(_jaspConsoleFont);
+		emit jaspCodeFontChanged(_jaspCodeFont);
 	}
 }
 
@@ -1233,13 +1234,13 @@ void JaspTheme::setJaspFont(QFont jaspFont)
 	emit jaspFontChanged(_jaspFont);
 }
 
-void JaspTheme::setJaspConsoleFont(QFont jaspConsoleFont)
+void JaspTheme::setJaspCodeFont(QFont jaspCodeFont)
 {
-	if (_jaspConsoleFont == jaspConsoleFont)
+	if (_jaspCodeFont == jaspCodeFont)
 		return;
 
-	_jaspConsoleFont = jaspConsoleFont;
-	emit jaspConsoleFontChanged(_jaspConsoleFont);
+	_jaspCodeFont = jaspCodeFont;
+	emit jaspCodeFontChanged(_jaspCodeFont);
 }
 
 void JaspTheme::setIconPath(QString iconPath)
@@ -1276,13 +1277,22 @@ void JaspTheme::setThemeName(QString themeName)
 		emit currentThemeNameChanged(_themeName);
 }
 
-void JaspTheme::setFontConsole(QFont fontConsole)
+void JaspTheme::setFontRCode(QFont fontRCode)
 {
-	if (_fontConsole == fontConsole)
+	if (_fontRCode == fontRCode)
 		return;
 
-	_fontConsole = fontConsole;
-	emit fontConsoleChanged(_fontConsole);
+	_fontRCode = fontRCode;
+	emit fontRCodeChanged(_fontRCode);
+}
+
+void JaspTheme::setFontCode(QFont fontCode)
+{
+	if (_fontCode == fontCode)
+		return;
+
+	_fontCode = fontCode;
+	emit fontCodeChanged(_fontCode);
 }
 
 QString JaspTheme::currentIconPath()

@@ -119,7 +119,6 @@
         <file>translations/images/flag_fr.png</file>
         <file>translations/images/flag_ge.png</file>
         <file>translations/images/flag_nl.png</file>
-        <file>resources/fonts/FreeSans.ttf</file>
         <file>components/JASP/Theme/DarkTheme.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsUI.qml</file>
         <file>components/JASP/Controls/InputListView.qml</file>

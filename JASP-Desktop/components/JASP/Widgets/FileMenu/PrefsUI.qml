@@ -1,5 +1,6 @@
 import QtQuick			2.12
 import QtQuick.Controls 2.12
+import QtQuick.Layouts	1.3 as L
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
 
@@ -50,17 +51,18 @@ ScrollView
 
 			GridLayout
 			{
-				columns			: 3
+				columns			: 2
 				rowSpacing		: 3 * preferencesModel.uiScale
-				columnSpacing	: 4 * preferencesModel.uiScale
+				columnSpacing	: 3 * preferencesModel.uiScale
 
-				Text { text: qsTr("Interface:") }
+				Text { L.Layout.columnSpan: 2; text: qsTr("Interface:") }
 
 				CheckBox
 				{
+					L.Layout.leftMargin	: 7 * preferencesModel.uiScale
 					id					: defaultInterfaceFont
 					label				: qsTr("Default font (%1)").arg(fontInfo.family)
-					font.family			: "SansSerif"
+					font.family			: preferencesModel.defaultInterfaceFont
 					checked				: preferencesModel.useDefaultInterfaceFont
 					onCheckedChanged	: preferencesModel.useDefaultInterfaceFont = checked
 
@@ -77,41 +79,43 @@ ScrollView
 					value					: preferencesModel.interfaceFont
 					onValueChanged			: if (value) preferencesModel.interfaceFont = value
 
-					KeyNavigation.tab		: defaultRConsoleFont
-					KeyNavigation.down		: defaultRConsoleFont
+					KeyNavigation.tab		: defaultRCodeFont
+					KeyNavigation.down		: defaultRCodeFont
 				}
 
-				Text { text: qsTr("R Console:") }
+				Text { L.Layout.columnSpan: 2; L.Layout.topMargin: 3 * preferencesModel.uiScale; text: qsTr("Code (R, JAGS, Lavaan...):") }
 
 				CheckBox
 				{
-					id					: defaultRConsoleFont
+					L.Layout.leftMargin	: 7 * preferencesModel.uiScale
+					id					: defaultRCodeFont
 					label				: qsTr("Default font (%1)").arg(fontInfo.family)
-					font.family			: "SansSerif"
-					checked				: preferencesModel.useDefaultConsoleFont
-					onCheckedChanged	: preferencesModel.useDefaultConsoleFont = checked
+					font.family			: preferencesModel.defaultCodeFont
+					checked				: preferencesModel.useDefaultCodeFont
+					onCheckedChanged	: preferencesModel.useDefaultCodeFont = checked
 
-					KeyNavigation.tab	: allConsoleFonts
-					KeyNavigation.down	: allConsoleFonts
+					KeyNavigation.tab	: allCodeFonts
+					KeyNavigation.down	: allCodeFonts
 				}
 
 				ComboBox
 				{
-					id						: allConsoleFonts
-					enabled					: !defaultRConsoleFont.checked
+					id						: allCodeFonts
+					enabled					: !defaultRCodeFont.checked
 					values					: preferencesModel.allFonts
 					addEmptyValue			: true
-					value					: preferencesModel.consoleFont
-					onValueChanged			: if (value) preferencesModel.consoleFont = value
+					value					: preferencesModel.codeFont
+					onValueChanged			: if (value) preferencesModel.codeFont = value
 
 					KeyNavigation.tab		: lightThemeButton
 					KeyNavigation.down		: lightThemeButton
 				}
 
-				Text { text: qsTr("Result & Help:") }
+				Text { L.Layout.columnSpan: 2; L.Layout.topMargin: 3 * preferencesModel.uiScale; text: qsTr("Result & Help:") }
 
 				CheckBox
 				{
+					L.Layout.leftMargin	: 7 * preferencesModel.uiScale
 					id					: defaultResultFont
 					label				: qsTr("Default font (%1)").arg(fontInfo.family)
 					font.family			: preferencesModel.defaultResultFont
