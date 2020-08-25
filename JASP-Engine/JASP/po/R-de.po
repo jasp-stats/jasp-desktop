@@ -4723,11 +4723,6 @@ msgstr "Kendalls Tau B"
 msgid "Number of observations is < %s"
 msgstr "Anzahl der Beobachtungen ist < %s"
 
-msgid ""
-"Partial correlation cannot be computed: covariance matrix is computationally "
-"singular."
-msgstr ""
-
 msgid "Assumption checks"
 msgstr "Annahmeprüfungen"
 
@@ -4739,9 +4734,6 @@ msgstr "Variablen"
 
 msgid "Shapiro-Wilk Test for Bivariate Normality"
 msgstr "Shapiro-Wilk-Test auf bivariate Normalverteilung"
-
-msgid "Confidence intervals for partial correlations not yet available."
-msgstr "Konfidenzintervalle sind für Partialkorrelationen noch nicht verfügbar."
 
 msgid "Scatter plots"
 msgstr "Streudiagramme"
@@ -4768,15 +4760,6 @@ msgid ""
 msgstr ""
 "Abbilden nicht möglich: \n"
 " Anzahl der Beobachtungen ist < 2"
-
-msgid "Partial Pearson's r"
-msgstr ""
-
-msgid "Partial Spearman's rho"
-msgstr ""
-
-msgid "Partial Kendall's tau B"
-msgstr ""
 
 msgid "%s heatmap"
 msgstr "%s Heatmap"
