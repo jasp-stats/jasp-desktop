@@ -29,14 +29,9 @@ Form
 		radioButtonsOnSameRow:	true
 		columns:				2
 		onValueChanged:	if(measures_correlation.checked) {
-			advanced_mu_transform.value				= "cohens_d"
-			// TODO: make this work >>
-			advanced_mu_transform_log_OR.enabled	= true
-			advanced_mu_transform_fishers_z.enabled	= false
+			advanced_mu_transform_cohens_d.checked	= true
 		} else if (measures_OR.checked){
-			advanced_mu_transform.value				= "log_OR"
-			advanced_mu_transform_log_OR.enabled	= false
-			advanced_mu_transform_fishers_z.enabled	= true
+			advanced_mu_transform_log_OR.checked	= true
 		}
 
 		RadioButton
@@ -1849,6 +1844,7 @@ Form
 		columns: 		2
 		title: 			qsTr("Advanced")
 
+		/* This will work with JASP 0.15 (+ delete line 31-35)
 		DropDown
 		{
 			Layout.columnSpan: 2
@@ -1856,12 +1852,48 @@ Form
 			label:		qsTr("Transform correlations")
 			name:		"advanced_mu_transform"
 			id:			advanced_mu_transform
-			values:
+			values:		measures_correlation.checked ?
 			[
 				{ label: qsTr("Cohen's d"),		value: "cohens_d"},
-				{ label: qsTr("Fisher's z"),	value: "fishers_z"},//,			id: advanced_mu_transform_fishers_z},
-				{ label: qsTr("log(OR)"),		value: "log_OR"}//				id: advanced_mu_transform_log_OR}
-			]
+				{ label: qsTr("Fisher's z"),	value: "fishers_z"}
+			]:	[
+				{ label: qsTr("log(OR)"),		value: "log_OR"},
+				{ label: qsTr("Cohen's d"),		value: "cohens_d"}
+			]		
+		}
+		*/
+
+		RadioButtonGroup
+		{
+			Layout.columnSpan:		2
+			name:					"advanced_mu_transform"
+			title:					qsTr("Transform effect sizes")
+			id:						advanced_mu_transform
+			enabled:				measures_correlation.checked || measures_OR.checked
+
+			RadioButton
+			{
+				label:		qsTr("log(OR)")
+				value:		"log_OR"
+				visible:	measures_OR.checked
+				id:			advanced_mu_transform_log_OR
+			}
+
+			RadioButton
+			{
+				label:		qsTr("Cohen's d")
+				value:		"cohens_d"
+				visible:	measures_correlation.checked || measures_OR.checked
+				id:			advanced_mu_transform_cohens_d
+			}
+
+			RadioButton
+			{
+				label:		qsTr("Fisher's z")
+				value:		"fishers_z"
+				visible:	measures_correlation.checked
+				id:			advanced_mu_transform_fishers_z
+			}
 		}
 
 		Group
