@@ -1,9 +1,9 @@
-import QtQuick			2.12
+ import QtQuick			2.12
 import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP				1.0
 
-Form
+Form 
 {
 	VariablesForm
 	{
@@ -19,7 +19,7 @@ Form
 
 		VariablesForm
 		{
-			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
+			height: 150
 			AvailableVariablesList	{ name: "components"	; title: qsTr("Components")	; source: ["variables"] }
 			AssignedVariablesList	{ name: "interactions"	; id: "interactions" ; title: qsTr("Model terms"); listViewType: JASP.Interaction
 				rowComponentsTitles: ["Add as a polynomial"]
@@ -60,11 +60,12 @@ Form
 		Group
 		{
 			title: qsTr("Estimation")
-			CheckBox { name:"modinf"		; label: qsTr("Show model comparisons")	; enabled: varlist.count > 1	}
+			CheckBox { name:"modinf"		; label: qsTr("Show model comparisons"); checked:true }
 			CheckBox { name:"means"			; label: qsTr("Report means")			; checked: true				}
 			CheckBox { name:"diff"			; label: qsTr("Show mean differences")	; checked: true				}
 			CheckBox { name:"sl"			; label: qsTr("Show slopes/intercepts")	; checked: true				}
 			CheckBox { name:"ci"			; label: qsTr("Show 95% intervals")		; checked: true				}
+			CheckBox { name:"pval"			; label: qsTr("Show p-values")		; checked: false				}
 		}
 	}
 
@@ -113,6 +114,12 @@ Form
 				name: "theme"
 				values: ["JASP", "Black and white", "Minimal", "Classic", "Dark"]
 				label: qsTr("GGplot theme")
+			}
+			CheckBox
+			{
+				name:"bw";
+				label: qsTr("Convert to grayscale");
+				checked: false
 			}
 			CheckBox
 			{
