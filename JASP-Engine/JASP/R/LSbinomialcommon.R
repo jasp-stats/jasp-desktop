@@ -769,7 +769,7 @@
     
   }
   
-  dat       <- data.frame(x_start = lCI, x_end = uCI, g = "custom", coverage = coverage)
+  dat       <- data.frame(x_start = lCI, x_end = uCI, g = "custom", coverage = coverage, parameter = "theta")
   return(dat)
 }
 .dataSupportBinomialLS      <- function(data, prior, BF){

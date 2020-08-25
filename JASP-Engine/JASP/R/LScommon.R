@@ -964,7 +964,7 @@
     if (CI$g[1] == "HPD"){
       temp_label <- paste(c(temp_cov,"['HPD']:",temp_int), collapse = "")
     } else if (CI$g[1] == "custom"){
-      temp_label  <- paste(c("P({",format(round(CI$x_start, nRound), nsmall = nRound),"<=x}<=",
+      temp_label  <- paste(c("P({",format(round(CI$x_start, nRound), nsmall = nRound),"<=",if (CI$parameter == "theta") "theta" else if (parameter == "mu") "mu","}<=",
                              (format(round(CI$x_end, nRound), nsmall = nRound)),")","=='",round(CI$coverage[1]*100)," %'"), collapse = "")
     } else if (CI$g[1] == "support"){
       temp_label <- paste(c("SI['[BF = ",CI$BF[1],"]']:",temp_int), collapse = "")
