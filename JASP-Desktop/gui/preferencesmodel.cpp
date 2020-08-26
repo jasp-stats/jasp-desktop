@@ -5,6 +5,7 @@
 #include "gui/messageforwarder.h"
 #include "qquick/jasptheme.h"
 #include "utilities/languagemodel.h"
+#include <QFontDatabase>
 
 using namespace std;
 
@@ -32,7 +33,16 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this,					&PreferencesModel::safeGraphicsChanged,			this, &PreferencesModel::animationsOnChanged			); // So animationsOn *might* not be changed, but it  doesnt matter
 	connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
 
-	connect(LanguageModel::lang(),	&LanguageModel::currentIndexChanged,			this, &PreferencesModel::languageCodeChanged);
+	connect(LanguageModel::lang(),	&LanguageModel::currentIndexChanged,			this, &PreferencesModel::languageCodeChanged			);
+
+	connect(this,					&PreferencesModel::useDefaultInterfaceFontChanged, this, &PreferencesModel::realInterfaceFontChanged	);
+	connect(this,					&PreferencesModel::interfaceFontChanged,		this, &PreferencesModel::realInterfaceFontChanged		);
+	connect(this,					&PreferencesModel::useDefaultCodeFontChanged, this, &PreferencesModel::realCodeFontChanged		);
+	connect(this,					&PreferencesModel::codeFontChanged,			this, &PreferencesModel::realCodeFontChanged		);
+	connect(this,					&PreferencesModel::useDefaultResultFontChanged,	this, &PreferencesModel::realResultFontChanged			);
+	connect(this,					&PreferencesModel::resultFontChanged,			this, &PreferencesModel::realResultFontChanged			);
+
+	_loadDatabaseFont();
 }
 
 void PreferencesModel::browseSpreadsheetEditor()
@@ -107,7 +117,49 @@ GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
 GET_PREF_FUNC_BOOL(	useNativeFileDialog,		Settings::USE_NATIVE_FILE_DIALOG					)
 GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
 GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
+GET_PREF_FUNC_STR(	interfaceFont,				Settings::INTERFACE_FONT							)
+GET_PREF_FUNC_BOOL( useDefaultInterfaceFont,	Settings::USE_DEFAULT_INTERFACE_FONT				)
+GET_PREF_FUNC_STR(	codeFont,					Settings::CODE_FONT									)
+GET_PREF_FUNC_BOOL( useDefaultCodeFont,			Settings::USE_DEFAULT_CODE_FONT						)
+GET_PREF_FUNC_BOOL( useDefaultResultFont,		Settings::USE_DEFAULT_RESULT_FONT					)
 
+QString PreferencesModel::resultFont() const
+{
+	QString result = Settings::value(Settings::RESULT_FONT).toString();
+
+	if (result.contains(","))
+	{
+		// The default is a list of fonts.
+		// Select the first one which is available.
+		for (const QString& font : result.split(","))
+		{
+			if (_allFonts.contains(font))
+				return font;
+		}
+
+		return "SansSerif";
+	}
+
+	return result;
+}
+
+QString PreferencesModel::realInterfaceFont() const
+{
+	if (useDefaultInterfaceFont())	return defaultInterfaceFont();
+	else							return interfaceFont();
+}
+
+QString PreferencesModel::realCodeFont() const
+{
+	if (useDefaultCodeFont())	return defaultCodeFont();
+	else							return codeFont();
+}
+
+QString PreferencesModel::realResultFont() const
+{
+	if (useDefaultResultFont())		return defaultResultFont();
+	else							return resultFont();
+}
 
 double PreferencesModel::uiScale()
 {
@@ -227,6 +279,12 @@ SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroun
 SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativeFileDialogChanged,		Settings::USE_NATIVE_FILE_DIALOG					)
 SET_PREF_FUNCTION(bool,		setDisableAnimations,		disableAnimations,			disableAnimationsChanged,		Settings::DISABLE_ANIMATIONS						)
 SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkdownChanged,		Settings::GENERATE_MARKDOWN_HELP					)
+SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT							)
+SET_PREF_FUNCTION(QString,	setCodeFont,				codeFont,					codeFontChanged,				Settings::CODE_FONT									)
+SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
+SET_PREF_FUNCTION(bool,		setUseDefaultInterfaceFont,	useDefaultInterfaceFont,	useDefaultInterfaceFontChanged,	Settings::USE_DEFAULT_INTERFACE_FONT				)
+SET_PREF_FUNCTION(bool,		setUseDefaultCodeFont,		useDefaultCodeFont,			useDefaultCodeFontChanged,		Settings::USE_DEFAULT_CODE_FONT						)
+SET_PREF_FUNCTION(bool,		setUseDefaultResultFont,	useDefaultResultFont,		useDefaultResultFontChanged,	Settings::USE_DEFAULT_RESULT_FONT					)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
@@ -354,16 +412,6 @@ void PreferencesModel::updateUtilsMissingValues()
 	Utils::processEmptyValues();
 }
 
-void PreferencesModel::setDefaultFont(QFont defaultFont)
-{
-	if (_defaultFont == defaultFont)
-		return;
-
-	_defaultFont = defaultFont;
-	emit defaultFontChanged(_defaultFont);
-}
-
-
 void PreferencesModel::setCurrentThemeNameFromClass(JaspTheme * theme)
 {
 	if(theme)
@@ -373,4 +421,31 @@ void PreferencesModel::setCurrentThemeNameFromClass(JaspTheme * theme)
 void PreferencesModel::onCurrentThemeNameChanged(QString newThemeName)
 {
 	JaspTheme::setCurrentThemeFromName(currentThemeName());
+}
+
+void PreferencesModel::_loadDatabaseFont()
+{
+	QFontDatabase fontDatabase;
+
+	fontDatabase.addApplicationFont(":/fonts/FreeSans.ttf");
+	fontDatabase.addApplicationFont(":/fonts/FiraCode-Retina.ttf");
+
+	_allFonts = fontDatabase.families();
+
+	emit allFontsChanged(_allFonts);
+}
+
+QString PreferencesModel::defaultResultFont() const
+{
+	return Settings::defaultValue(Settings::RESULT_FONT).toString();
+}
+
+QString PreferencesModel::defaultInterfaceFont() const
+{
+	return Settings::defaultValue(Settings::INTERFACE_FONT).toString();
+}
+
+QString PreferencesModel::defaultCodeFont() const
+{
+	return Settings::defaultValue(Settings::CODE_FONT).toString();
 }

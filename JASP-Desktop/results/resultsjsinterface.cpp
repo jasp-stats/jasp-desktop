@@ -36,6 +36,7 @@
 #include <QAction>
 #include "gui/messageforwarder.h"
 #include <QApplication>
+#include "gui/preferencesmodel.h"
 
 ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 {
@@ -73,6 +74,7 @@ void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 		emit runJavaScript("window.setAppVersion('" + version + "')");
 
 		setGlobalJsValues();
+		setFontFamily();
 
 		emit resultsPageLoadedSignal();
 		emit zoomChanged();
@@ -381,4 +383,13 @@ void ResultsJsInterface::setThemeCss(QString themeName)
 {
 	if(_resultsLoaded)
 		runJavaScript("window.setTheme(\"" + themeName + "\");");
+}
+
+void ResultsJsInterface::setFontFamily()
+{
+	if (_resultsLoaded)
+	{
+		QString font = PreferencesModel::prefs()->realResultFont();
+		runJavaScript("window.setFontFamily(\"" + escapeJavascriptString(font) + "\");");
+	}
 }

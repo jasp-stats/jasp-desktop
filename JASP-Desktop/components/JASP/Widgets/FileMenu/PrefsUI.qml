@@ -1,5 +1,6 @@
 import QtQuick			2.12
 import QtQuick.Controls 2.12
+import QtQuick.Layouts	1.3 as L
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
 
@@ -41,6 +42,103 @@ ScrollView
 			anchorMe:		false
 			width:			scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
 			x:				jaspTheme.generalMenuMargin
+		}
+
+		PrefsGroupRect
+		{
+			id:		fontGroup
+			title:	qsTr("Fonts")
+
+			GridLayout
+			{
+				columns			: 2
+				rowSpacing		: 3 * preferencesModel.uiScale
+				columnSpacing	: 3 * preferencesModel.uiScale
+
+				Text { L.Layout.columnSpan: 2; text: qsTr("Interface:") }
+
+				CheckBox
+				{
+					L.Layout.leftMargin	: 7 * preferencesModel.uiScale
+					id					: defaultInterfaceFont
+					label				: qsTr("Default font (%1)").arg(fontInfo.family)
+					font.family			: preferencesModel.defaultInterfaceFont
+					checked				: preferencesModel.useDefaultInterfaceFont
+					onCheckedChanged	: preferencesModel.useDefaultInterfaceFont = checked
+
+					KeyNavigation.tab	: allInterfaceFonts
+					KeyNavigation.down	: allInterfaceFonts
+				}
+
+				ComboBox
+				{
+					id						: allInterfaceFonts
+					enabled					: !defaultInterfaceFont.checked
+					values					: preferencesModel.allFonts
+					addEmptyValue			: true
+					value					: preferencesModel.interfaceFont
+					onValueChanged			: if (value) preferencesModel.interfaceFont = value
+
+					KeyNavigation.tab		: defaultRCodeFont
+					KeyNavigation.down		: defaultRCodeFont
+				}
+
+				Text { L.Layout.columnSpan: 2; L.Layout.topMargin: 3 * preferencesModel.uiScale; text: qsTr("Code (R, JAGS, Lavaan...):") }
+
+				CheckBox
+				{
+					L.Layout.leftMargin	: 7 * preferencesModel.uiScale
+					id					: defaultRCodeFont
+					label				: qsTr("Default font (%1)").arg(fontInfo.family)
+					font.family			: preferencesModel.defaultCodeFont
+					checked				: preferencesModel.useDefaultCodeFont
+					onCheckedChanged	: preferencesModel.useDefaultCodeFont = checked
+
+					KeyNavigation.tab	: allCodeFonts
+					KeyNavigation.down	: allCodeFonts
+				}
+
+				ComboBox
+				{
+					id						: allCodeFonts
+					enabled					: !defaultRCodeFont.checked
+					values					: preferencesModel.allFonts
+					addEmptyValue			: true
+					value					: preferencesModel.codeFont
+					onValueChanged			: if (value) preferencesModel.codeFont = value
+
+					KeyNavigation.tab		: lightThemeButton
+					KeyNavigation.down		: lightThemeButton
+				}
+
+				Text { L.Layout.columnSpan: 2; L.Layout.topMargin: 3 * preferencesModel.uiScale; text: qsTr("Result & Help:") }
+
+				CheckBox
+				{
+					L.Layout.leftMargin	: 7 * preferencesModel.uiScale
+					id					: defaultResultFont
+					label				: qsTr("Default font (%1)").arg(fontInfo.family)
+					font.family			: preferencesModel.defaultResultFont
+					checked				: preferencesModel.useDefaultResultFont
+					onCheckedChanged	: preferencesModel.useDefaultResultFont = checked
+
+					KeyNavigation.tab	: allResultFonts
+					KeyNavigation.down	: allResultFonts
+				}
+
+				ComboBox
+				{
+					id						: allResultFonts
+					enabled					: !defaultResultFont.checked
+					values					: preferencesModel.allFonts
+					addEmptyValue			: true
+					value					: preferencesModel.resultFont
+					onValueChanged			: if (value) preferencesModel.resultFont = value
+
+					KeyNavigation.tab		: lightThemeButton
+					KeyNavigation.down		: lightThemeButton
+				}
+			}
 		}
 
 		PrefsGroupRect
@@ -179,8 +277,8 @@ ScrollView
 				onCheckedChanged:	preferencesModel.useNativeFileDialog = checked
 				toolTip:			qsTr("If disabled it will not use your operating system's file dialogs but those made by Qt. This might solve some problems on Windows where JASP crashes on pressing \"Browse\".")
 
-				KeyNavigation.tab:		lightThemeButton
-				KeyNavigation.down:		lightThemeButton
+				KeyNavigation.tab:		defaultInterfaceFont
+				KeyNavigation.down:		defaultInterfaceFont
 			}
 		}
 	}

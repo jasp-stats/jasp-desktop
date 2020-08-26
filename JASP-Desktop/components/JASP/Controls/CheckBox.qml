@@ -42,6 +42,7 @@ JASPControl
 			property alias	childrenArea:			childControlsArea
 			property alias	text:					control.text
 			property alias	font:					label.font
+			property alias	fontInfo:				label.fontInfo
 			property alias	label:					control.text
 			property alias	checked:				control.checked
 			property bool	childrenOnSameRow:		false

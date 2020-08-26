@@ -26,6 +26,7 @@ ScrollView
 			x:				jaspTheme.generalMenuMargin
 		}
 
+
 		PrefsGroupRect
 		{
 			title:			qsTr("Table options")

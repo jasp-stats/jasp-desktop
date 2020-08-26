@@ -158,6 +158,7 @@ class JaspTheme : public QQuickItem
 
 	//Fonts:
 	Q_PROPERTY(QFont              jaspFont                        READ jaspFont                        WRITE setJaspFont                        NOTIFY jaspFontChanged                        )
+	Q_PROPERTY(QFont              jaspCodeFont	                  READ jaspCodeFont                    WRITE setJaspCodeFont                    NOTIFY jaspCodeFontChanged                    )
 
 	Q_PROPERTY(QFont              font                            READ font                            WRITE setFont                            NOTIFY fontChanged                            )
 	Q_PROPERTY(QFont              fontLabel                       READ fontLabel                       WRITE setFontLabel                       NOTIFY fontLabelChanged                       )
@@ -165,7 +166,8 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QFont              fontGroupTitle                  READ fontGroupTitle                  WRITE setFontGroupTitle                  NOTIFY fontGroupTitleChanged                  )
 	Q_PROPERTY(QFont              fontPrefOptionsGroupTitle       READ fontPrefOptionsGroupTitle       WRITE setFontPrefOptionsGroupTitle       NOTIFY fontPrefOptionsGroupTitleChanged       )
 
-	Q_PROPERTY(QFont              fontConsole                     READ fontConsole                     WRITE setFontConsole                     NOTIFY fontConsoleChanged                     )
+	Q_PROPERTY(QFont              fontRCode                       READ fontRCode                       WRITE setFontRCode                       NOTIFY fontRCodeChanged                       )
+	Q_PROPERTY(QFont              fontCode						  READ fontCode				           WRITE setFontCode                        NOTIFY fontCodeChanged                        )
 
 	//Iconfolder:
 	Q_PROPERTY(QString            iconPath                        READ iconPath                                                                 NOTIFY iconPathChanged                        )
@@ -300,8 +302,10 @@ public:
 	QFont				fontRibbon()						const	{ return _fontRibbon;	}
 	QFont				fontGroupTitle()					const	{ return _fontGroupTitle;	}
 	QFont				fontPrefOptionsGroupTitle()			const	{ return _fontPrefOptionsGroupTitle;	}
-	QFont				fontConsole()						const	{ return _fontConsole;	}
+	QFont				fontRCode()							const	{ return _fontRCode;	}
+	QFont				fontCode()							const	{ return _fontCode;	}
 	QFont				jaspFont()							const	{ return _jaspFont;				}
+	QFont				jaspCodeFont()						const	{ return _jaspCodeFont; }
 	QString				iconPath()							const	{ return _iconPath; }
 	QString				themeName()							const	{ return _themeName;	}
 	static QString		currentIconPath();
@@ -433,7 +437,9 @@ signals:
 	void fontGroupTitleChanged(QFont fontGroupTitle);
 	void fontPrefOptionsGroupTitleChanged(QFont fontPrefOptionsGroupTitle);
 	void jaspFontChanged(QFont jaspFont);
-	void fontConsoleChanged(QFont fontConsole);
+	void jaspCodeFontChanged(QFont jaspCodeFont);
+	void fontRCodeChanged(QFont fontRCode);
+	void fontCodeChanged(QFont fontCode);
 	void iconPathChanged(QString iconPath);
 	void themeNameChanged(QString themeName);
 	void currentThemeNameChanged(QString themeName);
@@ -560,9 +566,13 @@ public slots:
 	void setFontGroupTitle(QFont fontGroupTitle);
 	void setFontPrefOptionsGroupTitle(QFont fontPrefOptionsGroupTitle);
 	void setJaspFont(QFont jaspFont);
+	void setJaspCodeFont(QFont jaspCodeFont);
 	void setIconPath(QString iconPath);
 	void setThemeName(QString themeName);
-	void setFontConsole(QFont fontConsole);
+	void setFontRCode(QFont fontRCode);
+	void setFontCode(QFont fontCode);
+	void setDefaultFont();
+	void setDefaultCodeFont();
 
 private:
 	void connectSizeDistancesToUiScaleChanged();
@@ -695,11 +705,13 @@ private:
 	QFont				_font,
 						_fontLabel,
 						_fontRibbon,
-						_fontConsole,
+						_fontRCode,
+						_fontCode,
 						_fontGroupTitle,
 						_fontPrefOptionsGroupTitle;
 
-	static QFont		_jaspFont;
+	static QFont		_jaspFont,
+						_jaspCodeFont;
 
 	QString				_iconPath,
 						_themeName;

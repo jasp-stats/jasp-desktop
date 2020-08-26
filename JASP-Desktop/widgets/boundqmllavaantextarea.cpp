@@ -34,17 +34,6 @@ BoundQMLLavaanTextArea::BoundQMLLavaanTextArea(JASPControlBase* item)
 	_model = new ListModelTermsAvailable(this);
 	_modelHasAllVariables = true;
 
-	int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
-	if(QFontDatabase::applicationFontFamilies(id).size() > 0)
-	{
-		QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-
-		QFont font(family);
-		font.setStyleHint(QFont::Monospace);
-		font.setPointSize(10 * PreferencesModel::prefs()->uiScale());
-		setItemProperty("font", font);
-	}
-
 	QVariant textDocumentVariant = _item->property("textDocument");
 	QQuickTextDocument* textDocumentQQuick = textDocumentVariant.value<QQuickTextDocument *>();
 	if (textDocumentQQuick)

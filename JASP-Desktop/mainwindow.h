@@ -149,7 +149,6 @@ private:
 	void startDataEditor(QString path);
 	void loadRibbonQML();
 	void loadQML();
-	void loadDefaultFont();
 
 	void checkUsedModules();
 

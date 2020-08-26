@@ -38,9 +38,10 @@ GridLayout
 
 	Connections
 	{
-		enabled:				checkFormOverflowWhenLanguageChanged
-		target:					preferencesModel
-		onLanguageCodeChanged:	checkFormOverflowTimer.restart()
+		enabled:					checkFormOverflowWhenLanguageChanged
+		target:						preferencesModel
+		onLanguageCodeChanged:		checkFormOverflowTimer.restart()
+		onRealInterfaceFontChanged:	checkFormOverflowTimer.restart()
 	}
 
 	Timer

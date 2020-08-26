@@ -26,13 +26,6 @@ BoundQMLJAGSTextArea::BoundQMLJAGSTextArea(JASPControlBase* item)
 	: JASPControlWrapper(item)
 	, BoundQMLTextArea(item)
 {
-	int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
-	QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-
-	QFont font(family);
-	font.setStyleHint(QFont::Monospace);
-	font.setPointSize(10 * PreferencesModel::prefs()->uiScale());
-	setItemProperty("font", font);
 	_model = new ListModelTermsAvailable(this);
 	_model->setTermsAreVariables(false);
 }
