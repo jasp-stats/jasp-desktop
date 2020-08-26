@@ -241,7 +241,7 @@ Form {
 				}
 				RadioButton
 				{
-					value: "Bernoulli"; label: qsTr("Bernouilli")
+					value: "Bernoulli"; label: qsTr("Bernoulli")
 					childrenOnSameRow: true
 					DoubleField { name: "bernoulliParam"; label: qsTr("p"); defaultValue: 0.5; max: 1; inclusive: JASP.None; decimals: 3 }
 				}
