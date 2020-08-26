@@ -942,8 +942,8 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
       ),error = function(e)e)
       
     } else{
-      debug()
-      fit <- tryCatch(RoBMA::update.robma(
+
+      fit <- tryCatch(update(
         object  = fit,
         study_names  = if (options[["input_labels"]] != "") dataset[, .v(options[["input_labels"]])],
         chains  = options[["advanced_chains"]],
