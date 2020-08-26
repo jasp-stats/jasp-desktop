@@ -1,0 +1,7381 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: R 3.6.1\n"
+"Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
+"POT-Creation-Date: 2020-08-08 16:02\n"
+"PO-Revision-Date: 2020-04-29 14:35\n"
+"Last-Translator: Johannes Keyser <johannes.keyser@sport.uni-giessen.de>\n"
+"Language-Team: JASP <info@jasp-stats.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n==0 ? 0 : n==1 ? 0 : 1\n"
+
+msgid ""
+"The categorical fixed effect '%s' must have fewer levels than the overall "
+"number of observations."
+msgstr ""
+"Der kategorielle feste Effekt '%s' muss weniger Stufen haben als die "
+"gesamte Anzahl von Beobachtungen."
+
+msgid ""
+"The random effects grouping factor '%s' must have fewer levels than the "
+"overall number of observations."
+msgstr ""
+"Der zufällige Effekt Gruppierungsfaktor '%s' muss weniger Stufen haben als "
+"die gesamte Anzahl von Beobachtungen."
+
+msgid ""
+"The number of iterations must be at least 2 iterations higher than the burnin"
+msgstr ""
+"Die Anzahl von Iterationen muss mindestens 2 Iterationen mehr sein als die "
+"Anzahl der Aufwärmphase"
+
+msgid "%s requres that the dependent variable is positive."
+msgstr "%s setzt voraus, dass die abhängige Variable positiv ist."
+
+msgid "%s requres that the dependent variable is an integer."
+msgstr "%s setzt voraus, dass die abhängige Variable eine ganze Zahl ist."
+
+msgid "%s requres that the dependent variable contains only 0 and 1."
+msgstr "%s setzt voraus, dass die abhängige Variable nur 0 und 1 enthält."
+
+msgid ""
+"%s requres that the dependent variable is higher than 0 and lower than 1."
+msgstr ""
+"%s setzt voraus, dass die abhängige Variable größer als 0 und kleiner als 1 "
+"ist."
+
+msgid "%s requres that the number of trials variable is an integer."
+msgstr "%s setzt voraus, dass die Stichprobengröße eine ganze Zahl ist."
+
+msgid ""
+"%s requres that the dependent variable is proportion of successes out of the "
+"number of trials."
+msgstr ""
+"%s setzt voraus, dass die abhängige Variable ein Anteil an Erfolgen aus der "
+"Anzahl der Versuche ist."
+
+msgid "ANOVA Summary"
+msgstr "ANOVA Zusammenfassung"
+
+msgid "Effect"
+msgstr "Effekt"
+
+msgid "df"
+msgstr "df"
+
+msgid "F"
+msgstr "F"
+
+msgid "ChiSq"
+msgstr "ChiQu"
+
+msgid "p"
+msgstr "p"
+
+msgid "p (bootstrap)"
+msgstr "p (Bootstrap)"
+
+msgid "VS-MPR"
+msgstr "VS-MPQ"
+
+msgid "VS-MPR (bootstrap)"
+msgstr "VS-MPQ (Bootstrap)"
+
+msgid ""
+"The optimizer failed to find a solution. Probably due to quasi-separation in "
+"the data. Try removing some of the predictors."
+msgstr ""
+
+msgid ""
+"The optimizer failed to find a solution due to invalid starting values. "
+"(JASP currently does not support specifying different starting values.)"
+msgstr ""
+
+msgid ""
+"The optimizer failed to find a solution. Probably due to scaling issues "
+"quasi-separation in the data. Try rescaling or removing some of the "
+"predictors."
+msgstr ""
+
+msgid "Intercept"
+msgstr "Konstante"
+
+msgid "Warning:"
+msgstr "<em>Warnung:</em>"
+
+msgid "III"
+msgstr "III"
+
+msgid "II"
+msgstr "II"
+
+msgid "Model summary"
+msgstr "Modell-Zusammenfassung"
+
+msgid "Deviance"
+msgstr "Devianz"
+
+msgid "Deviance (REML)"
+msgstr "Devianz (REML)"
+
+msgid "log Lik."
+msgstr "Log-Lik."
+
+msgid "AIC"
+msgstr "AIC"
+
+msgid "BIC"
+msgstr "BIC"
+
+msgid "Variance/Correlation Estimates"
+msgstr "Varianz/Korrelation Schätzungen"
+
+msgid "%s: Variance Estimates"
+msgstr "%s: Varianzschätzungen"
+
+msgid "Term"
+msgstr "Term"
+
+msgid "Std. Deviation"
+msgstr "Standardabweichung"
+
+msgid "Variance"
+msgstr "Varianz"
+
+msgid "%s: Correlation Estimates"
+msgstr "%s: Korrelations-Schätzungen"
+
+msgid "Residual Variance Estimates"
+msgstr "Residualvarianz-Schätzungen"
+
+msgid "Fixed Effects Estimates"
+msgstr "Feste Effekte Schätzungen"
+
+msgid "Estimate"
+msgstr "Schätzung"
+
+msgid "SE"
+msgstr "Std.-Fehler"
+
+msgid "t"
+msgstr "t"
+
+msgid "Plot"
+msgstr "Abbildung"
+
+msgid ""
+"At least one random effects grouping factor needs to be selected in field "
+"'Background data show'."
+msgstr ""
+
+msgid ""
+"Factor levels need to be distinguished by at least one feature. Please, "
+"check one of the 'Distinguish factor levels' options."
+msgstr ""
+
+msgid "Estimated Means and Confidence Intervals"
+msgstr "Geschätzte Mittelwerte und Konfidenzintervalle"
+
+msgid "Mean"
+msgstr "Mittelwert"
+
+msgid "Lower"
+msgstr "Untere"
+
+msgid "%s%% CI"
+msgstr "%s%% KI"
+
+msgid "Upper"
+msgstr "Obere"
+
+msgid "Estimated Marginal Means"
+msgstr "Geschätzte Randmittelwerte"
+
+msgid "Row"
+msgstr "Zeile"
+
+msgid "z"
+msgstr "z"
+
+msgid "Median"
+msgstr "Median"
+
+msgid "%s%% HPD"
+msgstr ""
+
+msgid "Estimated Trends"
+msgstr "Geschätzte Trends"
+
+msgid "%s (slope)"
+msgstr "%s (Steigung)"
+
+msgid "Contrasts"
+msgstr "Kontraste"
+
+msgid "Odds Ratio"
+msgstr "Odds-Ratio"
+
+msgid "Ratio"
+msgstr "Verhältnis"
+
+msgid "Fit Statistics"
+msgstr "Anpassungs-Statistiken"
+
+msgid "WAIC"
+msgstr "WAIC"
+
+msgid "SE (WAIC)"
+msgstr "SF (WAIC)"
+
+msgid "LOO"
+msgstr "LOO"
+
+msgid "SE (LOO)"
+msgstr "SF (LOO)"
+
+msgid "%s (differences from intercept)"
+msgstr "%s (Differenzen von Konstante)"
+
+msgid "%s (trend)"
+msgstr "% (Trend)"
+
+msgid "%s (marginal means)"
+msgstr "%s (Randmittelwerte)"
+
+msgid "Level"
+msgstr "Stufe"
+
+msgid "R-hat"
+msgstr "R-Dach"
+
+msgid "ESS (bulk)"
+msgstr ""
+
+msgid "ESS (tail)"
+msgstr ""
+
+msgid ""
+"The model could not be estimated. Please, check the options and dataset for "
+"errors."
+msgstr ""
+"Das Modell konnte nicht geschätzt werden. Bitte prüfe die Optionen und den "
+"Datensatz auf Fehler."
+
+msgid "Sampling diagnostics"
+msgstr "Stichproben-Diagnostiken"
+
+msgid "Avg. autocorrelation"
+msgstr "Mittlere Autokorrelation"
+
+msgid ""
+"The following variables are a linear combination of each other, please, "
+"remove one of them from the analysis: %s"
+msgstr ""
+
+msgid ""
+"The intercept corresponds to the (unweighted) grand mean; for each factor "
+"with k levels, k - 1 parameters are estimated. Consequently, the estimates "
+"cannot be directly mapped to factor levels."
+msgstr ""
+
+msgid ""
+"Model fit is singular. Specified random effects parameters (random "
+"intercepts and random slopes) cannot be estimated from the available data. "
+"Carefully reduce the random effects structure, but this practice might "
+"inflate the reported p-value, and invalidates the analysis."
+msgstr ""
+
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, "
+"the maximum possible odds in favor of H₁ over H₀ equals 1/(-e <em>p</em> "
+"log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+"Vovk-Sellke-Maximum-<em>p</em>-Quotient: Basierend auf einem zweiseitigen "
+"<em>p</em>-Wert ist der maximale Quotient zugunsten H₁ gegenüber H₀ "
+"gegeben durch 1/(-e <em>p</em> log(<em>p</em>)) für <em>p</em> .37 "
+"(Sellke, Bayarri, & Berger, 2001)."
+
+msgid ""
+"Numerical problems with the maximum-likelihood estimate (e.g., gradients too "
+"large). This may indicate that the specified random effects parameters "
+"(random intercepts and random slopes) cannot be estimated from the available "
+"data. Consider carefully reducing the random effects structure, but be aware "
+"this may induce unknown risks of anti-conservative results (i.e., p-values "
+"might be lower than nominal)."
+msgstr ""
+
+msgid ""
+"Estimation of degrees of freedom disabled (i.e., asymptotic results shown), "
+"because the number of observations is large. To force estimation, check "
+"corresponding option."
+msgstr ""
+
+msgid "Results are on the response scale."
+msgstr ""
+
+msgid "Results are not on the response scale and might be misleading."
+msgstr ""
+
+msgid "Type %s Sum of Squares"
+msgstr "Typ %s Quadratsumme"
+
+msgid ""
+"This analysis requires at least one random effects grouping factor to run."
+msgstr ""
+
+msgid ""
+"The 'Binomial (aggregated)' family requires the 'Number of trials' to be "
+"specified to run."
+msgstr ""
+
+msgid "P-values correspond to test of null hypothesis against %s."
+msgstr ""
+
+msgid "Results are averaged over the levels of: %s."
+msgstr "Ergebnisse sind gemittelt über die Stufen von: %s"
+
+msgid "binomial"
+msgstr "Binomial"
+
+msgid "gaussian"
+msgstr "Gaußsch"
+
+msgid "gamma"
+msgstr "Gamma"
+
+msgid "inverse gaussian"
+msgstr "Inverse Gaußsche"
+
+msgid "poisson"
+msgstr "Poisson"
+
+msgid "negative binomial"
+msgstr "Negative Binomial"
+
+msgid "beta"
+msgstr "Beta"
+
+msgid "Generalized linear mixed model with %s family and %s link function."
+msgstr ""
+
+msgid "Satterthwaite"
+msgstr "Satterthwaite"
+
+msgid "Kenward-Roger"
+msgstr "Kenward-Roger"
+
+msgid "likelihood ratio tests"
+msgstr ""
+
+msgid "parametric bootstrap"
+msgstr "Parametrischer Bootstrap"
+
+msgid "Model terms tested with %s method."
+msgstr "Modellterme getestet mit %s-Methode"
+
+msgid "P-values are not adjusted."
+msgstr "P-Werte sind nicht korrigiert."
+
+msgid "Holm"
+msgstr "Holm"
+
+msgid "Homel"
+msgstr "Homel"
+
+msgid "Hochberg"
+msgstr "Hochberg"
+
+msgid "Multivariate-t"
+msgstr "Multivariat-t"
+
+msgid "Turkey"
+msgstr ""
+
+msgid "Benjamini-Hochberg"
+msgstr "Benjamini-Hochberg""
+
+msgid "Benjamini-Yekutieli"
+msgstr "Benjamini-Yekutieli"
+
+msgid "Scheffe"
+msgstr "Scheffe"
+
+msgid "Sidak"
+msgstr "Sidak"
+
+msgid "Dunnett"
+msgstr "Dunnett"
+
+msgid "Bonferroni"
+msgstr "Bonferroni"
+
+msgid "P-values are adjusted using %s adjustment."
+msgstr "P-Werte sind korrigiert mit %s-Korrektur."
+
+msgid ""
+"Inference possibly unreliable -- MCMC chains might not have converged; The "
+"largest R-hat is %.3f > 1.01. To lower R-hat please increase 'Iterations', "
+"or 'Adapt delta' in the Options section."
+msgstr ""
+
+msgid ""
+"Low estimation accuracy -- The smallest Effective Sample Size (ESS) is %.2f "
+"< %1.0f. To increase accuracy please increase 'Iterations', or 'Adapt delta' "
+"in the Options section."
+msgstr ""
+
+msgid "The model was fitted using %s."
+msgstr "Das Modell wurde mit %s angepasst."
+
+msgid "Bayesian A/B Test"
+msgstr "Bayesscher A/B-Test"
+
+msgid "Models"
+msgstr "Modelle"
+
+msgid "P(M)"
+msgstr "P(M)"
+
+msgid "P(M|data)"
+msgstr "P(M|Daten)"
+
+msgid ""
+"A positive log odds ratio means that the success rate in Group 2 is higher "
+"than in Group 1."
+msgstr ""
+"Eine positive Log-Odds-Ratio bedeutet, dass die Gewinnchance für Gruppe 2 "
+"höher ist als für Gruppe 1."
+
+msgid "Log odds ratio = 0"
+msgstr "Log-Odds-Ratio = 0"
+
+msgid "Log odds ratio > 0"
+msgstr "Log-Odds-Ratio > 0"
+
+msgid "Log odds ratio < 0"
+msgstr "Log-Odds-Ratio < 0"
+
+msgid "Log odds ratio %s 0"
+msgstr "Log-Odds-Ratio %s 0"
+
+msgid "Descriptives"
+msgstr "Deskriptive Statistiken"
+
+msgid "Counts"
+msgstr "Anzahlen"
+
+msgid "Total"
+msgstr "Gesamt"
+
+msgid "Proportion"
+msgstr "Verhältnis"
+
+msgid "Group 1"
+msgstr "Gruppe 1"
+
+msgid "Group 2"
+msgstr "Gruppe 2"
+
+msgid "Prior and Posterior"
+msgstr "Prior und Posterior"
+
+msgid "Sequential Analysis"
+msgstr "Sequenzielle Analyse"
+
+msgid "Bayes Factor Robustness Check"
+msgstr "Bayesfaktor-Robustheitsprüfung"
+
+msgid "Prior"
+msgstr "Prior"
+
+msgid ""
+"The WLS weights contain negative and/or zero values.<br><br>(only positive "
+"WLS weights allowed)."
+msgstr ""
+"Die WLS-Gewichte beinhalten negative und/oder Nullwerte.<br><br>(Nur "
+"positive WLS-Gewichte sind erlaubt)."
+
+msgid ""
+"Singular fit encountered; one or more predictor variables are a linear "
+"combination of other predictor variables"
+msgstr ""
+"Singuläre Anpassung detektiert; eine oder mehrere Prädiktorvariablen sind "
+"eine lineare Kombination anderer Prädiktorvariablen."
+
+msgid ""
+"Residual sum of squares is 0; this might be due to extremely low variance of "
+"your dependent variable"
+msgstr ""
+"Residuelle Quadratsumme ist 0; möglicherweise liegt dies an extrem niedriger "
+"Varianz deiner abhängigen Variable"
+
+msgid "An error occurred while computing the ANOVA: %s"
+msgstr "Ein Fehler ist beim Berechnen der ANOVA aufgetreten: %s"
+
+msgid ""
+"Your design contains empty cells. Please try a different type of sum of "
+"squares."
+msgstr ""
+"Dein Design beinhaltet leere Zellen. Bitte probiere einen anderen Typ der "
+"Quadratsumme."
+
+msgid "ANOVA"
+msgstr "ANOVA"
+
+msgid "ANCOVA"
+msgstr "ANCOVA"
+
+msgid "Homogeneity Correction"
+msgstr "Homogenitätskorrektur"
+
+msgid "Cases"
+msgstr "Fälle"
+
+msgid "Sum of Squares"
+msgstr "Quadratsumme"
+
+msgid "Mean Square"
+msgstr "Mittlere Quadratsumme"
+
+msgid "VS-MPR%s"
+msgstr "VS-MPQ%s"
+
+msgid "Type I Sum of Squares"
+msgstr "Typ I Quadratsumme"
+
+msgid "Type II Sum of Squares"
+msgstr "Typ II Quadratsumme"
+
+msgid "Type III Sum of Squares"
+msgstr "Typ III Quadratsumme"
+
+msgid ""
+"The Brown-Forsythe and Welch corrections are only available for one-way ANOVA"
+msgstr ""
+"Die Brown-Forsythe- und Welch-Korrekturen sind nur für einfaktorielle ANOVA "
+"verfügbar"
+
+msgid "Contrast Tables"
+msgstr "Kontrast-Tabellen"
+
+msgid "%1$s Contrast - %2$s"
+msgstr "%1$s Kontrast - %2$s"
+
+msgid "Please specify an additional contrast."
+msgstr "Bitte spezifiziere einen weiteren Kontrast."
+
+msgid "Wrong number of custom contrast matrix rows."
+msgstr "Falsche Anzahl Matrixzeilen von benutzerdefiniertem Kontrast."
+
+msgid "Please specify non-zero contrast weights."
+msgstr "Bitte spezifiziere Kontrastgewichte ungleich 0."
+
+msgid "%s%% CI for Mean Difference"
+msgstr "%s%% KI für Mittelwertdifferenz"
+
+msgid "%1$s Contrast Coefficients - %2$s"
+msgstr "%1$s Kontrast-Koeffizienten - %2$s"
+
+msgid "Post Hoc Tests"
+msgstr "Post-hoc-Tests"
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Results are averaged over the levels of: %s"
+msgstr "Ergebnisse sind gemittelt über die Stufen von: %s"
+
+msgid "Cohen's d does not correct for multiple comparisons."
+msgstr "Cohens d korrigiert nicht für multiple Vergleiche."
+
+msgid "Bootstrapping based on %s successful replicates."
+msgstr "Bootstrapping basierend auf %s erfolgreichen Wiederholungen."
+
+msgid ""
+"Mean Difference estimate is based on the median of the bootstrap "
+"distribution."
+msgstr ""
+
+msgid "Bias corrected accelerated."
+msgstr ""
+
+msgid "Bootstrapping Post Hoc Test"
+msgstr "Bootstrapping Post-hoc-Test"
+
+msgid ""
+"Some confidence intervals could not be computed.\n"
+"Possibly too few bootstrap replicates."
+msgstr ""
+"Einige Konfidenzintervalle konnten nicht berechnet werden.\n"
+"Möglicherweise zu wenige Bootstrap-Wiederholungen."
+
+msgid "Dunn"
+msgstr "Dunn"
+
+msgid "Dunn's Post Hoc Comparisons - %s"
+msgstr "Dunns Post-hoc-Vergleiche - %s"
+
+msgid "Comparison"
+msgstr "Vergleich"
+
+msgid "W<sub>i</sub>"
+msgstr "W<sub>i</sub>"
+
+msgid "W<sub>j</sub>"
+msgstr "W<sub>j</sub>"
+
+msgid "p<sub>bonf</sub>"
+msgstr "p<sub>bonf</sub>"
+
+msgid "p<sub>holm</sub>"
+msgstr "p<sub>holm</sub>"
+
+msgid "Games-Howell"
+msgstr "Games-Howell"
+
+msgid "Games-Howell Post Hoc Comparisons - %s"
+msgstr "Games-Howell Post-hoc-Vergleiche - %s"
+
+msgid "Mean Difference"
+msgstr "Mittelwertsdifferenz"
+
+msgid "%.0f%% CI for Mean Difference"
+msgstr "%.0f%% KI für Mittelwertsdifferenz"
+
+msgid "p<sub>tukey</sub>"
+msgstr "p<sub>tukey</sub>"
+
+msgid "Dunnett Post Hoc Comparisons - %s"
+msgstr "Dunnett Post-Hoc-Vergleiche - %s"
+
+msgid "p<sub>dunnett</sub>"
+msgstr "p<sub>dunnett</sub>"
+
+msgid ""
+"Confidence interval is too narrow, please select a different confidence "
+"level."
+msgstr ""
+"Konfidenzintervall ist zu schmal, bitte wähle ein anderes Konfidenzniveau."
+
+msgid "SD"
+msgstr "SD"
+
+msgid "N"
+msgstr "N"
+
+msgid "Assumption Checks"
+msgstr "Annahmeprüfungen"
+
+msgid "Test for Equality of Variances (Levene's)"
+msgstr "Test auf Gleichheit der Varianzen (Levenes)"
+
+msgid "df1"
+msgstr "df1"
+
+msgid "df2"
+msgstr "df2"
+
+msgid ""
+"F-value equal to zero indicating perfect fit.<br><br>(Levene's tests on an "
+"essentially perfect fit are unreliable)"
+msgstr ""
+"F-Wert gleich Null deutet auf perfekte Anpassung hin.<br><br>(Levenes Test "
+"ist bei nahezu perfekter Anpassung unzuverlässig)"
+
+msgid "Marginal Means"
+msgstr "Randmittelwerte"
+
+msgid "Bootstrapping Marginal Means"
+msgstr "Bootstrapping Randmittelwerte"
+
+msgid ""
+"Some confidence intervals could not be computed. Possibly too few bootstrap "
+"replicates."
+msgstr ""
+"Einige Konfidenzintervalle konnten nicht berechnet werden.\n"
+"Möglicherweise zu wenige Bootstrap-Wiederholungen."
+
+msgid "Bootstrapping based on %s replicates."
+msgstr "Bootstrapping basiert auf %s Wiederholungen."
+
+msgid "Simple Main Effects"
+msgstr "Einfache Haupteffekte"
+
+msgid "Simple Main Effects - %s"
+msgstr "Einfache Haupteffekte - %s"
+
+msgid "Level of %s"
+msgstr "Stufe von %s"
+
+msgid "Not enough observations in cells %s."
+msgstr "Nicht genügend Beobachtungen in Zellen %s."
+
+msgid "Kruskal-Wallis Test"
+msgstr "Kruskal-Wallis-Test"
+
+msgid "Factor"
+msgstr "Faktor"
+
+msgid "Statistic"
+msgstr "Statistik"
+
+msgid "Q-Q Plot"
+msgstr "Q-Q-Diagramm"
+
+msgid "Theoretical Quantiles"
+msgstr "Theoretische Quantile"
+
+msgid "Standardized Residuals"
+msgstr "Standardisierte Residuen"
+
+msgid ""
+"Error while loading data. Please verify your repeated measures observations."
+msgstr ""
+"Fehler beim Laden der Daten. Bitte kontrolliere deine Beobachtungen mit "
+"Messwiederholung."
+
+msgid "Factor: <em>%s</em>, contains fewer than two levels."
+msgstr "Faktor: <em>%s</em>, enthält weniger als zwei Stufen."
+
+msgid "Factors: <em>%s</em>, contain fewer than two levels."
+msgstr "Faktoren: <em>%s</em>, enthalten weniger als zwei Stufen."
+
+msgid "The repeated measure: <em>%s</em>, contains infinite values."
+msgstr "Die Messwiederholung: <em>%s</em>, enthält unendliche Werte."
+
+msgid "The repeated measures: <em>%s</em>, contain infinite values."
+msgstr "Die Messwiederholungen: <em>%s</em>, enthalten unendliche Werte."
+
+msgid "The covariate: <em>%s</em>, contains infinite values."
+msgstr "Die Kovariate: <em>%s</em>, enthält unendliche Werte."
+
+msgid "The covariates: <em>%s</em>, contain infinite values."
+msgstr "Die Kovariaten: <em>%s</em>, enthalten unendliche Werte."
+
+msgid ""
+"Please choose a name for the RM factors that differs from those for the "
+"between subjects factors."
+msgstr ""
+"Bitte wähle einen Namen für die MW-Faktoren, der sich von denen der "
+"Zwischensubjektfaktoren unterscheidet."
+
+msgid ""
+"Some parameters are not estimable, most likely due to empty cells of the "
+"design."
+msgstr ""
+"Einige Parameter sind nicht schätzbar, wahrscheinlich durch leere Zellen im "
+"Design."
+
+msgid "Greenhouse-Geisser"
+msgstr "Greenhouse-Geisser"
+
+msgid "Huynh-Feldt"
+msgstr "Huynh-Feldt"
+
+msgid "None"
+msgstr "Keine"
+
+msgid "Between Subjects Effects"
+msgstr "Zwischensubjekteffekte"
+
+msgid "%s<sub>G</sub>"
+msgstr "%s<sub>G</sub>"
+
+msgid "Within Subjects Effects"
+msgstr "Innersubjekteffekte"
+
+msgid "Sphericity Correction"
+msgstr "Sphärizitätskorrektur"
+
+msgid "Sphericity corrections not available for factors with 2 levels."
+msgstr ""
+"Sphärizitiätskorrekturen sind nicht für Faktoren mit 2 Abstufungen verfügbar."
+
+msgid ""
+"Mauchly's test of sphericity indicates that the assumption of sphericity is "
+"violated (p < .05)."
+msgstr ""
+"Mauchlys Test auf Sphärizität deutet darauf hin dass die Annahme der "
+"Sphärizität verletzt ist (p < .05)."
+
+msgid ""
+"Cannot perform homogeneity tests because there are no between subjects "
+"factors specified."
+msgstr ""
+"Kann Homogenitätstests nicht ausführen weil keine Zwischensubjektfaktoren "
+"spezifiziert sind."
+
+msgid "Test of Sphericity"
+msgstr "Test auf Sphärizität"
+
+msgid "Mauchly's W"
+msgstr "Mauchlys W"
+
+msgid "Approx. %s"
+msgstr "Ungefähr %s"
+
+msgid "dfSphericity"
+msgstr "dfSphärizität"
+
+msgid "p-value"
+msgstr "p-Wert"
+
+msgid "Greenhouse-Geisser %s"
+msgstr "Greenhouse-Geisser %s"
+
+msgid "Huynh-Feldt %s"
+msgstr "Huynh-Feldt %s"
+
+msgid "Lower Bound %s"
+msgstr "Untergrenze %s"
+
+msgid ""
+"Cannot perform sphericity tests because there are only two levels of the RM "
+"factor."
+msgstr ""
+"Kann keine Sphärizitätsprüfung durchführen, weil der MW-Faktor nur zwei "
+"Stufen hat."
+
+msgid "Unpooled error term only allowed in balanced designs."
+msgstr "Ungepoolter Fehlerterm nur für balancierte Designs erlaubt."
+
+msgid ""
+"%s corrected p-values are not appropriate for repeated measures post-hoc "
+"tests (Maxwell, 1980; Field, 2012)."
+msgstr ""
+"%s korrigierte p-Werte sind für Post-hoc-Tests bei Messwiederholung nicht "
+"geeignet (Maxwell, 1980; Field, 2012)."
+
+msgid "P-value adjusted for comparing a family of %s"
+msgstr "P-Wert adjustiert, um eine Familie von %s zu vergleichen"
+
+msgid ""
+"P-value and confidence intervals adjusted for comparing a family of %1$s "
+"estimates (confidence intervals corrected using the %2$s method)."
+msgstr ""
+"P-waarde en betrouwbaarheidsintervallen aangepast om een familie van %1$s "
+"schattingen te vergelijken (betrouwbaarheidsintervallen gecorrigeerd met de "
+"%2$s methode)."
+
+msgid "Post Hoc Comparisons -"
+msgstr "Post-hoc-Vergleiche -"
+
+msgid "Bootstrapped Post Hoc Comparisons -"
+msgstr "Bootstrapped Post-hoc-Vergleiche -"
+
+msgid "%1$s%% bca%2$s CI"
+msgstr "%1$s%% bca%2$s KI"
+
+msgid "bias"
+msgstr "bias"
+
+msgid "Cohen's d"
+msgstr "Cohens d"
+
+msgid "p<sub>scheffe</sub>"
+msgstr "p<sub>scheffe</sub>"
+
+msgid "p<sub>sidak</sub>"
+msgstr "p<sub>sidak</sub>"
+
+msgid ""
+"Unequal variances only available for main effects of within subjects factors"
+msgstr ""
+"Ungleiche Varianzen nur für Haupteffekte oder Innersubjektfaktoren verfügbar"
+
+msgid "Marginal Means -"
+msgstr "Randmittelwerte -"
+
+msgid "Bootstrapped Marginal Means -"
+msgstr "Bootstrapped Randmittelwerte -"
+
+msgid "Marginal Mean"
+msgstr "Randmittelwerte"
+
+msgid "95%% bca%s CI"
+msgstr "95%% bca%s KI"
+
+msgid ""
+"Marginal Means estimate is based on the median of the bootstrap distribution."
+msgstr ""
+"Die Schätzung der Randmittelwerte basiert auf dem Median der Bootstrap-"
+"Verteilung."
+
+msgid "95%% CI for Mean Difference"
+msgstr "95%% KI für Mittelwertdifferenz"
+
+msgid "Bonferroni CI adjustment"
+msgstr "Bonferroni KI-Korrektur"
+
+msgid "Sidak CI adjustment"
+msgstr "Sidak KI-Korrektur"
+
+msgid "Nonparametrics"
+msgstr "Nichtparametrisch"
+
+msgid "Friedman Test"
+msgstr "Friedman-Test"
+
+msgid "Chi-Squared"
+msgstr "Chi-Quadrat"
+
+msgid "Kendall's W"
+msgstr "Kendalls W"
+
+msgid "Please specify appropriate terms for the Friedman/Durbin test."
+msgstr "Bitte spezifiziere gültige Terme für den Friedman/Durbin Test."
+
+msgid "Durbin Test"
+msgstr "Durbin-Test"
+
+msgid "df num"
+msgstr "df Num"
+
+msgid "df den"
+msgstr "df Den"
+
+msgid "p<sub>F</sub>"
+msgstr "p<sub>F</sub>"
+
+msgid "Conover Test"
+msgstr "Conover Test"
+
+msgid "Conover's Post Hoc Comparisons - %s"
+msgstr "Conovers Post-hoc-Vergleiche - %s"
+
+msgid "T-Stat"
+msgstr "T-Stat"
+
+msgid "Grouped by %s."
+msgstr "Gruppiert mit %s."
+
+msgid "<u>Procedure</u>"
+msgstr "<u>Prozedur</u>"
+
+msgid ""
+"Benford's law states that in many naturally occurring collections of "
+"numbers, the leading significant number is likely to be small. The goal of "
+"this procedure is to determine to which extent the first leading numbers in "
+"the population follow Benford's law, and to test this relation with <b>%1$s</"
+"b> confidence. Data that do not conform to Benford's law might need further "
+"verification."
+msgstr ""
+"Das Benfordsche Gesetz sagt, dass in vielen natürlich auftretenden Datensätzen "
+"von Zahlen die führende Ziffer wahrscheinlich klein ist. Das Ziel dieser "
+"Prozedur ist es festzustellen, inwiefern die führenden Ziffern in der "
+"Population dem Benfordschen Gesetz folgen, und diese Relation mit einer "
+"Konfidenz von <b>%1$s</b> zu testen. Daten, die nicht mit dem Benfordschen "
+"Gesetz übereinstimmen könnten zu weiterer Prüfung herangezogen werden."
+
+msgid ""
+"Benford's law states that in many naturally occurring collections of "
+"numbers, the leading significant number is likely to be small. The goal of "
+"this procedure is to determine to which extent the first two leading numbers "
+"in the population follow Benford's law, and to test this relation with <b>"
+"%1$s</b> confidence. Data that do not conform to Benford's law might need "
+"further verification."
+msgstr ""
+"Das Benfordsche Gesetz sagt, dass in vielen natürlich auftretenden Datensätzen "
+"von Zahlen die führende Ziffer wahrscheinlich klein ist. Das Ziel dieser "
+"Prozedur ist es festzustellen, inwiefern die ersten beiden führenden Ziffern "
+"in der Population dem Benfordschen Gesetz folgen, und diese Relation mit einer "
+"Konfidenz von <b>%1$s</b> zu testen. Daten, die nicht mit dem Benfordschen "
+"Gesetz übereinstimmen könnten zu weiterer Prüfung herangezogen werden."
+
+msgid ""
+"Benford's law states that in many naturally occurring collections of "
+"numbers, the leading significant number is likely to be small. The goal of "
+"this procedure is to determine to which extent the last numbers in the "
+"population follow Benford's law, and to test this relation with <b>%1$s</b> "
+"confidence. Data that do not conform to Benford's law might need further "
+"verification."
+msgstr ""
+
+msgid ""
+"The uniform distribution assigns equal probability to all values that may "
+"occur. The goal of this procedure is to determine to which extent the first "
+"leading numbers in the population follow the uniform distribution, and to "
+"test this relation with <b>%1$s</b> confidence. Supposedly random data that "
+"do not conform to the uniform distribution might need further verification."
+msgstr ""
+
+msgid ""
+"The uniform distribution assigns equal probability to all values that may "
+"occur. The goal of this procedure is to determine to which extent the first "
+"two leading numbers in the population follow the uniform distribution, and "
+"to test this relation with <b>%1$s</b> confidence. Supposedly random data "
+"that do not conform to the uniform distribution might need further "
+"verification."
+msgstr ""
+
+msgid ""
+"The uniform distribution assigns equal probability to all values that may "
+"occur. The goal of this procedure is to determine to which extent the last "
+"numbers in the population follow the uniform distribution, and to test this "
+"relation with <b>%1$s</b> confidence. Supposedly random data that do not "
+"conform to the uniform distribution might need further verification."
+msgstr ""
+
+msgid "<u>Assessing Benford's Law</u>"
+msgstr "<u>Prüfung des Benfordschen Gesetzes</u>"
+
+msgid "<u>Assessing the Uniform Distribution</u>"
+msgstr "<u>Prüfung der Uniformen Verteilung</u>"
+
+msgid "<b>Table %i.</b> Goodness-of-fit Test"
+msgstr ""
+
+msgid "Value"
+msgstr "Wert"
+
+msgid "<i>p</i> value"
+msgstr "<i>p</i>-Wert"
+
+msgid ""
+"The null hypothesis specifies that the distribution of first numbers (1 - 9) "
+"in the population conforms to %1$s."
+msgstr ""
+"Die Nullhypothese gibt an, dass die Verteilung der führenden Ziffern (1 - 9) in "
+"der Population übereinstimmt mit %1$s."
+
+msgid ""
+"The null hypothesis specifies that the distribution of the first two numbers "
+"(10 - 99) in the population conforms to %1$s."
+msgstr ""
+"Die Nullhypothese gibt an, dass die Verteilung der ersten beiden führenden "
+"Ziffern (10-99) in der Population übereinstimmt mit %1$s."
+
+msgid ""
+"The null hypothesis specifies that the distribution of last numbers (1 - 9) "
+"in the population conforms to %1$s."
+msgstr ""
+"Die Nullhypothese gibt an, dass die Verteilung der letzten Ziffern (1 - 9) in "
+"der Population übereinstimmt mit %1$s."
+
+msgid "Chi-square"
+msgstr "Chi-Quadrat"
+
+msgid "X%1$s"
+msgstr "X%1$s"
+
+msgid "<b>Table %i.</b> Descriptive Statistics"
+msgstr "<b>Tabelle %i.</b> Deskriptive Statistiken"
+
+msgid "Benford's law"
+msgstr "Benfordsches Gesetz"
+
+msgid "Uniform distribution"
+msgstr "Uniforme Verteilung"
+
+msgid "Leading digit"
+msgstr "Führende Ziffer"
+
+msgid "Leading digits"
+msgstr "Führende Ziffern"
+
+msgid "Last digit"
+msgstr "Letzte Ziffer"
+
+msgid "Count"
+msgstr "Anzahl"
+
+msgid "Percentage"
+msgstr "Prozentzahl"
+
+msgid "Observed Percentages vs. Expected Percentages"
+msgstr "Beobachtete Prozentzahlen vs. Benfordsches Gesetz"
+
+msgid "Observed"
+msgstr "Beobachtet"
+
+msgid ""
+"<b>Figure %i:</b> The observed percentages of each number in the population "
+"compared to the expected percentage under %2$s. The more the blue dots lie "
+"near the top of the grey bars, the more the population conforms to %2$s."
+msgstr ""
+"<b>Abbildung %i:</b> Die beobachtete Prozentzahlen aller Zahlen in der "
+"Population, verglichen mit der erwarteten Prozentzahl unter %2$s. "
+"Je dichter die blauen Punkte an der Oberkante der grauen Balken "
+"liegen, desto mehr stimmt die Population überein mit %2$s."
+
+msgid "<u>Conclusion</u>"
+msgstr "<u>Schlussfolgerung</u>"
+
+msgid "can be rejected"
+msgstr "verworfen werden"
+
+msgid "can not be rejected"
+msgstr "nicht verworfen werden"
+
+msgid ""
+"The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis "
+"that the distribution of first numbers in the population conforms to %2$s <b>"
+"%3$s</b> with <b>%4$s</b> confidence."
+msgstr ""
+"Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die Nullhypothese, dass "
+"die Verteilung der führenden Ziffern in der Population mit %2$s übereinstimmt, "
+"<b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
+
+msgid ""
+"The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis "
+"that the distribution of the two first numbers in the population conforms to "
+"%2$s <b>%3$s</b> with <b>%4$s</b> confidence."
+msgstr ""
+"Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die Nullhypothese, dass "
+"die Verteilung der beiden ersten führenden Ziffern in der Population mit %2$s "
+"übereinstimmt, <b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
+
+msgid ""
+"The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis "
+"that the distribution of last numbers in the population conforms to %2$s <b>"
+"%3$s</b> with <b>%4$s</b> confidence."
+msgstr ""
+"Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die Nullhypothese, dass "
+"die Verteilung der letzten Ziffern in der Population mit %2$s übereinstimmt, "
+"<b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
+
+msgid "Direct estimator"
+msgstr "Direkter Schätzer"
+
+msgid "Difference estimator"
+msgstr "Differenzschätzer"
+
+msgid "Ratio estimator"
+msgstr "Quotient-Schätzer"
+
+msgid "Regression estimator"
+msgstr "Regressionsschätzer"
+
+msgid "Estimate %1$s"
+msgstr "Schätzung %1$s"
+
+msgid "Uncertainty"
+msgstr "Unsicherheit"
+
+msgid "%1$s%% Confidence interval"
+msgstr "%1$s%% Konfidenzintervall"
+
+msgid "Please specify the population size and your audit values."
+msgstr "Bitte spezifiziere die Populationsgröße und deine Auditwerte."
+
+msgid ""
+"Please specify the population size, population value and your sample "
+"variables."
+msgstr ""
+"Bitte spezifiziere die Populationsgröße, den Populationswert und deine "
+"Stichproben-Variablen."
+
+msgid ""
+"Displayed numbers may differ from exact outcomes due to rounding in the "
+"calculations."
+msgstr ""
+"Angezeigte Zahlen können wegen Rundungen in den Berechnungen von den exakten "
+"Ergebnissen abweichen."
+
+msgid "<u>Calculations</u>"
+msgstr "<u>Berechnungen</u>"
+
+msgid ""
+"<i>The required information for the <b>direct</b> estimator consists of:</i>"
+msgstr ""
+"<i>Die benötigte Information für den <b>direkten</b> Schätzer besteht aus:</"
+"i>"
+
+msgid "The population size <i>N</i>"
+msgstr "Die Populationsgröße <i>N</i>"
+
+msgid "%1$s = %2$i"
+msgstr "%1$s = %2$i"
+
+msgid "The sample size <i>n</i>"
+msgstr "Der Stichprobenumfang <i>n</i>"
+
+msgid "The mean of the sample audit values %1$s"
+msgstr "Der Mittelwert der Stichproben-Auditwerte %1$s"
+
+msgid "%1$s = %2$s"
+msgstr "%1$s = %2$s"
+
+msgid "The standard deviation of the sample audit values %1$s"
+msgstr "Die Standardabweichung der Stichproben-Auditwerte %1$s"
+
+msgid ""
+"The t-value <i>(df = n - 1)</i> corresponding to %1$s%% confidence %2$s%3$s"
+"%4$s"
+msgstr ""
+"Der t-Wert <i>(df = n - 1)</i> der übereinstimmt mit %1$s%% Konfidenz %2$s"
+"%3$s%4$s"
+
+msgid ""
+"The t-value <i>(df = %1$s - 1)</i> corresponding to %2$s%% confidence %3$s"
+"%4$s%5$s%6$s"
+msgstr ""
+"Der t-Wert <i>(df = %1$s - 1)</i> der übereinstimmt mit %2$s%% Konfidenz %3$s"
+"%4$s%5$s%6$s"
+
+msgid ""
+"%1$s\n"
+"                                %2$s\n"
+"                                %3$s\n"
+"                                %4$s\n"
+"                                %5$s"
+msgstr ""
+"%1$s\n"
+"                                %2$s\n"
+"                                %3$s\n"
+"                                %4$s\n"
+"                                %5$s"
+
+msgid "<i>This information allows for calculation of:</i>"
+msgstr "<i>Diese Information erlaubt die Berechnung von:</i>"
+
+msgid "The point estimate of the true population value %1$s"
+msgstr "Die Punktschätzung des wahren Populationswerts %1$s"
+
+msgid "The uncertainty of the estimator %1$s%2$s%3$s"
+msgstr "Die Unsicherheit des Schätzers %1$s%2$s%3$s"
+
+msgid "The confidence interval around the point estimate %1$s"
+msgstr "Das Konfidenzintervall um die Punktschätzung %1$s"
+
+msgid "%1$s = %2$s %3$s %4$s"
+msgstr "%1$s = %2$s %3$s %4$s"
+
+msgid ""
+"%1$s\n"
+"                           %2$s\n"
+"                           %3$s"
+msgstr ""
+"%1$s\n"
+"                           %2$s\n"
+"                           %3$s"
+
+msgid ""
+"<i>The required information for the <b>difference</b> estimator consists of:"
+"</i>"
+msgstr ""
+"<i>Die benötigte Information für die <b>Differenz</b>-Schätzung besteht aus:"
+"</i>"
+
+msgid "The sum of the population book values <i>B</i>"
+msgstr "Die Summe der Populations-Buchwerte <i>B</i>"
+
+msgid "The mean of the sample errors %1$s"
+msgstr "Der Mittelwert der Stichproben-Fehler %1$s"
+
+msgid "The standard deviation of the sample errors %1$s"
+msgstr "Die Standardabweichung der Stichprobenfehler %1$s"
+
+msgid ""
+"%1$s\n"
+"                                %2$s\n"
+"                                %3$s\n"
+"                                %4$s\n"
+"                                %5$s\n"
+"                                %6$s"
+msgstr ""
+"%1$s\n"
+"                                %2$s\n"
+"                                %3$s\n"
+"                                %4$s\n"
+"                                %5$s\n"
+"                                %6$s"
+
+msgid ""
+"%1$s\n"
+"                            %2$s\n"
+"                            %3$s"
+msgstr ""
+"%1$s\n"
+"                            %2$s\n"
+"                            %3$s"
+
+msgid ""
+"<i>The required information for the <b>ratio</b> estimator consists of:</i>"
+msgstr ""
+"<i>Die benötigte Information des <b>Quotient</b>-Schätzers besteht aus:</i>"
+
+msgid "The mean of the sample book values %1$s"
+msgstr "Der Mittelwert der Stichproben-Buchwerte %1$s"
+
+msgid "The standard deviation of the sample book values %1$s"
+msgstr "Die Standardabweichung der Stichproben-Buchwerte %1$s"
+
+msgid ""
+"The correlation coefficient of the sample book values and audit values %1$s"
+msgstr ""
+"Der Korrelationskoeffizient der Stichproben-Buchwerte und Auditwerte %1$s"
+
+msgid "The correctness ratio %1$s"
+msgstr "Das Korrektheits-Verhältnis %1$s"
+
+msgid ""
+"%1$s\n"
+"                                %2$s\n"
+"                                %3$s\n"
+"                                %4$s\n"
+"                                %5$s\n"
+"                                %6$s\n"
+"                                %7$s\n"
+"                                %8$s\n"
+"                                %9$s\n"
+"                                %10$s"
+msgstr ""
+"%1$s\n"
+"                                %2$s\n"
+"                                %3$s\n"
+"                                %4$s\n"
+"                                %5$s\n"
+"                                %6$s\n"
+"                                %7$s\n"
+"                                %8$s\n"
+"                                %9$s\n"
+"                                %10$s"
+
+msgid ""
+"<i>The required information for the <b>regression</b> estimator consists of:"
+"</i>"
+msgstr ""
+"<i>Die benötigte Information für den <b>Regressions</b>-Schätzer besteht aus:</i>"
+
+msgid ""
+"The regression coefficient of the sample book values and audit values %1$s"
+msgstr ""
+"Der Regressionskoeffizient der Buchwerte-Stichprobe und Auditwerten %1$s"
+
+msgid ""
+"%1$s\n"
+"                                %2$s\n"
+"                                %3$s\n"
+"                                %4$s\n"
+"                                %5$s\n"
+"                                %6$s\n"
+"                                %7$s\n"
+"                                %8$s\n"
+"                                %9$s"
+msgstr ""
+"%1$s\n"
+"                                %2$s\n"
+"                                %3$s\n"
+"                                %4$s\n"
+"                                %5$s\n"
+"                                %6$s\n"
+"                                %7$s\n"
+"                                %8$s\n"
+"                                %9$s"
+
+msgid "Required Sample Size"
+msgstr "Benötigter Stichprobenumfang"
+
+msgid "Estimator"
+msgstr "Schätzer"
+
+msgid "Required <i>n</i>"
+msgstr "Benötigtes <i>n</i>"
+
+msgid "Additional <i>n</i>"
+msgstr "Zusätzliches <i>n</i>"
+
+msgid "Correlation Plot"
+msgstr "Streudiagramm"
+
+msgid "Book values"
+msgstr "Buchwerte"
+
+msgid "Audit values"
+msgstr "Auditwerte"
+
+msgid ""
+"<b>Figure 1.</b> Scatter plot of the book values in the selection and their "
+"audit values. Red dots indicate observations that did not match their "
+"original book value. If these red dots lie in the bottom part of the graph, "
+"the book values are overstated. If these red dots lie in the upper part of "
+"the graph, they are understated. The value <i>r</i> is the Pearson "
+"correlation coefficient of the book values and the audit values, an "
+"indicator of the strength of the linear relationship between the two "
+"variables."
+msgstr ""
+"<b>Abbildung 1.</b> Streudiagramm der Buchwerte in der Auswahl und deren "
+"Auditwerte. Rote Punkte heben Beobachtungen hervor, die nicht ihrem "
+"ursprünglichen Buchwert übereinstimmen. Wenn diese roten Punkte im unteren "
+"Teil des Grafen liegen, sind die Buchwerte übertrieben. Wenn diese "
+"roten Punkte im oberen Teil des Grafen liegen, sind sie unterschätzt. "
+"Der Wert <i>r</i> ist der Pearson-Korrelationskoeffizient der Buchwerte und "
+"der Auditwerte, ein Indikator der Stärke der linearen Beziehung zwischen "
+"den beiden Variablen."
+
+msgid "<b>percentage</b>"
+msgstr "<b>Prozentzahl</b>"
+
+msgid "<b>amount</b>"
+msgstr "<b>Anzahl</b>"
+
+msgid "<u>Planning</u>"
+msgstr "<u>Planung</u>"
+
+msgid "<u>Selection</u>"
+msgstr "<u>Auswahl</u>"
+
+msgid "<u>Evaluation</u>"
+msgstr "<u>Evaluation</u>"
+
+msgid ""
+"Analysis not possible: Your materiality is higher than, or equal to the "
+"total value of the observations."
+msgstr ""
+"Analyse nicht möglich: Die Wesentlichkeit ist größer als, oder gleich dem "
+"Gesamtwert der Beobachtungen."
+
+msgid ""
+"Analysis not possible: Your expected errors are higher than materiality."
+msgstr ""
+"Analyse nicht möglich: Die erwarteten Fehler sind größer als die "
+"Wesentlichkeit."
+
+msgid ""
+"The detection risk is equal to or higher than 100%%. Please re-specify your "
+"custom values for the Inherent risk and/or Control risk, or the confidence."
+msgstr ""
+"Das Detektionsrisiko ist höher als, oder gleich 100%%. Bitte korrigiere deine "
+"benutzerdefinierten Werte für das inhärente Risiko und/oder das "
+"Kontrollrisiko, oder die Konfidenz."
+
+msgid "Selection summary"
+msgstr "Auswahl-Zusammenfassung"
+
+msgid ""
+"Your sample size is larger than (or equal to) your population size. Cannot "
+"take a sample larger than the population."
+msgstr ""
+
+msgid "Your sample size must be larger than 1."
+msgstr ""
+
+msgid ""
+"Your must specify unique record ID's. The row numbers of the data set are "
+"sufficient."
+msgstr ""
+
+msgid "Evaluation summary"
+msgstr "Evaluations-Zusammenfassung"
+
+msgid ""
+"Your audit result does not contain only 0's (correct) and 1's (incorrect)."
+msgstr ""
+
+msgid ""
+"The hypergeometric confidence bound requires that you specify the population "
+"size."
+msgstr ""
+
+msgid ""
+"Your sample size is larger than (or equal to) your population size. Please "
+"adjust your population size accordingly."
+msgstr ""
+
+msgid ""
+"The direct, difference, ratio, and regression confidence bound require that "
+"you specify the population size and the population value."
+msgstr ""
+
+msgid ""
+"The detection risk is equal to or higher than 100%%. Please re-specify your "
+"values for the Inherent risk and/or Control risk, or the confidence."
+msgstr ""
+"Das Detektionsrisiko ist höher als, oder gleich 100%%. Bitte korrigiere deine "
+"benutzerdefinierten Werte für das inhärente Risiko und/oder das "
+"Kontrollrisiko, oder die Konfidenz."
+
+msgid ""
+"The objective of this substantive testing procedure is to determine with a "
+"specified confidence <b>(%1$s)</b> whether the %2$s of misstatement in the "
+"target population is lower than the specified materiality of <b>%3$s</b>."
+msgstr ""
+
+msgid ""
+"The most likely error in the data was expected to be <b>%1$s</b>. The sample "
+"size that is required for a materiality of <b>%2$s</b>, assuming the sample "
+"contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based "
+"on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the "
+"control risk <b>(%7$s)</b> and the expected errors. Consequently, if the sum "
+"of errors from the audited observations remains below <b>%8$s</b>, the "
+"maximum misstatement is estimated to be below materiality."
+msgstr ""
+
+msgid ""
+"The most likely error in the data was expected to be <b>%1$s</b>. The sample "
+"size that is required for a materiality of <b>%2$s</b>, assuming the sample "
+"contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based "
+"on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the "
+"control risk <b>(%7$s)</b> and the expected errors. The information in this "
+"prior distribution states that there is a <b>%8$s%%</b> prior probability "
+"that the population misstatement is lower than materiality. Consequently, if "
+"the sum of errors from the audited observations remains below <b>%9$s</b> "
+"the maximum misstatement is estimated to be below materiality."
+msgstr ""
+
+msgid "random"
+msgstr "zufällig"
+
+msgid "fixed interval"
+msgstr "festes Intervall"
+
+msgid "cell"
+msgstr "Zelle"
+
+msgid ""
+"From the population of <b>%1$s</b> observations, <b>%2$s</b> observations "
+"were selected using a <b>%3$s record sampling</b> method. <br><b>Warning:</"
+"b> A monetary unit sampling method was tried but failed."
+msgstr ""
+
+msgid "%1$s record sampling"
+msgstr ""
+
+msgid "%1$s monetary unit sampling"
+msgstr ""
+
+msgid ""
+"From the population of <b>%1$s</b> observations, <b>%2$s</b> observations "
+"were selected using a <b>%3$s</b> method."
+msgstr ""
+
+msgid ""
+"%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned "
+"sample size (%3$s), as observations are selected multiple times due to their "
+"high value. These observations (%4$s) are counted multiple times in the "
+"evaluation."
+msgstr ""
+"%1$s <b>Beachte:</b> Die ausgewählte Teilmenge (%2$s) ist kleiner als die "
+"geplante Stichprobengröße (%3$s), da Beobachtungen wegen ihres hohen Werts "
+"mehrmals gezogen wurden. Diese Beobachtungen (%4$s) werden in der Evaluation "
+"mehrmals gezählt."
+
+msgid "below"
+msgstr "unter"
+
+msgid "lower"
+msgstr "niedriger"
+
+msgid "above"
+msgstr "über"
+
+msgid "higher"
+msgstr "höher"
+
+msgid ""
+"The objective of this substantive testing procedure was to determine with <b>"
+"%1$s</b> confidence whether the population misstatement is lower than "
+"materiality, in this case <b>%2$s</b>. For the current data, the <b>%3$s</b> "
+"confidence bound is <b>%4$s</b> materiality. The conclusion on the basis of "
+"these results is that, with <b>%5$s</b> confidence, the population "
+"misstatement is <b>%6$s</b> than materiality."
+msgstr ""
+
+msgid "<b>Table %1$i.</b> Book Value Descriptive Statistics"
+msgstr "<b>Tabelle %1$i.</b> Deskriptive Statistik der Buchwerte"
+
+msgid "Population size"
+msgstr "Populationsgröße"
+
+msgid "Total value"
+msgstr "Gesamtwert"
+
+msgid "Absolute value"
+msgstr "Absolutwert"
+
+msgid "Std. deviation"
+msgstr "Standardabweichung"
+
+msgid "25th"
+msgstr "25"
+
+msgid "50th"
+msgstr "50"
+
+msgid "Percentile"
+msgstr "Percentil"
+
+msgid "75th"
+msgstr "75"
+
+msgid "Book Value Distribution"
+msgstr "Buchwerte-Verteilung"
+
+msgid "Mean %1$s sd"
+msgstr "Mittelwert %1$s sd"
+
+msgid "Quartile"
+msgstr "Quartil"
+
+msgid ""
+"<b>Figure %1$i.</b> The distribution of book values in the population. The "
+"red and blue dots respectively represent the mean and the values exactly one "
+"standard deviation from the mean. The orange dots represent the 25th, 50th "
+"(median) and 75th percentile of the book values."
+msgstr ""
+
+msgid "Book values (%1$s)"
+msgstr "Buchwerte (%1$s)"
+
+msgid "Frequency"
+msgstr "Häufigkeit"
+
+msgid "<u>Audit Risk Model</u>"
+msgstr "<u>Auditisiko-Modell</u>"
+
+msgid ""
+"Audit risk (%1$s%%) = Inherent risk (%2$s%%) x Control risk (%3$s%%) x "
+"Detection risk (%4$s%%)"
+msgstr ""
+"Auditrisiko (%1$s%%) = Inhärentes Risiko (%2$s%%) x Kontrollrisiko (%3$s%%) "
+"x Detektionsrisiko (%4$s%%)"
+
+msgid ""
+"Prior to the substantive testing phase, the inherent risk was determined to "
+"be <b>%1$s</b>. The internal control risk was determined to be <b>%2$s</b>. "
+"According to the Audit Risk Model, the required detection risk to maintain "
+"an audit risk of <b>%3$s</b> should be <b>%4$s</b>."
+msgstr ""
+
+msgid ""
+"%1$s The translation of High, Medium and Low to probabilities is done "
+"according custom preferences</b>."
+msgstr ""
+"%1$s Die Übersetzung von Hoch, Mittel und Niedrig in Wahrscheinlichkeiten "
+"wurde nach <b>Benutzereinstellungen</b> vorgenommen."
+
+msgid ""
+"%1$s The translation of High, Medium and Low to probabilities is done "
+"according to <b>IODAD (2007)</b>."
+msgstr ""
+"%1$s Die Übersetzung von Hoch, Mittel und Niedrig in Wahrscheinlichkeiten "
+"wurde nach <b>IODAD (2007)</b> vorgenommen."
+
+msgid ""
+"The detection risk is equal to or higher than 100%%. Please re-specify your "
+"custom values for the Inherent risk and/or Control risk."
+msgstr ""
+"Das Detektionsrisiko ist gleich oder höher als 100%%. Bitte korrigiere deine "
+"benutzerdefinierten Werte für das inhärente Risiko und/oder das Kontrollrisiko."
+
+msgid "The resulting sample size exceeds 5000."
+msgstr "Die resultierende Stichprobengröße ist größer als 5000."
+
+msgid "An error occurred: %1$s"
+msgstr "Es ist ein Fehler aufgetreten: %1$s"
+
+msgid "The resulting sample size is larger than the population size."
+msgstr ""
+"Die resultierende Stichprobengröße ist größer als die Populationsgröße."
+
+msgid "<b>Table %1$i.</b> Planning Summary"
+msgstr "<b>Tabelle %1$i.</b> Planungs-Zusammenfassung"
+
+msgid "Materiality"
+msgstr "Wesentlichkeit"
+
+msgid "Inherent risk"
+msgstr "Inhärentes Risiko"
+
+msgid "Control risk"
+msgstr "Kontrollrisiko"
+
+msgid "Detection risk"
+msgstr "Detektionsrisiko"
+
+msgid "Expected errors"
+msgstr "Erwartete Fehler"
+
+msgid "Required sample size"
+msgstr "Benötigte Stichprobengröße"
+
+msgid "Expected evidence ratio"
+msgstr "Erwartetes Evidenzverhältnis"
+
+msgid "Expected %1$s"
+msgstr "Erwartet %1$s"
+
+msgid "The required sample size is based on the <b>Poisson</b> distribution."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Poisson</b>-Verteilung."
+
+msgid "The required sample size is based on the <b>binomial</b> distribution."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Binomial</b>-Verteilung."
+
+msgid ""
+"The required sample size is based on the <b>hypergeometric</b> distribution."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Hypergeometrischen</b> "
+"Verteilung."
+
+msgid "The required sample size is based on the <b>gamma</b> distribution."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Gamma</b>-Verteilung."
+
+msgid "The required sample size is based on the <b>beta</b> distribution."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Beta</b>-Verteilung."
+
+msgid ""
+"The required sample size is based on the <b>beta-binomial</b> distribution "
+"(N = %1$s)."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Beta-Binomial</b>-"
+"Verteilung (N = %1$s)."
+
+msgid ""
+"Either the materiality, the population size, or the population value is "
+"defined as zero."
+msgstr ""
+"Entweder ist die Wesentlichkeit, die Populationsgröße, oder der "
+"Populationswert als Null definiert."
+
+msgid "<b>Analysis not ready.</b>"
+msgstr "<b>Analyse nicht bereit.</b>"
+
+msgid ""
+"The required sample size is based on the <b>Poisson</b> distribution "
+"<i>(%1$s = %2$s)</i>."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Poisson</b>-Verteilung "
+"<i>(%1$s = %2$s)</i>."
+
+msgid ""
+"The required sample size is based on the <b>binomial</b> distribution <i>(p "
+"= %1$s)</i>"
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Binomial</b>-Verteilung "
+"<i>(p = %1$s)</i>"
+
+msgid ""
+"The required sample size is based on the <b>hypergeometric</b> distribution "
+"<i>(N = %1$s, K = %2$s)</i>."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Hypergeometrischen</b> "
+"Verteilung <i>(N = %1$s, K = %2$s)</i>."
+
+msgid ""
+"The required sample size is based on the <b>gamma</b> distribution <i>(%1$s "
+"= %2$s, %3$s = %4$s)</i>"
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Gamma</b>-Verteilung "
+"<i>(%1$s = %2$s, %3$s = %4$s)</i>"
+
+msgid ""
+"The required sample size is based on the <b>beta</b> distribution <i>(%1$s = "
+"%2$s, %3$s = %4$s)</i>."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Beta</b>-Verteilung "
+"<i>(%1$s = %2$s, %3$s = %4$s)</i>."
+
+msgid ""
+"The required sample size is based on the <b>beta-binomial</b> distribution "
+"<i>(N = %1$s, %2$s = %3$s, %4$s = %5$s)</i>."
+msgstr ""
+"Der benötigte Stichprobenumfang basiert auf der <b>Beta-Binomial</b>- "
+"Verteilung <i>(N = %1$s, %2$s = %3$s, %4$s = %5$s)</i>."
+
+msgid "Sample Size Comparison"
+msgstr "Stichprobenumfangvergleich"
+
+msgid "Expected error-free"
+msgstr "Erwartet fehlerlos"
+
+msgid ""
+"<b>Figure %1$i.</b> Sample size comparison for the current options. The bars "
+"represent the sample size that is required under different planning "
+"distributions. The number of expected errors in the selection is colored in "
+"red and the number of expected error-free observations is colored in green."
+msgstr ""
+
+msgid "Implied %1$s Sampling Distribution"
+msgstr "Implizierte %1$s Stichprobenverteilung"
+
+msgid "Errors"
+msgstr "Fehler"
+
+msgid "Probability"
+msgstr "Wahrscheinlichkeit"
+
+msgid ""
+"<b>Figure %1$i.</b> The implied <b>%2$s</b> sampling distribution. The "
+"number of expected errors in the selection is colored in red and the number "
+"of expected error-free observations is colored in green. The total "
+"probability of the errors does not exceed the detection risk as specified "
+"through the audit risk model."
+msgstr ""
+
+msgid "Your specified starting point lies outside the selection interval."
+msgstr "Dein spezifizierter Startpunkt liegt außerhalb des Auswahlintervalls."
+
+msgid "<b>Table %1$i.</b> Selection Summary"
+msgstr "<b>Tabel %1$i.</b> Auswahl-Zusammenfassung"
+
+msgid "Selection size"
+msgstr "Stichprobenumfang"
+
+msgid "Selection value"
+msgstr "Stichprobenwert"
+
+msgid "%% of population value"
+msgstr "%% des Populationswerts"
+
+msgid "%% of total observations"
+msgstr "%% der gesamten Beobachtungen"
+
+msgid "The sample is drawn with <i>seed %1$s</i>."
+msgstr "Die Stichprobe wurde gezogen mit <i>Startwert %1$s</i>."
+
+msgid "Unit %1$s is selected from each interval."
+msgstr "Einheit %1$s ist von jedem Intervall ausgewählt."
+
+msgid "<b>Table %1$i.</b> Selected Observations"
+msgstr "<b>Tabelle %1$i.</b> Ausgewählte Beobachtungen"
+
+msgid "<b>Table %1$i.</b> Selection Descriptive Statistics"
+msgstr "<b>Tabelle %1$i.</b> Auswahl, deskriptive Statistik"
+
+msgid "Valid cases"
+msgstr "Gültige Fälle"
+
+msgid "Range"
+msgstr "Wertebereich"
+
+msgid "Minimum"
+msgstr "Minimum"
+
+msgid "Maximum"
+msgstr "Maximum"
+
+msgid "Population and sample histograms"
+msgstr "Population und Stichprobenhistogramme"
+
+msgid ""
+"<b>Figure %1$i.</b> The distributions of numeric variables in the population "
+"compared to the distributions in the sample."
+msgstr ""
+
+msgid ""
+"probability that, when one would repeatedly sample from this population, the "
+"maximum misstatement is calculated to be lower than"
+msgstr ""
+
+msgid "probability that the maximum misstatement is lower than"
+msgstr ""
+
+msgid ""
+"The selection consisted of <b>%1$s</b> observations, of which <b>%2$s</b> "
+"were found to contain an error. The knowledge from these data, combined with "
+"the risk assessments results in an <b>%3$s</b> upper confidence bound of <b>"
+"%4$s</b>. The cumulative knowledge states that there is a <b>%5$s</b> %6$s "
+"<b>%7$s</b>."
+msgstr ""
+
+msgid "<b>Table %1$i.</b> Evaluation Summary"
+msgstr "<b>Tabelle %1$i.</b> Evaluations-Zusammenfassung"
+
+msgid "Sample size"
+msgstr "Stichprobenumfang"
+
+msgid "Total tainting"
+msgstr ""
+
+msgid "MLE"
+msgstr "MLE"
+
+msgid "%1$s%% Confidence bound"
+msgstr "%1$s%% Konfidenzgrenze"
+
+msgid "Maximum Misstatement"
+msgstr ""
+
+msgid "Evidence ratio"
+msgstr "Evidenzverhältnis"
+
+msgid "BF%1$s"
+msgstr "BF%1$s"
+
+msgid ""
+"The confidence bound is calculated according to the <b>Poisson</b> "
+"distributon."
+msgstr ""
+
+msgid ""
+"The confidence bound is calculated according to the <b>binomial</b> "
+"distributon."
+msgstr ""
+
+msgid ""
+"The confidence bound is calculated according to the <b>hypergeometric</b> "
+"distribution."
+msgstr ""
+
+msgid ""
+"The confidence bound is calculated according to the <b>Stringer</b> method."
+msgstr ""
+
+msgid ""
+"The confidence bound is calculated according to the <b>regression</b> method."
+msgstr ""
+
+msgid ""
+"The confidence bound is calculated according to the <b>direct</b> method."
+msgstr ""
+
+msgid ""
+"The confidence bound is calculated according to the <b>difference</b> method."
+msgstr ""
+
+msgid ""
+"The confidence bound is calculated according to the <b>ratio</b> method."
+msgstr ""
+
+msgid ""
+"The credible bound is calculated according to the <b>beta</b> distribution "
+"and requires the assumption that the sample taints are interchangeable."
+msgstr ""
+
+msgid ""
+"The credible bound is calculated according to the <b>gamma</b> distribution "
+"and requires the assumption that the sample taints are interchangeable."
+msgstr ""
+
+msgid ""
+"The credible bound is calculated according to the <b>beta-binomial</b> "
+"distribution and requires the assumption that the sample taints are "
+"interchangeable."
+msgstr ""
+
+msgid ""
+"The credible bound is calculated according to the <b>Cox and Snell</b> "
+"method and requires the assumption that the population taints are uniformly "
+"distributed."
+msgstr ""
+
+msgid ""
+"The confidence bound is calculated according to the <b>Stringer</b> method "
+"with <b>LTA adjustment</b>."
+msgstr ""
+
+msgid "The audit result column is empty."
+msgstr "Die Auditergebnis-Spalte ist leer."
+
+msgid ""
+"Either the materiality, the population size, or the population value is "
+"defined as zero, or one of the required variables is missing."
+msgstr ""
+"Entweder ist die Wesentlichkeit, die Populationsgröße, oder der "
+"Populationswert als Null definiert, oder eine der benötigten Variablen fehlt."
+
+msgid "You must specify the population value to see the maximum misstatement."
+msgstr ""
+
+msgid "Evaluation Information"
+msgstr "Evaluations-Information"
+
+msgid "Maximum error"
+msgstr "Maximaler Fehler"
+
+msgid "Most likely error"
+msgstr "Wahrscheinlichster Fehler"
+
+msgid ""
+"<b>Figure %1$i.</b> Evaluation information for the current annotated "
+"selection. The materiality is compared with the maximum misstatement and the "
+"most likely error. The most likely error (MLE) is an estimate of the true "
+"misstatement in the population. The maximum error is an estimate of the "
+"maximum error in the population."
+msgstr ""
+
+msgid "Audit values (%1$s)"
+msgstr "Auditwerte (%1$s)"
+
+msgid ""
+"<b>Figure %1$i.</b> Scatterplot of the book values in the selection and "
+"their audit values. Red dots indicate observations that did not match their "
+"original book value. If these red dots lie in the bottom part of the graph, "
+"the book values are overstated. If these red dots lie in the upper part of "
+"the graph, they are understated. The value <i>r</i> is the Pearson "
+"correlation coefficient of the book values and the audit values, an "
+"indicator of the strength of the linear relationship between the two "
+"variables."
+msgstr ""
+
+msgid "<b>Table %i.</b> Implicit Sample"
+msgstr "<b>Tabelle %i.</b> Implizierte Stichprobe"
+
+msgid "Implicit sample size"
+msgstr "Implizierter Stichprobenumfang"
+
+msgid "Implicit errors"
+msgstr "Implizite Fehler"
+
+msgid ""
+"Sample sizes shown are implicit sample sizes derived from the ARM risk "
+"assessments: IR = <b>%1$s</b> and CR = <b>%2$s</b>."
+msgstr ""
+
+msgid "<b>Table %i.</b> Prior and Expected Posterior Descriptive Statistics"
+msgstr ""
+
+msgid "Functional form"
+msgstr ""
+
+msgid "Support %1$s"
+msgstr ""
+
+msgid "Evidence ratio %1$s"
+msgstr "Evidenzverhältnis %1$s"
+
+msgid "%1$s%% Credible bound"
+msgstr ""
+
+msgid "Expected posterior"
+msgstr "Erwarteter Posterior"
+
+msgid "Expected shift"
+msgstr "Erwartete Verschiebung"
+
+msgid ""
+"%1$s: The population misstatement is lower than materiality (%2$s %3$s). "
+"%4$s: The population misstatement is equal to, or higher than, materiality "
+"(%5$s %6$s)."
+msgstr ""
+
+msgid "Implied Prior from Risk Assessments"
+msgstr "Implizierter Prior durch Risikobeurteilungen"
+
+msgid ""
+"Expected\n"
+"posterior"
+msgstr ""
+"Erwarteter\n"
+"Posterior"
+
+msgid "Density"
+msgstr "Dichte"
+
+msgid "Population errors"
+msgstr "Populationsfehler"
+
+msgid "Probability of misstatement"
+msgstr ""
+
+msgid ""
+"%1$s%% Prior \n"
+"credible region"
+msgstr ""
+
+msgid "%1$s%% Prior credible region"
+msgstr ""
+
+msgid "Support"
+msgstr "Träger"
+
+msgid ""
+"The expected errors (grey dot) receive the highest probability. The red dot "
+"represents the materiality."
+msgstr ""
+
+msgid ""
+"The expected posterior has its upper confidence bound below materiality."
+msgstr ""
+
+msgid ""
+"<b>Figure %1$i.</b> The prior probability distribution <b>(%2$s)</b> on the "
+"misstatement in the population. The prior parameters <i>%3$s = %4$s, %5$s = "
+"%6$s</i> are derived from the assessments of the inherent and control risk, "
+"along with the expected errors. %7$s %8$s"
+msgstr ""
+
+msgid "Prior and Posterior Distribution"
+msgstr "Prior- und Posterior-Verteilung"
+
+msgid "Posterior"
+msgstr "Posterior"
+
+msgid ""
+"%1$s%% Posterior \n"
+"credible region"
+msgstr ""
+
+msgid "beta-binomial"
+msgstr "Beta-Binomial"
+
+msgid "Cox and Snell"
+msgstr "Cox und Snell"
+
+msgid ""
+"The red dot represents the specified materiality. If the credible area under "
+"the distribution surpasses this point, the estimate of the maximum "
+"misstatement exceeds the materiality."
+msgstr ""
+
+msgid ""
+"<b>Figure %1$i.</b> The prior and posterior probability distribution "
+"<b>(%2$s)</b> on the misstatement in the population. %3$s"
+msgstr ""
+
+msgid "<b>Table %i.</b> Prior and Posterior Descriptive Statistics"
+msgstr ""
+
+msgid "Shift"
+msgstr "Verschiebung"
+
+msgid "BF.c"
+msgstr "BF.c"
+
+msgid "PMP a"
+msgstr "PMP a"
+
+msgid "PMP b"
+msgstr "PMP b"
+
+msgid ""
+"BF.c denotes the Bayes factor of the hypothesis in the row versus its "
+"complement.\n"
+"Posterior model probabilities (a: excluding the unconstrained hypothesis, b: "
+"including the unconstrained hypothesis) are based on equal prior model "
+"probabilities."
+msgstr ""
+
+msgid ""
+"The variables %s contain missing values, the rows containing these values "
+"are removed in the analysis."
+msgstr ""
+
+msgid "<b>Warning.</b>"
+msgstr "<b>Warnung.</b>"
+
+msgid ""
+"The variable %s contains missing values, the rows containing these values "
+"are removed in the analysis."
+msgstr ""
+
+msgid "The fixed factor has too many levels for a Bain analysis."
+msgstr ""
+
+msgid ""
+"An error occurred in the analysis:<br>%s<br><br>Please double check your "
+"variables and model constraints."
+msgstr ""
+
+msgid "H%i"
+msgstr "H%i"
+
+msgid "Hu"
+msgstr "Hu"
+
+msgid "Bayes Factor Matrix"
+msgstr "Bayes Faktormatrix"
+
+msgid "H1"
+msgstr "H1"
+
+msgid ""
+"Bain does not accept factor levels that contain spaces. Please remove the "
+"spaces from your factor levels to continue."
+msgstr ""
+
+msgid "Hypothesis Legend"
+msgstr "Hypothese Legende"
+
+msgid "Hypothesis"
+msgstr "Hypothese"
+
+msgid "H"
+msgstr "H"
+
+msgid "Excluding Hu"
+msgstr "Hu ausschließen"
+
+msgid "Including Hu"
+msgstr "Hu einbeziehen"
+
+msgid "Bain ANOVA"
+msgstr "Bain ANOVA"
+
+msgid ""
+"The variables %1$s and %2$s contain missing values, the rows containing "
+"these values are removed in the analysis."
+msgstr ""
+
+msgid "Descriptive Statistics"
+msgstr "Deskriptive Statistik"
+
+msgid "Coefficients for Groups plus Covariates"
+msgstr "Koeffizienten für Gruppen plus Kovariaten"
+
+msgid "Coefficient"
+msgstr "Koeffizient"
+
+msgid "%.0f%% Credible Interval"
+msgstr "%.0f%% Kredibilitätsintervall"
+
+msgid "Posterior Probabilities"
+msgstr "Posterior Wahrscheinlichkeiten"
+
+msgid "Descriptives Plot"
+msgstr "Deskriptive Abbildung"
+
+msgid "Adjusted Means"
+msgstr "Adjustierte Mittelwerte"
+
+msgid "Bain Linear Regression"
+msgstr "Bain Lineare Regression"
+
+msgid "Coefficients"
+msgstr "Koeffizienten"
+
+msgid "%i%% Credible Interval"
+msgstr "%i%% Kredibilitätsintervall"
+
+msgid "Covariate"
+msgstr "Kovariate"
+
+msgid "The displayed coefficients are standardized."
+msgstr "Die angezeigten Koeffizienten sind standardisiert."
+
+msgid "Bain Independent Samples Welch's T-Test"
+msgstr "Bain Welchs T-Test für unabhängige Stichproben"
+
+msgid "BF"
+msgstr "BF"
+
+msgid "Posterior probability"
+msgstr "Posterior Wahrscheinlichkeit"
+
+msgid ""
+"The alternative hypothesis H1 specifies that the mean of group 1 is unequal "
+"to the mean of group 2. The posterior probabilities are based on equal prior "
+"probabilities."
+msgstr ""
+
+msgid ""
+"The alternative hypothesis H1 specifies that the mean of group 1 is smaller "
+"than the mean of group 2. The posterior probabilities are based on equal "
+"prior probabilities."
+msgstr ""
+
+msgid ""
+"The alternative hypothesis H1 specifies that mean of group 1 is bigger than "
+"the mean of group 2. The posterior probabilities are based on equal prior "
+"probabilities."
+msgstr ""
+
+msgid ""
+"The hypothesis H1 specifies that the mean of group 1 is bigger than the mean "
+"of group 2. The hypothesis H2 specifies that the mean in group 1 is smaller "
+"than the mean in group 2. The posterior probabilities are based on equal "
+"prior probabilities."
+msgstr ""
+
+msgid ""
+"The null hypothesis H0 (equal group means) is tested against H1 (first mean "
+"larger than second mean) and H2 (first mean smaller than second mean). The "
+"posterior probabilities are based on equal prior probabilities."
+msgstr ""
+
+msgid "Results not computed: %s"
+msgstr "Ergebnisse nicht berechnet: %s"
+
+msgid ""
+"Variable contains missing values, the rows containing these values are "
+"removed in the analysis."
+msgstr ""
+
+msgid "H0: Equal"
+msgstr "H0: Gleich"
+
+msgid "H1: Not equal"
+msgstr "H1: Ungleich"
+
+msgid "H1: Bigger"
+msgstr "H1: Größer"
+
+msgid "H1: Smaller"
+msgstr "H1: Kleiner"
+
+msgid "H2: Smaller"
+msgstr "H2: Kleiner"
+
+msgid "Group"
+msgstr "Gruppe"
+
+msgid "Descriptive Plots"
+msgstr "Deskriptive Abbildungen"
+
+msgid "Bain One Sample T-test"
+msgstr "Bain T-Test für eine Stichprobe"
+
+msgid ""
+"The alternative hypothesis H1 specifies that the mean is unequal to %s. The "
+"posterior probabilities are based on equal prior probabilities."
+msgstr ""
+
+msgid ""
+"The alternative hypothesis H1 specifies that the mean is bigger than %s. The "
+"posterior probabilities are based on equal prior probabilities."
+msgstr ""
+
+msgid ""
+"The alternative hypothesis H1 specifies that the mean is smaller than %s. "
+"The posterior probabilities are based on equal prior probabilities."
+msgstr ""
+
+msgid ""
+"The hypothesis H1 specifies that the mean is bigger than %1$s and the "
+"hypothesis H2 specifies that the mean is smaller than %1$s. The posterior "
+"probabilities are based on equal prior probabilities."
+msgstr ""
+
+msgid ""
+"The null hypothesis H0 with test value %1$s is tested against the other "
+"hypotheses. H1 states that the mean is bigger than %1$s and H2 states that "
+"the mean is smaller than %1$s. The posterior probabilities are based on "
+"equal prior probabilities."
+msgstr ""
+
+msgid "Plotting not possible: the results for this variable were not computed."
+msgstr ""
+
+msgid "Plotting not possible: %s"
+msgstr "Abbilden nicht möglich: %s"
+
+msgid "H0"
+msgstr "H0"
+
+msgid "H2"
+msgstr "H2"
+
+msgid "Bain Paired Samples T-Test"
+msgstr "Bain T-Test für abhängige Stichproben"
+
+msgid ""
+"The alternative hypothesis H1 specifies that the mean of variable 1 is "
+"unequal to the mean of variable 2. The posterior probabilities are based on "
+"equal prior probabilities."
+msgstr ""
+
+msgid ""
+"The alternative hypothesis H1 specifies that the mean of variable 1 is "
+"bigger than the mean of variable 2. The posterior probabilities are based on "
+"equal prior probabilities."
+msgstr ""
+
+msgid ""
+"The alternative hypothesis H1 specifies that the mean of variable 1 is "
+"smaller than the mean of variable 2. The posterior probabilities are based "
+"on equal prior probabilities."
+msgstr ""
+
+msgid ""
+"The hypothesis H1 specifies that the mean of variable 1 is bigger than the "
+"mean of variable 2, while the hypothesis H2 specifies that it is smaller. "
+"The posterior probabilities are based on equal prior probabilities."
+msgstr ""
+
+msgid ""
+"The null hypothesis H0 with equal means is tested against the other "
+"hypotheses. The alternative hypothesis H1 states that the mean of variable 1 "
+"is bigger than the mean of variable 2. The alternative hypothesis H2 states "
+"that the mean of variable 1 is smaller than the mean of variable 2. The "
+"posterior probabilities are based on equal prior probabilities."
+msgstr ""
+
+msgid ""
+"Both variables contain missing values, the rows containing these values are "
+"removed in the analysis."
+msgstr ""
+
+msgid "Results not computed: The variables in this pair are the same."
+msgstr "Ergebnisse nicht berechnet: Die Variablen in diesem Paar sind dieselben."
+
+msgid "Results not computed: The pair is incomplete."
+msgstr "Ergebnisse nicht berechnet: Das Paar ist unvollständig."
+
+msgid "Difference"
+msgstr "Differenz"
+
+msgid "The prior lower bound is not smaller than the upper bound."
+msgstr "Die Untergrenze des Prior ist nicht kleiner als die Obergrenze."
+
+msgid "Your prior contains negative values."
+msgstr "Dein Prior enthält negative Werte."
+
+msgid "Your prior contains positive values."
+msgstr "Dein Prior enthält positive Werte."
+
+msgid "No positive numbers found in %s"
+msgstr "Keine positiven Zahlen in %s gefunden"
+
+msgid "No negative numbers found in %s"
+msgstr "Keine negativen Zahlen in %s gefunden"
+
+msgid "The 95%% CI Lower Bound must be smaller than the Upper Bound."
+msgstr "Die 95%% KI-Untergrenze muss kleiner als die Obergrenze sein."
+
+msgid "You cannot set all the prior model probabilties to zero."
+msgstr "Du kannst nicht alle Prior-Modellwahrscheinlichkeiten auf Null setzen."
+
+msgid ""
+"The model could not be fit. Please check the following: Do you have at least "
+"n=2 studies? If the prior is truncated, is it consistent with the data (when "
+"most effect sizes are negative, the analysis may not work when the prior is "
+"constrained to be postive)?"
+msgstr ""
+
+msgid "Posterior Estimates per Model"
+msgstr "Posteriorschätzungen pro Modell"
+
+msgid "BF%s%s"
+msgstr "BF%s%s"
+
+msgid "Log(BF%s%s)"
+msgstr "Log(BF%s%s)"
+
+msgid "95%% Credible Interval"
+msgstr "95%% Kredibilitätsintervall"
+
+msgid "Averaged"
+msgstr "Gemittelt"
+
+msgid "Fixed effects"
+msgstr "Feste Effekte"
+
+msgid "Random effects"
+msgstr "Zufällige Effekte"
+
+msgid "Ordered effects"
+msgstr "Geordnete Effekte"
+
+msgid ""
+"%s and %s are the group-level effect size and standard deviation, "
+"respectively."
+msgstr ""
+"%s und %s sind die Effektgröße bzw. die Standardabweichung auf Gruppenebene."
+
+msgid "%s is the group-level effect size."
+msgstr "%s ist die Effektgröße auf Gruppenebene."
+
+msgid "Bayes factor of the random effects H%1$s over the fixed effects H%1$s."
+msgstr ""
+"Bayesfaktor der zufälligen Effekte H%1$s gegenüber den festen Effekten H%1$s."
+
+msgid ""
+"Posterior estimates are based on the models that assume an effect to be "
+"present. The Bayes factor is based on all four models: fixed effects H%2$s & "
+"random effects H%2$s over the fixed effects H%1$s & random effects H%1$s."
+msgstr ""
+
+msgid ""
+"Model averaged posterior estimates for %3$s are not yet available, but will "
+"be added in the future. The Bayes factor is based on all four models: random "
+"effects H%1$s & H%2$s over the fixed effects H%1$s & H%2$s."
+msgstr ""
+
+msgid ""
+"Bayes factor of the (unconstrained/constrained) random effects H%1$s over "
+"the fixed effects H%1$s."
+msgstr ""
+
+msgid "Bayes factor of the fixed effects H%1$s over the random effects H%1$s."
+msgstr ""
+"Bayesfaktor der festen Effekte H%1$s gegenüber den zufälligen Effekten H%1$s."
+
+msgid ""
+"Model averaged posterior estimates are based on the models that assume an "
+"effect to be present. The Bayes factor is based on all four models: fixed "
+"effects H%1$s & random effects H%1$s over the fixed effects H%2$s & random "
+"effects H%2$s."
+msgstr ""
+
+msgid ""
+"Model averaged posterior estimates for %3$s are not yet available, but will "
+"be added in the future. The Bayes factor is based on all four models: fixed "
+"effects H%1$s & H%2$s over the random effects H%1$s & H%2$s."
+msgstr ""
+
+msgid ""
+"Bayes factor of the fixed effects H%1$s over the (unconstrained/constrained) "
+"random effects H%1$s."
+msgstr ""
+
+msgid ""
+"Bayes factor of the ordered effects H%1$s over the fixed effects H%1$s. The "
+"Bayes factor for the ordered effects H%1$s versus the unconstrained (random) "
+"effects H%1$s model is %2$.3f."
+msgstr ""
+
+msgid ""
+"Bayes factor of the fixed effects H%1$s over the ordered effects H%1$s. The "
+"Bayes factor for the unconstrained (random) effects H%1$s versus the ordered "
+"effects H%1$s model is %2$.3f."
+msgstr ""
+
+msgid "Model Probabilities"
+msgstr "Modellwahrscheinlichkeiten"
+
+msgid "Fixed H%s"
+msgstr "Feste H%s"
+
+msgid "Random H%s"
+msgstr "Zufällige H%s"
+
+msgid "Ordered H%s"
+msgstr "Geordende H%s"
+
+msgid "Effect Sizes per Study"
+msgstr "Effektgrößen pro Studie"
+
+msgid "Estimated"
+msgstr "Geschätzt"
+
+msgid "Study"
+msgstr "Studie"
+
+msgid ""
+"Posterior mean and 95%% credible interval estimates from the random effects "
+"model."
+msgstr ""
+
+msgid ""
+"Posterior mean and 95%% credible interval estimates from the constrained "
+"random effects model."
+msgstr ""
+
+msgid "Effect Size"
+msgstr "Effektgröße"
+
+msgid "Heterogeneity"
+msgstr "Heterogenität"
+
+msgid "Effect size"
+msgstr "Effektgröße"
+
+msgid "Prior and Posteriors"
+msgstr "Prior und Posteriors"
+
+msgid "Fixed H"
+msgstr "Feste H"
+
+msgid "Random H"
+msgstr "Zufällige H"
+
+msgid "Averaged H"
+msgstr "Gemittelte H"
+
+msgid "Prior H"
+msgstr "Prior H"
+
+msgid "Ordered H"
+msgstr "Geordnete H"
+
+msgid "Forest Plot"
+msgstr "Forest-Plot"
+
+msgid "Observed and estimated study effects"
+msgstr "Beobachtete und geschätzte Studieneffekte"
+
+msgid "Estimated study effects"
+msgstr "Geschätzte Studieneffekte"
+
+msgid "Observed study effects"
+msgstr "Beobachtete Studieneffekte"
+
+msgid "Cumulative forest plot"
+msgstr "Kumulativer Forest-Plot"
+
+msgid "Overall effect size"
+msgstr "Gesamte Effektgröße"
+
+msgid "Bayes factors effect size"
+msgstr "Bayesfaktoren Effektgröße"
+
+msgid "Bayes factors heterogeneity"
+msgstr "Bayesfaktoren Heterogenität"
+
+msgid "Posterior model probabilities"
+msgstr "Posterior Modellwahrscheinlichkeiten"
+
+msgid "Plotting failed: The Bayes factors contain infinity."
+msgstr "Grafieken faalde: De Bayes-factoren bevatten oneindig."
+
+msgid "Evidence for r H"
+msgstr "Evidenz für r H"
+
+msgid "Evidence for f H"
+msgstr "Evidenz für f H"
+
+msgid "Studies"
+msgstr "Studien"
+
+msgid ""
+"Posterior model \n"
+" probability"
+msgstr ""
+"Posterior Modell \n"
+" Wahrscheinlichkeit"
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the %s is positive."
+msgstr ""
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the %s is negative"
+msgstr ""
+
+msgid "Scatterplot"
+msgstr "Streudiagramm"
+
+msgid "Cannot test the hypothesis that the test value is greater than 1."
+msgstr ""
+
+msgid "Cannot test the hypothesis that the test value is less than 0."
+msgstr ""
+
+msgid "Binomial Test"
+msgstr "Binomialtest"
+
+msgid "Variable"
+msgstr "Variable"
+
+msgid "%s%% CI for Proportion"
+msgstr "%s%% BI voor Proportie"
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the proportion is "
+"less than %s."
+msgstr ""
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the proportion is "
+"greater than %s."
+msgstr ""
+
+msgid "Proportions tested against value: %s."
+msgstr "Verhältnisse getestet gegen Wert: %s."
+
+msgid "Descriptives Plots"
+msgstr "Deskriptive Abbildungen"
+
+msgid "Bayesian Binomial Test"
+msgstr "Bayesscher Binomialtest"
+
+msgid "Inferential Plots"
+msgstr "Inferenz-Abbildungen"
+
+msgid "Population proportion"
+msgstr "Populationsverhältnis"
+
+msgid "One or more Bayes factors cannot be computed"
+msgstr "Einer oder mehrere Bayesfaktoren können nicht berechnet werden"
+
+msgid "One or more Bayes factors are infinite"
+msgstr "Einer oder mehrere Bayesfaktoren sind unendlich"
+
+msgid "Undefined hypothesis"
+msgstr "Undefinierte Hypothese"
+
+msgid "The metafor package crashed with the following error: %s"
+msgstr ""
+
+msgid "Fixed and Random Effects"
+msgstr "Feste und zufällige Effekte"
+
+msgid "Q"
+msgstr "Q"
+
+msgid "<em>p</em>-values are approximate."
+msgstr "<em>p</em>-Werte sind angenähert."
+
+msgid "Standard Error"
+msgstr "Standardfehler"
+
+msgid "Wald test."
+msgstr "Wald-Test."
+
+msgid "Wald tests."
+msgstr "Wald-Tests."
+
+msgid "Fit measures"
+msgstr "Anpassungsmaße"
+
+msgid "Residual Heterogeneity Estimates"
+msgstr "Residuen-Heterogenität-Schätzungen"
+
+msgid "Parameter Covariances"
+msgstr "Parameter-Kovarianzen"
+
+msgid "Rank correlation test for Funnel plot asymmetry"
+msgstr "Rangkorrelationstest für Funnelplot-Asymmetrie"
+
+msgid "Kendall's %s"
+msgstr "Kendalls %s"
+
+msgid "Regression test for Funnel plot asymmetry (\"Egger's test\")"
+msgstr "Regressionstest für Funnelplot-Asymmetrie(\"Eggers Test\")"
+
+msgid "Influence Measures"
+msgstr "Einflußmaße"
+
+msgid "Std. Residual"
+msgstr "Std. Residuum"
+
+msgid "DFFITS"
+msgstr "DEFITS"
+
+msgid "Cook's Distance"
+msgstr "Cooks Distanz"
+
+msgid "Cov. Ratio"
+msgstr ""
+
+msgid "%s%s<sub>(-i)</sub>"
+msgstr "%s%s<sub>(-i)</sub>"
+
+msgid "Q<sub>E(-i)</sub>"
+msgstr "Q<sub>E(-i)</sub>"
+
+msgid "Hat"
+msgstr "Dach"
+
+msgid "Weight"
+msgstr "Gewicht"
+
+msgid "File Drawer Analysis"
+msgstr ""
+
+msgid "Fail-safe N"
+msgstr ""
+
+msgid "Target Significance"
+msgstr "Angestrebte Signifikanz"
+
+msgid "Observed Significance"
+msgstr "Beobachtete Signifikanz"
+
+msgid "Omnibus test of Model Coefficients"
+msgstr ""
+
+msgid "Test of Residual Heterogeneity"
+msgstr ""
+
+msgid "Log-likelihood"
+msgstr "Log-Likelihood"
+
+msgid "AICc"
+msgstr "AICc"
+
+msgid "I%s (%%)"
+msgstr "I%s (%%)"
+
+msgid "H%s"
+msgstr "H%s"
+
+msgid "Rank test"
+msgstr "Rangtest"
+
+msgid "Cases marked with %s are influential."
+msgstr ""
+
+msgid "Forest plot"
+msgstr "Forest-Plot"
+
+msgid "Funnel Plot"
+msgstr "Funnel-Plot"
+
+msgid "Log-likelihood for %s%s"
+msgstr "Log-Likelihood für %s%s"
+
+msgid "Trim-fill Analysis"
+msgstr "Trim-fill-Analyse"
+
+msgid "Diagnostic Plots"
+msgstr "Diagnostische Abbildungen"
+
+msgid "Study %s"
+msgstr "Studie %s"
+
+msgid "FE Model"
+msgstr "FE-Modell"
+
+msgid "RE Model"
+msgstr "RE-Modell"
+
+msgid "Observed Outcome"
+msgstr ""
+
+msgid "Cannot set 'xlim' automatically. Please set this argument manually."
+msgstr ""
+
+msgid "Profile Plot for"
+msgstr ""
+
+msgid "Restricted Log-Likelihood"
+msgstr ""
+
+msgid "Residual Value"
+msgstr "Residualwert"
+
+msgid "Argument 'x' must be an object of class \"rma\"."
+msgstr ""
+
+msgid "Function not applicable to objects of class \"robust.rma\"."
+msgstr ""
+
+msgid "Function not applicable to objects of class \"rma.ls\"."
+msgstr ""
+
+msgid ""
+"Setting 'xlim' and 'zlim' automatically not possible (must set axis limits "
+"manually)."
+msgstr ""
+
+msgid "Radial Plot"
+msgstr ""
+
+msgid "Stopped because k = 1."
+msgstr "Gestoppt, weil k = 1."
+
+msgid "Normal Q-Q Plot"
+msgstr "Normalvert. Q-Q-Diagramm"
+
+msgid "Sample Quantiles"
+msgstr "Stichprobenquantile"
+
+msgid "Fitted vs. Standardized Residuals"
+msgstr "Angepasste vs. standardisierte Residuen"
+
+msgid "Fitted Value"
+msgstr "Angepasster Wert"
+
+msgid "Standardized Residual"
+msgstr "Standardisierte Residuen"
+
+msgid "The model should contain at least one predictor or an intercept."
+msgstr "Das Modell muss mindestens einen Prädiktor oder Konstante beinhalten."
+
+msgid "FE"
+msgstr "FE"
+
+msgid "ML"
+msgstr "ML"
+
+msgid "REML"
+msgstr "REML"
+
+msgid "DL"
+msgstr "DL"
+
+msgid "HE"
+msgstr "HE"
+
+msgid "HS"
+msgstr "HS"
+
+msgid "SJ"
+msgstr "SJ"
+
+msgid "EB"
+msgstr "EB"
+
+msgid "PM"
+msgstr "PM"
+
+msgid "%g%% Confidence Interval"
+msgstr "%g%% Konfidenzintervall"
+
+msgid "<em>Note.</em>"
+msgstr "<em>Hinweis.</em>"
+
+msgid "No items to show, please add a results description or set init to true"
+msgstr ""
+
+msgid "None of the result items has show set to 'true', cannot skip init phase"
+msgstr ""
+
+msgid "Cannot create empty placeholder for element of type"
+msgstr ""
+
+msgid "Cannot locate any items in the results description"
+msgstr ""
+
+msgid "Unknown type ("
+msgstr "Unbekannter Typ ("
+
+msgid ")  provided in results description"
+msgstr ") angegeben in der Beschreibung der Ergebnisse"
+
+msgid "Could not create meta for"
+msgstr ""
+
+msgid "at depth"
+msgstr ""
+
+msgid "(class:"
+msgstr "(Klasse:"
+
+msgid ", names:"
+msgstr ", Namen:"
+
+msgid ", class children:"
+msgstr ""
+
+msgid ", names children:"
+msgstr ""
+
+msgid ")"
+msgstr ")"
+
+msgid "Could not figure out the container structure in"
+msgstr ""
+
+msgid "Could not find meta description for current plot"
+msgstr ""
+
+msgid "Could not find meta description for current table"
+msgstr ""
+
+msgid "Could not locate 'name' in custom table meta"
+msgstr ""
+
+msgid ""
+"Could not find any data in the table, cannot fetch items from the results "
+"description"
+msgstr ""
+
+msgid ""
+"Could not locate any of the columns specified in the results description"
+msgstr ""
+
+msgid "expecting output to be a data.frame"
+msgstr ""
+
+msgid "no columns found to be imported"
+msgstr ""
+
+msgid "expecting the JASP options to be a named list"
+msgstr ""
+
+msgid ""
+"Trying to find dataset columns to read, but it appears some options don't "
+"exist: '"
+msgstr ""
+
+msgid ","
+msgstr ","
+
+msgid "'"
+msgstr "'"
+
+msgid "Invalid type supplied to .fromRCPP, expected character"
+msgstr ""
+
+msgid "Unknown RCPP object"
+msgstr "Unbekanntes RCPP-Objekt"
+
+msgid "Could not locate"
+msgstr "Konnte nicht finden"
+
+msgid "in environment (.fromRCPP)"
+msgstr "in Umgebung (.fromRCPP)"
+
+msgid "Provide a numeric value to the progress updater"
+msgstr ""
+
+msgid "could not clean value"
+msgstr ""
+
+msgid "Missing required replacement(s): \""
+msgstr ""
+
+msgid "\""
+msgstr "\""
+
+msgid "Expecting row to be a numeric index"
+msgstr ""
+
+msgid "Expecting cols to be a (vector of) character name(s)"
+msgstr ""
+
+msgid "None of the gui options ("
+msgstr ""
+
+msgid ") is in the options list."
+msgstr ""
+
+msgid "Format incorrectly specified"
+msgstr ""
+
+msgid ""
+"Loading plot snapshot from a different session with possible side effects or "
+"errors."
+msgstr ""
+
+msgid "Invalid value provided to 'ticks', expecting positive integer"
+msgstr ""
+
+msgid "The value provided to 'callback' does not appear to be a function"
+msgstr ""
+
+msgid ""
+"Invalid value provided to 'skim', expecting numeric value in the range of "
+"0-99"
+msgstr ""
+
+msgid "Object provided in 'progressbar' is not of class JASP progressbar"
+msgstr ""
+
+msgid "Object provided in 'cluster' is not of class cluster"
+msgstr ""
+
+msgid "Cancelled by callback"
+msgstr ""
+
+msgid "Infinity found in repeated measures cells."
+msgstr "Unendlichkeit gefunden in Messwiederholung-Zellen."
+
+msgid "Number of observations is < %s in repeated measures cells"
+msgstr "Anzahl Beobachtungen ist < %s in Messwiederholungs-Zellen"
+
+msgid "The variance in the repeated measures cells is 0."
+msgstr ""
+
+msgid "Duplicate variables encountered in repeated measures cells, %s"
+msgstr ""
+
+msgid "Duplicate variables encountered in %s"
+msgstr ""
+
+msgid "Bayes factor is undefined -- all effects are specified as nuisance."
+msgstr ""
+
+msgid "Null model"
+msgstr "Nullmodell"
+
+msgid "Null model (incl. %s)"
+msgstr "Nullmodell (inkl. %s)"
+
+msgid "Computing Bayes factors"
+msgstr "Berechne Bayesfaktoren"
+
+msgid ""
+"Bayes factor could not be computed for model: %1$s.\n"
+"The error message was: %2$s."
+msgstr ""
+"Bayesfaktor konnte nicht berechnet werden für Modell: %1$s.\n"
+"Die Fehlermeldung war: %2$s."
+
+msgid "All models include %s"
+msgstr "Alle Modelle beinhalten %s"
+
+msgid "Analysis of Effects - %s"
+msgstr "Analyse der Effekte - %s"
+
+msgid "Analysis of Effects"
+msgstr "Analyse der Effekte"
+
+msgid "Log(BF<sub>incl</sub>)"
+msgstr "Log(BF<sub>inkl</sub>)"
+
+msgid "BF<sub>excl</sub>"
+msgstr "BF<sub>exkl</sub>"
+
+msgid "BF<sub>incl</sub>"
+msgstr "BF<sub>inkl</sub>"
+
+msgid "Effects"
+msgstr "Effekte"
+
+msgid "P(incl)"
+msgstr "P(inkl)"
+
+msgid "P(incl|data)"
+msgstr "P(inkl|Daten)"
+
+msgid ""
+"Compares models that contain the effect to equivalent models stripped of the "
+"effect. Higher-order interactions are excluded. Analysis suggested by "
+"Sebastiaan Mathôt."
+msgstr ""
+
+msgid ""
+"Some Bayes factors could not be calculated. Inclusion probabilities and "
+"Bayes factors are calculated while excluding these models. The results may "
+"be uninterpretable!"
+msgstr ""
+
+msgid "<b><em>Warning.</em></b>"
+msgstr "<b><em>Warnung.</em></b>"
+
+msgid "Model Comparison"
+msgstr "Modellvergleich"
+
+msgid "BF<sub>M</sub>"
+msgstr "BF<sub>M</sub>"
+
+msgid "BF<sub>10</sub>"
+msgstr "BF<sub>10</sub>"
+
+msgid "BF<sub>01</sub>"
+msgstr "BF<sub>01</sub>"
+
+msgid "Log(BF<sub>M</sub>)"
+msgstr "Log(BF<sub>M</sub>)"
+
+msgid "Log(BF<sub>10</sub>)"
+msgstr "Log(BF<sub>10</sub>)"
+
+msgid "error %"
+msgstr "Fehler %"
+
+msgid ""
+"<b><em>Warning.</em></b> Some Bayes factors could not be calculated. Multi "
+"model inference is carried out while excluding these models. The results may "
+"be uninterpretable!"
+msgstr ""
+
+msgid "Model Averaged Posterior Summary"
+msgstr "Modell-gemittelte Posterior-Zusammenfassung"
+
+msgid "%s%% Credible Interval"
+msgstr "%s%% Kredibilitätsintervall"
+
+msgid "Model Averaged R%s"
+msgstr "Modell-gemittelte R%s"
+
+msgid "Model Averaged Posterior Distributions"
+msgstr "Modell-gemittelte Posteriorverteilungen"
+
+msgid "Posterior distribution"
+msgstr "Posteriorverteilung"
+
+msgid ""
+"Could not plot posterior distribution. Check if an error occurred for models "
+"including this parameter."
+msgstr ""
+
+msgid "Model Averaged Q-Q Plot"
+msgstr "Model-gemitteltes Q-Q-Diagramm"
+
+msgid "Model Averaged Posterior R%s"
+msgstr "Modell-gemittelte Posterior R%s"
+
+msgid ""
+"The posterior odds have been corrected for multiple testing by fixing to 0.5 "
+"the prior probability that the null hypothesis holds across all comparisons "
+"(Westfall, Johnson, & Utts, 1997). Individual comparisons are based on the "
+"default t-test with a Cauchy (0, r = 1/sqrt(2)) prior. The \"U\" in the "
+"Bayes factor denotes that it is uncorrected."
+msgstr ""
+
+msgid "Prior Odds"
+msgstr ""
+
+msgid "Posterior Odds"
+msgstr ""
+
+msgid "Descriptives - %s"
+msgstr "Deskriptiv - %s"
+
+msgid ""
+"Some combinations of factors are not observed and hence omitted (%g out of "
+"%g combinations are unobserved)."
+msgstr ""
+
+msgid "Descriptives plots"
+msgstr "Deskriptive Abbildungen"
+
+msgid "Sampling posteriors"
+msgstr ""
+
+msgid "length of samples must be equal to length of weights!"
+msgstr ""
+"Die Länge der Stichprobe muss mit der Länge der Gewichte übereinstimmen!"
+
+msgid ""
+"All predictions had zero variance. Check the predictors for anomalies or "
+"increase the number of posterior samples."
+msgstr ""
+
+msgid "The following error occured in BayesFactor::enumerateGeneralModels: %s"
+msgstr ""
+
+msgid "Single Model Inference"
+msgstr ""
+
+msgid ""
+"Error in single model inference:\n"
+"%s"
+msgstr ""
+
+msgid "Single Model Posterior Summary"
+msgstr ""
+
+msgid "Single Model Posterior Distributions"
+msgstr ""
+
+msgid "Posterior R%s"
+msgstr ""
+
+msgid "Single Model R%s"
+msgstr ""
+
+msgid ""
+"The following problem(s) occurred while running the analysis:"
+"<ul><li>Variable has to be discrete (i.e., integer)</li></ul>"
+msgstr ""
+"Folgende(s) Problem(e) ist beim Ausführen der Analyse aufgetreten:"
+"<ul><li>Variable muss diskret sein (z.B., ganzzahlig)</li></ul>"
+
+msgid "<ul><li>Variable has to be discrete (i.e., integer)</li></ul>"
+msgstr "<ul><li>Variable muss diskret sein (z.B., ganzzahlig)</li></ul>"
+
+msgid "Overview - %s"
+msgstr "Übersicht - %s"
+
+msgid "n"
+msgstr "n"
+
+msgid "25%% Quantile"
+msgstr "25%% Quartil"
+
+msgid "75%% Quantile"
+msgstr "75%% Quartil"
+
+msgid "Rel. Frequency"
+msgstr "Rel. Häufigkeit"
+
+msgid "Observed Moments"
+msgstr "Empirische Momente"
+
+msgid "Moment"
+msgstr "Moment"
+
+msgid "Raw"
+msgstr "Roh"
+
+msgid "Central"
+msgstr "Zentralität"
+
+msgid "Estimated Parameters"
+msgstr "Geschätzte Parameter"
+
+msgid "Parameter"
+msgstr "Parameter"
+
+msgid "Standard errors are unavailable with this method"
+msgstr "Standardfehler sind mit dieser Methode nicht verfügbar."
+
+msgid "Confidence intervals are unavailable with this method."
+msgstr "Konfidenzintervalle sind mit dieser Methode nicht verfügbar."
+
+msgid "Confidence intervals were calculated using the delta method."
+msgstr "Konfidenzintervalle wurden mit der Deltamethode berechnet."
+
+msgid "Standard errors were calculated using the delta method."
+msgstr "Standardfehler wurden mit der Deltamethode berechnet."
+
+msgid ""
+"Standard errors and confidence intervals were calculated using the delta "
+"method."
+msgstr ""
+"Standardfehler und Konfidenzintervalle wurden mit der Deltamethode berechnet."
+
+msgid "Test"
+msgstr "Test"
+
+msgid "Kolmogorov-Smirnov"
+msgstr "Kolmogorov-Smirnov"
+
+msgid "Cramér-von Mises"
+msgstr "Cramér-von Mises"
+
+msgid "Anderson-Darling"
+msgstr "Anderson-Darling"
+
+msgid "Shapiro-Wilk"
+msgstr "Shapiro-Wilk"
+
+msgid "Histogram vs. Theoretical PDF"
+msgstr "Histogramm vs. Theoretische WDF"
+
+msgid "Histogram vs. Theoretical PMF"
+msgstr "Histogramm vs. Theoretische WF"
+
+msgid "Q-Q plot"
+msgstr "Q-Q-Diagramm"
+
+msgid "Empirical vs. Theoretical CDF"
+msgstr "Empirische vs. theoretische KDF"
+
+msgid "P-P plot"
+msgstr "P-P-Diagramm"
+
+msgid "Theoretical"
+msgstr "Theoretisch"
+
+msgid "Sample"
+msgstr "Stichprobe"
+
+msgid "Probability Mass"
+msgstr "Wahrscheinlichkeit"
+
+msgid "Formula"
+msgstr "Formel"
+
+msgid "Density Plot"
+msgstr "Dichtediagramm"
+
+msgid "Cumulative Probability Plot"
+msgstr "Diagramm kumulative Wahrscheinlichkeit"
+
+msgid "Slope"
+msgstr "Steigung"
+
+msgid "Quantile Plot"
+msgstr "Quantildiagramm"
+
+msgid "Probability Mass Plot"
+msgstr "Wahrscheinlichkeitsdiagramm"
+
+msgid "Histogram"
+msgstr "Histogramm"
+
+msgid "Bar plot"
+msgstr "Balkendiagramm"
+
+msgid "Rel. Freq (%s in bin)"
+msgstr ""
+
+msgid "Empirical Cumulative Distribution"
+msgstr "Empirische kumulative Verteilung"
+
+msgid "Freq"
+msgstr ""
+
+msgid "Parameters, Support, and Moments"
+msgstr "Parameter, Träger, und Momente"
+
+msgid ""
+"<b>Parameters</b>\n"
+"      %s\n"
+"      \n"
+"      <b>Support</b>\n"
+"      %s\n"
+"      \n"
+"      <b>Moments</b>\n"
+"      E(X) = %s\n"
+"      Var(X) = %s"
+msgstr ""
+"<b>Parameter</b>\n"
+"      %s\n"
+"      \n"
+"      <b>Träger</b>\n"
+"      %s\n"
+"      \n"
+"      <b>Momente</b>\n"
+"      E(X) = %s\n"
+"      Var(X) = %s"
+
+msgid ""
+"<b>Parameters</b>\n"
+"      %s\n"
+"      \n"
+"      <b>Support</b>\n"
+"      %s\n"
+"      \n"
+"      <b>Moments</b>\n"
+"      not available"
+msgstr ""
+"<b>Parameter</b>\n"
+"      %s\n"
+"      \n"
+"      <b>Träger</b>\n"
+"      %s\n"
+"      \n"
+"      <b>Momente</b>\n"
+"      nicht verfügbar"
+
+msgid ""
+"The probability density function (PDF), usually denoted as f(x), is a "
+"function of a random variable X.\n"
+"    The value of f(x) provides the relative likelihood that a realization of "
+"the random variable X yields a value equal to x. \n"
+"    More formally, the PDF is defined as a derivative of a cumulative "
+"distribution function (CDF).\n"
+"    \n"
+"    The density plot displays the probability density function of a random "
+"variable.\n"
+"    The <i>y</i>-axis displays the value of the density function for a "
+"particular value of the random variable (displayed on the <i>x</i>-axis)."
+msgstr ""
+"Die Wahrscheinlichkeitsdichtefunktion (WDF), meist notiert mit f(x), ist "
+"eine Funktion einer Zufallsvariable X.\n"
+"    Der Wert f(x) gibt die relative Wahrscheinlichkeit an, mit der beim "
+"Ziehen aus der Zufallsvariable X der Wert x realisiert wird. \n"
+"    Formal ist die WDF als eine Ableitung einer kumulativen "
+"Verteilungsfunktion (KVF) definiert.\n"
+"    \n"
+"    Das Dichtediagramm zeigt die Wahrscheinlichkeitsdichtefunktion einer "
+"Zufallsvariable.\n"
+"    Die <i>y</i>-Achse zeigt die Werte der Dichtefunktion für einen "
+"bestimmten Wert der Zufallsvariable (auf der <i>x</i>-Achse)."
+
+msgid ""
+"The probability mass function (PMF), usually denoted as f(x), is a function "
+"of a random variable X.\n"
+"    The value of f(x) provides the probability that a realization of the "
+"random variable X yields a value equal to x.\n"
+"    \n"
+"    The probability mass plot displays the probability mass function of a "
+"random variable.\n"
+"    The <i>y</i>-axis displays the value of the probability mass function "
+"for a particular value of the random variable (displayed on the <i>x</i>-"
+"axis)."
+msgstr ""
+"Die Wahrscheinlichkeitsfunktion (WF), meist notiert mit f(x), ist eine "
+"Funktion einer Zufallsvariable X.\n"
+"    Der Wert f(x) gibt die Wahrscheinlichkeit an, mit der beim Ziehen aus "
+"der Zufallsvariable X der Wert x realisiert wird.\n"
+"    \n"
+"    Das Wahrscheinlichkeitsdiagramm zeigt die Wahrscheinlichkeitsmasse einer "
+"Zufallsvariable.\n"
+"    Die <i>y</i>-Achse zeigt die Werte der Wahrscheinlichkeitsfunktion für "
+"einen bestimmten Wert der Zufallsvariable (auf der <i>x<i/>-Achse)."
+
+msgid ""
+"The cumulative distribution function (CDF), usually denoted as F(x), is a "
+"function of a random variable X.\n"
+"    The value of F(x) provides the probability that a realization of the "
+"random variable X yields a value that is equal to or smaller than x.\n"
+"    \n"
+"    The cumulative probability plot displays the cumulative distribution of "
+"a random variable.\n"
+"    The <i>y</i>-axis displays the value of the cumulative distribution "
+"function for a particular value of the random variable (displayed on the "
+"<i>x</i>-axis)."
+msgstr ""
+"Die kumulative Verteilungsfunktion (KVF), meist notiert als F(x), ist eine "
+"Funktion einer Zufallsvariable X.\n"
+"    Der Wert F(x) gibt die Wahrscheinlichkeit an, dass beim Ziehen aus der "
+"Zufallsvariable X ein Wert kleiner oder gleich x realisiert wird.\n"
+"    \n"
+"    Das kumulative-Wahrscheinlichkeits-Diagramm zeigt die kumulative "
+"Verteilung einer Zufallsvariable.\n"
+"    Die <i>y</i>-Achse zeigt die Werte der kumulativen Verteilungsfunktion "
+"für einen bestimmten Wert der Zufallsvariable (auf der <i>x</i>-Achse)."
+
+msgid ""
+"The quantile function, usually denoted as Q(p), is the inverse of the "
+"cumulative distribution function.\n"
+"    The function gives the quantile such that the probability of the random "
+"variable being less than or equal to that value equals the given probability "
+"p.   \n"
+"    \n"
+"    The quantile plot displays the quantile function.\n"
+"    The <i>y</i>-axis displays the quantile of which the probability that "
+"the random variable is less or equal to that value is equal to p (displayed "
+"on the <i>x</i>-axis)."
+msgstr ""
+"Die Quantilfunktion, meist notiert als Q(p), ist die Inverse der kumulativen "
+"Verteilungsfunktion.\n"
+"    Die Funktion liefert das Quantil, bei dem die Wahrscheinlichkeit, dass "
+"die Zufallsvariable diesen oder einen kleinerer Wert annimmt, der "
+"angegebenen Wahrscheinlichkeit p entspricht.\n"
+"    \n"
+"    Das Quantildiagramm zeigt die Quantilfunktion. \n"
+"    De <i>y</i>-Achse zeigt das Quantil, für das die Wahrscheinlichkeit der "
+"Zufallsvariable kleiner oder gleich dieses Wertes gleich p ist (gezeigt auf "
+"der <i>x</i>-Achse)."
+
+msgid ""
+"<h3> Demonstration of the %1$s </h3>\n"
+"This demonstration is divided into four parts.\n"
+"The first part displays the %2$s, its probability density function, "
+"cumulative distribution function, and quantile function.\n"
+"The second part allows you to generate data from the %3$s, compute "
+"descriptive statistics, and display descriptive plots.\n"
+"The third part allows you to estimate the parameters of the %4$s.\n"
+"The fourth part allows you to check the fit of the %5$s to the data.\n"
+"\n"
+"<b>References</b>\n"
+"\n"
+"Blitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> "
+"Chapman and Hall/CRC.\n"
+"\n"
+"Leemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, "
+"16</i>(4), 8–9.\n"
+"\n"
+"For relationships with other distributions, visit www.math.wm.edu/~leemis/"
+"chart/UDR/UDR.html.\n"
+"\n"
+"https://en.wikipedia.org/wiki/List_of_probability_distributions"
+msgstr ""
+"<h3> Darstellung der %1$s </h3>\n"
+"Diese Darstellung besteht aus vier Teilen.\n"
+"Der erste Teil zeigt die %2$s, ihre Wahrscheinlichkeitsdichtefunktion, die "
+"kumulative Verteilungsfunktion, und Quantilfunktion.\n"
+"Mit dem zweiten Teil kannst Du aus der %3$s Daten generieren, deskriptive "
+"Statistiken berechnen, und deskriptive Diagramme anzeigen.\n"
+"Im dritten Teil kannst Du die Parameter der %4$s schätzen.\n"
+"Im vierten Teil kannst Du die Anpassungsgüte der %5$s an die Daten prüfen.\n"
+"\n"
+"<b>Referenzen</b>\n"
+"\n"
+"Blitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> "
+"Chapman and Hall/CRC.\n"
+"\n"
+"Leemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, "
+"16</i>(4), 8–9.\n"
+"\n"
+"Für Verwandschaften mit weiteren Verteilungen, besuche www.math.wm.edu/"
+"~leemis/chart/UDR/UDR.html.\n"
+"\n"
+"https://en.wikipedia.org/wiki/List_of_probability_distributions"
+
+msgid ""
+"Estimation failed: Optimization did not converge. <ul><li>Try adjusting "
+"parameter values, check outliers or feasibility of the distribution fitting "
+"the data.</li></ul>"
+msgstr ""
+"Schätzung fehlgeschlagen: Optimierung ist nicht konvergiert. <ul><li> "
+"Probiere die Parameterwerte anzupassen, prüfe nach Ausreißern oder der "
+"Anpassungsgüte der Verteilung auf die Daten.</li></ul>"
+
+msgid ""
+"Estimation failed: Hessian matrix is not numerically computable. "
+"<ul><li>Check outliers or feasibility of the distribution fitting the data.</"
+"li></ul>"
+msgstr ""
+"Schätzung fehlgeschlagen: Hesse-Matrix is nicht numerisch berechenbar. "
+"<ul><li> Prüfe nach Ausreißern oder der Passgüte der Verteilung auf die "
+"Daten.</li></ul>"
+
+msgid "This function should not be used. In for reference."
+msgstr ""
+
+msgid "K-Nearest Neighbors Classification"
+msgstr "K-nächste-Nachbarn-Klassifikation"
+
+msgid "Linear Discriminant Classification"
+msgstr "Lineare Discriminanten-Klassifikation"
+
+msgid "Random Forest Classification"
+msgstr "Random-Forest-Klassifikation"
+
+msgid "Boosting Classification"
+msgstr "Boosting Klassifikation"
+
+msgid "Nearest neighbors"
+msgstr "Nächste-Nachbarn"
+
+msgid "Weights"
+msgstr "Gewichte"
+
+msgid "Distance"
+msgstr "Distanz"
+
+msgid "Linear Discriminants"
+msgstr "Lineare Diskriminanten"
+
+msgid "Method"
+msgstr "Methode"
+
+msgid "Trees"
+msgstr "Bäume"
+
+msgid "Predictors per split"
+msgstr ""
+
+msgid "Shrinkage"
+msgstr ""
+
+msgid "n(Train)"
+msgstr "n(Train)"
+
+msgid "n(Validation)"
+msgstr "n(Validation)"
+
+msgid "n(Test)"
+msgstr "n(Test)"
+
+msgid "Validation Accuracy"
+msgstr ""
+
+msgid "Test Accuracy"
+msgstr "Test-Genauigkeit"
+
+msgid "OOB Accuracy"
+msgstr "OOB Genauigkeit"
+
+msgid "Please provide a target variable and at least %i predictor variable(s)."
+msgstr ""
+
+msgid ""
+"The model is optimized with respect to the <i>validation set accuracy</i>."
+msgstr ""
+
+msgid ""
+"The optimum number of nearest neighbors is the maximum number. You might "
+"want to adjust the range of optimization."
+msgstr ""
+
+msgid "Manhattan"
+msgstr "Manhattan"
+
+msgid "Euclidean"
+msgstr "Euklidisch"
+
+msgid "MVE"
+msgstr "MVE"
+
+msgid "The model is optimized with respect to the <i>out-of-bag accuracy</i>."
+msgstr ""
+
+msgid "Confusion Matrix"
+msgstr "Konfusionsmatrix"
+
+msgid "Predicted"
+msgstr "Vorhergesagt"
+
+msgid "Decision Boundary Matrix"
+msgstr ""
+
+msgid ""
+"Cannot create matrix: not enough numeric variables remain after removing "
+"factor variables. You need at least 2 numeric variables."
+msgstr ""
+
+msgid "ROC Curves Plot"
+msgstr "ROC-Kurven-Grafik"
+
+msgid "False positive rate"
+msgstr "Falsch-positiv-Rate"
+
+msgid "True positive rate"
+msgstr "Richtig-positiv-Rate"
+
+msgid "Perfect separation"
+msgstr "Perfekte Trennung"
+
+msgid "Andrews Curves Plot"
+msgstr "Andrews-Kurven-Diagramm"
+
+msgid "Andrews curves require a minimum of 2 predictor variables."
+msgstr "Andrews Kurve benötigt ein Minimum von 2 Prädiktorvariablen."
+
+msgid "Box's M-test for Homogeneity of Covariance Matrices"
+msgstr ""
+
+msgid "Evaluation Metrics"
+msgstr "Evaluationsmetriken"
+
+msgid "Precision"
+msgstr "Genauigkeit"
+
+msgid "Recall"
+msgstr "Trefferquote"
+
+msgid "F1 Score"
+msgstr "F1 Score"
+
+msgid "AUC"
+msgstr "AUC"
+
+msgid ""
+"Area Under Curve (AUC) is calculated for every class against all other "
+"classes."
+msgstr ""
+"Area Under Curve (AUC) wordt berekend voor iedere klasse tegenover alle "
+"andere klassen."
+
+msgid "Average / Total"
+msgstr "Mittelwert / Gesamt"
+
+msgid "Class Proportions"
+msgstr "Klassenverhältnisse"
+
+msgid "Data Set"
+msgstr "Datensatz"
+
+msgid "Training Set"
+msgstr "Trainings-Menge"
+
+msgid "Validation Set"
+msgstr "Validations-Menge"
+
+msgid "Training and Validation Set"
+msgstr "Trainings- und Validations-Menge"
+
+msgid "Test Set"
+msgstr "Test-Menge"
+
+msgid ""
+"You have specified more clusters than distinct data points. Please choose a "
+"number lower than %s."
+msgstr ""
+
+msgid ""
+"R package error: The hclust clustering algorithm from the stats R package "
+"cannot handle data that has 65536 or more rows. We are working on a solution "
+"for this problem. Please try another algorithm in the meantime."
+msgstr ""
+
+msgid "K-Means Clustering"
+msgstr "K-Means-Clustering"
+
+msgid "Fuzzy C-Means Clustering"
+msgstr "Fuzzy-C-Means-Clustering"
+
+msgid "Hierarchical Clustering"
+msgstr "Hierarchisches Clustering"
+
+msgid "Density-Based Clustering"
+msgstr "Dichtebasiertes Clustering"
+
+msgid "Random Forest Clustering"
+msgstr "Random Forest Clustering"
+
+msgid "Clusters"
+msgstr "Cluster"
+
+msgid "R%s"
+msgstr "R%s"
+
+msgid "Please provide at least 2 variables."
+msgstr ""
+
+msgid "silhouette"
+msgstr "Silhouette"
+
+msgid "The model is optimized with respect to the <i>%s</i> value."
+msgstr ""
+
+msgid ""
+"The optimum number of clusters is the maximum number of clusters. You might "
+"want to adjust the range of optimization."
+msgstr ""
+
+msgid ""
+"Your cluster model contains 0 clusters and only Noisepoints, we advise to "
+"change the Eps and MinPts parameters."
+msgstr ""
+
+msgid ""
+"Your cluster model contains 1 cluster and 0 Noisepoints. You could change "
+"the Eps and MinPts parameters."
+msgstr ""
+
+msgid "The variables in the model are <b>unstandardized</b>."
+msgstr ""
+
+msgid "Cluster Information"
+msgstr "Cluster-Information"
+
+msgid "Cluster"
+msgstr "Cluster"
+
+msgid "Size"
+msgstr "Größe"
+
+msgid "Explained proportion within-cluster heterogeneity"
+msgstr ""
+
+msgid "Within sum of squares"
+msgstr "Innere Quadratsumme"
+
+msgid "Silhouette score"
+msgstr "Silhouette-Score"
+
+msgid "Centroid %s"
+msgstr "Zentroid %s"
+
+msgid "Noisepoints"
+msgstr ""
+
+msgid "The Between Sum of Squares of the %1$s cluster model is %2$s"
+msgstr "Die Zwischen-Quadratsumme von Clustermodell %1$s ist %2$s"
+
+msgid "The Total Sum of Squares of the %1$s cluster model is %2$s"
+msgstr "Die gesamte Quadratsumme von Clustermodell %1$s ist %2$s"
+
+msgid "Maximum diameter"
+msgstr "Maximaler Durchmesser"
+
+msgid "Minimum separation"
+msgstr "Minimale scheiding"
+
+msgid "Pearson's %s"
+msgstr "Pearson's %s"
+
+msgid "Dunn index"
+msgstr "Dunn index"
+
+msgid "Entropy"
+msgstr "Entropy"
+
+msgid "Calinski-Harabasz index"
+msgstr "Calinski-Harabasz index"
+
+msgid "All metrics are based on the <i>euclidean</i> distance."
+msgstr "Alle Metriken basieren auf der <i>Euklidischen</i> Distanz."
+
+msgid "Evaluation metrics cannot be computed when there is only 1 cluster."
+msgstr ""
+"Evaluationsmetriken können nicht berechnert werden wenn es nur 1 Cluster "
+"gibt."
+
+msgid "t-SNE Cluster Plot"
+msgstr "t-SNE Cluster-Abbildung"
+
+msgid "Noisepoint"
+msgstr "Noisepoint"
+
+msgid "Elbow Method Plot"
+msgstr "Elleboog Methode Grafiek"
+
+msgid "WSS"
+msgstr "WSS"
+
+msgid "Number of Clusters"
+msgstr "Anzahl Cluster"
+
+msgid "Lowest %s value"
+msgstr "Niedrigster Wert %s"
+
+msgid "Cluster Means"
+msgstr "Clustermittelwerte"
+
+msgid "Cluster %s"
+msgstr "Cluster %s"
+
+msgid "Cluster Density Plots"
+msgstr "Clusterdichte Abbildungen"
+
+msgid "Cluster Mean Plots"
+msgstr "Clustermittelwerte Abbildungen"
+
+msgid "All predictors"
+msgstr "Alle Prädiktoren"
+
+msgid "The variable '%s' can't be both a predictor and a test set indicator."
+msgstr ""
+
+msgid ""
+"Your test set indicator should be binary, containing only 1 (included in "
+"test set) and 0 (excluded from test set)."
+msgstr ""
+
+msgid ""
+"You have specified more nearest neighbors than there are observations in the "
+"training set. Please choose a number lower than %d."
+msgstr ""
+
+msgid ""
+"You have specified more folds than there are observations in the training "
+"and validation set. Please choose a number lower than %d."
+msgstr ""
+
+msgid ""
+"The minimum number of observations per node is too large. Ensure that `2 * "
+"Min. observations in node + 1` > `Training data used per tree * available "
+"training data` (in this case the minimum can be %.3f at most)."
+msgstr ""
+
+msgid "K-Nearest Neighbors Regression"
+msgstr "K-nächste-Nachbarn Regression"
+
+msgid "Regularized Linear Regression"
+msgstr "Regularisierte lineare Regression"
+
+msgid "Random Forest Regression"
+msgstr "Random-Forest-Regression"
+
+msgid "Boosting Regression"
+msgstr "Boosting-Regression"
+
+msgid "Penalty"
+msgstr "Strafterm"
+
+msgid "Loss function"
+msgstr ""
+
+msgid "Validation MSE"
+msgstr "Validation MSE"
+
+msgid "Test MSE"
+msgstr ""
+
+msgid "OOB Error"
+msgstr "OOB Fehler"
+
+msgid "Please provide a target variable and at least %d predictor variable(s)."
+msgstr ""
+
+msgid ""
+"The model is optimized with respect to the <i>validation set mean squared "
+"error</i>."
+msgstr ""
+
+msgid "When %s is set to 0 linear regression is performed."
+msgstr ""
+
+msgid ""
+"The model is optimized with respect to the <i>out-of-bag mean squared error</"
+"i>."
+msgstr ""
+
+msgid "Gaussian"
+msgstr "Gaußsch"
+
+msgid "Laplace"
+msgstr "Laplace"
+
+msgid "R%s cannot be computed due to lack of variance in the predictions.</i>"
+msgstr ""
+
+msgid "Predictive Performance Plot"
+msgstr ""
+
+msgid "Observed test values"
+msgstr "Beobachtete Testwerte"
+
+msgid "Predicted test values"
+msgstr "Vorhergesagte Testwerte"
+
+msgid "Data Split"
+msgstr "Datenaufteilung"
+
+msgid "Train: %d"
+msgstr "Training: %d"
+
+msgid "Test: %d"
+msgstr "Test: %d"
+
+msgid "Total: %d"
+msgstr "Gesamt: %d"
+
+msgid "Validation: %d"
+msgstr "Validation: %d"
+
+msgid "Train and validation: %d"
+msgstr "Training und Validation: %d"
+
+msgid "Object passed to .scaleNumericData.matrix was not numeric!"
+msgstr "Objekt weitergegeben an .scaleNumericData. Matrix war nicht numerisch!"
+
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value,"
+"the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</"
+"em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, "
+"2001)."
+msgstr ""
+"Vovk-Sellke-Maximum-<em>p</em>-Quotient: Basierend auf einem zweiseitigen "
+"<em>p</em>-Wert ist der maximale Quotient zugunsten H%1$s gegenüber H%2$s "
+"gegeben durch 1/(-e <em>p</em> log(<em>p</em>)) für <em>p</em> %3$s .37 "
+"(Sellke, Bayarri, & Berger, 2001)."
+
+msgid "Please provide another variable."
+msgstr "Bitte gib eine andere Variable ein."
+
+msgid "Variables %s and %s are the same!"
+msgstr "Variablen %s und %s sind dieselbe!"
+
+msgid ""
+"Bayes factor robustness check plot currently not supported for informed "
+"prior."
+msgstr ""
+"Bayesfaktor-Robustheitsprüfungsdiagramm ist derzeit nicht für informierte "
+"Prior verfügbar."
+
+msgid ""
+"Sequential analysis robustness check plot currently not supported for "
+"informed prior."
+msgstr ""
+"Robustheitsprüfungsdiagramm der sequenziellen Analyse ist derzeit nicht für "
+"informierte Prior verfügbar."
+
+msgid "Expected numeric or character rscale but got %s."
+msgstr "Erwartete Zahl oder Buchstabe rscale, aber bekam %s."
+
+msgid "Running robustness check %d / %d"
+msgstr "Berechne Bayesfaktor-Robustheitsprüfung %d / %d"
+
+msgid "max BF%s"
+msgstr "max BF%s"
+
+msgid "user prior"
+msgstr "benutzerdefinierter Prior"
+
+msgid "wide prior"
+msgstr "breiter Prior"
+
+msgid "ultrawide prior"
+msgstr "ultrabreiter Prior"
+
+msgid "BF%s"
+msgstr "BF%s"
+
+msgid "%s at r==%s"
+msgstr "%s mit r==%s"
+
+msgid "Cauchy prior width"
+msgstr "Breite Cauchy-Prior"
+
+msgid "Running sequential analysis %d / %d"
+msgstr "Berechne sequentielle Analyse %d / %d"
+
+msgid "Bayes factor could not be calculated"
+msgstr "Bayesfaktor konnte nicht berechnet werden"
+
+msgid "Bayes factor is infinite"
+msgstr "Bayesfaktor ist unendlich"
+
+msgid "The Bayes factor is too small"
+msgstr "Der Bayesfaktor ist zu klein"
+
+msgid "Bayesian Pearson Correlations"
+msgstr "Bayessche Pearson-Korrelationen"
+
+msgid "Bayesian Kendall's Tau Correlations"
+msgstr "Bayessche Kendalls-Tau-Korrelationen"
+
+msgid "Bayesian Spearman Correlations"
+msgstr "Bayessche Spearman-Korrelationen"
+
+msgid "Bayesian Correlation Table"
+msgstr "Bayessche Korrelationstabelle"
+
+msgid "Pearson Correlations"
+msgstr "Pearson-Korrelationen"
+
+msgid "Kendall's Tau Correlations"
+msgstr "Kendalls-Tau-Korrelationen"
+
+msgid "Spearman Correlations"
+msgstr "Spearman-Korrelationen"
+
+msgid "Correlation Table"
+msgstr "Korrelationstabelle"
+
+msgid "Pearson's r"
+msgstr "Pearsons r"
+
+msgid "Spearman's rho"
+msgstr "Spearmans Rho"
+
+msgid "Kendall's tau B"
+msgstr "Kendalls Tau B"
+
+msgid "Pearson"
+msgstr "Pearson"
+
+msgid "Spearman"
+msgstr "Spearman"
+
+msgid "Kendall"
+msgstr "Kendall"
+
+msgid "Plotting not possible: Number of observations is < 3"
+msgstr "Abbildung unmöglich: Anzahl Beobachtungen ist < 3"
+
+msgid "Plotting not possible: Infinite value(s)"
+msgstr "Abbildung unmöglich: Unendliche(r) Wert(e)"
+
+msgid "rho"
+msgstr "Rho"
+
+msgid "tau"
+msgstr "Tau"
+
+msgid "rho[s]"
+msgstr "Rho[s]"
+
+msgid "Pearson's"
+msgstr "Pearsons"
+
+msgid "Spearman's"
+msgstr "Spearmans"
+
+msgid "Kendall's"
+msgstr "Kendalls"
+
+msgid "Kendall's tau"
+msgstr "Kendalls Tau"
+
+msgid "Upper %s%% CI"
+msgstr "Obere %s%% KI"
+
+msgid "Lower %s%% CI"
+msgstr "Untere %s%% KI"
+
+msgid "Equivalence Prior and Posterior"
+msgstr "Äquivalenz Prior und Posterior"
+
+msgid "Equivalence Sequential Analysis"
+msgstr "Äquivalenz sequenzielle Analyse"
+
+msgid "Non-valid type argument provided"
+msgstr "Ungültigen Argumenttyp übergeben"
+
+msgid "Unknown check type provided: \""
+msgstr "Unbekannten Checktyp übergeben: \""
+
+msgid "Missing required argument(s): \""
+msgstr "Fehlende(s) benötigte(s) Argument(e): \""
+
+msgid "Each grouping variable must have a level specified"
+msgstr "Jede Gruppierungsvariable muss eine spezifizierte Stufe haben"
+
+msgid "the modelterms list must contain the named item `components`"
+msgstr ""
+"die Liste der Modellterme muss ein mit `componenten` benanntes Item "
+"beinhalten"
+
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,\n"
+"  the maximum possible odds in favor of H%1$s over H%2$s equals\n"
+"  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37\n"
+"  (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+"Vovk-Sellke-Maximum-<em>p</em>-Quotient: Basierend auf dem <em>p</em>-Wert\n"
+"  ist der maximalen Quotient zugungsten der H%1$s relativ zur H%2$s gegeben "
+"durch \n"
+"  1/(-e <em>p</em> log(<em>p</em>)) für <em>p</em> %3$s .37\n"
+"  (Sellke, Bayarri, & Berger, 2001)."
+
+msgid "The following problem(s) occurred while running the analysis:"
+msgstr "Folgende(s) Problem(e) traten beim Ausführen der Analyse auf:"
+
+msgid "after grouping on %s"
+msgstr "nach Gruppieren mit %s"
+
+msgid ""
+"This analysis terminated unexpectedly. %s To receive assistance with this "
+"problem, please report the message above at: https://jasp-stats.org/bug-"
+"reports"
+msgstr ""
+"Diese Analyse wurde unerwartet beendet. %s Um Hilfe zu diesem Problem zu "
+"bekommen, berichte die oben stehende Meldung auf: https://jasp-stats.org/bug-"
+"reports"
+
+msgid "Infinity found in %s"
+msgstr "Unendlichkeit gefunden in %s"
+
+msgid "Number of factor levels is %s in %s"
+msgstr "Anzahl Faktorstufen ist %s in %s"
+
+msgid "The variance in %s is equal to %s"
+msgstr "Die Varianz in %s ist gleich zu %s"
+
+msgid "Number of observations is %s in %s"
+msgstr "Anzahl Beobachtungen ist %s in %s"
+
+msgid "Cannot compute statistic reliably: number of observations is %s in %s"
+msgstr ""
+"Kann Statistik nicht zuverlässig berechnen: Anzahl Beobachtungen ist %s in %s"
+
+msgid "Values in %s outside interval [%s, %s]"
+msgstr "Werte in %s außerhalb Intervall [%s, %s]"
+
+msgid ""
+"Dataset is not a proper variance-covariance matrix. Please load only a "
+"positive definite symmetrical matrix as your dataset."
+msgstr ""
+
+msgid ""
+"The variance-covariance matrix of the supplied data is not positive-"
+"definite. Please check if variables have many missings observations or are "
+"collinear"
+msgstr ""
+
+msgid ""
+"Main effects and lower-order interactions must be included whenever the "
+"corresponding higher-order interaction is included"
+msgstr ""
+
+msgid "Negative numbers found in %s"
+msgstr "Negative Zahlen in %s gefunden"
+
+msgid "Missing values encountered in %s"
+msgstr "Fehlende Werte in %s gefunden"
+
+msgid ""
+"Levene's test is significant (p < .05), suggesting a violation of the equal "
+"variance assumption"
+msgstr ""
+"Levenes Test ist signifikant (p < .05), was auf eine Verletzung der Annahme "
+"von gleichen Varianzen hindeutet."
+
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the "
+"maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> "
+"log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+"Vovk-Sellke-Maximum-<em>p</em>-Quotient: Basierend auf dem <em>p</em>-Wert "
+"ist der maximale Quotient zugunsten der H%1$s relativ zur H%2$s gegeben "
+"durch 1/(-e <em>p</em> log(<em>p</em>)) für <em>p</em> %3$s .37 (Sellke, "
+"Bayarri, & Berger, 2001)."
+
+msgid "Proportions tested against value: %s"
+msgstr "Verhältnisse getestet gegen Wert: %s"
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the proportion is "
+"less than %s"
+msgstr ""
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the proportion is "
+"greater than %s"
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass das Verhältnisgrößer "
+"als %s ist"
+
+msgid "Could not find message for class %s and type %s"
+msgstr "Konnte keine Nachricht für Klasse %s und Typ %s finden"
+
+msgid "Log(BF%s)"
+msgstr "Log(BF%s)"
+
+msgid "Bayesian Independent Samples T-Test"
+msgstr "Bayesscher t-Test für unabhängige Stichproben"
+
+msgid "n%s"
+msgstr "n%s"
+
+msgid "Proportional error estimate could not be computed."
+msgstr ""
+
+msgid ""
+"Plotting not possible: Bayes factor robustness check plot currently not "
+"supported for informed prior."
+msgstr ""
+
+msgid "Bayes factors could not be computed for 100 values of the prior."
+msgstr ""
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that group 1 is greater "
+"than group 2."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass Gruppe 1 größer als "
+"Gruppe 2 ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the mean is greater "
+"than 0."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass der Mittelwert größer "
+"als 0 ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that measure 1 is "
+"greater than measure 2."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass Messung 1 größer als "
+"Messung 2 ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that group 1 is less "
+"than group 2."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass Gruppe 1 kleiner als "
+"Gruppe 2 ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the mean is less "
+"than 0."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass der Mittelwert kleiner "
+"als 0 ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that measure 1 is less "
+"than measure 2."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass Messung 1 kleiner als "
+"Messung 2 ist."
+
+msgid "Bayesian One Sample T-Test"
+msgstr "Bayesscher t-Test für eine Stichprobe"
+
+msgid "Bayesian Paired Samples T-Test"
+msgstr "Bayesscher t-Test für abhängige Stichproben"
+
+msgid "Not enough observations."
+msgstr "Nicht genug Beobachtungen."
+
+msgid "Second-Order"
+msgstr "Zweiter-Ordnung"
+
+msgid ""
+"The model could not be estimated. Ensure that factors have at least 2 "
+"observed variables."
+msgstr ""
+"Das Modell konnte nicht geschätzt werden. Stelle sicher, dass die Faktoren "
+"mindestens 2 beobachtete Variablen haben."
+
+msgid ""
+"The model could not be estimated. A factor with less than 2 variables was "
+"added in Second-Order."
+msgstr ""
+"Das Modell konnte nicht geschätzt werden. Ein Faktor mit weniger als 2 "
+"Variablen wurde in Zweiter-Ordnung hinzugefügt."
+
+msgid ""
+"The model could not be estimated. Error message: \n"
+"\n"
+" %s"
+msgstr ""
+"Das Modell konnte nicht geschätzt werden. Fehlermeldung:\n"
+"\n"
+" %s"
+
+msgid "The model is not admissible: %s"
+msgstr ""
+
+msgid "The model could not be estimated due to nonconvergence."
+msgstr "Das Modell konnte nicht geschätzt werden durch fehlende Konvergenz."
+
+msgid "The model could not be estimated: No degrees of freedom left."
+msgstr "Das Modell konnte nicht geschätzt werden: Keine Freiheitsgrade übrig."
+
+msgid "Model fit"
+msgstr "Modell-Anpassung"
+
+msgid "Chi-square test"
+msgstr "Chi-Quadrat-Test"
+
+msgid "Model"
+msgstr "Modell"
+
+msgid "Baseline model"
+msgstr "Baseline-Modell"
+
+msgid "Factor model"
+msgstr "Faktormmodell"
+
+msgid "Additional fit measures"
+msgstr "Weitere Anpassungsmetriken"
+
+msgid "Fit indices"
+msgstr "Anpassungsindikatoren"
+
+msgid "Index"
+msgstr "Index"
+
+msgid "Information criteria"
+msgstr "Informationskriterien"
+
+msgid "Other fit measures"
+msgstr "Andere Anpassungsmetriken"
+
+msgid "Metric"
+msgstr "Metrisch"
+
+msgid "Comparative Fit Index (CFI)"
+msgstr ""
+
+msgid "Tucker-Lewis Index (TLI)"
+msgstr "Tucker-Lewis-Index (TLI)"
+
+msgid "Bentler-Bonett Non-normed Fit Index (NNFI)"
+msgstr ""
+
+msgid "Bentler-Bonett Normed Fit Index (NFI)"
+msgstr ""
+
+msgid "Parsimony Normed Fit Index (PNFI)"
+msgstr ""
+
+msgid "Bollen's Relative Fit Index (RFI)"
+msgstr ""
+
+msgid "Bollen's Incremental Fit Index (IFI)"
+msgstr ""
+
+msgid "Relative Noncentrality Index (RNI)"
+msgstr ""
+
+msgid "Number of free parameters"
+msgstr "Anzahl freier Parameter"
+
+msgid "Akaike (AIC)"
+msgstr "Akaike (AIC)"
+
+msgid "Bayesian (BIC)"
+msgstr "Bayesianisch (BIC)"
+
+msgid "Sample-size adjusted Bayesian (SSABIC)"
+msgstr ""
+
+msgid "Root mean square error of approximation (RMSEA)"
+msgstr ""
+
+msgid "RMSEA 90%% CI lower bound"
+msgstr ""
+
+msgid "RMSEA 90%% CI upper bound"
+msgstr ""
+
+msgid "RMSEA p-value"
+msgstr ""
+
+msgid "Standardized root mean square residual (SRMR)"
+msgstr ""
+
+msgid "Hoelter's critical N (%s = .05)"
+msgstr "Hoelters kritisches N (%s = .05)"
+
+msgid "Hoelter's critical N (%s = .01)"
+msgstr "Hoelters kritisches N (%s = .01)"
+
+msgid "Goodness of fit index (GFI)"
+msgstr ""
+
+msgid "McDonald fit index (MFI)"
+msgstr "McDonald-Fit-Index (MFI)"
+
+msgid "Expected cross validation index (ECVI)"
+msgstr ""
+
+msgid "Parameter estimates"
+msgstr "Parameterschätzungen"
+
+msgid "Not all bootstrap samples were successful: CI based on %.0f samples."
+msgstr ""
+
+msgid "Indicator"
+msgstr "Indikator"
+
+msgid "Symbol"
+msgstr "Symbol"
+
+msgid "Std. Error"
+msgstr "Std.-Fehler"
+
+msgid "z-value"
+msgstr "z-Wert"
+
+msgid "%s%% Confidence Interval"
+msgstr "%s%% Konfidenzintervall"
+
+msgid "Std. Est. (%s)"
+msgstr "Std. Schätzung (%s)"
+
+msgid "Second-order factor loadings"
+msgstr ""
+
+msgid "Factor variances"
+msgstr "Faktorvarianzen"
+
+msgid "Factor Covariances"
+msgstr "Faktorkovarianzen"
+
+msgid "Residual variances"
+msgstr "Residualvarianzen"
+
+msgid "Residual covariances"
+msgstr "Residualkovarianzen"
+
+msgid "Factor Intercepts"
+msgstr "Faktor-Konstanten"
+
+msgid "Intercepts"
+msgstr "Konstanten"
+
+msgid "Modification Indices"
+msgstr ""
+
+msgid "Cross-loadings"
+msgstr ""
+
+msgid "Mod. Ind."
+msgstr ""
+
+msgid "EPC"
+msgstr "EPC"
+
+msgid "Second-order cross-loadings"
+msgstr ""
+
+msgid "Implied covariance matrices"
+msgstr "Implizierte Kovarianzmatrizen"
+
+msgid "Implied covariance matrix"
+msgstr "Implizierte Kovarianzmatrix"
+
+msgid "Residual covariance matrices"
+msgstr "Residualkovarianzmatrizen"
+
+msgid "Residual covariance matrix"
+msgstr "Residualkovarianzmatrix"
+
+msgid "Plots"
+msgstr "Abbildungen"
+
+msgid "Model plots"
+msgstr "Modellabbildungen"
+
+msgid "Model plot"
+msgstr "Modelabbildung"
+
+msgid "Misfit plots"
+msgstr ""
+
+msgid "Misfit plot"
+msgstr ""
+
+msgid "Model syntax"
+msgstr "Modellsyntax"
+
+msgid "Contingency Tables"
+msgstr "Kontingenztabellen"
+
+msgid "Chi-Squared Tests"
+msgstr "Chi-Quadrat-Tests"
+
+msgid ""
+"Vovk-Sellke Maximum  <em>p</em>-Ratio: Based the <em>p</em>-value, \n"
+"      the maximum possible odds in favor of H%1$s over H%2$s equals %3$s\n"
+"      (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+"Vovk-Sellke Maximum  <em>p</em>-Ratio:Gebaseerd op de  <em>p</em>-waarde, \n"
+"      De maximaal mogelijke odds voor H%1$s over H%2$s is %3$s\n"
+"      (Sellke, Bayarri, & Berger, 2001)."
+
+msgid "Log Odds Ratio"
+msgstr ""
+
+msgid "%.0f%% Confidence Intervals"
+msgstr "%.0f%% Konfidenzintervalle"
+
+msgid "Nominal"
+msgstr "Nominal"
+
+msgid "Ordinal Gamma"
+msgstr "Ordinal Gamma"
+
+msgid "95%% Confidence Intervals"
+msgstr "95%% Konfidenzintervalle"
+
+msgid "Gamma"
+msgstr "Gamma"
+
+msgid "Kendall's Tau-b"
+msgstr "Kendalls Tau-b"
+
+msgid "Z"
+msgstr "Z"
+
+msgid "Contingency coefficient"
+msgstr ""
+
+msgid "Phi-coefficient"
+msgstr "Phi-Koeffizient"
+
+msgid "Cramer's V"
+msgstr "Cramers V"
+
+msgid ""
+"Value could not be calculated - At least one row or column contains all zeros"
+msgstr ""
+
+msgid "is less than"
+msgstr "kleiner ist als"
+
+msgid "is greater than"
+msgstr "größer ist als"
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that group <em>%1$s</em> "
+"%2$s <em>%3$s</em>."
+msgstr ""
+"Für alle Tests gibt die Alternativhypothese an, dass Gruppe <em>%1$s</em> "
+"%2$s <em>%3$s</em>."
+
+msgid "Expected count"
+msgstr "Erwartete Anzahl"
+
+msgid "%% within row"
+msgstr "%% in Zeile"
+
+msgid "%% within column"
+msgstr "%% in Spalte"
+
+msgid "%% of total"
+msgstr "%% von Gesamt"
+
+msgid ""
+"%s could not be calculated - At least one row or column contains all zeros"
+msgstr ""
+
+msgid "%s continuity correction"
+msgstr ""
+
+msgid "Likelihood ratio"
+msgstr ""
+
+msgid "Odds ratio restricted to 2 x 2 tables"
+msgstr ""
+
+msgid "Fisher's exact test"
+msgstr "Fishers exakter Test"
+
+msgid "Lambda ( %i dependent)"
+msgstr "Lambda ( %i abhängig)"
+
+msgid "Bayesian Contingency Tables Tests"
+msgstr "Bayesscher Kontingenztabellen-Tests"
+
+msgid "Log Odds Ratio Plots"
+msgstr ""
+
+msgid "Odds ratio for this model not yet implemented"
+msgstr ""
+
+msgid "The Bayes factor is undefined"
+msgstr "Der Bayesfaktor ist undefiniert"
+
+msgid "The Bayes factor is infinite"
+msgstr "Der Bayesfaktor ist unendlich"
+
+msgid "median Log OR ="
+msgstr ""
+
+msgid "Poisson"
+msgstr "Poisson"
+
+msgid "Joint multinomial"
+msgstr ""
+
+msgid "Independent multinomial"
+msgstr ""
+
+msgid "Hypergeometric"
+msgstr "Hypergeometrisch"
+
+msgid "Hypergeometric contingency tables test restricted to 2 x 2 tables"
+msgstr ""
+
+msgid "Proportion test restricted to 2 x 2 tables"
+msgstr ""
+
+msgid "is not equal to"
+msgstr ""
+
+msgid "Invalid sampling model selected"
+msgstr ""
+
+msgid "Odds ratio"
+msgstr ""
+
+msgid "Odd ratio for this model not yet implemented"
+msgstr ""
+
+msgid "Cramer's V for this model not yet implemented"
+msgstr ""
+
+msgid "Kendall's Tau"
+msgstr "Kendalls Tau"
+
+msgid "Partial Correlation Table"
+msgstr ""
+
+msgid "%s Correlations"
+msgstr "%s Korrelationen"
+
+msgid "%s Partial Correlations"
+msgstr "%s Partialkorrelationen"
+
+msgid "All tests one-tailed, for positive correlation"
+msgstr "Alle Tests einseitig, für positive Korrelation"
+
+msgid ", one-tailed"
+msgstr ", einseitig"
+
+msgid "All tests one-tailed, for negative correlation"
+msgstr "Alle Tests einseitig, für negative Korrelation"
+
+msgid "p < .05, ** p < .01, *** p < .001%s"
+msgstr "p < .05, ** p < .01, *** p < .001%s"
+
+msgid "Conditioned on variables: %s"
+msgstr "Konditioniert auf Variablen: %s"
+
+msgid "r"
+msgstr "r"
+
+msgid "tau B"
+msgstr "tau B"
+
+msgid "Kendall's Tau B"
+msgstr "Kendalls Tau B"
+
+msgid "Number of observations is < %s"
+msgstr "Anzahl der Beobachtungen ist < %s"
+
+msgid "Assumption checks"
+msgstr "Annahmeprüfungen"
+
+msgid "Shapiro-Wilk Test for Multivariate Normality"
+msgstr "Shapiro-Wilk-Test auf multivariate Normalverteilung"
+
+msgid "Variables"
+msgstr "Variablen"
+
+msgid "Shapiro-Wilk Test for Bivariate Normality"
+msgstr "Shapiro-Wilk-Test auf bivariate Normalverteilung"
+
+msgid "Scatter plots"
+msgstr "Streudiagramme"
+
+msgid "Correlation plot"
+msgstr "Korrelationsdiagramm"
+
+msgid "Correlation undefined: %s"
+msgstr "Korrelation undefiniert: %s"
+
+msgid "%s%% CI: [%s, %s]"
+msgstr "%s%% KI: [%s, %s]"
+
+msgid ""
+"Plotting not possible:\n"
+" Number of observations is < 3"
+msgstr ""
+"Abbilden nicht möglich: \n"
+" Anzahl der Beobachtungen ist < 3"
+
+msgid ""
+"Plotting not possible:\n"
+" Number of observations is < 2"
+msgstr ""
+"Abbilden nicht möglich: \n"
+" Anzahl der Beobachtungen ist < 2"
+
+msgid "%s heatmap"
+msgstr "%s Heatmap"
+
+msgid "Heatmaps"
+msgstr "Heatmaps"
+
+msgid "%1$d%% CI: [%2$d, %3$d]"
+msgstr "%1$d%% KI: [%2$d, %3$d]"
+
+msgid "italic(r)"
+msgstr "italic(r)"
+
+msgid "italic(rho)"
+msgstr "italic(rho)"
+
+msgid "italic(tau)"
+msgstr "italic(tau)"
+
+msgid ""
+"Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p Values "
+"for Testing Precise Null Hypotheses. The American Statistician, 55(1), p. "
+"62-71."
+msgstr ""
+"Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p Values "
+"for Testing Precise Null Hypotheses. The American Statistician, 55(1), p. "
+"62-71."
+
+msgid "Bayesian Correlation Matrix Plot"
+msgstr "Bayessche Korrelationsmatrix Abbildung"
+
+msgid "Posterior is too peaked"
+msgstr "Posterior ist zu spitz"
+
+msgid "Could not compute the posteriors"
+msgstr "Konnte die Posterior nicht berechnen"
+
+msgid "%s%% CI:"
+msgstr "%s%% KI:"
+
+msgid "Bayesian Correlation Pairwise Plots"
+msgstr ""
+
+msgid "max %s"
+msgstr "max %s"
+
+msgid "%s at kappa==%s"
+msgstr ""
+
+msgid "Stretched beta prior width"
+msgstr ""
+
+msgid "Frequency Tables"
+msgstr "Häufigkeitstabellen"
+
+msgid "Correlation plots"
+msgstr "Korrelationsdiagramme"
+
+msgid "Distribution Plots"
+msgstr "Verteilungsabbildungen"
+
+msgid "Boxplots"
+msgstr "Boxplots"
+
+msgid "Q-Q Plots"
+msgstr "Q-Q-Diagramme"
+
+msgid "Plotting is not possible: Variable only contains NA!"
+msgstr "Abbilden unmöglich: Variable enthält nur NA!"
+
+msgid "Pie charts"
+msgstr "Tortendiagramme"
+
+msgid "Scatter Plots"
+msgstr "Streudiagramme"
+
+msgid ""
+"Excluded %1$i rows from the analysis that correspond to the missing values "
+"of the split-by variable %2$s"
+msgstr ""
+
+msgid "Valid"
+msgstr "Gültig"
+
+msgid "Missing"
+msgstr "Fehlend"
+
+msgid "Std. Error of Mean"
+msgstr "Std.-Fehler Mittelwert"
+
+msgid "Mode"
+msgstr "Modus"
+
+msgid "MAD"
+msgstr "MAD"
+
+msgid "MAD Robust"
+msgstr "MAD Robust"
+
+msgid "IQR"
+msgstr "IQR"
+
+msgid "Skewness"
+msgstr "Schiefe"
+
+msgid "Std. Error of Skewness"
+msgstr "Std.-Fehler Schiefe"
+
+msgid "Kurtosis"
+msgstr "Kurtosis"
+
+msgid "Std. Error of Kurtosis"
+msgstr "Std.-Fehler Kurtosis"
+
+msgid "P-value of Shapiro-Wilk"
+msgstr "P-Wert Shapiro-Wilk"
+
+msgid "Sum"
+msgstr "Summe"
+
+msgid "%gth percentile"
+msgstr "%ges Perzentil"
+
+msgid "All values are identical"
+msgstr "Alle Werte sind identisch"
+
+msgid ""
+"Infimum (minimum) of an empty set is %s, supremum (maximum) of an empty set "
+"is %s."
+msgstr ""
+
+msgid "Not all values are available for <i>Nominal Text</i> variables"
+msgstr ""
+
+msgid "More than one mode exists, only the first is reported"
+msgstr "Es gibt mehr als einen Modus, nur der erste ist berichtet"
+
+msgid "Frequencies for %s"
+msgstr "Häufigkeiten für %s"
+
+msgid "Percent"
+msgstr "Prozent"
+
+msgid "Valid Percent"
+msgstr "Prozent Gültig"
+
+msgid "Cumulative Percent"
+msgstr "Kumulative Prozent"
+
+msgid "Plotting is not possible: No plot type selected!"
+msgstr "Abbilden ist nicht möglich: Kein Abbildungstyp ausgewählt!"
+
+msgid "Standardised Residuals"
+msgstr "Standardisierte Residuen"
+
+msgid ""
+"Currently this only works with rma and rma.mv objects that have specified "
+"'yi' as a formula."
+msgstr ""
+"Dies funktioniert derzeit nur mit rma- und rma.mv-Objekten, die 'yi' als "
+"Formel spezifiziert haben."
+
+msgid "Formula is refering to factors that are not in the model."
+msgstr "Formel referiert auf Faktoren, die nicht im Modell sind."
+
+msgid "There are no predictors in the model that correspond to factors in '"
+msgstr "Im Modell gibt es keine passenden Prädiktoren zu Faktoren in '"
+
+msgid "'. Factor levels:"
+msgstr "'. Faktorstufen:"
+
+msgid ". Data names:"
+msgstr ". Datennamen:"
+
+msgid "; Used Terms:"
+msgstr "; Benutzte Terme:"
+
+msgid "; Data set head:"
+msgstr "; Datensatztitel:"
+
+msgid "Argument 'contrasts' should be a matrix."
+msgstr "Argument 'Kontraste' muss eine Matrix sein."
+
+msgid "Invalid contrasts: Rows in"
+msgstr "Ungültige Kontraste: Zeilen in"
+
+msgid "do not add to 0."
+msgstr "summieren sich nicht zu 0."
+
+msgid "Only using first element of"
+msgstr "Nutze nur erstes Element von"
+
+msgid "."
+msgstr "."
+
+msgid "is smaller than 2."
+msgstr "ist kleiner als 2."
+
+msgid "Equivalence Bayesian Independent Samples T-Test"
+msgstr "Äquivalenz Bayesscher t-Test für unabhängige Stichproben"
+
+msgid "I ranges from %1$s to %2$s"
+msgstr "I geht von %1$s bis %2$s"
+
+msgid "Prior and Posterior Mass Table"
+msgstr "Prior- und Posteriormasse Tabelle"
+
+msgid "Section"
+msgstr "Sektion"
+
+msgid "Mass"
+msgstr "Masse"
+
+msgid "Equivalence Bayesian One Sample T-Test"
+msgstr "Äquivalenz Bayesscher T-Test für eine Stichprobe"
+
+msgid "Equivalence Bayesian Paired Samples T-Test"
+msgstr "Äquivalenz Bayesscher T-Test für abhängige Stichproben"
+
+msgid "Equivalence Mass Table"
+msgstr "Äquivalenz Masse-Tabelle"
+
+msgid "Equivalence Independent Samples T-Test"
+msgstr "Äquivalenz T-Test für unabhängige Stichproben"
+
+msgid "T-Test"
+msgstr "T-Test"
+
+msgid "Upper bound"
+msgstr "Obere Grenze"
+
+msgid "Lower bound"
+msgstr "Untere Grenze"
+
+msgid "Equivalence Bounds"
+msgstr "Äquivalenzgrenzen"
+
+msgid "Bounds type"
+msgstr "Grenzentyp"
+
+msgid "Low"
+msgstr "Niedrig"
+
+msgid "High"
+msgstr "Hoch"
+
+msgid "Equivalence Bounds Plots"
+msgstr "Äquivalenzgrenzen-Abbildung"
+
+msgid "Equivalence One Sample T-Test"
+msgstr "Äquivalenz T-Test für eine Stichprobe"
+
+msgid "Equivalence Paired Samples T-Test"
+msgstr "Äquivalenz T-Test für abhängige Stichproben"
+
+msgid "Too many factors requested (%i) for the amount of included variables"
+msgstr "Zuviele geforderte Faktoren (%i) für die Anzahl einbezogener Variablen"
+
+msgid "Not enough valid cases (%i) to run this analysis"
+msgstr "Ungenügend gültige Fälle (%i) zum Ausführen dieser Analyse"
+
+msgid "Data not valid: variance is zero in each row"
+msgstr "Ungültige Daten: Varianz in jeder Zeile ist Null"
+
+msgid "Data not valid: too many missing values in variable(s) %s."
+msgstr "Ungültige Daten: Zuviele fehlende Werte in Variable(n) %s."
+
+msgid "Data not valid: all variables are collinear"
+msgstr "Ungültige Daten: Alle Variablen sind kollinear"
+
+msgid ""
+"Estimation failed. \n"
+"Internal error message: %s"
+msgstr ""
+"Schätzung fehlgeschlagen. \n"
+"Interne Fehlermeldung: %s"
+
+msgid "No components with an eigenvalue >"
+msgstr "Keine Komponenten mit einem Eigenwert >"
+
+msgid "Maximum observed eigenvalue:"
+msgstr "Maximal beobachteter Eigenwert:"
+
+msgid "Kaiser-Meyer-Olkin test"
+msgstr "Kaiser-Meyer-Olkin-Test"
+
+msgid "Overall MSA"
+msgstr "Gesamt-MSA"
+
+msgid "Degrees of freedom below 0, model is unidentified."
+msgstr "Freiheitsgrade unter 0, Modell ist nicht identifiziert."
+
+msgid "<em>Warning:</em>"
+msgstr "<em>Warnung:</em>"
+
+msgid "Factor Loadings"
+msgstr "Faktorladungen"
+
+msgid "No rotation method applied."
+msgstr "Keine Rotationsmethode angewendet."
+
+msgid "Applied rotation method is %s."
+msgstr "Angewandte Rotationsmethode ist %s."
+
+msgid "Factor %i"
+msgstr "Faktor %i"
+
+msgid "Uniqueness"
+msgstr "Eindeutigkeit"
+
+msgid "Factor Loadings (Structure Matrix)"
+msgstr "Faktorladungen (Strukturmatrix)"
+
+msgid "Factor Characteristics"
+msgstr "Faktorcharakteristiken"
+
+msgid "SumSq. Loadings"
+msgstr "Quadratsumme Ladungen"
+
+msgid "Proportion var."
+msgstr ""
+
+msgid "Cumulative"
+msgstr "Kumulativ"
+
+msgid "Factor Correlations"
+msgstr "Faktorkorrelationen"
+
+msgid "Additional fit indices"
+msgstr "Weitere Anpassungsindizes"
+
+msgid "RMSEA"
+msgstr "RMSEA"
+
+msgid "RMSEA 90%% confidence"
+msgstr "RMSEA 90%% Konfidenz"
+
+msgid "TLI"
+msgstr "TLI"
+
+msgid ""
+"Screeplot not available. \n"
+"Internal error message: %s"
+msgstr ""
+"Screeplot nicht verfügbar. \n"
+"Interne Fehlermeldung: %s"
+
+msgid "Data"
+msgstr "Daten"
+
+msgid "Simulated (95th quantile)"
+msgstr "Simuliert (95tes Quantil)"
+
+msgid "Eigenvalue"
+msgstr "Eigenwert"
+
+msgid "Path Diagram"
+msgstr "Pfaddiagramm"
+
+msgid "Cannot plot the posterior - possibly too concentrated near 0."
+msgstr "Kann Posterior nicht plotten - möglicherweise zu konzentriert um 0."
+
+msgid ""
+"The following names appeared both in the data set and in the user specified "
+"data:\n"
+"%s"
+msgstr ""
+"Die folgenden Namen erscheinen sowohl im Datensatz und den "
+"benutzerdefinierten Daten:\n"
+"%s"
+
+msgid "Please specify which parameters to monitor!"
+msgstr "Bitte spezifiziere, welche Parameter beobachtet werden sollen!"
+
+msgid "Please specify which parameters to show output for!"
+msgstr ""
+
+msgid "Rhat"
+msgstr "R-Dach"
+
+msgid "Point est."
+msgstr "Punktschätzung"
+
+msgid "Upper CI"
+msgstr "Obergrenze KI"
+
+msgid "Effecive Sample Size"
+msgstr "Effektiver Stichprobenumfang"
+
+msgid "No data was supplied, everything was sampled from the priors!"
+msgstr "Es wurden keine Daten übergeben, alles gezogen aus den Priors!"
+
+msgid "Deviance cannot be computed without data."
+msgstr "Devianz kann ohne Daten nicht berechnet werden."
+
+msgid ""
+"Failed to compute the Rhat statistic. This is expected if the model contains "
+"discrete parameters."
+msgstr ""
+
+msgid "The multivariate potential scale reduction factor is estimated at %.3f."
+msgstr ""
+
+msgid ""
+"Rhat statistic cannot be computed for only one chain. It is strongly "
+"recommoned to run more than one chain to assess MCMC convergence!"
+msgstr ""
+
+msgid "Marginal Density"
+msgstr "Randdichte"
+
+msgid "Marginal Histogram"
+msgstr "Randhistogramm"
+
+msgid "Trace Plots"
+msgstr "Verlaufs-Plots"
+
+msgid "Autocorrelation Plots"
+msgstr "Autokorrelationsplots"
+
+msgid "Bivariate Scatter Plot"
+msgstr "Bivariates Streudiagramm"
+
+msgid "Chain"
+msgstr "Kette"
+
+msgid "Iteration"
+msgstr "Iteration"
+
+msgid "Autocorrelation"
+msgstr "Autokorrelation"
+
+msgid "Lag"
+msgstr "Verzögerung"
+
+msgid ""
+"At least two parameters need to be monitored and shown to make a bivariate "
+"scatter plot!"
+msgstr ""
+"Mindestens zwei Parameter müssen beobachtet und angezeigt werden, um ein "
+"bivariates Streudiagramm zu erstellen!"
+
+msgid "%1$s%2$sIn addition:%3$s%4$s"
+msgstr "%1$s%2$sZusätzlich:%3$s%4$s"
+
+msgid "The model contains more '%1$s' than '%2$s' (%3$d vs %4$d)"
+msgstr "Das Modell beinhaltet mehr '%1$s' als '%2$s' (%3$d vs %4$d)"
+
+msgid ""
+"There was a problem loading JAGS, JAGS_HOME is: '%1$s'.\n"
+"Please contact the JASP team for support.\n"
+"Error was: %2$s."
+msgstr ""
+"Es gab ein Problem beim Laden von JAGS, JAGS_HOME ist: '%1$s'.\n"
+"Bitte kontaktiere das JASP-Team für Hilfe.\n"
+"Der Fehler war: %2$s."
+
+msgid "Expected JAGS version 4.3.0 but found %s"
+msgstr "Erwartete JAGS-Version 4.3.0, aber %s gefunden"
+
+msgid ""
+"The R code for %1$s crashed with error:\n"
+"%2$s"
+msgstr ""
+"Der R-Code für %1$s ist abgestürzt, mit Fehler:\n"
+"%2$s"
+
+msgid ""
+"The result of %1$s R code should be numeric but it was of mode %2$s and "
+"class %3$s"
+msgstr ""
+"Das Ergebnis von %1$s R-Code muss numerisch sein, aber war vom Typ %2$s und "
+"Klasse %3$s"
+
+msgid "Bernoulli distribution"
+msgstr "Bernoulli-Verteilung"
+
+msgid "Probability Mass Function"
+msgstr "Wahrscheinlichkeitsfunktion"
+
+msgid "Cumulative Distribution Function"
+msgstr "Kumulative Verteilungsfunktion"
+
+msgid "probability of success: p %s %s: 0 %s p %s 1"
+msgstr "Erfolgswahrscheinlichkeit: p %s %s: 0 %s p %s 1"
+
+msgid "x %s {0, 1}"
+msgstr "x %s {0, 1}"
+
+msgid "p(1-p)"
+msgstr "p(1-p)"
+
+msgid "The optimization did not converge, try adjusting the parameter values."
+msgstr ""
+"Die Optimierung ist nicht konvergiert; versuche, die Parameterwerte "
+"anzupassen."
+
+msgid "<i>Warning.</i>"
+msgstr "<i>Warnung.</i>"
+
+msgid "beta distribution"
+msgstr "Beta-Verteilung"
+
+msgid "Probability Density Function"
+msgstr "Wahrscheinlichkeitsdichtefunktion"
+
+msgid "Quantile Function"
+msgstr "Quantilfunktion"
+
+msgid "shape: %s"
+msgstr "Form: %s"
+
+msgid "binomial distribution"
+msgstr "Binomiale Verteilung"
+
+msgid "probability of success: %s"
+msgstr "Erfolgswahrscheinlichkeit: %s"
+
+msgid "number of trials: %s"
+msgstr "Anzahl Versuche: %s"
+
+msgid "Parameter n was fixed at value %s."
+msgstr "Parameter n wurde fixiert auf Wert %s."
+
+msgid "%s<sup>2</sup> distribution"
+msgstr "%s<sup>2</sup> Verteilung"
+
+msgid "degree of freedom: %s"
+msgstr "Freiheitsgrade: %s"
+
+msgid "non-centrality: %s"
+msgstr "Nichtzentralität: %s"
+
+msgid "exponential distribution"
+msgstr "Exponentielle Verteilung"
+
+msgid "scale: %s"
+msgstr "Skalierungsparameter: %s"
+
+msgid "rate: %s"
+msgstr "rate: %s"
+
+msgid "F-distribution"
+msgstr "F-Verteilung"
+
+msgid "gamma distribution"
+msgstr "Gammaverteilung"
+
+msgid "mean: %s"
+msgstr "Mittelwert: %s"
+
+msgid "inverse gamma distribution"
+msgstr "Inverse Gammaverteilung"
+
+msgid "normal distribution"
+msgstr "Normalverteilung"
+
+msgid "mean: &mu; %s"
+msgstr "Mittelwert: &mu; %s"
+
+msgid "variance: %s"
+msgstr "Varianz: %s"
+
+msgid "standard deviation: %s"
+msgstr "Standardabweichung: %s"
+
+msgid "precision: %s"
+msgstr "Präzision: %s"
+
+msgid "square root of precision: %s"
+msgstr "Quadratwurzel der Präzision: %s"
+
+msgid "&mu;"
+msgstr "&mu;"
+
+msgid "negative binomial distribution"
+msgstr "Negativ Binomialverteilung"
+
+msgid "number of successes: %s"
+msgstr "Anzahl Erfolge: %s"
+
+msgid "dispersion: %s"
+msgstr "Dispersion: %s"
+
+msgid "Poisson distribution"
+msgstr "Poisson-Verteilung"
+
+msgid "t-distribution"
+msgstr "t-Verteilung"
+
+msgid "does not exist unless df > 1"
+msgstr "existiert nur wenn df > 1"
+
+msgid "does not exist unless df > 2"
+msgstr "existiert nur wenn df > 2"
+
+msgid "MANOVA"
+msgstr "MANOVA"
+
+msgid ""
+"The design matrix is not invertible. This might be due to collinear "
+"dependent variables."
+msgstr ""
+"Die Designmatrix ist nicht invertierbar. Ein möglicher Grund sind kollineare "
+"abhängige Variablen."
+
+msgid "no terms in scope"
+msgstr "keine Terme im Geltungsbereich"
+
+msgid "no terms in scope for adding to object"
+msgstr "keine Terme im Geltungsbereich für Hinzufügen zu Objekt"
+
+msgid "trying + %s"
+msgstr "probiere + %s"
+
+msgid "F test assumes 'quasi%s' family"
+msgstr "F-Test setzt 'quasi%s' Familie voraus"
+
+msgid "'use.start' cannot be used with R's version of 'glm'"
+msgstr "'use.start' kann nicht mit R-version von 'glm' benutzt werden"
+
+msgid "AIC is not defined for this model, so 'stepAIC' cannot proceed"
+msgstr ""
+"AIC ist für dieses Modell nicht definiert, sodass 'stepAIC' nicht "
+"fortgesetzt werden kann"
+
+msgid "AIC is -infinity for this model, so 'stepAIC' cannot proceed"
+msgstr ""
+"AIC ist -unendlich für dieses Modell, sodass 'stepAIC' nicht fortgesetzt "
+"werden kann"
+
+msgid "0 df terms are changing AIC"
+msgstr ""
+
+msgid "number of rows in use has changed: remove missing values?"
+msgstr ""
+
+msgid "AIC undefined for REML fit"
+msgstr ""
+
+msgid "FIML only available with ML-type estimators."
+msgstr ""
+
+msgid ""
+"Not all exogenous variables are admissible. Inadmissible exogenous "
+"variables: %s. Only binary or continuous exogenous variables allowed."
+msgstr ""
+
+msgid ""
+"Not all endogenous variables are admissible. Inadmissible endogenous "
+"variables: %s. Only scale or ordinal endogenous variables allowed."
+msgstr ""
+
+msgid ""
+"FIML missing value handling only available when all endogenous variables are "
+"of scale type. Ordinal endogenous variables in the model: %s"
+msgstr ""
+
+msgid ""
+"Estimation failed\n"
+"Message:\n"
+"%s"
+msgstr ""
+"Schätzung fehlgeschlagen\n"
+"Meldung:\n"
+"%s"
+
+msgid "Direct effects"
+msgstr "Direkte Effekte"
+
+msgid "Indirect effects"
+msgstr "Indirekte Effekte"
+
+msgid "Total indirect effects"
+msgstr "Gesamte indirekte Effekte"
+
+msgid "Delta method"
+msgstr "Deltamethode"
+
+msgid "Robust"
+msgstr "Robust"
+
+msgid "percentile bootstrap"
+msgstr ""
+
+msgid "normal theory bootstrap"
+msgstr ""
+
+msgid "bias-corrected percentile bootstrap"
+msgstr ""
+
+msgid "normal theory"
+msgstr ""
+
+msgid "robust"
+msgstr "robust"
+
+msgid "%1$s standard errors, %2$s confidence intervals."
+msgstr "%1$s standaard fouten, %2$s betrouwbaarheidsintervallen."
+
+msgid ""
+"%1$s standard errors, %2$s confidence intervals, %3$s estimator. NB: Not all "
+"bootstrap samples were successful: CI based on %4$.0f samples."
+msgstr ""
+
+msgid "%1$s standard errors, %2$s confidence intervals, %3$s estimator."
+msgstr ""
+
+msgid "R-Squared"
+msgstr "R-Quadrat"
+
+msgid "Path plot"
+msgstr "Pfaddiagramm"
+
+msgid "The target variable should have at least 2 classes."
+msgstr "Die Zielvariable muss mindestens 2 Klassen enthalten."
+
+msgid "Linear Discriminant Coefficients"
+msgstr "Lineare Diskriminanz-Koeffizienten"
+
+msgid "(Constant)"
+msgstr "(Konstant)"
+
+msgid "Prior and Posterior Class Probabilities"
+msgstr "Prior and Posterior Klassen-Wahrscheinlichkeiten"
+
+msgid "Class Means in Training Data"
+msgstr "Klassenmittelwerte in Trainingsdaten"
+
+msgid "Linear Discriminant Matrix"
+msgstr ""
+
+msgid "Tests of Equality of Class Means"
+msgstr "Test auf Gleichheit der Klassenmittelwerte"
+
+msgid "The null hypothesis specifies equal class means."
+msgstr "Die Nullhypothese spezifiziert gleiche Klassenmittelwerte."
+
+msgid "Tests of Equality of Covariance Matrices"
+msgstr "Test auf Gleichheit der Kovarianzmatrizen"
+
+msgid "The null hypothesis specifies equal covariance matrices."
+msgstr "Die Nullhypothese spezifiziert gleiche Kovarianzmatrizen."
+
+msgid "Pooled Within-Class Matrices Correlations"
+msgstr ""
+
+msgid "K-Distance Plot"
+msgstr "K-Distanz-Plot"
+
+msgid "Points sorted by distance"
+msgstr "Punkte sortiert nach Distanz"
+
+msgid ""
+"%s-nearest neighbors \n"
+"distance"
+msgstr ""
+"%s-nächste Nachbarn \n"
+"Distanz"
+
+msgid "Maximum curvature = %s"
+msgstr ""
+
+msgid "End of recursion reached without converging"
+msgstr "Ende der Rekursion erreicht, ohne zu konvergieren"
+
+msgid "x and y must be numeric and finite. Missing values not allowed."
+msgstr ""
+
+msgid "x and y must be of equal length."
+msgstr ""
+
+msgid "Need more points to find cutoff."
+msgstr ""
+
+msgid "Need to specify fraction of maximum slope."
+msgstr ""
+
+msgid ""
+"Fraction of maximum slope must be positive and be less than or equal to 1."
+msgstr ""
+
+msgid "Method must be either 'first' or 'curvature'."
+msgstr ""
+
+msgid "Cutoff point is beyond range. Returning NA."
+msgstr ""
+
+msgid "Dendogram"
+msgstr "Dendogram"
+
+msgid "Variable Importance"
+msgstr "Variablen-Wichtigkeit"
+
+msgid "Mean decrease in Gini Index"
+msgstr ""
+
+msgid "Relative Influence"
+msgstr "Relativer Einfluß"
+
+msgid "Out-of-bag Improvement Plot"
+msgstr ""
+
+msgid "Training set"
+msgstr "Trainingset"
+
+msgid "OOB Change in %s Multinomial Deviance"
+msgstr ""
+
+msgid "OOB Change in %s Binomial Deviance"
+msgstr ""
+
+msgid "OOB Change in %s%s Deviance"
+msgstr ""
+
+msgid "Number of Trees"
+msgstr "Anzahl Bäume"
+
+msgid "Deviance Plot"
+msgstr "Devianz-Abbildung"
+
+msgid "Multinomial Deviance"
+msgstr "Multinomiale Devianz"
+
+msgid "Binomial Deviance"
+msgstr "Binomiale Devianz"
+
+msgid "%s Deviance"
+msgstr "%s Devianz"
+
+msgid "Relative Influence Plot"
+msgstr "Relativer Einfluß Abbildung"
+
+msgid "Classification Accuracy Plot"
+msgstr ""
+
+msgid "Mean Squared Error Plot"
+msgstr ""
+
+msgid "Classification Accuracy"
+msgstr ""
+
+msgid "Mean Squared Error"
+msgstr ""
+
+msgid "Validation set"
+msgstr "Validations-Menge"
+
+msgid "Number of Nearest Neighbors"
+msgstr "Anzahl von nächsten Nachbarn"
+
+msgid "Training and validation set"
+msgstr "Trainings- und Validations-Menge"
+
+msgid "Mean decrease in accuracy"
+msgstr ""
+
+msgid "Total increase in node purity"
+msgstr ""
+
+msgid "Out-of-bag Classification Accuracy Plot"
+msgstr ""
+
+msgid "Out-of-bag Mean Squared Error Plot"
+msgstr ""
+
+msgid "Out-of-bag %sClassification Accuracy"
+msgstr ""
+
+msgid "Out-of-bag %sMean Squared Error"
+msgstr ""
+
+msgid "Mean Decrease in Accuracy"
+msgstr ""
+
+msgid "Total Increase in Node Purity"
+msgstr ""
+
+msgid "Regression Coefficients"
+msgstr "Regression-Koeffizienten"
+
+msgid "Coefficient (%s)"
+msgstr "Koeffizienten (%s)"
+
+msgid "Variable Trace Plot"
+msgstr "Variablen-Verlaufs-Abbildung"
+
+msgid "Lambda Evaluation Plot"
+msgstr "Lambda-Evaluations-Abbildung"
+
+msgid "Cross-Validated %sMean Squared Error"
+msgstr ""
+
+msgid "Min. CV MSE"
+msgstr "Min. CV MSE"
+
+msgid "%s 1 SE"
+msgstr "%s 1 Std. Fehler"
+
+msgid "Variance Components"
+msgstr "Varianz-Komponenten"
+
+msgid "Expected counts not supported without observed counts."
+msgstr ""
+
+msgid "No expected counts entered."
+msgstr ""
+
+msgid ""
+"Invalid counts: variable does not match the number of levels of the factor."
+msgstr ""
+
+msgid ""
+"Invalid expected counts: variable does not match the number of levels of the "
+"factor."
+msgstr ""
+
+msgid "Invalid counts: variable must contain only integer values."
+msgstr ""
+
+msgid "Confidence intervals are based on independent binomial distributions."
+msgstr ""
+
+msgid "Could not compute confidence intervals."
+msgstr ""
+
+msgid "Expected: %s"
+msgstr "Erwartet: %s"
+
+msgid "Expected"
+msgstr "Erwartet"
+
+msgid "Observed counts"
+msgstr "Beobachtete Anzahlen"
+
+msgid "Observed proportions"
+msgstr ""
+
+msgid "Bayesian Multinomial Test"
+msgstr "Bayesscher Multinomial-Test"
+
+msgid "Levels"
+msgstr "Stufen"
+
+msgid "Credible"
+msgstr ""
+
+msgid ""
+"Credible intervals are based on independent binomial distributions with flat "
+"priors."
+msgstr ""
+
+msgid "Confidence"
+msgstr "Konfidenz"
+
+msgid "%1$s%% %2$s Interval"
+msgstr "%1$s%% %2$s Intervall"
+
+msgid "Could not compute %s Intervals."
+msgstr "Konnte %s Intervalle nicht berechnen."
+
+msgid "Descriptives plot"
+msgstr "Deskriptive Abbildung"
+
+msgid "Observed Counts"
+msgstr ""
+
+msgid "Observed Proportions"
+msgstr ""
+
+msgid ""
+"After binarizing the data too little variance remained in variable(s): %s."
+msgstr ""
+
+msgid "Summary of Network"
+msgstr "Zusammenfassung des Netwerks"
+
+msgid "Network"
+msgstr "Netzwerk"
+
+msgid "Number of nodes"
+msgstr "Anzahl Knoten"
+
+msgid "Number of non-zero edges"
+msgstr "Anzahl von Kanten ungleich 0"
+
+msgid "Sparsity"
+msgstr ""
+
+msgid "Data was binarized using %s."
+msgstr ""
+
+msgid "Only the first %d values of %s were used to color nodes (%d provided)."
+msgstr ""
+
+msgid "<em>Warning: </em>"
+msgstr "<em>Warnung: </em>"
+
+msgid ""
+"Minimum edge strength ignored in the network plot because it was larger than "
+"the absolute value of the strongest edge."
+msgstr ""
+
+msgid ""
+"Minimum edge strength ignored in the network plot of group%1$s %2$s because "
+"it was larger than the absolute value of the strongest edge."
+msgstr ""
+
+msgid ""
+"Bootstrapping is only done when 'Bootstrap network' is ticked and 'Number of "
+"Bootstraps' is larger than 0."
+msgstr ""
+
+msgid "Centrality measures per variable"
+msgstr "Zentralitätsmaße pro Variable"
+
+msgid "Betweenness"
+msgstr ""
+
+msgid "Closeness"
+msgstr ""
+
+msgid "Strength"
+msgstr ""
+
+msgid "Expected influence"
+msgstr "Erwarteter Einfluß"
+
+msgid "Barrat"
+msgstr "Barrat"
+
+msgid "Onnela"
+msgstr "Onnela"
+
+msgid "WS"
+msgstr "WS"
+
+msgid "Zhang"
+msgstr "Zhang"
+
+msgid "Clustering measures per variable"
+msgstr "Clustering-Maße pro Variable"
+
+msgid "Clustering measures could not be computed for network%1$s: %2$s"
+msgstr ""
+
+msgid "Weights matrix"
+msgstr "Gewichte-Matrix"
+
+msgid "Bootstrap summary of Network"
+msgstr ""
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Number of bootstraps"
+msgstr "Anzahl Bootstraps"
+
+msgid "Centrality Plot"
+msgstr "Zentralitäts-Abbildung"
+
+msgid "Clustering Plot"
+msgstr "Clustering-Abbildung"
+
+msgid "Network Plots"
+msgstr "Netzwerk-Abbildung"
+
+msgid "Network Plot"
+msgstr "Netzwerk-Abbildung"
+
+msgid "Edge Stability"
+msgstr ""
+
+msgid "Centrality Stability"
+msgstr ""
+
+msgid ""
+"bootnet crashed with the following error message:\n"
+"%s"
+msgstr ""
+
+msgid ""
+"Please drag all variables to a particular type under \"Analysis options\"."
+msgstr ""
+
+msgid ""
+"Coefficient could not be standardized because the variance is too small."
+msgstr ""
+
+msgid "Please supply a name for both the x and y-coordinates of the layout."
+msgstr ""
+
+msgid "Some variables did not contain char (%s)"
+msgstr ""
+
+msgid "Some variables were not matched in the column names of the dataset."
+msgstr ""
+
+msgid ""
+"Data supplied in %s cannot be used to determine variables types. Data should:"
+msgstr ""
+"Übergebene Daten in %s können nicht genutzt werden, um Variablentypen "
+"festzustellen. Daten müssen:"
+
+msgid "<ul><li>start with the column name of the variable.</ul></li>"
+msgstr "<ul><li>mit dem Spaltennamen der Variable beginnen.</ul></li>"
+
+msgid ""
+"<ul><li>contain an '=' to distinguish between column name and data type.</"
+"ul></li>"
+msgstr ""
+
+msgid ""
+"<ul><li>end with either 'g' for Gaussian, 'c' for categorical, or 'p' for "
+"Poisson.</ul></li>"
+msgstr ""
+
+msgid ""
+"Supplied data for layout was not understood and instead a circle layout was "
+"used."
+msgstr ""
+
+msgid ""
+"Data supplied in %1$s AND %2$s could not be used to determine node locations."
+msgstr ""
+
+msgid "Data supplied in %s could not be used to determine node locations."
+msgstr ""
+
+msgid ""
+"%1$s %2$s Data should only contain numeric:\n"
+"                 -start with the column name of the variable.\n"
+"                 -contain an '=' to distinguish between column name and "
+"coordinate."
+msgstr ""
+
+msgid ""
+"Data supplied in %s could not be used to determine variables types. Data "
+"should: \n"
+"- Start with the column name of the variable. \n"
+"- Contain an '=' to distinghuish betweem column name and group."
+msgstr ""
+
+msgid ""
+"Some entries of %1$s were not understood. These are now grouped under '%2$s'."
+msgstr ""
+
+msgid ""
+"bootnet crashed with the following error message:\n"
+"%s. <ul><li>Please check if there are variables in the network with little "
+"variance or few distinct observations.</li></ul>"
+msgstr ""
+
+msgid ""
+"'data' can only be missing if type = 'parametric'. Setting type = "
+"'parametric' and performing parametric bootstrap instead."
+msgstr ""
+
+msgid ""
+"'graph' may not be missing in parametric bootstrap when 'data' is missing."
+msgstr ""
+
+msgid ""
+"'sampleSize' may not be missing in parametric bootstrap when 'data' is "
+"missing."
+msgstr ""
+
+msgid "'data' is ignored when using manual parametric bootstrap."
+msgstr ""
+
+msgid "Removing non-numeric columns:"
+msgstr ""
+
+msgid ";"
+msgstr ";"
+
+msgid "Jacknife overwrites nBoot to sample size"
+msgstr ""
+
+msgid "Node-wise bootstrapping requires at least three nodes."
+msgstr ""
+
+msgid "'data' argument must be a data frame"
+msgstr "Argument 'data' muss ein Data Frame sein"
+
+msgid "'model' must be set in parametric bootstrap without 'data'."
+msgstr ""
+
+msgid "model set to '"
+msgstr ""
+
+msgid "Estimating sample network..."
+msgstr ""
+
+msgid "Bootstrapping..."
+msgstr "Bootstrappe..."
+
+msgid "Model '"
+msgstr "Modell '"
+
+msgid "' not supported."
+msgstr "' nicht unterstützt."
+
+msgid "Maximum number of errors in bootstraps reached"
+msgstr "Maximale Fehleranzahl in bootstraps erreicht"
+
+msgid "progress function failed: Cancelled by callback"
+msgstr "voortgangsfunctie mislukt: Geannuleerd door callback"
+
+msgid "Computing statistics..."
+msgstr "Berechne Statistiken..."
+
+msgid "Component Loadings"
+msgstr "Komponentenladungen"
+
+msgid "Component Correlations"
+msgstr "Komponentenkorrelationen"
+
+msgid "Scree plot"
+msgstr "Scree-Plot"
+
+msgid "Component"
+msgstr "Komponente"
+
+msgid ""
+"Stepwise procedures are not supported for models containing interaction terms"
+msgstr ""
+"Schrittweise Prozeduren werden nicht für Modelle unterstützt, die "
+"Interaktionsterme beinhalten"
+
+msgid ""
+"Error in Stepping Method Criteria: Entry p-value needs to be smaller than "
+"removal p-value"
+msgstr ""
+
+msgid ""
+"Error in Stepping Method Criteria: Entry F-value needs to be larger than "
+"removal F-value"
+msgstr ""
+
+msgid "Model Summary"
+msgstr "Modell-Zusammenfassung"
+
+msgid "Model Summary - %s"
+msgstr "Modell-Zusammenfassung - %s"
+
+msgid "R"
+msgstr "R"
+
+msgid "Adjusted R%s"
+msgstr "Korrigiertes R%s"
+
+msgid "RMSE"
+msgstr "RMSE"
+
+msgid "R%s Change"
+msgstr "R%s Änderung"
+
+msgid "F Change"
+msgstr "F Änderung"
+
+msgid "Durbin-Watson"
+msgstr "Durbin-Watson"
+
+msgid "p-value for Durbin-Watson test is unavailable for weighted regression."
+msgstr ""
+
+msgid "No covariate could be entered in the model"
+msgstr ""
+
+msgid "Regression"
+msgstr "Regression"
+
+msgid "Residual"
+msgstr "Residuum"
+
+msgid "Unstandardized"
+msgstr "Unstandardisiert"
+
+msgid "Standardized"
+msgstr "Standardisiert"
+
+msgid "%.0f%% CI"
+msgstr "%.0f%% KI"
+
+msgid "Collinearity Statistics"
+msgstr "Kollineare Statistik"
+
+msgid "Tolerance"
+msgstr "Toleranz"
+
+msgid "VIF"
+msgstr "VIF"
+
+msgid "Bootstrap Coefficients"
+msgstr "Bootstrap-Koeffizienten"
+
+msgid "Bias"
+msgstr "Bias"
+
+msgid "%s%% bca* CI"
+msgstr "%s%% bca* CI"
+
+msgid "Bootstrapping based on %i replicates."
+msgstr "Bootstrap basiert auf %i Wiederholungen."
+
+msgid ""
+"Coefficient estimate is based on the median of the bootstrap distribution."
+msgstr ""
+"Koeffizientenschätung basiert auf dem Median der Bootstrapverteilung."
+
+msgid "Bias corrected accelerated"
+msgstr ""
+
+msgid "expecting both arguments to be data.frames"
+msgstr "erwarte dass beide Argumente data.frames sind"
+
+msgid "Part And Partial Correlations"
+msgstr ""
+
+msgid "Partial"
+msgstr "Partiell"
+
+msgid "Part"
+msgstr ""
+
+msgid "Coefficients Covariance Matrix"
+msgstr "Koeffizienten-Kovarianzmatrix"
+
+msgid "Collinearity Diagnostics"
+msgstr "Kollinearitäts-Diagnostiken"
+
+msgid "Dimension"
+msgstr "Dimension"
+
+msgid "Condition Index"
+msgstr ""
+
+msgid "Variance Proportions"
+msgstr ""
+
+msgid "Casewise Diagnostics"
+msgstr "Fallweise Diagnostiken"
+
+msgid "Case Number"
+msgstr "Fallnummer"
+
+msgid "Predicted Value"
+msgstr "Vorhergesagter Wert"
+
+msgid "Residuals Statistics"
+msgstr "Residuen-Statistiken"
+
+msgid "Residuals vs. Dependent"
+msgstr "Residuen vs. Abhängige"
+
+msgid "Residuals"
+msgstr "Residuen"
+
+msgid "Residuals vs. Covariates"
+msgstr "Residuen vs. Kovariaten"
+
+msgid "Residuals vs. %s"
+msgstr "Residuen vs. %s"
+
+msgid "Residuals vs. Predicted"
+msgstr "Residuen vs. Vorhersage"
+
+msgid "Predicted Values"
+msgstr "Vorhergesagte Werte"
+
+msgid "Residuals Histogram"
+msgstr "Histogramm der Residuen"
+
+msgid "Standardized %s"
+msgstr "Standardisierte %s"
+
+msgid "Q-Q Plot Standardized Residuals"
+msgstr "Q-Q-Diagramm der standardisierten Residuen"
+
+msgid "Partial plots are not supported for models containing interaction terms"
+msgstr ""
+
+msgid "%1$s vs. %2$s"
+msgstr "%1$s vs. %2$s"
+
+msgid "Residuals %s"
+msgstr "Residuen %s"
+
+msgid "Std. Predicted Value"
+msgstr "Std. Vorhergesagter Wert"
+
+msgid ""
+"Unknown value provided for modelType, possible values: `alternative`, `null`"
+msgstr ""
+
+msgid "We need at least one predictor, or an intercept to make a formula"
+msgstr ""
+"Für eine Formel brauchen wir mindestens einen Prädiktor oder eine Konstante"
+
+msgid "Null model includes %s"
+msgstr "Nullmodell beinhaltet %s"
+
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the "
+"maximum\n"
+"        possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> "
+"log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+
+msgid ""
+"The intercept model is omitted, as no meaningful information can be shown."
+msgstr ""
+"Das konstante Modell wurde ausgelassen, da keine bedeutsame Information "
+"angezeigt werden kann."
+
+msgid ""
+"There is only an intercept model, no meaningful information can be shown."
+msgstr ""
+"Es gibt nur ein konstantes Modell, es kann keine bedeutsame Information "
+"gezeigt werden."
+
+msgid "Plotting is not possible: %s"
+msgstr "Abbilden ist nicht möglich: %s"
+
+msgid "All effects are specified as nuisance"
+msgstr "Alle Effekte sind als Störfaktoren spezifiziert"
+
+msgid "There are nonpositive weights"
+msgstr "Es gibt nicht-positive Gewichte"
+
+msgid "Posterior Summary"
+msgstr "Posterior-Zusammenfassung"
+
+msgid "Model Comparison - %s"
+msgstr "Modellvergleich - %s"
+
+msgid ""
+"The Wilson model prior corresponds to a beta binomial prior with %1$s = 1 "
+"and %2$s = p * %3$s and \n"
+"corresponds to an approximate penalization equal to log(%3$s + 1) in log-"
+"odds scale for each additional \n"
+"covariate added to the model (Consonni et al., 2018; Wilson et al., 2010)."
+msgstr ""
+
+msgid ""
+"The Castillo model prior corresponds to a beta binomial prior with %1$s = 1 "
+"and %2$s = p^u and is suitable \n"
+"for sparse regression when there are more covariates than observations "
+"(Castillo et al., 2015)."
+msgstr ""
+
+msgid "All models include %s."
+msgstr "Alle Modelle beinhalten %s."
+
+msgid ""
+"%sTable displays only a subset of models; to see all models, select \"No\" "
+"under \"Limit No. Models Shown\"."
+msgstr ""
+
+msgid "Posterior Summaries of Coefficients"
+msgstr "Posterior-Zusammenfassungen der Koeffizienten"
+
+msgid "BF<sub>inclusion</sub>"
+msgstr "BF<sub>inklusion</sub>"
+
+msgid "Log(BF<sub>inclusion</sub>)"
+msgstr "Log(BF<sub>inklusion</sub>)"
+
+msgid "<em>Warning.</em>"
+msgstr "<em>Warnung.</em>"
+
+msgid "Posterior Coefficients with %s%% Credible Interval"
+msgstr "Posterior-Koeffizienten mit %s%% Kredibilitätsintervall"
+
+msgid "Posterior Log Odds"
+msgstr "Posterior-Log-Odds"
+
+msgid "Cannot display Posterior Log Odds when sampling method is MCMC."
+msgstr "Kann Posterior-Log-Odds bei MCMC-Stichproben nicht anzeigen."
+
+msgid "Residuals vs Fitted"
+msgstr "Residuen vs Anpassung"
+
+msgid "Predictions under BMA"
+msgstr "Vorhersagen unter BMA"
+
+msgid "Cumulative Probability"
+msgstr "Kumulative Wahrscheinlichkeit"
+
+msgid "Model Search Order"
+msgstr "Modell-Suchreihenfolge"
+
+msgid "Log(P(data|M)) vs. Model Size"
+msgstr "Log(P(Daten|M)) vs. Modellgröße"
+
+msgid "Log(P(data|M))"
+msgstr "Log(P(Daten|M))"
+
+msgid "Model Dimension"
+msgstr "Modell-Dimension"
+
+msgid "Inclusion Probabilities"
+msgstr "Inklusionswahrscheinlichkeiten"
+
+msgid "Marginal Inclusion Probability"
+msgstr "Marginale Inklusionswahrscheinlichkeit"
+
+msgid ""
+"Prior\n"
+"Inclusion\n"
+"Probabilities"
+msgstr ""
+"Prior\n"
+"Inklusion\n"
+"Wahrscheinlichkeiten"
+
+msgid "Marginal Posterior Distributions"
+msgstr "Marginale Posterior-Verteilungen"
+
+msgid "Parameters estimates and/or credible intervals could not be calculated."
+msgstr ""
+"Parameterschätzungen und/oder Kredibilitätsintervalle konnten nicht "
+"berechnet werden."
+
+msgid "Performance Diagnostics"
+msgstr "Performanz-Diagnostiken"
+
+msgid "McFadden R%s"
+msgstr "McFadden R%s"
+
+msgid "Nagelkerke R%s"
+msgstr "Nagelkerke R%s"
+
+msgid "Tjur R%s"
+msgstr "Tjur R%s"
+
+msgid "Cox & Snell R%s"
+msgstr "Cox & Snell R%s"
+
+msgid "Standardized%s"
+msgstr "Standardisiertes%s"
+
+msgid "Wald Statistic"
+msgstr "Wald-Statistik"
+
+msgid ""
+"Standardized estimates represent estimates where the continuous predictors "
+"are standardized (X-standardization)."
+msgstr ""
+
+msgid ""
+"Coefficient estimate and robust standard error are based on the median of "
+"the bootstrap distribution."
+msgstr ""
+
+msgid "Predicted Group"
+msgstr "Vorhergesagte Gruppe"
+
+msgid "Studentized Residual"
+msgstr "Studentisierte Residuen"
+
+msgid "Factor Descriptives"
+msgstr "Faktorbeschreibungen"
+
+msgid "Confusion matrix"
+msgstr "Konfusionsmatrix"
+
+msgid "Performance metrics"
+msgstr "Performanz-Metriken"
+
+msgid "Null model contains nuisance parameters: %s"
+msgstr "Nullmodell enthält Störfaktoren: %s"
+
+msgid "%1$s level '%2$s' coded as class 1."
+msgstr "%1$s Stufe '%2$s' kodiert als Klasse 1."
+
+msgid "Bootstrapping based on %i successful replicates."
+msgstr "Bootstrap basiert auf %i erfolgreichen Wiederholungen."
+
+msgid "Residual plots"
+msgstr "Residuen-Abbildungen"
+
+msgid "Estimates plots"
+msgstr "Schätzer-Abbildungen"
+
+msgid "Predicted - residuals plot"
+msgstr "Vorhergesagt - Residuen-Abbildung"
+
+msgid "Predictor - residuals plots"
+msgstr "Prädiktor - Residuen-Abbildungen"
+
+msgid "Squared Pearson residuals plot"
+msgstr ""
+
+msgid "Predicted Probability"
+msgstr "Vorhergesagte Wahrscheinlichkeit"
+
+msgid "Squared Pearson Residual"
+msgstr ""
+
+msgid "%1$s%% bca%2$s Confidence interval"
+msgstr "%1$s%% bca%2$s Konfidenzintervall"
+
+msgid "%s%% Confidence interval"
+msgstr "%s%% Konfidenzintervall"
+
+msgid "%s <br> (odds ratio scale)"
+msgstr ""
+
+msgid "Robust <br> %s"
+msgstr "Robust <br> %s"
+
+msgid "Residual df"
+msgstr "Residuelle df"
+
+msgid "Residual Deviance"
+msgstr "Residualdevianz"
+
+msgid "%s%% Confidence Intervals"
+msgstr "%s%% Konfidenzintervalle"
+
+msgid ""
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Based the <em>p</em>-value, \n"
+"the maximum possible odds in favor of H%1$s over H%2$s equals \n"
+"1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 \n"
+"(Sellke, Bayarri, & Berger, 2001)."
+msgstr ""
+
+msgid "variables cannot be read"
+msgstr "Variablen können nicht gelesen werden"
+
+msgid "R Package error: %s"
+msgstr "R-Paket-Fehler: %s"
+
+msgid "R Package error: Cannot retrieve table probabilities"
+msgstr "R-Paket-Fehler: Kann Wahrscheinlichkeiten-Tabelle nicht abrufen"
+
+msgid "Total number of models visited = %i"
+msgstr "Gesamtanzahl besuchter Modelle = %i"
+
+msgid "Submodel specified is not within possible submodels"
+msgstr ""
+
+msgid "<em>Model formula:</em>"
+msgstr "<em>Modellformel:</em>"
+
+msgid "<em>Posterior model probability =</em>"
+msgstr "<em>Posterior Modellwahrscheinlichkeit =</em>"
+
+msgid "Posterior Summary Statistics"
+msgstr "Posterior zusammenfassende Statistiken"
+
+msgid "%s%% Credible intervals"
+msgstr "%s%% Kredibilitätsintervalle"
+
+msgid "Posterior Summary Statistics For Submodel %s"
+msgstr "Posterior zusammenfassende Statistiken für Untermodell %s"
+
+msgid "%.0f%% Credible intervals"
+msgstr "%.0f%% Kredibilitätsintervalle"
+
+msgid "The covariance matrix of the data is not invertible"
+msgstr "Die Kovarianzmatrix der Daten ist nicht invertierbar"
+
+msgid "%s Of the observations, pairwise complete cases were used."
+msgstr ""
+
+msgid "%s Of the observations, %1.f complete cases were used."
+msgstr ""
+
+msgid "Bayesian Scale Reliability Statistics"
+msgstr "Bayessche Skalenparameter-Reliabilitätsstatistiken"
+
+msgid "%s lower bound"
+msgstr "%s untere Grenze"
+
+msgid "%s upper bound"
+msgstr "%s obere Grenze"
+
+msgid "Please enter at least 3 variables to do an analysis. %s"
+msgstr "Bitte gib mindestens 3 Variablen ein, um eine Analyse zu machen. %s"
+
+msgid "footnote"
+msgstr "Fußnote"
+
+msgid "Please enter at least 3 variables to do an analysis."
+msgstr "Bitte gib mindestens 3 Variablen ein, um eine Analyse zu machen."
+
+msgid "%s (if item dropped)"
+msgstr "%s (falls Item ausgelassen)"
+
+msgid "Bayesian Individual Item Reliability Statistics"
+msgstr ""
+
+msgid "Item"
+msgstr "Item"
+
+msgid "Posterior Mean"
+msgstr "Posterior Mittelwert"
+
+msgid "Item-rest correlation"
+msgstr "Item-Rest-Korrelation"
+
+msgid ""
+"Probability that Reliability Statistic is Larger than %.2f and Smaller than "
+"%.2f"
+msgstr ""
+
+msgid "Posterior Plots"
+msgstr "Posterior Abbildungen"
+
+msgid "If Item Dropped Posterior Plots"
+msgstr ""
+
+msgid "Item Dropped"
+msgstr "Item ausgelassen"
+
+msgid "Factors"
+msgstr "Faktoren"
+
+msgid "Convergence Traceplot"
+msgstr ""
+
+msgid "Iterations"
+msgstr "Iterationen"
+
+msgid "%.2f"
+msgstr "%.2f"
+
+msgid "The analysis crashed with the following error message:"
+msgstr ""
+
+msgid "Frequentist Scale Reliability Statistics"
+msgstr "Frequentistische Skalenparameter-Reliabilitätsstatistiken"
+
+msgid "Point estimate"
+msgstr "Punktschätzung"
+
+msgid ""
+"%sMcDonald's ω estimation method switched to PFA because the CFA\n"
+"                                    did not find a solution."
+msgstr ""
+
+msgid ""
+"%s Some confidence intervals could not be computed because out of the "
+"bootstrapped matrices none were invertible."
+msgstr ""
+"%s Einige Konfidenzintervalle konnten nicht berechnet werden, weil keine "
+"der Matrizen des Bootstraps invertierbar waren."
+
+msgid "If item dropped"
+msgstr "Falls Item ausgelassen"
+
+msgid "Frequentist Individual Item Reliability Statistics"
+msgstr ""
+
+msgid ""
+"McDonald's ω estimation method for item-dropped statistics \n"
+"                                     switched to PFA because the CFA did not "
+"find a solution."
+msgstr ""
+
+msgid "Fit Measures of Single Factor Model Fit"
+msgstr ""
+
+msgid "Fit Measure"
+msgstr "Anpassungs-Maß"
+
+msgid ""
+"Fit measures cannot be displayed because the McDonald's ω \n"
+"                                       estimation method switched to PFA as "
+"the CFA did not find a solution."
+msgstr ""
+
+msgid "The priors for publication bias were set incorrectly."
+msgstr ""
+
+msgid "MCMC error"
+msgstr "MCMC-Fehler"
+
+msgid "ESS"
+msgstr ""
+
+msgid "%s is on %s scale."
+msgstr ""
+
+msgid "<em>p</em>-values interval %s"
+msgstr "<em>p</em>-Werte Intervall %s"
+
+msgid "The weights (%s) correspond to %s <em>p</em>-values."
+msgstr ""
+
+msgid "Estimated studies' effects (%s) correspond to effect size %s."
+msgstr ""
+
+msgid "Effect size (%s)"
+msgstr "Effektgröße (%s)"
+
+msgid "Heterogeneity (%s)"
+msgstr "Heterogenität (%s)"
+
+msgid "Prior Plots"
+msgstr "Prior-Abbildungen"
+
+msgid "Weight Function"
+msgstr "Gewichtungsfunktion"
+
+msgid "Model Preview"
+msgstr "Modell-Vorschau"
+
+msgid ""
+"At least one prior distribution per parameter must be specified (either null "
+"or alternative)."
+msgstr ""
+
+msgid "Publication bias"
+msgstr "Publikationsbias"
+
+msgid "Models Overview"
+msgstr "Modell-Überblick"
+
+msgid "Prior Distribution"
+msgstr "Prior-Verteilung"
+
+msgid "Publication Bias"
+msgstr "Publikationsbias"
+
+msgid "The loaded object is not a RoBMA model."
+msgstr ""
+
+msgid "Summary"
+msgstr "Zusammenfassung"
+
+msgid "Exclusion"
+msgstr "Exklusion"
+
+msgid "Inclusion"
+msgstr "Inklusion"
+
+msgid "log(BF)"
+msgstr "Log(BF)"
+
+msgid ""
+"All models failed to converge. Please, consider inspecting the 'MCMC "
+"diagnostics' and changing the 'Advanced options'."
+msgstr ""
+
+msgid "%i models failed to converge."
+msgstr ""
+
+msgid "Model Averaged Estimates"
+msgstr "Modell-gemittelte Schätzungen"
+
+msgid "Model Averaged Weights (%s)"
+msgstr "Modell-gemittelte Gewichte (%s)"
+
+msgid "Model Averaged Estimated Studies' Effects (%s)"
+msgstr ""
+
+msgid "Conditional Estimates"
+msgstr ""
+
+msgid ""
+"Estimates are model averaged over models assuming existence of effect / "
+"heterogeneity."
+msgstr ""
+
+msgid "Conditional Weights (%s)"
+msgstr ""
+
+msgid ""
+"Estimated weights (%s) are model averaged over models assuming existence of "
+"publication bias."
+msgstr ""
+
+msgid "Conditional Estimated Studies' Effects (%s)"
+msgstr "Geschätzte Studieneffekte"
+
+msgid ""
+"Estimated studies effects (%s) are model averaged over models assuming "
+"existence of effect."
+msgstr ""
+
+msgid "BF01"
+msgstr "BF01"
+
+msgid "log(BF10)"
+msgstr "Log(BF10)"
+
+msgid "BF10"
+msgstr "BF10"
+
+msgid "log(MargLik)"
+msgstr ""
+
+msgid "Individual Models Summary"
+msgstr ""
+
+msgid "Model %i"
+msgstr "Modell %i"
+
+msgid "Model %i does not exist. Select one of the models between 1 and %i."
+msgstr "Modell %i existiert nicht. Wähle eins der Modelle zwischen 1 und %i."
+
+msgid "Priors"
+msgstr "Prior"
+
+msgid "Information"
+msgstr "Information"
+
+msgid "Model Estimates"
+msgstr "Modell-Schätzungen"
+
+msgid "Estimated Weights (%s)"
+msgstr "Geschätzte Gewichte (%s)"
+
+msgid "Estimated Studies' Effects (%s)"
+msgstr "Geschätzte Studieneffekte (%s)"
+
+msgid "Weight function"
+msgstr "Gewichtungsfunktion"
+
+msgid "Effect size vs Heterogeneity"
+msgstr "Effektgröße vs Heterogenität"
+
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+msgid "Individual Models Plots"
+msgstr ""
+
+msgid "Diagnostics"
+msgstr "Diagnostiken"
+
+msgid "Models Diagnostics Overview"
+msgstr "Modell-Diagnostiken-Überblick"
+
+msgid "max(MCMC error)"
+msgstr "max(MCMC-Fehler)"
+
+msgid "min(ESS)"
+msgstr ""
+
+msgid "max(Rhat)"
+msgstr "max(R-Dach)"
+
+msgid "Trace plots"
+msgstr "Verlaufs-Abbildungen"
+
+msgid "Average autocorrelations"
+msgstr "Mittlere Autokorrelation"
+
+msgid "Posterior samples densities"
+msgstr ""
+
+msgid "Model %i does not contain any of the selected parameters."
+msgstr ""
+
+msgid "Model misspecified"
+msgstr "Modell falsch spezifiziert"
+
+msgid ""
+"Mean structure can not be included when data is variance-covariance matrix"
+msgstr ""
+"Mittelwertstruktur kann nicht einbezogen werden wenn Daten Varianz-"
+"Kovarianz-Matrix ist"
+
+msgid "Please set the sample size!"
+msgstr "Bitte setze den Stichprobenumfang!"
+
+msgid ""
+"Multiple group analysis not (yet) supported when data is variance-covariance "
+"matrix"
+msgstr ""
+
+msgid ""
+"Not more cases than number of variables. Is your data a variance-covariance "
+"matrix?"
+msgstr ""
+
+msgid "Chi Square Test Statistic (unscaled)"
+msgstr ""
+
+msgid "&#967;&sup2;"
+msgstr "&#967;&sup2;"
+
+msgid "label"
+msgstr "Bezeichnung"
+
+msgid "est"
+msgstr ""
+
+msgid "se"
+msgstr ""
+
+msgid "CI (lower)"
+msgstr "KI (untere)"
+
+msgid "CI (upper)"
+msgstr "KI (obere)"
+
+msgid "std (lv)"
+msgstr "std (lv)"
+
+msgid "std (all)"
+msgstr "std (all)"
+
+msgid "std (nox)"
+msgstr "std (nox)"
+
+msgid "group"
+msgstr "Gruppe"
+
+msgid "Minimum Function Test Statistic"
+msgstr "Minimum-Funktion Teststatistik"
+
+msgid "Degrees of freedom"
+msgstr "Freiheitsgrade"
+
+msgid "Loglikelihood and Information Criteria"
+msgstr "Log-Likelihood und Informationskriterien"
+
+msgid "Loglikelihood user model (H0)"
+msgstr "Log-Likelihood Nutzermodell (H0)"
+
+msgid "Loglikelihood unrestricted model (H1)"
+msgstr "Log-Likelihood unbeschränktes Modell (H1)"
+
+msgid "Sample-size adjusted Bayesian (BIC)"
+msgstr ""
+
+msgid "Root Mean Square Error of Approximation"
+msgstr "Wurzel des mittleren quadratischen Fehlers der Anpassung (RMSEA)"
+
+msgid "Upper 90%% CI"
+msgstr "Oberes 90%% KI"
+
+msgid "Lower 90%% CI"
+msgstr "Unteres 90%% KI"
+
+msgid "p-value RMSEA <= 0.05"
+msgstr "p-Wert RMSEA <= 0.05"
+
+msgid "RMR"
+msgstr "RMR"
+
+msgid "RMR (No Mean)"
+msgstr "RMR (kein Mittelwert)"
+
+msgid "SRMR"
+msgstr "SRMR"
+
+msgid "Other Fit Indices"
+msgstr "Weitere Anpassungsindizes"
+
+msgid "Hoelter Critical N (CN) alpha=0.05"
+msgstr "Hoelter kritisches N (CN) alpha=0.05"
+
+msgid "Hoelter Critical N (CN) alpha=0.01"
+msgstr "Hoelter kritisches N (CN) alpha=0.01"
+
+msgid "Goodness of Fit Index (GFI)"
+msgstr "Anpassungsgüte-Index (GFI)"
+
+msgid "Parsimony Goodness of Fit Index (GFI)"
+msgstr ""
+
+msgid "McDonald Fit Index (MFI)"
+msgstr "McDonald-Fit-Index (MFI)"
+
+msgid "R&sup2;"
+msgstr "R&sup2;"
+
+msgid "Group %i"
+msgstr "Gruppe %i"
+
+msgid "mi"
+msgstr ""
+
+msgid "epc"
+msgstr ""
+
+msgid "sepc (lv)"
+msgstr ""
+
+msgid "sepc (all)"
+msgstr ""
+
+msgid "sepc (nox)"
+msgstr ""
+
+msgid "Covariances (lower triangle) / correlations (upper triangle)"
+msgstr "Kovarianzen (unteres Dreieck) / Korrelationen (oberes Dreieck)"
+
+msgid "Mardia's coefficients"
+msgstr "Mardias Koeffizienten"
+
+msgid ""
+"Not all used variables are numeric. Mardia's coefficients not available."
+msgstr ""
+"Nicht alle Variablen sind numerisch. Mardias Koeffizienten nicht verfügbar."
+
+msgid "Path Diagrams"
+msgstr "Pfaddiagramme"
+
+msgid ""
+"- *Bayes factor*: If one-sided test is requested:\n"
+"- BF+0: Bayes factor that quantifies evidence for the one-sided alternative "
+"hypothesis that the population mean is larger than the test value\n"
+"- BF-0: Bayes factor that quantifies evidence for the one-sided alternative "
+"hypothesis that the population mean is smaller than the test value\n"
+"- BF0+: Bayes factor that quantifies evidence for the null hypothesis "
+"relative to the one-sided alternative hypothesis that the population mean is "
+"larger than the test value\n"
+"- BF0-: Bayes factor that quantifies evidence for the null hypothesis "
+"relative to the one-sided alternative hypothesis that that the population "
+"mean is smaller than the test value\n"
+"- **p**: p-value corresponding to t-statistic."
+msgstr ""
+
+msgid "Successes"
+msgstr "Erfolge"
+
+msgid "Failures"
+msgstr "Misserfolge"
+
+msgid "Test value"
+msgstr "Testwert"
+
+msgid "Plotting not possible: Posterior too peaked!"
+msgstr "Abbilden unmöglich: Posterior ist zu spitz!"
+
+msgid "Plotting not possible: Cannot evaluate prior or posterior density!"
+msgstr "Abbilden unmöglich: Kann Prior- oder Posteriordichte nicht evaluieren!"
+
+msgid "Plotting not possible: Bayes factor should be numeric!"
+msgstr "Abbilden unmöglich: Bayesfaktor muss numerisch sein!"
+
+msgid "%s%% Credible interval"
+msgstr "%s%% Kredibilitätsintervall"
+
+msgid "Number of covariates"
+msgstr "Anzahl Kovariaten"
+
+msgid "Robustness Plot"
+msgstr "Robustheitsabbildung"
+
+msgid "r scale"
+msgstr "Skalenparameter r"
+
+msgid "r scale used is: %s."
+msgstr "benutzter Skalenparameter r ist: %s."
+
+msgid "n = %i"
+msgstr "n = %i"
+
+msgid "Bayesian Linear Regression"
+msgstr "Bayessche lineare Regression"
+
+msgid "Number of Covariates must be less than N-1 (sample size minus 1)"
+msgstr ""
+"Anzahl der Kovariaten muss kleiner als N-1 sein (Stichprobenumfang minus 1)"
+
+msgid ""
+"Input: When number of covariates for Alternative hypothesis is greater than "
+"that of Null hypothesis, the R%s has to be higher under Alternative than "
+"under Null hypothesis"
+msgstr ""
+
+msgid ""
+"t-value is large. A Savage-Dickey approximation was used to compute the "
+"Bayes factor but no error estimate can be given."
+msgstr ""
+"Der t-Wert ist groß. Es wurde eine Savage-Dickey-Approximation benutzt um "
+"denBayesfaktor zu berechnen, aber es kann keine Fehlerschätzung gegeben "
+"werden."
+
+msgid "No error estimate is available for normal priors."
+msgstr "Keine Fehlerschätzung für normalverteilte Prior verfügbar."
+
+msgid "Bayesian Mann-Whitney U Test"
+msgstr "Bayesscher Mann-Whitney-U-Test"
+
+msgid ""
+"Result based on data augmentation algorithm with 5 chains of %.0f iterations."
+msgstr ""
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that group <em>%1$s</em> "
+"is greater than group <em>%2$s</em>."
+msgstr ""
+"Für alle Tests gibt die Alternativhypothese an, dass Gruppe <em>%1$s</"
+"em> größer ist als Gruppe <em>%2$s</em>."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that group <em>%1$s</em> "
+"is less than group <em>%2$s</em>."
+msgstr ""
+"Für alle Tests gibt die Alternativhypothese an, dass Gruppe <em>%1$s</"
+"em> kleiner ist als Gruppe <em>%2$s</em>."
+
+msgid "Bayesian Wilcoxon Signed-Rank Test"
+msgstr "Bayesscher Wilcoxon-Vorzeichen-Rang-Test."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the population mean "
+"is greater than %s."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass der "
+"Populationsmittelwert größer als %s ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the population mean "
+"is less than %s."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass der "
+"Populationsmittelwert kleiner als %s ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that the population mean "
+"differs from %s."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass der "
+"Populationsmittelwert von %s verschieden ist."
+
+msgid "Independent Samples T-Test"
+msgstr "T-Test für unabhängige Stichproben"
+
+msgid "Mann-Whitney U test."
+msgstr "Mann-Whitney-U-Test."
+
+msgid "W"
+msgstr "W"
+
+msgid "Welch's t-test."
+msgstr "Welchs T-Test."
+
+msgid "Student's t-test."
+msgstr "Students T-Test."
+
+msgid "Glass' delta"
+msgstr "Glass Delta"
+
+msgid "Hedges' g"
+msgstr "Hedges g"
+
+msgid "Hodges-Lehmann Estimate"
+msgstr "Hodges-Lehmann-Schätzung"
+
+msgid "Rank-Biserial Correlation"
+msgstr "Rang-Biseriale Korrelation"
+
+msgid "Location Parameter"
+msgstr "Lageparameter"
+
+msgid "Student t-test and Welch t-test"
+msgstr "Students T-Test und Welchs T-Test"
+
+msgid "Student t-test"
+msgstr "Students T-Test"
+
+msgid "Welch t-test"
+msgstr "Welchs T-Test"
+
+msgid "SE Difference"
+msgstr "Std.-Fehler Differenz"
+
+msgid ""
+"For the %s, location parameter is given by mean difference. For the Mann-"
+"Whitney test, location parameter is given by the Hodges-Lehmann estimate."
+msgstr ""
+"Beim %s wird der Lageparameter mit der Mittelwertsdifferenz angegeben. Beim "
+"Mann-Whitney-Test wird der Lageparameter mit der Hodges-Lehmann-Schätzung "
+"angegeben."
+
+msgid "%1$s%% CI for %2$s"
+msgstr "%1$s%% KI für %2$s"
+
+msgid ""
+"For the Mann-Whitney test, effect size is given by the rank biserial "
+"correlation."
+msgstr ""
+"Beim Mann-Whitney-Test wird die Effektgröße mit der rangbiserialen "
+"Korrelation angegeben."
+
+msgid "For the %1$s, effect size is given by %2$s."
+msgstr "Beim %1$s wird die Effektgröße mit %2$s angegeben."
+
+msgid "Test of Normality (Shapiro-Wilk)"
+msgstr "Prüfung auf Normalverteilung (Shapiro-Wilk)"
+
+msgid "Significant results suggest a deviation from normality."
+msgstr ""
+"Ein signifikantes Ergebnis deutet auf Abweichung von einer Normalverteilung "
+"hin."
+
+msgid "Test of Equality of Variances (Levene's)"
+msgstr "Prüfung auf Gleichheit der Varianzen (Levenes)"
+
+msgid "greater"
+msgstr "größer"
+
+msgid "less"
+msgstr "kleiner"
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that group %1$s is %2$s "
+"than group %3$s."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass Gruppe %1$s %2$s ist "
+"als Gruppe %3$s."
+
+msgid ""
+"Glass' delta uses the standard deviation of group %1$s of variable %2$s."
+msgstr ""
+"Glasssches Delta benutzt die Standardabweichung in Gruppe %1$s von Variable "
+"%2$s."
+
+msgid "F-statistic could not be calculated"
+msgstr "F-Statistik konnte nicht berechnet werden"
+
+msgid "One Sample T-Test"
+msgstr "t-Test für eine Stichprobe"
+
+msgid "Wilcoxon signed-rank test."
+msgstr "Wilcoxon-Vorzeichen-Rang-Test."
+
+msgid "V"
+msgstr "V"
+
+msgid "Z test."
+msgstr "Z-Test."
+
+msgid "Student t-test and Z-test"
+msgstr "Students t-Test und Z-Test"
+
+msgid "Z-test"
+msgstr "Z-Test"
+
+msgid "For the %s, location parameter is given by mean difference <em>d</em>."
+msgstr ""
+"Für den %s wird der Lageparameter mit der mittleren Differenz <em>d</em> "
+"angegeben."
+
+msgid ""
+"For the Wilcoxon test, location parameter is given by the Hodges-Lehmann "
+"estimate."
+msgstr ""
+"Beim Wilcoxon-Text wird der Lageparameter mit der Hodges-Lehmann-Schätzung "
+"angegeben."
+
+msgid "For the Student t-test, effect size is given by Cohen's <em>d</em>."
+msgstr ""
+"Bei Students t-Test ist die Effektgröße mit Cohens <em>d</em> angegeben."
+
+msgid ""
+"For the Wilcoxon test, effect size is given by the matched rank biserial "
+"correlation."
+msgstr ""
+"Beim Wilcoxon-Test wird die Effektgröße mit der entsprechenden "
+"rangbiserialen Korrelation angegeben."
+
+msgid ""
+"For the Z test, effect size is given by Cohen's <em>d</em> (based on the "
+"provided population standard deviation)."
+msgstr ""
+"Beim Z-Test wird die Effektgröße mit Cohens <em>d</em> angegeben (basierend "
+"auf der eingegebenen Populations-Standardabweichung)."
+
+msgid "greater than"
+msgstr "größer als"
+
+msgid "less than"
+msgstr "kleiner als"
+
+msgid "different from"
+msgstr "unterschiedlich von"
+
+msgid ""
+"For the %1$s, the alternative hypothesis specifies that the mean is %2$s "
+"%3$s."
+msgstr ""
+"Beim %1$s gibt die Alternativhypothese an, dass der Mittelwert %2$s %3$s ist."
+
+msgid ""
+"For the Wilcoxon test, the alternative hypothesis specifies that the median "
+"is %1$s %2$s."
+msgstr ""
+"Beim Wilcoxon-Test gibt die Alternativhypothese an, dass der Median %1$s "
+"%2$s ist."
+
+msgid "data are essentially constant"
+msgstr "Daten sind im Prinzip konstant"
+
+msgid "Paired Samples T-Test"
+msgstr "T-Test für abhängige Stichproben"
+
+msgid ""
+"For the Student t-test, location parameter is given by mean difference "
+"<em>d</em>. For the Wilcoxon test, effect size is given by the Hodges-"
+"Lehmann estimate."
+msgstr ""
+"Für den Studentschen t-Test wird der Lageparameter mit der "
+"Mittelwertsdifferenz <em>d</em angegeben>; für den Wilcoxon-Test wird die "
+"Effektgröße durch die Hodges-Lehmann-Schätzung angegeben."
+
+msgid ""
+"For the Student t-test, effect size is given by Cohen's <em>d</em>. For the "
+"Wilcoxon test, effect size is given by the matched rank biserial correlation."
+msgstr ""
+"Beim Studentschen t-Test wird die Effektgröße mit Cohens <em>d</em> "
+"angegeben. Beim Wilcoxon-Test wird die Effektgröße mit der entsprechenden "
+"rangbiserialen Korrelation angegeben."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that Measure 1 is less "
+"than Measure 2."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass Messung 1 kleiner als "
+"Messung 2 ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that Measure 1 is "
+"greater than Measure 2."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass Messung 1 größer als "
+"Messung 2 ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that %1s is less than "
+"%2s."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass %1s kleiner "
+"als %2s ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that %1s is greater than "
+"%2s."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass %1s größer "
+"als %2s ist."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that Measure 1 is less "
+"than Measure 2. For example, %1s is less than %2s."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass Messung 1 kleiner als "
+"Messung 2 ist. Zum Beispiel, %1s ist kleiner als %2s."
+
+msgid ""
+"For all tests, the alternative hypothesis specifies that Measure 1 is "
+"greater than Measure 2. For example, %1s is greater than %2s."
+msgstr ""
+"Bei allen Tests gibt die Alternativhypothese an, dass Messung 1 größer als "
+"Messung 2 ist. Zum Beispiel, %1s ist größer als %2s."
+
+msgid "Evidence for H1"
+msgstr "Evidenz für H1"
+
+msgid "Evidence for H0"
+msgstr "Evidenz für H0"
+
+msgid "Evidence for H+"
+msgstr "Evidenz für H+"
+
+msgid "Evidence for H-"
+msgstr "Evidenz für H-"
+
+msgid "Evidence for H1:"
+msgstr "Evidenz für H1:"
+
+msgid "Evidence for H+:"
+msgstr "Evidenz für H+:"
+
+msgid "Evidence for H-:"
+msgstr "Evidenz für H-:"
+
+msgid ""
+"could not calculate enough valid Bayes Factors for different values of the "
+"prior"
+msgstr ""
+"Konnte nicht genügend gültige Bayesfaktoren für verschiedene Priorwerte "
+"berechnen"
+
+msgid "The following variable is used as a random effects grouping factor: %s."
+msgid_plural ""
+"The following variables are used as random effects grouping factors: %s."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"All random slopes involving ‘%s’ have been removed for the random effects "
+"grouping factor ‘%s’. -- Factor %s does not vary within the levels of random "
+"effects grouping factor '%s'."
+msgid_plural ""
+"All random slopes involving ‘%s’ have been removed for the random effects "
+"grouping factor ‘%s’. -- Factors %s do not vary within the levels of random "
+"effects grouping factor '%s'."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"Random slopes of ‘%s’ for the random effects grouping factor ‘%s’ removed -- "
+"Too few observations to estimate random slopes of '%s' for random effects "
+"grouping factor '%s'."
+msgid_plural ""
+"Random slope of ‘%s’ for the random effects grouping factor ‘%s’ removed -- "
+"Too few observations to estimate random slope of '%s' for random effects "
+"grouping factor '%s'."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"Lower order random effects terms need to be specified in presence of the "
+"higher order random effects terms. Therefore, the following random effects "
+"term was added to the '%s' random effects grouping factor: '%s.'"
+msgid_plural ""
+"Lower order random effects terms need to be specified in presence of the "
+"higher order random effects terms. Therefore, the following random effects "
+"terms were added to the '%s' random effects grouping factor: '%s.'"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%i observation was removed due to missing values."
+msgid_plural "%i observations were removed due to missing values."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"The Hamiltonian Monte Carlo procedure might be invalid -- There was %i "
+"divergent transition after warmup. This can be solved by carefully "
+"increasing 'Adapt delta' until there are no divergent transitions."
+msgid_plural ""
+"The Hamiltonian Monte Carlo procedure might be invalid -- There were %i "
+"divergent transitions after warmup. This can be solved by carefully "
+"increasing 'Adapt delta' until there are no divergent transitions."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"Bayesian Fraction of Missing Information (BFMI) that was too low in %i chain "
+"indicating that the posterior distribution was not explored efficiently. Try "
+"increasing number of 'Burnin' and 'Iterations'."
+msgid_plural ""
+"Bayesian Fraction of Missing Information (BFMI) that was too low in %i "
+"chains indicating that the posterior distribution was not explored "
+"efficiently. Try increasing number of 'Burnin' and 'Iterations'."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"The Hamiltonian Monte Carlo procedure might be inefficient -- %i transition "
+"exceeded the maximum tree depth. This can be solved by carefully increasing "
+"'Maximum tree depth"
+msgid_plural ""
+"The Hamiltonian Monte Carlo procedure might be inefficient -- %i transitions "
+"exceeded the maximum tree depth. This can be solved by carefully increasing "
+"'Maximum tree depth"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"WAIC estimate unreliable -- There was %1.0f p_waic estimate larger than 0.4. "
+"We recommend using LOO instead."
+msgid_plural ""
+"WAIC estimate unreliable -- There were %1.0f p_waic estimates larger than "
+"0.4. We recommend using LOO instead."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"LOO estimate unreliable -- There was %1.0f observation with the shape "
+"parameter (k) of the generalized Pareto distribution higher than > .5."
+msgid_plural ""
+"LOO estimate unreliable -- There were %1.0f observations with the shape "
+"parameter (k) of the generalized Pareto distribution higher than > .5."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "The following pair is duplicated: %s"
+msgid_plural "The following pairs are duplicated: %s"
+msgstr[0] "Das folgende Datenpaar ist dupliziert: %s"
+msgstr[1] "Die folgenden Datenpaare sind dupliziert: %s"
+
+msgid "using the %d/%d row from a combined fit"
+msgid_plural "using the %d/%d rows from a combined fit"
+msgstr[0] "benutzt die Zeile %d/%d aus einer kombinierten Anpassung"
+msgstr[1] "benutzt die Zeilen %d/%d aus einer kombinierten Anpassung"
+
+msgid "%1$s X-Coordinates for variable %2$s was not understood."
+msgid_plural "%1$s X-Coordinates for variables %2$s were not understood."
+msgstr[0] "%1$s X-Koordinaten für Variable %2$s wurde nicht verstanden."
+msgstr[1] "%1$s X-Koordinaten für Variablen %2$s wurden nicht verstanden."
+
+msgid "%1$s Y-Coordinates for variable %2$s was not understood."
+msgid_plural "%1$s Y-Coordinates for variables %2$s were not understood."
+msgstr[0] "%1$s Y-Koordinaten für Variable %2$s wurde nicht verstanden."
+msgstr[1] "%1$s Y-Koordinaten für Variablen %2$s wurden nicht verstanden."
+
+msgid "The following covariate was considered but not included: %s."
+msgid_plural "The following covariates were considered but not included: %s."
+msgstr[0] "Die folgende Kovariate wurde erwogen, aber nicht einbezogen: %s."
+msgstr[1] "Die folgenden Kovariaten wurden erwogen, aber nicht einbezogen: %s."
+
+msgid "Partial Regression Plot"
+msgid_plural "Partial Regression Plots"
+msgstr[0] "Partialkorrelationsplot"
+msgstr[1] "Partialkorrelationsplots"
+
+msgid "The following item correlated negatively with the scale: %s. "
+msgid_plural "The following items correlated negatively with the scale: %s. "
+msgstr[0] "Das folgende Item korrelierte negativ mit der Skala: %s."
+msgstr[1] "Die folgenden Items korrelierten negativ mit der Skala: %s."
+
+msgid "The following item was reverse scaled: %s. "
+msgid_plural "The following items were reverse scaled: %s. "
+msgstr[0] "Das folgende Item wurde umgekehrt kodiert: %s."
+msgstr[1] "Die folgenden Items wurden umgekehrt kodiert: %s."
