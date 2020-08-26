@@ -67,4 +67,10 @@ Description
 		title:	qsTr("S.S. Bayesian Binomial Test")
 		func:	"SummaryStatsBinomialTestBayesian"
 	}
+	Analysis
+	{
+		menu:	qsTr("Bayesian A/B Test")
+		title:	qsTr("S.S. Bayesian A/B Test")
+		func:	"SummaryStatsABTestBayesian"
+	}
 }
