@@ -53,33 +53,13 @@ Section
 		}
 	}
 
-	Group
+
+	DropDown
 	{
 		Layout.columnSpan:	2
-		title:	qsTr("Point estimate")
-
-		RadioButtonGroup
-		{
-			name:	"pointEstimate"
-			RadioButton
-			{
-				value:	"mean"
-				label:	qsTr("Mean")
-				checked: true
-			}
-
-			RadioButton
-			{
-				value:	"median"
-				label:	qsTr("Median")
-			}
-
-			RadioButton
-			{
-				name:	"mode"
-				label:	qsTr("Mode")
-			}
-		}
+		name:		"pointEstimate"
+		label:		qsTr("Point estimate")
+		values:		["mean", "median", "mode"]
 	}
 
 

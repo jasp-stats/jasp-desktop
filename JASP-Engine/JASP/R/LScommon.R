@@ -1997,7 +1997,7 @@
 }
 .CIsTextLS          <- function(SI = FALSE){
   return(gettextf(
-    "<ul><li>'central' - a central interval (or quantile) that covers the central 'mass'%% area of the distribution</li><li>''HPD' - a highest posterior density interval that covers 'mass'%% area with the shortest range</li><li>'custom' - an interval defined by a ‘lower’ and ‘upper’ bound. It returns the posterior mass of the parameter falling inside the custom interval.</li>%s</ul>",
+    "<ul><li>'central' - a central interval (or quantile) that covers the central 'mass'%% area of the distribution</li><li>'HPD' - a highest posterior density interval that covers 'mass'%% area with the shortest range</li><li>'custom' - an interval defined by a 'lower' and 'upper' bound. It returns the posterior mass of the parameter falling inside the custom interval.</li>%s</ul>",
     ifelse(SI, gettext("<li>'support' - a support interval that covers a range of all parameter values which BF is higher than 'BF'</li>"),"")
   ))
 }
