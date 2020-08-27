@@ -64,9 +64,10 @@ test_that("Effects table results match", {
   )
 
   refTables <- list(
-    allModels = list(0.195147508378383, "contGamma", 0.6, 0.226438035053418, 0.215922578651088,
-                     "contBinom", 0.6, 0.24464673662928, 0.148059370442442, "contGamma<unicode><unicode><unicode>contBinom",
-                     0.2, 0.0356936478531284),
+    allModels = list(0.195147508378382, "contGamma", 0.4, 0.773561964946583, 0.6, 0.226438035053417,
+                     0.215922578651091, "contBinom", 0.4, 0.755353263370717, 0.6,
+                     0.244646736629283, 0.148059370442441, "contGamma<unicode><unicode><unicode>contBinom",
+                     0.8, 0.964306352146872, 0.2, 0.0356936478531281),
     matchedModels = list(0.251463756140853, "contGamma", 0.4, 0.770552715646492, 0.4, 0.193766080181001,
                          0.281631799589681, "contBinom", 0.4, 0.752414848114898, 0.4,
                          0.211903947712595, 0.784742840790344, "contGamma<unicode><unicode><unicode>contBinom",

@@ -90,9 +90,10 @@ test_that("Effects table results match", {
   options$effects <- TRUE
 
   refTables <- list(
-    allModels = list(1000799917193443, "RM_FACTOR_1", 0.6, 0.999999999999999, 2.08122183080565,
-                     "facGender", 0.6, 0.757389476581779, 0.343504623304608, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                     0.2, 0.0790846685097493),
+    allModels = list("<unicode>", "RM_FACTOR_1", 0.4, 0, 0.6, 1, 2.08122183080571,
+                     "facGender", 0.4, 0.242610523418215, 0.6, 0.757389476581785,
+                     0.343504623304611, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
+                     0.8, 0.92091533149025, 0.2, 0.0790846685097499),
     matchedModels = list(1.02806369879077e+24, "RM_FACTOR_1", 0.4, 8.95776528802106e-25,
                          0.4, 0.920915331490253, 2.795858969822, "facGender", 0.4, 0.242610523418218,
                          0.4, 0.678304808072035, 0.116591637813293, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
@@ -228,10 +229,11 @@ test_that("Analysis fails gracefully if some models error", {
   
   expect_equal_tables(
     effectsTable, 
-    list(0.1195679505763, "RM_FACTOR_1", 0.6, 0.152076680362384, 0.483120883747351,
-         "contBinom", 0.6, 0.420182740344847, "NaN", "contNormal", 0,
-         0, 0.0731728469410748, "RM_FACTOR_1<unicode><unicode><unicode>contBinom",
-         0.2, 0.0179645818360071), 
+    list(0.119567950353578, "RM_FACTOR_1", 0.4, 0.847923319877813, 0.6,
+         0.152076680122187, 0.483120882800079, "contBinom", 0.4, 0.579817260132845,
+         0.6, 0.420182739867155, "NaN", "contNormal", 1, 1, 0, 0, 0.0731728472676626,
+         "RM_FACTOR_1<unicode><unicode><unicode>contBinom", 0.8, 0.982035418085253,
+         0.2, 0.0179645819147469),
     label = "Table where one inclusion BF is NaN")
   
 })

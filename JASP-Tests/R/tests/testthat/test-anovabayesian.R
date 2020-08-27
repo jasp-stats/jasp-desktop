@@ -66,9 +66,10 @@ test_that("Effects table results match", {
   )
 
   refTables <- list(
-    allModels = list(0.099907027453377, "facFive", 0.6, 0.130329318915725, 0.182805120830185,
-                     "contBinom", 0.6, 0.215198578129191, 0.0164190701020927, "facFive<unicode><unicode><unicode>contBinom",
-                     0.2, 0.0040879872880584),
+    allModels = list(0.0999070274533343, "facFive", 0.4, 0.869670681084323, 0.6, 0.130329318915677,
+                     0.182805120830142, "contBinom", 0.4, 0.784801421870848, 0.6,
+                     0.215198578129152, 0.0164190701020935, "facFive<unicode><unicode><unicode>contBinom",
+                     0.8, 0.995912012711941, 0.2, 0.0040879872880586),
     matchedModels = list(0.144492921488217, "facFive", 0.4, 0.870120605324455, 0.4, 0.125726268310426,
                          0.268259601459593, "contBinom", 0.4, 0.785207438988672, 0.4,
                          0.210639434646209, 0.182973144016899, "facFive<unicode><unicode><unicode>contBinom",
