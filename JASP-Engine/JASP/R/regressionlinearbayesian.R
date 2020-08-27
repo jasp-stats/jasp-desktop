@@ -298,15 +298,9 @@ for sparse regression when there are more covariates than observations (Castillo
   overtitle <- gettextf("%s%% Credible Interval", format(100*options[["posteriorSummaryPlotCredibleIntervalValue"]], digits = 3))
   postSumTable$addColumnInfo(name = "coefficient", title = gettext("Coefficient"),   type = "string")
   postSumTable$addColumnInfo(name = "pInclprior",  title = gettext("P(incl)"),       type = "number")
-
-  if (options[["effectsType"]] == "matchedModels")
-    postSumTable$addColumnInfo(name = "pExclprior", title = gettext("P(excl)"), type = "number")
-
-  postSumTable$addColumnInfo(name = "pIncl", title = gettext("P(incl|data)"), type = "number")
-
-  if (options[["effectsType"]] == "matchedModels")
-    postSumTable$addColumnInfo(name = "pExcl", title = gettext("P(excl|data)"), type = "number")
-
+  postSumTable$addColumnInfo(name = "pExclprior",  title = gettext("P(excl)"),       type = "number")
+  postSumTable$addColumnInfo(name = "pIncl",       title = gettext("P(incl|data)"),  type = "number")
+  postSumTable$addColumnInfo(name = "pExcl",       title = gettext("P(excl|data)"),  type = "number")
   postSumTable$addColumnInfo(name = "BFincl",      title = bfTitle,                  type = "number")
   postSumTable$addColumnInfo(name = "mean",        title = gettext("Mean"),          type = "number")
   postSumTable$addColumnInfo(name = "sd",          title = gettext("SD"),            type = "number")
@@ -330,6 +324,13 @@ for sparse regression when there are more covariates than observations (Castillo
     probne0 <- basregModel[["probne0"]]
     priorProbs <- basregModel[["priorprobsPredictor"]]
     BFinclusion <- basregModel[["BFinclusion"]]
+
+    priorExcl <- 1 - priorProbs
+    postExcl  <- 1 - probne0
+
+    # set exclusion probabilities for the intercept to 0 to avoid numerical
+    # artefacts for the intercept (e.g., 2.2 * 10^-16)
+    priorExcl[1L] <- postExcl[1L] <- 0
 
   } else {
 
@@ -390,13 +391,9 @@ for sparse regression when there are more covariates than observations (Castillo
     upperCri <- confInt[i, 2]
     
     row <- list(coefficient = coefficient, mean = mean, sd = sd, pIncl = pIncl,
-      pInclprior = pInclprior, BFincl = BFincl, lowerCri = lowerCri, upperCri = upperCri
+      pInclprior = pInclprior, BFincl = BFincl, lowerCri = lowerCri, upperCri = upperCri,
+      pExclprior = priorExcl[i], pExcl = postExcl[i]
     )
-
-    if (options[["effectsType"]] == "matchedModels") {
-      row[["pExclprior"]] <- priorExcl[i]
-      row[["pExcl"]]      <- postExcl[i]
-    }
     postSumTable$addRows(row)
   }
 }

@@ -449,15 +449,9 @@
 
   effectsTable$addColumnInfo(name = "Effects",      title = gettext("Effects"),      type = "string")
   effectsTable$addColumnInfo(name = "P(incl)",      title = gettext("P(incl)"),      type = "number")
-
-  if (options[["effectsType"]] == "matchedModels")
-    effectsTable$addColumnInfo(name = "P(excl)",      title = gettext("P(excl)"),      type = "number")
-
+  effectsTable$addColumnInfo(name = "P(excl)",      title = gettext("P(excl)"),      type = "number")
   effectsTable$addColumnInfo(name = "P(incl|data)", title = gettext("P(incl|data)"), type = "number")
-
-  if (options[["effectsType"]] == "matchedModels")
-    effectsTable$addColumnInfo(name = "P(excl|data)", title = gettext("P(excl|data)"), type = "number")
-
+  effectsTable$addColumnInfo(name = "P(excl|data)", title = gettext("P(excl|data)"), type = "number")
   effectsTable$addColumnInfo(name = "BFInclusion",  title = inclusion.title,         type = "number")
 
   if (options$effectsType == "matchedModels") {
@@ -485,6 +479,9 @@
     postInclProb[postInclProb > 1] <- 1
     postInclProb[postInclProb < 0] <- 0
     bfIncl <- (postInclProb / (1 - postInclProb)) / (priorInclProb / (1 - priorInclProb))
+
+    priorExclProb <- 1 - priorInclProb
+    postExclProb  <- 1 - postInclProb
 
   } else {
 
@@ -521,10 +518,8 @@
     "BF10"    = bfIncl  
   )
 
-  if (options[["effectsType"]] == "matchedModels") {
-    effectsTable[["P(excl)"]]      <- priorExclProb
-    effectsTable[["P(excl|data)"]] <- postExclProb
-  }
+  effectsTable[["P(excl)"]]      <- priorExclProb
+  effectsTable[["P(excl|data)"]] <- postExclProb
 
   jaspResults[["tableEffects"]] <- effectsTable
   return()
