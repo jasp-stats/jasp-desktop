@@ -90,7 +90,7 @@ test_that("Effects table results match", {
   options$effects <- TRUE
 
   refTables <- list(
-    allModels = list("<unicode>", "RM_FACTOR_1", 0.4, 0, 0.6, 1, 2.08122183080571,
+    allModels = list(1000799917193443, "RM_FACTOR_1", 0.4, 0, 0.6, 1, 2.08122183080571,
                      "facGender", 0.4, 0.242610523418215, 0.6, 0.757389476581785,
                      0.343504623304611, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
                      0.8, 0.92091533149025, 0.2, 0.0790846685097499),
