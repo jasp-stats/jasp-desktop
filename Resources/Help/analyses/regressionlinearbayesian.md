@@ -77,8 +77,8 @@ Compares each model against the model selected.
   - Models: Predictors contained in the model.
   - P(M): Prior model probabilities.
   - P(M | data): Posterior probabilites of the models considered.
-  - BFM: Posterior model odds.
-  - BF10 (or BF01): Bayes factor.
+  - BFM: The updating factor by which the prior model odds change into the posterior model odds (e.g., when BFM = 2, the posterior model odds are twice as large as the prior model odds).
+  - BF10 (or BF01): Bayes factor comparing a model to either the null model or the model with the highest posterior model probability.
   - R2: Explained variance.
 
 #### Posterior Summary

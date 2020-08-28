@@ -78,8 +78,8 @@ Vergelijkt elk model met het geselecteerde model.
   - Modellen: Predictoren in het model.
   - P(M): Prior model kansen.
   - P(M|data): Posterior kansen van de modellen.
-  - BFM: Posterior model odds.
-  - BF10 (of BF01): Bayes factor.
+  - BFM: De update factor waarmee de prior model odds veranderen in de posterior model odds (bv. wanneer BFM = 2, dan is de posterior model odds twee keer zo groot als de prior model odds).
+  - BF10 (of BF01): Bayes factor die een model vergelijkt met ofwel het nulmodel, ofwel het model met de hoogste posterior model kans.
   - R2: Verklaarde variantie.
 
 #### Samenvatting van de posterior
