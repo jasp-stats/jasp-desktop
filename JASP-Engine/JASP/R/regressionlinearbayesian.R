@@ -297,11 +297,13 @@ for sparse regression when there are more covariates than observations (Castillo
   
   overtitle <- gettextf("%s%% Credible Interval", format(100*options[["posteriorSummaryPlotCredibleIntervalValue"]], digits = 3))
   postSumTable$addColumnInfo(name = "coefficient", title = gettext("Coefficient"),   type = "string")
+  postSumTable$addColumnInfo(name = "pInclprior",  title = gettext("P(incl)"),       type = "number")
+  postSumTable$addColumnInfo(name = "pExclprior",  title = gettext("P(excl)"),       type = "number")
+  postSumTable$addColumnInfo(name = "pIncl",       title = gettext("P(incl|data)"),  type = "number")
+  postSumTable$addColumnInfo(name = "pExcl",       title = gettext("P(excl|data)"),  type = "number")
+  postSumTable$addColumnInfo(name = "BFincl",      title = bfTitle,                  type = "number")
   postSumTable$addColumnInfo(name = "mean",        title = gettext("Mean"),          type = "number")
   postSumTable$addColumnInfo(name = "sd",          title = gettext("SD"),            type = "number")
-  postSumTable$addColumnInfo(name = "pInclprior",  title = gettext("P(incl)"),       type = "number")
-  postSumTable$addColumnInfo(name = "pIncl",       title = gettext("P(incl|data)"),  type = "number")
-  postSumTable$addColumnInfo(name = "BFincl",      title = bfTitle,                  type = "number")
   postSumTable$addColumnInfo(name = "lowerCri",    title = gettext("Lower"),         type = "number", overtitle = overtitle)
   postSumTable$addColumnInfo(name = "upperCri",    title = gettext("Upper"),         type = "number", overtitle = overtitle)
   
@@ -322,6 +324,13 @@ for sparse regression when there are more covariates than observations (Castillo
     probne0 <- basregModel[["probne0"]]
     priorProbs <- basregModel[["priorprobsPredictor"]]
     BFinclusion <- basregModel[["BFinclusion"]]
+
+    priorExcl <- 1 - priorProbs
+    postExcl  <- 1 - probne0
+
+    # set exclusion probabilities for the intercept to 0 to avoid numerical
+    # artefacts for the intercept (e.g., 2.2 * 10^-16)
+    priorExcl[1L] <- postExcl[1L] <- 0
 
   } else {
 
@@ -344,6 +353,8 @@ for sparse regression when there are more covariates than observations (Castillo
     probne0     <- c(1 ,tmp[["postInclProb"]])
     priorProbs  <- c(1, tmp[["priorInclProb"]])
     BFinclusion <- c(1, tmp[["bfIncl"]])
+    priorExcl   <- c(0, tmp[["priorExclProb"]])
+    postExcl    <- c(0, tmp[["postExclProb"]])
 
   }
   
@@ -379,11 +390,11 @@ for sparse regression when there are more covariates than observations (Castillo
     lowerCri <- confInt[i, 1]
     upperCri <- confInt[i, 2]
     
-    postSumTable$addRows(
-      list(coefficient = coefficient, mean = mean, sd = sd, pIncl = pIncl,
-           pInclprior = pInclprior, BFincl = BFincl, lowerCri = lowerCri, upperCri = upperCri
-      )
+    row <- list(coefficient = coefficient, mean = mean, sd = sd, pIncl = pIncl,
+      pInclprior = pInclprior, BFincl = BFincl, lowerCri = lowerCri, upperCri = upperCri,
+      pExclprior = priorExcl[i], pExcl = postExcl[i]
     )
+    postSumTable$addRows(row)
   }
 }
 

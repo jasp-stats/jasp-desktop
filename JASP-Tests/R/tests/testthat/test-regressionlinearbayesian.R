@@ -29,10 +29,11 @@ test_that("Main tables results match", {
     table <- results[["results"]][["basreg"]][["collection"]][["basreg_postSumContainer"]][["collection"]][["basreg_postSumContainer_postSumTable"]][["data"]]
     expect_equal_tables(
         table,
-        list("Intercept", -0.255843391953333, 0.0989748100578513, 1, 1, 1,
-             -0.47763974261721, -0.0887658028069459, "contGamma", -0.000116767975422579,
-             0.0241168865879483, 0.173953879458502, 0.5, 0.210586158729818,
-             -0.0551020698857689, 0.0781883358646909), 
+        list(1, "Intercept", -0.47763974261721, -0.255843391953333, 0, 0, 1,
+             1, 0.0989748100578513, -0.0887658028069459, 0.210586158729818,
+             "contGamma", -0.0551020698857689, -0.000116767975422579, 0.826046120541498,
+             0.5, 0.173953879458502, 0.5, 0.0241168865879483, 0.0781883358646909
+        ),
         label = "posteriorSummaryTable"
     )
     
@@ -43,6 +44,66 @@ test_that("Main tables results match", {
              100, 2.03296079621, 1.53241112621044), 
         label = "descriptivesTable"
     )
+})
+
+options <- jasptools::analysisOptions("RegressionLinearBayesian")
+options$covariates <- c("adverts", "airplay", "attract")
+options$dependent <- "sales"
+options$modelPrior <- "beta.binomial"
+options$modelTerms <- list(list(components = "adverts", isNuisance = FALSE),
+                           list(components = "airplay", isNuisance = FALSE),
+                           list(components = c("adverts", "airplay"), isNuisance = FALSE))
+options$postSummaryTable <- TRUE
+set.seed(1)
+results <- jasptools::run("RegressionLinearBayesian", "Album Sales.csv", options)
+
+test_that("Model Comparison - sales table results match", {
+  table <- results[["results"]][["basreg"]][["collection"]][["basreg_modelComparisonTable"]][["data"]]
+  expect_equal_tables(table,
+                      list(1, 14.3947181553409, "adverts + airplay", 0.629285746598297, 0.642772909910809,
+                           0.111111111111111, 0.185253135065882, 1.11151881039529, "adverts + airplay + adverts<unicode><unicode><unicode>airplay",
+                           0.632270344815323, 0.357227090089191, 0.333333333333333, 8.35835904551863e-23,
+                           4.29802141261388e-22, "airplay", 0.358703726117256, 5.37252676576735e-23,
+                           0.111111111111111, 2.33573121426008e-24, 1.20107579948757e-23,
+                           "adverts", 0.334648067623073, 1.50134474935946e-24, 0.111111111111111,
+                           1.76804178544216e-40, 6.81869617963531e-40, "Null model", 0,
+                           3.40934808981766e-40, 0.333333333333333),
+                      label = "regressionTable")
+})
+
+test_that("Posterior Summaries of Coefficients table (all models) results match", {
+  table <- results[["results"]][["basreg"]][["collection"]][["basreg_postSumContainer"]][["collection"]][["basreg_postSumContainer_postSumTable"]][["data"]]
+  expect_equal_tables(table,
+                      list(1, "Intercept", 186.563558446396, 193.2, 0, 0, 1, 1, 3.49006833453854,
+                           200.13212185122, 1.48905726277147e+22, "adverts", 0.0687198991720945,
+                           0.0957495623188114, 0, 0.444444444444444, 1, 0.555555555555556,
+                           0.0196173572277313, 0.142208994077732, 5.32855628489936e+23,
+                           "airplay", 3.00760853889365, 3.70853874547101, 0, 0.444444444444444,
+                           1, 0.555555555555556, 0.405127356180258, 4.59717006140448, 1.11151881039529,
+                           "adverts<unicode><unicode><unicode>airplay", -0.00190380192467875,
+                           -0.000322869356058448, 0.642772909910809, 0.666666666666667,
+                           0.357227090089191, 0.333333333333333, 0.000610819394600897,
+                           0.000225504023548261))
+})
+
+options$effectsType <- "matchedModels"
+set.seed(1)
+results <- jasptools::run("RegressionLinearBayesian", "Album Sales.csv", options)
+
+test_that("Posterior Summaries of Coefficients table (matched models) results match", {
+  table <- results[["results"]][["basreg"]][["collection"]][["basreg_postSumContainer"]][["collection"]][["basreg_postSumContainer_postSumTable"]][["data"]]
+  expect_equal_tables(table,
+                      list(1, "Intercept", 186.563558446396, 193.2, 0, 0, 1, 1, 3.49006833453854,
+                           200.13212185122, 2.39281417453861e+22, "adverts", 0.0687198991720945,
+                           0.0957495623188114, 5.37252676576735e-23, 0.444444444444444,
+                           0.642772909910809, 0.222222222222222, 0.0196173572277313, 0.142208994077732,
+                           8.56262907217074e+23, "airplay", 3.00760853889365, 3.70853874547101,
+                           1.50134474935946e-24, 0.444444444444444, 0.642772909910809,
+                           0.222222222222222, 0.405127356180258, 4.59717006140448, 0.185253135065882,
+                           "adverts<unicode><unicode><unicode>airplay", -0.00190380192467875,
+                           -0.000322869356058448, 0.642772909910809, 0.111111111111111,
+                           0.357227090089191, 0.333333333333333, 0.000610819394600897,
+                           0.000225504023548261))
 })
 
 test_that("Coefficient plots match", {

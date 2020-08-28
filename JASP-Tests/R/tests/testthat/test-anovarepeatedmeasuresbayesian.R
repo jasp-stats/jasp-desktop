@@ -12,7 +12,7 @@ initOpts <- function() {
   return(options)
 }
 
-test_that("Main table results match", {
+test_that("Main table and Effects table results match", {
   set.seed(0)
   options <- initOpts()
   options$repeatedMeasuresCells <- c("contNormal", "contGamma")
@@ -22,7 +22,7 @@ test_that("Main table results match", {
   options$betweenSubjectFactors <- "facGender"
   options$covariates <- "contcor1"
   options$modelTerms <- list(
-    list(components="RM_FACTOR_1", isNuisance=FALSE),
+    list(components="RM_FACTOR_1", isNuisance=TRUE),
     list(components="facGender", isNuisance=FALSE),
     list(components="contcor1", isNuisance=FALSE),
     list(components=c("RM_FACTOR_1", "facGender"), isNuisance=FALSE)
@@ -31,80 +31,63 @@ test_that("Main table results match", {
   options$priorFixedEffects <- 0.8
   options$priorRandomEffects <- 0.8
 
-  refTables <- list(
-    nullModelTop = list(1, 1.2015680635829e-23, "Null model (incl. subject)", 0.1, 1.33507562620322e-24,
-                        "", 3.47351082631416e+23, 7.78290269354812, "RM_FACTOR_1 + facGender",
-                        0.1, 0.463739964156505, 9.48562551500833, 2.25207823390771e+23,
-                        3.86945112370337, "RM_FACTOR_1", 0.1, 0.300669475839298, 39.106368292494,
-                        6.71141299730886e+22, 0.885790984668, "RM_FACTOR_1 + contcor1",
-                        0.1, 0.0896024391009056, 12.887989220175, 5.74376683392463e+22,
-                        0.74747150859863, "RM_FACTOR_1 + facGender + contcor1", 0.1,
-                        0.0766836310256722, 15.7870140533192, 4.50189687402267e+22,
-                        0.575524732870686, "RM_FACTOR_1 + facGender + RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                        0.1, 0.0601037278818813, 12.5735601755857, 6.89156615187532e+21,
-                        0.0835758191825203, "RM_FACTOR_1 + facGender + contcor1 + RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                        0.1, 0.00920076199573587, 11.0628049253349, 0.41104359340273,
-                        4.93896854573074e-24, "facGender", 0.1, 5.4877428285897e-25,
-                        7.7632364395313, 0.23874600738579, 2.86869577782693e-24, "contcor1",
-                        0.1, 3.18743975314103e-25, 16.2455760987563, 0.0921852605167578,
-                        1.10766864970006e-24, "facGender + contcor1", 0.1, 1.23074294411118e-25,
-                        13.7488070754201),
-    bestModelTop = list(1, 6.76784490026738, "RM_FACTOR_1 + facGender", 0.1, 0.429218129875987,
-                        "", 0.812461183408298, 4.81900629644283, "RM_FACTOR_1", 0.1,
-                        0.348723069739341, 11.0954981789983, 0.23781134935476, 1.02308586890581,
-                        "RM_FACTOR_1 + facGender + contcor1", 0.1, 0.102072942633335,
-                        32.3366579475681, 0.192584660287367, 0.810984063552273, "RM_FACTOR_1 + contcor1",
-                        0.1, 0.0826608277313462, 19.6531747475726, 0.0565717639157407,
-                        0.223973070906526, "RM_FACTOR_1 + facGender + RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                        0.1, 0.0242816267117001, 57.5970296697693, 0.0303887520130162,
-                        0.118942038756438, "RM_FACTOR_1 + facGender + contcor1 + RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                        0.1, 0.013043403308292, 18.7536418861197, 2.8910010651933e-24,
-                        1.11678306360458e-23, "Null model (incl. subject)", 0.1, 1.24087007067176e-24,
-                        10.0789044176123, 1.2418397001326e-24, 4.79718102327006e-24,
-                        "facGender", 0.1, 5.33020113696672e-25, 11.1219692156722, 5.61029992468607e-25,
-                        2.16723819754544e-24, "contcor1", 0.1, 2.40804244171715e-25,
-                        12.5004991737756, 2.26151580646109e-25, 8.73615226620796e-25,
-                        "facGender + contcor1", 0.1, 9.70683585134215e-26, 15.8888961021958)
-  )
-
-  for (order in c("nullModelTop", "bestModelTop")) {
-    options$bayesFactorOrder <- order
-    results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-    table <- results[["results"]][["tableModelComparison"]][["data"]]
-    expect_equal_tables(table, refTables[[order]], label=paste("Table with order", order))
-  }
-})
-
-test_that("Effects table results match", {
-  options <- initOpts()
-  options$repeatedMeasuresCells <- c("contNormal", "contGamma")
-  options$repeatedMeasuresFactors <- list(
-    list(levels=c("Level 1", "Level 2"), name="RM_FACTOR_1")
-  )
-  options$betweenSubjectFactors <- "facGender"
-  options$modelTerms <- list(
-    list(components="RM_FACTOR_1", isNuisance=FALSE),
-    list(components="facGender", isNuisance=FALSE),
-    list(components=c("RM_FACTOR_1", "facGender"), isNuisance=FALSE)
-  )
   options$effects <- TRUE
 
-  refTables <- list(
-    allModels = list(1000799917193443, "RM_FACTOR_1", 0.6, 0.999999999999999, 2.08122183080565,
-                     "facGender", 0.6, 0.757389476581779, 0.343504623304608, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                     0.2, 0.0790846685097493),
-    matchedModels = list(1.02806369879075e+24, "RM_FACTOR_1", 0.4, 0.92091533149025, 2.79585896982196,
-                         "facGender", 0.4, 0.67830480807203, 0.116591637813293, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                         0.2, 0.0790846685097493)
+  refTablesModelComparison <- list(
+    nullModelTop = list(1, 2.02638501389359, "Null model (incl. RM_FACTOR_1, subject)",
+                        0.166666666666667, 0.288396523943212, "", 1.69320444782317,
+                        4.77162304127099, "facGender", 0.166666666666667, 0.488314277077388,
+                        44.2229019018819, 0.286342191337782, 0.450067041153177, "contcor1",
+                        0.166666666666667, 0.0825800926400986, 39.4082320254761, 0.28460479470118,
+                        0.447092050862548, "facGender + contcor1", 0.166666666666667,
+                        0.082079033489392, 41.1428840377339, 0.171484942888838, 0.260143895615353,
+                        "facGender + facGender<unicode><unicode><unicode>RM_FACTOR_1",
+                        0.166666666666667, 0.049455661437741, 40.0629705456851, 0.0318117960879948,
+                        0.0462968029784322, "facGender + contcor1 + facGender<unicode><unicode><unicode>RM_FACTOR_1",
+                        0.166666666666667, 0.00917441141216799, 40.327021932526),
+    bestModelTop = list(1, 3.34131157517392, "facGender", 0.166666666666667, 0.400573883982298,
+                        "", 0.898667540451198, 2.81228939883351, "Null model (incl. RM_FACTOR_1, subject)",
+                        0.166666666666667, 0.359982747087356, 12.5507359207671, 0.229568777946671,
+                        0.506360852937598, "contcor1", 0.166666666666667, 0.0919592570231679,
+                        27.8060873129689, 0.227346150012038, 0.50096719848448, "facGender + contcor1",
+                        0.166666666666667, 0.0910689303187442, 20.5197149287988, 0.117361879179896,
+                        0.246656352933523, "facGender + facGender<unicode><unicode><unicode>RM_FACTOR_1",
+                        0.166666666666667, 0.047012103774552, 17.071031255608, 0.0234740161300624,
+                        0.0474616748915938, "facGender + contcor1 + facGender<unicode><unicode><unicode>RM_FACTOR_1",
+                        0.166666666666667, 0.0094030778138822, 19.2275168518371)
   )
 
+  refTablesEffects <- list(
+    allModels = list(0.847793843733313, "facGender", 0.333333333333333, 0.370976616583311,
+                     0.666666666666667, 0.629023383416689, 0.210409821072135, "contcor1",
+                     0.5, 0.826166462458341, 0.5, 0.173833537541659, 0.124563301118841,
+                     "RM_FACTOR_1<unicode><unicode><unicode>facGender", 0.666666666666667,
+                     0.941369927150091, 0.333333333333333, 0.058630072849909),
+    matchedModels = list(1.08784492220115, "facGender", 0.333333333333333, 0.451942004110523,
+                         0.333333333333333, 0.491642814301042, 0.238284689405314, "contcor1",
+                         0.5, 0.807568734844206, 0.5, 0.192431265155794, 0.1147483090313,
+                         "RM_FACTOR_1<unicode><unicode><unicode>facGender", 0.333333333333333,
+                         0.491642814301042, 0.333333333333333, 0.0564151815884342)
+  )
+
+  orders       <- c("nullModelTop", "bestModelTop")
   effectsTypes <- c("allModels", "matchedModels")
-  for (effectsType in effectsTypes) {
-    options$effectsType <- effectsType
-    set.seed(5) # setting seed at start gives aberrant behaviour
+
+  for (i in 1:2) {
+
+    order <- orders[i]
+    effectsType <- effectsTypes[i]
+
+    options$bayesFactorOrder <- order
+    options$effectsType      <- effectsType
     results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
+
+    table <- results[["results"]][["tableModelComparison"]][["data"]]
+
+    expect_equal_tables(table, refTablesModelComparison[[order]], label=paste("Table with order", order))
     table <- results[["results"]][["tableEffects"]][["data"]]
-    expect_equal_tables(table, refTables[[effectsType]], label=paste("Table with effects type", effectsType))
+
+    expect_equal_tables(table, refTablesEffects[[effectsType]], label=paste("Table with effectsType", effectsType))
   }
 })
 
@@ -204,6 +187,7 @@ test_that("Analysis fails gracefully if some models error", {
   # A user can never enter NULL here. This hack exists for BayesFactor version 0.9.12.4.2.
   options$priorCovariates <- NULL
 
+  set.seed(42)
   results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
 
   mainTable <- results[["results"]][["tableModelComparison"]][["data"]]
@@ -211,13 +195,13 @@ test_that("Analysis fails gracefully if some models error", {
   
   expect_equal_tables(
     mainTable, 
-    list(1, 4.08564987058798, "Null model (incl. subject)", 0.1, 0.505296412283417,
-         "", 0.678071126224469, 2.08482465246755, "contBinom", 0.1, 0.3426269073542,
-         11.0544491376076, 0.147479470584362, 0.322085471769318, "RM_FACTOR_1",
-         0.1, 0.0745208473717358, 5.34269802511568, 0.11793325601769,
-         0.253469573641492, "RM_FACTOR_1 + contBinom", 0.1, 0.0595912511546405,
-         30.5049473873051, 0.0355525616238314, 0.073172846941075, "RM_FACTOR_1 + contBinom + RM_FACTOR_1<unicode><unicode><unicode>contBinom",
-         0.1, 0.0179645818360071, 10.1729214128269, 1, 1, 1, "NaN", "NaN",
+    list(1, 4.81723072651078, "Null model (incl. subject)", 0.1, 0.546342823039303,
+         "", 0.57259147990674, 1.82098643786428, "contBinom", 0.1, 0.3128312455805,
+         4.73186300857416, 0.138862578799232, 0.328379305953214, "RM_FACTOR_1",
+         0.1, 0.0758665733156897, 7.12638585019384, 0.0858219117860418,
+         0.196779369864607, "RM_FACTOR_1 + contBinom", 0.1, 0.046888185563816,
+         8.86956002564671, 0.0330766173520163, 0.0736149993547432, "RM_FACTOR_1 + contBinom + RM_FACTOR_1<unicode><unicode><unicode>contBinom",
+         0.1, 0.0180711725006913, 17.6010066976745, 1, 1, 1, "NaN", "NaN",
          "contNormal", 0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "RM_FACTOR_1 + contNormal",
          0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "contBinom + contNormal",
          0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "RM_FACTOR_1 + contBinom + contNormal",
@@ -227,10 +211,11 @@ test_that("Analysis fails gracefully if some models error", {
   
   expect_equal_tables(
     effectsTable, 
-    list(0.1195679505763, "RM_FACTOR_1", 0.6, 0.152076680362384, 0.483120883747351,
-         "contBinom", 0.6, 0.420182740344847, "NaN", "contNormal", 0,
-         0, 0.0731728469410748, "RM_FACTOR_1<unicode><unicode><unicode>contBinom",
-         0.2, 0.0179645818360071), 
+    list(0.109272332211192, "RM_FACTOR_1", 0.4, 0.859174068619803, 0.6,
+         0.140825931380197, 0.404783990575272, "contBinom", 0.4, 0.622209396354992,
+         0.6, 0.377790603645008, "NaN", "contNormal", 1, 1, 0, 0, 0.0736149993547432,
+         "RM_FACTOR_1<unicode><unicode><unicode>contBinom", 0.8, 0.981928827499309,
+         0.2, 0.0180711725006913),
     label = "Table where one inclusion BF is NaN")
   
 })
