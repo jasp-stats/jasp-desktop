@@ -12,7 +12,7 @@ initOpts <- function() {
   return(options)
 }
 
-test_that("Main table results match", {
+test_that("Main table and Effects table results match", {
   set.seed(0)
   options <- initOpts()
   options$repeatedMeasuresCells <- c("contNormal", "contGamma")
@@ -31,7 +31,9 @@ test_that("Main table results match", {
   options$priorFixedEffects <- 0.8
   options$priorRandomEffects <- 0.8
 
-  refTables <- list(
+  options$effects <- TRUE
+
+  refTablesModelComparison <- list(
     nullModelTop = list(1, 1.2015680635829e-23, "Null model (incl. subject)", 0.1, 1.33507562620322e-24,
                         "", 3.47351082631416e+23, 7.78290269354812, "RM_FACTOR_1 + facGender",
                         0.1, 0.463739964156505, 9.48562551500833, 2.25207823390771e+23,
@@ -67,46 +69,38 @@ test_that("Main table results match", {
                         "facGender + contcor1", 0.1, 9.70683585134215e-26, 15.8888961021958)
   )
 
-  for (order in c("nullModelTop", "bestModelTop")) {
-    options$bayesFactorOrder <- order
-    results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
-    table <- results[["results"]][["tableModelComparison"]][["data"]]
-    expect_equal_tables(table, refTables[[order]], label=paste("Table with order", order))
-  }
-})
-
-test_that("Effects table results match", {
-  options <- initOpts()
-  options$repeatedMeasuresCells <- c("contNormal", "contGamma")
-  options$repeatedMeasuresFactors <- list(
-    list(levels=c("Level 1", "Level 2"), name="RM_FACTOR_1")
-  )
-  options$betweenSubjectFactors <- "facGender"
-  options$modelTerms <- list(
-    list(components="RM_FACTOR_1", isNuisance=FALSE),
-    list(components="facGender", isNuisance=FALSE),
-    list(components=c("RM_FACTOR_1", "facGender"), isNuisance=FALSE)
-  )
-  options$effects <- TRUE
-
-  refTables <- list(
-    allModels = list(1000799917193443, "RM_FACTOR_1", 0.4, 0, 0.6, 1, 2.08122183080571,
-                     "facGender", 0.4, 0.242610523418215, 0.6, 0.757389476581785,
-                     0.343504623304611, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                     0.8, 0.92091533149025, 0.2, 0.0790846685097499),
-    matchedModels = list(1.02806369879077e+24, "RM_FACTOR_1", 0.4, 8.95776528802106e-25,
-                         0.4, 0.920915331490253, 2.795858969822, "facGender", 0.4, 0.242610523418218,
-                         0.4, 0.678304808072035, 0.116591637813293, "RM_FACTOR_1<unicode><unicode><unicode>facGender",
-                         0.2, 0.678304808072035, 0.2, 0.0790846685097499)
+  refTablesEffects <- list(
+    allModels = list(193703209779376, "RM_FACTOR_1", 0.4, 3.44169137633798e-15, 0.6,
+                     0.999999999999997, 1.04154401781854, "facGender", 0.4, 0.390271921796097,
+                     0.6, 0.609728078203903, 0.212836911165513, "contcor1", 0.5,
+                     0.824513164790655, 0.5, 0.175486835209345, 0.297861074572698,
+                     "RM_FACTOR_1<unicode><unicode><unicode>facGender", 0.8, 0.930695508904435,
+                     0.2, 0.0693044910955647),
+    matchedModels = list(4.55863198189131e+23, "RM_FACTOR_1", 0.4, 2.11176285474782e-24,
+                         0.4, 0.962674968782349, 1.23159682956966, "facGender", 0.4,
+                         0.431383911299063, 0.4, 0.531291057483286, 0.246536467297555,
+                         "contcor1", 0.5, 0.80222281997731, 0.5, 0.197777180022688, 0.0702534527768218,
+                         "RM_FACTOR_1<unicode><unicode><unicode>facGender", 0.2, 0.531291057483286,
+                         0.2, 0.0373250312176498)
   )
 
+  orders       <- c("nullModelTop", "bestModelTop")
   effectsTypes <- c("allModels", "matchedModels")
-  for (effectsType in effectsTypes) {
-    options$effectsType <- effectsType
-    set.seed(5) # setting seed at start gives aberrant behaviour
+
+  for (i in 1:2) {
+
+    order <- orders[i]
+    effectsType <- effectsTypes[i]
+
+    options$bayesFactorOrder <- order
+    options$effectsType      <- effectsType
     results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
+
+    table <- results[["results"]][["tableModelComparison"]][["data"]]
+    expect_equal_tables(table, refTablesModelComparison[[order]], label=paste("Table with order", order))
+
     table <- results[["results"]][["tableEffects"]][["data"]]
-    expect_equal_tables(table, refTables[[effectsType]], label=paste("Table with effects type", effectsType))
+    expect_equal_tables(table, refTablesEffects[[effectsType]], label=paste("Table with effectsType", effectsType))
   }
 })
 
@@ -206,6 +200,7 @@ test_that("Analysis fails gracefully if some models error", {
   # A user can never enter NULL here. This hack exists for BayesFactor version 0.9.12.4.2.
   options$priorCovariates <- NULL
 
+  set.seed(42)
   results <- jasptools::run("AnovaRepeatedMeasuresBayesian", "test.csv", options)
 
   mainTable <- results[["results"]][["tableModelComparison"]][["data"]]
@@ -213,13 +208,13 @@ test_that("Analysis fails gracefully if some models error", {
   
   expect_equal_tables(
     mainTable, 
-    list(1, 4.08564987058798, "Null model (incl. subject)", 0.1, 0.505296412283417,
-         "", 0.678071126224469, 2.08482465246755, "contBinom", 0.1, 0.3426269073542,
-         11.0544491376076, 0.147479470584362, 0.322085471769318, "RM_FACTOR_1",
-         0.1, 0.0745208473717358, 5.34269802511568, 0.11793325601769,
-         0.253469573641492, "RM_FACTOR_1 + contBinom", 0.1, 0.0595912511546405,
-         30.5049473873051, 0.0355525616238314, 0.073172846941075, "RM_FACTOR_1 + contBinom + RM_FACTOR_1<unicode><unicode><unicode>contBinom",
-         0.1, 0.0179645818360071, 10.1729214128269, 1, 1, 1, "NaN", "NaN",
+    list(1, 4.81723072651078, "Null model (incl. subject)", 0.1, 0.546342823039303,
+         "", 0.57259147990674, 1.82098643786428, "contBinom", 0.1, 0.3128312455805,
+         4.73186300857416, 0.138862578799232, 0.328379305953214, "RM_FACTOR_1",
+         0.1, 0.0758665733156897, 7.12638585019384, 0.0858219117860418,
+         0.196779369864607, "RM_FACTOR_1 + contBinom", 0.1, 0.046888185563816,
+         8.86956002564671, 0.0330766173520163, 0.0736149993547432, "RM_FACTOR_1 + contBinom + RM_FACTOR_1<unicode><unicode><unicode>contBinom",
+         0.1, 0.0180711725006913, 17.6010066976745, 1, 1, 1, "NaN", "NaN",
          "contNormal", 0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "RM_FACTOR_1 + contNormal",
          0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "contBinom + contNormal",
          0.1, "NaN", "", 1, 1, 1, "NaN", "NaN", "RM_FACTOR_1 + contBinom + contNormal",
@@ -229,11 +224,11 @@ test_that("Analysis fails gracefully if some models error", {
   
   expect_equal_tables(
     effectsTable, 
-    list(0.119567950353578, "RM_FACTOR_1", 0.4, 0.847923319877813, 0.6,
-         0.152076680122187, 0.483120882800079, "contBinom", 0.4, 0.579817260132845,
-         0.6, 0.420182739867155, "NaN", "contNormal", 1, 1, 0, 0, 0.0731728472676626,
-         "RM_FACTOR_1<unicode><unicode><unicode>contBinom", 0.8, 0.982035418085253,
-         0.2, 0.0179645819147469),
+    list(0.109272332211192, "RM_FACTOR_1", 0.4, 0.859174068619803, 0.6,
+         0.140825931380197, 0.404783990575272, "contBinom", 0.4, 0.622209396354992,
+         0.6, 0.377790603645008, "NaN", "contNormal", 1, 1, 0, 0, 0.0736149993547432,
+         "RM_FACTOR_1<unicode><unicode><unicode>contBinom", 0.8, 0.981928827499309,
+         0.2, 0.0180711725006913),
     label = "Table where one inclusion BF is NaN")
   
 })
