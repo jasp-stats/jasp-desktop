@@ -147,12 +147,14 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
   .hasErrors(
     dataset              = dataset,
-    type                 = "infinity",
-    all.target           = c(options$dependent, options$covariates, allComponents, options$wlsWeights),
+    type                 = c("infinity", "factorLevels"),
+    infinity.target      = c(options$dependent, options$covariates, allComponents, options$wlsWeights),
+    factorLevels.target  = options[["fixedFactors"]],
+    factorLevels.amount  = "< 2",
     exitAnalysisIfErrors = TRUE
   )
 
-  nWayInteractions <- lengths(factorModelTerms)
+  nWayInteractions <- unlist(lapply(factorModelTerms, lengths), use.names = FALSE)
   if (any(nWayInteractions > 1L)) {
 
     # ensure that the largest n-way interaction effects come last
@@ -178,25 +180,17 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     componentsToGroupOn <- factorModelTerms
   }
 
+  observations.amount <- paste("<", length(options[["dependent"]]) + 1L)
   for(i in rev(seq_along(componentsToGroupOn))) {
 
     componentsToGroupBy <- componentsToGroupOn[[i]][["components"]]
 
     .hasErrors(
       dataset              = dataset,
-      type                 = c("observations", "variance", "factorLevels"),
+      type                 = c("observations", "variance"),
       all.target           = c(options$dependent, options$covariates),
       all.grouping         = componentsToGroupBy,
-      factorLevels.amount  = "< 2",
-      observations.amount  = paste("<", length(options$dependent)+1),
-      exitAnalysisIfErrors = TRUE
-    )
-
-    .hasErrors(
-      dataset              = dataset,
-      type                 = "factorLevels",
-      all.target           = componentsToGroupBy,
-      factorLevels.amount  = "< 2",
+      observations.amount  = observations.amount,
       exitAnalysisIfErrors = TRUE
     )
 

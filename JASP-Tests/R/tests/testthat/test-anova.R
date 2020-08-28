@@ -312,7 +312,7 @@ test_that("Analysis handles errors", {
   options$modelTerms <- list(list(components="facFive"))
   results <- jasptools::run("Anova", "test.csv", options)
   expect_identical(results[["results"]][["errorMessage"]], 
-                   "The following problem(s) occurred while running the analysis:<ul><li>The variance in debSame is equal to 0 after grouping on facFive</li><li>Number of factor levels is < 2 in debSame</li></ul>",
+                   "The following problem(s) occurred while running the analysis:<ul><li>The variance in debSame is equal to 0 after grouping on facFive</li></ul>",
                   label="No variance check")
 
   options$dependent <- "contGamma"
