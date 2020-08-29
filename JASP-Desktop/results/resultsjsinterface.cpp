@@ -389,7 +389,7 @@ void ResultsJsInterface::setFontFamily()
 {
 	if (_resultsLoaded)
 	{
-		QString font = PreferencesModel::prefs()->realResultFont();
+		QString font = PreferencesModel::prefs()->resultFont(true);
 		runJavaScript("window.setFontFamily(\"" + escapeJavascriptString(font) + "\");");
 	}
 }

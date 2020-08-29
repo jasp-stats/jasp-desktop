@@ -585,5 +585,5 @@ window.setTheme = function(themeName) {
 }
 
 window.setFontFamily = function(fontFamily) {
-	document.getElementsByTagName("body")[0].style["font-family"] = fontFamily;
+	document.body.style.fontFamily = fontFamily;
 }

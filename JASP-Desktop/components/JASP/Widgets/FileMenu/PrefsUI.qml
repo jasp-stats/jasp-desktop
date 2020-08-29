@@ -55,88 +55,76 @@ ScrollView
 				rowSpacing		: 3 * preferencesModel.uiScale
 				columnSpacing	: 3 * preferencesModel.uiScale
 
-				Text { L.Layout.columnSpan: 2; text: qsTr("Interface:") }
-
-				CheckBox
-				{
-					L.Layout.leftMargin	: 7 * preferencesModel.uiScale
-					id					: defaultInterfaceFont
-					label				: qsTr("Default font (%1)").arg(fontInfo.family)
-					font.family			: preferencesModel.defaultInterfaceFont
-					checked				: preferencesModel.useDefaultInterfaceFont
-					onCheckedChanged	: preferencesModel.useDefaultInterfaceFont = checked
-
-					KeyNavigation.tab	: allInterfaceFonts
-					KeyNavigation.down	: allInterfaceFonts
-				}
+				Text { text: qsTr("Interface:") }
 
 				ComboBox
 				{
-					id						: allInterfaceFonts
-					enabled					: !defaultInterfaceFont.checked
-					values					: preferencesModel.allFonts
+					id						: interfaceFonts
+					values					: preferencesModel.allInterfaceFonts
 					addEmptyValue			: true
+					placeholderText			: qsTr("default: %1").arg(defaultInterfaceFont.fontInfo.family)
 					value					: preferencesModel.interfaceFont
-					onValueChanged			: if (value) preferencesModel.interfaceFont = value
+					onValueChanged			: preferencesModel.interfaceFont = value
 
-					KeyNavigation.tab		: defaultRCodeFont
-					KeyNavigation.down		: defaultRCodeFont
+					KeyNavigation.tab		: codeFonts
+					KeyNavigation.down		: codeFonts
+
+					Text
+					{
+						// If the defaultInterfaceFont does not exist on the machine, then the default font of the machine is used.
+						// This (invisible) Text item is just to ask what will be the real font used.
+						id					: defaultInterfaceFont
+						font.family			: preferencesModel.defaultInterfaceFont
+						text				: fontInfo.family
+						visible				: false
+					}
 				}
 
-				Text { L.Layout.columnSpan: 2; L.Layout.topMargin: 3 * preferencesModel.uiScale; text: qsTr("Code (R, JAGS, Lavaan...):") }
-
-				CheckBox
-				{
-					L.Layout.leftMargin	: 7 * preferencesModel.uiScale
-					id					: defaultRCodeFont
-					label				: qsTr("Default font (%1)").arg(fontInfo.family)
-					font.family			: preferencesModel.defaultCodeFont
-					checked				: preferencesModel.useDefaultCodeFont
-					onCheckedChanged	: preferencesModel.useDefaultCodeFont = checked
-
-					KeyNavigation.tab	: allCodeFonts
-					KeyNavigation.down	: allCodeFonts
-				}
+				Text { text: qsTr("R, JAGS or Lavaan code:") }
 
 				ComboBox
 				{
-					id						: allCodeFonts
-					enabled					: !defaultRCodeFont.checked
-					values					: preferencesModel.allFonts
+					id						: codeFonts
+					values					: preferencesModel.allCodeFonts
 					addEmptyValue			: true
+					placeholderText			: qsTr("default: %1").arg(defaultRCodeFont.fontInfo.family)
 					value					: preferencesModel.codeFont
-					onValueChanged			: if (value) preferencesModel.codeFont = value
+					onValueChanged			: preferencesModel.codeFont = value
 
-					KeyNavigation.tab		: lightThemeButton
-					KeyNavigation.down		: lightThemeButton
+					KeyNavigation.tab		: resultFonts
+					KeyNavigation.down		: resultFonts
+
+					Text
+					{
+						id					: defaultRCodeFont
+						text				: fontInfo.family
+						font.family			: preferencesModel.defaultCodeFont
+						visible				: false
+					}
+
 				}
 
-				Text { L.Layout.columnSpan: 2; L.Layout.topMargin: 3 * preferencesModel.uiScale; text: qsTr("Result & Help:") }
-
-				CheckBox
-				{
-					L.Layout.leftMargin	: 7 * preferencesModel.uiScale
-					id					: defaultResultFont
-					label				: qsTr("Default font (%1)").arg(fontInfo.family)
-					font.family			: preferencesModel.defaultResultFont
-					checked				: preferencesModel.useDefaultResultFont
-					onCheckedChanged	: preferencesModel.useDefaultResultFont = checked
-
-					KeyNavigation.tab	: allResultFonts
-					KeyNavigation.down	: allResultFonts
-				}
+				Text { text: qsTr("Result & Help:") }
 
 				ComboBox
 				{
-					id						: allResultFonts
-					enabled					: !defaultResultFont.checked
-					values					: preferencesModel.allFonts
+					id						: resultFonts
+					values					: preferencesModel.allResultFonts
 					addEmptyValue			: true
+					placeholderText			: qsTr("default: %1").arg(defaultResultFont.fontInfo.family)
 					value					: preferencesModel.resultFont
-					onValueChanged			: if (value) preferencesModel.resultFont = value
+					onValueChanged			: preferencesModel.resultFont = value
 
 					KeyNavigation.tab		: lightThemeButton
 					KeyNavigation.down		: lightThemeButton
+
+					Text
+					{
+						id					: defaultResultFont
+						text				: fontInfo.family
+						font.family			: preferencesModel.defaultResultFont
+						visible				: false
+					}
 				}
 			}
 		}
@@ -277,8 +265,8 @@ ScrollView
 				onCheckedChanged:	preferencesModel.useNativeFileDialog = checked
 				toolTip:			qsTr("If disabled it will not use your operating system's file dialogs but those made by Qt. This might solve some problems on Windows where JASP crashes on pressing \"Browse\".")
 
-				KeyNavigation.tab:		defaultInterfaceFont
-				KeyNavigation.down:		defaultInterfaceFont
+				KeyNavigation.tab:		interfaceFonts
+				KeyNavigation.down:		interfaceFonts
 			}
 		}
 	}
