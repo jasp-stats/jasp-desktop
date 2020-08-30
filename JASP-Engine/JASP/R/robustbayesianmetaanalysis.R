@@ -17,7 +17,7 @@
 
 
 RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NULL) {
-
+  
   # clean fitted model if it was changed
   if(!.robmaReady(options))
     .robmaCleanModel(jaspResults)
@@ -671,102 +671,127 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
 # main functions
 .robmaPriorsPlots              <- function(jaspResults, options) {
   # create / access the container
-  if (!is.null(jaspResults[["prior_plots"]])) {
-    return()
-  } else{
+  if (!is.null(jaspResults[["prior_plots"]]))
+    prior_plots <- jaspResults[["prior_plots"]]
+  else{
     prior_plots <- createJaspContainer(title = gettext("Prior Plots"))
-    prior_plots$dependOn(
-      c(
-        "priors_mu",
-        "priors_tau",
-        "priors_omega",
-        "null_mu",
-        "null_tau",
-        "null_omega",
-        "priors_plot",
-        "measures",
-        "advanced_mu_transform"
-      )
-    )
+    prior_plots$dependOn(c("priors_plot", "measures", "advanced_mu_transform"))
     prior_plots$position <- 2
     jaspResults[["prior_plots"]] <- prior_plots
   }
   
-  
   # extract the priors
-  if (is.null(jaspResults[["model"]])) {
+  if (is.null(jaspResults[["model"]]))
     priors  <- jaspResults[["priors"]][["object"]]
-  } else{
+  else{
     fit     <- jaspResults[["model"]][["object"]]
     priors  <- fit[["priors"]]
   }
-  priors[["mu"]]    <- c(priors[["mu_null"]],    priors[["mu"]])
-  priors[["tau"]]   <- c(priors[["tau_null"]],   priors[["tau"]])
-  priors[["omega"]] <- c(priors[["omega_null"]], priors[["omega"]])
   
-  
-  # create plots for each of the parameters
+  # create conitainer for each of the parameters
   for (parameter in c("mu", "tau", "omega")) {
-    if (length(priors[[parameter]]) == 0)
-      next
     
-    temp_plots <- createJaspContainer(
-      title = switch(
+    if (!is.null(prior_plots[[parameter]]))
+      parameter_container <- prior_plots[[parameter]]
+    else{
+      parameter_container <- createJaspContainer(title = switch(
         parameter,
         "mu"    = gettext("Effect"),
         "tau"   = gettext("Heterogeneity"),
         "omega" = gettext("Weight Function")
       ))
-    prior_plots[[parameter]] <- temp_plots
-    
-    for (i in 1:length(priors[[parameter]])) {
-      if (parameter == "omega") {
-        temp_plot <- createJaspPlot(width = 500,  height = 400)
-      } else{
-        temp_plot <- createJaspPlot(width = 400,  height = 300)
-      }
-      temp_plots[[paste0(parameter, "_", i)]] <- temp_plot
-      
-      
-      if (is.null(jaspResults[["model"]])) {
-        p <- plot(
-          priors[[parameter]][[i]],
-          plot_type    = "ggplot",
-          par_name     = parameter,
-          effect_size  = if(parameter == "mu") switch(
-            options[["measures"]],
-            "cohensd"     = "d",
-            "correlation" = "r",
-            "OR"          = "OR",
-            "general"     = "y"
-          ),
-          mu_transform = if (options[["measures"]] %in% c("correlation", "OR") && parameter == "mu") options[["advanced_mu_transform"]],
-          samples      = 1e6,
-        )
-      } else{
-        p <- plot(
-          priors[[parameter]][[i]],
-          plot_type    = "ggplot",
-          par_name     = parameter,
-          effect_size  = if(parameter == "mu") fit[["add_info"]][["effect_size"]],
-          samples      = 1e6,
-          mu_transform = if (fit[["add_info"]][["effect_size"]] %in% c("r", "OR") && parameter == "mu") fit[["add_info"]][["mu_transform"]]
-        )
-      }
-      
-      p <- JASPgraphs::themeJasp(p)
-      
-      temp_plots[[paste0(parameter, "_", i)]][["plotObject"]] <- p
-      
+      parameter_container$position <- switch(
+        parameter,
+        "mu"    = 1,
+        "tau"   = 2,
+        "omega" = 3
+      )
+      prior_plots[[parameter]] <- parameter_container
     }
     
+    # create container for null and alternative models
+    for (type in c("null", "alternative")) {
+      
+      if (!is.null(parameter_container[[type]]))
+        next
+      else{
+        type_container <- createJaspContainer(title = switch(
+          type,
+          "null"         = gettext("Null"),
+          "alternative"  = gettext("Alternative")
+        ))
+        type_container$position <- switch(
+          type,
+          "null"         = 1,
+          "alternative"  = 2
+        )
+        type_container$dependOn(paste0("priors_", parameter, if (type == "null") "_null"))
+        parameter_container[[type]] <- type_container
+      }
+      
+      temp_priors <- switch(
+        paste0(parameter, "_", type),
+        "mu_null"           = priors[["mu_null"]],
+        "mu_alternative"    = priors[["mu"]],
+        "tau_null"          = priors[["tau_null"]],
+        "tau_alternative"   = priors[["tau"]],
+        "omega_null"        = priors[["omega_null"]],
+        "omega_alternative" = priors[["omega"]]
+      )
+      
+      if (length(temp_priors) == 0)
+        next
+      
+      # generate the actual plots
+      for (i in 1:length(temp_priors)) {
+        
+        if (parameter == "omega")
+          temp_plot <- createJaspPlot(width = 500,  height = 400)
+        else
+          temp_plot <- createJaspPlot(width = 400,  height = 300)
+        
+        type_container[[paste0(parameter, "_", type, "_", i)]] <- temp_plot
+        
+        
+        if (is.null(jaspResults[["model"]])) {
+          p <- plot(
+            temp_priors[[i]],
+            plot_type    = "ggplot",
+            par_name     = parameter,
+            effect_size  = if(parameter == "mu") switch(
+              options[["measures"]],
+              "cohensd"     = "d",
+              "correlation" = "r",
+              "OR"          = "OR",
+              "general"     = "y"
+            ),
+            mu_transform = if (options[["measures"]] %in% c("correlation", "OR") && parameter == "mu") options[["advanced_mu_transform"]],
+            samples      = 1e6,
+          )
+        } else{
+          p <- plot(
+            temp_priors[[i]],
+            plot_type    = "ggplot",
+            par_name     = parameter,
+            effect_size  = if(parameter == "mu") fit[["add_info"]][["effect_size"]],
+            samples      = 1e6,
+            mu_transform = if (fit[["add_info"]][["effect_size"]] %in% c("r", "OR") && parameter == "mu") fit[["add_info"]][["mu_transform"]]
+          )
+        }
+        
+        p <- JASPgraphs::themeJasp(p)
+        
+        type_container[[paste0(parameter, "_", type, "_", i)]][["plotObject"]] <- p
+        
+      }
+    }
   }
   
   return()
 }
 .robmaModelPreviewTable        <- function(jaspResults, options) {
   # create / access the container
-  if (!is.null(jaspResults[["prior_plots"]])) {
+  if (!is.null(jaspResults[["model_preview"]])) {
     return()
   } else{
     model_preview <- createJaspContainer(title = gettext("Model Preview"))
@@ -1488,13 +1513,13 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
     }
     
     # deal with JASPgraphs screwing secondary axis label distance
-    if(! (parameters == "theta" || (parameters == "omega" && options[["plots_omega_function"]]) ) ){
-      if(p$plot_env$any_density && p$plot_env$any_spikes){
-        p <- p + ggplot2::theme(
-          axis.title.y.right = ggplot2::element_text(vjust = 3),
-          plot.margin = ggplot2::margin(t = 3, r = 12, b = 0, l = 1))
-      }
-    }
+    if (!all(parameters %in% c("mu", "tau")))
+      if (! (parameters == "theta" || (parameters == "omega" && options[["plots_omega_function"]]) ) )
+        if(p$plot_env$any_density && p$plot_env$any_spikes)
+          p <- p + ggplot2::theme(
+            axis.title.y.right = ggplot2::element_text(vjust = 3),
+            plot.margin = ggplot2::margin(t = 3, r = 12, b = 0, l = 1))
+
     
     plots[[paste(parameters, collapse = "")]][["plotObject"]] <- p
     

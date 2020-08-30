@@ -1,9 +1,29 @@
 context("Robust Bayesian Meta-Analysis")
 
-skip("rjags needs to work for this to be testable")
+### create a pre-fitted model (in case that the package needs to be updated)
+if (FALSE){
+  # fit a default model
+  fit <- RoBMA::RoBMA(d = c(.3, .2, .1), n = c(30, 35, 40), iter = 4000, burnin = 4000, chains = 2, control = list(silent = TRUE), seed = 666)
+  # remove majority of the samples to save space
+  for(i in 2:length(fit$models)){
+    for(j in seq_along(fit$models[[i]]$fit$mcmc)){
+      fit$models[[i]]$fit$mcmc[[j]] <- fit$models[[i]]$fit$mcmc[[j]][1:100,]
+    }
+  }
+  set.seed(666)
+  for(i in 1:2){
+    for(p in c("mu", "tau")){
+      fit$RoBMA$samples[[i]][[p]] <- sample(fit$RoBMA$samples[[i]][[p]], 100)
+    }
+    for(p in c("omega", "theta")){
+      fit$RoBMA$samples[[i]][[p]] <- fit$RoBMA$samples[[i]][[p]][sample(nrow(fit$RoBMA$samples[[i]][[p]]), 100),]
+    }
+  }
+  saveRDS(fit, file = "../jasp-desktop/JASP-Tests/R/tests/testthat/robmaFit.RDS")
+}
 
 # path to the pre-fitted RoBMA model
-fitted_path <- "RoBMA_testfit.RDS"
+fitted_path <- file.path(jasptools:::.pkgOptions$tests.dir, "robmaFit.RDS")
 
 ### prior distibutions plots 
 {
@@ -82,7 +102,6 @@ fitted_path <- "RoBMA_testfit.RDS"
   dataset <- NULL
   results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
   
-  
   test_that("Models Overview table results match", {
     table <- results[["results"]][["model_preview"]][["collection"]][["model_preview_models_summary"]][["data"]]
     expect_equal_tables(table,
@@ -118,87 +137,77 @@ fitted_path <- "RoBMA_testfit.RDS"
                              "Publication bias"))
   })
   
-  test_that("titleless-plot-2 matches", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_1"]][["data"]]
+  test_that("Priors plot mu (1) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-2", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-2-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - mu - truncated normal", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_2"]][["data"]]
+  test_that("Priors plot mu (2) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_2"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-3", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-3-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - mu - truncated Cauchy", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_3"]][["data"]]
+  test_that("Priors plot mu (3) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_3"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-4", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-4-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - mu - Gamma", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_4"]][["data"]]
+  test_that("Priors plot mu (4) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_4"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-5", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-5-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - mu - InvGamma", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_5"]][["data"]]
+  test_that("Priors plot mu (5) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_5"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-6", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-6-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - mu - spike", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_6"]][["data"]]
+  test_that("Priors plot mu (6) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_6"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-7", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-7-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - mu - uniform", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_7"]][["data"]]
+  test_that("Priors plot mu (7) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_7"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-8", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-8-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - mu - Gamma 2", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_8"]][["data"]]
+  test_that("Priors plot mu (8) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_8"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-9", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-9-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - weight function - 2 step", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_omega"]][["collection"]][["prior_plots_omega_omega_1"]][["data"]]
+  test_that("Priors plot omega (1) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_omega"]][["collection"]][["prior_plots_omega_alternative"]][["collection"]][["prior_plots_omega_alternative_omega_alternative_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-10", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-10-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - weight function - 3 step", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_omega"]][["collection"]][["prior_plots_omega_omega_2"]][["data"]]
+  test_that("Priors plot omega (2) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_omega"]][["collection"]][["prior_plots_omega_alternative"]][["collection"]][["prior_plots_omega_alternative_omega_alternative_2"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-11", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-11-default", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - heterogeneity - InvGamma", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_tau"]][["collection"]][["prior_plots_tau_tau_1"]][["data"]]
+  test_that("Priors plot tau (1) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_tau"]][["collection"]][["prior_plots_tau_alternative"]][["collection"]][["prior_plots_tau_alternative_tau_alternative_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-12", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-12-default", dir="RobustBayesianMetaAnalysis")
   })
+  
 }
 {
   options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
-  options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
-    containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
-    input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
-    input_SE = list(containsColumn = TRUE), input_labels = list(
-      containsColumn = TRUE), input_t = list(containsColumn = TRUE), 
-    priors_mu = list(list(name = list(containsColumn = TRUE)), 
-                     list(name = list(containsColumn = TRUE))), priors_mu_null = list(
-                       list(name = list(containsColumn = TRUE))), priors_omega = list(
-                         list(name = list(containsColumn = TRUE)), list(name = list(
-                           containsColumn = TRUE)), list(name = list(containsColumn = TRUE))), 
-    priors_omega_null = list(list(name = list(containsColumn = TRUE))), 
-    priors_tau_null = list(list(name = list(containsColumn = TRUE))))
   options$advanced_control <- "clever"
+  options$advanced_mu_transform <- "cohens_d"
   options$fitted_path <- ""
   options$input_CI <- list()
   options$measures <- "correlation"
@@ -211,29 +220,26 @@ fitted_path <- "RoBMA_testfit.RDS"
                                  parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
                                  truncationLower = "-Inf", truncationUpper = "Inf", type = "normal"), 
                             list(name = "2", parA = "0", parAlpha = "1", parB = "1", 
-                                 parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "1", 
-                                 parScale = "2", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                 parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "3", 
+                                 parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
                                  truncationLower = "-Inf", truncationUpper = "Inf", type = "normal"))
   options$priors_mu_null <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
                                       parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
                                       parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
                                       truncationLower = "-Inf", truncationUpper = "Inf", type = "spike"))
-  options$priors_omega <- list(list(name = "", parAlpha = "(1,1,1)", parAlpha1 = "(1,1)", 
-                                    parAlpha2 = "(1,1)", parCuts = "(.05, .10)", priorOdds = "1/2", 
-                                    type = "Two-sided"), list(name = "2", parAlpha = "(1,1,1)", 
-                                                              parAlpha1 = "(1,1)", parAlpha2 = "(1,1)", parCuts = "(.05, .95)", 
-                                                              priorOdds = "1/2", type = "One-sided (mon.)"), list(name = "3", 
-                                                                                                                  parAlpha = "(1,1,1)", parAlpha1 = "(1,1)", parAlpha2 = "(1,1)", 
-                                                                                                                  parCuts = "(.05, .95)", priorOdds = "1", type = "One-sided"))
-  options$priors_omega_null <- list(list(name = "", parAlpha = "(1,1,1)", parAlpha1 = "(1,1,1)", 
-                                         parAlpha2 = "(1,1)", parCuts = "(.05, .10)", priorOdds = "1", 
+  options$priors_omega <- list()
+  options$priors_omega_null <- list(list(name = "", parAlpha = "(1,1,1)", parAlpha1 = "(1,1)", 
+                                         parAlpha2 = "(1,1)", parCuts = "(.05, .95)", priorOdds = "1", 
                                          type = "spike"))
   options$priors_plot <- TRUE
-  options$priors_tau <- list()
-  options$priors_tau_null <- list(list(`	` = "1", name = "", parA = "0", parAlpha = "1", parB = "1", 
+  options$priors_tau <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
+                                  parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
+                                  parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                  truncationLower = "0", truncationUpper = "Inf", type = "invgamma"))
+  options$priors_tau_null <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
                                        parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
-                                       parScale2 = "1", parShape = "1", priorOdds = "1", truncationLower = "0", 
-                                       truncationUpper = "Inf", type = "spike"))
+                                       parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                       truncationLower = "0", truncationUpper = "Inf", type = "spike"))
   options$results_models_BF <- "inclusion"
   options$results_models_order <- "default"
   options$save_path <- ""
@@ -245,61 +251,145 @@ fitted_path <- "RoBMA_testfit.RDS"
   test_that("Models Overview table results match", {
     table <- results[["results"]][["model_preview"]][["collection"]][["model_preview_models_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(1, 0.111111111111111, "Spike(0)", "Spike(1)", "Spike(0)", 2, 0.0555555555555556,
-                             "Spike(0)", "Two-sided((0.1, 0.05), (1, 1, 1))", "Spike(0)",
-                             3, 0.0555555555555556, "Spike(0)", "One-sided((0.95, 0.05), (1, 1, 1))",
-                             "Spike(0)", 4, 0.111111111111111, "Spike(0)", "One-sided((0.95, 0.05), (1, 1), (1, 1))",
-                             "Spike(0)", 5, 0.111111111111111, "Normal(0, 1)[-Inf, Inf]",
-                             "Spike(1)", "Spike(0)", 6, 0.0555555555555556, "Normal(0, 1)[-Inf, Inf]",
-                             "Two-sided((0.1, 0.05), (1, 1, 1))", "Spike(0)", 7, 0.0555555555555556,
-                             "Normal(0, 1)[-Inf, Inf]", "One-sided((0.95, 0.05), (1, 1, 1))",
-                             "Spike(0)", 8, 0.111111111111111, "Normal(0, 1)[-Inf, Inf]",
-                             "One-sided((0.95, 0.05), (1, 1), (1, 1))", "Spike(0)", 9, 0.111111111111111,
-                             "Normal(1, 2)[-Inf, Inf]", "Spike(1)", "Spike(0)", 10, 0.0555555555555556,
-                             "Normal(1, 2)[-Inf, Inf]", "Two-sided((0.1, 0.05), (1, 1, 1))",
-                             "Spike(0)", 11, 0.0555555555555556, "Normal(1, 2)[-Inf, Inf]",
-                             "One-sided((0.95, 0.05), (1, 1, 1))", "Spike(0)", 12, 0.111111111111111,
-                             "Normal(1, 2)[-Inf, Inf]", "One-sided((0.95, 0.05), (1, 1), (1, 1))",
-                             "Spike(0)"))
+                        list(1, 0.166666666666667, "Spike(0)", "Spike(1)", "Spike(0)", 2, 0.166666666666667,
+                             "Spike(0)", "Spike(1)", "InvGamma(1, 0.15)[0, Inf]", 3, 0.166666666666667,
+                             "Normal(0, 1)[-Inf, Inf]", "Spike(1)", "Spike(0)", 4, 0.166666666666667,
+                             "Normal(0, 1)[-Inf, Inf]", "Spike(1)", "InvGamma(1, 0.15)[0, Inf]",
+                             5, 0.166666666666667, "Normal(3, 1)[-Inf, Inf]", "Spike(1)",
+                             "Spike(0)", 6, 0.166666666666667, "Normal(3, 1)[-Inf, Inf]",
+                             "Spike(1)", "InvGamma(1, 0.15)[0, Inf]"))
   })
   
   test_that("Model Summary table results match", {
     table <- results[["results"]][["model_preview"]][["collection"]][["model_preview_overall_summary"]][["data"]]
     expect_equal_tables(table,
-                        list("8/12", 0.666666666666667, "Effect", "0/12", 0, "Heterogeneity",
-                             "9/12", 0.666666666666667, "Publication bias"))
+                        list("4/6", 0.666666666666667, "Effect", "3/6", 0.5, "Heterogeneity",
+                             "0/6", 0, "Publication bias"))
   })
   
-  test_that("Priors plot - mu - transformed normal", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_2"]][["data"]]
+  test_that("Priors plot mu (1) (correlation) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-3", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-2-correlations", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - mu - transformed normal (1,2)", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_mu_3"]][["data"]]
+  test_that("Priors plot mu (2) (correlation) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_2"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-4", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-3-correlations", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - weight function - two sided", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_omega"]][["collection"]][["prior_plots_omega_omega_2"]][["data"]]
+  test_that("Priors plot mu (3) (correlation) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_null"]][["collection"]][["prior_plots_mu_null_mu_null_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-6", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-4-correlations", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - weight function - one sided (monotonic)", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_omega"]][["collection"]][["prior_plots_omega_omega_3"]][["data"]]
+  test_that("Priors plot omega (1) (correlation) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_omega"]][["collection"]][["prior_plots_omega_null"]][["collection"]][["prior_plots_omega_null_omega_null_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-7", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-5-correlations", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Priors plot - weight function - one sided", {
-    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_omega"]][["collection"]][["prior_plots_omega_omega_4"]][["data"]]
+  test_that("Priors plot tau (1) (correlation) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_tau"]][["collection"]][["prior_plots_tau_alternative"]][["collection"]][["prior_plots_tau_alternative_tau_alternative_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-8", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "prior-plot-6-correlations", dir="RobustBayesianMetaAnalysis")
   })
   
+  test_that("Priors plot tau (2) (correlation) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_tau"]][["collection"]][["prior_plots_tau_null"]][["collection"]][["prior_plots_tau_null_tau_null_1"]][["data"]]
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+    expect_equal_plots(testPlot, "prior-plot-7-correlations", dir="RobustBayesianMetaAnalysis")
+  })
+}
+{
+  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options$advanced_control <- "clever"
+  options$advanced_mu_transform <- "log_OR"
+  options$fitted_path <- ""
+  options$input_CI <- list()
+  options$measures <- "OR"
+  options$plots_theta_order <- "labels"
+  options$plots_theta_show <- "observed"
+  options$plots_type_individual_by <- "model"
+  options$plots_type_individual_order <- "ascending"
+  options$priors_mu <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
+                                 parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
+                                 parScale = ".3", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                 truncationLower = "-Inf", truncationUpper = "Inf", type = "normal"), 
+                            list(name = "2", parA = "-.10", parAlpha = "1", parB = ".10", 
+                                 parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "3", 
+                                 parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                 truncationLower = "-Inf", truncationUpper = "Inf", type = "uniform"))
+  options$priors_mu_null <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
+                                      parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
+                                      parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                      truncationLower = "-Inf", truncationUpper = "Inf", type = "spike"))
+  options$priors_null <- TRUE
+  options$priors_omega <- list()
+  options$priors_omega_null <- list(list(name = "", parAlpha = "(1,1,1)", parAlpha1 = "(1,1)", 
+                                         parAlpha2 = "(1,1)", parCuts = "(.05, .95)", priorOdds = "1", 
+                                         type = "spike"))
+  options$priors_plot <- TRUE
+  options$priors_tau <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
+                                  parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
+                                  parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                  truncationLower = "0", truncationUpper = "Inf", type = "invgamma"))
+  options$priors_tau_null <- list()
+  options$results_models_BF <- "inclusion"
+  options$results_models_order <- "default"
+  options$save_path <- ""
+  set.seed(1)
+  dataset <- NULL
+  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  
+  
+  test_that("Models Overview table results match", {
+    table <- results[["results"]][["model_preview"]][["collection"]][["model_preview_models_summary"]][["data"]]
+    expect_equal_tables(table,
+                        list(1, 0.333333333333333, "Spike(0)", "Spike(1)", "InvGamma(1, 0.15)[0, Inf]",
+                             2, 0.333333333333333, "Normal(0, 0.3)[-Inf, Inf]", "Spike(1)",
+                             "InvGamma(1, 0.15)[0, Inf]", 3, 0.333333333333333, "Uniform(-0.1, 0.1)",
+                             "Spike(1)", "InvGamma(1, 0.15)[0, Inf]"))
+  })
+  
+  test_that("Model Summary table results match", {
+    table <- results[["results"]][["model_preview"]][["collection"]][["model_preview_overall_summary"]][["data"]]
+    expect_equal_tables(table,
+                        list("2/3", 0.666666666666667, "Effect", "3/3", 1, "Heterogeneity",
+                             "0/3", 0, "Publication bias"))
+  })
+  
+  test_that("Priors plot mu (1) (OR) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_1"]][["data"]]
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+    expect_equal_plots(testPlot, "prior-plot-2-OR", dir="RobustBayesianMetaAnalysis")
+  })
+  
+  test_that("Priors plot mu (2) (OR) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_alternative"]][["collection"]][["prior_plots_mu_alternative_mu_alternative_2"]][["data"]]
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+    expect_equal_plots(testPlot, "prior-plot-3-OR", dir="RobustBayesianMetaAnalysis")
+  })
+  
+  test_that("Priors plot mu (3) (OR) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_mu"]][["collection"]][["prior_plots_mu_null"]][["collection"]][["prior_plots_mu_null_mu_null_1"]][["data"]]
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+    expect_equal_plots(testPlot, "prior-plot-4-OR", dir="RobustBayesianMetaAnalysis")
+  })
+  
+  test_that("Priors plot omega (1) (OR) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_omega"]][["collection"]][["prior_plots_omega_null"]][["collection"]][["prior_plots_omega_null_omega_null_1"]][["data"]]
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+    expect_equal_plots(testPlot, "prior-plot-5-OR", dir="RobustBayesianMetaAnalysis")
+  })
+  
+  test_that("Priors plot tau (1) (OR) matches", {
+    plotName <- results[["results"]][["prior_plots"]][["collection"]][["prior_plots_tau"]][["collection"]][["prior_plots_tau_alternative"]][["collection"]][["prior_plots_tau_alternative_tau_alternative_1"]][["data"]]
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+    expect_equal_plots(testPlot, "prior-plot-6-OR", dir="RobustBayesianMetaAnalysis")
+  })
 }
 
 ### fit a default model using d + se, (wihout the more complex weight function) and main output
@@ -363,6 +453,7 @@ fitted_path <- "RoBMA_testfit.RDS"
   options$results_models_BF <- "inclusion"
   options$results_models_order <- "default"
   options$save_path <- ""
+  options$setSeed   <- TRUE
   set.seed(1)
   dataset <- structure(list(study = structure(c(1L, 3L, 2L), .Label = c("study one", 
                                                                         "study three", "study two"), class = "factor"), t = c(2.51, 2.39, 
@@ -376,51 +467,51 @@ fitted_path <- "RoBMA_testfit.RDS"
   test_that("Model Averaged Estimates table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0, 0.190081931593515, 0.190081931593515, "Effect size (<unicode><unicode>)",
-                             0.333866564932042, 0, 0, 0, "Heterogeneity (<unicode><unicode>)",
-                             0.314967238642941))
+                        list(0, 0.168712291757783, 0.189827028815157, "Effect size (<unicode><unicode>)",
+                             0.337208378977972, 0, 0.0480806513171957, 0, "Heterogeneity (<unicode><unicode>)",
+                             0.312443196435157))
   })
   
-  test_that("Model Averaged Weights (Ď‰) table results match", {
+  test_that("Model Averaged Weights (omega) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_weights"]][["data"]]
     expect_equal_tables(table,
-                        list(1, 0, 1, 1, 1, 0.05, 0.00599704774931339, 0.05, 0.573062069482425,
-                             0.573062069482425, 1, 1))
+                        list(1, 0, 1, 1, 1, 0.05, 0.00605631178628108, 0.05, 0.562366380513431,
+                             0.56391916627436, 1, 1))
   })
   
   test_that("Conditional Estimates table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_conditional_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0.0601405747266103, 0.207177943751351, 0.210330333086386, "Effect size (<unicode><unicode>)",
-                             0.342005856042393, 0.0326111357269888, 0.153342846880509, 0.120242501856159,
-                             "Heterogeneity (<unicode><unicode>)", 0.449773965162367))
+                        list(0.0572361924282677, 0.206723023237374, 0.210186930065265, "Effect size (<unicode><unicode>)",
+                             0.34044908725073, 0.0347697656712412, 0.154449387376258, 0.122302414943436,
+                             "Heterogeneity (<unicode><unicode>)", 0.461332883262839))
   })
   
-  test_that("Conditional Weights (Ď‰) table results match", {
+  test_that("Conditional Weights (omega) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_conditional_weights"]][["data"]]
     expect_equal_tables(table,
-                        list(1, 0, 1, 1, 1, 0.05, 0.00325701104562544, 0.05, 0.29169072246424,
-                             0.194146475231978, 0.921947822250772, 1))
+                        list(1, 0, 1, 1, 1, 0.05, 0.00303360000468365, 0.05, 0.281089511980057,
+                             0.183217040722455, 0.917228230024058, 1))
   })
   
   test_that("Models Overview table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_models_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0.00217700774875682, -12.3417718561692, 1, 0.00043521205774695,
-                             0.166666666666667, "Spike(0)", "Spike(1)", "Spike(0)", 0.531157751119659,
-                             -6.98669647910159, 2, 0.0460628292998666, 0.0833333333333333,
-                             "Spike(0)", "Two-sided((0.05), (1, 1))", "Spike(0)", 0.178550966011138,
-                             -7.96950117507418, 3, 0.0344789434695223, 0.166666666666667,
-                             "Spike(0)", "Spike(1)", "InvGamma(1, 0.15)[0, Inf]", 1.30622293098484,
-                             -6.15191286898532, 4, 0.106143285255788, 0.0833333333333333,
+                        list(0.00218093631921237, -12.3417718561692, 1, 0.000435997087465849,
+                             0.166666666666667, "Spike(0)", "Spike(1)", "Spike(0)", 0.523350520352504,
+                             -7.00262896601826, 2, 0.0454165235560754, 0.0833333333333333,
+                             "Spike(0)", "Two-sided((0.05), (1, 1))", "Spike(0)", 0.179575873688028,
+                             -7.96577750238348, 3, 0.0346699957809797, 0.166666666666667,
+                             "Spike(0)", "Spike(1)", "InvGamma(1, 0.15)[0, Inf]", 1.30334729581458,
+                             -6.1556852459012, 4, 0.105934366028825, 0.0833333333333333,
                              "Spike(0)", "Two-sided((0.05), (1, 1))", "InvGamma(1, 0.15)[0, Inf]",
-                             1.9645792909097, -5.86765378059505, 5, 0.282081545610932, 0.166666666666667,
-                             "Normal(0, 1)[-Inf, Inf]", "Spike(1)", "Spike(0)", 6.10327696329363,
-                             -4.93939176541967, 6, 0.356848396736616, 0.0833333333333333,
+                             1.96675398250927, -5.86866180586203, 5, 0.282305645849847, 0.166666666666667,
+                             "Normal(0, 1)[-Inf, Inf]", "Spike(1)", "Spike(0)", 6.04357955617748,
+                             -4.94752676988312, 6, 0.354595672596663, 0.0833333333333333,
                              "Normal(0, 1)[-Inf, Inf]", "Two-sided((0.05), (1, 1))", "Spike(0)",
-                             0.403082528335052, -7.19767828191783, 7, 0.07460232676832, 0.166666666666667,
-                             "Normal(0, 1)[-Inf, Inf]", "Spike(1)", "InvGamma(1, 0.15)[0, Inf]",
-                             1.2133669992042, -6.21807938744952, 8, 0.0993474608012077, 0.0833333333333333,
+                             0.402517316496111, -7.20077903677421, 7, 0.0745055115819915,
+                             0.166666666666667, "Normal(0, 1)[-Inf, Inf]", "Spike(1)", "InvGamma(1, 0.15)[0, Inf]",
+                             1.25130256082422, -6.19219688626355, 8, 0.102136287518153, 0.0833333333333333,
                              "Normal(0, 1)[-Inf, Inf]", "Two-sided((0.05), (1, 1))", "InvGamma(1, 0.15)[0, Inf]"
                         ))
   })
@@ -428,52 +519,52 @@ fitted_path <- "RoBMA_testfit.RDS"
   test_that("Model Summary table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_overall_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(4.34415645914171, "4/8", 0.812879729917076, 0.5, "Effect", 0.458942476486562,
-                             "4/8", 0.314572016294838, 0.5, "Heterogeneity", 3.10727801846188,
-                             "4/8", 0.608401972093478, 0.333333333333333, "Publication bias"
+                        list(4.36317022381951, "4/8", 0.813543117546654, 0.5, "Effect", 0.464656722154449,
+                             "4/8", 0.317246160909949, 0.5, "Heterogeneity", 3.10311936711015,
+                             "4/8", 0.608082849699716, 0.333333333333333, "Publication bias"
                         ))
   })
   
   test_that("Effect size (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-model-averaged-default-model", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Weight function (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_omega"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "weight-function-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "weight-function-model-averaged-default-model", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Heterogeneity (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_tau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "heterogeneity-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "heterogeneity-model-averaged-default-model", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Forest plot (Model Averaged) matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_theta"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "forest-plot-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "forest-plot-model-averaged-default-model", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Effect size (Conditional Models) plot matches", {
     plotName <- results[["results"]][["plots_individual"]][["collection"]][["plots_individual_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-conditional-models-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-conditional-models-default-model", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Weights (Conditional Models) plot matches", {
     plotName <- results[["results"]][["plots_individual"]][["collection"]][["plots_individual_omega"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "weights-conditional-models-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "weights-conditional-models-default-model", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Heterogeneity (Conditional Models) plot matches", {
     plotName <- results[["results"]][["plots_individual"]][["collection"]][["plots_individual_tau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "heterogeneity-conditional-models-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "heterogeneity-conditional-models-default-model", dir="RobustBayesianMetaAnalysis")
   })
   
 }
@@ -531,6 +622,7 @@ fitted_path <- "RoBMA_testfit.RDS"
   options$results_models_BF <- "inclusion"
   options$results_models_order <- "default"
   options$save_path <- ""
+  options$setSeed <- TRUE
   set.seed(1)
   dataset <- structure(list(study = structure(c(1L, 3L, 2L), .Label = c("study one", 
                                                                         "study three", "study two"), class = "factor"), t = c(2.51, 2.39, 
@@ -544,36 +636,36 @@ fitted_path <- "RoBMA_testfit.RDS"
   test_that("Model Averaged Estimates table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0, 0.558554923066283, 0.558554923066283, "Effect size (<unicode><unicode>)",
-                             0.824625889978887, 0, 0, 0, "Heterogeneity (<unicode><unicode>)",
-                             0.455426559873941))
+                        list(0, 0.535604763915645, 0.559463132312447, "Effect size (<unicode><unicode>)",
+                             0.828987540642641, 0, 0.107300145478871, 0, "Heterogeneity (<unicode><unicode>)",
+                             0.458067108966629))
   })
   
   test_that("Model Summary table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_overall_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(9.50763462152257, "2/4", 0.90483110271538, 0.5, "Effect", 0.455993686087569,
-                             "2/4", 0.313183834823405, 0.5, "Heterogeneity", "", "0/4", 0,
+                        list(9.47365692566878, "2/4", 0.904522364337789, 0.5, "Effect", 0.455716903634993,
+                             "2/4", 0.313053247164367, 0.5, "Heterogeneity", "", "0/4", 0,
                              0, "Publication bias"))
   })
   
   test_that("Effect size (Conditional) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-conditional-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-conditional-truncated-priors", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Heterogeneity (Conditional) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_tau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "heterogeneity-conditional-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "heterogeneity-conditional-truncated-priors", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Forest plot (Conditional) matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_theta"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "forest-plot-conditional-", dir="RobustBayesianMetaAnalysis")
-  }) 
+    expect_equal_plots(testPlot, "forest-plot-conditional-truncated-priors", dir="RobustBayesianMetaAnalysis")
+  })
 }
 
 ### fit models with only an effect size, d + (N1 + N2) and names
@@ -627,6 +719,7 @@ fitted_path <- "RoBMA_testfit.RDS"
   options$results_models_BF <- "inclusion"
   options$results_models_order <- "default"
   options$save_path <- ""
+  options$setSeed <- TRUE
   set.seed(1)
   dataset <- structure(list(study = structure(c(1L, 3L, 2L), .Label = c("study one", 
                                                                         "study three", "study two"), class = "factor"), t = c(2.51, 2.39, 
@@ -640,15 +733,15 @@ fitted_path <- "RoBMA_testfit.RDS"
   test_that("Model Averaged Estimates table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0, 0.0939706937772783, 0.0939706937772783, "Effect size (<unicode><unicode>)",
-                             0.147125401141212, 0, 0, 0, "Heterogeneity (<unicode><unicode>)",
+                        list(0, 0.0831886793185899, 0.0944310887618068, "Effect size (<unicode><unicode>)",
+                             0.147425398292625, 0, 0, 0, "Heterogeneity (<unicode><unicode>)",
                              0))
   })
   
   test_that("Model Summary table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_overall_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(4.37039740753456, "1/2", 0.813794040903375, 0.5, "Effect", "",
+                        list(4.33614576895865, "1/2", 0.812598822577677, 0.5, "Effect", "",
                              "0/2", 0, 0, "Heterogeneity", "", "0/2", 0, 0, "Publication bias"
                         ))
   })
@@ -656,19 +749,19 @@ fitted_path <- "RoBMA_testfit.RDS"
   test_that("Effect size (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-model-averaged-d-and-n", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Heterogeneity (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_tau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "heterogeneity-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "heterogeneity-model-averaged-d-and-n", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Forest plot (Model Averaged) matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_theta"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "forest-plot-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "forest-plot-model-averaged-d-and-n", dir="RobustBayesianMetaAnalysis")
   })
 }
 
@@ -690,7 +783,7 @@ fitted_path <- "RoBMA_testfit.RDS"
   options$advanced_control <- "clever"
   options$advanced_iteration <- 4000
   options$fitted_path <- ""
-  options$input_CI <- list(c("uCI", "lCI"))
+  options$input_CI <- list(c("lCI", "uCI"))
   options$input_ES <- "d"
   options$measures <- "general"
   options$plots_mu <- TRUE
@@ -721,6 +814,7 @@ fitted_path <- "RoBMA_testfit.RDS"
   options$results_models_BF <- "inclusion"
   options$results_models_order <- "default"
   options$save_path <- ""
+  options$setSeed <- TRUE
   set.seed(1)
   dataset <- structure(list(study = structure(c(1L, 3L, 2L), .Label = c("study one", 
                                                                         "study three", "study two"), class = "factor"), t = c(2.51, 2.39, 
@@ -738,137 +832,232 @@ fitted_path <- "RoBMA_testfit.RDS"
                              0))
   })
   
-  test_that("Model Averaged Weights (Ď‰) table results match", {
+  test_that("Model Averaged Weights (omega) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_weights"]][["data"]]
     expect_equal_tables(table,
-                        list(1, 0, 1, 1, 1, 0.05, 0.000767371189249364, 0.05, 0.0219980890559249,
-                             0.0219980890559249, 0.314633344471127, 1))
+                        list(1, 0, 1, 1, 1, 0.05, 0.000674752411048917, 0.05, 0.0614219245352222,
+                             0.0223643133148829, 0.389613651090792, 1))
   })
   
   test_that("Model Summary table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_overall_summary"]][["data"]]
     expect_equal_tables(table,
-                        list("", "0/2", 0, 0, "Effect", "", "0/2", 0, 0, "Heterogeneity", 211.679931564072,
-                             "1/2", 0.990640206661615, 0.333333333333333, "Publication bias"
+                        list("", "0/2", 0, 0, "Effect", "", "0/2", 0, 0, "Heterogeneity", 208.334068560185,
+                             "1/2", 0.990491316914607, 0.333333333333333, "Publication bias"
                         ))
   })
   
   test_that("Effect size (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-model-averaged-y-CI", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Weight function (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_omega"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "weight-function-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "weight-function-model-averaged-y-CI", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Heterogeneity (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_tau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "heterogeneity-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "heterogeneity-model-averaged-y-CI", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Forest plot (Model Averaged) matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_theta"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "forest-plot-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "forest-plot-model-averaged-y-CI", dir="RobustBayesianMetaAnalysis")
   })
 }
 
-### fit models with only heterogeneity, rho + (N)
+### fit models with OR
 {
   options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
-  options$.meta <- list(input_CI = list(containsColumn = TRUE), input_ES = list(
-    containsColumn = TRUE), input_N = list(containsColumn = TRUE), 
-    input_N1 = list(containsColumn = TRUE), input_N2 = list(containsColumn = TRUE), 
-    input_SE = list(containsColumn = TRUE), input_labels = list(
-      containsColumn = TRUE), input_t = list(containsColumn = TRUE), 
-    priors_mu_null = list(list(name = list(containsColumn = TRUE))), 
-    priors_omega_null = list(list(name = list(containsColumn = TRUE))), 
-    priors_tau = list(list(name = list(containsColumn = TRUE))), 
-    priors_tau_null = list(list(name = list(containsColumn = TRUE))))
-  options$advanced_adapt <- 500
+  options$advanced_adapt <- 100
   options$advanced_burnin <- 1000
   options$advanced_chains <- 2
   options$advanced_control <- "clever"
   options$advanced_iteration <- 4000
+  options$advanced_mu_transform <- "cohens_d"
   options$fitted_path <- ""
-  options$input_CI <- list(c("uCI", "lCI"))
-  options$input_ES <- "d"
-  options$input_N <- "N"
-  options$measures <- "correlation"
+  options$input_CI <- list(c("ORlCI", "ORuCI"))
+  options$input_ES <- "OR"
+  options$measures <- "OR"
+  options$plots_individual_mu <- TRUE
   options$plots_mu <- TRUE
+  options$plots_priors <- FALSE
   options$plots_tau <- TRUE
-  options$plots_theta <- TRUE
   options$plots_theta_order <- "labels"
-  options$plots_theta_show <- "both"
+  options$plots_theta_show <- "observed"
   options$plots_type_individual_by <- "model"
+  options$plots_type_individual_conditional <- FALSE
   options$plots_type_individual_order <- "ascending"
-  options$priors_mu <- list()
+  options$priors_mu <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
+                                 parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
+                                 parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                 truncationLower = "-Inf", truncationUpper = "Inf", type = "normal"))
   options$priors_mu_null <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
                                       parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
                                       parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
                                       truncationLower = "-Inf", truncationUpper = "Inf", type = "spike"))
   options$priors_null <- TRUE
-  options$priors_omega <- list()
+  options$priors_omega <- list(list(name = "", parAlpha = "(1,1)", parAlpha1 = "(1,1)", 
+                                    parAlpha2 = "(1,1)", parCuts = "(.05)", priorOdds = "1/2", 
+                                    type = "Two-sided"))
   options$priors_omega_null <- list(list(name = "", parAlpha = "(1,1,1)", parAlpha1 = "(1,1)", 
                                          parAlpha2 = "(1,1)", parCuts = "(.05, .95)", priorOdds = "1", 
                                          type = "spike"))
   options$priors_tau <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
                                   parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
                                   parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
-                                  truncationLower = "0", truncationUpper = ".2", type = "normal"))
-  options$priors_tau_null <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
-                                       parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
-                                       parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
-                                       truncationLower = "0", truncationUpper = "Inf", type = "spike"))
+                                  truncationLower = "0", truncationUpper = "Inf", type = "invgamma"))
+  options$priors_tau_null <- list()
   options$results_models_BF <- "inclusion"
   options$results_models_order <- "default"
   options$save_path <- ""
+  options$setSeed <- TRUE
   set.seed(1)
-  dataset <- structure(list(study = structure(c(1L, 3L, 2L), .Label = c("study one", 
-                                                                        "study three", "study two"), class = "factor"), t = c(2.51, 2.39, 
-                                                                                                                              2.55), N = c(100L, 150L, 97L), d = c(0.25, 0.2, 0.26), se = c(0.1, 
-                                                                                                                                                                                            0.08, 0.1), N1 = c(50L, 75L, 49L), N2 = c(50L, 75L, 48L), lCI = c(0.05, 
-                                                                                                                                                                                                                                                              0.04, 0.06), uCI = c(0.45, 0.41, 0.38)), class = "data.frame", row.names = c(NA, 
-                                                                                                                                                                                                                                                                                                                                           -3L))
+  dataset <- structure(list(study = c("study one", "study two", "study three"
+  ), t = c(2.51, 2.39, 2.55), N = c(100L, 150L, 97L), d = c(0.25, 
+                                                            0.2, 0.26), se = c(0.1, 0.08, 0.1), N1 = c(50L, 75L, 49L), N2 = c(50L, 
+                                                                                                                              75L, 48L), lCI = c(0.05, 0.04, 0.06), uCI = c(0.45, 0.41, 0.38
+                                                                                                                              ), OR = c(1.1, 1.05, 1.2), ORlCI = c(1, 0.98, 1.1), ORuCI = c(1.2, 
+                                                                                                                                                                                            1.1, 1.3)), class = "data.frame", row.names = c(NA, -3L))
   results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
   test_that("Model Averaged Estimates table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0, 0, 0, "Effect size (<unicode><unicode>)", 0, 0, 0.164511938302287,
-                             0.164511938302287, "Heterogeneity (<unicode><unicode>)", 0.1986654086427
-                        ))
+                        list(1, 1.01527374333754, 1, "Effect size (OR)", 1.18518278022787,
+                             0.0358341967386345, 0.0984568324014358, 0.082166145661641, "Heterogeneity (<unicode><unicode>)",
+                             0.252094438158819))
+  })
+  
+  test_that("Model Averaged Weights (Ď‰) table results match", {
+    table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_weights"]][["data"]]
+    expect_equal_tables(table,
+                        list(1, 0, 1, 1, 1, 0.05, 0.122013680867879, 0.05, 0.842151031560929,
+                             1, 1, 1))
   })
   
   test_that("Model Summary table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_overall_summary"]][["data"]]
     expect_equal_tables(table,
-                        list("", "0/2", 0, 0, "Effect", 11.3024893141746, "1/2", 0.918715637586628,
-                             0.5, "Heterogeneity", "", "0/2", 0, 0, "Publication bias"))
+                        list(0.132496130369426, "2/4", 0.116994775360693, 0.5, "Effect", "",
+                             "4/4", 1, 1, "Heterogeneity", 1.01423543293882, "2/4", 0.336481822838224,
+                             0.333333333333333, "Publication bias"))
   })
   
   test_that("Effect size (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-model-averaged-OR", dir="RobustBayesianMetaAnalysis")
+  })
+  
+  test_that("Effect size vs Heterogeneity (Model Averaged) plot matches", {
+    plotName <- results[["results"]][["plots"]][["collection"]][["plots_mutau"]][["data"]]
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+    expect_equal_plots(testPlot, "effect-size-vs-heterogeneity-model-averaged-OR", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Heterogeneity (Model Averaged) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_tau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "heterogeneity-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "heterogeneity-model-averaged-OR", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Forest plot (Model Averaged) matches", {
-    plotName <- results[["results"]][["plots"]][["collection"]][["plots_theta"]][["data"]]
+  test_that("Effect size (Models) plot matches", {
+    plotName <- results[["results"]][["plots_individual"]][["collection"]][["plots_individual_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "forest-plot-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-models-OR", dir="RobustBayesianMetaAnalysis")
+  })
+}
+
+### fit models with expected negative effect sizes
+{
+  options <- jasptools::analysisOptions("RobustBayesianMetaAnalysis")
+  options$advanced_adapt <- 100
+  options$advanced_burnin <- 1000
+  options$advanced_chains <- 2
+  options$advanced_control <- "clever"
+  options$advanced_iteration <- 4000
+  options$advanced_mu_transform <- "cohens_d"
+  options$effect_direction <- "negative"
+  options$fitted_path <- ""
+  options$input_CI <- list()
+  options$input_ES <- "d"
+  options$input_SE <- "se"
+  options$measures <- "general"
+  options$plots_mu <- TRUE
+  options$plots_priors <- FALSE
+  options$plots_theta_order <- "labels"
+  options$plots_theta_show <- "observed"
+  options$plots_type_individual_by <- "model"
+  options$plots_type_individual_order <- "ascending"
+  options$priors_mu <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
+                                 parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
+                                 parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                 truncationLower = "-Inf", truncationUpper = "Inf", type = "normal"))
+  options$priors_mu_null <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
+                                      parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
+                                      parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                      truncationLower = "-Inf", truncationUpper = "Inf", type = "spike"))
+  options$priors_null <- TRUE
+  options$priors_omega <- list(list(name = "", parAlpha = "(1,1)", parAlpha1 = "(1,1)", 
+                                    parAlpha2 = "(1,1)", parCuts = "(.05)", priorOdds = "1/2", 
+                                    type = "Two-sided"))
+  options$priors_omega_null <- list(list(name = "", parAlpha = "(1,1,1)", parAlpha1 = "(1,1)", 
+                                         parAlpha2 = "(1,1)", parCuts = "(.05, .95)", priorOdds = "1", 
+                                         type = "spike"))
+  options$priors_tau <- list(list(name = "", parA = "0", parAlpha = "1", parB = "1", 
+                                  parBeta = "0.15", parDF = "2", parLocation = "0", parMean = "0", 
+                                  parScale = "1", parScale2 = "1", parShape = "1", priorOdds = "1", 
+                                  truncationLower = "0", truncationUpper = "Inf", type = "invgamma"))
+  options$priors_tau_null <- list()
+  options$results_models_BF <- "inclusion"
+  options$results_models_order <- "default"
+  options$save_path <- ""
+  options$setSeed <- TRUE
+  set.seed(1)
+  dataset <- structure(list(study = c("study one", "study two", "study three"
+  ), t = c(2.51, 2.39, 2.55), N = c(100L, 150L, 97L), d = c(0.25, 
+                                                            0.2, 0.26), se = c(0.1, 0.08, 0.1), N1 = c(50L, 75L, 49L), N2 = c(50L, 
+                                                                                                                              75L, 48L), lCI = c(0.05, 0.04, 0.06), uCI = c(0.45, 0.41, 0.38
+                                                                                                                              ), OR = c(1.1, 1.05, 1.2), ORlCI = c(1, 0.98, 1.1), ORuCI = c(1.2, 
+                                                                                                                                                                                            1.1, 1.3)), class = "data.frame", row.names = c(NA, -3L))
+  results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
+  
+  
+  test_that("Model Averaged Estimates table results match", {
+    table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_summary"]][["data"]]
+    expect_equal_tables(table,
+                        list(0, 0.118084257741258, 0.0974468746788708, "Effect size (<unicode><unicode>)",
+                             0.371445404295019, 0.0360039463828572, 0.152105773972153, 0.11831544827935,
+                             "Heterogeneity (<unicode><unicode>)", 0.453723802791823))
+  })
+  
+  test_that("Model Averaged Weights (omega) table results match", {
+    table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_weights"]][["data"]]
+    expect_equal_tables(table,
+                        list(1, 0, 1, 1, 1, 0.05, 0.00532256931870136, 0.05, 0.511524704078504,
+                             0.411251834300105, 1, 1))
+  })
+  
+  test_that("Model Summary table results match", {
+    table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_overall_summary"]][["data"]]
+    expect_equal_tables(table,
+                        list(1.2900164973612, "2/4", 0.563321923159808, 0.5, "Effect", "",
+                             "4/4", 1, 1, "Heterogeneity", 3.73217626824764, "2/4", 0.651092376366959,
+                             0.333333333333333, "Publication bias"))
+  })
+  
+  test_that("Effect size (Model Averaged) plot matches", {
+    plotName <- results[["results"]][["plots"]][["collection"]][["plots_mu"]][["data"]]
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+    expect_equal_plots(testPlot, "effect-size-model-averaged-negative-ES", dir="RobustBayesianMetaAnalysis")
   })
 }
 
@@ -945,98 +1134,99 @@ fitted_path <- "RoBMA_testfit.RDS"
   results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
-  test_that("Diagnostic Plots - Effect size autocorrelation matches", {
+  test_that("Diagnostics autocorrelations (mu) plot matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_mu"]][["collection"]][["diagnostics_model_12_mu_autocor"]][["collection"]][["diagnostics_model_12_mu_autocor_autocor_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-0", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-0", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Effect size densities matches", {
+  test_that("Diagnostics samples (mu) plot matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_mu"]][["collection"]][["diagnostics_model_12_mu_samples"]][["collection"]][["diagnostics_model_12_mu_samples_samples_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-1", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-1", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Effect size chains matches", {
+  test_that("Diagnostics traceplot (mu) plot  matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_mu"]][["collection"]][["diagnostics_model_12_mu_trace"]][["collection"]][["diagnostics_model_12_mu_trace_trace_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-2", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-2", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Weights [2] autocorrelation matches", {
+  test_that("Diagnostics autocorrelations (omega 1) plot  matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_omega"]][["collection"]][["diagnostics_model_12_omega_autocor"]][["collection"]][["diagnostics_model_12_omega_autocor_autocor_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-3", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-3", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Weights [3] autocorrelation matches", {
+  test_that("Diagnostics autocorrelations (omega 2) plot ", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_omega"]][["collection"]][["diagnostics_model_12_omega_autocor"]][["collection"]][["diagnostics_model_12_omega_autocor_autocor_2"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-4", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-4", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Weights [2] densities matches", {
+  test_that("Diagnostics samples (omega 1) plot  matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_omega"]][["collection"]][["diagnostics_model_12_omega_samples"]][["collection"]][["diagnostics_model_12_omega_samples_samples_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-5", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-5", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Weights [3] densities matches", {
+  test_that("Diagnostics samples (omega 2) plotmatches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_omega"]][["collection"]][["diagnostics_model_12_omega_samples"]][["collection"]][["diagnostics_model_12_omega_samples_samples_2"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-6", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-6", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Weights [2] chains matches", {
+  test_that("Diagnostics traceplot (omega 1) plot matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_omega"]][["collection"]][["diagnostics_model_12_omega_trace"]][["collection"]][["diagnostics_model_12_omega_trace_trace_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-7", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-7", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Weights [3] chains matches", {
+  test_that("Diagnostics traceplot (omega 2) plot matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_omega"]][["collection"]][["diagnostics_model_12_omega_trace"]][["collection"]][["diagnostics_model_12_omega_trace_trace_2"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-8", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-8", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Heterogeneity autocorrelation matches", {
+  test_that("Diagnostics autocorrelation (tau) plot matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_tau"]][["collection"]][["diagnostics_model_12_tau_autocor"]][["collection"]][["diagnostics_model_12_tau_autocor_autocor_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-9", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-9", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Heterogeneity densities matches", {
+  test_that("Diagnostics samples (tau) matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_tau"]][["collection"]][["diagnostics_model_12_tau_samples"]][["collection"]][["diagnostics_model_12_tau_samples_samples_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-10", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-10", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Diagnostic Plots - Heterogeneity chains matches", {
+  test_that("Diagnostics traceplot (tau) matches", {
     plotName <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_model_12"]][["collection"]][["diagnostics_model_12_tau"]][["collection"]][["diagnostics_model_12_tau_trace"]][["collection"]][["diagnostics_model_12_tau_trace_trace_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-11", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "diagnostics-prefitted-1-titleless-plot-11", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Models Diagnostics Overview table results match", {
     table <- results[["results"]][["diagnostics"]][["collection"]][["diagnostics_models_diagnostics"]][["data"]]
     expect_equal_tables(table,
-                        list("", "", "", 1, "Spike(0)", "Spike(1)", "Spike(0)", 10466, 1.00010049364457,
-                             0.000115094597818856, 2, "Spike(0)", "Two-sided((0.05), (1, 1))",
-                             "Spike(0)", 9331, 1.000085163241, 0.00159202246136869, 3, "Spike(0)",
-                             "Two-sided((0.1, 0.05), (1, 1, 1))", "Spike(0)", 7507, 1.00030361193045,
-                             0.00108772876719897, 4, "Spike(0)", "Spike(1)", "InvGamma(1, 0.15)[0, Inf]",
-                             1093, 1.00117114947046, 0.002655287299943, 5, "Spike(0)", "Two-sided((0.05), (1, 1))",
-                             "InvGamma(1, 0.15)[0, Inf]", 1103, 1.00370110498082, 0.00269610373657982,
+                        list("", "", "", 1, "Spike(0)", "Spike(1)", "Spike(0)", 2640, 1.00003411674087,
+                             0.00499106325851357, 2, "Spike(0)", "Two-sided((0.05), (1, 1))",
+                             "Spike(0)", 2065, 1.00018724141735, 0.00457281380618246, 3,
+                             "Spike(0)", "Two-sided((0.1, 0.05), (1, 1, 1))", "Spike(0)",
+                             1314, 1.00140746545812, 0.00403857529523985, 4, "Spike(0)",
+                             "Spike(1)", "InvGamma(1, 0.15)[0, Inf]", 2256, 1.00093573490301,
+                             0.00476716834572168, 5, "Spike(0)", "Two-sided((0.05), (1, 1))",
+                             "InvGamma(1, 0.15)[0, Inf]", 1599, 1.00543812368937, 0.00453407225202122,
                              6, "Spike(0)", "Two-sided((0.1, 0.05), (1, 1, 1))", "InvGamma(1, 0.15)[0, Inf]",
-                             18231, 1.00028627530142, 0.000309706897676008, 7, "Normal(0, 1)[-Inf, Inf]",
-                             "Spike(1)", "Spike(0)", 7303, 1.00070481635947, 0.00146835764065996,
+                             4856, 0.99996990865339, 0.00271797365574783, 7, "Normal(0, 1)[-Inf, Inf]",
+                             "Spike(1)", "Spike(0)", 2166, 1.00020484967232, 0.00526137911926847,
                              8, "Normal(0, 1)[-Inf, Inf]", "Two-sided((0.05), (1, 1))", "Spike(0)",
-                             4109, 1.00083686191282, 0.00232405766583934, 9, "Normal(0, 1)[-Inf, Inf]",
-                             "Two-sided((0.1, 0.05), (1, 1, 1))", "Spike(0)", 997, 1.00162860705,
-                             0.00140948483318384, 10, "Normal(0, 1)[-Inf, Inf]", "Spike(1)",
-                             "InvGamma(1, 0.15)[0, Inf]", 574, 1.01040819322647, 0.00374251928756153,
+                             2173, 1.00057613895391, 0.0043135085739478, 9, "Normal(0, 1)[-Inf, Inf]",
+                             "Two-sided((0.1, 0.05), (1, 1, 1))", "Spike(0)", 658, 1.00131079141925,
+                             0.00887624435526559, 10, "Normal(0, 1)[-Inf, Inf]", "Spike(1)",
+                             "InvGamma(1, 0.15)[0, Inf]", 686, 1.00103786173391, 0.00832076930050759,
                              11, "Normal(0, 1)[-Inf, Inf]", "Two-sided((0.05), (1, 1))",
-                             "InvGamma(1, 0.15)[0, Inf]", 618, 1.00760178942564, 0.0028040331933867,
+                             "InvGamma(1, 0.15)[0, Inf]", 650, 1.0006477761088, 0.0089700481583478,
                              12, "Normal(0, 1)[-Inf, Inf]", "Two-sided((0.1, 0.05), (1, 1, 1))",
                              "InvGamma(1, 0.15)[0, Inf]"))
   })
@@ -1044,17 +1234,17 @@ fitted_path <- "RoBMA_testfit.RDS"
   test_that("Model Estimates table results match", {
     table <- results[["results"]][["individual_models"]][["collection"]][["individual_models_model_12"]][["collection"]][["individual_models_model_12_temp_coef"]][["data"]]
     expect_equal_tables(table,
-                        list(0.00126147153001014, 618, 0.0932223132127736, 0.153187957087545,
-                             0.153464069255454, 1.00760178942564, "Effect size (<unicode><unicode>)",
-                             0.211319027553267, 0.000988904353088519, 1066, 0.0208588078550267,
-                             0.0710380084816596, 0.0650065040133452, 1.00053721072253, "Heterogeneity (<unicode><unicode>)",
-                             0.134527829353758))
+                        list(0.0089700481583478, 650, -0.27577848560309, 0.156953845294782,
+                             0.15201967236391, 1.00062065346842, "Effect size (<unicode><unicode>)",
+                             0.62325922718054, 0.00460957412865408, 1495, 0.0367527372164884,
+                             0.184712184393409, 0.131520521597414, 1.00015376926195, "Heterogeneity (<unicode><unicode>)",
+                             0.64396175120006))
   })
   
   test_that("Information table results match", {
     table <- results[["results"]][["individual_models"]][["collection"]][["individual_models_model_12"]][["collection"]][["individual_models_model_12_temp_info"]][["data"]]
     expect_equal_tables(table,
-                        list(2.0792294240899, -27.2219234757986, 0.121740236193396, 0.0625
+                        list(0.176759472366701, -5.90832379591304, 0.0116467202823197, 0.0625
                         ))
   })
   
@@ -1068,149 +1258,80 @@ fitted_path <- "RoBMA_testfit.RDS"
   test_that("Estimated Studies' Effects (Î¸) table results match", {
     table <- results[["results"]][["individual_models"]][["collection"]][["individual_models_model_12"]][["collection"]][["individual_models_model_12_temp_studies"]][["data"]]
     expect_equal_tables(table,
-                        list(0.00118688637129725, 1560, 0.0627664742209605, 0.154523245344715,
-                             0.153690730421082, 1.00339505724863, "Anderson (2004; Exp. 2)",
-                             0.241173702107704, 0.00112955962618415, 1492, 0.0698010502811825,
-                             0.152779753070973, 0.152599336635102, 1.00239291265114, "Anderson (2004; Exp. 3)",
-                             0.234984055915514, 0.00124618492311774, 1401, 0.0689755103580689,
-                             0.155983072032323, 0.154920007131437, 1.00309465749598, "Anderson (in press)",
-                             0.244630628537246, 0.00110341500002332, 1558, 0.0597272695519908,
-                             0.146426303481604, 0.14679349266614, 1.00339425145671, "Anderson (2000)",
-                             0.226105703128576, 0.0011262922481393, 1579, 0.0590402625754587,
-                             0.147390765973535, 0.147676023623913, 1.00242021695147, "Arriaga (2008)",
-                             0.22924387931336, 0.00133451311147185, 1260, 0.0682307143148739,
-                             0.157587689345041, 0.15629519193073, 1.00283145674438, "Anderson (2003)",
-                             0.246525009881734, 0.0014310699301483, 1234, 0.0763658363310853,
-                             0.167013058316743, 0.163897292004967, 1.00246737646966, "Barlett (2009)",
-                             0.263346181018786, 0.00117802180893373, 1516, 0.0637828064097584,
-                             0.152818011242218, 0.152078730818824, 1.00258976126556, "Ballard (1999)",
-                             0.237933975315872, 0.00123778539537918, 1449, 0.0671842226666939,
-                             0.155130284083594, 0.154072598247243, 1.00223327392586, "Bartholow (2005)",
-                             0.246231631213309, 0.0011916982403025, 1469, 0.0629968248031648,
-                             0.151181866074427, 0.150664756828034, 1.00159032380496, "Carnagey (2005)",
-                             0.236789483376031, 0.00115609244571203, 1634, 0.0527857559828623,
-                             0.147913511968537, 0.148238636316897, 1.00291565932601, "Cicchiriool (2006)",
-                             0.23106019374081, 0.00120746258684542, 1362, 0.0656512521782747,
-                             0.15320400762662, 0.152612190904567, 1.00260703362534, "Gentile (in press)",
-                             0.234437797531761, 0.00133097928472719, 1323, 0.0679649066942493,
-                             0.157783932387765, 0.155899051978766, 1.00246881411072, "Irwin (1995)",
-                             0.250858897786932, 0.00124844903687008, 1477, 0.0542260453978141,
-                             0.149391520910075, 0.148864473825508, 1.00311163300669, "Katori (2001)",
-                             0.237019664550896, 0.00126560351334505, 1350, 0.0645409819622838,
-                             0.154588428560622, 0.153005458716874, 1.00247303615928, "Konijn (2007)",
-                             0.240980470188945, 0.00128578810155593, 1368, 0.0649122512501964,
-                             0.156329546629931, 0.154663786913019, 1.00240780156172, "Sheese (2005)",
-                             0.244656013279677, 0.00128262553474706, 1372, 0.0691279295403818,
-                             0.155798047993054, 0.154545821242817, 1.00315622278313, "Sakamoto (2001; Exp. 1)",
-                             0.248588032613739, 0.0012505173149723, 1485, 0.0617874777226259,
-                             0.154130522966276, 0.152619752735264, 1.00183948917286, "Schutte (1988)",
-                             0.245958814131438, 0.00131402187142727, 1356, 0.0621610500572623,
-                             0.154740207443713, 0.153345506781616, 1.00332370639166, "Sakamoto (2001; Exp. 1)",
-                             0.24358820073225, 0.00122787617930207, 1487, 0.0597698182037126,
-                             0.152396116448412, 0.151751149382207, 1.00293613864426, "Sakamoto (2001; Exp. 2)",
-                             0.239509192199654, 0.00118789973197807, 1581, 0.0522774414078521,
-                             0.144724136391252, 0.145041598393974, 1.00297128742555, "Yukawa (2000)",
-                             0.233525733566131, 0.000921418775797227, 1529, 0.0693022676787508,
-                             0.139518596072963, 0.140408644795474, 1.0021484714064, "Anderson (2007)",
-                             0.204910125134164, 0.0013363933248547, 1403, 0.0683512340527687,
-                             0.163246891077896, 0.160893100662774, 1.00298017625409, "Bartholow (2002)",
-                             0.257561804022334))
+                        list(0.00852024439881299, 735, -0.255923008947252, 0.176748964322513,
+                             0.167154704813216, 1.00091629944768, "Study 1", 0.663245585745701,
+                             0.00809948454702872, 749, -0.274041610154144, 0.160779535771706,
+                             0.157944785429571, 1.00068785496871, "Study 2", 0.612301087856998,
+                             0.00807508788266646, 709, -0.280653418186545, 0.136876373175994,
+                             0.134293585298117, 1.00066087953453, "Study 3", 0.561929530379696
+                        ))
   })
   
   test_that("Estimated Weights (Ď‰) table results match", {
     table <- results[["results"]][["individual_models"]][["collection"]][["individual_models_model_12"]][["collection"]][["individual_models_model_12_temp_weights"]][["data"]]
     expect_equal_tables(table,
-                        list("<unicode><unicode><unicode>", 0, 1, 0, 1, 1, 1.00062993417959,
-                             1, 0.05, 0.0028040331933867, 6554, 0.199294973945084, 0.05,
-                             0.550618160777274, 0.540182899062307, 1.00098003434939, 0.998234527198636,
-                             0.1, 0.00191804640479239, 1942, 0.00815564945392979, 0.1, 0.112534613890062,
-                             0.0899850976559516, 1.00282589692782, 0.282599573067571, 1
-                        ))
+                        list("<unicode><unicode><unicode>", 0, 1, 0, 1, 1, 0.999981156237916,
+                             1, 0.05, 0.00447268814768601, 1929, 0.289090563535792, 0.05,
+                             0.736649016128691, 0.774405065576981, 1.00039941621822, 0.990080716733073,
+                             0.1, 0.00415766999088018, 2644, 0.119733401287344, 0.1, 0.490236116608678,
+                             0.485039880388114, 1.0006477761088, 0.89768722132576, 1))
   })
   
   test_that("Model Averaged Estimates table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0.0946053997042164, 0.152208200580981, 0.152208200580981, "Effect size (<unicode><unicode>)",
-                             0.207990864321621, 0, 0, 0, "Heterogeneity (<unicode><unicode>)",
-                             0.0876252147626617))
+                        list(-0.104773490907481, 0.038323039556351, 0, "Effect size (<unicode><unicode>)",
+                             0.360885167995635, 0, 0.073578226708627, 0, "Heterogeneity (<unicode><unicode>)",
+                             0.339482111457866))
   })
   
   test_that("Model Averaged Weights (Ď‰) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_weights"]][["data"]]
     expect_equal_tables(table,
-                        list(1, 0, 1, 1, 1, 0.05, 0.0945052266099806, 0.05, 0.505983624767411,
-                             0.505983624767411, 0.961965550168008, 0.1, 0.0224360274260941,
-                             0.1, 0.0986787722822264, 0.0986787722822264, 0.36834063889696,
+                        list(1, 0, 1, 1, 1, 0.05, 0.245436596470257, 0.05, 0.835686040987476,
+                             1, 1, 0.1, 0.130458675198804, 0.1, 0.795555189151253, 1, 1,
                              1))
   })
   
   test_that("Model Summary table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_overall_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(11547021.5313713, "6/12", 0.999999913397588, 0.5, "Effect", 0.158577012507722,
-                             "6/12", 0.13687222411265, 0.5, "Heterogeneity", 529.088343904832,
-                             "8/12", 0.998113521997798, 0.5, "Publication bias"))
+                        list(0.287745674806251, "6/12", 0.223449148722277, 0.5, "Effect", 0.570584756327829,
+                             "6/12", 0.363294469801113, 0.5, "Heterogeneity", 0.615135637490406,
+                             "8/12", 0.380856952946814, 0.5, "Publication bias"))
   })
   
   test_that("Model Averaged Estimated Studies' Effects (Î¸) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_studies_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0.0903712028165508, 0.148447007028325, 0.148447007028325, "Anderson (2004; Exp. 2)",
-                             0.20667950354462, 0.0911433972007817, 0.151341205650675, 0.151341205650675,
-                             "Anderson (2004; Exp. 3)", 0.209084514495961, 0.091006089540715,
-                             0.150979666400309, 0.150979666400309, "Anderson (in press)",
-                             0.203521157657346, 0.0882173761871017, 0.148584006166866, 0.148584006166866,
-                             "Anderson (2000)", 0.201616650754228, 0.0912963264855289, 0.148500644483084,
-                             0.148500644483084, "Arriaga (2008)", 0.204359025089417, 0.0882173761871017,
-                             0.150979666400309, 0.150979666400309, "Anderson (2003)", 0.204367405965642,
-                             0.0914274969068644, 0.151101661326525, 0.151101661326525, "Barlett (2009)",
-                             0.217917108882882, 0.0869587243318078, 0.148754313363224, 0.148754313363224,
-                             "Ballard (1999)", 0.207037237467093, 0.0882173761871017, 0.149581633766109,
-                             0.149581633766109, "Bartholow (2005)", 0.204902147172008, 0.0898819694269352,
-                             0.150104830528991, 0.150104830528991, "Carnagey (2005)", 0.204100012067219,
-                             0.0903712028165508, 0.149548043660973, 0.149548043660973, "Cicchiriool (2006)",
-                             0.204359025089417, 0.0928473613250039, 0.149257190027554, 0.149257190027554,
-                             "Gentile (in press)", 0.203219859969572, 0.0891684098355765,
-                             0.149581633766109, 0.149581633766109, "Irwin (1995)", 0.205877110241537,
-                             0.0914274969068644, 0.149257190027554, 0.149257190027554, "Katori (2001)",
-                             0.203521157657346, 0.0903766383851239, 0.152382609220662, 0.152382609220662,
-                             "Konijn (2007)", 0.205063319528532, 0.0880135758536917, 0.149747686878157,
-                             0.149747686878157, "Sheese (2005)", 0.211590112079562, 0.0918803221743606,
-                             0.151055090724261, 0.151055090724261, "Sakamoto (2001; Exp. 1)",
-                             0.20463765554737, 0.0891684098355765, 0.149100225017513, 0.149100225017513,
-                             "Schutte (1988)", 0.204100012067219, 0.0903712028165508, 0.149486725146314,
-                             0.149486725146314, "Sakamoto (2001; Exp. 1)", 0.204359025089417,
-                             0.0882173761871017, 0.148754313363224, 0.148754313363224, "Sakamoto (2001; Exp. 2)",
-                             0.203767163890428, 0.0865173233841308, 0.148375414365553, 0.148375414365553,
-                             "Yukawa (2000)", 0.204359025089417, 0.089251239382399, 0.147987763601752,
-                             0.147987763601752, "Anderson (2007)", 0.196737278855289, 0.0891684098355765,
-                             0.150979666400309, 0.150979666400309, "Bartholow (2002)", 0.212299505210962
+                        list(-0.107450163928454, 0.0555020197211975, 0, "Study 1", 0.482061559243418,
+                             -0.0740703424511303, 0.0558393845146318, 0, "Study 2", 0.428338020099332,
+                             -0.152940987187001, 0.0539633761646308, 0, "Study 3", 0.435371637741933
                         ))
   })
   
   test_that("Effect size (Conditional) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-conditional-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-conditional-prefitted-1", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Weight function (Conditional) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_omega"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "weight-function-conditional-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "weight-function-conditional-prefitted-1", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Heterogeneity (Conditional) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_tau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "heterogeneity-conditional-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "heterogeneity-conditional-prefitted-1", dir="RobustBayesianMetaAnalysis")
   })
   
   test_that("Forest plot (Conditional) matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_theta"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "forest-plot-conditional-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "forest-plot-conditional-prefitted-1", dir="RobustBayesianMetaAnalysis")
   })
 }
 {
@@ -1278,60 +1399,58 @@ fitted_path <- "RoBMA_testfit.RDS"
   results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
-  test_that("Model Averaged Estimates table results match (different CI + BF01)", {
+  test_that("Model Averaged Estimates (different CI + BF01) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0.113189082589328, 0.152208200580981, 0.152208200580981, "Effect size (<unicode><unicode>)",
-                             0.189074473607484, 0, 0, 0, "Heterogeneity (<unicode><unicode>)",
-                             0.048039183915011))
+                        list(0, 0.038323039556351, 0, "Effect size (<unicode><unicode>)", 0.207512189502431,
+                             0, 0.073578226708627, 0, "Heterogeneity (<unicode><unicode>)",
+                             0.222322562122289))
   })
   
-  test_that("Model Averaged Weights (Ď‰) table results match (different CI + BF01)", {
+  test_that("Model Averaged Weights (omega) (different CI + BF01) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_weights"]][["data"]]
     expect_equal_tables(table,
-                        list(1, 0, 1, 1, 1, 0.05, 0.181151141450075, 0.05, 0.505983624767411,
-                             0.505983624767411, 0.867889982664734, 0.1, 0.0390524447569886,
-                             0.1, 0.0986787722822264, 0.0986787722822264, 0.227823462705588,
+                        list(1, 0, 1, 1, 1, 0.05, 0.376517122973235, 0.05, 0.835686040987476,
+                             1, 1, 0.1, 0.310983178144945, 0.1, 0.795555189151253, 1, 1,
                              1))
   })
   
-  test_that("Model Summary table results match (different CI + BF01)", {
+  test_that("Model Summary (different CI + BF01) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_overall_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(8.66024192717725e-08, "6/12", 0.999999913397588, 0.5, "Effect",
-                             6.30608424377591, "6/12", 0.13687222411265, 0.5, "Heterogeneity",
-                             0.00189004352774, "8/12", 0.998113521997798, 0.5, "Publication bias"
-                        ))
+                        list(3.47529116006117, "6/12", 0.223449148722277, 0.5, "Effect", 1.75258800539258,
+                             "6/12", 0.363294469801113, 0.5, "Heterogeneity", 1.62565772335959,
+                             "8/12", 0.380856952946814, 0.5, "Publication bias"))
   })
   
-  test_that("Effect size (Model Averaged) plot matches (no prior)", {
+  test_that("Effect size (Model Averaged) (no prior) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-model-averaged-prefitted-2", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Effect size vs Heterogeneity (Model Averaged) plot matches", {
+  test_that("Effect size vs Heterogeneity (Model Averaged) (no prior) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_mutau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-vs-heterogeneity-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-vs-heterogeneity-model-averaged-prefitted-2", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Weight function (Model Averaged) plot matches  (no prior)", {
+  test_that("Weight function (Model Averaged) (no prior) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_omega"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "weight-function-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "weight-function-model-averaged-prefitted-2", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Heterogeneity (Model Averaged) plot matches  (no prior)", {
+  test_that("Heterogeneity (Model Averaged) (no prior) plot matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_tau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "heterogeneity-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "heterogeneity-model-averaged-prefitted-2", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Forest plot (Model Averaged) matches  (observed + predicted)", {
+  test_that("Forest plot (Model Averaged) (observed + predicted) matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_theta"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "forest-plot-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "forest-plot-model-averaged-prefitted-2", dir="RobustBayesianMetaAnalysis")
   })
 }
 {
@@ -1397,61 +1516,62 @@ fitted_path <- "RoBMA_testfit.RDS"
   options$save_path <- ""
   set.seed(1)
   dataset <- NULL
+  
   results <- jasptools::run("RobustBayesianMetaAnalysis", dataset, options)
   
   
-  test_that("Model Averaged Estimates table results match (log BF & different CI)", {
+  test_that("Model Averaged Estimates (log BF & different CI) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(0.113189082589328, 0.152208200580981, 0.152208200580981, "Effect size (<unicode><unicode>)",
-                             0.189074473607484, 0, 0, 0, "Heterogeneity (<unicode><unicode>)",
-                             0.048039183915011))
+                        list(0, 0.038323039556351, 0, "Effect size (<unicode><unicode>)", 0.207512189502431,
+                             0, 0.073578226708627, 0, "Heterogeneity (<unicode><unicode>)",
+                             0.222322562122289))
   })
   
-  test_that("Model Averaged Weights (Ď‰) table results match (log BF & different CI)", {
+  test_that("Model Averaged Weights (omega) (log BF & different CI) table results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_averaged_weights"]][["data"]]
     expect_equal_tables(table,
-                        list(1, 0, 1, 1, 1, 0.05, 0.181151141450075, 0.05, 0.505983624767411,
-                             0.505983624767411, 0.867889982664734, 0.1, 0.0390524447569886,
-                             0.1, 0.0986787722822264, 0.0986787722822264, 0.227823462705588,
+                        list(1, 0, 1, 1, 1, 0.05, 0.376517122973235, 0.05, 0.835686040987476,
+                             1, 1, 0.1, 0.310983178144945, 0.1, 0.795555189151253, 1, 1,
                              1))
   })
   
-  test_that("Model Summary table results match (log BF & different CI)", {
+  test_that("Model Summary table (log BF & different CI) results match", {
     table <- results[["results"]][["main_summary"]][["collection"]][["main_summary_overall_summary"]][["data"]]
     expect_equal_tables(table,
-                        list(16.2619380856046, "6/12", 0.999999913397588, 0.5, "Effect", -1.84151492033841,
-                             "6/12", 0.13687222411265, 0.5, "Heterogeneity", 6.27115541962552,
-                             "8/12", 0.998113521997798, 0.5, "Publication bias"))
+                        list(-1.24567826257478, "6/12", 0.223449148722277, 0.5, "Effect", -0.56109355572288,
+                             "6/12", 0.363294469801113, 0.5, "Heterogeneity", -0.485912486728035,
+                             "8/12", 0.380856952946814, 0.5, "Publication bias"))
   })
   
-  test_that("Forest plot (Model Averaged) matches (observed, descending)", {
+  test_that("Forest plot (Model Averaged) (observed, descending) matches", {
     plotName <- results[["results"]][["plots"]][["collection"]][["plots_theta"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "forest-plot-model-averaged-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "forest-plot-model-averaged-prefitted-3", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Effect size (Models) plot matches (all models, descending by post. prob)", {
+  test_that("Effect size (Models) (all models, descending by post. prob) plot matches", {
     plotName <- results[["results"]][["plots_individual"]][["collection"]][["plots_individual_mu"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "effect-size-models-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "effect-size-models-prefitted-3", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Weights [2] (Models) plot matches (all models, descending by post. prob)", {
+  test_that("Weights (Models) (all models, descending by post. prob) plot matches", {
     plotName <- results[["results"]][["plots_individual"]][["collection"]][["plots_individual_omega"]][["collection"]][["plots_individual_omega_plot_1"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-5", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "weight-1-models-prefitted-3", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Weights [3] (Models) plot matches (all models, descending by post. prob)", {
+  test_that("Weights (Models) (all models, descending by post. prob) plot matches", {
     plotName <- results[["results"]][["plots_individual"]][["collection"]][["plots_individual_omega"]][["collection"]][["plots_individual_omega_plot_2"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "titleless-plot-6", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "weight-2-models-prefitted-3", dir="RobustBayesianMetaAnalysis")
   })
   
-  test_that("Heterogeneity (Models) plot matches (all models, descending by post. prob)", {
+  test_that("Heterogeneity (Models) (all models, descending by post. prob) plot matches", {
     plotName <- results[["results"]][["plots_individual"]][["collection"]][["plots_individual_tau"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-    expect_equal_plots(testPlot, "heterogeneity-models-", dir="RobustBayesianMetaAnalysis")
+    expect_equal_plots(testPlot, "heterogeneity-models-prefitted-3", dir="RobustBayesianMetaAnalysis")
   })
+  
 }
