@@ -705,8 +705,6 @@ void AnalysisForm::clearFormWarnings()
 
 	for(auto & control : _controls)
 		control->item()->setHasWarning(false);
-
-	knownIssuesUpdated(); //Otherwise the user does not get to see any warnings
 }
 
 void AnalysisForm::setAnalysis(QVariant analysis)
