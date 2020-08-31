@@ -38,11 +38,11 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       tables = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6", 
                  "Greatest Lower Bound", "Average interitem correlation", "mean", "sd"),
       tables_item = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6", 
-                      "Greatest Lower Bound", "Item-rest correlation", "mean", "sd"),
+                      gettext("Greatest Lower Bound"), gettext("Item-rest correlation"), gettext("mean"), gettext("sd")),
       coefficients = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6", 
-                       "Greatest Lower Bound", "Item-rest correlation"),
+                       gettext("Greatest Lower Bound"), gettext("Item-rest correlation")),
       plots = list(expression("McDonald's"~omega), expression("Cronbach\'s"~alpha), expression("Guttman's"~lambda[2]), 
-                   expression("Guttman's"~lambda[6]), "Greatest Lower Bound")
+                   expression("Guttman's"~lambda[6]), gettext("Greatest Lower Bound"))
     ),
     
     order_end = c(5, 1, 2, 3, 4) # order for plots and such, put omega to the front
@@ -321,7 +321,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     if (nvar > 0L && nvar < 3L)
       scaleTable$addFootnote(gettextf("Please enter at least 3 variables to do an analysis. %s", model[["footnote"]]))
     else
-      scaleTable$addFootnote(gettext(model[["footnote"]]))
+      scaleTable$addFootnote(model[["footnote"]])
     jaspResults[["scaleTable"]] <- scaleTable
     scaleTable$position <- 1
     return()
@@ -337,7 +337,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   if (!is.null(relyFit)) {
 
     for (i in idxSelected) {
-      scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+      scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
       if (options[["rHat"]]) {
         if (opts[i] == "mean" || opts[i] == "sd") {
           rhat <- NA_real_
@@ -358,12 +358,12 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     scaleTable$setData(allData)
     
     if (!is.null(model[["footnote"]]))
-      scaleTable$addFootnote(gettext(model[["footnote"]]))
+      scaleTable$addFootnote(model[["footnote"]])
     
   } else if (sum(selected) > 0L) {
     
     for (i in idxSelected) {
-      scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+      scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
     }
     
     nvar <- length(options[["variables"]])
@@ -374,7 +374,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     scaleTable$setError(model[["error"]])
   
   if (!is.null(model[["footnote"]]))
-    scaleTable$addFootnote(gettext(model[["footnote"]]))
+    scaleTable$addFootnote(model[["footnote"]])
   
   jaspResults[["scaleTable"]] <- scaleTable
   scaleTable$position = 1
@@ -433,7 +433,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                 overtitle = overTitles[i])
       }
     } else {
-      itemTable$addColumnInfo(name = paste0("postMean", i), title = gettext(estimators[i]), type = "number")
+      itemTable$addColumnInfo(name = paste0("postMean", i), title = estimators[i], type = "number")
     }
 
   }
