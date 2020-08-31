@@ -39,6 +39,7 @@ Description
 
 	Package { name: "svglite" }
 	Package { name: "stringi" }
+	Package { name: "prophet" }
 
 	Analysis
 	{

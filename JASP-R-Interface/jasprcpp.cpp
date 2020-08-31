@@ -1233,6 +1233,10 @@ void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames)
 
 				_jaspRCPP_System(cmd);
 			}
+			else if(line == "/usr/lib/libc++.1.dylib") //This could be done cleaner but I already rewrote this code in development so I will solve it through a merge conflict later
+			{
+				_jaspRCPP_System("install_name_tool -change " + line + " @executable_path/../Frameworks/R.framework/Versions/3.6/Resources/lib/libc++.1.dylib " + libDir);
+			}
 		}
 	}
 #endif
