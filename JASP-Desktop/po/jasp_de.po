@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-08-30 19:37+0000\n"
+"PO-Revision-Date: 2020-09-01 09:36+0000\n"
 "Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
@@ -44,7 +44,7 @@ msgstr "Variablen"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "Aufteilung"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Second-order Factor"
