@@ -143,33 +143,59 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
   modelTerms <- unlist(options$modelTerms, recursive = FALSE)
   factorModelTerms <- options$modelTerms[sapply(modelTerms, function(x) !any(x %in% options$covariates))]
+  allComponents <- unique(unlist(lapply(factorModelTerms, `[[`, "components"), use.names = FALSE))
 
-  for(i in length(factorModelTerms):1) {
-    .hasErrors(
-      dataset = dataset, 
-      type = c('observations', 'variance', 'infinity', 'factorLevels'),
-      all.target = c(options$dependent, options$covariates), 
-      all.grouping = factorModelTerms[[i]][['components']],
-      factorLevels.amount  = "< 2",
-      observations.amount = paste("<", length(options$dependent)+1), 
-      exitAnalysisIfErrors = TRUE)
-  }
-  
-  for(i in length(factorModelTerms):1) {
-    .hasErrors(
-      dataset = dataset, 
-      type = c('infinity', 'factorLevels'),
-      all.target = factorModelTerms[[i]][['components']], 
-      factorLevels.amount  = "< 2",
-      exitAnalysisIfErrors = TRUE)
-  }
-  
   .hasErrors(
-    dataset = dataset, 
-    type = c('infinity'),
-    all.target = options$wlsWeights,
-    exitAnalysisIfErrors = TRUE)
-  
+    dataset              = dataset,
+    type                 = c("infinity", "factorLevels"),
+    infinity.target      = c(options$dependent, options$covariates, allComponents, options$wlsWeights),
+    factorLevels.target  = options[["fixedFactors"]],
+    factorLevels.amount  = "< 2",
+    exitAnalysisIfErrors = TRUE
+  )
+
+  nWayInteractions <- unlist(lapply(factorModelTerms, lengths), use.names = FALSE)
+  if (any(nWayInteractions > 1L)) {
+
+    # ensure that the largest n-way interaction effects come last
+    factorModelTerms <- factorModelTerms[order(nWayInteractions)]
+
+    # For each model term, check if it is a strict subset of another term.
+    # For example, if grouping on a three-way interaction doesn't violate any error checks
+    # then all the two-way interactions composed of variables from the three-way interaction will pass.
+    idxToRemove <- integer()
+    for (i in 1:(length(factorModelTerms) - 1)) {
+      for (j in length(factorModelTerms):(i + 1)) {
+
+        if (all(factorModelTerms[[i]][["components"]] %in% factorModelTerms[[j]][["components"]])) {
+          idxToRemove <- c(idxToRemove, i)
+          break
+        }
+
+      }
+    }
+    componentsToGroupOn <- factorModelTerms[-idxToRemove]
+
+  } else {
+    componentsToGroupOn <- factorModelTerms
+  }
+
+  observations.amount <- paste("<", length(options[["dependent"]]) + 1L)
+  for(i in rev(seq_along(componentsToGroupOn))) {
+
+    componentsToGroupBy <- componentsToGroupOn[[i]][["components"]]
+
+    .hasErrors(
+      dataset              = dataset,
+      type                 = c("observations", "variance"),
+      all.target           = c(options$dependent, options$covariates),
+      all.grouping         = componentsToGroupBy,
+      observations.amount  = observations.amount,
+      exitAnalysisIfErrors = TRUE
+    )
+
+  }
+
   .hasErrors(dataset = dataset, 
              custom = function() {
                if (any(dataset[[.v(options$wlsWeights)]] <= 0)) 
