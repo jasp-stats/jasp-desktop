@@ -34,6 +34,8 @@
 #endif
 
 #include "utilenums.h"
+#include <codecvt>
+#include <regex>
 
 using namespace std;
 using namespace boost::posix_time;
@@ -398,4 +400,37 @@ std::string Utils::doubleToString(double dbl)
 	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes (and to get full precision)
 	conv << dbl;
 	return conv.str();
+}
+
+// hex should be 4 hexadecimals characters
+std::string Utils::_convertEscapedUnicodeToUTF8(const std::string& hex)
+{
+	std::string result = hex;
+	std::istringstream iss(hex);
+
+	uint32_t bytes;
+	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+
+	// Read the 4 hexadecimals as bytes, and convert these bytes into UTF8.
+	if (iss >> std::hex >> bytes) result = conv.to_bytes(char32_t(bytes));
+
+	return result;
+}
+
+// Replace all <U+FFFF> in str by their UT8 characters.
+void Utils::convertEscapedUnicodeToUTF8(std::string& inputStr)
+{
+	static const std::regex unicodeExpression ("<U\\+([0-9a-fA-F]{4})>");
+
+	std::smatch match;
+	auto begin	= inputStr.cbegin();
+
+	while (std::regex_search(begin, inputStr.cend(), match, unicodeExpression))
+	{
+		std::string utf8 = _convertEscapedUnicodeToUTF8(match[1].str()); // match 1 is the first group of the regexp: that is the 4 hexadecimals.
+		auto pos = match.position(0); // position of the whole sequence in str.
+		inputStr.replace(begin + pos, begin + pos + 8, utf8);
+		// str iterators cannot be trusted after replace. They must be recalculated from str.
+		begin = inputStr.begin() + pos;
+	}
 }

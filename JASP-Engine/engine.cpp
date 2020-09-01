@@ -523,6 +523,8 @@ void Engine::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & me
 
 void Engine::sendString(std::string message)
 {
+	Utils::convertEscapedUnicodeToUTF8(message);
+
 	Json::Value msgJson;
 
 	if(Json::Reader().parse(message, msgJson)) //If everything is converted to jaspResults maybe we can do this there?

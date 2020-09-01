@@ -66,9 +66,11 @@ public:
 	static bool			convertValueToIntForImport(		const std::string &strValue, int &intValue);
 	static bool			convertValueToDoubleForImport(	const std::string &strValue, double &doubleValue);
 	static std::string	doubleToString(double dbl);
+	static void			convertEscapedUnicodeToUTF8(	std::string &inputStr);
 
 private:
-	static std::string _deEuropeaniseForImport(		const std::string &value);
+	static std::string _deEuropeaniseForImport(			const std::string &value);
+	static std::string _convertEscapedUnicodeToUTF8(	const std::string &hex);
 
 	static std::vector<std::string>			_currentEmptyValues;
 	static const std::vector<std::string>	_defaultEmptyValues;
