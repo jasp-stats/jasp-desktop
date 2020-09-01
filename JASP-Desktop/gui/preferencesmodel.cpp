@@ -386,7 +386,6 @@ void PreferencesModel::_loadDatabaseFont()
 QString PreferencesModel::_checkFontList(QString fonts) const
 {
 	if (fonts.contains(","))
-	{
 		// If it is a list of fonts.
 		// Select the first one which is available.
 		for (QString font : fonts.split(","))
@@ -394,7 +393,6 @@ QString PreferencesModel::_checkFontList(QString fonts) const
 			if (_allFonts.contains(font.remove('"')))
 				return font;
 		}
-	}
 
 	return fonts;
 }

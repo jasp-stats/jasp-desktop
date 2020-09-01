@@ -62,8 +62,11 @@ ScrollView
 					id						: interfaceFonts
 					values					: preferencesModel.allInterfaceFonts
 					addEmptyValue			: true
+					showEmptyValueAsNormal	: true
+					addLineAfterEmptyValue	: true
+					addScrollBar			: true
 					placeholderText			: qsTr("default: %1").arg(defaultInterfaceFont.fontInfo.family)
-					value					: preferencesModel.interfaceFont
+					value					: currentIndex <= 0 ? placeholderText : preferencesModel.interfaceFont
 					onValueChanged			: preferencesModel.interfaceFont = value
 
 					KeyNavigation.tab		: codeFonts
@@ -87,8 +90,11 @@ ScrollView
 					id						: codeFonts
 					values					: preferencesModel.allCodeFonts
 					addEmptyValue			: true
+					showEmptyValueAsNormal	: true
+					addLineAfterEmptyValue	: true
+					addScrollBar			: true
 					placeholderText			: qsTr("default: %1").arg(defaultRCodeFont.fontInfo.family)
-					value					: preferencesModel.codeFont
+					value					: currentIndex <= 0 ? placeholderText : preferencesModel.codeFont
 					onValueChanged			: preferencesModel.codeFont = value
 
 					KeyNavigation.tab		: resultFonts
@@ -111,8 +117,11 @@ ScrollView
 					id						: resultFonts
 					values					: preferencesModel.allResultFonts
 					addEmptyValue			: true
+					showEmptyValueAsNormal	: true
+					addLineAfterEmptyValue	: true
+					addScrollBar			: true
 					placeholderText			: qsTr("default: %1").arg(defaultResultFont.fontInfo.family)
-					value					: preferencesModel.resultFont
+					value					: currentIndex <= 0 ? placeholderText : preferencesModel.resultFont
 					onValueChanged			: preferencesModel.resultFont = value
 
 					KeyNavigation.tab		: lightThemeButton
