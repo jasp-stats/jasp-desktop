@@ -197,11 +197,20 @@ Item
 
 					onExportToPDF:
 					{
+						if(preferencesModel.currentThemeName !== "lightTheme")
+							resultsJsInterface.setThemeCss("lightTheme");
+
 						resultsJsInterface.unselect(); //Otherwise we get the selected analysis highlighted in the pdf...
 						resultsView.printToPdf(pdfPath);
 					}
 				}
-				onPdfPrintingFinished:	resultsJsInterface.pdfPrintingFinished(filePath);
+				onPdfPrintingFinished:
+				{
+					if(preferencesModel.currentThemeName !== "lightTheme")
+						resultsJsInterface.setThemeCss(preferencesModel.currentThemeName);
+
+					resultsJsInterface.pdfPrintingFinished(filePath);
+				}
 
 				webChannel.registeredObjects:	[ resultsJsInterfaceInterface ]
 
