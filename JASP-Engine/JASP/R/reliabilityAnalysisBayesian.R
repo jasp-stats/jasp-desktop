@@ -180,7 +180,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       
       # get rid of multiple chains, first save the chains:
       relyFit[["Bayes"]][["chains"]] <- relyFit[["Bayes"]][["samp"]]
-      relyFit[["Bayes"]][["samp"]] <- lapply(relyFit[["Bayes"]][["chains"]], .chainSmoker)
+      relyFit[["Bayes"]][["samp"]] <- lapply(relyFit[["Bayes"]][["chains"]], as.vector)
 
       # mean and sd
       relyFit[["Bayes"]][["samp"]][["mean"]] <- NA_real_
@@ -190,7 +190,8 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       
       # get rid of multiple chains, first save the chains:
       relyFit[["Bayes"]][["ifitem"]][["chains"]] <- relyFit[["Bayes"]][["ifitem"]][["samp"]]
-      relyFit[["Bayes"]][["ifitem"]][["samp"]] <- lapply(relyFit[["Bayes"]][["ifitem"]][["chains"]], .chainSmoker)
+      relyFit[["Bayes"]][["ifitem"]][["samp"]] <- lapply(relyFit[["Bayes"]][["ifitem"]][["chains"]], 
+                                                         function(x) apply(x, 3, as.vector))
 
       # now the item statistics
       relyFit[["Bayes"]][["ifitem"]][["samp"]][["ircor"]] <- .reliabilityItemRestCor(dataset, options[["noSamples"]], options[["noBurnin"]], 
@@ -512,7 +513,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     poslow <- end - sum(prior[[1]][["x"]] > options[["probTableValueLow"]]) 
     poshigh <- end - sum(prior[[1]][["x"]] > options[["probTableValueHigh"]]) 
     # since the priors are only available in density form, the prior probability for the estimator being larger than
-    # a cutoff is given by caculating the relative probability of the density from the cutoff to 1.
+    # a cutoff is given by calculating the relative probability of the density from the cutoff to 1.
     # maybe check this with someone though
     
     probsPost <- numeric(sum(selected))
@@ -707,11 +708,19 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     plotContainerItem <- createJaspContainer(gettext("If Item Dropped Posterior Plots"))
     plotContainerItem$dependOn(options = c("variables", "plotItem", "noSamples", "noBurnin", "noChains", "noThin",
                                            "credibleIntervalValueItem", "orderType", "orderItem",
-                                           "reverseScaledItems", "missingValues", "setSeed", "seedValue"))
+                                           "reverseScaledItems", "missingValues", "setSeed", "seedValue", 
+                                           "alphaScale", "guttman2Scale", "guttman6Scale", 
+                                           "glbScale", "mcDonaldScale"))
     jaspResults[["plotContainerItem"]] <- plotContainerItem
   } 
   
   derivedOptions <- model[["derivedOptions"]]
+  # fixes issue that unchecking the scale coefficient box, does not uncheck the item-dropped coefficient box:
+  for (i in 1:5) {
+    if (!derivedOptions[["selectedEstimators"]][i]) {
+      derivedOptions[["itemDroppedSelectedItem"]][i] <- derivedOptions[["selectedEstimators"]][i]
+    }
+  }
   indices   <- which(derivedOptions[["itemDroppedSelectedItem"]])
   nmsLabs   <- derivedOptions[["namesEstimators"]][["plots"]]
   nmsObjs   <- derivedOptions[["namesEstimators"]][["tables_item"]]
@@ -977,27 +986,21 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   return(out)
 }
 
+# calculate the kublack leibler distance between two samples
+.KLD.statistic <- function(x, y) {
+  # transform the samples to PDFs:
+  xdf <- .get_approx_density(x)
+  ydf <- .get_approx_density(y)
+  
+  xx <- seq(0, 1, length.out = 1e4)
+  t <- LaplacesDemon::KLD(xdf(xx), ydf(xx))
+  t$sum.KLD.py.px
+}
 
 # calculate the kolomogorov smirnov distances between some samples and the original sample
 .ks.test.statistic <- function(x, y) {
   t <- stats::ks.test(x, y)
   t$statistic
-}
-
-# calculate the kublack leibler distance between two samples
-.KLD.statistic <- function(x, y) {
-  t <- LaplacesDemon::KLD(x, y)
-  t$sum.KLD.py.px
-}
-
-.chainSmoker <- function(A) {
-  d <- dim(A)
-  if (length(d) == 2) {
-    Av <- as.vector(A)
-  } else {
-    Av <- apply(A, seq(3, length(d), 1), as.vector)
-  }
-  return(coda::mcmc(Av))
 }
 
 .cov2cor.callback <- function(C, callback) {
@@ -1011,6 +1014,17 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   total <- apply(as.matrix(dataset[, cols]), 2, min, na.rm = T) + apply(as.matrix(dataset[, cols]), 2, max, na.rm = T)
   dataset[ ,cols] <- matrix(rep(total, nrow(dataset)), nrow(dataset), length(cols), byrow=T) - dataset[ ,cols]
   return(dataset)
+}
+
+.get_approx_density <- function(x) {
+  d <- density(x, n = 2^12)
+  f <- approxfun(d$x, d$y, yleft = 0, yright = 0)
+  c <- integrate(f, 0, 1)$value
+  return(
+    function(x) {
+      return(f(x) / c)
+    }
+  )
 }
 
   
