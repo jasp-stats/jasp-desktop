@@ -50,3 +50,32 @@ test_that("Prior and Posterior plot matches", {
   expect_equal_plots(testPlot, "prior-and-posterior-2", dir="SummaryStatsTTestBayesianIndependentSamples")
 })
 
+
+options <- jasptools::analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
+options$hypothesis <- "groupTwoGreater"
+options$tStatistic <- 2.3
+options$n1Size <- 20
+options$n2Size <- 20
+options$plotPriorAndPosterior <- TRUE
+options$plotBayesFactorRobustnessAdditionalInfo <- TRUE
+options$plotBayesFactorRobustness <- TRUE
+options$plotBayesFactorRobustnessAdditionalInfo <- TRUE
+options$bayesFactorType = "BF01"
+options$plotPriorAndPosteriorAdditionalInfo <- TRUE
+set.seed(1)
+results <- jasptools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
+
+
+test_that("BF Type Label Switches Correctly Robustness Check", {
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_BayesFactorRobustnessPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "bayes-factor-robustness-check-2", dir="SummaryStatsTTestBayesianIndependentSamples")
+})
+
+test_that("BF Type Label Switches Correctly Prior Posterior", {
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_priorPosteriorPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "prior-and-posterior-3", dir="SummaryStatsTTestBayesianIndependentSamples")
+})
+
+
