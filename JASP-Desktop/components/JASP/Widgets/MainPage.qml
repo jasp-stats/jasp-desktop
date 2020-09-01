@@ -266,6 +266,7 @@ Item
 							
 							customMenu.hide()
 
+							if (name === 'hasExportResults')				{ fileMenuModel.exportResultsInteractive();		return; }
 							if (name === 'hasRefreshAllAnalyses')			{ resultsJsInterface.refreshAllAnalyses();		return;	}
 							if (name === 'hasRemoveAllAnalyses')			{ resultsJsInterface.removeAllAnalyses();		return; }
 							if (name === 'hasCopy' || name === 'hasCite')	  resultsJsInterface.purgeClipboard();

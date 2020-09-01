@@ -23,7 +23,7 @@
 #include "gui/preferencesmodel.h"
 
 ResultMenuModel::ResultMenuModel(QObject *parent) : QAbstractListModel(parent),
-	_entriesOrder({"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg",
+	_entriesOrder({"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg", "hasExportResults",
 				"hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses", "hasShowDeps"})
 {
 	_generateCorrectlyTranslatedResultEntries();
@@ -47,7 +47,8 @@ void ResultMenuModel::_generateCorrectlyTranslatedResultEntries()
 		{	"hasRemove",				ResultMenuEntry(tr("Remove"),				"hasRemove",				"close-button.png",			"window.removeMenuClicked();")		},
 		{	"hasRemoveAllAnalyses",		ResultMenuEntry(tr("Remove All"),			"hasRemoveAllAnalyses",		"close-button.png",			"")									},
 		{	"hasRefreshAllAnalyses",	ResultMenuEntry(tr("Refresh All"),			"hasRefreshAllAnalyses",	"",							"")									},
-		{	"hasShowDeps",				ResultMenuEntry(tr("Show Dependencies"),	"hasShowDeps",				"",							"window.showDependenciesClicked()")	}
+		{	"hasShowDeps",				ResultMenuEntry(tr("Show Dependencies"),	"hasShowDeps",				"",							"window.showDependenciesClicked()")	},
+		{	"hasExportResults",			ResultMenuEntry(tr("Export Results"),		"hasExportResults",			"",							"")									}
    };
 }
 
