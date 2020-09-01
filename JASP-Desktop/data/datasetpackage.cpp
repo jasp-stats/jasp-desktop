@@ -714,7 +714,9 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 	if (_dataSet == nullptr)
 		return true;
 
-	bool changed = _dataSet->column(columnIndex).changeColumnType(newColumnType);
+	bool changed;
+
+	enlargeDataSetIfNecessary([&](){ changed = _dataSet->column(columnIndex).changeColumnType(newColumnType); }, "setColumnType");
 
 	if (changed)
 	{
