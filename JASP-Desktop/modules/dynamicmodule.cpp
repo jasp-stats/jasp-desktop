@@ -532,7 +532,7 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	{
 		R	<< standardRIndent << "pkgPath <- sub('\\\\', '/', " << pkgPath << ", fixed=TRUE);\n"; //replace any backslashes by forward slashes...
 		R	<< standardRIndent << "print(paste0(\"pkgPath: '\", pkgPath, \"'\"));\n";
-		R	<< standardRIndent << "loadLog <- paste0(loadLog, '\n', .runSeparateR(paste0(\"withr::with_libpaths(new=" << libPathsToUse << ", pkgbuild::with_build_tools(install.packages(pkgs='\", pkgPath, \"', lib='" << moduleRLibrary().toStdString() << "', type='source', repos=NULL, INSTALL_opts=c('--no-multiarch'))))\")));\n";
+		R	<< standardRIndent << "loadLog <- paste0(loadLog, '\n', .runSeparateR(paste0(\"withr::with_libpaths(new=" << libPathsToUse << ", pkgbuild::with_build_tools(install.packages(pkgs='\", pkgPath, \"', lib='" << moduleRLibrary().toStdString() << "', type='source', repos=NULL, INSTALL_opts=c('--no-multiarch')), required=FALSE ))\")));\n";
 	};
 
 	if(!onlyModPkg)
