@@ -29,9 +29,9 @@ Form
 		radioButtonsOnSameRow:	true
 		columns:				2
 		onValueChanged:	if(measures_correlation.checked) {
-			advanced_mu_transform_cohens_d.checked	= true
+			advanced_mu_transform_cohens_d.click()
 		} else if (measures_OR.checked){
-			advanced_mu_transform_log_OR.checked	= true
+			advanced_mu_transform_log_OR.click()
 		}
 
 		RadioButton
