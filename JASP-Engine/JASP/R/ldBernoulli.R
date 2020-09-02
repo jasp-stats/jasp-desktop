@@ -19,15 +19,10 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsBernoulli(options)
   
   #### Show bernoulli section ----
-  .ldIntroText(jaspResults, options, gettext("Bernoulli distribution"))
-  .ldBernoulliParsSupportMoments(jaspResults, options)
-  
-  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
-  .ldFillPMFContainer(pmfContainer, options, .ldFormulaBernoulliPMF)
-  
-  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCMFContainer(cmfContainer, options, .ldFormulaBernoulliCDF)
-  
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("Bernoulli distribution"), 
+                      parSupportMoments = .ldBernoulliParsSupportMoments,
+                      formulaPMF        = .ldFormulaBernoulliPMF, 
+                      formulaCMF        = .ldFormulaBernoulliCDF)
   
   #### Generate and Display data section ----
   # simulate and read data

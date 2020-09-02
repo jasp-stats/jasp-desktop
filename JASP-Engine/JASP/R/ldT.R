@@ -19,18 +19,11 @@ LDt <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsT(options)
   
   #### Show t section ----
-  .ldIntroText(jaspResults, options, gettext("t-distribution"))
-  .ldTParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaTPDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulaTCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaTQF)
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("t-distribution"), 
+                      parSupportMoments = .ldTParsSupportMoments,
+                      formulaPDF        = .ldFormulaTPDF, 
+                      formulaCDF        = .ldFormulaTCDF, 
+                      formulaQF         = .ldFormulaTQF)
   
   #### Generate and Display data section ----
   # simulate and read data

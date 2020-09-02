@@ -19,19 +19,12 @@ LDexponential <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsExponential(options)
   
   #### Show exponential section ----
-  .ldIntroText(jaspResults, options, gettext("exponential distribution"))
-  .ldExponentialParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaExponentialPDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulaExponentialCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaExponentialQF)
-  
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("exponential distribution"), 
+                      parSupportMoments = .ldExponentialParsSupportMoments,
+                      formulaPDF        = .ldFormulaExponentialPDF, 
+                      formulaCDF        = .ldFormulaExponentialCDF, 
+                      formulaQF         = .ldFormulaExponentialQF)
+
   #### Generate and Display data section ----
   # simulate and read data
   .simulateData(jaspResults, options)

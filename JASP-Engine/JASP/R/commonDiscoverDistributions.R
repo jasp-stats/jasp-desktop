@@ -628,6 +628,34 @@
   return()
 }
 
+#### Plots ----
+.ldShowDistribution <- function(jaspResults, options, name, parSupportMoments, formulaPDF=NULL, formulaPMF=NULL, formulaCDF=NULL, formulaCMF=NULL, formulaQF=NULL) {
+  .ldIntroText(jaspResults, options, name)
+  parSupportMoments(jaspResults, options)
+  
+  if (!is.null(formulaPDF) && is.null(formulaPMF)) {
+    pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
+    .ldFillPDFContainer(pdfContainer, options, formulaPDF)
+  } else if (is.null(formulaPDF) && !is.null(formulaPMF)) {
+    pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
+    .ldFillPMFContainer(pmfContainer, options, formulaPMF)
+  }
+  
+  if (!is.null(formulaCDF) && is.null(formulaCMF)) {
+    cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
+    .ldFillCDFContainer(cdfContainer, options, formulaCDF)
+  } else if(is.null(formulaCDF) && !is.null(formulaCMF)) {
+    cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
+    .ldFillCMFContainer(cmfContainer, options, formulaCMF)
+  }
+  
+  if (!is.null(formulaQF)) {
+    qfContainer <- .ldGetPlotContainer(jaspResults, options, "plotQF",   gettext("Quantile Function"), 5)
+    .ldFillQFContainer(qfContainer, options, formulaQF)
+  }
+  
+  return()
+}
 .ldGetPlotContainer <- function(jaspResults, options, name, title, position){
   if(!is.null(jaspResults[[name]])){
     plotsContainer <- jaspResults[[name]]

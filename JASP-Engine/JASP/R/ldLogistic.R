@@ -19,18 +19,11 @@ LDlogistic <- function(jaspResults, dataset, options, state=NULL){
   options <- .recodeOptionsLDLogistic(options)
   
   #### Show distribution section ----
-  .ldIntroText(jaspResults, options, gettext("logistic distribution"))
-  .ldLogisticParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaLogisticPDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulalogisticCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaLogisticQF)
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("logistic distribution"), 
+                      parSupportMoments = .ldLogisticParsSupportMoments,
+                      formulaPDF        = .ldFormulaLogisticPDF, 
+                      formulaCDF        = .ldFormulaLogisticCDF, 
+                      formulaQF         = .ldFormulaLogisticQF)
   
   #### Generate and Display data section ----
   # simulate and read data
@@ -157,9 +150,7 @@ LDlogistic <- function(jaspResults, dataset, options, state=NULL){
     text <- "<MATH>
     F(x; <span style='color:red'>&beta;</span>) = 
     </MATH>"
-  } else{
-    
-  }
+  } 
   
   return(gsub(pattern = "\n", replacement = " ", x = text))
 }
@@ -169,8 +160,6 @@ LDlogistic <- function(jaspResults, dataset, options, state=NULL){
     text <- "<MATH>
     Q(p; <span style='color:red'>&beta;</span>) = 
     </MATH>"
-  } else{
-    
   }
   
   return(gsub(pattern = "\n", replacement = " ", x = text))

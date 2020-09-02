@@ -19,18 +19,11 @@ LDf <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsF(options)
   
   #### Show f section ----
-  .ldIntroText(jaspResults, options, gettext("F-distribution"))
-  .ldFParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaFPDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulaFCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaFQF)
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("F-distribution"), 
+                      parSupportMoments = .ldFParsSupportMoments,
+                      formulaPDF        = .ldFormulaFPDF, 
+                      formulaCDF        = .ldFormulaFCDF, 
+                      formulaQF         = .ldFormulaFQF)
   
   #### Generate and Display data section ----
   # simulate and read data

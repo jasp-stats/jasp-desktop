@@ -19,18 +19,11 @@ LDgammaInverse <- function(jaspResults, dataset, options, state=NULL){
   options <- .recodeOptionsLDgammaInverse(options)
   
   #### Show gammaInverse section ----
-  .ldIntroText(jaspResults, options, gettext("inverse gamma distribution"))
-  .ldGammaInverseParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaGammaInversePDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulaGammaInverseCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaGammaInverseQF)
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("inverse gamma distribution"), 
+                      parSupportMoments = .ldGammaInverseParsSupportMoments,
+                      formulaPDF        = .ldFormulaGammaInversePDF, 
+                      formulaCDF        = .ldFormulaGammaInverseCDF, 
+                      formulaQF         = .ldFormulaGammaInverseQF)
   
   #### Generate and Display data section ----
   # simulate and read data

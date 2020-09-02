@@ -19,18 +19,11 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsChisq(options)
   
   #### Show chisq section ----
-  .ldIntroText(jaspResults, options, gettextf("%s<sup>2</sup> distribution","\u03A7"))
-  .ldChisqParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaChisqPDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulaChisqCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaChisqQF)
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettextf("%s<sup>2</sup> distribution","\u03A7"), 
+                      parSupportMoments = .ldChisqParsSupportMoments,
+                      formulaPDF        = .ldFormulaChisqPDF, 
+                      formulaCDF        = .ldFormulaChisqCDF, 
+                      formulaQF         = .ldFormulaChisqQF)
   
   #### Generate and Display data section ----
   # simulate and read data

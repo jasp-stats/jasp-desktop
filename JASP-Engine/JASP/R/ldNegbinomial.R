@@ -19,16 +19,10 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsNegbinomial(options)
   
   #### Show negbinomial section ----
-  .ldIntroText(jaspResults, options, gettext("negative binomial distribution"))
-  .ldNegbinomialParsSupportMoments(jaspResults, options)
-  
-  
-  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
-  .ldFillPMFContainer(pmfContainer, options, .ldFormulaNegbinomialPMF)
-  
-  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCMFContainer(cmfContainer, options, .ldFormulaNegbinomialCDF)
-  
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("negative binomial distribution"), 
+                      parSupportMoments = .ldNegbinomialParsSupportMoments,
+                      formulaPMF        = .ldFormulaNegbinomialPMF, 
+                      formulaCMF        = .ldFormulaNegbinomialCDF)
   
   #### Generate and Display data section ----
   # simulate and read data

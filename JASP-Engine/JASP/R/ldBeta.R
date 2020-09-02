@@ -19,18 +19,11 @@ LDbeta <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsBeta(options)
   
   #### Show beta section ----
-  .ldIntroText(jaspResults, options, gettext("beta distribution"))
-  .ldBetaParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaBetaPDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulaBetaCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaBetaQF)
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("beta distribution"), 
+                      parSupportMoments = .ldBetaParsSupportMoments,
+                      formulaPDF        = .ldFormulaBetaPDF, 
+                      formulaCDF        = .ldFormulaBetaCDF, 
+                      formulaQF         = .ldFormulaBetaQF)
   
   #### Generate and Display data section ----
   # simulate and read data

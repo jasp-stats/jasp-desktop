@@ -19,18 +19,11 @@ LDlognormal <- function(jaspResults, dataset, options, state=NULL){
   options <- .recodeOptionsLDLognormal(options)
   
   #### Show distribution section ----
-  .ldIntroText(jaspResults, options, gettext("log-normal distribution"))
-  .ldLognormalParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaLognormalPDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulalognormalCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaLognormalQF)
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("log-normal distribution"), 
+                      parSupportMoments = .ldLognormalParsSupportMoments,
+                      formulaPDF        = .ldFormulaLognormalPDF, 
+                      formulaCDF        = .ldFormulaLognormalCDF, 
+                      formulaQF         = .ldFormulaLognormalQF)
   
   #### Generate and Display data section ----
   # simulate and read data
@@ -157,8 +150,6 @@ LDlognormal <- function(jaspResults, dataset, options, state=NULL){
     text <- "<MATH>
     F(x; <span style='color:red'>&beta;</span>) = 
     </MATH>"
-  } else{
-    
   }
   
   return(gsub(pattern = "\n", replacement = " ", x = text))
@@ -169,8 +160,6 @@ LDlognormal <- function(jaspResults, dataset, options, state=NULL){
     text <- "<MATH>
     Q(p; <span style='color:red'>&beta;</span>) = 
     </MATH>"
-  } else{
-    
   }
   
   return(gsub(pattern = "\n", replacement = " ", x = text))

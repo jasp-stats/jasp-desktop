@@ -19,16 +19,10 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsPoisson(options)
   
   #### Show poisson section ----
-  .ldIntroText(jaspResults, options, gettext("Poisson distribution"))
-  .ldPoissonParsSupportMoments(jaspResults, options)
-  
-  
-  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
-  .ldFillPMFContainer(pmfContainer, options, .ldFormulaPoissonPMF)
-  
-  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCMFContainer(cmfContainer, options, .ldFormulaPoissonCDF)
-  
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("Poisson distribution"), 
+                      parSupportMoments = .ldPoissonParsSupportMoments,
+                      formulaPMF        = .ldFormulaPoissonPMF, 
+                      formulaCMF        = .ldFormulaPoissonCDF)
   
   #### Generate and Display data section ----
   # simulate and read data
