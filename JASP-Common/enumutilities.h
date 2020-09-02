@@ -133,7 +133,6 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 	{
 		// Token: [EnumName | EnumName=EnumValue]
 		std::string enumName;
-		T enumValue;
 		if (tokenString.find('=') == std::string::npos)
 			enumName = tokenString;
 		else

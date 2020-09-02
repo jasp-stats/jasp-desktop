@@ -74,6 +74,11 @@ public:
 	static bool				objectExistsInEnv(std::string envName);
 
 private:
+
+	// silences e.g., "./jaspResults.h:36:15: warning: 'jaspResults::dataEntry' hides overloaded virtual function [-Woverloaded-virtual]"
+	Json::Value	metaEntry(jaspObject * )					const	override { throw std::runtime_error("Don't call jaspResults::metaEntry(jaspObject * oldResult)"); };
+	Json::Value	dataEntry(jaspObject *, std::string & )		const	override { throw std::runtime_error("Don't call jaspResults::dataEntry(jaspObject * oldResult, std::string & errorMsg)"); };
+
 	static jaspResults				*	_jaspResults;
 	static Rcpp::Environment		*	_RStorageEnv; //we need this environment to store R objects in a "named" fashion, because then the garbage collector doesn't throw away everything...
 	static Json::Value					_response;
