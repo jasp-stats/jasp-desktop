@@ -97,10 +97,10 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
   
   options[['pars']]   <- list(lambda = options[['lambda']])
     
-  options[['pdfFun']] <- dpois
-  options[['cdfFun']] <- ppois
-  options[['qFun']]   <- qpois
-  options[['rFun']]   <- rpois
+  options[['pdfFun']] <- stats::dpois
+  options[['cdfFun']] <- stats::ppois
+  options[['qFun']]   <- stats::qpois
+  options[['rFun']]   <- stats::rpois
   options[['distNameInR']] <- "pois"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

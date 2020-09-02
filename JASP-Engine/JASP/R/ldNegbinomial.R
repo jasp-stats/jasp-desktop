@@ -102,10 +102,10 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
   
   options[['pars']]   <- list(size = options[['size']], mu = options[['mu']])
     
-  options[['pdfFun']] <- dnbinom
-  options[['cdfFun']] <- pnbinom
-  options[['qFun']]   <- qnbinom
-  options[['rFun']]   <- rnbinom
+  options[['pdfFun']] <- stats::dnbinom
+  options[['cdfFun']] <- stats::pnbinom
+  options[['qFun']]   <- stats::qnbinom
+  options[['rFun']]   <- stats::rnbinom
   options[['distNameInR']] <- "nbinom"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

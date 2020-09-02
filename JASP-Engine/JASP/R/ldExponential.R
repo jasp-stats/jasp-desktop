@@ -102,10 +102,10 @@ LDexponential <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("par")
   
   options[['pars']]   <- list(rate = options$rate)
-  options[['pdfFun']] <- dexp
-  options[['cdfFun']] <- pexp
-  options[['qFun']]   <- qexp
-  options[['rFun']]   <- rexp
+  options[['pdfFun']] <- stats::dexp
+  options[['cdfFun']] <- stats::pexp
+  options[['qFun']]   <- stats::qexp
+  options[['rFun']]   <- stats::rexp
   options[['distNameInR']] <- "exp"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

@@ -91,10 +91,10 @@ LDlogistic <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("mu", "sigma")
   
   options[['pars']]   <- list(location = options[['mu']], scale = options[['sigma']])
-  options[['pdfFun']] <- dlogis
-  options[['cdfFun']] <- plogis
-  options[['qFun']]   <- qlogis
-  options[['rFun']]   <- rlogis
+  options[['pdfFun']] <- stats::dlogis
+  options[['cdfFun']] <- stats::plogis
+  options[['qFun']]   <- stats::qlogis
+  options[['rFun']]   <- stats::rlogis
   options[['distNameInR']] <- "logis"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

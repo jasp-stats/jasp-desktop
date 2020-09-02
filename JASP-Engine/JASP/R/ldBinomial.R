@@ -98,10 +98,10 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
   options[['pars']]   <- list(prob = options[['prob']], size = options[['size']])
   options[['fix.pars']] <- list(size = options[['size']])
     
-  options[['pdfFun']] <- dbinom
-  options[['cdfFun']] <- pbinom
-  options[['qFun']]   <- qbinom
-  options[['rFun']]   <- rbinom
+  options[['pdfFun']] <- stats::dbinom
+  options[['cdfFun']] <- stats::pbinom
+  options[['qFun']]   <- stats::qbinom
+  options[['rFun']]   <- stats::rbinom
   options[['distNameInR']] <- "binom"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

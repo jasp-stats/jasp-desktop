@@ -106,10 +106,10 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("mu", "varValue")
   
   options[['pars']]   <- list(mean = options[['mu']], sd = options[['sd']])
-  options[['pdfFun']] <- dnorm
-  options[['cdfFun']] <- pnorm
-  options[['qFun']]   <- qnorm
-  options[['rFun']]   <- rnorm
+  options[['pdfFun']] <- stats::dnorm
+  options[['cdfFun']] <- stats::pnorm
+  options[['qFun']]   <- stats::qnorm
+  options[['rFun']]   <- stats::rnorm
   options[['distNameInR']] <- "norm"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

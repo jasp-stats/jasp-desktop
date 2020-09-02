@@ -104,10 +104,10 @@ LDgamma <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("shape", "par2")
   
   options[['pars']]   <- list(shape = options[['shape']], rate = options[['rate']])
-  options[['pdfFun']] <- dgamma
-  options[['cdfFun']] <- pgamma
-  options[['qFun']]   <- qgamma
-  options[['rFun']]   <- rgamma
+  options[['pdfFun']] <- stats::dgamma
+  options[['cdfFun']] <- stats::pgamma
+  options[['qFun']]   <- stats::qgamma
+  options[['rFun']]   <- stats::rgamma
   options[['distNameInR']] <- "gamma"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

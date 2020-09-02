@@ -96,10 +96,10 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("df", "ncp")
   
   options[['pars']]   <- list(df = options[['df']], ncp = options[['ncp']])
-  options[['pdfFun']] <- dchisq
-  options[['cdfFun']] <- pchisq
-  options[['qFun']]   <- qchisq
-  options[['rFun']]   <- rchisq
+  options[['pdfFun']] <- stats::dchisq
+  options[['cdfFun']] <- stats::pchisq
+  options[['qFun']]   <- stats::qchisq
+  options[['rFun']]   <- stats::rchisq
   options[['distNameInR']] <- "chisq"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

@@ -96,10 +96,10 @@ LDf <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("df1", "df2", "ncp")
   
   options[['pars']]   <- list(df1 = options[['df1']], df2 = options[['df2']], ncp = options[['ncp']])
-  options[['pdfFun']] <- df
-  options[['cdfFun']] <- pf
-  options[['qFun']]   <- qf
-  options[['rFun']]   <- rf
+  options[['pdfFun']] <- stats::df
+  options[['cdfFun']] <- stats::pf
+  options[['qFun']]   <- stats::qf
+  options[['rFun']]   <- stats::rf
   options[['distNameInR']] <- "f"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

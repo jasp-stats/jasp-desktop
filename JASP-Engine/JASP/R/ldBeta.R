@@ -96,10 +96,10 @@ LDbeta <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("alpha", "beta")
   
   options[['pars']]   <- list(shape1 = options[['alpha']], shape2 = options[['beta']])
-  options[['pdfFun']] <- dbeta
-  options[['cdfFun']] <- pbeta
-  options[['qFun']]   <- qbeta
-  options[['rFun']]   <- rbeta
+  options[['pdfFun']] <- stats::dbeta
+  options[['cdfFun']] <- stats::pbeta
+  options[['qFun']]   <- stats::qbeta
+  options[['rFun']]   <- stats::rbeta
   options[['distNameInR']] <- "beta"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

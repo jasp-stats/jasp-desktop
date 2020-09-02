@@ -91,10 +91,10 @@ LDlognormal <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("mu", "sigma")
   
   options[['pars']]   <- list(meanlog = options[['mu']], sdlog = options[['sigma']])
-  options[['pdfFun']] <- dlnorm
-  options[['cdfFun']] <- plnorm
-  options[['qFun']]   <- qlnorm
-  options[['rFun']]   <- rlnorm
+  options[['pdfFun']] <- stats::dlnorm
+  options[['cdfFun']] <- stats::plnorm
+  options[['qFun']]   <- stats::qlnorm
+  options[['rFun']]   <- stats::rlnorm
   options[['distNameInR']] <- "lnorm"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])

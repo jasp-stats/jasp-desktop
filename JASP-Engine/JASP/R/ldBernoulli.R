@@ -91,13 +91,13 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   options[['fix.pars']] <- list(size = 1)
     
   options[['pdfFun']] <- function(x, size = 1, prob, log = FALSE){ 
-    dbinom(x = x, size = size, prob = prob, log = log) 
+    stats::dbinom(x = x, size = size, prob = prob, log = log) 
     }
   options[['cdfFun']] <- function(q, size = 1, prob, lower.tail = TRUE, log.p = FALSE){ 
-    pbinom(q = q, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
+    stats::pbinom(q = q, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
     }
   options[['qFun']]   <- function(p, size = 1, prob, lower.tail = TRUE, log.p = FALSE){ 
-    qbinom(p = p, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
+    stats::qbinom(p = p, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
   }
   options[['rFun']]   <- function(n, size = 1, prob) { rbinom(n = n, size = 1, prob = prob)}
   options[['distNameInR']] <- "binom"

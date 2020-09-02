@@ -92,10 +92,10 @@ LDt <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("df", "ncp")
   
   options[['pars']]   <- list(df = options[['df']], ncp = options[['ncp']])
-  options[['pdfFun']] <- dt
-  options[['cdfFun']] <- pt
-  options[['qFun']]   <- qt
-  options[['rFun']]   <- rt
+  options[['pdfFun']] <- stats::dt
+  options[['cdfFun']] <- stats::pt
+  options[['qFun']]   <- stats::qt
+  options[['rFun']]   <- stats::rt
   options[['distNameInR']] <- "t"
   
   options[['range_x']] <- c(options[['min_x']], options[['max_x']])
