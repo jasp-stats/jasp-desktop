@@ -1,5 +1,7 @@
 context("Robust Bayesian Meta-Analysis")
 
+skip("Travis limit reached")
+
 ### create a pre-fitted model (in case that the package needs to be updated)
 if (FALSE){
   # fit a default model
