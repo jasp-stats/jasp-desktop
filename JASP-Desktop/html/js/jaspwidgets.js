@@ -951,7 +951,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	setParent: function (parent) {
 		this.parent = parent;
 		this.options = {
-			//If you add something here don't forget to do the same in resultmenuentry.cpp
+			//If you add something here don't forget to do the same in resultmenumodel.cpp
 			hasCopy:				(parent.hasCopy			=== undefined || parent.hasCopy())			&& parent.copyMenuClicked			!== undefined,
 			hasCite:				(parent.hasCitation		=== undefined || parent.hasCitation())		&& parent.citeMenuClicked			!== undefined,
 			hasNotes:				(parent.hasNotes		=== undefined || parent.hasNotes())			&& parent.notesMenuClicked			!== undefined,
@@ -965,29 +965,26 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasLaTeXCode:			(parent.hasLaTeXCode	=== undefined || parent.hasLaTeXCode())		&& parent.latexCodeMenuClicked		!== undefined,
 			hasRemoveAllAnalyses:	parent.menuName			=== 'All',
 			hasRefreshAllAnalyses:	parent.menuName			=== 'All',
+			hasExportResults:		parent.menuName			=== 'All',
 
-			objectName: parent.menuName,
+			objectName:				parent.menuName
 		};
 
-		this.hasMenu =	this.options.hasCopy		|| this.options.hasCite		|| this.options.hasSaveImg		|| this.options.hasEditImg		||
-						this.options.hasDuplicate	|| this.options.hasNotes	|| this.options.hasRemove		|| this.options.hasRemoveAll	||
-						this.options.hasEditTitle	|| this.options.hasCollapse || this.options.hasLaTeXCode	|| this.options.hasShowDeps		;
+		this.hasMenu =	this.options.hasCopy			|| this.options.hasCite		|| this.options.hasSaveImg		|| this.options.hasEditImg		||
+						this.options.hasDuplicate		|| this.options.hasNotes	|| this.options.hasRemove		|| this.options.hasRemoveAll	||
+						this.options.hasEditTitle		|| this.options.hasCollapse || this.options.hasLaTeXCode	|| this.options.hasShowDeps		||
+						this.options.hasExportResults	 ;
 	},
 
-	selectionElement: function() {
-		return this.parent.$el;
-	},
+	selectionElement: function() {	return this.parent.$el;	},
 
 	setSelected: function (value) {
-		this.selected = value;
+		this.selected			= value;
+		var $selectionElement	= this.selectionElement();
 
-		var $selectionElement = this.selectionElement();
-		if (value) {
-			$selectionElement.addClass("jasp-menu-selected")
-		}
-		else {
-			$selectionElement.removeClass("jasp-menu-selected")
-		}
+		if (value)	$selectionElement.addClass(		"jasp-menu-selected")
+		else		$selectionElement.removeClass(	"jasp-menu-selected")
+
 	},
 
 	displayMessage: function (msg) {

@@ -875,7 +875,8 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	{
 		connectFileEventCompleted(event);
 
-		_resultsJsInterface->exportHTML();
+		if(!event->path().endsWith(".pdf"))
+			_resultsJsInterface->exportHTML();
 
 		_loader->io(event);
 		showProgress();
@@ -935,7 +936,6 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		closeVariablesPage();
 	}
 }
-
 
 ///Returns true if the caller can go ahead and close up shop.
 bool MainWindow::checkPackageModifiedBeforeClosing()

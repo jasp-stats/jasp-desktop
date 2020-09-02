@@ -22,14 +22,16 @@
 #include <QTextDocument>
 #include <QPrinter>
 #include "utilenums.h"
+#include "results/resultsjsinterface.h"
+#include <QThread>
+#include "log.h"
+
 
 ResultExporter::ResultExporter()
 {
 	_defaultFileType = Utils::FileType::html;
 	_allowedFileTypes.push_back(Utils::FileType::html);
-#ifdef JASP_DEBUG
 	_allowedFileTypes.push_back(Utils::FileType::pdf);
-#endif
 }
 
 void ResultExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
@@ -51,23 +53,33 @@ void ResultExporter::saveDataSet(const std::string &path, boost::function<void(i
 
 	if (_currentFileType == Utils::FileType::pdf)
 	{
-		QString htmlContent = QString::fromStdString(DataSetPackage::pkg()->analysesHTML());
+		_writingToPdfMutex.lock();
 
-		//Next code could be a hack to show plots in pdf
-		//QUrl url = QUrl::fromLocalFile(QDir::current().absoluteFilePath("htmloutput.html"));
-		//QUrl url = QUrl::fromLocalFile(_transferFile);
-		//QWebEngineView wdocument;
-		//wdocument.setHtml(htmlContent, url); // str1 is the html file stored as QString.
+		_pdfPath = tq(path);
+		progressCallback(50);
 
-		QTextDocument *document = new QTextDocument();
-		document->setHtml(htmlContent);
-		QPrinter printer(QPrinter::PrinterResolution);
-		printer.setPaperSize(QPrinter::A4);
-		printer.setOutputFormat(QPrinter::PdfFormat);
-		printer.setOutputFileName(QString::fromStdString(path));
-		document->print(&printer);
-		delete document;
+		QMetaObject::Connection printConnection = QObject::connect(ResultsJsInterface::singleton(), &ResultsJsInterface::pdfPrintingFinished, [&](QString pdfPath)
+		{
+			if(_pdfPath != pdfPath)
+			{
+				Log::log() << "Got unexpected pdfPrintingFinished event! Expected path: \"" << _pdfPath << "\" but got: \"" << pdfPath << "\"...\nIgnoring it!" << std::endl;
+				return;
+			}
 
+			Log::log() << "PDF printing to : \"" << _pdfPath << "\" completed, telling thread to continue!" << std::endl;
+
+			_writingToPdf.wakeAll();
+		});
+
+		ResultsJsInterface::singleton()->exportToPDF(_pdfPath);
+
+		Log::log() << "Thread for exporting PDF will wait until exporting is done.";
+		_writingToPdf.wait(&_writingToPdfMutex);
+		_writingToPdfMutex.unlock();
+
+		QObject::disconnect(printConnection);
+
+		progressCallback(100);
 	}
 	else
 	{
@@ -75,7 +87,6 @@ void ResultExporter::saveDataSet(const std::string &path, boost::function<void(i
 
 		outfile << DataSetPackage::pkg()->analysesHTML() << std::flush;
 		outfile.close();
+		progressCallback(100);
 	}
-
-	progressCallback(100);
 }

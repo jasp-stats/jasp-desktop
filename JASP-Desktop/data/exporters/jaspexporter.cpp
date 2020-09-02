@@ -38,7 +38,8 @@ const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
 const Version JASPExporter::jaspArchiveVersion = Version("3.1.0");
 
 
-JASPExporter::JASPExporter() {
+JASPExporter::JASPExporter()
+{
 	_defaultFileType = Utils::FileType::jasp;
 	_allowedFileTypes.push_back(Utils::FileType::jasp);
 }

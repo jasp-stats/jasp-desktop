@@ -73,5 +73,6 @@
         <file>css/images/lightTheme/closer.png</file>
         <file>css/images/lightTheme/expand.png</file>
         <file>css/images/lightTheme/collapse.png</file>
+        <file>css/printing.css</file>
     </qresource>
 </RCC>

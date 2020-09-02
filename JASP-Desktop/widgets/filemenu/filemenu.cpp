@@ -475,3 +475,9 @@ void FileMenu::showPreferences()
 	setVisible(true);
 	_actionButtons->setSelectedAction(ActionButtons::Preferences);
 }
+
+void FileMenu::exportResultsInteractive()
+{
+	actionButtonClicked(ActionButtons::ExportResults);
+	_computer->browseMostRecent();
+}

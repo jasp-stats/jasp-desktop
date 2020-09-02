@@ -19,13 +19,20 @@
 #define RESULTEXPORTER_H
 
 #include "exporter.h"
+#include <QMutex>
+#include <QWaitCondition>
 
 class ResultExporter: public Exporter
 {
-
 public:
 	ResultExporter();
 	void saveDataSet(const std::string &path, boost::function<void (int)> progressCallback) OVERRIDE;
+
+private:
+	QString			_pdfPath;
+	QMutex			_writingToPdfMutex;
+	QWaitCondition	_writingToPdf;
+
 
 	JASPTIMER_CLASS(ResultExporter);
 };

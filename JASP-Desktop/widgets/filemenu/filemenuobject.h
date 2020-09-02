@@ -32,8 +32,6 @@ public:
 
 signals:
 	void dataSetIORequest(FileEvent *event);
-	void closeDataSetSelected();
-	void exportSelected(QString filename);
 
 protected:
 	FileEvent::FileMode _mode;

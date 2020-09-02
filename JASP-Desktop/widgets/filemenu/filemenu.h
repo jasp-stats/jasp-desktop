@@ -95,6 +95,8 @@ public:
 	ResourceButtons					*	resourceButtons()			const	{ return _resourceButtons;			}
 	ResourceButtonsVisible			*	resourceButtonsVisible()	const	{ return _resourceButtonsVisible;	}
 
+	Q_INVOKABLE void exportResultsInteractive();
+
 signals:
 	void fileoperationChanged();
 	void dataSetIORequest(FileEvent *event);
@@ -119,6 +121,7 @@ public slots:
     void analysesExportResults();
 	void refresh();
 	void close();
+
 
 
 private slots:
