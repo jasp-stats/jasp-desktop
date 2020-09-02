@@ -75,6 +75,29 @@
 }
 
 #### Descriptives ----
+.ldDescriptives <- function(jaspResults, variable, options, ready, errors, as = c("continuous", "discrete", "factor")){
+  as <- match.arg(as)
+  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
+  
+  if(as == "continuous") {
+    ready <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
+    .ldSummaryContinuousTableMain(dataContainer, variable, options, ready)
+    .ldObservedMomentsTableMain  (dataContainer, variable, options, ready)
+    .ldPlotHistogram             (dataContainer, variable, options, ready)
+    .ldPlotECDF                  (dataContainer, variable, options, ready)
+  } else if(as == "discrete") {
+    ready <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
+    .ldSummaryContinuousTableMain(dataContainer, variable, options, ready)
+    .ldObservedMomentsTableMain  (dataContainer, variable, options, ready)
+    .ldPlotHistogram             (dataContainer, variable, options, ready, "discrete")
+    .ldPlotECDF                  (dataContainer, variable, options, ready)
+  } else {
+    ready <- ready && isFALSE(errors)
+    .ldSummaryFactorTableMain    (dataContainer, variable, options, ready)
+    .ldPlotHistogram             (dataContainer, variable, options, ready, "factor")
+  }
+}
+
 .ldSummaryContinuousTableMain <- function(dataContainer, variable, options, ready) {
   if(!options$summary) return()
   if(!is.null(dataContainer[['summary']])) return()
@@ -323,6 +346,30 @@
 
 ### Fit distributions ----
 ### MLE stuff ----
+.ldMLE <- function(jaspResults, variable, options, ready, errors, fillTable){
+  ready <- ready && isFALSE(errors)
+  
+  if(! options$methodMLE) return()
+  
+  mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", gettext("Maximum likelihood"), 7, errors)
+    
+  # parameter estimates
+  mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
+  mleResults   <- .ldMLEResults(mleContainer, variable, options, ready, options$distNameInR)
+  fillTable(mleEstimatesTable, mleResults, options, ready)
+    
+    
+  # fit assessment
+  mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", gettext("Fit Assessment"), 8)
+    
+  # fit statistics
+  mleFitStatistics   <- .ldFitStatisticsTable(mleFitContainer, options, "methodMLE")
+  mleFitStatisticsResults <- .ldFitStatisticsResults(mleContainer, mleResults$fitdist, variable, options, ready)
+  .ldFillFitStatisticsTable(mleFitStatistics, mleFitStatisticsResults, options, ready)
+  # fit plots
+  .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, ready)
+}
+
 .ldMLEResults <- function(mleContainer, variable, options, ready, distName){
   if(!ready) return()
   if(!is.null(mleContainer[['mleResults']])) return(mleContainer[['mleResults']]$object)

@@ -43,12 +43,7 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   }
   
   # overview of the data
-  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
-  
-  readyDesc <- ready && isFALSE(errors)
-  .ldSummaryFactorTableMain    (dataContainer, variable, options, readyDesc)
-  .ldPlotHistogram             (dataContainer, variable, options, readyDesc, "factor")
-  
+  .ldDescriptives(jaspResults, variable, options, ready, errors, "factor")
   
   #### Fit data and assess fit ----
   
