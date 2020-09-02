@@ -46,28 +46,7 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   .ldDescriptives(jaspResults, variable, options, ready, errors, "factor")
   
   #### Fit data and assess fit ----
-  
-  readyFit <- ready && isFALSE(errors)
-  #### Maximum Likelihood ----
-  if(options$methodMLE){
-    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
-    
-    # parameter estimates
-    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, as.numeric(variable) - 1, options, readyFit, options$distNameInR)
-    .ldFillBernoulliEstimatesTable(mleEstimatesTable, mleResults, options, readyFit, levels(variable))
-    
-    # fit assessment
-    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
-
-    # fit plots
-    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, as.numeric(variable)-1, readyFit)
-    
-  }
-  
-  #### Method of moments ----
-  
-  #### Unbiased estimate ----
+  .ldMLE(jaspResults, as.numeric(variable)-1, options, ready, errors, .ldFillBernoulliEstimatesTable, levels = levels(variable))
   
   return()
 }

@@ -45,15 +45,8 @@ LDexponential <- function(jaspResults, dataset, options, state=NULL){
   # overview of the data
   .ldDescriptives(jaspResults, variable, options, ready, errors, "continuous")
   
-  
   #### Fit data and assess fit ----
-  
-  #### Maximum Likelihood ----
   .ldMLE(jaspResults, variable, options, ready, errors, .ldFillExponentialEstimatesTable)
-  
-  #### Method of moments ----
-  
-  #### Unbiased estimate ----
   
   return()
 }

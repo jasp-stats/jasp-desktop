@@ -346,9 +346,8 @@
 
 ### Fit distributions ----
 ### MLE stuff ----
-.ldMLE <- function(jaspResults, variable, options, ready, errors, fillTable){
+.ldMLE <- function(jaspResults, variable, options, ready, errors, fillTable, ...){
   ready <- ready && isFALSE(errors)
-  
   if(! options$methodMLE) return()
   
   mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", gettext("Maximum likelihood"), 7, errors)
@@ -356,8 +355,7 @@
   # parameter estimates
   mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
   mleResults   <- .ldMLEResults(mleContainer, variable, options, ready, options$distNameInR)
-  fillTable(mleEstimatesTable, mleResults, options, ready)
-    
+  fillTable(mleEstimatesTable, mleResults, options, ready, ...)
     
   # fit assessment
   mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", gettext("Fit Assessment"), 8)
@@ -443,7 +441,7 @@
   optionsTests <- allTests %in% names(options)
   whichTests <- unlist(options[allTests[optionsTests]])
   
-  if(all(!whichTests)) return()
+  if(is.null(whichTests) || all(!whichTests)) return()
   
   tab <- createJaspTable(title = gettext("Fit Statistics"))
   tab$position <- 1
