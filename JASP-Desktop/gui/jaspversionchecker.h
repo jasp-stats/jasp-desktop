@@ -37,12 +37,16 @@ signals:
 	void showDownloadButton(QString downloadUrl);
 	
 private slots:
-	void downloadFinished();
+	void downloadVersionFinished();
+	void downloadIssuesFinished();
+	void downloadKnownIssues();
 	void checkForJaspUpdate();
 
 private:
 	QNetworkReply			*	_networkReply			= nullptr;
-	QString						_url					= "http://static.jasp-stats.org/JASP-Version.txt"; //Do not do https here because then, on windows, openSSL dll needs to be loaded and that blocks the whole application
+	//Do not do use https here because then, on windows, openSSL dll needs to be loaded and that blocks the whole application
+	QString						_urlVersion				= "http://static.jasp-stats.org/JASP-Version.txt",
+								_urlKnownIssues			= "http://static.jasp-stats.org/JASP-KnownIssues.json";
 	QNetworkAccessManager		_networkManager;
 };
 

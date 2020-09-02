@@ -168,6 +168,7 @@ private:
 private slots:
 	   void		formCompletedHandler();
 	   void		_formCompletedHandler();
+	   void		knownIssuesUpdated();
 
 protected:
 	Analysis								*	_analysis			= nullptr;

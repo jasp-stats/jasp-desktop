@@ -175,7 +175,6 @@ signals:
 private slots:
 	void sendRScriptHandler(Analysis* analysis, QString script, QString controlName, bool whiteListedVersion);
 
-
 private:
 	void bindAnalysisHandler(Analysis* analysis);
 	void storeAnalysis(Analysis* analysis, size_t id, bool notifyAll);	

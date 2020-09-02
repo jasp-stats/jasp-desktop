@@ -31,6 +31,8 @@
 #include "tempfiles.h"
 #include "log.h"
 
+#include "knownissues.h"
+
 using namespace std;
 using Modules::Upgrader;
 
@@ -46,6 +48,8 @@ Analyses::Analyses()
 	connect(DataSetPackage::pkg(),	&DataSetPackage::dataSetChanged,				this,	&Analyses::dataSetChanged									);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this,	&Analyses::dataSetColumnsChanged							);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetChanged									);
+
+	new KnownIssues(this);
 }
 
 
@@ -149,20 +153,19 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 
 void Analyses::bindAnalysisHandler(Analysis* analysis)
 {
-	connect(analysis, &Analysis::statusChanged,						this, &Analyses::analysisStatusChanged				);
-	connect(analysis, &Analysis::sendRScript,						this, &Analyses::sendRScriptHandler					);
-	connect(analysis, &Analysis::titleChanged,						this, &Analyses::setChangedAnalysisTitle			);
-	connect(analysis, &Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
-	connect(analysis, &Analysis::imageEditedSignal,					this, &Analyses::analysisImageEdited				);
-	connect(analysis, &Analysis::requestColumnCreation,				this, &Analyses::requestColumnCreation				);
-	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
-	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation,		Qt::DirectConnection);
-	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction,	Qt::DirectConnection);
-	connect(analysis, &Analysis::titleChanged,						this, &Analyses::somethingModified					);
-	connect(analysis, &Analysis::imageChanged,						this, &Analyses::somethingModified					);
-	connect(analysis, &Analysis::userDataChangedSignal,				this, &Analyses::analysisOverwriteUserdata			);
+	connect(analysis,	&Analysis::statusChanged,						this, &Analyses::analysisStatusChanged				);
+	connect(analysis,	&Analysis::sendRScript,							this, &Analyses::sendRScriptHandler					);
+	connect(analysis,	&Analysis::titleChanged,						this, &Analyses::setChangedAnalysisTitle			);
+	connect(analysis,	&Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
+	connect(analysis,	&Analysis::imageEditedSignal,					this, &Analyses::analysisImageEdited				);
+	connect(analysis,	&Analysis::requestColumnCreation,				this, &Analyses::requestColumnCreation				);
+	connect(analysis,	&Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
+	connect(analysis,	&Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation,		Qt::DirectConnection);
+	connect(analysis,	&Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction,	Qt::DirectConnection);
+	connect(analysis,	&Analysis::titleChanged,						this, &Analyses::somethingModified					);
+	connect(analysis,	&Analysis::imageChanged,						this, &Analyses::somethingModified					);
+	connect(analysis,	&Analysis::userDataChangedSignal,				this, &Analyses::analysisOverwriteUserdata			);
 
-	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
 	{
 		QString filePath = tq(analysis->qmlFormPath());

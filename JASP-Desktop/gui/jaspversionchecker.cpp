@@ -21,6 +21,8 @@
 #include "utilities/qutils.h"
 #include "gui/aboutmodel.h"
 #include "appinfo.h"
+#include "analysis/knownissues.h"
+#include "log.h"
 
 JASPVersionChecker::JASPVersionChecker(QObject *parent) : QObject(parent)
 {
@@ -29,12 +31,19 @@ JASPVersionChecker::JASPVersionChecker(QObject *parent) : QObject(parent)
 
 void JASPVersionChecker::checkForJaspUpdate()
 {
-	QNetworkRequest request(_url);
+	QNetworkRequest request(_urlVersion);
 	_networkReply = _networkManager.get(request);
-	connect(_networkReply, &QNetworkReply::finished, this, &JASPVersionChecker::downloadFinished);
+	connect(_networkReply, &QNetworkReply::finished, this, &JASPVersionChecker::downloadVersionFinished);
 }
 
-void JASPVersionChecker::downloadFinished()
+void JASPVersionChecker::downloadKnownIssues()
+{
+	QNetworkRequest request(_urlKnownIssues);
+	_networkReply = _networkManager.get(request);
+	connect(_networkReply, &QNetworkReply::finished, this, &JASPVersionChecker::downloadIssuesFinished);
+}
+
+void JASPVersionChecker::downloadVersionFinished()
 {
 	QString version			= _networkReply->readAll().trimmed(),
 			downloadfile	= "https://jasp-stats.org/download/";
@@ -47,6 +56,14 @@ void JASPVersionChecker::downloadFinished()
 	if (latest > cur)
 		emit showDownloadButton(downloadfile);
 
+	if(KnownIssues::issues()->downloadNeededOrLoad())	downloadKnownIssues();
+	else												deleteLater(); //Remove yourself!
+}
+
+void JASPVersionChecker::downloadIssuesFinished()
+{
+	Log::log() << "New version of knownIssues downloaded!" << std::endl;
+	KnownIssues::issues()->loadJson(_networkReply->readAll().trimmed(), true);
 
 	deleteLater(); //Remove yourself!
 }

@@ -88,3 +88,8 @@ QString AppDirs::logDir()
 
 	return path;
 }
+
+QString AppDirs::appData()
+{
+	return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+}

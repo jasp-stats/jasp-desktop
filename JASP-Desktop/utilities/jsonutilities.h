@@ -4,6 +4,7 @@
 #include "jsonredirect.h"
 #include <string>
 #include <set>
+#include "stringutils.h"
 
 
 class JsonUtilities
@@ -18,6 +19,8 @@ public:
 
 	static std::string				replaceColumnNamesInDragNDropFilterJSON(const std::string & jsonStr,	const std::map<std::string, std::string> & changeNameColumns);
 	static void						replaceColumnNamesInDragNDropFilterJSON(Json::Value & json,				const std::map<std::string, std::string> & changeNameColumns);
+
+	static stringvec				jsonStringArrayToVec(Json::Value & jsonStrings);
 
 private:
 	JsonUtilities() {}

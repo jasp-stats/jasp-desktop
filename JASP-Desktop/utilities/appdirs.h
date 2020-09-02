@@ -32,6 +32,7 @@ public:
 	static QString modulesDir();
 	static QString documents();
 	static QString logDir();
+	static QString appData();
 };
 
 #endif // APPDIRS_H

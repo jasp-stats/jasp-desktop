@@ -260,6 +260,7 @@ INSTALLS += Resources
 HEADERS += \
     analysis/analysisform.h \
     analysis/boundqmlitem.h \
+    analysis/knownissues.h \
     analysis/options/bound.h \
     analysis/options/option.h \
     analysis/options/optionboolean.h \
@@ -460,6 +461,7 @@ HEADERS += \
 SOURCES += \
     analysis/analysisform.cpp \
     analysis/boundqmlitem.cpp \
+    analysis/knownissues.cpp \
     analysis/options/option.cpp \
     analysis/options/optionboolean.cpp \
     analysis/options/optioncomputedcolumn.cpp \
