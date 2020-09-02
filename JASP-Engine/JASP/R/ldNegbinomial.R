@@ -69,10 +69,7 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
   options[['rFun']]   <- stats::rnbinom
   options[['distNameInR']] <- "nbinom"
   
-  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
-  
-  options[['highlightmin']] <- options[['min']]
-  options[['highlightmax']] <- options[['max']]
+  options <- .ldOptionsDeterminePlotLimits(options, FALSE)
  
   options$support <- list(min = 0, max = Inf)
   options$lowerBound <- c(0, 0)

@@ -65,10 +65,7 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
   options[['rFun']]   <- stats::rbinom
   options[['distNameInR']] <- "binom"
   
-  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
-  
-  options[['highlightmin']] <- options[['min']]
-  options[['highlightmax']] <- options[['max']]
+  options <- .ldOptionsDeterminePlotLimits(options, FALSE)
  
   options$support <- list(min = 0, max = options[['size']])
   options$lowerBound <- c(0)

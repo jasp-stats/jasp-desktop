@@ -61,20 +61,7 @@ LDlogistic <- function(jaspResults, dataset, options, state=NULL){
   options[['rFun']]   <- stats::rlogis
   options[['distNameInR']] <- "logis"
   
-  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
-  
-  if(options[['highlightType']] == "minmax"){
-    options[['highlightmin']] <- options[['min']]
-    options[['highlightmax']] <- options[['max']]
-  } else if(options[['highlightType']] == "lower"){
-    options[['highlightmin']] <- options[['range_x']][1]
-    options[['highlightmax']] <- options[['lower_max']]
-  } else if(options[['highlightType']] == "upper"){
-    options[['highlightmin']] <- options[['upper_min']]
-    options[['highlightmax']] <- options[['range_x']][2]
-  } else{
-    options[['highlightmin']] <- options[['highlightmax']] <- NULL
-  }
+  options <- .ldOptionsDeterminePlotLimits(options)
   
   options$support <- list(min = -Inf, max = Inf)
   options$lowerBound <- c(-Inf, 0)

@@ -69,27 +69,9 @@ LDgammaInverse <- function(jaspResults, dataset, options, state=NULL){
   options[['qFun']]   <- invgamma::qinvgamma
   options[['rFun']]   <- invgamma::rinvgamma
   
-  # distribution from packages need to be exported to the global namespace (for fitting)
-  #dinvgamma <<- invgamma::dinvgamma
-  #pinvgamma <<- invgamma::pinvgamma
-  #qinvgamma <<- invgamma::qinvgamma
-  #rinvgamma <<- invgamma::rinvgamma
   options[['distNameInR']] <- "invgamma"
   
-  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
-  
-  if(options[['highlightType']] == "minmax"){
-    options[['highlightmin']] <- options[['min']]
-    options[['highlightmax']] <- options[['max']]
-  } else if(options[['highlightType']] == "lower"){
-    options[['highlightmin']] <- options[['range_x']][1]
-    options[['highlightmax']] <- options[['lower_max']]
-  } else if(options[['highlightType']] == "upper"){
-    options[['highlightmin']] <- options[['upper_min']]
-    options[['highlightmax']] <- options[['range_x']][2]
-  } else{
-    options[['highlightmin']] <- options[['highlightmax']] <- NULL
-  }
+  options <- .ldOptionsDeterminePlotLimits(options)
   
   options$support <- list(min = 0, max = Inf)
   options$lowerBound <- c(0, 0)

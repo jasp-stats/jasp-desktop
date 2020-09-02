@@ -344,6 +344,34 @@
   return(tab)
 }
 
+.ldOptionsDeterminePlotLimits <- function(options, switch = TRUE) {
+  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
+  
+  if(switch) {
+    
+    if(options[['highlightType']] == "minmax"){
+      options[['highlightmin']] <- options[['min']]
+      options[['highlightmax']] <- options[['max']]
+    } else if(options[['highlightType']] == "lower"){
+      options[['highlightmin']] <- options[['range_x']][1]
+      options[['highlightmax']] <- options[['lower_max']]
+    } else if(options[['highlightType']] == "upper"){
+      options[['highlightmin']] <- options[['upper_min']]
+      options[['highlightmax']] <- options[['range_x']][2]
+    } else{
+      options[['highlightmin']] <- options[['highlightmax']] <- NULL
+    }
+    
+  } else {
+    
+    options[['highlightmin']] <- options[['min']]
+    options[['highlightmax']] <- options[['max']]
+  
+  }
+  
+  options
+}
+
 ### Fit distributions ----
 ### MLE stuff ----
 .ldMLE <- function(jaspResults, variable, options, ready, errors, fillTable, ...){
