@@ -429,7 +429,7 @@ void Utils::convertEscapedUnicodeToUTF8(std::string& inputStr)
 	{
 		std::string utf8 = _convertEscapedUnicodeToUTF8(match[1].str()); // match 1 is the first group of the regexp: that is the 4 hexadecimals.
 		auto pos = match.position(0); // position of the whole sequence in str.
-		inputStr.replace(begin + pos, begin + pos + 8, utf8);
+		inputStr.replace(begin + pos, begin + pos + 8, utf8); // 8 is the number of characters of '<U+FFFF>'
 		// str iterators cannot be trusted after replace. They must be recalculated from str.
 		begin = inputStr.begin() + pos;
 	}
