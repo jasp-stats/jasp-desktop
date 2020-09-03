@@ -964,7 +964,7 @@
     if (CI$g[1] == "HPD"){
       temp_label <- paste(c(temp_cov,"['HPD']:",temp_int), collapse = "")
     } else if (CI$g[1] == "custom"){
-      temp_label  <- paste(c("P({",format(round(CI$x_start, nRound), nsmall = nRound),"<=",if (CI$parameter == "theta") "theta" else if (parameter == "mu") "mu","}<=",
+      temp_label  <- paste(c("P({",format(round(CI$x_start, nRound), nsmall = nRound),"<=",if (CI$parameter == "theta") "theta" else if (CI$parameter == "mu") "mu","}<=",
                              (format(round(CI$x_end, nRound), nsmall = nRound)),")","=='",round(CI$coverage[1]*100)," %'"), collapse = "")
     } else if (CI$g[1] == "support"){
       temp_label <- paste(c("SI['[BF = ",CI$BF[1],"]']:",temp_int), collapse = "")
@@ -1890,10 +1890,22 @@
     
     table_description <- gettextf(
       "The 'Prediction Summary' table displays numerical summaries for the individual models. The displayed point estimate can be changed using the 'Point estimate' option. The table is composed of the following columns:
-    <ul><li>'Model' - the specified model names</li><li>'Posterior (%1$s)' - the estimated posterior distribution for parameter %1$s (used for prediction)</li>%2$s<li>'Posterior Mean' - the mean of the specified posterior distribution</li><li>'Prediction%3$s' - the predictive distribution for new data</li><li>'Prediction Mean' - the mean of predicted data</li></ul>", 
+    <ul><li>'Model' - the specified model names</li><li>'Posterior (%1$s)' - the estimated posterior distribution for parameter %1$s (used for prediction)</li>%2$s<li>'Posterior %4$s' - the %5$s of the specified posterior distribution</li><li>'Prediction%3$s' - the predictive distribution for new data</li><li>'Prediction %4$s' - the %5$s of predicted data</li></ul>", 
       ifelse(binomial, "\u03B8", "\u03BC"),
       ifelse(estimation, "", "<li>'P(H|data)' - the posterior probability of the hypothesis (after updating with the data)</li>"),
-      ifelse(binomial, gettext(" (Successes)"), "")
+      ifelse(binomial, gettext(" (Successes)"), ""),
+      switch(
+        options$predictionTableEstimate,
+        "mean"   = gettext("Mean"),
+        "median" = gettext("Median"),
+        "mode"   = gettext("Mode")
+      ),
+      switch(
+        options$predictionTableEstimate,
+        "mean"   = gettext("mean"),
+        "median" = gettext("median"),
+        "mode"   = gettext("mode")
+      )
     )
     
     out <- paste0(predictions_text, " ", predictions_formulas, "\n\n", table_description)
@@ -1983,7 +1995,7 @@
       options[["plotsIterativeType"]],
       "conditional" = gettext("The 'Conditional' option shows all predictive accuracies independently, as ifthey were considered as individual models (without the existence of other hypotheses)."),
       "joint"       = gettext("The 'Joint' option shows all predictive accuracies when taking the prior probabilities of hypotheses into account (by multiplying conditional predictive accuracies by prior probabilities of the hypotheses)."),
-      "marginal"    = gettext("The 'Posterior' option shows all predictive accuracies considered together in light of the other hypotheses (by normalizing the joint predictive accuracies by the probability of the data, which equals to the posterior probability of the hypotheses at the given time point)."),
+      "marginal"    = gettext("The 'Normalized' option shows all predictive accuracies considered together in light of the other hypotheses (by normalizing the joint predictive accuracies by the probability of the data, which equals to the posterior probability of the hypotheses at the given time point)."),
       "BF"          = gettextf("The 'Bayes factor' option can compare the predictive accuracies of the hypotheses to the rest of the hypotheses ('vs. All'), the best hypothesis ('vs. best'), or a specific hypothesis selected in the 'vs.' dropdown. The nominator and denominator of the Bayes factors can be reversed by choosing the 'BF%2$s%1$s' option (quantifying the evidence in favor of the second hypothesis), or transformed to a log scale by choosing the 'log(BF%1$s%2$s)' option.", "\u2081", "\u2080")
     )
     
