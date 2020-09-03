@@ -70,7 +70,7 @@ public:
 
 private:
 	static std::string _deEuropeaniseForImport(			const std::string &value);
-	static std::string _convertEscapedUnicodeToUTF8(	const std::string &hex);
+	static std::string _convertEscapedUnicodeToUTF8(	std::string hex);
 
 	static std::vector<std::string>			_currentEmptyValues;
 	static const std::vector<std::string>	_defaultEmptyValues;

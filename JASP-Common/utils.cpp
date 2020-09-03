@@ -403,18 +403,20 @@ std::string Utils::doubleToString(double dbl)
 }
 
 // hex should be 4 hexadecimals characters
-std::string Utils::_convertEscapedUnicodeToUTF8(const std::string& hex)
+std::string Utils::_convertEscapedUnicodeToUTF8(std::string hex)
 {
-	std::string result = hex;
 	std::istringstream iss(hex);
 
 	uint32_t bytes;
-	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-
+#ifdef _WIN32
+	static std::wstring_convert<std::codecvt_utf8<unsigned int>, unsigned int> conv;
+#else
+	static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+#endif
 	// Read the 4 hexadecimals as bytes, and convert these bytes into UTF8.
-	if (iss >> std::hex >> bytes) result = conv.to_bytes(char32_t(bytes));
+	if (iss >> std::hex >> bytes) hex = conv.to_bytes(char32_t(bytes));
 
-	return result;
+	return hex;
 }
 
 // Replace all <U+FFFF> in str by their UT8 characters.
