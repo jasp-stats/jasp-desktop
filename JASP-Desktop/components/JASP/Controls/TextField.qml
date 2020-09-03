@@ -37,6 +37,7 @@ JASPControl
 	property alias	label:				beforeLabel.text
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
+	property string startValue:			""
 	property string lastValidValue:		""
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
@@ -77,7 +78,7 @@ JASPControl
 		control.editingFinished.connect(doEditingFinished);
 		control.textEdited.connect(textEdited);
 		control.pressed.connect(pressed);
-		control.released.connect(released);        
+		control.released.connect(released);
 	}	
 		
 	Rectangle
