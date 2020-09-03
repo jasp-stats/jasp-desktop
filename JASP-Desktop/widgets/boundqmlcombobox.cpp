@@ -31,8 +31,6 @@ BoundQMLComboBox::BoundQMLComboBox(JASPControlBase* item)
 	_model = new ListModelLabelValueTerms(this);
 
 	connect(_model, &ListModelTermsAvailable::allAvailableTermsChanged, this, &BoundQMLComboBox::modelChangedHandler);
-	if (getItemProperty("addEmptyValue").toBool())
-		_model->addEmptyValue();
 
 	_resetItemWidth();
 

@@ -22,6 +22,9 @@
 ListModelLabelValueTerms::ListModelLabelValueTerms(QMLListView* listView)
 	: ListModelTermsAvailable(listView)
 {
+	if (listView->getItemProperty("addEmptyValue").toBool())
+		addEmptyValue();
+
 	readModelProperty(listView);
 }
 

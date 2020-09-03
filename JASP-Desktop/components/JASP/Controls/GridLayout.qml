@@ -41,7 +41,7 @@ GridLayout
 		enabled:					checkFormOverflowWhenLanguageChanged
 		target:						preferencesModel
 		onLanguageCodeChanged:		checkFormOverflowTimer.restart()
-		onRealInterfaceFontChanged:	checkFormOverflowTimer.restart()
+		onInterfaceFontChanged:		checkFormOverflowTimer.restart()
 	}
 
 	Timer
@@ -54,7 +54,7 @@ GridLayout
 
 	function checkFormOverflow()
 	{
-		if (!form) return false;
+		if ((typeof form === 'undefined') || !form) return false;
 
 		var startColumns = gridLayout.columns;
 
