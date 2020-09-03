@@ -65,7 +65,7 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldOptionsDeterminePlotLimits(options)
   
   options$support <- list(min = 0, max = Inf)
-  options$lowerBound <- c(0,  -Inf)
+  options$lowerBound <- c(0, 0)
   options$upperBound <- c(Inf, Inf)
   
   options$transformations <- c(df = "df", ncp = "ncp")
