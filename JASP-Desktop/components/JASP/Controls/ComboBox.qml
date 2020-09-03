@@ -232,6 +232,7 @@ JASPControl
 				implicitHeight: contentHeight
 				model:			control.popup.visible ? control.delegateModel : null
 				currentIndex:	control.highlightedIndex
+				clip:			true
 
 				Rectangle
 				{
