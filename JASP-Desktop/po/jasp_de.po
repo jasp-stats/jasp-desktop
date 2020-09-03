@@ -999,7 +999,8 @@ msgid ""
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
 "Beim nächsten Start von JASP weitermachen, wo Du aufgehört hast.\n"
-"Durch Aktivieren dieser Option behält sich JASP, welche Module Du aktiviert hast."
+"Durch Aktivieren dieser Option behält sich JASP, welche Module Du aktiviert "
+"hast."
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
@@ -1030,8 +1031,9 @@ msgid ""
 "Disable this option if you are transforming your R-package to a JASP Module "
 "or simply want to keep manual changes to DESCRIPTION and NAMESPACE."
 msgstr ""
-"Schalte diese Option aus, wenn Du dein R-Paket in ein JASP-Modul transformierst "
-"oder einfach manuelle Änderungen in DESCRIPTION und NAMESPACE behalten willst."
+"Schalte diese Option aus, wenn Du dein R-Paket in ein JASP-Modul "
+"transformierst oder einfach manuelle Änderungen in DESCRIPTION und NAMESPACE "
+"behalten willst."
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
@@ -1047,7 +1049,9 @@ msgstr "In Datei protokollieren"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr "Um Debug-Protokolle von JASP in einer Datei zu speichern, aktiviere diese Checkbox."
+msgstr ""
+"Um Debug-Protokolle von JASP in einer Datei zu speichern, aktiviere diese "
+"Checkbox."
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
@@ -1083,8 +1087,8 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
-"Anzahl von einzigartigen ganzen Zahlen, um eine Variable als "
-"'kardinal' zu klassifizieren.\n"
+"Anzahl von einzigartigen ganzen Zahlen, um eine Variable als 'kardinal' zu "
+"klassifizieren.\n"
 "Du musst deine Daten neu laden, bevor Änderungen hier übernommen werden. "
 "Schaue in die Hilfe für mehr Informationen."
 
@@ -1145,8 +1149,8 @@ msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
 msgstr ""
-"Dies setzt die Hintergrundfarbe aller Abbildungen auf weiß."
-"Nützlich für die Verwendung mit LaTeX oder für Publikationen."
+"Dies setzt die Hintergrundfarbe aller Abbildungen auf weiß.Nützlich für die "
+"Verwendung mit LaTeX oder für Publikationen."
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
@@ -1157,8 +1161,8 @@ msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
 msgstr ""
-"Dies setzt die Hintergrundfarbe aller Abbildungen auf transparent."
-"Nützlich für die Verwendung mit allen Hintergründen, die nicht weiß sind."
+"Dies setzt die Hintergrundfarbe aller Abbildungen auf transparent.Nützlich "
+"für die Verwendung mit allen Hintergründen, die nicht weiß sind."
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
@@ -1368,8 +1372,7 @@ msgstr "Willkommen bei JASP"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
-msgstr ""
-"Ein frischer Zugang zur Statistik: Frei, freundlich und flexibel"
+msgstr "Ein frischer Zugang zur Statistik: Frei, freundlich und flexibel"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
@@ -1401,8 +1404,8 @@ msgid ""
 "JASP offers standard analysis procedures in both their classical and "
 "Bayesian manifestations."
 msgstr ""
-"JASP bietet Standardanalyseverfahren, sowohl als klassische und "
-"als Bayessche Variante."
+"JASP bietet Standardanalyseverfahren, sowohl als klassische und als "
+"Bayessche Variante."
 
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
@@ -2998,7 +3001,8 @@ msgstr "<b>Annotiere deine Beobachtungen mit deren Auditwerten.</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
-msgstr "<b>Annotiere deine Beobachungen mit 0 (korrekt) oder 1 (inkorrekt).</b>"
+msgstr ""
+"<b>Annotiere deine Beobachungen mit 0 (korrekt) oder 1 (inkorrekt).</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>To Evaluation</b>"
@@ -3456,7 +3460,8 @@ msgstr "<b>Annotiere deine Beobachtungen mit ihren Auditwerten.</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
-msgstr "<b>Annotiere deine Beobachtungen mit 0 (korrekt) oder 1 (inkorrekt).</b>"
+msgstr ""
+"<b>Annotiere deine Beobachtungen mit 0 (korrekt) oder 1 (inkorrekt).</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>To Evaluation</b>"
@@ -5487,9 +5492,10 @@ msgctxt "mlClassificationBoosting|"
 msgid "Algorithmic Settings"
 msgstr "Algorithmus-Einstellungen"
 
+#, fuzzy
 msgctxt "mlClassificationBoosting|"
 msgid "Shrinkage:"
-msgstr ""
+msgstr "Shrinkage:"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Interaction depth:"
@@ -6183,9 +6189,10 @@ msgctxt "mlClusteringHierarchical|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
+#, fuzzy
 msgctxt "mlClusteringHierarchical|"
 msgid "Cluster Determination"
-msgstr ""
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Fixed"
@@ -6295,9 +6302,10 @@ msgctxt "mlClusteringKMeans|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
+#, fuzzy
 msgctxt "mlClusteringKMeans|"
 msgid "Cluster Determination"
-msgstr ""
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Fixed"
@@ -6399,9 +6407,10 @@ msgctxt "mlClusteringRandomForest|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
+#, fuzzy
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster Determination"
-msgstr ""
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Fixed"
@@ -8177,10 +8186,6 @@ msgid "u"
 msgstr "u"
 
 msgctxt "RegressionLinearBayesian|"
-msgid "Bernouilli"
-msgstr "Bernoulli"
-
-msgctxt "RegressionLinearBayesian|"
 msgid "p"
 msgstr "p"
 
@@ -9574,7 +9579,8 @@ msgstr "Zurücksetzen"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr "Es gibt ungespeicherte Änderungen an deinem Filter; was möchtest Du tun?"
+msgstr ""
+"Es gibt ungespeicherte Änderungen an deinem Filter; was möchtest Du tun?"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
@@ -9833,11 +9839,6 @@ msgstr "Unbekannte Spalte (%1) in TableView Quelle %2 angegeben"
 
 #, qt-format
 msgctxt "QMLListView|"
-msgid "No name given in source attribute of VariableList %1"
-msgstr "Kein Name im Quell-Attribut der VariableList %1 angegeben"
-
-#, qt-format
-msgctxt "QMLListView|"
 msgid "No name given in discard source attribute of VariableList %1"
 msgstr "Kein Name im verworfenen Quell-Attribut der VariableList %1 angegeben"
 
@@ -9868,7 +9869,6 @@ msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
 msgstr ""
 "Aktiviert ein helles Farbschema, dies ist die Standardansicht von JASP."
-
 
 msgctxt "PrefsUI|"
 msgid "Dark Theme"
@@ -9985,8 +9985,7 @@ msgstr "Strg + Enter zum Anwenden"
 msgctxt "VariablesForm|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
 msgstr ""
-"Es kann nur eine Available-Variables-Liste pro VariablesForm genutzt "
-"werden"
+"Es kann nur eine Available-Variables-Liste pro VariablesForm genutzt werden"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -10070,8 +10069,7 @@ msgstr "Keine verwandte Liste für VariabeleList %1 gefunden"
 #, qt-format
 msgctxt "QMLListViewDraggable|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
-msgstr ""
-"Falsche Art von verwandter Liste (%1) für VariabeleLijst %2 gefunden"
+msgstr "Falsche Art von verwandter Liste (%1) für VariabeleLijst %2 gefunden"
 
 #, qt-format
 msgctxt "RowControls|"
@@ -10134,12 +10132,12 @@ msgstr ""
 "Strategie 1 nutzt einen klassischen R-Ansatz: Berechne ein Modell, dann gib "
 "es weiter an jede Funktion.\n"
 "Strategie 2 nutzt einen unorthodoxe Ansatz: Berechne das Modell wenn es "
-"wirklich benötigt wird, und nutze Referenzparameter-Mechanismen, um es "
-"zu allen Funktionen zu übergeben, die es benötigen.\n"
+"wirklich benötigt wird, und nutze Referenzparameter-Mechanismen, um es zu "
+"allen Funktionen zu übergeben, die es benötigen.\n"
 "Dies wird durch den Gebrauch von Containern erreicht.\n"
 "\n"
-"Der zweite Ansatz hat den Vorteil, dass das Übergeben von Fehlern "
-"einfacher ist, Abhängigkeiten geteilt werden (und \n"
+"Der zweite Ansatz hat den Vorteil, dass das Übergeben von Fehlern einfacher "
+"ist, Abhängigkeiten geteilt werden (und \n"
 "es wird immer eine leere Tabelle angezeigt, während das Modell mit der "
 "Berechnung beschäftigt ist).\n"
 "\n"
@@ -10153,7 +10151,6 @@ msgstr ""
 "Abhängigkeitsveränderung, die eine neue Berechnung erzwingt.\n"
 "Das Auswählen von 'Generiere Berechnungsfehler' erzwingt das Auftreten eines "
 "Fehlers während der Berechnungsphase."
-
 
 msgctxt "LatentRegression|"
 msgid "Add thresholds"
@@ -10340,15 +10337,6 @@ msgctxt "AnalysisForm|"
 msgid "A control has no name"
 msgstr "Eine Kontrolle hat keinen Namen"
 
-#, qt-format
-msgctxt "AnalysisForm|"
-msgid ""
-"These components were loaded with a wrong kind of value and are set with "
-"their default values:%1"
-msgstr ""
-"Diese Komponenten wurden mit falschen Wertetypen geladen und sind auf "
-"ihre Standardwerte gesetzt:%1"
-
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
 msgstr "Diese Datei stammt wahrscheinlich aus einer älteren Version von JASP."
@@ -10360,7 +10348,6 @@ msgid ""
 msgstr ""
 "Dies bedeutet, dass diese Ergebnisse nicht mit den ausgewählten Optionen "
 "übereinstimmt."
-
 
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
@@ -10554,9 +10541,9 @@ msgid ""
 "pressing \"Browse\"."
 msgstr ""
 "Wenn deaktiviert, werden nicht die Dateidialogfenster deines Betriebssystems "
-"benutzt, sondern die von Qt. Dies kann manche Probleme auf Windows lösen, bei "
-"denen JASP abstürzt, wenn man auf die \"Durchsuchen\"-Schaltfläche klickt."
-
+"benutzt, sondern die von Qt. Dies kann manche Probleme auf Windows lösen, "
+"bei denen JASP abstürzt, wenn man auf die \"Durchsuchen\"-Schaltfläche "
+"klickt."
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
@@ -13228,7 +13215,8 @@ msgstr ""
 "FaktorNiedrig = FaktorMittel = FaktorHoch\n"
 "FaktorNiedrig < FaktorMittel < FaktorHoch\n"
 "\n"
-"wobei Faktor den Namen des Faktors, und Niedrig/Mittel/Hoch dessen Stufen bezeichnet.\n"
+"wobei Faktor den Namen des Faktors, und Niedrig/Mittel/Hoch dessen Stufen "
+"bezeichnet.\n"
 "Lies nach in der Hilfedatei für weitere Erklärungen."
 
 msgctxt "BainAnovaBayesian|"
@@ -13247,7 +13235,8 @@ msgstr ""
 "FaktorNiedrig = FaktorMittel = FaktorHoch\n"
 "FaktorNiedrig < FaktorMittel < FaktorHoch\n"
 "\n"
-"wobei Faktor den Namen des Faktors, und Niedrig/Mittel/Hoch dessen Stufen bezeichnet.\n"
+"wobei Faktor den Namen des Faktors, und Niedrig/Mittel/Hoch dessen Stufen "
+"bezeichnet.\n"
 "Lies nach in der Hilfedatei für weitere Erklärungen."
 
 msgctxt "BainRegressionLinearBayesian|"
@@ -13288,9 +13277,10 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Second-Order"
 msgstr "Zweite Ordnung"
 
+#, fuzzy
 msgctxt "mlRegressionKnn|"
 msgid "Rectangular"
-msgstr ""
+msgstr "Rechteckig"
 
 msgctxt "mlRegressionKnn|"
 msgid "Epanechnikov"
@@ -13450,16 +13440,16 @@ msgid ""
 "correlations, numbers between -1 and 1 to the real line"
 msgstr ""
 "Fishers Z-Transformation (d.h. der Areatangens hyperbolicus) um "
-"Korrelationskoeffizienten, Zahlen zwischen -1 und 1, "
-"auf die reellen Zahlen zu transformieren"
+"Korrelationskoeffizienten, Zahlen zwischen -1 und 1, auf die reellen Zahlen "
+"zu transformieren"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
 msgstr ""
-"Inverse Fishers Z-Transformation (d.h. der Tangens hyperbolicus) um reelle Zahlen "
-"in Zahlen zwischen -1 und 1 zu transformieren"
+"Inverse Fishers Z-Transformation (d.h. der Tangens hyperbolicus) um reelle "
+"Zahlen in Zahlen zwischen -1 und 1 zu transformieren"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
@@ -13519,8 +13509,8 @@ msgid ""
 "generates data from a negative binomial distribution with specified trials "
 "and probability prob"
 msgstr ""
-"erzeugt Daten aus einer Negativen Binomialverteilung mit eingegebener "
-"Anzahl an Versuchen und Wahrscheinlichkeit Prob"
+"erzeugt Daten aus einer Negativen Binomialverteilung mit eingegebener Anzahl "
+"an Versuchen und Wahrscheinlichkeit Prob"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -13531,8 +13521,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr ""
-"erzeugt Daten aus einer Poissonverteilung mit eingegebener Rate Lambda"
+msgstr "erzeugt Daten aus einer Poissonverteilung mit eingegebener Rate Lambda"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -13604,8 +13593,8 @@ msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
 msgstr ""
-"Es gibt ungespeicherte Änderungen an deiner berechneten Spalte; was willst Du "
-"damit tun?"
+"Es gibt ungespeicherte Änderungen an deiner berechneten Spalte; was willst "
+"Du damit tun?"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
@@ -13823,9 +13812,9 @@ msgid ""
 "rewritten to jaspResults, and seeing as how these older analyses do use "
 "dependencies there is nothing to show you..."
 msgstr ""
-"Du hast versucht, die Abhängigkeiten einer Analyse anzuzeigen, die "
-"nicht für jaspResults überarbeitet wurde, und obwohl diese älteren "
-"Analysen Abhängigkeiten benutzen können, gibt es hier nichts anzuzeigen..."
+"Du hast versucht, die Abhängigkeiten einer Analyse anzuzeigen, die nicht für "
+"jaspResults überarbeitet wurde, und obwohl diese älteren Analysen "
+"Abhängigkeiten benutzen können, gibt es hier nichts anzuzeigen..."
 
 #, qt-format
 msgctxt "Analysis|"
@@ -13840,8 +13829,9 @@ msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
 msgstr ""
-"Konnte kein Festsetzen der Bearbeitungsoptionen für Abb. %1 finden, also werden "
-"Änderungen der Abbildung nicht gespeichert (falls es überhaupt geht)..."
+"Konnte kein Festsetzen der Bearbeitungsoptionen für Abb. %1 finden, also "
+"werden Änderungen der Abbildung nicht gespeichert (falls es überhaupt "
+"geht)..."
 
 msgctxt "EngineRepresentation|"
 msgid "Error saving plot"
@@ -13901,8 +13891,8 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
-"Deine Analysen wurden mit einer älteren Version von JASP erstellt; um die PPI der "
-"Abbildungen zu ändern, müssen diese erst aktualisiert werden.\n"
+"Deine Analysen wurden mit einer älteren Version von JASP erstellt; um die "
+"PPI der Abbildungen zu ändern, müssen diese erst aktualisiert werden.\n"
 "\n"
 "Alle Analysen aktualisieren?"
 
@@ -13913,8 +13903,8 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
-"Diese Analyse wurde mit einer älteren Version von JASP gemacht; um die Abbildung "
-"zu speichern muss diese erst aktualisiert werden.\n"
+"Diese Analyse wurde mit einer älteren Version von JASP gemacht; um die "
+"Abbildung zu speichern muss diese erst aktualisiert werden.\n"
 "\n"
 "Die Analyse aktualisieren?"
 
@@ -13929,8 +13919,8 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
-"Diese Analyse wurde mit einer älteren Version von JASP erstellt; um die Größe der "
-"Abbildung zu ändern, muss diese erst aktualisiert werden.\n"
+"Diese Analyse wurde mit einer älteren Version von JASP erstellt; um die "
+"Größe der Abbildung zu ändern, muss diese erst aktualisiert werden.\n"
 "\n"
 "Die Analyse aktualisieren?"
 
@@ -13986,9 +13976,9 @@ msgid ""
 msgstr ""
 "Wir werden zwei Webseiten in deinem Webbrowser öffnen.\n"
 "Die zweite Seite ist die 'Join GitHub'-Seite auf der Du einen neues Konto "
-"bei GitHub registrieren kannst.\n "
-"Die zweite Seite zeigt ein teilweise ausgefülltes Fehlerformular  "
-"nachdem Du dich bei GitHub mit dem neuen Github-Konto angemeldet hast.\n"
+"bei GitHub registrieren kannst.\n"
+" Die zweite Seite zeigt ein teilweise ausgefülltes Fehlerformular  nachdem "
+"Du dich bei GitHub mit dem neuen Github-Konto angemeldet hast.\n"
 "\n"
 "Bitte fülle dort alle fehlenden Informationen aus."
 
@@ -14003,8 +13993,8 @@ msgid ""
 "issues/issues"
 msgstr ""
 "Etwas ist beim Verbinden mit GitHub schiefgelaufen..\n"
-"Du kannst den Fehler trotzdem noch auf https://github."
-"com/jasp-stats/jasp-issues/issues berichten"
+"Du kannst den Fehler trotzdem noch auf https://github.com/jasp-stats/jasp-"
+"issues/issues berichten"
 
 msgctxt "MainWindow|"
 msgid "Error"
@@ -14044,11 +14034,11 @@ msgid ""
 "synchronize the data when the file is saved. Does this data file exist "
 "already, or do you want to generate it?"
 msgstr ""
-"JASP wurde ohne zugehörige Datendatei gestartet (CSV-, SAV- oder ODS-"
-"Datei). Allerdings startet JASP zum Bearbeiten der Daten ein "
-"Tabellenprogramm mit dieser Datendatei und synchronisiert die darin "
-"enthaltenen Daten sobald diese gespeichert werden. "
-"Gibt es diese Datendatei bereits, oder möchtest Du eine neue anlegen?"
+"JASP wurde ohne zugehörige Datendatei gestartet (CSV-, SAV- oder ODS-Datei). "
+"Allerdings startet JASP zum Bearbeiten der Daten ein Tabellenprogramm mit "
+"dieser Datendatei und synchronisiert die darin enthaltenen Daten sobald "
+"diese gespeichert werden. Gibt es diese Datendatei bereits, oder möchtest Du "
+"eine neue anlegen?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -14056,10 +14046,10 @@ msgid ""
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
-"JASP wurde mit einer Online-Datendatei (CSV-, SAV- oder ODS-Datei) gestartet. "
-"Allerdings muss diese Datei zum Bearbeiten der Daten auf deinem Computer "
-"gespeichert werden. Gibt es diese Datendatei auch auf deinem Computer, "
-"oder möchtest Du deine neue anlegen?"
+"JASP wurde mit einer Online-Datendatei (CSV-, SAV- oder ODS-Datei) "
+"gestartet. Allerdings muss diese Datei zum Bearbeiten der Daten auf deinem "
+"Computer gespeichert werden. Gibt es diese Datendatei auch auf deinem "
+"Computer, oder möchtest Du deine neue anlegen?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -14067,9 +14057,10 @@ msgid ""
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
 msgstr ""
-"JASP wurde mit einer Datendatei ohne Schreibrechte gestartet (wahrscheinlich aus den "
-"Beispielen). Allerdings muss JASP zum Bearbeiten der Daten in diese Datei schreiben. "
-"Gibt es diese Datendatei auch auf deinem Computer, oder möchtest Du deine neue anlegen?"
+"JASP wurde mit einer Datendatei ohne Schreibrechte gestartet (wahrscheinlich "
+"aus den Beispielen). Allerdings muss JASP zum Bearbeiten der Daten in diese "
+"Datei schreiben. Gibt es diese Datendatei auch auf deinem Computer, oder "
+"möchtest Du deine neue anlegen?"
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
@@ -14125,8 +14116,7 @@ msgstr ""
 msgctxt "DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
 msgstr ""
-"Beim Versuch, Modul %1 zu laden trat ein Fehler auf; der Fehler war: "
-"'%2'"
+"Beim Versuch, Modul %1 zu laden trat ein Fehler auf; der Fehler war: '%2'"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14134,8 +14124,8 @@ msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
 msgstr ""
-"Beim Löschen von Dateien für Modul %1 im Pfad '%2' ging etwas schief, und der "
-"Fehler war: %3"
+"Beim Löschen von Dateien für Modul %1 im Pfad '%2' ging etwas schief, und "
+"der Fehler war: %3"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14144,7 +14134,8 @@ msgid ""
 "%2"
 msgstr ""
 "Die Installation von Modul %1 ist fehlgeschlagen, mit folgender "
-"Fehlermeldung:\n %2"
+"Fehlermeldung:\n"
+" %2"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14158,7 +14149,8 @@ msgid ""
 "%2"
 msgstr ""
 "Das Laden der Pakete von Modul %1 ist fehlgeschlagen mit der folgenden "
-"Fehlermeldung:\n %2"
+"Fehlermeldung:\n"
+" %2"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14175,9 +14167,10 @@ msgid ""
 "contact: %2"
 msgstr ""
 "Kann Modul mit Namen '%1' nicht installieren weil der Name für das "
-"Installieren eines Entwicklermoduls reserviert ist.\nÄndere den Namen"
-"(in DESCRIPTION und description.json) und probiere es nochmal. Falls Du der "
-"Autor des Moduls bist und nicht weißt wie das geht, kontaktiere: %2"
+"Installieren eines Entwicklermoduls reserviert ist.\n"
+"Ändere den Namen(in DESCRIPTION und description.json) und probiere es "
+"nochmal. Falls Du der Autor des Moduls bist und nicht weißt wie das geht, "
+"kontaktiere: %2"
 
 msgctxt "DynamicModules|"
 msgid "Select a folder"
@@ -14220,7 +14213,8 @@ msgctxt "DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
 msgstr ""
-"Ein inst/icons-Verzeichnis anlegen für die Icons der Knöpfe in der Taskleiste."
+"Ein inst/icons-Verzeichnis anlegen für die Icons der Knöpfe in der "
+"Taskleiste."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14246,10 +14240,10 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"Es scheint dass Du nie ein %1 in deinem Modulentwicklungsverzeichnis hattest. "
-"Ohne dieses kann dein Modul nicht funktionieren, sorge dafür eines anzulegen. "
-"Es bleibt etwas mysteriös, wie du es installiert hast, und deswegen wird das "
-"Entwicklungsmodul nun deinstalliert werden."
+"Es scheint dass Du nie ein %1 in deinem Modulentwicklungsverzeichnis "
+"hattest. Ohne dieses kann dein Modul nicht funktionieren, sorge dafür eines "
+"anzulegen. Es bleibt etwas mysteriös, wie du es installiert hast, und "
+"deswegen wird das Entwicklungsmodul nun deinstalliert werden."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14262,8 +14256,8 @@ msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr ""
-"Es scheint dass Du %1 gelöscht hast, aber diese Datei ist nötig damit dein"
-"Modul funktioniert. Das Entwicklungsmodul wird nun gelöscht werden."
+"Es scheint dass Du %1 gelöscht hast, aber diese Datei ist nötig damit "
+"deinModul funktioniert. Das Entwicklungsmodul wird nun gelöscht werden."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14278,8 +14272,9 @@ msgid ""
 "now your old folder will be kept."
 msgstr ""
 "Es scheint dass Du das Verzeichnis %1 von deinem Entwicklungsmodul gelöscht "
-"hast. Ohne dieses Verzeichnis kann das Modul nicht funktionieren, sorge dafür "
-"dass es wieder herkommt. Vorerst wird nun das alte Verzeichnis aufbewahrt."
+"hast. Ohne dieses Verzeichnis kann das Modul nicht funktionieren, sorge "
+"dafür dass es wieder herkommt. Vorerst wird nun das alte Verzeichnis "
+"aufbewahrt."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14289,10 +14284,11 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"Es scheint dass das Verzeichnis %1 nie in deinem Entwicklungsmodulverzeichnis"
-"existiert hat. Ohne dieses Verzeichnis kann das Modul nicht funktionieren, "
-"sorge dafür Du eines anlegst. Es bleibt etwas mysteriös, wie Du das Modul "
-"installiert hast, und deswegen wird das Modul nun deinstalliert werden."
+"Es scheint dass das Verzeichnis %1 nie in deinem "
+"Entwicklungsmodulverzeichnisexistiert hat. Ohne dieses Verzeichnis kann das "
+"Modul nicht funktionieren, sorge dafür Du eines anlegst. Es bleibt etwas "
+"mysteriös, wie Du das Modul installiert hast, und deswegen wird das Modul "
+"nun deinstalliert werden."
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
@@ -14315,8 +14311,8 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
-"Die benötigten Updates für das Lesen älterer (<0.12) JASP-Dateien "
-"konnten nicht gelesen werden...\n"
+"Die benötigten Updates für das Lesen älterer (<0.12) JASP-Dateien konnten "
+"nicht gelesen werden...\n"
 "Du kannst JASP weiter benutzen und selbst (manche) älteren Dateien einlesen, "
 "aber manche Optionen werden möglicherweise nicht korrekt verstanden, und "
 "manche Analysen können möglicherweise gar nicht geladen werden."
@@ -14372,12 +14368,12 @@ msgstr "Datendatei"
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
 msgstr ""
-"Benutzername und/oder Passwort sind nicht korrekt. Bitte nochmal "
-"probieren."
+"Benutzername und/oder Passwort sind nicht korrekt. Bitte nochmal probieren."
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
-msgstr "OSF-Service ist nicht erreichbar. Bitte prüfe deine Internetverbindung."
+msgstr ""
+"OSF-Service ist nicht erreichbar. Bitte prüfe deine Internetverbindung."
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
@@ -14412,8 +14408,8 @@ msgid ""
 "To add a new data provider (eg. google drive) please use the online OSF "
 "services."
 msgstr ""
-"Dateien können nicht der Liste von Datenprovidern eines Projekts "
-"hinzugefügt werden.\n"
+"Dateien können nicht der Liste von Datenprovidern eines Projekts hinzugefügt "
+"werden.\n"
 "\n"
 "Bitte nutze den Onlineservice von OSF, um einen neuen Datenprovider (z.B. "
 "Google Drive) anzulegen."
@@ -14433,7 +14429,8 @@ msgstr "Fehler beim Öffnen der Datei von OSF"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr "Ein Fehler ist aufgetreten und das Verzeichnis konnte nicht angelegt werden."
+msgstr ""
+"Ein Fehler ist aufgetreten und das Verzeichnis konnte nicht angelegt werden."
 
 msgctxt "OSF|"
 msgid ""
@@ -14462,8 +14459,8 @@ msgstr ""
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
 msgstr ""
-"Eine neues Verzeichnis kann aus unbekanntem Grund nicht zu '%1' "
-"hinzugefügt werden."
+"Eine neues Verzeichnis kann aus unbekanntem Grund nicht zu '%1' hinzugefügt "
+"werden."
 
 msgctxt "OSF|"
 msgid "Folder"
@@ -14542,8 +14539,8 @@ msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.<br>"
 msgstr ""
-"Formel gibt keine logischen Werte zurück, und kann darum nicht "
-"in dem Filter genutzt werden.<br>"
+"Formel gibt keine logischen Werte zurück, und kann darum nicht in dem Filter "
+"genutzt werden.<br>"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!<br>"
@@ -14780,8 +14777,8 @@ msgstr "Modulo: ergibt den Rest einer ganzzahligen Division. 3%2 ergibt 1"
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
 msgstr ""
-"ergibt logische Werte und kann als Ausgangspunkt einer Formel für"
-"einen Filter dienen"
+"ergibt logische Werte und kann als Ausgangspunkt einer Formel füreinen "
+"Filter dienen"
 
 #, qt-format
 msgctxt "OperatorSelector|"
@@ -15032,7 +15029,8 @@ msgstr ""
 "\n"
 "Es ist momentan keine Hilfe zu dieser Analyse verfügbar.\n"
 "\n"
-"In einer zukünftigen Version von JASP soll hier Dokumentation hinzugefügt werden."
+"In einer zukünftigen Version von JASP soll hier Dokumentation hinzugefügt "
+"werden."
 
 msgctxt "LDGenerateDisplayData|"
 msgid "Generate and Display Data"
@@ -15099,11 +15097,6 @@ msgstr "z.B., zufällig %1"
 msgctxt "LDGenerateDisplayData|"
 msgid "Bar plot"
 msgstr "Balkendiagramm"
-
-#, qt-format
-msgctxt "QMLListView|"
-msgid "Wrong parameter discard in VariablesList %1"
-msgstr "Falsche Parameter in VariablesList %1 verworfen"
 
 #, qt-format
 msgctxt "QMLListView|"
@@ -15193,7 +15186,8 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr "Animationen sind bereits ausgeschaltet weil \"Sicherer Grafikmodus\" "
+msgstr ""
+"Animationen sind bereits ausgeschaltet weil \"Sicherer Grafikmodus\" "
 "eingeschaltet ist"
 
 msgctxt "EngineRepresentation|"
@@ -15833,16 +15827,6 @@ msgctxt "NetworkAnalysis|"
 msgid "Expected Influence"
 msgstr "Erwarteter Einfluß"
 
-msgctxt "MainWindow|"
-msgid ""
-"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
-"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
-"PowerPoint (*.pptx)"
-msgstr ""
-"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
-"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
-"PowerPoint (*.pptx)"
-
 msgctxt "RibbonModel|"
 msgid "R (Beta)"
 msgstr "R (Beta)"
@@ -15985,8 +15969,8 @@ msgid ""
 "A module for computing approximated adjusted fractional Bayes factors for "
 "equality, inequality, and about equality constrained hypotheses."
 msgstr ""
-"Ein Modul zum Berechnen von approximierten adjustierten fraktionierte Bayes"
-"faktoren für Gleichheit, Ungleichheit, und über Gleichheit definierte "
+"Ein Modul zum Berechnen von approximierten adjustierten fraktionierte "
+"Bayesfaktoren für Gleichheit, Ungleichheit, und über Gleichheit definierte "
 "Hypothesen."
 
 msgctxt "Description|"
@@ -16107,8 +16091,7 @@ msgstr "Äquivalenz-T-Tests (Beta)"
 
 msgctxt "Description|"
 msgid "This is a test version of Equivalence Testing module."
-msgstr ""
-"Dies ist eine Testversion des Äquivalenzstests-Moduls."
+msgstr "Dies ist eine Testversion des Äquivalenzstests-Moduls."
 
 msgctxt "Description|"
 msgid "Equivalence Independent Samples T-Test"
@@ -16428,8 +16411,8 @@ msgctxt "Description|"
 msgid ""
 "This module offers the standard Frequentist and Bayesian T-Tests analyses."
 msgstr ""
-"Dieses Modul bietet die Standardanalysen frequenstischer und Bayesscher "
-"T-Tests."
+"Dieses Modul bietet die Standardanalysen frequenstischer und Bayesscher T-"
+"Tests."
 
 msgctxt "Description|"
 msgid "Visual Modeling (Beta)"
@@ -16460,8 +16443,8 @@ msgid ""
 "Timer that displays the fact that updating Description.qml from live "
 "javascript code works fine."
 msgstr ""
-"Timer zum demonstrieren, dass das Aktualisieren von Description.qml "
-"mithilfe von live Javascript gut funktioniert."
+"Timer zum demonstrieren, dass das Aktualisieren von Description.qml mithilfe "
+"von live Javascript gut funktioniert."
 
 msgctxt "Description|"
 msgid "Descriptives"
@@ -16900,10 +16883,6 @@ msgid "Cohen's d / t-statistics & (N / SE)"
 msgstr "Cohens d / t-Statistik & (N / SF)"
 
 msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Correlations & (N / SE)"
-msgstr "Korrelationen & (N / SF)"
-
-msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Effect sizes & SE"
 msgstr "Effektgrößen & SF"
 
@@ -17184,10 +17163,6 @@ msgid "Type"
 msgstr "Type"
 
 msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Model-averaged"
-msgstr "Modell-gemittelt"
-
-msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Conditional"
 msgstr "Konditional"
 
@@ -17238,10 +17213,6 @@ msgstr "Schätzungen transformieren"
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Advanced"
 msgstr "Weiteres"
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Transform correlations"
-msgstr "Transformierte Korrelationen"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Cohen's d"
@@ -18113,8 +18084,8 @@ msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
 msgstr ""
-"Komponente %1 wurde mit falschen Werttyp geladen, und wurde auf "
-"ihren Standardwert zurückgesetzt."
+"Komponente %1 wurde mit falschen Werttyp geladen, und wurde auf ihren "
+"Standardwert zurückgesetzt."
 
 msgctxt "AnalysisForm|"
 msgid ""
@@ -18699,9 +18670,10 @@ msgstr ""
 "Diese Funktion berechnet den Bayesfaktor für eine binomialverteilte "
 "Beobachtung.\n"
 "Der Bayessche Binomialtest ist in Jeffreys (1961, p. 256) beschrieben.\n"
-"Dieser Test informiert uns, ob die Daten für oder gegen einen vorgeschlagenen "
-"Wert sprechen, der für den Parameter (Erfolgswahrscheinlichkeit) in Frage "
-"kommt.\n\n"
+"Dieser Test informiert uns, ob die Daten für oder gegen einen "
+"vorgeschlagenen Wert sprechen, der für den Parameter "
+"(Erfolgswahrscheinlichkeit) in Frage kommt.\n"
+"\n"
 "- Null-Modell: *p = p0*\n"
 "- Alt.-Modell: *p ~ Beta(a, b)*\n"
 "*p0* ist der vorgeschlagene Wert des Wahrscheinlichkeitsparameters von "
@@ -18710,8 +18682,8 @@ msgstr ""
 "Versuche, *n = s + f*. \n"
 "In 'Theory of Probability' nimmt Jeffreys einen uniformen Prior für den "
 "Wahrscheinlichkeitsparameter unter der Alternativhypothese an. \n"
-"Der hier benutzte Bayesfaktor ist ein verallgemeinerter Fall, der einen "
-"Beta-Prior für den Wahrscheinlichkeitsparameter annimmt. \n"
+"Der hier benutzte Bayesfaktor ist ein verallgemeinerter Fall, der einen Beta-"
+"Prior für den Wahrscheinlichkeitsparameter annimmt. \n"
 "*Anmerkung*: beta(1,1) entspricht einem uniformen Prior."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
@@ -18747,8 +18719,8 @@ msgid ""
 msgstr ""
 "Zeigt den Bayesfaktor, der mit benutzerdefiniertem Prior berechnet wurde; "
 "zeigt ein Wahrscheinlichkeitsdiagramm mit dem Chancenverhältnis der Daten "
-"unter der Null- vs. der Alternativhypothese; zeigt den Median und das "
-"95% Kredibilitätsintervall der Posteriordichte."
+"unter der Null- vs. der Alternativhypothese; zeigt den Median und das 95% "
+"Kredibilitätsintervall der Posteriordichte."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid ""
@@ -18916,6 +18888,27 @@ msgstr ""
 "Die horizontale durchgezogene Linie zeigt die Breite des 95%-"
 "Kredibilitätsintervalls des Posteriors."
 
+msgctxt "PrefsUI|"
+msgid "Fonts"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Interface:"
+msgstr ""
+
+#, qt-format
+msgctxt "PrefsUI|"
+msgid "Default font (%1)"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Code (R, JAGS, Lavaan...):"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Result & Help:"
+msgstr ""
+
 msgctxt "auditBayesianWorkflow|"
 msgid ""
 msgstr ""
@@ -18924,6 +18917,957 @@ msgctxt "auditClassicalWorkflow|"
 msgid ""
 msgstr ""
 
+msgctxt "Description|"
+msgid "Learn Bayes"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Learning Bayesian Statistics with JASP"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Counts"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Binomial Estimation"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Binomial Testing"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSbinomialestimation|"
+msgid "Model"
+msgstr "Modell"
+
+#, fuzzy
+msgctxt "LSbinomialestimation|"
+msgid "Distribution"
+msgstr "Verteilung"
+
+msgctxt "LSbinomialestimation|"
+msgid "Parameter (θ)"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Spike"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSbinomialestimation|"
+msgid "Beta"
+msgstr "Beta"
+
+#, fuzzy
+msgctxt "LSbinomialestimation|"
+msgid "α"
+msgstr "α"
+
+#, fuzzy
+msgctxt "LSbinomialestimation|"
+msgid "β"
+msgstr "β"
+
+msgctxt "LSbinomialestimation|"
+msgid "θ₀"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Hypothesis"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Prior probability"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSbinomialtesting|"
+msgid "Distribution"
+msgstr "Verteilung"
+
+msgctxt "LSbinomialtesting|"
+msgid "Parameter (θ)"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "P(H)"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Spike"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSbinomialtesting|"
+msgid "Beta"
+msgstr "Beta"
+
+#, fuzzy
+msgctxt "LSbinomialtesting|"
+msgid "α"
+msgstr "α"
+
+#, fuzzy
+msgctxt "LSbinomialtesting|"
+msgid "β"
+msgstr "β"
+
+msgctxt "LSbinomialtesting|"
+msgid "θ₀"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Data"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Input type"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Select variable"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Specify counts"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Enter sequence"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Count data"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSbinomialdatainput|"
+msgid "Successes"
+msgstr "Erfolge"
+
+#, fuzzy
+msgctxt "LSbinomialdatainput|"
+msgid "Failures"
+msgstr "Misserfolge"
+
+msgctxt "LSbinomialdatainput|"
+msgid "Comma-separated sequence of observations"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Levels"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Available"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSbinomialdatainput|"
+msgid "Selected"
+msgstr "Ausgewählt"
+
+msgctxt "LSbinomialdatainput|"
+msgid "Data summary"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "Inference"
+msgstr "Inferenz"
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "Color palette"
+msgstr "Farbpalette"
+
+msgctxt "LSestimationinference|"
+msgid "Colorblind"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "Colorblind Alt."
+msgstr "Farbenblind alt."
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "Viridis"
+msgstr "Viridis"
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "ggplot2"
+msgstr "ggplot2"
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "Gray"
+msgstr "Grau"
+
+msgctxt "LSestimationinference|"
+msgid "Point estimate"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Prior distribution"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "All"
+msgstr "Alle"
+
+msgctxt "LSestimationinference|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Individual"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "mass"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "lower"
+msgstr "untere"
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "upper"
+msgstr "obere"
+
+msgctxt "LSestimationinference|"
+msgid "Posterior distribution"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationinference|"
+msgid "BF"
+msgstr "BF"
+
+msgctxt "LSestimationinference|"
+msgid "Prior and posterior distribution"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Observed proportion"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Posterior prediction"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Future observations"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Summary"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Point estimate"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationpredictions|"
+msgid "Plots"
+msgstr "Abbildungen"
+
+#, fuzzy
+msgctxt "LSestimationpredictions|"
+msgid "Color palette"
+msgstr "Farbpalette"
+
+msgctxt "LSestimationpredictions|"
+msgid "Colorblind"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationpredictions|"
+msgid "Colorblind Alt."
+msgstr "Farbenblind alt."
+
+#, fuzzy
+msgctxt "LSestimationpredictions|"
+msgid "Viridis"
+msgstr "Viridis"
+
+#, fuzzy
+msgctxt "LSestimationpredictions|"
+msgid "ggplot2"
+msgstr "ggplot2"
+
+#, fuzzy
+msgctxt "LSestimationpredictions|"
+msgid "Gray"
+msgstr "Grau"
+
+msgctxt "LSestimationpredictions|"
+msgid "Posterior predictive distribution"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationpredictions|"
+msgid "All"
+msgstr "Alle"
+
+msgctxt "LSestimationpredictions|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Individual"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "mass"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationpredictions|"
+msgid "lower"
+msgstr "untere"
+
+#, fuzzy
+msgctxt "LSestimationpredictions|"
+msgid "upper"
+msgstr "obere"
+
+msgctxt "LSestimationpredictions|"
+msgid "Show sample proportions"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationsequential|"
+msgid "Sequential analysis"
+msgstr "Sequentielle Analyse"
+
+msgctxt "LSestimationsequential|"
+msgid "Point estimate"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationsequential|"
+msgid "All"
+msgstr "Alle"
+
+msgctxt "LSestimationsequential|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "mass"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationsequential|"
+msgid "BF"
+msgstr "BF"
+
+msgctxt "LSestimationsequential|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Updating table"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Interval"
+msgstr ""
+
+#, fuzzy
+msgctxt "LSestimationsequential|"
+msgid "lower"
+msgstr "untere"
+
+#, fuzzy
+msgctxt "LSestimationsequential|"
+msgid "upper"
+msgstr "obere"
+
+msgctxt "LSestimationsequential|"
+msgid "Posterior updating table"
+msgstr ""
+
+msgctxt "LSintrotext|"
+msgid "Introductory texts"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "Inference"
+msgstr "Inferenz"
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "Color palette"
+msgstr "Farbpalette"
+
+msgctxt "LStestinginference|"
+msgid "Colorblind"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "Colorblind Alt."
+msgstr "Farbenblind alt."
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "Viridis"
+msgstr "Viridis"
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "ggplot2"
+msgstr "ggplot2"
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "Gray"
+msgstr "Grau"
+
+msgctxt "LStestinginference|"
+msgid "Bayes factor"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "vs. all"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "vs. best"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "vs."
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "BF₁₀"
+msgstr "BF₁₀"
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "BF₀₁"
+msgstr "BF₀₁"
+
+msgctxt "LStestinginference|"
+msgid "log(BF₁₀)"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Prior distribution"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "Conditional"
+msgstr "Konditional"
+
+msgctxt "LStestinginference|"
+msgid "Point estimate"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "mass"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "lower"
+msgstr "untere"
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "upper"
+msgstr "obere"
+
+msgctxt "LStestinginference|"
+msgid "Joint"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Overlying"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Marginal"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Prior predictive distribution"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Observed proportion"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Predictive accuracy"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "Normalized"
+msgstr "Normalisiert"
+
+msgctxt "LStestinginference|"
+msgid "Posterior distribution"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestinginference|"
+msgid "BF"
+msgstr "BF"
+
+msgctxt "LStestinginference|"
+msgid "Prior and posterior distribution"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Posterior prediction"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Future observations"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Summary"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Point estimate"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestingpredictions|"
+msgid "Plots"
+msgstr "Abbildungen"
+
+#, fuzzy
+msgctxt "LStestingpredictions|"
+msgid "Color palette"
+msgstr "Farbpalette"
+
+msgctxt "LStestingpredictions|"
+msgid "Colorblind"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestingpredictions|"
+msgid "Colorblind Alt."
+msgstr "Farbenblind alt."
+
+#, fuzzy
+msgctxt "LStestingpredictions|"
+msgid "Viridis"
+msgstr "Viridis"
+
+#, fuzzy
+msgctxt "LStestingpredictions|"
+msgid "ggplot2"
+msgstr "ggplot2"
+
+#, fuzzy
+msgctxt "LStestingpredictions|"
+msgid "Gray"
+msgstr "Grau"
+
+msgctxt "LStestingpredictions|"
+msgid "Posterior predictive distribution"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestingpredictions|"
+msgid "Conditional"
+msgstr "Konditional"
+
+msgctxt "LStestingpredictions|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "mass"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestingpredictions|"
+msgid "lower"
+msgstr "untere"
+
+#, fuzzy
+msgctxt "LStestingpredictions|"
+msgid "upper"
+msgstr "obere"
+
+msgctxt "LStestingpredictions|"
+msgid "Joint"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Overlying"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Marginal"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Show sample proportions"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Predictions table"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestingsequential|"
+msgid "Sequential analysis"
+msgstr "Sequentielle Analyse"
+
+msgctxt "LStestingsequential|"
+msgid "Test results"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestingsequential|"
+msgid "Conditional"
+msgstr "Konditional"
+
+msgctxt "LStestingsequential|"
+msgid "Joint"
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestingsequential|"
+msgid "Normalized"
+msgstr "Normalisiert"
+
+msgctxt "LStestingsequential|"
+msgid "Bayes factor"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "vs. all"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "vs. best"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "vs."
+msgstr ""
+
+#, fuzzy
+msgctxt "LStestingsequential|"
+msgid "BF₁₀"
+msgstr "BF₁₀"
+
+#, fuzzy
+msgctxt "LStestingsequential|"
+msgid "BF₀₁"
+msgstr "BF₀₁"
+
+msgctxt "LStestingsequential|"
+msgid "log(BF₁₀)"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Updating table"
+msgstr ""
+
+#, fuzzy
+msgctxt "mlClusteringHierarchical|"
+msgid "Median"
+msgstr "Median"
+
+msgctxt "mlClusteringHierarchical|"
+msgid "Ward.D"
+msgstr ""
+
+msgctxt "mlClusteringHierarchical|"
+msgid "Ward.D2"
+msgstr ""
+
+msgctxt "mlClusteringHierarchical|"
+msgid "McQuitty"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Selection Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Robust Bayesian Meta-Analysis"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Correlations & N"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Odds ratios & CI"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Models"
+msgstr "Modelle"
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Expected effect size direction"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Positive"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Negative"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Rescale x-axis"
+msgstr ""
+
+#, fuzzy
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Model averaged"
+msgstr "Modell-Mittelwert"
+
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid ""
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Transform effect sizes"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "log(OR)"
+msgstr ""
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Effect Size"
+msgstr "Effektgröße"
+
+msgctxt "SelectionModels|"
+msgid "Effect Size Standard Error"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "P-value (one-sided)"
+msgstr ""
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Model"
+msgstr "Modell"
+
+msgctxt "SelectionModels|"
+msgid "P-value cutoffs"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Two-sided selection"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "P-value frequency"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Automatically join p-value intervals"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Expected effect size direction"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Positive"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Negative"
+msgstr ""
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Inference"
+msgstr "Inferenz"
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Fixed Effects"
+msgstr "Feste Effekte"
+
+msgctxt "SelectionModels|"
+msgid "Mean estimates"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Estimated weights"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Random Effects"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Estimated heterogeneity"
+msgstr ""
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Plots"
+msgstr "Abbildungen"
+
+msgctxt "SelectionModels|"
+msgid "Weight Function"
+msgstr ""
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Fixed effects"
+msgstr "Feste Effekte"
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Random effects"
+msgstr "Zufällige Effekte"
+
+msgctxt "SelectionModels|"
+msgid "Rescale x-axis"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Mean model estimates"
+msgstr ""
+
+msgctxt "Correlation|"
+msgid "Prediction intervals"
+msgstr ""
+
+msgctxt "RegressionLinear|"
+msgid "Prediction intervals"
+msgstr ""
+
+#, fuzzy
+msgctxt "RegressionLinearBayesian|"
+msgid "Bernoulli"
+msgstr "Bernoulli"
+
+msgctxt "RegressionLogistic|"
+msgid "Performance Plots"
+msgstr ""
+
+msgctxt "RegressionLogistic|"
+msgid "ROC plot"
+msgstr ""
+
+msgctxt "RegressionLogistic|"
+msgid "Cutoff step"
+msgstr ""
+
+msgctxt "RegressionLogistic|"
+msgid "Add cutoff labels"
+msgstr ""
+
+msgctxt "RegressionLogistic|"
+msgid "PR plot"
+msgstr ""
+
+msgctxt "Description|"
+msgid "S.S. Bayesian A/B Test"
+msgstr ""
+
+msgctxt "Flexplot|"
+msgid "Convert to grayscale"
+msgstr ""
+
+msgctxt "linmod|"
+msgid "Show p-values"
+msgstr ""
+
+msgctxt "linmod|"
+msgid "Convert to grayscale"
+msgstr ""
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid ""
+"These components were loaded with the wrong type of value and have been "
+"reset to their default values:%1"
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid "Problem loading known issues"
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version, contact "
+"the JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version: '%1', "
+"contact the JASP team for assistance."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
+msgstr ""
+
+#, fuzzy
+msgctxt "ResultMenuModel|"
+msgid "Export Results"
+msgstr "Ergebnisse exportieren"
+
+msgctxt "BoundQMLTextInput|"
+msgid "Formulas Field"
+msgstr ""
+
+#, qt-format
+msgctxt "QMLListView|"
+msgid "No name given in source attribute of List %1"
 msgstr ""

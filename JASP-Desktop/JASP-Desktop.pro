@@ -1,7 +1,7 @@
 QT      += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
 
-GENERATE_LANGUAGE_FILES = false
+GENERATE_LANGUAGE_FILES = true
 
 #AM_I_BUILDBOT is set as a "qmake internal var" in the command line
 message("AM_I_BUILDBOT: '$$[AM_I_BUILDBOT]'")
@@ -12,7 +12,7 @@ COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equa
 }
 }
 
-SUPPORTED_LANGUAGES = nl #de es pt ja
+SUPPORTED_LANGUAGES = nl de #es pt ja
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
 

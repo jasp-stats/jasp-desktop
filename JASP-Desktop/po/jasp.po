@@ -8181,10 +8181,6 @@ msgid "u"
 msgstr ""
 
 msgctxt "RegressionLinearBayesian|"
-msgid "Bernouilli"
-msgstr ""
-
-msgctxt "RegressionLinearBayesian|"
 msgid "p"
 msgstr ""
 
@@ -9875,17 +9871,7 @@ msgstr ""
 
 #, qt-format
 msgctxt "QMLListView|"
-msgid "No name given in source attribute of VariableList %1"
-msgstr ""
-
-#, qt-format
-msgctxt "QMLListView|"
 msgid "No name given in discard source attribute of VariableList %1"
-msgstr ""
-
-#, qt-format
-msgctxt "QMLListView|"
-msgid "Wrong parameter discard in VariablesList %1"
 msgstr ""
 
 #, qt-format
@@ -15560,13 +15546,6 @@ msgctxt "NetworkAnalysis|"
 msgid "Expected Influence"
 msgstr ""
 
-msgctxt "MainWindow|"
-msgid ""
-"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
-"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
-"PowerPoint (*.pptx)"
-msgstr ""
-
 msgctxt "Description|"
 msgid "Test Module"
 msgstr ""
@@ -16595,10 +16574,6 @@ msgid "Cohen's d / t-statistics & (N / SE)"
 msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Correlations & (N / SE)"
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Effect sizes & SE"
 msgstr ""
 
@@ -16879,10 +16854,6 @@ msgid "Type"
 msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Model-averaged"
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Conditional"
 msgstr ""
 
@@ -16932,10 +16903,6 @@ msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Advanced"
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Transform correlations"
 msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
@@ -18556,6 +18523,896 @@ msgctxt "Description|"
 msgid ""
 "This module offers the Principal Component, Confirmatory and Exploratory "
 "Factor analyses."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Fonts"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Interface:"
+msgstr ""
+
+#, qt-format
+msgctxt "PrefsUI|"
+msgid "Default font (%1)"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Code (R, JAGS, Lavaan...):"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Result & Help:"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Learn Bayes"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Learning Bayesian Statistics with JASP"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Counts"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Binomial Estimation"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Binomial Testing"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Model"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Distribution"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Parameter (θ)"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Spike"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Beta"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "α"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "β"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "θ₀"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Hypothesis"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Prior probability"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Distribution"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Parameter (θ)"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "P(H)"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Spike"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Beta"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "α"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "β"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "θ₀"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Data"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Input type"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Select variable"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Specify counts"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Enter sequence"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Count data"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Successes"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Failures"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Comma-separated sequence of observations"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Levels"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Available"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Selected"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Data summary"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Inference"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Color palette"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Colorblind"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Colorblind Alt."
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Viridis"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "ggplot2"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Gray"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Point estimate"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Prior distribution"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "All"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Individual"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "mass"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "lower"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "upper"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Posterior distribution"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "BF"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Prior and posterior distribution"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Observed proportion"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Posterior prediction"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Future observations"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Summary"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Point estimate"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Plots"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Color palette"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Colorblind"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Colorblind Alt."
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Viridis"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "ggplot2"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Gray"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Posterior predictive distribution"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "All"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Individual"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "mass"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "lower"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "upper"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Show sample proportions"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Sequential analysis"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Point estimate"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "All"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "mass"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "BF"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Updating table"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Interval"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "lower"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "upper"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Posterior updating table"
+msgstr ""
+
+msgctxt "LSintrotext|"
+msgid "Introductory texts"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Inference"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Color palette"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Colorblind"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Colorblind Alt."
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Viridis"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "ggplot2"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Gray"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Bayes factor"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "vs. all"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "vs. best"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "vs."
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "BF₁₀"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "BF₀₁"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "log(BF₁₀)"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Prior distribution"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Conditional"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Point estimate"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "mass"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "lower"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "upper"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Joint"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Overlying"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Marginal"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Prior predictive distribution"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Observed proportion"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Predictive accuracy"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Normalized"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Posterior distribution"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "BF"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Prior and posterior distribution"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Posterior prediction"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Future observations"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Summary"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Point estimate"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Plots"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Color palette"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Colorblind"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Colorblind Alt."
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Viridis"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "ggplot2"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Gray"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Posterior predictive distribution"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Conditional"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "CI"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "mass"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "lower"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "upper"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Joint"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Overlying"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Stacked"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Marginal"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Show sample proportions"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Predictions table"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Sequential analysis"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Test results"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Conditional"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Joint"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Normalized"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Bayes factor"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "vs. all"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "vs. best"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "vs."
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "BF₁₀"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "BF₀₁"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "log(BF₁₀)"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Updating table"
+msgstr ""
+
+msgctxt "mlClusteringHierarchical|"
+msgid "Median"
+msgstr ""
+
+msgctxt "mlClusteringHierarchical|"
+msgid "Ward.D"
+msgstr ""
+
+msgctxt "mlClusteringHierarchical|"
+msgid "Ward.D2"
+msgstr ""
+
+msgctxt "mlClusteringHierarchical|"
+msgid "McQuitty"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Selection Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Robust Bayesian Meta-Analysis"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Correlations & N"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Odds ratios & CI"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Models"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Expected effect size direction"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Positive"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Negative"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Rescale x-axis"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Model averaged"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Transform effect sizes"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "log(OR)"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Effect Size"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Effect Size Standard Error"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "P-value (one-sided)"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Model"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "P-value cutoffs"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Two-sided selection"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "P-value frequency"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Automatically join p-value intervals"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Expected effect size direction"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Positive"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Negative"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Inference"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Fixed Effects"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Mean estimates"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Estimated weights"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Random Effects"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Estimated heterogeneity"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Plots"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Weight Function"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Fixed effects"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Random effects"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Rescale x-axis"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Mean model estimates"
+msgstr ""
+
+msgctxt "Correlation|"
+msgid "Prediction intervals"
+msgstr ""
+
+msgctxt "RegressionLinear|"
+msgid "Prediction intervals"
+msgstr ""
+
+msgctxt "RegressionLinearBayesian|"
+msgid "Bernoulli"
+msgstr ""
+
+msgctxt "RegressionLogistic|"
+msgid "Performance Plots"
+msgstr ""
+
+msgctxt "RegressionLogistic|"
+msgid "ROC plot"
+msgstr ""
+
+msgctxt "RegressionLogistic|"
+msgid "Cutoff step"
+msgstr ""
+
+msgctxt "RegressionLogistic|"
+msgid "Add cutoff labels"
+msgstr ""
+
+msgctxt "RegressionLogistic|"
+msgid "PR plot"
+msgstr ""
+
+msgctxt "Description|"
+msgid "S.S. Bayesian A/B Test"
+msgstr ""
+
+msgctxt "Flexplot|"
+msgid "Convert to grayscale"
+msgstr ""
+
+msgctxt "linmod|"
+msgid "Show p-values"
+msgstr ""
+
+msgctxt "linmod|"
+msgid "Convert to grayscale"
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid "Problem loading known issues"
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version, contact "
+"the JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version: '%1', "
+"contact the JASP team for assistance."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
+msgstr ""
+
+msgctxt "ResultMenuModel|"
+msgid "Export Results"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Formulas Field"
+msgstr ""
+
+#, qt-format
+msgctxt "QMLListView|"
+msgid "No name given in source attribute of List %1"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"
