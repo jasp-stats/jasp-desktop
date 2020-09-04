@@ -641,12 +641,12 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   }
   
   # tau estimates
-  if (is.null(estimatesRE[["estimatesTauRE"]]) && options[["RE_heterogeneity"]] && options[["RE_estimates"]]) {
-    estimatesTauRE <- createJaspTable(title = gettextf("Heterogeneity Estimates(%s)", "\u03C4"))
-    estimatesTauRE$position <- 2
-    estimatesTauRE$dependOn(c("RE_heterogeneity"))
-    estimatesRE[["estimatesTauRE"]] <- estimatesTauRE
-    estimatesTauRE <- .smFillHeterogeneity(jaspResults, estimatesTauRE, models[["RE"]], options)    
+  if (is.null(estimatesRE[["heterogeneityRE"]]) && options[["RE_heterogeneity"]] && options[["RE_estimates"]]) {
+    heterogeneityRE <- createJaspTable(title = gettextf("Heterogeneity Estimates(%s)", "\u03C4"))
+    heterogeneityRE$position <- 2
+    heterogeneityRE$dependOn(c("RE_heterogeneity"))
+    estimatesRE[["heterogeneityRE"]] <- heterogeneityRE
+    heterogeneityRE <- .smFillHeterogeneity(jaspResults, heterogeneityRE, models[["RE"]], options)    
   }
   
   # weights estimates
