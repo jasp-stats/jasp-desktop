@@ -156,14 +156,14 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   return(x)
 }
 
-.smJoinCutoffs             <- function(steps, pval) {
+.smJoinCutoffs             <- function(steps, pVal) {
   
   ### this is probably the most complex part of the analysis
   # the fit function protests when there is any p-value interval with lower than 4 p-values
   # the autoreduce should combine all p-value intervals that have too few p-values
   
   # create p-value table
-  cutoffsTable <- table(cut(pval, breaks = c(0, steps)))
+  cutoffsTable <- table(cut(pVal, breaks = c(0, steps)))
   
   # start removing from the end, but never 1 at the end
   while (cutoffsTable[length(cutoffsTable)] < 4) {
@@ -172,7 +172,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     steps <- steps[-(length(steps) - 1)]
     
     # create p-value table
-    cutoffsTable <- table(cut(pval, breaks = c(0, steps)))
+    cutoffsTable <- table(cut(pVal, breaks = c(0, steps)))
   }
   
   # and then go from the start(go one by one - two neiboring intervals with 2 p-values will become one with 4 instead of removing all of them)
@@ -182,7 +182,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     steps <- steps[-which.max(cutoffsTable < 4)]
     
     # create p-value table
-    cutoffsTable <- table(cut(pval, breaks = c(0, steps)))
+    cutoffsTable <- table(cut(pVal, breaks = c(0, steps)))
   }
   
   # do not fit the models if there is only one p-value interval
@@ -197,13 +197,13 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   overtitleCI <- gettext("95% Confidence Interval")
   
-  table$addColumnInfo(name = "type", title = "",                        type = "string")
-  table$addColumnInfo(name = "est",  title = gettext("Estimate"),       type = "number")
-  table$addColumnInfo(name = "se",   title = gettext("Standard Error"), type = "number")
-  table$addColumnInfo(name = "stat", title = gettext("z"),              type = "number")
-  table$addColumnInfo(name = "pval", title = gettext("p"),              type = "pvalue")
-  table$addColumnInfo(name = "lCI",  title = gettext("Lower"),          type = "number", overtitle = overtitleCI)
-  table$addColumnInfo(name = "uCI",  title = gettext("Upper"),          type = "number", overtitle = overtitleCI)
+  table$addColumnInfo(name = "type",     title = "",                        type = "string")
+  table$addColumnInfo(name = "est",      title = gettext("Estimate"),       type = "number")
+  table$addColumnInfo(name = "se",       title = gettext("Standard Error"), type = "number")
+  table$addColumnInfo(name = "stat",     title = gettext("z"),              type = "number")
+  table$addColumnInfo(name = "pVal",     title = gettext("p"),              type = "pvalue")
+  table$addColumnInfo(name = "lowerCI",  title = gettext("Lower"),          type = "number", overtitle = overtitleCI)
+  table$addColumnInfo(name = "upperCI",  title = gettext("Upper"),          type = "number", overtitle = overtitleCI)
   
   rowUnadjusted <- list(type = "Unadjusted")
   rowAdjusted   <- list(type = "Adjusted")
@@ -221,17 +221,17 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
         est  = fit[["unadj_est"]][posMean, 1],
         se   = fit[["unadj_se"]][posMean, 1],
         stat = fit[["z_unadj"]][posMean, 1],
-        pval = fit[["p_unadj"]][posMean, 1],
-        lCI  = fit[["ci.lb_unadj"]][posMean, 1],
-        uCI  = fit[["ci.ub_unadj"]][posMean, 1]
+        pVal = fit[["p_unadj"]][posMean, 1],
+        lowerCI  = fit[["ci.lb_unadj"]][posMean, 1],
+        upperCI  = fit[["ci.ub_unadj"]][posMean, 1]
       ))
       rowAdjusted    <- c(rowAdjusted, list(
         est  = fit[["adj_est"]][posMean, 1],
         se   = fit[["adj_se"]][posMean, 1],
         stat = fit[["z_adj"]][posMean, 1],
-        pval = fit[["p_adj"]][posMean, 1],
-        lCI  = fit[["ci.lb_adj"]][posMean, 1],
-        uCI  = fit[["ci.ub_adj"]][posMean, 1]
+        pVal = fit[["p_adj"]][posMean, 1],
+        lowerCI  = fit[["ci.lb_adj"]][posMean, 1],
+        upperCI  = fit[["ci.ub_adj"]][posMean, 1]
       ))
       
       noteMessages    <- .smSetNoteMessages(jaspResults, fit, options)      
@@ -258,12 +258,12 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   overtitleCI <- gettext("95% Confidence Interval")
   
-  table$addColumnInfo(name = "type", title = "",                        type = "string")
-  table$addColumnInfo(name = "est",  title = gettext("Estimate"),       type = "number")
-  table$addColumnInfo(name = "stat", title = gettext("z"),              type = "number")
-  table$addColumnInfo(name = "pval", title = gettext("p"),              type = "pvalue")
-  table$addColumnInfo(name = "lCI",  title = gettext("Lower"),          type = "number", overtitle = overtitleCI)
-  table$addColumnInfo(name = "uCI",  title = gettext("Upper"),          type = "number", overtitle = overtitleCI)
+  table$addColumnInfo(name = "type",     title = "",                    type = "string")
+  table$addColumnInfo(name = "est",      title = gettext("Estimate"),   type = "number")
+  table$addColumnInfo(name = "stat",     title = gettext("z"),          type = "number")
+  table$addColumnInfo(name = "pVal",     title = gettext("p"),          type = "pvalue")
+  table$addColumnInfo(name = "lowerCI",  title = gettext("Lower"),      type = "number", overtitle = overtitleCI)
+  table$addColumnInfo(name = "upperCI",  title = gettext("Upper"),      type = "number", overtitle = overtitleCI)
   
   rowREUnadjustedTau <- list(type = "Unadjusted")
   rowREAdjustedTau   <- list(type = "Adjusted")
@@ -273,16 +273,16 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
       rowREUnadjustedTau  <- c(rowREUnadjustedTau, list(
         est  = sqrt(fit[["unadj_est"]][1, 1]),
         stat = fit[["z_unadj"]][1, 1],
-        pval = fit[["p_unadj"]][1, 1],
-        lCI  = sqrt(ifelse(fit[["ci.lb_unadj"]][1, 1] < 0, 0, fit[["ci.lb_unadj"]][1, 1])),
-        uCI  = sqrt(fit[["ci.ub_unadj"]][1, 1])
+        pVal = fit[["p_unadj"]][1, 1],
+        lowerCI  = sqrt(ifelse(fit[["ci.lb_unadj"]][1, 1] < 0, 0, fit[["ci.lb_unadj"]][1, 1])),
+        upperCI  = sqrt(fit[["ci.ub_unadj"]][1, 1])
       ))
       rowREAdjustedTau    <- c(rowREAdjustedTau, list(
         est  = sqrt(fit[["adj_est"]][1, 1]),
         stat = fit[["z_adj"]][1, 1],
-        pval = fit[["p_adj"]][1, 1],
-        lCI  = sqrt(ifelse(fit[["ci.lb_adj"]][1, 1] < 0, 0, fit[["ci.lb_adj"]][1, 1])),
-        uCI  = sqrt(fit[["ci.ub_adj"]][1, 1])
+        pVal = fit[["p_adj"]][1, 1],
+        lowerCI  = sqrt(ifelse(fit[["ci.lb_adj"]][1, 1] < 0, 0, fit[["ci.lb_adj"]][1, 1])),
+        upperCI  = sqrt(fit[["ci.ub_adj"]][1, 1])
       ))
       
       # add info that tau is on different scale if correlations were used
@@ -318,14 +318,14 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   overtitleCI <- gettext("95% Confidence Interval")
   overtitleP  <- gettext("<em>p</em>-values interval(one-sided)")
   
-  table$addColumnInfo(name = "lr",   title = gettext("Lower"),          type = "number", overtitle = overtitleP)
-  table$addColumnInfo(name = "ur",   title = gettext("Upper"),          type = "number", overtitle = overtitleP)
-  table$addColumnInfo(name = "est",  title = gettext("Estimate"),       type = "number")
-  table$addColumnInfo(name = "se",   title = gettext("Standard Error"), type = "number")
-  table$addColumnInfo(name = "stat", title = gettext("z"),              type = "number")
-  table$addColumnInfo(name = "pval", title = gettext("p"),              type = "pvalue")
-  table$addColumnInfo(name = "lCI",  title = gettext("Lower"),          type = "number", overtitle = overtitleCI)
-  table$addColumnInfo(name = "uCI",  title = gettext("Upper"),          type = "number", overtitle = overtitleCI)
+  table$addColumnInfo(name = "lr",       title = gettext("Lower"),          type = "number", overtitle = overtitleP)
+  table$addColumnInfo(name = "ur",       title = gettext("Upper"),          type = "number", overtitle = overtitleP)
+  table$addColumnInfo(name = "est",      title = gettext("Estimate"),       type = "number")
+  table$addColumnInfo(name = "se",       title = gettext("Standard Error"), type = "number")
+  table$addColumnInfo(name = "stat",     title = gettext("z"),              type = "number")
+  table$addColumnInfo(name = "pVal",     title = gettext("p"),              type = "pvalue")
+  table$addColumnInfo(name = "lowerCI",  title = gettext("Lower"),          type = "number", overtitle = overtitleCI)
+  table$addColumnInfo(name = "upperCI",  title = gettext("Upper"),          type = "number", overtitle = overtitleCI)
   
   if (!is.null(fit)) {
     if (!class(fit) %in% c("simpleError","error")) {
@@ -343,8 +343,8 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
             ur   = fit[["steps"]][1],
             est  = 1,
             se   = 0,
-            lCI  = 1,
-            uCI  = 1
+            lowerCI  = 1,
+            upperCI  = 1
           )           
         } else {
           tempRow <- list(
@@ -353,9 +353,9 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
             est  = fit[["adj_est"]][i+weightsAdd, 1],
             se   = fit[["adj_se"]][i+weightsAdd, 1],
             stat = fit[["z_adj"]][i+weightsAdd, 1],
-            pval = fit[["p_adj"]][i+weightsAdd, 1],
-            lCI  = ifelse(fit[["ci.lb_adj"]][i+weightsAdd, 1] < 0, 0, fit[["ci.lb_adj"]][i+weightsAdd, 1]),
-            uCI  = fit[["ci.ub_adj"]][i+weightsAdd, 1]
+            pVal = fit[["p_adj"]][i+weightsAdd, 1],
+            lowerCI  = ifelse(fit[["ci.lb_adj"]][i+weightsAdd, 1] < 0, 0, fit[["ci.lb_adj"]][i+weightsAdd, 1]),
+            upperCI  = fit[["ci.ub_adj"]][i+weightsAdd, 1]
           ) 
         }
         table$addRows(tempRow)
@@ -392,11 +392,11 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   steps <- .smGetCutoffs(options)
   
   # get the p-values
-  pval  <- .smGetInputPval(dataset, options)
+  pVal  <- .smGetInputPVal(dataset, options)
   
   # remove intervals that do not contain enought(3) p-values
   if (options[["joinPVal"]]) {
-    steps <- tryCatch(.smJoinCutoffs(steps, pval), error = function(e)e)
+    steps <- tryCatch(.smJoinCutoffs(steps, pVal), error = function(e)e)
     
     if (class(steps) %in% c("simpleError", "error")) {
       models[["object"]] <- list(
@@ -408,37 +408,37 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   }
   
   # fit the models
-  fit_FE <- tryCatch(weightr::weightfunct(
+  fitFE <- tryCatch(weightr::weightfunct(
     effect = .smGetInputES(dataset, options),
-    v      = .smGetInputVAR(dataset, options),
-    pval   = pval,
+    v      = .smGetInputVar(dataset, options),
+    pval   = pVal,
     steps  = steps,
     fe     = TRUE
   ),error = function(e)e)
   
-  fit_RE <- tryCatch(weightr::weightfunct(
+  fitRE <- tryCatch(weightr::weightfunct(
     effect = .smGetInputES(dataset, options),
-    v      = .smGetInputVAR(dataset, options),
-    pval   = pval,
+    v      = .smGetInputVar(dataset, options),
+    pval   = pVal,
     steps  = steps,
     fe     = FALSE
   ),error = function(e)e)
   
   # take care of the possibly turned estimates
   if (options[["effectDirection"]] == "negative") {
-    fit_FE <- .smTurnEstimatesDirection(fit_FE)
-    fit_RE <- .smTurnEstimatesDirection(fit_RE)  
+    fitFE <- .smTurnEstimatesDirection(fitFE)
+    fitRE <- .smTurnEstimatesDirection(fitRE)  
   }
   
   # take care of the transformed estimates
   if (options[["measures"]] == "correlation") {
-    fit_FE <- .smTransformEstimates(fit_FE, options)
-    fit_RE <- .smTransformEstimates(fit_RE, options)
+    fitFE <- .smTransformEstimates(fitFE, options)
+    fitRE <- .smTransformEstimates(fitRE, options)
   }
   
   models[["object"]] <- list(
-    FE = fit_FE,
-    RE = fit_RE
+    FE = fitFE,
+    RE = fitRE
   )
   
   return()
@@ -468,7 +468,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   heterogeneityTest$addColumnInfo(name = "stat",  title = gettext("Q"),  type = "number")
   heterogeneityTest$addColumnInfo(name = "df",    title = gettext("df"), type = "integer")
-  heterogeneityTest$addColumnInfo(name = "pval",  title = gettext("p"),  type = "pvalue")
+  heterogeneityTest$addColumnInfo(name = "pVal",  title = gettext("p"),  type = "pvalue")
   
   if (!is.null(models)) {
     
@@ -478,13 +478,13 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
       rowHeterogeneity    <- c(rowHeterogeneity, list(
         stat = models[["FE"]][["QE"]],
         df   =(models[["FE"]][["k"]] - models[["FE"]][["npred"]] - 1),
-        pval = models[["FE"]][["QEp"]]
+        pVal = models[["FE"]][["QEp"]]
       ))
     } else if (!errorRE) {
       rowHeterogeneity    <- c(rowHeterogeneity, list(
         stat = models[["RE"]][["QE"]],
         df   =(models[["RE"]][["k"]] - models[["RE"]][["npred"]] - 1),
-        pval = models[["RE"]][["QEp"]]
+        pVal = models[["RE"]][["QEp"]]
       ))
     }
     
@@ -522,7 +522,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   biasTest$addColumnInfo(name = "type",  title = "",                type = "string")
   biasTest$addColumnInfo(name = "stat",  title = gettext("ChiSq"),  type = "number")
   biasTest$addColumnInfo(name = "df",    title = gettext("df"),     type = "integer")
-  biasTest$addColumnInfo(name = "pval",  title = gettext("p"),      type = "pvalue")
+  biasTest$addColumnInfo(name = "pVal",  title = gettext("p"),      type = "pvalue")
   
   if (!is.null(models)) {
     
@@ -533,7 +533,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
       rowBiasHomogeneity <- c(rowBiasHomogeneity, list(
         stat = 2*abs(models[["FE"]][["output_unadj"]][["value"]] - models[["FE"]][["output_adj"]][["value"]]),
         df   = length(models[["FE"]][["output_adj"]][["par"]]) - length(models[["FE"]][["output_unadj"]][["par"]]),
-        pval = pchisq(
+        pVal = pchisq(
           2*abs(models[["FE"]][["output_unadj"]][["value"]] - models[["FE"]][["output_adj"]][["value"]]), 
           length(models[["FE"]][["output_adj"]][["par"]]) - length(models[["FE"]][["output_unadj"]][["par"]]),
           lower.tail = FALSE
@@ -544,7 +544,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
       rowBiasHeterogeneity <- c(rowBiasHeterogeneity, list(
         stat = 2*abs(models[["RE"]][["output_unadj"]][["value"]] - models[["RE"]][["output_adj"]][["value"]]),
         df   = length(models[["RE"]][["output_adj"]][["par"]]) - length(models[["RE"]][["output_unadj"]][["par"]]),
-        pval = pchisq(
+        pVal = pchisq(
           2*abs(models[["RE"]][["output_unadj"]][["value"]] - models[["RE"]][["output_adj"]][["value"]]), 
           length(models[["RE"]][["output_adj"]][["par"]]) - length(models[["RE"]][["output_unadj"]][["par"]]),
           lower.tail = FALSE
@@ -674,9 +674,9 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   }
   
   overtitle <- gettext("<em>p</em>-values interval(one-sided)")
-  pFrequency$addColumnInfo(name = "lowerRange", title = gettext("Lower"),     type = "number", overtitle = overtitle)
-  pFrequency$addColumnInfo(name = "upperRange", title = gettext("Upper"),     type = "number", overtitle = overtitle)
-  pFrequency$addColumnInfo(name = "frequency",  title = gettext("Frequency"), type = "integer")
+  pFrequency$addColumnInfo(name = "lowerPRange", title = gettext("Lower"),     type = "number", overtitle = overtitle)
+  pFrequency$addColumnInfo(name = "upperPRange", title = gettext("Upper"),     type = "number", overtitle = overtitle)
+  pFrequency$addColumnInfo(name = "frequency",   title = gettext("Frequency"), type = "integer")
   
   if (!.smCheckReady(options))
     return()
@@ -686,7 +686,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   # get the p-value steps and p-values(so we don't have to search for them in the models)
   steps <- .smGetCutoffs(options)
-  pval  <- .smGetInputPval(dataset, options)
+  pVal  <- .smGetInputPVal(dataset, options)
   
   # add a note in case that the models failed to conver due to autoreduce
   if (class(models[["FE"]]) %in% c("simpleError","error") || class(models[["RE"]]) %in% c("simpleError","error")) {
@@ -698,23 +698,23 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
         }
       } else {
         # the failure wasn't due to the reduce - reduce the p-value cuttoffs
-        steps <- .smJoinCutoffs(steps, pval)
+        steps <- .smJoinCutoffs(steps, pVal)
       }
     }
   } else {
     if (options[["joinPVal"]]) {
-      steps <- .smJoinCutoffs(steps, pval)      
+      steps <- .smJoinCutoffs(steps, pVal)      
     }
   }
   
   steps <- c(0, steps)
-  cutoffsTable <- table(cut(pval, breaks = steps))
+  cutoffsTable <- table(cut(pVal, breaks = steps))
   
   for(i in 1:length(cutoffsTable)) {
     pFrequency$addRows(list(
-      lowerRange = steps[i],
-      upperRange = steps[i+1],
-      frequency  = cutoffsTable[i]
+      lowerPRange = steps[i],
+      upperPRange = steps[i+1],
+      frequency   = cutoffsTable[i]
     ))
   }
   
@@ -752,17 +752,17 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   # get the weights and steps
   steps       <- c(0, fit[["steps"]])
   weightsMean <- c(1, fit[["adj_est"]][  ifelse(type == "FE", 2, 3):nrow(fit[["adj_est"]]),  1])
-  weightslCI  <- c(1, fit[["ci.lb_adj"]][ifelse(type == "FE", 2, 3):nrow(fit[["ci.lb_adj"]]), 1])
-  weightsuCI  <- c(1, fit[["ci.ub_adj"]][ifelse(type == "FE", 2, 3):nrow(fit[["ci.ub_adj"]]), 1])
+  weightsLowerCI  <- c(1, fit[["ci.lb_adj"]][ifelse(type == "FE", 2, 3):nrow(fit[["ci.lb_adj"]]), 1])
+  weightsupperCI  <- c(1, fit[["ci.ub_adj"]][ifelse(type == "FE", 2, 3):nrow(fit[["ci.ub_adj"]]), 1])
   
   # handle NaN in the estimates
-  if (any(c(is.nan(weightsMean), is.nan(weightslCI), is.nan(weightsuCI)))) {
+  if (any(c(is.nan(weightsMean), is.nan(weightsLowerCI), is.nan(weightsupperCI)))) {
     plotWeights$setError(gettext("The figure could not be created since one of the estimates is NaN."))
     return()
   }
   
   # correct the lower bound
-  weightslCI[weightslCI < 0] <- 0
+  weightsLowerCI[weightsLowerCI < 0] <- 0
   
   # get the ordering for plotting
   coordOrder <- sort(rep(1:(length(steps)-1),2), decreasing = FALSE)
@@ -771,7 +771,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   # axis ticks
   xTics    <- trimws(steps, which = "both", whitespace = "0")
   xTics[1] <- 0
-  y_tics    <- JASPgraphs::getPrettyAxisBreaks(range(c(weightsMean, weightslCI, weightsuCI)))
+  y_tics    <- JASPgraphs::getPrettyAxisBreaks(range(c(weightsMean, weightsLowerCI, weightsupperCI)))
   xSteps   <- if (options[["weightFunctionRescale"]]) seq(0, 1, length.out = length(steps)) else steps
   
   # make the plot happen
@@ -780,7 +780,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   plot <- plot + ggplot2::geom_polygon(
     ggplot2::aes(
       x = c(xSteps[stepsOrder], rev(xSteps[stepsOrder])),
-      y = c(weightslCI[coordOrder], rev(weightsuCI[coordOrder]))
+      y = c(weightsLowerCI[coordOrder], rev(weightsupperCI[coordOrder]))
     ),
     fill = "grey80")
   # CI
@@ -845,14 +845,14 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   estimates <- data.frame(
     model = c(gettext("Fixed effects"),    gettext("Fixed effects (adjusted)"),    gettext("Random effects"),   gettext("Random effects (adjusted)")),
     mean  = c(FE[["unadj_est"]][1, 1],     FE[["adj_est"]][1, 1],                  RE[["unadj_est"]][2, 1],     RE[["adj_est"]][2, 1]),
-    lCI   = c(FE[["ci.lb_unadj"]][1, 1],   FE[["ci.lb_adj"]][1, 1],                RE[["ci.lb_unadj"]][2, 1],   RE[["ci.lb_adj"]][2, 1]),
-    uCI   = c(FE[["ci.ub_unadj"]][1, 1],   FE[["ci.ub_adj"]][1, 1],                RE[["ci.ub_unadj"]][2, 1],   RE[["ci.ub_adj"]][2, 1])
+    lowerCI   = c(FE[["ci.lb_unadj"]][1, 1],   FE[["ci.lb_adj"]][1, 1],                RE[["ci.lb_unadj"]][2, 1],   RE[["ci.lb_adj"]][2, 1]),
+    upperCI   = c(FE[["ci.ub_unadj"]][1, 1],   FE[["ci.ub_adj"]][1, 1],                RE[["ci.ub_unadj"]][2, 1],   RE[["ci.ub_adj"]][2, 1])
   )
   estimates <- estimates[4:1,]
   
   # handle NaN in the estimates
-  if (any(c(is.nan(estimates[,"mean"]), is.nan(estimates[,"lCI"]), is.nan(estimates[,"uCI"]))))
-    plotEstimates$setError(gettext("The figure could not be created since one of the estimates is NaN."))
+  if (any(c(is.nan(estimates[,"mean"]), is.nan(estimates[,"lowerCI"]), is.nan(estimates[,"upperCI"]))))
+    plotEstimates$setError(gettext("The figure could not be created since one of the estimates is not a number."))
   
   
   # make the plot happen
@@ -860,8 +860,8 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   plot <- plot + ggplot2::geom_errorbarh(
     ggplot2::aes(
-      xmin = estimates[,"lCI"],
-      xmax = estimates[,"uCI"],
+      xmin = estimates[,"lowerCI"],
+      xmax = estimates[,"upperCI"],
       y    = 1:4
     ))
   plot   <- plot + ggplot2::geom_point(
@@ -872,8 +872,8 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   plot <- plot + ggplot2::geom_line(ggplot2::aes(x = c(0,0), y = c(.5, 4.5)), linetype = "dotted")
   plot <- plot + ggplot2::scale_x_continuous(
     gettextf("Mean Estimates (%s)", if (options[["measures"]] == "correlation") "\u03C1" else "\u03BC"),
-    breaks = JASPgraphs::getPrettyAxisBreaks(range(c(0, estimates[,"lCI"], estimates[,"uCI"]))),
-    limits = range(c(0, estimates[,"lCI"], estimates[,"uCI"])))
+    breaks = JASPgraphs::getPrettyAxisBreaks(range(c(0, estimates[,"lowerCI"], estimates[,"upperCI"]))),
+    limits = range(c(0, estimates[,"lowerCI"], estimates[,"upperCI"])))
   plot <- plot + ggplot2::scale_y_continuous(
     "",
     breaks = 1:4,
@@ -925,9 +925,9 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     
     ### check for no p-value in cutoffs
     steps <- c(0, fit[["steps"]])
-    pval  <- fit[["p"]]
+    pVal  <- fit[["p"]]
     
-    cutoffsTable <- table(cut(pval, breaks = steps))
+    cutoffsTable <- table(cut(pVal, breaks = steps))
     if (any(cutoffsTable == 0)) {
       messages <- c(messages, gettext(
         "At least one of the p-value intervals contains no effect sizes, leading to estimation problems. Consider re-specifying the cutoffs."
@@ -1073,7 +1073,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   }
 }
 
-.smGetInputVAR             <- function(dataset, options) {
+.smGetInputVar             <- function(dataset, options) {
   
   # change the direction
   ES <- .smGetInputES(dataset, options)
@@ -1087,16 +1087,16 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   }
 }
 
-.smGetInputPval            <- function(dataset, options) {
+.smGetInputPVal            <- function(dataset, options) {
   # weightfunc uses one-sided p-values as input!
   if (options[["inputPVal"]] == "") {
-    pval <- pnorm(
-      .smGetInputES(dataset, options) / sqrt(.smGetInputVAR(dataset, options)),
+    pVal <- pnorm(
+      .smGetInputES(dataset, options) / sqrt(.smGetInputVar(dataset, options)),
       lower.tail = FALSE) 
   } else {
-    pval <- dataset[, .v(options[["inputPVal"]])]
+    pVal <- dataset[, .v(options[["inputPVal"]])]
   }
-  return(pval)
+  return(pVal)
 }
 
 .smTransform               <- function(ES, N = NULL, transformation, what) {
