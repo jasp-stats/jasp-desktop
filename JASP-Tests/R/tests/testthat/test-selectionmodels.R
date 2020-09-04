@@ -18,7 +18,7 @@ context("Meta Analysis - Selection Models")
   
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_meanFE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.108777577319928, -0.269189581303854, 0.183822096876851, 0.0818443630848501,
                              -1.32907842666153, "Unadjusted", 0.0516344266639978, -0.11716380673004,
@@ -27,7 +27,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_weightsFE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.025, 0.376326541603695, 0.01803538997387, 0.025,
                              0.0395303509582151, 0.182804967058569, 2.0586231745176, 0.734617693233521,
@@ -42,7 +42,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Heterogeneity Estimates (tau) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_estimates_tau"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_heterogeneityRE"]][["data"]]
     expect_equal_tables(table,
                         list(0.827282385784749, 0.532667964302723, 0.000814125410133252, 3.34794713005884,
                              "Unadjusted", 1.04166075641977, 0.943446276464169, 0.491474185571525,
@@ -51,7 +51,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_meanRE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.144884644995104, -0.441684070668495, 0.338683528291211, 0.151431060986072,
                              -0.956769661730296, "Unadjusted", 0.151914780678286, -0.339172712645018,
@@ -60,7 +60,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_weightsRE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.025, 1.14398176102268, 0, 0.025, 0.111466938672115,
                              0.71874669301328, 1.59163412109298, 2.55269939333597, 0.975,
@@ -75,7 +75,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Publication Bias table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_bias_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_biasTest"]][["data"]]
     expect_equal_tables(table,
                         list(2, 0.119168059504646, 4.25444103486723, "Assuming homogeneity",
                              2, 0.231243622868297, 2.92856695951119, "Assuming heterogeneity"
@@ -83,19 +83,19 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Heterogeneity table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_heterogeneity_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_heterogeneityTest"]][["data"]]
     expect_equal_tables(table,
                         list(99, 2.70555845478692e-05, 167.546611260491))
   })
   
   test_that("p-value Frequency table results match", {
-    table <- results[["results"]][["p_frequency"]][["data"]]
+    table <- results[["results"]][["pFrequency"]][["data"]]
     expect_equal_tables(table,
                         list(5, 0, 0.025, 90, 0.025, 0.975, 5, 0.975, 1))
   })
   
   test_that("Mean Model Estimates (mu) plot matches", {
-    plotName <- results[["results"]][["plot_estimates"]][["data"]]
+    plotName <- results[["results"]][["plotEstimates"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
     expect_equal_plots(testPlot, "mean-model-estimates-mu-1", dir="SelectionModels")
   })
@@ -104,9 +104,9 @@ context("Meta Analysis - Selection Models")
 ### weight function scalling works
 {
   options <- jasptools::analysisOptions("SelectionModels")
-  options$FE_estimates <- FALSE
+  options$estimatesFE <- FALSE
   options$FE_weightfunction <- TRUE
-  options$RE_estimates <- FALSE
+  options$estimatesRE <- FALSE
   options$RE_weightfunction <- TRUE
   options$cutoffs_p <- "(.05)"
   options$input_ES <- "contNormal"
@@ -145,7 +145,7 @@ context("Meta Analysis - Selection Models")
   
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_meanFE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.108777577319928, -0.269189581303854, 0.183822096876851, 0.0818443630848501,
                              -1.32907842666153, "Unadjusted", 0.0516344266639978, -0.111944393246252,
@@ -154,7 +154,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_weightsFE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.05, 1.0390114365016, 0.0922569515176939, 0.05,
                              0.0314798599518836, 0.48304687864256, 2.15095362881009, 1.98576592148551,
@@ -162,7 +162,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Heterogeneity Estimates (Ď„) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_estimates_tau"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_heterogeneityRE"]][["data"]]
     expect_equal_tables(table,
                         list(0.827282385784749, 0.532667964302723, 0.000814125410133252, 3.34794713005884,
                              "Unadjusted", 1.04166075641977, 0.984135311386007, 0.579148049074138,
@@ -171,7 +171,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_meanRE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.144884644995104, -0.441684070668495, 0.338683528291211, 0.151431060986072,
                              -0.956769661730296, "Unadjusted", 0.151914780678286, -0.558733086935526,
@@ -180,14 +180,14 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_weightsRE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.05, 4.05572161073559, 0, 0.05, 0.0710518148153868,
                              2.24675526054569, 1.80514615096553, 8.45928100348104, 1))
   })
   
   test_that("Test of Publication Bias table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_bias_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_biasTest"]][["data"]]
     expect_equal_tables(table,
                         list(1, 0.934145999669388, 0.00682766423935277, "Assuming homogeneity",
                              1, 0.00620168963938165, 7.49074491600277, "Assuming heterogeneity"
@@ -195,7 +195,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Heterogeneity table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_heterogeneity_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_heterogeneityTest"]][["data"]]
     expect_equal_tables(table,
                         list(99, 2.70555845478692e-05, 167.546611260491))
   })
@@ -222,7 +222,7 @@ context("Meta Analysis - Selection Models")
   
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_meanFE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.108777577319928, -0.269189581303854, 0.183822096876851, 0.0818443630848501,
                              -1.32907842666153, "Unadjusted", 0.0516344266639978, -0.153847941286966,
@@ -231,7 +231,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_weightsFE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.3, 1.69565266908451, 0.782559612780323, 0.3,
                              0.00027291713359262, 0.465872364750855, 3.63973654026748, 2.60874572538869,
@@ -248,7 +248,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Heterogeneity Estimates (tau) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_estimates_tau"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_heterogeneityRE"]][["data"]]
     expect_equal_tables(table,
                         list(0.827282385784749, 0.532667964302723, 0.000814125410133252, 3.34794713005884,
                              "Unadjusted", 1.04166075641977, 1.0747401921054, 0.525845482178296,
@@ -257,7 +257,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_meanRE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.144884644995104, -0.441684070668495, 0.338683528291211, 0.151431060986072,
                              -0.956769661730296, "Unadjusted", 0.151914780678286, 0.0918536888331539,
@@ -266,7 +266,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_weightsRE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.3, 2.04088487425868, 0.668265339061214, 0.3,
                              0.00356623838422433, 0.700328958095412, 2.91418033006802, 3.41350440945615,
@@ -283,7 +283,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Publication Bias table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_bias_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_biasTest"]][["data"]]
     expect_equal_tables(table,
                         list(3, 0.00011133894641776, 20.8828940999699, "Assuming homogeneity",
                              3, 1.24070625524803e-05, 25.4541785368763, "Assuming heterogeneity"
@@ -291,13 +291,13 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Heterogeneity table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_heterogeneity_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_heterogeneityTest"]][["data"]]
     expect_equal_tables(table,
                         list(99, 2.70555845478692e-05, 167.546611260491))
   })
   
   test_that("p-value Frequency table results match", {
-    table <- results[["results"]][["p_frequency"]][["data"]]
+    table <- results[["results"]][["pFrequency"]][["data"]]
     expect_equal_tables(table,
                         list(27, 0, 0.3, 63, 0.3, 0.8, 8, 0.8, 0.999, 2, 0.999, 1))
   })
@@ -323,7 +323,7 @@ context("Meta Analysis - Selection Models")
   
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_meanFE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.108777577319928, -0.269189581303854, 0.183822096876851, 0.0818443630848501,
                              -1.32907842666153, "Unadjusted", 0.0516344266639978, -0.12253530646152,
@@ -332,7 +332,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_weightsFE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.3, 1.6273645316654, 0.745760379455773, 0.3, 0.000296976802455585,
                              0.449806302138001, 3.61792292355682, 2.50896868387502, 0.8,
@@ -342,7 +342,7 @@ context("Meta Analysis - Selection Models")
 
   
   test_that("Heterogeneity Estimates (tau) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_estimates_tau"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_heterogeneityRE"]][["data"]]
     expect_equal_tables(table,
                         list(0.827282385784749, 0.532667964302723, 0.000814125410133252, 3.34794713005884,
                              "Unadjusted", 1.04166075641977, 1.12013432591779, 0.653723752589082,
@@ -351,7 +351,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_meanRE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.144884644995104, -0.441684070668495, 0.338683528291211, 0.151431060986072,
                              -0.956769661730296, "Unadjusted", 0.151914780678286, 0.205359892764449,
@@ -360,7 +360,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_weightsRE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.3, 1.95909314883835, 0.681531198843923, 0.3,
                              0.00265117591129094, 0.651829298942061, 3.00553097569873, 3.23665509883278,
@@ -369,7 +369,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Publication Bias table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_bias_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_biasTest"]][["data"]]
     expect_equal_tables(table,
                         list(2, 0.0120813330893559, 8.83218747497003, "Assuming homogeneity",
                              2, 3.27514663506786e-06, 25.2582958316257, "Assuming heterogeneity"
@@ -377,13 +377,13 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Heterogeneity table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_heterogeneity_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_heterogeneityTest"]][["data"]]
     expect_equal_tables(table,
                         list(99, 2.70555845478692e-05, 167.546611260491))
   })
   
   test_that("p-value Frequency table results match", {
-    table <- results[["results"]][["p_frequency"]][["data"]]
+    table <- results[["results"]][["pFrequency"]][["data"]]
     expect_equal_tables(table,
                         list(27, 0, 0.3, 63, 0.3, 0.8, 10, 0.8, 1))
   })
@@ -532,7 +532,7 @@ context("Meta Analysis - Selection Models")
   
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_meanFE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.436205104253414, -0.519035731383147, 5.62654240706622e-25,
                              0.0422613006070984, -10.3216204420397, "Unadjusted", -0.35337447712368,
@@ -542,7 +542,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_meanRE"]][["data"]]
     expect_equal_tables(table,
                         list(-0.741950442278819, -1.0920698068352, 3.27528956955066e-05, 0.178635611326573,
                              -4.15342963684, "Unadjusted", -0.391831077722441, 0.380984681788735,
@@ -551,7 +551,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Publication Bias table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_bias_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_biasTest"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1.67613271825012e-06, 22.9345348682999, "Assuming homogeneity",
                              1, 3.83999830480277e-05, 16.9488792381323, "Assuming heterogeneity"
@@ -559,13 +559,13 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Heterogeneity table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_heterogeneity_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_heterogeneityTest"]][["data"]]
     expect_equal_tables(table,
                         list(12, 4.44385100747795e-28, 163.194038293184))
   })
   
   test_that("p-value Frequency table results match", {
-    table <- results[["results"]][["p_frequency"]][["data"]]
+    table <- results[["results"]][["pFrequency"]][["data"]]
     expect_equal_tables(table,
                         list(11, 0, 0.01, 2, 0.01, 1))
   })
@@ -587,7 +587,7 @@ context("Meta Analysis - Selection Models")
   
   
   test_that("Mean Estimates (mu) table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_meanFE"]][["data"]]
     expect_equal_tables(table,
                         list(0.662597315593419, 0.642551263321564, 0, 0.0470387015263903, 37.6146078689525,
                              "Unadjusted", 0.681314124633779, 0.655407160977405, 0.633471815965987,
@@ -596,7 +596,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["FE_estimates"]][["collection"]][["FE_estimates_FE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesFE"]][["collection"]][["estimatesFE_weightsFE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.025, 0.409656404820366, 0.0842244742968537, 0.025,
                              0.0136167098971546, 0.166039750266065, 2.46721886875839, 0.735088335343878,
@@ -604,14 +604,14 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Heterogeneity Estimates (tau) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_estimates_tau"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_heterogeneityRE"]][["data"]]
     expect_equal_tables(table,
                         list(0, 0, 1, 0, "Unadjusted", 0.256968421344323, 0, 0, 1, 0, "Adjusted",
                              0.263359366452577))
   })
   
   test_that("Mean Estimates (rho) table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_mean"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_meanRE"]][["data"]]
     expect_equal_tables(table,
                         list(0.662597315593418, 0.642091807205727, 1.85168846263159e-296, 0.0480800583300569,
                              36.7999202587027, "Unadjusted", 0.681714072749364, 0.655407161618698,
@@ -620,7 +620,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Estimated Weights table results match", {
-    table <- results[["results"]][["RE_estimates"]][["collection"]][["RE_estimates_RE_weights"]][["data"]]
+    table <- results[["results"]][["estimatesRE"]][["collection"]][["estimatesRE_weightsRE"]][["data"]]
     expect_equal_tables(table,
                         list(1, 1, 0, 0, 1, 0.025, 0.409656483313485, 0.0826617356047691, 0.025,
                              0.0140717065240502, 0.166837120624669, 2.45542767568545, 0.7366512310222,
@@ -628,7 +628,7 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Publication Bias table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_bias_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_biasTest"]][["data"]]
     expect_equal_tables(table,
                         list(1, 0.0223290789156104, 5.21995889075458, "Assuming homogeneity",
                              1, 0.022329078915696, 5.21995889074792, "Assuming heterogeneity"
@@ -636,13 +636,13 @@ context("Meta Analysis - Selection Models")
   })
   
   test_that("Test of Heterogeneity table results match", {
-    table <- results[["results"]][["fit_tests"]][["collection"]][["fit_tests_heterogeneity_test"]][["data"]]
+    table <- results[["results"]][["fitTests"]][["collection"]][["fitTests_heterogeneityTest"]][["data"]]
     expect_equal_tables(table,
                         list(99, 0.99117220635564, 69.5499359806442))
   })
   
   test_that("p-value Frequency table results match", {
-    table <- results[["results"]][["p_frequency"]][["data"]]
+    table <- results[["results"]][["pFrequency"]][["data"]]
     expect_equal_tables(table,
                         list(89, 0, 0.025, 11, 0.025, 1))
   })
