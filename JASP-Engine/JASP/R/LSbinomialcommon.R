@@ -472,10 +472,10 @@
     }
   }
 }
-.marginalCentralBinomialLS  <- function(density, spikes, coverage, l.bound = 0, u.bound = 1, density_discrete = FALSE){
+.marginalCentralBinomialLS  <- function(density, spikes, coverage, l.bound = 0, u.bound = 1, densityDiscrete = FALSE){
   
   if (!is.null(density)){
-    if (!density_discrete)
+    if (!densityDiscrete)
       density$y <- density$y/nrow(density)
   } else
     density <- data.frame("y" = NULL, "x" = NULL)
