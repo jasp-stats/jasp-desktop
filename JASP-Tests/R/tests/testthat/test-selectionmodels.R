@@ -3,16 +3,16 @@ context("Meta Analysis - Selection Models")
 ### output for all default settings
 {
   options <- jasptools::analysisOptions("SelectionModels")
-  options$FE_weightfunction <- TRUE
-  options$FE_weights <- TRUE
-  options$RE_heterogeneity <- TRUE
-  options$RE_weightfunction <- TRUE
-  options$RE_weights <- TRUE
-  options$cutoffs_p <- "(.05)"
-  options$input_ES <- "contNormal"
-  options$input_SE <- "contGamma"
-  options$p_table <- TRUE
-  options$plot_models <- TRUE
+  options$weightFunctionFE <- TRUE
+  options$weightsFE <- TRUE
+  options$heterogeneityRE <- TRUE
+  options$weightFunctionRE <- TRUE
+  options$weightsRE <- TRUE
+  options$cutoffsPVal <- "(.05)"
+  options$inputES <- "contNormal"
+  options$inputSE <- "contGamma"
+  options$tablePVal <- TRUE
+  options$plotModels <- TRUE
   set.seed(1)
   results <- jasptools::run("SelectionModels", "debug.csv", options)
   
@@ -105,13 +105,13 @@ context("Meta Analysis - Selection Models")
 {
   options <- jasptools::analysisOptions("SelectionModels")
   options$estimatesFE <- FALSE
-  options$FE_weightfunction <- TRUE
+  options$weightFunctionFE <- TRUE
   options$estimatesRE <- FALSE
-  options$RE_weightfunction <- TRUE
-  options$cutoffs_p <- "(.05)"
-  options$input_ES <- "contNormal"
-  options$input_SE <- "contGamma"
-  options$rescale_weightfunction <- TRUE
+  options$weightFunctionRE <- TRUE
+  options$cutoffsPVal <- "(.05)"
+  options$inputES <- "contNormal"
+  options$inputSE <- "contGamma"
+  options$weightFunctionRescale <- TRUE
   set.seed(1)
   results <- jasptools::run("SelectionModels", "debug.csv", options)
   
@@ -132,14 +132,14 @@ context("Meta Analysis - Selection Models")
 ### one sided selection & expected negative direction works
 {
   options <- jasptools::analysisOptions("SelectionModels")
-  options$FE_weights <- TRUE
-  options$RE_heterogeneity <- TRUE
-  options$RE_weights <- TRUE
-  options$cutoffs_p <- "(.05)"
-  options$effect_direction <- "negative"
-  options$input_ES <- "contNormal"
-  options$input_SE <- "contGamma"
-  options$selection_twosided <- FALSE
+  options$weightsFE <- TRUE
+  options$heterogeneityRE <- TRUE
+  options$weightsRE <- TRUE
+  options$cutoffsPVal <- "(.05)"
+  options$effectDirection <- "negative"
+  options$inputES <- "contNormal"
+  options$inputSE <- "contGamma"
+  options$selectionTwosided <- FALSE
   set.seed(1)
   results <- jasptools::run("SelectionModels", "debug.csv", options)
   
@@ -204,19 +204,19 @@ context("Meta Analysis - Selection Models")
 ### different cutoffs without automatic joining works
 {
   options <- jasptools::analysisOptions("SelectionModels")
-  options$FE_weightfunction <- TRUE
-  options$FE_weights <- TRUE
-  options$RE_heterogeneity <- TRUE
-  options$RE_weightfunction <- TRUE
-  options$RE_weights <- TRUE
-  options$auto_reduce <- FALSE
-  options$cutoffs_p <- "(.3, .8, .999)"
-  options$effect_direction <- "negative"
-  options$input_ES <- "contNormal"
-  options$input_SE <- "contGamma"
-  options$p_table <- TRUE
-  options$rescale_weightfunction <- TRUE
-  options$selection_twosided <- FALSE
+  options$weightFunctionFE <- TRUE
+  options$weightsFE <- TRUE
+  options$heterogeneityRE <- TRUE
+  options$weightFunctionRE <- TRUE
+  options$weightsRE <- TRUE
+  options$joinPVal <- FALSE
+  options$cutoffsPVal <- "(.3, .8, .999)"
+  options$effectDirection <- "negative"
+  options$inputES <- "contNormal"
+  options$inputSE <- "contGamma"
+  options$tablePVal <- TRUE
+  options$weightFunctionRescale <- TRUE
+  options$selectionTwosided <- FALSE
   set.seed(1)
   results <- jasptools::run("SelectionModels", "debug.csv", options)
   
@@ -306,18 +306,18 @@ context("Meta Analysis - Selection Models")
 ### different cutoffs with automatic joining works
 {
   options <- jasptools::analysisOptions("SelectionModels")
-  options$FE_weightfunction <- TRUE
-  options$FE_weights <- TRUE
-  options$RE_heterogeneity <- TRUE
-  options$RE_weightfunction <- TRUE
-  options$RE_weights <- TRUE
-  options$cutoffs_p <- "(.3, .8, .999)"
-  options$effect_direction <- "negative"
-  options$input_ES <- "contNormal"
-  options$input_SE <- "contGamma"
-  options$p_table <- TRUE
-  options$rescale_weightfunction <- TRUE
-  options$selection_twosided <- FALSE
+  options$weightFunctionFE <- TRUE
+  options$weightsFE <- TRUE
+  options$heterogeneityRE <- TRUE
+  options$weightFunctionRE <- TRUE
+  options$weightsRE <- TRUE
+  options$cutoffsPVal <- "(.3, .8, .999)"
+  options$effectDirection <- "negative"
+  options$inputES <- "contNormal"
+  options$inputSE <- "contGamma"
+  options$tablePVal <- TRUE
+  options$weightFunctionRescale <- TRUE
+  options$selectionTwosided <- FALSE
   set.seed(1)
   results <- jasptools::run("SelectionModels", "debug.csv", options)
   
@@ -392,14 +392,14 @@ context("Meta Analysis - Selection Models")
 ### supplying p-values work
 {
   options <- jasptools::analysisOptions("SelectionModels")
-  options$auto_reduce <- FALSE
-  options$cutoffs_p <- "(.01)"
-  options$effect_direction <- "negative"
-  options$input_ES <- "ES"
-  options$input_SE <- "SE"
-  options$input_p <- "pval"
-  options$p_table <- TRUE
-  options$selection_twosided <- FALSE
+  options$joinPVal <- FALSE
+  options$cutoffsPVal <- "(.01)"
+  options$effectDirection <- "negative"
+  options$inputES <- "ES"
+  options$inputSE <- "SE"
+  options$inputPVal <- "pval"
+  options$tablePVal <- TRUE
+  options$selectionTwosided <- FALSE
   set.seed(1)
   dataset <-
     structure(
@@ -574,14 +574,14 @@ context("Meta Analysis - Selection Models")
 ### output of the default settings with correlations as an input
 {
   options <- jasptools::analysisOptions("SelectionModels")
-  options$FE_weights <- TRUE
-  options$RE_heterogeneity <- TRUE
-  options$RE_weights <- TRUE
-  options$cutoffs_p <- "(.05, .10)"
-  options$input_ES <- "debCollin1"
-  options$input_N <- "facFifty"
+  options$weightsFE <- TRUE
+  options$heterogeneityRE <- TRUE
+  options$weightsRE <- TRUE
+  options$cutoffsPVal <- "(.05, .10)"
+  options$inputES <- "debCollin1"
+  options$inputN <- "facFifty"
   options$measures <- "correlation"
-  options$p_table <- TRUE
+  options$tablePVal <- TRUE
   set.seed(1)
   results <- jasptools::run("SelectionModels", "debug", options)
   
