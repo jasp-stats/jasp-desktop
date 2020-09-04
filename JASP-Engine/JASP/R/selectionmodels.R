@@ -1107,7 +1107,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
       "fishersZ" = psych::fisherz(ES)
     ))
   } else if (what == "VAR") {
-    if (is.null(N))stop("The effect size needs to be specified for the VAR transformation.")
+    if (is.null(N))stop("No effect sizes specified to compute the studies' sample variances.")
     return(switch(
       transformation,
       "cohensD"  = N/(N/2)^2 + ES^2/(2*N),
