@@ -27,8 +27,8 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   }
   
   # main summary tables
-  .smTestsTables(jaspResults, dataset, options)
-  .smEstimatesTables(jaspResults, dataset, options)
+  .smMakeTestsTables(jaspResults, dataset, options)
+  .smMakeEstimatesTables(jaspResults, dataset, options)
   
   # the p-value frequency tables
   if (options[["p_table"]])
@@ -218,20 +218,20 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
       }
       
       rowUnadjusted    <- c(rowUnadjusted, list(
-        est  = fit[["unadj_est"]][posMean,1],
-        se   = fit[["unadj_se"]][posMean,1],
-        stat = fit[["z_unadj"]][posMean,1],
-        pval = fit[["p_unadj"]][posMean,1],
-        lCI  = fit[["ci.lb_unadj"]][posMean,1],
-        uCI  = fit[["ci.ub_unadj"]][posMean,1]
+        est  = fit[["unadj_est"]][posMean, 1],
+        se   = fit[["unadj_se"]][posMean, 1],
+        stat = fit[["z_unadj"]][posMean, 1],
+        pval = fit[["p_unadj"]][posMean, 1],
+        lCI  = fit[["ci.lb_unadj"]][posMean, 1],
+        uCI  = fit[["ci.ub_unadj"]][posMean, 1]
       ))
       rowAdjusted    <- c(rowAdjusted, list(
-        est  = fit[["adj_est"]][posMean,1],
-        se   = fit[["adj_se"]][posMean,1],
-        stat = fit[["z_adj"]][posMean,1],
-        pval = fit[["p_adj"]][posMean,1],
-        lCI  = fit[["ci.lb_adj"]][posMean,1],
-        uCI  = fit[["ci.ub_adj"]][posMean,1]
+        est  = fit[["adj_est"]][posMean, 1],
+        se   = fit[["adj_se"]][posMean, 1],
+        stat = fit[["z_adj"]][posMean, 1],
+        pval = fit[["p_adj"]][posMean, 1],
+        lCI  = fit[["ci.lb_adj"]][posMean, 1],
+        uCI  = fit[["ci.ub_adj"]][posMean, 1]
       ))
       
       noteMessages    <- .smSetNoteMessages(jaspResults, fit, options)      
@@ -271,18 +271,18 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   if (!is.null(fit)) {
     if (!class(fit) %in% c("simpleError","error")) {
       rowREUnadjustedTau  <- c(rowREUnadjustedTau, list(
-        est  = sqrt(fit[["unadj_est"]][1,1]),
-        stat = fit[["z_unadj"]][1,1],
-        pval = fit[["p_unadj"]][1,1],
-        lCI  = sqrt(ifelse(fit[["ci.lb_unadj"]][1,1] < 0, 0, fit[["ci.lb_unadj"]][1,1])),
-        uCI  = sqrt(fit[["ci.ub_unadj"]][1,1])
+        est  = sqrt(fit[["unadj_est"]][1, 1]),
+        stat = fit[["z_unadj"]][1, 1],
+        pval = fit[["p_unadj"]][1, 1],
+        lCI  = sqrt(ifelse(fit[["ci.lb_unadj"]][1, 1] < 0, 0, fit[["ci.lb_unadj"]][1, 1])),
+        uCI  = sqrt(fit[["ci.ub_unadj"]][1, 1])
       ))
       rowREAdjustedTau    <- c(rowREAdjustedTau, list(
-        est  = sqrt(fit[["adj_est"]][1,1]),
-        stat = fit[["z_adj"]][1,1],
-        pval = fit[["p_adj"]][1,1],
-        lCI  = sqrt(ifelse(fit[["ci.lb_adj"]][1,1] < 0, 0, fit[["ci.lb_adj"]][1,1])),
-        uCI  = sqrt(fit[["ci.ub_adj"]][1,1])
+        est  = sqrt(fit[["adj_est"]][1, 1]),
+        stat = fit[["z_adj"]][1, 1],
+        pval = fit[["p_adj"]][1, 1],
+        lCI  = sqrt(ifelse(fit[["ci.lb_adj"]][1, 1] < 0, 0, fit[["ci.lb_adj"]][1, 1])),
+        uCI  = sqrt(fit[["ci.ub_adj"]][1, 1])
       ))
       
       # add info that tau is on different scale if correlations were used
@@ -350,12 +350,12 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
           tempRow <- list(
             lr   = fit[["steps"]][i-1],
             ur   = fit[["steps"]][i],
-            est  = fit[["adj_est"]][i+weightsAdd,1],
-            se   = fit[["adj_se"]][i+weightsAdd,1],
-            stat = fit[["z_adj"]][i+weightsAdd,1],
-            pval = fit[["p_adj"]][i+weightsAdd,1],
-            lCI  = ifelse(fit[["ci.lb_adj"]][i+weightsAdd,1] < 0, 0, fit[["ci.lb_adj"]][i+weightsAdd,1]),
-            uCI  = fit[["ci.ub_adj"]][i+weightsAdd,1]
+            est  = fit[["adj_est"]][i+weightsAdd, 1],
+            se   = fit[["adj_se"]][i+weightsAdd, 1],
+            stat = fit[["z_adj"]][i+weightsAdd, 1],
+            pval = fit[["p_adj"]][i+weightsAdd, 1],
+            lCI  = ifelse(fit[["ci.lb_adj"]][i+weightsAdd, 1] < 0, 0, fit[["ci.lb_adj"]][i+weightsAdd, 1]),
+            uCI  = fit[["ci.ub_adj"]][i+weightsAdd, 1]
           ) 
         }
         table$addRows(tempRow)
@@ -398,7 +398,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   if (options[["auto_reduce"]]) {
     steps <- tryCatch(.smJoinCutoffs(steps, pval), error = function(e)e)
     
-    if (class(steps) %in% c("simpleError","error")) {
+    if (class(steps) %in% c("simpleError", "error")) {
       models[["object"]] <- list(
         FE = steps,
         RE = steps
@@ -444,7 +444,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   return()
 }
 
-.smTestsTables             <- function(jaspResults, dataset, options) {
+.smMakeTestsTables         <- function(jaspResults, dataset, options) {
   
   if (!is.null(jaspResults[["fitTests"]])) {
     return()
@@ -582,7 +582,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   return()
 }
 
-.smEstimatesTables         <- function(jaspResults, dataset, options) {
+.smMakeEstimatesTables     <- function(jaspResults, dataset, options) {
   
   models   <- jaspResults[["models"]]$object
   
@@ -752,8 +752,8 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   # get the weights and steps
   steps       <- c(0, fit[["steps"]])
   weightsMean <- c(1, fit[["adj_est"]][  ifelse(type == "FE", 2, 3):nrow(fit[["adj_est"]]),  1])
-  weightslCI  <- c(1, fit[["ci.lb_adj"]][ifelse(type == "FE", 2, 3):nrow(fit[["ci.lb_adj"]]),1])
-  weightsuCI  <- c(1, fit[["ci.ub_adj"]][ifelse(type == "FE", 2, 3):nrow(fit[["ci.ub_adj"]]),1])
+  weightslCI  <- c(1, fit[["ci.lb_adj"]][ifelse(type == "FE", 2, 3):nrow(fit[["ci.lb_adj"]]), 1])
+  weightsuCI  <- c(1, fit[["ci.ub_adj"]][ifelse(type == "FE", 2, 3):nrow(fit[["ci.ub_adj"]]), 1])
   
   # handle NaN in the estimates
   if (any(c(is.nan(weightsMean), is.nan(weightslCI), is.nan(weightsuCI)))) {
@@ -795,7 +795,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     gettext("P-value (One-sided)"),
     breaks = xSteps,
     labels = xTics,
-    limits = c(0,1))
+    limits = c(0, 1))
   plot <- plot + ggplot2::scale_y_continuous(
     gettext("Publication Probability"),
     breaks = y_tics,
@@ -843,10 +843,10 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   # get the estimates
   estimates <- data.frame(
-    model = c(gettext("Fixed effects"),   gettext("Fixed effects (adjusted)"),   gettext("Random effects"),  gettext("Random effects (adjusted)")),
-    mean  = c(FE[["unadj_est"]][1,1],     FE[["adj_est"]][1,1],                  RE[["unadj_est"]][2,1],     RE[["adj_est"]][2,1]),
-    lCI   = c(FE[["ci.lb_unadj"]][1,1],   FE[["ci.lb_adj"]][1,1],                RE[["ci.lb_unadj"]][2,1],   RE[["ci.lb_adj"]][2,1]),
-    uCI   = c(FE[["ci.ub_unadj"]][1,1],   FE[["ci.ub_adj"]][1,1],                RE[["ci.ub_unadj"]][2,1],   RE[["ci.ub_adj"]][2,1])
+    model = c(gettext("Fixed effects"),    gettext("Fixed effects (adjusted)"),    gettext("Random effects"),   gettext("Random effects (adjusted)")),
+    mean  = c(FE[["unadj_est"]][1, 1],     FE[["adj_est"]][1, 1],                  RE[["unadj_est"]][2, 1],     RE[["adj_est"]][2, 1]),
+    lCI   = c(FE[["ci.lb_unadj"]][1, 1],   FE[["ci.lb_adj"]][1, 1],                RE[["ci.lb_unadj"]][2, 1],   RE[["ci.lb_adj"]][2, 1]),
+    uCI   = c(FE[["ci.ub_unadj"]][1, 1],   FE[["ci.ub_adj"]][1, 1],                RE[["ci.ub_unadj"]][2, 1],   RE[["ci.ub_adj"]][2, 1])
   )
   estimates <- estimates[4:1,]
   
@@ -939,7 +939,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     }
     
     ### check whether the unadjusted estimates is negative - the weightr assumes that the effect sizes are in expected direction
-    if (fit[["unadj_est"]][ifelse(fit[["fe"]], 1, 2),1] < 0 && is.null(fit[["estimates_turned"]])) {
+    if (fit[["unadj_est"]][ifelse(fit[["fe"]], 1, 2), 1] < 0 && is.null(fit[["estimates_turned"]])) {
       messages <- c(messages, gettext(
         "The unadjusted estimate is negative. The selection model default specification expects that the expected direction of the effect size is positive. Please, check that you specified the effect sizes correctly or change the 'Expected effect size direction' option in the 'Model' tab."
       ))
@@ -1005,15 +1005,15 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     
     fit_old <- fit
     
-    fit[["unadj_est"]][posMean,1] <- fit_old[["unadj_est"]][posMean,1] * -1
-    fit[["z_unadj"]][posMean,1]   <- fit_old[["z_unadj"]][posMean,1]   * -1
-    fit[["ci.lb_adj"]][posMean,1] <- fit_old[["ci.ub_adj"]][posMean,1] * -1
-    fit[["ci.ub_adj"]][posMean,1] <- fit_old[["ci.lb_adj"]][posMean,1] * -1
+    fit[["unadj_est"]][posMean, 1] <- fit_old[["unadj_est"]][posMean, 1] * -1
+    fit[["z_unadj"]][posMean, 1]   <- fit_old[["z_unadj"]][posMean, 1]   * -1
+    fit[["ci.lb_adj"]][posMean, 1] <- fit_old[["ci.ub_adj"]][posMean, 1] * -1
+    fit[["ci.ub_adj"]][posMean, 1] <- fit_old[["ci.lb_adj"]][posMean, 1] * -1
     
-    fit[["adj_est"]][posMean,1]     <- fit_old[["adj_est"]][posMean,1]     * -1
-    fit[["z_adj"]][posMean,1]       <- fit_old[["z_adj"]][posMean,1]       * -1
-    fit[["ci.lb_unadj"]][posMean,1] <- fit_old[["ci.ub_unadj"]][posMean,1] * -1
-    fit[["ci.ub_unadj"]][posMean,1] <- fit_old[["ci.lb_unadj"]][posMean,1] * -1
+    fit[["adj_est"]][posMean, 1]     <- fit_old[["adj_est"]][posMean, 1]     * -1
+    fit[["z_adj"]][posMean, 1]       <- fit_old[["z_adj"]][posMean, 1]       * -1
+    fit[["ci.lb_unadj"]][posMean, 1] <- fit_old[["ci.ub_unadj"]][posMean, 1] * -1
+    fit[["ci.ub_unadj"]][posMean, 1] <- fit_old[["ci.lb_unadj"]][posMean, 1] * -1
     
     fit[["output_unadj"]][["par"]][posMean] <- fit_old[["output_unadj"]][["par"]][posMean] * -1    
     fit[["output_adj"]][["par"]][posMean]   <- fit_old[["output_adj"]][["par"]][posMean]   * -1
@@ -1043,13 +1043,13 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     fit_old <- fit
     
     
-    fit[["unadj_est"]][posMean,1] <- .smInvTransform(fit_old[["unadj_est"]][posMean,1], options[["mu_transform"]])
-    fit[["ci.lb_adj"]][posMean,1] <- .smInvTransform(fit_old[["ci.lb_adj"]][posMean,1], options[["mu_transform"]])
-    fit[["ci.ub_adj"]][posMean,1] <- .smInvTransform(fit_old[["ci.ub_adj"]][posMean,1], options[["mu_transform"]])
+    fit[["unadj_est"]][posMean, 1] <- .smInvTransform(fit_old[["unadj_est"]][posMean, 1], options[["mu_transform"]])
+    fit[["ci.lb_adj"]][posMean, 1] <- .smInvTransform(fit_old[["ci.lb_adj"]][posMean, 1], options[["mu_transform"]])
+    fit[["ci.ub_adj"]][posMean, 1] <- .smInvTransform(fit_old[["ci.ub_adj"]][posMean, 1], options[["mu_transform"]])
     
-    fit[["adj_est"]][posMean,1]     <- .smInvTransform(fit_old[["adj_est"]][posMean,1],     options[["mu_transform"]])
-    fit[["ci.lb_unadj"]][posMean,1] <- .smInvTransform(fit_old[["ci.lb_unadj"]][posMean,1], options[["mu_transform"]])
-    fit[["ci.ub_unadj"]][posMean,1] <- .smInvTransform(fit_old[["ci.ub_unadj"]][posMean,1], options[["mu_transform"]])
+    fit[["adj_est"]][posMean, 1]     <- .smInvTransform(fit_old[["adj_est"]][posMean, 1],     options[["mu_transform"]])
+    fit[["ci.lb_unadj"]][posMean, 1] <- .smInvTransform(fit_old[["ci.lb_unadj"]][posMean, 1], options[["mu_transform"]])
+    fit[["ci.ub_unadj"]][posMean, 1] <- .smInvTransform(fit_old[["ci.ub_unadj"]][posMean, 1], options[["mu_transform"]])
     
     fit[["output_unadj"]][["par"]][posMean] <- .smInvTransform(fit_old[["output_unadj"]][["par"]][posMean], options[["mu_transform"]])
     fit[["output_adj"]][["par"]][posMean]   <- .smInvTransform(fit_old[["output_adj"]][["par"]][posMean],   options[["mu_transform"]])
