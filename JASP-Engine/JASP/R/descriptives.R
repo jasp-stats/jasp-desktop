@@ -995,6 +995,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   return(thePlot)
 }
 
+
 .plotMarginal <- function(column, variableName,
                           rugs = FALSE, displayDensity = FALSE) {
   column <- as.numeric(column)
@@ -1494,7 +1495,6 @@ Descriptives <- function(jaspResults, dataset, options) {
   footnote <- temp[2L]
   other <- temp[4:(length(temp) - 1L)]
 
-  # The commented out approach below looks fine when copied to word but the spacing is off in JASP.
   text  <- strsplit(other, " | ", fixed = TRUE)
   left  <- vapply(text, `[`, 1L, FUN.VALUE = character(1L))
   right <- vapply(text, function(x) if (length(x) == 1L) "" else x[2L], FUN.VALUE = character(1L))
