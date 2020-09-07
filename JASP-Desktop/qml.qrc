@@ -140,5 +140,6 @@
         <file>components/JASP/Controls/FileSelector.qml</file>
         <file>components/JASP/Widgets/RCommanderWindow.qml</file>
         <file>components/JASP/Widgets/CrossButton.qml</file>
+        <file>components/JASP/Widgets/SimpleTableView.qml</file>
     </qresource>
 </RCC>

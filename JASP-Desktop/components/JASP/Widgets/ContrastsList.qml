@@ -97,7 +97,6 @@ Item
 			{
 				preferredWidth	: itemCustomContrasts.width
 				name			: "values"
-				//modelType		: "AnovaCustomContrasts"
 				itemType		: "double"
 				minimum			: -Infinity
 				decimals		: 3

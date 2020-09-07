@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2020 University of Amsterdam
+// Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -23,27 +23,19 @@ import JASP.Controls 1.0
 
 BasicThreeButtonTableView
 {
-	id				: customContrastsTV
+    tableType		: "ExpectedProportions"
+    itemType		: "double"
+    modelType		: "Simple"
 
-	preferredHeight	: Math.max(150 * preferencesModel.uiScale,10 * preferencesModel.uiScale + tableView.y + tableView.tableHeight)
-
-	tableType			: "userDataInput"
-	itemType			: "string"
-	modelType			: "CustomContrasts"
-	initialColumnCount	: 1
-	initialRowCount		: 0
-	buttonsInRow		: true
-
-	cornerText			: ""
-
-	buttonAddText		: qsTr("Add Contrast")
+    buttonAddText		: qsTr("Add Column")
     onAddClicked		: tableView.addColumn()
+    buttonAddEnabled	: true
 
-	buttonDeleteText	: qsTr("Delete Contrast")
+    buttonDeleteText	: qsTr("Delete Column")
     onDeleteClicked		: tableView.removeAColumn()
-    buttonDeleteEnabled	: tableView.columnCount > (tableView.variableCount + 1)
+	buttonDeleteEnabled	: tableView.columnCount > initialColumnCount
 
-	buttonResetText		: qsTr("Reset")
-	onResetClicked		: tableView.reset()
-    buttonResetEnabled	: tableView.columnCount > (tableView.variableCount + 1)
+    buttonResetText		: qsTr("Reset")
+    onResetClicked		: tableView.reset()
+	buttonResetEnabled	: tableView.columnCount > initialColumnCount
 }

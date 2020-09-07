@@ -26,7 +26,7 @@
 #include "listmodelmultinomialchi2test.h"
 #include "listmodelrepeatedmeasuresfactors.h"
 #include "listmodelcustomcontrasts.h"
-#include "listmodelanovacustomcontrasts.h"
+#include "listmodeltableviewsimple.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optiondoublearray.h"
@@ -45,10 +45,9 @@ BoundQMLTableView::BoundQMLTableView(JASPControlBase* item)
 	if (modelType == "JAGSDataInputModel")		_tableModel	= new ListModelJAGSDataInput(		this, tableType	);
 	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType	);
 	if (modelType == "CustomContrasts")			_tableModel = new ListModelCustomContrasts(		this, tableType	);
-	if (modelType == "AnovaCustomContrasts")	_tableModel = new ListModelANOVACustomContrasts(this			);
+    if (!_tableModel)                            _tableModel = new ListModelTableViewSimple(     this, tableType );
 
-	if(!_tableModel) addControlError(tr("No model specified for TableView!"));
-	else			_tableModel->setItemType(itemType);
+    _tableModel->setItemType(itemType);
 
 	QQuickItem::connect(item, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));
 	QQuickItem::connect(item, SIGNAL(removeColumn(int)),				this, SLOT(removeColumnSlot(int)));

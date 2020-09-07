@@ -376,6 +376,7 @@ HEADERS += \
     widgets/boundqmltextinput.h \
     widgets/boundqmlcombobox.h \
     widgets/listmodeljagsdatainput.h \
+    widgets/listmodeltableviewsimple.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
     mainwindow.h \
@@ -454,7 +455,6 @@ HEADERS += \
     widgets/boundqmllavaantextarea.h \
     widgets/boundqmljagstextarea.h \
     widgets/boundqmlcomponentslist.h \
-    widgets/listmodelanovacustomcontrasts.h \
     widgets/listmodelcustomcontrasts.h \
     widgets/listmodellabelvalueterms.h
 
@@ -568,6 +568,7 @@ SOURCES += \
     widgets/boundqmltextinput.cpp \
     widgets/boundqmlcombobox.cpp \
     widgets/listmodeljagsdatainput.cpp \
+    widgets/listmodeltableviewsimple.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
     main.cpp \
@@ -645,7 +646,6 @@ SOURCES += \
     widgets/boundqmllavaantextarea.cpp \
     widgets/boundqmljagstextarea.cpp \
     widgets/boundqmlcomponentslist.cpp \
-    widgets/listmodelanovacustomcontrasts.cpp \
     widgets/listmodelcustomcontrasts.cpp \
     widgets/listmodellabelvalueterms.cpp
 
