@@ -3,13 +3,11 @@ rem autorun
 SETLOCAL EnableDelayedExpansion
 
 rem ---------------------- Check arguments -------------------------------
-rem Arguments are: <CPU's to use> <64/32bit> <full/partial build>
+rem Arguments are: <# CPU's to use> <64/32>bit <full/wix>
 SET CPUS=%1
 
 if "%1"=="" (
 SET CPUS=%NUMBER_OF_PROCESSORS%
-rem setting it to 1 might avoid errors but also makes it take an hour...
-rem %NUMBER_OF_PROCESSORS% manually changed to 1... because MSVC because loves to get all tangled up in internal errors when specifying "big" numbers like 8 or 24 :s
 )
 echo Running autobuild in %CPUS% separate processes!
 
@@ -26,6 +24,7 @@ SET ARCH=64
 
 SET BUILDSTYLE=%3
 
+rem set the third argument to full for a full build, to wix afterwards if that is all you are interested.
 if "%3"=="" (
 SET BUILDSTYLE=full
 )
@@ -316,15 +315,18 @@ cd %JASP_BASE_DIR%\%JASP_WIX_DIR%
 SET MERGEMODULENAME=Microsoft_VC141_CRT_%WIXARCH%.msm
 
 COPY "%VCToolsRedistDir%\MergeModules\%MERGEMODULENAME%" /Y
-"%WIX%\bin\heat.exe" dir .\%JASP_INSTALL_DIR% -cg JASPFiles -gg -scom -sreg -sfrag -srd -dr INSTALLLOCATION -var var.JASP_INSTALL_DIR -out JASPFilesFragment.wxs || exit /B 7
+"%WIX%\bin\heat.exe" dir .\%JASP_INSTALL_DIR% -cg JASPFiles -gg -scom -sreg -sfrag -srd -dr APPLICATIONFOLDER -var var.JASP_INSTALL_DIR -out JASPFilesFragment.wxs || exit /B 7
 
 COPY %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_BUILD_DIR%\jasp.wxi /Y
 "%WIX%\bin\candle" -arch %WIXARCH% -dJASP_INSTALL_DIR=%JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%  JASPFilesFragment.wxs  || exit /B 8
 
 COPY %JASP_DESKTOP%\Tools\wix\jasp.wxs /Y
+COPY %JASP_DESKTOP%\Tools\wix\jaspLicense.rtf /Y
 "%WIX%\bin\candle" -dRedistMergeModule=%MERGEMODULENAME% -arch %WIXARCH% -dJASP_DESKTOP_DIR=%JASP_DESKTOP% -ext WixUIExtension -ext WixUtilExtension jasp.wxs || exit /B 9
 
 "%WIX%\bin\light" -sval -dRedistMergeModule=%MERGEMODULENAME% -ext WixUIExtension -ext WixUtilExtension -out JASP.msi JASPFilesFragment.wixobj jasp.wixobj || exit /B 10
+
+if "%BUILDSTYLE%"=="wix" GOTO end
 
 cd %STARTDIR%
 

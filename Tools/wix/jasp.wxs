@@ -1,61 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Add xmlns:util namespace definition to be able to use stuff from WixUtilExtension dll-->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-    <?include $(sys.CURRENTDIR)jasp.wxi ?>
-    <?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.Revision).$(var.BuildVersion)" ?>
-  
-    <?if $(sys.BUILDARCH)="x86"?>
-        <?define Program_Files="ProgramFilesFolder"?>
-    <?elseif $(sys.BUILDARCH)="x64"?>
-        <?define Program_Files="ProgramFiles64Folder"?>
-    <?else?>
-        <?error Unsupported value of sys.BUILDARCH=$(sys.BUILDARCH)?>
-    <?endif?>
+	<?include $(sys.CURRENTDIR)jasp.wxi ?>
+	<?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.Revision).$(var.BuildVersion)" ?>
 
-  <?define ExeProcessName="JASP.exe" ?>
-  <?define UpgradeCode="32d502cb-4752-4861-bc86-b8b4252a7a68" ?>
-  <?define ApplicationName="JASP $(var.VersionNumber)" ?>
+	<?if $(sys.BUILDARCH)="x86"?>
+		<?define Program_Files="ProgramFilesFolder"?>
+	<?elseif $(sys.BUILDARCH)="x64"?>
+		<?define Program_Files="ProgramFiles64Folder"?>
+	<?else?>
+		<?error Unsupported value of sys.BUILDARCH=$(sys.BUILDARCH)?>
+	<?endif?>
 
-  <Product Id="*" Name="$(var.ApplicationName)" Language="1033" Version="$(var.VersionNumber)" Manufacturer="Universiteit van Amsterdam" UpgradeCode="$(var.UpgradeCode)">
-    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine"/>
-    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" CompressionLevel="high"/>    
-    
-    <Upgrade Id="$(var.UpgradeCode)">
-      <UpgradeVersion OnlyDetect="yes"  Minimum="$(var.VersionNumber)"  IncludeMinimum="no"                                                         Property="NEWER_VERSION_FOUND" />
-      <UpgradeVersion                   Minimum="$(var.VersionNumber)"  IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="yes"    Property="SAME_VERSION_FOUND" />
-      <UpgradeVersion                   Minimum="0.0.0.0"               IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="no"     Property="OLDER_VERSION_FOUND" />
-    </Upgrade>    
+	<?define ExeProcessName="JASP.exe" ?>
+	<?define UpgradeCode="32d502cb-4752-4861-bc86-b8b4252a7a68" ?>
+	<?define ApplicationName="JASP $(var.VersionNumber)" ?>
 
-    <DirectoryRef Id="TARGETDIR">
-        <Merge Id="VCRedist" SourceFile="$(var.RedistMergeModule)" DiskId="1" Language="0"/>
-    </DirectoryRef>
+	<Product Id="*" Name="$(var.ApplicationName)" Language="1033" Version="$(var.VersionNumber)" Manufacturer="Universiteit van Amsterdam" UpgradeCode="$(var.UpgradeCode)">
+	<Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine"/>
+	<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" CompressionLevel="high"/>
 
-    <Condition Message="JASP only supports Windows 7 and newer!">
-      <![CDATA[Installed OR (VersionNT >= 601)]]>
-    </Condition>
+	<Upgrade Id="$(var.UpgradeCode)">
+		<UpgradeVersion OnlyDetect="yes"  Minimum="$(var.VersionNumber)"  IncludeMinimum="no"                                                         Property="NEWER_VERSION_FOUND" />
+		<UpgradeVersion                   Minimum="$(var.VersionNumber)"  IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="yes"    Property="SAME_VERSION_FOUND" />
+		<UpgradeVersion                   Minimum="0.0.0.0"               IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="no"     Property="OLDER_VERSION_FOUND" />
+	</Upgrade>    
 
-    <CustomAction Id="NewerVersionFound" Error="A newer version of JASP is already installed!" />
-    <InstallExecuteSequence>
-        <Custom Action="NewerVersionFound" After="FindRelatedProducts">   <![CDATA[NEWER_VERSION_FOUND]]> </Custom>
-      <RemoveExistingProducts After="InstallInitialize"/>
-      <Custom Action="WixCloseApplications" Before="InstallInitialize" />
-    </InstallExecuteSequence>
+	<DirectoryRef Id="TARGETDIR">
+		<Merge Id="VCRedist" SourceFile="$(var.RedistMergeModule)" DiskId="1" Language="0"/>
+	</DirectoryRef>
 
-    <util:CloseApplication Id="CloseJASP" CloseMessage="no" Description="Before you can install JASP you must close any running instances of JASP." 
-                           ElevatedCloseMessage="no" RebootPrompt="no" Target="$(var.ExeProcessName)" />
-    <UIRef Id="WixUI_InstallDir" />
+	<Condition Message="JASP only supports Windows 7 and newer!">
+		<![CDATA[Installed OR (VersionNT >= 601)]]>
+	</Condition>
 
-    <Icon       Id="JASP.ico" SourceFile="$(var.JASP_DESKTOP_DIR)\JASP-Desktop\icon.ico" />
-    <Property   Id="ARPPRODUCTICON" Value="JASP.ico" />
+	<CustomAction Id="NewerVersionFound" Error="A newer version of JASP is already installed!" />
+	<InstallExecuteSequence>
+		<Custom Action="NewerVersionFound" After="FindRelatedProducts">   <![CDATA[NEWER_VERSION_FOUND]]> </Custom>
+		<RemoveExistingProducts After="InstallInitialize"/>
+		<Custom Action="WixCloseApplications" Before="InstallInitialize" />
+	</InstallExecuteSequence>
 
-    <WixVariable Id="WixUIDialogBmp" Value="$(var.JASP_DESKTOP_DIR)\Tools\wix\installerBackground.png" />
-    <WixVariable Id="WixUIBannerBmp" Value="$(var.JASP_DESKTOP_DIR)\Tools\wix\installerBanner.png" />
+	<util:CloseApplication Id="CloseJASP" CloseMessage="no" Description="Before you can install JASP you must close any running instances of JASP." ElevatedCloseMessage="no" RebootPrompt="no" Target="$(var.ExeProcessName)" />
 
-    <?define Description="A fresh way to do statistics"?>
+	<?define Description="A fresh way to do statistics"?>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
-        <Directory Id="$(var.Program_Files)">
-            <Directory Id="INSTALLLOCATION" Name="JASP">
+
+		<Directory Id="ProgramFilesFolder">
+            <Directory Id="APPLICATIONFOLDER" Name="JASP">
                 <!-- files added in JASPFilesFragment.wxs -->
             </Directory>
         </Directory>
@@ -64,33 +57,35 @@
             <Directory Id="ProgramMenuSubfolder" Name="JASP">
                 <Component Id="ApplicationShortcut" Guid="553ab265-b401-48f6-a080-752abbed57c8"> 
                     
-                    <RegistryValue Root="HKCU" Key="Software\JASP\JASP" Name="installed" Type="string" Value="JASP is installed here ;)"/> <!-- The registery key is necessary to make sure that we can check if the shortcut is installed or not -->
+                    <RegistryValue Root="HKMU" Key="Software\JASP\JASP" Name="installed" Type="string" Value="JASP is installed here ;)"/> <!-- The registery key is necessary to make sure that we can check if the shortcut is installed or not -->
                     
-                    <Shortcut Id="ApplicationStartMenuShortcut" Name="JASP $(var.VersionNumber)" Description="$(var.Description)" Target="[INSTALLLOCATION]JASP.exe" WorkingDirectory="INSTALLLOCATION"/>
+                    <Shortcut Id="ApplicationStartMenuShortcut" Name="JASP $(var.VersionNumber)" Description="$(var.Description)" Target="[APPLICATIONFOLDER]JASP.exe" WorkingDirectory="APPLICATIONFOLDER"/>
                     
-                    <RemoveFolder Id="CleanUpShortCut"      Directory="INSTALLLOCATION" On="uninstall"/> 
+                    <RemoveFolder Id="CleanUpShortCut"      Directory="APPLICATIONFOLDER" On="uninstall"/> 
                     <RemoveFolder Id="ProgramMenuSubfolder"                             On="uninstall"/> 
                 </Component>
 
                 <Component Id="FileTypeRegistration" Guid="c3591efa-fe71-416e-b5b8-6df0098f03c4">
 
-                       <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
-                    <!-- <RegistryValue Root="HKCU" Key="SOFTWARE\JASP\Capabilities"                     Name="ApplicationDescription"   Value="$(var.Description)"                                      Type="string" />
-                    <RegistryValue Root="HKCU" Key="SOFTWARE\JASP\Capabilities"                     Name="ApplicationIcon"          Value="[INSTALLLOCATION]JASP.exe,0"                             Type="string" />
-                    <RegistryValue Root="HKCU" Key="SOFTWARE\JASP\Capabilities"                     Name="ApplicationName"          Value="$(var.ApplicationName)"                                  Type="string" />
-                    <RegistryValue Root="HKCU" Key="SOFTWARE\JASP\Capabilities\DefaultIcon"                                         Value="[INSTALLLOCATION]JASP.exe,1"                             Type="string" />
-                    <RegistryValue Root="HKCU" Key="SOFTWARE\JASP\Capabilities\FileAssociations"    Name=".jasp"                    Value="JASP.Document"                                           Type="string" />
-                    <RegistryValue Root="HKCU" Key="SOFTWARE\JASP\Capabilities\MIMEAssociations"    Name="application/jasp"         Value="JASP.Document"                                           Type="string" />
-                    <RegistryValue Root="HKCU" Key="SOFTWARE\JASP\Capabilities\shell\Open\command"                                  Value="&quot;[INSTALLLOCATION]JASP.exe&quot; &quot;%1&quot;"    Type="string" /> -->
-                    <RegistryValue Root="HKCU" Key="SOFTWARE\RegisteredApplications"                Name="JASP"                     Value="SOFTWARE\JASP\Capabilities"                              Type="string" KeyPath="yes"/>
+
+                    <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
+					<!-- HKMU is supposed to resolve to either the user or machine registry root on install-->
+                    <RegistryValue Root="HKMU" Key="SOFTWARE\JASP\Capabilities"                     Name="ApplicationDescription"   Value="$(var.Description)"                                      Type="string" />
+                    <RegistryValue Root="HKMU" Key="SOFTWARE\JASP\Capabilities"                     Name="ApplicationIcon"          Value="[APPLICATIONFOLDER]JASP.exe,0"                             Type="string" />
+                    <RegistryValue Root="HKMU" Key="SOFTWARE\JASP\Capabilities"                     Name="ApplicationName"          Value="$(var.ApplicationName)"                                  Type="string" />
+                    <RegistryValue Root="HKMU" Key="SOFTWARE\JASP\Capabilities\DefaultIcon"                                         Value="[APPLICATIONFOLDER]JASP.exe,1"                             Type="string" />
+                    <RegistryValue Root="HKMU" Key="SOFTWARE\JASP\Capabilities\FileAssociations"    Name=".jasp"                    Value="JASP.Document"                                           Type="string" />
+                    <RegistryValue Root="HKMU" Key="SOFTWARE\JASP\Capabilities\MIMEAssociations"    Name="application/jasp"         Value="JASP.Document"                                           Type="string" />
+                    <!--<RegistryValue Root="HKMU" Key="SOFTWARE\JASP\Capabilities\shell\Open\command"                                  Value="&quot;[APPLICATIONFOLDER]JASP.exe&quot; &quot;%1&quot;"    Type="string" />-->
+                    <RegistryValue Root="HKMU" Key="SOFTWARE\RegisteredApplications"                Name="JASP"                     Value="SOFTWARE\JASP\Capabilities"                              Type="string" KeyPath="yes"/>
 
 
 
                     <!-- MyApp.Document ProgID -->
-                    <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\JASP.Document" Name="FriendlyTypeName" Value="A JASP file, containing analyses and/or data" Type="string"/>
+                    <RegistryValue Root="HKMU" Key="SOFTWARE\Classes\JASP.Document" Name="FriendlyTypeName" Value="A JASP file, containing analyses and/or data" Type="string"/>
                     <ProgId Id="JASP.Document" Description="A JASP file, containing analyses and/or data">
                         <Extension Id="jasp">
-                            <Verb Id="open" Target="&quot;[INSTALLLOCATION]JASP.exe&quot;" Argument="&quot;%1&quot;" />
+                            <Verb Id="open" Target="&quot;[APPLICATIONFOLDER]\JASP.exe&quot;" Argument="&quot;%1&quot;" />
                             <!--<MIME Advertise="yes" ContentType="application/jasp" Default="yes" />-->
                         </Extension>
                     </ProgId>
@@ -100,49 +95,62 @@
         </Directory>
     </Directory>
 
-    <UI>
-        <UIRef Id="WixUI_InstallDir" />
 
-        <!-- Skip license dialog -->
-        <Publish    Dialog="WelcomeDlg"
-                    Control="Next"
-                    Event="NewDialog"
-                    Value="InstallDirDlg"
-                    Order="2">
-            1
-        </Publish>
-        <Publish    Dialog="InstallDirDlg"
-                    Control="Back"
-                    Event="NewDialog"
-                    Value="WelcomeDlg"
-                    Order="2">
-            1
-        </Publish>
-        <Publish    Dialog="ExitDialog"
-                    Control="Finish" 
-                    Event="DoAction" 
-                    Value="LaunchApplication">
-            WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed
-        </Publish>
+	<Icon       	Id="JASP.ico" SourceFile="$(var.JASP_DESKTOP_DIR)\JASP-Desktop\icon.ico" />
+    <Property   	Id="ARPPRODUCTICON" 			Value="JASP.ico" />
+
+    <WixVariable	Id="WixUIDialogBmp" 			Value="$(var.JASP_DESKTOP_DIR)\Tools\wix\installerBackground.png" />
+    <WixVariable 	Id="WixUIBannerBmp" 			Value="$(var.JASP_DESKTOP_DIR)\Tools\wix\installerBanner.png" />
+
+    <!--<Property Id="APPLICATIONFOLDER"					Value="[$(var.Program_Files)][ApplicationFolderName]"	/>-->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch JASP" 									/>
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX"     Value="1"												/>
+	<Property Id="WixAppFolder" 						Value="WixPerMachineFolder" 							/> <!-- default to per machine-->
+	<Property Id="ApplicationFolderName" 				Value="JASP" 											/>
+	<Property Id="ExeLocation" 							Value="[#JASP.exe]"										/>
+
+	<CustomAction Id="WixSetDefaultPerMachineFix" Property="WixPerMachineFolder" Value="[$(var.Program_Files)][ApplicationFolderName]" Execute="immediate" />
+
+
+    <UIRef Id="WixUI_Advanced" />
+
+	<!-- Add some nice stuff like launching JASP after concluding the install -->
+	<UI>
+	    <UIRef Id="WixUI_Advanced" />
+	    <Publish Dialog="ExitDialog"	Control="Finish"	Event="DoAction" Value="LaunchApplication"> WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed </Publish>
+	 
+	 	<!-- https://stackoverflow.com/questions/56400973/why-does-my-msi-prompt-for-administrator-rights -->
+		<Publish Dialog="InstallScopeDlg" Control="Next" Property="MSIINSTALLPERUSER" 	Value="1" 								Order="3">WixAppFolder = "WixPerUserFolder"		</Publish>
+		<Publish Dialog="InstallScopeDlg" Control="Next" Property="MSIINSTALLPERUSER" 	Value="{}"								Order="2">WixAppFolder = "WixPerMachineFolder"	</Publish>
+		<Publish Dialog="InstallScopeDlg" Control="Next" Event="DoAction" 				Value="WixSetDefaultPerMachineFix" 		Order="3">WixAppFolder = "WixPerMachineFolder"	</Publish>
+		<Publish Dialog="InstallScopeDlg" Control="Next" Event="DoAction" 				Value="WixSetDefaultPerUserFolder" 		Order="3">WixAppFolder = "WixPerUserFolder"		</Publish>
+
+		<!-- We do not want VCRedist on by default if per-user because it would required UAC admin rights, so we disable it by default if per-user otherwise enable. -->
+		<Publish Dialog="InstallScopeDlg" Control="Next" Event="AddLocal"				Value="VCRedist" 						Order="4">WixAppFolder = "WixPerMachineFolder"	</Publish> 
+		<Publish Dialog="InstallScopeDlg" Control="Next" Event="Remove" 				Value="VCRedist" 						Order="4">WixAppFolder = "WixPerUserFolder"		</Publish>
+
+		<!-- Per user has no InstallDirDlg so after the scope is chosen we already know where JASP.exe will end up. For per-machine we need to wait for the final directory selection by user in InstallDirDlg. -->
+		<Publish Dialog="InstallDirDlg"   			Control="Next" 		Property="ExeLocation" 	Value="[APPLICATIONFOLDER]JASP.exe" 	Order="16">WixAppFolder = "WixPerMachineFolder"	</Publish>
+		<Publish Dialog="InstallScopeDlg" 			Control="Next" 		Property="ExeLocation" 	Value="[WixPerUserFolder]\JASP.exe" 	Order="16">WixAppFolder = "WixPerUserFolder"	</Publish>
+		<Publish Dialog="AdvancedWelcomeEulaDlg" 	Control="Install" 	Property="ExeLocation" 	Value="[WixPerMachineFolder]\JASP.exe" 	Order="666">1									</Publish>
     </UI>
-    
-    <Property Id="WIXUI_INSTALLDIR"                     Value="INSTALLLOCATION" />
-    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch JASP" />
-    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX"     Value="1"/>
 
-    <!-- WIX complains about [INSTALLLOCATION]JASP.exe but it seems to work so you know, whatever. -->
-    <Property Id="WixShellExecTarget" Value="[INSTALLLOCATION]JASP.exe" />
+	<!-- JASP "license" -->
+	<WixVariable Id="WixUILicenseRtf" Value="jaspLicense.rtf" />
+
+    <!-- WIX complains about [APPLICATIONFOLDER]JASP.exe but it seems to work so you know, whatever. -->
+    <Property Id="WixShellExecTarget" Value="[ExeLocation]" />
     <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
 
     <!-- Set the components defined in our fragment files that will be used for our feature  -->
     <Feature Id="JASPFeature" Title="JASP" Level="1">
-      <ComponentGroupRef Id="JASPFiles" />
-      <ComponentRef Id="ApplicationShortcut" />
-      <ComponentRef Id="FileTypeRegistration" />
+		<ComponentGroupRef Id="JASPFiles" />
+		<ComponentRef Id="ApplicationShortcut" />
+		<ComponentRef Id="FileTypeRegistration" />
     </Feature>
 
-    <Feature Id="VCRedist" Title="Visual C++ 14.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
-        <MergeRef Id="VCRedist"/>
+    <Feature Id="VCRedist" Title="Visual C++ 14.0 Runtime" AllowAdvertise="no" Display="collapse" Level="10">
+    	<MergeRef Id="VCRedist"/>
     </Feature>
   </Product>
 </Wix>
