@@ -33,8 +33,8 @@ RowControls::RowControls(ListModel* parent
 {
 }
 
-// Cannot do this code in the constructor: the Component create function will call the addJASPControl method (JASPControlBase, en ListView),
-// but to call the ListView needs to have already the instance of the RowControls to be able to call addJASPControl.
+// Cannot do this code in the constructor: the Component create function (comp->create(context)) will call the addJASPControl method in JASPControlBase (or ListView),
+// So this RowControls instance needs to exist already.
 void RowControls::init(int row, const Term& key, bool isNew)
 {
 	QMLListView* listView = _parentModel->listView();

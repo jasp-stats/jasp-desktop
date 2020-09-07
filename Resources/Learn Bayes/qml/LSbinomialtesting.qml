@@ -15,11 +15,11 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
-import JASP.Theme 1.0
+import QtQuick			2.8
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Widgets		1.0
+import JASP				1.0
 import "../qml/qml_components" as LS
 
 Form {
@@ -53,9 +53,7 @@ Form {
 			ComponentsList
 			{
 				name:					"priors"
-				optionKey:				"type"
 				defaultValues: 			[]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -66,7 +64,7 @@ Form {
 						{
 							label: 				""
 							name: 				"name"
-							value:				"Hypothesis " + rowIndex
+							startValue:			"Hypothesis " + (rowIndex + 1)
 							fieldWidth:			140 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true

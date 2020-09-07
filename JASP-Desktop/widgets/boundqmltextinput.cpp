@@ -231,7 +231,9 @@ Option *BoundQMLTextInput::createOption()
 	}
 
 	_value = getItemProperty("value").toString();
-	_setOptionValue(option, _value);
+	QString startValue = getItemProperty("startValue").toString();
+
+	_setOptionValue(option, startValue.isEmpty() ? _value : startValue);
 	return option;
 }
 

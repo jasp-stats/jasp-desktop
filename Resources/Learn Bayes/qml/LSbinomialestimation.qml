@@ -52,9 +52,7 @@ Form {
 			ComponentsList
 			{
 				name:					"priors"
-				optionKey:				"type"
 				defaultValues: 			[]
-				preferredHeight: 		90 * preferencesModel.uiScale
 				rowComponent: 			RowLayout
 				{
 					Row
@@ -65,7 +63,7 @@ Form {
 						{
 							label: 				""
 							name: 				"name"
-							value:				"Models " + rowIndex
+							startValue:			"Models " + (rowIndex + 1)
 							fieldWidth:			140 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
