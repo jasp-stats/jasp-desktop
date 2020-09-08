@@ -126,8 +126,9 @@
 		<Publish Dialog="InstallScopeDlg" Control="Next" Event="DoAction" 				Value="WixSetDefaultPerUserFolder" 		Order="3">WixAppFolder = "WixPerUserFolder"		</Publish>
 
 		<!-- We do not want VCRedist on by default if per-user because it would required UAC admin rights, so we disable it by default if per-user otherwise enable. -->
+	<!--	It turns out that it doesnt cause the UAC box to show up so it can be on by default.
 		<Publish Dialog="InstallScopeDlg" Control="Next" Event="AddLocal"				Value="VCRedist" 						Order="4">WixAppFolder = "WixPerMachineFolder"	</Publish> 
-		<Publish Dialog="InstallScopeDlg" Control="Next" Event="Remove" 				Value="VCRedist" 						Order="4">WixAppFolder = "WixPerUserFolder"		</Publish>
+		<Publish Dialog="InstallScopeDlg" Control="Next" Event="Remove" 				Value="VCRedist" 						Order="4">WixAppFolder = "WixPerUserFolder"		</Publish> -->
 
 		<!-- Per user has no InstallDirDlg so after the scope is chosen we already know where JASP.exe will end up. For per-machine we need to wait for the final directory selection by user in InstallDirDlg. -->
 		<Publish Dialog="InstallDirDlg"   			Control="Next" 		Property="ExeLocation" 	Value="[APPLICATIONFOLDER]JASP.exe" 	Order="16">WixAppFolder = "WixPerMachineFolder"	</Publish>
