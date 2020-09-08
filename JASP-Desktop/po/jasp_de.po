@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-01 09:36+0000\n"
+"PO-Revision-Date: 2020-09-08 15:01+0000\n"
 "Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.1-dev\n"
+"X-Generator: Weblate 4.3-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -5497,10 +5497,9 @@ msgctxt "mlClassificationBoosting|"
 msgid "Algorithmic Settings"
 msgstr "Algorithmus-Einstellungen"
 
-#, fuzzy
 msgctxt "mlClassificationBoosting|"
 msgid "Shrinkage:"
-msgstr "Shrinkage:"
+msgstr ""
 
 msgctxt "mlClassificationBoosting|"
 msgid "Interaction depth:"
@@ -6194,10 +6193,9 @@ msgctxt "mlClusteringHierarchical|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
-#, fuzzy
 msgctxt "mlClusteringHierarchical|"
 msgid "Cluster Determination"
-msgstr "Clusterbepaling"
+msgstr ""
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Fixed"
@@ -6307,10 +6305,9 @@ msgctxt "mlClusteringKMeans|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
-#, fuzzy
 msgctxt "mlClusteringKMeans|"
 msgid "Cluster Determination"
-msgstr "Clusterbepaling"
+msgstr ""
 
 msgctxt "mlClusteringKMeans|"
 msgid "Fixed"
@@ -6412,10 +6409,9 @@ msgctxt "mlClusteringRandomForest|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
-#, fuzzy
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster Determination"
-msgstr "Clusterbepaling"
+msgstr ""
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Fixed"
@@ -13282,7 +13278,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Second-Order"
 msgstr "Zweite Ordnung"
 
-#, fuzzy
 msgctxt "mlRegressionKnn|"
 msgid "Rectangular"
 msgstr "Rechteckig"
@@ -18942,12 +18937,10 @@ msgctxt "Description|"
 msgid "Binomial Testing"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "Model"
 msgstr "Modell"
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "Distribution"
 msgstr "Verteilung"
@@ -18960,17 +18953,14 @@ msgctxt "LSbinomialestimation|"
 msgid "Spike"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "Beta"
 msgstr "Beta"
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "α"
 msgstr "α"
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "β"
 msgstr "β"
@@ -18987,7 +18977,6 @@ msgctxt "LSbinomialtesting|"
 msgid "Prior probability"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "Distribution"
 msgstr "Verteilung"
@@ -19004,17 +18993,14 @@ msgctxt "LSbinomialtesting|"
 msgid "Spike"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "Beta"
 msgstr "Beta"
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "α"
 msgstr "α"
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "β"
 msgstr "β"
@@ -19047,12 +19033,10 @@ msgctxt "LSbinomialdatainput|"
 msgid "Count data"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSbinomialdatainput|"
 msgid "Successes"
 msgstr "Erfolge"
 
-#, fuzzy
 msgctxt "LSbinomialdatainput|"
 msgid "Failures"
 msgstr "Misserfolge"
@@ -19069,7 +19053,6 @@ msgctxt "LSbinomialdatainput|"
 msgid "Available"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSbinomialdatainput|"
 msgid "Selected"
 msgstr "Ausgewählt"
@@ -19078,12 +19061,10 @@ msgctxt "LSbinomialdatainput|"
 msgid "Data summary"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "Inference"
 msgstr "Inferenz"
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "Color palette"
 msgstr "Farbpalette"
@@ -19092,22 +19073,18 @@ msgctxt "LSestimationinference|"
 msgid "Colorblind"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "Colorblind Alt."
-msgstr "Farbenblind alt."
+msgstr "Farbenblind, alt."
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "Viridis"
 msgstr "Viridis"
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "ggplot2"
 msgstr "ggplot2"
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "Gray"
 msgstr "Grau"
@@ -19120,7 +19097,6 @@ msgctxt "LSestimationinference|"
 msgid "Prior distribution"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "All"
 msgstr "Alle"
@@ -19141,12 +19117,10 @@ msgctxt "LSestimationinference|"
 msgid "mass"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "lower"
 msgstr "untere"
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "upper"
 msgstr "obere"
@@ -19155,7 +19129,6 @@ msgctxt "LSestimationinference|"
 msgid "Posterior distribution"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "BF"
 msgstr "BF"
@@ -19184,12 +19157,10 @@ msgctxt "LSestimationpredictions|"
 msgid "Point estimate"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "Plots"
 msgstr "Abbildungen"
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "Color palette"
 msgstr "Farbpalette"
@@ -19198,22 +19169,18 @@ msgctxt "LSestimationpredictions|"
 msgid "Colorblind"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "Colorblind Alt."
-msgstr "Farbenblind alt."
+msgstr "Farbenblind, alt."
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "Viridis"
 msgstr "Viridis"
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "ggplot2"
 msgstr "ggplot2"
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "Gray"
 msgstr "Grau"
@@ -19222,7 +19189,6 @@ msgctxt "LSestimationpredictions|"
 msgid "Posterior predictive distribution"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "All"
 msgstr "Alle"
@@ -19243,12 +19209,10 @@ msgctxt "LSestimationpredictions|"
 msgid "mass"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "lower"
 msgstr "untere"
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "upper"
 msgstr "obere"
@@ -19257,7 +19221,6 @@ msgctxt "LSestimationpredictions|"
 msgid "Show sample proportions"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationsequential|"
 msgid "Sequential analysis"
 msgstr "Sequentielle Analyse"
@@ -19266,7 +19229,6 @@ msgctxt "LSestimationsequential|"
 msgid "Point estimate"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationsequential|"
 msgid "All"
 msgstr "Alle"
@@ -19279,7 +19241,6 @@ msgctxt "LSestimationsequential|"
 msgid "mass"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationsequential|"
 msgid "BF"
 msgstr "BF"
@@ -19296,12 +19257,10 @@ msgctxt "LSestimationsequential|"
 msgid "Interval"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSestimationsequential|"
 msgid "lower"
 msgstr "untere"
 
-#, fuzzy
 msgctxt "LSestimationsequential|"
 msgid "upper"
 msgstr "obere"
@@ -19314,12 +19273,10 @@ msgctxt "LSintrotext|"
 msgid "Introductory texts"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Inference"
 msgstr "Inferenz"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Color palette"
 msgstr "Farbpalette"
@@ -19328,22 +19285,18 @@ msgctxt "LStestinginference|"
 msgid "Colorblind"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Colorblind Alt."
-msgstr "Farbenblind alt."
+msgstr "Farbenblind, alt."
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Viridis"
 msgstr "Viridis"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "ggplot2"
 msgstr "ggplot2"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Gray"
 msgstr "Grau"
@@ -19364,12 +19317,10 @@ msgctxt "LStestinginference|"
 msgid "vs."
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "BF₁₀"
 msgstr "BF₁₀"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "BF₀₁"
 msgstr "BF₀₁"
@@ -19382,7 +19333,6 @@ msgctxt "LStestinginference|"
 msgid "Prior distribution"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Conditional"
 msgstr "Konditional"
@@ -19399,12 +19349,10 @@ msgctxt "LStestinginference|"
 msgid "mass"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "lower"
 msgstr "untere"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "upper"
 msgstr "obere"
@@ -19437,7 +19385,6 @@ msgctxt "LStestinginference|"
 msgid "Predictive accuracy"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Normalized"
 msgstr "Normalisiert"
@@ -19446,7 +19393,6 @@ msgctxt "LStestinginference|"
 msgid "Posterior distribution"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "BF"
 msgstr "BF"
@@ -19471,12 +19417,10 @@ msgctxt "LStestingpredictions|"
 msgid "Point estimate"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Plots"
 msgstr "Abbildungen"
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Color palette"
 msgstr "Farbpalette"
@@ -19485,22 +19429,18 @@ msgctxt "LStestingpredictions|"
 msgid "Colorblind"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Colorblind Alt."
-msgstr "Farbenblind alt."
+msgstr "Farbenblind, alt."
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Viridis"
 msgstr "Viridis"
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "ggplot2"
 msgstr "ggplot2"
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Gray"
 msgstr "Grau"
@@ -19509,7 +19449,6 @@ msgctxt "LStestingpredictions|"
 msgid "Posterior predictive distribution"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Conditional"
 msgstr "Konditional"
@@ -19791,7 +19730,6 @@ msgctxt "RegressionLinear|"
 msgid "Prediction intervals"
 msgstr ""
 
-#, fuzzy
 msgctxt "RegressionLinearBayesian|"
 msgid "Bernoulli"
 msgstr "Bernoulli"
