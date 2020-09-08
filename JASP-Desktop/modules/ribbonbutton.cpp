@@ -61,10 +61,11 @@ RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title,
 	setModuleName(name);
 	setTitle(title);
 	setIconSource(tq(icon));
-	setRequiresData(requiresData);
+
 	setIsDynamic(false);
 
 	setMenu({ new Modules::AnalysisEntry() }); //Just a single dummy
+	setRequiresData(requiresData); //setRequiresData because setMenu changes it based on the menu entries, but that doesnt work for this special dummy
 
 	bindYourself();
 }

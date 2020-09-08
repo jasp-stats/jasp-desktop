@@ -563,6 +563,8 @@ void DynamicModules::devModWatchFolder(QString folder, QFileSystemWatcher * & wa
 	delete watcher;
 	watcher = new QFileSystemWatcher({_devModSourceDirectory.absoluteFilePath(folder)}, this);
 
+	static const std::map<std::string, std::set<std::string>> _acceptedFilesInFolders = {{"", {"json"}}, {"r", {"r"}}, {"qml", {"qml"}}, {"icons", {"svg", "png", "ico", "jpg", "gif"}}, {"help", {"md", "html"}}};
+
 	QStringList extensionFilter;
 	for(const std::string & extension :  _acceptedFilesInFolders.at(folder.toLower().toStdString()))
 		extensionFilter << "*." + QString::fromStdString(extension) << "*." + QString::fromStdString(extension).toUpper();

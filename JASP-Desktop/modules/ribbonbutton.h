@@ -52,7 +52,7 @@ public:
 	//Should maybe be changed into some subclasses
 	RibbonButton(QObject *parent, std::string moduleName, bool isCommon);
 	RibbonButton(QObject *parent, Modules::DynamicModule * module);
-	RibbonButton(QObject *parent,	std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction);
+	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction);
 	~RibbonButton();
 
 
