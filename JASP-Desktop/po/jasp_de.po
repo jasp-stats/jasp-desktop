@@ -19461,12 +19461,10 @@ msgctxt "LStestingpredictions|"
 msgid "mass"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "lower"
 msgstr "untere"
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "upper"
 msgstr "obere"
@@ -19495,7 +19493,6 @@ msgctxt "LStestingpredictions|"
 msgid "Predictions table"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestingsequential|"
 msgid "Sequential analysis"
 msgstr "Sequentielle Analyse"
@@ -19504,7 +19501,6 @@ msgctxt "LStestingsequential|"
 msgid "Test results"
 msgstr ""
 
-#, fuzzy
 msgctxt "LStestingsequential|"
 msgid "Conditional"
 msgstr "Konditional"
