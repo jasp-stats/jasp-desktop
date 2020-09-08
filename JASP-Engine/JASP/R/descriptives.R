@@ -1500,9 +1500,9 @@ Descriptives <- function(jaspResults, dataset, options) {
   right <- vapply(text, function(x) if (length(x) == 1L) "" else x[2L], FUN.VALUE = character(1L))
 
   tb <- createJaspTable(title = title)
-  tb$addColumnInfo(name = "left",  title =  "", type = "string")
-  tb$addColumnInfo(name = "sep",   title =  "", type = "separator")
-  tb$addColumnInfo(name = "right", title =  "", type = "string")
+  tb$addColumnInfo(name = "left",  title =  "Stem", type = "integer")
+  tb$addColumnInfo(name = "sep",   title =  "",     type = "separator")
+  tb$addColumnInfo(name = "right", title =  "Leaf", type = "string")
 
   tb[["left"]]  <- left
   tb[["sep"]]   <- rep("|", length(left))
