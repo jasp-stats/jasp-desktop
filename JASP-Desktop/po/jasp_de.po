@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2020-09-01 09:36+0000\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2.1-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -38,7 +44,7 @@ msgstr "Variablen"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr "Split"
+msgstr "Aufteilung"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Second-order Factor"
@@ -114,7 +120,7 @@ msgstr "Modifizierungsindizes"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Cutoff"
-msgstr "Cutoff"
+msgstr ""
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Show lavaan syntax"
@@ -186,7 +192,7 @@ msgstr "Latente Konstanten auf 0 fixieren"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Omit residual single indicator"
-msgstr "Omit residual single indicator"
+msgstr ""
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Residual variances"
@@ -210,7 +216,7 @@ msgstr "Abhängige Variablen korrelieren"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Emulation"
-msgstr "Emulation"
+msgstr ""
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "None"
@@ -394,7 +400,7 @@ msgstr "Modifikation-Indizes"
 
 msgctxt "LatentRegression|"
 msgid "Cutoff"
-msgstr "Cutoff"
+msgstr ""
 
 msgctxt "LatentRegression|"
 msgid "Show lavaan syntax"
@@ -486,7 +492,7 @@ msgstr "Abhängige Variablen korrelieren"
 
 msgctxt "LatentRegression|"
 msgid "Emulation"
-msgstr "Emulation"
+msgstr ""
 
 msgctxt "LatentRegression|"
 msgid "None"
@@ -766,7 +772,7 @@ msgstr "Abhängige Variablen korrelieren"
 
 msgctxt "SEMSimple|"
 msgid "Emulation"
-msgstr "Emulation"
+msgstr ""
 
 msgctxt "SEMSimple|"
 msgid "None"
@@ -1427,8 +1433,7 @@ msgstr ""
 "noch einige Dinge fehlen.\n"
 "\n"
 "Falls JASP heute noch nicht alles kann was Du möchtest, probier' es morgen "
-"nochmal:\n"
-"JASP wird mit halsbrecherischem Tempo weiterentwickelt!"
+"nochmal: JASP wird mit halsbrecherischem Tempo weiterentwickelt!"
 
 msgctxt "Ancova|"
 msgid "Dependent Variable"
@@ -2720,11 +2725,11 @@ msgstr "Vovk-Sellke-Maximum-p-Quotient"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>1. Planning</b>"
-msgstr "<b>1. Planning</b>"
+msgstr "<b>1. Planung</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "1. Planning"
-msgstr "1. Planning"
+msgstr "1. Planung"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Population Materiality"
@@ -3493,7 +3498,7 @@ msgstr "LTA-Adjustierung"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Direct"
-msgstr "Direct"
+msgstr "Direkt"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Difference"
@@ -4438,7 +4443,7 @@ msgstr "Maximum-Likelihood"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Principal axis factoring"
-msgstr "Principal axis factoring"
+msgstr ""
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Ordinary least squares"
@@ -4470,7 +4475,7 @@ msgstr "Orthogonal"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Oblique"
-msgstr "Oblique"
+msgstr ""
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Base analysis on"
@@ -4578,7 +4583,7 @@ msgstr "Orthogonal"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Oblique"
-msgstr "Oblique"
+msgstr ""
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Base decomposition on"
@@ -4742,7 +4747,7 @@ msgstr "Konfidenzintervall"
 
 msgctxt "BinomialTest|"
 msgid "Interval"
-msgstr "Interval"
+msgstr "Intervall"
 
 msgctxt "BinomialTest|"
 msgid "Vovk-Sellke maximum p-ratio"
@@ -4838,7 +4843,7 @@ msgstr "χ²"
 
 msgctxt "ContingencyTables|"
 msgid "χ² continuity correction"
-msgstr "χ² continuity correction"
+msgstr ""
 
 msgctxt "ContingencyTables|"
 msgid "Likelihood ratio"
@@ -4926,7 +4931,7 @@ msgstr "Cochrans und Mantel-Haenszel-Statistiken"
 
 msgctxt "ContingencyTables|"
 msgid "Test common odds ratio equals"
-msgstr "Test common odds ratio equals"
+msgstr ""
 
 msgctxt "ContingencyTables|"
 msgid "Cells"
@@ -5298,7 +5303,7 @@ msgstr "Skalenparameter"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Model Cut-offs"
-msgstr "Model Cut-offs"
+msgstr ""
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Display best"
@@ -5771,7 +5776,7 @@ msgstr "Skalierungsprädiktoren"
 
 msgctxt "mlClassificationLda|"
 msgid "Set seed: "
-msgstr "Startwert für Zufallszahlen setzen:"
+msgstr "Startwert für Zufallszahlen setzen: "
 
 msgctxt "mlClassificationLda|"
 msgid "Add predicted classes to data"
@@ -6019,7 +6024,7 @@ msgstr "Binnen kwadratensom"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Silhouette score"
-msgstr "Silhouette score"
+msgstr ""
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Centroids"
@@ -6071,7 +6076,7 @@ msgstr "Max. Iterationen:"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Fuzziness parameter:"
-msgstr "Fuzziness parameter:"
+msgstr ""
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Scale variables"
@@ -6091,7 +6096,7 @@ msgstr "Fixiert"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Clusters:"
-msgstr "Clusters:"
+msgstr "Cluster:"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Optimized according to"
@@ -6151,7 +6156,7 @@ msgstr "Ellenbogenmethode"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Dendrogram"
-msgstr "Dendrogram"
+msgstr "Dendrogramm"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "t-SNE cluster plot"
@@ -6486,7 +6491,7 @@ msgstr "Algoritme-instellingen"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Shrinkage:"
-msgstr "Shrinkage:"
+msgstr ""
 
 msgctxt "mlRegressionBoosting|"
 msgid "Interaction depth:"
@@ -6954,7 +6959,7 @@ msgstr "Robustheit"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Fail-safe N"
-msgstr "Fail-safe N"
+msgstr ""
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Casewise diagnostics"
@@ -6982,7 +6987,7 @@ msgstr "Äußere Gruppierung (Gruppierungsstruktur)"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Case labels"
-msgstr "Case labels"
+msgstr ""
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Fixed Effects Model"
@@ -7170,7 +7175,7 @@ msgstr "Kov"
 
 msgctxt "NetworkAnalysis|"
 msgid "Npn"
-msgstr "Npn"
+msgstr ""
 
 msgctxt "NetworkAnalysis|"
 msgid "Centrality Measures"
@@ -7242,7 +7247,7 @@ msgstr "Bivariate Regressionen"
 
 msgctxt "NetworkAnalysis|"
 msgid "Loglinear"
-msgstr "Loglinear"
+msgstr "Log-Linear"
 
 msgctxt "NetworkAnalysis|"
 msgid "Criterion"
@@ -7302,7 +7307,7 @@ msgstr "Kreuzvalidation"
 
 msgctxt "NetworkAnalysis|"
 msgid "nFolds"
-msgstr "nFolds"
+msgstr ""
 
 msgctxt "NetworkAnalysis|"
 msgid "Bootstrap Options"
@@ -7546,11 +7551,11 @@ msgstr "Layout nicht aktualisieren"
 
 msgctxt "NetworkAnalysis|"
 msgid "Spring"
-msgstr "Spring"
+msgstr "Frühling"
 
 msgctxt "NetworkAnalysis|"
 msgid "Repulsion"
-msgstr "Repulsion"
+msgstr ""
 
 msgctxt "NetworkAnalysis|"
 msgid "Circle"
@@ -7835,7 +7840,7 @@ msgstr "Von"
 
 msgctxt "RegressionLinear|"
 msgid "bootstraps"
-msgstr "bootstraps"
+msgstr "Bootstraps"
 
 msgctxt "RegressionLinear|"
 msgid "Confidence intervals"
@@ -8131,15 +8136,15 @@ msgstr "g-Prior"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Hyper-g"
-msgstr "Hyper-g"
+msgstr ""
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Hyper-g-Laplace"
-msgstr "Hyper-g-Laplace"
+msgstr ""
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Hyper-g-n"
-msgstr "Hyper-g-n"
+msgstr ""
 
 msgctxt "RegressionLinearBayesian|"
 msgid "alpha"
@@ -8531,7 +8536,7 @@ msgstr "Volle-Information-Maximum-Likelihood"
 
 msgctxt "MediationAnalysis|"
 msgid "Emulation"
-msgstr "Emulation"
+msgstr ""
 
 msgctxt "MediationAnalysis|"
 msgid "None"
@@ -8659,7 +8664,7 @@ msgstr "Stichprobenumfang"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Kendall's tau-b"
-msgstr "Kendall's tau-b"
+msgstr "Kendalls Tau-b"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Alt. Hypothesis"
@@ -8751,7 +8756,7 @@ msgstr "t"
 
 msgctxt "SummaryStatsTTestBayesianIndependentSamples|"
 msgid "Group 1 size"
-msgstr "Größe Gruppe 1 "
+msgstr "Größe Gruppe 1"
 
 msgctxt "SummaryStatsTTestBayesianIndependentSamples|"
 msgid "Group 2 size"
@@ -9499,7 +9504,7 @@ msgstr "Schätzer"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Direct"
-msgstr "Direct"
+msgstr "Direkt"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Difference"
@@ -10132,8 +10137,9 @@ msgstr ""
 "Strategie 1 nutzt einen klassischen R-Ansatz: Berechne ein Modell, dann gib "
 "es weiter an jede Funktion.\n"
 "Strategie 2 nutzt einen unorthodoxe Ansatz: Berechne das Modell wenn es "
-"wirklich benötigt wird, und nutze Referenzparameter-Mechanismen, um es zu "
-"allen Funktionen zu übergeben, die es benötigen.\n"
+"wirklich benötigt wird,\n"
+"und nutze Referenzparameter-Mechanismen, um es zu allen Funktionen zu "
+"übergeben, die es benötigen.\n"
 "Dies wird durch den Gebrauch von Containern erreicht.\n"
 "\n"
 "Der zweite Ansatz hat den Vorteil, dass das Übergeben von Fehlern einfacher "
@@ -10142,9 +10148,9 @@ msgstr ""
 "Berechnung beschäftigt ist).\n"
 "\n"
 "Das Auswählen von 'Wir sind bereit' emuliert eine Analyse die bereit ist um "
-"Ergebnisse zu berechnen und anzuzeigen. Das Auswählen von 'Containercode \n"
-"benutzen' zwingt die Analyse dazu, Strategie 2 zu benutzen (ansonsten wird "
-"Strategie 1 benutzt).\n"
+"Ergebnisse zu berechnen und anzuzeigen.\n"
+"Das Auswählen von 'Containercode benutzen' zwingt die Analyse dazu, "
+"Strategie 2 zu benutzen (ansonsten wird Strategie 1 benutzt).\n"
 "Durch das Auswählen von 'Optionale Tabelle' wird eine optionale Tabelle "
 "erzeugt (weil Analysen oft optionale Elemente haben).\n"
 "Das Auswählen von 'Eine willkürliche Abhängigkeit' emuliert eine "
@@ -10242,11 +10248,11 @@ msgstr "Epanechnikov"
 
 msgctxt "mlClassificationKnn|"
 msgid "Biweight"
-msgstr "Biweight"
+msgstr ""
 
 msgctxt "mlClassificationKnn|"
 msgid "Triweight"
-msgstr "Triweight"
+msgstr ""
 
 msgctxt "mlClassificationKnn|"
 msgid "Cosine"
@@ -10254,11 +10260,11 @@ msgstr "Kosinus"
 
 msgctxt "mlClassificationKnn|"
 msgid "Inverse"
-msgstr "Inverse"
+msgstr "Invers"
 
 msgctxt "mlClassificationKnn|"
 msgid "Gaussian"
-msgstr "Gaussian"
+msgstr "Gaußsch"
 
 msgctxt "mlClassificationKnn|"
 msgid "Rank"
@@ -10302,7 +10308,7 @@ msgstr "Mittelwert"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Single"
-msgstr "Single"
+msgstr ""
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Complete"
@@ -10541,9 +10547,8 @@ msgid ""
 "pressing \"Browse\"."
 msgstr ""
 "Wenn deaktiviert, werden nicht die Dateidialogfenster deines Betriebssystems "
-"benutzt, sondern die von Qt. Dies kann manche Probleme auf Windows lösen, "
-"bei denen JASP abstürzt, wenn man auf die \"Durchsuchen\"-Schaltfläche "
-"klickt."
+"benutzt, sondern die von Qt. Dies kann manche Probleme auf Windows lösen, bei "
+"denen JASP abstürzt, wenn man auf die \"Durchsuchen\"-Schaltfläche klickt."
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
@@ -10939,7 +10944,7 @@ msgstr "P-P-Diagramm"
 
 msgctxt "LDbeta|"
 msgid "Kolmogorov-Smirnov"
-msgstr "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
 
 msgctxt "LDbeta|"
 msgid "Cramér–von Mises"
@@ -11019,7 +11024,7 @@ msgstr "Kumulative Wahrscheinlichkeit"
 
 msgctxt "LDbinomial|"
 msgid "Interval"
-msgstr "Interval"
+msgstr "Intervall"
 
 msgctxt "LDbinomial|"
 msgid "≤ X ≤"
@@ -11195,7 +11200,7 @@ msgstr "P-P-Diagramm"
 
 msgctxt "LDchisq|"
 msgid "Kolmogorov-Smirnov"
-msgstr "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
 
 msgctxt "LDchisq|"
 msgid "Cramér–von Mises"
@@ -11307,7 +11312,7 @@ msgstr "P-P-Diagramm"
 
 msgctxt "LDexponential|"
 msgid "Kolmogorov-Smirnov"
-msgstr "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
 
 msgctxt "LDexponential|"
 msgid "Cramér–von Mises"
@@ -11327,7 +11332,7 @@ msgstr "df 2"
 
 msgctxt "LDf|"
 msgid "ncp"
-msgstr "ncp"
+msgstr ""
 
 msgctxt "LDf|"
 msgid "Display"
@@ -11419,7 +11424,7 @@ msgstr "P-P-Diagramm"
 
 msgctxt "LDf|"
 msgid "Kolmogorov-Smirnov"
-msgstr "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
 
 msgctxt "LDf|"
 msgid "Cramér–von Mises"
@@ -11531,7 +11536,7 @@ msgstr "P-P Diagramm"
 
 msgctxt "LDgamma|"
 msgid "Kolmogorov-Smirnov"
-msgstr "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
 
 msgctxt "LDgamma|"
 msgid "Cramér–von Mises"
@@ -11643,7 +11648,7 @@ msgstr "P-P Diagramm"
 
 msgctxt "LDgammaInverse|"
 msgid "Kolmogorov-Smirnov"
-msgstr "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
 
 msgctxt "LDgammaInverse|"
 msgid "Cramér–von Mises"
@@ -11759,7 +11764,7 @@ msgstr "P-P-Diagramm"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Kolmogorov-Smirnov"
-msgstr "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Cramér–von Mises"
@@ -11827,7 +11832,7 @@ msgstr "Kumulative Wahrscheinlichkeit"
 
 msgctxt "LDnegbinomial|"
 msgid "Interval"
-msgstr "Interval"
+msgstr "Intervall"
 
 msgctxt "LDnegbinomial|"
 msgid "≤ X ≤"
@@ -11967,7 +11972,7 @@ msgstr "Kumulative Wahrscheinlichkeit"
 
 msgctxt "LDpoisson|"
 msgid "Interval"
-msgstr "Interval"
+msgstr "Intervall"
 
 msgctxt "LDpoisson|"
 msgid "≤ X ≤"
@@ -12051,7 +12056,7 @@ msgstr "df"
 
 msgctxt "LDt|"
 msgid "ncp"
-msgstr "ncp"
+msgstr ""
 
 msgctxt "LDt|"
 msgid "Display"
@@ -12135,7 +12140,7 @@ msgstr "P-P-Diagramm"
 
 msgctxt "LDt|"
 msgid "Kolmogorov-Smirnov"
-msgstr "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
 
 msgctxt "LDt|"
 msgid "Cramér–von Mises"
@@ -12511,7 +12516,7 @@ msgstr "Halbe t-Verteilung"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Plot prior(s)"
-msgstr "Plot prior(s)"
+msgstr "Prior plotten"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Plots"
@@ -12607,7 +12612,7 @@ msgstr "Integration"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Bridge sampling"
-msgstr "Bridge sampling"
+msgstr "Bridge-Sampling"
 
 msgctxt "Flexplot|"
 msgid "Dependent Variable"
@@ -13288,11 +13293,11 @@ msgstr "Epanechnikov"
 
 msgctxt "mlRegressionKnn|"
 msgid "Biweight"
-msgstr "Biweight"
+msgstr ""
 
 msgctxt "mlRegressionKnn|"
 msgid "Triweight"
-msgstr "Triweight"
+msgstr ""
 
 msgctxt "mlRegressionKnn|"
 msgid "Cosine"
@@ -13300,7 +13305,7 @@ msgstr "Kosinus"
 
 msgctxt "mlRegressionKnn|"
 msgid "Inverse"
-msgstr "Inverse"
+msgstr "Invers"
 
 msgctxt "mlRegressionKnn|"
 msgid "Gaussian"
@@ -13336,7 +13341,7 @@ msgstr "riesig"
 
 msgctxt "NetworkAnalysis|"
 msgid "Significant"
-msgstr "Significant"
+msgstr "Signifikant"
 
 msgctxt "RegressionLinear|"
 msgid "Enter"
@@ -13977,8 +13982,8 @@ msgstr ""
 "Wir werden zwei Webseiten in deinem Webbrowser öffnen.\n"
 "Die zweite Seite ist die 'Join GitHub'-Seite auf der Du einen neues Konto "
 "bei GitHub registrieren kannst.\n"
-" Die zweite Seite zeigt ein teilweise ausgefülltes Fehlerformular  nachdem "
-"Du dich bei GitHub mit dem neuen Github-Konto angemeldet hast.\n"
+" Die zweite Seite zeigt ein teilweise ausgefülltes Fehlerformular nachdem Du "
+"dich bei GitHub mit dem neuen Github-Konto angemeldet hast.\n"
 "\n"
 "Bitte fülle dort alle fehlenden Informationen aus."
 
@@ -14399,7 +14404,7 @@ msgstr ""
 
 msgctxt "OSF|"
 msgid "Data Providers"
-msgstr "Data Providers"
+msgstr "Daten-Provider"
 
 msgctxt "OSF|"
 msgid ""
@@ -14731,7 +14736,7 @@ msgstr "Helmert"
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr "repeated"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
@@ -14961,7 +14966,7 @@ msgstr "Likelihood"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Restricted ML"
-msgstr "Restricted ML"
+msgstr ""
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Hedges"
@@ -14969,7 +14974,7 @@ msgstr "Hedges"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Empirical Bayes"
-msgstr "Empirical Bayes"
+msgstr ""
 
 msgctxt "NetworkAnalysis|"
 msgid "red"
@@ -15817,11 +15822,11 @@ msgstr "Angezeigte Maße in Zentralitätsabbildung"
 
 msgctxt "NetworkAnalysis|"
 msgid "Betweenness"
-msgstr "Betweenness"
+msgstr ""
 
 msgctxt "NetworkAnalysis|"
 msgid "Closeness"
-msgstr "Closeness"
+msgstr ""
 
 msgctxt "NetworkAnalysis|"
 msgid "Expected Influence"
@@ -16230,7 +16235,7 @@ msgstr "Boosting"
 
 msgctxt "Description|"
 msgid "Boosting Regression"
-msgstr "Boosting Regression"
+msgstr ""
 
 msgctxt "Description|"
 msgid "K-Nearest Neighbors"
@@ -16588,7 +16593,7 @@ msgstr "Gamma"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Beta-binomial"
-msgstr "Beta-binomial"
+msgstr "Beta-Binomial"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Area Under Posterior"
@@ -17376,7 +17381,7 @@ msgstr "Wurzel"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Inverse"
-msgstr "Inverse"
+msgstr "Invers"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Estimated marginal means"
@@ -17392,7 +17397,7 @@ msgstr "Ausgewählte Variablen"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Response scale"
-msgstr "Response scale"
+msgstr "Antwortskala"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Specify contrasts"
@@ -17504,7 +17509,7 @@ msgstr "Wurzel"
 
 msgctxt "MixedModelsGLMM|"
 msgid "Inverse"
-msgstr "Inverse"
+msgstr "Invers"
 
 msgctxt "MixedModelsGLMM|"
 msgid "Estimated marginal means"
