@@ -20,6 +20,8 @@
 #define APPDIRS_H
 
 #include <QString>
+#include <QDir>
+
 
 class AppDirs
 {
@@ -33,6 +35,8 @@ public:
 	static QString documents();
 	static QString logDir();
 	static QString appData();
+	static QString rHome();
+	static QDir    programDir();
 };
 
 #endif // APPDIRS_H

@@ -7,6 +7,9 @@
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
 #include "modules/ribbonmodel.h"
+#include "utilities/qutils.h"
+#include "utilities/appdirs.h"
+#include "enginedefinitions.h"
 
 using namespace std;
 
@@ -457,4 +460,79 @@ QString PreferencesModel::defaultCodeFont() const
 void PreferencesModel::resetRememberedModules(bool setToRemember) 
 {
 	setModulesRemembered(!setToRemember ? QStringList({}) : RibbonModel::singleton()->getModulesEnabled());
+}
+
+winLcCtypeSetting _getWinLcCtypeSetting()
+{
+	QString lcCtypeSetting = Settings::value(Settings::LC_CTYPE_C_WIN).toString();
+	
+	winLcCtypeSetting val = winLcCtypeSetting::check;
+	
+	try
+	{
+		val = winLcCtypeSettingFromQString(lcCtypeSetting);	
+	}
+	catch(missingEnumVal & e) {} //Just keep it at check then
+	
+	return val;
+}
+
+bool PreferencesModel::lcCtypeCheck() const
+{
+	return _getWinLcCtypeSetting() == winLcCtypeSetting::check;
+}
+
+bool PreferencesModel::lcCtypeToC() const
+{
+	return _getWinLcCtypeSetting() == winLcCtypeSetting::alwaysC;
+}
+
+void PreferencesModel::setLcCtypeToC(bool newVal)
+{
+	winLcCtypeSetting	current = _getWinLcCtypeSetting(),
+						newSet	= newVal ? winLcCtypeSetting::alwaysC : winLcCtypeSetting::neverC; 
+	
+	
+	if(current != newSet)
+	{
+		Settings::setValue(Settings::LC_CTYPE_C_WIN, winLcCtypeSettingToQString(newSet));
+		
+		emit lcCtypeToCChanged();
+		emit lcCtypeCheckChanged();
+		emit restartAllEngines();
+	}
+}
+
+void PreferencesModel::setLcCtypeCheck(bool newVal)
+{
+	if(!newVal)
+	{
+		setLcCtypeToC(true);
+		return;
+	}
+	
+	winLcCtypeSetting	current = _getWinLcCtypeSetting(),
+						newSet	= winLcCtypeSetting::check; 
+	
+	
+	if(current != newSet)
+	{
+		Settings::setValue(Settings::LC_CTYPE_C_WIN, winLcCtypeSettingToQString(newSet));
+		
+		emit lcCtypeToCChanged();
+		emit lcCtypeCheckChanged();
+		emit restartAllEngines();
+	}
+}
+
+bool PreferencesModel::setLC_CTYPE_C() const
+{
+#ifndef _WIN32
+	throw std::runtime_error("PreferencesModel::setLC_CTYPE_C() should only be used on Windows.");
+#endif
+	
+	if(lcCtypeCheck())
+		return pathIsSafeForR(AppDirs::rHome());
+	
+	return lcCtypeToC();
 }

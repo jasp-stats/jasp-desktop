@@ -168,3 +168,8 @@ std::vector<std::string> fq(const QStringList & vec)
 {
 	return fq(vec.toVector());
 }
+
+bool pathIsSafeForR(const QString & checkThis)
+{
+	return checkThis.toLocal8Bit() == checkThis.toUtf8();
+}

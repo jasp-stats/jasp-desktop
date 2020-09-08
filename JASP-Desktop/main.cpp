@@ -32,7 +32,7 @@ const std::string	jaspExtension	= ".jasp",
 					saveArg			= "--save",
 					timeOutArg		= "--timeOut=";
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & LC_CTYPE_C, bool & LC_CTYPE_system)
 {
 	filePath		= "";
 	unitTest		= false;
@@ -41,6 +41,8 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 	logToFile		= false;
 	hideJASP		= false;
 	safeGraphics	= false;
+	LC_CTYPE_C		= false;
+	LC_CTYPE_system	= false;
 	timeOut			= 10;
 
 	bool letsExplainSomeThings = false;
@@ -54,6 +56,8 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		else if(args[arg] == "--logToFile")						logToFile				= true;
 		else if(args[arg] == "--hide")							hideJASP				= true;
 		else if(args[arg] == "--safeGraphics")					safeGraphics			= true;
+		else if(args[arg] == "--setLC_CTYPE_C")					LC_CTYPE_C				= true;
+		else if(args[arg] == "--setLC_CTYPE_system")			LC_CTYPE_system			= true;
 		else if(args[arg] == "--unitTestRecursive")
 		{
 			if(arg >= args.size() - 1)
@@ -152,7 +156,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 
 	if(letsExplainSomeThings)
 	{
-		std::cout	<< "JASP can be started without arguments, or the following: { --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n"
+		std::cerr	<< "JASP can be started without arguments, or the following: { --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n"
 					<< "If a filename is supplied JASP will try to load it. \nIf --unitTest is specified JASP will refresh all analyses in \"filename\" (which must be a JASP file) and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"
 					<< "If --unitTestRecursive is specified JASP will go through specified \"folder\" and perform a --unitTest on each JASP file. After it has done this it will exit with an errorcode indication succes or failure.\n"
 					<< "For both testing arguments there is the optional --save argument, which specifies that JASP should save the file after refreshing it.\n"
@@ -160,6 +164,9 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 					<< "If --logToFile is specified then JASP will try it's utmost to write logging to a file, this might come in handy if you want to figure out why JASP does not start in case of a bug.\n"
 					<< "If --hide is specified then JASP will not be shown during recursive testing.\n"
 					<< "If --safeGraphics is specified then JASP will be started with software rendering enabled.\n"
+			   #ifdef _WIN32
+					<< "If --setLC_CTYPE_C is specified JASP will make sure LC_CTYPE is set to \"C\" for the engine, --setLC_CTYPE_system is specified the system default is used."
+			   #endif
 					<< "This text will be shown when either --help or -h is specified or something else that JASP does not understand is given as argument.\n"
 					<< std::flush;
 
@@ -258,17 +265,23 @@ int main(int argc, char *argv[])
 				save,
 				logToFile,
 				hideJASP,
-				safeGraphics;
+				safeGraphics,
+				setLC_CTYPE_C,
+				setLC_CTYPE_system;
 	int			timeOut;
 
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics);
+	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, setLC_CTYPE_C, setLC_CTYPE_system);
 
 	QCoreApplication::setOrganizationName("JASP");
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
 
-	if(safeGraphics)	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
-	else				safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
+	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
+	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
+	
+	//Make sure the strings are the same as enum winLcCtypeSetting in enginedefinitions.h
+	if(setLC_CTYPE_C)		Settings::setValue(Settings::LC_CTYPE_C_WIN, "alwaysC"); 
+	if(setLC_CTYPE_system)	Settings::setValue(Settings::LC_CTYPE_C_WIN, "neverC");
 
 	QString filePathQ(QString::fromStdString(filePath));
 

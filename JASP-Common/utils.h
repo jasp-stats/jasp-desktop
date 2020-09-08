@@ -67,6 +67,8 @@ public:
 	static bool			convertValueToDoubleForImport(	const std::string &strValue, double &doubleValue);
 	static std::string	doubleToString(double dbl);
 	static void			convertEscapedUnicodeToUTF8(	std::string &inputStr);
+	
+	static std::wstring	getShortPathWin(const std::wstring & path);
 
 private:
 	static std::string _deEuropeaniseForImport(			const std::string &value);

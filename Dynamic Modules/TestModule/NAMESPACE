@@ -8,6 +8,3 @@ export(testEncodingFunc)
 export(customContrasts)
 export(testSaveLoadButton)
 export(customContrasts)
-  import('svglite');
-  import('stringi');
-  import('prophet');

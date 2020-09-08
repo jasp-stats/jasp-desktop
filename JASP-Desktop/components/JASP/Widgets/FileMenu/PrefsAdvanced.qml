@@ -206,10 +206,43 @@ ScrollView
 				checked:			preferencesModel.generateMarkdown
 				onCheckedChanged:	preferencesModel.generateMarkdown = checked
 				toolTip:			qsTr("Enabling this will generate markdown helpfile from the info at qml options.")
-				KeyNavigation.tab:	logToFile
-				KeyNavigation.down:	logToFile
+				KeyNavigation.tab:	checkForLC_CTYPE_C
+				KeyNavigation.down:	checkForLC_CTYPE_C
 
 			}
+		}
+		
+		PrefsGroupRect
+		{
+			id:			windowsSpecific
+			visible:	WINDOWS
+			enabled:	WINDOWS
+			
+			CheckBox
+			{
+				id:					checkForLC_CTYPE_C
+				label:				qsTr("Let JASP guess the best setting for LC_CTYPE")		
+				toolTip:			qsTr("Check the install and user directory path for compatibility with LC_CTYPE=\"C\" and set if reasonable.")
+				checked:			preferencesModel.lcCtypeCheck
+				onCheckedChanged:	preferencesModel.lcCtypeCheck = checked
+				KeyNavigation.tab:	alwaysSetLC_CTYPE_C
+				KeyNavigation.down:	alwaysSetLC_CTYPE_C
+				
+			}
+			
+			CheckBox
+			{
+				id:					alwaysSetLC_CTYPE_C
+				label:				qsTr("Always set LC_CTYPE to \"C\".")
+				toolTip:			qsTr("If this is enabled and you have non-ascii characters in your install path JASP won't work anymore.  If you only have non-ascii characters in your username then installing modules will probably break. On the other hand, disabling this will make certain characters in the results look weird, sorry for the inconvenience, we are working on it and hopefully have this fixed next release.")
+				checked:			preferencesModel.lcCtypeToC
+				onCheckedChanged:	preferencesModel.lcCtypeToC = checked
+				KeyNavigation.tab:	logToFile
+				KeyNavigation.down:	logToFile
+				visible:			!preferencesModel.lcCtypeCheck 
+			}
+			
+			
 		}
 
 		PrefsGroupRect

@@ -45,6 +45,7 @@ const Settings::Setting Settings::Values[] = {
 	{"interfaceFont",				"SansSerif"},
 	{"codeFont",					"Fira Code"},
 	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans,Segoe UI"},
+	{"win_LC_CTYPE_C",				"check" } //"check" should be an actual value in the underlying enum that is defined in preferencesmode.h
 };
 
 QVariant Settings::value(Settings::Type key)

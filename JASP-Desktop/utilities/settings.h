@@ -48,7 +48,8 @@ public:
 		GENERATE_MARKDOWN_HELP,
 		INTERFACE_FONT,
 		CODE_FONT,
-		RESULT_FONT
+		RESULT_FONT,
+		LC_CTYPE_C_WIN
 	};
 
 	static QVariant value(Settings::Type key);

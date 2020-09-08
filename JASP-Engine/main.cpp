@@ -44,19 +44,28 @@ void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
 }
 #endif
 
+/* THe following code might be useful if we ever want to get a bunch of utf16 from windows instead of local MBCS codepage crap
+ #ifdef _WIN32
+int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
+{
+	if(argc > 4)
+	{
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> strCvt;
+		
+		unsigned long	slaveNo			= wcstoul(argv[1], NULL, 10),
+						parentPID		= wcstoul(argv[2], NULL, 10);
+		std::string		logFileBase		= strCvt.to_bytes(argv[3]),
+						logFileWhere	= strCvt.to_bytes(argv[4]);	
+			
+#else*/
 int main(int argc, char *argv[])
 {
-	boost::nowide::args a(argc,argv);
 	if(argc > 4)
 	{
 		unsigned long	slaveNo			= strtoul(argv[1], NULL, 10),
 						parentPID		= strtoul(argv[2], NULL, 10);
 		std::string		logFileBase		= argv[3],
 						logFileWhere	= argv[4];
-
-#ifdef _WIN32
-		//openConsoleOutput(slaveNo, parentPID); //uncomment to have a console window open per Engine that shows you std out and cerr. (On windows only, on unixes you can just run JASP from a terminal)
-#endif
 
 		Log::logFileNameBase = logFileBase;
 		Log::initRedirects();

@@ -72,18 +72,18 @@ HEADERS += \
     jaspResults/src/jaspState.h \
     jaspResults/src/jaspColumn.h
 
-macx: INCLUDEPATH += ../../boost_1_71_0
-windows: INCLUDEPATH += ../../boost_1_71_0
+macx:		INCLUDEPATH += ../../boost_1_71_0
+windows:	INCLUDEPATH += ../../boost_1_71_0
 
 
 windows{
-  QMAKE_CXXFLAGS += -Og #for big object files
-  SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
-   SOURCE_LIBFILE ~= s,/,\\,g
+	QMAKE_CXXFLAGS += -Og -municode #for big object files & support for unicode/utf16 in mingw maybe?
+	SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
+	SOURCE_LIBFILE ~= s,/,\\,g
 	DEST_LIBFILE = $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_NAME'.lib'
-  DEST_LIBFILE ~= s,/,\\,g
-
-  QMAKE_POST_LINK     += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
+	DEST_LIBFILE ~= s,/,\\,g
+	
+	QMAKE_POST_LINK     += $$quote(cmd /c copy /Y \"$$SOURCE_LIBFILE\" \"$$DEST_LIBFILE\")
 }
 
 ### making sure that writeImage.R and zzzWrappers.R are available to jaspEngine:
@@ -101,8 +101,8 @@ win32 {
     SRC_WRAPPERS ~= s,/,\\,g
     DEST_DIR_AUX_R ~= s,/,\\,g
 
-    copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y $${SRC_WRITE_IMAGE} $${DEST_DIR_AUX_R}) $$escape_expand(\n\t)
-    copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y $${SRC_WRAPPERS}    $${DEST_DIR_AUX_R})
+    copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y \"$${SRC_WRITE_IMAGE}\" \"$${DEST_DIR_AUX_R}\") $$escape_expand(\n\t)
+    copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y \"$${SRC_WRAPPERS}\"    \"$${DEST_DIR_AUX_R}\")
 }
 
 unix {

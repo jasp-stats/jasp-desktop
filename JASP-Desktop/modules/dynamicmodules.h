@@ -131,6 +131,7 @@ private:
 	void						devModWatchFolder(QString folder, QFileSystemWatcher * & watcher);
 	void						regenerateDeveloperModuleRPackage();
 	void						registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg);
+	void						checkAndWarnForLC_CTYPE_C() const;
 
 private:
 	static DynamicModules								*	_singleton;

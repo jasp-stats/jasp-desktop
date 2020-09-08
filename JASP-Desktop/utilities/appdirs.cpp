@@ -30,6 +30,7 @@
 
 #include "dirs.h"
 #include <QStandardPaths>
+#include "appinfo.h"
 
 using namespace std;
 
@@ -48,7 +49,7 @@ QString AppDirs::help()
 
 QString AppDirs::analysisDefaultsDir()
 {
-	QString path = QString::fromStdString(Dirs::appDataDir()) + "/AnalysisDefaults";
+	QString path = appData() + "/AnalysisDefaults";
 	QDir dir(path);
 	dir.mkpath(".");
 
@@ -57,7 +58,7 @@ QString AppDirs::analysisDefaultsDir()
 
 QString AppDirs::userRLibrary()
 {
-	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	QString path = appData();
 	path += "/libraryR/";
 
 	return path;
@@ -65,7 +66,7 @@ QString AppDirs::userRLibrary()
 
 QString AppDirs::modulesDir()
 {
-	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	QString path = appData();
 	path += "/Modules/";
 
 	return path;
@@ -73,12 +74,12 @@ QString AppDirs::modulesDir()
 
 QString AppDirs::documents()
 {
-	return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+	return QString::fromStdWString(Utils::getShortPathWin(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).toStdWString()));
 }
 
 QString AppDirs::logDir()
 {
-	QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	QString path = appData();
 	path += "/Logs/";
 
 	QDir log(path);
@@ -91,5 +92,35 @@ QString AppDirs::logDir()
 
 QString AppDirs::appData()
 {
-	return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	return QString::fromStdWString(Utils::getShortPathWin(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdWString()));
+}
+
+QString AppDirs::rHome()
+{
+	
+#ifdef _WIN32
+	QString rHomePath = programDir().absoluteFilePath("R");
+#elif defined(__APPLE__)
+    QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
+#else //linux
+
+#ifndef R_HOME
+	QString rHomePath = programDir().absoluteFilePath("R/lib/libR.so");
+	if (QFileInfo(rHomePath).exists() == false)
+#ifdef FLATPAK_USED
+		rHomePath = "/app/lib64/R/"; //Tools/flatpak/org.jaspstats.JASP.json also sets R_HOME to /app/lib64 for 32bits...
+#else
+		rHomePath = "/usr/lib/R/";
+#endif
+#else
+	QString rHomePath = QDir::isRelativePath(R_HOME) ? programDir.absoluteFilePath(R_HOME) : R_HOME;
+#endif
+#endif
+	
+	return rHomePath;
+}
+
+QDir AppDirs::programDir()
+{
+	return QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();	
 }
