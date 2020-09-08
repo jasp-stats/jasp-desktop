@@ -244,7 +244,11 @@ void QMLListView::addRowComponentsDefaultOptions(Options *options)
 			// e.g. setup of BoundQMLListViewTerms sets whether the terms have interactions, which influences the kind of options that will be used.
 			boundItem->setUp();
 			Option* option = boundItem->createOption();
-			options->add(boundItem->name().toStdString(), option);
+			std::string optionName = boundItem->name().toStdString();
+
+			if (form() && (optionName == _optionKeyName))
+				form()->addFormError(tr("The list %1 has a rowComponent with the same name (%2) as its optionKey. Change the optionKey property of the list or the control name.").arg(name()).arg(tq(optionName)));
+			options->add(optionName, option);
 		}
 	}
 }

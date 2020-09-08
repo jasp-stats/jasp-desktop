@@ -11,15 +11,15 @@ std::map<QString, JaspTheme *> JaspTheme::_themes;
 
 JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 {
-	_jaspFont			= PreferencesModel::prefs()->realInterfaceFont();
-	_jaspCodeFont		= PreferencesModel::prefs()->realCodeFont();
+	_jaspFont			= PreferencesModel::prefs()->interfaceFont();
+	_jaspCodeFont		= PreferencesModel::prefs()->codeFont();
 
 	connect(this,			&JaspTheme::currentThemeNameChanged,		PreferencesModel::prefs(),	&PreferencesModel::setCurrentThemeName	);
 	connect(this,			&JaspTheme::jaspThemeChanged,				PreferencesModel::prefs(),	&PreferencesModel::jaspThemeChanged		);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this,			&JaspTheme::uiScaleChanged				);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::maxFlickVelocityChanged, this,			&JaspTheme::maximumFlickVelocity		);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::realInterfaceFontChanged,this,			&JaspTheme::setDefaultFont				);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::realCodeFontChanged,		this,			&JaspTheme::setDefaultCodeFont			);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::interfaceFontChanged,this,				&JaspTheme::setDefaultFont				);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::codeFontChanged,		this,				&JaspTheme::setDefaultCodeFont			);
 
 	connectSizeDistancesToUiScaleChanged();
 
@@ -45,7 +45,7 @@ JaspTheme::~JaspTheme()
 
 void JaspTheme::setDefaultFont()
 {
-	QString font = PreferencesModel::prefs()->realInterfaceFont();
+	QString font = PreferencesModel::prefs()->interfaceFont();
 
 	if (_jaspFont != font)
 	{
@@ -57,7 +57,7 @@ void JaspTheme::setDefaultFont()
 
 void JaspTheme::setDefaultCodeFont()
 {
-	QString font = PreferencesModel::prefs()->realCodeFont();
+	QString font = PreferencesModel::prefs()->codeFont();
 
 	if (_jaspCodeFont != font)
 	{

@@ -35,13 +35,6 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 
 	connect(LanguageModel::lang(),	&LanguageModel::currentIndexChanged,			this, &PreferencesModel::languageCodeChanged			);
 
-	connect(this,					&PreferencesModel::useDefaultInterfaceFontChanged, this, &PreferencesModel::realInterfaceFontChanged	);
-	connect(this,					&PreferencesModel::interfaceFontChanged,		this, &PreferencesModel::realInterfaceFontChanged		);
-	connect(this,					&PreferencesModel::useDefaultCodeFontChanged, this, &PreferencesModel::realCodeFontChanged		);
-	connect(this,					&PreferencesModel::codeFontChanged,			this, &PreferencesModel::realCodeFontChanged		);
-	connect(this,					&PreferencesModel::useDefaultResultFontChanged,	this, &PreferencesModel::realResultFontChanged			);
-	connect(this,					&PreferencesModel::resultFontChanged,			this, &PreferencesModel::realResultFontChanged			);
-
 	_loadDatabaseFont();
 }
 
@@ -117,49 +110,6 @@ GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
 GET_PREF_FUNC_BOOL(	useNativeFileDialog,		Settings::USE_NATIVE_FILE_DIALOG					)
 GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
 GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
-GET_PREF_FUNC_STR(	interfaceFont,				Settings::INTERFACE_FONT							)
-GET_PREF_FUNC_BOOL( useDefaultInterfaceFont,	Settings::USE_DEFAULT_INTERFACE_FONT				)
-GET_PREF_FUNC_STR(	codeFont,					Settings::CODE_FONT									)
-GET_PREF_FUNC_BOOL( useDefaultCodeFont,			Settings::USE_DEFAULT_CODE_FONT						)
-GET_PREF_FUNC_BOOL( useDefaultResultFont,		Settings::USE_DEFAULT_RESULT_FONT					)
-
-QString PreferencesModel::resultFont() const
-{
-	QString result = Settings::value(Settings::RESULT_FONT).toString();
-
-	if (result.contains(","))
-	{
-		// The default is a list of fonts.
-		// Select the first one which is available.
-		for (const QString& font : result.split(","))
-		{
-			if (_allFonts.contains(font))
-				return font;
-		}
-
-		return "SansSerif";
-	}
-
-	return result;
-}
-
-QString PreferencesModel::realInterfaceFont() const
-{
-	if (useDefaultInterfaceFont())	return defaultInterfaceFont();
-	else							return interfaceFont();
-}
-
-QString PreferencesModel::realCodeFont() const
-{
-	if (useDefaultCodeFont())	return defaultCodeFont();
-	else							return codeFont();
-}
-
-QString PreferencesModel::realResultFont() const
-{
-	if (useDefaultResultFont())		return defaultResultFont();
-	else							return resultFont();
-}
 
 double PreferencesModel::uiScale()
 {
@@ -282,9 +232,6 @@ SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkd
 SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT							)
 SET_PREF_FUNCTION(QString,	setCodeFont,				codeFont,					codeFontChanged,				Settings::CODE_FONT									)
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
-SET_PREF_FUNCTION(bool,		setUseDefaultInterfaceFont,	useDefaultInterfaceFont,	useDefaultInterfaceFontChanged,	Settings::USE_DEFAULT_INTERFACE_FONT				)
-SET_PREF_FUNCTION(bool,		setUseDefaultCodeFont,		useDefaultCodeFont,			useDefaultCodeFontChanged,		Settings::USE_DEFAULT_CODE_FONT						)
-SET_PREF_FUNCTION(bool,		setUseDefaultResultFont,	useDefaultResultFont,		useDefaultResultFontChanged,	Settings::USE_DEFAULT_RESULT_FONT					)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
@@ -430,14 +377,68 @@ void PreferencesModel::_loadDatabaseFont()
 	fontDatabase.addApplicationFont(":/fonts/FreeSans.ttf");
 	fontDatabase.addApplicationFont(":/fonts/FiraCode-Retina.ttf");
 
-	_allFonts = fontDatabase.families();
+	_allFonts = _allCodeFonts = _allResultFonts = _allInterfaceFonts = fontDatabase.families();
+	_allCodeFonts.removeAll(defaultCodeFont());
+	_allResultFonts.removeAll(defaultResultFont());
+	_allInterfaceFonts.removeAll(defaultInterfaceFont());
+}
 
-	emit allFontsChanged(_allFonts);
+QString PreferencesModel::_checkFontList(QString fonts) const
+{
+	if (fonts.contains(","))
+		// If it is a list of fonts.
+		// Select the first one which is available.
+		for (QString font : fonts.split(","))
+		{
+			if (_allFonts.contains(font.remove('"')))
+				return font;
+		}
+
+	return fonts;
 }
 
 QString PreferencesModel::defaultResultFont() const
 {
-	return Settings::defaultValue(Settings::RESULT_FONT).toString();
+	return _checkFontList(Settings::defaultValue(Settings::RESULT_FONT).toString());
+}
+
+QString PreferencesModel::resultFont(bool forWebEngine) const
+{
+	QString font		= Settings::value(Settings::RESULT_FONT).toString(),
+			defaultFont = Settings::defaultValue(Settings::RESULT_FONT).toString();
+
+	if (font.isEmpty()) font = defaultFont;
+
+	if (forWebEngine)
+	{
+		// for WebEngine, if the font is the default one (that is a list of fonts), then use directly this list.
+		// the css is then exacly the same as it used to be and we are sure that the user gets the same rendering.
+		// If the font starts with a dot, then it needs extra quote for the WebEngine.
+		if (font.startsWith("."))
+			font = '"' + font + '"';
+	}
+	else
+		font = _checkFontList(font);
+
+	return font;
+}
+
+QString PreferencesModel::interfaceFont() const
+{
+	QString font = Settings::value(Settings::INTERFACE_FONT).toString();
+
+	if (font.isEmpty()) font = defaultInterfaceFont();
+
+	return font;
+}
+
+QString PreferencesModel::codeFont() const
+{
+	QString font = Settings::value(Settings::CODE_FONT).toString();
+
+	if (font.isEmpty()) font = defaultCodeFont();
+
+	return font;
 }
 
 QString PreferencesModel::defaultInterfaceFont() const

@@ -44,6 +44,9 @@ JASPControl
 	property bool	useExternalBorder:		true
 	property bool	showBorder:				true
 	property bool	useModelDefinedIcon:	false
+	property bool	addScrollBar:			false
+	property bool	showEmptyValueAsNormal:	false
+	property bool	addLineAfterEmptyValue:	false
 
     signal activated(int index);
 
@@ -114,10 +117,12 @@ JASPControl
 						width:			modelWidth + extraWidth
 						height:			jaspTheme.comboBoxHeight
 						textRole:		comboBox.textRole
+						font:			jaspTheme.font
 		property int	modelWidth:		30 * preferencesModel.uiScale
 		property int	extraWidth:		5 * padding + dropdownIcon.width
-		property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
-						font:			jaspTheme.font
+		property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex === 0
+		property bool	showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
+
 
 		TextMetrics
 		{
@@ -154,8 +159,8 @@ JASPControl
 				text:						control.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? control.currentText : comboBox.currentText)
 				font:						control.font
 				anchors.verticalCenter:		parent.verticalCenter
-				anchors.horizontalCenter:	control.isEmptyValue ? parent.horizontalCenter : undefined
-				color:						(!enabled || control.isEmptyValue) ? jaspTheme.grayDarker : jaspTheme.black
+				anchors.horizontalCenter:	control.showEmptyValueStyle ? parent.horizontalCenter : undefined
+				color:						(!enabled || control.showEmptyValueStyle) ? jaspTheme.grayDarker : jaspTheme.black
 			}
 		}
 
@@ -200,6 +205,26 @@ JASPControl
 			padding:		1
 
 			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }
+
+			JASPScrollBar
+			{
+				id:				scrollBar
+				flickable:		popupView
+				manualAnchor:	true
+				vertical:		true
+				visible:		addScrollBar
+				z:				1337
+
+				anchors
+				{
+					top:		parent.top
+					right:		parent.right
+					bottom:		parent.bottom
+					margins:	2
+				}
+			}
+
+
 			contentItem: ListView
 			{
 				id: popupView
@@ -207,6 +232,7 @@ JASPControl
 				implicitHeight: contentHeight
 				model:			control.popup.visible ? control.delegateModel : null
 				currentIndex:	control.highlightedIndex
+				clip:			true
 
 				Rectangle
 				{
@@ -230,9 +256,13 @@ JASPControl
 			{
 				id:								itemRectangle
 				anchors.fill:					parent
+				anchors.rightMargin:			scrollBar.visible ? scrollBar.width + 2 : 0
 				color:							comboBox.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : jaspTheme.controlBackgroundColor)
 
-				property bool isEmptyValue:		comboBox.addEmptyValue && index <= 0
+				property bool isEmptyValue:		comboBox.addEmptyValue && index === 0
+				property bool showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
+				property bool showLine:			comboBox.addLineAfterEmptyValue && index === 0
+
 
 				Image
 				{
@@ -246,13 +276,27 @@ JASPControl
 					anchors.verticalCenter:		parent.verticalCenter
 				}
 
-				Text {
+				Text
+				{
 					x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
 					text:						itemRectangle.isEmptyValue ? comboBox.placeholderText : (model && model.name ? model.name : "")
 					font:						jaspTheme.font
-					color:						itemRectangle.isEmptyValue || !enabled ? jaspTheme.grayDarker : (comboBox.currentIndex === index ? jaspTheme.white : jaspTheme.black)
+					color:						itemRectangle.showEmptyValueStyle || !enabled ? jaspTheme.grayDarker : (comboBox.currentIndex === index ? jaspTheme.white : jaspTheme.black)
 					anchors.verticalCenter:		parent.verticalCenter
-					anchors.horizontalCenter:	itemRectangle.isEmptyValue ? parent.horizontalCenter : undefined
+					anchors.horizontalCenter:	itemRectangle.showEmptyValueStyle ? parent.horizontalCenter : undefined
+				}
+
+				Rectangle
+				{
+					anchors
+					{
+						left: parent.left
+						right: parent.right
+						bottom: parent.bottom
+					}
+					visible:	itemRectangle.showLine
+					height:		1
+					color:		jaspTheme.focusBorderColor
 				}
 			}
 		}

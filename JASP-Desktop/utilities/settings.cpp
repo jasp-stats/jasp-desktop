@@ -45,9 +45,6 @@ const Settings::Setting Settings::Values[] = {
 	{"interfaceFont",				"SansSerif"},
 	{"codeFont",					"Fira Code"},
 	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans,Segoe UI"},
-	{"useDefaultInterfaceFont",		true},
-	{"useDefaultCodeFont",			true},
-	{"useDefaultResultFont",		true}
 };
 
 QVariant Settings::value(Settings::Type key)

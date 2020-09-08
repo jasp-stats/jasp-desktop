@@ -338,12 +338,12 @@
     ttestTableMessage  <- NULL
   }
 
-  # Add information for plots; never show the log Bayes factor in the plots (it interferes with the pie charts)
-  if(options$bayesFactorType == "BF01"){
+  # Add BF10 or BF01 label for plots; never show the log Bayes factor in the plots (it interferes with the pie charts)
+  if (options$bayesFactorType == "BF01")
     BFPlots <- "BF01"
-  } else {
+  else 
     BFPlots <- "BF10"
-  }
+
 
   ttestPriorPosteriorPlot <- list(
     t        = t,
@@ -351,8 +351,8 @@
     n2       = NULL,
     paired   = TRUE,
     oneSided = hypothesisList$oneSided,
-    BF       = BFlist[[BFPlots]],
-    BFH1H0   = BFlist[["BF10"]]
+    BF       = BFlist[["BF10"]],
+    BFH1H0   = (BFPlots == "BF10")
   )
 
   ttestRobustnessPlot <- list(

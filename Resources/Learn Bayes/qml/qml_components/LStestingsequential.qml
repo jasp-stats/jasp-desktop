@@ -40,7 +40,7 @@ Section
 			name: "plotsIterativeType"
 			RadioButton { value: "conditional";		label: qsTr("Conditional"); checked: true}
 			RadioButton { value: "joint";			label: qsTr("Joint")}
-			RadioButton { value: "marginal";		label: qsTr("Normalized")}
+			RadioButton { value: "marginal";		label: qsTr("Posterior")}
 			RadioButton
 			{
 				value:	"BF"

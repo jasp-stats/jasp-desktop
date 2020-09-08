@@ -12,7 +12,7 @@ HelpModel::HelpModel(QObject * parent) : QObject(parent)
 	setPagePath("index");
 	connect(this,						&HelpModel::pagePathChanged,				this, &HelpModel::generateJavascript);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::currentThemeNameChanged, this, &HelpModel::setThemeCss,			Qt::QueuedConnection);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::realResultFontChanged,	this, &HelpModel::setFont,				Qt::QueuedConnection);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::resultFontChanged,		this, &HelpModel::setFont,				Qt::QueuedConnection);
 	connect(this,						&HelpModel::markdownChanged,				this, &HelpModel::loadMarkdown);
 }
 
@@ -146,7 +146,7 @@ void HelpModel::setThemeCss(QString themeName)
 
 void HelpModel::setFont()
 {
-	QString fontFamily = PreferencesModel::prefs()->realResultFont();
+	QString fontFamily = PreferencesModel::prefs()->resultFont(true);
 	runJavaScript("window.setFont", fontFamily);
 }
 

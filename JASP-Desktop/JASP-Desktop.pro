@@ -12,7 +12,7 @@ COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equa
 }
 }
 
-SUPPORTED_LANGUAGES = nl #de es pt ja
+SUPPORTED_LANGUAGES = nl de #es pt ja
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
 
