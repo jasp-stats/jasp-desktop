@@ -18917,7 +18917,6 @@ msgctxt "Description|"
 msgid "Binomial Testing"
 msgstr ""
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "Model"
 msgstr "Model"
