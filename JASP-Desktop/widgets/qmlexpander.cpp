@@ -62,4 +62,6 @@ void QMLExpander::setUp()
 		if (firstControl)
 			setItemProperty("firstControl", QVariant::fromValue(firstControl));
 	}
+
+	item()->setInitialized();
 }

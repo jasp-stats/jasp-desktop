@@ -133,7 +133,7 @@ void BoundQMLComboBox::setUp()
 	if (_currentIndex == -1)
 	{
 		// In case a value is given per default, find its index and sets it.
-		QString value = getItemProperty("value").toString();
+		QString value = getItemProperty("startValue").toString();
 		if (!value.isEmpty())
 			_currentIndex = _model->getIndexOfValue(value);
 	}
@@ -251,6 +251,10 @@ void BoundQMLComboBox::_setCurrentValue(int index, bool setComboBoxIndex, bool s
 			_currentColumnType = _model->data(index, ListModel::ColumnTypeRole).toString();			
 		}
 	}
+
+	if (_currentIndex == -1 && getItemProperty("addEmptyValue").toBool())
+		_currentText = getItemProperty("placeholderText").toString();
+
 	setItemProperty("currentText", _currentText);
 	// Cannot use _boundTo to get the current value, because when _boundTo is changed (by setting the current index),
 	// it emits a signal that can be received by a slot that needs already the currentValue.
