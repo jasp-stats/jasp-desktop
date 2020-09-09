@@ -472,11 +472,12 @@
     }
   }
 }
-.marginalCentralBinomialLS  <- function(density, spikes, coverage, l.bound = 0, u.bound = 1, density_discrete = FALSE){
+.marginalCentralBinomialLS  <- function(density, spikes, coverage, l.bound = 0, u.bound = 1, densityDiscrete = FALSE){
   
-  f(!is.null(density))
-  if (!density_discrete)density$y <- density$y/nrow(density)    
-  else
+  if (!is.null(density)){
+    if (!densityDiscrete)
+      density$y <- density$y/nrow(density)
+  } else
     density <- data.frame("y" = NULL, "x" = NULL)
   
   if (length(spikes) != 0){
@@ -586,7 +587,7 @@
     
     coverage <- sum(density$y[density$x >= lCI & density$x <= uCI])
     
-    return(cbind.data.frame(x_start = lCI, x_end = uCI, g = "custom", coverage = coverage))
+    return(cbind.data.frame(x_start = lCI, x_end = uCI, g = "custom", coverage = coverage, parameter = "theta"))
 }
 .marginalSupportBinomialLS  <- function(data, priors, post_density, post_spikes, BF){
   
