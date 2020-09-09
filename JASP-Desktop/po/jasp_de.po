@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-08 15:01+0000\n"
+"PO-Revision-Date: 2020-09-09 11:59+0000\n"
 "Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
@@ -120,7 +120,7 @@ msgstr "Modifizierungsindizes"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Cutoff"
-msgstr ""
+msgstr "Cutoff"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Show lavaan syntax"
@@ -400,7 +400,7 @@ msgstr "Modifikation-Indizes"
 
 msgctxt "LatentRegression|"
 msgid "Cutoff"
-msgstr ""
+msgstr "Cutoff"
 
 msgctxt "LatentRegression|"
 msgid "Show lavaan syntax"
@@ -6591,7 +6591,7 @@ msgstr "Distanz:"
 
 msgctxt "mlRegressionKnn|"
 msgid "Scale variables"
-msgstr "Skalierungsvariablen"
+msgstr ""
 
 msgctxt "mlRegressionKnn|"
 msgid "Set seed:"
@@ -6795,7 +6795,7 @@ msgstr "Konstante anpassen"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Scale variables"
-msgstr "Skalierungsvariablen"
+msgstr ""
 
 msgctxt "mlRegressionRegularized|"
 msgid "Set seed:"
@@ -6983,7 +6983,7 @@ msgstr "Äußere Gruppierung (Gruppierungsstruktur)"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Case labels"
-msgstr ""
+msgstr "Fallbezeichnungen"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Fixed Effects Model"
@@ -7415,7 +7415,7 @@ msgstr "Regenbogen"
 
 msgctxt "NetworkAnalysis|"
 msgid "Colorblind"
-msgstr "Farbenenblind"
+msgstr "Farbenblind"
 
 msgctxt "NetworkAnalysis|"
 msgid "Pastel"
@@ -16230,7 +16230,7 @@ msgstr "Boosting"
 
 msgctxt "Description|"
 msgid "Boosting Regression"
-msgstr ""
+msgstr "Boosting-Regression"
 
 msgctxt "Description|"
 msgid "K-Nearest Neighbors"
@@ -18890,24 +18890,24 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "Schriftarten"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "Bedienoberfläche:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "Default font (%1)"
-msgstr ""
+msgstr "Standardschriftart (%1)"
 
 msgctxt "PrefsUI|"
 msgid "Code (R, JAGS, Lavaan...):"
-msgstr ""
+msgstr "Code (R, JAGS, Lavaan...):"
 
 msgctxt "PrefsUI|"
 msgid "Result & Help:"
-msgstr ""
+msgstr "Ergebnis & Hilfe:"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
@@ -18919,19 +18919,19 @@ msgstr ""
 
 msgctxt "Description|"
 msgid "Learn Bayes"
-msgstr ""
+msgstr "Bayes lernen"
 
 msgctxt "Description|"
 msgid "Learning Bayesian Statistics with JASP"
-msgstr ""
+msgstr "Lerne Bayessche Statistik mit JASP"
 
 msgctxt "Description|"
 msgid "Counts"
-msgstr ""
+msgstr "Häufigkeiten"
 
 msgctxt "Description|"
 msgid "Binomial Estimation"
-msgstr ""
+msgstr "Binomial-Schätzung"
 
 msgctxt "Description|"
 msgid "Binomial Testing"
@@ -18947,7 +18947,7 @@ msgstr "Verteilung"
 
 msgctxt "LSbinomialestimation|"
 msgid "Parameter (θ)"
-msgstr ""
+msgstr "Parameter (θ)"
 
 msgctxt "LSbinomialestimation|"
 msgid "Spike"
@@ -18967,15 +18967,15 @@ msgstr "β"
 
 msgctxt "LSbinomialestimation|"
 msgid "θ₀"
-msgstr ""
+msgstr "θ₀"
 
 msgctxt "LSbinomialtesting|"
 msgid "Hypothesis"
-msgstr ""
+msgstr "Hypothese"
 
 msgctxt "LSbinomialtesting|"
 msgid "Prior probability"
-msgstr ""
+msgstr "Prior-Wahrscheinlichkeit"
 
 msgctxt "LSbinomialtesting|"
 msgid "Distribution"
@@ -18983,11 +18983,11 @@ msgstr "Verteilung"
 
 msgctxt "LSbinomialtesting|"
 msgid "Parameter (θ)"
-msgstr ""
+msgstr "Parameter (θ)"
 
 msgctxt "LSbinomialtesting|"
 msgid "P(H)"
-msgstr ""
+msgstr "P(H)"
 
 msgctxt "LSbinomialtesting|"
 msgid "Spike"
@@ -19007,27 +19007,27 @@ msgstr "β"
 
 msgctxt "LSbinomialtesting|"
 msgid "θ₀"
-msgstr ""
+msgstr "θ₀"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Data"
-msgstr ""
+msgstr "Daten"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Input type"
-msgstr ""
+msgstr "Eingabetyp"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Select variable"
-msgstr ""
+msgstr "Variable auswählen"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Specify counts"
-msgstr ""
+msgstr "Häufigkeiten angeben"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Enter sequence"
-msgstr ""
+msgstr "Sequenz eingeben"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Count data"
@@ -19043,15 +19043,15 @@ msgstr "Misserfolge"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Comma-separated sequence of observations"
-msgstr ""
+msgstr "Komma-getrennte Sequenz von Beobachtungen"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Levels"
-msgstr ""
+msgstr "Stufen"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Available"
-msgstr ""
+msgstr "Verfügbar"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Selected"
@@ -19059,7 +19059,7 @@ msgstr "Ausgewählt"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Data summary"
-msgstr ""
+msgstr "Datenzusammenfassung"
 
 msgctxt "LSestimationinference|"
 msgid "Inference"
@@ -19071,7 +19071,7 @@ msgstr "Farbpalette"
 
 msgctxt "LSestimationinference|"
 msgid "Colorblind"
-msgstr ""
+msgstr "Farbenblind"
 
 msgctxt "LSestimationinference|"
 msgid "Colorblind Alt."
@@ -19091,11 +19091,11 @@ msgstr "Grau"
 
 msgctxt "LSestimationinference|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Punktschätzung"
 
 msgctxt "LSestimationinference|"
 msgid "Prior distribution"
-msgstr ""
+msgstr "Prior-Verteilung"
 
 msgctxt "LSestimationinference|"
 msgid "All"
@@ -19111,11 +19111,11 @@ msgstr ""
 
 msgctxt "LSestimationinference|"
 msgid "CI"
-msgstr ""
+msgstr "KI"
 
 msgctxt "LSestimationinference|"
 msgid "mass"
-msgstr ""
+msgstr "Masse"
 
 msgctxt "LSestimationinference|"
 msgid "lower"
@@ -19127,7 +19127,7 @@ msgstr "obere"
 
 msgctxt "LSestimationinference|"
 msgid "Posterior distribution"
-msgstr ""
+msgstr "Posterior-Verteilung"
 
 msgctxt "LSestimationinference|"
 msgid "BF"
@@ -19135,7 +19135,7 @@ msgstr "BF"
 
 msgctxt "LSestimationinference|"
 msgid "Prior and posterior distribution"
-msgstr ""
+msgstr "Prior- und Posterior-Verteilung"
 
 msgctxt "LSestimationinference|"
 msgid "Observed proportion"
@@ -19143,19 +19143,19 @@ msgstr ""
 
 msgctxt "LSestimationpredictions|"
 msgid "Posterior prediction"
-msgstr ""
+msgstr "Posterior-Vorhersage"
 
 msgctxt "LSestimationpredictions|"
 msgid "Future observations"
-msgstr ""
+msgstr "Zukünftige Beobachtungen"
 
 msgctxt "LSestimationpredictions|"
 msgid "Summary"
-msgstr ""
+msgstr "Zusammenfassung"
 
 msgctxt "LSestimationpredictions|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Punktschätzung"
 
 msgctxt "LSestimationpredictions|"
 msgid "Plots"
@@ -19167,7 +19167,7 @@ msgstr "Farbpalette"
 
 msgctxt "LSestimationpredictions|"
 msgid "Colorblind"
-msgstr ""
+msgstr "Farbenblind"
 
 msgctxt "LSestimationpredictions|"
 msgid "Colorblind Alt."
@@ -19187,7 +19187,7 @@ msgstr "Grau"
 
 msgctxt "LSestimationpredictions|"
 msgid "Posterior predictive distribution"
-msgstr ""
+msgstr "A posteriori prädiktive Verteilung"
 
 msgctxt "LSestimationpredictions|"
 msgid "All"
@@ -19203,11 +19203,11 @@ msgstr ""
 
 msgctxt "LSestimationpredictions|"
 msgid "CI"
-msgstr ""
+msgstr "KI"
 
 msgctxt "LSestimationpredictions|"
 msgid "mass"
-msgstr ""
+msgstr "Masse"
 
 msgctxt "LSestimationpredictions|"
 msgid "lower"
@@ -19227,7 +19227,7 @@ msgstr "Sequentielle Analyse"
 
 msgctxt "LSestimationsequential|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Punktschätzung"
 
 msgctxt "LSestimationsequential|"
 msgid "All"
@@ -19235,11 +19235,11 @@ msgstr "Alle"
 
 msgctxt "LSestimationsequential|"
 msgid "CI"
-msgstr ""
+msgstr "KI"
 
 msgctxt "LSestimationsequential|"
 msgid "mass"
-msgstr ""
+msgstr "Masse"
 
 msgctxt "LSestimationsequential|"
 msgid "BF"
@@ -19255,7 +19255,7 @@ msgstr ""
 
 msgctxt "LSestimationsequential|"
 msgid "Interval"
-msgstr ""
+msgstr "Intervall"
 
 msgctxt "LSestimationsequential|"
 msgid "lower"
@@ -19271,7 +19271,7 @@ msgstr ""
 
 msgctxt "LSintrotext|"
 msgid "Introductory texts"
-msgstr ""
+msgstr "Einführungstexte"
 
 msgctxt "LStestinginference|"
 msgid "Inference"
@@ -19283,7 +19283,7 @@ msgstr "Farbpalette"
 
 msgctxt "LStestinginference|"
 msgid "Colorblind"
-msgstr ""
+msgstr "Farbenblind"
 
 msgctxt "LStestinginference|"
 msgid "Colorblind Alt."
@@ -19303,11 +19303,11 @@ msgstr "Grau"
 
 msgctxt "LStestinginference|"
 msgid "Bayes factor"
-msgstr ""
+msgstr "Bayesfaktor"
 
 msgctxt "LStestinginference|"
 msgid "vs. all"
-msgstr ""
+msgstr "vs. alle"
 
 msgctxt "LStestinginference|"
 msgid "vs. best"
@@ -19315,7 +19315,7 @@ msgstr ""
 
 msgctxt "LStestinginference|"
 msgid "vs."
-msgstr ""
+msgstr "vs."
 
 msgctxt "LStestinginference|"
 msgid "BF₁₀"
@@ -19327,11 +19327,11 @@ msgstr "BF₀₁"
 
 msgctxt "LStestinginference|"
 msgid "log(BF₁₀)"
-msgstr ""
+msgstr "log(BF₁₀)"
 
 msgctxt "LStestinginference|"
 msgid "Prior distribution"
-msgstr ""
+msgstr "Prior-Verteilung"
 
 msgctxt "LStestinginference|"
 msgid "Conditional"
@@ -19339,15 +19339,15 @@ msgstr "Konditional"
 
 msgctxt "LStestinginference|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Punktschätzung"
 
 msgctxt "LStestinginference|"
 msgid "CI"
-msgstr ""
+msgstr "KI"
 
 msgctxt "LStestinginference|"
 msgid "mass"
-msgstr ""
+msgstr "Masse"
 
 msgctxt "LStestinginference|"
 msgid "lower"
@@ -19375,7 +19375,7 @@ msgstr ""
 
 msgctxt "LStestinginference|"
 msgid "Prior predictive distribution"
-msgstr ""
+msgstr "A priori prädiktive Verteilung"
 
 msgctxt "LStestinginference|"
 msgid "Observed proportion"
@@ -19391,7 +19391,7 @@ msgstr "Normalisiert"
 
 msgctxt "LStestinginference|"
 msgid "Posterior distribution"
-msgstr ""
+msgstr "Posterior-Verteilung"
 
 msgctxt "LStestinginference|"
 msgid "BF"
@@ -19399,23 +19399,23 @@ msgstr "BF"
 
 msgctxt "LStestinginference|"
 msgid "Prior and posterior distribution"
-msgstr ""
+msgstr "Prior- und Posterior-Verteilung"
 
 msgctxt "LStestingpredictions|"
 msgid "Posterior prediction"
-msgstr ""
+msgstr "Posterior-Vorhersage"
 
 msgctxt "LStestingpredictions|"
 msgid "Future observations"
-msgstr ""
+msgstr "Zukünftige Beobachtungen"
 
 msgctxt "LStestingpredictions|"
 msgid "Summary"
-msgstr ""
+msgstr "Zusammenfassung"
 
 msgctxt "LStestingpredictions|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Punktschätzung"
 
 msgctxt "LStestingpredictions|"
 msgid "Plots"
@@ -19427,7 +19427,7 @@ msgstr "Farbpalette"
 
 msgctxt "LStestingpredictions|"
 msgid "Colorblind"
-msgstr ""
+msgstr "Farbenblind"
 
 msgctxt "LStestingpredictions|"
 msgid "Colorblind Alt."
@@ -19447,7 +19447,7 @@ msgstr "Grau"
 
 msgctxt "LStestingpredictions|"
 msgid "Posterior predictive distribution"
-msgstr ""
+msgstr "A posteriori prädiktive Verteilung"
 
 msgctxt "LStestingpredictions|"
 msgid "Conditional"
@@ -19455,11 +19455,11 @@ msgstr "Konditional"
 
 msgctxt "LStestingpredictions|"
 msgid "CI"
-msgstr ""
+msgstr "KI"
 
 msgctxt "LStestingpredictions|"
 msgid "mass"
-msgstr ""
+msgstr "Masse"
 
 msgctxt "LStestingpredictions|"
 msgid "lower"
@@ -19499,7 +19499,7 @@ msgstr "Sequentielle Analyse"
 
 msgctxt "LStestingsequential|"
 msgid "Test results"
-msgstr ""
+msgstr "Testergebnisse"
 
 msgctxt "LStestingsequential|"
 msgid "Conditional"
@@ -19516,11 +19516,11 @@ msgstr "Normalisiert"
 
 msgctxt "LStestingsequential|"
 msgid "Bayes factor"
-msgstr ""
+msgstr "Bayesfaktor"
 
 msgctxt "LStestingsequential|"
 msgid "vs. all"
-msgstr ""
+msgstr "vs. alle"
 
 msgctxt "LStestingsequential|"
 msgid "vs. best"
@@ -19528,27 +19528,24 @@ msgstr ""
 
 msgctxt "LStestingsequential|"
 msgid "vs."
-msgstr ""
+msgstr "vs."
 
-#, fuzzy
 msgctxt "LStestingsequential|"
 msgid "BF₁₀"
 msgstr "BF₁₀"
 
-#, fuzzy
 msgctxt "LStestingsequential|"
 msgid "BF₀₁"
 msgstr "BF₀₁"
 
 msgctxt "LStestingsequential|"
 msgid "log(BF₁₀)"
-msgstr ""
+msgstr "log(BF₁₀)"
 
 msgctxt "LStestingsequential|"
 msgid "Updating table"
 msgstr ""
 
-#, fuzzy
 msgctxt "mlClusteringHierarchical|"
 msgid "Median"
 msgstr "Median"
@@ -19563,7 +19560,7 @@ msgstr ""
 
 msgctxt "mlClusteringHierarchical|"
 msgid "McQuitty"
-msgstr ""
+msgstr "McQuitty"
 
 msgctxt "Description|"
 msgid "Selection Models"
@@ -19571,41 +19568,39 @@ msgstr ""
 
 msgctxt "Description|"
 msgid "Robust Bayesian Meta-Analysis"
-msgstr ""
+msgstr "Robuste Bayessche Meta-Analyse"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Correlations & N"
-msgstr ""
+msgstr "Korrelationen & N"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Odds ratios & CI"
 msgstr ""
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Models"
 msgstr "Modelle"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Expected effect size direction"
-msgstr ""
+msgstr "Erwartete Effektgrößenrichtung"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Positive"
-msgstr ""
+msgstr "Positiv"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Negative"
-msgstr ""
+msgstr "Negativ"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Rescale x-axis"
-msgstr ""
+msgstr "x-Achse umskalieren"
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Model averaged"
-msgstr "Modell-Mittelwert"
+msgstr "Modell-gemittelt"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid ""
@@ -19613,26 +19608,24 @@ msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Transform effect sizes"
-msgstr ""
+msgstr "Effektgrößen transformieren"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "log(OR)"
-msgstr ""
+msgstr "log(OR)"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Effect Size"
 msgstr "Effektgröße"
 
 msgctxt "SelectionModels|"
 msgid "Effect Size Standard Error"
-msgstr ""
+msgstr "Effektgröße Standardfehler"
 
 msgctxt "SelectionModels|"
 msgid "P-value (one-sided)"
-msgstr ""
+msgstr "P-Wert (einseitig)"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Model"
 msgstr "Modell"
@@ -19643,7 +19636,7 @@ msgstr ""
 
 msgctxt "SelectionModels|"
 msgid "Two-sided selection"
-msgstr ""
+msgstr "Zweiseitige Auswahl"
 
 msgctxt "SelectionModels|"
 msgid "P-value frequency"
@@ -19655,76 +19648,71 @@ msgstr ""
 
 msgctxt "SelectionModels|"
 msgid "Expected effect size direction"
-msgstr ""
+msgstr "Erwartete Effektgrößenrichtung"
 
 msgctxt "SelectionModels|"
 msgid "Positive"
-msgstr ""
+msgstr "Positiv"
 
 msgctxt "SelectionModels|"
 msgid "Negative"
-msgstr ""
+msgstr "Negativ"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Inference"
 msgstr "Inferenz"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Fixed Effects"
 msgstr "Feste Effekte"
 
 msgctxt "SelectionModels|"
 msgid "Mean estimates"
-msgstr ""
+msgstr "Mittlere Schätzungen"
 
 msgctxt "SelectionModels|"
 msgid "Estimated weights"
-msgstr ""
+msgstr "Geschätzte Gewichte"
 
 msgctxt "SelectionModels|"
 msgid "Random Effects"
-msgstr ""
+msgstr "Zufällige Effekte"
 
 msgctxt "SelectionModels|"
 msgid "Estimated heterogeneity"
-msgstr ""
+msgstr "Geschätzte Heterogenität"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Plots"
 msgstr "Abbildungen"
 
 msgctxt "SelectionModels|"
 msgid "Weight Function"
-msgstr ""
+msgstr "Gewichtungsfunktion"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Fixed effects"
 msgstr "Feste Effekte"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Random effects"
 msgstr "Zufällige Effekte"
 
 msgctxt "SelectionModels|"
 msgid "Rescale x-axis"
-msgstr ""
+msgstr "x-Achse umskalieren"
 
 msgctxt "SelectionModels|"
 msgid "Mean model estimates"
-msgstr ""
+msgstr "Mittlere Modellschätzungen"
 
 msgctxt "Correlation|"
 msgid "Prediction intervals"
-msgstr ""
+msgstr "Vorhersageintervalle"
 
 msgctxt "RegressionLinear|"
 msgid "Prediction intervals"
-msgstr ""
+msgstr "Vorhersageintervalle"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Bernoulli"
@@ -19736,7 +19724,7 @@ msgstr ""
 
 msgctxt "RegressionLogistic|"
 msgid "ROC plot"
-msgstr ""
+msgstr "ROC-Plot"
 
 msgctxt "RegressionLogistic|"
 msgid "Cutoff step"
@@ -19752,19 +19740,19 @@ msgstr ""
 
 msgctxt "Description|"
 msgid "S.S. Bayesian A/B Test"
-msgstr ""
+msgstr "Z.S. Bayesscher A/B Test"
 
 msgctxt "Flexplot|"
 msgid "Convert to grayscale"
-msgstr ""
+msgstr "In Graustufen umwandeln"
 
 msgctxt "linmod|"
 msgid "Show p-values"
-msgstr ""
+msgstr "P-Werte anzeigen"
 
 msgctxt "linmod|"
 msgid "Convert to grayscale"
-msgstr ""
+msgstr "In Graustufen umwandeln"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -19772,16 +19760,20 @@ msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
 msgstr ""
+"Diese Komponenten wurden mit falschen Werttypen geladen, und wurden auf ihre "
+"Standardwerte zurückgesetzt:%1"
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
+msgstr "Problem beim Laden bekannter Probleme"
 
 msgctxt "KnownIssues|"
 msgid ""
 "JASP ran into a problem loading the known issues for this version, contact "
 "the JASP team for assistance."
 msgstr ""
+"JASP stieß beim Laden der bekannten Probleme für diese Version auf ein "
+"Problem; kontaktiere das JASP-Team für Unterstützung."
 
 #, qt-format
 msgctxt "KnownIssues|"
@@ -19789,6 +19781,8 @@ msgid ""
 "JASP ran into a problem loading the known issues for this version: '%1', "
 "contact the JASP team for assistance."
 msgstr ""
+"JASP stieß beim Laden der bekannten Probleme für diese Version auf ein "
+"Problem: '%1', kontaktiere das JASP-Team für Unterstützung."
 
 msgctxt "MainWindow|"
 msgid ""
@@ -19796,17 +19790,19 @@ msgid ""
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
 msgstr "Ergebnisse exportieren"
 
 msgctxt "BoundQMLTextInput|"
 msgid "Formulas Field"
-msgstr ""
+msgstr "Formel-Feld"
 
 #, qt-format
 msgctxt "QMLListView|"
 msgid "No name given in source attribute of List %1"
-msgstr ""
+msgstr "Kein angegebener Name im Quellattribut von List %1"
