@@ -57,7 +57,7 @@ ScrollView
 
 				Text { text: qsTr("Interface:") }
 
-				ComboBox
+				DropDown
 				{
 					id						: interfaceFonts
 					values					: preferencesModel.allInterfaceFonts
@@ -66,8 +66,8 @@ ScrollView
 					addLineAfterEmptyValue	: true
 					addScrollBar			: true
 					placeholderText			: qsTr("default: %1").arg(defaultInterfaceFont.fontInfo.family)
-					value					: currentIndex <= 0 ? placeholderText : preferencesModel.interfaceFont
-					onValueChanged			: preferencesModel.interfaceFont = value
+					startValue				: preferencesModel.interfaceFont
+					onValueChanged			: if (initialized) preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab		: codeFonts
 					KeyNavigation.down		: codeFonts
@@ -85,7 +85,7 @@ ScrollView
 
 				Text { text: qsTr("R, JAGS or Lavaan code:") }
 
-				ComboBox
+				DropDown
 				{
 					id						: codeFonts
 					values					: preferencesModel.allCodeFonts
@@ -94,8 +94,8 @@ ScrollView
 					addLineAfterEmptyValue	: true
 					addScrollBar			: true
 					placeholderText			: qsTr("default: %1").arg(defaultRCodeFont.fontInfo.family)
-					value					: currentIndex <= 0 ? placeholderText : preferencesModel.codeFont
-					onValueChanged			: preferencesModel.codeFont = value
+					startValue				: preferencesModel.codeFont
+					onValueChanged			: if (initialized) preferencesModel.codeFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab		: resultFonts
 					KeyNavigation.down		: resultFonts
@@ -112,7 +112,7 @@ ScrollView
 
 				Text { text: qsTr("Result & Help:") }
 
-				ComboBox
+				DropDown
 				{
 					id						: resultFonts
 					values					: preferencesModel.allResultFonts
@@ -121,8 +121,8 @@ ScrollView
 					addLineAfterEmptyValue	: true
 					addScrollBar			: true
 					placeholderText			: qsTr("default: %1").arg(defaultResultFont.fontInfo.family)
-					value					: currentIndex <= 0 ? placeholderText : preferencesModel.resultFont
-					onValueChanged			: preferencesModel.resultFont = value
+					startValue				: preferencesModel.resultFont
+					onValueChanged			: if (initialized) preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab		: lightThemeButton
 					KeyNavigation.down		: lightThemeButton

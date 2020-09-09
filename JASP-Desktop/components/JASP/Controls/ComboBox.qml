@@ -22,6 +22,7 @@ JASPControl
 	property alias	currentLabel:			comboBox.currentText
 	property string currentValue:			"" // This is the current value (what is used by R)
 	property alias	value:					comboBox.currentText
+	property string	startValue:				""
 	property string currentColumnType:		"" // When the values come from column names, this property gives the column type of the current selected column
 	property alias	currentIndex:			control.currentIndex
 	property alias	indexDefaultValue:		control.currentIndex
@@ -35,8 +36,6 @@ JASPControl
 	property alias	syncModels:				comboBox.source
 	property bool	addEmptyValue:			false
 	property string	placeholderText:		qsTr("<no choice>")
-	property bool	isDirectModel:			false
-	property bool	initialized:			isDirectModel
 	property var	enabledOptions:			[]
 	property bool	setLabelAbove:			false
 	property int	controlMinWidth:		0
@@ -156,7 +155,7 @@ JASPControl
 			{
 				anchors.left:				contentIcon.visible ? contentIcon.right : parent.left
 				anchors.leftMargin:			4 * preferencesModel.uiScale
-				text:						control.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? control.currentText : comboBox.currentText)
+				text:						control.isEmptyValue ? comboBox.placeholderText : comboBox.currentText
 				font:						control.font
 				anchors.verticalCenter:		parent.verticalCenter
 				anchors.horizontalCenter:	control.showEmptyValueStyle ? parent.horizontalCenter : undefined

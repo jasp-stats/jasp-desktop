@@ -551,6 +551,8 @@ void AnalysisForm::bindTo()
 				}
 			}
 		}
+
+		control->item()->setInitialized();
 	}
 
 	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)

@@ -87,7 +87,11 @@ void JASPControlBase::componentComplete()
 	if (!hasContextForm)
 	{
 		if (_form)	_form->addControl(this);
-		else		_wrapper->setUp();
+		else
+		{
+			_wrapper->setUp();
+			setInitialized();
+		}
 	}
 	else
 	{
@@ -95,6 +99,7 @@ void JASPControlBase::componentComplete()
 		if (!noDirectSetup)
 			_wrapper->setUp();
 
+		setInitialized();
 		QMLListView* listView = nullptr;
 
 		QVariant listViewVar = context->contextProperty("listView");

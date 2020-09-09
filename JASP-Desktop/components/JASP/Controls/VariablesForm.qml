@@ -150,7 +150,6 @@ Item
 				anchors.leftMargin: (assignButton.width - width - 4) / 2
 				anchors.top:		assignButton.bottom
 				anchors.topMargin:	2
-				isDirectModel:		true
 				currentIndex:		0
 				values: ListModel 
 				{

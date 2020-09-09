@@ -25,6 +25,7 @@ class JASPControlBase : public QQuickItem
 	Q_PROPERTY( bool								hasError			READ hasError			WRITE setHasError			NOTIFY hasErrorChanged				)
 	Q_PROPERTY( bool								hasWarning			READ hasWarning			WRITE setHasWarning			NOTIFY hasWarningChanged			)
 	Q_PROPERTY( bool								runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged			)
+	Q_PROPERTY( bool								initialized			READ initialized									NOTIFY initializedChanged			)
 	Q_PROPERTY( QQuickItem						*	childControlsArea	READ childControlsArea	WRITE setChildControlsArea										)
 	Q_PROPERTY( QQuickItem						*	parentListView		READ parentListView									NOTIFY parentListViewChanged		)
 	Q_PROPERTY( QQuickItem						*	innerControl		READ innerControl		WRITE setInnerControl		NOTIFY innerControlChanged			)
@@ -78,6 +79,7 @@ public:
 	QString			info()					const	{ return _info;					}
 	QString			helpMD(int howDeep = 2)	const;
 	bool			isBound()				const	{ return _isBound;				}
+	bool			initialized()			const	{ return _initialized;			}
 	bool			debug()					const	{ return _debug;				}
 	bool			parentDebug()			const	{ return _parentDebug;			}
 	bool			hasError()				const;
@@ -94,6 +96,7 @@ public:
 	bool			runOnChange()			const	{ return _runOnChange;			}
 
 	QString			humanFriendlyLabel()	const;
+	void			setInitialized()	{ _initialized = true; emit initializedChanged(); }
 
 
 	JASPControlWrapper				*	getWrapper()				const { return _wrapper; }
@@ -139,6 +142,7 @@ signals:
 	void setOptionBlockSignal(	bool blockSignal);
 	void nameChanged();
 	void isBoundChanged();
+	void initializedChanged();
 	void debugChanged();
 	void parentDebugChanged();
 	void hasErrorChanged();
@@ -175,6 +179,7 @@ protected:
 							_title,
 							_parentListViewKey;
 	bool					_isBound				= true,
+							_initialized			= false,
 							_debug					= false,
 							_parentDebug			= false,
 							_hasError				= false,
