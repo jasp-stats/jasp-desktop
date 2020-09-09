@@ -1,0 +1,804 @@
+{
+  "name": "Categories",
+  "path": "Data Library",
+  "description": "General Examples",
+  "kind": "folder",
+  "children": [
+    {
+      "name": "Books",
+      "path": "Books",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Field - Discovering Statistics",
+          "path": "Field - Discovering Statistics",
+          "description": "This folder contains the data sets from Field, A. P. (2017). <i>Discovering Statistics Using IBM SPSS Statistics<\/i> (5th ed.). London: Sage. These data sets were constructed by Andy Field who therefore owns the copyright. Andy Field generously agreed that we can include these data sets in the JASP data library. These data sets are also publicly available on the website that accompanies Andy Field's book: https://edge.sagepub.com/field5e. Without Andy Field's explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of  a CC BY-NC-ND license <br><br> ",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "Album Sales",
+              "path": "../../../Data Library/4. Regression/Album Sales.jasp",
+              "description": "Factors that may influence album sales. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/Album Sales.csv"
+            },
+            {
+              "name": "Alcohol Attitudes",
+              "path": "../../../Data Library/3. ANOVA/Alcohol Attitudes.jasp",
+              "description": "Attitudes towards water, wine, and beer after watching positive, neutral, or negative imagery of that drink - each participant features in each cell of the 3x3 design. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Alcohol Attitudes.csv"
+            },
+            {
+              "name": "Beer Goggles",
+              "path": "../../../Data Library/3. ANOVA/Beer Goggles.jasp",
+              "description": "Median attractiveness ratings of 50 attractive or unattractive faces after consuming different amounts of alcohol. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Beer Goggles.csv"
+            },
+            {
+              "name": "Bush Tucker Food",
+              "path": "../../../Data Library/3. ANOVA/Bush Tucker Food.jasp",
+              "description": "The number of seconds before celebrities retch while eating disgusting food - each celebrity consumed four different kinds of disgusting items. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Bush Tucker Food.csv"
+            },
+            {
+              "name": "Dancing Cats",
+              "path": "../../../Data Library/5. Frequencies/Dancing Cats.jasp",
+              "description": "The number of cats who learned to dance, trained by one of two types of conditioning. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/5. Frequencies/Dancing Cats.csv"
+            },
+            {
+              "name": "Dancing Cats and Dogs",
+              "path": "../../../Data Library/5. Frequencies/Dancing Cats and Dogs.jasp",
+              "description": "The number of cats and dogs who learned to dance, trained by one of two types of conditioning. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/5. Frequencies/Dancing Cats and Dogs.csv"
+            },
+            {
+              "name": "Exam Anxiety",
+              "path": "../../../Data Library/4. Regression/Exam Anxiety.jasp",
+              "description": "Questionnaire of students prior to an exam (variables are anxiety, preparedness, and grade). <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/Exam Anxiety.csv"
+            },
+            {
+              "name": "Fear of Statistics",
+              "path": "../../../Data Library/1. Descriptives/Fear of Statistics.jasp",
+              "description": "Responses of 2571 students on an SPSS Anxiety Questionnaire. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/1. Descriptives/Fear of Statistics.csv"
+            },
+            {
+              "name": "Invisibility Cloak",
+              "path": "../../../Data Library/2. T-Tests/Invisibility Cloak.jasp",
+              "description": "The number of mischievous acts committed by two groups of people, those with and those without an invisibility cloak. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/2. T-Tests/Invisibility Cloak.csv"
+            },
+            {
+              "name": "Looks or Personality",
+              "path": "../../../Data Library/3. ANOVA/Looks or Personality.jasp",
+              "description": "Preference scores of ten men and ten women for nine speed-dating partners who varied in attractiveness (high, average, low) and charisma (high, some, none). <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Looks or Personality.csv"
+            },
+            {
+              "name": "The Biggest Liar",
+              "path": "../../../Data Library/4. Regression/The Biggest Liar.jasp",
+              "description": "Creativity test scores and ranking in a lying competition. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/The Biggest Liar.csv"
+            },
+            {
+              "name": "Viagra",
+              "path": "../../../Data Library/3. ANOVA/Viagra.jasp",
+              "description": "Men's libido (and that of their partners) after having been administered different doses of Viagra. <br><br> <i>Fictional data from Andy Field.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Viagra.csv"
+            }
+          ]
+        },
+        {
+          "name": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
+          "path": "Moore, McCabe, & Craig - Introduction to the Practice of Statistics",
+          "description": "This folder contains the data sets from Moore, D. S., McCabe, G. P., & Craig, B. A. (2012). <i>Introduction to the Practice of Statistics<\/i> (7th ed.). New York: W. H. Freeman and Company. Moore, McCabe, and Craig generously agreed that we can include the data sets in the JASP data library. These data sets are also publicly available on the website that accompanies their book: whfreeman.com/ips7e. Without the authors' explicit consent, these data sets may not be distributed for commercial purposes, these data sets may not be edited, and these data sets may not be presented without acknowledging their source (i.e., the terms of a CC BY-NC-ND license <br><br> ",
+          "kind": "folder",
+          "children": [
+            {
+              "name": "College Success",
+              "path": "../../../Data Library/4. Regression/College Success.jasp",
+              "description": "High school grades, SAT scores, and Grade Point Average of 224 university students. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/College Success.csv"
+            },
+            {
+              "name": "Directed Reading Activities",
+              "path": "../../../Data Library/2. T-Tests/Directed Reading Activities.jasp",
+              "description": "Reading performance of two groups of pupils - one control group and one group that was given Directed Reading Activities. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/2. T-Tests/Directed Reading Activities.csv"
+            },
+            {
+              "name": "Facebook Friends",
+              "path": "../../../Data Library/3. ANOVA/Facebook Friends.jasp",
+              "description": "Preference ratings for Facebook profiles - five groups judge the same profiles, except for the aspect that was manipulated: the number of friends for that profile.  <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Facebook Friends.csv"
+            },
+            {
+              "name": "Fidgeting and Fat Gain",
+              "path": "../../../Data Library/4. Regression/Fidgeting and Fat Gain.jasp",
+              "description": "Fat gain of participants and their non-deliberate exercise activities. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/Fidgeting and Fat Gain.csv"
+            },
+            {
+              "name": "Health Habits",
+              "path": "../../../Data Library/5. Frequencies/Health Habits.jasp",
+              "description": "Physical activity and consumption of fruits of 1184 students. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/5. Frequencies/Health Habits.csv"
+            },
+            {
+              "name": "Heart Rate",
+              "path": "../../../Data Library/3. ANOVA/Heart Rate.jasp",
+              "description": "Heart rate of male and female runners and generally sedentary participants following 6 minutes of exercise. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Heart Rate.csv"
+            },
+            {
+              "name": "Moon and Aggression",
+              "path": "../../../Data Library/2. T-Tests/Moon and Aggression.jasp",
+              "description": "The number of disruptive behaviors by dementia patients during two different phases of the lunar cycle. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/2. T-Tests/Moon and Aggression.csv"
+            },
+            {
+              "name": "Physical Activity and BMI",
+              "path": "../../../Data Library/4. Regression/Physical Activity and BMI.jasp",
+              "description": "Participants' Body Mass Index and average daily number of steps. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/4. Regression/Physical Activity and BMI.csv"
+            },
+            {
+              "name": "Response to Eye Color",
+              "path": "../../../Data Library/3. ANOVA/Response to Eye Color.jasp",
+              "description": "Post-advertisement attitudes towards a brand expressed by four different groups - each group saw the same advertisement except for the aspect that was manipulated: the eye-color of the model.  <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/3. ANOVA/Response to Eye Color.csv"
+            },
+            {
+              "name": "Weight Gain",
+              "path": "../../../Data Library/2. T-Tests/Weight Gain.jasp",
+              "description": "Weight of 16 participants before and after an eight-week period of excessive calorie intake. <br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+              "kind": "file",
+              "associated_datafile": "../../../Data Library/2. T-Tests/Weight Gain.csv"
+            }
+          ]
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "1. Descriptives",
+      "path": "1. Descriptives",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Sleep",
+          "path": "Sleep.jasp",
+          "description": "The number of additional hours that each of ten patients slept after having been administered two 'soporific drugs' (i.e., sleeping pills). <br><br> The example JASP file demonstrates the use of descriptive statistics.<br><br> <i>Data set included in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Sleep.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "2. T-Tests",
+      "path": "2. T-Tests",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Directed Reading Activities",
+          "path": "Directed Reading Activities.jasp",
+          "description": "Reading performance of two groups of pupils - one control group and one group that was given Directed Reading Activities. <br><br> The example JASP file demonstrates the use of an independent samples t-test.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Directed Reading Activities.csv"
+        },
+        {
+          "name": "Eye Movements",
+          "path": "Eye Movements.jasp",
+          "description": "The number of correctly recalled words by two groups of participants - during the retention interval, one group was instructed to fixate on a centrally presented dot <br><br> The example JASP file demonstrates the use of a Bayesian independent samples t-test.<br><br> <i>Subset of the data reported in Matzke et al. (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Eye Movements.csv"
+        },
+        {
+          "name": "Invisibility Cloak",
+          "path": "Invisibility Cloak.jasp",
+          "description": "The number of mischievous acts committed by two groups of people, those with and those without an invisibility cloak. <br><br> The example JASP file demonstrates the use of an independent samples t-test.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Invisibility Cloak.csv"
+        },
+        {
+          "name": "Kitchen Rolls",
+          "path": "Kitchen Rolls.jasp",
+          "description": "Openness to Experience scores for two groups of students - while filling out the personality questionnaire, both groups rotated a kitchen roll with their hands (one group clockwise, the other group counterclockwise). <br><br> The example JASP file demonstrates the use of a Bayesian and frequentist versions of independent samples t-test.<br><br> <i>Data reported in Wagenmakers et al. (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Kitchen Rolls.csv"
+        },
+        {
+          "name": "Moon and Aggression",
+          "path": "Moon and Aggression.jasp",
+          "description": "The number of disruptive behaviors by dementia patients during two different phases of the lunar cycle. <br><br> The example JASP file demonstrates the use of a paired samples t-test.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Moon and Aggression.csv"
+        },
+        {
+          "name": "Stereograms",
+          "path": "Stereograms.jasp",
+          "description": "The time it took two groups of participants to see the objects hidden in a stereogram - one group received advance information about the scene, the other group did not. <br><br> The example JASP file demonstrates the use of a Bayesian independent samples t-test.<br><br> <i>Data reported in Frisby & Clatworthy (1975).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Stereograms.csv"
+        },
+        {
+          "name": "Weight Gain",
+          "path": "Weight Gain.jasp",
+          "description": "Weight of 16 participants before and after an eight-week period of excessive calorie intake. <br><br> The example JASP file demonstrates the use of a one sample t-test.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Weight Gain.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "3. ANOVA",
+      "path": "3. ANOVA",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Alcohol Attitudes",
+          "path": "Alcohol Attitudes.jasp",
+          "description": "Attitudes towards water, wine, and beer after watching positive, neutral, or negative imagery of that drink - each participant features in each cell of the 3x3 design. <br><br> The example JASP file demonstrates the use of a repeated measures ANOVA.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Alcohol Attitudes.csv"
+        },
+        {
+          "name": "Beer Goggles",
+          "path": "Beer Goggles.jasp",
+          "description": "Median attractiveness ratings of 50 attractive or unattractive faces after consuming different amounts of alcohol. <br><br> The example JASP file demonstrates the use of an ANOVA.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Beer Goggles.csv"
+        },
+        {
+          "name": "Bugs",
+          "path": "Bugs.jasp",
+          "description": "The extent to which people want to kill arthropods that vary in freighteningness (low, high) and disgustingness (low, high) - each participant rates their attitude for all arthropods.  <br><br> The example JASP file demonstrates the use of a mixed design ANOVA.<br><br> <i>Subset of the data reported in Ryan, Wilde, & Crist (2013).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Bugs.csv"
+        },
+        {
+          "name": "Bush Tucker Food",
+          "path": "Bush Tucker Food.jasp",
+          "description": "The number of seconds before celebrities retch while eating disgusting food - each celebrity consumed four different kinds of disgusting items. <br><br> The example JASP file demonstrates the use of a repeated measures ANOVA.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Bush Tucker Food.csv"
+        },
+        {
+          "name": "Erotic Pictures and Love",
+          "path": "Erotic Pictures and Love.jasp",
+          "description": "Men and women's feelings towards their partners after watching either erotic or artistic pictures. <br><br> The example JASP file demonstrates the use of a factorial 2 x 2 ANOVA.<br><br> <i>Subset of the data reported in Balzarini et al. (2016).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Erotic Pictures and Love.csv"
+        },
+        {
+          "name": "Facebook Friends",
+          "path": "Facebook Friends.jasp",
+          "description": "Preference ratings for Facebook profiles - five groups judge the same profiles, except for the aspect that was manipulated: the number of friends for that profile.  <br><br> The example JASP file demonstrates the use of a one-way ANOVA.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Facebook Friends.csv"
+        },
+        {
+          "name": "Heart Rate",
+          "path": "Heart Rate.jasp",
+          "description": "Heart rate of male and female runners and generally sedentary participants following 6 minutes of exercise. <br><br> The example JASP file demonstrates the use of a 2 x 2 between subjects ANOVA.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Heart Rate.csv"
+        },
+        {
+          "name": "Looks or Personality",
+          "path": "Looks or Personality.jasp",
+          "description": "Preference scores of ten men and ten women for nine speed-dating partners who varied in attractiveness (high, average, low) and charisma (high, some, none). <br><br> The example JASP file demonstrates the use of a mixed design ANOVA.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Looks or Personality.csv"
+        },
+        {
+          "name": "Pain Thresholds",
+          "path": "Pain Thresholds.jasp",
+          "description": "Pain threshold for people with different hair color.  <br><br> The example JASP file demonstrates the use of a one-way ANOVA.<br><br> <i>Data from McClave & Dietrich (1991).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Pain Thresholds.csv"
+        },
+        {
+          "name": "Response to Eye Color",
+          "path": "Response to Eye Color.jasp",
+          "description": "Post-advertisement attitudes towards a brand expressed by four different groups - each group saw the same advertisement except for the aspect that was manipulated: the eye-color of the model.  <br><br> The example JASP file demonstrates the use of a one-way ANOVA.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Response to Eye Color.csv"
+        },
+        {
+          "name": "Singers",
+          "path": "Singers.jasp",
+          "description": "\"Heights in inches of the singers in the New York Choral Society in 1979. The data are grouped according to voice part. The vocal range for each voice part increases in pitch according to the following order: Bass 2, Bass 1, Tenor 2, Tenor 1, Alto 2, Alto 1, Soprano 2, Soprano 1.\" <br><br> The example JASP file demonstrates the use of a Bayesian between subjects ANOVA.<br><br> <i>Data set included in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Singers.csv"
+        },
+        {
+          "name": "Tooth Growth",
+          "path": "Tooth Growth.jasp",
+          "description": "\"The response is the length of odontoblasts (cells responsible for tooth growth) in 60 guinea pigs. Each animal received one of three dose levels of vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, orange juice or ascorbic acid (a form of vitamin C and coded as VC).\" <br><br> The example JASP file demonstrates the use of a 2 x 2 ANOVA.<br><br> <i>Data set included in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Tooth Growth.csv"
+        },
+        {
+          "name": "Viagra",
+          "path": "Viagra.jasp",
+          "description": "Men's libido (and that of their partners) after having been administered different doses of Viagra. <br><br> The example JASP file demonstrates the use of an ANCOVA.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Viagra.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "4. Regression",
+      "path": "4. Regression",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Adam Sandler",
+          "path": "Adam Sandler.jasp",
+          "description": "Rotten Tomatoes ratings and box office success for movies featuring Adam Sandler. <br><br> The example JASP file demonstrates the use of a Bayesian Pearson's correlation.<br><br> <i>Data collected from Rotten Tomatoes in 2015 by E.J. Wagenmakers.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Adam Sandler.csv"
+        },
+        {
+          "name": "Album Sales",
+          "path": "Album Sales.jasp",
+          "description": "Factors that may influence album sales. <br><br> The example JASP file demonstrates the use of linear regression.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Album Sales.csv"
+        },
+        {
+          "name": "Auction",
+          "path": "Auction.jasp",
+          "description": "The selling price and age of antique clocks, and the number of bidders in the auction. <br><br> The example JASP file demonstrates the use of linear regression.<br><br> <i>Data from Mendenhall & Sincich (1993).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Auction.csv"
+        },
+        {
+          "name": "Big Five Personality Traits",
+          "path": "Big Five Personality Traits.jasp",
+          "description": "Scores on Big Five personality traits of 500 participants. <br><br> The example JASP file demonstrates the use of Pearson's correlation.<br><br> <i>Data reported in Dolan et al. (2009).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Big Five Personality Traits.csv"
+        },
+        {
+          "name": "College Success",
+          "path": "College Success.jasp",
+          "description": "High school grades, SAT scores, and Grade Point Average of 224 university students. <br><br> The example JASP file demonstrates the use of linear regression.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "College Success.csv"
+        },
+        {
+          "name": "Exam Anxiety",
+          "path": "Exam Anxiety.jasp",
+          "description": "Questionnaire of students prior to an exam (variables are anxiety, preparedness, and grade). <br><br> The example JASP file demonstrates the use of a Pearson correlation coefficient.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Exam Anxiety.csv"
+        },
+        {
+          "name": "Fidgeting and Fat Gain",
+          "path": "Fidgeting and Fat Gain.jasp",
+          "description": "Fat gain of participants and their non-deliberate exercise activities. <br><br> The example JASP file demonstrates the use of linear regression.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Fidgeting and Fat Gain.csv"
+        },
+        {
+          "name": "Glasgow Norms",
+          "path": "Glasgow Norms.jasp",
+          "description": "A set of normative ratings for 5,553 English words on nine psycholinguistic dimensions. <br><br> The example JASP file demonstrates the use of Bayesian correlations.<br><br> <i>Data from Scott et al. (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Glasgow Norms.csv"
+        },
+        {
+          "name": "Physical Activity and BMI",
+          "path": "Physical Activity and BMI.jasp",
+          "description": "Participants' Body Mass Index and average daily number of steps. <br><br> The example JASP file demonstrates the use of linear regression.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Physical Activity and BMI.csv"
+        },
+        {
+          "name": "The Biggest Liar",
+          "path": "The Biggest Liar.jasp",
+          "description": "Creativity test scores and ranking in a lying competition. <br><br> The example JASP file demonstrates the use of Spearman's and Kendall's correlation.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "The Biggest Liar.csv"
+        },
+        {
+          "name": "Titanic",
+          "path": "Titanic.jasp",
+          "description": "Age, cabin class, and survival status of 1313 passengers on the Titanic. <br><br> The example JASP file demonstrates the use of logistic regression.<br><br> <i>Data set included in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Titanic.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "5. Frequencies",
+      "path": "5. Frequencies",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Dancing Cats and Dogs",
+          "path": "Dancing Cats and Dogs.jasp",
+          "description": "The number of cats and dogs who learned to dance, trained by one of two types of conditioning. <br><br> The example JASP file demonstrates the use of a log-linear analysis.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Dancing Cats and Dogs.csv"
+        },
+        {
+          "name": "Dancing Cats",
+          "path": "Dancing Cats.jasp",
+          "description": "The number of cats who learned to dance, trained by one of two types of conditioning. <br><br> The example JASP file demonstrates the use of a chi-squared test of independence.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Dancing Cats.csv"
+        },
+        {
+          "name": "Death Penalty",
+          "path": "Death Penalty.jasp",
+          "description": "Court decisions on a death penalty (i.e., yes or no) split by race of a defendant (i.e., White or Black) and the race of the victim (i.e., White or Black). <br><br> The example JASP file demonstrates the use of a Bayesian log-linear analysis.<br><br> <i>Data from Radelet & Pierce (1991).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Death Penalty.csv"
+        },
+        {
+          "name": "Emily Rosa",
+          "path": "Emily Rosa.jasp",
+          "description": "Correct and incorrect decisions from therapeutic touch practitioners in Emily Rosa's famous experiment. \"In the initial trial, the subjects stated the correct location of the investigator's hand in 70 (47%) of 150 tries.\" <br><br> The example JASP file demonstrates the use of a Bayesian binomial test.<br><br> <i>Data set reconstructed from the summary information in Rosa et al. (1998).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Emily Rosa.csv"
+        },
+        {
+          "name": "Health Habits",
+          "path": "Health Habits.jasp",
+          "description": "Physical activity and consumption of fruits of 1184 students. <br><br> The example JASP file demonstrates the use of a chi-squared test of independence.<br><br> <i>Data from Moore, McCabe, & Craig.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Health Habits.csv"
+        },
+        {
+          "name": "Hungry Zombies",
+          "path": "Hungry Zombies.jasp",
+          "description": "Answers of 12 zombies to the question: \"what is your appetitive state?\" <br><br> The example JASP file demonstrates the use of a Bayesian binomial test.<br><br> <i>Fictional data from E.J. Wagenmakers.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Hungry Zombies.csv"
+        },
+        {
+          "name": "Listerism",
+          "path": "Listerism.jasp",
+          "description": "Recovery status of patients treated with either Lister's method or ordinary dressings. <br><br> The example JASP file demonstrates the use of Bayesian contingency tables.<br><br> <i>Data set reconstructed from the summary information by MacAlister (1881) and reported in Jamil et al. (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Listerism.csv"
+        },
+        {
+          "name": "Memory of Life Stresses",
+          "path": "Memory of Life Stresses.jasp",
+          "description": "The number of reported life stresses (summed across participants) that occurred in specific months prior to an interview. <br><br> The example JASP file demonstrates the use of a multinomial test.<br><br> <i>Subset of the data reported in Uhleman et al. (1974) provided by Haberman (1978).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Memory of Life Stresses.csv"
+        },
+        {
+          "name": "MOOC Bias",
+          "path": "MOOC Bias.jasp",
+          "description": "Response rate from MOOC lecturers to questions posed by eight constructed identities [i.e., gender (male, female) x race (White, Indian, Black, Chinese)]. <br><br> The example JASP file demonstrates the use of a chi-squared test of independence.<br><br> <i>Data from Baker et al. (2018).<\/i>",
+          "kind": "file",
+          "associated_datafile": "MOOC Bias.csv"
+        },
+        {
+          "name": "Sun Block Lotions",
+          "path": "Sun Block Lotions.jasp",
+          "description": "Responses of 20 participants to the question: \"Which of these two sun block lotions is better?\" <br><br> The example JASP file demonstrates the use of a binomial test.<br><br> <i>Fictional data from Moore, McCaib, & Craig (2012).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Sun Block Lotions.csv"
+        },
+        {
+          "name": "Three-Sided Coin",
+          "path": "Three-Sided Coin.jasp",
+          "description": "The number of times that each of two experimental coins landed on its edge (out of 1,000 tosses).  <br><br> The example JASP file demonstrates the use of a Bayesian binomial test using summary statistics.<br><br> <i>Data collected by Matthew Parker.<\/i>",
+          "kind": "file"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "6. Factor",
+      "path": "6. Factor",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "G Factor",
+          "path": "G Factor.jasp",
+          "description": "Charles Spearman's data of pupils' school grades and sensory discrimination scores. <br><br> The example JASP file demonstrates the use of an exploratory factor analysis.<br><br> <i>Data reported in Spearman (1904).<\/i>",
+          "kind": "file",
+          "associated_datafile": "G Factor.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+        "name": "7. Audit",
+        "path": "7. Audit",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+              "name": "Tests of Controls",
+              "path": "controlTestBayesian.jasp",
+              "description": "A fictitious population of 100 control systems and relevant requirements. <br><br> The example JASP file demonstrates the use of the Bayesian audit workflow.<br><br> <i>Data set used in R package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "controlTest.csv"
+          },
+          {
+              "name": "Testing for Overstatements",
+              "path": "substantiveTestBayesian.jasp",
+              "description": "A fictitious population consisting of 3500 transactions. <br><br> The example JASP file demonstrates the use of the Bayesian audit workflow.<br><br> <i>Data set used in R package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "BuildIt_Monetary.csv"
+          },
+          {
+              "name": "Planning and Selecting a Sample",
+              "path": "planningAndSelectingBayesian.jasp",
+              "description": "A fictitious population consisting of 3500 transactions. <br><br> The example JASP file demonstrates the use of the Bayesian planning and the selection analysis.<br><br> <i>Data set used in R package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "BuildIt_Monetary.csv"
+          },
+          {
+              "name": "Evaluating a Sample",
+              "path": "evaluationBayesian.jasp",
+              "description": "A fictitious audit sample consisting of 60 transactions. <br><br> The example JASP file demonstrates the use of a Bayesian evaluation analysis.<br><br> <i>Data set used in R package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "auditSample.csv"
+          },
+          {
+              "name": "Assessing Benford's Law",
+              "path": "sinoForest.jasp",
+              "description": "Financial Statemens of Sino Forest Corporation’s 2010 Report. <br><br> The example JASP file demonstrates the use of a Benford's law analysis.<br><br> <i>Data set used in R package benford.analysis<\/i>",
+              "kind": "file",
+              "associated_datafile": "sinoForest.csv"
+          },
+          {
+              "name": "BuildIt Binary",
+              "path": "BuildIt_Binary.jasp",
+              "description": "BuildIt's audit population consisting of 3500 transactions. <br><br> The example JASP file demonstrates the use of the Bayesian audit workflow.<br><br> <i>Data set used in R package jfa<\/i>",
+              "kind": "file",
+              "associated_datafile": "BuildIt_Monetary.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "8. Bain",
+        "path": "8. Bain",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "One Sample T-Test",
+            "path": "bainOneSample.jasp",
+            "description": "This JASP file demonstrates a Bain one sample t-test using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
+            "kind": "file",
+            "associated_datafile": "sesame.csv"
+          },
+          {
+            "name": "Welch's T-Test",
+            "path": "bainIndependentSamples.jasp",
+            "description": "This JASP file demonstrates a Bain Welch's t-test using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
+            "kind": "file",
+            "associated_datafile": "sesame.csv"
+          },
+          {
+            "name": "Paired Samples T-Test",
+            "path": "bainPairedSamples.jasp",
+            "description": "This JASP file demonstrates a Bain paired samples t-test using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
+            "kind": "file",
+            "associated_datafile": "sesame.csv"
+          },
+          {
+            "name": "ANOVA",
+            "path": "bainAnova.jasp",
+            "description": "This JASP file demonstrates a Bain ANOVA using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
+            "kind": "file",
+            "associated_datafile": "sesame.csv"
+          },
+          {
+            "name": "ANCOVA",
+            "path": "bainAncova.jasp",
+            "description": "This JASP file demonstrates a Bain ANCOVA using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
+            "kind": "file",
+            "associated_datafile": "sesame.csv"
+          },
+          {
+            "name": "Regression",
+            "path": "bainRegression.jasp",
+            "description": "This JASP file demonstrates a Bain regression using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
+            "kind": "file",
+            "associated_datafile": "sesame.csv"
+          }
+        ],
+        "debug": false
+      },
+      {
+        "name": "9. Discover Distributions",
+        "path": "9. Discover Distributions",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Distributions",
+            "path": "Normal distribution.jasp",
+            "description": "Synthetic data set of variables generated from various probability distributions. <br><br> The example JASP file demonstrates the Normal distribution. <br><br> <i>Fictional data created by JASP Team.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Distributions.csv"
+          }
+        ]
+      },
+      {
+        "name": "10. Machine Learning",
+        "path": "10. Machine Learning",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Iris Flowers",
+            "path": "iris.jasp",
+            "description": "This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. <br><br> <i>Data set included in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "iris.csv"
+          },
+          {
+            "name": "Telco Customer Churn",
+            "path": "telcoCustomerChurn.jasp",
+            "description": "Telecom data from 7043 customers of a phone provider. Variables range from personal descriptives to subscription fees and provide information on customer churning behaviour. <br><br> <i>Publicly available at https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
+            "kind": "file",
+            "associated_datafile": "telcoCustomerChurn.csv"
+          },
+          {
+            "name": "Student Grades",
+            "path": "studentGrades.jasp",
+            "description": "Data contains information of 357 high school students in Portugal (Cortez & Silva, 2008). <br><br> <i>Publicly available at https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+            "kind": "file",
+            "associated_datafile": "studentGrades.csv"
+          },
+          {
+            "name": "Wine Types",
+            "path": "wine.jasp",
+            "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> <i>Data set included in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "wine.csv"
+          }
+        ],
+        "debug": false
+      },
+    {
+      "name": "11. Meta-Analysis",
+      "path": "11. Meta-Analysis",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "BCG Vaccine",
+          "path": "BCG Vaccine.jasp",
+          "description": "Test statistics from studies examining the effectiveness of a BCG vaccine. <br><br> The example JASP file demonstrates the use of a fixed-effects and random-effects meta-analysis.<br><br> <i>Data courtesy of Raoul Grasman.<\/i>",
+          "kind": "file",
+          "associated_datafile": "BCG Vaccine.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "12. Network Analysis",
+      "path": "12. Network Analysis",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "BFI Network",
+          "path": "BFI Network.jasp",
+          "description": "Responses from 2,800 participants on 25 Big Five Inventory items. <br><br> The example JASP file demonstrates the use of a network analysis.<br><br> <i>Data set included in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "BFI Network.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+        "name": "13. Reliability",
+        "path": "13. Reliability",
+        "description": "",
+        "kind": "folder",
+        "children": [
+          {
+            "name": "Fear of Statistics",
+            "path": "Fear of Statistics.jasp",
+            "description": "Responses of 2571 students on an SPSS Anxiety Questionnaire. <br><br> The example JASP file demonstrates the use of a reliability analysis.<br><br> <i>Fictional data from Andy Field.<\/i>",
+            "kind": "file",
+            "associated_datafile": "Fear of Statistics.csv"
+          }
+        ],
+        "debug": false
+      },
+    {
+      "name": "14. SEM",
+      "path": "14. SEM",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Political Democracy",
+          "path": "Political Democracy.jasp",
+          "description": "Indicators of industralization in 1960, and political democracy in 1960 and 1965. <br><br> The example JASP file demonstrates the use of structural equation modeling.<br><br> <i>Data set included in R.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Political Democracy.csv"
+        }
+      ],
+      "debug": false
+    },	
+    {
+      "name": "15. Miscellaneous",
+      "path": "15. Miscellaneous",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Anscombe's Quartet",
+          "path": "Anscombe's Quartet.jasp",
+          "description": "A classic example of the need to visualize one's data.  <br><br> The example JASP file demonstrates the use of inspecting data thoroughly using plots rather than statistical output.<br><br> <i>Fictional data from Anscombe (1973).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Anscombe's Quartet.csv"
+        },
+        {
+          "name": "Missing Data",
+          "path": "Missing Data.jasp",
+          "description": "Synthetic data with missing values. <br><br> The example JASP file demonstrates the use of missing values.<br><br> <i>Fictional data from Alexander Ly.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Missing Data.csv"
+        },
+        {
+          "name": "Presidents' Height",
+          "path": "Presidents' Height.jasp",
+          "description": "Heights of US presidents and their proportion of the popular vote. <br><br> The example JASP file demonstrates the use of conducting an interval-null hypothesis.<br><br> <i>Subset of the data reported in Stulp et al. (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Presidents' Height.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "Debug Dataset (JASP Team, 2017)",
+      "path": "../debug.csv",
+      "description": "For testing. Readme: is.gd/jaspdata",
+      "kind": "file",
+      "children": ["NULL"],
+      "debug": true
+    }
+  ]
+}
