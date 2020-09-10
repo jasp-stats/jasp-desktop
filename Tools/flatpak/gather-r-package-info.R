@@ -66,6 +66,8 @@ defineSpecials <- function()
   specials[['stanova']]      <- list(type='github', commit='2cb08223f957533103612e72055fa7063a1fb5ce', repo='bayesstuff/stanova'    )
   specials[['afex']]         <- list(type='github', commit='1acc5eec8c4d8d7e20c575f71892d1ab508f8d86', repo='singmann/afex'         )
   specials[['ggpol']]        <- list(type='github', commit='dea9db2503b04b81dbc746fdeccf92e9849ce64b', repo='jasp-stats/ggpol'      ) # temporary fix for conflicting ggplot2 dependencies in jasp 0.12.2. Should be removed after that release and shit should be fixed!
+  specials[['RoBMA']]        <- list(type='github', commit='984df69ee1878b12005b9e245a3961d44d3f73ae', repo='FBartos/RoBMA'         )
+  
 }
 
 getPkgVersion <- function(pkgName)

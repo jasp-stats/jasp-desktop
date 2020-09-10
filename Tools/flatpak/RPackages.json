@@ -694,8 +694,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/jfa_0.1.0.tar.gz",
-					"sha256": "6a4c99ae507755f167b256692eda7e069c51c37ac913a7d60c3f09ace0efd08d"
+					"url": "http://static.jasp-stats.org/RPkgs/jfa_0.2.0.tar.gz",
+					"sha256": "97564da402c15718a354c7e0c578294839c816538b114806f009fba2bb2d458f"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -1462,8 +1462,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/remotes_2.1.0.tar.gz",
-					"sha256": "8944c8f6fc9f0cd0ca04d6cf1221b716eee08facef9f4b4c4d91d0346d6d68a7"
+					"url": "http://static.jasp-stats.org/RPkgs/remotes_2.2.0.tar.gz",
+					"sha256": "12f234fd8c46f4ac54e06a3c60e4015ed2193a32762ca4dd6854f120136f33b8"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3173,6 +3173,18 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
+			"name": "RoBMA",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "git",
+					"url": "https://github.com/FBartos/RoBMA",
+					"commit": "984df69ee1878b12005b9e245a3961d44d3f73ae"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
 			"name": "rockchalk",
 			"buildsystem": "simple",
 			"sources": [
@@ -3552,6 +3564,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/viridis_0.5.1.tar.gz",
 					"sha256": "ddf267515838c6eb092938133035cee62ab6a78760413bfc28b8256165701918"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "weightr",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/weightr_2.0.2.tar.gz",
+					"sha256": "8b064feb6e185bcda4f58867c3935ae4d11ce3721762e33822fbb519d2545ee3"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
