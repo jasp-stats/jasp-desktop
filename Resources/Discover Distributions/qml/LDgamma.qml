@@ -47,7 +47,8 @@ Form
 
 			Group
 			{
-				columns: 1
+				columns: 2
+				Text { text: qsTr("Shape:") }
 				DoubleField
 				{
 					name: "shape"
@@ -56,6 +57,7 @@ Form
 					negativeValues: false
 					defaultValue: 1
 				}
+				Text { text: [qsTr("Scale:"), qsTr("Rate:"), qsTr("Mean:")][parametrization.currentIndex]}
 				DoubleField
 				{
 					name: "par2"
@@ -92,11 +94,14 @@ Form
 	LD.LDGenerateDisplayData
 	{
 		distributionName		: "Gamma"
+		formula					: shape.label + " = " + shape.value + ", " + par2.label + " = " + par2.value
+		enabled					: mainWindow.dataAvailable
 	}
 
 	Section
 	{
 		title: qsTr("Estimate Parameters")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{
@@ -126,6 +131,7 @@ Form
 	Section
 	{
 		title: qsTr("Assess Fit")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{

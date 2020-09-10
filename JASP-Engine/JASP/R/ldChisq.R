@@ -19,18 +19,11 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsChisq(options)
   
   #### Show chisq section ----
-  .ldIntroText(jaspResults, options, gettextf("%s<sup>2</sup> distribution","\u03A7"))
-  .ldChisqParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaChisqPDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulaChisqCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaChisqQF)
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettextf("%s<sup>2</sup> distribution","\u03A7"), 
+                      parSupportMoments = .ldChisqParsSupportMoments,
+                      formulaPDF        = .ldFormulaChisqPDF, 
+                      formulaCDF        = .ldFormulaChisqCDF, 
+                      formulaQF         = .ldFormulaChisqQF)
   
   #### Generate and Display data section ----
   # simulate and read data
@@ -50,43 +43,10 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
   }
   
   # overview of the data
-  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
-  
-  readyDesc <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
-  .ldSummaryContinuousTableMain(dataContainer, variable, options, readyDesc)
-  .ldObservedMomentsTableMain  (dataContainer, variable, options, readyDesc)
-  .ldPlotHistogram             (dataContainer, variable, options, readyDesc)
-  .ldPlotECDF                  (dataContainer, variable, options, readyDesc)
-  
+  .ldDescriptives(jaspResults, variable, options, ready, errors, "continuous")
   
   #### Fit data and assess fit ----
-  
-  readyFit <- ready && isFALSE(errors)
-  #### Maximum Likelihood ----
-  if(options$methodMLE){
-    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
-    
-    # parameter estimates
-    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR)
-    .ldFillChisqEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
-    
-    
-    # fit assessment
-    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
-    
-    # fit statistics
-    mleFitStatistics   <- .ldFitStatisticsTable(mleFitContainer, options, "methodMLE")
-    mleFitStatisticsResults <- .ldFitStatisticsResults(mleContainer, mleResults$fitdist, variable, options, readyFit)
-    .ldFillFitStatisticsTable(mleFitStatistics, mleFitStatisticsResults, options, readyFit)
-    # fit plots
-    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, readyFit)
-    
-  }
-  
-  #### Method of moments ----
-  
-  #### Unbiased estimate ----
+  .ldMLE(jaspResults, variable, options, ready, errors, .ldFillChisqEstimatesTable)
   
   return()
 }
@@ -96,29 +56,16 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
   options[['parValNames']] <- c("df", "ncp")
   
   options[['pars']]   <- list(df = options[['df']], ncp = options[['ncp']])
-  options[['pdfFun']] <- dchisq
-  options[['cdfFun']] <- pchisq
-  options[['qFun']]   <- qchisq
-  options[['rFun']]   <- rchisq
+  options[['pdfFun']] <- stats::dchisq
+  options[['cdfFun']] <- stats::pchisq
+  options[['qFun']]   <- stats::qchisq
+  options[['rFun']]   <- stats::rchisq
   options[['distNameInR']] <- "chisq"
   
-  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
-  
-  if(options[['highlightType']] == "minmax"){
-    options[['highlightmin']] <- options[['min']]
-    options[['highlightmax']] <- options[['max']]
-  } else if(options[['highlightType']] == "lower"){
-    options[['highlightmin']] <- options[['range_x']][1]
-    options[['highlightmax']] <- options[['lower_max']]
-  } else if(options[['highlightType']] == "upper"){
-    options[['highlightmin']] <- options[['upper_min']]
-    options[['highlightmax']] <- options[['range_x']][2]
-  } else{
-    options[['highlightmin']] <- options[['highlightmax']] <- NULL
-  }
+  options <- .ldOptionsDeterminePlotLimits(options)
   
   options$support <- list(min = 0, max = Inf)
-  options$lowerBound <- c(0,  -Inf)
+  options$lowerBound <- c(0, 0)
   options$upperBound <- c(Inf, Inf)
   
   options$transformations <- c(df = "df", ncp = "ncp")

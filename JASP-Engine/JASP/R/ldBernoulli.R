@@ -19,15 +19,10 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsBernoulli(options)
   
   #### Show bernoulli section ----
-  .ldIntroText(jaspResults, options, gettext("Bernoulli distribution"))
-  .ldBernoulliParsSupportMoments(jaspResults, options)
-  
-  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
-  .ldFillPMFContainer(pmfContainer, options, .ldFormulaBernoulliPMF)
-  
-  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCMFContainer(cmfContainer, options, .ldFormulaBernoulliCDF)
-  
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("Bernoulli distribution"), 
+                      parSupportMoments = .ldBernoulliParsSupportMoments,
+                      formulaPMF        = .ldFormulaBernoulliPMF, 
+                      formulaCMF        = .ldFormulaBernoulliCDF)
   
   #### Generate and Display data section ----
   # simulate and read data
@@ -48,36 +43,10 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   }
   
   # overview of the data
-  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
-  
-  readyDesc <- ready && isFALSE(errors)
-  .ldSummaryFactorTableMain    (dataContainer, variable, options, readyDesc)
-  .ldPlotHistogram             (dataContainer, variable, options, readyDesc, "factor")
-  
+  .ldDescriptives(jaspResults, variable, options, ready, errors, "factor")
   
   #### Fit data and assess fit ----
-  
-  readyFit <- ready && isFALSE(errors)
-  #### Maximum Likelihood ----
-  if(options$methodMLE){
-    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
-    
-    # parameter estimates
-    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, as.numeric(variable) - 1, options, readyFit, options$distNameInR)
-    .ldFillBernoulliEstimatesTable(mleEstimatesTable, mleResults, options, readyFit, levels(variable))
-    
-    # fit assessment
-    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
-
-    # fit plots
-    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, as.numeric(variable)-1, readyFit)
-    
-  }
-  
-  #### Method of moments ----
-  
-  #### Unbiased estimate ----
+  .ldMLE(jaspResults, as.numeric(variable)-1, options, ready, errors, .ldFillBernoulliEstimatesTable, levels = levels(variable))
   
   return()
 }
@@ -91,13 +60,13 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   options[['fix.pars']] <- list(size = 1)
     
   options[['pdfFun']] <- function(x, size = 1, prob, log = FALSE){ 
-    dbinom(x = x, size = size, prob = prob, log = log) 
+    stats::dbinom(x = x, size = size, prob = prob, log = log) 
     }
   options[['cdfFun']] <- function(q, size = 1, prob, lower.tail = TRUE, log.p = FALSE){ 
-    pbinom(q = q, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
+    stats::pbinom(q = q, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
     }
   options[['qFun']]   <- function(p, size = 1, prob, lower.tail = TRUE, log.p = FALSE){ 
-    qbinom(p = p, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
+    stats::qbinom(p = p, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
   }
   options[['rFun']]   <- function(n, size = 1, prob) { rbinom(n = n, size = 1, prob = prob)}
   options[['distNameInR']] <- "binom"

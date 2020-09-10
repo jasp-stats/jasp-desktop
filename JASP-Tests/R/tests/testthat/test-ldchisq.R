@@ -1,30 +1,26 @@
 context("Discover Distributions - Chi-square")
 
 options <- jasptools::analysisOptions("LDchisq")
-options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
-  containsColumn = TRUE))
-options$andersonDarling <- TRUE
-options$ciInterval <- TRUE
-options$cramerVonMisses <- TRUE
-options$ecdf <- TRUE
-options$estCDF <- TRUE
-options$estPDF <- TRUE
 options$explanatoryText <- TRUE
-options$highlightDensity <- TRUE
-options$highlightProbability <- TRUE
-options$histogram <- TRUE
-options$kolmogorovSmirnov <- TRUE
-options$methodMLE <- TRUE
-options$moments <- TRUE
-options$newVariableName <- ""
-options$outputSE <- TRUE
 options$parsSupportMoments <- TRUE
 options$plotCDF <- TRUE
 options$plotQF <- TRUE
-options$ppplot <- TRUE
+options$methodMLE <- TRUE
+options$outputSE <- TRUE
+options$ciInterval <- TRUE
+options$estPDF <- TRUE
 options$qqplot <- TRUE
-options$summary <- TRUE
+options$estCDF <- TRUE
+options$ppplot <- TRUE
+options$kolmogorovSmirnov <- TRUE
+options$cramerVonMisses <- TRUE
+options$andersonDarling <- TRUE
+options$highlightDensity <- TRUE
+options$highlightProbability <- TRUE
 options$variable <- "Chisq1000(df=5,ncp=0)"
+options$moments <- TRUE
+options$ecdf <- TRUE
+options$newVariableName <- ""
 set.seed(1)
 results <- jasptools::run("LDchisq", "Distributions.csv", options)
 
@@ -59,9 +55,9 @@ test_that("Descriptives table results match", {
 test_that("Estimated Parameters table results match", {
   table <- results[["results"]][["mleContainer"]][["collection"]][["mleContainer_estParametersTable"]][["data"]]
   expect_equal_tables(table,
-                      list(4.89430766995065, 4.47318516594046, "k", 0.214862368559807, 5.31543017396084,
-                           0.174886673572473, -0.295176292246842, "<unicode>", 0.239832450762928,
-                           0.644949639391788))
+                      list(4.8938297545344, 4.47271658799517, "k", 0.214857604456471, 5.31494292107364,
+                           0.174944391692288, -0.295081957134747, "<unicode>", 0.239813768280715,
+                           0.644970740519323))
 })
 
 test_that("Empirical vs. Theoretical CDF plot matches", {
@@ -79,9 +75,9 @@ test_that("Histogram vs. Theoretical PDF plot matches", {
 test_that("Fit Statistics table results match", {
   table <- results[["results"]][["mleContainer"]][["collection"]][["mleContainer_mleFitAssessment"]][["collection"]][["mleContainer_mleFitAssessment_fitStatisticsTable"]][["data"]]
   expect_equal_tables(table,
-                      list(0.987805623863763, 0.0141898736833013, "Kolmogorov-Smirnov", 0.993943245701122,
-                           0.0225598781379213, "Cram<unicode>r-von Mises", 0.999462835577231,
-                           0.133476420881834, "Anderson-Darling"))
+                      list(0.98827693435693, 0.0141404497973602, "Kolmogorov-Smirnov", 0.994063879727108,
+                           0.0224779929435535, "Cram<unicode>r-von Mises", 0.999468456836373,
+                           0.133316493982989, "Anderson-Darling"))
 })
 
 test_that("P-P plot matches", {

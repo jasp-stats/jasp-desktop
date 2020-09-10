@@ -34,8 +34,10 @@ Form
 			title: "Parameters"
 			Group
 			{
-				columns: 1
+				columns: 2
+				Text { text: qsTr("Shape:") }
 				DoubleField{ name: "alpha"; label: qsTr("α"); id: alpha; negativeValues: false; defaultValue: 1 }
+				Text { text: qsTr("Shape:") }
 				DoubleField{ name: "beta";  label: qsTr("β"); id: beta; negativeValues: false; defaultValue: 1 }
 			}
 
@@ -66,11 +68,13 @@ Form
 	{
 		distributionName	: "Beta"
 		formula				: "α = " + alpha.value + ", β = " + beta.value
+		enabled				: mainWindow.dataAvailable
 	}
 
 	Section
 	{
 		title: qsTr("Estimate Parameters")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{
@@ -100,6 +104,7 @@ Form
 	Section
 	{
 		title: qsTr("Assess Fit")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{

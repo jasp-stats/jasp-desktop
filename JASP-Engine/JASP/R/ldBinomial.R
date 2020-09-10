@@ -19,16 +19,10 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsBinomial(options)
   
   #### Show binomial section ----
-  .ldIntroText(jaspResults, options, gettext("binomial distribution"))
-  .ldBinomialParsSupportMoments(jaspResults, options)
-  
-  
-  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
-  .ldFillPMFContainer(pmfContainer, options, .ldFormulaBinomialPMF)
-  
-  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCMFContainer(cmfContainer, options, .ldFormulaBinomialCDF)
-  
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("binomial distribution"), 
+                      parSupportMoments = .ldBinomialParsSupportMoments,
+                      formulaPMF        = .ldFormulaBinomialPMF, 
+                      formulaCMF        = .ldFormulaBinomialCDF)
   
   #### Generate and Display data section ----
   # simulate and read data
@@ -49,43 +43,10 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
   }
   
   # overview of the data
-  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
-  
-  readyDesc <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
-  .ldSummaryContinuousTableMain(dataContainer, variable, options, readyDesc)
-  .ldObservedMomentsTableMain  (dataContainer, variable, options, readyDesc)
-  .ldPlotHistogram             (dataContainer, variable, options, readyDesc, "discrete")
-  .ldPlotECDF                  (dataContainer, variable, options, readyDesc)
-  
+  .ldDescriptives(jaspResults, variable, options, ready, errors, "discrete")
   
   #### Fit data and assess fit ----
-  
-  readyFit <- ready && isFALSE(errors)
-  #### Maximum Likelihood ----
-  if(options$methodMLE){
-    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
-    
-    # parameter estimates
-    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR)
-    .ldFillBinomialEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
-    
-    # fit assessment
-    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
-
-    # fit statistics
-    mleFitStatistics   <- .ldFitStatisticsTable(mleFitContainer, options, "methodMLE")
-    mleFitStatisticsResults <- .ldFitStatisticsResults(mleContainer, mleResults$fitdist, variable, options, readyFit)
-    .ldFillFitStatisticsTable(mleFitStatistics, mleFitStatisticsResults, options, readyFit)
-    #return()
-    # fit plots
-    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, readyFit)
-    
-  }
-  
-  #### Method of moments ----
-  
-  #### Unbiased estimate ----
+  .ldMLE(jaspResults, variable, options, ready, errors, .ldFillBinomialEstimatesTable)
   
   return()
 }
@@ -98,16 +59,13 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
   options[['pars']]   <- list(prob = options[['prob']], size = options[['size']])
   options[['fix.pars']] <- list(size = options[['size']])
     
-  options[['pdfFun']] <- dbinom
-  options[['cdfFun']] <- pbinom
-  options[['qFun']]   <- qbinom
-  options[['rFun']]   <- rbinom
+  options[['pdfFun']] <- stats::dbinom
+  options[['cdfFun']] <- stats::pbinom
+  options[['qFun']]   <- stats::qbinom
+  options[['rFun']]   <- stats::rbinom
   options[['distNameInR']] <- "binom"
   
-  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
-  
-  options[['highlightmin']] <- options[['min']]
-  options[['highlightmax']] <- options[['max']]
+  options <- .ldOptionsDeterminePlotLimits(options, FALSE)
  
   options$support <- list(min = 0, max = options[['size']])
   options$lowerBound <- c(0)

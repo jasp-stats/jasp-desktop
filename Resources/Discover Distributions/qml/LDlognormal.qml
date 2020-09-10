@@ -15,10 +15,10 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick			2.8
-import QtQuick.Layouts	1.3
-import JASP.Controls	1.0
-import JASP.Widgets		1.0
+import QtQuick 2.8
+import QtQuick.Layouts 1.3
+import JASP.Controls 1.0
+import JASP.Widgets 1.0
 
 import "./common" as LD
 
@@ -30,43 +30,13 @@ Form
 		title: qsTr("Show Distribution")
 		Group
 		{
+			title: "Parameters"
 			Layout.columnSpan: 2
-			DropDown
-			{
-				name: "parametrization"
-				id:   parametrization
-				indexDefaultValue: 0
-				label: qsTr("Parameters")
-				values: [
-					{ label: "k, θ",  value: "scale"},
-					{ label: "α, β",  value: "rate" },
-					{ label: "k, μ",  value: "mean"  }
-				]
-				visible: true
-			}
-
-			Group
-			{
-				columns: 2
-				Text { text: qsTr("Shape:") }
-				DoubleField
-				{
-					name: "shape"
-					label: ["k", "α", "k"][parametrization.currentIndex]
-					id: shape
-					negativeValues: false
-					defaultValue: 1
-				}
-				Text { text: [qsTr("Scale:"), qsTr("Rate:"), qsTr("Mean:")][parametrization.currentIndex]}
-				DoubleField
-				{
-					name: "par2"
-					label: ["θ", "β", "μ"][parametrization.currentIndex]
-					id: par2
-					negativeValues: false
-					defaultValue: 1
-				}
-			}
+			columns: 2
+			Text { text: qsTr("Log Mean:") }
+			DoubleField{ name: "mu";	label: qsTr("μ"); id: mu;	 negativeValues: true;  defaultValue: 0 }
+			Text { text: qsTr("Log std. deviation:") }
+			DoubleField{ name: "sigma"; label: qsTr("σ"); id: sigma; negativeValues: false; defaultValue: 1 }
 
 		}
 
@@ -85,17 +55,18 @@ Form
 		{
 			enabled				: plotPDF.checked || plotCDF.checked
 			negativeValues		: false
+			rangeMaxX			: 5
 			intervalMinmaxMin	: 1
 			intervalMinmaxMax	: 2
 			intervalLowerMax	: 1
-			intervalUpperMin	: 1
+			intervalUpperMin	: 2
 		}
 	}
 
 	LD.LDGenerateDisplayData
 	{
-		distributionName		: "InvGamma"
-		formula					: ["k = ", "α = ", "k = "][parametrization.currentIndex] + shape.value + [",θ = ", ",β = ", ",μ = "][parametrization.currentIndex] + par2.value
+		distributionName		: "Log-normal"
+		formula					: mu.label + " = " + mu.value + ", " + sigma.label + " = " + sigma.value
 		enabled					: mainWindow.dataAvailable
 	}
 
@@ -107,8 +78,6 @@ Form
 		Group
 		{
 			CheckBox{ name: "methodMLE";      label: qsTr("Maximum likelihood"); visible: true  }
-			CheckBox{ name: "methodMoments";  label: qsTr("Method of moments");  visible: false }
-			CheckBox{ name: "methodUnbiased"; label: qsTr("Unbiased estimator"); visible: false }
 		}
 
 		Group
@@ -150,7 +119,6 @@ Form
 			CheckBox{ name: "kolmogorovSmirnov";  label: qsTr("Kolmogorov-Smirnov")}
 			CheckBox{ name: "cramerVonMisses";    label: qsTr("Cramér–von Mises")  }
 			CheckBox{ name: "andersonDarling";    label: qsTr("Anderson-Darling")  }
-			//CheckBox{ name: "shapiroWilk";        label: qsTr("Shapiro-Wilk")      }
 		}
 
 	}

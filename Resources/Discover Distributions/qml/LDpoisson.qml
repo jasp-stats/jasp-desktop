@@ -32,6 +32,8 @@ Form
 		{
 			title: qsTr("Parameter")
 			Layout.columnSpan: 2
+			columns: 2
+			Text { text: qsTr("Rate:") }
 			DoubleField{ name: "lambda"; label: qsTr("λ"); id: lambda; min: 0; defaultValue: 1 }
 		}
 		Group
@@ -98,11 +100,13 @@ Form
 		histogramIsBarPlot		: true
 		allowOnlyScaleColumns	: false
 		suggestScaleColumns		: true
+		enabled					: mainWindow.dataAvailable
 	}
 
 	Section
 	{
 		title: qsTr("Estimate Parameters")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{
@@ -132,6 +136,7 @@ Form
 	Section
 	{
 		title: qsTr("Assess Fit")
+		enabled: mainWindow.dataAvailable
 
 		Group
 		{

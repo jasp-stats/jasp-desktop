@@ -19,16 +19,10 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsNegbinomial(options)
   
   #### Show negbinomial section ----
-  .ldIntroText(jaspResults, options, gettext("negative binomial distribution"))
-  .ldNegbinomialParsSupportMoments(jaspResults, options)
-  
-  
-  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
-  .ldFillPMFContainer(pmfContainer, options, .ldFormulaNegbinomialPMF)
-  
-  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCMFContainer(cmfContainer, options, .ldFormulaNegbinomialCDF)
-  
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("negative binomial distribution"), 
+                      parSupportMoments = .ldNegbinomialParsSupportMoments,
+                      formulaPMF        = .ldFormulaNegbinomialPMF, 
+                      formulaCMF        = .ldFormulaNegbinomialCDF)
   
   #### Generate and Display data section ----
   # simulate and read data
@@ -49,43 +43,10 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
   }
   
   # overview of the data
-  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
-  
-  readyDesc <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
-  .ldSummaryContinuousTableMain(dataContainer, variable, options, readyDesc)
-  .ldObservedMomentsTableMain  (dataContainer, variable, options, readyDesc)
-  .ldPlotHistogram             (dataContainer, variable, options, readyDesc, "discrete")
-  .ldPlotECDF                  (dataContainer, variable, options, readyDesc)
-  
+  .ldDescriptives(jaspResults, variable, options, ready, errors, "discrete")
   
   #### Fit data and assess fit ----
-  
-  readyFit <- ready && isFALSE(errors)
-  #### Maximum Likelihood ----
-  if(options$methodMLE){
-    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
-    
-    # parameter estimates
-    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR)
-    .ldFillNegbinomialEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
-    
-    # fit assessment
-    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
-
-    # fit statistics
-    mleFitStatistics   <- .ldFitStatisticsTable(mleFitContainer, options, "methodMLE")
-    mleFitStatisticsResults <- .ldFitStatisticsResults(mleContainer, mleResults$fitdist, variable, options, readyFit)
-    .ldFillFitStatisticsTable(mleFitStatistics, mleFitStatisticsResults, options, readyFit)
-    #return()
-    # fit plots
-    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, readyFit)
-    
-  }
-  
-  #### Method of moments ----
-  
-  #### Unbiased estimate ----
+  .ldMLE(jaspResults, variable, options, ready, errors, .ldFillNegbinomialEstimatesTable)
   
   return()
 }
@@ -102,16 +63,13 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
   
   options[['pars']]   <- list(size = options[['size']], mu = options[['mu']])
     
-  options[['pdfFun']] <- dnbinom
-  options[['cdfFun']] <- pnbinom
-  options[['qFun']]   <- qnbinom
-  options[['rFun']]   <- rnbinom
+  options[['pdfFun']] <- stats::dnbinom
+  options[['cdfFun']] <- stats::pnbinom
+  options[['qFun']]   <- stats::qnbinom
+  options[['rFun']]   <- stats::rnbinom
   options[['distNameInR']] <- "nbinom"
   
-  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
-  
-  options[['highlightmin']] <- options[['min']]
-  options[['highlightmax']] <- options[['max']]
+  options <- .ldOptionsDeterminePlotLimits(options, FALSE)
  
   options$support <- list(min = 0, max = Inf)
   options$lowerBound <- c(0, 0)

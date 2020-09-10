@@ -19,16 +19,10 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsPoisson(options)
   
   #### Show poisson section ----
-  .ldIntroText(jaspResults, options, gettext("Poisson distribution"))
-  .ldPoissonParsSupportMoments(jaspResults, options)
-  
-  
-  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
-  .ldFillPMFContainer(pmfContainer, options, .ldFormulaPoissonPMF)
-  
-  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCMFContainer(cmfContainer, options, .ldFormulaPoissonCDF)
-  
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("Poisson distribution"), 
+                      parSupportMoments = .ldPoissonParsSupportMoments,
+                      formulaPMF        = .ldFormulaPoissonPMF, 
+                      formulaCMF        = .ldFormulaPoissonCDF)
   
   #### Generate and Display data section ----
   # simulate and read data
@@ -49,43 +43,10 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
   }
   
   # overview of the data
-  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
-  
-  readyDesc <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
-  .ldSummaryContinuousTableMain(dataContainer, variable, options, readyDesc)
-  .ldObservedMomentsTableMain  (dataContainer, variable, options, readyDesc)
-  .ldPlotHistogram             (dataContainer, variable, options, readyDesc, "discrete")
-  .ldPlotECDF                  (dataContainer, variable, options, readyDesc)
-  
+  .ldDescriptives(jaspResults, variable, options, ready, errors, "discrete")
   
   #### Fit data and assess fit ----
-  
-  readyFit <- ready && isFALSE(errors)
-  #### Maximum Likelihood ----
-  if(options$methodMLE){
-    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
-    
-    # parameter estimates
-    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR)
-    .ldFillPoissonEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
-    
-    # fit assessment
-    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
-
-    # fit statistics
-    mleFitStatistics   <- .ldFitStatisticsTable(mleFitContainer, options, "methodMLE")
-    mleFitStatisticsResults <- .ldFitStatisticsResults(mleContainer, mleResults$fitdist, variable, options, readyFit)
-    .ldFillFitStatisticsTable(mleFitStatistics, mleFitStatisticsResults, options, readyFit)
-    #return()
-    # fit plots
-    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, readyFit)
-    
-  }
-  
-  #### Method of moments ----
-  
-  #### Unbiased estimate ----
+  .ldMLE(jaspResults, variable, options, ready, errors, .ldFillPoissonEstimatesTable)
   
   return()
 }
@@ -97,16 +58,13 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
   
   options[['pars']]   <- list(lambda = options[['lambda']])
     
-  options[['pdfFun']] <- dpois
-  options[['cdfFun']] <- ppois
-  options[['qFun']]   <- qpois
-  options[['rFun']]   <- rpois
+  options[['pdfFun']] <- stats::dpois
+  options[['cdfFun']] <- stats::ppois
+  options[['qFun']]   <- stats::qpois
+  options[['rFun']]   <- stats::rpois
   options[['distNameInR']] <- "pois"
   
-  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
-  
-  options[['highlightmin']] <- options[['min']]
-  options[['highlightmax']] <- options[['max']]
+  options <- .ldOptionsDeterminePlotLimits(options, FALSE)
  
   options$support <- list(min = 0, max = Inf)
   options$lowerBound <- c(0)

@@ -19,18 +19,11 @@ LDgammaInverse <- function(jaspResults, dataset, options, state=NULL){
   options <- .recodeOptionsLDgammaInverse(options)
   
   #### Show gammaInverse section ----
-  .ldIntroText(jaspResults, options, gettext("inverse gamma distribution"))
-  .ldGammaInverseParsSupportMoments(jaspResults, options)
-  
-  
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
-  .ldFillPDFContainer(pdfContainer, options, .ldFormulaGammaInversePDF)
-  
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
-  .ldFillCDFContainer(cdfContainer, options, .ldFormulaGammaInverseCDF)
-  
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
-  .ldFillQFContainer(qfContainer,   options, .ldFormulaGammaInverseQF)
+  .ldShowDistribution(jaspResults = jaspResults, options = options, name = gettext("inverse gamma distribution"), 
+                      parSupportMoments = .ldGammaInverseParsSupportMoments,
+                      formulaPDF        = .ldFormulaGammaInversePDF, 
+                      formulaCDF        = .ldFormulaGammaInverseCDF, 
+                      formulaQF         = .ldFormulaGammaInverseQF)
   
   #### Generate and Display data section ----
   # simulate and read data
@@ -50,43 +43,10 @@ LDgammaInverse <- function(jaspResults, dataset, options, state=NULL){
   }
   
   # overview of the data
-  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
-  
-  readyDesc <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
-  .ldSummaryContinuousTableMain(dataContainer, variable, options, readyDesc)
-  .ldObservedMomentsTableMain  (dataContainer, variable, options, readyDesc)
-  .ldPlotHistogram             (dataContainer, variable, options, readyDesc)
-  .ldPlotECDF                  (dataContainer, variable, options, readyDesc)
-  
+  .ldDescriptives(jaspResults, variable, options, ready, errors, "continuous")
   
   #### Fit data and assess fit ----
-  
-  readyFit <- ready && isFALSE(errors)
-  #### Maximum Likelihood ----
-  if(options$methodMLE){
-    mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", "Maximum likelihood", 7, errors)
-    
-    # parameter estimates
-    mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR)
-    .ldFillGammaInverseEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
-    
-    
-    # fit assessment
-    mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", "Fit Assessment", 8)
-    
-    # fit statistics
-    mleFitStatistics   <- .ldFitStatisticsTable(mleFitContainer, options, "methodMLE")
-    mleFitStatisticsResults <- .ldFitStatisticsResults(mleContainer, mleResults$fitdist, variable, options, readyFit)
-    .ldFillFitStatisticsTable(mleFitStatistics, mleFitStatisticsResults, options, readyFit)
-    # fit plots
-    .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, readyFit)
-    
-  }
-  
-  #### Method of moments ----
-  
-  #### Unbiased estimate ----
+  .ldMLE(jaspResults, variable, options, ready, errors, .ldFillGammaInverseEstimatesTable)
   
   return()
 }
@@ -109,27 +69,9 @@ LDgammaInverse <- function(jaspResults, dataset, options, state=NULL){
   options[['qFun']]   <- invgamma::qinvgamma
   options[['rFun']]   <- invgamma::rinvgamma
   
-  # distribution from packages need to be exported to the global namespace (for fitting)
-  #dinvgamma <<- invgamma::dinvgamma
-  #pinvgamma <<- invgamma::pinvgamma
-  #qinvgamma <<- invgamma::qinvgamma
-  #rinvgamma <<- invgamma::rinvgamma
   options[['distNameInR']] <- "invgamma"
   
-  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
-  
-  if(options[['highlightType']] == "minmax"){
-    options[['highlightmin']] <- options[['min']]
-    options[['highlightmax']] <- options[['max']]
-  } else if(options[['highlightType']] == "lower"){
-    options[['highlightmin']] <- options[['range_x']][1]
-    options[['highlightmax']] <- options[['lower_max']]
-  } else if(options[['highlightType']] == "upper"){
-    options[['highlightmin']] <- options[['upper_min']]
-    options[['highlightmax']] <- options[['range_x']][2]
-  } else{
-    options[['highlightmin']] <- options[['highlightmax']] <- NULL
-  }
+  options <- .ldOptionsDeterminePlotLimits(options)
   
   options$support <- list(min = 0, max = Inf)
   options$lowerBound <- c(0, 0)

@@ -75,6 +75,29 @@
 }
 
 #### Descriptives ----
+.ldDescriptives <- function(jaspResults, variable, options, ready, errors, as = c("continuous", "discrete", "factor")){
+  as <- match.arg(as)
+  dataContainer <- .ldGetDataContainer(jaspResults, options, errors)
+  
+  if(as == "continuous") {
+    ready <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
+    .ldSummaryContinuousTableMain(dataContainer, variable, options, ready)
+    .ldObservedMomentsTableMain  (dataContainer, variable, options, ready)
+    .ldPlotHistogram             (dataContainer, variable, options, ready)
+    .ldPlotECDF                  (dataContainer, variable, options, ready)
+  } else if(as == "discrete") {
+    ready <- ready && (isFALSE(errors) || (is.null(errors$infinity) && is.null(errors$observations)))
+    .ldSummaryContinuousTableMain(dataContainer, variable, options, ready)
+    .ldObservedMomentsTableMain  (dataContainer, variable, options, ready)
+    .ldPlotHistogram             (dataContainer, variable, options, ready, "discrete")
+    .ldPlotECDF                  (dataContainer, variable, options, ready)
+  } else {
+    ready <- ready && isFALSE(errors)
+    .ldSummaryFactorTableMain    (dataContainer, variable, options, ready)
+    .ldPlotHistogram             (dataContainer, variable, options, ready, "factor")
+  }
+}
+
 .ldSummaryContinuousTableMain <- function(dataContainer, variable, options, ready) {
   if(!options$summary) return()
   if(!is.null(dataContainer[['summary']])) return()
@@ -321,8 +344,58 @@
   return(tab)
 }
 
+.ldOptionsDeterminePlotLimits <- function(options, switch = TRUE) {
+  options[['range_x']] <- c(options[['min_x']], options[['max_x']])
+  
+  if(switch) {
+    
+    if(options[['highlightType']] == "minmax"){
+      options[['highlightmin']] <- options[['min']]
+      options[['highlightmax']] <- options[['max']]
+    } else if(options[['highlightType']] == "lower"){
+      options[['highlightmin']] <- options[['range_x']][1]
+      options[['highlightmax']] <- options[['lower_max']]
+    } else if(options[['highlightType']] == "upper"){
+      options[['highlightmin']] <- options[['upper_min']]
+      options[['highlightmax']] <- options[['range_x']][2]
+    } else{
+      options[['highlightmin']] <- options[['highlightmax']] <- NULL
+    }
+    
+  } else {
+    
+    options[['highlightmin']] <- options[['min']]
+    options[['highlightmax']] <- options[['max']]
+  
+  }
+  
+  options
+}
+
 ### Fit distributions ----
 ### MLE stuff ----
+.ldMLE <- function(jaspResults, variable, options, ready, errors, fillTable, ...){
+  ready <- ready && isFALSE(errors)
+  if(! options$methodMLE) return()
+  
+  mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", gettext("Maximum likelihood"), 7, errors)
+    
+  # parameter estimates
+  mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
+  mleResults   <- .ldMLEResults(mleContainer, variable, options, ready, options$distNameInR)
+  fillTable(mleEstimatesTable, mleResults, options, ready, ...)
+    
+  # fit assessment
+  mleFitContainer    <- .ldGetFitContainer(mleContainer, options, "mleFitAssessment", gettext("Fit Assessment"), 8)
+    
+  # fit statistics
+  mleFitStatistics   <- .ldFitStatisticsTable(mleFitContainer, options, "methodMLE")
+  mleFitStatisticsResults <- .ldFitStatisticsResults(mleContainer, mleResults$fitdist, variable, options, ready)
+  .ldFillFitStatisticsTable(mleFitStatistics, mleFitStatisticsResults, options, ready)
+  # fit plots
+  .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, ready)
+}
+
 .ldMLEResults <- function(mleContainer, variable, options, ready, distName){
   if(!ready) return()
   if(!is.null(mleContainer[['mleResults']])) return(mleContainer[['mleResults']]$object)
@@ -396,7 +469,7 @@
   optionsTests <- allTests %in% names(options)
   whichTests <- unlist(options[allTests[optionsTests]])
   
-  if(all(!whichTests)) return()
+  if(is.null(whichTests) || all(!whichTests)) return()
   
   tab <- createJaspTable(title = gettext("Fit Statistics"))
   tab$position <- 1
@@ -628,6 +701,34 @@
   return()
 }
 
+#### Plots ----
+.ldShowDistribution <- function(jaspResults, options, name, parSupportMoments, formulaPDF=NULL, formulaPMF=NULL, formulaCDF=NULL, formulaCMF=NULL, formulaQF=NULL) {
+  .ldIntroText(jaspResults, options, name)
+  parSupportMoments(jaspResults, options)
+  
+  if (!is.null(formulaPDF) && is.null(formulaPMF)) {
+    pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
+    .ldFillPDFContainer(pdfContainer, options, formulaPDF)
+  } else if (is.null(formulaPDF) && !is.null(formulaPMF)) {
+    pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
+    .ldFillPMFContainer(pmfContainer, options, formulaPMF)
+  }
+  
+  if (!is.null(formulaCDF) && is.null(formulaCMF)) {
+    cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
+    .ldFillCDFContainer(cdfContainer, options, formulaCDF)
+  } else if(is.null(formulaCDF) && !is.null(formulaCMF)) {
+    cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
+    .ldFillCMFContainer(cmfContainer, options, formulaCMF)
+  }
+  
+  if (!is.null(formulaQF)) {
+    qfContainer <- .ldGetPlotContainer(jaspResults, options, "plotQF",   gettext("Quantile Function"), 5)
+    .ldFillQFContainer(qfContainer, options, formulaQF)
+  }
+  
+  return()
+}
 .ldGetPlotContainer <- function(jaspResults, options, name, title, position){
   if(!is.null(jaspResults[[name]])){
     plotsContainer <- jaspResults[[name]]
@@ -909,7 +1010,7 @@
   explanation$position <- 1
   
   if(is.null(explanationText)){
-    explanationText <- .ldAllTextsList()$explanations$cdf
+    explanationText <- .ldAllTextsList()$explanations$qf
   }
   
   explanation[['text']] <- explanationText
