@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-10 19:14+0000\n"
-"Last-Translator: Paulina Elizabeth Robalino <paulina.e.robalino@gmail.com>\n"
+"PO-Revision-Date: 2020-09-12 08:36+0000\n"
+"Last-Translator: Pablo Augusto Vailati <pvailati@uade.edu.ar>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/"
 "jasp-desktop/es/>\n"
 "Language: es\n"
@@ -14,7 +14,7 @@ msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr "Un agradable agrupación de elementos"
+msgstr "Una agradable agrupación de elementos"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
@@ -22,7 +22,7 @@ msgstr "Puede ingresar un número entero aquí: "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr ""
+msgstr "Esta es una herramienta increíblemente útil, ¿verdad?"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
@@ -46,7 +46,7 @@ msgstr "División"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Second-order Factor"
-msgstr "Factor de Segundo orden"
+msgstr "Factor de Segundo Orden"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Model Options"
