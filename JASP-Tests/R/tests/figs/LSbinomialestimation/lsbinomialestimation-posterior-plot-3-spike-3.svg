@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 720.00 576.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    line, polyline, polygon, path, rect, circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 10.67; stroke: none;' />
+<rect x='117.52' y='20.71' width='602.48' height='485.23' style='stroke-width: 10.67; stroke: none;' />
+<line x1='418.76' y1='483.88' x2='418.76' y2='153.05' style='stroke-width: 2.13; stroke-linecap: butt;' />
+<polyline points='425.85,165.32 418.76,153.05 411.68,165.32 ' style='stroke-width: 2.13; stroke-linecap: butt;' />
+<polyline points='144.91,483.88 692.61,483.88 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
+<line x1='144.59' y1='505.94' x2='692.93' y2='505.94' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<rect x='117.52' y='20.71' width='602.48' height='485.23' style='stroke-width: 0.00; stroke: none;' />
+<text x='0.00' y='489.74' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='102.05px' lengthAdjust='spacingAndGlyphs'>Models Spike</text>
+<polyline points='117.52,505.94 720.00,505.94 ' style='stroke-width: 0.00; stroke: none; stroke-linecap: butt;' />
+<polyline points='144.91,514.44 144.91,505.94 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<polyline points='254.45,514.44 254.45,505.94 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<polyline points='363.99,514.44 363.99,505.94 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<polyline points='473.53,514.44 473.53,505.94 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<polyline points='583.07,514.44 583.07,505.94 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<polyline points='692.61,514.44 692.61,505.94 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<text x='133.10' y='533.12' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='23.62px' lengthAdjust='spacingAndGlyphs'>0.0</text>
+<text x='242.64' y='533.12' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='23.62px' lengthAdjust='spacingAndGlyphs'>0.2</text>
+<text x='352.18' y='533.12' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='23.62px' lengthAdjust='spacingAndGlyphs'>0.4</text>
+<text x='461.72' y='533.12' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='23.62px' lengthAdjust='spacingAndGlyphs'>0.6</text>
+<text x='571.26' y='533.12' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='23.62px' lengthAdjust='spacingAndGlyphs'>0.8</text>
+<text x='680.80' y='533.12' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='23.62px' lengthAdjust='spacingAndGlyphs'>1.0</text>
+<text x='331.77' y='563.96' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='161.59px' lengthAdjust='spacingAndGlyphs'>Population proportion</text>
+<text x='493.36' y='563.96' style='font-size: 17.00px; font-family: Symbola;' textLength='4.25px' lengthAdjust='spacingAndGlyphs'> </text>
+<text x='497.61' y='563.96' style='font-size: 17.00px; font-family: Symbola;' textLength='8.14px' lengthAdjust='spacingAndGlyphs'>θ</text>
+<text x='247.77' y='11.70' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='341.98px' lengthAdjust='spacingAndGlyphs'>LSbinomialestimation-posterior-plot-3-spike-3</text>
+</svg>
