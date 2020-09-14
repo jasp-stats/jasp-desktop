@@ -37,8 +37,9 @@ Item
 
 	property	bool	buttonsInRow		: false
 	property	alias	name				: tableView.name
-	property	alias	source				: tableView.source
-	property	alias	tableView			: tableView
+    property	alias	source				: tableView.source
+    property	alias	values				: tableView.values
+    property	alias	tableView			: tableView
 	property	alias	factorsSource		: tableView.factorsSource
 	property	alias	control				: tableView //Needed for RowComponents
 
@@ -74,6 +75,9 @@ Item
 	signal	resetClicked();
 
 	signal tableViewCompleted();
+
+	function getColHeaderText(defaultName, colIndex)				{ return defaultName; }
+	function getRowHeaderText(defaultName, rowIndex)				{ return defaultName; }
 
 	Grid
 	{
@@ -126,6 +130,9 @@ Item
 
 		property int maxWidth	: basicButtonTableView.width * (basicButtonTableView.showButtons && !buttonsInRow ? 3 / 4 : 1)
 		property int maxHeight	: basicButtonTableView.height
+
+		function getColHeaderText(defaultName, colIndex) { return basicButtonTableView.getColHeaderText(defaultName, colIndex); }
+		function getRowHeaderText(defaultName, rowIndex) { return basicButtonTableView.getRowHeaderText(defaultName, rowIndex); }
 
 		Component.onCompleted	: basicButtonTableView.tableViewCompleted()
 	}

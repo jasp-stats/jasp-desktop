@@ -37,12 +37,13 @@ JASPControl
 	shouldStealHover:	false
 
 	property var	source
+    property var    values          : []
 	property string factorsSource	: ""
 	property alias	syncModels		: tableView.source
 	property string	modelType
 	property string	itemType		: "string"
 	property string filter			: "rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
-	property string colName			: modelType == "CustomContrasts" ? "" : "data"					//Used by ListModelFilteredDataEntry and ListMOdelANOVACustomContrasts
+    property string colName			: modelType == "CustomContrasts" ? "" : "data"					//Used by ListModelFilteredDataEntry
 	property string	extraCol		: ""						//Used by ListModelFilteredDataEntry
 	property string	tableType
 	property alias	model			: theView.model
@@ -66,6 +67,9 @@ JASPControl
 	//The size of the table *inside* the Flickable. + 2 for margins of flickable and scrollbars
 	readonly property int tableWidth:  theView.width  + 2
 	readonly property int tableHeight: theView.height + 2
+
+	function getColHeaderText(headerText, columnIndex)			{ return headerText; }
+	function getRowHeaderText(headerText, rowIndex)				{ return headerText; }
 
 	signal reset()
 	signal addRow()
@@ -143,7 +147,7 @@ JASPControl
 				columnHeaderDelegate: Rectangle
 				{
 					color: columnIndex === tableView.colSelected ? jaspTheme.grayLighter : jaspTheme.analysisBackgroundColor
-					Text { text: headerText; anchors.centerIn: parent; font: jaspTheme.font; color:	jaspTheme.textEnabled }
+					Text { text: tableView.getColHeaderText(headerText, columnIndex); anchors.centerIn: parent; font: jaspTheme.font; color:	jaspTheme.textEnabled }
 					MouseArea
 					{
 						anchors.fill: parent
@@ -160,7 +164,7 @@ JASPControl
 					color: jaspTheme.analysisBackgroundColor
 					Text
 					{
-						text:					headerText;
+						text:					tableView.getRowHeaderText(headerText, rowIndex);
 						color:					jaspTheme.textEnabled
 						anchors.centerIn:		parent;
 						horizontalAlignment:	Text.AlignHCenter
