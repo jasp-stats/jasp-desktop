@@ -127,8 +127,8 @@ Popup
 						onLinkActivated:	Qt.openUrlExternally(link)
 						clip:				true
 
-						property string currentlySelectedFilePath: browseButton.browse()
-						property string defaultText: "<i>Browse for a JASP Module to see more information here</i>"
+						property string currentlySelectedFilePath:	browseButton.browse()
+						property string defaultText:				qsTr("<i>Browse for a JASP Module to see more information here</i>")
 
 						onCurrentlySelectedFilePathChanged: if(currentlySelectedFilePath !== "") showDescription();
 
@@ -143,26 +143,7 @@ Popup
 							}
 
 							if(dynamicModules.isFileAnArchive(filePath))
-							{
-								var textJson			= dynamicModules.getDescriptionJsonFromArchive(filePath)
-								descriptionViewer.text	= "<i>File is not a JASP module or something is wrong with it.</i>"
-
-								moduleInstallerRect.currentJSON = JSON.parse(textJson)
-
-								var moduleDescription	= moduleInstallerRect.currentJSON.moduleDescription
-
-								var title				= moduleDescription.title
-								var description			= moduleDescription.description
-								var version				= moduleDescription.version
-								var author				= moduleDescription.author
-								var maintainer			= moduleDescription.maintainer
-								var website				= moduleDescription.website
-
-								if(textJson !== undefined && textJson !== "")
-									descriptionViewer.text = "<h3>" + title + "</h3><i>Version " + version + "</i><br><p>" + description + "</p><br><br><i>Created by " + author + " and maintained by " + maintainer + ".<br>See website for further details: <a href=\"http://" + website + "\">" + website + "</a></i>"
-								else
-									descriptionViewer.currentlySelectedFilePath = "";
-							}
+								descriptionViewer.text = dynamicModules.getDescriptionFormattedFromArchive(filePath)
 							else
 							{
 								descriptionViewer.text = filePath + " is not a JASP Module!"
