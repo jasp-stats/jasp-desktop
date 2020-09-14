@@ -682,10 +682,17 @@ QString DynamicModules::getDescriptionFormattedFromArchive(QString archiveFilePa
 	{
 		desc = Modules::DynamicModule::instantiateDescriptionQml(tq(Modules::DynamicModule::getDescriptionQmlFromArchive(fq(archiveFilePath))), QUrl("Description.qml"), fq(QFileInfo(archiveFilePath).baseName()));
 	}
-	catch(Modules::ModuleException & e)	{ return tq(e.what()); }
+	catch(Modules::ModuleException & e)
+	{
+		MessageForwarder::showWarning(tr("Loading module description encountered a problem"), e.what());
+		return "";
+	}
 
 	if(!desc)
-		return tr("<i>Could not load the description of the module in archive: '%1'</i>").arg(archiveFilePath);
+	{
+		MessageForwarder::showWarning(tr("Loading module description encountered a problem"), tr("<i>Could not load the description of the module in archive: '%1'</i>").arg(archiveFilePath));
+		return "";
+	}
 
 	QString formattedDescription = tr(
 				"<h3>%1</h3><i>Version %2</i>"											"<br>"

@@ -52,8 +52,6 @@ Popup
 		{
 			id:			moduleInstallerRect
 
-			property var currentJSON: null
-
 			RectangularButton
 			{
 				id:					browseButton
@@ -129,12 +127,15 @@ Popup
 
 						property string currentlySelectedFilePath:	browseButton.browse()
 						property string defaultText:				qsTr("<i>Browse for a JASP Module to see more information here</i>")
+						property bool	moduleIsOK:					false
 
 						onCurrentlySelectedFilePathChanged: if(currentlySelectedFilePath !== "") showDescription();
 
 						function showDescription()
 						{
 							var filePath = currentlySelectedFilePath;
+
+							moduleIsOK = false;
 
 							if(filePath === "")
 							{
@@ -143,10 +144,20 @@ Popup
 							}
 
 							if(dynamicModules.isFileAnArchive(filePath))
-								descriptionViewer.text = dynamicModules.getDescriptionFormattedFromArchive(filePath)
-							else
 							{
-								descriptionViewer.text = filePath + " is not a JASP Module!"
+								var loadedQML = dynamicModules.getDescriptionFormattedFromArchive(filePath)
+
+								if(loadedQML !== "")
+								{
+									moduleIsOK = true;
+									descriptionViewer.text = loadedQML
+								}
+
+							}
+
+							if(!moduleIsOK)
+							{
+								descriptionViewer.text = qsTr("<i>%1 is not a (correct) JASP Module!</i>").arg(filePath)
 								descriptionViewer.currentlySelectedFilePath = "";
 							}
 						}
@@ -171,14 +182,14 @@ Popup
 					bottom:		parent.bottom
 					margins:	jaspTheme.generalAnchorMargin
 				}
-				enabled:			moduleInstallerRect.currentJSON !== null
+				enabled:			descriptionViewer.moduleIsOK
 
 				text:				"Install"
 				toolTip:			enabled ? "Press this to install your selected Module" : "Select a JASP Module to install"
 
 				onClicked:
 				{
-					if(moduleInstallerRect.currentJSON !== null)
+					if(descriptionViewer.moduleIsOK)
 					{
 						enabled							= false
 						selected						= true
