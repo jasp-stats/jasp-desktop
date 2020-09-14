@@ -1,5 +1,7 @@
 context("Learn Bayes - Binomial Estimation")
 
+skip_on_travis()
+
 ### output for all default settings (spike + beta)
 {
   options <- analysisOptions("LSbinomialestimation")
