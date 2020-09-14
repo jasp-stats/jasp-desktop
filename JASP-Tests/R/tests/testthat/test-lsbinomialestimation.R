@@ -3,12 +3,6 @@ context("Learn Bayes - Binomial Estimation")
 ### output for all default settings (spike + beta)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -202,12 +196,6 @@ context("Learn Bayes - Binomial Estimation")
 ### more options vol. 1 (spike + beta)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -508,12 +496,6 @@ context("Learn Bayes - Binomial Estimation")
 ### more options vol. 2 (spike + beta)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -656,12 +638,6 @@ context("Learn Bayes - Binomial Estimation")
 ### more options vol. 3 (spike + beta)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -768,12 +744,6 @@ context("Learn Bayes - Binomial Estimation")
 ### more options vol. 4 (spike + beta)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -874,12 +844,6 @@ context("Learn Bayes - Binomial Estimation")
 ### more options vol. 5 (spike + beta)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -980,12 +944,6 @@ context("Learn Bayes - Binomial Estimation")
 ### more options vol. 6 (spike + beta)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -1080,12 +1038,6 @@ context("Learn Bayes - Binomial Estimation")
 ### more options vol. 7 (spike + beta)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -1180,11 +1132,6 @@ context("Learn Bayes - Binomial Estimation")
 ### output for all default settings (spike only)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE))), selectedVariable = list(
-        containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -1312,11 +1259,6 @@ context("Learn Bayes - Binomial Estimation")
 ### output for all default settings (beta only)
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE))), selectedVariable = list(
-        containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -1445,12 +1387,6 @@ context("Learn Bayes - Binomial Estimation")
 ### different input types
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
@@ -1525,12 +1461,6 @@ context("Learn Bayes - Binomial Estimation")
 }
 {
   options <- analysisOptions("LSbinomialestimation")
-  options$.meta <- list(key_failure_Seq = list(containsColumn = TRUE), key_failure_Var = list(
-    containsColumn = TRUE), key_success_Seq = list(containsColumn = TRUE), 
-    key_success_Var = list(containsColumn = TRUE), priors = list(
-      list(value = list(containsColumn = TRUE)), list(value = list(
-        containsColumn = TRUE))), selectedVariable = list(
-          containsColumn = TRUE))
   options$colorPalette <- "colorblind"
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
