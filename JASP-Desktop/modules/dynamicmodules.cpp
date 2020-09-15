@@ -25,7 +25,7 @@
 #include "utilities/appdirs.h"
 #include "utilities/qutils.h"
 #include "log.h"
-
+#include "modules/description/description.h"
 
 DynamicModules * DynamicModules::_singleton = nullptr;
 
@@ -674,18 +674,42 @@ void DynamicModules::setDevelopersModuleInstallButtonEnabled(bool developersModu
 	emit developersModuleInstallButtonEnabledChanged(_developersModuleInstallButtonEnabled);
 }
 
-QString DynamicModules::getDescriptionJsonFromArchive(QString archiveFilePath)
+QString DynamicModules::getDescriptionFormattedFromArchive(QString archiveFilePath)
 {
-	std::string description = Modules::DynamicModule::getDescriptionJsonFromArchive(archiveFilePath.toStdString());
+	Modules::Description * desc = nullptr;
 
-	if(description == "") return "";
+	try
+	{
+		desc = Modules::DynamicModule::instantiateDescriptionQml(tq(Modules::DynamicModule::getDescriptionQmlFromArchive(fq(archiveFilePath))), QUrl("Description.qml"), fq(QFileInfo(archiveFilePath).baseName()));
+	}
+	catch(Modules::ModuleException & e)
+	{
+		MessageForwarder::showWarning(tr("Loading module description encountered a problem"), e.what());
+		return "";
+	}
 
-	//The javascript toJSON is more picky then JsonCPP so we do something seemoingly crazy here, transforming the text into json and back to text, but this removes "comments" (they are not officially allowed in JSON but jsoncpp does not care and javscript crashes on it)
+	if(!desc)
+	{
+		MessageForwarder::showWarning(tr("Loading module description encountered a problem"), tr("<i>Could not load the description of the module in archive: '%1'</i>").arg(archiveFilePath));
+		return "";
+	}
 
-	Json::Value json;
-	Json::Reader().parse(description, json);
+	QString formattedDescription = tr(
+				"<h3>%1</h3><i>Version %2</i>"											"<br>"
+				"<p>%3</p>"																"<br><br>"
+				"<i>Created by %4 and maintained by %5.</i>"							"<br>"
+				"<i>See website for further details: <a href=\"http://%6\">%6</a></i>"	"<br>"
+			  )
+			.arg(desc->title())
+			.arg(desc->version())
+			.arg(desc->description())
+			.arg(desc->author())
+			.arg(desc->maintainer())
+			.arg(desc->website().toString());
 
-	return tq(json.toStyledString());
+	delete desc;
+
+	return formattedDescription;
 }
 
 void DynamicModules::setDataLoaded(bool dataLoaded)

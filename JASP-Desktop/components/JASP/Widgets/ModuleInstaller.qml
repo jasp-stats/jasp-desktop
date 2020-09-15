@@ -52,8 +52,6 @@ Popup
 		{
 			id:			moduleInstallerRect
 
-			property var currentJSON: null
-
 			RectangularButton
 			{
 				id:					browseButton
@@ -127,14 +125,17 @@ Popup
 						onLinkActivated:	Qt.openUrlExternally(link)
 						clip:				true
 
-						property string currentlySelectedFilePath: browseButton.browse()
-						property string defaultText: "<i>Browse for a JASP Module to see more information here</i>"
+						property string currentlySelectedFilePath:	browseButton.browse()
+						property string defaultText:				qsTr("<i>Browse for a JASP Module to see more information here</i>")
+						property bool	moduleIsOK:					false
 
 						onCurrentlySelectedFilePathChanged: if(currentlySelectedFilePath !== "") showDescription();
 
 						function showDescription()
 						{
 							var filePath = currentlySelectedFilePath;
+
+							moduleIsOK = false;
 
 							if(filePath === "")
 							{
@@ -144,28 +145,19 @@ Popup
 
 							if(dynamicModules.isFileAnArchive(filePath))
 							{
-								var textJson			= dynamicModules.getDescriptionJsonFromArchive(filePath)
-								descriptionViewer.text	= "<i>File is not a JASP module or something is wrong with it.</i>"
+								var loadedQML = dynamicModules.getDescriptionFormattedFromArchive(filePath)
 
-								moduleInstallerRect.currentJSON = JSON.parse(textJson)
+								if(loadedQML !== "")
+								{
+									moduleIsOK = true;
+									descriptionViewer.text = loadedQML
+								}
 
-								var moduleDescription	= moduleInstallerRect.currentJSON.moduleDescription
-
-								var title				= moduleDescription.title
-								var description			= moduleDescription.description
-								var version				= moduleDescription.version
-								var author				= moduleDescription.author
-								var maintainer			= moduleDescription.maintainer
-								var website				= moduleDescription.website
-
-								if(textJson !== undefined && textJson !== "")
-									descriptionViewer.text = "<h3>" + title + "</h3><i>Version " + version + "</i><br><p>" + description + "</p><br><br><i>Created by " + author + " and maintained by " + maintainer + ".<br>See website for further details: <a href=\"http://" + website + "\">" + website + "</a></i>"
-								else
-									descriptionViewer.currentlySelectedFilePath = "";
 							}
-							else
+
+							if(!moduleIsOK)
 							{
-								descriptionViewer.text = filePath + " is not a JASP Module!"
+								descriptionViewer.text = qsTr("<i>%1 is not a (correct) JASP Module!</i>").arg(filePath)
 								descriptionViewer.currentlySelectedFilePath = "";
 							}
 						}
@@ -190,14 +182,14 @@ Popup
 					bottom:		parent.bottom
 					margins:	jaspTheme.generalAnchorMargin
 				}
-				enabled:			moduleInstallerRect.currentJSON !== null
+				enabled:			descriptionViewer.moduleIsOK
 
 				text:				"Install"
 				toolTip:			enabled ? "Press this to install your selected Module" : "Select a JASP Module to install"
 
 				onClicked:
 				{
-					if(moduleInstallerRect.currentJSON !== null)
+					if(descriptionViewer.moduleIsOK)
 					{
 						enabled							= false
 						selected						= true

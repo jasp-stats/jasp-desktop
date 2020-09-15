@@ -72,7 +72,7 @@ public:
 	Q_INVOKABLE	void		uninstallJASPModule(			const QString & moduleName);
 	Q_INVOKABLE void		installJASPDeveloperModule();
 
-	Q_INVOKABLE QString		getDescriptionJsonFromArchive(QString archiveFilePath);
+	Q_INVOKABLE QString		getDescriptionFormattedFromArchive(QString archiveFilePath);
 
 	int numberOfModules()												{ return _modules.size(); }
 	const std::vector<std::string> & moduleNames() const				{ return _moduleNames; }
