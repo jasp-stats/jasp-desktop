@@ -85,8 +85,8 @@
   return(sequence)
 }
 
-# taken from HDInterval::hdi
 hdi.function   <- function(object, credMass=0.95, tol, ...)  {
+  # adapted from HDIinterval:::hdi.function
   if(missing(tol))
     tol <- 1e-8
   if(class(try(object(0.5, ...), TRUE)) == "try-error")
@@ -105,6 +105,7 @@ hdi.function   <- function(object, credMass=0.95, tol, ...)  {
   return(result)
 }
 hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
+  # adapted from HDIinterval:::hdi.density
   sorted = sort( object$y , decreasing=TRUE )
   heightIdx = min( which( cumsum( sorted) >= sum(object$y) * credMass ) )
   height = sorted[heightIdx]
