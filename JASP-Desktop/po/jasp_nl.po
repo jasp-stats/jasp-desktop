@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-12 08:36+0000\n"
+"PO-Revision-Date: 2020-09-15 13:35+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
@@ -18878,16 +18878,16 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "Lettertypes"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "Interface:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "Default font (%1)"
-msgstr ""
+msgstr "Standaard lettertype (%1)"
 
 msgctxt "PrefsUI|"
 msgid "Code (R, JAGS, Lavaan...):"
