@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-09-03 09:04\n"
+"POT-Creation-Date: 2020-09-15 15:58\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -146,6 +146,15 @@ msgid "P(Successes)"
 msgstr ""
 
 msgid "Please specify a hypothesis for comparison."
+msgstr ""
+
+msgid "Conditional probability"
+msgstr ""
+
+msgid "Joint probability"
+msgstr ""
+
+msgid "Posterior probability"
 msgstr ""
 
 msgid "Observations"
@@ -310,7 +319,7 @@ msgstr ""
 msgid "For a model with a spike prior distribution for parameter %1$s, predictions for 'N' future observation ('Future observations') with standard deviation %2$s ('SD') follow a normal distribution with mean parameter equal to the location of the prior distribution %3$s and standard deviation %2$s/%4$sN. For a model with a normal prior distribution for parameter %1$s, the predictive distribution is a normal distribution with mean equal to the mean of the posterior distribution and standard deviation based on the standard deviation of the posterior distribution (%3$s) and expected standard deviation of the new data (%2$s/%4$sN), %4$s( %3$s%5$s + (%2$s/%4$sN)%5$s ). In both cases, the %6$s prediction is equal to the mean parameter of the distribution for predictions."
 msgstr ""
 
-msgid "The 'Prediction Summary' table displays numerical summaries for the individual models. The displayed point estimate can be changed using the 'Point estimate' option. The table is composed of the following columns:\n    <ul><li>'Model' - the specified model names</li><li>'Posterior (%1$s)' - the estimated posterior distribution for parameter %1$s (used for prediction)</li>%2$s<li>'Posterior Mean' - the mean of the specified posterior distribution</li><li>'Prediction%3$s' - the predictive distribution for new data</li><li>'Prediction Mean' - the mean of predicted data</li></ul>"
+msgid "The 'Prediction Summary' table displays numerical summaries for the individual models. The displayed point estimate can be changed using the 'Point estimate' option. The table is composed of the following columns:\n    <ul><li>'Model' - the specified model names</li><li>'Posterior (%1$s)' - the estimated posterior distribution for parameter %1$s (used for prediction)</li>%2$s<li>'Posterior %4$s' - the %5$s of the specified posterior distribution</li><li>'Prediction%3$s' - the predictive distribution for new data</li><li>'Prediction %4$s' - the %5$s of predicted data</li></ul>"
 msgstr ""
 
 msgid "The 'Posterior predictive distribution' option displays figures of predictive distributions based on posterior distributions of the individual models. The '%1$s' checkbox transforms the figures with predicted data%2$s into figures with %3$s."
@@ -607,7 +616,7 @@ msgstr ""
 msgid "Model fit is singular. Specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Carefully reduce the random effects structure, but this practice might inflate the reported p-value, and invalidates the analysis."
 msgstr ""
 
-msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum possible odds in favor of H₁ over H₀ equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & Berger, 2001)."
+msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 
 msgid "Numerical problems with the maximum-likelihood estimate (e.g., gradients too large). This may indicate that the specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Consider carefully reducing the random effects structure, but be aware this may induce unknown risks of anti-conservative results (i.e., p-values might be lower than nominal)."
@@ -2014,9 +2023,6 @@ msgstr ""
 msgid "BF"
 msgstr ""
 
-msgid "Posterior probability"
-msgstr ""
-
 msgid "The alternative hypothesis H1 specifies that the mean of group 1 is unequal to the mean of group 2. The posterior probabilities are based on equal prior probabilities."
 msgstr ""
 
@@ -2917,6 +2923,12 @@ msgstr ""
 msgid "Standard errors and confidence intervals were calculated using the delta method."
 msgstr ""
 
+msgid "Maximum likelihood"
+msgstr ""
+
+msgid "Fit Assessment"
+msgstr ""
+
 msgid "Test"
 msgstr ""
 
@@ -2954,6 +2966,18 @@ msgid "Sample"
 msgstr ""
 
 msgid "Probability Mass"
+msgstr ""
+
+msgid "Probability Density Function"
+msgstr ""
+
+msgid "Probability Mass Function"
+msgstr ""
+
+msgid "Cumulative Distribution Function"
+msgstr ""
+
+msgid "Quantile Function"
 msgstr ""
 
 msgid "Formula"
@@ -4501,12 +4525,6 @@ msgstr ""
 msgid "Bernoulli distribution"
 msgstr ""
 
-msgid "Probability Mass Function"
-msgstr ""
-
-msgid "Cumulative Distribution Function"
-msgstr ""
-
 msgid "probability of success: p %s %s: 0 %s p %s 1"
 msgstr ""
 
@@ -4523,12 +4541,6 @@ msgid "<i>Warning.</i>"
 msgstr ""
 
 msgid "beta distribution"
-msgstr ""
-
-msgid "Probability Density Function"
-msgstr ""
-
-msgid "Quantile Function"
 msgstr ""
 
 msgid "shape: %s"
@@ -4595,6 +4607,30 @@ msgid "square root of precision: %s"
 msgstr ""
 
 msgid "&mu;"
+msgstr ""
+
+msgid "logistic distribution"
+msgstr ""
+
+msgid "location: &mu; %s"
+msgstr ""
+
+msgid "(&sigma; &pi;)<sup>2</sup> / 3"
+msgstr ""
+
+msgid "log-normal distribution"
+msgstr ""
+
+msgid "log mean: &mu; %s"
+msgstr ""
+
+msgid "log standard deviation: %s"
+msgstr ""
+
+msgid "exp(&mu; + &sigma;<sup>2</sup>/2)"
+msgstr ""
+
+msgid "[exp(&sigma;<sup>2</sup>) - 1] exp(2&mu; + &sigma;<sup>2</sup>)"
 msgstr ""
 
 msgid "negative binomial distribution"
@@ -5671,7 +5707,7 @@ msgstr ""
 msgid "Frequentist Individual Item Reliability Statistics"
 msgstr ""
 
-msgid "McDonald's ω estimation method for item-dropped statistics \n                                     switched to PFA because the CFA did not find a solution."
+msgid "McDonald's %s estimation method for item-dropped statistics switched to PFA because the CFA did not find a solution."
 msgstr ""
 
 msgid "Fit Measures of Single Factor Model Fit"
@@ -5680,7 +5716,7 @@ msgstr ""
 msgid "Fit Measure"
 msgstr ""
 
-msgid "Fit measures cannot be displayed because the McDonald's ω \n                                       estimation method switched to PFA as the CFA did not find a solution."
+msgid "Fit measures cannot be displayed because the McDonald's %s estimation method switched to PFA as the CFA did not find a solution."
 msgstr ""
 
 msgid "The priors for publication bias were set incorrectly."
@@ -5714,6 +5750,12 @@ msgid "Prior Plots"
 msgstr ""
 
 msgid "Weight Function"
+msgstr ""
+
+msgid "Null"
+msgstr ""
+
+msgid "Alternative"
 msgstr ""
 
 msgid "Model Preview"
@@ -5854,7 +5896,10 @@ msgstr ""
 msgid "Model %i does not contain any of the selected parameters."
 msgstr ""
 
-msgid "Error in %s: All p-value needs to be between 0 and 1."
+msgid "Error in %s: All p-values need to be between 0 and 1."
+msgstr ""
+
+msgid "Error in %s: All correlation coefficients need to be between -1 and 1."
 msgstr ""
 
 msgid "The p-value cutoffs were set incorectly."
@@ -5875,7 +5920,10 @@ msgstr ""
 msgid "Note:"
 msgstr ""
 
-msgid "<em>p</em>-values interval (one-sided)"
+msgid "%s is on %s scale."
+msgstr ""
+
+msgid "<em>p</em>-values interval(one-sided)"
 msgstr ""
 
 msgid "Model Tests"
@@ -5896,7 +5944,7 @@ msgstr ""
 msgid "Assuming heterogeneity"
 msgstr ""
 
-msgid "Mean Estimates (%s)"
+msgid "Mean Estimates(%s)"
 msgstr ""
 
 msgid "Estimated Weights"
@@ -5905,7 +5953,7 @@ msgstr ""
 msgid "Random Effects Estimates"
 msgstr ""
 
-msgid "Heterogeneity Estimates (%s)"
+msgid "Heterogeneity Estimates(%s)"
 msgstr ""
 
 msgid "p-value Frequency"
@@ -5914,7 +5962,7 @@ msgstr ""
 msgid "There were no p-value cutoffs after their automatic reduction. The displayed frequencies correspond to the non-reduced p-value cutoffs."
 msgstr ""
 
-msgid "Weight Function (%s)"
+msgid "Weight Function(%s)"
 msgstr ""
 
 msgid "The figure could not be created since one of the estimates is NaN."
@@ -5933,6 +5981,12 @@ msgid "Fixed effects (adjusted)"
 msgstr ""
 
 msgid "Random effects (adjusted)"
+msgstr ""
+
+msgid "The figure could not be created since one of the estimates is not a number."
+msgstr ""
+
+msgid "Mean Estimates (%s)"
 msgstr ""
 
 msgid "Fixed effects model:"
@@ -5960,6 +6014,9 @@ msgid "The analysis requires both 'Effect Site' and 'Effect Size Standard Error'
 msgstr ""
 
 msgid "Only the following one-sided p-value cutoffs were used: %s."
+msgstr ""
+
+msgid "No effect sizes specified to compute the studies' sample variances."
 msgstr ""
 
 msgid "Model misspecified"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2020-08-08 16:02\n"
+"POT-Creation-Date: 2020-09-15 15:58\n"
 "PO-Revision-Date: 2020-09-09 11:59+0000\n"
 "Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-engine/"
@@ -13,6 +13,699 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n==0 ? 0 : n==1 ? 0 : 1;\n"
 "X-Generator: Weblate 4.3-dev\n"
+
+#, fuzzy
+msgid "Data Summary"
+msgstr "Zusammenfassung"
+
+msgid "Counts"
+msgstr "Anzahlen"
+
+msgid "Proportion"
+msgstr "Verhältnis"
+
+msgid "Successes"
+msgstr "Erfolge"
+
+msgid "Failures"
+msgstr "Misserfolge"
+
+msgid "Total"
+msgstr "Gesamt"
+
+#, fuzzy
+msgid "spike at %s"
+msgstr "%s mit r==%s"
+
+#, fuzzy
+msgid "beta (%s, %s)"
+msgstr "%s (%s)"
+
+#, fuzzy
+msgid "binomial (%i, %s)"
+msgstr "Binomial"
+
+#, fuzzy
+msgid "beta-binomial (%i, %s, %s)"
+msgstr "Beta-Binomial"
+
+#, fuzzy
+msgid "Estimation Summary"
+msgstr "Evaluations-Zusammenfassung"
+
+msgid "Model"
+msgstr "Modell"
+
+#, fuzzy
+msgid "Prior (%s)"
+msgstr "Prior"
+
+#, fuzzy
+msgid "Prior %s"
+msgstr "Prior"
+
+#, fuzzy
+msgid "Posterior (%s)"
+msgstr "Posterior"
+
+#, fuzzy
+msgid "Posterior %s"
+msgstr "Posterior"
+
+#, fuzzy
+msgid "Please specify successes and failures."
+msgstr "Bitte spezifiziere die Populationsgröße und deine Auditwerte."
+
+msgid "These results are based on %i %s and %i %s."
+msgstr ""
+
+#, fuzzy
+msgid "Observation"
+msgstr "Iteration"
+
+msgid "Population proportion"
+msgstr "Populationsverhältnis"
+
+msgid ""
+"More than bimodal CIs are not implemented in the Sequential analysis plot."
+msgstr ""
+
+#, fuzzy
+msgid "%i %% CI"
+msgstr "%s%% KI"
+
+msgid "%i %% HPD"
+msgstr ""
+
+msgid "SI (BF=%s)"
+msgstr ""
+
+#, fuzzy
+msgid "Prediction (Successes)"
+msgstr "Vorhersagen unter BMA"
+
+#, fuzzy
+msgid "Prediction %s"
+msgstr "Vorhersagen unter BMA"
+
+msgid "The prediction for %s %s is based on %s %s and %s %s."
+msgstr ""
+
+#, fuzzy
+msgid "Sample proportions"
+msgstr "Klassenverhältnisse"
+
+msgid "Density"
+msgstr "Dichte"
+
+#, fuzzy
+msgid "Number of successes"
+msgstr "Anzahl Erfolge: %s"
+
+msgid "Probability"
+msgstr "Wahrscheinlichkeit"
+
+msgid ""
+"The upper CI limit is higher than the number of future observations. Please, "
+"change the value of the upper CI limit in the settings panel."
+msgstr ""
+
+msgid ""
+"The lower CI limit is higher than the number of future observations. Please, "
+"change the value of the lower CI limit in the settings panel."
+msgstr ""
+
+msgid ""
+"The lower CI limit is higher than the upper CI limit. Please, change the "
+"value of the CI limits in the settings panel."
+msgstr ""
+
+#, fuzzy
+msgid "Testing Summary"
+msgstr "Posterior-Zusammenfassung"
+
+msgid "BF%s"
+msgstr "BF%s"
+
+#, fuzzy
+msgid "log(BF%s)"
+msgstr "Log(BF%s)"
+
+msgid "Hypothesis"
+msgstr "Hypothese"
+
+msgid "P(H)"
+msgstr ""
+
+#, fuzzy
+msgid "log(likelihood)"
+msgstr "Log-Likelihood"
+
+#, fuzzy
+msgid "P(H|data)"
+msgstr "P(M|Daten)"
+
+#, fuzzy
+msgid ""
+"The plot could not be created because the posterior model probabilities are "
+"not defined."
+msgstr "Du kannst nicht alle Prior-Modellwahrscheinlichkeiten auf Null setzen."
+
+#, fuzzy
+msgid "Proportion of Successes"
+msgstr "Verhältnis"
+
+#, fuzzy
+msgid "P(Successes|%s)"
+msgstr "Erfolge"
+
+#, fuzzy
+msgid "P(Successes)"
+msgstr "Erfolge"
+
+#, fuzzy
+msgid "Please specify a hypothesis for comparison."
+msgstr "Bitte spezifiziere einen weiteren Kontrast."
+
+#, fuzzy
+msgid "Conditional probability"
+msgstr "Posterior Wahrscheinlichkeit"
+
+#, fuzzy
+msgid "Joint probability"
+msgstr "Posterior Wahrscheinlichkeit"
+
+msgid "Posterior probability"
+msgstr "Posterior Wahrscheinlichkeit"
+
+#, fuzzy
+msgid "Observations"
+msgstr "Iterationen"
+
+msgid "At least 2 hypotheses need to be specified."
+msgstr ""
+
+msgid "%s %i"
+msgstr ""
+
+msgid "Please remove duplicates from the %s names."
+msgstr ""
+
+#, fuzzy
+msgid "%1$s %2$s Plots"
+msgstr "%1$s = %2$s"
+
+#, fuzzy
+msgid "Prior and Posterior Plots"
+msgstr "Prior und Posteriors"
+
+#, fuzzy
+msgid "%s Sequential Analysis: Point Estimate"
+msgstr "Sequenzielle Analyse"
+
+#, fuzzy
+msgid "%s Sequential Analysis: Interval"
+msgstr "Sequenzielle Analyse"
+
+msgid "Sequential Posterior Updating"
+msgstr ""
+
+#, fuzzy
+msgid "Prediction Summary"
+msgstr "Auswahl-Zusammenfassung"
+
+#, fuzzy
+msgid "%s Prediction Plots"
+msgstr "Verteilungsabbildungen"
+
+msgid "%1$s %2$s Prediction Plots"
+msgstr ""
+
+#, fuzzy
+msgid "%s Prior and Posterior Plots"
+msgstr "Prior und Posteriors"
+
+msgid "%s Predictive Accuracy Plot"
+msgstr ""
+
+#, fuzzy
+msgid "%s Sequential Analysis"
+msgstr "Sequenzielle Analyse"
+
+msgid ""
+"Welcome to the %s analysis from the Learn Bayes module. This analysis "
+"illustrates Bayesian %s using %s examples."
+msgstr ""
+
+#, fuzzy
+msgid "%s (the population proportion of successes)"
+msgstr "Populationsverhältnis"
+
+msgid "%s (the population mean, variance is assumed to be known)"
+msgstr ""
+
+msgid ""
+"The analysis is split into 5 sections:\n"
+"      <ol> <li> Data - for specifying the data input for the computations. "
+"You can either use a variable from a dataset loaded into JASP, specify an "
+"aggregated overview of the data, or enter the observations one by one (and "
+"update them during the analysis). </li>\n"
+"           <li> %s </li>\n"
+"           <li> %s </li>\n"
+"           <li> %s </li>\n"
+"           <li> %s </li> </ol>"
+msgstr ""
+
+msgid "The 'Data' section allows you to specify data input for the analysis."
+msgstr ""
+
+msgid ""
+"The 'Select variable' option allows the selection of a variable ('Selected') "
+"from a dataset loaded into JASP. %s"
+msgstr ""
+
+msgid ""
+"The 'Specify counts' option allows the use of aggregated data. %1$s This "
+"means that the %2$s are updated only once, with the complete data. The lack "
+"of information about the order of observations precludes the use of "
+"sequential analysis."
+msgstr ""
+
+msgid ""
+"The 'Enter sequence' option allows manual input of a specific order of "
+"observations. %s"
+msgstr ""
+
+msgid ""
+"The 'Binomial Estimation' analysis offers two types of prior distributions "
+"for parameter %1$s that represents the underlying population proportion of "
+"successes: \n"
+"        <ul><li>'Spike(%2$s)' - for concentrating all probability density at "
+"one location (%2$s). The prior %5$s corresponds to the location of the "
+"spike. The posterior distribution is again a spike at the same location and "
+"corresponding %5$s</li><li>'Beta(%3$s, %4$s)' - for allocating probability "
+"density across all values of parameter %1$s according to a beta distribution "
+"with parameters %3$s and %4$s. The prior %6$s. After observing 'S' successes "
+"and 'F' failures, the posterior distribution updates to beta(%3$s + S, %4$s "
+"+ F) with a %5$s computed correspondingly.</li></ul>"
+msgstr ""
+
+msgid ""
+"The 'Gaussian Estimation' analysis offers two types of prior distributions "
+"for parameter %1$s of a normal distribution, Normal(%1$s, %2$s), with known "
+"standard deviation %2$s: \n"
+"        <ul><li>'Spike(%3$s)' - for concentrating all probability density at "
+"one location (%3$s). The prior %8$s corresponds to the location of the "
+"spike. The posterior distribution is again a spike at the same location and "
+"corresponding %8$s.</li><li>'Normal(%3$s, %4$s)' - for allocating "
+"probability density across all values of parameter %1$s according to a "
+"normal distribution with parameters mean %3$s and standard deviation %4$s. "
+"The prior %8$s corresponds to the mean parameter of the normal distribution "
+"%3$s. After seeing 'N' observations with mean %5$s, the posterior "
+"distribution updates to normal( (%4$s%6$s*%5$s)/( (%2$s%6$s/N) + %4$s%6$s) + "
+"(%2$s%6$s*%3$s)/( (%2$s%6$s/N) + %4$s%6$s), 1/%7$s(1/%4$s%6$s + N/%2$s"
+"%6$s) ) with %8$s corresponding to the mean of posterior distribution.</li></"
+"ul>"
+msgstr ""
+
+msgid ""
+"The 'Estimation Summary' table displays numerical summaries for the "
+"individual models. The displayed point estimate can be changed using the "
+"'Point estimate' option. The table is composed of the following columns:\n"
+"    <ul><li>'Model' - the specified model names</li><li>'Prior (%1$s)' - the "
+"specified prior distribution for parameter %1$s</li><li>'Prior %2$s' - the "
+"%3$s of the specified prior distribution</li><li>'Posterior (%1$s)' - the "
+"estimated posterior distribution for the parameter %1$s (i.e., the prior "
+"distribution updated with data)</li><li>'Posterior %2$s' - the %3$s of the "
+"posterior distribution</li></ul>"
+msgstr ""
+
+msgid ""
+"The 'Binomial Testing' analysis offers two types of prior distributions for "
+"parameter %1$s that represents the underlying population proportion of "
+"successes: \n"
+"        <ul><li>'Spike(%2$s)' - for concentrating all probability density at "
+"one location (%2$s). The marginal likelihood corresponds to a binomial "
+"density evaluated at the observed number of successes, with size equal to "
+"the number of observations, and with the chance parameter equal to the "
+"location of the spike.</li><li>'Beta(%3$s, %4$s)' - for allocating "
+"probability density across all values of parameter %1$s according to a beta "
+"distribution with parameters %3$s and %4$s. The marginal likelihood "
+"corresponds to a beta-binomial density evaluated at the observed number of "
+"successes, with size equal to the number of observations, and with "
+"parameters %3$s and %4$s corresponding to the shape parameters of the prior "
+"beta distribution.</li></ul>"
+msgstr ""
+
+msgid ""
+"The 'Gaussian Testing' analysis offers two types of prior distributions for "
+"parameter %1$s that represents the underlying population mean of a normal "
+"distribution, Normal(%1$s, %2$s), with known standard deviation %2$s: \n"
+"        <ul><li>'Spike(%3$s)' - for concentrating all probability density at "
+"one location (%3$s). The marginal likelihood corresponds to a normal density "
+"evaluated at the observed mean, with mean equal to the location of the "
+"spike, and standard deviation as %2$s/%7$sN, where 'N' stands for the number "
+"of observations.</li><li>'Normal(%3$s, %4$s)' - for allocating probability "
+"density across all values of parameter %1$s according to a normal "
+"distribution with mean %3$s and standard deviation %4$s. The marginal "
+"likelihood corresponds to a normal density evaluated at the observed mean, "
+"with mean equal to the mean of the prior distribution, and standard "
+"deviation of %7$s( %2$s%6$s/N + %4$s%6$s ).</li></ul>"
+msgstr ""
+
+msgid ""
+"The posterior probabilities 'P(H|data)' are then computed using Bayes "
+"formula,\n"
+"        <center>P(H|data) = P(H) * P(data|H) / P(data),</center> where "
+"'P(H)' represents the prior probability of the hypothesis, 'P(data|H)' the "
+"marginal likelihood of the data given the hypothesis, and 'P(data)' the "
+"probability of the data. The factor 'P(data)' equals the sum of marginal "
+"likelihoods multiplied by the prior probabilities, P(data) = %1$s P(data|H"
+"%2$s)*P(H%2$s)."
+msgstr ""
+
+msgid ""
+"The Bayes factors 'BF' can be obtained by dividing the posterior odds of two "
+"models by their prior odds,\n"
+"        <center>BF%1$s%2$s = ( P(H%1$s|data)/P(H%2$s|data) ) / ( P(H%1$s)/P(H"
+"%2$s) ),</center> where 'BF%1$s%2$s' stands for the Bayes factor in favor of "
+"the 1st model in comparison to the 2nd model and can be interpreted as a "
+"natural measure of relative predictive performance. It is also possible to "
+"compute a Bayes factor that compares the hypothesis to the remaining "
+"hypotheses 'vs. all' exchange the second hypothesis for the sum of the "
+"remaining hypotheses, which can be simplified into,\n"
+"        <center>BF%1$s%2$s = ( P(H%1$s|data)/(1-P(H%1$s|data)) ) / ( P(H"
+"%1$s)/(1-P(H%1$s)) ).</center>The numerator and denominator of the Bayes "
+"factors can be reversed by choosing the 'BF%2$s%1$s' option (quantifying the "
+"evidence in favor of the second hypothesis), or transformed to a log scale "
+"by choosing the 'log(BF%1$s%2$s)' option."
+msgstr ""
+
+msgid ""
+"The 'Testing Summary' table displays numerical summaries for the hypotheses. "
+"It is composed of the following columns:\n"
+"    <ul><li>'Hypothesis' - the specified hypothesis names</li><li>'P(H)' - "
+"the prior probability of the hypothesis</li><li>'log(likelihood)' - the log "
+"of the marginal likelihood of the hypothesis</li><li>'P(H|data)' - the "
+"posterior probability of the hypothesis (after updating with the data)</"
+"li><li>%s</li></ul>"
+msgstr ""
+
+msgid ""
+"The '%1$s' option displays the %2$s plots for parameter %3$s. Spike prior "
+"distributions are visualized as arrows (signifying that their density is "
+"infinite) and %4$s distributions are visualized as continuous lines."
+msgstr ""
+
+msgid ""
+"The 'All' option shows all %1$s for parameter %2$s on top of each other, "
+"allowing for easier comparison with a common density and probability scale "
+"on the y-axis."
+msgstr ""
+
+msgid ""
+"The 'Stacked' option shows all %1$s for parameter %2$s in one figure with a "
+"depth effect induced by plotting the additional distributions 'further' on "
+"the z-axis."
+msgstr ""
+
+msgid ""
+"The 'Individual' option shows %1$s for parameter %2$s individually in "
+"separate figures. It is possible to visualize different types of point "
+"estimates ('Point estimate') and credible intervals ('CI'):%3$s"
+msgstr ""
+
+msgid ""
+"Furthermore, the 'Observed data' checkbox allows the visualization of the "
+"observed %s as a black cross in the figure."
+msgstr ""
+
+msgid ""
+"The 'Conditional' option shows all %1$s for parameter %2$s independently, as "
+"ifthey were considered as individual models (without the existence of other "
+"hypotheses). It is possible to visualize different types of point estimates "
+"('Point estimate') and credible intervals ('CI'):%3$s"
+msgstr ""
+
+msgid ""
+"The 'Joint' option shows all %1$s for parameter %2$s when considered "
+"together in light of the other hypotheses (by multiplying the density of the "
+"%1$s over the parameter by the %3$s probability of the hypothesis). In "
+"addition, the 'Overlying' option allows the visualization of all %1$s on top "
+"of each other, allowing for easier comparison with a common density and "
+"probability scale on the y-axis and the 'Stacked' option shows all %1$s in "
+"one figure with a depth effect induced by plotting the additional "
+"distributions 'further' on the z-axis."
+msgstr ""
+
+msgid ""
+"The 'Marginal' option collapses across all individual %1$s, weighting them "
+"by their %2$s probability.%3$s It is possible to visualize different types "
+"of point estimates ('Point estimate') and credible intervals ('CI'):%4$s"
+msgstr ""
+
+msgid ""
+"The 'Prior and posterior distribution' option displays the prior and "
+"posterior distribution of the parameter %1$s for the individual %2$s. Spike "
+"prior distributions are visualized as arrows (signifying that their density "
+"is infinite) and %3$s distributions are visualized as continuous lines. "
+"Prior distributions are visualized as dashed grey lines and the posterior "
+"distribution as solid black lines. In addition, the observed data summary "
+"can be visualized as a black cross by selecting the '%4$s' checkbox."
+msgstr ""
+
+msgid ""
+"The 'Conditional' option shows all prior and posterior distributions for "
+"parameter %1$s independently, as ifthey were considered as individual models "
+"(without the existence of other hypotheses)."
+msgstr ""
+
+msgid ""
+"The 'Joint' option shows all prior and posterior distributions for parameter "
+"%1$s when considered together in light of the other hypotheses. In addition, "
+"the 'Overlying' option allows the visualization all %1$s on top of each "
+"other, allowing for easier comparison with a common density and probability "
+"scale on the y-axis and the 'Stacked' option shows all %1$s in one figure "
+"with a depth effect induced by plotting the additional distributions "
+"'further' on the z-axis."
+msgstr ""
+
+msgid ""
+"The 'Marginal' option collapses across all individual prior and posterior "
+"distributions, weighting them by their prior and posterior probability."
+msgstr ""
+
+msgid ""
+"The 'Point estimate' option displays a plot with the sequential updating of "
+"the point estimate %s (y-axis). The figure visualizes the updating process "
+"as ifthe individual data points were arriving one after another (x-axis)."
+msgstr ""
+
+msgid ""
+"The 'All' option shows either the mean ('Mean') or the median ('Median') for "
+"all specified models in one figure, allowing for easier comparison. It is "
+"possible to visualize different types of point estimates ('Point estimate') "
+"and credible intervals ('CI'):%s"
+msgstr ""
+
+msgid ""
+"The 'Stacked' option shows all of the prior distribution updates for each "
+"model within one figure with a depth effect induced by plotting the "
+"additional distributions 'further' on the z-axis."
+msgstr ""
+
+msgid ""
+"The 'Updating table' option generates a numerical summary of the displayed "
+"figures."
+msgstr ""
+
+msgid ""
+"The 'Interval' option displays a sequential plot with the probability of "
+"parameter %s lying inside of the interval ranging from ('lower') to "
+"('upper'), (y-axis). The figure visualizes the updating process as ifthe "
+"individual data points were arriving one after another (x-axis)."
+msgstr ""
+
+msgid ""
+"The 'All' option shows the probability of parameter %s lying inside of the "
+"specified range for all models in one figure, allowing for easier comparison."
+msgstr ""
+
+msgid ""
+"The 'Stacked' option visualizes the interval for all prior distribution "
+"updates for each model within one figure with a depth effect induced by "
+"plotting the additional distributions 'further' on the z-axis."
+msgstr ""
+
+msgid ""
+"The 'Posterior updating table' option generates a numerical summary of the "
+"updating process for parameter %s. The 'Observation' column tracks how many "
+"observations have been already encountered for the corresponding posterior "
+"distribution. The first row (observation = 0) corresponds to the prior "
+"distribution and the last row corresponds to the final posterior "
+"distribution after the prior distribution was updated with all observations."
+msgstr ""
+
+msgid ""
+"The 'Posterior prediction' section allows the prediction of future data "
+"based on the estimated models%s"
+msgstr ""
+
+msgid ""
+"For a model with a spike prior distribution for parameter %1$s, predictions "
+"for 'N' future observation ('Future observations') follow a binomial "
+"distribution with size N and chance parameter %2$s equal to the location of "
+"the prior distribution. %5$s For a model with a beta prior distribution for "
+"parameter %1$s, the predictive distribution is a beta-binomial distribution "
+"with size N and posterior beta distribution parameters %3$s and %4$s. %6$s"
+msgstr ""
+
+msgid ""
+"For a model with a spike prior distribution for parameter %1$s, predictions "
+"for 'N' future observation ('Future observations') with standard deviation "
+"%2$s ('SD') follow a normal distribution with mean parameter equal to the "
+"location of the prior distribution %3$s and standard deviation %2$s/%4$sN. "
+"For a model with a normal prior distribution for parameter %1$s, the "
+"predictive distribution is a normal distribution with mean equal to the mean "
+"of the posterior distribution and standard deviation based on the standard "
+"deviation of the posterior distribution (%3$s) and expected standard "
+"deviation of the new data (%2$s/%4$sN), %4$s( %3$s%5$s + (%2$s/%4$sN)%5$s ). "
+"In both cases, the %6$s prediction is equal to the mean parameter of the "
+"distribution for predictions."
+msgstr ""
+
+msgid ""
+"The 'Prediction Summary' table displays numerical summaries for the "
+"individual models. The displayed point estimate can be changed using the "
+"'Point estimate' option. The table is composed of the following columns:\n"
+"    <ul><li>'Model' - the specified model names</li><li>'Posterior (%1$s)' - "
+"the estimated posterior distribution for parameter %1$s (used for "
+"prediction)</li>%2$s<li>'Posterior %4$s' - the %5$s of the specified "
+"posterior distribution</li><li>'Prediction%3$s' - the predictive "
+"distribution for new data</li><li>'Prediction %4$s' - the %5$s of predicted "
+"data</li></ul>"
+msgstr ""
+
+msgid ""
+"The 'Posterior predictive distribution' option displays figures of "
+"predictive distributions based on posterior distributions of the individual "
+"models. The '%1$s' checkbox transforms the figures with predicted data%2$s "
+"into figures with %3$s."
+msgstr ""
+
+msgid ""
+"The 'All' option shows all posterior predictive distributions on top of each "
+"other, allowing for easier comparison with a common density scale on the y-"
+"axis."
+msgstr ""
+
+msgid ""
+"The 'Stacked' option shows all posterior predictive distributions in one "
+"figure with a depth effect induced by plotting the additional distributions "
+"'further' on the z-axis."
+msgstr ""
+
+msgid ""
+"The 'Individual' option shows posterior predictive distributions for each "
+"model individually in separate figures. It is possible to visualize "
+"different types of point estimates ('Point estimate') and credible intervals "
+"('CI'):%s"
+msgstr ""
+
+msgid ""
+"The '%1$s' option displays figures of predictive distributions based on "
+"posterior distributions of the individual models. %2$s"
+msgstr ""
+
+msgid ""
+"The 'Conditional' option shows all %1$s for parameter %2$s independently, as "
+"ifthey were considered as individual models (without the existence of other "
+"hypotheses). It is possible to visualize different of credible intervals "
+"('CI'):%3$s"
+msgstr ""
+
+msgid ""
+"The 'Joint' option shows all %1$s for parameter %2$s when considered "
+"together in light of the other hypotheses (by multiplying the density of the "
+"%1$s by the %3$s probability of the hypothesis). In addition, the "
+"'Overlying' option allows the  visualization of all %1$s on top of each "
+"other, allowing for easier comparison with a common density and probability "
+"scale on the y-axis and the 'Stacked' option shows all %1$s in one figure "
+"with a depth effect induced by plotting the additional distributions "
+"'further' on the z-axis."
+msgstr ""
+
+msgid ""
+"The 'Predictive accuracy' option allows a comparison of the predictive "
+"accuracy across all hypotheses. Predictive accuracy refers to how likely the "
+"data are given the hypotheses."
+msgstr ""
+
+msgid ""
+"The 'Conditional' option shows all predictive accuracies independently, as "
+"ifthey were considered as individual models (without the existence of other "
+"hypotheses)."
+msgstr ""
+
+msgid ""
+"The 'Joint' option shows all predictive accuracies when taking the prior "
+"probabilities of hypotheses into account (by multiplying conditional "
+"predictive accuracies by prior probabilities of the hypotheses)."
+msgstr ""
+
+msgid ""
+"The 'Normalized' option shows all predictive accuracies considered together "
+"in light of the other hypotheses (by normalizing the joint predictive "
+"accuracies by the probability of the data, which equals to the posterior "
+"probability of the hypotheses)."
+msgstr ""
+
+msgid ""
+"The 'Test results' option displays a plot with the sequential change in the "
+"predictive accuracy of all hypotheses (y-axis). The figure visualizes the "
+"updating process as ifthe individual data points were arriving one after "
+"another (x-axis)."
+msgstr ""
+
+msgid ""
+"The 'Normalized' option shows all predictive accuracies considered together "
+"in light of the other hypotheses (by normalizing the joint predictive "
+"accuracies by the probability of the data, which equals to the posterior "
+"probability of the hypotheses at the given time point)."
+msgstr ""
+
+msgid ""
+"The 'Bayes factor' option can compare the predictive accuracies of the "
+"hypotheses to the rest of the hypotheses ('vs. All'), the best hypothesis "
+"('vs. best'), or a specific hypothesis selected in the 'vs.' dropdown. The "
+"nominator and denominator of the Bayes factors can be reversed by choosing "
+"the 'BF%2$s%1$s' option (quantifying the evidence in favor of the second "
+"hypothesis), or transformed to a log scale by choosing the 'log(BF%1$s%2$s)' "
+"option."
+msgstr ""
+
+msgid ""
+"The 'Updating table' option generates a numerical summary of the displayed "
+"figure."
+msgstr ""
+
+msgid ""
+"<ul><li>'central' - a central interval (or quantile) that covers the central "
+"'mass'%% area of the distribution</li><li>'HPD' - a highest posterior "
+"density interval that covers 'mass'%% area with the shortest range</"
+"li><li>'custom' - an interval defined by a 'lower' and 'upper' bound. It "
+"returns the posterior mass of the parameter falling inside the custom "
+"interval.</li>%s</ul>"
+msgstr ""
+
+msgid "Mean"
+msgstr "Mittelwert"
+
+msgid "Median"
+msgstr "Median"
+
+msgid "Mode"
+msgstr "Modus"
 
 msgid ""
 "The categorical fixed effect '%s' must have fewer levels than the overall "
@@ -34,27 +727,33 @@ msgstr ""
 "Die Anzahl von Iterationen muss mindestens 2 Iterationen mehr sein als die "
 "Anzahl der Aufwärmphase"
 
-msgid "%s requres that the dependent variable is positive."
+#, fuzzy
+msgid "%s requires that the dependent variable is positive."
 msgstr "%s setzt voraus, dass die abhängige Variable positiv ist."
 
-msgid "%s requres that the dependent variable is an integer."
+#, fuzzy
+msgid "%s requires that the dependent variable is an integer."
 msgstr "%s setzt voraus, dass die abhängige Variable eine ganze Zahl ist."
 
-msgid "%s requres that the dependent variable contains only 0 and 1."
+#, fuzzy
+msgid "%s requires that the dependent variable contains only 0 and 1."
 msgstr "%s setzt voraus, dass die abhängige Variable nur 0 und 1 enthält."
 
+#, fuzzy
 msgid ""
-"%s requres that the dependent variable is higher than 0 and lower than 1."
+"%s requires that the dependent variable is higher than 0 and lower than 1."
 msgstr ""
 "%s setzt voraus, dass die abhängige Variable größer als 0 und kleiner als 1 "
 "ist."
 
-msgid "%s requres that the number of trials variable is an integer."
+#, fuzzy
+msgid "%s requires that the number of trials variable is an integer."
 msgstr "%s setzt voraus, dass die Stichprobengröße eine ganze Zahl ist."
 
+#, fuzzy
 msgid ""
-"%s requres that the dependent variable is proportion of successes out of the "
-"number of trials."
+"%s requires that the dependent variable is proportion of successes out of "
+"the number of trials."
 msgstr ""
 "%s setzt voraus, dass die abhängige Variable ein Anteil an Erfolgen aus der "
 "Anzahl der Versuche ist."
@@ -121,8 +820,9 @@ msgstr "III"
 msgid "II"
 msgstr "II"
 
-msgid "Model summary"
-msgstr "Modell-Zusammenfassung"
+#, fuzzy
+msgid "Fit statistics"
+msgstr "Anpassungs-Statistiken"
 
 msgid "Deviance"
 msgstr "Devianz"
@@ -138,6 +838,13 @@ msgstr "AIC"
 
 msgid "BIC"
 msgstr "BIC"
+
+#, fuzzy
+msgid "Sample sizes"
+msgstr "Stichprobenumfang"
+
+msgid "Levels of RE grouping factors"
+msgstr ""
 
 msgid "Variance/Correlation Estimates"
 msgstr "Varianz/Korrelation Schätzungen"
@@ -188,9 +895,6 @@ msgstr ""
 msgid "Estimated Means and Confidence Intervals"
 msgstr "Geschätzte Mittelwerte und Konfidenzintervalle"
 
-msgid "Mean"
-msgstr "Mittelwert"
-
 msgid "Lower"
 msgstr "Untere"
 
@@ -208,9 +912,6 @@ msgstr "Zeile"
 
 msgid "z"
 msgstr "z"
-
-msgid "Median"
-msgstr "Median"
 
 msgid "%s%% HPD"
 msgstr ""
@@ -244,6 +945,9 @@ msgstr "LOO"
 
 msgid "SE (LOO)"
 msgstr "SF (LOO)"
+
+msgid "Model summary"
+msgstr "Modell-Zusammenfassung"
 
 msgid "%s (differences from intercept)"
 msgstr "%s (Differenzen von Konstante)"
@@ -302,14 +1006,16 @@ msgid ""
 "inflate the reported p-value, and invalidates the analysis."
 msgstr ""
 
+#, fuzzy
 msgid ""
 "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, "
-"the maximum possible odds in favor of H₁ over H₀ equals 1/(-e <em>p</em> "
-"log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & Berger, 2001)."
+"the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</"
+"em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, "
+"2001)."
 msgstr ""
 "Vovk-Sellke-Maximum-<em>p</em>-Quotient: Basierend auf einem zweiseitigen "
-"<em>p</em>-Wert ist der maximale Quotient zugunsten H₁ gegenüber H₀ "
-"gegeben durch 1/(-e <em>p</em> log(<em>p</em>)) für <em>p</em> .37 "
+"<em>p</em>-Wert ist der maximale Quotient zugunsten H%1$s gegenüber H%2$s "
+"gegeben durch 1/(-e <em>p</em> log(<em>p</em>)) für <em>p</em> %3$s .37 "
 "(Sellke, Bayarri, & Berger, 2001)."
 
 msgid ""
@@ -418,7 +1124,7 @@ msgstr "Hochberg"
 msgid "Multivariate-t"
 msgstr "Multivariat-t"
 
-msgid "Turkey"
+msgid "Tukey"
 msgstr ""
 
 msgid "Benjamini-Hochberg"
@@ -493,15 +1199,6 @@ msgstr "Log-Odds-Ratio %s 0"
 
 msgid "Descriptives"
 msgstr "Deskriptive Statistiken"
-
-msgid "Counts"
-msgstr "Anzahlen"
-
-msgid "Total"
-msgstr "Gesamt"
-
-msgid "Proportion"
-msgstr "Verhältnis"
 
 msgid "Group 1"
 msgstr "Gruppe 1"
@@ -987,68 +1684,82 @@ msgstr "Gruppiert mit %s."
 msgid "<u>Procedure</u>"
 msgstr "<u>Prozedur</u>"
 
+#, fuzzy
 msgid ""
 "Benford's law states that in many naturally occurring collections of "
-"numbers, the leading significant number is likely to be small. The goal of "
-"this procedure is to determine to which extent the first leading numbers in "
-"the population follow Benford's law, and to test this relation with <b>%1$s</"
-"b> confidence. Data that do not conform to Benford's law might need further "
-"verification."
+"numerical observations, the leading significant digit is likely to be small. "
+"The goal of this procedure is to determine to what extent the first leading "
+"digits in the data set follow Benford's law, and to test this relation with "
+"a type-I error of <b>%1$s</b>. Data that are not distributed according to "
+"Benford's law might need further investigation."
 msgstr ""
-"Das Benfordsche Gesetz sagt, dass in vielen natürlich auftretenden Datensätzen "
-"von Zahlen die führende Ziffer wahrscheinlich klein ist. Das Ziel dieser "
-"Prozedur ist es festzustellen, inwiefern die führenden Ziffern in der "
-"Population dem Benfordschen Gesetz folgen, und diese Relation mit einer "
-"Konfidenz von <b>%1$s</b> zu testen. Daten, die nicht mit dem Benfordschen "
-"Gesetz übereinstimmen könnten zu weiterer Prüfung herangezogen werden."
+"Das Benfordsche Gesetz sagt, dass in vielen natürlich auftretenden "
+"Datensätzen von Zahlen die führende Ziffer wahrscheinlich klein ist. Das "
+"Ziel dieser Prozedur ist es festzustellen, inwiefern die führenden Ziffern "
+"in der Population dem Benfordschen Gesetz folgen, und diese Relation mit "
+"einer Konfidenz von <b>%1$s</b> zu testen. Daten, die nicht mit dem "
+"Benfordschen Gesetz übereinstimmen könnten zu weiterer Prüfung herangezogen "
+"werden."
 
+#, fuzzy
 msgid ""
 "Benford's law states that in many naturally occurring collections of "
-"numbers, the leading significant number is likely to be small. The goal of "
-"this procedure is to determine to which extent the first two leading numbers "
-"in the population follow Benford's law, and to test this relation with <b>"
-"%1$s</b> confidence. Data that do not conform to Benford's law might need "
-"further verification."
+"numerical observations, the leading significant digit is likely to be small. "
+"The goal of this procedure is to determine to what extent the first two "
+"leading digits in the data set follow Benford's law, and to test this "
+"relation with a type-I error of <b>%1$s</b>. Data that are not distributed "
+"according to Benford's law might need further investigation."
 msgstr ""
-"Das Benfordsche Gesetz sagt, dass in vielen natürlich auftretenden Datensätzen "
-"von Zahlen die führende Ziffer wahrscheinlich klein ist. Das Ziel dieser "
-"Prozedur ist es festzustellen, inwiefern die ersten beiden führenden Ziffern "
-"in der Population dem Benfordschen Gesetz folgen, und diese Relation mit einer "
-"Konfidenz von <b>%1$s</b> zu testen. Daten, die nicht mit dem Benfordschen "
-"Gesetz übereinstimmen könnten zu weiterer Prüfung herangezogen werden."
+"Das Benfordsche Gesetz sagt, dass in vielen natürlich auftretenden "
+"Datensätzen von Zahlen die führende Ziffer wahrscheinlich klein ist. Das "
+"Ziel dieser Prozedur ist es festzustellen, inwiefern die ersten beiden "
+"führenden Ziffern in der Population dem Benfordschen Gesetz folgen, und "
+"diese Relation mit einer Konfidenz von <b>%1$s</b> zu testen. Daten, die "
+"nicht mit dem Benfordschen Gesetz übereinstimmen könnten zu weiterer Prüfung "
+"herangezogen werden."
 
+#, fuzzy
 msgid ""
 "Benford's law states that in many naturally occurring collections of "
-"numbers, the leading significant number is likely to be small. The goal of "
-"this procedure is to determine to which extent the last numbers in the "
-"population follow Benford's law, and to test this relation with <b>%1$s</b> "
-"confidence. Data that do not conform to Benford's law might need further "
-"verification."
+"numerical observations, the leading significant digit is likely to be small. "
+"The goal of this procedure is to determine to what extent the last digits in "
+"the data set follow Benford's law, and to test this relation with a type-I "
+"error of <b>%1$s</b>. Data that are not distributed according to Benford's "
+"law might need further investigation."
+msgstr ""
+"Das Benfordsche Gesetz sagt, dass in vielen natürlich auftretenden "
+"Datensätzen von Zahlen die führende Ziffer wahrscheinlich klein ist. Das "
+"Ziel dieser Prozedur ist es festzustellen, inwiefern die führenden Ziffern "
+"in der Population dem Benfordschen Gesetz folgen, und diese Relation mit "
+"einer Konfidenz von <b>%1$s</b> zu testen. Daten, die nicht mit dem "
+"Benfordschen Gesetz übereinstimmen könnten zu weiterer Prüfung herangezogen "
+"werden."
+
+msgid ""
+"The uniform distribution assigns equal probability to all possible digits "
+"that may occur. The goal of this procedure is to determine to what extent "
+"the first leading digits in the data set follow the uniform distribution, "
+"and to test this relation with a type-I error of <b>%1$s</b>. If the uniform "
+"distribution assumption is desirable, then violation of uniformity is cause "
+"for further investigation."
 msgstr ""
 
 msgid ""
-"The uniform distribution assigns equal probability to all values that may "
-"occur. The goal of this procedure is to determine to which extent the first "
-"leading numbers in the population follow the uniform distribution, and to "
-"test this relation with <b>%1$s</b> confidence. Supposedly random data that "
-"do not conform to the uniform distribution might need further verification."
+"The uniform distribution assigns equal probability to all possible digits "
+"that may occur. The goal of this procedure is to determine to what extent "
+"the first two leading digits in the data set follow the uniform "
+"distribution, and to test this relation with a type-I error of <b>%1$s</b>. "
+"If the uniform distribution assumption is desirable, then violation of "
+"uniformity is cause for further investigation."
 msgstr ""
 
 msgid ""
-"The uniform distribution assigns equal probability to all values that may "
-"occur. The goal of this procedure is to determine to which extent the first "
-"two leading numbers in the population follow the uniform distribution, and "
-"to test this relation with <b>%1$s</b> confidence. Supposedly random data "
-"that do not conform to the uniform distribution might need further "
-"verification."
-msgstr ""
-
-msgid ""
-"The uniform distribution assigns equal probability to all values that may "
-"occur. The goal of this procedure is to determine to which extent the last "
-"numbers in the population follow the uniform distribution, and to test this "
-"relation with <b>%1$s</b> confidence. Supposedly random data that do not "
-"conform to the uniform distribution might need further verification."
+"The uniform distribution assigns equal probability to all possible digits "
+"that may occur. The goal of this procedure is to determine to what extent "
+"the last digits in the data set follow the uniform distribution, and to test "
+"this relation with a type-I error of <b>%1$s</b>. If the uniform "
+"distribution assumption is desirable, then violation of uniformity is cause "
+"for further investigation."
 msgstr ""
 
 msgid "<u>Assessing Benford's Law</u>"
@@ -1066,26 +1777,29 @@ msgstr "Wert"
 msgid "<i>p</i> value"
 msgstr "<i>p</i>-Wert"
 
+#, fuzzy
 msgid ""
-"The null hypothesis specifies that the distribution of first numbers (1 - 9) "
-"in the population conforms to %1$s."
+"The null hypothesis specifies that the first digits (1 - 9) in the data set "
+"are distributed according to %1$s."
 msgstr ""
-"Die Nullhypothese gibt an, dass die Verteilung der führenden Ziffern (1 - 9) in "
-"der Population übereinstimmt mit %1$s."
+"Die Nullhypothese gibt an, dass die Verteilung der letzten Ziffern (1 - 9) "
+"in der Population übereinstimmt mit %1$s."
 
+#, fuzzy
 msgid ""
-"The null hypothesis specifies that the distribution of the first two numbers "
-"(10 - 99) in the population conforms to %1$s."
+"The null hypothesis specifies that the first two digits (10 - 99) in the "
+"data set are distributed according to %1$s."
 msgstr ""
 "Die Nullhypothese gibt an, dass die Verteilung der ersten beiden führenden "
 "Ziffern (10-99) in der Population übereinstimmt mit %1$s."
 
+#, fuzzy
 msgid ""
-"The null hypothesis specifies that the distribution of last numbers (1 - 9) "
-"in the population conforms to %1$s."
+"The null hypothesis specifies that the last digits (1 - 9) in the data set "
+"are distributed according to %1$s."
 msgstr ""
-"Die Nullhypothese gibt an, dass die Verteilung der letzten Ziffern (1 - 9) in "
-"der Population übereinstimmt mit %1$s."
+"Die Nullhypothese gibt an, dass die Verteilung der letzten Ziffern (1 - 9) "
+"in der Population übereinstimmt mit %1$s."
 
 msgid "Chi-square"
 msgstr "Chi-Quadrat"
@@ -1123,51 +1837,54 @@ msgstr "Beobachtete Prozentzahlen vs. Benfordsches Gesetz"
 msgid "Observed"
 msgstr "Beobachtet"
 
+#, fuzzy
 msgid ""
-"<b>Figure %i:</b> The observed percentages of each number in the population "
-"compared to the expected percentage under %2$s. The more the blue dots lie "
-"near the top of the grey bars, the more the population conforms to %2$s."
+"<b>Figure %i:</b> The observed percentages of each digit in the data set "
+"compared to the expected percentage under %2$s. For data sets distributed "
+"according %2$s the blue dots will lie near the top of the grey bars."
 msgstr ""
 "<b>Abbildung %i:</b> Die beobachtete Prozentzahlen aller Zahlen in der "
-"Population, verglichen mit der erwarteten Prozentzahl unter %2$s. "
-"Je dichter die blauen Punkte an der Oberkante der grauen Balken "
-"liegen, desto mehr stimmt die Population überein mit %2$s."
+"Population, verglichen mit der erwarteten Prozentzahl unter %2$s. Je dichter "
+"die blauen Punkte an der Oberkante der grauen Balken liegen, desto mehr "
+"stimmt die Population überein mit %2$s."
 
 msgid "<u>Conclusion</u>"
 msgstr "<u>Schlussfolgerung</u>"
 
-msgid "can be rejected"
+#, fuzzy
+msgid "is rejected"
 msgstr "verworfen werden"
 
-msgid "can not be rejected"
+#, fuzzy
+msgid "is not rejected"
 msgstr "nicht verworfen werden"
 
+#, fuzzy
 msgid ""
-"The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis "
-"that the distribution of first numbers in the population conforms to %2$s <b>"
-"%3$s</b> with <b>%4$s</b> confidence."
+"The <i>p</i> value is %1$s and the null hypothesis that the first digits in "
+"the data set are distributed according to %2$s <b>%3$s</b>."
 msgstr ""
-"Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die Nullhypothese, dass "
-"die Verteilung der führenden Ziffern in der Population mit %2$s übereinstimmt, "
-"<b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
+"Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die Nullhypothese, "
+"dass die Verteilung der beiden ersten führenden Ziffern in der Population "
+"mit %2$s übereinstimmt, <b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
 
+#, fuzzy
 msgid ""
-"The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis "
-"that the distribution of the two first numbers in the population conforms to "
-"%2$s <b>%3$s</b> with <b>%4$s</b> confidence."
+"The <i>p</i> value is %1$s and the null hypothesis that the first two digits "
+"in the data set are distributed according to %2$s <b>%3$s</b>."
 msgstr ""
-"Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die Nullhypothese, dass "
-"die Verteilung der beiden ersten führenden Ziffern in der Population mit %2$s "
-"übereinstimmt, <b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
+"Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die Nullhypothese, "
+"dass die Verteilung der beiden ersten führenden Ziffern in der Population "
+"mit %2$s übereinstimmt, <b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
 
+#, fuzzy
 msgid ""
-"The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis "
-"that the distribution of last numbers in the population conforms to %2$s <b>"
-"%3$s</b> with <b>%4$s</b> confidence."
+"The <i>p</i> value is %1$s and the null hypothesis that the last digits in "
+"the data set are distributed according to %2$s <b>%3$s</b>."
 msgstr ""
-"Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die Nullhypothese, dass "
-"die Verteilung der letzten Ziffern in der Population mit %2$s übereinstimmt, "
-"<b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
+"Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die Nullhypothese, "
+"dass die Verteilung der beiden ersten führenden Ziffern in der Population "
+"mit %2$s übereinstimmt, <b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
 
 msgid "Direct estimator"
 msgstr "Direkter Schätzer"
@@ -1371,7 +2088,8 @@ msgid ""
 "<i>The required information for the <b>regression</b> estimator consists of:"
 "</i>"
 msgstr ""
-"<i>Die benötigte Information für den <b>Regressions</b>-Schätzer besteht aus:</i>"
+"<i>Die benötigte Information für den <b>Regressions</b>-Schätzer besteht aus:"
+"</i>"
 
 msgid ""
 "The regression coefficient of the sample book values and audit values %1$s"
@@ -1433,11 +2151,11 @@ msgstr ""
 "<b>Abbildung 1.</b> Streudiagramm der Buchwerte in der Auswahl und deren "
 "Auditwerte. Rote Punkte heben Beobachtungen hervor, die nicht ihrem "
 "ursprünglichen Buchwert übereinstimmen. Wenn diese roten Punkte im unteren "
-"Teil des Grafen liegen, sind die Buchwerte übertrieben. Wenn diese "
-"roten Punkte im oberen Teil des Grafen liegen, sind sie unterschätzt. "
-"Der Wert <i>r</i> ist der Pearson-Korrelationskoeffizient der Buchwerte und "
-"der Auditwerte, ein Indikator der Stärke der linearen Beziehung zwischen "
-"den beiden Variablen."
+"Teil des Grafen liegen, sind die Buchwerte übertrieben. Wenn diese roten "
+"Punkte im oberen Teil des Grafen liegen, sind sie unterschätzt. Der Wert "
+"<i>r</i> ist der Pearson-Korrelationskoeffizient der Buchwerte und der "
+"Auditwerte, ein Indikator der Stärke der linearen Beziehung zwischen den "
+"beiden Variablen."
 
 msgid "<b>percentage</b>"
 msgstr "<b>Prozentzahl</b>"
@@ -1471,8 +2189,8 @@ msgid ""
 "The detection risk is equal to or higher than 100%%. Please re-specify your "
 "custom values for the Inherent risk and/or Control risk, or the confidence."
 msgstr ""
-"Das Detektionsrisiko ist höher als, oder gleich 100%%. Bitte korrigiere deine "
-"benutzerdefinierten Werte für das inhärente Risiko und/oder das "
+"Das Detektionsrisiko ist höher als, oder gleich 100%%. Bitte korrigiere "
+"deine benutzerdefinierten Werte für das inhärente Risiko und/oder das "
 "Kontrollrisiko, oder die Konfidenz."
 
 msgid "Selection summary"
@@ -1521,8 +2239,8 @@ msgid ""
 "The detection risk is equal to or higher than 100%%. Please re-specify your "
 "values for the Inherent risk and/or Control risk, or the confidence."
 msgstr ""
-"Das Detektionsrisiko ist höher als, oder gleich 100%%. Bitte korrigiere deine "
-"benutzerdefinierten Werte für das inhärente Risiko und/oder das "
+"Das Detektionsrisiko ist höher als, oder gleich 100%%. Bitte korrigiere "
+"deine benutzerdefinierten Werte für das inhärente Risiko und/oder das "
 "Kontrollrisiko, oder die Konfidenz."
 
 msgid ""
@@ -1700,7 +2418,8 @@ msgid ""
 "custom values for the Inherent risk and/or Control risk."
 msgstr ""
 "Das Detektionsrisiko ist gleich oder höher als 100%%. Bitte korrigiere deine "
-"benutzerdefinierten Werte für das inhärente Risiko und/oder das Kontrollrisiko."
+"benutzerdefinierten Werte für das inhärente Risiko und/oder das "
+"Kontrollrisiko."
 
 msgid "The resulting sample size exceeds 5000."
 msgstr "Die resultierende Stichprobengröße ist größer als 5000."
@@ -1843,9 +2562,6 @@ msgstr "Implizierte %1$s Stichprobenverteilung"
 
 msgid "Errors"
 msgstr "Fehler"
-
-msgid "Probability"
-msgstr "Wahrscheinlichkeit"
 
 msgid ""
 "<b>Figure %1$i.</b> The implied <b>%2$s</b> sampling distribution. The "
@@ -2129,9 +2845,6 @@ msgstr ""
 "Erwarteter\n"
 "Posterior"
 
-msgid "Density"
-msgstr "Dichte"
-
 msgid "Population errors"
 msgstr "Populationsfehler"
 
@@ -2257,9 +2970,6 @@ msgstr ""
 msgid "Hypothesis Legend"
 msgstr "Hypothese Legende"
 
-msgid "Hypothesis"
-msgstr "Hypothese"
-
 msgid "H"
 msgstr "H"
 
@@ -2318,9 +3028,6 @@ msgstr "Bain Welchs T-Test für unabhängige Stichproben"
 
 msgid "BF"
 msgstr "BF"
-
-msgid "Posterior probability"
-msgstr "Posterior Wahrscheinlichkeit"
 
 msgid ""
 "The alternative hypothesis H1 specifies that the mean of group 1 is unequal "
@@ -2466,7 +3173,8 @@ msgid ""
 msgstr ""
 
 msgid "Results not computed: The variables in this pair are the same."
-msgstr "Ergebnisse nicht berechnet: Die Variablen in diesem Paar sind dieselben."
+msgstr ""
+"Ergebnisse nicht berechnet: Die Variablen in diesem Paar sind dieselben."
 
 msgid "Results not computed: The pair is incomplete."
 msgstr "Ergebnisse nicht berechnet: Das Paar ist unvollständig."
@@ -2741,9 +3449,6 @@ msgstr "Bayesscher Binomialtest"
 
 msgid "Inferential Plots"
 msgstr "Inferenz-Abbildungen"
-
-msgid "Population proportion"
-msgstr "Populationsverhältnis"
 
 msgid "One or more Bayes factors cannot be computed"
 msgstr "Einer oder mehrere Bayesfaktoren können nicht berechnet werden"
@@ -3168,7 +3873,14 @@ msgstr "Effekte"
 msgid "P(incl)"
 msgstr "P(inkl)"
 
+msgid "P(excl)"
+msgstr ""
+
 msgid "P(incl|data)"
+msgstr "P(inkl|Daten)"
+
+#, fuzzy
+msgid "P(excl|data)"
 msgstr "P(inkl|Daten)"
 
 msgid ""
@@ -3360,6 +4072,13 @@ msgid ""
 msgstr ""
 "Standardfehler und Konfidenzintervalle wurden mit der Deltamethode berechnet."
 
+#, fuzzy
+msgid "Maximum likelihood"
+msgstr "Maximaler Fehler"
+
+msgid "Fit Assessment"
+msgstr ""
+
 msgid "Test"
 msgstr "Test"
 
@@ -3398,6 +4117,18 @@ msgstr "Stichprobe"
 
 msgid "Probability Mass"
 msgstr "Wahrscheinlichkeit"
+
+msgid "Probability Density Function"
+msgstr "Wahrscheinlichkeitsdichtefunktion"
+
+msgid "Probability Mass Function"
+msgstr "Wahrscheinlichkeitsfunktion"
+
+msgid "Cumulative Distribution Function"
+msgstr "Kumulative Verteilungsfunktion"
+
+msgid "Quantile Function"
+msgstr "Quantilfunktion"
 
 msgid "Formula"
 msgstr "Formel"
@@ -4092,9 +4823,6 @@ msgstr "breiter Prior"
 msgid "ultrawide prior"
 msgstr "ultrabreiter Prior"
 
-msgid "BF%s"
-msgstr "BF%s"
-
 msgid "%s at r==%s"
 msgstr "%s mit r==%s"
 
@@ -4103,6 +4831,9 @@ msgstr "Breite Cauchy-Prior"
 
 msgid "Running sequential analysis %d / %d"
 msgstr "Berechne sequentielle Analyse %d / %d"
+
+msgid "%s%% CI:"
+msgstr "%s%% KI:"
 
 msgid "Bayes factor could not be calculated"
 msgstr "Bayesfaktor konnte nicht berechnet werden"
@@ -4434,9 +5165,6 @@ msgstr "Modell-Anpassung"
 
 msgid "Chi-square test"
 msgstr "Chi-Quadrat-Test"
-
-msgid "Model"
-msgstr "Modell"
 
 msgid "Baseline model"
 msgstr "Baseline-Modell"
@@ -4810,6 +5538,11 @@ msgstr "Kendalls Tau B"
 msgid "Number of observations is < %s"
 msgstr "Anzahl der Beobachtungen ist < %s"
 
+msgid ""
+"Partial correlation cannot be computed: covariance matrix is computationally "
+"singular."
+msgstr ""
+
 msgid "Assumption checks"
 msgstr "Annahmeprüfungen"
 
@@ -4821,6 +5554,10 @@ msgstr "Variablen"
 
 msgid "Shapiro-Wilk Test for Bivariate Normality"
 msgstr "Shapiro-Wilk-Test auf bivariate Normalverteilung"
+
+#, fuzzy
+msgid "Confidence intervals for partial correlations not yet available."
+msgstr "Konfidenzintervalle wurden mit der Deltamethode berechnet."
 
 msgid "Scatter plots"
 msgstr "Streudiagramme"
@@ -4847,6 +5584,18 @@ msgid ""
 msgstr ""
 "Abbilden nicht möglich: \n"
 " Anzahl der Beobachtungen ist < 2"
+
+#, fuzzy
+msgid "Partial Pearson's r"
+msgstr "Pearsons r"
+
+#, fuzzy
+msgid "Partial Spearman's rho"
+msgstr "Spearmans Rho"
+
+#, fuzzy
+msgid "Partial Kendall's tau B"
+msgstr "Kendalls Tau B"
 
 msgid "%s heatmap"
 msgstr "%s Heatmap"
@@ -4883,9 +5632,6 @@ msgstr "Posterior ist zu spitz"
 
 msgid "Could not compute the posteriors"
 msgstr "Konnte die Posterior nicht berechnen"
-
-msgid "%s%% CI:"
-msgstr "%s%% KI:"
 
 msgid "Bayesian Correlation Pairwise Plots"
 msgstr ""
@@ -4936,9 +5682,6 @@ msgstr "Fehlend"
 
 msgid "Std. Error of Mean"
 msgstr "Std.-Fehler Mittelwert"
-
-msgid "Mode"
-msgstr "Modus"
 
 msgid "MAD"
 msgstr "MAD"
@@ -5331,12 +6074,6 @@ msgstr ""
 msgid "Bernoulli distribution"
 msgstr "Bernoulli-Verteilung"
 
-msgid "Probability Mass Function"
-msgstr "Wahrscheinlichkeitsfunktion"
-
-msgid "Cumulative Distribution Function"
-msgstr "Kumulative Verteilungsfunktion"
-
 msgid "probability of success: p %s %s: 0 %s p %s 1"
 msgstr "Erfolgswahrscheinlichkeit: p %s %s: 0 %s p %s 1"
 
@@ -5356,12 +6093,6 @@ msgstr "<i>Warnung.</i>"
 
 msgid "beta distribution"
 msgstr "Beta-Verteilung"
-
-msgid "Probability Density Function"
-msgstr "Wahrscheinlichkeitsdichtefunktion"
-
-msgid "Quantile Function"
-msgstr "Quantilfunktion"
 
 msgid "shape: %s"
 msgstr "Form: %s"
@@ -5428,6 +6159,35 @@ msgstr "Quadratwurzel der Präzision: %s"
 
 msgid "&mu;"
 msgstr "&mu;"
+
+#, fuzzy
+msgid "logistic distribution"
+msgstr "Posteriorverteilung"
+
+#, fuzzy
+msgid "location: &mu; %s"
+msgstr "Mittelwert: &mu; %s"
+
+msgid "(&sigma; &pi;)<sup>2</sup> / 3"
+msgstr ""
+
+#, fuzzy
+msgid "log-normal distribution"
+msgstr "Normalverteilung"
+
+#, fuzzy
+msgid "log mean: &mu; %s"
+msgstr "Mittelwert: &mu; %s"
+
+#, fuzzy
+msgid "log standard deviation: %s"
+msgstr "Standardabweichung: %s"
+
+msgid "exp(&mu; + &sigma;<sup>2</sup>/2)"
+msgstr ""
+
+msgid "[exp(&sigma;<sup>2</sup>) - 1] exp(2&mu; + &sigma;<sup>2</sup>)"
+msgstr ""
 
 msgid "negative binomial distribution"
 msgstr "Negativ Binomialverteilung"
@@ -6164,8 +6924,7 @@ msgstr "Bootstrap basiert auf %i Wiederholungen."
 
 msgid ""
 "Coefficient estimate is based on the median of the bootstrap distribution."
-msgstr ""
-"Koeffizientenschätung basiert auf dem Median der Bootstrapverteilung."
+msgstr "Koeffizientenschätung basiert auf dem Median der Bootstrapverteilung."
 
 msgid "Bias corrected accelerated"
 msgstr ""
@@ -6451,11 +7210,27 @@ msgstr "Prädiktor - Residuen-Abbildungen"
 msgid "Squared Pearson residuals plot"
 msgstr ""
 
+#, fuzzy
+msgid "Performance plots"
+msgstr "Performanz-Metriken"
+
+#, fuzzy
+msgid "ROC plot"
+msgstr "Q-Q-Diagramm"
+
+#, fuzzy
+msgid "PR plot"
+msgstr "P-P-Diagramm"
+
 msgid "Predicted Probability"
 msgstr "Vorhergesagte Wahrscheinlichkeit"
 
 msgid "Squared Pearson Residual"
 msgstr ""
+
+#, fuzzy
+msgid "Positive predictive value"
+msgstr "Vorhergesagter Wert"
 
 msgid "%1$s%% bca%2$s Confidence interval"
 msgstr "%1$s%% bca%2$s Konfidenzintervall"
@@ -6518,6 +7293,20 @@ msgstr "Posterior zusammenfassende Statistiken für Untermodell %s"
 msgid "%.0f%% Credible intervals"
 msgstr "%.0f%% Kredibilitätsintervalle"
 
+#, fuzzy
+msgid "Greatest Lower Bound"
+msgstr "Untergrenze %s"
+
+msgid "Item-rest correlation"
+msgstr "Item-Rest-Korrelation"
+
+#, fuzzy
+msgid "mean"
+msgstr "Mittelwert: %s"
+
+msgid "sd"
+msgstr ""
+
 msgid "The covariance matrix of the data is not invertible"
 msgstr "Die Kovarianzmatrix der Daten ist nicht invertierbar"
 
@@ -6539,9 +7328,6 @@ msgstr "%s obere Grenze"
 msgid "Please enter at least 3 variables to do an analysis. %s"
 msgstr "Bitte gib mindestens 3 Variablen ein, um eine Analyse zu machen. %s"
 
-msgid "footnote"
-msgstr "Fußnote"
-
 msgid "Please enter at least 3 variables to do an analysis."
 msgstr "Bitte gib mindestens 3 Variablen ein, um eine Analyse zu machen."
 
@@ -6556,9 +7342,6 @@ msgstr "Item"
 
 msgid "Posterior Mean"
 msgstr "Posterior Mittelwert"
-
-msgid "Item-rest correlation"
-msgstr "Item-Rest-Korrelation"
 
 msgid ""
 "Probability that Reliability Statistic is Larger than %.2f and Smaller than "
@@ -6600,12 +7383,14 @@ msgid ""
 "                                    did not find a solution."
 msgstr ""
 
+#, fuzzy
 msgid ""
-"%s Some confidence intervals could not be computed because out of the "
-"bootstrapped matrices none were invertible."
+"%s Some confidence intervals could not be computed \n"
+"                                        because none of the bootstrapped "
+"covariance matrices were invertible."
 msgstr ""
-"%s Einige Konfidenzintervalle konnten nicht berechnet werden, weil keine "
-"der Matrizen des Bootstraps invertierbar waren."
+"%s Einige Konfidenzintervalle konnten nicht berechnet werden, weil keine der "
+"Matrizen des Bootstraps invertierbar waren."
 
 msgid "If item dropped"
 msgstr "Falls Item ausgelassen"
@@ -6614,9 +7399,8 @@ msgid "Frequentist Individual Item Reliability Statistics"
 msgstr ""
 
 msgid ""
-"McDonald's ω estimation method for item-dropped statistics \n"
-"                                     switched to PFA because the CFA did not "
-"find a solution."
+"McDonald's %s estimation method for item-dropped statistics switched to PFA "
+"because the CFA did not find a solution."
 msgstr ""
 
 msgid "Fit Measures of Single Factor Model Fit"
@@ -6626,9 +7410,8 @@ msgid "Fit Measure"
 msgstr "Anpassungs-Maß"
 
 msgid ""
-"Fit measures cannot be displayed because the McDonald's ω \n"
-"                                       estimation method switched to PFA as "
-"the CFA did not find a solution."
+"Fit measures cannot be displayed because the McDonald's %s estimation method "
+"switched to PFA as the CFA did not find a solution."
 msgstr ""
 
 msgid "The priors for publication bias were set incorrectly."
@@ -6640,17 +7423,19 @@ msgstr "MCMC-Fehler"
 msgid "ESS"
 msgstr ""
 
-msgid "%s is on %s scale."
-msgstr ""
+#, fuzzy
+msgid "%1$s is on %2$s scale."
+msgstr "%1$s vs. %2$s"
 
 msgid "<em>p</em>-values interval %s"
 msgstr "<em>p</em>-Werte Intervall %s"
 
-msgid "The weights (%s) correspond to %s <em>p</em>-values."
+msgid "The weights (%1$s) correspond to %2$s <em>p</em>-values."
 msgstr ""
 
-msgid "Estimated studies' effects (%s) correspond to effect size %s."
-msgstr ""
+#, fuzzy
+msgid "Estimated studies' effects (%1$s) correspond to effect size %2$s."
+msgstr "Geschätzte Studieneffekte (%s)"
 
 msgid "Effect size (%s)"
 msgstr "Effektgröße (%s)"
@@ -6663,6 +7448,12 @@ msgstr "Prior-Abbildungen"
 
 msgid "Weight Function"
 msgstr "Gewichtungsfunktion"
+
+msgid "Null"
+msgstr ""
+
+msgid "Alternative"
+msgstr ""
 
 msgid "Model Preview"
 msgstr "Modell-Vorschau"
@@ -6707,6 +7498,11 @@ msgstr ""
 msgid "%i models failed to converge."
 msgstr ""
 
+msgid ""
+"Analyzing odds ratios is an experimental feature. The performance of default "
+"prior distributions was not evaluated."
+msgstr ""
+
 msgid "Model Averaged Estimates"
 msgstr "Modell-gemittelte Schätzungen"
 
@@ -6739,15 +7535,6 @@ msgid ""
 "Estimated studies effects (%s) are model averaged over models assuming "
 "existence of effect."
 msgstr ""
-
-msgid "BF01"
-msgstr "BF01"
-
-msgid "log(BF10)"
-msgstr "Log(BF10)"
-
-msgid "BF10"
-msgstr "BF10"
 
 msgid "log(MargLik)"
 msgstr ""
@@ -6782,8 +7569,9 @@ msgstr "Gewichtungsfunktion"
 msgid "Effect size vs Heterogeneity"
 msgstr "Effektgröße vs Heterogenität"
 
-msgid "%s (%s)"
-msgstr "%s (%s)"
+#, fuzzy
+msgid "%1$s (%2$s)"
+msgstr "%1$s = %2$s"
 
 msgid "Individual Models Plots"
 msgstr ""
@@ -6803,6 +7591,10 @@ msgstr ""
 msgid "max(Rhat)"
 msgstr "max(R-Dach)"
 
+#, fuzzy
+msgid "Model %1$i does not exist. Select one of the models between 1 and %2$i."
+msgstr "Modell %i existiert nicht. Wähle eins der Modelle zwischen 1 und %i."
+
 msgid "Trace plots"
 msgstr "Verlaufs-Abbildungen"
 
@@ -6815,14 +7607,177 @@ msgstr ""
 msgid "Model %i does not contain any of the selected parameters."
 msgstr ""
 
+msgid "Error in %s: All p-values need to be between 0 and 1."
+msgstr ""
+
+msgid "Error in %s: All correlation coefficients need to be between -1 and 1."
+msgstr ""
+
+msgid "The p-value cutoffs were set incorectly."
+msgstr ""
+
+msgid "At least one p-value cuttoff needs to be set."
+msgstr ""
+
+msgid "All p-value cutoffs needs to be between 0 and 1."
+msgstr ""
+
+msgid "No steps"
+msgstr ""
+
+#, fuzzy
+msgid "95% Confidence Interval"
+msgstr "95%% Konfidenzintervalle"
+
+msgid "Note:"
+msgstr ""
+
+msgid "%s is on %s scale."
+msgstr ""
+
+#, fuzzy
+msgid "<em>p</em>-values interval(one-sided)"
+msgstr "<em>p</em>-Werte Intervall %s"
+
+#, fuzzy
+msgid "Model Tests"
+msgstr "Modellabbildungen"
+
+#, fuzzy
+msgid "Test of Heterogeneity"
+msgstr "Heterogenität"
+
+#, fuzzy
+msgid "Error:"
+msgstr "Fehler"
+
+#, fuzzy
+msgid "Test of Publication Bias"
+msgstr "Publikationsbias"
+
+msgid "Assuming homogeneity"
+msgstr ""
+
+#, fuzzy
+msgid "Assuming heterogeneity"
+msgstr "Heterogenität"
+
+#, fuzzy
+msgid "Mean Estimates(%s)"
+msgstr "Modell-Schätzungen"
+
+#, fuzzy
+msgid "Estimated Weights"
+msgstr "Geschätzte Gewichte (%s)"
+
+#, fuzzy
+msgid "Random Effects Estimates"
+msgstr "Feste Effekte Schätzungen"
+
+#, fuzzy
+msgid "Heterogeneity Estimates(%s)"
+msgstr "Heterogenität (%s)"
+
+#, fuzzy
+msgid "p-value Frequency"
+msgstr "Rel. Häufigkeit"
+
+msgid ""
+"There were no p-value cutoffs after their automatic reduction. The displayed "
+"frequencies correspond to the non-reduced p-value cutoffs."
+msgstr ""
+
+#, fuzzy
+msgid "Weight Function(%s)"
+msgstr "Gewichtungsfunktion"
+
+msgid "The figure could not be created since one of the estimates is NaN."
+msgstr ""
+
+msgid "P-value (One-sided)"
+msgstr ""
+
+#, fuzzy
+msgid "Publication Probability"
+msgstr "Kumulative Wahrscheinlichkeit"
+
+#, fuzzy
+msgid "Mean Model Estimates (%s)"
+msgstr "Modell-Schätzungen"
+
+#, fuzzy
+msgid "Fixed effects (adjusted)"
+msgstr "Feste Effekte"
+
+#, fuzzy
+msgid "Random effects (adjusted)"
+msgstr "Zufällige Effekte"
+
+msgid ""
+"The figure could not be created since one of the estimates is not a number."
+msgstr ""
+
+#, fuzzy
+msgid "Mean Estimates (%s)"
+msgstr "Modell-Schätzungen"
+
+#, fuzzy
+msgid "Fixed effects model:"
+msgstr "Feste Effekte"
+
+#, fuzzy
+msgid "Random effects model:"
+msgstr "Zufällige Effekte"
+
+#, fuzzy
+msgid ""
+"%sThe optimizer failed to find a solution. Consider re-specifying the model."
+msgstr ""
+"Die Optimierung konnte keine Lösung finden. Vermutlich aufgrund der Quasi-"
+"Trennung in den Daten. Versuchen Sie, einige der Prädiktoren zu entfernen."
+
+msgid ""
+"%sThe automatic cutoffs selection did not find viable p-value cutoffs. "
+"Please, specify them manually."
+msgstr ""
+
+msgid ""
+"At least one of the p-value intervals contains no effect sizes, leading to "
+"estimation problems. Consider re-specifying the cutoffs."
+msgstr ""
+
+msgid ""
+"At least one of the p-value intervals contains three or fewer effect sizes, "
+"which may lead to estimation problems. Consider re-specifying the cutoffs."
+msgstr ""
+
+msgid ""
+"The unadjusted estimate is negative. The selection model default "
+"specification expects that the expected direction of the effect size is "
+"positive. Please, check that you specified the effect sizes correctly or "
+"change the 'Expected effect size direction' option in the 'Model' tab."
+msgstr ""
+
+msgid ""
+"The analysis requires both 'Effect Site' and 'Effect Size Standard Error' to "
+"be specified."
+msgstr ""
+
+#, fuzzy
+msgid "Only the following one-sided p-value cutoffs were used: %s."
+msgstr "Das folgende Item wurde umgekehrt kodiert: %s. "
+
+msgid "No effect sizes specified to compute the studies' sample variances."
+msgstr ""
+
 msgid "Model misspecified"
 msgstr "Modell falsch spezifiziert"
 
 msgid ""
 "Mean structure can not be included when data is variance-covariance matrix"
 msgstr ""
-"Mittelwertstruktur kann nicht einbezogen werden wenn Daten Varianz-"
-"Kovarianz-Matrix ist"
+"Mittelwertstruktur kann nicht einbezogen werden wenn Daten Varianz-Kovarianz-"
+"Matrix ist"
 
 msgid "Please set the sample size!"
 msgstr "Bitte setze den Stichprobenumfang!"
@@ -6977,12 +7932,6 @@ msgid ""
 "- **p**: p-value corresponding to t-statistic."
 msgstr ""
 
-msgid "Successes"
-msgstr "Erfolge"
-
-msgid "Failures"
-msgstr "Misserfolge"
-
 msgid "Test value"
 msgstr "Testwert"
 
@@ -7050,15 +7999,15 @@ msgid ""
 "For all tests, the alternative hypothesis specifies that group <em>%1$s</em> "
 "is greater than group <em>%2$s</em>."
 msgstr ""
-"Für alle Tests gibt die Alternativhypothese an, dass Gruppe <em>%1$s</"
-"em> größer ist als Gruppe <em>%2$s</em>."
+"Für alle Tests gibt die Alternativhypothese an, dass Gruppe <em>%1$s</em> "
+"größer ist als Gruppe <em>%2$s</em>."
 
 msgid ""
 "For all tests, the alternative hypothesis specifies that group <em>%1$s</em> "
 "is less than group <em>%2$s</em>."
 msgstr ""
-"Für alle Tests gibt die Alternativhypothese an, dass Gruppe <em>%1$s</"
-"em> kleiner ist als Gruppe <em>%2$s</em>."
+"Für alle Tests gibt die Alternativhypothese an, dass Gruppe <em>%1$s</em> "
+"kleiner ist als Gruppe <em>%2$s</em>."
 
 msgid "Bayesian Wilcoxon Signed-Rank Test"
 msgstr "Bayesscher Wilcoxon-Vorzeichen-Rang-Test"
@@ -7291,15 +8240,14 @@ msgid ""
 "For all tests, the alternative hypothesis specifies that %1s is less than "
 "%2s."
 msgstr ""
-"Bei allen Tests gibt die Alternativhypothese an, dass %1s kleiner "
-"als %2s ist."
+"Bei allen Tests gibt die Alternativhypothese an, dass %1s kleiner als %2s "
+"ist."
 
 msgid ""
 "For all tests, the alternative hypothesis specifies that %1s is greater than "
 "%2s."
 msgstr ""
-"Bei allen Tests gibt die Alternativhypothese an, dass %1s größer "
-"als %2s ist."
+"Bei allen Tests gibt die Alternativhypothese an, dass %1s größer als %2s ist."
 
 msgid ""
 "For all tests, the alternative hypothesis specifies that Measure 1 is less "
@@ -7477,3 +8425,52 @@ msgid "The following item was reverse scaled: %s. "
 msgid_plural "The following items were reverse scaled: %s. "
 msgstr[0] "Das folgende Item wurde umgekehrt kodiert: %s. "
 msgstr[1] "Die folgenden Items wurden umgekehrt kodiert: %s. "
+
+#~ msgid ""
+#~ "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-"
+#~ "value, the maximum possible odds in favor of H₁ over H₀ equals 1/(-e "
+#~ "<em>p</em> log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & "
+#~ "Berger, 2001)."
+#~ msgstr ""
+#~ "Vovk-Sellke-Maximum-<em>p</em>-Quotient: Basierend auf einem zweiseitigen "
+#~ "<em>p</em>-Wert ist der maximale Quotient zugunsten H₁ gegenüber H₀ "
+#~ "gegeben durch 1/(-e <em>p</em> log(<em>p</em>)) für <em>p</em> .37 "
+#~ "(Sellke, Bayarri, & Berger, 2001)."
+
+#~ msgid ""
+#~ "The null hypothesis specifies that the distribution of first numbers (1 - "
+#~ "9) in the population conforms to %1$s."
+#~ msgstr ""
+#~ "Die Nullhypothese gibt an, dass die Verteilung der führenden Ziffern (1 - "
+#~ "9) in der Population übereinstimmt mit %1$s."
+
+#~ msgid ""
+#~ "The <i>p</i> value is determined to be %1$s. Therefore, the null "
+#~ "hypothesis that the distribution of first numbers in the population "
+#~ "conforms to %2$s <b>%3$s</b> with <b>%4$s</b> confidence."
+#~ msgstr ""
+#~ "Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die "
+#~ "Nullhypothese, dass die Verteilung der führenden Ziffern in der "
+#~ "Population mit %2$s übereinstimmt, <b>%3$s</b> mit einer Konfidenz von <b>"
+#~ "%4$s</b>."
+
+#~ msgid ""
+#~ "The <i>p</i> value is determined to be %1$s. Therefore, the null "
+#~ "hypothesis that the distribution of last numbers in the population "
+#~ "conforms to %2$s <b>%3$s</b> with <b>%4$s</b> confidence."
+#~ msgstr ""
+#~ "Der <i>p</i>-Wert wurde bestimmt auf %1$s. Demnach kann die "
+#~ "Nullhypothese, dass die Verteilung der letzten Ziffern in der Population "
+#~ "mit %2$s übereinstimmt, <b>%3$s</b> mit einer Konfidenz von <b>%4$s</b>."
+
+#~ msgid "footnote"
+#~ msgstr "Fußnote"
+
+#~ msgid "BF01"
+#~ msgstr "BF01"
+
+#~ msgid "log(BF10)"
+#~ msgstr "Log(BF10)"
+
+#~ msgid "BF10"
+#~ msgstr "BF10"

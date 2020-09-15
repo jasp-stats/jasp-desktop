@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-09 11:59+0000\n"
-"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
-"de/>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -190,9 +184,10 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Fix latent intercepts to zero"
 msgstr "Latente Konstanten auf 0 fixieren"
 
+#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Omit residual single indicator"
-msgstr ""
+msgstr "Laat residuele enkele indicator weg"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Residual variances"
@@ -746,9 +741,10 @@ msgctxt "SEMSimple|"
 msgid "Fix latent intercepts to zero"
 msgstr "Latente Konstanten auf 0 fixieren"
 
+#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Omit residual single indicator"
-msgstr ""
+msgstr "Laat residuele enkele indicator weg"
 
 msgctxt "SEMSimple|"
 msgid "Residual variances"
@@ -5981,9 +5977,10 @@ msgctxt "mlClusteringDensityBased|"
 msgid "Distance:"
 msgstr "Distanz:"
 
+#, fuzzy
 msgctxt "mlClusteringDensityBased|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Schaalvariabelen"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Set seed:"
@@ -6021,9 +6018,10 @@ msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Within sum of squares"
 msgstr "Binnen kwadratensom"
 
+#, fuzzy
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Silhouette score"
-msgstr ""
+msgstr "Silhouette-Score"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Centroids"
@@ -6185,17 +6183,19 @@ msgctxt "mlClusteringHierarchical|"
 msgid "Linkage:"
 msgstr ""
 
+#, fuzzy
 msgctxt "mlClusteringHierarchical|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Schaalvariabelen"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
+#, fuzzy
 msgctxt "mlClusteringHierarchical|"
 msgid "Cluster Determination"
-msgstr ""
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Fixed"
@@ -6297,17 +6297,19 @@ msgctxt "mlClusteringKMeans|"
 msgid "Algorithm:"
 msgstr "Algorithmus:"
 
+#, fuzzy
 msgctxt "mlClusteringKMeans|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Schaalvariabelen"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
+#, fuzzy
 msgctxt "mlClusteringKMeans|"
 msgid "Cluster Determination"
-msgstr ""
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Fixed"
@@ -6401,17 +6403,19 @@ msgctxt "mlClusteringRandomForest|"
 msgid "Trees:"
 msgstr "Bäume:"
 
+#, fuzzy
 msgctxt "mlClusteringRandomForest|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Schaalvariabelen"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
+#, fuzzy
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster Determination"
-msgstr ""
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Fixed"
@@ -6589,9 +6593,10 @@ msgctxt "mlRegressionKnn|"
 msgid "Distance:"
 msgstr "Distanz:"
 
+#, fuzzy
 msgctxt "mlRegressionKnn|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Schaalvariabelen"
 
 msgctxt "mlRegressionKnn|"
 msgid "Set seed:"
@@ -6685,9 +6690,10 @@ msgctxt "mlRegressionRandomForest|"
 msgid "Predictors per split:"
 msgstr "Prädiktoren pro Aufteilung:"
 
+#, fuzzy
 msgctxt "mlRegressionRandomForest|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Schaalvariabelen"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Set seed:"
@@ -6793,9 +6799,10 @@ msgctxt "mlRegressionRegularized|"
 msgid "Fit intercept"
 msgstr "Konstante anpassen"
 
+#, fuzzy
 msgctxt "mlRegressionRegularized|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Schaalvariabelen"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Set seed:"
@@ -10041,10 +10048,6 @@ msgctxt "BoundQMLRadioButtons|"
 msgid "Radio button clicked is unknown: %1"
 msgstr "Angeklickter Radiobutton ist unbekannt: %1"
 
-msgctxt "BoundQMLTableView|"
-msgid "No model specified for TableView!"
-msgstr "Kein Modell für TableView spezifiziert!"
-
 msgctxt "BoundQMLTextArea|"
 msgid "valid R code"
 msgstr "gültiger R-Code"
@@ -10543,8 +10546,9 @@ msgid ""
 "pressing \"Browse\"."
 msgstr ""
 "Wenn deaktiviert, werden nicht die Dateidialogfenster deines Betriebssystems "
-"benutzt, sondern die von Qt. Dies kann manche Probleme auf Windows lösen, bei "
-"denen JASP abstürzt, wenn man auf die \"Durchsuchen\"-Schaltfläche klickt."
+"benutzt, sondern die von Qt. Dies kann manche Probleme auf Windows lösen, "
+"bei denen JASP abstürzt, wenn man auf die \"Durchsuchen\"-Schaltfläche "
+"klickt."
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
@@ -18896,26 +18900,9 @@ msgctxt "PrefsUI|"
 msgid "Interface:"
 msgstr "Bedienoberfläche:"
 
-#, qt-format
-msgctxt "PrefsUI|"
-msgid "Default font (%1)"
-msgstr "Standardschriftart (%1)"
-
-msgctxt "PrefsUI|"
-msgid "Code (R, JAGS, Lavaan...):"
-msgstr "Code (R, JAGS, Lavaan...):"
-
 msgctxt "PrefsUI|"
 msgid "Result & Help:"
 msgstr "Ergebnis & Hilfe:"
-
-msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-msgstr ""
 
 msgctxt "Description|"
 msgid "Learn Bayes"
@@ -19509,11 +19496,6 @@ msgctxt "LStestingsequential|"
 msgid "Joint"
 msgstr ""
 
-#, fuzzy
-msgctxt "LStestingsequential|"
-msgid "Normalized"
-msgstr "Normalisiert"
-
 msgctxt "LStestingsequential|"
 msgid "Bayes factor"
 msgstr "Bayesfaktor"
@@ -19601,10 +19583,6 @@ msgstr "x-Achse umskalieren"
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Model averaged"
 msgstr "Modell-gemittelt"
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid ""
-msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Transform effect sizes"
@@ -19806,3 +19784,534 @@ msgstr "Formel-Feld"
 msgctxt "QMLListView|"
 msgid "No name given in source attribute of List %1"
 msgstr "Kein angegebener Name im Quellattribut von List %1"
+
+#, qt-format
+msgctxt "PrefsUI|"
+msgid "default: %1"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "R, JAGS or Lavaan code:"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "<i>Browse for a JASP Module to see more information here</i>"
+msgstr ""
+
+#, qt-format
+msgctxt "ModuleInstaller|"
+msgid "<i>%1 is not a (correct) JASP Module!</i>"
+msgstr ""
+
+#, fuzzy
+msgctxt "SimpleTableView|"
+msgid "Add Column"
+msgstr "Spalte einfügen"
+
+#, fuzzy
+msgctxt "SimpleTableView|"
+msgid "Delete Column"
+msgstr "Spalte löschen"
+
+#, fuzzy
+msgctxt "SimpleTableView|"
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+msgctxt "auditBayesianWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "Description|"
+msgid "Log-normal"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Logistic"
+msgstr ""
+
+msgctxt "LDbernoulli|"
+msgid "Probability of success:"
+msgstr ""
+
+msgctxt "LDbeta|"
+msgid "Shape:"
+msgstr ""
+
+msgctxt "LDbinomial|"
+msgid "Probability of success:"
+msgstr ""
+
+msgctxt "LDbinomial|"
+msgid "Number of trials:"
+msgstr ""
+
+msgctxt "LDchisq|"
+msgid "Degree of freedom:"
+msgstr ""
+
+msgctxt "LDchisq|"
+msgid "Non-centrality:"
+msgstr ""
+
+msgctxt "LDexponential|"
+msgid "Rate:"
+msgstr ""
+
+msgctxt "LDexponential|"
+msgid "Scale:"
+msgstr ""
+
+msgctxt "LDf|"
+msgid "Degree of freedom:"
+msgstr ""
+
+msgctxt "LDf|"
+msgid "Non-centrality:"
+msgstr ""
+
+msgctxt "LDgamma|"
+msgid "Shape:"
+msgstr ""
+
+msgctxt "LDgamma|"
+msgid "Scale:"
+msgstr ""
+
+msgctxt "LDgamma|"
+msgid "Rate:"
+msgstr ""
+
+msgctxt "LDgamma|"
+msgid "Mean:"
+msgstr ""
+
+msgctxt "LDgammaInverse|"
+msgid "Shape:"
+msgstr ""
+
+msgctxt "LDgammaInverse|"
+msgid "Scale:"
+msgstr ""
+
+msgctxt "LDgammaInverse|"
+msgid "Rate:"
+msgstr ""
+
+msgctxt "LDgammaInverse|"
+msgid "Mean:"
+msgstr ""
+
+msgctxt "LDgaussianunivariate|"
+msgid "Mean:"
+msgstr ""
+
+msgctxt "LDgaussianunivariate|"
+msgid "Variance:"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDgaussianunivariate|"
+msgid "Std. deviation:"
+msgstr "Std.-Abweichung:"
+
+msgctxt "LDgaussianunivariate|"
+msgid "Precision:"
+msgstr ""
+
+msgctxt "LDgaussianunivariate|"
+msgid "Square root of precision:"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Show Distribution"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Location:"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "μ"
+msgstr "μ"
+
+msgctxt "LDlogistic|"
+msgid "Scale:"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "σ"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Display"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Explanatory text"
+msgstr "Erklärungstext"
+
+msgctxt "LDlogistic|"
+msgid "Parameters, support, and moments"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Formulas"
+msgstr "Formeln"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Probability density function"
+msgstr "Wahrscheinlichkeitsdichtefunktion"
+
+msgctxt "LDlogistic|"
+msgid "Cumulative distribution function"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Quantile function"
+msgstr "Quantilfunktion"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Estimate Parameters"
+msgstr "Schätzparameter"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Maximum likelihood"
+msgstr "Maximum-Likelihood"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Output"
+msgstr "Ausgabe"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Estimates"
+msgstr "Schätzer"
+
+msgctxt "LDlogistic|"
+msgid "Std. error"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Confidence interval"
+msgstr "Konfidenzintervall"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Variance-covariance"
+msgstr "Varianz-Kovarianz"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Correlation"
+msgstr "Korrelation"
+
+msgctxt "LDlogistic|"
+msgid "Assess Fit"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Plots"
+msgstr "Abbildungen"
+
+msgctxt "LDlogistic|"
+msgid "Histogram vs. theoretical pdf"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Q-Q plot"
+msgstr "Q-Q-Diagramm"
+
+msgctxt "LDlogistic|"
+msgid "Empirical vs. theoretical cdf"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "P-P plot"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Statistics"
+msgstr "Statistiken"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Cramér–von Mises"
+msgstr "Cramér–von Mises"
+
+#, fuzzy
+msgctxt "LDlogistic|"
+msgid "Anderson-Darling"
+msgstr "Anderson-Darling"
+
+msgctxt "LDlognormal|"
+msgid "Show Distribution"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Log Mean:"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "μ"
+msgstr "μ"
+
+msgctxt "LDlognormal|"
+msgid "Log std. deviation:"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "σ"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Display"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Explanatory text"
+msgstr "Erklärungstext"
+
+msgctxt "LDlognormal|"
+msgid "Parameters, support, and moments"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Formulas"
+msgstr "Formeln"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Probability density function"
+msgstr "Wahrscheinlichkeitsdichtefunktion"
+
+msgctxt "LDlognormal|"
+msgid "Cumulative distribution function"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Quantile function"
+msgstr "Quantilfunktion"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Estimate Parameters"
+msgstr "Schätzparameter"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Maximum likelihood"
+msgstr "Maximum-Likelihood"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Output"
+msgstr "Ausgabe"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Estimates"
+msgstr "Schätzer"
+
+msgctxt "LDlognormal|"
+msgid "Std. error"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Confidence interval"
+msgstr "Konfidenzintervall"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Variance-covariance"
+msgstr "Varianz-Kovarianz"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Correlation"
+msgstr "Korrelation"
+
+msgctxt "LDlognormal|"
+msgid "Assess Fit"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Plots"
+msgstr "Abbildungen"
+
+msgctxt "LDlognormal|"
+msgid "Histogram vs. theoretical pdf"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Q-Q plot"
+msgstr "Q-Q-Diagramm"
+
+msgctxt "LDlognormal|"
+msgid "Empirical vs. theoretical cdf"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "P-P plot"
+msgstr ""
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Statistics"
+msgstr "Statistiken"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Kolmogorov-Smirnov"
+msgstr "Kolmogorow-Smirnow"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Cramér–von Mises"
+msgstr "Cramér–von Mises"
+
+#, fuzzy
+msgctxt "LDlognormal|"
+msgid "Anderson-Darling"
+msgstr "Anderson-Darling"
+
+msgctxt "LDnegbinomial|"
+msgid "Number of successes:"
+msgstr ""
+
+msgctxt "LDnegbinomial|"
+msgid "Dispersion:"
+msgstr ""
+
+msgctxt "LDnegbinomial|"
+msgid "Probability of success:"
+msgstr ""
+
+msgctxt "LDnegbinomial|"
+msgid "Mean:"
+msgstr ""
+
+msgctxt "LDpoisson|"
+msgid "Rate:"
+msgstr ""
+
+msgctxt "LDt|"
+msgid "Degree of freedom:"
+msgstr ""
+
+msgctxt "LDt|"
+msgid "Non-centrality:"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Posterior"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid ""
+msgstr ""
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Effect sizes & SE"
+msgstr "Effektgrößen & SF"
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Correlations & N"
+msgstr "Korrelationen & N"
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "N"
+msgstr "N"
+
+msgctxt "SelectionModels|"
+msgid "Transform correlations"
+msgstr ""
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Cohen's d"
+msgstr "Cohens d"
+
+#, fuzzy
+msgctxt "SelectionModels|"
+msgid "Fisher's z"
+msgstr "Fishers z"
+
+msgctxt "Description|"
+msgid "Mixed Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "This module offers the Linear Mixed Models analysis."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Linear Mixed Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Generalized Linear Mixed Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Linear Mixed Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Generalized Linear Mixed Models"
+msgstr ""
+
+msgctxt "DynamicModules|"
+msgid "Loading module description encountered a problem"
+msgstr ""
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "<i>Could not load the description of the module in archive: '%1'</i>"
+msgstr ""
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
+"maintained by %5.</i><br><i>See website for further details: <a href="
+"\"http://%6\">%6</a></i><br>"
+msgstr ""
+
+#, qt-format
+msgctxt "QMLListView|"
+msgid ""
+"The list %1 has a rowComponent with the same name (%2) as its optionKey. "
+"Change the optionKey property of the list or the control name."
+msgstr ""
