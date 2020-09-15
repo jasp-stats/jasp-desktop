@@ -10068,10 +10068,6 @@ msgctxt "BoundQMLRadioButtons|"
 msgid "Radio button clicked is unknown: %1"
 msgstr ""
 
-msgctxt "BoundQMLTableView|"
-msgid "No model specified for TableView!"
-msgstr ""
-
 msgctxt "BoundQMLTextArea|"
 msgid "valid R code"
 msgstr ""
@@ -18533,15 +18529,6 @@ msgctxt "PrefsUI|"
 msgid "Interface:"
 msgstr ""
 
-#, qt-format
-msgctxt "PrefsUI|"
-msgid "Default font (%1)"
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Code (R, JAGS, Lavaan...):"
-msgstr ""
-
 msgctxt "PrefsUI|"
 msgid "Result & Help:"
 msgstr ""
@@ -19139,10 +19126,6 @@ msgid "Joint"
 msgstr ""
 
 msgctxt "LStestingsequential|"
-msgid "Normalized"
-msgstr ""
-
-msgctxt "LStestingsequential|"
 msgid "Bayes factor"
 msgstr ""
 
@@ -19415,6 +19398,36 @@ msgctxt "QMLListView|"
 msgid "No name given in source attribute of List %1"
 msgstr ""
 
+#, qt-format
+msgctxt "PrefsUI|"
+msgid "default: %1"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "R, JAGS or Lavaan code:"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "<i>Browse for a JASP Module to see more information here</i>"
+msgstr ""
+
+#, qt-format
+msgctxt "ModuleInstaller|"
+msgid "<i>%1 is not a (correct) JASP Module!</i>"
+msgstr ""
+
+msgctxt "SimpleTableView|"
+msgid "Add Column"
+msgstr ""
+
+msgctxt "SimpleTableView|"
+msgid "Delete Column"
+msgstr ""
+
+msgctxt "SimpleTableView|"
+msgid "Reset"
+msgstr ""
+
 msgctxt "auditBayesianWorkflow|"
 msgid ""
 msgstr ""
@@ -19423,6 +19436,450 @@ msgctxt "auditClassicalWorkflow|"
 msgid ""
 msgstr ""
 
+msgctxt "Description|"
+msgid "Log-normal"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Logistic"
+msgstr ""
+
+msgctxt "LDbernoulli|"
+msgid "Probability of success:"
+msgstr ""
+
+msgctxt "LDbeta|"
+msgid "Shape:"
+msgstr ""
+
+msgctxt "LDbinomial|"
+msgid "Probability of success:"
+msgstr ""
+
+msgctxt "LDbinomial|"
+msgid "Number of trials:"
+msgstr ""
+
+msgctxt "LDchisq|"
+msgid "Degree of freedom:"
+msgstr ""
+
+msgctxt "LDchisq|"
+msgid "Non-centrality:"
+msgstr ""
+
+msgctxt "LDexponential|"
+msgid "Rate:"
+msgstr ""
+
+msgctxt "LDexponential|"
+msgid "Scale:"
+msgstr ""
+
+msgctxt "LDf|"
+msgid "Degree of freedom:"
+msgstr ""
+
+msgctxt "LDf|"
+msgid "Non-centrality:"
+msgstr ""
+
+msgctxt "LDgamma|"
+msgid "Shape:"
+msgstr ""
+
+msgctxt "LDgamma|"
+msgid "Scale:"
+msgstr ""
+
+msgctxt "LDgamma|"
+msgid "Rate:"
+msgstr ""
+
+msgctxt "LDgamma|"
+msgid "Mean:"
+msgstr ""
+
+msgctxt "LDgammaInverse|"
+msgid "Shape:"
+msgstr ""
+
+msgctxt "LDgammaInverse|"
+msgid "Scale:"
+msgstr ""
+
+msgctxt "LDgammaInverse|"
+msgid "Rate:"
+msgstr ""
+
+msgctxt "LDgammaInverse|"
+msgid "Mean:"
+msgstr ""
+
+msgctxt "LDgaussianunivariate|"
+msgid "Mean:"
+msgstr ""
+
+msgctxt "LDgaussianunivariate|"
+msgid "Variance:"
+msgstr ""
+
+msgctxt "LDgaussianunivariate|"
+msgid "Std. deviation:"
+msgstr ""
+
+msgctxt "LDgaussianunivariate|"
+msgid "Precision:"
+msgstr ""
+
+msgctxt "LDgaussianunivariate|"
+msgid "Square root of precision:"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Show Distribution"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Location:"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "μ"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Scale:"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "σ"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Display"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Explanatory text"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Parameters, support, and moments"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Formulas"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Probability density function"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Cumulative distribution function"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Quantile function"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Estimate Parameters"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Maximum likelihood"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Output"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Estimates"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Std. error"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Confidence interval"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Variance-covariance"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Correlation"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Assess Fit"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Plots"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Histogram vs. theoretical pdf"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Q-Q plot"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Empirical vs. theoretical cdf"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "P-P plot"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Statistics"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Kolmogorov-Smirnov"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Cramér–von Mises"
+msgstr ""
+
+msgctxt "LDlogistic|"
+msgid "Anderson-Darling"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Show Distribution"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Log Mean:"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "μ"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Log std. deviation:"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "σ"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Display"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Explanatory text"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Parameters, support, and moments"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Formulas"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Probability density function"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Cumulative distribution function"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Quantile function"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Estimate Parameters"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Maximum likelihood"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Output"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Estimates"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Std. error"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Confidence interval"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Variance-covariance"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Correlation"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Assess Fit"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Plots"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Histogram vs. theoretical pdf"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Q-Q plot"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Empirical vs. theoretical cdf"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "P-P plot"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Statistics"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Kolmogorov-Smirnov"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Cramér–von Mises"
+msgstr ""
+
+msgctxt "LDlognormal|"
+msgid "Anderson-Darling"
+msgstr ""
+
+msgctxt "LDnegbinomial|"
+msgid "Number of successes:"
+msgstr ""
+
+msgctxt "LDnegbinomial|"
+msgid "Dispersion:"
+msgstr ""
+
+msgctxt "LDnegbinomial|"
+msgid "Probability of success:"
+msgstr ""
+
+msgctxt "LDnegbinomial|"
+msgid "Mean:"
+msgstr ""
+
+msgctxt "LDpoisson|"
+msgid "Rate:"
+msgstr ""
+
+msgctxt "LDt|"
+msgid "Degree of freedom:"
+msgstr ""
+
+msgctxt "LDt|"
+msgid "Non-centrality:"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Posterior"
+msgstr ""
+
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid ""
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Effect sizes & SE"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Correlations & N"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "N"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Transform correlations"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Cohen's d"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Fisher's z"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Mixed Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "This module offers the Linear Mixed Models analysis."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Linear Mixed Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Generalized Linear Mixed Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Linear Mixed Models"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Generalized Linear Mixed Models"
+msgstr ""
+
+msgctxt "DynamicModules|"
+msgid "Loading module description encountered a problem"
+msgstr ""
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "<i>Could not load the description of the module in archive: '%1'</i>"
+msgstr ""
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
+"maintained by %5.</i><br><i>See website for further details: <a href="
+"\"http://%6\">%6</a></i><br>"
+msgstr ""
+
+#, qt-format
+msgctxt "QMLListView|"
+msgid ""
+"The list %1 has a rowComponent with the same name (%2) as its optionKey. "
+"Change the optionKey property of the list or the control name."
 msgstr ""

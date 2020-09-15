@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2020-09-03 09:04\n"
+"POT-Creation-Date: 2020-09-15 15:58\n"
 "PO-Revision-Date: 2020-09-15 10:16+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-engine/"
@@ -187,6 +187,17 @@ msgstr "Successen"
 #, fuzzy
 msgid "Please specify a hypothesis for comparison."
 msgstr "Specificeer a.u.b. een toegevoegd contrast."
+
+#, fuzzy
+msgid "Conditional probability"
+msgstr "Posterior kans"
+
+#, fuzzy
+msgid "Joint probability"
+msgstr "Posterior kans"
+
+msgid "Posterior probability"
+msgstr "Posterior kans"
 
 #, fuzzy
 msgid "Observations"
@@ -571,9 +582,9 @@ msgid ""
 "'Point estimate' option. The table is composed of the following columns:\n"
 "    <ul><li>'Model' - the specified model names</li><li>'Posterior (%1$s)' - "
 "the estimated posterior distribution for parameter %1$s (used for "
-"prediction)</li>%2$s<li>'Posterior Mean' - the mean of the specified "
+"prediction)</li>%2$s<li>'Posterior %4$s' - the %5$s of the specified "
 "posterior distribution</li><li>'Prediction%3$s' - the predictive "
-"distribution for new data</li><li>'Prediction Mean' - the mean of predicted "
+"distribution for new data</li><li>'Prediction %4$s' - the %5$s of predicted "
 "data</li></ul>"
 msgstr ""
 
@@ -1010,15 +1021,17 @@ msgstr ""
 "structuur, maar merk op dat hierdoor de p-waarde opblaast, waardoor de "
 "validiteit van de analyse in gevaar komt."
 
+#, fuzzy
 msgid ""
 "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, "
-"the maximum possible odds in favor of H₁ over H₀ equals 1/(-e <em>p</em> "
-"log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & Berger, 2001)."
+"the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</"
+"em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, "
+"2001)."
 msgstr ""
 "Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op een tweezijdige <em>p</"
-"em>-waarde, het maximale aantal mogelijke kansratio voor H₁ t.o.v. H₀ is "
-"gelijk aan 1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> ≤ .37 Sellke, "
-"Bayarri, & Berger, 2001)."
+"em>-waarde, het maximale aantal mogelijke kansen die H%1$s ondersteunen over "
+"H%2$s is gelijk aan 1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> "
+"%3$s .37 (Sellke, Bayarri, & Berger, 2001)."
 
 msgid ""
 "Numerical problems with the maximum-likelihood estimate (e.g., gradients too "
@@ -3142,9 +3155,6 @@ msgstr "Bain Onafhankelijke Steekproeven Welch's T-Toets"
 msgid "BF"
 msgstr "BF"
 
-msgid "Posterior probability"
-msgstr "Posterior kans"
-
 msgid ""
 "The alternative hypothesis H1 specifies that the mean of group 1 is unequal "
 "to the mean of group 2. The posterior probabilities are based on equal prior "
@@ -4330,6 +4340,13 @@ msgstr ""
 "Standaardfouten betrouwbaarheidsintervallen zijn berekend met de "
 "deltamethode."
 
+#, fuzzy
+msgid "Maximum likelihood"
+msgstr "Maximale fout"
+
+msgid "Fit Assessment"
+msgstr ""
+
 msgid "Test"
 msgstr "Toets"
 
@@ -4368,6 +4385,18 @@ msgstr "Steekproef"
 
 msgid "Probability Mass"
 msgstr "Kansdichtheid"
+
+msgid "Probability Density Function"
+msgstr "Kansdichtheidsfunctie"
+
+msgid "Probability Mass Function"
+msgstr "Kansmassafunctie"
+
+msgid "Cumulative Distribution Function"
+msgstr "Cumulatieve Verdelingsfunctie"
+
+msgid "Quantile Function"
+msgstr "Kwantielfunctie"
 
 msgid "Formula"
 msgstr "Formule"
@@ -6355,12 +6384,6 @@ msgstr ""
 msgid "Bernoulli distribution"
 msgstr "Bernoulli verdeling"
 
-msgid "Probability Mass Function"
-msgstr "Kansmassafunctie"
-
-msgid "Cumulative Distribution Function"
-msgstr "Cumulatieve Verdelingsfunctie"
-
 msgid "probability of success: p %s %s: 0 %s p %s 1"
 msgstr "kans op succes: p %s %s: 0 %s p %s 1"
 
@@ -6380,12 +6403,6 @@ msgstr "<i>Waarschuwing.</i>"
 
 msgid "beta distribution"
 msgstr "betaverdeling"
-
-msgid "Probability Density Function"
-msgstr "Kansdichtheidsfunctie"
-
-msgid "Quantile Function"
-msgstr "Kwantielfunctie"
 
 msgid "shape: %s"
 msgstr "vorm: %s"
@@ -6452,6 +6469,35 @@ msgstr "kwadraatwortel van nauwkeurigheid: %s"
 
 msgid "&mu;"
 msgstr "&mu;"
+
+#, fuzzy
+msgid "logistic distribution"
+msgstr "Posterior verdeling"
+
+#, fuzzy
+msgid "location: &mu; %s"
+msgstr "gemiddelde: &mu; %s"
+
+msgid "(&sigma; &pi;)<sup>2</sup> / 3"
+msgstr ""
+
+#, fuzzy
+msgid "log-normal distribution"
+msgstr "normaal verdeling"
+
+#, fuzzy
+msgid "log mean: &mu; %s"
+msgstr "gemiddelde: &mu; %s"
+
+#, fuzzy
+msgid "log standard deviation: %s"
+msgstr "standaarddeviatie: %s"
+
+msgid "exp(&mu; + &sigma;<sup>2</sup>/2)"
+msgstr ""
+
+msgid "[exp(&sigma;<sup>2</sup>) - 1] exp(2&mu; + &sigma;<sup>2</sup>)"
+msgstr ""
 
 msgid "negative binomial distribution"
 msgstr "negatief-binomiale verdeling"
@@ -7760,10 +7806,10 @@ msgstr "Als item wordt weggelaten"
 msgid "Frequentist Individual Item Reliability Statistics"
 msgstr "Frequentistische Individuele Item Validiteitsstatistieken"
 
+#, fuzzy
 msgid ""
-"McDonald's ω estimation method for item-dropped statistics \n"
-"                                     switched to PFA because the CFA did not "
-"find a solution."
+"McDonald's %s estimation method for item-dropped statistics switched to PFA "
+"because the CFA did not find a solution."
 msgstr ""
 "McDonald's ω schattingsmethode voor item-weggelaten statistiek \n"
 " is omgeschakeld naar PFA omdat de CFA geen oplossing vond."
@@ -7774,10 +7820,10 @@ msgstr "Pasmaat van Enkele Factor Model passing"
 msgid "Fit Measure"
 msgstr "Pasmaat"
 
+#, fuzzy
 msgid ""
-"Fit measures cannot be displayed because the McDonald's ω \n"
-"                                       estimation method switched to PFA as "
-"the CFA did not find a solution."
+"Fit measures cannot be displayed because the McDonald's %s estimation method "
+"switched to PFA as the CFA did not find a solution."
 msgstr ""
 "De pasmaat kan niet worden getoond omdat de schattingsmethode voor "
 "McDonald's ω \n"
@@ -7819,6 +7865,12 @@ msgstr "Prior Grafieken"
 
 msgid "Weight Function"
 msgstr "Gewichtsfunctie"
+
+msgid "Null"
+msgstr ""
+
+msgid "Alternative"
+msgstr ""
 
 msgid "Model Preview"
 msgstr "Model Voorvertoning"
@@ -7982,7 +8034,10 @@ msgstr "Posterior kansen"
 msgid "Model %i does not contain any of the selected parameters."
 msgstr "De geselecteerd parameter zit niet in Model %i."
 
-msgid "Error in %s: All p-value needs to be between 0 and 1."
+msgid "Error in %s: All p-values need to be between 0 and 1."
+msgstr ""
+
+msgid "Error in %s: All correlation coefficients need to be between -1 and 1."
 msgstr ""
 
 #, fuzzy
@@ -8007,7 +8062,11 @@ msgid "Note:"
 msgstr ""
 
 #, fuzzy
-msgid "<em>p</em>-values interval (one-sided)"
+msgid "%s is on %s scale."
+msgstr "%s is op %s schaal."
+
+#, fuzzy
+msgid "<em>p</em>-values interval(one-sided)"
 msgstr "<em>p</em>-waarden interval %s"
 
 #, fuzzy
@@ -8034,7 +8093,7 @@ msgid "Assuming heterogeneity"
 msgstr "Heterogeniteit"
 
 #, fuzzy
-msgid "Mean Estimates (%s)"
+msgid "Mean Estimates(%s)"
 msgstr "Model Schattingen"
 
 #, fuzzy
@@ -8046,7 +8105,7 @@ msgid "Random Effects Estimates"
 msgstr "Gefixeerde Effecten Schattingen"
 
 #, fuzzy
-msgid "Heterogeneity Estimates (%s)"
+msgid "Heterogeneity Estimates(%s)"
 msgstr "Heterogeniteit (%s)"
 
 #, fuzzy
@@ -8059,7 +8118,7 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-msgid "Weight Function (%s)"
+msgid "Weight Function(%s)"
 msgstr "Gewichtsfunctie"
 
 msgid "The figure could not be created since one of the estimates is NaN."
@@ -8083,6 +8142,15 @@ msgstr "Gefixeerde effecten"
 #, fuzzy
 msgid "Random effects (adjusted)"
 msgstr "Willekeurige effecten"
+
+#, fuzzy
+msgid ""
+"The figure could not be created since one of the estimates is not a number."
+msgstr "U kan niet alle prior modelkansen gelijk aan nul zetten."
+
+#, fuzzy
+msgid "Mean Estimates (%s)"
+msgstr "Model Schattingen"
 
 #, fuzzy
 msgid "Fixed effects model:"
@@ -8130,6 +8198,9 @@ msgstr ""
 #, fuzzy
 msgid "Only the following one-sided p-value cutoffs were used: %s."
 msgstr "De volgende item is omgekeerd geschaald: %s."
+
+msgid "No effect sizes specified to compute the studies' sample variances."
+msgstr ""
 
 msgid "Model misspecified"
 msgstr "Model verkeerd gespecificeerd"
@@ -8852,6 +8923,17 @@ msgid "The following item was reverse scaled: %s. "
 msgid_plural "The following items were reverse scaled: %s. "
 msgstr[0] "De volgende item is omgekeerd geschaald: %s."
 msgstr[1] "De volgende items zijn omgekeerd geschaald: %s."
+
+#~ msgid ""
+#~ "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-"
+#~ "value, the maximum possible odds in favor of H₁ over H₀ equals 1/(-e "
+#~ "<em>p</em> log(<em>p</em>)) for <em>p</em> ≤ .37 (Sellke, Bayarri, & "
+#~ "Berger, 2001)."
+#~ msgstr ""
+#~ "Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op een tweezijdige <em>p</"
+#~ "em>-waarde, het maximale aantal mogelijke kansratio voor H₁ t.o.v. H₀ is "
+#~ "gelijk aan 1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> ≤ .37 "
+#~ "Sellke, Bayarri, & Berger, 2001)."
 
 #~ msgid "Turkey"
 #~ msgstr "Turkey"
