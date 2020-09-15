@@ -55,6 +55,7 @@ public:
 
 	int		currentIndex()			const { return _currentIndex; }
 	QString currentLanguageCode()	const;
+	QLocale::Language currentLanguage()	const {return currentLanguageInfo().language; };
 
 	//This function (currentTranslationSuffix) should be made obsolete through the abolishment of all the _nl etc files:
 	static			QString			currentTranslationSuffix()	{ return currentLanguageInfo().language  == QLocale::English ? "" : ("_" + currentLanguageInfo().localName); }

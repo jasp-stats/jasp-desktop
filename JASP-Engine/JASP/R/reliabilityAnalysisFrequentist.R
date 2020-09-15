@@ -526,8 +526,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
   if (!is.null(relyFit)) {
     if (options[["mcDonaldScale"]] && !is.null(relyFit[["freq"]][["omega.item.error"]])) {
-      itemTable$addFootnote(gettext("McDonald's \u03C9 estimation method for item-dropped statistics 
-                                     switched to PFA because the CFA did not find a solution."))
+      itemTable$addFootnote(gettextf("McDonald's %s estimation method for item-dropped statistics switched to PFA because the CFA did not find a solution.","\u03C9"))
     }
     
     tb <- data.frame(variable = model[["itemsDropped"]])
@@ -589,8 +588,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         value = NA_real_
       )
       if (!is.null(relyFit[["freq"]][["omega.error"]])) {
-          fitTable$addFootnote(gettext("Fit measures cannot be displayed because the McDonald's \u03C9 
-                                       estimation method switched to PFA as the CFA did not find a solution."))
+          fitTable$addFootnote(gettextf("Fit measures cannot be displayed because the McDonald's %s estimation method switched to PFA as the CFA did not find a solution.","\u03C9"))
       }
     } else {
       opts <- c("Chi-Square", "df", "p.value", "RMSEA", "Lower CI RMSEA", "Upper CI RMSEA", "SRMR")
