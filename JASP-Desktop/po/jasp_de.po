@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2020-09-16 11:55+0000\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -184,10 +190,9 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Fix latent intercepts to zero"
 msgstr "Latente Konstanten auf 0 fixieren"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Omit residual single indicator"
-msgstr "Laat residuele enkele indicator weg"
+msgstr "Residuellen Einzel-Indikator weglassen"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Residual variances"
@@ -20188,36 +20193,33 @@ msgctxt "LDlognormal|"
 msgid "Statistics"
 msgstr "Statistiken"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Kolmogorov-Smirnov"
 msgstr "Kolmogorow-Smirnow"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Cramér–von Mises"
 msgstr "Cramér–von Mises"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Anderson-Darling"
 msgstr "Anderson-Darling"
 
 msgctxt "LDnegbinomial|"
 msgid "Number of successes:"
-msgstr ""
+msgstr "Anzahl von Erfolgen:"
 
 msgctxt "LDnegbinomial|"
 msgid "Dispersion:"
-msgstr ""
+msgstr "Streuung:"
 
 msgctxt "LDnegbinomial|"
 msgid "Probability of success:"
-msgstr ""
+msgstr "Erfolgswahrscheinlichkeit:"
 
 msgctxt "LDnegbinomial|"
 msgid "Mean:"
-msgstr ""
+msgstr "Mittelwert:"
 
 msgctxt "LDpoisson|"
 msgid "Rate:"
@@ -20225,81 +20227,76 @@ msgstr ""
 
 msgctxt "LDt|"
 msgid "Degree of freedom:"
-msgstr ""
+msgstr "Freiheitsgrad:"
 
 msgctxt "LDt|"
 msgid "Non-centrality:"
-msgstr ""
+msgstr "Nichtzentralität:"
 
 msgctxt "LStestingsequential|"
 msgid "Posterior"
-msgstr ""
+msgstr "Posterior"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid ""
 msgstr ""
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Effect sizes & SE"
-msgstr "Effektgrößen & SF"
+msgstr "Effektgrößen & Std.-Fehler"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Correlations & N"
 msgstr "Korrelationen & N"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "N"
 msgstr "N"
 
 msgctxt "SelectionModels|"
 msgid "Transform correlations"
-msgstr ""
+msgstr "Korrelationen transformieren"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Cohen's d"
 msgstr "Cohens d"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Fisher's z"
 msgstr "Fishers z"
 
 msgctxt "Description|"
 msgid "Mixed Models"
-msgstr ""
+msgstr "Gemischte Modelle"
 
 msgctxt "Description|"
 msgid "This module offers the Linear Mixed Models analysis."
-msgstr ""
+msgstr "Dieses Modul bietet die Lineare Gemischte Modelle Analyse."
 
 msgctxt "Description|"
 msgid "Linear Mixed Models"
-msgstr ""
+msgstr "Lineare Gemischte Modelle"
 
 msgctxt "Description|"
 msgid "Generalized Linear Mixed Models"
-msgstr ""
+msgstr "Verallgemeinerte Lineare Gemischte Modelle"
 
 msgctxt "Description|"
 msgid "Bayesian Linear Mixed Models"
-msgstr ""
+msgstr "Bayessche Lineare Gemischte Modelle"
 
 msgctxt "Description|"
 msgid "Bayesian Generalized Linear Mixed Models"
-msgstr ""
+msgstr "Bayessche Verallgemeinerte Lineare Gemischte Modelle"
 
 msgctxt "DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr ""
+msgstr "Beim Laden der Modulbeschreibung ist ein Problem aufgetreten"
 
 #, qt-format
 msgctxt "DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
+msgstr "<i>Konnte die Beschreibung des Moduls im Archiv nicht laden: '%1'</i>"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -20308,6 +20305,9 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a href="
 "\"http://%6\">%6</a></i><br>"
 msgstr ""
+"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Erstellt von %4 und "
+"gepflegt von %5.</i> <br><i>Siehe Website für weitere Details: <a href=\"http"
+"://%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "QMLListView|"
@@ -20315,3 +20315,6 @@ msgid ""
 "The list %1 has a rowComponent with the same name (%2) as its optionKey. "
 "Change the optionKey property of the list or the control name."
 msgstr ""
+"Die Liste %1 hat eine rowComponent mit dem gleichen Namen (%2) wie ihre "
+"optionKey. Ändern Sie die optionKey-Eigenschaft der Liste oder den Control-"
+"Namen."
