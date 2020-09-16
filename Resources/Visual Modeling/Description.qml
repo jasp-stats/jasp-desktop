@@ -3,7 +3,7 @@ import JASP.Module 	1.0
 
 Description
 {
-	title :         qsTr("Visual Modeling (Beta)")
+	title :         qsTr("Visual Modeling")
 	name :          "Visual Modeling"
 	description:    qsTr("Graphically-Based Data Analysis")
 	version:        "0.0.1"
