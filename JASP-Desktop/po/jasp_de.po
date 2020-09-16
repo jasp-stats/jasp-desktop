@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-16 11:55+0000\n"
+"PO-Revision-Date: 2020-09-16 14:15+0000\n"
 "Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
@@ -746,10 +746,9 @@ msgctxt "SEMSimple|"
 msgid "Fix latent intercepts to zero"
 msgstr "Latente Konstanten auf 0 fixieren"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Omit residual single indicator"
-msgstr "Laat residuele enkele indicator weg"
+msgstr "Residuellen Einzel-Indikator weglassen"
 
 msgctxt "SEMSimple|"
 msgid "Residual variances"
@@ -5982,10 +5981,9 @@ msgctxt "mlClusteringDensityBased|"
 msgid "Distance:"
 msgstr "Distanz:"
 
-#, fuzzy
 msgctxt "mlClusteringDensityBased|"
 msgid "Scale variables"
-msgstr "Schaalvariabelen"
+msgstr ""
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Set seed:"
@@ -6023,7 +6021,6 @@ msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Within sum of squares"
 msgstr "Binnen kwadratensom"
 
-#, fuzzy
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Silhouette score"
 msgstr "Silhouette-Score"
@@ -6188,19 +6185,17 @@ msgctxt "mlClusteringHierarchical|"
 msgid "Linkage:"
 msgstr ""
 
-#, fuzzy
 msgctxt "mlClusteringHierarchical|"
 msgid "Scale variables"
-msgstr "Schaalvariabelen"
+msgstr ""
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
-#, fuzzy
 msgctxt "mlClusteringHierarchical|"
 msgid "Cluster Determination"
-msgstr "Clusterbepaling"
+msgstr "Cluster-Bestimmung"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Fixed"
@@ -6302,19 +6297,17 @@ msgctxt "mlClusteringKMeans|"
 msgid "Algorithm:"
 msgstr "Algorithmus:"
 
-#, fuzzy
 msgctxt "mlClusteringKMeans|"
 msgid "Scale variables"
-msgstr "Schaalvariabelen"
+msgstr ""
 
 msgctxt "mlClusteringKMeans|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
-#, fuzzy
 msgctxt "mlClusteringKMeans|"
 msgid "Cluster Determination"
-msgstr "Clusterbepaling"
+msgstr "Cluster-Bestimmung"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Fixed"
@@ -6408,19 +6401,17 @@ msgctxt "mlClusteringRandomForest|"
 msgid "Trees:"
 msgstr "Bäume:"
 
-#, fuzzy
 msgctxt "mlClusteringRandomForest|"
 msgid "Scale variables"
-msgstr "Schaalvariabelen"
+msgstr ""
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Set seed:"
 msgstr "Startwert für Zufallszahlen setzen:"
 
-#, fuzzy
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster Determination"
-msgstr "Clusterbepaling"
+msgstr "Cluster-Bestimmung"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Fixed"
@@ -6598,10 +6589,9 @@ msgctxt "mlRegressionKnn|"
 msgid "Distance:"
 msgstr "Distanz:"
 
-#, fuzzy
 msgctxt "mlRegressionKnn|"
 msgid "Scale variables"
-msgstr "Schaalvariabelen"
+msgstr ""
 
 msgctxt "mlRegressionKnn|"
 msgid "Set seed:"
@@ -6695,10 +6685,9 @@ msgctxt "mlRegressionRandomForest|"
 msgid "Predictors per split:"
 msgstr "Prädiktoren pro Aufteilung:"
 
-#, fuzzy
 msgctxt "mlRegressionRandomForest|"
 msgid "Scale variables"
-msgstr "Schaalvariabelen"
+msgstr ""
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Set seed:"
@@ -6804,10 +6793,9 @@ msgctxt "mlRegressionRegularized|"
 msgid "Fit intercept"
 msgstr "Konstante anpassen"
 
-#, fuzzy
 msgctxt "mlRegressionRegularized|"
 msgid "Scale variables"
-msgstr "Schaalvariabelen"
+msgstr "Variablen skalieren"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Set seed:"
@@ -19808,17 +19796,14 @@ msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
 msgstr ""
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
 msgstr "Spalte einfügen"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
 msgstr "Spalte löschen"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr "Zurücksetzen"
@@ -19919,7 +19904,6 @@ msgctxt "LDgaussianunivariate|"
 msgid "Variance:"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Std. deviation:"
 msgstr "Std.-Abweichung:"
@@ -19940,7 +19924,6 @@ msgctxt "LDlogistic|"
 msgid "Location:"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "μ"
 msgstr "μ"
@@ -19957,7 +19940,6 @@ msgctxt "LDlogistic|"
 msgid "Display"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Explanatory text"
 msgstr "Erklärungstext"
@@ -19966,12 +19948,10 @@ msgctxt "LDlogistic|"
 msgid "Parameters, support, and moments"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Formulas"
 msgstr "Formeln"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Probability density function"
 msgstr "Wahrscheinlichkeitsdichtefunktion"
@@ -19980,46 +19960,38 @@ msgctxt "LDlogistic|"
 msgid "Cumulative distribution function"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Quantile function"
 msgstr "Quantilfunktion"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Estimate Parameters"
-msgstr "Schätzparameter"
+msgstr "Parameter schätzen"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Maximum likelihood"
 msgstr "Maximum-Likelihood"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Output"
 msgstr "Ausgabe"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Estimates"
-msgstr "Schätzer"
+msgstr "Schätzungen"
 
 msgctxt "LDlogistic|"
 msgid "Std. error"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Confidence interval"
 msgstr "Konfidenzintervall"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Variance-covariance"
 msgstr "Varianz-Kovarianz"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Correlation"
 msgstr "Korrelation"
@@ -20028,7 +20000,6 @@ msgctxt "LDlogistic|"
 msgid "Assess Fit"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Plots"
 msgstr "Abbildungen"
@@ -20037,7 +20008,6 @@ msgctxt "LDlogistic|"
 msgid "Histogram vs. theoretical pdf"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Q-Q plot"
 msgstr "Q-Q-Diagramm"
@@ -20050,22 +20020,18 @@ msgctxt "LDlogistic|"
 msgid "P-P plot"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Statistics"
 msgstr "Statistiken"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Kolmogorov-Smirnov"
 msgstr "Kolmogorow-Smirnow"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Cramér–von Mises"
 msgstr "Cramér–von Mises"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Anderson-Darling"
 msgstr "Anderson-Darling"
@@ -20078,7 +20044,6 @@ msgctxt "LDlognormal|"
 msgid "Log Mean:"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "μ"
 msgstr "μ"
@@ -20095,7 +20060,6 @@ msgctxt "LDlognormal|"
 msgid "Display"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Explanatory text"
 msgstr "Erklärungstext"
@@ -20104,12 +20068,10 @@ msgctxt "LDlognormal|"
 msgid "Parameters, support, and moments"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Formulas"
 msgstr "Formeln"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Probability density function"
 msgstr "Wahrscheinlichkeitsdichtefunktion"
@@ -20118,46 +20080,38 @@ msgctxt "LDlognormal|"
 msgid "Cumulative distribution function"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Quantile function"
 msgstr "Quantilfunktion"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Estimate Parameters"
-msgstr "Schätzparameter"
+msgstr "Parameter schätzen"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Maximum likelihood"
 msgstr "Maximum-Likelihood"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Output"
 msgstr "Ausgabe"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Estimates"
-msgstr "Schätzer"
+msgstr "Schätzungen"
 
 msgctxt "LDlognormal|"
 msgid "Std. error"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Confidence interval"
 msgstr "Konfidenzintervall"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Variance-covariance"
 msgstr "Varianz-Kovarianz"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Correlation"
 msgstr "Korrelation"
@@ -20166,7 +20120,6 @@ msgctxt "LDlognormal|"
 msgid "Assess Fit"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Plots"
 msgstr "Abbildungen"
@@ -20175,7 +20128,6 @@ msgctxt "LDlognormal|"
 msgid "Histogram vs. theoretical pdf"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Q-Q plot"
 msgstr "Q-Q-Diagramm"
@@ -20188,7 +20140,6 @@ msgctxt "LDlognormal|"
 msgid "P-P plot"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Statistics"
 msgstr "Statistiken"
