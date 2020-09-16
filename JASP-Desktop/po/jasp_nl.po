@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2020-09-16 11:55+0000\n"
+"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
+"nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -10608,7 +10614,7 @@ msgstr "Verwachte bewijs graad"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Expected Bayes factor (BF₋₊)"
-msgstr "Verwachte Bayes factor  (BF₋₊)"
+msgstr "Verwachte Bayes factor (BF₋₊)"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Prior and expected posterior descriptives"
@@ -13972,8 +13978,8 @@ msgstr ""
 "We openen twee pagina's voor u in uw webbrowser.\n"
 "De tweede pagina is de 'Join GitHub' pagina waar u zich kunt registreren "
 "voor een nieuw account bij GitHub.\n"
-"De eerste pagina leidt u naar een gedeelteljk ingevuld foutenformulier  "
-"nadat u zich hebt aangemeld bij GitHub met uw nieuwe GitHub account.\n"
+"De eerste pagina leidt u naar een gedeelteljk ingevuld foutenformulier nadat "
+"u zich hebt aangemeld bij GitHub met uw nieuwe GitHub account.\n"
 "Vult u a.u.b daar alle ontbrekende informatie in."
 
 msgctxt "MainWindow|"
@@ -14029,7 +14035,7 @@ msgid ""
 "already, or do you want to generate it?"
 msgstr ""
 "JASP is gestart zonder een bijbehorend gegevensbestand (csv, sav of ods "
-"bstand). Maar om de gegevens te bewerken, start JASP  een "
+"bstand). Maar om de gegevens te bewerken, start JASP een "
 "gegevensverwerkingsprogramma (spreadsheet) gebaseerd op dit bestand en "
 "synchroniseert de gegevens wanneer het bestand wordt opgeslagen. Bestaat dit "
 "bestand al, of wilt u dat dit nu wordt aangemaakt?"
@@ -15899,7 +15905,7 @@ msgid ""
 msgstr ""
 "\"JASP for Audit\" is een officieel ondersteunde toevoegingsmodule die "
 "speciaal ontworpen is voor een auditor. JfA helpt de auditor met het "
-"interpreteren, uitleggen, en reporteren van de analyses en  laat een "
+"interpreteren, uitleggen, en reporteren van de analyses en laat een "
 "transparant audit spoor achter."
 
 msgctxt "Description|"
@@ -18876,15 +18882,15 @@ msgstr "Interface:"
 
 msgctxt "PrefsUI|"
 msgid "Result & Help:"
-msgstr ""
+msgstr "Resultaat & Help:"
 
 msgctxt "Description|"
 msgid "Learn Bayes"
-msgstr ""
+msgstr "Leer Bayes"
 
 msgctxt "Description|"
 msgid "Learning Bayesian Statistics with JASP"
-msgstr ""
+msgstr "Leer Bayesiaanse Statistieken met JASP"
 
 msgctxt "Description|"
 msgid "Counts"
@@ -18892,11 +18898,11 @@ msgstr "Aantallen"
 
 msgctxt "Description|"
 msgid "Binomial Estimation"
-msgstr ""
+msgstr "Binomiaal Schatting"
 
 msgctxt "Description|"
 msgid "Binomial Testing"
-msgstr ""
+msgstr "Binomiaal Toets"
 
 msgctxt "LSbinomialestimation|"
 msgid "Model"
@@ -18908,11 +18914,11 @@ msgstr "Verdeling"
 
 msgctxt "LSbinomialestimation|"
 msgid "Parameter (θ)"
-msgstr ""
+msgstr "Parameter (θ)"
 
 msgctxt "LSbinomialestimation|"
 msgid "Spike"
-msgstr ""
+msgstr "Puntmassa"
 
 msgctxt "LSbinomialestimation|"
 msgid "Beta"
@@ -18928,15 +18934,15 @@ msgstr "β"
 
 msgctxt "LSbinomialestimation|"
 msgid "θ₀"
-msgstr ""
+msgstr "θ₀"
 
 msgctxt "LSbinomialtesting|"
 msgid "Hypothesis"
-msgstr ""
+msgstr "Hypothese"
 
 msgctxt "LSbinomialtesting|"
 msgid "Prior probability"
-msgstr ""
+msgstr "Prior kans"
 
 msgctxt "LSbinomialtesting|"
 msgid "Distribution"
@@ -18944,15 +18950,15 @@ msgstr "Verdeling"
 
 msgctxt "LSbinomialtesting|"
 msgid "Parameter (θ)"
-msgstr ""
+msgstr "Parameter (θ)"
 
 msgctxt "LSbinomialtesting|"
 msgid "P(H)"
-msgstr ""
+msgstr "P(H)"
 
 msgctxt "LSbinomialtesting|"
 msgid "Spike"
-msgstr ""
+msgstr "Puntmassa"
 
 msgctxt "LSbinomialtesting|"
 msgid "Beta"
@@ -18968,7 +18974,7 @@ msgstr "β"
 
 msgctxt "LSbinomialtesting|"
 msgid "θ₀"
-msgstr ""
+msgstr "θ₀"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Data"
@@ -18976,23 +18982,23 @@ msgstr "Data"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Input type"
-msgstr ""
+msgstr "Invoer type"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Select variable"
-msgstr ""
+msgstr "Selecteer variabele"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Specify counts"
-msgstr ""
+msgstr "Specificeer aantallen"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Enter sequence"
-msgstr ""
+msgstr "Voer volgorde in"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Count data"
-msgstr ""
+msgstr "Tel gegevens"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Successes"
@@ -19004,15 +19010,15 @@ msgstr "Mislukkingen"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Comma-separated sequence of observations"
-msgstr ""
+msgstr "Door komma's gescheiden reeks waarnemingen"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Levels"
-msgstr ""
+msgstr "Niveaus"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Available"
-msgstr ""
+msgstr "Beschikbaar"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Selected"
@@ -19020,7 +19026,7 @@ msgstr "Geselecteerd"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Data summary"
-msgstr ""
+msgstr "Gegevensoverzicht"
 
 msgctxt "LSestimationinference|"
 msgid "Inference"
@@ -19052,11 +19058,11 @@ msgstr "Grijs"
 
 msgctxt "LSestimationinference|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Puntschatting"
 
 msgctxt "LSestimationinference|"
 msgid "Prior distribution"
-msgstr ""
+msgstr "Prior verdeling"
 
 msgctxt "LSestimationinference|"
 msgid "All"
@@ -19064,19 +19070,19 @@ msgstr "Alle"
 
 msgctxt "LSestimationinference|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapeld"
 
 msgctxt "LSestimationinference|"
 msgid "Individual"
-msgstr ""
+msgstr "Individueel"
 
 msgctxt "LSestimationinference|"
 msgid "CI"
-msgstr ""
+msgstr "BI"
 
 msgctxt "LSestimationinference|"
 msgid "mass"
-msgstr ""
+msgstr "massa"
 
 msgctxt "LSestimationinference|"
 msgid "lower"
@@ -19088,7 +19094,7 @@ msgstr "boven"
 
 msgctxt "LSestimationinference|"
 msgid "Posterior distribution"
-msgstr ""
+msgstr "Posterior verdeling"
 
 msgctxt "LSestimationinference|"
 msgid "BF"
@@ -19096,27 +19102,27 @@ msgstr "BF"
 
 msgctxt "LSestimationinference|"
 msgid "Prior and posterior distribution"
-msgstr ""
+msgstr "Prior en posterior verdeling"
 
 msgctxt "LSestimationinference|"
 msgid "Observed proportion"
-msgstr ""
+msgstr "Waargenomen proportie"
 
 msgctxt "LSestimationpredictions|"
 msgid "Posterior prediction"
-msgstr ""
+msgstr "Posterior voorspelling"
 
 msgctxt "LSestimationpredictions|"
 msgid "Future observations"
-msgstr ""
+msgstr "Toekomstige waarnemingen"
 
 msgctxt "LSestimationpredictions|"
 msgid "Summary"
-msgstr ""
+msgstr "Samenvatting"
 
 msgctxt "LSestimationpredictions|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Puntschatting"
 
 msgctxt "LSestimationpredictions|"
 msgid "Plots"
@@ -19148,7 +19154,7 @@ msgstr "Grijs"
 
 msgctxt "LSestimationpredictions|"
 msgid "Posterior predictive distribution"
-msgstr ""
+msgstr "Posterior voorspellende verdeling"
 
 msgctxt "LSestimationpredictions|"
 msgid "All"
@@ -19156,19 +19162,19 @@ msgstr "Alle"
 
 msgctxt "LSestimationpredictions|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapeld"
 
 msgctxt "LSestimationpredictions|"
 msgid "Individual"
-msgstr ""
+msgstr "Individueel"
 
 msgctxt "LSestimationpredictions|"
 msgid "CI"
-msgstr ""
+msgstr "BI"
 
 msgctxt "LSestimationpredictions|"
 msgid "mass"
-msgstr ""
+msgstr "massa"
 
 msgctxt "LSestimationpredictions|"
 msgid "lower"
@@ -19188,7 +19194,7 @@ msgstr "Sequentiële analyse"
 
 msgctxt "LSestimationsequential|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Puntschatting"
 
 msgctxt "LSestimationsequential|"
 msgid "All"
@@ -19196,11 +19202,11 @@ msgstr "Alle"
 
 msgctxt "LSestimationsequential|"
 msgid "CI"
-msgstr ""
+msgstr "BI"
 
 msgctxt "LSestimationsequential|"
 msgid "mass"
-msgstr ""
+msgstr "massa"
 
 msgctxt "LSestimationsequential|"
 msgid "BF"
@@ -19208,11 +19214,11 @@ msgstr "BF"
 
 msgctxt "LSestimationsequential|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapeld"
 
 msgctxt "LSestimationsequential|"
 msgid "Updating table"
-msgstr ""
+msgstr "Bijwerken tabel"
 
 msgctxt "LSestimationsequential|"
 msgid "Interval"
@@ -19232,7 +19238,7 @@ msgstr ""
 
 msgctxt "LSintrotext|"
 msgid "Introductory texts"
-msgstr ""
+msgstr "Inleidende teksten"
 
 msgctxt "LStestinginference|"
 msgid "Inference"
@@ -19264,7 +19270,7 @@ msgstr "Grijs"
 
 msgctxt "LStestinginference|"
 msgid "Bayes factor"
-msgstr ""
+msgstr "Bayes factor"
 
 msgctxt "LStestinginference|"
 msgid "vs. all"
@@ -19276,7 +19282,7 @@ msgstr ""
 
 msgctxt "LStestinginference|"
 msgid "vs."
-msgstr ""
+msgstr "vs."
 
 msgctxt "LStestinginference|"
 msgid "BF₁₀"
@@ -19288,11 +19294,11 @@ msgstr "BF₀₁"
 
 msgctxt "LStestinginference|"
 msgid "log(BF₁₀)"
-msgstr ""
+msgstr "log(BF₁₀)"
 
 msgctxt "LStestinginference|"
 msgid "Prior distribution"
-msgstr ""
+msgstr "Prior verdeling"
 
 msgctxt "LStestinginference|"
 msgid "Conditional"
@@ -19300,15 +19306,15 @@ msgstr "Conditioneel"
 
 msgctxt "LStestinginference|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Puntenschatting"
 
 msgctxt "LStestinginference|"
 msgid "CI"
-msgstr ""
+msgstr "BI"
 
 msgctxt "LStestinginference|"
 msgid "mass"
-msgstr ""
+msgstr "massa"
 
 msgctxt "LStestinginference|"
 msgid "lower"
@@ -19328,23 +19334,23 @@ msgstr ""
 
 msgctxt "LStestinginference|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapeld"
 
 msgctxt "LStestinginference|"
 msgid "Marginal"
-msgstr ""
+msgstr "Marginaal"
 
 msgctxt "LStestinginference|"
 msgid "Prior predictive distribution"
-msgstr ""
+msgstr "Prior voorspellende verdeling"
 
 msgctxt "LStestinginference|"
 msgid "Observed proportion"
-msgstr ""
+msgstr "Waargenomen proportie"
 
 msgctxt "LStestinginference|"
 msgid "Predictive accuracy"
-msgstr ""
+msgstr "Voorspellende nauwkeurigheid"
 
 msgctxt "LStestinginference|"
 msgid "Normalized"
@@ -19352,7 +19358,7 @@ msgstr "Genormaliseerd"
 
 msgctxt "LStestinginference|"
 msgid "Posterior distribution"
-msgstr ""
+msgstr "Posterior verdeling"
 
 msgctxt "LStestinginference|"
 msgid "BF"
@@ -19360,23 +19366,23 @@ msgstr "BF"
 
 msgctxt "LStestinginference|"
 msgid "Prior and posterior distribution"
-msgstr ""
+msgstr "Prior and posterior verdeling"
 
 msgctxt "LStestingpredictions|"
 msgid "Posterior prediction"
-msgstr ""
+msgstr "Posterior voorspelling"
 
 msgctxt "LStestingpredictions|"
 msgid "Future observations"
-msgstr ""
+msgstr "Toekomstige waarnemingen"
 
 msgctxt "LStestingpredictions|"
 msgid "Summary"
-msgstr ""
+msgstr "Samenvatting"
 
 msgctxt "LStestingpredictions|"
 msgid "Point estimate"
-msgstr ""
+msgstr "Puntschatting"
 
 msgctxt "LStestingpredictions|"
 msgid "Plots"
@@ -19408,7 +19414,7 @@ msgstr "Grijs"
 
 msgctxt "LStestingpredictions|"
 msgid "Posterior predictive distribution"
-msgstr ""
+msgstr "Posterior voorspellende verdeling"
 
 msgctxt "LStestingpredictions|"
 msgid "Conditional"
@@ -19416,11 +19422,11 @@ msgstr "Conditioneel"
 
 msgctxt "LStestingpredictions|"
 msgid "CI"
-msgstr ""
+msgstr "BI"
 
 msgctxt "LStestingpredictions|"
 msgid "mass"
-msgstr ""
+msgstr "massa"
 
 msgctxt "LStestingpredictions|"
 msgid "lower"
@@ -19440,11 +19446,11 @@ msgstr ""
 
 msgctxt "LStestingpredictions|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapeld"
 
 msgctxt "LStestingpredictions|"
 msgid "Marginal"
-msgstr ""
+msgstr "Marginaal"
 
 msgctxt "LStestingpredictions|"
 msgid "Show sample proportions"
@@ -19472,7 +19478,7 @@ msgstr ""
 
 msgctxt "LStestingsequential|"
 msgid "Bayes factor"
-msgstr ""
+msgstr "Bayes factor"
 
 msgctxt "LStestingsequential|"
 msgid "vs. all"
@@ -19496,11 +19502,11 @@ msgstr "BF₀₁"
 
 msgctxt "LStestingsequential|"
 msgid "log(BF₁₀)"
-msgstr ""
+msgstr "log(BF₁₀)"
 
 msgctxt "LStestingsequential|"
 msgid "Updating table"
-msgstr ""
+msgstr "Bijwerken tabel"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Median"
@@ -19544,11 +19550,11 @@ msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Positive"
-msgstr ""
+msgstr "Positief"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Negative"
-msgstr ""
+msgstr "Negatief"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Rescale x-axis"
@@ -19564,7 +19570,7 @@ msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "log(OR)"
-msgstr ""
+msgstr "log(OR)"
 
 msgctxt "SelectionModels|"
 msgid "Effect Size"
@@ -19604,11 +19610,11 @@ msgstr ""
 
 msgctxt "SelectionModels|"
 msgid "Positive"
-msgstr ""
+msgstr "Positief"
 
 msgctxt "SelectionModels|"
 msgid "Negative"
-msgstr ""
+msgstr "Negatief"
 
 msgctxt "SelectionModels|"
 msgid "Inference"
@@ -19616,7 +19622,7 @@ msgstr "Inferentie"
 
 msgctxt "SelectionModels|"
 msgid "Fixed Effects"
-msgstr ""
+msgstr "Gefixeerde effecten"
 
 msgctxt "SelectionModels|"
 msgid "Mean estimates"
@@ -19761,17 +19767,14 @@ msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
 msgstr ""
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
 msgstr "Voeg kolom toe"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
 msgstr "Verwijder kolom"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr "Herstel"
@@ -19872,7 +19875,6 @@ msgctxt "LDgaussianunivariate|"
 msgid "Variance:"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Std. deviation:"
 msgstr "Std. afwijking:"
@@ -19885,7 +19887,6 @@ msgctxt "LDgaussianunivariate|"
 msgid "Square root of precision:"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Show Distribution"
 msgstr "Toon verdeling"
@@ -19894,7 +19895,6 @@ msgctxt "LDlogistic|"
 msgid "Location:"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "μ"
 msgstr "μ"
@@ -19907,12 +19907,10 @@ msgctxt "LDlogistic|"
 msgid "σ"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Display"
 msgstr "Weergeven"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Explanatory text"
 msgstr "Toelichtende tekst"
@@ -19921,82 +19919,66 @@ msgctxt "LDlogistic|"
 msgid "Parameters, support, and moments"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Formulas"
 msgstr "Formules"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Probability density function"
 msgstr "Kansfunctie"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Cumulative distribution function"
 msgstr "Cumulatieve verdelingsfunctie"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Estimate Parameters"
 msgstr "Schat parameters"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Maximum likelihood"
 msgstr "Meest aannemelijke schatter"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Output"
 msgstr "Uitvoer"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Estimates"
 msgstr "Schattingen"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Std. error"
 msgstr "Std. fout"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Confidence interval"
 msgstr "Betrouwbaarheidsinterval"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Variance-covariance"
 msgstr "Variantie-covariantie"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Correlation"
 msgstr "Correlatie"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Assess Fit"
 msgstr "Evalueer Passing"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Plots"
 msgstr "Grafieken"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Histogram vs. theoretical pdf"
 msgstr "Histogram vs. theoretische pdf"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Q-Q plot"
 msgstr "Q-Q plot"
@@ -20005,32 +19987,26 @@ msgctxt "LDlogistic|"
 msgid "Empirical vs. theoretical cdf"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "P-P plot"
 msgstr "P-P plot"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Statistics"
 msgstr "Statistieken"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Kolmogorov-Smirnov"
 msgstr "Kolmogorov-Smirnov"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Cramér–von Mises"
 msgstr "Cramér–von Mises"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Anderson-Darling"
 msgstr "Anderson-Darling"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Show Distribution"
 msgstr "Toon verdeling"
@@ -20039,7 +20015,6 @@ msgctxt "LDlognormal|"
 msgid "Log Mean:"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "μ"
 msgstr "μ"
@@ -20052,12 +20027,10 @@ msgctxt "LDlognormal|"
 msgid "σ"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Display"
 msgstr "Weergeven"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Explanatory text"
 msgstr "Toelichtende tekst"
@@ -20066,82 +20039,66 @@ msgctxt "LDlognormal|"
 msgid "Parameters, support, and moments"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Formulas"
 msgstr "Formules"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Probability density function"
 msgstr "Kansfunctie"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Cumulative distribution function"
 msgstr "Cumulatieve verdelingsfunctie"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Estimate Parameters"
 msgstr "Schat parameters"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Maximum likelihood"
 msgstr "Meest aannemelijke schatter"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Output"
 msgstr "Uitvoer"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Estimates"
 msgstr "Schattingen"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Std. error"
 msgstr "Std. fout"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Confidence interval"
 msgstr "Betrouwbaarheidsinterval"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Variance-covariance"
 msgstr "Variantie-covariantie"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Correlation"
 msgstr "Correlatie"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Assess Fit"
 msgstr "Evalueer Passing"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Plots"
 msgstr "Grafieken"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Histogram vs. theoretical pdf"
 msgstr "Histogram vs. theoretische pdf"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Q-Q plot"
 msgstr "Q-Q plot"
@@ -20150,27 +20107,22 @@ msgctxt "LDlognormal|"
 msgid "Empirical vs. theoretical cdf"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "P-P plot"
 msgstr "P-P plot"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Statistics"
 msgstr "Statistieken"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Kolmogorov-Smirnov"
 msgstr "Kolmogorov-Smirnov"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Cramér–von Mises"
 msgstr "Cramér–von Mises"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Anderson-Darling"
 msgstr "Anderson-Darling"
@@ -20211,16 +20163,14 @@ msgctxt "RobustBayesianMetaAnalysis|"
 msgid ""
 msgstr ""
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Effect sizes & SE"
-msgstr "Effectgrootte & SE"
+msgstr "Effectgroottes & SE"
 
 msgctxt "SelectionModels|"
 msgid "Correlations & N"
 msgstr ""
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "N"
 msgstr "N"
@@ -20229,12 +20179,10 @@ msgctxt "SelectionModels|"
 msgid "Transform correlations"
 msgstr ""
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Cohen's d"
 msgstr "Cohen's d"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Fisher's z"
 msgstr "Fisher's z"
