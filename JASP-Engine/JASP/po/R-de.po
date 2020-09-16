@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-09-15 15:58\n"
 "PO-Revision-Date: 2020-09-16 09:30+0000\n"
-"Last-Translator: Tristan Stenner <ttstenner@gmail.com>\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "de/>\n"
 "Language: de\n"
@@ -14,9 +14,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n==0 ? 0 : n==1 ? 0 : 1;\n"
 "X-Generator: Weblate 4.3-dev\n"
 
-#, fuzzy
 msgid "Data Summary"
-msgstr "Zusammenfassung"
+msgstr "Datenzusammenfassung"
 
 msgid "Counts"
 msgstr "Anzahlen"
@@ -37,51 +36,41 @@ msgstr "Gesamt"
 msgid "spike at %s"
 msgstr "%s mit r==%s"
 
-#, fuzzy
 msgid "beta (%s, %s)"
-msgstr "%s (%s)"
+msgstr "Beta (%s, %s)"
 
-#, fuzzy
 msgid "binomial (%i, %s)"
-msgstr "Binomial"
+msgstr "Binomial (%i, %s)"
 
-#, fuzzy
 msgid "beta-binomial (%i, %s, %s)"
-msgstr "Beta-Binomial"
+msgstr "Beta-Binomial (%i, %s, %s)"
 
-#, fuzzy
 msgid "Estimation Summary"
-msgstr "Evaluations-Zusammenfassung"
+msgstr "Schätzungs-Zusammenfassung"
 
 msgid "Model"
 msgstr "Modell"
 
-#, fuzzy
 msgid "Prior (%s)"
-msgstr "Prior"
+msgstr "Prior (%s)"
 
-#, fuzzy
 msgid "Prior %s"
-msgstr "Prior"
+msgstr "Prior %s"
 
-#, fuzzy
 msgid "Posterior (%s)"
-msgstr "Posterior"
+msgstr "Posterior (%s)"
 
-#, fuzzy
 msgid "Posterior %s"
-msgstr "Posterior"
+msgstr "Posterior %s"
 
-#, fuzzy
 msgid "Please specify successes and failures."
-msgstr "Bitte spezifiziere die Populationsgröße und deine Auditwerte."
+msgstr "Bitte spezifiziere Erfolge und Misserfolge."
 
 msgid "These results are based on %i %s and %i %s."
-msgstr ""
+msgstr "Diese Ergebnisse basieren auf %i %s und %i %s."
 
-#, fuzzy
 msgid "Observation"
-msgstr "Iteration"
+msgstr "Beobachtung"
 
 msgid "Population proportion"
 msgstr "Populationsverhältnis"
@@ -89,38 +78,35 @@ msgstr "Populationsverhältnis"
 msgid ""
 "More than bimodal CIs are not implemented in the Sequential analysis plot."
 msgstr ""
+"Mehr als bimodale KIs sind im Sequenziellen Analysediagramm nicht "
+"implementiert."
 
-#, fuzzy
 msgid "%i %% CI"
-msgstr "%s%% KI"
+msgstr "%i %% KI"
 
 msgid "%i %% HPD"
-msgstr ""
+msgstr "%i %% HPD"
 
 msgid "SI (BF=%s)"
 msgstr ""
 
-#, fuzzy
 msgid "Prediction (Successes)"
-msgstr "Vorhersagen unter BMA"
+msgstr "Vorhersage (Erfolge)"
 
-#, fuzzy
 msgid "Prediction %s"
-msgstr "Vorhersagen unter BMA"
+msgstr "Vorhersage %s"
 
 msgid "The prediction for %s %s is based on %s %s and %s %s."
-msgstr ""
+msgstr "Die Vorhersage für %s %s basiert auf %s %s und %s %s."
 
-#, fuzzy
 msgid "Sample proportions"
-msgstr "Klassenverhältnisse"
+msgstr "Stichprobenanteile"
 
 msgid "Density"
 msgstr "Dichte"
 
-#, fuzzy
 msgid "Number of successes"
-msgstr "Anzahl Erfolge: %s"
+msgstr "Anzahl von Erfolgen"
 
 msgid "Probability"
 msgstr "Wahrscheinlichkeit"
@@ -148,14 +134,12 @@ msgstr ""
 "Die untere Grenze Konfidenzintervalls liegt über der unteren Grenze. Bitte "
 "ändere die Grenzen in den Einstellungen."
 
-#, fuzzy
 msgid "Testing Summary"
-msgstr "Posterior-Zusammenfassung"
+msgstr "Testzusammenfassung"
 
 msgid "BF%s"
 msgstr "BF%s"
 
-#, fuzzy
 msgid "log(BF%s)"
 msgstr "Log(BF%s)"
 
@@ -163,111 +147,94 @@ msgid "Hypothesis"
 msgstr "Hypothese"
 
 msgid "P(H)"
-msgstr ""
+msgstr "P(H)"
 
-#, fuzzy
 msgid "log(likelihood)"
-msgstr "Log-Likelihood"
+msgstr "Log(Likelihood)"
 
-#, fuzzy
 msgid "P(H|data)"
-msgstr "P(M|Daten)"
+msgstr "P(H|Daten)"
 
-#, fuzzy
 msgid ""
 "The plot could not be created because the posterior model probabilities are "
 "not defined."
-msgstr "Du kannst nicht alle Prior-Modellwahrscheinlichkeiten auf Null setzen."
+msgstr ""
+"Das Diagramm konnte nicht erstellt werden, da die Posterior-"
+"Modellwahrscheinlichkeiten nicht definiert sind."
 
-#, fuzzy
 msgid "Proportion of Successes"
-msgstr "Verhältnis"
+msgstr "Anteil der Erfolge"
 
-#, fuzzy
 msgid "P(Successes|%s)"
-msgstr "Erfolge"
+msgstr "P(Erfolge|%s)"
 
-#, fuzzy
 msgid "P(Successes)"
-msgstr "Erfolge"
+msgstr "P(Erfolge)"
 
-#, fuzzy
 msgid "Please specify a hypothesis for comparison."
-msgstr "Bitte spezifiziere einen weiteren Kontrast."
+msgstr "Bitte gib eine Hypothese zum Vergleich an."
 
-#, fuzzy
 msgid "Conditional probability"
-msgstr "Posterior Wahrscheinlichkeit"
+msgstr "Bedingte Wahrscheinlichkeit"
 
-#, fuzzy
 msgid "Joint probability"
-msgstr "Posterior Wahrscheinlichkeit"
+msgstr "Gemeinsame Wahrscheinlichkeit"
 
 msgid "Posterior probability"
 msgstr "Posterior Wahrscheinlichkeit"
 
-#, fuzzy
 msgid "Observations"
-msgstr "Iterationen"
+msgstr "Beobachtungen"
 
 msgid "At least 2 hypotheses need to be specified."
-msgstr ""
+msgstr "Es müssen mindestens 2 Hypothesen spezifiziert werden."
 
 msgid "%s %i"
 msgstr ""
 
 msgid "Please remove duplicates from the %s names."
-msgstr ""
+msgstr "Bitte entferne Duplikate aus den %s-Namen."
 
-#, fuzzy
 msgid "%1$s %2$s Plots"
-msgstr "%1$s = %2$s"
+msgstr "%1$s %2$s Abbildungen"
 
-#, fuzzy
 msgid "Prior and Posterior Plots"
-msgstr "Prior und Posteriors"
+msgstr "Prior- und Posterior-Abbildungen"
 
-#, fuzzy
 msgid "%s Sequential Analysis: Point Estimate"
-msgstr "Sequenzielle Analyse"
+msgstr "%s Sequenzielle Analyse: Punktschätzung"
 
-#, fuzzy
 msgid "%s Sequential Analysis: Interval"
-msgstr "Sequenzielle Analyse"
+msgstr "%s Sequenzielle Analyse: Intervall"
 
 msgid "Sequential Posterior Updating"
 msgstr ""
 
-#, fuzzy
 msgid "Prediction Summary"
-msgstr "Auswahl-Zusammenfassung"
+msgstr "Vorhersage-Zusammenfassung"
 
-#, fuzzy
 msgid "%s Prediction Plots"
-msgstr "Verteilungsabbildungen"
+msgstr "%s Vorhersage-Abbildungen"
 
 msgid "%1$s %2$s Prediction Plots"
 msgstr ""
 
-#, fuzzy
 msgid "%s Prior and Posterior Plots"
-msgstr "Prior und Posteriors"
+msgstr "Prior- und Posterior-Abbildungen"
 
 msgid "%s Predictive Accuracy Plot"
 msgstr ""
 
-#, fuzzy
 msgid "%s Sequential Analysis"
-msgstr "Sequenzielle Analyse"
+msgstr "%s Sequenzielle Analyse"
 
 msgid ""
 "Welcome to the %s analysis from the Learn Bayes module. This analysis "
 "illustrates Bayesian %s using %s examples."
 msgstr ""
 
-#, fuzzy
 msgid "%s (the population proportion of successes)"
-msgstr "Populationsverhältnis"
+msgstr ""
 
 msgid "%s (the population mean, variance is assumed to be known)"
 msgstr ""
