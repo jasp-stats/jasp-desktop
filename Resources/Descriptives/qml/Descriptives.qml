@@ -37,7 +37,7 @@ Form
 	CheckBox
 	{
 		name	: "stemAndLeaf";
-		label	: qsTr("Stem and leaf table")
+		label	: qsTr("Stem and leaf tables")
 		DoubleField	{name: "stemAndLeafScale";	label: qsTr("scale");	negativeValues: false;	inclusive: JASP.MaxOnly;	max: 200;	defaultValue: 1.0; }
 	}
 
