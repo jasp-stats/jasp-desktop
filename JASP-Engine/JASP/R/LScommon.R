@@ -1012,14 +1012,14 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     temp_int <- paste("'",temp_int,"'")
     
     # text for the coverage
-    temp_cov <- paste(c("'",round(CI$coverage[1]*100), "% CI'"), collapse = "")
+    temp_cov <- paste0(c("'",round(CI$coverage[1]*100), "% CI'"), collapse = "")
     
     
     if (CI$g[1] == "HPD"){
       temp_label <- paste(c(temp_cov,"['HPD']:",temp_int), collapse = "")
     } else if (CI$g[1] == "custom"){
       temp_label  <- paste(c("P({",format(round(CI$x_start, nRound), nsmall = nRound),"<=",if (CI$parameter == "theta") "theta" else if (CI$parameter == "mu") "mu","}<=",
-                             (format(round(CI$x_end, nRound), nsmall = nRound)),")","=='",round(CI$coverage[1]*100)," %'"), collapse = "")
+                             (format(round(CI$x_end, nRound), nsmall = nRound)),")","=='",round(CI$coverage[1]*100),"%'"), collapse = "")
     } else if (CI$g[1] == "support"){
       temp_label <- paste(c("SI['[BF = ",CI$BF[1],"]']:",temp_int), collapse = "")
     } else if (CI$g[1] == "central"){
@@ -1036,7 +1036,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     PEl <- PE$l
     if (is.numeric(PE$l))
       PEl <- format(round(PEl, ifelse(PE$estimate == "mean", 3, nRound)), nsmall = ifelse(PE$estimate == "mean", 3, nRound))
-    temp_pe    <- paste0("'", PE$estimate,"'",  ":", "' ", PEl, ifelse(is.null(temp_label), " '", "; '"))
+    temp_pe    <- paste0("'", PE$estimate,"'",  "==", "' ", PEl, ifelse(is.null(temp_label), " '", "; '"))
     if (!is.null(temp_label)){
       temp_label <- paste(temp_pe, temp_label, sep = "~")
     } else {
