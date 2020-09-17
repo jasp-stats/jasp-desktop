@@ -74,5 +74,6 @@
         <file>css/images/lightTheme/expand.png</file>
         <file>css/images/lightTheme/collapse.png</file>
         <file>css/printing.css</file>
+        <file>css/jasp.css</file>
     </qresource>
 </RCC>

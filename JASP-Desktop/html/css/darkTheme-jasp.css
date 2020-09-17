@@ -1,14 +1,7 @@
 
-.jasp-no-select {
-  -webkit-user-select: none;
-}
-
 body {
-        margin:           0;
-        cursor:           default;
         color:            #EEE;
         background-color: #222 ; /*grayLighter*/
-        font-size:        12px;
 }
 
 body.selected .jasp-analysis:not(.selected){
@@ -16,198 +9,14 @@ body.selected .jasp-analysis:not(.selected){
     background-color: #333 ;
 }
 
-h1, .h1-toolbar .jasp-menu {
-  font-size: 175% ;
-}
-
-h2, .h2-toolbar .jasp-menu {
-  font-size: 150% ;
-}
-
-h3, .h3-toolbar .jasp-menu {
-  font-size: 125% ;
-  margin-top: .5em;
-  margin-bottom: .5em;
-}
-
-h4, .h4-toolbar .jasp-menu {
-  font-size: 115% ;
-  margin-top: .5em;
-  margin-bottom: .5em;
-}
-
-h5, .h5-toolbar .jasp-menu {
-  font-size: 105% ;
-  margin-top: .5em;
-  margin-bottom: .5em;
-}
-
-h6, .h6-toolbar .jasp-menu {
-  font-size: 100% ;
-  margin-top: .5em;
-  margin-bottom: .5em;
-}
-
-
-.jasp-display-item.hidden-collection {
-  margin-top:     0px ;
-  margin-bottom:  0px ;
-  padding-left:   0px ;
-  margin-right:   0px ;
-  padding-right:  0px ;
-}
-
-.jasp-display-item
-{
-    margin-top:			0.1em ;
-	margin-bottom:		0.6em ;
-	padding-left:		0.6em ;
-	margin-right:		0.6em ;
-	padding-right:		0.6em ;
-}
-
-.jasp-display-item ~ .jasp-display-item {
-  margin-top: 0.6em;
-}
-
-.jasp-display-item-flat {
-  padding-left: 0;
-}
-
-.jasp-table-primitive {
-  padding-left: 0.6em ;
-}
 
 .jasp-collapsed {
-    max-width:			70em;
-	min-width:			40em;
 	background-color:	#404040; /*grayLighter*/
-	border:				1px solid #747677  ; /*grayDarker but not really because this is #696969 */
-}
-
-table {
-  font-style:			normal ;
-  border-collapse:		collapse ;
-  margin-bottom:		2em ;
-  cursor:				default;
-}
-
-th {
-  vertical-align: bottom ;
-  font-weight: normal ;
-}
-
-th[colspan="2"] {
-  padding-left : 1em ;
-  padding-right: 1em ;
-}
-
-td.value {
-  padding-left : 1em ;
-  padding-right: 0 ;
-}
-
-td.symbol {
-  text-align: left ;
-  padding-right: 1em ;
-  padding-left: 0 ;
-}
-
-td {
-  text-align: right ;
-  vertical-align: top ;
-}
-
-thead tr:nth-child(2) th:not(.separator) {
-  min-width: 4em ;
-}
-
-th.separator, td.separator {
-  padding-left: 0px ;
-  padding-right: 0px ;
-}
-
-thead tr:first-child th {
-  padding: 6px 10px ;
-  font-style: bold ;
-  text-align: left ;
-  padding-left: 0 ;
-}
-
-thead th {
-  text-align: center;
-  white-space: nowrap;
-  padding-top: .25em ;
-  padding-bottom: .25em ;
-}
-
-tbody th {
-  text-align: left;
-}
-
-tbody th,
-tbody td
-{
-  border-bottom:	none ;
-  border-top:		none;
-  white-space:		nowrap;
-}
-
-thead tr th {
-    border-bottom: thin solid ;
-}
-
-thead tr.over-title th:empty {
-    border-bottom:	none;
-}
-
-thead tr.over-title-space th {
-    border-bottom:	none;
-	padding:		0 .25em 0 .25em;
-}
-
-thead tr.over-title-space th:last-child {
-    border-bottom:	none;
-	padding:		0 0 0 .25em;
-}
-
-div.over-title-space {
-    padding-top:	.25em;
-	padding-bottom:	.25em;
-	vertical-align:	middle;
-	margin:			0 0 0 0;
-	text-align:		center;
-	border-bottom:	thin solid;
-}
-
-div.over-title-space:empty {
-  border-bottom: none;
+        border:			1px solid #747677  ; /*grayDarker but not really because this is #696969 */
 }
 
 
-tbody tr:last-child th,
-tbody tr:last-child td {
 
-  border-bottom: 2px solid ;
-}
-
-tbody tr td.new-sub-group-row {
-
-  padding-top: .4em ;
-}
-
-tbody tr td.new-group-row,
-tbody tr:first-child td {
-
-  padding-top: .9em ;
-}
-
-tbody tr:nth-last-child(2) td.last-group-row,
-tbody tr:nth-last-child(2) td,
-tbody tr:nth-last-child(2) th {
-
-  margin-bottom: .8em ;
-}
 
 tr:nth-child(odd) th,
 tr:nth-child(odd) td {
@@ -234,23 +43,9 @@ tr:nth-child(even) td {
     background-color: #222 ;
 }
 
-td.text {
-  text-align: left ;
-}
-
-tfoot td {
-
-  text-align: left;
-}
 
 .chart > g > rect { fill: #666625 }
 
-svg > text
-{
-  font-family:  sans-serif ;
-  font-weight:  bold;
-  font-size:    120% ;
-}
 
 .jasp-collection-image {
   display:				block;
@@ -258,23 +53,12 @@ svg > text
 }
 
 .jasp-image {
-  position:				relative ;
   background-color:		#000;
   border-radius:		2px;
 }
 
 .jasp-image-image {
-
-  width:  100% ;
-  height: 100% ;
-  filter: invert(1);
-}
-
-.etch-editor-panel {
-  position:   fixed;
-    top:      0;
-    width:    100%;
-    z-index:  100;
+   filter: invert(1);
 }
 
 .jasp-image-resizer {
@@ -282,7 +66,6 @@ svg > text
   background-color :  #5F89A7 ;
   border:             1px solid #7C95CB ;
   border-radius :     3px ;
-  margin:             0px ;
 }
 
 .jasp-image-resizable {
@@ -291,48 +74,7 @@ svg > text
   border-radius:	2px ;
 }
 
-.jasp_top_level {
 
-  margin-left:	1.7em ;
-  margin-right: 1.7em ;
-}
-
-
-#instructions {
-
-  margin: .7em ;
-  padding: 1em ;
-  /*display: inline-block ;*/
-}
-
-div.toolbar {
-
-  display:	block ;
-  position: relative;
-}
-
-div.image-status {
-
-  position:				absolute ;
-  top :					0 ;
-  left:					0 ;
-  width:				100% ;
-  height:				100% ;
-  background-repeat:	no-repeat;
-  background-position:	center center;
-  visibility:			hidden ;
-  z-index:				50 ;
-}
-
-div.status {
-
-  width:			16px ;
-  height:			16px ;
-  background-size:	100% ;
-  display:			inline-block ;
-  margin-left:		6px ;
-  visibility:		hidden ;
-}
 
 div.status.running {
 
@@ -362,34 +104,14 @@ div.jasp-image-image.no-data {
     background-image:	url('images/darkTheme/empty-plot.png') ;
 	background-repeat:	no-repeat;
 	background-size:	contain;
-	position:			relative;
-	max-height:			480px;
-	max-width:			480px;
 }
 
 div.jasp-image-image.no-data.error {
     background-image: linear-gradient(rgba(0,0,0,0.67), rgba(0,0,0,0.67)), url('images/darkTheme/empty-plot.png');
 }
 
-.jasp-analysis.error-state div.jasp-image-image {
-  opacity: 0.33
-}
-
 .error-state:not(.jasp-analysis), .jasp-analysis.error-state>.jasp-analysis {
   color: darkgray;
-}
-
-.jasp-analysis.error-state {
-  min-width:			500px;
-  min-height:			200px;
-}
-
-
-:not(.error-state) > .jasp-analysis {
-
-    margin:				0 .7em .7em .7em ;
-	padding:			0 1em 1em 1em ;
-	position:			relative;
 }
 
 
@@ -399,155 +121,43 @@ div.jasp-image-image.no-data.error {
   background:         #400;
 }
 
-.analysis-error-message {
-  min-width: 400px;
-  max-width: 1000px;
-  position: absolute;
-  top:			60px;
-  left:			50px;
-  margin-right: 50px;
-}
-
-.error-message-positioner {
-
-  height:	0px ;
-  overflow:	visible ;
-  position:	relative;
-  top:		10px ;
-  float:	left ;
-  z-index:	100 ;
-}
-
-.jasp-image-image .error-message-positioner {
-
-  position: absolute ;
-  top:		25% ;
-}
-
-.error-message-symbol {
-
-  float:		left;
-  margin-right: .3em;
-}
-
-.error-message-box {
-
-  z-index:			100 ;
-  padding:			1em ;
-  border-radius:	.4em ;
-  min-width:		300px ;
-  white-space:		normal;
-}
-
-.stack-trace-selector div,
-.stack-trace-selector span {
-
-  cursor:			pointer ;
-  display:			inline-block ;
-  vertical-align:	middle ;
-}
-
 .stack-trace-arrow {
 
   background:		center no-repeat url("images/darkTheme/expand.png") ;
   background-size:	70% ;
-  width:			16px ;
-  height:			16px ;
-  margin-left:		2px ;
 }
 
-.stack-trace {
-
-  display: none ;
-}
-
-td.squash-left
-{
-  width: 99% ;
-}
 
 #intro {
-
-  padding:			1em 2em ;
-  margin:			50px auto ;
-  min-width:		300px ;
-  max-width:		500px ;
-  width:			50% ;
-  border:			3px dashed #3CAAE7 ;
+  border:		3px dashed #3CAAE7 ;
   border-radius:	10px ;
-  color:			#3CAAE7 ;
+  color:		#3CAAE7 ;
 
 }
 
-.jasp-hide {
-    display:	none;
-	visibility: hidden ;
-}
-
-.jasp-image-holder {
-
-  position: relative ;
-}
 
 .jasp-resize {
     background: top left no-repeat url(images/darkTheme/resizer.png);
-	right:		2px;
-	cursor:		nw-resize;
-	bottom:		2px;
-	position:	absolute;
-	width:		16px;
-	height:		16px;
 }
 
 .jasp-closer {
     background:			top left no-repeat url(images/darkTheme/closer.png);
-	background-size:	16px;
-	position:			absolute;
-	right:				5px;
-	top:				5px;
-	width:				16px;
-	height:				16px;
-	bottom:				1px;
-	float:				right;
-	border:				8px solid;
-	border-color:		transparent;
-	z-index:			1;
+    background-size:	16px;
 }
 
-.jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar h4, .jasp-toolbar h5, .jasp-toolbar h6, .jasp-toolbar div , .jasp-toolbar span
-{
-    display:			inline-block;
-	vertical-align:		middle;
-}
-
-.jasp-menu
-{
+.jasp-menu {
   background: center no-repeat url(images/darkTheme/menu-indicator.svg);
   background-size: 70% ;
-  width:  16px ;
-  height: 16px ;
-  margin-left: 4px ;
 }
 
 .jasp-collapsed .jasp-menu {
   background:		center no-repeat url(images/darkTheme/expand.png);
   background-size:	70% ;
-  width:			16px ;
-  height:			16px ;
-  margin-left:		4px ;
 }
 
-.jasp-toolbar {
-  display:				block ;
-}
-
-.toolbar-clickable {
-  cursor: pointer;
-}
 
 .toolbar-editing {
-  cursor:			text;
-  border-top:		1px solid #5c5c5c;	/*rgb(205, 205, 205); #CDCDCD gray*/
+   border-top:		1px solid #5c5c5c;	/*rgb(205, 205, 205); #CDCDCD gray*/
   border-bottom:	1px solid #5c5c5c;
 }
 
@@ -555,28 +165,12 @@ td.squash-left
   background-color : #196EA9 ; /* cyan */
 }
 
-.jasp-editable {
-  padding-top:		.5em ;
-  padding-bottom:	.5em ;
-  background-color:	inherit ;
-  word-wrap:		break-word;
-}
-
-.jasp-editable, .jasp-editable * {
-  cursor: text;
-}
-
 
 .jasp-notes {
   border-bottom:		1px solid #5c5c5c;
   border-radius:		0;
-  color:				#000;
-  max-width:			70em;
-  min-width:			40em;
-  position:				relative ;
-  margin-top:			0.6em ;
-  margin-bottom:		0.6em ;
-  filter:				invert(1);
+  color:			#000;
+  filter:			invert(1);
 }
 
 .jasp-notes-border {
@@ -584,67 +178,15 @@ td.squash-left
 }
 
 
-.jasp-firstNote-note {
-  margin-bottom: 0.5em;
-}
-
-[contenteditable]:focus
-{
-  outline: 0px solid transparent;
-
-}
-
-
 .jasp-ghost-text {
-  font-weight:		bold ;
   color:			#212121;
-  cursor:			text;
-  padding-top:		.5em ;
-  padding-bottom:	.5em ;
-}
 
-pre {
-  display: inline;
-}
-
-.in-toolbar, .jasp-editable {
-  min-width: 1em;
-}
-
-.jasp-progressbar-container {
-  min-height:			1.25em;
-}
-
-.jasp-progressbar {
-  display: table;
 }
 
 .jasp-progressbar-label {
-  display:			table-cell;
-  vertical-align:	middle;
-  padding-left:		15px;
   color:			#5c5c5c;
 }
 
-.jasp-progressbar-label-sep {
-    font-style: italic;
-}
-
-/*.jasp-indent {
-  margin-left: .5em ;
-  padding-left: 0.8em ;
-}*/
-
-.jasp-code {
-  font-family: monospace, monospace;
-}
-
-/* The following code convinces webengine to have scrollbars that look sorta like JASPScrollBar */
-/* width */
-::-webkit-scrollbar {
- width: 16px;
- height: 16px;
-}
 
 /* Track */
 ::-webkit-scrollbar-track {
