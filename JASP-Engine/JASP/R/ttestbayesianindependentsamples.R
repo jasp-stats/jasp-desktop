@@ -288,6 +288,8 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
 
       }
       
+      xVals <- currentVals[1:n1]
+      yVals <- currentVals[(n1+1):(n1+n2)]
       gibbsResult <- .sampleGibbsTwoSampleWilcoxon(x = xVals, y = yVals, nIter = nGibbsIterations,
                                                    rscale = cauchyPriorParameter)
 
