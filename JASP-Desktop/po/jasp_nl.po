@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-16 14:15+0000\n"
-"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
+"PO-Revision-Date: 2020-09-17 13:48+0000\n"
+"Last-Translator: Don van den Bergh <donvdbergh@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
 "Language: nl\n"
@@ -19232,7 +19232,6 @@ msgctxt "LSestimationsequential|"
 msgid "upper"
 msgstr "boven"
 
-#, fuzzy
 msgctxt "LSestimationsequential|"
 msgid "Posterior updating table"
 msgstr "Posterior bijwerkingstabel"
@@ -19273,12 +19272,10 @@ msgctxt "LStestinginference|"
 msgid "Bayes factor"
 msgstr "Bayes factor"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "vs. all"
 msgstr "vs. alle"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "vs. best"
 msgstr "vs. beste"
@@ -19327,12 +19324,10 @@ msgctxt "LStestinginference|"
 msgid "upper"
 msgstr "boven"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Joint"
-msgstr "Samenvoeging"
+msgstr "Gezamenlijke"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Overlying"
 msgstr "Overlappend"
@@ -19441,12 +19436,10 @@ msgctxt "LStestingpredictions|"
 msgid "upper"
 msgstr "boven"
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Joint"
-msgstr "Samenvoeging"
+msgstr "Gezamenlijke"
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Overlying"
 msgstr "Overlappend"
@@ -19459,12 +19452,10 @@ msgctxt "LStestingpredictions|"
 msgid "Marginal"
 msgstr "Marginaal"
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Show sample proportions"
 msgstr "Toon steekproef proporties"
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Predictions table"
 msgstr "Voorspellingstabel"
@@ -19473,7 +19464,6 @@ msgctxt "LStestingsequential|"
 msgid "Sequential analysis"
 msgstr "Sequentiële analyse"
 
-#, fuzzy
 msgctxt "LStestingsequential|"
 msgid "Test results"
 msgstr "Toets resultaten"
@@ -19482,16 +19472,14 @@ msgctxt "LStestingsequential|"
 msgid "Conditional"
 msgstr "Conditioneel"
 
-#, fuzzy
 msgctxt "LStestingsequential|"
 msgid "Joint"
-msgstr "Samenvoeging"
+msgstr "Gezamenlijke"
 
 msgctxt "LStestingsequential|"
 msgid "Bayes factor"
 msgstr "Bayes factor"
 
-#, fuzzy
 msgctxt "LStestingsequential|"
 msgid "vs. all"
 msgstr "vs. alle"
@@ -19536,22 +19524,18 @@ msgctxt "mlClusteringHierarchical|"
 msgid "McQuitty"
 msgstr "McQuitty"
 
-#, fuzzy
 msgctxt "Description|"
 msgid "Selection Models"
 msgstr "Selectiemodellen"
 
-#, fuzzy
 msgctxt "Description|"
 msgid "Robust Bayesian Meta-Analysis"
 msgstr "Robuuste Bayesiaanse  Meta-Analyse"
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Correlations & N"
 msgstr "Correlaties & N"
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Odds ratios & CI"
 msgstr "Odds ratio & BI"
@@ -19560,10 +19544,9 @@ msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Models"
 msgstr "Modellen"
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Expected effect size direction"
-msgstr "Verwachte effectgrootte richting"
+msgstr "Verwachte richting effectgrootte"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Positive"
@@ -19573,10 +19556,9 @@ msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Negative"
 msgstr "Negatief"
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Rescale x-axis"
-msgstr "Schaal x-as opnieuw"
+msgstr "Herschaal x-as"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Model averaged"
@@ -19595,12 +19577,10 @@ msgctxt "SelectionModels|"
 msgid "Effect Size"
 msgstr "Effectgrootte"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Effect Size Standard Error"
-msgstr "Effectgrootte standaardfout"
+msgstr "Standaardfout effectgrootte"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "P-value (one-sided)"
 msgstr "P-waarde (eenzijdig)"
@@ -19609,12 +19589,10 @@ msgctxt "SelectionModels|"
 msgid "Model"
 msgstr "Model"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "P-value cutoffs"
 msgstr "P-waarde grenzen"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Two-sided selection"
 msgstr "Twee-zijdige selectie"
@@ -19623,15 +19601,13 @@ msgctxt "SelectionModels|"
 msgid "P-value frequency"
 msgstr "P-waarde frequentie"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Automatically join p-value intervals"
-msgstr "Voeg p-waarde intervallen automatisch samen"
+msgstr "Automatisch p-waarde intervallen samenvoegen"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Expected effect size direction"
-msgstr "Verwachte effectgrootte richting"
+msgstr "Verwachte richting effectgrootte"
 
 msgctxt "SelectionModels|"
 msgid "Positive"
@@ -19649,22 +19625,18 @@ msgctxt "SelectionModels|"
 msgid "Fixed Effects"
 msgstr "Gefixeerde effecten"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Mean estimates"
 msgstr "Gemiddelde schattingen"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Estimated weights"
 msgstr "Geschatte gewichten"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Random Effects"
 msgstr "Willekeurige effecten"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Estimated heterogeneity"
 msgstr "Geschatte heterogeniteit"
@@ -19673,7 +19645,6 @@ msgctxt "SelectionModels|"
 msgid "Plots"
 msgstr "Grafieken"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Weight Function"
 msgstr "Gewichtsfunctie"
@@ -19686,22 +19657,18 @@ msgctxt "SelectionModels|"
 msgid "Random effects"
 msgstr "Willekeurige effecten"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Rescale x-axis"
-msgstr "Schaal x-as opnieuw"
+msgstr "Herschaal x-as"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Mean model estimates"
 msgstr "Gemiddelde model schattingen"
 
-#, fuzzy
 msgctxt "Correlation|"
 msgid "Prediction intervals"
 msgstr "Voorspellingsintervallen"
 
-#, fuzzy
 msgctxt "RegressionLinear|"
 msgid "Prediction intervals"
 msgstr "Voorspellingsintervallen"
@@ -19710,57 +19677,46 @@ msgctxt "RegressionLinearBayesian|"
 msgid "Bernoulli"
 msgstr "Bernoulli"
 
-#, fuzzy
 msgctxt "RegressionLogistic|"
 msgid "Performance Plots"
 msgstr "Prestatie grafieken"
 
-#, fuzzy
 msgctxt "RegressionLogistic|"
 msgid "ROC plot"
 msgstr "ROC grafiek"
 
-#, fuzzy
 msgctxt "RegressionLogistic|"
 msgid "Cutoff step"
 msgstr "Cutoff stap"
 
-#, fuzzy
 msgctxt "RegressionLogistic|"
 msgid "Add cutoff labels"
 msgstr "Voeg cutoff-labels toe"
 
-#, fuzzy
 msgctxt "RegressionLogistic|"
 msgid "PR plot"
 msgstr "PR plot"
 
-#, fuzzy
 msgctxt "Description|"
 msgid "S.S. Bayesian A/B Test"
-msgstr "S.S. Baysiaanse  A/B Toets"
+msgstr "S.S. Baysiaanse A/B Toets"
 
-#, fuzzy
 msgctxt "Flexplot|"
 msgid "Convert to grayscale"
 msgstr "Converteren naar grijswaarden"
 
-#, fuzzy
 msgctxt "linmod|"
 msgid "Show p-values"
 msgstr "Toon p-waarden"
 
-#, fuzzy
 msgctxt "linmod|"
 msgid "Convert to grayscale"
 msgstr "Converteren naar grijswaarden"
 
-#, fuzzy
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
 msgstr "Probleem bij het laden van bekende issues"
 
-#, fuzzy
 msgctxt "KnownIssues|"
 msgid ""
 "JASP ran into a problem loading the known issues for this version, contact "
@@ -19769,14 +19725,14 @@ msgstr ""
 "JASP ondervond een probleem bij het laden van de bekende issues voor deze "
 "versie, neem contact op met het JASP-team voor hulp."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "KnownIssues|"
 msgid ""
 "JASP ran into a problem loading the known issues for this version: '%1', "
 "contact the JASP team for assistance."
 msgstr ""
 "JASP ondervond een probleem bij het laden van de bekende issues voor deze "
-"versie:'%1', neem contact op met het JASP-team voor hulp."
+"versie: '%1', neem contact op met het JASP-team voor ondersteuning."
 
 #, fuzzy
 msgctxt "MainWindow|"
@@ -19793,35 +19749,32 @@ msgctxt "ResultMenuModel|"
 msgid "Export Results"
 msgstr "Exporteer resultaten"
 
-#, fuzzy
 msgctxt "BoundQMLTextInput|"
 msgid "Formulas Field"
 msgstr "Formules veld"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QMLListView|"
 msgid "No name given in source attribute of List %1"
 msgstr "Geen naam gegeven in het bron-attribuut van lijst %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
 msgstr "standaard: %1"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "R, JAGS or Lavaan code:"
 msgstr "R, JAGS of Lavaan code:"
 
-#, fuzzy
 msgctxt "ModuleInstaller|"
 msgid "<i>Browse for a JASP Module to see more information here</i>"
-msgstr "<i>Blader naar een JASP-module om meer informatie te zien </i>."
+msgstr "<i>Blader naar een JASP-module om meer informatie te zien</i>"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
-msgstr "<i> %1 is geen (correcte) JASP Module! </i>"
+msgstr "<i>%1 is geen (correcte) JASP Module!</i>"
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
@@ -19843,15 +19796,13 @@ msgctxt "auditClassicalWorkflow|"
 msgid ""
 msgstr ""
 
-#, fuzzy
 msgctxt "Description|"
 msgid "Log-normal"
 msgstr "Log-normaal"
 
-#, fuzzy
 msgctxt "Description|"
 msgid "Logistic"
-msgstr "Logistiek"
+msgstr "Logistische"
 
 #, fuzzy
 msgctxt "LDbernoulli|"
@@ -19863,119 +19814,120 @@ msgctxt "LDbeta|"
 msgid "Shape:"
 msgstr "Vorm:"
 
-#, fuzzy
 msgctxt "LDbinomial|"
 msgid "Probability of success:"
 msgstr "Kans op succes:"
 
-#, fuzzy
 msgctxt "LDbinomial|"
 msgid "Number of trials:"
 msgstr "Aantal pogingen:"
 
-#, fuzzy
 msgctxt "LDchisq|"
 msgid "Degree of freedom:"
-msgstr "Vrijheidsgraad;"
+msgstr "Vrijheidsgraad:"
 
-#, fuzzy
 msgctxt "LDchisq|"
 msgid "Non-centrality:"
 msgstr "Niet-centraal:"
 
-#, fuzzy
 msgctxt "LDexponential|"
 msgid "Rate:"
 msgstr "Graad:"
 
-#, fuzzy
 msgctxt "LDexponential|"
 msgid "Scale:"
 msgstr "Schaal:"
 
-#, fuzzy
 msgctxt "LDf|"
 msgid "Degree of freedom:"
 msgstr "Vrijheidsgraad:"
 
-#, fuzzy
 msgctxt "LDf|"
 msgid "Non-centrality:"
 msgstr "niet-centraal:"
 
-#, fuzzy
 msgctxt "LDgamma|"
 msgid "Shape:"
 msgstr "Vorm:"
 
-#, fuzzy
 msgctxt "LDgamma|"
 msgid "Scale:"
 msgstr "Schaal:"
 
 msgctxt "LDgamma|"
 msgid "Rate:"
-msgstr ""
+msgstr "Graad:"
 
+#, fuzzy
 msgctxt "LDgamma|"
 msgid "Mean:"
-msgstr ""
+msgstr "Gemiddelde:"
 
+#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Shape:"
-msgstr ""
+msgstr "Vorm:"
 
+#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Scale:"
-msgstr ""
+msgstr "Schaal:"
 
+#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Rate:"
-msgstr ""
+msgstr "Graad:"
 
+#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Mean:"
-msgstr ""
+msgstr "Gemiddelde:"
 
+#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Mean:"
-msgstr ""
+msgstr "Gemiddelde:"
 
+#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Variance:"
-msgstr ""
+msgstr "Variantie:"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Std. deviation:"
 msgstr "Std. afwijking:"
 
+#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Precision:"
-msgstr ""
+msgstr "Nauwkeurigheid:"
 
+#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Square root of precision:"
-msgstr ""
+msgstr "Kwadraat van nauwkeurigheid:"
 
 msgctxt "LDlogistic|"
 msgid "Show Distribution"
 msgstr "Toon verdeling"
 
+#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Location:"
-msgstr ""
+msgstr "Locatie:"
 
 msgctxt "LDlogistic|"
 msgid "μ"
 msgstr "μ"
 
+#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Scale:"
-msgstr ""
+msgstr "Schaal:"
 
 msgctxt "LDlogistic|"
 msgid "σ"
-msgstr ""
+msgstr "σ"
 
 msgctxt "LDlogistic|"
 msgid "Display"
@@ -19985,9 +19937,10 @@ msgctxt "LDlogistic|"
 msgid "Explanatory text"
 msgstr "Toelichtende tekst"
 
+#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Parameters, support, and moments"
-msgstr ""
+msgstr "Parameters, Ondersteuning, en Momenten"
 
 msgctxt "LDlogistic|"
 msgid "Formulas"
@@ -20053,9 +20006,10 @@ msgctxt "LDlogistic|"
 msgid "Q-Q plot"
 msgstr "Q-Q plot"
 
+#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Empirical vs. theoretical cdf"
-msgstr ""
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDlogistic|"
 msgid "P-P plot"
@@ -20081,9 +20035,10 @@ msgctxt "LDlognormal|"
 msgid "Show Distribution"
 msgstr "Toon verdeling"
 
+#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Log Mean:"
-msgstr ""
+msgstr "Log gemiddelde:"
 
 msgctxt "LDlognormal|"
 msgid "μ"
@@ -20213,9 +20168,10 @@ msgctxt "LDnegbinomial|"
 msgid "Mean:"
 msgstr ""
 
+#, fuzzy
 msgctxt "LDpoisson|"
 msgid "Rate:"
-msgstr ""
+msgstr "Graad:"
 
 msgctxt "LDt|"
 msgid "Degree of freedom:"
