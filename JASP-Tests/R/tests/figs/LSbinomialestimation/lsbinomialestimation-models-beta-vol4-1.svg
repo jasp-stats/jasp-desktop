@@ -34,14 +34,14 @@
 <polyline points='637.85,87.12 637.85,80.04 637.85,72.95 ' style='stroke-width: 2.13; stroke-linecap: butt;' clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)' />
 <line x1='637.85' y1='80.04' x2='266.87' y2='80.04' style='stroke-width: 2.13; stroke-linecap: butt;' clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)' />
 <polyline points='266.87,72.95 266.87,80.04 266.87,87.12 ' style='stroke-width: 2.13; stroke-linecap: butt;' clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)' />
-<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='282.28' y='57.95' style='font-size: 17.07px; font-family: Liberation Sans;' textLength='55.95px' lengthAdjust='spacingAndGlyphs'>median</text></g>
-<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='341.39' y='57.95' style='font-size: 17.07px; font-family: Symbola;' textLength='4.55px' lengthAdjust='spacingAndGlyphs'>:</text></g>
-<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='349.10' y='57.95' style='font-size: 17.07px; font-family: Liberation Sans;' textLength='23.69px' lengthAdjust='spacingAndGlyphs'> 6; </text></g>
-<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='372.79' y='57.95' style='font-size: 17.07px; font-family: Symbola;' textLength='4.27px' lengthAdjust='spacingAndGlyphs'> </text></g>
-<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='377.05' y='57.95' style='font-size: 17.07px; font-family: Liberation Sans;' textLength='55.94px' lengthAdjust='spacingAndGlyphs'>95% CI</text></g>
-<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='432.99' y='61.11' style='font-size: 11.95px; font-family: Liberation Sans;' textLength='25.22px' lengthAdjust='spacingAndGlyphs'>HPD</text></g>
-<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='461.37' y='57.95' style='font-size: 17.07px; font-family: Symbola;' textLength='4.55px' lengthAdjust='spacingAndGlyphs'>:</text></g>
-<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='469.08' y='57.95' style='font-size: 17.07px; font-family: Liberation Sans;' textLength='47.38px' lengthAdjust='spacingAndGlyphs'> [3, 9] </text></g>
+<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='277.14' y='57.95' style='font-size: 17.07px; font-family: Liberation Sans;' textLength='55.95px' lengthAdjust='spacingAndGlyphs'>median</text></g>
+<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='337.04' y='57.95' style='font-size: 17.07px; font-family: Symbola;' textLength='13.25px' lengthAdjust='spacingAndGlyphs'>=</text></g>
+<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='354.24' y='57.95' style='font-size: 17.07px; font-family: Liberation Sans;' textLength='23.69px' lengthAdjust='spacingAndGlyphs'> 6; </text></g>
+<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='377.93' y='57.95' style='font-size: 17.07px; font-family: Symbola;' textLength='4.27px' lengthAdjust='spacingAndGlyphs'> </text></g>
+<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='382.20' y='57.95' style='font-size: 17.07px; font-family: Liberation Sans;' textLength='55.94px' lengthAdjust='spacingAndGlyphs'>95% CI</text></g>
+<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='438.13' y='61.11' style='font-size: 11.95px; font-family: Liberation Sans;' textLength='25.22px' lengthAdjust='spacingAndGlyphs'>HPD</text></g>
+<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='466.51' y='57.95' style='font-size: 17.07px; font-family: Symbola;' textLength='4.55px' lengthAdjust='spacingAndGlyphs'>:</text></g>
+<g clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)'><text x='474.22' y='57.95' style='font-size: 17.07px; font-family: Liberation Sans;' textLength='47.38px' lengthAdjust='spacingAndGlyphs'> [3, 9] </text></g>
 <circle cx='452.36' cy='117.11' r='5.15pt' style='stroke-width: 1.77; fill: #BEBEBE;' clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)' />
 <line x1='134.06' y1='510.13' x2='664.67' y2='510.13' style='stroke-width: 0.64; stroke-linecap: butt;' clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)' />
 <line x1='78.73' y1='488.20' x2='78.73' y2='96.93' style='stroke-width: 0.64; stroke-linecap: butt;' clip-path='url(#cpNzguNzN8NzIwLjAwfDUxMC4xM3wyMC43MQ==)' />
