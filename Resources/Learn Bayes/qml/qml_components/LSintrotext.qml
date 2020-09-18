@@ -25,6 +25,6 @@ CheckBox
 {
     name:		"introText"
 	label:		qsTr("Introductory texts")
-    checked:	true
+    checked:	false
 
 }

@@ -335,7 +335,7 @@
     
   } else if (alpha >= 1 & beta >= 1){
     
-    HDI <- HDInterval::hdi(qbeta, coverage, shape1 = alpha, shape2 = beta)
+    HDI <- hdi.function(qbeta, coverage, shape1 = alpha, shape2 = beta)
     
   } else {
     # new density approach - instead of pdf, use scaled cdf
@@ -346,7 +346,7 @@
     den_beta <- .dbetaLS(alpha, beta)
     class(den_beta) <- "density"
     
-    HDI <- HDInterval::hdi(den_beta, coverage, allowSplit = T)
+    HDI <- hdi.function(den_beta, coverage, allowSplit = T)
     HDI <- round(HDI, 5) # dealing with precission 
     HDI[HDI[,1] <= min(den_beta$x),1] <- 0
     HDI[HDI[,2] >= max(den_beta$x),2] <- 1
@@ -359,7 +359,7 @@
 .binomialHDILS              <- function(n, theta, coverage){
   
   # this doesn't work in some cases for some reason
-  # HDI <- HDInterval::hdi(qbinom, coverage, size = n, prob = theta)
+  # HDI <- my_hdi(qbinom, coverage, size = n, prob = theta)
   
   x_density <- 0:n
   y_density <- dbinom(x_density, n, theta)
@@ -369,7 +369,7 @@
     y = y_density
   )
   class(den_binom) <- "density"
-  HDI <- HDInterval::hdi(den_binom, coverage, allowSplit = T)
+  HDI <- hdi.density(den_binom, coverage, allowSplit = T)
   
   HDI <- matrix(as.vector(HDI), ncol = 2)
   return(HDI)
@@ -393,7 +393,7 @@
       y = y_density
     )
     class(den_beta) <- "density"
-    HDI <- HDInterval::hdi(den_beta, coverage, allowSplit = T)
+    HDI <- hdi.density(den_beta, coverage, allowSplit = T)
     
   }
   
@@ -548,7 +548,7 @@
         y = density$y
       )
       class(den_marginal) <- "density"
-      HDI2 <- HDInterval::hdi(den_marginal, prop_density, allowSplit = T)
+      HDI2 <- hdi.density(den_marginal, prop_density, allowSplit = T)
       
     }
     

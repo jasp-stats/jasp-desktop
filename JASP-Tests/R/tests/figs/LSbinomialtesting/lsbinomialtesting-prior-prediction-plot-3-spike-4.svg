@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 720.00 576.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    line, polyline, polygon, path, rect, circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 10.67; stroke: none;' />
+<rect x='113.74' y='20.71' width='606.26' height='489.41' style='stroke-width: 10.67; stroke: none;' />
+<polyline points='141.30,487.88 154.74,487.88 154.74,487.88 168.19,487.88 168.19,487.88 181.63,487.88 181.63,487.88 195.07,487.88 195.07,487.88 208.51,487.88 208.51,487.88 221.96,487.88 221.96,487.87 235.40,487.87 235.40,487.84 248.84,487.84 248.84,487.70 262.28,487.70 262.28,487.22 275.73,487.22 275.73,485.83 289.17,485.83 289.17,482.29 302.61,482.29 302.61,474.36 316.05,474.36 316.05,458.75 329.50,458.75 329.50,431.70 342.94,431.70 342.94,390.51 356.38,390.51 356.38,335.73 369.82,335.73 369.82,273.08 383.27,273.08 383.27,213.42 396.71,213.42 396.71,170.08 410.15,170.08 410.15,154.19 423.59,154.19 423.59,170.08 437.04,170.08 437.04,213.42 450.48,213.42 450.48,273.08 463.92,273.08 463.92,335.73 477.36,335.73 477.36,390.51 490.81,390.51 490.81,431.70 504.25,431.70 504.25,458.75 517.69,458.75 517.69,474.36 531.13,474.36 531.13,482.29 544.58,482.29 544.58,485.83 558.02,485.83 558.02,487.22 571.46,487.22 571.46,487.70 584.90,487.70 584.90,487.84 598.35,487.84 598.35,487.87 611.79,487.87 611.79,487.88 625.23,487.88 625.23,487.88 638.67,487.88 638.67,487.88 652.12,487.88 652.12,487.88 665.56,487.88 665.56,487.88 679.00,487.88 679.00,487.88 692.44,487.88 ' style='stroke-width: 2.13; stroke-linecap: butt;' />
+<polygon points='141.30,487.88 141.30,487.88 154.74,487.88 154.74,487.88 168.19,487.88 168.19,487.88 181.63,487.88 181.63,487.88 195.07,487.88 195.07,487.88 208.51,487.88 208.51,487.88 221.96,487.88 221.96,487.87 235.40,487.87 235.40,487.84 248.84,487.84 248.84,487.70 262.28,487.70 262.28,487.22 275.73,487.22 275.73,485.83 289.17,485.83 289.17,482.29 302.61,482.29 302.61,474.36 316.05,474.36 316.05,458.75 329.50,458.75 329.50,431.70 342.94,431.70 342.94,390.51 356.38,390.51 356.38,335.73 369.82,335.73 369.82,273.08 383.27,273.08 383.27,213.42 396.71,213.42 396.71,170.08 410.15,170.08 410.15,154.19 423.59,154.19 423.59,170.08 437.04,170.08 437.04,213.42 450.48,213.42 450.48,273.08 463.92,273.08 463.92,335.73 477.36,335.73 477.36,390.51 490.81,390.51 490.81,431.70 504.25,431.70 504.25,458.75 517.69,458.75 517.69,474.36 531.13,474.36 531.13,482.29 544.58,482.29 544.58,485.83 558.02,485.83 558.02,487.22 571.46,487.22 571.46,487.70 584.90,487.70 584.90,487.84 598.35,487.84 598.35,487.87 611.79,487.87 611.79,487.88 625.23,487.88 625.23,487.88 638.67,487.88 638.67,487.88 652.12,487.88 652.12,487.88 665.56,487.88 665.56,487.88 679.00,487.88 679.00,487.88 692.44,487.88 692.44,487.88 ' style='stroke-width: 1.07; fill: #999999; fill-opacity: 0.80;' />
+<line x1='147.70' y1='510.13' x2='686.04' y2='510.13' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<rect x='113.74' y='20.71' width='606.26' height='489.41' style='stroke-width: 0.00; stroke: none;' />
+<text x='0.00' y='493.73' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='98.27px' lengthAdjust='spacingAndGlyphs'>Hypothesis 1</text>
+<polyline points='113.74,510.13 720.00,510.13 ' style='stroke-width: 0.00; stroke: none; stroke-linecap: butt;' />
+<polyline points='148.02,518.63 148.02,510.13 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<polyline points='282.45,518.63 282.45,510.13 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<polyline points='416.87,518.63 416.87,510.13 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<polyline points='551.30,518.63 551.30,510.13 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<polyline points='685.72,518.63 685.72,510.13 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
+<text x='143.30' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='9.45px' lengthAdjust='spacingAndGlyphs'>0</text>
+<text x='272.99' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>10</text>
+<text x='407.42' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>20</text>
+<text x='541.84' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>30</text>
+<text x='676.27' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>40</text>
+<text x='335.16' y='567.49' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='163.42px' lengthAdjust='spacingAndGlyphs'>Number of successes</text>
+<text x='235.96' y='11.70' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='361.83px' lengthAdjust='spacingAndGlyphs'>LSbinomialtesting-prior-prediction-plot-3-spike-4</text>
+</svg>

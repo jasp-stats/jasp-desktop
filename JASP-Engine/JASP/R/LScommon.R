@@ -85,6 +85,60 @@
   return(sequence)
 }
 
+hdi.function   <- function(object, credMass=0.95, tol, ...)  {
+  # adapted from HDIinterval:::hdi.function
+  if(missing(tol))
+    tol <- 1e-8
+  if(class(try(object(0.5, ...), TRUE)) == "try-error")
+    stop(paste("Incorrect arguments for the inverse cumulative density function",
+               substitute(object)))
+  # cf. code in Kruschke 2011 p630
+  intervalWidth <- function( lowTailPr , ICDF , credMass , ... ) {
+    ICDF( credMass + lowTailPr , ... ) - ICDF( lowTailPr , ... )
+  }
+  optInfo <- optimize( intervalWidth , c( 0 , 1.0 - credMass) , ICDF=object ,
+                       credMass=credMass , tol=tol , ... )
+  HDIlowTailPr <- optInfo$minimum
+  result <- c(lower = object( HDIlowTailPr , ... ) ,
+              upper = object( credMass + HDIlowTailPr , ... ) )
+  attr(result, "credMass") <- credMass
+  return(result)
+}
+hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
+  # adapted from HDIinterval:::hdi.density
+  sorted = sort( object$y , decreasing=TRUE )
+  heightIdx = min( which( cumsum( sorted) >= sum(object$y) * credMass ) )
+  height = sorted[heightIdx]
+  indices = which( object$y >= height )
+  # HDImass = sum( object$y[indices] ) / sum(object$y)
+  gaps <- which(diff(indices) > 1)
+  if(length(gaps) > 0 && !allowSplit) {
+    # In this case, return shortest 95% CrI
+    warning("The HDI is discontinuous but allowSplit = FALSE;
+    the result is a valid CrI but not HDI.")
+    cumul <- cumsum(object$y) / sum(object$y)
+    upp.poss <- low.poss <- which(cumul < 1 - credMass)
+    for (i in low.poss)
+      upp.poss[i] <- min(which(cumul > cumul[i] + credMass))
+    # all(cumul[upp.poss] - cumul[low.poss] > credMass) # check
+    width <- upp.poss - low.poss
+    best <- which(width == min(width))  # usually > 1 value due to ties
+    result <- c(lower = mean(object$x[low.poss[best]]),
+                upper = mean(object$x[upp.poss[best]]))
+  } else {
+    begs <- indices[c(1, gaps + 1)]
+    ends <- indices[c(gaps, length(indices))]
+    result <- cbind(begin = object$x[begs], end = object$x[ends])
+    if(!allowSplit)  {
+      result <- as.vector(result)
+      names(result) <- c("lower", "upper")
+    }
+  }
+  attr(result, "credMass") <- credMass
+  attr(result, "height") <- height
+  return(result)
+}
+
 # plotting functions
 .plotPriorPosteriorLS  <- function(all_lines, all_arrows, dfPoints = NULL, xName = NULL, xRange = c(0,1)){
   
@@ -958,14 +1012,14 @@
     temp_int <- paste("'",temp_int,"'")
     
     # text for the coverage
-    temp_cov <- paste(c("'",round(CI$coverage[1]*100), "% CI'"), collapse = "")
+    temp_cov <- paste0(c("'",round(CI$coverage[1]*100), "% CI'"), collapse = "")
     
     
     if (CI$g[1] == "HPD"){
       temp_label <- paste(c(temp_cov,"['HPD']:",temp_int), collapse = "")
     } else if (CI$g[1] == "custom"){
       temp_label  <- paste(c("P({",format(round(CI$x_start, nRound), nsmall = nRound),"<=",if (CI$parameter == "theta") "theta" else if (CI$parameter == "mu") "mu","}<=",
-                             (format(round(CI$x_end, nRound), nsmall = nRound)),")","=='",round(CI$coverage[1]*100)," %'"), collapse = "")
+                             (format(round(CI$x_end, nRound), nsmall = nRound)),")","=='",round(CI$coverage[1]*100),"%'"), collapse = "")
     } else if (CI$g[1] == "support"){
       temp_label <- paste(c("SI['[BF = ",CI$BF[1],"]']:",temp_int), collapse = "")
     } else if (CI$g[1] == "central"){
@@ -982,7 +1036,7 @@
     PEl <- PE$l
     if (is.numeric(PE$l))
       PEl <- format(round(PEl, ifelse(PE$estimate == "mean", 3, nRound)), nsmall = ifelse(PE$estimate == "mean", 3, nRound))
-    temp_pe    <- paste0("'", PE$estimate,"'",  ":", "' ", PEl, ifelse(is.null(temp_label), " '", "; '"))
+    temp_pe    <- paste0("'", PE$estimate,"'",  "==", "' ", PEl, ifelse(is.null(temp_label), " '", "; '"))
     if (!is.null(temp_label)){
       temp_label <- paste(temp_pe, temp_label, sep = "~")
     } else {
