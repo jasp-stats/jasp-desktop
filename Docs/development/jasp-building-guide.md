@@ -104,7 +104,7 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 	From \<JASP\>\jasp-required-files\R -> \<JASP\>\build-release-64\R  
   
 	P.S. Instead of copying the files it is preferred to generate a symbolic link to the R and boost folder.  
-	From the build folder or Jasp root folder in a cmd-prompt, type:  
+	From the build folder or Jasp root folder in a cmd-prompt (run as admin!), type:  
 ```	
 	cd \<JASP\>\build-release-64  
 	mklink /D R ..\jasp-required-files\R  
