@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-16 14:15+0000\n"
+"PO-Revision-Date: 2020-09-22 10:41+0000\n"
 "Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
@@ -216,7 +216,7 @@ msgstr "Abhängige Variablen korrelieren"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Emulation"
-msgstr ""
+msgstr "Emulation"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "None"
@@ -492,7 +492,7 @@ msgstr "Abhängige Variablen korrelieren"
 
 msgctxt "LatentRegression|"
 msgid "Emulation"
-msgstr ""
+msgstr "Emulation"
 
 msgctxt "LatentRegression|"
 msgid "None"
@@ -772,7 +772,7 @@ msgstr "Abhängige Variablen korrelieren"
 
 msgctxt "SEMSimple|"
 msgid "Emulation"
-msgstr ""
+msgstr "Emulation"
 
 msgctxt "SEMSimple|"
 msgid "None"
@@ -3313,7 +3313,7 @@ msgstr "Dollar ($)"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Other"
-msgstr "Anders"
+msgstr "Andere"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Tables and Plots"
@@ -4063,7 +4063,7 @@ msgstr "Quartile"
 
 msgctxt "Descriptives|"
 msgid "Cut points for: "
-msgstr "Schneide Punkte ab für: "
+msgstr "Schnittpunkte für: "
 
 msgctxt "Descriptives|"
 msgid " equal groups"
@@ -4475,7 +4475,7 @@ msgstr "Orthogonal"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Oblique"
-msgstr ""
+msgstr "Oblique"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Base analysis on"
@@ -4583,7 +4583,7 @@ msgstr "Orthogonal"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Oblique"
-msgstr ""
+msgstr "Oblique"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Base decomposition on"
@@ -5983,7 +5983,7 @@ msgstr "Distanz:"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Variablen skalieren"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Set seed:"
@@ -6075,7 +6075,7 @@ msgstr "Max. Iterationen:"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Fuzziness parameter:"
-msgstr ""
+msgstr "Fuzziness-Parameter:"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Scale variables"
@@ -6087,7 +6087,7 @@ msgstr "Startwert für Zufallszahlen setzen:"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Cluster Determination"
-msgstr "Clusterbepaling"
+msgstr "Cluster-Bestimmung"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Fixed"
@@ -6187,7 +6187,7 @@ msgstr ""
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Variablen skalieren"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Set seed:"
@@ -6299,7 +6299,7 @@ msgstr "Algorithmus:"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Variablen skalieren"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Set seed:"
@@ -6403,7 +6403,7 @@ msgstr "Bäume:"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Variablen skalieren"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Set seed:"
@@ -6591,7 +6591,7 @@ msgstr "Distanz:"
 
 msgctxt "mlRegressionKnn|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Variablen skalieren"
 
 msgctxt "mlRegressionKnn|"
 msgid "Set seed:"
@@ -6687,7 +6687,7 @@ msgstr "Prädiktoren pro Aufteilung:"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Scale variables"
-msgstr ""
+msgstr "Variablen skalieren"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Set seed:"
@@ -8532,7 +8532,7 @@ msgstr "Volle-Information-Maximum-Likelihood"
 
 msgctxt "MediationAnalysis|"
 msgid "Emulation"
-msgstr ""
+msgstr "Emulation"
 
 msgctxt "MediationAnalysis|"
 msgid "None"
@@ -10949,7 +10949,7 @@ msgstr "Anderson-Darling"
 
 msgctxt "LDbinomial|"
 msgid "Show Distribution"
-msgstr "Toon verdeling"
+msgstr "Verteilung anzeigen"
 
 msgctxt "LDbinomial|"
 msgid "Free parameter"
@@ -11773,7 +11773,7 @@ msgstr "Shapiro-Wilk"
 
 msgctxt "LDnegbinomial|"
 msgid "Show Distribution"
-msgstr "Toon verdeling"
+msgstr "Verteilung anzeigen"
 
 msgctxt "LDnegbinomial|"
 msgid "Display"
@@ -11905,7 +11905,7 @@ msgstr "Chi-Quadrat"
 
 msgctxt "LDpoisson|"
 msgid "Show Distribution"
-msgstr "Toon verdeling"
+msgstr "Verteilung anzeigen"
 
 msgctxt "LDpoisson|"
 msgid "Parameter"
@@ -12033,7 +12033,7 @@ msgstr "Q-Q-Diagramm"
 
 msgctxt "LDpoisson|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empiriche vs. theoretische cfd (cumulatieve verdelingsfunctie)"
+msgstr "Empirische vs. theoretische kumulative Dichtefunktion"
 
 msgctxt "LDpoisson|"
 msgid "P-P plot"
@@ -14728,7 +14728,7 @@ msgstr "Helmert"
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr ""
+msgstr "messwiederholt"
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
@@ -16020,7 +16020,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "Description|"
 msgid "Distributions"
-msgstr "Verdelingen"
+msgstr "Verteilungen"
 
 msgctxt "Description|"
 msgid "Discover distributions with JASP"
@@ -16429,7 +16429,7 @@ msgstr "Gemischtes Modell"
 
 msgctxt "Description|"
 msgid "Generalized Linear Modeling"
-msgstr "Verallgemeinertes Lineares Modell"
+msgstr "Generalisiertes Lineares Modell"
 
 msgctxt "Description|"
 msgid "Wait for it..."
@@ -17397,7 +17397,7 @@ msgstr "Kontraste spezifizieren"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Estimated trends/conditional slopes"
-msgstr "Geschätzte Trends/konditionale Steigungen"
+msgstr "Geschätzte Trends/bedingte Steigungen"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Continous variables"
@@ -18931,7 +18931,7 @@ msgstr "Parameter (θ)"
 
 msgctxt "LSbinomialestimation|"
 msgid "Spike"
-msgstr ""
+msgstr "Punktmasse"
 
 msgctxt "LSbinomialestimation|"
 msgid "Beta"
@@ -18971,7 +18971,7 @@ msgstr "P(H)"
 
 msgctxt "LSbinomialtesting|"
 msgid "Spike"
-msgstr ""
+msgstr "Punktmasse"
 
 msgctxt "LSbinomialtesting|"
 msgid "Beta"
@@ -19083,11 +19083,11 @@ msgstr "Alle"
 
 msgctxt "LSestimationinference|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapelt"
 
 msgctxt "LSestimationinference|"
 msgid "Individual"
-msgstr ""
+msgstr "Einzeln"
 
 msgctxt "LSestimationinference|"
 msgid "CI"
@@ -19175,11 +19175,11 @@ msgstr "Alle"
 
 msgctxt "LSestimationpredictions|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapelt"
 
 msgctxt "LSestimationpredictions|"
 msgid "Individual"
-msgstr ""
+msgstr "Einzeln"
 
 msgctxt "LSestimationpredictions|"
 msgid "CI"
@@ -19227,7 +19227,7 @@ msgstr "BF"
 
 msgctxt "LSestimationsequential|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapelt"
 
 msgctxt "LSestimationsequential|"
 msgid "Updating table"
@@ -19343,11 +19343,11 @@ msgstr ""
 
 msgctxt "LStestinginference|"
 msgid "Overlying"
-msgstr ""
+msgstr "Überlagernd"
 
 msgctxt "LStestinginference|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapelt"
 
 msgctxt "LStestinginference|"
 msgid "Marginal"
@@ -19455,11 +19455,11 @@ msgstr ""
 
 msgctxt "LStestingpredictions|"
 msgid "Overlying"
-msgstr ""
+msgstr "Überlagernd"
 
 msgctxt "LStestingpredictions|"
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapelt"
 
 msgctxt "LStestingpredictions|"
 msgid "Marginal"
@@ -19527,11 +19527,11 @@ msgstr "Median"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Ward.D"
-msgstr ""
+msgstr "Ward.D"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Ward.D2"
-msgstr ""
+msgstr "Ward.D2"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "McQuitty"
@@ -19615,7 +19615,7 @@ msgstr ""
 
 msgctxt "SelectionModels|"
 msgid "Automatically join p-value intervals"
-msgstr ""
+msgstr "P-Wert-Intervalle automatisch verbinden"
 
 msgctxt "SelectionModels|"
 msgid "Expected effect size direction"
@@ -19707,7 +19707,7 @@ msgstr ""
 
 msgctxt "RegressionLogistic|"
 msgid "PR plot"
-msgstr ""
+msgstr "PR-Diagramm"
 
 msgctxt "Description|"
 msgid "S.S. Bayesian A/B Test"
@@ -19781,20 +19781,21 @@ msgstr "Kein angegebener Name im Quellattribut von List %1"
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr ""
+msgstr "Standard: %1"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS or Lavaan code:"
-msgstr ""
+msgstr "R-, JAGS- oder Lavaan-Code:"
 
 msgctxt "ModuleInstaller|"
 msgid "<i>Browse for a JASP Module to see more information here</i>"
 msgstr ""
+"<i>Suche nach einem JASP-Modul, um hier weitere Informationen zu sehen</i>"
 
 #, qt-format
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
-msgstr ""
+msgstr "<i>%1 ist kein (korrektes) JASP-Modul!</i>"
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
@@ -19818,39 +19819,39 @@ msgstr ""
 
 msgctxt "Description|"
 msgid "Log-normal"
-msgstr ""
+msgstr "Log-Normal"
 
 msgctxt "Description|"
 msgid "Logistic"
-msgstr ""
+msgstr "Logistisch"
 
 msgctxt "LDbernoulli|"
 msgid "Probability of success:"
-msgstr ""
+msgstr "Erfolgswahrscheinlichkeit:"
 
 msgctxt "LDbeta|"
 msgid "Shape:"
-msgstr ""
+msgstr "Form:"
 
 msgctxt "LDbinomial|"
 msgid "Probability of success:"
-msgstr ""
+msgstr "Erfolgswahrscheinlichkeit:"
 
 msgctxt "LDbinomial|"
 msgid "Number of trials:"
-msgstr ""
+msgstr "Anzahl der Versuche:"
 
 msgctxt "LDchisq|"
 msgid "Degree of freedom:"
-msgstr ""
+msgstr "Freiheitsgrad:"
 
 msgctxt "LDchisq|"
 msgid "Non-centrality:"
-msgstr ""
+msgstr "Nichtzentralität:"
 
 msgctxt "LDexponential|"
 msgid "Rate:"
-msgstr ""
+msgstr "Rate:"
 
 msgctxt "LDexponential|"
 msgid "Scale:"
@@ -19858,15 +19859,15 @@ msgstr ""
 
 msgctxt "LDf|"
 msgid "Degree of freedom:"
-msgstr ""
+msgstr "Freiheitsgrad:"
 
 msgctxt "LDf|"
 msgid "Non-centrality:"
-msgstr ""
+msgstr "Nichtzentralität:"
 
 msgctxt "LDgamma|"
 msgid "Shape:"
-msgstr ""
+msgstr "Form:"
 
 msgctxt "LDgamma|"
 msgid "Scale:"
@@ -19878,11 +19879,11 @@ msgstr ""
 
 msgctxt "LDgamma|"
 msgid "Mean:"
-msgstr ""
+msgstr "Mittelwert:"
 
 msgctxt "LDgammaInverse|"
 msgid "Shape:"
-msgstr ""
+msgstr "Form:"
 
 msgctxt "LDgammaInverse|"
 msgid "Scale:"
@@ -19894,15 +19895,15 @@ msgstr ""
 
 msgctxt "LDgammaInverse|"
 msgid "Mean:"
-msgstr ""
+msgstr "Mittelwert:"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Mean:"
-msgstr ""
+msgstr "Mittelwert:"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Variance:"
-msgstr ""
+msgstr "Varianz:"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Std. deviation:"
@@ -19910,15 +19911,15 @@ msgstr "Std.-Abweichung:"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Precision:"
-msgstr ""
+msgstr "Präzision:"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Square root of precision:"
-msgstr ""
+msgstr "Quadratwurzel der Präzision:"
 
 msgctxt "LDlogistic|"
 msgid "Show Distribution"
-msgstr ""
+msgstr "Verteilung anzeigen"
 
 msgctxt "LDlogistic|"
 msgid "Location:"
@@ -19934,11 +19935,11 @@ msgstr ""
 
 msgctxt "LDlogistic|"
 msgid "σ"
-msgstr ""
+msgstr "σ"
 
 msgctxt "LDlogistic|"
 msgid "Display"
-msgstr ""
+msgstr "Anzeigen"
 
 msgctxt "LDlogistic|"
 msgid "Explanatory text"
@@ -19946,7 +19947,7 @@ msgstr "Erklärungstext"
 
 msgctxt "LDlogistic|"
 msgid "Parameters, support, and moments"
-msgstr ""
+msgstr "Parameter, Träger, und Momente"
 
 msgctxt "LDlogistic|"
 msgid "Formulas"
@@ -19958,7 +19959,7 @@ msgstr "Wahrscheinlichkeitsdichtefunktion"
 
 msgctxt "LDlogistic|"
 msgid "Cumulative distribution function"
-msgstr ""
+msgstr "Kumulative Verteilungsfunktion"
 
 msgctxt "LDlogistic|"
 msgid "Quantile function"
@@ -19982,7 +19983,7 @@ msgstr "Schätzungen"
 
 msgctxt "LDlogistic|"
 msgid "Std. error"
-msgstr ""
+msgstr "Std.-Fehler"
 
 msgctxt "LDlogistic|"
 msgid "Confidence interval"
@@ -19998,7 +19999,7 @@ msgstr "Korrelation"
 
 msgctxt "LDlogistic|"
 msgid "Assess Fit"
-msgstr ""
+msgstr "Anpassungsgüte evaluieren"
 
 msgctxt "LDlogistic|"
 msgid "Plots"
@@ -20006,7 +20007,7 @@ msgstr "Abbildungen"
 
 msgctxt "LDlogistic|"
 msgid "Histogram vs. theoretical pdf"
-msgstr ""
+msgstr "Histogramm vs. theoretische Dichtefunktion"
 
 msgctxt "LDlogistic|"
 msgid "Q-Q plot"
@@ -20014,11 +20015,11 @@ msgstr "Q-Q-Diagramm"
 
 msgctxt "LDlogistic|"
 msgid "Empirical vs. theoretical cdf"
-msgstr ""
+msgstr "Empirische vs. theoretische kumulative Dichtefunktion"
 
 msgctxt "LDlogistic|"
 msgid "P-P plot"
-msgstr ""
+msgstr "P-P-Diagramm"
 
 msgctxt "LDlogistic|"
 msgid "Statistics"
@@ -20038,11 +20039,11 @@ msgstr "Anderson-Darling"
 
 msgctxt "LDlognormal|"
 msgid "Show Distribution"
-msgstr ""
+msgstr "Verteilung anzeigen"
 
 msgctxt "LDlognormal|"
 msgid "Log Mean:"
-msgstr ""
+msgstr "Log-Mittelwert:"
 
 msgctxt "LDlognormal|"
 msgid "μ"
@@ -20050,15 +20051,15 @@ msgstr "μ"
 
 msgctxt "LDlognormal|"
 msgid "Log std. deviation:"
-msgstr ""
+msgstr "Log-Std.-Abweichung:"
 
 msgctxt "LDlognormal|"
 msgid "σ"
-msgstr ""
+msgstr "σ"
 
 msgctxt "LDlognormal|"
 msgid "Display"
-msgstr ""
+msgstr "Anzeigen"
 
 msgctxt "LDlognormal|"
 msgid "Explanatory text"
@@ -20066,7 +20067,7 @@ msgstr "Erklärungstext"
 
 msgctxt "LDlognormal|"
 msgid "Parameters, support, and moments"
-msgstr ""
+msgstr "Parameter, Träger, und Momente"
 
 msgctxt "LDlognormal|"
 msgid "Formulas"
@@ -20078,7 +20079,7 @@ msgstr "Wahrscheinlichkeitsdichtefunktion"
 
 msgctxt "LDlognormal|"
 msgid "Cumulative distribution function"
-msgstr ""
+msgstr "Kumulative Verteilungsfunktion"
 
 msgctxt "LDlognormal|"
 msgid "Quantile function"
@@ -20102,7 +20103,7 @@ msgstr "Schätzungen"
 
 msgctxt "LDlognormal|"
 msgid "Std. error"
-msgstr ""
+msgstr "Std.-Fehler"
 
 msgctxt "LDlognormal|"
 msgid "Confidence interval"
@@ -20118,7 +20119,7 @@ msgstr "Korrelation"
 
 msgctxt "LDlognormal|"
 msgid "Assess Fit"
-msgstr ""
+msgstr "Anpassungsgüte evaluieren"
 
 msgctxt "LDlognormal|"
 msgid "Plots"
@@ -20126,7 +20127,7 @@ msgstr "Abbildungen"
 
 msgctxt "LDlognormal|"
 msgid "Histogram vs. theoretical pdf"
-msgstr ""
+msgstr "Histogramm vs. theoretische Dichtefunktion"
 
 msgctxt "LDlognormal|"
 msgid "Q-Q plot"
@@ -20134,11 +20135,11 @@ msgstr "Q-Q-Diagramm"
 
 msgctxt "LDlognormal|"
 msgid "Empirical vs. theoretical cdf"
-msgstr ""
+msgstr "Empirische vs. theoretische kumulative Dichtefunktion"
 
 msgctxt "LDlognormal|"
 msgid "P-P plot"
-msgstr ""
+msgstr "P-P Diagramm"
 
 msgctxt "LDlognormal|"
 msgid "Statistics"
@@ -20230,7 +20231,7 @@ msgstr "Lineare Gemischte Modelle"
 
 msgctxt "Description|"
 msgid "Generalized Linear Mixed Models"
-msgstr "Verallgemeinerte Lineare Gemischte Modelle"
+msgstr "Generalisierte Lineare Gemischte Modelle"
 
 msgctxt "Description|"
 msgid "Bayesian Linear Mixed Models"
@@ -20238,7 +20239,7 @@ msgstr "Bayessche Lineare Gemischte Modelle"
 
 msgctxt "Description|"
 msgid "Bayesian Generalized Linear Mixed Models"
-msgstr "Bayessche Verallgemeinerte Lineare Gemischte Modelle"
+msgstr "Bayessche Generalisierte Lineare Gemischte Modelle"
 
 msgctxt "DynamicModules|"
 msgid "Loading module description encountered a problem"
