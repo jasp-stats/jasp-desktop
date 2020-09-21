@@ -99,12 +99,10 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 
 	The distinction between debug version and release only differs in the option you choose in QtCreator. Only the description for the release version is given here.
 
-5.	**Copy files** to their expected locations in the build folders:    
+5.	**Copy & Link files** to their expected locations in the build folders:    
 	From \<JASP\>\jasp-required-files\64\\* -> \<JASP\>\build-release-64  
-	From \<JASP\>\jasp-required-files\R -> \<JASP\>\build-release-64\R  
-  
-	P.S. Instead of copying the files it is preferred to generate a symbolic link to the R and boost folder.  
-	From the build folder or Jasp root folder in a cmd-prompt (run as admin!), type:  
+	
+	You then open a cmd-prompt as admin(!) and make a symbolic link to R as follows:
 ```	
 	cd \<JASP\>\build-release-64  
 	mklink /D R ..\jasp-required-files\R  
