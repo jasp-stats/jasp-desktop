@@ -84,10 +84,10 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   }
   
   # Evaluate user R code, terminate early if the code doesn't work
-  inits    <- .JAGSreadRcode(jaspResults, options[["initialValues"]], type = "initial values", noChains = options[["noChains"]])
+  inits    <- .JAGSreadRcode(jaspResults, options[["initialValues"]], type = "initial values", noChains = options[["noChains"]], envir = datList)
   if (jaspResults[["mainContainer"]]$getError()) return(NULL)
   if (all(lengths(inits) == 0L)) inits <- NULL
-  userData <- .JAGSreadRcode(jaspResults, options[["userData"]], type = "data")
+  userData <- .JAGSreadRcode(jaspResults, options[["userData"]], type = "data", envir = datList)
   if (jaspResults[["mainContainer"]]$getError()) return(NULL)
   if (all(lengths(userData) == 0L)) userData <- NULL
   
@@ -774,8 +774,8 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   
 }
 
-.JAGSreadRcode <- function(jaspResults, input, type = c("initial values", "data"), noChains = 1L) {
-  
+.JAGSreadRcode <- function(jaspResults, input, type = c("initial values", "data"), noChains = 1L, envir = list()) {
+
   type <- match.arg(type)
   paramNms <- unlist(input[[1L]][["values"]])
   rcodes   <- unlist(input[[2L]][["values"]])
@@ -789,7 +789,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
       if (is.null(string) || string == "" || string == "...") { # this shouldn't be possible, but if string = NULL, parse prompts for user input.
         next
       }
-      obj <- try(eval(parse(text = string)))
+      obj <- try(eval(parse(text = encodeColNames(string)), envir = envir, enclos = globalenv()))
       if (isTryError(obj)) {
         jaspResults[["mainContainer"]]$setError(gettextf("The R code for %1$s crashed with error:\n%2$s",
                                                          type, .extractErrorMessage(obj)))
