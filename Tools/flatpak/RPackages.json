@@ -2602,8 +2602,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/rpf_1.0.4.tar.gz",
-					"sha256": "f412d20bf5a30814dad1b2bbdcceff3bd8d3acc3edad630160006ab6f463999d"
+					"url": "http://static.jasp-stats.org/RPkgs/rpf_1.0.5.tar.gz",
+					"sha256": "140490f32a3906a177138766335da861a4566bebd3bebecccfd1043ade89e74f"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3521,6 +3521,18 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
+			"name": "stanova",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "git",
+					"url": "https://github.com/bayesstuff/stanova",
+					"commit": "3e5635816fb2e4cda06704778e5bcd382f14717d"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
 			"name": "tidyr",
 			"buildsystem": "simple",
 			"sources": [
@@ -3659,7 +3671,7 @@
 				{
 					"type": "git",
 					"url": "https://github.com/dustinfife/flexplot",
-					"commit": "b36b94d585478b352815e8fb1c53d84c21908a5a"
+					"commit": "ec54fef0433d1fb670a01d386023c47993b29a02"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3917,18 +3929,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "stanova",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "git",
-					"url": "https://github.com/bayesstuff/stanova",
-					"commit": "2cb08223f957533103612e72055fa7063a1fb5ce"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "weights",
 			"buildsystem": "simple",
 			"sources": [
@@ -3945,9 +3945,9 @@
 			"buildsystem": "simple",
 			"sources": [
 				{
-					"type": "git",
-					"url": "https://github.com/singmann/afex",
-					"commit": "1acc5eec8c4d8d7e20c575f71892d1ab508f8d86"
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/afex_0.28-0.tar.gz",
+					"sha256": "9191ec35e670059b389f8247a96582f28b1a5c85be4fb81559827f4a055e8730"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]

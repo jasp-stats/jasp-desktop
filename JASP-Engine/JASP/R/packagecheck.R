@@ -75,7 +75,7 @@
 	expected <- rbind(expected, c('abind', '1.4-5'))
 	expected <- rbind(expected, c('abtest', '0.2.0'))
 	expected <- rbind(expected, c('acepack', '1.4.1'))
-	expected <- rbind(expected, c('afex', '0.28'))
+	expected <- rbind(expected, c('afex', '0.28-0'))
 	expected <- rbind(expected, c('arm', '1.10-1'))
 	expected <- rbind(expected, c('askpass', '1.1'))
 	expected <- rbind(expected, c('assertthat', '0.2.1'))
