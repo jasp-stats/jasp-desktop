@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-17 13:48+0000\n"
-"Last-Translator: Don van den Bergh <donvdbergh@hotmail.com>\n"
+"PO-Revision-Date: 2020-09-22 13:49+0000\n"
+"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
 "Language: nl\n"
@@ -11934,7 +11934,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDpoisson|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDpoisson|"
 msgid "Formulas"
@@ -12070,7 +12070,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDt|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDt|"
 msgid "Formulas"
@@ -19937,10 +19937,9 @@ msgctxt "LDlogistic|"
 msgid "Explanatory text"
 msgstr "Toelichtende tekst"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, Ondersteuning, en Momenten"
+msgstr "Parameters, drager, en momenten"
 
 msgctxt "LDlogistic|"
 msgid "Formulas"
@@ -20046,11 +20045,11 @@ msgstr "μ"
 
 msgctxt "LDlognormal|"
 msgid "Log std. deviation:"
-msgstr ""
+msgstr "Log std. afwijking:"
 
 msgctxt "LDlognormal|"
 msgid "σ"
-msgstr ""
+msgstr "σ"
 
 msgctxt "LDlognormal|"
 msgid "Display"
@@ -20062,7 +20061,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDlognormal|"
 msgid "Parameters, support, and moments"
-msgstr ""
+msgstr "Parameters, drager, en momenten"
 
 msgctxt "LDlognormal|"
 msgid "Formulas"
@@ -20130,7 +20129,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDlognormal|"
 msgid "Empirical vs. theoretical cdf"
-msgstr ""
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDlognormal|"
 msgid "P-P plot"
@@ -20154,19 +20153,19 @@ msgstr "Anderson-Darling"
 
 msgctxt "LDnegbinomial|"
 msgid "Number of successes:"
-msgstr ""
+msgstr "Aantal successen:"
 
 msgctxt "LDnegbinomial|"
 msgid "Dispersion:"
-msgstr ""
+msgstr "Spreiding:"
 
 msgctxt "LDnegbinomial|"
 msgid "Probability of success:"
-msgstr ""
+msgstr "Kans op succes:"
 
 msgctxt "LDnegbinomial|"
 msgid "Mean:"
-msgstr ""
+msgstr "Gemiddelde:"
 
 #, fuzzy
 msgctxt "LDpoisson|"
@@ -20175,15 +20174,15 @@ msgstr "Graad:"
 
 msgctxt "LDt|"
 msgid "Degree of freedom:"
-msgstr ""
+msgstr "Vrijheidsgraad:"
 
 msgctxt "LDt|"
 msgid "Non-centrality:"
-msgstr ""
+msgstr "Niet-centraal:"
 
 msgctxt "LStestingsequential|"
 msgid "Posterior"
-msgstr ""
+msgstr "Posterior"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid ""
@@ -20195,7 +20194,7 @@ msgstr "Effectgroottes & SE"
 
 msgctxt "SelectionModels|"
 msgid "Correlations & N"
-msgstr ""
+msgstr "Correlaties & N"
 
 msgctxt "SelectionModels|"
 msgid "N"
@@ -20203,7 +20202,7 @@ msgstr "N"
 
 msgctxt "SelectionModels|"
 msgid "Transform correlations"
-msgstr ""
+msgstr "Transformeer correlaties"
 
 msgctxt "SelectionModels|"
 msgid "Cohen's d"
@@ -20215,36 +20214,36 @@ msgstr "Fisher's z"
 
 msgctxt "Description|"
 msgid "Mixed Models"
-msgstr ""
+msgstr "Gemengde Modellen"
 
 msgctxt "Description|"
 msgid "This module offers the Linear Mixed Models analysis."
-msgstr ""
+msgstr "Deze module biedt de Lineaire Gemengde Modellen analyse."
 
 msgctxt "Description|"
 msgid "Linear Mixed Models"
-msgstr ""
+msgstr "Lineaire Gemengde Modellen"
 
 msgctxt "Description|"
 msgid "Generalized Linear Mixed Models"
-msgstr ""
+msgstr "Gegeneraliseerde Lineaire Gemengde Modellen"
 
 msgctxt "Description|"
 msgid "Bayesian Linear Mixed Models"
-msgstr ""
+msgstr "Bayesiaanse Lineaire Gemengde Modellen"
 
 msgctxt "Description|"
 msgid "Bayesian Generalized Linear Mixed Models"
-msgstr ""
+msgstr "Bayesiaanse Gegeneraliseerde Lineaire Gemengde Modellen"
 
 msgctxt "DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr ""
+msgstr "Er is een fout opgetreden bij het laden van de moduulbeschrijving"
 
 #, qt-format
 msgctxt "DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
+msgstr "<i>Kon de beschrijving van de module niet uit archief '%1' laden</i>"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -20253,6 +20252,9 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a href="
 "\"http://%6\">%6</a></i><br>"
 msgstr ""
+"<h3>%1</h3><i>Versie %2</i><br><p>%3</p><br><br><i>Gemaakt door %4 en "
+"onderhouden door %5.</i><br><i>Kijk op de website voor nadere details: <a "
+"href=\"http://%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "QMLListView|"
