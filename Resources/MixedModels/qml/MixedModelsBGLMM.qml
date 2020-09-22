@@ -49,7 +49,7 @@ Form {
 			name:				"dependentVariableAggregation"
 			title:				qsTr("Number of trials")
 			singleVariable:		true
-			allowedColumns:		["ordinal"]
+			allowedColumns:		["scale", "ordinal"]
 
 			onEnabledChanged: if (!enabled && count > 0) itemDoubleClicked(0)
 		}

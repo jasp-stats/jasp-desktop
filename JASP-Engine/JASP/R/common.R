@@ -3074,3 +3074,10 @@ postProcessModuleInstall <- function(moduleLibraryPath)
   #             "The argument options should be the options list from QML.",
   #             "Ensure that the SetSeed{} QML component is present in the QML file for this analysis."))
 }
+
+.getSeedJASP <- function(options) {
+  if (is.list(options) && c("setSeed", "seed") %in% names(options)) {
+    if (isTRUE(options[["setSeed"]]))
+      return(options[["seed"]])
+  }
+}

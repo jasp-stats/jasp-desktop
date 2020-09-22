@@ -139,7 +139,7 @@ Form {
 				label:	qsTr("Compare marginal means to:")
 			}
 
-			IntegerField
+			DoubleField
 			{
 				enabled:	marginalMeansCompare.checked
 				name:		"marginalMeansCompareTo"
@@ -272,7 +272,7 @@ Form {
 				label:	qsTr("Compare trends to:")
 			}
 
-			IntegerField
+			DoubleField
 			{
 				enabled:	trendsCompare.checked
 				name:		"trendsCompareTo"
