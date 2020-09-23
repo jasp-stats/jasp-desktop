@@ -240,6 +240,9 @@ Item
 				if (control.height === jaspTheme.defaultVariablesFormHeight)
 					control.setHeightInForm = true
 			}
+			else if (control instanceof ComboBox)
+				control.heightChanged.connect(setControlsSize);
+
 		}
 		
         for (i = 0; i < allAssignedVariablesList.length; i++)
@@ -304,7 +307,7 @@ Item
 				changeableHeightControls.push(control);
 				if (control.title)
 					minHeightOfAssignedControls += jaspTheme.variablesListTitle;
-			}			
+			}
 		}
 		
 		// Set the height of controls (that have not singleVariable set or where the height is already specifically set)
