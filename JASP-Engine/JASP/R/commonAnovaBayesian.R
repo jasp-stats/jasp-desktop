@@ -1404,10 +1404,10 @@
     conf.interval <- options$confidenceIntervalInterval
     descriptivesPlotContainer$dependOn(c("dependent", "plotErrorBars", "errorBarType", "confidenceIntervalInterval",
                                          "usePooledStandErrorCI"))
-    if(is.null(options[["usePooledStandErrorCI"]]))  usePooledSE <- FALSE else usePooledSE <- options[["usePooledStandErrorCI"]]
     
   }
-
+  if(is.null(options[["usePooledStandErrorCI"]]))  usePooledSE <- FALSE else usePooledSE <- options[["usePooledStandErrorCI"]]
+  
   descriptivesPlotContainer$dependOn(c("plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots", "labelYAxis"))
 
   if (errors$noVariables) {
