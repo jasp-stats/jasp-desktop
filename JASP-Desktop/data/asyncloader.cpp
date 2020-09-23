@@ -106,9 +106,10 @@ void AsyncLoader::saveTask(FileEvent *event)
 
 	try
 	{
-		int maxSleepTime = 2000;
-		int sleepTime = 100;
-		int delay = 0;
+		int	maxSleepTime	= 2000,
+			sleepTime		= 100,
+			delay			= 0;
+		
 		while (DataSetPackage::pkg()->isReady() == false)
 		{
 			if (delay > maxSleepTime)
@@ -122,9 +123,25 @@ void AsyncLoader::saveTask(FileEvent *event)
 		if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));
 		else			throw runtime_error("No Exporter found!");
 
-		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
-			throw runtime_error("File '" + fq(path) + "' is being used by another application.");
+		int attempts = 1;
 
+#ifdef _WIN32
+		if(event->type() == Utils::FileType::pdf)
+			attempts = 5;
+#endif		
+		bool renameSucceeded = false;
+		
+		while(
+			  !		(renameSucceeded = Utils::renameOverwrite(fq(tempPath), fq(path))) 
+			  &&	--attempts > 0)
+		{
+			Utils::sleep(sleepTime); //Yes Bruno, I can hear you laugh. But it seems webengine is not releasing the pdf.tmp file quickly enough on Windows... See: https://github.com/jasp-stats/jasp-test-release/issues/957
+		}
+		
+		if(!renameSucceeded)
+			throw runtime_error("File '" + fq(path) + "' or '" + fq(tempPath) + "' is being used by another application.");
+
+		
 		if (event->isOnlineNode())	// Not really sure why we would need to do the invokeMethod here?
 			QMetaObject::invokeMethod(
 						_odm, "beginUploadFile", Qt::AutoConnection,
