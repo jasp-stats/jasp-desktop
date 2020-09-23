@@ -132,7 +132,6 @@ JASPControlBase
 	ToolTip.text:				toolTip
 	ToolTip.timeout:			jaspTheme.toolTipTimeout
 	ToolTip.delay:				jaspTheme.toolTipDelay
-	ToolTip.toolTip.font:		jaspTheme.font
 	ToolTip.visible:			toolTip !== "" && controlMouseArea.containsMouse
 
 	MouseArea

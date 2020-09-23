@@ -209,7 +209,15 @@ JaspTheme
 	readonly property Item _toolTipOverrideItem: Item
 	{
 		//These properties override those for ALL attached ToolTips in the application
-		ToolTip.toolTip.background: Rectangle { color: tooltipBackgroundColor }
-		ToolTip.toolTip.font:		font
+		//ToolTip.toolTip shouldn't be changed anywhere else otherwise we get hard to debug behaviour
+		ToolTip.toolTip.background:		Rectangle { color: tooltipBackgroundColor }
+		ToolTip.toolTip.contentItem:	Text
+		{
+			font:			jaspTheme.font
+			wrapMode:		Text.WrapAtWordBoundaryOrAnywhere
+			text:			ToolTip.toolTip.text
+		}
+		ToolTip.toolTip.implicitWidth:			Math.min(jaspTheme.formWidth * 0.8, ToolTip.toolTip.contentItem.implicitWidth + (2 * ToolTip.toolTip.padding))
+		
 	}
 }
