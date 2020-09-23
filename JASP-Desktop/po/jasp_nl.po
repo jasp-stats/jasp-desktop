@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-22 13:49+0000\n"
+"PO-Revision-Date: 2020-09-23 07:12+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
@@ -4440,7 +4440,7 @@ msgstr "Meest aannemelijke schatter"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Principal axis factoring"
-msgstr "Principal axis factoring"
+msgstr "Hoofdas factoring"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Ordinary least squares"
@@ -4472,7 +4472,7 @@ msgstr "Orthogonaal"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Oblique"
-msgstr "Oblique"
+msgstr "Schuin"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Base analysis on"
@@ -4580,7 +4580,7 @@ msgstr "Orthogonaal"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Oblique"
-msgstr "Oblique"
+msgstr "Schuin"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Base decomposition on"
@@ -19530,7 +19530,7 @@ msgstr "Selectiemodellen"
 
 msgctxt "Description|"
 msgid "Robust Bayesian Meta-Analysis"
-msgstr "Robuuste Bayesiaanse  Meta-Analyse"
+msgstr "Robuuste Bayesiaanse Meta-Analyse"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Correlations & N"
@@ -19564,7 +19564,6 @@ msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Model averaged"
 msgstr "Model gemiddelde"
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Transform effect sizes"
 msgstr "Transformeer effectgroottes"
@@ -19734,7 +19733,6 @@ msgstr ""
 "JASP ondervond een probleem bij het laden van de bekende issues voor deze "
 "versie: '%1', neem contact op met het JASP-team voor ondersteuning."
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
@@ -19804,12 +19802,10 @@ msgctxt "Description|"
 msgid "Logistic"
 msgstr "Logistische"
 
-#, fuzzy
 msgctxt "LDbernoulli|"
 msgid "Probability of success:"
 msgstr "Kans op succes:"
 
-#, fuzzy
 msgctxt "LDbeta|"
 msgid "Shape:"
 msgstr "Vorm:"
@@ -19858,37 +19854,30 @@ msgctxt "LDgamma|"
 msgid "Rate:"
 msgstr "Graad:"
 
-#, fuzzy
 msgctxt "LDgamma|"
 msgid "Mean:"
 msgstr "Gemiddelde:"
 
-#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Shape:"
 msgstr "Vorm:"
 
-#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Scale:"
 msgstr "Schaal:"
 
-#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Rate:"
 msgstr "Graad:"
 
-#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Mean:"
 msgstr "Gemiddelde:"
 
-#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Mean:"
 msgstr "Gemiddelde:"
 
-#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Variance:"
 msgstr "Variantie:"
@@ -19897,12 +19886,10 @@ msgctxt "LDgaussianunivariate|"
 msgid "Std. deviation:"
 msgstr "Std. afwijking:"
 
-#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Precision:"
 msgstr "Nauwkeurigheid:"
 
-#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Square root of precision:"
 msgstr "Kwadraat van nauwkeurigheid:"
@@ -19911,7 +19898,6 @@ msgctxt "LDlogistic|"
 msgid "Show Distribution"
 msgstr "Toon verdeling"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Location:"
 msgstr "Locatie:"
@@ -19920,7 +19906,6 @@ msgctxt "LDlogistic|"
 msgid "μ"
 msgstr "μ"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Scale:"
 msgstr "Schaal:"
@@ -20005,7 +19990,6 @@ msgctxt "LDlogistic|"
 msgid "Q-Q plot"
 msgstr "Q-Q plot"
 
-#, fuzzy
 msgctxt "LDlogistic|"
 msgid "Empirical vs. theoretical cdf"
 msgstr "Empirische vs. theoretische cdf"
@@ -20034,7 +20018,6 @@ msgctxt "LDlognormal|"
 msgid "Show Distribution"
 msgstr "Toon verdeling"
 
-#, fuzzy
 msgctxt "LDlognormal|"
 msgid "Log Mean:"
 msgstr "Log gemiddelde:"
@@ -20167,7 +20150,6 @@ msgctxt "LDnegbinomial|"
 msgid "Mean:"
 msgstr "Gemiddelde:"
 
-#, fuzzy
 msgctxt "LDpoisson|"
 msgid "Rate:"
 msgstr "Graad:"
@@ -20262,3 +20244,6 @@ msgid ""
 "The list %1 has a rowComponent with the same name (%2) as its optionKey. "
 "Change the optionKey property of the list or the control name."
 msgstr ""
+"De lijst %1 heeft een rowComponent met dezelfde naam (%2) als zijn "
+"optionKey. Verander de optionKey property van de lijst of de naam van het "
+"control."
