@@ -180,6 +180,8 @@ public:
 	static void setCurrentTheme(JaspTheme * theme);
 	static void setCurrentThemeFromName(QString name);
 
+	static JaspTheme * currentTheme() { return _currentTheme; }
+
 	float				uiScale()							const	{ return PreferencesModel::prefs()->uiScale(); }
 	float				ribbonScaleHovered()				const	{ return _ribbonScaleHovered; }
 	QColor				white()								const	{ return _white; }

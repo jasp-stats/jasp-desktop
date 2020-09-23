@@ -7,22 +7,23 @@
 #include "timers.h"
 #include "log.h"
 #include "gui/preferencesmodel.h"
+#include "qquick/jasptheme.h"
 
 DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
 
-DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont(_font)
+DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent)
 {
 	setFlag(QQuickItem::ItemHasContents, true);
 	setFlag(ItemIsFocusScope);
 
 	material.setColor(Qt::gray);
 
-	connect(this, &DataSetView::parentChanged, this, &DataSetView::myParentChanged);
+	connect(this, &DataSetView::parentChanged,					this, &DataSetView::myParentChanged);
 
-	connect(this, &DataSetView::viewportXChanged, this, &DataSetView::viewportChanged);
-	connect(this, &DataSetView::viewportYChanged, this, &DataSetView::viewportChanged);
-	connect(this, &DataSetView::viewportWChanged, this, &DataSetView::viewportChanged);
-	connect(this, &DataSetView::viewportHChanged, this, &DataSetView::viewportChanged);
+	connect(this, &DataSetView::viewportXChanged,				this, &DataSetView::viewportChanged);
+	connect(this, &DataSetView::viewportYChanged,				this, &DataSetView::viewportChanged);
+	connect(this, &DataSetView::viewportWChanged,				this, &DataSetView::viewportChanged);
+	connect(this, &DataSetView::viewportHChanged,				this, &DataSetView::viewportChanged);
 
 	connect(this, &DataSetView::itemDelegateChanged,			this, &DataSetView::reloadTextItems);
 	connect(this, &DataSetView::rowNumberDelegateChanged,		this, &DataSetView::reloadRowNumbers);
@@ -31,14 +32,13 @@ DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont
 	connect(this, &DataSetView::itemHorizontalPaddingChanged,	this, &DataSetView::calculateCellSizes);
 	connect(this, &DataSetView::itemVerticalPaddingChanged,		this, &DataSetView::calculateCellSizes);
 	connect(this, &DataSetView::extraColumnItemChanged,			this, &DataSetView::calculateCellSizes);
-	connect(this, &DataSetView::fontChanged,					this, &DataSetView::calculateCellSizes);
 
-	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadTextItems);
-	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadRowNumbers);
-	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadColumnHeaders);
+	connect(this, &DataSetView::itemSizeChanged,				this, &DataSetView::reloadTextItems);
+	connect(this, &DataSetView::itemSizeChanged,				this, &DataSetView::reloadRowNumbers);
+	connect(this, &DataSetView::itemSizeChanged,				this, &DataSetView::reloadColumnHeaders);
 
-	connect(PreferencesModel::prefs(), &PreferencesModel::uiScaleChanged, this, &DataSetView::resetItems);
-	connect(PreferencesModel::prefs(), &PreferencesModel::interfaceFontChanged, this, &DataSetView::resetItems);
+	connect(PreferencesModel::prefs(), &PreferencesModel::uiScaleChanged,		this, &DataSetView::resetItems);
+	connect(PreferencesModel::prefs(), &PreferencesModel::interfaceFontChanged,	this, &DataSetView::resetItems);
 
 	setZ(10);
 
@@ -124,36 +124,10 @@ void DataSetView::modelWasReset()
 
 void DataSetView::resetItems()
 {
-	_storedLineFlags.clear();
-	_storedDisplayText.clear();
-
-	for(auto col : _cellTextItems)
-	{
-		for(auto row : col.second)
-			storeTextItem(row.first, col.first, false);
-		col.second.clear();
-	}
-
-	std::list<int> cols, rows;
-
-	for(auto col : _columnHeaderItems)
-		cols.push_back(col.first);
-
-	for(auto col : cols)
-		storeColumnHeader(col);
-
-	for(auto row : _rowNumberItems)
-		rows.push_back(row.first);
-
-	for(auto row : rows)
-		storeRowNumber(row);
-
-	_rowNumberStorage		= {};
-	_columnHeaderStorage	= {};
-	_textItemStorage		= {};
+	calculateCellSizesAndClear(true); //We clear storage because otherwise the wrong font/scaling gets remembered by the item
 }
 
-void DataSetView::calculateCellSizes()
+void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 {
 	JASPTIMER_RESUME(calculateCellSizes);
 
@@ -182,6 +156,13 @@ void DataSetView::calculateCellSizes()
 
 	for(auto row : rows)
 		storeRowNumber(row);
+
+	if(clearStorage)
+	{
+		_rowNumberStorage		= {};
+		_columnHeaderStorage	= {};
+		_textItemStorage		= {};
+	}
 
 	if(_model == nullptr) return;
 
@@ -351,6 +332,13 @@ void DataSetView::addLine(float x0, float y0, float x1, float y1)
 	_lines[_linesActualSize++] = y1;
 }
 
+QSizeF DataSetView::getTextSize(const QString & text) const
+{
+	QFontMetricsF metricsFont(JaspTheme::currentTheme()->font());
+
+	return metricsFont.size(Qt::TextSingleLine, text);
+}
+
 void DataSetView::buildNewLinesAndCreateNewItems()
 {
 	JASPTIMER_RESUME(buildNewLinesAndCreateNewItems);
@@ -499,7 +487,7 @@ QQuickItem * DataSetView::createTextItem(int row, int col)
 		if(_itemDelegate == nullptr)
 		{
 			_itemDelegate = new QQmlComponent(qmlEngine(this));
-			_itemDelegate->setData("import QtQuick 2.9\nText { text: itemText; color: itemActive ? 'black' : 'grey'; font: dataFont; verticalAlignment: Text.AlignVCenter; }", QUrl());
+			_itemDelegate->setData("import QtQuick 2.9\nText { text: itemText; color: itemActive ? 'black' : 'grey'; verticalAlignment: Text.AlignVCenter; }", QUrl());
 		}
 
 		QQuickItem			* textItem	= nullptr;
@@ -603,7 +591,7 @@ QQuickItem * DataSetView::createRowNumber(int row)
 		_rowNumberDelegate = new QQmlComponent(qmlEngine(this));
         _rowNumberDelegate->setData("import QtQuick 2.9\nItem {\n"
 			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
-			"Text		{ text: rowIndex; anchors.centerIn: parent; font: dataFont }\n"
+			"Text		{ text: rowIndex; anchors.centerIn: parent; }\n"
 		"}", QUrl());
 	}
 
@@ -690,7 +678,7 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 		_columnHeaderDelegate = new QQmlComponent(qmlEngine(this));
         _columnHeaderDelegate->setData("import QtQuick 2.9\nItem {\n"
 			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
-			"Text		{ text: headerText; anchors.centerIn: parent; font: dataFont }\n"
+			"Text		{ text: headerText; anchors.centerIn: parent; }\n"
 		"}", QUrl());
 	}
 
@@ -849,7 +837,6 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	previousContext->setContextProperty("itemInputType",	itemInputType);
 	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
 	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));
-	previousContext->setContextProperty("dataFont",			_font);
 	previousContext->setContextProperty("hasContextForm",	true);
 	previousContext->setContextProperty("tableView",		_tableViewItem);
 
@@ -862,7 +849,6 @@ QQmlContext * DataSetView::setStyleDataRowNumber(QQmlContext * previousContext, 
 		previousContext = new QQmlContext(qmlContext(this), this);
 
 	previousContext->setContextProperty("rowIndex",			_model->headerData(row, Qt::Vertical).toInt());
-	previousContext->setContextProperty("dataFont",			_font);
 	previousContext->setContextProperty("headerText",		text);
 
 
@@ -880,7 +866,6 @@ QQmlContext * DataSetView::setStyleDataColumnHeader(QQmlContext * previousContex
 	previousContext->setContextProperty("columnIsInvalidated",	isInvalidated);
 	previousContext->setContextProperty("columnIsFiltered",		isFiltered);
 	previousContext->setContextProperty("columnError",			computedError);
-	previousContext->setContextProperty("dataFont",				_font);
 
 	return previousContext;
 }
@@ -978,12 +963,6 @@ void DataSetView::setExtraColumnItem(QQuickItem * newItem)
 
 		emit extraColumnItemChanged();
 	}
-}
-
-void DataSetView::setFont(const QFont &font)
-{
-	_font = font;
-	_metricsFont = QFontMetricsF(_font);
 }
 
 void DataSetView::reloadTextItems()

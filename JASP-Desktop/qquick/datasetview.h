@@ -43,7 +43,6 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QQmlComponent * columnHeaderDelegate	READ columnHeaderDelegate	WRITE setColumnHeaderDelegate	NOTIFY columnHeaderDelegateChanged	)
 	Q_PROPERTY( QQuickItem * leftTopCornerItem			READ leftTopCornerItem		WRITE setLeftTopCornerItem		NOTIFY leftTopCornerItemChanged		)
 	Q_PROPERTY( QQuickItem * extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged		)
-	Q_PROPERTY( QFont font								READ font					WRITE setFont					NOTIFY fontChanged					)
 	Q_PROPERTY( double headerHeight						READ headerHeight											NOTIFY headerHeightChanged			)
 	Q_PROPERTY( double rowNumberWidth					READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
 	Q_PROPERTY( bool cacheItems							READ cacheItems				WRITE setCacheItems				NOTIFY cacheItemsChanged			)
@@ -75,7 +74,6 @@ public:
 	QQuickItem * tableViewItem()			{ return _tableViewItem; }
 
 	bool cacheItems()						{ return _cacheItems; }
-	QFont font()							{ return _font; }
 
 	GENERIC_SET_FUNCTION(CacheItems, _cacheItems, cacheItemsChanged, bool)
 
@@ -96,8 +94,6 @@ public:
 
 	void setTableViewItem(			QQuickItem * tableViewItem) { _tableViewItem = tableViewItem; }
 
-	void setFont(const QFont& font);
-
 	int headerHeight()			{ return _dataRowsMaxHeight; }
 	int rowNumberWidth()		{ return _rowNumberMaxWidth; }
 
@@ -109,7 +105,6 @@ public:
 
 signals:
 	void modelChanged();
-	void fontPixelSizeChanged();
 	void itemHorizontalPaddingChanged();
 	void itemVerticalPaddingChanged();
 
@@ -126,17 +121,15 @@ signals:
 
 	void itemSizeChanged();
 
-	void fontChanged();
-
 	void headerHeightChanged();
 	void rowNumberWidthChanged();
 
 	void cacheItemsChanged();
 
-public slots:
-	void calculateCellSizes();
 
-	void aContentSizeChanged() { _recalculateCellSizes = true; }
+public slots:
+	void calculateCellSizes()	{ calculateCellSizesAndClear(false); }
+	void aContentSizeChanged()	{ _recalculateCellSizes = true; }
 	void viewportChanged();
 	void myParentChanged(QQuickItem *);
 
@@ -152,6 +145,7 @@ public slots:
 	void setExtraColumnX();
 
 protected:
+	void calculateCellSizesAndClear(bool clearStorage);
 	void setRolenames();
 	void determineCurrentViewPortIndices();
 	void storeOutOfViewItems();
@@ -160,14 +154,14 @@ protected:
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
 	float extraColumnWidth() { return _extraColumnItem == nullptr ? 0 : 1 + _extraColumnItem->width(); }
 
-	QQuickItem * createTextItem(int row, int col);
-	void storeTextItem(int row, int col, bool cleanUp = true);
+	QQuickItem *	createTextItem(int row, int col);
+	void			storeTextItem(int row, int col, bool cleanUp = true);
 
-	QQuickItem * createRowNumber(int row);
-	void storeRowNumber(int row);
+	QQuickItem *	createRowNumber(int row);
+	void			storeRowNumber(int row);
 
-	QQuickItem * createColumnHeader(int col);
-	void storeColumnHeader(int col);
+	QQuickItem *	createColumnHeader(int col);
+	void			storeColumnHeader(int col);
 
 	QQuickItem *	createleftTopCorner();
 	void			updateExtraColumnItem();
@@ -178,7 +172,7 @@ protected:
 
 	void addLine(float x0, float y0, float x1, float y1);
 
-	QSizeF getTextSize(const QString& text)	const		{ 	return _metricsFont.size(Qt::TextSingleLine, text) * PreferencesModel::prefs()->uiScale(); }
+	QSizeF getTextSize(const QString& text)	const;
 	QSizeF getColumnSize(int col);
 	QSizeF getRowHeaderSize();
 
@@ -219,8 +213,6 @@ protected:
 
 	QSGFlatColorMaterial material;
 
-	QFont _font;
-
 	double _viewportX=0, _viewportY=0, _viewportW=1, _viewportH=1;
 	int _previousViewportColMin = -1,
 		_previousViewportColMax = -1,
@@ -231,8 +223,6 @@ protected:
 		_currentViewportColMax	= -1,
 		_currentViewportRowMin	= -1,
 		_currentViewportRowMax	= -1;
-
-	QFontMetricsF _metricsFont;
 
 	std::map<std::string, int> _roleNameToRole;
 

@@ -8,23 +8,23 @@ import JASP				1.0
 FocusScope
 {
 	id: __JASPDataViewRoot
-	property alias model: theView.model
 
-	property alias itemDelegate:			theView.itemDelegate
-	property alias rowNumberDelegate:		theView.rowNumberDelegate
-	property alias columnHeaderDelegate:	theView.columnHeaderDelegate
-	property alias leftTopCornerItem:		theView.leftTopCornerItem
-	property alias extraColumnItem:			theView.extraColumnItem
+				property alias model:					theView.model
 
-	property alias itemHorizontalPadding:	theView.itemHorizontalPadding
-	property alias itemVerticalPadding:		theView.itemVerticalPadding
-	property alias font:					theView.font
-	property alias rowNumberWidth:			theView.rowNumberWidth
+				property alias itemDelegate:			theView.itemDelegate
+				property alias rowNumberDelegate:		theView.rowNumberDelegate
+				property alias columnHeaderDelegate:	theView.columnHeaderDelegate
+				property alias leftTopCornerItem:		theView.leftTopCornerItem
+				property alias extraColumnItem:			theView.extraColumnItem
 
-	readonly property alias contentX:		myFlickable.contentX
-	readonly property alias contentY:		myFlickable.contentY
-	readonly property alias contentWidth:	myFlickable.contentWidth
-	readonly property alias contentHeight:	myFlickable.contentHeight
+				property alias itemHorizontalPadding:	theView.itemHorizontalPadding
+				property alias itemVerticalPadding:		theView.itemVerticalPadding
+				property alias rowNumberWidth:			theView.rowNumberWidth
+
+	readonly	property alias contentX:				myFlickable.contentX
+	readonly	property alias contentY:				myFlickable.contentY
+	readonly	property alias contentWidth:			myFlickable.contentWidth
+	readonly	property alias contentHeight:			myFlickable.contentHeight
 
 	JASPMouseAreaToolTipped
 	{

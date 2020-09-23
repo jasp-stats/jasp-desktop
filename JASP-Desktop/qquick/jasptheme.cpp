@@ -14,25 +14,25 @@ JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 	_jaspFont			= PreferencesModel::prefs()->interfaceFont();
 	_jaspCodeFont		= PreferencesModel::prefs()->codeFont();
 
-	connect(this,			&JaspTheme::currentThemeNameChanged,		PreferencesModel::prefs(),	&PreferencesModel::setCurrentThemeName	);
-	connect(this,			&JaspTheme::jaspThemeChanged,				PreferencesModel::prefs(),	&PreferencesModel::jaspThemeChanged		);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this,			&JaspTheme::uiScaleChanged				);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::maxFlickVelocityChanged, this,			&JaspTheme::maximumFlickVelocity		);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::interfaceFontChanged,this,				&JaspTheme::setDefaultFont				);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::codeFontChanged,		this,				&JaspTheme::setDefaultCodeFont			);
+	connect(this,						&JaspTheme::currentThemeNameChanged,		PreferencesModel::prefs(),	&PreferencesModel::setCurrentThemeName	);
+	connect(this,						&JaspTheme::jaspThemeChanged,				PreferencesModel::prefs(),	&PreferencesModel::jaspThemeChanged		);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this,						&JaspTheme::uiScaleChanged				);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::maxFlickVelocityChanged, this,						&JaspTheme::maximumFlickVelocity		);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::interfaceFontChanged,	this,						&JaspTheme::setDefaultFont				);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::codeFontChanged,			this,						&JaspTheme::setDefaultCodeFont			);
 
 	connectSizeDistancesToUiScaleChanged();
 
 	if(_currentTheme == nullptr)
 		setCurrentTheme(this);
 
-	setFont(_jaspFont);
-	setFontLabel(_jaspFont);
-	setFontRibbon(_jaspFont);
-	setFontGroupTitle(_jaspFont);
-	setFontPrefOptionsGroupTitle(_jaspFont);
-	setFontCode(_jaspCodeFont);
-	setFontRCode(_jaspCodeFont);
+	setFont(						_jaspFont);
+	setFontLabel(					_jaspFont);
+	setFontRibbon(					_jaspFont);
+	setFontGroupTitle(				_jaspFont);
+	setFontPrefOptionsGroupTitle(	_jaspFont);
+	setFontCode(					_jaspCodeFont);
+	setFontRCode(					_jaspCodeFont);
 
 	_fontCode.setStyleHint(QFont::Monospace); // Cannot be set in QML https://bugreports.qt.io/browse/QTBUG-38931
 }
