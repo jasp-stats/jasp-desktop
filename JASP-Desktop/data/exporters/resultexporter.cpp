@@ -73,7 +73,7 @@ void ResultExporter::saveDataSet(const std::string &path, boost::function<void(i
 
 		ResultsJsInterface::singleton()->exportToPDF(_pdfPath);
 
-		Log::log() << "Thread for exporting PDF will wait until exporting is done.";
+		Log::log() << "Thread for exporting PDF to '" << _pdfPath << "' will wait until exporting is done.";
 		_writingToPdf.wait(&_writingToPdfMutex);
 		_writingToPdfMutex.unlock();
 
