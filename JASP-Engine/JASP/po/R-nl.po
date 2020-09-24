@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-09-24 10:50\n"
-"PO-Revision-Date: 2020-09-23 07:12+0000\n"
+"PO-Revision-Date: 2020-09-25 12:40+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "nl/>\n"
@@ -14,9 +14,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n==0 ? 0 : n==1 ? 0 : 1;\n"
 "X-Generator: Weblate 4.3-dev\n"
 
-#, fuzzy
 msgid "Data Summary"
-msgstr "Samenvatting"
+msgstr "Gegevensoverzicht"
 
 msgid "Counts"
 msgstr "Aantallen"
@@ -33,55 +32,44 @@ msgstr "Mislukkingen"
 msgid "Total"
 msgstr "Totaal"
 
-#, fuzzy
 msgid "spike at %s"
-msgstr "%s met r==%s"
+msgstr "Puntmassa bij %s"
 
-#, fuzzy
 msgid "beta (%s, %s)"
-msgstr "%s (%s)"
+msgstr "beta (%s, %s)"
 
-#, fuzzy
 msgid "binomial (%i, %s)"
-msgstr "binomiaal"
+msgstr "binomiaal (%i, %s)"
 
-#, fuzzy
 msgid "beta-binomial (%i, %s, %s)"
-msgstr "beta-binomiaal"
+msgstr "beta-binomiaal (%i, %s, %s)"
 
-#, fuzzy
 msgid "Estimation Summary"
-msgstr "Evaluatie samenvatting"
+msgstr "Schatting Samenvatting"
 
 msgid "Model"
 msgstr "Model"
 
-#, fuzzy
 msgid "Prior (%s)"
-msgstr "Priors"
+msgstr "Prior (%s)"
 
-#, fuzzy
 msgid "Prior %s"
-msgstr "Priors"
+msgstr "Prior %s"
 
-#, fuzzy
 msgid "Posterior (%s)"
-msgstr "Posterior R%s"
+msgstr "Posterior (%s)"
 
-#, fuzzy
 msgid "Posterior %s"
-msgstr "Posterior R%s"
+msgstr "Posterior %s"
 
-#, fuzzy
 msgid "Please specify successes and failures."
-msgstr "Specificeer a.u.b. de populatiegrootte en uw auditwaarden."
+msgstr "Specificeer a.u.b. het aantal successen en mislukkingen."
 
 msgid "These results are based on %i %s and %i %s."
 msgstr "Deze resultaten zijn gebaseerd op %i %s en %i %s."
 
-#, fuzzy
 msgid "Observation"
-msgstr "Iteratie"
+msgstr "Observatie"
 
 msgid "Population proportion"
 msgstr "Populatieproportie"
@@ -92,38 +80,32 @@ msgstr ""
 "Meer dan bimodale BI's zijn niet geïmplementeerd in de sequentiële "
 "analyseplot."
 
-#, fuzzy
 msgid "%i %% CI"
-msgstr "%s%% BI"
+msgstr "%i %% BI"
 
-#, fuzzy
 msgid "%i %% HPD"
-msgstr "%s%% HGI"
+msgstr "%i %% HGI"
 
 msgid "SI (BF=%s)"
-msgstr ""
+msgstr "SI (BF=%s)"
 
-#, fuzzy
 msgid "Prediction (Successes)"
-msgstr "Voorspellingen onder BMA"
+msgstr "Voorspelling (Successen)"
 
-#, fuzzy
 msgid "Prediction %s"
-msgstr "Voorspellingen onder BMA"
+msgstr "Voorspelling %s"
 
 msgid "The prediction for %s %s is based on %s %s and %s %s."
-msgstr ""
+msgstr "De voorspelling voor %s %s is gebaseerd op %s %s en %s %s."
 
-#, fuzzy
 msgid "Sample proportions"
-msgstr "Klasse Verhoudingen"
+msgstr "Steekproef Proporties"
 
 msgid "Density"
 msgstr "Dichtheid"
 
-#, fuzzy
 msgid "Number of successes"
-msgstr "aantal successen: %s"
+msgstr "Aantal successen"
 
 msgid "Probability"
 msgstr "Kansverdeling"
@@ -132,67 +114,65 @@ msgid ""
 "The upper CI limit is higher than the number of future observations. Please, "
 "change the value of the upper CI limit in the settings panel."
 msgstr ""
+"De bovengrens van het BI is hoger dan het aantal toekomstige waarnemingen. "
+"Wijzig de waarde van de bovengrens in het instellingspaneel."
 
 msgid ""
 "The lower CI limit is higher than the number of future observations. Please, "
 "change the value of the lower CI limit in the settings panel."
 msgstr ""
+"De ondergrens van het BI is hoger dan het aantal toekomstige waarnemingen. "
+"Wijzig de waarde van de bovengrens in het instellingspaneel."
 
 msgid ""
 "The lower CI limit is higher than the upper CI limit. Please, change the "
 "value of the CI limits in the settings panel."
 msgstr ""
+"De ondergrens van het BI is hoger dan de bovengrens van het BI . Wijzig de "
+"waarde van de grenzen van het BI  in het instellingspaneel."
 
-#, fuzzy
 msgid "Testing Summary"
-msgstr "Samenvatting Posterior"
+msgstr "Samenvatting Toets"
 
 msgid "BF%s"
 msgstr "BF%s"
 
-#, fuzzy
 msgid "log(BF%s)"
-msgstr "Log(BF%s)"
+msgstr "log(BF%s)"
 
 msgid "Hypothesis"
 msgstr "Hypothese"
 
 msgid "P(H)"
-msgstr ""
+msgstr "P(H)"
 
-#, fuzzy
 msgid "log(likelihood)"
-msgstr "Log-likelihood"
+msgstr "Log(likelihood)"
 
-#, fuzzy
 msgid "P(H|data)"
-msgstr "P(M|data)"
+msgstr "P(H|data)"
 
-#, fuzzy
 msgid ""
 "The plot could not be created because the posterior model probabilities are "
 "not defined."
-msgstr "U kan niet alle prior modelkansen gelijk aan nul zetten."
+msgstr ""
+"De grafiek kan niet worden gemaakt omdat de waarschijnlijkheden van het "
+"posterior model niet zijn gedefinieerd."
 
-#, fuzzy
 msgid "Proportion of Successes"
-msgstr "Proportie"
+msgstr "Proportie van successen"
 
-#, fuzzy
 msgid "P(Successes|%s)"
-msgstr "Successen"
+msgstr "P(Successen|%s)"
 
-#, fuzzy
 msgid "P(Successes)"
-msgstr "Successen"
+msgstr "P(Successen)"
 
-#, fuzzy
 msgid "Please specify a hypothesis for comparison."
-msgstr "Specificeer a.u.b. een toegevoegd contrast."
+msgstr "Specificeer a.u.b. een hypothese om te vergelijken."
 
-#, fuzzy
 msgid "Conditional probability"
-msgstr "Posterior kans"
+msgstr "Voorwaardelijke kans"
 
 #, fuzzy
 msgid "Joint probability"
@@ -206,10 +186,10 @@ msgid "Observations"
 msgstr "Iteraties"
 
 msgid "At least 2 hypotheses need to be specified."
-msgstr ""
+msgstr "Er moeten ten minste 2 hypothesen worden gespecificeerd."
 
 msgid "%s %i"
-msgstr ""
+msgstr "%s %i"
 
 msgid "Please remove duplicates from the %s names."
 msgstr ""
@@ -994,7 +974,7 @@ msgid ""
 "The model could not be estimated. Please, check the options and dataset for "
 "errors."
 msgstr ""
-"Het model kon niet worden geschat. Controleer aub de opties en dataset op "
+"Het model kon niet worden geschat. Controleer aub de opties en gegevens op "
 "fouten."
 
 msgid "Sampling diagnostics"
@@ -1712,7 +1692,6 @@ msgstr "Gegroepeerd met %s."
 msgid "<u>Procedure</u>"
 msgstr "<u>Procedure</u>"
 
-#, fuzzy
 msgid ""
 "Benford's law states that in many naturally occurring collections of "
 "numerical observations, the leading significant digit is likely to be small. "
@@ -1724,11 +1703,10 @@ msgstr ""
 "De wet van Benford houdt in dat in veel natuurlijk voorkomende verzamelingen "
 "van getallen het leidende significante nummer waarschijnlijk klein is. Het "
 "doel van deze procedure is om vast te stellen in hoeverre de eerste leidende "
-"nummers in de populatie de wet van Benford volgen, en deze relatie te "
-"toetsen met <b>%1$s</b> betrouwbaarheid. Data die niet aan de wet van "
-"Benford voldoen moeten wellicht aan verdere verificatie onderworpen worden."
+"nummers in de gegevens de wet van Benford volgen, en deze relatie te toetsen "
+"met <b>%1$s</b> betrouwbaarheid. Data die niet aan de wet van Benford "
+"voldoen moeten wellicht aan verdere verificatie onderworpen worden."
 
-#, fuzzy
 msgid ""
 "Benford's law states that in many naturally occurring collections of "
 "numerical observations, the leading significant digit is likely to be small. "
@@ -1740,11 +1718,10 @@ msgstr ""
 "De wet van Benford houdt in dat in veel natuurlijk voorkomende verzamelingen "
 "van getallen het leidende significante nummer waarschijnlijk klein is. Het "
 "doel van deze procedure is om vast te stellen in hoeverre de eertse twee "
-"leidende nummers in de populatie de wet van Benford volgen, en deze relatie "
-"te toetsen met <b>%1$s</b> betrouwbaarheid. Data die niet aan de wet van "
+"leidende nummers in de gegevens de wet van Benford volgen, en deze relatie "
+"te toetsen met <b>%1$s</b> betrouwbaarheid. Gegevens die niet aan de wet van "
 "Benford voldoen moeten wellicht aan verdere verificatie onderworpen worden."
 
-#, fuzzy
 msgid ""
 "Benford's law states that in many naturally occurring collections of "
 "numerical observations, the leading significant digit is likely to be small. "
@@ -1756,11 +1733,10 @@ msgstr ""
 "De wet van Benford houdt in dat in veel natuurlijk voorkomende verzamelingen "
 "van getallen het leidende significante nummer waarschijnlijk klein is. Het "
 "doel van deze procedure is om vast te stellen in hoeverre de laatste nummers "
-"in de populatie de wet van Benford volgen, en deze relatie te toetsen met <b>"
-"%1$s</b> betrouwbaarheid. Data die niet aan de wet van Benford voldoen "
-"moeten wellicht aan verdere verificatie onderworpen worden."
+"in de gegevens de wet van Benford volgen, en deze relatie te toetsen met "
+"<b>%1$s</b> betrouwbaarheid. Gegevens die niet aan de wet van Benford "
+"voldoen moeten wellicht aan verdere verificatie onderworpen worden."
 
-#, fuzzy
 msgid ""
 "The uniform distribution assigns equal probability to all possible digits "
 "that may occur. The goal of this procedure is to determine to what extent "
@@ -1771,12 +1747,11 @@ msgid ""
 msgstr ""
 "De uniforme verdeling kent gelijke kansen toe aan alle waarden die kunnen "
 "voorkomen. Het doel van deze procedure is om vast te stellen in hoeverre de "
-"eerste leidende nummers in de populatie de uniforme verdeling volgen, en "
-"deze relatie te toetsen met <b>%1$s</b> betrouwbaarheid. Veronderstelde "
+"eerste leidende nummers in de gegevens de uniforme verdeling volgen, en deze "
+"relatie te toetsen met <b>%1$s</b> betrouwbaarheid. Veronderstelde "
 "willekeurige data die niet aan de uniforme verdeling voldoen moeten wellicht "
 "aan verdere verificatie onderworpen worden."
 
-#, fuzzy
 msgid ""
 "The uniform distribution assigns equal probability to all possible digits "
 "that may occur. The goal of this procedure is to determine to what extent "
@@ -1787,10 +1762,10 @@ msgid ""
 msgstr ""
 "De uniforme verdeling kent gelijke kansen toe aan alle waarden die kunnen "
 "voorkomen. Het doel van deze procedure is om vast te stellen in hoeverre de "
-"eerste twee leidende nummers in de populatie de uniforme verdeling volgen, "
-"en deze relatie te toetsen met <b>%1$s</b> betrouwbaarheid. Veronderstelde "
-"willekeurige data die niet aan de uniforme verdeling voldoen moeten wellicht "
-"aan verdere verificatie onderworpen worden."
+"eerste twee leidende nummers in de gegevens de uniforme verdeling volgen, en "
+"deze relatie te toetsen met <b>%1$s</b> betrouwbaarheid. Veronderstelde "
+"willekeurige gegevens die niet aan de uniforme verdeling voldoen moeten "
+"wellicht aan verdere verificatie onderworpen worden."
 
 #, fuzzy
 msgid ""
@@ -1823,29 +1798,26 @@ msgstr "Waarde"
 msgid "<i>p</i> value"
 msgstr "<i>p</i> waarde"
 
-#, fuzzy
 msgid ""
 "The null hypothesis specifies that the first digits (1 - 9) in the data set "
 "are distributed according to %1$s."
 msgstr ""
-"De nulhypothese specificeert dat de verdeling van de laaste getallen (1 - 9) "
-"in de populatie overeenstemmen met %1$s."
+"De nulhypothese specificeert dat de verdeling van de eerste getallen (1 - 9) "
+"in de gegevens overeenstemmen met %1$s."
 
-#, fuzzy
 msgid ""
 "The null hypothesis specifies that the first two digits (10 - 99) in the "
 "data set are distributed according to %1$s."
 msgstr ""
-"De nulhypothese specificeert dat de verdeling van de eerste twee getallen "
-"(10 - 99) in de populatie overeenstemmen met %1$s."
+"De nulhypothese specificeert dat de verdeling van de eerste twee getallen ("
+"10 - 99) in de gegevens overeenstemmen met %1$s."
 
-#, fuzzy
 msgid ""
 "The null hypothesis specifies that the last digits (1 - 9) in the data set "
 "are distributed according to %1$s."
 msgstr ""
 "De nulhypothese specificeert dat de verdeling van de laaste getallen (1 - 9) "
-"in de populatie overeenstemmen met %1$s."
+"in de gegevens overeenstemmen met %1$s."
 
 msgid "Chi-square"
 msgstr "Chi-kwadraat"
@@ -1883,16 +1855,15 @@ msgstr "Geobserveerde Percentages vs. Verwachte Percentages"
 msgid "Observed"
 msgstr "Geobserveerd"
 
-#, fuzzy
 msgid ""
 "<b>Figure %i:</b> The observed percentages of each digit in the data set "
 "compared to the expected percentage under %2$s. For data sets distributed "
 "according %2$s the blue dots will lie near the top of the grey bars."
 msgstr ""
 "<b>Figuur %i:</b> De geobserveerde percentages van ieder nummer in de "
-"populatie vergeleken met het verwachte percentage onder %2$s. Hoe dichter de "
+"gegevens vergeleken met het verwachte percentage onder %2$s. Hoe dichter de "
 "blauwe stippen rond de bovenkant van de grijze staven liggen, hoe meer de "
-"populatie overeenstemt met %2$s."
+"gegevens overeenstemmen met %2$s."
 
 msgid "<u>Conclusion</u>"
 msgstr "<u>Conclusies</u>"
@@ -1905,35 +1876,26 @@ msgstr "kan worden verworpen"
 msgid "is not rejected"
 msgstr "kan niet worden verworpen"
 
-#, fuzzy
 msgid ""
 "The <i>p</i> value is %1$s and the null hypothesis that the first digits in "
 "the data set are distributed according to %2$s <b>%3$s</b>."
 msgstr ""
-"De <i>p</i> waarde is vastgesteld op %1$s. De nulhypothese dat de verdeling "
-"van de eerste twee nummers in de populatie overeenstemt met %2$s <b>%3$s</b> "
-"kan niet worden verworpen en wordt dus ondersteund met <b>%4$s</b> "
-"betrouwbaarheid."
+"De <i>p</i> waarde is %1$s en de nulhypothese dat de eerste cijfers in de "
+"gegevens worden verdeeld volgens %2$s <b>%3$s</b>."
 
-#, fuzzy
 msgid ""
 "The <i>p</i> value is %1$s and the null hypothesis that the first two digits "
 "in the data set are distributed according to %2$s <b>%3$s</b>."
 msgstr ""
-"De <i>p</i> waarde is vastgesteld op %1$s. De nulhypothese dat de verdeling "
-"van de eerste twee nummers in de populatie overeenstemt met %2$s <b>%3$s</b> "
-"kan niet worden verworpen en wordt dus ondersteund met <b>%4$s</b> "
-"betrouwbaarheid."
+"De <i>p</i> waarde is %1$s en de nulhypothese dat de eerste twee cijfers in "
+"de gegevens worden verdeeld volgens %2$s <b>%3$s</b>."
 
-#, fuzzy
 msgid ""
 "The <i>p</i> value is %1$s and the null hypothesis that the last digits in "
 "the data set are distributed according to %2$s <b>%3$s</b>."
 msgstr ""
-"De <i>p</i> waarde is vastgesteld op %1$s. De nulhypothese dat de verdeling "
-"van de eerste twee nummers in de populatie overeenstemt met %2$s <b>%3$s</b> "
-"kan niet worden verworpen en wordt dus ondersteund met <b>%4$s</b> "
-"betrouwbaarheid."
+"De <i>p</i> waarde is %1$s en de nulhypothese dat de laatste cijfers in de "
+"gegevens worden verdeeld volgens %2$s <b>%3$s</b>."
 
 msgid "Direct estimator"
 msgstr "Directe schatter"
@@ -2254,7 +2216,7 @@ msgid ""
 "sufficient."
 msgstr ""
 "U moet unieke transactie ID's specificeren. De rijnummers van de gegevens "
-"volstaat."
+"volstaan."
 
 msgid "Evaluation summary"
 msgstr "Evaluatie samenvatting"
@@ -2359,7 +2321,7 @@ msgid ""
 msgstr ""
 "Van de populatie van <b>%1$s</b> observaties, waren <b>%2$s</b> observaties "
 "geselecteerd met <b>%3$s steekproef nemen</b> methode. <br><b>Waarschuwing:</"
-"b>  Een munteenheid steekproef nemen is niet gelukt."
+"b> Een munteenheid steekproef nemen is niet gelukt."
 
 msgid "%1$s record sampling"
 msgstr "%1$s record steekproef"
@@ -2871,7 +2833,7 @@ msgstr ""
 "schatting van de maximale fouten in de populatie."
 
 msgid "Audit values (%1$s)"
-msgstr "Audit waarden  (%1$s)"
+msgstr "Audit waarden (%1$s)"
 
 msgid ""
 "<b>Figure %1$i.</b> Scatterplot of the book values in the selection and "
@@ -3399,7 +3361,7 @@ msgid ""
 "constrained to be postive)?"
 msgstr ""
 "Het model kon niet passend gemaakt worden. Controleer a.u.b. het volgende: "
-"Heeft u ten minste n=2 onderzoeken? Als de prior afgekapt is, is hij dan "
+"Heeft u ten minste n=2 onderzoeken? Als de prior is afgekapt , is hij dan "
 "consistent met de data (wanneer de meeste effectgroottes negatief zijn, kan "
 "de analyse misschien niet uitgevoerd worden wanneer de prior positief dient "
 "te zijn)?"
@@ -3467,8 +3429,8 @@ msgid ""
 "Bayes factor of the (unconstrained/constrained) random effects H%1$s over "
 "the fixed effects H%1$s."
 msgstr ""
-"Bayes factor van de (unconstrained/constrained) aselecte effecten  H%1$s "
-"over de gefixeerde effecten H%1$s."
+"Bayes factor van de (unconstrained/constrained) aselecte effecten H%1$s over "
+"de gefixeerde effecten H%1$s."
 
 msgid "Bayes factor of the fixed effects H%1$s over the random effects H%1$s."
 msgstr ""
@@ -3835,7 +3797,7 @@ msgid "Residual Value"
 msgstr "Residuen Waarde"
 
 msgid "Argument 'x' must be an object of class \"rma\"."
-msgstr "Argument 'x' moet een object van klasse  \"rma\" zijn."
+msgstr "Argument 'x' moet een object van klasse \"rma\" zijn."
 
 msgid "Function not applicable to objects of class \"robust.rma\"."
 msgstr "Functie niet toepasbaar op objecten van klasse \"robust.rma\"."
@@ -3986,8 +3948,8 @@ msgid ""
 "Trying to find dataset columns to read, but it appears some options don't "
 "exist: '"
 msgstr ""
-"Proberen dataset kolommen te vinden om te lezen, maar het lijkt erop dat "
-"sommigeopties niet bestaan"
+"Probeer gegevens- kolommen te vinden om te lezen, maar het lijkt erop dat "
+"sommige opties niet bestaan:'"
 
 msgid ","
 msgstr ","
@@ -4791,7 +4753,7 @@ msgid "Class Proportions"
 msgstr "Klasse Verhoudingen"
 
 msgid "Data Set"
-msgstr "Gegevensverzameling"
+msgstr "Gegevens"
 
 msgid "Training Set"
 msgstr "Trainingset"
@@ -5304,8 +5266,8 @@ msgid ""
 "Dataset is not a proper variance-covariance matrix. Please load only a "
 "positive definite symmetrical matrix as your dataset."
 msgstr ""
-"De gegevens is geen correcte variantie-covariantie matrix. Voer alleen een "
-"positieve definitieve symmetrische matrix in."
+"De gegevens vormen geen correcte variantie-covariantie matrix. Gebruik als "
+"invoer alleen een positieve definitieve symmetrische matrix."
 
 msgid ""
 "The variance-covariance matrix of the supplied data is not positive-"
@@ -5463,7 +5425,8 @@ msgid ""
 " %s"
 msgstr ""
 "Het model kon niet geschat worden. Foutmelding:\n"
-" %s"
+" \n"
+"%s"
 
 msgid "The model is not admissible: %s"
 msgstr "Het model is niet geoorloofd: %s"
@@ -6037,8 +6000,8 @@ msgid ""
 "Infimum (minimum) of an empty set is %s, supremum (maximum) of an empty set "
 "is %s."
 msgstr ""
-"Infimum (minimum) van een lege verzameling is %s, supremum (maximum) van "
-"een  lege verzameling is %s."
+"Infimum (minimum) van een lege verzameling is %s, supremum (maximum) van een "
+"lege verzameling is %s."
 
 msgid "Not all values are available for <i>Nominal Text</i> variables"
 msgstr ""
@@ -6089,7 +6052,7 @@ msgid "; Used Terms:"
 msgstr "; Gebruikte termen:"
 
 msgid "; Data set head:"
-msgstr "; Dataset titel:"
+msgstr "; Gegevens titel:"
 
 msgid "Argument 'contrasts' should be a matrix."
 msgstr "Argument 'contrasten' moet een matrix zijn."
@@ -6278,8 +6241,8 @@ msgid ""
 "data:\n"
 "%s"
 msgstr ""
-"De volgende namen komen voor in de dataset en de door de gebruiker "
-"gespecificeerde data:\n"
+"De volgende namen komen zowel voor in de gegevens als in de door de "
+"gebruiker gespecificeerde gegevens:\n"
 "%s"
 
 msgid "Please specify which parameters to monitor!"
@@ -7063,7 +7026,7 @@ msgid "Some variables did not contain char (%s)"
 msgstr "Sommige variabelen bevatten teken (%s) niet"
 
 msgid "Some variables were not matched in the column names of the dataset."
-msgstr "Sommige variabelen zijn niet gematcht in de kolomnamen van de dataset."
+msgstr "Sommige variabelen zijn niet gematcht in de kolomnamen van de gegevens."
 
 msgid ""
 "Data supplied in %s cannot be used to determine variables types. Data should:"
@@ -7479,7 +7442,7 @@ msgid ""
 "under \"Limit No. Models Shown\"."
 msgstr ""
 "%sTabel geeft alleen een subset van modellen weer; om alle modellen te zien, "
-"selecteer  \"Nee\" onder \"Limiteer getoond aantal modellen\"."
+"selecteer \"Nee\" onder \"Limiteer getoond aantal modellen\"."
 
 msgid "Posterior Summaries of Coefficients"
 msgstr "Posterior Samenvattingen van Coëfficiënten"
@@ -7646,7 +7609,7 @@ msgid "%1$s%% bca%2$s Confidence interval"
 msgstr "%1$s%% bca%2$s Betrouwbaarheidsinterval"
 
 msgid "%s%% Confidence interval"
-msgstr "%s%%  Betrouwbaarheidinterval"
+msgstr "%s%% Betrouwbaarheidinterval"
 
 msgid "%s <br> (odds ratio scale)"
 msgstr "%s <br> (odds ratio schaal)"
@@ -7816,13 +7779,12 @@ msgstr "Als item wordt weggelaten"
 msgid "Frequentist Individual Item Reliability Statistics"
 msgstr "Frequentistische Individuele Item Validiteitsstatistieken"
 
-#, fuzzy
 msgid ""
 "McDonald's %s estimation method for item-dropped statistics switched to PFA "
 "because the CFA did not find a solution."
 msgstr ""
-"McDonald's ω schattingsmethode voor item-weggelaten statistiek \n"
-" is omgeschakeld naar PFA omdat de CFA geen oplossing vond."
+"McDonald's %s schattingsmethode voor item-weggelaten statistiek is "
+"omgeschakeld naar PFA omdat de CFA geen oplossing vond."
 
 msgid "Fit Measures of Single Factor Model Fit"
 msgstr "Pasmaat van Enkele Factor Model passing"
@@ -7830,14 +7792,13 @@ msgstr "Pasmaat van Enkele Factor Model passing"
 msgid "Fit Measure"
 msgstr "Pasmaat"
 
-#, fuzzy
 msgid ""
 "Fit measures cannot be displayed because the McDonald's %s estimation method "
 "switched to PFA as the CFA did not find a solution."
 msgstr ""
 "De pasmaat kan niet worden getoond omdat de schattingsmethode voor "
-"McDonald's ω \n"
-"veranderd is naar PFA, want de CFA leidde niet tot een oplossing."
+"McDonald's %s veranderd is naar PFA, want de CFA leidde niet tot een "
+"oplossing."
 
 msgid "The priors for publication bias were set incorrectly."
 msgstr ""
@@ -8087,9 +8048,8 @@ msgstr "Modelgrafieken"
 msgid "Test of Heterogeneity"
 msgstr "Toets van Residuen Heterogeniteit"
 
-#, fuzzy
 msgid "Error:"
-msgstr "Fouten"
+msgstr "Fout:"
 
 #, fuzzy
 msgid "Test of Publication Bias"
@@ -8162,13 +8122,11 @@ msgstr "U kan niet alle prior modelkansen gelijk aan nul zetten."
 msgid "Mean Estimates (%s)"
 msgstr "Model Schattingen"
 
-#, fuzzy
 msgid "Fixed effects model:"
-msgstr "Gefixeerde effecten"
+msgstr "Gefixeerde effecten model:"
 
-#, fuzzy
 msgid "Random effects model:"
-msgstr "Willekeurige effecten"
+msgstr "Willekeurige effecten model:"
 
 #, fuzzy
 msgid ""
@@ -8790,7 +8748,7 @@ msgstr[0] ""
 "van de willekeurige hellingen van '%s' voor willekeurige effecten "
 "groeperingsfactor '%s'."
 msgstr[1] ""
-"Willekeurige hellingen van ‘%s’ voor de willekeurige effecten "
+"Willekeurige helling van ‘%s’ voor de willekeurige effecten "
 "groeperingsfactor ‘%s’ verwijderd -- Te weinig observaties voor het schatten "
 "van de willekeurige hellingen van '%s' voor willekeurige effecten "
 "groeperingsfactor '%s'."
@@ -8926,13 +8884,13 @@ msgstr[1] "Partiële Regressiegrafieken"
 
 msgid "The following item correlated negatively with the scale: %s. "
 msgid_plural "The following items correlated negatively with the scale: %s. "
-msgstr[0] "De volgende item is negatief gecorreleerd met: %s."
-msgstr[1] "De volgende items zijn negatief gecorreleerd met: %s."
+msgstr[0] "De volgende item is negatief gecorreleerd met: %s. "
+msgstr[1] "De volgende items zijn negatief gecorreleerd met: %s. "
 
 msgid "The following item was reverse scaled: %s. "
 msgid_plural "The following items were reverse scaled: %s. "
-msgstr[0] "De volgende item is omgekeerd geschaald: %s."
-msgstr[1] "De volgende items zijn omgekeerd geschaald: %s."
+msgstr[0] "De volgende item is omgekeerd geschaald: %s. "
+msgstr[1] "De volgende items zijn omgekeerd geschaald: %s. "
 
 #~ msgid ""
 #~ "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-"
