@@ -16096,10 +16096,6 @@ msgid ""
 msgstr ""
 
 msgctxt "Description|"
-msgid "Visual Modeling (Beta)"
-msgstr ""
-
-msgctxt "Description|"
 msgid "Flexplot"
 msgstr ""
 
@@ -19428,14 +19424,6 @@ msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr ""
 
-msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-msgstr ""
-
 msgctxt "Description|"
 msgid "Log-normal"
 msgstr ""
@@ -19804,14 +19792,6 @@ msgctxt "LDt|"
 msgid "Non-centrality:"
 msgstr ""
 
-msgctxt "LStestingsequential|"
-msgid "Posterior"
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid ""
-msgstr ""
-
 msgctxt "SelectionModels|"
 msgid "Effect sizes & SE"
 msgstr ""
@@ -19882,4 +19862,24 @@ msgctxt "QMLListView|"
 msgid ""
 "The list %1 has a rowComponent with the same name (%2) as its optionKey. "
 "Change the optionKey property of the list or the control name."
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Normalized"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Visual Modeling"
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid ""
 msgstr ""

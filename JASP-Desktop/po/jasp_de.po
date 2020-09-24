@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-22 10:41+0000\n"
-"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
-"de/>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -16412,10 +16406,6 @@ msgstr ""
 "Tests."
 
 msgctxt "Description|"
-msgid "Visual Modeling (Beta)"
-msgstr "Visuelle Modellierung (Beta)"
-
-msgctxt "Description|"
 msgid "Flexplot"
 msgstr "Flexplot"
 
@@ -19809,14 +19799,6 @@ msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-msgstr ""
-
 msgctxt "Description|"
 msgid "Log-normal"
 msgstr "Log-Normal"
@@ -19873,9 +19855,10 @@ msgctxt "LDgamma|"
 msgid "Scale:"
 msgstr ""
 
+#, fuzzy
 msgctxt "LDgamma|"
 msgid "Rate:"
-msgstr ""
+msgstr "Rate:"
 
 msgctxt "LDgamma|"
 msgid "Mean:"
@@ -19889,9 +19872,10 @@ msgctxt "LDgammaInverse|"
 msgid "Scale:"
 msgstr ""
 
+#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Rate:"
-msgstr ""
+msgstr "Rate:"
 
 msgctxt "LDgammaInverse|"
 msgid "Mean:"
@@ -20173,9 +20157,10 @@ msgctxt "LDnegbinomial|"
 msgid "Mean:"
 msgstr "Mittelwert:"
 
+#, fuzzy
 msgctxt "LDpoisson|"
 msgid "Rate:"
-msgstr ""
+msgstr "Rate:"
 
 msgctxt "LDt|"
 msgid "Degree of freedom:"
@@ -20184,14 +20169,6 @@ msgstr "Freiheitsgrad:"
 msgctxt "LDt|"
 msgid "Non-centrality:"
 msgstr "Nichtzentralität:"
-
-msgctxt "LStestingsequential|"
-msgid "Posterior"
-msgstr "Posterior"
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid ""
-msgstr ""
 
 msgctxt "SelectionModels|"
 msgid "Effect sizes & SE"
@@ -20258,8 +20235,8 @@ msgid ""
 "\"http://%6\">%6</a></i><br>"
 msgstr ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Erstellt von %4 und "
-"gepflegt von %5.</i> <br><i>Siehe Website für weitere Details: <a href=\"http"
-"://%6\">%6</a></i><br>"
+"gepflegt von %5.</i> <br><i>Siehe Website für weitere Details: <a href="
+"\"http://%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "QMLListView|"
@@ -20270,3 +20247,24 @@ msgstr ""
 "Die Liste %1 hat eine rowComponent mit dem gleichen Namen (%2) wie ihre "
 "optionKey. Ändern Sie die optionKey-Eigenschaft der Liste oder den Control-"
 "Namen."
+
+#, fuzzy
+msgctxt "LStestingsequential|"
+msgid "Normalized"
+msgstr "Normalisiert"
+
+msgctxt "Description|"
+msgid "Visual Modeling"
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid ""
+msgstr ""
