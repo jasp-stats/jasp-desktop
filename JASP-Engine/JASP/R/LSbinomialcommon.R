@@ -297,7 +297,7 @@
       text_Alpha <- MASS::fractions(prior[["parAlpha"]] + data$nSuccesses)
     }
     if (!is.na(as.numeric(prior[["parBeta_inp"]]))){
-      text_Beta <- prior[["parBeta"]] + data$nSuccesses
+      text_Beta <- prior[["parBeta"]] + data$nFailures
     } else {
       text_Beta <- MASS::fractions(prior[["parBeta"]] + data$nFailures)
     }
