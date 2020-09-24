@@ -809,7 +809,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 }
 
 .referenceGrid <- function(rmAnovaContainer, options, ready) {
-  if (!is.null(rmAnovaContainer[["referenceGrid"]]) || !ready)
+  if (!is.null(rmAnovaContainer[["referenceGrid"]]) || !ready || rmAnovaContainer$getError())
     return()
   
   fullModel <- rmAnovaContainer[["anovaResult"]]$object$fullModel 
