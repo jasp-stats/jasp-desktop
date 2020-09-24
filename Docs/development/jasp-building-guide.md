@@ -170,7 +170,7 @@ Your deployment configuration, in the side panel, should now show something like
 
 
 10. From the Projects Build Settings, in the side panel, check if your build folders are correct.
-
+Make sure you've opened the "JASP.pro" project and JASP-R-Interface.pro.
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/BuildDir.png)  
 
@@ -217,7 +217,9 @@ To build JASP you need to clone **jasp-desktop** and **jasp-required-files** rep
 
 ![Image of Qt Configuration](https://static.jasp-stats.org/images/jasp2a.ConfigureQt.png)
 
- 2.b. **Configure project**: Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers. This should look like:
+ 2.b. **Configure project**: 
+ Open "JASP.pro" as the project in qtcreator.
+ Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers. This should look like:
 
  ![Image of Project debug](https://static.jasp-stats.org/images/jasp2b.1.ConfigureProjectDebug.png)
 
