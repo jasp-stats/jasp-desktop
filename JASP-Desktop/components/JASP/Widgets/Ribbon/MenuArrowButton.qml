@@ -37,9 +37,7 @@ Rectangle
 	ToolTip.text:				toolTip
 	ToolTip.timeout:			jaspTheme.toolTipTimeout
 	ToolTip.delay:				jaspTheme.toolTipDelay / 5
-	ToolTip.toolTip.font:		jaspTheme.font
 	ToolTip.visible:			toolTip !== "" && mice.containsMouse
-	ToolTip.toolTip.background: Rectangle { color:	jaspTheme.tooltipBackgroundColor }
 
 	signal clicked
 

@@ -96,7 +96,6 @@ JASPGridControl
 				QtControls.ToolTip.text			: removeTooltip
 				QtControls.ToolTip.timeout		: jaspTheme.toolTipTimeout
 				QtControls.ToolTip.delay		: jaspTheme.toolTipDelay
-				QtControls.ToolTip.toolTip.font	: jaspTheme.font
 				QtControls.ToolTip.visible		: removeTooltip !== "" && deleteMouseArea.containsMouse
 
 				MouseArea

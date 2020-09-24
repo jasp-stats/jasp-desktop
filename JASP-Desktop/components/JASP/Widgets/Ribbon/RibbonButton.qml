@@ -48,7 +48,6 @@ Rectangle
 	ToolTip.text:				toolTip
 	ToolTip.timeout:			jaspTheme.toolTipTimeout
 	ToolTip.delay:				jaspTheme.toolTipDelay
-	ToolTip.toolTip.font:		jaspTheme.font
 	ToolTip.visible:			toolTip !== "" && mice.containsMouse
 
     Rectangle

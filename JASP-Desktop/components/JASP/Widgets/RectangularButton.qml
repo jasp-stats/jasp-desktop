@@ -54,7 +54,6 @@ Item
 	ToolTip.text:				toolTip
 	ToolTip.timeout:			jaspTheme.toolTipTimeout
 	ToolTip.delay:				jaspTheme.toolTipDelay
-	ToolTip.toolTip.font:		jaspTheme.font
 	ToolTip.visible:			toolTip !== "" && buttonMouseArea.containsMouse
 
 	Keys.onSpacePressed:	clicked();

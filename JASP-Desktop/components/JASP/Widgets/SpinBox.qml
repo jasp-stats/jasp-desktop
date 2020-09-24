@@ -126,9 +126,7 @@ FocusScope
 		ToolTip.text:				root.toolTip
 		ToolTip.timeout:			jaspTheme.toolTipTimeout
 		ToolTip.delay:				jaspTheme.toolTipDelay
-		ToolTip.toolTip.font:		jaspTheme.font
 		ToolTip.visible:			root.toolTip !== "" && ( hoverMe.containsMouse || minus.hovered || plus.hovered )
-		ToolTip.toolTip.background: Rectangle { color:	jaspTheme.tooltipBackgroundColor }
 
 		background: Rectangle
 		{
