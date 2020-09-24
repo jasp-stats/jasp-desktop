@@ -61,7 +61,7 @@ Section
 			RadioButton
 			{
 				value:	"inclusion"
-				label:	qsTr("vs. all")
+				label:	qsTr("vs. rest")
 				checked: true
 			}
 
