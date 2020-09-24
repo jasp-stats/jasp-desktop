@@ -37,8 +37,8 @@ DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent)
 	connect(this, &DataSetView::itemSizeChanged,				this, &DataSetView::reloadRowNumbers);
 	connect(this, &DataSetView::itemSizeChanged,				this, &DataSetView::reloadColumnHeaders);
 
-	connect(PreferencesModel::prefs(), &PreferencesModel::uiScaleChanged,		this, &DataSetView::resetItems);
-	connect(PreferencesModel::prefs(), &PreferencesModel::interfaceFontChanged,	this, &DataSetView::resetItems);
+	connect(PreferencesModel::prefs(), &PreferencesModel::uiScaleChanged,		this, &DataSetView::resetItems, Qt::QueuedConnection);
+	connect(PreferencesModel::prefs(), &PreferencesModel::interfaceFontChanged,	this, &DataSetView::resetItems, Qt::QueuedConnection);
 
 	setZ(10);
 
