@@ -776,7 +776,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 			var $self = this.$el.find(">:first-child");
 			$self.tooltip({
-				content: "Damo is awesome",
+				content: "...",
 				items: "*",
 				disabled: true,
 				show: {
