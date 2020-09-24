@@ -219,7 +219,10 @@ To build JASP you need to clone **jasp-desktop** and **jasp-required-files** rep
 
  2.b. **Configure project**: 
  Open "JASP.pro" as the project in qtcreator.
- Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers. This should look like:
+ Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers.
+ These folders should be placed in the same directory as `jasp-desktop` and `jasp-required-files` (so next to them).
+ 
+ The projects, once configure, should look like:
 
  ![Image of Project debug](https://static.jasp-stats.org/images/jasp2b.1.ConfigureProjectDebug.png)
 
@@ -227,13 +230,14 @@ To build JASP you need to clone **jasp-desktop** and **jasp-required-files** rep
 
  ![Image of Project release](https://static.jasp-stats.org/images/jasp2b.2.ConfigureProjectRelease.png)
 
-In both case, I've added the flag "-j4" to make use of all my four cores on my mac.
+In both case, I've added the flag "-j4" to make use of all my four cores on my mac. (This seems to be enabled by default in newer versions of qtcreator)
 
  3. Clone the repository **jasp-required-files** and select the **MacOS** branch. These files can now be put in the folders as shown here:
 
  ![Image of folder structure](https://static.jasp-stats.org/images/jasp5.FolderStructure.png)
 
-where the blue files are the binaries that are added manually. The process will be smoothened out in the near future.
+where the blue files are the binaries that are added manually. Keep in mind that the screenshot is kind of old and is missing the `jasp-required-files` folder.
+The process will be smoothened out in the near future.
 You should also make sure to copy the `JAGS` folder together with the binaries.
 
 4. Make a symbolic link to Frameworks
