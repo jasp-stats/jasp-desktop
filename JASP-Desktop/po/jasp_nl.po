@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-23 07:12+0000\n"
-"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
-"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
-"nl/>\n"
-"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -16401,10 +16395,6 @@ msgstr ""
 "analyses."
 
 msgctxt "Description|"
-msgid "Visual Modeling (Beta)"
-msgstr "Visueel Modeleren (Beta)"
-
-msgctxt "Description|"
 msgid "Flexplot"
 msgstr "Flexplot"
 
@@ -19786,14 +19776,6 @@ msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr "Herstel"
 
-msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-msgstr ""
-
 msgctxt "Description|"
 msgid "Log-normal"
 msgstr "Log-normaal"
@@ -20162,14 +20144,6 @@ msgctxt "LDt|"
 msgid "Non-centrality:"
 msgstr "Niet-centraal:"
 
-msgctxt "LStestingsequential|"
-msgid "Posterior"
-msgstr "Posterior"
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid ""
-msgstr ""
-
 msgctxt "SelectionModels|"
 msgid "Effect sizes & SE"
 msgstr "Effectgroottes & SE"
@@ -20247,3 +20221,24 @@ msgstr ""
 "De lijst %1 heeft een rowComponent met dezelfde naam (%2) als zijn "
 "optionKey. Verander de optionKey property van de lijst of de naam van het "
 "control."
+
+#, fuzzy
+msgctxt "LStestingsequential|"
+msgid "Normalized"
+msgstr "Genormaliseerd"
+
+msgctxt "Description|"
+msgid "Visual Modeling"
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid ""
+msgstr ""

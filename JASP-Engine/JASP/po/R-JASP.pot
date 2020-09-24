@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-09-15 15:58\n"
+"POT-Creation-Date: 2020-09-24 10:50\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,6 +167,12 @@ msgid "%s %i"
 msgstr ""
 
 msgid "Please remove duplicates from the %s names."
+msgstr ""
+
+msgid "Incorrect arguments for the inverse cumulative density function"
+msgstr ""
+
+msgid "The HDI is discontinuous but allowSplit = FALSE;\n    the result is a valid CrI but not HDI."
 msgstr ""
 
 msgid "%1$s %2$s Plots"
