@@ -2776,7 +2776,7 @@ msgstr ""
 msgid "P(excl|data)"
 msgstr ""
 
-msgid "Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."
+msgid "Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Math%st."
 msgstr ""
 
 msgid "Some Bayes factors could not be calculated. Inclusion probabilities and Bayes factors are calculated while excluding these models. The results may be uninterpretable!"
@@ -2947,9 +2947,6 @@ msgstr ""
 msgid "Kolmogorov-Smirnov"
 msgstr ""
 
-msgid "Cramér-von Mises"
-msgstr ""
-
 msgid "Anderson-Darling"
 msgstr ""
 
@@ -3046,7 +3043,7 @@ msgstr ""
 msgid "The quantile function, usually denoted as Q(p), is the inverse of the cumulative distribution function.\n    The function gives the quantile such that the probability of the random variable being less than or equal to that value equals the given probability p.   \n    \n    The quantile plot displays the quantile function.\n    The <i>y</i>-axis displays the quantile of which the probability that the random variable is less or equal to that value is equal to p (displayed on the <i>x</i>-axis)."
 msgstr ""
 
-msgid "<h3> Demonstration of the %1$s </h3>\nThis demonstration is divided into four parts.\nThe first part displays the %2$s, its probability density function, cumulative distribution function, and quantile function.\nThe second part allows you to generate data from the %3$s, compute descriptive statistics, and display descriptive plots.\nThe third part allows you to estimate the parameters of the %4$s.\nThe fourth part allows you to check the fit of the %5$s to the data.\n\n<b>References</b>\n\nBlitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> Chapman and Hall/CRC.\n\nLeemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8–9.\n\nFor relationships with other distributions, visit www.math.wm.edu/~leemis/chart/UDR/UDR.html.\n\nhttps://en.wikipedia.org/wiki/List_of_probability_distributions"
+msgid "<h3> Demonstration of the %1$s </h3>\nThis demonstration is divided into four parts.\nThe first part displays the %2$s, its probability density function, cumulative distribution function, and quantile function.\nThe second part allows you to generate data from the %3$s, compute descriptive statistics, and display descriptive plots.\nThe third part allows you to estimate the parameters of the %4$s.\nThe fourth part allows you to check the fit of the %5$s to the data.\n\n<b>References</b>\n\nBlitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> Chapman and Hall/CRC.\n\nLeemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8-9.\n\nFor relationships with other distributions, visit www.math.wm.edu/~leemis/chart/UDR/UDR.html.\n\nhttps://en.wikipedia.org/wiki/List_of_probability_distributions"
 msgstr ""
 
 msgid "Estimation failed: Optimization did not converge. <ul><li>Try adjusting parameter values, check outliers or feasibility of the distribution fitting the data.</li></ul>"
@@ -5707,7 +5704,7 @@ msgstr ""
 msgid "Point estimate"
 msgstr ""
 
-msgid "%sMcDonald's ω estimation method switched to PFA because the CFA\n                                    did not find a solution."
+msgid "%1$sMcDonald's %2$s estimation method switched to PFA because the CFA\n                                    did not find a solution."
 msgstr ""
 
 msgid "%s Some confidence intervals could not be computed because none of the bootstrapped covariance matrices were invertible."
@@ -6423,13 +6420,13 @@ msgid_plural "The following variables are used as random effects grouping factor
 msgstr[0]    ""
 msgstr[1]    ""
 
-msgid        "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factor %s does not vary within the levels of random effects grouping factor '%s'."
-msgid_plural "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factors %s do not vary within the levels of random effects grouping factor '%s'."
+msgid        "All random slopes involving '%s' have been removed for the random effects grouping factor '%s'. -- Factor %s does not vary within the levels of random effects grouping factor '%s'."
+msgid_plural "All random slopes involving '%s' have been removed for the random effects grouping factor '%s'. -- Factors %s do not vary within the levels of random effects grouping factor '%s'."
 msgstr[0]    ""
 msgstr[1]    ""
 
-msgid        "Random slopes of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slopes of '%s' for random effects grouping factor '%s'."
-msgid_plural "Random slope of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slope of '%s' for random effects grouping factor '%s'."
+msgid        "Random slopes of '%s' for the random effects grouping factor '%s' removed -- Too few observations to estimate random slopes of '%s' for random effects grouping factor '%s'."
+msgid_plural "Random slope of '%s' for the random effects grouping factor '%s' removed -- Too few observations to estimate random slope of '%s' for random effects grouping factor '%s'."
 msgstr[0]    ""
 msgstr[1]    ""
 

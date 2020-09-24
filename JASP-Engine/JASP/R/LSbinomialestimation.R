@@ -956,8 +956,8 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
                                                 options[["plotsIterativeBF"]])
           }
           
-          if (all(is.na(tempCIPP[1:2]))){
-            tempInt <- "∅"
+          if (all(is.na(temp_CIPP[1:2]))){
+            temp_int <- "\u2205"
           } else {
             tempInt <- sapply(1:nrow(tempCIPP), function(i)paste(c(
               "[",format(round(tempCIPP$xStart[i], 3), nsmall = 3),", ",format(round(tempCIPP$xEnd[i], 3), nsmall = 3),"]"

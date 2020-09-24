@@ -401,7 +401,7 @@ Correlation <- function(jaspResults, dataset, options){
       }
       
       result$vsmpr <- JASP:::.VovkSellkeMPR(result$p.value)
-      result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
+      result$vsmpr <- ifelse(result$vsmpr == "\u221E", Inf, result$vsmpr)
       result <- unlist(result[stats], use.names = FALSE)
       names(result) <- statsNames
     }
@@ -431,7 +431,7 @@ Correlation <- function(jaspResults, dataset, options){
         }
       }
       result$vsmpr <- JASP:::.VovkSellkeMPR(result$p.value)
-      result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
+      result$vsmpr <- ifelse(result$vsmpr == "\u221E", Inf, result$vsmpr)
       # TODO: CIs for partial correlations
       result$lower.ci <- NA
       result$upper.ci <- NA
