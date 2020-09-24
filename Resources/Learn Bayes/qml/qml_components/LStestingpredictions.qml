@@ -36,7 +36,7 @@ Section
 			label: qsTr("Future observations")
 			id: predictionN
 			min: 1
-			defaultValue: 1
+			defaultValue: 10
 		}
 
 		CheckBox
