@@ -115,7 +115,10 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
       return()
     else if (!ready[1]){
       
-      estimatesTable$setError(gettext("Please specify successes and failures."))
+      if ((options[["dataType"]] == "dataVariable" && options[["selectedVariable"]] != "") ||
+          (options[["dataType"]] == "dataSequence" && options[["data_sequence"]]    != ""))
+        estimatesTable$addFootnote(gettext("Please specify successes and failures."))
+      
       return()
       
     } else if (ready[2]){
@@ -1208,7 +1211,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     
     plotsPredictions$position <- 2
     plotsPredictions$dependOn(c(.BinomialLS_data_dependencies, "predictionN",
-                                "colorPalettePrediction", "predictionPlotProp"))
+                                "colorPalette", "predictionPlotProp"))
     
     containerPredictionPlots[["plotsPredictions"]] <- plotsPredictions
     
@@ -1246,7 +1249,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
       
       if (options[["predictionPlotType"]] == "overlying"){
         p <- .plotOverlyingLS(all_lines, NULL, xName = xName, yName = yName, xRange = xRange, discrete = TRUE,
-                              palette = options[["colorPalettePrediction"]], proportions = options[["predictionPlotProp"]])
+                              palette = options[["colorPalette"]], proportions = options[["predictionPlotProp"]])
       } else {
         p <- .plotStackedLS(all_lines, NULL, legend, xName = xName, xRange = xRange,
                             discrete = TRUE, proportions = options[["predictionPlotProp"]])
