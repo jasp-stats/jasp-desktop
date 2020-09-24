@@ -139,8 +139,8 @@ void JaspTheme::setCurrentTheme(JaspTheme * theme)
 
 	if(_currentTheme)
 	{
-		emit _currentTheme->jaspThemeChanged(theme);
 		_currentTheme->updateFontMetrics();
+		emit _currentTheme->jaspThemeChanged(theme);
 	}
 
 
