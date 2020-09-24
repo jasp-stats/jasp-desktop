@@ -487,7 +487,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
                                 ifelse(type == "Prior", "plotsPredictionMarginalUpper",        "plotsPredictionPostMarginalUpper"),
                                 ifelse(type == "Prior", "plotsPredictionJointType",            "plotsPredictionPostJointType"),
                                 ifelse(type == "Prior", "plotsPredictionsObserved",            "predictionPostPlotProp"),
-                                ifelse(type == "Prior", "colorPalette",                        "colorPalettePrediction")
+                                "colorPalette"
     ))
     
     containerPlots[[paste0("plotsPredictions",type)]] <- plotsPredictions
@@ -559,7 +559,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
         
         if (options[[ifelse(type == "Prior", "plotsPredictionJointType", "plotsPredictionPostJointType")]] == "overlying"){
           p <- .plotOverlyingLS(all_lines, NULL, dfPoints = dfPoint, xName = xName, yName = yName, xRange = xRange,
-                                palette = options[[ifelse(type == "Prior", "colorPalette","colorPalettePrediction")]], nRound = nRound,
+                                palette = options[["colorPalette"]], nRound = nRound,
                                 discrete = TRUE, proportions = proportions)
         } else if (options[[ifelse(type == "Prior", "plotsPredictionJointType", "plotsPredictionPostJointType")]] == "stacked"){
           p <- .plotStackedLS(all_lines, NULL, legend, dfPoints = dfPoint, xName = xName, xRange = xRange,
@@ -691,8 +691,8 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
                                           ifelse(type == "Prior", "plotsPredictionCoverage",     "plotsPredictionPostCoverage"),
                                           ifelse(type == "Prior", "plotsPredictionLower",        "plotsPredictionPostLower"),
                                           ifelse(type == "Prior", "plotsPredictionUpper",        "plotsPredictionPostUpper"),
-                                          ifelse(type == "Prior", "colorPalette",                "colorPalettePrediction"),
-                                          ifelse(type == "Prior", "plotsPredictionsObserved",    "predictionPostPlotProp")
+                                          ifelse(type == "Prior", "plotsPredictionsObserved",    "predictionPostPlotProp"),
+                                          "colorPalette"
     ))
     
     
