@@ -28,7 +28,8 @@ FocusScope
 			anchors.right:		parent.right
 			anchors.bottom:		dataStatusBar.top
 
-			font:	jaspTheme.font
+			itemHorizontalPadding:	8 * jaspTheme.uiScale
+			itemVerticalPadding:	8 * jaspTheme.uiScale
 
 			model:				dataSetModel
 			onDoubleClicked:	__myRoot.doubleClicked()
@@ -38,7 +39,7 @@ FocusScope
 				{
 					text:				itemText
 					color:				itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
-					font:				dataFont
+					font:				jaspTheme.font
 					verticalAlignment:	Text.AlignVCenter
 				}
 
@@ -72,8 +73,8 @@ FocusScope
 					color:	jaspTheme.uiBackground
 					Text {
 						text:				rowIndex + 1
+						font:				jaspTheme.font
 						anchors.centerIn:	parent
-						font:				dataTableView.font
 						color:				jaspTheme.textEnabled
 					}
 
@@ -83,6 +84,7 @@ FocusScope
 			{
 				id:		headerRoot
 				color:	jaspTheme.uiBackground
+
 							property real	iconTextPadding:	10
 				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
 
@@ -190,7 +192,7 @@ FocusScope
 					id:				headerTextItem
 
 					text:			headerText
-					font:			dataTableView.font
+					font:			jaspTheme.font
 					color:			jaspTheme.textEnabled
 
 					horizontalAlignment:		Text.AlignHCenter
@@ -312,7 +314,7 @@ FocusScope
 			{
 				id:						datafiltertatusText
 				text:					filterModel.statusBarText
-				font:					dataTableView.font
+				font:					jaspTheme.font
 				color:					jaspTheme.textEnabled
 				anchors.left:			parent.left
 				anchors.verticalCenter:	parent.verticalCenter

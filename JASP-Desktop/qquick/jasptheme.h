@@ -4,6 +4,7 @@
 #include <QQuickItem>
 #include <QColor>
 #include <QFont>
+#include <QFontMetricsF>
 #include "gui/preferencesmodel.h"
 
 #define theme_distanceType	float
@@ -179,6 +180,9 @@ public:
 
 	static void setCurrentTheme(JaspTheme * theme);
 	static void setCurrentThemeFromName(QString name);
+
+	static JaspTheme		* currentTheme() { return _currentTheme; }
+	static QFontMetricsF	& fontMetrics()	 { return _fontMetrics;  } //For qml interface font used everywhere (in particular in datasetview though)
 
 	float				uiScale()							const	{ return PreferencesModel::prefs()->uiScale(); }
 	float				ribbonScaleHovered()				const	{ return _ribbonScaleHovered; }
@@ -577,6 +581,9 @@ public slots:
 private:
 	void connectSizeDistancesToUiScaleChanged();
 
+private slots:
+	void updateFontMetrics();
+
 private:
 	static JaspTheme		* _currentTheme;
 
@@ -713,10 +720,12 @@ private:
 	static QFont		_jaspFont,
 						_jaspCodeFont;
 
+
 	QString				_iconPath,
 						_themeName;
 
-	static std::map<QString, JaspTheme *> _themes;
+	static QFontMetricsF					_fontMetrics;
+	static std::map<QString, JaspTheme *>	_themes;
 };
 
 
