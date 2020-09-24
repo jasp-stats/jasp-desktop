@@ -153,7 +153,7 @@ public slots:
 	void setGenerateMarkdown(			bool		generateMarkdown);
 
 	void onCurrentThemeNameChanged(QString newThemeName);
-
+	void resetRememberedModules(bool clear);
 
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);

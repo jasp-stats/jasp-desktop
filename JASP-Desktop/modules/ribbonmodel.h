@@ -48,6 +48,10 @@ public:
 	};
 
 	RibbonModel();
+	~RibbonModel() { _singleton = nullptr; } 
+	
+	static RibbonModel * singleton() { return _singleton; }
+	
 
 	int								rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(_moduleNames.size());	}
 	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
@@ -70,6 +74,7 @@ public:
 
 	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
 	Q_INVOKABLE void			setModuleEnabled(int ribbonButtonModelIndex, bool enabled);
+	QStringList					getModulesEnabled() const;
 
 	int							highlightedModuleIndex() const { return _highlightedModuleIndex; }
 	Modules::AnalysisEntry*		getAnalysis(const std::string& moduleName, const std::string& analysisName);
@@ -101,6 +106,8 @@ private: // fields
 	std::vector<std::string>				_moduleNames;
 	int										_highlightedModuleIndex = -1;
 	std::vector<std::string>				_commonModulesToLoad;
+	
+	static RibbonModel * _singleton;
 };
 
 

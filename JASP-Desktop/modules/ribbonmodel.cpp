@@ -21,9 +21,13 @@
 #include "dirs.h"
 #include "log.h"
 
-RibbonModel::RibbonModel()
-	: QAbstractListModel(DynamicModules::dynMods())
-{}
+RibbonModel * RibbonModel::_singleton = nullptr;
+
+RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
+{
+	if(_singleton) throw std::runtime_error("RibbonModel can only be instantiated once!");
+	_singleton = this;	
+}
 
 void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
 {
@@ -197,6 +201,17 @@ void RibbonModel::setModuleEnabled(int ribbonButtonModelIndex, bool enabled)
 		ribbonButtonModel->setEnabled(enabled);
 		emit dataChanged(index(ribbonButtonModelIndex), index(ribbonButtonModelIndex));
 	}
+}
+
+QStringList RibbonModel::getModulesEnabled() const
+{
+	QStringList list;
+	
+	for(auto nameButton : _buttonModelsByName)
+		if(nameButton.second->enabled())
+			list.append(nameButton.second->moduleNameQ());
+	
+	return list;
 }
 
 Modules::AnalysisEntry *RibbonModel::getAnalysis(const std::string& moduleName, const std::string& analysisName)

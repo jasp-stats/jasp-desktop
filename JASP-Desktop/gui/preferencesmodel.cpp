@@ -6,6 +6,7 @@
 #include "qquick/jasptheme.h"
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
+#include "modules/ribbonmodel.h"
 
 using namespace std;
 
@@ -26,6 +27,7 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this,					&PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
 	connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
 	connect(this,					&PreferencesModel::plotBackgroundChanged,		this, &PreferencesModel::whiteBackgroundChanged			);
+	connect(this,					&PreferencesModel::modulesRememberChanged,		this, &PreferencesModel::resetRememberedModules			);
 
 	connect(this,					&PreferencesModel::jaspThemeChanged,			this, &PreferencesModel::setCurrentThemeNameFromClass,	Qt::QueuedConnection);
 	connect(this,					&PreferencesModel::currentThemeNameChanged,		this, &PreferencesModel::onCurrentThemeNameChanged		);
@@ -370,6 +372,7 @@ void PreferencesModel::onCurrentThemeNameChanged(QString newThemeName)
 	JaspTheme::setCurrentThemeFromName(currentThemeName());
 }
 
+
 void PreferencesModel::_loadDatabaseFont()
 {
 	QFontDatabase fontDatabase;
@@ -449,4 +452,9 @@ QString PreferencesModel::defaultInterfaceFont() const
 QString PreferencesModel::defaultCodeFont() const
 {
 	return Settings::defaultValue(Settings::CODE_FONT).toString();
+}
+
+void PreferencesModel::resetRememberedModules(bool setToRemember) 
+{
+	setModulesRemembered(!setToRemember ? QStringList({}) : RibbonModel::singleton()->getModulesEnabled());
 }
