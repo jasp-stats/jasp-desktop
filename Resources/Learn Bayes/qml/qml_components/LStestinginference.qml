@@ -23,7 +23,7 @@ import JASP				1.0
 
 Section
 {
-	expanded: true
+	expanded: false
 	title: qsTr("Inference")
 	columns: 2
 
