@@ -33,7 +33,7 @@ Section
 		IntegerField
 		{
 			name: "predictionN"
-			label: qsTr("Future observations")
+			label: qsTr("Number of future trials")
 			id: predictionN
 			min: 1
 			defaultValue: 10
