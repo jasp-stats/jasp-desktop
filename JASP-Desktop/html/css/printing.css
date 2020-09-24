@@ -4,7 +4,9 @@
 
     .jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar h4, .jasp-toolbar h5, .jasp-toolbar h6, .jasp-toolbar div , .jasp-toolbar span
 	                                { display:				block !important;	}
-	.toolbar-button					{ display:				none  !important;	}
+	.toolbar-button					{ display:				none  !important;	visibility: hidden; }
+	.jasp-menu						{ display:				none  !important;	visibility: hidden; }
+	.jasp-menu-selected				{ display:				none  !important;	visibility: hidden; }
 	body							{ float:				none  !important;	}
 
     .jasp-toolbar					{ page-break-after:		avoid;	}
