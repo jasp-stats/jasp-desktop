@@ -9,7 +9,6 @@
 #include <QSGFlatColorMaterial>
 
 #include <map>
-#include <QFontMetricsF>
 #include <QtQml>
 #include "utilities/qutils.h"
 #include "gui/preferencesmodel.h"

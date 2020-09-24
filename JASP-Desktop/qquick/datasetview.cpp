@@ -334,9 +334,7 @@ void DataSetView::addLine(float x0, float y0, float x1, float y1)
 
 QSizeF DataSetView::getTextSize(const QString & text) const
 {
-	QFontMetricsF metricsFont(JaspTheme::currentTheme()->font());
-
-	return metricsFont.size(Qt::TextSingleLine, text);
+	return JaspTheme::fontMetrics().size(Qt::TextSingleLine, text);
 }
 
 void DataSetView::buildNewLinesAndCreateNewItems()

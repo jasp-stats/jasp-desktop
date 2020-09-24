@@ -6,6 +6,7 @@
 JaspTheme			*	JaspTheme::_currentTheme	= nullptr;
 QFont					JaspTheme::_jaspFont		= QFont("SansSerif");
 QFont					JaspTheme::_jaspCodeFont	= QFont("FiraCode-Retina");
+QFontMetricsF			JaspTheme::_fontMetrics		= QFontMetrics(_jaspFont);
 
 std::map<QString, JaspTheme *> JaspTheme::_themes;
 
@@ -35,6 +36,10 @@ JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 	setFontRCode(					_jaspCodeFont);
 
 	_fontCode.setStyleHint(QFont::Monospace); // Cannot be set in QML https://bugreports.qt.io/browse/QTBUG-38931
+
+	updateFontMetrics();
+
+	connect(this,						&JaspTheme::uiScaleChanged,					this,						&JaspTheme::updateFontMetrics			);
 }
 
 JaspTheme::~JaspTheme()
@@ -133,7 +138,12 @@ void JaspTheme::setCurrentTheme(JaspTheme * theme)
 	_currentTheme = theme;
 
 	if(_currentTheme)
+	{
 		emit _currentTheme->jaspThemeChanged(theme);
+		_currentTheme->updateFontMetrics();
+	}
+
+
 }
 
 void JaspTheme::setCurrentThemeFromName(QString name)
@@ -1309,4 +1319,10 @@ void JaspTheme::setDarkeningColour(QColor darkeningColour)
 
 	_darkeningColour = darkeningColour;
 	emit darkeningColourChanged(_darkeningColour);
+}
+
+void JaspTheme::updateFontMetrics()
+{
+	if(currentTheme())
+		_fontMetrics = QFontMetrics(currentTheme()->font());
 }

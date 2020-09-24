@@ -28,6 +28,9 @@ FocusScope
 			anchors.right:		parent.right
 			anchors.bottom:		dataStatusBar.top
 
+			itemHorizontalPadding:	8 * jaspTheme.uiScale
+			itemVerticalPadding:	8 * jaspTheme.uiScale
+
 			model:				dataSetModel
 			onDoubleClicked:	__myRoot.doubleClicked()
 
