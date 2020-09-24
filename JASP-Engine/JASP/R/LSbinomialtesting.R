@@ -130,9 +130,14 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
     
     if (ready[1] && !ready[2])
       return()
-    else if (!ready[1])
-      testsTable$setError(gettext("Please specify successes and failures."))
-    else if (ready[2]){
+    else if (!ready[1]){
+      
+      if ((options[["dataType"]] == "dataVariable" && options[["selectedVariable"]] != "") ||
+          (options[["dataType"]] == "dataSequence" && options[["data_sequence"]]    != ""))
+        testsTable$addFootnote(gettext("Please specify successes and failures."))
+      
+      return()
+    }else if (ready[2]){
       
       temp_results <- .testBinomialLS(data, options[["priors"]])
       
