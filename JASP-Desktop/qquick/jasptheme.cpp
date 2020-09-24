@@ -135,6 +135,9 @@ void JaspTheme::setCurrentTheme(JaspTheme * theme)
 	if(theme == _currentTheme)
 		return;
 
+	if (_currentTheme && theme)
+		theme->setFont(_currentTheme->font());
+
 	_currentTheme = theme;
 
 	if(_currentTheme)
