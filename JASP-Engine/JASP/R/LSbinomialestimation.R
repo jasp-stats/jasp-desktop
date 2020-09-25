@@ -1048,6 +1048,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     predictionsTable$addColumnInfo(name = "posteriorEst",  title = gettextf("Posterior %s", estimateText),  type = "number")
     predictionsTable$addColumnInfo(name = "predictive",    title = gettext("Prediction (Successes)"),       type = "string")
     predictionsTable$addColumnInfo(name = "predictiveEst", title = gettextf("Prediction %s", estimateText), type = "number")
+    predictionsTable$addColumnInfo(name = "predictiveSD",  title = gettextf("Prediction std. deviation"),   type = "number")
     
     predictionsTable$setExpectedSize(length(options[["priors"]]))
     
@@ -1076,7 +1077,8 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
           posterior      = temp_results[["distribution"]],
           posteriorEst   = temp_results[[options[["predictionTableEstimate"]]]],
           predictive     = temp_prediction[["distribution"]],
-          predictiveEst  = temp_prediction[[options[["predictionTableEstimate"]]]]
+          predictiveEst  = temp_prediction[[options[["predictionTableEstimate"]]]],
+          predictiveSD   = temp_prediction[["SD"]]
         )
         
         predictionsTable$addRows(temp_row)

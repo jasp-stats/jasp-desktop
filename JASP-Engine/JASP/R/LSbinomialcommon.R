@@ -283,7 +283,8 @@
       median       = qbinom(.5, options[["predictionN"]], prior[["parPoint"]]) / d,
       mode         = .modeBinomialLS(options[["predictionN"]], prior[["parPoint"]], prop = prop),
       lCI          = qbinom(0.025, options[["predictionN"]], prior[["parPoint"]]) / d,
-      uCI          = qbinom(0.975, options[["predictionN"]], prior[["parPoint"]]) / d
+      uCI          = qbinom(0.975, options[["predictionN"]], prior[["parPoint"]]) / d,
+      SD           = .sdBinomLS(options[["predictionN"]], prior[["parPoint"]]) / d
     )
     
     return(output)
@@ -308,7 +309,8 @@
       median       = .qbetabinomLS(.5, options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures) / d,
       mode         = .modeBetaBinomLS(options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures, prop = prop),
       lCI          = .qbetabinomLS(0.025, options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures) / d,
-      uCI          = .qbetabinomLS(0.975, options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures) / d
+      uCI          = .qbetabinomLS(0.975, options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures) / d,
+      SD           = .sdBetaBinomLS(options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures) / d
     )
     
     return(output)
@@ -471,6 +473,20 @@
       return(temp_med / d)
     }
   }
+}
+.sdBinomLS            <- function(N, p, prop = FALSE){
+  if (prop) d <- N else d <- 1
+  
+  sd <- sqrt( N*p*(1-p) )
+  
+  return(sd / d)
+}
+.sdBetaBinomLS            <- function(N, alpha, beta, prop = FALSE){
+  if (prop) d <- N else d <- 1
+
+  sd <- sqrt( (N*alpha*beta*(N+alpha+beta)) / ( (alpha+beta)^2*(alpha+beta+1) ) )
+  
+  return(sd / d)
 }
 .marginalCentralBinomialLS  <- function(density, spikes, coverage, l.bound = 0, u.bound = 1, densityDiscrete = FALSE){
   
