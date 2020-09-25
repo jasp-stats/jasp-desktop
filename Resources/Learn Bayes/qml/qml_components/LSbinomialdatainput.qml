@@ -34,7 +34,7 @@ Section
 	{
 		columns:	3
 		name:		"dataType"
-		title:		qsTr("Input type")
+		title:		qsTr("Input Type")
 		id:			dataType
 
 		RadioButton
@@ -65,7 +65,7 @@ Section
 
 	Group
 	{
-		title: qsTr("Count data")
+		title: qsTr("Count Data")
 		visible: dataTypeA.checked
 
 		IntegerField
@@ -87,7 +87,7 @@ Section
 
 	TextArea
 	{
-		title:		qsTr("Comma-separated sequence of observations")
+		title:		qsTr("Comma-separated Sequence of Observations")
 		visible:	dataTypeB.checked
 		height:		100
 		name:		"data_sequence"

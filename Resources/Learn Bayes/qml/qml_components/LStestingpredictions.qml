@@ -24,7 +24,7 @@ import JASP				1.0
 Section
 {
 	expanded: false
-	title: qsTr("Posterior prediction")
+	title: qsTr("Posterior Prediction")
 
 	property alias predictionPlotProp: predictionPlotProp.label
 
@@ -215,7 +215,7 @@ Section
 										 plotsPredictionPostMarginalTypeCI.currentText == "HPD"
 								enabled: plotsPredictionPostMarginalCI.checked
 								name: "plotsPredictionPostMarginalCoverage"
-								label: qsTr("mass")
+								label: qsTr("Mass")
 								fieldWidth: 50
 								defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 							}
@@ -226,7 +226,7 @@ Section
 								visible: plotsPredictionPostMarginalTypeCI.currentText == "custom"
 								enabled: plotsPredictionPostMarginalCI.checked
 								name: "plotsPredictionPostMarginalLower"
-								label: qsTr("lower")
+								label: qsTr("Lower")
 								fieldWidth: 50
 								defaultValue: 0; min: 0; max: plotsPredictionPostMarginalUpper.value; inclusive: JASP.MinMax
 							}
@@ -236,7 +236,7 @@ Section
 								visible: plotsPredictionPostMarginalTypeCI.currentText == "custom"
 								enabled: plotsPredictionPostMarginalCI.checked
 								name: "plotsPredictionPostMarginalUpper"
-								label: qsTr("upper")
+								label: qsTr("Upper")
 								id: plotsPredictionPostMarginalUpper
 								fieldWidth: 50
 								defaultValue: 1; min: plotsPredictionPostMarginalLower.value; inclusive: JASP.MinOnly
