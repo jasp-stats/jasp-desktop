@@ -1053,9 +1053,17 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     
     containerPredictions[["predictionsTable"]] <- predictionsTable
     
-    if (!ready[2])
+    if (ready[1] && !ready[2])
       return()
-    else {
+    else if (!ready[1]){
+      
+      if ((options[["dataType"]] == "dataVariable" && options[["selectedVariable"]] != "") ||
+          (options[["dataType"]] == "dataSequence" && options[["data_sequence"]]    != ""))
+        predictionsTable$addFootnote(gettext("Please specify successes and failures."))
+      
+      return()
+      
+    } else {
       
       # add rows for each hypothesis
       for(i in 1:length(options[["priors"]])){
