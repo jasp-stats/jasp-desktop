@@ -990,7 +990,7 @@
     if (length(all_spikes) > 0){
       spike_y <- max(sapply(all_spikes, function(s)s$y))
       y       <- spike_y
-      x       <- unique(sapply(all_spikes, function(s)s$x[s$y == spike_y]))
+      x       <- unique(unlist(sapply(all_spikes, function(s)s$x[s$y == spike_y])))
       if (length(x) > 1)
         l <-  paste0("{", paste(x, collapse = ", "), "}")
       else
