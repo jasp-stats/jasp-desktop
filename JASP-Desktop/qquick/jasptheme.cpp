@@ -4,38 +4,23 @@
 #include <QFontDatabase>
 
 JaspTheme			*	JaspTheme::_currentTheme	= nullptr;
-QFont					JaspTheme::_jaspFont		= QFont("SansSerif");
-QFont					JaspTheme::_jaspCodeFont	= QFont("FiraCode-Retina");
-QFontMetricsF			JaspTheme::_fontMetrics		= QFontMetrics(_jaspFont);
+QFontMetricsF			JaspTheme::_fontMetrics		= QFontMetricsF(QFont());
 
 std::map<QString, JaspTheme *> JaspTheme::_themes;
 
 JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 {
-	_jaspFont			= PreferencesModel::prefs()->interfaceFont();
-	_jaspCodeFont		= PreferencesModel::prefs()->codeFont();
-
 	connect(this,						&JaspTheme::currentThemeNameChanged,		PreferencesModel::prefs(),	&PreferencesModel::setCurrentThemeName	);
 	connect(this,						&JaspTheme::jaspThemeChanged,				PreferencesModel::prefs(),	&PreferencesModel::jaspThemeChanged		);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this,						&JaspTheme::uiScaleChanged				);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::maxFlickVelocityChanged, this,						&JaspTheme::maximumFlickVelocity		);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::interfaceFontChanged,	this,						&JaspTheme::setDefaultFont				);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::codeFontChanged,			this,						&JaspTheme::setDefaultCodeFont			);
 
 	connectSizeDistancesToUiScaleChanged();
 
 	if(_currentTheme == nullptr)
 		setCurrentTheme(this);
 
-	setFont(						_jaspFont);
-	setFontLabel(					_jaspFont);
-	setFontRibbon(					_jaspFont);
-	setFontGroupTitle(				_jaspFont);
-	setFontPrefOptionsGroupTitle(	_jaspFont);
-	setFontCode(					_jaspCodeFont);
-	setFontRCode(					_jaspCodeFont);
-
-	_fontCode.setStyleHint(QFont::Monospace); // Cannot be set in QML https://bugreports.qt.io/browse/QTBUG-38931
+	//_fontCode.setStyleHint(QFont::Monospace); // Cannot be set in QML https://bugreports.qt.io/browse/QTBUG-38931
 
 	updateFontMetrics();
 
@@ -46,30 +31,6 @@ JaspTheme::~JaspTheme()
 {
 	if(_currentTheme == this)
 		setCurrentTheme(nullptr);
-}
-
-void JaspTheme::setDefaultFont()
-{
-	QString font = PreferencesModel::prefs()->interfaceFont();
-
-	if (_jaspFont != font)
-	{
-		_jaspFont = font;
-
-		emit jaspFontChanged(_jaspFont);
-	}
-}
-
-void JaspTheme::setDefaultCodeFont()
-{
-	QString font = PreferencesModel::prefs()->codeFont();
-
-	if (_jaspCodeFont != font)
-	{
-		_jaspCodeFont = font;
-
-		emit jaspCodeFontChanged(_jaspCodeFont);
-	}
 }
 
 #define CONNECT_UISCALE(toThis) connect(this, &JaspTheme::uiScaleChanged, this, &JaspTheme::toThis)
@@ -135,9 +96,6 @@ void JaspTheme::setCurrentTheme(JaspTheme * theme)
 	if(theme == _currentTheme)
 		return;
 
-	if (_currentTheme && theme)
-		theme->setFont(_currentTheme->font());
-
 	_currentTheme = theme;
 
 	if(_currentTheme)
@@ -145,8 +103,6 @@ void JaspTheme::setCurrentTheme(JaspTheme * theme)
 		_currentTheme->updateFontMetrics();
 		emit _currentTheme->jaspThemeChanged(theme);
 	}
-
-
 }
 
 void JaspTheme::setCurrentThemeFromName(QString name)
@@ -1238,24 +1194,6 @@ void JaspTheme::setFontPrefOptionsGroupTitle(QFont fontPrefOptionsGroupTitle)
 	emit fontPrefOptionsGroupTitleChanged(_fontPrefOptionsGroupTitle);
 }
 
-void JaspTheme::setJaspFont(QFont jaspFont)
-{
-	if (_jaspFont == jaspFont)
-		return;
-
-	_jaspFont = jaspFont;
-	emit jaspFontChanged(_jaspFont);
-}
-
-void JaspTheme::setJaspCodeFont(QFont jaspCodeFont)
-{
-	if (_jaspCodeFont == jaspCodeFont)
-		return;
-
-	_jaspCodeFont = jaspCodeFont;
-	emit jaspCodeFontChanged(_jaspCodeFont);
-}
-
 void JaspTheme::setIconPath(QString iconPath)
 {
 	if (_iconPath == iconPath)
@@ -1327,5 +1265,5 @@ void JaspTheme::setDarkeningColour(QColor darkeningColour)
 void JaspTheme::updateFontMetrics()
 {
 	if(currentTheme())
-		_fontMetrics = QFontMetrics(currentTheme()->font());
+		_fontMetrics = QFontMetricsF(currentTheme()->font());
 }
