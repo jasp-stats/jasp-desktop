@@ -24,7 +24,7 @@ import JASP				1.0
 Section
 {
 	expanded: false
-	title: qsTr("Sequential analysis")
+	title: qsTr("Sequential Analysis")
 
 
 	CheckBox
@@ -73,7 +73,7 @@ Section
 									plotsIterativeIndividualType.currentText == "HPD"
 						enabled: plotsIterativeIndividualCI.checked
 						name: "plotsIterativeCoverage"
-						label: qsTr("mass")
+						label: qsTr("Mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -121,7 +121,7 @@ Section
 				{
 					enabled: plotsIterativeInterval.checked
 					name: "plotsIterativeIntervalLower"
-					label: qsTr("lower")
+					label: qsTr("Lower")
 					id: plotsIterativeIntervalLower
 					fieldWidth: 50
 					defaultValue: 0.25; min: 0; max: plotsIterativeIntervalUpper.value; inclusive: JASP.MinOnly
@@ -131,7 +131,7 @@ Section
 				{
 					enabled: plotsIterativeInterval.checked
 					name: "plotsIterativeIntervalUpper"
-					label: qsTr("upper")
+					label: qsTr("Upper")
 					id: plotsIterativeIntervalUpper
 					fieldWidth: 50
 					defaultValue: 0.75; min: plotsIterativeIntervalLower.value; max: 1; inclusive: JASP.MaxOnly

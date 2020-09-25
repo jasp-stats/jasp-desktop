@@ -36,7 +36,7 @@ Section
 	{
 		Layout.columnSpan:	2
 		columns:			2
-		title:	qsTr("Bayes factor")
+		title:	qsTr("Bayes Factor")
 
 		RadioButtonGroup
 		{
@@ -135,7 +135,7 @@ Section
 								 plotsPriorTypeCI.currentText == "HPD"
 						enabled: plotsPriorCI.checked
 						name: "plotsPriorCoverage"
-						label: qsTr("mass")
+						label: qsTr("Mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -145,7 +145,7 @@ Section
 						visible: plotsPriorTypeCI.currentText == "custom"
 						enabled: plotsPriorCI.checked
 						name: "plotsPriorLower"
-						label: qsTr("lower")
+						label: qsTr("Lower")
 						id: plotsPriorLower
 						fieldWidth: 50
 						defaultValue: 0.25; min: 0; max: plotsPriorUpper.value; inclusive: JASP.MinMax
@@ -156,7 +156,7 @@ Section
 						visible: plotsPriorTypeCI.currentText == "custom"
 						enabled: plotsPriorCI.checked
 						name: "plotsPriorUpper"
-						label: qsTr("upper")
+						label: qsTr("Upper")
 						id: plotsPriorUpper
 						fieldWidth: 50
 						defaultValue: 0.75; min: plotsPriorLower.value; max: 1; inclusive: JASP.MinMax
@@ -233,7 +233,7 @@ Section
 								 plotsPriorMarginalType.currentText == "HPD"
 						enabled: plotsPriorMarginalCI.checked
 						name: "plotsPriorMarginalCoverage"
-						label: qsTr("mass")
+						label: qsTr("Mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -243,7 +243,7 @@ Section
 						visible: plotsPriorMarginalType.currentText == "custom"
 						enabled: plotsPriorMarginalCI.checked
 						name: "plotsPriorMarginalLower"
-						label: qsTr("lower")
+						label: qsTr("Lower")
 						id: plotsMarginalPriorLower
 						fieldWidth: 50
 						defaultValue: 0.25; min: 0; max: plotsPriorMarginalUpper.value; inclusive: JASP.MinMax
@@ -254,7 +254,7 @@ Section
 						visible: plotsPriorMarginalType.currentText == "custom"
 						enabled: plotsPriorMarginalCI.checked
 						name: "plotsPriorMarginalUpper"
-						label: qsTr("upper")
+						label: qsTr("Upper")
 						id: plotsPriorMarginalUpper
 						fieldWidth: 50
 						defaultValue: 0.75; min: plotsPriorMarginalLower.value; max: 1; inclusive: JASP.MinMax
@@ -324,7 +324,7 @@ Section
 								 plotsPredictionTypeCI.currentText == "HPD"
 						enabled: plotsPredictionCI.checked
 						name: "plotsPredictionCoverage"
-						label: qsTr("mass")
+						label: qsTr("Mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -334,7 +334,7 @@ Section
 						visible: plotsPredictionTypeCI.currentText == "custom"
 						enabled: plotsPredictionCI.checked
 						name: "plotsPredictionLower"
-						label: qsTr("lower")
+						label: qsTr("Lower")
 						id: plotsPredictionLower
 						fieldWidth: 50
 						defaultValue: 0; min: 0; max: plotsPredictionUpper.value; inclusive: JASP.MinMax
@@ -345,7 +345,7 @@ Section
 						visible: plotsPredictionTypeCI.currentText == "custom"
 						enabled: plotsPredictionCI.checked
 						name: "plotsPredictionUpper"
-						label: qsTr("upper")
+						label: qsTr("Upper")
 						id: plotsPredictionUpper
 						fieldWidth: 50
 						defaultValue: 1
@@ -425,7 +425,7 @@ Section
 								 plotsPredictionMarginalTypeCI.currentText == "HPD"
 						enabled: plotsPredictionMarginalCI.checked
 						name: "plotsPredictionMarginalCoverage"
-						label: qsTr("mass")
+						label: qsTr("Mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -435,7 +435,7 @@ Section
 						visible: plotsPredictionMarginalTypeCI.currentText == "custom"
 						enabled: plotsPredictionMarginalCI.checked
 						name: "plotsPredictionMarginalLower"
-						label: qsTr("lower")
+						label: qsTr("Lower")
 						id: plotsMarginalPredictionLower
 						fieldWidth: 50
 						defaultValue: 0; min: 0; max: plotsPredictionMarginalUpper.value; inclusive: JASP.MinMax
@@ -446,7 +446,7 @@ Section
 						visible: plotsPredictionMarginalTypeCI.currentText == "custom"
 						enabled: plotsPredictionMarginalCI.checked
 						name: "plotsPredictionMarginalUpper"
-						label: qsTr("upper")
+						label: qsTr("Upper")
 						id: plotsPredictionMarginalUpper
 						fieldWidth: 50
 						defaultValue: 1; min: plotsPredictionMarginalLower.value; inclusive: JASP.MinOnly
@@ -536,7 +536,7 @@ Section
 								 plotsPosteriorTypeCI.currentText == "HPD"
 						enabled: plotsPosteriorCI.checked
 						name: "plotsPosteriorCoverage"
-						label: qsTr("mass")
+						label: qsTr("Mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -546,7 +546,7 @@ Section
 						visible: plotsPosteriorTypeCI.currentText == "custom"
 						enabled: plotsPosteriorCI.checked
 						name: "plotsPosteriorLower"
-						label: qsTr("lower")
+						label: qsTr("Lower")
 						id: plotsPosteriorLower
 						fieldWidth: 50
 						defaultValue: 0; min: 0; max: plotsPosteriorUpper.value; inclusive: JASP.MinMax
@@ -557,7 +557,7 @@ Section
 						visible: plotsPosteriorTypeCI.currentText == "custom"
 						enabled: plotsPosteriorCI.checked
 						name: "plotsPosteriorUpper"
-						label: qsTr("upper")
+						label: qsTr("Upper")
 						id: plotsPosteriorUpper
 						fieldWidth: 50
 						defaultValue: 1; min: plotsPosteriorLower.value; max: 1; inclusive: JASP.MinMax
@@ -646,7 +646,7 @@ Section
 								 plotsPosteriorMarginalType.currentText == "HPD"
 						enabled: plotsPosteriorMarginalCI.checked
 						name: "plotsPosteriorMarginalCoverage"
-						label: qsTr("mass")
+						label: qsTr("Mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -656,7 +656,7 @@ Section
 						visible: plotsPosteriorMarginalType.currentText == "custom"
 						enabled: plotsPosteriorMarginalCI.checked
 						name: "plotsPosteriorMarginalLower"
-						label: qsTr("lower")
+						label: qsTr("Lower")
 						id: plotsPosteriorMarginalLower
 						fieldWidth: 50
 						defaultValue: 0.25; min: 0; max: plotsPosteriorMarginalUpper.value; inclusive: JASP.MinMax
@@ -667,7 +667,7 @@ Section
 						visible: plotsPosteriorMarginalType.currentText == "custom"
 						enabled: plotsPosteriorMarginalCI.checked
 						name: "plotsPosteriorMarginalUpper"
-						label: qsTr("upper")
+						label: qsTr("Upper")
 						id: plotsPosteriorMarginalUpper
 						fieldWidth: 50
 						defaultValue: 0.75; min: plotsPosteriorMarginalLower.value; max: 1; inclusive: JASP.MinMax

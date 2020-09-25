@@ -89,7 +89,7 @@ Section
 									plotsPriorIndividualType.currentText == "HPD"
 						enabled: plotsPriorIndividualCI.checked
 						name: "plotsPriorCoverage"
-						label: qsTr("mass")
+						label: qsTr("Mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -98,7 +98,7 @@ Section
 						visible: plotsPriorIndividualType.currentText == "custom"
 						enabled: plotsPriorIndividualCI.checked
 						name: "plotsPriorLower"
-						label: qsTr("lower")
+						label: qsTr("Lower")
 						id: plotsPriorLower
 						fieldWidth: 50
 						defaultValue: 0.25; min: 0; max: plotsPriorUpper.value; inclusive: JASP.MinMax
@@ -108,7 +108,7 @@ Section
 						visible: plotsPriorIndividualType.currentText == "custom"
 						enabled: plotsPriorIndividualCI.checked
 						name: "plotsPriorUpper"
-						label: qsTr("upper")
+						label: qsTr("Upper")
 						id: plotsPriorUpper
 						fieldWidth: 50
 						defaultValue: 0.75; min: plotsPriorLower.value; max: 1; inclusive: JASP.MinMax
@@ -168,7 +168,7 @@ Section
 									plotsPosteriorIndividualType.currentText == "HPD"
 						enabled: plotsPosteriorIndividualCI.checked
 						name: "plotsPosteriorCoverage"
-						label: qsTr("mass")
+						label: qsTr("Mass")
 						fieldWidth: 50
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
@@ -177,7 +177,7 @@ Section
 						visible: plotsPosteriorIndividualType.currentText == "custom"
 						enabled: plotsPosteriorIndividualCI.checked
 						name: "plotsPosteriorLower"
-						label: qsTr("lower")
+						label: qsTr("Lower")
 						id: plotsPosteriorLower
 						fieldWidth: 50
 						defaultValue: 0.25; min: 0; max: plotsPosteriorUpper.value; inclusive: JASP.MinMax
@@ -187,7 +187,7 @@ Section
 						visible: plotsPosteriorIndividualType.currentText == "custom"
 						enabled: plotsPosteriorIndividualCI.checked
 						name: "plotsPosteriorUpper"
-						label: qsTr("upper")
+						label: qsTr("Upper")
 						id: plotsPosteriorUpper
 						fieldWidth: 50
 						defaultValue: 0.75; min: plotsPosteriorLower.value; max: 1; inclusive: JASP.MinMax

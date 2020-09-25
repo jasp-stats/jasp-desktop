@@ -24,7 +24,7 @@ import JASP.Theme 1.0
 Section
 {
 	expanded:	false
-	title:		qsTr("Sequential analysis")
+	title:		qsTr("Sequential Analysis")
 	enabled:	dataTypeB.checked || dataTypeC.checked
 
 	property alias bfTypevsNameSequential: 	bfTypevsNameSequential.source
