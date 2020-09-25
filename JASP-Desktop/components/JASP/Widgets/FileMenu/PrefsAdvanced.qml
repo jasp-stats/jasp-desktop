@@ -243,7 +243,7 @@ ScrollView
 					value:				preferencesModel.logFilesMax
 					onValueChanged:		if(value !== "") preferencesModel.logFilesMax = value
 					from:				5 //Less than 5 makes no sense as on release you get 1 for JASP-Desktop and 4 from the Engines
-					to:					100
+					to:					1000000
 					defaultValue:		10
 					stepSize:			1
 					KeyNavigation.tab:	showLogs
