@@ -981,7 +981,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       legend.text  = ggplot2::element_text(margin = ggplot2::margin(0, 0, 2, 0)),
       legend.key.height = ggplot2::unit(1, "cm"),
       legend.key.width  = ggplot2::unit(1.5,"cm"),
-      axis.text.x       = ggplot2::element_text(angle = 45))
+      axis.text.x       = if (nrow(dfHist) > 3) ggplot2::element_text(angle = 45))
   
   plot <- g
   return(plot)
