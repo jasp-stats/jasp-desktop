@@ -22,16 +22,44 @@ import JASP.Widgets 1.0
 import JASP 1.0
 Form
 {
+	property var listVisibility :
+	{
+		"input_t" :	{ values: ["cohensd"]					, id: input_t	, check2Sample: false },
+		"input_SE": { values: ["cohensd", "general"]		, id: input_SE	, check2Sample: false },
+		"input_CI":	{ values: ["cohensd", "general", "OR"]	, id: input_CI	, check2Sample: false },
+		"input_N" :	{ values: ["cohensd", "correlation"]	, id: input_N	, check2Sample: false },
+		"input_N1": { values: ["cohensd"]					, id: input_N1	, check2Sample: true  },
+		"input_N2": { values: ["cohensd"]					, id: input_N2	, check2Sample: true  },
+	}
+
+	function checkListVisibility(name)
+	{
+		var check = (listVisibility[name]["check2Sample"] ? cohensd_twoSample.checked : true)
+
+		return check && listVisibility[name]["values"].includes(measures.value);
+	}
+
 	RadioButtonGroup
 	{
+		id:						measures
 		Layout.columnSpan:		2
 		name:					"measures"
 		radioButtonsOnSameRow:	true
 		columns:				2
-		onValueChanged:	if(measures_correlation.checked) {
-			advanced_mu_transform_cohens_d.click()
-		} else if (measures_OR.checked){
-			advanced_mu_transform_log_OR.click()
+
+		onValueChanged:
+		{
+			if(measures_correlation.checked)
+				advanced_mu_transform_cohens_d.click()
+			else if (measures_OR.checked)
+				advanced_mu_transform_log_OR.click()
+
+			for (var inputName in listVisibility)
+			{
+				if (!checkListVisibility(inputName) && listVisibility[inputName]["id"].count > 0)
+					listVisibility[inputName]["id"].itemDoubleClicked(0)
+			}
+
 		}
 
 		RadioButton
@@ -105,8 +133,7 @@ Form
 			title: 			qsTr("t-statistic")
 			singleVariable: true
 			allowedColumns: ["scale"]
-			visible:		 measures_cohensd.checked
-			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
+			visible:		checkListVisibility(name)
 		}
 
 		AssignedVariablesList
@@ -117,8 +144,7 @@ Form
 			title: 			qsTr("Effect Size Standard Error")
 			singleVariable: true
 			allowedColumns: ["scale"]
-			visible:		measures_cohensd.checked || measures_general.checked
-			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
+			visible:		checkListVisibility(name)
 		}
 
 		AssignedPairsVariablesList
@@ -129,8 +155,7 @@ Form
 			title: 			qsTr("95% CI Lower and Upper Bound")
 			singleVariable: true
 			allowedColumns: ["scale"]
-			visible:		measures_cohensd.checked || measures_general.checked || measures_OR.checked
-			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
+			visible:		checkListVisibility(name)
 		}
 
 		AssignedVariablesList
@@ -141,8 +166,7 @@ Form
 			title: 			qsTr("N")
 			singleVariable: true
 			allowedColumns: ["scale", "ordinal"]
-			visible:		 measures_cohensd.checked || measures_correlation.checked
-			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
+			visible:		checkListVisibility(name)
 		}
 
 		AssignedVariablesList
@@ -153,8 +177,7 @@ Form
 			title: 			qsTr("N (group 1)")
 			singleVariable: true
 			allowedColumns: ["scale", "ordinal"]
-			visible:		 measures_cohensd.checked && cohensd_twoSample.checked
-			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
+			visible:		 checkListVisibility(name)
 		}
 
 		AssignedVariablesList
@@ -165,8 +188,7 @@ Form
 			title: 			qsTr("N (group 2)")
 			singleVariable: true
 			allowedColumns: ["scale", "ordinal"]
-			visible:		 measures_cohensd.checked && cohensd_twoSample.checked
-			onVisibleChanged: if (!visible && count > 0) itemDoubleClicked(0);
+			visible:		 checkListVisibility(name)
 		}
 
 		AssignedVariablesList
