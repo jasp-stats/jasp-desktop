@@ -45,15 +45,19 @@ void TempFiles::init(long sessionId)
 	_sessionDirName	= Dirs::tempDir() + "/" + std::to_string(sessionId);
 	_statusFileName	= _sessionDirName +  "/status";
 	_clipboard		= Dirs::tempDir() + "/clipboard";
-
+	
 	createSessionDir();
 }
 
 void TempFiles::createSessionDir()
 {
+	std::cout << "TempFiles::createSessionDir(): ";
+	
 	system::error_code error;
 
 	filesystem::path sessionPath = Utils::osPath(_sessionDirName);
+	
+	std::cout<< "'" << sessionPath.string() << "' about to be (removed and re)created." << std::endl;
 
 	filesystem::remove_all(sessionPath, error);
 	filesystem::create_directories(sessionPath, error);

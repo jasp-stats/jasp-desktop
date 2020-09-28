@@ -97,6 +97,8 @@ MainWindow * MainWindow::_singleton	= nullptr;
 
 MainWindow::MainWindow(QApplication * application) : QObject(application), _application(application)
 {
+	std::cout << "MainWindow constructor started" << std::endl;
+	
 	assert(!_singleton);
 	_singleton = this;
 	JASPTIMER_START(MainWindowConstructor);
@@ -107,6 +109,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	makeAppleMenu(); //Doesnt do anything outside of magical apple land
+	
+	std::cout << "Going to construct the necessary models for JASP to function." << std::endl;
 
 	//The order of these constructors is deliberate (up to some extent anyway). If you change the order you might find that stuff explodes randomly (although most likely during startup)
 	_qml					= new QQmlApplicationEngine(this);
@@ -123,7 +127,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	
 	initLog(); //initLog needs _preferences and _engineSync!
 
-	Log::log() << "JASP " << AppInfo::version.asString() << " is initializing." << std::endl;
+	Log::log() << "JASP " << AppInfo::version.asString() << " is continuing initialization." << std::endl;
 
 	_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
