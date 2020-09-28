@@ -176,9 +176,9 @@ skip_on_travis()
   test_that("Predictions Table results match", {
     table <- results[["results"]][["containerPredictions"]][["collection"]][["containerPredictions_predictionsTable"]][["data"]]
     jasptools::expect_equal_tables(table,
-                                   list("Models Spike", "spike at 0.5", 0.5, "binomial (1, 0.5)", 0.5,
-                                        "Models Beta", "beta (59, 43)", 0.57843137254902, "beta-binomial (1, 59, 59)",
-                                        0.57843137254902))
+                        list("Models Spike", "spike at 0.5", 0.5, "binomial (1, 0.5)", 0.5,
+                             0.5, "Models Beta", "beta (59, 43)", 0.57843137254902, "beta-binomial (1, 59, 43)",
+                             0.57843137254902, 0.493810206253452))
   })
   
   test_that("Estimation Summary table results match", {
@@ -483,9 +483,9 @@ skip_on_travis()
   test_that("Estimation Summary table results match", {
     table <- results[["results"]][["estimatesContainer"]][["collection"]][["estimatesContainer_estimatesTable"]][["data"]]
     jasptools::expect_equal_tables(table,
-                                   list("Models Beta", "beta (60, 44)", 0.57843137254902, "beta (2, 2)",
-                                        0.5, "Models Point", "spike at 0.3", 0.3, "spike at 0.3", 0.3
-                                   ))
+                                   list("Models Beta", "beta (60, 44)", 0.57843137254902, "beta-binomial (10, 60, 44)",
+                                        6, 1.62789504128088, "Models Point", "spike at 0.3", 0.3, "binomial (10, 0.3)",
+                                        3, 1.44913767461894))
   })
   
   test_that("Data Summary table results match", {
