@@ -9,13 +9,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- TRUE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- TRUE
@@ -202,13 +202,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- TRUE
@@ -502,13 +502,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- FALSE
@@ -644,13 +644,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- FALSE
@@ -750,13 +750,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- FALSE
@@ -850,13 +850,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- FALSE
@@ -950,13 +950,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- FALSE
@@ -1044,13 +1044,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- FALSE
@@ -1138,13 +1138,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- TRUE
@@ -1265,13 +1265,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataVariable"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- TRUE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- "1"
-  options$key_success_Seq <- list()
-  options$key_success_Var <- "0"
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- "1"
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- "0"
   options$nFailures <- 0
   options$nSuccesses <- 0
   options$plotsBoth <- TRUE
@@ -1393,13 +1393,13 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataCounts"
-  options$data_sequence <- ""
+  options$dataSequenceInput <- ""
   options$doIterative <- FALSE
   options$introText <- FALSE
-  options$key_failure_Seq <- list()
-  options$key_failure_Var <- list()
-  options$key_success_Seq <- list()
-  options$key_success_Var <- list()
+  options$keyFailureSeq <- list()
+  options$keyFailureVar <- list()
+  options$keySuccessSeq <- list()
+  options$keySuccessVar <- list()
   options$nFailures <- 6
   options$nSuccesses <- 3
   options$plotsBoth <- FALSE
@@ -1467,15 +1467,15 @@ skip_on_travis()
   options$colorPalettePrediction <- "colorblind"
   options$dataSummary <- TRUE
   options$dataType <- "dataSequence"
-  options$data_sequence <- "1;0;0,10,1,1,0 ,1 ,
+  options$dataSequenceInput <- "1;0;0,10,1,1,0 ,1 ,
 1
 "
   options$doIterative <- FALSE
   options$introText <- FALSE
-  options$key_failure_Seq <- "0"
-  options$key_failure_Var <- list()
-  options$key_success_Seq <- "1"
-  options$key_success_Var <- list()
+  options$keyFailureSeq <- "0"
+  options$keyFailureVar <- list()
+  options$keySuccessSeq <- "1"
+  options$keySuccessVar <- list()
   options$nFailures <- 6
   options$nSuccesses <- 3
   options$plotsBoth <- FALSE
