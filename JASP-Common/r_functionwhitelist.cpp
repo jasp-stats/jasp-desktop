@@ -227,7 +227,8 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 
 	"pbirthday",
 	"ptukey",
-	"dwilcox"
+	"dwilcox",
+	"switch"
 #ifdef JASP_DEBUG
 	,"Sys.sleep", ".crashPlease", "stringi::stri_enc_mark", "stringi::stri_enc_toutf8", "Encoding"
 #endif
