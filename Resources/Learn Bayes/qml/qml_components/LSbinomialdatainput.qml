@@ -90,7 +90,7 @@ Section
 		title:		qsTr("Comma-separated Sequence of Observations")
 		visible:	dataTypeB.checked
 		height:		100
-		name:		"data_sequence"
+		name:		"dataSequenceInput"
 		textType:	"source"
 		separators:	[",",";","\n"]
 	}
@@ -105,20 +105,20 @@ Section
 
 			AvailableVariablesList
 			{
-				name:	"levels_Seq"
+				name:	"levelsSeq"
 				title:	qsTr("Levels")
-				source:	"data_sequence"
+				source:	"dataSequenceInput"
 			}
 
 			AssignedVariablesList
 			{
-				name:	"key_success_Seq"
+				name:	"keySuccessSeq"
 				title:	qsTr("Successes")
 			}
 
 			AssignedVariablesList
 			{
-				name:	"key_failure_Seq"
+				name:	"keyFailureSeq"
 				title:	qsTr("Failures")
 			}
 		}
@@ -153,20 +153,20 @@ Section
 
 			AvailableVariablesList
 			{
-				name:	"levels_Var"
+				name:	"levelsVar"
 				title:	qsTr("Levels")
 				source:	[{name: "selectedVariable", use: "levels"}]
 			}
 
 			AssignedVariablesList
 			{
-				name:	"key_success_Var"
+				name:	"keySuccessVar"
 				title:	qsTr("Successes")
 			}
 
 			AssignedVariablesList
 			{
-				name:	"key_failure_Var"
+				name:	"keyFailureVar"
 				title:	qsTr("Failures")
 			}
 		}
