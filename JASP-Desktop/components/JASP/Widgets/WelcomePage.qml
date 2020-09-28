@@ -18,6 +18,7 @@
 
 import QtQuick			2.11
 import QtQuick.Controls 2.4
+import QtQuick.Layouts	1.3
 
 import JASP.Widgets		1.0
 
@@ -80,7 +81,7 @@ FocusScope
 				id:				welcomeToJASP
 				text:			qsTr("Welcome to JASP")
 				color:			jaspTheme.white
-				font.family:	latoRegularFontFamily.name
+				font.family:	jaspTheme.font
 				font.pixelSize: 30 * welcomeRoot.scaler
 				font.weight:	Font.Bold
 				renderType:		Text.QtRendering
@@ -97,7 +98,7 @@ FocusScope
 				id:				version
 				text:			mainWindow.versionString()
 				color:			jaspTheme.white
-				font.family:	latoLightFontFamily.name
+				font.family:	jaspTheme.font
 				font.pixelSize: 14 * welcomeRoot.scaler
 				font.weight:	Font.Normal
 				renderType:		Text.QtRendering
@@ -129,7 +130,7 @@ FocusScope
 				id:				freshAndFunky
 				text:			qsTr("A Fresh Way to Do Statistics: Free, Friendly, and Flexible")
 				color:			jaspTheme.white
-				font.family:	latoLightFontFamily.name
+				font.family:	jaspTheme.font
 				font.pixelSize: 16 * welcomeRoot.scaler
 				font.weight:	Font.Normal
 				renderType:		Text.QtRendering
@@ -142,101 +143,92 @@ FocusScope
 				}
 			}
 
-			ListModel
+			Component
 			{
-				id: bitingTheBullets
+				id:					orangeDot
 
-				ListElement { keyword: qsTr("Free:");		explanation: qsTr("JASP is an open-source project with structural support from the University of Amsterdam.");		}
-				ListElement { keyword: qsTr("Friendly:");	explanation: qsTr("JASP has an intuitive interface that was designed with the user in mind.");						}
-				ListElement { keyword: qsTr("Flexible:");	explanation: qsTr("JASP offers standard analysis procedures in both their classical and Bayesian manifestations.");	}
+				Image
+				{
+					Layout.topMargin: 6 * welcomeRoot.scaler
+					Layout.alignment:	Qt.AlignLeft | Qt.AlignTop
+					source:		jaspTheme.iconPath + "ul-orange-dot.png"
+					height:		8 * welcomeRoot.scaler
+					width:		8 * welcomeRoot.scaler
+					mipmap:		true
+				}
 			}
 
 			Component
 			{
-				id: bulletPointComp
+				id:					blueKeyword
 
-				Item
+				Text
 				{
-					width:					parent.width
-					height:					Math.max(blueKeyword.height, explanationElement.height)
-
-					Image
-					{
-						id:					orangeDot
-						source:				jaspTheme.iconPath + "ul-orange-dot.png"
-						width:				height
-						height:				8 * welcomeRoot.scaler
-						mipmap:				true
-
-						anchors
-						{
-							verticalCenter:	blueKeyword.verticalCenter
-							left:			parent.left
-							margins:		1 //welcomeRoot.scaler
-						}
-					}
-
-					TextArea
-					{
-						id:					blueKeyword
-						text:				keyword
-						font.family:		latoRegularFontFamily.name
-						font.pixelSize:		explanationElement.font.pixelSize
-						font.weight:		Font.ExtraBold
-						verticalAlignment:	Text.AlignVCenter
-						renderType:			Text.QtRendering
-						color:				"#23a1df"
-						width:				90 * welcomeRoot.scaler
-						readOnly:			true
-						selectByKeyboard:	false
-						selectByMouse:		false
-						anchors
-						{
-							top:			parent.top
-							left:			orangeDot.right
-							margins:		orangeDot.anchors.margins
-						}
-					}
-
-					TextArea
-					{
-						id:					explanationElement
-						text:				explanation
-						font.family:		latoLightFontFamily.name
-						font.pixelSize:		freshAndFunky.font.pixelSize
-						font.weight:		Font.Light
-						verticalAlignment:	Text.AlignVCenter
-						color:				jaspTheme.black
-						wrapMode:			TextEdit.Wrap
-						readOnly:			true
-						renderType:			Text.QtRendering
-						selectByKeyboard:	false
-						selectByMouse:		false
-						anchors
-						{
-							top:			blueKeyword.top
-							left:			blueKeyword.right
-							right:			parent.right
-						}
-					}
+					Layout.alignment:	Qt.AlignLeft | Qt.AlignTop
+					text:				modelData
+					font.family:		jaspTheme.font
+					font.pixelSize:		freshAndFunky.font.pixelSize
+					//font.weight:		Font.Bold
+					verticalAlignment:	Text.AlignVCenter
+					renderType:			Text.QtRendering
+					color:				"#23a1df"
 				}
 			}
 
-			Column
+			Component
+			{
+				id:						explanationElement
+
+				Text
+				{
+					Layout.leftMargin:	10
+					Layout.alignment:	Qt.AlignLeft | Qt.AlignTop
+					text:				modelData
+					font.family:		jaspTheme.font
+					font.pixelSize:		freshAndFunky.font.pixelSize
+					Layout.preferredWidth:	560 * welcomeRoot.scaler
+					//font.weight:		Font.Thin
+					opacity:			0.7
+					verticalAlignment:	Text.AlignVCenter
+					color:				jaspTheme.black
+					wrapMode:			Text.WordWrap
+					renderType:			Text.QtRendering
+				}
+			}
+
+			GridLayout
 			{
 				id:							bulletPoints
 				width:						parent.widthOverflowers
-				height:						childrenRect.height
-				spacing:					2 //* preferencesModel.uiScale
+				columns:					3
+				rows:						3
+				flow:						GridLayout.TopToBottom
+				rowSpacing:					8 //* preferencesModel.uiScale
+				columnSpacing:				10
 				anchors.horizontalCenter:	parent.horizontalCenter
 				y:							(parent.height / 2) - (height / 2) - (20 * welcomeRoot.scaler)
 
 				Repeater
 				{
-					model:				bitingTheBullets
-					delegate:			bulletPointComp
+					model:		3
+					delegate:	orangeDot
+				}
+				Repeater
+				{
+					model:		[qsTr("Free:"), qsTr("Friendly:"), qsTr("Flexible:")]
+					delegate:	blueKeyword
 
 				}
+				Repeater
+				{
+					model:		[
+									qsTr("JASP is an open-source project with structural support from the University of Amsterdam."),
+									qsTr("JASP has an intuitive interface that was designed with the user in mind."),
+									qsTr("JASP offers standard analysis procedures in both their classical and Bayesian manifestations.")
+								]
+					delegate:	explanationElement
+				}
+
 			}
 
 			Text
@@ -245,7 +237,7 @@ FocusScope
 				text:					qsTr("So open a data file and take JASP for a spin!")
 				color:					jaspTheme.black
 				font.underline:			openDataFileMouse.containsMouse
-				font.family:			latoRegularFontFamily.name
+				font.family:			jaspTheme.font
 				font.pixelSize:			freshAndFunky.font.pixelSize + (2 * welcomeRoot.scaler)
 				renderType:				Text.QtRendering
 				anchors
@@ -287,7 +279,7 @@ FocusScope
 					id:						downloadNewJASP
 					anchors.centerIn:		parent
 					text:					qsTr("Click to get latest version")
-					font.family:			latoRegularFontFamily.name
+					font.family:			jaspTheme.font
 					font.pixelSize:			openADataFile.font.pixelSize + (downloadMouseArea.containsMouse ? 4 * welcomeRoot.scaler : 0)
 					font.weight:			Font.Bold
 					color:					jaspTheme.white
@@ -312,7 +304,7 @@ FocusScope
 			{
 				id:						keepInMindBeta
 				text:					qsTr("Please keep in mind that this is a preview release and a number of features are still missing.\n\nIf JASP doesn’t do all you want today, then check back tomorrow: JASP is being developed at break-neck speed!")
-				font.family:			latoLightFontFamily.name
+				font.family:			jaspTheme.font
 				font.pixelSize:			12 * welcomeRoot.scaler
 				font.weight:			Font.Normal
 				color:					jaspTheme.white
