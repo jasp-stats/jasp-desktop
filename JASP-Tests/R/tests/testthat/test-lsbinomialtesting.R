@@ -845,7 +845,7 @@ skip_on_travis()
   
   
   test_that("Prior and Posterior plot matches", {
-    plotName <- results[["results"]][["containerBoth"]][["collection"]][["containerBoth_plotsBoth"]][["collection"]][["containerBoth_plotsBoth_plotsBoth_plot"]][["data"]]
+    plotName <- results[["results"]][["containerBoth"]][["collection"]][["containerBoth_plotsBoth"]][["collection"]][["containerBoth_plotsBoth_plotsBothPlot"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
     jasptools::expect_equal_plots(testPlot, "prior-and-posterior-plot-0-vol4-1", dir="LSbinomialtesting")
   })
@@ -1017,7 +1017,7 @@ skip_on_travis()
   
   
   test_that("Prior and Posterio matches", {
-    plotName <- results[["results"]][["containerBoth"]][["collection"]][["containerBoth_plotsBoth"]][["collection"]][["containerBoth_plotsBoth_plotsBoth_plot"]][["data"]]
+    plotName <- results[["results"]][["containerBoth"]][["collection"]][["containerBoth_plotsBoth"]][["collection"]][["containerBoth_plotsBoth_plotsBothPlot"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
     jasptools::expect_equal_plots(testPlot, "prior-and-posterior-plot-0-vol5-1", dir="LSbinomialtesting")
   })
@@ -1045,7 +1045,7 @@ skip_on_travis()
     jasptools::expect_equal_tables(table,
                                    list("Hypothesis Spike", "spike at 0.5", 0.5, "binomial (1, 0.5)",
                                         0.5, 0.181526448024068, "Hypothesis Beta", "beta (21, 41)",
-                                        0.338709677419355, "beta-binomial (1, 21, 21)", 0.338709677419355,
+                                        0.338709677419355, "beta-binomial (1, 21, 41)", 0.338709677419355,
                                         0.818473551975932, "Marginal", 0.367988136778075, 0.367988136778075
                                    ))
   })
@@ -1230,7 +1230,7 @@ skip_on_travis()
     jasptools::expect_equal_tables(table,
                                    list("Hypothesis Spike", "spike at 0.5", 0.5, "binomial (10, 0.5)",
                                         5, 0.181526448024068, "Hypothesis Beta", "beta (21, 41)", 0.338709677419355,
-                                        "beta-binomial (10, 21, 21)", 3.38709677419355, 0.818473551975932,
+                                        "beta-binomial (10, 21, 41)", 3.38709677419355, 0.818473551975932,
                                         "Marginal", 0.367988136778075, 3.67988136778075))
   })
   
@@ -1672,7 +1672,7 @@ skip_on_travis()
   
   
   test_that("Prior and Posterior matches", {
-    plotName <- results[["results"]][["containerBoth"]][["collection"]][["containerBoth_plotsBoth"]][["collection"]][["containerBoth_plotsBoth_plotsBoth_plot"]][["data"]]
+    plotName <- results[["results"]][["containerBoth"]][["collection"]][["containerBoth_plotsBoth"]][["collection"]][["containerBoth_plotsBoth_plotsBothPlot"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
     jasptools::expect_equal_plots(testPlot, "prior-and-posterior-plot-0-beta-1", dir="LSbinomialtesting")
   })
