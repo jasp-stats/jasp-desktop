@@ -27,35 +27,35 @@ JaspTheme
 
 	//Fonts:
 	font.pixelSize:										Math.round(12 * uiScale)
-	font.family:										jaspFont		//If you change the property .family the font won't respond to the UI anymore unless you use jaspFont in it somewhere...
+	font.family:										preferencesModel.interfaceFont		//If you change the property .family the font won't respond to the UI anymore unless you use jaspFont in it somewhere...
 	font.weight:										Font.Normal
 
 
 	fontLabel.bold:										true
 	fontLabel.pixelSize:								Math.round(18 * uiScale)
-	fontLabel.family:									jaspFont
+	fontLabel.family:									preferencesModel.interfaceFont
 	fontLabel.weight:									Font.Bold
 
 	fontRibbon.bold:									false
 	fontRibbon.pixelSize:								Math.round(14 * uiScale)
-	fontRibbon.family:									jaspFont
+	fontRibbon.family:									preferencesModel.interfaceFont
 	fontRibbon.weight:									Font.DemiBold
 
 	fontGroupTitle.bold:								true
 	fontGroupTitle.pixelSize:							Math.round(14 * uiScale)
-	fontGroupTitle.family:								jaspFont
+	fontGroupTitle.family:								preferencesModel.interfaceFont
 	fontGroupTitle.weight:								Font.Medium
 
 	fontPrefOptionsGroupTitle.bold:						true
 	fontPrefOptionsGroupTitle.pixelSize:				Math.round(13 * uiScale)
-	fontPrefOptionsGroupTitle.family:					jaspFont
+	fontPrefOptionsGroupTitle.family:					preferencesModel.interfaceFont
 	fontPrefOptionsGroupTitle.weight:					Font.Bold
 
-	fontRCode.family:									jaspCodeFont
+	fontRCode.family:									preferencesModel.codeFont
 	fontRCode.pixelSize:								Math.round(14 * uiScale)
 	fontRCode.weight:									Font.Normal
 
-	fontCode.family:									jaspCodeFont
+	fontCode.family:									preferencesModel.codeFont
 	fontCode.pixelSize:									Math.round(10 * uiScale)
 	fontCode.weight:									Font.Normal
 
