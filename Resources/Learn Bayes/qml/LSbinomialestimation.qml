@@ -80,7 +80,7 @@ Form {
 						{
 							label: 				""
 							name: 				"name"
-							startValue:			"Model " + (rowIndex + 1)
+							startValue:			qsTr("Model ") + (rowIndex + 1)
 							fieldWidth:			140 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true

@@ -26,10 +26,10 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   if (options[["introText"]]).introductoryTextLS(jaspResults, options, "bin_est")
   
   # evaluate the expressions in priors
-  if (ready[2])options[["priors"]] <- .evaluate_priors(options[["priors"]])
+  if (ready["priors"])options[["priors"]] <- .evaluate_priors(options[["priors"]])
   
   # load, check, transform and process data
-  if (ready[1])data <- .readDataBinomialLS(dataset, options)
+  if (ready["data"])data <- .readDataBinomialLS(dataset, options)
   
   # data summary table ifrequested (but not ifthe data counts were added directly)
   .summaryBinomialLS(jaspResults, data, options, "bin_est")
@@ -111,9 +111,9 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     
     estimatesContainer[["estimatesTable"]] <- estimatesTable
     
-    if (ready[1] && !ready[2])
+    if (ready["data"] && !ready["priors"])
       return()
-    else if (!ready[1]){
+    else if (!ready["data"]){
       
       if ((options[["dataType"]] == "dataVariable" && options[["selectedVariable"]] != "") ||
           (options[["dataType"]] == "dataSequence" && options[["data_sequence"]]    != ""))
@@ -121,7 +121,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
       
       return()
       
-    } else if (ready[2]){
+    } else if (ready["priors"]){
       
       # add rows for each hypothesis
       for(i in 1:length(options[["priors"]])){
@@ -179,8 +179,8 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     containerIterativeUpdating[["estimatesSequentialTable"]] <- estimatesSequentialTable
     
     
-    estimatesSequentialTable$setExpectedSize(ifelse(ready[1], length(data$y) + 1, 1))
-    if (ready[2]){
+    estimatesSequentialTable$setExpectedSize(ifelse(ready["data"], length(data$y) + 1, 1))
+    if (ready["priors"]){
       for(i in 1:length(options[["priors"]])){
         estimatesSequentialTable$addColumnInfo(
           name  = options[["priors"]][[i]]$name,  
@@ -302,12 +302,12 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     containerPlots[[paste0("plots",type)]] <- plotsIndividual
     
     
-    if (all(!ready) || (ready[1] && !ready[2])){
+    if (all(!ready) || (ready["data"] && !ready["priors"])){
       
       plotsIndividual[[""]] <- createJaspPlot(title = "", width = 530, height = 400, aspectRatio = 0.7)
       return()
       
-    } else if (!ready[1] && ready[2]){
+    } else if (!ready["data"] && ready["priors"]){
       
       for(i in 1:length(options[["priors"]])){
         plotsIndividual[[options[["priors"]][[i]]$name]] <- createJaspPlot(title = options[["priors"]][[i]]$name,
@@ -431,12 +431,12 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     containerBoth[["plotsBoth"]] <- plotsBoth
     
     
-    if (all(!ready) || (ready[1] && !ready[2])){
+    if (all(!ready) || (ready["data"] && !ready["priors"])){
       
       plotsBoth[[""]] <- createJaspPlot(title = "", width = 530, height = 400, aspectRatio = 0.7)
       return()
       
-    } else if (!ready[1] && ready[2]){
+    } else if (!ready["data"] && ready["priors"]){
       
       for(i in 1:length(options[["priors"]])){
         plotsBoth[[options[["priors"]][[i]]$name]] <- createJaspPlot(title = options[["priors"]][[i]]$name,
@@ -652,12 +652,12 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     containerIterative[["plotsIterative"]] <- plotsIterative
     
     
-    if (all(!ready) || (ready[1] && !ready[2])){
+    if (all(!ready) || (ready["data"] && !ready["priors"])){
       
       plotsIterative[[""]] <- createJaspPlot(title = "", width = 530, height = 400, aspectRatio = 0.7)
       return()
       
-    } else if (!ready[1] && ready[2]){
+    } else if (!ready["data"] && ready["priors"]){
       
       for(i in 1:length(options[["priors"]])){
         plotsIterative[[options[["priors"]][[i]]$name]] <- createJaspPlot(title = options[["priors"]][[i]]$name,
@@ -805,12 +805,12 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     containerIterativeInterval[["plotsIterativeInterval"]] <- plotsIterativeInterval
     
     
-    if (all(!ready) || (ready[1] && !ready[2])){
+    if (all(!ready) || (ready["data"] && !ready["priors"])){
       
       plotsIterativeInterval[[""]] <- createJaspPlot(title = "", width = 530, height = 400, aspectRatio = 0.7)
       return()
       
-    } else if (!ready[1] && ready[2]){
+    } else if (!ready["data"] && ready["priors"]){
       
       for(i in 1:length(options[["priors"]])){
         plotsIterativeInterval[[options[["priors"]][[i]]$name]] <- createJaspPlot(title = options[["priors"]][[i]]$name,
@@ -892,7 +892,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     containerIterative[["tableIterative"]] <- tableIterative
     
     tableIterative$addColumnInfo(name = "iteration", title = gettext("Observation"), type = "integer")
-    if (ready[2]){
+    if (ready["priors"]){
       if (options[["plotsIterativeIndividualCI"]]){
         if (options[["plotsIterativeIndividualType"]] == "central")
           CI_title <- gettextf("%i %% CI", options[["plotsIterativeCoverage"]]*100)
@@ -992,7 +992,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     containerIterativeInterval[["tableIterativeInterval"]] <- tableIterativeInterval
     
     tableIterativeInterval$addColumnInfo(name = "iteration", title = gettext("Observation"), type = "integer")
-    if (ready[2]){
+    if (ready["priors"]){
       for(i in 1:length(options[["priors"]])){
         tableIterativeInterval$addColumnInfo(
           name  = paste(options[["priors"]][[i]]$name,"center", sep = "_"),  
@@ -1054,9 +1054,9 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     
     containerPredictions[["predictionsTable"]] <- predictionsTable
     
-    if (ready[1] && !ready[2])
+    if (ready["data"] && !ready["priors"])
       return()
-    else if (!ready[1]){
+    else if (!ready["data"]){
       
       if ((options[["dataType"]] == "dataVariable" && options[["selectedVariable"]] != "") ||
           (options[["dataType"]] == "dataSequence" && options[["data_sequence"]]    != ""))
@@ -1114,7 +1114,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     containerPredictionPlots[["plotsPredictions"]] <- plotsPredictions
     
     
-    if (!ready[2]){
+    if (!ready["priors"]){
       
       plotsPredictions[[""]] <- createJaspPlot(title = "", width = 530, height = 400, aspectRatio = 0.7)
       return()
@@ -1226,7 +1226,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     containerPredictionPlots[["plotsPredictions"]] <- plotsPredictions
     
     
-    if (!ready[2])
+    if (!ready["priors"])
       return()
     else {
       
