@@ -922,7 +922,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     }
   }
   if (!is.null(xBlacked))
-    fillColor <- c(fillColor, "blue")
+    fillColor <- c(fillColor, "steelblue")
   
   
   if (!proportions){

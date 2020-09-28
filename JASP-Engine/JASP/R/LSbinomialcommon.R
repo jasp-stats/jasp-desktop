@@ -19,14 +19,16 @@
 .readyBinomialLS       <- function(options){
   # are data ready
   if (options[["dataType"]] == "dataCounts")
-    ready <- TRUE
+    readyData <- TRUE
   else if (options[["dataType"]] == "dataSequence")
-    ready <- length(options[["key_success_Seq"]]) > 0 || length(options[["key_failure_Seq"]]) > 0
+    readyData <- length(options[["key_success_Seq"]]) > 0 || length(options[["key_failure_Seq"]]) > 0
   else if (options[["dataType"]] == "dataVariable")
-    ready <- length(options[["key_success_Var"]]) > 0 || length(options[["key_failure_Var"]]) > 0
+    readyData <- length(options[["key_success_Var"]]) > 0 || length(options[["key_failure_Var"]]) > 0
   
   # are priors ready
-  ready <- c(ready, length(options[["priors"]]) > 0)
+  readyPriors <- length(options[["priors"]]) > 0
+  
+  ready <- c("data" = readyData, "priors" = readyPriors)
   
   return(ready)
 }

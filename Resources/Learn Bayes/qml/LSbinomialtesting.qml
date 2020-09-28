@@ -81,7 +81,7 @@ Form {
 						{
 							label: 				""
 							name: 				"name"
-							startValue:			"Hypothesis " + (rowIndex + 1)
+							startValue:			qsTr("Hypothesis ") + (rowIndex + 1)
 							fieldWidth:			140 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
