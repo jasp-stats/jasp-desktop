@@ -17,13 +17,13 @@
 //
 
 import QtQuick					2.11
-import QtQuick.Controls			2.4
+import QtQuick.Controls			2.4 as QTCONTROLS
 import Qt.labs.folderlistmodel	2.11
 //import QtQuick.Window			2.3
-
+import JASP.Controls			1.0
 import JASP.Widgets				1.0
 
-Popup
+QTCONTROLS.Popup
 {
 	id:				moduleInstallerPopup
 
