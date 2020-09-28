@@ -322,11 +322,17 @@ int main(int argc, char *argv[])
 			JASPTIMER_START("JASP");
 
 			Application a(argvsize, argvs, filePathQ, unitTest, timeOut, save, logToFile);
+			
+			std::cout << "Application initialized" << std::endl;
 
 			QtWebEngine::initialize(); //We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
 
+			std::cout << "QtWebEngine initialized" << std::endl;
+			
 			try
 			{
+				std::cout << "Entering eventloop" << std::endl;
+				
 				int exitCode = a.exec();
 				JASPTIMER_STOP("JASP");
 				JASPTIMER_PRINTALL();
