@@ -1022,7 +1022,7 @@
   
   qfPlot <- createJaspPlot(title = gettext("Quantile Plot"), width = 600, height = 320)
   qfPlot$position <- 2 # after explanation, before formula
-  qfPlot$dependOn(c('plotQF', 'range'))
+  qfPlot$dependOn(c('plotQF', 'min_x', 'max_x'))
   qfContainer[['qfPlot']] <- qfPlot
   
   .ldFillPlotQF(qfPlot, options)
