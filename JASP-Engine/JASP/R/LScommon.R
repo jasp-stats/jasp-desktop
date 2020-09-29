@@ -114,8 +114,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
   gaps <- which(diff(indices) > 1)
   if(length(gaps) > 0 && !allowSplit) {
     # In this case, return shortest 95% CrI
-    warning("The HDI is discontinuous but allowSplit = FALSE;
-    the result is a valid CrI but not HDI.")
+    # warning("The HDI is discontinuous but allowSplit = FALSE; the result is a valid CrI but not HDI.")
     cumul <- cumsum(object$y) / sum(object$y)
     upp.poss <- low.poss <- which(cumul < 1 - credMass)
     for (i in low.poss)
@@ -1789,7 +1788,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       specific_text <- switch(
         options[[ifelse(type == "Prior", "plotsPriorType", "plotsPosteriorType")]],
         "conditional" = gettextf(
-          "The 'Conditional' option shows all %1$s for parameter %2$s independently, as ifthey were considered as individual models (without the existence of other hypotheses). It is possible to visualize different types of point estimates ('Point estimate') and credible intervals ('CI'):%3$s",
+          "The 'Conditional' option shows all %1$s for parameter %2$s independently, as if they were considered as individual models (without the existence of other hypotheses). It is possible to visualize different types of point estimates ('Point estimate') and credible intervals ('CI'):%3$s",
           ifelse(type == "Prior", gettext("prior distributions"), gettext("posterior distributions")),
           ifelse(binomial, "\u03B8", "\u03BC"),
           .CIsTextLS(type == "Posterior")),
@@ -1829,7 +1828,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       specific_text <- switch(
         options[["plotsBothType"]],
         "conditional" = gettextf(
-          "The 'Conditional' option shows all prior and posterior distributions for parameter %1$s independently, as ifthey were considered as individual models (without the existence of other hypotheses).",
+          "The 'Conditional' option shows all prior and posterior distributions for parameter %1$s independently, as if they were considered as individual models (without the existence of other hypotheses).",
           ifelse(binomial, "\u03B8", "\u03BC")),
         "joint"       = gettextf(
           "The 'Joint' option shows all prior and posterior distributions for parameter %1$s when considered together in light of the other hypotheses. In addition, the 'Overlying' option allows the visualization all %1$s on top of each other, allowing for easier comparison with a common density and probability scale on the y-axis and the 'Stacked' option shows all %1$s in one figure with a depth effect induced by plotting the additional distributions 'further' on the z-axis.",
@@ -2007,7 +2006,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       specific_text <- switch(
         options[[ifelse(type == "Prior", "plotsPredictionType", "plotsPredictionPostType")]],
         "conditional" = gettextf(
-          "The 'Conditional' option shows all %1$s for parameter %2$s independently, as ifthey were considered as individual models (without the existence of other hypotheses). It is possible to visualize different of credible intervals ('CI'):%3$s",
+          "The 'Conditional' option shows all %1$s for parameter %2$s independently, as if they were considered as individual models (without the existence of other hypotheses). It is possible to visualize different of credible intervals ('CI'):%3$s",
           ifelse(type == "Prior", gettext("prior predictive distributions"), gettext("posterior predictive distributions")),
           ifelse(binomial, "\u03B8", "\u03BC"),
           .CIsTextLS(FALSE)),
@@ -2034,7 +2033,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     
     specific_text <- switch(
       options[["plotsPredictiveAccuracyType"]],
-      "conditional" = gettext("The 'Conditional' option shows all predictive accuracies independently, as ifthey were considered as individual models (without the existence of other hypotheses)."),
+      "conditional" = gettext("The 'Conditional' option shows all predictive accuracies independently, as if they were considered as individual models (without the existence of other hypotheses)."),
       "joint"       = gettext("The 'Joint' option shows all predictive accuracies when taking the prior probabilities of hypotheses into account (by multiplying conditional predictive accuracies by prior probabilities of the hypotheses)."),
       "marginal"    = gettext("The 'Normalized' option shows all predictive accuracies considered together in light of the other hypotheses (by normalizing the joint predictive accuracies by the probability of the data, which equals to the posterior probability of the hypotheses).")
     )
@@ -2047,7 +2046,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     
     specific_text <- switch(
       options[["plotsIterativeType"]],
-      "conditional" = gettext("The 'Conditional' option shows all predictive accuracies independently, as ifthey were considered as individual models (without the existence of other hypotheses)."),
+      "conditional" = gettext("The 'Conditional' option shows all predictive accuracies independently, as if they were considered as individual models (without the existence of other hypotheses)."),
       "joint"       = gettext("The 'Joint' option shows all predictive accuracies when taking the prior probabilities of hypotheses into account (by multiplying conditional predictive accuracies by prior probabilities of the hypotheses)."),
       "marginal"    = gettext("The 'Normalized' option shows all predictive accuracies considered together in light of the other hypotheses (by normalizing the joint predictive accuracies by the probability of the data, which equals to the posterior probability of the hypotheses at the given time point)."),
       "BF"          = gettextf("The 'Bayes factor' option can compare the predictive accuracies of the hypotheses to the rest of the hypotheses ('vs. All'), the best hypothesis ('vs. best'), or a specific hypothesis selected in the 'vs.' dropdown. The nominator and denominator of the Bayes factors can be reversed by choosing the 'BF%2$s%1$s' option (quantifying the evidence in favor of the second hypothesis), or transformed to a log scale by choosing the 'log(BF%1$s%2$s)' option.", "\u2081", "\u2080")

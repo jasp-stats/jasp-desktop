@@ -140,7 +140,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     JASP:::.quitAnalysis(gettext("The p-value cutoffs were set incorectly."))
   
   if (length(x) == 0)
-    JASP:::.quitAnalysis(gettext("At least one p-value cuttoff needs to be set."))
+    JASP:::.quitAnalysis(gettext("At least one p-value cutoff needs to be set."))
   
   x <- as.numeric(x)
   if (options[["selectionTwosided"]])
@@ -757,7 +757,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   # handle NaN in the estimates
   if (any(c(is.nan(weightsMean), is.nan(weightsLowerCI), is.nan(weightsupperCI)))) {
-    plotWeights$setError(gettext("The figure could not be created since one of the estimates is NaN."))
+    plotWeights$setError(gettext("The figure could not be created since one of the estimates is not a number."))
     return()
   }
   
@@ -956,7 +956,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   if (!.smCheckReady(options) && options[["inputPVal"]] != "") {
     
-    messages <- gettext("The analysis requires both 'Effect Site' and 'Effect Size Standard Error' to be specified.")
+    messages <- gettext("The analysis requires both 'Effect Size' and 'Effect Size Standard Error' to be specified.")
     
   } else if (!class(fit) %in% c("simpleError","error")) {
     

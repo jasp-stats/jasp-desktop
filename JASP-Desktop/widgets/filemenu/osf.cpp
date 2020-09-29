@@ -356,8 +356,8 @@ void OSF::newFolderClicked()
 
 	if (currentNodeData.canCreateFolders == false)
 	{
-		if (currentNodeData.level == 0)			MessageForwarder::showWarning(tr("Projects"),			tr("A new folder cannot be added to the projects list.\n\nTo add a new project please use the online OSF services."));
-		else if (currentNodeData.level == 1)	MessageForwarder::showWarning(tr("Data Providers"),		tr("A new folder cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services."));
+		if (currentNodeData.level == 0)			MessageForwarder::showWarning(tr("Projects"),			tr("A new folder cannot be added to the projects list.<br>To add a new project please use the online OSF services."));
+		else if (currentNodeData.level == 1)	MessageForwarder::showWarning(tr("Data Providers"),		tr("A new folder cannot be added to a projects data providers list.<br>To add a new data provider (eg. google drive) please use the online OSF services."));
 		else									MessageForwarder::showWarning(currentNodeData.name,		tr("A new folder cannot be added to '%1' for an unknown reason.").arg(currentNodeData.name));
 
 		return;
