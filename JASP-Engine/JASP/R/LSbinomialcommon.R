@@ -286,7 +286,7 @@
       mode         = .modeBinomialLS(options[["predictionN"]], prior[["parPoint"]], prop = prop),
       lCI          = qbinom(0.025, options[["predictionN"]], prior[["parPoint"]]) / d,
       uCI          = qbinom(0.975, options[["predictionN"]], prior[["parPoint"]]) / d,
-      SD           = .sdBinomLS(options[["predictionN"]], prior[["parPoint"]]) / d
+      SD           = .computeSdBinomLS(options[["predictionN"]], prior[["parPoint"]]) / d
     )
     
     return(output)
@@ -312,7 +312,7 @@
       mode         = .modeBetaBinomLS(options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures, prop = prop),
       lCI          = .qbetabinomLS(0.025, options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures) / d,
       uCI          = .qbetabinomLS(0.975, options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures) / d,
-      SD           = .sdBetaBinomLS(options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures) / d
+      SD           = ..computeSdBetaBinomLS(options[["predictionN"]], prior[["parAlpha"]] + data$nSuccesses, prior[["parBeta"]] + data$nFailures) / d
     )
     
     return(output)
@@ -476,14 +476,14 @@
     }
   }
 }
-.sdBinomLS            <- function(N, p, prop = FALSE){
+.computeSdBinomLS            <- function(N, p, prop = FALSE){
   if (prop) d <- N else d <- 1
   
   sd <- sqrt( N*p*(1-p) )
   
   return(sd / d)
 }
-.sdBetaBinomLS            <- function(N, alpha, beta, prop = FALSE){
+..computeSdBetaBinomLS            <- function(N, alpha, beta, prop = FALSE){
   if (prop) d <- N else d <- 1
 
   sd <- sqrt( (N*alpha*beta*(N+alpha+beta)) / ( (alpha+beta)^2*(alpha+beta+1) ) )
