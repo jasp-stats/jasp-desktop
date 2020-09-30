@@ -144,6 +144,14 @@ Section
 				title:				qsTr("Selected")
 				singleVariable:		true
 				allowedColumns:		["ordinal", "nominal","nominalText"]
+
+				onCountChanged:
+				{
+					while (keySuccessVar.count > 0)
+						keySuccessVar.itemDoubleClicked(0)
+					while (keyFailureVar.count > 0)
+						keyFailureVar.itemDoubleClicked(0)
+				}
 			}
 		}
 
@@ -160,12 +168,14 @@ Section
 
 			AssignedVariablesList
 			{
+				id:		keySuccessVar
 				name:	"keySuccessVar"
 				title:	qsTr("Successes")
 			}
 
 			AssignedVariablesList
 			{
+				id:		keyFailureVar
 				name:	"keyFailureVar"
 				title:	qsTr("Failures")
 			}
