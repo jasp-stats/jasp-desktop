@@ -566,14 +566,13 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
     } else if (options[["cohensd_testType"]] == "two.sample") {
       ready_arg2 <- any(c(
         options[["input_SE"]] != "",
-        options[["input_N"]]) != "",
+        options[["input_N"]] != "",
         sum(unlist(options[["input_CI"]]) != "") == 2,
         all(c(options[["input_N1"]], options[["input_N2"]]) != "")
-      )
+      ))
     }
   } else if (options[["measures"]] == "correlation") {
     ready_arg1 <- options[["input_ES"]] != ""
-    ready_arg2 <- options[["input_N"]]  != ""
     ready_arg2 <- any(c(options[["input_SE"]], options[["input_N"]]) != "", sum(unlist(options[["input_CI"]]) != "") == 2)
   } else if (options[["measures"]] == "OR") {
     ready_arg1 <- options[["input_ES"]] != ""
