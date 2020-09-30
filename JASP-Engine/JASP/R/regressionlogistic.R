@@ -646,7 +646,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                 envir$idx <- envir$idx + 1L
               }
               robustSE <- try(unname(.glmRobustSE(result)))
-              if (!isTryError(resultStd)) {
+              if (!isTryError(robustSE)) {
                 envir$robustSE[envir$idx_rse, ] <- robustSE
                 envir$idx_rse <- envir$idx_rse + 1L
               }
