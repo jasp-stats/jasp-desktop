@@ -36,7 +36,7 @@ Form
 
 		RadioButton
 		{
-			label: qsTr("Cohen's d / t-statistics & (N / SE)")
+			label: qsTr("Cohen's d / t-statistics & N / SE")
 			value: "cohensd"
 			id: 	measures_cohensd
 			checked:true
@@ -92,7 +92,15 @@ Form
 			id: 			input_ES
 			name: 			"input_ES"
 			enabled: 		input_t.count == 0
-			title: 			qsTr("Effect Size")
+			title: 			if (measures_cohensd.checked){
+				qsTr("Cohen's d")
+			} else if (measures_correlation.checked) {
+				qsTr("Correlation")
+			} else if (measures_OR.checked) {
+				qsTr("Odds Ratio")
+			} else {
+				qsTr("Effect Size")
+			}
 			singleVariable: true
 			allowedColumns: ["scale"]
 		}

@@ -59,7 +59,11 @@ Form
 		AssignedVariablesList
 		{
 			name:			"inputES"
-			title:			qsTr("Effect Size")
+			title:			if (measures_correlation.checked) {
+				qsTr("Correlation")
+			} else {
+				qsTr("Effect Size")
+			}
 			singleVariable:	true
 			allowedColumns:	["scale"]
 		}
