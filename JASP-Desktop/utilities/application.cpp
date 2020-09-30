@@ -27,6 +27,8 @@
 Application::Application(int &argc, char **argv, QString filePath, bool unitTest, int timeOut, bool save, bool logToFile)
 	: QApplication(argc, argv)
 {
+	std::cout << "Application constructor entered" << std::endl;
+	
 	if(logToFile)
 		Settings::setValue(Settings::LOG_TO_FILE, true);
 

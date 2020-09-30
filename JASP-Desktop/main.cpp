@@ -25,6 +25,7 @@
 #include <QtWebEngine>
 #include <boost/filesystem.hpp>
 #include <codecvt>
+#include "appinfo.h"
 
 const std::string	jaspExtension	= ".jasp",
 					unitTestArg		= "--unitTest",
@@ -314,7 +315,7 @@ int main(int argc, char *argv[])
 					std::cout << " " << argvs[i];
 				}
 
-			std::cout << "\nStarting JASP" << std::endl;
+			std::cout << "\nStarting JASP " << AppInfo::version.asString() << " from commit " << AppInfo::gitCommit << " and branch " << AppInfo::gitBranch << std::endl;
 
 			int		argvsize  = args.size();
 			//To be all neat we should clean up all this stuff after we are done running JASP, but on the other hand the memory will be thrown out anyway after exit so why bother.

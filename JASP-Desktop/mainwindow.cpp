@@ -127,7 +127,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	
 	initLog(); //initLog needs _preferences and _engineSync!
 
-	Log::log() << "JASP " << AppInfo::version.asString() << " is continuing initialization." << std::endl;
+	Log::log() << "JASP " << AppInfo::version.asString() << " from commit " << AppInfo::gitCommit << " and branch " << AppInfo::gitBranch << " is continuing initialization." << std::endl;
 
 	_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
