@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-09-24 10:50\n"
-"PO-Revision-Date: 2020-09-30 13:40+0000\n"
+"PO-Revision-Date: 2020-10-01 15:40+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "nl/>\n"
@@ -128,8 +128,8 @@ msgid ""
 "The lower CI limit is higher than the upper CI limit. Please, change the "
 "value of the CI limits in the settings panel."
 msgstr ""
-"De ondergrens van het BI is hoger dan de bovengrens van het BI . Wijzig de "
-"waarde van de grenzen van het BI  in het instellingspaneel."
+"De ondergrens van het BI is hoger dan de bovengrens van het BI. Wijzig de "
+"waarde van de grenzen van het BI in het instellingspaneel."
 
 msgid "Testing Summary"
 msgstr "Toetsoverzicht"
@@ -174,16 +174,14 @@ msgstr "Specificeer a.u.b. een hypothese om te vergelijken."
 msgid "Conditional probability"
 msgstr "Voorwaardelijke kans"
 
-#, fuzzy
 msgid "Joint probability"
-msgstr "Posterior kans"
+msgstr "Gezamenlijke kans"
 
 msgid "Posterior probability"
 msgstr "Posterior kans"
 
-#, fuzzy
 msgid "Observations"
-msgstr "Iteraties"
+msgstr "Observaties"
 
 msgid "At least 2 hypotheses need to be specified."
 msgstr "Er moeten ten minste 2 hypothesen worden gespecificeerd."
@@ -202,28 +200,23 @@ msgid ""
 "    the result is a valid CrI but not HDI."
 msgstr ""
 
-#, fuzzy
 msgid "%1$s %2$s Plots"
-msgstr "%1$s = %2$s"
+msgstr "%1$s %2$s Grafieken"
 
-#, fuzzy
 msgid "Prior and Posterior Plots"
-msgstr "Prior en Posteriors"
+msgstr "Prior en Posteriors Grafieken"
 
-#, fuzzy
 msgid "%s Sequential Analysis: Point Estimate"
-msgstr "Sequentiële Analyse"
+msgstr "%s Sequentiële Analyse: Puntschatting"
 
-#, fuzzy
 msgid "%s Sequential Analysis: Interval"
-msgstr "Sequentiële Analyse"
+msgstr "%s Sequentiële Analyse: Interval"
 
 msgid "Sequential Posterior Updating"
 msgstr "Sequentiële Posterior Bijweken"
 
-#, fuzzy
 msgid "Prediction Summary"
-msgstr "Selectie samenvatting"
+msgstr "Voorspellingsoverzicht"
 
 #, fuzzy
 msgid "%s Prediction Plots"
@@ -232,17 +225,15 @@ msgstr "Histogrammen"
 msgid "%1$s %2$s Prediction Plots"
 msgstr "%1$s %2$s Voorspellingsgrafieken"
 
-#, fuzzy
 msgid "%s Prior and Posterior Plots"
-msgstr "Prior en Posteriors"
+msgstr "%s Prior en Posteriors Grafieken"
 
 #, fuzzy
 msgid "%s Predictive Accuracy Plot"
 msgstr "Grafiek Prestatievoorspelling"
 
-#, fuzzy
 msgid "%s Sequential Analysis"
-msgstr "Sequentiële Analyse"
+msgstr "%s Sequentiële Analyse"
 
 msgid ""
 "Welcome to the %s analysis from the Learn Bayes module. This analysis "
@@ -251,9 +242,8 @@ msgstr ""
 "Welkom bij de %s analyse van de Leer Bayes module. Deze analyse illustreert "
 "Bayesiaanse %s aan de hand van %s voorbeelden."
 
-#, fuzzy
 msgid "%s (the population proportion of successes)"
-msgstr "Populatieproportie"
+msgstr "%s (het populatieaandeel van successen)"
 
 msgid "%s (the population mean, variance is assumed to be known)"
 msgstr ""
@@ -446,7 +436,7 @@ msgstr ""
 "een normale dichtheid die wordt geëvalueerd aan de hand van het waargenomen "
 "gemiddelde, met een gemiddelde dat gelijk is aan het gemiddelde van de prior "
 "verdeling, en een standaardafwijking van %7$s ( %2$s%6$s/N + %4$s%6$s "
-").</li></ul>."
+").</li></ul>"
 
 msgid ""
 "The posterior probabilities 'P(H|data)' are then computed using Bayes "
@@ -460,12 +450,12 @@ msgid ""
 msgstr ""
 "De posterior kansen 'P(H|data)' worden dan berekend met behulp van de Bayes "
 "formule,\n"
-"        P(H|data) = P(H) * P(data|H) / P(data),</center> waarbij 'P(H)' de "
-"prior kans van de hypothese vertegenwoordigt, 'P(data|H)' de marginale "
-"waarschijnlijkheid van de gegevens onder de hypothese, en 'P(data)' de "
-"waarschijnlijkheid van de gegevens. De factor 'P(data)' is gelijk aan de som "
-"van de marginale waarschijnlijkheid vermenigvuldigd met de prior kansen, "
-"P(data) = %1$s P(data|H%2$s)*P(H%2$s)."
+"        <center>P(H|data) = P(H) * P(data|H) / P(data),</center> waarbij "
+"'P(H)' de prior kans van de hypothese vertegenwoordigt, 'P(data|H)' de "
+"marginale waarschijnlijkheid van de gegevens onder de hypothese, en 'P(data)"
+"' de waarschijnlijkheid van de gegevens. De factor 'P(data)' is gelijk aan "
+"de som van de marginale waarschijnlijkheid vermenigvuldigd met de prior "
+"kansen, P(data) = %1$s P(data|H%2$s)*P(H%2$s)."
 
 msgid ""
 "The Bayes factors 'BF' can be obtained by dividing the posterior odds of two "
@@ -583,7 +573,7 @@ msgid ""
 "one figure with a depth effect induced by plotting the additional "
 "distributions 'further' on the z-axis."
 msgstr ""
-"De  optie 'Gezamenlijke' toont alle %1$s voor parameter %2$s wanneer deze "
+"De optie 'Gezamenlijke' toont alle %1$s voor parameter %2$s wanneer deze "
 "samen worden beschouwd in het licht van de andere hypothesen (door de "
 "dichtheid van de %1$s over de parameter te vermenigvuldigen met de %3$s "
 "waarschijnlijkheid van de hypothese). Bovendien laat de optie 'Overlappend' "
@@ -644,7 +634,7 @@ msgstr ""
 "worden beschouwd. Bovendien maakt de optie 'Overlappend' optie het mogelijk "
 "om alle %1$s boven elkaar te visualiseren, waardoor de vergelijking met een "
 "gemeenschappelijke dichtheids- en waarschijnlijkheidsschaal op de y-as "
-"gemakkelijker wordt.  En de optie 'Gestapeld' optie toont alle %1$s in één "
+"gemakkelijker wordt. En de optie 'Gestapeld' optie toont alle %1$s in één "
 "figuur met een diepte-effect dat wordt geïnduceerd door de extra verdelingen "
 "'verder' op de z-as te plotten."
 
@@ -1133,9 +1123,8 @@ msgstr "AIC"
 msgid "BIC"
 msgstr "BIC"
 
-#, fuzzy
 msgid "Sample sizes"
-msgstr "Steekproefgrootte"
+msgstr "Steekproefgroottes"
 
 msgid "Levels of RE grouping factors"
 msgstr "Niveaus van RE-groeperingsfactoren"
@@ -2166,13 +2155,11 @@ msgstr ""
 msgid "<u>Conclusion</u>"
 msgstr "<u>Conclusies</u>"
 
-#, fuzzy
 msgid "is rejected"
-msgstr "kan worden verworpen"
+msgstr "wordt verworpen"
 
-#, fuzzy
 msgid "is not rejected"
-msgstr "kan niet worden verworpen"
+msgstr "wordt niet verworpen"
 
 msgid ""
 "The <i>p</i> value is %1$s and the null hypothesis that the first digits in "
@@ -4218,7 +4205,7 @@ msgid "Could not find meta description for current table"
 msgstr "Kon geen metabeschrijving van deze tabel vinden"
 
 msgid "Could not locate 'name' in custom table meta"
-msgstr "Er bevindt zich geen 'naam' in aangepaste meta  tabel"
+msgstr "Er bevindt zich geen 'naam' in aangepaste meta tabel"
 
 msgid ""
 "Could not find any data in the table, cannot fetch items from the results "
@@ -4393,9 +4380,8 @@ msgstr "P(excl)"
 msgid "P(incl|data)"
 msgstr "P(incl|data)"
 
-#, fuzzy
 msgid "P(excl|data)"
-msgstr "P(incl|data)"
+msgstr "P(excl|data)"
 
 msgid ""
 "Compares models that contain the effect to equivalent models stripped of the "
@@ -4610,9 +4596,8 @@ msgstr ""
 "Standaardfouten betrouwbaarheidsintervallen zijn berekend met de "
 "deltamethode."
 
-#, fuzzy
 msgid "Maximum likelihood"
-msgstr "Maximale fout"
+msgstr "Meest aannemelijke schatter"
 
 msgid "Fit Assessment"
 msgstr "Passingsbeoordeling"
@@ -4757,17 +4742,18 @@ msgid ""
 "    The <i>y</i>-axis displays the value of the density function for a "
 "particular value of the random variable (displayed on the <i>x</i>-axis)."
 msgstr ""
-"De kansfunctie (PDF), meestal genoteerd als f(x), is een functie van een "
-"willekeurige variabele X.\n"
+"De kansdichtheidsfunctie (PDF), meestal genoteerd als f(x), is een functie "
+"van een willekeurige variabele X.\n"
 "    De waarde van f(x) geeft de relatieve kans dat een realisatie van de "
 "willekeurige variabele X een waarde geeft die gelijk is aan x. \n"
 "    Formeel gezegd, de PDF is gedefinieerd als een afgeleide van een "
 "cumulatieve verdelingsfunctie (CDF).\n"
 "    \n"
-"    De dichtheidsgrafiek geeft de kansfunctie van een willekeurige "
-"variabele.\n"
-"    De y-as geeft de waarde van de dichtheidsfunctie voor een bepaalde "
-"waarde van de willekeurige variabele (weergegeven op de <i>x</i>-as)."
+"    De dichtheidsgrafiek geeft de kansfunctie van een willekeurige variabele."
+"\n"
+"    De <i>y</i>-as geeft de waarde van de dichtheidsfunctie voor een "
+"bepaalde waarde van de willekeurige variabele (weergegeven op de "
+"<i>x</i>-as)."
 
 msgid ""
 "The probability mass function (PMF), usually denoted as f(x), is a function "
@@ -4788,8 +4774,9 @@ msgstr ""
 "    \n"
 "    De kansmassagrafiek geeft de kansmassafunctie van een willekeurige "
 "variabele.\n"
-"    De y-as geeft de waarde weer van de kansmassafunctie voor een bepaalde "
-"waarde van de willekeurige variabele (weergegeven op de x-as)."
+"    De <i>y</i>-as geeft de waarde weer van de kansmassafunctie voor een "
+"bepaalde waarde van de willekeurige variabele (weergegeven op de "
+"<i>x</i>-as)."
 
 msgid ""
 "The cumulative distribution function (CDF), usually denoted as F(x), is a "
@@ -4810,8 +4797,9 @@ msgstr ""
 "    \n"
 "    De cumulatieve kansverdelingsgrafiek geeft de cumulatieve verdeling van "
 "een willekeurige variabele weer.\n"
-"    De y-as geeft de waarde weer van de cumulatieve verdelingsfunctie van "
-"een bepaalde waarde van de willekeurige variabele (weergegeven op de x-as)."
+"    De <i>y</i>-as geeft de waarde weer van de cumulatieve verdelingsfunctie "
+"van een bepaalde waarde van de willekeurige variabele (weergegeven op de "
+"<i>x</i>-as)."
 
 msgid ""
 "The quantile function, usually denoted as Q(p), is the inverse of the "
@@ -4832,9 +4820,9 @@ msgstr ""
 "kans p.   \n"
 "    \n"
 "    De kwantielgrafiek geeft de kwantielfunctie weer. \n"
-"    De y-as geeft het kwantiel weer waarvan de kans dat de willekeurige "
-"variabele minder is of gelijk is aan die waarde, gelijk is aan p "
-"(weergegeven op de <i>x</i>-as)."
+"    De <i>y</i>-as geeft het kwantiel weer waarvan de kans dat de "
+"willekeurige variabele minder is of gelijk is aan die waarde, gelijk is aan "
+"p (weergegeven op de <i>x</i>-as)."
 
 msgid ""
 "<h3> Demonstration of the %1$s </h3>\n"
@@ -6133,9 +6121,10 @@ msgstr "Variabelen"
 msgid "Shapiro-Wilk Test for Bivariate Normality"
 msgstr "Shapiro-Wilk voor Bivariate Normaliteit"
 
-#, fuzzy
 msgid "Confidence intervals for partial correlations not yet available."
-msgstr "Betrouwbaarheidsintervallen zijn berekend met de delta-methode."
+msgstr ""
+"Betrouwbaarheidsintervallen voor gedeeltelijke correlaties zijn nog niet "
+"beschikbaar."
 
 msgid "Scatter plots"
 msgstr "Spreidingsdiagrammen"
@@ -8323,14 +8312,14 @@ msgid "All p-value cutoffs needs to be between 0 and 1."
 msgstr "Alle p-afkapwaarden moeten tussen 0 en 1 liggen."
 
 msgid "No steps"
-msgstr ""
+msgstr "Geen stappen"
 
 #, fuzzy
 msgid "95% Confidence Interval"
 msgstr "95%% Betrouwbaarheidsintervallen"
 
 msgid "Note:"
-msgstr ""
+msgstr "Opmerking:"
 
 #, fuzzy
 msgid "%s is on %s scale."
@@ -8356,7 +8345,7 @@ msgid "Test of Publication Bias"
 msgstr "Publicatieonzuiverheid"
 
 msgid "Assuming homogeneity"
-msgstr ""
+msgstr "Uitgaande van homogeniteit"
 
 #, fuzzy
 msgid "Assuming heterogeneity"
@@ -8395,9 +8384,10 @@ msgstr "Gewichtsfunctie"
 
 msgid "The figure could not be created since one of the estimates is NaN."
 msgstr ""
+"Dee afbeelding kon niet worden gemaakt omdat een van de schattingen NaN is."
 
 msgid "P-value (One-sided)"
-msgstr ""
+msgstr "P-waarde (Eenzijdig)"
 
 #, fuzzy
 msgid "Publication Probability"
@@ -8467,6 +8457,10 @@ msgid ""
 "positive. Please, check that you specified the effect sizes correctly or "
 "change the 'Expected effect size direction' option in the 'Model' tab."
 msgstr ""
+"De niet-aangepaste schatting is negatief. De standaardinstelling van het "
+"selectiemodel verwacht dat de verwachte richting van de effectgrootte "
+"positief is. Controleer of u de effectgrootte correct heeft opgegeven of "
+"verander de optie 'Verwachte effectgrootte richting' in het tabblad 'Model'."
 
 msgid ""
 "The analysis requires both 'Effect Site' and 'Effect Size Standard Error' to "
@@ -9133,11 +9127,11 @@ msgid_plural ""
 msgstr[0] ""
 "Mogelijk inefficiente Hamiltoniaanse Monte Carlo procedure -- %i transitie "
 "overschreed de maximale boom diepte. Dit probleem kan opgelost worden door "
-"geleidelijk de 'Maximale boom diepte' te verhogen."
+"geleidelijk de 'Maximale boom diepte' te verhogen"
 msgstr[1] ""
 "Mogelijk inefficiente Hamiltoniaanse Monte Carlo procedure -- %i transities "
 "overschreden de maximale boom diepte. Dit probleem kan opgelost worden door "
-"geleidelijk de 'Maximale boom diepte' te verhogen."
+"geleidelijk de 'Maximale boom diepte' te verhogen"
 
 msgid ""
 "WAIC estimate unreliable -- There was %1.0f p_waic estimate larger than 0.4. "
