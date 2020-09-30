@@ -1119,7 +1119,8 @@
 
     pairs <- utils::combn(variable.levels, 2)
 
-    allSplits <- split(dataset[[.BANOVAdependentName]], dataset[[.v(posthoc.var)]])
+    splitname <- if (model[["analysisType"]] == "RM-ANOVA") .BANOVAdependentName else dependent
+    allSplits <- split(dataset[[splitname]], dataset[[.v(posthoc.var)]])
 
     errMessages <- NULL
     for (i in 1:ncol(pairs)) {
