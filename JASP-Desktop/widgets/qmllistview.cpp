@@ -182,7 +182,7 @@ void QMLListView::setSources()
 			ListModel* sourceModel = form()->getModel(sourceItem->name);
 			if (sourceModel)
 			{
-				if (!sourceModel->areTermsVariables() || !sourceItem->controlName.isEmpty())
+				if (!sourceModel->areTermsVariables() || !sourceItem->controlName.isEmpty() || sourceItem->modelUse == "levels")
 					termsAreVariables = false;
 				if (sourceModel->areTermsInteractions() || sourceItem->combineWithOtherModels)
 					termsAreInteractions = true;
