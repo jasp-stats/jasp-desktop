@@ -30,8 +30,8 @@ Window
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				jaspTheme.white
 
-	minimumWidth:		800 * preferencesModel.uiScale
-	minimumHeight:		600 * preferencesModel.uiScale
+	minimumWidth:		800
+	minimumHeight:		600
 
 	onVisibleChanged:
 		if(!visible)
