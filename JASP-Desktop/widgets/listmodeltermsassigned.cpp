@@ -127,6 +127,24 @@ const Terms &ListModelTermsAssigned::terms(const QString &what) const
 		return ListModelAssignedInterface::terms(what);
 }
 
+void ListModelTermsAssigned::removeTerm(int index)
+{
+	if (index < 0 || index >= int(_terms.size())) return
+	_tempTermsToRemove.clear();
+
+	beginResetModel();
+
+	const Term& term = _terms.at(size_t(index));
+
+	_rowControlsMap.remove(term.asQString());
+	_terms.remove(term);
+	_tempTermsToRemove.add(term);
+
+	endResetModel();
+
+	emit modelChanged(nullptr, &_tempTermsToRemove);
+}
+
 void ListModelTermsAssigned::changeTerm(int index, const QString& name)
 {
 	QString oldName = _terms[size_t(index)].asQString();

@@ -258,14 +258,8 @@ void BoundQMLComponentsList::addItemHandler()
 
 void BoundQMLComponentsList::removeItemHandler(int index)
 {
-	const std::vector<Term>& myTerms = _termsModel->terms().terms();
-
-	if (index < int(myTerms.size()))
-	{
-		QList<int> indexes = {index};
-		_termsModel->removeTerms(indexes);
-		setItemProperty("currentIndex", index >= _termsModel->rowCount() ? index - 1 : index);
-	}
+	_termsModel->removeTerm(index);
+	setItemProperty("currentIndex", index >= _termsModel->rowCount() ? index - 1 : index);
 }
 
 void BoundQMLComponentsList::nameChangedHandler(int index, QString name)
