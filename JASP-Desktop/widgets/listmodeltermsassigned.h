@@ -33,6 +33,7 @@ public:
 	Terms			canAddTerms(const Terms& terms)																	const	override;
 	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault)	override;
 	const Terms&	terms(const QString& what = QString())															const	override;
+	void			removeTerm(int index);
 
 	virtual void	changeTerm(int index, const QString& name);
 
