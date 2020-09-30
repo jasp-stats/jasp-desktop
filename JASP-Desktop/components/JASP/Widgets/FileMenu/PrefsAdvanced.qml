@@ -217,6 +217,7 @@ ScrollView
 			id:			windowsSpecific
 			visible:	WINDOWS
 			enabled:	WINDOWS
+			title:		qsTr("Windows Workarounds")
 			
 			CheckBox
 			{
