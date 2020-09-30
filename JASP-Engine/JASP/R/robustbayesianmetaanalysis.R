@@ -957,7 +957,7 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
           allow_min_ESS   = if (options[["advanced_omit"]] && options[["advanced_omit_ESS"]])   options[["advanced_omit_ESS_value"]],
           allow_inc_theta = options[["advanced_omit_theta"]],
           balance_prob    = options[["advanced_omit_prior"]] == "conditional",
-          silent          = TRUE,
+          silent          = FALSE,
           progress_start  = 'startProgressbar(length(object$models))',
           progress_tick   = 'progressbarTick()'
         ),
@@ -985,7 +985,7 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
           allow_min_ESS   = if (options[["advanced_omit_ESS"]]) options[["advanced_omit_ESS_value"]],
           allow_inc_theta = options[["advanced_omit_theta"]],
           balance_prob    = options[["advanced_omit_prior"]] == "conditional",
-          silent          = TRUE,
+          silent          = FALSE,
           progress_start  = 'startProgressbar(sum(converged_models))',
           progress_tick   = 'progressbarTick()'
         ),
