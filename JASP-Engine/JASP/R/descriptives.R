@@ -184,6 +184,24 @@ Descriptives <- function(jaspResults, dataset, options) {
     }
   }
 
+
+#X bar Chart
+ if(options[['Xbarchart']]) {
+    plot = createJaspPlot(title = "Xbar chart")
+    jaspResults[["Xbarchart"]]= plot
+    p = qcc::qcc(dataset, type="xbar")
+    jaspResults[["Xbarchart"]]$plotObject = p
+    }
+
+# R chart
+if(options[['Rchart']]) {
+   plot = createJaspPlot(title = "R chart")
+   jaspResults[["Rchart"]]= plot
+   p = qcc::qcc(dataset, type="R")
+   jaspResults[["Rchart"]]$plotObject = p
+   }
+
+
   # Scatter plots
   if (options[["scatterPlot"]]) {
     if(is.null(jaspResults[["scatterPlots"]])) {
