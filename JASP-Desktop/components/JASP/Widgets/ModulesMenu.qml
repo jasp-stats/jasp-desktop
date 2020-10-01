@@ -70,7 +70,7 @@ FocusScope
 			{
 				id:			modules
 				spacing:	4  * preferencesModel.uiScale
-				width:		parent.width - jaspTheme.generalAnchorMargin
+				width:		slidePart.width - vertScroller.width
 
 				property int buttonMargin:	3  * preferencesModel.uiScale
 				property int buttonWidth:	width - (buttonMargin * 2)
