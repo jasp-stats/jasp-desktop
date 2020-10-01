@@ -40,7 +40,7 @@
 	<string>org.jasp-stats.jasp</string>
 
 	<key>LSMinimumSystemVersion</key>
-	<string>10.8.0</string>
+	<string>10.13.0</string>
 
 	<key>CFBundleSignature</key>
 	<string>JASP</string>
