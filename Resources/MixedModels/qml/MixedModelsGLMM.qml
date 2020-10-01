@@ -49,7 +49,7 @@ Form {
 			name:				"dependentVariableAggregation"
 			title:				qsTr("Number of trials")
 			singleVariable:		true
-			allowedColumns:		["ordinal"]
+			allowedColumns:		["scale","ordinal"]
 
 			onEnabledChanged: if (!enabled && count > 0) itemDoubleClicked(0)
 		}
@@ -235,7 +235,7 @@ Form {
 				label:	qsTr("Compare marginal means to:")
 			}
 
-			IntegerField
+			DoubleField
 			{
 				enabled:	marginalMeansCompare.checked
 				name:		"marginalMeansCompareTo"
@@ -352,7 +352,7 @@ Form {
 				label:	qsTr("Compare trends to:")
 			}
 
-			IntegerField
+			DoubleField
 			{
 				enabled:	trendsCompare.checked
 				name:		"trendsCompareTo"

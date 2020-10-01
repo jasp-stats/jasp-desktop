@@ -1120,6 +1120,10 @@
     if (options$plotsBackgroundColor != "none" && options$plotsGeom != "geom_jitter" && "color" %in% mapping)
       data_arg$color <- options$plotsBackgroundColor
     
+    # fixing afex issues with bootstrap and LRT type II SS - hopefully removeable in the future
+    if (type %in% c("LMM", "GLMM"))
+      if (options$method %in% c("LRT", "PB") && options$type == 2)
+        model <- model$full_model[[length(model$full_model)]]
     
     JASP:::.setSeedJASP(options)
     p <- tryCatch(
@@ -2113,6 +2117,7 @@
 .mmFitModelB      <- function(jaspResults, dataset, options, type = "BLMM") {
     # hopefully fixing the random errors
     contr.bayes <<- stanova::contr.bayes
+    stan_glmer  <- rstanarm::stan_glmer
     if (!is.null(jaspResults[["mmModel"]]))
       return()
     
@@ -2129,7 +2134,7 @@
     model_formula <- .mmModelFormula(options, dataset)
 
     if (type == "BLMM") {
-      model <- stanova::stanova_lmer(
+      model <- stanova::stanova(
         formula           = as.formula(model_formula$model_formula),
         check_contrasts   = "contr.bayes",
         data              = dataset,
@@ -2138,7 +2143,8 @@
         warmup            = options$warmup,
         adapt_delta       = options$adapt_delta,
         control           = list(max_treedepth = options$max_treedepth),
-        seed              = if (isTRUE(options[["setSeed"]])) options[["seed"]]
+        seed              = .getSeedJASP(options),
+        model_fun         = "lmer"
       )
       
     } else if (type == "BGLMM") {
@@ -2157,7 +2163,7 @@
       if (options$family == "binomial_agg") {
         glmm_weight <<- dataset[, .v(options$dependentVariableAggregation)]
         
-        model <- stanova::stanova_glmer(
+        model <- stanova::stanova(
           formula           = as.formula(model_formula$model_formula),
           check_contrasts   = "contr.bayes",
           data              = dataset,
@@ -2168,11 +2174,12 @@
           control           = list(max_treedepth = options$max_treedepth),
           weights           = glmm_weight,
           family            = eval(call("binomial", glmm_link)),
-          seed              = if (isTRUE(options[["setSeed"]])) options[["seed"]]
+          seed              = .getSeedJASP(options),
+          model_fun         = "glmer"
         )
         
       } else{
-        model <- stanova::stanova_glmer(
+        model <- stanova::stanova(
           formula           = as.formula(model_formula$model_formula),
           check_contrasts   = "contr.bayes",
           data              = dataset,
@@ -2182,7 +2189,8 @@
           adapt_delta       = options$adapt_delta,
           control           = list(max_treedepth = options$max_treedepth),
           family            = glmm_family,
-          seed              = if (isTRUE(options[["setSeed"]])) options[["seed"]]
+          seed              = .getSeedJASP(options),
+          model_fun         = "glmer"
         )
         
       }
@@ -3113,7 +3121,7 @@
 .mmMessageSingularFit <-
   gettext("Model fit is singular. Specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Carefully reduce the random effects structure, but this practice might inflate the reported p-value, and invalidates the analysis.")
 .mmMessageVovkSellke <-
-  gettextf("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001).","\u2081","\u2080","\u2264")
+  gettext("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001).")
 .mmMessageNumericalProblems <-
   gettext("Numerical problems with the maximum-likelihood estimate (e.g., gradients too large). This may indicate that the specified random effects parameters (random intercepts and random slopes) cannot be estimated from the available data. Consider carefully reducing the random effects structure, but be aware this may induce unknown risks of anti-conservative results (i.e., p-values might be lower than nominal).")
 .mmMessageDFdisabled <-
