@@ -16,11 +16,7 @@
 #
 
 ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
-  jaspResults[["optionslist"]] <- createJaspHtml(paste(capture.output(str(options)), collapse = "\n"),
-                                                 class = "jasp-code", position = 7, title = "Options")
-}
 
-ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   jaspResults$addCitation("Revelle, W. (2018) psych: Procedures for Personality and Psychological Research, Northwestern University, Evanston, Illinois, USA, https://CRAN.R-project.org/package=psych Version = 1.8.12.")
 
   # Read dataset
@@ -82,8 +78,12 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
         return(gettext("Data not valid: variance is zero in each row"))
       }
     },
-    # Check for correlation anomalies
+    # check for correlation anomalies
     function() {
+      # the checks below also fail when n < p but this provides a more accurate error message
+      if (ncol(dataset) > nrow(dataset))
+        return(gettext("Data not valid: there are more variables than observations"))
+
       P <- ncol(dataset)
       
       # check whether a variable has too many missing values to compute the correlations
