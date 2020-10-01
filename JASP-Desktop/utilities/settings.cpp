@@ -1,4 +1,5 @@
 #include "settings.h"
+#include "enginedefinitions.h"
 
 QSettings* Settings::_settings = nullptr;
 
@@ -79,4 +80,19 @@ QSettings *Settings::getSettings()
 	if (!_settings)
 		_settings = new QSettings();
 	return _settings;
+}
+
+winLcCtypeSetting Settings::getWinLcCtypeSetting()
+{
+	QString lcCtypeSetting = Settings::value(Settings::LC_CTYPE_C_WIN).toString();
+	
+	winLcCtypeSetting val = winLcCtypeSetting::check;
+	
+	try
+	{
+		val = winLcCtypeSettingFromQString(lcCtypeSetting);	
+	}
+	catch(missingEnumVal & e) {} //Just keep it at check then
+	
+	return val;
 }

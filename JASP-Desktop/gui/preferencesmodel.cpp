@@ -462,34 +462,19 @@ void PreferencesModel::resetRememberedModules(bool setToRemember)
 	setModulesRemembered(!setToRemember ? QStringList({}) : RibbonModel::singleton()->getModulesEnabled());
 }
 
-winLcCtypeSetting _getWinLcCtypeSetting()
-{
-	QString lcCtypeSetting = Settings::value(Settings::LC_CTYPE_C_WIN).toString();
-	
-	winLcCtypeSetting val = winLcCtypeSetting::check;
-	
-	try
-	{
-		val = winLcCtypeSettingFromQString(lcCtypeSetting);	
-	}
-	catch(missingEnumVal & e) {} //Just keep it at check then
-	
-	return val;
-}
-
 bool PreferencesModel::lcCtypeCheck() const
 {
-	return _getWinLcCtypeSetting() == winLcCtypeSetting::check;
+	return Settings::getWinLcCtypeSetting() == winLcCtypeSetting::check;
 }
 
 bool PreferencesModel::lcCtypeToC() const
 {
-	return _getWinLcCtypeSetting() == winLcCtypeSetting::alwaysC;
+	return Settings::getWinLcCtypeSetting() == winLcCtypeSetting::alwaysC;
 }
 
 void PreferencesModel::setLcCtypeToC(bool newVal)
 {
-	winLcCtypeSetting	current = _getWinLcCtypeSetting(),
+	winLcCtypeSetting	current = Settings::getWinLcCtypeSetting(),
 						newSet	= newVal ? winLcCtypeSetting::alwaysC : winLcCtypeSetting::neverC; 
 	
 	
@@ -511,7 +496,7 @@ void PreferencesModel::setLcCtypeCheck(bool newVal)
 		return;
 	}
 	
-	winLcCtypeSetting	current = _getWinLcCtypeSetting(),
+	winLcCtypeSetting	current = Settings::getWinLcCtypeSetting(),
 						newSet	= winLcCtypeSetting::check; 
 	
 	

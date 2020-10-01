@@ -5,6 +5,8 @@
 #include <QString>
 #include <QLocale>
 
+enum class winLcCtypeSetting;
+
 class Settings {
 
 public:
@@ -59,6 +61,8 @@ public:
 	static void remove(Settings::Type key);
 	static QSettings* getSettings();
 	static const char *	defaultMissingValues;
+	
+	static winLcCtypeSetting getWinLcCtypeSetting();
 
 private:
 	struct Setting {

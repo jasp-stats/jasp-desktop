@@ -8,6 +8,8 @@
 
 class JaspTheme;
 
+
+
 class PreferencesModel : public QObject
 {
 	Q_OBJECT

@@ -235,7 +235,8 @@ ScrollView
 			{
 				id:					alwaysSetLC_CTYPE_C
 				label:				qsTr("Always set LC_CTYPE to \"C\".")
-				toolTip:			qsTr("If this is enabled and you have non-ascii characters in your install path JASP won't work anymore.  If you only have non-ascii characters in your username then installing modules will probably break. On the other hand, disabling this will make certain characters in the results look weird, sorry for the inconvenience, we are working on it and hopefully have this fixed next release.")
+				toolTip:			qsTr("See the documentation for more info.")
+				info:				qsTr("If this is enabled and you have non-ascii characters in your install path JASP won't work anymore.  If you only have non-ascii characters in your username then installing modules will probably break. On the other hand, disabling this will make certain characters in the results look weird, sorry for the inconvenience, we are working on it and hopefully have this fixed next release.")
 				checked:			preferencesModel.lcCtypeToC
 				onCheckedChanged:	preferencesModel.lcCtypeToC = checked
 				KeyNavigation.tab:	logToFile
