@@ -388,7 +388,7 @@ bool BoundQMLTextInput::_formulaResultInBounds(double result)
 		QString end;
 		if (tooSmall)	end = (includeMin ? "&ge; " : "&gt; ") + getItemProperty("min").toString();
 		else			end = (includeMax ? "&le; " : "&lt; ") + getItemProperty("max").toString();
-		item()->addControlError(tr("The result (%1) must be %2").arg(result).arg(end));
+		item()->addControlError(tr("The value (%1) must be %2").arg(result).arg(end));
 		setItemProperty("hasScriptError", true);
 	}
 	else
