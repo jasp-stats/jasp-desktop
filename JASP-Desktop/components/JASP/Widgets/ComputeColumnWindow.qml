@@ -131,7 +131,7 @@ FocusScope
 
 			Rectangle
 			{
-				id: computeColumnEditRectangle
+				id:		computeColumnEditRectangle
 				color: jaspTheme.white
 
 				border.width: 1
