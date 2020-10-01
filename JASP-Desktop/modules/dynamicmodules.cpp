@@ -40,8 +40,6 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 
 	if(!boost::filesystem::exists(_modulesInstallDirectory))
 		boost::filesystem::create_directories(_modulesInstallDirectory);
-
-	initializeInstalledModules();
 }
 
 DynamicModules::~DynamicModules()
