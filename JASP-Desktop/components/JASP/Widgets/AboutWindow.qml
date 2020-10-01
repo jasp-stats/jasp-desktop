@@ -4,6 +4,7 @@ import QtQuick.Controls 2.5
 import QtQuick.Controls.Styles 1.4
 import QtWebEngine 1.7
 import JASP.Widgets 1.0
+import JASP.Controls 1.0 as JC
 
 
 Window
@@ -95,7 +96,7 @@ Window
 		border.width:	0
 		color:			jaspTheme.white
 
-		Text
+		JC.Text
 		{
 			id:				copyrightMessage
 			anchors.left:	parent.left
@@ -107,7 +108,7 @@ Window
 			color:			jaspTheme.textEnabled
 		}
 
-		Label
+		JC.Label
 		{
 			id:				jaspVersionLabel
 			anchors.left:	parent.left
@@ -119,7 +120,7 @@ Window
 			color:			labelcolor
 			font.bold:		true
 
-			Text
+			JC.Text
 			{
 				id:				jaspVersionText
 
@@ -131,7 +132,7 @@ Window
 			}
 		}
 
-		Label
+		JC.Label
 		{
 			id:				buildDateLabel
 			anchors.left:	parent.left
@@ -143,7 +144,7 @@ Window
 			color:			labelcolor
 			font.bold:		true
 
-			Text
+			JC.Text
 			{
 				id:				buildDateText
 				anchors.left:	parent.right
@@ -155,7 +156,7 @@ Window
 			}
 		}
 
-		Label
+		JC.Label
 		{
 			id:				sourceLabel
 			anchors.left:	parent.left
@@ -167,7 +168,7 @@ Window
 			color:			labelcolor
 			font.bold:		true
 
-			Text
+			JC.Text
 			{
 				id:				commitLink
 				anchors.left:	parent.right
@@ -189,7 +190,7 @@ Window
 			}
 		}
 
-		Label
+		JC.Label
 		{
 			id:				downloadLabel
 			anchors.left:	parent.left
@@ -201,7 +202,7 @@ Window
 			color:			labelcolor
 			font.bold:		true
 
-			Text
+			JC.Text
 			{
 				id:				downloadText
 				anchors.left:	parent.right
@@ -223,7 +224,7 @@ Window
 			}
 		}
 
-		Label
+		JC.Label
 		{
 			id:				citationLabel
 			anchors.left:	parent.left
@@ -245,6 +246,7 @@ Window
 				topPadding:		0
 				bottomPadding:	0
 
+//				font:			jaspTheme.font
 				font.bold:		false
 				textFormat:		Text.StyledText
 				text:			aboutModel.citation
@@ -265,7 +267,7 @@ Window
 				}
 			}
 
-			Text
+			JC.Text
 			{
 				id:				bibTexText
 				anchors.left:	citationLabel.right
@@ -286,7 +288,7 @@ Window
 			}
 		}
 
-		Text
+		JC.Text
 		{
 			id:				warrantyText
 			height:			75
@@ -315,7 +317,7 @@ Window
 		height:			25
 		width:			75
 
-		Text
+		JC.Text
 		{
 			anchors.centerIn:		parent
 			text:					qsTr("Close")
