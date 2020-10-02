@@ -131,7 +131,7 @@ Form {
 							value:				"1"
 							min:				0
 							inclusive:			JASP.None
-							fieldWidth:			70
+							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}
@@ -143,7 +143,7 @@ Form {
 							value:				"1"
 							min:				0
 							inclusive:			JASP.None
-							fieldWidth:			70
+							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}
@@ -156,7 +156,7 @@ Form {
 							min:				0
 							max:				1
 							inclusive:			JASP.None
-							fieldWidth:			70
+							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}
