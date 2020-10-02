@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-09-24 10:50\n"
-"PO-Revision-Date: 2020-10-01 15:40+0000\n"
+"PO-Revision-Date: 2020-10-03 13:41+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "nl/>\n"
@@ -218,9 +218,8 @@ msgstr "Sequentiële Posterior Bijweken"
 msgid "Prediction Summary"
 msgstr "Voorspellingsoverzicht"
 
-#, fuzzy
 msgid "%s Prediction Plots"
-msgstr "Histogrammen"
+msgstr "%s Voorspellingsgrafieken"
 
 msgid "%1$s %2$s Prediction Plots"
 msgstr "%1$s %2$s Voorspellingsgrafieken"
@@ -228,9 +227,8 @@ msgstr "%1$s %2$s Voorspellingsgrafieken"
 msgid "%s Prior and Posterior Plots"
 msgstr "%s Prior en Posteriors Grafieken"
 
-#, fuzzy
 msgid "%s Predictive Accuracy Plot"
-msgstr "Grafiek Prestatievoorspelling"
+msgstr "%s Voorspellende Precisie Grafiek"
 
 msgid "%s Sequential Analysis"
 msgstr "%s Sequentiële Analyse"
@@ -260,6 +258,16 @@ msgid ""
 "           <li> %s </li>\n"
 "           <li> %s </li> </ol>"
 msgstr ""
+"De analyse is opgesplitst in 5 secties:\n"
+"      <ol> <li> Gegevens - voor het specificeren van de data-invoer voor de "
+"berekeningen. U kunt ofwel een variabele gebruiken uit een gegevensset die "
+"in JASP is geladen, een geaggregeerd overzicht van de gegevens specificeren, "
+"of de waarnemingen een voor een invoeren (en deze bijwerken tijdens de "
+"analyse). </li>\n"
+"           <li> %s </li>\n"
+"           <li> %s </li>\n"
+"           <li> %s </li>\n"
+"           <li> %s </li> </ol>"
 
 msgid "The 'Data' section allows you to specify data input for the analysis."
 msgstr ""
@@ -733,7 +741,7 @@ msgid ""
 "based on the estimated models%s"
 msgstr ""
 "De sectie 'Posterior voorspelling' maakt het mogelijk om toekomstige "
-"gegevens te voorspellen op basis van de geschatte modellen %s"
+"gegevens te voorspellen op basis van de geschatte modellen%s"
 
 msgid ""
 "For a model with a spike prior distribution for parameter %1$s, predictions "
@@ -1007,38 +1015,28 @@ msgstr ""
 "Het aantal iteraties moet minstens 2 iteraties hoger zijn dan het "
 "opwarmingsaantal"
 
-#, fuzzy
 msgid "%s requires that the dependent variable is positive."
-msgstr ""
-"Voor %s mag de afhankelijke variabele alleen positieve getallen bevatten."
+msgstr "%s vereist dat de afhankelijke variabele positief is."
 
-#, fuzzy
 msgid "%s requires that the dependent variable is an integer."
-msgstr "Voor %s mag de afhankelijke variabele alleen gehele getallen bevatten."
+msgstr "%s vereist dat de afhankelijke variabele een geheel getal is."
 
-#, fuzzy
 msgid "%s requires that the dependent variable contains only 0 and 1."
-msgstr ""
-"Voor %s mag de afhankelijke variabele alleen de getallen 0 en 1 bevatten."
+msgstr "%s vereist dat de afhankelijke variabele slechts 0 en 1 kan zijn."
 
-#, fuzzy
 msgid ""
 "%s requires that the dependent variable is higher than 0 and lower than 1."
-msgstr ""
-"Voor %s mag de afhankelijke variabele alleen getallen bevatten met waardes "
-"tussen 0 en 1."
+msgstr "%s vereist dat de afhankelijke variabele hoger dan 0 en lager dan 1 is."
 
-#, fuzzy
 msgid "%s requires that the number of trials variable is an integer."
-msgstr "Voor %s mag het aantal steekproeven alleen gehele getallen bevatten."
+msgstr "%s vereist dat de variable aantal steekproeven een geheel getal is."
 
-#, fuzzy
 msgid ""
 "%s requires that the dependent variable is proportion of successes out of "
 "the number of trials."
 msgstr ""
-"Voor %s mag de afhankelijke variabele alleen succesproporties van het aantal "
-"steekproeven bevatten."
+"%s vereist dat de afhankelijke variabele het aandeel van de successen in het "
+"aantal proeven is."
 
 msgid "ANOVA Summary"
 msgstr "ANOVA Samenvatting"
@@ -1104,7 +1102,6 @@ msgstr "III"
 msgid "II"
 msgstr "II"
 
-#, fuzzy
 msgid "Fit statistics"
 msgstr "Pasmaten"
 
@@ -1298,17 +1295,16 @@ msgstr ""
 "structuur, maar merk op dat hierdoor de p-waarde opblaast, waardoor de "
 "validiteit van de analyse in gevaar komt."
 
-#, fuzzy
 msgid ""
 "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, "
 "the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</"
 "em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, "
 "2001)."
 msgstr ""
-"Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op een tweezijdige <em>p</"
-"em>-waarde, het maximale aantal mogelijke kansen die H%1$s ondersteunen over "
-"H%2$s is gelijk aan 1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> "
-"%3$s .37 (Sellke, Bayarri, & Berger, 2001)."
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op een tweezijdige "
+"<em>p</em>-waarde, de maximaal mogelijke kansen ten gunste van H%1$s  boven "
+"H%2$s is gelijk aan 1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> %3$s ."
+"37 (Sellke, Bayarri, & Berger, 2001)."
 
 msgid ""
 "Numerical problems with the maximum-likelihood estimate (e.g., gradients too "
@@ -2054,7 +2050,6 @@ msgstr ""
 "willekeurige gegevens die niet aan de uniforme verdeling voldoen moeten "
 "wellicht aan verdere verificatie onderworpen worden."
 
-#, fuzzy
 msgid ""
 "The uniform distribution assigns equal probability to all possible digits "
 "that may occur. The goal of this procedure is to determine to what extent "
@@ -3804,7 +3799,7 @@ msgstr ""
 "beperkteaselecte effectenmodel."
 
 msgid "Effect Size"
-msgstr "Effect grootte"
+msgstr "Effectgrootte"
 
 msgid "Heterogeneity"
 msgstr "Heterogeniteit"
@@ -5342,10 +5337,10 @@ msgid ""
 "em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, "
 "2001)."
 msgstr ""
-"Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op een tweezijdige <em>p</"
-"em>-waarde, het maximale aantal mogelijke kansen die H%1$s ondersteunen over "
-"H%2$s is gelijk aan 1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> "
-"%3$s .37 (Sellke, Bayarri, & Berger, 2001)."
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op een tweezijdige "
+"<em>p</em>-waarde, de maximaal mogelijke kansen ten gunste van H%1$s boven "
+"H%2$s is gelijk aan 1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> %3$s ."
+"37 (Sellke, Bayarri, & Berger, 2001)."
 
 msgid "Please provide another variable."
 msgstr "Geef a.u.b. een andere variabele."
@@ -5371,7 +5366,7 @@ msgid "Expected numeric or character rscale but got %s."
 msgstr "Verwachte numerieke of karakter rschaal, maar ontving %s."
 
 msgid "Running robustness check %d / %d"
-msgstr "Bayes Factor Robuustheidsevaluatie %d / %d"
+msgstr "Uitvoeren van Robuustheidsevaluatie %d / %d"
 
 msgid "max BF%s"
 msgstr "max BF%s"
@@ -5509,8 +5504,8 @@ msgid ""
 "  (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 "Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op de <em>p</em>-waarde, \n"
-"  het maximale aantal mogelijke kansen die H%1$s ondersteunen over H%2$s is "
-"gelijk aan \n"
+"  de maximaal mogelijke kansen ten gunste van H%1$s  boven H%2$s is gelijk "
+"aan \n"
 "  1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> %3$s .37\n"
 "  (Sellke, Bayarri, & Berger, 2001)."
 
@@ -5589,10 +5584,10 @@ msgid ""
 "maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> "
 "log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
-"Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op de <em>p</em>-waarde, het "
-"maximale aantal mogelijke kansen die H%1$s ondersteunen ten opzichte van H"
-"%2$s is gelijk aan 1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> "
-"%3$s .37 (Sellke, Bayarri, & Berger, 2001)."
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op de <em>p</em>-waarde, de "
+"maximaal mogelijke kansen ten gunste van H%1$s boven H%2$s is gelijk aan 1/(-"
+"e <em>p</em> log(<em>p</em>)) voor <em>p</em> %3$s .37 (Sellke, Bayarri, & "
+"Berger, 2001)."
 
 msgid "Proportions tested against value: %s"
 msgstr "Proporties getest tegen waarde: %s"
@@ -5924,7 +5919,8 @@ msgid ""
 "      (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 "Vovk-Sellke Maximum  <em>p</em>-Ratio:Gebaseerd op de  <em>p</em>-waarde, \n"
-"      De maximaal mogelijke odds voor H%1$s over H%2$s is %3$s\n"
+"      De maximaal mogelijke kansen ten gunste van H%1$s boven H%2$s is "
+"gelijk aan %3$s\n"
 "      (Sellke, Bayarri, & Berger, 2001)."
 
 msgid "Log Odds Ratio"
@@ -6106,7 +6102,7 @@ msgid ""
 "Partial correlation cannot be computed: covariance matrix is computationally "
 "singular."
 msgstr ""
-"Gedeeltelijke correlatie kan niet worden berekend: covariantiematrix is "
+"Partiële correlatie kan niet worden berekend: covariantiematrix is "
 "computationeel singulier."
 
 msgid "Assumption checks"
@@ -6123,7 +6119,7 @@ msgstr "Shapiro-Wilk voor Bivariate Normaliteit"
 
 msgid "Confidence intervals for partial correlations not yet available."
 msgstr ""
-"Betrouwbaarheidsintervallen voor gedeeltelijke correlaties zijn nog niet "
+"Betrouwbaarheidsintervallen voor partiële correlaties zijn nog niet "
 "beschikbaar."
 
 msgid "Scatter plots"
@@ -6152,17 +6148,14 @@ msgstr ""
 "Grafiek maken niet mogelijk: \n"
 " Aantal observaties < 2"
 
-#, fuzzy
 msgid "Partial Pearson's r"
-msgstr "Pearson's r"
+msgstr "Partiële Pearson's r"
 
-#, fuzzy
 msgid "Partial Spearman's rho"
-msgstr "Spearman's rho"
+msgstr "Partiële Spearman's rho"
 
-#, fuzzy
 msgid "Partial Kendall's tau B"
-msgstr "Kendall's tau B"
+msgstr "Partiële Kendall's tau B"
 
 msgid "%s heatmap"
 msgstr "%s warmtekaart"
@@ -6676,7 +6669,7 @@ msgid "probability of success: %s"
 msgstr "kans op succes: %s"
 
 msgid "number of trials: %s"
-msgstr "Aantal pogingen: %s"
+msgstr "Aantal steekproeven: %s"
 
 msgid "Parameter n was fixed at value %s."
 msgstr "Parameter n werd bepaald op waarde %s."
@@ -6732,28 +6725,23 @@ msgstr "kwadraatwortel van nauwkeurigheid: %s"
 msgid "&mu;"
 msgstr "&mu;"
 
-#, fuzzy
 msgid "logistic distribution"
-msgstr "Posterior verdeling"
+msgstr "Logistische verdeling"
 
-#, fuzzy
 msgid "location: &mu; %s"
-msgstr "gemiddelde: &mu; %s"
+msgstr "locatie: &mu; %s"
 
 msgid "(&sigma; &pi;)<sup>2</sup> / 3"
 msgstr "(&sigma; &pi;)<sup>2</sup> / 3"
 
-#, fuzzy
 msgid "log-normal distribution"
-msgstr "normaal verdeling"
+msgstr "Lognormale verdeling"
 
-#, fuzzy
 msgid "log mean: &mu; %s"
-msgstr "gemiddelde: &mu; %s"
+msgstr "log gemiddelde: &mu; %s"
 
-#, fuzzy
 msgid "log standard deviation: %s"
-msgstr "standaarddeviatie: %s"
+msgstr "log standaarddeviatie: %s"
 
 msgid "exp(&mu; + &sigma;<sup>2</sup>/2)"
 msgstr "exp(&mu; + &sigma;<sup>2</sup>/2)"
@@ -7573,7 +7561,7 @@ msgid "Part And Partial Correlations"
 msgstr "Part En Partial Correlaties"
 
 msgid "Partial"
-msgstr "Gedeeltelijk"
+msgstr "Partieel"
 
 msgid "Part"
 msgstr "Deel"
@@ -7634,8 +7622,8 @@ msgstr "Q-Q Plot Gestandaardiseerde Residuen"
 
 msgid "Partial plots are not supported for models containing interaction terms"
 msgstr ""
-"Partial plots worden niet ondersteund voor modellen die interactietermen "
-"bevatten"
+"Partiële grafieken worden niet ondersteund voor modellen die "
+"interactietermen bevatten"
 
 msgid "%1$s vs. %2$s"
 msgstr "%1$s vs. %2$s"
@@ -7666,9 +7654,9 @@ msgid ""
 "        possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> "
 "log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
-"Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op de <em>p</em>-waarde, het "
-"maximum\n"
-"        mogelijke aantal kansen voor H%1$s tegenover H%2$s is gelijk aan 1/(-"
+"Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op de <em>p</em>-waarde, de "
+"maximaal\n"
+"        mogelijke kansen ten gunste van H%1$s boven H%2$s is gelijk aan 1/(-"
 "e <em>p</em> log(<em>p</em>)) voor <em>p</em> %3$s .37 (Sellke, Bayarri, & "
 "Berger, 2001)."
 
@@ -7872,17 +7860,14 @@ msgstr "Voorspeller - residuengrafieken"
 msgid "Squared Pearson residuals plot"
 msgstr "Gekwadrateerde Pearson residuengrafiek"
 
-#, fuzzy
 msgid "Performance plots"
-msgstr "Prestatiestatistieken"
+msgstr "Prestatiegrafieken"
 
-#, fuzzy
 msgid "ROC plot"
-msgstr "Q-Q plot"
+msgstr "ROC grafiek"
 
-#, fuzzy
 msgid "PR plot"
-msgstr "P-P plot"
+msgstr "PR grafiek"
 
 msgid "Predicted Probability"
 msgstr "Voorspelde kans"
@@ -7890,9 +7875,8 @@ msgstr "Voorspelde kans"
 msgid "Squared Pearson Residual"
 msgstr "Gekwadrateerd Pearson residu"
 
-#, fuzzy
 msgid "Positive predictive value"
-msgstr "Voorspelde Waarde"
+msgstr "Positieve voorspellende waarde"
 
 msgid "%1$s%% bca%2$s Confidence interval"
 msgstr "%1$s%% bca%2$s Betrouwbaarheidsinterval"
@@ -7922,7 +7906,7 @@ msgid ""
 "(Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 "Vovk-Sellke Maximum <em>p</em>-Ratio: Gebaseerd op de <em>p</em>-waarde, \n"
-"de maximaal mogelijke odds voor H%1$s boven H%2$s is \n"
+"de maximaal mogelijke kansen ten gunste van H%1$s boven H%2$s is \n"
 "1/(-e <em>p</em> log(<em>p</em>)) voor <em>p</em> %3$s .37 \n"
 "(Sellke, Bayarri, & Berger, 2001)."
 
@@ -7959,16 +7943,14 @@ msgstr "Posterior Kengetallen Voor Submodel %s"
 msgid "%.0f%% Credible intervals"
 msgstr "%.0f%% Geloofwaardigheidsintervallen"
 
-#, fuzzy
 msgid "Greatest Lower Bound"
-msgstr "Bovengrens %s"
+msgstr "Hoogste Ondergrens"
 
 msgid "Item-rest correlation"
 msgstr "Item-rest correlatie"
 
-#, fuzzy
 msgid "mean"
-msgstr "gemiddelde: %s"
+msgstr "gemiddelde"
 
 msgid "sd"
 msgstr "sd"
@@ -8053,14 +8035,13 @@ msgstr ""
 "%sMcDonald's ω schattingsmethode is omgeschakeld naar PFA omdat de CFA\n"
 "                                          geen oplossing vond."
 
-#, fuzzy
 msgid ""
 "%s Some confidence intervals could not be computed \n"
 "                                        because none of the bootstrapped "
 "covariance matrices were invertible."
 msgstr ""
 "%s Sommige betrouwbaarheidsintervallen konden niet worden berekend omdat "
-"geen van de bootstrap matrices inverteerbaar was."
+"geen van de bootstrap covariantie matrices inverteerbaar was."
 
 msgid "If item dropped"
 msgstr "Als item wordt weggelaten"
@@ -8099,20 +8080,18 @@ msgstr "MCMC fout"
 msgid "ESS"
 msgstr "ESS"
 
-#, fuzzy
 msgid "%1$s is on %2$s scale."
-msgstr "%s is op %s schaal."
+msgstr "%1$s is op %2$s schaal."
 
 msgid "<em>p</em>-values interval %s"
 msgstr "<em>p</em>-waarden interval %s"
 
-#, fuzzy
 msgid "The weights (%1$s) correspond to %2$s <em>p</em>-values."
-msgstr "De gewichten (%s) corresponderen met de %s <em>p</em>-waarden."
+msgstr "De gewichten (%1$s) corresponderen met de %2$s <em>p</em>-waarden."
 
-#, fuzzy
 msgid "Estimated studies' effects (%1$s) correspond to effect size %2$s."
-msgstr "Geschatte onderzoekseffecten (%s) correspondeert met effectgrootte %s."
+msgstr ""
+"Geschatte onderzoekseffecten (%1$s) corresponderen met effectgrootte %2$s."
 
 msgid "Effect size (%s)"
 msgstr "Effectgrootte (%s)"
@@ -8258,9 +8237,8 @@ msgstr "Gewichtsfunctie"
 msgid "Effect size vs Heterogeneity"
 msgstr "Effectgrootte vs Heterogeniteit"
 
-#, fuzzy
 msgid "%1$s (%2$s)"
-msgstr "%1$s = %2$s"
+msgstr "%1$s (%2$s)"
 
 msgid "Individual Models Plots"
 msgstr "Individuele Modellengrafiek"
@@ -8280,9 +8258,8 @@ msgstr "min(ESS)"
 msgid "max(Rhat)"
 msgstr "max(R-dakje)"
 
-#, fuzzy
 msgid "Model %1$i does not exist. Select one of the models between 1 and %2$i."
-msgstr "Model %i bestaat niet. Selecteer een model tussen 1 en %i."
+msgstr "Model %1$i bestaat niet. Selecteer een model tussen 1 en %2$i."
 
 msgid "Trace plots"
 msgstr "Spoordiagram"
@@ -8314,62 +8291,50 @@ msgstr "Alle p-afkapwaarden moeten tussen 0 en 1 liggen."
 msgid "No steps"
 msgstr "Geen stappen"
 
-#, fuzzy
 msgid "95% Confidence Interval"
-msgstr "95%% Betrouwbaarheidsintervallen"
+msgstr "95% Betrouwbaarheidsinterval"
 
 msgid "Note:"
 msgstr "Opmerking:"
 
-#, fuzzy
 msgid "%s is on %s scale."
 msgstr "%s is op %s schaal."
 
-#, fuzzy
 msgid "<em>p</em>-values interval(one-sided)"
-msgstr "<em>p</em>-waarden interval %s"
+msgstr "<em>p</em>-waarden interval(eenzijdig)"
 
-#, fuzzy
 msgid "Model Tests"
-msgstr "Modelgrafieken"
+msgstr "Modeltoetsen"
 
-#, fuzzy
 msgid "Test of Heterogeneity"
-msgstr "Toets van Residuen Heterogeniteit"
+msgstr "Toets van Heterogeniteit"
 
 msgid "Error:"
 msgstr "Fout:"
 
-#, fuzzy
 msgid "Test of Publication Bias"
-msgstr "Publicatieonzuiverheid"
+msgstr "Toets van Publicatieonzuiverheid"
 
 msgid "Assuming homogeneity"
 msgstr "Uitgaande van homogeniteit"
 
-#, fuzzy
 msgid "Assuming heterogeneity"
-msgstr "Heterogeniteit"
+msgstr "Heterogeniteit Aannemende"
 
-#, fuzzy
 msgid "Mean Estimates(%s)"
-msgstr "Model Schattingen"
+msgstr "Gemiddelde Schattingen(%s)"
 
-#, fuzzy
 msgid "Estimated Weights"
-msgstr "Geschatte Gewichten (%s)"
+msgstr "Geschatte Gewichten"
 
-#, fuzzy
 msgid "Random Effects Estimates"
-msgstr "Gefixeerde Effecten Schattingen"
+msgstr "Aselecte Effecten Schattingen"
 
-#, fuzzy
 msgid "Heterogeneity Estimates(%s)"
-msgstr "Heterogeniteit (%s)"
+msgstr "Heterogeniteitsschattingen (%s)"
 
-#, fuzzy
 msgid "p-value Frequency"
-msgstr "Rel. Frequentie"
+msgstr "p-waarde Frequentie"
 
 msgid ""
 "There were no p-value cutoffs after their automatic reduction. The displayed "
@@ -8378,41 +8343,36 @@ msgstr ""
 "Er waren geen p-afkapwaarden na hun automatische reductie. De weergegeven "
 "frequenties komen overeen met de niet-gereduceerde p-afkapwaarden."
 
-#, fuzzy
 msgid "Weight Function(%s)"
-msgstr "Gewichtsfunctie"
+msgstr "Gewichtsfunctie(%s)"
 
 msgid "The figure could not be created since one of the estimates is NaN."
 msgstr ""
-"Dee afbeelding kon niet worden gemaakt omdat een van de schattingen NaN is."
+"De afbeelding kon niet worden gemaakt omdat een van de schattingen NaN is."
 
 msgid "P-value (One-sided)"
 msgstr "P-waarde (Eenzijdig)"
 
-#, fuzzy
 msgid "Publication Probability"
-msgstr "Cumulatieve Kansverdeling"
+msgstr "Publicatie Waarschijnlijkheid"
 
-#, fuzzy
 msgid "Mean Model Estimates (%s)"
-msgstr "Model Schattingen"
+msgstr "Gemiddelde Modelschattingen (%s)"
 
-#, fuzzy
 msgid "Fixed effects (adjusted)"
-msgstr "Gefixeerde effecten"
+msgstr "Gefixeerde effecten (aangepast)"
 
-#, fuzzy
 msgid "Random effects (adjusted)"
-msgstr "Willekeurige effecten"
+msgstr "Aselecte effecten (aangepast)"
 
-#, fuzzy
 msgid ""
 "The figure could not be created since one of the estimates is not a number."
-msgstr "U kan niet alle prior modelkansen gelijk aan nul zetten."
+msgstr ""
+"De afbeelding kon niet worden gemaakt omdat een van de schattingen geen "
+"getal is."
 
-#, fuzzy
 msgid "Mean Estimates (%s)"
-msgstr "Model Schattingen"
+msgstr "Gemiddelde Schattingen (%s)"
 
 msgid "Fixed effects model:"
 msgstr "Gefixeerde effecten model:"
@@ -8420,13 +8380,11 @@ msgstr "Gefixeerde effecten model:"
 msgid "Random effects model:"
 msgstr "Willekeurige effecten model:"
 
-#, fuzzy
 msgid ""
 "%sThe optimizer failed to find a solution. Consider re-specifying the model."
 msgstr ""
-"De optimalisatie procedure kon geen oplossing vinden. Waarschijnlijk is er "
-"sprake van quasi-afzondering in de gegevens. Verwijder een aantal "
-"onafhankelijke variabelen."
+"%De optimalisator slaagde er niet in een oplossing te vinden. Overweeg om "
+"het model opnieuw te specificeren."
 
 msgid ""
 "%sThe automatic cutoffs selection did not find viable p-value cutoffs. "
@@ -8864,13 +8822,13 @@ msgid "V"
 msgstr "V"
 
 msgid "Z test."
-msgstr "z-toets."
+msgstr "Z-toets."
 
 msgid "Student t-test and Z-test"
-msgstr "Student t-toets en z-toets"
+msgstr "Student t-toets en Z-toets"
 
 msgid "Z-test"
-msgstr "z-toets"
+msgstr "Z-toets"
 
 msgid "For the %s, location parameter is given by mean difference <em>d</em>."
 msgstr ""
@@ -8926,7 +8884,7 @@ msgstr ""
 "%1$s %2$s is."
 
 msgid "data are essentially constant"
-msgstr "Data zijn in principe constant"
+msgstr "gegevens zijn in wezen constant"
 
 msgid "Paired Samples T-Test"
 msgstr "Gepaarde t-toets"
@@ -8937,15 +8895,15 @@ msgid ""
 "Lehmann estimate."
 msgstr ""
 "Voor de Student t-toets wordt de locatieparameter gegeven door gemiddelde "
-"verschil <em>d</em>; voor de Wilcoxon toets wordt effectgrootte gegeven door "
-"de Hodges-Lehmann schatting."
+"verschil <em>d</em>; voor de Wilcoxon toets wordt de effectgrootte gegeven "
+"door de Hodges-Lehmann schatting."
 
 msgid ""
 "For the Student t-test, effect size is given by Cohen's <em>d</em>. For the "
 "Wilcoxon test, effect size is given by the matched rank biserial correlation."
 msgstr ""
 "Voor de Student t-toets wordt de effectgrootte gegeven door Cohen's <em>d</"
-"em>. Voor de Wilcoxon toets wordt effectgrootte gegeven door de "
+"em>. Voor de Wilcoxon toets wordt de effectgrootte gegeven door de "
 "overeenkomende rank-biseriële correlatie."
 
 msgid ""
