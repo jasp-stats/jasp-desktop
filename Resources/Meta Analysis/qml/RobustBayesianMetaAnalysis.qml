@@ -1984,9 +1984,9 @@ Form
 
 			IntegerField
 			{
-				label:  		qsTr("Bridge sampling iterations:")
-				name:     		"advanced_bridge_iter"
-				defaultValue: 	10000
+				label:			qsTr("Bridge sampling iterations:")
+				name:			"advanced_bridge_iter"
+				defaultValue:	10000
 				max:			1000000
 				fieldWidth: 	60
 			}
@@ -2004,38 +2004,48 @@ Form
 				name:		"advanced_autofit"
 				checked:	false
 
-				Row
+				Group
 				{
-					IntegerField
+					Row
 					{
-						name:			"advanced_autofit_time"
-						label:			qsTr("Maximum fitting time")
+						IntegerField
+						{
+							name:			"advanced_autofit_time"
+							label:			qsTr("Maximum fitting time")
+							defaultValue:	1
+							min:			0
+						}
+
+						DropDown
+						{
+							name:	"advanced_autofit_time_unit"
+							values:
+							[
+								{ label: qsTr("hours"),				value: "hours"},
+								{ label: qsTr("minutes"),			value: "minutes"},
+								{ label: qsTr("seconds"),			value: "seconds"}
+
+							]
+						}
+					}
+
+					PercentField
+					{
+						name:			"advanced_autofit_error"
+						label:			qsTr("Target margin of error")
 						defaultValue:	1
-						min:			0
+						decimals:		1
+						fieldWidth:		jaspTheme.numericFieldWidth
 					}
 
-					DropDown
+					DoubleField
 					{
-						name:	"advanced_autofit_time_unit"
-						values:
-						[
-							{ label: qsTr("hours"),				value: "hours"},
-							{ label: qsTr("minutes"),			value: "minutes"},
-							{ label: qsTr("seconds"),			value: "seconds"}
-
-						]
+						name:			"advanced_autofit_rhat"
+						label:			qsTr("Target R-hat")
+						defaultValue:	1.05
+						min:			1
 					}
 				}
-
-				PercentField
-				{
-					id:				advanced_autofit_error
-					name:			"advanced_autofit_error"
-					label:			qsTr("Target margin of error")
-					defaultValue:	1
-					decimals:		1
-				}
-
 
 			}
 

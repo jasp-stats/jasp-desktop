@@ -135,6 +135,7 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
   "advanced_omit_rhat",
   "advanced_omit",
   "advanced_autofit_error",
+  "advanced_autofit_rhat",
   "advanced_autofit_time_unit",
   "advanced_autofit_time",
   "advanced_autofit",
@@ -952,6 +953,7 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
         control = list(
           autofit         = options[["advanced_autofit"]],
           max_error       = if (options[["advanced_autofit"]]) options[["advanced_autofit_error"]],
+          max_rhat        = if (options[["advanced_autofit"]]) options[["advanced_autofit_rhat"]],
           max_time        = if (options[["advanced_autofit"]]) paste0(options[["advanced_autofit_time"]], options[["advanced_autofit_time_unit"]]),
           adapt           = options[["advanced_adapt"]],
           bridge_max_iter = options[["advanced_bridge_iter"]],
