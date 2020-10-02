@@ -3028,7 +3028,7 @@ postProcessModuleInstall <- function(moduleLibraryPath)
 .parseAndStoreFormulaOptions <- function(jaspResults, options, names) {
   for (i in seq_along(names)) {
     name <- names[[i]]
-    options[[paste0(name, "Unparsed")]] = options[[name]]
+    options[[paste0(name, "Unparsed")]] <- options[[name]]
 
     if (is.null(jaspResults[[name]])) {
       parsedOption <- .parseRCodeInOptions(options[[name]])
