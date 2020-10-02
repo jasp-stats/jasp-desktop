@@ -833,22 +833,23 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
   
   
   ### create overview table
-  overall_summary <-
-    createJaspTable(title = gettext("Model Summary"))
+  overall_summary <- createJaspTable(title = gettext("Model Summary"))
   overall_summary$position <- 1
   
   overall_summary$addColumnInfo(name = "terms",     title = "",                type = "string")
   overall_summary$addColumnInfo(name = "models",    title = gettext("Models"), type = "string")
   overall_summary$addColumnInfo(name = "priorProb", title = gettext("P(M)"),   type = "number")
-  
-  for (i in 1:nrow(fitSummary[["overview"]])) {
-    temp_row <- list(
-      terms     = if (i == 1) gettext("Effect") else if (i == 2) gettext("Heterogeneity") else if (i == 3) gettext("Publication bias"),
-      models    = paste0(fitSummary[["overview"]][["Models"]][i], "/", fitSummary[["add_info"]][["n_models"]]),
-      priorProb = fitSummary[["overview"]][["Prior prob."]][i]
-    )
-    
-    overall_summary$addRows(temp_row)
+
+  if (!options[["measures"]] == "fitted") {
+    for (i in 1:nrow(fitSummary[["overview"]])) {
+      temp_row <- list(
+        terms     = if (i == 1) gettext("Effect") else if (i == 2) gettext("Heterogeneity") else if (i == 3) gettext("Publication bias"),
+        models    = paste0(fitSummary[["overview"]][["Models"]][i], "/", fitSummary[["add_info"]][["n_models"]]),
+        priorProb = fitSummary[["overview"]][["Prior prob."]][i]
+      )
+
+      overall_summary$addRows(temp_row)
+    }
   }
   
   model_preview[["overall_summary"]] <- overall_summary
@@ -865,17 +866,19 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
   models_summary$addColumnInfo(name = "prior_tau",   title = gettext("Heterogeneity"),    type = "string", overtitle = prior_overtitle)
   models_summary$addColumnInfo(name = "prior_omega", title = gettext("Publication Bias"), type = "string", overtitle = prior_overtitle)
   models_summary$addColumnInfo(name = "priorProb",   title = gettext("P(M)"),             type = "number")
-  
-  for (i in 1:nrow(fitSummary[["models"]])) {
-    temp_row <- list(
-      number       = as.numeric(rownames(fitSummary[["models"]]))[i],
-      prior_mu     = fitSummary[["models"]][i, "Prior mu"],
-      prior_tau    = fitSummary[["models"]][i, "Prior tau"],
-      prior_omega  = fitSummary[["models"]][i, "Prior omega"],
-      priorProb    = fitSummary[["models"]][i, "Prior prob."]
-    )
-    
-    models_summary$addRows(temp_row)
+
+  if (!options[["measures"]] == "fitted") {
+    for (i in 1:nrow(fitSummary[["models"]])) {
+      temp_row <- list(
+        number       = as.numeric(rownames(fitSummary[["models"]]))[i],
+        prior_mu     = fitSummary[["models"]][i, "Prior mu"],
+        prior_tau    = fitSummary[["models"]][i, "Prior tau"],
+        prior_omega  = fitSummary[["models"]][i, "Prior omega"],
+        priorProb    = fitSummary[["models"]][i, "Prior prob."]
+      )
+
+      models_summary$addRows(temp_row)
+    }
   }
   
   model_preview[["models_summary"]] <- models_summary

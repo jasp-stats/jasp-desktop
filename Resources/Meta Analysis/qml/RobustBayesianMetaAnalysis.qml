@@ -64,38 +64,43 @@ Form
 
 		RadioButton
 		{
-			label: qsTr("Cohen's d / t-statistics & N / SE")
-			value: "cohensd"
-			id: 	measures_cohensd
-			checked:true
+			label:		qsTr("Cohen's d / t-statistics & N / SE")
+			value:		"cohensd"
+			id:			measures_cohensd
+			enabled:	mainWindow.dataAvailable
+			checked:	mainWindow.dataAvailable
 		}
 
 		RadioButton
 		{
-			label: qsTr("Correlations & N")
-			value: "correlation"
-			id: 	measures_correlation
+			label:		qsTr("Correlations & N")
+			value:		"correlation"
+			id:			measures_correlation
+			enabled:	mainWindow.dataAvailable
 		}
 
 		RadioButton
 		{
-			label: qsTr("Odds ratios & CI")
-			value: "OR"
-			id: 	measures_OR
+			label:		qsTr("Odds ratios & CI")
+			value:		"OR"
+			id:			measures_OR
+			enabled:	mainWindow.dataAvailable
 		}
 
 		RadioButton
 		{
-			label: qsTr("Effect sizes & SE")
-			value: "general"
-			id: 	measures_general
+			label:		qsTr("Effect sizes & SE")
+			value:		"general"
+			id:			measures_general
+			enabled:	mainWindow.dataAvailable
 		}
 
 		RadioButton
 		{
-			label: qsTr("Fitted model")
-			value: "fitted"
-			id: 	measures_fitted
+			label:		qsTr("Fitted model")
+			value:		"fitted"
+			id:			measures_fitted
+			checked:	!mainWindow.dataAvailable
 		}
 	}
 
