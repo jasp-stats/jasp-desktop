@@ -672,14 +672,14 @@ void AnalysisForm::addControlError(JASPControlBase* control, QString message, bo
 bool AnalysisForm::hasError()
 {
 	// _controls have only controls created when the form is created, not the ones created dynamically afterwards
-	// So here we use a workaround: check whether one errorMessage item in _controlErrorMessageCache has a contral (do not use visible since it becomes visible too late).
+	// So here we use a workaround: check whether one errorMessage item in _controlErrorMessageCache has a control (do not use visible since it becomes visible too late).
 	// Controls handling inside a form must indeed be done in anther way!
 
-	bool result = false;
 	for (QQuickItem* item : _controlErrorMessageCache)
-		result |= (item->property("control").value<JASPControlBase*>() != nullptr);
+		if (item->property("control").value<JASPControlBase*>() != nullptr)
+			return true;
 
-	return result;
+	return false;
 }
 
 void AnalysisForm::clearControlError(JASPControlBase* control)
