@@ -34,7 +34,7 @@ JASPGridControl
 	property bool	showAddIcon		: addItemManually
 	property int	minimumItems	: 0
 	property int	maximumItems	: -1
-	property string newItemName		: ""
+	property string newItemName		: "#"
 	property string	removeIcon		: "cross.png"
 	property string	addIcon			: "duplicate.png"
 	property string addTooltip		: qsTr("Add a row")

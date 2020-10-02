@@ -19,6 +19,7 @@
 #include "listmodeltermsassigned.h"
 #include "listmodeltermsavailable.h"
 #include "analysis/analysisform.h"
+#include "rowcontrols.h"
 #include <QTimer>
 
 
@@ -33,7 +34,7 @@ ListModelTermsAssigned::ListModelTermsAssigned(QMLListView* listView, int maxRow
 void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
 {
 	ListModelAssignedInterface::initTerms(terms, allOptionsMap);
-	
+
 	if (source() != nullptr)
 	{
 		if (!_copyTermsWhenDropped)
@@ -64,7 +65,7 @@ void ListModelTermsAssigned::availableTermsChanged(const Terms* termsAdded, cons
 
 		_tempTermsToRemove.set(*termsRemoved);
 		emit modelChanged(nullptr, &_tempTermsToRemove);
-	}	
+	}
 }
 
 Terms ListModelTermsAssigned::canAddTerms(const Terms& terms) const
@@ -103,7 +104,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, JA
 	endResetModel();
 
 	emit modelChanged(&terms, &_tempTermsToSendBack);
-	
+
 	return _tempTermsToSendBack;
 }
 
@@ -129,14 +130,27 @@ const Terms &ListModelTermsAssigned::terms(const QString &what) const
 
 void ListModelTermsAssigned::removeTerm(int index)
 {
-	if (index < 0 || index >= int(_terms.size())) return
+	if (index < 0 || index >= int(_terms.size())) return;
+
 	_tempTermsToRemove.clear();
 
 	beginResetModel();
 
 	const Term& term = _terms.at(size_t(index));
+	const QString& termQ = term.asQString();
 
-	_rowControlsMap.remove(term.asQString());
+	if (_rowControlsMap.contains(termQ))
+	{
+		RowControls* controls = _rowControlsMap[termQ];
+		if (controls)
+			for (JASPControlWrapper* control : controls->getJASPControlsMap().values())
+			{
+				control->item()->setHasError(false);
+				listView()->form()->clearControlError(control->item());
+			}
+
+		_rowControlsMap.remove(termQ);
+	}
 	_terms.remove(term);
 	_tempTermsToRemove.add(term);
 
