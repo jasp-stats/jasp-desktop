@@ -61,9 +61,9 @@ Form {
 
 			RowLayout
 			{
-				Label { text: qsTr("Model");				Layout.preferredWidth: 280 * preferencesModel.uiScale}
-				Label { text: qsTr("Distribution");			Layout.preferredWidth: 130 * preferencesModel.uiScale}
-				Label { text: qsTr("Parameter (θ)");		Layout.preferredWidth: 150 * preferencesModel.uiScale}
+				Label { text: qsTr("Model");			Layout.leftMargin: 5 * preferencesModel.uiScale; Layout.preferredWidth: 210 * preferencesModel.uiScale}
+				Label { text: qsTr("Distribution");		Layout.preferredWidth: 97 * preferencesModel.uiScale}
+				Label { text: qsTr("Parameter (θ)"); }
 			}
 
 			ComponentsList
@@ -75,13 +75,13 @@ Form {
 					Row
 					{
 						spacing:				4 * preferencesModel.uiScale
-						Layout.preferredWidth:	285 * preferencesModel.uiScale
+						Layout.preferredWidth:	210 * preferencesModel.uiScale
 						TextField
 						{
 							label: 				""
 							name: 				"name"
 							startValue:			qsTr("Model ") + (rowIndex + 1)
-							fieldWidth:			140 * preferencesModel.uiScale
+							fieldWidth:			160 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}
@@ -89,7 +89,7 @@ Form {
 					Row
 					{
 						spacing: 4 * preferencesModel.uiScale
-						Layout.preferredWidth: 110 * preferencesModel.uiScale
+						Layout.preferredWidth: 100 * preferencesModel.uiScale
 						DropDown
 						{
 							id: typeItem
@@ -105,7 +105,6 @@ Form {
 					Row
 					{
 						spacing:				4 * preferencesModel.uiScale
-						Layout.preferredWidth:	150 * preferencesModel.uiScale
 						FormulaField
 						{
 							label:				qsTr("α")
@@ -114,7 +113,7 @@ Form {
 							value:				"1"
 							min:				0
 							inclusive:			JASP.None
-							fieldWidth:			70
+							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}
@@ -126,7 +125,7 @@ Form {
 							value:				"1"
 							min:				0
 							inclusive:			JASP.None
-							fieldWidth:			70
+							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}
@@ -139,7 +138,7 @@ Form {
 							min:				0
 							max:				1
 							inclusive:			JASP.None
-							fieldWidth:			70
+							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}
