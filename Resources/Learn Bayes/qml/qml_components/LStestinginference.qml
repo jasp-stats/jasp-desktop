@@ -244,7 +244,7 @@ Section
 						enabled: plotsPriorMarginalCI.checked
 						name: "plotsPriorMarginalLower"
 						label: qsTr("Lower")
-						id: plotsMarginalPriorLower
+						id: plotsPriorMarginalLower
 						fieldWidth: 50
 						defaultValue: 0.25; min: 0; max: plotsPriorMarginalUpper.value; inclusive: JASP.MinMax
 					}
@@ -436,7 +436,7 @@ Section
 						enabled: plotsPredictionMarginalCI.checked
 						name: "plotsPredictionMarginalLower"
 						label: qsTr("Lower")
-						id: plotsMarginalPredictionLower
+						id: plotsPredictionMarginalLower
 						fieldWidth: 50
 						defaultValue: 0; min: 0; max: plotsPredictionMarginalUpper.value; inclusive: JASP.MinMax
 					}
