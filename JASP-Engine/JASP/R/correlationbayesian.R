@@ -19,6 +19,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   ready <- length(options[["variables"]]) >= 2
   pairs <- unique(options[["pairs"]])
   
+  options <- .parseAndStoreFormulaOptions(jaspResults, options, "kappa")
   # 2. Data retrieval  --------
   #
   if (ready && is.null(dataset))

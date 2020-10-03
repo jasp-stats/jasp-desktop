@@ -67,6 +67,7 @@ test_that("Bayesian Correlation Matrix Plot matches", {
   options$plotMatrix <- TRUE
   options$plotMatrixDensities <- TRUE
   options$plotMatrixPosteriors <- TRUE
+  options$kappa <- 1.0
   set.seed(1)
   results <- jasptools::run("CorrelationBayesian", "test.csv", options)
   plotName <- results[["results"]][["matrixPlot"]][["data"]]
@@ -116,6 +117,7 @@ options$pairs <- list(c("contcor1", "contcor2"))
 options$plotPriorPosterior <- TRUE
 options$plotBfRobustness <- TRUE
 options$plotBfSequential <- TRUE
+options$kappa <- 1.0
 set.seed(1)
 results <- jasptools::run("CorrelationBayesian", "test.csv", options)
 
