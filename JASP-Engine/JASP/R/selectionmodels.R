@@ -956,7 +956,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
   
   if (!.smCheckReady(options) && options[["inputPVal"]] != "") {
     
-    messages <- gettext("The analysis requires both 'Effect Site' and 'Effect Size Standard Error' to be specified.")
+    messages <- gettext("The analysis requires both 'Effect Size' and 'Effect Size Standard Error' to be specified.")
     
   } else if (!class(fit) %in% c("simpleError","error")) {
     
