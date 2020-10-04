@@ -903,8 +903,8 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
     }
     
     # add more error messages as we find them I guess
-    if (fit$message == "non-finite value supplied by optim") {
-      message <- gettextf("%sThe optimizer failed to find a solution. Consider re-specifying the model.", model_type)
+    if (fit$message == "non-finite value supplied by optim" || grepl("Lapack routine dgesv", fit$message)) {
+      message <- gettextf("%sThe optimizer failed to find a solution. Consider re-specifying the model or the p-value cutoffs.", model_type)
     } else if (fit$message == "No steps") {
       message <- gettextf("%sThe automatic cutoffs selection did not find viable p-value cutoffs. Please, specify them manually.", model_type)      
     } else {
