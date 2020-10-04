@@ -1,14 +1,14 @@
 Robust Bayesian Meta-Analysis
 ===
 
-The robust Bayesian meta-analysis allows the user to specify a wide range of meta-analytic models, combine their estimates using model averaging and quantify evidence for different hypotheses using Bayes factors. The analysis allows to specify various prior distributions for effect sizes and heterogeneity and incorporate models correcting for publication bias by estimating a weight function on p-values. 
+The robust Bayesian meta-analysis allows the user to specify a wide range of meta-analytic models, combine their estimates using model averaging and quantify evidence for different hypotheses using Bayes factors. The analysis allows the user to specify various prior distributions for effect sizes and heterogeneity and incorporate models correcting for publication bias by estimating a weight function on p-values. 
 
 ### Input
 ---
 #### Input type
-- Cohen's d / t-statistics & (N / SE): Specifying input using either Cohen's d effect sizes and the sample size or standard errors, or reported t-statistics and sample sizes.
+- Cohen's d / t-statistics & N / SE: Specifying input using either Cohen's d effect sizes and the sample size or standard errors, or reported t-statistics and sample sizes.
 - Correlations & N: Specifying input using correlations and the sample size. Note that the effect size is internally transformed to Cohen's d scale for model estimation (see Advanced tab for additional options). The prior distributions are specified on the transformed scale, with the provided visualization transforming the priors back to the correlation scale. The output for the mean parameter is transformed back for easier interpretability, however, the heterogeneity parameter is always summarized on the transformed scale.
-- Odds ratios & CI: Specifying input using odds rations and their confidence intervals. Note that the effect size is internally transformed to log odds ratios for model estimation (see Advanced tab for additional options). The prior distributions are specified on the transformed scale, with the provided visualization transforming the priors back to the correlation scale. Analysing odds ratios is an experimental features and the default prior distribution were not verified to work with them. The output for the mean parameter is transformed back for easier interpretability, however, the heterogeneity parameter is always summarized on the transformed scale.
+- Odds ratios & CI: Specifying input using odds rations and their confidence intervals. Note that the effect size is internally transformed to log odds ratios for model estimation (see Advanced tab for additional options). The prior distributions are specified on the transformed scale, with the provided visualization transforming the priors back to the correlation scale. Analyzing odds ratios is an experimental feature and the default prior distributions were not verified to work with them. The output for the mean parameter is transformed back for easier interpretability, however, the heterogeneity parameter is always summarized on the transformed scale.
 - Effect sizes & SE: Specifying input using any other types of effect sizes and standard errors. Note that effect sizes supplied in this way will result in approximating the corresponding test statistics distribution using a normal distribution.
 - Fitted model: Specify a path to already fitted RoBMA model using R. The model must be saved as an RDS file.
 
@@ -24,13 +24,13 @@ The robust Bayesian meta-analysis allows the user to specify a wide range of met
 #### Input test type
 Only for 'Cohen's d / t-statistics & (N / SE)' input type. 
 
-#### Run Analysis
-Press the button to run the analysis. Model relevant changes in the settings will not be applied until the button is pressed.
 
-
-### Priors
+### Models
 ---
 The individual models that form up the robust Bayesian meta-analysis are defined by creating combinations of all specified priors for the effect size / heterogeneity / publication bias. The individual models' prior odds are obtained by multiplying the prior odds of prior distributions for each of the parameter that forms the model. Note that the prior distributions for the mean parameter are transformed into the correlation scale using a selected transformation if correlations are supplied as input.
+
+#### Expected effect size direction
+The direction of the expected effect size (the publication bias adjusted models with one-sided selection processes are not symmetrical around zero due to the estimation of weights).
 
 #### Plot priors
 Displays the specified prior density function(s).
@@ -62,7 +62,7 @@ Set a prior distribution(s) for the parameters of the weight function modeling t
 - Prior Odds: Prior odds of the distribution.
 
 #### Set null priors
-Allows to specify prior distributions for the null models.
+Allows specifying prior distributions for the null models.
 
 
 ### Inference
@@ -163,8 +163,9 @@ Display chains summaries for only a specific model.
 
 ### Advanced
 ---
-#### Transform correlations
-- Cohen's d: Supplied correlations will be transformed and modeled on Cohen's d scale.
+#### Transform effect sizes
+- Cohen's d: Supplied correlations / odds ratios will be transformed and modeled on Cohen's d scale. The default transformation for correlations.
+- log(OR): Supplied odds ratios will be transformed and modeled on log scale. The default transformation for odds ratios.
 - Fisher's z: Supplied correlations will be transformed and modeled on Fisher's z scale. We advise for using Cohen's d transformation since it preserves the proper distribution of test statistics important for the publication bias adjusted models.
 
 #### Estimation settings (MCMC)
@@ -181,6 +182,7 @@ A number of iterations for computing the marginal likelihood.
 When turned on, the MCMC estimation for each model continues until the maximum fitting time was reached or the target MCMC margin of error for parameters was obtained.
 - Maximum fitting time: The maximum fitting time per model.
 - Target margin of error: The target MCMC margin of error of parameter estimates for terminating the automatic estimation procedure.
+- Target R-hat: The target R-hat of parameter estimates for terminating the automatic estimation procedure.
 
 #### Exclude models
 Allows excluding individual models from the overall ensemble based on MCMC diagnostics.
@@ -191,7 +193,7 @@ Allows excluding individual models from the overall ensemble based on MCMC diagn
 
 #### Redistribute prior probability
 Allows respecifying how should be the prior probabilities of individual models changed in case that some of them fail to converge.
-- Conditional models: The prior model probability of a non-converged model will be transferred to a model with same the type of priors if possible. Meaning that if there are two models with non-null prior on effect size, heterogeneity, and publication bias and one of them fails to converge, the other one will gain the prior probability of the non-converged one. If there is no such model, the prior probability will be redistributed equally across all models.
+- Conditional models: The prior model probability of a non-converged model will be transferred to a model with the same the type of priors if possible. Meaning that if there are two models with non-null prior on effect size, heterogeneity, and publication bias and one of them fails to converge, the other one will gain the prior probability of the non-converged one. If there is no such model, the prior probability will be redistributed equally across all models.
 - Model space: If there is a non-converged model, the prior probability will be redistributed equally across all models.
 
 #### Control
@@ -200,13 +202,13 @@ Allows modifying the fitting and refitting behavior of the analysis when 'Run An
 - Always refit: Always refits the whole ensemble.
 - Never refit: Never refits the ensemble or the individual models.
 
-#### Seed
+#### Repeatability
 - Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
 
 
 ### References
 ---
-
+Maier, M., Bartoš, F., & Wagenmakers, E. J. (2020). Robust Bayesian meta-analysis: Addressing publication bias with model-averaging. https://doi.org/10.31234/osf.io/u4cns
 
 ### R-packages
 ---
