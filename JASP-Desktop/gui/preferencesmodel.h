@@ -45,8 +45,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
 	Q_PROPERTY(bool			disableAnimations		READ disableAnimations			WRITE setDisableAnimations			NOTIFY disableAnimationsChanged			)
 	Q_PROPERTY(bool			generateMarkdown		READ generateMarkdown			WRITE setGenerateMarkdown			NOTIFY generateMarkdownChanged			)
-	Q_PROPERTY(bool			lcCtypeCheck			READ lcCtypeCheck				WRITE setLcCtypeCheck				NOTIFY lcCtypeCheckChanged				)
-	Q_PROPERTY(bool			lcCtypeToC				READ lcCtypeToC					WRITE setLcCtypeToC					NOTIFY lcCtypeToCChanged				)
+	Q_PROPERTY(bool			lcCtypeCheck			READ lcCtypeCheck				WRITE setLcCtypeCheck				NOTIFY lcCtypeChanged					)
+	Q_PROPERTY(bool			lcCtypeToC				READ lcCtypeToC					WRITE setLcCtypeToC					NOTIFY lcCtypeChanged					)
 	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
 	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
@@ -202,8 +202,7 @@ signals:
 	void disableAnimationsChanged(		bool		disableAnimations);
 	void generateMarkdownChanged(		bool		generateMarkdown);
 	void animationsOnChanged();
-	void lcCtypeCheckChanged();
-	void lcCtypeToCChanged();
+	void lcCtypeChanged();
 	void restartAllEngines();
 	
 private:

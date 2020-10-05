@@ -482,8 +482,7 @@ void PreferencesModel::setLcCtypeToC(bool newVal)
 	{
 		Settings::setValue(Settings::LC_CTYPE_C_WIN, winLcCtypeSettingToQString(newSet));
 		
-		emit lcCtypeToCChanged();
-		emit lcCtypeCheckChanged();
+		emit lcCtypeChanged();
 		emit restartAllEngines();
 	}
 }
@@ -504,8 +503,7 @@ void PreferencesModel::setLcCtypeCheck(bool newVal)
 	{
 		Settings::setValue(Settings::LC_CTYPE_C_WIN, winLcCtypeSettingToQString(newSet));
 		
-		emit lcCtypeToCChanged();
-		emit lcCtypeCheckChanged();
+		emit lcCtypeChanged();
 		emit restartAllEngines();
 	}
 }
