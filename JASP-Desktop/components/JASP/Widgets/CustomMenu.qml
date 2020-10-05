@@ -42,6 +42,15 @@ FocusScope
 	property bool	showMe		: false
 	property var    sourceItem  : null
 	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
+	
+	
+	MouseArea
+	{
+		z:					-2
+		cursorShape:		Qt.PointingHandCursor
+		acceptedButtons:	Qt.NoButton
+		anchors.fill:		parent
+	}
 
 	onPropsChanged:
 	{

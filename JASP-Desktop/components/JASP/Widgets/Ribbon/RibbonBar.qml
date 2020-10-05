@@ -60,12 +60,15 @@ FocusScope
 	{
 		id	: ribbonMenu
 		z	: 0
+		
+		leftSideSpace:	fileMenuOpenButton.width
+		rightSideSpace: modulesPlusButton.width
 
 		anchors
 		{
 			top		: parent.top
-			right	: modulesPlusButton.left
-			left	: fileMenuOpenButton.right
+			right	: modulesPlusButton.right
+			left	: fileMenuOpenButton.left
 		}
 	}
 

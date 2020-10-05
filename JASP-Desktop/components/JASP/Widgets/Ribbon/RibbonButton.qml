@@ -135,7 +135,7 @@ Rectangle
 			anchors.fill	: parent
 			hoverEnabled	: true
 			acceptedButtons	: Qt.LeftButton
-			cursorShape		: Qt.PointingHandCursor
+			cursorShape		: pressed ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 			enabled			: ribbonButton.enabled
 
 			onClicked:

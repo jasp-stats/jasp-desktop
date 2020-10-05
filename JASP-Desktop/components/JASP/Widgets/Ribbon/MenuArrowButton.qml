@@ -20,16 +20,22 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 
 
-Rectangle
+Item
 {
 	id							: ribbonButton
 	width						: implicitWidth
 	height						: implicitHeight
 	implicitHeight				: jaspTheme.ribbonButtonHeight * 0.6
 	implicitWidth				: implicitHeight
-	// radius					: 5
-	color						: mice.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
-
+	
+	Rectangle
+	{
+		color					: mice.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
+		opacity					: mice.pressed ? 0.75                  : 0.0
+		z						: -2
+		anchors.fill			: parent
+	}
+	
 	property bool	hamburger:	true
 	property bool	showArrow:	false
 	property string	toolTip:	""

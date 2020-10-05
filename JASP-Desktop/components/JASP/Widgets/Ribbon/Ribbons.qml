@@ -26,6 +26,9 @@ Item
 	objectName:		"jaspRibbon"
 	width:			500
 	height:			jaspTheme.ribbonButtonHeight
+	
+	property double leftSideSpace:  0
+	property double rightSideSpace: 0
 
 	MouseArea
 	{
@@ -33,6 +36,7 @@ Item
 		z:					10
 		anchors.fill:		parent
 		acceptedButtons:	Qt.NoButton
+		cursorShape:		customMenu.visible ? Qt.PointingHandCursor : Qt.OpenHandCursor
 		onWheel:
 		{
 			var bigWheel = Math.abs(wheel.angleDelta.x) > Math.abs(wheel.angleDelta.y) ? wheel.angleDelta.x : wheel.angleDelta.y;
@@ -49,6 +53,9 @@ Item
 		currentIndex:					ribbonModelFiltered.highlightedModuleIndex
 		height:							parent.height
 		boundsBehavior:					Flickable.StopAtBounds
+		//cacheBuffer:					leftSideSpace + rightSideSpace
+		displayMarginBeginning:			leftSideSpace  * 2
+		displayMarginEnd:				rightSideSpace * 2
 
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
@@ -60,6 +67,8 @@ Item
 		{
 			left:			parent.left
 			right:			parent.right
+			leftMargin:		leftSideSpace
+			rightMargin:	rightSideSpace
 			verticalCenter:	parent.verticalCenter
 		}
 
@@ -75,23 +84,33 @@ Item
 			visible:		model.ribbonButton ? true : false
 		}
 	}
-
-	property real fadeOutMultiplier: 1.5
+	
+	Rectangle
+	{
+		id:				darkeningLeft
+		width:			leftSideSpace * 0.333333
+		color:			jaspTheme.uiBackground
+		anchors
+		{
+			top:		parent.top
+			bottom:		parent.bottom
+			left:		parent.left
+		}
+	}
 
 	Item
 	{
 		id:			fadeOutLeft
-		width:		height * Math.min(fadeOutMultiplier, ((buttonList.contentX - buttonList.originX) / height))
+		width:		leftSideSpace + Math.min(leftSideSpace, ((buttonList.contentX - buttonList.originX)))
 		visible:	width > 0
 		z:			1
 		anchors
 		{
 			top:		parent.top
 			bottom:		parent.bottom
-			left:		parent.left
-			leftMargin:	-2
+			left:		darkeningLeft.right
 		}
-
+		
 		Rectangle
 		{
 			gradient: Gradient
@@ -105,19 +124,32 @@ Item
 			rotation:			-90
 		}
 	}
+	
+	
+	Rectangle
+	{
+		id:				darkeningRight
+		width:			rightSideSpace * 0.333333
+		color:			jaspTheme.uiBackground
+		anchors
+		{
+			top:		parent.top
+			bottom:		parent.bottom
+			right:		parent.right
+		}
+	}
 
 	Item
 	{
 		id:			fadeOutRight
-		width:		height * Math.min(fadeOutMultiplier, (((buttonList.originX + buttonList.contentWidth) - (buttonList.contentX + buttonList.width)) / height))
+		width:		rightSideSpace + Math.min(rightSideSpace, (((buttonList.originX + buttonList.contentWidth) - (buttonList.contentX + buttonList.width))))
 		visible:	width > 0
 		z:			1
 		anchors
 		{
 			top:			parent.top
 			bottom:			parent.bottom
-			right:			parent.right
-			rightMargin:	-2
+			right:			darkeningRight.left
 		}
 
 		Rectangle
