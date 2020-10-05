@@ -72,6 +72,8 @@ public:
 		void				pauseEngines();
 		void				resumeEngines();
 		bool				enginesInitializing()	{ return emit enginesInitializingSignal();	}
+		
+		void				waitForExportResultsReady();
 
 		void				beginLoadingData();
 		void				endLoadingData();
