@@ -37,18 +37,7 @@ ResultExporter::ResultExporter()
 void ResultExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
 {
 
-	int maxSleepTime = 5000;
-	int sleepTime = 100;
-	int delay = 0;
-
-	while (DataSetPackage::pkg()->isReady() == false)
-	{
-		if (delay > maxSleepTime)
-			break;
-
-		Utils::sleep(sleepTime);
-		delay += sleepTime;
-	}
+	DataSetPackage::pkg()->waitForExportResultsReady();
 
 
 	if (_currentFileType == Utils::FileType::pdf)

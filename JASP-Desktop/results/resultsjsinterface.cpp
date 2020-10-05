@@ -306,11 +306,13 @@ void ResultsJsInterface::showInstruction()
 
 void ResultsJsInterface::exportPreviewHTML()
 {
+	DataSetPackage::pkg()->setWaitingForReady();
 	emit runJavaScript("window.exportHTML('%PREVIEW%');");
 }
 
 void ResultsJsInterface::exportHTML()
 {
+	DataSetPackage::pkg()->setWaitingForReady();
 	emit runJavaScript("window.exportHTML('%EXPORT%');");
 }
 
