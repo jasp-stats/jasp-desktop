@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2020-10-06 08:06+0000\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4837,7 +4843,7 @@ msgstr "χ²"
 
 msgctxt "ContingencyTables|"
 msgid "χ² continuity correction"
-msgstr ""
+msgstr "χ² Kontinuitätskorrektur"
 
 msgctxt "ContingencyTables|"
 msgid "Likelihood ratio"
@@ -19221,7 +19227,7 @@ msgstr "Gestapelt"
 
 msgctxt "LSestimationsequential|"
 msgid "Updating table"
-msgstr ""
+msgstr "Aktualisierungstabelle"
 
 msgctxt "LSestimationsequential|"
 msgid "Interval"
@@ -19237,7 +19243,7 @@ msgstr "obere"
 
 msgctxt "LSestimationsequential|"
 msgid "Posterior updating table"
-msgstr ""
+msgstr "Posterior-Aktualisierungstabelle"
 
 msgctxt "LSintrotext|"
 msgid "Introductory texts"
@@ -19461,7 +19467,7 @@ msgstr ""
 
 msgctxt "LStestingpredictions|"
 msgid "Predictions table"
-msgstr ""
+msgstr "Vorhersagetabelle"
 
 msgctxt "LStestingsequential|"
 msgid "Sequential analysis"
@@ -19509,7 +19515,7 @@ msgstr "log(BF₁₀)"
 
 msgctxt "LStestingsequential|"
 msgid "Updating table"
-msgstr ""
+msgstr "Aktualisierungstabelle"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Median"
@@ -19593,7 +19599,7 @@ msgstr "Modell"
 
 msgctxt "SelectionModels|"
 msgid "P-value cutoffs"
-msgstr ""
+msgstr "P-Wert-Grenzwerte"
 
 msgctxt "SelectionModels|"
 msgid "Two-sided selection"
@@ -19855,7 +19861,6 @@ msgctxt "LDgamma|"
 msgid "Scale:"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDgamma|"
 msgid "Rate:"
 msgstr "Rate:"
@@ -19872,7 +19877,6 @@ msgctxt "LDgammaInverse|"
 msgid "Scale:"
 msgstr ""
 
-#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Rate:"
 msgstr "Rate:"
@@ -19907,7 +19911,7 @@ msgstr "Verteilung anzeigen"
 
 msgctxt "LDlogistic|"
 msgid "Location:"
-msgstr ""
+msgstr "Lage:"
 
 msgctxt "LDlogistic|"
 msgid "μ"
@@ -20157,7 +20161,6 @@ msgctxt "LDnegbinomial|"
 msgid "Mean:"
 msgstr "Mittelwert:"
 
-#, fuzzy
 msgctxt "LDpoisson|"
 msgid "Rate:"
 msgstr "Rate:"
@@ -20248,14 +20251,13 @@ msgstr ""
 "optionKey. Ändern Sie die optionKey-Eigenschaft der Liste oder den Control-"
 "Namen."
 
-#, fuzzy
 msgctxt "LStestingsequential|"
 msgid "Normalized"
 msgstr "Normalisiert"
 
 msgctxt "Description|"
 msgid "Visual Modeling"
-msgstr ""
+msgstr "Visuelles Modellieren"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
