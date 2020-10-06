@@ -161,6 +161,9 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       tempArrow       <- allArrows[i,]
       tempArrow$yEnd <- tempArrow$yEnd * .scalingSpikes(allLines, allArrows)
       
+      if (tempArrow$yEnd == 0)
+        tempArrow$yEnd <- 1e-5
+      
       g <- g + ggplot2::geom_segment(
         data        = tempArrow,
         mapping     = mappingArrow,
@@ -309,6 +312,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     
     allArrowsScaled       <- allArrows
     allArrowsScaled$yEnd  <- allArrowsScaled$yEnd * .scalingSpikes(allLines, allArrows)
+    allArrowsScaled$yEnd[allArrowsScaled$yEnd == 0] <- 1e-5
     
     if (!is.null(pointEstimate)){
       if (pointEstimate$spike[1]){
@@ -710,7 +714,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
   if (!is.null(allArrows)){
     
     tempArrows        <- allArrows
-    tempArrows$yEnd  <- tempArrows$yEnd * .scalingSpikes(allLines, allArrows)
+    tempArrows$yEnd   <- tempArrows$yEnd * .scalingSpikes(allLines, allArrows)
+    tempArrows$yEnd[tempArrows$yEnd == 0] <- 1e-5
     
     g <- g + ggplot2::geom_segment(
       data    = allArrows,
