@@ -55,6 +55,12 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   # This ensures the ordering in tables and plots also changes appropriately.
   if (options$factor != "" && options$counts != "") {
     factLevelOrder        <- as.character(dataset[[.v(options$factor)]])
+    
+    # the following condition holds when `counts` are specified but the data set is not in aggregated form
+    # the error is subsequently caught in  .multinomCheckErrors
+    # we need to escape this function early because the operations under this check assume that the data set is already in aggregated form
+    if(length(unique(factLevelOrder)) != length(factLevelOrder)) return(dataset)
+    
     levelOrderUserWants   <- options$tableWidget[[1]]$levels
     whatUserWantsToWhatIs <- match(levelOrderUserWants, factLevelOrder)
       
@@ -94,7 +100,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
         counts  <- dataset[[.v(options$counts)]]
         
         if (nlevels != length(counts))
-          return(gettext("Invalid counts: variable does not match the number of levels of the factor."))
+          return(gettext("Invalid counts: variable does not match the number of levels of the factor. When counts are specified, each row of the data set must represent a unique level of the factor."))
 
         if (options$exProbVar != "" && nlevels != length(dataset[[.v(options$exProbVar)]]))
           return(gettext("Invalid expected counts: variable does not match the number of levels of the factor."))
