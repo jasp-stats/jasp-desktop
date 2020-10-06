@@ -55,7 +55,7 @@ Item
 
 		onDragStarted:					customMenu.hide()
 		onMovementStarted:				customMenu.hide()
-
+		
 		anchors
 		{
 			left:			leftArrow.right
@@ -76,6 +76,38 @@ Item
 		}
 	}
 	
+	property real ribbonFlickSpeed: 400
+	
+	Timer
+	{
+		id:			scrollLikeAChump
+		repeat:		true
+		interval:	300
+		
+		property bool timerWentOffAlready:	false
+		property bool goLeft:				false
+		
+		function anArrowPressed(goLeftPlease)
+		{
+			interval			= 300;
+			goLeft				= goLeftPlease;
+			timerWentOffAlready = false;
+			
+			start();
+		}
+		
+		onTriggered: 
+		{
+			timerWentOffAlready = true;
+			interval			= 10;
+			
+			if(goLeft)	buttonList.flick( ribbonFlickSpeed, 0);
+			else		buttonList.flick(-ribbonFlickSpeed, 0);
+		}
+		
+	}
+	
+	
 	MenuArrowButton
 	{
 		id:				leftArrow
@@ -84,7 +116,11 @@ Item
 		visible:		fadeOutLeft.visible
 		width:			height * 0.4
 		iconScale:		0.4
-		onClicked:		buttonList.flick(jaspTheme.maximumFlickVelocity, 0)
+		onClicked:		if(!scrollLikeAChump.timerWentOffAlready) buttonList.flick(2 * ribbonFlickSpeed, 0)
+		
+		onPressedChanged: 
+			if(pressed)							scrollLikeAChump.anArrowPressed(true);
+			else if(scrollLikeAChump.goLeft)	scrollLikeAChump.stop();
 		
 		anchors
 		{
@@ -94,8 +130,31 @@ Item
 		}	
 		
 	}
+	
+	MenuArrowButton
+	{
+		id:				rightArrow
+		z:				1
+		buttonType:		MenuArrowButton.ButtonType.RightArrow
+		visible:		fadeOutRight.visible
+		width:			leftArrow.width
+		iconScale:		leftArrow.iconScale
+		onClicked:		if(!scrollLikeAChump.timerWentOffAlready) buttonList.flick(-2 * ribbonFlickSpeed, 0)
+		
+		onPressedChanged: 
+			if(pressed)							scrollLikeAChump.anArrowPressed(false);
+			else if(!scrollLikeAChump.goLeft)	scrollLikeAChump.stop();
+		
+		anchors
+		{
+			top:		parent.top
+			bottom:		parent.bottom
+			right:		parent.right
+		}	
+		
+	}
 
-	property real fadeOutMultiplier: 1
+	property real fadeOutMultiplier: 0.15
 
 	Item
 	{
@@ -137,25 +196,6 @@ Item
 			anchors.centerIn:	parent
 			rotation:			-90
 		}
-	}
-	
-	MenuArrowButton
-	{
-		id:				rightArrow
-		z:				1
-		buttonType:		MenuArrowButton.ButtonType.RightArrow
-		visible:		fadeOutRight.visible
-		width:			leftArrow.width
-		iconScale:		leftArrow.iconScale
-		onClicked:		buttonList.flick(-jaspTheme.maximumFlickVelocity, 0)
-		
-		anchors
-		{
-			top:		parent.top
-			bottom:		parent.bottom
-			right:		parent.right
-		}	
-		
 	}
 
 	Item

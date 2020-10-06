@@ -61,7 +61,7 @@ Rectangle
 		anchors.centerIn:	parent
 		width:				hamburgerArrow.barWidth//parent.width	- (2 * jaspTheme.ribbonButtonPadding)
 		height:				baseHeight - 20
-		scale:				baseScale * (mice.containsMouse && !mice.pressed ? jaspTheme.ribbonScaleHovered : 1)
+		scale:				baseScale * (mice.containsMouse && !ribbonButton.pressed ? jaspTheme.ribbonScaleHovered : 1)
 
 
 		property real	baseScale:		iconScale * (parent.height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
