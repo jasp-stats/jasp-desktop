@@ -31,7 +31,7 @@ Item
 	{
 		id:					convertVerticalIntoHorizontalScrolling
 		z:					10
-		anchors.fill:		parent
+		anchors.fill:		buttonList
 		acceptedButtons:	Qt.NoButton
 		onWheel:
 		{
@@ -58,8 +58,8 @@ Item
 
 		anchors
 		{
-			left:			parent.left
-			right:			parent.right
+			left:			leftArrow.right
+			right:			rightArrow.left
 			verticalCenter:	parent.verticalCenter
 		}
 
@@ -75,8 +75,27 @@ Item
 			visible:		model.ribbonButton ? true : false
 		}
 	}
+	
+	MenuArrowButton
+	{
+		id:				leftArrow
+		z:				1
+		buttonType:		MenuArrowButton.ButtonType.LeftArrow
+		visible:		fadeOutLeft.visible
+		width:			height * 0.4
+		iconScale:		0.4
+		onClicked:		buttonList.flick(jaspTheme.maximumFlickVelocity, 0)
+		
+		anchors
+		{
+			top:		parent.top
+			bottom:		parent.bottom
+			left:		parent.left
+		}	
+		
+	}
 
-	property real fadeOutMultiplier: 1.5
+	property real fadeOutMultiplier: 1
 
 	Item
 	{
@@ -88,15 +107,29 @@ Item
 		{
 			top:		parent.top
 			bottom:		parent.bottom
-			left:		parent.left
+			left:		leftArrow.right
 			leftMargin:	-2
+		}
+		
+		Rectangle  // a line on the side "under which" ribbonbuttons can dissappear
+		{
+			z		: 3
+			width	: 1
+			color	: jaspTheme.uiBorder
+	
+			anchors
+			{
+				top		: parent.top
+				left	: parent.left
+				bottom	: parent.bottom
+			}
 		}
 
 		Rectangle
 		{
 			gradient: Gradient
 			{
-				GradientStop { position: 0.0; color: jaspTheme.uiBackground	}
+				GradientStop { position: 0.0; color: jaspTheme.shadow	}
 				GradientStop { position: 1.0; color: "transparent"		}
 			}
 			width:				parent.height
@@ -105,26 +138,59 @@ Item
 			rotation:			-90
 		}
 	}
+	
+	MenuArrowButton
+	{
+		id:				rightArrow
+		z:				1
+		buttonType:		MenuArrowButton.ButtonType.RightArrow
+		visible:		fadeOutRight.visible
+		width:			leftArrow.width
+		iconScale:		leftArrow.iconScale
+		onClicked:		buttonList.flick(-jaspTheme.maximumFlickVelocity, 0)
+		
+		anchors
+		{
+			top:		parent.top
+			bottom:		parent.bottom
+			right:		parent.right
+		}	
+		
+	}
 
 	Item
 	{
 		id:			fadeOutRight
-		width:		height * Math.min(fadeOutMultiplier, (((buttonList.originX + buttonList.contentWidth) - (buttonList.contentX + buttonList.width)) / height))
+		width:		height * Math.min(fadeOutMultiplier, (((buttonList.originX + buttonList.contentWidth) - (buttonList.contentX + buttonList.width + 1)) / height))
 		visible:	width > 0
 		z:			1
 		anchors
 		{
 			top:			parent.top
 			bottom:			parent.bottom
-			right:			parent.right
+			right:			rightArrow.left
 			rightMargin:	-2
+		}
+		
+		Rectangle  // a line on the side "under which" ribbonbuttons can dissappear
+		{
+			z		: 3
+			width	: 1
+			color	: jaspTheme.uiBorder
+	
+			anchors
+			{
+				top		: parent.top
+				right	: parent.right
+				bottom	: parent.bottom
+			}
 		}
 
 		Rectangle
 		{
 			gradient: Gradient
 			{
-				GradientStop { position: 0.0; color: jaspTheme.uiBackground	}
+				GradientStop { position: 0.0; color: jaspTheme.shadow	}
 				GradientStop { position: 1.0; color: "transparent"		}
 			}
 			width:				parent.height

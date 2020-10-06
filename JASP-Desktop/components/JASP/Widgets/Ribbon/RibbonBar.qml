@@ -35,10 +35,10 @@ FocusScope
 	MenuArrowButton
 	{
 		id			: fileMenuOpenButton
-		width		: height
-		showArrow	: fileMenuModel.visible
-		hamburger	: true
+		showPressed	: fileMenuModel.visible
+		buttonType	: MenuArrowButton.ButtonType.Hamburger
 		z			: 2
+		width		: 0.75 * height
 
 		onClicked:
 		{
@@ -50,9 +50,9 @@ FocusScope
 
 		anchors
 		{
-			top		: parent.top
-			left	: parent.left
-			bottom	: parent.bottom
+			top:			parent.top
+			left:			parent.left
+			bottom:			parent.bottom
 		}
 	}
 
@@ -72,9 +72,11 @@ FocusScope
 	MenuArrowButton
 	{
 		id			: modulesPlusButton
-		width		: height
-		hamburger	: false
 		toolTip		: qsTr("Show Modules Menu")
+		buttonType	: MenuArrowButton.ButtonType.Plus
+		width		: 0.75 * height
+		showPressed	: modulesMenu.opened
+		z			: 2
 
 		onClicked	:
 		{
@@ -83,9 +85,6 @@ FocusScope
 			
 			customMenu.hide()
 		}
-
-		showArrow	: modulesMenu.opened
-		z			: 2
 
 		anchors
 		{

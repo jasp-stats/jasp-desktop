@@ -28,11 +28,25 @@ Rectangle
 	implicitHeight				: jaspTheme.ribbonButtonHeight * 0.6
 	implicitWidth				: implicitHeight
 	// radius					: 5
-	color						: mice.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
-
-	property bool	hamburger:	true
-	property bool	showArrow:	false
+	color						: pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
+	
+	enum ButtonType
+	{
+		Hamburger,
+		Plus,
+		LeftArrow,
+		RightArrow
+	}
+	
+	property int buttonType:	MenuArrowButton.ButtonType.Hamburger 
 	property string	toolTip:	""
+	
+			 property double iconScale:	0.7
+			 property bool showPressed: false
+	readonly property bool pressed:		mice.pressed || showPressed
+	readonly property bool hamburger:	buttonType == MenuArrowButton.ButtonType.Hamburger || buttonType == MenuArrowButton.ButtonType.LeftArrow
+	readonly property bool showArrow:	buttonType == MenuArrowButton.ButtonType.LeftArrow || buttonType == MenuArrowButton.ButtonType.RightArrow 
+	
 
 	ToolTip.text:				toolTip
 	ToolTip.timeout:			jaspTheme.toolTipTimeout
@@ -50,7 +64,7 @@ Rectangle
 		scale:				baseScale * (mice.containsMouse && !mice.pressed ? jaspTheme.ribbonScaleHovered : 1)
 
 
-		property real	baseScale:		0.7 * (parent.height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
+		property real	baseScale:		iconScale * (parent.height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
 
 		property real	baseHeight:		80
 		property real	barThickness:	8 //(jaspTheme.ribbonButtonHeight (2 * jaspTheme.ribbonButtonPadding)) / 7
@@ -131,37 +145,4 @@ Rectangle
 		cursorShape				: Qt.PointingHandCursor
 		//onContainsMouseChanged	: if(containsMouse) itsHoverTime.start(); else itsHoverTime.stop();
 	}
-
-	/* Hmm, hover works a bit weird, disabling it.
-	property bool clickingAllowed: true
-
-	function clickWhenAllowed()
-	{
-		if(clickingAllowed)
-		{
-			clickingAllowed = false;
-			ribbonButton.clicked();
-			blockDoubleClicksTimer.start();
-		}
-	}
-
-	Timer
-	{
-		id:				itsHoverTime
-		interval:		jaspTheme.hoverTime * 2
-		repeat:			false
-		running:		false
-
-		onTriggered:	ribbonButton.clickWhenAllowed();
-	}
-
-	Timer
-	{
-		id:				blockDoubleClicksTimer
-		interval:		jaspTheme.fileMenuSlideDuration * 4
-		repeat:			false
-		running:		false
-
-		onTriggered:	ribbonButton.clickingAllowed = true;
-	}*/
 }
