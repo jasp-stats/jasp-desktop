@@ -186,20 +186,30 @@ Descriptives <- function(jaspResults, dataset, options) {
 
 
 #X bar Chart
- if(options[['Xbarchart']]) {
-    plot = createJaspPlot(title = "Xbar chart")
-    jaspResults[["Xbarchart"]]= plot
-    p = qcc::qcc(dataset, type="xbar")
-    jaspResults[["Xbarchart"]]$plotObject = p
+if (options$Xbarchart){
+
+  Xbarchart <- jaspResults[["Xbarchart"]]
+
+  for (var in variables){
+    if(is.null(Xbarchart[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)){
+        Xbarchart[[var]] <- .Xbarchart(jaspResults = jaspResults, dataset= dataset, options= options, variables= var)
+        jaspResults[["Xbarchart"]]$dependOn(c("Xbarchart", "variables", "Rchart"))
     }
+  }
+}
 
 # R chart
-if(options[['Rchart']]) {
-   plot = createJaspPlot(title = "R chart")
-   jaspResults[["Rchart"]]= plot
-   p = qcc::qcc(dataset, type="R")
-   jaspResults[["Rchart"]]$plotObject = p
-   }
+if (options$Rchart){
+
+  Rchart <- jaspResults[["Rchart"]]
+
+  for (var in variables){
+    if(is.null(Rchart[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)){
+       Rchart[[var]] <- .Rchart(jaspResults = jaspResults, dataset= dataset, options= options, variables= var)
+       jaspResults[["Rchart"]]$dependOn(c("Rchart", "variables", "Xbarchart"))
+    }
+  }
+}
 
 
   # Scatter plots
@@ -1446,3 +1456,88 @@ if(options[['Rchart']]) {
   else
     return(FALSE)
 }
+
+.Xbarchart <- function(jaspResults, dataset, options, variables){
+
+  ready <- (length(options$variables) > 0)
+
+  if (ready && is.null(jaspResults[["Xbarchart"]]))
+    .XbarPlotDescriptives(jaspResults, dataset, options, ready)
+
+  return()
+}
+
+.XbarPlotDescriptives <- function(jaspResults, dataset, options, ready){
+
+  XbarPlot <- createJaspPlot(title = "X bar chart", width=500, aspectRatio=1)
+  jaspResults[["Xbarchart"]] <- XbarPlot
+
+  if (!ready)
+    return()
+
+  .XbarFillPlotDescriptives(XbarPlot, dataset, options)
+
+  return()
+}
+
+.XbarFillPlotDescriptives <- function(XbarPlot, dataset, options){
+
+  plot <- qcc::qcc(dataset, type="xbar", plot= F)
+
+  if (inherits(plot, "try-error")){
+    errorMessage <- as.character(plot)
+    XbarPlot$setError(errorMessage)
+    return()
+  }
+
+  XbarPlot$plotObject <- plot
+
+  return()
+}
+
+.Rchart <- function(jaspResults, dataset, options, variables){
+
+  ready <- (length(options$variables) > 0)
+
+  if (ready && is.null(jaspResults[["Rchart"]]))
+    .RchartPlotDescriptives(jaspResults, dataset, options, ready)
+
+  return()
+}
+
+
+
+## plot function
+
+.RchartPlotDescriptives <- function(jaspResults, dataset, options, ready){
+
+  RchartPlot <- createJaspPlot(title = "R chart", width=500, aspectRatio=1)
+  jaspResults[["Rchart"]] <- RchartPlot
+
+  if (!ready)
+    return()
+
+
+  .RchartFillPlotDescriptives(RchartPlot, dataset, options)
+
+  return()
+}
+
+
+## Filling fucntion
+
+.RchartFillPlotDescriptives <- function(RchartPlot, dataset, options){
+
+  plot <- qcc::qcc(dataset, type="R", plot= F)
+
+  if (inherits(plot, "try-error")){
+    errorMessage <- as.character(plot)
+    RchartPlot$setError(errorMessage)
+    return()
+  }
+
+  RchartPlot$plotObject <- plot
+
+  return()
+}
+
