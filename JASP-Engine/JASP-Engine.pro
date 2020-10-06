@@ -204,6 +204,11 @@ DISTFILES += \
     JASP/R/ttestonesample.R \
     JASP/R/ttestpairedsamples.R \
     JASP/R/ttestplotfunctions.R \
+	JASP/po/R-JASP.pot \
+	JASP/po/R-de.po \
+	JASP/po/R-es.po \
+	JASP/po/R-fr.po \
+	JASP/po/R-nl.po \
     JASPgraphs/DESCRIPTION \
     JASPgraphs/NAMESPACE \
     JASPgraphs/R/plotEditing.R \
@@ -229,6 +234,8 @@ DISTFILES += \
     JASPgraphs/R/colorPalettes.R \
     JASPgraphs/R/PlotPizza.R \
     JASPgraphs/R/PlotPieChart.R \
+	JASPgraphs/po/R-de.po \
+	JASPgraphs/po/R-nl.po \
     JASPgraphs/tests/testthat.R \
     JASPgraphs/tests/testthat/test-plotEditing.R \
     JASPgraphs/man/PlotRobustnessSequential.Rd \
