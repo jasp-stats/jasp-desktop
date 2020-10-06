@@ -367,9 +367,10 @@
       modelObject[[m]]$ready <- TRUE
       # }
 
-      modelTable[["BF10"]]    <- .recodeBFtype(internalTable[, "BF10"],
-                                               newBFtype = options$bayesFactorType,
-                                               oldBFtype = "LogBF10")
+      # disable filling of Bayes factor column (see https://github.com/jasp-stats/jasp-test-release/issues/1018 for discussion)
+      # modelTable[["BF10"]]    <- .recodeBFtype(internalTable[, "BF10"],
+      #                                          newBFtype = options$bayesFactorType,
+      #                                          oldBFtype = "LogBF10")
       modelTable[["error %"]] <- internalTable[, "error %"]
     }
     progressbarTick()
