@@ -72,9 +72,19 @@ QString AppDirs::modulesDir()
 	return path;
 }
 
+QString AppDirs::processPath(const QString & path)
+{
+#ifdef _WIN32
+	return QString::fromStdWString(Utils::getShortPathWin(path.toStdWString()));
+#else
+	return path;
+#endif
+}
+
+
 QString AppDirs::documents()
 {
-	return QString::fromStdWString(Utils::getShortPathWin(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).toStdWString()));
+	return processPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 }
 
 QString AppDirs::logDir()
@@ -92,7 +102,7 @@ QString AppDirs::logDir()
 
 QString AppDirs::appData()
 {
-	return QString::fromStdWString(Utils::getShortPathWin(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdWString()));
+	return processPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 }
 
 QString AppDirs::rHome()

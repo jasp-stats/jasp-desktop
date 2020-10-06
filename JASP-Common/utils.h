@@ -68,8 +68,10 @@ public:
 	static std::string	doubleToString(double dbl);
 	static void			convertEscapedUnicodeToUTF8(	std::string &inputStr);
 	
+#ifdef _WIN32
 	static std::wstring	getShortPathWin(const std::wstring & path);
-
+#endif
+	
 private:
 	static std::string _deEuropeaniseForImport(			const std::string &value);
 	static std::string _convertEscapedUnicodeToUTF8(	std::string hex);

@@ -37,6 +37,9 @@ public:
 	static QString appData();
 	static QString rHome();
 	static QDir    programDir();
+	
+private:
+	static QString processPath(const QString & path);
 };
 
 #endif // APPDIRS_H

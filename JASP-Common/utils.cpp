@@ -440,6 +440,7 @@ void Utils::convertEscapedUnicodeToUTF8(std::string& inputStr)
 	}
 }
 
+#ifdef _WIN32
 std::wstring Utils::getShortPathWin(const std::wstring & longPath) 
 {
 	//See: https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getshortpathnamew
@@ -469,3 +470,4 @@ std::wstring Utils::getShortPathWin(const std::wstring & longPath)
 	
 	return shortPath;	 
 }
+#endif
