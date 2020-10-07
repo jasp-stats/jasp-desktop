@@ -49,6 +49,7 @@ Item
 		currentIndex:					ribbonModelFiltered.highlightedModuleIndex
 		height:							parent.height
 		boundsBehavior:					Flickable.StopAtBounds
+		clip:							true
 
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
@@ -167,7 +168,6 @@ Item
 			top:		parent.top
 			bottom:		parent.bottom
 			left:		leftArrow.right
-			leftMargin:	-2
 		}
 		
 		Rectangle  // a line on the side "under which" ribbonbuttons can dissappear
@@ -178,9 +178,10 @@ Item
 	
 			anchors
 			{
-				top		: parent.top
-				left	: parent.left
-				bottom	: parent.bottom
+				top			: parent.top
+				left		: parent.left
+				bottom		: parent.bottom
+				leftMargin	: -1
 			}
 		}
 
@@ -209,7 +210,6 @@ Item
 			top:			parent.top
 			bottom:			parent.bottom
 			right:			rightArrow.left
-			rightMargin:	-2
 		}
 		
 		Rectangle  // a line on the side "under which" ribbonbuttons can dissappear
@@ -220,9 +220,10 @@ Item
 	
 			anchors
 			{
-				top		: parent.top
-				right	: parent.right
-				bottom	: parent.bottom
+				top			: parent.top
+				right		: parent.right
+				bottom		: parent.bottom
+				rightMargin	: -1
 			}
 		}
 

@@ -28,7 +28,7 @@ Rectangle
 	implicitHeight				: jaspTheme.ribbonButtonHeight * 0.6
 	implicitWidth				: implicitHeight
 	// radius					: 5
-	color						: pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
+	color						: pressed ? jaspTheme.grayLighter : "transparent"
 	
 	enum ButtonType
 	{
@@ -118,7 +118,7 @@ Rectangle
 
 			Rectangle
 			{
-				anchors.centerIn:	ribbonButton.showArrow ||   ribbonButton.hamburger	? undefined		: parent
+				anchors.centerIn:	 ribbonButton.showArrow ||  ribbonButton.hamburger	? undefined		: parent
 				anchors.left:		!ribbonButton.showArrow || !ribbonButton.hamburger	? undefined		: parent.left
 				anchors.right:		!ribbonButton.showArrow ||  ribbonButton.hamburger	? undefined		: parent.right
 				transformOrigin:	!ribbonButton.showArrow								? Item.Center	: ribbonButton.hamburger ? Item.Left	: Item.Right
@@ -141,8 +141,36 @@ Rectangle
 		anchors.fill			: parent
 		hoverEnabled			: true
 		acceptedButtons			: Qt.LeftButton
-		onClicked				: ribbonButton.clicked(); //{ itsHoverTime.stop(); ribbonButton.clickWhenAllowed();  }
+		onClicked				: ribbonButton.clicked();
 		cursorShape				: Qt.PointingHandCursor
-		//onContainsMouseChanged	: if(containsMouse) itsHoverTime.start(); else itsHoverTime.stop();
 	}
+	
+	Rectangle
+    {
+        id      : borderLeft
+        width   : 1
+		color   : jaspTheme.uiBorder
+		visible	: pressed
+        anchors
+        {
+            left	: parent.left
+            top		: parent.top
+            bottom	: parent.bottom
+        }
+		
+    }
+
+    Rectangle
+    {
+        id      : borderRight
+        width   : 1
+		color   : jaspTheme.uiBorder
+		visible	: pressed
+        anchors
+        {
+            right	: parent.right
+            top		: parent.top
+            bottom	: parent.bottom
+        }
+    }
 }

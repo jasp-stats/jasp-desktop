@@ -63,9 +63,11 @@ FocusScope
 
 		anchors
 		{
-			top		: parent.top
-			right	: modulesPlusButton.left
-			left	: fileMenuOpenButton.right
+			top			: parent.top
+			left		: fileMenuOpenButton.right
+			right		: modulesPlusButton.left
+			leftMargin	: -1
+			rightMargin	: -1
 		}
 	}
 
