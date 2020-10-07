@@ -11,14 +11,12 @@ Window
 {
 	id:				aboutWindow
 
-	width:			850
-	height:			500
-
-	maximumHeight:	height
-	maximumWidth:	width
-	minimumHeight:	height
-	minimumWidth:	width
-
+	width:			850 * preferencesModel.uiScale
+	height:			500 * preferencesModel.uiScale
+    
+	minimumWidth:	850 
+	minimumHeight:	500 
+   
 	property string labelcolor:			"#F99800"
 	property string closebuttoncolor:	"#50B0E3"
 
@@ -328,13 +326,13 @@ Window
 
 		MouseArea
 		{
-			onClicked:				aboutModel.visible = false
+			onClicked:				{aboutModel.visible = false; aboutWindow.close()}
 			anchors.fill:			parent
 			cursorShape:			Qt.PointingHandCursor
 			focus:					true
-			Keys.onEnterPressed:	aboutModel.visible = false
-			Keys.onReturnPressed:	aboutModel.visible = false
-			Keys.onEscapePressed:	aboutModel.visible = false
+			Keys.onEnterPressed:	{aboutModel.visible = false; aboutWindow.close()}
+			Keys.onReturnPressed:	{aboutModel.visible = false; aboutWindow.close()}
+			Keys.onEscapePressed:	{aboutModel.visible = false; aboutWindow.close()}
 		}
 	}
 
