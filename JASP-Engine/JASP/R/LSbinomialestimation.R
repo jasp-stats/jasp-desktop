@@ -233,12 +233,14 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   
   if (is.null(containerPlots[[paste0("plots",type)]])){
     
-    plotsSimple <- createJaspPlot(width = 530, height = 400, aspectRatio = 0.7)
+    plotsSimple <- createJaspPlot(
+      width  = if (options[[ifelse(type == "Prior", "plotsPriorType", "plotsPosteriorType")]] == "overlying") 700 else 530,
+      height = 400)
     
     plotsSimple$position <- 2
-    plotsSimple$dependOn(c(.dataDependenciesBinomialLS,
-                           ifelse(options[[ifelse(type == "Prior", "plotsPriorType", "plotsPosteriorType")]] == "overlying",
-                                  "colorPalette", "")))
+    plotsSimple$dependOn(c(
+      .dataDependenciesBinomialLS,
+      ifelse(options[[ifelse(type == "Prior", "plotsPriorType", "plotsPosteriorType")]] == "overlying", "colorPalette", "")))
     
     containerPlots[[paste0("plots",type)]] <- plotsSimple
     
@@ -448,7 +450,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
       
       for(i in 1:length(options[["priors"]])){
         
-        tempPlot <- createJaspPlot(title = options[["priors"]][[i]]$name, width = 530, height = 400, aspectRatio = 0.7)
+        tempPlot <- createJaspPlot(title = options[["priors"]][[i]]$name, width = 700, height = 400)
         
         plotsBoth[[options[["priors"]][[i]]$name]] <- tempPlot
         
@@ -489,7 +491,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   
   if (is.null(containerIterative[["plotsIterative"]])){
     
-    plotsIterative <- createJaspPlot(width = 530, height = 400, aspectRatio = 0.7)
+    plotsIterative <- createJaspPlot(width = 700, height = 400)
     
     plotsIterative$position <- 2
     plotsIterative$dependOn(c(.dataDependenciesBinomialLS, "plotsIterativeEstimateType",
@@ -730,7 +732,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   
   if (is.null(containerIterativeInterval[["plotsIterativeInterval"]])){
     
-    plotsIterativeInterval <- createJaspPlot(width = 530, height = 400, aspectRatio = 0.7)
+    plotsIterativeInterval <- createJaspPlot(width = 700, height = 400)
     
     plotsIterativeInterval$position <- 2
     plotsIterativeInterval$dependOn(c(.dataDependenciesBinomialLS,
@@ -1217,7 +1219,9 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   
   if (is.null(containerPredictionPlots[["plotsPredictions"]])){
     
-    plotsPredictions <- createJaspPlot(width = 530, height = 400, aspectRatio = 0.7)
+    plotsPredictions <- createJaspPlot(
+      width  = if (options[["predictionPlotType"]] == "overlying") 700 else 530,
+      height = 400)
     
     plotsPredictions$position <- 2
     plotsPredictions$dependOn(c(.dataDependenciesBinomialLS, "predictionN",

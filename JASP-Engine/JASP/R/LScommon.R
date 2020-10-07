@@ -260,7 +260,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       legend.text  = ggplot2::element_text(margin = ggplot2::margin(0, 0, 2, 0)),
       legend.key.height = ggplot2::unit(1, "cm"),
       legend.key.width  = ggplot2::unit(1.5,"cm")) + 
-    .plotThemePlus(allLines, allArrows)
+    .plotThemePlus(allLines, allArrows) +
+    ggplot2::theme(legend.position = "right")
   
   plot <- g
   
@@ -296,16 +297,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     CI         <- cbind.data.frame(CI, "y" = yMax * 1.05)
   }
   
-  if (discrete){
-    xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(ceiling(xRange[1]),floor(xRange[2])))
-    xBreaks[length(xBreaks)] <- floor(xRange[2])
-    if (!proportions){
-      xBreaks <- round(xBreaks)
-    }
-  } else {
-    xBreaks <- JASPgraphs::getPrettyAxisBreaks(xRange)
-  }
-  
+
   g <- ggplot2::ggplot()
   
   if (!is.null(allArrows)){
@@ -328,12 +320,13 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       show.legend = F)
     g <- g + ggplot2::geom_segment(
       data    = allArrowsScaled,
+      show.legend = !all(allArrowsScaled$g == "__marginal"),
       mapping = mappingArrows,
       size    = 1)
   }
   
   if (!is.null(allLines)){
-    g <- g + ggplot2::geom_line(data = allLines, mapping = mappingLines, size = 1,)
+    g <- g + ggplot2::geom_line(data = allLines, mapping = mappingLines, size = 1, show.legend = !all(allLines$g == "__marginal"))
   }
   
   if (!is.null(dfPoints)){
@@ -422,7 +415,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       legend.text  = ggplot2::element_text(margin = ggplot2::margin(0, 0, 2, 0)),
       legend.key.height = ggplot2::unit(1, "cm"),
       legend.key.width  = ggplot2::unit(1.5,"cm")) + 
-    .plotThemePlus(allLines, allArrows)
+    .plotThemePlus(allLines, allArrows) +
+    ggplot2::theme(legend.position = "right")
   
   plot <- g
   
@@ -680,7 +674,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       legend.text  = ggplot2::element_text(margin = ggplot2::margin(0, 2, 2, 0)),
       legend.key.height = ggplot2::unit(1, "cm"),
       legend.key.width  = ggplot2::unit(1.5,"cm"),
-    )
+    ) +
+    ggplot2::theme(legend.position = "right")
   
   plot <- g
   class(plot) <- c("JASPgraphs", class(plot))
@@ -794,7 +789,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       legend.text  = ggplot2::element_text(margin = ggplot2::margin(0, 0, 2, 0)),
       legend.key.height = ggplot2::unit(1, "cm"),
       legend.key.width  = ggplot2::unit(1.5,"cm")) + 
-    .plotThemePlus(allLines, allArrows)
+    .plotThemePlus(allLines, allArrows) +
+    ggplot2::theme(legend.position = "right")
   
   plot <- g
   return(plot)
@@ -1118,9 +1114,9 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
   
   # set the y-scale plotting range
   if (!is.null(CI)){
-    yRange    <- c(0, yMax * 1.20) 
+    yRange    <- c(0, max(c(yMax * 1.20), max(yBreaks))) 
   } else {
-    yRange    <- c(0, yMax) 
+    yRange    <- c(0, max(c(yMax, max(yBreaks)))) 
   }
   
   if (!is.null(allLines) & !is.null(allArrows)){

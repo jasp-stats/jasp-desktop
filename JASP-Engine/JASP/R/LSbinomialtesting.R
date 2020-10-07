@@ -185,7 +185,11 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
   
   if (is.null(containerPlots[[paste0("plots",type)]])){
     
-    plotsSimple <- createJaspPlot(width = 530, height = 400, aspectRatio = 0.7)
+    plotsSimple <- createJaspPlot(
+      width  = if (options[[ifelse(type == "Prior", "plotsPriorType", "plotsPosteriorType")]] == "joint" &&
+                   options[[ifelse(type == "Prior", "plotsPriorJointType", "plotsPosteriorJointType")]] != "stacked")
+        700 else 530,
+      height = 400)
     
     plotsSimple$position <- 2
     plotsSimple$dependOn(c(.dataDependenciesBinomialLS,
@@ -474,7 +478,11 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
   
   if (is.null(containerPlots[[paste0("plotsPredictions",type)]])){
     
-    plotsPredictions <- createJaspPlot(width = 530, height = 400, aspectRatio = 0.7)
+    plotsPredictions <- createJaspPlot(
+      width  = if (options[[ifelse(type == "Prior", "plotsPredictionType",  "plotsPredictionPostType")]] == "joint" &&
+                   options[[ifelse(type == "Prior", "plotsPredictionJointType", "plotsPredictionPostJointType")]] != "stacked")
+        700 else 530,
+      height = 400)
     
     plotsPredictions$position <- 2
     plotsPredictions$dependOn(c(.dataDependenciesBinomialLS,
@@ -1252,7 +1260,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
       
     } else if (options[["plotsBothType"]] == "marginal"){
       
-      plotsBothPlot <- createJaspPlot(width = 530, height = 400, aspectRatio = 0.7)
+      plotsBothPlot <- createJaspPlot(width = 700, height = 400)
       plotsBoth[["plotsBothPlot"]] <- plotsBothPlot
       
       allLinesNew <- c()
@@ -1309,7 +1317,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
       
       for(i in 1:length(options[["priors"]])){
         
-        tempPlot <- createJaspPlot(title = options[["priors"]][[i]]$name, width = 530, height = 400, aspectRatio = 0.7)
+        tempPlot <- createJaspPlot(title = options[["priors"]][[i]]$name, width = 700, height = 400)
         
         plotsBoth[[options[["priors"]][[i]]$name]] <- tempPlot
         
