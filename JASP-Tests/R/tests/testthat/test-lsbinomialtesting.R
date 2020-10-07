@@ -110,6 +110,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis Spike", parAlpha = "1", 
                               parBeta = "1", parPoint = "0.5", type = "spike", value = ""), 
@@ -300,6 +301,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis Spike", parAlpha = "1", 
                               parBeta = "1", parPoint = "0.5", type = "spike", value = ""), 
@@ -478,6 +480,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis Spike", parAlpha = "1", 
                               parBeta = "1", parPoint = "0.5", type = "spike", value = ""), 
@@ -656,6 +659,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis Spike", parAlpha = "1", 
                               parBeta = "1", parPoint = "0.5", type = "spike", value = ""), 
@@ -834,6 +838,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis Spike", parAlpha = "1", 
                               parBeta = "1", parPoint = "0.5", type = "spike", value = ""), 
@@ -1006,6 +1011,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- TRUE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis Spike", parAlpha = "1", 
                               parBeta = "1", parPoint = "0.5", type = "spike", value = ""), 
@@ -1200,6 +1206,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- TRUE
   options$predictionPostPlotTable <- TRUE
   options$predictionTable <- TRUE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis Spike", parAlpha = "1", 
                               parBeta = "1", parPoint = "0.5", type = "spike", value = ""), 
@@ -1360,6 +1367,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- TRUE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis Spike", parAlpha = "1", 
                               parBeta = "1", parPoint = "0.5", type = "spike", value = ""), 
@@ -1496,6 +1504,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis 1", parAlpha = "1", parBeta = "1", 
                               parPoint = "0.5", type = "spike", value = ""))
@@ -1663,6 +1672,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis 1", parAlpha = "1", parBeta = "1", 
                               parPoint = "0.5", type = "beta", value = ""))
@@ -1830,6 +1840,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis 1", parAlpha = ".1", parBeta = "1", 
                               parPoint = "0.5", type = "beta", value = ""), list(PH = "1", 
@@ -1969,6 +1980,7 @@ skip_on_travis()
   options$predictionPostPlotProp <- FALSE
   options$predictionPostPlotTable <- FALSE
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(PH = "1", name = "Hypothesis 1", parAlpha = ".1", parBeta = "1", 
                               parPoint = "0.5", type = "beta", value = ""), list(PH = "1", 

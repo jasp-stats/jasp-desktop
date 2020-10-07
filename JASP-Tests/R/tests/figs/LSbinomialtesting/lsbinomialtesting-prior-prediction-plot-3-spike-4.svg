@@ -30,6 +30,6 @@
 <text x='407.42' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>20</text>
 <text x='541.84' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>30</text>
 <text x='676.27' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>40</text>
-<text x='335.16' y='567.49' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='163.42px' lengthAdjust='spacingAndGlyphs'>Number of successes</text>
+<text x='298.31' y='567.49' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='237.12px' lengthAdjust='spacingAndGlyphs'>Predicted number of successes</text>
 <text x='235.96' y='11.70' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='361.83px' lengthAdjust='spacingAndGlyphs'>LSbinomialtesting-prior-prediction-plot-3-spike-4</text>
 </svg>

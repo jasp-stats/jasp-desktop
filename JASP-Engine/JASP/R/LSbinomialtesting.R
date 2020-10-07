@@ -915,6 +915,8 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
       for(i in 1:length(options[["priors"]])){
         tablePredictions$addColumns(tempProb[,i]*tempResults[i,"posterior"])
       }
+    } else if (options[[ifelse(type == "Prior", "plotsPredictionType", "plotsPredictionPostType")]] == "marginal"){
+      tablePredictions$addColumns(apply(tempProb*matrix(tempResults[,"posterior"], byrow = T, ncol = length(options[["priors"]]), nrow = tempN + 1), 1, sum))
     }
     
   }
@@ -977,7 +979,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
   
   if (is.null(containerSequentialTests[["plotsIterative"]])){
     
-    plotsIterative <- createJaspPlot(width = 530, height = 400, aspectRatio = 0.7)
+    plotsIterative <- createJaspPlot(width = 700, height = 400)
     
     plotsIterative$position <- 2
     plotsIterative$dependOn(c(.dataDependenciesBinomialLS, "colorPalette",
@@ -1016,13 +1018,13 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
       
       if (options[["plotsIterativeType"]] == "conditional"){
         yName  <- gettext("Conditional probability")
-        tempY <- exp(tempResults[,"logLik"])
+        tempY  <- exp(tempResults[,"logLik"])
       } else if (options[["plotsIterativeType"]] == "joint"){
         yName  <- gettext("Joint probability")
-        tempY <- exp(tempResults[,"logLik"])*tempResults[,"prior"]       
+        tempY  <- exp(tempResults[,"logLik"])*tempResults[,"prior"]       
       } else if (options[["plotsIterativeType"]] == "marginal"){
         yName  <- gettext("Posterior probability")
-        tempY <- tempResults[,"posterior"]
+        tempY  <- tempResults[,"posterior"]
       } else if (options[["plotsIterativeType"]] == "BF"){
         
         if (options[["bfTypeSequential"]] == "inclusion"){

@@ -65,6 +65,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "overlying"
   options$predictionTable <- TRUE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(name = "Models Spike", parAlpha = "1", parBeta = "1", 
                               parPoint = "0.5", type = "spike", value = ""), list(name = "Models Beta", 
@@ -258,6 +259,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "stacked"
   options$predictionTable <- TRUE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mode"
   options$priors <- list(list(name = "Models Beta", parAlpha = "2", parBeta = "2", 
                               parPoint = "0.5", type = "beta", value = ""), list(name = "Models Point", 
@@ -475,17 +477,17 @@ skip_on_travis()
   test_that("Predictions table results match", {
     table <- results[["results"]][["containerPredictions"]][["collection"]][["containerPredictions_predictionsTable"]][["data"]]
     jasptools::expect_equal_tables(table,
-                                   list("Models Beta", "beta (60, 44)", 0.57843137254902, "beta-binomial (10, 60, 60)",
-                                        6, "Models Point", "spike at 0.3", 0.3, "binomial (10, 0.3)",
-                                        3))
+                                   list("Models Beta", "beta (60, 44)", 0.57843137254902, "beta-binomial (10, 60, 44)",
+                                        6, 1.62789504128088, "Models Point", "spike at 0.3", 0.3, "binomial (10, 0.3)",
+                                        3, 1.44913767461894))
   })
   
   test_that("Estimation Summary table results match", {
     table <- results[["results"]][["estimatesContainer"]][["collection"]][["estimatesContainer_estimatesTable"]][["data"]]
     jasptools::expect_equal_tables(table,
-                                   list("Models Beta", "beta (60, 44)", 0.57843137254902, "beta-binomial (10, 60, 44)",
-                                        6, 1.62789504128088, "Models Point", "spike at 0.3", 0.3, "binomial (10, 0.3)",
-                                        3, 1.44913767461894))
+                                   list("Models Beta", "beta (60, 44)", 0.57843137254902, "beta (2, 2)",
+                                        0.5, "Models Point", "spike at 0.3", 0.3, "spike at 0.3", 0.3
+                                   ))
   })
   
   test_that("Data Summary table results match", {
@@ -558,6 +560,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "individual"
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mode"
   options$priors <- list(list(name = "Models Beta", parAlpha = "2", parBeta = "2", 
                               parPoint = "0.5", type = "beta", value = ""), list(name = "Models Point", 
@@ -700,6 +703,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "individual"
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mode"
   options$priors <- list(list(name = "Models Beta", parAlpha = "2", parBeta = "2", 
                               parPoint = "0.5", type = "beta", value = ""), list(name = "Models Point", 
@@ -806,6 +810,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "individual"
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mode"
   options$priors <- list(list(name = "Models Beta", parAlpha = "2", parBeta = "2", 
                               parPoint = "0.5", type = "beta", value = ""), list(name = "Models Point", 
@@ -906,6 +911,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "individual"
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mode"
   options$priors <- list(list(name = "Models Beta", parAlpha = "2", parBeta = "2", 
                               parPoint = "0.5", type = "beta", value = ""), list(name = "Models Point", 
@@ -1006,6 +1012,7 @@ skip_on_travis()
   options$predictionPlotProp <- TRUE
   options$predictionPlotType <- "stacked"
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mode"
   options$priors <- list(list(name = "Models Beta", parAlpha = "2", parBeta = "2", 
                               parPoint = "0.5", type = "beta", value = ""), list(name = "Models Point", 
@@ -1100,6 +1107,7 @@ skip_on_travis()
   options$predictionPlotProp <- TRUE
   options$predictionPlotType <- "overlying"
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mode"
   options$priors <- list(list(name = "Models Beta", parAlpha = "2", parBeta = "2", 
                               parPoint = "0.5", type = "beta", value = ""), list(name = "Models Point", 
@@ -1194,6 +1202,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "overlying"
   options$predictionTable <- TRUE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(name = "Models Spike", parAlpha = "1", parBeta = "1", 
                               parPoint = "0.5", type = "spike", value = ""))
@@ -1241,8 +1250,8 @@ skip_on_travis()
   test_that("Predictions Summary table results match", {
     table <- results[["results"]][["containerPredictions"]][["collection"]][["containerPredictions_predictionsTable"]][["data"]]
     jasptools::expect_equal_tables(table,
-                                   list("Models Spike", "spike at 0.5", 0.5, "binomial (1, 0.5)", 0.5
-                                   ))
+                                   list("Models Spike", "spike at 0.5", 0.5, "binomial (1, 0.5)", 0.5,
+                                        0.5))
   })
   
   test_that("Estimation Summary table results match", {
@@ -1321,6 +1330,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "overlying"
   options$predictionTable <- TRUE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "median"
   options$priors <- list(list(name = "Models Beta", parAlpha = "1", parBeta = "1", 
                               parPoint = "0.5", type = "beta", value = ""))
@@ -1368,8 +1378,8 @@ skip_on_travis()
   test_that("Predictions Summary table results match", {
     table <- results[["results"]][["containerPredictions"]][["collection"]][["containerPredictions_predictionsTable"]][["data"]]
     jasptools::expect_equal_tables(table,
-                                   list("Models Beta", "beta (59, 43)", 0.578945969319675, "beta-binomial (1, 59, 59)",
-                                        1))
+                                   list("Models Beta", "beta (59, 43)", 0.578945969319675, "beta-binomial (1, 59, 43)",
+                                        1, 0.493810206253452))
   })
   
   test_that("Estimation Summary table results match", {
@@ -1449,6 +1459,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "overlying"
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(name = "Models 1", parAlpha = "1", parBeta = "1", parPoint = "0.5", 
                               type = "spike", value = ""), list(name = "Models 2", parAlpha = "1", 
@@ -1525,6 +1536,7 @@ skip_on_travis()
   options$predictionPlotProp <- FALSE
   options$predictionPlotType <- "overlying"
   options$predictionTable <- FALSE
+  options$predictionPlotTable <- FALSE
   options$predictionTableEstimate <- "mean"
   options$priors <- list(list(name = "Models 1", parAlpha = "1", parBeta = "1", parPoint = "0.5", 
                               type = "spike", value = ""), list(name = "Models 2", parAlpha = "1", 

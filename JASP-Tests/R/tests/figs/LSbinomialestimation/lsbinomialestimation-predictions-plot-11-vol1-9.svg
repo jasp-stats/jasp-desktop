@@ -35,6 +35,6 @@
 <text x='462.25' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='9.45px' lengthAdjust='spacingAndGlyphs'>6</text>
 <text x='562.46' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='9.45px' lengthAdjust='spacingAndGlyphs'>8</text>
 <text x='657.94' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>10</text>
-<text x='335.16' y='567.49' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='163.42px' lengthAdjust='spacingAndGlyphs'>Number of successes</text>
+<text x='298.31' y='567.49' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='237.12px' lengthAdjust='spacingAndGlyphs'>Predicted number of successes</text>
 <text x='238.00' y='11.70' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='357.75px' lengthAdjust='spacingAndGlyphs'>LSbinomialestimation-predictions-plot-11-vol1-9</text>
 </svg>
