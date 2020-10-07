@@ -86,7 +86,7 @@ Display a detailed overview of each specified model.
 - Single model: Display the overview for only one of the specified models.
 
 #### Bayes Factor
-- BF<sub>01</sub> : Bayes factor to quantify evidence for the alternative hypothesis relative to the null hypothesis.
+- BF<sub>10</sub>: Bayes factor to quantify evidence for the alternative hypothesis relative to the null hypothesis.
 - BF<sub>01</sub>: Bayes factor to quantify evidence for the null hypothesis relative to the alternative hypothesis.
 - Log(BF<sub>01</sub>) : Natural logarithm of BF<sub>01</sub>.
 
