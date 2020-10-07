@@ -641,12 +641,12 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     if (BFlog){
       g <- g +
         ggplot2::geom_line(
-          data    = data.frame(x = c(1, newXmax), y = c(0, 0)),
+          data    = data.frame(x = c(xStart, newXmax), y = c(0, 0)),
           mapping = ggplot2::aes(x = x, y = y), size = 1, show.legend = F, linetype = 3)
     } else if (!BFlog){
       g <- g +
         ggplot2::geom_line(
-          data    = data.frame(x = c(1, newXmax), y = c(1, 1)),
+          data    = data.frame(x = c(xStart, newXmax), y = c(1, 1)),
           mapping = ggplot2::aes(x = x, y = y), size = 1, show.legend = F, linetype = 3)
     }
   }

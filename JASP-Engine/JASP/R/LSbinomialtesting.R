@@ -989,10 +989,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
     }
     
     results <- NULL
-    if (length(data[["y"]]) == 1)
-      iterSeq <- c(1, 1.1)
-    else
-      iterSeq <- 1:length(data[["y"]])
+    iterSeq <- 0:length(data[["y"]])
     
     for(i in iterSeq){
       
@@ -1071,7 +1068,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
     else
       BFlog <- NULL
     
-    p <- .plotIterativeLS(plotDataLines, NULL, xName = xName, yName = yName, xStart = 1, palette = options[["colorPalette"]], BFlog = BFlog)
+    p <- .plotIterativeLS(plotDataLines, NULL, xName = xName, yName = yName, xStart = 0, palette = options[["colorPalette"]], BFlog = BFlog)
     
     plotsIterative$plotObject <- p
   }
