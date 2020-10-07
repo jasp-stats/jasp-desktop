@@ -195,7 +195,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
 
 .smFillEstimates           <- function(jaspResults, table, fit, options) {
   
-  overtitleCI <- gettext("95% Confidence Interval")
+  overtitleCI <- gettext("95%% Confidence Interval")
   
   table$addColumnInfo(name = "type",     title = "",                        type = "string")
   table$addColumnInfo(name = "est",      title = gettext("Estimate"),       type = "number")
@@ -256,7 +256,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
 
 .smFillHeterogeneity       <- function(jaspResults, table, fit, options) {
   
-  overtitleCI <- gettext("95% Confidence Interval")
+  overtitleCI <- gettext("95%% Confidence Interval")
   
   table$addColumnInfo(name = "type",     title = "",                    type = "string")
   table$addColumnInfo(name = "est",      title = gettext("Estimate"),   type = "number")
@@ -315,7 +315,7 @@ SelectionModels <- function(jaspResults, dataset, options, state = NULL) {
 
 .smFillWeights             <- function(jaspResults, table, fit, options) {
   
-  overtitleCI <- gettext("95% Confidence Interval")
+  overtitleCI <- gettext("95%% Confidence Interval")
   overtitleP  <- gettext("<em>p</em>-values interval(one-sided)")
   
   table$addColumnInfo(name = "lr",       title = gettext("Lower"),          type = "number", overtitle = overtitleP)

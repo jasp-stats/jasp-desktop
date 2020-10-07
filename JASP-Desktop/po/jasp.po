@@ -10336,11 +10336,6 @@ msgctxt "BoundQMLTextInput|"
 msgid "The expression did not return a number."
 msgstr ""
 
-#, qt-format
-msgctxt "BoundQMLTextInput|"
-msgid "The result (%1) must be %2"
-msgstr ""
-
 msgctxt "UsingContainers|"
 msgid ""
 "This example shows two strategies to writing a jaspResults analysis.\n"
@@ -12648,10 +12643,6 @@ msgid "Options"
 msgstr ""
 
 msgctxt "Flexplot|"
-msgid "Point controls"
-msgstr ""
-
-msgctxt "Flexplot|"
 msgid "Point transparency"
 msgstr ""
 
@@ -12664,10 +12655,6 @@ msgid "Jitter in Y"
 msgstr ""
 
 msgctxt "Flexplot|"
-msgid "Visual Statistics"
-msgstr ""
-
-msgctxt "Flexplot|"
 msgid "Plot confidence bands"
 msgstr ""
 
@@ -12677,10 +12664,6 @@ msgstr ""
 
 msgctxt "Flexplot|"
 msgid "Intervals (categorical predictors)"
-msgstr ""
-
-msgctxt "Flexplot|"
-msgid "Other Plot Controls"
 msgstr ""
 
 msgctxt "Flexplot|"
@@ -14184,21 +14167,6 @@ msgstr ""
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr ""
-
-msgctxt "OSF|"
-msgid ""
-"A new folder cannot be added to the projects list.\n"
-"\n"
-"To add a new project please use the online OSF services."
-msgstr ""
-
-msgctxt "OSF|"
-msgid ""
-"A new folder cannot be added to a projects data providers list.\n"
-"\n"
-"To add a new data provider (eg. google drive) please use the online OSF "
-"services."
 msgstr ""
 
 #, qt-format
@@ -16562,10 +16530,6 @@ msgid "<b>Download Report</b>"
 msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Cohen's d / t-statistics & (N / SE)"
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Effect sizes & SE"
 msgstr ""
 
@@ -18626,10 +18590,6 @@ msgid "Data"
 msgstr ""
 
 msgctxt "LSbinomialdatainput|"
-msgid "Input type"
-msgstr ""
-
-msgctxt "LSbinomialdatainput|"
 msgid "Select variable"
 msgstr ""
 
@@ -18642,19 +18602,11 @@ msgid "Enter sequence"
 msgstr ""
 
 msgctxt "LSbinomialdatainput|"
-msgid "Count data"
-msgstr ""
-
-msgctxt "LSbinomialdatainput|"
 msgid "Successes"
 msgstr ""
 
 msgctxt "LSbinomialdatainput|"
 msgid "Failures"
-msgstr ""
-
-msgctxt "LSbinomialdatainput|"
-msgid "Comma-separated sequence of observations"
 msgstr ""
 
 msgctxt "LSbinomialdatainput|"
@@ -18675,30 +18627,6 @@ msgstr ""
 
 msgctxt "LSestimationinference|"
 msgid "Inference"
-msgstr ""
-
-msgctxt "LSestimationinference|"
-msgid "Color palette"
-msgstr ""
-
-msgctxt "LSestimationinference|"
-msgid "Colorblind"
-msgstr ""
-
-msgctxt "LSestimationinference|"
-msgid "Colorblind Alt."
-msgstr ""
-
-msgctxt "LSestimationinference|"
-msgid "Viridis"
-msgstr ""
-
-msgctxt "LSestimationinference|"
-msgid "ggplot2"
-msgstr ""
-
-msgctxt "LSestimationinference|"
-msgid "Gray"
 msgstr ""
 
 msgctxt "LSestimationinference|"
@@ -18726,18 +18654,6 @@ msgid "CI"
 msgstr ""
 
 msgctxt "LSestimationinference|"
-msgid "mass"
-msgstr ""
-
-msgctxt "LSestimationinference|"
-msgid "lower"
-msgstr ""
-
-msgctxt "LSestimationinference|"
-msgid "upper"
-msgstr ""
-
-msgctxt "LSestimationinference|"
 msgid "Posterior distribution"
 msgstr ""
 
@@ -18754,14 +18670,6 @@ msgid "Observed proportion"
 msgstr ""
 
 msgctxt "LSestimationpredictions|"
-msgid "Posterior prediction"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
-msgid "Future observations"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
 msgid "Summary"
 msgstr ""
 
@@ -18771,30 +18679,6 @@ msgstr ""
 
 msgctxt "LSestimationpredictions|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
-msgid "Color palette"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
-msgid "Colorblind"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
-msgid "Colorblind Alt."
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
-msgid "Viridis"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
-msgid "ggplot2"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
-msgid "Gray"
 msgstr ""
 
 msgctxt "LSestimationpredictions|"
@@ -18818,23 +18702,7 @@ msgid "CI"
 msgstr ""
 
 msgctxt "LSestimationpredictions|"
-msgid "mass"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
-msgid "lower"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
-msgid "upper"
-msgstr ""
-
-msgctxt "LSestimationpredictions|"
 msgid "Show sample proportions"
-msgstr ""
-
-msgctxt "LSestimationsequential|"
-msgid "Sequential analysis"
 msgstr ""
 
 msgctxt "LSestimationsequential|"
@@ -18847,10 +18715,6 @@ msgstr ""
 
 msgctxt "LSestimationsequential|"
 msgid "CI"
-msgstr ""
-
-msgctxt "LSestimationsequential|"
-msgid "mass"
 msgstr ""
 
 msgctxt "LSestimationsequential|"
@@ -18870,14 +18734,6 @@ msgid "Interval"
 msgstr ""
 
 msgctxt "LSestimationsequential|"
-msgid "lower"
-msgstr ""
-
-msgctxt "LSestimationsequential|"
-msgid "upper"
-msgstr ""
-
-msgctxt "LSestimationsequential|"
 msgid "Posterior updating table"
 msgstr ""
 
@@ -18887,38 +18743,6 @@ msgstr ""
 
 msgctxt "LStestinginference|"
 msgid "Inference"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "Color palette"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "Colorblind"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "Colorblind Alt."
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "Viridis"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "ggplot2"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "Gray"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "Bayes factor"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "vs. all"
 msgstr ""
 
 msgctxt "LStestinginference|"
@@ -18955,18 +18779,6 @@ msgstr ""
 
 msgctxt "LStestinginference|"
 msgid "CI"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "mass"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "lower"
-msgstr ""
-
-msgctxt "LStestinginference|"
-msgid "upper"
 msgstr ""
 
 msgctxt "LStestinginference|"
@@ -19014,14 +18826,6 @@ msgid "Prior and posterior distribution"
 msgstr ""
 
 msgctxt "LStestingpredictions|"
-msgid "Posterior prediction"
-msgstr ""
-
-msgctxt "LStestingpredictions|"
-msgid "Future observations"
-msgstr ""
-
-msgctxt "LStestingpredictions|"
 msgid "Summary"
 msgstr ""
 
@@ -19031,30 +18835,6 @@ msgstr ""
 
 msgctxt "LStestingpredictions|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LStestingpredictions|"
-msgid "Color palette"
-msgstr ""
-
-msgctxt "LStestingpredictions|"
-msgid "Colorblind"
-msgstr ""
-
-msgctxt "LStestingpredictions|"
-msgid "Colorblind Alt."
-msgstr ""
-
-msgctxt "LStestingpredictions|"
-msgid "Viridis"
-msgstr ""
-
-msgctxt "LStestingpredictions|"
-msgid "ggplot2"
-msgstr ""
-
-msgctxt "LStestingpredictions|"
-msgid "Gray"
 msgstr ""
 
 msgctxt "LStestingpredictions|"
@@ -19103,10 +18883,6 @@ msgstr ""
 
 msgctxt "LStestingpredictions|"
 msgid "Predictions table"
-msgstr ""
-
-msgctxt "LStestingsequential|"
-msgid "Sequential analysis"
 msgstr ""
 
 msgctxt "LStestingsequential|"
@@ -19872,14 +19648,219 @@ msgctxt "Description|"
 msgid "Visual Modeling"
 msgstr ""
 
-msgctxt "auditBayesianWorkflow|"
-msgid ""
+msgctxt "LSbinomialestimation|"
+msgid "Color palette"
 msgstr ""
 
-msgctxt "auditClassicalWorkflow|"
-msgid ""
+msgctxt "LSbinomialestimation|"
+msgid "Colorblind"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Colorblind Alt."
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Viridis"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "ggplot2"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Gray"
+msgstr ""
+
+msgctxt "LSbinomialestimation|"
+msgid "Model "
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Color palette"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Colorblind"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Colorblind Alt."
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Viridis"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "ggplot2"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Gray"
+msgstr ""
+
+msgctxt "LSbinomialtesting|"
+msgid "Hypothesis "
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Input Type"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Count Data"
+msgstr ""
+
+msgctxt "LSbinomialdatainput|"
+msgid "Comma-separated Sequence of Observations"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Mass"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Lower"
+msgstr ""
+
+msgctxt "LSestimationinference|"
+msgid "Upper"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Posterior Prediction"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Number of future trials"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Mass"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Lower"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Upper"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Sequential Analysis"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Mass"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Lower"
+msgstr ""
+
+msgctxt "LSestimationsequential|"
+msgid "Upper"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Bayes Factor"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "vs. rest"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Mass"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Lower"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Upper"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Posterior Prediction"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Number of future trials"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Mass"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Lower"
+msgstr ""
+
+msgctxt "LStestingpredictions|"
+msgid "Upper"
+msgstr ""
+
+msgctxt "LStestingsequential|"
+msgid "Sequential Analysis"
 msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Cohen's d / t-statistics & N / SE"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Correlation"
+msgstr ""
+
+msgctxt "RobustBayesianMetaAnalysis|"
+msgid "Odds Ratio"
+msgstr ""
+
+msgctxt "SelectionModels|"
+msgid "Correlation"
+msgstr ""
+
+msgctxt "Flexplot|"
+msgid "<br><strong>Point controls</br></strong>"
+msgstr ""
+
+msgctxt "Flexplot|"
+msgid "<strong>Visual Statistics</strong>"
+msgstr ""
+
+msgctxt "Flexplot|"
+msgid "<br><strong>Other Plot Controls</strong>"
+msgstr ""
+
+msgctxt "Flexplot|"
+msgid "Color Palette"
+msgstr ""
+
+msgctxt "Flexplot|"
+msgid "Plot Labels"
+msgstr ""
+
+msgctxt "Flexplot|"
+msgid "<br><strong>Plot Labels</strong>"
+msgstr ""
+
+#, qt-format
+msgctxt "BoundQMLTextInput|"
+msgid "The value (%1) must be %2"
+msgstr ""
+
+msgctxt "OSF|"
 msgid ""
+"A new folder cannot be added to the projects list.<br>To add a new project "
+"please use the online OSF services."
+msgstr ""
+
+msgctxt "OSF|"
+msgid ""
+"A new folder cannot be added to a projects data providers list.<br>To add a "
+"new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
