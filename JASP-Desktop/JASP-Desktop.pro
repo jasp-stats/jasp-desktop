@@ -191,13 +191,13 @@ win32 {
 	  maketranslations.commands += $$quote($${QTBIN}lrelease.exe \"$${SOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.po\" -qm \"$${RESOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.qm\") &&
       }
     
-	maketranslations.commands += $$quote(copy \"$${RESOURCES_TRANSLATIONS}\*.qm\" \"$${RESOURCES_DESTINATION_TRANSLATIONS}\ \" ) &&
+	maketranslations.commands += $$quote(copy \"$${RESOURCES_TRANSLATIONS}\*.qm\" \"$${RESOURCES_DESTINATION_TRANSLATIONS}\" ) &&
 
     #Create R-JASP.mo translation file. (Need to add GETTEXT location to PATH environment.)
-    maketranslations.commands += $$quote(\"$$PWD/../Tools/translate.cmd $$_R_HOME/bin\" \"$${GETTEXT_LOCATION}\" \"$$PWD/../Tools\" \"$$PWD/../JASP-Engine/JASP\" ) &&
+    maketranslations.commands += $$quote(\"$$PWD/../Tools/translate.cmd\" \"$$_R_HOME/bin\" \"$${GETTEXT_LOCATION}\" \"$$PWD/../Tools\" \"$$PWD/../JASP-Engine/JASP\" ) &&
 
     #Create R-JASPgraphs.mo translation file. (Need to add GETTEXT location to PATH environment.)
-    maketranslations.commands += $$quote(\"$$PWD/../Tools/translate.cmd $$_R_HOME/bin\" \"$${GETTEXT_LOCATION}\" \"$$PWD/../Tools\" \"$$PWD/../JASP-Engine/JASPgraphs\" )
+    maketranslations.commands += $$quote(\"$$PWD/../Tools/translate.cmd\" \"$$_R_HOME/bin\" \"$${GETTEXT_LOCATION}\" \"$$PWD/../Tools\" \"$$PWD/../JASP-Engine/JASPgraphs\" )
 
     maketranslations.depends  = copyres
   }
