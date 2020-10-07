@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
 //
-// You should have received a copy of the GNU Affero General Public	
+// You should have received a copy of the GNU Affero General Public
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
@@ -62,10 +62,10 @@ Form {
 
 			RowLayout
 			{
-				Label { text: qsTr("Hypothesis");			Layout.preferredWidth: 155 * preferencesModel.uiScale}
-				Label { text: qsTr("Prior probability");	Layout.preferredWidth: 125 * preferencesModel.uiScale}
-				Label { text: qsTr("Distribution");			Layout.preferredWidth: 130 * preferencesModel.uiScale}
-				Label { text: qsTr("Parameter (θ)");		Layout.preferredWidth: 150 * preferencesModel.uiScale}
+				Label { text: qsTr("Hypothesis");			Layout.leftMargin: 5 * preferencesModel.uiScale; Layout.preferredWidth: 148 * preferencesModel.uiScale}
+				Label { text: qsTr("Prior probability");	Layout.preferredWidth: 100 * preferencesModel.uiScale	}
+				Label { text: qsTr("Distribution");			Layout.preferredWidth: 80 * preferencesModel.uiScale	}
+				Label { text: qsTr("Parameter (θ)");																}
 			}
 			ComponentsList
 			{
@@ -76,7 +76,7 @@ Form {
 					Row
 					{
 						spacing:				4 * preferencesModel.uiScale
-						Layout.preferredWidth:	160 * preferencesModel.uiScale
+						Layout.preferredWidth:	150 * preferencesModel.uiScale
 						TextField
 						{
 							label: 				""
@@ -90,7 +90,7 @@ Form {
 					Row
 					{
 						spacing:				4 * preferencesModel.uiScale
-						Layout.preferredWidth:	120 * preferencesModel.uiScale
+						Layout.preferredWidth:	100 * preferencesModel.uiScale
 						FormulaField
 						{
 							label: 				qsTr("P(H)")
@@ -106,7 +106,7 @@ Form {
 					Row
 					{
 						spacing: 4 * preferencesModel.uiScale
-						Layout.preferredWidth: 110 * preferencesModel.uiScale
+						Layout.preferredWidth: 80 * preferencesModel.uiScale
 						DropDown
 						{
 							id: typeItem
@@ -131,7 +131,7 @@ Form {
 							value:				"1"
 							min:				0
 							inclusive:			JASP.None
-							fieldWidth:			70
+							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}
@@ -143,7 +143,7 @@ Form {
 							value:				"1"
 							min:				0
 							inclusive:			JASP.None
-							fieldWidth:			70
+							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}
@@ -155,8 +155,8 @@ Form {
 							value:				"0.5"
 							min:				0
 							max:				1
-							inclusive:			JASP.MinMax
-							fieldWidth:			70
+							inclusive:			JASP.None
+							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
 						}

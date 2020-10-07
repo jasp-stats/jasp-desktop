@@ -206,6 +206,8 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progre
 	}
 
 	archive_entry_free(entry);
+	
+	DataSetPackage::pkg()->waitForExportResultsReady();
 
 	//Create new entry for archive: HTML results
 	std::string html = package->analysesHTML();

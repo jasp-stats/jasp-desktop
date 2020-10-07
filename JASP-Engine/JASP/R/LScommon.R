@@ -114,8 +114,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
   gaps <- which(diff(indices) > 1)
   if(length(gaps) > 0 && !allowSplit) {
     # In this case, return shortest 95% CrI
-    warning("The HDI is discontinuous but allowSplit = FALSE;
-    the result is a valid CrI but not HDI.")
+    # warning("The HDI is discontinuous but allowSplit = FALSE; the result is a valid CrI but not HDI.")
     cumul <- cumsum(object$y) / sum(object$y)
     upp.poss <- low.poss <- which(cumul < 1 - credMass)
     for (i in low.poss)

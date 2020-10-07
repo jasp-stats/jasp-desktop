@@ -76,7 +76,7 @@ Popup
 			Item
 			{
 				id:		nameItem
-				height:	marge * 2 + (jaspTheme.font.pixelSize * 1.5 * preferencesModel.uiScale)
+				height:	marge * 2 + (nameEdit.implicitHeight * 2)
 
 				property real marge: 10 * preferencesModel.uiScale
 
@@ -117,48 +117,54 @@ Popup
 						bottom:		parent.bottom
 						margins:	6 * preferencesModel.uiScale
 					}
-
-
-					TextEdit
+					
+					ScrollView
 					{
-						property string defaultText:				"..."
-						property string lastCheckedColumnNameInUse: ""
-						property bool	columnNameInUse:			lastCheckedColumnNameInUse !== "" && lastCheckedColumnNameInUse === text
-						property bool	validEntry:					text != defaultText && text.length > 0 && !columnNameInUse
-
-						id:						nameEdit
-						text:					defaultText
-						font:					jaspTheme.font
-						color:					columnNameInUse ? jaspTheme.red : jaspTheme.black
-
-						ToolTip.delay:			0
-						ToolTip.timeout:		10000
-						ToolTip.visible:		columnNameInUse
-						ToolTip.text:			qsTr("Column name is already used, please choose a different one.")
-
-						Keys.onReturnPressed:	rootCreateComputedColumn.createComputedColumn()
-
-						anchors
+						property double textHeightResidual: parent.height - nameEdit.implicitHeight
+						
+						clip:					true
+						anchors.fill:			parent
+						anchors.margins:		4 * preferencesModel.uiScale
+						anchors.topMargin:		textHeightResidual / 2
+						onContentWidthChanged:	if(contentWidth >= width) ScrollBar.horizontal.position = 1 - ScrollBar.horizontal.size
+						
+						TextEdit
 						{
-							left:			parent.left
-							right:			parent.right
-							verticalCenter:	parent.verticalCenter
-							margins:		2
+							property string defaultText:				"..."
+							property string lastCheckedColumnNameInUse: ""
+							property bool	columnNameInUse:			lastCheckedColumnNameInUse !== "" && lastCheckedColumnNameInUse === text
+							property bool	validEntry:					text != defaultText && text.length > 0 && !columnNameInUse
+	
+							id:						nameEdit
+							text:					defaultText
+							font:					jaspTheme.font
+							color:					columnNameInUse ? jaspTheme.red : jaspTheme.black
+							width:					Math.max(implicitWidth, nameBox.width)
+							selectByMouse:			true
+	
+							ToolTip.delay:			0
+							ToolTip.timeout:		10000
+							ToolTip.visible:		columnNameInUse
+							ToolTip.text:			qsTr("Column name is already used, please choose a different one.")
+	
+							Keys.onReturnPressed:	rootCreateComputedColumn.createComputedColumn()
+		
+							onActiveFocusChanged:
+							{
+								if( activeFocus	&& text === defaultText	) text = ""
+								if(!activeFocus && text === ""			) text = defaultText
+							}
 						}
-
-						onActiveFocusChanged:
-						{
-							if( activeFocus	&& text === defaultText	) text = ""
-							if(!activeFocus && text === ""			) text = defaultText
-						}
-
-						MouseArea
-						{
-							anchors.fill:		parent
-							hoverEnabled:		true
-							acceptedButtons:	Qt.NoButton
-							cursorShape:		Qt.IBeamCursor
-						}
+						
+					}
+					
+					MouseArea
+					{
+						z:					1234
+						anchors.fill:		parent
+						hoverEnabled:		true
+						acceptedButtons:	Qt.NoButton
+						cursorShape:		Qt.IBeamCursor
 					}
 				}
 			}

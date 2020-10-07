@@ -19,6 +19,7 @@
 import QtQuick			2.11
 import QtQuick.Window	2.11
 import JASP.Widgets		1.0
+import QtQuick.Controls	2.12
 
 Window
 {
@@ -228,5 +229,20 @@ Window
 		visible:			mainWindow.progressBarVisible
 		z:					10
 		anchors.fill:		parent
+	}
+	
+	//Utility:
+	readonly property Item _toolTipOverrideItem: Item
+	{
+		//These properties override those for ALL attached ToolTips in the application
+		//ToolTip.toolTip shouldn't be changed anywhere else otherwise we get hard to debug behaviour
+		ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor }
+		ToolTip.toolTip.contentItem:	Text
+		{
+			font:			jaspTheme.font
+			wrapMode:		Text.WrapAtWordBoundaryOrAnywhere
+			text:			ToolTip.toolTip.text
+		}
+		ToolTip.toolTip.implicitWidth:			Math.min(jaspTheme.formWidth * 0.8, ToolTip.toolTip.contentItem.implicitWidth + (2 * ToolTip.toolTip.padding))
 	}
 }

@@ -1760,7 +1760,6 @@ Form
 			RadioButtonGroup
 			{
 				name: 		"plots_type_individual_order"
-				title:		qsTr("")
 				columns: 	2
 				RadioButton
 				{

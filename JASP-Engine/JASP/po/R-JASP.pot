@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-09-24 10:50\n"
+"POT-Creation-Date: 2020-10-07 17:04\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,6 +88,9 @@ msgstr ""
 msgid "Prediction %s"
 msgstr ""
 
+msgid "Prediction std. deviation"
+msgstr ""
+
 msgid "The prediction for %s %s is based on %s %s and %s %s."
 msgstr ""
 
@@ -172,9 +175,6 @@ msgstr ""
 msgid "Incorrect arguments for the inverse cumulative density function"
 msgstr ""
 
-msgid "The HDI is discontinuous but allowSplit = FALSE;\n    the result is a valid CrI but not HDI."
-msgstr ""
-
 msgid "%1$s %2$s Plots"
 msgstr ""
 
@@ -232,10 +232,10 @@ msgstr ""
 msgid "The 'Enter sequence' option allows manual input of a specific order of observations. %s"
 msgstr ""
 
-msgid "The 'Binomial Estimation' analysis offers two types of prior distributions for parameter %1$s that represents the underlying population proportion of successes: \n        <ul><li>'Spike(%2$s)' - for concentrating all probability density at one location (%2$s). The prior %5$s corresponds to the location of the spike. The posterior distribution is again a spike at the same location and corresponding %5$s</li><li>'Beta(%3$s, %4$s)' - for allocating probability density across all values of parameter %1$s according to a beta distribution with parameters %3$s and %4$s. The prior %6$s. After observing 'S' successes and 'F' failures, the posterior distribution updates to beta(%3$s + S, %4$s + F) with a %5$s computed correspondingly.</li></ul>"
+msgid "The 'Binomial Estimation' analysis offers two types of prior distributions for parameter %1$s that represents the underlying population proportion of successes: \n        <ul><li>'Spike(%2$s)' - for concentrating all probability mass at one point (%2$s). This represents the prior belief that the population proportion is %2$s with certainty. This conviction is so strong that no data can move this prior belief. Hence, the posterior is also a spike at %2$s. The prior and the posterior %5$s then corresponds to the location of the spike.</li><li>'Beta(%3$s, %4$s)' - for allocating probability density across all values of parameter %1$s according to a beta distribution with parameters %3$s and %4$s. The prior %6$s. After observing 'S' successes and 'F' failures, the posterior distribution updates to beta(%3$s + S, %4$s + F) with a %5$s computed correspondingly.</li></ul>"
 msgstr ""
 
-msgid "The 'Gaussian Estimation' analysis offers two types of prior distributions for parameter %1$s of a normal distribution, Normal(%1$s, %2$s), with known standard deviation %2$s: \n        <ul><li>'Spike(%3$s)' - for concentrating all probability density at one location (%3$s). The prior %8$s corresponds to the location of the spike. The posterior distribution is again a spike at the same location and corresponding %8$s.</li><li>'Normal(%3$s, %4$s)' - for allocating probability density across all values of parameter %1$s according to a normal distribution with parameters mean %3$s and standard deviation %4$s. The prior %8$s corresponds to the mean parameter of the normal distribution %3$s. After seeing 'N' observations with mean %5$s, the posterior distribution updates to normal( (%4$s%6$s*%5$s)/( (%2$s%6$s/N) + %4$s%6$s) + (%2$s%6$s*%3$s)/( (%2$s%6$s/N) + %4$s%6$s), 1/%7$s(1/%4$s%6$s + N/%2$s%6$s) ) with %8$s corresponding to the mean of posterior distribution.</li></ul>"
+msgid "The 'Gaussian Estimation' analysis offers two types of prior distributions for parameter %1$s of a normal distribution, Normal(%1$s, %2$s), with known standard deviation %2$s: \n        <ul><li>'Spike(%3$s)' - for concentrating all probability mass at one point (%3$s). This represents the prior belief that the population proportion is %3$s with certainty. This conviction is so strong that no data can move this prior belief. Hence, the posterior is also a spike at %3$s. The prior and the posterior %8$s then corresponds to the location of the spike.</li><li>'Normal(%3$s, %4$s)' - for allocating probability density across all values of parameter %1$s according to a normal distribution with parameters mean %3$s and standard deviation %4$s. The prior %8$s corresponds to the mean parameter of the normal distribution %3$s. After seeing 'N' observations with mean %5$s, the posterior distribution updates to normal( (%4$s%6$s*%5$s)/( (%2$s%6$s/N) + %4$s%6$s) + (%2$s%6$s*%3$s)/( (%2$s%6$s/N) + %4$s%6$s), 1/%7$s(1/%4$s%6$s + N/%2$s%6$s) ) with %8$s corresponding to the mean of posterior distribution.</li></ul>"
 msgstr ""
 
 msgid "The 'Estimation Summary' table displays numerical summaries for the individual models. The displayed point estimate can be changed using the 'Point estimate' option. The table is composed of the following columns:\n    <ul><li>'Model' - the specified model names</li><li>'Prior (%1$s)' - the specified prior distribution for parameter %1$s</li><li>'Prior %2$s' - the %3$s of the specified prior distribution</li><li>'Posterior (%1$s)' - the estimated posterior distribution for the parameter %1$s (i.e., the prior distribution updated with data)</li><li>'Posterior %2$s' - the %3$s of the posterior distribution</li></ul>"
@@ -271,7 +271,7 @@ msgstr ""
 msgid "Furthermore, the 'Observed data' checkbox allows the visualization of the observed %s as a black cross in the figure."
 msgstr ""
 
-msgid "The 'Conditional' option shows all %1$s for parameter %2$s independently, as ifthey were considered as individual models (without the existence of other hypotheses). It is possible to visualize different types of point estimates ('Point estimate') and credible intervals ('CI'):%3$s"
+msgid "The 'Conditional' option shows all %1$s for parameter %2$s independently, as if they were considered as individual models (without the existence of other hypotheses). It is possible to visualize different types of point estimates ('Point estimate') and credible intervals ('CI'):%3$s"
 msgstr ""
 
 msgid "The 'Joint' option shows all %1$s for parameter %2$s when considered together in light of the other hypotheses (by multiplying the density of the %1$s over the parameter by the %3$s probability of the hypothesis). In addition, the 'Overlying' option allows the visualization of all %1$s on top of each other, allowing for easier comparison with a common density and probability scale on the y-axis and the 'Stacked' option shows all %1$s in one figure with a depth effect induced by plotting the additional distributions 'further' on the z-axis."
@@ -283,7 +283,7 @@ msgstr ""
 msgid "The 'Prior and posterior distribution' option displays the prior and posterior distribution of the parameter %1$s for the individual %2$s. Spike prior distributions are visualized as arrows (signifying that their density is infinite) and %3$s distributions are visualized as continuous lines. Prior distributions are visualized as dashed grey lines and the posterior distribution as solid black lines. In addition, the observed data summary can be visualized as a black cross by selecting the '%4$s' checkbox."
 msgstr ""
 
-msgid "The 'Conditional' option shows all prior and posterior distributions for parameter %1$s independently, as ifthey were considered as individual models (without the existence of other hypotheses)."
+msgid "The 'Conditional' option shows all prior and posterior distributions for parameter %1$s independently, as if they were considered as individual models (without the existence of other hypotheses)."
 msgstr ""
 
 msgid "The 'Joint' option shows all prior and posterior distributions for parameter %1$s when considered together in light of the other hypotheses. In addition, the 'Overlying' option allows the visualization all %1$s on top of each other, allowing for easier comparison with a common density and probability scale on the y-axis and the 'Stacked' option shows all %1$s in one figure with a depth effect induced by plotting the additional distributions 'further' on the z-axis."
@@ -316,6 +316,12 @@ msgstr ""
 msgid "The 'Posterior updating table' option generates a numerical summary of the updating process for parameter %s. The 'Observation' column tracks how many observations have been already encountered for the corresponding posterior distribution. The first row (observation = 0) corresponds to the prior distribution and the last row corresponds to the final posterior distribution after the prior distribution was updated with all observations."
 msgstr ""
 
+msgid "The 'Binomial Estimation' analysis offers two types of prior distributions for parameter %1$s that represents the underlying population proportion of successes: \n        <ul><li>'Spike(%2$s)' - for concentrating all probability density at one location (%2$s). The prior %5$s corresponds to the location of the spike. The posterior distribution is again a spike at the same location and corresponding %5$s</li><li>'Beta(%3$s, %4$s)' - for allocating probability density across all values of parameter %1$s according to a beta distribution with parameters %3$s and %4$s. The prior %6$s. After observing 'S' successes and 'F' failures, the posterior distribution updates to beta(%3$s + S, %4$s + F) with a %5$s computed correspondingly.</li></ul>"
+msgstr ""
+
+msgid "The 'Gaussian Estimation' analysis offers two types of prior distributions for parameter %1$s of a normal distribution, Normal(%1$s, %2$s), with known standard deviation %2$s: \n        <ul><li>'Spike(%3$s)' - for concentrating all probability density at one location (%3$s). The prior %8$s corresponds to the location of the spike. The posterior distribution is again a spike at the same location and corresponding %8$s.</li><li>'Normal(%3$s, %4$s)' - for allocating probability density across all values of parameter %1$s according to a normal distribution with parameters mean %3$s and standard deviation %4$s. The prior %8$s corresponds to the mean parameter of the normal distribution %3$s. After seeing 'N' observations with mean %5$s, the posterior distribution updates to normal( (%4$s%6$s*%5$s)/( (%2$s%6$s/N) + %4$s%6$s) + (%2$s%6$s*%3$s)/( (%2$s%6$s/N) + %4$s%6$s), 1/%7$s(1/%4$s%6$s + N/%2$s%6$s) ) with %8$s corresponding to the mean of posterior distribution.</li></ul>"
+msgstr ""
+
 msgid "The 'Posterior prediction' section allows the prediction of future data based on the estimated models%s"
 msgstr ""
 
@@ -343,7 +349,7 @@ msgstr ""
 msgid "The '%1$s' option displays figures of predictive distributions based on posterior distributions of the individual models. %2$s"
 msgstr ""
 
-msgid "The 'Conditional' option shows all %1$s for parameter %2$s independently, as ifthey were considered as individual models (without the existence of other hypotheses). It is possible to visualize different of credible intervals ('CI'):%3$s"
+msgid "The 'Conditional' option shows all %1$s for parameter %2$s independently, as if they were considered as individual models (without the existence of other hypotheses). It is possible to visualize different of credible intervals ('CI'):%3$s"
 msgstr ""
 
 msgid "The 'Joint' option shows all %1$s for parameter %2$s when considered together in light of the other hypotheses (by multiplying the density of the %1$s by the %3$s probability of the hypothesis). In addition, the 'Overlying' option allows the  visualization of all %1$s on top of each other, allowing for easier comparison with a common density and probability scale on the y-axis and the 'Stacked' option shows all %1$s in one figure with a depth effect induced by plotting the additional distributions 'further' on the z-axis."
@@ -352,7 +358,7 @@ msgstr ""
 msgid "The 'Predictive accuracy' option allows a comparison of the predictive accuracy across all hypotheses. Predictive accuracy refers to how likely the data are given the hypotheses."
 msgstr ""
 
-msgid "The 'Conditional' option shows all predictive accuracies independently, as ifthey were considered as individual models (without the existence of other hypotheses)."
+msgid "The 'Conditional' option shows all predictive accuracies independently, as if they were considered as individual models (without the existence of other hypotheses)."
 msgstr ""
 
 msgid "The 'Joint' option shows all predictive accuracies when taking the prior probabilities of hypotheses into account (by multiplying conditional predictive accuracies by prior probabilities of the hypotheses)."
@@ -2152,7 +2158,7 @@ msgstr ""
 msgid "You cannot set all the prior model probabilties to zero."
 msgstr ""
 
-msgid "The model could not be fit. Please check the following: Do you have at least n=2 studies? If the prior is truncated, is it consistent with the data (when most effect sizes are negative, the analysis may not work when the prior is constrained to be postive)?"
+msgid "The model could not be fit. Please check the following: Do you have at least n=2 studies? If the prior is truncated, is it consistent with the data (when most effect sizes are negative, the analysis may not work when the prior is constrained to be positive)?"
 msgstr ""
 
 msgid "Posterior Estimates per Model"
@@ -4945,7 +4951,7 @@ msgstr ""
 msgid "No expected counts entered."
 msgstr ""
 
-msgid "Invalid counts: variable does not match the number of levels of the factor."
+msgid "Invalid counts: variable does not match the number of levels of the factor. When counts are specified, each row of the data set must represent a unique level of the factor."
 msgstr ""
 
 msgid "Invalid expected counts: variable does not match the number of levels of the factor."
@@ -5704,7 +5710,7 @@ msgstr ""
 msgid "%sMcDonald's ω estimation method switched to PFA because the CFA\n                                    did not find a solution."
 msgstr ""
 
-msgid "%s Some confidence intervals could not be computed \n                                        because none of the bootstrapped covariance matrices were invertible."
+msgid "%s Some confidence intervals could not be computed because none of the bootstrapped covariance matrices were invertible."
 msgstr ""
 
 msgid "If item dropped"
@@ -5911,7 +5917,7 @@ msgstr ""
 msgid "The p-value cutoffs were set incorectly."
 msgstr ""
 
-msgid "At least one p-value cuttoff needs to be set."
+msgid "At least one p-value cutoff needs to be set."
 msgstr ""
 
 msgid "All p-value cutoffs needs to be between 0 and 1."
@@ -5920,7 +5926,7 @@ msgstr ""
 msgid "No steps"
 msgstr ""
 
-msgid "95% Confidence Interval"
+msgid "95%% Confidence Interval"
 msgstr ""
 
 msgid "Note:"
@@ -5971,7 +5977,7 @@ msgstr ""
 msgid "Weight Function(%s)"
 msgstr ""
 
-msgid "The figure could not be created since one of the estimates is NaN."
+msgid "The figure could not be created since one of the estimates is not a number."
 msgstr ""
 
 msgid "P-value (One-sided)"
@@ -5987,9 +5993,6 @@ msgid "Fixed effects (adjusted)"
 msgstr ""
 
 msgid "Random effects (adjusted)"
-msgstr ""
-
-msgid "The figure could not be created since one of the estimates is not a number."
 msgstr ""
 
 msgid "Mean Estimates (%s)"
@@ -6016,7 +6019,7 @@ msgstr ""
 msgid "The unadjusted estimate is negative. The selection model default specification expects that the expected direction of the effect size is positive. Please, check that you specified the effect sizes correctly or change the 'Expected effect size direction' option in the 'Model' tab."
 msgstr ""
 
-msgid "The analysis requires both 'Effect Site' and 'Effect Size Standard Error' to be specified."
+msgid "The analysis requires both 'Effect Size' and 'Effect Size Standard Error' to be specified."
 msgstr ""
 
 msgid "Only the following one-sided p-value cutoffs were used: %s."

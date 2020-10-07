@@ -867,13 +867,10 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{
-		_package->setWaitingForReady();
-
-		_resultsJsInterface->exportPreviewHTML();
-
-		_package->setAnalysesData(_analyses->asJson());
-
 		connectFileEventCompleted(event);
+		
+		_resultsJsInterface->exportPreviewHTML();
+		_package->setAnalysesData(_analyses->asJson());
 
 		_loader->io(event);
 		showProgress();

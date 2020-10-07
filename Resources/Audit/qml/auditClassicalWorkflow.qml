@@ -708,7 +708,6 @@ Form
 			{
 				id: 						variableType
 				name: 						"variableType"
-				title: 						qsTr("")
 				anchors.horizontalCenter: 	parent.horizontalCenter
 				enabled:					!pasteVariables.checked
 

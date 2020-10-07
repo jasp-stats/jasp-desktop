@@ -56,6 +56,8 @@ Analyses::Analyses()
 
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
 {
+	Log::log() << "Analyses::createFromJaspFileEntry" << std::endl;
+	
 	Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
 	size_t id					= analysisData["id"].asUInt();
 
@@ -68,6 +70,8 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(analysisData.get("dynamicModule", Json::nullValue).isNull())
 	{
+		Log::log() << "It is a builtin analysis, " << std::flush;
+		
 		Json::Value	&	versionJson		= analysisData["version"];
 		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
 
@@ -76,7 +80,8 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 						title			= tq(analysisData.get("title", "").asString());
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
 		QString			qml				= analysisEntry ? tq(analysisEntry->qml()) : name + ".qml";
-
+		
+		Log::log() << " titled: '" << title << "'" << std::endl;
 
 		if(title == "")
 			title = analysisEntry ? tq(analysisEntry->title()) : name;
@@ -88,6 +93,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	else
 	{
 		std::string title			= analysisData.get("title", "").asString();
+		
+		Log::log() << "It is a dynmod analysis with title: '" << title << "'" << std::endl;
+		
 		auto *	analysisEntry		= DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
 				analysis			= create(analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), &optionsJson);
 		auto *	dynMod				= analysisEntry->dynamicModule();
@@ -97,6 +105,8 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	}
 
+	Log::log() << "Now loading userdata and results from file." << std::endl;
+	
 	analysis->setUserData(analysisData["userdata"]);
 	analysis->setResults(analysisData["results"], status);
 
@@ -391,7 +401,8 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 
 			JASPTIMER_START(Analyses::loadAnalysesFromDatasetPackage for analysisData : analysesDataList);
 
-
+			Log::log() << "Loading analyses from jasp-file, entering loop." << std::endl;
+			
 			//There is no point trying to show progress here because qml is not updated while this function runs...
 			for (Json::Value & analysisData : analysesDataList)
 			{
@@ -404,16 +415,22 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 					//Maybe show a nicer messagebox?
 					errorFound = true;
 					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << modProb.what();
+					
+					Log::log() << "Caught module exception: " << modProb.what() << std::endl;
 				}
 				catch (runtime_error & e)
 				{
 					errorFound = true;
 					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
+					
+					Log::log() << "Caught runtime_error exception: " << e.what() << std::endl;
 				}
 				catch (exception & e)
 				{
 					errorFound = true;
 					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
+					
+					Log::log() << "Caught exception: " << e.what() << std::endl;
 				}
 			}
 
@@ -423,6 +440,8 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 		if (corruptAnalyses == 1)			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
 		else if (corruptAnalyses > 1)		errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
 	}
+	
+	Log::log() << "Loading analyses seems to have worked out fine." << std::endl;
 }
 
 void Analyses::refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,

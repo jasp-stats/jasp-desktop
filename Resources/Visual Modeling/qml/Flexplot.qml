@@ -3,16 +3,39 @@ import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP				1.0
 
-Form 
+Form
 {
 	usesJaspResults: true
 
 	VariablesForm
 	{
 		AvailableVariablesList	{ name: "allVariables" }
-		AssignedVariablesList	{ name: "dependent"		; title: qsTr("Dependent Variable")	; singleVariable: true	}
-		AssignedVariablesList	{ name: "variables"		; title: qsTr("Independent Variable(s)") ; id: varlist		}
-		AssignedVariablesList	{ name: "paneledVars"	; title: qsTr("Paneled Variable(s)")	 ; id: paneledVars	}
+		AssignedVariablesList	{
+				name: "dependent"		;
+				title: qsTr("Dependent Variable")	;
+				singleVariable: true
+				onCountChanged:  nameY.value = count > 0 ? model.data(model.index(0,0)) : ""
+		}
+		AssignedVariablesList	{
+				name: "variables"		;
+				title: qsTr("Independent Variable(s)") ;
+				id: varlist
+				onCountChanged: {
+					nameLegend.value = count > 1 ? model.data(model.index(1,0)) : "";
+					nameX.value = count > 0 ? model.data(model.index(0,0)) : "";
+				}
+
+		}
+		AssignedVariablesList	{
+			name: "paneledVars"	;
+			title: qsTr("Paneled Variable(s)");
+			id: paneledVars
+			onCountChanged: {
+				nameCols.value = count > 0 ? model.data(model.index(0,0)) : "";
+				nameRows.value = count > 1 ? model.data(model.index(1,0)) : "";
+			}
+
+		}
 	}
 
 	Section
@@ -21,7 +44,7 @@ Form
 
 		Group
 		{
-			title: qsTr("Point controls")
+			title: qsTr("<br><strong>Point controls</br></strong>")
 			columns: 4
 			Slider
 			{
@@ -56,7 +79,7 @@ Form
 		{
 			Group
 			{
-				title: qsTr("Visual Statistics")
+				title: qsTr("<strong>Visual Statistics</strong>")
 				CheckBox
 				{
 					name:"confidence";
@@ -66,7 +89,7 @@ Form
 				DropDown
 				{
 					name: "type"
-					values: ["Loess", "Regression", "Quadratic", "Cubic"]
+					values: ["Loess", "Regression", "Quadratic", "Cubic", "None"]
 					label: qsTr("Fitted line (scatterplots)")
 					enabled: varlist.count > 0
 				}
@@ -81,19 +104,26 @@ Form
 
 			Group
 			{
-				title: qsTr("Other Plot Controls")
+				title: qsTr("<br><strong>Other Plot Controls</strong>")
 				DropDown
 				{
 					name: "theme"
 					values: ["JASP", "Black and white", "Minimal", "Classic", "Dark"]
 					label: qsTr("GGplot theme")
 				}
-			CheckBox
-			{
-				name:"bw";
-				label: qsTr("Convert to grayscale");
-				checked: false
-			}
+				DropDown
+				{
+					name: "palette"
+					values: ["GGplot Default", "Nature", "AAAS", "Lancet", "JCO", "Dark"]
+					label: qsTr("Color Palette")
+				}
+				CheckBox
+				{
+					name:"bw";
+					label: qsTr("Convert to grayscale");
+					checked: false
+				}
+
 				CheckBox
 				{
 					name:"ghost";
@@ -105,4 +135,46 @@ Form
 		}
 	}
 
+	Section
+	{
+		title: qsTr("Plot Labels")
+		Group
+		{
+		  title: qsTr("<br><strong>Plot Labels</strong>")
+		  TextField
+      {
+	      id: nameX;
+	      label: "X Axis Label";
+	      name: "nameX";
+      }
+		  TextField
+      {
+	      id: nameY
+	      label: "Y Axis Label"
+	      name: "nameY";
+				value: xAxis.value
+      }
+			TextField
+      {
+	      id: nameLegend
+	      label: "Legend Label"
+	      name: "nameLegend";
+				value: legend.value
+      }
+			TextField
+      {
+	      id: nameCols
+	      label: "Column Panel Label"
+	      name: "nameCols";
+				value: cols.value
+      }
+			TextField
+      {
+	      id: nameRows
+	      label: "Row Panel Label"
+	      name: "nameRows";
+				value: rows.value
+      }
+		}
+	}
 }

@@ -24,6 +24,7 @@
 #include "columnencoder.h"
 #include "timers.h"
 #include "utilities/appdirs.h"
+#include "utils.h"
 
 #define ENUM_DECLARATION_CPP
 #include "datasetpackage.h"
@@ -1467,4 +1468,25 @@ QString DataSetPackage::windowTitle() const
 	folder = folder == "" ? "" : "      (" + folder + ")";
 
 	return name + (isModified() ? "*" : "") + folder;
+}
+
+// This function can be called from a different thread then where the underlying value for isReady() is set, but I don't think a mutex or whatever is necessary here. What could go wrong with checking a boolean?
+// Also this was already the case, so I'm not making things worse here...
+void DataSetPackage::waitForExportResultsReady() 
+{ 
+	int maxSleepTime	= 10000,
+		sleepTime		= 100,
+		delay			= 0;
+	
+	while (!isReady())
+	{
+		if (delay > maxSleepTime)
+			break;
+		
+		Utils::sleep(sleepTime);
+		delay += sleepTime;
+	}
+	
+	if(!isReady())
+		Log::log() << "Results were not exported properly!" << std::endl; //Should we maybe create a dummy result that explains something went wrong with the upload? Should we abort saving? What is going on?
 }
