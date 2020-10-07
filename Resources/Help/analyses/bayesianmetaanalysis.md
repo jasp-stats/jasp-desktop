@@ -17,7 +17,7 @@ The Bayesian meta-analysis allows the user to estimate an overall effect size es
 - Random effects: performs a random effects Bayesian meta-analysis.
 - Model averaged: performs a model averaged Bayesian meta-analysis. Averages over the fixed and random effects models. Fixed and random effects results are also given. 
 - Constrained random effects
-  - All postive: performs a constrained random effects Bayesian meta-analysis, where the effect size estimates are constrained to be postive. 
+  - All positive: performs a constrained random effects Bayesian meta-analysis, where the effect size estimates are constrained to be positive. 
   - All negative: performs a constrained random effects Bayesian meta-analysis, where the effect size estimates are constrained to be negative. 
 
 #### Bayes Factor
