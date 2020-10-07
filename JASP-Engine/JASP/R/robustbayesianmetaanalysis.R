@@ -841,7 +841,7 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
   overall_summary$addColumnInfo(name = "models",    title = gettext("Models"), type = "string")
   overall_summary$addColumnInfo(name = "priorProb", title = gettext("P(M)"),   type = "number")
 
-  if (!options[["measures"]] == "fitted") {
+  if (options[["measures"]] != "fitted") {
     for (i in 1:nrow(fitSummary[["overview"]])) {
       temp_row <- list(
         terms     = if (i == 1) gettext("Effect") else if (i == 2) gettext("Heterogeneity") else if (i == 3) gettext("Publication bias"),
@@ -869,7 +869,7 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
   models_summary$addColumnInfo(name = "prior_omega", title = gettext("Publication Bias"), type = "string", overtitle = prior_overtitle)
   models_summary$addColumnInfo(name = "priorProb",   title = gettext("P(M)"),             type = "number")
 
-  if (!options[["measures"]] == "fitted") {
+  if (options[["measures"]] != "fitted") {
     for (i in 1:nrow(fitSummary[["models"]])) {
       temp_row <- list(
         number       = as.numeric(rownames(fitSummary[["models"]]))[i],
