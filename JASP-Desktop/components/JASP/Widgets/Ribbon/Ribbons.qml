@@ -33,6 +33,7 @@ Item
 		z:					10
 		anchors.fill:		buttonList
 		acceptedButtons:	Qt.NoButton
+		cursorShape:		Qt.PointingHandCursor
 		onWheel:
 		{
 			var bigWheel = Math.abs(wheel.angleDelta.x) > Math.abs(wheel.angleDelta.y) ? wheel.angleDelta.x : wheel.angleDelta.y;
@@ -50,7 +51,7 @@ Item
 		height:							parent.height
 		boundsBehavior:					Flickable.StopAtBounds
 		clip:							true
-
+		interactive:					false
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
 
@@ -69,11 +70,11 @@ Item
 		{
 			text:			model.moduleTitle
 			moduleName:		model.moduleName
-			source:			model.ribbonButton ? ((model.isDynamic ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource) : ""
-			menu:			model.ribbonButton ? model.ribbonButton.analysisMenu : undefined
-			toolTip:		model.ribbonButton ? model.ribbonButton.toolTip : undefined
-			enabled:		model.ribbonButton ? model.active : false
-			visible:		model.ribbonButton ? true : false
+			source:			!model.ribbonButton ? ""		: (model.isDynamic ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource
+			menu:			!model.ribbonButton ? undefined : model.ribbonButton.analysisMenu
+			toolTip:		!model.ribbonButton ? undefined : model.ribbonButton.toolTip
+			enabled:		!model.ribbonButton ? false		: model.active
+			visible:		!model.ribbonButton ? false		: true
 		}
 	}
 	
