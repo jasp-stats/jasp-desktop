@@ -84,6 +84,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   if (options[["plotsPredictions"]]){
     if (options[["predictionPlotType"]] != "individual").plotsPredictionsBinomialLS(jaspResults, data, ready, options)
     if (options[["predictionPlotType"]] == "individual").plotsPredictionsIndividualBinomialLS(jaspResults, data, ready, options)
+    if (options[["predictionPlotTable"]]).tablePosteriorPredictions(jaspResults, data, ready, options)
   }
   
   return()
@@ -1130,11 +1131,11 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
         plotsPredictions[[options[["priors"]][[i]]$name]] <- tempPlot
         
         if (options[["predictionPlotProp"]]){
-          xName  <- gettext("Sample proportions")
+          xName  <- gettext("Predicted sample proportions")
           yName  <- gettext("Density")
           xRange <- c(-.5/options[["predictionN"]],1 + .5/options[["predictionN"]])
         } else {
-          xName  <- gettext("Number of successes")
+          xName  <- gettext("Predicted number of successes")
           yName  <- gettext("Probability")
           xRange <- c(0, options[["predictionN"]])
         }
@@ -1235,11 +1236,11 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
     else {
       
       if (options[["predictionPlotProp"]]){
-        xName  <- gettext("Sample proportions")
+        xName  <- gettext("Predicted sample proportions")
         yName  <- gettext("Density")
         xRange <- c(-.5/options[["predictionN"]],1+.5/options[["predictionN"]])
       } else {
-        xName  <- gettext("Number of successes")
+        xName  <- gettext("Predicted number of successes")
         yName  <- gettext("Probability")
         xRange <- c(-.5, options[["predictionN"]]+.5)
       }
@@ -1274,4 +1275,54 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   }
   
   return()  
+}
+.tablePosteriorPredictions         <- function(jaspResults, data, ready, options){
+  
+  containerPredictionPlots <- .containerPredictionPlotsLS(jaspResults, options, "binEst")
+  
+  if (is.null(containerPredictionPlots[["tablePredictions"]])){
+    
+    tablePredictions <- createJaspTable()
+    
+    tablePredictions$position <- 3
+    tablePredictions$dependOn(c(.dataDependenciesBinomialLS, "predictionN", "predictionPlotProp", "predictionPlotTable"))
+    containerPredictionPlots[["tablePredictions"]] <- tablePredictions
+    
+
+    if (options[["predictionPlotProp"]]){
+      tablePredictions$addColumnInfo(name = "successes", title = gettext("Proportion of Successes"), type = "number")
+      tablePredictions$addColumns(c(0:options[["predictionN"]])/options[["predictionN"]])
+    } else {
+      tablePredictions$addColumnInfo(name = "successes", title = gettext("Successes"), type = "integer")
+      tablePredictions$addColumns(0:options[["predictionN"]])
+    }
+    
+    
+    if (ready["priors"]){
+      for(i in seq_along(options[["priors"]])){
+        tablePredictions$addColumnInfo(name = paste0("hyp_", i), title = options[["priors"]][[i]]$name, type = "number")
+      }
+    } else
+      return()
+    
+    
+    if (!ready["data"]){
+      
+      if ((options[["dataType"]] == "dataVariable" && options[["selectedVariable"]]     != "") ||
+          (options[["dataType"]] == "dataSequence" && options[["dataSequenceInput"]]    != ""))
+        tablePredictions$addFootnote(gettext("Please specify successes and failures."))
+      
+      return()
+    }
+    
+    
+    tempPred    <- NULL
+    
+    for(i in 1:length(options[["priors"]])) {
+      tempResults <- .dataHistBinomialLS2(data, options[["priors"]][[i]], options[["predictionN"]])
+      tablePredictions$addColumns(tempResults[1:length(tempResults) %% 2 == 0,"y"])
+    }
+
+  }
+  return()
 }

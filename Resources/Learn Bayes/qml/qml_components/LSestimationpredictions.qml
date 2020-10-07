@@ -145,6 +145,13 @@ Section
 						id:	predictionPlotProp
 						label: qsTr("Show sample proportions")
 					}
+
+					CheckBox
+					{
+						name:	"predictionPlotTable"
+						label:	qsTr("Predictions table")
+					}
+
 				}
 			}
 		}

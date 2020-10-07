@@ -463,6 +463,12 @@ Section
 			label:		qsTr("Observed proportion")
 			checked:	false
 		}
+
+		CheckBox
+		{
+			name:	"predictionPlotTable"
+			label:	qsTr("Predictions table")
+		}
 	}
 
 
