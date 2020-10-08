@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-10-07 17:04\n"
+"POT-Creation-Date: 2020-10-08 13:38\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -975,8 +975,9 @@ msgstr ""
 
 msgid ""
 "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, "
-"the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> "
-"log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
+"the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</"
+"em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, "
+"2001)."
 msgstr ""
 
 msgid ""
@@ -6916,6 +6917,11 @@ msgstr ""
 msgid "Publication bias"
 msgstr ""
 
+msgid ""
+"The analysis will estimate multiple meta-analytic models using MCMC and "
+"might require a prolonged time to complete."
+msgstr ""
+
 msgid "Models Overview"
 msgstr ""
 
@@ -7155,7 +7161,8 @@ msgid "Random effects model:"
 msgstr ""
 
 msgid ""
-"%sThe optimizer failed to find a solution. Consider re-specifying the model."
+"%sThe optimizer failed to find a solution. Consider re-specifying the model "
+"or the p-value cutoffs."
 msgstr ""
 
 msgid ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-10-07 17:04\n"
+"Project-Id-Version: JASP 0.14.0\n"
+"POT-Creation-Date: 2020-10-08 13:38\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5776,6 +5776,9 @@ msgstr ""
 msgid "Publication bias"
 msgstr ""
 
+msgid "The analysis will estimate multiple meta-analytic models using MCMC and might require a prolonged time to complete."
+msgstr ""
+
 msgid "Models Overview"
 msgstr ""
 
@@ -6001,7 +6004,7 @@ msgstr ""
 msgid "Random effects model:"
 msgstr ""
 
-msgid "%sThe optimizer failed to find a solution. Consider re-specifying the model."
+msgid "%sThe optimizer failed to find a solution. Consider re-specifying the model or the p-value cutoffs."
 msgstr ""
 
 msgid "%sThe automatic cutoffs selection did not find viable p-value cutoffs. Please, specify them manually."
