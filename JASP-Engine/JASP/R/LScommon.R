@@ -160,6 +160,9 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       tempArrow       <- allArrows[i,]
       tempArrow$yEnd <- tempArrow$yEnd * .scalingSpikes(allLines, allArrows)
       
+      if (tempArrow$yEnd < .Machine$double.eps)
+        tempArrow$yEnd <- 1e-5
+      
       g <- g + ggplot2::geom_segment(
         data        = tempArrow,
         mapping     = mappingArrow,
@@ -256,7 +259,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       legend.text  = ggplot2::element_text(margin = ggplot2::margin(0, 0, 2, 0)),
       legend.key.height = ggplot2::unit(1, "cm"),
       legend.key.width  = ggplot2::unit(1.5,"cm")) + 
-    .plotThemePlus(allLines, allArrows)
+    .plotThemePlus(allLines, allArrows) +
+    ggplot2::theme(legend.position = "right")
   
   plot <- g
   
@@ -292,22 +296,14 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     CI         <- cbind.data.frame(CI, "y" = yMax * 1.05)
   }
   
-  if (discrete){
-    xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(ceiling(xRange[1]),floor(xRange[2])))
-    xBreaks[length(xBreaks)] <- floor(xRange[2])
-    if (!proportions){
-      xBreaks <- round(xBreaks)
-    }
-  } else {
-    xBreaks <- JASPgraphs::getPrettyAxisBreaks(xRange)
-  }
-  
+
   g <- ggplot2::ggplot()
   
   if (!is.null(allArrows)){
     
     allArrowsScaled       <- allArrows
     allArrowsScaled$yEnd  <- allArrowsScaled$yEnd * .scalingSpikes(allLines, allArrows)
+    allArrowsScaled$yEnd[allArrowsScaled$yEnd < .Machine$double.eps] <- 1e-5
     
     if (!is.null(pointEstimate)){
       if (pointEstimate$spike[1]){
@@ -323,12 +319,13 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       show.legend = F)
     g <- g + ggplot2::geom_segment(
       data    = allArrowsScaled,
+      show.legend = !all(allArrowsScaled$g == "__marginal"),
       mapping = mappingArrows,
       size    = 1)
   }
   
   if (!is.null(allLines)){
-    g <- g + ggplot2::geom_line(data = allLines, mapping = mappingLines, size = 1,)
+    g <- g + ggplot2::geom_line(data = allLines, mapping = mappingLines, size = 1, show.legend = !all(allLines$g == "__marginal"))
   }
   
   if (!is.null(dfPoints)){
@@ -417,7 +414,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       legend.text  = ggplot2::element_text(margin = ggplot2::margin(0, 0, 2, 0)),
       legend.key.height = ggplot2::unit(1, "cm"),
       legend.key.width  = ggplot2::unit(1.5,"cm")) + 
-    .plotThemePlus(allLines, allArrows)
+    .plotThemePlus(allLines, allArrows) +
+    ggplot2::theme(legend.position = "right")
   
   plot <- g
   
@@ -642,12 +640,12 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     if (BFlog){
       g <- g +
         ggplot2::geom_line(
-          data    = data.frame(x = c(1, newXmax), y = c(0, 0)),
+          data    = data.frame(x = c(xStart, newXmax), y = c(0, 0)),
           mapping = ggplot2::aes(x = x, y = y), size = 1, show.legend = F, linetype = 3)
     } else if (!BFlog){
       g <- g +
         ggplot2::geom_line(
-          data    = data.frame(x = c(1, newXmax), y = c(1, 1)),
+          data    = data.frame(x = c(xStart, newXmax), y = c(1, 1)),
           mapping = ggplot2::aes(x = x, y = y), size = 1, show.legend = F, linetype = 3)
     }
   }
@@ -675,7 +673,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       legend.text  = ggplot2::element_text(margin = ggplot2::margin(0, 2, 2, 0)),
       legend.key.height = ggplot2::unit(1, "cm"),
       legend.key.width  = ggplot2::unit(1.5,"cm"),
-    )
+    ) +
+    ggplot2::theme(legend.position = "right")
   
   plot <- g
   class(plot) <- c("JASPgraphs", class(plot))
@@ -709,7 +708,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
   if (!is.null(allArrows)){
     
     tempArrows        <- allArrows
-    tempArrows$yEnd  <- tempArrows$yEnd * .scalingSpikes(allLines, allArrows)
+    tempArrows$yEnd   <- tempArrows$yEnd * .scalingSpikes(allLines, allArrows)
+    tempArrows$yEnd[tempArrows$yEnd < .Machine$double.eps] <- 1e-5
     
     g <- g + ggplot2::geom_segment(
       data    = allArrows,
@@ -788,7 +788,8 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
       legend.text  = ggplot2::element_text(margin = ggplot2::margin(0, 0, 2, 0)),
       legend.key.height = ggplot2::unit(1, "cm"),
       legend.key.width  = ggplot2::unit(1.5,"cm")) + 
-    .plotThemePlus(allLines, allArrows)
+    .plotThemePlus(allLines, allArrows) +
+    ggplot2::theme(legend.position = "right")
   
   plot <- g
   return(plot)
@@ -1112,9 +1113,9 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
   
   # set the y-scale plotting range
   if (!is.null(CI)){
-    yRange    <- c(0, yMax * 1.20) 
+    yRange    <- c(0, max(c(yMax * 1.20), max(yBreaks))) 
   } else {
-    yRange    <- c(0, yMax) 
+    yRange    <- c(0, max(c(yMax, max(yBreaks)))) 
   }
   
   if (!is.null(allLines) & !is.null(allArrows)){
@@ -1843,7 +1844,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
   } else if (text == "sequential_point"){
     
     generalText <- gettextf(
-      "The 'Point estimate' option displays a plot with the sequential updating of the point estimate %s (y-axis). The figure visualizes the updating process as ifthe individual data points were arriving one after another (x-axis).",
+      "The 'Point estimate' option displays a plot with the sequential updating of the point estimate %s (y-axis). The figure visualizes the updating process as if the individual data points were arriving one after another (x-axis).",
       ifelse(binomial, "\u03B8", "\u03BC")
     )
     
@@ -1860,7 +1861,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
   } else if (text == "sequential_interval"){
     
     generalText <- gettextf(
-      "The 'Interval' option displays a sequential plot with the probability of parameter %s lying inside of the interval ranging from ('lower') to ('upper'), (y-axis). The figure visualizes the updating process as ifthe individual data points were arriving one after another (x-axis).",
+      "The 'Interval' option displays a sequential plot with the probability of parameter %s lying inside of the interval ranging from ('lower') to ('upper'), (y-axis). The figure visualizes the updating process as if the individual data points were arriving one after another (x-axis).",
       ifelse(binomial, "\u03B8", "\u03BC")
     )
     
@@ -2042,7 +2043,7 @@ hdi.density    <- function(object, credMass=0.95, allowSplit=FALSE, ...) {
     
   } else if (text == "sequential_tests"){
     
-    generalText <- gettext("The 'Test results' option displays a plot with the sequential change in the predictive accuracy of all hypotheses (y-axis). The figure visualizes the updating process as ifthe individual data points were arriving one after another (x-axis).")
+    generalText <- gettext("The 'Test results' option displays a plot with the sequential change in the predictive accuracy of all hypotheses (y-axis). The figure visualizes the updating process as if the individual data points were arriving one after another (x-axis).")
     
     specificText <- switch(
       options[["plotsIterativeType"]],

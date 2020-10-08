@@ -37,6 +37,6 @@
 <text x='509.38' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>40</text>
 <text x='594.80' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>50</text>
 <text x='680.22' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='18.91px' lengthAdjust='spacingAndGlyphs'>60</text>
-<text x='351.70' y='567.49' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='163.42px' lengthAdjust='spacingAndGlyphs'>Number of successes</text>
+<text x='314.85' y='567.49' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='237.12px' lengthAdjust='spacingAndGlyphs'>Predicted number of successes</text>
 <text x='240.68' y='11.70' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='385.45px' lengthAdjust='spacingAndGlyphs'>LSbinomialtesting-posterior-prediction-plot-2-vol5-3</text>
 </svg>
