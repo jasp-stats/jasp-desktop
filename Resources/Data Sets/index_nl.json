@@ -778,7 +778,7 @@
         {
           "name": "The Datasaurus Dozen (Long)",
           "path": "The Datasaurus Dozen (Long).jasp",
-          "description": "Twaalf variaties van twee variabelen die dezelfde beschrijvende statistieken hebben maar verschillende verdelingen geven. Een grilliger voorbeeld van de les die het traditionele Anscombe's Quartet geeft. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van het inspecteren van gegevens aan de hand van figuren. <br><br> <i>Synthetische gegevens van Matejka & Fitzmaurice (2018). Dataset overgenomen van R (Locke & McGowan, 2018)."
+          "description": "Twaalf variaties van twee variabelen die dezelfde beschrijvende statistieken hebben maar verschillende verdelingen geven. Een grilliger voorbeeld van de les die het traditionele Anscombe's Quartet geeft. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van het inspecteren van gegevens aan de hand van figuren. <br><br> <i>Synthetische gegevens van Matejka & Fitzmaurice (2018). Dataset overgenomen van R (Locke & McGowan, 2018).",
           "kind": "file",
           "associated_datafile": "The Datasaurus Dozen (Long).csv"
         },
