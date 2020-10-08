@@ -387,7 +387,7 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 		if (_colNames.size() > 0) _colNames.pop_back();
 		_editableColumn = -1;
 	}
-	else if (_colNames.size() > _editableColumn && _editableColumn >= 0)
+	else if (_colNames.size() > _editableColumn)
 		_colNames[_editableColumn]	= colName;
 
 	_colName = colName;
