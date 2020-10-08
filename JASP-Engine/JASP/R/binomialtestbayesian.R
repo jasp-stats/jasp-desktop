@@ -17,7 +17,7 @@
 
 BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   ready <- length(options$variables) > 0 && .RCodeInOptionsIsOk(options[c("testValue", "priorA", "priorB")])
-
+  
   # testValue, priorA & priorB are formulaFields: parse them and save the results in the state
   options <- .parseAndStoreFormulaOptions(jaspResults, options, c("testValue", "priorA", "priorB"))
 
@@ -320,18 +320,20 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
 .bayesBinomSequentialPlot <- function(container, plotName, options, BF10, counts, n, hyp, var, data, level) {   
   if (!options$plotSequentialAnalysis || !is.null(container[[plotName]]))
     return()
-
+  
   plot <- createJaspPlot(title = gettext("Sequential Analysis"), width = 530, height = 400, aspectRatio = 0.7)
-  plot$dependOn("plotSequentialAnalysis")
+  plot$dependOn(c("plotSequentialAnalysis", "bayesFactorType"))
   
   container[[plotName]] <- plot
   
   hypForPlots <- .binomHypothesisForPlots(hyp)
 
   p <- try({
+    bfTypeIgnoreLog <- if(options[["bayesFactorType"]] == "BF01") "BF01"  else "BF10" # see https://github.com/jasp-stats/INTERNAL-jasp/issues/1101
+    bf <- if(bfTypeIgnoreLog == "BF01") 1 / BF10  else BF10
     bfSubscripts <- .bayesBinomGetSubscript(options$hypothesis)
-    dfLinesSR   <- .dfLinesSR(d = data, var = var, split = level, a = options$priorA, b = options$priorB, hyp = hyp, theta0 = options$testValue)
-    JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, xName = "n", BF = BF10, bfType = "BF10", hypothesis = hypForPlots)
+    dfLinesSR   <- .dfLinesSR(d = data, var = var, split = level, a = options$priorA, b = options$priorB, hyp = hyp, theta0 = options$testValue, bfType = bfTypeIgnoreLog)
+    JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, xName = "n", BF = bf, bfType = bfTypeIgnoreLog, hypothesis = hypForPlots)
   })
   
   if (inherits(p, "try-error"))
@@ -398,7 +400,8 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   return(dat)
 }
 
-.dfLinesSR <- function(d, var, level, split, a = 1, b = 1, hyp = "two-sided", theta0 = .5){
+.dfLinesSR <- function(d, var, level, split, a = 1, b = 1, hyp = "two-sided", theta0 = .5, bfType = c("BF01", "BF10")){
+  bfType <- match.arg(bfType)
   x <- 1 * (d == split)
   BF10 <- numeric(length(x))
   for (i in seq_along(x)) {
@@ -413,7 +416,11 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
     if (is.infinite(BF10[i]))
       stop(gettext("One or more Bayes factors are infinite"))
   }
-  dat <- data.frame(x = 1:length(x), y = log(BF10))
+  if(bfType == "BF01") {
+    dat <- data.frame(x = 1:length(x), y = -log(BF10))
+  } else {
+    dat <- data.frame(x = 1:length(x), y = log(BF10))
+  }
   return(dat)
 }
 
