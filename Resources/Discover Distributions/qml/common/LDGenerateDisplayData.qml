@@ -30,7 +30,7 @@ Section
 	property bool	allowOnlyScaleColumns		: true
 	property bool	suggestScaleColumns			: false
 
-	title: qsTr("Generate and Display Data")
+	title: enabled ? qsTr("Generate and Display Data") : qsTr("Generate and Display Data") + " - " + qsTr("[requires a loaded data set]")
 	Group
 	{
 		Layout.columnSpan: 2
