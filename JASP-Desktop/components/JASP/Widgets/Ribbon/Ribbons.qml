@@ -31,8 +31,9 @@ Item
 	{
 		id:					convertVerticalIntoHorizontalScrolling
 		z:					10
-		anchors.fill:		parent
+		anchors.fill:		buttonList
 		acceptedButtons:	Qt.NoButton
+		cursorShape:		Qt.PointingHandCursor
 		onWheel:
 		{
 			var bigWheel = Math.abs(wheel.angleDelta.x) > Math.abs(wheel.angleDelta.y) ? wheel.angleDelta.x : wheel.angleDelta.y;
@@ -49,17 +50,18 @@ Item
 		currentIndex:					ribbonModelFiltered.highlightedModuleIndex
 		height:							parent.height
 		boundsBehavior:					Flickable.StopAtBounds
-
+		clip:							true
+		interactive:					false
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
 
 		onDragStarted:					customMenu.hide()
 		onMovementStarted:				customMenu.hide()
-
+		
 		anchors
 		{
-			left:			parent.left
-			right:			parent.right
+			left:			leftArrow.right
+			right:			rightArrow.left
 			verticalCenter:	parent.verticalCenter
 		}
 
@@ -68,15 +70,93 @@ Item
 		{
 			text:			model.moduleTitle
 			moduleName:		model.moduleName
-			source:			model.ribbonButton ? ((model.isDynamic ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource) : ""
-			menu:			model.ribbonButton ? model.ribbonButton.analysisMenu : undefined
-			toolTip:		model.ribbonButton ? model.ribbonButton.toolTip : undefined
-			enabled:		model.ribbonButton ? model.active : false
-			visible:		model.ribbonButton ? true : false
+			source:			!model.ribbonButton ? ""		: (model.isDynamic ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource
+			menu:			!model.ribbonButton ? undefined : model.ribbonButton.analysisMenu
+			toolTip:		!model.ribbonButton ? undefined : model.ribbonButton.toolTip
+			enabled:		!model.ribbonButton ? false		: model.active
+			visible:		!model.ribbonButton ? false		: true
 		}
 	}
+	
+	property real ribbonFlickSpeed: 400
+	
+	Timer
+	{
+		id:			scrollLikeAChump
+		repeat:		true
+		interval:	300
+		
+		property bool timerWentOffAlready:	false
+		property bool goLeft:				false
+		
+		function anArrowPressed(goLeftPlease)
+		{
+			interval			= 300;
+			goLeft				= goLeftPlease;
+			timerWentOffAlready = false;
+			
+			start();
+		}
+		
+		onTriggered: 
+		{
+			timerWentOffAlready = true;
+			interval			= 10;
+			
+			if(goLeft)	buttonList.flick( ribbonFlickSpeed, 0);
+			else		buttonList.flick(-ribbonFlickSpeed, 0);
+		}
+		
+	}
+	
+	
+	MenuArrowButton
+	{
+		id:				leftArrow
+		z:				1
+		buttonType:		MenuArrowButton.ButtonType.LeftArrow
+		visible:		fadeOutLeft.visible
+		width:			height * 0.4
+		iconScale:		0.4
+		onClicked:		if(!scrollLikeAChump.timerWentOffAlready) buttonList.flick(2 * ribbonFlickSpeed, 0)
+		
+		onPressedChanged: 
+			if(pressed)							scrollLikeAChump.anArrowPressed(true);
+			else if(scrollLikeAChump.goLeft)	scrollLikeAChump.stop();
+		
+		anchors
+		{
+			top:		parent.top
+			bottom:		parent.bottom
+			left:		parent.left
+		}	
+		
+	}
+	
+	MenuArrowButton
+	{
+		id:				rightArrow
+		z:				1
+		buttonType:		MenuArrowButton.ButtonType.RightArrow
+		visible:		fadeOutRight.visible
+		width:			leftArrow.width
+		iconScale:		leftArrow.iconScale
+		onClicked:		if(!scrollLikeAChump.timerWentOffAlready) buttonList.flick(-2 * ribbonFlickSpeed, 0)
+		
+		onPressedChanged: 
+			if(pressed)							scrollLikeAChump.anArrowPressed(false);
+			else if(!scrollLikeAChump.goLeft)	scrollLikeAChump.stop();
+		
+		anchors
+		{
+			top:		parent.top
+			bottom:		parent.bottom
+			right:		parent.right
+		}	
+		
+	}
 
-	property real fadeOutMultiplier: 1.5
+	property real fadeOutMultiplier: 0.15
 
 	Item
 	{
@@ -88,15 +168,29 @@ Item
 		{
 			top:		parent.top
 			bottom:		parent.bottom
-			left:		parent.left
-			leftMargin:	-2
+			left:		leftArrow.right
+		}
+		
+		Rectangle  // a line on the side "under which" ribbonbuttons can dissappear
+		{
+			z		: 3
+			width	: 1
+			color	: jaspTheme.uiBorder
+	
+			anchors
+			{
+				top			: parent.top
+				left		: parent.left
+				bottom		: parent.bottom
+				leftMargin	: -1
+			}
 		}
 
 		Rectangle
 		{
 			gradient: Gradient
 			{
-				GradientStop { position: 0.0; color: jaspTheme.uiBackground	}
+				GradientStop { position: 0.0; color: jaspTheme.shadow	}
 				GradientStop { position: 1.0; color: "transparent"		}
 			}
 			width:				parent.height
@@ -109,22 +203,36 @@ Item
 	Item
 	{
 		id:			fadeOutRight
-		width:		height * Math.min(fadeOutMultiplier, (((buttonList.originX + buttonList.contentWidth) - (buttonList.contentX + buttonList.width)) / height))
+		width:		height * Math.min(fadeOutMultiplier, (((buttonList.originX + buttonList.contentWidth) - (buttonList.contentX + buttonList.width + 1)) / height))
 		visible:	width > 0
 		z:			1
 		anchors
 		{
 			top:			parent.top
 			bottom:			parent.bottom
-			right:			parent.right
-			rightMargin:	-2
+			right:			rightArrow.left
+		}
+		
+		Rectangle  // a line on the side "under which" ribbonbuttons can dissappear
+		{
+			z		: 3
+			width	: 1
+			color	: jaspTheme.uiBorder
+	
+			anchors
+			{
+				top			: parent.top
+				right		: parent.right
+				bottom		: parent.bottom
+				rightMargin	: -1
+			}
 		}
 
 		Rectangle
 		{
 			gradient: Gradient
 			{
-				GradientStop { position: 0.0; color: jaspTheme.uiBackground	}
+				GradientStop { position: 0.0; color: jaspTheme.shadow	}
 				GradientStop { position: 1.0; color: "transparent"		}
 			}
 			width:				parent.height
