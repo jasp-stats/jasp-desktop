@@ -98,59 +98,7 @@ Form
 		enabled					: mainWindow.dataAvailable
 	}
 
-	Section
-	{
-		title: qsTr("Estimate Parameters")
-		enabled: mainWindow.dataAvailable
+	LD.LDEstimateParameters { enabled: mainWindow.dataAvailable }
 
-		Group
-		{
-			CheckBox{ name: "methodMLE";      label: qsTr("Maximum likelihood"); visible: true  }
-			CheckBox{ name: "methodMoments";  label: qsTr("Method of moments");  visible: false }
-			CheckBox{ name: "methodUnbiased"; label: qsTr("Unbiased estimator"); visible: false }
-		}
-
-		Group
-		{
-			title: qsTr("Output")
-			CheckBox
-			{
-				name: "outputEstimates"; label: qsTr("Estimates"); checked: true
-				CheckBox{ name: "outputSE"; label: qsTr("Std. error"); checked: false }
-				CheckBox
-				{
-					name: "ciInterval"; label: qsTr("Confidence interval"); childrenOnSameRow: true
-					PercentField{ name: "ciIntervalInterval"; label: ""; defaultValue: 95 }
-				}
-			}
-
-			CheckBox{ name: "outputVarCov"; label: qsTr("Variance-covariance"); checked: false; visible: false }
-			CheckBox{ name: "outputCor";    label: qsTr("Correlation"); checked: false; visible: false }
-		}
-	}
-	Section
-	{
-		title: qsTr("Assess Fit")
-		enabled: mainWindow.dataAvailable
-
-		Group
-		{
-			title: qsTr("Plots")
-			columns: 2
-			CheckBox{ name: "estPDF"; label: qsTr("Histogram vs. theoretical pdf") }
-			CheckBox{ name: "qqplot"; label: qsTr("Q-Q plot")                      }
-			CheckBox{ name: "estCDF"; label: qsTr("Empirical vs. theoretical cdf") }
-			CheckBox{ name: "ppplot"; label: qsTr("P-P plot")                      }
-		}
-
-		Group
-		{
-			title: qsTr("Statistics")
-			CheckBox{ name: "kolmogorovSmirnov";  label: qsTr("Kolmogorov-Smirnov")}
-			CheckBox{ name: "cramerVonMisses";    label: qsTr("Cramér–von Mises")  }
-			CheckBox{ name: "andersonDarling";    label: qsTr("Anderson-Darling")  }
-			//CheckBox{ name: "shapiroWilk";        label: qsTr("Shapiro-Wilk")      }
-		}
-
-	}
+	LD.LDAssessFit { enabled: mainWindow.dataAvailable }
 }
