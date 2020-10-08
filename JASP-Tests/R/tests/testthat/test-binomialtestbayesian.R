@@ -33,7 +33,7 @@ test_that("Prior posterior plots match", {
   expect_equal_plots(testPlot, "prior-posterior-2", dir="BinomialTestBayesian")
 })
 
-test_that("Sequential analysis plots match", {
+test_that("Sequential analysis plots match - BF10", {
   options <- jasptools::analysisOptions("BinomialTestBayesian")
   options$priorA <- 1
   options$priorB <- 1
@@ -47,4 +47,21 @@ test_that("Sequential analysis plots match", {
 
   testPlot <- results[["state"]][["figures"]][[2]][["obj"]]
   expect_equal_plots(testPlot, "sequential-analysis-2", dir="BinomialTestBayesian")
+})
+
+test_that("Sequential analysis plots match - BF01", {
+  options <- jasptools::analysisOptions("BinomialTestBayesian")
+  options$priorA <- 1
+  options$priorB <- 1
+  options$testValue <- 0.5
+  options$variables <- "contBinom"
+  options$plotSequentialAnalysis <- TRUE
+  options$bayesFactorType <- "BF01"
+  results <- jasptools::run("BinomialTestBayesian", "test.csv", options)
+  
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "sequential-analysis-3", dir="BinomialTestBayesian")
+  
+  testPlot <- results[["state"]][["figures"]][[2]][["obj"]]
+  expect_equal_plots(testPlot, "sequential-analysis-4", dir="BinomialTestBayesian")
 })
