@@ -1097,7 +1097,7 @@ msgstr ""
 "%s vereist dat de afhankelijke variabele hoger dan 0 en lager dan 1 is."
 
 msgid "%s requires that the number of trials variable is an integer."
-msgstr "%s vereist dat de steekproefgrootte variable een geheel getal is."
+msgstr "%s vereist dat de steekproefgrootte variabele een geheel getal is."
 
 msgid ""
 "%s requires that the dependent variable is proportion of successes out of "
