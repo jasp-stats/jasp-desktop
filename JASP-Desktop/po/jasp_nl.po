@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-10-08 14:08+0000\n"
+"PO-Revision-Date: 2020-10-08 15:48+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
@@ -20189,7 +20189,7 @@ msgstr "<br><strong>Puntbediening</br></strong></strong>"
 
 msgctxt "Flexplot|"
 msgid "<strong>Visual Statistics</strong>"
-msgstr "<strong> Visuele Statistieken </strong>"
+msgstr "<strong>Visuele Statistieken</strong>"
 
 msgctxt "Flexplot|"
 msgid "<br><strong>Other Plot Controls</strong>"
@@ -20205,7 +20205,7 @@ msgstr "Grafiek Labels"
 
 msgctxt "Flexplot|"
 msgid "<br><strong>Plot Labels</strong>"
-msgstr "<br> <strong> Grafiek Labels </strong>"
+msgstr "<br> <strong>Grafiek Labels</strong>"
 
 #, qt-format
 msgctxt "BoundQMLTextInput|"
