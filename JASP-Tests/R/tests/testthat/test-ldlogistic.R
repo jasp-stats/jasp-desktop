@@ -3,6 +3,7 @@ context("Discover Distributions - Logistic")
 options <- jasptools::analysisOptions("LDlogistic")
 options$andersonDarling <- TRUE
 options$ciInterval <- TRUE
+options$ciIntervalInterval <- 0.95
 options$cramerVonMisses <- TRUE
 options$estCDF <- TRUE
 options$estPDF <- TRUE
@@ -12,6 +13,7 @@ options$histogram <- FALSE
 options$kolmogorovSmirnov <- TRUE
 options$methodMLE <- TRUE
 options$newVariableName <- ""
+options$outputEstimates <- TRUE
 options$outputSE <- TRUE
 options$parsSupportMoments <- TRUE
 options$plotCDF <- TRUE

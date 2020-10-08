@@ -7,6 +7,7 @@ options$alpha <- 3
 options$andersonDarling <- TRUE
 options$beta <- 2
 options$ciInterval <- TRUE
+options$ciIntervalInterval <- 0.95
 options$cramerVonMisses <- TRUE
 options$ecdf <- TRUE
 options$estCDF <- TRUE
@@ -19,6 +20,7 @@ options$kolmogorovSmirnov <- TRUE
 options$methodMLE <- TRUE
 options$moments <- TRUE
 options$newVariableName <- ""
+options$outputEstimates <- TRUE
 options$outputSE <- TRUE
 options$parsSupportMoments <- TRUE
 options$plotCDF <- TRUE
