@@ -160,7 +160,7 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
   d <- data.frame(x = knnValues, y = knnDistances)
 
   xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x, min.n = 4)
-  yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, d$y, options[["eps"]]), min.n = 4)
 
   yKnee <- try(findCutoff(knnValues, knnDistances, method = "curvature")[["y"]])
   if (inherits(yKnee, "try-error")) # this can cause a stackoverflow, in which case we abort and don't add it
