@@ -5,6 +5,7 @@ options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = 
   containsColumn = TRUE))
 options$andersonDarling <- TRUE
 options$ciInterval <- TRUE
+options$ciIntervalInterval <- 0.95
 options$cramerVonMisses <- TRUE
 options$ecdf <- TRUE
 options$estCDF <- TRUE
@@ -17,6 +18,7 @@ options$kolmogorovSmirnov <- TRUE
 options$methodMLE <- TRUE
 options$moments <- TRUE
 options$newVariableName <- ""
+options$outputEstimates <- TRUE
 options$outputSE <- TRUE
 options$parsSupportMoments <- TRUE
 options$plotCDF <- TRUE

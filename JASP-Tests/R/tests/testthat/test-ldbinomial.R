@@ -5,6 +5,7 @@ options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = 
   containsColumn = TRUE))
 options$chiSquare <- TRUE
 options$ciInterval <- TRUE
+options$ciIntervalInterval <- 0.95
 options$ecdf <- TRUE
 options$estCDF <- TRUE
 options$estPMF <- TRUE
@@ -18,6 +19,7 @@ options$methodMLE <- TRUE
 options$min <- 3
 options$moments <- TRUE
 options$newVariableName <- ""
+options$outputEstimates <- TRUE
 options$outputSE <- TRUE
 options$parsSupportMoments <- TRUE
 options$plotCMF <- TRUE

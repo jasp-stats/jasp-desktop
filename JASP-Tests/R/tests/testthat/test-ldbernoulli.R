@@ -4,6 +4,7 @@ options <- jasptools::analysisOptions("LDbernoulli")
 options$.meta <- list(newVariableName = list(containsColumn = TRUE), variable = list(
   containsColumn = TRUE))
 options$ciInterval <- TRUE
+options$ciIntervalInterval <- 0.95
 options$estCDF <- TRUE
 options$estPMF <- TRUE
 options$explanatoryText <- TRUE
@@ -11,10 +12,12 @@ options$histogram <- TRUE
 options$max <- 0
 options$methodMLE <- TRUE
 options$newVariableName <- ""
+options$outputEstimates <- TRUE
 options$outputSE <- TRUE
 options$parsSupportMoments <- TRUE
 options$plotCMF <- TRUE
 options$ppplot <- TRUE
+options$qqplot <- TRUE
 options$summary <- TRUE
 options$variable <- "Bern10(p=0.5)"
 set.seed(1)

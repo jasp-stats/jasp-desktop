@@ -6,8 +6,10 @@ options$parsSupportMoments <- TRUE
 options$plotCDF <- TRUE
 options$plotQF <- TRUE
 options$methodMLE <- TRUE
+options$outputEstimates <- TRUE
 options$outputSE <- TRUE
 options$ciInterval <- TRUE
+options$ciIntervalInterval <- 0.95
 options$estPDF <- TRUE
 options$qqplot <- TRUE
 options$estCDF <- TRUE
