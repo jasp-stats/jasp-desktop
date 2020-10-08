@@ -776,6 +776,20 @@
           "associated_datafile": "Anscombe's Quartet.csv"
         },
         {
+          "name": "The Datasaurus Dozen (Long)",
+          "path": "The Datasaurus Dozen (Long).jasp",
+          "description": "Twelve variations of two variables that have the same summary statistics but different distributions provide a quirkier example of the lesson traditionally taught by the Anscombe's Quartet. <br><br>  The example JASP file demonstrates the use of inspecting data thoroughly using plots. <br><br> <i>Synthetic data from Matejka & Fitzmaurice (2018). Data set included in R (Locke & McGowan, 2018).</i>",
+          "kind": "file",
+          "associated_datafile": "The Datasaurus Dozen (Long).csv"
+        },
+        {
+          "name": "The Datasaurus Dozen (Wide)",
+          "path": "The Datasaurus Dozen (Wide).jasp",
+          "description": "Twelve variations of two variables that have the same summary statistics but different distributions provide a quirkier example of the lesson traditionally taught by the Anscbome's Quartet. <br><br>  The example JASP file demonstrates the use of inspecting data thoroughly using plots. <br><br> <i>Synthetic data from Matejka & Fitzmaurice (2018). Data set included in R (Locke & McGowan, 2018).</i>",
+          "kind": "file",
+          "associated_datafile": "The Datasaurus Dozen (Wide).csv"
+        },
+        {
           "name": "Missing Data",
           "path": "Missing Data.jasp",
           "description": "Synthetic data with missing values. <br><br> The example JASP file demonstrates the use of missing values.<br><br> <i>Fictional data from Alexander Ly.<\/i>",
