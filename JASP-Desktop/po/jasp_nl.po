@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2020-10-08 08:11+0000\n"
+"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
+"nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -20001,239 +20007,224 @@ msgctxt "Description|"
 msgid "Visual Modeling"
 msgstr "Visueel modelleren"
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "Color palette"
 msgstr "Kleurenpalet"
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "Colorblind"
 msgstr "Kleurenblind"
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "Colorblind Alt."
-msgstr "Kleurenblind alt."
+msgstr "Kleurenblind Alt."
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "Viridis"
 msgstr "Viridis"
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "ggplot2"
 msgstr "ggplot2"
 
-#, fuzzy
 msgctxt "LSbinomialestimation|"
 msgid "Gray"
 msgstr "Grijs"
 
 msgctxt "LSbinomialestimation|"
 msgid "Model "
-msgstr ""
+msgstr "Model "
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "Color palette"
 msgstr "Kleurenpalet"
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "Colorblind"
 msgstr "Kleurenblind"
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "Colorblind Alt."
-msgstr "Kleurenblind alt."
+msgstr "Kleurenblind Alt."
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "Viridis"
 msgstr "Viridis"
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "ggplot2"
 msgstr "ggplot2"
 
-#, fuzzy
 msgctxt "LSbinomialtesting|"
 msgid "Gray"
 msgstr "Grijs"
 
 msgctxt "LSbinomialtesting|"
 msgid "Hypothesis "
-msgstr ""
+msgstr "Hypothese "
 
 msgctxt "LSbinomialdatainput|"
 msgid "Input Type"
-msgstr ""
+msgstr "Invoer Type"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Count Data"
-msgstr ""
+msgstr "Tellingen"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Comma-separated Sequence of Observations"
-msgstr ""
+msgstr "Door komma's gescheiden reeks waarnemingen"
 
-#, fuzzy
 msgctxt "LSestimationinference|"
 msgid "Mass"
 msgstr "Massa"
 
 msgctxt "LSestimationinference|"
 msgid "Lower"
-msgstr ""
+msgstr "Onder"
 
 msgctxt "LSestimationinference|"
 msgid "Upper"
-msgstr ""
+msgstr "Boven"
 
 msgctxt "LSestimationpredictions|"
 msgid "Posterior Prediction"
-msgstr ""
+msgstr "Posterior Voorspelling"
 
 msgctxt "LSestimationpredictions|"
 msgid "Number of future trials"
-msgstr ""
+msgstr "Aantal toekomstige proeven"
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "Mass"
 msgstr "Massa"
 
 msgctxt "LSestimationpredictions|"
 msgid "Lower"
-msgstr ""
+msgstr "Onder"
 
 msgctxt "LSestimationpredictions|"
 msgid "Upper"
-msgstr ""
+msgstr "Boven"
 
 msgctxt "LSestimationsequential|"
 msgid "Sequential Analysis"
-msgstr ""
+msgstr "Sequentiële Analyse"
 
-#, fuzzy
 msgctxt "LSestimationsequential|"
 msgid "Mass"
 msgstr "Massa"
 
 msgctxt "LSestimationsequential|"
 msgid "Lower"
-msgstr ""
+msgstr "Onder"
 
 msgctxt "LSestimationsequential|"
 msgid "Upper"
-msgstr ""
+msgstr "Boven"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Bayes Factor"
-msgstr "Bayes factor"
+msgstr "Bayes Factor"
 
 msgctxt "LStestinginference|"
 msgid "vs. rest"
-msgstr ""
+msgstr "vs. rest"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Mass"
 msgstr "Massa"
 
 msgctxt "LStestinginference|"
 msgid "Lower"
-msgstr ""
+msgstr "Onder"
 
 msgctxt "LStestinginference|"
 msgid "Upper"
-msgstr ""
+msgstr "Boven"
 
 msgctxt "LStestingpredictions|"
 msgid "Posterior Prediction"
-msgstr ""
+msgstr "Posterior Voorspelling"
 
 msgctxt "LStestingpredictions|"
 msgid "Number of future trials"
-msgstr ""
+msgstr "Aantal toekomstige proeven"
 
-#, fuzzy
 msgctxt "LStestingpredictions|"
 msgid "Mass"
 msgstr "Massa"
 
 msgctxt "LStestingpredictions|"
 msgid "Lower"
-msgstr ""
+msgstr "Onder"
 
 msgctxt "LStestingpredictions|"
 msgid "Upper"
-msgstr ""
+msgstr "Boven"
 
 msgctxt "LStestingsequential|"
 msgid "Sequential Analysis"
-msgstr ""
+msgstr "Sequentiële analyse"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Cohen's d / t-statistics & N / SE"
-msgstr ""
+msgstr "Cohen's d / t-statistiek & (N / SE)"
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Correlation"
 msgstr "Correlatie"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Odds Ratio"
-msgstr ""
+msgstr "Odds Ratio"
 
-#, fuzzy
 msgctxt "SelectionModels|"
 msgid "Correlation"
 msgstr "Correlatie"
 
 msgctxt "Flexplot|"
 msgid "<br><strong>Point controls</br></strong>"
-msgstr ""
+msgstr "<br><strong>Puntbediening</br></strong></strong>"
 
 msgctxt "Flexplot|"
 msgid "<strong>Visual Statistics</strong>"
-msgstr ""
+msgstr "<strong> Visuele Statistieken </strong>"
 
 msgctxt "Flexplot|"
 msgid "<br><strong>Other Plot Controls</strong>"
-msgstr ""
+msgstr "<br><strong>Andere plot opties</strong>"
 
 msgctxt "Flexplot|"
 msgid "Color Palette"
-msgstr ""
+msgstr "Kleurenpalet"
 
 msgctxt "Flexplot|"
 msgid "Plot Labels"
-msgstr ""
+msgstr "Grafiek Labels"
 
 msgctxt "Flexplot|"
 msgid "<br><strong>Plot Labels</strong>"
-msgstr ""
+msgstr "<br> <strong> Grafiek Labels </strong>"
 
 #, qt-format
 msgctxt "BoundQMLTextInput|"
 msgid "The value (%1) must be %2"
-msgstr ""
+msgstr "De waarde (%1) moet %2 zijn"
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
 msgstr ""
+"Een nieuwe map kan niet worden toegevoegd aan de projectenlijst.<br>Om een "
+"nieuw project toe te voegen kunt u gebruik maken van de online OSF-diensten."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
+"Een nieuwe map kan niet worden toegevoegd aan een lijst van "
+"projectgegevensleveranciers.<br>Om een nieuwe gegevensleverancier (bijv. "
+"google drive) te voegen kunt u gebruik maken van de online OSF-diensten."
