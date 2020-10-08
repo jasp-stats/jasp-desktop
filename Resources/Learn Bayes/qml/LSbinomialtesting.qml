@@ -134,6 +134,7 @@ Form {
 							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
+							controlXOffset:		6 * preferencesModel.uiScale
 						}
 						FormulaField
 						{

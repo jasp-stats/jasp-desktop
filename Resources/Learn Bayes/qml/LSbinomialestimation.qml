@@ -116,6 +116,7 @@ Form {
 							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true
+							controlXOffset:		6 * preferencesModel.uiScale
 						}
 						FormulaField
 						{
@@ -137,7 +138,7 @@ Form {
 							value:				"0.5"
 							min:				0
 							max:				1
-							inclusive:			JASP.None
+							inclusive:			JASP.MinMax
 							fieldWidth:			70 * preferencesModel.uiScale
 							useExternalBorder:	false
 							showBorder:			true

@@ -27,6 +27,6 @@
 <polyline points='667.39,518.63 667.39,510.13 ' style='stroke-width: 0.64; stroke-linecap: butt;' />
 <text x='161.63' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='9.45px' lengthAdjust='spacingAndGlyphs'>0</text>
 <text x='662.66' y='537.31' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='9.45px' lengthAdjust='spacingAndGlyphs'>1</text>
-<text x='343.18' y='567.49' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='147.39px' lengthAdjust='spacingAndGlyphs'>Sample proportions</text>
+<text x='306.33' y='567.49' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='221.08px' lengthAdjust='spacingAndGlyphs'>Predicted sample proportions</text>
 <text x='246.34' y='11.70' style='font-size: 17.00px; font-family: Liberation Sans;' textLength='341.06px' lengthAdjust='spacingAndGlyphs'>LSbinomialestimation-prediction-plot-0-vol6-1</text>
 </svg>
