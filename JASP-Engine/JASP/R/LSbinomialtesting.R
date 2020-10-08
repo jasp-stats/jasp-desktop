@@ -21,15 +21,19 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
   ready <- .readyBinomialLS(options)
   
   # introductory text
-  if (options[["introText"]]).introductoryTextLS(jaspResults, options, "binTest")
+  if (options[["introText"]])
+    .introductoryTextLS(jaspResults, options, "binTest")
   
   # evaluate the expressions in priors
-  if (ready["priors"])options[["priors"]] <- .evaluatePriors(options[["priors"]])
+  if (ready["priors"])
+    options[["priors"]] <- .evaluatePriors(options[["priors"]])
   # scale the prior probabilities
-  if (ready["priors"])options[["priors"]] <- .scalePriors(options[["priors"]])
+  if (ready["priors"])
+    options[["priors"]] <- .scalePriors(options[["priors"]])
   
   # load, check, transform and process data
-  if (ready["data"])data <- .readDataBinomialLS(dataset, options)
+  if (ready["data"])
+    data <- .readDataBinomialLS(dataset, options)
   
   # data summary table ifrequested (but not ifthe data counts were added directly)
   .summaryBinomialLS(jaspResults, data, options, "binTest")
@@ -40,44 +44,60 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
   
   # prior parameter
   if (options[["plotsPrior"]]){
-    if (options[["plotsPriorType"]] != "conditional").plotsSimpleBinomial2LS(jaspResults, data, ready, options, type = "Prior")
-    if (options[["plotsPriorType"]] == "conditional").plotsIndividualBinomial2LS(jaspResults, data, ready, options, type = "Prior")
+    if (options[["plotsPriorType"]] != "conditional")
+      .plotsSimpleBinomial2LS(jaspResults, data, ready, options, type = "Prior")
+    if (options[["plotsPriorType"]] == "conditional")
+      .plotsIndividualBinomial2LS(jaspResults, data, ready, options, type = "Prior")
   }
   
   # prior predictive
   if (options[["plotsPredictions"]]){
-    if (options[["plotsPredictionType"]] != "conditional").plotsPredictionsBinomial2LS(jaspResults, data, ready, options, type = "Prior")
-    if (options[["plotsPredictionType"]] == "conditional").plotsPredictionsIndividualBinomial2LS(jaspResults, data, ready, options, type = "Prior")
-    if (options[["predictionPlotTable"]]).tablePredictions2LS(jaspResults, data, ready, options, type = "Prior")
+    if (options[["plotsPredictionType"]] != "conditional")
+      .plotsPredictionsBinomial2LS(jaspResults, data, ready, options, type = "Prior")
+    if (options[["plotsPredictionType"]] == "conditional")
+      .plotsPredictionsIndividualBinomial2LS(jaspResults, data, ready, options, type = "Prior")
+    if (options[["predictionPlotTable"]])
+      .tablePredictions2LS(jaspResults, data, ready, options, type = "Prior")
   }
   
   # predictive accuracy
-  if (options[["plotsPredictiveAccuracy"]]).plotsPredAccuracyBinomial2LS(jaspResults, data, ready, options)
+  if (options[["plotsPredictiveAccuracy"]])
+    .plotsPredAccuracyBinomial2LS(jaspResults, data, ready, options)
   
   # posterior parameter
   if (options[["plotsPosterior"]]){
-    if (options[["plotsPosteriorType"]] != "conditional").plotsSimpleBinomial2LS(jaspResults, data, ready, options, type = "Posterior")
-    if (options[["plotsPosteriorType"]] == "conditional").plotsIndividualBinomial2LS(jaspResults, data, ready, options, type = "Posterior")
+    if (options[["plotsPosteriorType"]] != "conditional")
+      .plotsSimpleBinomial2LS(jaspResults, data, ready, options, type = "Posterior")
+    if (options[["plotsPosteriorType"]] == "conditional")
+      .plotsIndividualBinomial2LS(jaspResults, data, ready, options, type = "Posterior")
   }
   
   # prior and posterior
   if (options[["plotsBoth"]]){
-    if (options[["plotsBothType"]] != "conditional").plotsBothBinomialLS2(jaspResults, data, ready, options)
-    if (options[["plotsBothType"]] == "conditional").plotsBothIndividualBinomial2LS(jaspResults, data, ready, options)
+    if (options[["plotsBothType"]] != "conditional")
+      .plotsBothBinomialLS2(jaspResults, data, ready, options)
+    if (options[["plotsBothType"]] == "conditional")
+      .plotsBothIndividualBinomial2LS(jaspResults, data, ready, options)
   }
   
   
   ### sequential analysis
-  if (options[["plotsIterative"]]).plotsIterativeOverlyingBinomial2LS(jaspResults, data, ready, options)
-  if (options[["plotsIterative"]] && options[["plotsIterativeUpdatingTable"]]).tableIterativeBinomial2LS(jaspResults, data, ready, options)
+  if (options[["plotsIterative"]])
+    .plotsIterativeOverlyingBinomial2LS(jaspResults, data, ready, options)
+  if (options[["plotsIterative"]] && options[["plotsIterativeUpdatingTable"]])
+    .tableIterativeBinomial2LS(jaspResults, data, ready, options)
   
   
   ### posterior predictive
-  if (options[["predictionTable"]]).tablePredictionsBinomialLS2(jaspResults, data, ready, options)
+  if (options[["predictionTable"]])
+    .tablePredictionsBinomialLS2(jaspResults, data, ready, options)
   if (options[["plotsPredictionsPost"]]){
-    if (options[["plotsPredictionPostType"]] != "conditional").plotsPredictionsBinomial2LS(jaspResults, data, ready, options, type = "Posterior")
-    if (options[["plotsPredictionPostType"]] == "conditional").plotsPredictionsIndividualBinomial2LS(jaspResults, data, ready, options, type = "Posterior")
-    if (options[["predictionPostPlotTable"]]).tablePredictions2LS(jaspResults, data, ready, options, type = "Posterior")
+    if (options[["plotsPredictionPostType"]] != "conditional")
+      .plotsPredictionsBinomial2LS(jaspResults, data, ready, options, type = "Posterior")
+    if (options[["plotsPredictionPostType"]] == "conditional")
+      .plotsPredictionsIndividualBinomial2LS(jaspResults, data, ready, options, type = "Posterior")
+    if (options[["predictionPostPlotTable"]])
+      .tablePredictions2LS(jaspResults, data, ready, options, type = "Posterior")
   }
   
   return()

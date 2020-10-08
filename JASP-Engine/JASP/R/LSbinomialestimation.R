@@ -23,13 +23,16 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   ready <- .readyBinomialLS(options)
   
   # introductory text
-  if (options[["introText"]]).introductoryTextLS(jaspResults, options, "binEst")
+  if (options[["introText"]])
+    .introductoryTextLS(jaspResults, options, "binEst")
   
   # evaluate the expressions in priors
-  if (ready["priors"])options[["priors"]] <- .evaluatePriors(options[["priors"]])
+  if (ready["priors"])
+    options[["priors"]] <- .evaluatePriors(options[["priors"]])
   
   # load, check, transform and process data
-  if (ready["data"])data <- .readDataBinomialLS(dataset, options)
+  if (ready["data"])
+    data <- .readDataBinomialLS(dataset, options)
   
   # data summary table ifrequested (but not ifthe data counts were added directly)
   .summaryBinomialLS(jaspResults, data, options, "binEst")
@@ -41,50 +44,65 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   
   # prior
   if (options[["plotsPrior"]]){
-    if (options[["plotsPriorType"]] != "individual").plotsSimpleBinomialLS(jaspResults, data, ready, options, type = "Prior")
-    if (options[["plotsPriorType"]] == "individual").plotsIndividualBinomialLS(jaspResults, data, ready, options, type = "Prior")
+    if (options[["plotsPriorType"]] != "individual")
+      .plotsSimpleBinomialLS(jaspResults, data, ready, options, type = "Prior")
+    if (options[["plotsPriorType"]] == "individual")
+      .plotsIndividualBinomialLS(jaspResults, data, ready, options, type = "Prior")
   }
   
   # posterior
   if (options[["plotsPosterior"]]){
-    if (options[["plotsPosteriorType"]] != "individual").plotsSimpleBinomialLS(jaspResults, data, ready, options, type = "Posterior")
+    if (options[["plotsPosteriorType"]] != "individual")
+      .plotsSimpleBinomialLS(jaspResults, data, ready, options, type = "Posterior")
     if (options[["plotsPosteriorType"]] == "individual").plotsIndividualBinomialLS(jaspResults, data, ready, options, type = "Posterior")
   }
   
   # prior and posterior
-  if (options[["plotsBoth"]]).plotsBothBinomialLS(jaspResults, data, ready, options)
+  if (options[["plotsBoth"]])
+    .plotsBothBinomialLS(jaspResults, data, ready, options)
   
   ### sequential analysis
   # point estimate
   if (options[["plotsIterative"]]){
-    if (options[["plotsIterativeType"]] == "overlying").plotsIterativeOverlyingBinomialLS(jaspResults, data, ready, options)
-    if (options[["plotsIterativeType"]] == "stacked").plotsIterativeStackedBinomialLS(jaspResults, data, ready, options)
+    if (options[["plotsIterativeType"]] == "overlying")
+      .plotsIterativeOverlyingBinomialLS(jaspResults, data, ready, options)
+    if (options[["plotsIterativeType"]] == "stacked")
+      .plotsIterativeStackedBinomialLS(jaspResults, data, ready, options)
   }
   
   # point estimate table
-  if (options[["plotsIterative"]] && options[["plotsIterativeUpdatingTable"]]).tableIterativeBinomialLS(jaspResults, data, ready, options)
+  if (options[["plotsIterative"]] && options[["plotsIterativeUpdatingTable"]])
+    .tableIterativeBinomialLS(jaspResults, data, ready, options)
   
   # interval
   if (options[["plotsIterativeInterval"]]){
-    if (options[["plotsIterativeIntervalType"]] == "overlying").plotsIterativeIntervalOverlyingBinomialLS(jaspResults, data, ready, options)
-    if (options[["plotsIterativeIntervalType"]] == "stacked").plotsIterativeIntervalStackedBinomialLS(jaspResults, data, ready, options)
+    if (options[["plotsIterativeIntervalType"]] == "overlying")
+      .plotsIterativeIntervalOverlyingBinomialLS(jaspResults, data, ready, options)
+    if (options[["plotsIterativeIntervalType"]] == "stacked")
+      .plotsIterativeIntervalStackedBinomialLS(jaspResults, data, ready, options)
   }
   
   # interval estimate table
-  if (options[["plotsIterativeInterval"]] && options[["plotsIterativeIntervalUpdatingTable"]]).tableIterativeIntervalBinomialLS(jaspResults, data, ready, options)
+  if (options[["plotsIterativeInterval"]] && options[["plotsIterativeIntervalUpdatingTable"]])
+    .tableIterativeIntervalBinomialLS(jaspResults, data, ready, options)
   
   # posterior updating table
-  if (options[["doIterative"]] && options[["dataType"]] != "dataCounts").estimatesSequentialBinomialLS(jaspResults, data, ready, options)
+  if (options[["doIterative"]] && options[["dataType"]] != "dataCounts")
+    .estimatesSequentialBinomialLS(jaspResults, data, ready, options)
   
   
   ### prediction
-  if (options[["predictionTable"]]).tablePredictionsBinomialLS(jaspResults, data, ready, options)
+  if (options[["predictionTable"]])
+    .tablePredictionsBinomialLS(jaspResults, data, ready, options)
   
   # plot
   if (options[["plotsPredictions"]]){
-    if (options[["predictionPlotType"]] != "individual").plotsPredictionsBinomialLS(jaspResults, data, ready, options)
-    if (options[["predictionPlotType"]] == "individual").plotsPredictionsIndividualBinomialLS(jaspResults, data, ready, options)
-    if (options[["predictionPlotTable"]]).tablePosteriorPredictions(jaspResults, data, ready, options)
+    if (options[["predictionPlotType"]] != "individual")
+      .plotsPredictionsBinomialLS(jaspResults, data, ready, options)
+    if (options[["predictionPlotType"]] == "individual")
+      .plotsPredictionsIndividualBinomialLS(jaspResults, data, ready, options)
+    if (options[["predictionPlotTable"]])
+      .tablePosteriorPredictions(jaspResults, data, ready, options)
   }
   
   return()
