@@ -376,7 +376,10 @@
 ### MLE stuff ----
 .ldMLE <- function(jaspResults, variable, options, ready, errors, fillTable, ...){
   ready <- ready && isFALSE(errors)
-  if(! options$methodMLE) return()
+  # override MLE option if any assess fit method is requested
+  options[["methodMLE"]] <- options[["methodMLE"]] || .ldAnyAssessFitRequested(options)
+  # jump out if mle not desired
+  if(!options[["methodMLE"]]) return()
   
   mleContainer <- .ldGetFitContainer(jaspResults, options, "mleContainer", gettext("Maximum likelihood"), 7, errors)
     
@@ -395,6 +398,19 @@
   # fit plots
   .ldFitPlots(mleFitContainer, mleResults$fitdist$estimate, options, variable, ready)
 }
+
+.ldAnyAssessFitRequested <- function(options) {
+  isTRUE(options[["kolmogorovSmirnov"]]) ||
+  isTRUE(options[["cramerVonMisses"]]) ||
+  isTRUE(options[["andersonDarling"]]) ||
+  isTRUE(options[["shapiroWilk"]]) ||
+  isTRUE(options[["chiSquare"]]) ||
+  isTRUE(options[["estPDF"]]) ||
+  isTRUE(options[["estPMF"]]) ||
+  isTRUE(options[["estCDF"]]) ||
+  isTRUE(options[["qqplot"]]) ||
+  isTRUE(options[["ppplot"]])
+} 
 
 .ldMLEResults <- function(mleContainer, variable, options, ready, distName){
   if(!ready) return()
