@@ -201,7 +201,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     
     if(is.null(jaspResults[["DotPlots"]])) {
       jaspResults[["DotPlots"]] <- createJaspContainer(gettext("Dot Plots"))
-      jaspResults[["DotPlots"]]$dependOn(c("plotVariables", "splitby", "descriptivesDotPlot"))
+      jaspResults[["DotPlots"]]$dependOn(c("splitby", "descriptivesDotPlot"))
       jaspResults[["DotPlots"]]$position <- 11
     }
     
@@ -209,12 +209,10 @@ Descriptives <- function(jaspResults, dataset, options) {
     
     for (var in variables) {
       if(is.null(dotPlots[[var]])) {
-        if (makeSplit) {
-          dotPlots[[var]] <- .descriptivesDotPlots(dataset = splitDat.factors, options = options, variable = var)
-        } else {
-          dotPlots[[var]] <- .descriptivesDotPlots(dataset = dataset.factors, options = options, variable = var)
-          
-        }
+          dotPlots[[var]] <- .descriptivesDotPlots(dataset = if(makeSplit) splitDat.factors else dataset.factors,
+                                                   options = options,
+                                                   variable = var)
+
       }
     }
   }
@@ -1086,19 +1084,18 @@ Descriptives <- function(jaspResults, dataset, options) {
     # return a collection
     split <- names(dataset)
     
-    plotResult <- createJaspContainer(title=variable)
-    plotResult$dependOn(options="splitby", optionContainsValue=list(variables=variable))
+    plotResult <- createJaspContainer(title = variable)
+    plotResult$dependOn(optionContainsValue = list(variables = variable))
     
-    for (l in split) {
-      plotResult[[l]] <- .descriptivesDotPlots_SubFunc(dataset=dataset[[l]], variable=variable, title = l)
-    }
+    for (l in split)
+      plotResult[[l]] <- .descriptivesDotPlots_SubFunc(dataset = dataset[[l]], variable = variable, title = l)
     
     return(plotResult)
     
   }else{
     
-    dotplot <- .descriptivesDotPlots_SubFunc(dataset=dataset, variable=variable, title = variable)
-    dotplot$dependOn(options="splitby", optionContainsValue=list(variables=variable))
+    dotplot <- .descriptivesDotPlots_SubFunc(dataset = dataset, variable = variable, title = variable)
+    dotplot$dependOn(options="splitby", optionContainsValue = list(variables = variable))
     
     return(dotplot)
   }
@@ -1110,17 +1107,27 @@ Descriptives <- function(jaspResults, dataset, options) {
   
   x <- na.omit(dataset[[.v(variable)]])
   
-  yheight <- max(as.data.frame(table(x))$Freq)
-  
+  if (is.factor(x)){
+    tb <- as.data.frame(table(x))
+    p <- ggplot2::ggplot(data = data.frame(x = x), ggplot2::aes(x = x)) + 
+      ggplot2::geom_dotplot(binaxis = 'x', stackdir = 'up') + 
+      ggplot2::xlab(variable) +
+      ggplot2::ylab("") +
+      ggplot2::scale_x_discrete(limits = factor(tb[, 1]))
+    
+    p <- JASPgraphs::themeJasp(p, yAxis = FALSE) + ggplot2::theme(axis.ticks.y = ggplot2::element_blank(),
+                                                                  axis.title.y = ggplot2::element_blank(),
+                                                                    axis.text.y = ggplot2::element_blank())
+  } else {
   p <- ggplot2::ggplot(data = data.frame(x = x), ggplot2::aes(x = x)) + 
-    ggplot2::geom_dotplot(binaxis='x', stackdir='up') + 
+    ggplot2::geom_dotplot(binaxis = 'x', stackdir='up') + 
     ggplot2::xlab(variable) +
     ggplot2::ylab("")
   
   p <- JASPgraphs::themeJasp(p, yAxis = FALSE) + ggplot2::theme(axis.ticks.y = ggplot2::element_blank(),
                                                                 axis.title.y = ggplot2::element_blank(),
                                                                 axis.text.y = ggplot2::element_blank())
-  
+  }
   
   dotplot$plotObject <- p
   
