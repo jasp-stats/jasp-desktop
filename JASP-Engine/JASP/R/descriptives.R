@@ -808,29 +808,30 @@ Descriptives <- function(jaspResults, dataset, options) {
 
 
 .descriptivesFrequencyPlots <- function(dataset, options, variable) {
+  
   if (options$splitby != "" ) {
     # return a collection
     split <- names(dataset)
 
     plotResult <- createJaspContainer(title=variable)
-    plotResult$dependOn(options="splitby", optionContainsValue=list(variables=variable))
+    plotResult$dependOn(options=c("splitby", "binWidthType"), optionContainsValue=list(variables=variable))
 
     for (l in split) {
-      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset[[l]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l)
+      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset[[l]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l, binWidthType = options$binWidthType)
       plotResult[[l]]$dependOn(optionsFromObject=plotResult)
     }
 
     return(plotResult)
   } else {
     column <- dataset[[.v(variable)]]
-    aPlot <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset, variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = variable)
-    aPlot$dependOn(options="splitby", optionContainsValue=list(variables=variable))
+    aPlot <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset, variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = variable, binWidthType = options$binWidthType)
+    aPlot$dependOn(options=c("splitby", "binWidthType"), optionContainsValue=list(variables=variable))
 
     return(aPlot)
   }
 }
 
-.descriptivesFrequencyPlots_SubFunc <- function(dataset, variable, width, height, displayDensity, title) {
+.descriptivesFrequencyPlots_SubFunc <- function(dataset, variable, width, height, displayDensity, title, binWidthType = NA) {
   freqPlot <- createJaspPlot(title=title, width=width, height=height)
   
   errorMessage <- .descriptivesCheckPlotErrors(dataset, variable, obsAmount = "< 3")
@@ -841,7 +842,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   else if (length(column) > 0 && is.factor(column))
     freqPlot$plotObject <- .barplotJASP(column, variable)
   else if (length(column) > 0 && !is.factor(column))
-    freqPlot$plotObject <- .plotMarginal(column, variableName=variable, displayDensity = displayDensity)
+    freqPlot$plotObject <- .plotMarginal(column, variableName=variable, displayDensity = displayDensity, binWidthType = binWidthType)
   
   return(freqPlot)
 }
@@ -977,14 +978,21 @@ Descriptives <- function(jaspResults, dataset, options) {
 
 
 .plotMarginal <- function(column, variableName,
-                          rugs = FALSE, displayDensity = FALSE) {
+                          rugs = FALSE, displayDensity = FALSE, binWidthType) {
   column <- as.numeric(column)
   variable <- na.omit(column)
 
   if(length(variable) == 0)
     return(NULL)
+  
+  if(binWidthType == "doane"){
+    sigma.g1 <- sqrt((6*(length(variable) - 2)) / ((length(variable) + 1)*(length(variable) + 3)))
+    g1 <- mean(abs(variable)^3)
+    k <- 1 + log2(length(variable)) + log2(1 + (g1 / sigma.g1))
+    binWidthType <- k
+  }
 
-  h <- hist(variable, plot = FALSE)
+  h <- hist(variable, plot = FALSE, breaks = binWidthType) # change options here
 
   if (!displayDensity)
     yhigh <- max(h$counts)
