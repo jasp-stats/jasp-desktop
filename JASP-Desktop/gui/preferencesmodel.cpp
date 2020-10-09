@@ -462,21 +462,10 @@ void PreferencesModel::resetRememberedModules(bool setToRemember)
 	setModulesRemembered(!setToRemember ? QStringList({}) : RibbonModel::singleton()->getModulesEnabled());
 }
 
-bool PreferencesModel::lcCtypeCheck() const
-{
-	return Settings::getWinLcCtypeSetting() == winLcCtypeSetting::check;
-}
-
-bool PreferencesModel::lcCtypeToC() const
-{
-	return Settings::getWinLcCtypeSetting() == winLcCtypeSetting::alwaysC;
-}
-
-void PreferencesModel::setLcCtypeToC(bool newVal)
+void PreferencesModel::setLcCtypeWin(int lcCtypeWin)
 {
 	winLcCtypeSetting	current = Settings::getWinLcCtypeSetting(),
-						newSet	= newVal ? winLcCtypeSetting::alwaysC : winLcCtypeSetting::neverC; 
-	
+						newSet	= winLcCtypeSetting(lcCtypeWin);
 	
 	if(current != newSet)
 	{
@@ -487,25 +476,11 @@ void PreferencesModel::setLcCtypeToC(bool newVal)
 	}
 }
 
-void PreferencesModel::setLcCtypeCheck(bool newVal)
+int PreferencesModel::lcCtypeWin() const
 {
-	if(!newVal)
-	{
-		setLcCtypeToC(true);
-		return;
-	}
+	winLcCtypeSetting	current = Settings::getWinLcCtypeSetting();
 	
-	winLcCtypeSetting	current = Settings::getWinLcCtypeSetting(),
-						newSet	= winLcCtypeSetting::check; 
-	
-	
-	if(current != newSet)
-	{
-		Settings::setValue(Settings::LC_CTYPE_C_WIN, winLcCtypeSettingToQString(newSet));
-		
-		emit lcCtypeChanged();
-		emit restartAllEngines();
-	}
+	return static_cast<int>(current);
 }
 
 bool PreferencesModel::setLC_CTYPE_C() const
@@ -514,8 +489,10 @@ bool PreferencesModel::setLC_CTYPE_C() const
 	throw std::runtime_error("PreferencesModel::setLC_CTYPE_C() should only be used on Windows.");
 #endif
 	
-	if(lcCtypeCheck())
-		return pathIsSafeForR(AppDirs::rHome());
-	
-	return lcCtypeToC();
+	switch(Settings::getWinLcCtypeSetting())
+	{
+	case winLcCtypeSetting::check:		return pathIsSafeForR(AppDirs::rHome());
+	case winLcCtypeSetting::neverC:		return false;
+	case winLcCtypeSetting::alwaysC:	return true;
+	}
 }

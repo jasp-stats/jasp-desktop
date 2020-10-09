@@ -45,8 +45,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
 	Q_PROPERTY(bool			disableAnimations		READ disableAnimations			WRITE setDisableAnimations			NOTIFY disableAnimationsChanged			)
 	Q_PROPERTY(bool			generateMarkdown		READ generateMarkdown			WRITE setGenerateMarkdown			NOTIFY generateMarkdownChanged			)
-	Q_PROPERTY(bool			lcCtypeCheck			READ lcCtypeCheck				WRITE setLcCtypeCheck				NOTIFY lcCtypeChanged					)
-	Q_PROPERTY(bool			lcCtypeToC				READ lcCtypeToC					WRITE setLcCtypeToC					NOTIFY lcCtypeChanged					)
+	Q_PROPERTY(int			lcCtypeWin			READ lcCtypeWin				WRITE setLcCtypeWin				NOTIFY lcCtypeChanged					)
 	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
 	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
@@ -60,8 +59,7 @@ class PreferencesModel : public QObject
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
-
-
+	
 	explicit	 PreferencesModel(QObject *parent = 0);
 	~PreferencesModel() { _singleton = nullptr;}
 
@@ -107,13 +105,13 @@ public:
 	QString		defaultResultFont()			const;
 	QString		defaultInterfaceFont()		const;
 	QString		defaultCodeFont()			const;
-	bool		lcCtypeCheck()				const;	
-	bool		lcCtypeToC()				const;
 	bool		setLC_CTYPE_C()				const;
+	int			lcCtypeWin()				const;
 
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
+	
 	
 public slots:
 	void setUiScale(					double		uiScale);
@@ -160,8 +158,7 @@ public slots:
 	void setGenerateMarkdown(			bool		generateMarkdown);
 	void onCurrentThemeNameChanged(		QString		newThemeName);
 	void resetRememberedModules(		bool		clear);
-	void setLcCtypeCheck(				bool		lcCtypeCheck);	
-	void setLcCtypeToC(					bool		lcCtypeToC);
+	void setLcCtypeWin(					int			lcCtypeWin);
 	
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);
@@ -204,6 +201,7 @@ signals:
 	void animationsOnChanged();
 	void lcCtypeChanged();
 	void restartAllEngines();
+	
 	
 private:
 	static PreferencesModel * _singleton;
