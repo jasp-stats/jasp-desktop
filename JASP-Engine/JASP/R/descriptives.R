@@ -1095,7 +1095,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   }else{
     
     dotplot <- .descriptivesDotPlots_SubFunc(dataset = dataset, variable = variable, title = variable)
-    dotplot$dependOn(options="splitby", optionContainsValue = list(variables = variable))
+    dotplot$dependOn(optionContainsValue = list(variables = variable))
     
     return(dotplot)
   }
