@@ -47,4 +47,6 @@ private:
 	static const char*	_nullStream;
 };
 
+std::ostream & operator<<(std::ostream & os, const std::wstring & wStr);
+
 #endif // LOG_H

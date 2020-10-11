@@ -1,7 +1,7 @@
 Package: JASP
 Type: Package
 Title: JASP analyses
-Version: 0.9.2
+Version: 0.14.0
 Author: JASP Team
 Maintainer: Bruno Boutin <B.Boutin@uva.nl>
 Description: Package contains the JASP Bayesian and Frequentist analyses.

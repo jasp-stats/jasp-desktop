@@ -19,7 +19,7 @@
 #include "jaspResults/src/jaspResults.h"
 #include <fstream>
 #include "columnencoder.h"
-
+#include "boost/nowide/system.hpp"
 
 static const	std::string NullString			= "null";
 static			std::string lastErrorMessage	= "";
@@ -72,13 +72,12 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
 	logFlushDef logFlushFunction, logWriteDef logWriteFunction)
 {
-
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
 	_sendToDesktop			= sendToDesktopFunction;
-
+	
 	rinside = new RInside();
-
+	
 	RInside &rInside = rinside->instance();
 
 	requestJaspResultsFileSourceCB				= callbacks->requestJaspResultsFileSourceCB;
@@ -117,11 +116,11 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".returnDataFrame"]					= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
 	rInside[".columnIsOrdinal"]					= Rcpp::InternalFunction(&jaspRCPP_columnIsOrdinal);
 	rInside[".columnIsNominal"]					= Rcpp::InternalFunction(&jaspRCPP_columnIsNominal);
-	rInside[".encodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnName);
-	rInside[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnName);
-	rInside[".columnIsNominalText"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsNominalText);
 	rInside[".encodeColNamesLax"]				= Rcpp::InternalFunction(&jaspRCPP_encodeAllColumnNames);
 	rInside[".decodeColNamesLax"]				= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
+	rInside[".columnIsNominalText"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsNominalText);
+	rInside[".encodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnName);
+	rInside[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnName);
 	rInside[".setColumnDataAsScale"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rInside[".readFullDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
 	rInside[".readDatasetToEndNative"]			= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
@@ -139,7 +138,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
 
 	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!'); sink();");
-
 
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
 	char baseCitation[200];
@@ -170,9 +168,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_parseEvalQNT("initEnvironment()");
 
+	
 	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')"));
-
-	std::cout << "R_HOME: " << _R_HOME << std::endl;
+	jaspRCPP_logString("R_HOME is: " + _R_HOME);
+	
 
 #ifdef __APPLE__
 	jaspRCPP_parseEvalQNT("options(jags.moddir=paste0(Sys.getenv('JAGS_HOME'),'/modules-4'))");
@@ -209,7 +208,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	SEXP results;
 
 	RInside &		rInside			= rinside->instance();
-
+	
 	rInside["name"]				= CSTRING_TO_R(name);
 	rInside["title"]			= CSTRING_TO_R(title);
 	rInside["options"]			= CSTRING_TO_R(options);
@@ -333,7 +332,7 @@ int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 		"tryCatch(\n"
 		"	{ returnVal <- eval(parse(text=.filterCode)) }, \n"
 		"	warning	= function(w) { .setRWarning(toString(w$message))	}, \n"
-		"	error	= function(e) { .setRError(toString(e$message))	}\n"
+		"	error	= function(e) { .setRError(  toString(e$message))	}  \n"
 		"); \n"
 		"returnVal");
 
@@ -1092,9 +1091,9 @@ void jaspRCPP_logString(const std::string & logThis)
 	jaspRCPP_Connection::write(logThis.c_str(), 0, logThis.size(), nullptr);
 }
 
-void jaspRCPP_parseEvalPreface(const std::string & code)
+void jaspRCPP_parseEvalPreface(const std::string & code, const char * msg = "Evaluating R-code:\n")
 {
-	jaspRCPP_logString("Evaluating R-code:\n");
+	jaspRCPP_logString(msg);
 	jaspRCPP_Connection::write(code.c_str(), 0, code.size(), nullptr);
 	jaspRCPP_logString("\nOutput:\n");
 }
@@ -1106,7 +1105,9 @@ std::string __sinkMe(const std::string code)
 
 void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
 {
-	if(preface)	jaspRCPP_parseEvalPreface(code);
+	if(preface)	
+		jaspRCPP_parseEvalPreface(code);
+	
 	rinside->parseEvalQNT(__sinkMe(code));
 	jaspRCPP_logString("\n");
 
@@ -1115,12 +1116,14 @@ void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
 
 RInside::Proxy jaspRCPP_parseEval(const std::string & code,	bool preface)
 {
-	if(preface)	jaspRCPP_parseEvalPreface(code);
+	if(preface)	
+		jaspRCPP_parseEvalPreface(code);
+	
 	RInside::Proxy returnthis = rinside->parseEvalNT(__sinkMe(code)); //Not throwing is nice actually!
 	jaspRCPP_logString("\n");
 
 	rinside->parseEvalQNT("sink();"); //back to normal!
-
+	
 	return returnthis;
 }
 
@@ -1139,7 +1142,9 @@ std::string _jaspRCPP_System(std::string cmd)
 	cmd = '"' + cmd + '"'; // See: https://stackoverflow.com/questions/2642551/windows-c-system-call-with-spaces-in-command
 #endif
 
-	system(cmd.c_str());
+	jaspRCPP_parseEvalPreface(cmd, "Evaluating system call:\n");
+	
+	boost::nowide::system(cmd.c_str());
 
 	std::ifstream readLog(path);
 	std::stringstream out;
@@ -1149,6 +1154,8 @@ std::string _jaspRCPP_System(std::string cmd)
 		out << readLog.rdbuf();
 		readLog.close();
 	}
+	else
+		out << "\nProblem reading output-log...\n";
 
 	return out.str();
 }
@@ -1174,8 +1181,6 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 
 	std::string codestr = Rcpp::as<std::string>(code),
 				command = R + " --slave -e \"" + codestr + "\"";
-
-	jaspRCPP_parseEvalPreface(command);
 
 	std::string out = _jaspRCPP_System(command);
 

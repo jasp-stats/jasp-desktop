@@ -11,7 +11,7 @@ namespace Modules
 
 Description::Description(QQuickItem *parent) : QQuickItem(parent)
 {
-	Log::log() << "Description created!" << std::endl;
+	//Log::log() << "Description created!" << std::endl;
 	setVisible(false);
 
 	setUpDelayedUpdate();
@@ -53,7 +53,7 @@ void Description::delayedUpdate()
 
 	_timer.start(); //Will restart the timer if already running
 
-	Log::log() << "Description::delayedUpdate() called and timer (re)started." << std::endl;
+	//Log::log() << "Description::delayedUpdate() called and timer (re)started." << std::endl;
 }
 
 void Description::connectChangesToDelay()
@@ -111,7 +111,7 @@ void Description::setTitle(QString title)
 	_title = title;
 	emit titleChanged(_title);
 
-	Log::log() << "Title of Description '" << _name << "' changes to '" << _title << "'!" << std::endl;
+	//Log::log() << "Title of Description '" << _name << "' changes to '" << _title << "'!" << std::endl;
 }
 
 void Description::setIcon(QString icon)

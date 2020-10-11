@@ -10,6 +10,7 @@
 #include "boost/iostreams/stream.hpp"
 #include "boost/iostreams/device/null.hpp"
 #include "boost/nowide/fstream.hpp"
+#include <codecvt>
 
 typedef boost::nowide::ofstream bofstream; //Use this to work around problems on Windows with utf8 conversion
 
@@ -176,3 +177,10 @@ std::ostream & Log::log(bool addTimestamp)
 		return _logFile;
 	}
 }
+
+std::ostream & operator<<(std::ostream & os, const std::wstring & wStr)
+{
+	static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> strCvt;
+	
+	return os << strCvt.to_bytes(wStr);
+};

@@ -86,7 +86,8 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false);
 void freeRBridgeColumnType(RBridgeColumnType* columnsRequested, size_t colMax);
 
-std::string _jaspRCPP_System(std::string cmd);
+std::string  _jaspRCPP_System (std::string  cmd);
+
 void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames);
 
 columnType jaspRCPP_getColumnType(std::string columnName);

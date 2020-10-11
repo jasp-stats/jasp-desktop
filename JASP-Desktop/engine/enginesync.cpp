@@ -38,6 +38,7 @@
 #include "gui/preferencesmodel.h"
 #include "utilities/appdirs.h"
 #include "log.h"
+#include "utilities/qutils.h"
 
 
 using namespace boost::interprocess;
@@ -382,9 +383,9 @@ void EngineSync::processAnalysisRequests()
 QProcess * EngineSync::startSlaveProcess(int no)
 {
 	JASPTIMER_SCOPE(EngineSync::startSlaveProcess);
-	QDir programDir			= QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();
+	QDir programDir			= AppDirs::programDir();
+	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-	QString engineExe		= QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absoluteFilePath("JASPEngine");
 
 	QStringList args;
 	args << QString::number(no) << QString::number(ProcessInfo::currentPID()) << QString::fromStdString(Log::logFileNameBase) << QString::fromStdString(Log::whereStr());
@@ -392,29 +393,10 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	env.insert("TMPDIR", tq(TempFiles::createTmpFolder()));
 	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warnings
 
-
-
-#ifdef _WIN32
-	QString rHomePath = programDir.absoluteFilePath("R");
-#elif defined(__APPLE__)
-    QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
-#else //linux
-
-#ifndef R_HOME
-	QString rHomePath = programDir.absoluteFilePath("R/lib/libR.so");
-	if (QFileInfo(rHomePath).exists() == false)
-#ifdef FLATPAK_USED
-		rHomePath = "/app/lib64/R/"; //Tools/flatpak/org.jaspstats.JASP.json also sets R_HOME to /app/lib64 for 32bits...
-#else
-		rHomePath = "/usr/lib/R/";
-#endif
-#else
-	QString rHomePath = QDir::isRelativePath(R_HOME) ? programDir.absoluteFilePath(R_HOME) : R_HOME;
-#endif
-#endif
+	QString rHomePath = AppDirs::rHome();
 
 	QDir rHome(rHomePath);
-	Log::log() << "R_HOME set to " << rHomePath.toStdString() << std::endl;
+	
 
 	QString custom_R_library = "";
 #ifdef JASP_DEBUG
@@ -423,31 +405,41 @@ QProcess * EngineSync::startSlaveProcess(int no)
 		custom_R_library = ":" + env.value("JASP_R_Library");
 #endif
 #ifdef _WIN32
-	//Windows has *special needs*, so let's make sure it can understand R_HOME later on. Not sure if it is necessary but it couldn't hurt, right?
-	QString rHomeWin = "";
-
-	for(auto & kar : rHome.absolutePath())
-		rHomeWin += kar != '/' ? QString(kar) : "\\";
-
 #if defined(ARCH_32)
 #define ARCH_SUBPATH "i386"
 #else
 #define ARCH_SUBPATH "x64"
 #endif
+	
+	auto longToShort = [](QString in) -> QString { return QString::fromStdWString(Utils::getShortPathWin(in.toStdWString())); };
+	
+	QString PATH		= longToShort(programDir.absoluteFilePath("R/library/RInside/libs/" ARCH_SUBPATH)) + ";" + longToShort(programDir.absoluteFilePath("R/library/Rcpp/libs/" ARCH_SUBPATH)) + ";" + longToShort(programDir.absoluteFilePath("R/bin/" ARCH_SUBPATH)) + ";" + longToShort(env.value("PATH")),
+			R_HOME		= longToShort(rHome.absolutePath()),
+			JAGS_HOME	= longToShort(programDir.absoluteFilePath("JAGS/"));
+	
+	Log::log() << "R_HOME set to " << R_HOME << std::endl;
 
-	env.insert("PATH",				programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH) + ";" + env.value("PATH")) ;
-	env.insert("R_HOME",			rHomeWin);
-	env.insert("JAGS_HOME",			programDir.absoluteFilePath("JAGS/"));
-
+	env.insert("PATH",				PATH);
+	env.insert("R_HOME",			R_HOME);
+	env.insert("JAGS_HOME",			JAGS_HOME);
+	
 #undef ARCH_SUBPATH
 
-	env.insert("R_LIBS",			rHomeWin + "\\library");
+	env.insert("R_LIBS",			 R_HOME + "/library");
 
 	env.insert("R_ENVIRON",			"something-which-doesn't-exist");
 	env.insert("R_PROFILE",			"something-which-doesn't-exist");
 	env.insert("R_PROFILE_USER",	"something-which-doesn't-exist");
 	env.insert("R_ENVIRON_USER",	"something-which-doesn't-exist");
-	env.insert("LC_CTYPE",			"C"); //To force utf-8 output from gettext et al. This is most likely only necessary on Windows but it can't hurt right?
+	
+	if(PreferencesModel::prefs()->setLC_CTYPE_C())
+	{
+		Log::log() << "Setting LC_CTYPE to C!" << std::endl;
+		env.insert("LC_CTYPE",			"C"); //To force utf-8 output from gettext et al.
+	}
+	else
+		Log::log() << "Leaving LC_CTYPE at systemdefault" << std::endl;
+					  
 
 #elif __APPLE__
 

@@ -66,6 +66,7 @@ public slots:
 	void		cleanUpAfterClose();
 	void		filterDone(int requestID);
 	std::string	currentState() const;
+	void		haveYouTriedTurningItOffAndOnAgain() { stopEngines(); restartEngines(); } // https://www.youtube.com/watch?v=DPqdyoTpyEs
 	
 signals:
 	void	processNewFilterResult(const std::vector<bool> & filterResult, int requestID);

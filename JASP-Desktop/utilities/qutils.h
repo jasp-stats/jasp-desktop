@@ -50,6 +50,8 @@ QString encrypt(const QString &input);
 QString decrypt(const QString &input);
 QString getSortableTimestamp();
 
+bool pathIsSafeForR(const QString & checkThis);
+
 const char * QProcessErrorToString(QProcess::ProcessError error);
 
 inline std::ostream& operator<<(std::ostream& os, const QString & qStr) { return (os << qStr.toStdString()); }

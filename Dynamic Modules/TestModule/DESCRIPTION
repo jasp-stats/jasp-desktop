@@ -2,10 +2,9 @@ Package: TestModule
 Type: Package
 Title: Wait for it... Module for JASP
 Version: 1.0.0
-Date: 2020-08-31
+Date: 2020-09-21
 Author: Joris Goosen
 Website: 
 Maintainer: Joris Goosen <Joris@JorisGoosen.nl>
 Description: A module to test stuff with.
 License: Whatever
-Imports: svglite, stringi, prophet

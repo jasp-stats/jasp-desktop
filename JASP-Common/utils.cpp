@@ -19,7 +19,8 @@
 #include "utils.h"
 
 #ifdef _WIN32
-#include "windows.h"
+#include <windows.h>
+#include <fileapi.h>
 #else
 #include <sys/stat.h>
 #include <utime.h>
@@ -438,3 +439,35 @@ void Utils::convertEscapedUnicodeToUTF8(std::string& inputStr)
 		begin = inputStr.begin() + pos;
 	}
 }
+
+#ifdef _WIN32
+std::wstring Utils::getShortPathWin(const std::wstring & longPath) 
+{
+	//See: https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getshortpathnamew
+	long     length = 0;
+    TCHAR*   buffer = NULL;
+
+// First obtain the size needed by passing NULL and 0.
+
+    length = GetShortPathName(longPath.c_str(), NULL, 0);
+    if (length == 0) 
+		return longPath;
+
+// Dynamically allocate the correct size 
+// (terminating null char was included in length)
+
+    buffer = new TCHAR[length];
+
+// Now simply call again using same long path.
+
+    length = GetShortPathName(longPath.c_str(), buffer, length);
+    if (length == 0)
+		return longPath;
+
+	std::wstring shortPath(buffer, length);
+    
+    delete [] buffer;
+	
+	return shortPath;	 
+}
+#endif

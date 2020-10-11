@@ -7,6 +7,9 @@
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
 #include "modules/ribbonmodel.h"
+#include "utilities/qutils.h"
+#include "utilities/appdirs.h"
+#include "enginedefinitions.h"
 
 using namespace std;
 
@@ -457,4 +460,39 @@ QString PreferencesModel::defaultCodeFont() const
 void PreferencesModel::resetRememberedModules(bool setToRemember) 
 {
 	setModulesRemembered(!setToRemember ? QStringList({}) : RibbonModel::singleton()->getModulesEnabled());
+}
+
+void PreferencesModel::setLcCtypeWin(int lcCtypeWin)
+{
+	winLcCtypeSetting	current = Settings::getWinLcCtypeSetting(),
+						newSet	= winLcCtypeSetting(lcCtypeWin);
+	
+	if(current != newSet)
+	{
+		Settings::setValue(Settings::LC_CTYPE_C_WIN, winLcCtypeSettingToQString(newSet));
+		
+		emit lcCtypeChanged();
+		emit restartAllEngines();
+	}
+}
+
+int PreferencesModel::lcCtypeWin() const
+{
+	winLcCtypeSetting	current = Settings::getWinLcCtypeSetting();
+	
+	return static_cast<int>(current);
+}
+
+bool PreferencesModel::setLC_CTYPE_C() const
+{
+#ifndef _WIN32
+	throw std::runtime_error("PreferencesModel::setLC_CTYPE_C() should only be used on Windows.");
+#endif
+	
+	switch(Settings::getWinLcCtypeSetting())
+	{
+	case winLcCtypeSetting::check:		return pathIsSafeForR(AppDirs::rHome());
+	case winLcCtypeSetting::neverC:		return false;
+	case winLcCtypeSetting::alwaysC:	return true;
+	}
 }
