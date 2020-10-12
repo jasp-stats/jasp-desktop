@@ -162,7 +162,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"JASPgraphs\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"modules\"))");
-
 	jaspRCPP_parseEvalQNT("source(file='writeImage.R')");
 	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')");
 
@@ -175,6 +174,9 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 #ifdef __APPLE__
 	jaspRCPP_parseEvalQNT("options(jags.moddir=paste0(Sys.getenv('JAGS_HOME'),'/modules-4'))");
+	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"rjags\"))");
+	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"runjags\"))");
+	jaspRCPP_parseEvalQNT("runjags::runjags.options(jagspath=Sys.getenv('JAGS_HOME'))");
 #endif
 
 	jaspRCPP_parseEvalQNT(".automaticColumnEncDecoding <- "
