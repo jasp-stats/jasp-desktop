@@ -388,7 +388,12 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 		_editableColumn = -1;
 	}
 	else if (_colNames.size() > _editableColumn)
-		_colNames[_editableColumn]	= colName;
+	{
+		if (_editableColumn >= 0)
+			_colNames[_editableColumn]	= colName;
+		else
+			Log::log() << "Warning: editableColumn is negative!" << std::endl;
+	}
 
 	_colName = colName;
 	emit colNameChanged(_colName);
