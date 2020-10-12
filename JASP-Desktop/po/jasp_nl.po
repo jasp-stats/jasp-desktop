@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2020-10-13 09:11+0000\n"
-"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
+"Last-Translator: Johnny van Doorn <johnnydoorn@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
 "Language: nl\n"
@@ -20235,7 +20235,7 @@ msgstr "Tijdelijke Oplossingen voor Windows"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE"
-msgstr ""
+msgstr "Laat JASP de beste instellingen raden voor LC-CTYPE"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
