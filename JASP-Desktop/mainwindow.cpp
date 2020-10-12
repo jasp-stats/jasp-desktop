@@ -1422,7 +1422,7 @@ void MainWindow::startDataEditor(QString path)
 	}
 	else
 #endif
-		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
+		if (!QDesktopServices::openUrl(QUrl::fromLocalFile(path)))
 			MessageForwarder::showWarning(tr("Start Spreadsheet Editor"), tr("No default spreadsheet editor for file %1. Use Preferences to set the right editor.").arg(fileInfo.completeBaseName()));
 
 }
