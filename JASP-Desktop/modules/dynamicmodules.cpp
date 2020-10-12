@@ -26,6 +26,7 @@
 #include "utilities/qutils.h"
 #include "log.h"
 #include "modules/description/description.h"
+#include "gui/preferencesmodel.h"
 
 DynamicModules * DynamicModules::_singleton = nullptr;
 
@@ -366,8 +367,17 @@ void DynamicModules::uninstallJASPModule(const QString & moduleName)
 	uninstallModule(moduleName.toStdString());
 }
 
+void DynamicModules::checkAndWarnForLC_CTYPE_C() const
+{
+	if(PreferencesModel::prefs()->setLC_CTYPE_C() && !pathIsSafeForR(AppDirs::modulesDir()))
+		MessageForwarder::showWarning(tr("Path cannot be handled by R"), tr("You are trying to install a module but because the path '%1' contains non-ascii characters (or a space) R might have some trouble installing there. If the installation of this module fails you can work around this by changing your username (or making a new username) that only contains ascii-characters and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences->Advanced->DeveloperMode."));
+	
+}
+
 void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 {
+	checkAndWarnForLC_CTYPE_C();
+	
 	if(!QFile(moduleZipFilename).exists())
 	{
 		MessageForwarder::showWarning(tr("Cannot install module because %1 does not exist.").arg(moduleZipFilename));
@@ -405,6 +415,8 @@ void DynamicModules::installJASPDeveloperModule()
 		MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));
 		return;
 	}
+	
+	checkAndWarnForLC_CTYPE_C();
 
 	setDevelopersModuleInstallButtonEnabled(false);
 

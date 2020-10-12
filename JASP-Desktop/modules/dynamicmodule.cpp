@@ -239,7 +239,7 @@ Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, Q
 
 	QQmlComponent descriptionQmlComp(ctxt->engine());
 
-	Log::log() << "Setting url to '" << url.toString() << "' for Description.qml.\n" << std::endl;// data: '" << descriptionTxt << "'\n"<< std::endl;
+	//Log::log() << "Setting url to '" << url.toString() << "' for Description.qml.\n" << std::endl;// data: '" << descriptionTxt << "'\n"<< std::endl;
 
 	descriptionQmlComp.setData(descriptionTxt.toUtf8(), url);
 

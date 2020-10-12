@@ -554,11 +554,12 @@
   
   allTests <- c("kolmogorovSmirnov", "cramerVonMisses", "andersonDarling", "shapiroWilk", "chiSquare")
   tests <- allTests[allTests %in% names(options)]
-  testNames <- c(gettext("Kolmogorov-Smirnov"),
-                 gettext("Cramér-von Mises"),
-                 gettext("Anderson-Darling"),
-                 gettext("Shapiro-Wilk"),
-                 gettext("Chi-square"))[allTests %in% names(options)]
+  testNames <- c(  gettext("Kolmogorov-Smirnov"),
+                          ("Cramér-von Mises"  ), #Removed the gettext here to avoid unicode mess, don't copy this to module-repo!
+                   gettext("Anderson-Darling"  ),
+                   gettext("Shapiro-Wilk"      ),
+                   gettext("Chi-square"        )
+                )[allTests %in% names(options)]
   
   whichTests <- unlist(options[tests])
   
@@ -1524,7 +1525,7 @@ The fourth part allows you to check the fit of the %5$s to the data.
 
 Blitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> Chapman and Hall/CRC.
 
-Leemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8–9.
+Leemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8-9.
 
 For relationships with other distributions, visit www.math.wm.edu/~leemis/chart/UDR/UDR.html.
 

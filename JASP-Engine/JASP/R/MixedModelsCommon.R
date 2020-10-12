@@ -3154,8 +3154,8 @@
   sprintf(
     ngettext(
       length(terms),
-      "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factor %s does not vary within the levels of random effects grouping factor '%s'.",
-      "All random slopes involving ‘%s’ have been removed for the random effects grouping factor ‘%s’. -- Factors %s do not vary within the levels of random effects grouping factor '%s'.",
+      "All random slopes involving '%s' have been removed for the random effects grouping factor '%s'. -- Factor %s does not vary within the levels of random effects grouping factor '%s'.",
+      "All random slopes involving '%s' have been removed for the random effects grouping factor '%s'. -- Factors %s do not vary within the levels of random effects grouping factor '%s'.",
     ),
     paste0("'", terms, "'", collapse = ", "),
     grouping,
@@ -3167,8 +3167,8 @@
   sprintf(
     ngettext(
       length(terms),
-      "Random slopes of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slopes of '%s' for random effects grouping factor '%s'.",
-      "Random slope of ‘%s’ for the random effects grouping factor ‘%s’ removed -- Too few observations to estimate random slope of '%s' for random effects grouping factor '%s'.",
+      "Random slopes of '%s' for the random effects grouping factor '%s' removed -- Too few observations to estimate random slopes of '%s' for random effects grouping factor '%s'.",
+      "Random slope of '%s' for the random effects grouping factor '%s' removed -- Too few observations to estimate random slope of '%s' for random effects grouping factor '%s'.",
     ),
     paste0("'", terms, "'", collapse = ", "),
     grouping,

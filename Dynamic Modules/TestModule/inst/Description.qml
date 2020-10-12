@@ -37,9 +37,9 @@ Description
 		func:	"testTransposedTableFunc"
 	}
 
-	Package { name: "svglite" }
+	/*Package { name: "svglite" }
 	Package { name: "stringi" }
-	Package { name: "prophet" }
+	Package { name: "prophet" }*/
 
 	Analysis
 	{

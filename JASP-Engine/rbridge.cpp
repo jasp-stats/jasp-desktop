@@ -92,9 +92,9 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 	};
 
 	JASPTIMER_START(jaspRCPP_init);
-	jaspRCPP_init(
-					AppInfo::getBuildYear().c_str(),
-					AppInfo::version.asString().c_str(),
+	
+	jaspRCPP_init(	AppInfo::getBuildYear()		.c_str(),
+					AppInfo::version.asString()	.c_str(),
 					&callbacks,
 					sendToDesktopFunction,
 					pollMessagesFunction,
@@ -102,8 +102,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					_logWriteFunction
 	);
 	JASPTIMER_STOP(jaspRCPP_init);
-	
-	Log::log() << "jaspRCPP_init was run and R_HOME: "<< jaspRCPP_runScriptReturnString("R.home('')") << std::endl;
+
 }
 
 void rbridge_setDataSetSource(			boost::function<DataSet* ()> source)												{	rbridge_dataSetSource			= source; }

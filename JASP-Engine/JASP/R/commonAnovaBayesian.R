@@ -456,7 +456,7 @@
   effectsTable$addColumnInfo(name = "BFInclusion",  title = inclusion.title,         type = "number")
 
   if (options$effectsType == "matchedModels") {
-    effectsTable$addFootnote(gettext("Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."))
+    effectsTable$addFootnote(gettextf("Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Math%st.", "\u00F4"))
   }
   
   if (is.null(model$models)) {
@@ -2735,6 +2735,6 @@
 .BANOVAcitations <- c(
   "MoreyEtal2015"    = "Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
   "RouderEtal2012"   = "Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.",
-  "Jeffreys1938"     = "Jeffreys, H. (1938). Significance tests when several degrees of freedom arise simultaneously. Proceedings of the Royal Society of London. Series A, Mathematical and Physical Sciences, 165, 161–198.",
+  "Jeffreys1938"     = "Jeffreys, H. (1938). Significance tests when several degrees of freedom arise simultaneously. Proceedings of the Royal Society of London. Series A, Mathematical and Physical Sciences, 165, 161-198.",
   "WestfallEtal1997" = "Westfall, P. H., Johnson, W. O., & Utts, J. M. (1997). A Bayesian perspective on the Bonferroni adjustment. Biometrika, 84, 419-427."
 )

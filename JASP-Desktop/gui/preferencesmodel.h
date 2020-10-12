@@ -8,6 +8,8 @@
 
 class JaspTheme;
 
+
+
 class PreferencesModel : public QObject
 {
 	Q_OBJECT
@@ -23,7 +25,6 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			whiteBackground			READ whiteBackground			WRITE setWhiteBackground			NOTIFY whiteBackgroundChanged			)
 	Q_PROPERTY(QString		plotBackground			READ plotBackground				WRITE setPlotBackground				NOTIFY plotBackgroundChanged			)
 	Q_PROPERTY(double		uiScale					READ uiScale					WRITE setUiScale					NOTIFY uiScaleChanged					)
-	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
 	Q_PROPERTY(bool			developerMode			READ developerMode				WRITE setDeveloperMode				NOTIFY developerModeChanged				)
 	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
@@ -37,27 +38,28 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QStringList	modulesRemembered		READ modulesRemembered			WRITE setModulesRemembered			NOTIFY modulesRememberedChanged			)
 	Q_PROPERTY(bool			safeGraphics			READ safeGraphics				WRITE setSafeGraphics				NOTIFY safeGraphicsChanged				)
 	Q_PROPERTY(QString		cranRepoURL				READ cranRepoURL				WRITE setCranRepoURL				NOTIFY cranRepoURLChanged				)
-	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
-	Q_PROPERTY(QString		defaultInterfaceFont	READ defaultInterfaceFont		CONSTANT																	)
 	Q_PROPERTY(QString		interfaceFont			READ interfaceFont				WRITE setInterfaceFont				NOTIFY interfaceFontChanged				)
-	Q_PROPERTY(QString		defaultCodeFont			READ defaultCodeFont			CONSTANT																	)
 	Q_PROPERTY(QString		codeFont				READ codeFont					WRITE setCodeFont					NOTIFY codeFontChanged					)
-	Q_PROPERTY(QString		defaultResultFont		READ defaultResultFont			CONSTANT																	)
 	Q_PROPERTY(QString		resultFont				READ resultFont					WRITE setResultFont					NOTIFY resultFontChanged				)
 	Q_PROPERTY(QString		currentThemeName		READ currentThemeName			WRITE setCurrentThemeName			NOTIFY currentThemeNameChanged			)
-	Q_PROPERTY(QString		languageCode			READ languageCode													NOTIFY languageCodeChanged				)
 	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
 	Q_PROPERTY(bool			disableAnimations		READ disableAnimations			WRITE setDisableAnimations			NOTIFY disableAnimationsChanged			)
-	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
 	Q_PROPERTY(bool			generateMarkdown		READ generateMarkdown			WRITE setGenerateMarkdown			NOTIFY generateMarkdownChanged			)
+	Q_PROPERTY(int			lcCtypeWin			READ lcCtypeWin				WRITE setLcCtypeWin				NOTIFY lcCtypeChanged					)
+	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
+	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
+	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
+	Q_PROPERTY(QString		languageCode			READ languageCode													NOTIFY languageCodeChanged				)
 	Q_PROPERTY(QStringList	allCodeFonts			READ allCodeFonts				CONSTANT																	)
+	Q_PROPERTY(QString		defaultInterfaceFont	READ defaultInterfaceFont		CONSTANT																	)
+	Q_PROPERTY(QString		defaultCodeFont			READ defaultCodeFont			CONSTANT																	)
+	Q_PROPERTY(QString		defaultResultFont		READ defaultResultFont			CONSTANT																	)
 	Q_PROPERTY(QStringList	allInterfaceFonts		READ allInterfaceFonts			CONSTANT																	)
 	Q_PROPERTY(QStringList	allResultFonts			READ allResultFonts				CONSTANT																	)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
-
-
+	
 	explicit	 PreferencesModel(QObject *parent = 0);
 	~PreferencesModel() { _singleton = nullptr;}
 
@@ -103,11 +105,14 @@ public:
 	QString		defaultResultFont()			const;
 	QString		defaultInterfaceFont()		const;
 	QString		defaultCodeFont()			const;
+	bool		setLC_CTYPE_C()				const;
+	int			lcCtypeWin()				const;
 
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
-
+	
+	
 public slots:
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
@@ -151,10 +156,10 @@ public slots:
 	void setUseNativeFileDialog(		bool		useNativeFileDialog);
 	void setDisableAnimations(			bool		disableAnimations);
 	void setGenerateMarkdown(			bool		generateMarkdown);
-
-	void onCurrentThemeNameChanged(QString newThemeName);
-	void resetRememberedModules(bool clear);
-
+	void onCurrentThemeNameChanged(		QString		newThemeName);
+	void resetRememberedModules(		bool		clear);
+	void setLcCtypeWin(					int			lcCtypeWin);
+	
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -193,10 +198,11 @@ signals:
 	void useNativeFileDialogChanged(	bool		useNativeFileDialog);
 	void disableAnimationsChanged(		bool		disableAnimations);
 	void generateMarkdownChanged(		bool		generateMarkdown);
-
 	void animationsOnChanged();
-
-
+	void lcCtypeChanged();
+	void restartAllEngines();
+	
+	
 private:
 	static PreferencesModel * _singleton;
 
