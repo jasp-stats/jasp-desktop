@@ -83,7 +83,7 @@ windows{
 	DEST_LIBFILE = $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_NAME'.lib'
 	DEST_LIBFILE ~= s,/,\\,g
 	
-	QMAKE_POST_LINK     += $$quote(cmd /c copy /Y \"$$SOURCE_LIBFILE\" \"$$DEST_LIBFILE\")
+        QMAKE_POST_LINK     += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
 }
 
 ### making sure that writeImage.R and zzzWrappers.R are available to jaspEngine:
@@ -101,8 +101,8 @@ win32 {
     SRC_WRAPPERS ~= s,/,\\,g
     DEST_DIR_AUX_R ~= s,/,\\,g
 
-    copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y \"$${SRC_WRITE_IMAGE}\" \"$${DEST_DIR_AUX_R}\") $$escape_expand(\n\t)
-    copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y \"$${SRC_WRAPPERS}\"    \"$${DEST_DIR_AUX_R}\")
+    copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y $${SRC_WRITE_IMAGE} $${DEST_DIR_AUX_R}) $$escape_expand(\n\t)
+    copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y $${SRC_WRAPPERS}    $${DEST_DIR_AUX_R})
 }
 
 unix {
