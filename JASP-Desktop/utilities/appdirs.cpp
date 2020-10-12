@@ -123,7 +123,7 @@ QString AppDirs::rHome()
 		rHomePath = "/usr/lib/R/";
 #endif
 #else
-	QString rHomePath = QDir::isRelativePath(R_HOME) ? programDir.absoluteFilePath(R_HOME) : R_HOME;
+	QString rHomePath = QDir::isRelativePath(R_HOME) ? programDir().absoluteFilePath(R_HOME) : R_HOME;
 #endif
 #endif
 	
