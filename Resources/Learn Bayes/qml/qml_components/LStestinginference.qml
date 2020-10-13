@@ -569,14 +569,14 @@ Section
 						defaultValue: 1; min: plotsPosteriorLower.value; max: 1; inclusive: JASP.MinMax
 					}
 
-					DoubleField
+					FormulaField
 					{
 						visible: plotsPosteriorTypeCI.currentText == "support"
 						enabled: plotsPosteriorCI.checked
 						name: "plotsPosteriorBF"
 						label: qsTr("BF")
 						fieldWidth: 50
-						defaultValue: 1; min: 0; inclusive: JASP.None
+						defaultValue: "1"; min: 0; inclusive: JASP.None
 					}
 				}
 
@@ -679,14 +679,14 @@ Section
 						defaultValue: 0.75; min: plotsPosteriorMarginalLower.value; max: 1; inclusive: JASP.MinMax
 					}
 
-					DoubleField
+					FormulaField
 					{
 						visible: plotsPosteriorMarginalType.currentText == "support"
 						enabled: plotsPosteriorMarginalCI.checked
 						name: "plotsPosteriorMarginalBF"
 						label: qsTr("BF")
 						fieldWidth: 50
-						defaultValue: 1; min: 0; inclusive: JASP.None
+						defaultValue: "1"; min: 0; inclusive: JASP.None
 					}
 				}
 

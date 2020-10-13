@@ -17,6 +17,8 @@
 
 LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
   
+  options <- .parseAndStoreFormulaOptions(jaspResults, options, c("plotsPosteriorMarginalBF", "plotsPosteriorBF"))
+  
   # a vector of two, first for data, second for hypotheses
   ready <- .readyBinomialLS(options)
   
@@ -222,7 +224,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
                            ifelse(type == "Prior", "plotsPriorMarginalUpper",        "plotsPosteriorMarginalUpper"),
                            ifelse(type == "Prior", "plotsPriorMarginalEstimate",     "plotsPosteriorMarginalEstimate"),
                            ifelse(type == "Prior", "plotsPriorMarginalEstimateType", "plotsPosteriorMarginalEstimateType"),
-                           if (type == "Posterior") "plotsPosteriorObserved",
+                           if (type == "Posterior") c("plotsPosteriorObserved", "plotsPosteriorMarginalBF"),
                            "colorPalette", "scaleSpikes"))
     
     
@@ -388,7 +390,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
                                ifelse(type == "Prior", "plotsPriorCoverage",     "plotsPosteriorCoverage"),
                                ifelse(type == "Prior", "plotsPriorLower",        "plotsPosteriorLower"),
                                ifelse(type == "Prior", "plotsPriorUpper",        "plotsPosteriorUpper"),
-                               if (type == "Posterior") "plotsPosteriorObserved",
+                               if (type == "Posterior") c("plotsPosteriorObserved", "plotsPosteriorBF"),
                                "scaleSpikes"))
     
     containerPlots[[paste0("plots",type)]] <- plotsIndividual

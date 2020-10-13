@@ -78,14 +78,14 @@ Section
 						defaultValue: 95; min: 0; max: 100; inclusive: JASP.MaxOnly
 					}
 
-					DoubleField
+					FormulaField
 					{
 						visible: plotsIterativeIndividualType.currentText == "support"
 						enabled: plotsIterativeIndividualCI.checked
 						name: "plotsIterativeBF"
 						label: qsTr("BF")
 						fieldWidth: 50
-						defaultValue: 1; min: 0; inclusive: JASP.None
+						defaultValue: "1"; min: 0; inclusive: JASP.None
 					}
 				}
 
