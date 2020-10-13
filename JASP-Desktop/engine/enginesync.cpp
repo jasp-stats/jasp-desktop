@@ -64,6 +64,10 @@ EngineSync::EngineSync(QObject *parent)
 	connect(PreferencesModel::prefs(),	&PreferencesModel::languageCodeChanged,				this,						&EngineSync::settingsChanged					);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::developerModeChanged,			this,						&EngineSync::settingsChanged					);
 
+#ifdef __gnu_linux__
+	//On linux it somehow ignores the newer settings, so we better kill the engines... https://github.com/jasp-stats/jasp-test-release/issues/1046
+	connect(PreferencesModel::prefs(),	&PreferencesModel::languageCodeChanged,				this,						&EngineSync::haveYouTriedTurningItOffAndOnAgain,	Qt::QueuedConnection);
+#endif
     // delay start so as not to increase program start up time 10sec is better than 100ms, because they are orphaned anyway
     QTimer::singleShot(10000, this, &EngineSync::deleteOrphanedTempFiles);
 
