@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-10-08 13:38\n"
 "PO-Revision-Date: 2020-10-13 09:11+0000\n"
-"Last-Translator: Don van den Bergh <donvdbergh@hotmail.com>\n"
+"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "nl/>\n"
 "Language: nl\n"
@@ -297,7 +297,6 @@ msgstr ""
 "De optie 'Voer volgorde in' maakt het mogelijk om handmatig een bepaalde "
 "volgorde van waarnemingen in te voeren. %s"
 
-#, fuzzy
 msgid ""
 "The 'Binomial Estimation' analysis offers two types of prior distributions "
 "for parameter %1$s that represents the underlying population proportion of "
@@ -313,18 +312,20 @@ msgid ""
 "'F' failures, the posterior distribution updates to beta(%3$s + S, %4$s + F) "
 "with a %5$s computed correspondingly.</li></ul>"
 msgstr ""
-"De analyse 'Binomiaal Schatting' biedt twee soorten prior verdelingen voor "
-"parameter %1$s die het onderliggende aandeel van de populatie in de "
-"successen vertegenwoordigt:\n"
+"De 'Binomial Estimation'-analyse biedt twee soorten prior verdelingen voor "
+"parameter %1$s die het onderliggende deel van de successen in de populatie "
+"vertegenwoordigt:\n"
 "        <ul><li>'Puntmassa(%2$s)' - voor het concentreren van alle "
-"waarschijnlijkheidsdensiteiten op één locatie (%2$s). De prior %5$s komt "
-"overeen met de locatie van de puntmassa. De posterior verdeling is weer een "
-"puntmassa op dezelfde locatie en komt overeen met %5$s</li><li>'Beta(%3$s, "
-"%4$s)' - voor het toewijzen van de waarschijnlijkheidsdichtheid over alle "
-"waarden van parameter %1$s volgens een betaverdeling met parameters %3$s en "
-"%4$s. De prior %6$s. Na het observeren van 'S'-successen en 'F'-"
-"mislukkingen, wordt de posterior verdeling aangepast aan de bèta (%3$s + S, "
-"%4$s + F) met een overeenkomstig berekende %5$s.</li></ul>"
+"waarschijnlijkheidsmassa op één punt (%2$s). Dit vertegenwoordigt de prior "
+"overtuiging dat het deel van de populatie is  %2$s met zekerheid. Deze "
+"overtuiging is zo sterk dat geen enkel gegeven deze prior kan ondermijnen. "
+"Vandaar dat de posterior ook een piek is bij %2$s. De prior en de posterior "
+"%5$s komen dan overeen met de locatie van de piek.</li><li>'Beta(%3$s, %4$s)"
+"' - voor het toewijzen van de waarschijnlijkheidsdensiteit over alle waarden "
+"van parameter %1$s volgens een betaverdeling met parameters %3$s en %4$s. De "
+"prior %6$s. Na het observeren van 'S'-successen en 'F'-fouten, wordt de "
+"posterior verdeling aangepast aan de bèta (%3$s + S, %4$s + F) met een "
+"overeenkomstig berekende %5$s.</li></ul>"
 
 #, fuzzy
 msgid ""
@@ -562,7 +563,6 @@ msgstr ""
 "Bovendien maakt het selectievakje 'Waargenomen gegevens' het mogelijk om de "
 "waargenomen %s als een zwart kruisje in de figuur te visualiseren."
 
-#, fuzzy
 msgid ""
 "The 'Conditional' option shows all %1$s for parameter %2$s independently, as "
 "if they were considered as individual models (without the existence of other "
@@ -623,7 +623,6 @@ msgstr ""
 "Bovendien kan de waargenomen gegevenssamenvatting worden gevisualiseerd als "
 "een zwart kruis door het selectievakje '%4$s' aan te vinken."
 
-#, fuzzy
 msgid ""
 "The 'Conditional' option shows all prior and posterior distributions for "
 "parameter %1$s independently, as if they were considered as individual "
@@ -918,7 +917,6 @@ msgstr ""
 "De '%1$s' optie geeft cijfers van voorspellende verdelingen weer op basis "
 "van de posterior verdelingen van de individuele modellen. %2$s"
 
-#, fuzzy
 msgid ""
 "The 'Conditional' option shows all %1$s for parameter %2$s independently, as "
 "if they were considered as individual models (without the existence of other "
@@ -960,7 +958,6 @@ msgstr ""
 "'Voorspellende nauwkeurigheid' heeft betrekking op hoe waarschijnlijk de "
 "gegevens zijn gegeven de hypothesen."
 
-#, fuzzy
 msgid ""
 "The 'Conditional' option shows all predictive accuracies independently, as "
 "if they were considered as individual models (without the existence of other "
@@ -3702,7 +3699,6 @@ msgstr "Het 95%% betrouwbaarheidsinterval moet kleiner zijn dan de Bovengrens."
 msgid "You cannot set all the prior model probabilties to zero."
 msgstr "U kan niet alle prior modelkansen gelijk aan nul zetten."
 
-#, fuzzy
 msgid ""
 "The model could not be fit. Please check the following: Do you have at least "
 "n=2 studies? If the prior is truncated, is it consistent with the data (when "
@@ -4447,7 +4443,6 @@ msgstr "P(incl|data)"
 msgid "P(excl|data)"
 msgstr "P(excl|data)"
 
-#, fuzzy
 msgid ""
 "Compares models that contain the effect to equivalent models stripped of the "
 "effect. Higher-order interactions are excluded. Analysis suggested by "
@@ -4455,7 +4450,7 @@ msgid ""
 msgstr ""
 "Vergelijkt modellen die het effect bevatten met vergelijkbare modellen "
 "waarbij het effect is weggenomen. Hogere-orde interacties zijn niet "
-"meegenomen. Analyse gesuggereerd door Sebastiaan Math%st."
+"meegenomen. Analyse voorgesteld door Sebastiaan Math%st."
 
 msgid ""
 "Some Bayes factors could not be calculated. Inclusion probabilities and "
@@ -7160,14 +7155,14 @@ msgstr "Verwachte aantallen niet ondersteund zonder geobserveerde aantallen."
 msgid "No expected counts entered."
 msgstr "Geen verwachte aantallen ingevoerd."
 
-#, fuzzy
 msgid ""
 "Invalid counts: variable does not match the number of levels of the factor. "
 "When counts are specified, each row of the data set must represent a unique "
 "level of the factor."
 msgstr ""
-"Ongeldig aantallen: de variabele past niet bij het aantal niveaus van de "
-"factor."
+"Ongeldige aantallen: de variabele past niet bij het aantal niveaus van de "
+"factor. Wanneer de aantallen worden gespecificeerd, moet elke rij van de "
+"gegevens een uniek niveau van de factor vertegenwoordigen."
 
 msgid ""
 "Invalid expected counts: variable does not match the number of levels of the "
@@ -8099,15 +8094,13 @@ msgstr "Frequentistische Schaal Validiteitsstatistieken"
 msgid "Point estimate"
 msgstr "Puntschatting"
 
-#, fuzzy
 msgid ""
 "%1$sMcDonald's %2$s estimation method switched to PFA because the CFA\n"
 "                                    did not find a solution."
 msgstr ""
-"%1$sMcDonald's %2$s schattingsmethode is omgeschakeld naar PFA omdat de CFA\n"
+"%1$sMcDonald's %2$s schattingsmethode is overgeschakeld op PFA omdat de CFA\n"
 "                                          geen oplossing vond."
 
-#, fuzzy
 msgid ""
 "%s Some confidence intervals could not be computed because none of the "
 "bootstrapped covariance matrices were invertible."
@@ -8361,9 +8354,8 @@ msgstr "Fout in %s: Alle correlatiecoëfficiënten moeten tussen -1 en 1 liggen.
 msgid "The p-value cutoffs were set incorectly."
 msgstr "De p-afkapwaarden waren verkeerd ingesteld."
 
-#, fuzzy
 msgid "At least one p-value cutoff needs to be set."
-msgstr "Er moet minstens één p-waarde cutoff worden ingesteld."
+msgstr "Er moet minstens één p-afkapwaarde worden ingesteld."
 
 msgid "All p-value cutoffs needs to be between 0 and 1."
 msgstr "Alle p-afkapwaarden moeten tussen 0 en 1 liggen."
@@ -8371,7 +8363,6 @@ msgstr "Alle p-afkapwaarden moeten tussen 0 en 1 liggen."
 msgid "No steps"
 msgstr "Geen stappen"
 
-#, fuzzy
 msgid "95%% Confidence Interval"
 msgstr "95%% Betrouwbaarheidsintervallen"
 
@@ -8457,13 +8448,12 @@ msgstr "Gefixeerde effecten model:"
 msgid "Random effects model:"
 msgstr "Willekeurige effecten model:"
 
-#, fuzzy
 msgid ""
 "%sThe optimizer failed to find a solution. Consider re-specifying the model "
 "or the p-value cutoffs."
 msgstr ""
 "%sDe optimalisator slaagde er niet in een oplossing te vinden. Overweeg om "
-"het model opnieuw te specificeren."
+"het model of de p-afkapwaarden opnieuw te specificeren."
 
 msgid ""
 "%sThe automatic cutoffs selection did not find viable p-value cutoffs. "
@@ -8499,12 +8489,11 @@ msgstr ""
 "positief is. Controleer of u de effectgrootte correct heeft opgegeven of "
 "verander de optie 'Verwachte effectgrootte richting' in het tabblad 'Model'."
 
-#, fuzzy
 msgid ""
 "The analysis requires both 'Effect Size' and 'Effect Size Standard Error' to "
 "be specified."
 msgstr ""
-"De analyse vereist dat zowel 'Effectgrootte' als 'Effectgrootte Standaard "
+"Deze analyse vereist dat zowel 'Effectgrootte' als 'Effectgrootte Standaard "
 "Fout' worden gespecificeerd."
 
 msgid "Only the following one-sided p-value cutoffs were used: %s."
