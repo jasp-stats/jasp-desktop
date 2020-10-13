@@ -139,6 +139,8 @@ Form
             CheckBox {				name: "plotCorrelationMatrix";	label: qsTr("Correlation plots")				}
             CheckBox {				name: "descriptivesQQPlot";		label: qsTr("Q-Q plots")						}
             CheckBox {				name: "descriptivesPiechart";	label: qsTr("Pie charts")						}
+            CheckBox {				name: "Xbarchart";	            label: qsTr("X bar chart")                      }
+            CheckBox {				name: "Rchart";	                label: qsTr("R chart")                          }
         }
 	}
 
