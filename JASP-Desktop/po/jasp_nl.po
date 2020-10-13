@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2020-10-13 09:11+0000\n"
-"Last-Translator: Don van den Bergh <donvdbergh@hotmail.com>\n"
+"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
 "Language: nl\n"
@@ -20286,37 +20286,31 @@ msgstr ""
 "Deze module bevat de standaard frequentistische en Bayesiaanse Mixed-Models "
 "analyses."
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Model"
 msgstr "Model"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Model components"
 msgstr "Model componenten"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Fixed effects"
 msgstr "Gefixeerde effecten"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Random effects"
 msgstr "Willekeurige effecten"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MixedModelsBGLMM|"
 msgid "Random slopes by %1"
 msgstr "Willekeurige hellingen van %1"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Correlations"
 msgstr "Correlaties"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Options"
 msgstr "Opties"
@@ -20325,27 +20319,22 @@ msgctxt "MixedModelsBGLMM|"
 msgid "Warmup"
 msgstr "Opwarming"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Iterations"
 msgstr "Iteraties"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Chains"
 msgstr "Ketens"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Adapt delta"
-msgstr "Aanpassingsdelta"
+msgstr "Pas delta aan"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Maximum treedepth"
-msgstr "Maximale boom diepte"
+msgstr "Maximale boomhoogte"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Show"
 msgstr "Toon"
@@ -20354,27 +20343,22 @@ msgctxt "MixedModelsBGLMM|"
 msgid "Deviations from mean"
 msgstr "Afwijkingen van het gemiddelde"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Marginal means"
-msgstr "Marginale gemiddelden"
+msgstr "Marginale Gemiddeldes"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Fixed effects estimates"
 msgstr "Gefixeerde effecten schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Variance/correlation estimates"
 msgstr "Variantie/correlatie schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "MCMC diagnostics"
 msgstr "MCMC diagnostiek"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Model terms"
 msgstr "Modeltermen"
@@ -20383,42 +20367,34 @@ msgctxt "MixedModelsBGLMM|"
 msgid "Selected term"
 msgstr "Geselecteerde term"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Plot type"
 msgstr "Grafiektype"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Plots"
 msgstr "Grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Model factors"
-msgstr "Model factoren"
+msgstr "Modelfactoren"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Horizontal axis"
 msgstr "Horizontale as"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Separate lines"
-msgstr "Onderscheidende lijnen"
+msgstr "Aparte lijnen"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Separate plots"
-msgstr "Onderscheidende grafieken"
+msgstr "Aparte grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Background data show"
-msgstr "Achtergrond gegevens tonen"
+msgstr "Achtergrondgegevens tonen"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Confidence interval method"
 msgstr "Betrouwbaarheidsintervalmethode"
