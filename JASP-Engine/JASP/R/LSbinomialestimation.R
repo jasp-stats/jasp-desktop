@@ -318,7 +318,8 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
                                ifelse(type == "Prior", "plotsPriorIndividualType", "plotsPosteriorIndividualType"),
                                ifelse(type == "Prior", "plotsPriorCoverage",       "plotsPosteriorCoverage"),
                                ifelse(type == "Prior", "plotsPriorLower",          "plotsPosteriorLower"),
-                               ifelse(type == "Prior", "plotsPriorUpper",          "plotsPosteriorUpper")))
+                               ifelse(type == "Prior", "plotsPriorUpper",          "plotsPosteriorUpper"),
+                               if(type == "Posterior") "plotsPosteriorBF"))
     
     containerPlots[[paste0("plots",type)]] <- plotsIndividual
     
@@ -393,7 +394,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
             dfCI <- .dataSupportBinomialLS(
               tempData,
               options[["priors"]][[i]],
-              options[["plotsPosteriorBF"]]
+              eval(parse(text = options[["plotsPosteriorBF"]]))
             )  
             
           }
@@ -568,7 +569,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
           } else if (options[["plotsIterativeIndividualType"]] == "support"){
             
             tempCIPP <- .dataSupportBinomialLS(tempData, options[["priors"]][[h]],
-                                                options[["plotsIterativeBF"]])
+                                               eval(parse(text = options[["plotsIterativeBF"]])))
             if (nrow(tempCIPP) == 0)tempCIPP <- NULL
             
           }
@@ -974,7 +975,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
                                             options[["plotsIterativeCoverage"]], type = "parameter")
           } else if (options[["plotsIterativeIndividualType"]] == "support"){
             tempCIPP <- .dataSupportBinomialLS(tempData, options[["priors"]][[h]],
-                                                options[["plotsIterativeBF"]])
+                                               eval(parse(text = options[["plotsIterativeBF"]])))
           }
           
           if (all(is.na(tempCIPP[1:2]))){

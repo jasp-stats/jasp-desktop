@@ -681,7 +681,7 @@
     coverage <- 0
   }
   
-  dat       <- data.frame(xStart = lCI, xEnd = uCI, g = "support", coverage = coverage, BF = BF)
+  dat       <- data.frame(xStart = lCI, xEnd = uCI, g = "support", coverage = coverage, BF = round(BF, 2))
   
   return(dat)
 }
@@ -817,7 +817,7 @@
     }
   }
   
-  dat       <- data.frame(xStart = lCI, xEnd = uCI, g = "support", coverage = coverage, BF = BF)
+  dat       <- data.frame(xStart = lCI, xEnd = uCI, g = "support", coverage = coverage, BF = round(BF, 2))
   return(dat)
 }
 .dataProportionBinomialLS   <- function(data){

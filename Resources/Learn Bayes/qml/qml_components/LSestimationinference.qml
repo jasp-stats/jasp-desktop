@@ -193,13 +193,13 @@ Section
 						defaultValue: 0.75; min: plotsPosteriorLower.value; max: 1; inclusive: JASP.MinMax
 					}
 
-					DoubleField{
+					FormulaField{
 						visible: plotsPosteriorIndividualType.currentText == "support"
 						enabled: plotsPosteriorIndividualCI.checked
 						name: "plotsPosteriorBF"
 						label: qsTr("BF")
 						fieldWidth: 50
-						defaultValue: 1; min: 0; inclusive: JASP.None
+						defaultValue: "1"; min: 0; inclusive: JASP.None
 					}
 				}
 
