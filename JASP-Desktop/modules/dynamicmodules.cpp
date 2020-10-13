@@ -369,9 +369,10 @@ void DynamicModules::uninstallJASPModule(const QString & moduleName)
 
 void DynamicModules::checkAndWarnForLC_CTYPE_C() const
 {
+#ifdef _WIN32
 	if(PreferencesModel::prefs()->setLC_CTYPE_C() && !pathIsSafeForR(AppDirs::modulesDir()))
 		MessageForwarder::showWarning(tr("Path cannot be handled by R"), tr("You are trying to install a module but because the path '%1' contains non-ascii characters (or a space) R might have some trouble installing there. If the installation of this module fails you can work around this by changing your username (or making a new username) that only contains ascii-characters and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences->Advanced->DeveloperMode."));
-	
+#endif
 }
 
 void DynamicModules::installJASPModule(const QString & moduleZipFilename)

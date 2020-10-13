@@ -2,7 +2,7 @@ Package: TestModule
 Type: Package
 Title: Wait for it... Module for JASP
 Version: 1.0.0
-Date: 2020-09-21
+Date: 2020-10-13
 Author: Joris Goosen
 Website: 
 Maintainer: Joris Goosen <Joris@JorisGoosen.nl>
