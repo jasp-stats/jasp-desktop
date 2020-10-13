@@ -19,6 +19,8 @@
 
 LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
   
+  options <- .parseAndStoreFormulaOptions(jaspResults, options, c("plotsPosteriorBF", "plotsIterativeBF"))
+  
   # a vector of two, first for data, second for hypotheses
   ready <- .readyBinomialLS(options)
   
@@ -394,7 +396,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
             dfCI <- .dataSupportBinomialLS(
               tempData,
               options[["priors"]][[i]],
-              eval(parse(text = options[["plotsPosteriorBF"]]))
+              options[["plotsPosteriorBF"]]
             )  
             
           }
@@ -569,7 +571,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
           } else if (options[["plotsIterativeIndividualType"]] == "support"){
             
             tempCIPP <- .dataSupportBinomialLS(tempData, options[["priors"]][[h]],
-                                               eval(parse(text = options[["plotsIterativeBF"]])))
+                                               options[["plotsIterativeBF"]])
             if (nrow(tempCIPP) == 0)tempCIPP <- NULL
             
           }
@@ -975,7 +977,7 @@ LSbinomialestimation   <- function(jaspResults, dataset, options, state = NULL){
                                             options[["plotsIterativeCoverage"]], type = "parameter")
           } else if (options[["plotsIterativeIndividualType"]] == "support"){
             tempCIPP <- .dataSupportBinomialLS(tempData, options[["priors"]][[h]],
-                                               eval(parse(text = options[["plotsIterativeBF"]])))
+                                               options[["plotsIterativeBF"]])
           }
           
           if (all(is.na(tempCIPP[1:2]))){

@@ -17,6 +17,8 @@
 
 LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
   
+  options <- .parseAndStoreFormulaOptions(jaspResults, options, c("plotsPosteriorMarginalBF", "plotsPosteriorBF"))
+  
   # a vector of two, first for data, second for hypotheses
   ready <- .readyBinomialLS(options)
   
@@ -347,7 +349,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
           
         } else if (options[[ifelse(type == "Prior", "plotsPriorMarginalType", "plotsPosteriorMarginalType")]] == "support"){
           
-          dfCI <- .marginalSupportBinomialLS(data, options[["priors"]], allLinesNew[[1]], allSpikes, eval(parse(text = options[["plotsPosteriorMarginalBF"]])))
+          dfCI <- .marginalSupportBinomialLS(data, options[["priors"]], allLinesNew[[1]], allSpikes, options[["plotsPosteriorMarginalBF"]])
           
         }
         
@@ -451,7 +453,7 @@ LSbinomialtesting   <- function(jaspResults, dataset, options, state = NULL){
             dfCI <- .dataCustomBinomialLS(tempData, options[["priors"]][[i]], options[[ifelse(type == "Prior", "plotsPriorLower", "plotsPosteriorLower")]],
                                           options[[ifelse(type == "Prior", "plotsPriorUpper", "plotsPosteriorUpper")]], type = "parameter")  
           else if (options[[ifelse(type == "Prior", "plotsPriorTypeCI", "plotsPosteriorTypeCI")]] == "support")
-            dfCI <- .dataSupportBinomialLS(tempData, options[["priors"]][[i]], eval(parse(text = options[["plotsPosteriorBF"]])))  
+            dfCI <- .dataSupportBinomialLS(tempData, options[["priors"]][[i]], options[["plotsPosteriorBF"]])  
           
         }
         
