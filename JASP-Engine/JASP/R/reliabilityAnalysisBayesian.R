@@ -38,11 +38,11 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       tables = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6",
                  "Greatest Lower Bound", "Average interitem correlation", "mean", "sd"),
       tables_item = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6",
-                      "Greatest Lower Bound", "Item-rest correlation", "mean", "sd"),
+                      gettext("Greatest Lower Bound"), gettext("Item-rest correlation"), gettext("mean"), gettext("sd")),
       coefficients = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6",
-                       "Greatest Lower Bound", "Item-rest correlation"),
+                       gettext("Greatest Lower Bound"), gettext("Item-rest correlation")),
       plots = list(expression("McDonald's"~omega), expression("Cronbach\'s"~alpha), expression("Guttman's"~lambda[2]),
-                   expression("Guttman's"~lambda[6]), "Greatest Lower Bound")
+                   expression("Guttman's"~lambda[6]), gettext("Greatest Lower Bound"))
     ),
 
     order_end = c(5, 1, 2, 3, 4) # order for plots and such, put omega to the front
@@ -323,7 +323,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     if (nvar > 0L && nvar < 3L)
       scaleTable$addFootnote(gettextf("Please enter at least 3 variables to do an analysis. %s", model[["footnote"]]))
     else
-      scaleTable$addFootnote(gettext(model[["footnote"]]))
+      scaleTable$addFootnote(model[["footnote"]])
     jaspResults[["scaleTable"]] <- scaleTable
     scaleTable$position <- 1
     return()
@@ -339,7 +339,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
   if (!is.null(relyFit)) {
 
     for (i in idxSelected) {
-      scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+      scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
       if (options[["rHat"]]) {
         if (opts[i] == "mean" || opts[i] == "sd") {
           rhat <- NA_real_
@@ -360,12 +360,12 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     scaleTable$setData(allData)
 
     if (!is.null(model[["footnote"]]))
-      scaleTable$addFootnote(gettext(model[["footnote"]]))
+      scaleTable$addFootnote(model[["footnote"]])
 
   } else if (sum(selected) > 0L) {
 
     for (i in idxSelected) {
-      scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+      scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
     }
 
     nvar <- length(options[["variables"]])
@@ -376,7 +376,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     scaleTable$setError(model[["error"]])
 
   if (!is.null(model[["footnote"]]))
-    scaleTable$addFootnote(gettext(model[["footnote"]]))
+    scaleTable$addFootnote(model[["footnote"]])
 
   jaspResults[["scaleTable"]] <- scaleTable
   scaleTable$position = 1
@@ -435,7 +435,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                 overtitle = overTitles[i])
       }
     } else {
-      itemTable$addColumnInfo(name = paste0("postMean", i), title = gettext(estimators[i]), type = "number")
+      itemTable$addColumnInfo(name = paste0("postMean", i), title = estimators[i], type = "number")
     }
 
   }
@@ -621,11 +621,11 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 
 
-  xBreaks <- jaspGraphs::getPrettyAxisBreaks(datDens$x)
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(datDens$x)
 
   # max height posterior is at 90% of plot area; remainder is for credible interval
   ymax <- max(d$y) / .9
-  yBreaks <- jaspGraphs::getPrettyAxisBreaks(c(0, ymax))
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, ymax))
   ymax <- max(yBreaks)
   scaleCriRound <- round(scaleCri[[i]], 3)
   datCri <- data.frame(xmin = scaleCriRound[1L], xmax = scaleCriRound[2L], y = .925 * ymax)
@@ -696,7 +696,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 
 
-  return(jaspGraphs::themeJasp(g))
+  return(JASPgraphs::themeJasp(g))
 
 }
 
@@ -831,7 +831,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 
 
-  return(jaspGraphs::themeJasp(g))
+  return(JASPgraphs::themeJasp(g))
 
 }
 
@@ -860,7 +860,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
     eframe$eigen_sim_low <- apply(ee_impl, 2, quantile, prob = .025)
     eframe$eigen_sim_up<- apply(ee_impl, 2, quantile, prob = .975)
     leg_pos <- (max(eframe$eigen_value) + min(eframe$eigen_value)) * .75
-    yBreaks <- jaspGraphs::getPrettyAxisBreaks(c(0, max(eframe$eigen_sim_up)))
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, max(eframe$eigen_sim_up)))
 
 
     g <- ggplot2::ggplot(eframe, mapping = ggplot2::aes(x = number, y = eigen_value)) +
@@ -872,7 +872,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
       ggplot2::scale_y_continuous(name = gettext("Eigenvalue"), breaks = yBreaks, limits = range(yBreaks)) +
       ggplot2::xlab(gettext("Factors"))
 
-    g <- jaspGraphs::themeJasp(g)
+    g <- JASPgraphs::themeJasp(g)
   }
   plot <- createJaspPlot(plot = g, title = "Posterior Predictive Check Omega", width = 400)
   plot$dependOn(options = c("variables", "reverseScaledItems", "noSamples", "noBurnin", "noChains", "noThin",
@@ -937,7 +937,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 .BayesianReliabilityMakeTracePlot <- function(relyFit, i, nms) {
 
   dd <- relyFit[["Bayes"]][["chains"]][[i]]
-  xBreaks <- jaspGraphs::getPrettyAxisBreaks(c(0, length(dd[1, ])))
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, length(dd[1, ])))
 
   dv <- cbind(dd[1, ], 1, seq(1, ncol(dd)))
   for (j in 2:nrow(dd)) {
@@ -955,7 +955,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
                                 expand = ggplot2::expand_scale(mult = c(0.05, 0.1)))
 
 
-  return(jaspGraphs::themeJasp(g))
+  return(JASPgraphs::themeJasp(g))
 
 }
 

@@ -26,11 +26,11 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
       tables = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6",
                  "Greatest Lower Bound", "Average interitem correlation", "mean", "sd"),
       tables_item = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6",
-                      "Greatest Lower Bound", "Item-rest correlation", "mean", "sd"),
+                      gettext("Greatest Lower Bound"), gettext("Item-rest correlation"), gettext("mean"), gettext("sd")),
       coefficients = c("McDonald's \u03C9", "Cronbach's \u03B1", "Guttman's \u03BB2", "Guttman's \u03BB6",
-                       "Greatest Lower Bound"),
+                       gettext("Greatest Lower Bound")),
       plots = list(expression("McDonald's"~omega), expression("Cronbach\'s"~alpha), expression("Guttman's"~lambda[2]),
-                   expression("Guttman's"~lambda[6]), "Greatest Lower Bound")
+                   expression("Guttman's"~lambda[6]), gettext("Greatest Lower Bound"))
     )
   )
 
@@ -208,8 +208,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         cordat <- cor(dataset, use = use.cases)
         p <- ncol(dataset)
         Cvtmp <- array(0, c(p, p - 1, p - 1))
+        Dtmp <- array(0, c(p, nrow(dataset), p - 1))
         for (i in 1:p){
           Cvtmp[i, , ] <- cv[-i, -i]
+          Dtmp[i, , ] <- as.matrix(dataset[, -i])
         }
 
         if (options[["omegaEst"]] == "pfa") {
@@ -219,51 +221,37 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           if (use.cases == "pairwise.complete.obs") {
             omega <- Bayesrel:::omegaFreqData(dataset, interval=.95, omega.int.analytic = T, pairwise = T)
             omega.est <- omega[["omega"]]
-            if (is.na(omega.est)) {
+            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
+            omega.item <- apply(Dtmp, 1, Bayesrel:::applyomega_cfa_data, interval = .95, pairwise = T)
+            if (any(is.na(omega))) {
               omega.est <- Bayesrel:::applyomega_pfa(cv)
               relyFit[["freq"]][["omega.error"]] <- TRUE
+              omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
             }
-
-            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
-
-            omega.item <- numeric(p)
-            for (i in 1:p) {
-              omega.item[i] <- Bayesrel:::applyomega_cfa_data(as.matrix(dataset[, -i]), interval = .95, pairwise = T)
-              if (is.na(omega.item[i])) {
-                omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
-                relyFit[["freq"]][["omega.item.error"]] <- TRUE
-                break
-              }
-            }
-
-
           } else {
             omega <- Bayesrel:::omegaFreqData(dataset, interval=.95, omega.int.analytic = T, pairwise = F)
             omega.est <- omega[["omega"]]
-            if (is.na(omega.est)) {
+            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
+            omega.item <- apply(Dtmp, 1, Bayesrel:::applyomega_cfa_data, interval = .95, pairwise = F)
+            if (any(is.na(omega))) {
               omega.est <- Bayesrel:::applyomega_pfa(cv)
               relyFit[["freq"]][["omega.error"]] <- TRUE
+              omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
             }
-            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
-
-            omega.item <- numeric(p)
-            for (i in 1:p) {
-              omega.item[i] <- Bayesrel:::applyomega_cfa_data(as.matrix(dataset[, -i]), interval = .95, pairwise = F)
-              if (is.na(omega.item[i])) {
-                omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
-                relyFit[["freq"]][["omega.item.error"]] <- TRUE
-                break
-              }
+            if (any(is.na(omega.item))) {
+              relyFit[["freq"]][["omega.item.error"]] <- TRUE
+              omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
             }
           }
         }
         if (options[["alphaMethod"]] == "alphaStand") {
           ca <- Bayesrel:::make_symmetric(cov2cor(cv))
           alpha <- Bayesrel:::applyalpha(ca)
-          alpha.item <- numeric(p)
+          Crtmp <- array(0, c(p, p - 1, p - 1))
           for (i in 1:p){
-            alpha.item <- Bayesrel:::applyalpha(ca[-i, -i])
+            Crtmp[i, , ] <- ca[-i, -i]
           }
+          alpha.item <- apply(Crtmp, 1, Bayesrel:::applyalpha)
         } else {
           alpha <- Bayesrel:::applyalpha(cv)
           alpha.item <- apply(Cvtmp, 1, Bayesrel:::applyalpha)
@@ -328,7 +316,6 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         # omega cfa analytic interval:
         if (is.null(relyFit[["freq"]][["omega.pfa"]]) && (options[["omegaInterval"]] == "omegaAnalytic")) {
           fit <- relyFit[["freq"]][["fit.object"]]
-
           params <- lavaan::parameterestimates(fit, level = options[["confidenceIntervalValue"]])
           om_low <- params$ci.lower[params$lhs=="omega"]
           om_up <- params$ci.upper[params$lhs=="omega"]
@@ -421,7 +408,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     if (nvar > 0L && nvar < 3L)
       scaleTable$addFootnote(gettextf("Please enter at least 3 variables to do an analysis. %s", model[["footnote"]]))
     else
-      scaleTable$addFootnote(gettext(model[["footnote"]]))
+      scaleTable$addFootnote(model[["footnote"]])
     jaspResults[["scaleTable"]] <- scaleTable
     scaleTable$position <- 1
     return()
@@ -435,8 +422,8 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   idxSelected <- which(selected)
 
   if (options[["mcDonaldScale"]] && !is.null(relyFit[["freq"]][["omega.error"]])) {
-    model[["footnote"]] <- gettextf("%sMcDonald's \u03C9 estimation method switched to PFA because the CFA
-                                    did not find a solution. ", model[["footnote"]])
+    model[["footnote"]] <- gettextf("%1$sMcDonald's %2$s estimation method switched to PFA because the CFA
+                                    did not find a solution. ", model[["footnote"]], "\u03C9")
   }
 
   if (!is.null(relyFit)) {
@@ -445,25 +432,23 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     if (options[["intervalOn"]]) {
       addSingularFootnote <- FALSE
       for (i in idxSelected) {
-        scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+        scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
         newData <- data.frame(est = c(unlist(relyFit[["freq"]][["est"]][[i]], use.names = F),
                                       unlist(model[["cfi"]][["scaleCfi"]][[i]], use.names = F)))
         colnames(newData) <- paste0(colnames(newData), i)
         allData <- cbind(allData, newData)
 
         # produce footnote for coefficients that are prone to fail with singular matrices, such as lambda6 and omega
-        if (any(is.nan(model[["cfi"]][["scaleCfi"]][[i]])))
+        if (is.nan(model[["cfi"]][["scaleCfi"]][[i]]))
           addSingularFootnote <- TRUE
       }
       if (addSingularFootnote) {
-        model[["footnote"]] <- gettextf("%s Some confidence intervals could not be computed
-                                        because none of the bootstrapped covariance matrices were invertible. ",
-                                        model[["footnote"]])
+        model[["footnote"]] <- gettextf("%s Some confidence intervals could not be computed because none of the bootstrapped covariance matrices were invertible.", model[["footnote"]])
       }
 
     } else {
       for (i in idxSelected) {
-        scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+        scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
         newData <- data.frame(est = c(unlist(relyFit[["freq"]][["est"]][[i]], use.names = F)))
         colnames(newData) <- paste0(colnames(newData), i)
         allData <- cbind(allData, newData)
@@ -473,11 +458,11 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     scaleTable$setData(allData)
 
     if (!is.null(model[["footnote"]]))
-      scaleTable$addFootnote(gettext(model[["footnote"]]))
+      scaleTable$addFootnote(model[["footnote"]])
   } else if (sum(selected) > 0L) {
 
     for (i in idxSelected) {
-      scaleTable$addColumnInfo(name = paste0("est", i), title = gettext(opts[i]), type = "number")
+      scaleTable$addColumnInfo(name = paste0("est", i), title = opts[i], type = "number")
     }
     nvar <- length(options[["variables"]])
     if (nvar > 0L && nvar < 3L){
@@ -489,7 +474,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
     scaleTable$setError(model[["error"]])
 
   if (!is.null(model[["footnote"]]))
-    scaleTable$addFootnote(gettext(model[["footnote"]]))
+    scaleTable$addFootnote(model[["footnote"]])
 
   jaspResults[["scaleTable"]] <- scaleTable
   scaleTable$position <- 1
@@ -528,10 +513,10 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
   coefficients <- derivedOptions[["namesEstimators"]][["coefficients"]]
   for (i in idxSelectedF) {
     if (estimators[i] %in% coefficients) {
-      itemTable$addColumnInfo(name = paste0("pointEst", i), title = gettext(estimators[i]), type = "number",
+      itemTable$addColumnInfo(name = paste0("pointEst", i), title = estimators[i], type = "number",
                                overtitle = overTitle)
     } else {
-      itemTable$addColumnInfo(name = paste0("pointEst", i), title = gettext(estimators[i]), type = "number")
+      itemTable$addColumnInfo(name = paste0("pointEst", i), title = estimators[i], type = "number")
     }
   }
 
@@ -539,8 +524,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
 
   if (!is.null(relyFit)) {
     if (options[["mcDonaldScale"]] && !is.null(relyFit[["freq"]][["omega.item.error"]])) {
-      itemTable$addFootnote(gettext("McDonald's \u03C9 estimation method for item-dropped statistics
-                                     switched to PFA because the CFA did not find a solution."))
+      itemTable$addFootnote(gettextf("McDonald's %s estimation method for item-dropped statistics switched to PFA because the CFA did not find a solution.","\u03C9"))
     }
 
     tb <- data.frame(variable = model[["itemsDropped"]])
@@ -602,8 +586,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         value = NA_real_
       )
       if (!is.null(relyFit[["freq"]][["omega.error"]])) {
-          fitTable$addFootnote(gettext("Fit measures cannot be displayed because the McDonald's \u03C9
-                                       estimation method switched to PFA as the CFA did not find a solution."))
+          fitTable$addFootnote(gettextf("Fit measures cannot be displayed because the McDonald's %s estimation method switched to PFA as the CFA did not find a solution.","\u03C9"))
       }
     } else {
       opts <- c("Chi-Square", "df", "p.value", "RMSEA", "Lower CI RMSEA", "Upper CI RMSEA", "SRMR")
