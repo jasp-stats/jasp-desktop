@@ -184,7 +184,45 @@ Descriptives <- function(jaspResults, dataset, options) {
     }
   }
 
-  # Scatter plots
+
+#X bar Chart
+  if(options$Xbarchart){
+
+    if(is.null(jaspResults[["Xbarchart"]])) {
+      jaspResults[["Xbarchart"]] <- createJaspContainer(gettext("X bar chart"))
+      jaspResults[["Xbarchart"]]$dependOn("Xbarchart")
+      jaspResults[["Xbarchart"]]$position <- 11
+    }
+
+    Xbarchart <- jaspResults[["Xbarchart"]]
+    for (var in variables){
+      if(is.null(Xbarchart[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
+        Xbarchart[[var]] <- .XbarchartNoId(jaspResults = jaspResults, dataset = dataset, options = options)
+        Xbarchart$dependOn(optionContainsValue=list(variables=var))
+      }
+    }
+  }
+
+
+#R chart
+  if(options$Rchart){
+
+    if(is.null(jaspResults[["Rchart"]])) {
+       jaspResults[["Rchart"]] <- createJaspContainer(gettext("R chart"))
+       jaspResults[["Rchart"]]$dependOn("Rchart")
+       jaspResults[["Rchart"]]$position <- 11
+     }
+
+    Rchart <- jaspResults[["Rchart"]]
+    for (var in variables){
+      if(is.null(Rchart[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
+        Rchart[[var]] <- .Rchart(jaspResults = jaspResults, dataset = dataset, options = options)
+        Rchart$dependOn(optionContainsValue=list(variables=var))
+      }
+    }
+  }
+
+# Scatter plots
   if (options[["scatterPlot"]]) {
     if(is.null(jaspResults[["scatterPlots"]])) {
       jaspResults[["scatterPlots"]] <- createJaspContainer(gettext("Scatter Plots"))
@@ -1374,6 +1412,7 @@ Descriptives <- function(jaspResults, dataset, options) {
       scatterPlot <- createJaspPlot(title = plotName)
       if (dependOnVariables)
         scatterPlot$dependOn(optionContainsValue = list(variables = c(v1, v2)))
+
       
       scatterData <- dataset[, c(variablesB64[i], variablesB64[j])]
       errorMessage <- .descriptivesCheckPlotErrors(scatterData, c(v1, v2), obsAmount = "< 2")
@@ -1427,4 +1466,76 @@ Descriptives <- function(jaspResults, dataset, options) {
     return(TRUE)
   else
     return(FALSE)
+}
+
+.XbarchartNoId <- function(jaspResults, dataset, options) {
+
+  ready <- (length(options$variables) > 1)
+  if (!ready)
+    return()
+
+  jaspResults[["XbarPlot"]] <- createJaspPlot(title = "X bar chart", width = 650, aspectRatio = 1)
+  jaspResults[["XbarPlot"]]$dependOn(c("Xbarchart", "variables"))
+  XbarPlot <- jaspResults[["XbarPlot"]]
+
+  data1= na.omit(as.data.frame(dataset))
+  means <- rowMeans(data1)
+  subgroups <- 1:length(means)
+  data2 <- data.frame(subgroups = subgroups, means = means)
+  sixsigma <- qcc::qcc(data1, type = 'xbar', plot = F)
+  center <- sixsigma$center
+  sd1 <- sixsigma$std.dev
+  UCL <- max(sixsigma$limits)
+  LCL <- min(sixsigma$limits)
+
+  p <- ggplot2::ggplot(data2, ggplot2::aes(x = subgroups, y = means, group = 1))+ ggplot2::geom_line()+
+    ggplot2::ylab("Subgroup mean")+
+    ggplot2::xlab('Subgroup')+
+    ggplot2::theme_classic()+
+    ggplot2::scale_x_continuous(breaks = c(subgroups), limits = c(1,length(subgroups) + 1.5))+
+    ggplot2::geom_point(size = 2)+
+    ggplot2::geom_hline(yintercept = center, color = 'black')+
+    ggplot2::geom_hline(yintercept = c(center - sd1,center + sd1), linetype = "dashed", color = "red")+
+    ggplot2::geom_hline(yintercept = c(UCL,LCL), color = "red")+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,center,label = sprintf("Mean = %g",round(center,3))))+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,UCL,label = sprintf("UCL = %g",round(UCL,3))))+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,LCL,label = sprintf("LCL = %g",round(LCL,3))))
+
+  XbarPlot$plotObject <- p
+  return()
+}
+
+.Rchart <- function(jaspResults, dataset, options) {
+
+  ready <- (length(options$variables) > 1)
+  if (!ready)
+    return()
+
+  jaspResults[["RPlot"]] <- createJaspPlot(title = "R chart", width = 650, aspectRatio = 1)
+  jaspResults[["RPlot"]]$dependOn(c("Rchart", "variables"))
+  RPlot <- jaspResults[["RPlot"]]
+
+  data1= na.omit(as.data.frame(dataset))
+  range= apply(data1, 1,function(x) {max(range(x)) - min(range(x))})
+  subgroups= 1:length(range)
+  data2 = data.frame(subgroups = subgroups, range = range)
+  sixsigma=qcc::qcc(data1, type= 'R', plot = F)
+  center = sixsigma$center
+  UCL= max(sixsigma$limits)
+  LCL = min(sixsigma$limits)
+
+  p <- ggplot2::ggplot(data2, ggplot2::aes(x = subgroups, y = range, group = 1))+ ggplot2::geom_line()+
+    ggplot2::ylab("Subgroup Range")+
+    ggplot2::xlab('Subgroup')+
+    ggplot2::theme_classic()+
+    ggplot2::scale_x_continuous(breaks = c(subgroups), limits = c(1,length(subgroups) + 1.5))+
+    ggplot2::geom_point(size = 2)+
+    ggplot2::geom_hline(yintercept =  center, color = 'black')+
+    ggplot2::geom_hline(yintercept= c(UCL,LCL), color = "red")+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,center,label = sprintf("Range = %g",round(center,3))))+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,UCL,label = sprintf("UCL = %g",round(UCL,3))))+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,LCL,label = sprintf("LCL= %g",round(LCL,3))))
+
+  RPlot$plotObject <- p
+  return()
 }
