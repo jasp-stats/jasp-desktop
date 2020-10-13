@@ -263,17 +263,17 @@ bool CSV::readUtf8()
 }
 
 
-void CSV::determineDelimiters()
+void CSV::determineDelimiters(size_t fromHere)
 {
-	bool inQuote = false;
-	bool eol = false;
+	bool	inQuote		= false,
+			eol			= false;
+	int		semicolons	= 0,
+			commas		= 0,
+			spaces		= 0,
+			tabs		= 0,
+			stopped		= 0;
 
-	int commas = 0;
-	int semicolons = 0;
-	int spaces = 0;
-	int tabs = 0;
-
-	for (int i = 0; i < _utf8BufferEndPos && eol == false; i++)
+	for (int i = fromHere; i < _utf8BufferEndPos && eol == false; i++)
 	{
 		char ch = _utf8Buffer[i];
 
@@ -306,7 +306,10 @@ void CSV::determineDelimiters()
 			break;
 		case '\r':
 		case '\n':
-			eol = true;
+			eol		= true;
+			stopped = i;
+			while(stopped < _utf8BufferEndPos && (_utf8Buffer[stopped] == '\r' || _utf8Buffer[stopped] == '\n'))
+				stopped++;
 			break;
 		}
 	}
@@ -325,7 +328,14 @@ void CSV::determineDelimiters()
 		countDelim = tabs;
 	}
 	if (countDelim == 0 && spaces > 0) // uses spaces only if there is nothing else.
-		_delim = ' ';
+	{
+		//See https://github.com/jasp-stats/jasp-test-release/issues/1040 for problems with single column-csv that contain a space in the title.
+		
+		if(fromHere == 0) //We just checked the first line, maybe the second line is more useful?
+			determineDelimiters(stopped);
+		else //The second line was as useless as the first one apparently.
+			_delim = ' ';
+	}
 }
 
 bool CSV::readLine(vector<string> &items)
