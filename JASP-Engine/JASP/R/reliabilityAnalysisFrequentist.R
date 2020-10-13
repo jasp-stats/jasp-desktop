@@ -452,7 +452,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         allData <- cbind(allData, newData)
 
         # produce footnote for coefficients that are prone to fail with singular matrices, such as lambda6 and omega
-        if (is.nan(model[["cfi"]][["scaleCfi"]][[i]]))
+        if (any(is.nan(model[["cfi"]][["scaleCfi"]][[i]])))
           addSingularFootnote <- TRUE
       }
       if (addSingularFootnote) {
