@@ -208,10 +208,8 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         cordat <- cor(dataset, use = use.cases)
         p <- ncol(dataset)
         Cvtmp <- array(0, c(p, p - 1, p - 1))
-        Dtmp <- array(0, c(p, nrow(dataset), p - 1))
         for (i in 1:p){
           Cvtmp[i, , ] <- cv[-i, -i]
-          Dtmp[i, , ] <- as.matrix(dataset[, -i])
         }
 
         if (options[["omegaEst"]] == "pfa") {
@@ -221,37 +219,51 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
           if (use.cases == "pairwise.complete.obs") {
             omega <- Bayesrel:::omegaFreqData(dataset, interval=.95, omega.int.analytic = T, pairwise = T)
             omega.est <- omega[["omega"]]
-            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
-            omega.item <- apply(Dtmp, 1, Bayesrel:::applyomega_cfa_data, interval = .95, pairwise = T)
-            if (any(is.na(omega))) {
+            if (is.na(omega.est)) {
               omega.est <- Bayesrel:::applyomega_pfa(cv)
               relyFit[["freq"]][["omega.error"]] <- TRUE
-              omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
             }
+
+            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
+
+            omega.item <- numeric(p)
+            for (i in 1:p) {
+              omega.item[i] <- Bayesrel:::applyomega_cfa_data(as.matrix(dataset[, -i]), interval = .95, pairwise = T)
+              if (is.na(omega.item[i])) {
+                omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
+                relyFit[["freq"]][["omega.item.error"]] <- TRUE
+                break
+              }
+            }
+
+
           } else {
             omega <- Bayesrel:::omegaFreqData(dataset, interval=.95, omega.int.analytic = T, pairwise = F)
             omega.est <- omega[["omega"]]
-            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
-            omega.item <- apply(Dtmp, 1, Bayesrel:::applyomega_cfa_data, interval = .95, pairwise = F)
-            if (any(is.na(omega))) {
+            if (is.na(omega.est)) {
               omega.est <- Bayesrel:::applyomega_pfa(cv)
               relyFit[["freq"]][["omega.error"]] <- TRUE
-              omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
             }
-            if (any(is.na(omega.item))) {
-              relyFit[["freq"]][["omega.item.error"]] <- TRUE
-              omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
+            relyFit[["freq"]][["omega.fit"]] <- omega[["indices"]]
+
+            omega.item <- numeric(p)
+            for (i in 1:p) {
+              omega.item[i] <- Bayesrel:::applyomega_cfa_data(as.matrix(dataset[, -i]), interval = .95, pairwise = F)
+              if (is.na(omega.item[i])) {
+                omega.item <- apply(Cvtmp, 1, Bayesrel:::applyomega_pfa)
+                relyFit[["freq"]][["omega.item.error"]] <- TRUE
+                break
+              }
             }
           }
         }
         if (options[["alphaMethod"]] == "alphaStand") {
           ca <- Bayesrel:::make_symmetric(cov2cor(cv))
           alpha <- Bayesrel:::applyalpha(ca)
-          Crtmp <- array(0, c(p, p - 1, p - 1))
+          alpha.item <- numeric(p)
           for (i in 1:p){
-            Crtmp[i, , ] <- ca[-i, -i]
+            alpha.item <- Bayesrel:::applyalpha(ca[-i, -i])
           }
-          alpha.item <- apply(Crtmp, 1, Bayesrel:::applyalpha)
         } else {
           alpha <- Bayesrel:::applyalpha(cv)
           alpha.item <- apply(Cvtmp, 1, Bayesrel:::applyalpha)
@@ -316,6 +328,7 @@ reliabilityFrequentist <- function(jaspResults, dataset, options) {
         # omega cfa analytic interval:
         if (is.null(relyFit[["freq"]][["omega.pfa"]]) && (options[["omegaInterval"]] == "omegaAnalytic")) {
           fit <- relyFit[["freq"]][["fit.object"]]
+
           params <- lavaan::parameterestimates(fit, level = options[["confidenceIntervalValue"]])
           om_low <- params$ci.lower[params$lhs=="omega"]
           om_up <- params$ci.upper[params$lhs=="omega"]
