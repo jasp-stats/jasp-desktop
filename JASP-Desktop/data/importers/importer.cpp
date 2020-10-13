@@ -52,9 +52,11 @@ void Importer::initColumnWithStrings(QVariant colId, std::string newName, const 
 	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
 
 	bool valuesAreIntegers		= ImportColumn::convertVecToInt(values, intValues, uniqueValues, emptyValuesMap);
+	
+	size_t minIntForThresh		= thresholdScale > 2 ? 2 : 0;
 
-	auto isNominalInt			= [&](){ return valuesAreIntegers && uniqueValues.size() == 2; };
-	auto isOrdinal				= [&](){ return valuesAreIntegers && uniqueValues.size() > 2 && uniqueValues.size() <= thresholdScale; };
+	auto isNominalInt			= [&](){ return valuesAreIntegers && uniqueValues.size() == minIntForThresh; };
+	auto isOrdinal				= [&](){ return valuesAreIntegers && uniqueValues.size() >  minIntForThresh && uniqueValues.size() <= thresholdScale; };
 	auto isScalar				= [&](){ return ImportColumn::convertVecToDouble(values, doubleValues, emptyValuesMap); };
 
 	if		(isOrdinal())					initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		true	);
