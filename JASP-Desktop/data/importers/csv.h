@@ -54,7 +54,7 @@ private:
 	bool readUtf8();
 
 	void determineEncoding();
-	void determineDelimiters();
+	void determineDelimiters(size_t fromHere = 0);
 
 private:
 
