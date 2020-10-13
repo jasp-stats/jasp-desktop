@@ -289,7 +289,7 @@ Form
 				defaultValue:	50
 				fieldWidth:		100
 				min:			1
-				max:			1e7
+				max:			parseFloat(noSamples.value) - parseFloat(noThin.value) -1
 			}
 
 			IntegerField
@@ -300,7 +300,7 @@ Form
 				defaultValue:	1
 				fieldWidth:		100
 				min:			1
-				max:			1e7
+				max:			parseFloat(noSamples.value) - parseFloat(noThin.value) -1
 			}
 
 			IntegerField
