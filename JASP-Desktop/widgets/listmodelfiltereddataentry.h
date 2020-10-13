@@ -71,7 +71,7 @@ private:
 	void	fillTable();
 
 	QString						_filter,
-								_colName = "data",
+								_colName,
 								_extraCol;
 	std::vector<bool>			_acceptedRows;
 	std::vector<size_t>			_filteredRowToData;
