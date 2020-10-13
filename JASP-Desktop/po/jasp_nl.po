@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-10-08 15:48+0000\n"
-"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
+"PO-Revision-Date: 2020-10-13 09:11+0000\n"
+"Last-Translator: Johnny van Doorn <johnnydoorn@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
 "Language: nl\n"
@@ -20231,25 +20231,27 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows Workarounds"
-msgstr ""
+msgstr "Tijdelijke Oplossingen voor Windows"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE"
-msgstr ""
+msgstr "Laat JASP de beste instellingen raden voor LC-CTYPE"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
 msgstr ""
+"Controleer het pad van de installatie- en gebruikersmap op compatibiliteit "
+"met LC_CTYPE=\"C\" en gebruik dit als het redelijk is."
 
 msgctxt "PrefsAdvanced|"
 msgid "Always set LC_CTYPE to \"C\"."
-msgstr ""
+msgstr "Zet LC_CTYPE altijd op \"C\"."
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
-msgstr ""
+msgstr "Zie de documentatie voor meer informatie."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -20260,886 +20262,737 @@ msgid ""
 "for the inconvenience, we are working on it and hopefully have this fixed "
 "next release."
 msgstr ""
+"Als dit is ingeschakeld en je hebt niet-ascii karakters in je installatiepad "
+"zal JASP niet meer werken.  Als je alleen niet-ascii karakters in je "
+"gebruikersnaam hebt, dan zal het installeren van modules waarschijnlijk "
+"mislukken. Aan de andere kant, het uitschakelen van dit zal bepaalde "
+"karakters in de resultaten er raar uit laten zien, onze excuses voor het "
+"ongemak, we zijn er mee bezig en hopelijk is het voor de volgende release "
+"opgelost."
 
 msgctxt "Description|"
 msgid ""
 "This module offers the Principal Component, Confirmatory and Exploratory "
 "Factor analyses"
 msgstr ""
+"Deze module bevat de principale-componentenanalyse, exploratieve "
+"factoranalyse, en confirmatieve factoranalyse"
 
 msgctxt "Description|"
 msgid ""
 "This module offers the standard Frequentist and Bayesian Mixed Models "
 "analyses."
 msgstr ""
+"Deze module bevat de standaard frequentistische en Bayesiaanse Mixed-Models "
+"analyses."
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Model"
 msgstr "Model"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Model components"
 msgstr "Model componenten"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Fixed effects"
 msgstr "Gefixeerde effecten"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Random effects"
 msgstr "Willekeurige effecten"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MixedModelsBGLMM|"
 msgid "Random slopes by %1"
 msgstr "Willekeurige hellingen van %1"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Correlations"
 msgstr "Correlaties"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Options"
 msgstr "Opties"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Warmup"
-msgstr ""
+msgstr "Opwarming"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Iterations"
 msgstr "Iteraties"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Chains"
 msgstr "Ketens"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Adapt delta"
-msgstr "Aanpassingsdelta"
+msgstr "Pas delta aan"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Maximum treedepth"
-msgstr "Maximale boom diepte"
+msgstr "Maximale boomhoogte"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Show"
 msgstr "Toon"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Deviations from mean"
-msgstr ""
+msgstr "Afwijkingen van het gemiddelde"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Marginal means"
-msgstr "Marginale gemiddelden"
+msgstr "Marginale Gemiddeldes"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Fixed effects estimates"
 msgstr "Gefixeerde effecten schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Variance/correlation estimates"
 msgstr "Variantie/correlatie schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "MCMC diagnostics"
 msgstr "MCMC diagnostiek"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Model terms"
 msgstr "Modeltermen"
 
 msgctxt "MixedModelsBGLMM|"
 msgid "Selected term"
-msgstr ""
+msgstr "Geselecteerde term"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Plot type"
 msgstr "Grafiektype"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Plots"
 msgstr "Grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Model factors"
-msgstr "Model factoren"
+msgstr "Modelfactoren"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Horizontal axis"
 msgstr "Horizontale as"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Separate lines"
-msgstr "Onderscheidende lijnen"
+msgstr "Aparte lijnen"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Separate plots"
-msgstr "Onderscheidende grafieken"
+msgstr "Aparte grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Background data show"
-msgstr "Achtergrond gegevens tonen"
+msgstr "Achtergrondgegevens tonen"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Confidence interval method"
 msgstr "Betrouwbaarheidsintervalmethode"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Distinguish factor levels"
 msgstr "Onderscheid factorniveaus"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Color"
 msgstr "Kleur"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Shape"
 msgstr "Vorm"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Linetype"
 msgstr "Lijntype"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Fill"
 msgstr "Vul"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Background geom"
 msgstr "Achtergrond geom"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Transparency"
 msgstr "Transparantie"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Jitter width"
 msgstr "Jitter breedte"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Jitter height"
 msgstr "Jitter hoogte"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Geom width"
 msgstr "Geom breedte"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Dodge"
 msgstr "Ontwijken"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Theme"
 msgstr "Thema"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Legend position"
 msgstr "Legenda positie"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Color background data"
 msgstr "Kleur achtergrond gegevens"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Relative size text"
 msgstr "Relatieve tekstgrootte"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Relative size foreground data"
 msgstr "Relatieve voorgrondgegevensgrootte"
 
-#, fuzzy
 msgctxt "MixedModelsBGLMM|"
 msgid "Estimates table"
 msgstr "Schattingstabel"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Model"
 msgstr "Model"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Model components"
 msgstr "Model componenten"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Fixed effects"
 msgstr "Gefixeerde effecten"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Random effects"
 msgstr "Willekeurige effecten"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MixedModelsBLMM|"
 msgid "Random slopes by %1"
 msgstr "Willekeurige hellingen van %1"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Correlations"
 msgstr "Correlaties"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Options"
 msgstr "Opties"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Warmup"
-msgstr ""
+msgstr "Opwarming"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Iterations"
 msgstr "Iteraties"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Chains"
 msgstr "Ketens"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Adapt delta"
 msgstr "Aanpassingsdelta"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Maximum treedepth"
 msgstr "Maximale boom diepte"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Show"
 msgstr "Toon"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Deviations from mean"
-msgstr ""
+msgstr "Afwijkingen van het gemiddelde"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Marginal means"
 msgstr "Marginale gemiddelden"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Fixed effects estimates"
 msgstr "Gefixeerde effecten schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Variance/correlation estimates"
 msgstr "Variantie/correlatie schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "MCMC diagnostics"
 msgstr "MCMC diagnostiek"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Model terms"
 msgstr "Modeltermen"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Selected term"
-msgstr ""
+msgstr "Geselecteerde term"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Plot type"
 msgstr "Grafiektype"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Plots"
 msgstr "Grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Model factors"
-msgstr "Model factoren"
+msgstr "Modelfactoren"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Horizontal axis"
 msgstr "Horizontale as"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Separate lines"
-msgstr "Onderscheidende lijnen"
+msgstr "Aparte lijnen"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Separate plots"
-msgstr "Onderscheidende grafieken"
+msgstr "Aparte grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Background data show"
 msgstr "Achtergrond gegevens tonen"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Confidence interval method"
 msgstr "Betrouwbaarheidsintervalmethode"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Distinguish factor levels"
 msgstr "Onderscheid factorniveaus"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Color"
 msgstr "Kleur"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Shape"
 msgstr "Vorm"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Linetype"
 msgstr "Lijntype"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Fill"
 msgstr "Vul"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Background geom"
 msgstr "Achtergrond geom"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Transparency"
 msgstr "Transparantie"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Jitter width"
 msgstr "Jitter breedte"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Jitter height"
 msgstr "Jitter hoogte"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Geom width"
 msgstr "Geom breedte"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Dodge"
 msgstr "Ontwijken"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Theme"
 msgstr "Thema"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Legend position"
 msgstr "Legenda positie"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Color background data"
 msgstr "Kleur achtergrond gegevens"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Relative size text"
 msgstr "Relatieve tekstgrootte"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Relative size foreground data"
 msgstr "Relatieve voorgrondgegevensgrootte"
 
-#, fuzzy
 msgctxt "MixedModelsBLMM|"
 msgid "Estimates table"
 msgstr "Schattingstabel"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Model"
 msgstr "Model"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Model components"
 msgstr "Model componenten"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Fixed effects"
 msgstr "Gefixeerde effecten"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Random effects"
 msgstr "Willekeurige effecten"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MixedModelsGLMM|"
 msgid "Random slopes by %1"
 msgstr "Willekeurige hellingen van %1"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Correlations"
 msgstr "Correlaties"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Options"
 msgstr "Opties"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Type"
 msgstr "Type"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "II"
 msgstr "II"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "III"
 msgstr "III"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Test intercept"
 msgstr "Toets intercept"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Test model terms"
 msgstr "Toets modeltermen"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "No. samples"
 msgstr "Aantal steekproeven"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Fixed effects estimates"
 msgstr "Gefixeerde effecten schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Variance/correlation estimates"
 msgstr "Variantie/correlatie schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Vovk-Sellke maximum p-ratio"
 msgstr "Vovk-Sellke maximum p-ratio"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Plots"
 msgstr "Grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Model factors"
 msgstr "Model factoren"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Horizontal axis"
 msgstr "Horizontale as"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Separate lines"
-msgstr "Onderscheidende lijnen"
+msgstr "Aparte lijnen"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Separate plots"
-msgstr "Onderscheidende grafieken"
+msgstr "Aparte grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Background data show"
 msgstr "Achtergrond gegevens tonen"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Confidence interval method"
 msgstr "Betrouwbaarheidsintervalmethode"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Distinguish factor levels"
 msgstr "Onderscheid factorniveaus"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Color"
 msgstr "Kleur"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Shape"
 msgstr "Vorm"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Linetype"
 msgstr "Lijntype"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Fill"
 msgstr "Vul"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Background geom"
 msgstr "Achtergrond geom"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Transparency"
 msgstr "Transparantie"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Jitter width"
 msgstr "Jitter breedte"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Jitter height"
 msgstr "Jitter hoogte"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Geom width"
 msgstr "Geom breedte"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Dodge"
 msgstr "Ontwijken"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Theme"
 msgstr "Thema"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Legend position"
 msgstr "Legenda positie"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Color background data"
 msgstr "Kleur achtergrond gegevens"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Relative size text"
 msgstr "Relatieve tekstgrootte"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Relative size foreground data"
 msgstr "Relatieve voorgrondgegevensgrootte"
 
-#, fuzzy
 msgctxt "MixedModelsGLMM|"
 msgid "Estimates table"
 msgstr "Schattingstabel"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Model"
 msgstr "Model"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Model components"
 msgstr "Model componenten"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Fixed effects"
 msgstr "Gefixeerde effecten"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Random effects"
 msgstr "Willekeurige effecten"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MixedModelsLMM|"
 msgid "Random slopes by %1"
 msgstr "Willekeurige hellingen van %1"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Correlations"
 msgstr "Correlaties"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Options"
 msgstr "Opties"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Type"
 msgstr "Type"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "II"
 msgstr "II"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "III"
 msgstr "III"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Test intercept"
 msgstr "Toets intercept"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Test model terms"
 msgstr "Toets modeltermen"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "No. samples"
 msgstr "Aantal steekproeven"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Fixed effects estimates"
 msgstr "Gefixeerde effecten schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Variance/correlation estimates"
 msgstr "Variantie/correlatie schattingen"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Vovk-Sellke maximum p-ratio"
 msgstr "Vovk-Sellke maximum p-ratio"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Plots"
 msgstr "Grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Model factors"
 msgstr "Model factoren"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Horizontal axis"
 msgstr "Horizontale as"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Separate lines"
-msgstr "Onderscheidende lijnen"
+msgstr "Aparte lijnen"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Separate plots"
-msgstr "Onderscheidende grafieken"
+msgstr "Aparte grafieken"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Background data show"
 msgstr "Achtergrond gegevens tonen"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Confidence interval method"
 msgstr "Betrouwbaarheidsintervalmethode"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Distinguish factor levels"
 msgstr "Onderscheid factorniveaus"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Color"
 msgstr "Kleur"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Shape"
 msgstr "Vorm"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Linetype"
 msgstr "Lijntype"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Fill"
 msgstr "Vul"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Background geom"
 msgstr "Achtergrond geom"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Transparency"
 msgstr "Transparantie"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Jitter width"
 msgstr "Jitter breedte"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Jitter height"
 msgstr "Jitter hoogte"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Geom width"
 msgstr "Geom breedte"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Dodge"
 msgstr "Ontwijken"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Theme"
 msgstr "Thema"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Legend position"
 msgstr "Legenda positie"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Color background data"
 msgstr "Kleur achtergrond gegevens"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Relative size text"
 msgstr "Relatieve tekstgrootte"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Relative size foreground data"
 msgstr "Relatieve voorgrondgegevensgrootte"
 
-#, fuzzy
 msgctxt "MixedModelsLMM|"
 msgid "Estimates table"
 msgstr "Schattingstabel"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Bernouilli"
-msgstr ""
+msgstr "Bernouilli"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Check numbers:"
-msgstr ""
+msgstr "Controleer getallen:"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Compare vs. Benford's law"
-msgstr ""
+msgstr "Vergelijk met Benford's wet"
 
 msgctxt "Description|"
 msgid "Robust Bayesian Meta-Analysis (beta)"
-msgstr ""
+msgstr "Robuste Bayesiaanse Meta-Analyse (beta)"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Cohen's d / t-statistics & (N / SE)"
-msgstr ""
+msgstr "Cohen's d / t-statistiek & (N / SE)"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Correlations & (N / SE)"
-msgstr ""
+msgstr "Correlaties & (N / SE)"
 
 #, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
@@ -21148,9 +21001,8 @@ msgstr " "
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Model-averaged"
-msgstr ""
+msgstr "Gemiddeld model"
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Transform correlations"
 msgstr "Transformeer correlaties"
@@ -21160,211 +21012,180 @@ msgid ""
 "This module offers the standard Frequentist and Bayesian Reliability "
 "analyses."
 msgstr ""
+"Deze module bevat de standaard frequentistische en Bayesiaanse "
+"Betrouwbaarheidsanalyses."
 
 msgctxt "ReliabilityBayesian|"
 msgid "Probability for: "
-msgstr ""
+msgstr "Kans op: "
 
 msgctxt "Mimic|"
 msgid "Indicators"
-msgstr ""
+msgstr "Indicator"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Predictors"
 msgstr "Voorspellers"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Options"
 msgstr "Opties"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Standardized estimates"
 msgstr "Gestandaardiseerde schattingen"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Lavaan syntax"
 msgstr "Lavaan syntax"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "R-squared"
 msgstr "R-kwadraat"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Additional fit measures"
 msgstr "Extra pasmaten"
 
 msgctxt "Mimic|"
 msgid "Confidence intervals"
-msgstr ""
+msgstr "Betrouwbaarheidsintervallen"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Method"
 msgstr "Methode"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Standard"
 msgstr "Standaard"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Robust"
 msgstr "Robuust"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Bootstrap"
 msgstr "Bootstrap"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Replications"
 msgstr "Replicaties"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Type"
 msgstr "Type"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Bias-corrected percentile"
 msgstr "Bias-gecorrigeerd percentiel"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Percentile"
 msgstr "Percentiel"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Normal theory"
 msgstr "Normaal theorie"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Plots"
 msgstr "Grafieken"
 
 msgctxt "Mimic|"
 msgid "Model plot"
-msgstr ""
+msgstr "Model grafiek"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Parameter estimates"
 msgstr "Parameterschattingen"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Legend"
 msgstr "Legenda"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Advanced"
 msgstr "Geavanceerd"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Missing value handling"
 msgstr "Behandeling ontbrekende waarden"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Full Information Maximum Likelihood"
 msgstr "Complete informatie meest aannemelijke schatter"
 
 msgctxt "Mimic|"
 msgid "Exclude cases listwise"
-msgstr ""
+msgstr "Sluit waarnemingen uit per rij"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Emulation"
 msgstr "Emulatie"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "None"
 msgstr "Geen"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Mplus"
 msgstr "Mplus"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "EQS"
 msgstr "EQS"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Estimator"
 msgstr "Schatter"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "Auto"
 msgstr "Auto"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "ML"
 msgstr "ML"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "GLS"
 msgstr "GLS"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "WLS"
 msgstr "WLS"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "ULS"
 msgstr "ULS"
 
-#, fuzzy
 msgctxt "Mimic|"
 msgid "DWLS"
 msgstr "DWLS"
 
 msgctxt "Description|"
 msgid "Visual Modeling (Beta)"
-msgstr ""
+msgstr "Visueel Modeleren (Beta)"
 
-#, fuzzy
 msgctxt "Flexplot|"
 msgid "Point controls"
 msgstr "Punt controles"
 
 msgctxt "Flexplot|"
 msgid "Visual Statistics"
-msgstr ""
+msgstr "Visuele statistieken"
 
 msgctxt "Flexplot|"
 msgid "Other Plot Controls"
-msgstr ""
+msgstr "Andere plot controles"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Target R-hat"
-msgstr ""
+msgstr "Doel R-hat"
 
 msgctxt "DynamicModules|"
 msgid "Path cannot be handled by R"
-msgstr ""
+msgstr "Pad kan niet worden afgehandeld door R"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -21376,3 +21197,10 @@ msgid ""
 "and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
 ">Advanced->DeveloperMode."
 msgstr ""
+"U probeert een module te installeren, maar omdat het pad '%1' niet-ascii-"
+"karakters (of een spatie) bevat, kan R problemen tegenkomen om daar te "
+"installeren. Als de installatie van deze module mislukt, kunt u hier omheen "
+"werken door uw gebruikersnaam te wijzigen (of een nieuwe gebruikersnaam te "
+"maken) die alleen bestaat uit ascii-karakters zonder spaties. Of u kunt "
+"\"LC_CTYPE-set-to-C\" uitschakelen onder "
+"Preferences->Advanced->DeveloperMode."
