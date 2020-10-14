@@ -64,14 +64,9 @@ Item
 		}
 	}
 
-	onListWidthChanged:
-	{
-		if (formInitialized && listWidth > 0 && listWidth != _lastListWidth)
-		{
-			_lastListWidth = listWidth;
-			setControlsSize();
-		}
-	}
+	onListWidthChanged: if (formInitialized && listWidth > 0 && listWidth != _lastListWidth) _lastListWidth = listWidth;
+
+	onHeightChanged:	if (formInitialized )	setControlsSize();
 
 	Repeater
 	{
