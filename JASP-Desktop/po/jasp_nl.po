@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-10-13 09:11+0000\n"
-"Last-Translator: Johnny van Doorn <johnnydoorn@gmail.com>\n"
+"PO-Revision-Date: 2020-10-14 08:33+0000\n"
+"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
 "Language: nl\n"
@@ -12709,7 +12709,7 @@ msgstr "Plot controles"
 
 msgctxt "glinmod|"
 msgid "Point controls"
-msgstr "Punt controles"
+msgstr "Puntbediening"
 
 msgctxt "glinmod|"
 msgid "Point transparency"
@@ -12817,11 +12817,11 @@ msgstr "Plot controles"
 
 msgctxt "linmod|"
 msgid "Point controls"
-msgstr "Punt controles"
+msgstr "Puntbediening"
 
 msgctxt "linmod|"
 msgid "Point transparency"
-msgstr "Point transparantie"
+msgstr "Punt transparantie"
 
 msgctxt "linmod|"
 msgid "Jitter in X"
@@ -12905,7 +12905,7 @@ msgstr "Plot controles"
 
 msgctxt "mixedmod|"
 msgid "Point controls"
-msgstr "Punt controles"
+msgstr "Puntbediening"
 
 msgctxt "mixedmod|"
 msgid "Point transparency"
@@ -16235,7 +16235,7 @@ msgstr "Clusteren"
 
 msgctxt "Description|"
 msgid "Density-Based"
-msgstr "Density-Based"
+msgstr "Op dichtheid gebaseerd"
 
 msgctxt "Description|"
 msgid "Density-Based Clustering"
@@ -16369,15 +16369,15 @@ msgstr "Flexplot"
 
 msgctxt "Description|"
 msgid "Linear Modeling"
-msgstr "Lineair Modeleren"
+msgstr "Lineair Modelleren"
 
 msgctxt "Description|"
 msgid "Mixed Modeling"
-msgstr "Mixed Modeling"
+msgstr "Gemengd Modelleren"
 
 msgctxt "Description|"
 msgid "Generalized Linear Modeling"
-msgstr "Veralgemeniseert Lineair Modeleren"
+msgstr "Gegeneraliseerd Lineair Modelleren"
 
 msgctxt "Description|"
 msgid "Wait for it..."
@@ -16961,7 +16961,7 @@ msgstr "Gewichtsfunctie"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Cut-points"
-msgstr "Afkap punt"
+msgstr "Afkappunten"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Two-sided"
@@ -19121,7 +19121,7 @@ msgstr "Conditioneel"
 
 msgctxt "LStestinginference|"
 msgid "Point estimate"
-msgstr "Puntenschatting"
+msgstr "Puntschatting"
 
 msgctxt "LStestinginference|"
 msgid "CI"
@@ -20994,7 +20994,6 @@ msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Correlations & (N / SE)"
 msgstr "Correlaties & (N / SE)"
 
-#, fuzzy
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid " "
 msgstr " "
@@ -21165,11 +21164,11 @@ msgstr "DWLS"
 
 msgctxt "Description|"
 msgid "Visual Modeling (Beta)"
-msgstr "Visueel Modeleren (Beta)"
+msgstr "Visueel Modelleren (Beta)"
 
 msgctxt "Flexplot|"
 msgid "Point controls"
-msgstr "Punt controles"
+msgstr "Puntbediening"
 
 msgctxt "Flexplot|"
 msgid "Visual Statistics"
