@@ -10766,70 +10766,6 @@ msgctxt "LDbernoulli|"
 msgid "≤ X ≤"
 msgstr ""
 
-msgctxt "LDbernoulli|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Method of moments"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Unbiased estimator"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Histogram vs. theoretical pmf"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "P-P plot"
-msgstr ""
-
 msgctxt "LDbeta|"
 msgid "α"
 msgstr ""
@@ -10864,86 +10800,6 @@ msgstr ""
 
 msgctxt "LDbeta|"
 msgid "Quantile function"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Method of moments"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Unbiased estimator"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Histogram vs. theoretical pdf"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Kolmogorov-Smirnov"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Cramér–von Mises"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Anderson-Darling"
 msgstr ""
 
 msgctxt "LDbinomial|"
@@ -11022,78 +10878,6 @@ msgctxt "LDbinomial|"
 msgid "≤ X ≤"
 msgstr ""
 
-msgctxt "LDbinomial|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Method of moments"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Unbiased estimator"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Histogram vs. theoretical pmf"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Chi-square"
-msgstr ""
-
 msgctxt "LDchisq|"
 msgid "k"
 msgstr ""
@@ -11130,78 +10914,6 @@ msgctxt "LDchisq|"
 msgid "Quantile function"
 msgstr ""
 
-msgctxt "LDchisq|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Histogram vs. theoretical pdf"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Kolmogorov-Smirnov"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Cramér–von Mises"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Anderson-Darling"
-msgstr ""
-
 msgctxt "LDexponential|"
 msgid "Parameter"
 msgstr ""
@@ -11232,86 +10944,6 @@ msgstr ""
 
 msgctxt "LDexponential|"
 msgid "Quantile function"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Method of moments"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Unbiased estimator"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Histogram vs. theoretical pdf"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Kolmogorov-Smirnov"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Cramér–von Mises"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Anderson-Darling"
 msgstr ""
 
 msgctxt "LDf|"
@@ -11354,78 +10986,6 @@ msgctxt "LDf|"
 msgid "Quantile function"
 msgstr ""
 
-msgctxt "LDf|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Histogram vs. theoretical pdf"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Kolmogorov-Smirnov"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Cramér–von Mises"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Anderson-Darling"
-msgstr ""
-
 msgctxt "LDgamma|"
 msgid "Parameters"
 msgstr ""
@@ -11456,86 +11016,6 @@ msgstr ""
 
 msgctxt "LDgamma|"
 msgid "Quantile function"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Method of moments"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Unbiased estimator"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Histogram vs. theoretical pdf"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Kolmogorov-Smirnov"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Cramér–von Mises"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Anderson-Darling"
 msgstr ""
 
 msgctxt "LDgammaInverse|"
@@ -11576,46 +11056,6 @@ msgstr ""
 
 msgctxt "LDgammaInverse|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Method of moments"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Unbiased estimator"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Correlation"
 msgstr ""
 
 msgctxt "LDgammaInverse|"
@@ -11686,90 +11126,6 @@ msgctxt "LDgaussianunivariate|"
 msgid "Quantile function"
 msgstr ""
 
-msgctxt "LDgaussianunivariate|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Method of moments"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Unbiased estimator"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Histogram vs. theoretical pdf"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Kolmogorov-Smirnov"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Cramér–von Mises"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Anderson-Darling"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Shapiro-Wilk"
-msgstr ""
-
 msgctxt "LDnegbinomial|"
 msgid "Show Distribution"
 msgstr ""
@@ -11828,78 +11184,6 @@ msgstr ""
 
 msgctxt "LDnegbinomial|"
 msgid "≤ X ≤"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Method of moments"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Unbiased estimator"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Histogram vs. theoretical pmf"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Chi-square"
 msgstr ""
 
 msgctxt "LDpoisson|"
@@ -11970,78 +11254,6 @@ msgctxt "LDpoisson|"
 msgid "≤ X ≤"
 msgstr ""
 
-msgctxt "LDpoisson|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Method of moments"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Unbiased estimator"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Histogram vs. theoretical pmf"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Chi-square"
-msgstr ""
-
 msgctxt "LDt|"
 msgid "df"
 msgstr ""
@@ -12076,70 +11288,6 @@ msgstr ""
 
 msgctxt "LDt|"
 msgid "Quantile function"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Histogram vs. theoretical pdf"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Kolmogorov-Smirnov"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Cramér–von Mises"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Anderson-Darling"
 msgstr ""
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
@@ -19348,78 +18496,6 @@ msgctxt "LDlogistic|"
 msgid "Quantile function"
 msgstr ""
 
-msgctxt "LDlogistic|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Histogram vs. theoretical pdf"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Kolmogorov-Smirnov"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Cramér–von Mises"
-msgstr ""
-
-msgctxt "LDlogistic|"
-msgid "Anderson-Darling"
-msgstr ""
-
 msgctxt "LDlognormal|"
 msgid "Show Distribution"
 msgstr ""
@@ -19466,78 +18542,6 @@ msgstr ""
 
 msgctxt "LDlognormal|"
 msgid "Quantile function"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Estimate Parameters"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Maximum likelihood"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Output"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Estimates"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Std. error"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Confidence interval"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Variance-covariance"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Correlation"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Assess Fit"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Histogram vs. theoretical pdf"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Q-Q plot"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Empirical vs. theoretical cdf"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "P-P plot"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Kolmogorov-Smirnov"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Cramér–von Mises"
-msgstr ""
-
-msgctxt "LDlognormal|"
-msgid "Anderson-Darling"
 msgstr ""
 
 msgctxt "LDnegbinomial|"
@@ -19866,14 +18870,6 @@ msgid ""
 msgstr ""
 
 msgctxt "PrefsAdvanced|"
-msgid "Windows Workarounds"
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid "Let JASP guess the best setting for LC_CTYPE"
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
@@ -19885,918 +18881,6 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid ""
-"If this is enabled and you have non-ascii characters in your install path "
-"JASP won't work anymore.  If you only have non-ascii characters in your "
-"username then installing modules will probably break. On the other hand, "
-"disabling this will make certain characters in the results look weird, sorry "
-"for the inconvenience, we are working on it and hopefully have this fixed "
-"next release."
-msgstr ""
-
-msgctxt "Description|"
-msgid ""
-"This module offers the Principal Component, Confirmatory and Exploratory "
-"Factor analyses"
-msgstr ""
-
-msgctxt "Description|"
-msgid ""
-"This module offers the standard Frequentist and Bayesian Mixed Models "
-"analyses."
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Model"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Model components"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Fixed effects"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Random effects"
-msgstr ""
-
-#, qt-format
-msgctxt "MixedModelsBGLMM|"
-msgid "Random slopes by %1"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Correlations"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Options"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Warmup"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Iterations"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Chains"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Adapt delta"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Maximum treedepth"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Show"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Deviations from mean"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Marginal means"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Fixed effects estimates"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Variance/correlation estimates"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "MCMC diagnostics"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Model terms"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Selected term"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Plot type"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Model factors"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Horizontal axis"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Separate lines"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Separate plots"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Background data show"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Confidence interval method"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Distinguish factor levels"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Color"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Shape"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Linetype"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Fill"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Background geom"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Transparency"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Jitter width"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Jitter height"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Geom width"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Dodge"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Theme"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Legend position"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Color background data"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Relative size text"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Relative size foreground data"
-msgstr ""
-
-msgctxt "MixedModelsBGLMM|"
-msgid "Estimates table"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Model"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Model components"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Fixed effects"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Random effects"
-msgstr ""
-
-#, qt-format
-msgctxt "MixedModelsBLMM|"
-msgid "Random slopes by %1"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Correlations"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Options"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Warmup"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Iterations"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Chains"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Adapt delta"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Maximum treedepth"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Show"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Deviations from mean"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Marginal means"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Fixed effects estimates"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Variance/correlation estimates"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "MCMC diagnostics"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Model terms"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Selected term"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Plot type"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Model factors"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Horizontal axis"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Separate lines"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Separate plots"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Background data show"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Confidence interval method"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Distinguish factor levels"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Color"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Shape"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Linetype"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Fill"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Background geom"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Transparency"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Jitter width"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Jitter height"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Geom width"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Dodge"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Theme"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Legend position"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Color background data"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Relative size text"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Relative size foreground data"
-msgstr ""
-
-msgctxt "MixedModelsBLMM|"
-msgid "Estimates table"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Model"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Model components"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Fixed effects"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Random effects"
-msgstr ""
-
-#, qt-format
-msgctxt "MixedModelsGLMM|"
-msgid "Random slopes by %1"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Correlations"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Options"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Type"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "II"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "III"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Test intercept"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Test model terms"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "No. samples"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Fixed effects estimates"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Variance/correlation estimates"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Vovk-Sellke maximum p-ratio"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Model factors"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Horizontal axis"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Separate lines"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Separate plots"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Background data show"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Confidence interval method"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Distinguish factor levels"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Color"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Shape"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Linetype"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Fill"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Background geom"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Transparency"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Jitter width"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Jitter height"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Geom width"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Dodge"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Theme"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Legend position"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Color background data"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Relative size text"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Relative size foreground data"
-msgstr ""
-
-msgctxt "MixedModelsGLMM|"
-msgid "Estimates table"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Model"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Model components"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Fixed effects"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Random effects"
-msgstr ""
-
-#, qt-format
-msgctxt "MixedModelsLMM|"
-msgid "Random slopes by %1"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Correlations"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Options"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Type"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "II"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "III"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Test intercept"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Test model terms"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "No. samples"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Fixed effects estimates"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Variance/correlation estimates"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Vovk-Sellke maximum p-ratio"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Model factors"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Horizontal axis"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Separate lines"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Separate plots"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Background data show"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Confidence interval method"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Distinguish factor levels"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Color"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Shape"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Linetype"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Fill"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Background geom"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Transparency"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Jitter width"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Jitter height"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Geom width"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Dodge"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Theme"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Legend position"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Color background data"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Relative size text"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Relative size foreground data"
-msgstr ""
-
-msgctxt "MixedModelsLMM|"
-msgid "Estimates table"
-msgstr ""
-
-msgctxt "RegressionLinearBayesian|"
-msgid "Bernouilli"
-msgstr ""
-
-msgctxt "auditClassicalBenfordsLaw|"
-msgid "Check numbers:"
-msgstr ""
-
-msgctxt "auditClassicalBenfordsLaw|"
-msgid "Compare vs. Benford's law"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Robust Bayesian Meta-Analysis (beta)"
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Cohen's d / t-statistics & (N / SE)"
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Correlations & (N / SE)"
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid " "
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Model-averaged"
-msgstr ""
-
-msgctxt "RobustBayesianMetaAnalysis|"
-msgid "Transform correlations"
-msgstr ""
-
-msgctxt "Description|"
-msgid ""
-"This module offers the standard Frequentist and Bayesian Reliability "
-"analyses."
-msgstr ""
-
-msgctxt "ReliabilityBayesian|"
-msgid "Probability for: "
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Indicators"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Predictors"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Options"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Standardized estimates"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Lavaan syntax"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "R-squared"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Additional fit measures"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Confidence intervals"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Method"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Standard"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Robust"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Bootstrap"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Replications"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Type"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Bias-corrected percentile"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Percentile"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Normal theory"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Plots"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Model plot"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Parameter estimates"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Legend"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Advanced"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Missing value handling"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Full Information Maximum Likelihood"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Exclude cases listwise"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Emulation"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "None"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Mplus"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "EQS"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Estimator"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "Auto"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "ML"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "GLS"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "WLS"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "ULS"
-msgstr ""
-
-msgctxt "Mimic|"
-msgid "DWLS"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Visual Modeling (Beta)"
-msgstr ""
-
-msgctxt "Flexplot|"
-msgid "Point controls"
-msgstr ""
-
-msgctxt "Flexplot|"
-msgid "Visual Statistics"
-msgstr ""
-
-msgctxt "Flexplot|"
-msgid "Other Plot Controls"
 msgstr ""
 
 msgctxt "RobustBayesianMetaAnalysis|"
@@ -20816,4 +18900,131 @@ msgid ""
 "your username (or making a new username) that only contains ascii-characters "
 "and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
 ">Advanced->DeveloperMode."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Windows workarounds"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Handling LC_CTYPE"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"If this is enabled and you have non-ascii characters in your install path "
+"JASP won't work anymore.  If you only have non-ascii characters in your "
+"username then installing modules will probably break."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Keep LC_CTYPE at systemdefault."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Enabling this will make certain characters in the results look weird, but at "
+"least you can use JASP if you installed it in a folder with non-ascii "
+"characters in the path. Sorry for the inconvenience, we are working on it "
+"and hopefully have this fixed next release."
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Assess Fit"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "[requires a loaded data set]"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Plots"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Histogram vs. theoretical pdf"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Histogram vs. theoretical pmf"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Q-Q plot"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Empirical vs. theoretical cdf"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "P-P plot"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Statistics"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Kolmogorov-Smirnov"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Cramér–von Mises"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Anderson-Darling"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Shapiro-Wilk"
+msgstr ""
+
+msgctxt "LDAssessFit|"
+msgid "Chi-square"
+msgstr ""
+
+msgctxt "LDEstimateParameters|"
+msgid "Estimate Parameters"
+msgstr ""
+
+msgctxt "LDEstimateParameters|"
+msgid "[requires a loaded data set]"
+msgstr ""
+
+msgctxt "LDEstimateParameters|"
+msgid "Maximum likelihood"
+msgstr ""
+
+msgctxt "LDEstimateParameters|"
+msgid "Output"
+msgstr ""
+
+msgctxt "LDEstimateParameters|"
+msgid "Estimates"
+msgstr ""
+
+msgctxt "LDEstimateParameters|"
+msgid "Std. error"
+msgstr ""
+
+msgctxt "LDEstimateParameters|"
+msgid "Confidence interval"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "[requires a loaded data set]"
+msgstr ""
+
+msgctxt "LSestimationpredictions|"
+msgid "Predictions table"
+msgstr ""
+
+msgctxt "LStestinginference|"
+msgid "Predictions table"
 msgstr ""

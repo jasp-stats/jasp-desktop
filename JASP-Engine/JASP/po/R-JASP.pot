@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.14.0\n"
-"POT-Creation-Date: 2020-10-08 13:38\n"
+"POT-Creation-Date: 2020-10-14 11:12\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,13 +94,13 @@ msgstr ""
 msgid "The prediction for %s %s is based on %s %s and %s %s."
 msgstr ""
 
-msgid "Sample proportions"
+msgid "Predicted sample proportions"
 msgstr ""
 
 msgid "Density"
 msgstr ""
 
-msgid "Number of successes"
+msgid "Predicted number of successes"
 msgstr ""
 
 msgid "Probability"
@@ -113,6 +113,9 @@ msgid "The lower CI limit is higher than the number of future observations. Plea
 msgstr ""
 
 msgid "The lower CI limit is higher than the upper CI limit. Please, change the value of the CI limits in the settings panel."
+msgstr ""
+
+msgid "Proportion of Successes"
 msgstr ""
 
 msgid "Testing Summary"
@@ -137,9 +140,6 @@ msgid "P(H|data)"
 msgstr ""
 
 msgid "The plot could not be created because the posterior model probabilities are not defined."
-msgstr ""
-
-msgid "Proportion of Successes"
 msgstr ""
 
 msgid "P(Successes|%s)"
@@ -292,7 +292,7 @@ msgstr ""
 msgid "The 'Marginal' option collapses across all individual prior and posterior distributions, weighting them by their prior and posterior probability."
 msgstr ""
 
-msgid "The 'Point estimate' option displays a plot with the sequential updating of the point estimate %s (y-axis). The figure visualizes the updating process as ifthe individual data points were arriving one after another (x-axis)."
+msgid "The 'Point estimate' option displays a plot with the sequential updating of the point estimate %s (y-axis). The figure visualizes the updating process as if the individual data points were arriving one after another (x-axis)."
 msgstr ""
 
 msgid "The 'All' option shows either the mean ('Mean') or the median ('Median') for all specified models in one figure, allowing for easier comparison. It is possible to visualize different types of point estimates ('Point estimate') and credible intervals ('CI'):%s"
@@ -304,7 +304,7 @@ msgstr ""
 msgid "The 'Updating table' option generates a numerical summary of the displayed figures."
 msgstr ""
 
-msgid "The 'Interval' option displays a sequential plot with the probability of parameter %s lying inside of the interval ranging from ('lower') to ('upper'), (y-axis). The figure visualizes the updating process as ifthe individual data points were arriving one after another (x-axis)."
+msgid "The 'Interval' option displays a sequential plot with the probability of parameter %s lying inside of the interval ranging from ('lower') to ('upper'), (y-axis). The figure visualizes the updating process as if the individual data points were arriving one after another (x-axis)."
 msgstr ""
 
 msgid "The 'All' option shows the probability of parameter %s lying inside of the specified range for all models in one figure, allowing for easier comparison."
@@ -367,7 +367,7 @@ msgstr ""
 msgid "The 'Normalized' option shows all predictive accuracies considered together in light of the other hypotheses (by normalizing the joint predictive accuracies by the probability of the data, which equals to the posterior probability of the hypotheses)."
 msgstr ""
 
-msgid "The 'Test results' option displays a plot with the sequential change in the predictive accuracy of all hypotheses (y-axis). The figure visualizes the updating process as ifthe individual data points were arriving one after another (x-axis)."
+msgid "The 'Test results' option displays a plot with the sequential change in the predictive accuracy of all hypotheses (y-axis). The figure visualizes the updating process as if the individual data points were arriving one after another (x-axis)."
 msgstr ""
 
 msgid "The 'Normalized' option shows all predictive accuracies considered together in light of the other hypotheses (by normalizing the joint predictive accuracies by the probability of the data, which equals to the posterior probability of the hypotheses at the given time point)."
@@ -4355,6 +4355,9 @@ msgid "Not enough valid cases (%i) to run this analysis"
 msgstr ""
 
 msgid "Data not valid: variance is zero in each row"
+msgstr ""
+
+msgid "Data not valid: there are more variables than observations"
 msgstr ""
 
 msgid "Data not valid: too many missing values in variable(s) %s."
