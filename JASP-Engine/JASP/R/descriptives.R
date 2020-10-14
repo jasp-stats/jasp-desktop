@@ -186,41 +186,12 @@ Descriptives <- function(jaspResults, dataset, options) {
 
 
 #X bar Chart
-  if(options$Xbarchart){
-
-    if(is.null(jaspResults[["Xbarchart"]])) {
-      jaspResults[["Xbarchart"]] <- createJaspContainer(gettext("X bar chart"))
-      jaspResults[["Xbarchart"]]$dependOn("Xbarchart")
-      jaspResults[["Xbarchart"]]$position <- 11
-    }
-
-    Xbarchart <- jaspResults[["Xbarchart"]]
-    for (var in variables){
-      if(is.null(Xbarchart[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
-        Xbarchart[[var]] <- .XbarchartNoId(jaspResults = jaspResults, dataset = dataset, options = options)
-        Xbarchart$dependOn(optionContainsValue=list(variables=var))
-      }
-    }
-  }
-
+  if(options$Xbarchart && is.null(jaspResults[["Xbarchart"]]))
+    .XbarchartNoId(jaspResults = jaspResults, dataset = dataset, options = options)
 
 #R chart
-  if(options$Rchart){
-
-    if(is.null(jaspResults[["Rchart"]])) {
-       jaspResults[["Rchart"]] <- createJaspContainer(gettext("R chart"))
-       jaspResults[["Rchart"]]$dependOn("Rchart")
-       jaspResults[["Rchart"]]$position <- 11
-     }
-
-    Rchart <- jaspResults[["Rchart"]]
-    for (var in variables){
-      if(is.null(Rchart[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
-        Rchart[[var]] <- .Rchart(jaspResults = jaspResults, dataset = dataset, options = options)
-        Rchart$dependOn(optionContainsValue=list(variables=var))
-      }
-    }
-  }
+  if(options$Rchart && is.null(jaspResults[["Rchart"]]))
+    .Rchart(jaspResults = jaspResults, dataset = dataset, options = options)
 
 # Scatter plots
   if (options[["scatterPlot"]]) {
@@ -1476,6 +1447,7 @@ Descriptives <- function(jaspResults, dataset, options) {
 
   jaspResults[["XbarPlot"]] <- createJaspPlot(title = "X bar chart", width = 650, aspectRatio = 1)
   jaspResults[["XbarPlot"]]$dependOn(c("Xbarchart", "variables"))
+  jaspResults[["XbarPlot"]]$position <- 11
   XbarPlot <- jaspResults[["XbarPlot"]]
 
   data1= na.omit(as.data.frame(dataset))
@@ -1497,12 +1469,14 @@ Descriptives <- function(jaspResults, dataset, options) {
     ggplot2::geom_hline(yintercept = center, color = 'black')+
     ggplot2::geom_hline(yintercept = c(center - sd1,center + sd1), linetype = "dashed", color = "red")+
     ggplot2::geom_hline(yintercept = c(UCL,LCL), color = "red")+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,center,label = sprintf("Mean = %g",round(center,3))))+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,UCL,label = sprintf("UCL = %g",round(UCL,3))))+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,LCL,label = sprintf("LCL = %g",round(LCL,3))))
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,center,label = sprintf("Mean = %g",round(center,3))))+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,UCL,label = sprintf("UCL = %g",round(UCL,3))))+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,LCL,label = sprintf("LCL = %g",round(LCL,3))))+
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y= ggplot2::element_text(size= ggplot2::rel(1.4)))+
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y= ggplot2::element_text(size= ggplot2::rel(1.4)))+
+    ggplot2::scale_y_continuous(limits = c(LCL,UCL), breaks = NULL)
 
   XbarPlot$plotObject <- p
-  return()
 }
 
 .Rchart <- function(jaspResults, dataset, options) {
@@ -1513,6 +1487,7 @@ Descriptives <- function(jaspResults, dataset, options) {
 
   jaspResults[["RPlot"]] <- createJaspPlot(title = "R chart", width = 650, aspectRatio = 1)
   jaspResults[["RPlot"]]$dependOn(c("Rchart", "variables"))
+  jaspResults[["RPlot"]]$position <- 11
   RPlot <- jaspResults[["RPlot"]]
 
   data1= na.omit(as.data.frame(dataset))
@@ -1532,10 +1507,12 @@ Descriptives <- function(jaspResults, dataset, options) {
     ggplot2::geom_point(size = 2)+
     ggplot2::geom_hline(yintercept =  center, color = 'black')+
     ggplot2::geom_hline(yintercept= c(UCL,LCL), color = "red")+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,center,label = sprintf("Range = %g",round(center,3))))+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,UCL,label = sprintf("UCL = %g",round(UCL,3))))+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1,LCL,label = sprintf("LCL= %g",round(LCL,3))))
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,center,label = sprintf("Range = %g",round(center,3))))+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,UCL,label = sprintf("UCL = %g",round(UCL,3))))+
+    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,LCL,label = sprintf("LCL= %g",round(LCL,3))))+
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y = ggplot2::element_text(size= ggplot2::rel(1.4)))+
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y = ggplot2::element_text(size= ggplot2::rel(1.4)))+
+    ggplot2::scale_y_continuous(limits = c(LCL,UCL), breaks = NULL)
 
-  RPlot$plotObject <- p
-  return()
+ RPlot$plotObject <- p
 }
