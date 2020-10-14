@@ -134,6 +134,7 @@ Form
             {
                                     name: "plotVariables";			label: qsTr("Distribution plots")
                 CheckBox {			name: "distPlotDensity";		label: qsTr("Display density")					}
+				CheckBox {			name: "distPlotRug";		label: qsTr("Display rug marks")					}
 				DropDown {
                 name: "binWidthType"
                 label: qsTr("Bin Width Type")

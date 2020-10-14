@@ -83,7 +83,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   if (options$plotVariables) {
     if(is.null(jaspResults[["distributionPlots"]])) {
       jaspResults[["distributionPlots"]] <- createJaspContainer(gettext("Distribution Plots"))
-      jaspResults[["distributionPlots"]]$dependOn(c("plotVariables", "splitby", "distPlotDensity"))
+      jaspResults[["distributionPlots"]]$dependOn(c("plotVariables", "splitby", "distPlotDensity", "distPlotRug"))
       jaspResults[["distributionPlots"]]$position <- 5
     }
 
@@ -817,21 +817,21 @@ Descriptives <- function(jaspResults, dataset, options) {
     plotResult$dependOn(options=c("splitby", "binWidthType"), optionContainsValue=list(variables=variable))
 
     for (l in split) {
-      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset[[l]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l, binWidthType = options$binWidthType)
+      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset[[l]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, rugs = options$distPlotRug, title = l, binWidthType = options$binWidthType)
       plotResult[[l]]$dependOn(optionsFromObject=plotResult)
     }
 
     return(plotResult)
   } else {
     column <- dataset[[.v(variable)]]
-    aPlot <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset, variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = variable, binWidthType = options$binWidthType)
+    aPlot <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset, variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, rugs = options$distPlotRug, title = variable, binWidthType = options$binWidthType)
     aPlot$dependOn(options=c("splitby", "binWidthType"), optionContainsValue=list(variables=variable))
 
     return(aPlot)
   }
 }
 
-.descriptivesFrequencyPlots_SubFunc <- function(dataset, variable, width, height, displayDensity, title, binWidthType = NA) {
+.descriptivesFrequencyPlots_SubFunc <- function(dataset, variable, width, height, displayDensity, rugs, title, binWidthType = NA) {
   freqPlot <- createJaspPlot(title=title, width=width, height=height)
   
   errorMessage <- .descriptivesCheckPlotErrors(dataset, variable, obsAmount = "< 3")
@@ -842,7 +842,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   else if (length(column) > 0 && is.factor(column))
     freqPlot$plotObject <- .barplotJASP(column, variable)
   else if (length(column) > 0 && !is.factor(column))
-    freqPlot$plotObject <- .plotMarginal(column, variableName=variable, displayDensity = displayDensity, binWidthType = binWidthType)
+    freqPlot$plotObject <- .plotMarginal(column, variableName=variable, displayDensity = displayDensity, rugs = rugs, binWidthType = binWidthType)
   
   return(freqPlot)
 }
@@ -992,7 +992,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     binWidthType <- k
   }
 
-  h <- hist(variable, plot = FALSE, breaks = binWidthType) # change options here
+  h <- hist(variable, plot = FALSE, breaks = binWidthType)
 
   if (!displayDensity)
     yhigh <- max(h$counts)
@@ -1049,6 +1049,9 @@ Descriptives <- function(jaspResults, dataset, options) {
         center    = ((h$breaks[2] - h$breaks[1])/2)
       )
   }
+  
+  if (rugs)
+    p <- p + ggplot2::geom_rug(data = data.frame(variable),mapping  = ggplot2::aes(x = variable), sides="b")
     
 
   # JASP theme
