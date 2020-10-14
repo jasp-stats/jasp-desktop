@@ -35,6 +35,50 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+		<release version="0.14.1" date="2020-10-14">
+					<description>
+						New release 0.14
+
+						New features and improvements 
+							- Adjusting for publication bias in meta-analysis
+							- Robust Bayesian meta-analysis
+							- Selection models
+							- Learn Bayes module
+							- PDF export of results
+							- Choose your font
+							- German translation
+							- Frequentist partial correlations
+							- Confidence and prediction intervals in linear regression
+							- New distributions in the Distributions module (log-normal and logistic)
+
+						Bug fixes 
+							- Large dataset: Crash when changing variable type #938
+							- Jasp cannot be installed without admin privileges #861
+							- Mangled name in 0.13 #851
+							- Analysis of Effects: Across Matched Models #852
+							- Corrections of bugs found during the workshop #4257
+							- Summary Statistics Bayesian Independent Samples T-Test: Labels in prior and posterior plots switch upon changing from BF10 to BF01, while they shouldn't #796
+							- Quill: Add the ability to change line width, as in docs via paragraph (singel, double spacing, etc) #694
+							- Quill: Ghost text? #695
+							- Quill: Tooltip for Quill #696
+							- Issues with display of icons and characters #929
+							- ROC and PR curve (after classification) #277
+							- Plots on linux are only saved as png #889
+							- Labels not being displayed anymore in spreadsheet #933
+							- Minor display glitch in spreadsheet #935
+							- Major inconsistency between frequentist and bayesian non parametric paired t-test #868
+							- Add methods median, ward.d, ward.d2 and mcquitty #4222
+							- Column order option does not work #914
+							- Contingency tables properly reverse column labels #4211
+							- Save image as SVG #873
+							- Selecting a custom spreadsheet editor not working #901
+							- Further Customization of Plots #279
+							- Posterior summaries in Bayesian linear regression and Bayesian ANOVAs now show exclusion probabilities #625
+							- Log Odds Ratio value not updated #915
+							- Bayesian Mixed Effect Models with aggregated binomial family #957 
+							- Reliability: Average interitem correlation 95%CI, do not include point estimate! #888
+			</description>
+		</release>
 		<release version="0.13.1" date="2020-07-13">
 					<description>
 						Bug fixing release for 0.13
