@@ -3261,9 +3261,9 @@
 			"buildsystem": "simple",
 			"sources": [
 				{
-					"type": "git",
-					"url": "https://github.com/FBartos/RoBMA",
-					"commit": "7685d4d203a46f259b4cda2c492c8235397c80eb"
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/RoBMA_1.0.5.tar.gz",
+					"sha256": "9bd8d81bbf14f18a82af831681fe19560f09aac067ba22d40ad0bf8bbe344108"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
