@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-10-14 11:12\n"
-"PO-Revision-Date: 2020-10-14 08:27+0000\n"
+"PO-Revision-Date: 2020-10-14 09:57+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "nl/>\n"
@@ -101,16 +101,14 @@ msgstr "Voorspelling std. afwijking"
 msgid "The prediction for %s %s is based on %s %s and %s %s."
 msgstr "De voorspelling voor %s %s is gebaseerd op %s %s en %s %s."
 
-#, fuzzy
 msgid "Predicted sample proportions"
-msgstr "Steekproef Proporties"
+msgstr "Voorspelde steekproefproporties"
 
 msgid "Density"
 msgstr "Dichtheid"
 
-#, fuzzy
 msgid "Predicted number of successes"
-msgstr "Aantal successen"
+msgstr "Voorspeld aantal successen"
 
 msgid "Probability"
 msgstr "Kansverdeling"
@@ -658,7 +656,6 @@ msgstr ""
 "De optie 'Marginaal' voegt alle individuele prior en posterior verdelingen "
 "samen, waarbij ze worden gewogen op basis van hun eerdere en posterior kans."
 
-#, fuzzy
 msgid ""
 "The 'Point estimate' option displays a plot with the sequential updating of "
 "the point estimate %s (y-axis). The figure visualizes the updating process "
@@ -697,16 +694,15 @@ msgstr ""
 "De optie 'Update tabel' genereert een numeriek overzicht van de getoonde "
 "cijfers."
 
-#, fuzzy
 msgid ""
 "The 'Interval' option displays a sequential plot with the probability of "
 "parameter %s lying inside of the interval ranging from ('lower') to "
 "('upper'), (y-axis). The figure visualizes the updating process as if the "
 "individual data points were arriving one after another (x-axis)."
 msgstr ""
-"De optie 'Interval' geeft een sequentieel grafiek weer met de kans dat de "
-"parameter %s binnen het interval ligt, variërend van ('onder') tot "
-"('boven'), (y-as). De figuur visualiseert het actualiseringsproces alsof de "
+"De optie 'Interval' geeft een sequentiële grafiek weer met de kans dat de "
+"parameter %s binnen het interval ligt, variërend van ('onder') tot ('boven')"
+", (y-as). De figuur visualiseert het actualiseringsproces alsof de "
 "afzonderlijke gegevenspunten na elkaar aankomen (x-as)."
 
 msgid ""
@@ -990,7 +986,6 @@ msgstr ""
 "nauwkeurigheden te normaliseren door de waarschijnlijkheid van de gegevens, "
 "die gelijk is aan de posterior kans van de hypothesen)."
 
-#, fuzzy
 msgid ""
 "The 'Test results' option displays a plot with the sequential change in the "
 "predictive accuracy of all hypotheses (y-axis). The figure visualizes the "
@@ -6485,9 +6480,8 @@ msgstr "Niet genoeg valide waarnemingen (%i) om de analyse uit te voeren"
 msgid "Data not valid: variance is zero in each row"
 msgstr "Data niet valide: variantie is nul in iedere rij"
 
-#, fuzzy
 msgid "Data not valid: there are more variables than observations"
-msgstr "Data niet valide: alle variabelen zijn collineair"
+msgstr "Gegevens niet valide: er zijn meer variablelen dan observaties"
 
 msgid "Data not valid: too many missing values in variable(s) %s."
 msgstr "Data niet valide: teveel ontbrekende waarden in variabele(n) %s."
