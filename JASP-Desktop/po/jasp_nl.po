@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2020-10-14 09:55+0000\n"
+"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
+"nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -19271,15 +19277,15 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows workarounds"
-msgstr ""
+msgstr "Tijdelijke Oplossingen voor Windows"
 
 msgctxt "PrefsAdvanced|"
 msgid "Handling LC_CTYPE"
-msgstr ""
+msgstr "Behandeling van LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
-msgstr ""
+msgstr "Laat JASP de beste waarde voor LC_TYPE bepalen (Aanbevolen!)"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -19287,10 +19293,14 @@ msgid ""
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
 msgstr ""
+"Als dit is ingeschakeld en je hebt non-ascii karakters in je installatiepad "
+"zal JASP niet meer werken.  Als je alleen non-ascii karakters in je "
+"gebruikersnaam hebt, dan zal het installeren van modules waarschijnlijk "
+"mislukken."
 
 msgctxt "PrefsAdvanced|"
 msgid "Keep LC_CTYPE at systemdefault."
-msgstr ""
+msgstr "Houd LC_TYPE waarde zoals systeemvoorkeur."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -19299,119 +19309,103 @@ msgid ""
 "characters in the path. Sorry for the inconvenience, we are working on it "
 "and hopefully have this fixed next release."
 msgstr ""
+"Door dit in te schakelen zullen bepaalde karakters in de resultaten er raar "
+"uitzien, maar JASPis in ieder geval te gebruiken JASP geïnstalleerd is in "
+"een map met non-ascii karakters. Sorry voor dit ongemak, hier wordt aan "
+"gewerkt en hopelijk hebben we de volgende release een oplossing."
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Assess Fit"
 msgstr "Evalueer Passing"
 
 msgctxt "LDAssessFit|"
 msgid "[requires a loaded data set]"
-msgstr ""
+msgstr "[vereist een geladen dataset]"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Plots"
 msgstr "Grafieken"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Histogram vs. theoretical pdf"
 msgstr "Histogram vs. theoretische pdf"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Histogram vs. theoretical pmf"
-msgstr "Histogram vs. theoretisch pmf"
+msgstr "Histogram vs. theoretische pmf"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Q-Q plot"
 msgstr "Q-Q plot"
 
 msgctxt "LDAssessFit|"
 msgid "Empirical vs. theoretical cdf"
-msgstr ""
+msgstr "Empirische vs. theoretische cdf"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "P-P plot"
 msgstr "P-P plot"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Statistics"
 msgstr "Statistieken"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Kolmogorov-Smirnov"
 msgstr "Kolmogorov-Smirnov"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Cramér–von Mises"
 msgstr "Cramér–von Mises"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Anderson-Darling"
 msgstr "Anderson-Darling"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Shapiro-Wilk"
 msgstr "Shapiro-Wilk"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Chi-square"
 msgstr "Chi-kwadraat"
 
-#, fuzzy
 msgctxt "LDEstimateParameters|"
 msgid "Estimate Parameters"
 msgstr "Schat parameters"
 
 msgctxt "LDEstimateParameters|"
 msgid "[requires a loaded data set]"
-msgstr ""
+msgstr "[vereist een geladen dataset]"
 
-#, fuzzy
 msgctxt "LDEstimateParameters|"
 msgid "Maximum likelihood"
 msgstr "Meest aannemelijke schatter"
 
-#, fuzzy
 msgctxt "LDEstimateParameters|"
 msgid "Output"
 msgstr "Uitvoer"
 
-#, fuzzy
 msgctxt "LDEstimateParameters|"
 msgid "Estimates"
 msgstr "Schattingen"
 
-#, fuzzy
 msgctxt "LDEstimateParameters|"
 msgid "Std. error"
 msgstr "Std. fout"
 
-#, fuzzy
 msgctxt "LDEstimateParameters|"
 msgid "Confidence interval"
 msgstr "Betrouwbaarheidsinterval"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "[requires a loaded data set]"
-msgstr ""
+msgstr "[vereist een geladen dataset]"
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "Predictions table"
 msgstr "Voorspellingstabel"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Predictions table"
 msgstr "Voorspellingstabel"
