@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2020-10-16 07:23+0000\n"
-"Last-Translator: Pablo Augusto Vailati <pvailati@uade.edu.ar>\n"
+"Last-Translator: Paulina Elizabeth Robalino <paulina.e.robalino@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/"
 "jasp-desktop/es/>\n"
 "Language: es\n"
@@ -140,10 +140,9 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Invariance testing"
 msgstr "Prueba de invariancia"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Configural"
-msgstr "Configural"
+msgstr "Configura"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Metric"
@@ -234,7 +233,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "None"
 msgstr "Ninguna"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Mplus"
 msgstr "Mplus"
@@ -479,10 +477,9 @@ msgctxt "LatentRegression|"
 msgid "Invariance testing"
 msgstr "Prueba de invariancia"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Configural"
-msgstr "Configural"
+msgstr "Configura"
 
 #, fuzzy
 msgctxt "LatentRegression|"
@@ -579,7 +576,6 @@ msgctxt "LatentRegression|"
 msgid "None"
 msgstr "Ninguna"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Mplus"
 msgstr "Mplus"
@@ -919,7 +915,6 @@ msgctxt "SEMSimple|"
 msgid "None"
 msgstr "Ninguna"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Mplus"
 msgstr "Mplus"
@@ -1529,7 +1524,6 @@ msgctxt "SubjectivePriors|"
 msgid "Default"
 msgstr "Defecto"
 
-#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "Cauchy"
 msgstr "Cauchy"
@@ -1564,7 +1558,6 @@ msgctxt "SubjectivePriors|"
 msgid "mean:"
 msgstr "media:"
 
-#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "std:"
 msgstr "std:"
@@ -1688,7 +1681,6 @@ msgid ""
 msgstr ""
 "JASP tiene una interfaz intuitiva que fue diseñada pensando en el usuario."
 
-#, fuzzy
 msgctxt "WelcomePage|"
 msgid "Flexible:"
 msgstr "Flexible:"
@@ -1812,7 +1804,6 @@ msgctxt "Ancova|"
 msgid "From"
 msgstr "De"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "bootstraps"
 msgstr "bootstraps"
@@ -1827,202 +1818,162 @@ msgctxt "Ancova|"
 msgid "Correction"
 msgstr "Corrección"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Tukey"
 msgstr "Tukey"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Scheffe"
 msgstr "Scheffe"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Bonferroni"
 msgstr "Bonferroni"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Holm"
 msgstr "Holm"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Šidák"
 msgstr "Šidák"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Type"
 msgstr "Tipo"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Standard"
 msgstr "Estándar"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Games-Howell"
-msgstr "Juegos-Howell"
+msgstr "Games-Howell"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Dunnett"
 msgstr "Dunnett"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Dunn"
 msgstr "Dunn"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Descriptives Plots"
-msgstr "Parcelas descriptivas"
+msgstr "gráficos descriptivos"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Horizontal Axis"
 msgstr "Eje horizontal"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Separate Lines"
 msgstr "Líneas separadas"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Separate Plots"
 msgstr "Parcelas separadas"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Display"
-msgstr "Monitor"
+msgstr "Mostrar"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Display error bars"
 msgstr "Mostrar barras de error"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Standard error"
 msgstr "Error estándar"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Marginal Means"
 msgstr "Medias marginales"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Compare marginal means to 0"
-msgstr "Compara las medias marginales con 0"
+msgstr "Comparar las medias marginales con 0"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Confidence interval adjustment"
 msgstr "Ajuste del intervalo de confianza"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Descriptive statistics"
-msgstr "Estadísticas descriptivas"
+msgstr "Estadísticos descriptivos"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Estimates of effect size"
 msgstr "Estimaciones del tamaño del efecto"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "η²"
 msgstr "η²"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "partial η²"
 msgstr "η² parcial"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "ω²"
 msgstr "ω²"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Vovk-Sellke maximum p-ratio"
 msgstr "Relación p máxima de Vovk-Sellke"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Simple Main Effects"
 msgstr "Efectos principales simples"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Factors"
 msgstr "Factores"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Simple Effect Factor"
 msgstr "Factor de efecto simple"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Moderator Factor 1"
-msgstr "Factor de moderador 1"
+msgstr "Factor moderador 1"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Moderator Factor 2"
-msgstr "Factor de moderador 2"
+msgstr "Factor moderador 2"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Nonparametrics"
 msgstr "No paramétricos"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Kruskal-Wallis Test"
 msgstr "Prueba de Kruskal-Wallis"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Dependent Variable"
 msgstr "Variable dependiente"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Fixed Factors"
 msgstr "Factores fijos"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Random Factors"
 msgstr "Factores aleatorios"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Covariates"
 msgstr "Covariables"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Tables"
-msgstr "Mesas"
+msgstr "Tablas"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Effects"
 msgstr "Efectos"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Across all models"
 msgstr "En todos los modelos"
