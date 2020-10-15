@@ -256,6 +256,8 @@ Modules::AnalysisEntry *RibbonModel::getAnalysis(std::string moduleName, const s
 
 		if(strippedModuleName != moduleName)
 			return getAnalysis(strippedModuleName, analysisName);
+		else if(strippedModuleName.size() < 4 || strippedModuleName.substr(0, 4) != "jasp") //Cause we renamed everything to jasp*
+			return getAnalysis("jasp" + strippedModuleName, analysisName);
 	}
 
 	return nullptr;

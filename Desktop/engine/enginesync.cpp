@@ -183,6 +183,10 @@ void EngineSync::restartEngineAfterCrash(int nr)
 	EngineRepresentation * eng = _engines[size_t(nr)];
 
 	eng->restartEngine(startSlaveProcess(nr));
+
+	//Make sure to load the modules and settings again otherwise this engine is pretty much useless
+	setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
+	logCfgRequest();
 }
 
 void EngineSync::restartKilledEngines()

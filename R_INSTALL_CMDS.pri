@@ -13,16 +13,18 @@ windows {
 }
 
 exists(/app/lib/*) {  #for flatpak we can should use R's own library as it is contained anyway
-  isEmpty(JASP_LIBRARY_DIR):   JASP_LIBRARY_DIR   = $$_R_HOME/library/
+  ROOT_LIBRARY_DIR   = $$_R_HOME/library/
 } else {              #by default we should install to the buildroot R library though
-  isEmpty(JASP_LIBRARY_DIR):   JASP_LIBRARY_DIR   = $${JASP_BUILDROOT_DIR}/R/library\
+  ROOT_LIBRARY_DIR   = $${JASP_BUILDROOT_DIR}/R/library\
 }
 
-win32:  INSTALL_R_PKG_CMD_PREFIX  = \"$$R_EXE\" -e \".libPaths(\'$${JASP_BUILDROOT_DIR}/R/library\'); install.packages(\'
-unix:   INSTALL_R_PKG_CMD_PREFIX  = \"$$R_EXE\" -e \".libPaths(\'$$_R_HOME/library\'); install.packages(\'
+isEmpty(JASP_LIBRARY_DIR):   JASP_LIBRARY_DIR   = $$ROOT_LIBRARY_DIR
 
-win32:  INSTALL_R_PKG_DEPS_CMD_PREFIX  = \"$$R_EXE\" -e \".libPaths(\'$${JASP_BUILDROOT_DIR}/R/library\'); remotes::install_deps(pkg=\'
-unix:   INSTALL_R_PKG_DEPS_CMD_PREFIX  = \"$$R_EXE\" -e \".libPaths(\'$$_R_HOME/library\'); remotes::install_deps(pkg=\'
+win32:  LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$${JASP_BUILDROOT_DIR}/R/library\'))"
+unix:	LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$$_R_HOME/library\'))"
+
+INSTALL_R_PKG_CMD_PREFIX  = \"$$R_EXE\" -e \"$$LIBPATHS; install.packages(\'
+INSTALL_R_PKG_DEPS_CMD_PREFIX  = \"$$R_EXE\" -e \"$$LIBPATHS; remotes::install_deps(pkg=\'
 
 INSTALL_R_PKG_CMD_POSTFIX      = \', lib=\'$${JASP_LIBRARY_DIR}\', INSTALL_opts=\'--no-multiarch --no-docs --no-test-load\', repos=NULL, type=\'source\')\"
 INSTALL_R_PKG_DEPS_CMD_POSTFIX = \', lib=\'$${JASP_LIBRARY_DIR}\', INSTALL_opts=\'--no-multiarch --no-docs --no-test-load\', repos=\'https://cloud.r-project.org/\', upgrade=\'never\', THREADS=1)\"

@@ -163,7 +163,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	rInside["jasp.analyses"] = Rcpp::List();
 
-	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
+	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"jaspBase\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"jaspGraphs\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"modules\"))");

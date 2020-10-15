@@ -64,6 +64,8 @@ exists(/app/lib/*) {
     InstallJASPRPackage.commands        =  $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_CMD_POSTFIX}
 	InstalljaspGraphsRPackage.commands  =  $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspGraphs$${INSTALL_R_PKG_CMD_POSTFIX}
 
+    InstalljaspGraphsRPackage.depends	= InstallJASPRPackage
+
 	win32 {
 	    RemoveJASPRPkgLock       = $${PKG_LOCK_CMD_PREFIX}00LOCK-jaspBase$${PKG_LOCK_CMD_INFIX}00LOCK-jaspBase$${PKG_LOCK_CMD_POSTFIX}
 		RemovejaspGraphsRPkgLock = $${PKG_LOCK_CMD_PREFIX}00LOCK-jaspGraphs$${PKG_LOCK_CMD_INFIX}00LOCK-jaspGraphs$${PKG_LOCK_CMD_POSTFIX}
