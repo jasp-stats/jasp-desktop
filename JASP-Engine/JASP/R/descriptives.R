@@ -117,23 +117,6 @@ Descriptives <- function(jaspResults, dataset, options) {
       }
     }
   }
-  # Interval plots
-  if (options$descriptivesIntervalPlot) {
-    if(is.null(jaspResults[["IntervalPlots"]])) {
-      jaspResults[["IntervalPlots"]] <- createJaspContainer(gettext("Intervalplots"))
-      jaspResults[["IntervalPlots"]]$dependOn(c("IntervalPlots", "splitby"))
-      jaspResults[["IntervalPlots"]]$position <- 11
-    }
-
-    IntervalPlots <- jaspResults[["IntervalPlots"]]
-
-    for (var in variables) {
-        if(is.null(IntervalPlots[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
-          IntervalPlots[[var]] <- .descriptivesIntervalPlot(dataset = dataset, options = options, variable = var)
-          IntervalPlots[[var]]$dependOn(optionContainsValue=list(variables=var))
-        }
-    }
-  }
 
   # QQ plots
   if (options$descriptivesQQPlot) {
@@ -213,6 +196,24 @@ Descriptives <- function(jaspResults, dataset, options) {
     .descriptivesScatterPlots(jaspResults[["scatterPlots"]], dataset.factors, variables, splitName, options)
   }
   return()
+}
+
+   # Interval plots
+   if (options$descriptivesIntervalPlot) {
+     if(is.null(jaspResults[["IntervalPlots"]])) {
+       jaspResults[["IntervalPlots"]] <- createJaspContainer(gettext("Intervalplots"))
+       jaspResults[["IntervalPlots"]]$dependOn(c("IntervalPlots", "splitby"))
+       jaspResults[["IntervalPlots"]]$position <- 11
+     }
+
+  intervalPlots <- jaspResults[["intervalPlots"]]
+
+  for (var in variables) {
+    if(is.null(intervalPlots[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
+      intervalPlots[[var]] <- .descriptivesIntervalPlot(dataset = dataset, variable = var)
+      intervalPlots[[var]]$dependOn(optionContainsValue=list(variables=var))
+    }
+  }
 }
 
 .descriptivesDescriptivesTable <- function(dataset, options, jaspResults, numberMissingSplitBy=0) {
@@ -992,36 +993,15 @@ Descriptives <- function(jaspResults, dataset, options) {
   return(thePlot)
 }
 
-.descriptivesIntervalPlot <- function(dataset, options, variable) {
+.descriptivesIntervalPlot <- function(dataset, variable) {
 
-  # Define custom y axis function
-  base_breaks_y <- function(x) {
-    b <- pretty(x)
-    d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-    list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), size = 0.75, inherit.aes=FALSE), ggplot2::scale_y_continuous(breaks=b))
-  }
-
-  thePlot <- createJaspPlot(title=variable, width=options$plotWidth, height=options$plotHeight)
+  thePlot <- createJaspPlot()
 
   errorMessage <- .descriptivesCheckPlotErrors(dataset, variable, obsAmount = "< 1")
   if (!is.null(errorMessage)) {
     thePlot$setError(gettextf("Plotting not possible: %s", errorMessage))
   } else {
-    # we need to know which index in y is related to which index in the actual data, so we should not forget the NAs somehow, lets make a list of indices.
-    yWithNA         <- dataset[[.v(variable)]]
     y               <- na.omit(dataset[[.v(variable)]])
-    yIndexToActual  <- y
-    yWithNAIndex    <- 1
-    yNoNAIndex      <- 1
-    while(yWithNAIndex <= length(yWithNA)) {
-
-      if(!is.na(yWithNA[[yWithNAIndex]])) {
-
-        yIndexToActual[[yNoNAIndex]] <- row.names(dataset)[[yWithNAIndex]]
-        yNoNAIndex                   <- yNoNAIndex + 1
-      }
-
-      yWithNAIndex <- yWithNAIndex + 1
     }
 
     if (is.null(dataset[[.v(options$splitby)]])){
@@ -1047,16 +1027,17 @@ Descriptives <- function(jaspResults, dataset, options) {
           ggplot2::geom_errorbar(width = .1)
 
     ### Theming & Cleaning
-    yBreaks <- JASPgraphs::getPrettyAxisBreaks(y)
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(cdata[["lower"]], cdata[["upper"]]))
     p <- p +
       ggplot2::xlab(xlab) +
-      ggplot2::ylab(variable) +
-      ggplot2::scale_y_continuous(breaks = yBreaks) + #, limits = yLimits) +
+      ggplot2::scale_y_continuous(name = variable, breaks = yBreaks, limits = range(yBreaks)) +
       JASPgraphs::geom_rangeframe(sides = "l") +
-      JASPgraphs::themeJaspRaw()
+      ggplot2::labs(title = gettext("Interval Plots"),
+      subtitle = gettext("95% CI for the Mean"),
+      caption = gettext("Individual standard deviations are used to calculate the mean"))
 
     thePlot$plotObject <- p
-  }
+
   return(thePlot)
 }
 
