@@ -79,7 +79,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		QString			name			= tq(analysisData["name"].asString()),
 						module			= analysisData["module"].asString() != "" ? tq(analysisData["module"].asString()) : "Common",
 						title			= tq(analysisData.get("title", "").asString());
-		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
+						analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
 		QString			qml				= analysisEntry ? tq(analysisEntry->qml()) : name + ".qml";
 		
 		Log::log() << " titled: '" << title << "'" << std::endl;
