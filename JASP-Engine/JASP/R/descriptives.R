@@ -991,6 +991,9 @@ Descriptives <- function(jaspResults, dataset, options) {
     k <- 1 + log2(length(variable)) + log2(1 + (g1 / sigma.g1))
     binWidthType <- k
   }
+  
+  if(binWidthType == 'fd' & nclass.FD(variable) > 10000) # FD-method will produce extreme number of bins and crash ggplot, mention this in footnote
+    binWidthType <- 10000
 
   h <- hist(variable, plot = FALSE, breaks = binWidthType)
 
