@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-10-14 11:12\n"
-"PO-Revision-Date: 2020-10-14 07:25+0000\n"
-"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
+"PO-Revision-Date: 2020-10-16 07:23+0000\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "de/>\n"
 "Language: de\n"
@@ -101,16 +101,14 @@ msgstr "Vorhersage Std.-Abweichung"
 msgid "The prediction for %s %s is based on %s %s and %s %s."
 msgstr "Die Vorhersage für %s %s basiert auf %s %s und %s %s."
 
-#, fuzzy
 msgid "Predicted sample proportions"
-msgstr "Stichprobenanteile"
+msgstr "Vorhergesagte Stichprobenanteile"
 
 msgid "Density"
 msgstr "Dichte"
 
-#, fuzzy
 msgid "Predicted number of successes"
-msgstr "Anzahl von Erfolgen"
+msgstr "Vorhergesagte Anzahl von Erfolgen"
 
 msgid "Probability"
 msgstr "Wahrscheinlichkeit"
@@ -637,16 +635,15 @@ msgid ""
 "distributions, weighting them by their prior and posterior probability."
 msgstr ""
 
-#, fuzzy
 msgid ""
 "The 'Point estimate' option displays a plot with the sequential updating of "
 "the point estimate %s (y-axis). The figure visualizes the updating process "
 "as if the individual data points were arriving one after another (x-axis)."
 msgstr ""
-"Die Option 'Punktschätzung' zeigt eine Abbildung mit der sequentiellen "
+"Die Option 'Punktschätzung' zeigt eine Abbildung mit der sequenziellen "
 "Aktualisierung der Punktschätzung %s (y-Achse). Die Abbildung "
 "veranschaulicht den Aktualisierungsprozess, als ob die einzelnen Datenpunkte "
-"nacheinander eintreffen (x-Achse)."
+"nacheinander eintreffen würden (x-Achse)."
 
 msgid ""
 "The 'All' option shows either the mean ('Mean') or the median ('Median') for "
@@ -677,7 +674,6 @@ msgstr ""
 "Die Option 'Aktualisierungstabelle' erzeugt eine numerische Zusammenfassung "
 "der angezeigten Abbildungen."
 
-#, fuzzy
 msgid ""
 "The 'Interval' option displays a sequential plot with the probability of "
 "parameter %s lying inside of the interval ranging from ('lower') to "
@@ -686,8 +682,8 @@ msgid ""
 msgstr ""
 "Die Option 'Intervall' zeigt eine sequenzielle Abbildung mit der "
 "Wahrscheinlichkeit, dass der Parameter %s innerhalb des Intervalls von "
-"('unterer') bis ('oberer') liegt, (y-Achse). Die Abbildung veranschaulicht "
-"den Aktualisierungsprozess, als ob die einzelnen Datenpunkte nacheinander "
+"('untere') bis ('obere') liegt, (y-Achse). Die Abbildung veranschaulicht den "
+"Aktualisierungsprozess, als ob die einzelnen Datenpunkte nacheinander "
 "eintreffen würden (x-Achse)."
 
 msgid ""
@@ -974,7 +970,6 @@ msgstr ""
 "Wahrscheinlichkeit der Daten, die der Posterior-Wahrscheinlichkeit der "
 "Hypothesen entspricht)."
 
-#, fuzzy
 msgid ""
 "The 'Test results' option displays a plot with the sequential change in the "
 "predictive accuracy of all hypotheses (y-axis). The figure visualizes the "
@@ -5992,10 +5987,10 @@ msgid "Proportion test restricted to 2 x 2 tables"
 msgstr ""
 
 msgid "is not equal to"
-msgstr ""
+msgstr "ist nicht gleich zu"
 
 msgid "Invalid sampling model selected"
-msgstr ""
+msgstr "Ungültiges Stichprobenmodell ausgewählt"
 
 msgid "Odds ratio"
 msgstr ""
@@ -6010,7 +6005,7 @@ msgid "Kendall's Tau"
 msgstr "Kendalls Tau"
 
 msgid "Partial Correlation Table"
-msgstr ""
+msgstr "Tabelle Partialkorrelation"
 
 msgid "%s Correlations"
 msgstr "%s Korrelationen"
@@ -6049,6 +6044,8 @@ msgid ""
 "Partial correlation cannot be computed: covariance matrix is computationally "
 "singular."
 msgstr ""
+"Partielle Korrelation kann nicht berechnet werden: die Kovarianzmatrix ist "
+"rechnerisch singulär."
 
 msgid "Assumption checks"
 msgstr "Annahmeprüfungen"
@@ -6146,7 +6143,7 @@ msgid "%s at kappa==%s"
 msgstr "%s bei kappa==%s"
 
 msgid "Stretched beta prior width"
-msgstr ""
+msgstr "Breite des gestreckten Beta-Priors"
 
 msgid "Frequency Tables"
 msgstr "Häufigkeitstabellen"
@@ -6361,9 +6358,8 @@ msgstr "Ungenügend gültige Fälle (%i) zum Ausführen dieser Analyse"
 msgid "Data not valid: variance is zero in each row"
 msgstr "Ungültige Daten: Varianz in jeder Zeile ist Null"
 
-#, fuzzy
 msgid "Data not valid: there are more variables than observations"
-msgstr "Ungültige Daten: Alle Variablen sind kollinear"
+msgstr "Daten nicht gültig: Es gibt mehr Variablen als Beobachtungen"
 
 msgid "Data not valid: too many missing values in variable(s) %s."
 msgstr "Ungültige Daten: Zuviele fehlende Werte in Variable(n) %s."
