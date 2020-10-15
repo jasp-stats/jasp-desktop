@@ -160,7 +160,7 @@ Rectangle
 					{
 						var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
 						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
-						var analysisQML = customMenu.props['model'].getAnalysisQML(index);
+						var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
 						ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
 						customMenu.hide();
 					}

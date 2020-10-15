@@ -136,7 +136,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_columnsModel			= new ColumnsModel(_datasetTableModel);
 	_computedColumnsModel	= new ComputedColumnsModel();
 	_filterModel			= new FilterModel(_labelFilterGenerator);
-	_ribbonModel			= new RibbonModel(this);
+	_ribbonModel			= new RibbonModel();
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_ribbonModelUncommon	= new RibbonModelUncommon(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);

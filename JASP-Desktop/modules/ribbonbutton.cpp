@@ -68,7 +68,6 @@ RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title,
 	setTitle(title);
 	setIconSource(tq(icon));
 
-	setMenu({ new Modules::AnalysisEntry() }); //Just a single dummy
 	setRequiresData(requiresData); //setRequiresData because setMenu changes it based on the menu entries, but that doesnt work for this special dummy
 
 	bindYourself();
@@ -89,32 +88,6 @@ void RibbonButton::bindYourself()
 	connect(this,						&RibbonButton::requiresDataChanged,	this, &RibbonButton::activeChanged		);
 
 	connect(DynamicModules::dynMods(),	&DynamicModules::dataLoadedChanged,	this, &RibbonButton::dataLoadedChanged	);
-}
-
-void RibbonButton::setMenu(const Modules::AnalysisEntries& entries)
-{
-	_menuEntries = entries;
-
-	for(size_t i=0; i<_oldTitles.size(); i++)
-		if(i < _menuEntries.size())
-			emit analysisTitleChanged(_moduleName, _oldTitles[i] , _menuEntries[i]->title());
-
-
-	_analysisMenuModel->setAnalysisEntries(entries);
-
-	emit analysisMenuChanged();
-
-	_oldTitles.clear();
-	for(const Modules::AnalysisEntry * entry : _menuEntries)
-		_oldTitles.push_back(entry->title());
-
-	///If any single analysis can run without data the button should be pressible without data
-	bool requiresData = true;
-	for(const Modules::AnalysisEntry * entry : _menuEntries)
-		if(!entry->requiresData())
-			requiresData = false;
-
-	setRequiresData(requiresData);
 }
 
 void RibbonButton::setRequiresData(bool requiresDataset)
@@ -206,72 +179,6 @@ std::vector<std::string> RibbonButton::getAllAnalysisNames() const
 
 	return allAnalyses;
 }
-
-/*
-void RibbonButton::reloadMenuFromDescriptionQml()
-{
-	//Find the location of the module path
-	QFileInfo modulepath = QFileInfo(QString::fromStdString(Dirs::resourcesDir() + _moduleName + "/"));
-	if(!modulepath.exists())
-	{
-		Log::log() << "Path " << modulepath.absoluteFilePath().toStdString() << " does not exist!" << std::endl << std::flush;
-		return;
-	}
-
-	QFileInfo descriptionFileInfo(modulepath.absoluteFilePath() + "/" + tq(Modules::DynamicModule::getQmlDescriptionFilename()));
-
-	if(!descriptionFileInfo.exists())
-	{
-		Log::log() << "Could not find the qml description file : " << descriptionFileInfo.absoluteFilePath() << std::endl;
-		return;
-	}
-
-	QFile descriptionFile(descriptionFileInfo.absoluteFilePath());
-	if (!descriptionFile.open(QFile::ReadOnly))
-	{
-		Log::log() << "Could not open the qml description file : " << descriptionFile.fileName().toStdString()  << std::endl;
-		return;
-	}
-
-	Modules::Description * desc = nullptr;
-
-	try
-	{
-		desc = Modules::DynamicModule::instantiateDescriptionQml(descriptionFile.readAll(), QUrl::fromLocalFile(descriptionFileInfo.absoluteFilePath()), _moduleName);
-
-		setTitle(			fq(	desc->title()	)	);
-		setIconSource(			desc->icon()		);
-		setToolTip(				desc->description() );
-		setMenu(				desc->menuEntries());
-
-		if(_description)
-			delete _description;
-
-		_description = desc;
-
-		connect(desc, &Modules::Description::iShouldBeUpdated, this, &RibbonButton::descriptionChanged);
-	}
-	catch(std::runtime_error e)
-	{
-		Log::log() << "(Re)loading " << Modules::DynamicModule::getQmlDescriptionFilename() << " had a problem: " << e.what() << std::endl;
-	}
-}
-
-void RibbonButton::descriptionChanged(Modules::Description * desc)
-{
-	if(_description != desc)
-	{
-		Log::log() << "RibbonButton for module " << _moduleName << " was told to update from a Description but it isn't the one it knows about... Ignoring it!" << std::endl;
-		return;
-	}
-
-	Log::log() << "RibbonButton for module " << _moduleName << " will read from Description again!" << std::endl;
-
-	setTitle(			fq(	_description->title()	)	);
-	setIconSource(			_description->icon()		);
-	setMenu(				_description->menuEntries() );
-	setToolTip(				_description->description()	);
-}*/
 
 void RibbonButton::setToolTip(QString toolTip)
 {

@@ -85,10 +85,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		Log::log() << " titled: '" << title << "'" << std::endl;
 
 		if(title == "")
-			title = analysisEntry ? analysisEntry->title() : name;
+			title = analysisEntry ? tq(analysisEntry->title()) : name;
 		
-		analysis = analysisEntry	? create(analysisEntry, id, status, false, title, "0.0.0", &optionsJson) //0.0.0 as module version to be sure we show the "made with old version"
-									: create(tq(module), tq(name), qml, tq(title), id, version, &optionsJson, status, false);
+		analysis = analysisEntry	? create(analysisEntry, id, status, false, fq(title), "0.0.0", &optionsJson) //0.0.0 as module version to be sure we show the "made with old version"
+									: create(module, name, qml, title, id, version, &optionsJson, status, false);
 	}
 	else
 	{

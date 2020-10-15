@@ -240,7 +240,8 @@ QStringList RibbonModel::getModulesEnabled() const
 	return list;
 }
 
-Modules::AnalysisEntry *RibbonModel::getAnalysis(const std::string & moduleName, const std::string & analysisName)
+
+Modules::AnalysisEntry *RibbonModel::getAnalysis(std::string moduleName, const std::string & analysisName)
 {
 	if(moduleName == "Common")
 		moduleName = getModuleNameFromAnalysisName(analysisName);

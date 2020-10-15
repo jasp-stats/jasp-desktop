@@ -48,3 +48,5 @@ include(../InstallModule.pri)
 MODULE_NAME = jaspVisualModeling
 include(../InstallModule.pri)
 
+MODULE_NAME = jaspLearnBayes
+include(../InstallModule.pri)

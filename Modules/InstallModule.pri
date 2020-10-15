@@ -39,7 +39,7 @@ isEmpty(MODULE_NAME) {
 		#PostInstallFix$${MODULE_NAME}.commands      +=   && echo \"I managed to actually run jaspengine probably?\";			$$escape_expand(\\n\\t)
 		#PostInstallFix$${MODULE_NAME}.commands		 +=  POPD ; $$escape_expand(\\n)
 	}
-	unix:  PostInstallFix$${MODULE_NAME}.commands       +=  $${JASP_BUILDROOT_DIR}/JASPEngine $$JASP_LIBRARY_DIR ;				$$escape_expand(\\n\\t)
+	unix:  PostInstallFix$${MODULE_NAME}.commands       +=  LD_LIBRARY_PATH=$${_R_HOME}/lib $${JASP_BUILDROOT_DIR}/JASPEngine $$JASP_LIBRARY_DIR ;				$$escape_expand(\\n\\t)
 
 	PostInstallFix$${MODULE_NAME}.depends = Install$${MODULE_NAME}
 

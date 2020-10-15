@@ -103,7 +103,7 @@ QVector<QString> tq(const std::vector<std::string> & vec)
 	for(const std::string & s : vec)
 		out.push_back(tq(s));
 
-	return QVector<QString>::fromStdVector(out);
+	return QVector<QString>(out.begin(), out.end());
 }
 
 std::vector<std::string> fq(const QVector<QString> & vec)
@@ -151,11 +151,6 @@ const char * QProcessErrorToString(QProcess::ProcessError error)
 	case QProcess::ProcessError::FailedToStart:	return "FailedToStart";
 	};
 	return "???";
-}
-
-std::vector<std::string> fq(const QStringList & vec)
-{
-	return fq(vec.toVector());
 }
 
 bool pathIsSafeForR(const QString & checkThis)

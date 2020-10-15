@@ -161,7 +161,6 @@ public slots:
 	void resetRememberedModules(		bool		clear);
 	void setLcCtypeWin(					int			lcCtypeWin);
 	void setMaxEngines(					int			maxEngines);
-	void onCurrentThemeNameChanged(QString newThemeName);
 
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);
