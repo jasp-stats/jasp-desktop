@@ -19,13 +19,13 @@ if (!dir.exists(jaspDir))
   stop("Could not find directory ", jaspDir)
 
 subDirs <- list.dirs(jaspDir, recursive=FALSE, full.names=FALSE)
-if (!all(c("JASP-Engine", "JASP-R-Interface") %in% subDirs))
-  stop("Could not locate JASP-Engine and JASP-R-Interface as subdirectories of ", jaspDir)
+if (!all(c("Engine", "R-Interface") %in% subDirs))
+  stop("Could not locate Engine and R-Interface as subdirectories of ", jaspDir)
 
-dirs <- c(file.path(jaspDir, "JASP-Engine"), file.path(jaspDir, "JASP-R-Interface"))
+dirs <- c(file.path(jaspDir, "Engine"), file.path(jaspDir, "R-Interface"))
 rFiles <- list.files(dirs, pattern="\\.[Rr]$", recursive=TRUE, full.names=TRUE)
 if (length(rFiles) == 0)
-  stop("Could not locate any R files in the JASP-Engine and JASP-R-Interface directories")
+  stop("Could not locate any R files in the Engine and R-Interface directories")
 
 options("repos" = "https://cloud.r-project.org")
 if (!"stringr" %in% installed.packages())

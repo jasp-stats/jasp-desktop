@@ -5,7 +5,7 @@ develop <- function(path, makePersistent = TRUE) {
   path <- normalizePath(path)
   if (!isJaspDesktopDir(path))
     stop(paste("incorrect path.\n\nPath should point to the github location of jasp-desktop.",
-               "JASP-Common and JASP-Desktop should be subdirectories."))
+               "Common and Desktop should be subdirectories."))
   
   if (makePersistent) {
     jasptoolsDir <- path.package("jaspTools", quiet = FALSE)
@@ -31,7 +31,7 @@ isJaspDesktopDir <- function(path) {
 
   # check if path is the location of github/jasp-desktop
   dirs <- dir(path, pattern = "JASP-*")
-  return(all(c("JASP-Common", "JASP-Desktop", "JASP-Engine", "JASP-R-Interface") %in% dirs))
+  return(all(c("Common", "Desktop", "Engine", "R-Interface") %in% dirs))
 }
 
 .getDirOSXFramework <- function(pathJaspBuildEnvir) {
@@ -157,13 +157,13 @@ isJaspDesktopDir <- function(path) {
     
     # set locations of all required resources (json, analyses, html, packages)
     relativePaths <- list(
-      common.r.dir = file.path("JASP-Engine", "jaspBase", "R"),
-      html.dir = file.path("JASP-Desktop", "html"),
+      common.r.dir = file.path("Engine", "jaspBase", "R"),
+      html.dir = file.path("Desktop", "html"),
       common.qml.dir = file.path("Resources"),
       data.dir = file.path("Resources", "Data Sets"),
-      tests.dir = file.path("JASP-Tests", "R", "tests", "testthat"),
-      tests.figs.dir = file.path("JASP-Tests", "R", "tests", "figs"),
-      tests.data.dir = file.path("JASP-Tests", "R", "tests", "datasets")
+      tests.dir = file.path("Tests", "R", "tests", "testthat"),
+      tests.figs.dir = file.path("Tests", "R", "tests", "figs"),
+      tests.data.dir = file.path("Tests", "R", "tests", "datasets")
     )
 
     if (!is.null(pathToPackages)) {

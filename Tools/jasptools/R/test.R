@@ -1,6 +1,6 @@
 #' Test a specific JASP analysis.
 #'
-#' Tests a specific R analysis found under JASP-Tests. Useful to perform before
+#' Tests a specific R analysis found under Tests. Useful to perform before
 #' making a pull request, to prevent failing builds.
 #'
 #'
@@ -56,7 +56,7 @@ testAnalysis <- function(analysis) {
 
 #' Test all JASP analyses.
 #'
-#' Tests all R analyses found under JASP-Tests. Useful to perform before making
+#' Tests all R analyses found under Tests. Useful to perform before making
 #' a pull request, to prevent failing builds.
 #'
 #'

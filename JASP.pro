@@ -5,16 +5,16 @@ TEMPLATE = subdirs
 DESTDIR = .
 
 SUBDIRS += \
-	JASP-Common \
-	JASP-Engine \
-	JASP-Desktop \
+	Common \
+	Engine \
+	Desktop \
 	Modules
 
-unix: SUBDIRS += JASP-R-Interface
+unix: SUBDIRS += R-Interface
 
-JASP-Desktop.depends  = JASP-Common
-JASP-Engine.depends   = JASP-Common
-Modules.depends       = JASP-Engine \
-                        JASP-Desktop
+Desktop.depends  = Common
+Engine.depends   = Common
+Modules.depends  = Engine \
+            	   Desktop
 
-unix: JASP-Engine.depends += JASP-R-Interface
+unix: Engine.depends += R-Interface

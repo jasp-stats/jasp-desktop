@@ -101,7 +101,7 @@ if (length(args)==0) {
   }
 
   if (editPkgCheck) {
-    locPkgCheck <- file.path("..", "JASP-Engine", "jaspBase", "R", "packagecheck.R")
+    locPkgCheck <- file.path("..", "Engine", "jaspBase", "R", "packagecheck.R")
     if (! file.exists(locPkgCheck))
       stop(paste("Could not locate packagecheck.R at", locPkgCheck))
     

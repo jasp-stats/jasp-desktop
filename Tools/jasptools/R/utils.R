@@ -80,7 +80,7 @@
     if (dir.exists(.getPkgOption("common.r.dir")))
       install.packages(file.path(.getPkgOption("common.r.dir"), ".."), type="source", repos=NULL)
     else
-      warning("Cannot find jasp-desktop/JASP-Engine/JASP; it won't be possible to evaluate jaspBase:: calls in your code.\n
+      warning("Cannot find jasp-desktop/Engine/JASP; it won't be possible to evaluate jaspBase:: calls in your code.\n
               Is the `common.r.dir` specified correctly in `viewPkgOptions()`?")
   }
   .sourceModuleCode(envir)

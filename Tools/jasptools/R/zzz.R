@@ -40,7 +40,7 @@
 
 .checkVersions <- function(jaspDir) {
   deps <- c("jaspTools", "jaspGraphs", "jaspResults")
-  dirs <- setNames(c(file.path(jaspDir, "Tools"), file.path(jaspDir, "JASP-Engine"), file.path(jaspDir, "JASP-R-Interface")), deps)
+  dirs <- setNames(c(file.path(jaspDir, "Tools"), file.path(jaspDir, "Engine"), file.path(jaspDir, "R-Interface")), deps)
   
   for (dep in deps) {
     devVersion <- try(silent=TRUE, { utils::packageVersion(dep, lib.loc=dirs[dep]) })

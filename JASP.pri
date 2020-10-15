@@ -1,7 +1,7 @@
 #Used for common JASP qmake build settings
 
 #Jasp-R-Interface
-JASP_R_INTERFACE_TARGET = JASP-R-Interface
+JASP_R_INTERFACE_TARGET = R-Interface
 
 JASP_R_INTERFACE_MAJOR_VERSION =  10  # Interface changes or whenever you feel majorlike
 JASP_R_INTERFACE_MINOR_VERSION =  6   # Code changes

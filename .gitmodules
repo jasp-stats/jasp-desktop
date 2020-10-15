@@ -75,11 +75,11 @@
 	url = https://github.com/jasp-stats/jaspVisualModeling
 	branch = master
 [submodule "JASP-Engine/jaspGraphs"]
-	path = JASP-Engine/jaspGraphs
+	path = Engine/jaspGraphs
 	url = https://github.com/jasp-stats/jaspGraphs.git
 	branch = master
 [submodule "JASP-Engine/jaspBase"]
-	path = JASP-Engine/jaspBase
+	path = Engine/jaspBase
 	url = https://github.com/jasp-stats/jaspBase.git
 	branch = master
 [submodule "Modules/Extra/jaspLearnBayes"]
