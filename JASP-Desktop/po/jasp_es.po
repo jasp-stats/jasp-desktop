@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-09-22 10:42+0000\n"
-"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
+"PO-Revision-Date: 2020-10-16 07:23+0000\n"
+"Last-Translator: Pablo Augusto Vailati <pvailati@uade.edu.ar>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/"
 "jasp-desktop/es/>\n"
 "Language: es\n"
@@ -24,17 +24,14 @@ msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
 msgstr "Esta es una herramienta increíblemente útil, ¿verdad?"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
 msgstr "La primera casilla de verificación"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
 msgstr "La segunda casilla de verificación"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
 msgstr "La última casilla de verificación"
@@ -55,27 +52,22 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Model Options"
 msgstr "Opciones del Modelo"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Additional Fit Measures"
 msgstr "Medidas de ajuste adicionales"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "AIC"
 msgstr "AIC"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "BIC"
 msgstr "BIC"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "SRMR"
 msgstr "SRMR"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "TLI"
 msgstr "TLI"
@@ -93,67 +85,57 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Include mean structure"
 msgstr "Incluir estructura media"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Assume factors uncorrelated"
-msgstr "Suponga factores no correlacionados"
+msgstr "Asumir que los factores no están correlacionados"
 
 #, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Fix exogenous covariates"
 msgstr "Fijar covariables exógenas"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Factor scaling"
-msgstr "Escala de factores"
+msgstr "Escalamiento de factores"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Residual Covariances"
 msgstr "Covarianzas residuales"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Additional Output"
-msgstr "Salida adicional"
+msgstr "Output adicional"
 
 #, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Implied covariance matrix"
 msgstr "Matriz de covarianza implícita"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Residual covariance matrix"
 msgstr "Matriz de covarianza residual"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Modification indices"
 msgstr "Índices de modificación"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Cutoff"
-msgstr "Cortar"
+msgstr "Corte"
 
 #, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Show lavaan syntax"
 msgstr "Mostrar sintaxis de lavaan"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Multigroup CFA"
 msgstr "CFA multigrupo"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Grouping variable"
 msgstr "Variable de agrupación"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Invariance testing"
 msgstr "Prueba de invariancia"
@@ -163,52 +145,43 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Configural"
 msgstr "Configural"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Metric"
 msgstr "Métrico"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Scalar"
 msgstr "Escalar"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Strict"
 msgstr "Estricto"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Plots"
-msgstr "Parcelas"
+msgstr "Gráficos"
 
 #, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Misfit plot"
 msgstr "Parcela inadaptada"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Model plot"
-msgstr "Parcela modelo"
+msgstr "Gráfico del modelo"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Show parameters"
 msgstr "Mostrar parámetros"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Show means"
-msgstr "Mostrar medios"
+msgstr "Mostrar medias"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Advanced"
 msgstr "Avanzado"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Options"
 msgstr "Opciones"
@@ -228,7 +201,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Omit residual single indicator"
 msgstr "Omitir indicador único residual"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Residual variances"
 msgstr "Variaciones residuales"
@@ -238,8 +210,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Correlate exogenous latents"
 msgstr "Correlación de latentes exógenos"
 
-#, fuzzy
-#| msgid "Add thresholdds"
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Add thresholds"
 msgstr "Agregar umbrales"
@@ -247,7 +217,7 @@ msgstr "Agregar umbrales"
 #, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Add scalings parameters"
-msgstr "Agregar parámetros de escalas"
+msgstr "Agregar parámetros de escalamiento"
 
 #, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
@@ -2977,32 +2947,26 @@ msgctxt "AnovaRepeatedMeasures|"
 msgid "η²"
 msgstr "η²"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasures|"
 msgid "partial η²"
 msgstr "η² parcial"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasures|"
 msgid "general η²"
-msgstr "general η²"
+msgstr "η² general"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasures|"
 msgid "ω²"
 msgstr "ω²"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Vovk-Sellke maximum p-ratio"
 msgstr "Relación p máxima de Vovk-Sellke"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Simple Main Effects"
 msgstr "Efectos principales simples"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Simple Effect Factor"
 msgstr "Factor de efecto simple"
