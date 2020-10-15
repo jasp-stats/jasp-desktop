@@ -1445,36 +1445,41 @@ Descriptives <- function(jaspResults, dataset, options) {
   if (!ready)
     return()
 
-  jaspResults[["XbarPlot"]] <- createJaspPlot(title = "X bar chart", width = 650, aspectRatio = 1)
+  jaspResults[["XbarPlot"]] <- createJaspPlot(title = "X bar chart", width = 950, height= 400)
   jaspResults[["XbarPlot"]]$dependOn(c("Xbarchart", "variables"))
   jaspResults[["XbarPlot"]]$position <- 11
   XbarPlot <- jaspResults[["XbarPlot"]]
 
-  data1= na.omit(as.data.frame(dataset))
+  data1 <- na.omit(dataset)
   means <- rowMeans(data1)
   subgroups <- 1:length(means)
-  data2 <- data.frame(subgroups = subgroups, means = means)
-  sixsigma <- qcc::qcc(data1, type = 'xbar', plot = F)
+  data2 <- data.frame(subgroups=subgroups, means=means)
+  sixsigma <- qcc::qcc(data1, type='xbar', plot=FALSE)
   center <- sixsigma$center
   sd1 <- sixsigma$std.dev
   UCL <- max(sixsigma$limits)
   LCL <- min(sixsigma$limits)
+  dfLabel <- data.frame(
+    x <- length(subgroups) + 1.2,
+    y <- c(center, UCL, LCL),
+    l <- c(
+      gettextf("Mean = %g", round(center, 3)),
+      gettextf("UCL = %g",   round(UCL, 3)),
+      gettextf("LCL = %g",   round(LCL, 3))))
 
-  p <- ggplot2::ggplot(data2, ggplot2::aes(x = subgroups, y = means, group = 1))+ ggplot2::geom_line()+
-    ggplot2::ylab("Subgroup mean")+
-    ggplot2::xlab('Subgroup')+
-    ggplot2::theme_classic()+
-    ggplot2::scale_x_continuous(breaks = c(subgroups), limits = c(1,length(subgroups) + 1.5))+
-    ggplot2::geom_point(size = 2)+
-    ggplot2::geom_hline(yintercept = center, color = 'black')+
-    ggplot2::geom_hline(yintercept = c(center - sd1,center + sd1), linetype = "dashed", color = "red")+
-    ggplot2::geom_hline(yintercept = c(UCL,LCL), color = "red")+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,center,label = sprintf("Mean = %g",round(center,3))))+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,UCL,label = sprintf("UCL = %g",round(UCL,3))))+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,LCL,label = sprintf("LCL = %g",round(LCL,3))))+
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y= ggplot2::element_text(size= ggplot2::rel(1.4)))+
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y= ggplot2::element_text(size= ggplot2::rel(1.4)))+
-    ggplot2::scale_y_continuous(limits = c(LCL,UCL), breaks = NULL)
+  p <- ggplot2::ggplot(data2, ggplot2::aes(x = subgroups, y = means)) +
+    ggplot2::geom_line() +
+    ggplot2::geom_point(size = 2) +
+    ggplot2::geom_hline(yintercept =  center, color = 'black') +
+    ggplot2::geom_hline(yintercept=c(center - sd1, center + sd1), linetype = "dashed", color = "red") +
+    ggplot2::geom_hline(yintercept= c(UCL, LCL), color = "red") +
+    ggplot2::geom_label(data = dfLabel, mapping = ggplot2::aes(x = x, y = y, label = l),inherit.aes = FALSE) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y = ggplot2::element_text(size = ggplot2::rel(1.4))) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y = ggplot2::element_text(size = ggplot2::rel(1.4))) +
+    ggplot2::scale_y_continuous(name = "Subgroup mean" ,limits = c(LCL,UCL), breaks = NULL) +
+    ggplot2::scale_x_continuous(name = 'Subgroup', breaks = subgroups, limits = c(1, length(subgroups) + 1.5)) +
+    JASPgraphs::geom_rangeframe() +
+    JASPgraphs::themeJaspRaw()
 
   XbarPlot$plotObject <- p
 }
@@ -1485,34 +1490,39 @@ Descriptives <- function(jaspResults, dataset, options) {
   if (!ready)
     return()
 
-  jaspResults[["RPlot"]] <- createJaspPlot(title = "R chart", width = 650, aspectRatio = 1)
+  jaspResults[["RPlot"]] <- createJaspPlot(title = "R chart", width = 950, height= 400)
   jaspResults[["RPlot"]]$dependOn(c("Rchart", "variables"))
   jaspResults[["RPlot"]]$position <- 11
   RPlot <- jaspResults[["RPlot"]]
 
-  data1= na.omit(as.data.frame(dataset))
-  range= apply(data1, 1,function(x) {max(range(x)) - min(range(x))})
-  subgroups= 1:length(range)
-  data2 = data.frame(subgroups = subgroups, range = range)
-  sixsigma=qcc::qcc(data1, type= 'R', plot = F)
-  center = sixsigma$center
-  UCL= max(sixsigma$limits)
-  LCL = min(sixsigma$limits)
+  data1 <- na.omit(dataset)
+  range <- apply(data1, 1, function(x) max(x) - min(x))
+  subgroups <- 1:length(range)
+  data2 <- data.frame(subgroups = subgroups, range = range)
+  sixsigma <- qcc::qcc(data1, type= 'R', plot = FALSE)
+  center <- sixsigma$center
+  UCL <- max(sixsigma$limits)
+  LCL <- min(sixsigma$limits)
+  dfLabel <- data.frame(
+    x <- length(subgroups) + 1.2,
+    y <- c(center, UCL, LCL),
+    l <- c(
+      gettextf("Range = %g", round(center, 3)),
+      gettextf("UCL = %g",   round(UCL, 3)),
+      gettextf("LCL = %g",   round(LCL, 3))))
 
-  p <- ggplot2::ggplot(data2, ggplot2::aes(x = subgroups, y = range, group = 1))+ ggplot2::geom_line()+
-    ggplot2::ylab("Subgroup Range")+
-    ggplot2::xlab('Subgroup')+
-    ggplot2::theme_classic()+
-    ggplot2::scale_x_continuous(breaks = c(subgroups), limits = c(1,length(subgroups) + 1.5))+
-    ggplot2::geom_point(size = 2)+
-    ggplot2::geom_hline(yintercept =  center, color = 'black')+
-    ggplot2::geom_hline(yintercept= c(UCL,LCL), color = "red")+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,center,label = sprintf("Range = %g",round(center,3))))+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,UCL,label = sprintf("UCL = %g",round(UCL,3))))+
-    ggplot2::geom_label(ggplot2::aes(length(subgroups)+1.2,LCL,label = sprintf("LCL= %g",round(LCL,3))))+
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y = ggplot2::element_text(size= ggplot2::rel(1.4)))+
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y = ggplot2::element_text(size= ggplot2::rel(1.4)))+
-    ggplot2::scale_y_continuous(limits = c(LCL,UCL), breaks = NULL)
+  p <- ggplot2::ggplot(data2, ggplot2::aes(x = subgroups, y = range)) +
+    ggplot2::geom_line() +
+    ggplot2::geom_point(size = 2) +
+    ggplot2::geom_hline(yintercept =  center, color = 'black') +
+    ggplot2::geom_hline(yintercept= c(UCL,LCL), color = "red") +
+    ggplot2::geom_label(data = dfLabel, mapping = ggplot2::aes(x = x, y = y, label = l),inherit.aes = FALSE) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y = ggplot2::element_text(size= ggplot2::rel(1.4))) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size= ggplot2::rel(1.4)), axis.text.y = ggplot2::element_text(size= ggplot2::rel(1.4))) +
+    ggplot2::scale_y_continuous(name = "Subgroup Range" ,limits = c(LCL,UCL), breaks = NULL) +
+    ggplot2::scale_x_continuous(name= "Subgroup" ,breaks = subgroups, limits = c(1,length(subgroups) + 1.5)) +
+    JASPgraphs::geom_rangeframe() +
+    JASPgraphs::themeJaspRaw()
 
  RPlot$plotObject <- p
 }
