@@ -25,7 +25,7 @@
 Thumbs.db
 
 # R
-JASP-Engine/R-*
+Engine/R-*
 .Rapp.history
 
 # .exe
@@ -44,8 +44,8 @@ JASP.pro.user.b601785
 Resources/TestFiles
 
 *.autosave
-JASP-Engine/jaspBase/R/.Rhistory
-JASP-Tests/.Rhistory
+Engine/jaspBase/R/.Rhistory
+Tests/.Rhistory
 
 flatpak-builder-folder/
 

@@ -119,7 +119,7 @@ cd %STARTDIR%
 SET JASP_WIX_DIR=jasp-wix-installer-%ARCH%
 SET JASP_INSTALL_DIR=jasp-installer-files-%ARCH%
 SET JASP_BUILD_DIR=jasp-build-%ARCH%
-SET JASP_R_INTERFACE=JASP-R-Interface
+SET JASP_R_INTERFACE=R-Interface
 SET JOM=%QTDIR%\Tools\QtCreator\bin\jom.exe
 
 SET VCVARS_DIR="%MSVCDIR%\VC\Auxiliary\Build"
@@ -241,12 +241,12 @@ echo "Making sure QM files are generated"
 %QTVCDIR%\qmake -set AM_I_BUILDBOT "I_AM_BUILDBOT" || exit 1
 
 if "%BUILDSTYLE%"=="full" (
-    echo Creating directory for JASP-R-Interface "%JASP_R_INTERFACE%"
+    echo Creating directory for R-Interface "%JASP_R_INTERFACE%"
     mkdir %JASP_R_INTERFACE%
 )
 cd %JASP_R_INTERFACE%
 rem echo %JASP_DESKTOP%\%JASP_R_INTERFACE%\%JASP_R_INTERFACE%.pro
-echo Building JASP-R-Interface in %JASP_R_INTERFACE%
+echo Building R-Interface in %JASP_R_INTERFACE%
 if "%BUILDSTYLE%"=="full" (
     %QTVCDIR%\qmake.exe %JASP_DESKTOP%\%JASP_R_INTERFACE%\%JASP_R_INTERFACE%.pro -spec win32-g++
 )
@@ -274,7 +274,7 @@ mkdir  %JASP_INSTALL_DIR%
 cd %JASP_INSTALL_DIR%
 
 echo copy icon
-COPY %JASP_DESKTOP%\JASP-Desktop\icon.ico /Y
+COPY %JASP_DESKTOP%\Desktop\icon.ico /Y
 
 echo copy AGPL txt
 COPY %JASP_DESKTOP%\COPYING.txt  AGPL.txt /Y
@@ -286,7 +286,7 @@ COPY %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_BUILD_DIR%\*.R /Y
 COPY %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_BUILD_DIR%\*.dll /Y
 
 echo Running windeployqt on JASP.exe
-%QTVCDIR%\windeployqt.exe --no-compiler-runtime -core -gui -webenginewidgets -webchannel -svg -network -printsupport -xml -qml -quick -quickwidgets --qmldir %JASP_DESKTOP%\JASP-Desktop JASP.exe
+%QTVCDIR%\windeployqt.exe --no-compiler-runtime -core -gui -webenginewidgets -webchannel -svg -network -printsupport -xml -qml -quick -quickwidgets --qmldir %JASP_DESKTOP%\Desktop JASP.exe
 
 echo copy resources
 XCOPY  %JASP_DESKTOP%\Resources /E /I Resources

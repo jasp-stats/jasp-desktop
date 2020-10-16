@@ -13,7 +13,7 @@ This can be done as follows:
 
 and
 
-`install.packages("/%path%/jasp-desktop/JASP-R-Interface/jaspResults/", repos = NULL, type = "source", dependencies = TRUE)`
+`install.packages("/%path%/jasp-desktop/R-Interface/jaspResults/", repos = NULL, type = "source", dependencies = TRUE)`
 
 To install jasptools itself use:
 

@@ -4,7 +4,7 @@ r: 3.6.1
 #cache: packages
 before_install: 
   - "git clone --branch=MacOS-Original https://github.com/jasp-stats/jasp-required-files.git ~/pkgs"
-  - cd JASP-Tests/R/tests/
+  - cd Tests/R/tests/
 install:
   - rm '/usr/local/bin/gfortran'
   - brew install jags

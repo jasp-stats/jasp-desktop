@@ -2,7 +2,7 @@
 Guide to Building JASP
 ======================
 
-The easiest way to build JASP is to use Qt Creator. After cloning the [jasp-desktop project](https://github.com/jasp-stats/jasp-desktop), open the JASP.pro file in the jasp-desktop directory, in Qt Creator. This project contains two runnable sub-projects, *JASP-Desktop* and *JASP-Engine*. In order to run JASP, *JASP-Desktop* is the correct project to run.
+The easiest way to build JASP is to use Qt Creator. After cloning the [jasp-desktop project](https://github.com/jasp-stats/jasp-desktop), open the JASP.pro file in the jasp-desktop directory, in Qt Creator. This project contains two runnable sub-projects, *Desktop* and *Engine*. In order to run JASP, *Desktop* is the correct project to run.
 
 For those unfamiliar with using Qt Creator for development, there is some excellent documentation available [here](http://doc.qt.io/qtcreator/index.html).
 
@@ -42,7 +42,7 @@ Building JASP under windows is most temperamental but should pose no large probl
 - [Visual Studio 2017](https://www.visualstudio.com/downloads/) Download the community version
 - [R Tools 3.5](https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe) Download from (https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe)
 
-Besides installing and cloning the software above, one needs to make some kits in Qt Creator to be able to build JASP and separately JASP-R-Interface.
+Besides installing and cloning the software above, one needs to make some kits in Qt Creator to be able to build JASP and separately R-Interface.
 
 Assume that the root folder of your JASP build folder is \<JASP\>.
 To build JASP follow the next steps:
@@ -145,9 +145,9 @@ For following updates of Qt you can use the MaintenanceTool for Qt in \<QTINSTAL
 
 9.	The last step you have to do is **configuring QtCreator with the proper kits** to build JASP.    
 	Start QtCreator and load, through File->Open File or Project, the JASP.pro file from \<JASP\>\jasp-desktop\JASP.pro.  
-	Also load \<JASP\>\jasp-desktop\JASP-R-Interface\JASP-R-Interface.pro.  
+	Also load \<JASP\>\jasp-desktop\R-Interface\R-Interface.pro.  
 	Both projects are built with a different kit in Qt because they are built with different compilers.  
-	Select Manage Kits in QtCreator, through Project in the side panel, and go to the Compilers Tab and add manually the MINGW compiler needed to build JASP-R-Interface. After adding a new compiler select its location in RTools mingw folder.   
+	Select Manage Kits in QtCreator, through Project in the side panel, and go to the Compilers Tab and add manually the MINGW compiler needed to build R-Interface. After adding a new compiler select its location in RTools mingw folder.   
 	The compiler tab should now be similar to:  
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/Compilers.png)    
@@ -155,7 +155,7 @@ For following updates of Qt you can use the MaintenanceTool for Qt in \<QTINSTAL
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/Debuggers.png)   	
 
-You should now create two kits, one for building JASP desktop and one for building JASP-R-Interface. Both are equal except for the Compiler versions. The kits should look similar to:
+You should now create two kits, one for building JASP desktop and one for building R-Interface. Both are equal except for the Compiler versions. The kits should look similar to:
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/MSVC-Kit.png)   
 
@@ -165,27 +165,27 @@ And
 
 Your deployment configuration, in the side panel, should now show something like:  
 
-![Image of Qt Installer](https://static.jasp-stats.org/images/JASP-Configuration.png)   
-![Image of Qt Installer](https://static.jasp-stats.org/images/JASP-R-Interface-Configuration.png)   
+![Image of Qt Installer](https://static.jasp-stats.org/images/Configuration.png)   
+![Image of Qt Installer](https://static.jasp-stats.org/images/R-Interface-Configuration.png)   
 
 
 10. From the Projects Build Settings, in the side panel, check if your build folders are correct.
-Make sure you've opened the "JASP.pro" project and JASP-R-Interface.pro.
+Make sure you've opened the "JASP.pro" project and R-Interface.pro.
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/BuildDir.png)  
 
-For the JASP-R-Interface the Build directory should be build-release-64\JASP-R-Interface. This folder needs to be created manually.
+For the R-Interface the Build directory should be build-release-64\R-Interface. This folder needs to be created manually.
 
-11. **Start building the JASP-R-Interface first**, you will need this to finish the JASP build properly.
+11. **Start building the R-Interface first**, you will need this to finish the JASP build properly.
 
 12. Now set JASP as Active project and build JASP.  
 
-13. Whenever changes are made to JASP-R-Interface it will need to be built anew, while on Mac and Linux this happens automatically on Windows this must, in principle, be done manually. There is however a way to automate this and can be done as follows:
-	- Open both the JASP and JASP-R-Interface project in Qt Creator.
+13. Whenever changes are made to R-Interface it will need to be built anew, while on Mac and Linux this happens automatically on Windows this must, in principle, be done manually. There is however a way to automate this and can be done as follows:
+	- Open both the JASP and R-Interface project in Qt Creator.
 	- Make sure JASP is your active project
 	- Select "Projects" with the button on the leftside of Qt Creator.
 	- Select "Dependencies" under "Project Settings"
-	- Now you should see JASP-R-Interface with a checkbox
+	- Now you should see R-Interface with a checkbox
 	- Tick the box, now Qt Creator will build it for you when necessary.
 	- Qt will however not automatically remember this setting, to make it do so: `select File > Sessions > Manage > Restore last session on startup.`
 

@@ -62,7 +62,7 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
   - [Implementing Analyses in R](Docs/development/r-analyses-guide.md)
   - [The JASP R style guide](Docs/development/r-style-guide.md)
   - [The JASP Guide to Writing Analyses for Humans](Docs/development/jasp-human-guide.md)
-  - [Writing Unit Tests for Analyses](JASP-Tests/README.md)
+  - [Writing Unit Tests for Analyses](Tests/README.md)
   - [The JASP R package list](https://jasp-stats.org/r-package-list/)
 
 #### Translation

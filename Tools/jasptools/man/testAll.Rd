@@ -7,6 +7,6 @@
 testAll()
 }
 \description{
-Tests all R analyses found under JASP-Tests. Useful to perform before making
+Tests all R analyses found under Tests. Useful to perform before making
 a pull request, to prevent failing builds.
 }

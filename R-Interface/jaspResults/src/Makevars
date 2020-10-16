@@ -1,3 +1,3 @@
 CXX_STD = CXX11
-PKG_CPPFLAGS= -I../../../JASP-Common -I../../JASP-Common
+PKG_CPPFLAGS= -I../../../Common -I../../Common
 CXX11STD	= -std=c++11

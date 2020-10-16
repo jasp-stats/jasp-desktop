@@ -202,7 +202,7 @@ The key features described here are:
 1. neat encapsulation of related code into functions
 2. neat transmission of errors between these functions
 
-A well designed example of a more complicated JASP analysis is the ANOVA. It lives on github [here](https://github.com/jasp-stats/jasp-desktop/blob/development/JASP-Engine/JASP/R/anova.R).
+A well designed example of a more complicated JASP analysis is the ANOVA. It lives on github [here](https://github.com/jasp-stats/jasp-desktop/blob/development/Engine/JASP/R/anova.R).
 
 We will begin with the `Anova()` function itself.
 

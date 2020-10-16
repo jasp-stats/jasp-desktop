@@ -64,7 +64,7 @@ cp *.R app/JASP.app/Contents/MacOS/
 echo "Create apps from each executable"
 echo "We do this to the JASPEngine, because this process fixes the rpaths"
 
-$QT_KIT_FULL/bin/macdeployqt app/JASP.app/ -qmldir=$JASP_DESKTOP/JASP-Desktop
+$QT_KIT_FULL/bin/macdeployqt app/JASP.app/ -qmldir=$JASP_DESKTOP/Desktop
 $QT_KIT_FULL/bin/macdeployqt app/JASPEngine.app/
 
 echo "Copy the JASPEngine out of the JASPEngine.app into the JASP.app"

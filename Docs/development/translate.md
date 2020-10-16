@@ -15,7 +15,7 @@
 
 ### 1. Introduction.
 
-To aid the internationalization of JASP, the source files were heavily modified. The JASP core code consists of two main functional parts. The first is JASP-Interface, which defines the user interface such as windows and file menus. JASP-Interface is mainly written in C++ and QML. The second part is JASP-Engine, which executes the R-code from each analysis. JASP-Engine is mainly written in R (and C++, but this code does not produce any messages for the users).  Internationalization requires us to go through the following three steps:
+To aid the internationalization of JASP, the source files were heavily modified. The JASP core code consists of two main functional parts. The first is Interface, which defines the user interface such as windows and file menus. Interface is mainly written in C++ and QML. The second part is Engine, which executes the R-code from each analysis. Engine is mainly written in R (and C++, but this code does not produce any messages for the users).  Internationalization requires us to go through the following three steps:
 
 1. An inventory was made of all the types of source files in JASP that contain messages to the user. These file types are described in the [Inventory: Identifying all the source file types that contain strings that are shown to the user](#2-Preparing-different-type-of-source-files) section.
 2. From this inventory all strings are extracted and .po files were generated. How all the .po files are structured and how they are created out of the source files is described in the 'How to generate .po files' section.
@@ -133,46 +133,46 @@ As described above, most user interfaces, messages and errors shown by JASP are 
 
 #### *Location of the .po files*
 Translaters familiar with github:<br> could clone or fork the jasp-desktop repository and will find then<br>
-..../jasp-desktop/JASP-Desktop/po/jasp.po (and jasp\_nl.po for the Dutch version) Copy this jasp.po file, rename it to jasp\_xx.po, and adjust the header.<br>
-..../jasp-desktop/JASP-Engine/JASP/po/R-JASP.pot. Copy this R-JASP.pot file, rename the copy to R-xx.po and adjust the header.<br>
-..../jasp-desktop/JASP-Engine/jaspGraphs/po/R-jaspGraphs.pot. Copy this R-jaspGraphs.pot file, rename the copy to R-xx.po, and adjust the header.
+..../jasp-desktop/Desktop/po/jasp.po (and jasp\_nl.po for the Dutch version) Copy this jasp.po file, rename it to jasp\_xx.po, and adjust the header.<br>
+..../jasp-desktop/Engine/JASP/po/R-JASP.pot. Copy this R-JASP.pot file, rename the copy to R-xx.po and adjust the header.<br>
+..../jasp-desktop/Engine/jaspGraphs/po/R-jaspGraphs.pot. Copy this R-jaspGraphs.pot file, rename the copy to R-xx.po, and adjust the header.
 
 Alternatively, a prepared zip file with the jasp-desktop structure can downloaded:<br>
-This compressed zip can be downloaded from:  https://static.jasp-stats.org/PO-Files-JASP-0.12.1-S.zip<br>
+This compressed zip can be downloaded from:  https://static.jasp-stats.org/PO-Files-0.12.1-S.zip<br>
 Unzipping this file gives you a jasp-desktop folder with only the necessary files to translate and generate the binary translation files, which you can test in you own build of JASP.<br>
 
 Or you can just use the po files zip:<br>
 This zip file only contains the .po files that must be translated.<br>
-Can be downloaded from: https://static.jasp-stats.org/PO-Files-JASP-0.12.1.zip<br>
+Can be downloaded from: https://static.jasp-stats.org/PO-Files-0.12.1.zip<br>
 
 
 #### *Translating the .po files*
 In the next section the 'xx' stands for the unique two-letter code of the language.
 See https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for the complete list.
 
-1. Translate the JASP .po interface file: JASP\_xx.po <br>Translate means here: Fill out the empty 'msgstr' field. Every  language has it's own specific .po file. This means that every language file contains a two-letter code that defines the (ISO) language name JASP-xx.po e.g.:
+1. Translate the JASP .po interface file: JASP\_xx.po <br>Translate means here: Fill out the empty 'msgstr' field. Every  language has it's own specific .po file. This means that every language file contains a two-letter code that defines the (ISO) language name xx.po e.g.:
 	* JASP_nl.po for Dutch translations.
 	* JASP_de.po for German translations.
 
 	The first version of this file is in fact a generated template file, without any translated message strings. All the message strings entries starting with 'msgstr' should be filled out with the proper translated string.
 
-2. Translate the JASP R .po file: 	R-xx.po (located in jasp-desktop/JASP-Engine/JASP/po)
-3. Translate the jaspGraphs .po file:	R-xx.po (located in jasp-desktop/JASP-Engine/jaspGraphs/po)
+2. Translate the JASP R .po file: 	R-xx.po (located in jasp-desktop/Engine/JASP/po)
+3. Translate the jaspGraphs .po file:	R-xx.po (located in jasp-desktop/Engine/jaspGraphs/po)
 
 #### *Create the binary .mo and .qm files*
-For translators that might have a complete build environment of JASP: edit JASP-Desktop.pro and almost on top set the  GENERATE\_LANGUAGE\_FILES = true. Then you need to specify the target language to translate. You can do this by defining it in the project build environment: Project\->Build Setrings\->Build environment and add the item: <br>
+For translators that might have a complete build environment of JASP: edit Desktop.pro and almost on top set the  GENERATE\_LANGUAGE\_FILES = true. Then you need to specify the target language to translate. You can do this by defining it in the project build environment: Project\->Build Setrings\->Build environment and add the item: <br>
 TARGET\_LANGUAGE\_CODE=nl  (e.g. For a Dutch translation. See the Language Code references below for complete list.)<br>
-Rebuilding the JASP-Desktop will give you all the binary translation files.<br><br>
+Rebuilding the Desktop will give you all the binary translation files.<br><br>
 Translators who wish to test their translations on an already installed version of JASP:<br>Be sure that the first three items of the Section 4 are installed. The following commands from a terminal in the jasp-desktop folder can be run to create the .mo and .qm files.
 
-1.	The Qt JASP interface .qm file: jasp\_xx.qm<br>From a terminal run: <br> > ~/Qt/5.14.2/clang_64/bin/lrelease ./JASP-Desktop/po/jasp\_xx.po -qm jasp\_xx.qm<br>
+1.	The Qt JASP interface .qm file: jasp\_xx.qm<br>From a terminal run: <br> > ~/Qt/5.14.2/clang_64/bin/lrelease ./Desktop/po/jasp\_xx.po -qm jasp\_xx.qm<br>
 This creates a jasp\_xx.qm.<br>
 
-2.	The JASP R related .mo file: R-JASP.mo<br>Start R from a terminal run: <br> > tools::update_pkg_po(paste0(getwd(),"/JASP-Engine/JASP"))<br>
-This creates a R-JASP.mo in ./JASP-Engine/JASP/inst/po/xx/LC_MESSAGES
+2.	The JASP R related .mo file: R-JASP.mo<br>Start R from a terminal run: <br> > tools::update_pkg_po(paste0(getwd(),"/Engine/JASP"))<br>
+This creates a R-JASP.mo in ./Engine/JASP/inst/po/xx/LC_MESSAGES
 
-3. The jaspGraphs R related .mo file: R-jaspGraphs.mo<br>Start R from a terminal run: <br> > tools::update_pkg_po(paste0(getwd(),"/JASP-Engine/jaspGraphs"))<br>
-This creates a R-jaspGraphs.mo in ./JASP-Engine/jaspGraphs/inst/po/nl/LC_MESSAGES
+3. The jaspGraphs R related .mo file: R-jaspGraphs.mo<br>Start R from a terminal run: <br> > tools::update_pkg_po(paste0(getwd(),"/Engine/jaspGraphs"))<br>
+This creates a R-jaspGraphs.mo in ./Engine/jaspGraphs/inst/po/nl/LC_MESSAGES
 
 #### *Test binary translation files by copying them to an already installed JASP version*
 Once the binaries are successfully created it is possible to test them in an already installed version of JASP. On startup JASP searches for all the typical language coded names, like JASP_nl.qm, and then tries to load that file with that specific language code. If one of those is found with a recognized language code it is added to the language preference menu, so that it can be chosen even at runtime.

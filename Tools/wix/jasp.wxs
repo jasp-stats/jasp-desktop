@@ -96,7 +96,7 @@
     </Directory>
 
 
-	<Icon       	Id="JASP.ico" SourceFile="$(var.JASP_DESKTOP_DIR)\JASP-Desktop\icon.ico" />
+	<Icon       	Id="JASP.ico" SourceFile="$(var.JASP_DESKTOP_DIR)\Desktop\icon.ico" />
     <Property   	Id="ARPPRODUCTICON" 			Value="JASP.ico" />
 
     <WixVariable	Id="WixUIDialogBmp" 			Value="$(var.JASP_DESKTOP_DIR)\Tools\wix\installerBackground.png" />

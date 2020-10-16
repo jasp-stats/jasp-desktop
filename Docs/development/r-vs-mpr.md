@@ -1,6 +1,6 @@
 # Vovk-Sellke MPR (Maximum p-Ratio)
 
-This document describes the implementation of the Vovk-Sellke MPR into each statistical procedure in JASP. Follow the steps to complete a procedure. The necessary global functions are in the file commonMPR.R in the existing JASP-Engine/JASP/R directory. At the bottom of this document is a to-do list for where this still needs to be implemented.
+This document describes the implementation of the Vovk-Sellke MPR into each statistical procedure in JASP. Follow the steps to complete a procedure. The necessary global functions are in the file commonMPR.R in the existing Engine/JASP/R directory. At the bottom of this document is a to-do list for where this still needs to be implemented.
 
 ##### Outline
 
