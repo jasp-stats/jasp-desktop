@@ -28,6 +28,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <sstream>
 
 enum Encryption { NoEncryption, SimpleCryptEncryption };
 
