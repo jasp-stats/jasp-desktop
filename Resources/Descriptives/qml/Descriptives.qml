@@ -141,19 +141,31 @@ Form
                 indexDefaultValue: 0
                 values:
                 [	
-					{ label: qsTr("Sturges"),				value: "sturges"	},
-                    { label: qsTr("Scott"),					value: "scott"		},
-                    { label: qsTr("Doane"),					value: "doane"	},
-					{ label: qsTr("Freedman-Diaconis"),		value: "fd"	}
+					{label: qsTr("Sturges"),				value: "sturges"},
+                    {label: qsTr("Scott"),					value: "scott"},
+                    {label: qsTr("Doane"),					value: "doane"},
+					{label: qsTr("Freedman-Diaconis"),		value: "fd"	}, 
+					{label: qsTr("Manual"),					value: "manual"	}
                 ]
+				id: binWidthType
 				}
+				DoubleField
+				{
+					name:			"numberOfBins"
+					label:			qsTr("Number of Bins")
+					defaultValue:	30
+					min:			3;
+					max:			10000;
+					enabled:		binWidthType.currentValue === "manual"
+				}
+				}
+				
             }
 			
             CheckBox {				name: "plotCorrelationMatrix";	label: qsTr("Correlation plots")				}
             CheckBox {				name: "descriptivesQQPlot";		label: qsTr("Q-Q plots")						}
             CheckBox {				name: "descriptivesPiechart";	label: qsTr("Pie charts")						}
         }
-	}
 
 	Section
 	{
