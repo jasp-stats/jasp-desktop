@@ -17,8 +17,8 @@
 //
 // Code based on http://stackoverflow.com/questions/17833103/how-to-create-scrollbar-in-qtquick-2-0
 
-import QtQuick 2.0;
-//import QtQml 2.14;
+import QtQuick	2.0;
+import QtQml	2.15
 
 
 Item
@@ -82,7 +82,7 @@ Item
 	
 	Binding
 	{
-//		restoreMode: Binding.RestoreBinding
+		restoreMode: Binding.RestoreBinding
 		target:		handle;
 		property:	scrollbar.vertical ? "y" : "x"
 		when:		!clicker.drag.active
@@ -93,7 +93,7 @@ Item
 
 	Binding
 	{
-//		restoreMode: Binding.RestoreBinding
+		restoreMode: Binding.RestoreBinding
 		target:		flickable
 		property:	scrollbar.vertical ? "contentY" : "contentX"
 		when:		(clicker.drag.active || clicker.pressed)
