@@ -65,8 +65,8 @@ JASPControl
 	property int	initialRowCount		: 0	//Only read on init
 
 	//The size of the table *inside* the Flickable. + 2 for margins of flickable and scrollbars
-	readonly property int tableWidth:  theView.width  + 2
-	readonly property int tableHeight: theView.height + 2
+	readonly property int tableWidth:  theView.width  + 2 + (vertiScroller.visible ? jaspTheme.scrollbarBoxWidth : 0)
+	readonly property int tableHeight: theView.height + 2 + (horiScroller.visible ? jaspTheme.scrollbarBoxWidth : 0)
 
 	function getColHeaderText(headerText, columnIndex)			{ return headerText; }
 	function getRowHeaderText(headerText, rowIndex)				{ return headerText; }
