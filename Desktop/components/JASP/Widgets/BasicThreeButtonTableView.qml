@@ -125,10 +125,10 @@ Item
 		anchors.left	: buttonColumn.visible && !buttonsInRow ? buttonColumn.right : parent.left
 		anchors.leftMargin: jaspTheme.generalAnchorMargin
 		anchors.topMargin: buttonColumn.visible && buttonsInRow ? jaspTheme.generalAnchorMargin : 0
-		width			: tableView.tableWidth  < maxWidth  - jaspTheme.scrollbarBoxWidth ? (tableView.tableWidth  + (tableView.height < tableView.tableHeight ? jaspTheme.scrollbarBoxWidth : 0)): maxWidth
-		height			: tableView.tableHeight < maxHeight - jaspTheme.scrollbarBoxWidth ? (tableView.tableHeight + (tableView.width < tableView.tableWidth ? jaspTheme.scrollbarBoxWidth : 0)): maxHeight
+		width			: tableView.tableWidth  < maxWidth  ? tableView.tableWidth : maxWidth
+		height			: tableView.tableHeight < maxHeight ? tableView.tableHeight : maxHeight
 
-		property int maxWidth	: basicButtonTableView.width * (basicButtonTableView.showButtons && !buttonsInRow ? 3 / 4 : 1)
+		property int maxWidth	: basicButtonTableView.width * ((basicButtonTableView.showButtons && !buttonsInRow) ? (3 / 4) : 1)
 		property int maxHeight	: basicButtonTableView.height
 
 		function getColHeaderText(defaultName, colIndex) { return basicButtonTableView.getColHeaderText(defaultName, colIndex); }
