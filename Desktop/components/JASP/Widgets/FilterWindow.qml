@@ -19,8 +19,8 @@ FocusScope
 	Connections
 	{
 		target:						filterModel
-		onFilterErrorMsgChanged:	if(filterModel.filterErrorMsg.length > 0) open();
-		onRFilterChanged:			absorbModelRFilter();
+		function onFilterErrorMsgChanged()	{ if (filterModel.filterErrorMsg.length > 0) open();	}
+		function onRFilterChanged()			{ absorbModelRFilter();				}
 	}
 
     function toggle()

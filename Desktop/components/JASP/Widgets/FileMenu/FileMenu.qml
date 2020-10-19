@@ -33,7 +33,7 @@ FocusScope
 	Connections
 	{
 		target:				fileMenuModel
-		onVisibleChanged:	if(fileMenuModel.visible) actionMenu.forceActiveFocus(); else fileMenu.focus = false;
+		function onVisibleChanged() { if (fileMenuModel.visible) actionMenu.forceActiveFocus(); else fileMenu.focus = false; }
 	}
 
 	Item
@@ -314,10 +314,10 @@ FocusScope
 			Connections
 			{
 				target:	fileMenuModel.resourceButtons
-				onCurrentQMLChanged:
+				function onCurrentQMLChanged(currentQML)
 				{
 					resourceScreen.previousQML = resourceScreen.currentQML
-					resourceScreen.currentQML  = fileMenuModel.resourceButtons.currentQML
+					resourceScreen.currentQML  = currentQML
 				}
 			}
 

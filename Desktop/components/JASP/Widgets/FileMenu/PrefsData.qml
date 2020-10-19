@@ -132,7 +132,7 @@ Item
 							Connections
 							{
 								target:					preferencesModel
-								onCustomEditorChanged:	customEditorText.text = preferencesModel.customEditor
+								function onCustomEditorChanged(customEditor) { customEditorText.text = customEditor; }
 							}
 						}
 					}

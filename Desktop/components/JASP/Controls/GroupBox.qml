@@ -73,14 +73,14 @@ JASPControl
 
 	Connections
 	{
-		target:				preferencesModel
-		onUiScaleChanged:	alignTextFieldTimer.restart()
+		target:	preferencesModel
+		function onUiScaleChanged(scale)	{ alignTextFieldTimer.restart(); }
 	}
 
 	Connections
 	{
-		target:					preferencesModel
-		onLanguageCodeChanged:	checkFormOverflowAndAlignTimer.restart()
+		target:	preferencesModel
+		function onLanguageCodeChanged()	{ checkFormOverflowAndAlignTimer.restart(); }
 	}
 
 	Timer

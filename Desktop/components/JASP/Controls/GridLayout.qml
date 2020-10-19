@@ -40,8 +40,8 @@ GridLayout
 	{
 		enabled:					checkFormOverflowWhenLanguageChanged
 		target:						preferencesModel
-		onLanguageCodeChanged:		checkFormOverflowTimer.restart()
-		onInterfaceFontChanged:		checkFormOverflowTimer.restart()
+		function onLanguageCodeChanged()		{ checkFormOverflowTimer.restart(); }
+		function onInterfaceFontChanged(font)	{ checkFormOverflowTimer.restart(); }
 	}
 
 	Timer

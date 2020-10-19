@@ -31,7 +31,7 @@ Window
 	Connections
 	{
 		target:			mainWindow
-		onCloseWindows: aboutModel.visible = false;
+		function onCloseWindows() { aboutModel.visible = false; }
 	}
 
 

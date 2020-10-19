@@ -439,7 +439,7 @@ DropArea
 				Connections
 				{
 					target:				loader.item
-					onHeightChanged:	expanderButton.formHeight = loader.item.height
+					function onHeightChanged() { expanderButton.formHeight = loader.item.height; }
 				}
 
 				Loader
