@@ -44,8 +44,8 @@ ListView
 
 	Connections
 	{
-		target:				listView.model
-		onModelReset:		listView.currentIndex = 0;
+		target:	listView.model
+		function onModelReset() { listView.currentIndex = 0; }
 	}
 
 	delegate:	ListItem

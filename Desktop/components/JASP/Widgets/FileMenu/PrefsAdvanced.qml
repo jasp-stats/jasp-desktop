@@ -111,8 +111,8 @@ ScrollView
 
 						Connections
 						{
-							target:					preferencesModel
-							onCustomEditorChanged:	developerFolderText = preferencesModel.developerFolder
+							target:			preferencesModel
+							function onCustomEditorChanged(customEditor) { developerFolderText = preferencesModel.developerFolder; }
 						}
 
 					}

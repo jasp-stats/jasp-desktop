@@ -15,9 +15,9 @@ Item
 	Connections
 	{
 		target:				preferencesModel
-		onUiScaleChanged:
+		function onUiScaleChanged(scale)
 		{
-			if(uiScaleNotifier.uiScaleIsLoadedFromSettings)
+			if (uiScaleNotifier.uiScaleIsLoadedFromSettings)
 				uiScaleTimer.restart()
 
 			uiScaleNotifier.uiScaleIsLoadedFromSettings = true;

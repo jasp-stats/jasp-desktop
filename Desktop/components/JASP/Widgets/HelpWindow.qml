@@ -27,7 +27,7 @@ Window
 	Connections
 	{
 		target:			mainWindow
-		onCloseWindows: helpWindowRoot.close()
+		function onCloseWindows() { helpWindowRoot.close(); }
 	}
 
 	UIScaleNotifier { anchors.centerIn:	parent }
@@ -57,7 +57,7 @@ Window
 		Connections
 		{
 			target:				helpModel
-			onRunJavaScriptSignal:
+			function onRunJavaScriptSignal(helpJS)
 			{
 				helpView.runJavaScript(helpJS);
 				searchBar.search();

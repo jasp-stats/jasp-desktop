@@ -19,14 +19,14 @@ ScrollView
 
 	Connections
 	{
-		target:						preferencesModel
-		onCurrentThemeNameChanged:	scrollPrefs.resetMe();
+		target:				preferencesModel
+		function onCurrentThemeNameChanged(name)	{ scrollPrefs.resetMe(); }
 	}
 
 	Connections
 	{
-		target:						languageModel
-		onCurrentIndexChanged:		scrollPrefs.resetMe();
+		target:				languageModel
+		function onCurrentIndexChanged()			{ scrollPrefs.resetMe(); }
 	}
 
 	Column

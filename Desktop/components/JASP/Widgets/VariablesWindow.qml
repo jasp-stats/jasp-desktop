@@ -32,9 +32,9 @@ FocusScope
 	{
 		target: labelModel
 		
-		onChosenColumnChanged:
+		function onChosenColumnChanged()
 		{
-			if(labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
+			if (labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
 			{
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
 				levelsTableViewRectangle.focus = true //So we just put it somewhere

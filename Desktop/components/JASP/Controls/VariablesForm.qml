@@ -53,7 +53,7 @@ Item
 	Connections
 	{
 		target:					preferencesModel
-		onLanguageCodeChanged:
+		function onLanguageCodeChanged()
 		{
 			// Apparently a Qt bug: the height is not always recalculated by the GridLayout when the language is changed.
 			// Force this by changing temporarily the Layout.preferredHeight

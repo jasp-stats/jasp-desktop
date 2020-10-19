@@ -80,10 +80,10 @@ Item
 			Connections
 			{
 				target:						mainWindow
-				onDataPanelVisibleChanged:
+				function onDataPanelVisibleChanged(visible)
 				{
-					if(mainWindow.dataPanelVisible && data.width === 0)		data.maximizeData();
-					else if(!mainWindow.dataPanelVisible && data.width > 0)	data.minimizeData();
+					if (visible && data.width === 0)	data.maximizeData();
+					else if(!visible && data.width > 0)	data.minimizeData();
 				}
 			}
 		}
@@ -130,7 +130,7 @@ Item
 			Connections
 			{
 				target:				analysesModel
-				onAnalysisAdded:
+				function onAnalysisAdded()
 				{
 					//make sure we get to see the results!
 
@@ -191,11 +191,11 @@ Item
 
 				Connections
 				{
-					target:					resultsJsInterface
-					onRunJavaScript:		resultsView.runJavaScript(js)
-					onScrollAtAllChanged:	resultsView.runJavaScript("window.setScrollAtAll("+(scrollAtAll ? "true" : "false")+")");
+					target:		resultsJsInterface
+					function onRunJavaScript(js)				{ resultsView.runJavaScript(js); }
+					function onScrollAtAllChanged(scrollAtAll)	{ resultsView.runJavaScript("window.setScrollAtAll("+(scrollAtAll ? "true" : "false")+")"); }
 
-					onExportToPDF:
+					function onExportToPDF(pdfPath)
 					{
 						if(preferencesModel.currentThemeName !== "lightTheme")
 							resultsJsInterface.setThemeCss("lightTheme");

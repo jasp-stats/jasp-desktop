@@ -53,7 +53,7 @@ FocusScope
 		Connections
 		{
 			target:							analysesModel
-			onCurrentAnalysisIndexChanged:	formsBackground.scrollToForm(analysesModel.currentAnalysisIndex);
+			function onCurrentAnalysisIndexChanged(index) { formsBackground.scrollToForm(index); }
 		}
 
 		Rectangle
@@ -143,7 +143,7 @@ FocusScope
 				Connections
 				{
 					target:							analysesModel
-					onCurrentFormHeightChanged:		if(analysesModel.currentFormHeight > analysesModel.currentFormPrevH) reposition(); //If it got larger it probably means an expander opened and we should reposition if possible
+					function onCurrentFormHeightChanged(formHeight) { if (formHeight > analysesModel.currentFormPrevH) reposition(); }//If it got larger it probably means an expander opened and we should reposition if possible
 
 					function reposition()
 					{

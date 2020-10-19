@@ -37,7 +37,11 @@ FocusScope
 	Connections
 	{
 		target:						computedColumnsInterface
-		onShowThisColumnChanged:	if(!computedColumnContainer.changed && computedColumnsInterface.showThisColumn !== computedColumnsInterface.computeColumnNameSelected) open(computedColumnsInterface.showThisColumn)
+		function onShowThisColumnChanged(columnName)
+		{
+			if (!computedColumnContainer.changed && columnName !== computedColumnsInterface.computeColumnNameSelected)
+				open(columnName);
+		}
 	}
 
 	function close()
