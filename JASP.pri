@@ -83,8 +83,8 @@ windows {
 		BOOST_ARCH = x64
 	}
 
-	CONFIG(ReleaseBuild)    { BOOST_POSTFIX = -vc141-mt-$${BOOST_ARCH}-1_71 }
-	CONFIG(DebugBuild)      { BOOST_POSTFIX = -vc141-mt-gd-$${BOOST_ARCH}-1_71 }
+        CONFIG(ReleaseBuild)    { BOOST_POSTFIX = -vc142-mt-$${BOOST_ARCH}-1_71 }
+        CONFIG(DebugBuild)      { BOOST_POSTFIX = -vc142-mt-gd-$${BOOST_ARCH}-1_71 }
 
 	QMAKE_CXXFLAGS	+= -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 }
