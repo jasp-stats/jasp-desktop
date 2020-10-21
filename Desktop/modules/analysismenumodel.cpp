@@ -61,30 +61,6 @@ QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
 	return roles;
 }
 
-/*void AnalysisMenuModel::setAnalysisEntries(const std::vector<Modules::AnalysisEntry *> &analysisEntries)
-{
-	_analysisEntries.clear();
-	_hasIcons = false;
-
-	//This code must be moved to the actual initialization of the entries in dynamic module. It introduces an unnecessary (little) memory leak
-	Modules::AnalysisEntry* previousEntry = nullptr;
-	for (Modules::AnalysisEntry* entry: analysisEntries)
-	{
-		if (entry->isGroupTitle())
-		{
-			if (previousEntry && !previousEntry->isSeparator() )
-				_analysisEntries.push_back(new Modules::AnalysisEntry());
-		}
-		else if (entry->isAnalysis())
-		{
-			if (entry->icon() != "???" && entry->icon() != "")
-				_hasIcons = true;
-		}
-		_analysisEntries.push_back(entry);
-		previousEntry = entry;
-	}
-}*/
-
 Modules::AnalysisEntry *AnalysisMenuModel::getAnalysisEntry(const std::string& name)
 {
 	for (Modules::AnalysisEntry* analysis : analysisEntries())

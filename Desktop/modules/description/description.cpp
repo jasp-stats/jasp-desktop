@@ -241,10 +241,22 @@ std::set<std::string> Description::requiredModules() const
 std::vector<AnalysisEntry*> Description::menuEntries() const
 {
 	std::vector<AnalysisEntry*> entries;
+	AnalysisEntry *previousEntry = nullptr;
 
 	for(EntryBase * entry : _entries)
+	{
 		if(entry->shouldBeAdded())
-			entries.push_back(entry->convertToAnalysisEntry(requiresDataDef()));
+		{
+			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef());
+			if (analysisEntry != nullptr)
+			{
+				if (analysisEntry->isGroupTitle() && previousEntry != nullptr && !previousEntry->isSeparator())
+					entries.push_back(new AnalysisEntry()); // Add a separator
+				entries.push_back(analysisEntry);
+				previousEntry = analysisEntry;
+			}
+		}
+	}
 
 	return entries;
 }
