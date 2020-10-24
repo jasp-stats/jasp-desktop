@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-10-16 07:23+0000\n"
+"PO-Revision-Date: 2020-10-25 12:26+0000\n"
 "Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4443,7 +4443,7 @@ msgstr "Maximum-Likelihood"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Principal axis factoring"
-msgstr ""
+msgstr "Hauptachsenmethode"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Ordinary least squares"
@@ -6183,7 +6183,7 @@ msgstr "Distanz:"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Linkage:"
-msgstr ""
+msgstr "Linkage:"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Scale variables"
@@ -8132,15 +8132,15 @@ msgstr "g-Prior"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Hyper-g"
-msgstr ""
+msgstr "Hyper-g"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Hyper-g-Laplace"
-msgstr ""
+msgstr "Hyper-g-Laplace"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Hyper-g-n"
-msgstr ""
+msgstr "Hyper-g-n"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "alpha"
@@ -10296,15 +10296,15 @@ msgstr "Euklidisch"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Average"
-msgstr "Mittelwert"
+msgstr "Average"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Single"
-msgstr ""
+msgstr "Single"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Complete"
-msgstr "Komplett"
+msgstr "Complete"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Centroid"
@@ -11756,7 +11756,7 @@ msgstr "Abhängige Variable"
 
 msgctxt "Flexplot|"
 msgid "Independent Variable(s)"
-msgstr "Unabhängige variabele(n)"
+msgstr "Unabhängige Variable(n)"
 
 msgctxt "Flexplot|"
 msgid "Options"
@@ -14171,7 +14171,7 @@ msgstr "Erste"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "observed moments"
-msgstr "Beobachtete Momente"
+msgstr "beobachtete Momente"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "Plots"
@@ -14183,7 +14183,7 @@ msgstr "Histogramm mit"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "bins"
-msgstr "Bins"
+msgstr "Klassen"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "Empirical cumulative distribution"
@@ -18015,7 +18015,7 @@ msgstr "Binomial-Schätzung"
 
 msgctxt "Description|"
 msgid "Binomial Testing"
-msgstr ""
+msgstr "Binomial-Tests"
 
 msgctxt "LSbinomialestimation|"
 msgid "Model"
@@ -18171,7 +18171,7 @@ msgstr "Prior- und Posterior-Verteilung"
 
 msgctxt "LSestimationinference|"
 msgid "Observed proportion"
-msgstr ""
+msgstr "Beobachtetes Verhältnis"
 
 msgctxt "LSestimationpredictions|"
 msgid "Summary"
@@ -18187,7 +18187,7 @@ msgstr "Abbildungen"
 
 msgctxt "LSestimationpredictions|"
 msgid "Posterior predictive distribution"
-msgstr "A posteriori prädiktive Verteilung"
+msgstr "Posterior-prädiktive Verteilung"
 
 msgctxt "LSestimationpredictions|"
 msgid "All"
@@ -18207,7 +18207,7 @@ msgstr "KI"
 
 msgctxt "LSestimationpredictions|"
 msgid "Show sample proportions"
-msgstr ""
+msgstr "Anteile in Stichproben anzeigen"
 
 msgctxt "LSestimationsequential|"
 msgid "Point estimate"
@@ -18303,11 +18303,11 @@ msgstr ""
 
 msgctxt "LStestinginference|"
 msgid "Prior predictive distribution"
-msgstr "A priori prädiktive Verteilung"
+msgstr "Prior-prädiktive Verteilung"
 
 msgctxt "LStestinginference|"
 msgid "Observed proportion"
-msgstr ""
+msgstr "Beobachteter Anteil"
 
 msgctxt "LStestinginference|"
 msgid "Predictive accuracy"
@@ -18343,7 +18343,7 @@ msgstr "Abbildungen"
 
 msgctxt "LStestingpredictions|"
 msgid "Posterior predictive distribution"
-msgstr "A posteriori prädiktive Verteilung"
+msgstr "Posterior-prädiktive Verteilung"
 
 msgctxt "LStestingpredictions|"
 msgid "Conditional"
@@ -18383,7 +18383,7 @@ msgstr ""
 
 msgctxt "LStestingpredictions|"
 msgid "Show sample proportions"
-msgstr ""
+msgstr "Anteile in Stichproben anzeigen"
 
 msgctxt "LStestingpredictions|"
 msgid "Predictions table"
@@ -18603,7 +18603,7 @@ msgstr "Bernoulli"
 
 msgctxt "RegressionLogistic|"
 msgid "Performance Plots"
-msgstr ""
+msgstr "Performanz-Abbildungen"
 
 msgctxt "RegressionLogistic|"
 msgid "ROC plot"
@@ -19093,7 +19093,7 @@ msgstr "Eingabetyp"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Count Data"
-msgstr ""
+msgstr "Häufigkeiten"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Comma-separated Sequence of Observations"
@@ -19201,7 +19201,7 @@ msgstr "Korrelation"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Odds Ratio"
-msgstr ""
+msgstr "Quotenverhältnis"
 
 msgctxt "SelectionModels|"
 msgid "Correlation"
@@ -19225,11 +19225,11 @@ msgstr "Farbpalette"
 
 msgctxt "Flexplot|"
 msgid "Plot Labels"
-msgstr ""
+msgstr "Abbildungs-Beschriftungen"
 
 msgctxt "Flexplot|"
 msgid "<br><strong>Plot Labels</strong>"
-msgstr ""
+msgstr "<br><strong>Abbildungs-Beschriftungen</strong>"
 
 #, qt-format
 msgctxt "BoundQMLTextInput|"
@@ -19297,15 +19297,15 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows workarounds"
-msgstr ""
+msgstr "Windows-Übergangslösungen"
 
 msgctxt "PrefsAdvanced|"
 msgid "Handling LC_CTYPE"
-msgstr ""
+msgstr "Umgang mit LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
-msgstr ""
+msgstr "Lass JASP die beste Einstellung für LC_CTYPE erraten (Empfohlen!)"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -19313,10 +19313,14 @@ msgid ""
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
 msgstr ""
+"Wenn dies aktiviert ist und es nicht-ASCII-Zeichen in deinem "
+"Installationspfad gibt, wird JASP nicht mehr funktionieren.  Falls dein "
+"Benutzername ausschließlich nicht-ASCII-Zeichen hat, wird die Installation "
+"von Modulen wahrscheinlich unterbrochen."
 
 msgctxt "PrefsAdvanced|"
 msgid "Keep LC_CTYPE at systemdefault."
-msgstr ""
+msgstr "Behalte LC_CTYPE auf der Systemvoreinstellung."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -19325,14 +19329,19 @@ msgid ""
 "characters in the path. Sorry for the inconvenience, we are working on it "
 "and hopefully have this fixed next release."
 msgstr ""
+"Bei Aktivierung dieser Option werden bestimmte Zeichen in den Ergebnissen "
+"seltsam aussehen, aber zumindest ist JASP verwendbar, wenn es in einem "
+"Ordner mit nicht-ASCII-Zeichen im Pfad installiert ist. Bitte entschuldige "
+"die Unannehmlichkeiten, wir arbeiten daran und haben dies hoffentlich in der "
+"nächsten Version behoben."
 
 msgctxt "LDAssessFit|"
 msgid "Assess Fit"
-msgstr ""
+msgstr "Anpassungsgüte evaluieren"
 
 msgctxt "LDAssessFit|"
 msgid "[requires a loaded data set]"
-msgstr ""
+msgstr "[erfordert einen geladenen Datensatz]"
 
 msgctxt "LDAssessFit|"
 msgid "Plots"
@@ -19340,7 +19349,7 @@ msgstr "Abbildungen"
 
 msgctxt "LDAssessFit|"
 msgid "Histogram vs. theoretical pdf"
-msgstr ""
+msgstr "Histogramm vs. theoretische Dichtefunktion"
 
 msgctxt "LDAssessFit|"
 msgid "Histogram vs. theoretical pmf"
@@ -19352,11 +19361,11 @@ msgstr "Q-Q-Diagramm"
 
 msgctxt "LDAssessFit|"
 msgid "Empirical vs. theoretical cdf"
-msgstr ""
+msgstr "Empirische vs. theoretische KDF"
 
 msgctxt "LDAssessFit|"
 msgid "P-P plot"
-msgstr ""
+msgstr "P-P-Diagramm"
 
 msgctxt "LDAssessFit|"
 msgid "Statistics"
@@ -19380,15 +19389,15 @@ msgstr "Shapiro-Wilk"
 
 msgctxt "LDAssessFit|"
 msgid "Chi-square"
-msgstr ""
+msgstr "Chi-Quadrat"
 
 msgctxt "LDEstimateParameters|"
 msgid "Estimate Parameters"
-msgstr ""
+msgstr "Parameter schätzen"
 
 msgctxt "LDEstimateParameters|"
 msgid "[requires a loaded data set]"
-msgstr ""
+msgstr "[erfordert einen geladenen Datensatz]"
 
 msgctxt "LDEstimateParameters|"
 msgid "Maximum likelihood"
@@ -19400,11 +19409,11 @@ msgstr "Ausgabe"
 
 msgctxt "LDEstimateParameters|"
 msgid "Estimates"
-msgstr ""
+msgstr "Schätzungen"
 
 msgctxt "LDEstimateParameters|"
 msgid "Std. error"
-msgstr ""
+msgstr "Std.-Fehler"
 
 msgctxt "LDEstimateParameters|"
 msgid "Confidence interval"
@@ -19412,7 +19421,7 @@ msgstr "Konfidenzintervall"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "[requires a loaded data set]"
-msgstr ""
+msgstr "[erfordert einen geladenen Datensatz]"
 
 msgctxt "LSestimationpredictions|"
 msgid "Predictions table"
