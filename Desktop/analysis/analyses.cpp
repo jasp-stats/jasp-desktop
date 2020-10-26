@@ -170,7 +170,8 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis,	&Analysis::titleChanged,						this, &Analyses::somethingModified					);
 	connect(analysis,	&Analysis::imageChanged,						this, &Analyses::somethingModified					);
 	connect(analysis,	&Analysis::userDataChangedSignal,				this, &Analyses::analysisOverwriteUserdata			);
-
+	connect(analysis,	&Analysis::destructionSignal,					this, &Analyses::analysisRemoved					);
+	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
 	{
 		QString filePath = tq(analysis->qmlFormPath());
@@ -199,7 +200,6 @@ void Analyses::clear()
 		idAnalysis.second  = nullptr;
 
 		emit analysisRemoved(analysis);
-		delete analysis;
 	}
 
 	_analysisMap.clear();
@@ -275,6 +275,9 @@ void Analyses::removeAnalysis(Analysis *analysis)
 			break;
 		}
 
+	if (indexAnalysis == -1)
+		return;
+
 	QList<int> toRemove;
 	QMapIterator<int, QPair<Analysis*, QString> > it(_scriptIDMap);
 	while (it.hasNext())
@@ -294,10 +297,7 @@ void Analyses::removeAnalysis(Analysis *analysis)
 
 	emit countChanged();
 	emit analysisRemoved(analysis);
-
-	delete analysis;
 }
-
 
 void Analyses::removeAnalysesOfDynamicModule(Modules::DynamicModule * module)
 {

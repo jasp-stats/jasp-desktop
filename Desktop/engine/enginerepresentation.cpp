@@ -42,7 +42,7 @@ EngineRepresentation::~EngineRepresentation()
 
 void EngineRepresentation::cleanUpAfterClose()
 {
-	_analysisInProgress = nullptr;
+	clearAnalysisInProgress();
 	_analysisAborted	= nullptr;
 	_idRemovedAnalysis	= -1;
 	_lastRequestId		= -1;
@@ -136,6 +136,9 @@ void EngineRepresentation::clearAnalysisInProgress()
 {
 	Log::log() << "Engine " << channelNumber() << " clears current analysis in progress (" << (_analysisInProgress ? _analysisInProgress->name() : "???" ) << ")" << std::endl;
 
+	if (_analysisInProgress)
+		disconnect(_analysisInProgress, &Analysis::destructionSignal, this, &EngineRepresentation::clearAnalysisInProgress);
+
 	_analysisInProgress = nullptr;
 	_engineState		= engineState::idle;
 }
@@ -150,8 +153,14 @@ void EngineRepresentation::setAnalysisInProgress(Analysis* analysis)
 
 	if(_engineState != engineState::idle)	throw std::runtime_error("Engine " + std::to_string(_channel->channelNumber()) + " is not idle! Yet you are trying to set an analysis in progress on it..");
 
+	clearAnalysisInProgress();
+
 	_analysisInProgress = analysis;
+	if (_analysisInProgress)
+		connect(_analysisInProgress, &Analysis::destructionSignal, this, &EngineRepresentation::clearAnalysisInProgress);
+
 	_engineState		= engineState::analysis;
+
 }
 
 void EngineRepresentation::process()
@@ -364,6 +373,10 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 
 	_idRemovedAnalysis = analysis->id();
 	abortAnalysisInProgress(false);
+
+	if (_analysisInProgress)
+		disconnect(_analysisInProgress, &Analysis::destructionSignal, this, &EngineRepresentation::clearAnalysisInProgress);
+
 	_analysisInProgress = nullptr; //Because it will be deleted!
 	//But we keep the engineState at analysis to make sure another analysis won't try to run until the aborted one gets the message!
 }
@@ -415,6 +428,8 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		}
 		return;
 	}
+
+	if (!_analysisInProgress)	return;
 
 	Analysis *analysis			= _analysisInProgress;
 
@@ -518,7 +533,7 @@ void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
 
 void EngineRepresentation::handleRunningAnalysisStatusChanges()
 {
-	if (_engineState != engineState::analysis || _idRemovedAnalysis >= 0)
+	if (_engineState != engineState::analysis || _idRemovedAnalysis >= 0 || _analysisInProgress == nullptr)
 		return;
 
 	if(		(_analysisInProgress->isEmpty() || _analysisInProgress->isAborted() )

@@ -300,10 +300,13 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 {
 						_analysisForm	= form;
 	if(!_isDuplicate)	_status			= isNewAnalysis ? Empty : Complete;
-	
+
+	setParent(_analysisForm);
+
 	connect(Analyses::analyses(),	&Analyses::dataSetChanged,			_analysisForm,	&AnalysisForm::dataSetChangedHandler		);
 	connect(Analyses::analyses(),	&Analyses::dataSetColumnsChanged,	_analysisForm,	&AnalysisForm::dataSetColumnsChangedHandler	);
 	connect(_analysisForm,			&AnalysisForm::helpMDChanged,		this,			&Analysis::helpMDChanged					);
+	connect(_analysisForm,			&AnalysisForm::formDestruction,		[=]() { emit this->destructionSignal(this);	}				);
 }
 
 

@@ -190,4 +190,5 @@ AnalysisForm
 	}
 	
 	Component.onCompleted:	bindingTimer.start()
+	Component.onDestruction: formDestruction();
 }

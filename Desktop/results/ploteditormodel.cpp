@@ -20,8 +20,15 @@ PlotEditorModel::PlotEditorModel()
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
 {
+	Analysis* analysis = Analyses::analyses()->get(id);
+	if (_analysis != analysis)
+	{
+		if (_analysis)	disconnect(_analysis, &Analysis::destructionSignal, this, &PlotEditorModel::reset);
+		if (analysis)	connect(_analysis, &Analysis::destructionSignal, this, &PlotEditorModel::reset);
+	}
+
 	_analysisId	= id;
-	_analysis	= Analyses::analyses()->get(id);
+	_analysis = analysis;
 	_imgOptions	= Json::objectValue;
 
 	Json::Reader().parse(fq(options), _imgOptions);
@@ -38,6 +45,7 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 void PlotEditorModel::reset()
 {
 	_analysisId		=	-1;
+
 	_analysis		=	nullptr;
 	_imgOptions		=	Json::nullValue;
 	_editOptions	=	Json::nullValue;

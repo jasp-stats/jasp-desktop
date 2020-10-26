@@ -88,6 +88,7 @@ signals:
 				void			sendRScript(QString script, int key);
 				void			formChanged(Analysis* analysis);
 				void			formCompleted();
+				void			formDestruction();
 				void			dataSetChanged();
 				void			refreshTableViewModels();
 				void			errorMessagesItemChanged();

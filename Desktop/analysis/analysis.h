@@ -181,6 +181,7 @@ signals:
 	void				imageEditedSignal(		Analysis * analysis);
 	void				resultsChangedSignal(	Analysis * analysis);
 	void				userDataChangedSignal(	Analysis * analysis);
+	void				destructionSignal(		Analysis * analysis);
 	void				imageChanged();
 
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
