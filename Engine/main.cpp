@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 		}
 		catch (std::exception & e)
 		{
-			Log::log() << "Engine had an uncaught exception of: " << e.what() << "\n";
+			Log::log() << "Engine had an uncaught exception of: " << e.what() << std::endl;;
 			throw e;
 		}
 
