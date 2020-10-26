@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 
-	std::cout << "Engine started in testing mode because it didn't receive 4 arguments." << std::endl;
+	std::cout << "Engine started in testing mode because it didn't receive 4 (or 1) arguments." << std::endl;
 
 	const char * testFileName = "testFile.txt";
 	std::ofstream writeTestFile(testFileName);

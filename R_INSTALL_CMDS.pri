@@ -20,8 +20,24 @@ exists(/app/lib/*) {  #for flatpak we can should use R's own library as it is co
 
 isEmpty(JASP_LIBRARY_DIR):   JASP_LIBRARY_DIR   = $$ROOT_LIBRARY_DIR
 
-win32:  LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$${JASP_BUILDROOT_DIR}/R/library\'))"
-unix:	LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$$_R_HOME/library\'))"
+
+defineReplace(generateExtraLibPaths) {
+	DEPS_VAR	= $$1
+	DEPS		= $$eval($$DEPS_VAR)
+	EXTRA_LIBS	= 
+
+	#The comma even when EXTRA_LIBS is empty is intentional, to make sure it fits right into LIBPATHS if there is at least 1 dep
+	for(DEP, DEPS) {
+		EXTRA_LIBS = $${EXTRA_LIBS}, \'$${JASP_BUILDROOT_DIR}/Modules/$${DEP}\'
+	}
+
+	return($$EXTRA_LIBS)
+}
+
+#MODULE_DEPS can be used to define which other modules this one is dependent on.
+
+win32:  LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$${JASP_BUILDROOT_DIR}/R/library\'$$generateExtraLibPaths(MODULE_DEPS)))"
+unix:	LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$$_R_HOME/library\'$$generateExtraLibPaths(MODULE_DEPS)))"
 
 INSTALL_R_PKG_CMD_PREFIX  = \"$$R_EXE\" -e \"$$LIBPATHS; install.packages(\'
 INSTALL_R_PKG_DEPS_CMD_PREFIX  = \"$$R_EXE\" -e \"$$LIBPATHS; remotes::install_deps(pkg=\'

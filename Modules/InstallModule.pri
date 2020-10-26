@@ -4,6 +4,7 @@ isEmpty(R_MODULES_INSTALL_DEPENDENCIES) {
 	R_MODULES_INSTALL_DEPENDENCIES = false
 }
 
+
 isEmpty(MODULE_NAME) {
     message(You must specify MODULE_NAME to use InstallModule.pri!)
 } else {
@@ -25,7 +26,6 @@ isEmpty(MODULE_NAME) {
     #Then, if we so desire, we install all dependencies (that are missing anyhow)
 	$$R_MODULES_INSTALL_DEPENDENCIES:		Install$${MODULE_NAME}.commands		+= $${INSTALL_R_PKG_DEPS_CMD_PREFIX}$${MODULE_DIR}/$${MODULE_NAME}$${INSTALL_R_PKG_DEPS_CMD_POSTFIX} $$escape_expand(\\n\\t) 
 	
-
     #Install the actual module package
 	Install$${MODULE_NAME}.commands     +=  $${INSTALL_R_PKG_CMD_PREFIX}$${MODULE_DIR}/$${MODULE_NAME}$${INSTALL_R_PKG_CMD_POSTFIX}; $$escape_expand(\\n\\t)
 
@@ -58,4 +58,13 @@ isEmpty(MODULE_NAME) {
 
     QMAKE_CLEAN			+= $$JASP_LIBRARY_DIR/$${MODULE_NAME}/* $$JASP_LIBRARY_DIR/*
 	#QMAKE_DISTCLEAN	+= $$JASP_LIBRARY_DIR/*/*/* $$JASP_LIBRARY_DIR/*/* $$JASP_LIBRARY_DIR/* $$JASP_LIBRARY_DIR
+
+	#Make sure we install the r pkgs in the right order.
+	for(DEP, MODULE_DEPS) {
+		Install$${MODULE_NAME}.depends	+= PostInstallFix$${DEP}
+	}
 }
+
+#reset the special vars:
+MODULE_NAME =
+MODULE_DEPS = 

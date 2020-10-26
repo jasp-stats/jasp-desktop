@@ -24,10 +24,10 @@ include(../InstallModule.pri)
 R_MODULES_INSTALL_DEPENDENCIES = true
 MODULE_NAME = jaspMachineLearning
 include(../InstallModule.pri)
-
 R_MODULES_INSTALL_DEPENDENCIES = false
 
 MODULE_NAME = jaspSummaryStatistics
+MODULE_DEPS = jaspFrequencies jaspRegression jaspTTests
 include(../InstallModule.pri)
 
 MODULE_NAME = jaspMetaAnalysis

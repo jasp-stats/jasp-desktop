@@ -14,6 +14,7 @@ MODULE_NAME = jaspDescriptives
 include(../InstallModule.pri)
 
 MODULE_NAME = jaspAnova
+MODULE_DEPS = jaspDescriptives jaspTTests
 include(../InstallModule.pri)
 
 MODULE_NAME = jaspFactor
@@ -23,6 +24,7 @@ MODULE_NAME = jaspFrequencies
 include(../InstallModule.pri)
 
 MODULE_NAME = jaspRegression
+MODULE_DEPS = jaspDescriptives jaspAnova
 include(../InstallModule.pri)
 
 MODULE_NAME = jaspTTests
