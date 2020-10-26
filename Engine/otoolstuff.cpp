@@ -52,7 +52,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 		remove_all(rcppPath);
 
 #ifdef __APPLE__
-	std::cout << "This is a mac so we ar trying to fix the otool mess..." << std::endl;
+	std::cout << "This is a mac so we are trying to fix the otool mess..." << std::endl;
 
 	typedef filesystem::recursive_directory_iterator	recIt;
 
