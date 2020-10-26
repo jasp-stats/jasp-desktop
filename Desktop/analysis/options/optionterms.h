@@ -27,17 +27,18 @@ class OptionTerms : public OptionI<std::vector<std::vector<std::string> > >
 public:
 			OptionTerms() : OptionI(true), _onlyOneComponent(false), _onlyOneTerm(false) {}
 
-			void		set(const Json::Value& value) override;
-			Json::Value asJSON() const override;
-			Option		*clone() const override;
-			void		init(const Json::Value &data) override;
+			void		set(const Json::Value& value)			override;
+			Json::Value asJSON()						const	override;
+			Json::Value	asMetaJSON()					const	override;
+			Option		*clone()						const	override;
+			void		init(const Json::Value &data)			override;
 
 			void		setValue(const std::vector<std::vector<std::string> > &value) override;
 	virtual void		setValue(const std::vector<std::string> &value);
 	virtual void		setValue(const std::string &value);
 
-	bool				onlyOneTerm() const;
-	bool				onlyOneComponent() const;
+	bool				onlyOneTerm()		const;
+	bool				onlyOneComponent()	const;
 
 protected:
 	OptionTerms(bool onlyOneComponent, bool onlyOneTerm = false) : OptionI(true), _onlyOneComponent(onlyOneComponent), _onlyOneTerm(onlyOneTerm) {}

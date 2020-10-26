@@ -136,3 +136,9 @@ bool OptionTerms::onlyOneComponent() const
 {
 	return _onlyOneComponent;
 }
+
+Json::Value OptionTerms::asMetaJSON() const
+{
+	//Maybe we should check if the terms are in fact columnnames or not? But, for now I will just assume that terms are very likely to contain columnnames. And otherwise Ill have to step through all this like in OptionTerms::asJSON() and simply check it
+	return defaultMetaEntryContainingColumn();
+}

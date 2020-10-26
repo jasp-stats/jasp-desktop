@@ -34,20 +34,16 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(JASPControlBase* item, bool interac
 	: JASPControlWrapper(item)
 	, BoundQMLListViewDraggable(item)
 {
-	_optionsTable = nullptr;
-	_optionVariables = nullptr;
 	_maxRows = getItemProperty("maxRows").toInt();
 	_columns = getItemProperty("columns").toInt();
+	
 	bool interactionContainLowerTerms	= getItemProperty("interactionContainLowerTerms").toBool();
 	_interactionHighOrderCheckBoxName	= getItemProperty("interactionHighOrderCheckBox").toString();
 	bool addInteractionsByDefault		= getItemProperty("addInteractionsByDefault").toBool();
 		
-	if (interaction)
-		_termsModel = new ListModelInteractionAssigned(this, interactionContainLowerTerms, addInteractionsByDefault);
-	else if (_columns > 1)
-		_termsModel = new ListModelMultiTermsAssigned(this, _columns);
-	else
-		_termsModel = new ListModelTermsAssigned(this, _maxRows);
+	if (interaction)		_termsModel = new ListModelInteractionAssigned(	this, interactionContainLowerTerms, addInteractionsByDefault);
+	else if (_columns > 1)	_termsModel = new ListModelMultiTermsAssigned(	this, _columns);
+	else					_termsModel = new ListModelTermsAssigned(		this, _maxRows);
 }
 
 void BoundQMLListViewTerms::bindTo(Option *option)
