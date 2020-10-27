@@ -86,3 +86,7 @@
 	path = Modules/jaspLearnBayes
 	url = https://github.com/jasp-stats/jaspLearnBayes
 	branch = master
+[submodule "Tools/jaspTools"]
+	path = Tools/jaspTools
+	url = https://github.com/jasp-stats/jaspTools/
+	branch = master
