@@ -39,8 +39,8 @@ defineReplace(generateExtraLibPaths) {
 win32:  LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$${JASP_BUILDROOT_DIR}/R/library\'$$generateExtraLibPaths(MODULE_DEPS)))"
 unix:	LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$$_R_HOME/library\'$$generateExtraLibPaths(MODULE_DEPS)))"
 
-INSTALL_R_PKG_CMD_PREFIX  = \"$$R_EXE\" -e \"$$LIBPATHS; install.packages(\'
-INSTALL_R_PKG_DEPS_CMD_PREFIX  = \"$$R_EXE\" -e \"$$LIBPATHS; remotes::install_deps(pkg=\'
+INSTALL_R_PKG_CMD_PREFIX		= JASP_R_HOME=\"$$_R_HOME\" \"$$R_EXE\" -e \"$$LIBPATHS; install.packages(\'
+INSTALL_R_PKG_DEPS_CMD_PREFIX	= JASP_R_HOME=\"$$_R_HOME\" \"$$R_EXE\" -e \"$$LIBPATHS; remotes::install_deps(pkg=\'
 
 INSTALL_R_PKG_CMD_POSTFIX      = \', lib=\'$${JASP_LIBRARY_DIR}\', INSTALL_opts=\'--no-multiarch --no-docs --no-test-load\', repos=NULL, type=\'source\')\"
 INSTALL_R_PKG_DEPS_CMD_POSTFIX = \', lib=\'$${JASP_LIBRARY_DIR}\', INSTALL_opts=\'--no-multiarch --no-docs --no-test-load\', repos=\'https://cloud.r-project.org/\', upgrade=\'never\', THREADS=1)\"
