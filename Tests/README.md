@@ -9,7 +9,7 @@ Note that it is required to have the R package [jaspTools](https://github.com/ja
     - [figs](#figs)
     - [testthat](#testthat)
     - [testthat.R](#testthatr)
-    - [travis.yml](#travisyml)
+    - [.travis.yml](#travisyml)
   - [Creating unit tests](#creating-unit-tests)
     - [Creating a test file](#creating-a-test-file)
     - [Adding table tests](#adding-table-tests)
@@ -32,7 +32,7 @@ Your module should include the following structure:
     - [figs/](#figs)
     - [testthat/](#testthat)
     - [testthat.R](#testthatr)
-  - [travis.yml](#travisyml)
+  - [.travis.yml](#travisyml)
   
 ### figs
 An empty folder, will be automatically filled later, see [Adding plot tests](#adding-plot-tests).
@@ -48,7 +48,7 @@ library(testthat)
 jaspTools::runTestsTravis(module = getwd())
 ```
 
-### travis.yml
+### .travis.yml
 ```
 os: osx
 language: r
