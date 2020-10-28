@@ -32,6 +32,8 @@
 #include <QStandardPaths>
 #include "appinfo.h"
 
+#include "log.h"
+
 using namespace std;
 
 QString AppDirs::examples()
@@ -77,7 +79,7 @@ QString AppDirs::bundledModulesDir()
 	static QString folder =
 #ifdef __APPLE__
 	 (QDir(programDir().absoluteFilePath("../Resources/Modules")).exists() ? programDir().absoluteFilePath("../Resources/Modules") : programDir().absoluteFilePath("Modules")) + '/';
-#elif __WIN32__
+#elif _WIN32
 	 programDir().absoluteFilePath("Modules") + '/';
 #else
 	"???";
