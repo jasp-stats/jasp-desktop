@@ -401,12 +401,12 @@ installRequiredPackages <- function(stopOnError = TRUE)
     {
       specialDef <- specials[[pkgName]]
       if(specialDef$type == 'github')
-        error <- try(devtools::install_github(paste0(specialDef$repo, '@', specialDef$commit)))
+        error <- try(remotes::install_github(paste0(specialDef$repo, '@', specialDef$commit)))
       else
         stop(paste0("Found a special that I cannot handle! (",specialDef,")"))
     }
     else
-      error <- try(devtools::install_version(package=pkgName, version=version, repos=CRAN, dependencies=FALSE, upgrade_dependencies=FALSE))
+      error <- try(remotes::install_version(package=pkgName, version=version, repos=CRAN, dependencies=FALSE, upgrade_dependencies=FALSE))
 
     if (inherits(error, "try-error"))
     {
