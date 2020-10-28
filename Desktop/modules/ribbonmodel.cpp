@@ -18,7 +18,7 @@
 
 
 #include "ribbonmodel.h"
-#include "dirs.h"
+#include "utilities/appdirs.h"
 #include "log.h"
 
 RibbonModel * RibbonModel::_singleton = nullptr;
@@ -38,24 +38,21 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 {
 	DynamicModules::dynMods()->insertCommonModuleNames(std::set<std::string>(commonModulesToLoad.begin(), commonModulesToLoad.end()));
 
-	for(const std::string & moduleName : commonModulesToLoad)
-		if(DynamicModules::dynMods()->moduleIsInstalledInItsOwnLibrary(moduleName)) //Only load bundled if the user did not install a newer/other version
-			addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[moduleName]);
-		else
-		{
-			std::string moduleLibrary = Dirs::bundledDir() + moduleName + "/" ;
-			DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, true);
-		}
-
-	for(const std::string & moduleName : extraModulesToLoad)
-		if(DynamicModules::dynMods()->moduleIsInstalledInItsOwnLibrary(moduleName)) //Only load bundled if the user did not install a newer/other version
-			addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[moduleName]);
-		else
-		{
-			std::string moduleLibrary = Dirs::bundledDir() + moduleName + "/" ;
-			DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, false);
-		}
-
+	auto loadModulesFromBundledOrUserData = [&](bool common)
+	{
+		for(const std::string & moduleName : (common ? commonModulesToLoad : extraModulesToLoad))
+			if(DynamicModules::dynMods()->moduleIsInstalledByUser(moduleName)) //Only load bundled if the user did not install a newer/other version
+				addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[moduleName]);
+			else
+			{
+				std::string moduleLibrary = DynamicModules::bundledModuleLibraryPath(moduleName);
+				DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, common);
+			}
+	};
+	
+	loadModulesFromBundledOrUserData(true);
+	loadModulesFromBundledOrUserData(false);
+	
 	for(const std::string & modName : DynamicModules::dynMods()->moduleNames())
 		if(!isModuleName(modName)) //Was it already added from commonModulesToLoad or extraModulesToLoad?
 			addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[modName]);

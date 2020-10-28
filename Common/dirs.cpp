@@ -302,18 +302,3 @@ string Dirs::resourcesDir()
 
 	return dir;
 }
-
-string Dirs::bundledDir()
-{
-	string dir = exeDir();
-
-#ifdef __APPLE__
-	static bool isQtBuild = filesystem::exists("Makefile");
-	if (!isQtBuild)
-		dir += "/..";
-#endif
-
-	dir += "/Modules/";
-
-	return dir;
-}

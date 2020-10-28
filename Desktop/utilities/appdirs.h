@@ -31,7 +31,8 @@ public:
 	static QString help();
 	static QString analysisDefaultsDir();
 	static QString userRLibrary();
-	static QString modulesDir();
+	static QString userModulesDir();
+	static QString bundledModulesDir();
 	static QString documents();
 	static QString logDir();
 	static QString appData();

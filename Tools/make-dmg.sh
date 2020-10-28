@@ -80,6 +80,9 @@ cp -R $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
 rm app/JASP.app/Contents/Resources/TestFiles.zip
 cp -R R app/JASP.app/Contents/MacOS
 
+echo "Copy the module( librarie)s from the buildfolder to Resources"
+cp -R $JASP_FULL_BUILD_DIR/Modules app/JASP.app/Contents/Resources
+
 #This is now made part of jasp-required-files: https://github.com/jasp-stats/jasp-required-files/commit/34cdebfda1e5bc27c30d5bf11cd07471449162e7
 #echo "Make symbolic link to Frameworks in bin folder to let @executable_path/... stuff work from R executable as well."
 #pushd $APP_R_FRAMEWORK/Versions/$CURRENT_R_VERSION/bin

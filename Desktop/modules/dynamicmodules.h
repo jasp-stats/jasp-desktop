@@ -49,12 +49,13 @@ public:
 	bool			initializeModule(					Modules::DynamicModule * module);
 	void			replaceModule(						Modules::DynamicModule * module);
 
-	bool			bundledModuleInFilesystem(	const	std::string & moduleName);
-	std::string		bundledModuleLibraryPath(	const	std::string & moduleName);
-	std::string		moduleDirectory(		const	std::string & moduleName)	const;
-	std::wstring	moduleDirectoryW(		const	std::string & moduleName)	const;
+	static bool			bundledModuleInFilesystem(	const	std::string & moduleName);
+	static std::string	bundledModuleLibraryPath(	const	std::string & moduleName);
+	std::string			moduleDirectory(			const	std::string & moduleName)	const;
+	std::wstring		moduleDirectoryW(			const	std::string & moduleName)	const;
+	QString				moduleDirectoryQ(			const	QString     & moduleName)	const;
 
-	bool			moduleIsInstalledInItsOwnLibrary(const std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
+	bool			moduleIsInstalledByUser(const std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
 
 	bool			aModuleNeedsToBeLoadedInR()					{ return !_modulesToBeLoaded.empty();				}
 	bool			aModuleNeedsToBeUnloadedFromR()				{ return !_modulesToBeUnloaded.empty();				}

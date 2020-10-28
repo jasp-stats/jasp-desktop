@@ -63,7 +63,7 @@ DynamicModule::DynamicModule(QString moduleDirectory, QObject *parent, bool bund
 DynamicModule::DynamicModule(std::string modulePackageFile, QObject *parent, bool unpack) : QObject(parent), _modulePackage(modulePackageFile)
 {
 	_name			= extractPackageNameFromArchive(modulePackageFile);
-	_moduleFolder	= QFileInfo(AppDirs::modulesDir() + QString::fromStdString(_name) + "/");
+	_moduleFolder	= QFileInfo(AppDirs::userModulesDir() + QString::fromStdString(_name) + "/");
 	unpackage();
 
 	loadDescriptionFromFolder(_modulePackage);
@@ -71,14 +71,14 @@ DynamicModule::DynamicModule(std::string modulePackageFile, QObject *parent, boo
 
 QFileInfo DynamicModule::developmentModuleFolder()
 {
-	return QFileInfo(AppDirs::modulesDir() + QString::fromStdString(defaultDevelopmentModuleName()) + "/");
+	return QFileInfo(AppDirs::userModulesDir() + QString::fromStdString(defaultDevelopmentModuleName()) + "/");
 }
 
 void DynamicModule::developmentModuleFolderCreate()
 {
 	if(developmentModuleFolder().dir().exists()) return;
 
-	QDir(AppDirs::modulesDir()).mkdir(QString::fromStdString(defaultDevelopmentModuleName()));
+	QDir(AppDirs::userModulesDir()).mkdir(QString::fromStdString(defaultDevelopmentModuleName()));
 }
 
 ///This constructor is meant specifically for the development module and only *it*!

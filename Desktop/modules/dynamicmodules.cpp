@@ -38,7 +38,7 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 
 	connect(this, &DynamicModules::stopEngines, this, &DynamicModules::enginesStopped, Qt::QueuedConnection);
 
-	_modulesInstallDirectory = AppDirs::modulesDir().toStdWString();
+	_modulesInstallDirectory = AppDirs::userModulesDir().toStdWString();
 
 	if(!boost::filesystem::exists(_modulesInstallDirectory))
 		boost::filesystem::create_directories(_modulesInstallDirectory);
@@ -506,12 +506,12 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 		return;
 	}
 
-	if(moduleIsInstalledInItsOwnLibrary(moduleName))
+	if(moduleIsInstalledByUser(moduleName))
 		uninstallModule(moduleName);
 
 	auto modNameQ = QString::fromStdString(moduleName);
-	if(!QDir(AppDirs::modulesDir() + "/" + modNameQ).exists())
-		QDir(AppDirs::modulesDir()).mkdir(modNameQ);
+	if(!QDir(AppDirs::userModulesDir() + "/" + modNameQ).exists())
+		QDir(AppDirs::userModulesDir()).mkdir(modNameQ);
 
 	if(_modules.count(moduleName) > 0 && _modules[moduleName]->isBundled())
 		replaceModule(dynMod);
@@ -548,7 +548,7 @@ void DynamicModules::installJASPDeveloperModule()
 					name	= devMod->name(),
 					dest	= devMod->moduleRLibrary().toStdString();
 
-		if(moduleIsInstalledInItsOwnLibrary(name))
+		if(moduleIsInstalledByUser(name))
 		{
 			uninstallModule(name);
 			stopEngines();
@@ -779,16 +779,20 @@ void DynamicModules::enginesStopped()
 		nameMod.second->setLoaded(false); //Cause we restarted the engines
 }
 
+QString DynamicModules::moduleDirectoryQ(const QString & moduleName)	const
+{
+	if(moduleName == tq(developmentModuleName()))	return developmentModuleFolder();
+													return AppDirs::userModulesDir() + moduleName + '/';
+}
+
 std::string DynamicModules::moduleDirectory(const std::string & moduleName)	const
 {
-	if(moduleName == developmentModuleName()) return developmentModuleFolder().toStdString();
-	return AppDirs::modulesDir().toStdString() + moduleName + '/';
+	return moduleDirectoryQ(tq(moduleName)).toStdString();
 }
 
 std::wstring DynamicModules::moduleDirectoryW(const std::string & moduleName)	const
 {
-	if(moduleName == developmentModuleName()) return developmentModuleFolder().toStdWString();
-	return AppDirs::modulesDir().toStdWString() + QString::fromStdString(moduleName).toStdWString() + L'/';
+	return moduleDirectoryQ(tq(moduleName)).toStdWString();
 }
 
 void DynamicModules::setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled)
@@ -854,7 +858,7 @@ bool DynamicModules::bundledModuleInFilesystem(const std::string & moduleName)
 
 std::string DynamicModules::bundledModuleLibraryPath(const std::string & moduleName)
 {
-	return Dirs::bundledDir() + moduleName + "/";
+	return fq(AppDirs::bundledModulesDir()) + moduleName + "/";
 }
 
 QStringList DynamicModules::requiredModulesLibPaths(QString moduleName)

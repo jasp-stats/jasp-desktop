@@ -64,12 +64,28 @@ QString AppDirs::userRLibrary()
 	return path;
 }
 
-QString AppDirs::modulesDir()
+QString AppDirs::userModulesDir()
 {
 	QString path = appData();
 	path += "/Modules/";
 
 	return path;
+}
+
+QString AppDirs::bundledModulesDir()
+{
+	static QString folder =
+#ifdef __APPLE__
+	 (QDir(programDir().absoluteFilePath("../Resources/Modules")).exists() ? programDir().absoluteFilePath("../Resources/Modules") : programDir().absoluteFilePath("Modules")) + '/';
+#elif __WIN32__
+	 programDir().absoluteFilePath("Modules") + '/';
+#else
+	"???";
+	Log::log() << "lINUX DOESNT KNOW WHERE TO LOOK FOR BUNDLED MODULES YET!!!\nIf you are not Joris tell him he should fix this..." << std::endl;
+	throw std::runtime_error("Fix linux bundled modules please");
+#endif
+	
+	return folder ;
 }
 
 QString AppDirs::processPath(const QString & path)

@@ -30,7 +30,6 @@ public:
 	static std::string exeDir();
 	static std::string rHomeDir();
 	static std::string resourcesDir();
-	static std::string bundledDir();
 
 
 	class Exception : public std::runtime_error
