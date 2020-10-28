@@ -42,7 +42,7 @@ SET QTDIR_DEFAULT=C:\Qt
 SET QTVER_DEFAULT=5.15.0
 SET RTOOLSDIR_DEFAULT=C:\Rtools
 SET WIX_DEFAULT=C:\Program Files (x86)\WiX Toolset v3.11
-SET MSVCDIR_DEFAULT=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community
+SET MSVCDIR_DEFAULT=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community
 
 rem ---------------------- Setting up environmet -------------------------------
 
@@ -312,7 +312,7 @@ echo Melting and Coalescing MSI
 
 cd %JASP_BASE_DIR%\%JASP_WIX_DIR%
 
-SET MERGEMODULENAME=Microsoft_VC141_CRT_%WIXARCH%.msm
+SET MERGEMODULENAME=Microsoft_VC142_CRT_%WIXARCH%.msm
 
 echo VCToolsRedistDir: "%VCToolsRedistDir%"
 
