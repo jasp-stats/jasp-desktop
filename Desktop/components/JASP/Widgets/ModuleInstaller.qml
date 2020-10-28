@@ -17,7 +17,7 @@
 //
 
 import QtQuick					2.11
-import QtQuick.Controls			2.4 as QTCONTROLS
+import QtQuick.Controls			2.7 as QTCONTROLS
 import Qt.labs.folderlistmodel	2.11
 //import QtQuick.Window			2.3
 import JASP.Controls			1.0
@@ -35,7 +35,7 @@ QTCONTROLS.Popup
 	modal:			true
 
 	background:		Rectangle { color: jaspTheme.uiBackground }
-	closePolicy:	Popup.CloseOnPressOutside | Popup.CloseOnEscape
+	closePolicy:	QTCONTROLS.Popup.CloseOnPressOutside | QTCONTROLS.Popup.CloseOnEscape
 
 	Loader
 	{
