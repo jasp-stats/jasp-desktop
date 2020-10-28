@@ -126,12 +126,12 @@ SET VCVARS_DIR="%MSVCDIR%\VC\Auxiliary\Build"
 
 if "%ARCH%" == "64" (
 SET MINGWDIR=%RTOOLSDIR%\mingw_64\bin
-SET QTVCDIR=%QTDIR%\%QTVER%\msvc2017_64\bin
+SET QTVCDIR=%QTDIR%\%QTVER%\msvc2019_64\bin
 SET WIXARCH="x64"
 SET COPY_R_ARCH="x64"
 ) else (
 SET MINGWDIR=%RTOOLSDIR%\mingw_32\bin
-SET QTVCDIR=%QTDIR%\%QTVER%\msvc2017\bin
+SET QTVCDIR=%QTDIR%\%QTVER%\msvc2019\bin
 SET WIXARCH="x86"
 SET COPY_R_ARCH="i386"
 )
@@ -313,6 +313,8 @@ echo Melting and Coalescing MSI
 cd %JASP_BASE_DIR%\%JASP_WIX_DIR%
 
 SET MERGEMODULENAME=Microsoft_VC141_CRT_%WIXARCH%.msm
+
+echo VCToolsRedistDir: "%VCToolsRedistDir%"
 
 COPY "%VCToolsRedistDir%\MergeModules\%MERGEMODULENAME%" /Y
 "%WIX%\bin\heat.exe" dir .\%JASP_INSTALL_DIR% -cg JASPFiles -gg -scom -sreg -sfrag -srd -dr APPLICATIONFOLDER -var var.JASP_INSTALL_DIR -out JASPFilesFragment.wxs || exit /B 7
