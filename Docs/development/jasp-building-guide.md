@@ -2,6 +2,10 @@
 Guide to Building JASP
 ======================
 
+First off, are you sure you want to build JASP? An easier way to develop modules is to just [download a nightly](http://static.jasp-stats.org/Nightlies/) and load your module as a development module. This process is described at [workflow in developing a JASP module](./jasp-module-workflow.md).
+
+If you **really** want to build JASP, read on.
+
 The easiest way to build JASP is to use Qt Creator. After cloning the [jasp-desktop project](https://github.com/jasp-stats/jasp-desktop), open the JASP.pro file in the jasp-desktop directory, in Qt Creator. This project contains two runnable sub-projects, *Desktop* and *Engine*. In order to run JASP, *Desktop* is the correct project to run.
 
 For those unfamiliar with using Qt Creator for development, there is some excellent documentation available [here](http://doc.qt.io/qtcreator/index.html).
