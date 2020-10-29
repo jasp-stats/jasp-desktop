@@ -245,13 +245,15 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 }
 
 .linregFillAnovaTable <- function(anovaTable, model, options) {
+  rowTypes <- list(Regression = gettext("Regression"), Residual = gettext("Residual"), Total = gettext("Total"))
+
   indicesOfModelsWithPredictors <- .linregGetIndicesOfModelsWithPredictors(model, options)
   for (i in indicesOfModelsWithPredictors) {
     isNewGroup  <- i > 1
     anovaRes    <- .linregGetAnova(model[[i]]$fit, model[[i]]$predictors)
 
-    for (rowType in c(gettext("Regression"), gettext("Residual"), gettext("Total"))) {
-      anovaTable$addRows(c(anovaRes[[rowType]], list(.isNewGroup = isNewGroup, model = model[[i]]$title, cases = rowType)))
+    for (rowType in names(rowTypes)) {
+      anovaTable$addRows(c(anovaRes[[rowType]], list(.isNewGroup = isNewGroup, model = model[[i]]$title, cases = rowTypes[[rowType]])))
       isNewGroup <- FALSE
     }
   }
