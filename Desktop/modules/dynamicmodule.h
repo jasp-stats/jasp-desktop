@@ -220,11 +220,6 @@ signals:
 	QStringList requiredModulesLibPaths(QString moduleName);
 
 private:
-	void		generateRPackageMetadata(QDir packageDir);
-	std::string generateNamespaceFileForRPackage();
-	std::string generateDescriptionFileForRPackage();
-
-private:
 	QFileInfo			_moduleFolder;
 	moduleStatus		_status = moduleStatus::initializing;
 	std::string			_name,

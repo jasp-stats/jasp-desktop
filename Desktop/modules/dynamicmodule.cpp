@@ -338,94 +338,6 @@ void DynamicModule::setLoadingNeeded()
 		setStatus(moduleStatus::loadingNeeded);
 }
 
-void DynamicModule::generateRPackageMetadata(QDir packageDir)
-{
-	QFile	descriptionFile(packageDir.absoluteFilePath("DESCRIPTION")),
-			namespaceFile(	packageDir.absoluteFilePath("NAMESPACE"));
-
-	if(!descriptionFile.exists() || (isDevMod() && Settings::value(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC).toBool()))
-	{
-		descriptionFile.open(QFile::WriteOnly	| QFile::Truncate);
-		descriptionFile.write(generateDescriptionFileForRPackage().c_str());
-	}
-
-	if(!namespaceFile.exists() || (isDevMod() && Settings::value(Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC).toBool()))
-	{
-		namespaceFile.open(QFile::WriteOnly		| QFile::Truncate);
-		namespaceFile.write(generateNamespaceFileForRPackage().c_str());
-	}
-}
-
-std::string DynamicModule::generateDescriptionFileForRPackage()
-{
-	std::stringstream out;
-
-	out << "Package: "		<< _name <<
-		"\nType: Package"
-		"\nTitle: "			<< _title << " Module for JASP"
-		"\nVersion: "		<< _version <<
-		"\nDate: "			<< QDateTime::currentDateTime().toString("yyyy-MM-dd").toStdString() <<
-		"\nAuthor: "		<< _author <<
-		"\nWebsite: "		<< _website <<
-		"\nMaintainer: "	<< _maintainer <<
-		"\nDescription: "	<< _description <<
-		"\nLicense: "		<< _license;
-
-
-	if(_requiredPackages.isArray() && _requiredPackages.size() > 0)
-	{
-		out << "\nImports: ";
-
-		bool first = true;
-		for(Json::Value & pkgV : _requiredPackages)
-		{
-			if(!first) out << ", ";
-
-			if(pkgV.isObject() && pkgV.isMember("package"))
-			{
-				try {
-					out << pkgV["package"].asString();
-
-					if(!pkgV["version"].isNull())
-						out << " (>= " << pkgV["version"].asString() << ")";
-
-					first = false;
-				} catch (...) {
-					setInstallLog("Something went wrong parsing the required packages in description.json! Make sure they follow the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionjson");
-					setStatus(moduleStatus::error);
-				}
-			}
-			else if(pkgV.isString())
-			{
-				out << pkgV.asString();
-				first = false;
-			}
-		}
-	}
-
-	return out.str();
-
-}
-
-std::string DynamicModule::generateNamespaceFileForRPackage()
-{
-	std::stringstream out;
-
-	//Always export functions that have a full alpha name. This helps with dependencies of other modules
-	out << "exportPattern('^[[:alpha:]]+')\n";
-
-	try
-	{
-		if(_requiredPackages.isArray())
-			for(Json::Value & pkgV : _requiredPackages)
-				out << standardRIndent << "import('" << (pkgV.isString()  ? pkgV.asString() : pkgV["package"].asString()) << "');\n";
-	} catch (...) {
-		throw std::runtime_error("Something went wrong parsing the required packages in description.json! Make sure they follow the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionjson");
-	}
-
-	return out.str();
-}
-
 Json::Value	DynamicModule::requestJsonForPackageInstallationRequest(bool onlyModPkg)
 {
 	if(!installNeeded())
@@ -522,8 +434,6 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	try
 	{
 		loadDescriptionFromFolder(_modulePackage);
-
-		generateRPackageMetadata(QDir(_modulePackage.c_str())); //Generate DESCRIPTION and NAMESPACE in case they are missing
 	}
 	catch(ModuleException & e)
 	{

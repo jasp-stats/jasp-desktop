@@ -30,7 +30,6 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QString		developerFolder			READ developerFolder			WRITE setDeveloperFolder			NOTIFY developerFolderChanged			)
 	Q_PROPERTY(bool			customThresholdScale	READ customThresholdScale		WRITE setCustomThresholdScale		NOTIFY customThresholdScaleChanged		)
 	Q_PROPERTY(int			thresholdScale			READ thresholdScale				WRITE setThresholdScale				NOTIFY thresholdScaleChanged			)
-	Q_PROPERTY(bool			devModRegenDESC			READ devModRegenDESC			WRITE setDevModRegenDESC			NOTIFY devModRegenDESCChanged			)
 	Q_PROPERTY(bool			logToFile				READ logToFile					WRITE setLogToFile					NOTIFY logToFileChanged					)
 	Q_PROPERTY(int			logFilesMax				READ logFilesMax				WRITE setLogFilesMax				NOTIFY logFilesMaxChanged				)
 	Q_PROPERTY(int			maxFlickVelocity		READ maxFlickVelocity			WRITE setMaxFlickVelocity			NOTIFY maxFlickVelocityChanged			)
@@ -83,7 +82,6 @@ public:
 	QStringList	missingValues()				const;
 	bool		customThresholdScale()		const;
 	int			thresholdScale()			const;
-	bool		devModRegenDESC()			const;
 	bool		logToFile()					const;
 	int			logFilesMax()				const;
 	int			maxFlickVelocity()			const;
@@ -137,7 +135,6 @@ public slots:
 	void resetMissingValues();
 	void setCustomThresholdScale(		bool		customThresholdScale);
 	void setThresholdScale(				int			thresholdScale);
-	void setDevModRegenDESC(			bool		devModRegenDESC);
 	void setLogToFile(					bool		logToFile);
 	void setLogFilesMax(				int			logFilesMax);
 	void setMaxFlickVelocity(			int			maxFlickVelocity);
@@ -183,7 +180,6 @@ signals:
 	void plotBackgroundChanged(			QString		plotBackground);
 	void customThresholdScaleChanged(	bool		customThresholdScale);
 	void thresholdScaleChanged(			int			thresholdScale);
-	void devModRegenDESCChanged(		bool		devModRegenDESC);
 	void logToFileChanged(				bool		logToFile);
 	void logFilesMaxChanged(			int			logFilesMax);
 	void maxFlickVelocityChanged(		int			maxFlickVelocity);
