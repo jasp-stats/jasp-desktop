@@ -38,8 +38,8 @@ Windows
 
 Building JASP under windows is most temperamental but should pose no large problems. Besides the above described GitHub repositories, you will need to install the following preliminaries to build JASP on Windows, later on described in more detail:
 
-- [Qt 5.12.7](https://www.qt.io/download) Download the Open Source version from (https://www.qt.io/download).
-- [Visual Studio 2017](https://www.visualstudio.com/downloads/) Download the community version
+- [Qt 5.15.1](https://www.qt.io/download) Download the Open Source version from (https://www.qt.io/download).
+- [Visual Studio 2019](https://www.visualstudio.com/downloads/) Download the community version
 - [R Tools 3.5](https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe) Download from (https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe)
 
 Besides installing and cloning the software above, one needs to make some kits in Qt Creator to be able to build JASP and separately R-Interface.
@@ -113,7 +113,7 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 	\<JASP\>\build-release-64\*.lib and *.dll  
 	\<JASP\>\build-release-64\JAGS\*
    
-6.	**Install Qt 5.12.7**  
+6.	**Install Qt 5.15.1**  
 	Go to https://www.qt.io/download  
 	Choose Open Source and Download.  
 	Start qt-unified-windows-x86-?.?.?-online.exe from your download folder.  
@@ -203,16 +203,16 @@ To build JASP you need to clone **jasp-desktop** and **jasp-required-files** rep
  - Tell XCode which "Command Line Tools" to use
  - Close
 
- 2. [Qt](https://www.qt.io/): **Install Qt 5.15**
+ 2. [Qt](https://www.qt.io/): **Install Qt 5.15.1**
  Select:
   - macOS
   - Qt WebEngine
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/jasp2.InstallQt.png)
 
- 2.a. **Configure Qt5.15**: Once installed:
+ 2.a. **Configure Qt5.15.1**: Once installed:
  - Go to "Qt Creator" - "Preference" - "Kits"
- - Auto-detect should give "Desktop Qt 5.15 clang 64bit". Click on this.
+ - Auto-detect should give "Desktop Qt 5.15.1 clang 64bit". Click on this.
  - Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
 
 ![Image of Qt Configuration](https://static.jasp-stats.org/images/jasp2a.ConfigureQt.png)
