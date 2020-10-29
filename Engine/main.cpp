@@ -61,6 +61,8 @@ int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
 #else*/
 int main(int argc, char *argv[])
 {
+	sleep(2);
+	
 	boost::nowide::args a(argc,argv); //This gets the arguments again through GetCommandLineW apparently, so theoretically this might gives us actual unicode? (utf-8)
 
 	if(argc > 4)
@@ -79,9 +81,10 @@ int main(int argc, char *argv[])
 		Log::log() << "Log and possible redirects initialized!" << std::endl;
 		Log::log() << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
 
+#ifdef _WIN32
 		//Should help with converting korean/japanese/etc to utf-8.
 		boost::filesystem::path::imbue(std::locale( std::locale(), new std::codecvt_utf8_utf16<wchar_t>() ) );
-
+#endif
 		try
 		{
 			JASPTIMER_START(Engine Starting);

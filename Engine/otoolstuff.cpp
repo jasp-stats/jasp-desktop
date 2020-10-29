@@ -43,6 +43,10 @@ std::string _system(std::string cmd)
 void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 {
 	using namespace boost;
+	
+#ifdef JASP_DEBUG
+	printStuff = true; //If debugging please always print stuff
+#endif
 
 	filesystem::path	modLibpath	= Utils::osPath(moduleLibraryPath),
 						rcppPath	= Utils::osPath(moduleLibraryPath + "/Rcpp");
@@ -75,11 +79,14 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 					otoolOut	= _system(otoolCmd);
 		auto		otoolLines	= stringUtils::splitString(otoolOut, '\n');
 
-		/*std::cout << "jaspRCPP_postProcessLocalPackageInstall used otool -L on " << libDir << " and found this output:" << std::endl;
+		if(printStuff)
+		{
+			std::cout << "jaspRCPP_postProcessLocalPackageInstall used otool -L on " << libDir << " and found this output:" << std::endl;
 
-		for(const auto & line : otoolLines)
-			std::cout << line << std::endl;*/
-
+			for(const auto & line : otoolLines)
+				std::cout << line << std::endl;
+		}
+		
 		//ok otoolLines[1] represents the "id" of the lib but we do not need to change it because it probably points directly back to itself. The other lines however we should change
 
 		for(size_t i=2; i<otoolLines.size(); i++)

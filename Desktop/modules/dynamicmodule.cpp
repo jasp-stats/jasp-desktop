@@ -464,7 +464,7 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	{
 		R	<< standardRIndent << "pkgPath <- sub('\\\\', '/', " << pkgPath << ", fixed=TRUE);\n"; //replace any backslashes by forward slashes...
 		R	<< standardRIndent << "print(paste0(\"pkgPath: '\", pkgPath, \"'\"));\n";
-		R	<< standardRIndent << "loadLog <- paste0(loadLog, '\n', .runSeparateR(paste0(\"withr::with_libpaths(new=" << libPathsToUse << ", pkgbuild::with_build_tools(install.packages(pkgs='\", pkgPath, \"', lib='" << moduleRLibrary().toStdString() << "', type='source', repos=NULL, INSTALL_opts=c('--no-multiarch')), required=FALSE ))\")));\n";
+		R	<< standardRIndent << "loadLog <- paste0(loadLog, '\\n', .runSeparateR(paste0(\"withr::with_libpaths(new=" << libPathsToUse << ", pkgbuild::with_build_tools(install.packages(pkgs='\", pkgPath, \"', lib='" << moduleRLibrary().toStdString() << "', type='source', repos=NULL, INSTALL_opts=c('--no-multiarch')), required=FALSE ))\")));\n";
 	};
 
 	if(!onlyModPkg)
@@ -497,7 +497,9 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 
 
 		//Check if install worked and through loadlog as error otherwise
-	R << standardRIndent << "tryCatch(expr={ withr::with_libpaths(new='" << moduleRLibrary().toStdString() << "', find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setLog(loadLog); return('fail'); });\n";
+	std::string moduleNotFoundMsg = "'\\nCouldn\\'t find the module by name of " + _name + "'";
+	
+	R << standardRIndent << "tryCatch(expr={ withr::with_libpaths(new='" << moduleRLibrary().toStdString() << "', find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setLog(paste0(loadLog, " << moduleNotFoundMsg <<")); return('fail'); });\n";
 
 
 	//Log::log() << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << R.str() << std::endl;

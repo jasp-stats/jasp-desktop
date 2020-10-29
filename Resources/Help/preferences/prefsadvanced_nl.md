@@ -16,9 +16,6 @@ Dit is waar kan worden gespecificeerd of u gebruik wilt maken van de JASP module
 Een locatiemap kan worden geselecteerd waar de nieuwe modules zijn opgeslagen. 
 Modules van ontwikkelaars kunnen direct worden toegevoegd uit deze map, of modules kunnen worden toegevoegd van andere gespecificeerde locaties. 
 
-De checkbox bepaalt of package metadata iedere keer moeten worden gegenereerd.
-Zet deze functie uit als u een R-package naar een JASP module omzet, of als u simpelweg de manuele veranderingen van DESCRIPTION en NAMESPACE wilt behouden. 
-
 De CRAN repository URL bepaald waar JASP de benodigde pacakges gespecificeerd in de module van download. 
 De standaardoptie is `https://cloud.r-project.org`, maar een goed alternatief (wanneer packages bijvoorbeeld niet lijken te installeren) is `cran.r-project.org`. 
 

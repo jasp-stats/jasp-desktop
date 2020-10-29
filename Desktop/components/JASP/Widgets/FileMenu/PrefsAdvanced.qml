@@ -57,7 +57,7 @@ ScrollView
 				id:					editDeveloperFolder
 				visible:			preferencesModel.developerMode
 				width:				parent.width
-				height:				browseDeveloperFolderButton.height + overwriteDescriptionEtc.height
+				height:				browseDeveloperFolderButton.height
 
 				RectangularButton
 				{
@@ -94,8 +94,8 @@ ScrollView
 						font:				jaspTheme.font
 						onTextChanged:		preferencesModel.developerFolder = text
 						color:				jaspTheme.textEnabled
-						KeyNavigation.tab:	overwriteDescriptionEtc
-						KeyNavigation.down:	overwriteDescriptionEtc
+						KeyNavigation.tab:	cranRepoUrlItem
+						KeyNavigation.down:	cranRepoUrlItem
 						selectByMouse:		true
 						selectedTextColor:	jaspTheme.white
 						selectionColor:		jaspTheme.itemSelectedColor
@@ -115,25 +115,6 @@ ScrollView
 							function onCustomEditorChanged(customEditor) { developerFolderText = preferencesModel.developerFolder; }
 						}
 
-					}
-				}
-
-				CheckBox
-				{
-					id:					overwriteDescriptionEtc
-					label:				qsTr("Regenerate package metadata every time (DESCRIPTION & NAMESPACE)")
-					checked:			preferencesModel.devModRegenDESC
-					onCheckedChanged:	preferencesModel.devModRegenDESC = checked
-					height:				implicitHeight * preferencesModel.uiScale
-					toolTip:			qsTr("Disable this option if you are transforming your R-package to a JASP Module or simply want to keep manual changes to DESCRIPTION and NAMESPACE.")
-					KeyNavigation.tab:	cranRepoUrl
-					KeyNavigation.down:	cranRepoUrl
-
-					anchors
-					{
-						left:			parent.left
-						leftMargin:		jaspTheme.subOptionOffset
-						top:			developerFolderTextRect.bottom
 					}
 				}
 			}

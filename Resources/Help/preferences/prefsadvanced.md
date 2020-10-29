@@ -16,9 +16,6 @@ This is where you specify if you want to use JASP modules or not.
 A location folder can be selected where new modules reside.
 Developers modules can be added directly from this folder or modules can be added from another specified location.
 
-The checkbox decides if package metadata should be generated every time.
-Disable this option if you are transforming your R-package to a JASP Module or simply want to keep manual changes to DESCRIPTION and NAMESPACE.
-
 The CRAN repository URL determines where JASP will try to download the required packages specified in a module from.
 The default is `https://cloud.r-project.org` but a good alternative (when packages seemingly can't be installed for instance) is `cran.r-project.org`.
 
