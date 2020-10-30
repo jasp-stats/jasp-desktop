@@ -196,22 +196,22 @@ Descriptives <- function(jaspResults, dataset, options) {
     .descriptivesScatterPlots(jaspResults[["scatterPlots"]], dataset.factors, variables, splitName, options)
   }
 
-   # Interval plots
-   if (options$descriptivesIntervalPlot) {
-     if(is.null(jaspResults[["IntervalPlots"]])) {
-       jaspResults[["IntervalPlots"]] <- createJaspContainer(gettext("Intervalplots"))
-	   jaspResults[["IntervalPlots"]]$dependOn(c("descriptivesIntervalPlot", "splitby"))
-       jaspResults[["IntervalPlots"]]$position <- 11
-     }
-
-  intervalPlots <- jaspResults[["intervalPlots"]]
-
-  for (var in variables) {
-    if(is.null(intervalPlots[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
-	intervalPlots[[var]] <- .descriptivesIntervalPlot(dataset = dataset, options = options, variable = var)
-      intervalPlots[[var]]$dependOn(optionContainsValue=list(variables=var))
+  # Interval plots
+  if (options$descriptivesIntervalPlot) {
+    if(is.null(jaspResults[["IntervalPlots"]])) {
+      jaspResults[["IntervalPlots"]] <- createJaspContainer(gettext("Intervalplots"))
+      jaspResults[["IntervalPlots"]]$dependOn(c("descriptivesIntervalPlot", "splitby"))
+      jaspResults[["IntervalPlots"]]$position <- 11
     }
-  }
+    
+    intervalPlots <- jaspResults[["intervalPlots"]]
+    
+    for (var in variables) {
+      if(is.null(intervalPlots[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
+        intervalPlots[[var]] <- .descriptivesIntervalPlot(dataset = dataset, options = options, variable = var)
+        intervalPlots[[var]]$dependOn(optionContainsValue=list(variables=var))
+      }
+    }
   }
   return()
 }
@@ -989,7 +989,7 @@ Descriptives <- function(jaspResults, dataset, options) {
       JASPgraphs::themeJaspRaw()
 
     thePlot$plotObject <- p
-
+  }
   return(thePlot)
 }
 
