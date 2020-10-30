@@ -195,7 +195,6 @@ Descriptives <- function(jaspResults, dataset, options) {
     }
     .descriptivesScatterPlots(jaspResults[["scatterPlots"]], dataset.factors, variables, splitName, options)
   }
-  return()
 
    # Interval plots
    if (options$descriptivesIntervalPlot) {
@@ -214,6 +213,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     }
   }
   }
+  return()
 }
 
 .descriptivesDescriptivesTable <- function(dataset, options, jaspResults, numberMissingSplitBy=0) {
@@ -1014,7 +1014,6 @@ Descriptives <- function(jaspResults, dataset, options) {
 
     }
 
-
     plotDat <- data.frame(group = group, y = y)
 
     cdata <- plyr::ddply(plotDat, "group", "summarise",
@@ -1039,8 +1038,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     thePlot$plotObject <- p
 
   return(thePlot)
-}
-}
+ }
 
 .plotMarginal <- function(column, variableName,
                           rugs = FALSE, displayDensity = FALSE) {
