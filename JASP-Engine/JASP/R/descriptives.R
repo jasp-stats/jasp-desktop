@@ -204,7 +204,7 @@ Descriptives <- function(jaspResults, dataset, options) {
       jaspResults[["IntervalPlots"]]$position <- 11
     }
     
-    intervalPlots <- jaspResults[["intervalPlots"]]
+intervalPlots <- jaspResults[["IntervalPlots"]]
     
     for (var in variables) {
       if(is.null(intervalPlots[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
