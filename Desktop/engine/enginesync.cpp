@@ -69,7 +69,9 @@ EngineSync::EngineSync(QObject *parent)
 	connect(PreferencesModel::prefs(),	&PreferencesModel::languageCodeChanged,				this,						&EngineSync::haveYouTriedTurningItOffAndOnAgain,	Qt::QueuedConnection);
 #endif
     // delay start so as not to increase program start up time 10sec is better than 100ms, because they are orphaned anyway
-    QTimer::singleShot(10000, this, &EngineSync::deleteOrphanedTempFiles);
+	// Except, that it might somehow cause a crash? If the timer goes off while waiting for a download from OSF than it might remove the files while making them..
+	// So lets put it on 500ms...
+	QTimer::singleShot(500, this, &EngineSync::deleteOrphanedTempFiles);
 
 	DataSetPackage::pkg()->setEngineSync(this);
 

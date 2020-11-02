@@ -217,6 +217,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 MainWindow::~MainWindow()
 {
+	Log::log() << "MainWindow::~MainWindow()" << std::endl;
+
 	_singleton = nullptr;
 
 	try
