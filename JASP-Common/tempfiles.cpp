@@ -123,7 +123,8 @@ void TempFiles::deleteOrphans()
 
 	system::error_code error;
 
-	try {
+	try
+	{
 
 		filesystem::path tempPath		= Utils::osPath(Dirs::tempDir());
 		filesystem::path sessionPath	= Utils::osPath(_sessionDirName);
@@ -132,7 +133,7 @@ void TempFiles::deleteOrphans()
 
 		if (error)
 		{
-			perror(error.message().c_str());
+			Log::log() << error.message() << std::endl;
 			return;
 		}
 
@@ -168,10 +169,7 @@ void TempFiles::deleteOrphans()
 						filesystem::remove(p, error);
 
 						if (error)
-						{
-							Log::log() << "Error when deleting File: " << error.message() << std::endl;
-							perror(error.message().c_str());
-						}
+							Log::log() << "Error when deleting file: " << error.message() << std::endl;
 					}
 				}
 			}
@@ -193,7 +191,7 @@ void TempFiles::deleteOrphans()
 						filesystem::remove_all(p, error);
 
 						if (error)
-							perror(error.message().c_str());
+							Log::log() << "Error when deleting directory: " << error.message() << std::endl;
 					}
 				}
 				else // no status file
@@ -201,7 +199,7 @@ void TempFiles::deleteOrphans()
 					filesystem::remove_all(p, error);
 
 					if (error)
-						perror(error.message().c_str());
+						Log::log() << "Error when deleting directory, had no status file and " << error.message() << std::endl;
 				}
 			}
 		}
@@ -209,8 +207,7 @@ void TempFiles::deleteOrphans()
 	}
 	catch (runtime_error e)
 	{
-		perror("Could not delete orphans");
-		perror(e.what());
+		Log::log() << "Could not delete orphans, error: " << e.what() << std::endl;
 		return;
 	}
 }
