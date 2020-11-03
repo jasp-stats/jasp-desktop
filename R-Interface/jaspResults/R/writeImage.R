@@ -84,10 +84,6 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
     
     isRecordedPlot <- inherits(plot2draw, "recordedplot")
 
-    # Open graphics device and plot
-    openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), bg = backgroundColor)
-    on.exit(dev.off())
-
     if (is.function(plot2draw) && !isRecordedPlot) {
 
       if (obj) dev.control('enable') # enable plot recording
