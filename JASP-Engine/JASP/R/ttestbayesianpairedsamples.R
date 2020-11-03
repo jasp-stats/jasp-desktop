@@ -313,7 +313,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
   fullVar <- ((nSamples - 1) / nSamples) * withinChainVar + (betweenChainVar / nSamples)
   rHat <- sqrt(fullVar/withinChainVar)
   
-  return(list(deltaSamples = as.vector(deltaSamplesMatrix), rHat = rHat))
+  return(list(deltaSamples = -as.vector(deltaSamplesMatrix), rHat = rHat))
 }
 
 .sampleGibbsOneSampleWilcoxon <- function(diffScores, nIter = 10, rscale = 1/sqrt(2)){
