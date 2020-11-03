@@ -134,11 +134,11 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
           } else {
             
-            ttestResults[["delta"]][[var]]  <- r[["deltaSamples"]] * -1
+            ttestResults[["delta"]][[var]]  <- r[["deltaSamples"]] * -
             ttestResults[["rHat"]][[var]]  <- r[["rHat"]]
             
             bf.raw <- .computeBayesFactorWilcoxon(
-              deltaSamples         = r[["deltaSamples"]] * -1,
+              deltaSamples         = r[["deltaSamples"]],
               cauchyPriorParameter = options[["priorWidth"]],
               oneSided             = oneSided)
             
