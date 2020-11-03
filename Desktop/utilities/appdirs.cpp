@@ -81,10 +81,10 @@ QString AppDirs::bundledModulesDir()
 	 (QDir(programDir().absoluteFilePath("../Resources/Modules")).exists() ? programDir().absoluteFilePath("../Resources/Modules") : programDir().absoluteFilePath("Modules")) + '/';
 #elif _WIN32
 	 programDir().absoluteFilePath("Modules") + '/';
-#else
-	"???";
-	Log::log() << "lINUX DOESNT KNOW WHERE TO LOOK FOR BUNDLED MODULES YET!!!\nIf you are not Joris tell him he should fix this..." << std::endl;
-	throw std::runtime_error("Fix linux bundled modules please");
+#elif FLATPAK_USED
+	"/app/bin/Modules/";
+#else  //Normal linux build
+	programDir().absoluteFilePath("Modules") + '/';
 #endif
 	
 	return folder ;
