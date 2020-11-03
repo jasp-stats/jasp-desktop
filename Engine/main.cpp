@@ -61,8 +61,6 @@ int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
 #else*/
 int main(int argc, char *argv[])
 {
-	sleep(2);
-	
 	boost::nowide::args a(argc,argv); //This gets the arguments again through GetCommandLineW apparently, so theoretically this might gives us actual unicode? (utf-8)
 
 	if(argc > 4)
