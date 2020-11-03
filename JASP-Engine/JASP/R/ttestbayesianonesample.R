@@ -121,7 +121,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
           
           .setSeedJASP(options)
           r <- try(.signRankGibbsSampler(
-            x = x, nSamples = options[["wilcoxonSamplesNumber"]], testValue = 0, nBurnin = 0,
+            x = x, nSamples = options[["wilcoxonSamplesNumber"]], testValue = options[["testValue"]], nBurnin = 0,
             cauchyPriorParameter = options[["priorWidth"]]
           ))
           
