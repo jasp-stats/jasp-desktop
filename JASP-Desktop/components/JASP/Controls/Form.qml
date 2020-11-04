@@ -61,7 +61,7 @@ AnalysisForm
 	{
 		id:				formContent
 		width:			parent.width
-		height:			oldFileMessagesBox.height + errorMessagesBox.height + contentArea.implicitHeight
+		height:			oldFileMessagesBox.height + errorMessagesBox.height + warningMessagesBox.height + contentArea.implicitHeight
 		anchors
 		{
 			top:		form.top
