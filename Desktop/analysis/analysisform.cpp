@@ -243,7 +243,7 @@ void AnalysisForm::addControl(JASPControlBase *control)
 void AnalysisForm::_setUpControls()
 {
 	//Todo: remove anything that thinks we aren't using jaspResults
-	_analysis->setUsesJaspResults(QQmlProperty(this, "usesJaspResults").read().toBool());
+	_analysis->setUsesJaspResults(true);
 
 	_orderExpanders();
 	_setUpRelatedModels();
