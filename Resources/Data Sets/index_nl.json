@@ -809,7 +809,7 @@
           "description": "Synthetische data met missende waardes. <br><br> Het voorbeeldbestand in JASP laat zien hoe een XXX kan worden toegepast. Missende waardes.<br><br> <i>Fictieve data van Alexander Ly.<\/i>",
           "kind": "file",
           "associated_datafile": "Missing Data.csv"
-	}
+        }
       ],
       "debug": false
     },

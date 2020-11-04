@@ -809,7 +809,7 @@
           "description": "Synthetic data with missing values. <br><br> The example JASP file demonstrates the use of missing values.<br><br> <i>Fictional data from Alexander Ly.<\/i>",
           "kind": "file",
           "associated_datafile": "Missing Data.csv"
-	}
+        }
       ],
       "debug": false
     },
