@@ -1,6 +1,7 @@
 #include "ploteditormodel.h"
 #include "analysis/analyses.h"
 #include "utilities/qutils.h"
+#include "gui/preferencesmodel.h"
 #include "log.h"
 #include "tempfiles.h"
 #include <QDir>
@@ -13,6 +14,7 @@ PlotEditorModel::PlotEditorModel()
 {
 	_xAxis = new AxisModel(this, true);
 	_yAxis = new AxisModel(this, false);
+	_ppi   = PreferencesModel::prefs()->plotPPI();
 
 	connect(_xAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
 	connect(_yAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
@@ -20,9 +22,10 @@ PlotEditorModel::PlotEditorModel()
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
 {
-	_analysisId	= id;
-	_analysis	= Analyses::analyses()->get(id);
-	_imgOptions	= Json::objectValue;
+	_analysisId		= id;
+	_analysis		= Analyses::analyses()->get(id);
+	_imgOptions		= Json::objectValue;
+	_prevImgOptions	= Json::nullValue;
 
 	Json::Reader().parse(fq(options), _imgOptions);
 
@@ -95,12 +98,17 @@ Json::Value PlotEditorModel::generateEditOptions() const
 	return editOptions;
 }
 
-void PlotEditorModel::somethingChanged() const
+void PlotEditorModel::somethingChanged()
 {
 	if(!_visible) return; // We're still loading!
 
-	_analysis->editImage(generateImgOptions());
+	Json::Value newImgOptions = generateImgOptions();
 
+	if(newImgOptions != _prevImgOptions)
+	{
+		_prevImgOptions = newImgOptions;
+		_analysis->editImage(_prevImgOptions);
+	}
 }
 
 void PlotEditorModel::setVisible(bool visible)

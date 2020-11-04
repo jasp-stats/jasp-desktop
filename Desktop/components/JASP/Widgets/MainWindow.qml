@@ -200,13 +200,11 @@ Window
 
 		CreateComputeColumnDialog	{ id: createComputeDialog	}
 		ModuleInstaller				{ id: moduleInstallerDialog	}
-		Loader
+		
+		PlotEditor
 		{
 			id:					plotEditingDialog
-			anchors.fill:		parent
-			source:				plotEditorFile
 			visible:			plotEditorModel.visible
-			//onSourceChanged:	console.log("PlotEditor QML file changed")
 		}
 
 		/*MessageBox

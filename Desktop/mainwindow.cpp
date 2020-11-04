@@ -375,14 +375,6 @@ void MainWindow::makeConnections()
 	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
-
-
-	// Temporary to facilitate plot editing
-	_plotEditingFilePath = QString::fromStdString(Dirs::resourcesDir()) + "PlotEditor.qml";
-	if (!_plotEditingFileWatcher.addPath(_plotEditingFilePath))
-		Log::log() << "Cannot watch plot editing file" << _plotEditingFilePath << std::endl;
-	connect(&_plotEditingFileWatcher, &QFileSystemWatcher::fileChanged,					this,					&MainWindow::plotEditingFileChanged							);
-
 }
 
 void MainWindow::loadQML()
@@ -447,7 +439,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("iconInactiveFiles",	_iconInactiveFiles);
 	_qml->rootContext()->setContextProperty("iconDisabledFiles",	_iconDisabledFiles);
 
-	_qml->rootContext()->setContextProperty("plotEditorFile",		QString::fromStdString("file:") + _plotEditingFilePath);
+	_qml->setOutputWarningsToStandardError(true);
 
 	_qml->addImportPath("qrc:///components");
 
@@ -575,15 +567,6 @@ void MainWindow::logRemoveSuperfluousFiles(int maxFilesToKeep)
 
 	for(int i=logs.size() - 1; i >= maxFilesToKeep; i--)
 		logFileDir.remove(logs[i].fileName());
-}
-
-void MainWindow::plotEditingFileChanged()
-{
-	Log::log() << "Plot Editing file changed" << std::endl;
-	resetQmlCache();
-
-	_qml->rootContext()->setContextProperty("plotEditorFile", "");
-	_qml->rootContext()->setContextProperty("plotEditorFile", QString::fromStdString("file:") + _plotEditingFilePath);
 }
 
 void MainWindow::openFolderExternally(QDir folder)

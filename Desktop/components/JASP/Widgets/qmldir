@@ -38,11 +38,12 @@ WelcomePage                 1.0 WelcomePage.qml
 UIScaleNotifier             1.0 UIScaleNotifier.qml
 ModulesMenu                 1.0 ModulesMenu.qml
 SaveDiscardCancelDialog     1.0 SaveDiscardCancelDialog.qml
-PlotEditor                  1.0 PlotEditor.qml
 CustomContrastsTableView    1.0 CustomContrastsTableView.qml
 SetSeed                     1.0 SetSeed.qml
 BasicThreeButtonTableView   1.0 BasicThreeButtonTableView.qml
 ControlErrorMessage         1.0 ControlErrorMessage.qml
 LoadingIndicator            1.0 LoadingIndicator.qml
-CrossButton		    1.0 CrossButton.qml
+CrossButton		    		1.0 CrossButton.qml
 SimpleTableView             1.0 SimpleTableView.qml
+ImageInverter				1.0 ImageInverter.qml
+PlotEditor                  1.0 PlotEditor/PlotEditor.qml

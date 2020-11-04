@@ -25,6 +25,7 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(int						height			READ height			WRITE setHeight			NOTIFY heightChanged		)
 	Q_PROPERTY(AxisModel *				xAxis			READ xAxis									NOTIFY dummyAxisChanged		)
 	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged		)
+	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged			)
 
 
 public:
@@ -37,8 +38,9 @@ public:
 	QString					title()		const { return _title;		}
 	int						width()		const { return _width;		}
 	int						height()	const { return _height;		}
-	AxisModel *	xAxis()		const { return _xAxis;		}
-	AxisModel *	yAxis()		const { return _yAxis;		}
+	AxisModel *	xAxis()					const { return _xAxis;		}
+	AxisModel *	yAxis()					const { return _yAxis;		}
+	double					ppi()		const {	return _ppi;		}
 	void					reset();
 
 signals:
@@ -49,6 +51,7 @@ signals:
 	void widthChanged(			int			width			);
 	void heightChanged(			int			height			);
 	void dummyAxisChanged();
+	void ppiChanged();// TODO, refresh all
 
 public slots:
 	void showPlotEditor(int id, QString options);
@@ -60,7 +63,7 @@ public slots:
 	void setWidth(			int			width			);
 	void setHeight(			int			height			);
 
-	void somethingChanged() const;
+	void somethingChanged();
 	void refresh();
 
 	QString clickHitsElement(double x, double y) const;
@@ -77,7 +80,8 @@ private:
 
 	Coordinates				_coordinates;
 	Json::Value				_editOptions	= Json::nullValue,
-							_imgOptions		= Json::nullValue;
+							_imgOptions		= Json::nullValue,
+							_prevImgOptions	= Json::nullValue;
 	QString					_name,
 							_data,
 							_title;
@@ -86,6 +90,7 @@ private:
 	int						_width,
 							_height,
 							_analysisId;
+	double					_ppi;
 };
 
 }

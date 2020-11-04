@@ -234,7 +234,6 @@ private slots:
 	void logToFileChanged(bool logToFile);
 	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
-	void plotEditingFileChanged();
 	void jaspThemeChanged(JaspTheme * newTheme);
 
 private:
@@ -303,8 +302,6 @@ private:
 									_iconInactiveFiles,
 									_iconDisabledFiles;
 
-	QString							_plotEditingFilePath;
-	QFileSystemWatcher				_plotEditingFileWatcher;
 	QFont							_defaultFont;
 };
 
