@@ -92,7 +92,6 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _titleDefault(	duplicateMe->_titleDefault	)
 	, _title("Copy of "+duplicateMe->_title			)
 	, _rfile(			duplicateMe->_rfile			)
-	, _useJaspResults(	duplicateMe->_useJaspResults)
 	, _isDuplicate(		true						)
 	, _version(			duplicateMe->_version		)
 	, _moduleData(		duplicateMe->_moduleData	)
@@ -284,7 +283,7 @@ void Analysis::imagesRewritten()
 Analysis::Status Analysis::parseStatus(std::string name)
 {
 	if		(name == "empty")			return Analysis::Empty;
-	else if (name == "waiting")			return Analysis::Inited;
+	else if (name == "waiting")			return Analysis::Running; //For backwards compatibility
 	else if (name == "running")			return Analysis::Running;
 	else if (name == "complete")		return Analysis::Complete;
 	else if (name == "initializing")	return Analysis::Initializing;
@@ -298,8 +297,10 @@ Analysis::Status Analysis::parseStatus(std::string name)
 
 void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 {
-						_analysisForm	= form;
-	if(!_isDuplicate)	_status			= isNewAnalysis ? Empty : Complete;
+	_analysisForm	= form;
+
+	if(!_isDuplicate && isNewAnalysis)
+		_status = Empty;
 	
 	connect(Analyses::analyses(),	&Analyses::dataSetChanged,			_analysisForm,	&AnalysisForm::dataSetChangedHandler		);
 	connect(Analyses::analyses(),	&Analyses::dataSetColumnsChanged,	_analysisForm,	&AnalysisForm::dataSetColumnsChangedHandler	);
@@ -318,7 +319,6 @@ Analysis::Status Analysis::analysisResultsStatusToAnalysisStatus(analysisResultS
 	case analysisResultStatus::imageEdited:
 	case analysisResultStatus::imagesRewritten:
 	case analysisResultStatus::complete:		return Analysis::Complete;
-	case analysisResultStatus::inited:			return Analysis::Inited;
 	case analysisResultStatus::running:			return Analysis::Running;
 	default:									throw std::logic_error("When you define new analysisResultStatuses like '" + analysisResultStatusToString(result)  +  "' you should add them to EngineRepresentation::analysisResultStatusToAnalysStatus!");
 	}
@@ -329,8 +329,6 @@ std::string Analysis::statusToString(Status status)
 	switch (status)
 	{
 	case Analysis::Empty:			return "empty";
-	case Analysis::Inited:			return "inited";
-	case Analysis::Initing:			return "initing";
 	case Analysis::Running:			return "running";
 	case Analysis::Complete:		return "complete";
 	case Analysis::Aborted:			return "aborted";
@@ -364,7 +362,6 @@ Json::Value Analysis::asJSON() const
 	switch (_status)
 	{
 	case Analysis::Empty:			status = "empty";			break;
-	case Analysis::Inited:			status = "waiting";			break;
 	case Analysis::Running:			status = "running";			break;
 	case Analysis::Complete:		status = "complete";		break;
 	case Analysis::Aborted:			status = "aborted";			break;
@@ -416,7 +413,7 @@ void Analysis::setStatus(Analysis::Status status)
 	if(_status == Analysis::Complete)									storeUserDataEtc();
 	if( status == Analysis::Complete && _status == Analysis::Running)	fitOldUserDataEtc();
 
-	if ((status == Analysis::Running || status == Analysis::Initing) && needsRefresh())
+	if (status == Analysis::Running && needsRefresh())
 	{
 		bool neededRefresh = needsRefresh();
 
@@ -428,7 +425,6 @@ void Analysis::setStatus(Analysis::Status status)
 
 		if(neededRefresh != needsRefresh())
 			emit needsRefreshChanged();
-
 	}
 
 	_status = status;
@@ -475,7 +471,7 @@ performType Analysis::desiredPerformTypeFromAnalysisStatus() const
 {
 	switch(status())
 	{
-	case Analysis::Empty:		return(usesJaspResults() ? performType::run : performType::init);
+	case Analysis::Empty:		return(performType::run);
 	case Analysis::SaveImg:		return(performType::saveImg);
 	case Analysis::EditImg:		return(performType::editImg);
 	case Analysis::RewriteImgs:	return(performType::rewriteImgs);
@@ -513,7 +509,6 @@ Json::Value Analysis::createAnalysisRequestJson()
 
 	switch(perform)
 	{
-	case performType::init:			setStatus(Analysis::Initing);	break;
 	case performType::abort:		setStatus(Analysis::Aborted);	break;
 	case performType::run:
 	case performType::saveImg:
@@ -529,7 +524,6 @@ Json::Value Analysis::createAnalysisRequestJson()
 	json["perform"]				= performTypeToString(perform);
 	json["revision"]			= revision();
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
-	json["jaspResults"]			= usesJaspResults();
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
 
 	if (!isAborted())
@@ -608,6 +602,15 @@ void Analysis::showDependenciesOnQMLForObject(QString uniqueName)
 	processResultsForDependenciesToBeShown();
 }
 
+void Analysis::setOptionsBound(bool optionsBound)
+{
+	if (_optionsBound == optionsBound)
+		return;
+
+	_optionsBound = optionsBound;
+	emit optionsBoundChanged(_optionsBound);
+}
+
 bool Analysis::processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array)
 {
 	if(!array.isArray())
@@ -644,9 +647,6 @@ bool Analysis::processResultsForDependenciesToBeShownMetaTraverser(const Json::V
 
 void Analysis::processResultsForDependenciesToBeShown()
 {
-	if(!_useJaspResults && _showDepsName != "")
-		MessageForwarder::showWarning(tr("Old-school analysis doesn't use dependencies"), tr("You have tried to show the dependencies of an analysis that has not been rewritten to jaspResults, and seeing as how these older analyses do use dependencies there is nothing to show you..."));
-
 	if(!_results.isMember(".meta") || !_analysisForm)
 		return;
 

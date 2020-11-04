@@ -91,10 +91,7 @@ Json::Value AnalysisEntry::asJsonForJaspFile()	const
 
 std::string AnalysisEntry::codedReference() const
 {
-	std::string modName  = dynamicModule()->name(),
-				coded    = modName + "~" + function();
-
-	return coded;
+	return dynamicModule()->name() + "~" + function();
 }
 
 std::string	AnalysisEntry::buttonMenuString() const

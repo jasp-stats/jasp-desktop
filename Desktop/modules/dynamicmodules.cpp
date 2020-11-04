@@ -269,7 +269,8 @@ void DynamicModules::replaceModule(Modules::DynamicModule * module)
 	_modules[moduleName] = module;
 
 	//Tmp folder with pkg data was removed so lets unpackage (again)
-	module->unpackage();
+	if(!module->isDevMod())
+		module->unpackage();
 
 	//registerForInstalling(moduleName);
 
@@ -555,6 +556,8 @@ void DynamicModules::installJASPDeveloperModule()
 			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
 			restartEngines();
 		}
+		else if(_modules.count(name) > 0 && _modules[name] != devMod)
+			replaceModule(devMod);
 
 		Modules::DynamicModule::developmentModuleFolderCreate();
 

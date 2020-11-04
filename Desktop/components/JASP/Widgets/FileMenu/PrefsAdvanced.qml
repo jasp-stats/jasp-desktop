@@ -302,11 +302,31 @@ ScrollView
 					}
 
 
-					KeyNavigation.tab:	rememberModulesSelected
-					KeyNavigation.down:	rememberModulesSelected
+					KeyNavigation.tab:	maxEngineCount
+					KeyNavigation.down:	maxEngineCount
 				}
 			}
 		}
-
+		
+		PrefsGroupRect
+		{
+			id:		engineGroup
+			title:	qsTr("Engine options")
+			
+			SpinBox
+			{
+				id:					maxEngineCount
+				value:				preferencesModel.maxEngines
+				onValueChanged:		if(value !== "") preferencesModel.maxEngines = value
+				from:				1
+				to:					16
+				defaultValue:		4
+				stepSize:			1
+				KeyNavigation.tab:	rememberModulesSelected
+				KeyNavigation.down:	rememberModulesSelected
+				text:				qsTr("Maximum # of engines: ")
+			}
+			
+		}
 	}
 }

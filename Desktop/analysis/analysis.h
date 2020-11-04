@@ -48,6 +48,7 @@ class Analysis : public QObject
 	Q_PROPERTY(bool		needsRefresh		READ needsRefresh									NOTIFY needsRefreshChanged		)
 	///Volatile notes are coupled with results elements and might disappear when the name changes. Some attempt is made to salvage them on a refresh when needsRefresh is true!
 	Q_PROPERTY(bool		hasVolatileNotes	READ hasVolatileNotes	WRITE setHasVolatileNotes	NOTIFY hasVolatileNotesChanged	)
+	Q_PROPERTY(bool		optionsBound		READ optionsBound		WRITE setOptionsBound		NOTIFY optionsBoundChanged		)
 
 
 
@@ -55,7 +56,7 @@ class Analysis : public QObject
 
 public:
 
-	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing, KeepStatus };
+	enum Status { Empty, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing, KeepStatus };
 	void setStatus(Status status);
 	static std::string statusToString(Status status);
 	///This function transforms an analysisResultStatus to Analysis::Status so that the Analysis gets the correct status after returning from Engine
@@ -91,7 +92,6 @@ public:
 	void setUserData(Json::Value userData);
 	void setVersion(Version version, bool resetWasUpgraded = false);
 	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;						}
-	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;			}
 	void incrementRevision()							{ _revision++;									}
 
 	void setErrorInResults(const std::string & msg);
@@ -113,7 +113,6 @@ public:
 	const	std::string		&	rfile()				const	{ return _rfile;							}
 	const	std::string		&	module()			const	{ return _module;							}
 			size_t				id()				const	{ return _id;								}
-			bool				usesJaspResults()	const	{ return _useJaspResults;					}
 			Status				status()			const	{ return _status;							}
 			QString				statusQ()			const	{ return tq(statusToString(_status));		}
 			int					revision()			const	{ return _revision;							}
@@ -125,10 +124,11 @@ public:
 			AnalysisForm	*	form()				const	{ return _analysisForm;						}
 			bool				isDuplicate()		const	{ return _isDuplicate;						}
 			bool				hasVolatileNotes()	const	{ return _hasVolatileNotes;					}
-			bool				utilityRunAllowed() const	{ return  isSaveImg() || isEditImg() || isRewriteImgs();								}
-			bool				shouldRun()			const	{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() || isInited());	} //There isnt any difference between empty and inited anymore I think?
-	const	Json::Value		&	meta()				const	{ return _meta;																			}
+			bool				utilityRunAllowed() const	{ return  isSaveImg() || isEditImg() || isRewriteImgs();									}
+			bool				shouldRun()			const	{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() ) && optionsBound();	}
+	const	Json::Value		&	meta()				const	{ return _meta;																				}
 			QString				helpMD()			const;
+			bool				optionsBound()		const	{ return _optionsBound;	}
 
 			void		run();
 			void		refresh();
@@ -148,7 +148,6 @@ public:
 	bool isSaveImg()		const { return status() == SaveImg;		}
 	bool isRewriteImgs()	const { return status() == RewriteImgs;	}
 	bool isEditImg()		const { return status() == EditImg;		}
-	bool isInited()			const { return status() == Inited;		}
 	bool isFinished()		const { return status() == Complete || status() == ValidationError || status() == FatalError; }
 
 
@@ -165,6 +164,8 @@ public:
 
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 	std::string				upgradeMsgsForOption(const std::string & name) const;
+
+
 
 signals:
 	void				nameChanged();
@@ -193,6 +194,8 @@ signals:
 
 
 
+	void optionsBoundChanged(bool optionsBound);
+
 public slots:
 	void					setName(std::string name);
 	void					setNameQ(QString name) { setName(name.toStdString()); }
@@ -204,6 +207,7 @@ public slots:
 	void					refreshAvailableVariablesModels();
 	void					emitDuplicationSignals();
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
+	void					setOptionsBound(bool optionsBound);
 
 protected:
 	void					abort();
@@ -251,11 +255,11 @@ private:
 							_rfile,
 							_showDepsName		= "",
 							_moduleVersion		= "";
-	bool					_useJaspResults		= false,
-							_isDuplicate		= false,
+	bool					_isDuplicate		= false,
 							_wasUpgraded		= false,
 							_hasVolatileNotes	= false,
-							_tryToFixNotes		= false;
+							_tryToFixNotes		= false,
+							_optionsBound		= false;
 	Version					_version;
 	int						_revision		= 0;
 

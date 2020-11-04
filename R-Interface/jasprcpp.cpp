@@ -82,7 +82,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	_libraryFixerFunc		= libraryFixerFunc;
 
 	rinside = new RInside();
-	
+
 	RInside &rInside = rinside->instance();
 
 	requestJaspResultsFileSourceCB				= callbacks->requestJaspResultsFileSourceCB;
@@ -161,8 +161,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
 
-	rInside["jasp.analyses"] = Rcpp::List();
-
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"jaspBase\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"jaspGraphs\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
@@ -190,6 +188,13 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 #else
 														  "FALSE");
 #endif
+
+	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
+}
+
+void STDCALL jaspRCPP_purgeGlobalEnvironment()
+{
+	jaspRCPP_parseEvalQNT("jaspBase:::.cleanEngineMemory()");
 }
 
 void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMode)
@@ -210,58 +215,7 @@ void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMod
 	jaspResults::setWriteSealLocation(root, relativePath);
 }
 
-const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground, bool developerMode)
-{
-	SEXP results;
-
-	RInside &		rInside			= rinside->instance();
-	
-	rInside["name"]				= CSTRING_TO_R(name);
-	rInside["title"]			= CSTRING_TO_R(title);
-	rInside["options"]			= CSTRING_TO_R(options);
-	rInside["resultsMeta"]		= CSTRING_TO_R(resultsMeta);
-	rInside["dataKey"]			= dataKey;
-	rInside["requiresInit"]		= requiresInit;
-	rInside[".imageBackground"]	= imageBackground;
-	rInside["stateKey"]			= stateKey;
-	rInside["perform"]			= perform;
-	rInside[".ppi"]				= ppi;
-
-	if (rfile && *rfile)
-	{
-		std::stringstream ss;
-		ss << "loadNamespace(\"JASP\"); source(\"" << rfile << "\")";
-		jaspRCPP_parseEvalQNT(ss.str());
-	}
-
-	if(usesJaspResults)
-	{
-		_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
-
-		results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey)");
-	}
-	else
-		throw std::runtime_error("Old school analyses are no longer supported by JASP!");
-		//results = jaspRCPP_parseEval("run(name=name, title=title, requiresInit=requiresInit, dataKey=dataKey, options=options, resultsMeta=resultsMeta, stateKey=stateKey, perform=perform)");
-
-	static std::string str;
-	if(Rcpp::is<std::string>(results))	str = Rcpp::as<std::string>(results);
-	else								str = "error!";
-
-	if(usesJaspResults)
-	{
-#ifdef PRINT_ENGINE_MESSAGES
-		jaspRCPP_logString("result of runJaspResults:\n" + str + "\n");
-#endif
-		jaspObject::destroyAllAllocatedObjects();
-	}
-
-	jaspRCPP_checkForCrashRequest();
-
-	return str.c_str();
-}
-
-const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode)
+const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode)
 {
 	RInside &rInside				= rinside->instance();
 
@@ -270,7 +224,6 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rInside["options"]			= CSTRING_TO_R(options);
 	rInside[".ppi"]				= ppi;
 	rInside["dataKey"]			= dataKey;
-	rInside["perform"]			= perform;
 	rInside["stateKey"]			= stateKey;
 	rInside["moduleCall"]		= moduleCall;
 	rInside["resultsMeta"]		= "null";

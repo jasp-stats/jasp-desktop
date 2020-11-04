@@ -43,8 +43,9 @@ public:
 
 
 	typedef engineAnalysisStatus Status;
-	Status getAnalysisStatus() { return _analysisStatus; }
-	analysisResultStatus getStatusToAnalysisStatus();
+
+	Status					getAnalysisStatus() { return _analysisStatus; }
+	analysisResultStatus	getStatusToAnalysisStatus();
 
 	int  getColumnType(const std::string & columnName) { return int(!isColumnNameOk(columnName) ? columnType::unknown : provideDataSet()->column(columnName).getColumnType()); }
 
@@ -65,6 +66,7 @@ public:
 
 private: // Methods:
 	void initialize();
+	void beIdle(bool newlyIdle);
 
 	void receiveRCodeMessage(			const Json::Value & jsonRequest);
 	void receiveFilterMessage(			const Json::Value & jsonRequest);
@@ -100,8 +102,6 @@ private: // Methods:
 	void sendRCodeResult(		const std::string & rCodeResult,	int rCodeRequestId);
 	void sendRCodeError(		int rCodeRequestId);
 
-	std::string callback(const std::string &results, int progress);
-
 	DataSet *provideDataSet();
 
 	void provideTempFileName(		const std::string & extension,		std::string & root,	std::string & relativePath);
@@ -116,7 +116,8 @@ private: // Data:
 	static Engine	*	_EngineInstance;
 	const int			_slaveNo;
 	const unsigned long	_parentPID = 0;
-	engineState			_engineState = engineState::initializing;
+	engineState			_engineState	= engineState::initializing,
+						_lastRequest	= engineState::initializing;
 
 	Status				_analysisStatus = Status::empty;
 
@@ -125,10 +126,7 @@ private: // Data:
 						_progress,
 						_ppi		= 96;
 
-	bool				_analysisRequiresInit,
-						_analysisJaspResults,
-						_currentAnalysisKnowsAboutChange,
-						_developerMode		= false;
+	bool				_developerMode		= false;
 
 	std::string			_analysisName,
 						_analysisTitle,

@@ -61,6 +61,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
 	size_t id					= analysisData["id"].asUInt();
 
+	//If the user saved an analysis that didnt crash and didnt complete it should probably still be ran
+	if(status != Analysis::Status::Complete && status != Analysis::Status::FatalError)
+		status = Analysis::Status::Empty;
+
 	if(_nextId <= id) _nextId = id + 1;
 
 	Analysis				*	analysis		= nullptr;

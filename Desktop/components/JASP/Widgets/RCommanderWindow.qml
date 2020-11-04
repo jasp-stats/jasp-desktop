@@ -265,13 +265,13 @@ Window
 
 				toolTip:		qsTr("Pressing Ctrl+Enter or F5 will also run the code")
 
-				function runCode() { if(enabled && rCmd.runCode(codeEntry.text)) codeEntry.text = ""; }
+				function runCode() { if(runButton.enabled && rCmd.runCode(codeEntry.text)) codeEntry.text = ""; }
 
 				anchors
 				{
 					top:			parent.top
 					left:			parent.left
-					bottom:		parent.verticalCenter
+					bottom:			parent.verticalCenter
 					margins:		jaspTheme.generalAnchorMargin
 					bottomMargin:	jaspTheme.generalAnchorMargin * 0.5
 				}
