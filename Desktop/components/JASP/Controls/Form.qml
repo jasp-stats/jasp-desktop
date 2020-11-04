@@ -34,7 +34,6 @@ AnalysisForm
 	
 	default property alias	content		: contentArea.children
 	property alias	form				: form
-	property bool	usesJaspResults		: true
 	property int	majorVersion		: 1
 	property int	minorVersion		: 0
 	property int	availableWidth		: form.width - 2 * jaspTheme.formMargin
@@ -45,6 +44,8 @@ AnalysisForm
 
 	property int    plotHeight			: 320
 	property int    plotWidth			: 480
+					
+	property bool	usesJaspResults		: true //Just here for Koen so he can use his branch in 0.14 still. Can be removed later
 
 	MouseArea
 	{

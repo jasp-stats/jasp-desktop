@@ -242,9 +242,6 @@ void AnalysisForm::addControl(JASPControlBase *control)
 
 void AnalysisForm::_setUpControls()
 {
-	//Todo: remove anything that thinks we aren't using jaspResults
-	_analysis->setUsesJaspResults(true);
-
 	_orderExpanders();
 	_setUpRelatedModels();
 	_setUpItems();
@@ -476,7 +473,7 @@ void AnalysisForm::bindTo()
 	if (_options != nullptr)
 		unbind();
 
-	const Json::Value& optionsFromJASPFile = _analysis->optionsFromJASPFile();
+	const Json::Value & optionsFromJASPFile = _analysis->optionsFromJASPFile();
 	_options = _analysis->options();
 	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
 
@@ -577,6 +574,7 @@ void AnalysisForm::bindTo()
 	if(upgradeMsg != "")
 		addFormError(upgradeMsg);
 
+	_analysis->setOptionsBound(true);
 }
 
 void AnalysisForm::unbind()
@@ -592,6 +590,7 @@ void AnalysisForm::unbind()
 	}
 
 	_options = nullptr;
+	_analysis->setOptionsBound(false);
 }
 
 void AnalysisForm::addFormError(const QString &error)

@@ -4,10 +4,10 @@
 #include "enumutilities.h"
 
 DECLARE_ENUM(engineState,			initializing, idle, analysis, filter, rCode, computeColumn, moduleRequest, pauseRequested, paused, resuming, stopRequested, stopped, logCfg, settings, killed);
-DECLARE_ENUM(performType,			init, run, abort, saveImg, editImg, rewriteImgs);
-DECLARE_ENUM(analysisResultStatus,	validationError, fatalError, imageSaved, imageEdited, imagesRewritten, complete, inited, running, changed, waiting);
+DECLARE_ENUM(performType,			run, abort, saveImg, editImg, rewriteImgs);
+DECLARE_ENUM(analysisResultStatus,	validationError, fatalError, imageSaved, imageEdited, imagesRewritten, complete, running, changed, waiting);
 DECLARE_ENUM(moduleStatus,			initializing, installNeeded, installModPkgNeeded, loadingNeeded, unloadingNeeded, readyForUse, error);
-DECLARE_ENUM(engineAnalysisStatus,	empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg, rewriteImgs, synchingData);
+DECLARE_ENUM(engineAnalysisStatus,	empty, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg, rewriteImgs, synchingData);
 DECLARE_ENUM(winLcCtypeSetting,		check, alwaysC, neverC);
 
 struct unexpectedEngineReply  : public std::runtime_error
@@ -20,6 +20,15 @@ struct unexpectedEngineReply  : public std::runtime_error
 	static void checkIfExpected(engineState expectedReplyState, engineState currentState, int channelNo);
 };
 
+///How many seconds do we wait for an engine to be killed if it gets stuck in some analysis?
+#define ENGINE_KILLTIME 2
+
+///How many seconds should there be at minimum between two attempts to start an extra idle engine?
+#define ENGINE_EXTRA_INTERVAL 10
+
+///After how many seconds is an engine allowed to shutdown due to boredom?
+/// SHOULD TOTALLY BE BIGGER THAN 6 in actual development! more like 600
+#define ENGINE_BORED_SHUTDOWN 600
 
 
 #endif // ENGINEDEFINITIONS_H

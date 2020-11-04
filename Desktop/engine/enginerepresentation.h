@@ -16,9 +16,6 @@
 #include "rscriptstore.h"
 #include "modules/dynamicmodules.h"
 
-//How many seconds do we wait for an engine to be killed if it gets stuck in some analysis?
-#define KILLTIME 2
-
 class EngineRepresentation : public QObject
 {
 	Q_OBJECT
@@ -47,10 +44,22 @@ public:
 	void sendLogCfg();
 	void sendSettings();
 
-	void killEngine(bool disconnectFinished = false);
+	///Kills engine outright by killing process
+	void killEngine();
+	
+	///Try to gracefully shut down this engine so it can be removed
+	void shutEngineDown();
+	
+	///Stop the engine but keep it so it can be restarted easily
 	void stopEngine();
+	
+	///Tell the engine it shouldn't be doing anything else, aka pause.
 	void pauseEngine();
+	
+	///Tell engine to resume running
 	void resumeEngine();
+	
+	///Start engine again in jaspEngineProcess
 	void restartEngine(QProcess * jaspEngineProcess);
 	bool resumed()				const { return _engineState != engineState::resuming && !paused() && !initializing();	}
 	bool paused()				const { return _engineState == engineState::paused || initializing();					}
@@ -62,10 +71,20 @@ public:
 	bool runsAnalysis()			const { return _runsAnalysis;															}
 	bool runsUtility()			const { return _runsUtility;															}
 	bool runsRCmd()				const { return _runsRCmd;																}
+	bool isBored()			const;
 
 	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr && !killed(); }
 
 	void process();
+	void restartAbortedAnalysis();
+	void checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }
+	bool willProcessAnalysis(const Analysis * analysis) const;
+
+	size_t	channelNumber()		const { return _channel->channelNumber(); }
+
+	std::string currentState() const;	
+	
+protected:
 	void processRCodeReply(			Json::Value & json);
 	void processFilterReply(		Json::Value & json);
 	void processAnalysisReply(		Json::Value & json);
@@ -76,17 +95,8 @@ public:
 	void processEngineResumedReply();
 	void processLogCfgReply();
 	void processSettingsReply();
-	void restartAbortedAnalysis();
-
-	void checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }
-	bool willProcessAnalysis(const Analysis * analysis) const;
-
-	size_t	channelNumber()		const { return _channel->channelNumber(); }
-
+	
 	void sendString(std::string str);
-
-	std::string currentState() const;
-
 
 public slots:
 	void analysisRemoved(Analysis * analysis);
@@ -117,12 +127,12 @@ signals:
 	void moduleUnloadingFinished(		const QString & moduleName, int channelID);
 	void moduleUninstallingFinished(	const QString & moduleName);
 
-	void logCfgReplyReceived(int channelNr);
+	void logCfgReplyReceived(	EngineRepresentation * engine);
+	void requestEngineRestart(	EngineRepresentation * engine);
 	void plotEditorRefresh();
-	void requestEngineRestart(int channelNr);
-	void runsAnalysisChanged(bool runsAnalysis);
-	void runsUtilityChanged(bool runsUtility);
-	void runsRCmdChanged(bool runsRCmd);
+	void runsAnalysisChanged(	bool runsAnalysis);
+	void runsUtilityChanged(	bool runsUtility);
+	void runsRCmdChanged(		bool runsRCmd);
 
 private:
 	void sendPauseEngine();
@@ -144,7 +154,8 @@ private:
 				*	_analysisAborted	= nullptr;	//To make sure we know that the response we got was from this aborted analysis or not
 	int				_idRemovedAnalysis	= -1,		//If the analysis was deleted we should ignore its results
 					_lastRequestId		= -1,		//for R code requests from qml components, so that we can send it back to the right element
-					_abortTime			= -1;		//When did we tell the analysis to abort? So that we can kill it if it takes too long
+					_abortTime			= -1,		//When did we tell the analysis to abort? So that we can kill it if it takes too long
+					_idleStartSecs		= -1;
 	bool			_pauseRequested		= false,	//should tell the engine to pause as soon as possible
 					_stopRequested		= false,	//should tell the engine to stop as soon as possible
 					_slaveCrashed		= false,	//My slave crashed
@@ -152,7 +163,8 @@ private:
 					_abortAndRestart	= false,	//abort and restart an analysis
 					_runsAnalysis		= true,		//is this engine meant for running analyses?
 					_runsUtility		= true,		//is this engine meant for running filters, installing modules or running R Code (not the r prompt though)
-					_runsRCmd			= false;	//is this engine meant for the R prompt?
+					_runsRCmd			= false,	//is this engine meant for the R prompt?
+					_removeEngine		= false;
 	std::string		_lastCompColName	= "???";
 
 

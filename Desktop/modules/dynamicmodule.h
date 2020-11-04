@@ -81,7 +81,6 @@ public:
 	static std::string  developmentModuleName()			{ return _developmentModuleName;	}
 	static std::string  defaultDevelopmentModuleName()  { return "DevelopmentModule";		}
 	static std::wstring defaultDevelopmentModuleNameW() { return L"DevelopmentModule";		}
-	static std::string	getJsonDescriptionFilename()	{ return "description.json";		}
 	static std::string	getQmlDescriptionFilename()		{ return "Description.qml";			}
 	static QFileInfo	developmentModuleFolder();
 	static void			developmentModuleFolderCreate();
@@ -89,7 +88,7 @@ public:
 	static bool			isDescriptionFile(const QString		& filename);
 
 	std::string			name()				const { return _name;									}
-	QString				nameQ()				const { return QString::fromStdString(_name);			}
+	QString				nameQ()				const { return QString::fromStdString(name());			}
 	std::string			title()				const { return (isDevMod() ? "Dev: " : "") + _title;	}
 	bool				requiresData()		const;
 	std::string			author()			const { return _author;									}
@@ -162,7 +161,6 @@ public:
 	bool isBundled()	const { return _bundled;		}
 
 	void initialize(); //returns true if install of package(s) should be done
-	void parseDescriptionFile(std::string descriptionTxt);
 	void loadDescriptionQml(QString descriptionTxt);
 
 
@@ -173,8 +171,6 @@ public:
 	static std::string	getFileFromFolder(				const std::string & folderPath, const std::string & searchMe);
 	static std::string	getDESCRIPTIONFromArchive(		const std::string & archivePath);
 	static std::string	getDESCRIPTIONFromFolder(		const std::string & folderPath);
-	static std::string	getDescriptionJsonFromArchive(	const std::string & archivePath);
-	static std::string	getDescriptionJsonFromFolder(	const std::string & folderPath);
 	static std::string	getDescriptionQmlFromArchive(	const std::string & archivePath);
 	static std::string	getDescriptionQmlFromFolder(	const std::string & folderPath);
 	static std::string	extractPackageNameFromArchive(	const std::string & archivePath);

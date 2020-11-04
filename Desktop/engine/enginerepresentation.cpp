@@ -123,13 +123,13 @@ void EngineRepresentation::handleEngineCrash()
 		return; //It will be resumed somewhere in EngineSync::process() or thereabouts
 
 	default: //If not one of the above then let the engine crash and burn (https://www.youtube.com/watch?v=UtUpXPiSJEg)
-		emit engineTerminated();
+		emit  engineTerminated();
 		return;
 	}
 
 	_engineState = engineState::initializing;
 
-	emit requestEngineRestart(channelNumber()); //Only for actual crashes
+	emit requestEngineRestart(this); //Only for actual crashes
 }
 
 void EngineRepresentation::clearAnalysisInProgress()
@@ -160,8 +160,13 @@ void EngineRepresentation::process()
 	{
 		if		(_stopRequested)	sendStopEngine();
 		else if	(_pauseRequested)	sendPauseEngine();
+		
+		if(_idleStartSecs == -1)	_idleStartSecs = Utils::currentSeconds();
+ 
 		return;
-	}
+	} 
+	
+	_idleStartSecs = -1;
 
 	std::string data;
 
@@ -208,9 +213,9 @@ void EngineRepresentation::process()
 		}
 	}
 
-	if(_analysisAborted && _analysisInProgress && _abortTime + KILLTIME < Utils::currentSeconds()) //We wait a second or two before we kill the engine if it does not want to abort.
+	if(_analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME < Utils::currentSeconds()) //We wait a second or two before we kill the engine if it does not want to abort.
 	{
-		killEngine(true);
+		killEngine();
 		restartAbortedAnalysis();
 	}
 }
@@ -468,7 +473,6 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	case analysisResultStatus::validationError:
 	case analysisResultStatus::fatalError:
 	case analysisResultStatus::complete:
-	case analysisResultStatus::inited:
 		analysis->setResults(results, status);
 		clearAnalysisInProgress();
 
@@ -526,16 +530,17 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 		abortAnalysisInProgress(_analysisInProgress->isEmpty());
 }
 
-void EngineRepresentation::killEngine(bool disconnectFinished)
+void EngineRepresentation::killEngine()
 {
-	Log::log() << "Killing Engine #" << channelNumber() << " and " << (disconnectFinished ? "disconnecting" : "leaving attached") << " it's finished signal." << std::endl;
+	Log::log() << "Killing Engine #" << channelNumber() << std::endl; //" and " << (disconnectFinished ? "disconnecting" : "leaving attached") << " it's finished signal." << std::endl;
 
 	_engineState  = engineState::killed;
 
-	if(disconnectFinished)
+	//Always disconnect finished because if the engine is to be killed by JASP jasp should not show a "crashed" msgbox
+	//if(disconnectFinished)
 		//We must make sure we do not get a popup, and while processFinished checks for "killed" or not it doesnt help that that needs the eventloop to be processed
-		//I want pause and resume all engines to be done in a singly function call without returning to the eventloop, so we just disconnect "finished" if we want to kill the engine.
-		disconnect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
+		//I want pause and resume all engines to be done in a single function call without returning to the eventloop, so we just disconnect "finished" if we want to kill the engine.
+	disconnect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
 
 	_slaveProcess->kill();
 	//The rest will be handled in EngineRepresentation::processFinished
@@ -544,6 +549,32 @@ void EngineRepresentation::killEngine(bool disconnectFinished)
 void EngineRepresentation::stopEngine()
 {
 	_stopRequested = true;
+}
+
+void EngineRepresentation::shutEngineDown()
+{
+	if(_analysisInProgress)
+	{
+		abortAnalysisInProgress(true);	
+		
+		//Wait for the engine to get the message.
+		while(_analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME + 1 < Utils::currentSeconds())
+			process();
+		
+		if(!killed() && !stopped())
+			killEngine();
+	}
+	else
+	{
+		size_t stopTime = Utils::currentSeconds();
+		stopEngine();
+		
+		while(!stopped() && stopTime + ENGINE_KILLTIME < Utils::currentSeconds())
+			process();
+		
+		if(!stopped())
+			killEngine();
+	}
 }
 
 void EngineRepresentation::sendStopEngine()
@@ -577,11 +608,17 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 	_engineState	 = engineState::initializing;
 }
 
+bool EngineRepresentation::isBored() const 
+{ 
+	
+	return _idleStartSecs != -1 && _idleStartSecs + ENGINE_BORED_SHUTDOWN < Utils::currentSeconds();		
+}
+
 void EngineRepresentation::pauseEngine()
 {
 	if(initializing())
 		return;
-
+	
 	_pauseRequested = true;
 	abortAnalysisInProgress(true);
 }
@@ -700,7 +737,7 @@ void EngineRepresentation::processLogCfgReply()
 {
 	_engineState = engineState::idle;
 
-	emit logCfgReplyReceived(channelNumber());
+	emit logCfgReplyReceived(this);
 }
 
 std::string EngineRepresentation::currentState() const

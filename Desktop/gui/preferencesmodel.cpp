@@ -236,7 +236,7 @@ SET_PREF_FUNCTION(bool,		setGenerateMarkdown,		generateMarkdown,			generateMarkd
 SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontChanged,			Settings::INTERFACE_FONT							)
 SET_PREF_FUNCTION(QString,	setCodeFont,				codeFont,					codeFontChanged,				Settings::CODE_FONT									)
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
-SET_PREF_FUNCTION(int,		setMaxEngines,				maxEngines,					maxEnginesChanged,				Settings::LOG_FILES_MAX								)
+SET_PREF_FUNCTION(int,		setMaxEngines,				maxEngines,					maxEnginesChanged,				Settings::MAX_ENGINE_COUNT							)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {

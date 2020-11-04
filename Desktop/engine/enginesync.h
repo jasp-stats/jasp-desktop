@@ -38,7 +38,7 @@
 class EngineSync : public QObject
 {
 	Q_OBJECT
-
+	
 public:
 	EngineSync(QObject *parent);
 	~EngineSync();
@@ -51,9 +51,9 @@ public:
 
 	EngineRepresentation *	createNewEngine();
 	EngineRepresentation *	createRCmdEngine();
-	void					destroyEngine(EngineRepresentation * rCmdEngine);
 
 public slots:
+	void		destroyEngine(EngineRepresentation * engine);
 	int			sendFilter(		const QString & generatedFilter,	const QString & filter);
 	void		sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion);
 	void		computeColumn(	const QString & columnName,			const QString & computeCode,	columnType columnType);
@@ -90,22 +90,26 @@ signals:
 	void		settingsChanged();
 
 private:
+	//These process functions can request a new engine to be started:
+	bool		processScriptQueue();
+	bool		processDynamicModules();
+	bool		processAnalysisRequests();
+	
+	void		processLogCfgRequests();
+	void		processFilterScript();
+	void		processSettingsChanged();
+	
 	bool		allEnginesStopped();
 	bool		allEnginesPaused();
 	bool		allEnginesResumed();
-	QProcess*	startSlaveProcess(int no);
-	void		processScriptQueue();
-	void		processLogCfgRequests();
-	void		processDynamicModules();
-	void		processFilterScript();
-	void		processSettingsChanged();
+	QProcess*	startSlaveProcess(int channelNumber);
 	void		checkModuleWideCastDone();
 	void		resetModuleWideCastVars();
 	void		setModuleWideCastVars(Json::Value newVars);
 	bool		amICastingAModuleRequestWide()	{ return !_requestWideCastModuleJson.isNull(); }
+	size_t		maxEngineCount() const;
 
 private slots:
-	void	processAnalysisRequests();
 	void	deleteOrphanedTempFiles();
 	void	heartbeatTempFiles();
 
@@ -116,11 +120,13 @@ private slots:
 	void	moduleUnloadingFinishedHandler(	const QString & moduleName, int channelID);
 
 	void	restartEngines();
-	void	restartEngineAfterCrash(int nr);
+	void	restartEngineAfterCrash(EngineRepresentation * engine);
 	void	restartKilledEngines();
 
-	void	logCfgReplyReceived(size_t channelNr);
-
+	void	logCfgReplyReceived(EngineRepresentation * engine);
+	
+	void	maxEngineCountChanged();
+	void	startExtraEngine();
 
 private:
 	static EngineSync				*	_singleton;
@@ -134,10 +140,12 @@ private:
 										_requestWideCastModuleName		= "";
 	Json::Value							_requestWideCastModuleJson		= Json::nullValue;
 	std::map<int, std::string>			_requestWideCastModuleResults;
-	std::set<size_t>					_logCfgRequested				= {};
 
 	std::queue<RScriptStore*>			_waitingScripts;
-	std::vector<EngineRepresentation*>	_engines;
+	std::set<EngineRepresentation*>		_workers,		//Your typical run of the mill engine, can do analyses and Rscript/filter stuff
+										_rCmders,		//For those special occassions where you just want to shout at R in a more personal manner
+										_engines,		//Keeping track of all those engines isn't easy...
+										_logCfgRequested;
 };
 
 #endif // ENGINESYNC_H

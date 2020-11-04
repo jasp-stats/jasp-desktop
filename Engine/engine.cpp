@@ -143,26 +143,34 @@ void Engine::run()
 
 		switch(_engineState)
 		{
-		case engineState::idle:									break;
-		case engineState::analysis:			runAnalysis();		break;
+		case engineState::idle:				beIdle(_lastRequest == engineState::analysis);	break;
+		case engineState::analysis:			runAnalysis();									break;
 		case engineState::paused:			/* Do nothing */
-		case engineState::stopped:								break;
+		case engineState::stopped:															break;
 		case engineState::resuming:			throw std::runtime_error("Enginestate " + engineStateToString(_engineState) + " should NOT be set as currentState!");
 		default:
 			Log::log() << "Engine got stuck in engineState " << engineStateToString(_engineState) << " which is not supposed to happen..." << std::endl;
 		}
-
-		freeRBridgeColumns();
-
-		static engineState previousState = engineState::idle;
-
-		if(previousState != _engineState)
-			Log::log() << "current Engine state == "<< engineStateToString(_engineState) << std::endl;
-		previousState = _engineState;
 	}
 
 	if(_engineState == engineState::stopped)
 		Log::log() << "Engine leaving mainloop after having been asked to stop." << std::endl;
+}
+
+void Engine::beIdle(bool newlyIdle)
+{
+	static int idleStartTime = -1;
+
+	if(newlyIdle)
+		idleStartTime = Utils::currentSeconds();
+	else if(idleStartTime != -1 && idleStartTime + 10 < Utils::currentSeconds())
+	{
+		Log::log() << "Attempting to clean up memory used by engine/R a bit." << std::endl;
+		rbridge_memoryCleaning();
+		idleStartTime = -1;
+	}
+
+	_lastRequest = engineState::idle;
 }
 
 
@@ -187,12 +195,12 @@ bool Engine::receiveMessages(int timeout)
 		if(typeSend == "")
 			return false;
 
-		engineState typeRequest = engineStateFromString(typeSend);
+		_lastRequest = engineStateFromString(typeSend);
 
 #ifdef PRINT_ENGINE_MESSAGES
-		Log::log() << "Engine received " << engineStateToString(typeRequest) <<" message" << std::endl;
+		Log::log() << "Engine received " << engineStateToString(_lastRequest) <<" message" << std::endl;
 #endif
-		switch(typeRequest)
+		switch(_lastRequest)
 		{
 		case engineState::analysis:			receiveAnalysisMessage(jsonRequest);		return true;
 		case engineState::filter:			receiveFilterMessage(jsonRequest);			break;
@@ -204,7 +212,7 @@ bool Engine::receiveMessages(int timeout)
 		case engineState::stopRequested:	stopEngine();								break;
 		case engineState::logCfg:			receiveLogCfg(jsonRequest);					break;
 		case engineState::settings:			receiveSettings(jsonRequest);				break;
-		default:							throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState " + engineStateToString(typeRequest) + " to it!");
+		default:							throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState " + engineStateToString(_lastRequest) + " to it!");
 		}
 	}
 
@@ -434,7 +442,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 	performType perform	= performTypeFromString(jsonRequest.get("perform", "run").asString());
 
 	if (analysisId == _analysisId && _analysisStatus == Status::running) // if the current running analysis has changed
-		_analysisStatus = (perform == performType::init || (_analysisJaspResults && perform == performType::run)) ? Status::changed : Status::aborted;
+		_analysisStatus = perform == performType::run ? Status::changed : Status::aborted;
 	else
 	{
 		// the new analysis should be init or run (existing analyses will be aborted)
@@ -442,7 +450,6 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 
 		switch(perform)
 		{
-		case performType::init:			_analysisStatus = Status::toInit;		break;
 		case performType::run:			_analysisStatus = Status::toRun;		break;
 		case performType::saveImg:		_analysisStatus = Status::saveImg;		break;
 		case performType::editImg:		_analysisStatus = Status::editImg;		break;
@@ -456,8 +463,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 	Log::log() << "msg type was '" << engineAnalysisStatusToString(_analysisStatus) << "'" << std::endl;
 #endif
 
-	if(	_analysisStatus == Status::toInit		||
-		_analysisStatus == Status::toRun		||
+	if(	_analysisStatus == Status::toRun		||
 		_analysisStatus == Status::changed		||
 		_analysisStatus == Status::saveImg		||
 		_analysisStatus == Status::editImg		||
@@ -472,9 +478,6 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_imageOptions			= jsonRequest.get("image",				Json::nullValue);
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
-		_analysisRequiresInit	= jsonRequest.get("requiresInit",		Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
-
-		_analysisJaspResults	= _dynamicModuleCall != "" || jsonRequest.get("jaspResults",	false).asBool();
 		_engineState			= engineState::analysis;
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
@@ -550,68 +553,48 @@ void Engine::runAnalysis()
 {
 	Log::log() << "Engine::runAnalysis() " << _analysisTitle << " (" << _analysisId << ") revision: " << _analysisRevision << std::endl;
 
-	if(_analysisStatus == Status::saveImg)		{ saveImage();		return; }
-	if(_analysisStatus == Status::editImg)		{ editImage();		return; }
-	if(_analysisStatus == Status::rewriteImgs)	{ rewriteImages();	return; }
-
-	if(_analysisStatus == Status::empty || _analysisStatus == Status::aborted)
+	switch(_analysisStatus)
 	{
+	case Status::saveImg:		 saveImage();						return;
+	case Status::editImg:		 editImage();						return;
+	case Status::rewriteImgs:	 rewriteImages();					return;
+
+	case Status::empty:
+	case Status::aborted:
 		_analysisStatus	= Status::empty;
 		_engineState	= engineState::idle;
 		Log::log() << "Engine::state <= idle because it does not need to be run now (empty || aborted)" << std::endl;
 		return;
+
+	default:	break;
 	}
-
-	if(_analysisStatus == Status::toInit && !_analysisJaspResults)	_analysisStatus = Status::initing;
-	else															_analysisStatus = Status::running;
-
-	std::string perform					= _analysisStatus == Status::initing ? "init" : "run";
-
-	RCallback callback					= boost::bind(&Engine::callback, this, _1, _2);
-
-	_currentAnalysisKnowsAboutChange	= false;
 
 	Log::log() << "Analysis will be run now." << std::endl;
 
-	_analysisResultsString = _dynamicModuleCall != "" ?
-			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode)
-		:	rbridge_run(_analysisName, _analysisTitle, _analysisRFile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults, _developerMode);
+	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode);
 
-	if (!_analysisJaspResults && (_analysisStatus == Status::initing || _analysisStatus == Status::running))  // if status hasn't changed
-		receiveMessages();
-
-	if (_analysisStatus == Status::toInit || _analysisStatus == Status::aborted || _analysisStatus == Status::error || _analysisStatus == Status::exception)
+	switch(_analysisStatus)
 	{
-		// analysis was aborted, and we shouldn't send the results
+	case Status::aborted:
+	case Status::error:
+	case Status::exception:
 		return;
-	}
-	else if (_analysisStatus == Status::changed && (_currentAnalysisKnowsAboutChange == false || _analysisResultsString == "null"))
-	{
-		// analysis was changed, and the analysis either did not know about the change (because it did not call a callback),
-		// or it could not incorporate the changes (returned null). In both cases it needs to be re-run, and results should not be sent
 
-		_analysisStatus = Status::toInit;
-
-		if (_analysisResultsString == "null")
-			TempFiles::deleteList(TempFiles::retrieveList(_analysisId));
+	case Status::changed:
+		// analysis was changed, and the analysis killed itself through jaspResults::checkForAnalysisChanged()
+		//It needs to be re-run and the tempfiles can be cleared.
+		_analysisStatus = Status::toRun;
+		TempFiles::deleteList(TempFiles::retrieveList(_analysisId));
 		return;
-	}
-	else
-	{
+
+	default:
 		Json::Reader().parse(_analysisResultsString, _analysisResults, false);
-
-		if(!_analysisJaspResults)
-		{
-			_analysisStatus		= _analysisStatus == Status::initing ? Status::inited : Status::complete;
-			_progress	= -1;
-			sendAnalysisResults();
-		}
 
 		_engineState	= engineState::idle;
 		_analysisStatus	= Status::empty;
 
 		removeNonKeepFiles(_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
-
+		return;
 	}
 }
 
@@ -671,7 +654,6 @@ analysisResultStatus Engine::getStatusToAnalysisStatus()
 {
 	switch (_analysisStatus)
 	{
-	case Status::inited:	return analysisResultStatus::inited;
 	case Status::running:
 	case Status::changed:	return analysisResultStatus::running;
 	case Status::complete:	return analysisResultStatus::complete;
@@ -752,50 +734,6 @@ void Engine::provideSpecificFileName(const std::string & specificName, std::stri
 void Engine::provideTempFileName(const std::string & extension, std::string & root, std::string & relativePath)
 {
 	TempFiles::create(extension, _analysisId, root, relativePath);
-}
-
-
-std::string Engine::callback(const std::string &results, int progress)
-{
-	receiveMessages();
-
-	if (_analysisStatus == Status::aborted || _analysisStatus == Status::toInit || _analysisStatus == Status::toRun)
-		return "{ \"status\" : \"aborted\" }"; // abort
-
-	if (_analysisStatus == Status::changed && _currentAnalysisKnowsAboutChange)
-	{
-		_analysisStatus = Status::running;
-		_currentAnalysisKnowsAboutChange = false;
-	}
-
-	if (results != "null")
-	{
-		_analysisResultsString = results;
-
-		Json::Reader().parse(_analysisResultsString, _analysisResults, false);
-
-		_progress = progress;
-
-		sendAnalysisResults();
-	}
-	else if (progress >= 0 && _analysisStatus == Status::running)
-	{
-		_analysisResultsString	= "";
-		_analysisResults		= Json::nullValue;
-		_progress				= progress;
-
-		sendAnalysisResults();
-
-	}
-
-	if (_analysisStatus == Status::changed)
-	{
-		_currentAnalysisKnowsAboutChange = true; // because we're telling it now
-		return "{ \"status\" : \"changed\", \"options\" : " + _analysisOptions + " }";
-	}
-	else if (_analysisStatus == Status::aborted)	return "{ \"status\" : \"aborted\" }";
-
-	return "{ \"status\" : \"ok\" }";
 }
 
 bool Engine::isColumnNameOk(std::string columnName)
