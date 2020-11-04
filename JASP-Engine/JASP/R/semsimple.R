@@ -498,7 +498,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     semRSquaredTable$addColumns(data.frame(var = .unv(names(r2[[1]]))))
                                 
     for (i in 1:length(r2)) {
-      semRSquaredTable$addColumnInfo(name = paste0("R2", i), title = gettextf("Group %i", nm[i]), 
+      semRSquaredTable$addColumnInfo(name = paste0("R2", i), title = gettextf("Group %s", nm[i]), 
                                      overtitle = gettext("R&sup2;"), type = "number")
       thisCol <- data.frame(rr = r2[[i]])
       names(thisCol) <- paste0("R2", i)
