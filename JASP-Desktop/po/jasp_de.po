@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-11-04 16:26+0000\n"
+"PO-Revision-Date: 2020-11-06 22:26+0000\n"
 "Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.3.2\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -4881,7 +4881,7 @@ msgstr "Gruppe eins < Gruppe zwei"
 
 msgctxt "ContingencyTables|"
 msgid "Nominal"
-msgstr "Nominal"
+msgstr "nominal"
 
 msgctxt "ContingencyTables|"
 msgid "Contingency coefficient"
@@ -4901,7 +4901,7 @@ msgstr "Unsicherheitskoeffizient"
 
 msgctxt "ContingencyTables|"
 msgid "Ordinal"
-msgstr "ordinal"
+msgstr "ordinal (sortierbar)"
 
 msgctxt "ContingencyTables|"
 msgid "Gamma"
@@ -8234,7 +8234,7 @@ msgstr "Methode"
 
 msgctxt "RegressionLogistic|"
 msgid "Enter"
-msgstr "Eingeben"
+msgstr "Einschluss"
 
 msgctxt "RegressionLogistic|"
 msgid "Backward"
@@ -12470,7 +12470,7 @@ msgstr "Signifikant"
 
 msgctxt "RegressionLinear|"
 msgid "Enter"
-msgstr "Eingeben"
+msgstr "Einschluss"
 
 msgctxt "RegressionLinear|"
 msgid "Backward"
@@ -13663,15 +13663,15 @@ msgstr "Bitte alle Argumente eingeben - siehe rot markierte Felder.<br>"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr "metrisch / kardinal"
+msgstr "metrisch (gleichabständig)"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr "ordinal"
+msgstr "ordinal (sortierbar)"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr "Nominal"
+msgstr "nominal (nicht sortierbar)"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
@@ -14221,15 +14221,15 @@ msgstr "Ausgewählt"
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr "metrisch / kardinal"
+msgstr "metrisch (gleichabständig)"
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr "ordinal"
+msgstr "ordinal (sortierbar)"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
-msgstr "Nominal"
+msgstr "nominal (nicht sortierbar)"
 
 #, qt-format
 msgctxt "BoundQMLComboBox|"
