@@ -121,7 +121,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
           
           .setSeedJASP(options)
           r <- try(.signRankGibbsSampler(
-            x = x, nSamples = options[["wilcoxonSamplesNumber"]], testValue = 0, nBurnin = 0,
+            x = x, nSamples = options[["wilcoxonSamplesNumber"]], testValue = options[["testValue"]], nBurnin = 0,
             cauchyPriorParameter = options[["priorWidth"]]
           ))
           
@@ -134,11 +134,11 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
           } else {
             
-            ttestResults[["delta"]][[var]]  <- r[["deltaSamples"]] * -1
+            ttestResults[["delta"]][[var]]  <- r[["deltaSamples"]]
             ttestResults[["rHat"]][[var]]  <- r[["rHat"]]
             
             bf.raw <- .computeBayesFactorWilcoxon(
-              deltaSamples         = r[["deltaSamples"]] * -1,
+              deltaSamples         = r[["deltaSamples"]],
               cauchyPriorParameter = options[["priorWidth"]],
               oneSided             = oneSided)
             
