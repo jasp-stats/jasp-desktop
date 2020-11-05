@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2020-11-06 22:26+0000\n"
-"Last-Translator: Paulina Elizabeth Robalino <paulina.e.robalino@gmail.com>\n"
+"Last-Translator: Pablo Augusto Vailati <pvailati@uade.edu.ar>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/"
 "jasp-desktop/es/>\n"
 "Language: es\n"
@@ -2939,87 +2939,70 @@ msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Estimates"
 msgstr "Estimados"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Model averaged R²"
 msgstr "Modelo R² promedio"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Descriptives"
 msgstr "Descriptivos"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Credible interval"
 msgstr "Intervalo creíble"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Order"
 msgstr "Orden"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Compare to best model"
 msgstr "Comparar con el mejor modelo"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Compare to null model"
 msgstr "Comparar con el modelo nulo"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Plots"
-msgstr "Parcelas"
+msgstr "Gráficos"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Model averaged posteriors"
 msgstr "Modelos posteriores promediados"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Group levels in single plot"
-msgstr "Niveles de grupo en una sola parcela"
+msgstr "Agrupar niveles en un solo gráfico"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Individual plot per level"
-msgstr "Parcela individual por nivel"
+msgstr "Gráfico individual por nivel"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Q-Q plot of residuals"
-msgstr "Gráfico Q-Q de residuos"
+msgstr "Q-Q plot de residuos"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Posterior R²"
 msgstr "R² posterior"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Model"
 msgstr "Modelo"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Components"
 msgstr "Componentes"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Single Model Inference"
 msgstr "Inferencia de modelo único"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Specific Model Terms"
 msgstr "Términos específicos del modelo"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "R²"
 msgstr "R²"
@@ -3029,57 +3012,47 @@ msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Marginal posteriors"
 msgstr "Posteriores marginales"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Post Hoc Tests"
 msgstr "Pruebas post hoc"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Correction"
 msgstr "Corrección"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Null control"
 msgstr "Control nulo"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Descriptives Plots"
-msgstr "Parcelas descriptivas"
+msgstr "Gráficos descriptivas"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Factors"
 msgstr "Factores"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Horizontal Axis"
 msgstr "Eje horizontal"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Separate Lines"
 msgstr "Líneas separadas"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Separate Plots"
-msgstr "Parcelas separadas"
+msgstr "Gráficos separados"
 
 #, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Label y-axis"
-msgstr "Etiqueta del eje y"
+msgstr "Etiquetar el eje y"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Additional Options"
 msgstr "Opciones adicionales"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Prior"
 msgstr "Anterior"
@@ -3099,17 +3072,14 @@ msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "r scale covariates"
 msgstr "covariables de escala r"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Numerical Accuracy"
 msgstr "Precisión numérica"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Auto"
-msgstr "Auto"
+msgstr "Automático"
 
-#, fuzzy
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Manual"
 msgstr "Manual"
