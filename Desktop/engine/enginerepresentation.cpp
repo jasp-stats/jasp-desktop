@@ -76,7 +76,7 @@ void EngineRepresentation::processFinished(int exitCode, QProcess::ExitStatus ex
 
 void EngineRepresentation::handleEngineCrash()
 {
-	Log::log() << "EngineRepresentation::handleEngineCrash():\n" << currentState() << std::endl;
+	Log::log() << "EngineRepresentation::handleEngineCrash():\n" << currentStateForDebug() << std::endl;
 
 	switch(_engineState)
 	{
@@ -199,17 +199,18 @@ void EngineRepresentation::process()
 
 		switch(typeRequest)
 		{
-		case engineState::filter:			processFilterReply(json);			break;
-		case engineState::rCode:			processRCodeReply(json);			break;
-		case engineState::analysis:			processAnalysisReply(json);			break;
-		case engineState::computeColumn:	processComputeColumnReply(json);	break;
-		case engineState::paused:			processEnginePausedReply();			break;
-		case engineState::resuming:			processEngineResumedReply();		break;
-		case engineState::stopped:			processEngineStoppedReply();		break;
-		case engineState::moduleRequest:	processModuleRequestReply(json);	break;
-		case engineState::logCfg:			processLogCfgReply();				break;
-		case engineState::settings:			processSettingsReply();				break;
-		default:							throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
+		case engineState::filter:				processFilterReply(json);			break;
+		case engineState::rCode:				processRCodeReply(json);			break;
+		case engineState::analysis:				processAnalysisReply(json);			break;
+		case engineState::computeColumn:		processComputeColumnReply(json);	break;
+		case engineState::paused:				processEnginePausedReply();			break;
+		case engineState::resuming:				processEngineResumedReply();		break;
+		case engineState::stopped:				processEngineStoppedReply();		break;
+		case engineState::moduleInstallRequest:
+		case engineState::moduleLoadRequest:	processModuleRequestReply(json);	break;
+		case engineState::logCfg:				processLogCfgReply();				break;
+		case engineState::settings:				processSettingsReply();				break;
+		default:								throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
 		}
 	}
 
@@ -679,9 +680,17 @@ void EngineRepresentation::processEngineStoppedReply()
 	_engineState = engineState::stopped;
 }
 
-void EngineRepresentation::runModuleRequestOnProcess(Json::Value request)
+void EngineRepresentation::runModuleInstallRequestOnProcess(Json::Value request)
 {
-	_engineState			= engineState::moduleRequest;
+	_engineState			= engineState::moduleInstallRequest;
+	request["typeRequest"]	= engineStateToString(_engineState);
+
+	sendString(request.toStyledString());
+}
+
+void EngineRepresentation::runModuleLoadRequestOnProcess(Json::Value request)
+{
+	_engineState			= engineState::moduleLoadRequest;
 	request["typeRequest"]	= engineStateToString(_engineState);
 
 	sendString(request.toStyledString());
@@ -689,7 +698,7 @@ void EngineRepresentation::runModuleRequestOnProcess(Json::Value request)
 
 void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 {
-	checkIfExpectedReplyType(engineState::moduleRequest);
+	checkIfExpectedReplyType(_engineState);
 
 	_engineState = engineState::idle;
 
@@ -740,7 +749,7 @@ void EngineRepresentation::processLogCfgReply()
 	emit logCfgReplyReceived(this);
 }
 
-std::string EngineRepresentation::currentState() const
+std::string EngineRepresentation::currentStateForDebug() const
 {
 	try {
 		std::stringstream out;
@@ -767,7 +776,7 @@ std::string EngineRepresentation::currentState() const
 	}
 	catch (...)
 	{
-		return "EngineRepresentation::currentState() didn't work...";
+		return "EngineRepresentation::currentStateForDebug() didn't work...";
 	}
 }
 
@@ -864,4 +873,21 @@ bool EngineRepresentation::willProcessAnalysis(const Analysis * analysis) const
 		return false;
 
 	return runsAnalysis() || (analysis->utilityRunAllowed() && runsUtility());
+}
+
+bool EngineRepresentation::idleSoon() const
+{
+	switch(_engineState)
+	{
+	case engineState::resuming:
+	case engineState::paused:
+	case engineState::initializing:
+	case engineState::settings:
+	case engineState::logCfg:
+	case engineState::moduleLoadRequest:
+		return true;
+	
+	default:
+		return false;
+	}
 }

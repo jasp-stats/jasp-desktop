@@ -202,17 +202,18 @@ bool Engine::receiveMessages(int timeout)
 #endif
 		switch(_lastRequest)
 		{
-		case engineState::analysis:			receiveAnalysisMessage(jsonRequest);		return true;
-		case engineState::filter:			receiveFilterMessage(jsonRequest);			break;
-		case engineState::rCode:			receiveRCodeMessage(jsonRequest);			break;
-		case engineState::computeColumn:	receiveComputeColumnMessage(jsonRequest);	break;
-		case engineState::pauseRequested:	pauseEngine();								break;
-		case engineState::resuming:			resumeEngine(jsonRequest);					break;
-		case engineState::moduleRequest:	receiveModuleRequestMessage(jsonRequest);	break;
-		case engineState::stopRequested:	stopEngine();								break;
-		case engineState::logCfg:			receiveLogCfg(jsonRequest);					break;
-		case engineState::settings:			receiveSettings(jsonRequest);				break;
-		default:							throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState " + engineStateToString(_lastRequest) + " to it!");
+		case engineState::analysis:				receiveAnalysisMessage(jsonRequest);		return true;
+		case engineState::filter:				receiveFilterMessage(jsonRequest);			break;
+		case engineState::rCode:				receiveRCodeMessage(jsonRequest);			break;
+		case engineState::computeColumn:		receiveComputeColumnMessage(jsonRequest);	break;
+		case engineState::pauseRequested:		pauseEngine();								break;
+		case engineState::resuming:				resumeEngine(jsonRequest);					break;
+		case engineState::moduleInstallRequest:	
+		case engineState::moduleLoadRequest:	receiveModuleRequestMessage(jsonRequest);	break;
+		case engineState::stopRequested:		stopEngine();								break;
+		case engineState::logCfg:				receiveLogCfg(jsonRequest);					break;
+		case engineState::settings:				receiveSettings(jsonRequest);				break;
+		default:								throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState " + engineStateToString(_lastRequest) + " to it!");
 		}
 	}
 
@@ -407,7 +408,7 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 
 void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 {
-	_engineState				= engineState::moduleRequest;
+	_engineState					= engineStateFromString(jsonRequest.get("typeRequest", Json::nullValue).asString());
 
 	std::string		moduleRequest	= jsonRequest["moduleRequest"].asString();
 	std::string		moduleCode		= jsonRequest["moduleCode"].asString();
@@ -422,7 +423,7 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	jsonAnswer["moduleName"]		= moduleName;
 	jsonAnswer["succes"]			= succes;
 	jsonAnswer["error"]				= jaspRCPP_getLastErrorMsg();
-	jsonAnswer["typeRequest"]		= engineStateToString(engineState::moduleRequest);
+	jsonAnswer["typeRequest"]		= engineStateToString(_engineState);
 
 	sendString(jsonAnswer.toStyledString());
 

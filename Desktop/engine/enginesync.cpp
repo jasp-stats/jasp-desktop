@@ -262,12 +262,14 @@ void EngineSync::process()
 
 	if(_filterRunning) return; //Do not do anything else while waiting for a filter to return
 	
-							processLogCfgRequests();
-	bool notEnoughIdles =	processScriptQueue();
-		 notEnoughIdles =	processDynamicModules()   || notEnoughIdles;
-		 notEnoughIdles =	processAnalysisRequests() || notEnoughIdles;
+	processLogCfgRequests();
 	
-	if(notEnoughIdles)	
+	bool	notEnoughIdlesForScript		=	processScriptQueue(),
+			notEnoughIdlesForModule		=	processDynamicModules(),
+			notEnoughIdlesForAnalysis	=	processAnalysisRequests(),
+			notEnoughIdles				=	notEnoughIdlesForScript || notEnoughIdlesForModule || notEnoughIdlesForAnalysis;
+	
+	if(notEnoughIdles && !anEngineIdleSoon())	
 		startExtraEngine();
 	else
 		for (auto engine : _workers)
@@ -405,8 +407,8 @@ bool EngineSync::processDynamicModules()
 			if(engine->idle())
 			{
 				foundIdle = true;
-				if		(DynamicModules::dynMods()->aModuleNeedsPackagesInstalled())												engine->runModuleRequestOnProcess(DynamicModules::dynMods()->getJsonForPackageInstallationRequest());
-				else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleRequestOnProcess(_requestWideCastModuleJson);
+				if		(DynamicModules::dynMods()->aModuleNeedsPackagesInstalled())												engine->runModuleInstallRequestOnProcess(DynamicModules::dynMods()->getJsonForPackageInstallationRequest());
+				else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleLoadRequestOnProcess(_requestWideCastModuleJson);
 			}
 		}
 		
@@ -427,28 +429,40 @@ bool EngineSync::processAnalysisRequests()
 	for(auto engine : _workers)
 		engine->handleRunningAnalysisStatusChanges();
 
-	Analyses::analyses()->applyToSome([&](Analysis * analysis)
+	Analyses::analyses()->applyToAll([&](Analysis * analysis)
 	{
 		if(analysis && analysis->shouldRun())
 		{
 			try
 			{
+				bool anEngineIsRunningMe = false;
+				
 				for(auto engine : _workers)
 					if(engine->willProcessAnalysis(analysis))
 					{
 						engine->runAnalysisOnProcess(analysis);
-						return true;
+						return;
 					}
+					else if (engine->analysisInProgress() == analysis)
+						anEngineIsRunningMe = true;
+					
 				
-				couldntFindIdleEngine = true;
+				couldntFindIdleEngine = couldntFindIdleEngine || !anEngineIsRunningMe;
 			}
 			catch(...)	{ Log::log() << "Exception thrown in ProcessAnalysisRequests" << std::endl;	}
 		}
-
-		return true;
 	});
 	
 	return couldntFindIdleEngine;
+}
+
+///Maybe no engines are idle, but if one is initializing or setting up some stuff it'll be so soon. So tell JASP to be patient then.
+bool EngineSync::anEngineIdleSoon()
+{
+	for(auto engine : _workers)
+		if(engine->idleSoon())
+			return true;
+	return false;
 }
 
 void EngineSync::startExtraEngine()
@@ -885,21 +899,21 @@ void EngineSync::cleanUpAfterClose()
 
 }
 
-std::string	EngineSync::currentState() const
+std::string	EngineSync::currentStateForDebug() const
 {
 	try
 	{
 		std::stringstream out;
 
 		for(auto * engine : _engines)
-			try			{ out << engine->currentState() << "\n"; }
+			try			{ out << engine->currentStateForDebug() << "\n"; }
 			catch(...)	{ out << "Something is wrong with engine " << engine->channelNumber() << "...\n"; }
 
 		return out.str();
 	}
 	catch(...)
 	{
-		return "EngineSync::currentState() did not work...\n";
+		return "EngineSync::currentStateForDebug() did not work...\n";
 	}
 
 }
