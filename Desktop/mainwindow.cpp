@@ -1203,7 +1203,7 @@ void MainWindow::openGitHubBugReport() const
 				"<!--- A note from the developers:\nIf possible please attach your data and/or JASP file to the issue, this makes solving the bug a lot easier."
 				" If you would prefer to not make your data publicly available then you could also mail us.\n"
 				"Note that github requires you to zip the file to upload it here.\n-->\n\n"
-				"### Debug information:\n" << _engineSync->currentState();
+				"### Debug information:\n" << _engineSync->currentStateForDebug();
 
 	try			{ fillIt << "\n[Commit used](" << AboutModel::commitUrl() << ")\n"; }
 	catch(...)	{ fillIt << "Commit couldn't be found\n"; }

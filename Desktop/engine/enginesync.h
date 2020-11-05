@@ -65,7 +65,7 @@ public slots:
 	void		logToFileChanged(bool) { logCfgRequest(); }
 	void		cleanUpAfterClose();
 	void		filterDone(int requestID);
-	std::string	currentState() const;
+	std::string	currentStateForDebug() const;
 	void		haveYouTriedTurningItOffAndOnAgain() { stopEngines(); restartEngines(); } // https://www.youtube.com/watch?v=DPqdyoTpyEs
 	
 signals:
@@ -127,6 +127,7 @@ private slots:
 	
 	void	maxEngineCountChanged();
 	void	startExtraEngine();
+	bool	anEngineIdleSoon();
 
 private:
 	static EngineSync				*	_singleton;

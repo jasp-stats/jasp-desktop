@@ -40,7 +40,8 @@ public:
 	void runScriptOnProcess(const QString & rCmdCode);
 	void runScriptOnProcess(RComputeColumnStore * computeColumnStore);
 	void runAnalysisOnProcess(Analysis *analysis);
-	void runModuleRequestOnProcess(Json::Value request);
+	void runModuleInstallRequestOnProcess(Json::Value request);
+	void runModuleLoadRequestOnProcess(Json::Value request);
 	void sendLogCfg();
 	void sendSettings();
 
@@ -67,6 +68,7 @@ public:
 	bool stopped()				const { return _engineState == engineState::stopped;									}
 	bool killed()				const { return _engineState == engineState::killed;										}
 	bool idle()					const { return _engineState == engineState::idle;										}
+	bool idleSoon()				const;
 	bool shouldSendSettings()	const { return idle() && _settingsChanged;												}
 	bool runsAnalysis()			const { return _runsAnalysis;															}
 	bool runsUtility()			const { return _runsUtility;															}
@@ -82,7 +84,7 @@ public:
 
 	size_t	channelNumber()		const { return _channel->channelNumber(); }
 
-	std::string currentState() const;	
+	std::string currentStateForDebug() const;	
 	
 protected:
 	void processRCodeReply(			Json::Value & json);

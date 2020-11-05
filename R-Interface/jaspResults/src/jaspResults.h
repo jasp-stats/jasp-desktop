@@ -108,8 +108,8 @@ private:
 			_progressbarLastUpdateTime		= -1,
 			_progressbarTicks				= 0,
 			_sendingFeedbackLastTime		= -1,
-			_progressbarBetweenUpdatesTime	= 250,
-			_sendingFeedbackInterval		= 500;
+			_progressbarBetweenUpdatesTime	= 500,
+			_sendingFeedbackInterval		= 1000;
 
 
 };
