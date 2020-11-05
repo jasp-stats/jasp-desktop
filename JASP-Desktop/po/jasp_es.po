@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-10-16 07:23+0000\n"
+"PO-Revision-Date: 2020-11-06 22:26+0000\n"
 "Last-Translator: Paulina Elizabeth Robalino <paulina.e.robalino@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/"
 "jasp-desktop/es/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3-dev\n"
+"X-Generator: Weblate 4.3.2\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "jasp-qml-style-example|"
@@ -80,7 +80,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "RMSEA"
 msgstr "RMSEA"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Include mean structure"
 msgstr "Incluir estructura media"
@@ -89,7 +88,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Assume factors uncorrelated"
 msgstr "Asumir que los factores no están correlacionados"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Fix exogenous covariates"
 msgstr "Fijar covariables exógenas"
@@ -106,7 +104,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Additional Output"
 msgstr "Output adicional"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Implied covariance matrix"
 msgstr "Matriz de covarianza implícita"
@@ -123,7 +120,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Cutoff"
 msgstr "Corte"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Show lavaan syntax"
 msgstr "Mostrar sintaxis de lavaan"
@@ -185,17 +181,14 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Options"
 msgstr "Opciones"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Fix manifest intercepts to zero"
 msgstr "Corregir intercepciones de manifiesto a cero"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Fix latent intercepts to zero"
 msgstr "Fijar intercepciones latentes a cero"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Omit residual single indicator"
 msgstr "Omitir indicador único residual"
@@ -204,7 +197,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Residual variances"
 msgstr "Variaciones residuales"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Correlate exogenous latents"
 msgstr "Correlación de latentes exógenos"
@@ -218,17 +210,14 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Add scalings parameters"
 msgstr "Agregar parámetros de escalamiento"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Correlate dependent variables"
 msgstr "Correlacionar variables dependientes"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Emulation"
 msgstr "Emulación"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "None"
 msgstr "Ninguna"
@@ -237,187 +226,150 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Mplus"
 msgstr "Mplus"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "EQS"
 msgstr "EQS"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Error Calculation"
 msgstr "Cálculo de error"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Standard"
 msgstr "Estándar"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Robust"
 msgstr "Robusto"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Bootstrap"
-msgstr "Oreja"
+msgstr "Bootstrap"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Bootstrap samples"
 msgstr "Muestras de Bootstrap"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Estimator"
 msgstr "Estimador"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Auto"
 msgstr "Auto"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "ML"
 msgstr "ML"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "GLS"
 msgstr "GLS"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "WLS"
 msgstr "WLS"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "ULS"
 msgstr "ULS"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "DWLS"
 msgstr "DWLS"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Standardization"
 msgstr "Estandarización"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Latents"
 msgstr "Latentes"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "All"
 msgstr "Todas"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "No X"
 msgstr "No X"
 
-#, fuzzy
 msgctxt "FactorsForm|"
 msgid "+"
 msgstr "+"
 
-#, fuzzy
 msgctxt "FactorsForm|"
 msgid "-"
 msgstr "-"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Latent variables"
 msgstr "Variables latentes"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Regression"
 msgstr "Regresión"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Dependent Variable"
 msgstr "Variable dependiente"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Covariates"
 msgstr "Covariables"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Factors"
 msgstr "Factores"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "WLS Weights (optional)"
 msgstr "Pesos WLS (opcional)"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Model options"
 msgstr "Opciones de modelo"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Additional Fit Measures"
 msgstr "Medidas de ajuste adicionales"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "AIC"
 msgstr "AIC"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "BIC"
 msgstr "BIC"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "SRMR"
 msgstr "SRMR"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "TLI"
 msgstr "TLI"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "CFI"
 msgstr "CFI"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "RMSEA"
 msgstr "RMSEA"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Model Options"
 msgstr "Opciones de modelo"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Include mean structure"
 msgstr "Incluir estructura media"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Assume factors uncorrelated"
-msgstr "Suponga factores no correlacionados"
+msgstr "Asumir factores no correlacionados"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Fix exogenous covariates"
 msgstr "Fijar covariables exógenas"
@@ -427,52 +379,42 @@ msgctxt "LatentRegression|"
 msgid "Factor scaling"
 msgstr "Escala de factores"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Residual Covariances"
 msgstr "Covarianzas residuales"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Additional output"
 msgstr "Salida adicional"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Implied covariance matrix"
 msgstr "Matriz de covarianza implícita"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Residual covariance matrix"
 msgstr "Matriz de covarianza residual"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Modification indices"
 msgstr "Índices de modificación"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Cutoff"
 msgstr "Cortar"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Show lavaan syntax"
 msgstr "Mostrar sintaxis de lavaan"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Multigroup CFA"
-msgstr "CFA multigrupo"
+msgstr "CFA Multigrupo"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Grouping variable"
 msgstr "Variable de agrupación"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Invariance testing"
 msgstr "Prueba de invariancia"
@@ -481,7 +423,6 @@ msgctxt "LatentRegression|"
 msgid "Configural"
 msgstr "Configura"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Metric"
 msgstr "Métrico"
@@ -491,27 +432,23 @@ msgctxt "LatentRegression|"
 msgid "Scalar"
 msgstr "Escalar"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Strict"
 msgstr "Estricto"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Plots"
-msgstr "Parcelas"
+msgstr "Gáficos"
 
 #, fuzzy
 msgctxt "LatentRegression|"
 msgid "Misfit plot"
 msgstr "Parcela inadaptada"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Model plot"
-msgstr "Parcela modelo"
+msgstr "Gráfico del modelo"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Show parameters"
 msgstr "Mostrar parámetros"
