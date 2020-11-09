@@ -18,7 +18,7 @@
 
 #include "rowcontrols.h"
 #include "analysis/analysisform.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include "qmllistview.h"
 
 #include "log.h"
@@ -33,7 +33,7 @@ RowControls::RowControls(ListModel* parent
 {
 }
 
-// Cannot do this code in the constructor: the Component create function (comp->create(context)) will call the addJASPControl method in JASPControlBase (or ListView),
+// Cannot do this code in the constructor: the Component create function (comp->create(context)) will call the addJASPControl method in JASPControl (or ListView),
 // So this RowControls instance needs to exist already.
 void RowControls::init(int row, const Term& key, bool isNew)
 {

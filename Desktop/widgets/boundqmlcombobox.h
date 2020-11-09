@@ -30,10 +30,10 @@ class BoundQMLComboBox : public QMLListView, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLComboBox(JASPControlBase* item);
+	BoundQMLComboBox(JASPControl* item);
 
 	void		bindTo(Option *option)						override;
-	void		resetQMLItem(JASPControlBase *item)			override;
+	void		resetQMLItem(JASPControl *item)			override;
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;	
 	bool		isJsonValid(const Json::Value& optionValue) override;

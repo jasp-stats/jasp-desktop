@@ -17,7 +17,7 @@
 //
 
 #include "boundqmlcomponentslist.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include "rowcontrols.h"
 #include "log.h"
 #include "analysis/options/optionvariable.h"
@@ -25,7 +25,7 @@
 
 #include <QJsonValue>
 
-BoundQMLComponentsList::BoundQMLComponentsList(JASPControlBase *item)
+BoundQMLComponentsList::BoundQMLComponentsList(JASPControl *item)
 	: JASPControlWrapper(item)
 	, QMLListView(item)
 	, BoundQMLItem()

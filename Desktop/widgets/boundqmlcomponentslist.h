@@ -28,7 +28,7 @@ class BoundQMLComponentsList : public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
 public:
-	BoundQMLComponentsList(JASPControlBase* item);
+	BoundQMLComponentsList(JASPControl* item);
 
 	ListModel*	model()								const	override { return _termsModel; }
 	Option*		boundTo()									override { return _boundTo; }

@@ -82,7 +82,7 @@ public:
 		QVector<SourceType> getDiscardModels(bool onlyNotNullModel = true)	const;
 	};
 	
-	QMLListView(JASPControlBase* item);
+	QMLListView(JASPControl* item);
 	
 	virtual ListModel		*	model()			const = 0;
 			void				setUp()			override;

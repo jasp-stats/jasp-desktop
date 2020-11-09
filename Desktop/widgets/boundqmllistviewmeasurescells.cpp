@@ -27,7 +27,7 @@
 using namespace std;
 
 
-BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(JASPControlBase* item)
+BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(JASPControl* item)
 	: JASPControlWrapper(item)
 	, BoundQMLListViewDraggable(item)
 {

@@ -24,7 +24,7 @@ import JASP			1.0
 JASPControl
 {
 	id						: jaspGridViewControl
-	controlType				: JASPControlBase.VariablesListView
+	controlType				: JASPControl.VariablesListView
 	background				: itemRectangle
 	implicitWidth 			: parent.width
 	implicitHeight			: jaspTheme.defaultVariablesFormHeight

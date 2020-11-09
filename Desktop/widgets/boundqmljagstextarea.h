@@ -25,7 +25,7 @@
 class BoundQMLJAGSTextArea : public BoundQMLTextArea
 {
 public:
-	BoundQMLJAGSTextArea(JASPControlBase* item);
+	BoundQMLJAGSTextArea(JASPControl* item);
 
 	void	bindTo(Option *option)						override;
 	Option* createOption()								override;

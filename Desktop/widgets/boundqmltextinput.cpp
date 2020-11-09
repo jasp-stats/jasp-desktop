@@ -18,7 +18,7 @@
 
 #include "boundqmltextinput.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrolbase.h"
+#include "../analysis/jaspcontrol.h"
 #include "../analysis/options/optiondoublearray.h"
 #include <QQmlProperty>
 #include <QQuickItem>
@@ -26,7 +26,7 @@
 
 using namespace std;
 
-BoundQMLTextInput::BoundQMLTextInput(JASPControlBase* item)
+BoundQMLTextInput::BoundQMLTextInput(JASPControl* item)
 	: JASPControlWrapper(item)
 	, QObject(item)
 	, BoundQMLItem()
@@ -301,7 +301,7 @@ void BoundQMLTextInput::resetValue()
 	setItemProperty("value", _value);
 }
 
-void BoundQMLTextInput::resetQMLItem(JASPControlBase *item)
+void BoundQMLTextInput::resetQMLItem(JASPControl *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 
@@ -375,9 +375,9 @@ bool BoundQMLTextInput::_formulaResultInBounds(double result)
 {
 	double min			= getItemProperty("min").toDouble();
 	double max			= getItemProperty("max").toDouble();
-	JASPControlBase::Inclusive inclusive = JASPControlBase::Inclusive(getItemProperty("inclusive").toInt());
-	bool includeMin = (inclusive == JASPControlBase::Inclusive::MinMax || inclusive == JASPControlBase::Inclusive::MinOnly);
-	bool includeMax = (inclusive == JASPControlBase::Inclusive::MinMax || inclusive == JASPControlBase::Inclusive::MaxOnly);
+	JASPControl::Inclusive inclusive = JASPControl::Inclusive(getItemProperty("inclusive").toInt());
+	bool includeMin = (inclusive == JASPControl::Inclusive::MinMax || inclusive == JASPControl::Inclusive::MinOnly);
+	bool includeMax = (inclusive == JASPControl::Inclusive::MinMax || inclusive == JASPControl::Inclusive::MaxOnly);
 
 	bool tooSmall = includeMin ? result < min : result <= min;
 	bool tooLarge = includeMax ? result > max : result >= max;

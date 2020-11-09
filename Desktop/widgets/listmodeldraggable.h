@@ -21,7 +21,7 @@
 
 #include "listmodel.h"
 #include "qmllistviewdraggable.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 
 class RowControls;
 
@@ -34,14 +34,14 @@ public:
 	~ListModelDraggable();
 
 	bool copyTermsWhenDropped() const						{ return _copyTermsWhenDropped; }
-	JASPControlBase::DropMode dropMode() const				{ return _dropMode; }
+	JASPControl::DropMode dropMode() const				{ return _dropMode; }
 	
-	void setDropMode(JASPControlBase::DropMode dropMode)	{ _dropMode = dropMode; }
+	void setDropMode(JASPControl::DropMode dropMode)	{ _dropMode = dropMode; }
 	void setCopyTermsWhenDropped(bool copy)					{ _copyTermsWhenDropped = copy; }
 	
 	virtual Terms termsFromIndexes(const QList<int> &indexes) const;
 	virtual Terms canAddTerms(const Terms& terms) const;
-	virtual Terms addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault) ;
+	virtual Terms addTerms(const Terms& terms, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault) ;
 	virtual void removeTerms(const QList<int>& indexes);
 	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1);
 
@@ -52,7 +52,7 @@ protected:
 	bool						_copyTermsWhenDropped;
 	bool						_addNewAvailableTermsToAssignedModel	= false;
 	bool						_allowAnalysisOwnComputedColumns		= true;
-	JASPControlBase::DropMode	_dropMode								= JASPControlBase::DropMode::DropNone;
+	JASPControl::DropMode	_dropMode								= JASPControl::DropMode::DropNone;
 	Terms						_tempTermsToRemove;
 	Terms						_tempTermsToAdd;
 		

@@ -24,7 +24,7 @@
 class BoundQMLLavaanTextArea : public BoundQMLTextArea
 {
 public:
-	BoundQMLLavaanTextArea(JASPControlBase* item);
+	BoundQMLLavaanTextArea(JASPControl* item);
 
 
 public slots:

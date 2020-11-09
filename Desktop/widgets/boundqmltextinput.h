@@ -38,7 +38,7 @@ class BoundQMLTextInput : public QObject, public BoundQMLItem
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType, FormulaArrayType};
 
-	BoundQMLTextInput(JASPControlBase* item);
+	BoundQMLTextInput(JASPControl* item);
 	void initTextInput();
 
 	void		bindTo(Option *option)						override;
@@ -47,7 +47,7 @@ public:
 	bool		isJsonValid(const Json::Value& optionValue) override;
 	Option*		boundTo()									override { return _option; }
 	void		setUp()										override;
-	void		resetQMLItem(JASPControlBase *item)			override;
+	void		resetQMLItem(JASPControl *item)			override;
 	void		rScriptDoneHandler(const QString& result)	override;
 
 	TextInputType	inputType()	{ return _inputType; }

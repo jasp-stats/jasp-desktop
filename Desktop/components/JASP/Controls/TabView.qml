@@ -26,7 +26,7 @@ import JASP				1.0
 JASPControl
 {
 	id						: tabView
-	controlType				: JASPControlBase.TabView
+	controlType				: JASPControl.TabView
 	background				: rectangleItem
 	implicitWidth 			: parent.width
 	implicitHeight			: itemStack.y + itemStack.height

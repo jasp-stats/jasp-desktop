@@ -35,7 +35,7 @@
 #include "gui/messageforwarder.h"
 #include "mainwindow.h"
 #include "log.h"
-#include "jaspcontrolbase.h"
+#include "jaspcontrol.h"
 #include "widgets/boundqmlcombobox.h"
 #include "widgets/boundqmltextarea.h"
 #include "widgets/boundqmllistviewterms.h"
@@ -143,13 +143,13 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 {
 	switch(controlWrapper->item()->controlType())
 	{
-	case JASPControlBase::ControlType::Expander:
+	case JASPControl::ControlType::Expander:
 	{
 		QMLExpander* expander = dynamic_cast<QMLExpander*>(controlWrapper);
 		_expanders.push_back(expander);
 		break;
 	}
-	case JASPControlBase::ControlType::TextArea:
+	case JASPControl::ControlType::TextArea:
 	{
 		BoundQMLTextArea		* boundQMLTextArea	= dynamic_cast<BoundQMLTextArea*>(controlWrapper);
 		ListModelTermsAvailable	* availableModel	= dynamic_cast<ListModelTermsAvailable*>(boundQMLTextArea->model());
@@ -163,14 +163,14 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 
 		break;
 	}
-	case JASPControlBase::ControlType::ComboBox:
-	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:
-	case JASPControlBase::ControlType::InputListView:
-	case JASPControlBase::ControlType::TabView:
-	case JASPControlBase::ControlType::ComponentsList:
-	case JASPControlBase::ControlType::FactorsForm:
-	case JASPControlBase::ControlType::TableView:
-	case JASPControlBase::ControlType::VariablesListView:
+	case JASPControl::ControlType::ComboBox:
+	case JASPControl::ControlType::RepeatedMeasuresFactorsList:
+	case JASPControl::ControlType::InputListView:
+	case JASPControl::ControlType::TabView:
+	case JASPControl::ControlType::ComponentsList:
+	case JASPControl::ControlType::FactorsForm:
+	case JASPControl::ControlType::TableView:
+	case JASPControl::ControlType::VariablesListView:
 	{
 		QMLListView* listView = dynamic_cast<QMLListView*>(controlWrapper);
 
@@ -194,7 +194,7 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 
 }
 
-void AnalysisForm::addControl(JASPControlBase *control)
+void AnalysisForm::addControl(JASPControl *control)
 {
 	if (control->isBound())
 	{
@@ -294,7 +294,7 @@ void AnalysisForm::_setUpItems()
 	for (JASPControlWrapper* control : controls)
 	{
 		_dependsOrderedCtrls.push_back(control);
-		connect(control->item(), &JASPControlBase::helpMDChanged, this, &AnalysisForm::helpMDChanged);
+		connect(control->item(), &JASPControl::helpMDChanged, this, &AnalysisForm::helpMDChanged);
 	}
 
 	emit helpMDChanged(); //Because we just got info on our lovely children in _orderedControls
@@ -310,8 +310,8 @@ void AnalysisForm::_orderExpanders()
 			if (sibling->objectName() == "Section")
 			{
 				QObject			* button	= sibling->property("button").value<QObject*>();
-				JASPControlBase	* control	= qobject_cast<JASPControlBase*>(button);
-				if (control && control->controlType() == JASPControlBase::ControlType::Expander)
+				JASPControl	* control	= qobject_cast<JASPControl*>(button);
+				if (control && control->controlType() == JASPControl::ControlType::Expander)
 				{
 					if (foundExpander)
 					{
@@ -583,7 +583,7 @@ void AnalysisForm::addFormError(const QString &error)
 	emit errorsChanged();
 }
 
-QQuickItem* AnalysisForm::_getControlErrorMessageOfControl(JASPControlBase* jaspControl)
+QQuickItem* AnalysisForm::_getControlErrorMessageOfControl(JASPControl* jaspControl)
 {
 	QQuickItem* result = nullptr;
 
@@ -597,9 +597,9 @@ QQuickItem* AnalysisForm::_getControlErrorMessageOfControl(JASPControlBase* jasp
 	return result;
 }
 
-//This should be moved to JASPControlBase maybe?
+//This should be moved to JASPControl maybe?
 //Maybe even to full QML? Why don't we just use a loader...
-void AnalysisForm::addControlError(JASPControlBase* control, QString message, bool temporary, bool warning)
+void AnalysisForm::addControlError(JASPControl* control, QString message, bool temporary, bool warning)
 {
 	if (!control) return;
 
@@ -609,7 +609,7 @@ void AnalysisForm::addControlError(JASPControlBase* control, QString message, bo
 
 		for (QQuickItem* item : _controlErrorMessageCache)
 		{
-			JASPControlBase* errorControl = item->property("control").value<JASPControlBase*>();
+			JASPControl* errorControl = item->property("control").value<JASPControl*>();
 			if (errorControl == control || !errorControl)
 			{
 				controlErrorMessageItem = item;
@@ -659,19 +659,19 @@ bool AnalysisForm::hasError()
 	// Controls handling inside a form must indeed be done in anther way!
 
 	for (QQuickItem* item : _controlErrorMessageCache)
-		if (item->property("control").value<JASPControlBase*>() != nullptr)
+		if (item->property("control").value<JASPControl*>() != nullptr)
 			return true;
 
 	return false;
 }
 
-void AnalysisForm::clearControlError(JASPControlBase* control)
+void AnalysisForm::clearControlError(JASPControl* control)
 {
 	if (!control) return;
 
 	for (QQuickItem* errorItem : _controlErrorMessageCache)
 	{
-		JASPControlBase* errorControl = errorItem->property("control").value<JASPControlBase*>();
+		JASPControl* errorControl = errorItem->property("control").value<JASPControl*>();
 		if (errorControl == control)
 			errorItem->setProperty("control", QVariant());
 	}
@@ -834,7 +834,7 @@ void AnalysisForm::setRunOnChange(bool change)
 bool AnalysisForm::runWhenThisOptionIsChanged(Option *option)
 {
 	BoundQMLItem* control = getBoundItem(option);
-	JASPControlBase* item = control ? control->item() : nullptr;
+	JASPControl* item = control ? control->item() : nullptr;
 
 	emit valueChanged(item);
 	if (item)
@@ -907,9 +907,9 @@ QString AnalysisForm::helpMD() const
 		"---\n# ", tr("Input"), "\n"
 	};
 
-	QList<JASPControlBase*> orderedControls = JASPControlBase::getChildJASPControls(this);
+	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
 
-	for(JASPControlBase * control : orderedControls)
+	for(JASPControl * control : orderedControls)
 		markdown.push_back(control->helpMD());
 
 	markdown.push_back(metaHelpMD());

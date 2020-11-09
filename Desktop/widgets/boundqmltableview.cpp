@@ -18,7 +18,7 @@
 
 #include "log.h"
 #include <QTimer>
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include "boundqmltableview.h"
 #include "listmodeljagsdatainput.h"
 #include "../analysis/analysisform.h"
@@ -32,7 +32,7 @@
 #include "analysis/options/optiondoublearray.h"
 
 
-BoundQMLTableView::BoundQMLTableView(JASPControlBase* item)
+BoundQMLTableView::BoundQMLTableView(JASPControl* item)
 	: JASPControlWrapper(item)
 	, QMLListView(item)
 	, BoundQMLItem()

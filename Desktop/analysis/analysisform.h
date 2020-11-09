@@ -43,7 +43,7 @@
 
 class ListModelTermsAssigned;
 class BoundQMLItem;
-class JASPControlBase;
+class JASPControl;
 class QMLExpander;
 
 class AnalysisForm : public QQuickItem, public VariableInfoProvider
@@ -95,7 +95,7 @@ signals:
 				void			needsRefreshChanged();
 				void			hasVolatileNotesChanged();
 				void			runOnChangeChanged();
-				void			valueChanged(JASPControlBase* item);
+				void			valueChanged(JASPControl* item);
 				void			infoChanged();
 				void			helpMDChanged();
 				void			errorsChanged();
@@ -115,7 +115,7 @@ public:
 	BoundQMLItem		*	getBoundItem(Option* option)			{ return _optionControlMap[option]; }
 
 	Options				*	options() { return _options; }
-	void					addControl(JASPControlBase* control);
+	void					addControl(JASPControl* control);
 
 	Q_INVOKABLE void		clearFormErrors();
 	Q_INVOKABLE void		clearFormWarnings();
@@ -125,8 +125,8 @@ public:
 	Q_INVOKABLE void		refreshAnalysis();
 	Q_INVOKABLE void		runAnalysis();
 
-	void		addControlError(JASPControlBase* control, QString message, bool temporary = false, bool warning = false);
-	void		clearControlError(JASPControlBase* control);
+	void		addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false);
+	void		clearControlError(JASPControl* control);
 	void		cleanUpForm();
 	void		refreshAvailableVariablesModels() { _setAllAvailableVariablesModel(true); }
 
@@ -162,7 +162,7 @@ private:
 	void		setControlMustContain(	QString controlName, QStringList containThis);
 	void		setControlIsDependency(	std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
 	void		setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
-	QQuickItem* _getControlErrorMessageOfControl(JASPControlBase* jaspControl);
+	QQuickItem* _getControlErrorMessageOfControl(JASPControl* jaspControl);
 	void		setAnalysisUp();
 
 private slots:

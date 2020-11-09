@@ -29,7 +29,7 @@ class BoundQMLRadioButtons : public QObject, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLRadioButtons(JASPControlBase* item);
+	BoundQMLRadioButtons(JASPControl* item);
 	void	bindTo(Option *option)						override;
 	void	unbind()									override;
 	Option* boundTo()									override { return _boundTo; }	

@@ -18,7 +18,7 @@
 
 #include "qmllistview.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrolbase.h"
+#include "../analysis/jaspcontrol.h"
 #include "listmodel.h"
 #include "listmodellabelvalueterms.h"
 #include "log.h"
@@ -29,7 +29,7 @@
 const QString QMLListView::_defaultKey = "_JASPDefaultKey";
 
 
-QMLListView::QMLListView(JASPControlBase *item)
+QMLListView::QMLListView(JASPControl *item)
 	: QObject(item)	  
 {
 	_hasSource = !getItemProperty("source").isNull() || !getItemProperty("values").isNull(); // sourceModels are only known after setup is called, but the method hasSource() is needed before in AnalysisForm
@@ -84,7 +84,7 @@ QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString
 {
 	QMap<QString, QVariant> map;
 
-	JASPControlBase* sourceItem = source.value<JASPControlBase*>();
+	JASPControl* sourceItem = source.value<JASPControl*>();
 	if (sourceItem)
 		sourceName = sourceItem->name();
 	else if (source.type() == QVariant::Type::String)
@@ -94,7 +94,7 @@ QMap<QString, QVariant> QMLListView::_readSource(const QVariant& source, QString
 		map = source.toMap();
 		if (map.contains("id"))
 		{
-			JASPControlBase* sourceItem2 = map["id"].value<JASPControlBase*>();
+			JASPControl* sourceItem2 = map["id"].value<JASPControl*>();
 			if (sourceItem2)
 				sourceName = sourceItem2->name();
 		}
@@ -403,7 +403,7 @@ QList<std::pair<QMLListView::SourceType*, Terms> > QMLListView::getTermsPerSourc
 			if (!sourceItem->conditionExpression.isEmpty())
 			{
 				Terms filteredTerms;
-				QJSEngine jsEngine;
+				QJSEngine* jsEngine = qmlEngine(item());
 
 				for (const Term& term : sourceTerms)
 				{
@@ -424,11 +424,11 @@ QList<std::pair<QMLListView::SourceType*, Terms> > QMLListView::getTermsPerSourc
 							default:						value = valueVar.toString();	break;
 							}
 
-							jsEngine.globalObject().setProperty(conditionVariable.name, value);
+							jsEngine->globalObject().setProperty(conditionVariable.name, value);
 						}
 					}
 
-					QJSValue result = jsEngine.evaluate(sourceItem->conditionExpression);
+					QJSValue result = jsEngine->evaluate(sourceItem->conditionExpression);
 					if (result.isError())
 							addControlError("Error when evaluating : " + sourceItem->conditionExpression + ": " + result.toString());
 					else if (result.toBool())

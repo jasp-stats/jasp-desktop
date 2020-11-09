@@ -20,12 +20,12 @@
 #include "listmodeldraggable.h"
 #include "listmodelassignedinterface.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrolbase.h"
+#include "../analysis/jaspcontrol.h"
 #include <QTimer>
 #include <QQmlProperty>
 #include "log.h"
 
-QMLListViewDraggable::QMLListViewDraggable(JASPControlBase* item)
+QMLListViewDraggable::QMLListViewDraggable(JASPControl* item)
 	: QMLListView(item)
 {
 }
@@ -37,7 +37,7 @@ void QMLListViewDraggable::setUp()
 	_draggableModel = dynamic_cast<ListModelDraggable*>(model());
 	_draggableModel->setItemType(getItemProperty("itemType").toString());
 	_draggableModel->setTermsAreVariables(getItemProperty("showVariableTypeIcon").toBool());
-	JASPControlBase::DropMode dropMode = JASPControlBase::DropMode(getItemProperty("dropMode").toInt());
+	JASPControl::DropMode dropMode = JASPControl::DropMode(getItemProperty("dropMode").toInt());
 	_draggableModel->setDropMode(dropMode);
 	
 	QQuickItem::connect(_item, SIGNAL(itemDoubleClicked(int)),							this, SLOT(itemDoubleClickedHandler(int)));
@@ -97,7 +97,7 @@ void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdrop
 	
 	_tempDropModel = dropModel;
 	_tempDropItemIndex = dropItemIndex;
-	_tempAssignOption = JASPControlBase::AssignType(assignOption);
+	_tempAssignOption = JASPControl::AssignType(assignOption);
 	// the call to itemsDropped is called from an item that will be removed (the items of the variable list
 	// will be re-created). So itemsDropped should not call _moveItems directly.
 	QTimer::singleShot(0, this, SLOT(moveItemsDelayedHandler()));
@@ -108,7 +108,7 @@ void QMLListViewDraggable::moveItemsDelayedHandler()
 	moveItems(_tempIndexes, _tempDropModel, _tempDropItemIndex, _tempAssignOption);
 }
 
-void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex, JASPControlBase::AssignType assignOption)
+void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex, JASPControl::AssignType assignOption)
 {
 	if (targetModel && indexes.size() > 0)
 	{

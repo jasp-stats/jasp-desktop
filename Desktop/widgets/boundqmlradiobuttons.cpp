@@ -17,7 +17,7 @@
 //
 
 #include "boundqmlradiobuttons.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include "log.h"
@@ -25,7 +25,7 @@
 
 using namespace std;
 
-BoundQMLRadioButtons::BoundQMLRadioButtons(JASPControlBase* item)
+BoundQMLRadioButtons::BoundQMLRadioButtons(JASPControl* item)
 	: JASPControlWrapper(item)
 	, BoundQMLItem()
 {
@@ -65,13 +65,13 @@ void BoundQMLRadioButtons::setUp()
 void BoundQMLRadioButtons::_getRadioButtons(QQuickItem* item, QList<JASPControlWrapper* >& buttons) {
 	for (QQuickItem* child : item->childItems())
 	{
-		JASPControlBase* jaspControl = dynamic_cast<JASPControlBase*>(child);
+		JASPControl* jaspControl = dynamic_cast<JASPControl*>(child);
 		if (jaspControl)
 		{
-			JASPControlBase::ControlType controlType = jaspControl->controlType();
-			if (controlType == JASPControlBase::ControlType::RadioButton)
+			JASPControl::ControlType controlType = jaspControl->controlType();
+			if (controlType == JASPControl::ControlType::RadioButton)
 				buttons.append(jaspControl->getWrapper());
-			else if (controlType != JASPControlBase::ControlType::RadioButtonGroup)
+			else if (controlType != JASPControl::ControlType::RadioButtonGroup)
 				_getRadioButtons(child, buttons);
 		}
 		else
@@ -139,7 +139,7 @@ void BoundQMLRadioButtons::radioButtonClickedHandler(const QVariant& button)
 	QObject* objButton = button.value<QObject*>();
 	if (objButton)
 		objButton = objButton->parent();
-	JASPControlBase *quickButton = qobject_cast<JASPControlBase*>(objButton);
+	JASPControl *quickButton = qobject_cast<JASPControl*>(objButton);
 	if (quickButton)
 	{
 		QString buttonName = quickButton->name();

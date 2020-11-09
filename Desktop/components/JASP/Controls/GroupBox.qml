@@ -28,7 +28,7 @@ JASPControl
 	implicitWidth:		Math.max(label.realWidth, jaspTheme.groupContentPadding + contentArea.implicitWidth)
 	implicitHeight:		label.realHeight + jaspTheme.titleBottomMargin + contentArea.implicitHeight	
 	L.Layout.leftMargin:	indent ? jaspTheme.indentationLength : 0
-	controlType				: JASPControlBase.GroupBox
+	controlType				: JASPControl.GroupBox
 	isBound					: false
 	childControlsArea		: contentArea
     
@@ -103,7 +103,7 @@ JASPControl
 		for (var i = 0; i < contentArea.children.length; i++)
 		{
 			var child = contentArea.children[i];
-			if (child.hasOwnProperty('controlType') && child.controlType === JASPControlBase.TextField)
+			if (child.hasOwnProperty('controlType') && child.controlType === JASPControl.TextField)
 				_allTextFields.push(child)
 		}
 

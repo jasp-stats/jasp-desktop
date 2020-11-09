@@ -366,7 +366,7 @@ bool ListModelTableViewBase::addRowControl(const QString &key, JASPControlWrappe
 {
 	_itemControls[key][control->name()] = control;
 
-	if (control->item()->controlType() == JASPControlBase::ControlType::TextField)
+	if (control->item()->controlType() == JASPControl::ControlType::TextField)
 	{
 		BoundQMLTextInput* textInput = dynamic_cast<BoundQMLTextInput*>(control);
 		if (textInput && textInput->inputType() == BoundQMLTextInput::TextInputType::FormulaType)

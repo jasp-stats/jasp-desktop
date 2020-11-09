@@ -7,7 +7,7 @@
 #include "utilities/qutils.h"
 #include <QQuickItem>
 #include "log.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 
 ListModelFilteredDataEntry::ListModelFilteredDataEntry(BoundQMLTableView * parent, QString tableType)
 	: ListModelTableViewBase(parent, tableType)

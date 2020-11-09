@@ -454,7 +454,6 @@ HEADERS += \
     results/ploteditorcoordinates.h \
     widgets/boundqmlinputlist.h \
     widgets/listmodelinputvalue.h \
-    analysis/jaspcontrolbase.h \
     widgets/jaspcontrolwrapper.h \
     widgets/rowcontrols.h \
     widgets/qmlexpander.h \
@@ -463,7 +462,8 @@ HEADERS += \
     widgets/boundqmljagstextarea.h \
     widgets/boundqmlcomponentslist.h \
     widgets/listmodelcustomcontrasts.h \
-    widgets/listmodellabelvalueterms.h
+    widgets/listmodellabelvalueterms.h \
+    analysis/jaspcontrol.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -647,7 +647,6 @@ SOURCES += \
     results/ploteditorcoordinates.cpp \
     widgets/boundqmlinputlist.cpp \
     widgets/listmodelinputvalue.cpp \
-    analysis/jaspcontrolbase.cpp \
     widgets/jaspcontrolwrapper.cpp \
     widgets/rowcontrols.cpp \
     widgets/qmlexpander.cpp \
@@ -656,7 +655,8 @@ SOURCES += \
     widgets/boundqmljagstextarea.cpp \
     widgets/boundqmlcomponentslist.cpp \
     widgets/listmodelcustomcontrasts.cpp \
-    widgets/listmodellabelvalueterms.cpp
+    widgets/listmodellabelvalueterms.cpp \
+    analysis/jaspcontrol.cpp
 
 RESOURCES += \
     html/html.qrc \

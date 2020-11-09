@@ -19,11 +19,11 @@
 #include "boundqmlrepeatedmeasuresfactors.h"
 #include "analysis/options/optionencodablestring.h"
 #include "analysis/options/optionvariables.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 
 using namespace std;
 
-BoundQMLRepeatedMeasuresFactors::BoundQMLRepeatedMeasuresFactors(JASPControlBase *item)
+BoundQMLRepeatedMeasuresFactors::BoundQMLRepeatedMeasuresFactors(JASPControl *item)
 	: JASPControlWrapper(item)
 	, QMLListView(item)
 	, BoundQMLItem()

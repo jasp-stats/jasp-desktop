@@ -29,7 +29,7 @@ class BoundQMLRepeatedMeasuresFactors :  public QMLListView, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLRepeatedMeasuresFactors(JASPControlBase* item);
+	BoundQMLRepeatedMeasuresFactors(JASPControl* item);
 
 	ListModel*	model()								const	override { return _factorsModel; }
 	Option*		boundTo()									override { return _boundTo; }

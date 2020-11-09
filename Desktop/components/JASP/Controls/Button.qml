@@ -24,7 +24,7 @@ import JASP.Widgets		1.0
 JASPControl
 {
 	id:					button
-	controlType:		JASPControlBase.Button
+	controlType:		JASPControl.Button
 	implicitHeight:		control.implicitHeight
 	implicitWidth:		control.implicitWidth
 	isBound:			false

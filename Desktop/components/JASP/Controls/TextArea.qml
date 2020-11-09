@@ -6,7 +6,7 @@ import JASP				1.0
 JASPControl
 {
 	id:					textArea
-	controlType:		JASPControlBase.TextArea
+	controlType:		JASPControl.TextArea
 	height:				jaspTheme.defaultTextAreaHeight
 	implicitHeight:		height
 	width:				parent.width

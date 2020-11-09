@@ -24,7 +24,7 @@ import JASP				1.0
 JASPControl
 {
 	id:							repeatedMeasuresFactorsList
-	controlType:				JASPControlBase.RepeatedMeasuresFactorsList
+	controlType:				JASPControl.RepeatedMeasuresFactorsList
 	implicitWidth:				parent.width
 	implicitHeight:				jaspTheme.defaultVariablesFormHeight
 	background:					rectangle

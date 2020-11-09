@@ -7,7 +7,7 @@ import JASP				1.0
 JASPControl
 {
 	id:					comboBox
-	controlType:		JASPControlBase.ComboBox
+	controlType:		JASPControl.ComboBox
 	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
 	implicitWidth:		control.width + ((controlLabel.visible && !setLabelAbove) ? jaspTheme.labelSpacing + controlLabel.width : 0)
 	background:			useExternalBorder ? externalControlBackground : control.background
@@ -189,7 +189,7 @@ JASPControl
 			height:				parent.height + jaspTheme.jaspControlHighlightWidth
 			width:				parent.width + jaspTheme.jaspControlHighlightWidth
 			color:				"transparent"
-			border.width:		3
+			border.width:		1
 			border.color:		"transparent"
 			anchors.centerIn:	parent
 			opacity:			debug ? .3 : 1

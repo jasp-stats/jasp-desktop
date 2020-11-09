@@ -30,7 +30,7 @@ class BoundQMLTableView : public QMLListView, public BoundQMLItem
 	Q_OBJECT
 
 public:
-	BoundQMLTableView(JASPControlBase* item);
+	BoundQMLTableView(JASPControl* item);
 
 	void				bindTo(Option *option)							override;
 	ListModel*			model()									const	override { return _tableModel; }
