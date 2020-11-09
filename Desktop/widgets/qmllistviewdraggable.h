@@ -22,7 +22,7 @@
 #include "qmllistview.h"
 #include <QVariant>
 #include <QList>
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 
 class ListModelDraggable;
 
@@ -31,13 +31,13 @@ class QMLListViewDraggable : public QMLListView
 	Q_OBJECT
 
 public:
-	QMLListViewDraggable(JASPControlBase* item);
+	QMLListViewDraggable(JASPControl* item);
 	
 	void setUp() override;
 	
 	ListModelDraggable* draggableModel() const		{ return _draggableModel; }
 	
-	void moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault);
+	void moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault);
 
 protected:
 	ListModelDraggable* _draggableModel;
@@ -51,7 +51,7 @@ private:
 	ListModelDraggable	*			_tempDropModel = nullptr;
 	QList<int>						_tempIndexes;
 	int								_tempDropItemIndex;
-	JASPControlBase::AssignType		_tempAssignOption = JASPControlBase::AssignType::AssignDefault;
+	JASPControl::AssignType		_tempAssignOption = JASPControl::AssignType::AssignDefault;
 	
 };
 

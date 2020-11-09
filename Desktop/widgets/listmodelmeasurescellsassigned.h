@@ -33,7 +33,7 @@ public:
 	QVariant		data(const QModelIndex &index, int role = Qt::DisplayRole)										const	override;
 	Terms			termsFromIndexes(const QList<int> &indexes)														const	override;
 	void			initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())			override;
-	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault)	override;
+	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault)	override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)											override;
 	void			removeTerms(const QList<int>& indexes) override;
 

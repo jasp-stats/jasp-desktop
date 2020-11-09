@@ -177,7 +177,7 @@ Terms ListModelInteractionAssigned::canAddTerms(const Terms& terms) const
 	return terms;
 }
 
-void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, JASPControlBase::AssignType assignType)
+void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, JASPControl::AssignType assignType)
 {
 	Terms dropped;
 	dropped.setSortParent(source()->allTerms());
@@ -189,26 +189,26 @@ void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, JASPCont
 
 	switch (assignType)
 	{
-	case JASPControlBase::AssignType::AssignDefault:
-	case JASPControlBase::AssignType::AssignCross:
+	case JASPControl::AssignType::AssignDefault:
+	case JASPControl::AssignType::AssignCross:
 		newTerms = dropped.crossCombinations();
 		break;
-	case JASPControlBase::AssignType::AssignInteraction:
+	case JASPControl::AssignType::AssignInteraction:
 		newTerms = dropped.wayCombinations(nbTerms);
 		break;
-	case JASPControlBase::AssignType::AssignMainEffects:
+	case JASPControl::AssignType::AssignMainEffects:
 		newTerms = dropped.wayCombinations(1);
 		break;
-	case JASPControlBase::AssignType::AssignAll2Way:
+	case JASPControl::AssignType::AssignAll2Way:
 		newTerms = dropped.wayCombinations(nbTerms < 2 ? nbTerms : 2);
 		break;
-	case JASPControlBase::AssignType::AssignAll3Way:
+	case JASPControl::AssignType::AssignAll3Way:
 		newTerms = dropped.wayCombinations(nbTerms < 3 ? nbTerms : 3);
 		break;
-	case JASPControlBase::AssignType::AssignAll4Way:
+	case JASPControl::AssignType::AssignAll4Way:
 		newTerms = dropped.wayCombinations(nbTerms < 4 ? nbTerms : 4);
 		break;
-	case JASPControlBase::AssignType::AssignAll5Way:
+	case JASPControl::AssignType::AssignAll5Way:
 		newTerms = dropped.wayCombinations(nbTerms < 5 ? nbTerms : 5);
 		break;
 	default:
@@ -219,7 +219,7 @@ void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, JASPCont
 	setTerms();
 }
 
-Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControlBase::AssignType assignType)
+Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControl::AssignType assignType)
 {
 	Q_UNUSED(dropItemIndex);
 
@@ -228,8 +228,8 @@ Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemInd
 	if (terms.size() == 0)
 		return result;
 	
-	if (assignType == JASPControlBase::AssignType::AssignDefault)
-		assignType = JASPControlBase::AssignType::AssignCross;
+	if (assignType == JASPControl::AssignType::AssignDefault)
+		assignType = JASPControl::AssignType::AssignCross;
 		
 	addCombinedTerms(terms, assignType);
 	
@@ -238,8 +238,8 @@ Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemInd
 
 void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)
 {
-	JASPControlBase::DropMode _dropMode = dropMode();
-	if (indexes.length() == 0 || _dropMode == JASPControlBase::DropMode::DropNone)
+	JASPControl::DropMode _dropMode = dropMode();
+	if (indexes.length() == 0 || _dropMode == JASPControl::DropMode::DropNone)
 		return;
 
 	beginResetModel();

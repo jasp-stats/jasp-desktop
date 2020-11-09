@@ -21,11 +21,11 @@
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optionvariable.h"
 #include "log.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include "rowcontrols.h"
 
 
-BoundQMLInputList::BoundQMLInputList(JASPControlBase *item)
+BoundQMLInputList::BoundQMLInputList(JASPControl *item)
 	: JASPControlWrapper(item)
 	, QMLListView(item)
 	, BoundQMLItem()

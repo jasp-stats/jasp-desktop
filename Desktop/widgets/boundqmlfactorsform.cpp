@@ -21,7 +21,7 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/analysisform.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include "utilities/qutils.h"
 
 #include <QQmlProperty>
@@ -29,7 +29,7 @@
 
 using namespace std;
 
-BoundQMLFactorsForm::BoundQMLFactorsForm(JASPControlBase *item)
+BoundQMLFactorsForm::BoundQMLFactorsForm(JASPControl *item)
 	: JASPControlWrapper(item)
 	, QMLListView(item)
 	, BoundQMLItem()
@@ -38,7 +38,7 @@ BoundQMLFactorsForm::BoundQMLFactorsForm(JASPControlBase *item)
 	setTermsAreNotVariables();
 	_availableVariablesListName = getItemProperty("availableVariablesListName").toString();
 	QVariant availableListVariant = getItemProperty("availableVariablesList");
-	_availableVariablesListItem = dynamic_cast<JASPControlBase*>(qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>()));
+	_availableVariablesListItem = dynamic_cast<JASPControl*>(qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>()));
 	_initNumberFactors = getItemProperty("initNumberFactors").toInt();
 	
 	QQuickItem::connect(item, SIGNAL(titleChanged(int, QString)), _factorsModel, SLOT(titleChangedSlot(int, QString)));

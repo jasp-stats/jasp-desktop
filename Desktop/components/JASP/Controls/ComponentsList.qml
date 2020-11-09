@@ -25,7 +25,7 @@ import QtQuick.Layouts	1.3
 JASPGridControl
 {
 	id					: componentsList
-	controlType			: JASPControlBase.ComponentsList
+	controlType			: JASPControl.ComponentsList
 	itemComponent		: components
 	implicitHeight		: itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
 

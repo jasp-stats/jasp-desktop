@@ -26,7 +26,7 @@ import JASP				1.0
 JASPControl
 {
 	id:					control
-	controlType:		JASPControlBase.RadioButtonGroup
+	controlType:		JASPControl.RadioButtonGroup
 	childControlsArea:	contentArea
 	focusOnTab:			false
 	shouldStealHover:	false

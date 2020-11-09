@@ -24,7 +24,7 @@ import JASP				1.0
 JASPGridViewControl
 {
 	id:							inputListView
-	controlType:				JASPControlBase.InputListView
+	controlType:				JASPControl.InputListView
 	itemComponent:				itemInputComponent
 
 				property var	inputComponent		: textField

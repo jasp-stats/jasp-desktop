@@ -28,7 +28,7 @@
 
 #include <QQuickItem>
 
-BoundQMLListViewDraggable::BoundQMLListViewDraggable(JASPControlBase *item)
+BoundQMLListViewDraggable::BoundQMLListViewDraggable(JASPControl *item)
 	: QMLListViewDraggable(item)
 	, BoundQMLItem()
 {

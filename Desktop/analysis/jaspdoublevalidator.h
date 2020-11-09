@@ -20,14 +20,14 @@
 #define JASPDOUBLEVALIDATOR_H
 
 #include <QDoubleValidator>
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include "log.h"
 
 class JASPDoubleValidator : public QDoubleValidator
 {
 	Q_OBJECT
 
-	Q_PROPERTY(JASPControlBase::Inclusive inclusive READ inclusive	WRITE setInclusive	NOTIFY inclusiveChanged	)
+	Q_PROPERTY(JASPControl::Inclusive inclusive READ inclusive	WRITE setInclusive	NOTIFY inclusiveChanged	)
 
 public:
 	JASPDoubleValidator (QObject* parent = nullptr) : QDoubleValidator(parent) {}
@@ -36,15 +36,15 @@ public:
 
 	Q_INVOKABLE QString	validationMessage(const QString& fieldName);
 
-	GENERIC_SET_FUNCTION(Inclusive, _inclusive, inclusiveChanged, JASPControlBase::Inclusive)
+	GENERIC_SET_FUNCTION(Inclusive, _inclusive, inclusiveChanged, JASPControl::Inclusive)
 
-	JASPControlBase::Inclusive inclusive() { return _inclusive; }
+	JASPControl::Inclusive inclusive() { return _inclusive; }
 
 signals:
 	void inclusiveChanged();
 
 protected:
-	JASPControlBase::Inclusive	_inclusive = JASPControlBase::Inclusive::MinMax;
+	JASPControl::Inclusive	_inclusive = JASPControl::Inclusive::MinMax;
 
 private:
 	bool	_isInf(double value);

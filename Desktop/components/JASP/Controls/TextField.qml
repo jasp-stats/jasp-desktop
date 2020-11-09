@@ -24,7 +24,7 @@ import JASP				1.0
 JASPControl
 {
 	id:					textField
-	controlType:		JASPControlBase.TextField
+	controlType:		JASPControl.TextField
 	
 	implicitHeight:		control.height
 	implicitWidth:		afterLabel.text ? (afterLabelRect.x + afterLabelRect.width) : (control.x + control.width)

@@ -27,12 +27,12 @@ class QMLExpander : public QObject, public virtual JASPControlWrapper
 {
 	Q_OBJECT
 public:
-	explicit QMLExpander(JASPControlBase *item);
+	explicit QMLExpander(JASPControl *item);
 
 	void	setUp() override;
 
 protected:
-	JASPControlBase* _findFirstControl(QObject* obj);
+	JASPControl* _findFirstControl(QObject* obj);
 };
 
 #endif // QMLEXPANDER_H

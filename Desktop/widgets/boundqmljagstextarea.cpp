@@ -22,7 +22,7 @@
 #include "columnencoder.h"
 #include "stringutils.h"
 
-BoundQMLJAGSTextArea::BoundQMLJAGSTextArea(JASPControlBase* item)
+BoundQMLJAGSTextArea::BoundQMLJAGSTextArea(JASPControl* item)
 	: JASPControlWrapper(item)
 	, BoundQMLTextArea(item)
 {

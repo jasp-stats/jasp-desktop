@@ -19,7 +19,7 @@
 #include "jaspcontrolwrapper.h"
 #include "../analysis/analysisform.h"
 #include <QQmlProperty>
-#include "../analysis/jaspcontrolbase.h"
+#include "../analysis/jaspcontrol.h"
 #include "widgets/boundqmlcheckbox.h"
 #include "widgets/boundqmlcombobox.h"
 #include "widgets/boundqmlslider.h"
@@ -41,31 +41,31 @@
 #include "log.h"
 
 
-JASPControlWrapper::JASPControlWrapper(JASPControlBase *item)
+JASPControlWrapper::JASPControlWrapper(JASPControl *item)
 	: _item(item)
 {
 }
 
-JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase* control)
+JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControl* control)
 {
 	JASPControlWrapper* controlWrapper = nullptr;
 
 	switch(control->controlType())
 	{
-	case JASPControlBase::ControlType::Switch:			//fallthrough:
-	case JASPControlBase::ControlType::CheckBox:					controlWrapper		= new BoundQMLCheckBox(control);					break;
-	case JASPControlBase::ControlType::Slider:						controlWrapper		= new BoundQMLSlider(control);						break;
-	case JASPControlBase::ControlType::ComboBox:					controlWrapper		= new BoundQMLComboBox(control);					break;
-	case JASPControlBase::ControlType::Expander:					controlWrapper		= new QMLExpander(control);							break;
-	case JASPControlBase::ControlType::TableView:					controlWrapper		= new BoundQMLTableView(control);					break;
-	case JASPControlBase::ControlType::TextField:					controlWrapper		= new BoundQMLTextInput(control);					break;
-	case JASPControlBase::ControlType::FactorsForm:					controlWrapper		= new BoundQMLFactorsForm(control);					break;
-	case JASPControlBase::ControlType::InputListView:				controlWrapper		= new BoundQMLInputList(control);					break;
-	case JASPControlBase::ControlType::TabView:						controlWrapper		= new BoundQMLComponentsList(control);				break;
-	case JASPControlBase::ControlType::ComponentsList:				controlWrapper		= new BoundQMLComponentsList(control);				break;
-	case JASPControlBase::ControlType::RadioButtonGroup:			controlWrapper		= new BoundQMLRadioButtons(control);				break;
-	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:	controlWrapper		= new BoundQMLRepeatedMeasuresFactors(control);		break;
-	case JASPControlBase::ControlType::TextArea:
+	case JASPControl::ControlType::Switch:			//fallthrough:
+	case JASPControl::ControlType::CheckBox:					controlWrapper		= new BoundQMLCheckBox(control);					break;
+	case JASPControl::ControlType::Slider:						controlWrapper		= new BoundQMLSlider(control);						break;
+	case JASPControl::ControlType::ComboBox:					controlWrapper		= new BoundQMLComboBox(control);					break;
+	case JASPControl::ControlType::Expander:					controlWrapper		= new QMLExpander(control);							break;
+	case JASPControl::ControlType::TableView:					controlWrapper		= new BoundQMLTableView(control);					break;
+	case JASPControl::ControlType::TextField:					controlWrapper		= new BoundQMLTextInput(control);					break;
+	case JASPControl::ControlType::FactorsForm:					controlWrapper		= new BoundQMLFactorsForm(control);					break;
+	case JASPControl::ControlType::InputListView:				controlWrapper		= new BoundQMLInputList(control);					break;
+	case JASPControl::ControlType::TabView:						controlWrapper		= new BoundQMLComponentsList(control);				break;
+	case JASPControl::ControlType::ComponentsList:				controlWrapper		= new BoundQMLComponentsList(control);				break;
+	case JASPControl::ControlType::RadioButtonGroup:			controlWrapper		= new BoundQMLRadioButtons(control);				break;
+	case JASPControl::ControlType::RepeatedMeasuresFactorsList:	controlWrapper		= new BoundQMLRepeatedMeasuresFactors(control);		break;
+	case JASPControl::ControlType::TextArea:
 	{
 		QString textType = control->property("textType").toString();
 		if		(textType == "lavaan")								controlWrapper		= new BoundQMLLavaanTextArea(control);
@@ -73,23 +73,23 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 		else														controlWrapper		= new BoundQMLTextArea(control);
 		break;
 	}
-	case JASPControlBase::ControlType::VariablesListView:
+	case JASPControl::ControlType::VariablesListView:
 	{
-		JASPControlBase::ListViewType	listViewType = JASPControlBase::ListViewType(control->property("listViewType").toInt());
+		JASPControl::ListViewType	listViewType = JASPControl::ListViewType(control->property("listViewType").toInt());
 
 		switch(listViewType)
 		{
-		case JASPControlBase::ListViewType::AssignedVariables:		controlWrapper = new BoundQMLListViewTerms(control, false);		break;
-		case JASPControlBase::ListViewType::Interaction:			controlWrapper = new BoundQMLListViewTerms(control, true);		break;
-		case JASPControlBase::ListViewType::RepeatedMeasures:		controlWrapper = new BoundQMLListViewMeasuresCells(control);	break;
-		case JASPControlBase::ListViewType::Layers:					controlWrapper = new BoundQMLListViewLayers(control);			break;
-		case JASPControlBase::ListViewType::AvailableVariables:		controlWrapper = new QMLListViewTermsAvailable(control, false);	break;
-		case JASPControlBase::ListViewType::AvailableInteraction:	controlWrapper = new QMLListViewTermsAvailable(control, true);	break;
+		case JASPControl::ListViewType::AssignedVariables:		controlWrapper = new BoundQMLListViewTerms(control, false);		break;
+		case JASPControl::ListViewType::Interaction:			controlWrapper = new BoundQMLListViewTerms(control, true);		break;
+		case JASPControl::ListViewType::RepeatedMeasures:		controlWrapper = new BoundQMLListViewMeasuresCells(control);	break;
+		case JASPControl::ListViewType::Layers:					controlWrapper = new BoundQMLListViewLayers(control);			break;
+		case JASPControl::ListViewType::AvailableVariables:		controlWrapper = new QMLListViewTermsAvailable(control, false);	break;
+		case JASPControl::ListViewType::AvailableInteraction:	controlWrapper = new QMLListViewTermsAvailable(control, true);	break;
 		}
 		break;
 	}
-	case JASPControlBase::ControlType::GroupBox:
-	case JASPControlBase::ControlType::JASPControl:
+	case JASPControl::ControlType::GroupBox:
+	case JASPControl::ControlType::DefaultControl:
 	default:
 		controlWrapper = new JASPControlWrapper(control);
 	}
@@ -99,7 +99,7 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 
 QString JASPControlWrapper::friendlyName() const
 {
-	return JASPControlBase::ControlTypeToFriendlyString(item()->controlType());
+	return JASPControl::ControlTypeToFriendlyString(item()->controlType());
 }
 
 void JASPControlWrapper::cleanUp()
@@ -108,7 +108,7 @@ void JASPControlWrapper::cleanUp()
 		_item->disconnect();
 }
 
-void JASPControlWrapper::resetQMLItem(JASPControlBase *item)
+void JASPControlWrapper::resetQMLItem(JASPControl *item)
 {
 	_item = item;
 }
@@ -157,7 +157,7 @@ void JASPControlWrapper::setItemProperty(const QString& name, const QVariant& va
 
 JASPControlWrapper* JASPControlWrapper::parentListControl()
 {
-	JASPControlBase* listView = qobject_cast<JASPControlBase*>(_item->parentListView());
+	JASPControl* listView = qobject_cast<JASPControl*>(_item->parentListView());
 
 	if (listView)	return listView->getWrapper();
 	else			return nullptr;

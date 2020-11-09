@@ -32,7 +32,7 @@ class BoundQMLListViewTerms : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewTerms(JASPControlBase* item, bool interaction = false);
+	BoundQMLListViewTerms(JASPControl* item, bool interaction = false);
 	
 	ListModel*	model()								const	override { return _termsModel; }
 	Option*		boundTo()									override

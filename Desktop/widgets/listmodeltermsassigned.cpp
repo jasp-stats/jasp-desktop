@@ -76,7 +76,7 @@ Terms ListModelTermsAssigned::canAddTerms(const Terms& terms) const
 	return ListModelDraggable::canAddTerms(terms);
 }
 
-Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControlBase::AssignType)
+Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControl::AssignType)
 {
 	Terms newTerms;
 	_tempTermsToSendBack.clear();

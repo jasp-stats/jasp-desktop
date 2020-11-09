@@ -23,7 +23,7 @@
 #include <set>
 #include <QVariant>
 
-class JASPControlBase;
+class JASPControl;
 class AnalysisForm;
 
 class JASPControlWrapper
@@ -32,17 +32,17 @@ class JASPControlWrapper
 public:
 	typedef std::set<JASPControlWrapper*> Set;
 
-			 JASPControlWrapper(JASPControlBase* item);
+			 JASPControlWrapper(JASPControl* item);
 	virtual ~JASPControlWrapper() {}
 
 	virtual void				setUp() {}
 	virtual void				cleanUp();
-	virtual void				resetQMLItem(JASPControlBase* item);
+	virtual void				resetQMLItem(JASPControl* item);
 
 	const QString			&	name()					const;
 	bool						isBound()				const;
 	AnalysisForm			*	form()					const;
-	JASPControlBase			*	item()					const	{ return _item; }
+	JASPControl			*	item()					const	{ return _item; }
 	const Set				&	depends()				const	{ return _depends; }
 	void						addControlError(const QString& error);
 	bool						addDependency(JASPControlWrapper* item);
@@ -54,13 +54,13 @@ public:
 	virtual JASPControlWrapper*	getChildControl(QString key, QString name)	{ return nullptr; }
 
 
-	static JASPControlWrapper*	buildJASPControlWrapper(JASPControlBase* control);
+	static JASPControlWrapper*	buildJASPControlWrapper(JASPControl* control);
 
 	virtual QString				friendlyName() const;
 	
 protected:
 	
-	JASPControlBase	*	_item = nullptr;
+	JASPControl	*	_item = nullptr;
 	Set					_depends; //So Joris changed this to a set instead of a vector because that is what it seemed to be, the order isn't important right?
 };
 

@@ -31,7 +31,7 @@ class BoundQMLListViewDraggable : public QMLListViewDraggable, public BoundQMLIt
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewDraggable(JASPControlBase* item);
+	BoundQMLListViewDraggable(JASPControl* item);
 	
 	void						setUp() override;
 	ListModelAssignedInterface* assignedModel();

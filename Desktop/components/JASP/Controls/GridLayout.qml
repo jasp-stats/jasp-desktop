@@ -26,7 +26,6 @@ GridLayout
 	rowSpacing:				jaspTheme.rowGridSpacing
 	columnSpacing:			jaspTheme.columnGridSpacing
 	columns:				2
-	Layout.minimumWidth:	parent.width
 	Layout.alignment:		Qt.AlignTop | Qt.AlignLeft
 	
 	property int count									: children.length

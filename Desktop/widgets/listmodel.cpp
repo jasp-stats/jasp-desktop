@@ -20,7 +20,7 @@
 #include "../analysis/analysisform.h"
 #include "boundqmllistviewterms.h"
 #include "rowcontrols.h"
-#include "../analysis/jaspcontrolbase.h"
+#include "../analysis/jaspcontrol.h"
 #include <QJSEngine>
 #include <boost/bind.hpp>
 #include "log.h"

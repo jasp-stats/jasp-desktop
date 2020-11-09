@@ -22,7 +22,7 @@ import JASP				1.0
 
 JASPControl
 {
-	controlType:				JASPControlBase.Switch
+	controlType:				JASPControl.Switch
 	implicitWidth:				control.indicator.height + (4 * preferencesModel.uiScale)
 	implicitHeight:				control.indicator.width + controlLabel.implicitWidth + control.spacing + (6 * preferencesModel.uiScale)
 	innerControl:				control

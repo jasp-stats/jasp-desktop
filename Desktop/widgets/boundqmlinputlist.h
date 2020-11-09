@@ -29,7 +29,7 @@ class BoundQMLInputList : public QMLListView, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLInputList(JASPControlBase* item);
+	BoundQMLInputList(JASPControl* item);
 
 	ListModel*	model()								const	override { return _inputModel; }
 	Option*		boundTo()									override { return _boundTo; }

@@ -30,7 +30,7 @@
 #include "log.h"
 #include "rowcontrols.h"
 
-BoundQMLListViewTerms::BoundQMLListViewTerms(JASPControlBase* item, bool interaction)
+BoundQMLListViewTerms::BoundQMLListViewTerms(JASPControl* item, bool interaction)
 	: JASPControlWrapper(item)
 	, BoundQMLListViewDraggable(item)
 {

@@ -18,7 +18,7 @@
 
 #include "boundqmltextarea.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrolbase.h"
+#include "../analysis/jaspcontrol.h"
 #include "qmllistviewtermsavailable.h"
 #include "r_functionwhitelist.h"
 #include <QQmlProperty>
@@ -31,7 +31,7 @@
 
 #include "log.h"
 
-BoundQMLTextArea::BoundQMLTextArea(JASPControlBase* item)
+BoundQMLTextArea::BoundQMLTextArea(JASPControl* item)
 	: JASPControlWrapper(item)
 	, QMLListView(item)
 	, BoundQMLItem()
@@ -92,7 +92,7 @@ bool BoundQMLTextArea::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::stringValue;
 }
 
-void BoundQMLTextArea::resetQMLItem(JASPControlBase *item)
+void BoundQMLTextArea::resetQMLItem(JASPControl *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	setItemProperty("text", _text);

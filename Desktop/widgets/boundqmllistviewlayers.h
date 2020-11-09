@@ -28,7 +28,7 @@ class BoundQMLListViewLayers : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewLayers(JASPControlBase* item);
+	BoundQMLListViewLayers(JASPControl* item);
 	
 	ListModel*	model()								const	override { return _layersModel; }
 	Option*		boundTo()									override { return _boundTo; }

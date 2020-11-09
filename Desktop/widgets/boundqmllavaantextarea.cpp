@@ -18,14 +18,14 @@
 
 #include "boundqmllavaantextarea.h"
 #include "analysis/analysisform.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include "gui/preferencesmodel.h"
 #include "log.h"
 
 #include <QQuickTextDocument>
 
 
-BoundQMLLavaanTextArea::BoundQMLLavaanTextArea(JASPControlBase* item)
+BoundQMLLavaanTextArea::BoundQMLLavaanTextArea(JASPControl* item)
 	: JASPControlWrapper(item)
 	, BoundQMLTextArea(item)
 {

@@ -18,11 +18,11 @@
 
 #include "boundqmlcombobox.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrolbase.h"
+#include "../analysis/jaspcontrol.h"
 #include <QAbstractListModel>
 
 
-BoundQMLComboBox::BoundQMLComboBox(JASPControlBase* item)
+BoundQMLComboBox::BoundQMLComboBox(JASPControl* item)
 	: JASPControlWrapper(item)
 	, QMLListView(item)
 	, BoundQMLItem()
@@ -74,7 +74,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 		addControlError(tr("Unknown error in ComboBox %1").arg(name()));
 }
 
-void BoundQMLComboBox::resetQMLItem(JASPControlBase *item)
+void BoundQMLComboBox::resetQMLItem(JASPControl *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	

@@ -148,7 +148,7 @@ void ListModelMultiTermsAssigned::_setTerms()
 }
 
 
-Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, JASPControlBase::AssignType)
+Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, JASPControl::AssignType)
 {
 	beginResetModel();
 	Terms termsToReturn;

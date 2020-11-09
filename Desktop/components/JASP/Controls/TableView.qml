@@ -30,7 +30,7 @@ JASPControl
 {
 	id:					tableView
 
-	controlType:		JASPControlBase.TableView
+	controlType:		JASPControl.TableView
 	focusOnTab:			false
 	implicitWidth:		400
 	implicitHeight:		400

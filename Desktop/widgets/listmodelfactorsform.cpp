@@ -24,7 +24,7 @@
 #include "boundqmllistviewterms.h"
 #include "log.h"
 #include <QQuickItem>
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include "analysis/analysisform.h"
 
 
@@ -187,7 +187,7 @@ void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
 		Log::log()  << "No quick Item found in factorAdded!" << std::endl;
 		return;
 	}
-	JASPControlBase* control = dynamic_cast<JASPControlBase*>(quickItem);
+	JASPControl* control = dynamic_cast<JASPControl*>(quickItem);
 	if (!control)
 	{
 		Log::log() << "Quick item is not a JASP Control in factorAdded!" << std::endl;

@@ -43,7 +43,7 @@
 #include "mainwindow.h"
 
 #include "analysis/analysisform.h"
-#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspcontrol.h"
 #include "analysis/jaspdoublevalidator.h"
 #include "analysis/options/optionvariablesgroups.h"
 
@@ -152,14 +152,14 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	qmlRegisterUncreatableType<JASPControlBase>					("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
+	qmlRegisterUncreatableType<JASPControl>					("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
 	qmlRegisterUncreatableType<MessageForwarder>				("JASP",		1, 0, "MessageForwarder",	"You can't touch this"				);
 
 	qmlRegisterType<DataSetView>								("JASP",		1, 0, "DataSetView"			);
 	qmlRegisterType<JaspTheme>									("JASP",		1, 0, "JaspTheme"			);
 	qmlRegisterType<AnalysisForm>								("JASP",		1, 0, "AnalysisForm"		);
 	qmlRegisterType<RCommander>									("JASP", 		1, 0, "RCommander"			);
-	qmlRegisterType<JASPControlBase>							("JASP",		1, 0, "JASPControlBase"		);
+	qmlRegisterType<JASPControl>							("JASP",		1, 0, "JASPControl"			);
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"	);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"	);
 

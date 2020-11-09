@@ -18,10 +18,10 @@
 
 #include "boundqmlcheckbox.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrolbase.h"
+#include "../analysis/jaspcontrol.h"
 #include "log.h"
 
-BoundQMLCheckBox::BoundQMLCheckBox(JASPControlBase* item)
+BoundQMLCheckBox::BoundQMLCheckBox(JASPControl* item)
 	: JASPControlWrapper(item)
 	, QObject(item)
 	, BoundQMLItem()
@@ -61,7 +61,7 @@ Option *BoundQMLCheckBox::createOption()
 	return new OptionBoolean(_checked);
 }
 
-void BoundQMLCheckBox::resetQMLItem(JASPControlBase *item)
+void BoundQMLCheckBox::resetQMLItem(JASPControl *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	setItemProperty("checked", _checked);

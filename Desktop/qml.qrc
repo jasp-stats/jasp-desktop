@@ -14,7 +14,6 @@
         <file>components/JASP/Controls/GridLayout.qml</file>
         <file>components/JASP/Controls/GroupBox.qml</file>
         <file>components/JASP/Controls/IntegerField.qml</file>
-        <file>components/JASP/Controls/JASPControl.qml</file>
         <file>components/JASP/Controls/Label.qml</file>
         <file>components/JASP/Controls/PercentField.qml</file>
         <file>components/JASP/Controls/CIField.qml</file>

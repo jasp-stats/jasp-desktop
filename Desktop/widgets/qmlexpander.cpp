@@ -18,21 +18,21 @@
 
 #include "qmlexpander.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrolbase.h"
+#include "../analysis/jaspcontrol.h"
 
-QMLExpander::QMLExpander(JASPControlBase *item)
+QMLExpander::QMLExpander(JASPControl *item)
 	: JASPControlWrapper(item)
 	, QObject(item)
 {
 }
 
-JASPControlBase* QMLExpander::_findFirstControl(QObject* obj)
+JASPControl* QMLExpander::_findFirstControl(QObject* obj)
 {
-	JASPControlBase* result = nullptr;
+	JASPControl* result = nullptr;
 
 	for (QObject* child : obj->children())
 	{
-		result = qobject_cast<JASPControlBase*>(child);
+		result = qobject_cast<JASPControl*>(child);
 
 		if (!result)
 			result = _findFirstControl(child);
@@ -58,7 +58,7 @@ void QMLExpander::setUp()
 
 	if (childControlsArea)
 	{
-		JASPControlBase* firstControl = _findFirstControl(childControlsArea);
+		JASPControl* firstControl = _findFirstControl(childControlsArea);
 		if (firstControl)
 			setItemProperty("firstControl", QVariant::fromValue(firstControl));
 	}

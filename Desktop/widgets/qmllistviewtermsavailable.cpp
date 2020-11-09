@@ -21,7 +21,7 @@
 #include "listmodelinteractionavailable.h"
 #include "listmodelassignedinterface.h"
 
-QMLListViewTermsAvailable::QMLListViewTermsAvailable(JASPControlBase* item, bool isInteraction)
+QMLListViewTermsAvailable::QMLListViewTermsAvailable(JASPControl* item, bool isInteraction)
 	: JASPControlWrapper(item)
 	, QMLListViewDraggable(item)
 

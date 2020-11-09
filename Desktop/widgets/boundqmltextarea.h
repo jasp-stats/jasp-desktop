@@ -40,7 +40,7 @@ class BoundQMLTextArea : public QMLListView, public BoundQMLItem
 	enum TextType {Default, Model, Rcode, JAGSmodel, Source};
 	
 public:
-	BoundQMLTextArea(JASPControlBase* item);
+	BoundQMLTextArea(JASPControl* item);
 
 	void		bindTo(Option *option)						override;
 	Option*		createOption()								override;
@@ -50,7 +50,7 @@ public:
 	ListModel*	model()								const	override { return _model; }
 	bool		modelNeedsAllVariables()			const			 { return _modelNeedsAllVariables; }
 
-	void		resetQMLItem(JASPControlBase *item)			override;
+	void		resetQMLItem(JASPControl *item)			override;
 	void		rScriptDoneHandler(const QString &result)	override;
 
 public slots:
