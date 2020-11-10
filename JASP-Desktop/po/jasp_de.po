@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-11-09 18:26+0000\n"
+"PO-Revision-Date: 2020-11-11 08:28+0000\n"
 "Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3.2\n"
+"X-Generator: Weblate 4.4-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -1495,7 +1495,7 @@ msgstr "Kontraste"
 
 msgctxt "Ancova|"
 msgid "Confidence intervals"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "Ancova|"
 msgid "Post Hoc Tests"
@@ -1595,7 +1595,7 @@ msgstr "Vergleiche Randmittelwerte mit 0"
 
 msgctxt "Ancova|"
 msgid "Confidence interval adjustment"
-msgstr "Vertrauensbereich-Anpassung"
+msgstr "Konfidenzintervall-Anpassung"
 
 msgctxt "Ancova|"
 msgid "Descriptive statistics"
@@ -1895,7 +1895,7 @@ msgstr "Kontraste"
 
 msgctxt "Anova|"
 msgid "Confidence intervals"
-msgstr "Vertrauensbereiche"
+msgstr "Konfidenzintervalle"
 
 msgctxt "Anova|"
 msgid "Post Hoc Tests"
@@ -1983,7 +1983,7 @@ msgstr "Fehlerbalken anzeigen"
 
 msgctxt "Anova|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "Anova|"
 msgid "Standard error"
@@ -1999,7 +1999,7 @@ msgstr "Randmittelwerte mit 0 vergleichen"
 
 msgctxt "Anova|"
 msgid "Confidence interval adjustment"
-msgstr "Vertrauensbereich-Anpassung"
+msgstr "Konfidenzintervall-Anpassung"
 
 msgctxt "Anova|"
 msgid "Descriptive statistics"
@@ -2303,7 +2303,7 @@ msgstr "Post-hoc-Tests"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Confidence intervals"
-msgstr "Vertrauensbereiche"
+msgstr "Konfidenzintervalle"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Effect size"
@@ -2367,7 +2367,7 @@ msgstr "Fehlerbalken anzeigen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Standard error"
@@ -2395,7 +2395,7 @@ msgstr "Vergleiche Randmittelwerte mit 0"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Confidence interval adjustment"
-msgstr "Vertrauensbereich-Anpassung"
+msgstr "Konfidenzintervall-Anpassung"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Šidák"
@@ -4145,7 +4145,7 @@ msgstr "Linear"
 
 msgctxt "Descriptives|"
 msgid "Show confidence interval"
-msgstr "Vertrauensbereich anzeigen"
+msgstr "Konfidenzintervall anzeigen"
 
 msgctxt "Descriptives|"
 msgid "Show legend"
@@ -4353,7 +4353,7 @@ msgstr "Fälle paarweise ausschließen"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Confidence Interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Cronbach's α analytical"
@@ -4745,7 +4745,7 @@ msgstr "Weitere Statistiken"
 
 msgctxt "BinomialTest|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "BinomialTest|"
 msgid "Interval"
@@ -4857,7 +4857,7 @@ msgstr "Log-Odds-Ratio (allein 2x2)"
 
 msgctxt "ContingencyTables|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "ContingencyTables|"
 msgid "Vovk-Sellke maximum p-ratio"
@@ -5161,7 +5161,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "MultinomialTest|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "MultinomialTest|"
 msgid "Vovk-Sellke maximum p-ratio"
@@ -5273,7 +5273,7 @@ msgstr "Schätzer"
 
 msgctxt "RegressionLogLinear|"
 msgid "Confidence intervals"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "RegressionLogLinear|"
 msgid "Interval"
@@ -6881,7 +6881,7 @@ msgstr "Schätzer"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Confidence intervals"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Interval"
@@ -7614,7 +7614,7 @@ msgstr "Signifikante Korrelationen markieren"
 
 msgctxt "Correlation|"
 msgid "Confidence intervals"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "Correlation|"
 msgid "Interval"
@@ -7842,7 +7842,7 @@ msgstr "Bootstraps"
 
 msgctxt "RegressionLinear|"
 msgid "Confidence intervals"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "RegressionLinear|"
 msgid "Covariance matrix"
@@ -8322,7 +8322,7 @@ msgstr "Chancenverhältnisse"
 
 msgctxt "RegressionLogistic|"
 msgid "Confidence intervals"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "RegressionLogistic|"
 msgid "Odds ratio scale"
@@ -8402,7 +8402,7 @@ msgstr "Konditional geschätzte Abbildungen anzeigen"
 
 msgctxt "RegressionLogistic|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "RegressionLogistic|"
 msgid "Show data points"
@@ -8466,7 +8466,7 @@ msgstr "Residuale Kovarianzen"
 
 msgctxt "MediationAnalysis|"
 msgid "Confidence intervals"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "MediationAnalysis|"
 msgid "Method"
@@ -9110,7 +9110,7 @@ msgstr "Lageparameter"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Effect Size"
@@ -9210,7 +9210,7 @@ msgstr "Lageparameter"
 
 msgctxt "TTestOneSample|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "TTestOneSample|"
 msgid "Effect Size"
@@ -9282,7 +9282,7 @@ msgstr "Lageparameter"
 
 msgctxt "TTestPairedSamples|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "TTestPairedSamples|"
 msgid "Effect Size"
@@ -11538,7 +11538,7 @@ msgstr "Effektgröße des Standardfehlers"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "95% CI Lower and Upper Bound"
-msgstr "95% Vertrauensbereich Unter- und Obergrenze"
+msgstr "95% Konfidenzintervall Unter- und Obergrenze"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Study Labels"
@@ -11706,7 +11706,7 @@ msgstr "Feste und zufällige Effekte-Posterior hinzufügen"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Shade 95% CI"
-msgstr "95%-Vertrauensbereich schattieren"
+msgstr "95%-Konfidenzintervall schattieren"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Sequential plot"
@@ -11778,7 +11778,7 @@ msgstr "Streuung in Y"
 
 msgctxt "Flexplot|"
 msgid "Plot confidence bands"
-msgstr "Vertrauensbereich anzeigen"
+msgstr "Konfidenzintervall anzeigen"
 
 msgctxt "Flexplot|"
 msgid "Fitted line (scatterplots)"
@@ -16911,7 +16911,7 @@ msgstr "Skala-Statistiken"
 
 msgctxt "ReliabilityFrequentist|"
 msgid "Confidence Interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "ReliabilityFrequentist|"
 msgid "McDonald's ω"
@@ -17385,7 +17385,7 @@ msgstr "Hintergrund-Daten anzeigen"
 
 msgctxt "MixedModelsPlots|"
 msgid "Confidence interval method"
-msgstr "Vertrauensbereich-Methode"
+msgstr "Konfidenzintervall-Methode"
 
 msgctxt "MixedModelsPlots|"
 msgid "Model"
@@ -17409,7 +17409,7 @@ msgstr "Zwischen"
 
 msgctxt "MixedModelsPlots|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "MixedModelsPlots|"
 msgid "Distinguish factor levels"
@@ -17585,7 +17585,7 @@ msgstr "Beta"
 
 msgctxt "MixedModelsBLMM|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "MixedModelsBLMM|"
 msgid "SD factor covariates"
@@ -17617,7 +17617,7 @@ msgstr "Poisson"
 
 msgctxt "MixedModelsGLMM|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "MixedModelsGLMM|"
 msgid "SD factor covariates"
@@ -17633,7 +17633,7 @@ msgstr "Kein"
 
 msgctxt "MixedModelsLMM|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "MixedModelsLMM|"
 msgid "SD factor covariates"
@@ -18465,7 +18465,7 @@ msgstr "Korrelationen & N"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Odds ratios & CI"
-msgstr "Odds Ratio & Vertrauensbereich"
+msgstr "Odds Ratio & Konfidenzintervall"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Models"
@@ -19419,7 +19419,7 @@ msgstr "Std.-Fehler"
 
 msgctxt "LDEstimateParameters|"
 msgid "Confidence interval"
-msgstr "Vertrauensbereich"
+msgstr "Konfidenzintervall"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "[requires a loaded data set]"
