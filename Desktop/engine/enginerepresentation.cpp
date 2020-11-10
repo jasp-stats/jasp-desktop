@@ -458,7 +458,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 	case analysisResultStatus::imageEdited:
 		if (results.get("error", false).asBool())
-			MessageForwarder::showWarning(tr("Error resizing plot"), tr("Unfortunately the plot could not be saved.\n\nError message:\n%1\n\nIf the problem persists, please report the message above at: https://jasp-stats.org/bug-reports").arg(tq(results.get("errorMessage", "").asString())));
+			MessageForwarder::showWarning(tr("Error resizing plot"), tr("Unfortunately the plot could not be edited.\n\nError message:\n%1\n\nIf the problem persists, please report the message above at: https://jasp-stats.org/bug-reports").arg(tq(results.get("errorMessage", "").asString())));
 
 		analysis->imageEdited(results); // if an error occurs js needs to resize the plot back to the old size
 		emit plotEditorRefresh();
