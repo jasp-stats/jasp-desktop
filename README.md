@@ -68,3 +68,5 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
 #### Translation
   - [New translations of JASP](Docs/development/translate.md)
   - [Prepare source files for translation](Docs/development/jasp-translation-rules.md)
+  - [Guideline for translating JASP](Docs/development/jasp-guideline-translators.md)
+
