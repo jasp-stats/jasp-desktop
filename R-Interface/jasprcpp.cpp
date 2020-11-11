@@ -58,7 +58,7 @@ EnDecodeDef						encodeColumnName,
 								encodeAllColumnNames,
 								decodeAllColumnNames;
 
-getStrings						getAllColumnNames;
+getColNames						getAllColumnNames;
 
 static logFlushDef				_logFlushFunction		= nullptr;
 static logWriteDef				_logWriteFunction		= nullptr;
@@ -512,10 +512,11 @@ SEXP jaspRCPP_requestTempRootNameSEXP()
 	return paths;
 }
 
-SEXP jaspRCPP_allColumnNamesDataset()
+SEXP jaspRCPP_allColumnNamesDataset(SEXP encoded)
 {
+	bool			encode	= Rf_isNull(encoded) || !Rf_isLogical(encoded) ? true :  Rcpp::as<bool>(encoded);
 	size_t			cols;
-	const char **	names = getAllColumnNames(cols);
+	const char **	names = getAllColumnNames(cols, encode);
 	
 	Rcpp::StringVector colNames;
 	

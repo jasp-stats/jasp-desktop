@@ -66,7 +66,7 @@ extern "C" {
 	const char *				STDCALL rbridge_decodeColumnName(		const char * in);
 	const char *				STDCALL rbridge_encodeAllColumnNames(	const char * in);
 	const char *				STDCALL rbridge_decodeAllColumnNames(	const char * in);
-	const char **				STDCALL rbridge_allColumnNames(			size_t & numCols);
+	const char **				STDCALL rbridge_allColumnNames(			size_t & numCols,	bool encoded);
 	const char *				STDCALL rbridge_system(					const char * cmd);
 	void						STDCALL rbridge_moduleLibraryFixer(		const char * moduleLibrary);
 }

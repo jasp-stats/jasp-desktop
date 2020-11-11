@@ -477,3 +477,8 @@ ColumnEncoder::colVec ColumnEncoder::columnNames()
 {
 	return _columnEncoder ? _columnEncoder->_originalNames : colVec();
 }
+
+ColumnEncoder::colVec ColumnEncoder::columnNamesEncoded()
+{
+	return _columnEncoder ? _columnEncoder->_encodedNames : colVec();
+}

@@ -36,7 +36,7 @@ SEXP jaspRCPP_requestSpecificFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestTempRootNameSEXP();
 SEXP jaspRCPP_requestStateFileNameSEXP();
-SEXP jaspRCPP_allColumnNamesDataset();
+SEXP jaspRCPP_allColumnNamesDataset(SEXP encoded);
 SEXP jaspRCPP_RunSeparateR(SEXP code);
 
 				//Custom parseEvals to make sure sink is set (to capture output)

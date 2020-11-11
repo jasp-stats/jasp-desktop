@@ -48,6 +48,7 @@ public:
 	static	std::string			removeColumnNamesFromRScript(const std::string & rCode, const std::vector<std::string> & colsToRemove);
 	
 	static	colVec				columnNames();
+	static	colVec				columnNamesEncoded();
 
 			bool				shouldEncode(const std::string & in);
 			bool				shouldDecode(const std::string & in);

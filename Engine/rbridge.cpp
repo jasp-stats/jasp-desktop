@@ -948,16 +948,14 @@ extern "C" void STDCALL rbridge_moduleLibraryFixer(const char * moduleLibrary)
 	_moduleLibraryFixer(moduleLibrary);
 }
 
-extern "C" const char ** STDCALL rbridge_allColumnNames(size_t & numCols)
+extern "C" const char ** STDCALL rbridge_allColumnNames(size_t & numCols, bool encoded)
 {
-	Log::log() << "rbridge_allColumnNames called!"<< std::endl;
-	
 	static std::vector<std::string> cols;
 	static const char **			names = nullptr;
 	
 	if(names)	free(names);
 	
-	cols	= ColumnEncoder::columnNames();
+	cols	= encoded ? ColumnEncoder::columnNamesEncoded() : ColumnEncoder::columnNames();
 	numCols	= cols.size();
 	names	= static_cast<const char **>(malloc(sizeof(char*) * cols.size()));
 	
@@ -966,3 +964,4 @@ extern "C" const char ** STDCALL rbridge_allColumnNames(size_t & numCols)
 	
 	return names;
 }
+
