@@ -46,6 +46,8 @@ public:
 
 	static	std::string			replaceColumnNamesInRScript(const std::string & rCode, const std::map<std::string, std::string> & changedNames);
 	static	std::string			removeColumnNamesFromRScript(const std::string & rCode, const std::vector<std::string> & colsToRemove);
+	
+	static	colVec				columnNames();
 
 			bool				shouldEncode(const std::string & in);
 			bool				shouldDecode(const std::string & in);

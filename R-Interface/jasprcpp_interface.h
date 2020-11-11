@@ -84,6 +84,7 @@ typedef int							(STDCALL *DataSetRowCount)              ();
 typedef const char *				(STDCALL *EnDecodeDef)					(const char *);
 typedef const char *				(STDCALL *systemDef)					(const char *);
 typedef void						(STDCALL *libraryFixerDef)				(const char *);
+typedef const char **				(STDCALL *getStrings)					(size_t &  names);
 
 struct RBridgeCallBacks {
 	ReadDataSetCB					readDataSetCB;
@@ -108,6 +109,7 @@ struct RBridgeCallBacks {
 									decoder,
 									encoderAll,
 									decoderAll;
+	getStrings						columnNames;
 };
 
 typedef void			(*sendFuncDef)			(const char *);

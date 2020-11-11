@@ -18,7 +18,6 @@
 #include "jasprcpp.h"
 #include "jaspResults/src/jaspResults.h"
 #include <fstream>
-#include "columnencoder.h"
 #include "boost/nowide/system.hpp"
 
 static const	std::string NullString			= "null";
@@ -58,6 +57,8 @@ EnDecodeDef						encodeColumnName,
 								decodeColumnName,
 								encodeAllColumnNames,
 								decodeAllColumnNames;
+
+getStrings						getAllColumnNames;
 
 static logFlushDef				_logFlushFunction		= nullptr;
 static logWriteDef				_logWriteFunction		= nullptr;
@@ -102,6 +103,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	decodeAllColumnNames						= callbacks->decoderAll;
 	readFilterDataSetCB							= callbacks->readFilterDataSetCB;
 	readFullDataSetCB							= callbacks->readFullDataSetCB;
+	getAllColumnNames							= callbacks->columnNames;
 	encodeColumnName							= callbacks->encoder;
 	decodeColumnName							= callbacks->decoder;
 	dataSetRowCount								= callbacks->dataSetRowCount;
@@ -128,6 +130,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnName);
 	rInside[".setColumnDataAsScale"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rInside[".readFullDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
+	rInside[".allColumnNamesDataset"]			= Rcpp::InternalFunction(&jaspRCPP_allColumnNamesDataset);
 	rInside[".readDatasetToEndNative"]			= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
 	rInside[".readFilterDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFilterDataSet);
 	rInside[".setColumnDataAsOrdinal"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsOrdinal);
@@ -141,7 +144,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".requestStateFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
 	rInside[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
-
+	
+	
 	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!'); sink();");
 
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
@@ -506,6 +510,19 @@ SEXP jaspRCPP_requestTempRootNameSEXP()
 	Rcpp::List paths;
 	paths["root"] = CSTRING_TO_R_UTF8(root);
 	return paths;
+}
+
+SEXP jaspRCPP_allColumnNamesDataset()
+{
+	size_t			cols;
+	const char **	names = getAllColumnNames(cols);
+	
+	Rcpp::StringVector colNames;
+	
+	for(size_t i=0; i<cols; i++)
+		colNames.push_back(names[i]);
+	
+	return colNames;
 }
 
 

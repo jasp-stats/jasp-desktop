@@ -472,3 +472,8 @@ std::string ColumnEncoder::replaceColumnNamesInRScript(const std::string & rCode
 			tempEncoder._encodedNames
 		);
 }
+
+ColumnEncoder::colVec ColumnEncoder::columnNames()
+{
+	return _columnEncoder ? _columnEncoder->_originalNames : colVec();
+}

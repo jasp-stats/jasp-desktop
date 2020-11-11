@@ -89,7 +89,8 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_encodeColumnName,
 		rbridge_decodeColumnName,
 		rbridge_encodeAllColumnNames,
-		rbridge_decodeAllColumnNames
+		rbridge_decodeAllColumnNames,
+		rbridge_allColumnNames
 	};
 
 	JASPTIMER_START(jaspRCPP_init);
@@ -945,4 +946,23 @@ extern "C" const char *	 STDCALL rbridge_system(const char * cmd)
 extern "C" void STDCALL rbridge_moduleLibraryFixer(const char * moduleLibrary)
 {
 	_moduleLibraryFixer(moduleLibrary);
+}
+
+extern "C" const char ** STDCALL rbridge_allColumnNames(size_t & numCols)
+{
+	Log::log() << "rbridge_allColumnNames called!"<< std::endl;
+	
+	static std::vector<std::string> cols;
+	static const char **			names = nullptr;
+	
+	if(names)	free(names);
+	
+	cols	= ColumnEncoder::columnNames();
+	numCols	= cols.size();
+	names	= static_cast<const char **>(malloc(sizeof(char*) * cols.size()));
+	
+	for(size_t i=0; i<numCols; i++)
+		names[i] = cols[i].c_str();
+	
+	return names;
 }
