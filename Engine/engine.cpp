@@ -500,7 +500,7 @@ void Engine::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & me
 #ifdef JASP_COLUMN_ENCODE_ALL
 	if(meta.isNull())
 		return;
-
+	
 	bool encodePlease = meta.isObject() && meta.isMember("containsColumn") && meta["containsColumn"].asBool();
 
 	switch(options.type())
@@ -508,9 +508,11 @@ void Engine::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & me
 	case Json::arrayValue:
 		if(encodePlease)
 			ColumnEncoder::columnEncoder()->encodeJson(options, false); //If we already think we have columnNames just change it all
-		else
+		else if(meta.type() == Json::arrayValue)
 			for(size_t i=0; i<options.size() && i < meta.size(); i++)
 				_encodeColumnNamesinOptions(options[i], meta[i]);
+		else if(meta.type() == Json::objectValue && meta.get("containsColumn", false).asBool())
+			ColumnEncoder::columnEncoder()->encodeJson(options, false);
 		return;
 
 	case Json::objectValue:
