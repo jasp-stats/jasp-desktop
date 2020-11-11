@@ -491,8 +491,6 @@ void MainWindow::loadQML()
 	//And now we disconnect the exit on fail lambda because we won't be needing it later
 	disconnect(exitOnFailConnection);
 
-	_dynamicModules->initializeInstalledModules(); //Should be done only now because we need the QML rootcontext to load Description.qml
-
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
 	_ribbonModel->loadModules(	
 		{ 	"jaspDescriptives", "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },

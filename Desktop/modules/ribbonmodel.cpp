@@ -19,6 +19,7 @@
 
 #include "ribbonmodel.h"
 #include "utilities/appdirs.h"
+#include "gui/messageforwarder.h"
 #include "log.h"
 
 RibbonModel * RibbonModel::_singleton = nullptr;
@@ -36,18 +37,27 @@ RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
 
 void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
 {
+	DynamicModules::dynMods()->initializeInstalledModules();	
 	DynamicModules::dynMods()->insertCommonModuleNames(std::set<std::string>(commonModulesToLoad.begin(), commonModulesToLoad.end()));
 
 	auto loadModulesFromBundledOrUserData = [&](bool common)
 	{
 		for(const std::string & moduleName : (common ? commonModulesToLoad : extraModulesToLoad))
+		{
 			if(DynamicModules::dynMods()->moduleIsInstalledByUser(moduleName)) //Only load bundled if the user did not install a newer/other version
 				addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[moduleName]);
 			else
 			{
-				std::string moduleLibrary = DynamicModules::bundledModuleLibraryPath(moduleName);
-				DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, common);
+				try {
+					std::string moduleLibrary = DynamicModules::bundledModuleLibraryPath(moduleName);
+					DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, common);
+				} 
+				catch (std::runtime_error & e) 
+				{
+					MessageForwarder::showWarning(tr("Loading bundled module %1 failed").arg(tq(moduleName)), tr("Loading of the bundled module %1 failed with the following error:\n\n%2").arg(tq(moduleName)).arg(tq(e.what())));
+				}
 			}
+		}
 	};
 	
 	loadModulesFromBundledOrUserData(true);
