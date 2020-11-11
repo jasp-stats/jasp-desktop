@@ -37,7 +37,7 @@ public:
 	ListModel*	model()								const	override { return _termsModel; }
 	Option*		boundTo()									override
 	{
-		if (_hasRowComponents || _termsModel->areTermsInteractions())
+		if (hasRowComponent() || _termsModel->areTermsInteractions())
 			return _optionsTable;
 		else
 			return _optionVariables; 

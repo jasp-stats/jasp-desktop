@@ -33,7 +33,6 @@ QMLListView::QMLListView(JASPControl *item)
 	: QObject(item)	  
 {
 	_hasSource = !getItemProperty("source").isNull() || !getItemProperty("values").isNull(); // sourceModels are only known after setup is called, but the method hasSource() is needed before in AnalysisForm
-	_hasRowComponents = item->rowComponentsCount() > 0;
 	_optionKeyName = getItemProperty("optionKey").toString().toStdString();
 }
 
@@ -309,14 +308,14 @@ void QMLListView::setupSources()
 
 void QMLListView::addRowComponentsDefaultOptions(Options *options)
 {
-	if (!_hasRowComponents)
+	if (!hasRowComponent())
 		return;
 
 	if (_defaultRowControls)
 		delete _defaultRowControls;
 
 	// Create a dummy QML control, so that we can create the right kind of options.
-	_defaultRowControls = new RowControls(this->model(), item()->getRowComponents(), QMap<QString, Option*>(), true);
+	_defaultRowControls = new RowControls(this->model(), item()->rowComponent(), QMap<QString, Option*>(), true);
 	_defaultRowControls->init(0, Term(_defaultKey), true);
 
 	const QMap<QString, JASPControlWrapper*>& map = _defaultRowControls->getJASPControlsMap();
@@ -351,7 +350,7 @@ void QMLListView::setUp()
 	if (!listModel)
 		return;
 
-	listModel->setRowComponents(item()->getRowComponents());
+	listModel->setRowComponent(item()->rowComponent());
 	setupSources();
 
 	QVariant sourceVar = getItemProperty("source");
@@ -458,6 +457,11 @@ bool QMLListView::addRowControl(const QString &key, JASPControlWrapper *control)
 		success = model()->addRowControl(key, control);
 
 	return success;
+}
+
+bool QMLListView::hasRowComponent() const
+{
+	return item()->rowComponent() != nullptr;
 }
 
 JASPControlWrapper *QMLListView::getChildControl(QString key, QString name)

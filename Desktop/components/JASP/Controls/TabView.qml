@@ -241,7 +241,21 @@ JASPControl
 		Repeater
 		{
 			model			: tabView.model
-			delegate		: RowComponents { controls : model.rowComponents }
+			FocusScope
+			{
+				id:	tabViewWrapper
+				property var rowComponentItem: model.rowComponent
+
+				width	: rowComponentItem ? rowComponentItem.width : 0
+				height	: rowComponentItem ? rowComponentItem.height : 0
+
+				Component.onCompleted:
+				{
+					rowComponentItem.parent = tabViewWrapper
+					rowComponentItem.z = 10
+					itemStack.height = rowComponentItem.height
+				}
+			}
 		}
 	}
 }

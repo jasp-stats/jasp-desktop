@@ -26,10 +26,10 @@
 #include <QQmlContext>
 
 RowControls::RowControls(ListModel* parent
-						 , QList<QQmlComponent *>& components
+						 , QQmlComponent* component
 						 , const QMap<QString, Option*>& rowOptions
 						 , bool isDummy)
- : QObject(parent), _parentModel(parent), _rowComponents(components), _rowOptions(rowOptions), _isDummy(isDummy)
+ : QObject(parent), _parentModel(parent), _rowComponent(component), _rowOptions(rowOptions), _isDummy(isDummy)
 {
 }
 
@@ -38,51 +38,38 @@ RowControls::RowControls(ListModel* parent
 void RowControls::init(int row, const Term& key, bool isNew)
 {
 	QMLListView* listView = _parentModel->listView();
-	int col = 0;
-	for (QQmlComponent* comp : _rowComponents)
+
+	QQmlContext* context = new QQmlContext(qmlContext(listView->item()), listView->item());
+	if (_isDummy)
+		context->setContextProperty("noDirectSetup", true);
+	context->setContextProperty("hasContextForm", true);
+	context->setContextProperty("form", listView->form());
+	context->setContextProperty("listView", listView);
+	context->setContextProperty("isNew", isNew);
+	context->setContextProperty("rowIndex",	row);
+	context->setContextProperty("rowValue", key.asQString());
+
+	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context));
+
+	if (_rowObject)
 	{
-		QQmlContext* context = new QQmlContext(qmlContext(listView->item()), listView->item());
-		if (_isDummy)
-			context->setContextProperty("noDirectSetup", true);
-		context->setContextProperty("hasContextForm", true);
-		context->setContextProperty("form", listView->form());
-		context->setContextProperty("listView", listView);
-		context->setContextProperty("colIndex", col);
-		context->setContextProperty("isNew", isNew);
-		context->setContextProperty("fromRowComponents", _rowControlsVarMap);
-		context->setContextProperty("rowIndex",	row);
-		context->setContextProperty("rowValue", key.asQString());
-		context->setContextProperty("rowValueIsInteraction", key.components().size() > 1);
+		_context = context;
 
-		QVariantMap prop;
-		if (_isDummy)	prop["visible"] = false;
-		QQuickItem* obj = qobject_cast<QQuickItem*>(comp->createWithInitialProperties(prop, context));
-
-		if (obj)
-		{
-			_contextMap[obj] = context;
-			_rowObjects.push_back(QVariant::fromValue(obj));
-
-			if (_isDummy) // A dummy will never be used in QML, and does not get a parent, but a parent is needed to destroy it
-				obj->setParent(this);
-		}
-		else
-			Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
-
-		col++;
+		if (_isDummy) // A dummy will never be used in QML, and does not get a parent, but a parent is needed to destroy it
+			_rowObject->setParent(this);
 	}
+	else
+		Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
+
 }
 
 void RowControls::setContext(int row, const QString &key)
 {
-	for (auto & itemContext : _contextMap)
-	{
-		// Cannot use qmlContext(item) : setContextProperty would generate: 'Cannot set property on internal context.' error
-		itemContext.second->setContextProperty("rowIndex",	row);
-		itemContext.second->setContextProperty("rowValue", key);
-		itemContext.second->setContextProperty("isNew", false);
-		itemContext.first->setParentItem(nullptr);
-	}
+	// Cannot use qmlContext(item) : setContextProperty would generate: 'Cannot set property on internal context.' error
+	_context->setContextProperty("rowIndex",	row);
+	_context->setContextProperty("rowValue", key);
+	_context->setContextProperty("isNew", false);
+	_rowObject->setParentItem(nullptr);
 }
 
 bool RowControls::addJASPControl(JASPControlWrapper *control)

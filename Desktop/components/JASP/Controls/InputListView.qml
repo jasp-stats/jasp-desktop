@@ -28,12 +28,12 @@ JASPGridViewControl
 	itemComponent:				itemInputComponent
 
 				property var	inputComponent		: textField
-				property bool	enableRowComponents	: true
-				property var	defaultValues	: []
-				property int	minRows	: 0
-				property bool	addVirtual		: true
-				property string placeHolder		: qsTr("New Value")
-	readonly	property string deleteIcon		: "cross.png"
+				property bool	enableRowComponent	: true
+				property var	defaultValues		: []
+				property int	minRows				: 0
+				property bool	addVirtual			: true
+				property string placeHolder			: qsTr("New Value")
+	readonly	property string deleteIcon			: "cross.png"
 
 	signal itemChanged(int index, var name);
 	signal itemRemoved(int index);
@@ -50,7 +50,19 @@ JASPGridViewControl
 
 			property bool	isDeletable:		model.type.includes("deletable")
 			property bool	isVirtual:			model.type.includes("virtual")
-			property var	extraColumnsModel:	model.extraColumns
+			property var	rowComponentItem:	model.rowComponent
+
+			Component.onCompleted:
+			{
+				if (rowComponentItem)
+				{
+					rowComponentItem.parent					= itemWrapper
+					rowComponentItem.anchors.verticalCenter	= itemWrapper.verticalCenter
+					rowComponentItem.anchors.right			= itemWrapper.right
+					rowComponentItem.anchors.rightMargin	= deleteIconID.width
+					rowComponentItem.enabled				= !itemWrapper.isVirtual && inputListView.enableRowComponent
+				}
+			}
 
 			Loader
 			{
@@ -64,20 +76,9 @@ JASPGridViewControl
 				onLoaded:
 				{
 					if (item.hasOwnProperty("fieldWidth"))
-						item.fieldWidth = Qt.binding( function() { return itemWrapper.width - rowComponentsItem.width - deleteIconID.width; })
+						item.fieldWidth = Qt.binding( function() { return itemWrapper.width - (rowComponentItem ? rowComponentItem.width : 0) - deleteIconID.width; })
 					item.focus = true;
 				}
-			}
-
-			RowComponents
-			{
-				id						: rowComponentsItem
-				anchors.verticalCenter	: parent.verticalCenter
-				anchors.right			: parent.right
-				anchors.rightMargin		: deleteIconID.width
-				spacing					: inputListView.rowComponentsSpacing
-				controls				: model.rowComponents
-				enabled					: !itemWrapper.isVirtual && inputListView.enableRowComponents
 			}
 
 			Image
@@ -105,8 +106,8 @@ JASPGridViewControl
 		id: textField
 		TextField
 		{
-			value:							isVirtual ? "" : modelValue.name
-			placeholderText:				isVirtual ? modelValue.name : ""
+			value:							(!isVirtual && modelValue) ? modelValue.name : ""
+			placeholderText:				(isVirtual && modelValue) ? modelValue.name : ""
 			useExternalBorder:				false
 			showBorder:						false
 			selectValueOnFocus:				true

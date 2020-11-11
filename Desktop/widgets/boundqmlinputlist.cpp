@@ -59,7 +59,7 @@ void BoundQMLInputList::bindTo(Option *option)
 	QMap<QString, QMap<QString, Option*> > allOptionsMap;
 	for (const Options* options : allOptions)
 	{
-		if (_hasRowComponents)
+		if (hasRowComponent())
 		{
 			OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_optionKeyName));
 			if (variableOption)
@@ -93,7 +93,7 @@ Option* BoundQMLInputList::createOption()
 	OptionsTable* optionsTable = nullptr;
 	Options* templote = new Options();
 
-	if (_hasRowComponents)
+	if (hasRowComponent())
 	{
 		templote->add(_optionKeyName, new OptionVariable());
 		addRowComponentsDefaultOptions(templote);
@@ -107,7 +107,7 @@ Option* BoundQMLInputList::createOption()
 	{
 		std::vector<Options*> allOptions;
 
-		if (!_hasRowComponents)
+		if (!hasRowComponent())
 		{
 			Options* options = new Options();
 			OptionVariables* optionVars = new OptionVariables();

@@ -419,6 +419,7 @@ JASPGridViewControl
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool draggable:			variablesList.draggable && model.selectable
 				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
+				property var extraItem:				model.rowComponent
 
 				enabled: variablesList.listViewType != JASP.AvailableVariables || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
 				
@@ -450,6 +451,17 @@ JASPGridViewControl
 				QTCONTROLS.ToolTip.delay: 300
 				QTCONTROLS.ToolTip.text: model.name
 				
+				Component.onCompleted:
+				{
+					if (extraItem)
+					{
+						extraItem.parent = itemRectangle;
+						extraItem.anchors.verticalCenter = itemRectangle.verticalCenter;
+						extraItem.anchors.right = itemRectangle.right;
+						extraItem.anchors.rightMargin = 3 * preferencesModel.uiScale;
+					}
+				}
+
 				Image
 				{
 					id:						icon
@@ -469,22 +481,12 @@ JASPGridViewControl
 					anchors.left:			variablesList.showVariableTypeIcon ? icon.right : itemRectangle.left
 					anchors.leftMargin:		jaspTheme.generalAnchorMargin
 					text:					model.name
-					width:					itemRectangle.width - x - rowComponents.width
+					width:					itemRectangle.width - x - (itemRectangle.extraItem ? itemRectangle.extraItem.width : 0)
 					elide:					Text.ElideRight
 					anchors.verticalCenter:	parent.verticalCenter
 					horizontalAlignment:	itemRectangle.isLayer ? Text.AlignHCenter : undefined
 					color:					!enabled ? jaspTheme.textDisabled : itemRectangle.isVirtual ? jaspTheme.grayLighter : (itemRectangle.color === jaspTheme.itemSelectedColor ? jaspTheme.white : jaspTheme.black)
 					font:					jaspTheme.font
-				}
-				
-				RowComponents
-				{
-					id						: rowComponents
-					controls				: model.rowComponents
-					anchors.verticalCenter	: parent.verticalCenter
-					anchors.right			: parent.right
-					anchors.rightMargin		: 3 * preferencesModel.uiScale
-					spacing					: variablesList.rowComponentsSpacing
 				}
 				
 				states: [

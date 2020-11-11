@@ -45,7 +45,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 		roles[SelectableRole]		= "selectable";
 		roles[ColumnTypeRole]		= "columnType";
 		roles[NameRole]				= "name";
-		roles[RowComponentsRole]	= "rowComponents";
+		roles[RowComponentRole]		= "rowComponent";
 		roles[ValueRole]			= "value";
 
 		setMe = false;
@@ -158,9 +158,9 @@ ListModel *ListModel::getSourceModelOfTerm(const Term &term)
 	return result;
 }
 
-void ListModel::setRowComponents(QList<QQmlComponent *> &rowComponents)
+void ListModel::setRowComponent(QQmlComponent* rowComponent)
 {
-	_rowComponents = rowComponents;
+	_rowComponent = rowComponent;
 }
 
 void ListModel::endResetModel()
@@ -171,7 +171,7 @@ void ListModel::endResetModel()
 
 void ListModel::setUpRowControls()
 {
-	if (_rowComponents.empty())
+	if (_rowComponent == nullptr)
 		return;
 
 	int row = 0;
@@ -181,7 +181,7 @@ void ListModel::setUpRowControls()
 		if (!_rowControlsMap.contains(key))
 		{
 			bool hasOptions = _rowControlsOptions.contains(key);
-			RowControls* rowControls = new RowControls(this, _rowComponents, _rowControlsOptions[key]);
+			RowControls* rowControls = new RowControls(this, _rowComponent, _rowControlsOptions[key]);
 			_rowControlsMap[key] = rowControls;
 			rowControls->init(row, term, !hasOptions);
 		}
@@ -398,10 +398,10 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 		else
 			return false;
 	}
-	if (role == ListModel::RowComponentsRole)
+	if (role == ListModel::RowComponentRole)
 	{
 		if (_rowControlsMap.size() > 0)
-			return QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getObjects());
+			return QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getRowObject());
 		else
 			return QVariant();
 	}

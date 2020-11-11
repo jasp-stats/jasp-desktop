@@ -99,6 +99,7 @@ public:
 
 			JASPControlWrapper*	getRowControl(const QString& key, const QString& name)		const;
 			bool				addRowControl(const QString& key, JASPControlWrapper* control);
+			bool				hasRowComponent()			const;
 
 			JASPControlWrapper*	getChildControl(QString key, QString name) override;
 
@@ -117,7 +118,6 @@ protected:
 	bool				_hasSource				= false;
 	bool				_needsSourceModels		= false;
 	int					_variableTypesAllowed;
-	bool				_hasRowComponents		= false;
 	std::string			_optionKeyName;
 	RowControls*		_defaultRowControls		= nullptr;
 

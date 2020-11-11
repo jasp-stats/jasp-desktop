@@ -53,7 +53,7 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 		_optionVariablesGroups = dynamic_cast<OptionVariablesGroups *>(option);
 		_termsModel->initTerms(_optionVariablesGroups->value());
 	}
-	else if (_hasRowComponents || _termsModel->areTermsInteractions())
+	else if (hasRowComponent() || _termsModel->areTermsInteractions())
 	{
 		_optionsTable = dynamic_cast<OptionsTable *>(option);
 		if (!_optionsTable)
@@ -135,7 +135,7 @@ Option* BoundQMLListViewTerms::createOption()
 	Option* result = nullptr;
 	if (_columns > 1)
 		result = new OptionVariablesGroups();
-	else if (_hasRowComponents || _termsModel->areTermsInteractions())
+	else if (hasRowComponent() || _termsModel->areTermsInteractions())
 	{
 		Options* templote = new Options();
 		if (_tempOptionKey.empty())
@@ -150,7 +150,7 @@ Option* BoundQMLListViewTerms::createOption()
 		else
 			templote->add(_tempOptionKey, new OptionVariable());
 		
-		if (_hasRowComponents)
+		if (hasRowComponent())
 			addRowComponentsDefaultOptions(templote);
 		
 		result = new OptionsTable(templote);
@@ -164,7 +164,7 @@ Option* BoundQMLListViewTerms::createOption()
 bool BoundQMLListViewTerms::isOptionValid(Option *option)
 {
 	if (_columns > 1)							return dynamic_cast<OptionVariablesGroups*>(option) != nullptr;
-	else if (_hasRowComponents ||
+	else if (hasRowComponents() ||
 		 _termsModel->areTermsInteractions())	return dynamic_cast<OptionsTable*>(option)			!= nullptr;
 	else if (_maxRows == 1)						return dynamic_cast<OptionVariable*>(option)		!= nullptr;
 	else										return dynamic_cast<OptionVariables*>(option)		!= nullptr;
@@ -175,7 +175,7 @@ bool BoundQMLListViewTerms::isJsonValid(const Json::Value &optionValue)
 	bool valid = true;
 	if (_columns > 1)
 		valid = optionValue.type() == Json::arrayValue;
-	else if (_hasRowComponents || _termsModel->areTermsInteractions())
+	else if (hasRowComponent() || _termsModel->areTermsInteractions())
 	{
 		valid = optionValue.type() == Json::arrayValue;
 		if (valid)

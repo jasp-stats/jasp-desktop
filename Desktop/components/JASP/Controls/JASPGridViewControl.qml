@@ -51,9 +51,7 @@ JASPControl
 	property alias	scrollBar			: scrollBar
 	property alias	listTitle			: itemTitle		// Backward compatibility
 	property alias	itemTitle			: itemTitle
-	property alias	rowComponentsTitles	: itemTitles.model
-	property alias	rowComponentsLabels	: itemTitles.model
-	property int	rowComponentsSpacing : 1
+	property string	rowComponentTitle	: ""
 
 	property var	itemComponent
 
@@ -68,17 +66,14 @@ JASPControl
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}
 
-	Row
+	Text
 	{
-		width			: parent.width
-		anchors.top		: jaspGridViewControl.top;
-		spacing			: 5
-		layoutDirection	: Qt.RightToLeft
-		Repeater
-		{
-			id	: itemTitles;
-			Label { text : modelData }
-		}
+		anchors.top		: parent.top
+		anchors.right	: parent.right
+		text			: rowComponentTitle
+		height			: rowComponentTitle ? jaspTheme.listTitle : 0
+		font			: jaspTheme.font
+		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}
 
 	Rectangle

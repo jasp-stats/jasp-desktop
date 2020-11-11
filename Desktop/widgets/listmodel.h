@@ -45,7 +45,7 @@ public:
 		SelectedRole,
 		SelectableRole,
 		ColumnTypeRole,
-		RowComponentsRole,
+		RowComponentRole,
 		ValueRole
     };
 	typedef QMap<QString, QMap<QString, Option*> > RowControlsOptions;
@@ -74,7 +74,7 @@ public:
 			Terms					getSourceTerms();
 			ListModel*				getSourceModelOfTerm(const Term& term);
 
-			void					setRowComponents(QList<QQmlComponent*> &rowComponents);
+			void					setRowComponent(QQmlComponent* rowComponents);
 	virtual void					setUpRowControls();
 	const rowControlMap	&			getRowControls() const { return _rowControlsMap; }
 	virtual JASPControlWrapper*		getRowControl(const QString& key, const QString& name)			const;
@@ -115,7 +115,7 @@ protected:
 	bool							_areTermsVariables;
 	bool							_areTermsInteractions = false;
 	QMap<QString, RowControls* >	_rowControlsMap;
-	QList<QQmlComponent *>			_rowComponents;
+	QQmlComponent *					_rowComponent = nullptr;
 	RowControlsOptions				_rowControlsOptions;
 	QList<BoundQMLItem *>			_rowControlsConnected;
 

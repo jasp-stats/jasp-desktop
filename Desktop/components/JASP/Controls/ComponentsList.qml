@@ -68,18 +68,20 @@ JASPGridControl
 		FocusScope
 		{
 			id		: itemWrapper
-			height	: rowComponentsItem.height
+			height	: rowComponentItem ? rowComponentItem.height : 0
 			width	: componentsList.itemGrid.width
 
-			property bool isDeletable: addItemManually && (!model.type || model.type.includes("deletable"))
+			property var	rowComponentItem	: model.rowComponent
+			property bool	isDeletable			: addItemManually && (!model.type || model.type.includes("deletable"))
 
-			RowComponents
+			Component.onCompleted:
 			{
-				id						: rowComponentsItem
-				anchors.verticalCenter	: parent.verticalCenter
-				anchors.left			: parent.left
-				spacing					: componentsList.columnSpacing
-				controls				: model.rowComponents
+				if (rowComponentItem)
+				{
+					rowComponentItem.parent = itemWrapper;
+					rowComponentItem.anchors.left = itemWrapper.left
+					rowComponentItem.anchors.verticalCenter = itemWrapper.verticalCenter
+				}
 			}
 
 			Image

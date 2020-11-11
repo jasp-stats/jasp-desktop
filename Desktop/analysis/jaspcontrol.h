@@ -39,7 +39,6 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( QQuickItem						*	background			READ background				WRITE setBackground			NOTIFY backgroundChanged			)
 	Q_PROPERTY( QQuickItem						*	focusIndicator		READ focusIndicator			WRITE setFocusIndicator		NOTIFY focusIndicatorChanged		)
 	Q_PROPERTY( QQmlComponent					*	rowComponent		READ rowComponent			WRITE setRowComponent		NOTIFY rowComponentChanged			)
-	Q_PROPERTY( QQmlListProperty<QQmlComponent>		rowComponents		READ rowComponents)
 	Q_PROPERTY( QStringList							dependencyMustContain READ dependencyMustContain WRITE setDependencyMustContain NOTIFY dependencyMustContainChanged )
 	Q_PROPERTY( int									preferredHeight		READ preferredHeight		WRITE setPreferredHeight	NOTIFY preferredHeightChanged		)
 	Q_PROPERTY( int									preferredWidth		READ preferredWidth			WRITE setPreferredWidth		NOTIFY preferredWidthChanged		)
@@ -124,17 +123,10 @@ public:
 
 
 	JASPControlWrapper				*	getWrapper()				const { return _wrapper; }
-	QQmlComponent					*	rowComponent()				const { return _rowComponents.length() > 0 ? _rowComponents.at(0) : nullptr;	}
-	QQmlComponent					*	rowComponent(int)			const;
-	QQmlListProperty<QQmlComponent>		rowComponents();
-	int									rowComponentsCount()		const;
-	void								setRowComponent(	QQmlComponent * newRowComponent);
-	void								appendRowComponent(	QQmlComponent * newRowComponent);
-	void								clearRowComponents();
-	QList<QQmlComponent*>			&	getRowComponents()				{ return _rowComponents; }
+	QQmlComponent					*	rowComponent()				const { return _rowComponent;	}
 
 	static QString					ControlTypeToFriendlyString(ControlType controlType);
-	static QList<JASPControl*>	getChildJASPControls(const QQuickItem* item);
+	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item);
 
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }
@@ -170,6 +162,7 @@ public slots:
 	GENERIC_SET_FUNCTION(ShouldShowFocus	, _shouldShowFocus		, shouldShowFocusChanged	, bool			)
 	GENERIC_SET_FUNCTION(ShouldStealHover	, _shouldStealHover		, shouldStealHoverChanged	, bool			)
 	GENERIC_SET_FUNCTION(Background			, _background			, backgroundChanged			, QQuickItem*	)
+	GENERIC_SET_FUNCTION(RowComponent		, _rowComponent			, rowComponentChanged		, QQmlComponent*)
 	GENERIC_SET_FUNCTION(DependencyMustContain, _dependencyMustContain, dependencyMustContainChanged, QStringList)
 
 private slots:
@@ -250,7 +243,7 @@ protected:
 						*	_innerControl			= nullptr,
 						*	_background				= nullptr,
 						*	_focusIndicator			= nullptr;
-	QList<QQmlComponent*>	_rowComponents;
+	QQmlComponent		*	_rowComponent			= nullptr;
 
 	QColor					_defaultBorderColor;
 	float					_defaultBorderWidth		= 0;
