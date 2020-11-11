@@ -74,21 +74,6 @@ void BoundQMLComboBox::bindTo(Option *option)
 		addControlError(tr("Unknown error in ComboBox %1").arg(name()));
 }
 
-void BoundQMLComboBox::resetQMLItem(JASPControl *item)
-{
-	BoundQMLItem::resetQMLItem(item);
-	
-	setItemProperty("model", QVariant::fromValue(_model));
-	setItemProperty("currentIndex", _currentIndex);
-	setItemProperty("currentText", _currentText);
-	setItemProperty("currentValue",	tq(_boundTo->value()));
-	setItemProperty("currentColumnType", _currentColumnType);
-	_resetItemWidth();
-
-	if (_item)
-		QQuickItem::connect(_item, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
-}
-
 Option *BoundQMLComboBox::createOption()
 {
 	std::vector<std::string> options = _model->getValues();

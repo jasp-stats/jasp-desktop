@@ -35,7 +35,6 @@ public:
 	Option* boundTo()										override { return _boundTo; }
 	bool	isOptionValid(Option* option)					override;
 	bool	isJsonValid(const Json::Value& optionValue)		override;
-	void	resetQMLItem(JASPControl *item)				override;
 	
 	void setQMLItemChecked(bool checked);
 

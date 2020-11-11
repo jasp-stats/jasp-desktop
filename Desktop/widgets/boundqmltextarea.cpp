@@ -92,15 +92,6 @@ bool BoundQMLTextArea::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::stringValue;
 }
 
-void BoundQMLTextArea::resetQMLItem(JASPControl *item)
-{
-	BoundQMLItem::resetQMLItem(item);
-	setItemProperty("text", _text);
-
-	if (_item)
-		QQuickItem::connect(item, SIGNAL(applyRequest()), this, SLOT(checkSyntax()));
-}
-
 void BoundQMLTextArea::checkSyntax()
 {
 	_text = getItemProperty("text").toString();

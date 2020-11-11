@@ -37,12 +37,11 @@ public:
 
 	virtual void				setUp() {}
 	virtual void				cleanUp();
-	virtual void				resetQMLItem(JASPControl* item);
 
 	const QString			&	name()					const;
 	bool						isBound()				const;
 	AnalysisForm			*	form()					const;
-	JASPControl			*	item()					const	{ return _item; }
+	JASPControl				*	item()					const	{ return _item; }
 	const Set				&	depends()				const	{ return _depends; }
 	void						addControlError(const QString& error);
 	bool						addDependency(JASPControlWrapper* item);

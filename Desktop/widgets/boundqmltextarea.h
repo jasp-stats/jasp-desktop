@@ -50,7 +50,6 @@ public:
 	ListModel*	model()								const	override { return _model; }
 	bool		modelNeedsAllVariables()			const			 { return _modelNeedsAllVariables; }
 
-	void		resetQMLItem(JASPControl *item)			override;
 	void		rScriptDoneHandler(const QString &result)	override;
 
 public slots:

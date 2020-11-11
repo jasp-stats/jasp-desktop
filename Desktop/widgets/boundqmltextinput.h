@@ -47,7 +47,6 @@ public:
 	bool		isJsonValid(const Json::Value& optionValue) override;
 	Option*		boundTo()									override { return _option; }
 	void		setUp()										override;
-	void		resetQMLItem(JASPControl *item)				override;
 	void		rScriptDoneHandler(const QString& result)	override;
 
 	TextInputType	inputType()	{ return _inputType; }

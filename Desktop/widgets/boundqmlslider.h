@@ -12,7 +12,6 @@ class BoundQMLSlider : public QObject, public BoundQMLItem
 public:
 	BoundQMLSlider(JASPControl* item);
 	void	bindTo(Option *option)						override;
-	void	resetQMLItem(JASPControl *item)			override;
 	Option* createOption()								override;
 	bool	isOptionValid(Option* option)				override;
 	bool	isJsonValid(const Json::Value& optionValue) override;

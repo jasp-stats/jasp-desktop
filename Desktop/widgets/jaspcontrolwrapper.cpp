@@ -108,11 +108,6 @@ void JASPControlWrapper::cleanUp()
 		_item->disconnect();
 }
 
-void JASPControlWrapper::resetQMLItem(JASPControl *item)
-{
-	_item = item;
-}
-
 const QString& JASPControlWrapper::name() const
 {
 	return _item->name();

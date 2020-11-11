@@ -45,19 +45,6 @@ void BoundQMLSlider::bindTo(Option *option)
 		Log::log()  << "Option is not an OptionNumber in BoundQMLSlider" << std::endl;
 }
 
-
-void BoundQMLSlider::resetQMLItem(JASPControl *item)
-{
-	BoundQMLItem::resetQMLItem(item);
-	setItemProperty("value", _number);
-	
-	if (_item)
-	{
-		QQuickItem::connect(_item, SIGNAL(moved()), this, SLOT(sliderMovedSlot()));
-		QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
-	}
-}
-
 Option *BoundQMLSlider::createOption()
 {
 	_number = _item->property("value").toDouble();	

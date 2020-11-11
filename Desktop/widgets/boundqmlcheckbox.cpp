@@ -61,14 +61,6 @@ Option *BoundQMLCheckBox::createOption()
 	return new OptionBoolean(_checked);
 }
 
-void BoundQMLCheckBox::resetQMLItem(JASPControl *item)
-{
-	BoundQMLItem::resetQMLItem(item);
-	setItemProperty("checked", _checked);
-	if (_item)
-		QQuickItem::connect(_item, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
-}
-
 void BoundQMLCheckBox::setQMLItemChecked(bool checked)
 {
 	_checked = checked;

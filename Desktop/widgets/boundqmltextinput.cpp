@@ -304,15 +304,6 @@ void BoundQMLTextInput::resetValue()
 	setItemProperty("value", _value);
 }
 
-void BoundQMLTextInput::resetQMLItem(JASPControl *item)
-{
-	BoundQMLItem::resetQMLItem(item);
-
-	setItemProperty("value", _value);
-	if (_item)
-		QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
-}
-
 void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 {
 	QStringList results;
