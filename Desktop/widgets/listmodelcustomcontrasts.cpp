@@ -210,7 +210,7 @@ void ListModelCustomContrasts::_resetValuesEtc()
 	_rowNames.clear();
 	_rowCount = _values.length() > 0 ? size_t(_values[0].length()) : 0;
 
-	for (size_t rowNb = 1; rowNb <= _rowCount; rowNb++)
+	for (size_t rowNb = 0; rowNb < _rowCount; rowNb++)
 		_rowNames.push_back(getDefaultRowName(rowNb));
 
 	for (size_t colNb = 0; colNb < _columnCount; colNb++)
