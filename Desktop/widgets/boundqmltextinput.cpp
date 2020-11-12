@@ -160,11 +160,10 @@ void BoundQMLTextInput::bindTo(Option *option)
 
 
 	case TextInputType::DoubleArrayInputType:
-		_doubleArray = dynamic_cast<OptionDoubleArray *>(option);
-		if (!_doubleArray)
-			_doubleArray = new OptionDoubleArray();
-		_option = _doubleArray;
-		_value = _getDoubleArrayValue();
+							_doubleArray	= dynamic_cast<OptionDoubleArray *>(option);
+		if (!_doubleArray)	_doubleArray	= new OptionDoubleArray();
+							_option			= _doubleArray;
+							_value			= _getDoubleArrayValue();
 		break;
 
 
@@ -175,23 +174,20 @@ void BoundQMLTextInput::bindTo(Option *option)
 		break;
 	case TextInputType::FormulaType:
 	case TextInputType::FormulaArrayType:
-		_formula = dynamic_cast<OptionString *>(option);
-		if (!_formula)
-			_formula = new OptionString();
-		_option = _formula;
-		_value = QString::fromStdString(_formula ? _formula->value() : "");
-		if (_inputType == TextInputType::FormulaType)
-			runRScript("as.character(" + _value + ")", true);
-		else
-			runRScript("paste(as.array(" + _value + "), collapse=\"|\")", true);
+						_formula	= dynamic_cast<OptionString *>(option);
+		if (!_formula){	_formula	= new OptionString();	_formula->setIsRCode(true); }
+						_option		= _formula;
+						_value		= QString::fromStdString(_formula ? _formula->value() : "");
+						
+		if (_inputType == TextInputType::FormulaType)	runRScript("as.character("   + _value + ")",					true);
+		else											runRScript("paste(as.array(" + _value + "), collapse=\"|\")",	true);
 		break;
 
 	default:
-		_string = dynamic_cast<OptionString *>(option);
-		if (!_string)
-			_string = new OptionString();
-		_option = _string;
-		_value  = QString::fromStdString(_string->value());
+						_string = dynamic_cast<OptionString *>(option);
+		if (!_string)	_string = new OptionString();
+						_option = _string;
+						_value  = QString::fromStdString(_string->value());
 		break;
 	}
 
@@ -224,10 +220,17 @@ Option *BoundQMLTextInput::createOption()
 		option->requestColumnCreation.connect(boost::bind( &Option::notifyRequestColumnCreation, form()->options(), _1, _2));
 		break;
 	}
+		
 	case TextInputType::StringInputType:
+	default:									
+		option = new OptionString();
+		break;
+		
 	case TextInputType::FormulaType:
 	case TextInputType::FormulaArrayType:
-	default:									option = new OptionString();			break;
+		option = new OptionString();
+		option->setIsRCode(true);
+		break;
 	}
 
 	_value = getItemProperty("value").toString();
@@ -468,8 +471,8 @@ void BoundQMLTextInput::textChangedSlot()
 {
 	if (!isBound() && _inputType != TextInputType::FormulaType && _inputType != TextInputType::FormulaArrayType)
 		// In a TabView, if the name of the tab is edited and, before validating, a new tab is added, the model is first changed because of adding a tab,
-		// making possibly the QML item of the TextField invalid (as this TextField depends on the TabView model).
-		// But as this TextField is anyway not bound (_option is null), and is not a Formula, we don't need anyway to fetch the value of the item.
+		// possibly making the QML item of the TextField invalid (as this TextField depends on the TabView model).
+		// But as this TextField is not bound (_option is null), and is not a Formula, we don't need to fetch the value of the item anyway.
 		return;
 
 	_value = getItemProperty("value").toString();

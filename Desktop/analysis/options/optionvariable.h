@@ -26,11 +26,10 @@
 class OptionVariable : public OptionVariables
 {
 public:
-	OptionVariable() : OptionVariables(true, false) {	}
+	OptionVariable() : OptionVariables(true, false) { setContainsColumn(true);	}
 
 	void					set(const Json::Value& value)			override;
 	Json::Value				asJSON()						const	override;
-	Json::Value				asMetaJSON()					const	override;
 	Option					*clone()						const	override;
 
 	std::string				variable()						const;

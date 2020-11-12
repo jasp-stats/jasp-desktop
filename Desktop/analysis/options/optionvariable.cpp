@@ -41,11 +41,6 @@ Json::Value OptionVariable::asJSON() const
 	return Json::Value("");
 }
 
-Json::Value OptionVariable::asMetaJSON() const
-{
-	return defaultMetaEntryContainingColumn();
-}
-
 Option *OptionVariable::clone() const
 {
 	OptionVariable *c = new OptionVariable();

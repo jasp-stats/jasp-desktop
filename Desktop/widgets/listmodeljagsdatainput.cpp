@@ -127,6 +127,9 @@ OptionsTable *ListModelJAGSDataInput::createOption()
 			for (const auto & level: stdlevels)
 				tempValues.push_back(_defaultCellVal.toString().toStdString());
 			options->add("values",	new OptionTerm(tempValues));
+			
+			if(isRCodeColumn(colIndex))
+				options->get("values")->setIsRCode(true);
 
 			allOptions.push_back(options);
 		}
@@ -148,7 +151,8 @@ void ListModelJAGSDataInput::initValues(OptionsTable * bindHere)
 	std::vector<Options *>	options = bindHere->value();
 
 	OptionVariables		* optionLevels = nullptr;
-
+	
+	size_t curCol = 0;
 	for (Options * newRow : options)
 	{
 		OptionString	*	optionName		= static_cast<OptionString		*>(newRow->get("name"));
@@ -161,6 +165,11 @@ void ListModelJAGSDataInput::initValues(OptionsTable * bindHere)
 
 		for (const std::string & val : optionValues->term())
 			_values[_values.size()-1].push_back(tq(val));
+		
+		if(isRCodeColumn(curCol))
+			optionValues->setIsRCode(true);
+		
+		curCol++;
 	}
 
 	if(optionLevels)
@@ -211,9 +220,12 @@ void ListModelJAGSDataInput::modelChangedSlot() // Should move this to listmodel
 			options->add("levels",	new OptionVariables(stdlevels));
 			
 			std::vector<std::string> tempValues;
-			for (QVariant val : _values[colIndex].toStdVector())
+			for (QVariant val : _values[colIndex])
 				tempValues.push_back(val.toString().toStdString());
 			options->add("values",	new OptionTerm(tempValues));
+			
+			if(isRCodeColumn(colIndex))
+				options->get("values")->setIsRCode(true);
 
 			allOptions.push_back(options);
 

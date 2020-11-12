@@ -26,10 +26,9 @@
 class OptionVariablesGroups : public OptionI<std::vector<std::vector<std::string> > >, public OptionVariableI
 {
 public:
-	OptionVariablesGroups() : OptionI(true) { }
+	OptionVariablesGroups() : OptionI(true) { setContainsColumn(true); }
 
 	Json::Value					asJSON()												const	override;
-	Json::Value					asMetaJSON()											const	override;
 	void						set(const Json::Value& value)									override;
 	Option						*clone()												const	override;
 

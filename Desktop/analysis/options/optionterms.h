@@ -25,11 +25,13 @@
 class OptionTerms : public OptionI<std::vector<std::vector<std::string> > >
 {
 public:
-			OptionTerms() : OptionI(true), _onlyOneComponent(false), _onlyOneTerm(false) {}
+			OptionTerms() : OptionI(true), _onlyOneComponent(false), _onlyOneTerm(false) 
+			{
+				setContainsColumn(true); //Maybe we should check if the terms are in fact columnnames or not? But, for now I will just assume that terms are very likely to contain columnnames. And otherwise Ill have to override asMetaJson and step through all this like in OptionTerms::asJSON() and simply check it
+			}
 
 			void		set(const Json::Value& value)			override;
 			Json::Value asJSON()						const	override;
-			Json::Value	asMetaJSON()					const	override;
 			Option		*clone()						const	override;
 			void		init(const Json::Value &data)			override;
 

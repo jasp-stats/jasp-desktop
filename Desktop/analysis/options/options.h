@@ -47,10 +47,10 @@ public:
 	void		clear()	override;
 	size_t		size()									const				{ return _options.size(); }
 
-	Option*		get(std::string name)					const;
+	Option*		get(const std::string & name)					const;
 	Option*		get(int index)							const				{ return _options.at(size_t(index)).second; }
-	void		get(int index, std::string &name, Option *&option);	
-
+	void		get(int index, std::string & name, Option *&option);	
+	
 	std::set<std::string>	usedVariables()																	const	override;
 	void					removeUsedVariable(const std::string & var)												override;
 	void					replaceVariableName(const std::string & oldName, const std::string & newName)			override;
