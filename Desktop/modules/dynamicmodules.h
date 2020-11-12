@@ -39,32 +39,32 @@ public:
 							~DynamicModules() override;
 	static DynamicModules * dynMods()	{ return _singleton; }
 
-	void			initializeInstalledModules();
+	void					initializeInstalledModules();
 
-	bool			unpackAndInstallModule(		const	std::string & moduleZipFilename);
-	void			uninstallModule(			const	std::string & moduleName);
-	std::string		loadModule(					const	std::string & moduleName);
-	void			unloadModule(				const	std::string & moduleName);
-	bool			initializeModuleFromDir(			std::string   moduleDir,	bool bundled = false, bool isCommon = false);
-	bool			initializeModule(					Modules::DynamicModule * module);
-	void			replaceModule(						Modules::DynamicModule * module);
+	bool					unpackAndInstallModule(		const	std::string & moduleZipFilename);
+	void					uninstallModule(			const	std::string & moduleName);
+	std::string				loadModule(					const	std::string & moduleName);
+	void					unloadModule(				const	std::string & moduleName);
+	bool					initializeModuleFromDir(			std::string   moduleDir,	bool bundled = false, bool isCommon = false);
+	bool					initializeModule(					Modules::DynamicModule * module);
+	void					replaceModule(						Modules::DynamicModule * module);
 
-	static bool			bundledModuleInFilesystem(	const	std::string & moduleName);
-	static std::string	bundledModuleLibraryPath(	const	std::string & moduleName);
-	std::string			moduleDirectory(			const	std::string & moduleName)	const;
-	std::wstring		moduleDirectoryW(			const	std::string & moduleName)	const;
-	QString				moduleDirectoryQ(			const	QString     & moduleName)	const;
+	static bool				bundledModuleInFilesystem(	const	std::string & moduleName);
+	static std::string		bundledModuleLibraryPath(	const	std::string & moduleName);
+	std::string				moduleDirectory(			const	std::string & moduleName)	const;
+	std::wstring			moduleDirectoryW(			const	std::string & moduleName)	const;
+	QString					moduleDirectoryQ(			const	QString     & moduleName)	const;
 
-	bool			moduleIsInstalledByUser(const std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
+	bool					moduleIsInstalledByUser(const std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
 
-	bool			aModuleNeedsToBeLoadedInR()					{ return !_modulesToBeLoaded.empty();				}
-	bool			aModuleNeedsToBeUnloadedFromR()				{ return !_modulesToBeUnloaded.empty();				}
-	bool			aModuleNeedsPackagesInstalled()				{ return !_modulesInstallPackagesNeeded.empty();	}
+	bool					aModuleNeedsToBeLoadedInR()					{ return !_modulesToBeLoaded.empty();				}
+	bool					aModuleNeedsToBeUnloadedFromR()				{ return !_modulesToBeUnloaded.empty();				}
+	bool					aModuleNeedsPackagesInstalled()				{ return !_modulesInstallPackagesNeeded.empty();	}
 
-	Json::Value		getJsonForPackageLoadingRequest()		{ return requestModuleForSomethingAndRemoveIt(_modulesToBeLoaded)->requestJsonForPackageLoadingRequest();					}
-	Json::Value		getJsonForPackageUnloadingRequest();
-	Json::Value		getJsonForPackageInstallationRequest();
-	Json::Value		getJsonForReloadingActiveModules();
+	Json::Value				getJsonForPackageLoadingRequest()		{ return requestModuleForSomethingAndRemoveIt(_modulesToBeLoaded)->requestJsonForPackageLoadingRequest();					}
+	Json::Value				getJsonForPackageUnloadingRequest();
+	Json::Value				getJsonForPackageInstallationRequest();
+	Json::Value				getJsonForReloadingActiveModules();
 
 	Modules::DynamicModule*	dynamicModule(	const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? nullptr : _modules.at(moduleName); }
 	Modules::DynamicModule*	operator[](		const std::string & moduleName)	const { return dynamicModule(moduleName); }
