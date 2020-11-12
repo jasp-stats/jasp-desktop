@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-11-12 13:06+0000\n"
+"PO-Revision-Date: 2020-11-12 13:08+0000\n"
 "Last-Translator: bruno boutin <b.boutin@uva.nl>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "fr/>\n"
@@ -14,7 +14,7 @@ msgstr ""
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr "Un tres joli regroupement d'éléments"
+msgstr "Un très joli regroupement d'éléments"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
