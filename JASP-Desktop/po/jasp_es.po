@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-11-06 22:26+0000\n"
+"PO-Revision-Date: 2020-11-13 21:28+0000\n"
 "Last-Translator: Pablo Augusto Vailati <pvailati@uade.edu.ar>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/"
 "jasp-desktop/es/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3.2\n"
+"X-Generator: Weblate 4.4-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "jasp-qml-style-example|"
@@ -1631,17 +1631,14 @@ msgstr ""
 "JASP ofrece procedimientos de análisis estándar en sus manifestaciones "
 "clásicas y bayesianas."
 
-#, fuzzy
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr "¡Así que abra un archivo de datos y pruebe JASP!"
+msgstr "¡Abra un archivo de datos y pruebe JASP!"
 
-#, fuzzy
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
 msgstr "Haga clic para obtener la última versión"
 
-#, fuzzy
 msgctxt "WelcomePage|"
 msgid ""
 "Please keep in mind that this is a preview release and a number of features "
@@ -1650,68 +1647,56 @@ msgid ""
 "If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
 "being developed at break-neck speed!"
 msgstr ""
-"Tenga en cuenta que esta es una versión preliminar y que todavía faltan "
-"algunas funciones.\n"
+"Tenga en cuenta que esta es una vista previa y que todavía faltan algunas "
+"funciones.\n"
 "\n"
-"Si JASP no hace todo lo que desea hoy, vuelva a consultar mañana: ¡JASP se "
-"está desarrollando a una velocidad vertiginosa!"
+"Si JASP no hace todo lo que usted desea hoy, vuelva a consultar mañana: ¡"
+"JASP se está desarrollando a una velocidad vertiginosa!"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Dependent Variable"
 msgstr "Variable dependiente"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Fixed Factors"
 msgstr "Factores fijos"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Random Factors"
 msgstr "Factores aleatorios"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Covariates"
 msgstr "Covariables"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "WLS Weights"
 msgstr "Pesos WLS"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Model"
 msgstr "Modelo"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Components"
 msgstr "Componentes"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Model Terms"
-msgstr "Términos modelo"
+msgstr "Términos del modelo"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Sum of squares"
 msgstr "Suma de cuadrados"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Assumption Checks"
-msgstr "Verificaciones de supuestos"
+msgstr "Verificación de supuestos"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Homogeneity tests"
 msgstr "Pruebas de homogeneidad"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Q-Q plot of residuals"
 msgstr "Gráfico Q-Q de residuos"
@@ -1721,22 +1706,18 @@ msgctxt "Ancova|"
 msgid "Factor covariate independence check"
 msgstr "Comprobación de independencia de covariables de factores"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Contrasts"
 msgstr "Contrastes"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Confidence intervals"
 msgstr "Intervalos de confianza"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Post Hoc Tests"
 msgstr "Pruebas post hoc"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "From"
 msgstr "De"
@@ -1745,12 +1726,10 @@ msgctxt "Ancova|"
 msgid "bootstraps"
 msgstr "bootstraps"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Effect size"
 msgstr "Tamaño del efecto"
 
-#, fuzzy
 msgctxt "Ancova|"
 msgid "Correction"
 msgstr "Corrección"
@@ -1920,37 +1899,30 @@ msgctxt "AncovaBayesian|"
 msgid "Across matched models"
 msgstr "A través de modelos combinados"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Estimates"
-msgstr "Estimados"
+msgstr "Estimadores"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Model averaged R²"
-msgstr "Modelo R² promedio"
+msgstr "Modelo promedio R²"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Descriptives"
 msgstr "Descriptivos"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Credible interval"
 msgstr "Intervalo creíble"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Order"
 msgstr "Orden"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Compare to best model"
 msgstr "Comparar con el mejor modelo"
 
-#, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Compare to null model"
 msgstr "Comparar con el modelo nulo"
@@ -1958,7 +1930,7 @@ msgstr "Comparar con el modelo nulo"
 #, fuzzy
 msgctxt "AncovaBayesian|"
 msgid "Plots"
-msgstr "Parcelas"
+msgstr "Gráficos"
 
 #, fuzzy
 msgctxt "AncovaBayesian|"
