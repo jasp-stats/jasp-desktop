@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2020-11-13 21:28+0000\n"
-"Last-Translator: Pablo Augusto Vailati <pvailati@uade.edu.ar>\n"
+"Last-Translator: Paulina Elizabeth Robalino <paulina.e.robalino@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/"
 "jasp-desktop/es/>\n"
 "Language: es\n"
@@ -205,7 +205,6 @@ msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Add thresholds"
 msgstr "Agregar umbrales"
 
-#, fuzzy
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Add scalings parameters"
 msgstr "Agregar parámetros de escalamiento"
@@ -427,7 +426,6 @@ msgctxt "LatentRegression|"
 msgid "Metric"
 msgstr "Métrico"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Scalar"
 msgstr "Escalar"
@@ -453,17 +451,14 @@ msgctxt "LatentRegression|"
 msgid "Show parameters"
 msgstr "Mostrar parámetros"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Show means"
-msgstr "Mostrar medios"
+msgstr "Mostrar medias"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Advanced"
 msgstr "Avanzado"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Options"
 msgstr "Opciones"
@@ -473,42 +468,34 @@ msgctxt "LatentRegression|"
 msgid "Fix manifest intercepts to zero"
 msgstr "Corregir intercepciones de manifiesto a cero"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Fix latent intercepts to zero"
 msgstr "Fijar intercepciones latentes a cero"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Omit residual single indicator"
 msgstr "Omitir indicador único residual"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Residual variances"
 msgstr "Variaciones residuales"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Correlate exogenous latents"
 msgstr "Correlación de latentes exógenos"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Add scalings parameters"
 msgstr "Agregar parámetros de escalas"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Correlate dependent variables"
 msgstr "Correlacionar variables dependientes"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Emulation"
 msgstr "Emulación"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "None"
 msgstr "Ninguna"
@@ -517,172 +504,138 @@ msgctxt "LatentRegression|"
 msgid "Mplus"
 msgstr "Mplus"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "EQS"
 msgstr "EQS"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Error Calculation"
 msgstr "Cálculo de error"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Standard"
 msgstr "Estándar"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Robust"
 msgstr "Robusto"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Bootstrap"
-msgstr "Oreja"
+msgstr "Bootstrap"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Bootstrap samples"
 msgstr "Muestras de Bootstrap"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Estimator"
 msgstr "Estimador"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Auto"
 msgstr "Auto"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "ML"
 msgstr "ML"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "GLS"
 msgstr "GLS"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "WLS"
 msgstr "WLS"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "ULS"
 msgstr "ULS"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "DWLS"
 msgstr "DWLS"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Standardization"
 msgstr "Estandarización"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Latents"
 msgstr "Latentes"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "All"
 msgstr "Todas"
 
-#, fuzzy
 msgctxt "LatentRegression|"
 msgid "No X"
 msgstr "No X"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Data"
 msgstr "Datos"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "raw"
-msgstr "crudo"
+msgstr "bruto"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Variance-covariance matrix"
 msgstr "Matriz de varianza-covarianza"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Sample size"
 msgstr "Tamaño de la muestra"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Statistics"
 msgstr "Estadísticas"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Error Calculation"
 msgstr "Cálculo de error"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Standard"
 msgstr "Estándar"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Robust"
 msgstr "Robusto"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Bootstrap"
-msgstr "Oreja"
+msgstr "Bootstrap"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Bootstrap samples"
 msgstr "Muestras de Bootstrap"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Additional fit measures"
 msgstr "Medidas de ajuste adicionales"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Fitted covariances / correlations"
 msgstr "Covarianzas / correlaciones ajustadas"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Observed covariances / correlations"
 msgstr "Covarianzas / correlaciones observadas"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Residual covariances / correlations"
 msgstr "Covarianzas / correlaciones residuales"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Mardia's coefficient"
 msgstr "Coeficiente de Mardia"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Modification indices"
 msgstr "Índices de modificación"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Hide low indices"
 msgstr "Ocultar índices bajos"
@@ -692,162 +645,130 @@ msgctxt "SEMSimple|"
 msgid "Threshold"
 msgstr "Límite"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Options"
 msgstr "Opciones"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Grouping Variable"
 msgstr "Variable de agrupación"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Loadings"
 msgstr "Cargas"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Intercepts"
 msgstr "Intercepta"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Residuals"
-msgstr "Derechos residuales de autor"
+msgstr "Residuos"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Residual covariances"
 msgstr "Covarianzas residuales"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Means"
-msgstr "Medio"
+msgstr "Medias"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Regressions"
 msgstr "Regresiones"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Latent variances"
 msgstr "Variaciones latentes"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Latent covariances"
 msgstr "Covarianzas latentes"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Estimator"
 msgstr "Estimador"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Auto"
 msgstr "Auto"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "ML"
 msgstr "ML"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "GLS"
 msgstr "GLS"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "WLS"
 msgstr "WLS"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "ULS"
 msgstr "ULS"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "DWLS"
 msgstr "DWLS"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Model Options"
-msgstr "Opciones de modelo"
+msgstr "Opciones del modelo"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Include mean structure"
 msgstr "Incluir estructura media"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Assume factors uncorrelated"
 msgstr "Suponga factores no correlacionados"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Fix exogenous covariates"
 msgstr "Fijar covariables exógenas"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Factor scaling"
 msgstr "Escala de factores"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Advanced"
 msgstr "Avanzado"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Fix manifest intercepts to zero"
 msgstr "Corregir intercepciones de manifiesto a cero"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Fix latent intercepts to zero"
 msgstr "Fijar intercepciones latentes a cero"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Omit residual single indicator"
 msgstr "Omitir indicador único residual"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Residual variances"
 msgstr "Variaciones residuales"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Correlate exogenous latents"
 msgstr "Correlación de latentes exógenos"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Add scalings parameters"
 msgstr "Agregar parámetros de escalas"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Correlate dependent variables"
 msgstr "Correlacionar variables dependientes"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Emulation"
 msgstr "Emulación"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "None"
 msgstr "Ninguna"
@@ -856,152 +777,123 @@ msgctxt "SEMSimple|"
 msgid "Mplus"
 msgstr "Mplus"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "EQS"
 msgstr "EQS"
 
-#, fuzzy
 msgctxt "SEMSimple|"
 msgid "Model Name"
 msgstr "Nombre del modelo"
 
-#, fuzzy
 msgctxt "ComboBox|"
 msgid "<no choice>"
 msgstr "<sin elección>"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
 msgstr "Restaurando el último valor correcto: %1"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Version:"
 msgstr "Versión:"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "About JASP"
 msgstr "Sobre JASP"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr "Construida sobre:"
+msgstr "Construido sobre:"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Source:"
 msgstr "Fuente:"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr "Accede a las fuentes aquí"
+msgstr "Acceda a las fuentes aquí"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Download:"
 msgstr "Descargar:"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Citation:"
 msgstr "Citación:"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Select All"
 msgstr "Seleccionar todo"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
 msgstr "Copiar selección"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Close"
-msgstr "Cerca"
+msgstr "Cerrar"
 
-#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
 msgstr "Arrastra para reordenar los análisis"
 
-#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
 msgstr "Edite el título de este análisis"
 
-#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
 msgstr "Duplica este análisis"
 
-#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
 msgstr "Cambiar el tamaño de los datos / resultados"
 
-#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
 msgstr "Arrastra para mostrar datos"
 
-#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
 msgstr "Ocultar opciones de entrada"
 
-#, fuzzy
 msgctxt "AnalysisForms|"
 msgid "Show input options"
 msgstr "Mostrar opciones de entrada"
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
 msgstr "Factor de Bayes"
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
 msgstr "BF₁₀"
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
 msgstr "BF₀₁"
 
-#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr "Registro (BF₁₀)"
+msgstr "Log(BF₁₀)"
 
-#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
 msgstr "Añadir columna"
 
-#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
 msgstr "Eliminar columna"
 
-#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
 msgstr "Reiniciar"
 
-#, fuzzy
 msgctxt "ContrastsList|"
 msgid "Factors"
 msgstr "Factores"
 
-#, fuzzy
 msgctxt "BreadCrumbs|"
 msgid "You are here"
 msgstr "Estás aquí"
