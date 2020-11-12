@@ -36,7 +36,7 @@ Json::Value OptionVariables::asJSON() const
 
 Json::Value OptionVariables::asMetaJSON() const
 {
-	Json::Value metaBase = defaultMetaEntryContainingColumn(!_extraEncodings);
+	Json::Value metaBase = defaultMetaEntryContainingColumn(_extraEncodings || _shouldEncode);
 
 	if(_extraEncodings)
 		metaBase["encodeThis"] = asJSON();
@@ -57,9 +57,9 @@ void OptionVariables::set(const Json::Value &value)
 
 Option *OptionVariables::clone() const
 {
-	OptionVariables *c = new OptionVariables();
+	OptionVariables *c = new OptionVariables(_extraEncodings);
 	c->setValue(value());
-	c->setExtraEncodings(_extraEncodings);
+	c->setShouldEncode(_shouldEncode); // Should maybe be more generic then this.. But rewriting and removing all of these damned optionclasses ought to help
 	return c;
 }
 

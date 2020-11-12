@@ -45,6 +45,7 @@ Option *OptionVariable::clone() const
 {
 	OptionVariable *c = new OptionVariable();
 	c->setValue(this->value());
+	c->setShouldEncode(_shouldEncode);
 	return c;
 }
 

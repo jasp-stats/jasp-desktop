@@ -53,7 +53,7 @@ public:
 			bool				shouldEncode(const std::string & in);
 			bool				shouldDecode(const std::string & in);
 			void				setCurrentNames(const std::vector<std::string> & names);
-			void				setCurrentNamesFromOptionsMeta(const std::string & options);
+			void				setCurrentNamesFromOptionsMeta(const Json::Value & json);
 
 			std::string			encode(const std::string &in);
 			std::string			decode(const std::string &in);

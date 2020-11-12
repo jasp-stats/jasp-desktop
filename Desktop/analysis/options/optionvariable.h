@@ -26,7 +26,7 @@
 class OptionVariable : public OptionVariables
 {
 public:
-	OptionVariable() : OptionVariables(true, false) { setContainsColumn(true);	}
+	OptionVariable() : OptionVariables(true, false) { setShouldEncode(true);	}
 
 	void					set(const Json::Value& value)			override;
 	Json::Value				asJSON()						const	override;

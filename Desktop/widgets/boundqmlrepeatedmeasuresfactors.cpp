@@ -44,8 +44,8 @@ void BoundQMLRepeatedMeasuresFactors::bindTo(Option *option)
 	
 	for (const Options* options : allOptions)
 	{
-		OptionEncodableString *factorNameOption = static_cast<OptionEncodableString *>(options->get("name"));
-		OptionVariables *factorLevelsOption		= static_cast<OptionVariables *>(options->get("levels"));
+		OptionEncodableString	* factorNameOption		= static_cast<OptionEncodableString *>(options->get("name"));
+		OptionVariables			* factorLevelsOption	= static_cast<OptionVariables		*>(options->get("levels"));
 		
 		factors.push_back(make_pair(factorNameOption->value(), factorLevelsOption->variables()));
 	}
@@ -56,20 +56,20 @@ void BoundQMLRepeatedMeasuresFactors::bindTo(Option *option)
 Option* BoundQMLRepeatedMeasuresFactors::createOption()
 {
 	
-	Options* templote = new Options();
-	templote->add("name", new OptionEncodableString());
-	templote->add("levels", new OptionVariables(true));
+	Options* templote =				new Options();
+	templote->add("name",			new OptionEncodableString());
+	templote->add("levels",			new OptionVariables(true));
 	
-	OptionsTable* optionsTable = new OptionsTable(templote);
+	OptionsTable* optionsTable =	new OptionsTable(templote);
 
-	OptionVariables* levels = new OptionVariables(true);
+	OptionVariables* levels =		new OptionVariables(true);
 	std::vector<std::string> firstLevels;
 	firstLevels.push_back(tr("Level %1").arg(1).toStdString());
 	firstLevels.push_back(tr("Level %1").arg(2).toStdString());
 	levels->setValue(firstLevels);
 
-	Options* options = new Options();
-	options->add("name", new OptionEncodableString(tr("RM Factor %1").arg(1).toStdString()));
+	Options* options =		new Options();
+	options->add("name",	new OptionEncodableString(tr("RM Factor %1").arg(1).toStdString()));
 	options->add("levels", levels);
 	
 	std::vector<Options*> allOptions;

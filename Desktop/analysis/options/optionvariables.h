@@ -24,8 +24,8 @@
 class OptionVariables : public OptionTerms, public OptionVariableI
 {
 public:
-	OptionVariables(bool extraEncodes = false)									: OptionTerms(true, false), _extraEncodings(extraEncodes) {}
-	OptionVariables(std::vector<std::string> vars, bool extraEncodes = false)	: OptionTerms(true, false), _extraEncodings(extraEncodes) { setValue(vars); }
+	OptionVariables(bool extraEncodes = false)									: OptionTerms(true, false), _extraEncodings(extraEncodes) { _shouldEncode = true; }
+	OptionVariables(std::vector<std::string> vars, bool extraEncodes = false)	: OptionTerms(true, false), _extraEncodings(extraEncodes) { _shouldEncode = true; setValue(vars); }
 
 	Json::Value					asJSON()												const	override;
 	Json::Value					asMetaJSON()											const	override;
@@ -43,7 +43,7 @@ public:
 	void						setExtraEncodings(bool theyAreIt)											{ _extraEncodings = theyAreIt; }
 
 protected:
-	OptionVariables(bool onlyOneTerm, bool extraEncodes) : OptionTerms(true, onlyOneTerm), _extraEncodings(extraEncodes)	{}
+	OptionVariables(bool onlyOneTerm, bool extraEncodes) : OptionTerms(true, onlyOneTerm), _extraEncodings(extraEncodes)	{ _shouldEncode = true;}
 
 	bool _extraEncodings = false;
 };

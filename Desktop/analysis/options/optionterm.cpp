@@ -49,6 +49,7 @@ Option *OptionTerm::clone() const
 {
 	OptionTerm *c = new OptionTerm();
 	c->setValue(this->term());
+	c->setShouldEncode(_shouldEncode);
 	return c;
 }
 
