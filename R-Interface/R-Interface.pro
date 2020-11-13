@@ -85,26 +85,31 @@ windows{
 ### making sure that writeImage.R and zzzWrappers.R are available to jaspEngine:
 SRC_WRITE_IMAGE = $${PWD}/jaspResults/R/writeImage.R
 SRC_WRAPPERS    = $${PWD}/jaspResults/R/zzzWrappers.R
+SRC_WORKAROUNDS = $${PWD}/R/workarounds.R
 DEST_DIR_AUX_R  = $$OUT_PWD/$$DESTDIR
 
-auxillaryRFiles.path = $$INSTALLPATH
-auxillaryRFiles.files = $${PWD}/jaspResults/R/writeImage.R
+auxillaryRFiles.path   = $$INSTALLPATH
+auxillaryRFiles.files  = $${PWD}/jaspResults/R/writeImage.R
 auxillaryRFiles.files += $${PWD}/jaspResults/R/zzzWrappers.R
+auxillaryRFiles.files += $${PWD}/R/workarounds.R
 INSTALLS += auxillaryRFiles
 
 win32 {
     SRC_WRITE_IMAGE ~= s,/,\\,g
-    SRC_WRAPPERS ~= s,/,\\,g
-    DEST_DIR_AUX_R ~= s,/,\\,g
+	SRC_WRAPPERS    ~= s,/,\\,g
+	SRC_WORKAROUNDS ~= s,/,\\,g
+	DEST_DIR_AUX_R  ~= s,/,\\,g
 
     copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y $${SRC_WRITE_IMAGE} $${DEST_DIR_AUX_R}) $$escape_expand(\n\t)
-    copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y $${SRC_WRAPPERS}    $${DEST_DIR_AUX_R})
+	copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y $${SRC_WRAPPERS}    $${DEST_DIR_AUX_R}) $$escape_expand(\n\t)
+	copyRFiles.commands  += $$quote(cmd /c xcopy /I /Y $${SRC_WORKAROUNDS} $${DEST_DIR_AUX_R})
 }
 
 unix {
     copyRFiles.commands += $(MKDIR) $$DEST_DIR_AUX_R ;
     copyRFiles.commands += cp $$SRC_WRITE_IMAGE $$DEST_DIR_AUX_R ;
-    copyRFiles.commands += cp $$SRC_WRAPPERS $$DEST_DIR_AUX_R ;
+	copyRFiles.commands += cp $$SRC_WRAPPERS    $$DEST_DIR_AUX_R ;
+	copyRFiles.commands += cp $$SRC_WORKAROUNDS $$DEST_DIR_AUX_R ;
 }
 
 
