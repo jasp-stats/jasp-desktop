@@ -116,7 +116,6 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 			connect(module, &Modules::DynamicModule::registerForInstalling,			this, &DynamicModules::registerForInstalling		);
 			connect(module, &Modules::DynamicModule::registerForInstallingModPkg,	this, &DynamicModules::registerForInstallingModPkg	);
 			connect(module, &Modules::DynamicModule::descriptionReloaded,			this, &DynamicModules::descriptionReloaded			);
-			connect(module, &Modules::DynamicModule::requiredModulesLibPaths,		this, &DynamicModules::requiredModulesLibPaths		);
 
 			module->initialize();
 		}
@@ -226,10 +225,10 @@ void DynamicModules::registerForLoading(const std::string & moduleName)
 bool DynamicModules::requiredModulesForModuleReady(const std::string & moduleName) const
 {
 	Modules::DynamicModule	*	dynMod	= _modules.at(moduleName);
-	std::set<std::string>		reqMods	= dynMod->requiredModules();
+	std::set<std::string>		reqMods	= dynMod->importsR();
 
 	for(const std::string & reqMod : reqMods)
-		if(_modules.count(reqMod) == 0 || !_modules.at(reqMod)->readyForUse())
+		if(_modules.count(reqMod) > 0 && !_modules.at(reqMod)->readyForUse())
 			return false;
 
 	return true;
@@ -868,10 +867,18 @@ QStringList DynamicModules::requiredModulesLibPaths(QString moduleName)
 {
 	QStringList returnThis;
 
-	std::set<std::string> requiredModules = _modules[moduleName.toStdString()]->requiredModules();
+	std::set<std::string> requiredModules = _modules[moduleName.toStdString()]->importsR();
+	
+	Log::log() << "DynamicModules::requiredModulesLibPaths(" << moduleName << ") sees the following R-pkgs: ";
+	
+	for(const std::string & reqMod : requiredModules)
+		Log::log(false) << "'" << reqMod << "' ";
+	Log::log(false) << std::endl;
+	
 
 	for(const std::string & reqMod : requiredModules)
-		returnThis.append(_modules[reqMod]->moduleRLibrary());
+		if(_modules.count(reqMod) > 0)
+			returnThis.append(_modules[reqMod]->moduleRLibrary());
 
 	return returnThis;
 }

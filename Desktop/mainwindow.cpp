@@ -55,8 +55,6 @@
 #include "modules/dynamicmodules.h"
 #include "modules/analysismenumodel.h"
 #include "modules/description/entrybase.h"
-#include "modules/description/requiredpackage.h"
-#include "modules/description/requiredmodule.h"
 
 #include "qquick/datasetview.h"
 #include "qquick/rcommander.h"
@@ -152,14 +150,14 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	qmlRegisterUncreatableType<JASPControl>					("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
+	qmlRegisterUncreatableType<JASPControl>						("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
 	qmlRegisterUncreatableType<MessageForwarder>				("JASP",		1, 0, "MessageForwarder",	"You can't touch this"				);
 
 	qmlRegisterType<DataSetView>								("JASP",		1, 0, "DataSetView"			);
 	qmlRegisterType<JaspTheme>									("JASP",		1, 0, "JaspTheme"			);
 	qmlRegisterType<AnalysisForm>								("JASP",		1, 0, "AnalysisForm"		);
 	qmlRegisterType<RCommander>									("JASP", 		1, 0, "RCommander"			);
-	qmlRegisterType<JASPControl>							("JASP",		1, 0, "JASPControl"			);
+	qmlRegisterType<JASPControl>								("JASP",		1, 0, "JASPControl"			);
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"	);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"	);
 
@@ -167,8 +165,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis");
 	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator");
 	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle");
-	qmlRegisterType<Modules::RequiredPackage>					("JASP.Module", 1, 0, "Package");
-	qmlRegisterType<Modules::RequiredModule>					("JASP.Module", 1, 0, "Module");
 	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",				"Superclass for menu entries, shouldn't be instantiated manually");
 	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",			"Can only be instantiated by JASP");
 	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",	"Superclass for Description info, shouldn't be instantiated manually");

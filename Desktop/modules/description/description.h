@@ -55,7 +55,6 @@ public:
 	void	removeChild(DescriptionChildBase * child);
 
 	std::vector<AnalysisEntry *>	menuEntries()		const;
-	Json::Value						requiredPackages()	const;
 	std::set<std::string>			requiredModules()	const;
 
 public slots:
@@ -105,8 +104,6 @@ private:
 	bool					_requiresDataDef	= true;
 	DynamicModule		*	_dynMod			= nullptr;
 	QList<EntryBase*>		_entries;
-	QList<RequiredPackage*>	_reqPkgs;
-	QList<RequiredModule*>	_reqMods;
 	QTimer					_timer;
 };
 

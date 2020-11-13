@@ -2,8 +2,6 @@
 #include "log.h"
 #include "descriptionchildbase.h"
 #include "entrybase.h"
-#include "requiredpackage.h"
-#include "requiredmodule.h"
 #include "../analysisentry.h"
 #include "../dynamicmodule.h"
 
@@ -23,15 +21,7 @@ Description::~Description()
 	for(EntryBase * entry : _entries)
 		delete entry;
 
-	for(RequiredPackage * pkg : _reqPkgs)
-		delete pkg;
-
-	for(RequiredModule * mod : _reqMods)
-		delete mod;
-
 	_entries.clear();
-	_reqPkgs.clear();
-	_reqMods.clear();
 }
 
 void Description::setUpDelayedUpdate()
@@ -83,9 +73,7 @@ void Description::addChild(DescriptionChildBase * child)
 	assert(child);
 
 	if(dynamic_cast<EntryBase*>(child))			_entries.push_back(dynamic_cast<EntryBase*>			(child));
-	if(dynamic_cast<RequiredPackage*>(child))	_reqPkgs.push_back(dynamic_cast<RequiredPackage*>	(child));
-	if(dynamic_cast<RequiredModule*>(child))	_reqMods.push_back(dynamic_cast<RequiredModule*>	(child));
-
+	
 	connect(child, &DescriptionChildBase::somethingChanged, this, &Description::childChanged, Qt::UniqueConnection);
 }
 
@@ -95,8 +83,6 @@ void Description::removeChild(DescriptionChildBase * child)
 	assert(child);
 
 	if(dynamic_cast<EntryBase*>(child))			_entries.removeAll(dynamic_cast<EntryBase*>			(child));
-	if(dynamic_cast<RequiredPackage*>(child))	_reqPkgs.removeAll(dynamic_cast<RequiredPackage*>	(child));
-	if(dynamic_cast<RequiredModule*>(child))	_reqMods.removeAll(dynamic_cast<RequiredModule*>	(child));
 
 	disconnect(child, &DescriptionChildBase::somethingChanged, this, &Description::childChanged);
 }
@@ -208,34 +194,6 @@ void Description::setDynMod(DynamicModule * dynMod)
 	_dynMod = dynMod;
 
 	emit dynModChanged(_dynMod);
-}
-
-Json::Value Description::requiredPackages() const
-{
-	Json::Value array = Json::arrayValue;
-
-	for(RequiredPackage * pkg : _reqPkgs)
-		array.append(pkg->asJson());
-
-	static Json::Value jaspBase(Json::nullValue);
-	if(jaspBase.isNull())
-	{
-		jaspBase			= Json::objectValue;
-		jaspBase["package"] = "jaspBase";
-	}
-	array.append(jaspBase);
-
-	return array;
-}
-
-std::set<std::string> Description::requiredModules() const
-{
-	std::set<std::string> setje;
-
-	for(Modules::RequiredModule * reqMod : _reqMods)
-		setje.insert(fq(reqMod->name()));
-
-	return setje;
 }
 
 std::vector<AnalysisEntry*> Description::menuEntries() const

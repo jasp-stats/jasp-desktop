@@ -171,6 +171,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"modules\"))");
 	jaspRCPP_parseEvalQNT("source(file='writeImage.R')");
 	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')");
+	jaspRCPP_parseEvalQNT("source(file='workarounds.R')");
 
 	jaspRCPP_parseEvalQNT("initEnvironment()");
 

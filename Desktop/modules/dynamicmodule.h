@@ -31,6 +31,7 @@
 #include "jsonredirect.h"
 #include "enginedefinitions.h"
 #include "analysisentry.h"
+#include "utilities/qutils.h"
 
 namespace Modules
 {
@@ -54,10 +55,9 @@ class DynamicModule : public QObject
 	Q_PROPERTY(bool			installed			READ installed			WRITE setInstalled			NOTIFY installedChanged			)
 	Q_PROPERTY(bool			loading				READ loading			WRITE setLoading			NOTIFY loadingChanged			)
 	Q_PROPERTY(bool			installing			READ installing			WRITE setInstalling			NOTIFY installingChanged		)
-	Q_PROPERTY(Json::Value	requiredPackages	READ requiredPackages	WRITE setRequiredPackages	NOTIFY requiredPackagesChanged	)
 	Q_PROPERTY(bool			initialized			READ initialized		WRITE setInitialized		NOTIFY initializedChanged		)
 	Q_PROPERTY(bool			isBundled			READ isBundled			WRITE setBundled			NOTIFY bundledChanged			)
-	Q_PROPERTY(QStringList	requiredModules		READ requiredModulesQ								NOTIFY requiredModulesChanged	)
+	Q_PROPERTY(QStringList	importsR			READ importsRQ										NOTIFY importsRChanged			)
 
 public:
 	//To do make the constructors less misleading (std::string vs QString does not do the same thing at all!) Some kind of a static MakeDynamicModule function and making the constructors private should do the trick
@@ -107,12 +107,14 @@ public:
 	bool				installNeeded()		const { return _status == moduleStatus::installNeeded;	}
 	bool				loadingNeeded()		const { return _status == moduleStatus::loadingNeeded;	}
 	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath();			}
-	Json::Value			requiredPackages()	const { return _requiredPackages;						}
-	QStringList			requiredModulesQ()	const;
+	const stringset &	importsR()			const { return _importsR;						}
+	QStringList			importsRQ()			const { return tql(_importsR);					}
+	stringset			requiredModules()	const;
+	
 	std::string			getLibPathsToUse();
 
-	bool				requiresModule(const std::string & moduleName) { return _requiredModules.count(moduleName) > 0; }
-	const stringset &	requiredModules() { return _requiredModules; }
+	bool				requiresModule(const std::string & moduleName) { return _importsR.count(moduleName) > 0; }
+	
 
 	std::string			moduleInstFolder()									const; //Where is the "inst" folder?
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
@@ -164,17 +166,19 @@ public:
 	void loadDescriptionQml(QString descriptionTxt);
 
 
-	void loadDescriptionFromFolder( const std::string & folderPath);
-	void loadDescriptionFromArchive(const std::string & archivePath);
-
-	static QString		getFileFromFolder(				const QString     & filepath,	const QString     & searchMe);
-	static std::string	getFileFromFolder(				const std::string & folderPath, const std::string & searchMe);
-	static std::string	getDESCRIPTIONFromArchive(		const std::string & archivePath);
-	static std::string	getDESCRIPTIONFromFolder(		const std::string & folderPath);
-	static std::string	getDescriptionQmlFromArchive(	const std::string & archivePath);
-	static std::string	getDescriptionQmlFromFolder(	const std::string & folderPath);
-	static std::string	extractPackageNameFromArchive(	const std::string & archivePath);
-	static std::string	extractPackageNameFromFolder(	const std::string & folderPath);
+	void loadDescriptionFromFolder(									const std::string & folderPath);
+	void loadDescriptionFromArchive(								const std::string & archivePath);
+	void loadRequiredModulesFromFolder(								const std::string & folderPath)			{ loadRequiredModulesFromDESCRIPTIONTxt( tq( getDESCRIPTIONFromFolder ( folderPath  ) ) ); }
+	void loadRequiredModulesFromArchive(							const std::string & archivePath)		{ loadRequiredModulesFromDESCRIPTIONTxt( tq( getDESCRIPTIONFromArchive( archivePath ) ) ); }
+	void loadRequiredModulesFromDESCRIPTIONTxt(						const QString	  & DESCRIPTION);
+	static QString		getFileFromFolder(							const QString     & filepath,	const QString     & searchMe);
+	static std::string	getFileFromFolder(							const std::string & folderPath, const std::string & searchMe);
+	static std::string	getDESCRIPTIONFromArchive(					const std::string & archivePath);
+	static std::string	getDESCRIPTIONFromFolder(					const std::string & folderPath);
+	static std::string	getDescriptionQmlFromArchive(				const std::string & archivePath);
+	static std::string	getDescriptionQmlFromFolder(				const std::string & folderPath);
+	static std::string	extractPackageNameFromArchive(				const std::string & archivePath);
+	static std::string	extractPackageNameFromFolder(				const std::string & folderPath);
 	static std::string	extractPackageNameFromDESCRIPTIONTxt(		const std::string & DESCRIPTION);
 	static std::string	extractPackageNameFromDescriptionQmlTxt(	const std::string & descriptionQmlTxt);
 	static std::string	extractPackageNameFromDescriptionJsonTxt(	const std::string & descriptionJsonTxt);
@@ -194,8 +198,7 @@ public slots:
 	void setBundled(			bool		isBundled);
 	void setInstallLog(			std::string installLog);
 	void setLoadLog(			std::string loadLog);
-	void setRequiredPackages(	Json::Value requiredPackages);
-	void setRequiredModules(	stringset	requiredModules);
+	void setImportsR(	stringset	importsR);
 
 signals:
 	void		installLogChanged();
@@ -212,8 +215,7 @@ signals:
 	void		registerForInstalling(			const std::string & moduleName);
 	void		registerForInstallingModPkg(	const std::string & moduleName);
 	void		descriptionReloaded(Modules::DynamicModule * dynMod);
-	void		requiredModulesChanged();
-	QStringList requiredModulesLibPaths(QString moduleName);
+	void		importsRChanged();
 
 private:
 	QFileInfo			_moduleFolder;
@@ -238,10 +240,8 @@ private:
 						_initialized		= false,
 						_bundled			= false,
 						_isCommon			= false;
-	Json::Value			_requiredPackages,
-						_previousReqPkgs;
 	AnalysisEntries		_menuEntries;
-	stringset			_requiredModules;
+	stringset			_importsR;
 
 	const char			*_modulePostFix		= "_module",
 						*_exposedPostFix	= "_exposed";

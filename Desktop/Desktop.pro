@@ -334,8 +334,6 @@ HEADERS += \
     modules/description/description.h \
     modules/description/descriptionchildbase.h \
     modules/description/entrybase.h \
-    modules/description/requiredmodule.h \
-    modules/description/requiredpackage.h \
     modules/upgrader/upgradechange.h \
     modules/upgrader/upgrader.h \
     modules/upgrader/upgradestep.h \
@@ -530,8 +528,6 @@ SOURCES += \
     modules/description/description.cpp \
     modules/description/descriptionchildbase.cpp \
     modules/description/entrybase.cpp \
-    modules/description/requiredmodule.cpp \
-    modules/description/requiredpackage.cpp \
     modules/upgrader/upgradechange.cpp \
     modules/upgrader/upgrader.cpp \
     modules/upgrader/upgradestep.cpp \

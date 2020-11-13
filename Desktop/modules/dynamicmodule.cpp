@@ -25,13 +25,13 @@
 #include "tempfiles.h"
 #include <locale>
 #include "log.h"
-#include "utilities/qutils.h"
 #include "utilities/languagemodel.h"
 #include "dynamicmodules.h"
 #include <QQmlContext>
 #include <QQmlIncubator>
 #include "description/description.h"
 #include <QThread>
+#include <QRegularExpression>
 
 namespace Modules
 {
@@ -149,6 +149,10 @@ void DynamicModule::initialize()
 	}
 
 	loadDescriptionQml(qmlTxt);
+	
+	QFile DESCRIPTION(checkForExistence("DESCRIPTION", true).absoluteFilePath());
+	DESCRIPTION.open(QFile::ReadOnly);
+	loadRequiredModulesFromDESCRIPTIONTxt(DESCRIPTION.readAll());
 }
 
 void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath)
@@ -159,6 +163,8 @@ void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath)
 		throw std::runtime_error("No description found in folder " + folderPath);
 
 	loadDescriptionQml(tq(descriptionQml));
+	
+	loadRequiredModulesFromFolder(_modulePackage);
 }
 
 void DynamicModule::loadDescriptionFromArchive(const std::string & archivePath)
@@ -169,6 +175,45 @@ void DynamicModule::loadDescriptionFromArchive(const std::string & archivePath)
 		throw std::runtime_error("No description found in archive " + archivePath);
 
 	loadDescriptionQml(tq(descriptionQml));
+	
+	loadRequiredModulesFromArchive(archivePath);
+}
+
+///Very simple parse to go through list of imports and see if any modules are in it. Because we can't really know what is a module and what isn't... We just get em all.
+void DynamicModule::loadRequiredModulesFromDESCRIPTIONTxt(const QString & DESCRIPTION)
+{
+	stringset reqModules;
+	
+	
+	QRegularExpression isItImports("Imports:");
+	
+
+	QRegularExpressionMatch m = isItImports.match(DESCRIPTION);
+	
+	if(!m.hasMatch()) return;
+	
+	size_t importsEnd = m.capturedEnd();
+
+	//Aka check for stuff like "name (...),", "name (...)", "name," or "name" 
+	QRegularExpression pkgEx("[[:space:]]*([[:alnum:].]+)[[:space:]]*(\\([^)]\\))?(,)?");
+	
+	QRegularExpressionMatchIterator pkgMIt = pkgEx.globalMatch(DESCRIPTION, importsEnd);
+
+	while(pkgMIt.hasNext())
+	{
+		QRegularExpressionMatch pkgM = pkgMIt.next();
+		reqModules.insert(fq(pkgM.captured(1)));
+		
+		if(pkgM.captured(3) == "") //Not a comma so last one
+			break;
+	}		
+	
+	Log::log() << "loadRequiredModulesFromDESCRIPTIONTxt found: ";
+	for(const std::string & reqM : reqModules)
+		Log::log(false) << reqM << "\t";
+	Log::log(false) << std::endl;
+	
+	setImportsR(reqModules);
 }
 
 //Turning QMLENGINE_DOES_ALL_THE_WORK on also works fine, but has slightly less transparent errormsgs so isn't recommended
@@ -258,9 +303,6 @@ void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 	_description					= fq(description->description());
 	_version						= fq(description->version());
 
-	setRequiredPackages(description->requiredPackages());
-	setRequiredModules(description->requiredModules());
-
 	for(auto * menuEntry : _menuEntries)
 		delete menuEntry;
 	_menuEntries.clear();
@@ -344,12 +386,12 @@ std::string DynamicModule::getLibPathsToUse()
 {
 	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "'";
 
-	std::vector<std::string> requiredLibPaths = fq(requiredModulesLibPaths(tq(_name)));
+	std::vector<std::string> requiredLibPaths = fq(DynamicModules::dynMods()->requiredModulesLibPaths(tq(_name)));
 
 	for(const std::string & path : requiredLibPaths)
 		libPathsToUse += ", '" + path + "'";
 
-	libPathsToUse += ", .libPaths())"; //Because in stable it was ", .libPaths()"
+	libPathsToUse += ", .libPaths())";
 
 	return libPathsToUse;
 }
@@ -386,6 +428,8 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	//<< ".runSeparateR(\"{"
 
 	std::string libPathsToUse = getLibPathsToUse();
+	
+	Log::log() << "DynamicModule::generateModuleInstallingR(bool onlyModPkg) gets the following libPathsToUse:\t" << libPathsToUse << std::endl;
 
 	R << standardRIndent << "loadLog <- '';\n";
 	
@@ -410,16 +454,6 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 		//Install dependencies:
 		//First the ones from CRAN because they cant depend on one from github
 		installDeps("'" + _modulePackage + "/.'");
-
-		//Then the specials from github
-		for(const Json::Value & reqPkg : _requiredPackages)
-			if(reqPkg.isMember("github"))
-			{
-				R	 << standardRIndent << "print('Downloading pkg \"" << reqPkg["github"].asString() << "\" from github!');\n"
-					 << standardRIndent << "pkgdownload <- remotes::remote_download(remotes::github_remote(repo= '"	<< reqPkg["github"].asString() << "'" << (reqPkg.isMember("gitref") ? ", ref='" + reqPkg["gitref"].asString() + "'" : "") << "));\n";
-				installDeps("pkgdownload");
-				installLocal("pkgdownload");
-			}
 
 		//And fix Mac OS libraries of dependencies:
 		R << standardRIndent << ".postProcessLibraryModule(\"" << moduleRLibrary().toStdString() << "\");\n";
@@ -456,7 +490,7 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 
 	R << _name << _modulePostFix << " <- module({\n" << standardRIndent << ".libPaths(" << getLibPathsToUse() <<");\n\n";
 
-	for(const std::string & reqMod : _requiredModules)
+	for(const std::string & reqMod : requiredModules())
 		R << standardRIndent << "import('" << reqMod << "');\n";
 	R << standardRIndent << "import('" << _name << "');\n\n";
 
@@ -680,8 +714,8 @@ void DynamicModule::setInitialized(bool initialized)
 
 void DynamicModule::setStatus(moduleStatus newStatus)
 {
-	if(_status == newStatus)
-		return;
+	//if(_status == newStatus)
+	//	return;
 
 	// if we already need an install then we should only install the modpkg
 	if(_status == moduleStatus::installNeeded && newStatus == moduleStatus::installModPkgNeeded)
@@ -702,16 +736,6 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	}
 }
 
-void  DynamicModule::setRequiredPackages(Json::Value requiredPackages)
-{
-	if (_requiredPackages == requiredPackages)
-		return;
-
-	_previousReqPkgs  = _requiredPackages;
-	_requiredPackages = requiredPackages;
-	emit requiredPackagesChanged();
-}
-
 void DynamicModule::reloadDescription()
 {
 	try
@@ -719,12 +743,6 @@ void DynamicModule::reloadDescription()
 		loadDescriptionFromFolder(fq(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/"));
 	}
 	catch(std::runtime_error e) { return; } //If it doesnt work then never mind.
-
-	if(_requiredPackages.toStyledString() != _previousReqPkgs.toStyledString())
-	{
-		Log::log() << "Required packages of module '" << _name << "' changed, installing again" << std::endl;
-		setStatus(moduleStatus::installNeeded);
-	}
 }
 
 std::string DynamicModule::getDESCRIPTIONFromArchive(const std::string &  filepath)
@@ -925,6 +943,7 @@ bool DynamicModule::requiresData() const
 	return true;
 }
 
+
 Json::Value DynamicModule::asJsonForJaspFile(const std::string & analysisFunction) const
 {
 	Json::Value json(Json::objectValue);
@@ -965,28 +984,30 @@ std::string DynamicModule::toString()
 	return out.str();
 }
 
-QStringList DynamicModule::requiredModulesQ() const {	return tql(_requiredModules);					}
-
-void DynamicModule::setRequiredModules(stringset requiredModules)
+void DynamicModule::setImportsR(stringset importsR)
 {
-	bool ditto = requiredModules.size() == _requiredModules.size();
-
-	if(ditto)
-		for(const std::string & mod : requiredModules)
-			if(_requiredModules.count(mod) == 0)
-			{
-				ditto = false;
-				break;
-			}
-
-	if(!ditto)
+	if(importsR != _importsR)
 	{
-		Log::log() << "Required Modules for module '" << name() << "' changed!" << std::endl;
-
-		_requiredModules = requiredModules;
-
-		emit requiredModulesChanged();
+		Log::log() << "R Pkg imports for module '" << name() << "' changed!\nReinstalling module, just in case." << std::endl;
+		
+		_importsR = importsR;
+		emit importsRChanged();
+		
+		if(_status == moduleStatus::readyForUse || _status == moduleStatus::loadingNeeded)
+			setStatus(moduleStatus::installNeeded);
 	}
 }
+
+stringset DynamicModule::requiredModules() const 
+{
+	stringset out;
+	
+	for(const std::string & pkg : _importsR)
+		if(DynamicModules::dynMods()->dynamicModule(pkg))
+			out.insert(pkg);
+	
+	return out;
+}
+
 
 }
