@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-11-11 08:28+0000\n"
-"Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
+"PO-Revision-Date: 2020-11-16 15:28+0000\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
 "Language: de\n"
@@ -1695,7 +1695,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "AncovaBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "AncovaBayesian|"
 msgid "Order"
@@ -2091,7 +2091,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "AnovaBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "AnovaBayesian|"
 msgid "Order"
@@ -2511,7 +2511,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Order"
@@ -2735,7 +2735,7 @@ msgstr "1. Planung"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Population Materiality"
-msgstr "Populatiematerialiteit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Absolute"
@@ -3049,7 +3049,7 @@ msgstr "Geloofwaardigheidsgrens"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Most likely error (MLE)"
@@ -3069,7 +3069,7 @@ msgstr "Korrelationsdiagramm"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Population Materiality"
-msgstr "Populations-Wesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Absolute"
@@ -3081,7 +3081,7 @@ msgstr "Relativ"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Size"
@@ -3214,7 +3214,7 @@ msgstr "1. Planung"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Population Materiality"
-msgstr "Populations-Wesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Absolute"
@@ -3532,7 +3532,7 @@ msgstr "Korrelationsdiagramm"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Population Materiality"
-msgstr "Populations-Wesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Absolute"
@@ -3544,7 +3544,7 @@ msgstr "Relativ"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Size"
@@ -3665,7 +3665,7 @@ msgstr "Koeffizienten"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Plots"
@@ -3713,7 +3713,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Plots"
@@ -3749,7 +3749,7 @@ msgstr "Koeffzienten"
 
 msgctxt "BainRegressionLinearBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainRegressionLinearBayesian|"
 msgid "Plots"
@@ -3849,7 +3849,7 @@ msgstr "Deskriptive Abbildungen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Variables"
@@ -3925,7 +3925,7 @@ msgstr "Deskriptive Abbildungen"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Pairs"
@@ -3997,7 +3997,7 @@ msgstr "Deskriptive Abbildungen"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "Descriptives|"
 msgid "Variables"
@@ -4805,7 +4805,7 @@ msgstr "Deskriptive Abbildungen"
 
 msgctxt "BinomialTestBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BinomialTestBayesian|"
 msgid "Prior"
@@ -5069,7 +5069,7 @@ msgstr "Log-Odds-Ratio (nur 2x2)"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Cramer's V"
@@ -5217,7 +5217,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Display"
@@ -5345,7 +5345,7 @@ msgstr "Schätzer"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Credible intervals"
-msgstr "Kredibilitätsintervalle"
+msgstr "Glaubwürdigkeitsintervalle"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Interval"
@@ -7730,7 +7730,7 @@ msgstr "Unterstützte Korrelationen markieren"
 
 msgctxt "CorrelationBayesian|"
 msgid "Credible intervals"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervalle"
 
 msgctxt "CorrelationBayesian|"
 msgid "Interval"
@@ -8018,7 +8018,7 @@ msgstr "Konstante weglassen"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Order"
@@ -8222,7 +8222,7 @@ msgstr "Numerische Genauigkeit"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "No. samples for credible interval"
-msgstr "Stichprobenumfang für Kredibilitätsintervall"
+msgstr "Stichprobenumfang für Glaubwürdigkeitsintervall"
 
 msgctxt "RegressionLogistic|"
 msgid "Dependent Variable"
@@ -8926,7 +8926,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Tests"
@@ -8990,7 +8990,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Alt. Hypothesis"
@@ -9066,7 +9066,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Additional Statistics"
@@ -9466,7 +9466,7 @@ msgstr "SortMenuModel wurde nicht mit einem sortierbaren Parent aufgerufen"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Size"
@@ -10511,7 +10511,7 @@ msgstr "Spearmans Rho"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Credible intervals"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervalle"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Interval"
@@ -10954,7 +10954,7 @@ msgstr "df 2"
 
 msgctxt "LDf|"
 msgid "ncp"
-msgstr "ncp"
+msgstr "Nzp"
 
 msgctxt "LDf|"
 msgid "Display"
@@ -14258,7 +14258,7 @@ msgstr "Spearmans Rho"
 
 msgctxt "CorrelationBayesian|"
 msgid "Population Correlation Coefficient"
-msgstr "Populations-Korrelationskoeffizient"
+msgstr "Grundgesamtheits-Korrelationskoeffizient"
 
 msgctxt "CorrelationBayesian|"
 msgid "Pearson's rho"
@@ -14888,7 +14888,7 @@ msgstr "Abbildungen"
 
 msgctxt "auditSelection|"
 msgid "Population and sample histograms"
-msgstr "Populations- und Stichprobenhistogramme"
+msgstr "Grundgesamtheits- und Stichprobenhistogramme"
 
 msgctxt "auditSelection|"
 msgid "Add selection counter to data"
@@ -15567,7 +15567,7 @@ msgstr "Grafikbasierte Datenanalyse"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Population Materiality"
-msgstr "Populationswesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Absolute"
@@ -15579,7 +15579,7 @@ msgstr "Relativ"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Size"
@@ -15703,7 +15703,7 @@ msgstr "Kredibilitätsgrenze"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Explanatory Text"
@@ -15799,7 +15799,7 @@ msgstr "Prior-Information"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Population Materiality"
-msgstr "Populationswesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Absolute"
@@ -15811,7 +15811,7 @@ msgstr "Relativ"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Size"
@@ -16723,7 +16723,7 @@ msgstr "Skala-Statistiken"
 
 msgctxt "ReliabilityBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "ReliabilityBayesian|"
 msgid "McDonald's ω"
@@ -17244,7 +17244,7 @@ msgstr "Schätzungen Varianz/Korrelation"
 
 msgctxt "MixedModelsBOptions|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "MixedModelsMCMCDiagnostics|"
 msgid "MCMC diagnostics"
@@ -17790,24 +17790,24 @@ msgid ""
 "Two-sided alternative hypothesis that the population mean is not equal to "
 "the test value."
 msgstr ""
-"Zweiseitige Alternativhypothese, dass der Populationsmittelwert nicht gleich "
-"dem Testwert ist."
+"Zweiseitige Alternativhypothese, dass der Mittelwert der Grundgesamtheit "
+"nicht gleich dem Testwert ist."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid ""
 "One-sided alternative hypothesis that the population mean is larger than the "
 "test value."
 msgstr ""
-"Einseitige Alternativhypothese, dass der Populationsmittelwert größer als "
-"der Testwert ist."
+"Einseitige Alternativhypothese, dass der Mittelwert der Grundgesamtheit "
+"größer als der Testwert ist."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid ""
 "One sided alternative hypothesis that the population mean is smaller than "
 "the test value."
 msgstr ""
-"Einseitige Alternativhypothese, dass der Populationsmittelwert kleiner als "
-"der Testwert ist."
+"Einseitige Alternativhypothese, dass der Mittelwert der Grundgesamtheit "
+"kleiner als der Testwert ist."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid ""
@@ -17819,7 +17819,7 @@ msgstr ""
 "Zeigt den Bayesfaktor, der mit benutzerdefiniertem Prior berechnet wurde; "
 "zeigt ein Wahrscheinlichkeitsdiagramm mit dem Chancenverhältnis der Daten "
 "unter der Null- vs. der Alternativhypothese; zeigt den Median und das 95% "
-"Kredibilitätsintervall der Posteriordichte."
+"Glaubwürdigkeitsintervall der Posteriordichte."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid ""
@@ -17985,7 +17985,7 @@ msgstr ""
 "Dichte der Effektgröße unter der Alternativhypothese; die grauen Kreise "
 "zeigen die Höhe der Prior- und Posterior-Dichte bei Effektgröße delta = 0. "
 "Die horizontale durchgezogene Linie zeigt die Breite des 95%-"
-"Kredibilitätsintervalls des Posteriors."
+"Glaubwürdigkeitsintervalls des Posteriors."
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
