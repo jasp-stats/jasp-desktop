@@ -26,7 +26,7 @@ import JASP.Controls	1.0
 import QtQuick.Window	2.3
 import JASP				1.0
 
-JASPControl
+TableViewBase
 {
 	id:					tableView
 

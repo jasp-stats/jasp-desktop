@@ -17,17 +17,18 @@
 //
 
 #include "listmodelmultitermsassigned.h"
+#include "jasplistcontrol.h"
 #include "log.h"
 
 
 using namespace std;
 
-ListModelMultiTermsAssigned::ListModelMultiTermsAssigned(QMLListView* listView, int columns)
+ListModelMultiTermsAssigned::ListModelMultiTermsAssigned(JASPListControl* listView, int columns)
 	: ListModelAssignedInterface(listView)
 	, _columns(columns)
 {
 	_copyTermsWhenDropped = true;
-	_allowDuplicatesInMultipleColumns = listView->getItemProperty("allowDuplicatesInMultipleColumns").toBool();
+	_allowDuplicatesInMultipleColumns = listView->property("allowDuplicatesInMultipleColumns").toBool();
 }
 
 void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)

@@ -26,7 +26,7 @@ class ListModelInputValue : public ListModel
 	Q_OBJECT
 public:
 	
-	ListModelInputValue(QMLListView* listView, int minRows = 0);
+	ListModelInputValue(JASPListControl* listView, int minRows = 0);
 	
 	int							rowCount(const QModelIndex &parent = QModelIndex())				const	override;
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)		const	override;

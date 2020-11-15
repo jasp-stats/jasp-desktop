@@ -21,7 +21,7 @@
 #include "../analysis/analysisform.h"
 #include <QQmlProperty>
 
-ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView)
+ListModelTermsAvailable::ListModelTermsAvailable(JASPListControl* listView)
 	: ListModelAvailableInterface(listView)
 {
 }

@@ -1,4 +1,5 @@
 #include "jaspcontrol.h"
+#include "widgets/jasplistcontrol.h"
 #include "log.h"
 #include "analysisform.h"
 #include "qquick/jasptheme.h"
@@ -191,29 +192,15 @@ void JASPControl::componentComplete()
 	}
 
 	QQmlContext* context = qmlContext(this);
-	bool hasContextForm = context->contextProperty("hasContextForm").toBool();
+	bool isDynamic = context->contextProperty("isDynamic").toBool();
+	_form = context->contextProperty("form").value<AnalysisForm*>();
 
-	if (hasContextForm)
-		_form = context->contextProperty("form").value<AnalysisForm*>();
-	else
-	{
-		QObject* p = this;
-		do
-		{
-			p = p->parent();
-			_form = qobject_cast<AnalysisForm*>(p);
-		}
-		while (p && !_form);
-	}
-
-	_wrapper = JASPControlWrapper::buildJASPControlWrapper(this);
-
-	if (!hasContextForm)
+	if (!isDynamic)
 	{
 		if (_form)	_form->addControl(this);
 		else
 		{
-			_wrapper->setUp();
+			setUp();
 			setInitialized();
 		}
 	}
@@ -221,14 +208,14 @@ void JASPControl::componentComplete()
 	{
 		bool noDirectSetup = context->contextProperty("noDirectSetup").toBool();
 		if (!noDirectSetup)
-			_wrapper->setUp();
+			setUp();
 
 		setInitialized();
-		QMLListView* listView = nullptr;
+		JASPListControl* listView = nullptr;
 
 		QVariant listViewVar = context->contextProperty("listView");
 		if (!listViewVar.isNull())
-			listView = dynamic_cast<QMLListView*>(listViewVar.value<QObject*>());
+			listView = dynamic_cast<JASPListControl*>(listViewVar.value<QObject*>());
 		else
 		{
 			QVariant tableViewVar = context->contextProperty("tableView");
@@ -236,13 +223,13 @@ void JASPControl::componentComplete()
 			{
 				JASPControl* tableViewControl = dynamic_cast<JASPControl*>(tableViewVar.value<QObject*>());
 				if (tableViewControl)
-					listView = dynamic_cast<QMLListView*>(tableViewControl->getWrapper());
+					listView = dynamic_cast<JASPListControl*>(tableViewControl);
 			}
 		}
 
 		if (listView)
 		{
-			_parentListView = listView->item();
+			_parentListView = listView;
 
 			if (!listViewVar.isNull())
 			{
@@ -252,7 +239,7 @@ void JASPControl::componentComplete()
 			else
 				_parentListViewKey = context->contextProperty("rowIndex").toString();
 
-			listView->addRowControl(_parentListViewKey, _wrapper);
+			listView->addRowControl(_parentListViewKey, this);
 
 			emit parentListViewChanged();
 		}
@@ -273,6 +260,59 @@ void JASPControl::componentComplete()
 	if (!_runOnChange)
 		setRunOnChangeToChildren(_runOnChange);
 }
+
+/*
+		JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControl* control)
+		{
+			JASPControlWrapper* controlWrapper = nullptr;
+
+			switch(control->controlType())
+			{
+			case JASPControl::ControlType::Switch:			//fallthrough:
+			case JASPControl::ControlType::CheckBox:					controlWrapper		= new CheckBoxBase(control);					break;
+			case JASPControl::ControlType::Slider:						controlWrapper		= new SliderBase(control);						break;
+			case JASPControl::ControlType::ComboBox:					controlWrapper		= new ComboBoxBase(control);					break;
+			case JASPControl::ControlType::Expander:					controlWrapper		= new QMLExpander(control);							break;
+			case JASPControl::ControlType::TableView:					controlWrapper		= new BoundQMLTableView(control);					break;
+			case JASPControl::ControlType::TextField:					controlWrapper		= new TextInputBase(control);					break;
+			case JASPControl::ControlType::FactorsForm:					controlWrapper		= new FactorsFormBase(control);					break;
+			case JASPControl::ControlType::InputListView:				controlWrapper		= new InputListBase(control);					break;
+			case JASPControl::ControlType::TabView:						controlWrapper		= new ComponentsListBase(control);				break;
+			case JASPControl::ControlType::ComponentsList:				controlWrapper		= new ComponentsListBase(control);				break;
+			case JASPControl::ControlType::RadioButtonGroup:			controlWrapper		= new BoundQMLRadioButtons(control);				break;
+			case JASPControl::ControlType::RepeatedMeasuresFactorsList:	controlWrapper		= new BoundQMLRepeatedMeasuresFactors(control);		break;
+			case JASPControl::ControlType::TextArea:
+			{
+				QString textType = control->property("textType").toString();
+				if		(textType == "lavaan")								controlWrapper		= new TextAreaLavaanBase(control);
+				else if (textType == "JAGSmodel")							controlWrapper		= new TextAreaJAGSBase(control);
+				else														controlWrapper		= new BoundQMLTextArea(control);
+				break;
+			}
+			case JASPControl::ControlType::VariablesListView:
+			{
+				JASPControl::ListViewType	listViewType = JASPControl::ListViewType(control->property("listViewType").toInt());
+
+				switch(listViewType)
+				{
+				case JASPControl::ListViewType::AssignedVariables:		controlWrapper = new BoundQMLListViewTerms(control, false);		break;
+				case JASPControl::ListViewType::Interaction:			controlWrapper = new BoundQMLListViewTerms(control, true);		break;
+				case JASPControl::ListViewType::RepeatedMeasures:		controlWrapper = new BoundQMLListViewMeasuresCells(control);	break;
+				case JASPControl::ListViewType::Layers:					controlWrapper = new BoundQMLListViewLayers(control);			break;
+				case JASPControl::ListViewType::AvailableVariables:		controlWrapper = new QMLListViewTermsAvailable(control, false);	break;
+				case JASPControl::ListViewType::AvailableInteraction:	controlWrapper = new QMLListViewTermsAvailable(control, true);	break;
+				}
+				break;
+			}
+			case JASPControl::ControlType::GroupBox:
+			case JASPControl::ControlType::DefaultControl:
+			default:
+				controlWrapper = new JASPControlWrapper(control);
+			}
+
+			return controlWrapper;
+		}
+		*/
 
 void JASPControl::setCursorShape(int shape)
 {
@@ -330,6 +370,25 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item)
 	}
 
 	return result;
+}
+
+bool JASPControl::addDependency(JASPControl *item)
+{
+	if (_depends.count(item) > 0 || this == item)
+		return false;
+
+	_depends.insert(item);
+	return true;
+}
+
+void JASPControl::removeDependency(JASPControl *item)
+{
+	_depends.erase(item);
+}
+
+QString JASPControl::friendlyName() const
+{
+	return ControlTypeToFriendlyString(controlType());
 }
 
 void JASPControl::setParentDebug(bool parentDebug)
@@ -479,7 +538,7 @@ QString JASPControl::helpMD(int howDeep) const
 	else			markdown << [&] () { QString header; for(header = ""; header.size() < howDeep ; header += '#'); return header;} () + " "; // ;)
 
 	//Ok removing the check for existence of wrapper because
-	markdown << _wrapper->friendlyName();
+	markdown << friendlyName();
 
 	if(title() != "")	markdown << " - *" + title() + "*:\n";
 	else				markdown << "\n";
@@ -581,4 +640,16 @@ QString JASPControl::humanFriendlyLabel() const
 
 	return label;
 
+}
+
+void JASPControl::runRScript(const QString &script, bool whiteListedVersion)
+{
+	QString id = parentListView() ? (parentListView()->name() + "." + parentListViewKey() + "." + name()) : name();
+
+	form()->runRScript(script, id, whiteListedVersion);
+}
+
+void JASPControl::rScriptDoneHandler(const QString &)
+{
+	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
 }

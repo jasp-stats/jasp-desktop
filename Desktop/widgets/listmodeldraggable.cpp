@@ -18,13 +18,14 @@
 
 #include "listmodeldraggable.h"
 #include "analysis/analysisform.h"
+#include "jasplistcontrol.h"
 
-ListModelDraggable::ListModelDraggable(QMLListView* listView)
+ListModelDraggable::ListModelDraggable(JASPListControl* listView)
 	: ListModel(listView)
 	, _copyTermsWhenDropped(false)	
 {
-	_allowAnalysisOwnComputedColumns = listView->getItemProperty("allowAnalysisOwnComputedColumns").toBool();
-	_addNewAvailableTermsToAssignedModel = listView->getItemProperty("addAvailableVariablesToAssigned").toBool();
+	_allowAnalysisOwnComputedColumns = listView->property("allowAnalysisOwnComputedColumns").toBool();
+	_addNewAvailableTermsToAssignedModel = listView->property("addAvailableVariablesToAssigned").toBool();
 }
 
 ListModelDraggable::~ListModelDraggable()

@@ -21,22 +21,106 @@ import QtQml.Models		2.2
 import JASP.Controls	1.0
 import JASP				1.0
 
-JASPGridViewControl
+InputListBase
 {
-	id:							inputListView
-	controlType:				JASPControl.InputListView
-	itemComponent:				itemInputComponent
+	id						: inputListView
+	controlType				: JASPControl.InputListView
+	background				: itemRectangle
+	implicitWidth 			: parent.width
+	implicitHeight			: jaspTheme.defaultVariablesFormHeight
+	useControlMouseArea		: false
+	shouldStealHover		: false
+	innerControl			: itemGridView
 
-				property var	inputComponent		: textField
-				property bool	enableRowComponent	: true
-				property var	defaultValues		: []
-				property int	minRows				: 0
-				property bool	addVirtual			: true
-				property string placeHolder			: qsTr("New Value")
+	property var	model
+	property alias	label				: inputListView.title
+	property alias	count				: itemGridView.count
+	property string	optionKey			: "value"
+	property var	source
+	property var	sourceModel
+
+	property alias	itemGridView		: itemGridView
+	property alias	cellHeight			: itemGridView.cellHeight
+	property alias	cellWidth			: itemGridView.cellWidth
+	property alias	itemTitle			: itemTitle
+	property string	rowComponentTitle	: ""
+
+	property bool	enableRowComponent	: true
+	property var	defaultValues		: []
+	property int	minRows				: 0
+	property bool	addVirtual			: true
+	property string placeHolder			: qsTr("New Value")
+
 	readonly	property string deleteIcon			: "cross.png"
 
 	signal itemChanged(int index, var name);
 	signal itemRemoved(int index);
+
+	Text
+	{
+		id				: itemTitle
+		anchors.top		: parent.top
+		anchors.left	: parent.left
+		text			: title
+		height			: title ? jaspTheme.listTitle : 0
+		font			: jaspTheme.font
+		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+	}
+
+	Text
+	{
+		anchors.top		: parent.top
+		anchors.right	: parent.right
+		text			: rowComponentTitle
+		height			: rowComponentTitle ? jaspTheme.listTitle : 0
+		font			: jaspTheme.font
+		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+	}
+
+	Rectangle
+	{
+		id				: itemRectangle
+		anchors.top		: itemTitle.bottom
+		anchors.left	: parent.left
+		height			: inputListView.height - itemTitle.height
+		width			: parent.width
+		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
+		border.width	: 1
+		border.color	: jaspTheme.borderColor
+		radius			: jaspTheme.borderRadius
+
+		JASPScrollBar
+		{
+			id				: scrollBar
+			flickable		: itemGridView
+			manualAnchor	: true
+			vertical		: true
+			z				: 1337
+
+			anchors
+			{
+				top			: parent.top
+				right		: parent.right
+				bottom		: parent.bottom
+				margins		: 2
+			}
+		}
+
+		GridView
+		{
+			id						: itemGridView
+			cellHeight				: 20  * preferencesModel.uiScale
+			cellWidth				: width
+			clip					: true
+			focus					: true
+			anchors.fill			: parent
+			anchors.margins			: 4 * preferencesModel.uiScale
+			anchors.rightMargin		: scrollBar.width + anchors.margins
+			model					: inputListView.model
+			delegate				: itemInputComponent
+			boundsBehavior			: Flickable.StopAtBounds
+		}
+	}
 
 	Component
 	{
@@ -54,6 +138,9 @@ JASPGridViewControl
 
 			Component.onCompleted:
 			{
+				textField.fieldWidth = Qt.binding( function() { return itemWrapper.width - (rowComponentItem ? rowComponentItem.width : 0) - deleteIconID.width; })
+				textField.focus = true;
+
 				if (rowComponentItem)
 				{
 					rowComponentItem.parent					= itemWrapper
@@ -64,21 +151,16 @@ JASPGridViewControl
 				}
 			}
 
-			Loader
+			TextField
 			{
-				sourceComponent: inputListView.inputComponent
-				asynchronous:	false
-
-				property var modelValue: model
-				property int modelIndex: index
-				property bool isVirtual: itemWrapper.isVirtual
-
-				onLoaded:
-				{
-					if (item.hasOwnProperty("fieldWidth"))
-						item.fieldWidth = Qt.binding( function() { return itemWrapper.width - (rowComponentItem ? rowComponentItem.width : 0) - deleteIconID.width; })
-					item.focus = true;
-				}
+				id:								textField
+				value:							(!itemWrapper.isVirtual && model) ? model.name : ""
+				placeholderText:				(itemWrapper.isVirtual && model) ? model.name : ""
+				useExternalBorder:				false
+				showBorder:						false
+				selectValueOnFocus:				true
+				control.horizontalAlignment:	TextInput.AlignLeft
+				onEditingFinished:				inputListView.itemChanged(index, value)
 			}
 
 			Image
@@ -100,20 +182,4 @@ JASPGridViewControl
 			}
 		}
 	}
-
-	Component
-	{
-		id: textField
-		TextField
-		{
-			value:							(!isVirtual && modelValue) ? modelValue.name : ""
-			placeholderText:				(isVirtual && modelValue) ? modelValue.name : ""
-			useExternalBorder:				false
-			showBorder:						false
-			selectValueOnFocus:				true
-			control.horizontalAlignment:	TextInput.AlignLeft
-			onEditingFinished:				inputListView.itemChanged(modelIndex, value)
-		}
-	}
-
 }

@@ -19,10 +19,10 @@
 #include "listmodellabelvalueterms.h"
 #include "log.h"
 
-ListModelLabelValueTerms::ListModelLabelValueTerms(QMLListView* listView, const QMLListView::LabelValueMap& values)
+ListModelLabelValueTerms::ListModelLabelValueTerms(JASPListControl* listView, const JASPListControl::LabelValueMap& values)
 	: ListModelTermsAvailable(listView)
 {
-	if (listView->getItemProperty("addEmptyValue").toBool())
+	if (listView->property("addEmptyValue").toBool())
 		addEmptyValue();
 
 	setLabelValues(values);
@@ -89,7 +89,7 @@ int ListModelLabelValueTerms::getIndexOfValue(const QString &value)
 	return -1;
 }
 
-void ListModelLabelValueTerms::setLabelValues(const QMLListView::LabelValueMap &labelvalues)
+void ListModelLabelValueTerms::setLabelValues(const JASPListControl::LabelValueMap &labelvalues)
 {
 	_valueToLabelMap.clear();
 	_labelToValueMap = labelvalues;

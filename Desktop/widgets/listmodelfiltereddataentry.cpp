@@ -3,30 +3,30 @@
 #include "analysis/options/optionintegerarray.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/analysisform.h"
-#include "boundqmltableview.h"
+#include "tableviewbase.h"
 #include "utilities/qutils.h"
 #include <QQuickItem>
 #include "log.h"
 #include "analysis/jaspcontrol.h"
 
-ListModelFilteredDataEntry::ListModelFilteredDataEntry(BoundQMLTableView * parent, QString tableType)
+ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent, QString tableType)
 	: ListModelTableViewBase(parent, tableType)
 {
 	setAcceptedRowsTrue();
 
-	setFilter(	_tableView->getItemProperty("filter").toString());
-	setColName(	_tableView->getItemProperty("colName").toString());
-	setExtraCol(_tableView->getItemProperty("extraCol").toString());
+	setFilter(	_tableView->property("filter").toString());
+	setColName(	_tableView->property("colName").toString());
+	setExtraCol(_tableView->property("extraCol").toString());
 
-	_tableView->setItemProperty("itemType", "double"); //Force itemtype to be double
+	_tableView->setProperty("itemType", "double"); //Force itemtype to be double
 
 	connect(this,				&ListModelFilteredDataEntry::filterChanged,		this, &ListModelFilteredDataEntry::runFilter										);
-	connect(_tableView->item(), SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))														);
-	connect(_tableView->item(), SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))														);
-	connect(_tableView->item(), SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))													);
+	connect(_tableView,			SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))														);
+	connect(_tableView,			SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))														);
+	connect(_tableView,			SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))													);
 	connect(_tableView->form(), &AnalysisForm::dataSetChanged,					this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
-	connect(this,				&ListModelFilteredDataEntry::filterChanged,		[&](){ _tableView->setItemProperty("filter",	_filter);	}						);
-	connect(this,				&ListModelFilteredDataEntry::colNameChanged,	[&](){ _tableView->setItemProperty("colName",	_colName);	}						);
+	connect(this,				&ListModelFilteredDataEntry::filterChanged,		[&](){ _tableView->setProperty("filter",	_filter);	}						);
+	connect(this,				&ListModelFilteredDataEntry::colNameChanged,	[&](){ _tableView->setProperty("colName",	_colName);	}						);
 
 	if(_colNames.size() == 0 && !_colName.isEmpty())
 		_colNames.push_back(_colName);

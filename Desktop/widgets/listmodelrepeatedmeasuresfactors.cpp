@@ -27,10 +27,11 @@
 
 using namespace std;
 
-ListModelRepeatedMeasuresFactors::ListModelRepeatedMeasuresFactors(QMLListView* listView)
+ListModelRepeatedMeasuresFactors::ListModelRepeatedMeasuresFactors(JASPListControl* listView)
 	: ListModel(listView)
 {
 	_itemType = "fixedFactors";
+	setTermsAreVariables(false);
 }
 
 int ListModelRepeatedMeasuresFactors::rowCount(const QModelIndex &parent) const

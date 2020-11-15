@@ -131,8 +131,6 @@
         <file>components/JASP/Widgets/ControlErrorMessage.qml</file>
         <file>components/JASP/Widgets/LoadingIndicator.qml</file>
         <file>components/JASP/Controls/Text.qml</file>
-        <file>components/JASP/Controls/JASPGridControl.qml</file>
-        <file>components/JASP/Controls/JASPGridViewControl.qml</file>
         <file>components/JASP/Controls/RowLayout.qml</file>
         <file>components/JASP/Controls/TabView.qml</file>
         <file>components/JASP/Controls/FileSelector.qml</file>

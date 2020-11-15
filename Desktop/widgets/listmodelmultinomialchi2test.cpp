@@ -23,7 +23,7 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optiondoublearray.h"
 
-ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(BoundQMLTableView * parent, QString tableType)
+ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(TableViewBase * parent, QString tableType)
 	: ListModelTableViewBase(parent, tableType)
 {
 	_defaultCellVal		= 1;

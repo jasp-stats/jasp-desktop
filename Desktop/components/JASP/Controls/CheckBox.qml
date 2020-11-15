@@ -22,7 +22,7 @@ import QtQuick.Layouts	1.3 as L
 import JASP				1.0
 
 
-JASPControl
+CheckBoxBase
 {
 	id:					checkBox
 	controlType:		JASPControl.CheckBox

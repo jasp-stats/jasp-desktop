@@ -8,7 +8,6 @@
 
 
 class AnalysisForm;
-class JASPControlWrapper;
 
 class JASPControl : public QQuickItem
 {
@@ -34,7 +33,7 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( bool								shouldShowFocus		READ shouldShowFocus		WRITE setShouldShowFocus	NOTIFY shouldShowFocusChanged		)
 	Q_PROPERTY( bool								shouldStealHover	READ shouldStealHover		WRITE setShouldStealHover	NOTIFY shouldStealHoverChanged		)
 	Q_PROPERTY( QQuickItem						*	childControlsArea	READ childControlsArea		WRITE setChildControlsArea										)
-	Q_PROPERTY( QQuickItem						*	parentListView		READ parentListView										NOTIFY parentListViewChanged		)
+	Q_PROPERTY( JASPControl						*	parentListView		READ parentListView										NOTIFY parentListViewChanged		)
 	Q_PROPERTY( QQuickItem						*	innerControl		READ innerControl			WRITE setInnerControl		NOTIFY innerControlChanged			)
 	Q_PROPERTY( QQuickItem						*	background			READ background				WRITE setBackground			NOTIFY backgroundChanged			)
 	Q_PROPERTY( QQuickItem						*	focusIndicator		READ focusIndicator			WRITE setFocusIndicator		NOTIFY focusIndicatorChanged		)
@@ -44,6 +43,8 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( int									preferredWidth		READ preferredWidth			WRITE setPreferredWidth		NOTIFY preferredWidthChanged		)
 	Q_PROPERTY( int									cursorShape			READ cursorShape			WRITE setCursorShape											)
 	Q_PROPERTY( bool								hovered				READ hovered											NOTIFY hoveredChanged				)
+
+	typedef std::set<JASPControl*> Set;
 
 public:
 	// Any addition here should also be added manually to ControlTypeToFriendlyString... I couldnt get this to work with DECLARE_ENUM...
@@ -74,6 +75,7 @@ public:
 	enum class DropMode		{ DropNone			= static_cast<int>(Inclusive::MaxOnly)					+ 1,	DropInsert, DropReplace };
 	enum class ListViewType { AssignedVariables = static_cast<int>(DropMode::DropReplace)				+ 1,	Interaction, AvailableVariables, RepeatedMeasures, Layers, AvailableInteraction };
 	enum class AssignType	{ AssignDefault		= static_cast<int>(ListViewType::AvailableInteraction)	+ 1,	AssignCross, AssignMainEffects, AssignInteraction, AssignAll2Way, AssignAll3Way, AssignAll4Way, AssignAll5Way };
+	enum class TextType		{ Default			= static_cast<int>(AssignType::AssignAll5Way)			+ 1,	Model, Rcode, JAGSmodel, Source, Lavaan };
 
 
 	Q_ENUM(ControlType)
@@ -106,7 +108,7 @@ public:
 	bool			focusOnTab()			const	{ return activeFocusOnTab();	}
 	AnalysisForm*	form()					const	{ return _form;					}
 	QQuickItem*		childControlsArea()		const	{ return _childControlsArea;	}
-	QQuickItem*		parentListView()		const	{ return _parentListView;		}
+	JASPControl*	parentListView()		const	{ return _parentListView;		}
 	QString			parentListViewKey()		const	{ return _parentListViewKey;	}
 	QQuickItem*		innerControl()			const	{ return _innerControl;			}
 	QQuickItem*		background()			const	{ return _background;			}
@@ -122,11 +124,26 @@ public:
 	void			setInitialized()	{ _initialized = true; emit initializedChanged(); }
 
 
-	JASPControlWrapper				*	getWrapper()				const { return _wrapper; }
 	QQmlComponent					*	rowComponent()				const { return _rowComponent;	}
 
 	static QString					ControlTypeToFriendlyString(ControlType controlType);
 	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item);
+
+	virtual void					setUp()										{}
+	virtual void					cleanUp()									{ disconnect(); }
+
+	const Set					&	depends()							const	{ return _depends; }
+	bool							addDependency(JASPControl* item);
+	void							removeDependency(JASPControl* item);
+	virtual JASPControl			*	getChildControl(QString key, QString name)	{ return nullptr; }
+	void							runRScript(const QString& script, bool whiteListedVersion = true);
+	virtual void					rScriptDoneHandler(const QString& result);
+
+	virtual QString					friendlyName() const;
+
+protected:
+	Set								_depends; //So Joris changed this to a set instead of a vector because that is what it seemed to be, the order isn't important right?
+
 
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }
@@ -207,13 +224,6 @@ protected:
 			void					componentComplete() override;
 			void					_setType();
 			void					setCursorShape(int shape);
-
-	static	void					appendRowComponent(	QQmlListProperty<QQmlComponent>*, QQmlComponent*);
-	static	int						rowComponentsCount(	QQmlListProperty<QQmlComponent>*);
-	static	QQmlComponent*			rowComponent(		QQmlListProperty<QQmlComponent>*, int);
-	static	void					clearRowComponents(	QQmlListProperty<QQmlComponent>*);
-
-
 			void					setParentDebugToChildren(bool debug);
 			void					setRunOnChangeToChildren(bool change);
 
@@ -237,9 +247,8 @@ protected:
 							_useControlMouseArea	= true,
 							_shouldShowFocus		= false,
 							_shouldStealHover		= false;
-	JASPControlWrapper	*	_wrapper				= nullptr;
-	QQuickItem			*	_parentListView			= nullptr,
-						*	_childControlsArea		= nullptr,
+	JASPControl			*	_parentListView			= nullptr;
+	QQuickItem			*	_childControlsArea		= nullptr,
 						*	_innerControl			= nullptr,
 						*	_background				= nullptr,
 						*	_focusIndicator			= nullptr;

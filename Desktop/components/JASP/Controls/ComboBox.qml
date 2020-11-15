@@ -4,7 +4,7 @@ import QtQuick.Layouts	1.3
 import JASP				1.0
 
 
-JASPControl
+ComboBoxBase
 {
 	id:					comboBox
 	controlType:		JASPControl.ComboBox

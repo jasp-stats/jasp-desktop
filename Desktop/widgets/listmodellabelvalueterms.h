@@ -19,13 +19,14 @@
 #ifndef LISTMODELLABELVALUETERMS_H
 #define LISTMODELLABELVALUETERMS_H
 
+#include "jasplistcontrol.h"
 #include "listmodeltermsavailable.h"
 
 class ListModelLabelValueTerms : public ListModelTermsAvailable
 {
 	Q_OBJECT
 public:
-	ListModelLabelValueTerms(QMLListView* listView, const QMLListView::LabelValueMap& values = QMLListView::LabelValueMap());
+	ListModelLabelValueTerms(JASPListControl* listView, const JASPListControl::LabelValueMap& values = JASPListControl::LabelValueMap());
 
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 
@@ -34,7 +35,7 @@ public:
 	QString						getLabel(const QString& value);
 	int							getIndexOfValue(const QString& value);
 
-	void						setLabelValues(const QMLListView::LabelValueMap& values);
+	void						setLabelValues(const JASPListControl::LabelValueMap& values);
 
 protected:
 

@@ -23,12 +23,32 @@ import QtQml.Models		2.2
 import JASP.Widgets		1.0
 import JASP				1.0
 
-JASPGridViewControl
+VariablesListBase
 {
 	id						: variablesList
 	implicitHeight			: maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
-	itemComponent			: itemVariableComponent
-	optionKey				: listViewType === JASP.Interaction ? "components" : "variable"
+	controlType				: JASPControl.VariablesListView
+	background				: itemRectangle
+	implicitWidth 			: parent.width
+	useControlMouseArea		: false
+	shouldStealHover		: false
+	innerControl			: itemGridView
+
+	property var	model
+	property var	values
+	property string	optionKey			: listViewType === JASP.Interaction ? "components" : "variable"
+	property alias	label				: variablesList.title
+	property alias	count				: itemGridView.count
+	property int	columns				: 1
+	property var	source
+	property var	sourceModel
+	property alias	itemGridView		: itemGridView
+	property alias	cellHeight			: itemGridView.cellHeight
+	property alias	cellWidth			: itemGridView.cellWidth
+	property alias	itemRectangle		: itemRectangle
+	property alias	scrollBar			: scrollBar
+	property alias	itemTitle			: itemTitle
+	property string	rowComponentTitle	: ""
 
 	property string itemType						: "variables"
 	property alias	dropKeys						: dropArea.keys
@@ -60,7 +80,7 @@ JASPGridViewControl
 
 	property int	indexInDroppedListViewOfDraggedItem:	-1
 	
-	readonly property int rectangleY				: listRectangle.y
+	readonly property int rectangleY				: itemRectangle.y
 
 	property int	startShiftSelected				: 0
 	property int	endShiftSelected				: -1
@@ -101,7 +121,7 @@ JASPGridViewControl
 		}
 
 		// Do not use variablesList.enabled: this may break the binding if the developer used it in his QML form.
-		listRectangle.enabled = result
+		itemRectangle.enabled = result
 		listTitle.enabled = result
 	}
 
@@ -121,9 +141,9 @@ JASPGridViewControl
 	function getExistingItems()
 	{
 		var items = [];
-		for (var i = 0; i < listGridView.contentItem.children.length; i++)
+		for (var i = 0; i < itemGridView.contentItem.children.length; i++)
 		{
-			var item = listGridView.contentItem.children[i];
+			var item = itemGridView.contentItem.children[i];
 			if (item.children.length === 0)
 				continue;
 			item = item.children[0];
@@ -169,6 +189,93 @@ JASPGridViewControl
 			variablesList.model.selectItem(i, selected)
 	}
 
+	Text
+	{
+		id				: itemTitle
+		anchors.top		: parent.top
+		anchors.left	: parent.left
+		text			: title
+		height			: title ? jaspTheme.listTitle : 0
+		font			: jaspTheme.font
+		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+	}
+
+	Text
+	{
+		anchors.top		: parent.top
+		anchors.right	: parent.right
+		text			: rowComponentTitle
+		height			: rowComponentTitle ? jaspTheme.listTitle : 0
+		font			: jaspTheme.font
+		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+	}
+
+	Rectangle
+	{
+		id				: itemRectangle
+		anchors.top		: itemTitle.bottom
+		anchors.left	: parent.left
+		height			: variablesList.height - itemTitle.height
+		width			: parent.width
+		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
+		border.width	: 1
+		border.color	: jaspTheme.borderColor
+		radius			: jaspTheme.borderRadius
+
+		JASPScrollBar
+		{
+			id				: scrollBar
+			flickable		: itemGridView
+			manualAnchor	: true
+			vertical		: true
+			z				: 1337
+
+			anchors
+			{
+				top			: parent.top
+				right		: parent.right
+				bottom		: parent.bottom
+				margins		: 2
+			}
+		}
+
+		GridView
+		{
+			id						: itemGridView
+			cellHeight				: 20  * preferencesModel.uiScale
+			cellWidth				: width / variablesList.columns
+			clip					: true
+			focus					: true
+			anchors.fill			: parent
+			anchors.margins			: 4 * preferencesModel.uiScale
+			anchors.rightMargin		: scrollBar.width + anchors.margins
+			model					: variablesList.model
+			delegate				: itemVariableComponent
+			boundsBehavior			: Flickable.StopAtBounds
+
+			onCurrentItemChanged:
+			{
+				if (variablesList.shiftPressed)
+				{
+					if (variablesList.endShiftSelected >= 0)
+						variablesList.selectShiftItems(false);
+					variablesList.endShiftSelected = itemGridView.currentIndex;
+					variablesList.selectShiftItems(true);
+				}
+				else if (!variablesList.mousePressed)
+				{
+					var itemWrapper = currentItem;
+					if (itemWrapper)
+					{
+						var itemRectangle = itemWrapper.children[0];
+						variablesList.setSelectedItem(itemRectangle.rank);
+						variablesList.startShiftSelected = currentIndex;
+						variablesList.endShiftSelected = -1;
+					}
+				}
+			}
+		}
+	}
 		
 	Repeater
 	{
@@ -184,9 +291,9 @@ JASPGridViewControl
 			smooth:	true
 			anchors
 			{
-				bottom:			listRectangle.bottom;
+				bottom:			itemRectangle.bottom;
 				bottomMargin:	4  * preferencesModel.uiScale
-				right:			listRectangle.right;
+				right:			itemRectangle.right;
 				rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
 			}
 		}
@@ -195,25 +302,25 @@ JASPGridViewControl
 	DropArea
 	{
 		id:				dropArea
-		anchors.fill:	listRectangle
+		anchors.fill:	itemRectangle
 
 		onPositionChanged:
 		{
-			if (!listRectangle.enabled || variablesList.maxRows === 1 || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+			if (!itemRectangle.enabled || variablesList.maxRows === 1 || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
 
 			var onTop = true;
-			var item = listGridView.itemAt(drag.x, drag.y + listGridView.contentY)
+			var item = itemGridView.itemAt(drag.x, drag.y + itemGridView.contentY)
 			if (item && item.children.length > 0)
 				item = item.children[0];
 			if (!item || item.objectName !== "itemRectangle")
 			{
-				if (listGridView.count > 0)
+				if (itemGridView.count > 0)
 				{
 					var items = variablesList.getExistingItems();
 					if (items.length > 0)
 					{
 						var lastItem = items[items.length - 1];
-						if (lastItem.rank === (listGridView.count - 1) && drag.y > (lastItem.height * listGridView.count))
+						if (lastItem.rank === (itemGridView.count - 1) && drag.y > (lastItem.height * itemGridView.count))
 						{
 							item = lastItem
 							onTop = false;
@@ -298,11 +405,11 @@ JASPGridViewControl
 
 	SortMenuButton
 	{
-		visible: variablesList.showSortMenu && variablesList.sortMenuModel && listGridView.count > 1
+		visible: variablesList.showSortMenu && variablesList.sortMenuModel && itemGridView.count > 1
 		anchors
 		{
-			top:			listRectangle.top
-			right:			listRectangle.right
+			top:			itemRectangle.top
+			right:			itemRectangle.right
 			rightMargin:	5 * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
 			topMargin:		5 * preferencesModel.uiScale
 		}
@@ -311,28 +418,6 @@ JASPGridViewControl
 		scrollYPosition: backgroundForms.contentY
 	}
 			
-	listGridView.onCurrentItemChanged:
-	{
-		if (variablesList.shiftPressed)
-		{
-			if (variablesList.endShiftSelected >= 0)
-				selectShiftItems(false);
-			variablesList.endShiftSelected = listGridView.currentIndex;
-			selectShiftItems(true);
-		}
-		else if (!mousePressed)
-		{
-			var itemWrapper = listGridView.currentItem;
-			if (itemWrapper)
-			{
-				var itemRectangle = itemWrapper.children[0];
-				variablesList.setSelectedItem(itemRectangle.rank);
-				variablesList.startShiftSelected = listGridView.currentIndex;
-				variablesList.endShiftSelected = -1;
-			}
-		}
-	}
-
 	Timer
 	{
 		id: searchKeysTimer
@@ -354,11 +439,11 @@ JASPGridViewControl
 
 			if (nextIndex >= 0)
 			{
-				listGridView.positionViewAtIndex(nextIndex, GridView.Contain)
-				if (listGridView.currentIndex !== nextIndex)
+				itemGridView.positionViewAtIndex(nextIndex, GridView.Contain)
+				if (itemGridView.currentIndex !== nextIndex)
 				{
 					variablesList.clearSelectedItems();
-					listGridView.currentIndex = nextIndex;
+					itemGridView.currentIndex = nextIndex;
 				}
 				searchKeysTimer.restart()
 				variablesList.searchKeys = stringToSearch
@@ -388,8 +473,8 @@ JASPGridViewControl
 		FocusScope
 		{
 			id:			itemWrapper
-			height:		listGridView.cellHeight
-			width:		listGridView.cellWidth
+			height:		itemGridView.cellHeight
+			width:		itemGridView.cellWidth
 			
 			Rectangle
 			{
@@ -399,8 +484,8 @@ JASPGridViewControl
 				anchors.verticalCenter:		parent.verticalCenter
 				// the height & width of itemWrapper & itemRectangle must be set independently of each other:
 				// when the rectangle is dragged, it gets another parent but it must keep the same size,
-				height:			listGridView.cellHeight
-				width:			listGridView.cellWidth
+				height:			itemGridView.cellHeight
+				width:			itemGridView.cellWidth
 				focus:			true
 				border.width:	containsDragItem && variablesList.dropModeReplace ? 2 : (variablesList.showElementBorder ? 1 : 0)
 				border.color:	containsDragItem && variablesList.dropModeReplace ? jaspTheme.containsDragBorderColor : jaspTheme.grayLighter
@@ -538,7 +623,7 @@ JASPGridViewControl
 					onPressed:
 					{
 						variablesList.mousePressed = true
-						listGridView.currentIndex = index;
+						itemGridView.currentIndex = index;
 						itemRectangle.clearOtherSelectedItemsWhenClicked = false
 						if (mouse.modifiers & Qt.ControlModifier)
 						{

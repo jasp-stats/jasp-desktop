@@ -25,7 +25,7 @@ class ListModelLayersAssigned : public ListModelAssignedInterface
 {
 	Q_OBJECT
 public:
-	ListModelLayersAssigned(QMLListView* listView);
+	ListModelLayersAssigned(JASPListControl* listView);
 
 	QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
 	Terms		termsFromIndexes(const QList<int> &indexes)									const	override;

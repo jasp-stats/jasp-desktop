@@ -19,7 +19,7 @@
 #include "rowcontrols.h"
 #include "analysis/analysisform.h"
 #include "analysis/jaspcontrol.h"
-#include "qmllistview.h"
+#include "jasplistcontrol.h"
 
 #include "log.h"
 
@@ -37,12 +37,12 @@ RowControls::RowControls(ListModel* parent
 // So this RowControls instance needs to exist already.
 void RowControls::init(int row, const Term& key, bool isNew)
 {
-	QMLListView* listView = _parentModel->listView();
+	JASPListControl* listView = _parentModel->listView();
 
-	QQmlContext* context = new QQmlContext(qmlContext(listView->item()), listView->item());
+	QQmlContext* context = new QQmlContext(qmlContext(listView), listView);
 	if (_isDummy)
 		context->setContextProperty("noDirectSetup", true);
-	context->setContextProperty("hasContextForm", true);
+	context->setContextProperty("isDynamic", true);
 	context->setContextProperty("form", listView->form());
 	context->setContextProperty("listView", listView);
 	context->setContextProperty("isNew", isNew);
@@ -72,10 +72,10 @@ void RowControls::setContext(int row, const QString &key)
 	_rowObject->setParentItem(nullptr);
 }
 
-bool RowControls::addJASPControl(JASPControlWrapper *control)
+bool RowControls::addJASPControl(JASPControl *control)
 {
 	bool success = false;
-	QMLListView* listView = _parentModel->listView();
+	JASPListControl* listView = _parentModel->listView();
 
 	if (!control->isBound())
 		success = true;
@@ -85,22 +85,22 @@ bool RowControls::addJASPControl(JASPControlWrapper *control)
 		listView->addControlError(tr("2 row components in %1 have the same name").arg(listView->name()).arg(control->name()));
 	else
 	{
-		QQmlContext* context = qmlContext(control->item());
+		QQmlContext* context = qmlContext(control);
 		bool isDummy = context->contextProperty("noDirectSetup").toBool();
 
-		_rowControlsVarMap[control->name()] = QVariant::fromValue(control->item());
-		_rowJASPWrapperMap[control->name()] = control;
-		BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(control);
+		_rowControlsVarMap[control->name()] = QVariant::fromValue(control);
+		_rowJASPControlMap[control->name()] = control;
+		BoundControl* boundItem = dynamic_cast<BoundControl*>(control);
 
 		if (boundItem && !isDummy)
 		{
-			bool hasOption = _rowOptions.contains(boundItem->name());
-			Option* option =  hasOption ? _rowOptions[boundItem->name()] : boundItem->createOption();
+			bool hasOption = _rowOptions.contains(control->name());
+			Option* option =  hasOption ? _rowOptions[control->name()] : boundItem->createOption();
 
 			boundItem->bindTo(option);
 			if (!hasOption)
 			{
-				QMLListView* listView = dynamic_cast<QMLListView*>(boundItem);
+				JASPListControl* listView = dynamic_cast<JASPListControl*>(control);
 				// If a ListView depends on a source, it has to be initialized by this source
 				// For this just call the sourceTermsChanged handler.
 				if (listView && listView->hasSource())

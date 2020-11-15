@@ -21,7 +21,7 @@
 
 #include <boost/bind.hpp>
 
-#include "options/bound.h"
+#include "options/boundcontrol.h"
 #include "utilities/qutils.h"
 
 #include <QQmlProperty>
@@ -36,17 +36,16 @@
 #include "mainwindow.h"
 #include "log.h"
 #include "jaspcontrol.h"
-#include "widgets/boundqmlcombobox.h"
-#include "widgets/boundqmltextarea.h"
-#include "widgets/boundqmllistviewterms.h"
-#include "widgets/boundqmllistviewmeasurescells.h"
-#include "widgets/boundqmllistviewlayers.h"
-#include "widgets/boundqmlinputlist.h"
-#include "widgets/boundqmlrepeatedmeasuresfactors.h"
-#include "widgets/boundqmlfactorsform.h"
-#include "widgets/boundqmltableview.h"
-#include "widgets/qmllistviewtermsavailable.h"
-#include "widgets/qmlexpander.h"
+#include "widgets/comboboxbase.h"
+#include "widgets/textareabase.h"
+#include "widgets/boundcontrolterms.h"
+#include "widgets/boundcontrolmeasurescells.h"
+#include "widgets/boundcontrollayers.h"
+#include "widgets/inputlistbase.h"
+#include "widgets/repeatedmeasuresfoctorslistbase.h"
+#include "widgets/factorsformbase.h"
+#include "widgets/tableviewbase.h"
+#include "widgets/expanderbuttonbase.h"
 
 
 using namespace std;
@@ -109,7 +108,7 @@ void AnalysisForm::cleanUpForm()
 	if (!_removed)
 	{
 		_removed = true;
-		for (JASPControlWrapper* control : _dependsOrderedCtrls)
+		for (JASPControl* control : _dependsOrderedCtrls)
 			// controls will be automatically deleted by the deletion of AnalysisForm
 			// But they must be first disconnected: sometimes an event seems to be triggered before the item is completely destroyed
 			control->cleanUp();
@@ -121,15 +120,15 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 	if(_removed)
 		return;
 
-	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(controlName));
+	JASPControl* item = getControl(controlName);
 	if (!item)
 	{
 		QStringList composedName = controlName.split(".");
 		if (composedName.length() == 3)
 		{
-			JASPControlWrapper* parentControl = getControl(composedName[0]);
+			JASPControl* parentControl = getControl(composedName[0]);
 			if (parentControl)
-				item = dynamic_cast<BoundQMLItem*>(parentControl->getChildControl(composedName[1], composedName[2]));
+				item = dynamic_cast<JASPControl*>(parentControl->getChildControl(composedName[1], composedName[2]));
 		}
 	}
 
@@ -139,118 +138,93 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 		Log::log() << "Unknown item " << controlName.toStdString() << std::endl;
 }
 
-void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
-{
-	switch(controlWrapper->item()->controlType())
-	{
-	case JASPControl::ControlType::Expander:
-	{
-		QMLExpander* expander = dynamic_cast<QMLExpander*>(controlWrapper);
-		_expanders.push_back(expander);
-		break;
-	}
-	case JASPControl::ControlType::TextArea:
-	{
-		BoundQMLTextArea		* boundQMLTextArea	= dynamic_cast<BoundQMLTextArea*>(controlWrapper);
-		ListModelTermsAvailable	* availableModel	= dynamic_cast<ListModelTermsAvailable*>(boundQMLTextArea->model());
-
-		if (availableModel)
-		{
-			if (boundQMLTextArea->modelNeedsAllVariables())
-				_allAvailableVariablesModels.push_back(availableModel);
-			_modelMap[controlWrapper->name()] = availableModel;
-		}
-
-		break;
-	}
-	case JASPControl::ControlType::ComboBox:
-	case JASPControl::ControlType::RepeatedMeasuresFactorsList:
-	case JASPControl::ControlType::InputListView:
-	case JASPControl::ControlType::TabView:
-	case JASPControl::ControlType::ComponentsList:
-	case JASPControl::ControlType::FactorsForm:
-	case JASPControl::ControlType::TableView:
-	case JASPControl::ControlType::VariablesListView:
-	{
-		QMLListView* listView = dynamic_cast<QMLListView*>(controlWrapper);
-
-		if (listView->model())
-		{
-			_modelMap[controlWrapper->name()] = listView->model();
-
-			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(listView->model());
-
-			if (availableModel)
-			{
-				if (!listView->hasSource())	_allAvailableVariablesModels.push_back(availableModel);
-				else						_allAvailableVariablesModelsWithSource.push_back(availableModel);
-			}
-		}
-		break;
-	}
-	default:
-		break;
-	}
-
-}
-
 void AnalysisForm::addControl(JASPControl *control)
 {
-	if (control->isBound())
+	const QString & name = control->name();
+
+	if (name.isEmpty() && control->isBound())
 	{
-		const QString & name = control->name();
+		QString label = control->humanFriendlyLabel();
 
-		if (name.isEmpty())
-		{
-			QString label = control->humanFriendlyLabel();
+		if (!label.isEmpty())	addFormError(tr("Control with label '%1' has no name").arg(label));
+		else					addFormError(tr("A control has no name"));
 
-			if (!label.isEmpty())	addFormError(tr("Control with label '%1' has no name").arg(label));
-			else					addFormError(tr("A control has no name"));
+		control->setHasError(true);
+	}
 
-			control->setHasError(true);
-		}
-		else if (_controls.keys().contains(name))
+	if (!name.isEmpty())
+	{
+		if (_controls.keys().contains(name))
 		{
 			addFormError(tr("2 controls have the same name: %1").arg(name));
-			control					->	setHasWarning(true);
-			_controls[name]->item()	->	setHasWarning(true);
+			control			->	setHasWarning(true);
+			_controls[name]	->	setHasWarning(true);
 		}
 		else
-		{
-			JASPControlWrapper* wrapper = control->getWrapper();
-			_controls[name] = wrapper;
-			_addControlWrapper(wrapper);
-		}
+			_controls[name] = control;
 	}
-	else
-		_addControlWrapper(control->getWrapper());
+
+	if (control->controlType() == JASPControl::ControlType::Expander)
+	{
+		ExpanderButtonBase* expander = dynamic_cast<ExpanderButtonBase*>(control);
+		_expanders.push_back(expander);
+	}
 }
 
 void AnalysisForm::_setUpControls()
 {
 	_orderExpanders();
-	_setUpRelatedModels();
-	_setUpItems();
+	_setUpModels();
+	_setUp();
 }
 
-void AnalysisForm::_setUpRelatedModels()
+void AnalysisForm::_setUpModels()
 {
+	QMapIterator<QString, JASPControl*> it(_controls);
+	while (it.hasNext())
+	{
+		it.next();
+		JASPListControl* listView = qobject_cast<JASPListControl*>(it.value());
+		if (listView)
+		{
+			listView->setUpModel();
+			_modelMap[it.key()] = listView->model();
+
+			TextAreaBase* textArea	= qobject_cast<TextAreaBase*>(listView);
+			if (textArea)
+			{
+				// TODO : Change this special handling for TextArea
+				ListModelTermsAvailable	* availableModel = qobject_cast<ListModelTermsAvailable*>(textArea->model());
+				if (availableModel && textArea->modelNeedsAllVariables())
+					_allAvailableVariablesModels.push_back(availableModel);
+			}
+			else
+			{
+				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(listView->model());
+
+				if (availableModel)
+				{
+					if (!listView->hasSource())	_allAvailableVariablesModels.push_back(availableModel);
+					else						_allAvailableVariablesModelsWithSource.push_back(availableModel);
+				}
+			}
+		}
+	}
+
 	for (ListModel* model : _modelMap.values())
 	{
-		QMLListView* listView = model->listView();
-		QList<QVariant> dropKeyList = listView->getItemProperty("dropKeys").toList();
-		QString dropKey				= dropKeyList.isEmpty() ? listView->getItemProperty("dropKeys").toString() : dropKeyList[0].toString(); // The first key gives the default drop item.
+		JASPListControl* listView = model->listView();
+		QList<QVariant> dropKeyList = listView->property("dropKeys").toList();
+		QString dropKey				= dropKeyList.isEmpty() ? listView->property("dropKeys").toString() : dropKeyList[0].toString(); // The first key gives the default drop item.
 
 		if (!dropKey.isEmpty())
 		{
-			//ListModel* targetModel = _modelMap[dropKey]; //Indexing on a map creates elements if they do not exist yet...
-
 			if (_modelMap.count(dropKey))		_relatedModelMap[listView] = _modelMap[dropKey];
 			else								addFormError(tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name()));
 		}
 		else
 		{
-			bool draggable = listView->getItemProperty("draggabble").toBool();
+			bool draggable = listView->property("draggabble").toBool();
 			if (draggable)
 				addFormError(tr("No drop key found for %1").arg(listView->name()));
 		}
@@ -258,27 +232,27 @@ void AnalysisForm::_setUpRelatedModels()
 	}
 }
 
-void AnalysisForm::_setUpItems()
+void AnalysisForm::_setUp()
 {
-	QList<JASPControlWrapper*> controls = _controls.values();
+	QList<JASPControl*> controls = _controls.values();
 
-	for (JASPControlWrapper* control : controls)
+	for (JASPControl* control : controls)
 		control->setUp();
 
 	// set the order of the BoundItems according to their dependencies (for binding purpose)
-	for (JASPControlWrapper* control : controls)
+	for (JASPControl* control : controls)
 	{
-		std::vector<JASPControlWrapper*> depends(control->depends().begin(), control->depends().end());
+		std::vector<JASPControl*> depends(control->depends().begin(), control->depends().end());
 
 		// This looks like a for-each loop right? Except that we add a dependency to control.depends and also to our local copy...
 		// Which means that won't work because then we invalidate the loop, instead we do it old-school with an index.
 		// But I thought it would be nice to add a comment here describing the magic going on here for the next forlorn soul looking into this.
 		for (size_t index = 0; index < depends.size(); index++)
 		{
-			JASPControlWrapper					* depend		= depends[index];
-			const std::set<JASPControlWrapper*>	& dependdepends = depend->depends();
+			JASPControl					* depend		= depends[index];
+			const std::set<JASPControl*>	& dependdepends = depend->depends();
 
-			for (JASPControlWrapper* dependdepend : dependdepends)
+			for (JASPControl* dependdepend : dependdepends)
 				if (dependdepend == control)
 					addFormError(tq("Circular dependency between control ") + control->name() + tq(" and ") + depend->name());
 				else if (control->addDependency(dependdepend))
@@ -287,14 +261,14 @@ void AnalysisForm::_setUpItems()
 	}
 
 	std::sort(controls.begin(), controls.end(), 
-		[](JASPControlWrapper* a, JASPControlWrapper* b) {
+		[](JASPControl* a, JASPControl* b) {
 			return a->depends().size() < b->depends().size();
 		});
 
-	for (JASPControlWrapper* control : controls)
+	for (JASPControl* control : controls)
 	{
 		_dependsOrderedCtrls.push_back(control);
-		connect(control->item(), &JASPControl::helpMDChanged, this, &AnalysisForm::helpMDChanged);
+		connect(control, &JASPControl::helpMDChanged, this, &AnalysisForm::helpMDChanged);
 	}
 
 	emit helpMDChanged(); //Because we just got info on our lovely children in _orderedControls
@@ -302,10 +276,10 @@ void AnalysisForm::_setUpItems()
 
 void AnalysisForm::_orderExpanders()
 {
-	for (QMLExpander* expander : _expanders)
+	for (ExpanderButtonBase* expander : _expanders)
 	{
 		bool foundExpander = false;
-		for (QObject* sibling : expander->item()->parent()->parent()->children())
+		for (QObject* sibling : expander->parent()->parent()->children())
 		{
 			if (sibling->objectName() == "Section")
 			{
@@ -315,10 +289,10 @@ void AnalysisForm::_orderExpanders()
 				{
 					if (foundExpander)
 					{
-						_nextExpanderMap[expander] = dynamic_cast<QMLExpander*>(control->getWrapper());
+						_nextExpanderMap[expander] = dynamic_cast<ExpanderButtonBase*>(control);
 						break;
 					}
-					if (control->getWrapper() == expander)
+					if (control == expander)
 						foundExpander = true;
 				}
 			}
@@ -327,7 +301,7 @@ void AnalysisForm::_orderExpanders()
 	}
 }
 
-void AnalysisForm::addListView(QMLListView* listView, QMLListView* source)
+void AnalysisForm::addListView(JASPListControl* listView, JASPListControl* source)
 {
 	if(listView->model())							_modelMap[listView->name()] = listView->model();
 	else if(_modelMap.count(listView->name()) > 0)	_modelMap.remove(listView->name());
@@ -366,14 +340,9 @@ void AnalysisForm::replaceVariableNameInListModels(const std::string & oldName, 
 	for (ListModelTermsAvailable * model : _allAvailableVariablesModels)
 	{
 		model->replaceVariableName(oldName, newName);
-
-		QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(model->listView());
-		if (qmlAvailableListView)
-		{
-			const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();
-			for (ListModelAssignedInterface* modelAssign : assignedModels)
-				    modelAssign->replaceVariableName(oldName, newName);
-		}
+		const QList<ListModelAssignedInterface*>& assignedModels = model->assignedModel();
+		for (ListModelAssignedInterface* modelAssign : assignedModels)
+				modelAssign->replaceVariableName(oldName, newName);
 	}
 }
 
@@ -401,13 +370,9 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 		if (refreshAssigned)
 		{
 			emit model->allAvailableTermsChanged(nullptr, nullptr);
-			QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(model->listView());
-			if (qmlAvailableListView)
-			{
-				const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();	
-				for (ListModelAssignedInterface* modelAssign : assignedModels)
-					modelAssign->refresh();
-			}
+			const QList<ListModelAssignedInterface*>& assignedModels = model->assignedModel();
+			for (ListModelAssignedInterface* modelAssign : assignedModels)
+				modelAssign->refresh();
 		}
 	}
 
@@ -419,7 +384,7 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 
 QString AnalysisForm::_getControlLabel(QString controlName)
 {
-	return _controls[controlName]->item()->humanFriendlyLabel();
+	return _controls[controlName]->humanFriendlyLabel();
 }
 
 void AnalysisForm::_addLoadingError(QStringList wrongJson)
@@ -469,18 +434,18 @@ void AnalysisForm::bindTo()
 
 	std::set<std::string> controlsJsonWrong;
 	
-	for (JASPControlWrapper* control : _dependsOrderedCtrls)
+	for (JASPControl* control : _dependsOrderedCtrls)
 	{
-		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
-		if (boundControl)
+		BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
+		if (boundControl && control->isBound())
 		{
-			std::string name = boundControl->name().toStdString();
+			std::string name = control->name().toStdString();
 			Option* option   = _options->get(name);
 
 			if (option && !boundControl->isOptionValid(option))
 			{
 				option = nullptr;
-				boundControl->item()->setHasWarning(true);
+				control->setHasWarning(true);
 				controlsJsonWrong.insert(name);
 			}
 
@@ -491,7 +456,7 @@ void AnalysisForm::bindTo()
 				{
 					if (!boundControl->isJsonValid(optionValue))
 					{
-						boundControl->item()->setHasWarning(true);
+						control->setHasWarning(true);
 						controlsJsonWrong.insert(name);
 					}
 					else
@@ -511,10 +476,10 @@ void AnalysisForm::bindTo()
 			}
 
 			boundControl->bindTo(option);
-			_optionControlMap[option] = boundControl;
+			_optionControlMap[option] = control;
 		}
 
-		QMLListView* listControl = dynamic_cast<QMLListView *>(control);
+		JASPListControl* listControl = dynamic_cast<JASPListControl *>(control);
 		if (listControl && listControl->hasSource())
 		{
 			ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(listControl->model());
@@ -533,7 +498,7 @@ void AnalysisForm::bindTo()
 			}
 		}
 
-		control->item()->setInitialized();
+		control->setInitialized();
 	}
 
 	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)
@@ -544,12 +509,12 @@ void AnalysisForm::bindTo()
 	_options->blockSignals(false, false);
 
 	//Ok we can only set the warnings on the components now, because otherwise _addLoadingError() will add a big fat red warning on top of the analysisform without reason...
-	for (JASPControlWrapper* control : _dependsOrderedCtrls)
+	for (JASPControl* control : _dependsOrderedCtrls)
 	{
 		QString upgradeMsg(tq(_analysis->upgradeMsgsForOption(fq(control->name()))));
 
 		if(upgradeMsg != "")
-			control->item()->addControlWarning(upgradeMsg);
+			control->addControlWarning(upgradeMsg);
 	}
 
 	//Also check for a warning to show above the analysis:
@@ -566,9 +531,9 @@ void AnalysisForm::unbind()
 	if (_options == nullptr)
 		return;
 	
-	for (JASPControlWrapper* control : _dependsOrderedCtrls)
+	for (JASPControl* control : _dependsOrderedCtrls)
 	{
-		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
+		BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
 		if (boundControl)
 			boundControl->unbind();
 	}
@@ -693,7 +658,7 @@ void AnalysisForm::clearFormWarnings()
 	emit warningsChanged();
 
 	for(auto & control : _controls)
-		control->item()->setHasWarning(false);
+		control->setHasWarning(false);
 }
 
 void AnalysisForm::setAnalysis(QVariant analysis)
@@ -751,7 +716,7 @@ void AnalysisForm::knownIssuesUpdated()
 		{
 			for(const std::string & option : issue.options)
 				if(_controls.count(tq(option)) > 0)
-					_controls[tq(option)]->item()->setHasWarning(true);
+					_controls[tq(option)]->setHasWarning(true);
 
 			_formWarnings.append(tq(issue.info));
 		}
@@ -783,13 +748,13 @@ void AnalysisForm::dataSetColumnsChangedHandler()
 void AnalysisForm::setControlIsDependency(QString controlName, bool isDependency)
 {
 	if(_controls.count(controlName) > 0)
-		_controls[controlName]->setItemProperty("isDependency", isDependency);
+		_controls[controlName]->setProperty("isDependency", isDependency);
 }
 
 void AnalysisForm::setControlMustContain(QString controlName, QStringList containThis)
 {
 	if(_controls.count(controlName) > 0)
-		_controls[controlName]->setItemProperty("dependencyMustContain", containThis);
+		_controls[controlName]->setProperty("dependencyMustContain", containThis);
 }
 
 void AnalysisForm::setMustBe(std::set<std::string> mustBe)
@@ -833,17 +798,16 @@ void AnalysisForm::setRunOnChange(bool change)
 
 bool AnalysisForm::runWhenThisOptionIsChanged(Option *option)
 {
-	BoundQMLItem* control = getBoundItem(option);
-	JASPControl* item = control ? control->item() : nullptr;
+	JASPControl* control = getControl(option);
 
-	emit valueChanged(item);
-	if (item)
-		emit item->valueChanged();
+	emit valueChanged(control);
+	if (control)
+		emit control->valueChanged();
 
 	if (!_runOnChange)
 		return false;
 
-	if (item && !item->runOnChange())
+	if (control && !control->runOnChange())
 		return false;
 
 	return true;

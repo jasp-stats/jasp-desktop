@@ -27,7 +27,7 @@ class ListModelInteractionAvailable : public ListModelAvailableInterface, public
 {
 	Q_OBJECT	
 public:
-	ListModelInteractionAvailable(QMLListView* listView);
+	ListModelInteractionAvailable(JASPListControl* listView);
 	
 	void resetTermsFromSourceModels(bool updateAssigned = true) override;
 };

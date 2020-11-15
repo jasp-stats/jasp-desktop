@@ -44,6 +44,19 @@
 
 #include "analysis/analysisform.h"
 #include "analysis/jaspcontrol.h"
+#include "widgets/checkboxbase.h"
+#include "widgets/comboboxbase.h"
+#include "widgets/textinputbase.h"
+#include "widgets/componentslistbase.h"
+#include "widgets/factorsformbase.h"
+#include "widgets/inputlistbase.h"
+#include "widgets/textareabase.h"
+#include "widgets/sliderbase.h"
+#include "widgets/expanderbuttonbase.h"
+#include "widgets/variableslistbase.h"
+#include "widgets/repeatedmeasuresfoctorslistbase.h"
+#include "widgets/tableviewbase.h"
+#include "widgets/radiobuttonsgroupbase.h"
 #include "analysis/jaspdoublevalidator.h"
 #include "analysis/options/optionvariablesgroups.h"
 
@@ -158,6 +171,19 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<AnalysisForm>								("JASP",		1, 0, "AnalysisForm"		);
 	qmlRegisterType<RCommander>									("JASP", 		1, 0, "RCommander"			);
 	qmlRegisterType<JASPControl>								("JASP",		1, 0, "JASPControl"			);
+	qmlRegisterType<ExpanderButtonBase>							("JASP",		1, 0, "ExpanderButtonBase"	);
+	qmlRegisterType<CheckBoxBase>								("JASP",		1, 0, "CheckBoxBase"		);
+	qmlRegisterType<SliderBase>									("JASP",		1, 0, "SliderBase"			);
+	qmlRegisterType<TextInputBase>								("JASP",		1, 0, "TextInputBase"		);
+	qmlRegisterType<TextAreaBase>								("JASP",		1, 0, "TextAreaBase"		);
+	qmlRegisterType<ComboBoxBase>								("JASP",		1, 0, "ComboBoxBase"		);
+	qmlRegisterType<RadioButtonsGroupBase>						("JASP",		1, 0, "RadioButtonsGroupBase");
+	qmlRegisterType<ComponentsListBase>							("JASP",		1, 0, "ComponentsListBase"	);
+	qmlRegisterType<FactorsFormBase>							("JASP",		1, 0, "FactorsFormBase"		);
+	qmlRegisterType<InputListBase>								("JASP",		1, 0, "InputListBase"		);
+	qmlRegisterType<RepeatedMeasuresFoctorsListBase>			("JASP",		1, 0, "RepeatedMeasuresFoctorsListBase"	);
+	qmlRegisterType<VariablesListBase>							("JASP",		1, 0, "VariablesListBase"	);
+	qmlRegisterType<TableViewBase>								("JASP",		1, 0, "TableViewBase"		);
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"	);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"	);
 

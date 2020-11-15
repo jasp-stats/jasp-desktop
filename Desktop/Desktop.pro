@@ -264,9 +264,7 @@ INSTALLS += Resources
 
 HEADERS += \
     analysis/analysisform.h \
-    analysis/boundqmlitem.h \
     analysis/knownissues.h \
-    analysis/options/bound.h \
     analysis/options/option.h \
     analysis/options/optionboolean.h \
     analysis/options/optioncomputedcolumn.h \
@@ -376,10 +374,6 @@ HEADERS += \
     widgets/filemenu/datalibrarylistmodel.h \
     widgets/filemenu/computerfilesystem.h \
     widgets/filemenu/filesystementry.h \
-    widgets/boundqmlcheckbox.h \
-    widgets/boundqmlradiobuttons.h \
-    widgets/boundqmltextinput.h \
-    widgets/boundqmlcombobox.h \
     widgets/listmodeljagsdatainput.h \
     widgets/listmodeltableviewsimple.h \
     widgets/listmodeltermsassigned.h \
@@ -387,20 +381,10 @@ HEADERS += \
     mainwindow.h \
     utilities/extractarchive.h \
     widgets/listmodel.h \
-    widgets/qmllistview.h \
     widgets/listmodelassignedinterface.h \
     widgets/listmodelavailableinterface.h \
     widgets/listmodeldraggable.h \
-    widgets/qmllistviewdraggable.h \
-    widgets/boundqmllistviewmeasurescells.h \
-    widgets/boundqmllistviewdraggable.h \
     widgets/listmodelmeasurescellsassigned.h \
-    widgets/qmllistviewtermsavailable.h \
-    widgets/boundqmllistviewterms.h \
-    widgets/boundqmlslider.h \
-    widgets/boundqmltextarea.h \
-    widgets/boundqmltableview.h \
-    widgets/boundqmllistviewlayers.h \
     widgets/listmodellayersassigned.h \
     widgets/listmodelmultinomialchi2test.h  \
     data/filtermodel.h \
@@ -426,14 +410,12 @@ HEADERS += \
     widgets/filemenu/actionbuttons.h \
     widgets/filemenu/resourcebuttons.h \
     widgets/filemenu/resourcebuttonsvisible.h \
-    widgets/boundqmlrepeatedmeasuresfactors.h \
     widgets/listmodelrepeatedmeasuresfactors.h \
     widgets/interactionmodel.h \
     widgets/listmodelinteractionavailable.h \
     results/resultmenuentry.h \
     results/resultmenumodel.h \
     analysis/jaspdoublevalidator.h \
-    widgets/boundqmlfactorsform.h \
     widgets/listmodelfactorsform.h \
     gui/aboutmodel.h \
     modules/ribbonbutton.h \
@@ -450,22 +432,38 @@ HEADERS += \
     results/ploteditormodel.h \
     results/ploteditoraxismodel.h \
     results/ploteditorcoordinates.h \
-    widgets/boundqmlinputlist.h \
     widgets/listmodelinputvalue.h \
-    widgets/jaspcontrolwrapper.h \
     widgets/rowcontrols.h \
-    widgets/qmlexpander.h \
     widgets/listmodelmultitermsassigned.h \
-    widgets/boundqmllavaantextarea.h \
-    widgets/boundqmljagstextarea.h \
-    widgets/boundqmlcomponentslist.h \
     widgets/listmodelcustomcontrasts.h \
     widgets/listmodellabelvalueterms.h \
-    analysis/jaspcontrol.h
+    analysis/jaspcontrol.h \
+    widgets/checkboxbase.h \
+    widgets/comboboxbase.h \
+    widgets/textinputbase.h \
+    widgets/componentslistbase.h \
+    widgets/factorsformbase.h \
+    widgets/inputlistbase.h \
+    widgets/sliderbase.h \
+    analysis/options/boundcontrol.h \
+    widgets/expanderbuttonbase.h \
+    widgets/variableslistbase.h \
+    widgets/boundcontrolmeasurescells.h \
+    widgets/boundcontrollayers.h \
+    widgets/boundcontrolterms.h \
+    widgets/boundcontrolmultiterms.h \
+    widgets/tableviewbase.h \
+    widgets/textareabase.h \
+    widgets/boundcontroltextarea.h \
+    widgets/boundcontrolsourcetextarea.h \
+    widgets/boundcontrollavaantextarea.h \
+    widgets/boundcontroljagstextarea.h \
+    widgets/repeatedmeasuresfoctorslistbase.h \
+    widgets/radiobuttonsgroupbase.h \
+    widgets/jasplistcontrol.h
 
 SOURCES += \
     analysis/analysisform.cpp \
-    analysis/boundqmlitem.cpp \
     analysis/knownissues.cpp \
     analysis/options/option.cpp \
     analysis/options/optionboolean.cpp \
@@ -568,10 +566,6 @@ SOURCES += \
     widgets/filemenu/datalibrarybreadcrumbsmodel.cpp \
     widgets/filemenu/datalibrarylistmodel.cpp \
     widgets/filemenu/computerfilesystem.cpp \
-    widgets/boundqmlcheckbox.cpp \
-    widgets/boundqmlradiobuttons.cpp \
-    widgets/boundqmltextinput.cpp \
-    widgets/boundqmlcombobox.cpp \
     widgets/listmodeljagsdatainput.cpp \
     widgets/listmodeltableviewsimple.cpp \
     widgets/listmodeltermsassigned.cpp \
@@ -580,20 +574,10 @@ SOURCES += \
     mainwindow.cpp \
     utilities/extractarchive.cpp \
     widgets/listmodel.cpp \
-    widgets/qmllistview.cpp \
     widgets/listmodelavailableinterface.cpp \
     widgets/listmodelassignedinterface.cpp \
     widgets/listmodeldraggable.cpp \
-    widgets/qmllistviewdraggable.cpp \
-    widgets/boundqmllistviewmeasurescells.cpp \
-    widgets/boundqmllistviewdraggable.cpp \
     widgets/listmodelmeasurescellsassigned.cpp \
-    widgets/qmllistviewtermsavailable.cpp \
-    widgets/boundqmllistviewterms.cpp \
-    widgets/boundqmlslider.cpp \
-    widgets/boundqmltextarea.cpp \
-    widgets/boundqmltableview.cpp \
-    widgets/boundqmllistviewlayers.cpp \
     widgets/listmodellayersassigned.cpp \
     widgets/listmodelmultinomialchi2test.cpp \
     data/filtermodel.cpp \
@@ -618,14 +602,12 @@ SOURCES += \
     widgets/filemenu/actionbuttons.cpp \
     widgets/filemenu/resourcebuttons.cpp \
     widgets/filemenu/resourcebuttonsvisible.cpp \
-    widgets/boundqmlrepeatedmeasuresfactors.cpp \
     widgets/listmodelrepeatedmeasuresfactors.cpp \
     widgets/interactionmodel.cpp \
     widgets/listmodelinteractionavailable.cpp \
     results/resultmenumodel.cpp \
     results/resultmenuentry.cpp \
     analysis/jaspdoublevalidator.cpp \
-    widgets/boundqmlfactorsform.cpp \
     widgets/listmodelfactorsform.cpp \
     gui/aboutmodel.cpp \
     modules/ribbonbutton.cpp \
@@ -641,18 +623,34 @@ SOURCES += \
     results/ploteditormodel.cpp \
     results/ploteditoraxismodel.cpp \
     results/ploteditorcoordinates.cpp \
-    widgets/boundqmlinputlist.cpp \
     widgets/listmodelinputvalue.cpp \
-    widgets/jaspcontrolwrapper.cpp \
     widgets/rowcontrols.cpp \
-    widgets/qmlexpander.cpp \
     widgets/listmodelmultitermsassigned.cpp \
-    widgets/boundqmllavaantextarea.cpp \
-    widgets/boundqmljagstextarea.cpp \
-    widgets/boundqmlcomponentslist.cpp \
     widgets/listmodelcustomcontrasts.cpp \
     widgets/listmodellabelvalueterms.cpp \
-    analysis/jaspcontrol.cpp
+    analysis/jaspcontrol.cpp \
+    widgets/checkboxbase.cpp \
+    widgets/comboboxbase.cpp \
+    widgets/textinputbase.cpp \
+    widgets/componentslistbase.cpp \
+    widgets/factorsformbase.cpp \
+    widgets/inputlistbase.cpp \
+    widgets/sliderbase.cpp \
+    widgets/expanderbuttonbase.cpp \
+    widgets/variableslistbase.cpp \
+    widgets/boundcontrolmeasurescells.cpp \
+    widgets/boundcontrollayers.cpp \
+    widgets/boundcontrolterms.cpp \
+    widgets/boundcontrolmultiterms.cpp \
+    widgets/tableviewbase.cpp \
+    widgets/textareabase.cpp \
+    widgets/boundcontroltextarea.cpp \
+    widgets/boundcontrolsourcetextarea.cpp \
+    widgets/boundcontrollavaantextarea.cpp \
+    widgets/boundcontroljagstextarea.cpp \
+    widgets/repeatedmeasuresfoctorslistbase.cpp \
+    widgets/radiobuttonsgroupbase.cpp \
+    widgets/jasplistcontrol.cpp
 
 RESOURCES += \
     html/html.qrc \

@@ -20,12 +20,11 @@
 #include "utilities/qutils.h"
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
-#include "analysis/boundqmlitem.h"
 #include "analysis/options/optionboolean.h"
 
 using namespace std;
 
-ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool mustContainLowerTerms, bool addInteractionsByDefault)
+ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* listView, bool mustContainLowerTerms, bool addInteractionsByDefault)
 	: ListModelAssignedInterface(listView), InteractionModel ()
 {
 	_areTermsInteractions		= true;

@@ -25,7 +25,7 @@ class ListModelMultiTermsAssigned: public ListModelAssignedInterface
 {
 	Q_OBJECT
 public:
-	ListModelMultiTermsAssigned(QMLListView* listView, int columns = 2);
+	ListModelMultiTermsAssigned(JASPListControl* listView, int columns = 2);
 	
 	void			initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())		override;
 	Terms			addTerms(const Terms &terms, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault)	override;

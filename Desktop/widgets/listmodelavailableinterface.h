@@ -31,7 +31,7 @@ class ListModelAvailableInterface: public ListModelDraggable, public VariableInf
 {
 	Q_OBJECT
 public:
-	ListModelAvailableInterface(QMLListView* listView)
+	ListModelAvailableInterface(JASPListControl* listView)
 		: ListModelDraggable(listView) {}
 	
 	virtual const Terms& allTerms()																						const { return _allSortedTerms; }
@@ -39,16 +39,23 @@ public:
 	virtual void resetTermsFromSourceModels(bool updateAssigned = true)			= 0;
 	virtual void removeTermsInAssignedList();
 	
-			QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const override;
+			QVariant requestInfo(const Term &term, VariableInfo::InfoType info)			const override;
 
-			void sortItems(SortType sortType)								override;
-			void addEmptyValue()												{ _addEmptyValue = true; }
+			void sortItems(SortType sortType)											override;
+			void addEmptyValue()														{ _addEmptyValue = true; }
+
+			void										addAssignedModel(ListModelAssignedInterface* model);
+			const QList<ListModelAssignedInterface*>&	assignedModel()	const			{ return _assignedModels; }
+
+			void										setTermsAreVariables(bool areVariables)		override;
+			void										setTermsAreInteractions(bool interactions)	override;
 
 signals:
 			void allAvailableTermsChanged(Terms* termsAdded, Terms* termsRemoved);
 
 public slots:
 			void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved) override;
+			void removeAssignedModel(ListModelDraggable* model);
 
 protected:
 	bool					_addEmptyValue = false;
@@ -58,7 +65,8 @@ protected:
 	Terms					_tempRemovedTerms;
 	Terms					_tempAddedTerms;
 
-	
+	QList<ListModelAssignedInterface*>	_assignedModels;
+
 	void setChangedTerms(const Terms &newTerms);
 };
 

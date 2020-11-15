@@ -22,28 +22,119 @@ import JASP				1.0
 import JASP.Widgets		1.0
 import QtQuick.Layouts	1.3
 
-JASPGridControl
+ComponentsListBase
 {
-	id					: componentsList
-	controlType			: JASPControl.ComponentsList
-	itemComponent		: components
-	implicitHeight		: itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
+	id						: componentsList
+	controlType				: JASPControl.ComponentsList
+	background				: itemRectangle
+	implicitWidth 			: parent.width
+	implicitHeight			: itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
+	useControlMouseArea		: false
+	shouldStealHover		: false
+	innerControl			: itemGrid
 
+	property var	model
+	property var	values
+	property string title
+	property alias	label				: componentsList.title
+	property alias	count				: itemRepeater.count
+	property string	optionKey			: "value"
+	property alias	columns				: itemGrid.columns
+	property alias	rows				: itemGrid.rows
+	property var	source
+	property var	sourceModel
 
-	property bool	addItemManually	: !source && !values
-	property bool	showAddIcon		: addItemManually
-	property int	minimumItems	: 0
-	property int	maximumItems	: -1
-	property string newItemName		: "#"
-	property string	removeIcon		: "cross.png"
-	property string	addIcon			: "duplicate.png"
-	property string addTooltip		: qsTr("Add a row")
-	property string removeTooltip	: qsTr("Remove a row")
-	property var	defaultValues	: []
+	property alias	itemGrid			: itemGrid
+	property alias	itemRectangle		: itemRectangle
+	property alias	itemScrollbar		: itemScrollbar
+	property alias	itemTitle			: itemTitle
+	property alias	rowSpacing			: itemGrid.rowSpacing
+	property alias	columnSpacing		: itemGrid.columnSpacing
+
+	property bool	addItemManually		: !source && !values
+	property bool	showAddIcon			: addItemManually
+	property int	minimumItems		: 0
+	property int	maximumItems		: -1
+	property string newItemName			: "#"
+	property string	removeIcon			: "cross.png"
+	property string	addIcon				: "duplicate.png"
+	property string addTooltip			: qsTr("Add a row")
+	property string removeTooltip		: qsTr("Remove a row")
+	property var	defaultValues		: []
 
 	signal addItem();
 	signal removeItem(int index);
 	signal nameChanged(int index, string name)
+
+	Text
+	{
+		id				: itemTitle
+		anchors.top		: parent.top
+		anchors.left	: parent.left
+		text			: title
+		height			: title ? jaspTheme.listTitle : 0
+		font			: jaspTheme.font
+		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+	}
+
+	Rectangle
+	{
+		id				: itemRectangle
+		anchors.top		: itemTitle.bottom
+		anchors.left	: parent.left
+		height			: componentsList.height - itemTitle.height
+		width			: parent.width
+		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.analysisBackgroundColor
+		border.width	: 1
+		border.color	: jaspTheme.borderColor
+		radius			: jaspTheme.borderRadius
+
+		JASPScrollBar
+		{
+			id				: itemScrollbar
+			flickable		: itemFlickable
+			manualAnchor	: true
+			vertical		: true
+			z				: 1337
+
+			anchors
+			{
+				top			: parent.top
+				right		: parent.right
+				bottom		: parent.bottom
+				margins		: 2
+			}
+		}
+
+		Flickable
+		{
+			id						: itemFlickable
+			anchors.fill			: parent
+			anchors.margins			: jaspTheme.contentMargin
+			anchors.rightMargin		: itemScrollbar.width + anchors.margins
+			clip					: true
+			boundsBehavior			: Flickable.StopAtBounds
+			contentWidth			: itemGrid.width
+			contentHeight			: itemGrid.height
+
+			Grid
+			{
+				id						: itemGrid
+				width					: itemRectangle.width - 2 * jaspTheme.contentMargin - (itemScrollbar.visible ? itemScrollbar.width + 2 : 0)
+				focus					: true
+				columns					: 1
+				rowSpacing				: 1
+				columnSpacing			: 1
+
+				Repeater
+				{
+					id						: itemRepeater
+					model					: componentsList.model
+					delegate				: components
+				}
+			}
+		}
+	}
 
 	MenuButton
 	{

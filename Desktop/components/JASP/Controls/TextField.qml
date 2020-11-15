@@ -21,7 +21,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts	1.3
 import JASP				1.0
 
-JASPControl
+TextInputBase
 {
 	id:					textField
 	controlType:		JASPControl.TextField

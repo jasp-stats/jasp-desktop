@@ -22,15 +22,15 @@
 #include "listmodeltableviewbase.h"
 #include "../analysis/analysisform.h"
 #include "utilities/qutils.h"
-#include "boundqmltableview.h"
-#include "boundqmltextinput.h"
+#include "tableviewbase.h"
+#include "textinputbase.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optiondoublearray.h"
 #include "gui/preferencesmodel.h"
 
 using namespace std;
 
-ListModelTableViewBase::ListModelTableViewBase(BoundQMLTableView * tableView, QString tableType)
+ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView, QString tableType)
 	: ListModel(tableView), _tableView(tableView), _tableType(tableType)
 {
 	connect(this, &ListModel::modelChanged, this, &ListModelTableViewBase::modelChangedSlot);
@@ -356,21 +356,21 @@ bool ListModelTableViewBase::valueOk(QVariant value)
 	return ok;
 }
 
-JASPControlWrapper *ListModelTableViewBase::getRowControl(const QString &key, const QString &name) const
+JASPControl *ListModelTableViewBase::getRowControl(const QString &key, const QString &name) const
 {
 	if (_itemControls.contains(key))	return _itemControls[key][name];
 	else								return nullptr;
 }
 
-bool ListModelTableViewBase::addRowControl(const QString &key, JASPControlWrapper *control)
+bool ListModelTableViewBase::addRowControl(const QString &key, JASPControl *control)
 {
 	_itemControls[key][control->name()] = control;
 
-	if (control->item()->controlType() == JASPControl::ControlType::TextField)
+	if (control->controlType() == JASPControl::ControlType::TextField)
 	{
-		BoundQMLTextInput* textInput = dynamic_cast<BoundQMLTextInput*>(control);
-		if (textInput && textInput->inputType() == BoundQMLTextInput::TextInputType::FormulaType)
-			connect(textInput, &BoundQMLTextInput::formulaCheckSucceeded, this, &ListModelTableViewBase::formulaCheckSucceededSlot);
+		TextInputBase* textInput = dynamic_cast<TextInputBase*>(control);
+		if (textInput && textInput->inputType() == TextInputBase::TextInputType::FormulaType)
+			connect(textInput, &TextInputBase::formulaCheckSucceeded, this, &ListModelTableViewBase::formulaCheckSucceededSlot);
 	}
 
 	return true;

@@ -17,14 +17,14 @@
 //
 
 #include "listmodellayersassigned.h"
-#include "boundqmllistviewlayers.h"
+#include "boundcontrollayers.h"
 
 #include "utilities/qutils.h"
 
 using namespace std;
 
 
-ListModelLayersAssigned::ListModelLayersAssigned(QMLListView* listView)
+ListModelLayersAssigned::ListModelLayersAssigned(JASPListControl* listView)
 	: ListModelAssignedInterface(listView)
 {
 }

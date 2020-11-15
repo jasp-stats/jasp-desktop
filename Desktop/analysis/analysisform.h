@@ -22,7 +22,7 @@
 #include <QMap>
 
 #include "dataset.h"
-#include "options/bound.h"
+#include "options/boundcontrol.h"
 #include "options/options.h"
 #include "options/optionvariables.h"
 
@@ -32,7 +32,6 @@
 #include <QQuickItem>
 
 #include "analysis.h"
-#include "boundqmlitem.h"
 #include "widgets/listmodel.h"
 #include "options/variableinfo.h"
 #include "widgets/listmodeltermsavailable.h"
@@ -42,9 +41,8 @@
 
 
 class ListModelTermsAssigned;
-class BoundQMLItem;
 class JASPControl;
-class QMLExpander;
+class ExpanderButtonBase;
 
 class AnalysisForm : public QQuickItem, public VariableInfoProvider
 {
@@ -106,13 +104,13 @@ protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
 
 public:
-	ListModel			*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
+	ListModel			*	getRelatedModel(JASPListControl* listView)	{ return _relatedModelMap[listView]; }
 	ListModel			*	getModel(const QString& modelName)		{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr; } // Maps create elements if they do not exist yet
 	Options				*	getAnalysisOptions()					{ return _analysis->options(); }
-	JASPControlWrapper	*	getControl(const QString& name)			{ return _controls.contains(name) ? _controls[name] : nullptr; }
-	void					addListView(QMLListView* listView, QMLListView* sourceListView);
-	QMLExpander			*	nextExpander(QMLExpander* expander)		{ return _nextExpanderMap[expander]; }
-	BoundQMLItem		*	getBoundItem(Option* option)			{ return _optionControlMap[option]; }
+	JASPControl			*	getControl(const QString& name)			{ return _controls.contains(name) ? _controls[name] : nullptr; }
+	void					addListView(JASPListControl* listView, JASPListControl* sourceListView);
+	ExpanderButtonBase			*	nextExpander(ExpanderButtonBase* expander)		{ return _nextExpanderMap[expander]; }
+	JASPControl			*	getControl(Option* option)				{ return _optionControlMap[option]; }
 
 	Options				*	options() { return _options; }
 	void					addControl(JASPControl* control);
@@ -151,10 +149,9 @@ protected:
 	QString		msgsListToString(const QStringList & list) const;
 
 private:
-	void		_addControlWrapper(JASPControlWrapper* controlWrapper);
 	void		_setUpControls();
-	void		_setUpRelatedModels();
-	void		_setUpItems();
+	void		_setUpModels();
+	void		_setUp();
 	void		_orderExpanders();
 	QString		_getControlLabel(QString controlName);
 	void		_addLoadingError(QStringList wrongJson);
@@ -173,16 +170,16 @@ private slots:
 protected:
 	Analysis								*	_analysis			= nullptr;
 	Options									*	_options			= nullptr;
-	QMap<QString, JASPControlWrapper* >			_controls;
+	QMap<QString, JASPControl* >				_controls;
 
 	///Ordered on dependencies within QML, aka an assigned variables list depends on the available list it is connected to.
-	QVector<JASPControlWrapper*>				_dependsOrderedCtrls;
-	QMap<Option*, BoundQMLItem*>				_optionControlMap;
-	QMap<QMLListView*, ListModel* >				_relatedModelMap;
+	QVector<JASPControl*>						_dependsOrderedCtrls;
+	QMap<Option*, JASPControl*>					_optionControlMap;
+	QMap<JASPListControl*, ListModel* >				_relatedModelMap;
 	QMap<QString, ListModel* >					_modelMap;
-	QVector<QMLExpander*>						_expanders;
-	QMap<QMLExpander*, QMLExpander*>			_nextExpanderMap;
-	QMap<JASPControlWrapper*, QMLExpander*>		_controlExpanderMap;
+	QVector<ExpanderButtonBase*>				_expanders;
+	QMap<ExpanderButtonBase*, ExpanderButtonBase*>	_nextExpanderMap;
+	QMap<JASPControl*, ExpanderButtonBase*>		_controlExpanderMap;
 	bool										_removed = false;
 	std::set<std::string>						_mustBe;
 	std::map<std::string,std::set<std::string>>	_mustContain;

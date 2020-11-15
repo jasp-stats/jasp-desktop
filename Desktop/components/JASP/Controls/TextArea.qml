@@ -3,7 +3,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts	1.3
 import JASP				1.0
 
-JASPControl
+TextAreaBase
 {
 	id:					textArea
 	controlType:		JASPControl.TextArea
@@ -15,8 +15,6 @@ JASPControl
 	innerControl:		control
 	
 	property alias	control				: control
-	property alias  text				: control.text
-    property string textType
 	property string applyScriptInfo		: Qt.platform.os == "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
 	property alias  infoText			: infoText.text
 	property bool   hasScriptError		: false
@@ -67,6 +65,7 @@ JASPControl
 			TextArea.flickable: TextArea
 			{
 				id:					control
+				text:				textArea.text
 				selectByMouse:		true
 				selectedTextColor:	jaspTheme.white
 				selectionColor:		jaspTheme.itemSelectedColor

@@ -20,12 +20,13 @@
 #include "listmodeltermsavailable.h"
 #include "analysis/analysisform.h"
 #include "rowcontrols.h"
+#include "jasplistcontrol.h"
 #include <QTimer>
 
 
 using namespace std;
 
-ListModelTermsAssigned::ListModelTermsAssigned(QMLListView* listView, int maxRows)
+ListModelTermsAssigned::ListModelTermsAssigned(JASPListControl* listView, int maxRows)
 	: ListModelAssignedInterface(listView)
 	, _maxRows(maxRows)
 {
@@ -143,10 +144,10 @@ void ListModelTermsAssigned::removeTerm(int index)
 	{
 		RowControls* controls = _rowControlsMap[termQ];
 		if (controls)
-			for (JASPControlWrapper* control : controls->getJASPControlsMap().values())
+			for (JASPControl* control : controls->getJASPControlsMap().values())
 			{
-				control->item()->setHasError(false);
-				listView()->form()->clearControlError(control->item());
+				control->setHasError(false);
+				listView()->form()->clearControlError(control);
 			}
 
 		_rowControlsMap.remove(termQ);
