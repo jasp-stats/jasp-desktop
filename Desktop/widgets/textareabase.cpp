@@ -33,6 +33,7 @@
 TextAreaBase::TextAreaBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
+	_controlType = ControlType::TextArea;
 }
 
 
@@ -66,6 +67,8 @@ void TextAreaBase::setUpModel()
 		}
 		else
 			_model->setTermsAreVariables(false);
+
+		JASPListControl::setUpModel();
 	}
 
 	QQuickItem::connect(this, SIGNAL(applyRequest()), this, SLOT(checkSyntaxHandler()));
@@ -89,7 +92,7 @@ void TextAreaBase::rScriptDoneHandler(const QString & result)
 		setProperty("infoText", tr("Model applied"));
 		OptionString* option = dynamic_cast<OptionString*>(boundTo());
 		if (option != nullptr)
-			option->setValue(_text.toStdString());
+			option->setValue(text().toStdString());
 	}
 	else
 	{
@@ -98,11 +101,12 @@ void TextAreaBase::rScriptDoneHandler(const QString & result)
 	}
 }
 
-void TextAreaBase::setText(QString text)
+QString TextAreaBase::text()
 {
-	if (text != _text)
-	{
-		_text = text;
-		emit textChanged();
-	}
+	return property("text").toString();
+}
+
+void TextAreaBase::setText(const QString& text)
+{
+	setProperty("text", text);
 }

@@ -43,7 +43,7 @@ public:
 	void		setUpModel()								override;
 
 protected slots:
-	void modelChangedHandler() override;
+	void termsChangedHandler() override;
 	void comboBoxChangeValueSlot(int index);
 	void languageChangedHandler();
 

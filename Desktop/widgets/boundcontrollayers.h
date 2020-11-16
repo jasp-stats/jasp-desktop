@@ -34,7 +34,7 @@ public:
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
-	void		modelChanged()								override;
+	void		updateOption()								override;
 	
 private:
 	OptionsTable*				_boundTo		= nullptr;

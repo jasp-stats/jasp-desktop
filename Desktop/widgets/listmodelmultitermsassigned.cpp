@@ -135,7 +135,7 @@ void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 	_setTerms();
 	endResetModel();
 
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelMultiTermsAssigned::_setTerms()
@@ -233,7 +233,7 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 	_setTerms();
 	endResetModel();
 
-	emit modelChanged();
+	emit termsChanged();
 
 	return termsToReturn;
 }
@@ -350,5 +350,5 @@ void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropI
 	_setTerms();
 	endResetModel();
 	
-	emit modelChanged();
+	emit termsChanged();
 }

@@ -38,7 +38,7 @@ public:
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
-	void		modelChanged()								override;
+	void		updateOption()								override;
 
 private:
 	void		interactionHighOrderHandler(Option* option);
@@ -47,10 +47,11 @@ private:
 	OptionVariables*				_optionVariables		= nullptr;
 	OptionsTable*					_optionsTable			= nullptr;
 	ListModelAssignedInterface*		_termsModel				= nullptr;
-	JASPListControl*					_listView				= nullptr;
+	JASPListControl*				_listView				= nullptr;
 	bool							_isSingleRow			= false;
 	QString							_interactionHighOrderCheckBoxName;
-	std::string						_tempOptionKey;
+	std::string						_optionKey,
+									_optionKeyFromFile;
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

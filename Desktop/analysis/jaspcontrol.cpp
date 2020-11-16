@@ -176,7 +176,7 @@ void JASPControl::componentComplete()
 	_setBackgroundColor();
 	_setVisible();
 
-	if (useControlMouseArea())
+	if (_useControlMouseArea)
 	{
 		QQmlComponent* comp = getMouseAreaComponent(qmlEngine(this));
 		QVariantMap props = { {"hoverEnabled", shouldStealHover()}, {"cursorShape", cursorShape()} };
@@ -234,7 +234,7 @@ void JASPControl::componentComplete()
 			if (!listViewVar.isNull())
 			{
 				_parentListViewKey = context->contextProperty("rowValue").toString();
-				connect(listView->model(), &ListModel::termChanged, this, &JASPControl::listViewKeyChanged);
+				connect(listView->model(), &ListModel::termChanged, this, &JASPControl::parentListViewKeyChanged);
 			}
 			else
 				_parentListViewKey = context->contextProperty("rowIndex").toString();
@@ -260,59 +260,6 @@ void JASPControl::componentComplete()
 	if (!_runOnChange)
 		setRunOnChangeToChildren(_runOnChange);
 }
-
-/*
-		JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControl* control)
-		{
-			JASPControlWrapper* controlWrapper = nullptr;
-
-			switch(control->controlType())
-			{
-			case JASPControl::ControlType::Switch:			//fallthrough:
-			case JASPControl::ControlType::CheckBox:					controlWrapper		= new CheckBoxBase(control);					break;
-			case JASPControl::ControlType::Slider:						controlWrapper		= new SliderBase(control);						break;
-			case JASPControl::ControlType::ComboBox:					controlWrapper		= new ComboBoxBase(control);					break;
-			case JASPControl::ControlType::Expander:					controlWrapper		= new QMLExpander(control);							break;
-			case JASPControl::ControlType::TableView:					controlWrapper		= new BoundQMLTableView(control);					break;
-			case JASPControl::ControlType::TextField:					controlWrapper		= new TextInputBase(control);					break;
-			case JASPControl::ControlType::FactorsForm:					controlWrapper		= new FactorsFormBase(control);					break;
-			case JASPControl::ControlType::InputListView:				controlWrapper		= new InputListBase(control);					break;
-			case JASPControl::ControlType::TabView:						controlWrapper		= new ComponentsListBase(control);				break;
-			case JASPControl::ControlType::ComponentsList:				controlWrapper		= new ComponentsListBase(control);				break;
-			case JASPControl::ControlType::RadioButtonGroup:			controlWrapper		= new BoundQMLRadioButtons(control);				break;
-			case JASPControl::ControlType::RepeatedMeasuresFactorsList:	controlWrapper		= new BoundQMLRepeatedMeasuresFactors(control);		break;
-			case JASPControl::ControlType::TextArea:
-			{
-				QString textType = control->property("textType").toString();
-				if		(textType == "lavaan")								controlWrapper		= new TextAreaLavaanBase(control);
-				else if (textType == "JAGSmodel")							controlWrapper		= new TextAreaJAGSBase(control);
-				else														controlWrapper		= new BoundQMLTextArea(control);
-				break;
-			}
-			case JASPControl::ControlType::VariablesListView:
-			{
-				JASPControl::ListViewType	listViewType = JASPControl::ListViewType(control->property("listViewType").toInt());
-
-				switch(listViewType)
-				{
-				case JASPControl::ListViewType::AssignedVariables:		controlWrapper = new BoundQMLListViewTerms(control, false);		break;
-				case JASPControl::ListViewType::Interaction:			controlWrapper = new BoundQMLListViewTerms(control, true);		break;
-				case JASPControl::ListViewType::RepeatedMeasures:		controlWrapper = new BoundQMLListViewMeasuresCells(control);	break;
-				case JASPControl::ListViewType::Layers:					controlWrapper = new BoundQMLListViewLayers(control);			break;
-				case JASPControl::ListViewType::AvailableVariables:		controlWrapper = new QMLListViewTermsAvailable(control, false);	break;
-				case JASPControl::ListViewType::AvailableInteraction:	controlWrapper = new QMLListViewTermsAvailable(control, true);	break;
-				}
-				break;
-			}
-			case JASPControl::ControlType::GroupBox:
-			case JASPControl::ControlType::DefaultControl:
-			default:
-				controlWrapper = new JASPControlWrapper(control);
-			}
-
-			return controlWrapper;
-		}
-		*/
 
 void JASPControl::setCursorShape(int shape)
 {
@@ -578,7 +525,7 @@ void JASPControl::reconnectWithYourChildren()
 	emit hasWarningChanged();
 }
 
-void JASPControl::listViewKeyChanged(const QString &oldName, const QString &newName)
+void JASPControl::parentListViewKeyChanged(const QString &oldName, const QString &newName)
 {
 	if (oldName == _parentListViewKey)
 		_parentListViewKey = newName;

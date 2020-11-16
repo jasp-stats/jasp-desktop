@@ -28,6 +28,8 @@
 InputListBase::InputListBase(QQuickItem *parent)
 	: JASPListControl(parent)
 {
+	_controlType			= ControlType::InputListView;
+	_useControlMouseArea	= false;
 }
 
 void InputListBase::setUpModel()
@@ -44,6 +46,8 @@ void InputListBase::setUpModel()
 
 	QQuickItem::connect(this,	SIGNAL(itemChanged(int, QVariant)),	_inputModel,	SLOT(itemChanged(int, QVariant)));
 	QQuickItem::connect(this,	SIGNAL(itemRemoved(int)),			_inputModel,	SLOT(itemRemoved(int)));
+
+	JASPListControl::setUpModel();
 }
 
 void InputListBase::bindTo(Option *option)
@@ -56,18 +60,19 @@ void InputListBase::bindTo(Option *option)
 	}
 	std::vector<Options*> allOptions = _boundTo->value();
 
+	std::string keyName = _optionKey.toStdString();
 	std::vector<std::string> values;
 	QMap<QString, QMap<QString, Option*> > allOptionsMap;
 	for (const Options* options : allOptions)
 	{
 		if (hasRowComponent())
 		{
-			OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_optionKeyName));
+			OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(keyName));
 			if (variableOption)
 			{
 				QMap<QString, Option*> optionsMap;
 				for (const std::string& name : options->names)
-					if (name != _optionKeyName)
+					if (name != keyName)
 						optionsMap[QString::fromStdString(name)] = options->get(name);
 				std::string inputValue = variableOption->variable();
 				values.push_back(inputValue);
@@ -81,7 +86,7 @@ void InputListBase::bindTo(Option *option)
 		}
 		else
 		{
-			OptionVariables *optionVars = static_cast<OptionVariables *>(options->get(_optionKeyName));
+			OptionVariables *optionVars = static_cast<OptionVariables *>(options->get(keyName));
 			values = optionVars->variables();
 		}
 	}
@@ -93,14 +98,15 @@ Option* InputListBase::createOption()
 {
 	OptionsTable* optionsTable = nullptr;
 	Options* templote = new Options();
+	std::string keyName = _optionKey.toStdString();
 
 	if (hasRowComponent())
 	{
-		templote->add(_optionKeyName, new OptionVariable());
+		templote->add(keyName, new OptionVariable());
 		addRowComponentsDefaultOptions(templote);
 	}
 	else
-		templote->add(_optionKeyName, new OptionVariables());
+		templote->add(keyName, new OptionVariables());
 	
 	optionsTable = new OptionsTable(templote);
 
@@ -113,7 +119,7 @@ Option* InputListBase::createOption()
 			Options* options = new Options();
 			OptionVariables* optionVars = new OptionVariables();
 			optionVars->setValue(_defaultValues);
-			options->add(_optionKeyName, optionVars);
+			options->add(keyName, optionVars);
 			allOptions.push_back(options);
 		}
 		else
@@ -123,7 +129,7 @@ Option* InputListBase::createOption()
 				Options* options = dynamic_cast<Options*>(templote->clone());
 				OptionVariable* optionVar = new OptionVariable();
 				optionVar->setValue(defaultValue);
-				options->add(_optionKeyName, optionVar);
+				options->add(keyName, optionVar);
 				allOptions.push_back(options);
 			}
 		}
@@ -150,7 +156,7 @@ bool InputListBase::isJsonValid(const Json::Value &optionValue)
 			valid = value.type() == Json::objectValue;
 			if (valid)
 			{
-				const Json::Value& nameOption = value[_optionKeyName];
+				const Json::Value& nameOption = value[_optionKey.toStdString()];
 				valid = nameOption.type() == Json::stringValue;
 
 				if (!valid)
@@ -162,7 +168,7 @@ bool InputListBase::isJsonValid(const Json::Value &optionValue)
 	return valid;
 }
 
-void InputListBase::modelChangedHandler()
+void InputListBase::termsChangedHandler()
 {
 	if (_boundTo)
 	{
@@ -172,7 +178,7 @@ void InputListBase::modelChangedHandler()
 		for (const std::string &value : values)
 		{
 			Options* options = new Options();
-			options->add(_optionKeyName, new OptionString(value));
+			options->add(_optionKey.toStdString(), new OptionString(value));
 			RowControls* rowControls = allControls[QString::fromStdString(value)];
 			if (rowControls)
 			{

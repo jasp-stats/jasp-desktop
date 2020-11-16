@@ -179,11 +179,11 @@ void ListModelInputValue::itemChanged(int row, QVariant value)
 		}
 	}
 
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelInputValue::itemRemoved(int row)
 {
 	_removeTerm(row);
-	emit modelChanged();
+	emit termsChanged();
 }

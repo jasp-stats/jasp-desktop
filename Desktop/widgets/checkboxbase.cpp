@@ -23,6 +23,7 @@
 CheckBoxBase::CheckBoxBase(QQuickItem* parent)
 	: JASPControl(parent)
 {
+	_controlType = ControlType::CheckBox;
 }
 
 void CheckBoxBase::bindTo(Option *option)

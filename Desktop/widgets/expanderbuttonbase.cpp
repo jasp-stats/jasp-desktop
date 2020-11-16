@@ -22,6 +22,7 @@
 ExpanderButtonBase::ExpanderButtonBase(QQuickItem *parent)
 	: JASPControl(parent)
 {
+	_controlType = ControlType::Expander;
 }
 
 JASPControl* ExpanderButtonBase::_findFirstControl(QObject* obj)

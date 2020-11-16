@@ -72,7 +72,7 @@ void BoundControlMeasuresCells::addFactorModel(ListModelRepeatedMeasuresFactors 
 	_sourceFactorsModels.push_back(factorModel);
 }
 
-void BoundControlMeasuresCells::modelChanged()
+void BoundControlMeasuresCells::updateOption()
 {
 	const Terms& terms = _measuresCellsModel->terms();
 	

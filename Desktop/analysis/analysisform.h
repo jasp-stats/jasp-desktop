@@ -175,7 +175,7 @@ protected:
 	///Ordered on dependencies within QML, aka an assigned variables list depends on the available list it is connected to.
 	QVector<JASPControl*>						_dependsOrderedCtrls;
 	QMap<Option*, JASPControl*>					_optionControlMap;
-	QMap<JASPListControl*, ListModel* >				_relatedModelMap;
+	QMap<JASPListControl*, ListModel* >			_relatedModelMap;
 	QMap<QString, ListModel* >					_modelMap;
 	QVector<ExpanderButtonBase*>				_expanders;
 	QMap<ExpanderButtonBase*, ExpanderButtonBase*>	_nextExpanderMap;

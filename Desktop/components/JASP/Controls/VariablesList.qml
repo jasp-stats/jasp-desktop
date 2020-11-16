@@ -27,29 +27,20 @@ VariablesListBase
 {
 	id						: variablesList
 	implicitHeight			: maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
-	controlType				: JASPControl.VariablesListView
 	background				: itemRectangle
 	implicitWidth 			: parent.width
-	useControlMouseArea		: false
 	shouldStealHover		: false
 	innerControl			: itemGridView
+	optionKey				: listViewType === JASP.Interaction ? "components" : "variable"
 
-	property var	model
-	property var	values
-	property string	optionKey			: listViewType === JASP.Interaction ? "components" : "variable"
-	property alias	label				: variablesList.title
-	property alias	count				: itemGridView.count
-	property int	columns				: 1
-	property var	source
-	property var	sourceModel
-	property alias	itemGridView		: itemGridView
-	property alias	cellHeight			: itemGridView.cellHeight
-	property alias	cellWidth			: itemGridView.cellWidth
-	property alias	itemRectangle		: itemRectangle
-	property alias	scrollBar			: scrollBar
-	property alias	itemTitle			: itemTitle
-	property string	rowComponentTitle	: ""
-
+	property alias	label							: variablesList.title
+	property alias	itemGridView					: itemGridView
+	property alias	cellHeight						: itemGridView.cellHeight
+	property alias	cellWidth						: itemGridView.cellWidth
+	property alias	itemRectangle					: itemRectangle
+	property alias	scrollBar						: scrollBar
+	property alias	itemTitle						: itemTitle
+	property string	rowComponentTitle				: ""
 	property string itemType						: "variables"
 	property alias	dropKeys						: dropArea.keys
 	property int	dropMode						: JASP.DropNone
@@ -58,7 +49,6 @@ VariablesListBase
 	property bool	showSortMenu					: true
 	property bool	singleVariable					: false
 	property int	maxRows							: (singleVariable ? 1 : -1)
-	property int	listViewType					: JASP.AvailableVariables
 	property var	allowedColumns					: []
 	property bool	dropModeInsert					: dropMode === JASP.DropInsert
 	property bool	dropModeReplace					: dropMode === JASP.DropReplace
@@ -69,7 +59,7 @@ VariablesListBase
 	property bool	setHeightInForm					: false
 	property bool	addInteractionsByDefault		: true
 	property bool	interactionContainLowerTerms	: true
-	property var	interactionHighOrderCheckBox
+	property string	interactionHighOrderCheckBox
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
 	property bool	allowAnalysisOwnComputedColumns	: true
 	property bool	allowDuplicatesInMultipleColumns: false // This property is used in the constructor and is not updatable afterwards.
@@ -555,7 +545,7 @@ VariablesListBase
 					x:						jaspTheme.borderRadius
 					anchors.verticalCenter:	parent.verticalCenter
 					source:					(!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) || !model.columnType) ? "" : jaspTheme.iconPath + (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType])
-					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable && source !== ""
+					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable && source
 					mipmap:	true
 					smooth:	true
 				}

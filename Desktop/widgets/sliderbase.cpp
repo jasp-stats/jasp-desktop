@@ -28,6 +28,7 @@
 SliderBase::SliderBase(QQuickItem* parent)
 	: JASPControl(parent)
 {
+	_controlType = ControlType::Slider;
 	QQuickItem::connect(this, SIGNAL(moved()), this, SLOT(sliderMovedSlot()));
 }
 

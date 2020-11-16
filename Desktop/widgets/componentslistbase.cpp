@@ -28,12 +28,15 @@
 ComponentsListBase::ComponentsListBase(QQuickItem *parent)
 	: JASPListControl(parent)
 {
+	_controlType			= ControlType::ComponentsList;
+	_useControlMouseArea	= false;
 }
 
 void ComponentsListBase::setUpModel()
 {
 	_termsModel = new ListModelTermsAssigned(this);
 	_termsModel->setTermsAreVariables(false);
+	JASPListControl::setUpModel();
 
 	QQuickItem::connect(this, SIGNAL(nameChanged(int, QString)), this, SLOT(nameChangedHandler(int, QString)));
 	QQuickItem::connect(this, SIGNAL(addItem()), this, SLOT(addItemHandler()));
@@ -49,6 +52,7 @@ void ComponentsListBase::bindTo(Option *option)
 		return;
 	}
 
+	std::string keyName = _optionKey.toStdString();
 	Terms terms;
 	QMap<QString, QMap<QString, Option*> > allOptionsMap;
 	std::vector<Options*> optionsList = _boundTo->value();
@@ -58,7 +62,7 @@ void ComponentsListBase::bindTo(Option *option)
 
 		if (_termsModel->areTermsInteractions())
 		{
-			OptionTerm* termOption = dynamic_cast<OptionTerm*>(options->get(_optionKeyName));
+			OptionTerm* termOption = dynamic_cast<OptionTerm*>(options->get(keyName));
 			if (termOption)
 			{
 				Term term(termOption->term());
@@ -73,7 +77,7 @@ void ComponentsListBase::bindTo(Option *option)
 		}
 		else
 		{
-			OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_optionKeyName));
+			OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(keyName));
 			if (variableOption)
 			{
 				key = variableOption->variable();
@@ -88,7 +92,7 @@ void ComponentsListBase::bindTo(Option *option)
 
 		QMap<QString, Option*> optionsMap;
 		for (const std::string& name : options->names)
-			if (name != _optionKeyName)
+			if (name != keyName)
 				optionsMap[QString::fromStdString(name)] = options->get(name);
 
 		allOptionsMap[QString::fromStdString(key)] = optionsMap;
@@ -101,11 +105,12 @@ void ComponentsListBase::bindTo(Option *option)
 Option* ComponentsListBase::createOption()
 {
 	Options* templote = new Options();
+	std::string keyName = _optionKey.toStdString();
 
 	if (_termsModel->areTermsInteractions())
-		templote->add(_optionKeyName, new OptionTerm());
+		templote->add(keyName, new OptionTerm());
 	else
-		templote->add(_optionKeyName, new OptionVariable());
+		templote->add(keyName, new OptionVariable());
 	addRowComponentsDefaultOptions(templote);
 
 	OptionsTable* result = new OptionsTable(templote);
@@ -121,13 +126,13 @@ Option* ComponentsListBase::createOption()
 			{
 				OptionTerm* optionVar = new OptionTerm();
 				optionVar->setValue(term.scomponents());
-				row->add(_optionKeyName, optionVar);
+				row->add(keyName, optionVar);
 			}
 			else
 			{
 				OptionVariables* optionVar = new OptionVariable();
 				optionVar->setValue(term.asString());
-				row->add(_optionKeyName, optionVar);
+				row->add(keyName, optionVar);
 			}
 			allOptions.push_back(row);
 		}
@@ -143,7 +148,6 @@ Option* ComponentsListBase::createOption()
 			defaultValues.push_back(defaultName);
 
 		QList<QString> keyValues;
-		QString keyName = tq(_optionKeyName);
 
 		for (const QVariant& defaultValue : defaultValues)
 		{
@@ -152,14 +156,14 @@ Option* ComponentsListBase::createOption()
 			OptionVariables* optionVar = new OptionVariable();
 
 			QString keyValue = (defaultValue.type() == QVariant::String) ? defaultValue.toString() : defaultName;
-			if (defaultValueMap.contains(keyName))
-				keyValue = defaultValueMap[keyName].toString();
+			if (defaultValueMap.contains(_optionKey))
+				keyValue = defaultValueMap[_optionKey].toString();
 
 			keyValue = _makeUnique(keyValue, keyValues);
 			keyValues.push_back(keyValue);
 
 			optionVar->setValue(keyValue.toStdString());
-			row->add(_optionKeyName, optionVar);
+			row->add(keyName, optionVar);
 
 			QMapIterator<QString, QVariant> it(defaultValueMap);
 			while (it.hasNext())
@@ -167,7 +171,7 @@ Option* ComponentsListBase::createOption()
 				it.next();
 				QString name = it.key();
 
-				if (name != keyName)
+				if (name != _optionKey)
 				{
 					QVariant value = it.value();
 					Option* option = row->get(fq(name));
@@ -193,10 +197,11 @@ bool ComponentsListBase::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::arrayValue;
 }
 
-void ComponentsListBase::modelChangedHandler()
+void ComponentsListBase::termsChangedHandler()
 {
 	if (_boundTo)
 	{
+		std::string keyName = _optionKey.toStdString();
 		std::vector<Options*> allOptions;
 		const Terms& terms = _termsModel->terms();
 		const QMap<QString, RowControls*>& allControls = _termsModel->getRowControls();
@@ -206,7 +211,7 @@ void ComponentsListBase::modelChangedHandler()
 
 			if (_termsModel->areTermsInteractions())
 			{
-				OptionTerm* optionTerm = dynamic_cast<OptionTerm*>(rowOptions->get(_optionKeyName));
+				OptionTerm* optionTerm = dynamic_cast<OptionTerm*>(rowOptions->get(keyName));
 				if (optionTerm)
 					optionTerm->setValue(term.scomponents());
 				else
@@ -214,7 +219,7 @@ void ComponentsListBase::modelChangedHandler()
 			}
 			else
 			{
-				OptionVariable* optionVariable = dynamic_cast<OptionVariable*>(rowOptions->get(_optionKeyName));
+				OptionVariable* optionVariable = dynamic_cast<OptionVariable*>(rowOptions->get(keyName));
 				if (optionVariable)
 					optionVariable->setValue(term.asString());
 				else

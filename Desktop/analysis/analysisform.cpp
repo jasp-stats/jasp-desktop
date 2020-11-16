@@ -152,7 +152,7 @@ void AnalysisForm::addControl(JASPControl *control)
 		control->setHasError(true);
 	}
 
-	if (!name.isEmpty())
+	if (!name.isEmpty() && control->nameMustBeUnique())
 	{
 		if (_controls.keys().contains(name))
 		{
@@ -189,25 +189,6 @@ void AnalysisForm::_setUpModels()
 		{
 			listView->setUpModel();
 			_modelMap[it.key()] = listView->model();
-
-			TextAreaBase* textArea	= qobject_cast<TextAreaBase*>(listView);
-			if (textArea)
-			{
-				// TODO : Change this special handling for TextArea
-				ListModelTermsAvailable	* availableModel = qobject_cast<ListModelTermsAvailable*>(textArea->model());
-				if (availableModel && textArea->modelNeedsAllVariables())
-					_allAvailableVariablesModels.push_back(availableModel);
-			}
-			else
-			{
-				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(listView->model());
-
-				if (availableModel)
-				{
-					if (!listView->hasSource())	_allAvailableVariablesModels.push_back(availableModel);
-					else						_allAvailableVariablesModelsWithSource.push_back(availableModel);
-				}
-			}
 		}
 	}
 
@@ -237,7 +218,32 @@ void AnalysisForm::_setUp()
 	QList<JASPControl*> controls = _controls.values();
 
 	for (JASPControl* control : controls)
+	{
 		control->setUp();
+
+		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
+		if (listControl)
+		{
+			TextAreaBase* textArea	= qobject_cast<TextAreaBase*>(listControl);
+			if (textArea)
+			{
+				// TODO : Change this special handling for TextArea
+				ListModelTermsAvailable	* availableModel = qobject_cast<ListModelTermsAvailable*>(textArea->model());
+				if (availableModel && textArea->modelNeedsAllVariables())
+					_allAvailableVariablesModels.push_back(availableModel);
+			}
+			else
+			{
+				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(listControl->model());
+
+				if (availableModel)
+				{
+					if (!listControl->hasSource())	_allAvailableVariablesModels.push_back(availableModel);
+					else							_allAvailableVariablesModelsWithSource.push_back(availableModel);
+				}
+			}
+		}
+	}
 
 	// set the order of the BoundItems according to their dependencies (for binding purpose)
 	for (JASPControl* control : controls)

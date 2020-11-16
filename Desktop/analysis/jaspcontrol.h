@@ -13,7 +13,7 @@ class JASPControl : public QQuickItem
 {
 	Q_OBJECT
 
-	Q_PROPERTY( ControlType							controlType			READ controlType			WRITE setControlType											)
+	Q_PROPERTY( ControlType							controlType			READ controlType			WRITE setControlType		NOTIFY controlTypeChanged			)
 	Q_PROPERTY( QString								name				READ name					WRITE setName				NOTIFY nameChanged					)
 	Q_PROPERTY( QString								title				READ title					WRITE setTitle				NOTIFY titleChanged					) //Basically whatever a human sees on their screen when they look at this specific item.
 	Q_PROPERTY( QString								info				READ info					WRITE setInfo				NOTIFY infoChanged					)
@@ -21,7 +21,6 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( QString								helpMD				READ helpMD												NOTIFY helpMDChanged				)
 	Q_PROPERTY( bool								isBound				READ isBound				WRITE setIsBound			NOTIFY isBoundChanged				)
 	Q_PROPERTY( bool								indent				READ indent					WRITE setIndent				NOTIFY indentChanged				)
-	Q_PROPERTY( bool								useControlMouseArea	READ useControlMouseArea	WRITE setUseControlMouseArea NOTIFY useControlMouseAreaChanged	)
 	Q_PROPERTY( bool								isDependency		READ isDependency			WRITE setIsDependency		NOTIFY isDependencyChanged			)
 	Q_PROPERTY( bool								debug				READ debug					WRITE setDebug				NOTIFY debugChanged					)
 	Q_PROPERTY( bool								parentDebug			READ parentDebug										NOTIFY parentDebugChanged			)
@@ -83,6 +82,7 @@ public:
 	Q_ENUM(DropMode)
 	Q_ENUM(ListViewType)
 	Q_ENUM(AssignType)
+	Q_ENUM(TextType)
 
 	JASPControl(QQuickItem *parent = nullptr);
 
@@ -93,8 +93,8 @@ public:
 	QString			toolTip()				const	{ return _toolTip;				}
 	QString			helpMD(int howDeep = 2)	const;
 	bool			isBound()				const	{ return _isBound;				}
+	bool			nameMustBeUnique()		const	{ return _nameMustBeUnique;		}
 	bool			indent()				const	{ return _indent;				}
-	bool			useControlMouseArea()	const	{ return _useControlMouseArea;	}
 	bool			isDependency()			const	{ return _isDependency;			}
 	bool			initialized()			const	{ return _initialized;			}
 	bool			shouldShowFocus()		const	{ return _shouldShowFocus;		}
@@ -166,7 +166,7 @@ public slots:
 	void	clearControlError();
 
 	void	reconnectWithYourChildren();
-	void	listViewKeyChanged(const QString& oldName, const QString& newName);
+	void	parentListViewKeyChanged(const QString& oldName, const QString& newName);
 
 	GENERIC_SET_FUNCTION(Name				, _name					, nameChanged				, QString		)
 	GENERIC_SET_FUNCTION(Info				, _info					, infoChanged				, QString		)
@@ -174,7 +174,6 @@ public slots:
 	GENERIC_SET_FUNCTION(Title				, _title				, titleChanged				, QString		)
 	GENERIC_SET_FUNCTION(IsBound			, _isBound				, isBoundChanged			, bool			)
 	GENERIC_SET_FUNCTION(Indent				, _indent				, indentChanged				, bool			)
-	GENERIC_SET_FUNCTION(UseControlMouseArea, _useControlMouseArea	, useControlMouseAreaChanged, bool			)
 	GENERIC_SET_FUNCTION(IsDependency		, _isDependency			, isDependencyChanged		, bool			)
 	GENERIC_SET_FUNCTION(ShouldShowFocus	, _shouldShowFocus		, shouldShowFocusChanged	, bool			)
 	GENERIC_SET_FUNCTION(ShouldStealHover	, _shouldStealHover		, shouldStealHoverChanged	, bool			)
@@ -194,7 +193,6 @@ signals:
 	void nameChanged();
 	void isBoundChanged();
 	void indentChanged();
-	void useControlMouseAreaChanged();
 	void isDependencyChanged();
 	void initializedChanged();
 	void shouldShowFocusChanged();
@@ -219,6 +217,7 @@ signals:
 	void preferredHeightChanged();
 	void preferredWidthChanged();
 	void hoveredChanged();
+	void controlTypeChanged();			// Not used, defined only to suppress warning in QML
 
 protected:
 			void					componentComplete() override;
@@ -246,7 +245,8 @@ protected:
 							_runOnChange			= true,
 							_useControlMouseArea	= true,
 							_shouldShowFocus		= false,
-							_shouldStealHover		= false;
+							_shouldStealHover		= false,
+							_nameMustBeUnique		= true;
 	JASPControl			*	_parentListView			= nullptr;
 	QQuickItem			*	_childControlsArea		= nullptr,
 						*	_innerControl			= nullptr,

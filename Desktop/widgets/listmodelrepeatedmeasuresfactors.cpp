@@ -305,7 +305,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 	
 	_setAllLevelsCombinations();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
@@ -363,7 +363,7 @@ void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 	
 	_setAllLevelsCombinations();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 QStringList ListModelRepeatedMeasuresFactors::_getOtherLevelsStringList(const Factor& item)

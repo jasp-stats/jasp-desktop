@@ -90,7 +90,7 @@ bool BoundControlLayers::isJsonValid(const Json::Value &optionValue)
 	return valid;
 }
 
-void BoundControlLayers::modelChanged()
+void BoundControlLayers::updateOption()
 {
 	vector<pair<string, vector<string> > > layers = _layersModel->getLayers();
 	vector<Options *> allOptions;

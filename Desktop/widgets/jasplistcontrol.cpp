@@ -32,8 +32,11 @@ const QString JASPListControl::_defaultKey = "_JASPDefaultKey";
 JASPListControl::JASPListControl(QQuickItem *parent)
 	: JASPControl(parent)
 {
-	_hasSource = !property("source").isNull() || !property("values").isNull(); // sourceModels are only known after setup is called, but the method hasSource() is needed before in AnalysisForm
-	_optionKeyName = property("optionKey").toString().toStdString();
+}
+
+void JASPListControl::setUpModel()
+{
+	emit modelChanged();
 }
 
 QList<QVariant> JASPListControl::_getListVariant(QVariant var)
@@ -172,16 +175,13 @@ void JASPListControl::setupSources()
 	}
 	_sourceModels.clear();
 
-	QVariant valuesVar = property("values");
-	QVariant sourcesVar = property("source");
-
-	if ((!sourcesVar.isValid() || sourcesVar.isNull()) && (!valuesVar.isValid() || valuesVar.isNull()))
+	if ((!source().isValid() || source().isNull()) && (!values().isValid() || values().isNull()))
 		return;
 
-	if (valuesVar.isValid() && !valuesVar.isNull())
-		_sourceModels.append(new SourceType(_readValues(valuesVar)));
+	if (values().isValid() && !values().isNull())
+		_sourceModels.append(new SourceType(_readValues(values())));
 
-	QList<QVariant> sources = _getListVariant(sourcesVar);
+	QList<QVariant> sources = _getListVariant(source());
 	
 	for (const QVariant& source : sources)
 	{
@@ -238,7 +238,7 @@ void JASPListControl::setupSources()
 	if (_sourceModels.isEmpty())
 	{
 		if (_needsSourceModels)
-			addControlError(tr("Needs source model for VariablesList %1").arg(name()));
+			addControlError(tr("Needs source model for component %1").arg(name()));
 	}
 	else
 	{
@@ -265,7 +265,7 @@ void JASPListControl::setupSources()
 					termsAreInteractions = true;
 				sourceItem->model = sourceModel;
 				addDependency(sourceModel->listView());
-				connect(sourceModel, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
+				connect(sourceModel, &ListModel::termsChanged, listModel, &ListModel::sourceTermsChanged);
 
 				for (SourceType& discardSource : sourceItem->discardModels)
 				{
@@ -285,7 +285,7 @@ void JASPListControl::setupSources()
 					{
 						discardSource.model = discardModel;
 						addDependency(discardModel->listView());
-						connect(discardModel, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
+						connect(discardModel, &ListModel::termsChanged, listModel, &ListModel::sourceTermsChanged);
 					}
 					else
 						addControlError(tr("Unknown discard model %1 for VariableList %2").arg(discardSource.name).arg(name()));
@@ -299,9 +299,6 @@ void JASPListControl::setupSources()
 			listModel->setTermsAreVariables(false); // set it only when it is false
 		if (termsAreInteractions)
 			listModel->setTermsAreInteractions(true); // set it only when it is true
-
-		if (_sourceModels.length() == 1 && _sourceModels[0]->model)
-			setProperty("sourceModel", QVariant::fromValue(_sourceModels[0]->model));
 	}
 
 }
@@ -334,7 +331,7 @@ void JASPListControl::addRowComponentsDefaultOptions(Options *options)
 			Option* option = boundItem->createOption();
 			std::string optionName = control->name().toStdString();
 
-			if (form() && (optionName == _optionKeyName))
+			if (form() && (optionName == _optionKey.toStdString()))
 				form()->addFormError(tr("The list %1 has a rowComponent with the same name (%2) as its optionKey. Change the optionKey property of the list or the control name.").arg(name()).arg(tq(optionName)));
 			options->add(optionName, option);
 		}
@@ -353,17 +350,9 @@ void JASPListControl::setUp()
 	listModel->setRowComponent(rowComponent());
 	setupSources();
 
-	QVariant sourceVar = property("source");
-	if (sourceVar.isValid() && !sourceVar.isNull())
-		QQuickItem::connect(this, SIGNAL(sourceChanged()), this, SLOT(sourceChangedHandler()));
-
-	QVariant valuesVar = property("values");
-	if (valuesVar.isValid() && !valuesVar.isNull())
-		QQuickItem::connect(this, SIGNAL(valuesChanged()), this, SLOT(sourceChangedHandler()));
-
-	connect(listModel, &ListModel::modelChanged, this, &JASPListControl::modelChangedHandler);
-
-	setProperty("model", QVariant::fromValue(listModel));
+	connect(this,		&JASPListControl::sourceChanged,	this,	&JASPListControl::sourceChangedHandler);
+	connect(listModel,	&ListModel::termsChanged,			this,	&JASPListControl::termsChangedHandler);
+	connect(listModel,	&ListModel::termsChanged,			[this]() { emit countChanged(); });
 }
 
 void JASPListControl::cleanUp()
@@ -468,6 +457,11 @@ QString JASPListControl::getSourceType(QString name)
 	return model()->getItemType(name);
 }
 
+int JASPListControl::count()
+{
+	return model() ? model()->rowCount() : 0;
+}
+
 void JASPListControl::sourceChangedHandler()
 {
 	ListModel* listModel = model();
@@ -480,9 +474,9 @@ void JASPListControl::sourceChangedHandler()
 		if (sourceModel)
 		{
 			removeDependency(sourceModel->listView());
-			disconnect(sourceModel, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
+			disconnect(sourceModel, &ListModel::termsChanged, listModel, &ListModel::sourceTermsChanged);
 			for (SourceType& discardModel : sourceItem->getDiscardModels())
-				disconnect(discardModel.model, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
+				disconnect(discardModel.model, &ListModel::termsChanged, listModel, &ListModel::sourceTermsChanged);
 		}
 	}
 

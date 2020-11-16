@@ -24,28 +24,19 @@ import JASP				1.0
 InputListBase
 {
 	id						: inputListView
-	controlType				: JASPControl.InputListView
 	background				: itemRectangle
 	implicitWidth 			: parent.width
 	implicitHeight			: jaspTheme.defaultVariablesFormHeight
-	useControlMouseArea		: false
 	shouldStealHover		: false
 	innerControl			: itemGridView
 
-	property var	model
 	property alias	label				: inputListView.title
-	property alias	count				: itemGridView.count
-	property string	optionKey			: "value"
-	property var	source
-	property var	sourceModel
-
 	property alias	itemGridView		: itemGridView
 	property alias	cellHeight			: itemGridView.cellHeight
 	property alias	cellWidth			: itemGridView.cellWidth
 	property alias	itemTitle			: itemTitle
 	property string	rowComponentTitle	: ""
 
-	property bool	enableRowComponent	: true
 	property var	defaultValues		: []
 	property int	minRows				: 0
 	property bool	addVirtual			: true
@@ -129,8 +120,8 @@ InputListBase
 		FocusScope
 		{
 			id:		itemWrapper
-			height: listGridView.cellHeight
-			width:	scrollBar.visible ?  listGridView.cellWidth - scrollBar.width : listGridView.cellWidth
+			height: inputListView.cellHeight
+			width:	scrollBar.visible ?  inputListView.cellWidth - scrollBar.width : inputListView.cellWidth
 
 			property bool	isDeletable:		model.type.includes("deletable")
 			property bool	isVirtual:			model.type.includes("virtual")
@@ -147,13 +138,14 @@ InputListBase
 					rowComponentItem.anchors.verticalCenter	= itemWrapper.verticalCenter
 					rowComponentItem.anchors.right			= itemWrapper.right
 					rowComponentItem.anchors.rightMargin	= deleteIconID.width
-					rowComponentItem.enabled				= !itemWrapper.isVirtual && inputListView.enableRowComponent
+					rowComponentItem.enabled				= !itemWrapper.isVirtual
 				}
 			}
 
 			TextField
 			{
 				id:								textField
+				isBound:						false
 				value:							(!itemWrapper.isVirtual && model) ? model.name : ""
 				placeholderText:				(itemWrapper.isVirtual && model) ? model.name : ""
 				useExternalBorder:				false

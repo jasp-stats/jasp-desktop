@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2020 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,8 @@
 #include <QObject>
 #include <QMap>
 
+class RadioButtonBase;
+
 class RadioButtonsGroupBase : public JASPControl, public BoundControl
 {
 	Q_OBJECT
@@ -32,7 +34,6 @@ class RadioButtonsGroupBase : public JASPControl, public BoundControl
 public:
 	RadioButtonsGroupBase(QQuickItem* parent = nullptr);
 	void	bindTo(Option *option)						override;
-	void	unbind()									override;
 	Option* boundTo()									override { return _boundTo; }	
 	Option* createOption()								override;
 	bool	isOptionValid(Option* option)				override;
@@ -46,10 +47,10 @@ private slots:
     
 protected:
 	OptionList*							_boundTo		= nullptr;
-	QMap<QString, JASPControl *>		_buttons;
-	JASPControl*						_checkedButton	= nullptr;
+	QMap<QString, RadioButtonBase *>	_buttons;
+	RadioButtonBase*					_checkedButton	= nullptr;
 	
-	void _getRadioButtons(QQuickItem* item, QList<JASPControl* >& buttons);
+	void _getRadioButtons(QQuickItem* item, QList<RadioButtonBase* >& buttons);
 };
 
 #endif // RADIOBUTTONSGROUPBASE_H

@@ -28,6 +28,7 @@ using namespace std;
 TextInputBase::TextInputBase(QQuickItem* parent)
 	: JASPControl(parent)
 {
+	_controlType = ControlType::TextField;
 }
 
 QString TextInputBase::_getPercentValue()

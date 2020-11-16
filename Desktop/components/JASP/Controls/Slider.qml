@@ -7,7 +7,6 @@ import JASP					1.0
 SliderBase
 {
 	id:					slider
-	controlType:		JASPControl.Slider
 	implicitHeight:		columnLayout.implicitHeight
 	implicitWidth:		columnLayout.implicitWidth
 	innerControl:		textField

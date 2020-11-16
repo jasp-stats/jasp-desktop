@@ -35,7 +35,7 @@ BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool
 	_termsModel = listModel;
 	_listView = listModel->listView();
 	_isSingleRow = isSingleRow;
-	_listView->optionKeyName();
+	_optionKey = _listView->optionKey().toStdString();
 	_interactionHighOrderCheckBoxName	= _listView->property("interactionHighOrderCheckBox").toString();
 }
 
@@ -58,21 +58,21 @@ void BoundControlTerms::bindTo(Option *option)
 			return;
 		}
 
-		if (!_tempOptionKey.empty() && _tempOptionKey != _listView->optionKeyName())
+		if (_optionKey != _optionKeyFromFile)
 		{
 			// Backward compatibility: the key in the JASP file does not correspond to the current key. This must be replaced
-			_optionsTable->replaceKey(_tempOptionKey, _listView->optionKeyName());
+			_optionsTable->replaceKey(_optionKeyFromFile, _optionKey);
 		}
 		
+		std::vector<Options*> optionsList = _optionsTable->value();
 		Terms terms;
 		QMap<QString, QMap<QString, Option*> > allOptionsMap;
-		std::vector<Options*> optionsList = _optionsTable->value();
 		for (Options* options : optionsList)
 		{
 			std::string key;
 			if (_termsModel->areTermsInteractions())
 			{
-				OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_listView->optionKeyName()));
+				OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_optionKey));
 				termOption->setShouldEncode(true);
 
 				if (termOption)
@@ -89,7 +89,7 @@ void BoundControlTerms::bindTo(Option *option)
 			}
 			else
 			{
-				OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_listView->optionKeyName()));
+				OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_optionKey));
 				if (variableOption)
 				{
 					key = variableOption->variable();
@@ -104,7 +104,7 @@ void BoundControlTerms::bindTo(Option *option)
 			
 			QMap<QString, Option*> optionsMap;
 			for (const std::string& name : options->names)
-				if (name != _listView->optionKeyName())
+				if (name != _optionKey)
 				{
 					QString qname = QString::fromStdString(name);
 					Option* option = options->get(name);
@@ -133,17 +133,15 @@ Option* BoundControlTerms::createOption()
 	if (_listView->hasRowComponent() || _termsModel->areTermsInteractions())
 	{
 		Options* templote = new Options();
-		if (_tempOptionKey.empty())
-			_tempOptionKey = _listView->optionKeyName();
 
 		if (_termsModel->areTermsInteractions())
 		{
 			OptionTerm * newOptTerm = new OptionTerm();
 			newOptTerm->setShouldEncode(true);
-			templote->add(_tempOptionKey, newOptTerm);
+			templote->add(_optionKey, newOptTerm);
 		}
 		else
-			templote->add(_tempOptionKey, new OptionVariable());
+			templote->add(_optionKey, new OptionVariable());
 
 		if (_listView->hasRowComponent())
 			_listView->addRowComponentsDefaultOptions(templote);
@@ -176,13 +174,13 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 				valid = value.type() == Json::objectValue;
 				if (valid)
 				{
-					_tempOptionKey = _listView->optionKeyName();
-					if (value[_tempOptionKey].isNull() && value.size() > 0)
+					_optionKeyFromFile = _optionKey;
+					if (value[_optionKey].isNull() && value.size() > 0)
 					{
-						_tempOptionKey = value.begin().memberName();
-						Log::log() << "JASP file has options for " << _listView->name() << " without '" << _listView->optionKeyName() << "' key. Per default, first key '" << _tempOptionKey << "' is used. Probably the file comes from an older version of JASP." << std::endl;
+						_optionKeyFromFile = value.begin().memberName();
+						Log::log() << "JASP file has options for " << _listView->name() << " without '" << _optionKey << "' key. Per default, first key '" << _optionKeyFromFile << "' is used. Probably the file comes from an older version of JASP." << std::endl;
 					}
-					const Json::Value& components = value[_tempOptionKey];
+					const Json::Value& components = value[_optionKeyFromFile];
 					if (_termsModel->areTermsInteractions())
 					{
 						valid = components.type() == Json::arrayValue;
@@ -220,7 +218,7 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 	return valid;
 }
 
-void BoundControlTerms::modelChanged()
+void BoundControlTerms::updateOption()
 {
 	_listView->setProperty("columnsTypes", QVariant(_termsModel->itemTypes()));
 
@@ -234,7 +232,7 @@ void BoundControlTerms::modelChanged()
 			Options *rowOptions = static_cast<Options *>(_optionsTable->rowTemplate()->clone());
 			if (_termsModel->areTermsInteractions())
 			{
-				OptionTerm *optionTerm = dynamic_cast<OptionTerm *>(rowOptions->get(_listView->optionKeyName()));
+				OptionTerm *optionTerm = dynamic_cast<OptionTerm *>(rowOptions->get(_optionKey));
 				if (optionTerm)
 				{
 					optionTerm->setValue(term.scomponents());
@@ -245,7 +243,7 @@ void BoundControlTerms::modelChanged()
 			}
 			else
 			{
-				OptionVariable* optionVariable = dynamic_cast<OptionVariable*>(rowOptions->get(_listView->optionKeyName()));
+				OptionVariable* optionVariable = dynamic_cast<OptionVariable*>(rowOptions->get(_optionKey));
 				if (optionVariable)
 					optionVariable->setValue(term.asString());
 				else
@@ -295,7 +293,7 @@ void BoundControlTerms::interactionHighOrderHandler(Option *option)
 	std::vector<Options*> allOptions = _optionsTable->value();
 	for (Options* options : allOptions)
 	{
-		OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_listView->optionKeyName()));
+		OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_optionKey));
 		OptionBoolean *highOrderOption = static_cast<OptionBoolean*>(options->get(_interactionHighOrderCheckBoxName.toStdString()));
 		Term term = Term(termOption->term());
 
@@ -306,7 +304,7 @@ void BoundControlTerms::interactionHighOrderHandler(Option *option)
 				if (optionsBis == options)
 					continue;
 
-				OptionTerm *tOption = static_cast<OptionTerm*>(optionsBis->get(_listView->optionKeyName()));
+				OptionTerm *tOption = static_cast<OptionTerm*>(optionsBis->get(_optionKey));
 				OptionBoolean *nOption = static_cast<OptionBoolean*>(optionsBis->get(_interactionHighOrderCheckBoxName.toStdString()));
 				Term t = Term(tOption->term());
 

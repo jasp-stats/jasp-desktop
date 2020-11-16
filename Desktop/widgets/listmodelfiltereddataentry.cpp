@@ -111,7 +111,7 @@ void ListModelFilteredDataEntry::setAcceptedRows(std::vector<bool> newRows)
 	{
 		emit acceptedRowsChanged();
 		fillTable();
-		emit modelChanged();
+		emit termsChanged();
 	}
 }
 
@@ -132,7 +132,7 @@ void ListModelFilteredDataEntry::itemChanged(int column, int row, QVariant value
 			_enteredValues[_filteredRowToData[row]] = value.toDouble();
 
 			emit dataChanged(index(row, column), index(row, column), { Qt::DisplayRole });
-			emit modelChanged();
+			emit termsChanged();
 
 			if(gotLarger)
 				emit headerDataChanged(Qt::Orientation::Horizontal, column, column);
@@ -173,7 +173,7 @@ void ListModelFilteredDataEntry::sourceTermsChanged(const Terms *, const Terms *
 
 	fillTable();
 
-	emit modelChanged();
+	emit termsChanged();
 }
 
 OptionsTable * ListModelFilteredDataEntry::createOption()
@@ -204,7 +204,7 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 	{
 		//addControlError("Not a single row in OptionsTable for ListModelFilteredDataEntry!");
 		fillTable();
-		emit modelChanged();
+		emit termsChanged();
 		return;
 	}
 
@@ -397,7 +397,7 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 
 	_colName = colName;
 	emit colNameChanged(_colName);
-	emit modelChanged();
+	emit termsChanged();
 
 	if (_editableColumn >= 0)
 		emit headerDataChanged(Qt::Horizontal, _editableColumn, _editableColumn);
@@ -459,7 +459,7 @@ void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
 
 	emit columnCountChanged();
 	emit extraColChanged(_extraCol);
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelFilteredDataEntry::refreshModel()

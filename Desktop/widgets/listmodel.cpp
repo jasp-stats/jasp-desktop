@@ -368,7 +368,7 @@ void ListModel::sourceTermsChanged(const Terms *termsAdded, const Terms *termsRe
 {
 	_initTerms(getSourceTerms(), RowControlsOptions(), false);
 	
-	emit modelChanged(termsAdded, termsRemoved);
+	emit termsChanged(termsAdded, termsRemoved);
 }
 
 int ListModel::rowCount(const QModelIndex &) const

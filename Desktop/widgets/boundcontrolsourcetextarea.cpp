@@ -48,5 +48,5 @@ void BoundControlSourceTextArea::_setSourceTerms()
 		terms.append(term.trimmed());
 	_textArea->model()->initTerms(terms);
 
-	emit _textArea->model()->modelChanged(nullptr, nullptr);
+	emit _textArea->model()->termsChanged(nullptr, nullptr);
 }

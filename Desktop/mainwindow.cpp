@@ -56,6 +56,7 @@
 #include "widgets/variableslistbase.h"
 #include "widgets/repeatedmeasuresfoctorslistbase.h"
 #include "widgets/tableviewbase.h"
+#include "widgets/radiobuttonbase.h"
 #include "widgets/radiobuttonsgroupbase.h"
 #include "analysis/jaspdoublevalidator.h"
 #include "analysis/options/optionvariablesgroups.h"
@@ -166,31 +167,34 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterUncreatableType<JASPControl>						("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"	); //This is here to keep JASP.enum short I guess?
 	qmlRegisterUncreatableType<MessageForwarder>				("JASP",		1, 0, "MessageForwarder",	"You can't touch this"				);
 
-	qmlRegisterType<DataSetView>								("JASP",		1, 0, "DataSetView"			);
-	qmlRegisterType<JaspTheme>									("JASP",		1, 0, "JaspTheme"			);
-	qmlRegisterType<AnalysisForm>								("JASP",		1, 0, "AnalysisForm"		);
-	qmlRegisterType<RCommander>									("JASP", 		1, 0, "RCommander"			);
-	qmlRegisterType<JASPControl>								("JASP",		1, 0, "JASPControl"			);
-	qmlRegisterType<ExpanderButtonBase>							("JASP",		1, 0, "ExpanderButtonBase"	);
-	qmlRegisterType<CheckBoxBase>								("JASP",		1, 0, "CheckBoxBase"		);
-	qmlRegisterType<SliderBase>									("JASP",		1, 0, "SliderBase"			);
-	qmlRegisterType<TextInputBase>								("JASP",		1, 0, "TextInputBase"		);
-	qmlRegisterType<TextAreaBase>								("JASP",		1, 0, "TextAreaBase"		);
-	qmlRegisterType<ComboBoxBase>								("JASP",		1, 0, "ComboBoxBase"		);
-	qmlRegisterType<RadioButtonsGroupBase>						("JASP",		1, 0, "RadioButtonsGroupBase");
-	qmlRegisterType<ComponentsListBase>							("JASP",		1, 0, "ComponentsListBase"	);
-	qmlRegisterType<FactorsFormBase>							("JASP",		1, 0, "FactorsFormBase"		);
-	qmlRegisterType<InputListBase>								("JASP",		1, 0, "InputListBase"		);
+	qmlRegisterType<DataSetView>								("JASP",		1, 0, "DataSetView"						);
+	qmlRegisterType<JaspTheme>									("JASP",		1, 0, "JaspTheme"						);
+	qmlRegisterType<AnalysisForm>								("JASP",		1, 0, "AnalysisForm"					);
+	qmlRegisterType<RCommander>									("JASP", 		1, 0, "RCommander"						);
+	qmlRegisterType<JASPControl>								("JASP",		1, 0, "JASPControl"						);
+	qmlRegisterType<ExpanderButtonBase>							("JASP",		1, 0, "ExpanderButtonBase"				);
+	qmlRegisterType<CheckBoxBase>								("JASP",		1, 0, "CheckBoxBase"					);
+	qmlRegisterType<SliderBase>									("JASP",		1, 0, "SliderBase"						);
+	qmlRegisterType<TextInputBase>								("JASP",		1, 0, "TextInputBase"					);
+	qmlRegisterType<TextAreaBase>								("JASP",		1, 0, "TextAreaBase"					);
+	qmlRegisterType<ComboBoxBase>								("JASP",		1, 0, "ComboBoxBase"					);
+	qmlRegisterType<RadioButtonBase>							("JASP",		1, 0, "RadioButtonBase"					);
+	qmlRegisterType<RadioButtonsGroupBase>						("JASP",		1, 0, "RadioButtonsGroupBase"			);
+	qmlRegisterType<ComponentsListBase>							("JASP",		1, 0, "ComponentsListBase"				);
+	qmlRegisterType<FactorsFormBase>							("JASP",		1, 0, "FactorsFormBase"					);
+	qmlRegisterType<InputListBase>								("JASP",		1, 0, "InputListBase"					);
 	qmlRegisterType<RepeatedMeasuresFoctorsListBase>			("JASP",		1, 0, "RepeatedMeasuresFoctorsListBase"	);
-	qmlRegisterType<VariablesListBase>							("JASP",		1, 0, "VariablesListBase"	);
-	qmlRegisterType<TableViewBase>								("JASP",		1, 0, "TableViewBase"		);
-	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"	);
-	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"	);
+	qmlRegisterType<VariablesListBase>							("JASP",		1, 0, "VariablesListBase"				);
+	qmlRegisterType<TableViewBase>								("JASP",		1, 0, "TableViewBase"					);
+	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
+	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
 
-	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description");
-	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis");
-	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator");
-	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle");
+	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description"						);
+	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis"						);
+	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator"						);
+	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle"						);
+	qmlRegisterType<Modules::RequiredPackage>					("JASP.Module", 1, 0, "Package"							);
+	qmlRegisterType<Modules::RequiredModule>					("JASP.Module", 1, 0, "Module"							);
 	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",				"Superclass for menu entries, shouldn't be instantiated manually");
 	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",			"Can only be instantiated by JASP");
 	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",	"Superclass for Description info, shouldn't be instantiated manually");
@@ -304,6 +308,7 @@ void MainWindow::makeConnections()
 	connect(_engineSync,			&EngineSync::plotEditorRefresh,						_plotEditorModel,		&PlotEditorModel::refresh									);
 
 	qRegisterMetaType<columnType>();
+	qRegisterMetaType<ListModel*>();
 
 	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);

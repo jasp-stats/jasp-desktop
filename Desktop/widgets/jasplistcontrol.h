@@ -33,7 +33,13 @@ class Terms;
 
 class JASPListControl : public JASPControl
 {
-Q_OBJECT
+	Q_OBJECT
+
+	Q_PROPERTY( ListModel*		model		READ model								NOTIFY modelChanged		)
+	Q_PROPERTY( QVariant		source		READ source			WRITE setSource		NOTIFY sourceChanged	)
+	Q_PROPERTY( QVariant		values		READ values			WRITE setValues		NOTIFY sourceChanged	)
+	Q_PROPERTY( int				count		READ count								NOTIFY countChanged		)
+	Q_PROPERTY( QString			optionKey	READ optionKey		WRITE setOptionKey							)
 
 public:
 	typedef QMap<QString, QString> LabelValueMap;
@@ -84,7 +90,7 @@ public:
 	JASPListControl(QQuickItem* parent);
 	
 	virtual ListModel		*	model()			const	= 0;
-	virtual void				setUpModel()			= 0;
+	virtual void				setUpModel();
 			void				setUp()			override;
 			void				cleanUp()		override;
 	
@@ -92,34 +98,48 @@ public:
 
 	const QList<SourceType*>&	sourceModels()				const	{ return _sourceModels; }
 	QList<std::pair<SourceType*, Terms> >	getTermsPerSource();
-			bool				hasSource()					const	{ return _hasSource; }
+			bool				hasSource()					const	{ return !_source.isNull() || !_values.isNull(); }
 
 			JASPControl		*	getRowControl(const QString& key, const QString& name)		const;
 			bool				addRowControl(const QString& key, JASPControl* control);
 			bool				hasRowComponent()			const;
 
 			void				addRowComponentsDefaultOptions(Options* optionTable);
-			const std::string&	optionKeyName()				const	{ return _optionKeyName; }
+			const QString&		optionKey()					const	{ return _optionKey; }
 			JASPControl		*	getChildControl(QString key, QString name) override;
 
 	Q_INVOKABLE QString			getSourceType(QString name);
 
+			const QVariant&		source()					const	{ return _source;	}
+			const QVariant&		values()					const	{ return _values;	}
+			int					count();
+
+signals:
+			void				modelChanged();
+			void				sourceChanged();
+			void				countChanged();
+
 protected slots:
-	virtual void				modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
+	virtual void				termsChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
 			void				sourceChangedHandler();
 
-protected:
-	virtual void				setupSources();
+			GENERIC_SET_FUNCTION(Source,		_source,	sourceChanged,		QVariant		)
+			GENERIC_SET_FUNCTION(Values,		_values,	sourceChanged,		QVariant		)
+
+			void				setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
 
 protected:
-	QList<SourceType*>	_sourceModels;
-	bool				_hasSource				= false;
-	bool				_needsSourceModels		= false;
-	int					_variableTypesAllowed;
-	std::string			_optionKeyName;
-	RowControls*		_defaultRowControls		= nullptr;
+	virtual void			setupSources();
 
-	static const QString _defaultKey;
+	QList<SourceType*>		_sourceModels;
+	bool					_needsSourceModels		= false;
+	int						_variableTypesAllowed;
+	QString					_optionKey				= "value";
+	RowControls*			_defaultRowControls		= nullptr;
+	QVariant				_source;
+	QVariant				_values;
+
+	static const QString	_defaultKey;
 	
 private:
 	int						_getAllowedColumnsTypes();

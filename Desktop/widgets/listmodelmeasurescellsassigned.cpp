@@ -79,7 +79,7 @@ void ListModelMeasuresCellsAssigned::sourceTermsChanged(const Terms *termsAdded,
 		BoundControlMeasuresCells* boundControl = dynamic_cast<BoundControlMeasuresCells*>(measureCellsListView->boundControl());
 		initLevels(boundControl->getLevels());
 		source()->removeTermsInAssignedList();
-		emit modelChanged(termsAdded, termsRemoved);
+		emit termsChanged(termsAdded, termsRemoved);
 	}
 	else
 		Log::log() << "ListView from Measures cells model is not of a Measures Cell type!!";
@@ -146,7 +146,7 @@ Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& terms, int dropItemI
 	
 	endResetModel();
 	
-	emit modelChanged();
+	emit termsChanged();
 	
 	return termsToSendBack;
 }
@@ -171,7 +171,7 @@ void ListModelMeasuresCellsAssigned::moveTerms(const QList<int> &indexes, int dr
 	_terms.replace(int(dropRow), fromValue);
 	endResetModel();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelMeasuresCellsAssigned::removeTerms(const QList<int> &indexes)
@@ -185,7 +185,7 @@ void ListModelMeasuresCellsAssigned::removeTerms(const QList<int> &indexes)
 	}
 	endResetModel();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 QVariant ListModelMeasuresCellsAssigned::data(const QModelIndex &index, int role) const

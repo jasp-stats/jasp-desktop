@@ -160,7 +160,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 
 	ListModelTermsAvailable* model = _textArea->availableModel();
 	model->initTerms(_usedParameters.toList());
-	emit model->modelChanged();
+	emit model->termsChanged();
 }
 
 

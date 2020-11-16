@@ -39,7 +39,7 @@ public:
 	bool		isJsonValid(const Json::Value& optionValue)	override;
 
 protected slots:
-	void		modelChangedHandler()						override;
+	void		termsChangedHandler()						override;
 	void		addItemHandler();
 	void		removeItemHandler(int index);
 	void		nameChangedHandler(int index, QString name);

@@ -258,7 +258,7 @@ void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int drop
 
 	endResetModel();
 
-	emit modelChanged();
+	emit termsChanged();
 
 }
 
@@ -270,5 +270,5 @@ void ListModelInteractionAssigned::setTerms()
 	
 	endResetModel();
 	
-	emit modelChanged();
+	emit termsChanged();
 }

@@ -37,8 +37,7 @@ class TextAreaBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( TextType	textType	READ textType	WRITE setTextType						)
-	Q_PROPERTY(	QString		text		READ text		WRITE setText		NOTIFY textChanged	)
+	Q_PROPERTY( TextType	textType	READ textType		WRITE setTextType		NOTIFY textTypeChanged)
 
 public:
 	TextAreaBase(QQuickItem* parent = nullptr);
@@ -56,22 +55,23 @@ public:
 	void						rScriptDoneHandler(const QString &result)	override;
 
 	TextType					textType()							const	{ return _textType; }
-	QString						text()								const	{ return _text;		}
-	const QList<QString>&		separators()				const	{ return _separators; }
+	const QList<QString>&		separators()						const	{ return _separators; }
+	QString						text();
+	void						setText(const QString& text);
 
 public slots:
-	void setTextType(TextType textType)				{ _textType = textType; }
-	void setText(QString	text);
+	GENERIC_SET_FUNCTION(TextType,	_textType,	textTypeChanged,	TextType)
+
 	void dataSetChangedHandler();
 	void checkSyntaxHandler()						{ _boundControl->checkSyntax(); }
 
 signals:
-			void textChanged();
+	void textTypeChanged();
+
     
 protected:
 
 	BoundControlTextArea*		_boundControl			= nullptr;
-	QString						_text;
 	TextType					_textType				= TextType::Default;
 	QList<QString>				_separators;
 	

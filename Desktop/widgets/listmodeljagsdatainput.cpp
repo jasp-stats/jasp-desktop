@@ -83,7 +83,7 @@ void ListModelJAGSDataInput::sourceTermsChanged(const Terms *, const Terms *)
 
 	emit columnCountChanged();
 	emit rowCountChanged();
-	emit modelChanged();
+	emit termsChanged();
 }
 
 

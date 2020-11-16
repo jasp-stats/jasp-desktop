@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2020 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,7 @@
 //
 
 #include "radiobuttonsgroupbase.h"
-#include "analysis/jaspcontrol.h"
+#include "radiobuttonbase.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include "log.h"
@@ -28,16 +28,17 @@ using namespace std;
 RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
 	: JASPControl(item)
 {
+	_controlType		= ControlType::RadioButtonGroup;
 }
 
 void RadioButtonsGroupBase::setUp()
 {
 	JASPControl::setUp();
-	QList<JASPControl* > buttons;
+	QList<RadioButtonBase* > buttons;
 	_getRadioButtons(this, buttons);
 	QVariant buttonGroup = property("buttonGroup");
 
-	for (JASPControl* button: buttons)
+	for (RadioButtonBase* button: buttons)
 	{	
 		const QString& controlName = button->name();
 		if (controlName.isEmpty())
@@ -61,16 +62,16 @@ void RadioButtonsGroupBase::setUp()
 	QQuickItem::connect(this, SIGNAL(clicked(const QVariant &)), this, SLOT(radioButtonClickedHandler(const QVariant &)));
 }
 
-void RadioButtonsGroupBase::_getRadioButtons(QQuickItem* item, QList<JASPControl* >& buttons) {
+void RadioButtonsGroupBase::_getRadioButtons(QQuickItem* item, QList<RadioButtonBase *> &buttons) {
 	for (QQuickItem* child : item->childItems())
 	{
-		JASPControl* jaspControl = dynamic_cast<JASPControl*>(child);
+		JASPControl* jaspControl = qobject_cast<JASPControl*>(child);
 		if (jaspControl)
 		{
-			JASPControl::ControlType controlType = jaspControl->controlType();
-			if (controlType == JASPControl::ControlType::RadioButton)
-				buttons.append(jaspControl);
-			else if (controlType != JASPControl::ControlType::RadioButtonGroup)
+			ControlType controlType = jaspControl->controlType();
+			if (controlType == ControlType::RadioButton)
+				buttons.append(qobject_cast<RadioButtonBase*>(jaspControl));
+			else if (controlType != ControlType::RadioButtonGroup)
 				_getRadioButtons(child, buttons);
 		}
 		else
@@ -91,7 +92,7 @@ void RadioButtonsGroupBase::bindTo(Option *option)
 	string value = _boundTo->value();
 	if (!value.empty())
 	{
-		JASPControl* button = _buttons[QString::fromStdString(value)];
+		RadioButtonBase* button = _buttons[QString::fromStdString(value)];
 		if (!button)
 		{
 			addControlError(tr("No radio button corresponding to name %1").arg(QString::fromStdString(value)));
@@ -108,14 +109,9 @@ void RadioButtonsGroupBase::bindTo(Option *option)
 	}
 }
 
-void RadioButtonsGroupBase::unbind()
-{
-	
-}
-
 Option *RadioButtonsGroupBase::createOption()
 {
-	QString defaultValue = _checkedButton ? _checkedButton->property("name").toString() : "";
+	QString defaultValue = _checkedButton ? _checkedButton->name() : "";
 	std::vector<std::string> options;
 	for (QString value : _buttons.keys())
 		options.push_back(value.toStdString());
@@ -138,11 +134,11 @@ void RadioButtonsGroupBase::radioButtonClickedHandler(const QVariant& button)
 	QObject* objButton = button.value<QObject*>();
 	if (objButton)
 		objButton = objButton->parent();
-	JASPControl *quickButton = qobject_cast<JASPControl*>(objButton);
-	if (quickButton)
+	RadioButtonBase *radioButton = qobject_cast<RadioButtonBase*>(objButton);
+	if (radioButton)
 	{
-		QString buttonName = quickButton->name();
-		JASPControl* foundButton = _buttons[buttonName];
+		QString buttonName = radioButton->name();
+		RadioButtonBase* foundButton = _buttons[buttonName];
 		if (foundButton)
 		{
 			if (_checkedButton != foundButton)
@@ -160,5 +156,5 @@ void RadioButtonsGroupBase::radioButtonClickedHandler(const QVariant& button)
 			addControlError(tr("Radio button clicked is unknown: %1").arg(buttonName));
 	}
 	else
-		Log::log() << "Object clicked is not a quick item! Name" << objButton->objectName().toStdString();
+		Log::log() << "Object clicked is not a RadioButton item! Name" << objButton->objectName().toStdString();
 }

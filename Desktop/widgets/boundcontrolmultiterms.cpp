@@ -44,7 +44,7 @@ bool BoundControlMultiTerms::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::arrayValue;
 }
 
-void BoundControlMultiTerms::modelChanged()
+void BoundControlMultiTerms::updateOption()
 {
 	const QList<Terms>& tuples = _listModel->tuples();
 	std::vector<std::vector<std::string> > values;

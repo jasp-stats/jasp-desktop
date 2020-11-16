@@ -63,7 +63,6 @@ FocusScope
 	ExpanderButtonBase
 	{
 		id						: expanderButton
-		controlType				: JASPControl.Expander
 		isBound					: false
 		background				: expanderRectangle
 		childControlsArea		: expanderArea

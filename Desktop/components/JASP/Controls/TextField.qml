@@ -24,8 +24,6 @@ import JASP				1.0
 TextInputBase
 {
 	id:					textField
-	controlType:		JASPControl.TextField
-	
 	implicitHeight:		control.height
 	implicitWidth:		afterLabel.text ? (afterLabelRect.x + afterLabelRect.width) : (control.x + control.width)
 	background:			useExternalBorder ? externalControlBackground : control.background

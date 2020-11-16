@@ -221,7 +221,7 @@ void ListModelCustomContrasts::_resetValuesEtc()
 	emit columnCountChanged();
 	emit rowCountChanged();
 	emit variableCountChanged();
-	emit modelChanged();
+	emit termsChanged();
 }
 
 
@@ -249,7 +249,7 @@ void ListModelCustomContrasts::reset()
 	endResetModel();
 
 	emit columnCountChanged();
-	emit modelChanged();
+	emit termsChanged();
 
 }
 
@@ -264,7 +264,7 @@ void ListModelCustomContrasts::setup()
 		if (factorsSourceModel)
 		{
 			_setFactorsSource(factorsSourceModel);
-			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::modelChanged, this, &ListModelCustomContrasts::factorsSourceChanged);
+			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::termsChanged, this, &ListModelCustomContrasts::factorsSourceChanged);
 		}
 	}
 	_loadColumnInfo();
@@ -439,7 +439,7 @@ void ListModelCustomContrasts::labelChanged(QString columnName, QString original
 	bool isChanged = _labelChanged(columnName, originalLabel, newLabel);
 
 	if (isChanged)
-		emit modelChanged();
+		emit termsChanged();
 }
 
 bool ListModelCustomContrasts::_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel)
@@ -523,7 +523,7 @@ void ListModelCustomContrasts::scaleFactorChanged()
 			}
 			endResetModel();
 
-			emit modelChanged();
+			emit termsChanged();
 		}
 	}
 

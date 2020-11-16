@@ -7,7 +7,6 @@ import JASP				1.0
 ComboBoxBase
 {
 	id:					comboBox
-	controlType:		JASPControl.ComboBox
 	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
 	implicitWidth:		control.width + ((controlLabel.visible && !setLabelAbove) ? jaspTheme.labelSpacing + controlLabel.width : 0)
 	background:			useExternalBorder ? externalControlBackground : control.background
@@ -26,14 +25,10 @@ ComboBoxBase
 	property string currentColumnType:		"" // When the values come from column names, this property gives the column type of the current selected column
 	property alias	currentIndex:			control.currentIndex
 	property alias	indexDefaultValue:		control.currentIndex
-	property alias	model:					control.model
 	property alias	fieldWidth:				control.modelWidth
 	property string	textRole:				"label"
 	property string	valueRole:				"value"
 	property bool	showVariableTypeIcon:	false
-	property var	values:					undefined
-	property var	source:					undefined // Do not set a default: if nothing is set, it gets all variables per default.
-	property alias	syncModels:				comboBox.source
 	property bool	addEmptyValue:			false
 	property string	placeholderText:		qsTr("<no choice>")
 	property var	enabledOptions:			[]
@@ -105,6 +100,7 @@ ComboBoxBase
 	ComboBox
 	{
 						id:				control
+						model:			comboBox.model
 						anchors.left:	!rectangleLabel.visible || comboBox.setLabelAbove ? comboBox.left : rectangleLabel.right
 						anchors.leftMargin: !rectangleLabel.visible || comboBox.setLabelAbove ? 0 : jaspTheme.labelSpacing
 						anchors.top:	rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top

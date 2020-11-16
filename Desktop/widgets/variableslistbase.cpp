@@ -37,13 +37,15 @@
 VariablesListBase::VariablesListBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
+	_controlType			= ControlType::VariablesListView;
+	_useControlMouseArea	= false;
 }
 
 void VariablesListBase::setUp()
 {
 	JASPListControl::setUp();
 
-	if (_listType == JASPControl::ListViewType::RepeatedMeasures)
+	if (listViewType() == ListViewType::RepeatedMeasures)
 	{
 		for (SourceType* sourceItem : _sourceModels)
 		{
@@ -98,29 +100,28 @@ void VariablesListBase::setUp()
 
 void VariablesListBase::setUpModel()
 {
-	_listType = JASPControl::ListViewType(property("listViewType").toInt());
-	switch (_listType)
+	switch (_listViewType)
 	{
-	case JASPControl::ListViewType::AvailableVariables:
+	case ListViewType::AvailableVariables:
 	{
 		_isBound = false;
 		_draggableModel = new ListModelTermsAvailable(this);
 		break;
 	}
-	case JASPControl::ListViewType::AvailableInteraction:
+	case ListViewType::AvailableInteraction:
 	{
 		_isBound = false;
 		_draggableModel = new ListModelInteractionAvailable(this);
 		break;
 	}
-	case JASPControl::ListViewType::Layers:
+	case ListViewType::Layers:
 	{
 		ListModelLayersAssigned* layersModel = new ListModelLayersAssigned(this);
 		_boundControl = new BoundControlLayers(layersModel);
 		_draggableModel = layersModel;
 		break;
 	}
-	case JASPControl::ListViewType::RepeatedMeasures:
+	case ListViewType::RepeatedMeasures:
 	{
 		_needsSourceModels = true;
 		 ListModelMeasuresCellsAssigned* measuresCellsModel = new ListModelMeasuresCellsAssigned(this);
@@ -128,14 +129,13 @@ void VariablesListBase::setUpModel()
 		_draggableModel = measuresCellsModel;
 		break;
 	}
-	case JASPControl::ListViewType::AssignedVariables:
+	case ListViewType::AssignedVariables:
 	{
 		ListModelAssignedInterface* termsModel = nullptr;
-		int columns = property("columns").toInt();
 
-		if (columns > 1)
+		if (columns() > 1)
 		{
-			ListModelMultiTermsAssigned* multiTermsModel = new ListModelMultiTermsAssigned(this, columns);
+			ListModelMultiTermsAssigned* multiTermsModel = new ListModelMultiTermsAssigned(this, columns());
 			_boundControl = new BoundControlMultiTerms(multiTermsModel);
 			_draggableModel = multiTermsModel;
 		}
@@ -149,7 +149,7 @@ void VariablesListBase::setUpModel()
 		}
 		break;
 	}
-	case JASPControl::ListViewType::Interaction:
+	case ListViewType::Interaction:
 	{
 		bool interactionContainLowerTerms	= property("interactionContainLowerTerms").toBool();
 		bool addInteractionsByDefault		= property("addInteractionsByDefault").toBool();
@@ -160,6 +160,8 @@ void VariablesListBase::setUpModel()
 		break;
 	}
 	}
+
+	JASPListControl::setUpModel();
 }
 
 void VariablesListBase::itemDoubleClickedHandler(int index)
@@ -300,8 +302,8 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 	}
 }
 
-void VariablesListBase::modelChangedHandler()
+void VariablesListBase::termsChangedHandler()
 {
-	if (_boundControl)	_boundControl->modelChanged();
-	else JASPListControl::modelChangedHandler();
+	if (_boundControl)	_boundControl->updateOption();
+	else JASPListControl::termsChangedHandler();
 }

@@ -52,7 +52,7 @@ void ListModelTermsAssigned::availableTermsChanged(const Terms* termsAdded, cons
 		endResetModel();
 
 		_tempTermsToAdd.set(*termsAdded);
-		emit modelChanged(&_tempTermsToAdd, nullptr);
+		emit termsChanged(&_tempTermsToAdd, nullptr);
 
 		if (!_copyTermsWhenDropped)
 			source()->removeTermsInAssignedList();
@@ -65,7 +65,7 @@ void ListModelTermsAssigned::availableTermsChanged(const Terms* termsAdded, cons
 		endResetModel();
 
 		_tempTermsToRemove.set(*termsRemoved);
-		emit modelChanged(nullptr, &_tempTermsToRemove);
+		emit termsChanged(nullptr, &_tempTermsToRemove);
 	}
 }
 
@@ -104,7 +104,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, JA
 
 	endResetModel();
 
-	emit modelChanged(&terms, &_tempTermsToSendBack);
+	emit termsChanged(&terms, &_tempTermsToSendBack);
 
 	return _tempTermsToSendBack;
 }
@@ -157,7 +157,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 
 	endResetModel();
 
-	emit modelChanged(nullptr, &_tempTermsToRemove);
+	emit termsChanged(nullptr, &_tempTermsToRemove);
 }
 
 void ListModelTermsAssigned::changeTerm(int index, const QString& name)
@@ -172,7 +172,7 @@ void ListModelTermsAssigned::changeTerm(int index, const QString& name)
 		_terms.replace(index, Term(name));
 
 		emit termChanged(oldName, name);
-		emit modelChanged();
+		emit termsChanged();
 		QModelIndex modelIndex = ListModelTermsAssigned::index(index, 0);
 		emit dataChanged(modelIndex, modelIndex);
 	}

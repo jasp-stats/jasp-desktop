@@ -129,7 +129,7 @@ void ListModelFactorsForm::addFactor()
 
 	endInsertRows();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelFactorsForm::removeFactor()
@@ -152,7 +152,7 @@ void ListModelFactorsForm::removeFactor()
 		else
 			Log::log() << "No list View found when removing factor" << std::endl;
 
-		emit modelChanged();
+		emit termsChanged();
 	}
 	
 }
@@ -171,7 +171,7 @@ void ListModelFactorsForm::titleChangedSlot(int index, QString title)
 	for (Factor* factor : _factors)
         _titles.add(factor->title);
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
@@ -196,7 +196,7 @@ void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
 	model->setInfoProvider(listView->form());
 	model->initTerms(terms);
 	model->setCopyTermsWhenDropped(true);
-	connect(model, &ListModelDraggable::modelChanged, this, &ListModelFactorsForm::resetTerms);
+	connect(model, &ListModelDraggable::termsChanged, this, &ListModelFactorsForm::resetTerms);
 	emit addListView(factor->listView);
 	
 	factor->listView->setUp();
@@ -215,5 +215,5 @@ void ListModelFactorsForm::resetTerms()
 		}
 	}
 	
-	emit modelChanged();
+	emit termsChanged();
 }

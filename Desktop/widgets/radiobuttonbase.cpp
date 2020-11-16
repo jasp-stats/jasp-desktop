@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2020 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,24 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDCONTROL_H
-#define BOUNDCONTROL_H
+#include "radiobuttonbase.h"
 
-#include "option.h"
-
-#include <QString>
-
-class BoundControl
+RadioButtonBase::RadioButtonBase(QQuickItem* item)
+	: JASPControl(item)
 {
-public:
-	virtual ~BoundControl() {}
-	virtual void bindTo(Option *option)			= 0;
-	virtual void unbind()						{ }
-	virtual Option* createOption()				= 0;
-	virtual Option* boundTo()					= 0;
-	virtual bool isOptionValid(Option* option)	= 0;
-	virtual bool isJsonValid(const Json::Value& optionValue) = 0;
-	virtual void updateOption()					{ }
-};
-
-#endif // BOUNDCONTROL_H
+	_controlType		= ControlType::RadioButton;
+	_isBound			= false;
+	_nameMustBeUnique	= false;
+}

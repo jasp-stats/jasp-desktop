@@ -31,6 +31,8 @@ class VariablesListBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 
+	Q_PROPERTY( ListViewType	listViewType	READ listViewType		WRITE setListViewType	NOTIFY listViewTypeChanged	)
+	Q_PROPERTY( int				columns			READ columns			WRITE setColumns		NOTIFY columnsChanged		)
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
 	
@@ -45,26 +47,32 @@ public:
 	bool						isOptionValid(Option* option)	override	{ return _boundControl->isOptionValid(option);	}
 	bool						isJsonValid(const Json::Value& optionValue) override { return _boundControl->isJsonValid(optionValue);	}
 
-	JASPControl::ListViewType	listType()	const				{ return _listType;			}
-	BoundControl*				boundControl()					{ return _boundControl;		}
+	ListViewType				listViewType()			const				{ return _listViewType;		}
+	BoundControl*				boundControl()								{ return _boundControl;		}
+	int							columns()				const				{ return _columns;			}
 	
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault);
 
+signals:
+	void listViewTypeChanged();
+	void columnsChanged();
+
 protected:
+	GENERIC_SET_FUNCTION(ListViewType,	_listViewType,	listViewTypeChanged,	ListViewType	)
+	GENERIC_SET_FUNCTION(Columns,		_columns,		columnsChanged,			int				)
+
 	ListModelDraggable*			_draggableModel	= nullptr;
-	JASPControl::ListViewType	_listType		= JASPControl::ListViewType::AssignedVariables;
+	ListViewType				_listViewType	= ListViewType::AssignedVariables;
 	BoundControl*				_boundControl	= nullptr;
 
 protected slots:
-	void modelChangedHandler() override;
-
-private slots:
+	void termsChangedHandler()		override;
 	void moveItemsDelayedHandler();
 	void itemDoubleClickedHandler(int index);
 	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex, int assignOption);
 	
 private:
-	int							_maxRows				= -1;
+	int							_columns				= 1;
 
 	ListModelDraggable	*		_tempDropModel = nullptr;
 	QList<int>					_tempIndexes;

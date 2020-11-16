@@ -25,25 +25,16 @@ import QtQuick.Layouts	1.3
 ComponentsListBase
 {
 	id						: componentsList
-	controlType				: JASPControl.ComponentsList
 	background				: itemRectangle
 	implicitWidth 			: parent.width
 	implicitHeight			: itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
-	useControlMouseArea		: false
 	shouldStealHover		: false
 	innerControl			: itemGrid
 
-	property var	model
-	property var	values
 	property string title
 	property alias	label				: componentsList.title
-	property alias	count				: itemRepeater.count
-	property string	optionKey			: "value"
 	property alias	columns				: itemGrid.columns
 	property alias	rows				: itemGrid.rows
-	property var	source
-	property var	sourceModel
-
 	property alias	itemGrid			: itemGrid
 	property alias	itemRectangle		: itemRectangle
 	property alias	itemScrollbar		: itemScrollbar

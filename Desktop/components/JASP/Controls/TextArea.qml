@@ -6,7 +6,6 @@ import JASP				1.0
 TextAreaBase
 {
 	id:					textArea
-	controlType:		JASPControl.TextArea
 	height:				jaspTheme.defaultTextAreaHeight
 	implicitHeight:		height
 	width:				parent.width
@@ -15,6 +14,7 @@ TextAreaBase
 	innerControl:		control
 	
 	property alias	control				: control
+	property alias	text				: control.text
 	property string applyScriptInfo		: Qt.platform.os == "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
 	property alias  infoText			: infoText.text
 	property bool   hasScriptError		: false
@@ -65,7 +65,6 @@ TextAreaBase
 			TextArea.flickable: TextArea
 			{
 				id:					control
-				text:				textArea.text
 				selectByMouse:		true
 				selectedTextColor:	jaspTheme.white
 				selectionColor:		jaspTheme.itemSelectedColor

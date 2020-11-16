@@ -25,7 +25,6 @@ import JASP				1.0
 CheckBoxBase
 {
 	id:					checkBox
-	controlType:		JASPControl.CheckBox
 	implicitWidth:		childrenOnSameRow
 							? control.implicitWidth + (childControlsArea.children.length > 0 ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
 							: Math.max(control.implicitWidth, control.padding + checkIndicator.width + control.spacing + childControlsArea.implicitWidth)

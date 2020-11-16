@@ -40,7 +40,7 @@ public:
 	bool		isJsonValid(const Json::Value& optionValue)	override;
 
 protected slots:
-	void		modelChangedHandler()						override;
+	void		termsChangedHandler()						override;
 
 private:
 	ListModelInputValue*		_inputModel			= nullptr;

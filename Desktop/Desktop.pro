@@ -460,7 +460,8 @@ HEADERS += \
     widgets/boundcontroljagstextarea.h \
     widgets/repeatedmeasuresfoctorslistbase.h \
     widgets/radiobuttonsgroupbase.h \
-    widgets/jasplistcontrol.h
+    widgets/jasplistcontrol.h \
+    widgets/radiobuttonbase.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -650,7 +651,8 @@ SOURCES += \
     widgets/boundcontroljagstextarea.cpp \
     widgets/repeatedmeasuresfoctorslistbase.cpp \
     widgets/radiobuttonsgroupbase.cpp \
-    widgets/jasplistcontrol.cpp
+    widgets/jasplistcontrol.cpp \
+    widgets/radiobuttonbase.cpp
 
 RESOURCES += \
     html/html.qrc \

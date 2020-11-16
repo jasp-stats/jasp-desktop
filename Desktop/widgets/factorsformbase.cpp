@@ -32,11 +32,15 @@ using namespace std;
 FactorsFormBase::FactorsFormBase(QQuickItem *parent)
 	: JASPListControl(parent)
 {
+	_controlType			= ControlType::FactorsForm;
+	_useControlMouseArea	= false;
 }
 
 void FactorsFormBase::setUpModel()
 {
 	_factorsModel = new ListModelFactorsForm(this);
+	JASPListControl::setUpModel();
+
 	_availableVariablesListName = property("availableVariablesListName").toString();
 	QVariant availableListVariant = property("availableVariablesList");
 	_availableVariablesListItem = dynamic_cast<JASPControl*>(qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>()));
@@ -107,7 +111,7 @@ bool FactorsFormBase::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::arrayValue;
 }
 
-void FactorsFormBase::modelChangedHandler()
+void FactorsFormBase::termsChangedHandler()
 {
 	const vector<tuple<string, string, vector<string> > > &factors = _factorsModel->getFactors();
 	vector<Options *> allOptions;
@@ -141,5 +145,5 @@ void FactorsFormBase::addListViewSlot(JASPListControl *listView)
 	JASPListControl* availableListView = dynamic_cast<JASPListControl*>(_availableVariablesListItem);
 	form()->addListView(listView, availableListView);
 	
-	connect(listView->model(), &ListModel::modelChanged, this, &FactorsFormBase::modelChangedHandler);
+	connect(listView->model(), &ListModel::termsChanged, this, &FactorsFormBase::termsChangedHandler);
 }

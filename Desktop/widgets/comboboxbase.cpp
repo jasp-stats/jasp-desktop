@@ -24,6 +24,7 @@
 ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
+	_controlType = ControlType::ComboBox;
 }
 
 void ComboBoxBase::bindTo(Option *option)
@@ -129,7 +130,7 @@ void ComboBoxBase::setUp()
 
 	_currentIndex = property("currentIndex").toInt();
 
-	connect(_model, &ListModelTermsAvailable::allAvailableTermsChanged, this, &ComboBoxBase::modelChangedHandler);
+	connect(_model, &ListModelTermsAvailable::allAvailableTermsChanged, this, &ComboBoxBase::termsChangedHandler);
 	connect(this, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
 
 	_setLabelValues();
@@ -145,6 +146,7 @@ void ComboBoxBase::setUp()
 void ComboBoxBase::setUpModel()
 {
 	_model = new ListModelLabelValueTerms(this);
+	JASPListControl::setUpModel();
 }
 
 void ComboBoxBase::languageChangedHandler()
@@ -160,7 +162,7 @@ void ComboBoxBase::languageChangedHandler()
 	_resetOptions();
 }
 
-void ComboBoxBase::modelChangedHandler()
+void ComboBoxBase::termsChangedHandler()
 {
 	_resetOptions();
 }

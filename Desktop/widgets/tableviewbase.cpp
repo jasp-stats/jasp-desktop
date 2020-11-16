@@ -35,6 +35,7 @@
 TableViewBase::TableViewBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
+	_controlType = ControlType::TableView;
 }
 
 void TableViewBase::bindTo(Option *option)
@@ -56,6 +57,7 @@ void TableViewBase::setUpModel()
 	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType	);
 	if (modelType == "CustomContrasts")			_tableModel = new ListModelCustomContrasts(		this, tableType	);
 	if (!_tableModel)                            _tableModel = new ListModelTableViewSimple(     this, tableType );
+	JASPListControl::setUpModel();
 
 	_tableModel->setItemType(itemType);
 

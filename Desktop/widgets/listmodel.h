@@ -93,7 +93,7 @@ public:
 
 
 signals:
-			void modelChanged(const Terms* added = nullptr, const Terms* removed = nullptr);
+			void termsChanged(const Terms* added = nullptr, const Terms* removed = nullptr);
 			void selectedItemsChanged();
 			void termChanged(const QString& oldName, const QString& newName);
 

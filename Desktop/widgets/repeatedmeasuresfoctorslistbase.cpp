@@ -26,11 +26,13 @@ using namespace std;
 RepeatedMeasuresFoctorsListBase::RepeatedMeasuresFoctorsListBase(QQuickItem *parent)
 	: JASPListControl(parent)
 {
+	_controlType = ControlType::RepeatedMeasuresFactorsList;
 }
 
 void RepeatedMeasuresFoctorsListBase::setUpModel()
 {
 	_factorsModel = new ListModelRepeatedMeasuresFactors(this);
+	JASPListControl::setUpModel();
 }
 
 void RepeatedMeasuresFoctorsListBase::setUp()
@@ -117,7 +119,7 @@ bool RepeatedMeasuresFoctorsListBase::isJsonValid(const Json::Value &optionValue
 	return valid;
 }
 
-void RepeatedMeasuresFoctorsListBase::modelChangedHandler()
+void RepeatedMeasuresFoctorsListBase::termsChangedHandler()
 {
 	const vector<pair<string, vector<string> > > &factors = _factorsModel->getFactors();
 	vector<Options *> allOptions;

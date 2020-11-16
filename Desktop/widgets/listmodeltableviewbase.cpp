@@ -33,7 +33,7 @@ using namespace std;
 ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView, QString tableType)
 	: ListModel(tableView), _tableView(tableView), _tableType(tableType)
 {
-	connect(this, &ListModel::modelChanged, this, &ListModelTableViewBase::modelChangedSlot);
+	connect(this, &ListModel::termsChanged, this, &ListModelTableViewBase::modelChangedSlot);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
 
@@ -113,7 +113,7 @@ void ListModelTableViewBase::addColumn(bool emitStuff)
 		endResetModel();
 
 		emit columnCountChanged();
-		emit modelChanged();
+		emit termsChanged();
 	}
 }
 
@@ -134,7 +134,7 @@ void ListModelTableViewBase::removeColumn(size_t col, bool emitStuff)
 		endResetModel();
 
 		emit columnCountChanged();
-		emit modelChanged();
+		emit termsChanged();
 	}
 }
 
@@ -158,7 +158,7 @@ void ListModelTableViewBase::addRow(bool emitStuff)
 		endResetModel();
 
 		emit rowCountChanged();
-		emit modelChanged();
+		emit termsChanged();
 	}
 }
 
@@ -180,7 +180,7 @@ void ListModelTableViewBase::removeRow(size_t row, bool emitStuff)
 		endResetModel();
 
 		emit rowCountChanged();
-		emit modelChanged();
+		emit termsChanged();
 	}
 }
 
@@ -214,7 +214,7 @@ void ListModelTableViewBase::reset()
 
 	emit columnCountChanged();
 	emit rowCountChanged();
-	emit modelChanged();
+	emit termsChanged();
 
 	endResetModel();
 }
@@ -231,7 +231,7 @@ void ListModelTableViewBase::itemChanged(int column, int row, QVariant value, QS
 			// the following triggers a reset of the view if the colwidth changes, but that is wrong. actually it should just change the cell-value.
 			emit dataChanged(index(row, column), index(row, column), { Qt::DisplayRole });
 			if (type != "formula") // For formula type, wait for the formulaCheckSucceeded signal before emitting modelChanged
-				emit modelChanged();
+				emit termsChanged();
 
 			// Here we should *actually* check if specialRoles::maxColString changes and in that case: (so that the view can recalculate stuff)
 			//	emit headerDataChanged(Qt::Orientation::Horizontal, column, column);
@@ -378,7 +378,7 @@ bool ListModelTableViewBase::addRowControl(const QString &key, JASPControl *cont
 
 void ListModelTableViewBase::formulaCheckSucceededSlot()
 {
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelTableViewBase::modelChangedSlot()
