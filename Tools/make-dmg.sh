@@ -104,7 +104,7 @@ ln -s ./Versions/Current/PrivateHeaders PrivateHeaders
 ln -s ./Versions/Current/Resources Resources
 find . -name '*.cpp' -exec rm {} \;
 find . -name '*.c' -exec rm {} \;
-find . -name '*.h' -exec rm {} \;
+#find . -name '*.h' -exec rm {} \; See https://github.com/jasp-stats/INTERNAL-jasp/issues/1169 (Allow compiling of cpp in JASP with regards to dynamic modules etc. I dont think anything else then the headers is required for that. )
 find . -name '*.f' -exec rm {} \;
 cd ../../../../..
 

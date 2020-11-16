@@ -59,14 +59,13 @@ FOR /D %%G in ("*") DO (
     COPY %SOURCEDIR%\library\%%G\DESCRIPTION DESCRIPTION /Y >nul
     COPY %SOURCEDIR%\library\%%G\*.R . /Y >nul
     
-    if exist %SOURCEDIR%\library\%%G\R    ( XCOPY %SOURCEDIR%\library\%%G\R    /Q /E /I R    >nul )
-    if exist %SOURCEDIR%\library\%%G\Meta ( XCOPY %SOURCEDIR%\library\%%G\Meta /Q /E /I Meta >nul )
-    if exist %SOURCEDIR%\library\%%G\po   ( XCOPY %SOURCEDIR%\library\%%G\po   /Q /E /I po   >nul )
-
-    if exist %SOURCEDIR%\library\%%G\afm  ( XCOPY %SOURCEDIR%\library\%%G\afm  /Q /E /I afm >nul )
-    if exist %SOURCEDIR%\library\%%G\enc  ( XCOPY %SOURCEDIR%\library\%%G\enc  /Q /E /I enc >nul )
-    if exist %SOURCEDIR%\library\%%G\icc  ( XCOPY %SOURCEDIR%\library\%%G\icc  /Q /E /I icc >nul )
-
+    if exist %SOURCEDIR%\library\%%G\R            ( XCOPY %SOURCEDIR%\library\%%G\R            /Q /E /I R           >nul )
+    if exist %SOURCEDIR%\library\%%G\Meta         ( XCOPY %SOURCEDIR%\library\%%G\Meta         /Q /E /I Meta        >nul )
+    if exist %SOURCEDIR%\library\%%G\po           ( XCOPY %SOURCEDIR%\library\%%G\po           /Q /E /I po          >nul )
+    if exist %SOURCEDIR%\library\%%G\afm          ( XCOPY %SOURCEDIR%\library\%%G\afm          /Q /E /I afm         >nul )
+    if exist %SOURCEDIR%\library\%%G\enc          ( XCOPY %SOURCEDIR%\library\%%G\enc          /Q /E /I enc         >nul )
+    if exist %SOURCEDIR%\library\%%G\icc          ( XCOPY %SOURCEDIR%\library\%%G\icc          /Q /E /I icc         >nul )
+    if exist %SOURCEDIR%\library\%%G\include      ( XCOPY %SOURCEDIR%\library\%%G\include      /Q /E /I include     >nul )
 	if exist %SOURCEDIR%\library\%%G\shinythemes  ( XCOPY %SOURCEDIR%\library\%%G\shinythemes  /Q /E /I shinythemes >nul )
 	
 	rem for issue https://github.com/jasp-stats/jasp-test-release/issues/823
@@ -74,7 +73,7 @@ FOR /D %%G in ("*") DO (
 	
 
     rem for issue https://github.com/jasp-stats/jasp-test-release/issues/416#issuecomment-591899068
-    if "%%G"=="viridisLite"               ( XCOPY %SOURCEDIR%\library\%%G\data /Q /E /I data >nul )
+    if "%%G"=="viridisLite"                       ( XCOPY %SOURCEDIR%\library\%%G\data         /Q /E /I data        >nul )
 
     if exist %SOURCEDIR%\library\%%G\libs (
         mkdir %DESTDIR%\library\%%G\libs
