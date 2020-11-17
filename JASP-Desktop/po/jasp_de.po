@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2020-11-16 15:28+0000\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.4-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -1079,7 +1085,9 @@ msgstr "Anderen Editor wählen"
 
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
-msgstr "Importier-Schwellwert zwischen Nominal- und Kardinalskala"
+msgstr ""
+"Schwellwert für die Unterscheidung von nominaler und metrischer / kardinaler "
+"Skala"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -1087,8 +1095,8 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
-"Anzahl von einzigartigen ganzen Zahlen, um eine Variable als 'kardinal' zu "
-"klassifizieren.\n"
+"Anzahl von einzigartigen ganzen Zahlen, um eine Variable als metrisch / "
+"kardinal zu klassifizieren.\n"
 "Du musst deine Daten neu laden, bevor Änderungen hier übernommen werden. "
 "Schaue in die Hilfe für mehr Informationen."
 
@@ -1426,7 +1434,7 @@ msgstr ""
 "Bitte behalte im Hinterkopf, dass dies eine Vorschau-Version ist, bei der "
 "noch einige Funktionen fehlen.\n"
 "\n"
-"Falls JASP heute noch nicht alles tut, was Du möchtest, dann schau' morgen "
+"Falls JASP heute noch nicht alles tut, was Du möchtest, dann schaue morgen "
 "wieder vorbei: JASP wird mit halsbrecherischem Tempo weiterentwickelt!"
 
 msgctxt "Ancova|"
@@ -1487,7 +1495,7 @@ msgstr "Kontraste"
 
 msgctxt "Ancova|"
 msgid "Confidence intervals"
-msgstr "Konfidenzintervalle"
+msgstr "Konfidenzintervall"
 
 msgctxt "Ancova|"
 msgid "Post Hoc Tests"
@@ -1587,7 +1595,7 @@ msgstr "Vergleiche Randmittelwerte mit 0"
 
 msgctxt "Ancova|"
 msgid "Confidence interval adjustment"
-msgstr "Konfidenzintervall-Adjustierung"
+msgstr "Konfidenzintervall-Anpassung"
 
 msgctxt "Ancova|"
 msgid "Descriptive statistics"
@@ -1687,7 +1695,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "AncovaBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "AncovaBayesian|"
 msgid "Order"
@@ -1991,7 +1999,7 @@ msgstr "Randmittelwerte mit 0 vergleichen"
 
 msgctxt "Anova|"
 msgid "Confidence interval adjustment"
-msgstr "Konfidenzintervall-Adjustierung"
+msgstr "Konfidenzintervall-Anpassung"
 
 msgctxt "Anova|"
 msgid "Descriptive statistics"
@@ -2083,7 +2091,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "AnovaBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "AnovaBayesian|"
 msgid "Order"
@@ -2387,7 +2395,7 @@ msgstr "Vergleiche Randmittelwerte mit 0"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Confidence interval adjustment"
-msgstr "Konfidenzintervall-Adjustierung"
+msgstr "Konfidenzintervall-Anpassung"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Šidák"
@@ -2503,7 +2511,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Order"
@@ -2727,7 +2735,7 @@ msgstr "1. Planung"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Population Materiality"
-msgstr "Populatiematerialiteit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Absolute"
@@ -2743,7 +2751,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Confidence"
-msgstr "Konfidenz"
+msgstr "Vertrauen"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Variable definition</b>"
@@ -3041,7 +3049,7 @@ msgstr "Geloofwaardigheidsgrens"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Most likely error (MLE)"
@@ -3061,7 +3069,7 @@ msgstr "Korrelationsdiagramm"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Population Materiality"
-msgstr "Populations-Wesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Absolute"
@@ -3073,7 +3081,7 @@ msgstr "Relativ"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Size"
@@ -3089,7 +3097,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Confidence"
-msgstr "Konfidenz"
+msgstr "Vertrauen"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Advanced Options"
@@ -3206,7 +3214,7 @@ msgstr "1. Planung"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Population Materiality"
-msgstr "Populations-Wesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Absolute"
@@ -3222,7 +3230,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Confidence"
-msgstr "Konfidenz"
+msgstr "Vertrauen"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Variable definition</b>"
@@ -3524,7 +3532,7 @@ msgstr "Korrelationsdiagramm"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Population Materiality"
-msgstr "Populations-Wesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Absolute"
@@ -3536,7 +3544,7 @@ msgstr "Relativ"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Size"
@@ -3552,7 +3560,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Confidence"
-msgstr "Konfidenz"
+msgstr "Vertrauen"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Advanced Options"
@@ -3657,7 +3665,7 @@ msgstr "Koeffizienten"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Plots"
@@ -3705,7 +3713,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Plots"
@@ -3741,7 +3749,7 @@ msgstr "Koeffzienten"
 
 msgctxt "BainRegressionLinearBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainRegressionLinearBayesian|"
 msgid "Plots"
@@ -3841,7 +3849,7 @@ msgstr "Deskriptive Abbildungen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Variables"
@@ -3917,7 +3925,7 @@ msgstr "Deskriptive Abbildungen"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Pairs"
@@ -3989,7 +3997,7 @@ msgstr "Deskriptive Abbildungen"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "Descriptives|"
 msgid "Variables"
@@ -4001,7 +4009,7 @@ msgstr "Splits"
 
 msgctxt "Descriptives|"
 msgid "Frequency tables (nominal and ordinal variables)"
-msgstr "Häufigkeitstabellen (nominale und ordinale Variablen)"
+msgstr "Häufigkeitstabellen (nur für nominale und ordinale Variablen)"
 
 msgctxt "Descriptives|"
 msgid "Plots"
@@ -4017,7 +4025,7 @@ msgstr "Dichte anzeigen"
 
 msgctxt "Descriptives|"
 msgid "Correlation plots"
-msgstr "Korrelationsdiagramme"
+msgstr "Streudiagramme"
 
 msgctxt "Descriptives|"
 msgid "Boxplots"
@@ -4209,11 +4217,11 @@ msgstr "Verteilung"
 
 msgctxt "Descriptives|"
 msgid "Skewness"
-msgstr "Scheefheid"
+msgstr "Schiefe: (+) rechts, (-) links"
 
 msgctxt "Descriptives|"
 msgid "Kurtosis"
-msgstr "Gepiektheid"
+msgstr "Wölbung: (+) spitz, (-) stumpf"
 
 msgctxt "Descriptives|"
 msgid "Shapiro-Wilk test"
@@ -4353,7 +4361,7 @@ msgstr "Cronbachs α, analytisch"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Confidence"
-msgstr "Konfidenz"
+msgstr "Vertrauen"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Second-Order Factor"
@@ -4437,7 +4445,7 @@ msgstr "Maximum-Likelihood"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Principal axis factoring"
-msgstr ""
+msgstr "Hauptachsenmethode"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Ordinary least squares"
@@ -4797,7 +4805,7 @@ msgstr "Deskriptive Abbildungen"
 
 msgctxt "BinomialTestBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "BinomialTestBayesian|"
 msgid "Prior"
@@ -4873,7 +4881,7 @@ msgstr "Gruppe eins < Gruppe zwei"
 
 msgctxt "ContingencyTables|"
 msgid "Nominal"
-msgstr "Nominal"
+msgstr "nominal"
 
 msgctxt "ContingencyTables|"
 msgid "Contingency coefficient"
@@ -4893,7 +4901,7 @@ msgstr "Unsicherheitskoeffizient"
 
 msgctxt "ContingencyTables|"
 msgid "Ordinal"
-msgstr "Ordinal"
+msgstr "ordinal (sortierbar)"
 
 msgctxt "ContingencyTables|"
 msgid "Gamma"
@@ -4925,7 +4933,7 @@ msgstr "Cochrans und Mantel-Haenszel-Statistiken"
 
 msgctxt "ContingencyTables|"
 msgid "Test common odds ratio equals"
-msgstr ""
+msgstr "Test der allgemeinen Odds Ratio entspricht"
 
 msgctxt "ContingencyTables|"
 msgid "Cells"
@@ -5061,7 +5069,7 @@ msgstr "Log-Odds-Ratio (nur 2x2)"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Cramer's V"
@@ -5209,7 +5217,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Display"
@@ -5297,7 +5305,7 @@ msgstr "Skalenparameter"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Model Cut-offs"
-msgstr ""
+msgstr "Modellgrenzen"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Display best"
@@ -5337,7 +5345,7 @@ msgstr "Schätzer"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Credible intervals"
-msgstr "Kredibilitätsintervalle"
+msgstr "Glaubwürdigkeitsintervalle"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Interval"
@@ -5493,7 +5501,7 @@ msgstr "Algorithmus-Einstellungen"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Shrinkage:"
-msgstr ""
+msgstr "Schrumpfung:"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Interaction depth:"
@@ -5965,7 +5973,7 @@ msgstr "Algorithmus-Einstellungen"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Epsilon neighborhood size:"
-msgstr ""
+msgstr "Epsilon Nachbarschaftsbereich:"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Min. core points:"
@@ -6177,7 +6185,7 @@ msgstr "Distanz:"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Linkage:"
-msgstr ""
+msgstr "Linkage:"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Scale variables"
@@ -6481,7 +6489,7 @@ msgstr "Algoritme-instellingen"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Shrinkage:"
-msgstr ""
+msgstr "Schwund:"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Interaction depth:"
@@ -6753,7 +6761,7 @@ msgstr "Vorhersageleistung"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Variable trace"
-msgstr ""
+msgstr "Variablenspur"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Legend"
@@ -6873,7 +6881,7 @@ msgstr "Schätzer"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Confidence intervals"
-msgstr "Konfidenzintervalle"
+msgstr "Konfidenzintervall"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Interval"
@@ -6949,7 +6957,7 @@ msgstr "Robustheit"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Fail-safe N"
-msgstr ""
+msgstr "Optimales N"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Casewise diagnostics"
@@ -7165,7 +7173,7 @@ msgstr "Kov"
 
 msgctxt "NetworkAnalysis|"
 msgid "Npn"
-msgstr ""
+msgstr "Npn"
 
 msgctxt "NetworkAnalysis|"
 msgid "Centrality Measures"
@@ -7297,7 +7305,7 @@ msgstr "Kreuzvalidation"
 
 msgctxt "NetworkAnalysis|"
 msgid "nFolds"
-msgstr ""
+msgstr "n-fach"
 
 msgctxt "NetworkAnalysis|"
 msgid "Bootstrap Options"
@@ -7545,7 +7553,7 @@ msgstr "Frühling"
 
 msgctxt "NetworkAnalysis|"
 msgid "Repulsion"
-msgstr ""
+msgstr "Abstoßung"
 
 msgctxt "NetworkAnalysis|"
 msgid "Circle"
@@ -7606,7 +7614,7 @@ msgstr "Signifikante Korrelationen markieren"
 
 msgctxt "Correlation|"
 msgid "Confidence intervals"
-msgstr "Konfidenzintervalle"
+msgstr "Konfidenzintervall"
 
 msgctxt "Correlation|"
 msgid "Interval"
@@ -7722,7 +7730,7 @@ msgstr "Unterstützte Korrelationen markieren"
 
 msgctxt "CorrelationBayesian|"
 msgid "Credible intervals"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervalle"
 
 msgctxt "CorrelationBayesian|"
 msgid "Interval"
@@ -7834,7 +7842,7 @@ msgstr "Bootstraps"
 
 msgctxt "RegressionLinear|"
 msgid "Confidence intervals"
-msgstr "Konfidenzintervalle"
+msgstr "Konfidenzintervall"
 
 msgctxt "RegressionLinear|"
 msgid "Covariance matrix"
@@ -8010,7 +8018,7 @@ msgstr "Konstante weglassen"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Order"
@@ -8126,15 +8134,15 @@ msgstr "g-Prior"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Hyper-g"
-msgstr ""
+msgstr "Hyper-g"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Hyper-g-Laplace"
-msgstr ""
+msgstr "Hyper-g-Laplace"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Hyper-g-n"
-msgstr ""
+msgstr "Hyper-g-n"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "alpha"
@@ -8214,7 +8222,7 @@ msgstr "Numerische Genauigkeit"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "No. samples for credible interval"
-msgstr "Stichprobenumfang für Kredibilitätsintervall"
+msgstr "Stichprobenumfang für Glaubwürdigkeitsintervall"
 
 msgctxt "RegressionLogistic|"
 msgid "Dependent Variable"
@@ -8226,7 +8234,7 @@ msgstr "Methode"
 
 msgctxt "RegressionLogistic|"
 msgid "Enter"
-msgstr "Eingeben"
+msgstr "Einschluss"
 
 msgctxt "RegressionLogistic|"
 msgid "Backward"
@@ -8314,7 +8322,7 @@ msgstr "Chancenverhältnisse"
 
 msgctxt "RegressionLogistic|"
 msgid "Confidence intervals"
-msgstr "Konfidenzintervalle"
+msgstr "Konfidenzintervall"
 
 msgctxt "RegressionLogistic|"
 msgid "Odds ratio scale"
@@ -8918,7 +8926,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Tests"
@@ -8982,7 +8990,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Alt. Hypothesis"
@@ -9058,7 +9066,7 @@ msgstr "Deskriptive Statistik"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Additional Statistics"
@@ -9458,7 +9466,7 @@ msgstr "SortMenuModel wurde nicht mit einem sortierbaren Parent aufgerufen"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Size"
@@ -9474,7 +9482,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Confidence"
-msgstr "Konfidenz"
+msgstr "Vertrauen"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Book values"
@@ -10234,11 +10242,11 @@ msgstr "Epanechnikov"
 
 msgctxt "mlClassificationKnn|"
 msgid "Biweight"
-msgstr ""
+msgstr "zweifach gewichtet"
 
 msgctxt "mlClassificationKnn|"
 msgid "Triweight"
-msgstr ""
+msgstr "dreifach gewichtet"
 
 msgctxt "mlClassificationKnn|"
 msgid "Cosine"
@@ -10290,15 +10298,15 @@ msgstr "Euklidisch"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Average"
-msgstr "Mittelwert"
+msgstr "Average"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Single"
-msgstr ""
+msgstr "Single"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Complete"
-msgstr "Komplett"
+msgstr "Complete"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Centroid"
@@ -10503,7 +10511,7 @@ msgstr "Spearmans Rho"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Credible intervals"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervalle"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Interval"
@@ -10642,7 +10650,7 @@ msgstr "Weitere Optionen"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Confidence"
-msgstr "Konfidenz"
+msgstr "Vertrauen"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Explanatory Text"
@@ -10946,7 +10954,7 @@ msgstr "df 2"
 
 msgctxt "LDf|"
 msgid "ncp"
-msgstr ""
+msgstr "Nzp"
 
 msgctxt "LDf|"
 msgid "Display"
@@ -11250,7 +11258,7 @@ msgstr "df"
 
 msgctxt "LDt|"
 msgid "ncp"
-msgstr ""
+msgstr "Nonzentralitätsparameter"
 
 msgctxt "LDt|"
 msgid "Display"
@@ -11698,7 +11706,7 @@ msgstr "Feste und zufällige Effekte-Posterior hinzufügen"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Shade 95% CI"
-msgstr "95%-Konfidenzintervall markieren"
+msgstr "95%-Konfidenzintervall schattieren"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Sequential plot"
@@ -11750,7 +11758,7 @@ msgstr "Abhängige Variable"
 
 msgctxt "Flexplot|"
 msgid "Independent Variable(s)"
-msgstr "Unabhängige variabele(n)"
+msgstr "Unabhängige Variable(n)"
 
 msgctxt "Flexplot|"
 msgid "Options"
@@ -11770,7 +11778,7 @@ msgstr "Streuung in Y"
 
 msgctxt "Flexplot|"
 msgid "Plot confidence bands"
-msgstr "Konfidenzbänder anzeigen"
+msgstr "Konfidenzintervall anzeigen"
 
 msgctxt "Flexplot|"
 msgid "Fitted line (scatterplots)"
@@ -12410,11 +12418,11 @@ msgstr "Epanechnikov"
 
 msgctxt "mlRegressionKnn|"
 msgid "Biweight"
-msgstr ""
+msgstr "zweifach gewichtet"
 
 msgctxt "mlRegressionKnn|"
 msgid "Triweight"
-msgstr ""
+msgstr "dreifach gewichtet"
 
 msgctxt "mlRegressionKnn|"
 msgid "Cosine"
@@ -12462,7 +12470,7 @@ msgstr "Signifikant"
 
 msgctxt "RegressionLinear|"
 msgid "Enter"
-msgstr "Eingeben"
+msgstr "Einschluss"
 
 msgctxt "RegressionLinear|"
 msgid "Backward"
@@ -12834,7 +12842,7 @@ msgstr "Median"
 
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr "if-else-Anweisung"
+msgstr "wenn-dann-Anweisung"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Show explanatory text at each step of the analysis"
@@ -13099,7 +13107,7 @@ msgstr ""
 "Wir werden zwei Webseiten in deinem Webbrowser öffnen.\n"
 "Die zweite Seite ist die 'Tritt GitHub bei'-Seite, auf der Du einen neues "
 "Konto bei GitHub registrieren kannst.\n"
-"Die zweite Seite zeigt ein teilweise ausgefülltes Fehlerformular nachdem Du "
+"Die zweite Seite zeigt ein teilweise ausgefülltes Fehlerformular, nachdem Du "
 "dich bei GitHub mit dem neuen Github-Konto angemeldet hast.\n"
 "\n"
 "Bitte fülle dort alle fehlenden Informationen aus."
@@ -13655,15 +13663,15 @@ msgstr "Bitte alle Argumente eingeben - siehe rot markierte Felder.<br>"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr "Kardinal"
+msgstr "metrisch (gleichabständig)"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr "Ordinal"
+msgstr "ordinal (sortierbar)"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr "Nominal"
+msgstr "nominal (nicht sortierbar)"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
@@ -13783,7 +13791,7 @@ msgstr "obere:"
 
 msgctxt "Flexplot|"
 msgid "Paneled Variable(s)"
-msgstr ""
+msgstr "Panel-Variablen"
 
 msgctxt "Form|"
 msgid ""
@@ -14060,7 +14068,7 @@ msgstr "Likelihood"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Restricted ML"
-msgstr ""
+msgstr "Begrenztes ML"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Hedges"
@@ -14068,7 +14076,7 @@ msgstr "Hedges"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Empirical Bayes"
-msgstr ""
+msgstr "Empirischer Bayes"
 
 msgctxt "NetworkAnalysis|"
 msgid "red"
@@ -14165,7 +14173,7 @@ msgstr "Erste"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "observed moments"
-msgstr "Beobachtete Momente"
+msgstr "beobachtete Momente"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "Plots"
@@ -14177,7 +14185,7 @@ msgstr "Histogramm mit"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "bins"
-msgstr "Bins"
+msgstr "Klassen"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "Empirical cumulative distribution"
@@ -14213,15 +14221,15 @@ msgstr "Ausgewählt"
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr "Kardinal"
+msgstr "metrisch (gleichabständig)"
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr "Ordinal"
+msgstr "ordinal (sortierbar)"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
-msgstr "Nominal"
+msgstr "nominal (nicht sortierbar)"
 
 #, qt-format
 msgctxt "BoundQMLComboBox|"
@@ -14250,7 +14258,7 @@ msgstr "Spearmans Rho"
 
 msgctxt "CorrelationBayesian|"
 msgid "Population Correlation Coefficient"
-msgstr "Populations-Korrelationskoeffizient"
+msgstr "Grundgesamtheits-Korrelationskoeffizient"
 
 msgctxt "CorrelationBayesian|"
 msgid "Pearson's rho"
@@ -14880,7 +14888,7 @@ msgstr "Abbildungen"
 
 msgctxt "auditSelection|"
 msgid "Population and sample histograms"
-msgstr "Populations- und Stichprobenhistogramme"
+msgstr "Grundgesamtheits- und Stichprobenhistogramme"
 
 msgctxt "auditSelection|"
 msgid "Add selection counter to data"
@@ -14916,11 +14924,11 @@ msgstr "Angezeigte Maße in Zentralitätsabbildung"
 
 msgctxt "NetworkAnalysis|"
 msgid "Betweenness"
-msgstr ""
+msgstr "dazwischen"
 
 msgctxt "NetworkAnalysis|"
 msgid "Closeness"
-msgstr ""
+msgstr "Geschlossenheit"
 
 msgctxt "NetworkAnalysis|"
 msgid "Expected Influence"
@@ -15559,7 +15567,7 @@ msgstr "Grafikbasierte Datenanalyse"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Population Materiality"
-msgstr "Populationswesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Absolute"
@@ -15571,7 +15579,7 @@ msgstr "Relativ"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Size"
@@ -15587,7 +15595,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Confidence"
-msgstr "Konfidenz"
+msgstr "Vertrauen"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Record ID's"
@@ -15695,7 +15703,7 @@ msgstr "Kredibilitätsgrenze"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Explanatory Text"
@@ -15791,7 +15799,7 @@ msgstr "Prior-Information"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Population Materiality"
-msgstr "Populationswesentlichkeit"
+msgstr "Grundgesamtheits-Wesentlichkeit"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Absolute"
@@ -15803,7 +15811,7 @@ msgstr "Relativ"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Population"
-msgstr "Population"
+msgstr "Grundgesamtheit"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Size"
@@ -15819,7 +15827,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Confidence"
-msgstr "Konfidenz"
+msgstr "Vertrauen"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Record ID's"
@@ -16715,7 +16723,7 @@ msgstr "Skala-Statistiken"
 
 msgctxt "ReliabilityBayesian|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "ReliabilityBayesian|"
 msgid "McDonald's ω"
@@ -17236,7 +17244,7 @@ msgstr "Schätzungen Varianz/Korrelation"
 
 msgctxt "MixedModelsBOptions|"
 msgid "Credible interval"
-msgstr "Kredibilitätsintervall"
+msgstr "Glaubwürdigkeitsintervall"
 
 msgctxt "MixedModelsMCMCDiagnostics|"
 msgid "MCMC diagnostics"
@@ -17377,7 +17385,7 @@ msgstr "Hintergrund-Daten anzeigen"
 
 msgctxt "MixedModelsPlots|"
 msgid "Confidence interval method"
-msgstr "Konfidenzintervallmethode"
+msgstr "Konfidenzintervall-Methode"
 
 msgctxt "MixedModelsPlots|"
 msgid "Model"
@@ -17782,24 +17790,24 @@ msgid ""
 "Two-sided alternative hypothesis that the population mean is not equal to "
 "the test value."
 msgstr ""
-"Zweiseitige Alternativhypothese, dass der Populationsmittelwert nicht gleich "
-"dem Testwert ist."
+"Zweiseitige Alternativhypothese, dass der Mittelwert der Grundgesamtheit "
+"nicht gleich dem Testwert ist."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid ""
 "One-sided alternative hypothesis that the population mean is larger than the "
 "test value."
 msgstr ""
-"Einseitige Alternativhypothese, dass der Populationsmittelwert größer als "
-"der Testwert ist."
+"Einseitige Alternativhypothese, dass der Mittelwert der Grundgesamtheit "
+"größer als der Testwert ist."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid ""
 "One sided alternative hypothesis that the population mean is smaller than "
 "the test value."
 msgstr ""
-"Einseitige Alternativhypothese, dass der Populationsmittelwert kleiner als "
-"der Testwert ist."
+"Einseitige Alternativhypothese, dass der Mittelwert der Grundgesamtheit "
+"kleiner als der Testwert ist."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid ""
@@ -17811,7 +17819,7 @@ msgstr ""
 "Zeigt den Bayesfaktor, der mit benutzerdefiniertem Prior berechnet wurde; "
 "zeigt ein Wahrscheinlichkeitsdiagramm mit dem Chancenverhältnis der Daten "
 "unter der Null- vs. der Alternativhypothese; zeigt den Median und das 95% "
-"Kredibilitätsintervall der Posteriordichte."
+"Glaubwürdigkeitsintervall der Posteriordichte."
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid ""
@@ -17977,7 +17985,7 @@ msgstr ""
 "Dichte der Effektgröße unter der Alternativhypothese; die grauen Kreise "
 "zeigen die Höhe der Prior- und Posterior-Dichte bei Effektgröße delta = 0. "
 "Die horizontale durchgezogene Linie zeigt die Breite des 95%-"
-"Kredibilitätsintervalls des Posteriors."
+"Glaubwürdigkeitsintervalls des Posteriors."
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
@@ -18009,7 +18017,7 @@ msgstr "Binomial-Schätzung"
 
 msgctxt "Description|"
 msgid "Binomial Testing"
-msgstr ""
+msgstr "Binomial-Tests"
 
 msgctxt "LSbinomialestimation|"
 msgid "Model"
@@ -18165,7 +18173,7 @@ msgstr "Prior- und Posterior-Verteilung"
 
 msgctxt "LSestimationinference|"
 msgid "Observed proportion"
-msgstr ""
+msgstr "Beobachtetes Verhältnis"
 
 msgctxt "LSestimationpredictions|"
 msgid "Summary"
@@ -18181,7 +18189,7 @@ msgstr "Abbildungen"
 
 msgctxt "LSestimationpredictions|"
 msgid "Posterior predictive distribution"
-msgstr "A posteriori prädiktive Verteilung"
+msgstr "Posterior-prädiktive Verteilung"
 
 msgctxt "LSestimationpredictions|"
 msgid "All"
@@ -18201,7 +18209,7 @@ msgstr "KI"
 
 msgctxt "LSestimationpredictions|"
 msgid "Show sample proportions"
-msgstr ""
+msgstr "Anteile in Stichproben anzeigen"
 
 msgctxt "LSestimationsequential|"
 msgid "Point estimate"
@@ -18281,7 +18289,7 @@ msgstr "KI"
 
 msgctxt "LStestinginference|"
 msgid "Joint"
-msgstr ""
+msgstr "gemeinsam"
 
 msgctxt "LStestinginference|"
 msgid "Overlying"
@@ -18293,15 +18301,15 @@ msgstr "Gestapelt"
 
 msgctxt "LStestinginference|"
 msgid "Marginal"
-msgstr ""
+msgstr "marginal"
 
 msgctxt "LStestinginference|"
 msgid "Prior predictive distribution"
-msgstr "A priori prädiktive Verteilung"
+msgstr "Prior-prädiktive Verteilung"
 
 msgctxt "LStestinginference|"
 msgid "Observed proportion"
-msgstr ""
+msgstr "Beobachteter Anteil"
 
 msgctxt "LStestinginference|"
 msgid "Predictive accuracy"
@@ -18337,7 +18345,7 @@ msgstr "Abbildungen"
 
 msgctxt "LStestingpredictions|"
 msgid "Posterior predictive distribution"
-msgstr "A posteriori prädiktive Verteilung"
+msgstr "Posterior-prädiktive Verteilung"
 
 msgctxt "LStestingpredictions|"
 msgid "Conditional"
@@ -18361,7 +18369,7 @@ msgstr "obere"
 
 msgctxt "LStestingpredictions|"
 msgid "Joint"
-msgstr ""
+msgstr "gemeinsam"
 
 msgctxt "LStestingpredictions|"
 msgid "Overlying"
@@ -18373,11 +18381,11 @@ msgstr "Gestapelt"
 
 msgctxt "LStestingpredictions|"
 msgid "Marginal"
-msgstr ""
+msgstr "marginal"
 
 msgctxt "LStestingpredictions|"
 msgid "Show sample proportions"
-msgstr ""
+msgstr "Anteile in Stichproben anzeigen"
 
 msgctxt "LStestingpredictions|"
 msgid "Predictions table"
@@ -18393,7 +18401,7 @@ msgstr "Konditional"
 
 msgctxt "LStestingsequential|"
 msgid "Joint"
-msgstr ""
+msgstr "Zusammen"
 
 msgctxt "LStestingsequential|"
 msgid "Bayes factor"
@@ -18445,7 +18453,7 @@ msgstr "McQuitty"
 
 msgctxt "Description|"
 msgid "Selection Models"
-msgstr ""
+msgstr "Auswahlmodelle"
 
 msgctxt "Description|"
 msgid "Robust Bayesian Meta-Analysis"
@@ -18457,7 +18465,7 @@ msgstr "Korrelationen & N"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Odds ratios & CI"
-msgstr ""
+msgstr "Odds Ratio & Konfidenzintervall"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Models"
@@ -18517,7 +18525,7 @@ msgstr "Zweiseitige Auswahl"
 
 msgctxt "SelectionModels|"
 msgid "P-value frequency"
-msgstr ""
+msgstr "p-Wert Häufigkeit"
 
 msgctxt "SelectionModels|"
 msgid "Automatically join p-value intervals"
@@ -18597,7 +18605,7 @@ msgstr "Bernoulli"
 
 msgctxt "RegressionLogistic|"
 msgid "Performance Plots"
-msgstr ""
+msgstr "Performanz-Abbildungen"
 
 msgctxt "RegressionLogistic|"
 msgid "ROC plot"
@@ -18605,11 +18613,11 @@ msgstr "ROC-Plot"
 
 msgctxt "RegressionLogistic|"
 msgid "Cutoff step"
-msgstr ""
+msgstr "Grenzwert"
 
 msgctxt "RegressionLogistic|"
 msgid "Add cutoff labels"
-msgstr ""
+msgstr "Ergänze Grenzwert-Beschriftung"
 
 msgctxt "RegressionLogistic|"
 msgid "PR plot"
@@ -18753,7 +18761,7 @@ msgstr "Rate:"
 
 msgctxt "LDexponential|"
 msgid "Scale:"
-msgstr ""
+msgstr "Skala:"
 
 msgctxt "LDf|"
 msgid "Degree of freedom:"
@@ -18769,7 +18777,7 @@ msgstr "Form:"
 
 msgctxt "LDgamma|"
 msgid "Scale:"
-msgstr ""
+msgstr "Skala:"
 
 msgctxt "LDgamma|"
 msgid "Rate:"
@@ -18785,7 +18793,7 @@ msgstr "Form:"
 
 msgctxt "LDgammaInverse|"
 msgid "Scale:"
-msgstr ""
+msgstr "Skala:"
 
 msgctxt "LDgammaInverse|"
 msgid "Rate:"
@@ -18829,7 +18837,7 @@ msgstr "μ"
 
 msgctxt "LDlogistic|"
 msgid "Scale:"
-msgstr ""
+msgstr "Skala:"
 
 msgctxt "LDlogistic|"
 msgid "σ"
@@ -19087,7 +19095,7 @@ msgstr "Eingabetyp"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Count Data"
-msgstr ""
+msgstr "Häufigkeiten"
 
 msgctxt "LSbinomialdatainput|"
 msgid "Comma-separated Sequence of Observations"
@@ -19195,7 +19203,7 @@ msgstr "Korrelation"
 
 msgctxt "RobustBayesianMetaAnalysis|"
 msgid "Odds Ratio"
-msgstr ""
+msgstr "Quotenverhältnis"
 
 msgctxt "SelectionModels|"
 msgid "Correlation"
@@ -19219,11 +19227,11 @@ msgstr "Farbpalette"
 
 msgctxt "Flexplot|"
 msgid "Plot Labels"
-msgstr ""
+msgstr "Abbildungs-Beschriftungen"
 
 msgctxt "Flexplot|"
 msgid "<br><strong>Plot Labels</strong>"
-msgstr ""
+msgstr "<br><strong>Abbildungs-Beschriftungen</strong>"
 
 #, qt-format
 msgctxt "BoundQMLTextInput|"
@@ -19291,15 +19299,15 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows workarounds"
-msgstr ""
+msgstr "Windows-Übergangslösungen"
 
 msgctxt "PrefsAdvanced|"
 msgid "Handling LC_CTYPE"
-msgstr ""
+msgstr "Umgang mit LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
-msgstr ""
+msgstr "Lass JASP die beste Einstellung für LC_CTYPE erraten (Empfohlen!)"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -19307,10 +19315,14 @@ msgid ""
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
 msgstr ""
+"Wenn dies aktiviert ist und es nicht-ASCII-Zeichen in deinem "
+"Installationspfad gibt, wird JASP nicht mehr funktionieren.  Falls dein "
+"Benutzername ausschließlich nicht-ASCII-Zeichen hat, wird die Installation "
+"von Modulen wahrscheinlich unterbrochen."
 
 msgctxt "PrefsAdvanced|"
 msgid "Keep LC_CTYPE at systemdefault."
-msgstr ""
+msgstr "Behalte LC_CTYPE auf der Systemvoreinstellung."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -19319,112 +19331,104 @@ msgid ""
 "characters in the path. Sorry for the inconvenience, we are working on it "
 "and hopefully have this fixed next release."
 msgstr ""
+"Bei Aktivierung dieser Option werden bestimmte Zeichen in den Ergebnissen "
+"seltsam aussehen, aber zumindest ist JASP verwendbar, wenn es in einem "
+"Ordner mit nicht-ASCII-Zeichen im Pfad installiert ist. Bitte entschuldige "
+"die Unannehmlichkeiten, wir arbeiten daran und haben dies hoffentlich in der "
+"nächsten Version behoben."
 
 msgctxt "LDAssessFit|"
 msgid "Assess Fit"
-msgstr ""
+msgstr "Anpassungsgüte evaluieren"
 
 msgctxt "LDAssessFit|"
 msgid "[requires a loaded data set]"
-msgstr ""
+msgstr "[erfordert einen geladenen Datensatz]"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Plots"
 msgstr "Abbildungen"
 
 msgctxt "LDAssessFit|"
 msgid "Histogram vs. theoretical pdf"
-msgstr ""
+msgstr "Histogramm vs. theoretische Dichtefunktion"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Histogram vs. theoretical pmf"
 msgstr "Histogramm vs. theoretische WF"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Q-Q plot"
 msgstr "Q-Q-Diagramm"
 
 msgctxt "LDAssessFit|"
 msgid "Empirical vs. theoretical cdf"
-msgstr ""
+msgstr "Empirische vs. theoretische KDF"
 
 msgctxt "LDAssessFit|"
 msgid "P-P plot"
-msgstr ""
+msgstr "P-P-Diagramm"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Statistics"
 msgstr "Statistiken"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Kolmogorov-Smirnov"
 msgstr "Kolmogorow-Smirnow"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Cramér–von Mises"
 msgstr "Cramér–von Mises"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Anderson-Darling"
 msgstr "Anderson-Darling"
 
-#, fuzzy
 msgctxt "LDAssessFit|"
 msgid "Shapiro-Wilk"
 msgstr "Shapiro-Wilk"
 
 msgctxt "LDAssessFit|"
 msgid "Chi-square"
-msgstr ""
+msgstr "Chi-Quadrat"
 
 msgctxt "LDEstimateParameters|"
 msgid "Estimate Parameters"
-msgstr ""
+msgstr "Parameter schätzen"
 
 msgctxt "LDEstimateParameters|"
 msgid "[requires a loaded data set]"
-msgstr ""
+msgstr "[erfordert einen geladenen Datensatz]"
 
-#, fuzzy
 msgctxt "LDEstimateParameters|"
 msgid "Maximum likelihood"
 msgstr "Maximum-Likelihood"
 
-#, fuzzy
 msgctxt "LDEstimateParameters|"
 msgid "Output"
 msgstr "Ausgabe"
 
 msgctxt "LDEstimateParameters|"
 msgid "Estimates"
-msgstr ""
+msgstr "Schätzungen"
 
 msgctxt "LDEstimateParameters|"
 msgid "Std. error"
-msgstr ""
+msgstr "Std.-Fehler"
 
-#, fuzzy
 msgctxt "LDEstimateParameters|"
 msgid "Confidence interval"
 msgstr "Konfidenzintervall"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "[requires a loaded data set]"
-msgstr ""
+msgstr "[erfordert einen geladenen Datensatz]"
 
-#, fuzzy
 msgctxt "LSestimationpredictions|"
 msgid "Predictions table"
 msgstr "Vorhersagetabelle"
 
-#, fuzzy
 msgctxt "LStestinginference|"
 msgid "Predictions table"
 msgstr "Vorhersagetabelle"
