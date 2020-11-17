@@ -466,6 +466,9 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 
 		//Install module
 	installLocal("'" + _modulePackage + "/.'");
+	
+	//And fix Mac OS libraries of module pkg in case it contains cpp (and it will check all the deps again, but that shouldnt be a problem):
+	R << standardRIndent << ".postProcessLibraryModule(\"" << moduleRLibrary().toStdString() << "\");\n";
 
 
 		//Check if install worked and through loadlog as error otherwise
