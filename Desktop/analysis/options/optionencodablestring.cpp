@@ -11,7 +11,7 @@ Option * OptionEncodableString::clone() const
 
 Json::Value OptionEncodableString::asMetaJSON() const
 {
-	Json::Value meta	= Json::objectValue;
+	Json::Value meta	= defaultMetaEntryContainingColumn();
 	meta["encodeThis"]	= _value;
 
 	return meta;

@@ -26,10 +26,9 @@
 class OptionVariablesGroups : public OptionI<std::vector<std::vector<std::string> > >, public OptionVariableI
 {
 public:
-	OptionVariablesGroups() : OptionI(true) { }
+	OptionVariablesGroups() : OptionI(true) { setShouldEncode(true); }
 
 	Json::Value					asJSON()												const	override;
-	Json::Value					asMetaJSON()											const	override;
 	void						set(const Json::Value& value)									override;
 	Option						*clone()												const	override;
 
@@ -37,7 +36,7 @@ public:
 	void						replaceName(std::string oldName, std::string newName)			override;
 	void						removeName(std::string name)									override;
 	std::set<std::string>		usedVariables()											const	override;
-	void						removeUsedVariable(const std::string & var)								override	{ removeName(var); }
+	void						removeUsedVariable(const std::string & var)										override	{ removeName(var); }
 	void						replaceVariableName(const std::string & oldName, const std::string & newName)	override	{ replaceName(oldName, newName); }
 };
 

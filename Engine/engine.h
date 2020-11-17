@@ -23,6 +23,7 @@
 #include "ipcchannel.h"
 #include "processinfo.h"
 #include "jsonredirect.h"
+#include "columnencoder.h"
 
 /* The Engine represents the background processes.
  * It can be in a variety of states _currentEngineState and can run analyses, filters, compute columns and Rcode.
@@ -144,10 +145,8 @@ private: // Data:
 						_analysisResults;
 
 	IPCChannel *		_channel = nullptr;
-
-
-
-
+	
+	ColumnEncoder	*	_extraEncodings = nullptr;
 };
 
 #endif // ENGINE_H

@@ -16,7 +16,6 @@
 //
 
 #include "rbridge.h"
-#include "columnencoder.h"
 #include "jsonredirect.h"
 #include "sharedmemory.h"
 #include "appinfo.h"
@@ -30,7 +29,7 @@ DataSet						*	rbridge_dataSet		= nullptr;
 RCallback						rbridge_callback	= NULL;
 std::set<std::string>			filterColumnsUsed;
 std::vector<std::string>		columnNamesInDataSet;
-ColumnEncoder					extraEncodings("JaspExtraOptions_.");
+ColumnEncoder				*	extraEncodings		= nullptr;
 
 
 //You cannot replace these NULL's by nullptr because then the compiler will complain about expressions that cannot be used as functions
@@ -63,9 +62,11 @@ size_t _logWriteFunction(const void * buf, size_t len)
 	return len;
 }
 
-void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction)
+void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder)
 {
 	JASPTIMER_SCOPE(rbridge_init);
+	
+	extraEncodings = extraEncoder;
 
 	RBridgeCallBacks callbacks = {
 		rbridge_readDataSet,
@@ -134,8 +135,8 @@ extern "C" const char * STDCALL rbridge_encodeColumnName(const char * in)
 {
 	static std::string out;
 
-	if(extraEncodings.shouldEncode(in))	out = extraEncodings.encode(in);
-	else								out = ColumnEncoder::columnEncoder()->encode(in);
+	if(extraEncodings->shouldEncode(in))	out = extraEncodings->encode(in);
+	else									out = ColumnEncoder::columnEncoder()->encode(in);
 
 	return out.c_str();
 }
@@ -144,8 +145,8 @@ extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 {
 	static std::string out;
 
-	if(extraEncodings.shouldDecode(in))	out = extraEncodings.decode(in);
-	else								out = ColumnEncoder::columnEncoder()->decode(in);
+	if(extraEncodings->shouldDecode(in))	out = extraEncodings->decode(in);
+	else									out = ColumnEncoder::columnEncoder()->decode(in);
 
 	return out.c_str();
 }
@@ -244,14 +245,11 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 	return true;
 }
 
-std::string
-rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground, bool developerMode)
+std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground, bool developerMode)
 {
 	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
 	if (rbridge_dataSet != nullptr)
 		rbridge_dataSet		= rbridge_dataSetSource();
-
-	extraEncodings.setCurrentNamesFromOptionsMeta(options);
 
 	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), ppi, analysisID, analysisRevision, imageBackground.c_str(), developerMode);
 }

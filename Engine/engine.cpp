@@ -30,7 +30,7 @@
 #include "rbridge.h"
 #include "timers.h"
 #include "log.h"
-#include "columnencoder.h"
+
 
 void SendFunctionForJaspresults(const char * msg) { Engine::theEngine()->sendString(msg); }
 bool PollMessagesFunctionForJaspResults()
@@ -87,6 +87,8 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 										boost::bind(&Engine::setColumnDataAsNominalText,	this, _1, _2));
 
 	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
+	
+	_extraEncodings = new ColumnEncoder("JaspExtraOptions_.");
 
 }
 
@@ -94,7 +96,7 @@ void Engine::initialize()
 {
 	Log::log() << "Engine::initialize()" << std::endl;
 
-	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults);
+	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings);
 	
 	Log::log() << "rbridge_init completed" << std::endl;
 
@@ -482,13 +484,15 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_engineState			= engineState::analysis;
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
+		
+		_extraEncodings->setCurrentNamesFromOptionsMeta(optionsEnc);
+		
 #ifdef JASP_COLUMN_ENCODE_ALL
 		encodeColumnNamesinOptions(optionsEnc);
 #endif
 		_analysisOptions		= optionsEnc.toStyledString();
 	}
 }
-
 
 void Engine::encodeColumnNamesinOptions(Json::Value & options)
 {
@@ -501,31 +505,44 @@ void Engine::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & me
 	if(meta.isNull())
 		return;
 	
-	bool encodePlease = meta.isObject() && meta.isMember("containsColumn") && meta["containsColumn"].asBool();
+	bool	encodePlease	= meta.isObject() && meta.get("shouldEncode",	false).asBool(),
+			isRCode			= meta.isObject() && meta.get("rCode",			false).asBool();
 
 	switch(options.type())
 	{
 	case Json::arrayValue:
 		if(encodePlease)
 			ColumnEncoder::columnEncoder()->encodeJson(options, false); //If we already think we have columnNames just change it all
+		
 		else if(meta.type() == Json::arrayValue)
 			for(size_t i=0; i<options.size() && i < meta.size(); i++)
 				_encodeColumnNamesinOptions(options[i], meta[i]);
-		else if(meta.type() == Json::objectValue && meta.get("containsColumn", false).asBool())
-			ColumnEncoder::columnEncoder()->encodeJson(options, false);
+		
+		else if(isRCode)
+			for(size_t i=0; i<options.size(); i++)
+				if(options[i].isString())
+					options[i] = ColumnEncoder::columnEncoder()->encodeRScript(options[i].asString());
+	
 		return;
 
 	case Json::objectValue:
 		for(const std::string & memberName : options.getMemberNames())
 			if(memberName != ".meta" && meta.isMember(memberName))
 				_encodeColumnNamesinOptions(options[memberName], meta[memberName]);
+		
+			else if(isRCode && options[memberName].isString())
+				options[memberName] = ColumnEncoder::columnEncoder()->encodeRScript(options[memberName].asString());
+		
 			else if(encodePlease)
 				ColumnEncoder::columnEncoder()->encodeJson(options, false); //If we already think we have columnNames just change it all I guess?
+		
 		return;
 
 	case Json::stringValue:
-			if(encodePlease)
-				options = ColumnEncoder::columnEncoder()->encodeAll(options.asString());
+			
+			if(isRCode)				options = ColumnEncoder::columnEncoder()->encodeRScript(options.asString());
+			else if(encodePlease)	options = ColumnEncoder::columnEncoder()->encodeAll(options.asString());
+			
 		return;
 
 	default:

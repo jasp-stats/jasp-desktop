@@ -324,7 +324,7 @@ QHash<int, QByteArray> ListModelTableViewBase::roleNames() const
 		roles[int(specialRoles::lines)]					= QString("lines").toUtf8();
 		roles[int(specialRoles::maxColString)]			= QString("maxColString").toUtf8();
 		roles[int(specialRoles::maxRowHeaderString)]	= QString("maxRowHeaderString").toUtf8();
-		roles[int(specialRoles::itemInputType)]				= QString("itemInputType").toUtf8();
+		roles[int(specialRoles::itemInputType)]			= QString("itemInputType").toUtf8();
 		addRoles = false;
 	}
 

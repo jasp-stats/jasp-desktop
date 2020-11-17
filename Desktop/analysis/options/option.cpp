@@ -57,10 +57,11 @@ void Option::notifyChanged(Option* option)
 		changed(option);
 }
 
-Json::Value Option::defaultMetaEntryContainingColumn(bool containsColumn) const
+Json::Value Option::defaultMetaEntryContainingColumn(bool shouldEncode, bool rCode) const
 {
 	Json::Value meta		= Json::objectValue;
-	meta["containsColumn"]	= containsColumn;
+	meta["shouldEncode"]	= shouldEncode;
+	meta["rCode"]			= rCode;
 
 	return meta;
 }

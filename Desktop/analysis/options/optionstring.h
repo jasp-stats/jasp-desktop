@@ -30,14 +30,13 @@ public:
 	void		set(const Json::Value &value)			override;
 	Json::Value asJSON()						const	override;
 	Option*		clone()							const	override;
-
+	
 	int			max()		const;
 	std::string regexp()	const;
 
   protected:
 	int			_max;
 	std::string _regexp;
-
 };
 
 #endif // OPTIONSTRING_H

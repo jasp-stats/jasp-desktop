@@ -38,6 +38,7 @@ BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(JASPControl* item)
 void BoundQMLListViewMeasuresCells::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionVariables *>(option);
+	_boundTo->setShouldEncode(true);
 	_measuresCellsModel->initLevels(getLevels(), _boundTo->value(), true);
 }
 
@@ -45,10 +46,8 @@ const Terms& BoundQMLListViewMeasuresCells::getLevels()
 {
 	_tempTerms.clear();
 	for (ListModelRepeatedMeasuresFactors* factorsModel : _sourceFactorsModels)
-	{
-		const Terms& terms = factorsModel->getLevels();
-		_tempTerms.add(terms);
-	}
+		_tempTerms.add(factorsModel->getLevels());
+	
 	
 	return _tempTerms;
 }
@@ -56,10 +55,8 @@ const Terms& BoundQMLListViewMeasuresCells::getLevels()
 Option* BoundQMLListViewMeasuresCells::createOption()
 {
 	OptionVariables *result = new OptionVariables();
-	vector<string> values;
-	for (size_t i = 0; i < getLevels().size(); i++)
-		values.push_back("");
-	result->setValue(values);
+	result->setShouldEncode(true);
+	result->setValue(vector<string>(getLevels().size(), ""));
 	
 	return result;
 }
@@ -71,9 +68,7 @@ bool BoundQMLListViewMeasuresCells::isOptionValid(Option *option)
 
 bool BoundQMLListViewMeasuresCells::isJsonValid(const Json::Value &optionValue)
 {
-	bool ok = optionValue.type() == Json::arrayValue;
-
-	return ok;
+	return optionValue.type() == Json::arrayValue;
 }
 
 
@@ -96,5 +91,8 @@ void BoundQMLListViewMeasuresCells::modelChangedHandler()
 	const Terms& terms = _measuresCellsModel->terms();
 	
 	if (_boundTo)
+	{
+		_boundTo->setShouldEncode(true);
 		_boundTo->setValue(terms.asVector());
+	}
 }

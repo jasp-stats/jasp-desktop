@@ -64,7 +64,7 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 
 		if (!_tempOptionKey.empty() && _tempOptionKey != _optionKeyName)
 		{
-			// Backward compatibility: the key in the JASP file does not correspond to the current key. This must be replacec
+			// Backward compatibility: the key in the JASP file does not correspond to the current key. This must be replaced
 			_optionsTable->replaceKey(_tempOptionKey, _optionKeyName);
 		}
 		
@@ -77,6 +77,7 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 			if (_termsModel->areTermsInteractions())
 			{
 				OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_optionKeyName));
+				termOption->setShouldEncode(true);
 				if (termOption)
 				{
 					Term term(termOption->term());
@@ -103,6 +104,7 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 					return;
 				}
 			}
+			
 			QMap<QString, Option*> optionsMap;
 			for (const std::string& name : options->names)
 				if (name != _optionKeyName)
@@ -140,11 +142,17 @@ Option* BoundQMLListViewTerms::createOption()
 			_tempOptionKey = _optionKeyName;
 
 		if (_termsModel->areTermsInteractions())
-			templote->add(_tempOptionKey, new OptionTerm());
+		{
+			OptionTerm * newOptTerm = new OptionTerm();
+			newOptTerm->setShouldEncode(true);
+			templote->add(_tempOptionKey, newOptTerm);
+		}
 		else
 			templote->add(_tempOptionKey, new OptionVariable());
+		
 		if (_hasRowComponents)
 			addRowComponentsDefaultOptions(templote);
+		
 		result = new OptionsTable(templote);
 	}
 	else
@@ -155,14 +163,11 @@ Option* BoundQMLListViewTerms::createOption()
 
 bool BoundQMLListViewTerms::isOptionValid(Option *option)
 {
-	if (_columns > 1)
-		return dynamic_cast<OptionVariablesGroups*>(option) != nullptr;
-	else if (_hasRowComponents || _termsModel->areTermsInteractions())
-		return dynamic_cast<OptionsTable*>(option) != nullptr;
-	else if (_maxRows == 1)
-		return dynamic_cast<OptionVariable*>(option) != nullptr;
-	else	
-		return dynamic_cast<OptionVariables*>(option) != nullptr;
+	if (_columns > 1)							return dynamic_cast<OptionVariablesGroups*>(option) != nullptr;
+	else if (_hasRowComponents ||
+		 _termsModel->areTermsInteractions())	return dynamic_cast<OptionsTable*>(option)			!= nullptr;
+	else if (_maxRows == 1)						return dynamic_cast<OptionVariable*>(option)		!= nullptr;
+	else										return dynamic_cast<OptionVariables*>(option)		!= nullptr;
 }
 
 bool BoundQMLListViewTerms::isJsonValid(const Json::Value &optionValue)
@@ -241,7 +246,10 @@ void BoundQMLListViewTerms::modelChangedHandler()
 			{
 				OptionTerm *optionTerm = dynamic_cast<OptionTerm *>(rowOptions->get(_optionKeyName));
 				if (optionTerm)
+				{
 					optionTerm->setValue(term.scomponents());
+					optionTerm->setShouldEncode(true);
+				}
 				else
 					Log::log()  << "An option is not of type OptionTerm!!" << std::endl;
 			}

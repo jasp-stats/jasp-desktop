@@ -170,7 +170,7 @@ bool Options::extractValue(const string &name, const Json::Value &root, Json::Va
 		return false;
 }
 
-Option *Options::get(string name) const
+Option *Options::get(const string & name) const
 {
 	for (const OptionNamed& p : _options)
 	{

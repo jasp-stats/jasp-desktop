@@ -11,11 +11,6 @@ Json::Value OptionComputedColumn::asJSON() const
 	return Json::Value(value());
 }
 
-Json::Value OptionComputedColumn::asMetaJSON() const
-{
-	return defaultMetaEntryContainingColumn();
-}
-
 void OptionComputedColumn::setValue(const std::string &newValue)
 {
 	std::string columnName = newValue;

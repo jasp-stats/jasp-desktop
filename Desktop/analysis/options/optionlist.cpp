@@ -71,5 +71,5 @@ Json::Value OptionList::asMetaJSON() const
 
 	//If everything is a columnName then you know, its probably a bunch of columnNames
 
-	return defaultMetaEntryContainingColumn();
+	return defaultMetaEntryContainingColumn(true);
 }

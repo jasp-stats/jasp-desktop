@@ -33,6 +33,7 @@
 #include "../Common/dataset.h"
 #include "../R-Interface/jasprcpp_interface.h"
 #include "r_functionwhitelist.h"
+#include "columnencoder.h"
 
 /* The R Bridge provides functions to the R analyses;
  * i.e. functions to read the data set from shared memory
@@ -73,7 +74,7 @@ extern "C" {
 
 	typedef boost::function<std::string (const std::string &, int progress)> RCallback;
 
-	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction);
+	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder);
 
 
 	void rbridge_setFileNameSource(			boost::function<void(const std::string &, std::string &, std::string &)> source);

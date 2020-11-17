@@ -54,7 +54,7 @@ public:
 	virtual void		init(const Json::Value &)		{ }
 	virtual void		set(const Json::Value& value)	= 0;
 	virtual Json::Value asJSON()		const			= 0;
-	virtual Json::Value	asMetaJSON()	const			{ return Json::nullValue; }
+	virtual Json::Value	asMetaJSON()	const			{ return !_isRCode && !_shouldEncode ? Json::nullValue : defaultMetaEntryContainingColumn(_shouldEncode, _isRCode); }
 	virtual Option		*clone()		const			= 0;
 	virtual void		clear() {}
 
@@ -77,12 +77,19 @@ public:
 	ComputedColumn *	notifyRequestComputedColumnCreation(std::string columnName)			{ return requestComputedColumnCreation(columnName); }
 	void				notifyRequestComputedColumnDestruction(std::string columnName)		{ requestComputedColumnDestruction(columnName); }
 	
-	Json::Value			defaultMetaEntryContainingColumn(bool containsColumn = true) const;
+	Json::Value			defaultMetaEntryContainingColumn(bool shouldEncode, bool rCode)	const;
+	Json::Value			defaultMetaEntryContainingColumn(bool shouldEncode)				const	{ return defaultMetaEntryContainingColumn(shouldEncode,  _isRCode); }
+	Json::Value			defaultMetaEntryContainingColumn()								const	{ return defaultMetaEntryContainingColumn(_shouldEncode, _isRCode); }
+	
+	void		setIsRCode(bool isIt)			{ _isRCode			= isIt;		}
+	void		setShouldEncode(bool doesIt)	{ _shouldEncode	= doesIt;	}
 
 protected:
-	void				notifyChanged(Option* option);
+	void		notifyChanged(Option* option);
 
 	bool		_isTransient;
+	bool		_isRCode		= false,
+				_shouldEncode	= false;
 
 private:
 	int			_signalsBlocked						= 0;

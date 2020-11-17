@@ -406,14 +406,11 @@ void ColumnEncoder::replaceAll(Json::Value & json, const std::map<std::string, s
 	}
 }
 
-void ColumnEncoder::setCurrentNamesFromOptionsMeta(const std::string & optionsStr)
+void ColumnEncoder::setCurrentNamesFromOptionsMeta(const Json::Value & options)
 {
-	Json::Value options;
-	Json::Reader().parse(optionsStr, options);
-
 	std::vector<std::string> namesFound;
 
-	if(options.isMember(".meta"))
+	if(!options.isNull() && options.isMember(".meta"))
 		collectExtraEncodingsFromMetaJson(options[".meta"], namesFound);
 
 	setCurrentNames(namesFound);
@@ -431,14 +428,15 @@ void ColumnEncoder::collectExtraEncodingsFromMetaJson(const Json::Value & json, 
 	case Json::objectValue:
 		if(json.isMember("encodeThis"))
 		{
-			if(json["encodeThis"].isString())		namesCollected.push_back(json["encodeThis"].asString());
+			if(json["encodeThis"].isString())		
+				namesCollected.push_back(json["encodeThis"].asString());
 			else if(json["encodeThis"].isArray())
 				for(const Json::Value & enc : json["encodeThis"])
 					namesCollected.push_back(enc.asString());
 		}
 		else
 			for(const std::string & optionName : json.getMemberNames())
-			collectExtraEncodingsFromMetaJson(json[optionName], namesCollected);
+				collectExtraEncodingsFromMetaJson(json[optionName], namesCollected);
 		return;
 
 	default:
