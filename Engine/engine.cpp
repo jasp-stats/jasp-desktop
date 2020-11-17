@@ -519,14 +519,10 @@ void Engine::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & me
 				_encodeColumnNamesinOptions(options[i], meta[i]);
 		
 		else if(isRCode)
-		{
 			for(size_t i=0; i<options.size(); i++)
 				if(options[i].isString())
 					options[i] = ColumnEncoder::columnEncoder()->encodeRScript(options[i].asString());
-		}
-		else if(encodePlease)
-			ColumnEncoder::columnEncoder()->encodeJson(options, false);
-		
+	
 		return;
 
 	case Json::objectValue:
