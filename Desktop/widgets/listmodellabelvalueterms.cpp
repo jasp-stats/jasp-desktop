@@ -92,17 +92,16 @@ int ListModelLabelValueTerms::getIndexOfValue(const QString &value)
 void ListModelLabelValueTerms::setLabelValues(const JASPListControl::LabelValueMap &labelvalues)
 {
 	_valueToLabelMap.clear();
-	_labelToValueMap = labelvalues;
+	_labelToValueMap.clear();
 	_terms.clear();
 
-	QMapIterator<QString, QString> it(labelvalues);
-	while (it.hasNext())
+	for (const auto& labelValue :labelvalues)
 	{
-		it.next();
-		const QString& label = it.key();
-		const QString& value = it.value();
+		const QString& label = labelValue.first;
+		const QString& value = labelValue.second;
 		_terms.add(label);
 		_valueToLabelMap[value] = label;
+		_labelToValueMap[label] = value;
 	}
 }
 

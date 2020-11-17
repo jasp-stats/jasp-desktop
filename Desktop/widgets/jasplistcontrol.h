@@ -42,7 +42,7 @@ class JASPListControl : public JASPControl
 	Q_PROPERTY( QString			optionKey	READ optionKey		WRITE setOptionKey							)
 
 public:
-	typedef QMap<QString, QString> LabelValueMap;
+	typedef QVector<std::pair<QString, QString> > LabelValueMap;
 	struct SourceType
 	{
 		struct ConditionVariable

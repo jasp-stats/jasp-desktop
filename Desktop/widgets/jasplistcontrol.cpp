@@ -130,7 +130,7 @@ JASPListControl::LabelValueMap JASPListControl::_readValues(const QVariant& valu
 		for (int i = 1; i <= count; i++)
 		{
 			QString number = QString::number(i);
-			result[number] = number;
+			result.push_back(std::make_pair(number, number));
 		}
 	}
 	else
@@ -150,13 +150,13 @@ JASPListControl::LabelValueMap JASPListControl::_readValues(const QVariant& valu
 				if (labelValuePair.isEmpty())
 				{
 					QString value = itemVariant.toString();
-					result[value] = value;
+					result.push_back(std::make_pair(value, value));
 				}
 				else
 				{
 					QString label = labelValuePair[textRole].toString();
 					QString value = labelValuePair[valueRole].toString();
-					result[label] = value;
+					result.push_back(std::make_pair(label, value));
 				}
 			}
 		}

@@ -105,7 +105,7 @@ void ComboBoxBase::_setLabelValues()
 			{
 				QString label = term.asQString();
 				QString value = labelValueSourceModel ? labelValueSourceModel->getValue(label) : label;
-				values[label] = value;
+				values.push_back(std::make_pair(label, value));
 			}
 		}
 	}
