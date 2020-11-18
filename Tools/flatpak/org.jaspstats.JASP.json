@@ -1,8 +1,10 @@
 {
 	"app-id":			"org.jaspstats.JASP",
 	"runtime": 			"org.kde.Platform",
-	"runtime-version": 		"5.12",
+	"runtime-version":	"5.15",
 	"sdk": 				"org.kde.Sdk",
+	"base":				"io.qt.qtwebengine.BaseApp",
+	"base-version":		"5.15",
 	"command": 			"org.jaspstats.JASP",
 	"finish-args": [
 		"--socket=x11",
@@ -34,17 +36,17 @@
 	],
 	"modules":[	
 		{ 
-			"name": "boost",
-			"buildsystem": "simple",
+			"name": 		"boost",
+			"buildsystem": 	"simple",
 			"build-commands":[
 				"./bootstrap.sh --with-libraries=filesystem,system",
 				"./b2 -j${FLATPAK_BUILDER_N_JOBS} install --prefix=/app" 
 			],
 			"sources":[
 				{
-					"type": "archive",
-					"url": "https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz",
-					"sha256": "96b34f7468f26a141f6020efb813f1a2f3dfb9797ecf76a7d7cbd843cc95f5bd"
+					"type": 	"archive",
+					"url": 		"https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz",
+					"sha256": 	"96b34f7468f26a141f6020efb813f1a2f3dfb9797ecf76a7d7cbd843cc95f5bd"
 				}
 			]
 		},
@@ -62,8 +64,8 @@
 			"sources": [
 				{
 					"type":   "archive",
-					"url":    "http://cran.r-project.org/src/base/R-3/R-3.6.1.tar.gz",
-					"sha256": "5baa9ebd3e71acecdcc3da31d9042fb174d55a42829f8315f2457080978b1389"
+					"url":    "http://cran.r-project.org/src/base/R-3/R-3.6.3.tar.gz",
+					"sha256": "89302990d8e8add536e12125ec591d6951022cf8475861b3690bc8bf1cefaa8f"
 				}
 			]
 		},	
@@ -104,7 +106,7 @@
 			[
 				{
 					"type":		"git",
-					"tag":		"v0.13.0.0_rc0_flathub_fix0",
+					"branch":	"development",
 					"url": 		"https://github.com/jasp-stats/jasp-desktop"
 				},
 				{

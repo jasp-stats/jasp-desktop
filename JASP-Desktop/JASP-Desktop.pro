@@ -1,5 +1,7 @@
-QT      += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
+QT      += webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
+
+!exists(/app/lib/*) { QT += webengine }
 
 GENERATE_LANGUAGE_FILES = false
 
@@ -31,7 +33,9 @@ DESTDIR = ..
 
 linux {
   exists(/app/lib/*) {
-      TARGET = org.jaspstats.JASP
+      TARGET       = org.jaspstats.JASP
+	  INCLUDEPATH += /app/include/QtWebEngine /app/include/QtWebEngineCore #For working with io.qt.qtwebengine.BaseApp
+	  LIBS        += -L/app/lib -lQt5WebEngine -lQt5WebEngineCore
   } else {
       TARGET = jasp
 }} else { #not linux

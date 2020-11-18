@@ -1,4 +1,4 @@
-QT -= gui core
+QT =
 
 include(../JASP.pri)
 

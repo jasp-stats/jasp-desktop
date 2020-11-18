@@ -35,6 +35,16 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+		<release version="0.14.1.1" date="2020-11-17">
+					<description>
+						New release 0.14.1
+
+						Because the previous release was actually 0.14 but the number given was 0.14.1 this version is now 0.14.1.1.
+						It corresponds to 0.14.1 on win and mac though.
+
+						Some bugfixes and upgraded to qt 5.15
+			</description>
+		</release>
 		<release version="0.14.1" date="2020-10-14">
 					<description>
 						New release 0.14

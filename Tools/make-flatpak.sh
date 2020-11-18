@@ -58,6 +58,6 @@ flatpak-builder --install-deps-from=flathub --gpg-sign=528338C233D5B3D8 --force-
 #echo "Starting flatpak builder x86"
 #flatpak-builder --arch=i386 --install-deps-from=flathub --gpg-sign=528338C233D5B3D8 --force-clean --ccache --repo=jasp-repo jasp-build org.jaspstats.JASP.json
 
-echo "Update Repository"
-flatpak build-update-repo jasp-repo --gpg-sign=528338C233D5B3D8 --generate-static-deltas
+#echo "Update Repository"
+#flatpak build-update-repo jasp-repo --gpg-sign=528338C233D5B3D8 --generate-static-deltas
 
