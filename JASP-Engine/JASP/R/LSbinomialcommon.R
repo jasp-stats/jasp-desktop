@@ -594,20 +594,18 @@
 }
 .marginalCustomBinomialLS   <- function(density, spikes, lCI, uCI, densityDiscrete = FALSE){
   
-  if (!is.null(density))
-    if (!densityDiscrete)density$y <- density$y/nrow(density)    
-    else
-      density <- data.frame("y" = NULL, "x" = NULL)
-    
-    if (length(spikes) != 0){
-      for(i in 1:length(spikes)){
-        density <- rbind(density[density$x <= spikes[[i]]$x,], spikes[[i]], density[spikes[[i]]$x < density$x,])
-      }
-    }
-    
-    coverage <- sum(density$y[density$x >= lCI & density$x <= uCI])
-    
-    return(cbind.data.frame(xStart = lCI, xEnd = uCI, g = "custom", coverage = coverage, parameter = "theta"))
+  if (!is.null(density) && !densityDiscrete)
+      density$y <- density$y/nrow(density)    
+  if (is.null(density))
+    density <- data.frame("y" = NULL, "x" = NULL)
+  
+  for(i in seq_along(spikes)) {
+    density <- rbind(density[density$x <= spikes[[i]]$x,], spikes[[i]], density[spikes[[i]]$x < density$x,])
+  }
+  
+  coverage <- sum(density$y[density$x >= lCI & density$x <= uCI])
+  
+  return(cbind.data.frame(xStart = lCI, xEnd = uCI, g = "custom", coverage = coverage, parameter = "theta"))
 }
 .marginalSupportBinomialLS  <- function(data, priors, postDensity, postSpikes, BF){
   
@@ -1054,4 +1052,3 @@
                                    "dataSequenceInput",    "keySuccessSeq", "keyFailureSeq",  # for Sequence
                                    "selectedVariable", "keySuccessVar", "keyFailureVar",  # for Variable
                                    "priors") 
-
