@@ -59,7 +59,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
 
   plot2draw <- decodeplot(plot)
 
-  if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable"))) {
+  if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable", "gTree"))) {
 
     # TODO: ggsave adds very little when we use a function as device...
     ggplot2::ggsave(
