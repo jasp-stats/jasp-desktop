@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-10-14 11:12\n"
 "PO-Revision-Date: 2020-11-23 10:29+0000\n"
-"Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "de/>\n"
 "Language: de\n"
@@ -4216,8 +4216,8 @@ msgstr "<em>Hinweis.</em>"
 
 msgid "No items to show, please add a results description or set init to true"
 msgstr ""
-"Keine Einträge anzeigbar, bitte ergänze einer Ergebnisbeschreibung oder "
-"setze die Ausgangslage (init) auf \"wahr\"."
+"Keine Einträge anzeigbar, bitte ergänze eine Ergebnisbeschreibung oder setze "
+"die Initialisierung (init) auf 'wahr'"
 
 msgid "None of the result items has show set to 'true', cannot skip init phase"
 msgstr ""
@@ -6205,7 +6205,7 @@ msgid "Could not compute the posteriors"
 msgstr "Konnte die Posterior nicht berechnen"
 
 msgid "Bayesian Correlation Pairwise Plots"
-msgstr ""
+msgstr "Bayessche Korrelation Paarweise Diagramme"
 
 msgid "max %s"
 msgstr "max %s"
@@ -6572,6 +6572,8 @@ msgstr ""
 
 msgid "The multivariate potential scale reduction factor is estimated at %.3f."
 msgstr ""
+"Der multivariate potentielle Skalierungsreduktionsfaktor wird geschätzt auf %"
+".3f."
 
 msgid ""
 "Rhat statistic cannot be computed for only one chain. It is strongly "
@@ -6588,7 +6590,7 @@ msgid "Marginal Histogram"
 msgstr "Randhistogramm"
 
 msgid "Trace Plots"
-msgstr "Verlaufs-Plots"
+msgstr "Verlaufsdiagramme"
 
 msgid "Autocorrelation Plots"
 msgstr "Autokorrelationsplots"
@@ -7079,7 +7081,7 @@ msgid "Coefficient (%s)"
 msgstr "Koeffizienten (%s)"
 
 msgid "Variable Trace Plot"
-msgstr "Variablen-Verlaufs-Abbildung"
+msgstr "Variablen-Verlaufsdiagramm"
 
 msgid "Lambda Evaluation Plot"
 msgstr "Lambda-Evaluations-Abbildung"
@@ -7937,7 +7939,7 @@ msgid "Factors"
 msgstr "Faktoren"
 
 msgid "Convergence Traceplot"
-msgstr ""
+msgstr "Konvergenz-Verlaufsdiagramm"
 
 msgid "Iterations"
 msgstr "Iterationen"
@@ -8188,7 +8190,7 @@ msgstr ""
 "Modell %1$i existiert nicht. Wähle eines der Modelle zwischen 1 und %2$i aus."
 
 msgid "Trace plots"
-msgstr "Verlaufs-Abbildungen"
+msgstr "Verlaufsdiagramme"
 
 msgid "Average autocorrelations"
 msgstr "Mittlere Autokorrelation"
