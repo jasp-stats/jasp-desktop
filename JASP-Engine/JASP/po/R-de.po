@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-10-14 11:12\n"
-"PO-Revision-Date: 2020-11-22 10:50+0000\n"
+"PO-Revision-Date: 2020-11-23 10:29+0000\n"
 "Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "de/>\n"
@@ -4261,31 +4261,34 @@ msgid "Could not figure out the container structure in"
 msgstr "Konnte die Container-Struktur nicht ermitteln"
 
 msgid "Could not find meta description for current plot"
-msgstr ""
+msgstr "Konnte die Meta-Beschreibung für das aktuelle Diagramm nicht finden"
 
 msgid "Could not find meta description for current table"
-msgstr ""
+msgstr "Konnte die Meta-Beschreibung für die aktuelle Tabelle nicht finden"
 
 msgid "Could not locate 'name' in custom table meta"
 msgstr ""
+"Konnte 'name' nicht in der benutzerdefinierten Tabellen-Metadaten finden"
 
 msgid ""
 "Could not find any data in the table, cannot fetch items from the results "
 "description"
 msgstr ""
+"Konnte keine Daten in der Tabelle finden, konnte keine Elemente von der "
+"Ergebnisbeschreibung abrufen"
 
 msgid ""
 "Could not locate any of the columns specified in the results description"
-msgstr ""
+msgstr "Konnte keine der angegebenen Spalten in der Ergebnisbeschreibung finden"
 
 msgid "expecting output to be a data.frame"
-msgstr ""
+msgstr "erwarte vom Ergebnis, dass es ein data.frame ist"
 
 msgid "no columns found to be imported"
-msgstr ""
+msgstr "keine Spalten zum Importieren gefunden"
 
 msgid "expecting the JASP options to be a named list"
-msgstr ""
+msgstr "erwarte von den JASP-Optionen, dass sie eine benannte Liste ist"
 
 msgid ""
 "Trying to find dataset columns to read, but it appears some options don't "
@@ -4301,7 +4304,7 @@ msgid "'"
 msgstr "'"
 
 msgid "Invalid type supplied to .fromRCPP, expected character"
-msgstr ""
+msgstr "ungültiger Typ für .fromRCPP, habe einen Buchstaben erwartet"
 
 msgid "Unknown RCPP object"
 msgstr "Unbekanntes RCPP-Objekt"
@@ -4313,56 +4316,62 @@ msgid "in environment (.fromRCPP)"
 msgstr "in Umgebung (.fromRCPP)"
 
 msgid "Provide a numeric value to the progress updater"
-msgstr ""
+msgstr "Übergib der Fortschrittsanzeige eine Zahl"
 
 msgid "could not clean value"
-msgstr ""
+msgstr "konnte den Wert nicht bereinigen"
 
 msgid "Missing required replacement(s): \""
-msgstr ""
+msgstr "Es fehlen benötigte Ersatzwerte: \""
 
 msgid "\""
 msgstr "\""
 
 msgid "Expecting row to be a numeric index"
-msgstr ""
+msgstr "für die Zeile wurde eine Zeilennummer / Index erwartet"
 
 msgid "Expecting cols to be a (vector of) character name(s)"
-msgstr ""
+msgstr "für die Spalten werden Namen aus Buchstaben erwartet"
 
 msgid "None of the gui options ("
-msgstr ""
+msgstr "Keine der Optionen der Benutzeroberfläche ("
 
 msgid ") is in the options list."
-msgstr ""
+msgstr ") befindet sich inder Options-Liste."
 
 msgid "Format incorrectly specified"
-msgstr ""
+msgstr "Format falsch angegeben"
 
 msgid ""
 "Loading plot snapshot from a different session with possible side effects or "
 "errors."
 msgstr ""
+"Lade Schnappschuss des Diagramms von einer anderen Sitzung mit potenziellen "
+"Nebenwirkungen oder Fehlern."
 
 msgid "Invalid value provided to 'ticks', expecting positive integer"
-msgstr ""
+msgstr "Ungültiger Wert für 'ticks' angegeben, erwarte positive Ganzzahl"
 
 msgid "The value provided to 'callback' does not appear to be a function"
 msgstr ""
+"Der Wert, der 'callback' übergeben wurde, scheint keine Funktion zu sein"
 
 msgid ""
 "Invalid value provided to 'skim', expecting numeric value in the range of "
 "0-99"
 msgstr ""
+"Ungültiger Wert für 'skim' angegeben, erwarte eine Zahl zwischen 0 und 99"
 
 msgid "Object provided in 'progressbar' is not of class JASP progressbar"
 msgstr ""
+"Objekt gegeben in 'progressbar' hat nicht die Art eines JASP "
+"Fortschrittsbalkens"
 
 msgid "Object provided in 'cluster' is not of class cluster"
-msgstr ""
+msgstr "Objekt gegeben in 'cluster' ist nicht von der Art eines Clusters"
 
 msgid "Cancelled by callback"
-msgstr ""
+msgstr "Abgebrochen durch Rückruf"
 
 msgid "Infinity found in repeated measures cells."
 msgstr "Unendlichkeit gefunden in Messwiederholung-Zellen."
@@ -4371,13 +4380,13 @@ msgid "Number of observations is < %s in repeated measures cells"
 msgstr "Anzahl Beobachtungen ist < %s in Messwiederholungs-Zellen"
 
 msgid "The variance in the repeated measures cells is 0."
-msgstr ""
+msgstr "Die Varianz in den Zellen der Messwiederholung ist 0."
 
 msgid "Duplicate variables encountered in repeated measures cells, %s"
-msgstr ""
+msgstr "Doppelte Variablen in Zellen der Messwiederholung entdeckt, %s"
 
 msgid "Duplicate variables encountered in %s"
-msgstr ""
+msgstr "Doppelte Variablen entdeckt in %s"
 
 msgid "Bayes factor is undefined -- all effects are specified as nuisance."
 msgstr ""
@@ -4423,7 +4432,7 @@ msgid "P(incl)"
 msgstr "P(inkl)"
 
 msgid "P(excl)"
-msgstr ""
+msgstr "P(excl)"
 
 msgid "P(incl|data)"
 msgstr "P(inkl|Daten)"
@@ -4508,10 +4517,10 @@ msgid ""
 msgstr ""
 
 msgid "Prior Odds"
-msgstr ""
+msgstr "Vorherige Chancen"
 
 msgid "Posterior Odds"
-msgstr ""
+msgstr "Anschließende Chancen"
 
 msgid "Descriptives - %s"
 msgstr "Deskriptiv - %s"
@@ -4541,15 +4550,17 @@ msgstr ""
 "Anomalien oder erhöhe den Umfang der Posterior-Stichprobe."
 
 msgid "The following error occured in BayesFactor::enumerateGeneralModels: %s"
-msgstr ""
+msgstr "Der folgende Fehler trat auf in BayesFactor::enumerateGeneralModels: %s"
 
 msgid "Single Model Inference"
-msgstr ""
+msgstr "Einzelmodell-Schluss"
 
 msgid ""
 "Error in single model inference:\n"
 "%s"
 msgstr ""
+"Fehler im Einzelmodell-Schluss:\n"
+"%s"
 
 msgid "Single Model Posterior Summary"
 msgstr ""
@@ -4561,7 +4572,7 @@ msgid "Posterior R%s"
 msgstr "Posterior R%s"
 
 msgid "Single Model R%s"
-msgstr ""
+msgstr "Einzelmodell R%s"
 
 msgid ""
 "The following problem(s) occurred while running the analysis:"
@@ -4943,10 +4954,10 @@ msgid "Trees"
 msgstr "Bäume"
 
 msgid "Predictors per split"
-msgstr ""
+msgstr "Vorhersagevariablen (UVs) pro Split"
 
 msgid "Shrinkage"
-msgstr ""
+msgstr "Schrumpfung"
 
 msgid "n(Train)"
 msgstr "n(Train)"
@@ -4971,7 +4982,7 @@ msgstr "Bitte gib eine Zielvariable und mindestens %i Prädiktorvariable(n) an."
 
 msgid ""
 "The model is optimized with respect to the <i>validation set accuracy</i>."
-msgstr ""
+msgstr "Das Modell ist optimiert auf <i>Prüfung der Exaktheit</i>."
 
 msgid ""
 "The optimum number of nearest neighbors is the maximum number. You might "
@@ -4990,7 +5001,7 @@ msgid "MVE"
 msgstr "MVE"
 
 msgid "The model is optimized with respect to the <i>out-of-bag accuracy</i>."
-msgstr ""
+msgstr "Das Modell ist optimiert auf <i>\"out of the box\" Exaktheit</i>."
 
 msgid "Confusion Matrix"
 msgstr "Konfusionsmatrix"
@@ -4999,12 +5010,15 @@ msgid "Predicted"
 msgstr "Vorhergesagt"
 
 msgid "Decision Boundary Matrix"
-msgstr ""
+msgstr "Matrix der Entscheidungsgrenzen"
 
 msgid ""
 "Cannot create matrix: not enough numeric variables remain after removing "
 "factor variables. You need at least 2 numeric variables."
 msgstr ""
+"Konnte die Matrix nicht erstellen: Nicht genug numerische Variablen übrig "
+"nachdem Faktorvariablen entfernt wurden. Du benötigst mindestens 2 "
+"numerische Variablen."
 
 msgid "ROC Curves Plot"
 msgstr "ROC-Kurven-Grafik"
@@ -5025,7 +5039,7 @@ msgid "Andrews curves require a minimum of 2 predictor variables."
 msgstr "Andrews Kurve benötigt ein Minimum von 2 Prädiktorvariablen."
 
 msgid "Box's M-test for Homogeneity of Covariance Matrices"
-msgstr ""
+msgstr "Box's M-test auf die Homogenität der Kovarianz-Matritzen"
 
 msgid "Evaluation Metrics"
 msgstr "Evaluationsmetriken"
