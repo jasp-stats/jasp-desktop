@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
 "POT-Creation-Date: 2020-10-14 11:12\n"
-"PO-Revision-Date: 2020-11-20 21:28+0000\n"
-"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
+"PO-Revision-Date: 2020-11-22 10:50+0000\n"
+"Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-engine/"
 "de/>\n"
 "Language: de\n"
@@ -2683,10 +2683,10 @@ msgstr ""
 "versucht, aber ist gescheitert."
 
 msgid "%1$s record sampling"
-msgstr ""
+msgstr "%1$s aufgezeichnete Stichprobenziehung"
 
 msgid "%1$s monetary unit sampling"
-msgstr ""
+msgstr "%1$s monetäre Stichprobenziehung"
 
 msgid ""
 "From the population of <b>%1$s</b> observations, <b>%2$s</b> observations "
@@ -3215,7 +3215,7 @@ msgstr ""
 "<b>Tabelle %i.</b> Deskriptive Statistiken Prior und erwartetem Posterior"
 
 msgid "Functional form"
-msgstr ""
+msgstr "Form der Funktion"
 
 msgid "Support %1$s"
 msgstr "Träger %1$s"
@@ -3224,7 +3224,7 @@ msgid "Evidence ratio %1$s"
 msgstr "Evidenzverhältnis %1$s"
 
 msgid "%1$s%% Credible bound"
-msgstr ""
+msgstr "%1$s%% Glaubwürdigkeitsgrenze"
 
 msgid "Expected posterior"
 msgstr "Erwarteter Posterior"
@@ -3261,9 +3261,11 @@ msgid ""
 "%1$s%% Prior \n"
 "credible region"
 msgstr ""
+"%1$s%% Prior\n"
+"Glaubwürdigkeitsbereich"
 
 msgid "%1$s%% Prior credible region"
-msgstr ""
+msgstr "%1$s%% Prior Glaubwürdigkeitsbereich"
 
 msgid "Support"
 msgstr "Träger"
@@ -3303,6 +3305,8 @@ msgid ""
 "%1$s%% Posterior \n"
 "credible region"
 msgstr ""
+"%1$s%% Posterior \n"
+"Glaubwürdigkeitsbereich"
 
 msgid "beta-binomial"
 msgstr "Beta-Binomial"
@@ -3337,10 +3341,10 @@ msgid "BF.c"
 msgstr "BF.c"
 
 msgid "PMP a"
-msgstr ""
+msgstr "PMP a"
 
 msgid "PMP b"
-msgstr ""
+msgstr "PMP b"
 
 msgid ""
 "BF.c denotes the Bayes factor of the hypothesis in the row versus its "
@@ -4047,7 +4051,7 @@ msgid "Cook's Distance"
 msgstr "Cooks Distanz"
 
 msgid "Cov. Ratio"
-msgstr ""
+msgstr "Anteil der Kovarianz"
 
 msgid "%s%s<sub>(-i)</sub>"
 msgstr "%s%s<sub>(-i)</sub>"
@@ -4062,10 +4066,10 @@ msgid "Weight"
 msgstr "Gewicht"
 
 msgid "File Drawer Analysis"
-msgstr ""
+msgstr "Analyse des Publikationsbias (Schubladenproblem)"
 
 msgid "Fail-safe N"
-msgstr ""
+msgstr "optimales N"
 
 msgid "Target Significance"
 msgstr "Angestrebte Signifikanz"
@@ -4074,10 +4078,10 @@ msgid "Observed Significance"
 msgstr "Beobachtete Signifikanz"
 
 msgid "Omnibus test of Model Coefficients"
-msgstr ""
+msgstr "Globaler Test der Modellparameter (omnibus test)"
 
 msgid "Test of Residual Heterogeneity"
-msgstr ""
+msgstr "Test auf Residuenheterogenität"
 
 msgid "Log-likelihood"
 msgstr "Log-Likelihood"
@@ -4095,7 +4099,7 @@ msgid "Rank test"
 msgstr "Rangtest"
 
 msgid "Cases marked with %s are influential."
-msgstr ""
+msgstr "Mit %s markierte Fälle haben einen Effekt."
 
 msgid "Forest plot"
 msgstr "Forest-Plot"
@@ -4122,36 +4126,39 @@ msgid "RE Model"
 msgstr "RE-Modell"
 
 msgid "Observed Outcome"
-msgstr ""
+msgstr "Beobachtetes Ergebnis"
 
 msgid "Cannot set 'xlim' automatically. Please set this argument manually."
 msgstr ""
+"'xlim' konnte nicht automatisch gesetzt werden. Bitte setzen Sie es händisch."
 
 msgid "Profile Plot for"
-msgstr ""
+msgstr "Profilplot für"
 
 msgid "Restricted Log-Likelihood"
-msgstr ""
+msgstr "Beschränkte logarithmische Wahrscheinlichkeit"
 
 msgid "Residual Value"
 msgstr "Residualwert"
 
 msgid "Argument 'x' must be an object of class \"rma\"."
-msgstr ""
+msgstr "Argument 'x' muss ein Objekt der Klasse \"rma\" sein."
 
 msgid "Function not applicable to objects of class \"robust.rma\"."
-msgstr ""
+msgstr "Funktion nicht anwendbar für Objekte der Klasse \"robust.rma\"."
 
 msgid "Function not applicable to objects of class \"rma.ls\"."
-msgstr ""
+msgstr "Funktion nicht anwendbar für Objekte der Klasse \"rma.ls\"."
 
 msgid ""
 "Setting 'xlim' and 'zlim' automatically not possible (must set axis limits "
 "manually)."
 msgstr ""
+"Die automatische Einstellung von 'xlim' und 'zlim' war nicht möglich. Bitte "
+"setzen Sie die Achsengrenzen händisch."
 
 msgid "Radial Plot"
-msgstr ""
+msgstr "Polar- / Netzdiagramm"
 
 msgid "Stopped because k = 1."
 msgstr "Gestoppt, weil k = 1."
@@ -4209,6 +4216,8 @@ msgstr "<em>Hinweis.</em>"
 
 msgid "No items to show, please add a results description or set init to true"
 msgstr ""
+"Keine Einträge anzeigbar, bitte ergänze einer Ergebnisbeschreibung oder "
+"setze die Ausgangslage (init) auf \"wahr\"."
 
 msgid "None of the result items has show set to 'true', cannot skip init phase"
 msgstr ""
@@ -4228,10 +4237,10 @@ msgid ")  provided in results description"
 msgstr ") angegeben in der Beschreibung der Ergebnisse"
 
 msgid "Could not create meta for"
-msgstr ""
+msgstr "Konnte meta nicht erstellen für"
 
 msgid "at depth"
-msgstr ""
+msgstr "bei der Tiefe"
 
 msgid "(class:"
 msgstr "(Klasse:"
@@ -4240,16 +4249,16 @@ msgid ", names:"
 msgstr ", Namen:"
 
 msgid ", class children:"
-msgstr ""
+msgstr ", Untergruppen:"
 
 msgid ", names children:"
-msgstr ""
+msgstr ", Namen der Untergruppen:"
 
 msgid ")"
 msgstr ")"
 
 msgid "Could not figure out the container structure in"
-msgstr ""
+msgstr "Konnte die Container-Struktur nicht ermitteln"
 
 msgid "Could not find meta description for current plot"
 msgstr ""
@@ -6249,10 +6258,10 @@ msgid "Std. Error of Skewness"
 msgstr "Std.-Fehler Schiefe"
 
 msgid "Kurtosis"
-msgstr "Kurtosis"
+msgstr "Wölbung / Kurtosis"
 
 msgid "Std. Error of Kurtosis"
-msgstr "Std.-Fehler Kurtosis"
+msgstr "Std.-Fehler der Wölbung"
 
 msgid "P-value of Shapiro-Wilk"
 msgstr "P-Wert Shapiro-Wilk"
@@ -6274,7 +6283,7 @@ msgstr ""
 "Menge ist %s."
 
 msgid "Not all values are available for <i>Nominal Text</i> variables"
-msgstr ""
+msgstr "Nicht alle Maße sind verfügbar bei <i>nominalen Text</i> Variablen."
 
 msgid "More than one mode exists, only the first is reported"
 msgstr "Es gibt mehr als einen Modus, nur der erste ist berichtet"
@@ -8447,16 +8456,16 @@ msgid "mi"
 msgstr ""
 
 msgid "epc"
-msgstr ""
+msgstr "epc"
 
 msgid "sepc (lv)"
-msgstr ""
+msgstr "sepc (lv)"
 
 msgid "sepc (all)"
 msgstr ""
 
 msgid "sepc (nox)"
-msgstr ""
+msgstr "sepc (all)"
 
 msgid "Covariances (lower triangle) / correlations (upper triangle)"
 msgstr "Kovarianzen (unteres Dreieck) / Korrelationen (oberes Dreieck)"
@@ -8867,7 +8876,10 @@ msgid "The following variable is used as a random effects grouping factor: %s."
 msgid_plural ""
 "The following variables are used as random effects grouping factors: %s."
 msgstr[0] ""
+"Die folgenden Variable wird genutzt, um zufällige Effekte zu gruppieren: %s."
 msgstr[1] ""
+"Die folgenden Variablen werden genutzt, um zufällige Effekte zu gruppieren: "
+"%s."
 
 msgid ""
 "All random slopes involving '%s' have been removed for the random effects "
