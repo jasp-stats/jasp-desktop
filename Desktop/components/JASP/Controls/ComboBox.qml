@@ -16,21 +16,11 @@ ComboBoxBase
 	property alias	control:				control
 	property alias	controlLabel:			controlLabel
 	property alias	label:					controlLabel.text
-	// The 4 following properties should be set only from the backend. Unfortunately they cannot be set readonly
-	property string currentText:			""	// This is the current label displayed. currentText is the official name for this property in a ComboBox in QML
 	property alias	currentLabel:			comboBox.currentText
-	property string currentValue:			"" // This is the current value (what is used by R)
 	property alias	value:					comboBox.currentText
-	property string	startValue:				""
-	property string currentColumnType:		"" // When the values come from column names, this property gives the column type of the current selected column
 	property alias	currentIndex:			control.currentIndex
-	property alias	indexDefaultValue:		control.currentIndex
 	property alias	fieldWidth:				control.modelWidth
-	property string	textRole:				"label"
-	property string	valueRole:				"value"
 	property bool	showVariableTypeIcon:	false
-	property bool	addEmptyValue:			false
-	property string	placeholderText:		qsTr("<no choice>")
 	property var	enabledOptions:			[]
 	property bool	setLabelAbove:			false
 	property int	controlMinWidth:		0
@@ -111,13 +101,11 @@ ComboBoxBase
 
 						width:			modelWidth + extraWidth
 						height:			jaspTheme.comboBoxHeight
-						textRole:		comboBox.textRole
 						font:			jaspTheme.font
 		property int	modelWidth:		30 * preferencesModel.uiScale
 		property int	extraWidth:		5 * padding + dropdownIcon.width
 		property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex === 0
 		property bool	showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
-
 
 		TextMetrics
 		{
@@ -151,10 +139,10 @@ ComboBoxBase
 			{
 				anchors.left:				contentIcon.visible ? contentIcon.right : parent.left
 				anchors.leftMargin:			4 * preferencesModel.uiScale
-				text:						control.isEmptyValue ? comboBox.placeholderText : comboBox.currentText
-				font:						control.font
 				anchors.verticalCenter:		parent.verticalCenter
 				anchors.horizontalCenter:	control.showEmptyValueStyle ? parent.horizontalCenter : undefined
+				text:						comboBox.currentText
+				font:						control.font
 				color:						(!enabled || control.showEmptyValueStyle) ? jaspTheme.grayDarker : jaspTheme.black
 			}
 		}
@@ -252,7 +240,7 @@ ComboBoxBase
 				id:								itemRectangle
 				anchors.fill:					parent
 				anchors.rightMargin:			scrollBar.visible ? scrollBar.width + 2 : 0
-				color:							comboBox.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : jaspTheme.controlBackgroundColor)
+				color:							control.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : jaspTheme.controlBackgroundColor)
 
 				property bool isEmptyValue:		comboBox.addEmptyValue && index === 0
 				property bool showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
@@ -276,7 +264,7 @@ ComboBoxBase
 					x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
 					text:						itemRectangle.isEmptyValue ? comboBox.placeholderText : (model && model.name ? model.name : "")
 					font:						jaspTheme.font
-					color:						itemRectangle.showEmptyValueStyle || !enabled ? jaspTheme.grayDarker : (comboBox.currentIndex === index ? jaspTheme.white : jaspTheme.black)
+					color:						itemRectangle.showEmptyValueStyle || !enabled ? jaspTheme.grayDarker : (control.currentIndex === index ? jaspTheme.white : jaspTheme.black)
 					anchors.verticalCenter:		parent.verticalCenter
 					anchors.horizontalCenter:	itemRectangle.showEmptyValueStyle ? parent.horizontalCenter : undefined
 				}

@@ -54,7 +54,7 @@
 #include "widgets/sliderbase.h"
 #include "widgets/expanderbuttonbase.h"
 #include "widgets/variableslistbase.h"
-#include "widgets/repeatedmeasuresfoctorslistbase.h"
+#include "widgets/repeatedmeasuresfactorslistbase.h"
 #include "widgets/tableviewbase.h"
 #include "widgets/radiobuttonbase.h"
 #include "widgets/radiobuttonsgroupbase.h"
@@ -183,7 +183,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<ComponentsListBase>							("JASP",		1, 0, "ComponentsListBase"				);
 	qmlRegisterType<FactorsFormBase>							("JASP",		1, 0, "FactorsFormBase"					);
 	qmlRegisterType<InputListBase>								("JASP",		1, 0, "InputListBase"					);
-	qmlRegisterType<RepeatedMeasuresFoctorsListBase>			("JASP",		1, 0, "RepeatedMeasuresFoctorsListBase"	);
+	qmlRegisterType<RepeatedMeasuresFactorsListBase>			("JASP",		1, 0, "RepeatedMeasuresFoctorsListBase"	);
 	qmlRegisterType<VariablesListBase>							("JASP",		1, 0, "VariablesListBase"				);
 	qmlRegisterType<TableViewBase>								("JASP",		1, 0, "TableViewBase"					);
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
@@ -193,8 +193,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis"						);
 	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator"						);
 	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle"						);
-	qmlRegisterType<Modules::RequiredPackage>					("JASP.Module", 1, 0, "Package"							);
-	qmlRegisterType<Modules::RequiredModule>					("JASP.Module", 1, 0, "Module"							);
 	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",				"Superclass for menu entries, shouldn't be instantiated manually");
 	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",			"Can only be instantiated by JASP");
 	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",	"Superclass for Description info, shouldn't be instantiated manually");

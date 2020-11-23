@@ -29,35 +29,75 @@
 class ComboBoxBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
-	
+
+	Q_PROPERTY( QString		currentText			READ currentText		WRITE setCurrentText			NOTIFY currentTextChanged			)
+	Q_PROPERTY( QString		currentValue		READ currentValue		WRITE setCurrentValue			NOTIFY currentValueChanged			)
+	Q_PROPERTY( QString		startValue			READ startValue			WRITE setStartValue				NOTIFY startValueChanged			)
+	Q_PROPERTY( QString		currentColumnType	READ currentColumnType	WRITE setCurrentColumnType		NOTIFY currentColumnTypeChanged		)
+	Q_PROPERTY( QString		textRole			READ textRole			WRITE setTextRole				NOTIFY textRoleChanged				)
+	Q_PROPERTY( QString		valueRole			READ valueRole			WRITE setValueRole				NOTIFY valueRoleChanged				)
+	Q_PROPERTY( int			indexDefaultValue	READ indexDefaultValue	WRITE setIndexDefaultValue		NOTIFY indexDefaultValueChanged		)
+
 public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
 
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;	
-	bool		isJsonValid(const Json::Value& optionValue) override;
-	Option*		boundTo()									override	{ return _boundTo; }
-	void		setUp()										override;
-	ListModel*	model()								const	override	{ return _model; }
-	void		setUpModel()								override;
+	void				bindTo(Option *option)						override;
+	Option*				createOption()								override;
+	bool				isOptionValid(Option* option)				override;
+	bool				isJsonValid(const Json::Value& optionValue) override;
+	Option*				boundTo()									override	{ return _boundTo;				}
+	void				setUp()										override;
+	ListModel*			model()								const	override	{ return _model;				}
+	void				setUpModel()								override;
+
+	void				setLabelValues();
+
+	const QString&		currentText()						const				{ return _currentText;			}
+	const QString&		currentValue()						const				{ return _currentValue;			}
+	const QString&		startValue()						const				{ return _startValue;			}
+	const QString&		currentColumnType()					const				{ return _currentColumnType;	}
+	const QString&		textRole()							const				{ return _textRole;				}
+	const QString&		valueRole()							const				{ return _valueRole;			}
+	int					indexDefaultValue()					const				{ return _indexDefaultValue;	}
+
+signals:
+	void currentTextChanged();
+	void currentValueChanged();
+	void startValueChanged();
+	void currentColumnTypeChanged();
+	void indexDefaultValueChanged();
+	void textRoleChanged();
+	void valueRoleChanged();
 
 protected slots:
 	void termsChangedHandler() override;
 	void comboBoxChangeValueSlot(int index);
 	void languageChangedHandler();
 
+	GENERIC_SET_FUNCTION(CurrentText,		_currentText,		currentTextChanged,			QString	)
+	GENERIC_SET_FUNCTION(CurrentValue,		_currentValue,		currentValueChanged,		QString	)
+	GENERIC_SET_FUNCTION(StartValue,		_startValue,		startValueChanged,			QString	)
+	GENERIC_SET_FUNCTION(CurrentColumnType,	_currentColumnType, currentColumnTypeChanged,	QString	)
+	GENERIC_SET_FUNCTION(IndexDefaultValue,	_indexDefaultValue,	indexDefaultValueChanged,	int		)
+	GENERIC_SET_FUNCTION(TextRole,			_textRole,			textRoleChanged,			QString	)
+	GENERIC_SET_FUNCTION(ValueRole,			_valueRole,			valueRoleChanged,			QString	)
+
 protected:
 	OptionList*					_boundTo				= nullptr;
-	int							_currentIndex			= 0;
-	QString						_currentText;
-	QString						_currentColumnType;
 	ListModelLabelValueTerms*	_model					= nullptr;
+	QString						_currentText,
+								_currentValue,
+								_startValue,
+								_currentColumnType,
+								_textRole				= "label",
+								_valueRole				= "value";
+	int							_indexDefaultValue		= 0;
 
-	void _setLabelValues();
 	void _resetItemWidth();
 	void _resetOptions();
-	void _setCurrentValue(int index, bool setComboBoxIndex = true, bool setOption = true);
+	void _setCurrentValue(int index, bool setOption = true);
+
+
 };
 
 #endif // COMBOBOXBASE_H

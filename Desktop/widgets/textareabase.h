@@ -72,7 +72,7 @@ signals:
 protected:
 
 	BoundControlTextArea*		_boundControl			= nullptr;
-	TextType					_textType				= TextType::Default;
+	TextType					_textType				= TextType::TextTypeDefault;
 	QList<QString>				_separators;
 	
 	ListModelTermsAvailable*	_model					= nullptr;

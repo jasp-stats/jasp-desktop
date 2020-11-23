@@ -24,12 +24,12 @@
 #include "listmodelrepeatedmeasuresfactors.h"
 #include "analysis/options/optionstable.h"
 
-class RepeatedMeasuresFoctorsListBase :  public JASPListControl, public BoundControl
+class RepeatedMeasuresFactorsListBase :  public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 	
 public:
-	RepeatedMeasuresFoctorsListBase(QQuickItem* parent = nullptr);
+	RepeatedMeasuresFactorsListBase(QQuickItem* parent = nullptr);
 
 	ListModel*	model()								const	override { return _factorsModel; }
 	void		setUpModel()								override;

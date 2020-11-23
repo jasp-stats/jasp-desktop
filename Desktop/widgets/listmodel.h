@@ -107,7 +107,7 @@ private:
 			void	_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls);
 
 protected:
-	JASPListControl*					_listView = nullptr;
+	JASPListControl*				_listView = nullptr;
 	QString							_itemType;
 	Terms							_terms;
 	QList<int>						_selectedItems;

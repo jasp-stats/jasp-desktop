@@ -30,13 +30,6 @@ void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControl
 	if (currentSortType() != SortType::None)
 		Sortable::sortItems();
 
-	if (_addEmptyValue && _allSortedTerms.size() > 0 && !_allSortedTerms[0].asQString().isEmpty())
-	{
-		_allSortedTerms.insert(0, QString());
-		_allTerms.insert(0, QString());
-		_terms.add(QString());
-	}
-
 	removeTermsInAssignedList();
 	endResetModel();
 }

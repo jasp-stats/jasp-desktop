@@ -40,7 +40,6 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 		setProperty("ToolTip.delay", JaspTheme::currentTheme()->toolTipDelay());
 		setProperty("ToolTip.tooltip.font", JaspTheme::currentTheme()->font());
 	}*/
-	QQmlProperty(this, "Layout.alignment", qmlContext(this)).write(int(Qt::AlignTop | Qt::AlignLeft));
 
 	connect(this, &JASPControl::titleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::infoChanged,			this, &JASPControl::helpMDChanged);

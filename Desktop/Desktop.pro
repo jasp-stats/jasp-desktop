@@ -458,10 +458,10 @@ HEADERS += \
     widgets/boundcontrolsourcetextarea.h \
     widgets/boundcontrollavaantextarea.h \
     widgets/boundcontroljagstextarea.h \
-    widgets/repeatedmeasuresfoctorslistbase.h \
     widgets/radiobuttonsgroupbase.h \
     widgets/jasplistcontrol.h \
-    widgets/radiobuttonbase.h
+    widgets/radiobuttonbase.h \
+    widgets/repeatedmeasuresfactorslistbase.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -649,10 +649,10 @@ SOURCES += \
     widgets/boundcontrolsourcetextarea.cpp \
     widgets/boundcontrollavaantextarea.cpp \
     widgets/boundcontroljagstextarea.cpp \
-    widgets/repeatedmeasuresfoctorslistbase.cpp \
     widgets/radiobuttonsgroupbase.cpp \
     widgets/jasplistcontrol.cpp \
-    widgets/radiobuttonbase.cpp
+    widgets/radiobuttonbase.cpp \
+    widgets/repeatedmeasuresfactorslistbase.cpp
 
 RESOURCES += \
     html/html.qrc \

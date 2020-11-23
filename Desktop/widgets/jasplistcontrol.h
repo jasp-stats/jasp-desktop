@@ -35,11 +35,13 @@ class JASPListControl : public JASPControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( ListModel*		model		READ model								NOTIFY modelChanged		)
-	Q_PROPERTY( QVariant		source		READ source			WRITE setSource		NOTIFY sourceChanged	)
-	Q_PROPERTY( QVariant		values		READ values			WRITE setValues		NOTIFY sourceChanged	)
-	Q_PROPERTY( int				count		READ count								NOTIFY countChanged		)
-	Q_PROPERTY( QString			optionKey	READ optionKey		WRITE setOptionKey							)
+	Q_PROPERTY( ListModel*		model				READ model											NOTIFY modelChanged				)
+	Q_PROPERTY( QVariant		source				READ source				WRITE setSource				NOTIFY sourceChanged			)
+	Q_PROPERTY( QVariant		values				READ values				WRITE setValues				NOTIFY sourceChanged			)
+	Q_PROPERTY( int				count				READ count											NOTIFY countChanged				)
+	Q_PROPERTY( QString			optionKey			READ optionKey			WRITE setOptionKey											)
+	Q_PROPERTY( bool			addEmptyValue		READ addEmptyValue		WRITE setAddEmptyValue		NOTIFY addEmptyValueChanged		)
+	Q_PROPERTY( QString			placeholderText		READ placeholderText	WRITE setPlaceHolderText	NOTIFY placeHolderTextChanged	)
 
 public:
 	typedef QVector<std::pair<QString, QString> > LabelValueMap;
@@ -113,18 +115,25 @@ public:
 			const QVariant&		source()					const	{ return _source;	}
 			const QVariant&		values()					const	{ return _values;	}
 			int					count();
+			bool				addEmptyValue()				const	{ return _addEmptyValue;				}
+			const QString&		placeholderText()			const	{ return _placeHolderText;				}
 
 signals:
 			void				modelChanged();
 			void				sourceChanged();
 			void				countChanged();
+			void				addEmptyValueChanged();
+			void				placeHolderTextChanged();
+
 
 protected slots:
 	virtual void				termsChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
 			void				sourceChangedHandler();
 
-			GENERIC_SET_FUNCTION(Source,		_source,	sourceChanged,		QVariant		)
-			GENERIC_SET_FUNCTION(Values,		_values,	sourceChanged,		QVariant		)
+			GENERIC_SET_FUNCTION(Source,			_source,			sourceChanged,				QVariant	)
+			GENERIC_SET_FUNCTION(Values,			_values,			sourceChanged,				QVariant	)
+			GENERIC_SET_FUNCTION(AddEmptyValue,		_addEmptyValue,		addEmptyValueChanged,		bool		)
+			GENERIC_SET_FUNCTION(PlaceHolderText,	_placeHolderText,	placeHolderTextChanged,		QString		)
 
 			void				setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
 
@@ -138,6 +147,8 @@ protected:
 	RowControls*			_defaultRowControls		= nullptr;
 	QVariant				_source;
 	QVariant				_values;
+	bool					_addEmptyValue			= false;
+	QString					_placeHolderText		= tr("<no choice>");
 
 	static const QString	_defaultKey;
 	

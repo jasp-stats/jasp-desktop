@@ -18,7 +18,6 @@
 
 #include "comboboxbase.h"
 #include "../analysis/analysisform.h"
-#include <QAbstractListModel>
 
 
 ComboBoxBase::ComboBoxBase(QQuickItem* parent)
@@ -54,7 +53,7 @@ void ComboBoxBase::bindTo(Option *option)
 		std::vector<std::string> options = _model->getValues();
 		_boundTo->resetOptions(options, index);
 		
-		_setCurrentValue(index, true, false);
+		_setCurrentValue(index, false);
 		
 		_resetItemWidth();
 		setProperty("initialized", true);
@@ -67,8 +66,8 @@ Option *ComboBoxBase::createOption()
 {
 	std::vector<std::string> options = _model->getValues();
 	
-	int index = property("currentIndex").toInt();
-	
+	int index = startValue().isEmpty() ? indexDefaultValue() : _model->getIndexOfValue(startValue());
+
 	if (options.size() == 0)
 		index = -1;
 	else if (index >= int(options.size()))
@@ -91,56 +90,25 @@ bool ComboBoxBase::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::stringValue;
 }
 
-void ComboBoxBase::_setLabelValues()
+void ComboBoxBase::setLabelValues()
 {
-	LabelValueMap values;
-
-	for (const std::pair<JASPListControl::SourceType *, Terms>& source : getTermsPerSource())
-	{
-		ListModel* sourceModel = source.first->model;
-		if (source.first->isValuesSource)
-		{
-			ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceModel);
-			for (const Term& term : source.second)
-			{
-				QString label = term.asQString();
-				QString value = labelValueSourceModel ? labelValueSourceModel->getValue(label) : label;
-				values.push_back(std::make_pair(label, value));
-			}
-		}
-	}
-
-	if (_currentIndex == -1)
-	{
-		// In case a value is given per default, find its index and sets it.
-		QString value = property("startValue").toString();
-		if (!value.isEmpty())
-			_currentIndex = _model->getIndexOfValue(value);
-	}
-	
-	_setCurrentValue(_currentIndex, true, false);
-
-	_model->setLabelValues(values);
+	_model->setLabelValuesFromSource();
 	_model->refresh();
+
+	_resetItemWidth();
 }
 
 void ComboBoxBase::setUp()
 {
 	JASPListControl::setUp();
 
-	_currentIndex = property("currentIndex").toInt();
-
 	connect(_model, &ListModelTermsAvailable::allAvailableTermsChanged, this, &ComboBoxBase::termsChangedHandler);
+	connect(this,	&JASPListControl::addEmptyValueChanged,				this, &ComboBoxBase::termsChangedHandler);
 	connect(this, SIGNAL(activated(int)), this, SLOT(comboBoxChangeValueSlot(int)));
-
-	_setLabelValues();
-
-	_resetItemWidth();
-	
-	_setCurrentValue(_currentIndex, true, false);
-
 	if (form())
 		connect(form(), &AnalysisForm::languageChanged, this, &ComboBoxBase::languageChangedHandler);
+
+	setLabelValues();
 }
 
 void ComboBoxBase::setUpModel()
@@ -153,17 +121,12 @@ void ComboBoxBase::languageChangedHandler()
 {
 	setupSources();
 
-	_setLabelValues();
-
-	_resetItemWidth();
-
-	_setCurrentValue(_currentIndex, true, false);
-
-	_resetOptions();
+	setLabelValues();
 }
 
 void ComboBoxBase::termsChangedHandler()
 {
+	setLabelValues();
 	_resetOptions();
 }
 
@@ -178,35 +141,28 @@ void ComboBoxBase::_resetOptions()
 		QString label = term.asQString();
 		QString value = _model->getValue(label);
 		options.push_back(value.toStdString());
-		if (label == _currentText)
+		if (value == _currentValue)
 			currentIndex = index;
 		index++;
 	}
 	
 	if (currentIndex == -1)
-	{
-		if (int(terms.size()) > _currentIndex)
-			currentIndex = _currentIndex;
-		else if (terms.size() > 0U)
-			currentIndex = 0;
-	}
+		currentIndex = startValue().isEmpty() ? indexDefaultValue() : _model->getIndexOfValue(startValue());
 	
 	if (_boundTo)
 		_boundTo->resetOptions(options, currentIndex);
 	
-	_setCurrentValue(currentIndex, true, true);
+	_setCurrentValue(currentIndex, true);
 	
 	_resetItemWidth();
 }
 
 void ComboBoxBase::comboBoxChangeValueSlot(int index)
 {
-	const Terms& terms = _model->terms();
-	if (index < 0 || index >= int(terms.size()))
+	if (index < 0 || index >= _model->rowCount())
 		return;
 	
-	if (_currentIndex != index)
-		_setCurrentValue(index);
+	_setCurrentValue(index);
 }
 
 void ComboBoxBase::_resetItemWidth()
@@ -215,43 +171,41 @@ void ComboBoxBase::_resetItemWidth()
 	QMetaObject::invokeMethod(this, "resetWidth", Q_ARG(QVariant, QVariant(terms.asQList())));
 }
 
-void ComboBoxBase::_setCurrentValue(int index, bool setComboBoxIndex, bool setOption)
+void ComboBoxBase::_setCurrentValue(int index, bool setOption)
 {
-	_currentIndex = index;
-	_currentText.clear();
-	_currentColumnType.clear();
+	QString currentColumnType, currentValue, currentText;
 
-	if (_currentIndex >= 0)
+	if (index >= 0)
 	{
 		int rowCount = _model->rowCount();
-		if (_currentIndex >= rowCount)
+		if (index >= rowCount)
 		{
 			if (rowCount > 0)
-				_currentIndex = -1;
+				index = -1;
 			else
-				_currentIndex = 0;
+				index = 0;
 		}
-		if (_currentIndex >= 0)
+		if (index >= 0)
 		{
-			QModelIndex index(_model->index(_currentIndex, 0));
-			_currentText = _model->data(index, ListModel::NameRole).toString();
-			_currentColumnType = _model->data(index, ListModel::ColumnTypeRole).toString();			
+			QModelIndex modelIndex(_model->index(index, 0));
+			currentColumnType = _model->data(modelIndex, ListModel::ColumnTypeRole).toString();
+			currentText = _model->data(modelIndex, ListModel::NameRole).toString();
+			currentValue = _model->data(modelIndex, ListModel::ValueRole).toString();
 		}
 	}
 
-	if (_currentIndex == -1 && property("addEmptyValue").toBool())
-		_currentText = property("placeholderText").toString();
-
-	setProperty("currentText", _currentText);
 	// Cannot use _boundTo to get the current value, because when _boundTo is changed (by setting the current index),
 	// it emits a signal that can be received by a slot that needs already the currentValue.
 	// This is in particular needed in CustomContrast
-	setProperty("currentValue", _model->getValue(_currentText));
-	setProperty("currentColumnType", _currentColumnType);
+	setCurrentText(currentText);
+	setCurrentValue(currentValue);
+	setCurrentColumnType(currentColumnType);
 
-	if (setComboBoxIndex)
-		setProperty("currentIndex", _currentIndex);
+	int currentIndex = property("currentIndex").toInt();
+	if (index != currentIndex)
+		setProperty("currentIndex", index);
+	setProperty("test", index);
 
 	if (_boundTo && setOption)
-		_boundTo->set(size_t(_currentIndex));
+		_boundTo->set(size_t(index));
 }

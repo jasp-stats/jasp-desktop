@@ -42,7 +42,6 @@ public:
 			QVariant requestInfo(const Term &term, VariableInfo::InfoType info)			const override;
 
 			void sortItems(SortType sortType)											override;
-			void addEmptyValue()														{ _addEmptyValue = true; }
 
 			void										addAssignedModel(ListModelAssignedInterface* model);
 			const QList<ListModelAssignedInterface*>&	assignedModel()	const			{ return _assignedModels; }
@@ -58,7 +57,6 @@ public slots:
 			void removeAssignedModel(ListModelDraggable* model);
 
 protected:
-	bool					_addEmptyValue = false;
 	Terms					_allTerms;
 	Terms					_allSortedTerms;
 

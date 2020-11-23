@@ -16,26 +16,26 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "repeatedmeasuresfoctorslistbase.h"
+#include "repeatedmeasuresfactorslistbase.h"
 #include "analysis/options/optionencodablestring.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/jaspcontrol.h"
 
 using namespace std;
 
-RepeatedMeasuresFoctorsListBase::RepeatedMeasuresFoctorsListBase(QQuickItem *parent)
+RepeatedMeasuresFactorsListBase::RepeatedMeasuresFactorsListBase(QQuickItem *parent)
 	: JASPListControl(parent)
 {
 	_controlType = ControlType::RepeatedMeasuresFactorsList;
 }
 
-void RepeatedMeasuresFoctorsListBase::setUpModel()
+void RepeatedMeasuresFactorsListBase::setUpModel()
 {
 	_factorsModel = new ListModelRepeatedMeasuresFactors(this);
 	JASPListControl::setUpModel();
 }
 
-void RepeatedMeasuresFoctorsListBase::setUp()
+void RepeatedMeasuresFactorsListBase::setUp()
 {
 	JASPListControl::setUp();
 
@@ -44,7 +44,7 @@ void RepeatedMeasuresFoctorsListBase::setUp()
 
 }
 
-void RepeatedMeasuresFoctorsListBase::bindTo(Option *option)
+void RepeatedMeasuresFactorsListBase::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable*>(option);
 	
@@ -62,7 +62,7 @@ void RepeatedMeasuresFoctorsListBase::bindTo(Option *option)
 	_factorsModel->initFactors(factors);
 }
 
-Option* RepeatedMeasuresFoctorsListBase::createOption()
+Option* RepeatedMeasuresFactorsListBase::createOption()
 {
 	
 	Options* templote =				new Options();
@@ -88,12 +88,12 @@ Option* RepeatedMeasuresFoctorsListBase::createOption()
 	return optionsTable;
 }
 
-bool RepeatedMeasuresFoctorsListBase::isOptionValid(Option *option)
+bool RepeatedMeasuresFactorsListBase::isOptionValid(Option *option)
 {
 	return dynamic_cast<OptionsTable*>(option) != nullptr;
 }
 
-bool RepeatedMeasuresFoctorsListBase::isJsonValid(const Json::Value &optionValue)
+bool RepeatedMeasuresFactorsListBase::isJsonValid(const Json::Value &optionValue)
 {
 	bool valid = optionValue.type() == Json::arrayValue;
 
@@ -119,7 +119,7 @@ bool RepeatedMeasuresFoctorsListBase::isJsonValid(const Json::Value &optionValue
 	return valid;
 }
 
-void RepeatedMeasuresFoctorsListBase::termsChangedHandler()
+void RepeatedMeasuresFactorsListBase::termsChangedHandler()
 {
 	const vector<pair<string, vector<string> > > &factors = _factorsModel->getFactors();
 	vector<Options *> allOptions;

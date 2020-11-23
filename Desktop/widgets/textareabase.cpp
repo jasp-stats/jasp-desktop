@@ -41,10 +41,10 @@ void TextAreaBase::setUpModel()
 {
 	switch (_textType)
 	{
-	case TextType::Source:		_boundControl = new BoundControlSourceTextArea(this);	break;
-	case TextType::Lavaan:		_boundControl = new BoundControlLavaanTextArea(this);	break;
-	case TextType::JAGSmodel:	_boundControl = new BoundControlJAGSTextArea(this);		break;
-	default:					_boundControl = new BoundControlTextArea(this);			break;
+	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);	break;
+	case TextType::TextTypeLavaan:		_boundControl = new BoundControlLavaanTextArea(this);	break;
+	case TextType::TextTypeJAGSmodel:	_boundControl = new BoundControlJAGSTextArea(this);		break;
+	default:							_boundControl = new BoundControlTextArea(this);			break;
 	}
 
 	QList<QVariant> separators = property("separators").toList();
@@ -56,11 +56,11 @@ void TextAreaBase::setUpModel()
 			_separators.push_back(separator.toString());
 	}
 
-	if (_textType == TextType::Source || _textType == TextType::JAGSmodel || _textType == TextType::Lavaan)
+	if (_textType == TextType::TextTypeSource || _textType == TextType::TextTypeJAGSmodel || _textType == TextType::TextTypeLavaan)
 	{
 		_model = new ListModelTermsAvailable(this);
 
-		if (_textType == TextType::Lavaan)
+		if (_textType == TextType::TextTypeLavaan)
 		{
 			connect(form(), &AnalysisForm::dataSetChanged,	this, &TextAreaBase::dataSetChangedHandler,	Qt::QueuedConnection	);
 			_modelNeedsAllVariables = true;

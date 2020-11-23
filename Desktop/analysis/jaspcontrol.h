@@ -42,6 +42,7 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( int									preferredWidth		READ preferredWidth			WRITE setPreferredWidth		NOTIFY preferredWidthChanged		)
 	Q_PROPERTY( int									cursorShape			READ cursorShape			WRITE setCursorShape											)
 	Q_PROPERTY( bool								hovered				READ hovered											NOTIFY hoveredChanged				)
+	Q_PROPERTY( int									alignment			READ alignment				WRITE setAlignment												)
 
 	typedef std::set<JASPControl*> Set;
 
@@ -74,7 +75,7 @@ public:
 	enum class DropMode		{ DropNone			= static_cast<int>(Inclusive::MaxOnly)					+ 1,	DropInsert, DropReplace };
 	enum class ListViewType { AssignedVariables = static_cast<int>(DropMode::DropReplace)				+ 1,	Interaction, AvailableVariables, RepeatedMeasures, Layers, AvailableInteraction };
 	enum class AssignType	{ AssignDefault		= static_cast<int>(ListViewType::AvailableInteraction)	+ 1,	AssignCross, AssignMainEffects, AssignInteraction, AssignAll2Way, AssignAll3Way, AssignAll4Way, AssignAll5Way };
-	enum class TextType		{ Default			= static_cast<int>(AssignType::AssignAll5Way)			+ 1,	Model, Rcode, JAGSmodel, Source, Lavaan };
+	enum class TextType		{ TextTypeDefault	= static_cast<int>(AssignType::AssignAll5Way)			+ 1,	TextTypeModel, TextTypeRcode, TextTypeJAGSmodel, TextTypeSource, TextTypeLavaan };
 
 
 	Q_ENUM(ControlType)
@@ -119,6 +120,7 @@ public:
 	int				preferredWidth()		const	{ return _preferredWidth;		}
 	int				cursorShape()			const	{ return _cursorShape;			}
 	bool			hovered()				const;
+	int				alignment()				const	{ return _alignment;			}
 
 	QString			humanFriendlyLabel()	const;
 	void			setInitialized()	{ _initialized = true; emit initializedChanged(); }
@@ -158,6 +160,7 @@ public slots:
 	void	setInnerControl(		QQuickItem* innerControl);
 	void	setPreferredHeight(		int preferredHeight, bool isBinding = false);
 	void	setPreferredWidth(		int preferredWidth, bool isBinding = false);
+	void	setAlignment(			int alignment)		{ _alignment = alignment; }
 
 	void	addControlError(			QString message);
 	void	addControlErrorTemporary(	QString message);
@@ -264,6 +267,7 @@ protected:
 	QStringList				_dependencyMustContain;
 	QQuickItem			*	_mouseAreaObj			= nullptr;
 	int						_cursorShape			= Qt::PointingHandCursor;
+	int						_alignment				= Qt::AlignTop | Qt::AlignLeft;
 
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;

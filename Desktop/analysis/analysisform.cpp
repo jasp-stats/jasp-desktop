@@ -42,7 +42,7 @@
 #include "widgets/boundcontrolmeasurescells.h"
 #include "widgets/boundcontrollayers.h"
 #include "widgets/inputlistbase.h"
-#include "widgets/repeatedmeasuresfoctorslistbase.h"
+#include "widgets/repeatedmeasuresfactorslistbase.h"
 #include "widgets/factorsformbase.h"
 #include "widgets/tableviewbase.h"
 #include "widgets/expanderbuttonbase.h"
@@ -188,7 +188,7 @@ void AnalysisForm::_setUpModels()
 		if (listView)
 		{
 			listView->setUpModel();
-			_modelMap[it.key()] = listView->model();
+			if (listView->model())	_modelMap[it.key()] = listView->model();
 		}
 	}
 
