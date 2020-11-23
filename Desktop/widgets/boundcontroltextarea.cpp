@@ -59,7 +59,7 @@ void BoundControlTextArea::checkSyntax()
 	QString text = _textArea->text();
 	JASPControl::TextType textType = _textArea->textType();
 
-	if (textType == JASPControl::TextType::Rcode)
+	if (textType == JASPControl::TextType::TextTypeRcode)
 	{
 		try
 		{

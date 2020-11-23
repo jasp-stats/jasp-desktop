@@ -245,7 +245,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 
 
 #ifdef PRINT_ENGINE_MESSAGES
-	jaspRCPP_logString("result of runJaspResults:\n" + str);
+	jaspRCPP_logString("result of runJaspResults:\n" + str + "\n");
 #endif
 
 	jaspObject::destroyAllAllocatedObjects();
