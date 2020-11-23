@@ -24,10 +24,10 @@
 #include "analysis/options/optionterm.h"
 #include "analysis/options/optionboolean.h"
 #include "r_functionwhitelist.h"
-#include "boundqmltableview.h"
+#include "tableviewbase.h"
 #include "listmodelrepeatedmeasuresfactors.h"
 
-ListModelCustomContrasts::ListModelCustomContrasts(BoundQMLTableView *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
+ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
 {
 	_defaultCellVal = "0";
 	_colNames.clear();
@@ -35,14 +35,14 @@ ListModelCustomContrasts::ListModelCustomContrasts(BoundQMLTableView *parent, QS
 	_colNames.push_back(getDefaultColName(0));
 	_values.push_back({});
 
-	parent->setItemProperty("parseDefaultValue", false);
-	parent->setItemProperty("defaultEmptyValue", _defaultCellVal);
+	parent->setProperty("parseDefaultValue", false);
+	parent->setProperty("defaultEmptyValue", _defaultCellVal);
 
 	connect(DataSetPackage::pkg(), &DataSetPackage::labelChanged,		this, &ListModelCustomContrasts::labelChanged);
 	connect(DataSetPackage::pkg(), &DataSetPackage::labelsReordered,	this, &ListModelCustomContrasts::labelsReordered);
 
-	connect(this, &ListModelCustomContrasts::variableCountChanged,	[&]() { listView()->setItemProperty("variableCount", _variables.size()); });
-	connect(listView()->item(), SIGNAL(scaleFactorChanged()),			this, SLOT(scaleFactorChanged()));
+	connect(this, &ListModelCustomContrasts::variableCountChanged,	[&]() { listView()->setProperty("variableCount", _variables.size()); });
+	connect(listView(), SIGNAL(scaleFactorChanged()),			this, SLOT(scaleFactorChanged()));
 }
 
 void ListModelCustomContrasts::sourceTermsChanged(const Terms *, const Terms *)
@@ -221,7 +221,7 @@ void ListModelCustomContrasts::_resetValuesEtc()
 	emit columnCountChanged();
 	emit rowCountChanged();
 	emit variableCountChanged();
-	emit modelChanged();
+	emit termsChanged();
 }
 
 
@@ -249,7 +249,7 @@ void ListModelCustomContrasts::reset()
 	endResetModel();
 
 	emit columnCountChanged();
-	emit modelChanged();
+	emit termsChanged();
 
 }
 
@@ -257,14 +257,14 @@ void ListModelCustomContrasts::setup()
 {
 	// This cannot be done in the constructor: the form is then not yet known.
 	connect(_tableView->form(), &AnalysisForm::dataSetChanged, this, &ListModelCustomContrasts::dataSetChangedHandler,	Qt::QueuedConnection	);
-	QString factorsSourceName = _tableView->getItemProperty("factorsSource").toString();
+	QString factorsSourceName = _tableView->property("factorsSource").toString();
 	if (!factorsSourceName.isEmpty())
 	{
 		ListModelRepeatedMeasuresFactors* factorsSourceModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(_tableView->form()->getModel(factorsSourceName));
 		if (factorsSourceModel)
 		{
 			_setFactorsSource(factorsSourceModel);
-			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::modelChanged, this, &ListModelCustomContrasts::factorsSourceChanged);
+			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::termsChanged, this, &ListModelCustomContrasts::factorsSourceChanged);
 		}
 	}
 	_loadColumnInfo();
@@ -439,7 +439,7 @@ void ListModelCustomContrasts::labelChanged(QString columnName, QString original
 	bool isChanged = _labelChanged(columnName, originalLabel, newLabel);
 
 	if (isChanged)
-		emit modelChanged();
+		emit termsChanged();
 }
 
 bool ListModelCustomContrasts::_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel)
@@ -489,7 +489,7 @@ void ListModelCustomContrasts::_setFactors()
 
 void ListModelCustomContrasts::_loadColumnInfo()
 {
-	setColName(	_tableView->getItemProperty("colName").toString());
+	setColName(	_tableView->property("colName").toString());
 }
 
 void ListModelCustomContrasts::labelsReordered(QString )
@@ -500,7 +500,7 @@ void ListModelCustomContrasts::labelsReordered(QString )
 void ListModelCustomContrasts::scaleFactorChanged()
 {
 	double oldScaleFactor = _scaleFactor;
-	_scaleFactor = listView()->getItemProperty("scaleFactor").toDouble();
+	_scaleFactor = listView()->property("scaleFactor").toDouble();
 
 	QVector<QString> scaleVariables;
 	for (const QString& variable : _variables)
@@ -523,7 +523,7 @@ void ListModelCustomContrasts::scaleFactorChanged()
 			}
 			endResetModel();
 
-			emit modelChanged();
+			emit termsChanged();
 		}
 	}
 

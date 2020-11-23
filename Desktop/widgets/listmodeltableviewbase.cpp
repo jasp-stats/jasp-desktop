@@ -22,18 +22,18 @@
 #include "listmodeltableviewbase.h"
 #include "../analysis/analysisform.h"
 #include "utilities/qutils.h"
-#include "boundqmltableview.h"
-#include "boundqmltextinput.h"
+#include "tableviewbase.h"
+#include "textinputbase.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optiondoublearray.h"
 #include "gui/preferencesmodel.h"
 
 using namespace std;
 
-ListModelTableViewBase::ListModelTableViewBase(BoundQMLTableView * tableView, QString tableType)
+ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView, QString tableType)
 	: ListModel(tableView), _tableView(tableView), _tableType(tableType)
 {
-	connect(this, &ListModel::modelChanged, this, &ListModelTableViewBase::modelChangedSlot);
+	connect(this, &ListModel::termsChanged, this, &ListModelTableViewBase::modelChangedSlot);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
 
@@ -113,7 +113,7 @@ void ListModelTableViewBase::addColumn(bool emitStuff)
 		endResetModel();
 
 		emit columnCountChanged();
-		emit modelChanged();
+		emit termsChanged();
 	}
 }
 
@@ -134,7 +134,7 @@ void ListModelTableViewBase::removeColumn(size_t col, bool emitStuff)
 		endResetModel();
 
 		emit columnCountChanged();
-		emit modelChanged();
+		emit termsChanged();
 	}
 }
 
@@ -158,7 +158,7 @@ void ListModelTableViewBase::addRow(bool emitStuff)
 		endResetModel();
 
 		emit rowCountChanged();
-		emit modelChanged();
+		emit termsChanged();
 	}
 }
 
@@ -180,7 +180,7 @@ void ListModelTableViewBase::removeRow(size_t row, bool emitStuff)
 		endResetModel();
 
 		emit rowCountChanged();
-		emit modelChanged();
+		emit termsChanged();
 	}
 }
 
@@ -214,7 +214,7 @@ void ListModelTableViewBase::reset()
 
 	emit columnCountChanged();
 	emit rowCountChanged();
-	emit modelChanged();
+	emit termsChanged();
 
 	endResetModel();
 }
@@ -231,7 +231,7 @@ void ListModelTableViewBase::itemChanged(int column, int row, QVariant value, QS
 			// the following triggers a reset of the view if the colwidth changes, but that is wrong. actually it should just change the cell-value.
 			emit dataChanged(index(row, column), index(row, column), { Qt::DisplayRole });
 			if (type != "formula") // For formula type, wait for the formulaCheckSucceeded signal before emitting modelChanged
-				emit modelChanged();
+				emit termsChanged();
 
 			// Here we should *actually* check if specialRoles::maxColString changes and in that case: (so that the view can recalculate stuff)
 			//	emit headerDataChanged(Qt::Orientation::Horizontal, column, column);
@@ -356,21 +356,21 @@ bool ListModelTableViewBase::valueOk(QVariant value)
 	return ok;
 }
 
-JASPControlWrapper *ListModelTableViewBase::getRowControl(const QString &key, const QString &name) const
+JASPControl *ListModelTableViewBase::getRowControl(const QString &key, const QString &name) const
 {
 	if (_itemControls.contains(key))	return _itemControls[key][name];
 	else								return nullptr;
 }
 
-bool ListModelTableViewBase::addRowControl(const QString &key, JASPControlWrapper *control)
+bool ListModelTableViewBase::addRowControl(const QString &key, JASPControl *control)
 {
 	_itemControls[key][control->name()] = control;
 
-	if (control->item()->controlType() == JASPControl::ControlType::TextField)
+	if (control->controlType() == JASPControl::ControlType::TextField)
 	{
-		BoundQMLTextInput* textInput = dynamic_cast<BoundQMLTextInput*>(control);
-		if (textInput && textInput->inputType() == BoundQMLTextInput::TextInputType::FormulaType)
-			connect(textInput, &BoundQMLTextInput::formulaCheckSucceeded, this, &ListModelTableViewBase::formulaCheckSucceededSlot);
+		TextInputBase* textInput = dynamic_cast<TextInputBase*>(control);
+		if (textInput && textInput->inputType() == TextInputBase::TextInputType::FormulaType)
+			connect(textInput, &TextInputBase::formulaCheckSucceeded, this, &ListModelTableViewBase::formulaCheckSucceededSlot);
 	}
 
 	return true;
@@ -378,7 +378,7 @@ bool ListModelTableViewBase::addRowControl(const QString &key, JASPControlWrappe
 
 void ListModelTableViewBase::formulaCheckSucceededSlot()
 {
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelTableViewBase::modelChangedSlot()

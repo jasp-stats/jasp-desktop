@@ -17,8 +17,9 @@
 //
 
 #include "listmodelassignedinterface.h"
+#include "variableslistbase.h"
 
-ListModelAssignedInterface::ListModelAssignedInterface(QMLListView* listView)
+ListModelAssignedInterface::ListModelAssignedInterface(JASPListControl* listView)
 	: ListModelDraggable(listView)
   , _source(nullptr)
 {
@@ -37,7 +38,7 @@ void ListModelAssignedInterface::refresh()
 
 	if (toRemove.count() > 0)
 	{
-		QMLListViewDraggable* qmlListView = dynamic_cast<QMLListViewDraggable*>(listView());
+		VariablesListBase* qmlListView = dynamic_cast<VariablesListBase*>(listView());
 		if (qmlListView)
 		{
 			qmlListView->moveItems(toRemove, _source);

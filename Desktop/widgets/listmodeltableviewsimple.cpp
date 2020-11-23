@@ -17,12 +17,12 @@
 //
 
 #include "listmodeltableviewsimple.h"
-#include "qmllistview.h"
+#include "jasplistcontrol.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optiondoublearray.h"
 
-ListModelTableViewSimple::ListModelTableViewSimple(BoundQMLTableView * parent, QString tableType)
+ListModelTableViewSimple::ListModelTableViewSimple(TableViewBase * parent, QString tableType)
     : ListModelTableViewBase(parent, tableType)
 {
     _keepRowsOnReset	= true;
@@ -34,7 +34,7 @@ OptionsTable* ListModelTableViewSimple::createOption()
 {
     OptionsTable* result = ListModelTableViewBase::createOption();
 
-    QVariant modelVar = listView()->getItemProperty("values");
+	QVariant modelVar = listView()->property("values");
     QList<QVariant> list = modelVar.toList();
 
     std::vector<std::string>    levels;
@@ -63,6 +63,6 @@ OptionsTable* ListModelTableViewSimple::createOption()
 
 QString ListModelTableViewSimple::getDefaultColName(size_t index) const
 {
-	return listView()->getItemProperty("colName").toString() + " " + QString::number(index + 1);
+	return listView()->property("colName").toString() + " " + QString::number(index + 1);
 }
 

@@ -342,10 +342,10 @@ Properties:
 For an input with text that can have many lines, use this component. As an `Enter` just adds a new line, and thus does not finish the editing, in order to apply the text you entered, you need to type `Ctrl-Enter`.<br>
 Properties:
 - `title`: [optional, default: `""`] title displayed above the TextArea.
-- `textType`: [optional, default: `""`, values: `lavaan`, `JAGS`, `Rcode`, `model`, `source`]: this component is in fact often used in a specialized mode, specified by this property):<br>
-  * `lavaan`, `JAGS` and `Rcode`: the TextArea is used for Lavaan, JAGS or R code: it gets automatically the right syntax check
-  * `model`: the TextArea is used as R model.
-  * `source`: The TextArea can be then used as source for a VariablesList: all unique strings separated by a separator (per default a new line, but can be change via property `separator` will be then the terms of the VariablesList.<br>
+- `textType`: [optional, default: `""`, values: `JASP.TextTypeLavaan`, `JASP.TextTypeJAGS`, `JASP.TextTypeRcode`, `JASP.TextTypeModel`, `JASP.TextTypeSource`]: this component is in fact often used in a specialized mode, specified by this property):<br>
+  * `JASP.TextTypeLavaan`, `JASP.TextTypeJAGS` and `JASP.TextTypeRcode`: the TextArea is used for Lavaan, JAGS or R code: it gets automatically the right syntax check
+  * `JASP.TextTypeModel`: the TextArea is used as R model.
+  * `JASP.TextTypeSource`: The TextArea can be then used as source for a VariablesList: all unique strings separated by a separator (per default a new line, but can be change via property `separator` will be then the terms of the VariablesList.<br>
 - `separator`, `separators`: [optional, default: `"\n"`] string or array of strings used to split the string of a `source` TextArea
 
 ### Variable Specification

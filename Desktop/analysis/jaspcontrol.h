@@ -8,13 +8,12 @@
 
 
 class AnalysisForm;
-class JASPControlWrapper;
 
 class JASPControl : public QQuickItem
 {
 	Q_OBJECT
 
-	Q_PROPERTY( ControlType							controlType			READ controlType			WRITE setControlType											)
+	Q_PROPERTY( ControlType							controlType			READ controlType			WRITE setControlType		NOTIFY controlTypeChanged			)
 	Q_PROPERTY( QString								name				READ name					WRITE setName				NOTIFY nameChanged					)
 	Q_PROPERTY( QString								title				READ title					WRITE setTitle				NOTIFY titleChanged					) //Basically whatever a human sees on their screen when they look at this specific item.
 	Q_PROPERTY( QString								info				READ info					WRITE setInfo				NOTIFY infoChanged					)
@@ -22,7 +21,6 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( QString								helpMD				READ helpMD												NOTIFY helpMDChanged				)
 	Q_PROPERTY( bool								isBound				READ isBound				WRITE setIsBound			NOTIFY isBoundChanged				)
 	Q_PROPERTY( bool								indent				READ indent					WRITE setIndent				NOTIFY indentChanged				)
-	Q_PROPERTY( bool								useControlMouseArea	READ useControlMouseArea	WRITE setUseControlMouseArea NOTIFY useControlMouseAreaChanged	)
 	Q_PROPERTY( bool								isDependency		READ isDependency			WRITE setIsDependency		NOTIFY isDependencyChanged			)
 	Q_PROPERTY( bool								debug				READ debug					WRITE setDebug				NOTIFY debugChanged					)
 	Q_PROPERTY( bool								parentDebug			READ parentDebug										NOTIFY parentDebugChanged			)
@@ -34,17 +32,19 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( bool								shouldShowFocus		READ shouldShowFocus		WRITE setShouldShowFocus	NOTIFY shouldShowFocusChanged		)
 	Q_PROPERTY( bool								shouldStealHover	READ shouldStealHover		WRITE setShouldStealHover	NOTIFY shouldStealHoverChanged		)
 	Q_PROPERTY( QQuickItem						*	childControlsArea	READ childControlsArea		WRITE setChildControlsArea										)
-	Q_PROPERTY( QQuickItem						*	parentListView		READ parentListView										NOTIFY parentListViewChanged		)
+	Q_PROPERTY( JASPControl						*	parentListView		READ parentListView										NOTIFY parentListViewChanged		)
 	Q_PROPERTY( QQuickItem						*	innerControl		READ innerControl			WRITE setInnerControl		NOTIFY innerControlChanged			)
 	Q_PROPERTY( QQuickItem						*	background			READ background				WRITE setBackground			NOTIFY backgroundChanged			)
 	Q_PROPERTY( QQuickItem						*	focusIndicator		READ focusIndicator			WRITE setFocusIndicator		NOTIFY focusIndicatorChanged		)
 	Q_PROPERTY( QQmlComponent					*	rowComponent		READ rowComponent			WRITE setRowComponent		NOTIFY rowComponentChanged			)
-	Q_PROPERTY( QQmlListProperty<QQmlComponent>		rowComponents		READ rowComponents)
 	Q_PROPERTY( QStringList							dependencyMustContain READ dependencyMustContain WRITE setDependencyMustContain NOTIFY dependencyMustContainChanged )
 	Q_PROPERTY( int									preferredHeight		READ preferredHeight		WRITE setPreferredHeight	NOTIFY preferredHeightChanged		)
 	Q_PROPERTY( int									preferredWidth		READ preferredWidth			WRITE setPreferredWidth		NOTIFY preferredWidthChanged		)
 	Q_PROPERTY( int									cursorShape			READ cursorShape			WRITE setCursorShape											)
 	Q_PROPERTY( bool								hovered				READ hovered											NOTIFY hoveredChanged				)
+	Q_PROPERTY( int									alignment			READ alignment				WRITE setAlignment												)
+
+	typedef std::set<JASPControl*> Set;
 
 public:
 	// Any addition here should also be added manually to ControlTypeToFriendlyString... I couldnt get this to work with DECLARE_ENUM...
@@ -75,6 +75,7 @@ public:
 	enum class DropMode		{ DropNone			= static_cast<int>(Inclusive::MaxOnly)					+ 1,	DropInsert, DropReplace };
 	enum class ListViewType { AssignedVariables = static_cast<int>(DropMode::DropReplace)				+ 1,	Interaction, AvailableVariables, RepeatedMeasures, Layers, AvailableInteraction };
 	enum class AssignType	{ AssignDefault		= static_cast<int>(ListViewType::AvailableInteraction)	+ 1,	AssignCross, AssignMainEffects, AssignInteraction, AssignAll2Way, AssignAll3Way, AssignAll4Way, AssignAll5Way };
+	enum class TextType		{ TextTypeDefault	= static_cast<int>(AssignType::AssignAll5Way)			+ 1,	TextTypeModel, TextTypeRcode, TextTypeJAGSmodel, TextTypeSource, TextTypeLavaan };
 
 
 	Q_ENUM(ControlType)
@@ -82,6 +83,7 @@ public:
 	Q_ENUM(DropMode)
 	Q_ENUM(ListViewType)
 	Q_ENUM(AssignType)
+	Q_ENUM(TextType)
 
 	JASPControl(QQuickItem *parent = nullptr);
 
@@ -92,8 +94,8 @@ public:
 	QString			toolTip()				const	{ return _toolTip;				}
 	QString			helpMD(int howDeep = 2)	const;
 	bool			isBound()				const	{ return _isBound;				}
+	bool			nameMustBeUnique()		const	{ return _nameMustBeUnique;		}
 	bool			indent()				const	{ return _indent;				}
-	bool			useControlMouseArea()	const	{ return _useControlMouseArea;	}
 	bool			isDependency()			const	{ return _isDependency;			}
 	bool			initialized()			const	{ return _initialized;			}
 	bool			shouldShowFocus()		const	{ return _shouldShowFocus;		}
@@ -107,7 +109,7 @@ public:
 	bool			focusOnTab()			const	{ return activeFocusOnTab();	}
 	AnalysisForm*	form()					const	{ return _form;					}
 	QQuickItem*		childControlsArea()		const	{ return _childControlsArea;	}
-	QQuickItem*		parentListView()		const	{ return _parentListView;		}
+	JASPControl*	parentListView()		const	{ return _parentListView;		}
 	QString			parentListViewKey()		const	{ return _parentListViewKey;	}
 	QQuickItem*		innerControl()			const	{ return _innerControl;			}
 	QQuickItem*		background()			const	{ return _background;			}
@@ -118,23 +120,32 @@ public:
 	int				preferredWidth()		const	{ return _preferredWidth;		}
 	int				cursorShape()			const	{ return _cursorShape;			}
 	bool			hovered()				const;
+	int				alignment()				const	{ return _alignment;			}
 
 	QString			humanFriendlyLabel()	const;
 	void			setInitialized()	{ _initialized = true; emit initializedChanged(); }
 
 
-	JASPControlWrapper				*	getWrapper()				const { return _wrapper; }
-	QQmlComponent					*	rowComponent()				const { return _rowComponents.length() > 0 ? _rowComponents.at(0) : nullptr;	}
-	QQmlComponent					*	rowComponent(int)			const;
-	QQmlListProperty<QQmlComponent>		rowComponents();
-	int									rowComponentsCount()		const;
-	void								setRowComponent(	QQmlComponent * newRowComponent);
-	void								appendRowComponent(	QQmlComponent * newRowComponent);
-	void								clearRowComponents();
-	QList<QQmlComponent*>			&	getRowComponents()				{ return _rowComponents; }
+	QQmlComponent					*	rowComponent()				const { return _rowComponent;	}
 
 	static QString					ControlTypeToFriendlyString(ControlType controlType);
-	static QList<JASPControl*>	getChildJASPControls(const QQuickItem* item);
+	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item);
+
+	virtual void					setUp()										{}
+	virtual void					cleanUp()									{ disconnect(); }
+
+	const Set					&	depends()							const	{ return _depends; }
+	bool							addDependency(JASPControl* item);
+	void							removeDependency(JASPControl* item);
+	virtual JASPControl			*	getChildControl(QString key, QString name)	{ return nullptr; }
+	void							runRScript(const QString& script, bool whiteListedVersion = true);
+	virtual void					rScriptDoneHandler(const QString& result);
+
+	virtual QString					friendlyName() const;
+
+protected:
+	Set								_depends; //So Joris changed this to a set instead of a vector because that is what it seemed to be, the order isn't important right?
+
 
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }
@@ -149,6 +160,7 @@ public slots:
 	void	setInnerControl(		QQuickItem* innerControl);
 	void	setPreferredHeight(		int preferredHeight, bool isBinding = false);
 	void	setPreferredWidth(		int preferredWidth, bool isBinding = false);
+	void	setAlignment(			int alignment)		{ _alignment = alignment; }
 
 	void	addControlError(			QString message);
 	void	addControlErrorTemporary(	QString message);
@@ -157,7 +169,7 @@ public slots:
 	void	clearControlError();
 
 	void	reconnectWithYourChildren();
-	void	listViewKeyChanged(const QString& oldName, const QString& newName);
+	void	parentListViewKeyChanged(const QString& oldName, const QString& newName);
 
 	GENERIC_SET_FUNCTION(Name				, _name					, nameChanged				, QString		)
 	GENERIC_SET_FUNCTION(Info				, _info					, infoChanged				, QString		)
@@ -165,11 +177,11 @@ public slots:
 	GENERIC_SET_FUNCTION(Title				, _title				, titleChanged				, QString		)
 	GENERIC_SET_FUNCTION(IsBound			, _isBound				, isBoundChanged			, bool			)
 	GENERIC_SET_FUNCTION(Indent				, _indent				, indentChanged				, bool			)
-	GENERIC_SET_FUNCTION(UseControlMouseArea, _useControlMouseArea	, useControlMouseAreaChanged, bool			)
 	GENERIC_SET_FUNCTION(IsDependency		, _isDependency			, isDependencyChanged		, bool			)
 	GENERIC_SET_FUNCTION(ShouldShowFocus	, _shouldShowFocus		, shouldShowFocusChanged	, bool			)
 	GENERIC_SET_FUNCTION(ShouldStealHover	, _shouldStealHover		, shouldStealHoverChanged	, bool			)
 	GENERIC_SET_FUNCTION(Background			, _background			, backgroundChanged			, QQuickItem*	)
+	GENERIC_SET_FUNCTION(RowComponent		, _rowComponent			, rowComponentChanged		, QQmlComponent*)
 	GENERIC_SET_FUNCTION(DependencyMustContain, _dependencyMustContain, dependencyMustContainChanged, QStringList)
 
 private slots:
@@ -184,7 +196,6 @@ signals:
 	void nameChanged();
 	void isBoundChanged();
 	void indentChanged();
-	void useControlMouseAreaChanged();
 	void isDependencyChanged();
 	void initializedChanged();
 	void shouldShowFocusChanged();
@@ -209,18 +220,12 @@ signals:
 	void preferredHeightChanged();
 	void preferredWidthChanged();
 	void hoveredChanged();
+	void controlTypeChanged();			// Not used, defined only to suppress warning in QML
 
 protected:
 			void					componentComplete() override;
 			void					_setType();
 			void					setCursorShape(int shape);
-
-	static	void					appendRowComponent(	QQmlListProperty<QQmlComponent>*, QQmlComponent*);
-	static	int						rowComponentsCount(	QQmlListProperty<QQmlComponent>*);
-	static	QQmlComponent*			rowComponent(		QQmlListProperty<QQmlComponent>*, int);
-	static	void					clearRowComponents(	QQmlListProperty<QQmlComponent>*);
-
-
 			void					setParentDebugToChildren(bool debug);
 			void					setRunOnChangeToChildren(bool change);
 
@@ -243,14 +248,14 @@ protected:
 							_runOnChange			= true,
 							_useControlMouseArea	= true,
 							_shouldShowFocus		= false,
-							_shouldStealHover		= false;
-	JASPControlWrapper	*	_wrapper				= nullptr;
-	QQuickItem			*	_parentListView			= nullptr,
-						*	_childControlsArea		= nullptr,
+							_shouldStealHover		= false,
+							_nameMustBeUnique		= true;
+	JASPControl			*	_parentListView			= nullptr;
+	QQuickItem			*	_childControlsArea		= nullptr,
 						*	_innerControl			= nullptr,
 						*	_background				= nullptr,
 						*	_focusIndicator			= nullptr;
-	QList<QQmlComponent*>	_rowComponents;
+	QQmlComponent		*	_rowComponent			= nullptr;
 
 	QColor					_defaultBorderColor;
 	float					_defaultBorderWidth		= 0;
@@ -262,6 +267,7 @@ protected:
 	QStringList				_dependencyMustContain;
 	QQuickItem			*	_mouseAreaObj			= nullptr;
 	int						_cursorShape			= Qt::PointingHandCursor;
+	int						_alignment				= Qt::AlignTop | Qt::AlignLeft;
 
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;

@@ -18,13 +18,14 @@
 
 #include "listmodeldraggable.h"
 #include "analysis/analysisform.h"
+#include "jasplistcontrol.h"
 
-ListModelDraggable::ListModelDraggable(QMLListView* listView)
+ListModelDraggable::ListModelDraggable(JASPListControl* listView)
 	: ListModel(listView)
 	, _copyTermsWhenDropped(false)	
 {
-	_allowAnalysisOwnComputedColumns = listView->getItemProperty("allowAnalysisOwnComputedColumns").toBool();
-	_addNewAvailableTermsToAssignedModel = listView->getItemProperty("addAvailableVariablesToAssigned").toBool();
+	_allowAnalysisOwnComputedColumns = listView->property("allowAnalysisOwnComputedColumns").toBool();
+	_addNewAvailableTermsToAssignedModel = listView->property("addAvailableVariablesToAssigned").toBool();
 }
 
 ListModelDraggable::~ListModelDraggable()
@@ -62,7 +63,7 @@ void ListModelDraggable::removeTerms(const QList<int> &indices)
 
 	endResetModel();
 
-	emit modelChanged(nullptr, &_tempTermsToRemove);
+	emit termsChanged(nullptr, &_tempTermsToRemove);
 }
 
 
@@ -100,7 +101,7 @@ Terms ListModelDraggable::addTerms(const Terms& terms, int dropItemIndex, JASPCo
 		endResetModel();
 
 		_tempTermsToAdd = terms;
-		emit modelChanged(&_tempTermsToAdd, nullptr);
+		emit termsChanged(&_tempTermsToAdd, nullptr);
 	}
 
 	return nullptr;

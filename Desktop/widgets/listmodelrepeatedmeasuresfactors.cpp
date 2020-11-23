@@ -27,10 +27,11 @@
 
 using namespace std;
 
-ListModelRepeatedMeasuresFactors::ListModelRepeatedMeasuresFactors(QMLListView* listView)
+ListModelRepeatedMeasuresFactors::ListModelRepeatedMeasuresFactors(JASPListControl* listView)
 	: ListModel(listView)
 {
 	_itemType = "fixedFactors";
+	setTermsAreVariables(false);
 }
 
 int ListModelRepeatedMeasuresFactors::rowCount(const QModelIndex &parent) const
@@ -304,7 +305,7 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 	
 	_setAllLevelsCombinations();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
@@ -362,7 +363,7 @@ void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 	
 	_setAllLevelsCombinations();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 QStringList ListModelRepeatedMeasuresFactors::_getOtherLevelsStringList(const Factor& item)

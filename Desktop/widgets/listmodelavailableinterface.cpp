@@ -18,7 +18,6 @@
 
 #include "listmodelavailableinterface.h"
 #include "listmodelassignedinterface.h"
-#include "qmllistviewtermsavailable.h"
 #include "log.h"
 
 void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControlsOptions&)
@@ -30,13 +29,6 @@ void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControl
 
 	if (currentSortType() != SortType::None)
 		Sortable::sortItems();
-
-	if (_addEmptyValue && _allSortedTerms.size() > 0 && !_allSortedTerms[0].asQString().isEmpty())
-	{
-		_allSortedTerms.insert(0, QString());
-		_allTerms.insert(0, QString());
-		_terms.add(QString());
-	}
 
 	removeTermsInAssignedList();
 	endResetModel();
@@ -131,22 +123,53 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 	_terms = _allSortedTerms;
 	_terms.setSortParent(_allSortedTerms);
 	
-	QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(listView());
-
-	if (qmlAvailableListView)
-		for (ListModelAssignedInterface* modelAssign : qmlAvailableListView->assignedModel())
+	for (ListModelAssignedInterface* modelAssign : assignedModel())
+	{
+		Terms assignedTerms = modelAssign->terms();
+		if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
 		{
-			Terms assignedTerms = modelAssign->terms();
-			if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
-			{
-				modelAssign->initTerms(assignedTerms); // initTerms call removeTermsInAssignedList
-				emit modelAssign->modelChanged();
-			}
-			else if (!modelAssign->copyTermsWhenDropped())
-				_terms.remove(assignedTerms);
+			modelAssign->initTerms(assignedTerms); // initTerms call removeTermsInAssignedList
+			emit modelAssign->termsChanged();
 		}
+		else if (!modelAssign->copyTermsWhenDropped())
+			_terms.remove(assignedTerms);
+	}
 
 	
 	endResetModel();
 }
+
+void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *model)
+{
+	_assignedModels.push_back(model);
+
+	connect(model, &ListModelAssignedInterface::destroyed, this, &ListModelAvailableInterface::removeAssignedModel);
+
+	 if (!areTermsVariables())		 model->setTermsAreVariables(false);
+	 if (areTermsInteractions())	 model->setTermsAreInteractions(true);
+}
+
+void ListModelAvailableInterface::removeAssignedModel(ListModelDraggable* model)
+{
+	_assignedModels.removeAll(qobject_cast<ListModelAssignedInterface*>(model));
+}
+
+void ListModelAvailableInterface::setTermsAreVariables(bool areVariables)
+{
+	ListModelDraggable::setTermsAreVariables(areVariables);
+
+	if (!areVariables)
+		for (ListModelAssignedInterface* model : _assignedModels)
+			model->setTermsAreVariables(areVariables);
+}
+
+void ListModelAvailableInterface::setTermsAreInteractions(bool interactions)
+{
+	ListModelDraggable::setTermsAreInteractions(interactions);
+
+	if (interactions)
+		for (ListModelAssignedInterface* model : _assignedModels)
+			model->setTermsAreInteractions(interactions);
+}
+
 

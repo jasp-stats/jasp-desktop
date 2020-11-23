@@ -30,7 +30,7 @@ class ListModelFilteredDataEntry : public ListModelTableViewBase
 	Q_PROPERTY(QString	extraCol	READ extraCol	WRITE setExtraCol	NOTIFY extraColChanged	)
 
 public:
-	explicit ListModelFilteredDataEntry(BoundQMLTableView * parent, QString tableType);
+	explicit ListModelFilteredDataEntry(TableViewBase * parent, QString tableType);
 
 	QVariant		data(	const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
 	Qt::ItemFlags	flags(	const QModelIndex &index)								const	override;

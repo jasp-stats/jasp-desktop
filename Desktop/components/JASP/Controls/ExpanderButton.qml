@@ -60,10 +60,9 @@ FocusScope
 		RotationAnimation	{								duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 	}
 	
-	JASPControl
+	ExpanderButtonBase
 	{
 		id						: expanderButton
-		controlType				: JASPControl.Expander
 		isBound					: false
 		background				: expanderRectangle
 		childControlsArea		: expanderArea

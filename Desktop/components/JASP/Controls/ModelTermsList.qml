@@ -27,21 +27,15 @@ VariablesList
 	title					: qsTr("Model Terms")
 	listViewType			: JASP.Interaction
 
-	rowComponentsTitles		: [qsTr("Add to null model")]
+	rowComponentTitle		: qsTr("Add to null model")
 	interactionHighOrderCheckBox : "isNuisance"
-	rowComponents			:
-	[
-		Component
+	rowComponent			: CheckBox
+	{
+		name: "isNuisance"
+		Component.onCompleted:
 		{
-			CheckBox
-			{
-				name: "isNuisance"
-				Component.onCompleted:
-				{
-					if ((typeof(isNew) !== 'undefined') && isNew)
-						checked = (listView.getSourceType(rowValue) === "randomFactors")
-				}
-			}
+			if ((typeof(isNew) !== 'undefined') && isNew)
+				checked = (listView.getSourceType(rowValue) === "randomFactors")
 		}
-	]
+	}
 }

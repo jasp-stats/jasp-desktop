@@ -21,22 +21,97 @@ import QtQml.Models		2.2
 import JASP.Controls	1.0
 import JASP				1.0
 
-JASPGridViewControl
+InputListBase
 {
-	id:							inputListView
-	controlType:				JASPControl.InputListView
-	itemComponent:				itemInputComponent
+	id						: inputListView
+	background				: itemRectangle
+	implicitWidth 			: parent.width
+	implicitHeight			: jaspTheme.defaultVariablesFormHeight
+	shouldStealHover		: false
+	innerControl			: itemGridView
 
-				property var	inputComponent		: textField
-				property bool	enableRowComponents	: true
-				property var	defaultValues	: []
-				property int	minRows	: 0
-				property bool	addVirtual		: true
-				property string placeHolder		: qsTr("New Value")
-	readonly	property string deleteIcon		: "cross.png"
+	property alias	label				: inputListView.title
+	property alias	itemGridView		: itemGridView
+	property alias	cellHeight			: itemGridView.cellHeight
+	property alias	cellWidth			: itemGridView.cellWidth
+	property alias	itemTitle			: itemTitle
+	property string	rowComponentTitle	: ""
+
+	property var	defaultValues		: []
+	property int	minRows				: 0
+	property bool	addVirtual			: true
+	property string placeHolder			: qsTr("New Value")
+
+	readonly	property string deleteIcon			: "cross.png"
 
 	signal itemChanged(int index, var name);
 	signal itemRemoved(int index);
+
+	Text
+	{
+		id				: itemTitle
+		anchors.top		: parent.top
+		anchors.left	: parent.left
+		text			: title
+		height			: title ? jaspTheme.listTitle : 0
+		font			: jaspTheme.font
+		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+	}
+
+	Text
+	{
+		anchors.top		: parent.top
+		anchors.right	: parent.right
+		text			: rowComponentTitle
+		height			: rowComponentTitle ? jaspTheme.listTitle : 0
+		font			: jaspTheme.font
+		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+	}
+
+	Rectangle
+	{
+		id				: itemRectangle
+		anchors.top		: itemTitle.bottom
+		anchors.left	: parent.left
+		height			: inputListView.height - itemTitle.height
+		width			: parent.width
+		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
+		border.width	: 1
+		border.color	: jaspTheme.borderColor
+		radius			: jaspTheme.borderRadius
+
+		JASPScrollBar
+		{
+			id				: scrollBar
+			flickable		: itemGridView
+			manualAnchor	: true
+			vertical		: true
+			z				: 1337
+
+			anchors
+			{
+				top			: parent.top
+				right		: parent.right
+				bottom		: parent.bottom
+				margins		: 2
+			}
+		}
+
+		GridView
+		{
+			id						: itemGridView
+			cellHeight				: 20  * preferencesModel.uiScale
+			cellWidth				: width
+			clip					: true
+			focus					: true
+			anchors.fill			: parent
+			anchors.margins			: 4 * preferencesModel.uiScale
+			anchors.rightMargin		: scrollBar.width + anchors.margins
+			model					: inputListView.model
+			delegate				: itemInputComponent
+			boundsBehavior			: Flickable.StopAtBounds
+		}
+	}
 
 	Component
 	{
@@ -45,39 +120,39 @@ JASPGridViewControl
 		FocusScope
 		{
 			id:		itemWrapper
-			height: listGridView.cellHeight
-			width:	scrollBar.visible ?  listGridView.cellWidth - scrollBar.width : listGridView.cellWidth
+			height: inputListView.cellHeight
+			width:	scrollBar.visible ?  inputListView.cellWidth - scrollBar.width : inputListView.cellWidth
 
 			property bool	isDeletable:		model.type.includes("deletable")
 			property bool	isVirtual:			model.type.includes("virtual")
-			property var	extraColumnsModel:	model.extraColumns
+			property var	rowComponentItem:	model.rowComponent
 
-			Loader
+			Component.onCompleted:
 			{
-				sourceComponent: inputListView.inputComponent
-				asynchronous:	false
+				textField.fieldWidth = Qt.binding( function() { return itemWrapper.width - (rowComponentItem ? rowComponentItem.width : 0) - deleteIconID.width; })
+				textField.focus = true;
 
-				property var modelValue: model
-				property int modelIndex: index
-				property bool isVirtual: itemWrapper.isVirtual
-
-				onLoaded:
+				if (rowComponentItem)
 				{
-					if (item.hasOwnProperty("fieldWidth"))
-						item.fieldWidth = Qt.binding( function() { return itemWrapper.width - rowComponentsItem.width - deleteIconID.width; })
-					item.focus = true;
+					rowComponentItem.parent					= itemWrapper
+					rowComponentItem.anchors.verticalCenter	= itemWrapper.verticalCenter
+					rowComponentItem.anchors.right			= itemWrapper.right
+					rowComponentItem.anchors.rightMargin	= deleteIconID.width
+					rowComponentItem.enabled				= !itemWrapper.isVirtual
 				}
 			}
 
-			RowComponents
+			TextField
 			{
-				id						: rowComponentsItem
-				anchors.verticalCenter	: parent.verticalCenter
-				anchors.right			: parent.right
-				anchors.rightMargin		: deleteIconID.width
-				spacing					: inputListView.rowComponentsSpacing
-				controls				: model.rowComponents
-				enabled					: !itemWrapper.isVirtual && inputListView.enableRowComponents
+				id:								textField
+				isBound:						false
+				value:							(!itemWrapper.isVirtual && model) ? model.name : ""
+				placeholderText:				(itemWrapper.isVirtual && model) ? model.name : ""
+				useExternalBorder:				false
+				showBorder:						false
+				selectValueOnFocus:				true
+				control.horizontalAlignment:	TextInput.AlignLeft
+				onEditingFinished:				inputListView.itemChanged(index, value)
 			}
 
 			Image
@@ -99,20 +174,4 @@ JASPGridViewControl
 			}
 		}
 	}
-
-	Component
-	{
-		id: textField
-		TextField
-		{
-			value:							isVirtual ? "" : modelValue.name
-			placeholderText:				isVirtual ? modelValue.name : ""
-			useExternalBorder:				false
-			showBorder:						false
-			selectValueOnFocus:				true
-			control.horizontalAlignment:	TextInput.AlignLeft
-			onEditingFinished:				inputListView.itemChanged(modelIndex, value)
-		}
-	}
-
 }

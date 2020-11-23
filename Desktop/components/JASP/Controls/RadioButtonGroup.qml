@@ -23,10 +23,9 @@ import QtQuick.Layouts	1.3 as L
 import JASP				1.0
 
 
-JASPControl
+RadioButtonsGroupBase
 {
 	id:					control
-	controlType:		JASPControl.RadioButtonGroup
 	childControlsArea:	contentArea
 	focusOnTab:			false
 	shouldStealHover:	false

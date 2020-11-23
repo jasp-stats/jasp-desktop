@@ -18,19 +18,19 @@
 
 #include "listmodel.h"
 #include "../analysis/analysisform.h"
-#include "boundqmllistviewterms.h"
+#include "boundcontrolterms.h"
 #include "rowcontrols.h"
 #include "../analysis/jaspcontrol.h"
+#include "jasplistcontrol.h"
 #include <QJSEngine>
 #include <boost/bind.hpp>
 #include "log.h"
 
-ListModel::ListModel(QMLListView* listView) 
+ListModel::ListModel(JASPListControl* listView) 
 	: QAbstractTableModel(listView)
 	, _listView(listView)
 {
 	setInfoProvider(listView->form());
-	_areTermsVariables = true;
 }
 
 QHash<int, QByteArray> ListModel::roleNames() const
@@ -45,7 +45,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 		roles[SelectableRole]		= "selectable";
 		roles[ColumnTypeRole]		= "columnType";
 		roles[NameRole]				= "name";
-		roles[RowComponentsRole]	= "rowComponents";
+		roles[RowComponentRole]		= "rowComponent";
 		roles[ValueRole]			= "value";
 
 		setMe = false;
@@ -78,7 +78,7 @@ void ListModel::_initTerms(const Terms &terms, const RowControlsOptions& allOpti
 	endResetModel();
 
 	if (setupControlConnections)
-		for (QMLListView::SourceType* sourceType : listView()->sourceModels())
+		for (JASPListControl::SourceType* sourceType : listView()->sourceModels())
 			_connectSourceControls(sourceType->model, sourceType->usedControls);
 }
 
@@ -95,8 +95,8 @@ void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QStrin
 	{
 		for (const Term& term : terms)
 		{
-			JASPControlWrapper* control = sourceModel->getRowControl(term.asQString(), controlName);
-			BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
+			JASPControl* control = sourceModel->getRowControl(term.asQString(), controlName);
+			BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
 			if (boundControl && !_rowControlsConnected.contains(boundControl))
 			{
 				boundControl->boundTo()->changed.connect(boost::bind(&ListModel::_sourceTermsChangedHandler, this, _1));
@@ -112,9 +112,9 @@ Terms ListModel::getSourceTerms()
 	Terms termsToCombine;
 	Terms termsToBeCombinedWith;
 
-	for (const std::pair<QMLListView::SourceType *, Terms>& source : listView()->getTermsPerSource())
+	for (const std::pair<JASPListControl::SourceType *, Terms>& source : listView()->getTermsPerSource())
 	{
-		QMLListView::SourceType* sourceItem = source.first;
+		JASPListControl::SourceType* sourceItem = source.first;
 		const Terms& sourceTerms = source.second;
 		ListModel* sourceModel = sourceItem->model;
 		if (sourceModel)
@@ -150,7 +150,7 @@ ListModel *ListModel::getSourceModelOfTerm(const Term &term)
 {
 	ListModel* result = nullptr;
 
-	for (const std::pair<QMLListView::SourceType *, Terms>& source : listView()->getTermsPerSource())
+	for (const std::pair<JASPListControl::SourceType *, Terms>& source : listView()->getTermsPerSource())
 	{
 		if (source.second.contains(term))
 			result = source.first->model;
@@ -158,9 +158,9 @@ ListModel *ListModel::getSourceModelOfTerm(const Term &term)
 	return result;
 }
 
-void ListModel::setRowComponents(QList<QQmlComponent *> &rowComponents)
+void ListModel::setRowComponent(QQmlComponent* rowComponent)
 {
-	_rowComponents = rowComponents;
+	_rowComponent = rowComponent;
 }
 
 void ListModel::endResetModel()
@@ -171,7 +171,7 @@ void ListModel::endResetModel()
 
 void ListModel::setUpRowControls()
 {
-	if (_rowComponents.empty())
+	if (_rowComponent == nullptr)
 		return;
 
 	int row = 0;
@@ -181,7 +181,7 @@ void ListModel::setUpRowControls()
 		if (!_rowControlsMap.contains(key))
 		{
 			bool hasOptions = _rowControlsOptions.contains(key);
-			RowControls* rowControls = new RowControls(this, _rowComponents, _rowControlsOptions[key]);
+			RowControls* rowControls = new RowControls(this, _rowComponent, _rowControlsOptions[key]);
 			_rowControlsMap[key] = rowControls;
 			rowControls->init(row, term, !hasOptions);
 		}
@@ -191,14 +191,14 @@ void ListModel::setUpRowControls()
 	}
 }
 
-JASPControlWrapper *ListModel::getRowControl(const QString &key, const QString &name) const
+JASPControl *ListModel::getRowControl(const QString &key, const QString &name) const
 {
-	JASPControlWrapper* control = nullptr;
+	JASPControl* control = nullptr;
 
 	if (_rowControlsMap.contains(key))
 	{
 		RowControls* rowControls = _rowControlsMap[key];
-		const QMap<QString, JASPControlWrapper*>& controls = rowControls->getJASPControlsMap();
+		const QMap<QString, JASPControl*>& controls = rowControls->getJASPControlsMap();
 		if (controls.contains(name))
 			control = controls[name];
 	}
@@ -206,7 +206,7 @@ JASPControlWrapper *ListModel::getRowControl(const QString &key, const QString &
 	return control;
 }
 
-bool ListModel::addRowControl(const QString &key, JASPControlWrapper *control)
+bool ListModel::addRowControl(const QString &key, JASPControl *control)
 {
 	bool success = false;
 
@@ -368,7 +368,7 @@ void ListModel::sourceTermsChanged(const Terms *termsAdded, const Terms *termsRe
 {
 	_initTerms(getSourceTerms(), RowControlsOptions(), false);
 	
-	emit modelChanged(termsAdded, termsRemoved);
+	emit termsChanged(termsAdded, termsRemoved);
 }
 
 int ListModel::rowCount(const QModelIndex &) const
@@ -398,10 +398,10 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 		else
 			return false;
 	}
-	if (role == ListModel::RowComponentsRole)
+	if (role == ListModel::RowComponentRole)
 	{
 		if (_rowControlsMap.size() > 0)
-			return QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getObjects());
+			return QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getRowObject());
 		else
 			return QVariant();
 	}
@@ -483,16 +483,23 @@ const Terms &ListModel::terms(const QString &what) const
 			RowControls* rowControls = _rowControlsMap[term.asQString()];
 			if (rowControls)
 			{
-				JASPControlWrapper* controlWrapper = rowControls->getJASPControl(useThisControl);
+				JASPControl* control = rowControls->getJASPControl(useThisControl);
 
-				if (controlWrapper)	controlTerms.add(controlWrapper->getItemProperty("value").toString());
-				else				Log::log() << "Could not find control " << useThisControl << " in list view " << name() << std::endl;
+				if (control)	controlTerms.add(control->property("value").toString());
+				else			Log::log() << "Could not find control " << useThisControl << " in list view " << name() << std::endl;
 			}
 		}
 		specialTerms = controlTerms;
 	}
 
 	return specialTerms;
+}
+
+void ListModel::setTermsAreVariables(bool areVariables)
+{
+	_areTermsVariables = areVariables;
+	if (!areVariables)
+		listView()->setProperty("showVariableTypeIcon", false);
 }
 
 void ListModel::replaceVariableName(const std::string & oldName, const std::string & newName)

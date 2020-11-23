@@ -20,12 +20,13 @@
 #include "listmodeltermsavailable.h"
 #include "analysis/analysisform.h"
 #include "rowcontrols.h"
+#include "jasplistcontrol.h"
 #include <QTimer>
 
 
 using namespace std;
 
-ListModelTermsAssigned::ListModelTermsAssigned(QMLListView* listView, int maxRows)
+ListModelTermsAssigned::ListModelTermsAssigned(JASPListControl* listView, int maxRows)
 	: ListModelAssignedInterface(listView)
 	, _maxRows(maxRows)
 {
@@ -51,7 +52,7 @@ void ListModelTermsAssigned::availableTermsChanged(const Terms* termsAdded, cons
 		endResetModel();
 
 		_tempTermsToAdd.set(*termsAdded);
-		emit modelChanged(&_tempTermsToAdd, nullptr);
+		emit termsChanged(&_tempTermsToAdd, nullptr);
 
 		if (!_copyTermsWhenDropped)
 			source()->removeTermsInAssignedList();
@@ -64,7 +65,7 @@ void ListModelTermsAssigned::availableTermsChanged(const Terms* termsAdded, cons
 		endResetModel();
 
 		_tempTermsToRemove.set(*termsRemoved);
-		emit modelChanged(nullptr, &_tempTermsToRemove);
+		emit termsChanged(nullptr, &_tempTermsToRemove);
 	}
 }
 
@@ -103,7 +104,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, JA
 
 	endResetModel();
 
-	emit modelChanged(&terms, &_tempTermsToSendBack);
+	emit termsChanged(&terms, &_tempTermsToSendBack);
 
 	return _tempTermsToSendBack;
 }
@@ -143,10 +144,10 @@ void ListModelTermsAssigned::removeTerm(int index)
 	{
 		RowControls* controls = _rowControlsMap[termQ];
 		if (controls)
-			for (JASPControlWrapper* control : controls->getJASPControlsMap().values())
+			for (JASPControl* control : controls->getJASPControlsMap().values())
 			{
-				control->item()->setHasError(false);
-				listView()->form()->clearControlError(control->item());
+				control->setHasError(false);
+				listView()->form()->clearControlError(control);
 			}
 
 		_rowControlsMap.remove(termQ);
@@ -156,7 +157,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 
 	endResetModel();
 
-	emit modelChanged(nullptr, &_tempTermsToRemove);
+	emit termsChanged(nullptr, &_tempTermsToRemove);
 }
 
 void ListModelTermsAssigned::changeTerm(int index, const QString& name)
@@ -171,7 +172,7 @@ void ListModelTermsAssigned::changeTerm(int index, const QString& name)
 		_terms.replace(index, Term(name));
 
 		emit termChanged(oldName, name);
-		emit modelChanged();
+		emit termsChanged();
 		QModelIndex modelIndex = ListModelTermsAssigned::index(index, 0);
 		emit dataChanged(modelIndex, modelIndex);
 	}

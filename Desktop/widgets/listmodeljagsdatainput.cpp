@@ -23,9 +23,9 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionterm.h"
 #include "r_functionwhitelist.h"
-#include "boundqmltableview.h"
+#include "tableviewbase.h"
 
-ListModelJAGSDataInput::ListModelJAGSDataInput(BoundQMLTableView *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
+ListModelJAGSDataInput::ListModelJAGSDataInput(TableViewBase *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
 {
 	_defaultCellVal = "...";
 	_colNames.clear();
@@ -35,8 +35,8 @@ ListModelJAGSDataInput::ListModelJAGSDataInput(BoundQMLTableView *parent, QStrin
 	_colNames.push_back(getDefaultColName(1));
 	_values.push_back({});
 
-	parent->setItemProperty("parseDefaultValue", false);
-	parent->setItemProperty("defaultEmptyValue", _defaultCellVal);
+	parent->setProperty("parseDefaultValue", false);
+	parent->setProperty("defaultEmptyValue", _defaultCellVal);
 }
 
 void ListModelJAGSDataInput::sourceTermsChanged(const Terms *, const Terms *)
@@ -83,7 +83,7 @@ void ListModelJAGSDataInput::sourceTermsChanged(const Terms *, const Terms *)
 
 	emit columnCountChanged();
 	emit rowCountChanged();
-	emit modelChanged();
+	emit termsChanged();
 }
 
 

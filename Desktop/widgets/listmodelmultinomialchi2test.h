@@ -27,7 +27,7 @@ class ListModelMultinomialChi2Test : public ListModelTableViewBase
 	Q_OBJECT
 
 public:
-	explicit ListModelMultinomialChi2Test(BoundQMLTableView * parent, QString tableType);
+	explicit ListModelMultinomialChi2Test(TableViewBase * parent, QString tableType);
 
 	QString	getDefaultColName(size_t index) const override;
 

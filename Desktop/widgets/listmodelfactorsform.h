@@ -21,7 +21,7 @@
 
 #include "listmodel.h"
 
-class BoundQMLListViewTerms;
+class JASPListControl;
 
 class ListModelFactorsForm : public ListModel
 {
@@ -34,7 +34,7 @@ public:
 		FactorTitleRole
     };
 
-	ListModelFactorsForm(QMLListView* listView);
+	ListModelFactorsForm(JASPListControl* listView);
 	
 	QHash<int, QByteArray>	roleNames()													const override;
 	int						rowCount(const QModelIndex &parent = QModelIndex())			const override { return count(); }
@@ -53,14 +53,14 @@ public slots:
 	void factorAddedSlot(int, QVariant item);
 
 signals:
-	void addListView(BoundQMLListViewTerms* listView);
+	void addListView(JASPListControl* listView);
 	
 protected:
 	struct Factor
 	{
 		QString						name;
 		QString						title;
-		BoundQMLListViewTerms*		listView;
+		JASPListControl*				listView;
 		std::vector<std::string>	initTerms;
 		Factor(const QString& _name, const QString& _title, std::vector<std::string> _initTerms = std::vector<std::string>()) :
 			name(_name), title(_title), listView(nullptr), initTerms(_initTerms) {}

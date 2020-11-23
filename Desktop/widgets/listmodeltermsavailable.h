@@ -26,7 +26,7 @@ class ListModelTermsAvailable : public ListModelAvailableInterface
 {
 	Q_OBJECT
 public:
-	ListModelTermsAvailable(QMLListView* listView);
+	ListModelTermsAvailable(JASPListControl* listView);
 		
 	void		sortItems(SortType sortType)							override;
 	void		resetTermsFromSourceModels(bool updateAssigned = true)	override;	

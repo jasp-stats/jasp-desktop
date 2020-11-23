@@ -19,8 +19,9 @@
 #include "listmodelinteractionavailable.h"
 #include "listmodeltermsassigned.h"
 #include "../analysis/analysisform.h"
+#include "jasplistcontrol.h"
 
-ListModelInteractionAvailable::ListModelInteractionAvailable(QMLListView* listView)
+ListModelInteractionAvailable::ListModelInteractionAvailable(JASPListControl* listView)
 	: ListModelAvailableInterface(listView), InteractionModel ()
 {
 	_areTermsInteractions = true;
@@ -28,7 +29,7 @@ ListModelInteractionAvailable::ListModelInteractionAvailable(QMLListView* listVi
 
 void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssigned)
 {
-	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
+	const QList<JASPListControl::SourceType*>& sourceItems = listView()->sourceModels();
 	if (sourceItems.size() == 0)
 		return;
 	
@@ -39,7 +40,7 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssign
 	Terms randomFactors;
 	Terms covariates;
 
-	for (const std::pair<QMLListView::SourceType *, Terms>& source : listView()->getTermsPerSource())
+	for (const std::pair<JASPListControl::SourceType *, Terms>& source : listView()->getTermsPerSource())
 	{
 		ListModel* sourceModel = source.first->model;
 		const Terms& terms = source.second;

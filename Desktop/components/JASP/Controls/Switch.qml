@@ -20,9 +20,8 @@ import QtQuick			2.11
 import QtQuick.Controls 2.4
 import JASP				1.0
 
-JASPControl
+CheckBoxBase
 {
-	controlType:				JASPControl.Switch
 	implicitWidth:				control.indicator.height + (4 * preferencesModel.uiScale)
 	implicitHeight:				control.indicator.width + controlLabel.implicitWidth + control.spacing + (6 * preferencesModel.uiScale)
 	innerControl:				control

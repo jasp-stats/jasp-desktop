@@ -41,7 +41,7 @@ Item
     property	alias	values				: tableView.values
     property	alias	tableView			: tableView
 	property	alias	factorsSource		: tableView.factorsSource
-	property	alias	control				: tableView //Needed for RowComponents
+	property	alias	control				: tableView //Needed for RowComponent
 
 	property	alias	tableType			: tableView.tableType
 	property	alias	itemType			: tableView.itemType

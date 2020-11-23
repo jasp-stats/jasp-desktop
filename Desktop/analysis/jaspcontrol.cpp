@@ -1,4 +1,5 @@
 #include "jaspcontrol.h"
+#include "widgets/jasplistcontrol.h"
 #include "log.h"
 #include "analysisform.h"
 #include "qquick/jasptheme.h"
@@ -39,7 +40,6 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 		setProperty("ToolTip.delay", JaspTheme::currentTheme()->toolTipDelay());
 		setProperty("ToolTip.tooltip.font", JaspTheme::currentTheme()->font());
 	}*/
-	QQmlProperty(this, "Layout.alignment", qmlContext(this)).write(int(Qt::AlignTop | Qt::AlignLeft));
 
 	connect(this, &JASPControl::titleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::infoChanged,			this, &JASPControl::helpMDChanged);
@@ -175,7 +175,7 @@ void JASPControl::componentComplete()
 	_setBackgroundColor();
 	_setVisible();
 
-	if (useControlMouseArea())
+	if (_useControlMouseArea)
 	{
 		QQmlComponent* comp = getMouseAreaComponent(qmlEngine(this));
 		QVariantMap props = { {"hoverEnabled", shouldStealHover()}, {"cursorShape", cursorShape()} };
@@ -191,29 +191,15 @@ void JASPControl::componentComplete()
 	}
 
 	QQmlContext* context = qmlContext(this);
-	bool hasContextForm = context->contextProperty("hasContextForm").toBool();
+	bool isDynamic = context->contextProperty("isDynamic").toBool();
+	_form = context->contextProperty("form").value<AnalysisForm*>();
 
-	if (hasContextForm)
-		_form = context->contextProperty("form").value<AnalysisForm*>();
-	else
-	{
-		QObject* p = this;
-		do
-		{
-			p = p->parent();
-			_form = qobject_cast<AnalysisForm*>(p);
-		}
-		while (p && !_form);
-	}
-
-	_wrapper = JASPControlWrapper::buildJASPControlWrapper(this);
-
-	if (!hasContextForm)
+	if (!isDynamic)
 	{
 		if (_form)	_form->addControl(this);
 		else
 		{
-			_wrapper->setUp();
+			setUp();
 			setInitialized();
 		}
 	}
@@ -221,14 +207,14 @@ void JASPControl::componentComplete()
 	{
 		bool noDirectSetup = context->contextProperty("noDirectSetup").toBool();
 		if (!noDirectSetup)
-			_wrapper->setUp();
+			setUp();
 
 		setInitialized();
-		QMLListView* listView = nullptr;
+		JASPListControl* listView = nullptr;
 
 		QVariant listViewVar = context->contextProperty("listView");
 		if (!listViewVar.isNull())
-			listView = dynamic_cast<QMLListView*>(listViewVar.value<QObject*>());
+			listView = dynamic_cast<JASPListControl*>(listViewVar.value<QObject*>());
 		else
 		{
 			QVariant tableViewVar = context->contextProperty("tableView");
@@ -236,23 +222,23 @@ void JASPControl::componentComplete()
 			{
 				JASPControl* tableViewControl = dynamic_cast<JASPControl*>(tableViewVar.value<QObject*>());
 				if (tableViewControl)
-					listView = dynamic_cast<QMLListView*>(tableViewControl->getWrapper());
+					listView = dynamic_cast<JASPListControl*>(tableViewControl);
 			}
 		}
 
 		if (listView)
 		{
-			_parentListView = listView->item();
+			_parentListView = listView;
 
 			if (!listViewVar.isNull())
 			{
 				_parentListViewKey = context->contextProperty("rowValue").toString();
-				connect(listView->model(), &ListModel::termChanged, this, &JASPControl::listViewKeyChanged);
+				connect(listView->model(), &ListModel::termChanged, this, &JASPControl::parentListViewKeyChanged);
 			}
 			else
 				_parentListViewKey = context->contextProperty("rowIndex").toString();
 
-			listView->addRowControl(_parentListViewKey, _wrapper);
+			listView->addRowControl(_parentListViewKey, this);
 
 			emit parentListViewChanged();
 		}
@@ -330,6 +316,25 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item)
 	}
 
 	return result;
+}
+
+bool JASPControl::addDependency(JASPControl *item)
+{
+	if (_depends.count(item) > 0 || this == item)
+		return false;
+
+	_depends.insert(item);
+	return true;
+}
+
+void JASPControl::removeDependency(JASPControl *item)
+{
+	_depends.erase(item);
+}
+
+QString JASPControl::friendlyName() const
+{
+	return ControlTypeToFriendlyString(controlType());
 }
 
 void JASPControl::setParentDebug(bool parentDebug)
@@ -419,70 +424,6 @@ void JASPControl::setParentDebugToChildren(bool debug)
 			childControl->setParentDebug(debug);
 }
 
-void JASPControl::setRowComponent(QQmlComponent *newRowComponent)
-{
-	if ( _rowComponents.length() == 0 || newRowComponent != _rowComponents.at(0))
-	{
-		for (QQmlComponent* rowComponent : _rowComponents)
-			delete rowComponent;
-
-		_rowComponents.clear();
-		_rowComponents.push_back(newRowComponent);
-		emit rowComponentChanged();
-	}
-}
-
-QQmlListProperty<QQmlComponent> JASPControl::rowComponents()
-{
-	return QQmlListProperty<QQmlComponent>(this, this,
-			 &JASPControl::appendRowComponent,
-			 &JASPControl::rowComponentsCount,
-			 &JASPControl::rowComponent,
-			 &JASPControl::clearRowComponents);
-}
-
-void JASPControl::appendRowComponent(QQmlComponent* p)
-{
-	_rowComponents.append(p);
-}
-
-int JASPControl::rowComponentsCount() const
-{
-	return _rowComponents.count();
-}
-
-QQmlComponent* JASPControl::rowComponent(int index) const
-{
-	return _rowComponents.at(index);
-}
-
-void JASPControl::clearRowComponents()
-{
-	for (QQmlComponent* rowComponent : _rowComponents)
-		delete(rowComponent);
-	_rowComponents.clear();
-}
-
-void JASPControl::appendRowComponent(QQmlListProperty<QQmlComponent>* list, QQmlComponent* p)
-{
-	reinterpret_cast< JASPControl* >(list->data)->appendRowComponent(p);
-}
-
-void JASPControl::clearRowComponents(QQmlListProperty<QQmlComponent>* list)
-{
-	reinterpret_cast< JASPControl* >(list->data)->clearRowComponents();
-}
-
-QQmlComponent* JASPControl::rowComponent(QQmlListProperty<QQmlComponent>* list, int i)
-{
-	return reinterpret_cast< JASPControl* >(list->data)->rowComponent(i);
-}
-
-int JASPControl::rowComponentsCount(QQmlListProperty<QQmlComponent>* list)
-{
-	return reinterpret_cast< JASPControl* >(list->data)->rowComponentsCount();
-}
-
 QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 {
 	switch(controlType)
@@ -543,7 +484,7 @@ QString JASPControl::helpMD(int howDeep) const
 	else			markdown << [&] () { QString header; for(header = ""; header.size() < howDeep ; header += '#'); return header;} () + " "; // ;)
 
 	//Ok removing the check for existence of wrapper because
-	markdown << _wrapper->friendlyName();
+	markdown << friendlyName();
 
 	if(title() != "")	markdown << " - *" + title() + "*:\n";
 	else				markdown << "\n";
@@ -583,7 +524,7 @@ void JASPControl::reconnectWithYourChildren()
 	emit hasWarningChanged();
 }
 
-void JASPControl::listViewKeyChanged(const QString &oldName, const QString &newName)
+void JASPControl::parentListViewKeyChanged(const QString &oldName, const QString &newName)
 {
 	if (oldName == _parentListViewKey)
 		_parentListViewKey = newName;
@@ -645,4 +586,16 @@ QString JASPControl::humanFriendlyLabel() const
 
 	return label;
 
+}
+
+void JASPControl::runRScript(const QString &script, bool whiteListedVersion)
+{
+	QString id = parentListView() ? (parentListView()->name() + "." + parentListViewKey() + "." + name()) : name();
+
+	form()->runRScript(script, id, whiteListedVersion);
+}
+
+void JASPControl::rScriptDoneHandler(const QString &)
+{
+	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
 }

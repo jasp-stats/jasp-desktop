@@ -30,7 +30,7 @@ class ListModelCustomContrasts : public ListModelTableViewBase
 	Q_PROPERTY(int variableCount	READ variableCount					NOTIFY variableCountChanged)
 
 public:
-	explicit ListModelCustomContrasts(BoundQMLTableView * parent, QString tableType);
+	explicit ListModelCustomContrasts(TableViewBase * parent, QString tableType);
 
 	int getMaximumColumnWidthInCharacters(size_t columnIndex)	const	override;
 

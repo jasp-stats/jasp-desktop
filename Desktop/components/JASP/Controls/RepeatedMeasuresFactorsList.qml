@@ -21,15 +21,13 @@ import QtQml.Models		2.2
 import JASP.Controls	1.0
 import JASP				1.0
 
-JASPControl
+RepeatedMeasuresFoctorsListBase
 {
 	id:							repeatedMeasuresFactorsList
-	controlType:				JASPControl.RepeatedMeasuresFactorsList
 	implicitWidth:				parent.width
 	implicitHeight:				jaspTheme.defaultVariablesFormHeight
 	background:					rectangle
 
-				property var	model
 				property bool	setWidthInForm: false
 				property bool	setHeightInForm: false
 	readonly	property string deleteIcon: "cross.png"
@@ -117,6 +115,7 @@ JASPControl
 				TextField
 				{
 					id:								colName
+					isBound:						false
 					value:							itemRectangle.isVirtual ? "" : model.name
 					placeholderText:				itemRectangle.isVirtual ? model.name : ""
 					anchors.centerIn:				parent

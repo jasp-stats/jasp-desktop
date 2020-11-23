@@ -26,18 +26,14 @@ import JASP.Controls	1.0
 import QtQuick.Window	2.3
 import JASP				1.0
 
-JASPControl
+TableViewBase
 {
 	id:					tableView
-
-	controlType:		JASPControl.TableView
 	focusOnTab:			false
 	implicitWidth:		400
 	implicitHeight:		400
 	shouldStealHover:	false
 
-	property var	source
-    property var    values          : []
 	property string factorsSource	: ""
 	property alias	syncModels		: tableView.source
 	property string	modelType
@@ -46,7 +42,6 @@ JASPControl
     property string colName			: modelType == "CustomContrasts" ? "" : "data"					//Used by ListModelFilteredDataEntry
 	property string	extraCol		: ""						//Used by ListModelFilteredDataEntry
 	property string	tableType
-	property alias	model			: theView.model
 	property alias	rowNumberWidth	: theView.rowNumberWidth
 	property var	validator		: (itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
 	property int	minimum			: 0
@@ -133,7 +128,7 @@ JASPControl
 			{
 				z:						-1
 				id:						theView
-				model:					null
+				model:					tableView.model
 				itemHorizontalPadding:	0
 				itemVerticalPadding:	8 * preferencesModel.uiScale
 				cacheItems:				false

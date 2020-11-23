@@ -4,10 +4,9 @@ import JASP.Controls		1.0 as JC //He returns!
 import QtQuick.Layouts		1.3
 import JASP					1.0
 
-JASPControl
+SliderBase
 {
 	id:					slider
-	controlType:		JASPControl.Slider
 	implicitHeight:		columnLayout.implicitHeight
 	implicitWidth:		columnLayout.implicitWidth
 	innerControl:		textField

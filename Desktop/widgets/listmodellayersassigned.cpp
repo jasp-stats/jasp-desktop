@@ -17,14 +17,14 @@
 //
 
 #include "listmodellayersassigned.h"
-#include "boundqmllistviewlayers.h"
+#include "boundcontrollayers.h"
 
 #include "utilities/qutils.h"
 
 using namespace std;
 
 
-ListModelLayersAssigned::ListModelLayersAssigned(QMLListView* listView)
+ListModelLayersAssigned::ListModelLayersAssigned(JASPListControl* listView)
 	: ListModelAssignedInterface(listView)
 {
 }
@@ -148,7 +148,7 @@ Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, J
 	
 	endResetModel();
 	
-	emit modelChanged();
+	emit termsChanged();
 	
 	return result;
 }
@@ -212,7 +212,7 @@ void ListModelLayersAssigned::moveTerms(const QList<int> &indexes, int dropItemI
 	
 	endResetModel();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelLayersAssigned::removeTerms(const QList<int> &indexes)
@@ -244,7 +244,7 @@ void ListModelLayersAssigned::removeTerms(const QList<int> &indexes)
 	
 	endResetModel();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 QVariant ListModelLayersAssigned::data(const QModelIndex &index, int role) const

@@ -27,7 +27,7 @@ class ListModelTermsAssigned : public ListModelAssignedInterface
 	Q_OBJECT
 	
 public:
-	ListModelTermsAssigned(QMLListView* listView, int maxRows = -1);
+	ListModelTermsAssigned(JASPListControl* listView, int maxRows = -1);
 	
 	void			initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())			override;
 	Terms			canAddTerms(const Terms& terms)																	const	override;

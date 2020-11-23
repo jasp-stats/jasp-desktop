@@ -25,7 +25,7 @@ class ListModelTableViewSimple : public ListModelTableViewBase
 {
     Q_OBJECT
 public:
-    explicit ListModelTableViewSimple(BoundQMLTableView * parent, QString tableType);
+    explicit ListModelTableViewSimple(TableViewBase * parent, QString tableType);
 
 	OptionsTable*	createOption()							override;
 	QString			getDefaultColName(size_t index)	const	override;

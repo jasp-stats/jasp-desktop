@@ -35,6 +35,15 @@ GridLayout
 
 	Component.onCompleted: _initialColumns = columns; // Do not bind it!
 
+	onCountChanged:
+	{
+		for (var i = 0; i < children.length; i++)
+		{
+			if (typeof children[i].alignment !== "undefined")
+				children[i].Layout.alignment = children[i].alignment;
+		}
+	}
+
 	Connections
 	{
 		enabled:					checkFormOverflowWhenLanguageChanged

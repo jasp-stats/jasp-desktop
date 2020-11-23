@@ -22,4 +22,5 @@ VariablesList
 {
 	listViewType:	JASP.AvailableVariables
 	showSortMenu:	true
+	isBound:		false
 }

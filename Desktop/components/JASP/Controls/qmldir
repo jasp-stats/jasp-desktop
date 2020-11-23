@@ -39,6 +39,7 @@ Switch                       1.0 Switch.qml
 TableView                   1.0 TableView.qml
 TextField                  1.0 TextField.qml
 TextArea                  1.0 TextArea.qml
+JAGSTextArea             1.0 JAGSTextArea.qml
 VariablesForm            1.0 VariablesForm.qml
 VariablesList           1.0 VariablesList.qml
 FormulaField           1.0 FormulaField.qml

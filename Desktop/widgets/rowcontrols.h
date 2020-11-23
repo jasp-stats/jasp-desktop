@@ -23,9 +23,9 @@
 #include <QQmlComponent>
 #include <QQuickItem>
 
-class QMLListView;
+class JASPListControl;
 class ListModel;
-class JASPControlWrapper;
+class JASPControl;
 class Option;
 class Term;
 
@@ -37,24 +37,25 @@ public:
 	
 	RowControls(
 			ListModel* parent
-			, QList<QQmlComponent *>& components
+			, QQmlComponent* components
 			, const QMap<QString, Option*>& rowOptions
 			, bool isDummy = false);
 
 	void										init(int row, const Term& key, bool isNew);
 	void										setContext(int row, const QString& key);
-	const QList<QVariant>&						getObjects()								const	{ return _rowObjects;			}
-	const QMap<QString, JASPControlWrapper*>&	getJASPControlsMap()						const	{ return _rowJASPWrapperMap;	}
-	JASPControlWrapper*							getJASPControl(const QString& name)					{ return _rowJASPWrapperMap.contains(name) ? _rowJASPWrapperMap[name] : nullptr; }
-	bool										addJASPControl(JASPControlWrapper* control);
+	QQmlComponent*								getComponent()								const	{ return _rowComponent; }
+	QQuickItem*									getRowObject()								const	{ return _rowObject;			}
+	const QMap<QString, JASPControl*>&			getJASPControlsMap()						const	{ return _rowJASPControlMap;	}
+	JASPControl*								getJASPControl(const QString& name)					{ return _rowJASPControlMap.contains(name) ? _rowJASPControlMap[name] : nullptr; }
+	bool										addJASPControl(JASPControl* control);
 
 private:
 
 	ListModel*								_parentModel;
-	QList<QQmlComponent *>					_rowComponents;
-	QList<QVariant>							_rowObjects;
-	QMap<QString, JASPControlWrapper*>		_rowJASPWrapperMap;
-	std::map<QQuickItem*, QQmlContext*>		_contextMap;
+	QQmlComponent*							_rowComponent = nullptr;
+	QQuickItem*								_rowObject;
+	QMap<QString, JASPControl*>				_rowJASPControlMap;
+	QQmlContext*							_context;
 	QMap<QString, QVariant>					_rowControlsVarMap;
 	QMap<QString, Option*>					_rowOptions;
 	bool									_isDummy = false;

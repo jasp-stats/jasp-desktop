@@ -122,7 +122,6 @@
         <file>components/JASP/Widgets/FileMenu/PrefsUI.qml</file>
         <file>components/JASP/Controls/InputListView.qml</file>
         <file>components/JASP/Controls/FormulaField.qml</file>
-        <file>components/JASP/Controls/RowComponents.qml</file>
         <file>components/JASP/Controls/ModelTermsList.qml</file>
         <file>components/JASP/Controls/AssignedPairsVariablesList.qml</file>
         <file>components/JASP/Controls/AssignedRepeatedMeasuresCells.qml</file>
@@ -132,13 +131,12 @@
         <file>components/JASP/Widgets/ControlErrorMessage.qml</file>
         <file>components/JASP/Widgets/LoadingIndicator.qml</file>
         <file>components/JASP/Controls/Text.qml</file>
-        <file>components/JASP/Controls/JASPGridControl.qml</file>
-        <file>components/JASP/Controls/JASPGridViewControl.qml</file>
         <file>components/JASP/Controls/RowLayout.qml</file>
         <file>components/JASP/Controls/TabView.qml</file>
         <file>components/JASP/Controls/FileSelector.qml</file>
         <file>components/JASP/Widgets/RCommanderWindow.qml</file>
         <file>components/JASP/Widgets/CrossButton.qml</file>
         <file>components/JASP/Widgets/SimpleTableView.qml</file>
+        <file>components/JASP/Controls/JAGSTextArea.qml</file>
     </qresource>
 </RCC>

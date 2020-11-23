@@ -21,7 +21,7 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 #include "utilities/qutils.h"
-#include "boundqmllistviewterms.h"
+#include "variableslistbase.h"
 #include "log.h"
 #include <QQuickItem>
 #include "analysis/jaspcontrol.h"
@@ -30,9 +30,10 @@
 
 using namespace std;
 
-ListModelFactorsForm::ListModelFactorsForm(QMLListView* listView)
+ListModelFactorsForm::ListModelFactorsForm(JASPListControl* listView)
 	: ListModel(listView)
 {
+	setTermsAreVariables(false);
 }
 
 QHash<int, QByteArray> ListModelFactorsForm::roleNames() const
@@ -107,7 +108,7 @@ vector<tuple<string, string, vector<string> > > ListModelFactorsForm::getFactors
 	for (int i = 0; i < _factors.length(); i++)
 	{
 		Factor* factor = _factors[i];
-		BoundQMLListViewTerms* listView = factor->listView;
+		JASPListControl* listView = factor->listView;
 		if (listView)
 			result.push_back(make_tuple(factor->name.toStdString(), factor->title.toStdString(), listView->model()->terms().asVector()));
 	}
@@ -128,14 +129,14 @@ void ListModelFactorsForm::addFactor()
 
 	endInsertRows();
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelFactorsForm::removeFactor()
 {
 	if (_factors.size() > 1)
 	{		
-		BoundQMLListViewTerms* listView = _factors[_factors.size() - 1]->listView;
+		JASPListControl* listView = _factors[_factors.size() - 1]->listView;
 
 		if (listView)
 		{
@@ -151,7 +152,7 @@ void ListModelFactorsForm::removeFactor()
 		else
 			Log::log() << "No list View found when removing factor" << std::endl;
 
-		emit modelChanged();
+		emit termsChanged();
 	}
 	
 }
@@ -170,7 +171,7 @@ void ListModelFactorsForm::titleChangedSlot(int index, QString title)
 	for (Factor* factor : _factors)
         _titles.add(factor->title);
 	
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
@@ -181,33 +182,21 @@ void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
 		return;
 	}
 	
-	QQuickItem *quickItem = qobject_cast<QQuickItem *>(item.value<QObject *>());
-	if (!quickItem)
-	{
-		Log::log()  << "No quick Item found in factorAdded!" << std::endl;
-		return;
-	}
-	JASPControl* control = dynamic_cast<JASPControl*>(quickItem);
-	if (!control)
-	{
-		Log::log() << "Quick item is not a JASP Control in factorAdded!" << std::endl;
-		return;
-	}
-	BoundQMLListViewTerms* listView = dynamic_cast<BoundQMLListViewTerms*>(control->getWrapper());
+	VariablesListBase* listView = qobject_cast<VariablesListBase *>(item.value<QObject *>());
 	if (!listView)
 	{
-		Log::log() << "JASP Control is not a BoundQMLListViewTerms in factorAdded" << std::endl;
+		Log::log() << "JASP Control is not a VariablesListBase in factorAdded" << std::endl;
 		return;
 	}
 	
 	Factor* factor = _factors[index];
 	factor->listView = listView;
 	Terms terms(factor->initTerms);
-	ListModelAssignedInterface* model = factor->listView->assignedModel();
+	ListModelDraggable* model = listView->draggableNodel();
 	model->setInfoProvider(listView->form());
 	model->initTerms(terms);
 	model->setCopyTermsWhenDropped(true);
-	connect(factor->listView->model(), &ListModelAssignedInterface::modelChanged, this, &ListModelFactorsForm::resetTerms);
+	connect(model, &ListModelDraggable::termsChanged, this, &ListModelFactorsForm::resetTerms);
 	emit addListView(factor->listView);
 	
 	factor->listView->setUp();
@@ -226,5 +215,5 @@ void ListModelFactorsForm::resetTerms()
 		}
 	}
 	
-	emit modelChanged();
+	emit termsChanged();
 }

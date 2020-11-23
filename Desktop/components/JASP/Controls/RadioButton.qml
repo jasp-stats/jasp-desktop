@@ -21,11 +21,9 @@ import QtQuick.Controls	2.4
 import JASP				1.0
 
 
-JASPControl
+RadioButtonBase
 {
 	id:						radioButton
-	controlType:			JASPControl.RadioButton
-	isBound:				false
 	implicitWidth:			childrenOnSameRow
 								? control.implicitWidth + (childControlsArea.children.length > 0 ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
 								: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)

@@ -23,26 +23,17 @@ import QtQuick.Layouts	1.3
 import JASP.Widgets		1.0
 import JASP				1.0
 
-JASPControl
+ComponentsListBase
 {
 	id						: tabView
-	controlType				: JASPControl.TabView
 	background				: rectangleItem
 	implicitWidth 			: parent.width
 	implicitHeight			: itemStack.y + itemStack.height
-	useControlMouseArea		: false
 	shouldStealHover		: false
 	innerControl			: itemTabBar
 
-	property var	model
-	property var	values
 	property string title
 	property alias	label				: tabView.title
-	property alias	count				: itemRepeater.count
-	property string	optionKey			: "value"
-	property var	source
-	property var	sourceModel
-	property alias	syncModels			: tabView.source
 	property var	defaultValues		: []
 	property bool	addItemManually		: !source
 	property bool	showAddIcon			: addItemManually
@@ -241,7 +232,21 @@ JASPControl
 		Repeater
 		{
 			model			: tabView.model
-			delegate		: RowComponents { controls : model.rowComponents }
+			FocusScope
+			{
+				id:	tabViewWrapper
+				property var rowComponentItem: model.rowComponent
+
+				width	: rowComponentItem ? rowComponentItem.width : 0
+				height	: rowComponentItem ? rowComponentItem.height : 0
+
+				Component.onCompleted:
+				{
+					rowComponentItem.parent = tabViewWrapper
+					rowComponentItem.z = 10
+					itemStack.height = rowComponentItem.height
+				}
+			}
 		}
 	}
 }

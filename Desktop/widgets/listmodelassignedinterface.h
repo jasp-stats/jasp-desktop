@@ -26,7 +26,7 @@ class ListModelAssignedInterface : public ListModelDraggable
 {
 	Q_OBJECT
 public:
-	ListModelAssignedInterface(QMLListView* listView);
+	ListModelAssignedInterface(JASPListControl* listView);
 	
 	void							refresh()													override;
 

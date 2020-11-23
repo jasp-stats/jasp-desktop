@@ -26,7 +26,7 @@ class ListModelRepeatedMeasuresFactors : public ListModel
 	Q_OBJECT
 public:
 	
-	ListModelRepeatedMeasuresFactors(QMLListView* listView);
+	ListModelRepeatedMeasuresFactors(JASPListControl* listView);
 	
 	int rowCount(const QModelIndex &parent = QModelIndex())						const override;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole)			const override;

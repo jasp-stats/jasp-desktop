@@ -20,7 +20,6 @@
 #define LISTMODELDRAGGABLE_H
 
 #include "listmodel.h"
-#include "qmllistviewdraggable.h"
 #include "analysis/jaspcontrol.h"
 
 class RowControls;
@@ -30,7 +29,7 @@ class ListModelDraggable : public ListModel
 	Q_OBJECT
 	
 public:
-	ListModelDraggable(QMLListView* listView);
+	ListModelDraggable(JASPListControl* listView);
 	~ListModelDraggable();
 
 	bool copyTermsWhenDropped() const						{ return _copyTermsWhenDropped; }

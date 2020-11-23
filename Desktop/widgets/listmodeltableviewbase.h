@@ -24,7 +24,7 @@
 #include "data/datasetpackage.h"
 #include "analysis/options/optionstable.h"
 
-class BoundQMLTableView;
+class TableViewBase;
 
 ///This class makes sure the roles that DataSetView expects are implemented and returned.
 class ListModelTableViewBase : public ListModel
@@ -36,7 +36,7 @@ class ListModelTableViewBase : public ListModel
 public:
 	enum class	specialRoles		{ active = Qt::UserRole, lines, maxColString, maxRowHeaderString, itemInputType };
 
-	explicit						ListModelTableViewBase(BoundQMLTableView * tableView, QString tableType = "");
+	explicit						ListModelTableViewBase(TableViewBase * tableView, QString tableType = "");
 
 	QHash<int, QByteArray>			roleNames() const override;
 
@@ -78,8 +78,8 @@ public:
 
 				bool valueOk(QVariant value);
 
-	JASPControlWrapper*	getRowControl(const QString& key, const QString& name)			const	override;
-				bool addRowControl(const QString& key, JASPControlWrapper* control)				override;
+				JASPControl*	getRowControl(const QString& key, const QString& name)			const	override;
+				bool			addRowControl(const QString& key, JASPControl* control)				override;
 
 signals:
 	void columnCountChanged();
@@ -90,7 +90,7 @@ protected slots:
 	void formulaCheckSucceededSlot();
 
 protected:
-	BoundQMLTableView		*	_tableView		= nullptr;
+	TableViewBase		*	_tableView		= nullptr;
 	OptionsTable			*	_boundTo		= nullptr;
 
 	const size_t				_maxColumn		= 10,
@@ -108,7 +108,7 @@ protected:
 	bool						_keepRowsOnReset = false,
 								_keepColsOnReset = false;
 
-	QMap<QString, QMap<QString, JASPControlWrapper*> >	_itemControls;
+	QMap<QString, QMap<QString, JASPControl*> >	_itemControls;
 };
 
 #endif // LISTMODELTABLEVIEWBASE_H

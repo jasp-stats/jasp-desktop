@@ -23,10 +23,12 @@
 #include "utilities/qutils.h"
 #include "log.h"
 
-ListModelInputValue::ListModelInputValue(QMLListView* listView, int minRows)
+ListModelInputValue::ListModelInputValue(JASPListControl* listView, int minRows)
 	: ListModel(listView), _minRows(minRows)
 {
+	setTermsAreVariables(false);
 }
+
 
 int ListModelInputValue::rowCount(const QModelIndex &parent) const
 {
@@ -177,11 +179,11 @@ void ListModelInputValue::itemChanged(int row, QVariant value)
 		}
 	}
 
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelInputValue::itemRemoved(int row)
 {
 	_removeTerm(row);
-	emit modelChanged();
+	emit termsChanged();
 }

@@ -23,7 +23,7 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optiondoublearray.h"
 
-ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(BoundQMLTableView * parent, QString tableType)
+ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(TableViewBase * parent, QString tableType)
 	: ListModelTableViewBase(parent, tableType)
 {
 	_defaultCellVal		= 1;
@@ -62,7 +62,7 @@ void ListModelMultinomialChi2Test::sourceTermsChanged(const Terms *termsAdded, c
 
 	emit columnCountChanged();
 	emit rowCountChanged();
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelMultinomialChi2Test::labelChanged(QString columnName, QString originalLabel, QString newLabel)
@@ -81,7 +81,7 @@ void ListModelMultinomialChi2Test::labelChanged(QString columnName, QString orig
 
 	endResetModel();
 
-	emit modelChanged();
+	emit termsChanged();
 }
 
 void ListModelMultinomialChi2Test::labelsReordered(QString columnName)
@@ -107,7 +107,7 @@ void ListModelMultinomialChi2Test::labelsReordered(QString columnName)
 
 	endResetModel();
 
-	emit modelChanged();
+	emit termsChanged();
 }
 
 

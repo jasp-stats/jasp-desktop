@@ -27,7 +27,7 @@ class ListModelMeasuresCellsAssigned : public ListModelAssignedInterface
 {
 	Q_OBJECT
 public:
-	ListModelMeasuresCellsAssigned(QMLListView* listView);
+	ListModelMeasuresCellsAssigned(JASPListControl* listView);
 
 	int				rowCount(const QModelIndex &parent = QModelIndex())												const	override { return _levels.size() * 2; }
 	QVariant		data(const QModelIndex &index, int role = Qt::DisplayRole)										const	override;
