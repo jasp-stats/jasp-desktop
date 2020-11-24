@@ -111,6 +111,8 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 	cd \<JASP\>\build-release-64  
 	mklink /D R ..\jasp-required-files\R  
 ```	
+	If you don't do it like that, aka a command prompt that you started as admin, JASP *will not compile at all*. So make sure to do it in the described manner.	
+
 	You should now have :  
 
 	\<JASP\>\build-release-64\R  
