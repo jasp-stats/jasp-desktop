@@ -427,6 +427,20 @@
           "associated_datafile": "Physical Activity and BMI.csv"
         },
         {
+          "name": "De Lengte van Presidenten",
+          "path": "Presidents' Height.jasp",
+          "description": "De lengte van presidenten van de VS en hun aandeel van de populariteitsstemming. <br><br> Het voorbeeldbestand in JASP laat zien hoe een interval - nulhypothese kan worden toegepast. <br><br> <i>Subset van de data gerapporteerd in Stulp et al. (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Presidents' Height.csv"
+        },
+        {
+          "name": "World Happiness",
+          "path": "World Happiness.jasp",
+          "description": "National happiness scores and various life factors of 155 countries reported in 2017. <br><br> The example JASP file demonstrates the use of Bayesian linear regression.<br><br> <i>Data from Helliwell, Layard, & Sachs (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "World Happiness.csv"
+        },
+        {
           "name": "De Grootste Leugenaar",
           "path": "The Biggest Liar.jasp",
           "description": "Creativiteit testscores en een rangorde in een liegwedstrijd <br><br> Het voorbeeldbestand in JASP laat zien hoe Spearman's en Kendall's correlatie kunnen worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
@@ -795,13 +809,6 @@
           "description": "Synthetische data met missende waardes. <br><br> Het voorbeeldbestand in JASP laat zien hoe een XXX kan worden toegepast. Missende waardes.<br><br> <i>Fictieve data van Alexander Ly.<\/i>",
           "kind": "file",
           "associated_datafile": "Missing Data.csv"
-        },
-        {
-          "name": "De Lengte van Presidenten",
-          "path": "Presidents' Height.jasp",
-          "description": "De lengte van presidenten van de VS en hun aandeel van de populariteitsstemming. <br><br> Het voorbeeldbestand in JASP laat zien hoe een interval - nulhypothese kan worden toegepast. <br><br> <i>Subset van de data gerapporteerd in Stulp et al. (2015).<\/i>",
-          "kind": "file",
-          "associated_datafile": "Presidents' Height.csv"
         }
       ],
       "debug": false
