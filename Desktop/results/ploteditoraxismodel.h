@@ -15,7 +15,7 @@ class AxisModel : public QAbstractTableModel
 	Q_PROPERTY(QString	title		READ title			WRITE setTitle			NOTIFY titleChanged				)
 	Q_PROPERTY(QString	titleType	READ titleType		WRITE setTitleType		NOTIFY titleTypeChanged			)
 	Q_PROPERTY(QString	type		READ type			WRITE setType			NOTIFY typeChanged				)
-	Q_PROPERTY(bool		transposed	READ transposed		WRITE setTransposed		NOTIFY transposedChanged		)
+	Q_PROPERTY(bool		vertical	READ vertical		WRITE setVertical		NOTIFY verticalChanged			)
 
 	Q_PROPERTY(QString	breaksType	READ breaksType		WRITE setBreaksType		NOTIFY rangeChanged				)
 	Q_PROPERTY(double	from		READ from			WRITE setFrom			NOTIFY rangeChanged				)
@@ -27,9 +27,8 @@ class AxisModel : public QAbstractTableModel
 	Q_PROPERTY(double	limitUpper	READ upper			WRITE setUpper			NOTIFY limitsChanged			)
 
 public:
-	AxisModel(QObject * parent, bool transposed);
-
-
+	AxisModel(QObject * parent, bool vertical) : QAbstractTableModel(parent), _vertical(vertical)
+	{ }
 
 	enum class	specialRoles
 	{
@@ -56,7 +55,7 @@ public:
 	QString				type()			const	{ return _type;			}
 	QString				titleType()		const	{ return _titleType;	}
 	QString				breaksType()	const	{ return _breaksType;	}
-	bool				transposed()	const	{ return _transposed;	}
+	bool				vertical()	const	{ return _vertical;	}
 
 	double				from()			const	{ return _range.size() > 0 ? _range[0] : NAN;		}
 	double				to()			const	{ return _range.size() > 1 ? _range[1] : NAN;		}
@@ -66,11 +65,13 @@ public:
 	double				lower()			const	{ return _limits.size() > 0 ? _limits[0] : NAN;	}
 	double				upper()			const	{ return _limits.size() > 1 ? _limits[1] : NAN;	}
 
+	bool				hasBreaks()		const	{ return _breaks.size() > 0; }
+
 public slots:
 	void setTitle(		QString title);
 	void setTitleType(	QString title);
 	void setType(		QString type);
-	void setTransposed(bool transposed);
+	void setVertical(bool vertical);
 	void insertBreak(const QModelIndex &index, const size_t column, const bool left);
 	void deleteBreak(const QModelIndex &index, const size_t column);
 
@@ -89,7 +90,7 @@ signals:
 	void titleChanged(		QString title);
 	void titleTypeChanged(	QString title);
 	void typeChanged(		QString type);
-	void transposedChanged(	bool	transposed);
+	void verticalChanged(	bool	transposed);
 	void rangeChanged();
 	void limitsChanged();
 	void somethingChanged();
@@ -104,7 +105,7 @@ private:
 							_breaks,
 							_limits;
 	std::vector<QString>	_labels;
-	bool					_transposed = false;
+	bool					_vertical	= false;
 	Json::Value				_axis		= Json::objectValue;
 
 	//add expands as well?

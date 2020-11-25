@@ -1,14 +1,11 @@
 #include "ploteditoraxismodel.h"
 #include "utilities/qutils.h"
+#include "utilities/jsonutilities.h"
 #include "log.h"
 #include "gui/messageforwarder.h"
 
 namespace PlotEditor
 {
-
-AxisModel::AxisModel(QObject * parent, bool transposed)
-	: QAbstractTableModel(parent), _transposed(transposed)
-{ }
 
 void AxisModel::setAxisData(const Json::Value & axis)
 {
@@ -17,20 +14,20 @@ void AxisModel::setAxisData(const Json::Value & axis)
 
 	Json::Value	settings = axis.get(	"settings",		Json::objectValue);
 
-	setTitle(		tq(settings.get(		"title",		""			).asString()));
-	setTitleType(	tq(settings.get(		"titleType",	"plainText"	).asString()));
-	setType(		tq(settings.get(		"type",			""			).asString()));
-	setBreaksType(	tq(settings.get(		"breaksType",	"range"		).asString()));
-	setLimitsType(	tq(settings.get(		"limitsType",	"data"		).asString()));
+	setTitle(		tq(settings.get(	"title",		""			).asString()));
+	setTitleType(	tq(settings.get(	"titleType",	"plainText"	).asString()));
+	setType(		tq(settings.get(	"type",			""			).asString()));
+	setBreaksType(	tq(settings.get(	"breaksType",	"range"		).asString()));
+	setLimitsType(	tq(settings.get(	"limitsType",	"data"		).asString()));
 
-	Json::Value breaks	= settings.get("breaks",	Json::arrayValue);
-	Json::Value labels	= settings.get("labels",	Json::arrayValue);
-	Json::Value limits	= settings.get("limits",	Json::arrayValue);
-	Json::Value expands	= settings.get("expands",	Json::arrayValue);
+	Json::Value breaks	= settings.get(	"breaks",		Json::arrayValue);
+	Json::Value labels	= settings.get(	"labels",		Json::arrayValue);
+	Json::Value limits	= settings.get(	"limits",		Json::arrayValue);
+	Json::Value expands	= settings.get(	"expands",		Json::arrayValue);
 
 	fillFromJSON(_breaks, breaks);
 	
-	if(_breaks.size() > 0)
+	if(hasBreaks())
 	{
 		_range.clear();
 		_range.reserve(3);
@@ -38,6 +35,8 @@ void AxisModel::setAxisData(const Json::Value & axis)
 		_range.push_back(_breaks[_breaks.size() - 1]);
 		_range.push_back(_range[0] != _range[1] ? (_range[1] - _range[0]) / (_breaks.size() - 1) : 1);
 	}
+	else
+		_range.clear();
 	
 	fillFromJSON(_labels, labels);
 	fillFromJSON(_limits, limits);
@@ -52,46 +51,16 @@ Json::Value AxisModel::getAxisData() const
 	if(!axis.isMember("settings"))
 		axis["settings"] = Json::objectValue;
 
-	Json::Value & settings = axis["settings"];
+	Json::Value & settings	= axis["settings"];
 
-	settings["title"]	= _title.toStdString();
-	settings["type"]	= _type.toStdString();
-
-	if(!settings.get("breaks", Json::nullValue).isArray())
-		settings["breaks"] = Json::arrayValue;
-
-	settings["breaks"].clear();
-
-	for(double brk : _breaks)
-		settings["breaks"].append(brk);
-
-	if(!settings.get("labels", Json::nullValue).isArray())
-		settings["labels"] = Json::arrayValue;
-
-	settings["labels"].clear();
-
-	for(QString label : _labels)
-		settings["labels"].append(label.toStdString());
-
-	settings["breaksType"] = _breaksType.toStdString();
-
-	if(!settings.get("range", Json::nullValue).isArray())
-		settings["range"] = Json::arrayValue;
-
-	settings["range"].clear();
-	for (double v : _range)
-		if(std::isnan(v) || std::isinf(v))		settings["range"].append(Json::nullValue);
-		else									settings["range"].append(v);
-
-	settings["limitsType"] = _limitsType.toStdString();
-
-	if(!settings.get("limits", Json::nullValue).isArray())
-		settings["limits"] = Json::arrayValue;
-
-	settings["limits"].clear();
-	for (double v : _limits)
-		if(std::isnan(v) || std::isinf(v))		settings["limits"].append(Json::nullValue);
-		else									settings["limits"].append(v);
+	settings["title"]		= _title.toStdString();
+	settings["type"]		= _type.toStdString();
+	settings["breaks"]		= JsonUtilities::vecToJsonArray(_breaks);
+	settings["labels"]		= JsonUtilities::vecToJsonArray(_labels);
+	settings["range"]		= JsonUtilities::vecToJsonArray(_range);
+	settings["limits"]		= JsonUtilities::vecToJsonArray(_limits);
+	settings["breaksType"]	= _breaksType.toStdString();
+	settings["limitsType"]	= _limitsType.toStdString();
 
 	return axis;
 }
@@ -118,18 +87,18 @@ void AxisModel::setTitleType(QString titleType)
 
 int AxisModel::rowCount(const QModelIndex &) const
 {
-	return _transposed ? 2 : int(std::max(_breaks.size(), _labels.size()));
+	return _vertical ? (hasBreaks() ? 2 : 1) : int(std::max(_breaks.size(), _labels.size()));
 }
 
 int AxisModel::columnCount(const QModelIndex &) const
 {
-	return _transposed ? int(std::max(_breaks.size(), _labels.size())) : 2;
+	return _vertical ? int(std::max(_breaks.size(), _labels.size())) : (hasBreaks() ? 2 : 1);
 }
 
 void AxisModel::getEntryAndBreaks(size_t & entry, bool & breaks, const QModelIndex & index) const
 {
-	entry	= size_t( _transposed ? index.column()	: index.row()	);
-	breaks	=		( _transposed ? index.row()		: index.column()) == 0;
+	entry	= size_t(			_vertical ? index.column()	: index.row()	);
+	breaks	= hasBreaks() && (	_vertical ? index.row()		: index.column()) == 0;
 }
 
 QVariant AxisModel::data(const QModelIndex &index, int role) const
@@ -148,11 +117,11 @@ QVariant AxisModel::data(const QModelIndex &index, int role) const
 
 QVariant AxisModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {
-	if(_transposed == (orientation == Qt::Horizontal) || role != Qt::DisplayRole)
+	if(_vertical == (orientation == Qt::Horizontal) || role != Qt::DisplayRole)
 		return QVariant();
 
-	if(section == 0) return "Breaks";
-	return "Labels";
+	if(section == 0 && hasBreaks()) return "Breaks";
+	else							return "Labels";
 }
 
 bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -164,25 +133,32 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 	bool	breaks;
 	getEntryAndBreaks(entry, breaks, index);
 
-	if (role == int(specialRoles::insertLeft))
+	switch(role)
 	{
-		std::cout << "insertLeft" << std::endl;
+	case int(specialRoles::insertLeft):
+	{
+		Log::log() << "insertLeft" << std::endl;
 		insertBreak(index, entry, true);
 		return true;
 	}
-	else if (role == int(specialRoles::insertRight))
+
+	case int(specialRoles::insertRight):
 	{
-		std::cout << "insertRight" << std::endl;
+		Log::log() << "insertRight" << std::endl;
 		insertBreak(index, entry, false);
 		return true;
 	}
-	else if (role == int(specialRoles::deleteBreak))
+
+	case int(specialRoles::deleteBreak):
 	{
-		std::cout << "deleteBreak" << std::endl;
+		Log::log() << "deleteBreak" << std::endl;
 		deleteBreak(index, entry);
 		return true;
 	}
 
+	default:
+		break;
+	}
 
 	if(breaks)
 	{
@@ -190,21 +166,10 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 
 		if(_breaks[entry] != newBreak)
 		{
-			bool sizeBigger = QVariant(_breaks[entry]).toString().size() < QVariant(newBreak).toString().size();
-
 			_breaks[entry] = newBreak;
-
-			if(sizeBigger)
-			{
-				beginResetModel();
-				endResetModel();
-			}
-			else
-				emit dataChanged(index, index);
-
+			emit dataChanged(index, index);
 			emit somethingChanged();
 		}
-		return true;
 	}
 	else
 	{
@@ -212,22 +177,13 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 
 		if(_labels[entry] != newLabel)
 		{
-			bool sizeBigger = _labels[entry].size() < newLabel.size();
-
 			_labels[entry] = newLabel;
-
-			if(sizeBigger)
-			{
-				beginResetModel();
-				endResetModel();
-			}
-			else
-				emit dataChanged(index, index);
-
+			emit dataChanged(index, index);
 			emit somethingChanged();
 		}
-		return true;
 	}
+
+	return true;
 }
 
 Qt::ItemFlags AxisModel::flags(const QModelIndex &) const
@@ -245,13 +201,13 @@ void AxisModel::setType(QString type)
 	emit somethingChanged();
 }
 
-void AxisModel::setTransposed(bool transposed)
+void AxisModel::setVertical(bool vertical)
 {
-	if (_transposed == transposed)
+	if (_vertical == vertical)
 		return;
 
-	_transposed = transposed;
-	emit transposedChanged(_transposed);
+	_vertical = vertical;
+	emit verticalChanged(_vertical);
 }
 
 void AxisModel::insertBreak(const QModelIndex &index, const size_t column, const bool left)

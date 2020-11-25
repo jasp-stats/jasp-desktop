@@ -13,7 +13,7 @@ PlotEditorModel::PlotEditorModel()
 	: QObject(Analyses::analyses())
 {
 	_xAxis = new AxisModel(this, true);
-	_yAxis = new AxisModel(this, false);
+	_yAxis = new AxisModel(this, true);
 	_ppi   = PreferencesModel::prefs()->plotPPI();
 
 	connect(_xAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);

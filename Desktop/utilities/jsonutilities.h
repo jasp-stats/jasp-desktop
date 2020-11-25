@@ -5,7 +5,8 @@
 #include <string>
 #include <set>
 #include "stringutils.h"
-
+#include <cmath>
+#include "qutils.h"
 
 class JsonUtilities
 {
@@ -21,6 +22,37 @@ public:
 	static void						replaceColumnNamesInDragNDropFilterJSON(Json::Value & json,				const std::map<std::string, std::string> & changeNameColumns);
 
 	static stringvec				jsonStringArrayToVec(Json::Value & jsonStrings);
+
+	template<typename T>
+	static Json::Value				vecToJsonArray(const std::vector<T> & vec)
+	{
+		Json::Value out = Json::arrayValue;
+
+		for(const T & e : vec)	out.append(e);
+
+		return out;
+	}
+
+	static Json::Value				vecToJsonArray(const std::vector<double> vec)
+	{
+		Json::Value out = Json::arrayValue;
+
+		for(const double & v : vec)
+			if(std::isnan(v) || std::isinf(v))	out.append(Json::nullValue); //Json does not support inf or nan... Sigh...
+			else								out.append(v);
+
+		return out;
+	}
+
+	static Json::Value				vecToJsonArray(const std::vector<QString> & vec)
+	{
+		Json::Value out = Json::arrayValue;
+
+		for(const QString & e : vec)	out.append(fq(e));
+
+		return out;
+	}
+
 
 private:
 	JsonUtilities() {}
