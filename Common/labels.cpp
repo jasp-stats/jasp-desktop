@@ -137,10 +137,17 @@ bool Labels::syncInts(const std::set<int> &values)
 {
 	std::set<int>	valuesToAdd		= values,
 					valuesToRemove;
+	bool			isChanged			= false;
 
-	for (const Label & label : _labels)
+	for (Label & label : _labels)
 	{
 		int value = label.value();
+
+		if (!label.hasIntValue())
+		{
+			label.setValue(value);
+			isChanged = true;
+		}
 
 		if(values.count(value) > 0)	valuesToAdd.erase(value);
 		else						valuesToRemove.insert(value);
@@ -151,7 +158,7 @@ bool Labels::syncInts(const std::set<int> &values)
 	for (int value : valuesToAdd)
 		add(value);
 
-	return valuesToAdd.size() + valuesToRemove.size() > 0;
+	return isChanged || (valuesToAdd.size() + valuesToRemove.size() > 0);
 }
 
 std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels, bool *changedSomething)

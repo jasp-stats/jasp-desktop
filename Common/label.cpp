@@ -38,15 +38,7 @@ Label::Label(const std::string &label, int value, bool filterAllows, bool isText
 
 Label::Label(int value)
 {
-	std::stringstream ss;
-	ss << value;
-	std::string asString = ss.str();
-
-	std::memcpy(_stringValue, asString.c_str(), asString.length());
-	_stringLength = asString.length();
-
-	_hasIntValue = true;
-	_intValue = value;
+	setValue(value);
 }
 
 Label::Label()
@@ -77,6 +69,14 @@ void Label::setLabel(const std::string &label) {
 
 void Label::setValue(int value)
 {
+	std::stringstream ss;
+	ss << value;
+	std::string asString = ss.str();
+
+	std::memcpy(_stringValue, asString.c_str(), asString.length());
+	_stringLength = asString.length();
+
+	_hasIntValue = true;
 	_intValue = value;
 }
 
