@@ -922,6 +922,7 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
       priors <- jaspResults[["priors"]][["object"]]
       
       fit <- tryCatch(RoBMA::RoBMA(
+        likelihood = "normal",
         # data
         t   = if (options[["measures"]] == "cohensd" && options[["input_t"]] != "")                     dataset[, .v(options[["input_t"]])],
         d   = if (options[["measures"]] == "cohensd" && options[["input_ES"]] != "")                    dataset[, .v(options[["input_ES"]])],
@@ -969,7 +970,7 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
           progress_tick   = 'progressbarTick()'
         ),
         save    = "all",
-        seed    = if (options[["setSeed"]]) options[["setSeed"]]
+        seed    = if (options[["setSeed"]]) options[["seed"]],
       ),error = function(e)e)
       
     } else{
@@ -1508,24 +1509,15 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
     temp_plot$dependOn(dependencies)
     plots[[paste(parameters, collapse = "")]] <- temp_plot
     
-    if (all(parameters %in% "theta")) {
-      p <- JASPgraphs::themeJasp(p, sides =  "b")
-    } else{
-      if (!is.null(ggplot2::ggplot_build(p)[["layout"]][["panel_params"]][[1]][["y.sec.labels"]])) {
-        p <- JASPgraphs::themeJasp(p, sides =  "blr")
-      } else{
-        p <- JASPgraphs::themeJasp(p, sides =  "bl")
-      }
-    }
+    if (all(parameters %in% "theta"))
+      p <- JASPgraphs::themeJasp(p, sides = "b")
+    else if (!is.null(p[["double_y_axis"]]))
+      p <- JASPgraphs::themeJasp(p, sides = "blr")  + ggplot2::theme(
+        axis.title.y.right = ggplot2::element_text(vjust = 3),
+        plot.margin = ggplot2::margin(t = 3, r = 12, b = 0, l = 1))
+    else
+      p <- JASPgraphs::themeJasp(p, sides = "bl")
     
-    # deal with JASPgraphs screwing secondary axis label distance
-    if (!all(parameters %in% c("mu", "tau")))
-      if (! (parameters == "theta" || (parameters == "omega" && options[["plots_omega_function"]]) ) )
-        if(p$plot_env$any_density && p$plot_env$any_spikes)
-          p <- p + ggplot2::theme(
-            axis.title.y.right = ggplot2::element_text(vjust = 3),
-            plot.margin = ggplot2::margin(t = 3, r = 12, b = 0, l = 1))
-
     
     plots[[paste(parameters, collapse = "")]][["plotObject"]] <- p
     
@@ -1539,22 +1531,15 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
       temp_plot <- createJaspPlot(width = width, height = height)
       temp_plots[[paste(parameters, "_", i, collapse = "")]] <- temp_plot
       
-      if (all(parameters %in% "theta")) {
-        p[[i]] <- JASPgraphs::themeJasp(p[[i]], sides =  "b")
-      } else{
-        if (!is.null(ggplot2::ggplot_build(p[[i]])[["layout"]][["panel_params"]][[1]][["y.sec.labels"]])) {
-          p[[i]] <- JASPgraphs::themeJasp(p[[i]], sides =  "blr")
-        } else{
-          p[[i]] <- JASPgraphs::themeJasp(p[[i]], sides =  "bl")
-        }
-      }
-      
-      # deal with JASPgraphs screwing secondary axis label distance
-      if(p[[i]]$plot_env$any_density && p[[i]]$plot_env$any_spikes){
-        p[[i]] <- p[[i]] + ggplot2::theme(
+      if (all(parameters %in% "theta"))
+        p[[i]] <- JASPgraphs::themeJasp(p[[i]], sides = "b")
+      else if(!is.null(p[[i]][["double_y_axis"]]))
+        p[[i]] <- JASPgraphs::themeJasp(p[[i]], sides = "blr") + ggplot2::theme(
           axis.title.y.right = ggplot2::element_text(vjust = 3.25),
           plot.margin = ggplot2::margin(t = 3, r = 12, b = 0, l = 1))
-      }
+      else
+        p[[i]] <- JASPgraphs::themeJasp(p[[i]], sides = "bl")
+      
       
       temp_plots[[paste(parameters, "_", i, collapse = "")]][["plotObject"]] <- p[[i]]
       
