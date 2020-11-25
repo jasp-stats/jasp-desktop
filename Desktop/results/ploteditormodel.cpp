@@ -9,6 +9,8 @@
 namespace PlotEditor
 {
 
+int PlotEditorModel::_editRequest = 0;
+
 PlotEditorModel::PlotEditorModel()
 	: QObject(Analyses::analyses())
 {
@@ -82,6 +84,7 @@ Json::Value PlotEditorModel::generateImgOptions() const
 	imgOptions["title"]			= title().toStdString();
 	imgOptions["width"]			= width();
 	imgOptions["height"]		= height();
+	imgOptions["request"]		= _editRequest++;
 
 	return imgOptions;
 }

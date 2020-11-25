@@ -646,6 +646,9 @@ void Engine::editImage()
 
 	Json::Reader().parse(result, _analysisResults, false);
 
+	if(_analysisResults.isMember("results"))
+		_analysisResults["results"]["request"] = _imageOptions.get("request", -1);
+
 	_analysisStatus			= Status::complete;
 	_progress				= -1;
 

@@ -91,6 +91,8 @@ private:
 							_height,
 							_analysisId;
 	double					_ppi;
+
+	static int				_editRequest;
 };
 
 }

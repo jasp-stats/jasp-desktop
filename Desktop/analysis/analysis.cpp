@@ -238,6 +238,10 @@ void Analysis::imageEdited(const Json::Value & results)
 
 	emit imageEditedSignal(this);
 	emit imageChanged();
+
+	//Maybe this is the wrong request, because it took a while and the user kept changing stuff in the ploteditor
+	if(_imgOptions.isMember("request") && _imgResults.isMember("request") && _imgOptions["request"].asInt() != _imgResults["request"].asInt())
+		editImage(_imgOptions);
 }
 
 bool Analysis::updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root)
