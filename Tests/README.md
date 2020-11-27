@@ -9,7 +9,7 @@ Note that it is required to have the R package [jaspTools](https://github.com/ja
     - [figs](#figs)
     - [testthat](#testthat)
     - [testthat.R](#testthatr)
-    - [.github/workflows/unittests.yml](#unittestsyml)
+    - [.github/workflows/unittests.yml](#githubworkflowsunittestsyml)
   - [Creating unit tests](#creating-unit-tests)
     - [Creating a test file](#creating-a-test-file)
     - [Adding table tests](#adding-table-tests)
@@ -32,7 +32,7 @@ Your module should include the following structure:
     - [figs/](#figs)
     - [testthat/](#testthat)
     - [testthat.R](#testthatr)
-  - [.github/workflows/unittests.yml](#unittestsyml)
+  - [.github/workflows/unittests.yml](#githubworkflowsunittestsyml)
   
 ### figs
 An empty folder, will be automatically filled later, see [Adding plot tests](#adding-plot-tests).
@@ -49,6 +49,7 @@ jaspTools::runTestsTravis(module = getwd())
 ```
 
 ### .github/workflows/unittests.yml
+The default workflow is
 ```
 on: [push, pull_request]
 
@@ -86,7 +87,7 @@ jobs:
         shell: Rscript {0}
 
 ```
-if you also want to use JAGS, you can use
+JAGS can be enabled by setting `requiresJAGS: true`:
 ```
       - uses: jasp-stats/jasp-actions/setup-test-env@master
         with:
