@@ -48,13 +48,12 @@ public:
 
 
 public slots:
-	void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)	override;
-	void modelChangedSlot()														override;
+	void sourceTermsChanged()											override;
+	void modelChangedSlot()												override;
 	void labelChanged(	 QString columnName, QString originalLabel, QString newLabel);
 	void labelsReordered(QString columnName);
 	void scaleFactorChanged();
 	void setColName(QString colName);
-	void dataSetChangedHandler();
 	void factorsSourceChanged();
 
 signals:

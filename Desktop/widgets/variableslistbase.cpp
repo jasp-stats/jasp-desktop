@@ -30,6 +30,7 @@
 #include "boundcontrolmultiterms.h"
 #include "../analysis/analysisform.h"
 #include "../analysis/jaspcontrol.h"
+#include "sourceitem.h"
 #include <QTimer>
 #include <QQmlProperty>
 #include "log.h"
@@ -47,9 +48,9 @@ void VariablesListBase::setUp()
 
 	if (listViewType() == ListViewType::RepeatedMeasures)
 	{
-		for (SourceType* sourceItem : _sourceModels)
+		for (SourceItem* sourceItem : _sourceItems)
 		{
-			ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(sourceItem->model);
+			ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(sourceItem->model());
 			if (!factorsModel)
 				addControlError(tr("Source model of %1 must be from a Factor List").arg(name()));
 			addDependency(factorsModel->listView());
@@ -66,7 +67,7 @@ void VariablesListBase::setUp()
 
 		if (!relatedModel)
 		{
-			if (sourceModels().empty() && !property("debug").toBool())
+			if (sourceItems().empty() && !property("debug").toBool())
 				addControlError(tr("Cannot find source for VariableList %1").arg(name()));
 		}
 		else
@@ -123,7 +124,6 @@ void VariablesListBase::setUpModel()
 	}
 	case ListViewType::RepeatedMeasures:
 	{
-		_needsSourceModels = true;
 		 ListModelMeasuresCellsAssigned* measuresCellsModel = new ListModelMeasuresCellsAssigned(this);
 		_boundControl	= new BoundControlMeasuresCells(measuresCellsModel);
 		_draggableModel = measuresCellsModel;

@@ -18,9 +18,10 @@
 
 #include "listmodellabelvalueterms.h"
 #include "log.h"
+#include "sourceitem.h"
 
 ListModelLabelValueTerms::ListModelLabelValueTerms(JASPListControl* listView, const JASPListControl::LabelValueMap& values)
-	: ListModelTermsAvailable(listView)
+	: ListModelAvailableInterface(listView)
 {
 	_setLabelValues(values);
 }
@@ -43,35 +44,18 @@ QVariant ListModelLabelValueTerms::data(const QModelIndex &index, int role) cons
 			return label;
 	}
 
-	return ListModelTermsAvailable::data(index, role);
+	return ListModelAvailableInterface::data(index, role);
 }
 
-void ListModelLabelValueTerms::resetTermsFromSourceModels(bool )
+void ListModelLabelValueTerms::resetTermsFromSources(bool )
 {
 	beginResetModel();
 
 	setLabelValuesFromSource();
 
 	endResetModel();
-}
 
-void ListModelLabelValueTerms::initTerms(const Terms &terms, const ListModel::RowControlsOptions &)
-{
-	// TODO: this is called when a DropDown has no source and is filled with the available columns names...
-	// The Available column names should be a source as another one.
-	beginResetModel();
-
-	JASPListControl::LabelValueMap values;
-
-	if (_listView->addEmptyValue())
-		values.push_back(std::make_pair(_listView->placeholderText(), ""));
-
-	for (const Term& term : terms)
-		values.push_back(std::make_pair(term.asQString(), term.asQString()));
-
-	_setLabelValues(values);
-
-	endResetModel();
+	emit termsChanged();
 }
 
 
@@ -132,23 +116,25 @@ void ListModelLabelValueTerms::_setLabelValues(const JASPListControl::LabelValue
 
 void ListModelLabelValueTerms::setLabelValuesFromSource()
 {
-	JASPListControl::LabelValueMap values;
+	JASPListControl::LabelValueMap labelValuePairs;
 
 	if (_listView->addEmptyValue())
-		values.push_back(std::make_pair(_listView->placeholderText(), ""));
+		labelValuePairs.push_back(std::make_pair(_listView->placeholderText(), ""));
 
-	for (const std::pair<JASPListControl::SourceType *, Terms>& source : _listView->getTermsPerSource())
+	for (const auto& pair : listView()->getTermsPerSource())
 	{
-		ListModel* sourceModel = source.first->model;
+		SourceItem* sourceItem = pair.first;
+		const Terms& terms = pair.second;
+		ListModel* sourceModel = sourceItem->model();
 		ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceModel);
-		for (const Term& term : source.second)
+		for (const Term& term : terms)
 		{
 			QString label = term.asQString();
 			QString value = labelValueSourceModel ? labelValueSourceModel->getValue(label) : label;
-			values.push_back(std::make_pair(label, value));
+			labelValuePairs.push_back(std::make_pair(label, value));
 		}
 	}
 
-	_setLabelValues(values);
+	_setLabelValues(labelValuePairs);
 }
 

@@ -102,6 +102,7 @@ QVariant LanguageModel::data(const QModelIndex &index, int role) const
 	switch(role)
 	{
 	case NameRole:			result = getNativeLanguaName(cl); break;
+	case Qt::DisplayRole:
 	case LabelRole:			result = getNativeLanguaName(cl); break;
 	case ValueRole:			result = getNativeLanguaName(cl); break;
 	case NationFlagRole:	result = "qrc:/translations/images/flag_nl.png"; break;

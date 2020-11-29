@@ -28,6 +28,7 @@ using namespace std;
 ListModelMeasuresCellsAssigned::ListModelMeasuresCellsAssigned(JASPListControl* listView)
 	: ListModelAssignedInterface(listView)
 {
+	_needsSource = true;
 }
 
 void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms &variables, bool initVariables)
@@ -71,7 +72,7 @@ void ListModelMeasuresCellsAssigned::_fitTermsWithLevels()
 	}
 }
 
-void ListModelMeasuresCellsAssigned::sourceTermsChanged(const Terms *termsAdded, const Terms *termsRemoved)
+void ListModelMeasuresCellsAssigned::sourceTermsChanged()
 {
 	VariablesListBase* measureCellsListView = dynamic_cast<VariablesListBase*>(listView());
 	if (measureCellsListView)
@@ -79,7 +80,7 @@ void ListModelMeasuresCellsAssigned::sourceTermsChanged(const Terms *termsAdded,
 		BoundControlMeasuresCells* boundControl = dynamic_cast<BoundControlMeasuresCells*>(measureCellsListView->boundControl());
 		initLevels(boundControl->getLevels());
 		source()->removeTermsInAssignedList();
-		emit termsChanged(termsAdded, termsRemoved);
+		emit termsChanged();
 	}
 	else
 		Log::log() << "ListView from Measures cells model is not of a Measures Cell type!!";

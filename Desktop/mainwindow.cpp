@@ -160,6 +160,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	new MessageForwarder(this); //We do not need to store this
 
+	AnalysisForm::columnsModel = _columnsModel;
+	AnalysisForm::columnsModelRole = ColumnsModel::NameRole;
+
 	startOnlineDataManager();
 
 	makeConnections();
@@ -311,7 +314,6 @@ void MainWindow::makeConnections()
 	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::dataColumnAdded,				_fileMenu,				&FileMenu::dataColumnAdded									);
-	connect(_computedColumnsModel,	&ComputedColumnsModel::refreshData,					_analyses,				&Analyses::refreshAvailableVariables,						Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			this,					&MainWindow::showResultsPanel								);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);

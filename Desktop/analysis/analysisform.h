@@ -75,9 +75,6 @@ public:
 					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
-				void			dataSetChangedHandler();
-				void			dataSetColumnsChangedHandler();
-				void			replaceVariableNameInListModels(const std::string & oldName, const std::string & newName);
 				void			setInfo(QString info);
 				void			setAnalysis(QVariant analysis);
 
@@ -86,7 +83,6 @@ signals:
 				void			sendRScript(QString script, int key);
 				void			formChanged(Analysis* analysis);
 				void			formCompleted();
-				void			dataSetChanged();
 				void			refreshTableViewModels();
 				void			errorMessagesItemChanged();
 				void			languageChanged();
@@ -126,8 +122,6 @@ public:
 	void		addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false);
 	void		clearControlError(JASPControl* control);
 	void		cleanUpForm();
-	void		refreshAvailableVariablesModels() { _setAllAvailableVariablesModel(true); }
-
 	bool		hasError();
 
 	bool		isOwnComputedColumn(const QString& col)			const	{ return _computedColumns.contains(col); }
@@ -144,8 +138,9 @@ public:
 	QString		warnings()			const { return msgsListToString(_formWarnings);	}
 	QVariant	analysis()			const { return QVariant::fromValue(_analysis);	}
 
+	static QAbstractItemModel*	columnsModel;
+	static int					columnsModelRole;
 protected:
-	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
 	QString		msgsListToString(const QStringList & list) const;
 
 private:
@@ -185,8 +180,6 @@ protected:
 	std::map<std::string,std::set<std::string>>	_mustContain;
 	
 private:
-	std::vector<ListModelTermsAvailable*>		_allAvailableVariablesModels,
-												_allAvailableVariablesModelsWithSource;
 	QStringList									_formErrors,
 												_formWarnings;
 

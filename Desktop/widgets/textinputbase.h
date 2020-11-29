@@ -36,6 +36,8 @@ class TextInputBase : public JASPControl, public BoundControl
 {
 	Q_OBJECT
 
+	Q_PROPERTY( bool		hasScriptError		READ hasScriptError			WRITE setHasScriptError		NOTIFY hasScriptErrorChanged		)
+
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType, FormulaArrayType};
 
@@ -51,9 +53,14 @@ public:
 
 	TextInputType	inputType()	{ return _inputType; }
 	QString			friendlyName() const override;
+	bool			hasScriptError()						const	{ return _hasScriptError;		}
 
 signals:
 	void		formulaCheckSucceeded();
+	void		hasScriptErrorChanged();
+
+public slots:
+	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
 
 private slots:
 	void		textChangedSlot();
@@ -80,6 +87,7 @@ private:
 
 	bool					_parseDefaultValue	= true;
 	QString					_defaultValue		= "";
+	bool					_hasScriptError		= false;
 
 };
 

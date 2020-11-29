@@ -233,7 +233,7 @@ void JASPControl::componentComplete()
 			if (!listViewVar.isNull())
 			{
 				_parentListViewKey = context->contextProperty("rowValue").toString();
-				connect(listView->model(), &ListModel::termChanged, this, &JASPControl::parentListViewKeyChanged);
+				connect(listView->model(), &ListModel::oneTermChanged, this, &JASPControl::parentListViewKeyChanged);
 			}
 			else
 				_parentListViewKey = context->contextProperty("rowIndex").toString();
@@ -320,7 +320,7 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item)
 
 bool JASPControl::addDependency(JASPControl *item)
 {
-	if (_depends.count(item) > 0 || this == item)
+	if (_depends.count(item) > 0 || this == item || !item)
 		return false;
 
 	_depends.insert(item);

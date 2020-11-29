@@ -461,7 +461,8 @@ HEADERS += \
     widgets/radiobuttonsgroupbase.h \
     widgets/jasplistcontrol.h \
     widgets/radiobuttonbase.h \
-    widgets/repeatedmeasuresfactorslistbase.h
+    widgets/repeatedmeasuresfactorslistbase.h \
+    widgets/sourceitem.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -652,7 +653,8 @@ SOURCES += \
     widgets/radiobuttonsgroupbase.cpp \
     widgets/jasplistcontrol.cpp \
     widgets/radiobuttonbase.cpp \
-    widgets/repeatedmeasuresfactorslistbase.cpp
+    widgets/repeatedmeasuresfactorslistbase.cpp \
+    widgets/sourceitem.cpp
 
 RESOURCES += \
     html/html.qrc \

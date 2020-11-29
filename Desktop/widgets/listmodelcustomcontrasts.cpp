@@ -34,6 +34,9 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QStrin
 	_values.clear();
 	_colNames.push_back(getDefaultColName(0));
 	_values.push_back({});
+	_loadColumnInfo();
+
+	_needsSource = _colName.isEmpty();
 
 	parent->setProperty("parseDefaultValue", false);
 	parent->setProperty("defaultEmptyValue", _defaultCellVal);
@@ -45,7 +48,7 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QStrin
 	connect(listView(), SIGNAL(scaleFactorChanged()),			this, SLOT(scaleFactorChanged()));
 }
 
-void ListModelCustomContrasts::sourceTermsChanged(const Terms *, const Terms *)
+void ListModelCustomContrasts::sourceTermsChanged()
 {
 	_resetValuesEtc();
 }
@@ -255,8 +258,6 @@ void ListModelCustomContrasts::reset()
 
 void ListModelCustomContrasts::setup()
 {
-	// This cannot be done in the constructor: the form is then not yet known.
-	connect(_tableView->form(), &AnalysisForm::dataSetChanged, this, &ListModelCustomContrasts::dataSetChangedHandler,	Qt::QueuedConnection	);
 	QString factorsSourceName = _tableView->property("factorsSource").toString();
 	if (!factorsSourceName.isEmpty())
 	{
@@ -267,7 +268,6 @@ void ListModelCustomContrasts::setup()
 			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::termsChanged, this, &ListModelCustomContrasts::factorsSourceChanged);
 		}
 	}
-	_loadColumnInfo();
 }
 
 int ListModelCustomContrasts::getMaximumColumnWidthInCharacters(size_t columnIndex) const
@@ -537,11 +537,6 @@ void ListModelCustomContrasts::setColName(QString colName)
 	_colName = colName;
 	emit colNameChanged(_colName);
 
-	_resetValuesEtc();
-}
-
-void ListModelCustomContrasts::dataSetChangedHandler()
-{
 	_resetValuesEtc();
 }
 

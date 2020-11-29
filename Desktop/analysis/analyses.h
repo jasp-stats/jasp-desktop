@@ -128,7 +128,6 @@ public slots:
 	void rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * module);
 	void setChangedAnalysisTitle();
 	void analysisTitleChangedInResults(int id, QString title);
-	void refreshAvailableVariables();
 	void setCurrentFormPrevH(double currentFormPrevH);
 	void move(int fromIndex, int toIndex);
 	void duplicateAnalysis(size_t id);

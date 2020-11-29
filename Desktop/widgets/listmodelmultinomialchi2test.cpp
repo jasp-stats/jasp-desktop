@@ -35,7 +35,7 @@ ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(TableViewBase * paren
 
 }
 
-void ListModelMultinomialChi2Test::sourceTermsChanged(const Terms *termsAdded, const Terms *)
+void ListModelMultinomialChi2Test::sourceTermsChanged()
 {
 	beginResetModel();
 
@@ -45,9 +45,10 @@ void ListModelMultinomialChi2Test::sourceTermsChanged(const Terms *termsAdded, c
 	_columnCount = 0;
 	_rowCount    = 0;
 
-	if (termsAdded && termsAdded->size() > 0)
+	Terms newTerms = getSourceTerms();
+	if (newTerms.size() > 0)
 	{
-		_columnBeingTracked	= tq(termsAdded->at(0).asString());
+		_columnBeingTracked	= tq(newTerms.at(0).asString());
 		_rowNames			= DataSetPackage::pkg()->getColumnLabelsAsStringList(fq(_columnBeingTracked)).toVector();
 		_rowCount			= _rowNames.size();
 

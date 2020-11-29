@@ -20,18 +20,16 @@
 #define LISTMODELLABELVALUETERMS_H
 
 #include "jasplistcontrol.h"
-#include "listmodeltermsavailable.h"
+#include "listmodelavailableinterface.h"
 
-class ListModelLabelValueTerms : public ListModelTermsAvailable
+class ListModelLabelValueTerms : public ListModelAvailableInterface
 {
 	Q_OBJECT
 public:
 	ListModelLabelValueTerms(JASPListControl* listView, const JASPListControl::LabelValueMap& values = JASPListControl::LabelValueMap());
 
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
-	void						resetTermsFromSourceModels(bool updateAssigned = true)				override;
-	void						initTerms(const Terms &terms, const RowControlsOptions& _rowControlsOptions = RowControlsOptions())	override;
-
+	void						resetTermsFromSources(bool updateAssigned = true)				override;
 
 	std::vector<std::string>	getValues();
 	QString						getValue(const QString& label);

@@ -201,6 +201,7 @@ void Analyses::clear()
 	{
 		Analysis* analysis = idAnalysis.second;
 		idAnalysis.second  = nullptr;
+		analysis->remove();
 
 		emit analysisRemoved(analysis);
 		delete analysis;
@@ -514,10 +515,7 @@ void Analyses::refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
 
 			if (aNameChanged)
 				for (std::string & varname : interChangename)
-				{
-					analysis->replaceVariableName(varname, changeNameColumns[varname]);
 					analysesToRebind.insert(analysis);
-				}
 
 			if (aNameChanged || aColumnRemoved || aColumnChanged)
 				analysesToRefresh.insert(analysis);
@@ -534,15 +532,6 @@ void Analyses::refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
 		// replaceVariableName and removeUsedVariable just changes the options, not the form
 		// So by rebinding the form with their options, it will update the form
 		analysis->rebind();
-
-	if (hasNewColumns || missingColumns.size() > 0 || changeNameColumns.size() > 0 || changedColumns.size() > 0)
-		applyToAll([&](Analysis * a)
-		{
-			if (analysesToRebind.find(a) == analysesToRebind.end())
-				// rebind already refreshes the available models together with the assigned models in the right way
-				a->refreshAvailableVariablesModels();
-		});
-
 
 	if(rowCountChanged)
 		QTimer::singleShot(0, this, &Analyses::refreshAllAnalyses);
@@ -804,11 +793,6 @@ void Analyses::setChangedAnalysisTitle()
 
     if (analysis != nullptr)
         emit analysisTitleChanged(analysis);
-}
-
-void Analyses::refreshAvailableVariables()
-{
-	applyToAll([](Analysis * a) { a->refreshAvailableVariablesModels();	});
 }
 
 void Analyses::duplicateAnalysis(size_t id)

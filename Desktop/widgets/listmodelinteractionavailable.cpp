@@ -20,6 +20,7 @@
 #include "listmodeltermsassigned.h"
 #include "../analysis/analysisform.h"
 #include "jasplistcontrol.h"
+#include "sourceitem.h"
 
 ListModelInteractionAvailable::ListModelInteractionAvailable(JASPListControl* listView)
 	: ListModelAvailableInterface(listView), InteractionModel ()
@@ -27,12 +28,8 @@ ListModelInteractionAvailable::ListModelInteractionAvailable(JASPListControl* li
 	_areTermsInteractions = true;
 }
 
-void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssigned)
-{
-	const QList<JASPListControl::SourceType*>& sourceItems = listView()->sourceModels();
-	if (sourceItems.size() == 0)
-		return;
-	
+void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
+{	
 	beginResetModel();
 	Terms termsAvailable;
 	clearInteractions();
@@ -40,13 +37,14 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssign
 	Terms randomFactors;
 	Terms covariates;
 
-	for (const std::pair<JASPListControl::SourceType *, Terms>& source : listView()->getTermsPerSource())
+	for (const auto& pair : listView()->getTermsPerSource())
 	{
-		ListModel* sourceModel = source.first->model;
-		const Terms& terms = source.second;
+		SourceItem* sourceItem = pair.first;
+		const Terms& terms = pair.second;
+		ListModel* sourceModel = sourceItem->model();
 		for (const Term& term : terms)
 		{
-			QString itemType = sourceModel->getItemType(term);
+			QString itemType = sourceModel ? sourceModel->getItemType(term) : "";
 			if (itemType.isEmpty() || itemType == "variables")
 				itemType = sourceModel->name();
 
@@ -69,7 +67,15 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssign
 		addCovariates(covariates);
 	
 	const Terms& interactions = interactionTerms();
-	setChangedTerms(interactions);
+	Terms removedTerms, addedTerms;
+
+	for (const Term& term : _allTerms)
+		if (!interactions.contains(term))
+			removedTerms.add(term);
+
+	for (const Term& term : interactions)
+		if (!_allTerms.contains(term))
+			addedTerms.add(term);
 	
 	_allTerms.set(interactions);
 	_terms.set(interactions);
@@ -80,7 +86,7 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssign
 	endResetModel();
 
 	if (updateAssigned)
-		emit allAvailableTermsChanged(&_tempAddedTerms, &_tempRemovedTerms);
+		emit allAvailableTermsChanged(addedTerms, removedTerms);
 
 }
 

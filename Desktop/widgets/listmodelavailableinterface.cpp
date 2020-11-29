@@ -46,8 +46,21 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 	switch(sortType)
 	{
 	case SortType::None:
+	{
+		Terms allowed, forbidden;
+
+		for (const Term &term : _allTerms)
+		{
+			if ( ! isAllowed(term))	forbidden.add(term);
+			else					allowed.add(term);
+		}
+
+		_allTerms.clear();
+		_allTerms.add(allowed);
+		_allTerms.add(forbidden);
 		_allSortedTerms = _allTerms;
 		break;
+	}
 
 	case SortType::SortByName:
 	{
@@ -94,26 +107,9 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 	endResetModel();
 }
 
-void ListModelAvailableInterface::sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)
+void ListModelAvailableInterface::sourceTermsChanged()
 {
-	Q_UNUSED(termsAdded);
-	Q_UNUSED(termsRemoved);
-	
-	resetTermsFromSourceModels();
-}
-
-void ListModelAvailableInterface::setChangedTerms(const Terms &newTerms)
-{
-	_tempRemovedTerms.clear();
-	_tempAddedTerms.clear();
-
-	for (const Term& term : _allTerms)
-		if (!newTerms.contains(term))
-			_tempRemovedTerms.add(term);
-
-	for (const Term& term : newTerms)
-		if (!_allTerms.contains(term))
-			_tempAddedTerms.add(term);
+	resetTermsFromSources();
 }
 
 void ListModelAvailableInterface::removeTermsInAssignedList()

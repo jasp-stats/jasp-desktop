@@ -36,7 +36,7 @@ public:
 	
 	virtual const Terms& allTerms()																						const { return _allSortedTerms; }
 			void initTerms(const Terms &terms, const RowControlsOptions& _rowControlsOptions = RowControlsOptions())	override;
-	virtual void resetTermsFromSourceModels(bool updateAssigned = true)			= 0;
+	virtual void resetTermsFromSources(bool updateAssigned = true)			= 0;
 	virtual void removeTermsInAssignedList();
 	
 			QVariant requestInfo(const Term &term, VariableInfo::InfoType info)			const override;
@@ -50,22 +50,17 @@ public:
 			void										setTermsAreInteractions(bool interactions)	override;
 
 signals:
-			void allAvailableTermsChanged(Terms* termsAdded, Terms* termsRemoved);
+			void allAvailableTermsChanged(Terms termsAdded, Terms termsRemoved);
 
 public slots:
-			void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved) override;
+			void sourceTermsChanged()								override;
 			void removeAssignedModel(ListModelDraggable* model);
 
 protected:
-	Terms					_allTerms;
-	Terms					_allSortedTerms;
-
-	Terms					_tempRemovedTerms;
-	Terms					_tempAddedTerms;
+	Terms								_allTerms;
+	Terms								_allSortedTerms;
 
 	QList<ListModelAssignedInterface*>	_assignedModels;
-
-	void setChangedTerms(const Terms &newTerms);
 };
 
 #endif // LISTMODELTERMSAVAILABLEINTERFACE_H

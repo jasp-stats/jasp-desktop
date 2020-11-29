@@ -159,7 +159,6 @@ public:
 	std::set<std::string>	usedVariables()																	{ return _options->usedVariables();					}
 	std::set<std::string>	columnsCreated()																{ return _options->columnsCreated();				}
 	void					removeUsedVariable(const std::string & var)										{ _options->removeUsedVariable(var);				}
-	void					replaceVariableName(const std::string & oldName, const std::string & newName);
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
@@ -204,7 +203,6 @@ public slots:
 	void					setTitle(std::string title) { setTitleQ(tq(title)); }
 	void					setHasVolatileNotes(bool hasVolatileNotes);
 	void					setDynamicModule(Modules::DynamicModule * module);
-	void					refreshAvailableVariablesModels();
 	void					emitDuplicationSignals();
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
 	void					setOptionsBound(bool optionsBound);

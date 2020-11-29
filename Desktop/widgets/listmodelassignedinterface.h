@@ -34,7 +34,7 @@ public:
 	ListModelAvailableInterface*	source() const												{ return _source; }
 	
 public slots:
-	virtual void availableTermsChanged(const Terms* termsAdded, const Terms* termsRemoved) {}
+	virtual void availableTermsChanged(Terms termsAdded, Terms termsRemoved) {}
 
 protected:
 	ListModelAvailableInterface*			_source;

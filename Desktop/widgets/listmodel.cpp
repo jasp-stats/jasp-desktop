@@ -22,7 +22,7 @@
 #include "rowcontrols.h"
 #include "../analysis/jaspcontrol.h"
 #include "jasplistcontrol.h"
-#include <QJSEngine>
+#include "sourceitem.h"
 #include <boost/bind.hpp>
 #include "log.h"
 
@@ -78,8 +78,8 @@ void ListModel::_initTerms(const Terms &terms, const RowControlsOptions& allOpti
 	endResetModel();
 
 	if (setupControlConnections)
-		for (JASPListControl::SourceType* sourceType : listView()->sourceModels())
-			_connectSourceControls(sourceType->model, sourceType->usedControls);
+		for (SourceItem* sourceItem : listView()->sourceItems())
+			_connectSourceControls(sourceItem->model(), sourceItem->usedControls());
 }
 
 
@@ -97,7 +97,7 @@ void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QStrin
 		{
 			JASPControl* control = sourceModel->getRowControl(term.asQString(), controlName);
 			BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
-			if (boundControl && !_rowControlsConnected.contains(boundControl))
+			if (control->isBound() && boundControl && !_rowControlsConnected.contains(boundControl))
 			{
 				boundControl->boundTo()->changed.connect(boost::bind(&ListModel::_sourceTermsChangedHandler, this, _1));
 				_rowControlsConnected.push_back(boundControl);
@@ -109,38 +109,13 @@ void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QStrin
 Terms ListModel::getSourceTerms()
 {
 	Terms termsAvailable;
-	Terms termsToCombine;
-	Terms termsToBeCombinedWith;
 
-	for (const std::pair<JASPListControl::SourceType *, Terms>& source : listView()->getTermsPerSource())
+	for (const auto& pair : listView()->getTermsPerSource())
 	{
-		JASPListControl::SourceType* sourceItem = source.first;
-		const Terms& sourceTerms = source.second;
-		ListModel* sourceModel = sourceItem->model;
-		if (sourceModel)
-		{
-			_connectSourceControls(sourceModel, sourceItem->usedControls);
+		SourceItem* sourceItem = pair.first;
+		_connectSourceControls(sourceItem->model(), sourceItem->usedControls());
 
-			if (sourceItem->combineWithOtherModels)
-				termsToCombine = sourceTerms;
-			else
-				termsToBeCombinedWith.add(sourceTerms);
-
-			termsAvailable.add(sourceTerms);
-		}
-	}
-
-	if (termsToCombine.size() > 0)
-	{
-		for (const Term& termToCombine : termsToCombine)
-		{
-			for (const Term& termToBeCombined : termsToBeCombinedWith)
-			{
-				QStringList components = termToCombine.components();
-				components.append(termToBeCombined.components());
-				termsAvailable.add(Term(components));
-			}
-		}
+		termsAvailable.add(pair.second);
 	}
 	
 	return termsAvailable;
@@ -150,10 +125,11 @@ ListModel *ListModel::getSourceModelOfTerm(const Term &term)
 {
 	ListModel* result = nullptr;
 
-	for (const std::pair<JASPListControl::SourceType *, Terms>& source : listView()->getTermsPerSource())
+	for (const auto& pair : listView()->getTermsPerSource())
 	{
-		if (source.second.contains(term))
-			result = source.first->model;
+		SourceItem* sourceItem = pair.first;
+		if (pair.second.contains(term) && sourceItem->model())
+			result = sourceItem->model();
 	}
 	return result;
 }
@@ -255,7 +231,7 @@ void ListModel::_addSelectedItemType(int _index)
 
 void ListModel::_sourceTermsChangedHandler(Option *)
 {
-	sourceTermsChanged(nullptr, nullptr);
+	sourceTermsChanged();
 }
 
 void ListModel::selectItem(int _index, bool _select)
@@ -364,11 +340,11 @@ QList<QString> ListModel::itemTypes()
 }
 
 
-void ListModel::sourceTermsChanged(const Terms *termsAdded, const Terms *termsRemoved)
+void ListModel::sourceTermsChanged()
 {
 	_initTerms(getSourceTerms(), RowControlsOptions(), false);
 	
-	emit termsChanged(termsAdded, termsRemoved);
+	emit termsChanged();
 }
 
 int ListModel::rowCount(const QModelIndex &) const

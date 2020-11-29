@@ -29,10 +29,10 @@ class ListModelMultinomialChi2Test : public ListModelTableViewBase
 public:
 	explicit ListModelMultinomialChi2Test(TableViewBase * parent, QString tableType);
 
-	QString	getDefaultColName(size_t index) const override;
+	QString	getDefaultColName(size_t index) const	override;
 
 public slots:
-	void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)	override;
+	void sourceTermsChanged()						override;
 	void labelChanged(	 QString columnName, QString originalLabel, QString newLabel);
 	void labelsReordered(QString columnName);
 

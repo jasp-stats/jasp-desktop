@@ -315,7 +315,7 @@ void TextInputBase::rScriptDoneHandler(const QString &result)
 		if (!succes)
 		{
 			addControlError(tr("The expression did not return a number."));
-			setProperty("hasScriptError", true);
+			setHasScriptError(true);
 			break;
 		}
 
@@ -376,11 +376,11 @@ bool TextInputBase::_formulaResultInBounds(double result)
 		if (tooSmall)	end = (includeMin ? "&ge; " : "&gt; ") + property("min").toString();
 		else			end = (includeMax ? "&le; " : "&lt; ") + property("max").toString();
 		addControlError(tr("The value (%1) must be %2").arg(result).arg(end));
-		setProperty("hasScriptError", true);
+		setHasScriptError(true);
 	}
 	else
 	{
-		setProperty("hasScriptError", false);
+		setHasScriptError(false);
 		clearControlError();
 	}
 

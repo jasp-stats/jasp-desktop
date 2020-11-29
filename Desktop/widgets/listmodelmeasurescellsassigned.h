@@ -40,7 +40,7 @@ public:
 	void			initLevels(const Terms& levels, const Terms &variables = Terms(), bool initVariables = false);
 
 public slots:	
-	void			sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved) override;
+	void			sourceTermsChanged()																					override;
 	
 private:
 	void			_fitTermsWithLevels();

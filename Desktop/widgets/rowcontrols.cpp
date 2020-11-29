@@ -92,7 +92,7 @@ bool RowControls::addJASPControl(JASPControl *control)
 		_rowJASPControlMap[control->name()] = control;
 		BoundControl* boundItem = dynamic_cast<BoundControl*>(control);
 
-		if (boundItem && !isDummy)
+		if (control->isBound() && boundItem && !isDummy)
 		{
 			bool hasOption = _rowOptions.contains(control->name());
 			Option* option =  hasOption ? _rowOptions[control->name()] : boundItem->createOption();
@@ -104,7 +104,7 @@ bool RowControls::addJASPControl(JASPControl *control)
 				// If a ListView depends on a source, it has to be initialized by this source
 				// For this just call the sourceTermsChanged handler.
 				if (listView && listView->hasSource())
-					listView->model()->sourceTermsChanged(nullptr, nullptr);
+					listView->model()->sourceTermsChanged();
 			}
 		}
 

@@ -43,29 +43,27 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsOpti
 	}
 }
 
-void ListModelTermsAssigned::availableTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)
+void ListModelTermsAssigned::availableTermsChanged(Terms termsAdded, Terms termsRemoved)
 {
-	if (termsAdded && termsAdded->size() > 0 && _addNewAvailableTermsToAssignedModel)
+	if (termsAdded.size() > 0 && _addNewAvailableTermsToAssignedModel)
 	{
 		beginResetModel();
-		_terms.add(*termsAdded);
+		_terms.add(termsAdded);
 		endResetModel();
 
-		_tempTermsToAdd.set(*termsAdded);
-		emit termsChanged(&_tempTermsToAdd, nullptr);
+		emit termsChanged();
 
 		if (!_copyTermsWhenDropped)
 			source()->removeTermsInAssignedList();
 	}
 
-	if (termsRemoved && termsRemoved->size() > 0)
+	if (termsRemoved.size() > 0)
 	{
 		beginResetModel();
-		_terms.remove(*termsRemoved);
+		_terms.remove(termsRemoved);
 		endResetModel();
 
-		_tempTermsToRemove.set(*termsRemoved);
-		emit termsChanged(nullptr, &_tempTermsToRemove);
+		emit termsChanged();
 	}
 }
 
@@ -104,7 +102,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, JA
 
 	endResetModel();
 
-	emit termsChanged(&terms, &_tempTermsToSendBack);
+	emit termsChanged();
 
 	return _tempTermsToSendBack;
 }
@@ -133,8 +131,6 @@ void ListModelTermsAssigned::removeTerm(int index)
 {
 	if (index < 0 || index >= int(_terms.size())) return;
 
-	_tempTermsToRemove.clear();
-
 	beginResetModel();
 
 	const Term& term = _terms.at(size_t(index));
@@ -153,11 +149,10 @@ void ListModelTermsAssigned::removeTerm(int index)
 		_rowControlsMap.remove(termQ);
 	}
 	_terms.remove(term);
-	_tempTermsToRemove.add(term);
 
 	endResetModel();
 
-	emit termsChanged(nullptr, &_tempTermsToRemove);
+	emit termsChanged();
 }
 
 void ListModelTermsAssigned::changeTerm(int index, const QString& name)
@@ -171,7 +166,7 @@ void ListModelTermsAssigned::changeTerm(int index, const QString& name)
 		_rowControlsOptions.remove(oldName);
 		_terms.replace(index, Term(name));
 
-		emit termChanged(oldName, name);
+		emit oneTermChanged(oldName, name);
 		emit termsChanged();
 		QModelIndex modelIndex = ListModelTermsAssigned::index(index, 0);
 		emit dataChanged(modelIndex, modelIndex);

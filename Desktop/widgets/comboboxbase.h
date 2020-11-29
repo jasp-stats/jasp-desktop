@@ -30,13 +30,11 @@ class ComboBoxBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 
+	Q_PROPERTY( int			currentIndex		READ currentIndex		WRITE setCurrentIndex			NOTIFY currentIndexChanged			)
 	Q_PROPERTY( QString		currentText			READ currentText		WRITE setCurrentText			NOTIFY currentTextChanged			)
 	Q_PROPERTY( QString		currentValue		READ currentValue		WRITE setCurrentValue			NOTIFY currentValueChanged			)
 	Q_PROPERTY( QString		startValue			READ startValue			WRITE setStartValue				NOTIFY startValueChanged			)
 	Q_PROPERTY( QString		currentColumnType	READ currentColumnType	WRITE setCurrentColumnType		NOTIFY currentColumnTypeChanged		)
-	Q_PROPERTY( QString		textRole			READ textRole			WRITE setTextRole				NOTIFY textRoleChanged				)
-	Q_PROPERTY( QString		valueRole			READ valueRole			WRITE setValueRole				NOTIFY valueRoleChanged				)
-	Q_PROPERTY( int			indexDefaultValue	READ indexDefaultValue	WRITE setIndexDefaultValue		NOTIFY indexDefaultValueChanged		)
 
 public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
@@ -50,37 +48,28 @@ public:
 	ListModel*			model()								const	override	{ return _model;				}
 	void				setUpModel()								override;
 
-	void				setLabelValues();
-
 	const QString&		currentText()						const				{ return _currentText;			}
 	const QString&		currentValue()						const				{ return _currentValue;			}
 	const QString&		startValue()						const				{ return _startValue;			}
 	const QString&		currentColumnType()					const				{ return _currentColumnType;	}
-	const QString&		textRole()							const				{ return _textRole;				}
-	const QString&		valueRole()							const				{ return _valueRole;			}
-	int					indexDefaultValue()					const				{ return _indexDefaultValue;	}
+	int					currentIndex()						const				{ return _currentIndex;			}
 
 signals:
 	void currentTextChanged();
 	void currentValueChanged();
 	void startValueChanged();
 	void currentColumnTypeChanged();
-	void indexDefaultValueChanged();
-	void textRoleChanged();
-	void valueRoleChanged();
+	void currentIndexChanged();
 
 protected slots:
 	void termsChangedHandler() override;
-	void comboBoxChangeValueSlot(int index);
-	void languageChangedHandler();
+	void activatedSlot(int index);
 
 	GENERIC_SET_FUNCTION(CurrentText,		_currentText,		currentTextChanged,			QString	)
 	GENERIC_SET_FUNCTION(CurrentValue,		_currentValue,		currentValueChanged,		QString	)
 	GENERIC_SET_FUNCTION(StartValue,		_startValue,		startValueChanged,			QString	)
 	GENERIC_SET_FUNCTION(CurrentColumnType,	_currentColumnType, currentColumnTypeChanged,	QString	)
-	GENERIC_SET_FUNCTION(IndexDefaultValue,	_indexDefaultValue,	indexDefaultValueChanged,	int		)
-	GENERIC_SET_FUNCTION(TextRole,			_textRole,			textRoleChanged,			QString	)
-	GENERIC_SET_FUNCTION(ValueRole,			_valueRole,			valueRoleChanged,			QString	)
+	GENERIC_SET_FUNCTION(CurrentIndex,		_currentIndex,		currentIndexChanged,		int		)
 
 protected:
 	OptionList*					_boundTo				= nullptr;
@@ -88,13 +77,10 @@ protected:
 	QString						_currentText,
 								_currentValue,
 								_startValue,
-								_currentColumnType,
-								_textRole				= "label",
-								_valueRole				= "value";
-	int							_indexDefaultValue		= 0;
+								_currentColumnType;
+	int							_currentIndex			= 0;
 
 	void _resetItemWidth();
-	void _resetOptions();
 	void _setCurrentValue(int index, bool setOption = true);
 
 

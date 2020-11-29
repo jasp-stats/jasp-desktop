@@ -44,7 +44,7 @@ public:
 
 		
 public slots:
-	void availableTermsChanged(const Terms* termsToAdd, const Terms* termsToRemove) override;
+	void availableTermsChanged(Terms termsToAdd, Terms termsToRemove)								override;
 	
 protected:
 	void addCombinedTerms(const Terms& terms, JASPControl::AssignType assignType);

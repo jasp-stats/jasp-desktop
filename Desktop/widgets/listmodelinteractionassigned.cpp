@@ -136,17 +136,17 @@ void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWit
 	
 }
 
-void ListModelInteractionAssigned::availableTermsChanged(const Terms *termsAdded, const Terms *termsRemoved)
+void ListModelInteractionAssigned::availableTermsChanged(Terms termsAdded, Terms termsRemoved)
 {
-	if (termsAdded && termsAdded->size() > 0 && _addNewAvailableTermsToAssignedModel)
+	if (termsAdded.size() > 0 && _addNewAvailableTermsToAssignedModel)
 	{
-		_addTerms(*termsAdded, _addInteractionsByDefault);
+		_addTerms(termsAdded, _addInteractionsByDefault);
 		setTerms();
 	}
 	
-	if (termsRemoved && termsRemoved->size() > 0)
+	if (termsRemoved.size() > 0)
 	{
-		removeInteractionTerms(*termsRemoved);
+		removeInteractionTerms(termsRemoved);
 		setTerms();
 	}
 }

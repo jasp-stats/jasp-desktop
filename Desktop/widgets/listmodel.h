@@ -59,16 +59,18 @@ public:
 
 	virtual void					endResetModel();
 
-			JASPListControl*			listView() const								{ return _listView; }
+			JASPListControl*		listView()													const		{ return _listView; }
 			const QString &			name() const;
-	virtual const Terms &			terms(const QString& what = QString())	const;
-			bool					areTermsVariables() const						{ return _areTermsVariables; }
-			bool					areTermsInteractions() const					{ return _areTermsInteractions; }
-	virtual QString					getItemType(const Term& term) const				{ return _itemType; }
+	virtual const Terms &			terms(const QString& what = QString())						const;
+			bool					areTermsVariables()											const		{ return _areTermsVariables; }
+			bool					areTermsInteractions()										const		{ return _areTermsInteractions; }
+			bool					needsSource()												const		{ return _needsSource;			}
+			void					setNeedsSource(bool needs)												{ _needsSource = needs;			}
+	virtual QString					getItemType(const Term& term)								const		{ return _itemType; }
 	virtual void					setTermsAreVariables(bool areVariables);
-	virtual void					setTermsAreInteractions(bool interactions)		{ _areTermsInteractions = interactions; }
-			void					setItemType(QString type)						{ _itemType = type; }
-			void					addControlError(const QString& error) const;
+	virtual void					setTermsAreInteractions(bool interactions)								{ _areTermsInteractions = interactions; }
+			void					setItemType(QString type)												{ _itemType = type; }
+			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
 	virtual void					initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions());
 			Terms					getSourceTerms();
@@ -77,7 +79,7 @@ public:
 			void					setRowComponent(QQmlComponent* rowComponents);
 	virtual void					setUpRowControls();
 	const rowControlMap	&			getRowControls() const { return _rowControlsMap; }
-	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)			const;
+	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
@@ -85,20 +87,20 @@ public:
 	Q_INVOKABLE void				clearSelectedItems(bool emitSelectedChange = true);
 	Q_INVOKABLE void				setSelectedItem(int _index);
 	Q_INVOKABLE void				selectAllItems();
-	Q_INVOKABLE QList<int>			selectedItems()			{ return _selectedItems; }
-	Q_INVOKABLE QList<QString>		selectedItemsTypes()	{ return _selectedItemsTypes.toList(); }
+	Q_INVOKABLE QList<int>			selectedItems()															{ return _selectedItems; }
+	Q_INVOKABLE QList<QString>		selectedItemsTypes()													{ return _selectedItemsTypes.toList(); }
 	Q_INVOKABLE QList<QString>		itemTypes();
 
 			void					replaceVariableName(const std::string & oldName, const std::string & newName);
 
 
 signals:
-			void termsChanged(const Terms* added = nullptr, const Terms* removed = nullptr);
+			void termsChanged();
 			void selectedItemsChanged();
-			void termChanged(const QString& oldName, const QString& newName);
+			void oneTermChanged(const QString& oldName, const QString& newName);
 
 public slots:	
-	virtual void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved);
+	virtual void sourceTermsChanged();
 
 private:
 			void	_addSelectedItemType(int _index);
@@ -112,6 +114,7 @@ protected:
 	Terms							_terms;
 	QList<int>						_selectedItems;
 	QSet<QString>					_selectedItemsTypes;
+	bool							_needsSource			= true;
 	bool							_areTermsVariables		= true;
 	bool							_areTermsInteractions	= false;
 	QMap<QString, RowControls* >	_rowControlsMap;

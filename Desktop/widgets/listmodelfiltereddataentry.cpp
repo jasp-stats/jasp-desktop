@@ -24,7 +24,6 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent, Q
 	connect(_tableView,			SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))														);
 	connect(_tableView,			SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))														);
 	connect(_tableView,			SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))													);
-	connect(_tableView->form(), &AnalysisForm::dataSetChanged,					this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
 	connect(this,				&ListModelFilteredDataEntry::filterChanged,		[&](){ _tableView->setProperty("filter",	_filter);	}						);
 	connect(this,				&ListModelFilteredDataEntry::colNameChanged,	[&](){ _tableView->setProperty("colName",	_colName);	}						);
 
@@ -34,12 +33,13 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent, Q
 
 }
 
-void ListModelFilteredDataEntry::dataSetChangedHandler()
+//TODO: This is not called anymore, but should be handled by termsChangedHandler
+/*void ListModelFilteredDataEntry::dataSetChangedHandler()
 {
 	//std::cout << "ListModelFilteredDataEntry::dataSetChangedHandler()" << std::endl;
 	setAcceptedRowsTrue();
 	runFilter(_filter);
-}
+}*/
 
 void ListModelFilteredDataEntry::setFilter(QString filter)
 {
@@ -149,7 +149,7 @@ Qt::ItemFlags ListModelFilteredDataEntry::flags(const QModelIndex & index) const
 }
 
 
-void ListModelFilteredDataEntry::sourceTermsChanged(const Terms *, const Terms *)
+void ListModelFilteredDataEntry::sourceTermsChanged()
 {
 	//std::cout << "ListModelFilteredDataEntry::sourceTermsChanged(Terms *, Terms *)" << std::endl;
 

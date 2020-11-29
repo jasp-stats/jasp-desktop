@@ -38,7 +38,7 @@ public:
 	virtual void	changeTerm(int index, const QString& name);
 
 public slots:
-	virtual void availableTermsChanged(const Terms* termsToAdd, const Terms* termsToRemove)							override;
+	virtual void availableTermsChanged(Terms termsToAdd, Terms termsToRemove)							override;
 	
 private:
 	int		_maxRows = -1;

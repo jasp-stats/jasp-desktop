@@ -23,6 +23,7 @@ ListModelAssignedInterface::ListModelAssignedInterface(JASPListControl* listView
 	: ListModelDraggable(listView)
   , _source(nullptr)
 {
+	_needsSource = false;
 }
 
 void ListModelAssignedInterface::refresh()

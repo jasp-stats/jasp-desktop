@@ -54,16 +54,17 @@ void ListModelDraggable::removeTerms(const QList<int> &indices)
 {
 	beginResetModel();
 
-	_tempTermsToRemove.clear();
+	Terms termsToRemove;
+
 	for (int index : indices)
 		if (index < int(_terms.size()))
-			_tempTermsToRemove.add(_terms.at(size_t(index)));
+			termsToRemove.add(_terms.at(size_t(index)));
 
-	_terms.remove(_tempTermsToRemove);
+	_terms.remove(termsToRemove);
 
 	endResetModel();
 
-	emit termsChanged(nullptr, &_tempTermsToRemove);
+	emit termsChanged();
 }
 
 
@@ -100,8 +101,7 @@ Terms ListModelDraggable::addTerms(const Terms& terms, int dropItemIndex, JASPCo
 		_terms.add(terms);
 		endResetModel();
 
-		_tempTermsToAdd = terms;
-		emit termsChanged(&_tempTermsToAdd, nullptr);
+		emit termsChanged();
 	}
 
 	return nullptr;
