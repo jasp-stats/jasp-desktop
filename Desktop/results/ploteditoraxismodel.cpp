@@ -12,6 +12,11 @@ void AxisModel::setAxisData(const Json::Value & axis)
 	_axis = axis;
 	beginResetModel();
 
+	_axisType = tq(axis.get("type", "").asString());
+//	this should never happen
+//	if (_axisType == "")
+//		throw error
+
 	Json::Value	settings = axis.get(	"settings",		Json::objectValue);
 
 	setTitle(		tq(settings.get(	"title",		""			).asString()));

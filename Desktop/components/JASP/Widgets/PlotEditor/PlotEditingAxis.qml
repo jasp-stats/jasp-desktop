@@ -16,7 +16,7 @@ Column
 	JASPC.TextField
 	{
 		id:					axisTitle
-		label:				qsTr("Name of %1").arg(parent.title);
+		label:				qsTr("Title of %1").arg(parent.title);
 		fieldWidth:			200
 		value:				!axisModel ? "" : axisModel.title
 		onEditingFinished:	if(axisModel) axisModel.title = value
@@ -52,10 +52,11 @@ Column
 	{
 		id:		axisBreaksRadioButton
 		title:	qsTr("Breaks")
+		visible: axisModel ? axisModel.axisType === "ScaleContinuous" : false
 
 		//define breaksType as enum
-		JASPC.RadioButton { id: axisBreaksRange;		value: "range";		label:	qsTr("Specify range");		checked: if(axisModel) axisModel.breaksType === "range"		}
-		JASPC.RadioButton { id: axisBreaksManual;		value: "manual";	label:	qsTr("Manually");			checked: if(axisModel) axisModel.breaksType === "manual"	}
+		JASPC.RadioButton { id: axisBreaksRange;		value: "range";		label:	qsTr("Specify range");		checked: if(axisModel) axisModel.axisType === "ScaleContinuous" ? axisModel.breaksType === "range"  : false	}
+		JASPC.RadioButton { id: axisBreaksManual;		value: "manual";	label:	qsTr("Manually");			checked: if(axisModel) axisModel.axisType === "ScaleContinuous" ? axisModel.breaksType === "manual" : true	}
 
 		onValueChanged: axisModel.breaksType = axisBreaksRadioButton.value
 
@@ -93,13 +94,12 @@ Column
 		}
 	}
 
-
-
 	JASPC.RadioButtonGroup
 	{
 		id:		axisLimitsRadioButton
 		name:	"axisLimits";
 		title:	qsTr("Limits")
+		visible: axisModel ? axisModel.axisType === "ScaleContinuous" : false
 
 		//Limits to C++ as well
 		JASPC.RadioButton	{								value: "data";		label:	qsTr("Based on data");		checked: if(axisModel) axisModel.limitsType === "data"		}

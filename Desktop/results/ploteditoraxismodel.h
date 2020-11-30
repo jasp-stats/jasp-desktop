@@ -26,6 +26,8 @@ class AxisModel : public QAbstractTableModel
 	Q_PROPERTY(double	limitLower	READ lower			WRITE setLower			NOTIFY limitsChanged			)
 	Q_PROPERTY(double	limitUpper	READ upper			WRITE setUpper			NOTIFY limitsChanged			)
 
+	Q_PROPERTY(QString	axisType	READ axisType								NOTIFY axisTypeChanged			)
+
 public:
 	AxisModel(QObject * parent, bool vertical) : QAbstractTableModel(parent), _vertical(vertical)
 	{ }
@@ -55,7 +57,7 @@ public:
 	QString				type()			const	{ return _type;			}
 	QString				titleType()		const	{ return _titleType;	}
 	QString				breaksType()	const	{ return _breaksType;	}
-	bool				vertical()	const	{ return _vertical;	}
+	bool				vertical()		const	{ return _vertical;	}
 
 	double				from()			const	{ return _range.size() > 0 ? _range[0] : NAN;		}
 	double				to()			const	{ return _range.size() > 1 ? _range[1] : NAN;		}
@@ -66,6 +68,8 @@ public:
 	double				upper()			const	{ return _limits.size() > 1 ? _limits[1] : NAN;	}
 
 	bool				hasBreaks()		const	{ return _breaks.size() > 0; }
+
+	QString				axisType()	const	{ return _limitsType;	}
 
 public slots:
 	void setTitle(		QString title);
@@ -93,6 +97,7 @@ signals:
 	void verticalChanged(	bool	transposed);
 	void rangeChanged();
 	void limitsChanged();
+	void axisTypeChanged();
 	void somethingChanged();
 
 private:
@@ -100,7 +105,8 @@ private:
 							_type,
 							_titleType,
 							_breaksType,
-							_limitsType;
+							_limitsType,
+							_axisType;
 	std::vector<double>		_range,
 							_breaks,
 							_limits;
