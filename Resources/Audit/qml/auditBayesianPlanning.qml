@@ -16,426 +16,673 @@
 // When making changes to this file always mention @koenderks as a
 // reviewer in the Pull Request
 
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick 									2.8
+import QtQuick.Layouts 							1.3
+import JASP.Controls 							1.0
+import JASP.Widgets 							1.0
 
-Form {
-
-	usesJaspResults: true
+Form 
+{
+	
+	columns:									1
 
 	// Extra options
-	CheckBox { name: "workflow"; checked: false; visible: false}
+	CheckBox 
+	{ 
+		name: 									"workflow"
+		checked: 								false
+		visible: 								false
+	}
 
+	CheckBox 
+	{ 
+		name: 									"bayesianAnalysis"
+		checked: 								true
+		visible: 								false 
+	}
+
+	CheckBox 
+	{ 
+		name: 									"separateKnownAndUnknownMisstatement"
+		checked: 								false
+		visible: 								false
+	}
+
+	// Start analysis
 	GridLayout
 	{
-		columns: 		3
+		columns: 								3
 
-		RadioButtonGroup
+		GroupBox 
 		{
-			id: 			materiality
-			name: 		"materiality"
-			title: 		qsTr("Population Materiality")
+			title: 								qsTr("Sampling Objectives")
+			columns:							2
 
-			RowLayout
+			CheckBox
 			{
-				RadioButton
-				{
-					id: 								materialityAbsolute
-					name: 							"materialityAbsolute"
-					text: 							qsTr("Absolute")
-					checked: 						true
-					childrenOnSameRow: 	true
+				id: 							performanceMateriality
+				text: 							qsTr("Test against a performance materiality")
+				name: 							"performanceMateriality"
 
-					DoubleField
+				RadioButtonGroup
+				{
+					id: 						materiality
+					name: 						"materiality"
+
+					RowLayout
 					{
-						id: 							materialityValue
-						visible: 					materialityAbsolute.checked
-						name: 						"materialityValue"
-						defaultValue: 		0
-						min: 							0
-						fieldWidth: 			90
-						decimals: 				2
-						label: 						euroValuta.checked ? "€" : (dollarValuta.checked ? "$" : otherValutaName.value)
+						visible: 				performanceMateriality.checked
+						
+						RadioButton
+						{
+							id: 				materialityRelative
+							name: 				"materialityRelative"
+							text: 				qsTr("Relative")
+							checked:			true
+							childrenOnSameRow: 	true
+							onCheckedChanged:	if (checked & populationValue.value == 0) beta.click()
+
+							PercentField
+							{
+								id: 			materialityPercentage
+								visible: 		materialityRelative.checked
+								decimals: 		2
+								defaultValue: 	0
+								name: 			"materialityPercentage"
+								fieldWidth: 	40
+							}
+						}
+					}
+
+					RowLayout
+					{
+						visible: 				performanceMateriality.checked
+						
+						RadioButton
+						{
+							id: 				materialityAbsolute
+							name: 				"materialityAbsolute"
+							text: 				qsTr("Absolute")
+							childrenOnSameRow: 	true
+							onCheckedChanged:	if (checked) gamma.click()
+
+							DoubleField
+							{
+								id: 			materialityValue
+								visible: 		materialityAbsolute.checked
+								name: 			"materialityValue"
+								defaultValue: 	0
+								min: 			0
+								fieldWidth: 	90
+								decimals: 		2
+								label: 			euroValuta.checked ? "€" : (dollarValuta.checked ? "$" : otherValutaName.value)
+							}
+						}
 					}
 				}
 			}
 
-			RowLayout
+			HelpButton
 			{
-				RadioButton
-				{
-					id: 								materialityRelative
-					name: 							"materialityRelative"
-					text: 							qsTr("Relative")
-					childrenOnSameRow: 	true
+				toolTip: 						qsTr("Click to learn more about the performance materiality.")
+				helpPage:						"Audit/performanceMateriality"
+			}
 
-					PercentField
-					{
-						id: 							materialityPercentage
-						visible: 					materialityRelative.checked
-						decimals: 				2
-						defaultValue: 		0
-						name: 						"materialityPercentage"
-						fieldWidth: 			40
-					}
+			CheckBox
+			{
+				id: 							minimumPrecision
+				text: 							qsTr("Obtain a required minimum precision")
+				name: 							"minimumPrecision"
+			
+				PercentField
+				{
+					id: 						minimumPrecisionPercentage
+					name: 						"minimumPrecisionPercentage"
+					decimals: 					2
+					defaultValue: 				2
+					min:						0.5
+					max:						100
+					label: 						qsTr("Relative")
+					visible: 					minimumPrecision.checked
 				}
+			}
+
+			HelpButton
+			{
+				toolTip: 						qsTr("Click to learn more about the precision.")
+				helpPage:						"Audit/minimumPrecision"
 			}
 		}
 
 		GroupBox
 		{
-			title: 					qsTr("Population")
+			title: 								qsTr("Population")
 
 			IntegerField
 			{
-				id: 					populationSize
-				name: 				"populationSize"
-				text: 				qsTr("Size")
-				fieldWidth: 	100
-				defaultValue: 0
-				min: 					0
+				id: 							populationSize
+				name: 							"populationSize"
+				text: 							qsTr("Size")
+				fieldWidth: 					80
+				defaultValue: 					0
+				min: 							0
 			}
 
 			DoubleField
 			{
-				id: 					populationValue
-				name: 				"populationValue"
-				text: 				qsTr("Value")
-				defaultValue: 0
-				enabled: 			materialityAbsolute.checked
-				fieldWidth: 	100
-				min: 					0
-				decimals: 		2
+				id: 							populationValue
+				name: 							"populationValue"
+				text: 							qsTr("Value")
+				defaultValue: 					0
+				fieldWidth: 					80
+				min: 							0
+				decimals: 						2
+				onValueChanged:					
+				{
+												if(populationValue.value > 0) gamma.click()
+												if(populationValue.value == 0) beta.click()
+				}
 			}
 		}
 
 		GroupBox
 		{
-			id: 						auditRisk
-			title: 					qsTr("Audit Risk")
+			id: 								auditRisk
+			title: 								qsTr("Audit Risk")
 
 			PercentField
 			{
-				name: 				"confidence"
-				label: 				qsTr("Confidence")
-				decimals: 		2
-				defaultValue: 95
+				name: 							"confidence"
+				label: 							qsTr("Confidence")
+				decimals: 						2
+				defaultValue: 					95
 			}
 		}
 	}
 
-	Section {
-		title: 		qsTr("Prior Information")
-		columns: 3
+	Section 
+	{
+		title: 									qsTr("A.     Prior Information")
+		columns: 								3
+		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 
-		RadioButtonGroup
+		RowLayout
 		{
-			id: 		ir
-			title: 		qsTr("Inherent Risk")
-			name: 		"IR"
-
-			RadioButton { text: qsTr("High"); 		name: "High"; checked: true	}
-			RadioButton { text: qsTr("Medium");		name: "Medium"}
-			RadioButton { text: qsTr("Low"); 			name: "Low"}
-			RadioButton
+			DropDown 
 			{
-				id: 								irCustom
-				text:	 							qsTr("Custom")
-				name: 							"Custom"
-				childrenOnSameRow: 	true
+				id: 							priorConstructionMethod
+				name: 							"priorConstructionMethod"
+				indexDefaultValue: 				0
+				label: 							qsTr("Prior information:")
+				Layout.columnSpan: 				2
+				enabled:						!pasteVariables.checked
+				values: 
+				[
+					{ label: qsTr("None"), 							value: "none"},
+					{ label: qsTr("Audit Risk Model"), 				value: "arm"},
+					{ label: qsTr("Equal prior probabilities"), 	value: "median"},
+					{ label: qsTr("Custom prior probabilities"), 	value: "hypotheses"},
+					{ label: qsTr("Earlier sample"), 				value: "sample"},
+					{ label: qsTr("Weighted earlier sample"), 		value: "factor"}
+				]
+			}
 
-				PercentField
-				{
-					name: 						"irCustom"
-					visible: 					irCustom.checked
-					decimals: 				2
-					defaultValue: 		100
-					min: 							25
-				}
+			HelpButton
+			{
+				toolTip: 						qsTr("Click to learn more about the prior information.")
+				helpPage:						"Audit/priorInformation"
 			}
 		}
 
 		RadioButtonGroup
 		{
-			id: 		cr
-			title: 		qsTr("Control Risk")
-			name: 		"CR"
-
-			RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
-			RadioButton { text: qsTr("Medium"); 	name: "Medium" 					}
-			RadioButton { text: qsTr("Low"); 		name: "Low" 					}
-			RadioButton
-			{
-				id: 							crCustom
-				text:	 						qsTr("Custom")
-				name: 						"Custom"
-				childrenOnSameRow: true
-
-				PercentField
-				{
-					name: 					"crCustom"
-					visible: 				crCustom.checked
-					decimals: 			2
-					defaultValue: 	100
-					min:						25
-				}
-			}
-		}
-
-		RadioButtonGroup
-		{
-			id: 		expectedErrors
-			name: 		"expectedErrors"
-			title: 		qsTr("Expected Errors")
+			id: 								expectedErrors
+			name: 								"expectedErrors"
+			title: 								qsTr("Expected Errors in Sample")
 
 			RowLayout
 			{
-				enabled: monetaryVariable.count > 0
+				RadioButton 
+				{ 
+					id: 						expectedRelative
+					name: 						"expectedRelative"
+					text: 						qsTr("Relative")
+					checked: 					true
+				}
 
-				RadioButton { text: qsTr("Absolute"); name: "expectedAbsolute"; id: expectedAbsolute}
+				PercentField
+				{
+					name: 						"expectedPercentage"
+					enabled: 					expectedRelative.checked
+					decimals: 					2
+					defaultValue: 				0
+					visible: 					expectedRelative.checked
+					fieldWidth: 				40
+				}
+			}
+
+			RowLayout
+			{
+				RadioButton 
+				{ 
+					id: 						expectedAbsolute
+					name: 						"expectedAbsolute"
+					text: 						qsTr("Absolute")
+				}
 
 				DoubleField
 				{
-					name: 			"expectedNumber"
-					enabled: 		expectedAbsolute.checked
-					defaultValue: 	0
-					min: 			0
-					max: 			1e10
-					decimals: 		2
-					visible: 		expectedAbsolute.checked
-					fieldWidth: 	60
-					label: 			"$"
+					name: 						"expectedNumber"
+					enabled: 					expectedAbsolute.checked
+					defaultValue: 				0
+					min: 						0
+					decimals: 					3
+					visible: 					expectedAbsolute.checked
+					fieldWidth: 				60
+					label: 						performanceMateriality.checked & materialityAbsolute.checked ? (euroValuta.checked ? "€" : (dollarValuta.checked ? "$" : otherValutaName.value)) : ""
 				}
+			}
+		}
+
+		GroupBox
+		{
+			visible: 							[1].includes(priorConstructionMethod.currentIndex)
+			Layout.columnSpan: 					3
+			columns: 							3
+
+			RadioButtonGroup
+			{
+				id: 							ir
+				title: 							qsTr("Inherent Risk")
+				name: 							"IR"
+
+				RadioButton 
+				{ 
+					text: 						qsTr("High")
+					name: 						"High"
+					checked: 					true	
+				}
+
+				RadioButton 
+				{ 
+					text: 						qsTr("Medium")
+					name: 						"Medium"
+				}
+
+				RadioButton 
+				{ 
+					text: 						qsTr("Low")
+					name: 						"Low"
+				}
+				
+				RadioButton
+				{
+					id: 						irCustom
+					text:	 					qsTr("Custom")
+					name: 						"Custom"
+					childrenOnSameRow: 			true
+
+					PercentField
+					{
+						name: 					"irCustom"
+						visible: 				irCustom.checked
+						decimals: 				2
+						defaultValue: 			100
+						min: 					25
+					}
+				}
+			}
+
+			RadioButtonGroup
+			{
+				id: 							cr
+				title: 							qsTr("Control Risk")
+				name: 							"CR"
+
+				RadioButton 
+				{ 
+					text: 						qsTr("High")
+					name: 						"High"
+					checked: 					true	
+				}
+
+				RadioButton 
+				{ 
+					text: 						qsTr("Medium")
+					name: 						"Medium"
+				}
+
+				RadioButton 
+				{ 
+					text: 						qsTr("Low")
+					name: 						"Low"
+				}
+
+				RadioButton
+				{
+					id: 						crCustom
+					text:	 					qsTr("Custom")
+					name: 						"Custom"
+					childrenOnSameRow: 			true
+
+					PercentField
+					{
+						name: 					"crCustom"
+						visible: 				crCustom.checked
+						decimals: 				2
+						defaultValue: 			100
+						min:					25
+					}
+				}
+			}
+		}
+
+		GroupBox
+		{
+			visible: 							[2].includes(priorConstructionMethod.currentIndex)
+			Layout.columnSpan: 					3
+			columns: 							1
+			enabled:							false
+
+			DoubleField
+			{
+				name: 							"pHminfixed"
+				text: 							qsTr("Prior probability of tolerable misstatement: p(H\u208B) = ")
+				defaultValue: 					0.5
+			}
+
+			DoubleField
+			{
+				name: 							"pHplusfixed"
+				text: 							qsTr("Prior probability of intolerable misstatement: p(H\u208A) = ")
+				defaultValue: 					0.5
+			}
+		}
+
+		GroupBox
+		{
+			visible: 							[3].includes(priorConstructionMethod.currentIndex)
+			Layout.columnSpan: 					3
+			columns: 							1
+
+			DoubleField
+			{
+				id: 							pHmin
+				name: 							"pHmin"
+				text: 							qsTr("Prior probability of tolerable misstatement: p(H\u208B) = ")
+				defaultValue: 					0.5
+				decimals: 						2
+				min: 							0
+				max: 							1
+			}
+
+			DoubleField
+			{
+				id:								pHplus
+				name: 							"pHplus"
+				text: 							qsTr("Prior probability of intolerable misstatement: p(H\u208A) = ")
+				enabled:						false
+				defaultValue: 					0.5
+				value:							1 - pHmin.value
+				decimals: 						2
+			}
+		}
+
+		GroupBox
+		{
+			visible: 							[4, 5].includes(priorConstructionMethod.currentIndex)
+			Layout.columnSpan: 					3
+			columns: 							1
+
+			IntegerField
+			{
+				id: 							sampleN
+				name: 							"sampleN"
+				text: 							qsTr("Number of earlier seen transactions")
+				defaultValue: 					0
+				min: 							0
+			}
+
+			DoubleField
+			{
+				name: 							"sampleK"
+				text: 							qsTr("Number of earlier seen errors")
+				defaultValue: 					0
+				decimals: 						2
+				min: 							0
+				max:							sampleN.value
+			}
+
+			DoubleField
+			{
+				name: 							"factor"
+				text: 							qsTr("Weighting factor")
+				defaultValue: 					0
+				decimals: 						2
+				min: 							0
+				max: 							1
+				visible: 						[5].includes(priorConstructionMethod.currentIndex)
+			}
+		}	
+	}
+
+	Section
+	{
+		text: 									qsTr("B.     Advanced Options")
+		columns:								4
+		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
+
+		RadioButtonGroup
+		{
+			id: 								planningModel
+			title: 								qsTr("Probability Distribution")
+			name: 								"planningModel"
+
+			RadioButton
+			{
+				id: 							beta
+				text: 							qsTr("Beta")
+				name: 							"binomial"
+				checked: 						true
+			}
+
+			RadioButton
+			{
+				id: 							gamma
+				text: 							qsTr("Gamma")
+				name: 							"Poisson"
+			}
+
+			RadioButton
+			{
+				id: 							betaBinomial
+				text: 							qsTr("Beta-binomial")
+				name: 							"hypergeometric"
+				enabled:						performanceMateriality.checked
+			}
+		}
+
+		GroupBox
+		{
+			title: 								qsTr("Calculation Settings")
+
+			IntegerField 
+			{
+				name: 							"sampleSizeIncrease"
+				text: 							qsTr("Step size")
+				min: 							1
+				max:							20
+				defaultValue: 					1
+			}
+		}
+
+		RadioButtonGroup
+		{
+			id: 								valuta
+			title: 								qsTr("Currency")
+			name: 								"valuta"
+			enabled:							materialityAbsolute.checked | populationValue.value > 0
+
+			RadioButton 	
+			{ 
+				id: 							euroValuta
+				text: 							qsTr("Euro (€)")
+				name: 							"euroValuta"
+				checked: 						true
+			}
+
+			RadioButton 	
+			{ 
+				id: 							dollarValuta	
+				text: 							qsTr("Dollar ($)")
+				name: 							"dollarValuta"
 			}
 
 			RowLayout
 			{
-				RadioButton { text: qsTr("Relative") ; name: "expectedRelative"; id: expectedRelative; checked: true}
+				RadioButton	
+				{ 
+					id: 						otherValuta
+					text:						qsTr("Other")
+					name: 						"otherValuta"	
+				}
+
+				TextField
+				{
+					id: 						otherValutaName
+					name: 						"otherValutaName"
+					fieldWidth: 				100
+					enabled: 					otherValuta.checked
+					visible: 					otherValuta.checked
+				}
+			}
+		}
+
+		GroupBox
+		{
+			title: 								qsTr("Explanatory Text")
+			columns: 2
+
+			CheckBox
+			{
+				id: 							explanatoryText
+				text: 							qsTr("Enable")
+				name: 							"explanatoryText"
+				checked: 						true
+			}
+
+			HelpButton
+			{
+				helpPage:						"Audit/explanatoryText"
+				toolTip: 						qsTr("Show explanatory text at each step of the analysis")
+			}
+		}	
+	}
+
+	Section
+	{
+		title: 									qsTr("C.     Tables and Plots")
+		columns:								2
+		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
+
+		ColumnLayout
+		{
+			GroupBox
+			{
+				title: 							qsTr("Statistics")
+
+				CheckBox
+				{
+					text: 						qsTr("Expected posterior odds")
+					name: 						"expectedEvidenceRatio"
+					enabled:					performanceMateriality.checked
+				}
+
+				CheckBox
+				{
+					text: 						qsTr("Expected Bayes factor (BF\u208B\u208A)")
+					name: 						"expectedBayesFactor"
+					enabled:					performanceMateriality.checked
+				}
+			}
+
+			GroupBox
+			{
+				title: 							qsTr("Tables")
+
+				CheckBox
+				{
+					text: 						qsTr("Implicit sample induced by prior distribution")
+					name: 						"implicitSampleTable"
+				}
+
+				CheckBox
+				{
+					text: 						qsTr("Description of prior and expected posterior distribution")
+					name: 						"priorStatistics"
+				}
+			}
+		}
+
+		GroupBox
+		{
+			title: 								qsTr("Plots")
+
+			CheckBox
+			{
+				text: 							qsTr("Compare required sample sizes")
+				name: 							"decisionPlot"
+				enabled:						![2, 3].includes(priorConstructionMethod.currentIndex) & performanceMateriality.checked
+			}
+
+			CheckBox
+			{
+				text: 							qsTr("Implied prior distribution")
+				name: 							"priorPlot"
+				childrenOnSameRow: 				false
 
 				PercentField
 				{
-					name: 			"expectedPercentage"
-					enabled: 		expectedRelative.checked
-					decimals: 		2
-					defaultValue: 	0
-					visible: 		expectedRelative.checked
-					fieldWidth: 	40
-				}
-			}
-		}
-
-	}
-
-	Section
-	{
-		text: 			qsTr("Advanced Options")
-
-		GridLayout
-		{
-			columns: 	3
-
-			RadioButtonGroup
-			{
-				id: 								planningModel
-				title: 							qsTr("Planning Distribution")
-				name: 							"planningModel"
-
-				RadioButton
-				{
-					id: 				beta
-					text: 			qsTr("Beta")
-					name: 			"binomial"
-					checked: 		true
-				}
-
-				RadioButton
-				{
-					id: 				gamma
-					text: 			qsTr("Gamma")
-					name: 			"Poisson"
-				}
-
-				RadioButton
-				{
-					id: 				betaBinomial
-					text: 			qsTr("Beta-binomial")
-					name: 			"hypergeometric"
-				}
-			}
-
-			RadioButtonGroup
-			{
-				id: 					valuta
-				title: 				qsTr("Currency")
-				name: 				"valuta"
-				visible:			materialityAbsolute.checked
-
-				RadioButton
-				{
-					id: 				euroValuta
-					text: 			qsTr("Euro (€)")
-					name: 			"euroValuta"
-					checked: 		true
-				}
-
-				RadioButton
-				{
-					id: 			dollarValuta
-					text: 		qsTr("Dollar ($)")
-					name: 		"dollarValuta"
-					checked: 	false
-				}
-
-				RowLayout
-				{
-					RadioButton
-					{
-						id: 			otherValuta
-						text: 		qsTr("Other")
-						name: 		"otherValuta"
-						checked: 	false
-					}
-
-					TextField
-					{
-						id: 				otherValutaName
-						name: 			"otherValutaName"
-						fieldWidth: 100
-						enabled: 		otherValuta.checked
-						visible: 		otherValuta.checked
-					}
-				}
-			}
-
-			GroupBox
-			{
-				title: qsTr("Explanatory Text")
-
-				RowLayout
-				{
-					CheckBox
-					{
-						id: 			explanatoryText
-						text: 		qsTr("Enable")
-						name: 		"explanatoryText"
-						checked: 	true
-					}
-
-					HelpButton
-					{
-						helpPage:			"Audit/explanatoryText"
-						toolTip: 			qsTr("Show explanatory text at each step of the analysis")
-					}
-				}
-			}
-		}
-	}
-
-	Section
-	{
-		title: qsTr("Tables and Plots")
-
-		GridLayout
-		{
-			columns: 2
-
-			ColumnLayout
-			{
-				GroupBox
-				{
-					title: qsTr("Statistics")
-
-					CheckBox
-					{
-						text: qsTr("Expected evidence ratio")
-						name: "expectedEvidenceRatio"
-					}
-
-					CheckBox
-					{
-						text: qsTr("Expected Bayes factor (BF\u208B\u208A)")
-						name: "expectedBayesFactor"
-					}
-				}
-
-				GroupBox
-				{
-					title: qsTr("Tables")
-
-					CheckBox
-					{
-						text: qsTr("Implicit sample")
-						name: "implicitSampleTable"
-					}
-
-					CheckBox
-					{
-						text: qsTr("Prior and expected posterior descriptives")
-						name: "priorStatistics"
-					}
-				}
-			}
-
-			GroupBox
-			{
-				title: qsTr("Plots")
-
-				CheckBox
-				{
-					text: qsTr("Sample size comparison")
-					name: "decisionPlot"
+					text: 						qsTr("x-axis limit")
+					name: 						"priorPlotLimit"
+					defaultValue: 				50
 				}
 
 				CheckBox
 				{
-					text: 								qsTr("Implied prior from risk assessments")
-					name: 								"priorPlot"
-					childrenOnSameRow: 		false
+					text: 						qsTr("Expected posterior distribution")
+					name: 						"priorPlotExpectedPosterior"
+				}
 
-					PercentField
+				CheckBox
+				{
+					text: 						qsTr("Display additional information")
+					name: 						"priorPlotAdditionalInfo"
+					checked: 					true
+
+					RadioButtonGroup 
 					{
-						text: 							qsTr("x-axis limit")
-						name: 							"priorPlotLimit"
-						defaultValue: 			20
-					}
+						title: 					qsTr("Shade")
+						name: 					"shadePrior"
 
-					CheckBox
-					{
-						text: 							qsTr("Expected posterior")
-						name: 							"priorPlotExpectedPosterior"
-					}
-
-					CheckBox
-					{
-						text: 							qsTr("Additional info")
-						name: 							"priorPlotAdditionalInfo"
-						checked: 						true
-
-						RadioButtonGroup 
+						RadioButton
 						{
-							title: 				qsTr("Shade")
-							name: 				"shadePrior"
+							text: 				qsTr("Credible region")
+							name: 				"shadePriorCredibleRegion"
+							checked: 			true
+						}
 
-							RadioButton
-							{
-								text: 			qsTr("Credible region")
-								name: 			"shadePriorCredibleRegion"
-								checked: 		true
-							}
+						RadioButton
+						{
+							text: 				qsTr("Hypothesis regions")
+							name: 				"shadePriorHypotheses"
+							enabled:			performanceMateriality.checked
+						}
 
-							RadioButton
-							{
-								text: 			qsTr("Support regions")
-								name: 			"shadePriorHypotheses"
-							}
-
-							RadioButton
-							{
-								text: 			qsTr("None")
-								name: 			"shadePriorNone"
-							}
+						RadioButton
+						{
+							text: 				qsTr("None")
+							name: 				"shadePriorNone"
 						}
 					}
 				}
@@ -445,21 +692,17 @@ Form {
 
 	Item
 	{
-		Layout.preferredHeight: downloadReportPlanning.height
-		Layout.fillWidth: 			true
+		Layout.preferredHeight: 				downloadReportPlanning.height
+		Layout.fillWidth: 						true
 
 		Button
 		{
-			id: 									downloadReportPlanning
-			enabled: 							materialityRelative.checked ? (populationSize.value != 0 && materialityPercentage.value != 0) : (populationSize.value != 0 && materialityValue.value != 0 && populationValue.value != 0)
-			anchors.right: 				parent.right
-			anchors.bottom: 			parent.bottom
+			id: 								downloadReportPlanning
+			enabled: 							((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
+			anchors.right: 						parent.right
+			anchors.bottom: 					parent.bottom
 			text: 								qsTr("<b>Download Report</b>")
-
-			onClicked:
-			{
-				form.exportResults()
-			}
+			onClicked: 							form.exportResults()
 		}
 	}
 }

@@ -19,8 +19,8 @@
 # reviewer in the Pull Request
 
 auditClassicalEvaluation <- function(jaspResults, dataset, options, ...){
-
+  
   # For the evaluation constituents, see auditCommonFunctions.R
-  .auditEvaluationStage(options, jaspResults, type = "frequentist", workflow = FALSE)
+  .jfa.evaluation.stage(options, jaspResults, workflow = FALSE)
   
 }

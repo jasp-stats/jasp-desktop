@@ -16,57 +16,55 @@
 // When making changes to this file always mention @koenderks as a
 // reviewer in the Pull Request
 
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick 								2.8
+import QtQuick.Layouts 						1.3
+import JASP.Controls 						1.0
+import JASP.Widgets 						1.0
 
 Form {
 
-	usesJaspResults: true
-
 	GridLayout
 	{
-		columns: 2
+		columns: 							2
 
 		GroupBox
 		{
-			title: qsTr("Population")
+			title: 							qsTr("Population")
 
 			IntegerField
 			{
-				id: 			populationSize
-				name: 			"populationSize"
-				text: 			qsTr("Size")
-				fieldWidth: 	100
-				defaultValue: 	0
-				min: 			0
+				id: 						populationSize
+				name: 						"populationSize"
+				text: 						qsTr("Size")
+				fieldWidth: 				100
+				defaultValue: 				0
+				min: 						0
 			}
 
 			DoubleField
 			{
-				id: 			populationValue
-				name: 			"populationValue"
-				text: 			qsTr("Value")
-				defaultValue: 	0
-				fieldWidth: 	100
-				min: 			0
-				decimals: 		2
-				enabled:		!mpu.checked
+				id: 						populationValue
+				name: 						"populationValue"
+				text: 						qsTr("Value")
+				defaultValue: 				0
+				fieldWidth: 				100
+				min: 						0
+				decimals: 					2
+				enabled:					!mpu.checked
 			}
 		}
 
 		GroupBox
 		{
-			id: 		auditRisk
-			title: 		qsTr("Audit Risk")
+			id: 							auditRisk
+			title: 							qsTr("Audit Risk")
 
 			PercentField
 			{
-				name: 			"confidence"
-				label: 			qsTr("Confidence")
-				decimals: 		2
-				defaultValue: 	95
+				name: 						"confidence"
+				label: 						qsTr("Confidence")
+				decimals: 					2
+				defaultValue: 				95
 			}
 		}
 	}
@@ -75,151 +73,152 @@ Form {
 
 	VariablesForm
 	{
-		id: 			variablesFormEstimation
-		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
+		id: 								variablesFormEstimation
+		preferredHeight: 					jaspTheme.smallDefaultVariablesFormHeight
 
-		AvailableVariablesList	{ name: "variablesFormEstimation" }
-
-		AssignedVariablesList
-		{
-			id: 			bookValues
-			name: 			"bookValues"
-			title: 			qsTr("Book values")
-			singleVariable:	true
-			allowedColumns:	["scale"]
-			enabled: 		!mpu.checked
+		AvailableVariablesList	
+		{ 
+			name: 							"variablesFormEstimation" 
 		}
 
 		AssignedVariablesList
 		{
-			id: 			auditValues
-			name: 			"auditValues"
-			title: 			qsTr("Audit values")
-			singleVariable: true
-			allowedColumns: ["scale"]
+			id: 							bookValues
+			name: 							"bookValues"
+			title: 							qsTr("Book values")
+			singleVariable:					true
+			allowedColumns:					["scale"]
+			enabled: 						!mpu.checked
+		}
+
+		AssignedVariablesList
+		{
+			id: 							auditValues
+			name: 							"auditValues"
+			title: 							qsTr("Audit values")
+			singleVariable: 				true
+			allowedColumns: 				["scale"]
 		}
 	}
 
 	Section
 	{
-		text: qsTr("Advanced Options")
+		text: 								qsTr("Advanced Options")
 
 		GridLayout
 		{
-			columns: 3
+			columns: 						3
 
 			RadioButtonGroup
 			{
-				id: 		ir
-				title: 		qsTr("Estimator")
-				name: 		"estimator"
+				id: 						ir
+				title: 						qsTr("Estimator")
+				name: 						"estimator"
 
 				RadioButton
 				{
-					id:			mpu
-					text: 		qsTr("Direct")
-					name: 		"mpu"
+					id:						mpu
+					text: 					qsTr("Direct")
+					name: 					"mpu"
 				}
 
 				RadioButton
 				{
-					text: 		qsTr("Difference")
-					name: 		"difference"
+					text: 					qsTr("Difference")
+					name: 					"difference"
 				}
 
 				RadioButton
 				{
-					text:	 	qsTr("Ratio")
-					name: 		"ratio"
+					text:	 				qsTr("Ratio")
+					name: 					"ratio"
 				}
 
 				RadioButton
 				{
-					text:	 	qsTr("Regression")
-					name: 		"regression"
-					checked:	true
+					text:	 				qsTr("Regression")
+					name: 					"regression"
+					checked:				true
 				}
 			}
 
 			GroupBox
 			{
-				title: qsTr("Explanatory Text")
+				title: 						qsTr("Explanatory Text")
 
 				RowLayout
 				{
 					CheckBox
 					{
-						id: 		explanatoryText
-						text:	 	qsTr("Enable")
-						name: 		"explanatoryText"
-						checked: 	true
+						id: 				explanatoryText
+						text:	 			qsTr("Enable")
+						name: 				"explanatoryText"
+						checked: 			true
 					}
 
 					HelpButton
 					{
 						helpPage:			"Audit/explanatoryText"
-						toolTip: 			qsTr("Show explanatory text and formulas")
+						toolTip: 			qsTr("Click to learn more about the explanatory text.")
 					}
 				}
 			}
 		}
 	}
 
-	Section {
-		title: qsTr("Tables and Plots")
+	Section 
+	{
+		title: 								qsTr("Tables and Plots")
 
 		GroupBox
 		{
-			title: qsTr("Tables")
+			title: 							qsTr("Tables")
 
 			CheckBox
 			{
-				id: requiredSampleSize
-				text: qsTr("Required sample size")
-				name: "requiredSampleSizeTable"
+				id: 						requiredSampleSize
+				text:	 					qsTr("Required sample size")
+				name: 						"requiredSampleSizeTable"
 
 				DoubleField
 				{
-					name: 			"requiredUncertainty"
-					visible: 		requiredSampleSize.checked
-					text: 			qsTr("for an uncertainty of:")
-					defaultValue: 	100000
-					fieldWidth: 	100
-					min: 			0
-					decimals: 		2
+					name: 					"requiredUncertainty"
+					visible: 				requiredSampleSize.checked
+					text: 					qsTr("for an uncertainty of:")
+					defaultValue: 			100000
+					fieldWidth: 			100
+					min: 					0
+					decimals: 				2
 				}
 			}
 		}
 
 		GroupBox
 		{
-			title: qsTr("Plots")
+			title: 							qsTr("Plots")
 
 			CheckBox
 			{
-				text: qsTr("Correlation plot")
-				name: "correlationPlot"
-				enabled: !mpu.checked
+				text: 						qsTr("Correlation plot")
+				name: 						"correlationPlot"
+				enabled: 					!mpu.checked
 			}
 		}
 	}
 
 	Item
 	{
-		Layout.preferredHeight: downloadReportEstimation.height
-		Layout.fillWidth: 			true
+		Layout.preferredHeight: 			downloadReportEstimation.height
+		Layout.fillWidth: 					true
 
 		Button
 		{
-			id: 									downloadReportEstimation
-			enabled: 							populationSize.value != 0 && populationValue.value != 0 && auditValues.count > 0 && bookValues.count > 0
-			anchors.right: 				parent.right
-			anchors.bottom: 			parent.bottom
-			text: 								qsTr("<b>Download Report</b>")
-			onClicked:
-			{
-				form.exportResults()
-			}
+			id: 							downloadReportEstimation
+			enabled: 						populationSize.value != 0 && populationValue.value != 0 && auditValues.count > 0 && bookValues.count > 0
+			anchors.right: 					parent.right
+			anchors.bottom: 				parent.bottom
+			text: 							qsTr("<b>Download Report</b>")
+			onClicked:						form.exportResults()
 		}
 	}
 }

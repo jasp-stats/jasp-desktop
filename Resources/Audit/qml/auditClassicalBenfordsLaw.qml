@@ -16,148 +16,151 @@
 // When making changes to this file always mention @koenderks as a 
 // reviewer in the Pull Request
 
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick							2.8
+import QtQuick.Layouts					1.3
+import JASP.Controls					1.0
+import JASP.Widgets						1.0
 
 Form {
-
-	usesJaspResults: true
+	
 	columns: 1
 
 	VariablesForm
 	{
-		id: 						variablesFormBenfordsLaw
-		preferredHeight:			jaspTheme.smallDefaultVariablesFormHeight
+		id: 							variablesFormBenfordsLaw
+		preferredHeight:				jaspTheme.smallDefaultVariablesFormHeight
 
 		AvailableVariablesList	
 		{ 
-			name: 				"variablesFormBenfordsLaw" 
+			name: 						"variablesFormBenfordsLaw" 
 		}
 
 		AssignedVariablesList
 		{
 			id: 						values
-			name: 					"values"
-			title: 					qsTr("Variable")
-			singleVariable:	true
-			allowedColumns:	["ordinal", "scale"]
+			name: 						"values"
+			title: 						qsTr("Variable")
+			singleVariable:				true
+			allowedColumns:				["ordinal", "scale"]
 		}
 
-		DropDown {
-				name: 							"digits"
-				indexDefaultValue: 	0
-				label: 							qsTr("Check digits:")
-				values:
-				[
-						{ label: "First", value: "first"},
-						{ label: "First and second", value: "firstSecond"},
-						{ label: "Last", value: "last"}
-				]
+		DropDown 
+		{
+			name: 						"digits"
+			indexDefaultValue: 			0
+			label: 						qsTr("Check digits:")
+			values:
+			[
+					{ 
+						label: 			qsTr("First"), 
+						value: 			"first" 
+					},
+					{ 
+						label: 			qsTr("First and second"), 
+						value: 			"firstSecond"
+					},
+					{ 
+						label: 			qsTr("Last"), 
+						value: 			"last"
+					}
+			]
 		}
 
-		DropDown {
-				name: 							"distribution"
-				indexDefaultValue: 	0
-				label: 							qsTr("Compare to:")
-				values:
-				[
-						{ label: "Benford's law", value: "benford"},
-						{ label: "Uniform distribution", value: "uniform"}
-				]
+		DropDown 
+		{
+			name: 						"distribution"
+			indexDefaultValue: 			0
+			label: 						qsTr("Compare to:")
+			values:
+			[
+					{ 
+						label: 			qsTr("Benford's law"), 
+						value: 			"benford"
+					},
+					{ 
+						label: 			qsTr("Uniform distribution"), 
+						value: 			"uniform"
+					}
+			]
 		}
 	}
 
 	Section 
 	{
-		text: qsTr("Advanced Options")
+		text: 							qsTr("Advanced Options")
+		columns:						3
 
-		GridLayout 
+		PercentField
 		{
-			columns: 3
+			name: 						"confidence"
+			label: 						qsTr("Confidence")
+			decimals: 					2
+			defaultValue: 				95
+		}
 
-			PercentField
+		GroupBox 
+		{
+			title: 						qsTr("Explanatory Text")
+			columns:					2
+
+			CheckBox 
 			{
-				name: 				"confidence"
-				label: 				qsTr("Confidence")
-				decimals: 		2
-				defaultValue: 95
+				id: 					explanatoryText
+				text:	 				qsTr("Enable")
+				name: 					"explanatoryText"
+				checked: 				true
 			}
 
-			GroupBox 
-			{
-				title: qsTr("Explanatory Text")
-
-				RowLayout 
-				{
-					CheckBox 
-					{
-						id: 		explanatoryText
-						text:	 	qsTr("Enable")
-						name: 		"explanatoryText"
-						checked: 	true
-					}
-
-					HelpButton 
-					{ 
-						helpPage:			"Audit/explanatoryText"
-						toolTip: 			qsTr("Show explanatory text and formulas")
-					}
-				}
+			HelpButton 
+			{ 
+				helpPage:				"Audit/explanatoryText"
+				toolTip: 				qsTr("Click to learn more about the explanatory text.")
 			}
 		}
 	}
 
-	Section {
-		title: qsTr("Tables and Plots")
+	Section 
+	{
+		title: 							qsTr("Tables and Plots")
+		columns: 						2
 
-		GridLayout 
+		GroupBox
 		{
-			columns: 2
+			title: 						qsTr("Tables")
 
-			GroupBox
+			CheckBox
 			{
-				title: qsTr("Tables")
-
-				CheckBox
-				{
-					text: qsTr("Descriptive statistics")
-					name: "summaryTable"
-					checked: true
-				}
+				text: 					qsTr("Descriptive statistics")
+				name: 					"summaryTable"
+				checked: 				true
 			}
+		}
 
-			GroupBox
+		GroupBox
+		{
+			title: 						qsTr("Plots")
+
+			CheckBox
 			{
-				title: qsTr("Plots")
-
-				CheckBox
-				{
-					text: qsTr("Compare to expected distribution")
-					name: "benfordsLawPlot"
-				}
+				text: 					qsTr("Compare to expected distribution")
+				name: 					"benfordsLawPlot"
 			}
 		}
 	}
 
 	Item 
 	{
-		Layout.preferredHeight: downloadReportBenfordsLaw.height
-		Layout.fillWidth: 			true
+		Layout.preferredHeight: 		downloadReportBenfordsLaw.height
+		Layout.fillWidth: 				true
 
 		Button 
 		{
-			id: 							downloadReportBenfordsLaw
+			id: 						downloadReportBenfordsLaw
 			enabled: 					values.count > 0
-			anchors.right: 		parent.right
-			anchors.bottom: 	parent.bottom
+			anchors.right:				parent.right
+			anchors.bottom:				parent.bottom
 			text: 						qsTr("<b>Download Report</b>")
-
-			onClicked: 
-			{
-				form.exportResults()
-			}
+			onClicked: 					form.exportResults()
 		}
 	}
 }
