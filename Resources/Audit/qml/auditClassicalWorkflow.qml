@@ -1076,7 +1076,7 @@ Form
 							id: 					variableTypeAuditValues
 							text: 					qsTr("Soll values")
 							name: 					"variableTypeAuditValues"
-							checked: 				true
+							checked: 				false
 							enabled: 				monetaryVariable.count > 0
 						}
 
@@ -1094,7 +1094,7 @@ Form
 							id: 					variableTypeCorrect
 							text: 					qsTr("Correct / Incorrect")
 							name: 					"variableTypeCorrect"
-							checked: 				false
+							checked: 				true
 							enabled: 				true
 						}
 

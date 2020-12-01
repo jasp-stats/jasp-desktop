@@ -2743,9 +2743,7 @@
       
       result <- try({
         # call jfa evaluation
-        jfa::evaluation(sample = sample,
-                        counts = prevState[["count"]],
-                        confidence = confidence,
+        jfa::evaluation(confidence = confidence,
                         nSumstats = nrow(sample),
                         kSumstats = length(which(sample[, .v(options[["auditResult"]])] == 1)),
                         method = method,
