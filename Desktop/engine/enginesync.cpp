@@ -616,7 +616,7 @@ void EngineSync::stopEngines()
 	for(auto engine : _engines)
 		engine->process();
 
-	_engineStarted = false;
+	_engineStarted		= false;
 
 	for(EngineRepresentation * e : _engines)
 		e->stopEngine();
@@ -624,7 +624,7 @@ void EngineSync::stopEngines()
 	while(!allEnginesStopped())
 		if(timeout < QDateTime::currentSecsSinceEpoch())
 		{
-			std::cerr << "Waiting for engine to reply stopRequest took longer than timeout, killing it/them.." << std::endl;
+			Log::log() << "Waiting for engine to reply stopRequest took longer than timeout, killing it/them.." << std::endl;
 			for(EngineRepresentation * e : _engines)
 				if(!e->stopped() && !e->killed())
 					e->killEngine();
@@ -635,10 +635,13 @@ void EngineSync::stopEngines()
 			for (auto * engine : _engines)
 				engine->process();
 
-	timeout = QDateTime::currentSecsSinceEpoch() + 10;
+	//timeout = QDateTime::currentSecsSinceEpoch() + 10;
+
+	/*
+
+	  Log::log() << "Checking if engines are running by using QApplication::processEvents to get answers." << std::endl;
 
 	bool stillRunning;
-
 	do
 	{
 		QApplication::processEvents(); //Otherwise we will not get feedback from QProcess (aka finished)
@@ -658,9 +661,9 @@ void EngineSync::stopEngines()
 		for (auto * engine : _engines)
 			if(engine->jaspEngineStillRunning())
 				engine->killEngine();
-	}
-	else
-		Log::log() << "Engines stopped" << std::endl;
+	}*/
+
+	Log::log() << "Engines stopped(/killed)" << std::endl;
 }
 
 void EngineSync::pause()

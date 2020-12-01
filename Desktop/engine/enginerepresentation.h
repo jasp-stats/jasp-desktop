@@ -80,7 +80,7 @@ public:
 	void process();
 	void restartAbortedAnalysis();
 	void checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }
-	bool willProcessAnalysis(const Analysis * analysis) const;
+	bool willProcessAnalysis(Analysis * analysis) const;
 
 	size_t	channelNumber()		const { return _channel->channelNumber(); }
 
@@ -168,6 +168,8 @@ private:
 					_runsRCmd			= false,	//is this engine meant for the R prompt?
 					_removeEngine		= false;
 	std::string		_lastCompColName	= "???";
+
+	QMetaObject::Connection	_slaveFinishedConnection;
 
 
 };

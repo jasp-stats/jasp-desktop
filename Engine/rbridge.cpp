@@ -66,8 +66,10 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 {
 	JASPTIMER_SCOPE(rbridge_init);
 	
+	Log::log() << "Setting extraEncodings." << std::endl;
 	extraEncodings = extraEncoder;
 
+	Log::log() << "Collecting RBridgeCallBacks." << std::endl;
 	RBridgeCallBacks callbacks = {
 		rbridge_readDataSet,
 		rbridge_readDataColumnNames,
@@ -96,6 +98,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 
 	JASPTIMER_START(jaspRCPP_init);
 	
+	Log::log() << "Entering jaspRCPP_init." << std::endl;
 	jaspRCPP_init(	AppInfo::getBuildYear()		.c_str(),
 					AppInfo::version.asString()	.c_str(),
 					&callbacks,

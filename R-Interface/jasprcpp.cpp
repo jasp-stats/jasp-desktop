@@ -82,6 +82,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	_systemFunc				= systemFunc;
 	_libraryFixerFunc		= libraryFixerFunc;
 
+	jaspRCPP_logString("Creating RInside.\n");
 	rinside = new RInside();
 
 	RInside &rInside = rinside->instance();
@@ -145,7 +146,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
 	
-	
+	jaspRCPP_logString("Creating Output sink.\n");
 	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!'); sink();");
 
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
@@ -157,6 +158,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspResults::setPollMessagesFunc(pollMessagesFunction);
 	jaspResults::setBaseCitation(baseCitation);
 	jaspResults::setInsideJASP();
+
+	jaspRCPP_logString("Initializing jaspResultsModule, jaspBase, jaspGraphs and more.\n");
 
 	rInside["jaspResultsModule"]			= givejaspResultsModule();
 

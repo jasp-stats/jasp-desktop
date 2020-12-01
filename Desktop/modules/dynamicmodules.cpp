@@ -90,9 +90,11 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled
 
 bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 {
+	std::string	moduleName;
+
 	try
 	{
-		std::string					moduleName				= module->name();
+									moduleName				= module->name();
 		Modules::DynamicModule	*	oldModule				= _modules.count(moduleName) > 0 && _modules[moduleName] != module ? _modules[moduleName] : nullptr;
 		bool						wasAddedAlready			= true;
 
@@ -136,18 +138,22 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 
 		return true;
 	}
-	catch(Modules::ModuleException & e)
+	catch(Modules::ModuleException & e) { MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what())); }
+	catch(std::runtime_error & e)		{ MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what())); }
+
+	if(_modules.count(moduleName) > 0)
 	{
-		MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what()));
-		return false;
-	}
-	catch(std::runtime_error & e)
-	{
-		MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what()));
-		return false;
+		delete _modules[moduleName];
+		_modules.erase(moduleName);
+
+		for(size_t i = _moduleNames.size(); i > 0; i--)
+			if(_moduleNames[i - 1] == moduleName)
+				_moduleNames.erase(_moduleNames.begin() + i - 1);
 	}
 
+	restartEngines();
 
+	return false;
 }
 
 std::string DynamicModules::loadModule(const std::string & moduleName)
@@ -431,6 +437,10 @@ void DynamicModules::loadingFailed(const QString & moduleName, const QString & e
 
 		MessageForwarder::showWarning(tr("Loading packages for Module %1 failed").arg(moduleName), tr("Loading the packages of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
 	}
+	else
+		for(const auto & nameModule : _modules)
+			if(nameModule.second->readyForUse())
+				nameModule.second->setLoaded(false);
 }
 
 void DynamicModules::loadingSucceeded(const QString & moduleName)
@@ -454,6 +464,10 @@ void DynamicModules::loadingSucceeded(const QString & moduleName)
 		for(const std::string & modWait : removeThese)
 			_modulesWaitingForDependency.erase(modWait);
 	}
+	else
+		for(const auto & nameModule : _modules)
+			if(nameModule.second->readyForUse())
+				nameModule.second->setLoaded(true);
 }
 
 Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)
@@ -757,7 +771,7 @@ Json::Value	DynamicModules::getJsonForReloadingActiveModules()
 	Json::Value requestJson(Json::objectValue);
 
 	std::stringstream loadingCode;
-	for(int i=0; i<_moduleNames.size(); i++)
+	for(size_t i=0; i<_moduleNames.size(); i++)
 	{
 		const std::string & modName = _moduleNames[i];
 
@@ -765,7 +779,7 @@ Json::Value	DynamicModules::getJsonForReloadingActiveModules()
 			loadingCode << _modules[modName]->generateModuleLoadingR(i == _moduleNames.size() - 1) << "\n";
 	}
 
-	if(loadingCode.str() == "")
+	if(loadingCode.str() != "")
 		loadingCode << "return('" << Modules::DynamicModule::succesResultString() << "')"; //We could also avoid calling getJsonForReloadingActiveModules altogether but whatever
 
 	requestJson["moduleCode"]		= loadingCode.str();
@@ -777,8 +791,9 @@ Json::Value	DynamicModules::getJsonForReloadingActiveModules()
 
 void DynamicModules::enginesStopped()
 {
-	for(auto & nameMod : _modules)
-		nameMod.second->setLoaded(false); //Cause we restarted the engines
+	//for(auto & nameMod : _modules)
+	//	nameMod.second->setLoaded(false); //Cause we restarted the engines
+	// It is slightly misleading all this, but by not setting them to unloaded the GUI becomes cleaner and we do not have to set them back to loaded later in a hacky fashion
 }
 
 QString DynamicModules::moduleDirectoryQ(const QString & moduleName)	const

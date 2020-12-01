@@ -9,7 +9,7 @@ Item
 	Image
 	{
 		id						: img
-		source					: jaspTheme.iconPath + "/loading.svg"
+		source					: visible ? jaspTheme.iconPath + "/loading.svg" : ""
 		sourceSize.width		: width
 		sourceSize.height		: width
 		height					: width
@@ -17,11 +17,25 @@ Item
 		transformOrigin			: Item.Center
 		anchors.centerIn		: parent
 
-		property int	segments: 12
-		property real	duration: 1200
-		property int	run		: 0
+		readonly property int	segments: 12
+		readonly property real	duration: 1200
+				 property int	run		: 0
 
-		onVisibleChanged: if(visible && !anim.running) anim.start()
+		onVisibleChanged: 	startStopIfVisible();
+		ListView.onReused:	startStopIfVisible();
+		ListView.onPooled:	anim.stop()
+
+		function startStopIfVisible()
+		{
+			if ( visible && !anim.running)
+			{
+				run = 0;
+				anim.start();
+			}
+
+			if(!visible && anim.running)
+				anim.stop();
+		}
 
 		SequentialAnimation
 		{

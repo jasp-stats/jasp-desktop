@@ -46,6 +46,8 @@ class RibbonButton : public QObject
 	Q_PROPERTY(bool		active			READ active											NOTIFY activeChanged		)
 	Q_PROPERTY(QString	toolTip			READ toolTip			WRITE setToolTip			NOTIFY toolTipChanged		)
 	Q_PROPERTY(bool		special			READ isSpecial										NOTIFY isSpecialChanged		)
+	Q_PROPERTY(bool		ready			READ ready				WRITE setReady				NOTIFY readyChanged			)
+	Q_PROPERTY(bool		error			READ error				WRITE setError				NOTIFY errorChanged			)
 
 public:
 
@@ -54,27 +56,30 @@ public:
 	~RibbonButton() {}
 
 
-	bool							requiresData()												const			{ return _requiresData;									}
-	bool							isCommon()													const			{ return _isCommonModule;								}
-	std::string						title()														const			{ return _title;										}
-	QString							titleQ()													const			{ return QString::fromStdString(_title);				}
-	QString							iconSource()												const			{ return _iconSource;									}
-	bool							enabled()													const			{ return _enabled;					}
-	std::string						moduleName()												const			{ return _moduleName;									}
-	QString							moduleNameQ()												const			{ return QString::fromStdString(_moduleName);			}
+	bool							requiresData()												const			{ return _requiresData;										}
+	bool							isCommon()													const			{ return _isCommonModule;									}
+	std::string						title()														const			{ return _title;											}
+	QString							titleQ()													const			{ return QString::fromStdString(_title);					}
+	QString							iconSource()												const			{ return _iconSource;										}
+	bool							enabled()													const			{ return _enabled;											}
+	std::string						moduleName()												const			{ return _moduleName;										}
+	QString							moduleNameQ()												const			{ return QString::fromStdString(_moduleName);				}
 	Modules::DynamicModule*			dynamicModule();
 	Modules::AnalysisEntry*			getAnalysis(const std::string& name);
-	QVariant						analysisMenu()												const			{ return QVariant::fromValue(_analysisMenuModel); }
+	QVariant						analysisMenu()												const			{ return QVariant::fromValue(_analysisMenuModel);			}
 	std::vector<std::string>		getAllAnalysisNames()										const;
 	bool							dataLoaded()												const			{ return DynamicModules::dynMods() &&  DynamicModules::dynMods()->dataLoaded();	}
-	bool							active()													const			{ return _enabled && (!requiresData() || dataLoaded());	}
-	QString							toolTip()													const			{ return _toolTip;	}
+	bool							active()													const			{ return _enabled && (!requiresData() || dataLoaded());		}
+	QString							toolTip()													const			{ return _toolTip;											}
 	bool							isBundled()													const			{ return _module && _module->isBundled();					}
 	QString							version()													const			{ return !_module ? "?" : _module->versionQ();				}
-
-	//void							reloadMenuFromDescriptionQml();
+	bool							ready()														const			{ return _ready;											}
+	bool							error()														const			{ return _error;											}
 
 	static QString					getJsonDescriptionFilename();
+
+
+
 
 public slots:
 	void setDynamicModule(Modules::DynamicModule * module);
@@ -88,11 +93,15 @@ public slots:
 	void setModuleNameQ(QString moduleName)							{ setModuleName(moduleName.toStdString()); }
 	void somePropertyChanged()										{ emit iChanged(this); }
 	void setToolTip(QString toolTip);
-
+	void setReady(bool ready);
+	void setError(bool error);
 
 	bool isSpecial() const	{ return _specialButtonFunc != nullptr ; }
 	void runSpecial()		{ _specialButtonFunc(); };
 	void reloadDynamicModule(Modules::DynamicModule * dynMod);
+
+
+
 
 signals:
 	void enabledChanged();
@@ -108,6 +117,8 @@ signals:
 	void toolTipChanged(QString toolTip);
 	void analysisMenuChanged();
 	void isSpecialChanged(); //This wont be called it is just here to keep qml from complaining
+	void readyChanged(bool ready);
+	void errorChanged(bool error);
 
 private:
 	void bindYourself();
@@ -118,7 +129,9 @@ private:
 	bool							_requiresData		= true,
 									_isDynamicModule	= true,
 									_isCommonModule		= false,
-									_enabled			= false;
+									_enabled			= false,
+									_ready				= false,
+									_error				= false;
 	std::string						_title				= "",
 									_moduleName			= "";
 	Modules::DynamicModule		*	_module				= nullptr;

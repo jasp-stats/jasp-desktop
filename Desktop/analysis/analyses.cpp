@@ -88,11 +88,13 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		
 		Log::log() << " titled: '" << title << "'" << std::endl;
 
+		if(!analysisEntry)
+			throw Modules::ModuleException(fq(module), "Problem loading analysis \"" + fq(name) + "\" from module \"" + fq(module) + "\". This module cannot be found in your JASP, this is likely a bug as we still ship all modules in the installer.");
+
 		if(title == "")
-			title = analysisEntry ? tq(analysisEntry->title()) : name;
+			title = tq(analysisEntry->title());
 		
-		analysis = analysisEntry	? create(analysisEntry, id, status, false, fq(title), "0.0.0", &optionsJson) //0.0.0 as module version to be sure we show the "made with old version"
-									: create(module, name, qml, title, id, version, &optionsJson, status, false);
+		analysis = create(analysisEntry, id, status, false, fq(title), "0.0.0", &optionsJson); //0.0.0 as module version to be sure we show the "made with old version"
 	}
 	else
 	{
@@ -111,15 +113,6 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(wasUpgraded)
 		analysis->setUpgradeMsgs(msgs);
-
-	return analysis;
-}
-
-Analysis* Analyses::create(const QString &module, const QString &name, const QString& qml, const QString &title, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
-{
-	Analysis *analysis = new Analysis(id, module.toStdString(), name.toStdString(), qml.toStdString(), title.toStdString(), version, options);
-	storeAnalysis(analysis, id, notifyAll);
-	bindAnalysisHandler(analysis);
 
 	return analysis;
 }
@@ -455,9 +448,10 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 
 		if (corruptAnalyses == 1)			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
 		else if (corruptAnalyses > 1)		errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
+		else								Log::log() << "Loading analyses seems to have worked out fine." << std::endl;
 	}
 	
-	Log::log() << "Loading analyses seems to have worked out fine." << std::endl;
+
 }
 
 void Analyses::refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
@@ -608,8 +602,7 @@ void Analyses::analysisClickedHandler(QString analysisFunction, QString analysis
 {
 	Modules::DynamicModule * dynamicModule = DynamicModules::dynMods()->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysisFunction)));
-	else							create(module, analysisFunction, analysisQML, analysisTitle);
+	create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysisFunction)));
 }
 
 

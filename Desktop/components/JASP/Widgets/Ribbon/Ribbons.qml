@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQuick.Controls 2.4
+import QtQuick			2.15
+import QtQuick.Controls 2.15
 
 
 Item
@@ -54,6 +54,7 @@ Item
 		interactive:					false
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
+		reuseItems:						true
 
 		onDragStarted:					customMenu.hide()
 		onMovementStarted:				customMenu.hide()
@@ -68,13 +69,14 @@ Item
 
 		delegate: RibbonButton
 		{
-			text:			model.moduleTitle
-			moduleName:		model.moduleName
-			source:			!model.ribbonButton ? ""		: (!model.ribbonButton.special ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource
+			text:			 model.moduleTitle
+			moduleName:		 model.moduleName
+			source:			!model.ribbonButton || model.ribbonButton.iconSource === "" ? ""		: (!model.ribbonButton.special ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource
 			menu:			!model.ribbonButton ? undefined : model.ribbonButton.analysisMenu
 			toolTip:		!model.ribbonButton ? undefined : model.ribbonButton.toolTip
-			enabled:		!model.ribbonButton ? false		: model.active
-			visible:		!model.ribbonButton ? false		: true
+			enabled:		 model.ribbonButton && model.active
+			visible:		 model.ribbonButton
+			ready:			 model.ribbonButton && (model.ribbonButton.ready || model.ribbonButton.special || model.ribbonButton.error)
 		}
 	}
 	

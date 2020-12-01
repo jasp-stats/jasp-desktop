@@ -237,6 +237,8 @@ private slots:
 	void plotEditingFileChanged();
 	void jaspThemeChanged(JaspTheme * newTheme);
 
+	void printQmlWarnings(const QList<QQmlError> &warnings);
+
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
 	void makeAppleMenu();
