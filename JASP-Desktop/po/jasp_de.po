@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-11-16 15:28+0000\n"
-"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
+"PO-Revision-Date: 2020-11-23 10:29+0000\n"
+"Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
 "Language: de\n"
@@ -1434,7 +1434,7 @@ msgstr ""
 "Bitte behalte im Hinterkopf, dass dies eine Vorschau-Version ist, bei der "
 "noch einige Funktionen fehlen.\n"
 "\n"
-"Falls JASP heute noch nicht alles tut, was Du möchtest, dann schaue morgen "
+"Falls JASP heute noch nicht alles tut, was Du möchtest, dann schau morgen "
 "wieder vorbei: JASP wird mit halsbrecherischem Tempo weiterentwickelt!"
 
 msgctxt "Ancova|"
@@ -2751,7 +2751,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Confidence"
-msgstr "Vertrauen"
+msgstr "Konfidenz"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Variable definition</b>"
@@ -3097,7 +3097,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Confidence"
-msgstr "Vertrauen"
+msgstr "Konfidenz"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Advanced Options"
@@ -3230,7 +3230,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Confidence"
-msgstr "Vertrauen"
+msgstr "Konfidenz"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Variable definition</b>"
@@ -3560,7 +3560,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Confidence"
-msgstr "Vertrauen"
+msgstr "Konfidenz"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Advanced Options"
@@ -4009,7 +4009,7 @@ msgstr "Splits"
 
 msgctxt "Descriptives|"
 msgid "Frequency tables (nominal and ordinal variables)"
-msgstr "Häufigkeitstabellen (nur für nominale und ordinale Variablen)"
+msgstr "Häufigkeitstabellen (nominale und ordinale Variablen)"
 
 msgctxt "Descriptives|"
 msgid "Plots"
@@ -4217,11 +4217,11 @@ msgstr "Verteilung"
 
 msgctxt "Descriptives|"
 msgid "Skewness"
-msgstr "Schiefe: (+) rechts, (-) links"
+msgstr "Schiefe"
 
 msgctxt "Descriptives|"
 msgid "Kurtosis"
-msgstr "Wölbung: (+) spitz, (-) stumpf"
+msgstr "Wölbung / Kurtosis"
 
 msgctxt "Descriptives|"
 msgid "Shapiro-Wilk test"
@@ -4361,7 +4361,7 @@ msgstr "Cronbachs α, analytisch"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Confidence"
-msgstr "Vertrauen"
+msgstr "Konfidenz"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Second-Order Factor"
@@ -7173,7 +7173,7 @@ msgstr "Kov"
 
 msgctxt "NetworkAnalysis|"
 msgid "Npn"
-msgstr "Npn"
+msgstr "Npn-Transformation für nicht normalverteilte Daten"
 
 msgctxt "NetworkAnalysis|"
 msgid "Centrality Measures"
@@ -9482,7 +9482,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Confidence"
-msgstr "Vertrauen"
+msgstr "Konfidenz"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Book values"
@@ -10650,7 +10650,7 @@ msgstr "Weitere Optionen"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Confidence"
-msgstr "Vertrauen"
+msgstr "Konfidenz"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Explanatory Text"
@@ -15595,7 +15595,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Confidence"
-msgstr "Vertrauen"
+msgstr "Konfidenz"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Record ID's"
@@ -15827,7 +15827,7 @@ msgstr "Auditrisiko"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Confidence"
-msgstr "Vertrauen"
+msgstr "Konfidenz"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Record ID's"
