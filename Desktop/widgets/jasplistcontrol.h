@@ -61,7 +61,8 @@ public:
 			int					variableTypesAllowed()		const	{ return _variableTypesAllowed; }
 
 	const QVector<SourceItem*>& sourceItems()				const	{ return _sourceItems; }
-	QVector<std::pair<SourceItem*, Terms> >	getTermsPerSource();
+	void						applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
+
 			bool				hasSource()					const	{ return _sourceItems.size() > 0; }
 
 			JASPControl		*	getRowControl(const QString& key, const QString& name)		const;
@@ -123,9 +124,9 @@ protected:
 	static const QString	_defaultKey;
 	
 private:
-	Terms					_getCombinedTerms(SourceItem* sourceToCombine);
-	int						_getAllowedColumnsTypes();
-	void					_setAllowedVariables();
+	Terms									_getCombinedTerms(SourceItem* sourceToCombine);
+	int										_getAllowedColumnsTypes();
+	void									_setAllowedVariables();
 };
 
 #endif // JASPLISTCONTROL_H

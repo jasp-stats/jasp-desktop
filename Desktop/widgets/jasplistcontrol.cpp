@@ -168,17 +168,10 @@ Terms JASPListControl::_getCombinedTerms(SourceItem* sourceToCombine)
 	return result;
 }
 
-QVector<std::pair<SourceItem*, Terms> > JASPListControl::getTermsPerSource()
+void JASPListControl::applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis)
 {
-	QVector<std::pair<SourceItem*, Terms> > result; // Do not use a map in order to keep the order of the sources.
-
 	for (SourceItem* sourceItem : _sourceItems)
-		if (sourceItem->combineWithOtherModels())
-			result.push_back(std::make_pair(sourceItem, _getCombinedTerms(sourceItem)));
-		else
-			result.push_back(std::make_pair(sourceItem, sourceItem->getTerms()));
-
-	return result;
+		applyThis(sourceItem, sourceItem->combineWithOtherModels() ? _getCombinedTerms(sourceItem) : sourceItem->getTerms());
 }
 
 bool JASPListControl::addRowControl(const QString &key, JASPControl *control)

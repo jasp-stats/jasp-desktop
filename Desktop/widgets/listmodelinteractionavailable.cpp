@@ -37,10 +37,8 @@ void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
 	Terms randomFactors;
 	Terms covariates;
 
-	for (const auto& pair : listView()->getTermsPerSource())
+	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		SourceItem* sourceItem = pair.first;
-		const Terms& terms = pair.second;
 		ListModel* sourceModel = sourceItem->model();
 		for (const Term& term : terms)
 		{
@@ -55,7 +53,7 @@ void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
 			else if (itemType == "covariates")
 				covariates.add(term);
 		}
-	}
+	});
 		
 	if (fixedFactors.size() > 0)
 		addFixedFactors(fixedFactors);

@@ -96,7 +96,6 @@ public:
 	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
 	bool	checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
 	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
-	ColumnsModel *	columnsModel()			{ return _columnsModel;			}
 
 	static MainWindow * singleton() { return _singleton; }
 

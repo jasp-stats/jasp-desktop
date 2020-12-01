@@ -110,13 +110,11 @@ Terms ListModel::getSourceTerms()
 {
 	Terms termsAvailable;
 
-	for (const auto& pair : listView()->getTermsPerSource())
+	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		SourceItem* sourceItem = pair.first;
 		_connectSourceControls(sourceItem->model(), sourceItem->usedControls());
-
-		termsAvailable.add(pair.second);
-	}
+		termsAvailable.add(terms);
+	});
 	
 	return termsAvailable;
 }
@@ -125,12 +123,12 @@ ListModel *ListModel::getSourceModelOfTerm(const Term &term)
 {
 	ListModel* result = nullptr;
 
-	for (const auto& pair : listView()->getTermsPerSource())
+	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		SourceItem* sourceItem = pair.first;
-		if (pair.second.contains(term) && sourceItem->model())
+		if (terms.contains(term))
 			result = sourceItem->model();
-	}
+	});
+
 	return result;
 }
 

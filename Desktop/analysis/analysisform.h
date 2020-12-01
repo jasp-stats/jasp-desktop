@@ -138,8 +138,10 @@ public:
 	QString		warnings()			const { return msgsListToString(_formWarnings);	}
 	QVariant	analysis()			const { return QVariant::fromValue(_analysis);	}
 
-	static QAbstractItemModel*	columnsModel;
-	static int					columnsModelRole;
+	static void					setColumnsModel(QAbstractItemModel* model);
+	static QAbstractItemModel*	getColumnsModel()		{ return _columnsModel;		}
+	static int					getColumnsModelRole()	{ return _columnsModelRole;	}
+
 protected:
 	QString		msgsListToString(const QStringList & list) const;
 
@@ -189,6 +191,10 @@ private:
 	bool										_runOnChange	= true,
 												_formCompleted = false;
 	QString										_info;
+
+	static QAbstractItemModel*					_columnsModel;
+	static int									_columnsModelRole;
+
 };
 
 #endif // ANALYSISFORM_H

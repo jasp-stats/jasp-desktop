@@ -160,8 +160,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	new MessageForwarder(this); //We do not need to store this
 
-	AnalysisForm::columnsModel = _columnsModel;
-	AnalysisForm::columnsModelRole = ColumnsModel::NameRole;
+	AnalysisForm::setColumnsModel(_columnsModel);
 
 	startOnlineDataManager();
 

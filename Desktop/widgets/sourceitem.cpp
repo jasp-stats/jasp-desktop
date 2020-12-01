@@ -86,8 +86,8 @@ void SourceItem::_setUp()
 
 	if (_isDataSetColumns)
 	{
-		_nativeModel = AnalysisForm::columnsModel;
-		_nativeModelRole = AnalysisForm::columnsModelRole;
+		_nativeModel = AnalysisForm::getColumnsModel();
+		_nativeModelRole = AnalysisForm::getColumnsModelRole();
 	}
 
 	if (_isValuesSource)								sourceModel = new ListModelLabelValueTerms(_listControl, _values);
@@ -102,10 +102,10 @@ void SourceItem::_setUp()
 	}
 	else if (_nativeModel)
 	{
-		connect(_nativeModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)),	this,	SLOT(nativeModelChanged()) );
-		connect(_nativeModel, SIGNAL(rowsInserted(const QModelIndex &, int , int )),								this,	SLOT(nativeModelChanged()) );
-		connect(_nativeModel, SIGNAL(rowsRemoved(const QModelIndex &, int , int )),									this,	SLOT(nativeModelChanged()) );
-		connect(_nativeModel, SIGNAL(modelReset()),																	this,	SLOT(nativeModelChanged()) );
+		connect(_nativeModel, &QAbstractItemModel::dataChanged,			this,	&SourceItem::nativeModelChanged);
+		connect(_nativeModel, &QAbstractItemModel::rowsInserted,		this,	&SourceItem::nativeModelChanged);
+		connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			this,	&SourceItem::nativeModelChanged);
+		connect(_nativeModel, &QAbstractItemModel::modelReset,			this,	&SourceItem::nativeModelChanged);
 	}
 	else
 	{

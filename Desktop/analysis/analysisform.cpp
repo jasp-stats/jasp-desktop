@@ -50,8 +50,8 @@
 
 using namespace std;
 
-QAbstractItemModel* AnalysisForm::columnsModel =  nullptr;
-int AnalysisForm::columnsModelRole = Qt::DisplayRole;
+QAbstractItemModel* AnalysisForm::_columnsModel		=  nullptr;
+int					AnalysisForm::_columnsModelRole = Qt::DisplayRole;
 
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
@@ -780,6 +780,22 @@ QString AnalysisForm::metaHelpMD() const
 	};
 
 	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->meta(), 2);
+}
+
+void AnalysisForm::setColumnsModel(QAbstractItemModel *model)
+{
+	_columnsModel = model;
+
+	if (model)
+	{
+		QHashIterator<int, QByteArray> i(model->roleNames());
+		while (i.hasNext())
+		{
+			i.next();
+			if (i.value() == "columnName")
+				_columnsModelRole = i.key();
+		}
+	}
 }
 
 QString AnalysisForm::helpMD() const

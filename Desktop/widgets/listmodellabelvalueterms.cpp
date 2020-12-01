@@ -121,19 +121,16 @@ void ListModelLabelValueTerms::setLabelValuesFromSource()
 	if (_listView->addEmptyValue())
 		labelValuePairs.push_back(std::make_pair(_listView->placeholderText(), ""));
 
-	for (const auto& pair : listView()->getTermsPerSource())
+	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		SourceItem* sourceItem = pair.first;
-		const Terms& terms = pair.second;
-		ListModel* sourceModel = sourceItem->model();
-		ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceModel);
+		ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceItem->model());
 		for (const Term& term : terms)
 		{
 			QString label = term.asQString();
 			QString value = labelValueSourceModel ? labelValueSourceModel->getValue(label) : label;
 			labelValuePairs.push_back(std::make_pair(label, value));
 		}
-	}
+	});
 
 	_setLabelValues(labelValuePairs);
 }
