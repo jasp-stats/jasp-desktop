@@ -25,7 +25,9 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
 
 ### User guide
 
-  - [JASP User Guide](Docs/user-guide/index.md)
+  - [Download JASP](https://jasp-stats.org/download/)
+  - [How to use JASP](https://jasp-stats.org/how-to-use-jasp/)
+
 
 ### Citation details
 
