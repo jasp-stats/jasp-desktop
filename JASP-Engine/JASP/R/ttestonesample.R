@@ -273,7 +273,7 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
     tempResult <- BSDA::z.test(dat, "alternative" = direction, "mu" = options[["testValue"]], 
                                "sigma.x" = options[["stddev"]], 
                                "conf.level" = optionsList[["percentConfidenceMeanDiff"]])
-    df <- ifelse(is.null(tempResult[["parameter"]]), "", as.numeric(tempResult[["parameter"]]))
+    df   <- if (is.null(tempResult[["parameter"]])) "" else as.numeric(tempResult[["parameter"]])
     d  <- mean(dat) / options[["stddev"]]
     
     if(direction == "less")
