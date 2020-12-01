@@ -9,7 +9,7 @@ Note that it is required to have the R package [jaspTools](https://github.com/ja
     - [figs](#figs)
     - [testthat](#testthat)
     - [testthat.R](#testthatr)
-    - [.travis.yml](#travisyml)
+    - [.github/workflows/unittests.yml](#githubworkflowsunittestsyml)
   - [Creating unit tests](#creating-unit-tests)
     - [Creating a test file](#creating-a-test-file)
     - [Adding table tests](#adding-table-tests)
@@ -32,7 +32,7 @@ Your module should include the following structure:
     - [figs/](#figs)
     - [testthat/](#testthat)
     - [testthat.R](#testthatr)
-  - [.travis.yml](#travisyml)
+  - [.github/workflows/unittests.yml](#githubworkflowsunittestsyml)
   
 ### figs
 An empty folder, will be automatically filled later, see [Adding plot tests](#adding-plot-tests).
@@ -48,23 +48,50 @@ library(testthat)
 jaspTools::runTestsTravis(module = getwd())
 ```
 
-### .travis.yml
+### .github/workflows/unittests.yml
+The default workflow is
 ```
-os: osx
-language: r
-r: 3.6.1
-before_install: 
-  - "git clone --branch=MacOS-Original https://github.com/jasp-stats/jasp-required-files.git ~/pkgs"
-install:
-  - RScript -e ".libPaths(c(.libPaths(), '~/pkgs')); install.packages('remotes'); remotes::install_github('jasp-stats/jaspTools', upgrade = 'never')"
-script:
-  - R < tests/testthat.R --no-save
-env:
-  global:
-    - R_REMOTES_NO_ERRORS_FROM_WARNINGS=true
-    - VDIFFR_RUN_TESTS=true
-    - REQUIRED_PKGS=~/pkgs
+on: [push, pull_request]
 
+name: unit-tests
+
+jobs:
+  unit-tests:
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, r: "3.6.1"}
+          - {os: macOS-latest,   r: "3.6.1"}
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      R_REMOTES_UPGRADE: never
+      VDIFFR_RUN_TESTS: true
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@master
+        with:
+          r-version: ${{ matrix.config.r }}
+
+      - uses: jasp-stats/jasp-actions/setup-test-env@master
+
+      - name: Run unit tests
+        run: source("tests/testthat.R")
+        shell: Rscript {0}
+
+```
+JAGS can be enabled by setting `requiresJAGS: true`:
+```
+      - uses: jasp-stats/jasp-actions/setup-test-env@master
+        with:
+          requiresJAGS: true
 ```
 
 ## Creating unit tests
