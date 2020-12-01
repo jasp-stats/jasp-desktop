@@ -20,6 +20,7 @@ import QtQuick				2.11
 import QtQuick.Controls		2.4
 import QtGraphicalEffects	1.12
 import JASP					1.0
+import JASP.Widgets			1.0
 
 Rectangle
 {
@@ -31,8 +32,9 @@ Rectangle
 	objectName      : "ribbonButton"
 
 	property alias	text		: innerText.text
-	property alias	source		: backgroundImage.source
+	property string	source		: ""
 	property bool	enabled		: true
+	property bool	ready		: false
 	property string moduleName	: "???"
 	property string toolTip		: ""
 	property var	menu		: []
@@ -93,6 +95,8 @@ Rectangle
 			smooth:		true
 			mipmap:		true
 			fillMode:	Image.PreserveAspectFit
+			visible:	ribbonButton.ready
+			source:		ribbonButton.source === "" ? jaspTheme.iconPath + "error.png" : ribbonButton.source
 
 			anchors
 			{
@@ -101,6 +105,16 @@ Rectangle
 				horizontalCenter: parent.horizontalCenter
 			}
 
+		}
+
+		LoadingIndicator
+		{
+			anchors.top:		backgroundImage.top
+			anchors.left:		backgroundImage.left
+			width:				backgroundImage.width
+			height:				backgroundImage.height
+			visible:			!ribbonButton.ready
+			z:					backgroundImage.z + 1
 		}
 
 		Image
@@ -114,7 +128,7 @@ Rectangle
 			anchors.top:		backgroundImage.top
 			source:				jaspTheme.iconPath + "/toolbutton-menu-indicator.svg"
 			opacity:			ribbonButton.enabled ? 1 : 0.5
-			visible:			ribbonButton.menu ? ribbonButton.menu.rowCount() > 1 : false
+			visible:			ribbonButton.menu && ribbonButton.menu.rowCount() > 1
 		}
 
 		Text

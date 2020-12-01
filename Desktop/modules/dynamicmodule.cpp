@@ -684,6 +684,8 @@ void DynamicModule::setLoaded(bool loaded)
 	{
 		_loaded = loaded;
 
+		Log::log() << "DYNMOD " << _name << " changed loaded to " << (loaded ? "YES" : "NO") << std::endl;
+
 		emit loadedChanged(_loaded);
 	}
 }
@@ -717,8 +719,8 @@ void DynamicModule::setInitialized(bool initialized)
 
 void DynamicModule::setStatus(moduleStatus newStatus)
 {
-	//if(_status == newStatus)
-	//	return;
+	if(_status != newStatus && (_status == moduleStatus::error || newStatus == moduleStatus::error))
+		errorChanged(error());
 
 	// if we already need an install then we should only install the modpkg
 	if(_status == moduleStatus::installNeeded && newStatus == moduleStatus::installModPkgNeeded)
@@ -983,7 +985,7 @@ void DynamicModule::setBundled(bool bundled)
 std::string DynamicModule::toString()
 {
 	std::stringstream out;
-	out << "DynamicModule " << _name << "(0x" << std::hex << std::to_string(size_t(static_cast<void *>(this))) << ")" ;
+	out << "DynamicModule " << _name << "(0x" << std::hex << size_t(static_cast<void *>(this)) << ")" ;
 	return out.str();
 }
 

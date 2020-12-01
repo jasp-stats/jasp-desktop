@@ -23,8 +23,10 @@
 #include "utilities/qutils.h"
 #include "log.h"
 
-RibbonButton::RibbonButton(QObject *parent, Modules::DynamicModule * module)  : QObject(parent), _module(module)
+RibbonButton::RibbonButton(QObject *parent, Modules::DynamicModule * module)  : QObject(parent)
 {
+	setDynamicModule(module);
+
 	setTitle(			_module->title()					);
 	setRequiresData(	_module->requiresData()				);
 	setIsCommon(		_module->isCommon()					);
@@ -32,17 +34,24 @@ RibbonButton::RibbonButton(QObject *parent, Modules::DynamicModule * module)  : 
 	setIconSource(tq(	_module->iconFilePath())			);
 
 	bindYourself();
-
-	_analysisMenuModel = new AnalysisMenuModel(this, _module);
-
-	setDynamicModule(_module);
 }
 
 void RibbonButton::setDynamicModule(Modules::DynamicModule * module)
 {
-	_module = module;
-	connect(_module, &Modules::DynamicModule::descriptionReloaded, this, &RibbonButton::reloadDynamicModule, Qt::QueuedConnection);
-	_analysisMenuModel->setDynamicModule(_module);
+	if(_module != module)
+	{
+		_module = module;
+		connect(_module, &Modules::DynamicModule::descriptionReloaded,	this, &RibbonButton::reloadDynamicModule,	Qt::QueuedConnection);
+		connect(_module, &Modules::DynamicModule::loadedChanged,		this, &RibbonButton::setReady			);
+		connect(_module, &Modules::DynamicModule::errorChanged,			this, &RibbonButton::setError			);
+
+		if(!_analysisMenuModel)
+			_analysisMenuModel = new AnalysisMenuModel(this, _module);
+
+		_analysisMenuModel->setDynamicModule(_module);
+
+		setReady(false);
+	}
 }
 
 void RibbonButton::reloadDynamicModule(Modules::DynamicModule * dynMod)
@@ -58,6 +67,26 @@ void RibbonButton::reloadDynamicModule(Modules::DynamicModule * dynMod)
 
 	//if(dynamicModuleChanged)
 	emit iChanged(this);
+}
+
+void RibbonButton::setError(bool error)
+{
+	if (_error == error)
+		return;
+
+	_error = error;
+	emit errorChanged(_error);
+}
+
+void RibbonButton::setReady(bool ready)
+{
+	if (_ready == ready)
+		return;
+
+	Log::log() << "RibbonButton " << title() << " is " << (ready ? "" : "not ") << "ready!" << std::endl;
+
+	_ready = ready;
+	emit readyChanged(_ready);
 }
 
 RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction)

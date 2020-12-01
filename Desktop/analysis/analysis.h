@@ -63,7 +63,6 @@ public:
 	static Analysis::Status analysisResultsStatusToAnalysisStatus(analysisResultStatus result);
 
 	Analysis(size_t id, Analysis * duplicateMe);
-	Analysis(size_t id, std::string module, std::string name, std::string qml, std::string title, const Version &version, Json::Value *data);
 	Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", std::string moduleVersion = "", Json::Value *data = nullptr);
 
 	virtual ~Analysis();
@@ -77,8 +76,8 @@ public:
 	Q_INVOKABLE void	duplicateMe();
 
 	bool needsRefresh()			const;
-	bool isWaitingForModule()	const { return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
-	bool isDynamicModule()		const { return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
+	bool isWaitingForModule();
+	bool isDynamicModule()		const { return bool(_dynamicModule); }
 	void setResults(	const Json::Value & results, analysisResultStatus	status, const Json::Value & progress = Json::nullValue) { setResults(results, analysisResultsStatusToAnalysisStatus(status), progress); }
 	void setResults(	const Json::Value & results, Status					status, const Json::Value & progress = Json::nullValue);
 	void imageSaved(	const Json::Value & results);
@@ -125,7 +124,7 @@ public:
 			bool				isDuplicate()		const	{ return _isDuplicate;						}
 			bool				hasVolatileNotes()	const	{ return _hasVolatileNotes;					}
 			bool				utilityRunAllowed() const	{ return  isSaveImg() || isEditImg() || isRewriteImgs();									}
-			bool				shouldRun()			const	{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() ) && optionsBound();	}
+			bool				shouldRun()					{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() ) && optionsBound();	}
 	const	Json::Value		&	meta()				const	{ return _meta;																				}
 			QString				helpMD()			const;
 			bool				optionsBound()		const	{ return _optionsBound;	}
@@ -225,6 +224,7 @@ private:
 	void					storeUserDataEtc();
 	void					fitOldUserDataEtc();
 	bool					updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root);
+	Modules::AnalysisEntry	*moduleData();
 
 protected:
 	Status					_status			= Initializing;

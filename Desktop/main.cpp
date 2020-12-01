@@ -26,6 +26,8 @@
 #include <boost/filesystem.hpp>
 #include <codecvt>
 #include "appinfo.h"
+#include <iostream>
+#include "timers.h"
 
 const std::string	jaspExtension	= ".jasp",
 					unitTestArg		= "--unitTest",

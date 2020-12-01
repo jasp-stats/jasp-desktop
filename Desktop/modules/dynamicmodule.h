@@ -58,6 +58,7 @@ class DynamicModule : public QObject
 	Q_PROPERTY(bool			initialized			READ initialized		WRITE setInitialized		NOTIFY initializedChanged		)
 	Q_PROPERTY(bool			isBundled			READ isBundled			WRITE setBundled			NOTIFY bundledChanged			)
 	Q_PROPERTY(QStringList	importsR			READ importsRQ										NOTIFY importsRChanged			)
+	Q_PROPERTY(bool			error				READ error											NOTIFY errorChanged				)
 
 public:
 	//To do make the constructors less misleading (std::string vs QString does not do the same thing at all!) Some kind of a static MakeDynamicModule function and making the constructors private should do the trick
@@ -216,6 +217,7 @@ signals:
 	void		registerForInstallingModPkg(	const std::string & moduleName);
 	void		descriptionReloaded(Modules::DynamicModule * dynMod);
 	void		importsRChanged();
+	void		errorChanged(bool error);
 
 private:
 	QFileInfo			_moduleFolder;
@@ -250,6 +252,7 @@ private:
 	static const std::string	_moduleDirPostfix;
 
 	Description		*	_descriptionObj		= nullptr;
+	bool m_error;
 };
 
 

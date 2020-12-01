@@ -9,11 +9,6 @@ EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slav
 	: QObject(parent), _channel(channel)
 {
 	setSlaveProcess(slaveProcess);
-
-#ifndef JASP_DEBUG
-	if(channelNumber() == 0)
-		setRunsAnalysis(false); // don't perform 'runs' on process 0, "only" inits & filters & rCode & columnComputes & moduleRequests.
-#endif
 }
 
 
@@ -23,7 +18,7 @@ void EngineRepresentation::setSlaveProcess(QProcess * slaveProcess)
 	_slaveProcess = slaveProcess;
 	_slaveProcess->setParent(this);
 
-	connect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
+	_slaveFinishedConnection = connect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
 }
 
 EngineRepresentation::~EngineRepresentation()
@@ -65,11 +60,11 @@ void EngineRepresentation::sendString(std::string str)
 
 void EngineRepresentation::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	Log::log() << "Engine # " << channelNumber() << " finished while in state '" << _engineState << "' " << (exitStatus == QProcess::ExitStatus::NormalExit ? "normally" : "crashing") << " and with exitCode " << exitCode << "!" << std::endl;
+	Log::log() << "Engine # " << channelNumber() << " finished while in state '" << _engineState << "' " << (exitStatus == QProcess::ExitStatus::NormalExit || stopped() ? "normally" : "crashing") << " and with exitCode " << exitCode << "!" << std::endl;
 
 	_slaveProcess->deleteLater();
 	_slaveProcess = nullptr;
-	_slaveCrashed = exitStatus == QProcess::ExitStatus::CrashExit && _engineState != engineState::killed;
+	_slaveCrashed = exitStatus == QProcess::ExitStatus::CrashExit && !(stopped() || killed());
 
 	handleEngineCrash();
 }
@@ -657,6 +652,7 @@ void EngineRepresentation::resumeEngine()
 
 void EngineRepresentation::processEnginePausedReply()
 {
+	Log::log() << "EngineRepresentation::processEnginePausedReply() for engine #" << channelNumber() << std::endl;
 	checkIfExpectedReplyType(engineState::pauseRequested);
 
 	_engineState = engineState::paused;
@@ -664,6 +660,8 @@ void EngineRepresentation::processEnginePausedReply()
 
 void EngineRepresentation::processEngineResumedReply()
 {
+	Log::log() << "EngineRepresentation::processEngineResumedReply() for engine #" << channelNumber() << std::endl;
+
 	if(_engineState != engineState::resuming && _engineState != engineState::initializing)
 		throw unexpectedEngineReply("Received an unexpected engine #" + std::to_string(channelNumber()) + " resumed reply!");
 
@@ -674,10 +672,12 @@ void EngineRepresentation::processEngineResumedReply()
 
 void EngineRepresentation::processEngineStoppedReply()
 {
-	if(_engineState != engineState::stopRequested)
-		throw unexpectedEngineReply("Received an unexpected engine stopped reply!");
+	Log::log() << "EngineRepresentation::processEngineStoppedReply() for engine #" << channelNumber() << std::endl;
+	checkIfExpectedReplyType(engineState::stopRequested);
 
 	_engineState = engineState::stopped;
+
+	disconnect(_slaveFinishedConnection);
 }
 
 void EngineRepresentation::runModuleInstallRequestOnProcess(Json::Value request)
@@ -867,7 +867,7 @@ void EngineRepresentation::restartAbortedAnalysis()
 	_analysisAborted = nullptr;
 }
 
-bool EngineRepresentation::willProcessAnalysis(const Analysis * analysis) const
+bool EngineRepresentation::willProcessAnalysis(Analysis * analysis) const
 {
 	if(!analysis || !idle() || !analysis->shouldRun())
 		return false;

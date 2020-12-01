@@ -16,10 +16,7 @@
 //
 
 #include "analysis.h"
-
 #include <boost/bind.hpp>
-
-
 #include "options/options.h"
 #include "tempfiles.h"
 #include "appinfo.h"
@@ -28,27 +25,6 @@
 #include "analysisform.h"
 #include "utilities/qutils.h"
 #include "log.h"
-
-
-Analysis::Analysis(size_t id, std::string module, std::string name, std::string qml, std::string title, const Version &version, Json::Value *data) :
-	QObject(Analyses::analyses()),
-	_options(new Options()),
-	_id(id),
-	_module(module),
-	_name(name),
-	_qml(qml),
-	_titleDefault(title),
-	_title(title),
-	_version(version)
-{
-	if (data)
-		// We cannot set the options now because it sometimes needs more information from the QML file
-		// (especially with OptionsTable that needs a template information).
-		_optionsDotJASP = *data;
-
-	setHelpFile("analyses/" + nameQ());
-	bindOptionHandlers();
-}
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  QObject(Analyses::analyses()),
@@ -69,7 +45,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 	if (data)
 		_optionsDotJASP = *data; //Same story as other constructor
 
-	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries)
+	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	setHelpFile(dynamicModule()->helpFolderPath() + tq(analysisEntry->function()));
 	bindOptionHandlers();
 }
@@ -122,12 +98,18 @@ bool Analysis::checkAnalysisEntry()
 {
 	try
 	{
-		if(_codedReferenceToAnalysisEntry != "" && _dynamicModule != nullptr)
-			_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
+		if(_codedReferenceToAnalysisEntry == "" || !_dynamicModule)
+			Modules::ModuleException("???", "No coded reference stored or _dynamicModule == nullptr...");
+
+		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
+
 		return true;
 	}
 	catch (Modules::ModuleException & e)
 	{
+		Log::log() << "Analysis::checkAnalysisEntry() had a problem: " << e.what() << std::endl;
+
+		_moduleData = nullptr;
 		return false;
 	}
 }
@@ -264,6 +246,14 @@ bool Analysis::updatePlotSize(const std::string & plotName, int width, int heigh
 	}
 
 	return false;
+}
+
+Modules::AnalysisEntry * Analysis::moduleData()
+{
+	if(!_moduleData)
+		checkAnalysisEntry();
+
+	return _moduleData;
 }
 
 
@@ -963,6 +953,12 @@ bool Analysis::needsRefresh() const
 {
 	bool differentVersion = _dynamicModule ? _moduleVersion != _dynamicModule->version() : version() != AppInfo::version;
 	return _wasUpgraded || differentVersion;
+}
+
+bool Analysis::isWaitingForModule()
+{
+	//if moduleData == nullptr we might still be waiting for the module to be reloaded after replacement. Because it doesnt know which Analyses it contains yet.
+	return isDynamicModule() && (!moduleData() || !moduleData()->dynamicModule()->readyForUse());
 }
 
 

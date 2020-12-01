@@ -96,25 +96,33 @@ void Engine::initialize()
 {
 	Log::log() << "Engine::initialize()" << std::endl;
 
-	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings);
-	
-	Log::log() << "rbridge_init completed" << std::endl;
+	try
+	{
+		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings);
+
+		Log::log() << "rbridge_init completed" << std::endl;
 
 #if defined(JASP_DEBUG) || defined(__linux__)
-	if (_slaveNo == 0)
-	{
-		Log::log() << rbridge_check()			<< std::endl;
-		Log::log() << "rbridge_check completed" << std::endl;
-	}
+		if (_slaveNo == 0)
+		{
+			Log::log() << rbridge_check()			<< std::endl;
+			Log::log() << "rbridge_check completed" << std::endl;
+		}
 #endif
 	
-	//Is there maybe already some data? Like, if we just killed and restarted the engine
-	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
+		//Is there maybe already some data? Like, if we just killed and restarted the engine
+		ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
 
-	_engineState = engineState::idle;
-	sendEngineResumed(); //Then the desktop knows we've finished init.
-	
-	Log::log() << "Engine::initialize() done" << std::endl;
+		_engineState = engineState::idle;
+		sendEngineResumed(); //Then the desktop knows we've finished init.
+
+		Log::log() << "Engine::initialize() done" << std::endl;
+	}
+	catch(std::exception & e)
+	{
+		Log::log() << "Engine::initialize() failed! The exception caught was: '" << e.what() << "'" << std::endl;
+		throw e;
+	}
 }
 
 Engine::~Engine()
