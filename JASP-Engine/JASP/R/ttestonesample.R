@@ -237,61 +237,71 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
 }
   
 .ttestOneSampleComputeMainTableRow <- function(variable, dataset, test, testStat, optionsList, options) {
-  direction <- switch(options$hypothesis,
+  direction <- switch(options[["hypothesis"]],
                       "notEqualToTestValue"  ="two.sided",
                       "greaterThanTestValue" ="greater",
                       "lessThanTestValue"    ="less")
   dat <- na.omit(dataset[[ .v(variable) ]])
   n   <- length(dat)
   if (test == "Wilcoxon") {
-    r <- stats::wilcox.test(dat, alternative = direction, mu = options$testValue,
-                            conf.level = optionsList$percentConfidenceMeanDiff, conf.int = TRUE)
-    df   <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
+    # Note(Alexander): Effect size estimate of Wilcoxon is based on the centralised statistic
+    tempResult <- stats::wilcox.test(dat, "alternative" = direction, "mu" = options[["testValue"]],
+                                     "conf.level" = optionsList[["percentConfidenceMeanDiff"]], "conf.int" = TRUE)
+    wilxoconWCentral <- stats::wilcox.test(dat, "alternative" = direction, "mu" = 0,
+                                           "conf.level" = optionsList[["percentConfidenceMeanDiff"]], 
+                                           "conf.int" = FALSE)[["statistic"]]
+    # tempResult[["conf.int"]] <- tempResultEZ[["conf.int"]]
+    # tempResult[["estimate"]] <- tempResultEZ[["estimate"]]
+    
+    df   <- ifelse(is.null(tempResult[["parameter"]]), "", as.numeric(tempResult[["parameter"]]))
     nd   <- sum(dat != 0)
     maxw <- (nd * (nd + 1)) / 2
-    d    <- as.numeric((r$statistic / maxw) * 2 - 1)
+    d    <- as.numeric((wilxoconWCentral / maxw) * 2 - 1)
     wSE  <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) /2
     mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
     # zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
     zmbiss <- atanh(d)
+    
     if(direction == "two.sided")
-      confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize)/2)*mrSE), 
-                               tanh(zmbiss + qnorm((1+optionsList$percentConfidenceEffSize)/2)*mrSE)))
+      confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList[["percentConfidenceEffSize"]])/2)*mrSE), 
+                               tanh(zmbiss + qnorm((1+optionsList[["percentConfidenceEffSize"]])/2)*mrSE)))
     else if (direction == "less") 
-      confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(optionsList$percentConfidenceEffSize)*mrSE)))
+      confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(optionsList[["percentConfidenceEffSize"]])*mrSE)))
     else if (direction == "greater")
-      confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize))*mrSE), Inf))
+      confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList[["percentConfidenceEffSize"]]))*mrSE), Inf))
   } else if (test == "Z"){
-    r <- BSDA::z.test(dat, alternative = direction, mu = options$testValue, 
-                      sigma.x = options$stddev, 
-                      conf.level = optionsList$percentConfidenceMeanDiff)
-    df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-    d  <- (mean(dat) - options$testValue) / options$stddev
+    tempResult <- BSDA::z.test(dat, "alternative" = direction, "mu" = options[["testValue"]], 
+                               "sigma.x" = options[["stddev"]], 
+                               "conf.level" = optionsList[["percentConfidenceMeanDiff"]])
+    df   <- if (is.null(tempResult[["parameter"]])) "" else as.numeric(tempResult[["parameter"]])
+    d  <- mean(dat) / options[["stddev"]]
     
     if(direction == "less")
-      r$conf.int[1] <- -Inf
+      tempResult[["conf.int"]][1] <- -Inf
     else if(direction == "greater")
-      r$conf.int[2] <- Inf
+      tempResult[["conf.int"]][2] <- Inf
     
-    confIntEffSize <- c(0,0)
-    if(optionsList$wantsConfidenceEffSize)
-      confIntEffSize <- r$conf.int/options$stddev
+    confIntEffSize <- c(0, 0)
+    
+    if(optionsList[["wantsConfidenceEffSize"]])
+      confIntEffSize <- tempResult[["conf.int"]]/options[["stddev"]]
+    
   } else {
-    r <- stats::t.test(dat, alternative = direction, mu = options$testValue, 
-                       conf.level = optionsList$percentConfidenceMeanDiff)
-    df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-    d  <- (mean(dat) - options$testValue) / sd(dat)
-    t  <- as.numeric(r$statistic)
+    tempResult <- stats::t.test(dat, "alternative" = direction, "mu" = options[["testValue"]], 
+                                "conf.level" = optionsList[["percentConfidenceMeanDiff"]])
+    df <- ifelse(is.null(tempResult[["parameter"]]), "", as.numeric(tempResult[["parameter"]]))
+    d  <- mean(dat) / sd(dat)
+    t  <- as.numeric(tempResult[["statistic"]])
     
-    confIntEffSize <- c(0,0)
+    confIntEffSize <- c(0, 0)
     
-    if (optionsList$wantsConfidenceEffSize) {
+    if (optionsList[["wantsConfidenceEffSize"]]) {
       
-      ciEffSize  <- options$effSizeConfidenceIntervalPercent
-      alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
+      ciEffSize  <- options[["effSizeConfidenceIntervalPercent"]]
+      alphaLevel <- ifelse("direction" == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
       
-      confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt(n), df = df, alpha.lower = alphaLevel,
-                                                     alpha.upper = alphaLevel)[c(1, 3)]
+      confIntEffSize <- .confidenceLimitsEffectSizes("ncp" = d * sqrt(n), "df" = df, "alpha.lower" = alphaLevel,
+                                                     "alpha.upper" = alphaLevel)[c(1, 3)]
       confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
       
       if (direction == "greater")
@@ -304,24 +314,24 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   }
   
   ## same for all tests
-  p     <- as.numeric(r$p.value)
-  stat  <- as.numeric(r$statistic)
-  m     <- as.numeric(r$estimate - r$null.value)
-  ciLow <- as.numeric(r$conf.int[1] - r$null.value)
-  ciUp  <- as.numeric(r$conf.int[2] - r$null.value)
+  p     <- as.numeric(tempResult[["p.value"]])
+  stat  <- as.numeric(tempResult[["statistic"]])
+  m     <- as.numeric(tempResult[["estimate"]]) 
+  ciLow <- as.numeric(tempResult[["conf.int"]][1])
+  ciUp  <- as.numeric(tempResult[["conf.int"]][2])
   ciLowEffSize <- as.numeric(confIntEffSize[1])
   ciUpEffSize  <- as.numeric(confIntEffSize[2])
   
   if (suppressWarnings(is.na(t)))  # do not throw warning when test stat is not 't' 
     stop("data are essentially constant")
   
-  result <- list(df = df, p = p, m = m, d = d, 
-              lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp, 
-              lowerCIeffectSize = ciLowEffSize, upperCIeffectSize = ciUpEffSize)
+  result <- list("df" = df, "p" = p, "m" = m, "d" = d, 
+                 "lowerCIlocationParameter" = ciLow, "upperCIlocationParameter" = ciUp, 
+                 "lowerCIeffectSize" = ciLowEffSize, "upperCIeffectSize" = ciUpEffSize)
   result[[testStat]] <- stat
   
-  if (options$VovkSellkeMPR)
-    result[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
+  if (options[["VovkSellkeMPR"]])
+    result[["VovkSellkeMPR"]] <- JASP:::.VovkSellkeMPR(p)
   
   return(result)
 }
