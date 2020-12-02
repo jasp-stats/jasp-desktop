@@ -12,15 +12,13 @@ void AxisModel::setAxisData(const Json::Value & axis)
 	_axis = axis;
 	beginResetModel();
 
-	_axisType = tq(axis.get("type", "").asString());
-//	this should never happen
-//	if (_axisType == "")
-//		throw error
+	_axisType	= tq(axis.get("type", "").asString());
+	_continuous = _axisType != "ScaleDiscrete";
 
 	Json::Value	settings = axis.get(	"settings",		Json::objectValue);
 
 	setTitle(		tq(settings.get(	"title",		""			).asString()));
-	setTitleType(	tq(settings.get(	"titleType",	"plainText"	).asString()));
+	setTitleType(	tq(settings.get(	"titleType",	"character"	).asString()));
 	setType(		tq(settings.get(	"type",			""			).asString()));
 	setBreaksType(	tq(settings.get(	"breaksType",	"range"		).asString()));
 	setLimitsType(	tq(settings.get(	"limitsType",	"data"		).asString()));
@@ -59,6 +57,7 @@ Json::Value AxisModel::getAxisData() const
 	Json::Value & settings	= axis["settings"];
 
 	settings["title"]		= _title.toStdString();
+	settings["titleType"]	= _titleType.toStdString();
 	settings["type"]		= _type.toStdString();
 	settings["breaks"]		= JsonUtilities::vecToJsonArray(_breaks);
 	settings["labels"]		= JsonUtilities::vecToJsonArray(_labels);
@@ -82,10 +81,12 @@ void AxisModel::setTitle(QString title)
 
 void AxisModel::setTitleType(QString titleType)
 {
-	if (_titleType == titleType)
+	if (_titleType == titleType || titleType != "") // TODO: titleType != "" shouldn't be necessary but it is?
 		return;
 
 	_titleType = titleType;
+	Log::log() << "titleType was "		<< titleType	<< std::endl;
+	Log::log() << "_titleType is now "	<< _titleType	<< std::endl;
 	emit titleTypeChanged(_titleType);
 	emit somethingChanged();
 }

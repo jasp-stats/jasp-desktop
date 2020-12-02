@@ -48,6 +48,10 @@ Popup
 				id:							title
 				font:						jaspTheme.fontLabel
 				text:						plotEditorModel.title
+				/*
+					TODO: the title can disappear behind the axis options when resizing the jasp window!
+					It should probably be at least in the top left corner
+				*/
 				anchors.horizontalCenter:	parent.horizontalCenter
 				y:							jaspTheme.generalAnchorMargin
 			}
@@ -71,7 +75,7 @@ Popup
 				PlotEditingAxis
 				{
 					id:				xAxis
-					title:			qsTr("X axis")
+					title:			qsTr("x-axis")
 					axisModel:		plotEditorModel.xAxis
 
 					anchors
@@ -101,7 +105,7 @@ Popup
 				PlotEditingAxis
 				{
 					id:				yAxis
-					title:			qsTr("Y axis")
+					title:			qsTr("y-axis")
 					axisModel:		plotEditorModel.yAxis
 
 					anchors
@@ -111,6 +115,61 @@ Popup
 						right:		parent.right
 						margins:	jaspTheme.generalAnchorMargin
 					}
+				}
+
+				Rectangle
+				{
+					id:				buttonSeparator
+					height:			1
+					color:			jaspTheme.uiBorder
+					anchors
+					{
+						bottom:			exitButton.top
+						bottomMargin:	jaspTheme.generalAnchorMargin
+						left:			parent.left
+						right:			parent.right
+					}
+				}
+
+				JASPW.RectangularButton
+				{
+					id:					exitButton
+					anchors
+					{
+						left:			parent.left
+						bottom:			parent.bottom
+						margins:		jaspTheme.generalAnchorMargin
+					}
+					text:				qsTr("Exit")
+					on_PressedChanged:	plotEditorPopup.close()
+				}
+
+				JASPW.RectangularButton
+				{
+					id:					resetButton
+					anchors
+					{
+						left:			exitButton.right
+						bottom:			parent.bottom
+						margins:		jaspTheme.generalAnchorMargin
+					}
+					text:				qsTr("Reset plot")
+					on_PressedChanged:	plotEditorModel.resetPlot = true
+				}
+
+				JASPW.RectangularButton
+				{
+					// TODO: this would be a nice to have but I'm not sure how to access MainWindow::analysisSaveImageHandler properly
+					visible: false
+					id:					saveButton
+					anchors
+					{
+						left:			resetButton.right
+						bottom:			parent.bottom
+						margins:		jaspTheme.generalAnchorMargin
+					}
+					text:				qsTr("Save plot as")
+					on_PressedChanged:	plotEditorModel.resetPlot = true
 				}
 			}
 

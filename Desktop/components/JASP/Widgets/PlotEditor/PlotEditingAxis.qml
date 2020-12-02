@@ -5,6 +5,10 @@ import JASP.Widgets			1.0		as	JASPW
 import JASP.Theme			1.0
 import JASP.Controls		1.0		as	JASPC
 
+/*
+	TODO: it might make sense to add a global title/ box around all the options inside one axis.
+ */
+
 Column
 {
 
@@ -24,39 +28,54 @@ Column
 
 	JASPC.DropDown
 	{
-		// TODO: make this work on the R side (if I've got time left)
-		visible: false
-		label: qsTr("Text Type")
+		label: qsTr("Title Type")
 
 		//Move this to C++
 		values:
 		[
-			{ label: qsTr("Plain Text"),		value: "plainText"		},
-			{ label: qsTr("R Expression"),		value: "rExpression"	},
-			{ label: qsTr("LateX"),				value: "Latex"			}
+			{ label: qsTr("Plain Text"),		value: "character"		},
+			{ label: qsTr("R Expression"),		value: "expression"		},
+			{ label: qsTr("LateX"),				value: "LaTeX"			}
 		]
 
 		indexDefaultValue: {
-			var idx = ["plainText", "rExpression", "Latex"].findIndex(e => e === !axisModel ? "plainText" : axisModel.titleType);
-			if (idx < 0)
+			if (currentValue)
+				console.log("current value is " + currentValue)
+			else
+				console.log("current value is undefined")
+
+			if (axisModel)
+				console.log("axisModel is " + axisModel.titleType)
+			else
+				console.log("axisModel is undefined")
+
+			var idx;
+			if (axisModel)
 			{
-				console.log("Someone made a typo! titleType: '", axisModel.titleType, "' could not be found!")
-				idx = 0
+				idx = ["character", "expression"].findIndex(e => e === axisModel.titleType);
+				if (idx < 0)
+				{
+					console.log("Someone made a typo! titleType: '", axisModel.titleType, "' could not be found!")
+					idx = 0
+				}
 			}
+			else
+				idx = 0
+			console.log("idx is " + idx)
 			return idx
 		}
-		onCurrentIndexChanged: axisModel.titleType = currentValue
+		onCurrentIndexChanged: if (axisModel) axisModel.titleType = currentValue
 	}
 
 	JASPC.RadioButtonGroup
 	{
 		id:		axisBreaksRadioButton
 		title:	qsTr("Breaks")
-		visible: axisModel ? axisModel.axisType === "ScaleContinuous" : false
+		visible: axisModel ? axisModel.continuous : false
 
 		//define breaksType as enum
-		JASPC.RadioButton { id: axisBreaksRange;		value: "range";		label:	qsTr("Specify range");		checked: if(axisModel) axisModel.axisType === "ScaleContinuous" ? axisModel.breaksType === "range"  : false	}
-		JASPC.RadioButton { id: axisBreaksManual;		value: "manual";	label:	qsTr("Manually");			checked: if(axisModel) axisModel.axisType === "ScaleContinuous" ? axisModel.breaksType === "manual" : true	}
+		JASPC.RadioButton { id: axisBreaksRange;		value: "range";		label:	qsTr("Specify range");		checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === "range"  : false	}
+		JASPC.RadioButton { id: axisBreaksManual;		value: "manual";	label:	qsTr("Manually");			checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === "manual" : true	}
 
 		onValueChanged: axisModel.breaksType = axisBreaksRadioButton.value
 
@@ -99,7 +118,7 @@ Column
 		id:		axisLimitsRadioButton
 		name:	"axisLimits";
 		title:	qsTr("Limits")
-		visible: axisModel ? axisModel.axisType === "ScaleContinuous" : false
+		visible: axisModel ? axisModel.continuous : false
 
 		//Limits to C++ as well
 		JASPC.RadioButton	{								value: "data";		label:	qsTr("Based on data");		checked: if(axisModel) axisModel.limitsType === "data"		}
@@ -109,7 +128,7 @@ Column
 		onValueChanged: axisModel.limitsType = axisLimitsRadioButton.value
 	}
 
-	JASPC.DoubleField	{	visible: axisLimitsManual.checked;	id: axisLimitsLower;	label: qsTr("lower limit");	negativeValues: true;	max: !axisModel ? 0 : axisModel.limitUpper;		defaultValue: !axisModel ? 0 : axisModel.limitLower;	onValueChanged: if(axisModel) axisModel.limitLower = value; 	}
-	JASPC.DoubleField	{	visible: axisLimitsManual.checked;	id: axisLimitsUpper;	label: qsTr("upper limit");	negativeValues: true;	min: !axisModel ? 0 : axisModel.limitLower;		defaultValue: !axisModel ? 0 : axisModel.limitUpper;	onValueChanged: if(axisModel) axisModel.limitUpper = value; 	}
+	JASPC.DoubleField	{	visible: axisLimitsManual.checked;	id: axisLimitsLower;	label: qsTr("Lower limit");	negativeValues: true;	max: !axisModel ? 0 : axisModel.limitUpper;		defaultValue: !axisModel ? 0 : axisModel.limitLower;	onValueChanged: if(axisModel) axisModel.limitLower = value; 	}
+	JASPC.DoubleField	{	visible: axisLimitsManual.checked;	id: axisLimitsUpper;	label: qsTr("Upper limit");	negativeValues: true;	min: !axisModel ? 0 : axisModel.limitLower;		defaultValue: !axisModel ? 0 : axisModel.limitUpper;	onValueChanged: if(axisModel) axisModel.limitUpper = value; 	}
 
 }

@@ -17,6 +17,7 @@ PlotEditorModel::PlotEditorModel()
 	_xAxis = new AxisModel(this, true);
 	_yAxis = new AxisModel(this, true);
 	_ppi   = PreferencesModel::prefs()->plotPPI();
+	// _resetPlot is always false, it should only be set to TRUE from QML
 
 	connect(_xAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
 	connect(_yAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
@@ -95,6 +96,7 @@ Json::Value PlotEditorModel::generateEditOptions() const
 
 	editOptions["xAxis"]		= _xAxis->getAxisData();
 	editOptions["yAxis"]		= _yAxis->getAxisData();
+	editOptions["resetPlot"]	= _resetPlot;
 
 	// To Do Vincent Pedata: Do we need to send the coordinates back? No right?
 
@@ -112,6 +114,8 @@ void PlotEditorModel::somethingChanged()
 		_prevImgOptions = newImgOptions;
 		_analysis->editImage(_prevImgOptions);
 	}
+	// should always be reset
+	_resetPlot = false;
 }
 
 void PlotEditorModel::setVisible(bool visible)
@@ -196,6 +200,15 @@ void PlotEditorModel::setHeight(int height)
 
 	_height = height;
 	emit heightChanged(_height);
+}
+
+void PlotEditorModel::setResetPlot(bool resetPlot)
+{
+	if (_resetPlot == resetPlot)
+		return;
+	_resetPlot = resetPlot;
+	emit resetPlotChanged(_resetPlot);
+	somethingChanged();
 }
 
 QString PlotEditorModel::clickHitsElement(double x, double y) const

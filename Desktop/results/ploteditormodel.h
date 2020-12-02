@@ -26,7 +26,7 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(AxisModel *				xAxis			READ xAxis									NOTIFY dummyAxisChanged		)
 	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged		)
 	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged			)
-
+	Q_PROPERTY(bool						resetPlot		READ resetPlot		WRITE setResetPlot		NOTIFY resetPlotChanged		)
 
 public:
 	explicit PlotEditorModel();
@@ -42,6 +42,7 @@ public:
 	AxisModel *	yAxis()					const { return _yAxis;		}
 	double					ppi()		const {	return _ppi;		}
 	void					reset();
+	bool					resetPlot()	const { return _resetPlot;	}
 
 signals:
 	void visibleChanged(		bool		visible			);
@@ -52,6 +53,7 @@ signals:
 	void heightChanged(			int			height			);
 	void dummyAxisChanged();
 	void ppiChanged();// TODO, refresh all
+	void resetPlotChanged(		bool		resetPlot		);
 
 public slots:
 	void showPlotEditor(int id, QString options);
@@ -62,6 +64,7 @@ public slots:
 	void setTitle(			QString		title			);
 	void setWidth(			int			width			);
 	void setHeight(			int			height			);
+	void setResetPlot(		bool		resetPlot		);
 
 	void somethingChanged();
 	void refresh();
@@ -86,7 +89,8 @@ private:
 							_data,
 							_title;
 	bool					_visible		= false,
-							_goBlank		= false;
+							_goBlank		= false,
+							_resetPlot		= false;
 	int						_width,
 							_height,
 							_analysisId;

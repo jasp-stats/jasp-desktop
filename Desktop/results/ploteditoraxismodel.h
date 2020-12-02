@@ -26,7 +26,7 @@ class AxisModel : public QAbstractTableModel
 	Q_PROPERTY(double	limitLower	READ lower			WRITE setLower			NOTIFY limitsChanged			)
 	Q_PROPERTY(double	limitUpper	READ upper			WRITE setUpper			NOTIFY limitsChanged			)
 
-	Q_PROPERTY(QString	axisType	READ axisType								NOTIFY axisTypeChanged			)
+	Q_PROPERTY(bool		continuous	READ continuous								NOTIFY continuousChanged		)
 
 public:
 	AxisModel(QObject * parent, bool vertical) : QAbstractTableModel(parent), _vertical(vertical)
@@ -69,7 +69,7 @@ public:
 
 	bool				hasBreaks()		const	{ return _breaks.size() > 0; }
 
-	QString				axisType()	const	{ return _limitsType;	}
+	bool				continuous()	const	{ return _continuous;	}
 
 public slots:
 	void setTitle(		QString title);
@@ -97,7 +97,7 @@ signals:
 	void verticalChanged(	bool	transposed);
 	void rangeChanged();
 	void limitsChanged();
-	void axisTypeChanged();
+	void continuousChanged();
 	void somethingChanged();
 
 private:
@@ -111,7 +111,8 @@ private:
 							_breaks,
 							_limits;
 	std::vector<QString>	_labels;
-	bool					_vertical	= false;
+	bool					_vertical	= false,
+							_continuous	= false; // <- required to avoid warning about "member not initialized"
 	Json::Value				_axis		= Json::objectValue;
 
 	//add expands as well?
