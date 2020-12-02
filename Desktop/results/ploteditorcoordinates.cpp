@@ -54,6 +54,7 @@ void Coordinates::loadCoordinates(Json::Value coordsFromEditOptions)
 	bool rightFormat = coordsFromEditOptions.isArray();
 
 	if(rightFormat)
+	{
 		for(const Json::Value & entry : coordsFromEditOptions)
 			if(!entry.isObject() || !lambdaMemberCheck(entry, {"name", "x0", "x1", "y0", "y1"}))
 			{
@@ -68,9 +69,9 @@ void Coordinates::loadCoordinates(Json::Value coordsFromEditOptions)
 						entry["x1"].asDouble(), entry["y1"].asDouble()
 					)
 				);
-
-		if(!rightFormat)
-			Log::log() << "coordinates for plotEditing were not in the right format!\nReceived:" << coordsFromEditOptions.toStyledString();
+	}
+	else
+		Log::log() << "coordinates for plotEditing were not in the right format!\nReceived:" << coordsFromEditOptions.toStyledString();
 }
 
 }

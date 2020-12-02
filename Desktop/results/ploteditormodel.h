@@ -25,7 +25,8 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(int						height			READ height			WRITE setHeight			NOTIFY heightChanged		)
 	Q_PROPERTY(AxisModel *				xAxis			READ xAxis									NOTIFY dummyAxisChanged		)
 	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged		)
-
+	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged			)
+	Q_PROPERTY(bool						loading			READ loading		WRITE setLoading		NOTIFY loadingChanged		)
 
 public:
 	explicit PlotEditorModel();
@@ -37,10 +38,14 @@ public:
 	QString					title()		const { return _title;		}
 	int						width()		const { return _width;		}
 	int						height()	const { return _height;		}
-	AxisModel *	xAxis()		const { return _xAxis;		}
-	AxisModel *	yAxis()		const { return _yAxis;		}
+	AxisModel			*	xAxis()		const { return _xAxis;		}
+	AxisModel			*	yAxis()		const { return _yAxis;		}
+	double					ppi()		const {	return _ppi;		}
+	bool					loading()	const { return _loading;	}
 	void					reset();
-
+	
+	
+	
 signals:
 	void visibleChanged(		bool		visible			);
 	void nameChanged(			QString		name			);
@@ -49,7 +54,10 @@ signals:
 	void widthChanged(			int			width			);
 	void heightChanged(			int			height			);
 	void dummyAxisChanged();
-
+	void ppiChanged();// TODO, refresh all
+	void resetPlotChanged(		bool		resetPlot		);
+	void loadingChanged(		bool		loading);
+	
 public slots:
 	void showPlotEditor(int id, QString options);
 
@@ -59,12 +67,17 @@ public slots:
 	void setTitle(			QString		title			);
 	void setWidth(			int			width			);
 	void setHeight(			int			height			);
+	
+	void					resetPlot();
+	void					savePlot()	const;
 
-	void somethingChanged() const;
+	void somethingChanged();
 	void refresh();
 
 	QString clickHitsElement(double x, double y) const;
-
+	
+	void setLoading(bool loading);
+	
 private:
 	void		processImgOptions();
 	Json::Value generateImgOptions()	const;
@@ -77,15 +90,22 @@ private:
 
 	Coordinates				_coordinates;
 	Json::Value				_editOptions	= Json::nullValue,
-							_imgOptions		= Json::nullValue;
+							_imgOptions		= Json::nullValue,
+							_prevImgOptions	= Json::nullValue,
+							_originalImgOps	= Json::nullValue;
 	QString					_name,
 							_data,
 							_title;
 	bool					_visible		= false,
-							_goBlank		= false;
+							_goBlank		= false,
+							_loading		= false;
 	int						_width,
 							_height,
-							_analysisId;
+							_analysisId,
+							_lastAnalID;
+	double					_ppi;
+
+	static int				_editRequest;
 };
 
 }

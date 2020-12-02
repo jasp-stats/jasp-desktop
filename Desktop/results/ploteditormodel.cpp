@@ -1,18 +1,24 @@
 #include "ploteditormodel.h"
 #include "analysis/analyses.h"
 #include "utilities/qutils.h"
+#include "gui/preferencesmodel.h"
 #include "log.h"
 #include "tempfiles.h"
 #include <QDir>
+#include "gui/messageforwarder.h"
 
 namespace PlotEditor
 {
+
+int PlotEditorModel::_editRequest = 0;
 
 PlotEditorModel::PlotEditorModel()
 	: QObject(Analyses::analyses())
 {
 	_xAxis = new AxisModel(this, true);
-	_yAxis = new AxisModel(this, false);
+	_yAxis = new AxisModel(this, true);
+	_ppi   = PreferencesModel::prefs()->plotPPI();
+	// _resetPlot is always false, it should only be set to TRUE from QML
 
 	connect(_xAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
 	connect(_yAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
@@ -20,19 +26,38 @@ PlotEditorModel::PlotEditorModel()
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
 {
-	_analysisId	= id;
-	_analysis	= Analyses::analyses()->get(id);
-	_imgOptions	= Json::objectValue;
+	setLoading(true);
+	_analysisId		= id;
+	_analysis		= Analyses::analyses()->get(id);
+	_imgOptions		= Json::objectValue;
+	_prevImgOptions	= Json::nullValue;
 
 	Json::Reader().parse(fq(options), _imgOptions);
-
+	
 	//maybe the following checks are a bit extreme but whatever
 	if(!_analysis || !_imgOptions.isMember("type") || _imgOptions["type"].type() != Json::stringValue || _imgOptions["type"] != "interactive")
 		return;
 
+	_originalImgOps = _imgOptions;
+	_lastAnalID		= _analysisId;
+	
 	processImgOptions();
 
 	setVisible(true);
+	setLoading(false);
+}
+
+void PlotEditorModel::resetPlot()
+{
+	setLoading(true);
+	reset();
+	showPlotEditor(_lastAnalID, tq(_originalImgOps.toStyledString()));	
+	emit somethingChanged();
+}
+
+void PlotEditorModel::savePlot() const
+{
+	MessageForwarder::showWarning("Plot saving", "Sorry but this hasnt been implemented yet");	
 }
 
 void PlotEditorModel::reset()
@@ -79,6 +104,7 @@ Json::Value PlotEditorModel::generateImgOptions() const
 	imgOptions["title"]			= title().toStdString();
 	imgOptions["width"]			= width();
 	imgOptions["height"]		= height();
+	imgOptions["request"]		= _editRequest++;
 
 	return imgOptions;
 }
@@ -95,12 +121,17 @@ Json::Value PlotEditorModel::generateEditOptions() const
 	return editOptions;
 }
 
-void PlotEditorModel::somethingChanged() const
+void PlotEditorModel::somethingChanged()
 {
-	if(!_visible) return; // We're still loading!
+	if(_loading || !_visible) return;
 
-	_analysis->editImage(generateImgOptions());
+	Json::Value newImgOptions = generateImgOptions();
 
+	if(newImgOptions != _prevImgOptions)
+	{
+		_prevImgOptions = newImgOptions;
+		_analysis->editImage(_prevImgOptions);
+	}
 }
 
 void PlotEditorModel::setVisible(bool visible)
@@ -191,6 +222,15 @@ QString PlotEditorModel::clickHitsElement(double x, double y) const
 {
 	std::string elementName;
 	return 	_coordinates.elementHit(x, y, elementName) ? tq(elementName) : "";
+}
+
+void PlotEditorModel::setLoading(bool loading)
+{
+	if (_loading == loading)
+		return;
+	
+	_loading = loading;
+	emit loadingChanged(_loading);
 }
 
 }

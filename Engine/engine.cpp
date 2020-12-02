@@ -194,8 +194,25 @@ bool Engine::receiveMessages(int timeout)
 		if(data =="")
 			return false;
 
-		Json::Value jsonRequest;
-		Json::Reader().parse(data, jsonRequest, false);
+
+
+		Json::Value		jsonRequest;
+		Json::Reader	jsonReader;
+
+		if(!jsonReader.parse(data, jsonRequest, false))
+		{
+			Log::log() << "Engine got request:\nrow 0:\t";
+
+			size_t row=0;
+			for(const char & c : data)
+			{
+				if(c == '\n')
+					Log::log() << "\nrow " << ++row << ":\t";
+				Log::log() << c;
+			}
+
+			Log::log() << "Parsing request failed on:\n" << jsonReader.getFormatedErrorMessages() << std::endl;
+		}
 
 		//Clear send buffer
 		sendString("");
@@ -203,7 +220,10 @@ bool Engine::receiveMessages(int timeout)
 		//Check if we got anyting useful
 		std::string typeSend	= jsonRequest.get("typeRequest", Json::nullValue).asString();
 		if(typeSend == "")
+		{
+			Log::log() << "It seems the required field \"typeRequest\" was empty: '" << typeSend << "'" << std::endl;
 			return false;
+		}
 
 		_lastRequest = engineStateFromString(typeSend);
 
@@ -652,6 +672,9 @@ void Engine::editImage()
 				result		= jaspRCPP_editImage(optionsJson.c_str(), _ppi, _imageBackground.c_str());
 
 	Json::Reader().parse(result, _analysisResults, false);
+
+	if(_analysisResults.isMember("results"))
+		_analysisResults["results"]["request"] = _imageOptions.get("request", -1);
 
 	_analysisStatus			= Status::complete;
 	_progress				= -1;

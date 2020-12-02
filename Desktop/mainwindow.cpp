@@ -168,6 +168,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
 
+	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",		1, 0, "AxisModel",		"Can't make it");
+
 	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description"						);
 	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis"						);
 	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator"						);
@@ -381,13 +383,6 @@ void MainWindow::makeConnections()
 	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
 
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
-
-	// Temporary to facilitate plot editing
-	_plotEditingFilePath = QString::fromStdString(Dirs::resourcesDir()) + "PlotEditor.qml";
-	if (!_plotEditingFileWatcher.addPath(_plotEditingFilePath))
-		Log::log() << "Cannot watch plot editing file" << _plotEditingFilePath << std::endl;
-	connect(&_plotEditingFileWatcher, &QFileSystemWatcher::fileChanged,					this,					&MainWindow::plotEditingFileChanged							);
-
 }
 
 void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)
@@ -457,7 +452,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("LINUX",				isLinux);
 	_qml->rootContext()->setContextProperty("WINDOWS",				isWindows);
 
-	_qml->rootContext()->setContextProperty("plotEditorFile",		QString::fromStdString("file:") + _plotEditingFilePath);
+	_qml->setOutputWarningsToStandardError(true);
 
 	_qml->addImportPath("qrc:///components");
 
@@ -583,15 +578,6 @@ void MainWindow::logRemoveSuperfluousFiles(int maxFilesToKeep)
 
 	for(int i=logs.size() - 1; i >= maxFilesToKeep; i--)
 		logFileDir.remove(logs[i].fileName());
-}
-
-void MainWindow::plotEditingFileChanged()
-{
-	Log::log() << "Plot Editing file changed" << std::endl;
-	resetQmlCache();
-
-	_qml->rootContext()->setContextProperty("plotEditorFile", "");
-	_qml->rootContext()->setContextProperty("plotEditorFile", QString::fromStdString("file:") + _plotEditingFilePath);
 }
 
 void MainWindow::openFolderExternally(QDir folder)

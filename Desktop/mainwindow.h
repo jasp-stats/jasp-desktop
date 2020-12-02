@@ -227,7 +227,6 @@ private slots:
 	void logToFileChanged(bool logToFile);
 	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
-	void plotEditingFileChanged();
 	void jaspThemeChanged(JaspTheme * newTheme);
 
 	void printQmlWarnings(const QList<QQmlError> &warnings);
@@ -294,8 +293,6 @@ private:
 									_welcomePageVisible		= true,
 									_checkAutomaticSync		= false;
 
-	QString							_plotEditingFilePath;
-	QFileSystemWatcher				_plotEditingFileWatcher;
 	QFont							_defaultFont;
 };
 

@@ -24,10 +24,10 @@ import JASP				1.0
 
 JASPControl
 {
-	id:					groupBox
-	implicitWidth:		Math.max(label.realWidth, jaspTheme.groupContentPadding + contentArea.implicitWidth)
-	implicitHeight:		label.realHeight + jaspTheme.titleBottomMargin + contentArea.implicitHeight	
-	L.Layout.leftMargin:	indent ? jaspTheme.indentationLength : 0
+	id						: groupBox
+	implicitWidth			: Math.max(label.realWidth, jaspTheme.groupContentPadding + contentArea.implicitWidth)
+	implicitHeight			: label.realHeight + jaspTheme.titleBottomMargin + contentArea.implicitHeight
+	L.Layout.leftMargin		: indent ? jaspTheme.indentationLength : 0
 	controlType				: JASPControl.GroupBox
 	isBound					: false
 	childControlsArea		: contentArea
@@ -54,7 +54,7 @@ JASPControl
 		visible:		groupBox.title ? true : false
 		
 		property int	realHeight: visible ? implicitHeight : 0
-		property int	realWidth: visible ? implicitWidth : 0
+		property int	realWidth:  visible ? implicitWidth  : 0
 		
     }
     
@@ -68,6 +68,7 @@ JASPControl
 		anchors.leftMargin: groupBox.title ? jaspTheme.groupContentPadding : 0
 		rowSpacing:			groupBox.rowSpacing
 		columnSpacing:		groupBox.columnSpacing
+
 		checkFormOverflowWhenLanguageChanged: false // the checkFormOverflow is done with the alignment.
     }
 
