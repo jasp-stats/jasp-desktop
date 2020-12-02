@@ -64,7 +64,7 @@
 	expected <- rbind(expected, c('RcppParallel', '5.0.1'))
 	expected <- rbind(expected, c('Rcsdp', '0.1.57.1'))
 	expected <- rbind(expected, c('Rdpack', '0.11-1'))
-	expected <- rbind(expected, c('RoBMA', '1.0.5'))
+	expected <- rbind(expected, c('RoBMA', '1.2.0.900'))
 	expected <- rbind(expected, c('Rsolnp', '1.16'))
 	expected <- rbind(expected, c('Rtsne', '0.15'))
 	expected <- rbind(expected, c('SparseM', '1.77'))
