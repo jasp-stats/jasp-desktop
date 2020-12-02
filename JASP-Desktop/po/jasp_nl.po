@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-12-01 13:39+0000\n"
+"PO-Revision-Date: 2020-12-02 21:29+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
@@ -20947,7 +20947,7 @@ msgstr ""
 
 msgctxt "LSgaussiantesting|"
 msgid "σ₀"
-msgstr ""
+msgstr "σ₀"
 
 msgctxt "LSgaussiantesting|"
 msgid "Observed data"
@@ -20992,7 +20992,7 @@ msgstr "Gemiddelde"
 
 msgctxt "LSgaussiandatainput|"
 msgid "SD"
-msgstr ""
+msgstr "SD"
 
 msgctxt "LSgaussiandatainput|"
 msgid "Observations"
