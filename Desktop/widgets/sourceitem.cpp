@@ -67,12 +67,6 @@ SourceItem::SourceItem(JASPListControl *listControl, const JASPListControl::Labe
 	_setUp();
 }
 
-SourceItem::SourceItem(JASPListControl *listControl, QAbstractItemModel *nativeModel, int nativeModelRole)
-	 : _listControl(listControl), _nativeModel(nativeModel), _nativeModelRole(nativeModelRole)
-{
-	_setUp();
-}
-
 SourceItem::SourceItem(JASPListControl *listControl)
 	:  _listControl(listControl), _isDataSetColumns(true)
 {
@@ -102,10 +96,10 @@ void SourceItem::_setUp()
 	}
 	else if (_nativeModel)
 	{
-		connect(_nativeModel, &QAbstractItemModel::dataChanged,			this,	&SourceItem::nativeModelChanged);
-		connect(_nativeModel, &QAbstractItemModel::rowsInserted,		this,	&SourceItem::nativeModelChanged);
-		connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			this,	&SourceItem::nativeModelChanged);
-		connect(_nativeModel, &QAbstractItemModel::modelReset,			this,	&SourceItem::nativeModelChanged);
+		connect(_nativeModel, &QAbstractItemModel::dataChanged,			this,	[this]() { _listControl->model()->sourceTermsChanged(); });
+		connect(_nativeModel, &QAbstractItemModel::rowsInserted,		this,	[this]() { _listControl->model()->sourceTermsChanged(); });
+		connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			this,	[this]() { _listControl->model()->sourceTermsChanged(); });
+		connect(_nativeModel, &QAbstractItemModel::modelReset,			this,	[this]() { _listControl->model()->sourceTermsChanged(); });
 	}
 	else
 	{
@@ -131,12 +125,6 @@ SourceItem::~SourceItem()
 
 	for (SourceItem* discardModel : _discardSources)
 		delete discardModel;
-}
-
-void SourceItem::nativeModelChanged()
-{
-	QString name = _listControl->name();
-	_listControl->model()->sourceTermsChanged();
 }
 
 QList<QVariant> SourceItem::_getListVariant(QVariant var)
@@ -229,8 +217,7 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 
 		if (!roleName.isEmpty())
 		{
-			QHash<int, QByteArray> roles = nativeModel->roleNames();
-			QHashIterator<int, QByteArray> it(roles);
+			QHashIterator<int, QByteArray> it(nativeModel->roleNames());
 
 			while (it.hasNext())
 			{

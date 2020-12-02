@@ -793,7 +793,10 @@ void AnalysisForm::setColumnsModel(QAbstractItemModel *model)
 		{
 			i.next();
 			if (i.value() == "columnName")
+			{
 				_columnsModelRole = i.key();
+				break;
+			}
 		}
 	}
 }

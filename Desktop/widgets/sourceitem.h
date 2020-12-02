@@ -57,8 +57,6 @@ public:
 
 	SourceItem(JASPListControl* _listControl, const JASPListControl::LabelValueMap& _values);
 
-	SourceItem(JASPListControl* _listControl, QAbstractItemModel* _nativeModel, int _nativeModelRole);
-
 	SourceItem(JASPListControl* _listControl = nullptr);
 
 	virtual ~SourceItem();
@@ -71,10 +69,6 @@ public:
 	Terms					getTerms();
 
 	static QVector<SourceItem*>				readAllSources(JASPListControl* _listControl);
-
-private slots:
-
-	void									nativeModelChanged();
 
 private:
 	static QString							_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse);
