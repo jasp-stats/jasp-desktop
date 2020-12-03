@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-12-02 21:29+0000\n"
-"Last-Translator: Koen Derks <koen-derks@hotmail.com>\n"
-"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
-"nl/>\n"
-"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -20063,10 +20057,6 @@ msgid "<b>How would you like to evaluate your transactions?</b>"
 msgstr "<b>Hoe wilt u uw transacties evalueren?</b>"
 
 msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Soll values"
 msgstr "Soll waardes"
 
@@ -20588,10 +20578,6 @@ msgctxt "auditClassicalWorkflow|"
 msgid "<b>How would you like to evaluate your transactions?</b>"
 msgstr "<b>Hoe wilt u uw transacties evalueren?</b>"
 
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-msgstr ""
-
 #, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Soll values"
@@ -20922,9 +20908,10 @@ msgctxt "LSgaussianestimation|"
 msgid "μ₀"
 msgstr ""
 
+#, fuzzy
 msgctxt "LSgaussianestimation|"
 msgid "σ₀"
-msgstr ""
+msgstr "σ₀"
 
 msgctxt "LSgaussianestimation|"
 msgid "Observed data"
@@ -21928,4 +21915,32 @@ msgstr "Latente covarianties"
 
 msgctxt "SEM|"
 msgid "Release constraints (one per line)"
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "TTestBayesianIndependentSamples|"
+msgid "Raincloud plots"
+msgstr ""
+
+msgctxt "TTestBayesianIndependentSamples|"
+msgid "Horizontal display"
+msgstr ""
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "Raincloud plots"
+msgstr ""
+
+msgctxt "TTestIndependentSamples|"
+msgid "Raincloud plots"
+msgstr ""
+
+msgctxt "TTestIndependentSamples|"
+msgid "Horizontal display"
+msgstr ""
+
+msgctxt "TTestPairedSamples|"
+msgid "Raincloud plots"
 msgstr ""

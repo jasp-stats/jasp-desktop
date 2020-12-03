@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-12-03 09:42+0000\n"
-"Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
-"de/>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -19689,9 +19683,10 @@ msgctxt "auditBayesianEvaluation|"
 msgid "Display additional information"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditBayesianPlanning|"
 msgid "Sampling Objectives"
-msgstr ""
+msgstr "Ziel der Stichprobenziehung"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Test against a performance materiality"
@@ -19701,13 +19696,15 @@ msgctxt "auditBayesianPlanning|"
 msgid "Click to learn more about the performance materiality."
 msgstr ""
 
+#, fuzzy
 msgctxt "auditBayesianPlanning|"
 msgid "Obtain a required minimum precision"
-msgstr ""
+msgstr "Erhalten Sie eine erforderliche Mindestgenauigkeit"
 
+#, fuzzy
 msgctxt "auditBayesianPlanning|"
 msgid "Click to learn more about the precision."
-msgstr ""
+msgstr "Klicken Sie hier, um mehr über die Präzision zu erfahren."
 
 msgctxt "auditBayesianPlanning|"
 msgid "A.     Prior Information"
@@ -19817,9 +19814,10 @@ msgctxt "auditBayesianPlanning|"
 msgid "Hypothesis regions"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "Sampling Objectives"
-msgstr ""
+msgstr "Ziel der Stichprobenziehung"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Test against a performance materiality"
@@ -19829,45 +19827,52 @@ msgctxt "auditBayesianWorkflow|"
 msgid "Click to learn more about the performance materiality."
 msgstr ""
 
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "Obtain a required minimum precision"
-msgstr ""
+msgstr "Erhalten Sie eine erforderliche Mindestgenauigkeit"
 
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "Click to learn more about the precision."
-msgstr ""
+msgstr "Klicken Sie hier, um mehr über die Präzision zu erfahren."
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Variable Definitions</b>"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "Transaction ID's"
-msgstr ""
+msgstr "Transaktions-ID's"
 
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "Ist Position <i>(required)</i>"
-msgstr ""
+msgstr "Soll-Position <i>(benötigt)</i>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Ist Position <i>(optional)</i>"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "A.     Critical Transactions"
-msgstr ""
+msgstr "A.     Kritische Transaktionen"
 
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "Select critical transactions"
-msgstr ""
+msgstr "Wähle kritische Transaktionen"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Column name critical transactions: "
 msgstr ""
 
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "Negative Ist values"
-msgstr ""
+msgstr "Negative Ist-Werte"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "How to handle critical transactions"
@@ -20079,13 +20084,10 @@ msgctxt "auditBayesianWorkflow|"
 msgid "<b>How would you like to evaluate your transactions?</b>"
 msgstr ""
 
-msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "Soll values"
-msgstr ""
+msgstr "Soll-Werte"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Adds a column to specify the Soll values of the transactions."
@@ -20221,17 +20223,20 @@ msgctxt "auditClassicalBenfordsLaw|"
 msgid "Uniform distribution"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Click to learn more about the explanatory text."
-msgstr ""
+msgstr "Klicken Sie hier, um mehr über den erläuternden Text zu erfahren."
 
+#, fuzzy
 msgctxt "auditClassicalEstimation|"
 msgid "Click to learn more about the explanatory text."
-msgstr ""
+msgstr "Klicken Sie hier, um mehr über den erläuternden Text zu erfahren."
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Sampling Objectives"
-msgstr ""
+msgstr "Ziel der Stichprobenziehung"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Test against a performance materiality"
@@ -20241,57 +20246,70 @@ msgctxt "auditClassicalEvaluation|"
 msgid "Click to learn more about the performance materiality."
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Obtain a required minimum precision"
-msgstr ""
+msgstr "Erhalten Sie eine erforderliche Mindestgenauigkeit"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Click to learn more about the precision."
-msgstr ""
+msgstr "Klicken Sie hier, um mehr über die Präzision zu erfahren."
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Transaction ID's"
-msgstr ""
+msgstr "Transaktions-ID's"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Soll Position"
-msgstr ""
+msgstr "Soll-Position"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Ist Position <i>(required)</i>"
-msgstr ""
+msgstr "Soll-Position <i>(benötigt)</i>"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Ist Position"
-msgstr ""
+msgstr "Ist-Position"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Soll values"
-msgstr ""
+msgstr "Soll-Werte"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Number of seen transactions"
-msgstr ""
+msgstr "Anzahl erkannter Transaktionen"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Number of found errors"
-msgstr ""
+msgstr "Anzahl gefundener Fehler"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Click to learn more about the explanatory text."
-msgstr ""
+msgstr "Klicken Sie hier, um mehr über den erläuternden Text zu erfahren."
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "A.     Critical Transactions"
-msgstr ""
+msgstr "A.     Kritische Transaktionen"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Select critical transactions"
-msgstr ""
+msgstr "Wähle kritische Transaktionen"
 
+#, fuzzy
 msgctxt "auditClassicalEvaluation|"
 msgid "Negative Ist values"
-msgstr ""
+msgstr "Negative Ist-Werte"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "How to handle critical transactions"
@@ -20382,9 +20400,10 @@ msgctxt "auditClassicalEvaluation|"
 msgid "Display transaction ID's"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalPlanning|"
 msgid "Sampling Objectives"
-msgstr ""
+msgstr "Ziel der Stichprobenziehung"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Test against a performance materiality"
@@ -20394,13 +20413,15 @@ msgctxt "auditClassicalPlanning|"
 msgid "Click to learn more about the performance materiality."
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalPlanning|"
 msgid "Obtain a required minimum precision"
-msgstr ""
+msgstr "Erhalten Sie eine erforderliche Mindestgenauigkeit"
 
+#, fuzzy
 msgctxt "auditClassicalPlanning|"
 msgid "Click to learn more about the precision."
-msgstr ""
+msgstr "Klicken Sie hier, um mehr über die Präzision zu erfahren."
 
 msgctxt "auditClassicalPlanning|"
 msgid "A.     Risk Assessments"
@@ -20438,9 +20459,10 @@ msgctxt "auditClassicalPlanning|"
 msgid "Implied distribution of errors"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Sampling Objectives"
-msgstr ""
+msgstr "Ziel der Stichprobenziehung"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Test against a performance materiality"
@@ -20450,45 +20472,52 @@ msgctxt "auditClassicalWorkflow|"
 msgid "Click to learn more about the performance materiality."
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Obtain a required minimum precision"
-msgstr ""
+msgstr "Erhalten Sie eine erforderliche Mindestgenauigkeit"
 
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Click to learn more about the precision."
-msgstr ""
+msgstr "Klicken Sie hier, um mehr über die Präzision zu erfahren."
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Variable Definitions</b>"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Transaction ID's"
-msgstr ""
+msgstr "Transaktions-ID's"
 
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Ist Position <i>(required)</i>"
-msgstr ""
+msgstr "Soll-Position <i>(benötigt)</i>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Ist Position <i>(optional)</i>"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "A.     Critical Transactions"
-msgstr ""
+msgstr "A.     Kritische Transaktionen"
 
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Select critical transactions"
-msgstr ""
+msgstr "Wähle kritische Transaktionen"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Column name critical transactions: "
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Negative Ist values"
-msgstr ""
+msgstr "Negative Ist-Werte"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "How to handle critical transactions"
@@ -20599,13 +20628,10 @@ msgctxt "auditClassicalWorkflow|"
 msgid "<b>How would you like to evaluate your transactions?</b>"
 msgstr ""
 
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-msgstr ""
-
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Soll values"
-msgstr ""
+msgstr "Soll-Werte"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Adds a column to specify the Soll values of the transactions."
@@ -20706,9 +20732,10 @@ msgctxt "auditClassicalWorkflow|"
 msgid "Display transaction ID's"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditSelection|"
 msgid "Ist Position"
-msgstr ""
+msgstr "Ist-Position"
 
 msgctxt "auditSelection|"
 msgid "Ist Position <i>(optional)</i>"
@@ -21921,4 +21948,32 @@ msgstr "Latente Kovarianzen"
 
 msgctxt "SEM|"
 msgid "Release constraints (one per line)"
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "TTestBayesianIndependentSamples|"
+msgid "Raincloud plots"
+msgstr ""
+
+msgctxt "TTestBayesianIndependentSamples|"
+msgid "Horizontal display"
+msgstr ""
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "Raincloud plots"
+msgstr ""
+
+msgctxt "TTestIndependentSamples|"
+msgid "Raincloud plots"
+msgstr ""
+
+msgctxt "TTestIndependentSamples|"
+msgid "Horizontal display"
+msgstr ""
+
+msgctxt "TTestPairedSamples|"
+msgid "Raincloud plots"
 msgstr ""
