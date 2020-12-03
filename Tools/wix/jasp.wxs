@@ -133,6 +133,7 @@
 		<Publish Dialog="InstallDirDlg"   			Control="Next" 		Property="ExeLocation" 	Value="[APPLICATIONFOLDER]JASP.exe" 	Order="16">WixAppFolder = "WixPerMachineFolder"	</Publish>
 		<Publish Dialog="InstallScopeDlg" 			Control="Next" 		Property="ExeLocation" 	Value="[WixPerUserFolder]\JASP.exe" 	Order="16">WixAppFolder = "WixPerUserFolder"	</Publish>
 		<Publish Dialog="AdvancedWelcomeEulaDlg" 	Control="Install" 	Property="ExeLocation" 	Value="[WixPerMachineFolder]\JASP.exe" 	Order="666">1									</Publish>
+		<Publish Dialog="AdvancedWelcomeEulaDlg" 	Control="Install" 	Event="AddLocal" 		Value="VCRedist" 						Order="123">1									</Publish>
     </UI>
 
 	<!-- JASP "license" -->
