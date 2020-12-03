@@ -19672,10 +19672,6 @@ msgid "<b>How would you like to evaluate your transactions?</b>"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Soll values"
 msgstr ""
 
@@ -20184,10 +20180,6 @@ msgstr ""
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>How would you like to evaluate your transactions?</b>"
-msgstr ""
-
-msgctxt "auditClassicalWorkflow|"
-msgid ""
 msgstr ""
 
 msgctxt "auditClassicalWorkflow|"
@@ -21370,4 +21362,32 @@ msgstr ""
 
 msgctxt "SEM|"
 msgid "Release constraints (one per line)"
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "TTestBayesianIndependentSamples|"
+msgid "Raincloud plots"
+msgstr ""
+
+msgctxt "TTestBayesianIndependentSamples|"
+msgid "Horizontal display"
+msgstr ""
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "Raincloud plots"
+msgstr ""
+
+msgctxt "TTestIndependentSamples|"
+msgid "Raincloud plots"
+msgstr ""
+
+msgctxt "TTestIndependentSamples|"
+msgid "Horizontal display"
+msgstr ""
+
+msgctxt "TTestPairedSamples|"
+msgid "Raincloud plots"
 msgstr ""
