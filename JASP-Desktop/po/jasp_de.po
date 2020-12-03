@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-12-02 21:29+0000\n"
+"PO-Revision-Date: 2020-12-03 09:42+0000\n"
 "Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "de/>\n"
@@ -9546,7 +9546,7 @@ msgstr "Abbildungen"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Correlation plot"
-msgstr "Korrelation-Abbildung"
+msgstr "Streudiagramm"
 
 msgctxt "auditClassicalEstimation|"
 msgid "<b>Download Report</b>"
