@@ -1,4 +1,4 @@
-Bayesian Audit Workflow
+The Bayesian Audit Sampling Workflow
 ==========================
 
 The task of an auditor is to make a judgment regarding the fairness of the presented transactions in a population, and give on opinion on whether the population as a whole contains errors that are material (lower than the set materiality). When the auditor has access to the raw population data, they can use the *Bayesian audit workflow* to calculate how many samples need to be evaluated in order to meet a certain confidence in their judgment. They can then sample these transactions from the population, inspect these observations, and produce a statement about the totalerror in the population. The workflow guides the auditor through the audit process, making the correct choices of calculations along the way. The *Bayesian audit workflow* may use the risk assessments from the *audit risk model* to incorporate this prior information into a prior probability distribution, which is updated using information from the sample to form a posterior probability distribution. Inferences about the population error are made using the posterior distribution.
@@ -19,11 +19,10 @@ The Bayesian audit workflow consists of four separate stages, each with their ow
 Default input options
 -------
 
-#### Population materiality
-The population materiality is the maximum tolerable error in the total population. This can be either an absolute value, or a value that quantifies the materiality as a percentage relative to the total value of the population.
-
-- Absolute: Enter your population materiality as a monetary value.
-- Relative: Enter your population materiality as a percentage relative to the total value.
+#### Sampling objectives
+In order to start the analysis you must specify the objectives that have to be achieved with the sampling procedure. The sampling objectives influence the course of the procedure. They can currently be one of two objectives:
+- **Test against a performance materiality:** Also called the upper error limit, the tolerable deviation rate, or the tolerable misstatement, the performance materiality is the amount established by the auditor below the normal materiality of the financial reports to decrease the probability that the aggregate of uncorrected and undetectable misstatements exceeds the materiality of financial reports as a whole. In the statistical analysis, the performance materiality represents the upper bound of tolerable misstatement in the population to be tested. By testing against a performance materiality, you are able to plan a sample in order to collect evidence for or against the statement that the population as a whole does not contain misstatements that are considered material (i.e., are greater than the upper bound of tolerable misstatement). You should enable this objective when you want to find out whether the population contains misstatements that are greater than a certain limit (the performance materiality) using a sample of the population. A lower performance materiality will result in a higher required sample size. Vice versa, a higher performance materiality will result in a lower required sample size.
+- **Obtain a required minimum precision:** The precision is a measure of how much certainty there is in the estimate of the misstatement from testing a particular characteristic of a sample at a given level of sampling risk. In the statistical analysis, the precision is represented by the difference between the estimated most likely error and the upper bound on the misstatement. By enabling this sampling objective, you are be able to plan a sample so that the difference between the estimated most likely error and the upper bound on the misstatement is reduced to a minimum percentage. You should enable this objective if you are interested in making an estimate of the population misstatement with a certain accuracy. A lower minimum required precision will result in a higher required sample size. Vice versa, a higher minimum required precision will result in a lower required sample size.
 
 #### Audit Risk
 The audit risk determines the risk that the auditor is willing to take to give an incorrect judgment with regards to the fairness of the transactions in the population. The audit risk is the inverse of the confidence of the analysis (audit risk = 1 - confidence).

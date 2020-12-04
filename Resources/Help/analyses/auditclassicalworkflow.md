@@ -1,9 +1,7 @@
-Audit Workflow
+The Audit Sampling Workflow
 ==========================
 
 The task of an auditor is to make a judgment regarding the fairness of the presented transactions in a population, and give on opinion on whether the population as a whole contains errors that are material (lower than the set materiality). When the auditor has access to the raw population data, they can use the *audit workflow* to calculate how many samples need to be evaluated in order to meet a certain confidence in their judgment. She can then sample these transactions from the population, inspect these observations, and produce a statement about the total error in the population. The workflow guides the auditor through the audit process, making the correct choices of calculations along the way. The frequentist *audit workflow* may use the risk assessments from the *audit risk model* to adjust the required risk of finding material errors.
-
-----
 
 Workflow
 -----------
@@ -16,14 +14,45 @@ The audit workflow consists of four separate stages, each with their own purpose
 
 ----
 
+#### The Audit Risk Model
+
+When the auditor has information that indicates a low-risk profile on the population, they can use this information to reduce their required sample size via the Audit Risk Model (ARM) provided that there are no errors in the population. According to the ARM, the audit risk (AR) is a function of the inherent risk (IR), the internal control risk (CR), and the detection risk (DR). 
+
+*AR = IR x CR x DR*
+
+The auditor assesses inherent risk and internal control risk generally on a 3-point scale to determine the appropriate detection risk. Using the ARM and zero errors the sample size depends on the risk factor *R*, which is a function of the detection risk. 
+
+*R = -ln(DR)*
+
+The following table presents values of *R* as a function of the detection risk, provided that there are zero errors (Touw and Hoogduin 2012).
+
+| Detection risk (%) | 1 | 4 | 5 | 10 | 14 |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| R | 4.6 | 3.2 | 3 | 2.3 | 2 |
+
+The risk factor *R* can be adjusted using the assessments of the inherent risk and the internal control risk. By default, the standard method of setting the probabilities of IR and CR is by following the table below for a detection risk of 5%:
+
+|  | High | Medium | Low | 
+| :---: | :---: | :---: |
+| R | 3 | 2 | 1 |
+
+These values of *R* are used to select default percentages for IR and CR. JASP for Audit handles the following default values for IR and CR:
+
+- High: 100%
+- Medium: 60%
+- Low: 36%
+
+You can manually adjust the value of IR and CR by selecting the Custom option under the corresponding risk assessment.
+
+----
+
 Default input options
 -------
 
-#### Population materiality
-The population materiality is the maximum tolerable error in the total population. This can be either an absolute value, or a value that quantifies the materiality as a percentage relative to the total value of the population.
-
-- Absolute: Enter your population materiality as a monetary value.
-- Relative: Enter your population materiality as a percentage relative to the total value.
+#### Sampling objectives
+In order to start the analysis you must specify the objectives that have to be achieved with the sampling procedure. The sampling objectives influence the course of the procedure. They can currently be one of two objectives:
+- **Test against a performance materiality:** Also called the upper error limit, the tolerable deviation rate, or the tolerable misstatement, the performance materiality is the amount established by the auditor below the normal materiality of the financial reports to decrease the probability that the aggregate of uncorrected and undetectable misstatements exceeds the materiality of financial reports as a whole. In the statistical analysis, the performance materiality represents the upper bound of tolerable misstatement in the population to be tested. By testing against a performance materiality, you are able to plan a sample in order to collect evidence for or against the statement that the population as a whole does not contain misstatements that are considered material (i.e., are greater than the upper bound of tolerable misstatement). You should enable this objective when you want to find out whether the population contains misstatements that are greater than a certain limit (the performance materiality) using a sample of the population. A lower performance materiality will result in a higher required sample size. Vice versa, a higher performance materiality will result in a lower required sample size.
+- **Obtain a required minimum precision:** The precision is a measure of how much certainty there is in the estimate of the misstatement from testing a particular characteristic of a sample at a given level of sampling risk. In the statistical analysis, the precision is represented by the difference between the estimated most likely error and the upper bound on the misstatement. By enabling this sampling objective, you are be able to plan a sample so that the difference between the estimated most likely error and the upper bound on the misstatement is reduced to a minimum percentage. You should enable this objective if you are interested in making an estimate of the population misstatement with a certain accuracy. A lower minimum required precision will result in a higher required sample size. Vice versa, a higher minimum required precision will result in a lower required sample size.
 
 #### Audit Risk
 The audit risk determines the risk that the auditor is willing to take to give an incorrect judgment with regards to the fairness of the transactions in the population. The audit risk is the inverse of the confidence of the analysis (audit risk = 1 - confidence).
