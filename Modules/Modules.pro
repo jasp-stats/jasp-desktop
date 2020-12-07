@@ -31,6 +31,7 @@ include(InstallModule.pri)
 MODULE_NAME = jaspTTests
 include(InstallModule.pri)
 
+#R_MODULES_INSTALL_DEPENDENCIES = true
 MODULE_NAME = jaspMixedModels
 include(InstallModule.pri)
 
@@ -75,4 +76,7 @@ MODULE_NAME = jaspVisualModeling
 include(InstallModule.pri)
 
 MODULE_NAME = jaspLearnBayes
+include(InstallModule.pri)
+
+MODULE_NAME = jaspProphet
 include(InstallModule.pri)

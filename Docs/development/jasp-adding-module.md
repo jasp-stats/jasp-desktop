@@ -45,6 +45,8 @@ So the root object of your `Description.qml` is a `Description` object that has 
   | `website`     | Website of the author. |
   | `license`     | License under which the module is released. To have it distributed by us this should be a [free software license](https://en.wikipedia.org/wiki/Free_software_license), aka something like "GPL (>= 2)". |
 
+  In the future most of this info will be taking straight from [DESCRIPTION](#packageMetadata).
+
 #### Description Menu
 A very important part of [Description.qml](#Description.qml) is the menu specification, as this makes it possible for a user of your module to actually run your analyses. You specify the analyses your module offers, what their titles are, which [options form](#qml) they use and which R-functions should be called to run them. Furthermore you can add separators between groups of analyses and you can add headers with icons inside the menu to make it clearer what category each group of analyses embodies. 
 
@@ -160,9 +162,7 @@ In the R folder you should place your R file(s). You could add all your analyses
 The help folder is where you place the documentation for your module. You should name the helpfile for each analysis with the exact same functionname as your analysis has. **Only all characters should be lowercase**.
 
 #### Package Metadata
-Because a JASP Module is also, to a large extent, an R package it should contain a [DESCRIPTION](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#The-DESCRIPTION-file) file and a [NAMESPACE](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Package-namespaces) file. 
+Because a JASP Module is also an R package it should contain a [DESCRIPTION](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#The-DESCRIPTION-file) file and a [NAMESPACE](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Package-namespaces) file. 
 JASP uses the Imports field in a DESCRIPTION file to understand which dependencies it needs to install from [CRAN](https://cran.r-project.org/), in fact it lets R figure this out for it. It also installs the module as an actual R-package which means you must specify each of the main-analysis-functions in the NAMESPACE file to make sure JASP can see these functions. 
-
-If these are missing from your module this is no problem, as JASP can generate them for you based on the information in [Description.qml](#Description.qml). It does this for modules that are distributed as .tar.gz files (which is the same format as an R-package) but also for the development module.
 
 To actually use this shiny new module and work on it see: [development workflow](./jasp-module-workflow.md)).

@@ -90,3 +90,7 @@
 	path = Tools/jaspTools
 	url = https://github.com/jasp-stats/jaspTools/
 	branch = master
+[submodule "Modules/jaspProphet"]
+	path = Modules/jaspProphet
+	url = https://github.com/jasp-stats/jaspProphet
+	branch = master
