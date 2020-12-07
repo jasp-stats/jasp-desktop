@@ -39,7 +39,7 @@ public:
 	bool			isRCodeColumn(int col)						const				{ return col == 1; }
 
 public slots:
-	void sourceTermsChanged()											override;
+	void sourceTermsReset()											override;
 	void modelChangedSlot()												override;
 };
 

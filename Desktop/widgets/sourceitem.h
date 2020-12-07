@@ -61,7 +61,7 @@ public:
 
 	virtual ~SourceItem();
 
-	ListModel*				model()								{ return _model;					}
+	ListModel*				listModel()							{ return _listModel;				}
 	const QString&			controlName()				const	{ return _controlName;				}
 	const QString&			modelUse()					const	{ return _modelUse;					}
 	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;	}
@@ -79,6 +79,10 @@ private:
 	void									_setUp();
 	Terms									_readAllTerms();
 
+private slots:
+	void									_connectModels();
+
+private:
 	JASPListControl		*			_listControl			= nullptr;
 	QString							_name,
 									_controlName,
@@ -86,7 +90,7 @@ private:
 	QVector<SourceItem*>			_discardSources;
 	JASPListControl::LabelValueMap	_values;
 	bool							_isValuesSource			= false;
-	ListModel			*			_model					= nullptr;
+	ListModel			*			_listModel				= nullptr;
 	QAbstractItemModel	*			_nativeModel			= nullptr;
 	int								_nativeModelRole		= Qt::DisplayRole;
 	bool							_isDataSetColumns		= false;
@@ -94,8 +98,6 @@ private:
 	QString							_conditionExpression;
 	QVector<ConditionVariable>		_conditionVariables;
 	QSet<QString>					_usedControls;
-
-	bool isAlive = true;
 };
 
 #endif // SOURCEITEM_H

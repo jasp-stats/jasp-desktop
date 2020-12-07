@@ -134,18 +134,18 @@ void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 
 	_setTerms();
 	endResetModel();
-
-	emit termsChanged();
 }
 
 void ListModelMultiTermsAssigned::_setTerms()
 {
-	_terms.clear();
+	Terms newTerms;
 	for (const Terms& terms : _tuples)
 	{
 		for (const Term& term : terms)
-			_terms.add(term, false);
+			newTerms.add(term, false);
 	}
+
+	ListModel::_setTerms(newTerms, false);
 }
 
 
@@ -232,8 +232,6 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 	
 	_setTerms();
 	endResetModel();
-
-	emit termsChanged();
 
 	return termsToReturn;
 }
@@ -349,6 +347,4 @@ void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropI
 
 	_setTerms();
 	endResetModel();
-	
-	emit termsChanged();
 }

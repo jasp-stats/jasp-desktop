@@ -32,7 +32,7 @@ public:
 	QString	getDefaultColName(size_t index) const	override;
 
 public slots:
-	void sourceTermsChanged()						override;
+	void sourceTermsReset()						override;
 	void labelChanged(	 QString columnName, QString originalLabel, QString newLabel);
 	void labelsReordered(QString columnName);
 

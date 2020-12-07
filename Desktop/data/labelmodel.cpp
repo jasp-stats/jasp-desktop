@@ -127,7 +127,7 @@ void LabelModel::columnAboutToBeRemoved(int column)
 		setVisible(false);
 }
 
-void LabelModel::columnDataTypeChanged(std::string colName)
+void LabelModel::columnDataTypeChanged(QString colName)
 {
 	int colIndex = DataSetPackage::pkg()->getColumnIndex(colName);
 

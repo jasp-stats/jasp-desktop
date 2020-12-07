@@ -54,8 +54,6 @@ void ListModelLabelValueTerms::resetTermsFromSources(bool )
 	setLabelValuesFromSource();
 
 	endResetModel();
-
-	emit termsChanged();
 }
 
 
@@ -88,7 +86,7 @@ int ListModelLabelValueTerms::getIndexOfValue(const QString &value)
 {
 	int index = 0;
 	QString label = getLabel(value);
-	for (const Term& term : _terms)
+	for (const Term& term : terms())
 	{
 		if (term.asQString() == label)
 			return index;
@@ -102,28 +100,30 @@ void ListModelLabelValueTerms::_setLabelValues(const JASPListControl::LabelValue
 {
 	_valueToLabelMap.clear();
 	_labelToValueMap.clear();
-	_terms.clear();
+	Terms newTerms;
 
 	for (const auto& labelValue :labelvalues)
 	{
 		const QString& label = labelValue.first;
 		const QString& value = labelValue.second;
-		_terms.add(label);
+		newTerms.add(label);
 		_valueToLabelMap[value] = label;
 		_labelToValueMap[label] = value;
 	}
+
+	_setTerms(newTerms);
 }
 
 void ListModelLabelValueTerms::setLabelValuesFromSource()
 {
 	JASPListControl::LabelValueMap labelValuePairs;
 
-	if (_listView->addEmptyValue())
-		labelValuePairs.push_back(std::make_pair(_listView->placeholderText(), ""));
+	if (listView()->addEmptyValue())
+		labelValuePairs.push_back(std::make_pair(listView()->placeholderText(), ""));
 
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceItem->model());
+		ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceItem->listModel());
 		for (const Term& term : terms)
 		{
 			QString label = term.asQString();
@@ -133,5 +133,46 @@ void ListModelLabelValueTerms::setLabelValuesFromSource()
 	});
 
 	_setLabelValues(labelValuePairs);
+}
+
+void ListModelLabelValueTerms::sourceNamesChanged(QMap<QString, QString> map)
+{
+	QMap<QString, QString>	changedNamesMap;
+	QSet<int>				changedIndexes;
+
+	QMapIterator<QString, QString> it(map);
+	while (it.hasNext())
+	{
+		it.next();
+		const QString& oldName = it.key(), newName = it.value();
+		Terms orgTerms = terms();
+		QSet<int> indexes = orgTerms.replaceVariableName(oldName.toStdString(), newName.toStdString());
+		if (indexes.size() > 0)
+		{
+			QString oldValue = _labelToValueMap[oldName];
+			_labelToValueMap.remove(oldName);
+			_valueToLabelMap.remove(oldValue);
+			QString newValue = oldValue;
+			listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
+			{
+				ListModelLabelValueTerms* labelValueSourceModel = qobject_cast<ListModelLabelValueTerms*>(sourceItem->listModel());
+				if (terms.contains(newName) && labelValueSourceModel)
+					newValue = labelValueSourceModel->getValue(newName);
+			});
+			_labelToValueMap[newName] = newValue;
+			_valueToLabelMap[newValue] = newName;
+			changedIndexes += indexes;
+			changedNamesMap[oldName] = newName;
+		}
+	}
+
+	for (int i : changedIndexes)
+	{
+		QModelIndex ind = index(i, 0);
+		emit dataChanged(ind, ind);
+	}
+
+	if (changedNamesMap.size() > 0)
+		emit namesChanged(changedNamesMap);
 }
 

@@ -43,10 +43,7 @@ void TextAreaBase::setUpModel()
 		_model = new ListModelTermsAvailable(this);
 
 		if (_textType == TextType::TextTypeLavaan)
-		{
 			_model->setNeedsSource(true);
-			connect(_model, &ListModel::termsChanged, [this] () { if (form()) form()->refreshAnalysis(); } );
-		}
 		else
 		{
 			_model->setNeedsSource(false);
@@ -107,4 +104,11 @@ QString TextAreaBase::text()
 void TextAreaBase::setText(const QString& text)
 {
 	setProperty("text", text);
+}
+
+void TextAreaBase::termsChangedHandler()
+{
+	if (_textType == TextType::TextTypeLavaan && form())
+		form()->refreshAnalysis();
+
 }

@@ -45,6 +45,9 @@ public:
 public slots:
 	void		refreshMe();
 
+protected slots:
+	void				termsChangedHandler()							override;
+
 protected:
 	OptionsTable				* _boundTo		= nullptr;
 	ListModelTableViewBase		* _tableModel	= nullptr;

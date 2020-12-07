@@ -37,7 +37,6 @@ public slots:
 	void itemRemoved(int row);
 		
 protected:
-	void			_removeTerm(int row);
 	QString			_makeUnique(const QString& val, int row = -1);
 	QString			_changeLastNumber(const QString& val);
 

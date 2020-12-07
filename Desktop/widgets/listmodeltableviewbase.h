@@ -67,10 +67,10 @@ public:
 	virtual		OptionsTable *		createOption();
 	virtual		void				modelChangedSlot();
 
-				const QVector<QVector<QVariant>>	&	values()	const { return _values;		}
-				const QVector<QString>				&	rowNames()	const { return _rowNames;	}
-				const QVector<QString>				&	colNames()	const { return _colNames;	}
-				const Terms							&	terms(const QString& what = QString())	const override;
+				const QVector<QVector<QVariant>>	&	values()					const { return _values;		}
+				const QVector<QString>				&	rowNames()					const { return _rowNames;	}
+				const QVector<QString>				&	colNames()					const { return _colNames;	}
+					  Terms								termsEx(const QString& what)	override;
 
 
 				void runRScript(		const QString & script);

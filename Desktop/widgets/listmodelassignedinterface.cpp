@@ -55,3 +55,18 @@ void ListModelAssignedInterface::setAvailableModel(ListModelAvailableInterface *
 {
 	_source = source;
 }
+
+int ListModelAssignedInterface::sourceTypeChanged(QString name)
+{
+	int index = ListModelDraggable::sourceTypeChanged(name);
+	VariablesListBase* qmlListView = dynamic_cast<VariablesListBase*>(listView());
+
+	if (qmlListView && index >= 0 && !isAllowed(terms().at(size_t(index))))
+	{
+		QList<int> indexes = {index};
+		qmlListView->moveItems(indexes, _source);
+		ListModelDraggable::refresh();
+	}
+
+	return index;
+}

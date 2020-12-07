@@ -23,7 +23,9 @@
 
 #include <QDataStream>
 #include <QIODevice>
+#include <QSet>
 #include "utilities/qutils.h"
+
 using namespace std;
 
 Terms::Terms(const QList<QList<QString> > &terms, Terms *parent)
@@ -61,12 +63,12 @@ Terms::Terms(Terms *parent)
 	_parent = parent;
 }
 
-void Terms::set(const std::vector<Term> &terms)
+void Terms::set(const std::vector<Term> &terms, bool isUnique)
 {
 	_terms.clear();
 
 	for(const Term &term : terms)
-		add(term);
+		add(term, isUnique);
 }
 
 void Terms::set(const std::vector<string> &terms)
@@ -93,12 +95,12 @@ void Terms::set(const QList<Term> &terms)
 		add(term);
 }
 
-void Terms::set(const Terms &terms)
+void Terms::set(const Terms &terms, bool isUnique)
 {
 	_terms.clear();
 
 	for(const Term &term : terms)
-		add(term);
+		add(term, isUnique);
 }
 
 void Terms::set(const QList<QList<QString> > &terms)
@@ -207,6 +209,19 @@ bool Terms::contains(const Term &term) const
 bool Terms::contains(const std::string & component)
 {
 	return contains(tq(component));
+}
+
+int Terms::indexOf(const QString &component) const
+{
+	int i = 0;
+	for(const Term &term : _terms)
+	{
+		if (term.contains(component))
+			return i;
+		i++;
+	}
+
+	return -1;
 }
 
 bool Terms::contains(const QString & component)
@@ -641,9 +656,17 @@ void Terms::remove(const Term &term)
 		_terms.erase(itr);
 }
 
-void Terms::replaceVariableName(const std::string & oldName, const std::string & newName)
+QSet<int> Terms::replaceVariableName(const std::string & oldName, const std::string & newName)
 {
-	for(Term & t : _terms)
-		t.replaceVariableName(oldName, newName);
+	QSet<int> change;
 
+	int i = 0;
+	for(Term & t : _terms)
+	{
+		if (t.replaceVariableName(oldName, newName))
+			change.insert(i);
+		i++;
+	}
+
+	return change;
 }

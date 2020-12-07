@@ -50,7 +50,7 @@ void VariablesListBase::setUp()
 	{
 		for (SourceItem* sourceItem : _sourceItems)
 		{
-			ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(sourceItem->model());
+			ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(sourceItem->listModel());
 			if (!factorsModel)
 				addControlError(tr("Source model of %1 must be from a Factor List").arg(name()));
 			addDependency(factorsModel->listView());
@@ -80,7 +80,9 @@ void VariablesListBase::setUp()
 				assignedModel->setAvailableModel(availableModel);
 				availableModel->addAssignedModel(assignedModel);
 				addDependency(availableModel->listView());
-				connect(availableModel, &ListModelAvailableInterface::allAvailableTermsChanged, assignedModel, &ListModelAssignedInterface::availableTermsChanged);
+				connect(availableModel, &ListModelAvailableInterface::availableTermsReset, assignedModel, &ListModelAssignedInterface::availableTermsResetHandler);
+				connect(availableModel, &ListModelAvailableInterface::availableNamesChanged, assignedModel, &ListModelAssignedInterface::availableNamesChangedHandler);
+				connect(availableModel, &ListModelAvailableInterface::availableTypeChanged, assignedModel, &ListModelAssignedInterface::availableTypeChangedHandler);
 			}
 		}
 	}

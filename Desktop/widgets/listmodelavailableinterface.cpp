@@ -24,8 +24,8 @@ void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControl
 {
 	beginResetModel();
 	
-	_allTerms = _allSortedTerms = _terms = terms;
-	_terms.setSortParent(_allSortedTerms);
+	_allTerms = _allSortedTerms = terms;
+	_setTerms(terms, _allSortedTerms);
 
 	if (currentSortType() != SortType::None)
 		Sortable::sortItems();
@@ -100,37 +100,65 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 		break;
 	}
 
-	Terms orgTerms = _terms;
-	_terms.clear();
-	_terms.set(orgTerms); // This will reorder the terms
+	Terms orgTerms = terms();
+	_setTerms(orgTerms); // This will reorder the terms
 
 	endResetModel();
 }
 
-void ListModelAvailableInterface::sourceTermsChanged()
+void ListModelAvailableInterface::sourceTermsReset()
 {
 	resetTermsFromSources();
+}
+
+void ListModelAvailableInterface::sourceNamesChanged(QMap<QString, QString> map)
+{
+	ListModelDraggable::sourceNamesChanged(map);
+
+	QMap<QString, QString>	allTermsChangedMap;
+	QMapIterator<QString, QString> it(map);
+
+	while (it.hasNext())
+	{
+		it.next();
+		const QString& oldName = it.key(), newName = it.value();
+
+		QSet<int> allIndexes = _allTerms.replaceVariableName(oldName.toStdString(), newName.toStdString());
+
+		if (allIndexes.size() > 0)
+			allTermsChangedMap[oldName] = newName;
+	}
+
+	if (allTermsChangedMap.size() > 0)
+		emit availableNamesChanged(allTermsChangedMap);
+}
+
+int ListModelAvailableInterface::sourceTypeChanged(QString name)
+{
+	int index = ListModelDraggable::sourceTypeChanged(name);
+
+	if (_allTerms.contains(name))
+		emit availableTypeChanged(name);
+
+	return index;
 }
 
 void ListModelAvailableInterface::removeTermsInAssignedList()
 {
 	beginResetModel();
 	
-	_terms = _allSortedTerms;
-	_terms.setSortParent(_allSortedTerms);
+	Terms newTerms = _allSortedTerms;
 	
 	for (ListModelAssignedInterface* modelAssign : assignedModel())
 	{
 		Terms assignedTerms = modelAssign->terms();
 		if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
-		{
 			modelAssign->initTerms(assignedTerms); // initTerms call removeTermsInAssignedList
-			emit modelAssign->termsChanged();
-		}
 		else if (!modelAssign->copyTermsWhenDropped())
-			_terms.remove(assignedTerms);
+			newTerms.remove(assignedTerms);
 	}
 
+	_setTerms(newTerms, _allSortedTerms);
 	
 	endResetModel();
 }

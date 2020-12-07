@@ -86,7 +86,7 @@ public slots:
 				ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis * analysis);
 				void				requestColumnCreation(QString columnName, Analysis * analysis, int columnType);
 				void				requestComputedColumnDestruction(QString columnName);
-				void				recomputeColumn(std::string columnName);
+				void				recomputeColumn(QString columnName);
 				void				setLastCreatedColumn(QString lastCreatedColumn);
 				void				analysisRemoved(Analysis * analysis);
 				void				setShowThisColumn(QString showThisColumn);

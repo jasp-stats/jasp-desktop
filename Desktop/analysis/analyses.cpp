@@ -46,7 +46,6 @@ Analyses::Analyses()
 
 	connect(this,					&Analyses::requestComputedColumnDestruction,	this,	&Analyses::dataSetChanged			, Qt::QueuedConnection	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::dataSetChanged,				this,	&Analyses::dataSetChanged									);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this,	&Analyses::dataSetColumnsChanged							);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetChanged									);
 
 	new KnownIssues(this);
@@ -467,23 +466,12 @@ void Analyses::refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
 											bool					rowCountChanged,
 											bool					hasNewColumns)
 {
-	std::map<std::string, std::string> changeNameColumns = fq(changeNameColumnsQ);
-
-	std::vector<std::string> oldColumnNames;
-
-	for (auto & keyval : changeNameColumns)
-		oldColumnNames.push_back(keyval.first);
-
 	std::sort(changedColumnsQ.begin(), changedColumnsQ.end()); //Why are we sorting here?
-	std::sort(missingColumnsQ.begin(), missingColumnsQ.end());
-	std::sort(oldColumnNames.begin(),  oldColumnNames.end());
 
 	std::vector<std::string> changedColumns(fq(changedColumnsQ));
-	std::vector<std::string> missingColumns(fq(missingColumnsQ));
 
 
 	std::set<Analysis *> analysesToRefresh;
-	std::set<Analysis *> analysesToRebind;
 
 	for (auto idAnalysis : _analysisMap)
 	{
@@ -493,31 +481,13 @@ void Analyses::refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
 
 		if (!variables.empty())
 		{
-			std::vector<std::string> interChangecol, interChangename, interMissingcol;
+			std::vector<std::string> interChangecol;
 
 			std::set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(interChangecol));
-			std::set_intersection(variables.begin(), variables.end(), oldColumnNames.begin(), oldColumnNames.end(), std::back_inserter(interChangename));
-			std::set_intersection(variables.begin(), variables.end(), missingColumns.begin(), missingColumns.end(), std::back_inserter(interMissingcol));
 
-			bool	aNameChanged	= interChangename.size() > 0,
-					aColumnRemoved	= interMissingcol.size() > 0,
-					aColumnChanged	= interChangecol.size() > 0;
+			bool aColumnChanged	= interChangecol.size() > 0;
 
-			if(aNameChanged || aColumnRemoved)
-				analysis->setRefreshBlocked(true);
-
-			if (aColumnRemoved)
-				for (std::string & varname : interMissingcol)
-				{
-					analysis->removeUsedVariable(varname);
-					analysesToRebind.insert(analysis);
-				}
-
-			if (aNameChanged)
-				for (std::string & varname : interChangename)
-					analysesToRebind.insert(analysis);
-
-			if (aNameChanged || aColumnRemoved || aColumnChanged)
+			if (aColumnChanged)
 				analysesToRefresh.insert(analysis);
 		}
 	}
@@ -527,11 +497,6 @@ void Analyses::refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
 		analysis->setRefreshBlocked(false);
 		analysis->refresh();
 	}
-
-	for (Analysis *analysis : analysesToRebind)
-		// replaceVariableName and removeUsedVariable just changes the options, not the form
-		// So by rebinding the form with their options, it will update the form
-		analysis->rebind();
 
 	if(rowCountChanged)
 		QTimer::singleShot(0, this, &Analyses::refreshAllAnalyses);

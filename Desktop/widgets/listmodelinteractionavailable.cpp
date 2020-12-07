@@ -25,7 +25,7 @@
 ListModelInteractionAvailable::ListModelInteractionAvailable(JASPListControl* listView)
 	: ListModelAvailableInterface(listView), InteractionModel ()
 {
-	_areTermsInteractions = true;
+	setTermsAreInteractions(true);
 }
 
 void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
@@ -39,7 +39,7 @@ void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
 
 	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		ListModel* sourceModel = sourceItem->model();
+		ListModel* sourceModel = sourceItem->listModel();
 		for (const Term& term : terms)
 		{
 			QString itemType = sourceModel ? sourceModel->getItemType(term) : "";
@@ -76,15 +76,14 @@ void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
 			addedTerms.add(term);
 	
 	_allTerms.set(interactions);
-	_terms.set(interactions);
-	_terms.setSortParent(_allTerms);
+	_setTerms(interactions, _allTerms);
 	
 	removeTermsInAssignedList();
 	
 	endResetModel();
 
 	if (updateAssigned)
-		emit allAvailableTermsChanged(addedTerms, removedTerms);
+		emit availableTermsReset(addedTerms, removedTerms);
 
 }
 

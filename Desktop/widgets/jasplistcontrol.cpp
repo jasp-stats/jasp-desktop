@@ -54,11 +54,11 @@ void JASPListControl::setupSources()
 
 	for (SourceItem* sourceItem : _sourceItems)
 	{
-		if (sourceItem->model())
+		if (sourceItem->listModel())
 		{
-			if (!sourceItem->model()->areTermsVariables() || !sourceItem->controlName().isEmpty() || sourceItem->modelUse() == "levels")
+			if (!sourceItem->listModel()->areTermsVariables() || !sourceItem->controlName().isEmpty() || sourceItem->modelUse() == "levels")
 				termsAreVariables = false;
-			if (sourceItem->model()->areTermsInteractions() || sourceItem->combineWithOtherModels())
+			if (sourceItem->listModel()->areTermsInteractions() || sourceItem->combineWithOtherModels())
 				termsAreInteractions = true;
 		}
 	}
@@ -118,7 +118,7 @@ void JASPListControl::setUp()
 
 	connect(this,		&JASPListControl::sourceChanged,	this,	&JASPListControl::sourceChangedHandler);
 	connect(listModel,	&ListModel::termsChanged,			this,	&JASPListControl::termsChangedHandler);
-	connect(listModel,	&ListModel::modelReset,			[this]() { emit countChanged(); });
+	connect(listModel,	&ListModel::termsChanged,			[this]() { emit countChanged(); });
 }
 
 void JASPListControl::cleanUp()
@@ -219,7 +219,7 @@ void JASPListControl::sourceChangedHandler()
 	if (!model())	return;
 
 	setupSources();
-	model()->sourceTermsChanged();
+	model()->sourceTermsReset();
 }
 
 int JASPListControl::_getAllowedColumnsTypes()

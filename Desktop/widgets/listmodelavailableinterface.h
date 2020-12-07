@@ -50,10 +50,14 @@ public:
 			void										setTermsAreInteractions(bool interactions)	override;
 
 signals:
-			void allAvailableTermsChanged(Terms termsAdded, Terms termsRemoved);
+			void availableTermsReset(Terms termsAdded, Terms termsRemoved);
+			void availableNamesChanged(QMap<QString, QString>);
+			void availableTypeChanged(QString name);
 
 public slots:
-			void sourceTermsChanged()								override;
+			void sourceTermsReset()										override;
+			void sourceNamesChanged(QMap<QString, QString> map)			override;
+			int  sourceTypeChanged(QString name)						override;
 			void removeAssignedModel(ListModelDraggable* model);
 
 protected:

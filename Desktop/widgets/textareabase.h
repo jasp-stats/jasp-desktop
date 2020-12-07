@@ -65,12 +65,14 @@ public slots:
 	GENERIC_SET_FUNCTION(TextType,			_textType,			textTypeChanged,		TextType	)
 	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
 
-	void checkSyntaxHandler()						{ _boundControl->checkSyntax(); }
+	void	checkSyntaxHandler()						{ _boundControl->checkSyntax(); }
 
 signals:
-	void textTypeChanged();
-	void hasScriptErrorChanged();
+	void	textTypeChanged();
+	void	hasScriptErrorChanged();
 
+protected slots:
+	void	termsChangedHandler()		override;
     
 protected:
 

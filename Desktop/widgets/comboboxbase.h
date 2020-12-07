@@ -80,6 +80,7 @@ protected:
 								_currentColumnType;
 	int							_currentIndex			= 0;
 
+	int	 _getStartIndex();
 	void _resetItemWidth();
 	void _setCurrentValue(int index, bool setOption = true);
 

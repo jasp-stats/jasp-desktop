@@ -27,7 +27,7 @@ using namespace std;
 ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* listView, bool mustContainLowerTerms, bool addInteractionsByDefault)
 	: ListModelAssignedInterface(listView), InteractionModel ()
 {
-	_areTermsInteractions		= true;
+	setTermsAreInteractions(true);
 	_copyTermsWhenDropped		= true;
 	_mustContainLowerTerms		= mustContainLowerTerms;
 	_addInteractionsByDefault	= addInteractionsByDefault;
@@ -39,13 +39,12 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowContro
 	ListModelAssignedInterface::initTerms(interactionTerms(), allOptionsMap);
 }
 
-const Terms &ListModelInteractionAssigned::terms(const QString &what) const
+Terms ListModelInteractionAssigned::termsEx(const QString &what)
 {
 	if (what == "noInteraction")
 	{
-		static Terms terms;
+		Terms terms;
 
-		terms.clear();
 		terms.add(_fixedFactors);
 		terms.add(_randomFactors);
 		terms.add(_covariates);
@@ -53,13 +52,7 @@ const Terms &ListModelInteractionAssigned::terms(const QString &what) const
 		return terms;
 	}
 	else
-		return ListModelAssignedInterface::terms(what);
-}
-
-void ListModelInteractionAssigned::setAvailableModel(ListModelAvailableInterface *source)
-{
-	ListModelAssignedInterface::setAvailableModel(source);
-	_terms.setSortParent(source->allTerms());
+		return ListModelAssignedInterface::termsEx(what);
 }
 
 void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
@@ -69,8 +62,8 @@ void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 	for (int i : indices)
 	{
 		size_t index = size_t(i);
-		if (index < _terms.size())
-			toRemove.add(_terms.at(index));
+		if (index < terms().size())
+			toRemove.add(terms().at(index));
 	}
 
 	removeInteractionTerms(toRemove);
@@ -80,15 +73,15 @@ void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 
 Terms ListModelInteractionAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
-	Terms terms;
+	Terms result;
 	for (int i : indexes)
 	{
 		size_t index = size_t(i);
-		if (index < _terms.size())
-			terms.add(_terms.at(index));
+		if (index < terms().size())
+			result.add(terms().at(index));
 	}
 	
-	return terms;
+	return result;
 }
 
 void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWithExistingTerms)
@@ -136,7 +129,7 @@ void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWit
 	
 }
 
-void ListModelInteractionAssigned::availableTermsChanged(Terms termsAdded, Terms termsRemoved)
+void ListModelInteractionAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)
 {
 	if (termsAdded.size() > 0 && _addNewAvailableTermsToAssignedModel)
 	{
@@ -242,9 +235,9 @@ void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int drop
 		return;
 
 	beginResetModel();
-	Terms terms = termsFromIndexes(indexes);
+	Terms termsToMove = termsFromIndexes(indexes);
 	if (dropItemIndex == -1)
-		dropItemIndex = int(_terms.size());
+		dropItemIndex = int(terms().size());
 	for (int index : indexes)
 	{
 		if (index < dropItemIndex)
@@ -252,23 +245,19 @@ void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int drop
 	}
 
 	Terms newTerms = _interactionTerms;
-	newTerms.remove(terms);
-	newTerms.insert(dropItemIndex, terms);
-	_terms = _interactionTerms = newTerms;
+	newTerms.remove(termsToMove);
+	newTerms.insert(dropItemIndex, termsToMove);
+	_interactionTerms = newTerms;
+	_setTerms(newTerms);
 
 	endResetModel();
-
-	emit termsChanged();
-
 }
 
 void ListModelInteractionAssigned::setTerms()
 {	
 	beginResetModel();
 	
-	_terms.set(interactionTerms());
+	_setTerms(interactionTerms());
 	
 	endResetModel();
-	
-	emit termsChanged();
 }

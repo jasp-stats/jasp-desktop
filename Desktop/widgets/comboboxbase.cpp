@@ -61,16 +61,19 @@ void ComboBoxBase::bindTo(Option *option)
 		addControlError(tr("Unknown error in ComboBox %1").arg(name()));
 }
 
+int ComboBoxBase::_getStartIndex()
+{
+	return startValue().isEmpty() ? currentIndex() : _model->getIndexOfValue(startValue());
+}
+
 Option *ComboBoxBase::createOption()
 {
 	std::vector<std::string> options = _model->getValues();
 	
-	int index = startValue().isEmpty() ? currentIndex() : _model->getIndexOfValue(startValue());
+	int index = _getStartIndex();
 
-	if (options.size() == 0)
-		index = -1;
-	else if (index >= int(options.size()))
-		index = 0;
+	if (options.size() == 0)								index = -1;
+	else if (index == -1 || (index >= int(options.size())))	index = 0;
 	
 	std::string selected = "";
 	if (index >= 0)
@@ -95,11 +98,8 @@ void ComboBoxBase::setUp()
 
 	_model->resetTermsFromSources();
 
-	int startIndex = (!startValue().isEmpty()) ? _model->getIndexOfValue(startValue()) : currentIndex();
-	_setCurrentValue(startIndex, false);
-
 	connect(this,	&JASPListControl::addEmptyValueChanged,		[this] () { _model->resetTermsFromSources(); }	);
-	connect(this,	&ComboBoxBase::currentIndexChanged,			[this] () { _setCurrentValue(currentIndex()); } );
+	connect(this,	&ComboBoxBase::currentIndexChanged,			[this] () { _setCurrentValue(currentIndex()); } ); // Case when currentIndex is changed in QML
 	connect(this,	SIGNAL(activated(int)),						this,		SLOT(activatedSlot(int)));
 	if (form())
 		connect(form(), &AnalysisForm::languageChanged,			[this] () { _model->resetTermsFromSources(); }	);
@@ -128,13 +128,15 @@ void ComboBoxBase::termsChangedHandler()
 		counter++;
 	}
 	
-	if (index == -1 && !startValue().isEmpty())	index = _model->getIndexOfValue(startValue());
-	if (index == -1 && terms.size() > 0)		index = 0;
+	if (index == -1)	index = _getStartIndex();
+
+	if (terms.size() == 0)									index = -1;
+	else if (index == -1 || (index >= int(terms.size())))	index = 0;
 	
 	if (_boundTo)
 		_boundTo->resetOptions(options, index);
 	
-	_setCurrentValue(index, true);
+	_setCurrentValue(index);
 	
 	_resetItemWidth();
 }
@@ -154,19 +156,16 @@ void ComboBoxBase::_setCurrentValue(int index, bool setOption)
 {
 	QString currentColumnType, currentValue, currentText;
 
+	if (index >= _model->rowCount())	index = 0;
+
 	if (index >= 0)
 	{
-		if (index >= _model->rowCount())	index = 0;
-
 		QModelIndex modelIndex(_model->index(index, 0));
 		currentColumnType = _model->data(modelIndex, ListModel::ColumnTypeRole).toString();
 		currentText = _model->data(modelIndex, ListModel::NameRole).toString();
 		currentValue = _model->data(modelIndex, ListModel::ValueRole).toString();
 	}
 
-	// Cannot use _boundTo to get the current value, because when _boundTo is changed (by setting the current index),
-	// it emits a signal that can be received by a slot that needs already the currentValue.
-	// This is in particular needed in CustomContrast
 	setCurrentText(currentText);
 	setCurrentValue(currentValue);
 	setCurrentColumnType(currentColumnType);

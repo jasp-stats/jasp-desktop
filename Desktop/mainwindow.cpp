@@ -290,16 +290,18 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::datasetChanged,					_analyses,				&Analyses::refreshAnalysesUsingColumns,						Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::datasetChanged,					_filterModel,			&FilterModel::datasetChanged,								Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnsModel::datasetChanged,						Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::datasetChanged,					_columnsModel,			&ColumnsModel::datasetChanged,								Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::windowTitleChanged,				this,					&MainWindow::windowTitleChanged								);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
+	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_columnsModel,			&ColumnsModel::columnTypeChanged							);
 	connect(_package,				&DataSetPackage::freeDatasetSignal,					_loader,				&AsyncLoader::free											);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
 
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
 	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError,									Qt::QueuedConnection); //To give the process some time to realize it has crashed or something
-	connect(_engineSync,			&EngineSync::columnDataTypeChanged,					_analyses,				&Analyses::dataSetColumnsChanged							);
+	connect(_engineSync,			&EngineSync::columnDataTypeChanged,					_columnsModel,			&ColumnsModel::columnTypeChanged							);
 	connect(_engineSync,			&EngineSync::refreshAllPlotsExcept,					_analyses,				&Analyses::refreshAllPlots									);
 	connect(_engineSync,			&EngineSync::processNewFilterResult,				_filterModel,			&FilterModel::processFilterResult							);
 	connect(_engineSync,			&EngineSync::processFilterErrorMsg,					_filterModel,			&FilterModel::processFilterErrorMsg							);

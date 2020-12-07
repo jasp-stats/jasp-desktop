@@ -157,3 +157,8 @@ void TableViewBase::refreshMe()
 	if(_tableModel)
 		_tableModel->refreshModel();
 }
+
+void TableViewBase::termsChangedHandler()
+{
+	_tableModel->modelChangedSlot();
+}

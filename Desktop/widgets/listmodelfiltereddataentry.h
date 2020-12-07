@@ -48,7 +48,7 @@ public:
 
 
 public slots:
-	void	sourceTermsChanged()															override;
+	void	sourceTermsReset()															override;
 	void	modelChangedSlot()																override;
 	void	setFilter(QString filter);
 	void	setColName(QString colName);

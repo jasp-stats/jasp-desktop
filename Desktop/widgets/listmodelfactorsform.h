@@ -40,7 +40,7 @@ public:
 	int						rowCount(const QModelIndex &parent = QModelIndex())			const override { return count(); }
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	
-	const Terms&			terms(const QString& what = QString())						const override;
+	Terms					termsEx(const QString& what)									override;
 	void					initFactors(const std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > &factors);
 	int						count() const { return int(_factors.size()); }
 	std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > getFactors() const;

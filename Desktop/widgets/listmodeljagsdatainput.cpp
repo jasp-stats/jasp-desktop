@@ -39,7 +39,7 @@ ListModelJAGSDataInput::ListModelJAGSDataInput(TableViewBase *parent, QString ta
 	parent->setProperty("defaultEmptyValue", _defaultCellVal);
 }
 
-void ListModelJAGSDataInput::sourceTermsChanged()
+void ListModelJAGSDataInput::sourceTermsReset()
 {
 	beginResetModel();
 
@@ -83,7 +83,6 @@ void ListModelJAGSDataInput::sourceTermsChanged()
 
 	emit columnCountChanged();
 	emit rowCountChanged();
-	emit termsChanged();
 }
 
 

@@ -48,7 +48,7 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QStrin
 	connect(listView(), SIGNAL(scaleFactorChanged()),			this, SLOT(scaleFactorChanged()));
 }
 
-void ListModelCustomContrasts::sourceTermsChanged()
+void ListModelCustomContrasts::sourceTermsReset()
 {
 	_resetValuesEtc();
 }
@@ -224,7 +224,6 @@ void ListModelCustomContrasts::_resetValuesEtc()
 	emit columnCountChanged();
 	emit rowCountChanged();
 	emit variableCountChanged();
-	emit termsChanged();
 }
 
 
@@ -252,8 +251,6 @@ void ListModelCustomContrasts::reset()
 	endResetModel();
 
 	emit columnCountChanged();
-	emit termsChanged();
-
 }
 
 void ListModelCustomContrasts::setup()
@@ -270,7 +267,7 @@ void ListModelCustomContrasts::setup()
 	}
 }
 
-int ListModelCustomContrasts::getMaximumColumnWidthInCharacters(size_t columnIndex) const
+int ListModelCustomContrasts::getMaximumColumnWidthInCharacters(size_t) const
 {
 	return 5;
 }
@@ -436,10 +433,8 @@ void ListModelCustomContrasts::modelChangedSlot() // Should move this to listmod
 
 void ListModelCustomContrasts::labelChanged(QString columnName, QString originalLabel, QString newLabel)
 {
-	bool isChanged = _labelChanged(columnName, originalLabel, newLabel);
-
-	if (isChanged)
-		emit termsChanged();
+	if (_labelChanged(columnName, originalLabel, newLabel))
+		refresh();
 }
 
 bool ListModelCustomContrasts::_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel)
@@ -522,8 +517,6 @@ void ListModelCustomContrasts::scaleFactorChanged()
 				_labelChanged(scaleVariable, QString::number(oldScaleFactor), QString::number(_scaleFactor));
 			}
 			endResetModel();
-
-			emit termsChanged();
 		}
 	}
 

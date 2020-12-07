@@ -38,6 +38,9 @@ public:
 
 	void						setLabelValuesFromSource();
 
+public slots:
+	void						sourceNamesChanged(QMap<QString, QString> map)					override;
+
 protected:
 	void						_setLabelValues(const JASPListControl::LabelValueMap& values);
 

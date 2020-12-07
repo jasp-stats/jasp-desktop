@@ -43,15 +43,13 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsOpti
 	}
 }
 
-void ListModelTermsAssigned::availableTermsChanged(Terms termsAdded, Terms termsRemoved)
+void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)
 {
 	if (termsAdded.size() > 0 && _addNewAvailableTermsToAssignedModel)
 	{
 		beginResetModel();
-		_terms.add(termsAdded);
+		_addTerms(termsAdded);
 		endResetModel();
-
-		emit termsChanged();
 
 		if (!_copyTermsWhenDropped)
 			source()->removeTermsInAssignedList();
@@ -60,10 +58,8 @@ void ListModelTermsAssigned::availableTermsChanged(Terms termsAdded, Terms terms
 	if (termsRemoved.size() > 0)
 	{
 		beginResetModel();
-		_terms.remove(termsRemoved);
+		_removeTerms(termsRemoved);
 		endResetModel();
-
-		emit termsChanged();
 	}
 }
 
@@ -75,20 +71,19 @@ Terms ListModelTermsAssigned::canAddTerms(const Terms& terms) const
 	return ListModelDraggable::canAddTerms(terms);
 }
 
-Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControl::AssignType)
+Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, JASPControl::AssignType)
 {
-	Terms newTerms;
 	_tempTermsToSendBack.clear();
 
 	beginResetModel();
 
-	newTerms.set(_terms);
+	Terms newTerms = terms();
 	if (dropItemIndex < 0 && _maxRows == 1)
 		dropItemIndex = 0; // for single row, per default replace old item by new one.
-	if (dropItemIndex >= 0 && dropItemIndex < int(_terms.size()))
-		newTerms.insert(dropItemIndex, terms);
+	if (dropItemIndex >= 0 && dropItemIndex < int(terms().size()))
+		newTerms.insert(dropItemIndex, termsToAdd);
 	else
-		newTerms.add(terms);
+		newTerms.add(termsToAdd);
 
 	size_t maxRows = size_t(_maxRows);
 	if (newTerms.size() > maxRows)
@@ -98,42 +93,39 @@ Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, JA
 		newTerms.remove(maxRows, newTerms.size() - maxRows);
 	}
 
-	_terms.set(newTerms);
+	_setTerms(newTerms);
 
 	endResetModel();
-
-	emit termsChanged();
 
 	return _tempTermsToSendBack;
 }
 
-const Terms &ListModelTermsAssigned::terms(const QString &what) const
+Terms ListModelTermsAssigned::termsEx(const QString &what)
 {
 	if (_maxRows == 1 && what == "levels")
 	{
-		static Terms terms;
-		terms.clear();
+		Terms result;
 		if (rowCount() == 1)
 		{
 			QString term = data(index(0,0)).toString();
 			QStringList labels = DataSetPackage::pkg()->getColumnLabelsAsStringList(term.toStdString());
 			for (const QString& label : labels)
-				terms.add(label);
+				result.add(label);
 		}
 
-		return terms;
+		return result;
 	}
 	else
-		return ListModelAssignedInterface::terms(what);
+		return ListModelAssignedInterface::termsEx(what);
 }
 
 void ListModelTermsAssigned::removeTerm(int index)
 {
-	if (index < 0 || index >= int(_terms.size())) return;
+	if (index < 0 || index >= int(terms().size())) return;
 
 	beginResetModel();
 
-	const Term& term = _terms.at(size_t(index));
+	const Term& term = terms().at(size_t(index));
 	const QString& termQ = term.asQString();
 
 	if (_rowControlsMap.contains(termQ))
@@ -148,26 +140,23 @@ void ListModelTermsAssigned::removeTerm(int index)
 
 		_rowControlsMap.remove(termQ);
 	}
-	_terms.remove(term);
+	_removeTerm(term);
 
 	endResetModel();
-
-	emit termsChanged();
 }
 
 void ListModelTermsAssigned::changeTerm(int index, const QString& name)
 {
-	QString oldName = _terms[size_t(index)].asQString();
+	QString oldName = terms()[size_t(index)].asQString();
 	if (oldName != name)
 	{
 		_rowControlsMap[name] = _rowControlsMap[oldName];
 		_rowControlsOptions[name] = _rowControlsOptions[oldName];
 		_rowControlsMap.remove(oldName);
 		_rowControlsOptions.remove(oldName);
-		_terms.replace(index, Term(name));
+		_replaceTerm(index, Term(name));
 
 		emit oneTermChanged(oldName, name);
-		emit termsChanged();
 		QModelIndex modelIndex = ListModelTermsAssigned::index(index, 0);
 		emit dataChanged(modelIndex, modelIndex);
 	}

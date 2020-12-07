@@ -38,8 +38,6 @@ void ListModelTermsAvailable::resetTermsFromSources(bool updateAssigned)
 
 	endResetModel();
 
-	emit termsChanged();
-
 	if (updateAssigned)
-		emit allAvailableTermsChanged(addedTerms, removedTerms);
+		emit availableTermsReset(addedTerms, removedTerms);
 }

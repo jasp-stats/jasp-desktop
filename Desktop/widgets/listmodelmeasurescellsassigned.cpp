@@ -48,7 +48,7 @@ void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms
 	}
 	
 	if (initVariables)
-		_terms = variables;
+		_setTerms(variables, false);
 
 	_fitTermsWithLevels();
 
@@ -60,19 +60,19 @@ void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms
 
 void ListModelMeasuresCellsAssigned::_fitTermsWithLevels()
 {
-	while (_terms.size() < size_t(_levels.size()))
-		_terms.add(QString(), false);
+	while (terms().size() < size_t(_levels.size()))
+		_addTerm(QString(), false);
 
-	if (_terms.size() > size_t(_levels.size()))
+	if (terms().size() > size_t(_levels.size()))
 	{
-		std::vector<Term> terms = _terms.terms();
-		while (terms.size() > size_t(_levels.size()))
-			terms.pop_back();
-		_terms.set(terms);
+		std::vector<Term> newTerms = terms().terms();
+		while (newTerms.size() > size_t(_levels.size()))
+			newTerms.pop_back();
+		_setTerms(newTerms, false);
 	}
 }
 
-void ListModelMeasuresCellsAssigned::sourceTermsChanged()
+void ListModelMeasuresCellsAssigned::sourceTermsReset()
 {
 	VariablesListBase* measureCellsListView = dynamic_cast<VariablesListBase*>(listView());
 	if (measureCellsListView)
@@ -80,7 +80,6 @@ void ListModelMeasuresCellsAssigned::sourceTermsChanged()
 		BoundControlMeasuresCells* boundControl = dynamic_cast<BoundControlMeasuresCells*>(measureCellsListView->boundControl());
 		initLevels(boundControl->getLevels());
 		source()->removeTermsInAssignedList();
-		emit termsChanged();
 	}
 	else
 		Log::log() << "ListView from Measures cells model is not of a Measures Cell type!!";
@@ -88,15 +87,15 @@ void ListModelMeasuresCellsAssigned::sourceTermsChanged()
 
 Terms ListModelMeasuresCellsAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
-	Terms terms;
+	Terms result;
 	for (int index : indexes)
 	{
 		size_t realIndex = size_t(index / 2);
-		if (realIndex < _terms.size())
-			terms.add(_terms[realIndex]);
+		if (realIndex < terms().size())
+			result.add(terms().at(realIndex));
 	}
 	
-	return terms;
+	return result;
 }
 
 void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListModel::RowControlsOptions &allOptionsMap)
@@ -105,7 +104,7 @@ void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListMod
 	_fitTermsWithLevels();
 }
 
-Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControl::AssignType)
+Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, JASPControl::AssignType)
 {
 	beginResetModel();
 	if (dropItemIndex >= 0)
@@ -113,41 +112,39 @@ Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& terms, int dropItemI
 	Terms termsToSendBack;
 	if (dropItemIndex >= 0)
 	{
-		if (terms.size() > 1 || dropItemIndex >= int(_terms.size()))
-			termsToSendBack.set(terms);
+		if (termsToAdd.size() > 1 || dropItemIndex >= int(terms().size()))
+			termsToSendBack.set(termsToAdd);
 		else
 		{
-			const Term& newTerm = terms.at(0);
-			const Term& oldTerm = _terms.at(size_t(dropItemIndex));
+			const Term& newTerm = termsToAdd.at(0);
+			const Term& oldTerm = terms().at(size_t(dropItemIndex));
 			if (!oldTerm.asString().empty())
 				termsToSendBack.add(Term(oldTerm));
-			_terms.replace(dropItemIndex, newTerm);
+			_replaceTerm(dropItemIndex, newTerm);
 		}
 	}
 	else
 	{
 		size_t index = 0;
-		for (size_t i = 0; i < _terms.size() && index < terms.size(); i++)
+		for (size_t i = 0; i < terms().size() && index < termsToAdd.size(); i++)
 		{
-			const Term& oldTerm = _terms.at(i);
+			const Term& oldTerm = terms().at(i);
 			if (oldTerm.asQString().isEmpty())
 			{
-				const Term& newTerm = terms.at(index);
-				_terms.replace(int(i), newTerm);
+				const Term& newTerm = termsToAdd.at(index);
+				_replaceTerm(int(i), newTerm);
 				index++;
 			}
 		}
 		
-		for (size_t i = index; i < terms.size(); i++)
+		for (size_t i = index; i < termsToAdd.size(); i++)
 		{
-			const Term& term = terms.at(i);
+			const Term& term = termsToAdd.at(i);
 			termsToSendBack.add(term);
 		}
 	}
 	
 	endResetModel();
-	
-	emit termsChanged();
 	
 	return termsToSendBack;
 }
@@ -159,20 +156,18 @@ void ListModelMeasuresCellsAssigned::moveTerms(const QList<int> &indexes, int dr
 	
 	size_t fromIndex = size_t(indexes[0]);
 	size_t fromRow = fromIndex / 2;
-	if (fromRow >= _terms.size())
+	if (fromRow >= terms().size())
 		return;
 	size_t dropRow = size_t(dropItemIndex / 2);
-	if (dropRow >= _terms.size())
+	if (dropRow >= terms().size())
 		return;
 	
 	beginResetModel();
-	Term fromValue = _terms.at(fromRow);
-	Term dropValue = _terms.at(dropRow);
-	_terms.replace(int(fromRow), dropValue);
-	_terms.replace(int(dropRow), fromValue);
+	Term fromValue = terms().at(fromRow);
+	Term dropValue = terms().at(dropRow);
+	_replaceTerm(int(fromRow), dropValue);
+	_replaceTerm(int(dropRow), fromValue);
 	endResetModel();
-	
-	emit termsChanged();
 }
 
 void ListModelMeasuresCellsAssigned::removeTerms(const QList<int> &indexes)
@@ -181,12 +176,10 @@ void ListModelMeasuresCellsAssigned::removeTerms(const QList<int> &indexes)
 	for (int i = 0; i < indexes.length(); i++)
 	{
 		int index = indexes[i] / 2;
-		if (index < int(_terms.size()))
-			_terms.replace(index, QString());
+		if (index < int(terms().size()))
+			_replaceTerm(index, QString());
 	}
-	endResetModel();
-	
-	emit termsChanged();
+	endResetModel();	
 }
 
 QVariant ListModelMeasuresCellsAssigned::data(const QModelIndex &index, int role) const
@@ -207,13 +200,13 @@ QVariant ListModelMeasuresCellsAssigned::data(const QModelIndex &index, int role
 	if (role == Qt::DisplayRole || role == ListModel::NameRole)
 	{
 		if (realCol == 0)
-			return _terms[size_t(realRow)].asQString();
+			return terms()[size_t(realRow)].asQString();
 		else
 			return _levels[realRow];
 	}
 	else if (role == ListModel::SelectableRole)
 	{
-		return realCol == 0 && !_terms.at(size_t(realRow)).asString().empty();
+		return realCol == 0 && !terms().at(size_t(realRow)).asString().empty();
 	}
 	else if (role == ListModel::SelectedRole)
 	{

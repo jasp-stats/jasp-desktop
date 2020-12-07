@@ -35,7 +35,7 @@ ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(TableViewBase * paren
 
 }
 
-void ListModelMultinomialChi2Test::sourceTermsChanged()
+void ListModelMultinomialChi2Test::sourceTermsReset()
 {
 	beginResetModel();
 
@@ -63,7 +63,6 @@ void ListModelMultinomialChi2Test::sourceTermsChanged()
 
 	emit columnCountChanged();
 	emit rowCountChanged();
-	emit termsChanged();
 }
 
 void ListModelMultinomialChi2Test::labelChanged(QString columnName, QString originalLabel, QString newLabel)
@@ -81,8 +80,6 @@ void ListModelMultinomialChi2Test::labelChanged(QString columnName, QString orig
 		}
 
 	endResetModel();
-
-	emit termsChanged();
 }
 
 void ListModelMultinomialChi2Test::labelsReordered(QString columnName)
@@ -107,8 +104,6 @@ void ListModelMultinomialChi2Test::labelsReordered(QString columnName)
 			_values[col].push_back(tempStore[_rowNames[row]][col]);
 
 	endResetModel();
-
-	emit termsChanged();
 }
 
 

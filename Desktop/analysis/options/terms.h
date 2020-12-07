@@ -41,11 +41,11 @@ public:
 
 	void set(const QList<QList<QString> >					& terms);
 	void set(const QList<QString>							& terms);
-	void set(const std::vector<Term>						& terms);
+	void set(const std::vector<Term>						& terms, bool isUnique = true);
 	void set(const std::vector<std::string>					& terms);
 	void set(const std::vector<std::vector<std::string> >	& terms);
 	void set(const QList<Term>								& terms);
-	void set(const Terms									& terms);
+	void set(const Terms									& terms, bool isUnique = true);
 	void set(const QByteArray								& array);
 
 	void removeParent();
@@ -75,14 +75,15 @@ public:
 	bool discardWhatDoesContainTheseTerms(			const Terms &terms);
 	bool discardWhatIsntTheseTerms(					const Terms &terms, Terms *discarded = nullptr);
 
-	void replaceVariableName(const std::string & oldName, const std::string & newName);
+	QSet<int> replaceVariableName(const std::string & oldName, const std::string & newName);
 
 	void clear();
 
-	const Term &at(size_t index) const;
-	bool contains(const Term		&	term) const;
+	const Term &at(size_t index)								const;
+	bool contains(const Term		&	term)					const;
 	bool contains(const QString		&	component);
 	bool contains(const std::string &	component);
+	int	 indexOf(const QString		&	component)				const;
 
 	std::vector<std::string>				asVector()			const;
 	std::set<std::string>					asSet()				const;

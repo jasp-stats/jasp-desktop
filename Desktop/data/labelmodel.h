@@ -41,7 +41,7 @@ public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
 	void columnAboutToBeRemoved(int column);
-	void columnDataTypeChanged(std::string colName);
+	void columnDataTypeChanged(QString colName);
 
 signals:
 	void visibleChanged(bool visible);

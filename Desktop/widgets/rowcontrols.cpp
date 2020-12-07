@@ -104,7 +104,7 @@ bool RowControls::addJASPControl(JASPControl *control)
 				// If a ListView depends on a source, it has to be initialized by this source
 				// For this just call the sourceTermsChanged handler.
 				if (listView && listView->hasSource())
-					listView->model()->sourceTermsChanged();
+					listView->model()->sourceTermsReset();
 			}
 		}
 

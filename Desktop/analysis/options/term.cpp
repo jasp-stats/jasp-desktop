@@ -125,11 +125,17 @@ size_t Term::size() const
 	return _components.size();
 }
 
-void Term::replaceVariableName(const std::string & oldName, const std::string & newName)
+bool Term::replaceVariableName(const std::string & oldName, const std::string & newName)
 {
+	bool changed = false;
 	for(int i=0; i<_components.size(); i++)
 		if(_components[i] == tq(oldName))
+		{
 			_components[i] = tq(newName);
+			changed = true;
+		}
 
 	initFrom(_components);
+
+	return changed;
 }

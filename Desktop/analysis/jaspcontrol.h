@@ -123,7 +123,7 @@ public:
 	int				alignment()				const	{ return _alignment;			}
 
 	QString			humanFriendlyLabel()	const;
-	void			setInitialized()	{ if (_initialized) { _initialized = true; emit initializedChanged();} }
+	void			setInitialized()	{ if (!_initialized) { _initialized = true; emit initializedChanged();} }
 
 
 	QQmlComponent					*	rowComponent()				const { return _rowComponent;	}

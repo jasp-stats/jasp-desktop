@@ -21,6 +21,7 @@
 #include "analysis/analysisform.h"
 #include "jasplistcontrol.h"
 #include "listmodellabelvalueterms.h"
+#include "data/columnsmodel.h"
 #include <QQmlEngine>
 
 SourceItem::SourceItem(
@@ -73,33 +74,49 @@ SourceItem::SourceItem(JASPListControl *listControl)
 	_setUp();
 }
 
+void SourceItem::_connectModels()
+{
+	if (!_listControl->initialized() || !_nativeModel) return;
+
+	ListModel *controlModel = _listControl->model();
+
+	connect(_nativeModel, &QAbstractItemModel::dataChanged,			controlModel,	&ListModel::sourceTermsReset );
+	connect(_nativeModel, &QAbstractItemModel::rowsInserted,		controlModel,	&ListModel::sourceTermsReset );
+	connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			controlModel,	&ListModel::sourceTermsReset );
+	connect(_nativeModel, &QAbstractItemModel::rowsMoved,			controlModel,	&ListModel::sourceTermsReset );
+	connect(_nativeModel, &QAbstractItemModel::modelReset,			controlModel,	&ListModel::sourceTermsReset );
+
+	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
+	if (columnsModel)
+	{
+		connect(columnsModel,	&ColumnsModel::namesChanged,		controlModel, &ListModel::sourceNamesChanged );
+		connect(columnsModel,	&ColumnsModel::columnTypeChanged,	controlModel, &ListModel::sourceTypeChanged );
+	}
+
+	if (_listModel)
+	{
+		_listControl->addDependency(_listModel->listView());
+		connect(_listModel,		&ListModel::namesChanged,			controlModel, &ListModel::sourceNamesChanged);
+		connect(_listModel,		&ListModel::typeChanged,			controlModel, &ListModel::sourceTypeChanged);
+	}
+}
 
 void SourceItem::_setUp()
 {
-	ListModel* sourceModel = nullptr;
-
-	if (_isDataSetColumns)
+	if (_isValuesSource)								_nativeModel = new ListModelLabelValueTerms(_listControl, _values);
+	else if (_listControl->form() && !_name.isEmpty())	_nativeModel = _listControl->form()->getModel(_name);
+	else if (_isDataSetColumns)
 	{
 		_nativeModel = AnalysisForm::getColumnsModel();
 		_nativeModelRole = AnalysisForm::getColumnsModelRole();
 	}
 
-	if (_isValuesSource)								sourceModel = new ListModelLabelValueTerms(_listControl, _values);
-	else if (_nativeModel)								sourceModel = qobject_cast<ListModel*>(_nativeModel); // A nativeModel is not always a ListModel
-	else if (_listControl->form() && !_name.isEmpty())	sourceModel = _listControl->form()->getModel(_name);
-
-	if (sourceModel)
+	if (_nativeModel)
 	{
-		_model = sourceModel;
-		_listControl->addDependency(_model->listView());
-		ListModel::connect(_model, &ListModel::termsChanged, _listControl->model(), &ListModel::sourceTermsChanged);
-	}
-	else if (_nativeModel)
-	{
-		connect(_nativeModel, &QAbstractItemModel::dataChanged,			this,	[this]() { _listControl->model()->sourceTermsChanged(); });
-		connect(_nativeModel, &QAbstractItemModel::rowsInserted,		this,	[this]() { _listControl->model()->sourceTermsChanged(); });
-		connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			this,	[this]() { _listControl->model()->sourceTermsChanged(); });
-		connect(_nativeModel, &QAbstractItemModel::modelReset,			this,	[this]() { _listControl->model()->sourceTermsChanged(); });
+		_listModel = qobject_cast<ListModel*>(_nativeModel);
+		// Do not connect before this control (and the controls of the source) are completely initialized
+		// The source could sent some data to this control before it is completely ready for it.
+		connect(_listControl, &JASPControl::initializedChanged,			this,	&SourceItem::_connectModels);
 	}
 	else
 	{
@@ -114,13 +131,29 @@ void SourceItem::_setUp()
 
 SourceItem::~SourceItem()
 {
-	isAlive = false;
 	if (_isValuesSource)
-		delete _model; // In case of values, the model is created just to contain the values, and does not come from another listview.
-	else if (_model)
+		delete _listModel; // In case of values, the model is created just to contain the values, and does not come from another listview.
+	else if (_nativeModel)
 	{
-		_listControl->removeDependency(_model->listView());
-		ListModel::disconnect(_model, &ListModel::termsChanged, _listControl->model(), &ListModel::sourceTermsChanged);
+		disconnect(_nativeModel, &QAbstractItemModel::dataChanged,			_listControl->model(),	&ListModel::sourceTermsReset );
+		disconnect(_nativeModel, &QAbstractItemModel::rowsInserted,			_listControl->model(),	&ListModel::sourceTermsReset );
+		disconnect(_nativeModel, &QAbstractItemModel::rowsRemoved,			_listControl->model(),	&ListModel::sourceTermsReset );
+		disconnect(_nativeModel, &QAbstractItemModel::rowsMoved,			_listControl->model(),	&ListModel::sourceTermsReset );
+		disconnect(_nativeModel, &QAbstractItemModel::modelReset,			_listControl->model(),	&ListModel::sourceTermsReset );
+
+		ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
+		if (columnsModel)
+		{
+			disconnect(columnsModel, &ColumnsModel::namesChanged,			_listControl->model(), &ListModel::sourceNamesChanged );
+			disconnect(columnsModel, &ColumnsModel::columnTypeChanged,		_listControl->model(), &ListModel::sourceTypeChanged );
+		}
+
+		if (_listModel)
+		{
+			_listControl->removeDependency(_listModel->listView());
+			disconnect(_listModel, &ListModel::namesChanged,	_listControl->model(), &ListModel::sourceNamesChanged);
+			disconnect(_listModel, &ListModel::typeChanged,		_listControl->model(), &ListModel::sourceTypeChanged);
+		}
 	}
 
 	for (SourceItem* discardModel : _discardSources)
@@ -330,7 +363,7 @@ Terms SourceItem::_readAllTerms()
 {
 	Terms terms;
 
-	if (_model)	terms = _model->terms(_modelUse);
+	if (_listModel)	terms = _listModel->termsEx(_modelUse);
 	else if (_nativeModel)
 	{
 		int nbRows = _nativeModel->rowCount();
@@ -351,7 +384,7 @@ Terms SourceItem::getTerms()
 	for (SourceItem* discardModel : _discardSources)
 		sourceTerms.discardWhatDoesContainTheseComponents(discardModel->_readAllTerms());
 
-	if (!_conditionExpression.isEmpty() && _model)
+	if (!_conditionExpression.isEmpty() && _listModel)
 	{
 		Terms filteredTerms;
 		QJSEngine* jsEngine = qmlEngine(_listControl);
@@ -360,7 +393,7 @@ Terms SourceItem::getTerms()
 		{
 			for (const ConditionVariable& conditionVariable : _conditionVariables)
 			{
-				JASPControl* control = _model->getRowControl(term.asQString(), conditionVariable.controlName);
+				JASPControl* control = _listModel->getRowControl(term.asQString(), conditionVariable.controlName);
 				if (control)
 				{
 					QJSValue value;

@@ -76,7 +76,8 @@ void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector
 	
 	_factors.clear();
 	_titles.clear();
-	_terms.clear();
+	Terms newTerms;
+
 	int index = 0;
 	for (const tuple<string, string, vector<string> > &factorTuple : factors)
 	{
@@ -86,19 +87,20 @@ void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector
 		Factor* factor = new Factor(name, title, terms);
 		_factors.push_back(factor);
         _titles.add(title);
-		_terms.add(Terms(terms));
+		newTerms.add(Terms(terms));
 		index++;
 	}
 	
+	_setTerms(newTerms);
 	endResetModel();	
 }
 
 
-const Terms& ListModelFactorsForm::terms(const QString& what) const
+Terms ListModelFactorsForm::termsEx(const QString& what)
 {
 	if (what == "title")
 		return _titles;
-	return _terms;
+	return ListModel::termsEx(what);
 }
 
 vector<tuple<string, string, vector<string> > > ListModelFactorsForm::getFactors() const
@@ -129,7 +131,6 @@ void ListModelFactorsForm::addFactor()
 
 	endInsertRows();
 	
-	emit termsChanged();
 }
 
 void ListModelFactorsForm::removeFactor()
@@ -143,7 +144,7 @@ void ListModelFactorsForm::removeFactor()
 			beginRemoveRows(QModelIndex(), _factors.size() - 1, _factors.size() - 1);
 
 			const Terms& lastTerms = listView->model()->terms();
-			_terms.remove(lastTerms);
+			_removeTerms(lastTerms);
 			_titles.remove(_titles.size() - 1);
 			_factors.removeLast();
 
@@ -152,7 +153,6 @@ void ListModelFactorsForm::removeFactor()
 		else
 			Log::log() << "No list View found when removing factor" << std::endl;
 
-		emit termsChanged();
 	}
 	
 }
@@ -164,14 +164,16 @@ void ListModelFactorsForm::titleChangedSlot(int index, QString title)
 	
 	if (_factors[index]->title == title)
 		return;
-	
+
+	beginResetModel();
+
 	_factors[index]->title = title;
 	_titles.clear();
 	
 	for (Factor* factor : _factors)
         _titles.add(factor->title);
-	
-	emit termsChanged();
+
+	endResetModel();
 }
 
 void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
@@ -196,7 +198,7 @@ void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
 	model->setInfoProvider(listView->form());
 	model->initTerms(terms);
 	model->setCopyTermsWhenDropped(true);
-	connect(model, &ListModelDraggable::termsChanged, this, &ListModelFactorsForm::resetTerms);
+	connect(model, &ListModelDraggable::modelReset, this, &ListModelFactorsForm::resetTerms);
 	emit addListView(factor->listView);
 	
 	factor->listView->setUp();
@@ -204,16 +206,20 @@ void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
 
 void ListModelFactorsForm::resetTerms()
 {
-	_terms.clear();
+	beginResetModel();
+
+	Terms newTerms = terms();
 	for (Factor* factor : _factors)
 	{
 		if (factor->listView)
 		{
 			const Terms& terms = factor->listView->model()->terms();
-			_terms.add(terms);
+			newTerms.add(terms);
 			factor->initTerms = terms.asVector();
 		}
 	}
+
+	_setTerms(newTerms);
 	
-	emit termsChanged();
+	endResetModel();
 }
