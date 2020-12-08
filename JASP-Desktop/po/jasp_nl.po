@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-12-08 09:24+0000\n"
+"PO-Revision-Date: 2020-12-08 12:28+0000\n"
 "Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
 "nl/>\n"
@@ -15070,7 +15070,7 @@ msgstr ""
 
 msgctxt "Description|"
 msgid "T-Tests"
-msgstr "lolo"
+msgstr "T-Toetsen"
 
 msgctxt "Description|"
 msgid "Welch's T-Test"
