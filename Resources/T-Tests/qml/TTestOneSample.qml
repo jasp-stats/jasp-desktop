@@ -46,7 +46,7 @@ Form
 		Layout.rowSpan: 2
 		CheckBox
 		{
-			name: "meanDifference";			label: qsTr("Location parameter")
+            name: "meanDifference";			label: qsTr("Location estimate")
 			CheckBox
 			{
 				name: "meanDiffConfidenceIntervalCheckbox";	label: qsTr("Confidence interval")
