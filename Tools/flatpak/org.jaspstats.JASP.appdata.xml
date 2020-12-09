@@ -35,14 +35,26 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-		<release version="0.14.1.1" date="2020-11-17">
+		<release version="0.14.1.1" date="2020-12-09">
 					<description>
 						New release 0.14.1
 
 						Because the previous release was actually 0.14 but the number given was 0.14.1 this version is now 0.14.1.1.
-						It corresponds to 0.14.1 on win and mac though.
+						It corresponds to 0.14.1 on win and mac though. Apologies for any confusion.
 
-						Some bugfixes and upgraded to qt 5.15
+						Improvements:
+						- Several changes to the audit module 
+						-- Evaluate audit samples more efficiently #4411
+						-- More prior construction methods #700
+						-- UVB functionality #1149
+						- More computing speed for RoBMA #4408
+						- Previously the effect size estimates and confidence intervals in the one-sample t-test were defined in terms of differences with respect to the test point. Both the effect size estimates and confidence intervals are now defined independently of the test point #4407
+						- Updates to Data Library (new Datasaurus and World Happiness examples) #4393
+
+						Bug fixes 
+						- Fix to multigroup SEM #4394
+						- Fix to t-test #4390
+						- fixing marginal custom CI in predictive distributions #4397
 			</description>
 		</release>
 		<release version="0.14.1" date="2020-10-14">
