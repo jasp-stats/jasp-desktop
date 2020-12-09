@@ -59,18 +59,18 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
     ttest$addFootnote(gettext("Student's t-test."))
     testStat                <- "t"
     testStatName            <- gettext("t")
-    nameOfLocationParameter <- gettext("Mean Difference")
+    nameOfLocationParameter <- gettext("Sample Mean")
     nameOfEffectSize        <- gettext("Cohen's d")
   } else if(optionsList$wantsZtest && optionsList$onlyTest){
     ttest$addFootnote(gettext("Z test."))
     testStat                <- "Z"
     testStatName            <- gettext("Z")
-    nameOfLocationParameter <- gettext("Mean Difference")
+    nameOfLocationParameter <- gettext("Sample Mean")
     nameOfEffectSize        <- gettext("Cohen's d")
   } else {
     testStat                <- "Statistic"
     testStatName            <- gettext("Statistic")
-    nameOfLocationParameter <- gettext("Location Parameter")
+    nameOfLocationParameter <- gettext("Location Estimate")
     nameOfEffectSize        <- gettext("Effect Size")
   }
   
@@ -103,10 +103,10 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
       tzNote <- wNote <- NULL
       
       if (optionsList$wantsStudents || optionsList$wantsZtest)
-        tzNote <- gettextf("For the %s, location parameter is given by mean difference <em>d</em>.", testInNote)
+        tzNote <- gettextf("For the %s, location estimate is given by the mean <em>d</em>.", testInNote)
       
       if (optionsList$wantsWilcox)
-        wNote <- gettext("For the Wilcoxon test, location parameter is given by the Hodges-Lehmann estimate.")
+        wNote <- gettext("For the Wilcoxon test, location estimate is given by the Hodges-Lehmann estimate.")
       
       ttest$addFootnote(paste(tzNote, wNote))
     }
