@@ -103,7 +103,7 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
       tzNote <- wNote <- NULL
       
       if (optionsList$wantsStudents || optionsList$wantsZtest)
-        tzNote <- gettextf("For the %s, location estimate is given by the mean <em>d</em>.", testInNote)
+        tzNote <- gettextf("For the %s, location estimate is given by the sample mean <em>d</em>.", testInNote)
       
       if (optionsList$wantsWilcox)
         wNote <- gettext("For the Wilcoxon test, location estimate is given by the Hodges-Lehmann estimate.")
