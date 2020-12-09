@@ -36,9 +36,28 @@ TextAreaBase::TextAreaBase(QQuickItem* parent)
 	_controlType = ControlType::TextArea;
 }
 
-
 void TextAreaBase::setUpModel()
 {
+	if (_textType == TextType::TextTypeSource || _textType == TextType::TextTypeJAGSmodel || _textType == TextType::TextTypeLavaan)
+	{
+		_model = new ListModelTermsAvailable(this);
+
+		if (_textType == TextType::TextTypeLavaan)
+			_model->setNeedsSource(true);
+		else
+		{
+			_model->setNeedsSource(false);
+			_model->setTermsAreVariables(false);
+		}
+
+		JASPListControl::setUpModel();
+	}
+}
+
+void TextAreaBase::setUp()
+{
+	JASPListControl::setUp();
+
 	switch (_textType)
 	{
 	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);	break;
@@ -56,39 +75,15 @@ void TextAreaBase::setUpModel()
 			_separators.push_back(separator.toString());
 	}
 
-	if (_textType == TextType::TextTypeSource || _textType == TextType::TextTypeJAGSmodel || _textType == TextType::TextTypeLavaan)
-	{
-		_model = new ListModelTermsAvailable(this);
-
-		if (_textType == TextType::TextTypeLavaan)
-		{
-			connect(form(), &AnalysisForm::dataSetChanged,	this, &TextAreaBase::dataSetChangedHandler,	Qt::QueuedConnection	);
-			_modelNeedsAllVariables = true;
-		}
-		else
-			_model->setTermsAreVariables(false);
-
-		JASPListControl::setUpModel();
-	}
-
 	QQuickItem::connect(this, SIGNAL(applyRequest()), this, SLOT(checkSyntaxHandler()));
-
 }
-
-
-void TextAreaBase::dataSetChangedHandler()
-{
-	form()->refreshAnalysis();
-}
-
-
 
 void TextAreaBase::rScriptDoneHandler(const QString & result)
 {
 	//This is for the lavaan model, but can be used by other type
 	if (result.length() == 0)
 	{
-		setProperty("hasScriptError", false);
+		setHasScriptError(false);
 		setProperty("infoText", tr("Model applied"));
 		OptionString* option = dynamic_cast<OptionString*>(boundTo());
 		if (option != nullptr)
@@ -96,7 +91,7 @@ void TextAreaBase::rScriptDoneHandler(const QString & result)
 	}
 	else
 	{
-		setProperty("hasScriptError", true);
+		setHasScriptError(true);
 		setProperty("infoText", result);
 	}
 }
@@ -109,4 +104,11 @@ QString TextAreaBase::text()
 void TextAreaBase::setText(const QString& text)
 {
 	setProperty("text", text);
+}
+
+void TextAreaBase::termsChangedHandler()
+{
+	if (_textType == TextType::TextTypeLavaan && form())
+		form()->refreshAnalysis();
+
 }

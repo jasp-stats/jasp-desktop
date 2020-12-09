@@ -20,19 +20,16 @@
 #include "listmodeltermsassigned.h"
 #include "../analysis/analysisform.h"
 #include "jasplistcontrol.h"
+#include "sourceitem.h"
 
 ListModelInteractionAvailable::ListModelInteractionAvailable(JASPListControl* listView)
 	: ListModelAvailableInterface(listView), InteractionModel ()
 {
-	_areTermsInteractions = true;
+	setTermsAreInteractions(true);
 }
 
-void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssigned)
-{
-	const QList<JASPListControl::SourceType*>& sourceItems = listView()->sourceModels();
-	if (sourceItems.size() == 0)
-		return;
-	
+void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
+{	
 	beginResetModel();
 	Terms termsAvailable;
 	clearInteractions();
@@ -40,13 +37,12 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssign
 	Terms randomFactors;
 	Terms covariates;
 
-	for (const std::pair<JASPListControl::SourceType *, Terms>& source : listView()->getTermsPerSource())
+	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		ListModel* sourceModel = source.first->model;
-		const Terms& terms = source.second;
+		ListModel* sourceModel = sourceItem->listModel();
 		for (const Term& term : terms)
 		{
-			QString itemType = sourceModel->getItemType(term);
+			QString itemType = sourceModel ? sourceModel->getItemType(term) : "";
 			if (itemType.isEmpty() || itemType == "variables")
 				itemType = sourceModel->name();
 
@@ -57,7 +53,7 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssign
 			else if (itemType == "covariates")
 				covariates.add(term);
 		}
-	}
+	});
 		
 	if (fixedFactors.size() > 0)
 		addFixedFactors(fixedFactors);
@@ -69,18 +65,25 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssign
 		addCovariates(covariates);
 	
 	const Terms& interactions = interactionTerms();
-	setChangedTerms(interactions);
+	Terms removedTerms, addedTerms;
+
+	for (const Term& term : _allTerms)
+		if (!interactions.contains(term))
+			removedTerms.add(term);
+
+	for (const Term& term : interactions)
+		if (!_allTerms.contains(term))
+			addedTerms.add(term);
 	
 	_allTerms.set(interactions);
-	_terms.set(interactions);
-	_terms.setSortParent(_allTerms);
+	_setTerms(interactions, _allTerms);
 	
 	removeTermsInAssignedList();
 	
 	endResetModel();
 
 	if (updateAssigned)
-		emit allAvailableTermsChanged(&_tempAddedTerms, &_tempRemovedTerms);
+		emit availableTermsReset(addedTerms, removedTerms);
 
 }
 

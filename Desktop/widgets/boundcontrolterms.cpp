@@ -258,7 +258,7 @@ void BoundControlTerms::updateOption()
 				{
 					it.next();
 					BoundControl* boundItem = dynamic_cast<BoundControl*>(it.value());
-					if (boundItem)
+					if (it.value()->isBound() && boundItem)
 					{
 						const QString& name = it.key();
 						Option* option = boundItem->boundTo();

@@ -292,8 +292,6 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 	if(!_isDuplicate && isNewAnalysis)
 		_status = Empty;
 	
-	connect(Analyses::analyses(),	&Analyses::dataSetChanged,			_analysisForm,	&AnalysisForm::dataSetChangedHandler		);
-	connect(Analyses::analyses(),	&Analyses::dataSetColumnsChanged,	_analysisForm,	&AnalysisForm::dataSetColumnsChangedHandler	);
 	connect(_analysisForm,			&AnalysisForm::helpMDChanged,		this,			&Analysis::helpMDChanged					);
 }
 
@@ -478,15 +476,6 @@ std::string Analysis::qmlFormPath() const
 				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
 }
 
-void Analysis::replaceVariableName(const std::string & oldName, const std::string & newName)
-{
-	if (_options)
-		_options->replaceVariableName(oldName, newName);
-
-	if (_analysisForm)
-		_analysisForm->replaceVariableNameInListModels(oldName, newName);
-}
-
 void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)
 {
 	if (_analysisForm)
@@ -567,12 +556,6 @@ void Analysis::emitDuplicationSignals()
 {
 	emit resultsChangedSignal(this);
 	emit titleChanged();
-}
-
-void Analysis::refreshAvailableVariablesModels()
-{
-	if(form() != nullptr)
-		form()->refreshAvailableVariablesModels();
 }
 
 QString	Analysis::fullHelpPath(QString helpFileName)

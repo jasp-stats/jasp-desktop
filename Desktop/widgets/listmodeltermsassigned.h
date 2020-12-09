@@ -31,14 +31,15 @@ public:
 	
 	void			initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())			override;
 	Terms			canAddTerms(const Terms& terms)																	const	override;
-	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault)	override;
-	const Terms&	terms(const QString& what = QString())															const	override;
+	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault)	override;
+	Terms			termsEx(const QString& what)																			override;
 	void			removeTerm(int index);
 
 	virtual void	changeTerm(int index, const QString& name);
 
 public slots:
-	virtual void availableTermsChanged(const Terms* termsToAdd, const Terms* termsToRemove)							override;
+	void availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;
+
 	
 private:
 	int		_maxRows = -1;

@@ -56,7 +56,8 @@ void TableViewBase::setUpModel()
 	if (modelType == "JAGSDataInputModel")		_tableModel	= new ListModelJAGSDataInput(		this, tableType	);
 	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType	);
 	if (modelType == "CustomContrasts")			_tableModel = new ListModelCustomContrasts(		this, tableType	);
-	if (!_tableModel)                            _tableModel = new ListModelTableViewSimple(     this, tableType );
+	if (!_tableModel)							_tableModel = new ListModelTableViewSimple(     this, tableType );
+
 	JASPListControl::setUpModel();
 
 	_tableModel->setItemType(itemType);
@@ -155,4 +156,9 @@ void TableViewBase::refreshMe()
 {
 	if(_tableModel)
 		_tableModel->refreshModel();
+}
+
+void TableViewBase::termsChangedHandler()
+{
+	_tableModel->modelChangedSlot();
 }

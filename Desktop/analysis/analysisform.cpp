@@ -50,6 +50,9 @@
 
 using namespace std;
 
+QAbstractItemModel* AnalysisForm::_columnsModel		=  nullptr;
+int					AnalysisForm::_columnsModelRole = Qt::DisplayRole;
+
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
 	setObjectName("AnalysisForm");
@@ -217,35 +220,10 @@ void AnalysisForm::_setUp()
 {
 	QList<JASPControl*> controls = _controls.values();
 
+	// set the order of the BoundItems according to their dependencies (for binding purpose)
 	for (JASPControl* control : controls)
-	{
 		control->setUp();
 
-		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
-		if (listControl)
-		{
-			TextAreaBase* textArea	= qobject_cast<TextAreaBase*>(listControl);
-			if (textArea)
-			{
-				// TODO : Change this special handling for TextArea
-				ListModelTermsAvailable	* availableModel = qobject_cast<ListModelTermsAvailable*>(textArea->model());
-				if (availableModel && textArea->modelNeedsAllVariables())
-					_allAvailableVariablesModels.push_back(availableModel);
-			}
-			else
-			{
-				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(listControl->model());
-
-				if (availableModel)
-				{
-					if (!listControl->hasSource())	_allAvailableVariablesModels.push_back(availableModel);
-					else							_allAvailableVariablesModelsWithSource.push_back(availableModel);
-				}
-			}
-		}
-	}
-
-	// set the order of the BoundItems according to their dependencies (for binding purpose)
 	for (JASPControl* control : controls)
 	{
 		std::vector<JASPControl*> depends(control->depends().begin(), control->depends().end());
@@ -341,17 +319,6 @@ QString AnalysisForm::msgsListToString(const QStringList & list) const
 	return text;
 }
 
-void AnalysisForm::replaceVariableNameInListModels(const std::string & oldName, const std::string & newName)
-{
-	for (ListModelTermsAvailable * model : _allAvailableVariablesModels)
-	{
-		model->replaceVariableName(oldName, newName);
-		const QList<ListModelAssignedInterface*>& assignedModels = model->assignedModel();
-		for (ListModelAssignedInterface* modelAssign : assignedModels)
-				modelAssign->replaceVariableName(oldName, newName);
-	}
-}
-
 void AnalysisForm::setInfo(QString info)
 {
 	if (_info == info)
@@ -359,33 +326,6 @@ void AnalysisForm::setInfo(QString info)
 
 	_info = info;
 	emit infoChanged();
-}
-
-void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
-{
-	if (_allAvailableVariablesModels.size() == 0)
-		return;
-
-	std::vector<std::string> columnNames = DataSetPackage::pkg()->getColumnNames();
-
-
-	for (ListModelTermsAvailable* model : _allAvailableVariablesModels)
-	{
-		model->initTerms(columnNames);
-
-		if (refreshAssigned)
-		{
-			emit model->allAvailableTermsChanged(nullptr, nullptr);
-			const QList<ListModelAssignedInterface*>& assignedModels = model->assignedModel();
-			for (ListModelAssignedInterface* modelAssign : assignedModels)
-				modelAssign->refresh();
-		}
-	}
-
-	if (refreshAssigned)
-		for (ListModelTermsAvailable * model : _allAvailableVariablesModelsWithSource)
-			model->resetTermsFromSourceModels(true);
-
 }
 
 QString AnalysisForm::_getControlLabel(QString controlName)
@@ -436,14 +376,12 @@ void AnalysisForm::bindTo()
 
 	_options->blockSignals(true);
 	
-	_setAllAvailableVariablesModel();	
-
 	std::set<std::string> controlsJsonWrong;
 	
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
 		BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
-		if (boundControl && control->isBound())
+		if (control->isBound() && boundControl)
 		{
 			std::string name = control->name().toStdString();
 			Option* option   = _options->get(name);
@@ -498,7 +436,7 @@ void AnalysisForm::bindTo()
 			if (availableModel)
 			{
 				if (optionsFromJASPFile != Json::nullValue || _analysis->isDuplicate())
-					availableModel->resetTermsFromSourceModels(false);
+					availableModel->resetTermsFromSources(false);
 				else
 					availableModelsToBeReset.push_back(availableModel);
 			}
@@ -508,7 +446,7 @@ void AnalysisForm::bindTo()
 	}
 
 	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)
-		availableModel->resetTermsFromSourceModels(true);
+		availableModel->resetTermsFromSources(true);
 	
 	_addLoadingError(tql(controlsJsonWrong));
 
@@ -540,7 +478,7 @@ void AnalysisForm::unbind()
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
 		BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
-		if (boundControl)
+		if (control->isBound() && boundControl)
 			boundControl->unbind();
 	}
 
@@ -731,26 +669,6 @@ void AnalysisForm::knownIssuesUpdated()
 	}
 }
 
-void AnalysisForm::dataSetChangedHandler()
-{
-	if (!_removed && DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
-	{
-		_setAllAvailableVariablesModel(true);
-		emit dataSetChanged();
-	}
-}
-
-void AnalysisForm::dataSetColumnsChangedHandler()
-{
-	if (!_removed && DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
-	{
-		for (ListModel* model : _modelMap.values())
-			model->refresh();
-
-		emit dataSetChanged();
-	}
-}
-
 void AnalysisForm::setControlIsDependency(QString controlName, bool isDependency)
 {
 	if(_controls.count(controlName) > 0)
@@ -862,6 +780,25 @@ QString AnalysisForm::metaHelpMD() const
 	};
 
 	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->meta(), 2);
+}
+
+void AnalysisForm::setColumnsModel(QAbstractItemModel *model)
+{
+	_columnsModel = model;
+
+	if (model)
+	{
+		QHashIterator<int, QByteArray> i(model->roleNames());
+		while (i.hasNext())
+		{
+			i.next();
+			if (i.value() == "columnName")
+			{
+				_columnsModelRole = i.key();
+				break;
+			}
+		}
+	}
 }
 
 QString AnalysisForm::helpMD() const

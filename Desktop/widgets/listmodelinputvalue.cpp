@@ -33,7 +33,7 @@ ListModelInputValue::ListModelInputValue(JASPListControl* listView, int minRows)
 int ListModelInputValue::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
-	return int(_terms.size()) + (_addVirtual ? 1 : 0);
+	return int(terms().size()) + (_addVirtual ? 1 : 0);
 }
 
 QVariant ListModelInputValue::data(const QModelIndex &index, int role) const
@@ -51,15 +51,15 @@ QVariant ListModelInputValue::data(const QModelIndex &index, int role) const
 	if (role == Qt::DisplayRole || role == ListModelInputValue::NameRole)
 	{
 		QString value;
-		if (rowU < _terms.size())
-			value = _terms.at(rowU).asQString();
+		if (rowU < terms().size())
+			value = terms().at(rowU).asQString();
 		else if (_addVirtual)
 			value = _placeholder;
 		return value;
 	}
 	else if (role == ListModelInputValue::TypeRole)
 	{
-		bool isVirtual = (_addVirtual && rowU == _terms.size());
+		bool isVirtual = (_addVirtual && rowU == terms().size());
 		QStringList listValues;
 		if (isVirtual)
 			listValues.push_back(tq("virtual"));
@@ -73,18 +73,6 @@ QVariant ListModelInputValue::data(const QModelIndex &index, int role) const
 		return ListModel::data(index, role);
 }
 
-void ListModelInputValue::_removeTerm(int row)
-{
-	QString value;
-	size_t rowU = size_t(row);
-
-	if (rowU >= _terms.size())
-		return;
-
-	beginRemoveRows(QModelIndex(), row, row);
-	_terms.remove(rowU);
-	endRemoveRows();
-}
 
 QString ListModelInputValue::_changeLastNumber(const QString &val)
 {
@@ -115,7 +103,7 @@ QString ListModelInputValue::_changeLastNumber(const QString &val)
 QString ListModelInputValue::_makeUnique(const QString &val, int row)
 {
 	QString result = val;
-	QList<QString> values = _terms.asQList();
+	QList<QString> values = terms().asQList();
 	bool isUnique = true;
 	do
 	{
@@ -152,13 +140,13 @@ void ListModelInputValue::itemChanged(int row, QVariant value)
 	QString val = value.toString();
 	size_t rowU = size_t(row);
 
-	bool isVirtual = (_addVirtual && rowU == _terms.size());
+	bool isVirtual = (_addVirtual && rowU == terms().size());
 	if (isVirtual)
 	{
 		if (val.isEmpty())
 			return;
 		beginResetModel();
-		_terms.add(_makeUnique(val));
+		_addTerm(_makeUnique(val));
 		endResetModel();
 	}
 	else
@@ -167,23 +155,27 @@ void ListModelInputValue::itemChanged(int row, QVariant value)
 			val = "1";
 
 		if (val.isEmpty())
+		{
+			beginRemoveRows(QModelIndex(), row, row);
 			_removeTerm(row);
+			endRemoveRows();
+		}
 		else
 		{
 			beginResetModel();
 			val = _makeUnique(val, row);
-			QList<QString> values = _terms.asQList();
+			QList<QString> values = terms().asQList();
 			values[row] = val;
-			_terms.set(values);
+			_setTerms(values);
 			endResetModel();
 		}
 	}
 
-	emit termsChanged();
 }
 
 void ListModelInputValue::itemRemoved(int row)
 {
+	beginRemoveRows(QModelIndex(), row, row);
 	_removeTerm(row);
-	emit termsChanged();
+	endRemoveRows();
 }

@@ -18,9 +18,9 @@ ComboBoxBase
 	property alias	label:					controlLabel.text
 	property alias	currentLabel:			comboBox.currentText
 	property alias	value:					comboBox.currentText
-	property alias	currentIndex:			control.currentIndex
+	property alias	indexDefaultValue:		comboBox.currentIndex
 	property alias	fieldWidth:				control.modelWidth
-	property bool	showVariableTypeIcon:	false
+	property bool	showVariableTypeIcon:	!source && !values
 	property var	enabledOptions:			[]
 	property bool	setLabelAbove:			false
 	property int	controlMinWidth:		0
@@ -32,7 +32,7 @@ ComboBoxBase
 	property bool	showEmptyValueAsNormal:	false
 	property bool	addLineAfterEmptyValue:	false
 
-    signal activated(int index);
+	signal activated(int index);
 
 	onControlMinWidthChanged: _resetWidth(textMetrics.width)
 
@@ -69,7 +69,7 @@ ComboBoxBase
 		comboBox.width = comboBox.implicitWidth; // the width is not automatically updated by the implicitWidth...
     }
 
-	Component.onCompleted: control.activated.connect(activated);
+	Component.onCompleted:	control.activated.connect(activated);
 
 	Rectangle
 	{
@@ -96,7 +96,6 @@ ComboBoxBase
 						anchors.top:	rectangleLabel.visible && comboBox.setLabelAbove ? rectangleLabel.bottom: comboBox.top
 
 						focus:			true
-						currentIndex:	-1
 						padding:		2 * preferencesModel.uiScale //jaspTheme.jaspControlPadding
 
 						width:			modelWidth + extraWidth
@@ -104,7 +103,7 @@ ComboBoxBase
 						font:			jaspTheme.font
 		property int	modelWidth:		30 * preferencesModel.uiScale
 		property int	extraWidth:		5 * padding + dropdownIcon.width
-		property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex === 0
+		property bool	isEmptyValue:	comboBox.addEmptyValue && comboBox.currentIndex === 0
 		property bool	showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
 
 		TextMetrics
@@ -240,7 +239,7 @@ ComboBoxBase
 				id:								itemRectangle
 				anchors.fill:					parent
 				anchors.rightMargin:			scrollBar.visible ? scrollBar.width + 2 : 0
-				color:							control.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : jaspTheme.controlBackgroundColor)
+				color:							comboBox.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : jaspTheme.controlBackgroundColor)
 
 				property bool isEmptyValue:		comboBox.addEmptyValue && index === 0
 				property bool showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue
@@ -264,7 +263,7 @@ ComboBoxBase
 					x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
 					text:						itemRectangle.isEmptyValue ? comboBox.placeholderText : (model && model.name ? model.name : "")
 					font:						jaspTheme.font
-					color:						itemRectangle.showEmptyValueStyle || !enabled ? jaspTheme.grayDarker : (control.currentIndex === index ? jaspTheme.white : jaspTheme.black)
+					color:						itemRectangle.showEmptyValueStyle || !enabled ? jaspTheme.grayDarker : (comboBox.currentIndex === index ? jaspTheme.white : jaspTheme.black)
 					anchors.verticalCenter:		parent.verticalCenter
 					anchors.horizontalCenter:	itemRectangle.showEmptyValueStyle ? parent.horizontalCenter : undefined
 				}

@@ -31,6 +31,17 @@ public:
 	int						columnCount(const QModelIndex &parent = QModelIndex())								const	override;
 	QVariant				headerData(	int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
 
+signals:
+	void namesChanged(QMap<QString, QString> changedNames);
+	void columnTypeChanged(QString colName);
+
+public slots:
+	void datasetChanged(	QStringList				changedColumns,
+							QStringList				missingColumns,
+							QMap<QString, QString>	changeNameColumns,
+							bool					rowCountChanged,
+							bool					hasNewColumns);
+
 private slots:
 	void onHeaderDataChanged(Qt::Orientation orientation, int first, int last);
 	void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);

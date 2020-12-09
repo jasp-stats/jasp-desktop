@@ -1,0 +1,103 @@
+//
+// Copyright (C) 2013-2018 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
+#ifndef SOURCEITEM_H
+#define SOURCEITEM_H
+
+#include <QObject>
+#include <QVector>
+#include <QVariant>
+#include <QMap>
+#include <QSet>
+#include <QAbstractItemModel>
+
+#include "jasplistcontrol.h"
+
+class SourceItem : public QObject
+{
+	Q_OBJECT
+public:
+	struct ConditionVariable
+	{
+		QString name,
+				controlName,
+				propertyName;
+		bool	addQuotes = false;
+
+		ConditionVariable(const QString& _name, const QString& _controlName, const QString& _propertyName, bool _addQuotes = false)
+			: name(_name), controlName(_controlName), propertyName(_propertyName), addQuotes(_addQuotes) {}
+		ConditionVariable(const ConditionVariable& source)
+			: name(source.name), controlName(source.controlName), propertyName(source.propertyName), addQuotes(source.addQuotes) {}
+		ConditionVariable() {}
+	};
+
+	SourceItem(
+			  JASPListControl* _listControl
+			, QMap<QString, QVariant>& map
+			, const JASPListControl::LabelValueMap& _values
+			, QAbstractItemModel* _nativeModel = nullptr
+			, const QVector<SourceItem*>& _discardSources = QVector<SourceItem*>()
+			, const QVector<QMap<QString, QVariant> >& _conditionVariables = QVector<QMap<QString, QVariant> >()
+			);
+
+	SourceItem(JASPListControl* _listControl, const JASPListControl::LabelValueMap& _values);
+
+	SourceItem(JASPListControl* _listControl = nullptr);
+
+	virtual ~SourceItem();
+
+	ListModel*				listModel()							{ return _listModel;				}
+	const QString&			controlName()				const	{ return _controlName;				}
+	const QString&			modelUse()					const	{ return _modelUse;					}
+	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;	}
+	const QSet<QString>&	usedControls()				const	{ return _usedControls;				}
+	Terms					getTerms();
+
+	static QVector<SourceItem*>				readAllSources(JASPListControl* _listControl);
+
+private:
+	static QString							_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse);
+	static QMap<QString, QVariant>			_readSource(JASPListControl* _listControl, const QVariant& source, JASPListControl::LabelValueMap& sourceValues, QAbstractItemModel*& _nativeModel);
+	static JASPListControl::LabelValueMap	_readValues(JASPListControl* _listControl, const QVariant& _values);
+	static QList<QVariant>					_getListVariant(QVariant var);
+
+	void									_setUp();
+	Terms									_readAllTerms();
+
+private slots:
+	void									_connectModels();
+
+private:
+	JASPListControl		*			_listControl			= nullptr;
+	QString							_name,
+									_controlName,
+									_modelUse;
+	QVector<SourceItem*>			_discardSources;
+	JASPListControl::LabelValueMap	_values;
+	bool							_isValuesSource			= false;
+	ListModel			*			_listModel				= nullptr;
+	QAbstractItemModel	*			_nativeModel			= nullptr;
+	int								_nativeModelRole		= Qt::DisplayRole;
+	bool							_isDataSetColumns		= false;
+	bool							_combineWithOtherModels	= false;
+	QString							_conditionExpression;
+	QVector<ConditionVariable>		_conditionVariables;
+	QSet<QString>					_usedControls;
+};
+
+#endif // SOURCEITEM_H

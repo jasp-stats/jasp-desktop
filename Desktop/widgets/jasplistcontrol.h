@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
@@ -25,11 +25,13 @@
 #include <QVector>
 #include <QMap>
 #include <QSet>
+#include <QAbstractItemModel>
 
 class ListModel;
 class Options;
 class RowControls;
 class Terms;
+class SourceItem;
 
 class JASPListControl : public JASPControl
 {
@@ -42,53 +44,13 @@ class JASPListControl : public JASPControl
 	Q_PROPERTY( QString			optionKey			READ optionKey			WRITE setOptionKey											)
 	Q_PROPERTY( bool			addEmptyValue		READ addEmptyValue		WRITE setAddEmptyValue		NOTIFY addEmptyValueChanged		)
 	Q_PROPERTY( QString			placeholderText		READ placeholderText	WRITE setPlaceHolderText	NOTIFY placeHolderTextChanged	)
+	Q_PROPERTY( QString			labelRole			READ labelRole			WRITE setLabelRole			NOTIFY labelRoleChanged			)
+	Q_PROPERTY( QString			valueRole			READ valueRole			WRITE setValueRole			NOTIFY valueRoleChanged			)
+
 
 public:
 	typedef QVector<std::pair<QString, QString> > LabelValueMap;
-	struct SourceType
-	{
-		struct ConditionVariable
-		{
-			QString name,
-					controlName,
-					propertyName;
-			bool	addQuotes = false;
 
-			ConditionVariable(const QString& _name, const QString& _controlName, const QString& _propertyName, bool _addQuotes = false)
-				: name(_name), controlName(_controlName), propertyName(_propertyName), addQuotes(_addQuotes) {}
-			ConditionVariable(const ConditionVariable& source)
-				: name(source.name), controlName(source.controlName), propertyName(source.propertyName), addQuotes(source.addQuotes) {}
-			ConditionVariable() {}
-		};
-
-		QString						name,
-									controlName,
-									modelUse;
-		QVector<SourceType>			discardModels;
-		LabelValueMap				values;
-		bool						isValuesSource = false;
-		ListModel	*				model = nullptr;
-		QString						conditionExpression;
-		QVector<ConditionVariable>	conditionVariables;
-		bool						combineWithOtherModels = false;
-		QSet<QString>				usedControls;
-
-		SourceType(
-				  const QString& _name
-				, const QString& _controlName
-				, const QString& _modelUse
-				, const LabelValueMap& _values
-				, bool isValuesSource
-				, const QVector<std::tuple<QString, QString, QString, LabelValueMap, bool> >& _discardModels = QVector<std::tuple<QString, QString, QString, LabelValueMap, bool> >()
-				, const QString& _conditionExpression = ""
-				, const QVector<QMap<QString, QVariant> >& _conditionVariables = QVector<QMap<QString, QVariant> >()
-				, bool _combineWithOtherModels = false);
-
-		SourceType(const LabelValueMap& _values) : values(_values), isValuesSource(true) {}
-
-		QVector<SourceType> getDiscardModels(bool onlyNotNullModel = true)	const;
-	};
-	
 	JASPListControl(QQuickItem* parent);
 	
 	virtual ListModel		*	model()			const	= 0;
@@ -98,9 +60,10 @@ public:
 	
 			int					variableTypesAllowed()		const	{ return _variableTypesAllowed; }
 
-	const QList<SourceType*>&	sourceModels()				const	{ return _sourceModels; }
-	QList<std::pair<SourceType*, Terms> >	getTermsPerSource();
-			bool				hasSource()					const	{ return !_source.isNull() || !_values.isNull(); }
+	const QVector<SourceItem*>& sourceItems()				const	{ return _sourceItems; }
+	void						applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
+
+			bool				hasSource()					const	{ return _sourceItems.size() > 0; }
 
 			JASPControl		*	getRowControl(const QString& key, const QString& name)		const;
 			bool				addRowControl(const QString& key, JASPControl* control);
@@ -112,11 +75,14 @@ public:
 
 	Q_INVOKABLE QString			getSourceType(QString name);
 
-			const QVariant&		source()					const	{ return _source;	}
-			const QVariant&		values()					const	{ return _values;	}
+			const QVariant&		source()					const	{ return _source;				}
+			const QVariant&		values()					const	{ return _values;				}
 			int					count();
-			bool				addEmptyValue()				const	{ return _addEmptyValue;				}
-			const QString&		placeholderText()			const	{ return _placeHolderText;				}
+			bool				addEmptyValue()				const	{ return _addEmptyValue;		}
+			const QString&		placeholderText()			const	{ return _placeHolderText;		}
+			const QString&		labelRole()					const	{ return _labelRole;			}
+			const QString&		valueRole()					const	{ return _valueRole;			}
+
 
 signals:
 			void				modelChanged();
@@ -124,6 +90,8 @@ signals:
 			void				countChanged();
 			void				addEmptyValueChanged();
 			void				placeHolderTextChanged();
+			void				labelRoleChanged();
+			void				valueRoleChanged();
 
 
 protected slots:
@@ -134,31 +102,31 @@ protected slots:
 			GENERIC_SET_FUNCTION(Values,			_values,			sourceChanged,				QVariant	)
 			GENERIC_SET_FUNCTION(AddEmptyValue,		_addEmptyValue,		addEmptyValueChanged,		bool		)
 			GENERIC_SET_FUNCTION(PlaceHolderText,	_placeHolderText,	placeHolderTextChanged,		QString		)
+			GENERIC_SET_FUNCTION(LabelRole,			_labelRole,			labelRoleChanged,			QString		)
+			GENERIC_SET_FUNCTION(ValueRole,			_valueRole,			valueRoleChanged,			QString		)
 
 			void				setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
 
 protected:
 	virtual void			setupSources();
 
-	QList<SourceType*>		_sourceModels;
-	bool					_needsSourceModels		= false;
+	QVector<SourceItem*>	_sourceItems;
 	int						_variableTypesAllowed;
 	QString					_optionKey				= "value";
 	RowControls*			_defaultRowControls		= nullptr;
 	QVariant				_source;
 	QVariant				_values;
 	bool					_addEmptyValue			= false;
-	QString					_placeHolderText		= tr("<no choice>");
+	QString					_placeHolderText		= tr("<no choice>"),
+							_labelRole				= "label",
+							_valueRole				= "value";
 
 	static const QString	_defaultKey;
 	
 private:
-	int						_getAllowedColumnsTypes();
-	void					_setAllowedVariables();
-	QString					_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse);
-	QMap<QString, QVariant>	_readSource(const QVariant& source, QString& sourceName, QString& sourceControl, QString& sourceUse, LabelValueMap& sourceValues);
-	LabelValueMap			_readValues(const QVariant& values);
-	QList<QVariant>			_getListVariant(QVariant var);
+	Terms									_getCombinedTerms(SourceItem* sourceToCombine);
+	int										_getAllowedColumnsTypes();
+	void									_setAllowedVariables();
 };
 
 #endif // JASPLISTCONTROL_H

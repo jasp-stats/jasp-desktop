@@ -37,7 +37,8 @@ class TextAreaBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( TextType	textType	READ textType		WRITE setTextType		NOTIFY textTypeChanged)
+	Q_PROPERTY( TextType	textType			READ textType				WRITE setTextType			NOTIFY textTypeChanged				)
+	Q_PROPERTY( bool		hasScriptError		READ hasScriptError			WRITE setHasScriptError		NOTIFY hasScriptErrorChanged		)
 
 public:
 	TextAreaBase(QQuickItem* parent = nullptr);
@@ -49,34 +50,38 @@ public:
 	Option*						boundTo()									override	{ return _boundControl->boundTo();				}
 	ListModel*					model()								const	override	{ return _model; }
 	ListModelTermsAvailable*	availableModel()					const				{ return _model; }
+	void						setUp()										override;
 	void						setUpModel()								override;
-	bool						modelNeedsAllVariables()			const				{ return _modelNeedsAllVariables; }
 
 	void						rScriptDoneHandler(const QString &result)	override;
 
-	TextType					textType()							const	{ return _textType; }
-	const QList<QString>&		separators()						const	{ return _separators; }
+	TextType					textType()							const	{ return _textType;				}
+	bool						hasScriptError()					const	{ return _hasScriptError;		}
+	const QList<QString>&		separators()						const	{ return _separators;			}
 	QString						text();
 	void						setText(const QString& text);
 
 public slots:
-	GENERIC_SET_FUNCTION(TextType,	_textType,	textTypeChanged,	TextType)
+	GENERIC_SET_FUNCTION(TextType,			_textType,			textTypeChanged,		TextType	)
+	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
 
-	void dataSetChangedHandler();
-	void checkSyntaxHandler()						{ _boundControl->checkSyntax(); }
+	void	checkSyntaxHandler()						{ _boundControl->checkSyntax(); }
 
 signals:
-	void textTypeChanged();
+	void	textTypeChanged();
+	void	hasScriptErrorChanged();
 
+protected slots:
+	void	termsChangedHandler()		override;
     
 protected:
 
 	BoundControlTextArea*		_boundControl			= nullptr;
 	TextType					_textType				= TextType::TextTypeDefault;
+	bool						_hasScriptError			= false;
 	QList<QString>				_separators;
 	
 	ListModelTermsAvailable*	_model					= nullptr;
-	bool						_modelNeedsAllVariables = false;
 	
 };
 

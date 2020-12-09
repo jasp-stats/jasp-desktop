@@ -109,9 +109,10 @@ void ListModelRepeatedMeasuresFactors::initFactors(const vector<pair<string, vec
 	Factor extraFactor(tr("RM Factor %1").arg(factorIndex), true, false);
 	_factors.append(extraFactor);
 
+	_setAllLevelsCombinations();
+
 	endResetModel();
 	
-	_setAllLevelsCombinations();	
 }
 
 vector<pair<string, vector<string> > > ListModelRepeatedMeasuresFactors::getFactors() const
@@ -186,7 +187,7 @@ void ListModelRepeatedMeasuresFactors::_updateVirtualFactorIndex()
 void ListModelRepeatedMeasuresFactors::_setAllLevelsCombinations()
 {
 	vector<vector<string> > allLevelsCombinations;
-	_terms.set(_getAllFactorsStringList());
+	_setTerms(_getAllFactorsStringList());
 	
 	vector<vector<string> > allLevels;	
 	vector<string> currentLevels;
@@ -299,13 +300,11 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 			}
 		}
 
+		_setAllLevelsCombinations();
 		QModelIndex modelIndex = index(row, 0);
 		emit dataChanged(modelIndex, modelIndex);
 	}
 	
-	_setAllLevelsCombinations();
-	
-	emit termsChanged();
 }
 
 QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
@@ -323,6 +322,7 @@ QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
 		{
 			beginRemoveRows(QModelIndex(), row, row);
 			_factors.removeAt(row);
+			_setAllLevelsCombinations();
 			endRemoveRows();
 			_updateVirtualLevelIndex(factor.headFactor);
 		}
@@ -346,6 +346,7 @@ QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
 			beginRemoveRows(QModelIndex(), row, row + countRemoved - 1);
 			for (int i = 0; i < countRemoved; i++)
 				_factors.removeAt(row);
+			_setAllLevelsCombinations();
 			endRemoveRows();
 
 			_updateVirtualFactorIndex();
@@ -360,10 +361,6 @@ QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
 void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
 {
 	_removeFactor(row);
-	
-	_setAllLevelsCombinations();
-	
-	emit termsChanged();
 }
 
 QStringList ListModelRepeatedMeasuresFactors::_getOtherLevelsStringList(const Factor& item)

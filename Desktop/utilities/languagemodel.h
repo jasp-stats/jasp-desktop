@@ -102,7 +102,7 @@ private:
 
 	QString		_qmlocation;
 
-	int			_currentIndex;
+	int			_currentIndex = 0;
 	bool		_shouldEmitLanguageChanged = false;
 };
 

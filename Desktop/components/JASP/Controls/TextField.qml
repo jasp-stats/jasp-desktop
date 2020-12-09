@@ -50,7 +50,6 @@ TextInputBase
 	property alias	afterLabel:			afterLabel.text
 	property string	inputType:			"string"
 	property bool	useLastValidValue:	true
-	property bool	hasScriptError:		false
 	property bool	editable:			true
 
 	property double controlXOffset:		0

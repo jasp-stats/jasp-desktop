@@ -57,18 +57,19 @@ public:
 			int						columnCount(const QModelIndex &parent = QModelIndex())		const override { return 1; }
 			QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 
-	virtual void					endResetModel();
-
-			JASPListControl*			listView() const								{ return _listView; }
+			JASPListControl*		listView()													const		{ return _listView; }
 			const QString &			name() const;
-	virtual const Terms &			terms(const QString& what = QString())	const;
-			bool					areTermsVariables() const						{ return _areTermsVariables; }
-			bool					areTermsInteractions() const					{ return _areTermsInteractions; }
-	virtual QString					getItemType(const Term& term) const				{ return _itemType; }
+	virtual Terms					termsEx(const QString& what);
+			const Terms &			terms()														const		{ return _terms;	}
+			bool					areTermsVariables()											const		{ return _areTermsVariables; }
+			bool					areTermsInteractions()										const		{ return _areTermsInteractions; }
+			bool					needsSource()												const		{ return _needsSource;			}
+			void					setNeedsSource(bool needs)												{ _needsSource = needs;			}
+	virtual QString					getItemType(const Term& term)								const		{ return _itemType; }
 	virtual void					setTermsAreVariables(bool areVariables);
-	virtual void					setTermsAreInteractions(bool interactions)		{ _areTermsInteractions = interactions; }
-			void					setItemType(QString type)						{ _itemType = type; }
-			void					addControlError(const QString& error) const;
+	virtual void					setTermsAreInteractions(bool interactions)								{ _areTermsInteractions = interactions; }
+			void					setItemType(QString type)												{ _itemType = type; }
+			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
 	virtual void					initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions());
 			Terms					getSourceTerms();
@@ -77,7 +78,7 @@ public:
 			void					setRowComponent(QQmlComponent* rowComponents);
 	virtual void					setUpRowControls();
 	const rowControlMap	&			getRowControls() const { return _rowControlsMap; }
-	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)			const;
+	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
@@ -85,20 +86,42 @@ public:
 	Q_INVOKABLE void				clearSelectedItems(bool emitSelectedChange = true);
 	Q_INVOKABLE void				setSelectedItem(int _index);
 	Q_INVOKABLE void				selectAllItems();
-	Q_INVOKABLE QList<int>			selectedItems()			{ return _selectedItems; }
-	Q_INVOKABLE QList<QString>		selectedItemsTypes()	{ return _selectedItemsTypes.toList(); }
+	Q_INVOKABLE QList<int>			selectedItems()															{ return _selectedItems; }
+	Q_INVOKABLE QList<QString>		selectedItemsTypes()													{ return _selectedItemsTypes.toList(); }
 	Q_INVOKABLE QList<QString>		itemTypes();
-
-			void					replaceVariableName(const std::string & oldName, const std::string & newName);
 
 
 signals:
-			void termsChanged(const Terms* added = nullptr, const Terms* removed = nullptr);
+			void termsChanged();		// Used to signal all kinds of changes in the model. Do not call it directly
+			void namesChanged(QMap<QString, QString> map);
+			void typeChanged(QString name);
 			void selectedItemsChanged();
-			void termChanged(const QString& oldName, const QString& newName);
+			void oneTermChanged(const QString& oldName, const QString& newName);
 
 public slots:	
-	virtual void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved);
+	virtual void sourceTermsReset();
+	virtual void sourceNamesChanged(QMap<QString, QString> map);
+	virtual int  sourceTypeChanged(QString colName);
+
+protected:
+			void	_setTerms(const Terms& terms, bool isUnique = true);
+			void	_setTerms(const Terms& terms, const Terms& parentTerms);
+			void	_setTerms(const std::vector<Term>& terms, bool isUnique = true);
+			void	_removeTerms(const Terms& terms);
+			void	_removeTerm(int index);
+			void	_removeTerm(const Term& term);
+			void	_addTerms(const Terms& terms);
+			void	_addTerm(const QString& term, bool isUnique = true);
+			void	_replaceTerm(int index, const Term& term);
+
+			QString							_itemType;
+			bool							_needsSource			= true;
+			QMap<QString, RowControls* >	_rowControlsMap;
+			QQmlComponent *					_rowComponent			= nullptr;
+			RowControlsOptions				_rowControlsOptions;
+			QList<BoundControl *>			_rowControlsConnected;
+			QList<int>						_selectedItems;
+			QSet<QString>					_selectedItemsTypes;
 
 private:
 			void	_addSelectedItemType(int _index);
@@ -106,18 +129,10 @@ private:
 			void	_initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap, bool setupRowConnections = true);
 			void	_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls);
 
-protected:
-	JASPListControl*				_listView = nullptr;
-	QString							_itemType;
-	Terms							_terms;
-	QList<int>						_selectedItems;
-	QSet<QString>					_selectedItemsTypes;
-	bool							_areTermsVariables		= true;
-	bool							_areTermsInteractions	= false;
-	QMap<QString, RowControls* >	_rowControlsMap;
-	QQmlComponent *					_rowComponent = nullptr;
-	RowControlsOptions				_rowControlsOptions;
-	QList<BoundControl *>			_rowControlsConnected;
+			JASPListControl*				_listView = nullptr;
+			Terms							_terms;
+			bool							_areTermsVariables		= true;
+			bool							_areTermsInteractions	= false;
 
 };
 

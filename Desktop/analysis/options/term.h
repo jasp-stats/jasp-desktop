@@ -56,7 +56,7 @@ public:
 
 	size_t size() const;
 
-	void replaceVariableName(const std::string & oldName, const std::string & newName);
+	bool replaceVariableName(const std::string & oldName, const std::string & newName);
 
 	static const char* separator;
 

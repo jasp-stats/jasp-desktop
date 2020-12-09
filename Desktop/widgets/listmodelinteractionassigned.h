@@ -33,18 +33,16 @@ public:
 	ListModelInteractionAssigned(JASPListControl* listView, bool mustContainLowerTerms, bool addInteractionsByDefault);
 
 	void			initTerms(const Terms &terms, const RowControlsOptions& = RowControlsOptions())	override;
-	void			setAvailableModel(ListModelAvailableInterface *source)							override;
 	Terms			termsFromIndexes(const QList<int> &indexes)								const	override;
 	Terms			canAddTerms(const Terms& terms) const override;
 	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControl::AssignType assignType = JASPControl::AssignType::AssignDefault) override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
 	void			removeTerms(const QList<int> &indices)											override;
 	QString			getItemType(const Term &term)											const	override;
-	const Terms&	terms(const QString& what = QString())									const	override;
-
+	Terms			termsEx(const QString& what)													override;
 		
 public slots:
-	void availableTermsChanged(const Terms* termsToAdd, const Terms* termsToRemove) override;
+	void availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;
 	
 protected:
 	void addCombinedTerms(const Terms& terms, JASPControl::AssignType assignType);

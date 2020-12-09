@@ -188,7 +188,7 @@ void InputListBase::termsChangedHandler()
 				{
 					it.next();
 					BoundControl* boundItem = dynamic_cast<BoundControl*>(it.value());
-					if (boundItem)
+					if (it.value()->isBound() && boundItem)
 						options->add(it.key().toStdString(), boundItem->boundTo());
 				}
 			}

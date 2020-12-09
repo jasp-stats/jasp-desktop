@@ -39,8 +39,8 @@ public:
 	bool			isRCodeColumn(int col)						const				{ return col == 1; }
 
 public slots:
-	void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)	override;
-	void modelChangedSlot()														override;
+	void sourceTermsReset()											override;
+	void modelChangedSlot()												override;
 };
 
 #endif // ListModelJAGSDataInput_H

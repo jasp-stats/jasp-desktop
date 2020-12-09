@@ -145,5 +145,7 @@ void FactorsFormBase::addListViewSlot(JASPListControl *listView)
 	JASPListControl* availableListView = dynamic_cast<JASPListControl*>(_availableVariablesListItem);
 	form()->addListView(listView, availableListView);
 	
-	connect(listView->model(), &ListModel::termsChanged, this, &FactorsFormBase::termsChangedHandler);
+	connect(listView->model(), &ListModel::modelReset, this, &FactorsFormBase::termsChangedHandler);
+	connect(listView->model(), &ListModel::rowsRemoved, this, &FactorsFormBase::termsChangedHandler);
+	connect(listView->model(), &ListModel::rowsInserted, this, &FactorsFormBase::termsChangedHandler);
 }

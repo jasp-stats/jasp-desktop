@@ -34,7 +34,10 @@ public:
 	ListModelAvailableInterface*	source() const												{ return _source; }
 	
 public slots:
-	virtual void availableTermsChanged(const Terms* termsAdded, const Terms* termsRemoved) {}
+	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)	{}
+	virtual void availableNamesChangedHandler(QMap<QString, QString> map)			{ sourceNamesChanged(map); }
+	virtual void availableTypeChangedHandler(QString name)							{ sourceTypeChanged(name); }
+			int  sourceTypeChanged(QString name)									override;
 
 protected:
 	ListModelAvailableInterface*			_source;

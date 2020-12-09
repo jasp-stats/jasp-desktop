@@ -17,7 +17,6 @@ TextAreaBase
 	property alias	text				: control.text
 	property string applyScriptInfo		: Qt.platform.os == "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
 	property alias  infoText			: infoText.text
-	property bool   hasScriptError		: false
 	property alias  font				: control.font
 	property alias  textDocument		: control.textDocument
 	property bool   trim				: false

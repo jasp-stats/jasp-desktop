@@ -20,16 +20,14 @@
 #define LISTMODELTERMSAVAILABLE_H
 
 #include "listmodelavailableinterface.h"
-#include "common.h"
 
 class ListModelTermsAvailable : public ListModelAvailableInterface
 {
 	Q_OBJECT
 public:
-	ListModelTermsAvailable(JASPListControl* listView);
+	ListModelTermsAvailable(JASPListControl* listView) : ListModelAvailableInterface(listView) {}
 		
-	void		sortItems(SortType sortType)							override;
-	void		resetTermsFromSourceModels(bool updateAssigned = true)	override;	
+	void	resetTermsFromSources(bool updateAssigned = true)	override;
 };
 
 #endif // LISTMODELTERMSAVAILABLE_H

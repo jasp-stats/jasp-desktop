@@ -17,50 +17,27 @@
 //
 
 #include "listmodeltermsavailable.h"
-#include "listmodeltermsassigned.h"
-#include "../analysis/analysisform.h"
-#include <QQmlProperty>
 
-ListModelTermsAvailable::ListModelTermsAvailable(JASPListControl* listView)
-	: ListModelAvailableInterface(listView)
-{
-}
-
-void ListModelTermsAvailable::sortItems(SortType sortType)
-{	
-	if (sortType == Sortable::None)
-	{
-		Terms allowed;
-		Terms forbidden;
-
-		for (const Term &term : _allTerms)
-		{
-			if ( ! isAllowed(term))
-				forbidden.add(term);
-			else
-				allowed.add(term);
-		}
-
-		_allTerms.clear();
-		_allTerms.add(allowed);
-		_allTerms.add(forbidden);
-	}
-
-	ListModelAvailableInterface::sortItems(sortType);
-}
-
-void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
+void ListModelTermsAvailable::resetTermsFromSources(bool updateAssigned)
 {
 	
 	beginResetModel();
 
 	Terms termsAvailable = getSourceTerms();
+	Terms removedTerms, addedTerms;
 	
-	setChangedTerms(termsAvailable);
+	for (const Term& term : _allTerms)
+		if (!termsAvailable.contains(term))
+			removedTerms.add(term);
+
+	for (const Term& term : termsAvailable)
+		if (!_allTerms.contains(term))
+			addedTerms.add(term);
+
 	initTerms(termsAvailable);
 
 	endResetModel();
 
 	if (updateAssigned)
-		emit allAvailableTermsChanged(&_tempAddedTerms, &_tempRemovedTerms);
+		emit availableTermsReset(addedTerms, removedTerms);
 }

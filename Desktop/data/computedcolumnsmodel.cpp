@@ -241,22 +241,23 @@ void ComputedColumnsModel::computeColumnFailed(QString columnNameQ, QString erro
 }
 
 ///Called from datatype changed
-void ComputedColumnsModel::recomputeColumn(std::string columnName)
+void ComputedColumnsModel::recomputeColumn(QString columnName)
 {
-	if(!DataSetPackage::pkg()->isColumnComputed(columnName))
+	std::string colName = columnName.toStdString();
+	if(!DataSetPackage::pkg()->isColumnComputed(colName))
 		return;
 
 	//It will be found because we just checked for it in isColumnComputed
-	ComputedColumn * col = &((*computedColumns())[columnName]);
+	ComputedColumn * col = &((*computedColumns())[colName]);
 
 	if(col->codeType() == ComputedColumn::computedType::analysis || col->codeType() == ComputedColumn::computedType::analysisNotComputed)
 		return;
 
-	DataSetPackage::pkg()->columnSetDefaultValues(columnName);
+	DataSetPackage::pkg()->columnSetDefaultValues(colName);
 	computedColumns()->findAllColumnNames();
 
 
-	checkForDependentColumnsToBeSent(columnName, true);
+	checkForDependentColumnsToBeSent(colName, true);
 }
 
 void ComputedColumnsModel::checkForDependentColumnsToBeSent(std::string columnName, bool refreshMe)

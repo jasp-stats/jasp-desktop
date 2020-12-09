@@ -22,7 +22,7 @@
 #include "rowcontrols.h"
 #include "../analysis/jaspcontrol.h"
 #include "jasplistcontrol.h"
-#include <QJSEngine>
+#include "sourceitem.h"
 #include <boost/bind.hpp>
 #include "log.h"
 
@@ -31,6 +31,15 @@ ListModel::ListModel(JASPListControl* listView)
 	, _listView(listView)
 {
 	setInfoProvider(listView->form());
+
+	// Connect all apecific signals to a general signal
+	connect(this,	&ListModel::modelReset,				this,	&ListModel::termsChanged);
+	connect(this,	&ListModel::rowsRemoved,			this,	&ListModel::termsChanged);
+	connect(this,	&ListModel::rowsMoved,				this,	&ListModel::termsChanged);
+	connect(this,	&ListModel::rowsInserted,			this,	&ListModel::termsChanged);
+	connect(this,	&ListModel::dataChanged,			this,	&ListModel::termsChanged);
+	connect(this,	&ListModel::namesChanged,			this,	&ListModel::termsChanged);
+	connect(this,	&ListModel::typeChanged,			this,	&ListModel::termsChanged);
 }
 
 QHash<int, QByteArray> ListModel::roleNames() const
@@ -73,13 +82,13 @@ void ListModel::initTerms(const Terms &terms, const RowControlsOptions& allOptio
 void ListModel::_initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap, bool setupControlConnections)
 {
 	beginResetModel();
-	_terms.set(terms);
 	_rowControlsOptions = allOptionsMap;
+	_setTerms(terms);
 	endResetModel();
 
 	if (setupControlConnections)
-		for (JASPListControl::SourceType* sourceType : listView()->sourceModels())
-			_connectSourceControls(sourceType->model, sourceType->usedControls);
+		for (SourceItem* sourceItem : listView()->sourceItems())
+			_connectSourceControls(sourceItem->listModel(), sourceItem->usedControls());
 }
 
 
@@ -97,7 +106,7 @@ void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QStrin
 		{
 			JASPControl* control = sourceModel->getRowControl(term.asQString(), controlName);
 			BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
-			if (boundControl && !_rowControlsConnected.contains(boundControl))
+			if (control->isBound() && boundControl && !_rowControlsConnected.contains(boundControl))
 			{
 				boundControl->boundTo()->changed.connect(boost::bind(&ListModel::_sourceTermsChangedHandler, this, _1));
 				_rowControlsConnected.push_back(boundControl);
@@ -109,39 +118,12 @@ void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QStrin
 Terms ListModel::getSourceTerms()
 {
 	Terms termsAvailable;
-	Terms termsToCombine;
-	Terms termsToBeCombinedWith;
 
-	for (const std::pair<JASPListControl::SourceType *, Terms>& source : listView()->getTermsPerSource())
+	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		JASPListControl::SourceType* sourceItem = source.first;
-		const Terms& sourceTerms = source.second;
-		ListModel* sourceModel = sourceItem->model;
-		if (sourceModel)
-		{
-			_connectSourceControls(sourceModel, sourceItem->usedControls);
-
-			if (sourceItem->combineWithOtherModels)
-				termsToCombine = sourceTerms;
-			else
-				termsToBeCombinedWith.add(sourceTerms);
-
-			termsAvailable.add(sourceTerms);
-		}
-	}
-
-	if (termsToCombine.size() > 0)
-	{
-		for (const Term& termToCombine : termsToCombine)
-		{
-			for (const Term& termToBeCombined : termsToBeCombinedWith)
-			{
-				QStringList components = termToCombine.components();
-				components.append(termToBeCombined.components());
-				termsAvailable.add(Term(components));
-			}
-		}
-	}
+		_connectSourceControls(sourceItem->listModel(), sourceItem->usedControls());
+		termsAvailable.add(terms);
+	});
 	
 	return termsAvailable;
 }
@@ -150,23 +132,18 @@ ListModel *ListModel::getSourceModelOfTerm(const Term &term)
 {
 	ListModel* result = nullptr;
 
-	for (const std::pair<JASPListControl::SourceType *, Terms>& source : listView()->getTermsPerSource())
+	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
 	{
-		if (source.second.contains(term))
-			result = source.first->model;
-	}
+		if (terms.contains(term))
+			result = sourceItem->listModel();
+	});
+
 	return result;
 }
 
 void ListModel::setRowComponent(QQmlComponent* rowComponent)
 {
 	_rowComponent = rowComponent;
-}
-
-void ListModel::endResetModel()
-{
-	setUpRowControls();
-	QAbstractTableModel::endResetModel();
 }
 
 void ListModel::setUpRowControls()
@@ -255,7 +232,7 @@ void ListModel::_addSelectedItemType(int _index)
 
 void ListModel::_sourceTermsChangedHandler(Option *)
 {
-	sourceTermsChanged(nullptr, nullptr);
+	sourceTermsReset();
 }
 
 void ListModel::selectItem(int _index, bool _select)
@@ -364,11 +341,9 @@ QList<QString> ListModel::itemTypes()
 }
 
 
-void ListModel::sourceTermsChanged(const Terms *termsAdded, const Terms *termsRemoved)
+void ListModel::sourceTermsReset()
 {
-	_initTerms(getSourceTerms(), RowControlsOptions(), false);
-	
-	emit termsChanged(termsAdded, termsRemoved);
+	_initTerms(getSourceTerms(), RowControlsOptions(), false);	
 }
 
 int ListModel::rowCount(const QModelIndex &) const
@@ -428,7 +403,7 @@ const QString &ListModel::name() const
 	return _listView->name();
 }
 
-const Terms &ListModel::terms(const QString &what) const
+Terms ListModel::termsEx(const QString &what)
 {
 	const QString typeIs = "type=";
 	const QString controlIs = "control=";
@@ -436,11 +411,7 @@ const Terms &ListModel::terms(const QString &what) const
 	if (!what.startsWith(controlIs) && !what.startsWith(typeIs))
 		return _terms; // in most cases, it comes here.
 
-	// This method was defined as const (it is used in other const methods), and returns a reference to a const Terms
-	// It returns 99% of the cases _terms
-	// But in case that a condition is used (what is not empty), then it cannot return a local variable nor a member of this class
-	// So a static variable is used.
-	static Terms specialTerms;
+	Terms specialTerms;
 
 	QStringList allConditions = what.split(",");
 	QString useTheseVariableTypes, useThisControl;
@@ -502,11 +473,97 @@ void ListModel::setTermsAreVariables(bool areVariables)
 		listView()->setProperty("showVariableTypeIcon", false);
 }
 
-void ListModel::replaceVariableName(const std::string & oldName, const std::string & newName)
+void ListModel::sourceNamesChanged(QMap<QString, QString> map)
 {
-	_terms.replaceVariableName(oldName, newName);
+	QMap<QString, QString>	changedNamesMap;
+	QSet<int>				changedIndexes;
 
-	for(const QString & key : _rowControlsOptions.keys())
-		for(const QString & key2 : _rowControlsOptions[key].keys())
-			_rowControlsOptions[key][key2]->replaceVariableName(oldName, newName);
+	QMapIterator<QString, QString> it(map);
+	while (it.hasNext())
+	{
+		it.next();
+		const QString& oldName = it.key(), newName = it.value();
+		QSet<int> indexes = _terms.replaceVariableName(oldName.toStdString(), newName.toStdString());
+		if (indexes.size() > 0)
+		{
+			changedNamesMap[oldName] = newName;
+			changedIndexes += indexes;
+		}
+	}
+
+	for (int i : changedIndexes)
+	{
+		QModelIndex ind = index(i, 0);
+		emit dataChanged(ind, ind);
+	}
+
+	if (changedNamesMap.size() > 0)
+		emit namesChanged(changedNamesMap);
+}
+
+int ListModel::sourceTypeChanged(QString name)
+{
+	int i = terms().indexOf(name);
+	if (i >= 0)
+	{
+		QModelIndex ind = index(i, 0);
+		emit dataChanged(ind, ind);
+		emit typeChanged(name);
+	}
+
+	return i;
+}
+
+void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)
+{
+	_terms.setSortParent(parentTerms);
+	_setTerms(terms);
+}
+
+void ListModel::_setTerms(const std::vector<Term> &terms, bool isUnique)
+{
+	_terms.set(terms, isUnique);
+	setUpRowControls();
+}
+
+void ListModel::_setTerms(const Terms &terms, bool isUnique)
+{
+	_terms.set(terms, isUnique);
+	setUpRowControls();
+}
+
+void ListModel::_removeTerms(const Terms &terms)
+{
+	_terms.remove(terms);
+	setUpRowControls();
+}
+
+void ListModel::_removeTerm(int index)
+{
+	_terms.remove(size_t(index));
+	setUpRowControls();
+}
+
+void ListModel::_removeTerm(const Term &term)
+{
+	_terms.remove(term);
+	setUpRowControls();
+}
+
+void ListModel::_addTerms(const Terms &terms)
+{
+	_terms.add(terms);
+	setUpRowControls();
+}
+
+void ListModel::_addTerm(const QString &term, bool isUnique)
+{
+	_terms.add(term, isUnique);
+	setUpRowControls();
+}
+
+void ListModel::_replaceTerm(int index, const Term &term)
+{
+	_terms.replace(index, term);
+	setUpRowControls();
 }

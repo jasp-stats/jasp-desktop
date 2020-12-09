@@ -721,11 +721,11 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 
 	if (changed)
 	{
-		std::string colName = _dataSet->column(columnIndex).name();
+		QString colName = tq(_dataSet->column(columnIndex).name());
 
 		emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
 		emit columnDataTypeChanged(colName);
-		emit refreshAnalysesWithColumn(tq(colName));
+		emit refreshAnalysesWithColumn(colName);
 	}
 
 	return changed;

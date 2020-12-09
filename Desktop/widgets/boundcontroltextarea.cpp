@@ -64,12 +64,12 @@ void BoundControlTextArea::checkSyntax()
 		try
 		{
 			R_FunctionWhiteList::scriptIsSafe(text.toStdString());
-			_textArea->setProperty("hasScriptError", false);
+			_textArea->setHasScriptError(false);
 			_textArea->setProperty("infoText", QObject::tr("valid R code"));
 		}
 		catch(filterException & e)
 		{
-			_textArea->setProperty("hasScriptError", true);
+			_textArea->setHasScriptError(true);
 			std::string errorMessage(e.what());
 			_textArea->setProperty("infoText", errorMessage.c_str());
 		}

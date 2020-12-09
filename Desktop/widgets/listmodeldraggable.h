@@ -52,8 +52,6 @@ protected:
 	bool						_addNewAvailableTermsToAssignedModel	= false;
 	bool						_allowAnalysisOwnComputedColumns		= true;
 	JASPControl::DropMode		_dropMode								= JASPControl::DropMode::DropNone;
-	Terms						_tempTermsToRemove;
-	Terms						_tempTermsToAdd;
 		
 	bool						isAllowed(const Term &term) const;
 };

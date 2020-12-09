@@ -23,6 +23,7 @@ ListModelAssignedInterface::ListModelAssignedInterface(JASPListControl* listView
 	: ListModelDraggable(listView)
   , _source(nullptr)
 {
+	_needsSource = false;
 }
 
 void ListModelAssignedInterface::refresh()
@@ -53,4 +54,19 @@ void ListModelAssignedInterface::refresh()
 void ListModelAssignedInterface::setAvailableModel(ListModelAvailableInterface *source)
 {
 	_source = source;
+}
+
+int ListModelAssignedInterface::sourceTypeChanged(QString name)
+{
+	int index = ListModelDraggable::sourceTypeChanged(name);
+	VariablesListBase* qmlListView = dynamic_cast<VariablesListBase*>(listView());
+
+	if (qmlListView && index >= 0 && !isAllowed(terms().at(size_t(index))))
+	{
+		QList<int> indexes = {index};
+		qmlListView->moveItems(indexes, _source);
+		ListModelDraggable::refresh();
+	}
+
+	return index;
 }

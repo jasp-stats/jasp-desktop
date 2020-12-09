@@ -90,17 +90,19 @@ int ListModelLayersAssigned::_getLayer(int index, int& indexInLayer, bool inclus
 
 void ListModelLayersAssigned::_setTerms()
 {
-	_terms.clear();
+	Terms newTerms;
 	int layer = 1;
 	for (const QList<QString>& variables : _variables)
 	{
-		_terms.add(tr("Layer %1").arg(layer));
+		newTerms.add(tr("Layer %1").arg(layer));
 		for (const QString& variable : variables)
-			_terms.add(variable);
+			newTerms.add(variable);
 		layer++;
 	}
 
-	_terms.add(tr("Layer %1").arg(layer));
+	newTerms.add(tr("Layer %1").arg(layer));
+
+	ListModel::_setTerms(newTerms);
 }
 
 Terms ListModelLayersAssigned::termsFromIndexes(const QList<int> &indexes) const
@@ -147,8 +149,6 @@ Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, J
 	_setTerms();
 	
 	endResetModel();
-	
-	emit termsChanged();
 	
 	return result;
 }
@@ -210,9 +210,7 @@ void ListModelLayersAssigned::moveTerms(const QList<int> &indexes, int dropItemI
 
 	_setTerms();
 	
-	endResetModel();
-	
-	emit termsChanged();
+	endResetModel();	
 }
 
 void ListModelLayersAssigned::removeTerms(const QList<int> &indexes)
@@ -242,9 +240,7 @@ void ListModelLayersAssigned::removeTerms(const QList<int> &indexes)
 
 	_setTerms();
 	
-	endResetModel();
-	
-	emit termsChanged();
+	endResetModel();	
 }
 
 QVariant ListModelLayersAssigned::data(const QModelIndex &index, int role) const

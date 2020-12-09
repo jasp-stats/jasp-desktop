@@ -235,9 +235,12 @@ void ComponentsListBase::termsChangedHandler()
 				{
 					it.next();
 					BoundControl* boundItem = dynamic_cast<BoundControl*>(it.value());
-					const QString& name = it.key();
-					Option* option = boundItem->boundTo();
-					rowOptions->add(name.toStdString(), option);
+					if (it.value()->isBound() && boundItem)
+					{
+						const QString& name = it.key();
+						Option* option = boundItem->boundTo();
+						rowOptions->add(name.toStdString(), option);
+					}
 				}
 			}
 			allOptions.push_back(rowOptions);

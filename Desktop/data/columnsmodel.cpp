@@ -56,6 +56,14 @@ void ColumnsModel::onDataChanged(const QModelIndex &, const QModelIndex &, const
 	endResetModel();
 }
 
+void ColumnsModel::datasetChanged(	QStringList				changedColumns,
+									QStringList				missingColumns,
+									QMap<QString, QString>	changeNameColumns,
+									bool					rowCountChanged,
+									bool					hasNewColumns)
+{
+	emit namesChanged(changeNameColumns);
+}
 
 int ColumnsModel::rowCount(const QModelIndex &) const
 {

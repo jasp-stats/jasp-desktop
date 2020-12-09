@@ -243,7 +243,7 @@ signals:
 				void				labelFilterChanged();
 				void				labelChanged(QString columnName, QString originalLabel, QString newLabel);
 				void				dataSetChanged();
-				void				columnDataTypeChanged(std::string columnName);
+				void				columnDataTypeChanged(QString columnName);
 				void				refreshAnalysesWithColumn(QString columnName);
 				void				labelsReordered(		  QString columnName);
 				void				isModifiedChanged();
