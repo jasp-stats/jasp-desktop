@@ -91,7 +91,7 @@ Form
 		defaultValue: 							0
 		min: 									0
 		max: 									dataSetModel.rowCount()
-		fieldWidth: 							60
+		fieldWidth: 							60 * preferencesModel.uiScale
 	}	
 
 	GroupBox
@@ -117,7 +117,7 @@ Form
 
 	Section
 	{
-		title: 									qsTr("A.    Selection Methodology")
+		title: 									qsTr("Selection Methodology")
 		columns:								3
 
 		CheckBox
@@ -225,13 +225,13 @@ Form
 			defaultValue: 						1
 			min: 								1
 			max: 								99999
-			fieldWidth: 						60
+			fieldWidth: 						60 * preferencesModel.uiScale
 		}
 	}
 
 	Section
 	{
-		title:									qsTr("B     Advanced Options")
+		title:									qsTr("Advanced Options")
 		columns:								1
 
 		RadioButtonGroup
@@ -269,7 +269,7 @@ Form
 				{
 					id: 						otherValutaName
 					name: 						"otherValutaName"
-					fieldWidth: 				100
+					fieldWidth: 				100 * preferencesModel.uiScale
 					enabled: 					otherValuta.checked
 					visible: 					otherValuta.checked
 				}
@@ -279,7 +279,7 @@ Form
 
 	Section
 	{
-		title: 									qsTr("C.    Tables")
+		title: 									qsTr("Tables")
 		columns:								1
 
 		GroupBox
@@ -369,20 +369,59 @@ Form
 		}
 	}
 
-	CheckBox 
-	{ 
-		id: 									addSampleIndicator  
-		name: 									"addSampleIndicator"
-		text: 									qsTr("Add selection counter to data")
-		enabled: 								recordNumberVariable.count > 0
+	GroupBox 
+	{
 
-		ComputedColumnField 
+		CheckBox 
 		{ 
-				id:								sampleIndicatorColumn
-				name: 							"sampleIndicatorColumn"
-				text: 							qsTr("Column name: ")
-				fieldWidth: 					120
-				visible:    					addSampleIndicator.checked
+			id: 								addSampleIndicator  
+			name: 								"addSampleIndicator"
+			text: 								qsTr("Export sample to file")
+			enabled: 							recordNumberVariable.count > 0 & sampleSize.value > 0
+			onCheckedChanged:					if(!checked) exportSample.checked = false
+
+			ComputedColumnField 
+			{ 
+					id:							sampleIndicatorColumn
+					name: 						"sampleIndicatorColumn"
+					text: 						qsTr("Column name selection result: ")
+					placeholderText: 			qsTr("e.g. Count")
+					fieldWidth: 				120 * preferencesModel.uiScale
+					visible:					addSampleIndicator.checked
+			}
+
+				FileSelector
+				{
+					id:							file
+					name:						"file"
+					label:  					qsTr("Save as: ")
+					filter:						"*.csv"
+					save:						true
+					fieldWidth:					180 * preferencesModel.uiScale 
+					visible:					addSampleIndicator.checked
+				}
+		}
+
+		RowLayout
+		{
+			Button
+			{
+				id: 							downloadSampleSelection
+				Layout.leftMargin:				25 * preferencesModel.uiScale
+				text: 							exportSample.checked ? qsTr("<b>Synchronize: On</b>") : qsTr("<b>Synchronize: Off</b>")
+				control.color: 					exportSample.checked ? "#1E90FF" : jaspTheme.buttonColorDisabled
+				control.textColor: 				exportSample.checked ? "white" : "black"
+				implicitHeight:					20 * preferencesModel.uiScale
+				onClicked: 						exportSample.click()
+				enabled:						recordNumberVariable.count > 0 & sampleSize.value > 0 & addSampleIndicator.checked & sampleIndicatorColumn.value != "" & file.value != ""
+				visible:						addSampleIndicator.checked
+			}
+			CheckBox
+			{
+				id:								exportSample
+				name:							"exportSample"
+				visible:						false
+			}	
 		}
 	}
 
@@ -391,17 +430,6 @@ Form
 		Layout.preferredHeight: 				downloadReportSelection.height
 		Layout.fillWidth: 						true
 		Layout.columnSpan:						2
-
-		Button
-		{
-			id:									downloadDataSelection
-			anchors.right:	 					downloadReportSelection.left
-			anchors.rightMargin:				jaspTheme.generalAnchorMargin
-			text:								qsTr("<b>Export Data</b>")
-			enabled:							sampleSize.value > 0
-			onClicked: 							form.exportResults() // This should still be changed to data export
-			visible:							false // That is why this is false
-		}
 
 		Button
 		{

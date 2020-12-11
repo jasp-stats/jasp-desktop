@@ -497,14 +497,14 @@
     
     if(!is.null(recordNumberVariable)){
       dataset <- .readDataSetToEnd(columns.as.factor = recordNumberVariable)
-      dataset[, .v(recordNumberVariable)] <- as.character(levels(dataset[, .v(recordNumberVariable)]))
+      dataset[, .v(recordNumberVariable)] <- as.character(dataset[, .v(recordNumberVariable)])
       
       analysisOptions[["populationSize"]] <- nrow(dataset)
       analysisOptions[["uniqueN"]] <- length(unique(dataset[, .v(options[["recordNumberVariable"]])]))
       
       if(!is.null(monetaryVariable)){
         dataset <- .readDataSetToEnd(columns.as.numeric = monetaryVariable, columns.as.factor = recordNumberVariable)
-        dataset[, .v(recordNumberVariable)] <- as.character(levels(dataset[, .v(recordNumberVariable)]))
+        dataset[, .v(recordNumberVariable)] <- as.character(dataset[, .v(recordNumberVariable)])
         
         monetaryColumn <- dataset[, .v(monetaryVariable)]
         analysisOptions[["populationValue"]] <- sum(monetaryColumn, na.rm = TRUE)
@@ -952,11 +952,6 @@
       # Error if the sample size is larger than the population value in case of mus sampling.
       parentContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
       parentContainer$setError(gettext("Your sample size is larger than (or equal to) your population value. Cannot take a MUS sample larger than the population value."))
-      return(TRUE)
-    } else if(!is.null(dataset) && options[["sampleSize"]] == 1){
-      # Error if the sample size is 1.
-      parentContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
-      parentContainer$setError(gettext("Your sample size must be larger than 1."))
       return(TRUE)
     } else if(options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
       # Error if the transaction ID's are not unique
@@ -1673,8 +1668,8 @@
     
     if(isTryError(result)){
       
-      if(JASP:::.extractErrorMessage(result) == "Sample size could not be calculated, please increase the maxSize argument"){
-        parentContainer$setError(gettext("You cannot achieve your current sampling objectives with this population. The resulting sample size exceeds 5000. Adjust your sampling objectives or variables accordingly."))
+      if(JASP:::.extractErrorMessage(result) == "Sample size could not be calculated, you may want to increase the maxSize argument."){
+        parentContainer$setError(gettext("You cannot achieve your current sampling objectives with this population. The resulting sample size exceeds 10000. Adjust your sampling objectives or variables accordingly."))
         return()
       }
       
@@ -2019,17 +2014,97 @@
       
       startProgressbar(length(likelihoods))
       
-      for(i in 1:length(likelihoods)){
+      leftPlotError <- try({
+        
+        for(i in 1:length(likelihoods)){
+          if(options[["bayesianAnalysis"]]){
+            names <- c("Beta", "Gamma", "Beta-binomial")
+            ir <- base::switch(options[["IR"]], "High" = 1, "Medium" = 0.60, "Low" = 0.36, "Custom" = options[["irCustom"]])
+            cr <- base::switch(options[["CR"]], "High" = 1, "Medium" = 0.60, "Low" = 0.36, "Custom" = options[["crCustom"]])
+            
+            # Create a prior distribution that incorporates the existing information
+            prior <- jfa::auditPrior(materiality = performanceMateriality,
+                                     confidence = confidence,
+                                     expectedError = parentOptions[["expectedErrors"]],
+                                     likelihood =  likelihoods[i],
+                                     N = N,
+                                     ir = ir,
+                                     cr = cr,
+                                     method = options[["priorConstructionMethod"]],
+                                     sampleN = options[["sampleN"]],
+                                     sampleK = options[["sampleK"]],
+                                     factor = options[["factor"]],
+                                     pHplus = 1 - options[["pHmin"]],
+                                     pHmin = options[["pHmin"]])
+          } else {
+            names <- c("Binomial", "Poisson", "Hypergeometric")
+            prior <- FALSE
+          }
+          result <- jfa::planning(materiality = performanceMateriality,
+                                  confidence = confidence,
+                                  expectedError = parentOptions[["expectedErrors"]],
+                                  likelihood = likelihoods[i],
+                                  minPrecision = minPrecision,
+                                  N = N,
+                                  increase = options[["sampleSizeIncrease"]],
+                                  prior = prior)
+          n[i] <- result[["sampleSize"]]
+          k[i] <- result[["expectedSampleError"]]
+          progressbarTick()
+        }
+      })
+      
+      if(!JASP::isTryError(leftPlotError)){
+        
+        dPlot <- data.frame(y = c(n, k), x = rep(names, 2), type = rep(c(gettext("Expected error-free"), gettext("Expected errors")), each = 3))
+        dPlot$x <- factor(x = dPlot$x, levels = levels(dPlot$x)[c(2, 3, 1)])
+        dPlot$type <- factor(x = dPlot$type, levels = levels(dPlot$type)[c(1, 2)])
+        
+        yBreaks <- JASPgraphs::getPrettyAxisBreaks(0:(ceiling(1.1 * max(n))), min.n = 4)
+        yLimits <- c(0, ceiling(1.2 * max(n)))
+        
+        jfaTheme <- ggplot2::theme(axis.ticks.x = ggplot2::element_blank(),
+                                   axis.ticks.y = ggplot2::element_blank(),
+                                   axis.text.y = ggplot2::element_text(hjust = 0),
+                                   panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb", size = 0.5),
+                                   legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 0, r = 30)))
+        
+        plot <- ggplot2::ggplot(data = dPlot, mapping = ggplot2::aes(x = x, y = y, fill = type)) +
+          ggplot2::geom_bar(stat = "identity", col = "black", size = 1) +
+          ggplot2::scale_y_continuous(name = gettext("Required sample size (n)"), breaks = yBreaks, limits = yLimits) +
+          ggplot2::coord_flip() +
+          ggplot2::annotate("text", y = k, x = c(3, 2, 1), label = k, size = 6, vjust = 0.5, hjust = -0.25) +
+          ggplot2::annotate("text", y = n, x = c(3, 2, 1), label = n, size = 6, vjust = 0.5, hjust = -0.75) +
+          ggplot2::xlab("") +
+          ggplot2::labs(fill = "") +
+          ggplot2::scale_fill_manual(values=c("#7FE58B", "#FF6666"), guide = ggplot2::guide_legend(reverse = TRUE))
+        plot <- JASPgraphs::themeJasp(plot, sides = "", legend.position = "top") + jfaTheme
+        
+        figure$plotObject <- plot
+      } else {
+        if(JASP:::.extractErrorMessage(leftPlotError) == "Sample size could not be calculated, you may want to increase the maxSize argument."){
+          figure$setError(gettext("You cannot achieve your current sampling objectives with this population. The resulting sample size exceeds 10000. Adjust your sampling objectives or variables accordingly."))
+        } else {
+          figure$setError(gettextf("An error occurred in a call to the the jfa package: %1$s", JASP:::.extractErrorMessage(leftPlotError)))
+        }
+      }
+    }
+    
+    if(is.null(collection[["comparisonErrors"]])){
+      
+      # Second plot: Comparison across expected errors
+      figure <- createJaspPlot(plot = NULL, title = gettextf("Across Expected Errors (Current: %1$s)", round(parentState[["expectedSampleError"]], 2)),
+                               width = 150, height = 200)
+      collection[["comparisonErrors"]] <- figure
+      
+      rightPlotError <- try({
         if(options[["bayesianAnalysis"]]){
-          names <- c("Beta", "Gamma", "Beta-binomial")
-          ir <- base::switch(options[["IR"]], "High" = 1, "Medium" = 0.60, "Low" = 0.36, "Custom" = options[["irCustom"]])
-          cr <- base::switch(options[["CR"]], "High" = 1, "Medium" = 0.60, "Low" = 0.36, "Custom" = options[["crCustom"]])
           
           # Create a prior distribution that incorporates the existing information
           prior <- jfa::auditPrior(materiality = performanceMateriality,
                                    confidence = confidence,
                                    expectedError = parentOptions[["expectedErrors"]],
-                                   likelihood =  likelihoods[i],
+                                   likelihood = parentOptions[["likelihood"]],
                                    N = N,
                                    ir = ir,
                                    cr = cr,
@@ -2040,104 +2115,47 @@
                                    pHplus = 1 - options[["pHmin"]],
                                    pHmin = options[["pHmin"]])
         } else {
-          names <- c("Binomial", "Poisson", "Hypergeometric")
           prior <- FALSE
         }
-        result <- jfa::planning(materiality = performanceMateriality,
-                                confidence = confidence,
-                                expectedError = parentOptions[["expectedErrors"]],
-                                likelihood = likelihoods[i],
-                                minPrecision = minPrecision,
-                                N = N,
-                                increase = options[["sampleSizeIncrease"]],
-                                prior = prior)
-        n[i] <- result[["sampleSize"]]
-        k[i] <- result[["expectedSampleError"]]
-        progressbarTick()
-      }
-      
-      dPlot <- data.frame(y = c(n, k), x = rep(names, 2), type = rep(c(gettext("Expected error-free"), gettext("Expected errors")), each = 3))
-      dPlot$x <- factor(x = dPlot$x, levels = levels(dPlot$x)[c(2, 3, 1)])
-      dPlot$type <- factor(x = dPlot$type, levels = levels(dPlot$type)[c(1, 2)])
-      
-      yBreaks <- JASPgraphs::getPrettyAxisBreaks(0:(ceiling(1.1 * max(n))), min.n = 4)
-      yLimits <- c(0, ceiling(1.2 * max(n)))
-      
-      jfaTheme <- ggplot2::theme(axis.ticks.x = ggplot2::element_blank(),
-                                 axis.ticks.y = ggplot2::element_blank(),
-                                 axis.text.y = ggplot2::element_text(hjust = 0),
-                                 panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb", size = 0.5),
-                                 legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 0, r = 30)))
-      
-      plot <- ggplot2::ggplot(data = dPlot, mapping = ggplot2::aes(x = x, y = y, fill = type)) +
-        ggplot2::geom_bar(stat = "identity", col = "black", size = 1) +
-        ggplot2::scale_y_continuous(name = gettext("Required sample size (n)"), breaks = yBreaks, limits = yLimits) +
-        ggplot2::coord_flip() +
-        ggplot2::annotate("text", y = k, x = c(3, 2, 1), label = k, size = 6, vjust = 0.5, hjust = -0.25) +
-        ggplot2::annotate("text", y = n, x = c(3, 2, 1), label = n, size = 6, vjust = 0.5, hjust = -0.75) +
-        ggplot2::xlab("") +
-        ggplot2::labs(fill = "") +
-        ggplot2::scale_fill_manual(values=c("#7FE58B", "#FF6666"), guide = ggplot2::guide_legend(reverse = TRUE))
-      plot <- JASPgraphs::themeJasp(plot, sides = "", legend.position = "top") + jfaTheme
-      
-      figure$plotObject <- plot
-    }
-    
-    if(is.null(collection[["comparisonErrors"]])){
-      
-      # Second plot: Comparison across expected errors
-      figure <- createJaspPlot(plot = NULL, title = gettextf("Across Expected Errors (Current: %1$s)", round(parentState[["expectedSampleError"]], 2)),
-                               width = 150, height = 200)
-      collection[["comparisonErrors"]] <- figure
-      
-      if(options[["bayesianAnalysis"]]){
         
-        # Create a prior distribution that incorporates the existing information
-        prior <- jfa::auditPrior(materiality = performanceMateriality,
-                                 confidence = confidence,
-                                 expectedError = parentOptions[["expectedErrors"]],
-                                 likelihood = parentOptions[["likelihood"]],
-                                 N = N,
-                                 ir = ir,
-                                 cr = cr,
-                                 method = options[["priorConstructionMethod"]],
-                                 sampleN = options[["sampleN"]],
-                                 sampleK = options[["sampleK"]],
-                                 factor = options[["factor"]],
-                                 pHplus = 1 - options[["pHmin"]],
-                                 pHmin = options[["pHmin"]])
+        n <- numeric(length(1:4))
+        for(i in 1:4){
+          result <- jfa::planning(materiality = performanceMateriality,
+                                  confidence = confidence,
+                                  likelihood = parentOptions[["likelihood"]],
+                                  expectedError = i - 1,
+                                  N = N,
+                                  minPrecision = minPrecision,
+                                  prior = prior,
+                                  increase = options[["sampleSizeIncrease"]])
+          n[i] <- result[["sampleSize"]]
+        }
+      })
+      
+      if(!JASP::isTryError(rightPlotError)){
+        
+        dPlot <- data.frame(x = c("0", "1", "2", "3"), y = c(2, 2, 2, 2))
+        dPlot$x <- factor(dPlot$x, levels = c("3", "2", "1", "0"))
+        
+        plot <- ggplot2::ggplot(data = dPlot, mapping = ggplot2::aes(x = x, y = y, fill = x)) +
+          ggplot2::geom_bar(stat = "identity", col = "black", size = 1) +
+          ggplot2::scale_y_continuous(name = "", breaks = NULL, limits = c(0, 2.3)) +
+          ggplot2::scale_x_discrete(name = "") +
+          ggplot2::scale_fill_manual(values = c("red", "darkorange1", "orange", "#7FE58B")) +
+          ggplot2::coord_flip() +
+          ggplot2::labs(fill = "") +
+          ggplot2::annotate("text", y = c(0.5, 0.5, 0.5, 0.5), x = c(4, 3, 2, 1),
+                            label = paste0("n = ", n), size = 6, vjust = 0.5, hjust = 0.2, fontface = "italic")
+        plot <- JASPgraphs::themeJasp(plot, sides = "", legend.position = "none") + jfaTheme
+        
+        figure$plotObject <- plot
       } else {
-        prior <- FALSE
+        if(JASP:::.extractErrorMessage(rightPlotError) == "Sample size could not be calculated, you may want to increase the maxSize argument."){
+          figure$setError(gettext("You cannot achieve your current sampling objectives with this population. The resulting sample size exceeds 10000. Adjust your sampling objectives or variables accordingly."))
+        } else {
+          figure$setError(gettextf("An error occurred in a call to the the jfa package: %1$s", JASP:::.extractErrorMessage(rightPlotError)))
+        }
       }
-      
-      n <- numeric(length(1:4))
-      for(i in 1:4){
-        result <- jfa::planning(materiality = performanceMateriality,
-                                confidence = confidence,
-                                likelihood = parentOptions[["likelihood"]],
-                                expectedError = i - 1,
-                                N = N,
-                                minPrecision = minPrecision,
-                                prior = prior,
-                                increase = options[["sampleSizeIncrease"]])
-        n[i] <- result[["sampleSize"]]
-      }
-      
-      dPlot <- data.frame(x = c("0", "1", "2", "3"), y = c(2, 2, 2, 2))
-      dPlot$x <- factor(dPlot$x, levels = c("3", "2", "1", "0"))
-      
-      plot <- ggplot2::ggplot(data = dPlot, mapping = ggplot2::aes(x = x, y = y, fill = x)) +
-        ggplot2::geom_bar(stat = "identity", col = "black", size = 1) +
-        ggplot2::scale_y_continuous(name = "", breaks = NULL, limits = c(0, 2.3)) +
-        ggplot2::scale_x_discrete(name = "") +
-        ggplot2::scale_fill_manual(values = c("red", "darkorange1", "orange", "#7FE58B")) +
-        ggplot2::coord_flip() +
-        ggplot2::labs(fill = "") +
-        ggplot2::annotate("text", y = c(0.5, 0.5, 0.5, 0.5), x = c(4, 3, 2, 1),
-                          label = paste0("n = ", n), size = 6, vjust = 0.5, hjust = 0.2, fontface = "italic")
-      plot <- JASPgraphs::themeJasp(plot, sides = "", legend.position = "none") + jfaTheme
-      
-      figure$plotObject <- plot
     }
     
     if(options[["explanatoryText"]] && ready){
@@ -2286,6 +2304,29 @@
                                                                 "sampleIndicatorColumn"))
     jaspResults[["sampleIndicatorColumn"]]$setNominal(sampleIndicatorColumn)
   }
+  
+  # Export sample
+  if(options[["exportSample"]] && options[["file"]] != ""){
+    sampleExport <- data.frame(row = parentState[["rowNumber"]])
+    sampleExport <- cbind(sampleExport, count = parentState[["count"]])
+    sampleExport <- cbind(sampleExport, id = parentState[[.v(options[["recordNumberVariable"]])]])
+    colnames(sampleExport) <- c("Row number", decodeColNames(options[["sampleIndicatorColumn"]]), decodeColNames(options[["recordNumberVariable"]]))
+    if(options[["monetaryVariable"]] != ""){
+      sampleExport <- cbind(sampleExport, ist = parentState[[.v(options[["monetaryVariable"]])]])
+      colnames(sampleExport)[length(colnames(sampleExport))] <- decodeColNames(options[["monetaryVariable"]])
+    }
+    if(options[["rankingVariable"]] != ""){
+      sampleExport <- cbind(sampleExport, parentState[[.v(options[["rankingVariable"]])]])
+      colnames(sampleExport)[length(colnames(sampleExport))] <- decodeColNames(options[["rankingVariable"]])
+    }
+    if(length(unlist(options[["additionalVariables"]])) >= 1 && unlist(options[["additionalVariables"]]) != ""){
+      sampleExport <- cbind(sampleExport, parentState[[.v(unlist(options[["additionalVariables"]]))]])
+      colnames(sampleExport)[(length(colnames(sampleExport)) - length(unlist(options[["additionalVariables"]]))):length(colnames(sampleExport))] <- decodeColNames(unlist(options[["additionalVariables"]]))
+    }
+    sampleExport <- cbind(sampleExport, rep(NA, nrow(sampleExport)))
+    colnames(sampleExport)[length(colnames(sampleExport))] <- "Soll"
+    utils::write.csv(x = sampleExport, file = options[["file"]], row.names = FALSE, na = "", quote = FALSE)
+  }
 }
 
 .jfa.selection.state <- function(options, dataset, prevState, parentContainer){
@@ -2353,7 +2394,7 @@
     interval <- base::switch(units, "records" = nrow(dataset) / prevState[["sampleSize"]],
                              "mus" = sum(dataset[, bookValues]) / prevState[["sampleSize"]])
     if(options[["seed"]] > interval){
-      parentContainer$setError(gettext("Your specified starting point lies outside the selection interval."))
+      parentContainer$setError(gettextf("Your specified starting point lies outside the selection interval (%1$s).", round(interval, 3)))
       return()
     }
   }
@@ -2370,13 +2411,13 @@
   }
   
   sample <- jfa::selection(population = dataset,
-							sampleSize = prevState[["sampleSize"]],
-							algorithm = algorithm,
-							units = units,
-							seed = options[["seed"]],
-							ordered = FALSE,
-							bookValues = bookValues,
-							intervalStartingPoint = startingPointSeed)
+                           sampleSize = prevState[["sampleSize"]],
+                           algorithm = algorithm,
+                           units = units,
+                           seed = options[["seed"]],
+                           ordered = FALSE,
+                           bookValues = bookValues,
+                           intervalStartingPoint = startingPointSeed)
   
   sample <- data.frame(sample[["sample"]])
   sample[, 1:2] <- apply(X = sample[, 1:2], MARGIN = 2, as.numeric)
@@ -2830,35 +2871,35 @@
       errorLabel 		<- evaluationState[["k"]]
       
       if(options[["display"]] == "displayNumbers"){
-		  if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
-		    boundLabel <- round(evaluationState[["upperBound"]] / planningOptions[["populationSize"]], 3)
-        	mleLabel <- round(evaluationState[["mle"]] / planningOptions[["populationSize"]], 3)
-        	precisionLabel <- round(evaluationState[["precision"]] / planningOptions[["populationSize"]], 3)
-		  } else {
-		    boundLabel <- round(evaluationState[["confBound"]], 3)
-        	mleLabel <- round(evaluationState[["mle"]], 3)
-        	precisionLabel <- round(evaluationState[["precision"]], 3)
-		  }
+        if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
+          boundLabel <- round(evaluationState[["upperBound"]] / planningOptions[["populationSize"]], 3)
+          mleLabel <- round(evaluationState[["mle"]] / planningOptions[["populationSize"]], 3)
+          precisionLabel <- round(evaluationState[["precision"]] / planningOptions[["populationSize"]], 3)
+        } else {
+          boundLabel <- round(evaluationState[["confBound"]], 3)
+          mleLabel <- round(evaluationState[["mle"]], 3)
+          precisionLabel <- round(evaluationState[["precision"]], 3)
+        }
       } else if(options[["display"]] == "displayPercentages"){
-		  if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
-        	boundLabel <- paste0(round(evaluationState[["upperBound"]] / planningOptions[["populationValue"]] * 100, 3), "%")
-        	mleLabel <- paste0(round(evaluationState[["mle"]] / planningOptions[["populationValue"]] * 100, 3), "%")
-        	precisionLabel <- paste0(round(evaluationState[["precision"]] / planningOptions[["populationValue"]] * 100, 3), "%")  
-		  } else {
-        	boundLabel <- paste0(round(evaluationState[["confBound"]] * 100, 3), "%")
-        	mleLabel <- paste0(round(evaluationState[["mle"]] * 100, 3), "%")
-        	precisionLabel <- paste0(round(evaluationState[["precision"]] * 100, 3), "%")  
-		  }
+        if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
+          boundLabel <- paste0(round(evaluationState[["upperBound"]] / planningOptions[["populationValue"]] * 100, 3), "%")
+          mleLabel <- paste0(round(evaluationState[["mle"]] / planningOptions[["populationValue"]] * 100, 3), "%")
+          precisionLabel <- paste0(round(evaluationState[["precision"]] / planningOptions[["populationValue"]] * 100, 3), "%")  
+        } else {
+          boundLabel <- paste0(round(evaluationState[["confBound"]] * 100, 3), "%")
+          mleLabel <- paste0(round(evaluationState[["mle"]] * 100, 3), "%")
+          precisionLabel <- paste0(round(evaluationState[["precision"]] * 100, 3), "%")  
+        }
       } else if(options[["display"]] == "displayValues"){
-		  if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
-        	boundLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["upperBound"]], 2))
-        	mleLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["mle"]], 2))
-        	precisionLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["precision"]], 2))  
-		  } else {
-        	boundLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["confBound"]] * planningOptions[["populationValue"]], 2))
-        	mleLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["mle"]] * planningOptions[["populationValue"]], 2))
-        	precisionLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["precision"]] * planningOptions[["populationValue"]], 2))  
-		  }
+        if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
+          boundLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["upperBound"]], 2))
+          mleLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["mle"]], 2))
+          precisionLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["precision"]], 2))  
+        } else {
+          boundLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["confBound"]] * planningOptions[["populationValue"]], 2))
+          mleLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["mle"]] * planningOptions[["populationValue"]], 2))
+          precisionLabel <- paste(planningOptions[["valuta"]], round(evaluationState[["precision"]] * planningOptions[["populationValue"]], 2))  
+        }
       }
       
     } else {
@@ -2991,7 +3032,7 @@
                                           planningOptions,
                                           evaluationContainer){
   
-
+  
   # Check whether there is enough data to perform an analysis
   if(!options[["performanceMateriality"]] && !options[["minimumPrecision"]]){
     return()
@@ -3316,18 +3357,18 @@
                       upperBound = UpperBoundLabel)
     
   } else {
-
-	if(parentState[["method"]] %in% c("direct", "difference", "quotient", "regression")){
-		boundLabel <- base::switch(options[["display"]],
-								"displayNumbers" = round(parentState[["upperBound"]] / prevOptions[["populationSize"]], 3),
-								"displayPercentages" = paste0(round(parentState[["upperBound"]] / prevOptions[["populationValue"]] * 100, 3), "%"),
-								"displayValues" = paste(prevOptions[["valuta"]], round(parentState[["upperBound"]], 2)))
-	} else {
-		boundLabel <- base::switch(options[["display"]],
-								"displayNumbers" = round(parentState[["confBound"]], 3),
-								"displayPercentages" = paste0(round(parentState[["confBound"]] * 100, 3), "%"),
-								"displayValues" = paste(prevOptions[["valuta"]], round(parentState[["confBound"]] * prevOptions[["populationValue"]], 2)))
-	}   
+    
+    if(parentState[["method"]] %in% c("direct", "difference", "quotient", "regression")){
+      boundLabel <- base::switch(options[["display"]],
+                                 "displayNumbers" = round(parentState[["upperBound"]] / prevOptions[["populationSize"]], 3),
+                                 "displayPercentages" = paste0(round(parentState[["upperBound"]] / prevOptions[["populationValue"]] * 100, 3), "%"),
+                                 "displayValues" = paste(prevOptions[["valuta"]], round(parentState[["upperBound"]], 2)))
+    } else {
+      boundLabel <- base::switch(options[["display"]],
+                                 "displayNumbers" = round(parentState[["confBound"]], 3),
+                                 "displayPercentages" = paste0(round(parentState[["confBound"]] * 100, 3), "%"),
+                                 "displayValues" = paste(prevOptions[["valuta"]], round(parentState[["confBound"]] * prevOptions[["populationValue"]], 2)))
+    }   
     
     row <- data.frame(sampleSize = parentState[["n"]],
                       fullErrors = parentState[["k"]],
@@ -3353,32 +3394,32 @@
   }
   
   if(options[["mostLikelyError"]]){
-	  if(parentState[["method"]] %in% c("direct", "difference", "quotient", "regression")){
-		mleLabel <- base::switch(options[["display"]],
-								"displayNumbers" = round(parentState[["mle"]] /  prevOptions[["populationSize"]], 3),
-								"displayPercentages" = paste0(round(parentState[["mle"]] /  prevOptions[["populationValue"]] * 100, 3), "%"),
-								"displayValues" = paste(prevOptions[["valuta"]], round(parentState[["mle"]], 2)))
-	  } else {
-		mleLabel <- base::switch(options[["display"]],
-								"displayNumbers" = round(parentState[["mle"]], 3),
-								"displayPercentages" = paste0(round(parentState[["mle"]] * 100, 3), "%"),
-								"displayValues" = paste(prevOptions[["valuta"]], round(parentState[["mle"]] * prevOptions[["populationValue"]], 2)))
-	  }
+    if(parentState[["method"]] %in% c("direct", "difference", "quotient", "regression")){
+      mleLabel <- base::switch(options[["display"]],
+                               "displayNumbers" = round(parentState[["mle"]] /  prevOptions[["populationSize"]], 3),
+                               "displayPercentages" = paste0(round(parentState[["mle"]] /  prevOptions[["populationValue"]] * 100, 3), "%"),
+                               "displayValues" = paste(prevOptions[["valuta"]], round(parentState[["mle"]], 2)))
+    } else {
+      mleLabel <- base::switch(options[["display"]],
+                               "displayNumbers" = round(parentState[["mle"]], 3),
+                               "displayPercentages" = paste0(round(parentState[["mle"]] * 100, 3), "%"),
+                               "displayValues" = paste(prevOptions[["valuta"]], round(parentState[["mle"]] * prevOptions[["populationValue"]], 2)))
+    }
     row <- cbind(row, mle = mleLabel)
   }
   
   if(options[["obtainedPrecision"]]){
-	if(parentState[["method"]] %in% c("direct", "difference", "quotient", "regression")){
-		precisionLabel <- base::switch(options[["display"]],
-									"displayNumbers" = round(parentState[["precision"]] /  prevOptions[["populationSize"]], 3),
-									"displayPercentages" = paste0(round(parentState[["precision"]] /  prevOptions[["populationValue"]] * 100, 3), "%"),
-									"displayValues" = paste(prevOptions[["valuta"]], round(parentState[["precision"]], 2)))
-	} else {
-		precisionLabel <- base::switch(options[["display"]],
-									"displayNumbers" = round(parentState[["precision"]], 3),
-									"displayPercentages" = paste0(round(parentState[["precision"]] * 100, 3), "%"),
-									"displayValues" = paste(prevOptions[["valuta"]], round(parentState[["precision"]] * prevOptions[["populationValue"]], 2)))
-	}   
+    if(parentState[["method"]] %in% c("direct", "difference", "quotient", "regression")){
+      precisionLabel <- base::switch(options[["display"]],
+                                     "displayNumbers" = round(parentState[["precision"]] /  prevOptions[["populationSize"]], 3),
+                                     "displayPercentages" = paste0(round(parentState[["precision"]] /  prevOptions[["populationValue"]] * 100, 3), "%"),
+                                     "displayValues" = paste(prevOptions[["valuta"]], round(parentState[["precision"]], 2)))
+    } else {
+      precisionLabel <- base::switch(options[["display"]],
+                                     "displayNumbers" = round(parentState[["precision"]], 3),
+                                     "displayPercentages" = paste0(round(parentState[["precision"]] * 100, 3), "%"),
+                                     "displayValues" = paste(prevOptions[["valuta"]], round(parentState[["precision"]] * prevOptions[["populationValue"]], 2)))
+    }   
     row <- cbind(row, precision = precisionLabel)
   }
   
@@ -3474,79 +3515,88 @@
        parentContainer$getError())
       return()
     
-    materiality 	<- parentState[["materiality"]]
-    minPrecision 	<- options[["minimumPrecisionPercentage"]]
+    plotError <- try({
+      
+      materiality 	<- parentState[["materiality"]]
+      minPrecision 	<- options[["minimumPrecisionPercentage"]]
+      
+      if(options[["variableType"]] == "variableTypeAuditValues" &&  options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
+        bound 		    <- parentState[["upperBound"]] / prevOptions[["populationValue"]]
+        mle 			<- parentState[["mle"]] / prevOptions[["populationValue"]]
+        precision 	    <- parentState[["precision"]] / prevOptions[["populationValue"]]
+      } else {
+        bound 		    <- parentState[["confBound"]]
+        mle 			<- parentState[["mle"]]
+        precision 	    <- parentState[["precision"]]
+      }
+      
+      objectiveColor 	<- "orange"
+      boundColor 		<- ifelse(bound < materiality, yes = rgb(0, 1, .7, 1), no = rgb(1, 0, 0, 1))
+      precisionColor 	<- ifelse(precision < minPrecision, yes = rgb(0, 1, .7, 1), no = rgb(1, 0, 0, 1))
+      
+      if(options[["performanceMateriality"]] && !options[["minimumPrecision"]]){
+        label <- rev(c(gettext("Performance materiality"), gettext("Maximum error"), gettext("Most likely error")))
+        values <- rev(c(materiality, bound, mle))
+        fill <- rev(c(objectiveColor, boundColor, "#1380A1"))
+      } else if(!options[["performanceMateriality"]] && options[["minimumPrecision"]]){
+        label <- rev(c(gettext("Required precision"), gettext("Obtained precision"), gettext("Maximum error"), gettext("Most likely error")))
+        values <- rev(c(minPrecision, precision, bound, mle))
+        fill <- rev(c(objectiveColor, precisionColor, "#1380A1", "#1380A1"))
+      } else if(options[["performanceMateriality"]] && options[["minimumPrecision"]]){
+        label <- rev(c(gettext("Required precision"), gettext("Obtained precision"), gettext("Performance materiality"), gettext("Maximum error"), gettext("Most likely error")))
+        values <- rev(c(minPrecision, precision, materiality, bound, mle))
+        fill <- rev(c(objectiveColor, precisionColor, objectiveColor, boundColor, "#1380A1"))
+      }
+      
+      if(options[["display"]] == "displayValues")
+        values <- values * prevOptions[["populationValue"]]
+      
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, values), min.n = 4)
+      
+      if(options[["display"]] == "displayValues"){
+        x.labels <- format(JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), min.n = 4), scientific = FALSE)
+        values.labels <- paste(prevOptions[["valuta"]], ceiling(values))
+      } else {
+        x.labels <- paste0(round(JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), min.n = 4) * 100, 4), "%")
+        values.labels <- paste0(round(values * 100, 2), "%")
+      }
+      
+      plotData 	    <- data.frame(x = label, y = values)
+      plotData$x 	<- factor(plotData$x, levels = plotData$x)
+      
+      yLimits <- c(0, 1.1 * max(values))
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), min.n = 4)
+      
+      if(mle < 0 || bound < 0 || precision < 0){
+        # Here we adjust the axes if the mle/bound/precision is negative
+        yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(min(values), 1.1 * max(values), length.out = 100), min.n = 4)
+        x.labels <- format(JASPgraphs::getPrettyAxisBreaks(seq(min(values), 1.1 * max(values), length.out = 100), min.n = 4), scientific = FALSE)
+        yLimits <- c(min(values), 1.1 * max(values))
+      }
+      
+    })
     
-    if(options[["variableType"]] == "variableTypeAuditValues" &&  options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
-      bound 		<- parentState[["upperBound"]] / prevOptions[["populationValue"]]
-	  mle 			<- parentState[["mle"]] / prevOptions[["populationValue"]]
-	  precision 	<- parentState[["precision"]] / prevOptions[["populationValue"]]
+    if(!JASP::isTryError(plotError)){
+      
+      plot <- ggplot2::ggplot(data = plotData, mapping = ggplot2::aes(x = x, y = y)) +
+        ggplot2::geom_bar(stat = "identity", col = "black", size = 1, fill = fill) +
+        ggplot2::coord_flip() +
+        ggplot2::xlab(NULL) +
+        ggplot2::annotate("text", y = values, x = 1:length(values), label = values.labels,
+                          size = 6, vjust = 0.5, hjust = -0.3) +
+        ggplot2::scale_y_continuous(name = "", breaks = yBreaks, limits = yLimits, labels = x.labels)
+      
+      jfaTheme <- ggplot2::theme(axis.ticks.x = ggplot2::element_blank(),
+                                 axis.ticks.y = ggplot2::element_blank(),
+                                 axis.text.y = ggplot2::element_text(hjust = 0),
+                                 panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb", size = 0.5))
+      
+      plot <- JASPgraphs::themeJasp(plot, sides = "") + jfaTheme
+      
+      figure$plotObject <- plot
     } else {
-	  bound 		<- parentState[["confBound"]]
-	  mle 			<- parentState[["mle"]]
-	  precision 	<- parentState[["precision"]]
-	}
-    
-    objectiveColor 	<- "orange"
-    boundColor 		<- ifelse(bound < materiality, yes = rgb(0, 1, .7, 1), no = rgb(1, 0, 0, 1))
-    precisionColor 	<- ifelse(precision < minPrecision, yes = rgb(0, 1, .7, 1), no = rgb(1, 0, 0, 1))
-    
-    if(options[["performanceMateriality"]] && !options[["minimumPrecision"]]){
-      label <- rev(c(gettext("Performance materiality"), gettext("Maximum error"), gettext("Most likely error")))
-      values <- rev(c(materiality, bound, mle))
-      fill <- rev(c(objectiveColor, boundColor, "#1380A1"))
-    } else if(!options[["performanceMateriality"]] && options[["minimumPrecision"]]){
-      label <- rev(c(gettext("Required precision"), gettext("Obtained precision"), gettext("Maximum error"), gettext("Most likely error")))
-      values <- rev(c(minPrecision, precision, bound, mle))
-      fill <- rev(c(objectiveColor, precisionColor, "#1380A1", "#1380A1"))
-    } else if(options[["performanceMateriality"]] && options[["minimumPrecision"]]){
-      label <- rev(c(gettext("Required precision"), gettext("Obtained precision"), gettext("Performance materiality"), gettext("Maximum error"), gettext("Most likely error")))
-      values <- rev(c(minPrecision, precision, materiality, bound, mle))
-      fill <- rev(c(objectiveColor, precisionColor, objectiveColor, boundColor, "#1380A1"))
+      figure$setError(gettextf("An error occurred while creating this plot: %1$s", JASP:::.extractErrorMessage(plotError)))
     }
-    
-    if(options[["display"]] == "displayValues")
-      values <- values * prevOptions[["populationValue"]]
-    
-    yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, values), min.n = 4)
-    
-    if(options[["display"]] == "displayValues"){
-      x.labels <- format(JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), min.n = 4), scientific = FALSE)
-      values.labels <- paste(prevOptions[["valuta"]], ceiling(values))
-    } else {
-      x.labels <- paste0(round(JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), min.n = 4) * 100, 4), "%")
-      values.labels <- paste0(round(values * 100, 2), "%")
-    }
-    
-    plotData 	<- data.frame(x = label, y = values)
-    plotData$x 	<- factor(plotData$x, levels = plotData$x)
-    
-    yLimits <- c(0, 1.1 * max(values))
-    yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), min.n = 4)
-    
-    if(mle < 0 || bound < 0){
-      # Here we adjust the axes if the mle turns out to be negative
-      yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(min(values), 1.1 * max(values), length.out = 100), min.n = 4)
-      x.labels <- format(JASPgraphs::getPrettyAxisBreaks(seq(min(values), 1.1 * max(values), length.out = 100), min.n = 4), scientific = FALSE)
-      yLimits <- c(min(values), 1.1 * max(values))
-    }
-    
-    plot <- ggplot2::ggplot(data = plotData, mapping = ggplot2::aes(x = x, y = y)) +
-      ggplot2::geom_bar(stat = "identity", col = "black", size = 1, fill = fill) +
-      ggplot2::coord_flip() +
-      ggplot2::xlab(NULL) +
-      ggplot2::annotate("text", y = values, x = 1:length(values), label = values.labels,
-                        size = 6, vjust = 0.5, hjust = -0.3) +
-      ggplot2::scale_y_continuous(name = "", breaks = yBreaks, limits = yLimits, labels = x.labels)
-    
-    jfaTheme <- ggplot2::theme(axis.ticks.x = ggplot2::element_blank(),
-                               axis.ticks.y = ggplot2::element_blank(),
-                               axis.text.y = ggplot2::element_text(hjust = 0),
-                               panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb", size = 0.5))
-    
-    plot <- JASPgraphs::themeJasp(plot, sides = "") + jfaTheme
-    
-    figure$plotObject <- plot
   }
   
   if(options[["explanatoryText"]]){
@@ -3673,16 +3723,16 @@
 ################################################################################
 
 .jfa.additionalSamples.table <- function(options, jaspResults, positionInContainer = 2){
-
+  
   if(!options[["bayesianAnalysis"]] || !options[["additionalSamples"]])
-	return()
-
+    return()
+  
   prevContainer   	<- jaspResults[["evaluationContainer"]]
   prevState       	<- prevContainer[["evaluationState"]]$object
   parentContainer 	<- jaspResults[["conclusionContainer"]]
-
+  
   if(is.nan(prevState[["t"]]))
-	return()
+    return()
   
   # Produce relevant terms conditional on the analysis result
   approveMateriality <- TRUE
@@ -3911,13 +3961,13 @@
   alphaPosterior 	<- prior[["description"]]$alpha + expErrors
   betaPosterior 	<- prior[["description"]]$beta + n - expErrors
   expectedPosterior <- list(description = list(alpha = alphaPosterior, beta = betaPosterior),
-				 			statistics = list(mean = alphaPosterior / (alphaPosterior + betaPosterior), 
-							 				  mode = (alphaPosterior - 1) / (alphaPosterior + betaPosterior - 2), 
-											  ub = qbeta(options[["confidence"]], alphaPosterior, betaPosterior), 
-											  precision = qbeta(options[["confidence"]], alphaPosterior, betaPosterior) - ((alphaPosterior - 1) / (alphaPosterior + betaPosterior - 2))),
-							hypotheses = list(pHmin = pbeta(adjustedMateriality, alphaPosterior, betaPosterior), 
-											  pHplus = pbeta(adjustedMateriality, alphaPosterior, betaPosterior, lower.tail = F), 
-											  oddHmin = pbeta(adjustedMateriality, alphaPosterior, betaPosterior) / pbeta(adjustedMateriality, alphaPosterior, betaPosterior, lower.tail = F)))
+                            statistics = list(mean = alphaPosterior / (alphaPosterior + betaPosterior), 
+                                              mode = (alphaPosterior - 1) / (alphaPosterior + betaPosterior - 2), 
+                                              ub = qbeta(options[["confidence"]], alphaPosterior, betaPosterior), 
+                                              precision = qbeta(options[["confidence"]], alphaPosterior, betaPosterior) - ((alphaPosterior - 1) / (alphaPosterior + betaPosterior - 2))),
+                            hypotheses = list(pHmin = pbeta(adjustedMateriality, alphaPosterior, betaPosterior), 
+                                              pHplus = pbeta(adjustedMateriality, alphaPosterior, betaPosterior, lower.tail = F), 
+                                              oddHmin = pbeta(adjustedMateriality, alphaPosterior, betaPosterior) / pbeta(adjustedMateriality, alphaPosterior, betaPosterior, lower.tail = F)))
   
   
   result <- list(sampleSize = n,
@@ -3928,7 +3978,7 @@
                  expectedSampleError = expErrors,
                  likelihood = "binomial",
                  prior = prior,
-				 expectedPosterior = expectedPosterior,
+                 expectedPosterior = expectedPosterior,
                  startingPoint = intervalStartingPoint)
   
   return(result)
@@ -3992,18 +4042,18 @@
   
   # The total obtained precision
   precisionAsFraction <- (V95 - V) / prevOptions[["populationValue"]]
-
+  
   adjustedMateriality <- (prevOptions[["materiality"]] / (1 - (sum(sample[, .v(options[["monetaryVariable"]])]) / prevOptions[["populationValue"]])))
   alphaPosterior 	<- prior[["description"]]$alpha + totalTaint
   betaPosterior 	<- prior[["description"]]$beta + n - totalTaint
   posterior 		<- list(description = list(alpha = alphaPosterior, beta = betaPosterior),
-				 			statistics = list(mean = alphaPosterior / (alphaPosterior + betaPosterior), 
-							 				  mode = (alphaPosterior - 1) / (alphaPosterior + betaPosterior - 2), 
-											  ub = qbeta(options[["confidence"]], alphaPosterior, betaPosterior), 
-											  precision = qbeta(options[["confidence"]], alphaPosterior, betaPosterior) - ((alphaPosterior - 1) / (alphaPosterior + betaPosterior - 2))),
-							hypotheses = list(pHmin = pbeta(adjustedMateriality, alphaPosterior, betaPosterior), 
-											  pHplus = pbeta(adjustedMateriality, alphaPosterior, betaPosterior, lower.tail = F), 
-											  oddHmin = pbeta(adjustedMateriality, alphaPosterior, betaPosterior) / pbeta(adjustedMateriality, alphaPosterior, betaPosterior, lower.tail = F)))
+                      statistics = list(mean = alphaPosterior / (alphaPosterior + betaPosterior), 
+                                        mode = (alphaPosterior - 1) / (alphaPosterior + betaPosterior - 2), 
+                                        ub = qbeta(options[["confidence"]], alphaPosterior, betaPosterior), 
+                                        precision = qbeta(options[["confidence"]], alphaPosterior, betaPosterior) - ((alphaPosterior - 1) / (alphaPosterior + betaPosterior - 2))),
+                      hypotheses = list(pHmin = pbeta(adjustedMateriality, alphaPosterior, betaPosterior), 
+                                        pHplus = pbeta(adjustedMateriality, alphaPosterior, betaPosterior, lower.tail = F), 
+                                        oddHmin = pbeta(adjustedMateriality, alphaPosterior, betaPosterior) / pbeta(adjustedMateriality, alphaPosterior, betaPosterior, lower.tail = F)))
   
   result <- list(confBound = V95AsFraction,
                  confBoundUnseen = Vt95 / unseen_value,
@@ -4014,7 +4064,7 @@
                  t = totalTaint,
                  n = n,
                  prior = prior,
-				 posterior = posterior,
+                 posterior = posterior,
                  confidence = options[["confidence"]],
                  method = "binomial",
                  likelihood = "binomial",

@@ -98,7 +98,7 @@ Form
 								decimals: 		2
 								defaultValue: 	0
 								name: 			"materialityPercentage"
-								fieldWidth: 	40
+								fieldWidth: 	50 * preferencesModel.uiScale
 							}
 						}
 					}
@@ -122,7 +122,7 @@ Form
 								name: 			"materialityValue"
 								defaultValue: 	0
 								min: 			0
-								fieldWidth: 	90
+								fieldWidth: 	90 * preferencesModel.uiScale
 								decimals: 		2
 								label: 			"€"
 							}
@@ -172,7 +172,7 @@ Form
 				id: 							populationSize
 				name: 							"populationSize"
 				text: 							qsTr("Size")
-				fieldWidth: 					80
+				fieldWidth: 					80 * preferencesModel.uiScale
 				defaultValue: 					0
 				min: 							0
 			}
@@ -183,7 +183,7 @@ Form
 				name: 							"populationValue"
 				text: 							qsTr("Value")
 				defaultValue: 					0
-				fieldWidth: 					80
+				fieldWidth: 					80 * preferencesModel.uiScale
 				min: 							0
 				decimals: 						2
 				onValueChanged:					
@@ -347,7 +347,7 @@ Form
 
 	Section
 	{
-		title: 									qsTr("A.     Critical Transactions")
+		title: 									qsTr("Critical Transactions")
 		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 		columns: 								1
 
@@ -397,7 +397,7 @@ Form
 
 	Section 
 	{
-		title: 									qsTr("B.     Efficiency Techniques")
+		title: 									qsTr("Efficiency Techniques")
 		columns: 								1
 		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 
@@ -435,7 +435,7 @@ Form
 
 	Section 
 	{
-		title: 									qsTr("C.     Prior Information")
+		title: 									qsTr("Prior Information")
 		columns: 								3
 		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 
@@ -490,7 +490,7 @@ Form
 					decimals: 					2
 					defaultValue: 				0
 					visible: 					expectedRelative.checked
-					fieldWidth: 				40
+					fieldWidth: 				50 * preferencesModel.uiScale
 				}
 			}
 
@@ -512,7 +512,7 @@ Form
 					min: 						0
 					decimals: 					3
 					visible: 					expectedAbsolute.checked
-					fieldWidth: 				60
+					fieldWidth: 				60 * preferencesModel.uiScale
 					label: 						performanceMateriality.checked & materialityAbsolute.checked ? "€" : ""
 				}
 			}
@@ -702,7 +702,7 @@ Form
 
 	Section
 	{
-		title: 									qsTr("D.     Advanced Options")
+		title: 									qsTr("Advanced Options")
 		columns: 								3
 		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 
@@ -783,7 +783,7 @@ Form
 
 	Section
 	{
-		title: 									qsTr("E.     Tables and Plots")
+		title: 									qsTr("Tables and Plots")
 		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 		columns:								2
 
