@@ -36,7 +36,7 @@ Form {
 				id: 						populationSize
 				name: 						"populationSize"
 				text: 						qsTr("Size")
-				fieldWidth: 				100
+				fieldWidth: 				100 * preferencesModel.uiScale
 				defaultValue: 				0
 				min: 						0
 			}
@@ -47,7 +47,7 @@ Form {
 				name: 						"populationValue"
 				text: 						qsTr("Value")
 				defaultValue: 				0
-				fieldWidth: 				100
+				fieldWidth: 				100 * preferencesModel.uiScale
 				min: 						0
 				decimals: 					2
 				enabled:					!mpu.checked
@@ -186,7 +186,7 @@ Form {
 					visible: 				requiredSampleSize.checked
 					text: 					qsTr("for an uncertainty of:")
 					defaultValue: 			100000
-					fieldWidth: 			100
+					fieldWidth: 			100 * preferencesModel.uiScale
 					min: 					0
 					decimals: 				2
 				}

@@ -103,7 +103,7 @@ Form
 								decimals: 		2
 								defaultValue: 	0
 								name: 			"materialityPercentage"
-								fieldWidth: 	40
+								fieldWidth: 	50 * preferencesModel.uiScale
 							}
 						}
 					}
@@ -127,7 +127,7 @@ Form
 								name: 			"materialityValue"
 								defaultValue: 	0
 								min: 			0
-								fieldWidth: 	90
+								fieldWidth: 	90 * preferencesModel.uiScale
 								decimals: 		2
 								label: 			"€"
 							}
@@ -157,6 +157,7 @@ Form
 					min:						0.5
 					max:						99.9
 					label: 						qsTr("Relative")
+					fieldWidth:					50 * preferencesModel.uiScale
 					visible: 					minimumPrecision.checked
 				}
 			}
@@ -177,7 +178,7 @@ Form
 				id: 							populationSize
 				name: 							"populationSize"
 				text: 							qsTr("Size")
-				fieldWidth: 					80
+				fieldWidth: 					80 * preferencesModel.uiScale
 				defaultValue: 					0
 				min: 							0
 			}
@@ -188,7 +189,7 @@ Form
 				name: 							"populationValue"
 				text: 							qsTr("Value")
 				defaultValue: 					0
-				fieldWidth: 					80
+				fieldWidth: 					80 * preferencesModel.uiScale
 				min: 							0
 				decimals: 						2
 				onValueChanged:					
@@ -353,7 +354,7 @@ Form
 
 	Section
 	{
-		title: 									qsTr("A.     Critical Transactions")
+		title: 									qsTr("Critical Transactions")
 		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 		columns: 								1
 
@@ -403,7 +404,7 @@ Form
 
 	Section
 	{
-		text: 									qsTr("B.     Risk Assessments")
+		text: 									qsTr("Risk Assessments")
 		columns:								3
 		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 
@@ -498,7 +499,7 @@ Form
 
 	Section
 	{
-		title: 									qsTr("C.     Advanced Options");
+		title: 									qsTr("Advanced Options");
 		columns: 								2
 		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 
@@ -620,7 +621,7 @@ Form
 
 	Section
 	{
-		title: 									qsTr("D.     Tables and Plots")
+		title: 									qsTr("Tables and Plots")
 		columns:								2
 		enabled:								((performanceMateriality.checked & ((materialityRelative.checked & materialityPercentage.value > 0) | (materialityAbsolute.checked & materialityValue.value > 0 & populationValue.value > 0))) | (minimumPrecision.checked & minimumPrecisionPercentage.value > 0)) & populationSize.value > 0
 

@@ -125,7 +125,7 @@ Form
 									decimals: 		2
 									defaultValue: 	0
 									name: 			"materialityPercentage"
-									fieldWidth: 	40
+									fieldWidth: 	50 * preferencesModel.uiScale
 								}
 							}
 						}
@@ -148,7 +148,7 @@ Form
 									name: 			"materialityValue"
 									defaultValue: 	0
 									min: 			0
-									fieldWidth: 	90
+									fieldWidth: 	90 * preferencesModel.uiScale
 									decimals: 		2
 									label: 			euroValuta.checked ? "€" : (dollarValuta.checked ? "$" : otherValutaName.value)
 								}
@@ -178,6 +178,7 @@ Form
 						min:						0.1
 						max:						100
 						label: 						qsTr("Relative")
+						fieldWidth:					50 * preferencesModel.uiScale
 						visible: 					minimumPrecision.checked
 					}
 				}
@@ -309,7 +310,7 @@ Form
 						id: 						criticalTransactions
 						name: 						"criticalTransactions"
 						text: 						qsTr("Column name critical transactions: ")
-						fieldWidth: 				120
+						fieldWidth: 				120 * preferencesModel.uiScale
 						value: 						"Critical"
 					}
 
@@ -500,7 +501,7 @@ Form
 						decimals: 					2
 						defaultValue: 				0
 						visible: 					expectedRelative.checked
-						fieldWidth: 				40
+						fieldWidth: 				50 * preferencesModel.uiScale
 						onValueChanged:				if(expectedRelative.checked & expectedPercentage.value > 0) 
 						{
 													irHigh.click()
@@ -527,7 +528,7 @@ Form
 						min: 						0
 						decimals: 					3
 						visible: 					expectedAbsolute.checked
-						fieldWidth: 				60
+						fieldWidth: 				60 * preferencesModel.uiScale
 						label: 						performanceMateriality.checked & materialityAbsolute.checked ? (euroValuta.checked ? "€" : (dollarValuta.checked ? "$" : otherValutaName.value)) : ""
 						onValueChanged:				if(expectedAbsolute.checked & expectedNumber.value > 0) 
 						{
@@ -583,6 +584,7 @@ Form
 				{
 					name: 							"sampleSizeIncrease"
 					text: 							qsTr("Step size")
+					fieldWidth:						50 * preferencesModel.uiScale
 					min: 							1
 					max:							20
 					defaultValue: 					1
@@ -624,7 +626,7 @@ Form
 					{
 						id: 						otherValutaName
 						name: 						"otherValutaName"
-						fieldWidth: 				100
+						fieldWidth: 				100 * preferencesModel.uiScale
 						enabled: 					otherValuta.checked
 						visible: 					otherValuta.checked
 					}	
@@ -883,7 +885,7 @@ Form
 				defaultValue: 						1
 				min: 								1
 				max: 								99999
-				fieldWidth: 						60
+				fieldWidth: 						60 * preferencesModel.uiScale
 				enabled: 							!pasteVariables.checked
 			}
 		}
@@ -1126,7 +1128,7 @@ Form
 					id: 							sampleFilter
 					name: 							"sampleFilter"
 					text: 							qsTr("Column name selection result: ")
-					fieldWidth: 					120
+					fieldWidth: 					120 * preferencesModel.uiScale
 					value:							"SelectionResult"
 				}
 
@@ -1135,7 +1137,7 @@ Form
 					id: 							variableName
 					name: 							"variableName"
 					text: 							variableTypeAuditValues.checked ? qsTr("Column name Soll values: ") : qsTr("Column name audit result: ")
-					fieldWidth: 					120
+					fieldWidth: 					120 * preferencesModel.uiScale
 					value: 							"AuditResult"
 				}
 			}
