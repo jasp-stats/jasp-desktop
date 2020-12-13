@@ -1721,8 +1721,8 @@ msgstr "Games-Howel"
 msgid "Games-Howell Post Hoc Comparisons - %s"
 msgstr "Games-Howell Post-Hoc Vergelijkingen - %s"
 
-msgid "Mean Difference"
-msgstr "Gemiddeld Verschil"
+msgid "Sample Mean"
+msgstr "Steekproefgemiddelde"
 
 msgid "%.0f%% CI for Mean Difference"
 msgstr "%.0f%% CI voor Gemiddelde Verschil"
@@ -8815,8 +8815,8 @@ msgstr "Hodges-Lehmann Schatting"
 msgid "Rank-Biserial Correlation"
 msgstr "Rank-Biseriële Correlatie"
 
-msgid "Location Parameter"
-msgstr "Locatieparameter"
+msgid "Location Estimate"
+msgstr "Locatieschatting"
 
 msgid "Student t-test and Welch t-test"
 msgstr "Student t-toets en Welch t-toets"
@@ -8900,15 +8900,16 @@ msgstr "Student t-toets en Z-toets"
 msgid "Z-test"
 msgstr "Z-toets"
 
-msgid "For the %s, location parameter is given by mean difference <em>d</em>."
+msgid "For the %s, location estimate is given by the sample mean <em>d</em>."
 msgstr ""
-"Voor de %s wordt locatieparameter gegeven door gemiddeld verschil <em>d</em>."
+"Voor de %s wordt de locatieschatting gegeven door het steekproefgemiddelde <em>d</em>."
+
 
 msgid ""
-"For the Wilcoxon test, location parameter is given by the Hodges-Lehmann "
+"For the Wilcoxon test, location estimate is given by the Hodges-Lehmann "
 "estimate."
 msgstr ""
-"Voor de Wilcoxontoets wordt de locatieparameter gegeven door de Hodges-"
+"Voor de Wilcoxontoets wordt de locatieschatting gegeven door de Hodges-"
 "Lehmann schatting."
 
 msgid "For the Student t-test, effect size is given by Cohen's <em>d</em>."
