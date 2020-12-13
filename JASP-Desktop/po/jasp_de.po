@@ -9199,8 +9199,8 @@ msgid "Additional Statistics"
 msgstr "Weitere Statistiken"
 
 msgctxt "TTestOneSample|"
-msgid "Location parameter"
-msgstr "Lageparameter"
+msgid "Location estimate"
+msgstr "Lageschätzung"
 
 msgctxt "TTestOneSample|"
 msgid "Confidence interval"

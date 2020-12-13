@@ -9200,8 +9200,8 @@ msgid "Additional Statistics"
 msgstr "Aanvullende statistieken"
 
 msgctxt "TTestOneSample|"
-msgid "Location parameter"
-msgstr "Locatieparameter"
+msgid "Location estimate"
+msgstr "Locatieschatting"
 
 msgctxt "TTestOneSample|"
 msgid "Confidence interval"
