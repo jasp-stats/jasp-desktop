@@ -18,6 +18,7 @@
 
 #include "listmodelavailableinterface.h"
 #include "listmodelassignedinterface.h"
+#include "jasplistcontrol.h"
 #include "log.h"
 
 void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControlsOptions&)
@@ -130,15 +131,51 @@ void ListModelAvailableInterface::sourceNamesChanged(QMap<QString, QString> map)
 	}
 
 	if (allTermsChangedMap.size() > 0)
-		emit availableNamesChanged(allTermsChangedMap);
+		emit namesChanged(allTermsChangedMap);
 }
 
-int ListModelAvailableInterface::sourceTypeChanged(QString name)
+void ListModelAvailableInterface::sourceColumnsChanged(QStringList columns)
 {
-	int index = ListModelDraggable::sourceTypeChanged(name);
+	ListModelDraggable::sourceColumnsChanged(columns);
 
-	if (_allTerms.contains(name))
-		emit availableTypeChanged(name);
+	QStringList changedColumns;
+
+	for (const QString& column : columns)
+	{
+		if (_allTerms.contains(column))
+			changedColumns.push_back(column);
+	}
+
+	if (changedColumns.size() > 0)
+		emit columnsChanged(changedColumns);
+}
+
+int ListModelAvailableInterface::sourceColumnTypeChanged(QString name)
+{
+	int index = ListModelDraggable::sourceColumnTypeChanged(name);
+
+	if (index == -1 && _allTerms.contains(name))
+		emit columnTypeChanged(name);
+
+	return index;
+}
+
+int ListModelAvailableInterface::sourceLabelChanged(QString columnName, QString orgLabel, QString newLabel)
+{
+	int index = ListModelDraggable::sourceLabelChanged(columnName, orgLabel, newLabel);
+
+	if (index == -1 && _allTerms.contains(columnName))
+		emit labelChanged(columnName, orgLabel, newLabel);
+
+	return index;
+}
+
+int ListModelAvailableInterface::sourceLabelsReordered(QString columnName)
+{
+	int index = ListModelDraggable::sourceLabelsReordered(columnName);
+
+	if (index == -1 && _allTerms.contains(columnName))
+		emit labelsReordered(columnName);
 
 	return index;
 }
@@ -163,37 +200,23 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 	endResetModel();
 }
 
-void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *model)
+void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *assignedModel)
 {
-	_assignedModels.push_back(model);
+	_assignedModels.push_back(assignedModel);
 
-	connect(model, &ListModelAssignedInterface::destroyed, this, &ListModelAvailableInterface::removeAssignedModel);
-
-	 if (!areTermsVariables())		 model->setTermsAreVariables(false);
-	 if (areTermsInteractions())	 model->setTermsAreInteractions(true);
+	connect(assignedModel, &ListModelAssignedInterface::destroyed, this, &ListModelAvailableInterface::removeAssignedModel);
+	connect(this, &ListModelAvailableInterface::availableTermsReset, assignedModel, &ListModelAssignedInterface::availableTermsResetHandler);
+	connect(this, &ListModelAvailableInterface::namesChanged, assignedModel, &ListModelAssignedInterface::sourceNamesChanged);
+	connect(this, &ListModelAvailableInterface::columnsChanged, assignedModel, &ListModelAssignedInterface::sourceColumnsChanged);
+	connect(this, &ListModelAvailableInterface::columnTypeChanged, assignedModel, &ListModelAssignedInterface::sourceColumnTypeChanged);
+	connect(this, &ListModelAvailableInterface::labelChanged, assignedModel, &ListModelAssignedInterface::sourceLabelChanged);
+	connect(this, &ListModelAvailableInterface::labelsReordered, assignedModel, &ListModelAssignedInterface::sourceLabelsReordered);
+	connect(listView(), &JASPListControl::containsVariablesChanged, assignedModel->listView(), &JASPListControl::setContainsVariables);
+	connect(listView(), &JASPListControl::containsInteractionsChanged, assignedModel->listView(), &JASPListControl::setContainsInteractions);
 }
 
-void ListModelAvailableInterface::removeAssignedModel(ListModelDraggable* model)
+void ListModelAvailableInterface::removeAssignedModel(ListModelDraggable* assignedModel)
 {
-	_assignedModels.removeAll(qobject_cast<ListModelAssignedInterface*>(model));
+	_assignedModels.removeAll(qobject_cast<ListModelAssignedInterface*>(assignedModel));
 }
-
-void ListModelAvailableInterface::setTermsAreVariables(bool areVariables)
-{
-	ListModelDraggable::setTermsAreVariables(areVariables);
-
-	if (!areVariables)
-		for (ListModelAssignedInterface* model : _assignedModels)
-			model->setTermsAreVariables(areVariables);
-}
-
-void ListModelAvailableInterface::setTermsAreInteractions(bool interactions)
-{
-	ListModelDraggable::setTermsAreInteractions(interactions);
-
-	if (interactions)
-		for (ListModelAssignedInterface* model : _assignedModels)
-			model->setTermsAreInteractions(interactions);
-}
-
 

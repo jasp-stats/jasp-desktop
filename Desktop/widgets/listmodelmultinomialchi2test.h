@@ -32,9 +32,9 @@ public:
 	QString	getDefaultColName(size_t index) const	override;
 
 public slots:
-	void sourceTermsReset()						override;
-	void labelChanged(	 QString columnName, QString originalLabel, QString newLabel);
-	void labelsReordered(QString columnName);
+	void sourceTermsReset()																override;
+	int sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel)	override;
+	int sourceLabelsReordered(QString columnName)										override;
 
 private:
 	QString _columnBeingTracked = "";

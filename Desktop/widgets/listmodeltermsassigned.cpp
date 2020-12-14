@@ -36,10 +36,10 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsOpti
 {
 	ListModelAssignedInterface::initTerms(terms, allOptionsMap);
 
-	if (source() != nullptr)
+	if (availableModel() != nullptr)
 	{
 		if (!_copyTermsWhenDropped)
-			source()->removeTermsInAssignedList();
+			availableModel()->removeTermsInAssignedList();
 	}
 }
 
@@ -52,7 +52,7 @@ void ListModelTermsAssigned::availableTermsResetHandler(Terms termsAdded, Terms 
 		endResetModel();
 
 		if (!_copyTermsWhenDropped)
-			source()->removeTermsInAssignedList();
+			availableModel()->removeTermsInAssignedList();
 	}
 
 	if (termsRemoved.size() > 0)
@@ -80,7 +80,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 	Terms newTerms = terms();
 	if (dropItemIndex < 0 && _maxRows == 1)
 		dropItemIndex = 0; // for single row, per default replace old item by new one.
-	if (dropItemIndex >= 0 && dropItemIndex < int(terms().size()))
+	if (dropItemIndex >= 0 && dropItemIndex < rowCount())
 		newTerms.insert(dropItemIndex, termsToAdd);
 	else
 		newTerms.add(termsToAdd);
@@ -100,28 +100,9 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 	return _tempTermsToSendBack;
 }
 
-Terms ListModelTermsAssigned::termsEx(const QString &what)
-{
-	if (_maxRows == 1 && what == "levels")
-	{
-		Terms result;
-		if (rowCount() == 1)
-		{
-			QString term = data(index(0,0)).toString();
-			QStringList labels = DataSetPackage::pkg()->getColumnLabelsAsStringList(term.toStdString());
-			for (const QString& label : labels)
-				result.add(label);
-		}
-
-		return result;
-	}
-	else
-		return ListModelAssignedInterface::termsEx(what);
-}
-
 void ListModelTermsAssigned::removeTerm(int index)
 {
-	if (index < 0 || index >= int(terms().size())) return;
+	if (index < 0 || index >= rowCount()) return;
 
 	beginResetModel();
 

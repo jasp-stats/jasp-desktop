@@ -36,8 +36,6 @@ public:
 	void						replaceName(std::string oldName, std::string newName)			override;
 	void						removeName(std::string name)									override;
 	std::set<std::string>		usedVariables()											const	override;
-	void						removeUsedVariable(const std::string & var)										override	{ removeName(var); }
-	void						replaceVariableName(const std::string & oldName, const std::string & newName)	override	{ replaceName(oldName, newName); }
 };
 
 #endif // OPTIONVARIABLESGROUPS_H

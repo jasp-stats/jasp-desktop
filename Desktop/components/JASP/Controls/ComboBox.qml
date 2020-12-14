@@ -20,14 +20,13 @@ ComboBoxBase
 	property alias	value:					comboBox.currentText
 	property alias	indexDefaultValue:		comboBox.currentIndex
 	property alias	fieldWidth:				control.modelWidth
-	property bool	showVariableTypeIcon:	!source && !values
+	property bool	showVariableTypeIcon:	containsVariables
 	property var	enabledOptions:			[]
 	property bool	setLabelAbove:			false
 	property int	controlMinWidth:		0
 	property bool	setWidthInForm:			true
 	property bool	useExternalBorder:		true
 	property bool	showBorder:				true
-	property bool	useModelDefinedIcon:	false
 	property bool	addScrollBar:			false
 	property bool	showEmptyValueAsNormal:	false
 	property bool	addLineAfterEmptyValue:	false
@@ -130,7 +129,7 @@ ComboBoxBase
 				width:					15 * preferencesModel.uiScale
 				x:						3  * preferencesModel.uiScale
 				anchors.verticalCenter: parent.verticalCenter
-				source:					!visible ? "" : jaspTheme.iconPath + ( enabled ? iconFiles[comboBox.currentColumnType] : iconDisabledFiles[comboBox.currentColumnType] )
+				source:					!visible ? "" : comboBox.currentColumnTypeIcon
 				visible:				comboBox.showVariableTypeIcon && comboBox.currentColumnType && !control.isEmptyValue
 			}
 
@@ -252,7 +251,7 @@ ComboBoxBase
 					x:							1 * preferencesModel.uiScale
 					height:						15 * preferencesModel.uiScale
 					width:						15 * preferencesModel.uiScale
-					source:						useModelDefinedIcon ? model.iconfile : (visible ? jaspTheme.iconPath + (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : "")
+					source:						model.columnTypeIcon
 					visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
 
 					anchors.verticalCenter:		parent.verticalCenter

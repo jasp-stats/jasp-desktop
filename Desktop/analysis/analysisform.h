@@ -20,17 +20,13 @@
 #define ANALYSISFORM_H
 
 #include <QMap>
+#include <QQuickItem>
 
-#include "dataset.h"
 #include "options/boundcontrol.h"
 #include "options/options.h"
 #include "options/optionvariables.h"
 
 #include "analysis/options/variableinfo.h"
-#include "analysis.h"
-
-#include <QQuickItem>
-
 #include "analysis.h"
 #include "widgets/listmodel.h"
 #include "options/variableinfo.h"
@@ -43,6 +39,7 @@
 class ListModelTermsAssigned;
 class JASPControl;
 class ExpanderButtonBase;
+class ColumnsModel;
 
 class AnalysisForm : public QQuickItem, public VariableInfoProvider
 {
@@ -138,8 +135,8 @@ public:
 	QString		warnings()			const { return msgsListToString(_formWarnings);	}
 	QVariant	analysis()			const { return QVariant::fromValue(_analysis);	}
 
-	static void					setColumnsModel(QAbstractItemModel* model);
-	static QAbstractItemModel*	getColumnsModel()		{ return _columnsModel;		}
+	static void					setColumnsModel(ColumnsModel* model);
+	static ColumnsModel*		getColumnsModel()		{ return _columnsModel;		}
 	static int					getColumnsModelRole()	{ return _columnsModelRole;	}
 
 protected:
@@ -192,7 +189,7 @@ private:
 												_formCompleted = false;
 	QString										_info;
 
-	static QAbstractItemModel*					_columnsModel;
+	static ColumnsModel*						_columnsModel;
 	static int									_columnsModelRole;
 
 };

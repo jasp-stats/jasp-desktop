@@ -41,9 +41,6 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QStrin
 	parent->setProperty("parseDefaultValue", false);
 	parent->setProperty("defaultEmptyValue", _defaultCellVal);
 
-	connect(DataSetPackage::pkg(), &DataSetPackage::labelChanged,		this, &ListModelCustomContrasts::labelChanged);
-	connect(DataSetPackage::pkg(), &DataSetPackage::labelsReordered,	this, &ListModelCustomContrasts::labelsReordered);
-
 	connect(this, &ListModelCustomContrasts::variableCountChanged,	[&]() { listView()->setProperty("variableCount", _variables.size()); });
 	connect(listView(), SIGNAL(scaleFactorChanged()),			this, SLOT(scaleFactorChanged()));
 }
@@ -73,7 +70,7 @@ void ListModelCustomContrasts::_getVariablesAndLabels(QStringList& variables, QV
 			labels = _factors[newVariable];
 		else
 		{
-			columnType colType = DataSetPackage::pkg()->getColumnType(fq(newVariable));
+			columnType colType = columnType(requestInfo(newVariable, VariableInfo::VariableType).toInt());
 			if (colType == columnType::scale)
 			{
 				if (_scaleFactor == 0)
@@ -86,7 +83,7 @@ void ListModelCustomContrasts::_getVariablesAndLabels(QStringList& variables, QV
 				}
 			}
 			else
-				labels = DataSetPackage::pkg()->getColumnLabelsAsStringList(fq(newVariable));
+				labels = requestInfo(newVariable, VariableInfo::Labels).toStringList();
 		}
 
 		QVector<QVector<QVariant> > copyAllLabels = allLabels;
@@ -431,10 +428,12 @@ void ListModelCustomContrasts::modelChangedSlot() // Should move this to listmod
 	}
 }
 
-void ListModelCustomContrasts::labelChanged(QString columnName, QString originalLabel, QString newLabel)
+int ListModelCustomContrasts::sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel)
 {
 	if (_labelChanged(columnName, originalLabel, newLabel))
 		refresh();
+
+	return 0;
 }
 
 bool ListModelCustomContrasts::_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel)
@@ -487,9 +486,10 @@ void ListModelCustomContrasts::_loadColumnInfo()
 	setColName(	_tableView->property("colName").toString());
 }
 
-void ListModelCustomContrasts::labelsReordered(QString )
+int ListModelCustomContrasts::sourceLabelsReordered(QString )
 {
 	_resetValuesEtc();
+	return 0;
 }
 
 void ListModelCustomContrasts::scaleFactorChanged()
@@ -500,7 +500,7 @@ void ListModelCustomContrasts::scaleFactorChanged()
 	QVector<QString> scaleVariables;
 	for (const QString& variable : _variables)
 	{
-		if (DataSetPackage::pkg()->getColumnType(fq(variable)) == columnType::scale)
+		if (requestInfo(variable, VariableInfo::VariableType).toInt() == int(columnType::scale))
 			scaleVariables.push_back(variable);
 	}
 

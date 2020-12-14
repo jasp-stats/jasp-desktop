@@ -391,7 +391,6 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				emit dataChanged(DataSetPackage::index(0, col, parent), DataSetPackage::index(rowCount(), col, parent), { Qt::DisplayRole });
 
 				emit labelChanged(tq(getColumnName(col)), originalLabel, tq(labels.getLabelFromRow(index.row())));
-				emit refreshAnalysesWithColumn(tq(getColumnName(columnIndex)));
 				return true;
 			}
 			break;
@@ -725,7 +724,6 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 
 		emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
 		emit columnDataTypeChanged(colName);
-		emit refreshAnalysesWithColumn(colName);
 	}
 
 	return changed;
@@ -1318,7 +1316,6 @@ void DataSetPackage::labelMoveRows(size_t column, std::vector<size_t> rows, bool
 		emit dataChanged(index(row, 0, p), index(row, columnCount(p), p));
 
 	emit labelsReordered(tq(getColumnName(column)));
-	emit refreshAnalysesWithColumn(tq(getColumnName(column)));
 }
 
 void DataSetPackage::labelReverse(size_t column)
@@ -1333,7 +1330,6 @@ void DataSetPackage::labelReverse(size_t column)
 
 	emit dataChanged(index(0, 0, p), index(rowCount(p), columnCount(p), p));
 	emit labelsReordered(tq(getColumnName(column)));
-	emit refreshAnalysesWithColumn(tq(getColumnName(column)));
 }
 
 void DataSetPackage::columnSetDefaultValues(std::string columnName, columnType columnType)

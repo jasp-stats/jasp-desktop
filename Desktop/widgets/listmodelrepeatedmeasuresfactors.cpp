@@ -31,7 +31,6 @@ ListModelRepeatedMeasuresFactors::ListModelRepeatedMeasuresFactors(JASPListContr
 	: ListModel(listView)
 {
 	_itemType = "fixedFactors";
-	setTermsAreVariables(false);
 }
 
 int ListModelRepeatedMeasuresFactors::rowCount(const QModelIndex &parent) const

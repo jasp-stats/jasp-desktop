@@ -30,12 +30,12 @@ class ComboBoxBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( int			currentIndex		READ currentIndex		WRITE setCurrentIndex			NOTIFY currentIndexChanged			)
-	Q_PROPERTY( QString		currentText			READ currentText		WRITE setCurrentText			NOTIFY currentTextChanged			)
-	Q_PROPERTY( QString		currentValue		READ currentValue		WRITE setCurrentValue			NOTIFY currentValueChanged			)
-	Q_PROPERTY( QString		startValue			READ startValue			WRITE setStartValue				NOTIFY startValueChanged			)
-	Q_PROPERTY( QString		currentColumnType	READ currentColumnType	WRITE setCurrentColumnType		NOTIFY currentColumnTypeChanged		)
-
+	Q_PROPERTY( int			currentIndex			READ currentIndex			WRITE setCurrentIndex		NOTIFY currentIndexChanged			)
+	Q_PROPERTY( QString		currentText				READ currentText			WRITE setCurrentText		NOTIFY currentTextChanged			)
+	Q_PROPERTY( QString		currentValue			READ currentValue			WRITE setCurrentValue		NOTIFY currentValueChanged			)
+	Q_PROPERTY( QString		startValue				READ startValue				WRITE setStartValue			NOTIFY startValueChanged			)
+	Q_PROPERTY( QString		currentColumnType		READ currentColumnType									NOTIFY currentColumnTypeChanged		)
+	Q_PROPERTY( QString		currentColumnTypeIcon	READ currentColumnTypeIcon								NOTIFY currentColumnTypeIconChanged	)
 public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
 
@@ -52,6 +52,7 @@ public:
 	const QString&		currentValue()						const				{ return _currentValue;			}
 	const QString&		startValue()						const				{ return _startValue;			}
 	const QString&		currentColumnType()					const				{ return _currentColumnType;	}
+	const QString&		currentColumnTypeIcon()				const				{ return _currentColumnTypeIcon;}
 	int					currentIndex()						const				{ return _currentIndex;			}
 
 signals:
@@ -59,17 +60,17 @@ signals:
 	void currentValueChanged();
 	void startValueChanged();
 	void currentColumnTypeChanged();
+	void currentColumnTypeIconChanged();
 	void currentIndexChanged();
 
 protected slots:
 	void termsChangedHandler() override;
 	void activatedSlot(int index);
+	void setCurrentIndex(int index);
+	void setCurrentValue(QString value);
+	void setCurrentText(QString text);
 
-	GENERIC_SET_FUNCTION(CurrentText,		_currentText,		currentTextChanged,			QString	)
-	GENERIC_SET_FUNCTION(CurrentValue,		_currentValue,		currentValueChanged,		QString	)
-	GENERIC_SET_FUNCTION(StartValue,		_startValue,		startValueChanged,			QString	)
-	GENERIC_SET_FUNCTION(CurrentColumnType,	_currentColumnType, currentColumnTypeChanged,	QString	)
-	GENERIC_SET_FUNCTION(CurrentIndex,		_currentIndex,		currentIndexChanged,		int		)
+	GENERIC_SET_FUNCTION(StartValue,	_startValue,	startValueChanged,	QString	)
 
 protected:
 	OptionList*					_boundTo				= nullptr;
@@ -77,13 +78,13 @@ protected:
 	QString						_currentText,
 								_currentValue,
 								_startValue,
-								_currentColumnType;
-	int							_currentIndex			= 0;
+								_currentColumnType,
+								_currentColumnTypeIcon;
+	int							_currentIndex			= -1;
 
 	int	 _getStartIndex();
 	void _resetItemWidth();
-	void _setCurrentValue(int index, bool setOption = true);
-
+	void _setCurrentProperties(int index, bool setOption = true);
 
 };
 

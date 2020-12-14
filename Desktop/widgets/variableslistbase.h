@@ -31,35 +31,52 @@ class VariablesListBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( ListViewType	listViewType	READ listViewType		WRITE setListViewType	NOTIFY listViewTypeChanged	)
-	Q_PROPERTY( int				columns			READ columns			WRITE setColumns		NOTIFY columnsChanged		)
+	Q_PROPERTY( ListViewType	listViewType			READ listViewType			WRITE setListViewType			NOTIFY listViewTypeChanged			)
+	Q_PROPERTY( int				columns					READ columns				WRITE setColumns				NOTIFY columnsChanged				)
+	Q_PROPERTY( QStringList		allowedColumns			READ allowedColumns			WRITE setAllowedColumns			NOTIFY allowedColumnsChanged		)
+	Q_PROPERTY( QStringList		suggestedColumns		READ suggestedColumns		WRITE setSuggestedColumns		NOTIFY suggestedColumnsChanged		)
+	Q_PROPERTY(	QStringList		suggestedColumnsIcons	READ suggestedColumnsIcons									NOTIFY suggestedColumnsIconsChanged	)
+	Q_PROPERTY( QStringList		columnsTypes			READ columnsTypes											NOTIFY columnsTypesChanged			)
+
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
 	
-	void						setUp()							override;
-	ListModel*					model()					const	override	{ return _draggableModel;	}
-	ListModelDraggable*			draggableNodel()		const				{ return _draggableModel;	}
-	void						setUpModel()					override;
-	void						bindTo(Option *option)			override	{ _boundControl->bindTo(option);				}
-	void						unbind()						override	{ _boundControl->unbind();						}
-	Option*						createOption()					override	{ return _boundControl->createOption();			}
-	Option*						boundTo()						override	{ return _boundControl->boundTo();				}
-	bool						isOptionValid(Option* option)	override	{ return _boundControl->isOptionValid(option);	}
-	bool						isJsonValid(const Json::Value& optionValue) override { return _boundControl->isJsonValid(optionValue);	}
+	void						setUp()										override;
+	ListModel*					model()								const	override	{ return _draggableModel;							}
+	ListModelDraggable*			draggableNodel()					const				{ return _draggableModel;							}
+	void						setUpModel()								override;
+	void						bindTo(Option *option)						override	{ _boundControl->bindTo(option);					}
+	void						unbind()									override	{ _boundControl->unbind();							}
+	Option*						createOption()								override	{ return _boundControl->createOption();				}
+	Option*						boundTo()									override	{ return _boundControl->boundTo();					}
+	bool						isOptionValid(Option* option)				override	{ return _boundControl->isOptionValid(option);		}
+	bool						isJsonValid(const Json::Value& optionValue) override	{ return _boundControl->isJsonValid(optionValue);	}
 
-	ListViewType				listViewType()			const				{ return _listViewType;		}
-	BoundControl*				boundControl()								{ return _boundControl;		}
-	int							columns()				const				{ return _columns;			}
-	
+	ListViewType				listViewType()						const				{ return _listViewType;								}
+	BoundControl*				boundControl()											{ return _boundControl;								}
+	int							columns()							const				{ return _columns;									}
+	QStringList					allowedColumns()					const				{ return _allowedColumns;							}
+	QStringList					suggestedColumns()					const				{ return _suggestedColumns;							}
+	QStringList					suggestedColumnsIcons()				const				{ return _suggestedColumnsIcons;					}
+	QStringList					columnsTypes()						const				{ return _columnsTypes;								}
+
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault);
 
 signals:
 	void listViewTypeChanged();
 	void columnsChanged();
+	void allowedColumnsChanged();
+	void suggestedColumnsChanged();
+	void suggestedColumnsIconsChanged();
+	void columnsTypesChanged();
 
 protected:
-	GENERIC_SET_FUNCTION(ListViewType,	_listViewType,	listViewTypeChanged,	ListViewType	)
-	GENERIC_SET_FUNCTION(Columns,		_columns,		columnsChanged,			int				)
+	GENERIC_SET_FUNCTION(ListViewType,			_listViewType,			listViewTypeChanged,			ListViewType	)
+	GENERIC_SET_FUNCTION(Columns,				_columns,				columnsChanged,					int				)
+	GENERIC_SET_FUNCTION(AllowedColumns,		_allowedColumns,		allowedColumnsChanged,			QStringList		)
+	GENERIC_SET_FUNCTION(SuggestedColumns,		_suggestedColumns,		suggestedColumnsChanged,		QStringList		)
+	GENERIC_SET_FUNCTION(SuggestedColumnsIcons,	_suggestedColumnsIcons,	suggestedColumnsIconsChanged,	QStringList		)
+	GENERIC_SET_FUNCTION(ColumnsTypes,			_columnsTypes,			columnsTypesChanged,			QStringList		)
 
 	ListModelDraggable*			_draggableModel	= nullptr;
 	ListViewType				_listViewType	= ListViewType::AssignedVariables;
@@ -72,12 +89,20 @@ protected slots:
 	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex, int assignOption);
 	
 private:
+	int							_getAllowedColumnsTypes();
+	void						_setAllowedVariables();
+
 	int							_columns				= 1;
 
 	ListModelDraggable	*		_tempDropModel = nullptr;
 	QList<int>					_tempIndexes;
 	int							_tempDropItemIndex;
 	JASPControl::AssignType		_tempAssignOption = JASPControl::AssignType::AssignDefault;
+
+	QStringList					_allowedColumns,
+								_suggestedColumns,
+								_suggestedColumnsIcons,
+								_columnsTypes;
 	
 };
 

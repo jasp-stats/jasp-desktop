@@ -60,8 +60,6 @@ public:
 
 
 	virtual std::set<std::string>	usedVariables()		const														{ return std::set<std::string>(); }
-	virtual void					removeUsedVariable(const std::string &)											{}
-	virtual void					replaceVariableName(const std::string & oldName, const std::string & newName)	{}
 	virtual std::set<std::string>	columnsCreated()																{ return std::set<std::string>(); }
 
 			void		blockSignals(bool block, bool notifyOnceUnblocked = true);
@@ -81,8 +79,8 @@ public:
 	Json::Value			defaultMetaEntryContainingColumn(bool shouldEncode)				const	{ return defaultMetaEntryContainingColumn(shouldEncode,  _isRCode); }
 	Json::Value			defaultMetaEntryContainingColumn()								const	{ return defaultMetaEntryContainingColumn(_shouldEncode, _isRCode); }
 	
-	void		setIsRCode(bool isIt)			{ _isRCode			= isIt;		}
-	void		setShouldEncode(bool doesIt)	{ _shouldEncode	= doesIt;	}
+	void				setIsRCode(bool isIt)			{ _isRCode			= isIt;		}
+	void				setShouldEncode(bool doesIt)	{ _shouldEncode	= doesIt;	}
 
 protected:
 	void		notifyChanged(Option* option);

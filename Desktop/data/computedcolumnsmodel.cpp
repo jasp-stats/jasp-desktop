@@ -447,9 +447,6 @@ void ComputedColumnsModel::requestComputedColumnDestruction(QString columnNameQ)
 
 	emit headerDataChanged(Qt::Horizontal, index, DataSetPackage::pkg()->columnCount() + 1);
 
-	Analyses::analyses()->applyToAll([&](Analysis * analysis)
-		{ analysis->removeUsedVariable(columnName); } );
-
 	checkForDependentColumnsToBeSent(columnName);
 
 	if(columnNameQ == lastCreatedColumn())

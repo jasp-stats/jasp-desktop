@@ -155,13 +155,6 @@ private:
 
 	void packageChanged();
 	void setPackageModified();
-	void refreshAnalysesUsingColumn(	QString columnName);
-	void refreshAnalysesUsingColumns(	QStringList				changedColumns,
-										QStringList				missingColumns,
-										QMap<QString, QString>	changeNameColumns,
-										bool					rowCountChanged,
-										bool					hasNewColumns);
-
 	bool closeRequestCheck(bool &isSaving);
 	void saveTextToFileHandler(const QString &filename, const QString &data);
 
@@ -300,10 +293,6 @@ private:
 									_savingForClose			= false,
 									_welcomePageVisible		= true,
 									_checkAutomaticSync		= false;
-
-	static QMap<QString, QVariant>	_iconFiles,
-									_iconInactiveFiles,
-									_iconDisabledFiles;
 
 	QString							_plotEditingFilePath;
 	QFileSystemWatcher				_plotEditingFileWatcher;

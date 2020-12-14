@@ -49,12 +49,10 @@ VariablesListBase
 	property bool	showSortMenu					: true
 	property bool	singleVariable					: false
 	property int	maxRows							: (singleVariable ? 1 : -1)
-	property var	allowedColumns					: []
 	property bool	dropModeInsert					: dropMode === JASP.DropInsert
 	property bool	dropModeReplace					: dropMode === JASP.DropReplace
-	property var	suggestedColumns				: []
 	property bool	showElementBorder				: false
-	property bool	showVariableTypeIcon			: true
+	property bool	showVariableTypeIcon			: containsVariables
 	property bool	setWidthInForm					: false
 	property bool	setHeightInForm					: false
 	property bool	addInteractionsByDefault		: true
@@ -63,7 +61,6 @@ VariablesListBase
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
 	property bool	allowAnalysisOwnComputedColumns	: true
 	property bool	allowDuplicatesInMultipleColumns: false // This property is used in the constructor and is not updatable afterwards.
-	property var	columnsTypes					: [] // This is set automatically by the item self each time that the model is changed
 
 	property var	interactionControl
 	property bool	addInteractionOptions			: false
@@ -112,7 +109,7 @@ VariablesListBase
 
 		// Do not use variablesList.enabled: this may break the binding if the developer used it in his QML form.
 		itemRectangle.enabled = result
-		listTitle.enabled = result
+		itemTitle.enabled = result
 	}
 
 
@@ -185,7 +182,7 @@ VariablesListBase
 		anchors.top		: parent.top
 		anchors.left	: parent.left
 		text			: title
-		height			: title ? jaspTheme.listTitle : 0
+		height			: title ? jaspTheme.variablesListTitle : 0
 		font			: jaspTheme.font
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}
@@ -195,7 +192,7 @@ VariablesListBase
 		anchors.top		: parent.top
 		anchors.right	: parent.right
 		text			: rowComponentTitle
-		height			: rowComponentTitle ? jaspTheme.listTitle : 0
+		height			: rowComponentTitle ? jaspTheme.variablesListTitle : 0
 		font			: jaspTheme.font
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}
@@ -269,11 +266,11 @@ VariablesListBase
 		
 	Repeater
 	{
-		model: suggestedColumns
+		model: suggestedColumnsIcons
 
 		Image
 		{
-			source: jaspTheme.iconPath + (enabled ? iconInactiveFiles[suggestedColumns[index]] : iconDisabledFiles[suggestedColumns[index]])
+			source: modelData
 			height: 16 * preferencesModel.uiScale
 			width:	16 * preferencesModel.uiScale
 			z:		2
@@ -339,46 +336,7 @@ VariablesListBase
 			variablesList.itemContainingDrag = null
 			variablesList.indexInDroppedListViewOfDraggedItem = -1
 		}
-	}
-		
-	Component.onCompleted:
-	{
-		var mySuggestedColumns = []
-		var myAllowedColumns = []
-
-		if (typeof suggestedColumns === "string")
-			mySuggestedColumns.push(suggestedColumns)
-		else
-			mySuggestedColumns = suggestedColumns.concat()
-		if (typeof allowedColumns === "string")
-			myAllowedColumns.push(allowedColumns)
-		else
-			myAllowedColumns = allowedColumns.concat()
-
-		if (mySuggestedColumns.length === 0 && myAllowedColumns.length > 0)
-			mySuggestedColumns = myAllowedColumns.concat()
-		else if (myAllowedColumns.length === 0 && mySuggestedColumns.length > 0)
-		{
-			myAllowedColumns = mySuggestedColumns.concat()
-			if (mySuggestedColumns.includes("scale"))
-			{
-				if (!myAllowedColumns.includes("nominal"))
-					myAllowedColumns.push("nominal")
-				if (!myAllowedColumns.includes("ordinal"))
-					myAllowedColumns.push("ordinal")
-			}
-			if (mySuggestedColumns.includes("nominal"))
-			{
-				if (!myAllowedColumns.includes("nominalText"))
-					myAllowedColumns.push("nominalText")
-				if (!myAllowedColumns.includes("ordinal"))
-					myAllowedColumns.push("ordinal")
-			}
-		}
-		suggestedColumns = mySuggestedColumns.concat()
-		allowedColumns = myAllowedColumns.concat()
-	}
-			
+	}		
 
 	Rectangle
 	{
@@ -544,8 +502,8 @@ VariablesListBase
 					width:					source === "" ? 0 : 16 * preferencesModel.uiScale
 					x:						jaspTheme.borderRadius
 					anchors.verticalCenter:	parent.verticalCenter
-					source:					(!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) || !model.columnType) ? "" : jaspTheme.iconPath + (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType])
-					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable && source
+					source:					variablesList.showVariableTypeIcon && itemRectangle.isVariable ? (enabled ? model.columnTypeIcon : model.columnTypeDisabledIcon) : ""
+					visible:				source
 					mipmap:	true
 					smooth:	true
 				}

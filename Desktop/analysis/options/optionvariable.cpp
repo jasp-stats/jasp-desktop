@@ -56,21 +56,3 @@ string OptionVariable::variable() const
 	else
 		return "";
 }
-
-void  OptionVariable::removeUsedVariable(const std::string & var)
-{
-	bool iContainVar = false;
-	for(std::string v : variables())
-		if(v == var)
-		{
-			iContainVar = true;
-			break;
-		}
-
-	if(iContainVar)
-	{
-		Json::Value nuller(Json::nullValue);
-		set(nuller);
-	}
-
-}

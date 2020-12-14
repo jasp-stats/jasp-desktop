@@ -52,8 +52,8 @@ void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms
 
 	_fitTermsWithLevels();
 
-	if (source() != nullptr)
-		source()->removeTermsInAssignedList();
+	if (availableModel() != nullptr)
+		availableModel()->removeTermsInAssignedList();
 	
 	endResetModel();
 }
@@ -79,7 +79,7 @@ void ListModelMeasuresCellsAssigned::sourceTermsReset()
 	{
 		BoundControlMeasuresCells* boundControl = dynamic_cast<BoundControlMeasuresCells*>(measureCellsListView->boundControl());
 		initLevels(boundControl->getLevels());
-		source()->removeTermsInAssignedList();
+		availableModel()->removeTermsInAssignedList();
 	}
 	else
 		Log::log() << "ListView from Measures cells model is not of a Measures Cell type!!";

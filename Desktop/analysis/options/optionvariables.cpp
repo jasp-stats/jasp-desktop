@@ -105,17 +105,3 @@ void OptionVariables::removeName(string name)
 	setValue(values);
 }
 
-void  OptionVariables::removeUsedVariable(const std::string & var)
-{
-	bool iContainVar = false;
-	for(std::string v : variables())
-		if(v == var)
-		{
-			iContainVar = true;
-			break;
-		}
-
-	if(iContainVar)
-		removeName(var);
-}
-

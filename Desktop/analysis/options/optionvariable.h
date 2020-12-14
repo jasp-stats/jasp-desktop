@@ -34,7 +34,6 @@ public:
 
 	std::string				variable()						const;
 	std::set<std::string>	usedVariables()					const	override { return variable() == "" ? std::set<std::string>({}) : std::set<std::string>({ variable() }); }
-	void					removeUsedVariable(const std::string & var)		override;
 
 };
 

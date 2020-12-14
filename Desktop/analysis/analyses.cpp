@@ -44,13 +44,8 @@ Analyses::Analyses()
 	if(_singleton) throw std::runtime_error("Can only instantiate single copy of Analyses!");
 	_singleton = this;
 
-	connect(this,					&Analyses::requestComputedColumnDestruction,	this,	&Analyses::dataSetChanged			, Qt::QueuedConnection	);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::dataSetChanged,				this,	&Analyses::dataSetChanged									);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetChanged									);
-
 	new KnownIssues(this);
 }
-
 
 
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
@@ -453,49 +448,6 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 	
 
 }
-
-void Analyses::refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
-											QStringList				missingColumnsQ,
-											QMap<QString, QString>	changeNameColumnsQ,
-											bool					rowCountChanged,
-											bool					hasNewColumns)
-{
-	std::sort(changedColumnsQ.begin(), changedColumnsQ.end()); //Why are we sorting here?
-
-	std::vector<std::string> changedColumns(fq(changedColumnsQ));
-
-
-	std::set<Analysis *> analysesToRefresh;
-
-	for (auto idAnalysis : _analysisMap)
-	{
-		Analysis * analysis = idAnalysis.second;
-
-		std::set<std::string> variables = analysis->usedVariables();
-
-		if (!variables.empty())
-		{
-			std::vector<std::string> interChangecol;
-
-			std::set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(interChangecol));
-
-			bool aColumnChanged	= interChangecol.size() > 0;
-
-			if (aColumnChanged)
-				analysesToRefresh.insert(analysis);
-		}
-	}
-
-	for (Analysis *analysis : analysesToRefresh)
-	{
-		analysis->setRefreshBlocked(false);
-		analysis->refresh();
-	}
-
-	if(rowCountChanged)
-		QTimer::singleShot(0, this, &Analyses::refreshAllAnalyses);
-}
-
 
 void Analyses::applyToSome(std::function<bool(Analysis *analysis)> applyThis)
 {

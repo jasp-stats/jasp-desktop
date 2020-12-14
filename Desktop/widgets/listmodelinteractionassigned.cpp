@@ -27,7 +27,6 @@ using namespace std;
 ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* listView, bool mustContainLowerTerms, bool addInteractionsByDefault)
 	: ListModelAssignedInterface(listView), InteractionModel ()
 {
-	setTermsAreInteractions(true);
 	_copyTermsWhenDropped		= true;
 	_mustContainLowerTerms		= mustContainLowerTerms;
 	_addInteractionsByDefault	= addInteractionsByDefault;
@@ -61,9 +60,9 @@ void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 
 	for (int i : indices)
 	{
-		size_t index = size_t(i);
-		if (index < terms().size())
-			toRemove.add(terms().at(index));
+		int index = i;
+		if (index < rowCount())
+			toRemove.add(terms().at(size_t(index)));
 	}
 
 	removeInteractionTerms(toRemove);
@@ -76,9 +75,9 @@ Terms ListModelInteractionAssigned::termsFromIndexes(const QList<int> &indexes) 
 	Terms result;
 	for (int i : indexes)
 	{
-		size_t index = size_t(i);
-		if (index < terms().size())
-			result.add(terms().at(index));
+		int index = i;
+		if (index < rowCount())
+			result.add(terms().at(size_t(index)));
 	}
 	
 	return result;
@@ -147,7 +146,7 @@ void ListModelInteractionAssigned::availableTermsResetHandler(Terms termsAdded, 
 QString ListModelInteractionAssigned::getItemType(const Term &term) const
 {
 	QString type;
-	ListModelTermsAvailable* _source = dynamic_cast<ListModelTermsAvailable*>(source());	
+	ListModelTermsAvailable* _source = dynamic_cast<ListModelTermsAvailable*>(availableModel());
 	if (_source)
 	{
 		ListModel* model = _source->getSourceModelOfTerm(term);
@@ -172,7 +171,7 @@ Terms ListModelInteractionAssigned::canAddTerms(const Terms& terms) const
 void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, JASPControl::AssignType assignType)
 {
 	Terms dropped;
-	dropped.setSortParent(source()->allTerms());
+	dropped.setSortParent(availableModel()->allTerms());
 	dropped.set(terms);
 
 	int nbTerms = int(dropped.size());

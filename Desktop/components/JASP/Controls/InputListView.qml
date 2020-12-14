@@ -53,7 +53,7 @@ InputListBase
 		anchors.top		: parent.top
 		anchors.left	: parent.left
 		text			: title
-		height			: title ? jaspTheme.listTitle : 0
+		height			: title ? jaspTheme.variablesListTitle : 0
 		font			: jaspTheme.font
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}
@@ -63,7 +63,7 @@ InputListBase
 		anchors.top		: parent.top
 		anchors.right	: parent.right
 		text			: rowComponentTitle
-		height			: rowComponentTitle ? jaspTheme.listTitle : 0
+		height			: rowComponentTitle ? jaspTheme.variablesListTitle : 0
 		font			: jaspTheme.font
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}

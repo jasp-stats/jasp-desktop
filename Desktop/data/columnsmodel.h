@@ -13,17 +13,17 @@ public:
 	enum ColumnsModelRoles {
 		NameRole = Qt::UserRole + 1,
 		TypeRole,
+		TypeNameRole,
 		IconSourceRole,
-		ToolTipRole
+		DisabledIconSourceRole,
+		InactiveIconSourceRole,
+		ToolTipRole,
+		LabelsRole,
 	 };
 
-	ColumnsModel(DataSetTableModel * tableModel) : QAbstractTableModel(tableModel), _tableModel(tableModel)
-	{
-		connect(_tableModel, &DataSetTableModel::headerDataChanged,		this, &ColumnsModel::onHeaderDataChanged);
-		connect(_tableModel, &DataSetTableModel::dataChanged,			this, &ColumnsModel::onDataChanged		);
-		connect(_tableModel, &DataSetTableModel::modelAboutToBeReset,	this, &ColumnsModel::beginResetModel	);
-		connect(_tableModel, &DataSetTableModel::modelReset,			this, &ColumnsModel::endResetModel		);
-	}
+	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType };
+
+	ColumnsModel(DataSetTableModel * tableModel);
 
 	QVariant				data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 	QHash<int, QByteArray>	roleNames()																			const	override;
@@ -31,9 +31,17 @@ public:
 	int						columnCount(const QModelIndex &parent = QModelIndex())								const	override;
 	QVariant				headerData(	int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
 
+	int						getColumnIndex(const std::string& col)												const	{ return _tableModel->getColumnIndex(col);						}
+	size_t					getMaximumColumnWidthInCharacters(int index)										const	{ return _tableModel->getMaximumColumnWidthInCharacters(index);	}
+	QModelIndex				parentModelForType(parIdxType type, int column = 0)									const	{ return _tableModel->parentModelForType(type, column);			}
+	QString					getIconFile(columnType colType, IconType type)										const;
+
 signals:
 	void namesChanged(QMap<QString, QString> changedNames);
+	void columnsChanged(QStringList changedColumns);
 	void columnTypeChanged(QString colName);
+	void labelChanged(QString columnName, QString originalLabel, QString newLabel);
+	void labelsReordered(QString columnName);
 
 public slots:
 	void datasetChanged(	QStringList				changedColumns,
@@ -48,6 +56,8 @@ private slots:
 
 
 private:
+	void refresh();
+
 	DataSetTableModel * _tableModel = nullptr;
 };
 

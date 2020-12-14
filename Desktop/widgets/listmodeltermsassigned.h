@@ -32,7 +32,6 @@ public:
 	void			initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())			override;
 	Terms			canAddTerms(const Terms& terms)																	const	override;
 	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault)	override;
-	Terms			termsEx(const QString& what)																			override;
 	void			removeTerm(int index);
 
 	virtual void	changeTerm(int index, const QString& name);

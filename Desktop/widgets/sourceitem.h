@@ -66,6 +66,7 @@ public:
 	const QString&			modelUse()					const	{ return _modelUse;					}
 	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;	}
 	const QSet<QString>&	usedControls()				const	{ return _usedControls;				}
+	bool					isColumnsModel()			const	{ return _isColumnsModel;			}
 	Terms					getTerms();
 
 	static QVector<SourceItem*>				readAllSources(JASPListControl* _listControl);
@@ -93,7 +94,7 @@ private:
 	ListModel			*			_listModel				= nullptr;
 	QAbstractItemModel	*			_nativeModel			= nullptr;
 	int								_nativeModelRole		= Qt::DisplayRole;
-	bool							_isDataSetColumns		= false;
+	bool							_isColumnsModel			= false;
 	bool							_combineWithOtherModels	= false;
 	QString							_conditionExpression;
 	QVector<ConditionVariable>		_conditionVariables;

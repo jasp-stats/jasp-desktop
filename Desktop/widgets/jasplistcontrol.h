@@ -37,15 +37,17 @@ class JASPListControl : public JASPControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( ListModel*		model				READ model											NOTIFY modelChanged				)
-	Q_PROPERTY( QVariant		source				READ source				WRITE setSource				NOTIFY sourceChanged			)
-	Q_PROPERTY( QVariant		values				READ values				WRITE setValues				NOTIFY sourceChanged			)
-	Q_PROPERTY( int				count				READ count											NOTIFY countChanged				)
-	Q_PROPERTY( QString			optionKey			READ optionKey			WRITE setOptionKey											)
-	Q_PROPERTY( bool			addEmptyValue		READ addEmptyValue		WRITE setAddEmptyValue		NOTIFY addEmptyValueChanged		)
-	Q_PROPERTY( QString			placeholderText		READ placeholderText	WRITE setPlaceHolderText	NOTIFY placeHolderTextChanged	)
-	Q_PROPERTY( QString			labelRole			READ labelRole			WRITE setLabelRole			NOTIFY labelRoleChanged			)
-	Q_PROPERTY( QString			valueRole			READ valueRole			WRITE setValueRole			NOTIFY valueRoleChanged			)
+	Q_PROPERTY( ListModel*		model					READ model													NOTIFY modelChanged					)
+	Q_PROPERTY( QVariant		source					READ source					WRITE setSource					NOTIFY sourceChanged				)
+	Q_PROPERTY( QVariant		values					READ values					WRITE setValues					NOTIFY sourceChanged				)
+	Q_PROPERTY( int				count					READ count													NOTIFY countChanged					)
+	Q_PROPERTY( QString			optionKey				READ optionKey				WRITE setOptionKey													)
+	Q_PROPERTY( bool			addEmptyValue			READ addEmptyValue			WRITE setAddEmptyValue			NOTIFY addEmptyValueChanged			)
+	Q_PROPERTY( QString			placeholderText			READ placeholderText		WRITE setPlaceHolderText		NOTIFY placeHolderTextChanged		)
+	Q_PROPERTY( QString			labelRole				READ labelRole				WRITE setLabelRole				NOTIFY labelRoleChanged				)
+	Q_PROPERTY( QString			valueRole				READ valueRole				WRITE setValueRole				NOTIFY valueRoleChanged				)
+	Q_PROPERTY( bool			containsVariables		READ containsVariables										NOTIFY containsVariablesChanged		)
+	Q_PROPERTY( bool			containsInteractions	READ containsInteractions									NOTIFY containsInteractionsChanged	)
 
 
 public:
@@ -82,6 +84,8 @@ public:
 			const QString&		placeholderText()			const	{ return _placeHolderText;		}
 			const QString&		labelRole()					const	{ return _labelRole;			}
 			const QString&		valueRole()					const	{ return _valueRole;			}
+			bool				containsVariables()			const	{ return _containsVariables;	}
+			bool				containsInteractions()		const	{ return _containsInteractions;	}
 
 
 signals:
@@ -92,31 +96,37 @@ signals:
 			void				placeHolderTextChanged();
 			void				labelRoleChanged();
 			void				valueRoleChanged();
+			void				containsVariablesChanged();
+			void				containsInteractionsChanged();
 
+public slots:
+			void				setContainsVariables();
+			void				setContainsInteractions();
 
 protected slots:
 	virtual void				termsChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
 			void				sourceChangedHandler();
 
-			GENERIC_SET_FUNCTION(Source,			_source,			sourceChanged,				QVariant	)
-			GENERIC_SET_FUNCTION(Values,			_values,			sourceChanged,				QVariant	)
-			GENERIC_SET_FUNCTION(AddEmptyValue,		_addEmptyValue,		addEmptyValueChanged,		bool		)
-			GENERIC_SET_FUNCTION(PlaceHolderText,	_placeHolderText,	placeHolderTextChanged,		QString		)
-			GENERIC_SET_FUNCTION(LabelRole,			_labelRole,			labelRoleChanged,			QString		)
-			GENERIC_SET_FUNCTION(ValueRole,			_valueRole,			valueRoleChanged,			QString		)
-
 			void				setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
 
-protected:
-	virtual void			setupSources();
+			GENERIC_SET_FUNCTION(Source,				_source,				sourceChanged,					QVariant	)
+			GENERIC_SET_FUNCTION(Values,				_values,				sourceChanged,					QVariant	)
+			GENERIC_SET_FUNCTION(AddEmptyValue,			_addEmptyValue,			addEmptyValueChanged,			bool		)
+			GENERIC_SET_FUNCTION(PlaceHolderText,		_placeHolderText,		placeHolderTextChanged,			QString		)
+			GENERIC_SET_FUNCTION(LabelRole,				_labelRole,				labelRoleChanged,				QString		)
+			GENERIC_SET_FUNCTION(ValueRole,				_valueRole,				valueRoleChanged,				QString		)
 
+protected:
 	QVector<SourceItem*>	_sourceItems;
-	int						_variableTypesAllowed;
+	int						_variableTypesAllowed	= 0xff;
 	QString					_optionKey				= "value";
 	RowControls*			_defaultRowControls		= nullptr;
 	QVariant				_source;
 	QVariant				_values;
-	bool					_addEmptyValue			= false;
+	bool					_addEmptyValue			= false,
+							_containsVariables		= false,
+							_containsInteractions	= false,
+							_termsAreInteractions	= false;
 	QString					_placeHolderText		= tr("<no choice>"),
 							_labelRole				= "label",
 							_valueRole				= "value";
@@ -124,9 +134,8 @@ protected:
 	static const QString	_defaultKey;
 	
 private:
+	void									_setupSources();
 	Terms									_getCombinedTerms(SourceItem* sourceToCombine);
-	int										_getAllowedColumnsTypes();
-	void									_setAllowedVariables();
 };
 
 #endif // JASPLISTCONTROL_H

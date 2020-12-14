@@ -34,7 +34,6 @@
 #include "modules/upgrader/upgradechange.h"
 
 class ComputedColumn;
-class Analyses;
 class DataSet;
 class AnalysisForm;
 
@@ -157,7 +156,6 @@ public:
 
 	std::set<std::string>	usedVariables()																	{ return _options->usedVariables();					}
 	std::set<std::string>	columnsCreated()																{ return _options->columnsCreated();				}
-	void					removeUsedVariable(const std::string & var)										{ _options->removeUsedVariable(var);				}
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);

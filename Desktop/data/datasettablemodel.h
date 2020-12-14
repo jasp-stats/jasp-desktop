@@ -45,11 +45,19 @@ public:
 
 	columnType				getColumnType(size_t column)			const				{ return DataSetPackage::pkg()->getColumnType(column);								}
 	std::string				getColumnName(size_t col)				const				{ return DataSetPackage::pkg()->getColumnName(col);									}
+	int						getColumnIndex(const std::string& col)	const				{ return DataSetPackage::pkg()->getColumnIndex(col);								}
+	QStringList				getColumnLabelsAsStringList(int col)	const				{ return DataSetPackage::pkg()->getColumnLabelsAsStringList(col);					}
+	size_t					getMaximumColumnWidthInCharacters(int index) const			{ return DataSetPackage::pkg()->getMaximumColumnWidthInCharacters(index);			}
+	QModelIndex				parentModelForType(parIdxType type, int column = 0)	const	{ return DataSetPackage::pkg()->parentModelForType(type, column);					}
+
 				bool		showInactive()							const				{ return _showInactive;	}
 
 signals:
 				void		columnsFilteredCountChanged();
 				void		showInactiveChanged(bool showInactive);
+				void		columnTypeChanged(QString colName);
+				void		labelChanged(QString columnName, QString originalLabel, QString newLabel);
+				void		labelsReordered(QString columnName);
 
 public slots:
 				void		setShowInactive(bool showInactive);

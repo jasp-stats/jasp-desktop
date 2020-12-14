@@ -8,6 +8,7 @@
 #include <QQuickItem>
 #include "log.h"
 #include "analysis/jaspcontrol.h"
+#include "data/columnsmodel.h"
 
 ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent, QString tableType)
 	: ListModelTableViewBase(parent, tableType)
@@ -61,9 +62,9 @@ void ListModelFilteredDataEntry::runFilter(QString filter)
 		);
 }
 
-size_t ListModelFilteredDataEntry::getDataSetRowCount()
+size_t ListModelFilteredDataEntry::getDataSetRowCount() const
 {
-	return DataSetPackage::pkg()->rowCount();
+	return size_t(AnalysisForm::getColumnsModel()->rowCount());
 }
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
@@ -153,8 +154,8 @@ void ListModelFilteredDataEntry::sourceTermsReset()
 
 	Terms sourceTerms	= getSourceTerms();
 	QString colName		= (_editableColumn >= 0 && _editableColumn < _colNames.size()) ? _colNames[_editableColumn] : "";
-	_dataColumns		= sourceTerms.asVector();
-	_colNames			= tq(_dataColumns);
+	_dataColumns		= sourceTerms.asQList();
+	_colNames			= _dataColumns;
 
 	if(_extraCol != "")
 		_colNames.push_back(_extraCol);
@@ -222,13 +223,13 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 
 	_extraCol = tq(optionExtraCol->variables().size() > 0 ? optionExtraCol->variables()[0] : "");
 
-	_dataColumns	= optionDataCols->variables();
-	_colNames		= tq(_dataColumns);
+	_dataColumns	= tql(optionDataCols->variables());
+	_colNames		= _dataColumns;
 
 	if(_extraCol != "")
 		_colNames.push_back(_extraCol);
 
-	_columnCount	= _dataColumns.size() + 1;
+	_columnCount	= size_t(_dataColumns.size() + 1);
 	_colName		= tq(optionColName->value());
 	_editableColumn = _colName.isEmpty() ? -1 : _colNames.size();
 
@@ -309,7 +310,7 @@ void ListModelFilteredDataEntry::modelChangedSlot()
 		for (QVariant val : _values[0])
 			tempvalues.push_back(val.toDouble());
 		options->add("values",		new OptionDoubleArray(tempvalues));
-		options->add("dataCols",	new OptionVariables(_dataColumns));
+		options->add("dataCols",	new OptionVariables(fq(_dataColumns)));
 		options->add("extraCol",	new OptionVariables({fq(_extraCol)}));
 
 		_boundTo->setValue({options});
@@ -331,36 +332,37 @@ QVariant ListModelFilteredDataEntry::data(const QModelIndex &index, int role) co
 	if(column == _editableColumn)
 		return QVariant(_values[0][row]);
 
-	if(!DataSetPackage::pkg()->hasDataSet() || column > _colNames.size() || column < 0)
+	if(getDataSetRowCount() == 0 || column > _colNames.size() || column < 0)
 		return QVariant();
 
 	std::string colName = _colNames[column].toStdString();
 	size_t rowData		= _filteredRowToData[static_cast<size_t>(row)];
 
-	DataSetPackage * package = DataSetPackage::pkg();
+	ColumnsModel* columnsModel = AnalysisForm::getColumnsModel();
 
-	int colIndex = package->getColumnIndex(colName);
+	int colIndex = columnsModel->getColumnIndex(colName);
 
-	return package->data(package->index(rowData, colIndex, package->parentModelForType(parIdxType::data)));
-
+	return columnsModel->data(columnsModel->index(int(rowData), colIndex, columnsModel->parentModelForType(parIdxType::data)));
 }
 
 
 int ListModelFilteredDataEntry::getMaximumColumnWidthInCharacters(size_t column) const
 {
-	if(column == _editableColumn)
+	int colIndex = int(column);
+
+	if(colIndex == _editableColumn)
 		return ListModelTableViewBase::getMaximumColumnWidthInCharacters(0);
 
 
-	DataSetPackage * package = DataSetPackage::pkg();
+	ColumnsModel* columnsModel = AnalysisForm::getColumnsModel();
 
-	if(!(package->hasDataSet() || column > _colNames.size() || column < 0))
+	if(!(columnsModel->rowCount() >= 0 || colIndex > _colNames.size() || column < 0))
 	{
-		std::string colName		= _colNames[column].toStdString();
-		int			colIndex	= package->getColumnIndex(colName);
+		std::string colName		= _colNames[colIndex].toStdString();
+		int			colIndex	= columnsModel->getColumnIndex(colName);
 
 		if(colIndex > -1)
-			return package->getMaximumColumnWidthInCharacters(colIndex);
+			return int(columnsModel->getMaximumColumnWidthInCharacters(colIndex));
 	}
 
 

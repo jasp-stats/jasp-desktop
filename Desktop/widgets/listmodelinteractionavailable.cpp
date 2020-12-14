@@ -25,7 +25,6 @@
 ListModelInteractionAvailable::ListModelInteractionAvailable(JASPListControl* listView)
 	: ListModelAvailableInterface(listView), InteractionModel ()
 {
-	setTermsAreInteractions(true);
 }
 
 void ListModelInteractionAvailable::resetTermsFromSources(bool updateAssigned)
