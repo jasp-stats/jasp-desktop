@@ -1903,7 +1903,7 @@
 
 .jfa.criticalTransactions.init <- function(options, jaspResults){
   
-  if(options[["recordNumberVariable"]] == "" || options[["monetaryVariable"]] == "")
+  if(options[["recordNumberVariable"]] == "" || options[["monetaryVariable"]] == "" || options[["criticalTransactions"]] == "")
     return()
   
   dataset <- .jfa.dataset.read(options, jaspResults, stage = "procedure")
@@ -1924,7 +1924,7 @@
 
 .jfa.criticalTransactions.add <- function(options, sample){
   
-  if(options[["workflow"]] && options[["flagCriticalTransactions"]] && options[["handleCriticalTransactions"]] == "inspect"){
+  if(options[["workflow"]] && options[["flagCriticalTransactions"]] && options[["handleCriticalTransactions"]] == "inspect" && options[["criticalTransactions"]] != ""){
     
     monetaryVariable <- .jfa.variable.read(options, varType = "monetary")
     auditResult <- .jfa.variable.read(options, varType = "auditResult")
