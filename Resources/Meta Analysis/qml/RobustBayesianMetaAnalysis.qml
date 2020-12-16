@@ -218,6 +218,11 @@ Form
 		name:					"cohensd_testType"
 		visible:				measures_cohensd.checked
 		radioButtonsOnSameRow:	true
+		onValueChanged:
+		{
+			input_N1.itemDoubleClicked(0)
+			input_N2.itemDoubleClicked(0)
+		}
 
 		RadioButton
 		{

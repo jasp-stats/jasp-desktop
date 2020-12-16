@@ -632,6 +632,12 @@ RobustBayesianMetaAnalysis <- function(jaspResults, dataset, options, state = NU
         columns.as.numeric = var_names,
         columns = if (options[["input_labels"]] != "") options[["input_labels"]]
       )
+
+      if (options[["input_labels"]] != ""){
+        dataset[[.v(options[["input_labels"]])]] <- as.character(dataset[[.v(options[["input_labels"]])]])
+        if (!validUTF8(dataset[[.v(options[["input_labels"]])]]))
+          JASP:::.quitAnalysis(gettext("The study labels contain invalid characters. Please, remove them before running the analysis."))
+      }
     }
     
   }
