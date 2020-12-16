@@ -3275,7 +3275,7 @@
 				{
 					"type": "git",
 					"url": "https://github.com/FBartos/RoBMA",
-					"commit": "ccb82bf2c2c3e7263f3952bc976a230111f9c217"
+					"commit": "788f678b02bbfbc619425f67c724abc79c9c28b6"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
