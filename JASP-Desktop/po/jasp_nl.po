@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-12-08 12:28+0000\n"
-"Last-Translator: JASP Stats <F.A.M.Meerhoff@uva.nl>\n"
-"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jasp-desktop/"
-"nl/>\n"
-"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -2731,10 +2725,6 @@ msgid "1. Planning"
 msgstr "1. Planning"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Population Materiality"
-msgstr "Populatiematerialiteit"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Absolute"
 msgstr "Absoluut"
 
@@ -2749,26 +2739,6 @@ msgstr "Audit Risico"
 msgctxt "auditBayesianWorkflow|"
 msgid "Confidence"
 msgstr "Betrouwbaarheid"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "<b>Variable definition</b>"
-msgstr "<b>Variabele definitie</b>"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Record ID's"
-msgstr "Transactie ID's"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Book Values <i>(required)</i>"
-msgstr "Boekwaarden <i>(verplicht)</i>"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Book Values <i>(optional)</i>"
-msgstr "Boekwaarden <i>(optioneel)</i>"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Advanced Options"
-msgstr "Geavanceerde opties"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Inherent Risk"
@@ -2786,10 +2756,6 @@ msgctxt "auditBayesianWorkflow|"
 msgid "Low"
 msgstr "Laag"
 
-msgctxt "auditBayesianWorkflow|"
-msgid "Expected Errors"
-msgstr "Verwachte Fouten"
-
 #| msgid "Explanator Text"
 msgctxt "auditBayesianWorkflow|"
 msgid "Explanatory Text"
@@ -2802,10 +2768,6 @@ msgstr "Activeer"
 msgctxt "auditBayesianWorkflow|"
 msgid "Control Risk"
 msgstr "Intern Beheersingsrisico"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Planning Distribution"
-msgstr "Planning verdeling"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Beta"
@@ -2832,10 +2794,6 @@ msgid "Other"
 msgstr "Anders"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Tables and Plots"
-msgstr "Tabellen en grafieken"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Statistics"
 msgstr "Statistieken"
 
@@ -2844,36 +2802,12 @@ msgid "Tables"
 msgstr "Tabellen"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Book value descriptives"
-msgstr "Beschrijvende statistieken boekwaarden"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Implicit sample"
-msgstr "Impliciete steekproef"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Plots"
 msgstr "Grafieken"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Book value distribution"
-msgstr "Verdeling van boekwaarden"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Implied prior from risk assessments"
-msgstr "Geïmpliceerde prior door risicobeoordelingen"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "x-axis limit"
 msgstr "x-as limiet"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Additional info"
-msgstr "Aanvullende info"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Expected posterior"
-msgstr "Verwachte posterior"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Download Report</b>"
@@ -2932,14 +2866,6 @@ msgid "Seed"
 msgstr "Toevalsgenerator beginwaarde"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Display selected observations"
-msgstr "Geef geselecteerde observaties weer"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Selection descriptives"
-msgstr "Selectie samenvatting"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Mean"
 msgstr "Gemiddelde"
 
@@ -2984,28 +2910,12 @@ msgid "3. Execution"
 msgstr "3. Uitvoering"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "<b>How would you like to evaluate your observations?</b>"
-msgstr "<b>Hoe wil u uw observaties evalueren?</b>"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Audit values"
-msgstr "Audit waarden"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Correct / Incorrect"
 msgstr "Correct / Incorrect"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Fill Variables</b>"
 msgstr "<b>Vul variabelen in</b>"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "<b>Annotate your observations with their audit values.</b>"
-msgstr "<b>Annoteer uw observaties met de bijbehorende audit waarden. </b>"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
-msgstr "<b>Annoteer uw observaties met 0 (correct) of 1 (incorrect).</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>To Evaluation</b>"
@@ -3028,10 +2938,6 @@ msgid "Estimation Method"
 msgstr "Schattingsmethode"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Cox and Snell"
-msgstr "Cox en Snell"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Regression"
 msgstr "Regressie"
 
@@ -3040,32 +2946,8 @@ msgid "Area Under Posterior"
 msgstr "Gebied Onder Posterior"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Credible bound"
-msgstr "Geloofwaardigheidsgrens"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Credible interval"
-msgstr "Geloofwaardigheidsinterval"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Most likely error (MLE)"
 msgstr "Meest waarschijnlijke fout (MLE)"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Evaluation information"
-msgstr "Evaluatie informatie"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Prior and posterior"
-msgstr "Prior en posterior"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Correlation plot"
-msgstr "Correlatiediagram"
-
-msgctxt "auditBayesianPlanning|"
-msgid "Population Materiality"
-msgstr "Populatiematerialiteit"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Absolute"
@@ -3115,10 +2997,6 @@ msgctxt "auditBayesianPlanning|"
 msgid "Low"
 msgstr "Laag"
 
-msgctxt "auditBayesianPlanning|"
-msgid "Expected Errors"
-msgstr "Verwachte fouten"
-
 #| msgid "Explanator4 Text"
 msgctxt "auditBayesianPlanning|"
 msgid "Explanatory Text"
@@ -3131,10 +3009,6 @@ msgstr "Activeer"
 msgctxt "auditBayesianPlanning|"
 msgid "Control Risk"
 msgstr "Intern Beheersingsrisico"
-
-msgctxt "auditBayesianPlanning|"
-msgid "Planning Distribution"
-msgstr "Planning verdeling"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Beta"
@@ -3173,28 +3047,12 @@ msgid "Tables"
 msgstr "Tabellen"
 
 msgctxt "auditBayesianPlanning|"
-msgid "Implicit sample"
-msgstr "Impliciete steekproef"
-
-msgctxt "auditBayesianPlanning|"
 msgid "Plots"
 msgstr "Grafieken"
 
 msgctxt "auditBayesianPlanning|"
-msgid "Implied prior from risk assessments"
-msgstr "Geïmpliceerde prior door risicobeoordelingen"
-
-msgctxt "auditBayesianPlanning|"
 msgid "x-axis limit"
 msgstr "x-as limiet"
-
-msgctxt "auditBayesianPlanning|"
-msgid "Additional info"
-msgstr "Aanvullende info"
-
-msgctxt "auditBayesianPlanning|"
-msgid "Expected posterior"
-msgstr "Verwachte posterior"
 
 msgctxt "auditBayesianPlanning|"
 msgid "<b>Download Report</b>"
@@ -3207,10 +3065,6 @@ msgstr "<b>1. Planning</b>"
 msgctxt "auditClassicalWorkflow|"
 msgid "1. Planning"
 msgstr "1. Planning"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Population Materiality"
-msgstr "Populatiematerialiteit"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Absolute"
@@ -3229,26 +3083,6 @@ msgid "Confidence"
 msgstr "Betrouwbaarheid"
 
 msgctxt "auditClassicalWorkflow|"
-msgid "<b>Variable definition</b>"
-msgstr "<b>Variabele definitie</b>"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Record ID's"
-msgstr "Transactie ID's"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Book Values <i>(required)</i>"
-msgstr "Boekwaarden <i>(verplicht)</i>"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Book Values <i>(optional)</i>"
-msgstr "Boekwaarden <i>(optioneel)</i>"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Advanced Options"
-msgstr "Geavanceerde opties"
-
-msgctxt "auditClassicalWorkflow|"
 msgid "Inherent Risk"
 msgstr "Inherent risico"
 
@@ -3264,10 +3098,6 @@ msgctxt "auditClassicalWorkflow|"
 msgid "Low"
 msgstr "Laag"
 
-msgctxt "auditClassicalWorkflow|"
-msgid "Expected Errors"
-msgstr "Verwachte fouten"
-
 #| msgid "Explanatory1 Text"
 msgctxt "auditClassicalWorkflow|"
 msgid "Explanatory Text"
@@ -3280,10 +3110,6 @@ msgstr "Activeer"
 msgctxt "auditClassicalWorkflow|"
 msgid "Control Risk"
 msgstr "Intern Beheersingsrisico"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Planning Distribution"
-msgstr "Planning verdeling"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Poisson"
@@ -3314,24 +3140,12 @@ msgid "Other"
 msgstr "Anders"
 
 msgctxt "auditClassicalWorkflow|"
-msgid "Tables and Plots"
-msgstr "Tabellen en grafieken"
-
-msgctxt "auditClassicalWorkflow|"
 msgid "Tables"
 msgstr "Tabellen"
 
 msgctxt "auditClassicalWorkflow|"
-msgid "Book value descriptives"
-msgstr "Beschrijvende statistieken boekwaarden"
-
-msgctxt "auditClassicalWorkflow|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Book value distribution"
-msgstr "Verdeling boekwaarden"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Download Report</b>"
@@ -3390,14 +3204,6 @@ msgid "Seed"
 msgstr "Toevalsgenerator beginwaarde"
 
 msgctxt "auditClassicalWorkflow|"
-msgid "Display selected observations"
-msgstr "Geef geselecteerde observaties weer"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Selection descriptives"
-msgstr "Selectie beschrijvende statistieken"
-
-msgctxt "auditClassicalWorkflow|"
 msgid "Mean"
 msgstr "Gemiddelde"
 
@@ -3442,28 +3248,12 @@ msgid "3. Execution"
 msgstr "3. Uitvoering"
 
 msgctxt "auditClassicalWorkflow|"
-msgid "<b>How would you like to evaluate your observations?</b>"
-msgstr "<b>Hoe wilt u uw observaties evalueren?</b>"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Audit values"
-msgstr "Audit waarden"
-
-msgctxt "auditClassicalWorkflow|"
 msgid "Correct / Incorrect"
 msgstr "Correct / Incorrect"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Fill Variables</b>"
 msgstr "<b>Vul variabelen in</b>"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "<b>Annotate your observations with their audit values.</b>"
-msgstr "<b>Annoteer uw observaties met de bijbehorende audit waarden.</b>"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
-msgstr "<b>Annoteer uw observaties met 0 (correct) of 1 (incorrect).</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>To Evaluation</b>"
@@ -3482,32 +3272,8 @@ msgid "Audit Result"
 msgstr "Auditresultaat"
 
 msgctxt "auditClassicalWorkflow|"
-msgid "Estimation Method"
-msgstr "Schattingsmethode"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Stringer"
-msgstr "Stringer grens"
-
-msgctxt "auditClassicalWorkflow|"
 msgid "LTA adjustment"
 msgstr "LTA bijstelling"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Direct"
-msgstr "Direct"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Difference"
-msgstr "Verschil"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Ratio"
-msgstr "Ratio"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Regression"
-msgstr "Regressie"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Statistics"
@@ -3516,18 +3282,6 @@ msgstr "Statistieken"
 msgctxt "auditClassicalWorkflow|"
 msgid "Most likely error (MLE)"
 msgstr "Meest waarschijnlijke fout (MLE)"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Evaluation information"
-msgstr "Evaluatie informatie"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Correlation plot"
-msgstr "Correlatiediagram"
-
-msgctxt "auditClassicalPlanning|"
-msgid "Population Materiality"
-msgstr "Populatiematerialiteit"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Absolute"
@@ -3577,10 +3331,6 @@ msgctxt "auditClassicalPlanning|"
 msgid "Low"
 msgstr "Laag"
 
-msgctxt "auditClassicalPlanning|"
-msgid "Expected Errors"
-msgstr "Verwachte fouten"
-
 #| msgid "Explanator3 Text"
 msgctxt "auditClassicalPlanning|"
 msgid "Explanatory Text"
@@ -3593,10 +3343,6 @@ msgstr "Activeer"
 msgctxt "auditClassicalPlanning|"
 msgid "Control Risk"
 msgstr "Intern Beheersingsrisico"
-
-msgctxt "auditClassicalPlanning|"
-msgid "Planning Distribution"
-msgstr "Planning verdeling"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Poisson"
@@ -10564,20 +10310,8 @@ msgid "Gamma"
 msgstr "Gamma"
 
 msgctxt "auditBayesianPlanning|"
-msgid "Expected evidence ratio"
-msgstr "Verwachte bewijs graad"
-
-msgctxt "auditBayesianPlanning|"
 msgid "Expected Bayes factor (BF₋₊)"
 msgstr "Verwachte Bayes factor (BF₋₊)"
-
-msgctxt "auditBayesianPlanning|"
-msgid "Prior and expected posterior descriptives"
-msgstr "Prior en verwachte posterior beschrijvingen"
-
-msgctxt "auditBayesianPlanning|"
-msgid "Sample size comparison"
-msgstr "Steekproefgrootte vergelijking"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Shade"
@@ -10586,10 +10320,6 @@ msgstr "Markeer"
 msgctxt "auditBayesianPlanning|"
 msgid "Credible region"
 msgstr "Geloofwaardigheidsgebied"
-
-msgctxt "auditBayesianPlanning|"
-msgid "Support regions"
-msgstr "Ondersteuningsgebieden"
 
 msgctxt "auditBayesianPlanning|"
 msgid "None"
@@ -10604,20 +10334,8 @@ msgid "Gamma"
 msgstr "Gamma"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Expected evidence ratio"
-msgstr "Verwachte bewijs graad"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Expected Bayes factor (BF₋₊)"
 msgstr "Verwachte Bayes factor (BF₋₊)"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Prior and expected posterior descriptives"
-msgstr "Prior en verwachte posterior beschrijvingen"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Sample size comparison"
-msgstr "Steekproefgrootte vergelijking"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Shade"
@@ -10628,24 +10346,12 @@ msgid "Credible region"
 msgstr "Geloofwaardigheidsgebied"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Support regions"
-msgstr "Ondersteuningsgebieden"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "None"
 msgstr "Geen"
 
 msgctxt "auditBayesianWorkflow|"
-msgid "Evidence ratio"
-msgstr "Evidentieratio"
-
-msgctxt "auditBayesianWorkflow|"
 msgid "Bayes factor (BF₋₊)"
 msgstr "Bayes factor (BF₋₊)"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Prior and posterior descriptives"
-msgstr "Prior and posterior beschrijvingen"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Variable"
@@ -10691,25 +10397,9 @@ msgctxt "auditClassicalPlanning|"
 msgid "Custom"
 msgstr "Aangepast"
 
-msgctxt "auditClassicalPlanning|"
-msgid "Sample size comparison"
-msgstr "Steekproefgrootte vergelijking"
-
-msgctxt "auditClassicalPlanning|"
-msgid "Implied sampling distribution"
-msgstr "Impliciete steekproefverdeling"
-
 msgctxt "auditClassicalWorkflow|"
 msgid "Custom"
 msgstr "Aangepast"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Sample size comparison"
-msgstr "Steekproefgrootte vergelijking"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Implied sampling distribution"
-msgstr "Impliciete steekproefverdeling"
 
 msgctxt "LDbernoulli|"
 msgid "Show Distribution"
@@ -12856,46 +12546,6 @@ msgctxt "auditBayesianWorkflow|"
 msgid "Show explanatory text at each step of the analysis"
 msgstr "Geef toelichtende tekst weer bij iedere stap van de analyse"
 
-msgctxt "auditBayesianWorkflow|"
-msgid "Select observations with probability proportional to their value"
-msgstr "Selecteer observaties met kans proportioneel aan hun waarde"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Select observations with equal probability"
-msgstr "Selecteer observaties met gelijke kansen"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Select observations by random sampling"
-msgstr "Selecteer observaties met aselecte steekproef"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Select observations by cell sampling"
-msgstr "Trek waarnemingen met celbemonstering"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Select observations by fixed interval sampling"
-msgstr "Selecteer observaties met een steekproef met vaste interval"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Adds a column to specify the audit value of the observations"
-msgstr ""
-"Voegt een kolom toe die de audit waarde van de observaties specificeert"
-
-msgctxt "auditBayesianWorkflow|"
-msgid ""
-"Adds a column to specify the observations as correct (0) or incorrect (1)"
-msgstr ""
-"Voegt een kolom toe die de observaties als correct (0) of incorrect (1) "
-"specificeert"
-
-msgctxt "auditClassicalBenfordsLaw|"
-msgid "Show explanatory text and formulas"
-msgstr "Geef toelichtende tekst en formules weer"
-
-msgctxt "auditClassicalEstimation|"
-msgid "Show explanatory text and formulas"
-msgstr "Geef toelichtende tekst en formules weer"
-
 msgctxt "auditClassicalPlanning|"
 msgid "Show explanatory text at each step of the analysis"
 msgstr "Geef toelichtende tekst weer bij iedere stap van de analyse"
@@ -12903,38 +12553,6 @@ msgstr "Geef toelichtende tekst weer bij iedere stap van de analyse"
 msgctxt "auditClassicalWorkflow|"
 msgid "Show explanatory text at each step of the analysis"
 msgstr "Geef toelichtende tekst weer bij iedere stap van de analyse"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Select observations with probability proportional to their value"
-msgstr "Selecteer observaties met kans proportioneel aan hun waarde"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Select observations with equal probability"
-msgstr "Selecteer observaties met gelijke kansen"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Select observations by random sampling"
-msgstr "Selecteer observaties met aselecte steekproef"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Select observations by cell sampling"
-msgstr "Trek waarnemingen met celbemonstering"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Select observations by fixed interval sampling"
-msgstr "Selecteer observaties met een steekproef met vaste interval"
-
-msgctxt "auditClassicalWorkflow|"
-msgid "Adds a column to specify the audit value of the observations"
-msgstr ""
-"Voegt een kolom toe die de audit waarde van de observaties specificeert"
-
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-"Adds a column to specify the observations as correct (0) or incorrect (1)"
-msgstr ""
-"Voegt een kolom toe die de observaties als correct (0) of incorrect (1) "
-"specificeert"
 
 msgctxt "Analysis|"
 msgid "Old-school analysis doesn't use dependencies"
@@ -14498,24 +14116,12 @@ msgid "Record ID's"
 msgstr "Transactie ID's"
 
 msgctxt "auditSelection|"
-msgid "Book Values <i>(required)</i>"
-msgstr "Boekwaarden <i>(verplicht)</i>"
-
-msgctxt "auditSelection|"
-msgid "Book Values <i>(optional)</i>"
-msgstr "Boekwaarden <i>(optioneel)</i>"
-
-msgctxt "auditSelection|"
 msgid "Ranking Variable <i>(optional)</i>"
 msgstr "Rangvariabele <i>(optioneel)</i>"
 
 msgctxt "auditSelection|"
 msgid "Additional Variables <i>(optional)</i>"
 msgstr "Aanvullende variabelen <i>(optioneel)</i>"
-
-msgctxt "auditSelection|"
-msgid "Sample size"
-msgstr "Steekproefgrootte"
 
 msgctxt "auditSelection|"
 msgid "Enable"
@@ -14534,16 +14140,8 @@ msgid "Monetary unit sampling"
 msgstr "Monetaire eenheid steekproeven"
 
 msgctxt "auditSelection|"
-msgid "Select observations with probability proportional to their value"
-msgstr "Selecteer observaties met kans proportioneel aan hun waarde"
-
-msgctxt "auditSelection|"
 msgid "Record sampling"
 msgstr "Record steekproeven"
-
-msgctxt "auditSelection|"
-msgid "Select observations with equal probability"
-msgstr "Selecteer observaties met gelijke kansen"
 
 msgctxt "auditSelection|"
 msgid "Selection Method"
@@ -14554,24 +14152,12 @@ msgid "Random sampling"
 msgstr "Aselecte steekproeven"
 
 msgctxt "auditSelection|"
-msgid "Select observations by random sampling"
-msgstr "Selecteer observaties met aselecte steekproef"
-
-msgctxt "auditSelection|"
 msgid "Cell sampling"
 msgstr "Cel steekproeven"
 
 msgctxt "auditSelection|"
-msgid "Select observations by cell sampling"
-msgstr "Trek waarnemingen met celbemonstering"
-
-msgctxt "auditSelection|"
 msgid "Fixed interval sampling"
 msgstr "Vast interval steekproeven"
-
-msgctxt "auditSelection|"
-msgid "Select observations by fixed interval sampling"
-msgstr "Selecteer observaties met een steekproef met vaste interval"
 
 msgctxt "auditSelection|"
 msgid "Seed"
@@ -14580,14 +14166,6 @@ msgstr "Toevalsgenerator beginwaarde"
 msgctxt "auditSelection|"
 msgid "Tables"
 msgstr "Tabellen"
-
-msgctxt "auditSelection|"
-msgid "Display selected observations"
-msgstr "Geef geselecteerde observaties weer"
-
-msgctxt "auditSelection|"
-msgid "Selection descriptives"
-msgstr "Selectie beschrijvende statistieken"
 
 msgctxt "auditSelection|"
 msgid "Mean"
@@ -14866,26 +14444,6 @@ msgctxt "RCommanderWindow|"
 msgid "Cleared..."
 msgstr "Gewist..."
 
-msgctxt "auditSelection|"
-msgid "Tables and Plots"
-msgstr "Tabellen en Grafieken"
-
-msgctxt "auditSelection|"
-msgid "Plots"
-msgstr "Grafieken"
-
-msgctxt "auditSelection|"
-msgid "Population and sample histograms"
-msgstr "Populatie en steekproef histogrammen"
-
-msgctxt "auditSelection|"
-msgid "Add selection counter to data"
-msgstr "Voeg selectieteller toe aan de gegevens"
-
-msgctxt "auditSelection|"
-msgid "Column name: "
-msgstr "Kolomnaam: "
-
 msgctxt "NetworkAnalysis|"
 msgid "Nonparametric"
 msgstr "Niet parametrisch"
@@ -15008,28 +14566,8 @@ msgid "Audit"
 msgstr "Audit"
 
 msgctxt "Description|"
-msgid ""
-"JASP for Audit (JfA) is an officially supported add-on module that is "
-"designed specifically with the auditor in mind. JfA helps the auditor in "
-"interpreting, explaining, and reporting the analyses and leaves a "
-"transparent audit trail."
-msgstr ""
-"\"JASP for Audit\" is een officieel ondersteunde toevoegingsmodule die "
-"speciaal ontworpen is voor een auditor. JfA helpt de auditor met het "
-"interpreteren, uitleggen, en reporteren van de analyses en laat een "
-"transparant audit spoor achter."
-
-msgctxt "Description|"
 msgid "Workflow"
 msgstr "Description"
-
-msgctxt "Description|"
-msgid "Audit Workflow"
-msgstr "Audit Workflow"
-
-msgctxt "Description|"
-msgid "Bayesian Audit Workflow"
-msgstr "Bayesiaanse Audit Workflow"
 
 msgctxt "Description|"
 msgid "Planning"
@@ -15556,10 +15094,6 @@ msgid "Graphically-Based Data Analysis"
 msgstr "Grafisch georiënteerde Data Analyse"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "Population Materiality"
-msgstr "Populatiematerialiteit"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Absolute"
 msgstr "Absoluut"
 
@@ -15588,20 +15122,8 @@ msgid "Confidence"
 msgstr "Betrouwbaarheid"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "Record ID's"
-msgstr "Transactie ID's"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Audit Result"
 msgstr "Auditresultaat"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Book Values <i>(required)</i>"
-msgstr "Boekwaarden <i>(verplicht)</i>"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Book Values <i>(optional)</i>"
-msgstr "Boekwaarden <i>(optioneel)</i>"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Selection Counter <i>(optional)</i>"
@@ -15612,24 +15134,12 @@ msgid "Annotation Method"
 msgstr "Annotatiemethode"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "Audit values"
-msgstr "Audit waarden"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Correct / Incorrect"
 msgstr "Correct / Incorrect"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Use summary statistics"
 msgstr "Gebruik samenvattende statistieken"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Sample size"
-msgstr "Steekproefgrootte"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Found errors"
-msgstr "Gevonden fouten"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Prior Information"
@@ -15660,16 +15170,8 @@ msgid "Control Risk"
 msgstr "Intern Beheersingsrisico"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "Expected Errors"
-msgstr "Verwachte Fouten"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Advanced Options"
 msgstr "Geavanceerde Opties"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Estimation Method"
-msgstr "Schattingsmethode"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Beta"
@@ -15688,24 +15190,12 @@ msgid "Area Under Posterior"
 msgstr "Gebied Onder Posterior"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "Credible bound"
-msgstr "Geloofwaardigheidsgrens"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Credible interval"
-msgstr "Geloofwaardigheidsinterval"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Explanatory Text"
 msgstr "Toelichtende Tekst"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Enable"
 msgstr "Activeer"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Show explanatory text and formulas"
-msgstr "Geef toelichtende tekst en formules weer"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Tables and Plots"
@@ -15720,10 +15210,6 @@ msgid "Most likely error (MLE)"
 msgstr "Meest waarschijnlijke fout (MLE)"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "Evidence ratio"
-msgstr "Evidentieratio"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Bayes factor (BF₋₊)"
 msgstr "Bayes factor (BF₋₊)"
 
@@ -15732,32 +15218,12 @@ msgid "Tables"
 msgstr "Tabellen"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "Prior and posterior descriptives"
-msgstr "Prior and posterior beschrijvingen"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Plots"
 msgstr "Grafieken"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "Evaluation information"
-msgstr "Evaluatie informatie"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Correlation plot"
-msgstr "Correlatiediagram"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Prior and posterior"
-msgstr "Prior en posterior"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "x-axis limit"
 msgstr "x-as limiet"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "Additional info"
-msgstr "Aanvullende info"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Shade"
@@ -15782,14 +15248,6 @@ msgstr "<b>Download Verslag</b>"
 msgctxt "auditBayesianPlanning|"
 msgid "Prior Information"
 msgstr "Prior Informatie"
-
-msgctxt "auditBayesianWorkflow|"
-msgid "Prior Information"
-msgstr "Prior Informatie"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Population Materiality"
-msgstr "Populatiematerialiteit"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Absolute"
@@ -15820,20 +15278,8 @@ msgid "Confidence"
 msgstr "Betrouwbaarheid"
 
 msgctxt "auditClassicalEvaluation|"
-msgid "Record ID's"
-msgstr "Transactie ID's"
-
-msgctxt "auditClassicalEvaluation|"
 msgid "Audit Result"
 msgstr "Auditresultaat"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Book Values <i>(required)</i>"
-msgstr "Boekwaarden <i>(verplicht)</i>"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Book Values <i>(optional)</i>"
-msgstr "Boekwaarden <i>(optioneel)</i>"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Selection Counter <i>(optional)</i>"
@@ -15844,10 +15290,6 @@ msgid "Annotation Method"
 msgstr "Annotatiemethode"
 
 msgctxt "auditClassicalEvaluation|"
-msgid "Audit values"
-msgstr "Audit waarden"
-
-msgctxt "auditClassicalEvaluation|"
 msgid "Correct / Incorrect"
 msgstr "Correct / Incorrect"
 
@@ -15856,44 +15298,12 @@ msgid "Use summary statistics"
 msgstr "Gebruik samenvattende statistieken"
 
 msgctxt "auditClassicalEvaluation|"
-msgid "Sample size"
-msgstr "Steekproefgrootte"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Found errors"
-msgstr "Gevonden fouten"
-
-msgctxt "auditClassicalEvaluation|"
 msgid "Advanced Options"
 msgstr "Geavanceerde Opties"
 
 msgctxt "auditClassicalEvaluation|"
-msgid "Estimation Method"
-msgstr "Schattingsmethode"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Stringer"
-msgstr "Stringer grens"
-
-msgctxt "auditClassicalEvaluation|"
 msgid "LTA adjustment"
 msgstr "LTA bijstelling"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Direct"
-msgstr "Direct"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Difference"
-msgstr "Verschil"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Ratio"
-msgstr "Ratio"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Regression"
-msgstr "Regressie"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Binomial"
@@ -15940,10 +15350,6 @@ msgid "Enable"
 msgstr "Activeer"
 
 msgctxt "auditClassicalEvaluation|"
-msgid "Show explanatory text and formulas"
-msgstr "Geef toelichtende tekst en formules weer"
-
-msgctxt "auditClassicalEvaluation|"
 msgid "Tables and Plots"
 msgstr "Tabellen en Grafieken"
 
@@ -15958,14 +15364,6 @@ msgstr "Meest waarschijnlijke fout (MLE)"
 msgctxt "auditClassicalEvaluation|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Evaluation information"
-msgstr "Evaluatie informatie"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "Correlation plot"
-msgstr "Correlatiediagram"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "<b>Download Report</b>"
@@ -19483,10 +18881,6 @@ msgid "Click to learn more about the explanatory text."
 msgstr "Klik om meer te leren over de uitleggende tekst."
 
 msgctxt "auditBayesianEvaluation|"
-msgid "A.     Critical Transactions"
-msgstr "A.     Kritieke Transacties"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Select critical transactions"
 msgstr "Selecteer kritieke transacties"
 
@@ -19508,10 +18902,6 @@ msgid "Remove"
 msgstr "Verwijder"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "B.     Efficiency Techniques"
-msgstr "B.     Efficientie Technieken"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Efficiency Techniques"
 msgstr "Efficientie Technieken"
 
@@ -19527,10 +18917,6 @@ msgctxt "auditBayesianEvaluation|"
 msgid ""
 "<i>Requires additional assumption: The sample taints are homogeneous</i>"
 msgstr "<i>Benodigde extra assumptie: The steekproef taints zijn homogeen</i>"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "C.     Prior Information"
-msgstr "C.     Prior Informatie"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Prior information:"
@@ -19585,10 +18971,6 @@ msgid "Weighting factor"
 msgstr "Wegingsfactor"
 
 msgctxt "auditBayesianEvaluation|"
-msgid "D.     Advanced Options"
-msgstr "D.     Geavanceerde Opties"
-
-msgctxt "auditBayesianEvaluation|"
 msgid "Probability Distribution"
 msgstr "Kansverdeling"
 
@@ -19617,10 +18999,6 @@ msgstr "Percentages"
 msgctxt "auditBayesianEvaluation|"
 msgid "Extrapolated amounts"
 msgstr "Geëxtrapoleerde bedragen"
-
-msgctxt "auditBayesianEvaluation|"
-msgid "E.     Tables and Plots"
-msgstr "E.     Tabellen en Plots"
 
 msgctxt "auditBayesianEvaluation|"
 msgid "Obtained precision"
@@ -19693,10 +19071,6 @@ msgid "Click to learn more about the precision."
 msgstr "Klik om meer te leren over de precisie."
 
 msgctxt "auditBayesianPlanning|"
-msgid "A.     Prior Information"
-msgstr "C.     Prior Informatie"
-
-msgctxt "auditBayesianPlanning|"
 msgid "Prior information:"
 msgstr "Prior informatie:"
 
@@ -19749,10 +19123,6 @@ msgid "Weighting factor"
 msgstr "Wegingsfactor"
 
 msgctxt "auditBayesianPlanning|"
-msgid "B.     Advanced Options"
-msgstr "B.     Geavanceerde Opties"
-
-msgctxt "auditBayesianPlanning|"
 msgid "Probability Distribution"
 msgstr "Kansverdeling"
 
@@ -19763,10 +19133,6 @@ msgstr "Berekeningsinstellingen"
 msgctxt "auditBayesianPlanning|"
 msgid "Step size"
 msgstr "Stapgrootte"
-
-msgctxt "auditBayesianPlanning|"
-msgid "C.     Tables and Plots"
-msgstr "C.     Tabellen en Plots"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Expected posterior odds"
@@ -20266,10 +19632,6 @@ msgid "Click to learn more about the explanatory text."
 msgstr "Klik om meer te leren over de verklarende tekst."
 
 msgctxt "auditClassicalEvaluation|"
-msgid "A.     Critical Transactions"
-msgstr "A.     Kritieke Transacties"
-
-msgctxt "auditClassicalEvaluation|"
 msgid "Select critical transactions"
 msgstr "Selecteer kritieke transacties"
 
@@ -20289,14 +19651,6 @@ msgstr "Behouden"
 msgctxt "auditClassicalEvaluation|"
 msgid "Remove"
 msgstr "Verwijder"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "B.     Risk Assessments"
-msgstr "B.     Risicobeoordelingen"
-
-msgctxt "auditClassicalEvaluation|"
-msgid "C.     Advanced Options"
-msgstr "C.     Geavanceerde Opties"
 
 msgctxt "auditClassicalEvaluation|"
 msgid "Evaluation Method"
@@ -20344,10 +19698,6 @@ msgid "Extrapolated amounts"
 msgstr "Geëxtrapoleerde bedragen"
 
 msgctxt "auditClassicalEvaluation|"
-msgid "D.     Tables and Plots"
-msgstr "D.     Tabellen en Plots"
-
-msgctxt "auditClassicalEvaluation|"
 msgid "Obtained precision"
 msgstr "Verkregen precisie"
 
@@ -20388,16 +19738,8 @@ msgid "Click to learn more about the precision."
 msgstr "Klik om meer te leren over de precisie."
 
 msgctxt "auditClassicalPlanning|"
-msgid "A.     Risk Assessments"
-msgstr "A.     Risicobeoordelingen"
-
-msgctxt "auditClassicalPlanning|"
 msgid "Expected Errors in Sample"
 msgstr "Verwachte Fouten in Steekproef"
-
-msgctxt "auditClassicalPlanning|"
-msgid "B.     Advanced Options"
-msgstr "B.     Geavanceerde Opties"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Probability Distribution"
@@ -20410,10 +19752,6 @@ msgstr "Berekeningsinstellingen"
 msgctxt "auditClassicalPlanning|"
 msgid "Step size"
 msgstr "Stapgrootte"
-
-msgctxt "auditClassicalPlanning|"
-msgid "C.     Plots"
-msgstr "C.     Plots"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Compare required sample sizes"
@@ -20716,10 +20054,6 @@ msgid "Show explanatory text at each step of the analysis"
 msgstr "Geef toelichtende tekst weer bij iedere stap van de analyse"
 
 msgctxt "auditSelection|"
-msgid "A.    Selection Methodology"
-msgstr "A.     Selectiemethode"
-
-msgctxt "auditSelection|"
 msgid "Randomly organize transactions before selection"
 msgstr "Transacties willekeurig organiseren vóór selectie"
 
@@ -20743,10 +20077,6 @@ msgctxt "auditSelection|"
 msgid "Click to learn more about fixed interval sampling."
 msgstr "Klik om meer te leren over fixed interval sampling."
 
-msgctxt "auditSelection|"
-msgid "B     Advanced Options"
-msgstr "B.     Geavanceerde Opties"
-
 #, fuzzy
 msgctxt "auditSelection|"
 msgid "Currency"
@@ -20768,10 +20098,6 @@ msgid "Other"
 msgstr "Anders"
 
 msgctxt "auditSelection|"
-msgid "C.    Tables"
-msgstr "C.     Tabellen"
-
-msgctxt "auditSelection|"
 msgid "Display selected transactions"
 msgstr "Geselecteerde transacties weergeven"
 
@@ -20779,1174 +20105,50 @@ msgctxt "auditSelection|"
 msgid "Descriptive statistics of selected transactions"
 msgstr "Beschrijvende statistieken van geselecteerde transacties"
 
-msgctxt "auditSelection|"
-msgid "<b>Export Data</b>"
-msgstr "<b>Gegevens Exporteren</b>"
-
-msgctxt "Descriptives|"
-msgid "Stem and leaf tables"
-msgstr ""
-
-#, fuzzy
-msgctxt "Descriptives|"
-msgid "scale"
-msgstr "schaal"
-
-msgctxt "Descriptives|"
-msgid ""
-"The scale parameter controls how much the table is expanded. For example, "
-"scale = 2 will cause the table to be roughly twice as long as the default "
-"(scale = 1)."
-msgstr ""
-
-msgctxt "Descriptives|"
-msgid "Create a Stem and leaf table."
-msgstr ""
-
-msgctxt "Description|"
-msgid ""
-"This module offers the Principal Component, Confirmatory and Exploratory "
-"Factor analyses"
-msgstr ""
-
-#, fuzzy
-msgctxt "ConfirmatoryFactorAnalysis|"
-msgid "Standardized"
-msgstr "Gestandaardiseerd"
-
-msgctxt "Description|"
-msgid "Gaussian Estimation"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Gaussian Testing"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Problem of Points"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Game of Chance"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Game of Skills"
-msgstr ""
-
-msgctxt "LSgameofchance|"
-msgid "The number of players"
-msgstr ""
-
-msgctxt "LSgameofchance|"
-msgid "The number of points for each player when interrupted (comma delimited)"
-msgstr ""
-
-msgctxt "LSgameofchance|"
-msgid "The number of points required to win the game"
-msgstr ""
-
-msgctxt "LSgameofchance|"
-msgid ""
-"For every play, the probability that each player wins the point (comma "
-"delimited)"
-msgstr ""
-
-msgctxt "LSgameofchance|"
-msgid "The number of simulated games"
-msgstr ""
-
-msgctxt "LSgameofchance|"
-msgid "95% credible interval (highest posterior density)"
-msgstr ""
-
-msgctxt "LSgameofskills|"
-msgid "The number of players"
-msgstr ""
-
-msgctxt "LSgameofskills|"
-msgid ""
-"The hyperparameters of the beta (or Dirichlet) prior for 2 (or more than 2) "
-"players (comma delimited)"
-msgstr ""
-
-msgctxt "LSgameofskills|"
-msgid "The number of points for each player when interrupted (comma delimited)"
-msgstr ""
-
-msgctxt "LSgameofskills|"
-msgid "The number of points required to win the game"
-msgstr ""
-
-msgctxt "LSgameofskills|"
-msgid "The number of simulated games"
-msgstr ""
-
-msgctxt "LSgameofskills|"
-msgid "95% credible interval (highest posterior density)"
-msgstr ""
-
-#, fuzzy
-msgctxt "LSgaussianestimation|"
-msgid "Model"
-msgstr "Model"
-
-#, fuzzy
-msgctxt "LSgaussianestimation|"
-msgid "Distribution"
-msgstr "Verdeling"
-
-msgctxt "LSgaussianestimation|"
-msgid "Parameter (μ)"
-msgstr ""
-
-#, fuzzy
-msgctxt "LSgaussianestimation|"
-msgid "Spike"
-msgstr "Puntmassa"
-
-#, fuzzy
-msgctxt "LSgaussianestimation|"
-msgid "Normal"
-msgstr "Normaal"
-
-msgctxt "LSgaussianestimation|"
-msgid "μ₀"
-msgstr ""
-
-#, fuzzy
-msgctxt "LSgaussianestimation|"
-msgid "σ₀"
-msgstr "σ₀"
-
-msgctxt "LSgaussianestimation|"
-msgid "Observed data"
-msgstr ""
-
-msgctxt "LSgaussianestimation|"
-msgid "Show sample means"
-msgstr ""
-
-#, fuzzy
-msgctxt "LSgaussiantesting|"
-msgid "Hypothesis"
-msgstr "Hypothese"
-
-#, fuzzy
-msgctxt "LSgaussiantesting|"
-msgid "Distribution"
-msgstr "Verdeling"
-
-msgctxt "LSgaussiantesting|"
-msgid "Parameter (μ)"
-msgstr ""
-
-#, fuzzy
-msgctxt "LSgaussiantesting|"
-msgid "Spike"
-msgstr "Puntmassa"
-
-#, fuzzy
-msgctxt "LSgaussiantesting|"
-msgid "Normal"
-msgstr "Normaal"
-
-msgctxt "LSgaussiantesting|"
-msgid "μ₀"
-msgstr ""
-
-msgctxt "LSgaussiantesting|"
-msgid "σ₀"
-msgstr "σ₀"
-
-msgctxt "LSgaussiantesting|"
-msgid "Observed data"
-msgstr ""
-
-msgctxt "LSgaussiantesting|"
-msgid "Sample means"
-msgstr ""
-
-#, fuzzy
-msgctxt "LSgaussiandatainput|"
-msgid "Data"
-msgstr "Data"
-
-msgctxt "LSgaussiandatainput|"
-msgid "Input type"
-msgstr ""
-
-#, fuzzy
-msgctxt "LSgaussiandatainput|"
-msgid "Select variable"
-msgstr "Selecteer variabele"
-
-msgctxt "LSgaussiandatainput|"
-msgid "Specify data summary"
-msgstr ""
-
-#, fuzzy
-msgctxt "LSgaussiandatainput|"
-msgid "Enter sequence"
-msgstr "Voer volgorde in"
-
-#, fuzzy
-msgctxt "LSgaussiandatainput|"
-msgid "Data summary"
-msgstr "Gegevensoverzicht"
-
-#, fuzzy
-msgctxt "LSgaussiandatainput|"
-msgid "Mean"
-msgstr "Gemiddelde"
-
-msgctxt "LSgaussiandatainput|"
-msgid "SD"
-msgstr "SD"
-
-msgctxt "LSgaussiandatainput|"
-msgid "Observations"
-msgstr ""
-
-msgctxt "LSgaussiandatainput|"
-msgid "Comma-separated sequence of observations"
-msgstr ""
-
-#, fuzzy
-msgctxt "LSgaussiandatainput|"
-msgid "Available"
-msgstr "Beschikbaar"
-
-#, fuzzy
-msgctxt "LSgaussiandatainput|"
-msgid "Selected"
-msgstr "Geselecteerd"
-
-msgctxt "Description|"
-msgid ""
-"This module offers the standard Frequentist and Bayesian Mixed Models "
-"analyses."
-msgstr ""
-
-msgctxt "Description|"
-msgid "The SEM module for JASP."
-msgstr ""
-
-msgctxt "Description|"
-msgid "MIMIC Model (beta)"
-msgstr ""
-
-msgctxt "Description|"
-msgid "Latent Growth (beta)"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Variables"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Regressions"
-msgstr "Regressies"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Factor"
-msgstr "Factor"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Time-varying covariates"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Timings"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Model Options"
-msgstr "Modelopties"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Growth curve shape"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Intercept"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Linear"
-msgstr "Lineair"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Quadratic"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Cubic"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Covarying latent curve"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Additional Output"
-msgstr "Aanvullende uitvoer"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Additional Fit Measures"
-msgstr "Extra Pasmaten"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "R-Squared"
-msgstr "R-kwadraat"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Standardized estimates"
-msgstr "Gestandaardiseerde schattingen"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Implied covariance matrix"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Residual covariance matrix"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Show lavaan syntax"
-msgstr "Toon lavaan syntax"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Plots"
-msgstr "Grafieken"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Color palette"
-msgstr "Kleurenpalet"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Colorblind"
-msgstr "Kleurenblind"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Colorblind Alt."
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Viridis"
-msgstr "Viridis"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "ggplot2"
-msgstr "ggplot2"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Gray"
-msgstr "Grijs"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Curve plot"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Misfit plot"
-msgstr "Niet-passings grafiek"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Model plot"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Show parameters"
-msgstr "Toon parameters"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Show means"
-msgstr "Toon gemiddelden"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Advanced"
-msgstr "Geavanceerd"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Emulation"
-msgstr "Emulatie"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "None"
-msgstr "Geen"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Mplus"
-msgstr "Mplus"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "EQS"
-msgstr "EQS"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Missing value handling"
-msgstr "Behandeling ontbrekende waarden"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Full Information Maximum Likelihood"
-msgstr "Complete informatie meest aannemelijke schatter"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Exclude cases listwise"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Error calculation"
-msgstr "Foutberekening"
-
-msgctxt "LatentGrowthCurve|"
-msgid "CI width"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Method"
-msgstr "Methode"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Standard"
-msgstr "Standaard"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Robust"
-msgstr "Robuust"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Bootstrap CI"
-msgstr "Bootstrap BI"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Bootstrap samples"
-msgstr "Bootstrap steekproeven"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Estimator"
-msgstr "Schatter"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Auto"
-msgstr "Auto"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "ML"
-msgstr "ML"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "GLS"
-msgstr "GLS"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "WLS"
-msgstr "WLS"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "ULS"
-msgstr "ULS"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "DWLS"
-msgstr "DWLS"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Options"
-msgstr "Opties"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Fix manifest intercepts to zero"
-msgstr "Zet manifeste intercepten vast op 0"
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Fix latent intercepts to zero"
-msgstr "Zet latente intercepten vast op 0"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Omit residual single indicator"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Residual variances"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Correlate exogenous latents"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Add thresholdds"
-msgstr ""
-
-msgctxt "LatentGrowthCurve|"
-msgid "Add scalings parameters"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Correlate dependent variables"
-msgstr "Correleer afhankelijke variabelen"
-
-msgctxt "LatentGrowthCurve|"
-msgid "Multigroup LGCM"
-msgstr ""
-
-#, fuzzy
-msgctxt "LatentGrowthCurve|"
-msgid "Grouping variable"
-msgstr "Groepeer variabele"
-
-msgctxt "Mimic|"
-msgid "Indicators"
-msgstr ""
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Predictors"
-msgstr "Voorspellers"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Options"
-msgstr "Opties"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Standardized estimates"
-msgstr "Gestandaardiseerde schattingen"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Lavaan syntax"
-msgstr "Lavaan syntax"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "R-squared"
-msgstr "R-kwadraat"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Additional fit measures"
-msgstr "Extra pasmaten"
-
-msgctxt "Mimic|"
-msgid "Confidence intervals"
-msgstr ""
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Method"
-msgstr "Methode"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Standard"
-msgstr "Standaard"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Robust"
-msgstr "Robuust"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Bootstrap"
-msgstr "Bootstrap"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Replications"
-msgstr "Replicaties"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Type"
-msgstr "Type"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Bias-corrected percentile"
-msgstr "Bias-gecorrigeerd percentiel"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Percentile"
-msgstr "Percentiel"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Normal theory"
-msgstr "Normaal theorie"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Plots"
-msgstr "Grafieken"
-
-msgctxt "Mimic|"
-msgid "Model plot"
-msgstr ""
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Parameter estimates"
-msgstr "Parameterschattingen"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Legend"
-msgstr "Legenda"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Advanced"
-msgstr "Geavanceerd"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Missing value handling"
-msgstr "Behandeling ontbrekende waarden"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Full Information Maximum Likelihood"
-msgstr "Complete informatie meest aannemelijke schatter"
-
-msgctxt "Mimic|"
-msgid "Exclude cases listwise"
-msgstr ""
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Emulation"
-msgstr "Emulatie"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "None"
-msgstr "Geen"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Mplus"
-msgstr "Mplus"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "EQS"
-msgstr "EQS"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Estimator"
-msgstr "Schatter"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "Auto"
-msgstr "Auto"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "ML"
-msgstr "ML"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "GLS"
-msgstr "GLS"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "WLS"
-msgstr "WLS"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "ULS"
-msgstr "ULS"
-
-#, fuzzy
-msgctxt "Mimic|"
-msgid "DWLS"
-msgstr "DWLS"
-
-msgctxt "SEM|"
-msgid "Model 1"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Data"
-msgstr "Data"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Raw"
-msgstr "Ruw"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Variance-covariance matrix"
-msgstr "Variantie-covariantie matrix"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Sample size"
-msgstr "Steekproefgrootte"
-
-msgctxt "SEM|"
-msgid "Sampling weights"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Output options"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Additional fit measures"
-msgstr "Extra pasmaten"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "R-squared"
-msgstr "R-kwadraat"
-
-msgctxt "SEM|"
-msgid "Observed covariances"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Implied covariances"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Residual covariances"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Standardized residuals"
-msgstr "Gestandaardiseerde residuen"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Mardia's coefficient"
-msgstr "Mardia's coëfficiënt"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Standardized estimates"
-msgstr "Gestandaardiseerde schattingen"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Path diagram"
-msgstr "Paddiagram"
-
-msgctxt "SEM|"
-msgid "Show parameter estimates"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Show legend"
-msgstr "Toon legenda"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Modification indices"
-msgstr "Modificatie-indices"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Hide low indices"
-msgstr "Verberg lage indices"
-
-msgctxt "SEM|"
-msgid "Threshold"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Model Options"
-msgstr "Modelopties"
-
-msgctxt "SEM|"
-msgid "Factor scaling"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Factor loadings"
-msgstr "Factorladingen"
-
-msgctxt "SEM|"
-msgid "Factor variance"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Effects coding"
-msgstr "Effecten coderen"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "None"
-msgstr "Geen"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Include mean structure"
-msgstr "Neem gemiddelde structuur mee"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Fix manifest intercepts to zero"
-msgstr "Zet manifeste intercepten vast op 0"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Fix latent intercepts to zero"
-msgstr "Zet latente intercepten vast op 0"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Assume factors uncorrelated"
-msgstr "Neem aan dat factoren niet gecorreleerd zijn"
-
-msgctxt "SEM|"
-msgid "Fix exogenous covariates"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Omit residual single indicator"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Include residual variances"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Correlate exogenous latents"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Correlate dependent variables"
-msgstr "Correleer afhankelijke variabelen"
-
-msgctxt "SEM|"
-msgid "Add thresholds"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Add scaling parameters"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Constrain EFA blocks"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Estimation options"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Information matrix"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Expected"
-msgstr "Verwachte"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Observed"
-msgstr "Waargenomen"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Error calculation"
-msgstr "Foutberekening"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Standard"
-msgstr "Standaard"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Robust"
-msgstr "Robuust"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Bootstrap"
-msgstr "Bootstrap"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Bootstrap samples"
-msgstr "Bootstrap steekproeven"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Type"
-msgstr "Type"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Bias-corrected percentile"
-msgstr "Bias-gecorrigeerd percentiel"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Percentile"
-msgstr "Percentiel"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Normal theory"
-msgstr "Normaal theorie"
-
-msgctxt "SEM|"
-msgid "Confidence intervals"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Standardize variables before estimation"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Estimator"
-msgstr "Schatter"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Auto"
-msgstr "Auto"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "ML"
-msgstr "ML"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "GLS"
-msgstr "GLS"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "WLS"
-msgstr "WLS"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "ULS"
-msgstr "ULS"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "DWLS"
-msgstr "DWLS"
-
-msgctxt "SEM|"
-msgid "PML"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Model test"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Satorra-Bentler"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Yuan-Bentler"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Mean and Variance adjusted"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Scaled and shifted"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Bootstrap (Bollen-Stine)"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Missing data handling"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "FIML"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Listwise deletion"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Pairwise"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Two-stage"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Robust two-stage"
-msgstr ""
-
-msgctxt "SEM|"
-msgid "Doubly robust"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Emulation"
-msgstr "Emulatie"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Mplus"
-msgstr "Mplus"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "EQS"
-msgstr "EQS"
-
-msgctxt "SEM|"
-msgid "Multigroup SEM"
-msgstr ""
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Grouping Variable"
-msgstr "Groepen"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Equality Constraints"
-msgstr "Gelijkheidsbeperkingen"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Loadings"
-msgstr "Ladingen"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Intercepts"
-msgstr "Intercepten"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Residuals"
-msgstr "Residuen"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Means"
-msgstr "Gemiddelden"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Regressions"
-msgstr "Regressies"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Latent variances"
-msgstr "Latente varianties"
-
-#, fuzzy
-msgctxt "SEM|"
-msgid "Latent covariances"
-msgstr "Latente covarianties"
-
-msgctxt "SEM|"
-msgid "Release constraints (one per line)"
-msgstr ""
+msgctxt "auditBayesianEvaluation|"
+msgid "Critical Transactions"
+msgstr "Kritieke Transacties"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Critical Transactions"
+msgstr "Kritieke Transacties"
+
+msgctxt "auditClassicalEvaluation|"
+msgid "Risk Assessments"
+msgstr "Risicobeoordelingen"
+
+msgctxt "auditClassicalPlanning|"
+msgid "Risk Assessments"
+msgstr "Risicobeoordelingen"
 
 msgctxt "auditClassicalWorkflow|"
-msgid ""
+msgid "" 
 msgstr ""
 
-msgctxt "TTestBayesianIndependentSamples|"
-msgid "Raincloud plots"
-msgstr ""
+msgctxt "auditSelection|"
+msgid "Selection Methodology"
+msgstr "Selectiemethode"
 
-msgctxt "TTestBayesianIndependentSamples|"
-msgid "Horizontal display"
-msgstr ""
+msgctxt "auditSelection|"
+msgid "Export sample to file"
+msgstr "Exporteer steekproef naar bestand"
 
-msgctxt "TTestBayesianPairedSamples|"
-msgid "Raincloud plots"
-msgstr ""
+msgctxt "auditSelection|"
+msgid "Column name selection result: "
+msgstr "Kolomnaam selectie resultaat: "
 
-msgctxt "TTestIndependentSamples|"
-msgid "Raincloud plots"
-msgstr ""
+msgctxt "auditSelection|"
+msgid "e.g. Count"
+msgstr "b.v. Aantal"
 
-msgctxt "TTestIndependentSamples|"
-msgid "Horizontal display"
-msgstr ""
+msgctxt "auditSelection|"
+msgid "Save as: "
+msgstr "Opslaan als: "
 
-msgctxt "TTestPairedSamples|"
-msgid "Raincloud plots"
-msgstr ""
+msgctxt "auditSelection|"
+msgid "<b>Synchronize: On</b>"
+msgstr "<b>Synchoniseer: Aan</b>"
+
+msgctxt "auditSelection|"
+msgid "<b>Synchronize: Off</b>"
+msgstr "<b>Synchoniseer: Uit</b>"

@@ -2812,11 +2812,32 @@ msgstr ""
 "Het detectie risico is hoger dan 100%%. Herspecificeer de aangepaste waarden "
 "voor het Inherente risico en/of het Intern Beheersingsrisico."
 
-msgid "The resulting sample size exceeds 5000."
-msgstr "De resulterende steekproefgrootte is groter dan 5000."
+msgid "You cannot achieve your current sampling objectives with this population. The resulting sample size exceeds 10000. Adjust your sampling objectives or variables accordingly."
+msgstr "Met deze populatie kunt u uw huidige steekproefdoelstellingen niet halen. "
+"De resulterende steekproefgrootte is groter dan 5000. "
+"Pas uw steekproefdoelen of variabelen dienovereenkomstig aan."
 
 msgid "An error occurred: %1$s"
 msgstr "Foutmelding: %1$s"
+
+
+msgid ""
+"You cannot achieve your current sampling objectives with this population. "
+"The resulting sample size is larger than the number of transactions in the "
+"population. Adjust your sampling objectives or variables accordingly."
+msgstr ""
+"Met deze populatie kunt u uw huidige steekproefdoelstellingen niet halen. "
+"De resulterende steekproefgtrootte is groter dan het aantal transacties in de populatie. "
+"Pas uw steekproefdoelstellingen of variabelen dienovereenkomstig aan."
+
+msgid ""
+"You cannot achieve your current sampling objectives with this population. "
+"The resulting sample size is larger than the total value of the population. "
+"Adjust your sampling objectives or variables accordingly."
+msgstr ""
+"Met deze populatie kunt u uw huidige steekproefdoelstellingen niet halen. "
+"De resulterende steekproefgrootte is groter dan de totale waarde van de populatie. "
+"Pas uw steekproefdoelstellingen of variabelen dienovereenkomstig aan."
 
 msgid "The resulting sample size is larger than the population size."
 msgstr "De resulterende steekproefgrootte is groter dan de populatiegrootte."
@@ -2935,6 +2956,9 @@ msgstr "Steekproefgrootte vergelijking"
 msgid "Expected error-free"
 msgstr "Verwacht foutloos"
 
+msgid "An error occurred in a call to the the jfa package: %1$s"
+msgstr "Er is een fout opgetreden bij het aanroepen van het jfa-package: %1$s"
+
 msgid ""
 "<b>Figure %1$i.</b> Sample size comparison for the current options. The bars "
 "represent the sample size that is required under different planning "
@@ -2964,8 +2988,8 @@ msgstr ""
 "foutvrije observaties groen. De totale kans van de fouten overschrijdt niet "
 "het detectie risico zoals gespecificeerd door het audit risicomodel."
 
-msgid "Your specified starting point lies outside the selection interval."
-msgstr "Uw gespecificeerde startpunt ligt buiten het selectie interval."
+msgid "Your specified starting point lies outside the selection interval (%1$s)."
+msgstr "Uw gespecificeerde startpunt ligt buiten het selectie interval (%1$s)."
 
 msgid "<b>Table %1$i.</b> Selection Summary"
 msgstr "<b>Tabel %1$i.</b> Selectiesamenvatting"
@@ -3158,6 +3182,9 @@ msgstr "Evaluatie informatie"
 
 msgid "Maximum error"
 msgstr "Maximale fout"
+
+msgid "An error occurred while creating this plot: %1$s"
+msgstr "Er is een fout opgetreden bij het maken van deze plot: %1$s"
 
 msgid "Most likely error"
 msgstr "Meest waarschijnlijke fout"
