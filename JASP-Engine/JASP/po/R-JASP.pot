@@ -1597,10 +1597,16 @@ msgstr ""
 msgid "The detection risk is equal to or higher than 100%%. Please re-specify your custom values for the Inherent risk and/or Control risk."
 msgstr ""
 
-msgid "The resulting sample size exceeds 5000."
+msgid "You cannot achieve your current sampling objectives with this population. The resulting sample size exceeds 10000. Adjust your sampling objectives or variables accordingly."
 msgstr ""
 
 msgid "An error occurred: %1$s"
+msgstr ""
+
+msgid "You cannot achieve your current sampling objectives with this population. The resulting sample size is larger than the number of transactions in the population. Adjust your sampling objectives or variables accordingly."
+msgstr ""
+
+msgid "You cannot achieve your current sampling objectives with this population. The resulting sample size is larger than the total value of the population. Adjust your sampling objectives or variables accordingly."
 msgstr ""
 
 msgid "The resulting sample size is larger than the population size."
@@ -1681,6 +1687,9 @@ msgstr ""
 msgid "Expected error-free"
 msgstr ""
 
+msgid "An error occurred in a call to the the jfa package: %1$s"
+msgstr ""
+
 msgid "<b>Figure %1$i.</b> Sample size comparison for the current options. The bars represent the sample size that is required under different planning distributions. The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green."
 msgstr ""
 
@@ -1693,7 +1702,7 @@ msgstr ""
 msgid "<b>Figure %1$i.</b> The implied <b>%2$s</b> sampling distribution. The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green. The total probability of the errors does not exceed the detection risk as specified through the audit risk model."
 msgstr ""
 
-msgid "Your specified starting point lies outside the selection interval."
+msgid "Your specified starting point lies outside the selection interval (%1$s)."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Selection Summary"
@@ -1826,6 +1835,9 @@ msgid "Evaluation Information"
 msgstr ""
 
 msgid "Maximum error"
+msgstr ""
+
+msgid "An error occurred while creating this plot: %1$s"
 msgstr ""
 
 msgid "Most likely error"
