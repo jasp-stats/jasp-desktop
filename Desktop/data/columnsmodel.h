@@ -23,6 +23,8 @@ public:
 
 	enum IconType { DefaultIconType, DisabledIconType, InactiveIconType };
 
+	static ColumnsModel* singleton()	{ return _singleton; }
+
 	ColumnsModel(DataSetTableModel * tableModel);
 
 	QVariant				data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
@@ -59,6 +61,8 @@ private:
 	void refresh();
 
 	DataSetTableModel * _tableModel = nullptr;
+
+	static ColumnsModel* _singleton;
 };
 
 

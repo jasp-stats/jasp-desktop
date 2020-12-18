@@ -33,9 +33,6 @@
 
 using namespace std;
 
-ColumnsModel*		AnalysisForm::_columnsModel		=  nullptr;
-int					AnalysisForm::_columnsModelRole = Qt::DisplayRole;
-
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
 	setObjectName("AnalysisForm");
@@ -47,18 +44,19 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
 {
-	if (!_columnsModel) return QVariant();
+	ColumnsModel* colModel = ColumnsModel::singleton();
+	if (!colModel) return QVariant();
 
 	try {
-		QModelIndex index = _columnsModel->index(_columnsModel->getColumnIndex(term.asString()), 0);
+		QModelIndex index = colModel->index(colModel->getColumnIndex(term.asString()), 0);
 		switch(info)
 		{
-		case VariableInfo::VariableType:			return _columnsModel->data(index, ColumnsModel::TypeRole);
-		case VariableInfo::VariableTypeName:		return _columnsModel->data(index, ColumnsModel::TypeNameRole);
-		case VariableInfo::VariableTypeIcon:		return _columnsModel->data(index, ColumnsModel::IconSourceRole);
-		case VariableInfo::VariableTypeDisabledIcon: return _columnsModel->data(index, ColumnsModel::DisabledIconSourceRole);
-		case VariableInfo::VariableTypeInactiveIcon: return _columnsModel->data(index, ColumnsModel::InactiveIconSourceRole);
-		case VariableInfo::Labels:					return	_columnsModel->data(index, ColumnsModel::LabelsRole);
+		case VariableInfo::VariableType:			return colModel->data(index, ColumnsModel::TypeRole);
+		case VariableInfo::VariableTypeName:		return colModel->data(index, ColumnsModel::TypeNameRole);
+		case VariableInfo::VariableTypeIcon:		return colModel->data(index, ColumnsModel::IconSourceRole);
+		case VariableInfo::VariableTypeDisabledIcon: return colModel->data(index, ColumnsModel::DisabledIconSourceRole);
+		case VariableInfo::VariableTypeInactiveIcon: return colModel->data(index, ColumnsModel::InactiveIconSourceRole);
+		case VariableInfo::Labels:					return	colModel->data(index, ColumnsModel::LabelsRole);
 		}
 	}
 	catch(columnNotFound & e) {} //just return an empty QVariant right?
@@ -773,25 +771,6 @@ QString AnalysisForm::metaHelpMD() const
 	};
 
 	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->meta(), 2);
-}
-
-void AnalysisForm::setColumnsModel(ColumnsModel *model)
-{
-	_columnsModel = model;
-
-	if (model)
-	{
-		QHashIterator<int, QByteArray> i(model->roleNames());
-		while (i.hasNext())
-		{
-			i.next();
-			if (i.value() == "columnName")
-			{
-				_columnsModelRole = i.key();
-				break;
-			}
-		}
-	}
 }
 
 QString AnalysisForm::helpMD() const

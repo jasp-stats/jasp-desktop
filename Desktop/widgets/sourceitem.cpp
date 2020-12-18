@@ -114,8 +114,8 @@ void SourceItem::_setUp()
 	else if (_listControl->form() && !_name.isEmpty())	_nativeModel = _listControl->form()->getModel(_name);
 	else if (_isColumnsModel)
 	{
-		_nativeModel = AnalysisForm::getColumnsModel();
-		_nativeModelRole = AnalysisForm::getColumnsModelRole();
+		_nativeModel = ColumnsModel::singleton();
+		_nativeModelRole = ColumnsModel::NameRole;
 	}
 
 	if (_nativeModel)

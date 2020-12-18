@@ -124,15 +124,14 @@ void ComboBoxBase::termsChangedHandler()
 
 	if (initialized())
 	{
-		int counter = 0;
-		for (const Term& term : terms)
+		for (size_t counter = 0; counter < terms.size(); counter++)
 		{
+			const Term& term = terms.at(counter);
 			QString label = term.asQString();
 			QString value = _model->getValue(label);
 			options.push_back(value.toStdString());
 			if (value == _currentValue)
-				index = counter;
-			counter++;
+				index = int(counter);
 		}
 
 		if (index == -1) index = _getStartIndex();

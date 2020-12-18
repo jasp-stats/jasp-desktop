@@ -64,7 +64,7 @@ void ListModelFilteredDataEntry::runFilter(QString filter)
 
 size_t ListModelFilteredDataEntry::getDataSetRowCount() const
 {
-	return size_t(AnalysisForm::getColumnsModel()->rowCount());
+	return size_t(ColumnsModel::singleton()->rowCount());
 }
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
@@ -338,7 +338,7 @@ QVariant ListModelFilteredDataEntry::data(const QModelIndex &index, int role) co
 	std::string colName = _colNames[column].toStdString();
 	size_t rowData		= _filteredRowToData[static_cast<size_t>(row)];
 
-	ColumnsModel* columnsModel = AnalysisForm::getColumnsModel();
+	ColumnsModel* columnsModel = ColumnsModel::singleton();
 
 	int colIndex = columnsModel->getColumnIndex(colName);
 
@@ -354,7 +354,7 @@ int ListModelFilteredDataEntry::getMaximumColumnWidthInCharacters(size_t column)
 		return ListModelTableViewBase::getMaximumColumnWidthInCharacters(0);
 
 
-	ColumnsModel* columnsModel = AnalysisForm::getColumnsModel();
+	ColumnsModel* columnsModel = ColumnsModel::singleton();
 
 	if(!(columnsModel->rowCount() >= 0 || colIndex > _colNames.size() || column < 0))
 	{

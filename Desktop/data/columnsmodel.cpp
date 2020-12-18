@@ -1,15 +1,19 @@
 #include "columnsmodel.h"
 #include "qquick/jasptheme.h"
 
+ColumnsModel* ColumnsModel::_singleton = nullptr;
+
 ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) : QAbstractTableModel(tableModel), _tableModel(tableModel)
 {
-   connect(_tableModel, &DataSetTableModel::headerDataChanged,		this, &ColumnsModel::onHeaderDataChanged);
-   connect(_tableModel, &DataSetTableModel::dataChanged,			this, &ColumnsModel::onDataChanged		);
-   connect(_tableModel, &DataSetTableModel::modelAboutToBeReset,	this, &ColumnsModel::beginResetModel	);
-   connect(_tableModel, &DataSetTableModel::modelReset,				this, &ColumnsModel::endResetModel			);
-   connect(_tableModel, &DataSetTableModel::columnTypeChanged,		this, &ColumnsModel::columnTypeChanged	);
-   connect(_tableModel, &DataSetTableModel::labelChanged,			this, &ColumnsModel::labelChanged		);
-   connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
+	connect(_tableModel, &DataSetTableModel::headerDataChanged,		this, &ColumnsModel::onHeaderDataChanged);
+	connect(_tableModel, &DataSetTableModel::dataChanged,			this, &ColumnsModel::onDataChanged		);
+	connect(_tableModel, &DataSetTableModel::modelAboutToBeReset,	this, &ColumnsModel::beginResetModel	);
+	connect(_tableModel, &DataSetTableModel::modelReset,				this, &ColumnsModel::endResetModel			);
+	connect(_tableModel, &DataSetTableModel::columnTypeChanged,		this, &ColumnsModel::columnTypeChanged	);
+	connect(_tableModel, &DataSetTableModel::labelChanged,			this, &ColumnsModel::labelChanged		);
+	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
+
+	if (_singleton == nullptr) _singleton = this;
 }
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const

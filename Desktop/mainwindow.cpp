@@ -139,8 +139,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	new MessageForwarder(this); //We do not need to store this
 
-	AnalysisForm::setColumnsModel(_columnsModel);
-
 	startOnlineDataManager();
 
 	makeConnections();

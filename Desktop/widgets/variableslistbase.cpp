@@ -346,17 +346,13 @@ void VariablesListBase::_setAllowedVariables()
 		QStringList newAllowedColumns = suggestedColumns();
 		if (suggestedColumns().contains("scale"))
 		{
-			if (!newAllowedColumns.contains("nominal"))
-				newAllowedColumns.push_back("nominal");
-			if (!newAllowedColumns.contains("ordinal"))
-				newAllowedColumns.push_back("ordinal");
+			if (!newAllowedColumns.contains("nominal"))			newAllowedColumns.push_back("nominal");
+			if (!newAllowedColumns.contains("ordinal"))			newAllowedColumns.push_back("ordinal");
 		}
 		if (suggestedColumns().contains("nominal"))
 		{
-			if (!newAllowedColumns.contains("nominalText"))
-				newAllowedColumns.push_back("nominalText");
-			if (!newAllowedColumns.contains("ordinal"))
-				newAllowedColumns.push_back("ordinal");
+			if (!newAllowedColumns.contains("nominalText"))		newAllowedColumns.push_back("nominalText");
+			if (!newAllowedColumns.contains("ordinal"))			newAllowedColumns.push_back("ordinal");
 		}
 		setAllowedColumns(newAllowedColumns);
 	}
@@ -366,7 +362,7 @@ void VariablesListBase::_setAllowedVariables()
 	if (allowedColumnsTypes >= 0)
 		_variableTypesAllowed = allowedColumnsTypes;
 
-	ColumnsModel* colModel = AnalysisForm::getColumnsModel();
+	ColumnsModel* colModel = ColumnsModel::singleton();
 	QStringList iconList;
 	for (const QString& suggectedType : suggestedColumns())
 	{
