@@ -24,7 +24,7 @@
 #include <cstdlib>
 #include <string>
 
-#include "MemBuf.h"
+#include <MemBuf.h>
 
 extern bool verbose;
 extern const char *programName;

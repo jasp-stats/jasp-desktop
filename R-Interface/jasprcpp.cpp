@@ -84,7 +84,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_logString("Creating RInside.\n");
 	rinside = new RInside();
-
+	
 	RInside &rInside = rinside->instance();
 
 	requestJaspResultsFileSourceCB				= callbacks->requestJaspResultsFileSourceCB;

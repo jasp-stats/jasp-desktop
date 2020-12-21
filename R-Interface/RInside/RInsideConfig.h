@@ -21,6 +21,6 @@
 #define RINSIDE_RINSIDECONFIG_H
 
 // uncomment to turn on the experimental callbacks
-#define RINSIDE_CALLBACKS
+// #define RINSIDE_CALLBACKS
 
 #endif

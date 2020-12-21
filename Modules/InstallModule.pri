@@ -1,7 +1,7 @@
 # This is part of https://github.com/jasp-stats/INTERNAL-jasp/issues/996 and works, but requires me to install V8 because of stupid dependency resolution based on CRAN
 # So ive turned it off for now, but if you'd like to use it you can!
 isEmpty(R_MODULES_INSTALL_DEPENDENCIES) { 
-	R_MODULES_INSTALL_DEPENDENCIES = false
+	R_MODULES_INSTALL_DEPENDENCIES = true
 }
 
 
@@ -52,11 +52,13 @@ isEmpty(MODULE_NAME) {
 
 
     #See this: https://www.qtcentre.org/threads/9287-How-do-I-get-QMAKE_CLEAN-to-delete-a-directory
-	#The windows one still ought to be tested though
 	unix:  QMAKE_DEL_FILE = rm -rf
-	win32: QMAKE_DEL_FILE = rmdir
-
-    QMAKE_CLEAN			+= $$JASP_LIBRARY_DIR/$${MODULE_NAME}/* $$JASP_LIBRARY_DIR/*
+    unix:	QMAKE_CLEAN			  += $$JASP_LIBRARY_DIR/$${MODULE_NAME}/* $$JASP_LIBRARY_DIR/*
+	
+	#we do not use QMAKE_DEL_FILE + QMAKE_CLEAN because otherwise /S and /Q get turned into \\S and \\Q :(
+	#see end of Modules.pro for the rest of it
+	win32:	libraryClean.commands += rd $$quote($$JASP_LIBARY_DIR_FIX) /S /Q || exit 0; $$escape_expand(\\n\\t)
+	
 	#QMAKE_DISTCLEAN	+= $$JASP_LIBRARY_DIR/*/*/* $$JASP_LIBRARY_DIR/*/* $$JASP_LIBRARY_DIR/* $$JASP_LIBRARY_DIR
 
 	#Make sure we install the r pkgs in the right order.
@@ -64,6 +66,8 @@ isEmpty(MODULE_NAME) {
 		Install$${MODULE_NAME}.depends	+= PostInstallFix$${DEP}
 	}
 }
+
+#R_MODULES_INSTALL_DEPENDENCIES = false
 
 #reset the special vars:
 MODULE_NAME =

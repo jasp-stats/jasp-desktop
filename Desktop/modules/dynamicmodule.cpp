@@ -993,13 +993,14 @@ void DynamicModule::setImportsR(stringset importsR)
 {
 	if(importsR != _importsR)
 	{
-		Log::log() << "R Pkg imports for module '" << name() << "' changed!\nReinstalling module, just in case." << std::endl;
-		
 		_importsR = importsR;
 		emit importsRChanged();
 		
 		if(_status == moduleStatus::readyForUse || _status == moduleStatus::loadingNeeded)
-			setStatus(moduleStatus::installNeeded);
+		{
+			Log::log() << "R Pkg imports for module '" << name() << "' changed!\nReinstalling module deps, just in case." << std::endl;
+			setStatus(moduleStatus::installModPkgNeeded);
+		}
 	}
 }
 

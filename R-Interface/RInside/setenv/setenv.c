@@ -60,8 +60,16 @@ extern "C" int setenv(const char *env_var, const char *env_val, int dummy) {
 	}
 
 	if(!inquote && *p == '\\') {
-	    if(*(p+1) == '\n') p++;
-	    else if(*(p+1) == '\\') *q++ = *p;
+	    if(*(p+1) == '\n') {
+	        p++;
+	    }
+	    else if(*(p+1) == '\\') {
+	        *q++ = '/';
+	        p++;
+	    }
+	    else {
+	        *q++ = '/';
+	    }
 	    continue;
 	}
 

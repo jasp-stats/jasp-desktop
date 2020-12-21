@@ -22,7 +22,7 @@
 #ifndef RINSIDE_CALLBACKS_H
 #define RINSIDE_CALLBACKS_H
 
-#include <RInside/RInsideCommon.h>
+#include <RInsideCommon.h>
 
 #ifdef RINSIDE_CALLBACKS
 

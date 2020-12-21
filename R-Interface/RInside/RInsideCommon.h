@@ -22,7 +22,7 @@
 #ifndef RINSIDE_RINSIDECOMMON_H
 #define RINSIDE_RINSIDECOMMON_H
 
-#include "RInsideConfig.h"
+#include <RInsideConfig.h>
 
 #include <sys/time.h>           // gettimeofday()
 #include <sys/types.h>		// pid_t
@@ -37,23 +37,25 @@
 
 #include <Rcpp.h>
 
-#ifdef _WIN32
+#ifdef WIN32
   #ifndef Win32
     // needed for parts of Rembedded.h
     #define Win32
   #endif
 #endif
 
-#ifndef _WIN32
+#ifndef WIN32
   // needed to turn-off stack checking, and we already have uintptr_t
   #define CSTACK_DEFNS
-  #define HAVE_UINTPTR_T
+  #ifndef HAVE_UINTPTR_T
+    #define HAVE_UINTPTR_T
+  #endif
 #endif
 
 #include <Rembedded.h>
 #include <R_ext/RStartup.h>
 
-#include "MemBuf.h"
+#include <MemBuf.h>
 
 // simple logging help
 inline void logTxtFunction(const char* file, const int line, const char* expression, const bool verbose) {

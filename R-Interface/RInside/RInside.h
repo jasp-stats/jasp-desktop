@@ -3,7 +3,7 @@
 // RInside.h: R/C++ interface class library -- Easier R embedding into C++
 //
 // Copyright (C) 2009         Dirk Eddelbuettel
-// Copyright (C) 2010 - 2013  Dirk Eddelbuettel and Romain Francois
+// Copyright (C) 2010 - 2017  Dirk Eddelbuettel and Romain Francois
 //
 // This file is part of RInside.
 //
@@ -23,8 +23,8 @@
 #ifndef RINSIDE_RINSIDE_H
 #define RINSIDE_RINSIDE_H
 
-#include "RInsideCommon.h"
-#include "Callbacks.h"
+#include <RInsideCommon.h>
+#include <Callbacks.h>
 
 class RInside {
 private:
@@ -91,10 +91,11 @@ public:
     
     static RInside& instance();
     static RInside* instancePtr();
+
+	void repl();
     
 #ifdef RINSIDE_CALLBACKS
     void set_callbacks(Callbacks* callbacks_) ;
-	void repl() ;
 #endif
 
 };

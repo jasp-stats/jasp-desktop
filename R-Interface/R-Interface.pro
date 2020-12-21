@@ -24,7 +24,7 @@ windows{
 
 macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
-INCLUDEPATH += ../Common
+INCLUDEPATH += ../Common RInside
 DEFINES     += JASP_R_INTERFACE_LIBRARY QT_DEPRECATED_WARNINGS
 
 # QT_DEPRECATED_WARNINGS is there for:
@@ -48,8 +48,8 @@ SOURCES += \
     jaspResults/src/jaspColumn.cpp
 
 HEADERS += \
+	jasprcpp.h \
     jasprcpp_interface.h \
-    jasprcpp.h \
     RInside/Callbacks.h \
     RInside/MemBuf.h \
     RInside/RInside.h \
@@ -73,13 +73,13 @@ macx:		INCLUDEPATH += ../../boost_1_71_0
 windows:	INCLUDEPATH += ../../boost_1_71_0
 
 windows{
-	QMAKE_CXXFLAGS += -Og -municode #for big object files & support for unicode/utf16 in mingw maybe?
-	SOURCE_LIBFILE = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
-	SOURCE_LIBFILE ~= s,/,\\,g
-	DEST_LIBFILE = $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_NAME'.lib'
-	DEST_LIBFILE ~= s,/,\\,g
+	QMAKE_CXXFLAGS  += -Og -municode #for big object files & support for unicode/utf16 in mingw maybe?
+	SOURCE_LIBFILE   = $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_NAME'.a'
+	SOURCE_LIBFILE  ~= s,/,\\,g
+	DEST_LIBFILE     = $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_NAME'.lib'
+	DEST_LIBFILE    ~= s,/,\\,g
 	
-        QMAKE_POST_LINK     += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
+	QMAKE_POST_LINK += $$quote(cmd /c copy /Y $$SOURCE_LIBFILE $$DEST_LIBFILE)
 }
 
 ### making sure that writeImage.R and zzzWrappers.R are available to jaspEngine:
