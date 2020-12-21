@@ -35,7 +35,6 @@ ComponentsListBase::ComponentsListBase(QQuickItem *parent)
 void ComponentsListBase::setUpModel()
 {
 	_termsModel = new ListModelTermsAssigned(this);
-	_termsModel->setTermsAreVariables(false);
 	JASPListControl::setUpModel();
 
 	QQuickItem::connect(this, SIGNAL(nameChanged(int, QString)), this, SLOT(nameChangedHandler(int, QString)));
@@ -60,7 +59,7 @@ void ComponentsListBase::bindTo(Option *option)
 	{
 		std::string key;
 
-		if (_termsModel->areTermsInteractions())
+		if (containsInteractions())
 		{
 			OptionTerm* termOption = dynamic_cast<OptionTerm*>(options->get(keyName));
 			if (termOption)
@@ -107,7 +106,7 @@ Option* ComponentsListBase::createOption()
 	Options* templote = new Options();
 	std::string keyName = _optionKey.toStdString();
 
-	if (_termsModel->areTermsInteractions())
+	if (containsInteractions())
 		templote->add(keyName, new OptionTerm());
 	else
 		templote->add(keyName, new OptionVariable());
@@ -122,7 +121,7 @@ Option* ComponentsListBase::createOption()
 		for (const Term& term : initTerms)
 		{
 			Options* row = dynamic_cast<Options*>(templote->clone());
-			if (_termsModel->areTermsInteractions())
+			if (containsInteractions())
 			{
 				OptionTerm* optionVar = new OptionTerm();
 				optionVar->setValue(term.scomponents());
@@ -209,7 +208,7 @@ void ComponentsListBase::termsChangedHandler()
 		{
 			Options *rowOptions = static_cast<Options *>(_boundTo->rowTemplate()->clone());
 
-			if (_termsModel->areTermsInteractions())
+			if (containsInteractions())
 			{
 				OptionTerm* optionTerm = dynamic_cast<OptionTerm*>(rowOptions->get(keyName));
 				if (optionTerm)

@@ -53,7 +53,7 @@ void ComboBoxBase::bindTo(Option *option)
 		std::vector<std::string> options = _model->getValues();
 		_boundTo->resetOptions(options, index);
 		
-		_setCurrentValue(index, false);
+		_setCurrentProperties(index, false);
 		
 		_resetItemWidth();
 	}
@@ -63,7 +63,11 @@ void ComboBoxBase::bindTo(Option *option)
 
 int ComboBoxBase::_getStartIndex()
 {
-	return startValue().isEmpty() ? currentIndex() : _model->getIndexOfValue(startValue());
+	if (!startValue().isEmpty())	return _model->getIndexOfValue(startValue());
+	if (currentIndex() != -1)		return currentIndex();
+	if (!currentValue().isEmpty())	return _model->getIndexOfValue(currentValue());
+	if (!currentText().isEmpty())	return _model->getIndexOfLabel(currentText());
+	return -1;
 }
 
 Option *ComboBoxBase::createOption()
@@ -99,7 +103,7 @@ void ComboBoxBase::setUp()
 	_model->resetTermsFromSources();
 
 	connect(this,	&JASPListControl::addEmptyValueChanged,		[this] () { _model->resetTermsFromSources(); }	);
-	connect(this,	&ComboBoxBase::currentIndexChanged,			[this] () { _setCurrentValue(currentIndex()); } ); // Case when currentIndex is changed in QML
+	connect(this,	&ComboBoxBase::currentIndexChanged,			[this] () { _setCurrentProperties(currentIndex()); } ); // Case when currentIndex is changed in QML
 	connect(this,	SIGNAL(activated(int)),						this,		SLOT(activatedSlot(int)));
 	if (form())
 		connect(form(), &AnalysisForm::languageChanged,			[this] () { _model->resetTermsFromSources(); }	);
@@ -116,34 +120,39 @@ void ComboBoxBase::termsChangedHandler()
 {
 	std::vector<std::string> options;
 	const Terms& terms = _model->terms();
-	int counter = 0;
 	int index = -1;
-	for (const Term& term : terms)
-	{
-		QString label = term.asQString();
-		QString value = _model->getValue(label);
-		options.push_back(value.toStdString());
-		if (value == _currentValue)
-			index = counter;
-		counter++;
-	}
-	
-	if (index == -1)	index = _getStartIndex();
 
+	if (initialized())
+	{
+		for (size_t counter = 0; counter < terms.size(); counter++)
+		{
+			const Term& term = terms.at(counter);
+			QString label = term.asQString();
+			QString value = _model->getValue(label);
+			options.push_back(value.toStdString());
+			if (value == _currentValue)
+				index = int(counter);
+		}
+
+		if (index == -1) index = _getStartIndex();
+	}
+	else
+		index = _getStartIndex();
+	
 	if (terms.size() == 0)									index = -1;
 	else if (index == -1 || (index >= int(terms.size())))	index = 0;
 	
 	if (_boundTo)
 		_boundTo->resetOptions(options, index);
 	
-	_setCurrentValue(index);
+	_setCurrentProperties(index);
 	
 	_resetItemWidth();
 }
 
 void ComboBoxBase::activatedSlot(int index)
 {
-	_setCurrentValue(index);
+	_setCurrentProperties(index);
 }
 
 void ComboBoxBase::_resetItemWidth()
@@ -152,9 +161,32 @@ void ComboBoxBase::_resetItemWidth()
 	QMetaObject::invokeMethod(this, "resetWidth", Q_ARG(QVariant, QVariant(terms.asQList())));
 }
 
-void ComboBoxBase::_setCurrentValue(int index, bool setOption)
+void ComboBoxBase::setCurrentText(QString text)
 {
-	QString currentColumnType, currentValue, currentText;
+	if (initialized())
+		_setCurrentProperties(_model->getIndexOfLabel(text));
+	else
+		_currentText = text;
+}
+
+void ComboBoxBase::setCurrentValue(QString value)
+{
+	if (initialized())
+		_setCurrentProperties(_model->getIndexOfValue(value));
+	else
+		_currentValue = value;
+}
+void ComboBoxBase::setCurrentIndex(int index)
+{
+	if (initialized())
+		_setCurrentProperties(index);
+	else
+		_currentIndex = index; // In this case it is used as start index
+}
+
+void ComboBoxBase::_setCurrentProperties(int index, bool setOption)
+{
+	QString currentColumnType, currentValue, currentText, currentColumnTypeIcon;
 
 	if (index >= _model->rowCount())	index = 0;
 
@@ -162,15 +194,30 @@ void ComboBoxBase::_setCurrentValue(int index, bool setOption)
 	{
 		QModelIndex modelIndex(_model->index(index, 0));
 		currentColumnType = _model->data(modelIndex, ListModel::ColumnTypeRole).toString();
+		currentColumnTypeIcon = _model->data(modelIndex, ListModel::ColumnTypeIconRole).toString();
 		currentText = _model->data(modelIndex, ListModel::NameRole).toString();
 		currentValue = _model->data(modelIndex, ListModel::ValueRole).toString();
 	}
 
-	setCurrentText(currentText);
-	setCurrentValue(currentValue);
-	setCurrentColumnType(currentColumnType);
-	setCurrentIndex(index);
+	// emit signals when all values are set, so that when 1 of the signals is caught,
+	// all values are coherent
+	bool emitCurrentTextSignal				= (_currentText != currentText);
+	bool emitCurrentValueSignal				= (_currentValue != currentValue);
+	bool emitCurrentColumnTypeSignal		= (_currentColumnType != currentColumnType);
+	bool emitCurrentColumnTypeIconSignal	= (_currentColumnTypeIcon != currentColumnTypeIcon);
+	bool emitCurrentIndexSignal				= (_currentIndex != index);
 
+	_currentText							= currentText;
+	_currentValue							= currentValue;
+	_currentColumnType						= currentColumnType;
+	_currentColumnTypeIcon					= currentColumnTypeIcon;
+	_currentIndex							= index;
+
+	if (emitCurrentTextSignal)				emit currentTextChanged();
+	if (emitCurrentValueSignal)				emit currentValueChanged();
+	if (emitCurrentColumnTypeSignal)		emit currentColumnTypeChanged();
+	if (emitCurrentColumnTypeIconSignal)	emit currentColumnTypeIconChanged();
+	if (emitCurrentIndexSignal)				emit currentIndexChanged();
 
 	if (_boundTo && setOption)
 		_boundTo->set(size_t(index));

@@ -22,6 +22,7 @@
 #include "jasplistcontrol.h"
 #include "listmodellabelvalueterms.h"
 #include "data/columnsmodel.h"
+#include "log.h"
 #include <QQmlEngine>
 
 SourceItem::SourceItem(
@@ -42,7 +43,7 @@ SourceItem::SourceItem(
 	_discardSources			= discardSources;
 
 	_isValuesSource			= map.contains("isValuesSource")			? map["isValuesSource"].toBool()			: false;
-	_isDataSetColumns		= map.contains("isDataSetColumns")			? map["isDataSetColumns"].toBool()			: false;
+	_isColumnsModel		= map.contains("isDataSetColumns")			? map["isDataSetColumns"].toBool()			: false;
 	_combineWithOtherModels	= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
 	_nativeModelRole		= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
 
@@ -69,7 +70,7 @@ SourceItem::SourceItem(JASPListControl *listControl, const JASPListControl::Labe
 }
 
 SourceItem::SourceItem(JASPListControl *listControl)
-	:  _listControl(listControl), _isDataSetColumns(true)
+	:  _listControl(listControl), _isColumnsModel(true)
 {
 	_setUp();
 }
@@ -90,14 +91,20 @@ void SourceItem::_connectModels()
 	if (columnsModel)
 	{
 		connect(columnsModel,	&ColumnsModel::namesChanged,		controlModel, &ListModel::sourceNamesChanged );
-		connect(columnsModel,	&ColumnsModel::columnTypeChanged,	controlModel, &ListModel::sourceTypeChanged );
+		connect(columnsModel,	&ColumnsModel::columnTypeChanged,	controlModel, &ListModel::sourceColumnTypeChanged );
+		connect(columnsModel,	&ColumnsModel::labelChanged,		controlModel, &ListModel::sourceLabelChanged );
+		connect(columnsModel,	&ColumnsModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
+		connect(columnsModel,	&ColumnsModel::columnsChanged,		controlModel, &ListModel::sourceColumnsChanged );
 	}
 
 	if (_listModel)
 	{
 		_listControl->addDependency(_listModel->listView());
 		connect(_listModel,		&ListModel::namesChanged,			controlModel, &ListModel::sourceNamesChanged);
-		connect(_listModel,		&ListModel::typeChanged,			controlModel, &ListModel::sourceTypeChanged);
+		connect(_listModel,		&ListModel::columnTypeChanged,		controlModel, &ListModel::sourceColumnTypeChanged);
+		connect(_listModel,		&ListModel::labelChanged,			controlModel, &ListModel::sourceLabelChanged );
+		connect(_listModel,		&ListModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
+		connect(_listModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
 	}
 }
 
@@ -105,10 +112,10 @@ void SourceItem::_setUp()
 {
 	if (_isValuesSource)								_nativeModel = new ListModelLabelValueTerms(_listControl, _values);
 	else if (_listControl->form() && !_name.isEmpty())	_nativeModel = _listControl->form()->getModel(_name);
-	else if (_isDataSetColumns)
+	else if (_isColumnsModel)
 	{
-		_nativeModel = AnalysisForm::getColumnsModel();
-		_nativeModelRole = AnalysisForm::getColumnsModelRole();
+		_nativeModel = ColumnsModel::singleton();
+		_nativeModelRole = ColumnsModel::NameRole;
 	}
 
 	if (_nativeModel)
@@ -135,24 +142,32 @@ SourceItem::~SourceItem()
 		delete _listModel; // In case of values, the model is created just to contain the values, and does not come from another listview.
 	else if (_nativeModel)
 	{
-		disconnect(_nativeModel, &QAbstractItemModel::dataChanged,			_listControl->model(),	&ListModel::sourceTermsReset );
-		disconnect(_nativeModel, &QAbstractItemModel::rowsInserted,			_listControl->model(),	&ListModel::sourceTermsReset );
-		disconnect(_nativeModel, &QAbstractItemModel::rowsRemoved,			_listControl->model(),	&ListModel::sourceTermsReset );
-		disconnect(_nativeModel, &QAbstractItemModel::rowsMoved,			_listControl->model(),	&ListModel::sourceTermsReset );
-		disconnect(_nativeModel, &QAbstractItemModel::modelReset,			_listControl->model(),	&ListModel::sourceTermsReset );
+		ListModel *controlModel = _listControl->model();
+
+		disconnect(_nativeModel, &QAbstractItemModel::dataChanged,			controlModel,	&ListModel::sourceTermsReset );
+		disconnect(_nativeModel, &QAbstractItemModel::rowsInserted,			controlModel,	&ListModel::sourceTermsReset );
+		disconnect(_nativeModel, &QAbstractItemModel::rowsRemoved,			controlModel,	&ListModel::sourceTermsReset );
+		disconnect(_nativeModel, &QAbstractItemModel::rowsMoved,			controlModel,	&ListModel::sourceTermsReset );
+		disconnect(_nativeModel, &QAbstractItemModel::modelReset,			controlModel,	&ListModel::sourceTermsReset );
 
 		ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
 		if (columnsModel)
 		{
-			disconnect(columnsModel, &ColumnsModel::namesChanged,			_listControl->model(), &ListModel::sourceNamesChanged );
-			disconnect(columnsModel, &ColumnsModel::columnTypeChanged,		_listControl->model(), &ListModel::sourceTypeChanged );
+			disconnect(columnsModel, &ColumnsModel::namesChanged,			controlModel, &ListModel::sourceNamesChanged );
+			disconnect(columnsModel, &ColumnsModel::columnTypeChanged,		controlModel, &ListModel::sourceColumnTypeChanged );
+			disconnect(columnsModel, &ColumnsModel::labelChanged,			controlModel, &ListModel::sourceLabelChanged );
+			disconnect(columnsModel, &ColumnsModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
+			disconnect(columnsModel, &ColumnsModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
 		}
 
 		if (_listModel)
 		{
 			_listControl->removeDependency(_listModel->listView());
-			disconnect(_listModel, &ListModel::namesChanged,	_listControl->model(), &ListModel::sourceNamesChanged);
-			disconnect(_listModel, &ListModel::typeChanged,		_listControl->model(), &ListModel::sourceTypeChanged);
+			disconnect(_listModel,	&ListModel::namesChanged,				controlModel, &ListModel::sourceNamesChanged);
+			disconnect(_listModel,	&ListModel::columnTypeChanged,				controlModel, &ListModel::sourceColumnTypeChanged);
+			disconnect(_listModel,	&ListModel::labelChanged,				controlModel, &ListModel::sourceLabelChanged );
+			disconnect(_listModel,	&ListModel::labelsReordered,			controlModel, &ListModel::sourceLabelsReordered );
+			disconnect(_listModel,	&ListModel::columnsChanged,				controlModel, &ListModel::sourceColumnsChanged );
 		}
 	}
 
@@ -363,7 +378,12 @@ Terms SourceItem::_readAllTerms()
 {
 	Terms terms;
 
-	if (_listModel)	terms = _listModel->termsEx(_modelUse);
+	if (_listModel)
+	{
+		terms = _listModel->termsEx(_modelUse);
+		if (_modelUse == "levels")
+			_listControl->model()->setColumnsUsedForLabels(_listModel->terms().asQList());
+	}
 	else if (_nativeModel)
 	{
 		int nbRows = _nativeModel->rowCount();

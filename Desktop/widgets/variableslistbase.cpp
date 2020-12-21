@@ -31,6 +31,7 @@
 #include "../analysis/analysisform.h"
 #include "../analysis/jaspcontrol.h"
 #include "sourceitem.h"
+#include "data/columnsmodel.h"
 #include <QTimer>
 #include <QQmlProperty>
 #include "log.h"
@@ -80,9 +81,8 @@ void VariablesListBase::setUp()
 				assignedModel->setAvailableModel(availableModel);
 				availableModel->addAssignedModel(assignedModel);
 				addDependency(availableModel->listView());
-				connect(availableModel, &ListModelAvailableInterface::availableTermsReset, assignedModel, &ListModelAssignedInterface::availableTermsResetHandler);
-				connect(availableModel, &ListModelAvailableInterface::availableNamesChanged, assignedModel, &ListModelAssignedInterface::availableNamesChangedHandler);
-				connect(availableModel, &ListModelAvailableInterface::availableTypeChanged, assignedModel, &ListModelAssignedInterface::availableTypeChangedHandler);
+				setContainsVariables();
+				setContainsInteractions();
 			}
 		}
 	}
@@ -92,8 +92,9 @@ void VariablesListBase::setUp()
 		setProperty("sortMenuModel", QVariant::fromValue(sortedMenuModel));
 	}
 
+	_setAllowedVariables();
+
 	_draggableModel->setItemType(property("itemType").toString());
-	_draggableModel->setTermsAreVariables(property("showVariableTypeIcon").toBool());
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());
 	_draggableModel->setDropMode(dropMode);
 	
@@ -114,6 +115,7 @@ void VariablesListBase::setUpModel()
 	case ListViewType::AvailableInteraction:
 	{
 		_isBound = false;
+		_termsAreInteractions = true;
 		_draggableModel = new ListModelInteractionAvailable(this);
 		break;
 	}
@@ -153,6 +155,8 @@ void VariablesListBase::setUpModel()
 	}
 	case ListViewType::Interaction:
 	{
+		_termsAreInteractions = true;
+
 		bool interactionContainLowerTerms	= property("interactionContainLowerTerms").toBool();
 		bool addInteractionsByDefault		= property("addInteractionsByDefault").toBool();
 
@@ -306,6 +310,66 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 
 void VariablesListBase::termsChangedHandler()
 {
+	setColumnsTypes(model()->termsTypes());
+
 	if (_boundControl)	_boundControl->updateOption();
 	else JASPListControl::termsChangedHandler();
 }
+
+
+int VariablesListBase::_getAllowedColumnsTypes()
+{
+	int allowedColumnsTypes = -1;
+
+	if (!allowedColumns().isEmpty())
+	{
+		allowedColumnsTypes = 0;
+		for (QString& allowedColumn: allowedColumns())
+		{
+			columnType allowedType = columnTypeFromQString(allowedColumn, columnType::unknown);
+			if (allowedType != columnType::unknown)
+				allowedColumnsTypes |= int(allowedType);
+			else
+				addControlError(tr("Wrong column type: %1 for ListView %2").arg(allowedColumn).arg(name()));
+		}
+	}
+
+	return allowedColumnsTypes;
+}
+
+void VariablesListBase::_setAllowedVariables()
+{
+	if (suggestedColumns().empty() && !allowedColumns().empty())
+		setSuggestedColumns(allowedColumns());
+	else if (allowedColumns().empty() && !suggestedColumns().empty())
+	{
+		QStringList newAllowedColumns = suggestedColumns();
+		if (suggestedColumns().contains("scale"))
+		{
+			if (!newAllowedColumns.contains("nominal"))			newAllowedColumns.push_back("nominal");
+			if (!newAllowedColumns.contains("ordinal"))			newAllowedColumns.push_back("ordinal");
+		}
+		if (suggestedColumns().contains("nominal"))
+		{
+			if (!newAllowedColumns.contains("nominalText"))		newAllowedColumns.push_back("nominalText");
+			if (!newAllowedColumns.contains("ordinal"))			newAllowedColumns.push_back("ordinal");
+		}
+		setAllowedColumns(newAllowedColumns);
+	}
+
+	int allowedColumnsTypes = _getAllowedColumnsTypes();
+
+	if (allowedColumnsTypes >= 0)
+		_variableTypesAllowed = allowedColumnsTypes;
+
+	ColumnsModel* colModel = ColumnsModel::singleton();
+	QStringList iconList;
+	for (const QString& suggectedType : suggestedColumns())
+	{
+		columnType type = columnTypeFromQString(suggectedType, columnType::unknown);
+		if (type != columnType::unknown)
+			iconList.push_back(colModel->getIconFile(type, ColumnsModel::InactiveIconType));
+	}
+	setSuggestedColumnsIcons(iconList);
+}
+

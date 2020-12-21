@@ -41,7 +41,7 @@ BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool
 
 Option* BoundControlTerms::boundTo()
 {
-	if (_listView->hasRowComponent() || _termsModel->areTermsInteractions())
+	if (_listView->hasRowComponent() || _listView->containsInteractions())
 		return _optionsTable;
 	else
 		return _optionVariables;
@@ -49,7 +49,7 @@ Option* BoundControlTerms::boundTo()
 
 void BoundControlTerms::bindTo(Option *option)
 {
-	if (_listView->hasRowComponent() || _termsModel->areTermsInteractions())
+	if (_listView->hasRowComponent() || _listView->containsInteractions())
 	{
 		_optionsTable = dynamic_cast<OptionsTable *>(option);
 		if (!_optionsTable)
@@ -70,13 +70,13 @@ void BoundControlTerms::bindTo(Option *option)
 		for (Options* options : optionsList)
 		{
 			std::string key;
-			if (_termsModel->areTermsInteractions())
+			if (_listView->containsInteractions())
 			{
 				OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_optionKey));
-				termOption->setShouldEncode(true);
 
 				if (termOption)
 				{
+					termOption->setShouldEncode(_listView->containsVariables());
 					Term term(termOption->term());
 					key = term.asString();
 					terms.add(term);
@@ -130,14 +130,14 @@ void BoundControlTerms::bindTo(Option *option)
 Option* BoundControlTerms::createOption()
 {
 	Option* result = nullptr;
-	if (_listView->hasRowComponent() || _termsModel->areTermsInteractions())
+	if (_listView->hasRowComponent() || _listView->containsInteractions())
 	{
 		Options* templote = new Options();
 
-		if (_termsModel->areTermsInteractions())
+		if (_listView->containsInteractions())
 		{
 			OptionTerm * newOptTerm = new OptionTerm();
-			newOptTerm->setShouldEncode(true);
+			newOptTerm->setShouldEncode(_listView->containsVariables());
 			templote->add(_optionKey, newOptTerm);
 		}
 		else
@@ -155,15 +155,15 @@ Option* BoundControlTerms::createOption()
 
 bool BoundControlTerms::isOptionValid(Option *option)
 {
-	if (_listView->hasRowComponent() || _termsModel->areTermsInteractions())	return dynamic_cast<OptionsTable*>(option) != nullptr;
-	else if (_isSingleRow)														return dynamic_cast<OptionVariable*>(option) != nullptr;
-	else																		return dynamic_cast<OptionVariables*>(option) != nullptr;
+	if (_listView->hasRowComponent() || _listView->containsInteractions())	return dynamic_cast<OptionsTable*>(option) != nullptr;
+	else if (_isSingleRow)													return dynamic_cast<OptionVariable*>(option) != nullptr;
+	else																	return dynamic_cast<OptionVariables*>(option) != nullptr;
 }
 
 bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 {
 	bool valid = true;
-	if (_listView->hasRowComponent() || _termsModel->areTermsInteractions())
+	if (_listView->hasRowComponent() || _listView->containsInteractions())
 	{
 		valid = optionValue.type() == Json::arrayValue;
 		if (valid)
@@ -181,7 +181,7 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 						Log::log() << "JASP file has options for " << _listView->name() << " without '" << _optionKey << "' key. Per default, first key '" << _optionKeyFromFile << "' is used. Probably the file comes from an older version of JASP." << std::endl;
 					}
 					const Json::Value& components = value[_optionKeyFromFile];
-					if (_termsModel->areTermsInteractions())
+					if (_listView->containsInteractions())
 					{
 						valid = components.type() == Json::arrayValue;
 						if (components.type() == Json::stringValue)
@@ -220,8 +220,6 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 
 void BoundControlTerms::updateOption()
 {
-	_listView->setProperty("columnsTypes", QVariant(_termsModel->itemTypes()));
-
 	if (_optionsTable)
 	{
 		std::vector<Options*> allOptions;
@@ -230,13 +228,13 @@ void BoundControlTerms::updateOption()
 		for (const Term& term : terms)
 		{
 			Options *rowOptions = static_cast<Options *>(_optionsTable->rowTemplate()->clone());
-			if (_termsModel->areTermsInteractions())
+			if (_listView->containsInteractions())
 			{
 				OptionTerm *optionTerm = dynamic_cast<OptionTerm *>(rowOptions->get(_optionKey));
 				if (optionTerm)
 				{
+					optionTerm->setShouldEncode(_listView->containsVariables());
 					optionTerm->setValue(term.scomponents());
-					optionTerm->setShouldEncode(true);
 				}
 				else
 					Log::log()  << "An option is not of type OptionTerm!!" << std::endl;

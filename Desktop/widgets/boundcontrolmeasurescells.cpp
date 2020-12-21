@@ -35,7 +35,6 @@ BoundControlMeasuresCells::BoundControlMeasuresCells(ListModelMeasuresCellsAssig
 void BoundControlMeasuresCells::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionVariables *>(option);
-	_boundTo->setShouldEncode(true);
 	_measuresCellsModel->initLevels(getLevels(), _boundTo->value(), true);
 }
 
@@ -51,7 +50,6 @@ Terms BoundControlMeasuresCells::getLevels()
 Option* BoundControlMeasuresCells::createOption()
 {
 	OptionVariables *result = new OptionVariables();
-	result->setShouldEncode(true);
 	result->setValue(vector<string>(getLevels().size(), ""));
 	
 	return result;
@@ -77,8 +75,5 @@ void BoundControlMeasuresCells::updateOption()
 	const Terms& terms = _measuresCellsModel->terms();
 	
 	if (_boundTo)
-	{
-		_boundTo->setShouldEncode(true);
 		_boundTo->setValue(terms.asVector());
-	}
 }

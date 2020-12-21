@@ -104,12 +104,6 @@ public slots:
 	void removeAnalysis(Analysis *analysis);
 	void refreshAllAnalyses();
 	void refreshAllPlots(std::set<Analysis*> exceptThese = {});
-	void refreshAnalysesUsingColumn(QString columnName)									{ refreshAnalysesUsingColumns({columnName}); }
-	void refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
-										QStringList				missingColumnsQ		= {},
-										QMap<QString, QString>	changeNameColumnsQ	= {},
-										bool					rowCountChanged		= false,
-										bool					hasNewColumns		= false);
 	void analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
 	void analysisIdSelectedInResults(int id);

@@ -48,10 +48,10 @@ public:
 
 
 public slots:
-	void sourceTermsReset()											override;
-	void modelChangedSlot()												override;
-	void labelChanged(	 QString columnName, QString originalLabel, QString newLabel);
-	void labelsReordered(QString columnName);
+	void sourceTermsReset()																		override;
+	void modelChangedSlot()																		override;
+	int  sourceLabelChanged(	 QString columnName, QString originalLabel, QString newLabel)	override;
+	int  sourceLabelsReordered(QString columnName)												override;
 	void scaleFactorChanged();
 	void setColName(QString colName);
 	void factorsSourceChanged();

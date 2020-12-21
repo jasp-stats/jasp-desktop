@@ -26,14 +26,13 @@
 ListModelInputValue::ListModelInputValue(JASPListControl* listView, int minRows)
 	: ListModel(listView), _minRows(minRows)
 {
-	setTermsAreVariables(false);
 }
 
 
 int ListModelInputValue::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
-	return int(terms().size()) + (_addVirtual ? 1 : 0);
+	return ListModel::rowCount() + (_addVirtual ? 1 : 0);
 }
 
 QVariant ListModelInputValue::data(const QModelIndex &index, int role) const

@@ -67,7 +67,7 @@ ScrollView
 					addScrollBar			: true
 					placeholderText			: qsTr("default: %1").arg(defaultInterfaceFont.fontInfo.family)
 					startValue				: preferencesModel.interfaceFont
-					onActivated				: preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
+					onValueChanged			: preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab		: codeFonts
 					KeyNavigation.down		: codeFonts
@@ -95,7 +95,7 @@ ScrollView
 					addScrollBar			: true
 					placeholderText			: qsTr("default: %1").arg(defaultRCodeFont.fontInfo.family)
 					startValue				: preferencesModel.codeFont
-					onActivated				: preferencesModel.codeFont = (currentIndex <= 0 ? "" : value)
+					onValueChanged			: preferencesModel.codeFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab		: resultFonts
 					KeyNavigation.down		: resultFonts
@@ -122,7 +122,7 @@ ScrollView
 					addScrollBar			: true
 					placeholderText			: qsTr("default: %1").arg(defaultResultFont.fontInfo.family)
 					startValue				: preferencesModel.resultFont
-					onActivated				: preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
+					onValueChanged			: preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
 
 					KeyNavigation.tab		: lightThemeButton
 					KeyNavigation.down		: lightThemeButton
@@ -181,8 +181,6 @@ ScrollView
 				fieldWidth:				100
 
 				label:					qsTr("Choose Language  ")
-
-				useModelDefinedIcon:	false
 
 				currentIndex:			languageModel.currentIndex
 				onActivated:			languageModel.changeLanguage(index);

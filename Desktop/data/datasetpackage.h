@@ -244,7 +244,6 @@ signals:
 				void				labelChanged(QString columnName, QString originalLabel, QString newLabel);
 				void				dataSetChanged();
 				void				columnDataTypeChanged(QString columnName);
-				void				refreshAnalysesWithColumn(QString columnName);
 				void				labelsReordered(		  QString columnName);
 				void				isModifiedChanged();
 				void				pauseEnginesSignal();

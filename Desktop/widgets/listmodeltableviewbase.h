@@ -21,7 +21,6 @@
 
 #include "listmodel.h"
 #include "common.h"
-#include "data/datasetpackage.h"
 #include "analysis/options/optionstable.h"
 
 class TableViewBase;
@@ -68,8 +67,8 @@ public:
 	virtual		void				modelChangedSlot();
 
 				const QVector<QVector<QVariant>>	&	values()					const { return _values;		}
-				const QVector<QString>				&	rowNames()					const { return _rowNames;	}
-				const QVector<QString>				&	colNames()					const { return _colNames;	}
+				const QStringList					&	rowNames()					const { return _rowNames;	}
+				const QStringList					&	colNames()					const { return _colNames;	}
 					  Terms								termsEx(const QString& what)	override;
 
 
@@ -95,7 +94,7 @@ protected:
 
 	const size_t				_maxColumn		= 10,
 								_maxRow			= 100;
-	QVector<QString>			_rowNames,
+	QStringList					_rowNames,
 								_colNames;
 	QVector<QVector<QVariant> >	_values;
 	int							_rowSelected	= -1;

@@ -66,7 +66,7 @@ private slots:
 private:
 	void	setAcceptedRows(std::vector<bool> newRows);
 	void	setAcceptedRowsTrue()		{ setAcceptedRows(std::vector<bool>(getDataSetRowCount(), true)); }
-	size_t	getDataSetRowCount();
+	size_t	getDataSetRowCount()	const;
 	void	fillTable();
 
 	QString						_filter,
@@ -76,7 +76,7 @@ private:
 	std::vector<size_t>			_filteredRowToData;
 	std::map<size_t, double>	_enteredValues;
 	int							_editableColumn = 0;
-	std::vector<std::string>	_dataColumns,
+	QStringList					_dataColumns,
 								_extraColsStr;
 };
 

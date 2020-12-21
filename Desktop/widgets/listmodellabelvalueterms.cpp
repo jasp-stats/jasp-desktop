@@ -71,29 +71,24 @@ std::vector<std::string> ListModelLabelValueTerms::getValues()
 	return values;
 }
 
-QString ListModelLabelValueTerms::getValue(const QString &label)
+QString ListModelLabelValueTerms::getValue(const QString &label) const
 {
 	return _labelToValueMap.contains(label) ? _labelToValueMap[label] : label;
 }
 
-QString ListModelLabelValueTerms::getLabel(const QString &value)
+QString ListModelLabelValueTerms::getLabel(const QString &value) const
 {
 	return _valueToLabelMap.contains(value) ? _valueToLabelMap[value] : value;
 }
 
-
-int ListModelLabelValueTerms::getIndexOfValue(const QString &value)
+int ListModelLabelValueTerms::getIndexOfValue(const QString &value) const
 {
-	int index = 0;
-	QString label = getLabel(value);
-	for (const Term& term : terms())
-	{
-		if (term.asQString() == label)
-			return index;
-		index++;
-	}
+	return terms().indexOf(getLabel(value));
+}
 
-	return -1;
+int ListModelLabelValueTerms::getIndexOfLabel(const QString &label) const
+{
+	return terms().indexOf(label);
 }
 
 void ListModelLabelValueTerms::_setLabelValues(const JASPListControl::LabelValueMap &labelvalues)
@@ -145,10 +140,11 @@ void ListModelLabelValueTerms::sourceNamesChanged(QMap<QString, QString> map)
 	{
 		it.next();
 		const QString& oldName = it.key(), newName = it.value();
-		Terms orgTerms = terms();
-		QSet<int> indexes = orgTerms.replaceVariableName(oldName.toStdString(), newName.toStdString());
+		Terms newTerms = terms();
+		QSet<int> indexes = newTerms.replaceVariableName(oldName.toStdString(), newName.toStdString());
 		if (indexes.size() > 0)
 		{
+			_setTerms(newTerms);
 			QString oldValue = _labelToValueMap[oldName];
 			_labelToValueMap.remove(oldName);
 			_valueToLabelMap.remove(oldValue);

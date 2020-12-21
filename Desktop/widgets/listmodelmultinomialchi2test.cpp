@@ -29,10 +29,6 @@ ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(TableViewBase * paren
 	_defaultCellVal		= 1;
 	_initialColCnt		= 1;
 	_keepRowsOnReset	= true;
-
-	connect(DataSetPackage::pkg(), &DataSetPackage::labelChanged,		this, &ListModelMultinomialChi2Test::labelChanged);
-	connect(DataSetPackage::pkg(), &DataSetPackage::labelsReordered,	this, &ListModelMultinomialChi2Test::labelsReordered);
-
 }
 
 void ListModelMultinomialChi2Test::sourceTermsReset()
@@ -49,8 +45,8 @@ void ListModelMultinomialChi2Test::sourceTermsReset()
 	if (newTerms.size() > 0)
 	{
 		_columnBeingTracked	= tq(newTerms.at(0).asString());
-		_rowNames			= DataSetPackage::pkg()->getColumnLabelsAsStringList(fq(_columnBeingTracked)).toVector();
-		_rowCount			= _rowNames.size();
+		_rowNames			= requestInfo(_columnBeingTracked, VariableInfo::Labels).toStringList();
+		_rowCount			= size_t(_rowNames.size());
 
 		QVector<QVariant> newValues(_rowNames.length(), 1.0);
 		_values.push_back(newValues);
@@ -65,27 +61,27 @@ void ListModelMultinomialChi2Test::sourceTermsReset()
 	emit rowCountChanged();
 }
 
-void ListModelMultinomialChi2Test::labelChanged(QString columnName, QString originalLabel, QString newLabel)
+int ListModelMultinomialChi2Test::sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel)
 {
 	if(columnName != _columnBeingTracked)
-		return;
-
-	beginResetModel();
+		return -1;
 
 	for(int row=0; row<_rowNames.size(); row++)
 		if(_rowNames[row] == originalLabel)
 		{
 			_rowNames[row] = newLabel;
+			QModelIndex i = index(row, 0);
+			emit dataChanged(i, i);
 			break;
 		}
 
-	endResetModel();
+	return 0;
 }
 
-void ListModelMultinomialChi2Test::labelsReordered(QString columnName)
+int ListModelMultinomialChi2Test::sourceLabelsReordered(QString columnName)
 {
 	if(columnName != _columnBeingTracked)
-		return;
+		return -1;
 
 	std::map<QString, std::vector<QVariant>> tempStore;
 
@@ -95,7 +91,7 @@ void ListModelMultinomialChi2Test::labelsReordered(QString columnName)
 			tempStore[_rowNames[row]].push_back(_values[col][row]);
 
 	beginResetModel();
-	_rowNames			= DataSetPackage::pkg()->getColumnLabelsAsStringList(fq(_columnBeingTracked)).toVector();
+	_rowNames	= requestInfo(_columnBeingTracked, VariableInfo::Labels).toStringList();
 	_values.clear();
 	_values.resize(_columnCount);
 
@@ -104,6 +100,8 @@ void ListModelMultinomialChi2Test::labelsReordered(QString columnName)
 			_values[col].push_back(tempStore[_rowNames[row]][col]);
 
 	endResetModel();
+
+	return 0;
 }
 
 

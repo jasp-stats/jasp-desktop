@@ -28,12 +28,13 @@
 class VariableInfo
 {
 public:
-	enum InfoType { VariableType, Labels, VariableTypeName };
+	enum InfoType { VariableType, Labels, VariableTypeName, VariableTypeIcon, VariableTypeDisabledIcon, VariableTypeInactiveIcon };
 };
 
 class VariableInfoProvider
 {
 	friend class VariableInfoConsumer;
+
 
 protected:
 	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const = 0;
@@ -51,37 +52,8 @@ public:
 
 	QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const
 	{
-		if (_provider != NULL)	return _provider->requestInfo(term, info);
-		else					return QVariant();
-	}
-
-	bool variableIsColumn(const Term &term)
-	{
-		switch (requestInfo(term, VariableInfo::VariableType).toInt())
-		{
-		case int(columnType::nominalText):
-		case int(columnType::nominal):
-		case int(columnType::ordinal):
-		case int(columnType::scale):		return true;
-		default:									return false;
-		}
-	}
-
-	QVariant requestIcon(const Term &term) const
-	{
-		static QString	nominalTextIcon	= "variable-nominal-text.svg",
-						nominalIcon		= "variable-nominal.svg",
-						ordinalIcon		= "variable-ordinal.svg",
-						scaleIcon		= "variable-scale.svg";
-
-		switch (requestInfo(term, VariableInfo::VariableType).toInt())
-		{
-		case int(columnType::nominalText):	return JaspTheme::currentIconPath() + nominalTextIcon;
-		case int(columnType::nominal):		return JaspTheme::currentIconPath() + nominalIcon;
-		case int(columnType::ordinal):		return JaspTheme::currentIconPath() + ordinalIcon;
-		case int(columnType::scale):		return JaspTheme::currentIconPath() + scaleIcon;
-		default:							return QVariant();
-		}
+		if (_provider != nullptr)	return _provider->requestInfo(term, info);
+		else						return QVariant();
 	}
 
 	QVariant requestLabel(const Term &term) const
@@ -90,7 +62,8 @@ public:
 	}
 
 private:
-	VariableInfoProvider *_provider = NULL;
+	VariableInfoProvider *_provider = nullptr;
 };
 
 #endif // VARIABLEINFO_H
+

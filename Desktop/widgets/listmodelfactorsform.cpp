@@ -33,7 +33,6 @@ using namespace std;
 ListModelFactorsForm::ListModelFactorsForm(JASPListControl* listView)
 	: ListModel(listView)
 {
-	setTermsAreVariables(false);
 }
 
 QHash<int, QByteArray> ListModelFactorsForm::roleNames() const

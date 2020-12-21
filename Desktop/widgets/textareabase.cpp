@@ -41,14 +41,7 @@ void TextAreaBase::setUpModel()
 	if (_textType == TextType::TextTypeSource || _textType == TextType::TextTypeJAGSmodel || _textType == TextType::TextTypeLavaan)
 	{
 		_model = new ListModelTermsAvailable(this);
-
-		if (_textType == TextType::TextTypeLavaan)
-			_model->setNeedsSource(true);
-		else
-		{
-			_model->setNeedsSource(false);
-			_model->setTermsAreVariables(false);
-		}
+		_model->setNeedsSource(_textType == TextType::TextTypeLavaan);
 
 		JASPListControl::setUpModel();
 	}
@@ -56,8 +49,6 @@ void TextAreaBase::setUpModel()
 
 void TextAreaBase::setUp()
 {
-	JASPListControl::setUp();
-
 	switch (_textType)
 	{
 	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);	break;
@@ -65,6 +56,8 @@ void TextAreaBase::setUp()
 	case TextType::TextTypeJAGSmodel:	_boundControl = new BoundControlJAGSTextArea(this);		break;
 	default:							_boundControl = new BoundControlTextArea(this);			break;
 	}
+
+	JASPListControl::setUp();
 
 	QList<QVariant> separators = property("separators").toList();
 	if (separators.isEmpty())

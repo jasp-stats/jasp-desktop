@@ -37,9 +37,9 @@ ListModel::ListModel(JASPListControl* listView)
 	connect(this,	&ListModel::rowsRemoved,			this,	&ListModel::termsChanged);
 	connect(this,	&ListModel::rowsMoved,				this,	&ListModel::termsChanged);
 	connect(this,	&ListModel::rowsInserted,			this,	&ListModel::termsChanged);
-	connect(this,	&ListModel::dataChanged,			this,	&ListModel::termsChanged);
+	connect(this,	&ListModel::dataChanged,			this,	&ListModel::dataChangedHandler);
 	connect(this,	&ListModel::namesChanged,			this,	&ListModel::termsChanged);
-	connect(this,	&ListModel::typeChanged,			this,	&ListModel::termsChanged);
+	connect(this,	&ListModel::columnTypeChanged,			this,	&ListModel::termsChanged);
 }
 
 QHash<int, QByteArray> ListModel::roleNames() const
@@ -49,13 +49,15 @@ QHash<int, QByteArray> ListModel::roleNames() const
 
 	if(setMe)
 	{
-		roles[TypeRole]				= "type";
-		roles[SelectedRole]			= "selected";
-		roles[SelectableRole]		= "selectable";
-		roles[ColumnTypeRole]		= "columnType";
-		roles[NameRole]				= "name";
-		roles[RowComponentRole]		= "rowComponent";
-		roles[ValueRole]			= "value";
+		roles[TypeRole]						= "type";
+		roles[SelectedRole]					= "selected";
+		roles[SelectableRole]				= "selectable";
+		roles[ColumnTypeRole]				= "columnType";
+		roles[ColumnTypeIconRole]			= "columnTypeIcon";
+		roles[ColumnTypeDisabledIconRole]	= "columnTypeDisabledIcon";
+		roles[NameRole]						= "name";
+		roles[RowComponentRole]				= "rowComponent";
+		roles[ValueRole]					= "value";
 
 		setMe = false;
 	}
@@ -90,8 +92,6 @@ void ListModel::_initTerms(const Terms &terms, const RowControlsOptions& allOpti
 		for (SourceItem* sourceItem : listView()->sourceItems())
 			_connectSourceControls(sourceItem->listModel(), sourceItem->usedControls());
 }
-
-
 
 void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls)
 {
@@ -193,6 +193,20 @@ bool ListModel::addRowControl(const QString &key, JASPControl *control)
 	return success;
 }
 
+QStringList ListModel::termsTypes()
+{
+	QSet<QString> types;
+
+	for (const Term& term : terms())
+	{
+		columnType type = columnType(requestInfo(term, VariableInfo::VariableType).toInt());
+		if (type != columnType::unknown)
+			types.insert(columnTypeToQString(type));
+	}
+
+	return types.values();
+}
+
 int ListModel::searchTermWith(QString searchString)
 {
 	int result = -1;
@@ -280,7 +294,7 @@ void ListModel::selectItem(int _index, bool _select)
 
 	if (changed)
 	{
-		emit dataChanged(index(_index, 0), index(_index, 0));
+		emit dataChanged(index(_index, 0), index(_index, 0), { ListModel::SelectedRole });
 		emit selectedItemsChanged();
 	}
 }
@@ -293,7 +307,7 @@ void ListModel::clearSelectedItems(bool emitSelectedChange)
 	_selectedItemsTypes.clear();
 
 	for (int i : selected)
-		emit dataChanged(index(i,0), index(i,0));
+		emit dataChanged(index(i,0), index(i,0), { ListModel::SelectedRole });
 
 	if (selected.length() > 0 && emitSelectedChange)
 		emit selectedItemsChanged();
@@ -307,7 +321,7 @@ void ListModel::setSelectedItem(int _index)
 
 void ListModel::selectAllItems()
 {
-	int nbTerms = int(terms().size());
+	int nbTerms = rowCount();
 	if (nbTerms == 0) return;
 
 	_selectedItems.clear();
@@ -322,24 +336,9 @@ void ListModel::selectAllItems()
 		}
 	}
 
-	emit dataChanged(index(0, 0), index(nbTerms - 1, 0));
+	emit dataChanged(index(0, 0), index(nbTerms - 1, 0), { ListModel::SelectedRole });
 	emit selectedItemsChanged();
 }
-
-QList<QString> ListModel::itemTypes()
-{
-	QSet<QString> types;
-
-	for (const Term& term : terms())
-	{
-		columnType type = DataSetPackage::pkg()->getColumnType(term.asString());
-		if (type != columnType::unknown)
-			types.insert(columnTypeToQString(type));
-	}
-
-	return types.values();
-}
-
 
 void ListModel::sourceTermsReset()
 {
@@ -381,18 +380,19 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 			return QVariant();
 	}
 	
-	if (!areTermsVariables())
+	if (!listView()->containsVariables())
 		return QVariant();
 	
 	if (role == ListModel::TypeRole)
 		return QVariant("variable");
-	else if (role == ListModel::ColumnTypeRole)
+	else
 	{
 		const Term& term = myTerms.at(row_t);
-		if (term.size() != 1)
-			return QVariant();
+		if (term.size() != 1)	return QVariant();
 
-		return requestInfo(term, VariableInfo::VariableTypeName);
+		if (role == ListModel::ColumnTypeRole)					return requestInfo(term, VariableInfo::VariableTypeName);
+		else if (role == ListModel::ColumnTypeIconRole)			return requestInfo(term, VariableInfo::VariableTypeIcon);
+		else if (role == ListModel::ColumnTypeDisabledIconRole)	return requestInfo(term, VariableInfo::VariableTypeName);
 	}
 	
 	return QVariant();
@@ -405,13 +405,24 @@ const QString &ListModel::name() const
 
 Terms ListModel::termsEx(const QString &what)
 {
+	Terms result;
+
+	if (what == "levels")
+	{
+		for (const Term& term : _terms)
+		{
+			Terms labels = requestInfo(term, VariableInfo::Labels).toStringList();
+			result.add(labels);
+		}
+
+		return result;
+	}
+
 	const QString typeIs = "type=";
 	const QString controlIs = "control=";
 
 	if (!what.startsWith(controlIs) && !what.startsWith(typeIs))
 		return _terms; // in most cases, it comes here.
-
-	Terms specialTerms;
 
 	QStringList allConditions = what.split(",");
 	QString useTheseVariableTypes, useThisControl;
@@ -424,8 +435,6 @@ Terms ListModel::termsEx(const QString &what)
 
 	if (!useTheseVariableTypes.isEmpty())
 	{
-		specialTerms.clear();
-
 		QStringList typesStr = useTheseVariableTypes.split("|");
 		QList<columnType> types;
 
@@ -438,18 +447,18 @@ Terms ListModel::termsEx(const QString &what)
 
 		for (const Term& term : _terms)
 		{
-			columnType type = DataSetPackage::pkg()->getColumnType(term.asString());
+			columnType type = columnType(requestInfo(term, VariableInfo::VariableType).toInt());
 			if (types.contains(type))
-				specialTerms.add(term);
+				result.add(term);
 		}
 	}
 	else
-		specialTerms = _terms;
+		result = _terms;
 
 	if (!useThisControl.isEmpty())
 	{
 		Terms controlTerms;
-		for (const Term& term : specialTerms)
+		for (const Term& term : result)
 		{
 			RowControls* rowControls = _rowControlsMap[term.asQString()];
 			if (rowControls)
@@ -460,17 +469,10 @@ Terms ListModel::termsEx(const QString &what)
 				else			Log::log() << "Could not find control " << useThisControl << " in list view " << name() << std::endl;
 			}
 		}
-		specialTerms = controlTerms;
+		result = controlTerms;
 	}
 
-	return specialTerms;
-}
-
-void ListModel::setTermsAreVariables(bool areVariables)
-{
-	_areTermsVariables = areVariables;
-	if (!areVariables)
-		listView()->setProperty("showVariableTypeIcon", false);
+	return result;
 }
 
 void ListModel::sourceNamesChanged(QMap<QString, QString> map)
@@ -501,17 +503,79 @@ void ListModel::sourceNamesChanged(QMap<QString, QString> map)
 		emit namesChanged(changedNamesMap);
 }
 
-int ListModel::sourceTypeChanged(QString name)
+int ListModel::sourceColumnTypeChanged(QString name)
 {
 	int i = terms().indexOf(name);
 	if (i >= 0)
 	{
 		QModelIndex ind = index(i, 0);
 		emit dataChanged(ind, ind);
-		emit typeChanged(name);
+		emit columnTypeChanged(name);
 	}
 
 	return i;
+}
+
+int ListModel::sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel)
+{
+	int i = -1;
+	if (_columnsUsedForLabels.contains(columnName))
+	{
+		i = terms().indexOf(originalLabel);
+		if (i >= 0)
+			sourceNamesChanged({std::make_pair(originalLabel, newLabel)});
+	}
+	else
+	{
+		i = terms().indexOf(columnName);
+		if (i >= 0)
+			emit labelChanged(columnName, originalLabel, newLabel);
+	}
+
+	return i;
+}
+
+int ListModel::sourceLabelsReordered(QString columnName)
+{
+	int i = -1;
+	if (_columnsUsedForLabels.contains(columnName))
+	{
+		sourceTermsReset();
+		i = 0;
+	}
+	else
+	{
+		i = terms().indexOf(columnName);
+		if (i >= 0)
+			emit labelsReordered(columnName);
+	}
+
+	return i;
+}
+
+void ListModel::sourceColumnsChanged(QStringList columns)
+{
+	QStringList changedColumns;
+
+	for (const QString& column : columns)
+	{
+		if (terms().contains(column))
+			changedColumns.push_back(column);
+	}
+
+	if (changedColumns.size() > 0)
+	{
+		if (listView()->isBound())
+			listView()->form()->refreshAnalysis();
+		else
+			emit columnsChanged(changedColumns);
+	}
+}
+
+void ListModel::dataChangedHandler(const QModelIndex &, const QModelIndex &, const QVector<int> &roles)
+{
+	if (roles.isEmpty() || roles.size() > 1 || roles[0] != ListModel::SelectedRole)
+		emit termsChanged();
 }
 
 void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)

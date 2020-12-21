@@ -57,7 +57,7 @@ void ListModelDraggable::removeTerms(const QList<int> &indices)
 	Terms termsToRemove;
 
 	for (int index : indices)
-		if (index < int(terms().size()))
+		if (index < rowCount())
 			termsToRemove.add(terms().at(size_t(index)));
 
 	_removeTerms(termsToRemove);

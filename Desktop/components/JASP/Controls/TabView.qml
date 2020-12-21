@@ -65,7 +65,7 @@ ComponentsListBase
 		anchors.top		: parent.top
 		anchors.left	: parent.left
 		text			: title
-		height			: title ? jaspTheme.listTitle : 0
+		height			: title ? jaspTheme.variablesListTitle : 0
 		font			: jaspTheme.font
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}

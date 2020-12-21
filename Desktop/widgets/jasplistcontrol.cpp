@@ -21,6 +21,7 @@
 #include "../analysis/jaspcontrol.h"
 #include "listmodel.h"
 #include "listmodellabelvalueterms.h"
+#include "listmodelassignedinterface.h"
 #include "log.h"
 #include "rowcontrols.h"
 #include "sourceitem.h"
@@ -40,33 +41,103 @@ void JASPListControl::setUpModel()
 	emit modelChanged();
 }
 
-void JASPListControl::setupSources()
+void JASPListControl::_setupSources()
 {
 	for (SourceItem* sourceItem : _sourceItems)
+	{
+		if (sourceItem->listModel())
+		{
+			JASPListControl* sourceControl = sourceItem->listModel()->listView();
+			disconnect(sourceControl, &JASPListControl::containsVariablesChanged,		this, &JASPListControl::setContainsVariables);
+			disconnect(sourceControl, &JASPListControl::containsInteractionsChanged,	this, &JASPListControl::setContainsInteractions);
+		}
 		delete sourceItem;
+	}
 	_sourceItems.clear();
 
 	_sourceItems = SourceItem::readAllSources(this);
-
-	ListModel* listModel = model();
-	bool termsAreVariables = true;
-	bool termsAreInteractions = false;
 
 	for (SourceItem* sourceItem : _sourceItems)
 	{
 		if (sourceItem->listModel())
 		{
-			if (!sourceItem->listModel()->areTermsVariables() || !sourceItem->controlName().isEmpty() || sourceItem->modelUse() == "levels")
-				termsAreVariables = false;
-			if (sourceItem->listModel()->areTermsInteractions() || sourceItem->combineWithOtherModels())
-				termsAreInteractions = true;
+			JASPListControl* sourceControl = sourceItem->listModel()->listView();
+			connect(sourceControl, &JASPListControl::containsVariablesChanged,		this, &JASPListControl::setContainsVariables);
+			connect(sourceControl, &JASPListControl::containsInteractionsChanged,	this, &JASPListControl::setContainsInteractions);
 		}
 	}
 
-	if (!termsAreVariables)
-		listModel->setTermsAreVariables(false); // set it only when it is false
-	if (termsAreInteractions)
-		listModel->setTermsAreInteractions(true); // set it only when it is true
+	setContainsVariables();
+	setContainsInteractions();
+}
+
+void JASPListControl::setContainsVariables()
+{
+	bool containsVariables = false;
+
+	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(model());
+	if (assignedModel && assignedModel->availableModel())
+		containsVariables = assignedModel->availableModel()->listView()->containsVariables();
+
+	if (!containsVariables)
+	{
+		for (SourceItem* sourceItem : _sourceItems)
+		{
+			if (sourceItem->isColumnsModel())	containsVariables = true;
+			else if (sourceItem->listModel())
+			{
+				if (sourceItem->listModel()->listView()->containsVariables() && sourceItem->controlName().isEmpty() && sourceItem->modelUse() != "levels")
+					containsVariables = true;
+			}
+		}
+	}
+
+	if (isBound())
+	{
+		BoundControl* boundControl = dynamic_cast<BoundControl*>(this);
+		if (boundControl && boundControl->boundTo())
+			boundControl->boundTo()->setShouldEncode(containsVariables);
+	}
+
+	if (_containsVariables != containsVariables)
+	{
+		_containsVariables = containsVariables;
+		emit containsVariablesChanged();
+	}
+}
+
+void JASPListControl::setContainsInteractions()
+{
+	bool containsInteractions = false;
+
+	if (_termsAreInteractions)
+		containsInteractions = true;
+
+	if (!containsInteractions)
+	{
+		ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(model());
+		if (assignedModel && assignedModel->availableModel())
+			containsInteractions = assignedModel->availableModel()->listView()->containsInteractions();
+	}
+
+	if (!containsInteractions)
+	{
+		for (SourceItem* sourceItem : _sourceItems)
+		{
+			if (sourceItem->listModel())
+			{
+				JASPListControl* sourceControl = sourceItem->listModel()->listView();
+				if (sourceControl->containsInteractions() || sourceItem->combineWithOtherModels())
+					containsInteractions = true;
+			}
+		}
+	}
+
+	if (_containsInteractions != containsInteractions)
+	{
+		_containsInteractions = containsInteractions;
+		emit containsInteractionsChanged();
+	}
 }
 
 void JASPListControl::addRowComponentsDefaultOptions(Options *options)
@@ -108,13 +179,12 @@ void JASPListControl::setUp()
 {
 	if (!model())	setUpModel();
 	JASPControl::setUp();
-	_setAllowedVariables();
 
 	ListModel* listModel = model();
 	if (!listModel)	return;
 
 	listModel->setRowComponent(rowComponent());
-	setupSources();
+	_setupSources();
 
 	connect(this,		&JASPListControl::sourceChanged,	this,	&JASPListControl::sourceChangedHandler);
 	connect(listModel,	&ListModel::termsChanged,			this,	&JASPListControl::termsChangedHandler);
@@ -126,14 +196,16 @@ void JASPListControl::cleanUp()
 	try
 	{
 		ListModel* _model = model();
-		if (_model)
-			_model->disconnect();
 		for (SourceItem* sourceItem : _sourceItems)
 			delete sourceItem;
 
-		for (RowControls* rowControls : _model->getRowControls().values())
-			for (JASPControl* control : rowControls->getJASPControlsMap().values())
-				control->cleanUp();
+		if (_model)
+		{
+			_model->disconnect();
+			for (RowControls* rowControls : _model->getRowControls().values())
+				for (JASPControl* control : rowControls->getJASPControlsMap().values())
+					control->cleanUp();
+		}
 
 		if (_defaultRowControls)
 			for (JASPControl* control : _defaultRowControls->getJASPControlsMap().values())
@@ -218,47 +290,7 @@ void JASPListControl::sourceChangedHandler()
 {
 	if (!model())	return;
 
-	setupSources();
+	_setupSources();
 	model()->sourceTermsReset();
 }
-
-int JASPListControl::_getAllowedColumnsTypes()
-{
-	int allowedColumnsTypes = -1;
-	
-	QStringList allowedColumns = property("allowedColumns").toStringList();
-	if (allowedColumns.isEmpty())
-	{
-		QString allowedColumn = property("allowedColumns").toString();
-		if (!allowedColumn.isEmpty())
-			allowedColumns.append(allowedColumn);
-	}
-	if (!allowedColumns.isEmpty())
-	{
-		allowedColumnsTypes = 0;
-		for (QString& allowedColumn: allowedColumns)
-		{
-			if (allowedColumn == "ordinal")				allowedColumnsTypes |= int(columnType::ordinal);
-			else if (allowedColumn == "nominal")		allowedColumnsTypes |= int(columnType::nominal);
-			else if (allowedColumn == "nominalText")	allowedColumnsTypes |= int(columnType::nominalText);
-			else if (allowedColumn == "scale")			allowedColumnsTypes |= int(columnType::scale);
-			else
-				addControlError(tr("Wrong column type: %1 for ListView %2").arg(allowedColumn).arg(name()));
-		}
-	}
-	
-	return allowedColumnsTypes;
-}
-
-void JASPListControl::_setAllowedVariables()
-{
-	_variableTypesAllowed = 0xff;
-	
-	int allowedColumnsTypes = _getAllowedColumnsTypes();
-	
-	if (allowedColumnsTypes >= 0)
-		_variableTypesAllowed = allowedColumnsTypes;
-}
-
-
 

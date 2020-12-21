@@ -46,18 +46,16 @@ public:
 			void										addAssignedModel(ListModelAssignedInterface* model);
 			const QList<ListModelAssignedInterface*>&	assignedModel()	const			{ return _assignedModels; }
 
-			void										setTermsAreVariables(bool areVariables)		override;
-			void										setTermsAreInteractions(bool interactions)	override;
-
 signals:
 			void availableTermsReset(Terms termsAdded, Terms termsRemoved);
-			void availableNamesChanged(QMap<QString, QString>);
-			void availableTypeChanged(QString name);
 
 public slots:
 			void sourceTermsReset()										override;
 			void sourceNamesChanged(QMap<QString, QString> map)			override;
-			int  sourceTypeChanged(QString name)						override;
+			void sourceColumnsChanged(QStringList columns)				override;
+			int  sourceColumnTypeChanged(QString name)						override;
+			int  sourceLabelChanged(QString columnName, QString orgLabel, QString newLabel)	override;
+			int  sourceLabelsReordered(QString columnName)				override;
 			void removeAssignedModel(ListModelDraggable* model);
 
 protected:

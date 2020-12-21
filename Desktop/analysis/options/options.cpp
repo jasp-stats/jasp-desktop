@@ -236,19 +236,3 @@ void Options::replaceKey(const string &oldKey, const string &newKey)
 		if (option.first == oldKey)
 			option.first = newKey;
 }
-
-void Options::removeUsedVariable(const std::string & var)
-{
-	for (const OptionNamed& option : _options)
-		option.second->removeUsedVariable(var);
-
-	notifyChanged(this);
-}
-
-void Options::replaceVariableName(const std::string & oldName, const std::string & newName)
-{
-	for (const OptionNamed& option : _options)
-		option.second->replaceVariableName(oldName, newName);
-
-	notifyChanged(this);
-}

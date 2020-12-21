@@ -186,7 +186,7 @@ JaspTheme
 	splitHandleWidth:						20
 	subMenuIconHeight:						13
 	ribbonButtonHeight:						72
-	variablesListTitle:						20
+	variablesListTitle:						16
 	sliderHandleDiameter:					16
 	defaultTextAreaHeight:					250
 	jaspControlHighlightWidth:				3

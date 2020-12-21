@@ -29,12 +29,13 @@ public:
 	ListModelLabelValueTerms(JASPListControl* listView, const JASPListControl::LabelValueMap& values = JASPListControl::LabelValueMap());
 
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
-	void						resetTermsFromSources(bool updateAssigned = true)				override;
+	void						resetTermsFromSources(bool updateAssigned = true)					override;
 
 	std::vector<std::string>	getValues();
-	QString						getValue(const QString& label);
-	QString						getLabel(const QString& value);
-	int							getIndexOfValue(const QString& value);
+	QString						getValue(const QString& label)								const;
+	QString						getLabel(const QString& value)								const;
+	int							getIndexOfValue(const QString& value)						const;
+	int							getIndexOfLabel(const QString& label)						const;
 
 	void						setLabelValuesFromSource();
 

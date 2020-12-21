@@ -85,27 +85,6 @@
 
 using namespace std;
 
-QMap<QString, QVariant> MainWindow::_iconFiles {
-	{ "nominalText"	, "variable-nominal-text.png" },
-	{ "nominal"		, "variable-nominal.png"},
-	{ "ordinal"		, "variable-ordinal.png"},
-	{ "scale"		, "variable-scale.png"}
-};
-
-QMap<QString, QVariant> MainWindow::_iconInactiveFiles {
-	{ "nominalText"	, "variable-nominal-text-inactive.svg" },
-	{ "nominal"		, "variable-nominal-inactive.png"},
-	{ "ordinal"		, "variable-ordinal-inactive.png"},
-	{ "scale"		, "variable-scale-inactive.png"}
-};
-
-QMap<QString, QVariant> MainWindow::_iconDisabledFiles {
-	{ "nominalText"	, "variable-nominal-disabled.png" },
-	{ "nominal"		, "variable-nominal-disabled.png"},
-	{ "ordinal"		, "variable-ordinal-disabled.png"},
-	{ "scale"		, "variable-scale-disabled.png"}
-};
-
 MainWindow * MainWindow::_singleton	= nullptr;
 
 MainWindow::MainWindow(QApplication * application) : QObject(application), _application(application)
@@ -159,8 +138,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_columnTypesModel		= new ColumnTypesModel(this);
 
 	new MessageForwarder(this); //We do not need to store this
-
-	AnalysisForm::setColumnsModel(_columnsModel);
 
 	startOnlineDataManager();
 
@@ -288,15 +265,12 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 
-	connect(_package,				&DataSetPackage::refreshAnalysesWithColumn,			_analyses,				&Analyses::refreshAnalysesUsingColumn,						Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::datasetChanged,					_analyses,				&Analyses::refreshAnalysesUsingColumns,						Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::datasetChanged,					_filterModel,			&FilterModel::datasetChanged,								Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnsModel::datasetChanged,						Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::datasetChanged,					_columnsModel,			&ColumnsModel::datasetChanged,								Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::windowTitleChanged,				this,					&MainWindow::windowTitleChanged								);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
-	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_columnsModel,			&ColumnsModel::columnTypeChanged							);
 	connect(_package,				&DataSetPackage::freeDatasetSignal,					_loader,				&AsyncLoader::free											);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
 
@@ -482,9 +456,6 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("MACOS",				isMac);
 	_qml->rootContext()->setContextProperty("LINUX",				isLinux);
 	_qml->rootContext()->setContextProperty("WINDOWS",				isWindows);
-	_qml->rootContext()->setContextProperty("iconFiles",			_iconFiles);
-	_qml->rootContext()->setContextProperty("iconInactiveFiles",	_iconInactiveFiles);
-	_qml->rootContext()->setContextProperty("iconDisabledFiles",	_iconDisabledFiles);
 
 	_qml->rootContext()->setContextProperty("plotEditorFile",		QString::fromStdString("file:") + _plotEditingFilePath);
 

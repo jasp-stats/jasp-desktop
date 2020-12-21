@@ -18,40 +18,20 @@
 
 #include "analysisform.h"
 #include "knownissues.h"
-
-#include <boost/bind.hpp>
-
 #include "options/boundcontrol.h"
 #include "utilities/qutils.h"
+#include "widgets/listmodeltermsavailable.h"
+#include "widgets/jasplistcontrol.h"
+#include "widgets/expanderbuttonbase.h"
+#include "log.h"
+#include "jaspcontrol.h"
+#include "data/columnsmodel.h"
 
 #include <QQmlProperty>
 #include <QQmlContext>
-
-#include "widgets/listmodeltermsavailable.h"
-
-#include "utils.h"
-#include "dirs.h"
-#include "utilities/settings.h"
-#include "gui/messageforwarder.h"
-#include "mainwindow.h"
-#include "log.h"
-#include "jaspcontrol.h"
-#include "widgets/comboboxbase.h"
-#include "widgets/textareabase.h"
-#include "widgets/boundcontrolterms.h"
-#include "widgets/boundcontrolmeasurescells.h"
-#include "widgets/boundcontrollayers.h"
-#include "widgets/inputlistbase.h"
-#include "widgets/repeatedmeasuresfactorslistbase.h"
-#include "widgets/factorsformbase.h"
-#include "widgets/tableviewbase.h"
-#include "widgets/expanderbuttonbase.h"
-
+#include <QTimer>
 
 using namespace std;
-
-QAbstractItemModel* AnalysisForm::_columnsModel		=  nullptr;
-int					AnalysisForm::_columnsModelRole = Qt::DisplayRole;
 
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
@@ -64,12 +44,19 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
 {
+	ColumnsModel* colModel = ColumnsModel::singleton();
+	if (!colModel) return QVariant();
+
 	try {
+		QModelIndex index = colModel->index(colModel->getColumnIndex(term.asString()), 0);
 		switch(info)
 		{
-		case VariableInfo::VariableType:		return int(					DataSetPackage::pkg()->getColumnType(term.asString()));
-		case VariableInfo::VariableTypeName:	return columnTypeToQString(	DataSetPackage::pkg()->getColumnType(term.asString()));
-		case VariableInfo::Labels:				return						DataSetPackage::pkg()->getColumnLabelsAsStringList(term.asString());
+		case VariableInfo::VariableType:			return colModel->data(index, ColumnsModel::TypeRole);
+		case VariableInfo::VariableTypeName:		return colModel->data(index, ColumnsModel::TypeNameRole);
+		case VariableInfo::VariableTypeIcon:		return colModel->data(index, ColumnsModel::IconSourceRole);
+		case VariableInfo::VariableTypeDisabledIcon: return colModel->data(index, ColumnsModel::DisabledIconSourceRole);
+		case VariableInfo::VariableTypeInactiveIcon: return colModel->data(index, ColumnsModel::InactiveIconSourceRole);
+		case VariableInfo::Labels:					return	colModel->data(index, ColumnsModel::LabelsRole);
 		}
 	}
 	catch(columnNotFound & e) {} //just return an empty QVariant right?
@@ -381,6 +368,8 @@ void AnalysisForm::bindTo()
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
 		BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
+		JASPListControl* listControl = dynamic_cast<JASPListControl *>(control);
+
 		if (control->isBound() && boundControl)
 		{
 			std::string name = control->name().toStdString();
@@ -419,11 +408,13 @@ void AnalysisForm::bindTo()
 				_options->add(name, option);
 			}
 
+			if (listControl)
+				option->setShouldEncode(listControl->containsVariables());
+
 			boundControl->bindTo(option);
 			_optionControlMap[option] = control;
 		}
 
-		JASPListControl* listControl = dynamic_cast<JASPListControl *>(control);
 		if (listControl && listControl->hasSource())
 		{
 			ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(listControl->model());
@@ -780,25 +771,6 @@ QString AnalysisForm::metaHelpMD() const
 	};
 
 	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->meta(), 2);
-}
-
-void AnalysisForm::setColumnsModel(QAbstractItemModel *model)
-{
-	_columnsModel = model;
-
-	if (model)
-	{
-		QHashIterator<int, QByteArray> i(model->roleNames());
-		while (i.hasNext())
-		{
-			i.next();
-			if (i.value() == "columnName")
-			{
-				_columnsModelRole = i.key();
-				break;
-			}
-		}
-	}
 }
 
 QString AnalysisForm::helpMD() const

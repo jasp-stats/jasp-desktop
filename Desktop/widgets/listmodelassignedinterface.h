@@ -30,17 +30,15 @@ public:
 	
 	void							refresh()													override;
 
-	virtual void					setAvailableModel(ListModelAvailableInterface *source);
-	ListModelAvailableInterface*	source() const												{ return _source; }
+	virtual void					setAvailableModel(ListModelAvailableInterface *availableModel);
+	ListModelAvailableInterface*	availableModel() const										{ return _availableModel; }
 	
 public slots:
-	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)	{}
-	virtual void availableNamesChangedHandler(QMap<QString, QString> map)			{ sourceNamesChanged(map); }
-	virtual void availableTypeChangedHandler(QString name)							{ sourceTypeChanged(name); }
-			int  sourceTypeChanged(QString name)									override;
+	virtual void availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)				{}
+			int  sourceColumnTypeChanged(QString name)												override;
 
 protected:
-	ListModelAvailableInterface*			_source;
+	ListModelAvailableInterface*			_availableModel;
 };
 
 #endif // LISTMODELASSIGNEDINTERFACE_H

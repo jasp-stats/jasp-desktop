@@ -52,8 +52,6 @@ public:
 	void		get(int index, std::string & name, Option *&option);	
 	
 	std::set<std::string>	usedVariables()																	const	override;
-	void					removeUsedVariable(const std::string & var)												override;
-	void					replaceVariableName(const std::string & oldName, const std::string & newName)			override;
 	std::set<std::string>	columnsCreated()																		override;
 	void					replaceKey(const std::string& oldKey, const std::string& newKey);
 

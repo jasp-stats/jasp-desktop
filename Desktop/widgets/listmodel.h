@@ -45,6 +45,8 @@ public:
 		SelectedRole,
 		SelectableRole,
 		ColumnTypeRole,
+		ColumnTypeIconRole,
+		ColumnTypeDisabledIconRole,
 		RowComponentRole,
 		ValueRole
     };
@@ -61,25 +63,22 @@ public:
 			const QString &			name() const;
 	virtual Terms					termsEx(const QString& what);
 			const Terms &			terms()														const		{ return _terms;	}
-			bool					areTermsVariables()											const		{ return _areTermsVariables; }
-			bool					areTermsInteractions()										const		{ return _areTermsInteractions; }
 			bool					needsSource()												const		{ return _needsSource;			}
 			void					setNeedsSource(bool needs)												{ _needsSource = needs;			}
 	virtual QString					getItemType(const Term& term)								const		{ return _itemType; }
-	virtual void					setTermsAreVariables(bool areVariables);
-	virtual void					setTermsAreInteractions(bool interactions)								{ _areTermsInteractions = interactions; }
 			void					setItemType(QString type)												{ _itemType = type; }
 			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
 	virtual void					initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions());
 			Terms					getSourceTerms();
 			ListModel*				getSourceModelOfTerm(const Term& term);
-
+			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
 	virtual void					setUpRowControls();
 	const rowControlMap	&			getRowControls() const { return _rowControlsMap; }
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
+			QStringList				termsTypes();
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);
@@ -88,20 +87,27 @@ public:
 	Q_INVOKABLE void				selectAllItems();
 	Q_INVOKABLE QList<int>			selectedItems()															{ return _selectedItems; }
 	Q_INVOKABLE QList<QString>		selectedItemsTypes()													{ return _selectedItemsTypes.toList(); }
-	Q_INVOKABLE QList<QString>		itemTypes();
 
 
 signals:
 			void termsChanged();		// Used to signal all kinds of changes in the model. Do not call it directly
 			void namesChanged(QMap<QString, QString> map);
-			void typeChanged(QString name);
+			void columnTypeChanged(QString name);
+			void labelChanged(QString columnName, QString originalLabel, QString newLabel);
+			void labelsReordered(QString columnName);
+			void columnsChanged(QStringList columns);
 			void selectedItemsChanged();
 			void oneTermChanged(const QString& oldName, const QString& newName);
 
 public slots:	
 	virtual void sourceTermsReset();
 	virtual void sourceNamesChanged(QMap<QString, QString> map);
-	virtual int  sourceTypeChanged(QString colName);
+	virtual int  sourceColumnTypeChanged(QString colName);
+	virtual int	 sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel);
+	virtual int	 sourceLabelsReordered(QString columnName);
+	virtual void sourceColumnsChanged(QStringList columns);
+
+			void dataChangedHandler(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 
 protected:
 			void	_setTerms(const Terms& terms, bool isUnique = true);
@@ -131,8 +137,7 @@ private:
 
 			JASPListControl*				_listView = nullptr;
 			Terms							_terms;
-			bool							_areTermsVariables		= true;
-			bool							_areTermsInteractions	= false;
+			QStringList						_columnsUsedForLabels;
 
 };
 
