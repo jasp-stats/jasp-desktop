@@ -26,7 +26,7 @@ public:
 	static ColumnsModel* singleton()	{ return _singleton; }
 
 	ColumnsModel(DataSetTableModel * tableModel);
-	~ColumnsModel()		override { _singleton = nullptr; }
+	~ColumnsModel()		override { if(_singleton == this) _singleton = nullptr; }
 
 	QVariant				data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 	QHash<int, QByteArray>	roleNames()																			const	override;
