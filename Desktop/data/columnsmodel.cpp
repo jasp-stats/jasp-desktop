@@ -146,4 +146,6 @@ QString ColumnsModel::getIconFile(columnType colType, ColumnsModel::IconType typ
 		default:						return "";
 		}
 	}
+
+	return ""; //We are never getting here but GCC isn't convinced
 }
