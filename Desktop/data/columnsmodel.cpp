@@ -36,7 +36,8 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 
 		return tr("The '") + _tableModel->columnTitle(index.row()).toString() + tr("'-column ") + usedIn;
 	}
-	case LabelsRole:	return _tableModel->getColumnLabelsAsStringList(index.row());
+	case LabelsRole:				return _tableModel->getColumnLabelsAsStringList(index.row());
+	case Qt::DisplayRole:			return _tableModel->data(index, Qt::DisplayRole);
 	}
 
 	return QVariant();
