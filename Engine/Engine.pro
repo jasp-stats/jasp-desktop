@@ -62,10 +62,13 @@ exists(/app/lib/*) {
     # org.jaspstats.JASP.json and flatpakbuilder do all this
 } else {
 
-    InstallJASPRPackage.commands        =  $${INSTALL_R_PKG_DEPS_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_DEPS_CMD_POSTFIX};	 $$escape_expand(\\n\\t) 
+	
+	InstallJASPRPackage.commands        = ""
+    #InstallJASPRPackage.commands        =  $${INSTALL_R_PKG_DEPS_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_DEPS_CMD_POSTFIX};	 $$escape_expand(\\n\\t) 
 	InstallJASPRPackage.commands       +=       $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_CMD_POSTFIX}
 	
-	InstalljaspGraphsRPackage.commands  =  $${INSTALL_R_PKG_DEPS_CMD_PREFIX}$$PWD/jaspGraphs$${INSTALL_R_PKG_DEPS_CMD_POSTFIX};	 $$escape_expand(\\n\\t) 
+	InstalljaspGraphsRPackage.commands  =  ""
+	#InstalljaspGraphsRPackage.commands  =  $${INSTALL_R_PKG_DEPS_CMD_PREFIX}$$PWD/jaspGraphs$${INSTALL_R_PKG_DEPS_CMD_POSTFIX};	 $$escape_expand(\\n\\t) 
 	InstalljaspGraphsRPackage.commands +=       $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspGraphs$${INSTALL_R_PKG_CMD_POSTFIX}
 
     InstalljaspGraphsRPackage.depends	= InstallJASPRPackage

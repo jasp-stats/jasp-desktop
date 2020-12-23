@@ -1,7 +1,7 @@
 # This is part of https://github.com/jasp-stats/INTERNAL-jasp/issues/996 and works, but requires me to install V8 because of stupid dependency resolution based on CRAN
 # So ive turned it off for now, but if you'd like to use it you can!
 isEmpty(R_MODULES_INSTALL_DEPENDENCIES) { 
-	R_MODULES_INSTALL_DEPENDENCIES = true
+	R_MODULES_INSTALL_DEPENDENCIES = false
 }
 
 
