@@ -267,7 +267,7 @@ void ListModelFilteredDataEntry::fillTable()
 	size_t dataRows = getDataSetRowCount();
 
 	if(_acceptedRows.size() != dataRows)
-		_acceptedRows = std::vector<bool>(true, dataRows);
+		_acceptedRows = std::vector<bool>(dataRows, true);
 
 
 	_values.push_back({});
