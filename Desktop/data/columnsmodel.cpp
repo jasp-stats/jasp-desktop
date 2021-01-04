@@ -100,7 +100,7 @@ void ColumnsModel::datasetChanged(	QStringList				changedColumns,
 
 int ColumnsModel::rowCount(const QModelIndex &) const
 {
-	return _tableModel->columnCount();
+	return _tableModel->rowCount();
 }
 
 int ColumnsModel::columnCount(const QModelIndex &) const
