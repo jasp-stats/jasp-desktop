@@ -64,7 +64,8 @@ void ListModelFilteredDataEntry::runFilter(QString filter)
 
 size_t ListModelFilteredDataEntry::getDataSetRowCount() const
 {
-	return size_t(ColumnsModel::singleton()->rowCount());
+	// ColumnsModel is a transpose proxy of the dataset model. So columnCount is the row count of the dataset
+	return size_t(ColumnsModel::singleton()->columnCount());
 }
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)

@@ -1,12 +1,12 @@
 #ifndef COLUMNSMODEL_H
 #define COLUMNSMODEL_H
 
-#include <QAbstractTableModel>
+#include <QTransposeProxyModel>
 #include "datasettablemodel.h"
 #include "common.h"
 
 ///Surprisingly the columns are laid out as rows ;-)
-class ColumnsModel  : public QAbstractTableModel
+class ColumnsModel  : public QTransposeProxyModel
 {
 	Q_OBJECT
 public:
@@ -30,9 +30,6 @@ public:
 
 	QVariant				data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 	QHash<int, QByteArray>	roleNames()																			const	override;
-	int						rowCount(	const QModelIndex &parent = QModelIndex())								const	override;
-	int						columnCount(const QModelIndex &parent = QModelIndex())								const	override;
-	QVariant				headerData(	int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
 	QModelIndex				index(int row, int column, const QModelIndex &parent = QModelIndex())				const	override	{ return _tableModel->index(row, column, parent); }
 
 	int						getColumnIndex(const std::string& col)												const	{ return _tableModel->getColumnIndex(col);						}
@@ -53,11 +50,6 @@ public slots:
 							QMap<QString, QString>	changeNameColumns,
 							bool					rowCountChanged,
 							bool					hasNewColumns);
-
-private slots:
-	void onHeaderDataChanged(Qt::Orientation orientation, int first, int last);
-	void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
-
 
 private:
 	void refresh();

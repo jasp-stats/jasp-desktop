@@ -26,6 +26,7 @@
 #include "r_functionwhitelist.h"
 #include "tableviewbase.h"
 #include "listmodelrepeatedmeasuresfactors.h"
+#include "data/columnsmodel.h"
 
 ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
 {
@@ -42,7 +43,9 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QStrin
 	parent->setProperty("defaultEmptyValue", _defaultCellVal);
 
 	connect(this, &ListModelCustomContrasts::variableCountChanged,	[&]() { listView()->setProperty("variableCount", _variables.size()); });
-	connect(listView(), SIGNAL(scaleFactorChanged()),			this, SLOT(scaleFactorChanged()));
+	connect(listView(), SIGNAL(scaleFactorChanged()),					this,	SLOT(scaleFactorChanged()));
+	connect(ColumnsModel::singleton(), &ColumnsModel::labelChanged,		this,	&ListModelCustomContrasts::sourceLabelChanged);
+	connect(ColumnsModel::singleton(), &ColumnsModel::labelsReordered,	this,	&ListModelCustomContrasts::sourceLabelsReordered);
 }
 
 void ListModelCustomContrasts::sourceTermsReset()
@@ -528,6 +531,7 @@ void ListModelCustomContrasts::setColName(QString colName)
 		return;
 
 	_colName = colName;
+
 	emit colNameChanged(_colName);
 
 	_resetValuesEtc();
