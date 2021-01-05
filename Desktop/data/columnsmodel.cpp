@@ -3,12 +3,10 @@
 
 ColumnsModel* ColumnsModel::_singleton = nullptr;
 
-ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) : QAbstractTableModel(tableModel), _tableModel(tableModel)
+ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) : QTransposeProxyModel(tableModel), _tableModel(tableModel)
 {
-	connect(_tableModel, &DataSetTableModel::headerDataChanged,		this, &ColumnsModel::onHeaderDataChanged);
-	connect(_tableModel, &DataSetTableModel::dataChanged,			this, &ColumnsModel::onDataChanged		);
-	connect(_tableModel, &DataSetTableModel::modelAboutToBeReset,	this, &ColumnsModel::beginResetModel	);
-	connect(_tableModel, &DataSetTableModel::modelReset,				this, &ColumnsModel::endResetModel			);
+	setSourceModel(tableModel);
+
 	connect(_tableModel, &DataSetTableModel::columnTypeChanged,		this, &ColumnsModel::columnTypeChanged	);
 	connect(_tableModel, &DataSetTableModel::labelChanged,			this, &ColumnsModel::labelChanged		);
 	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
@@ -18,8 +16,7 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) : QAbstractTableModel(
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 {
-	//So yes despite this being a "proxy model" it doesn't actually use any data from that model as passed through.
-	if(index.row() < 0 || index.row() >= rowCount()) return QVariant();
+	if(index.row() < 0) return QVariant() ; // index.row() >= rowCount()): the row can be greater than the rowCount when a data of a column is asked.
 
 	switch(role)
 	{
@@ -37,7 +34,7 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 		return tr("The '") + _tableModel->columnTitle(index.row()).toString() + tr("'-column ") + usedIn;
 	}
 	case LabelsRole:				return _tableModel->getColumnLabelsAsStringList(index.row());
-	case Qt::DisplayRole:			return _tableModel->data(index, Qt::DisplayRole);
+	case Qt::DisplayRole:			return _tableModel->data(index, role);
 	}
 
 	return QVariant();
@@ -66,16 +63,6 @@ void ColumnsModel::refresh()
 	endResetModel();
 }
 
-void ColumnsModel::onHeaderDataChanged(Qt::Orientation, int, int)
-{
-	refresh();
-}
-
-void ColumnsModel::onDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)
-{
-	refresh();
-}
-
 void ColumnsModel::datasetChanged(	QStringList				changedColumns,
 									QStringList				missingColumns,
 									QMap<QString, QString>	changeNameColumns,
@@ -96,22 +83,6 @@ void ColumnsModel::datasetChanged(	QStringList				changedColumns,
 		}
 		emit columnsChanged(changedColumns);
 	}
-}
-
-int ColumnsModel::rowCount(const QModelIndex &) const
-{
-	return _tableModel->rowCount();
-}
-
-int ColumnsModel::columnCount(const QModelIndex &) const
-{
-	return 1; //We just show columns
-}
-
-//What does headerData even mean here? Doesn't really matter at the moment (20-11-2019)
-QVariant ColumnsModel::headerData(int section, Qt::Orientation orientation, int role ) const
-{
-	return _tableModel->headerData(section, orientation == Qt::Orientation::Vertical ? Qt::Horizontal : Qt::Vertical, role);
 }
 
 QString ColumnsModel::getIconFile(columnType colType, ColumnsModel::IconType type) const
