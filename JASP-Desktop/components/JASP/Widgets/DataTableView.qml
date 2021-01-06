@@ -271,7 +271,6 @@ FocusScope
 					onClicked:
 						if(columnIndex >= 0)
 						{
-
 							if(dataSetModel.columnIcon(columnIndex)  !== columnTypeScale)
 							{
 								var changedIndex		= labelModel.chosenColumn	!== columnIndex

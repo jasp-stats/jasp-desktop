@@ -241,7 +241,7 @@ FocusScope
 								id:						filterEditRectangle
 								color:					jaspTheme.white
 								border.width:			1
-								border.color:			"lightGrey"
+								border.color:			jaspTheme.uiBorder
 				property real	desiredMinimumHeight:	applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
 
 				anchors
@@ -280,12 +280,11 @@ FocusScope
 						id:				filterGeneratedBox
 						height:			filterGeneratedEdit.contentHeight
 						color:			"transparent"
-						border.color:	"lightGray"
+						border.color:	jaspTheme.uiBorder
 						border.width:	1
 
 						anchors
 						{
-							top:	parent.top
 							left:	parent.left
 							right:	parent.right
 						}
@@ -294,7 +293,7 @@ FocusScope
 						TextArea
 						{
 							id:						filterGeneratedEdit
-							anchors.top:			filterGeneratedBox.top
+							anchors.verticalCenter:	filterGeneratedBox.verticalCenter
 							anchors.left:			resetAllGeneratedFilters.right
 							anchors.right:			filterGeneratedBox.right
 							text:					filterModel.generatedFilter +"\n"
@@ -303,7 +302,6 @@ FocusScope
 							color:					jaspTheme.gray
 							selectByMouse:			true
 							onActiveFocusChanged:	if(!activeFocus) deselect()
-
 							font.family:			"Courier"
 							font.pixelSize:			baseFontSize * preferencesModel.uiScale
 							wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere

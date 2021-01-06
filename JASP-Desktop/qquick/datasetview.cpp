@@ -8,6 +8,7 @@
 #include "log.h"
 #include "gui/preferencesmodel.h"
 #include "qquick/jasptheme.h"
+#include <QScreen>
 
 DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
 
@@ -51,10 +52,10 @@ void DataSetView::setModel(QAbstractItemModel * model)
 	{
 		_model = model;
 
-		connect(_model, &QAbstractItemModel::dataChanged,			this, &DataSetView::modelDataChanged);
-		connect(_model, &QAbstractItemModel::headerDataChanged,		this, &DataSetView::modelHeaderDataChanged);
-		connect(_model, &QAbstractItemModel::modelAboutToBeReset,	this, &DataSetView::modelAboutToBeReset);
-		connect(_model, &QAbstractItemModel::modelReset,			this, &DataSetView::modelWasReset);
+		connect(_model, &QAbstractItemModel::dataChanged,			this, &DataSetView::modelDataChanged		);
+		connect(_model, &QAbstractItemModel::headerDataChanged,		this, &DataSetView::modelHeaderDataChanged	);
+		connect(_model, &QAbstractItemModel::modelAboutToBeReset,	this, &DataSetView::modelAboutToBeReset		);
+		connect(_model, &QAbstractItemModel::modelReset,			this, &DataSetView::modelWasReset			);
 
 		setRolenames();
 
@@ -84,25 +85,46 @@ void DataSetView::setRolenames()
 
 QSizeF DataSetView::getColumnSize(int col)
 {
-	QString text = _model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["maxColString"]).toString();
+	QVariant maxColStringVar = _model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["maxColString"]);
+	if(!maxColStringVar.isNull())
+		return getTextSize(maxColStringVar.toString());
+	else
+	{
+		QVariant columnWidthFallbackVar = _model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["columnWidthFallback"]);
 
-	return getTextSize(text);
+		QSizeF columnSize = getTextSize("??????");
+
+		if(!columnWidthFallbackVar.isNull())
+			columnSize.setWidth(columnWidthFallbackVar.toFloat() - itemHorizontalPadding() * 2);
+
+		return columnSize;
+	}
 }
 
 QSizeF DataSetView::getRowHeaderSize()
 {
-	QString text = _model->headerData(0, Qt::Orientation::Horizontal, _roleNameToRole["maxRowHeaderString"]).toString();
+	QString text = _model->headerData(0, Qt::Orientation::Vertical, _roleNameToRole["maxRowHeaderString"]).toString();
 
 	return getTextSize(text);
 }
 
-void DataSetView::modelDataChanged(const QModelIndex &index, const QModelIndex &, const QVector<int> &)
+void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &)
 {
-	int col = index.column();
+	int col = topLeft.column();
 	QSizeF calcSize = getColumnSize(col);
 
 	if (_cacheItems || int(_cellSizes[size_t(col)].width() * 10) != int(calcSize.width() * 10)) //If we cache items we are not expecting the user to make regular manual changes to the data, so if something changes we can do a reset. Otherwise we are in TableView and we do it only when the column size changes.
 		calculateCellSizes();
+	
+	//The following else would be good but it doesnt seem to work on mac for some reason. It does work on linux though
+	/*else 
+		for(size_t row=topLeft.row(); row<=bottomRight.row(); row++)
+			for(size_t col=topLeft.column(); col<=bottomRight.column(); col++)
+			{
+				storeTextItem(row, col);
+				createTextItem(row, col);
+			}*/
+
 }
 
 void DataSetView::modelHeaderDataChanged(Qt::Orientation, int, int)
@@ -136,7 +158,7 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 	_storedLineFlags.clear();
 	_storedDisplayText.clear();
 
-	for(auto col : _cellTextItems)
+	for(auto & col : _cellTextItems)
 	{
 		for(auto row : col.second)
 			storeTextItem(row.first, col.first, false);
@@ -179,7 +201,6 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 		_dataColsMaxWidth[col] = _cellSizes[col].width() + _itemHorizontalPadding * 2;
 
 	setHeaderHeight(_model->columnCount() == 0 ? 0 : _cellSizes[0].height() + _itemVerticalPadding * 2);
-
 	setRowNumberWidth(getRowHeaderSize().width());
 
 	float w = _rowNumberMaxWidth;
@@ -205,8 +226,10 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 	setHeight(	newHeight);
 	_recalculateCellSizes = false;
 
-	emit itemSizeChanged();
+	//emit itemSizeChanged(); //This calls reloadTextItems, reloadRowNumbers and reloadColumnHeaders and those all call viewPortChanged. Which recreates them all every time if necessary... Nobody else seems to emit this signal anywhere so I dont see the point. Ill replace it with viewPortChanged
 
+	viewportChanged();
+	
 	JASPTIMER_STOP(calculateCellSizes);
 }
 
@@ -424,21 +447,23 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 
 	for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)
 	{
-		createRowNumber(row);
+		if(createRowNumber(row))
+		{
 
 #ifdef ADD_LINES_PLEASE
-		float	pos0x(_viewportX),
-				pos0y((1 + row) * _dataRowsMaxHeight),
-				pos1x(_viewportX + _rowNumberMaxWidth),
-				pos1y((2 + row) * _dataRowsMaxHeight);
+			float	pos0x(_viewportX),
+					pos0y((1 + row) * _dataRowsMaxHeight),
+					pos1x(_viewportX + _rowNumberMaxWidth),
+					pos1y((2 + row) * _dataRowsMaxHeight);
 
-		if(pos0y > _dataRowsMaxHeight + _viewportY)
-			addLine(pos0x, pos0y, pos1x, pos0y);
+			if(pos0y > _dataRowsMaxHeight + _viewportY)
+				addLine(pos0x, pos0y, pos1x, pos0y);
 
 
-		if(row == _model->rowCount() - 1 && pos1y > _dataRowsMaxHeight + _viewportY)
-			addLine(pos0x, pos1y, pos1x, pos1y);
+			if(row == _model->rowCount() - 1 && pos1y > _dataRowsMaxHeight + _viewportY)
+				addLine(pos0x, pos1y, pos1x, pos1y);
 #endif
+		}
 	}
 
 	for(int col=_currentViewportColMin; col<_currentViewportColMax; col++)
@@ -584,12 +609,15 @@ QQuickItem * DataSetView::createRowNumber(int row)
 {
 	//Log::log() << "createRowNumber("<<row<<") called!\n" << std::flush;
 
+	if(rowNumberWidth() == 0)
+		return nullptr;
+
 	if(_rowNumberDelegate == nullptr)
 	{
 		_rowNumberDelegate = new QQmlComponent(qmlEngine(this));
         _rowNumberDelegate->setData("import QtQuick 2.9\nItem {\n"
-			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
-			"Text		{ text: rowIndex; anchors.centerIn: parent; }\n"
+			"Rectangle	{ color: jaspTheme.uiBackground;	anchors.fill: parent }\n"
+			"Text		{ text: rowIndex; anchors.centerIn: parent; color: jaspTheme.textEnabled; }\n"
 		"}", QUrl());
 	}
 
@@ -675,8 +703,8 @@ QQuickItem * DataSetView::createColumnHeader(int col)
 	{
 		_columnHeaderDelegate = new QQmlComponent(qmlEngine(this));
         _columnHeaderDelegate->setData("import QtQuick 2.9\nItem {\n"
-			"Rectangle	{ color: \"lightGrey\";	anchors.fill: parent }\n"
-			"Text		{ text: headerText; anchors.centerIn: parent; }\n"
+			"Rectangle	{ color: jaspTheme.uiBackground;	anchors.fill: parent }\n"
+			"Text		{ text: headerText; anchors.centerIn: parent; color: jaspTheme.textEnabled; }\n"
 		"}", QUrl());
 	}
 
@@ -819,10 +847,9 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	QModelIndex idx = _model->index(row, col);
 
 	bool isEditable(_model->flags(idx) & Qt::ItemIsEditable);
-	QVariant itemInputType = _model->data(idx, _roleNameToRole["itemInputType"]);
 
 	if(isEditable || _storedDisplayText.count(row) == 0 || _storedDisplayText[row].count(col) == 0)
-		_storedDisplayText[row][col] = _model->data(idx).toString();
+		_storedDisplayText[row][col] = _model->data(idx, Qt::DisplayRole).toString();
 
 	QString text = _storedDisplayText[row][col];
 
@@ -832,7 +859,8 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	previousContext->setContextProperty("itemText",			text);
 	previousContext->setContextProperty("itemActive",		active);
 	previousContext->setContextProperty("itemEditable",		isEditable);
-	previousContext->setContextProperty("itemInputType",	itemInputType);
+	previousContext->setContextProperty("itemSelected",		_model->data(idx, _roleNameToRole["selected"]));
+	previousContext->setContextProperty("itemInputType",	_model->data(idx, _roleNameToRole["itemInputType"]));
 	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
 	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));
 	previousContext->setContextProperty("hasContextForm",	true);
@@ -1018,7 +1046,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
 	//if(recalculateCellSizes) calculateCellContentSizes();
 
-	const QRectF rect = boundingRect();
+	//const QRectF rect = boundingRect();
 
 
 	const int linesPerNode = 2048;
@@ -1027,6 +1055,8 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 	else if(!_linesWasChanged)	return oldNode;
 	
 	QSGGeometryNode * currentNode = static_cast<QSGGeometryNode*>(oldNode->firstChild());
+
+	oldNode->markDirty(QSGNode::DirtyGeometry);
 
 
 	for(int lineIndex=0; lineIndex<_linesActualSize;)
@@ -1042,6 +1072,8 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 			currentNode->setMaterial(&material);
 
 			justAdded = true;
+
+			oldNode->markDirty(QSGNode::DirtyNodeAdded);
 		}
 
 		int geomSize = std::min(linesPerNode, (int)(_linesActualSize - lineIndex) / 4); //_lines is floats x, y, x, y so each set of 4 is a single line.
@@ -1085,6 +1117,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 	{
 		killThem.push(currentNode);
 		currentNode = static_cast<QSGGeometryNode*>(currentNode->nextSibling());
+		oldNode->markDirty(QSGNode::DirtyNodeRemoved);
 	}
 
 	while(killThem.size() > 0)

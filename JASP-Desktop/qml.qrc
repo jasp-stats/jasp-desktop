@@ -44,8 +44,6 @@
         <file>components/JASP/Widgets/JASPDataView.qml</file>
         <file>components/JASP/Widgets/JASPMouseAreaToolTipped.qml</file>
         <file>components/JASP/Widgets/ProgressBarHolder.qml</file>
-        <file>components/JASP/Widgets/TableViewJasp.qml</file>
-        <file>components/JASP/Widgets/TableViewStyleJasp.qml</file>
         <file>components/JASP/Widgets/VariablesWindow.qml</file>
         <file>components/JASP/Widgets/FilterConstructor/ColumnDrag.qml</file>
         <file>components/JASP/Widgets/FilterConstructor/ColumnsSelector.qml</file>

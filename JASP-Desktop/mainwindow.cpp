@@ -160,6 +160,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<JASPControlBase>							("JASP",		1, 0, "JASPControlBase"		);
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"	);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"	);
+	qmlRegisterType<LabelModel>									("JASP",		1, 0, "LabelModel"			);
 
 	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description");
 	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis");
