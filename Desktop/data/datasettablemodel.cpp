@@ -18,6 +18,8 @@
 
 #include "datasettablemodel.h"
 
+DataSetTableModel* DataSetTableModel::_singleton = nullptr;
+
 DataSetTableModel::DataSetTableModel() : DataSetTableProxy(parIdxType::data)
 {
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsFilteredCountChanged,	this, &DataSetTableModel::columnsFilteredCountChanged	);
@@ -27,6 +29,8 @@ DataSetTableModel::DataSetTableModel() : DataSetTableProxy(parIdxType::data)
 	//connect(this,		&DataSetTableModel::dataChanged,				this, &DataSetTableModel::onDataChanged,				Qt::QueuedConnection);
 
 	setFilterRole(int(DataSetPackage::specialRoles::filter));
+
+	if (_singleton == nullptr) _singleton = this;
 }
 
 

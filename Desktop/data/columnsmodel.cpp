@@ -16,7 +16,7 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) : QTransposeProxyModel
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 {
-	if(index.row() < 0) return QVariant() ; // index.row() >= rowCount()): the row can be greater than the rowCount when a data of a column is asked.
+	if(index.row() < 0 || index.row() >= rowCount()) return QVariant();
 
 	switch(role)
 	{
@@ -34,7 +34,6 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 		return tr("The '") + _tableModel->columnTitle(index.row()).toString() + tr("'-column ") + usedIn;
 	}
 	case LabelsRole:				return _tableModel->getColumnLabelsAsStringList(index.row());
-	case Qt::DisplayRole:			return _tableModel->data(index, role);
 	}
 
 	return QVariant();
@@ -95,7 +94,7 @@ QString ColumnsModel::getIconFile(columnType colType, ColumnsModel::IconType typ
 		{
 		case columnType::scale:			return path + "variable-scale.png";
 		case columnType::ordinal:		return path + "variable-ordinal.png";
-		case columnType::nominal:		return path+ "variable-nominal.png";
+		case columnType::nominal:		return path + "variable-nominal.png";
 		case columnType::nominalText:	return path + "variable-nominal-text.png";
 		default:						return "";
 		}

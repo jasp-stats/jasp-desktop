@@ -70,8 +70,7 @@ int ListModelMultinomialChi2Test::sourceLabelChanged(QString columnName, QString
 		if(_rowNames[row] == originalLabel)
 		{
 			_rowNames[row] = newLabel;
-			QModelIndex i = index(row, 0);
-			emit dataChanged(i, i);
+			emit headerDataChanged(Qt::Vertical, row, row);
 			break;
 		}
 

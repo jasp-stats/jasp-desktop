@@ -33,8 +33,6 @@ public:
 	QModelIndex				index(int row, int column, const QModelIndex &parent = QModelIndex())				const	override	{ return _tableModel->index(row, column, parent); }
 
 	int						getColumnIndex(const std::string& col)												const	{ return _tableModel->getColumnIndex(col);						}
-	size_t					getMaximumColumnWidthInCharacters(int index)										const	{ return _tableModel->getMaximumColumnWidthInCharacters(index);	}
-	QModelIndex				parentModelForType(parIdxType type, int column = 0)									const	{ return _tableModel->parentModelForType(type, column);			}
 	QString					getIconFile(columnType colType, IconType type)										const;
 
 signals:
