@@ -1129,7 +1129,7 @@ Form
 					name: 							"sampleDescriptives"	
 				}
 
-				GridLayout
+				RowLayout
 				{
 					Layout.leftMargin: 				20 * preferencesModel.uiScale
 
