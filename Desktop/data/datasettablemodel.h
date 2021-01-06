@@ -29,7 +29,10 @@ class DataSetTableModel : public DataSetTableProxy
 	Q_PROPERTY(bool showInactive			READ showInactive			WRITE setShowInactive	NOTIFY showInactiveChanged)
 
 public:
+	static DataSetTableModel* singleton()	{ return _singleton; }
+
 	explicit				DataSetTableModel();
+	~DataSetTableModel()	override { if(_singleton == this) _singleton = nullptr; }
 
 	bool					filterAcceptsRow(int source_row, const QModelIndex & source_parent)	const override;
 
@@ -66,6 +69,9 @@ public slots:
 
 private:
 	bool					_showInactive	= true;
+
+	static DataSetTableModel* _singleton;
+
 };
 
 #endif // DATASETTABLEMODEL_H

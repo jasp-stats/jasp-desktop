@@ -339,11 +339,11 @@ QVariant ListModelFilteredDataEntry::data(const QModelIndex &index, int role) co
 	std::string colName = _colNames[column].toStdString();
 	size_t rowData		= _filteredRowToData[static_cast<size_t>(row)];
 
-	ColumnsModel* columnsModel = ColumnsModel::singleton();
+	DataSetTableModel* dataSetModel = DataSetTableModel::singleton();
 
-	int colIndex = columnsModel->getColumnIndex(colName);
+	int colIndex = dataSetModel->getColumnIndex(colName);
 
-	return columnsModel->data(columnsModel->index(int(rowData), colIndex, columnsModel->parentModelForType(parIdxType::data)));
+	return dataSetModel->data(dataSetModel->index(int(rowData), colIndex, dataSetModel->parentModelForType(parIdxType::data)));
 }
 
 
@@ -355,15 +355,15 @@ int ListModelFilteredDataEntry::getMaximumColumnWidthInCharacters(size_t column)
 		return ListModelTableViewBase::getMaximumColumnWidthInCharacters(0);
 
 
-	ColumnsModel* columnsModel = ColumnsModel::singleton();
+	DataSetTableModel* dataSetModel = DataSetTableModel::singleton();
 
-	if(!(columnsModel->rowCount() >= 0 || colIndex > _colNames.size() || column < 0))
+	if(!(dataSetModel->columnCount() >= 0 || colIndex > _colNames.size() || column < 0))
 	{
 		std::string colName		= _colNames[colIndex].toStdString();
-		int			colIndex	= columnsModel->getColumnIndex(colName);
+		int			colIndex	= dataSetModel->getColumnIndex(colName);
 
 		if(colIndex > -1)
-			return int(columnsModel->getMaximumColumnWidthInCharacters(colIndex));
+			return int(dataSetModel->getMaximumColumnWidthInCharacters(colIndex));
 	}
 
 
