@@ -28,21 +28,26 @@
 class FactorsFormBase :  public JASPListControl, public BoundControl
 {
 	Q_OBJECT
+
 	
 public:
 	FactorsFormBase(QQuickItem* parent = nullptr);
 
-	ListModel*	model()								const	override { return _factorsModel; }
+	ListModel*	model()								const	override { return _factorsModel;	}
 	void		setUpModel()								override;
-	Option*		boundTo()									override { return _boundTo; }
+	Option*		boundTo()									override { return _boundTo;			}
 	void		bindTo(Option *option)						override;
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
 
+	Q_INVOKABLE	void	addFactor()					{ _factorsModel->addFactor();		}
+	Q_INVOKABLE void	removeFactor()				{ _factorsModel->removeFactor();	}
+
+
 protected slots:
 	void termsChangedHandler() override;
-	void addListViewSlot(JASPListControl* listView);
+	void factorsAddedSlot(int index, QVariant item);
 	
 private:
 	ListModelFactorsForm*	_factorsModel				= nullptr;

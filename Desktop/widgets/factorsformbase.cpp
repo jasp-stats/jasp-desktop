@@ -23,9 +23,9 @@
 #include "analysis/analysisform.h"
 #include "analysis/jaspcontrol.h"
 #include "utilities/qutils.h"
+#include "variableslistbase.h"
 
-#include <QQmlProperty>
-#include <QQuickItem>
+#include "log.h"
 
 using namespace std;
 
@@ -39,6 +39,7 @@ FactorsFormBase::FactorsFormBase(QQuickItem *parent)
 void FactorsFormBase::setUpModel()
 {
 	_factorsModel = new ListModelFactorsForm(this);
+
 	JASPListControl::setUpModel();
 
 	_availableVariablesListName = property("availableVariablesListName").toString();
@@ -47,9 +48,7 @@ void FactorsFormBase::setUpModel()
 	_initNumberFactors = property("initNumberFactors").toInt();
 
 	QQuickItem::connect(this, SIGNAL(titleChanged(int, QString)), _factorsModel, SLOT(titleChangedSlot(int, QString)));
-	QQuickItem::connect(this, SIGNAL(factorAdded(int, QVariant)), _factorsModel, SLOT(factorAddedSlot(int, QVariant)));
-
-	connect(_factorsModel, &ListModelFactorsForm::addListView, this, &FactorsFormBase::addListViewSlot);
+	QQuickItem::connect(this, SIGNAL(factorAdded(int, QVariant)), this, SLOT(factorsAddedSlot(int, QVariant)));
 }
 
 void FactorsFormBase::bindTo(Option *option)
@@ -133,19 +132,16 @@ void FactorsFormBase::termsChangedHandler()
 	_boundTo->setValue(allOptions);	
 }
 
-void FactorsFormBase::addListViewSlot(JASPListControl *listView)
+void FactorsFormBase::factorsAddedSlot(int index, QVariant item)
 {
-	const vector<tuple<string, string, vector<string> > > &factors = _factorsModel->getFactors();
-	QStringList names;
-	for (auto factor : factors)
-		names.push_back(tq(get<0>(factor)));
-	_availableVariablesListItem->setProperty("dropKeys", names);
-	setProperty("dropKeys", _availableVariablesListName);
+	VariablesListBase* listView = qobject_cast<VariablesListBase *>(item.value<QObject *>());
+	if (!listView)
+	{
+		Log::log() << "JASP Control is not a VariablesListBase in factorAdded" << std::endl;
+		return;
+	}
 	
-	JASPListControl* availableListView = dynamic_cast<JASPListControl*>(_availableVariablesListItem);
-	form()->addListView(listView, availableListView);
+	_factorsModel->factorAdded(index, listView);
 	
-	connect(listView->model(), &ListModel::modelReset, this, &FactorsFormBase::termsChangedHandler);
-	connect(listView->model(), &ListModel::rowsRemoved, this, &FactorsFormBase::termsChangedHandler);
-	connect(listView->model(), &ListModel::rowsInserted, this, &FactorsFormBase::termsChangedHandler);
+	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::resetModelTerms);
 }

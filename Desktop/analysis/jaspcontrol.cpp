@@ -194,21 +194,11 @@ void JASPControl::componentComplete()
 	bool isDynamic = context->contextProperty("isDynamic").toBool();
 	_form = context->contextProperty("form").value<AnalysisForm*>();
 
-	if (!isDynamic)
-	{
-		if (_form)	_form->addControl(this);
-		else
-		{
-			setUp();
-			setInitialized();
-		}
-	}
+	if (!isDynamic && _form)
+		_form->addControl(this);
 	else
 	{
-		bool noDirectSetup = context->contextProperty("noDirectSetup").toBool();
-		if (!noDirectSetup)
-			setUp();
-
+		setUp();
 		setInitialized();
 		JASPListControl* listView = nullptr;
 

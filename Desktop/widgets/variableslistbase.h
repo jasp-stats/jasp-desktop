@@ -37,13 +37,14 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( QStringList		suggestedColumns		READ suggestedColumns		WRITE setSuggestedColumns		NOTIFY suggestedColumnsChanged		)
 	Q_PROPERTY(	QStringList		suggestedColumnsIcons	READ suggestedColumnsIcons									NOTIFY suggestedColumnsIconsChanged	)
 	Q_PROPERTY( QStringList		columnsTypes			READ columnsTypes											NOTIFY columnsTypesChanged			)
+	Q_PROPERTY( QStringList		dropKeys				READ dropKeys				WRITE setDropKeys				NOTIFY dropKeysChanged				)
 
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
 	
 	void						setUp()										override;
 	ListModel*					model()								const	override	{ return _draggableModel;							}
-	ListModelDraggable*			draggableNodel()					const				{ return _draggableModel;							}
+	ListModelDraggable*			draggableModel()					const				{ return _draggableModel;							}
 	void						setUpModel()								override;
 	void						bindTo(Option *option)						override	{ _boundControl->bindTo(option);					}
 	void						unbind()									override	{ _boundControl->unbind();							}
@@ -55,10 +56,11 @@ public:
 	ListViewType				listViewType()						const				{ return _listViewType;								}
 	BoundControl*				boundControl()											{ return _boundControl;								}
 	int							columns()							const				{ return _columns;									}
-	QStringList					allowedColumns()					const				{ return _allowedColumns;							}
-	QStringList					suggestedColumns()					const				{ return _suggestedColumns;							}
-	QStringList					suggestedColumnsIcons()				const				{ return _suggestedColumnsIcons;					}
-	QStringList					columnsTypes()						const				{ return _columnsTypes;								}
+	const QStringList&			allowedColumns()					const				{ return _allowedColumns;							}
+	const QStringList&			suggestedColumns()					const				{ return _suggestedColumns;							}
+	const QStringList&			suggestedColumnsIcons()				const				{ return _suggestedColumnsIcons;					}
+	const QStringList&			columnsTypes()						const				{ return _columnsTypes;								}
+	const QStringList&			dropKeys()							const				{ return _dropKeys;									}
 
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault);
 
@@ -69,6 +71,7 @@ signals:
 	void suggestedColumnsChanged();
 	void suggestedColumnsIconsChanged();
 	void columnsTypesChanged();
+	void dropKeysChanged();
 
 protected:
 	GENERIC_SET_FUNCTION(ListViewType,			_listViewType,			listViewTypeChanged,			ListViewType	)
@@ -77,6 +80,9 @@ protected:
 	GENERIC_SET_FUNCTION(SuggestedColumns,		_suggestedColumns,		suggestedColumnsChanged,		QStringList		)
 	GENERIC_SET_FUNCTION(SuggestedColumnsIcons,	_suggestedColumnsIcons,	suggestedColumnsIconsChanged,	QStringList		)
 	GENERIC_SET_FUNCTION(ColumnsTypes,			_columnsTypes,			columnsTypesChanged,			QStringList		)
+	GENERIC_SET_FUNCTION(DropKeys,				_dropKeys,				dropKeysChanged,				QStringList		)
+
+	ListModel*					getRelatedModel();
 
 	ListModelDraggable*			_draggableModel	= nullptr;
 	ListViewType				_listViewType	= ListViewType::AssignedVariables;
@@ -102,8 +108,8 @@ private:
 	QStringList					_allowedColumns,
 								_suggestedColumns,
 								_suggestedColumnsIcons,
-								_columnsTypes;
-	
+								_columnsTypes,
+								_dropKeys;
 };
 
 #endif // VARIABLESLISTBASE_H

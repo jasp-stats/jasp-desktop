@@ -170,36 +170,10 @@ void AnalysisForm::_setUpControls()
 
 void AnalysisForm::_setUpModels()
 {
-	QMapIterator<QString, JASPControl*> it(_controls);
-	while (it.hasNext())
+	for (JASPControl* control : _controls.values())
 	{
-		it.next();
-		JASPListControl* listView = qobject_cast<JASPListControl*>(it.value());
-		if (listView)
-		{
-			listView->setUpModel();
-			if (listView->model())	_modelMap[it.key()] = listView->model();
-		}
-	}
-
-	for (ListModel* model : _modelMap.values())
-	{
-		JASPListControl* listView = model->listView();
-		QList<QVariant> dropKeyList = listView->property("dropKeys").toList();
-		QString dropKey				= dropKeyList.isEmpty() ? listView->property("dropKeys").toString() : dropKeyList[0].toString(); // The first key gives the default drop item.
-
-		if (!dropKey.isEmpty())
-		{
-			if (_modelMap.count(dropKey))		_relatedModelMap[listView] = _modelMap[dropKey];
-			else								addFormError(tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name()));
-		}
-		else
-		{
-			bool draggable = listView->property("draggabble").toBool();
-			if (draggable)
-				addFormError(tr("No drop key found for %1").arg(listView->name()));
-		}
-
+		JASPListControl*	listControl = qobject_cast<JASPListControl*>(control);
+		if (listControl)	listControl->setUpModel();
 	}
 }
 
@@ -270,15 +244,6 @@ void AnalysisForm::_orderExpanders()
 		}
 		expander->setUp();
 	}
-}
-
-void AnalysisForm::addListView(JASPListControl* listView, JASPListControl* source)
-{
-	if(listView->model())							_modelMap[listView->name()] = listView->model();
-	else if(_modelMap.count(listView->name()) > 0)	_modelMap.remove(listView->name());
-
-	_relatedModelMap[listView]	= source->model();
-	_relatedModelMap[source]	= listView->model();
 }
 
 void AnalysisForm::reset()
