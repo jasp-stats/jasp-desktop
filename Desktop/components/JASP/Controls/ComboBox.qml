@@ -17,7 +17,7 @@ ComboBoxBase
 	property alias	controlLabel:			controlLabel
 	property alias	label:					controlLabel.text
 	property alias	currentLabel:			comboBox.currentText
-	property alias	value:					comboBox.currentText
+	property alias	value:					comboBox.currentValue
 	property alias	indexDefaultValue:		comboBox.currentIndex
 	property alias	fieldWidth:				control.modelWidth
 	property bool	showVariableTypeIcon:	containsVariables
@@ -251,7 +251,7 @@ ComboBoxBase
 					x:							1 * preferencesModel.uiScale
 					height:						15 * preferencesModel.uiScale
 					width:						15 * preferencesModel.uiScale
-					source:						model.columnTypeIcon
+					source:						visible ? model.columnTypeIcon : ""
 					visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
 
 					anchors.verticalCenter:		parent.verticalCenter

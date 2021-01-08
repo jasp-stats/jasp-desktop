@@ -33,35 +33,16 @@ Column
 		id:		titleTypeDropDown
 		label: qsTr("Title Type")
 
-		//Ok, this dropdowncode looks horrible but Bruno might be able to help out with making this less weird I hope
-		Connections
-		{
-			target:				axisModel
-			onTitleTypeChanged:	titleTypeDropDown.handleTitleType()
-
-		}
-
-		function handleTitleType()
-		{
-			if(axisModel.titleType === AxisModel.TitleCharacter)	titleTypeDropDown.currentIndex = 0;
-			if(axisModel.titleType === AxisModel.TitleExpression)	titleTypeDropDown.currentIndex = 1;
-			if(axisModel.titleType === AxisModel.TitleLaTeX)		titleTypeDropDown.currentIndex = 2;
-		}
-
 		values:
 		[
-			{ label: qsTr("Plain Text"),		value: "?"		}, //What is the value here anyway? What would we use it for? Is it only for R?
-			{ label: qsTr("R Expression"),		value: "??"		},
-			{ label: qsTr("LateX"),				value: "???"	}
+			{ label: qsTr("Plain Text"),		value: AxisModel.TitleCharacter		},
+			{ label: qsTr("R Expression"),		value: AxisModel.TitleExpression	},
+			{ label: qsTr("LateX"),				value: AxisModel.TitleLaTeX			}
 		]
 
-		indexDefaultValue:		0
-		onCurrentIndexChanged:	if (axisModel)
-		{
-			if(currentIndex === 0)	axisModel.titleType = AxisModel.titleCharacter
-			if(currentIndex === 1)	axisModel.titleType = AxisModel.TitleExpression
-			if(currentIndex === 2)	axisModel.titleType = AxisModel.TitleLaTeX
-		}
+		startValue: axisModel.titleType
+
+		onCurrentValueChanged: axisModel.titleType = parseInt(currentValue)
 	}
 
 	JASPC.RadioButtonGroup
