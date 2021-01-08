@@ -50,6 +50,7 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
 
 #### General 
   - [Licensing](Docs/development/jasp-licensing.md)
+  - [Logging](Docs/user-guide/logging-howto.md)
   
 #### Building
   - [Guide to Building JASP](Docs/development/jasp-building-guide.md)
