@@ -115,3 +115,5 @@ macx {
 
 #uncomment the following line to enable automatic encoding and decoding of columnNames. Be sure to recompile all necessary objects
 DEFINES += JASP_COLUMN_ENCODE_ALL
+
+linux: QMAKE_LFLAGS += -fuse-ld=gold
