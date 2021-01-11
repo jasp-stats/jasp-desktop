@@ -1,0 +1,3402 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Language: en_US\n"
+"X-Source-Language: American English\n"
+"X-Qt-Contexts: true\n"
+
+msgctxt "ComponentsList|"
+msgid "Add a row"
+msgstr "Voeg een rij toe"
+
+msgctxt "ComponentsList|"
+msgid "Remove a row"
+msgstr "Verwijder een rij"
+
+msgctxt "FileSelector|"
+msgid "Save file to:"
+msgstr "Schrijf bestand naar:"
+
+msgctxt "FileSelector|"
+msgid "Load file from:"
+msgstr "Laad bestand van:"
+
+msgctxt "FileSelector|"
+msgid "Select file to save"
+msgstr "Selecteer bestand om op te slaan"
+
+msgctxt "FileSelector|"
+msgid "Select file to load"
+msgstr "Selecteer bestand om te laden"
+
+msgctxt "FileSelector|"
+msgid "Browse"
+msgstr "Blader"
+
+msgctxt "Form|"
+msgid ""
+"This analysis was created with an older version of JASP (or a dynamic module)"
+msgstr ""
+"Deze analyse is gemaakt met een oudere versie van JASP (of met een "
+"dynamische module)"
+
+msgctxt "Form|"
+msgid ", refreshing could give a slightly different result."
+msgstr ", wanneer u de resultaten ververst kunnen deze iets afwijken."
+
+msgctxt "Form|"
+msgid ""
+", to keep your notes where they are it is highly recommended to first "
+"refresh your analyses!"
+msgstr ""
+", om de juiste plaats van uw aantekeningen in de resultaten te behouden "
+"raden we u aan om eerst uw analyses te verversen!"
+
+msgctxt "InputListView|"
+msgid "New Value"
+msgstr "Nieuwe waarde"
+
+msgctxt "ModelTermsList|"
+msgid "Model Terms"
+msgstr "Modeltermen"
+
+msgctxt "ModelTermsList|"
+msgid "Add to null model"
+msgstr "Voeg aan nulmodel toe"
+
+msgctxt "TableView|"
+msgid "Row #"
+msgstr "Rij #"
+
+msgctxt "TabView|"
+msgid "Add a tab"
+msgstr "Voeg tab toe"
+
+msgctxt "TabView|"
+msgid "Remove this tab"
+msgstr "Verwijder deze tab"
+
+msgctxt "TabView|"
+msgid "New tab"
+msgstr "Nieuwe tab"
+
+msgctxt "TextArea|"
+msgid "⌘ + Enter to apply"
+msgstr "⌘ + Enter om toe te passen"
+
+msgctxt "TextArea|"
+msgid "Ctrl + Enter to apply"
+msgstr "Ctrl + Enter om toe te passen"
+
+#, qt-format
+msgctxt "TextField|"
+msgid "Restoring last correct value: %1"
+msgstr "Herstel laatste correcte waarde: %1"
+
+msgctxt "VariablesForm|"
+msgid "Main Effects"
+msgstr "Hoofdeffecten"
+
+msgctxt "VariablesForm|"
+msgid "Only 2 way"
+msgstr "Slechts 2-weg"
+
+msgctxt "VariablesForm|"
+msgid "Only 3 way"
+msgstr "Slechts 3-weg"
+
+msgctxt "VariablesForm|"
+msgid "Only 4 way"
+msgstr "Slechts 4-weg"
+
+msgctxt "VariablesForm|"
+msgid "Only 5 way"
+msgstr "Slechts 5-weg"
+
+msgctxt "VariablesForm|"
+msgid "All"
+msgstr "Alle"
+
+msgctxt "VariablesForm|"
+msgid "Only 1 Available Variables list can be set in a VariablesForm"
+msgstr ""
+"Er kan maar één beschikbare variabelelijst worden toegepast in een "
+"VariablesForm"
+
+msgctxt "VariablesForm|"
+msgid "There is no Available List in the Variables Form"
+msgstr "Er is geen beschikbare lijst in het Variabelen Scherm"
+
+msgctxt "AboutWindow|"
+msgid "About JASP"
+msgstr "Over JASP"
+
+msgctxt "AboutWindow|"
+msgid "Version:"
+msgstr "Versie:"
+
+msgctxt "AboutWindow|"
+msgid "Built on:"
+msgstr "Gemaakt op:"
+
+msgctxt "AboutWindow|"
+msgid "Source:"
+msgstr "Bron:"
+
+msgctxt "AboutWindow|"
+msgid "Access the sources here"
+msgstr "Krijg hier toegang tot de broncode"
+
+msgctxt "AboutWindow|"
+msgid "Download:"
+msgstr "Download:"
+
+msgctxt "AboutWindow|"
+msgid "Citation:"
+msgstr "Citatie:"
+
+msgctxt "AboutWindow|"
+msgid "Select All"
+msgstr "Selecteer alle"
+
+msgctxt "AboutWindow|"
+msgid "Copy Selection"
+msgstr "Kopieer selectie"
+
+msgctxt "AboutWindow|"
+msgid "BibTeX"
+msgstr "BibTeX"
+
+msgctxt "AboutWindow|"
+msgid "Close"
+msgstr "Sluit"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Drag to reorder the analyses"
+msgstr "Sleep om de analyse opnieuw in te delen"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Edit the title of this analysis"
+msgstr "Bewerk de titel van deze analyse"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Duplicate this analysis"
+msgstr "Dupliceer deze analyse"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show info for this analysis"
+msgstr "Toon informatie over deze analyse"
+
+msgctxt "AnalysisFormExpander|"
+msgid "Remove this analysis"
+msgstr "Verwijder deze analyse"
+
+msgctxt "AnalysisForms|"
+msgid "Resize data/results"
+msgstr "Pas grootte data/resultaten aan"
+
+msgctxt "AnalysisForms|"
+msgid "Drag to show data"
+msgstr "Sleep om data te zien"
+
+msgctxt "AnalysisForms|"
+msgid "Hide input options"
+msgstr "Verberg invoeropties"
+
+msgctxt "AnalysisForms|"
+msgid "Show input options"
+msgstr "Toon invoeropties"
+
+msgctxt "BasicThreeButtonTableView|"
+msgid "Add"
+msgstr "Voeg toe"
+
+msgctxt "BasicThreeButtonTableView|"
+msgid "Delete"
+msgstr "Verwijder"
+
+msgctxt "BasicThreeButtonTableView|"
+msgid "Reset"
+msgstr "Herstel"
+
+msgctxt "BayesFactorType|"
+msgid "Bayes Factor"
+msgstr "Bayes factor"
+
+msgctxt "BayesFactorType|"
+msgid "BF₁₀"
+msgstr "BF₁₀"
+
+msgctxt "BayesFactorType|"
+msgid ""
+"Bayes factor to quantify evidence for the alternative hypothesis relative to "
+"the null hypothesis."
+msgstr ""
+"Bayes factor voor het kwantificeren van bewijs voor de alternatieve "
+"hypothese ten opzichte van de nulhypothese."
+
+msgctxt "BayesFactorType|"
+msgid "BF₀₁"
+msgstr "BF₀₁"
+
+msgctxt "BayesFactorType|"
+msgid ""
+"Bayes factor to quantify evidence for the null hypothesis relative to the "
+"alternative hypothesis."
+msgstr ""
+"Bayes factor voor het kwantificeren van bewijs voor de nulhypothese ten "
+"opzichte van de alternatieve hypothese."
+
+msgctxt "BayesFactorType|"
+msgid "Log(BF₁₀)"
+msgstr "Log(BF₁₀)"
+
+msgctxt "BayesFactorType|"
+msgid "Natural logarithm of BF10."
+msgstr "Natuurlijke logaritme van BF10."
+
+msgctxt "Chi2TestTableView|"
+msgid "Add Column"
+msgstr "Voeg kolom toe"
+
+msgctxt "Chi2TestTableView|"
+msgid "Delete Column"
+msgstr "Verwijder kolom"
+
+msgctxt "Chi2TestTableView|"
+msgid "Reset"
+msgstr "Herstel"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Computed Column: "
+msgstr "Berekende Kolom: "
+
+msgctxt "ComputeColumnWindow|"
+msgid "Select a column"
+msgstr "Selecteer een kolom"
+
+msgctxt "ComputeColumnWindow|"
+msgid "absolute value"
+msgstr "absolute waarde"
+
+msgctxt "ComputeColumnWindow|"
+msgid "standard deviation"
+msgstr "standaard afwijking"
+
+msgctxt "ComputeColumnWindow|"
+msgid "variance"
+msgstr "variantie"
+
+msgctxt "ComputeColumnWindow|"
+msgid "summation"
+msgstr "sommering"
+
+msgctxt "ComputeColumnWindow|"
+msgid "product of values"
+msgstr "product van waarden"
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns minimum of values"
+msgstr "retourneert minimum van waarden"
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns maximum of values"
+msgstr "retourneert maximum van waarden"
+
+msgctxt "ComputeColumnWindow|"
+msgid "mean"
+msgstr "gemiddelde"
+
+msgctxt "ComputeColumnWindow|"
+msgid "rounds y to n decimals"
+msgstr "rond y af tot n decimalen"
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns number of elements in y"
+msgstr "retourneert aantal elementen in y"
+
+msgctxt "ComputeColumnWindow|"
+msgid "median"
+msgstr "mediaan"
+
+msgctxt "ComputeColumnWindow|"
+msgid "natural logarithm"
+msgstr "natuurlijke logaritme"
+
+msgctxt "ComputeColumnWindow|"
+msgid "base 2 logarithm"
+msgstr "grondtal 2 logaritme"
+
+msgctxt "ComputeColumnWindow|"
+msgid "base 10 logarithm"
+msgstr "grondtal 10 logaritme"
+
+msgctxt "ComputeColumnWindow|"
+msgid "logarithm of y in 'base'"
+msgstr "logaritme van y in 'grondtal'"
+
+msgctxt "ComputeColumnWindow|"
+msgid "exponential"
+msgstr "exponentieel"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
+"correlations, numbers between -1 and 1 to the real line"
+msgstr ""
+"Fisher's Z-transformatie (dit is de inverse hyperbolische tanges) om "
+"correlaties te transformeren, getallen tussen -1 en 1 naar reële getallen"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
+"real numbers to numbers between -1 and 1"
+msgstr ""
+"Fisher's Z-transformatie (dit is de hyperbolische tanges) om reële getallen "
+"te transformeren naar getallen tussen -1 en 1"
+
+msgctxt "ComputeColumnWindow|"
+msgid "break your data up in numBreaks levels"
+msgstr "splits uw gegevens op in aantalSplits niveaus"
+
+msgctxt "ComputeColumnWindow|"
+msgid "replace any missing values (NA) in column by the value in replaceWith"
+msgstr ""
+"vervang iedere ontbrekende waarde (NA) in de kolom door de waarde in "
+"vervangMet"
+
+msgctxt "ComputeColumnWindow|"
+msgid "if-else statement"
+msgstr "if-else statement"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from a Gaussian distribution with specified mean and standard "
+"deviation sd"
+msgstr ""
+"genereert gegevens van een Gauss verdeling met gespecificeerd gemiddelde en "
+"standaard deviatie"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from t distribution with degrees of freedom df and non-"
+"centrality parameter ncp"
+msgstr ""
+"genereert gegevens van een t-verdeling met gespecificeerd aantal "
+"vrijheidsgraden vg en niet-centrale parameter ncp"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from a chi-squared distribution with degrees of freedom df "
+"and non-centrality parameter ncp"
+msgstr ""
+"genereert data met een chi-kwadraat verdeling met vrijheidsgraden vg en niet-"
+"centraliteitsparameter ncp"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from an F distribution with specified degrees of freedoms "
+"df1, df2 and non-centrality parameter ncp"
+msgstr ""
+"genereert data met een F verdeling met een gespecificeerd aantal "
+"vrijheidsgraden vg 1, vg 2 en niet-centraliteitsparameter ncp"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from a binomial distribution with specified trials and "
+"probability prob"
+msgstr ""
+"genereert data met een binomiaalverdeling met gespecificeerde steekproeven "
+"en kans"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from a negative binomial distribution with specified trials "
+"and probability prob"
+msgstr ""
+"genereert data met een negatieve binomiaalverdeling met gespecificeerde "
+"steekproeven en kans"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from a geometric distribution with specified probability prob"
+msgstr ""
+"genereert data met een geometrische verdeling met gespecificeerde kans prob"
+
+msgctxt "ComputeColumnWindow|"
+msgid "generates data from a Poisson distribution with specified rate lambda"
+msgstr ""
+"genereert data met een Poissonverdeling met een gespecificeerde snelheid/ "
+"intensiteit lambda"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from a beta distribution with specified shapes alpha and beta"
+msgstr ""
+"genereert data met een betaverdeling met gespecificeerde vormen alpha en beta"
+
+msgctxt "ComputeColumnWindow|"
+msgid "generates data from a uniform distribution between min and max"
+msgstr "genereert data met een uniforme verdeling tussen min en max"
+
+msgctxt "ComputeColumnWindow|"
+msgid "generates data from a gamma distribution with specified shape and scale"
+msgstr ""
+"genereert data met een gammaverdeling met gespecificeerde vorm en schaal"
+
+msgctxt "ComputeColumnWindow|"
+msgid "generates data from an exponential distribution with specified rate"
+msgstr ""
+"genereert data met een exponentiële verdeling met een gespecificeerde "
+"snelheid/ intensiteit"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from a log-normal distribution with specified logarithmic "
+"mean meanLog and standard deviation sdLog"
+msgstr ""
+"genereert data met een log-normaalverdeling met een gespecificeerd "
+"logaritmisch gemiddelde meanLog en standaardafwijking sdLog"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"generates data from a Weibull distribution with specified shape and scale"
+msgstr ""
+"genereert data met een Weibullverdeling met gespecificeerde vorm en schaal"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Remove computed column"
+msgstr "Verwijder berekende kolom"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Show generated R code"
+msgstr "Toon gegenereerde R code"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Compute column"
+msgstr "Bereken kolom"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Column computed"
+msgstr "Kolom berekend"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Click to compute column"
+msgstr "Klik om kolom te berekenen"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Column (in line to be) computed"
+msgstr "Kolom (in regel die wordt) berekend"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Open Documentation"
+msgstr "Open Documentatie"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Close computed column window"
+msgstr "Sluit scherm berekende kolom"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Computed Column Changed"
+msgstr "Berekende Kolom Veranderd"
+
+msgctxt "ComputeColumnWindow|"
+msgid ""
+"There are unapplied changes to your computed column; what would you like to "
+"do?"
+msgstr ""
+"Er zijn niet toegepaste veranderingen in de berekende kolom; wat wil u "
+"hiermee doen?"
+
+msgctxt "ContrastsList|"
+msgid "none"
+msgstr "geen"
+
+msgctxt "ContrastsList|"
+msgid "deviation"
+msgstr "afwijking"
+
+msgctxt "ContrastsList|"
+msgid "simple"
+msgstr "enkelvoudig"
+
+msgctxt "ContrastsList|"
+msgid "difference"
+msgstr "verschil"
+
+msgctxt "ContrastsList|"
+msgid "Helmert"
+msgstr "Helmert"
+
+msgctxt "ContrastsList|"
+msgid "repeated"
+msgstr "herhaald"
+
+msgctxt "ContrastsList|"
+msgid "polynomial"
+msgstr "polynoom"
+
+msgctxt "ContrastsList|"
+msgid "custom"
+msgstr "handmatig"
+
+msgctxt "ContrastsList|"
+msgid "Factors"
+msgstr "Factoren"
+
+#, qt-format
+msgctxt "ContrastsList|"
+msgid "Custom for %1"
+msgstr "Aangepast voor %1"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Computed Column"
+msgstr "Maak Berekende Kolom"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Name:"
+msgstr "Naam:"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Column name is already used, please choose a different one."
+msgstr "Kolomnaam is al in gebruik, kies a.u.b. een andere naam."
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Define column through R code"
+msgstr "Definieer kolom met R code"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Define column through drag and drop formulas"
+msgstr "Definieer kolom met sleep en plaats formules"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Scale"
+msgstr "Schaal"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Ordinal"
+msgstr "Ordinaal"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Nominal"
+msgstr "Nominaal"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Text"
+msgstr "Tekst"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Open Documentation"
+msgstr "Open Documentatie"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Column"
+msgstr "Maak Kolom"
+
+#, qt-format
+msgctxt "CreateComputeColumnDialog|"
+msgid "Click here to create your new computed column '%1'"
+msgstr "Klik hier om de nieuwe berekende kolom '%1' te maken"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Enter a valid (unused) name for computed column"
+msgstr "Voer een geldige (ongebruikte) naam in voor de berekende kolom"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Close without creating a computed column"
+msgstr "Sluit zonder een berekende kolom te maken"
+
+msgctxt "CustomContrastsTableView|"
+msgid "Add Contrast"
+msgstr "Voeg contrast toe"
+
+msgctxt "CustomContrastsTableView|"
+msgid "Delete Contrast"
+msgstr "Verwijder contrast"
+
+msgctxt "CustomContrastsTableView|"
+msgid "Reset"
+msgstr "Herstel"
+
+msgctxt "DataTableView|"
+msgid "Hide filter"
+msgstr "Verberg filter"
+
+msgctxt "DataTableView|"
+msgid "Show filter"
+msgstr "Toon filter"
+
+msgctxt "DataTableView|"
+msgid "Add computed column"
+msgstr "Voeg berekende kolom toe"
+
+msgctxt "DataTableView|"
+msgid "Click here to change column type"
+msgstr "Klik hier om kolomtype te veranderen"
+
+msgctxt "DataTableView|"
+msgid "Click here to change the columns formulas"
+msgstr "Klik hier om de kolomformules te veranderen"
+
+msgctxt "DataTableView|"
+msgid "Click here to change labels"
+msgstr "Klik hier om de labels te veranderen"
+
+msgctxt "DataTableView|"
+msgid " or inspect filter"
+msgstr " of inspecteer filter"
+
+#, qt-format
+msgctxt "BreadCrumbs|"
+msgid "Back to %1"
+msgstr "Terug naar %1"
+
+msgctxt "BreadCrumbs|"
+msgid "You are here"
+msgstr "U bent hier"
+
+msgctxt "Computer|"
+msgid "Recent Folders"
+msgstr "Recente mappen"
+
+msgctxt "Computer|"
+msgid "Browse"
+msgstr "Blader"
+
+msgctxt "CurrentFile|"
+msgid "Current data file for synchronization"
+msgstr "Huidig databestand voor synchronisatie"
+
+msgctxt "DataLibrary|"
+msgid "Data Library"
+msgstr "Databibliotheek"
+
+msgctxt "ListItem|"
+msgid "Synchronize with this Data File"
+msgstr "Synchroniseer met dit databestand"
+
+msgctxt "ListItem|"
+msgid "Navigate to folder"
+msgstr "Navigeer naar map"
+
+msgctxt "ListItem|"
+msgid "Open JASP file"
+msgstr "Open JASP-bestand"
+
+msgctxt "ListItem|"
+msgid "Open data file"
+msgstr "Open databestand"
+
+msgctxt "MenuHeader|"
+msgid "Show info about these preferences"
+msgstr "Toon informatie over deze voorkeuren"
+
+msgctxt "OSF|"
+msgid "Open Science Framework"
+msgstr "Open Science Framework"
+
+msgctxt "OSF|"
+msgid "Logout"
+msgstr "Afmelden"
+
+msgctxt "OSF|"
+msgid "Create Folder"
+msgstr "Maak nieuwe map"
+
+msgctxt "OSF|"
+msgid "Foldername"
+msgstr "Naam van de map"
+
+msgctxt "OSF|"
+msgid "Filename"
+msgstr "Bestandsnaam"
+
+msgctxt "OSF|"
+msgid "Save"
+msgstr "Bewaar"
+
+msgctxt "OSFLogin|"
+msgid "OSF"
+msgstr "OSF"
+
+msgctxt "OSFLogin|"
+msgid "Sign in with your OSF account to continue"
+msgstr "Meld u aan met uw OSF-account"
+
+msgctxt "OSFLogin|"
+msgid "Sign in"
+msgstr "Aanmelden"
+
+msgctxt "OSFLogin|"
+msgid "Remember me"
+msgstr "Onthoud gegevens"
+
+msgctxt "OSFLogin|"
+msgid "About the OSF"
+msgstr "Over het OSF"
+
+msgctxt "OSFLogin|"
+msgid "Register"
+msgstr "Registreer"
+
+msgctxt "PrefsAdvanced|"
+msgid "Advanced Preferences"
+msgstr "Geavanceerde voorkeuren"
+
+msgctxt "PrefsAdvanced|"
+msgid "Modules options"
+msgstr "Module-opties"
+
+msgctxt "PrefsAdvanced|"
+msgid "Remember Enabled Modules"
+msgstr "Bewaar Gekozen Modules"
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Continue where you left of the next time JASP starts.\n"
+"Enabling this option makes JASP remember which Modules you've enabled."
+msgstr ""
+"Ga de volgende keer dat JASP start verder waar u was gebleven. \n"
+"Als u deze optie aanzet, onthoudt JASP welke modules u aan heeft gezet."
+
+msgctxt "PrefsAdvanced|"
+msgid "Developer mode (Beta version)"
+msgstr "Ontwikkelaarsmodus (betaversie)"
+
+msgctxt "PrefsAdvanced|"
+msgid "To use JASP Modules enable this option."
+msgstr "Schakel deze optie in om JASP-modules te gebruiken."
+
+msgctxt "PrefsAdvanced|"
+msgid "Select developer folder"
+msgstr "Selecteer ontwikkelaarsmap"
+
+msgctxt "PrefsAdvanced|"
+msgid "Browse to your JASP Module folder."
+msgstr "Blader naar uw JASP-modulemap."
+
+msgctxt "PrefsAdvanced|"
+msgid "Change the CRAN repository: "
+msgstr "Verander de CRAN locatie: "
+
+msgctxt "PrefsAdvanced|"
+msgid "Generate markdown files for help"
+msgstr "Genereer markdown bestanden voor help"
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Enabling this will generate markdown helpfile from the info at qml options."
+msgstr ""
+"Als deze optie is ingeschakeld worden markdown helpbestanden gegenereerd m.b."
+"v. de informatie in de qml opties."
+
+msgctxt "PrefsAdvanced|"
+msgid "Windows workarounds"
+msgstr "Tijdelijke oplossingen voor Windows"
+
+msgctxt "PrefsAdvanced|"
+msgid "Handling LC_CTYPE"
+msgstr "Behandeling van LC_CTYPE"
+
+msgctxt "PrefsAdvanced|"
+msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
+msgstr "Laat JASP de beste waarde voor LC_TYPE bepalen (Aanbevolen!)"
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Check the install and user directory path for compatibility with LC_CTYPE=\"C"
+"\" and set if reasonable."
+msgstr ""
+"Controleer het pad van de installatie- en gebruikersmap op compatibiliteit "
+"met LC_CTYPE=\"C\" en gebruik dit als het redelijk is."
+
+msgctxt "PrefsAdvanced|"
+msgid "Always set LC_CTYPE to \"C\"."
+msgstr "Zet LC_CTYPE altijd op \"C\"."
+
+msgctxt "PrefsAdvanced|"
+msgid "See the documentation for more info."
+msgstr "Zie de documentatie voor meer informatie."
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"If this is enabled and you have non-ascii characters in your install path "
+"JASP won't work anymore.  If you only have non-ascii characters in your "
+"username then installing modules will probably break."
+msgstr ""
+"Als dit is ingeschakeld en je hebt non-ascii karakters in je installatiepad "
+"zal JASP niet meer werken.  Als je alleen non-ascii karakters in je "
+"gebruikersnaam hebt, dan zal het installeren van modules waarschijnlijk "
+"mislukken."
+
+msgctxt "PrefsAdvanced|"
+msgid "Keep LC_CTYPE at systemdefault."
+msgstr "Houd LC_TYPE waarde zoals systeemvoorkeur."
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Enabling this will make certain characters in the results look weird, but at "
+"least you can use JASP if you installed it in a folder with non-ascii "
+"characters in the path. Sorry for the inconvenience, we are working on it "
+"and hopefully have this fixed next release."
+msgstr ""
+"Door dit in te schakelen zullen bepaalde karakters in de resultaten er raar "
+"uitzien, maar JASPis in ieder geval te gebruiken JASP geïnstalleerd is in "
+"een map met non-ascii karakters. Sorry voor dit ongemak, hier wordt aan "
+"gewerkt en hopelijk hebben we de volgende release een oplossing."
+
+msgctxt "PrefsAdvanced|"
+msgid "Logging options"
+msgstr "Logopties"
+
+msgctxt "PrefsAdvanced|"
+msgid "Log to file"
+msgstr "Log naar een bestand"
+
+msgctxt "PrefsAdvanced|"
+msgid "To store debug-logs of JASP in a file, check this box."
+msgstr "Om debug-logbestanden op te slaan, activeer deze box."
+
+msgctxt "PrefsAdvanced|"
+msgid "Max logfiles to keep: "
+msgstr "Maximum aantal logbestanden: "
+
+msgctxt "PrefsAdvanced|"
+msgid "Show logs"
+msgstr "Toon logs"
+
+#, fuzzy
+msgctxt "PrefsAdvanced|"
+msgid "Engine options"
+msgstr "Logopties"
+
+#, fuzzy
+msgctxt "PrefsAdvanced|"
+msgid "Maximum # of engines: "
+msgstr "Maximale pastijd"
+
+msgctxt "PrefsData|"
+msgid "Data Preferences"
+msgstr "Datavoorkeuren"
+
+msgctxt "PrefsData|"
+msgid "Synchronize automatically on data file save"
+msgstr "Synchroniseer automatisch bij opslaan bestand"
+
+msgctxt "PrefsData|"
+msgid "Use default spreadsheet editor"
+msgstr "Gebruik standaard spreadsheeteditor"
+
+msgctxt "PrefsData|"
+msgid "Select custom editor"
+msgstr "Kies andere editor"
+
+msgctxt "PrefsData|"
+msgid "Import threshold between Categorical or Scale"
+msgstr "Grenswaarde bij import tussen categorisch en continu"
+
+msgctxt "PrefsData|"
+msgid ""
+"Threshold number of unique integers before classifying a variable as "
+"'scale'.\n"
+"You need to reload your data to take effect! Check help for more info."
+msgstr ""
+"Drempelwaarde aantal unieke gehele getallen voor het classificeren van een "
+"variabele als 'schaal'.\n"
+"U moet uw gegevens opnieuw laden om effect te hebben! Controleer de help "
+"voor meer informatie."
+
+msgctxt "PrefsMissingValues|"
+msgid "Missing Value List"
+msgstr "Lijst met ontbrekende waarden"
+
+msgctxt "PrefsMissingValues|"
+msgid "Remove missing value"
+msgstr "Verwijder ontbrekende waarde"
+
+msgctxt "PrefsMissingValues|"
+msgid "Reset"
+msgstr "Herstel"
+
+msgctxt "PrefsResults|"
+msgid "Results Preferences"
+msgstr "Resultaatvoorkeuren"
+
+msgctxt "PrefsResults|"
+msgid "Table options"
+msgstr "Tabelopties"
+
+msgctxt "PrefsResults|"
+msgid "Display exact p-values"
+msgstr "Toon exacte p-waarden"
+
+msgctxt "PrefsResults|"
+msgid "Fix the number of decimals"
+msgstr "Vast aantal decimalen"
+
+msgctxt "PrefsResults|"
+msgid "Plot options"
+msgstr "Grafiekopties"
+
+msgctxt "PrefsResults|"
+msgid "Use PPI of screen in plots: "
+msgstr "Gebruik PPI van het scherm in grafieken: "
+
+msgctxt "PrefsResults|"
+msgid "Use the Pixels Per Inch of your screen to render your plots."
+msgstr "Gebruik PPI van het scherm in grafieken."
+
+msgctxt "PrefsResults|"
+msgid "Custom PPI: "
+msgstr "Aangepaste PPI: "
+
+msgctxt "PrefsResults|"
+msgid "Image background color"
+msgstr "Achtergrondkleur afbeelding"
+
+msgctxt "PrefsResults|"
+msgid "White"
+msgstr "Wit"
+
+msgctxt "PrefsResults|"
+msgid ""
+"This makes the background of all plots white, quite useful if you want to "
+"use it in LaTeX or submit it to a journal."
+msgstr ""
+"Dit maakt de achtergrond van alle grafieken wit. Handig voor het gebruik in "
+"LaTeX of voor publicatie."
+
+msgctxt "PrefsResults|"
+msgid "Transparent"
+msgstr "Transparant"
+
+msgctxt "PrefsResults|"
+msgid ""
+"This makes the background of all plots transparent, quite useful if you want "
+"to use it seamlessly on any background that isn't white."
+msgstr ""
+"Dit maakt de achtergrond van alle grafieken transparant. Vooral zinvol om te "
+"gebruiken bij een achtergrond die niet wit is."
+
+msgctxt "PrefsUI|"
+msgid "User Interface options"
+msgstr "Gebruikersinterface opties"
+
+msgctxt "PrefsUI|"
+msgid "Fonts"
+msgstr "Lettertypes"
+
+msgctxt "PrefsUI|"
+msgid "Interface:"
+msgstr "Interface:"
+
+#, qt-format
+msgctxt "PrefsUI|"
+msgid "default: %1"
+msgstr "standaard: %1"
+
+msgctxt "PrefsUI|"
+msgid "R, JAGS or Lavaan code:"
+msgstr "R, JAGS of Lavaan code:"
+
+msgctxt "PrefsUI|"
+msgid "Result & Help:"
+msgstr "Resultaat & Help:"
+
+msgctxt "PrefsUI|"
+msgid "Themes"
+msgstr "Thema's"
+
+msgctxt "PrefsUI|"
+msgid "Light Theme"
+msgstr "Licht thema"
+
+msgctxt "PrefsUI|"
+msgid ""
+"Switches to a light theme, this is the default and original flavour of JASP."
+msgstr ""
+"Schakelt over naar een lichte achtergrond, dit is de standaard en "
+"oorspronkelijke instelling van JASP."
+
+msgctxt "PrefsUI|"
+msgid "Dark Theme"
+msgstr "Donker thema"
+
+msgctxt "PrefsUI|"
+msgid ""
+"Switches to a dark theme, makes JASP a lot easier on the eyes for those "
+"night owls out there."
+msgstr ""
+"Schakelt naar een donker thema, maakt JASP een stuk makkelijker voor de ogen "
+"van nachtbrakers."
+
+msgctxt "PrefsUI|"
+msgid "Preferred Language"
+msgstr "Voorkeurstaal"
+
+msgctxt "PrefsUI|"
+msgid "Choose Language  "
+msgstr "Kies taal  "
+
+msgctxt "PrefsUI|"
+msgid "Miscellaneous options"
+msgstr "Overige opties"
+
+msgctxt "PrefsUI|"
+msgid "Zoom (%): "
+msgstr "Zoom (%): "
+
+msgctxt "PrefsUI|"
+msgid ""
+"Increase or decrease the size of the interface elements (text, buttons, etc)."
+msgstr ""
+"Vergroot of verklein de grootte van de interface-elementen (tekst, knoppen, "
+"etc.)."
+
+msgctxt "PrefsUI|"
+msgid "Scroll speed (pix/s): "
+msgstr "Scrollsnelheid (pix/s): "
+
+msgctxt "PrefsUI|"
+msgid ""
+"Set the speed with which you can scroll in the options, dataviewer and other "
+"places."
+msgstr ""
+"Stel de snelheid in waarmee u scrolt in de opties, dataviewer en andere "
+"plekken."
+
+msgctxt "PrefsUI|"
+msgid "Safe Graphics Mode"
+msgstr "Veilige Grafische Modus"
+
+msgctxt "PrefsUI|"
+msgid ""
+"Switches to a \"safer\" mode for graphics aka software rendering.\n"
+"It will make your interface slower but if you have some problems (weird "
+"glitches, cannot see results or anything even) might fix them.\n"
+"Analyses will still be just as fast though."
+msgstr ""
+"Schakelt naar een \"veiligere\" modus voor grafische/software rendering.\n"
+"Hierdoor wordt de interface langzamer, maar als zich problemen voordoen "
+"(vreemde glitches, onzichtbare resultaten, etc.) worden deze misschien "
+"opgelost.\n"
+"Analyses zijn echter even snel."
+
+msgctxt "PrefsUI|"
+msgid "Disable Animations"
+msgstr "Schakel Animaties uit"
+
+msgctxt "PrefsUI|"
+msgid ""
+"Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
+msgstr ""
+"Schakelt alle animaties uit, dit is impliciet wanneer \"Veilige Grafische "
+"Mode\" aan staat."
+
+msgctxt "PrefsUI|"
+msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
+msgstr "Animaties al uitgezet omdat de \"Veilige Grafische Mode\" aan staat"
+
+msgctxt "PrefsUI|"
+msgid "Use Native File Dialogs"
+msgstr "Gebruik systeembestandsdialoogvensters"
+
+msgctxt "PrefsUI|"
+msgid ""
+"If disabled it will not use your operating system's file dialogs but those "
+"made by Qt. This might solve some problems on Windows where JASP crashes on "
+"pressing \"Browse\"."
+msgstr ""
+"Als deze optie uitgevinkt is dan wordt niet het bestandsdialoogvenster van "
+"het besturingssysteem gebruikt maar die van Qt zelf. Dit zou enkele "
+"problemen op Windows kunnen oplossen waar JASP crasht wanneer op de \"Blader"
+"\" knop gedrukt wordt."
+
+msgctxt "RecentFiles|"
+msgid "Recent Files"
+msgstr "Laatst geopend"
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Computed columns code clear(ed)"
+msgstr "Code berekende kolommen leeg(gemaakt)"
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Computed columns code applied"
+msgstr "Code berekende kolommen toegepast"
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Please enter all arguments - see fields marked in red."
+msgstr "Vul alle argumenten in aub - zie de velden in rood gemarkeerd."
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Only one formula per computed column allowed."
+msgstr "Slechts één formule per berekende kolom toegestaan."
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Welcome to the drag and drop computed column constructor!"
+msgstr "Welkom bij de vereenvoudigde berekende kolom maker!"
+
+msgctxt "DropTrash|"
+msgid "Dump unwanted snippets here; double-click to erase the entire slate"
+msgstr "Plak ongewenste snippers hier; dubbel-klik om alles te verwijderen"
+
+msgctxt "FilterConstructor|"
+msgid "Filter cleared<br>"
+msgstr "Filter geleegd<br>"
+
+msgctxt "FilterConstructor|"
+msgid "Filter applied<br>"
+msgstr "Filter toegepast<br>"
+
+msgctxt "FilterConstructor|"
+msgid "Please enter all arguments - see fields marked in red.<br>"
+msgstr "Vul alle argumenten in aub - zie de roodgemarkeerde velden.<br>"
+
+msgctxt "FilterConstructor|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter.<br>"
+msgstr ""
+"Formule geeft geen verzameling logische waarden terug, en kan daarom niet "
+"gebruikt worden in het filter.<br>"
+
+msgctxt "FilterConstructor|"
+msgid "Welcome to the drag and drop filter!<br>"
+msgstr "Welkom bij het vereenvoudigde gegevensfilter!<br>"
+
+msgctxt "OperatorSelector|"
+msgid "Addition"
+msgstr "Optellen"
+
+msgctxt "OperatorSelector|"
+msgid "Subtraction"
+msgstr "Aftrekken"
+
+msgctxt "OperatorSelector|"
+msgid "Multiplication"
+msgstr "Vermenigvuldigen"
+
+msgctxt "OperatorSelector|"
+msgid "Division"
+msgstr "Delen door"
+
+msgctxt "OperatorSelector|"
+msgid "Power (2^3 returns 8)"
+msgstr "Macht (2^3 is 8)"
+
+msgctxt "OperatorSelector|"
+msgid "Square root"
+msgstr "Wortel"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr "Modulo: geeft het restant van een deling. 3%2 is 1"
+
+msgctxt "OperatorSelector|"
+msgid "returns logicals and can be the root of a filter formula"
+msgstr "geeft logicals en kan de basis zijn van een formule voor een filter"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Equality: %1"
+msgstr "Gelijkheid: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Inequality: %1"
+msgstr "Ongelijkheid: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Less than: %1"
+msgstr "Kleiner dan: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Less than or equal to: %1"
+msgstr "Kleiner dan of gelijk aan: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Greater than: %1"
+msgstr "Groter dan: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Greater than or equal to: %1"
+msgstr "Groter dan of gelijk aan: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "And: %1"
+msgstr "En: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Or: %1"
+msgstr "Of: %1"
+
+msgctxt "OperatorSelector|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr "Splits: voert een filter uit op elke groep"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "not: %1"
+msgstr "niet: %1"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Addition"
+msgstr "Optellen"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Subtraction"
+msgstr "Aftrekken"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Multiplication"
+msgstr "Vermenigvuldigen"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Division"
+msgstr "Delen door"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Power (2^3 returns 8)"
+msgstr "Macht (2^3 is 8)"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Square root"
+msgstr "Wortel"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr "Modulo: geeft het restant van een deling. 3%2 is 1"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "returns logicals"
+msgstr "geeft logicals"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Equality: %1"
+msgstr "Gelijkheid: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Inequality: %1"
+msgstr "Ongelijkheid: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Less than: %1"
+msgstr "Kleiner dan: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Less than or equal to: %1"
+msgstr "Kleiner dan of gelijk aan: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Greater than: %1"
+msgstr "Groter dan: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Greater than or equal to: %1"
+msgstr "Groter dan of gelijk aan: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "And: %1"
+msgstr "En: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Or: %1"
+msgstr "Of: %1"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr "Splits: voert een filter uit op elke groep"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Not: %1"
+msgstr "Niet: %1"
+
+msgctxt "FilterWindow|"
+msgid "absolute value"
+msgstr "absolute waarde"
+
+msgctxt "FilterWindow|"
+msgid "standard deviation"
+msgstr "standaard afwijking"
+
+msgctxt "FilterWindow|"
+msgid "variance"
+msgstr "variantie"
+
+msgctxt "FilterWindow|"
+msgid "summation"
+msgstr "optelling"
+
+msgctxt "FilterWindow|"
+msgid "product of values"
+msgstr "product van waarden"
+
+msgctxt "FilterWindow|"
+msgid "returns minimum of values"
+msgstr "retourneert minimum van waarden"
+
+msgctxt "FilterWindow|"
+msgid "returns maximum of values"
+msgstr "retourneert maximum van waarden"
+
+msgctxt "FilterWindow|"
+msgid "mean"
+msgstr "gemiddelde"
+
+msgctxt "FilterWindow|"
+msgid "rounds y to n decimals"
+msgstr "rond y af tot n decimalen"
+
+msgctxt "FilterWindow|"
+msgid "returns number of elements in y"
+msgstr "retourneert aantal elementen in y"
+
+msgctxt "FilterWindow|"
+msgid "median"
+msgstr "mediaan"
+
+msgctxt "FilterWindow|"
+msgid "if-else statement"
+msgstr "if-else statement"
+
+msgctxt "FilterWindow|"
+msgid "Filter Changed"
+msgstr "Filter gewijzigd"
+
+msgctxt "FilterWindow|"
+msgid "There are unapplied changes to your filter; what would you like to do?"
+msgstr "Er zijn niet-toegepaste veranderingen aan uw filter; wat wilt u doen?"
+
+msgctxt "FilterWindow|"
+msgid "Switch to the R filter"
+msgstr "Wissel naar het R filter"
+
+msgctxt "FilterWindow|"
+msgid "Hide rows that were filtered out."
+msgstr "Verberg rijen die eruit zijn gefilterd."
+
+msgctxt "FilterWindow|"
+msgid "Show rows that were filtered out."
+msgstr "Toon rijen die eruit zijn gefilterd."
+
+msgctxt "FilterWindow|"
+msgid "Apply pass-through filter"
+msgstr "Pas doorlaatfilter toe"
+
+msgctxt "FilterWindow|"
+msgid "Filter applied"
+msgstr "Filter toegepast"
+
+msgctxt "FilterWindow|"
+msgid "Click to apply filter"
+msgstr "Klik om filter toe te passen"
+
+msgctxt "FilterWindow|"
+msgid "Filter is already applied"
+msgstr "Filter is al toegepast"
+
+msgctxt "FilterWindow|"
+msgid "Open Documentation"
+msgstr "Open documentatie"
+
+msgctxt "FilterWindow|"
+msgid "Hide filter"
+msgstr "Verberg filter"
+
+msgctxt "FilterWindow|"
+msgid "Reset all checkmarks on all labels"
+msgstr "Herstel alle vinkjes op alle labels"
+
+msgctxt "FilterWindow|"
+msgid "Switch to the drag and drop filter"
+msgstr "Wissel naar het drag en drop filter"
+
+msgctxt "FilterWindow|"
+msgid "Reset to default filter"
+msgstr "Herstel naar standaardfilter"
+
+msgctxt "FilterWindow|"
+msgid "Default filter applied"
+msgstr "Standaardfilter toegepast"
+
+msgctxt "FilterWindow|"
+msgid "Filter is unchanged from default"
+msgstr "Filter is onveranderd van standaard"
+
+msgctxt "HelpWindow|"
+msgid "JASP Help"
+msgstr "JASP Documentatie"
+
+msgctxt "HelpWindow|"
+msgid "Search for:"
+msgstr "Zoek naar:"
+
+msgctxt "JagsTableView|"
+msgid "Add Data"
+msgstr "Voeg data toe"
+
+msgctxt "JagsTableView|"
+msgid "Delete Data"
+msgstr "Verwijder Data"
+
+msgctxt "JagsTableView|"
+msgid "Reset"
+msgstr "Herstel"
+
+msgctxt "JASPDataView|"
+msgid "Double click to edit data"
+msgstr "Dubbel-klik om gegevens te wijzigen"
+
+msgctxt "MainPage|"
+msgid "Hide data"
+msgstr "Verberg data"
+
+msgctxt "MainPage|"
+msgid "Show data"
+msgstr "Toon data"
+
+msgctxt "MainPage|"
+msgid "Resize data/results"
+msgstr "Pas grootte data/resultaten aan"
+
+msgctxt "MainPage|"
+msgid "Drag to show data"
+msgstr "Sleep om data te tonen"
+
+msgctxt "MainPage|"
+msgid "Results"
+msgstr "Resultaten"
+
+msgctxt "ModuleInstaller|"
+msgid "Browse for JASP Module"
+msgstr "Blader naar JASP Module"
+
+msgctxt "ModuleInstaller|"
+msgid "Select a JASP Module"
+msgstr "Selecteer een JASP-module"
+
+msgctxt "ModuleInstaller|"
+msgid "<i>Browse for a JASP Module to see more information here</i>"
+msgstr "<i>Blader naar een JASP-module om meer informatie te zien</i>"
+
+#, qt-format
+msgctxt "ModuleInstaller|"
+msgid "<i>%1 is not a (correct) JASP Module!</i>"
+msgstr "<i>%1 is geen (correcte) JASP Module!</i>"
+
+msgctxt "ModulesMenu|"
+msgid "Install Module"
+msgstr "Intalleer module"
+
+msgctxt "ModulesMenu|"
+msgid "Install a module"
+msgstr "Installeer een module"
+
+msgctxt "ModulesMenu|"
+msgid "Install Developer Module"
+msgstr "Installeer ontwikkelaarsmodule"
+
+msgctxt "ModulesMenu|"
+msgid "Installing Developer Module"
+msgstr "Installeren ontwikkelaarsmodule"
+
+msgctxt "ModulesMenu|"
+msgid "Select a Developer Module"
+msgstr "Selecteer een ontwikkelaarsmodule"
+
+msgctxt "ModulesMenu|"
+msgid "Install selected developer module"
+msgstr "Installeer geselecteerde ontwikkelaarsmodule"
+
+msgctxt "ModulesMenu|"
+msgid "Installing developer module now"
+msgstr "Ontwikkelaarsmodule aan het installeren"
+
+msgctxt "ModulesMenu|"
+msgid "Select a developer module under Left menu->Preference->Advanced"
+msgstr ""
+"Selecteer een ontwikkelaarsmodule onder Linker menu -> Voorkeuren -> "
+"Geavanceerd"
+
+msgctxt "ModulesMenu|"
+msgid "Ready"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "ModulesMenu|"
+msgid "Installing: %1\n"
+msgstr "Installeren:"
+
+#, fuzzy, qt-format
+msgctxt "ModulesMenu|"
+msgid "Loading: %1\n"
+msgstr "Laden:"
+
+msgctxt "ModulesMenu|"
+msgid "Loaded and ready for use!"
+msgstr "Geladen en klaar om te gebruiken!"
+
+msgctxt "ModulesMenu|"
+msgid "Error occurred!"
+msgstr "Fout opgetreden!"
+
+msgctxt "ModulesMenu|"
+msgid "Not ready for use?"
+msgstr "Nier klaar voor gebruik?"
+
+msgctxt "ModulesMenu|"
+msgid "Uninstall module "
+msgstr "Deïnstalleer module "
+
+msgctxt "RCommanderWindow|"
+msgid "R in JASP"
+msgstr "R in JASP"
+
+msgctxt "RCommanderWindow|"
+msgid "Welcome to R in JASP!"
+msgstr "Welkom bij R in JASP!"
+
+msgctxt "RCommanderWindow|"
+msgid ""
+"Enter your R code here.\n"
+"The data is fully available as 'data' and filtered as 'filteredData'."
+msgstr ""
+"Voer hier uw R-code in.\n"
+"De gegevens zijn volledig beschikbaar als 'data' en gefilterd als "
+"'filteredData'."
+
+msgctxt "RCommanderWindow|"
+msgid "Enter your R code here."
+msgstr "Voer hier uw R-code in."
+
+msgctxt "RCommanderWindow|"
+msgid "Run Code"
+msgstr "Voer code uit"
+
+msgctxt "RCommanderWindow|"
+msgid "Pressing Ctrl+Enter or F5 will also run the code"
+msgstr "Als u op Ctrl+Enter of F5 drukt, wordt de code ook uitgevoerd"
+
+msgctxt "RCommanderWindow|"
+msgid "Clear Output"
+msgstr "Wis uitvoer"
+
+msgctxt "RCommanderWindow|"
+msgid "Cleared..."
+msgstr "Gewist..."
+
+msgctxt "RibbonBar|"
+msgid "Show Modules Menu"
+msgstr "Geef modulemenu weer"
+
+msgctxt "SaveDiscardCancelDialog|"
+msgid "Changes were made"
+msgstr "Er zijn wijzigingen gedaan"
+
+msgctxt "SaveDiscardCancelDialog|"
+msgid "There are unapplied changes; what would you like to do?"
+msgstr "Er zijn niet-toegepaste wijzigingen; wat wilt u doen?"
+
+msgctxt "SaveDiscardCancelDialog|"
+msgid "Apply"
+msgstr "Toepassen"
+
+msgctxt "SaveDiscardCancelDialog|"
+msgid "Discard"
+msgstr "Verwerpen"
+
+msgctxt "SaveDiscardCancelDialog|"
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgctxt "SetSeed|"
+msgid "Repeatability"
+msgstr "Reproduceerbaarheid"
+
+msgctxt "SetSeed|"
+msgid "Set seed:"
+msgstr "Gebruik toevalsgenerator beginwaarde:"
+
+msgctxt "SimpleTableView|"
+msgid "Add Column"
+msgstr "Voeg kolom toe"
+
+msgctxt "SimpleTableView|"
+msgid "Delete Column"
+msgstr "Verwijder kolom"
+
+msgctxt "SimpleTableView|"
+msgid "Reset"
+msgstr "Herstel"
+
+msgctxt "SortMenuButton|"
+msgid "Sort the items"
+msgstr "Sorteer de items"
+
+msgctxt "SubjectivePriors|"
+msgid "Prior"
+msgstr "Prior"
+
+msgctxt "SubjectivePriors|"
+msgid "Standardized effect size"
+msgstr "Gestandaardiseerde effectgrootte"
+
+msgctxt "SubjectivePriors|"
+msgid "Default"
+msgstr "Standaard"
+
+msgctxt "SubjectivePriors|"
+msgid "Cauchy"
+msgstr "Cauchy"
+
+msgctxt "SubjectivePriors|"
+msgid "scale"
+msgstr "schaal"
+
+msgctxt "SubjectivePriors|"
+msgid "Informed"
+msgstr "Geïnformeerd"
+
+msgctxt "SubjectivePriors|"
+msgid "location:"
+msgstr "locatie:"
+
+msgctxt "SubjectivePriors|"
+msgid "scale:"
+msgstr "schaal:"
+
+msgctxt "SubjectivePriors|"
+msgid "Normal"
+msgstr "Normaal"
+
+msgctxt "SubjectivePriors|"
+msgid "mean:"
+msgstr "gemiddelde:"
+
+msgctxt "SubjectivePriors|"
+msgid "std:"
+msgstr "std:"
+
+msgctxt "SubjectivePriors|"
+msgid "t"
+msgstr "t"
+
+msgctxt "SubjectivePriors|"
+msgid "df:"
+msgstr "vg:"
+
+msgctxt "SubjectivePriors|"
+msgid "Raw effect size (Dienes)"
+msgstr "Ruwe effectgrootte (Dienes)"
+
+msgctxt "SubjectivePriors|"
+msgid "Uniform"
+msgstr "Uniform"
+
+msgctxt "SubjectivePriors|"
+msgid "lower bound:"
+msgstr "ondergrens:"
+
+msgctxt "SubjectivePriors|"
+msgid "upper bound:"
+msgstr "bovengrens:"
+
+msgctxt "SubjectivePriors|"
+msgid "Half-normal"
+msgstr "Half-normaal"
+
+msgctxt "VariablesWindow|"
+msgid "Filter"
+msgstr "Filter"
+
+msgctxt "VariablesWindow|"
+msgid "Value"
+msgstr "Waarde"
+
+msgctxt "VariablesWindow|"
+msgid "Label"
+msgstr "Label"
+
+msgctxt "VariablesWindow|"
+msgid "Move selected labels up"
+msgstr "Verplaats geselecteerde labels omhoog"
+
+msgctxt "VariablesWindow|"
+msgid "Move selected labels down"
+msgstr "Verplaats geselecteerde labels omlaag"
+
+msgctxt "VariablesWindow|"
+msgid "Reverse order of all labels"
+msgstr "Draai volgorde alle labels om"
+
+msgctxt "VariablesWindow|"
+msgid "Reset all filter checkmarks for this column"
+msgstr "Reset alle filtervinkjes voor deze kolom"
+
+msgctxt "VariablesWindow|"
+msgid "Reset all filter checkmarks for all columns"
+msgstr "Reset alle filtervinkjes voor alle kolommen"
+
+msgctxt "VariablesWindow|"
+msgid "Close this view"
+msgstr "Sluit dit scherm"
+
+msgctxt "WelcomePage|"
+msgid "Welcome to JASP"
+msgstr "Welkom bij JASP"
+
+msgctxt "WelcomePage|"
+msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
+msgstr ""
+"Een nieuwe manier om statistiek te bedrijven. Gratis, vriendelijk en flexibel"
+
+msgctxt "WelcomePage|"
+msgid "Free:"
+msgstr "Gratis:"
+
+msgctxt "WelcomePage|"
+msgid "Friendly:"
+msgstr "Vriendelijk:"
+
+msgctxt "WelcomePage|"
+msgid "Flexible:"
+msgstr "Flexibel:"
+
+msgctxt "WelcomePage|"
+msgid ""
+"JASP is an open-source project with structural support from the University "
+"of Amsterdam."
+msgstr ""
+"JASP is een open-source project dat voortdurend in ontwikkeling is en "
+"structureel ondersteund wordt door de Universiteit van Amsterdam."
+
+msgctxt "WelcomePage|"
+msgid ""
+"JASP has an intuitive interface that was designed with the user in mind."
+msgstr "JASP heeft een intuïtieve en gebruikersvriendelijke interface."
+
+msgctxt "WelcomePage|"
+msgid ""
+"JASP offers standard analysis procedures in both their classical and "
+"Bayesian manifestations."
+msgstr ""
+"JASP biedt standaard analyseprocedures in zowel hun klassieke als "
+"Bayesiaanse manifestaties."
+
+msgctxt "WelcomePage|"
+msgid "So open a data file and take JASP for a spin!"
+msgstr "Dus open een databestand en ontdek de voordelen van JASP!"
+
+msgctxt "WelcomePage|"
+msgid "Click to get latest version"
+msgstr "Klik om de laatste versie te krijgen"
+
+msgctxt "WelcomePage|"
+msgid ""
+"Please keep in mind that this is a preview release and a number of features "
+"are still missing.\n"
+"\n"
+"If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
+"being developed at break-neck speed!"
+msgstr ""
+"Onthoud a.u.b. dat dit een preview-release is en dat een aantal features nog "
+"ontbreekt. \n"
+"\n"
+"Als JASP vandaag nog niet alles kan wat u wilt, probeer het dan morgen "
+"opnieuw:\n"
+"JASP wordt in hoog tempo verder ontwikkeld!"
+
+#, qt-format
+msgctxt "Analysis|"
+msgid "Could not find edit options of plot %1 so plot editing will not work..."
+msgstr ""
+"Kon de aanpassingsopties van plot %1 niet vinden, dus plot aanpassen werkt "
+"niet..."
+
+#, qt-format
+msgctxt "Analysis|"
+msgid ""
+"Could not find set edit options of plot %1 so plot editing will not remember "
+"anything (if it evens works)..."
+msgstr ""
+"Kon geen vaste aanpassingsopties vinden voor plot %1, dus zal plot aanpassen "
+"niets onthouden (als het al werkt)..."
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid "Control with label '%1' has no name"
+msgstr "Control met label '%1' heeft geen naam"
+
+msgctxt "AnalysisForm|"
+msgid "A control has no name"
+msgstr "Een control heeft geen naam"
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid "2 controls have the same name: %1"
+msgstr "Twee controles hebben dezelfde naam: %1"
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid "Cannot find a source %1 for VariableList %2"
+msgstr "Kan geen bron %1 vinden voor VariableList %2"
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid "No drop key found for %1"
+msgstr "Geen drop key gevonden voor %1"
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid ""
+"Component %1 was loaded with the wrong type of value and has been reset to "
+"its default value."
+msgstr "Component %1 heeft een verkeerde type, de standaardwaarde is herstelt."
+
+#, qt-format
+msgctxt "AnalysisForm|"
+msgid ""
+"These components were loaded with the wrong type of value and have been "
+"reset to their default values:%1"
+msgstr ""
+"Deze componenten werden geladen met een verkeerd soort waarde en kregen hun "
+"standaard waarden:%1"
+
+msgctxt "AnalysisForm|"
+msgid ""
+"Many components were loaded with the wrong type of value and have been reset "
+"to their default values."
+msgstr ""
+"Verschillende componenten hebben een verkeerd type, de standaardwaarden zijn "
+"hersteld."
+
+msgctxt "AnalysisForm|"
+msgid "The file probably comes from an older version of JASP."
+msgstr "Dit bestand komt waarschijnlijk van een oudere versie van JASP."
+
+msgctxt "AnalysisForm|"
+msgid ""
+"That means that the results currently displayed do not correspond to the "
+"options selected."
+msgstr ""
+"Dat betekent dat de huidige getoonde resultaten niet overeenkomen met de "
+"geselecteerde opties."
+
+msgctxt "AnalysisForm|"
+msgid "Refreshing the analysis may change the results."
+msgstr "Het vernieuwen van de analyse kan de resultaten wijzigen."
+
+msgctxt "AnalysisForm|"
+msgid "Table"
+msgstr "Tabel"
+
+msgctxt "AnalysisForm|"
+msgid "Plot"
+msgstr "Grafiek"
+
+msgctxt "AnalysisForm|"
+msgid "Collection"
+msgstr "Verzameling"
+
+msgctxt "AnalysisForm|"
+msgid "Result"
+msgstr "Resultaat"
+
+msgctxt "AnalysisForm|"
+msgid "Output"
+msgstr "Uitvoer"
+
+msgctxt "AnalysisForm|"
+msgid "Input"
+msgstr "Invoer"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Option"
+msgstr "Optie"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Section"
+msgstr "Sectie"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "CheckBox"
+msgstr "Selectievak"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Switch"
+msgstr "Schakelaar"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Entry Field"
+msgstr "Invoerveld"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Radio Button"
+msgstr "Keuzerondje"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Radio Buttons"
+msgstr "Keuzerondjes"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Variables"
+msgstr "Variabelen"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "ComboBox"
+msgstr "Keuzelijst"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "RM Factors List"
+msgstr "RM Factoren Lijst"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Input ListView"
+msgstr "Invoer Lijstweergave"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "TableView"
+msgstr "Tabelweergave"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Slider"
+msgstr "Schuifregelaar"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "TextArea"
+msgstr "Tekstveld"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Button"
+msgstr "Knop"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Factors Form"
+msgstr "Factoren Scherm"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "List of Components"
+msgstr "Lijst van Componenten"
+
+#, fuzzy
+msgctxt "JASPControl|"
+msgid "Group Box"
+msgstr "Groep Box"
+
+msgctxt "JASPDoubleValidator|"
+msgid "The value must be "
+msgstr "De waarde moet zijn "
+
+#, qt-format
+msgctxt "JASPDoubleValidator|"
+msgid "&#8805; %1"
+msgstr "&#8805; %1"
+
+#, qt-format
+msgctxt "JASPDoubleValidator|"
+msgid "&gt; %1"
+msgstr "&gt; %1"
+
+msgctxt "JASPDoubleValidator|"
+msgid " and "
+msgstr " en "
+
+#, qt-format
+msgctxt "JASPDoubleValidator|"
+msgid "&#8804; %1"
+msgstr "&#8804; %1"
+
+#, qt-format
+msgctxt "JASPDoubleValidator|"
+msgid "&lt; %1"
+msgstr "&lt; %1"
+
+msgctxt "JASPDoubleValidator|"
+msgid "No validation error"
+msgstr "Geen validatiefout"
+
+msgctxt "KnownIssues|"
+msgid "Problem loading known issues"
+msgstr "Probleem bij het laden van bekende issues"
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version, contact "
+"the JASP team for assistance."
+msgstr ""
+"JASP ondervond een probleem bij het laden van de bekende issues voor deze "
+"versie, neem contact op met het JASP-team voor hulp."
+
+#, qt-format
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version: '%1', "
+"contact the JASP team for assistance."
+msgstr ""
+"JASP ondervond een probleem bij het laden van de bekende issues voor deze "
+"versie: '%1', neem contact op met het JASP-team voor ondersteuning."
+
+msgctxt "AsyncLoader|"
+msgid "Loading Data Set"
+msgstr "Laden van Gegevens"
+
+msgctxt "AsyncLoader|"
+msgid "Saving Data Set"
+msgstr "Opslaan van Gegevens"
+
+msgctxt "AsyncLoader|"
+msgid "Exporting Result Set"
+msgstr "Exporteren van Resultaat"
+
+msgctxt "AsyncLoader|"
+msgid "Exporting Data Set"
+msgstr "Exporteren van Gegevens"
+
+msgctxt "AsyncLoader|"
+msgid "Sync Data Set"
+msgstr "Synchroniseren van Gegevens"
+
+msgctxt "ColumnsModel|"
+msgid "which can be used in numerical comparisons"
+msgstr "die gebruikt kunnen worden in numerieke vergelijkingen"
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence, greater and lesser than "
+"comparisons"
+msgstr ""
+"die slechts gebruikt kunnen worden in (on)gelijk, groter en kleiner dan "
+"vergelijkingen"
+
+msgctxt "ColumnsModel|"
+msgid "which can only be used in (in)equivalence comparisons"
+msgstr "die slechts gebruikt kunnen worden in (on)gelijk vergelijkingen"
+
+msgctxt "ColumnsModel|"
+msgid "The '"
+msgstr "De '"
+
+msgctxt "ColumnsModel|"
+msgid "'-column "
+msgstr "'-kolom "
+
+#, qt-format
+msgctxt "FileEvent|"
+msgid "Importing Data from %1"
+msgstr "Importeren van Gegevens van %1"
+
+msgctxt "FileEvent|"
+msgid "Importing SPSS File"
+msgstr "Importeren van SPSS Bestand"
+
+msgctxt "FileEvent|"
+msgid "Importing SAS File"
+msgstr "Importeren van SAS Bestand"
+
+msgctxt "FileEvent|"
+msgid "Importing STATA File"
+msgstr "Importeren van STATA Bestand"
+
+msgctxt "FileEvent|"
+msgid "Loading JASP File"
+msgstr "Laden van JASP Bestand"
+
+msgctxt "FileEvent|"
+msgid "Loading File"
+msgstr "Laden Bestand"
+
+msgctxt "FileEvent|"
+msgid "Saving JASP File"
+msgstr "Opslaan van JASP Bestand"
+
+msgctxt "FileEvent|"
+msgid "Exporting Results"
+msgstr "Exporteren van Resultaten"
+
+msgctxt "FileEvent|"
+msgid "Exporting Data"
+msgstr "Exporteren van Gegevens"
+
+msgctxt "FileEvent|"
+msgid "Synchronizing Data"
+msgstr "Synchroniseren van Gegevens"
+
+msgctxt "FileEvent|"
+msgid "Processing File"
+msgstr "Verwerken van Bestand"
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to run this analysis..."
+msgstr "De engine is gecrashed tijdens het uitvoeren van deze analyse..."
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to run the filter..."
+msgstr "De engine is gecrashed tijdens het uitvoeren van het filter..."
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to compute this column..."
+msgstr "De engine is gecrashed tijdens het berekenen van deze kolom..."
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to run rscript..."
+msgstr "De engine is gecrashed tijdens het uitvoeren van dit script..."
+
+msgctxt "EngineRepresentation|"
+msgid "Error saving plot"
+msgstr "Fout in opslaan plot"
+
+#, qt-format
+msgctxt "EngineRepresentation|"
+msgid ""
+"Unfortunately the plot could not be saved.\n"
+"\n"
+"Error message:\n"
+"%1\n"
+"\n"
+"If the problem persists, please report the message above at: https://jasp-"
+"stats.org/bug-reports"
+msgstr ""
+"Helaas kon het plot niet opgeslagen worden.\n"
+"\n"
+"Foutmelding:\n"
+"%1\n"
+"\n"
+"Als het probleem zich blijft voordoen, meld bovenstaand bericht dan a.u.b "
+"aan: https://jasp-stats.org/bug-reports"
+
+msgctxt "EngineRepresentation|"
+msgid "Error resizing plot"
+msgstr "Fout herschalen plot"
+
+msgctxt "ColumnTypesModel|"
+msgid "Scale"
+msgstr "Schaal"
+
+msgctxt "ColumnTypesModel|"
+msgid "Ordinal"
+msgstr "Ordinaal"
+
+msgctxt "ColumnTypesModel|"
+msgid "Nominal"
+msgstr "Nominaal"
+
+msgctxt "MessageForwarder|"
+msgid "Yes"
+msgstr "Ja"
+
+msgctxt "MessageForwarder|"
+msgid "No"
+msgstr "Nee"
+
+msgctxt "MessageForwarder|"
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgctxt "MessageForwarder|"
+msgid "Save"
+msgstr "Opslaan"
+
+msgctxt "MessageForwarder|"
+msgid "Don't Save"
+msgstr "Niet opslaan"
+
+msgctxt "PreferencesModel|"
+msgid "Select a file..."
+msgstr "Selecteer bestand..."
+
+msgctxt "PreferencesModel|"
+msgid "Select a folder..."
+msgstr "Selecteer een map..."
+
+msgctxt "PreferencesModel|"
+msgid "Safe Graphics mode changed"
+msgstr "Veilige Grafische modus is veranderd"
+
+msgctxt "PreferencesModel|"
+msgid ""
+"You've changed the Safe Graphics mode of JASP, for this option to take "
+"effect you need to restart JASP"
+msgstr ""
+"U hebt de Veilige Grafische modus van JASP veranderd, om deze wijziging "
+"actief te maken zal JASP herstart moeten worden"
+
+msgctxt "MainWindow|"
+msgid "Datafile changed"
+msgstr "Databestand veranderd"
+
+msgctxt "MainWindow|"
+msgid ""
+"The datafile that was used by this JASP file was modified. Do you want to "
+"reload the analyses with this new data?"
+msgstr ""
+"Het databestand dat werd gebruikt door dit JASP-bestand is bewerkt. Wilt u "
+"de analyses opnieuw laden met deze nieuwe data?"
+
+msgctxt "MainWindow|"
+msgid "Version incompatibility"
+msgstr "Versie incompatibiliteit"
+
+msgctxt "MainWindow|"
+msgid ""
+"Your analyses were created in an older version of JASP, to change the PPI of "
+"the images they must be refreshed first.\n"
+"\n"
+"Refresh all analyses?"
+msgstr ""
+"Uw analyses zijn gemaakt in een oudere versie van JASP, om de PPI van de "
+"afbeeldingen te veranderen moeten ze eerst worden vernieuwd.\n"
+"\n"
+"Vernieuw alle analyses?"
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was created in an older version of JASP, to save the image it "
+"must be refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+"Deze analyse is gemaakt in een oudere versie van JASP, om de afbeelding op "
+"te slaan moet deze eerst worden vernieuwd.\n"
+"\n"
+"Vernieuw de analyse?"
+
+msgctxt "MainWindow|"
+msgid "Save JASP Image"
+msgstr "Sla JASP Afbeelding Op"
+
+msgctxt "MainWindow|"
+msgid ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
+msgstr ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was created in an older version of JASP, to resize the image "
+"it must be refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+"Deze analyse is gemaakt in een oudere versie van JASP, om de afbeelding te "
+"herschalen moet deze eerst worden vernieuwd.\n"
+"\n"
+"Vernieuw de analyse?"
+
+msgctxt "MainWindow|"
+msgid "Save File?"
+msgstr "Bewaar bestand?"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"Save changes to the file %1 before closing?\n"
+"\n"
+"Your changes will be lost if you don't save them."
+msgstr ""
+"Wijzigingen bewaren in bestand %1 voor het afsluiten?\n"
+"\n"
+"Uw wijzigingen gaan verloren als u ze niet opslaat."
+
+msgctxt "MainWindow|"
+msgid "File has changed"
+msgstr "Bestand is gewijzigd"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"Unable to open file because:\n"
+"%1"
+msgstr ""
+"Kan bestand niet openen omdat:\n"
+"%1"
+
+msgctxt "MainWindow|"
+msgid "Save failed"
+msgstr "Opslaan mislukt"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"Unable to save file.\n"
+"\n"
+"%1"
+msgstr ""
+"Kan bestand niet opslaan.\n"
+"\n"
+"%1"
+
+msgctxt "MainWindow|"
+msgid "Do you have a GitHub account?"
+msgstr "Heeft u een GitHub account?"
+
+msgctxt "MainWindow|"
+msgid ""
+"To be able to report the bug you need to have a GitHub account, do you have "
+"such an account?"
+msgstr ""
+"Om een fout te melden heeft u een GitHub account nodig, heeft u zo'n account?"
+
+msgctxt "MainWindow|"
+msgid "Join GitHub"
+msgstr "Meld u zich aan bij GitHub"
+
+msgctxt "MainWindow|"
+msgid ""
+"We will open two pages for you in your webbrowser.\n"
+"The second will be the 'Join GitHub' page where you can register for an "
+"account with GitHub.\n"
+"The first will be a login page that leads to a partly filled bug report "
+"after you sign in with your new GitHub account.\n"
+"\n"
+"Please fill in all missing information there."
+msgstr ""
+"We openen twee pagina's voor u in uw webbrowser.\n"
+"De tweede pagina is de 'Join GitHub' pagina waar u zich kunt registreren "
+"voor een nieuw account bij GitHub.\n"
+"De eerste pagina leidt u naar een gedeeltelijk ingevuld foutenformulier "
+"nadat u zich hebt aangemeld bij GitHub met uw nieuwe GitHub account.\n"
+"\n"
+"Vult u a.u.b daar alle ontbrekende informatie in."
+
+msgctxt "MainWindow|"
+msgid "GitHub couldn't be openend for you"
+msgstr "GitHub kon niet voor u geopend worden"
+
+msgctxt "MainWindow|"
+msgid ""
+"Something went wrong with leading you to GitHub..\n"
+"You can still report the bug by going to https://github.com/jasp-stats/jasp-"
+"issues/issues"
+msgstr ""
+"Er trad een fout op bij het benaderen van GitHub..\n"
+"U kunt nog steeds de fout rapporteren door te navigeren naar https://github."
+"com/jasp-stats/jasp-issues/issues"
+
+msgctxt "MainWindow|"
+msgid "Error"
+msgstr "Fout"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"JASP has experienced an unexpected internal error:\n"
+"%1"
+msgstr ""
+"Er is in JASP een onverwachte interne fout opgetreden:\n"
+"%1"
+
+msgctxt "MainWindow|"
+msgid ""
+"JASP cannot continue and will close.\n"
+"\n"
+"We would be grateful if you could report this error to the JASP team."
+msgstr ""
+"JASP kan niet doorgaan en sluit af.\n"
+"\n"
+"We zouden het op prijs stellen als u deze fout rapporteert aan het JASP team."
+
+msgctxt "MainWindow|"
+msgid "Report"
+msgstr "Rapporteer"
+
+msgctxt "MainWindow|"
+msgid "Exit"
+msgstr "Sluit af"
+
+msgctxt "MainWindow|"
+msgid ""
+"JASP was started without associated data file (csv, sav or ods file). But to "
+"edit the data, JASP starts a spreadsheet editor based on this file and "
+"synchronize the data when the file is saved. Does this data file exist "
+"already, or do you want to generate it?"
+msgstr ""
+"JASP is gestart zonder een bijbehorend gegevensbestand (csv, sav of ods "
+"bstand). Maar om de gegevens te bewerken, start JASP een "
+"gegevensverwerkingsprogramma (spreadsheet) gebaseerd op dit bestand en "
+"synchroniseert de gegevens wanneer het bestand wordt opgeslagen. Bestaat dit "
+"bestand al, of wilt u dat dit nu wordt aangemaakt?"
+
+msgctxt "MainWindow|"
+msgid ""
+"JASP was started with an online data file (csv, sav or ods file). But to "
+"edit the data, JASP needs this file on your computer. Does this data file "
+"also exist on your computer, or do you want to generate it?"
+msgstr ""
+"JASP is gestart met een online gegevensbestand (csv, sav of ods bestand). "
+"Maar om de gegevens te kunnen bewerken, moet dit bestand op uw computer "
+"staan. Staat dit bestand ook op uw computer of moet JASP het bestand "
+"genereren?"
+
+msgctxt "MainWindow|"
+msgid ""
+"JASP was started with a read-only data file (probably from the examples). "
+"But to edit the data, JASP needs to write to the data file. Does the same "
+"file also exist on your computer, or do you want to generate it?"
+msgstr ""
+"JASP is gestart met een alleen-lezen gegevensbestand (waarschijnlijk uit de "
+"voorbeelden). Maar om de gegevens te bewerken, moet het mogelijk zijn voor "
+"JASP om in het bestand te schrijven. Bestaat het bestand ook op uw computer "
+"of moet JASP het bestand genereren?"
+
+msgctxt "MainWindow|"
+msgid "Start Spreadsheet Editor"
+msgstr "Start Spreadsheet Gegevensbewerker"
+
+msgctxt "MainWindow|"
+msgid "Generate Data File"
+msgstr "Genereer gegevensbestand"
+
+msgctxt "MainWindow|"
+msgid "Find Data File"
+msgstr "Zoek gegevensbestand"
+
+msgctxt "MainWindow|"
+msgid "Start Editor"
+msgstr "Start Gegevensverwerker"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"Unable to start the editor : %1. Please check your editor settings in the "
+"preference menu."
+msgstr ""
+"Niet mogelijk om de gegevensverwerker %1 te starten. Controleer de "
+"gegevensverwerker instellingen in het voorkeursmenu."
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"No default spreadsheet editor for file %1. Use Preferences to set the right "
+"editor."
+msgstr ""
+"Er is geen standaard spreadsheet gegevensverwerker voor bestand %1. Gebruik "
+"de Voorkeuren->Data bij de Instellingen om de juiste gegevensverwerker te "
+"kiezen."
+
+msgctxt "MainWindow|"
+msgid "Remove All Analyses"
+msgstr "Verwijder alle analyses"
+
+msgctxt "MainWindow|"
+msgid "Do you really want to remove all analyses?"
+msgstr "Weet u zeker dat u alle analyses wilt verwijderen?"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"An error occured trying to initialize a module from dir %1, the error was: %2"
+msgstr ""
+"Een trad een fout op bij het initialiseren van een module in %1, de fout "
+"was: %2"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "An error occured trying to load module %1, the error was: '%2'"
+msgstr "Er trad een fout op bij het laden van module %1, de fout was: '%2'"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"Something went wrong removing files for module %1 at path '%2' and the error "
+"was: %3"
+msgstr ""
+"Er ging iets fout bij het verwijderen van bestanden voor module %1 in '%2' "
+"en de fout was: %3"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"The installation of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+"De installatie van Module %1 is mislukt met de volgende foutmelding:\n"
+"%2"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "Loading packages for Module %1 failed"
+msgstr "Het laden van packages voor Module %1 is mislukt"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"Loading the packages of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+"Het laden van de packages van Module %1 is mislukt met de volgende "
+"foutmelding:\n"
+"%2"
+
+msgctxt "DynamicModules|"
+msgid "Path cannot be handled by R"
+msgstr "Pad kan niet worden afgehandeld door R"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You are trying to install a module but because the path '%1' contains non-"
+"ascii characters (or a space) R might have some trouble installing there. If "
+"the installation of this module fails you can work around this by changing "
+"your username (or making a new username) that only contains ascii-characters "
+"and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
+">Advanced->DeveloperMode."
+msgstr ""
+"U probeert een module te installeren, maar omdat het pad '%1' niet-ascii-"
+"karakters (of een spatie) bevat, kan R problemen tegenkomen om daar te "
+"installeren. Als de installatie van deze module mislukt, kunt u hier omheen "
+"werken door uw gebruikersnaam te wijzigen (of een nieuwe gebruikersnaam te "
+"maken) die alleen bestaat uit ascii-karakters zonder spaties. Of u kunt "
+"\"LC_CTYPE-set-to-C\" uitschakelen onder Preferences->Advanced-"
+">DeveloperMode."
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "Cannot install module because %1 does not exist."
+msgstr "Kan module %1 niet installeren omdat deze niet bestaat."
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"Cannot install module because it is named '%1' and that name is reserved for "
+"installing the development module.\n"
+"Change the name (in DESCRIPTION and description.json) and try it again. If "
+"you are not the author of this module and do not know how to do this, "
+"contact: %2"
+msgstr ""
+"Kan module met naam '%1' niet installeren omdat die naam gereserveerd is "
+"voor het installeren van een ontwikkelaarsmodule.\n"
+"Verander de naam (in DESCRIPTION en description.json) en probeer het opnieuw."
+"Als u de auteur van deze module bent en niet weet hoe dit moet, contact: %2"
+
+msgctxt "DynamicModules|"
+msgid "Select a folder"
+msgstr "Kies een map"
+
+msgctxt "DynamicModules|"
+msgid ""
+"To install a development module you need to select the folder you want to "
+"watch and load, you can do this under the filemenu, Preferences->Advanced."
+msgstr ""
+"Om een ontwikkelmodule te installeren moet u de map selecteren waar u de "
+"module kunt zien en laden, u kunt dit van uit het bestandsmenu doen, "
+"Voorkeuren->Geavanceerd."
+
+msgctxt "DynamicModules|"
+msgid "Problem initializing module"
+msgstr "Probleem bij initialisate module"
+
+msgctxt "DynamicModules|"
+msgid ""
+"There was a problem loading the developer module:\n"
+"\n"
+msgstr ""
+"Er trad een probleem op bij het laden van het ontwikkelaarsmodule:\n"
+"\n"
+
+msgctxt "DynamicModules|"
+msgid "Missing files or folders"
+msgstr "Ontbrekende bestanden of mappen"
+
+msgctxt "DynamicModules|"
+msgid ""
+"The selected folder cannot be installed as a developer module because it "
+"does not contain all the necessary files and folders."
+msgstr ""
+"De geselecteerde map kan niet als ontwikkelaars module geïnstalleerd worden "
+"omdat het niet alle benodigde bestanden en mappen bevat."
+
+msgctxt "DynamicModules|"
+msgid "Create a inst/description.json file."
+msgstr "Maak een inst/description.json bestand."
+
+msgctxt "DynamicModules|"
+msgid "Create a R directory containing your analysis code."
+msgstr "Maak een R map voor de R-code van de analyses."
+
+msgctxt "DynamicModules|"
+msgid "Create a inst/qml directory containing your optionsforms."
+msgstr "Maak een inst/qml map voor opslaan van de analyseschermen."
+
+msgctxt "DynamicModules|"
+msgid ""
+"Create a inst/icons directory containing the icons for your ribbonbuttons."
+msgstr ""
+"Maak een inst/icons map die de pictogrammen bevat voor de knoppen op de "
+"taakbalk."
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "Missing %1"
+msgstr "Ontbrekend %1"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed %1 from your development module directory. Without "
+"it your module cannot work, make sure to put it back. For now your old %2 "
+"file will be kept."
+msgstr ""
+"Het lijkt erop dat u %1 van uw module ontwikkelomgeving verwijderd hebt. "
+"Zonder dit kan uw module niet werken, zorg ervoor dat deze teruggeplaatst "
+"wordt. Voor nu wordt het oude bestand %2 bewaard."
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have never had a %1 in your development module directory. "
+"Without it your module cannot work, make sure to create one. How you "
+"installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+"Het lijkt erop dat u nooit een %1 in uw ontwikkelmodulemap had. Bij gebrek "
+"hieraan kan uw module niet werken en hoe u het heeft weten te installeren is "
+"onduidelijk. De module zal nu worden verwijderd"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "%1 was removed!"
+msgstr "%1 was verwijderd!"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed %1 but this file is required for your module to "
+"work. The development module is going to be uninstalled now."
+msgstr ""
+"Het lijkt erop dat u %1 verwijderd heeft, maar dit bestand is nodig om uw "
+"module te laten werken. De ontwikkelmodule wordt nu verwijderd."
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "Missing folder %1"
+msgstr "Ontbrekende map %1"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed the folder %1 from your development module "
+"directory. Without it your module cannot work, make sure to put it back. For "
+"now your old folder will be kept."
+msgstr ""
+"Het lijkt erop dat u de map %1 van uw module ontwikkelomgeving verwijderd "
+"hebt. Zonder deze map kan de module niet werken, zorg ervoor dat deze terug "
+"geplaatst wordt. Voor nu wordt de oude bewaard."
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have never had the folder %1 in your development module "
+"directory. Without it your module cannot work, make sure to create one. How "
+"you installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+"Het lijkt erop dat map %1 nooit bestaan heeft in uw module ontwikkel-"
+"omgeving. Zonder deze map kan uw module niet werken, zorg dat deze aanwezig "
+"is. Hoe de module ooit geïnstalleerd werd is onduidelijk, en de "
+"ontwikkelmodule zal nu verwijderd worden"
+
+msgctxt "DynamicModules|"
+msgid "Loading module description encountered a problem"
+msgstr "Er is een fout opgetreden bij het laden van de moduulbeschrijving"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "<i>Could not load the description of the module in archive: '%1'</i>"
+msgstr "<i>Kon de beschrijving van de module niet uit archief '%1' laden</i>"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
+"maintained by %5.</i><br><i>See website for further details: <a href="
+"\"http://%6\">%6</a></i><br>"
+msgstr ""
+"<h3>%1</h3><i>Versie %2</i><br><p>%3</p><br><br><i>Gemaakt door %4 en "
+"onderhouden door %5.</i><br><i>Kijk op de website voor nadere details: <a "
+"href=\"http://%6\">%6</a></i><br>"
+
+#, fuzzy, qt-format
+msgctxt "RibbonModel|"
+msgid "Loading bundled module %1 failed"
+msgstr "Het laden van packages voor Module %1 is mislukt"
+
+#, fuzzy, qt-format
+msgctxt "RibbonModel|"
+msgid ""
+"Loading of the bundled module %1 failed with the following error:\n"
+"\n"
+"%2"
+msgstr ""
+"Het laden van de packages van Module %1 is mislukt met de volgende "
+"foutmelding:\n"
+"%2"
+
+msgctxt "RibbonModel|"
+msgid "R (Beta)"
+msgstr "R (Beta)"
+
+msgctxt "Modules::Upgrader|"
+msgid "Error Loading Upgrades"
+msgstr "Fout gedurende laden van upgrades"
+
+#, qt-format
+msgctxt "Modules::Upgrader|"
+msgid "While loading upgrades for %1 an error was encountered: %2"
+msgstr "Gedurende het laden van upgrades voor %1 is een fout opgetreden: %2"
+
+msgctxt "Modules::Upgrader|"
+msgid "Upgrades couldn't be read"
+msgstr "Upgrades konden niet worden gelezen"
+
+#, fuzzy
+msgctxt "Modules::Upgrader|"
+msgid ""
+"The necessary upgrades for reading older JASP-files could not be read...\n"
+"You can still use JASP and even read (some) older files but some options "
+"might not be understood properly and some analyses might fail to load "
+"entirely."
+msgstr ""
+"De benodigde upgrades voor het lezen van oudere (<0.12) JASP-bestanden "
+"konden niet worden gelezen...\n"
+"U kunt nog steeds JASP gebruiken en zelfs oudere bestanden inlezen, maar "
+"sommige opties kunnen misschien niet goed geïnterpreteerd worden en sommige "
+"analyses kunnen dan niet in hun geheel geladen worden."
+
+msgctxt "OnlineDataManager|"
+msgid "File Changed"
+msgstr "Bestand gewijzigd"
+
+msgctxt "OnlineDataManager|"
+msgid ""
+"The online copy of this file has changed since it was opened.\n"
+"\n"
+"Would you like to override the online file?"
+msgstr ""
+"De kopie van de online versie van dit bestand is gewijzigd sinds het is het "
+"is geopend.\n"
+"\n"
+"Wilt u de online versie overschrijven?"
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating upload of "
+msgstr "Initialiseren van upload van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating download of "
+msgstr "Initialiseren van download van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating making new file "
+msgstr "Initialiseren van het maken van nieuw bestand van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating making new folder "
+msgstr "Initialiseren van het maken van een nieuwe map "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating osf action "
+msgstr "Initialiseren van osf actie "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Upload of "
+msgstr "Upload van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Download of "
+msgstr "Download van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Creating new file "
+msgstr "Maken van een nieuw bestand "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Creating new folder "
+msgstr "Maken van een nieuwe map "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Osf action "
+msgstr "Osf actie "
+
+#, qt-format
+msgctxt "OnlineDataNodeOSF|"
+msgid "%1 %2 failed because %3"
+msgstr "%1 %2 faalde omdat %3"
+
+msgctxt "OnlineDataNodeOSF|"
+msgid " in progress"
+msgstr " gaande"
+
+msgctxt "ResultMenuModel|"
+msgid "Collapse"
+msgstr "Inklappen"
+
+msgctxt "ResultMenuModel|"
+msgid "Edit Title"
+msgstr "Bewerk titel"
+
+msgctxt "ResultMenuModel|"
+msgid "Copy"
+msgstr "Kopieer"
+
+msgctxt "ResultMenuModel|"
+msgid "Copy LaTeX"
+msgstr "Kopieer LaTeX"
+
+msgctxt "ResultMenuModel|"
+msgid "Copy Citations"
+msgstr "Kopieer referenties"
+
+msgctxt "ResultMenuModel|"
+msgid "Save Image As"
+msgstr "Sla afbeelding op als"
+
+msgctxt "ResultMenuModel|"
+msgid "Edit Image"
+msgstr "Bewerk afbeelding"
+
+msgctxt "ResultMenuModel|"
+msgid "Add Note"
+msgstr "Opmerking toevoegen"
+
+msgctxt "ResultMenuModel|"
+msgid "Duplicate"
+msgstr "Dupliceer"
+
+msgctxt "ResultMenuModel|"
+msgid "Remove"
+msgstr "Verwijder"
+
+msgctxt "ResultMenuModel|"
+msgid "Remove All"
+msgstr "Verwijder alles"
+
+msgctxt "ResultMenuModel|"
+msgid "Refresh All"
+msgstr "Ververs alles"
+
+msgctxt "ResultMenuModel|"
+msgid "Show Dependencies"
+msgstr "Toon afhankelijkheden"
+
+msgctxt "ResultMenuModel|"
+msgid "Export Results"
+msgstr "Exporteer resultaten"
+
+msgctxt "ResultsJsInterface|"
+msgid "Results Warning"
+msgstr "Resultaten Waarschuwing"
+
+msgctxt "HelpModel|"
+msgid ""
+"Coming Soon!\n"
+"========\n"
+"\n"
+"There is currently no help available for this analysis.\n"
+"\n"
+"Additional documentation will be available in future releases of JASP."
+msgstr ""
+"Binnenkort beschikbaar!\n"
+"========\n"
+"\n"
+"Er is momenteel geen hulp beschikbaar voor deze analysis.\n"
+"\n"
+"Er zal documentatie worden toegevoegd in een toekomstige versie van JASP."
+
+#, fuzzy
+msgctxt "QObject|"
+msgid "valid R code"
+msgstr "geldige R code"
+
+#, fuzzy, qt-format
+msgctxt "ComboBoxBase|"
+msgid "Unknown option %1 in DropDown %2"
+msgstr "Onbekende optie %1 in Dropdown %2"
+
+#, fuzzy, qt-format
+msgctxt "ComboBoxBase|"
+msgid "Unknown error in ComboBox %1"
+msgstr "Onbekende fout in ComboBox %1"
+
+msgctxt "ActionButtons|"
+msgid "Open"
+msgstr "Open"
+
+msgctxt "ActionButtons|"
+msgid "Save"
+msgstr "Opslaan"
+
+msgctxt "ActionButtons|"
+msgid "Save As"
+msgstr "Opslaan als"
+
+msgctxt "ActionButtons|"
+msgid "Export Results"
+msgstr "Exporteer resultaten"
+
+msgctxt "ActionButtons|"
+msgid "Export Data"
+msgstr "Exporteer data"
+
+msgctxt "ActionButtons|"
+msgid "Sync Data"
+msgstr "Sync data"
+
+msgctxt "ActionButtons|"
+msgid "Close"
+msgstr "Sluit"
+
+msgctxt "ActionButtons|"
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+msgctxt "ActionButtons|"
+msgid "About"
+msgstr "Over"
+
+msgctxt "DataLibraryBreadCrumbsListModel|"
+msgid "Categories"
+msgstr "Categorieën"
+
+msgctxt "FileMenu|"
+msgid "File Types"
+msgstr "Bestand Types"
+
+msgctxt "FileMenu|"
+msgid "Failed to open file from OSF"
+msgstr "Kon bestand op OSF niet openen"
+
+msgctxt "FileMenu|"
+msgid "No associated data file"
+msgstr "Geen bijbehorend gegevensbestand"
+
+msgctxt "FileMenu|"
+msgid ""
+"JASP has no associated data file to be synchronized with.\n"
+"Do you want to search for such a data file on your computer?\n"
+"NB: You can also set this data file via menu File/Sync Data."
+msgstr ""
+"JASP heeft geen bijbehorend gegevensbestand om mee te synchroniseren.\n"
+"Wilt u dat bestand selecteren op uw computer?\n"
+"NB: U kunt dit gegevensbestand ook selecteren via het menu Bestand/Sync Data."
+
+msgctxt "FileMenu|"
+msgid "Find Data File"
+msgstr "Zoek gegevensbestand"
+
+msgctxt "FileMenu|"
+msgid "Data File"
+msgstr "Gegevensbestand"
+
+msgctxt "OSF|"
+msgid "Username and/or password are not correct. Please try again."
+msgstr "Gebruikersnaam en/of wachtwoord niet correct. Probeer nogmaals aub."
+
+msgctxt "OSF|"
+msgid "OSF service not available. Please check your internet connection."
+msgstr "OSF service is niet beschikbaar. Controleer uw internet verbinding."
+
+msgctxt "OSF|"
+msgid "Connection Timeout error. Please check your internet connection."
+msgstr "Timeout verbindingsfout. Controleer uw internet verbinding aub."
+
+msgctxt "OSF|"
+msgid "OSF Error"
+msgstr "OSF fout"
+
+msgctxt "OSF|"
+msgid "Projects"
+msgstr "Projecten"
+
+msgctxt "OSF|"
+msgid ""
+"Files cannot be added to the projects list.\n"
+"\n"
+"To add a new project please use the online OSF services."
+msgstr ""
+"Bestanden konden niet toegevoegd worden aan de lijst met projecten.\n"
+"\n"
+"Gebruik de online OSF om een nieuwe project toe te voegen."
+
+msgctxt "OSF|"
+msgid "Data Providers"
+msgstr "Gegevensproviders"
+
+msgctxt "OSF|"
+msgid ""
+"Files cannot be added to a projects data providers list.\n"
+"\n"
+"To add a new data provider (eg. google drive) please use the online OSF "
+"services."
+msgstr ""
+"Bestanden konden niet toegevoegd worden aan de lijst met gegevensproviders "
+"van projecten.\n"
+"\n"
+"Gebruik de online OSF om een nieuwe gegevensprovider toe te voegen (bijv. "
+"Google Drive)."
+
+#, qt-format
+msgctxt "OSF|"
+msgid "Files cannot be added to '%1' for an unknown reason."
+msgstr "Bestanden konden niet toegevoegd worden aan '%1' om onbekende reden."
+
+msgctxt "OSF|"
+msgid "File Types"
+msgstr "Bestand Types"
+
+msgctxt "OSF|"
+msgid "Failed to open file from OSF"
+msgstr "Kon bestand op OSF niet openen"
+
+msgctxt "OSF|"
+msgid "An error occured and the folder could not be created."
+msgstr "Een fout is opgetreden en de map kon niet aangemaakt worden."
+
+msgctxt "OSF|"
+msgid ""
+"A new folder cannot be added to the projects list.<br>To add a new project "
+"please use the online OSF services."
+msgstr ""
+"Een nieuwe map kan niet worden toegevoegd aan de projectenlijst.<br>Om een "
+"nieuw project toe te voegen kunt u gebruik maken van de online OSF-diensten."
+
+msgctxt "OSF|"
+msgid ""
+"A new folder cannot be added to a projects data providers list.<br>To add a "
+"new data provider (eg. google drive) please use the online OSF services."
+msgstr ""
+"Een nieuwe map kan niet worden toegevoegd aan een lijst van "
+"projectgegevensleveranciers.<br>Om een nieuwe gegevensleverancier (bijv. "
+"google drive) te voegen kunt u gebruik maken van de online OSF-diensten."
+
+#, qt-format
+msgctxt "OSF|"
+msgid "A new folder cannot be added to '%1' for an unknown reason."
+msgstr "Een nieuwe map kan niet toegevoegd worden aan '%1' om onbekende reden."
+
+msgctxt "OSF|"
+msgid "Folder"
+msgstr "Map"
+
+msgctxt "OSF|"
+msgid "Login"
+msgstr "Aanmelden"
+
+msgctxt "OSF|"
+msgid "User or password cannot be empty."
+msgstr "Gebruikersnaam of wachtwoord mag niet leeg zijn."
+
+msgctxt "OSF|"
+msgid "Entry name cannot be empty."
+msgstr "Naam invoer mag niet leeg zijn."
+
+#, qt-format
+msgctxt "OSF|"
+msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
+msgstr "%1 naam kan slechts de volgende karakters bevatten: A-Z a-z 0-9 _ %2"
+
+msgctxt "ResourceButtons|"
+msgid "Recent Files"
+msgstr "Laatst geopend"
+
+msgctxt "ResourceButtons|"
+msgid "Current File"
+msgstr "Huidig bestand"
+
+msgctxt "ResourceButtons|"
+msgid "Computer"
+msgstr "Computer"
+
+msgctxt "ResourceButtons|"
+msgid "OSF"
+msgstr "OSF"
+
+msgctxt "ResourceButtons|"
+msgid "Data Library"
+msgstr "Bibliotheek"
+
+msgctxt "ResourceButtons|"
+msgid "Data"
+msgstr "Data"
+
+msgctxt "ResourceButtons|"
+msgid "Results"
+msgstr "Resultaten"
+
+msgctxt "ResourceButtons|"
+msgid "Interface"
+msgstr "Interface"
+
+msgctxt "ResourceButtons|"
+msgid "Advanced"
+msgstr "Geavanceerd"
+
+#, fuzzy, qt-format
+msgctxt "JASPListControl|"
+msgid ""
+"The list %1 has a rowComponent with the same name (%2) as its optionKey. "
+"Change the optionKey property of the list or the control name."
+msgstr ""
+"De lijst %1 heeft een rowComponent met dezelfde naam (%2) als zijn "
+"optionKey. Verander de optionKey property van de lijst of de naam van het "
+"control."
+
+#, fuzzy, qt-format
+msgctxt "JASPListControl|"
+msgid "Wrong column type: %1 for ListView %2"
+msgstr "Verkeerd kolomtype: %1 voor ListView %2"
+
+#, qt-format
+msgctxt "ListModelCustomContrasts|"
+msgid "Contrast %1"
+msgstr "Contrast %1"
+
+msgctxt "ListModelFilteredDataEntry|"
+msgid "Too many rows in OptionsTable for ListModelFilteredDataEntry"
+msgstr "Teveel rijen in OptionsTable voor ListModelFilteredDataEntry"
+
+#, qt-format
+msgctxt "ListModelLayersAssigned|"
+msgid "Layer %1"
+msgstr "Laag %1"
+
+#, qt-format
+msgctxt "ListModelRepeatedMeasuresFactors|"
+msgid "Level %1"
+msgstr "Level %1"
+
+#, qt-format
+msgctxt "ListModelRepeatedMeasuresFactors|"
+msgid "RM Factor %1"
+msgstr "BP Factor %1"
+
+#, qt-format
+msgctxt "ListModelTableViewBase|"
+msgid "Column number in source use is bigger than the number of columns of %1"
+msgstr "Kolomnummer in bron is groter dan het aantal kolommen van %1"
+
+#, qt-format
+msgctxt "ListModelTableViewBase|"
+msgid "No column in TableView source %1"
+msgstr "Geen kolom gespecificeerd in TableView bron %1"
+
+#, qt-format
+msgctxt "ListModelTableViewBase|"
+msgid "Unknown column specified (%1) in TableView source %2"
+msgstr "Onbekende kolom gespecificeerd (%1) in TableView bron %2"
+
+#, fuzzy, qt-format
+msgctxt "RadioButtonsGroupBase|"
+msgid ""
+"A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
+"name"
+msgstr ""
+"Een RadioButton in het RadioButtonGroup element (naam: %1) heeft geen naam"
+
+#, fuzzy, qt-format
+msgctxt "RadioButtonsGroupBase|"
+msgid "No radio button corresponding to name %1"
+msgstr "Geen radiobutton komt overeen met naam %1"
+
+#, fuzzy, qt-format
+msgctxt "RadioButtonsGroupBase|"
+msgid "Radio button clicked is unknown: %1"
+msgstr "Geklikte radiobutton is onbekend: %1"
+
+#, fuzzy, qt-format
+msgctxt "RepeatedMeasuresFactorsListBase|"
+msgid "Level %1"
+msgstr "Level %1"
+
+#, fuzzy, qt-format
+msgctxt "RepeatedMeasuresFactorsListBase|"
+msgid "RM Factor %1"
+msgstr "BP Factor %1"
+
+#, qt-format
+msgctxt "RowControls|"
+msgid "A row component in %1 does not have a name"
+msgstr "Een rij-onderdeel in %1 heeft geen naam"
+
+#, qt-format
+msgctxt "RowControls|"
+msgid "2 row components in %1 have the same name"
+msgstr "Twee rij-onderdelen in %1 hebben dezelfde naam"
+
+msgctxt "SortMenuModel|"
+msgid "None"
+msgstr "Geen"
+
+msgctxt "SortMenuModel|"
+msgid "Sort by name"
+msgstr "Sorteer op naam"
+
+msgctxt "SortMenuModel|"
+msgid "Sort by name A-Z"
+msgstr "Sorteer op naam A-Z"
+
+msgctxt "SortMenuModel|"
+msgid "Sort by name Z-A"
+msgstr "Sorteer op naam Z-A"
+
+msgctxt "SortMenuModel|"
+msgid "Sort by type"
+msgstr "Sorteer op type"
+
+msgctxt "SortMenuModel|"
+msgid "Sort by date"
+msgstr "Sorteer op datum"
+
+msgctxt "SortMenuModel|"
+msgid "Sort by size"
+msgstr "Sorteer op grootte"
+
+msgctxt "SortMenuModel|"
+msgid "SortMenuModel not called with a sortable parent"
+msgstr "SortMenuModel niet geroepen met een sorteerbare parent"
+
+#, fuzzy
+msgctxt "TextAreaBase|"
+msgid "Model applied"
+msgstr "Model toegepast"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "The expression did not return a number."
+msgstr "De uitdrukking heeft geen getal geretourneerd."
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Integer Field"
+msgstr "Geheel getal Veld"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Number Field"
+msgstr "Getal Veld"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Percentage Field"
+msgstr "Percentage Veld"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Integers Field"
+msgstr "Gehele getallen Veld"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Doubles Field"
+msgstr "Dubbel precisie Veld"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Add Column Field"
+msgstr "Voeg Kolomveld toe"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Add Computed Column Field"
+msgstr "Voeg Berekende Kolom Veld toe"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Formula Field"
+msgstr "Formule Veld"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Formulas Field"
+msgstr "Formules veld"
+
+#, fuzzy
+msgctxt "TextInputBase|"
+msgid "Text Field"
+msgstr "Tekst Veld"
+
+#, fuzzy, qt-format
+msgctxt "TextInputBase|"
+msgid "The value (%1) must be %2"
+msgstr "De waarde (%1) moet %2 zijn"
+
+#, fuzzy, qt-format
+msgctxt "VariablesListBase|"
+msgid "Source model of %1 must be from a Factor List"
+msgstr "Bronmodel van %1 moet uit een factorlijst komen"
+
+#, fuzzy, qt-format
+msgctxt "VariablesListBase|"
+msgid "Cannot find source for VariableList %1"
+msgstr "Kan geen bron vinden voor VariableList %1"
+
+#, fuzzy, qt-format
+msgctxt "VariablesListBase|"
+msgid "Wrong kind of source for VariableList %1"
+msgstr "Verkeerde soort bron voor VariableList %1"
+
+#, fuzzy, qt-format
+msgctxt "VariablesListBase|"
+msgid "No related list found for VariablesList %1"
+msgstr "Geen gerelateerde lijst gevonden voor VariabeleLijst %1"
+
+#, fuzzy, qt-format
+msgctxt "VariablesListBase|"
+msgid "Wrong kind of related list (%1) found for VariablesList %2"
+msgstr ""
+"Verkeerde soort gerelateerde lijst (%1) gevonden voor VariabeleLijst %2"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "No name given for the source of %1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "No source given for %1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Cannot find component %1 for the source of %2"
+msgstr ""
