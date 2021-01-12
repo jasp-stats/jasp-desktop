@@ -1,18 +1,7 @@
 QT      += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
 
-GENERATE_LANGUAGE_FILES = false
-
-#AM_I_BUILDBOT is set as a "qmake internal var" in the command line
-message("AM_I_BUILDBOT: '$$[AM_I_BUILDBOT]'")
-COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equals function below actually works...
-!equals(COPY_BUILDBOTNESS, "") {
-!equals(COPY_BUILDBOTNESS, "\"\"") { #this should be done less stupidly but I do not want to waste my time on that now
-	GENERATE_LANGUAGE_FILES = true
-}
-}
-
-SUPPORTED_LANGUAGES = nl de #es pt ja
+SUPPORTED_LANGUAGES = nl de es#pt ja
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
 
@@ -158,95 +147,114 @@ RESOURCES_TRANSLATIONS = $${RESOURCES_PATH}/Translations
 RESOURCES_DESTINATION = $${OUT_PWD}/../Resources
 RESOURCES_DESTINATION_TRANSLATIONS = $$RESOURCES_DESTINATION/Translations
 
-win32 {
+$$GENERATE_LANGUAGE_FILES { 
 
-  SOURCES_TRANSLATIONS ~= s,/,\\,g
+win32 { ######################## Windows language files ##################################
 
-  RESOURCES_PATH ~= s,/,\\,g
-  RESOURCES_TRANSLATIONS ~= s,/,\\,g
+	SOURCES_TRANSLATIONS ~= s,/,\\,g
 
-  RESOURCES_DESTINATION ~= s,/,\\,g
-  RESOURCES_DESTINATION_TRANSLATIONS ~= s,/,\\,g
+	RESOURCES_PATH ~= s,/,\\,g
+	RESOURCES_TRANSLATIONS ~= s,/,\\,g
 
-  QTBIN=$$QMAKE_QMAKE
-  QTBIN ~= s,qmake.exe,,g
-  QTBIN ~= s,/,\\,g
-  EXTENSIONS=cpp,qml
-  WINPWD=$$PWD/..
-  WINPWD ~= s,/,\\,g
+	RESOURCES_DESTINATION ~= s,/,\\,g
+	RESOURCES_DESTINATION_TRANSLATIONS ~= s,/,\\,g
 
-  GETTEXT_LOCATION = $$(GETTEXT_PATH)
-  isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
+	EXTENSIONS=cpp,qml
+	WINPWD=$$PWD
+	WINPWD ~= s,/,\\,g
 
-  delres.commands  += $$quote(IF exist \"$$RESOURCES_DESTINATION\" (rd /s /q \"$$RESOURCES_DESTINATION\";) );
-  copyres.commands +=  $$quote(cmd /c xcopy /S /I /Y \"$${RESOURCES_PATH}\" \"$${RESOURCES_DESTINATION}\")
+	delres.commands  += $$quote(IF exist \"$$RESOURCES_DESTINATION\" (rd /s /q \"$$RESOURCES_DESTINATION\";) );
+	copyres.commands +=  $$quote(cmd /c xcopy /S /I /Y \"$${RESOURCES_PATH}\" \"$${RESOURCES_DESTINATION}\")
 
-  $$GENERATE_LANGUAGE_FILES {  
-	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -recursive \"$${WINPWD}\" -ts \"$${SOURCES_TRANSLATIONS}\jasp.po\") &&	#cleanup po files
-    maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location \"$${SOURCES_TRANSLATIONS}\jasp.po\" -o \"$${SOURCES_TRANSLATIONS}\jasp.po\") &&
+	#Update and Cleanup .pot file
+	maketranslations.commands += $$quote($${WINQTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -recursive \"$${WINPWD}\" -ts \"$$SOURCES_TRANSLATIONS\jaspDesktop.pot\") &&
+	maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location \"$${SOURCES_TRANSLATIONS}\jaspDesktop.pot\" -o \"$${SOURCES_TRANSLATIONS}\jaspDesktop.pot\") &&
     
     for(LANGUAGE_CODE, SUPPORTED_LANGUAGES) {
-	   maketranslations.commands += $$quote(echo "Generating language File: $${LANGUAGE_CODE}") &&
+		maketranslations.commands += $$quote(echo "Generating Language Files: $${LANGUAGE_CODE}") &&
 
-	   #Create jasp_$${LANGUAGE_CODE}.po
-       maketranslations.commands += $$quote($${QTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -recursive \"$${WINPWD}\" -ts \"$${SOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.po\") &&
-       maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location \"$${SOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.po\" -o \"$${SOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.po\")  &&
-    
-	  #Create jasp_$${LANGUAGE_CODE}.qm
-	  maketranslations.commands += $$quote($${QTBIN}lrelease.exe \"$${SOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.po\" -qm \"$${RESOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.qm\") &&
-      }
-    
+		#Initialize jaspDesktop-xx.po from previous language files
+		!exists($$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po){
+			maketranslations.commands += $$quote(echo "INITIALIZE JASPDESKTOP FILES WITH MSGMERGE: $${LANGUAGE_CODE} ;") &&
+			maketranslations.commands += $$quote($${WINQTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -recursive \"$${WINPWD}\" -ts \"$$SOURCES_TRANSLATIONS\jaspDesktop-$${LANGUAGE_CODE}.po\") &&
+			maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgmerge.exe\" \"$$SOURCES_TRANSLATIONS\jasp_$${LANGUAGE_CODE}.po\" \"$$SOURCES_TRANSLATIONS\jaspDesktop.pot\" > \"$$SOURCES_TRANSLATIONS\jaspDesktop-$${LANGUAGE_CODE}.po\" ) &&
+			maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location \""$$SOURCES_TRANSLATIONS\jaspDesktop-$${LANGUAGE_CODE}.po\" -o \""$$SOURCES_TRANSLATIONS\jaspDesktop-$${LANGUAGE_CODE}.po\") &&
+		}
+		
+		#Update and Cleanup .po file
+		maketranslations.commands += $$quote($${WINQTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -recursive \"$${WINPWD}\" -ts \"$$SOURCES_TRANSLATIONS\jaspDesktop-$${LANGUAGE_CODE}.po\") &&
+		maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location \""$$SOURCES_TRANSLATIONS\jaspDesktop-$${LANGUAGE_CODE}.po\" -o \""$$SOURCES_TRANSLATIONS\jaspDesktop-$${LANGUAGE_CODE}.po\") &&
+		
+		#Create jaspDesktop-$${LANGUAGE_CODE}.qm
+		maketranslations.commands += $$quote($${WINQTBIN}lrelease.exe \"$$SOURCES_TRANSLATIONS\jaspDesktop-$${LANGUAGE_CODE}.po\" -qm \"$$RESOURCES_TRANSLATIONS\jaspDesktop-$${LANGUAGE_CODE}.qm\") &&
+		
+	}#Loop over Languages
+	
+	#Create R-jaspGraphs.mo translation file. (Need to add GETTEXT location to PATH environment.)
+	maketranslations.commands += $$quote(\"$$PWD/../Tools/translate.cmd\" \"$$_R_HOME/bin\" \"$${GETTEXT_LOCATION}\" \"$$PWD/../Tools\" \"$$PWD/../Engine/jaspGraphs\" ) &&
+	
+	#Create R-jaspBase.mo translation file. (Need to add GETTEXT location to PATH environment.)
+	maketranslations.commands += $$quote(\"$$PWD/../Tools/translate.cmd\" \"$$_R_HOME/bin\" \"$${GETTEXT_LOCATION}\" \"$$PWD/../Tools\" \"$$PWD/../Engine/jaspBase\" ) &&
+   
+	#Copy to Resources
 	maketranslations.commands += $$quote(copy \"$${RESOURCES_TRANSLATIONS}\*.qm\" \"$${RESOURCES_DESTINATION_TRANSLATIONS}\" ) &&
-
-    #Create R-JASP.mo translation file. (Need to add GETTEXT location to PATH environment.)
-    maketranslations.commands += $$quote(\"$$PWD/../Tools/translate.cmd\" \"$$_R_HOME/bin\" \"$${GETTEXT_LOCATION}\" \"$$PWD/../Tools\" \"$$PWD/../Engine/jaspBase\" ) &&
-
-    #Create R-JASPgraphs.mo translation file. (Need to add GETTEXT location to PATH environment.)
-    maketranslations.commands += $$quote(\"$$PWD/../Tools/translate.cmd\" \"$$_R_HOME/bin\" \"$${GETTEXT_LOCATION}\" \"$$PWD/../Tools\" \"$$PWD/../Engine/jaspGraphs\" )
-
     maketranslations.depends  = copyres
-  }
-}
+	maketranslations.commands += $$quote(echo "End translation task")
+	
+}#End Win32
 
-unix {
+unix { ######################## Unix language files ##################################
+	
+	delres.commands += rm -rf $$RESOURCES_DESTINATION;
+	copyres.commands += $(MKDIR) $$RESOURCES_DESTINATION ;
+	copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_DESTINATION ;
 
-  GETTEXT_LOCATION = $$(GETTEXT_PATH)
-  isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
-
-  EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$dirname(QMAKE_QMAKE)
-
-  delres.commands += rm -rf $$RESOURCES_DESTINATION;
-  copyres.commands += $(MKDIR) $$RESOURCES_DESTINATION ;
-  copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_DESTINATION ;
-
-  $$GENERATE_LANGUAGE_FILES {
-  
+	#Update and  Cleanup .pot file
 	maketranslations.commands += export PATH=$$EXTENDED_PATH;
-    maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp.po ;
-    #cleanup po files
-	maketranslations.commands += msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp.po -o $$SOURCES_TRANSLATIONS/jasp.po ;
+	maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD -ts $$SOURCES_TRANSLATIONS/jaspDesktop.pot ;   
+    maketranslations.commands += msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jaspDesktop.pot -o $$SOURCES_TRANSLATIONS/jaspDesktop.pot ;
 
-    for(LANGUAGE_CODE, SUPPORTED_LANGUAGES) {
-	   maketranslations.commands += $$quote(echo "Generating language File: $${LANGUAGE_CODE}") &&
-	   maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po ;
-       #cleanup po files
-       maketranslations.commands += msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po -o $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po ;
-       #Create jasp_$${LANGUAGE_CODE}.qm
-       maketranslations.commands += lrelease $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po -qm $$RESOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.qm ;
-       }
-    
-    maketranslations.commands += cp $$RESOURCES_TRANSLATIONS/*.qm $$RESOURCES_DESTINATION_TRANSLATIONS/ ;
+	for(LANGUAGE_CODE, SUPPORTED_LANGUAGES) {
+		maketranslations.commands += $$quote(echo "Generating language File: $${LANGUAGE_CODE}" ;) 
+		
+		#Initialize QML jaspDesktop-xx.po from previous language files
+		#!exists($$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po){
+		#	maketranslations.commands += $$quote(echo "INITIALIZE JASPDESKTOP FILES WITH MSGMERGE: $${LANGUAGE_CODE} ;")
+		#	maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD -ts $$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po ;
+		#	maketranslations.commands += msgmerge $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po $$SOURCES_TRANSLATIONS/jaspDesktop.pot > $$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po ;
+		#	maketranslations.commands += msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po -o $$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po ;
+		#}
 
-    #Create R-JASP.mo translation file. (Need to add GETTEXT location to PATH environment.)
-	maketranslations.commands +=  Rscript $$PWD/../Tools/translate.R $$PWD/../Engine/JASP ;
+		#Initialize R jaspBase-xx.po from previous language files (R in jaspBase is now a subset of pre-Modules all R)
+		#!exists($$PWD/../Engine/jaspBase/po/jaspBase-$${LANGUAGE_CODE}.po){
+		#	maketranslations.commands += $$quote(echo "INITIALIZE R-TRANSLATION-FILES FOR jaspBase WITH MSGMERGE: $${LANGUAGE_CODE}");
+		#	maketranslations.commands += Rscript $$PWD/../Tools/translate.R $$PWD/../Engine/jaspBase ;						
+		#	maketranslations.commands += msgmerge $$PWD/../Engine/jaspBase/po/R-$${LANGUAGE_CODE}.po.0.14.1 $$PWD/../Engine/jaspBase/po/R-jaspBase.pot > $$PWD/../Engine/jaspBase/po/R-$${LANGUAGE_CODE}.po ;			
+		#	maketranslations.commands += msgattrib --no-obsolete --no-location $$PWD/../Engine/jaspBase/po/R-$${LANGUAGE_CODE}.po -o $$PWD/../Engine/jaspBase/po/R-$${LANGUAGE_CODE}.po ;
+		#}
 
-    #Create R-jaspGraphs.mo translation file. (Need to add GETTEXT location to PATH environment.)
-	maketranslations.commands +=  Rscript $$PWD/../Tools/translate.R $$PWD/../Engine/jaspGraphs ;
+		#Update and Cleanup QML .po file
+		maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD -ts $$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po ;
+		maketranslations.commands += msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po -o $$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po ;
+		
+		#Create jaspDesktop-$${LANGUAGE_CODE}.qm
+		maketranslations.commands += lrelease  $$SOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.po -qm $$RESOURCES_TRANSLATIONS/jaspDesktop-$${LANGUAGE_CODE}.qm ;
+		
+	}#Loop over languages
+	
+	#Create jaspBase.mo translation files. (Need to add GETTEXT location to PATH environment.)
+	maketranslations.commands +=  Rscript $$PWD/../Tools/translate.R $$PWD/../Engine/jaspBase ;	
 
-    maketranslations.depends  = copyres
-  
-  }
-}
+	#Create jaspGraphs.mo translation files. 
+	maketranslations.commands +=  Rscript $$PWD/../Tools/translate.R $$PWD/../Engine/jaspGraphs ;		
+
+	#Copy to Resources
+	maketranslations.commands += cp $$RESOURCES_TRANSLATIONS/*.qm $$RESOURCES_DESTINATION_TRANSLATIONS/ ;
+	maketranslations.depends  = copyres
+	
+}#end Unix
+
+}#End Generate Language Files
 
 copyres.depends = delres
 

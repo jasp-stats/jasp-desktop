@@ -111,14 +111,15 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 		}
 
 		_modules[moduleName] = module;
-
+		
+		
 		if(!module->initialized())
-		{
+		{	
 			connect(module, &Modules::DynamicModule::registerForLoading,			this, &DynamicModules::registerForLoading			);
 			connect(module, &Modules::DynamicModule::registerForInstalling,			this, &DynamicModules::registerForInstalling		);
 			connect(module, &Modules::DynamicModule::registerForInstallingModPkg,	this, &DynamicModules::registerForInstallingModPkg	);
 			connect(module, &Modules::DynamicModule::descriptionReloaded,			this, &DynamicModules::descriptionReloaded			);
-
+			
 			module->initialize();
 		}
 
@@ -134,7 +135,7 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 			emit dynamicModuleChanged(module);
 			emit loadModuleTranslationFile(module);
 			restartEngines();
-		}
+		}		
 
 		return true;
 	}

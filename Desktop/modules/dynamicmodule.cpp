@@ -131,9 +131,13 @@ void DynamicModule::initialize()
 
 	//Ok everything seems to be in order, let's load!
 	QString qmlTxt = "", jsonTxt = "";
+	
+	QUrl url;
 	try
 	{
 		QFileInfo descriptionInfo = checkForExistence(getQmlDescriptionFilename(), true);
+		
+		url = QUrl::fromLocalFile(descriptionInfo.absoluteFilePath());
 
 		QFile descriptionFile(descriptionInfo.absoluteFilePath());
 		descriptionFile.open(QFile::ReadOnly);
@@ -147,8 +151,8 @@ void DynamicModule::initialize()
 	{
 		throw std::runtime_error("Couldn't find " + getQmlDescriptionFilename());
 	}
-
-	loadDescriptionQml(qmlTxt);
+	
+	loadDescriptionQml(qmlTxt, url);
 	
 	QFile DESCRIPTION(checkForExistence("DESCRIPTION", true).absoluteFilePath());
 	DESCRIPTION.open(QFile::ReadOnly);
@@ -161,8 +165,10 @@ void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath)
 
 	if(descriptionQml == "")
 		throw std::runtime_error("No description found in folder " + folderPath);
-
-	loadDescriptionQml(tq(descriptionQml));
+	
+	QUrl url = QUrl(".");
+	
+	loadDescriptionQml(tq(descriptionQml), url);
 	
 	loadRequiredModulesFromFolder(_modulePackage);
 }
@@ -174,7 +180,9 @@ void DynamicModule::loadDescriptionFromArchive(const std::string & archivePath)
 	if(descriptionQml == "")
 		throw std::runtime_error("No description found in archive " + archivePath);
 
-	loadDescriptionQml(tq(descriptionQml));
+	QUrl url = QUrl(".");
+	
+	loadDescriptionQml(tq(descriptionQml), url);
 	
 	loadRequiredModulesFromArchive(archivePath);
 }
@@ -219,14 +227,14 @@ void DynamicModule::loadRequiredModulesFromDESCRIPTIONTxt(const QString & DESCRI
 //Turning QMLENGINE_DOES_ALL_THE_WORK on also works fine, but has slightly less transparent errormsgs so isn't recommended
 //#define QMLENGINE_DOES_ALL_THE_WORK
 
-Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, QUrl url, const std::string & moduleName)
+Description * DynamicModule::instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName)
 {	
 	QObject * obj = nullptr;
 #ifdef QMLENGINE_DOES_ALL_THE_WORK
 	obj = DynamicModules::dynMods()->loadQmlData(descriptionTxt, url);
-#else
+#else		
 	QQmlContext * ctxt = DynamicModules::dynMods()->requestRootContext();
-
+		
 	QQmlComponent descriptionQmlComp(ctxt->engine());
 
 	//Log::log() << "Setting url to '" << url.toString() << "' for Description.qml.\n" << std::endl;// data: '" << descriptionTxt << "'\n"<< std::endl;
@@ -257,10 +265,11 @@ Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, Q
 
 	if(!descriptionQmlComp.isReady())
 		throw ModuleException(moduleName, "Description Component is not ready!");
-
+	
 	QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
-	descriptionQmlComp.create(localIncubator, ctxt);
 
+	descriptionQmlComp.create(localIncubator);
+	
 	errorLogger(localIncubator.isError(), localIncubator.errors());
 
 	obj = localIncubator.object();
@@ -272,9 +281,10 @@ Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, Q
 	return description;
 }
 
-void DynamicModule::loadDescriptionQml(QString descriptionTxt)
+
+void DynamicModule::loadDescriptionQml(const QString & descriptionTxt, const QUrl & url)
 {
-	Description * description = instantiateDescriptionQml(descriptionTxt, QUrl("."), name());
+	Description * description = instantiateDescriptionQml(descriptionTxt, url, name());
 
 	if(!description)
 		throw ModuleException(name(), getQmlDescriptionFilename() + " must have Description object as root!");
