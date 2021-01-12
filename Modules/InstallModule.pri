@@ -72,3 +72,4 @@ isEmpty(MODULE_NAME) {
 #reset the special vars:
 MODULE_NAME =
 MODULE_DEPS = 
+R_MODULES_INSTALL_DEPENDENCIES = false

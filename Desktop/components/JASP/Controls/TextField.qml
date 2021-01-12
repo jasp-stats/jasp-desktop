@@ -117,7 +117,7 @@ TextInputBase
 			id:				controlBackground
 			color:			jaspTheme.controlBackgroundColor
 			border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
-			border.color:	textField.showBorder							? jaspTheme.borderColor : "transparent"
+			border.color:	jaspTheme.borderColor //If the border width is zero the color is inconsequential
 			radius:			jaspTheme.borderRadius
 		}
 
@@ -125,10 +125,10 @@ TextInputBase
 		{
 			id:					externalControlBackground
 			height:				parent.height + jaspTheme.jaspControlHighlightWidth
-			width:				parent.width + jaspTheme.jaspControlHighlightWidth
+			width:				parent.width  + jaspTheme.jaspControlHighlightWidth
 			color:				"transparent"
-			border.width:		3
-			border.color:		control.acceptableInput ? "transparent" : jaspTheme.red // Needed when the QML file has wrong default value
+			border.width:		control.acceptableInput ? 0 : 3 //See comment below
+			border.color:		jaspTheme.red // Needed when the QML file has wrong default value
 			anchors.centerIn:	parent
 			opacity:			debug ? .3 : 1
 			visible:			textField.useExternalBorder

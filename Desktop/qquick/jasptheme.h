@@ -170,6 +170,8 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QString            iconPath                        READ iconPath                                                                 NOTIFY iconPathChanged                        )
 	Q_PROPERTY(QString            themeName                       READ themeName                       WRITE setThemeName                       NOTIFY themeNameChanged                       )
 
+	Q_PROPERTY(bool               isDark                          READ isDark                          WRITE setIsDark                          NOTIFY isDarkChanged						  )
+
 public:
 	explicit JaspTheme(QQuickItem * item = nullptr);
 	~JaspTheme();
@@ -240,74 +242,74 @@ public:
 	QColor				sliderPartOn() 						const	{ return _sliderPartOn; }
 	QColor				sliderPartOff() 					const	{ return _sliderPartOff; }
 	QColor				darkeningColour()					const	{ return _darkeningColour;	}
-	theme_distanceType	borderRadius()						const	{ return _borderRadius * uiScale(); }
-	theme_distanceType	shadowRadius()						const	{ return _shadowRadius * uiScale(); }
-	theme_distanceType	itemPadding()						const	{ return _itemPadding * uiScale(); }
-	theme_distanceType	jaspControlPadding()				const	{ return _jaspControlPadding * uiScale(); }
-	theme_distanceType	ribbonButtonPadding()				const	{ return _ribbonButtonPadding * uiScale(); }
-	theme_distanceType	groupContentPadding()				const	{ return _groupContentPadding * uiScale(); }
-	theme_distanceType	rowSpacing()						const	{ return _rowSpacing * uiScale(); }
-	theme_distanceType	rowGridSpacing()					const	{ return _rowGridSpacing * uiScale(); }
-	theme_distanceType	rowGroupSpacing()					const	{ return _rowGroupSpacing * uiScale(); }
-	theme_distanceType	columnGridSpacing()					const	{ return _columnGridSpacing * uiScale(); }
-	theme_distanceType	columnGroupSpacing()				const	{ return _columnGroupSpacing * uiScale(); }
-	theme_distanceType	indentationLength()					const	{ return _indentationLength * uiScale(); }
-	theme_distanceType	labelSpacing()						const	{ return _labelSpacing * uiScale(); }
-	theme_distanceType	menuSpacing()						const	{ return _menuSpacing * uiScale(); }
-	theme_distanceType	menuPadding()						const	{ return _menuPadding * uiScale(); }
-	theme_distanceType	generalAnchorMargin()				const	{ return _generalAnchorMargin * uiScale(); }
-	theme_distanceType	generalMenuMargin()					const	{ return _generalMenuMargin * uiScale(); }
-	theme_distanceType	titleBottomMargin()					const	{ return _titleBottomMargin * uiScale(); }
-	theme_distanceType	contentMargin()						const	{ return _contentMargin * uiScale(); }
-	theme_distanceType	subOptionOffset()					const	{ return _subOptionOffset * uiScale(); }
-	theme_sizeType		minPanelWidth()						const	{ return _minPanelWidth * uiScale(); }
-	theme_sizeType		resultWidth()						const	{ return _resultWidth * uiScale(); }
-	theme_sizeType		formWidth()							const	{ return _formWidth * uiScale(); }
-	theme_sizeType		iconSize()							const	{ return _iconSize * uiScale(); }
-	theme_sizeType		formMargin()						const	{ return _formMargin * uiScale(); }
-	theme_sizeType		formExpanderHeaderHeight()			const	{ return _formExpanderHeaderHeight * uiScale(); }
-	theme_sizeType		sliderWidth()						const	{ return _sliderWidth * uiScale(); }
-	theme_sizeType		sliderLength()						const	{ return _sliderLength * uiScale(); }
-	theme_sizeType		switchHeight()						const	{ return _switchHeight * uiScale(); }
-	theme_sizeType		spinBoxHeight()						const	{ return _spinBoxHeight * uiScale(); }
-	theme_sizeType		spinBoxWidth()						const	{ return _spinBoxWidth * uiScale(); }
-	theme_sizeType		comboBoxHeight()					const	{ return _comboBoxHeight * uiScale(); }
-	theme_sizeType		textFieldWidth()					const	{ return _textFieldWidth * uiScale(); }
-	theme_sizeType		textFieldHeight()					const	{ return _textFieldHeight * uiScale(); }
-	theme_sizeType		numericFieldWidth()					const	{ return _numericFieldWidth * uiScale(); }
-	theme_sizeType		splitHandleWidth()					const	{ return _splitHandleWidth * uiScale(); }
-	theme_sizeType		subMenuIconHeight()					const	{ return _subMenuIconHeight * uiScale(); }
-	theme_sizeType		ribbonButtonHeight()				const	{ return _ribbonButtonHeight * uiScale(); }
-	theme_sizeType		variablesListTitle()				const	{ return _variablesListTitle * uiScale(); }
-	theme_sizeType		sliderHandleDiameter()				const	{ return _sliderHandleDiameter * uiScale(); }
-	theme_sizeType		defaultTextAreaHeight()				const	{ return _defaultTextAreaHeight * uiScale(); }
-	theme_sizeType		jaspControlHighlightWidth()			const	{ return _jaspControlHighlightWidth * uiScale(); }
-	theme_sizeType		defaultVariablesFormHeight()		const	{ return _defaultVariablesFormHeight * uiScale(); }
-	theme_sizeType		defaultSingleItemListHeight()		const	{ return _defaultSingleItemListHeight * uiScale(); }
-	theme_sizeType		defaultRectangularButtonHeight()	const	{ return _defaultRectangularButtonHeight * uiScale(); }
-	theme_sizeType		smallDefaultVariablesFormHeight()	const	{ return _smallDefaultVariablesFormHeight * uiScale(); }
-	theme_sizeType		messageBoxButtonHeight()			const	{ return _messageBoxButtonHeight * uiScale(); }
-	theme_sizeType		scrollbarBoxWidthBig()				const	{ return _scrollbarBoxWidthBig * uiScale(); }
-	theme_sizeType		scrollbarBoxWidth()					const	{ return _scrollbarBoxWidth * uiScale(); }
-	theme_sizeType		menuItemHeight()					const	{ return _menuItemHeight * uiScale(); }
-	theme_sizeType		menuGroupTitleHeight()				const	{ return _menuGroupTitleHeight * uiScale(); }
-	theme_sizeType		menuHeaderHeight()					const	{ return _menuHeaderHeight * uiScale(); }
+	theme_distanceType	borderRadius()						const	{ return _borderRadius						* uiScale(); }
+	theme_distanceType	shadowRadius()						const	{ return _shadowRadius						* uiScale(); }
+	theme_distanceType	itemPadding()						const	{ return _itemPadding						* uiScale(); }
+	theme_distanceType	jaspControlPadding()				const	{ return _jaspControlPadding				* uiScale(); }
+	theme_distanceType	ribbonButtonPadding()				const	{ return _ribbonButtonPadding				* uiScale(); }
+	theme_distanceType	groupContentPadding()				const	{ return _groupContentPadding				* uiScale(); }
+	theme_distanceType	rowSpacing()						const	{ return _rowSpacing						* uiScale(); }
+	theme_distanceType	rowGridSpacing()					const	{ return _rowGridSpacing					* uiScale(); }
+	theme_distanceType	rowGroupSpacing()					const	{ return _rowGroupSpacing					* uiScale(); }
+	theme_distanceType	columnGridSpacing()					const	{ return _columnGridSpacing					* uiScale(); }
+	theme_distanceType	columnGroupSpacing()				const	{ return _columnGroupSpacing				* uiScale(); }
+	theme_distanceType	indentationLength()					const	{ return _indentationLength					* uiScale(); }
+	theme_distanceType	labelSpacing()						const	{ return _labelSpacing						* uiScale(); }
+	theme_distanceType	menuSpacing()						const	{ return _menuSpacing						* uiScale(); }
+	theme_distanceType	menuPadding()						const	{ return _menuPadding						* uiScale(); }
+	theme_distanceType	generalAnchorMargin()				const	{ return _generalAnchorMargin				* uiScale(); }
+	theme_distanceType	generalMenuMargin()					const	{ return _generalMenuMargin					* uiScale(); }
+	theme_distanceType	titleBottomMargin()					const	{ return _titleBottomMargin					* uiScale(); }
+	theme_distanceType	contentMargin()						const	{ return _contentMargin						* uiScale(); }
+	theme_distanceType	subOptionOffset()					const	{ return _subOptionOffset					* uiScale(); }
+	theme_sizeType		minPanelWidth()						const	{ return _minPanelWidth						* uiScale(); }
+	theme_sizeType		resultWidth()						const	{ return _resultWidth						* uiScale(); }
+	theme_sizeType		formWidth()							const	{ return _formWidth							* uiScale(); }
+	theme_sizeType		iconSize()							const	{ return _iconSize							* uiScale(); }
+	theme_sizeType		formMargin()						const	{ return _formMargin						* uiScale(); }
+	theme_sizeType		formExpanderHeaderHeight()			const	{ return _formExpanderHeaderHeight			* uiScale(); }
+	theme_sizeType		sliderWidth()						const	{ return _sliderWidth						* uiScale(); }
+	theme_sizeType		sliderLength()						const	{ return _sliderLength						* uiScale(); }
+	theme_sizeType		switchHeight()						const	{ return _switchHeight						* uiScale(); }
+	theme_sizeType		spinBoxHeight()						const	{ return _spinBoxHeight						* uiScale(); }
+	theme_sizeType		spinBoxWidth()						const	{ return _spinBoxWidth						* uiScale(); }
+	theme_sizeType		comboBoxHeight()					const	{ return _comboBoxHeight					* uiScale(); }
+	theme_sizeType		textFieldWidth()					const	{ return _textFieldWidth					* uiScale(); }
+	theme_sizeType		textFieldHeight()					const	{ return _textFieldHeight					* uiScale(); }
+	theme_sizeType		numericFieldWidth()					const	{ return _numericFieldWidth					* uiScale(); }
+	theme_sizeType		splitHandleWidth()					const	{ return _splitHandleWidth					* uiScale(); }
+	theme_sizeType		subMenuIconHeight()					const	{ return _subMenuIconHeight					* uiScale(); }
+	theme_sizeType		ribbonButtonHeight()				const	{ return _ribbonButtonHeight				* uiScale(); }
+	theme_sizeType		variablesListTitle()				const	{ return _variablesListTitle				* uiScale(); }
+	theme_sizeType		sliderHandleDiameter()				const	{ return _sliderHandleDiameter				* uiScale(); }
+	theme_sizeType		defaultTextAreaHeight()				const	{ return _defaultTextAreaHeight				* uiScale(); }
+	theme_sizeType		jaspControlHighlightWidth()			const	{ return _jaspControlHighlightWidth			* uiScale(); }
+	theme_sizeType		defaultVariablesFormHeight()		const	{ return _defaultVariablesFormHeight		* uiScale(); }
+	theme_sizeType		defaultSingleItemListHeight()		const	{ return _defaultSingleItemListHeight		* uiScale(); }
+	theme_sizeType		defaultRectangularButtonHeight()	const	{ return _defaultRectangularButtonHeight	* uiScale(); }
+	theme_sizeType		smallDefaultVariablesFormHeight()	const	{ return _smallDefaultVariablesFormHeight	* uiScale(); }
+	theme_sizeType		messageBoxButtonHeight()			const	{ return _messageBoxButtonHeight			* uiScale(); }
+	theme_sizeType		scrollbarBoxWidthBig()				const	{ return _scrollbarBoxWidthBig				* uiScale(); }
+	theme_sizeType		scrollbarBoxWidth()					const	{ return _scrollbarBoxWidth					* uiScale(); }
+	theme_sizeType		menuItemHeight()					const	{ return _menuItemHeight					* uiScale(); }
+	theme_sizeType		menuGroupTitleHeight()				const	{ return _menuGroupTitleHeight				* uiScale(); }
+	theme_sizeType		menuHeaderHeight()					const	{ return _menuHeaderHeight					* uiScale(); }
 	float				maximumFlickVelocity()				const	{ return PreferencesModel::prefs()->maxFlickVelocity(); }
-	int					hoverTime()							const	{ return _hoverTime; }
-	int					fileMenuSlideDuration()				const	{ return _fileMenuSlideDuration; }
-	int					toolTipDelay()						const	{ return _toolTipDelay; }
-	int					toolTipTimeout()					const	{ return _toolTipTimeout; }
-	QFont				font()								const	{ return _font;	}
-	QFont				fontLabel()							const	{ return _fontLabel;	}
-	QFont				fontRibbon()						const	{ return _fontRibbon;	}
-	QFont				fontGroupTitle()					const	{ return _fontGroupTitle;	}
+	int					hoverTime()							const	{ return _hoverTime;					}
+	int					fileMenuSlideDuration()				const	{ return _fileMenuSlideDuration;		}
+	int					toolTipDelay()						const	{ return _toolTipDelay;					}
+	int					toolTipTimeout()					const	{ return _toolTipTimeout;				}
+	QFont				font()								const	{ return _font;							}
+	QFont				fontLabel()							const	{ return _fontLabel;					}
+	QFont				fontRibbon()						const	{ return _fontRibbon;					}
+	QFont				fontGroupTitle()					const	{ return _fontGroupTitle;				}
 	QFont				fontPrefOptionsGroupTitle()			const	{ return _fontPrefOptionsGroupTitle;	}
-	QFont				fontRCode()							const	{ return _fontRCode;	}
-	QFont				fontCode()							const	{ return _fontCode;	}
-	QString				iconPath()							const	{ return _iconPath; }
-	QString				themeName()							const	{ return _themeName;	}
+	QFont				fontRCode()							const	{ return _fontRCode;					}
+	QFont				fontCode()							const	{ return _fontCode;						}
+	QString				iconPath()							const	{ return _iconPath;						}
+	QString				themeName()							const	{ return _themeName;					}
 	static QString		currentIconPath();
-
+	bool				isDark()							const	{ return _isDark;						}
 
 signals:
 	void jaspThemeChanged(JaspTheme * newTheme);
@@ -439,6 +441,7 @@ signals:
 	void iconPathChanged(QString iconPath);
 	void themeNameChanged(QString themeName);
 	void currentThemeNameChanged(QString themeName);
+	void isDarkChanged(bool isDark);
 
 public slots:
 	void setRibbonScaleHovered(float ribbonScaleHovered);
@@ -565,6 +568,7 @@ public slots:
 	void setThemeName(QString themeName);
 	void setFontRCode(QFont fontRCode);
 	void setFontCode(QFont fontCode);
+	void setIsDark(bool isDark);
 
 private:
 	void connectSizeDistancesToUiScaleChanged();
@@ -707,6 +711,8 @@ private:
 
 	QString				_iconPath,
 						_themeName;
+
+	bool				_isDark = false;
 
 	static QFontMetricsF					_fontMetrics;
 	static std::map<QString, JaspTheme *>	_themes;

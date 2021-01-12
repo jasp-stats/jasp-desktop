@@ -1246,6 +1246,15 @@ void JaspTheme::setFontCode(QFont fontCode)
 	emit fontCodeChanged(_fontCode);
 }
 
+void JaspTheme::setIsDark(bool isDark)
+{
+	if (_isDark == isDark)
+		return;
+
+	_isDark = isDark;
+	emit isDarkChanged(_isDark);
+}
+
 QString JaspTheme::currentIconPath()
 {
 	if(_currentTheme)

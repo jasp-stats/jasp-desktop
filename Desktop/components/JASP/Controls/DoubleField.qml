@@ -40,7 +40,7 @@ TextField
 
 	onDefaultValueChanged:
 	{
-		if (_prevDefaultValue == value)
+		if (_prevDefaultValue === value)
 			value = defaultValue;
 
 		_prevDefaultValue = defaultValue;

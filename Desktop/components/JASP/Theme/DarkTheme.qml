@@ -3,6 +3,7 @@ import QtQuick 2.12
 Theme
 {
 	themeName:							"darkTheme"
+	isDark:								true
 
 	//Color definitions:
 	white:								"#333"
