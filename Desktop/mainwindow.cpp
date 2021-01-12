@@ -374,13 +374,13 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule				);
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
 	connect(_dynamicModules,		&DynamicModules::moduleEnabledChanged,				_preferences,			&PreferencesModel::moduleEnabledChanged						);
-	connect(_dynamicModules,		&DynamicModules::loadModuleTranslationFile,			_languageModel,			&LanguageModel::loadModuleTranslationFile					);
+	connect(_dynamicModules,		&DynamicModules::loadModuleTranslationFile,			_languageModel,			&LanguageModel::loadModuleTranslationFiles					);
 	connect(_dynamicModules,		&DynamicModules::requestRootContext,				this,					&MainWindow::giveRootQmlContext,							Qt::UniqueConnection);
 	connect(_dynamicModules,		&DynamicModules::loadQmlData,						this,					&MainWindow::loadQmlData,									Qt::UniqueConnection);
 
 	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
-	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);	
 
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
 }

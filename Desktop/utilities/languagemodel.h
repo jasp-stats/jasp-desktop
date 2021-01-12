@@ -58,7 +58,7 @@ public:
 	QLocale::Language currentLanguage()	const {return currentLanguageInfo().language; };
 
 	//This function (currentTranslationSuffix) should be made obsolete through the abolishment of all the _nl etc files:
-	static			QString			currentTranslationSuffix()	{ return currentLanguageInfo().language  == QLocale::English ? "" : ("_" + currentLanguageInfo().localName); }
+	static	QString	currentTranslationSuffix()	{ return currentLanguageInfo().language  == QLocale::English ? "" : (suffixChar() + currentLanguageInfo().localName); }
 
 	void setApplicationEngine(QQmlApplicationEngine	 * ae) { _qml = ae; }
 	void initialize();
@@ -67,7 +67,7 @@ public:
 public slots:
 	void changeLanguage(int index);
 	void setCurrentIndex(int currentIndex);
-	void loadModuleTranslationFile(Modules::DynamicModule *dyn);
+	void loadModuleTranslationFiles(Modules::DynamicModule *dyn);
 	void resultsPageLoaded();
 
 signals:
@@ -75,6 +75,7 @@ signals:
 	void languageChanged();
 
 private:
+	static char		suffixChar() { return _singleton->_suffixChar; }
 	static const	LanguageInfo &	currentLanguageInfo()		{ return _singleton->_currentLanguageInfo; }
 
 	void		findQmFiles(QString qmlocation);
@@ -104,6 +105,7 @@ private:
 
 	int			_currentIndex = 0;
 	bool		_shouldEmitLanguageChanged = false;
+	char		_suffixChar;
 };
 
 

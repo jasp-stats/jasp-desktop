@@ -164,7 +164,7 @@ public:
 	bool isBundled()	const { return _bundled;		}
 
 	void initialize(); //returns true if install of package(s) should be done
-	void loadDescriptionQml(QString descriptionTxt);
+	void loadDescriptionQml(const QString & descriptionTxt, const QUrl & url);
 
 
 	void loadDescriptionFromFolder(									const std::string & folderPath);
@@ -186,7 +186,7 @@ public:
 
 	void unpackage();
 	///Make sure url ends with the actual filename of the qml you are loading, otherwise translations will not work! Also make it with QUrl::fromLocalFile otherwise Windows messes things up
-	static Description * instantiateDescriptionQml(QString descriptionTxt, QUrl url, const std::string & moduleName);
+	static Description * instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName);
 
 	std::string toString();
 	void loadInfoFromDescriptionItem(Description * description);

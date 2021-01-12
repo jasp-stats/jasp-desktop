@@ -117,3 +117,26 @@ macx {
 DEFINES += JASP_COLUMN_ENCODE_ALL
 
 linux: QMAKE_LFLAGS += -fuse-ld=gold
+
+#All language translation related defines are below
+GENERATE_LANGUAGE_FILES = false
+#AM_I_BUILDBOT is set as a "qmake internal var" in the command line
+message("AM_I_BUILDBOT: '$$[AM_I_BUILDBOT]'")
+COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equals function below actually works...
+!equals(COPY_BUILDBOTNESS, "") {
+!equals(COPY_BUILDBOTNESS, "\"\"") { #this should be done less stupidly but I do not want to waste my time on that now
+	GENERATE_LANGUAGE_FILES = true
+}
+}
+
+GETTEXT_LOCATION = $$(GETTEXT_PATH) #The GETTEXT_PATH can be used as environment for a specific gettext location
+unix{
+isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
+EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$dirname(QMAKE_QMAKE)
+}
+win32{
+isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
+WINQTBIN=$$QMAKE_QMAKE
+WINQTBIN ~= s,qmake.exe,,gs
+WINQTBIN ~= s,/,\\,g
+}
