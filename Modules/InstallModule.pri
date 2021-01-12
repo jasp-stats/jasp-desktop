@@ -42,13 +42,133 @@ isEmpty(MODULE_NAME) {
 	unix:  PostInstallFix$${MODULE_NAME}.commands       +=  LD_LIBRARY_PATH=$${_R_HOME}/lib $${JASP_BUILDROOT_DIR}/JASPEngine $$JASP_LIBRARY_DIR ;				$$escape_expand(\\n\\t)
 
 	PostInstallFix$${MODULE_NAME}.depends = Install$${MODULE_NAME}
+	
+	############# All Translations related commands ###############
+	
+	$$GENERATE_LANGUAGE_FILES {
+	
+	QM_TRANSLATION_FOLDER = /inst/qml/translations
+	QM_FILE_LOCATION = $$PWD/$${MODULE_NAME}$${QM_TRANSLATION_FOLDER}
+	
+	win32{ ################## Windows ##################
 
-    QMAKE_EXTRA_TARGETS += Install$${MODULE_NAME}
-	POST_TARGETDEPS     += Install$${MODULE_NAME}
+		WIN_MODULE_LOCATION = $$PWD/$${MODULE_NAME}
+		WIN_MODULE_LOCATION ~= s,/,\\,g
+		WIN_QM_FILE_LOCATION = $${QM_FILE_LOCATION}
+		WIN_QM_FILE_LOCATION ~= s,/,\\,g
+		WINPWD=$$PWD
+		WINPWD ~= s,/,\\,g
+		FILE_EXTENSIONS=cpp,qml
 
-    QMAKE_EXTRA_TARGETS += PostInstallFix$${MODULE_NAME}
-	POST_TARGETDEPS     += PostInstallFix$${MODULE_NAME}
-    
+		#Create inst/qml/translations folder if not exists
+		!exists($${WIN_QM_FILE_LOCATION}){
+		GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(echo '\"$${WIN_QM_FILE_LOCATION}\" does not exits. Creating it.') &&
+		GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(md \"$${WIN_QM_FILE_LOCATION}\") &&
+		}
+
+		#Create po folder if not exists
+		!exists($${WIN_MODULE_LOCATION}\po){
+		GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(echo '\"$${WIN_MODULE_LOCATION}\po\" does not exits. Creating it.') &&
+		GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(md \"$${WIN_MODULE_LOCATION}\po\") &&
+		}
+
+		#Update and Cleanup QML-$${MODULE_NAME}.pot file
+		GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${WINQTBIN}lupdate.exe\" -locations none -extensions $${FILE_EXTENSIONS} -recursive \"$${WIN_MODULE_LOCATION}\" -ts \"$${WIN_MODULE_LOCATION}\po\QML-$${MODULE_NAME}.pot\") &&
+		GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location \"$${WIN_MODULE_LOCATION}\po\QML-$${MODULE_NAME}.pot\" -o \"$${WIN_MODULE_LOCATION}\po\QML-$${MODULE_NAME}.pot\") &&
+
+		for(LANGUAGE_CODE, SUPPORTED_LANGUAGES) {
+			#Busy Message
+			GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(echo "Generating language File: $${LANGUAGE_CODE}") &&
+
+			#Initialize R-xx.po from previous language files
+			!exists($${WIN_MODULE_LOCATION}\po\R-$${LANGUAGE_CODE}.po){
+				GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(echo "INITIALIZE R-TRANSLATION-FILES FOR $${MODULE_NAME} WITH MSGMERGE: $${LANGUAGE_CODE}") &&
+				GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${WINPWD}\..\Tools\translate.cmd\" \"$$_R_HOME\bin\" \"$${GETTEXT_LOCATION}\" \"$${WINPWD}\..\Tools\" \"$${WIN_MODULE_LOCATION}\" ) &&
+				GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${GETTEXT_LOCATION}\msgmerge.exe\" \"$${WINPWD}\..\Engine\jaspBase\po\R-$${LANGUAGE_CODE}.po\" \"$${WIN_MODULE_LOCATION}\po\R-$${MODULE_NAME}.pot\" > \"$${WIN_MODULE_LOCATION}\po\R-$${LANGUAGE_CODE}.po\" ) &&
+				GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location \"$${WIN_MODULE_LOCATION}\po\R-$${LANGUAGE_CODE}.po\" -o \"$${WIN_MODULE_LOCATION}\po\R-$${LANGUAGE_CODE}.po\") &&
+			}
+
+			#Initialize QML-xx.po from previous language files
+			!exists($${WIN_MODULE_LOCATION}\po\R-$${LANGUAGE_CODE}.po){
+				GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(echo "INITIALIZE QML-TRANSLATION-FILES FOR $${MODULE_NAME} WITH MSGMERGE: $${LANGUAGE_CODE}") &&
+				GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${GETTEXT_LOCATION}\msgmerge.exe\" \"$${WINPWD}\..\Desktop\po\jasp_$${LANGUAGE_CODE}.po\" \"$${WIN_MODULE_LOCATION}\po\QML-$${MODULE_NAME}.pot\" > \"$${WIN_MODULE_LOCATION}\po\QML-$${LANGUAGE_CODE}.po\" ) &&
+				GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location \"$${WIN_MODULE_LOCATION}\po\QML-$${LANGUAGE_CODE}.po\" -o \"$${WIN_MODULE_LOCATION}\po\QML-$${LANGUAGE_CODE}.po\") &&
+			}
+
+			GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${WINQTBIN}lupdate.exe\" -locations none -extensions $${FILE_EXTENSIONS} -recursive \"$${WIN_MODULE_LOCATION}\" -ts  \"$${WIN_MODULE_LOCATION}\po\QML-$${LANGUAGE_CODE}.po\") &&
+			#Cleanup QML-xx.po file
+			GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location \"$${WIN_MODULE_LOCATION}\po\QML-$${LANGUAGE_CODE}.po\" -o \"$${WIN_MODULE_LOCATION}\po\QML-$${LANGUAGE_CODE}.po\") &&
+			#Create $${MODULE_NAME}-$${LANGUAGE_CODE}.qm
+			GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${WINQTBIN}lrelease.exe\" \"$${WIN_MODULE_LOCATION}\po\QML-$${LANGUAGE_CODE}.po\" -qm \"$${WIN_QM_FILE_LOCATION}\\$${MODULE_NAME}-$${LANGUAGE_CODE}.qm\") &&
+
+		}#End for
+
+		#Create R-$${MODULE_NAME}.mo translation file for all different languages. (Need to add GETTEXT location to PATH environment.)
+		GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(\"$${WINPWD}\..\Tools\translate.cmd\" \"$$_R_HOME\bin\" \"$${GETTEXT_LOCATION}\" \"$${WINPWD}\..\Tools\" \"$${WIN_MODULE_LOCATION}\" ) &&
+
+		#Ready
+		GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(echo 'Ready with language files.')
+	}#Win32
+
+	unix{ ################## Unix ##################
+
+		#Create inst/qml/translations folder if not exists
+		!exists($${QM_FILE_LOCATION}){
+			GenerateLanguageFiles$${MODULE_NAME}.commands += echo '\"$${MODULE_NAME}$${QM_TRANSLATION_FOLDER}\" does not exits. Creating it.';
+			GenerateLanguageFiles$${MODULE_NAME}.commands += mkdir -p $${QM_FILE_LOCATION} ;
+		}
+
+		#Create po folder if not exists
+		!exists($$PWD/$${MODULE_NAME}/po){
+			GenerateLanguageFiles$${MODULE_NAME}.commands += echo '\"$$PWD/$${MODULE_NAME}/po\" does not exits. Creating it.';
+			GenerateLanguageFiles$${MODULE_NAME}.commands += mkdir -p \"$$PWD/$${MODULE_NAME}/po\" ;
+		}
+
+		#Update and Cleanup QML-$${MODULE_NAME}.pot file
+		GenerateLanguageFiles$${MODULE_NAME}.commands += export PATH=$$EXTENDED_PATH;
+		GenerateLanguageFiles$${MODULE_NAME}.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/$${MODULE_NAME} -ts $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot ;
+		GenerateLanguageFiles$${MODULE_NAME}.commands += msgattrib --no-obsolete --no-location $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot -o $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot ;
+
+		for(LANGUAGE_CODE, SUPPORTED_LANGUAGES) {
+			#Busy Message
+			GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(echo "Generating language File: $${LANGUAGE_CODE}");
+
+			#Initialize R-xx.po from obsolete language files
+			!exists($$PWD/$${MODULE_NAME}/po/R-$${LANGUAGE_CODE}.po){
+				GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(echo "INITIALIZE R-TRANSLATION-FILES FOR $${MODULE_NAME} WITH MSGMERGE: $${LANGUAGE_CODE}");
+				GenerateLanguageFiles$${MODULE_NAME}.commands +=  Rscript $$PWD/../Tools/translate.R $$PWD/$${MODULE_NAME} ;
+				GenerateLanguageFiles$${MODULE_NAME}.commands +=  msgmerge $$PWD/../Engine/jaspBase/po/R-$${LANGUAGE_CODE}.po.0.14.1 $$PWD/$${MODULE_NAME}/po/R-$${MODULE_NAME}.pot > $$PWD/$${MODULE_NAME}/po/R-$${LANGUAGE_CODE}.po ;
+				GenerateLanguageFiles$${MODULE_NAME}.commands += msgattrib --no-obsolete --no-location $$PWD/$${MODULE_NAME}/po/R-$${LANGUAGE_CODE}.po -o $$PWD/$${MODULE_NAME}/po/R-$${LANGUAGE_CODE}.po ;
+			}
+
+			#Initialize QML-xx.po from obsolete language files
+			!exists($$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po){
+				GenerateLanguageFiles$${MODULE_NAME}.commands += $$quote(echo "INITIALIZE QML-TRANSLATION-FILES FOR $${MODULE_NAME} WITH MSGMERGE: $${LANGUAGE_CODE}");
+				GenerateLanguageFiles$${MODULE_NAME}.commands +=  msgmerge $$PWD/../Desktop/po/jasp_$${LANGUAGE_CODE}.po $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot > $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po ;
+				GenerateLanguageFiles$${MODULE_NAME}.commands += msgattrib --no-obsolete --no-location $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po -o $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po ;
+			}
+
+			#Update and Cleanup QML-xx.po file
+			GenerateLanguageFiles$${MODULE_NAME}.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/$${MODULE_NAME} -ts $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po ;	
+			GenerateLanguageFiles$${MODULE_NAME}.commands += msgattrib --no-obsolete --no-location $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po -o $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po ;
+
+			#Create $${MODULE_NAME}.qm
+			GenerateLanguageFiles$${MODULE_NAME}.commands += lrelease $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po -qm $${QM_FILE_LOCATION}/$${MODULE_NAME}-$${LANGUAGE_CODE}.qm ;
+			}
+
+		#Create $${MODULE_NAME}.mo translation file. (Need to add GETTEXT location to PATH environment.)
+		GenerateLanguageFiles$${MODULE_NAME}.commands +=  Rscript $$PWD/../Tools/translate.R $$PWD/$${MODULE_NAME} ;
+	}#Unix
+	}#########################################################
+
+		QMAKE_EXTRA_TARGETS += Install$${MODULE_NAME}
+		POST_TARGETDEPS     += Install$${MODULE_NAME}
+
+		QMAKE_EXTRA_TARGETS += PostInstallFix$${MODULE_NAME}
+		POST_TARGETDEPS     += PostInstallFix$${MODULE_NAME}
+
+		QMAKE_EXTRA_TARGETS += GenerateLanguageFiles$${MODULE_NAME}
+		POST_TARGETDEPS     += GenerateLanguageFiles$${MODULE_NAME}
 
 
     #See this: https://www.qtcentre.org/threads/9287-How-do-I-get-QMAKE_CLEAN-to-delete-a-directory

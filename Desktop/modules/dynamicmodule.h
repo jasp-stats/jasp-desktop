@@ -164,7 +164,7 @@ public:
 	bool isBundled()	const { return _bundled;		}
 
 	void initialize(); //returns true if install of package(s) should be done
-	void loadDescriptionQml(QString descriptionTxt);
+	void loadDescriptionQml(QString descriptionTxt, QUrl & url);
 
 
 	void loadDescriptionFromFolder(									const std::string & folderPath);
