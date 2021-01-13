@@ -70,7 +70,7 @@ Popup
 					bottom:			buttonSeparator.top
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				
+
 				Flickable
 				{
 					id:						axesFlickable
@@ -81,61 +81,82 @@ Popup
 					contentHeight:			flickChild.height
 					contentWidth:			flickChild.width
 					flickableDirection:		Flickable.VerticalFlick
-					
-					
+										
 					onFlickStarted:			forceActiveFocus();
 					
 					Item
 					{
 						id:					flickChild
 						width:				axesFlickable.width
-						height:				yAxis.y + yAxis.height + jaspTheme.generalAnchorMargin
-					
-					
-						PlotEditingAxis
+						height:				xAxis.y + xAxis.height + jaspTheme.generalAnchorMargin
+
+
+						JASPC.DropDown
 						{
-							id:				xAxis
-							title:			qsTr("x-axis")
-							axisModel:		plotEditorModel.xAxis
-		
+							id:		axisDropDown
+							label: qsTr("Which axis should be shown?")
+							values:
+							[
+								{ label: qsTr("x-axis"),		value:	"x-axis"		},
+								{ label: qsTr("y-axis"),		value:	"y-axis"		}
+							]
+							startValue: "x-axis"
+
 							anchors
 							{
 								top:		parent.top
 								left:		parent.left
 								right:		parent.right
 								margins:	jaspTheme.generalAnchorMargin
-		
 							}
 						}
-		
-						Rectangle
-						{
-							id:				axisSeparator
-							height:			1
-							color:			jaspTheme.uiBorder
-							anchors
-							{
-								top:		xAxis.bottom
-								topMargin:	jaspTheme.generalAnchorMargin
-								left:		parent.left
-								right:		parent.right
-							}
-						}
-		
+					
 						PlotEditingAxis
 						{
-							id:				yAxis
-							title:			qsTr("y-axis")
-							axisModel:		plotEditorModel.yAxis
-		
+							id:				xAxis
+							// maybe do this in the onValueChanged of the dropdown with a switch?
+							title:			axisDropDown.value === "x-axis" ? qsTr("x-axis") : qsTr("y-axis")
+							axisModel:		axisDropDown.value === "x-axis" ? plotEditorModel.xAxis : plotEditorModel.yAxis
+
 							anchors
 							{
-								top:		axisSeparator.bottom
+								top:		axisDropDown.bottom
 								left:		parent.left
 								right:		parent.right
 								margins:	jaspTheme.generalAnchorMargin
 							}
 						}
+		
+//						Rectangle
+//						{
+//							id:				axisSeparator
+//							height:			1
+//							color:			jaspTheme.uiBorder
+//							anchors
+//							{
+//								top:		xAxis.bottom
+//								topMargin:	jaspTheme.generalAnchorMargin
+//								left:		parent.left
+//								right:		parent.right
+//							}
+//						}
+		
+//						PlotEditingAxis
+//						{
+//							id:				yAxis
+//							title:			qsTr("y-axis")
+//							axisModel:		plotEditorModel.yAxis
+//							advanced:		advanced.enabled
+//							visible:		axisDropDown.value === "y-axis"
+		
+//							anchors
+//							{
+//								top:		axisSeparator.bottom
+//								left:		parent.left
+//								right:		parent.right
+//								margins:	jaspTheme.generalAnchorMargin
+//							}
+//						}
 					}
 				}
 				
@@ -170,7 +191,7 @@ Popup
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				text:				qsTr("Exit")
+				text:				qsTr("Finish")
 				on_PressedChanged:	plotEditorPopup.close()
 			}
 
@@ -183,7 +204,7 @@ Popup
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				text:				qsTr("Reset plot")
+				text:				qsTr("Original plot")
 				on_PressedChanged:	plotEditorModel.resetPlot()
 			}
 
@@ -200,6 +221,28 @@ Popup
 				}
 				text:				qsTr("Save plot as")
 				on_PressedChanged:	plotEditorModel.savePlot()
+			}
+
+			JASPC.CheckBox
+			{
+				id:					advanced
+				label:				qsTr("Advanced mode")
+				checked:			false
+				anchors
+				{
+					right:			parent.right
+					bottom:			parent.bottom
+					margins:		jaspTheme.generalAnchorMargin
+				}
+				// no idea why `PlotEditingAxis { advanced = advanced.checked; ... }` doesn't work...
+				onCheckedChanged:	{
+
+					xAxis.advanced = this.checked
+//					if (!this.checked)
+//					{
+//						axisModel.limitsType === AxisModel.LimitsBreaks
+//					}
+				}
 			}
 
 			Item
