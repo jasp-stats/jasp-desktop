@@ -41,7 +41,7 @@ void ResultMenuModel::_generateCorrectlyTranslatedResultEntries()
 		{	"hasLaTeXCode",				ResultMenuEntry(tr("Copy LaTeX"),			"hasLaTeXCode",				"code-icon.png",			"window.latexCodeMenuClicked();")	},
 		{	"hasCite",					ResultMenuEntry(tr("Copy Citations"),		"hasCite",					"cite.png",					"window.citeMenuClicked();")		},
 		{	"hasSaveImg",				ResultMenuEntry(tr("Save Image As"),		"hasSaveImg",				"document-save-as.png",		"window.saveImageClicked();")		},
-		{	"hasEditImg",				ResultMenuEntry(tr("Edit Image"),			"hasEditImage",				"editImage.png",			"window.editImageClicked();")		},
+		{	"hasEditImg",				ResultMenuEntry(tr("Edit Image"),			"hasEditImg",				"editImage.png",			"window.editImageClicked();")		},
 		{	"hasNotes",					ResultMenuEntry(tr("Add Note"),				"hasNotes",					"",							"")									},
 		{	"hasDuplicate",				ResultMenuEntry(tr("Duplicate"),			"hasDuplicate",				"duplicate.png",			"window.duplicateMenuClicked();")	},
 		{	"hasRemove",				ResultMenuEntry(tr("Remove"),				"hasRemove",				"close-button.png",			"window.removeMenuClicked();")		},
@@ -134,9 +134,6 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 			}
 		}
 		else
-#ifndef JASP_DEBUG
-			if (key != "hasEditImg")
-#endif
 				entries.push_back(entry);
 	}
 

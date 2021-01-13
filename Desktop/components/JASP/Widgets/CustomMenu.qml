@@ -66,6 +66,7 @@ FocusScope
 			menu.menuOffset.y	= y_offset;
 			menu.menuScroll		= "0,0";
 			menu.showMe			= true;
+			
 			menu.forceActiveFocus();
 		}
 	}
