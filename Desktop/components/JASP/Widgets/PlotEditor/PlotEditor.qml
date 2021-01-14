@@ -114,9 +114,9 @@ Popup
 						PlotEditingAxis
 						{
 							id:				xAxis
-							// maybe do this in the onValueChanged of the dropdown with a switch?
-							title:			axisDropDown.value === "x-axis" ? qsTr("x-axis") : qsTr("y-axis")
-							axisModel:		axisDropDown.value === "x-axis" ? plotEditorModel.xAxis : plotEditorModel.yAxis
+							title:			qsTr("x-axis")
+							axisModel:		plotEditorModel.xAxis
+							visible:		axisDropDown.value === "x-axis"
 
 							anchors
 							{
@@ -126,37 +126,23 @@ Popup
 								margins:	jaspTheme.generalAnchorMargin
 							}
 						}
+
+						PlotEditingAxis
+						{
+							id:				yAxis
+							title:			qsTr("y-axis")
+							axisModel:		plotEditorModel.yAxis
+							visible:		axisDropDown.value === "y-axis"
 		
-//						Rectangle
-//						{
-//							id:				axisSeparator
-//							height:			1
-//							color:			jaspTheme.uiBorder
-//							anchors
-//							{
-//								top:		xAxis.bottom
-//								topMargin:	jaspTheme.generalAnchorMargin
-//								left:		parent.left
-//								right:		parent.right
-//							}
-//						}
-		
-//						PlotEditingAxis
-//						{
-//							id:				yAxis
-//							title:			qsTr("y-axis")
-//							axisModel:		plotEditorModel.yAxis
-//							advanced:		advanced.enabled
-//							visible:		axisDropDown.value === "y-axis"
-		
-//							anchors
-//							{
-//								top:		axisSeparator.bottom
-//								left:		parent.left
-//								right:		parent.right
-//								margins:	jaspTheme.generalAnchorMargin
-//							}
-//						}
+							anchors
+							{
+								top:		axisDropDown.bottom
+								left:		parent.left
+								right:		parent.right
+								margins:	jaspTheme.generalAnchorMargin
+							}
+						}
+
 					}
 				}
 				
@@ -165,6 +151,20 @@ Popup
 					id:				axesScrollbar
 					flickable:		axesFlickable
 					vertical:		true
+				}
+				JASPC.CheckBox
+				{
+					id:					advanced
+					label:				qsTr("Advanced settings")
+					checked:			false
+					anchors
+					{
+						right:			parent.right
+						bottom:			parent.bottom
+						margins:		jaspTheme.generalAnchorMargin
+					}
+					onCheckedChanged:	plotEditorModel.advanced = this.checked
+
 				}
 			}
 			
@@ -221,28 +221,6 @@ Popup
 				}
 				text:				qsTr("Save plot as")
 				on_PressedChanged:	plotEditorModel.savePlot()
-			}
-
-			JASPC.CheckBox
-			{
-				id:					advanced
-				label:				qsTr("Advanced mode")
-				checked:			false
-				anchors
-				{
-					right:			parent.right
-					bottom:			parent.bottom
-					margins:		jaspTheme.generalAnchorMargin
-				}
-				// no idea why `PlotEditingAxis { advanced = advanced.checked; ... }` doesn't work...
-				onCheckedChanged:	{
-
-					xAxis.advanced = this.checked
-//					if (!this.checked)
-//					{
-//						axisModel.limitsType === AxisModel.LimitsBreaks
-//					}
-				}
 			}
 
 			Item

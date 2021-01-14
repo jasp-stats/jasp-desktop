@@ -1,4 +1,5 @@
 #include "ploteditoraxismodel.h"
+#include "ploteditormodel.h"
 #include "utilities/qutils.h"
 #include "utilities/jsonutilities.h"
 #include "log.h"
@@ -90,6 +91,11 @@ void AxisModel::setTitleType(TitleType titleType)
 	emit somethingChanged();
 }
 
+AxisModel::AxisModel(PlotEditorModel *parent, bool vertical) : QAbstractTableModel(parent), _plotEditor(parent), _vertical(vertical)
+{
+
+}
+
 int AxisModel::rowCount(const QModelIndex &) const
 {
 	return _vertical ? (hasBreaks() ? 2 : 1) : int(std::max(_breaks.size(), _labels.size()));
@@ -172,6 +178,16 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 		if(_breaks[entry] != newBreak)
 		{
 			_breaks[entry] = newBreak;
+
+			if (!_plotEditor->advanced())
+			{
+				if (newBreak < _limits[0])
+					setLimits(newBreak, 0);
+				else if (newBreak > _limits[1])
+					setLimits(newBreak, 1);
+			}
+
+
 			emit dataChanged(index, index);
 			emit somethingChanged();
 		}
@@ -285,6 +301,22 @@ void AxisModel::setRange(const double value, const size_t idx)
 	emit somethingChanged();
 }
 
+void AxisModel::setFrom(const double from)
+{
+	setRange(from, 0);
+
+	if (_plotEditor->advanced())
+		setLimits(from, 0);
+}
+
+void AxisModel::setTo(const double to)
+{
+	setRange(to, 1);
+
+	if (_plotEditor->advanced())
+		setLimits(to, 1);
+}
+
 void AxisModel::setLimitsType(const LimitsType limitsType)
 {
 	if (_limitsType == limitsType)
@@ -371,6 +403,7 @@ std::string		AxisModel::TitleTypeToString (TitleType  type) const
 	case TitleType::TitleCharacter:		return "character";
 	case TitleType::TitleExpression:	return "expression";
 	case TitleType::TitleLaTeX:			return "LaTeX";
+	case TitleType::TitleNull:			return "NULL";
 	}
 
 	return "???"; //Can't get here but GCC doesnt understand that
@@ -382,6 +415,7 @@ std::string		AxisModel::BreaksTypeToString(BreaksType type) const
 	{
 	case BreaksType::BreaksManual:		return "manual";
 	case BreaksType::BreaksRange:		return "range";
+	case BreaksType::BreaksNull:		return "NULL";
 	}
 
 	return "???"; //Can't get here but GCC doesnt understand that
@@ -399,20 +433,22 @@ std::string		AxisModel::LimitsTypeToString(LimitsType type) const
 	return "???"; //Can't get here but GCC doesnt understand that
 }
 
-AxisModel::TitleType	AxisModel::TitleTypeFromString (std::string type) const
+AxisModel::TitleType	AxisModel::TitleTypeFromString (const std::string& type) const
 {
 	if(type == "expression")	return TitleType::TitleExpression;
 	if(type == "LaTeX")			return TitleType::TitleLaTeX;
+	if(type == "NULL")			return TitleType::TitleNull;
 								return TitleType::TitleCharacter; //default
 }
 
-AxisModel::BreaksType	AxisModel::BreaksTypeFromString(std::string type) const
+AxisModel::BreaksType	AxisModel::BreaksTypeFromString(const std::string& type) const
 {
 	if(type == "manual"	)	return BreaksType::BreaksManual;
+	if(type == "NULL")		return BreaksType::BreaksNull;
 							return BreaksType::BreaksRange; //default
 }
 
-AxisModel::LimitsType	AxisModel::LimitsTypeFromString(std::string type) const
+AxisModel::LimitsType	AxisModel::LimitsTypeFromString(const std::string& type) const
 {
 	if(type == "breaks"	)	return LimitsType::LimitsBreaks;
 	if(type == "manual"	)	return LimitsType::LimitsManual;

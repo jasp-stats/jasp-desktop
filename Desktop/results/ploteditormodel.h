@@ -27,6 +27,7 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged		)
 	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged			)
 	Q_PROPERTY(bool						loading			READ loading		WRITE setLoading		NOTIFY loadingChanged		)
+	Q_PROPERTY(bool						advanced		READ advanced		WRITE setAdvanced		NOTIFY advancedChanged		)
 
 public:
 	explicit PlotEditorModel();
@@ -42,10 +43,9 @@ public:
 	AxisModel			*	yAxis()		const { return _yAxis;		}
 	double					ppi()		const {	return _ppi;		}
 	bool					loading()	const { return _loading;	}
+	bool					advanced()	const {	return _advanced;	}
 	void					reset();
-	
-	
-	
+
 signals:
 	void visibleChanged(		bool		visible			);
 	void nameChanged(			QString		name			);
@@ -56,17 +56,20 @@ signals:
 	void dummyAxisChanged();
 	void ppiChanged();// TODO, refresh all
 	void resetPlotChanged(		bool		resetPlot		);
-	void loadingChanged(		bool		loading);
-	
+	void loadingChanged(		bool		loading			);
+	void advancedChanged(		bool		advanced		);
+
 public slots:
 	void showPlotEditor(int id, QString options);
 
-	void setVisible(		bool		visible			);
-	void setName(			QString		name			);
-	void setData(			QString		data			);
-	void setTitle(			QString		title			);
-	void setWidth(			int			width			);
-	void setHeight(			int			height			);
+	void setVisible(		bool					visible			);
+	void setName(			const QString	&		name			);
+	void setData(			const QString	&		data			);
+	void setTitle(			const QString	&		title			);
+	void setWidth(			int						width			);
+	void setHeight(			int						height			);
+	void setLoading(		bool					loading			);
+	void setAdvanced(		bool					advanced		);
 	
 	void					resetPlot();
 	void					savePlot()	const;
@@ -76,8 +79,8 @@ public slots:
 
 	QString clickHitsElement(double x, double y) const;
 	
-	void setLoading(bool loading);
-	
+
+
 private:
 	void		processImgOptions();
 	Json::Value generateImgOptions()	const;
@@ -98,7 +101,8 @@ private:
 							_title;
 	bool					_visible		= false,
 							_goBlank		= false,
-							_loading		= false;
+							_loading		= false,
+							_advanced		= false;
 	int						_width,
 							_height,
 							_analysisId,
@@ -106,6 +110,7 @@ private:
 	double					_ppi;
 
 	static int				_editRequest;
+
 };
 
 }

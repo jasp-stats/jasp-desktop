@@ -9,6 +9,8 @@
 namespace PlotEditor
 {
 
+class PlotEditorModel;
+
 class AxisModel : public QAbstractTableModel
 {
 	Q_OBJECT
@@ -34,8 +36,7 @@ class AxisModel : public QAbstractTableModel
 	//Q_PROPERTY(bool		hasBreaks	READ hasBreaks								NOTIFY hasBreaksChanged			) //Is a bit misleading as apparently you can have breaks without _breaks containing anything?
 
 public:
-	AxisModel(QObject * parent, bool vertical) : QAbstractTableModel(parent), _vertical(vertical)
-	{ }
+	AxisModel(PlotEditorModel * parent, bool vertical);
 
 	enum class	specialRoles
 	{
@@ -44,8 +45,8 @@ public:
 		deleteBreak
 	};
 
-	enum class TitleType  { TitleCharacter, TitleExpression, TitleLaTeX };
-	enum class BreaksType { BreaksRange, BreaksManual};
+	enum class TitleType  { TitleCharacter, TitleExpression, TitleLaTeX, TitleNull };
+	enum class BreaksType { BreaksRange, BreaksManual, BreaksNull};
 	enum class LimitsType { LimitsData,  LimitsBreaks, LimitsManual };
 
 	int						rowCount(	const QModelIndex &parent = QModelIndex())								const	override;
@@ -66,7 +67,7 @@ public:
 	QString				type()			const	{ return _type;			}
 	TitleType			titleType()		const	{ return _titleType;	}
 	BreaksType			breaksType()	const	{ return _breaksType;	}
-	bool				vertical()		const	{ return _vertical;	}
+	bool				vertical()		const	{ return _vertical;		}
 
 	double				from()			const	{ return _range.size() > 0 ? _range[0] : NAN;		}
 	double				to()			const	{ return _range.size() > 1 ? _range[1] : NAN;		}
@@ -90,8 +91,8 @@ public slots:
 
 	void setBreaksType(const BreaksType breaksType);
 	void setRange(	const double value, const size_t idx);
-	void setFrom(	const double from)			{ setRange(from,	0);	}
-	void setTo(		const double to)			{ setRange(to,		1);	}
+	void setFrom(	const double from);
+	void setTo(		const double to);
 	void setSteps(	const double steps)			{ setRange(steps,	2);	}
 
 	void setLimitsType(const LimitsType limitsType);
@@ -115,11 +116,12 @@ private:
 	std::string				BreaksTypeToString(BreaksType type) const;
 	std::string				LimitsTypeToString(LimitsType type) const;
 
-	TitleType				TitleTypeFromString (std::string type) const;
-	BreaksType				BreaksTypeFromString(std::string type) const;
-	LimitsType				LimitsTypeFromString(std::string type) const;
+	TitleType				TitleTypeFromString (const std::string& type) const;
+	BreaksType				BreaksTypeFromString(const std::string& type) const;
+	LimitsType				LimitsTypeFromString(const std::string& type) const;
 
 private:
+	PlotEditorModel		*	_plotEditor = nullptr;
 	QString					_title,
 							_type,
 							_axisType;

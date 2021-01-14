@@ -146,7 +146,7 @@ void PlotEditorModel::setVisible(bool visible)
 		reset();
 }
 
-void PlotEditorModel::setName(QString name)
+void PlotEditorModel::setName(const QString & name)
 {
 	if (_name == name)
 		return;
@@ -180,7 +180,7 @@ QUrl PlotEditorModel::imgFile() const
 	return QUrl::fromLocalFile(pad);
 }
 
-void PlotEditorModel::setData(QString data)
+void PlotEditorModel::setData(const QString & data)
 {
 	if (_data == data)
 		return;
@@ -190,7 +190,7 @@ void PlotEditorModel::setData(QString data)
 	somethingChanged();
 }
 
-void PlotEditorModel::setTitle(QString title)
+void PlotEditorModel::setTitle(const QString & title)
 {
 	if (_title == title)
 		return;
@@ -231,6 +231,15 @@ void PlotEditorModel::setLoading(bool loading)
 	
 	_loading = loading;
 	emit loadingChanged(_loading);
+}
+
+void PlotEditorModel::setAdvanced(bool advanced)
+{
+	if (_advanced == advanced)
+		return;
+
+	_advanced = advanced;
+	emit advancedChanged(_advanced);
 }
 
 }
