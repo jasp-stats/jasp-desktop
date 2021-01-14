@@ -106,7 +106,7 @@ Terms ListModelFactorsForm::termsEx(const QString& what)
 	return ListModel::termsEx(what);
 }
 
-vector<tuple<string, string, vector<string> > > ListModelFactorsForm::getFactors()
+ListModelFactorsForm::FoctorVec ListModelFactorsForm::getFactors()
 {
 	vector<tuple<string, string, vector<string> > > result;
 	
@@ -116,7 +116,7 @@ vector<tuple<string, string, vector<string> > > ListModelFactorsForm::getFactors
 		if (listView)
 		{
 			Terms terms = listView->model()->terms();
-			result.push_back(make_tuple(factor->name.toStdString(), factor->title.toStdString(), terms.asVector()));
+			result.push_back(make_tuple(fq(factor->name), fq(factor->title), terms.asVector()));
 		}
 	}
 	

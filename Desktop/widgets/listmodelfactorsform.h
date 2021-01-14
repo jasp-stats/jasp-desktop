@@ -34,6 +34,7 @@ public:
         FactorNameRole = Qt::UserRole + 1,
 		FactorTitleRole
     };
+	typedef std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > FoctorVec;
 
 	ListModelFactorsForm(JASPListControl* listView);
 	
@@ -44,7 +45,7 @@ public:
 	Terms					termsEx(const QString& what)									override;
 	void					initFactors(const std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > &factors);
 	int						count() const { return int(_factors.size()); }
-	std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > getFactors();
+	FoctorVec				getFactors();
 	
 	void					addFactor();
 	void					removeFactor();

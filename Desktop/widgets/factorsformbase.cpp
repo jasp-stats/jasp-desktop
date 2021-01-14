@@ -112,7 +112,7 @@ bool FactorsFormBase::isJsonValid(const Json::Value &optionValue)
 
 void FactorsFormBase::termsChangedHandler()
 {
-	const vector<tuple<string, string, vector<string> > > &factors = _factorsModel->getFactors();
+	const ListModelFactorsForm::FoctorVec &factors = _factorsModel->getFactors();
 	vector<Options *> allOptions;
 	
 	for (const auto &factor : factors)
@@ -134,10 +134,11 @@ void FactorsFormBase::termsChangedHandler()
 
 void FactorsFormBase::factorsAddedSlot(int index, QVariant item)
 {
-	VariablesListBase* listView = qobject_cast<VariablesListBase *>(item.value<QObject *>());
+	VariablesListBase* listView = item.value<VariablesListBase *>();
 	if (!listView)
 	{
-		Log::log() << "JASP Control is not a VariablesListBase in factorAdded" << std::endl;
+		JASPControl* control = item.value<JASPControl *>();
+		Log::log() << "JASP Control " << (control ? control->name() : "") << " is not a VariablesListBase in factorAdded" << std::endl;
 		return;
 	}
 	

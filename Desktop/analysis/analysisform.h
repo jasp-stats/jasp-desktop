@@ -94,16 +94,16 @@ signals:
 				void			analysisChanged();
 
 protected:
-				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
+				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info)	const override;
 
 public:
-	ListModel			*	getModel(const QString& modelName)								{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
-	void					addModel(ListModel* model)										{ if (!model->name().isEmpty())	_modelMap[model->name()] = model;			}
-	Options				*	getAnalysisOptions()											{ return _analysis->options();												}
-	JASPControl			*	getControl(const QString& name)									{ return _controls.contains(name) ? _controls[name] : nullptr;				}
+	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.value(modelName);	} // Maps create elements if they do not exist yet
+	void					addModel(ListModel* model)												{ if (!model->name().isEmpty())	_modelMap[model->name()] = model;			}
+	Options				*	getAnalysisOptions()													{ return _analysis->options();												}
+	JASPControl			*	getControl(const QString& name)											{ return _controls.contains(name) ? _controls[name] : nullptr;				}
 	void					addListView(JASPListControl* listView, JASPListControl* sourceListView);
-	ExpanderButtonBase	*	nextExpander(ExpanderButtonBase* expander)						{ return _nextExpanderMap[expander];										}
-	JASPControl			*	getControl(Option* option)										{ return _optionControlMap[option];											}
+	ExpanderButtonBase	*	nextExpander(ExpanderButtonBase* expander)								{ return _nextExpanderMap[expander];										}
+	JASPControl			*	getControl(Option* option)												{ return _optionControlMap[option];											}
 
 	Options				*	options() { return _options; }
 	void					addControl(JASPControl* control);
