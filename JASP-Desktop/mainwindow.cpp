@@ -160,6 +160,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<JASPControlBase>							("JASP",		1, 0, "JASPControlBase"		);
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"	);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"	);
+	qmlRegisterType<LabelModel>									("JASP",		1, 0, "LabelModel"			);
 
 	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description");
 	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis");
@@ -374,6 +375,7 @@ void MainWindow::makeConnections()
 	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
 
+	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
 
 	// Temporary to facilitate plot editing
 	_plotEditingFilePath = QString::fromStdString(Dirs::resourcesDir()) + "PlotEditor.qml";
@@ -381,6 +383,14 @@ void MainWindow::makeConnections()
 		Log::log() << "Cannot watch plot editing file" << _plotEditingFilePath << std::endl;
 	connect(&_plotEditingFileWatcher, &QFileSystemWatcher::fileChanged,					this,					&MainWindow::plotEditingFileChanged							);
 
+}
+
+void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)
+{
+	Log::log()		<< "Received QML warnings:\n";
+	for(const QQmlError & warning : warnings)
+		Log::log(false)	<< "\t" << warning.toString() << "\n";
+	Log::log(false) << std::endl;
 }
 
 void MainWindow::loadQML()
@@ -452,7 +462,9 @@ void MainWindow::loadQML()
 	{
 		if(obj == nullptr)
 		{
-			std::cerr << "Could not load QML: " + url.toString().toStdString() << std::endl;
+
+
+			std::cerr << "Could not load QML: " + url.toString().toStdString() << " because of: " << std::endl;
 			exit(10);
 		}
 		else
