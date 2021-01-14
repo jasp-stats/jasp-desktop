@@ -32,6 +32,7 @@ public slots:
 	void	loadingSucceeded();
 	void	setMarkdown(QString markdown);
 	void	loadMarkdown(QString md);
+	bool	pageExists(QString pagePath);
 
 signals:
 	void renderCode(QString javascript);

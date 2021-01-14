@@ -775,8 +775,7 @@ QString AnalysisForm::metaHelpMD() const
 
 QString AnalysisForm::helpMD() const
 {
-	if (!PreferencesModel::prefs()->generateMarkdown())
-		return ""; // It should not come here, but when debugging QML, it crashes here because apparently _analysis is not set yet. Weird...
+	if(!_analysis) return "";
 
 	QStringList markdown =
 	{
