@@ -359,7 +359,7 @@ DropArea
 					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
-					onClicked:			if(preferencesModel.generateMarkdown)
+					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(loader.myAnalysis.helpFile))
 											helpModel.markdown = Qt.binding(function(){ return myAnalysis.helpMD; });
 										else
 										{

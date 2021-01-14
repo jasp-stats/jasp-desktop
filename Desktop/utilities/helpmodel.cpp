@@ -150,7 +150,19 @@ void HelpModel::setFont()
 	runJavaScript("window.setFont", fontFamily);
 }
 
-bool HelpModel::loadHelpContent(const QString &pagePath, bool ignorelanguage, QString &renderFunc, QString &content)
+///Temporary function for https://github.com/jasp-stats/INTERNAL-jasp/issues/1215 
+bool HelpModel::pageExists(QString pagePath)
+{
+	pagePath = convertPagePathToLower(pagePath);
+	
+	 QString renderFunc, content;
+	 
+	 //We will simply have to use loadHelpContent to make sure we follow the same logic.
+	 
+	 return loadHelpContent(pagePath, false, renderFunc, content) || loadHelpContent(pagePath, true, renderFunc, content);
+}
+
+bool HelpModel::loadHelpContent(const QString & pagePath, bool ignorelanguage, QString &renderFunc, QString &content)
 {
 
 	QString _localname = ignorelanguage ? "" : LanguageModel::currentTranslationSuffix();
@@ -160,21 +172,21 @@ bool HelpModel::loadHelpContent(const QString &pagePath, bool ignorelanguage, QS
 	content = "";
 
 	QFile fileMD, fileHTML;
-	QFileInfo pathMd(_pagePath + _localname + ".md");
+	QFileInfo pathMd(pagePath + _localname + ".md");
 
 	bool relative = pathMd.isRelative();
 
 	if(relative) //This is probably a file in resources then
 	{
-		fileMD.setFileName(AppDirs::help() + "/" + _pagePath + _localname + ".md");
-		fileHTML.setFileName(AppDirs::help() + "/" + _pagePath + _localname + ".html");
+		fileMD.setFileName(  AppDirs::help() + "/" + pagePath + _localname + ".md");
+		fileHTML.setFileName(AppDirs::help() + "/" + pagePath + _localname + ".html");
 	}
 	else
 	{
 		//We got an absolute path, this probably means it comes from a (dynamic) module.
 
-		fileMD.setFileName(_pagePath + _localname + ".md");
-		fileHTML.setFileName(_pagePath + _localname + ".html");
+		fileMD.setFileName(	 pagePath + _localname + ".md");
+		fileHTML.setFileName(pagePath + _localname + ".html");
 	}
 
 	if (fileHTML.exists())
