@@ -41,13 +41,14 @@ public:
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
 
-	Q_INVOKABLE	void	addFactor()					{ _factorsModel->addFactor();		}
-	Q_INVOKABLE void	removeFactor()				{ _factorsModel->removeFactor();	}
+	Q_INVOKABLE	void	addFactor()								{ _factorsModel->addFactor();						}
+	Q_INVOKABLE void	removeFactor()							{ _factorsModel->removeFactor();					}
+	Q_INVOKABLE void	titleChanged(int index, QString title)	{ _factorsModel->titleChangedSlot(index, title);	}
+	Q_INVOKABLE void	factorAdded(int index, QVariant item);
 
 
 protected slots:
 	void termsChangedHandler() override;
-	void factorsAddedSlot(int index, QVariant item);
 	
 private:
 	ListModelFactorsForm*	_factorsModel				= nullptr;

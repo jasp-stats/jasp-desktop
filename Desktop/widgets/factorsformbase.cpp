@@ -46,16 +46,13 @@ void FactorsFormBase::setUpModel()
 	QVariant availableListVariant = property("availableVariablesList");
 	_availableVariablesListItem = dynamic_cast<JASPControl*>(qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>()));
 	_initNumberFactors = property("initNumberFactors").toInt();
-
-	QQuickItem::connect(this, SIGNAL(titleChanged(int, QString)), _factorsModel, SLOT(titleChangedSlot(int, QString)));
-	QQuickItem::connect(this, SIGNAL(factorAdded(int, QVariant)), this, SLOT(factorsAddedSlot(int, QVariant)));
 }
 
 void FactorsFormBase::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable*>(option);
 	
-	vector<tuple<string, string, vector<string> > > factors;
+	ListModelFactorsForm::FactorVec factors;
 	vector<Options*> allOptions = _boundTo->value();
 	
 	for (const Options* options : allOptions)
@@ -112,7 +109,7 @@ bool FactorsFormBase::isJsonValid(const Json::Value &optionValue)
 
 void FactorsFormBase::termsChangedHandler()
 {
-	const ListModelFactorsForm::FoctorVec &factors = _factorsModel->getFactors();
+	const ListModelFactorsForm::FactorVec &factors = _factorsModel->getFactors();
 	vector<Options *> allOptions;
 	
 	for (const auto &factor : factors)
@@ -132,7 +129,7 @@ void FactorsFormBase::termsChangedHandler()
 	_boundTo->setValue(allOptions);	
 }
 
-void FactorsFormBase::factorsAddedSlot(int index, QVariant item)
+void FactorsFormBase::factorAdded(int index, QVariant item)
 {
 	VariablesListBase* listView = item.value<VariablesListBase *>();
 	if (!listView)

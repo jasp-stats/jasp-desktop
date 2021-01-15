@@ -69,7 +69,7 @@ QVariant ListModelFactorsForm::data(const QModelIndex &index, int role) const
 	return value;	
 }
 
-void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector<string> > > &factors)
+void ListModelFactorsForm::initFactors(const FactorVec &factors)
 {
 	beginResetModel();
 	
@@ -77,7 +77,7 @@ void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector
 	Terms newTerms;
 
 	int index = 0;
-	for (const tuple<string, string, vector<string> > &factorTuple : factors)
+	for (const auto &factorTuple : factors)
 	{
 		QString name = tq(get<0>(factorTuple));
 		QString title = tq(get<1>(factorTuple));
@@ -106,9 +106,9 @@ Terms ListModelFactorsForm::termsEx(const QString& what)
 	return ListModel::termsEx(what);
 }
 
-ListModelFactorsForm::FoctorVec ListModelFactorsForm::getFactors()
+ListModelFactorsForm::FactorVec ListModelFactorsForm::getFactors()
 {
-	vector<tuple<string, string, vector<string> > > result;
+	ListModelFactorsForm::FactorVec result;
 	
 	for (Factor* factor : _factors)
 	{
