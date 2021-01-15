@@ -38,6 +38,8 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 
 void JASPListControl::setUpModel()
 {
+	if (model() && form())	form()->addModel(model());
+
 	emit modelChanged();
 }
 

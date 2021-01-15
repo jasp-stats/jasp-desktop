@@ -22,6 +22,7 @@
 #include "listmodel.h"
 
 class JASPListControl;
+class VariablesListBase;
 
 class ListModelFactorsForm : public ListModel
 {
@@ -33,6 +34,7 @@ public:
         FactorNameRole = Qt::UserRole + 1,
 		FactorTitleRole
     };
+	typedef std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > FactorVec;
 
 	ListModelFactorsForm(JASPListControl* listView);
 	
@@ -41,16 +43,17 @@ public:
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	
 	Terms					termsEx(const QString& what)									override;
-	void					initFactors(const std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > &factors);
+	void					initFactors(const FactorVec &factors);
 	int						count() const { return int(_factors.size()); }
-	std::vector<std::tuple<std::string, std::string, std::vector<std::string> > > getFactors() const;
+	FactorVec				getFactors();
 	
-	Q_INVOKABLE void		addFactor();
-	Q_INVOKABLE void		removeFactor();
-		
+	void					addFactor();
+	void					removeFactor();
+	void					factorAdded(int, VariablesListBase* listView);
+
 public slots:
-	void titleChangedSlot(int index, QString title);	
-	void factorAddedSlot(int, QVariant item);
+	void titleChangedSlot(int index, QString title);
+	void resetModelTerms();
 
 signals:
 	void addListView(JASPListControl* listView);
@@ -60,16 +63,13 @@ protected:
 	{
 		QString						name;
 		QString						title;
-		JASPListControl*				listView;
+		JASPListControl*			listView;
 		std::vector<std::string>	initTerms;
 		Factor(const QString& _name, const QString& _title, std::vector<std::string> _initTerms = std::vector<std::string>()) :
 			name(_name), title(_title), listView(nullptr), initTerms(_initTerms) {}
 	};
 	QVector<Factor*>	_factors;
-	Terms				_titles;
 	
-protected slots:
-	void resetTerms();
 };
 
 #endif // LISTMODELFACTORSFORM_H

@@ -64,8 +64,7 @@ void VariablesListBase::setUp()
 
 	if (assignedModel)
 	{
-		ListModel* relatedModel = form()->getRelatedModel(this);
-
+		ListModel* relatedModel = getRelatedModel();
 		if (!relatedModel)
 		{
 			if (sourceItems().empty() && !property("debug").toBool())
@@ -172,7 +171,7 @@ void VariablesListBase::setUpModel()
 
 void VariablesListBase::itemDoubleClickedHandler(int index)
 {
-	ListModel *targetModel = form()->getRelatedModel(this);
+	ListModel *targetModel = getRelatedModel();
 	
 	if (!targetModel)
 	{
@@ -194,16 +193,11 @@ void VariablesListBase::itemDoubleClickedHandler(int index)
 
 void VariablesListBase::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex, int assignOption)
 {
-	QQuickItem* dropList = qobject_cast<QQuickItem*>(vdropList.value<QObject*>());
+	JASPListControl* dropList = qobject_cast<JASPListControl*>(vdropList.value<QObject*>());
 	ListModelDraggable* dropModel = nullptr;
 	
-	if (!dropList)
-		dropModel = dynamic_cast<ListModelDraggable*>(form()->getRelatedModel(this));
-	else
-	{
-		QVariant vdropModel = QQmlProperty(dropList, "model").read();
-		dropModel = qobject_cast<ListModelDraggable*>(vdropModel.value<QObject*>());
-	}
+	if (!dropList)	dropModel = qobject_cast<ListModelDraggable*>(getRelatedModel());
+	else			dropModel = qobject_cast<ListModelDraggable*>(dropList->model());
 	
 	if (!dropModel)
 	{
@@ -308,6 +302,13 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 	}
 }
 
+ListModel *VariablesListBase::getRelatedModel()
+{
+	if (dropKeys().count() > 0) return form()->getModel(dropKeys()[0]); // The first key gives the default drop item.
+
+	return nullptr;
+}
+
 void VariablesListBase::termsChangedHandler()
 {
 	setColumnsTypes(model()->termsTypes());
@@ -324,7 +325,7 @@ int VariablesListBase::_getAllowedColumnsTypes()
 	if (!allowedColumns().isEmpty())
 	{
 		allowedColumnsTypes = 0;
-		for (QString& allowedColumn: allowedColumns())
+		for (const QString& allowedColumn: allowedColumns())
 		{
 			columnType allowedType = columnTypeFromQString(allowedColumn, columnType::unknown);
 			if (allowedType != columnType::unknown)

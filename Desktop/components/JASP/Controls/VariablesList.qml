@@ -42,7 +42,6 @@ VariablesListBase
 	property alias	itemTitle						: itemTitle
 	property string	rowComponentTitle				: ""
 	property string itemType						: "variables"
-	property alias	dropKeys						: dropArea.keys
 	property int	dropMode						: JASP.DropNone
 	property bool	draggable						: true
 	property var	sortMenuModel					: null
@@ -290,6 +289,7 @@ VariablesListBase
 	{
 		id:				dropArea
 		anchors.fill:	itemRectangle
+		keys:			variablesList.dropKeys
 
 		onPositionChanged:
 		{

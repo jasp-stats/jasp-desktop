@@ -23,9 +23,9 @@
 #include "analysis/analysisform.h"
 #include "analysis/jaspcontrol.h"
 #include "utilities/qutils.h"
+#include "variableslistbase.h"
 
-#include <QQmlProperty>
-#include <QQuickItem>
+#include "log.h"
 
 using namespace std;
 
@@ -39,24 +39,20 @@ FactorsFormBase::FactorsFormBase(QQuickItem *parent)
 void FactorsFormBase::setUpModel()
 {
 	_factorsModel = new ListModelFactorsForm(this);
+
 	JASPListControl::setUpModel();
 
 	_availableVariablesListName = property("availableVariablesListName").toString();
 	QVariant availableListVariant = property("availableVariablesList");
 	_availableVariablesListItem = dynamic_cast<JASPControl*>(qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>()));
 	_initNumberFactors = property("initNumberFactors").toInt();
-
-	QQuickItem::connect(this, SIGNAL(titleChanged(int, QString)), _factorsModel, SLOT(titleChangedSlot(int, QString)));
-	QQuickItem::connect(this, SIGNAL(factorAdded(int, QVariant)), _factorsModel, SLOT(factorAddedSlot(int, QVariant)));
-
-	connect(_factorsModel, &ListModelFactorsForm::addListView, this, &FactorsFormBase::addListViewSlot);
 }
 
 void FactorsFormBase::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable*>(option);
 	
-	vector<tuple<string, string, vector<string> > > factors;
+	ListModelFactorsForm::FactorVec factors;
 	vector<Options*> allOptions = _boundTo->value();
 	
 	for (const Options* options : allOptions)
@@ -113,7 +109,7 @@ bool FactorsFormBase::isJsonValid(const Json::Value &optionValue)
 
 void FactorsFormBase::termsChangedHandler()
 {
-	const vector<tuple<string, string, vector<string> > > &factors = _factorsModel->getFactors();
+	const ListModelFactorsForm::FactorVec &factors = _factorsModel->getFactors();
 	vector<Options *> allOptions;
 	
 	for (const auto &factor : factors)
@@ -133,19 +129,17 @@ void FactorsFormBase::termsChangedHandler()
 	_boundTo->setValue(allOptions);	
 }
 
-void FactorsFormBase::addListViewSlot(JASPListControl *listView)
+void FactorsFormBase::factorAdded(int index, QVariant item)
 {
-	const vector<tuple<string, string, vector<string> > > &factors = _factorsModel->getFactors();
-	QStringList names;
-	for (auto factor : factors)
-		names.push_back(tq(get<0>(factor)));
-	_availableVariablesListItem->setProperty("dropKeys", names);
-	setProperty("dropKeys", _availableVariablesListName);
+	VariablesListBase* listView = item.value<VariablesListBase *>();
+	if (!listView)
+	{
+		JASPControl* control = item.value<JASPControl *>();
+		Log::log() << "JASP Control " << (control ? control->name() : "") << " is not a VariablesListBase in factorAdded" << std::endl;
+		return;
+	}
 	
-	JASPListControl* availableListView = dynamic_cast<JASPListControl*>(_availableVariablesListItem);
-	form()->addListView(listView, availableListView);
+	_factorsModel->factorAdded(index, listView);
 	
-	connect(listView->model(), &ListModel::modelReset, this, &FactorsFormBase::termsChangedHandler);
-	connect(listView->model(), &ListModel::rowsRemoved, this, &FactorsFormBase::termsChangedHandler);
-	connect(listView->model(), &ListModel::rowsInserted, this, &FactorsFormBase::termsChangedHandler);
+	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::resetModelTerms);
 }

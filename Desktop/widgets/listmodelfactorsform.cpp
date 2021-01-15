@@ -69,23 +69,21 @@ QVariant ListModelFactorsForm::data(const QModelIndex &index, int role) const
 	return value;	
 }
 
-void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector<string> > > &factors)
+void ListModelFactorsForm::initFactors(const FactorVec &factors)
 {
 	beginResetModel();
 	
 	_factors.clear();
-	_titles.clear();
 	Terms newTerms;
 
 	int index = 0;
-	for (const tuple<string, string, vector<string> > &factorTuple : factors)
+	for (const auto &factorTuple : factors)
 	{
 		QString name = tq(get<0>(factorTuple));
 		QString title = tq(get<1>(factorTuple));
 		std::vector<string> terms = get<2>(factorTuple);
 		Factor* factor = new Factor(name, title, terms);
 		_factors.push_back(factor);
-        _titles.add(title);
 		newTerms.add(Terms(terms));
 		index++;
 	}
@@ -98,20 +96,28 @@ void ListModelFactorsForm::initFactors(const vector<tuple<string, string, vector
 Terms ListModelFactorsForm::termsEx(const QString& what)
 {
 	if (what == "title")
-		return _titles;
+	{
+		Terms terms;
+		for (Factor* factor : _factors)
+			terms.add(factor->title);
+		return terms;
+	}
+
 	return ListModel::termsEx(what);
 }
 
-vector<tuple<string, string, vector<string> > > ListModelFactorsForm::getFactors() const
+ListModelFactorsForm::FactorVec ListModelFactorsForm::getFactors()
 {
-	vector<tuple<string, string, vector<string> > > result;
+	ListModelFactorsForm::FactorVec result;
 	
-	for (int i = 0; i < _factors.length(); i++)
+	for (Factor* factor : _factors)
 	{
-		Factor* factor = _factors[i];
 		JASPListControl* listView = factor->listView;
 		if (listView)
-			result.push_back(make_tuple(factor->name.toStdString(), factor->title.toStdString(), listView->model()->terms().asVector()));
+		{
+			Terms terms = listView->model()->terms();
+			result.push_back(make_tuple(fq(factor->name), fq(factor->title), terms.asVector()));
+		}
 	}
 	
 	return result;
@@ -126,7 +132,6 @@ void ListModelFactorsForm::addFactor()
 	QString title = tq("Factor ") + index;
 	Factor* factor = new Factor(name, title);
 	_factors.push_back(factor);
-    _titles.add(title);
 
 	endInsertRows();
 	
@@ -144,7 +149,6 @@ void ListModelFactorsForm::removeFactor()
 
 			const Terms& lastTerms = listView->model()->terms();
 			_removeTerms(lastTerms);
-			_titles.remove(_titles.size() - 1);
 			_factors.removeLast();
 
 			endRemoveRows();
@@ -153,29 +157,38 @@ void ListModelFactorsForm::removeFactor()
 			Log::log() << "No list View found when removing factor" << std::endl;
 
 	}
-	
 }
 
-void ListModelFactorsForm::titleChangedSlot(int index, QString title)
+void ListModelFactorsForm::titleChangedSlot(int row, QString title)
 {
-	if (index < 0 && index >= _factors.length())
+	if (row < 0 && row >= _factors.length())
 		return;
 	
-	if (_factors[index]->title == title)
+	if (_factors[row]->title == title)
 		return;
 
-	beginResetModel();
+	_factors[row]->title = title;
 
-	_factors[index]->title = title;
-	_titles.clear();
-	
-	for (Factor* factor : _factors)
-        _titles.add(factor->title);
-
-	endResetModel();
+	emit dataChanged(index(row, 0), index(row,0));
 }
 
-void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
+void ListModelFactorsForm::resetModelTerms()
+{
+	Terms allTerms;
+
+	for (Factor* factor : _factors)
+	{
+		JASPListControl* listView = factor->listView;
+		if (listView)
+			allTerms.add(listView->model()->terms());
+	}
+
+	_setTerms(allTerms);
+
+	emit dataChanged(index(0,0), index(_factors.length() - 1, 0));
+}
+
+void ListModelFactorsForm::factorAdded(int index, VariablesListBase* listView)
 {
 	if (index >= _factors.length())
 	{
@@ -183,42 +196,11 @@ void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
 		return;
 	}
 	
-	VariablesListBase* listView = qobject_cast<VariablesListBase *>(item.value<QObject *>());
-	if (!listView)
-	{
-		Log::log() << "JASP Control is not a VariablesListBase in factorAdded" << std::endl;
-		return;
-	}
-	
 	Factor* factor = _factors[index];
 	factor->listView = listView;
 	Terms terms(factor->initTerms);
-	ListModelDraggable* model = listView->draggableNodel();
+	ListModelDraggable* model = listView->draggableModel();
+	model->setCopyTermsWhenDropped(true);
 	model->setInfoProvider(listView->form());
 	model->initTerms(terms);
-	model->setCopyTermsWhenDropped(true);
-	connect(model, &ListModelDraggable::modelReset, this, &ListModelFactorsForm::resetTerms);
-	emit addListView(factor->listView);
-	
-	factor->listView->setUp();
-}
-
-void ListModelFactorsForm::resetTerms()
-{
-	beginResetModel();
-
-	Terms newTerms = terms();
-	for (Factor* factor : _factors)
-	{
-		if (factor->listView)
-		{
-			const Terms& terms = factor->listView->model()->terms();
-			newTerms.add(terms);
-			factor->initTerms = terms.asVector();
-		}
-	}
-
-	_setTerms(newTerms);
-	
-	endResetModel();
 }
