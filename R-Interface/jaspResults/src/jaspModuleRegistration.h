@@ -7,6 +7,7 @@ JASP_OBJECT_CREATOR(jaspTable)
 JASP_OBJECT_CREATOR(jaspState)
 JASP_OBJECT_CREATOR(jaspColumn)
 JASP_OBJECT_CREATOR(jaspContainer)
+JASP_OBJECT_CREATOR(jaspQmlSource)
 JASP_OBJECT_CREATOR_ARG(jaspResults, oldState)
 
 RCPP_MODULE(jaspResults)
@@ -18,6 +19,7 @@ RCPP_MODULE(jaspResults)
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspColumn);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspResults);
 	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspContainer);
+	JASP_OBJECT_CREATOR_FUNCTIONREGISTRATION(jaspQmlSource);
 
 
 	Rcpp::function("cpp_startProgressbar",	jaspResults::staticStartProgressbar);
@@ -194,6 +196,11 @@ RCPP_MODULE(jaspResults)
 
 		.method("prepareForWriting",		&jaspResults_Interface::prepareForWriting,						"Clear seal for writing")
 	;
+
+	Rcpp::class_<jaspQmlSource_Interface>("jaspQmlSource")
+		.derives<jaspTable_Interface>("jaspTable")
+		.property("sourceID",				&jaspQmlSource_Interface::getSourceID,
+											&jaspQmlSource_Interface::setSourceID,							"The name of the qml object for which this r-source is meant.");
 }
 
 

@@ -74,6 +74,7 @@ public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
 				void			setInfo(QString info);
 				void			setAnalysis(QVariant analysis);
+				void			rSourceChanged(const QString& name);
 
 
 signals:
@@ -134,6 +135,9 @@ public:
 	QString		errors()			const {	return msgsListToString(_formErrors);	}
 	QString		warnings()			const { return msgsListToString(_formWarnings);	}
 	QVariant	analysis()			const { return QVariant::fromValue(_analysis);	}
+	void		addRSource(const QString& name, ListModel* model)	{ _rSourceModelMap[name] = model; }
+
+	std::vector<std::string>	getValuesFromRSource(const QString& sourceID) { if (_analysis) return _analysis->getValuesFromRSource(sourceID); else return {}; }
 
 protected:
 	QString		msgsListToString(const QStringList & list) const;
@@ -183,6 +187,7 @@ private:
 	bool										_runOnChange	= true,
 												_formCompleted = false;
 	QString										_info;
+	QMap<QString, ListModel*>					_rSourceModelMap;
 
 };
 

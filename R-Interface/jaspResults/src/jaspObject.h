@@ -15,7 +15,7 @@ void jaspPrint(std::string msg);
 
 #define JASPOBJECT_DEFAULT_POSITION 9999
 
-DECLARE_ENUM(jaspObjectType, unknown, container, table, plot, json, list, results, html, state, column);
+DECLARE_ENUM(jaspObjectType, unknown, container, table, plot, json, list, results, html, state, column, qmlSource);
 DECLARE_ENUM(jaspColumnType, unknown, scale, ordinal, nominal, nominalText); //can be merged with columnType from CentralDatasetModel branch later on?
 
 jaspObjectType jaspObjectTypeStringToObjectType(std::string type);

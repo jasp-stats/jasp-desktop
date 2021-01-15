@@ -18,6 +18,9 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	if (metaData.type)
 		type = metaData.type;
 
+	if (type === "qmlSource")
+		return null;
+
 	if(_.has(results, "title") && results.title === "" && type === "collection")
 		embeddedLevel--; //to make sure title of whatever inside "hidden-collection"'s aren't shrunk unnecessarily
 

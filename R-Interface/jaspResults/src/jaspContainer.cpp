@@ -16,6 +16,7 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 
 	if(Rcpp::is<jaspObject_Interface>(value))			obj = Rcpp::as<jaspObject_Interface>(value).returnMyJaspObject();
 	else if(Rcpp::is<jaspContainer_Interface>(value))	obj = Rcpp::as<jaspContainer_Interface>(value).returnMyJaspObject();
+	else if(Rcpp::is<jaspQmlSource_Interface>(value))	obj = Rcpp::as<jaspQmlSource_Interface>(value).returnMyJaspObject();
 	else if(Rcpp::is<jaspColumn_Interface>(value))		obj = Rcpp::as<jaspColumn_Interface>(value).returnMyJaspObject();
 	else if(Rcpp::is<jaspTable_Interface>(value))		obj = Rcpp::as<jaspTable_Interface>(value).returnMyJaspObject();
 	else if(Rcpp::is<jaspState_Interface>(value))		obj = Rcpp::as<jaspState_Interface>(value).returnMyJaspObject();
@@ -72,13 +73,14 @@ Rcpp::RObject jaspContainer::at(std::string field)
 
 	switch(ref->getType())
 	{
-	case jaspObjectType::json:		return Rcpp::wrap(((jaspJson*)ref)->jsonToPrefixedStrings());
-	case jaspObjectType::html:		return Rcpp::wrap(jaspHtml_Interface(ref));
 	case jaspObjectType::container:	return Rcpp::wrap(jaspContainer_Interface(ref));
+	case jaspObjectType::qmlSource:	return Rcpp::wrap(jaspQmlSource_Interface(ref));
 	case jaspObjectType::column:	return Rcpp::wrap(jaspColumn_Interface(ref));
 	case jaspObjectType::table:		return Rcpp::wrap(jaspTable_Interface(ref));
 	case jaspObjectType::state:		return Rcpp::wrap(jaspState_Interface(ref));
+	case jaspObjectType::html:		return Rcpp::wrap(jaspHtml_Interface(ref));
 	case jaspObjectType::plot:		return Rcpp::wrap(jaspPlot_Interface(ref));
+	case jaspObjectType::json:		return Rcpp::wrap(((jaspJson*)ref)->jsonToPrefixedStrings());
 	default:						return R_NilValue;
 	}
 }
@@ -284,6 +286,7 @@ void jaspContainer::letChildrenRun()
 			break;
 
 		case jaspObjectType::table:
+		case jaspObjectType::qmlSource:
 			static_cast<jaspTable*>(obj)->letRun();
 			break;
 
@@ -311,6 +314,7 @@ void jaspContainer::completeChildren()
 			break;
 
 		case jaspObjectType::table:
+		case jaspObjectType::qmlSource:
 			static_cast<jaspTable*>(obj)->complete();
 			break;
 
@@ -327,7 +331,7 @@ void jaspContainer::completeChildren()
 
 bool jaspContainer::containsNonContainer()
 {
-	for(auto keyval : _data)
+	for(const auto & keyval : _data)
 	{
 		jaspObject * obj = keyval.second;
 
@@ -348,7 +352,7 @@ bool jaspContainer::containsNonContainer()
 
 bool jaspContainer::canShowErrorMessage() const
 {
-	for(auto keyval : _data)
+	for(const auto & keyval : _data)
 		if(keyval.second->canShowErrorMessage())
 			return true;
 
@@ -363,10 +367,10 @@ Json::Value jaspContainer::convertToJSON() const
 	obj["data_order"]		= Json::objectValue;
 	obj["order_increment"]	= _order_increment;
 
-	for(auto d : _data)
+	for(const auto & d : _data)
 		obj["data"][d.first] = d.second->convertToJSON();
 
-	for(auto d : _data_order)
+	for(const auto & d : _data_order)
 		if(_data.count(d.first) > 0) //no need to keep remembering lost items positions
 			obj["data_order"][d.first] = d.second;
 

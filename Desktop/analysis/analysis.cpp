@@ -153,6 +153,9 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 
 	processResultsForDependenciesToBeShown();
 
+	if(_status == Analysis::Complete)
+		checkForRSources();
+
 	_wasUpgraded = false;
 }
 
@@ -179,11 +182,11 @@ void Analysis::run()
 
 void Analysis::refresh()
 {
+	clearRSources();
 	TempFiles::deleteAll(_id);
 	run();
 
-	if(_analysisForm)
-		_analysisForm->refreshTableViewModels();
+	emit refreshTableViewModels();
 }
 
 void Analysis::saveImage(const Json::Value &options)
@@ -297,6 +300,8 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 		_status = Empty;
 	
 	connect(_analysisForm,			&AnalysisForm::helpMDChanged,		this,			&Analysis::helpMDChanged					);
+	connect(this,					&Analysis::RSourceChanged,	_analysisForm,	&AnalysisForm::rSourceChanged				);
+	connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
 }
 
 
@@ -727,6 +732,26 @@ std::string Analysis::upgradeMsgsForOption(const std::string & name) const
 	return out.str();
 }
 
+std::vector<std::string> Analysis::getValuesFromRSource(const QString &sourceID) const
+{
+	const Json::Value& jsonValue = _RSources.count(fq(sourceID)) == 0 ? Json::nullValue : _RSources.at(fq(sourceID));
+	std::vector<std::string> result;
+
+	if (!jsonValue.isObject()) return result;
+
+	const Json::Value& dataValue = jsonValue["data"];
+	for (const Json::Value& rowValue : dataValue)
+		for (const Json::Value& colValue : rowValue)
+		{
+			if (colValue.isString())
+				result.push_back(colValue.asString());
+			else if (colValue.isNumeric())
+				result.push_back(std::to_string(colValue.asDouble()));
+		}
+
+	return result;
+}
+
 void Analysis::storeUserDataEtc()
 {
 	if(!needsRefresh())
@@ -984,4 +1009,90 @@ void Analysis::setDynamicModule(Modules::DynamicModule * module)
 	_dynamicModule = module;
 
 	checkAnalysisEntry();
+}
+
+void Analysis::checkForRSources()
+{
+	if(!_results.isMember(".meta"))
+	{
+		clearRSources();
+		return;
+	}
+
+	//First check meta for qmlSources and collections
+	std::set<std::string> sourceIDs, isCollection;
+
+	std::function<void(Json::Value & meta)> findNewSource = [&](Json::Value & meta) -> void
+	{
+		if(meta.isArray())
+			for(Json::Value & entry : meta)
+				findNewSource(entry);
+		else if(meta.isObject())
+		{
+			if(meta.isMember("type") && meta["type"].asString() == "qmlSource")
+				sourceIDs.insert(meta["name"].asString());
+
+			if(meta.isMember("type") && meta["type"].asString() == "collection")
+				isCollection.insert(meta["name"].asString());
+
+			if(meta.isMember("meta")) //means there is an array of more meta below there
+				findNewSource(meta["meta"]);
+		}
+	};
+
+	findNewSource(_results[".meta"]);
+
+	//Then uses the found collections and qmlSources to create the new list of qmlSources
+	std::map<std::string, Json::Value> newSources;
+
+	std::function<void(Json::Value & meta)> collectSources = [&](Json::Value & results) -> void
+	{
+		if(results.isArray())
+			for(Json::Value & entry : results)
+				findNewSource(entry);
+		else if(results.isObject())
+		{
+			if(results.isMember("name") && sourceIDs.count(results["name"].asString()) > 0)
+				newSources[results["sourceID"].asString()] = results;
+
+			for(const std::string & memberName : results.getMemberNames())
+				if(sourceIDs.count(memberName) > 0)
+					newSources[results[memberName]["sourceID"].asString()] = results[memberName];
+				else if(isCollection.count(memberName) > 0 && results[memberName].isMember("collection")) //Checking for "collection" is to avoid stupid crashes but shouldnt really be necessary anyhow
+					collectSources(results[memberName]["collection"]);
+		}
+	};
+
+	collectSources(_results);
+
+	//And then calculate the delta
+	std::set<std::string> removeAfterwards;
+
+	for(auto & sourceJson : _RSources)
+		if(newSources.count(sourceJson.first) == 0)
+		{
+			removeAfterwards.insert(sourceJson.first);
+			sourceJson.second = Json::nullValue;
+			emit RSourceChanged(tq(sourceJson.first));
+		}
+
+	for(auto & newOptionJson : newSources)
+	{
+		_RSources[newOptionJson.first] = newOptionJson.second;
+		emit RSourceChanged(tq(newOptionJson.first));
+	}
+
+	for(const std::string & removeThis : removeAfterwards)
+		_RSources.erase(removeThis);
+}
+
+void Analysis::clearRSources()
+{
+	for(auto & optionJson : _RSources)
+	{
+		optionJson.second = Json::nullValue;
+		emit RSourceChanged(tq(optionJson.first));
+	}
+
+	_RSources.clear();
 }
