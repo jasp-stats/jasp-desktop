@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2021-01-16 17:45+0000\n"
-"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
+"Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
 "Language: de\n"
@@ -882,10 +882,9 @@ msgctxt "PrefsAdvanced|"
 msgid "Engine options"
 msgstr "Engine-Optionen"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
-msgstr "Maximale Anpassungsdauer"
+msgstr "Maximale # von Maschinen: "
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
@@ -905,9 +904,7 @@ msgstr "Anderen Editor wählen"
 
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
-msgstr ""
-"Schwellwert für die Unterscheidung von nominaler und metrischer / kardinaler "
-"Skala"
+msgstr "Schwellwert zur Unterscheidung von nominaler & metrischer Skala"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -915,8 +912,8 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
-"Anzahl von einzigartigen ganzen Zahlen, um eine Variable als metrisch / "
-"kardinal zu klassifizieren.\n"
+"Anzahl von einzigartigen ganzen Zahlen, um eine Variable als metrisch zu "
+"klassifizieren.\n"
 "Du musst deine Daten neu laden, bevor Änderungen hier übernommen werden. "
 "Schaue in die Hilfe für mehr Informationen."
 
@@ -1556,17 +1553,17 @@ msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr ""
+msgstr "ferig"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr "Installiert:"
+msgstr "Installiere: %1\n"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr "Laden:"
+msgstr "Lade: %1\n"
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
@@ -2694,7 +2691,7 @@ msgstr ""
 "Es scheint dass Du nie ein %1 in deinem Modulentwicklungsverzeichnis "
 "hattest. Ohne dieses kann dein Modul nicht funktionieren, sorge dafür eines "
 "anzulegen. Es bleibt etwas mysteriös, wie du es installiert hast, und "
-"deswegen wird das Entwicklungsmodul nun deinstalliert werden."
+"deswegen wird das Entwicklungsmodul nun deinstalliert werden"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -2739,7 +2736,7 @@ msgstr ""
 "Entwicklungsmodulverzeichnisexistiert hat. Ohne dieses Verzeichnis kann das "
 "Modul nicht funktionieren, sorge dafür Du eines anlegst. Es bleibt etwas "
 "mysteriös, wie Du das Modul installiert hast, und deswegen wird das Modul "
-"nun deinstalliert werden."
+"nun deinstalliert werden"
 
 msgctxt "DynamicModules|"
 msgid "Loading module description encountered a problem"
@@ -2775,6 +2772,7 @@ msgid ""
 msgstr ""
 "Das Laden der Pakete von Modul %1 ist fehlgeschlagen mit der folgenden "
 "Fehlermeldung:\n"
+"\n"
 " %2"
 
 msgctxt "RibbonModel|"
@@ -3023,7 +3021,8 @@ msgid ""
 msgstr ""
 "JASP hat keine zugehörige Datendatei, um damit zu synchronisieren.\n"
 "Willst du nach solch einer Datendatei auf deinem Computer suchen?\n"
-"PS: Du kannst die Datendatei auch setzen im Menü Daten/Daten synchronisieren."
+"PS: Du kannst die Datendatei auch setzen im Menü Daten, dann Daten "
+"synchronisieren."
 
 msgctxt "FileMenu|"
 msgid "Find Data File"
@@ -3398,14 +3397,14 @@ msgstr "Falsche Art von verwandter Liste (%1) für VariabeleLijst %2 gefunden"
 #, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr ""
+msgstr "Für Quelle %1 wurde kein Name angegeben"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr ""
+msgstr "Für %1 wurde keine Quelle angegeben"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr ""
+msgstr "Finde keine Komponente %1 für die Quelle von %2"
