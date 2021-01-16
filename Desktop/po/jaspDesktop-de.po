@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2021-01-17 18:32+0000\n"
-"Last-Translator: Thomas Langkamp <thomas.lassdiesonnerein@gmx.de>\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
 "Language: de\n"
@@ -2763,14 +2763,14 @@ msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
 msgstr "Das Laden von Paketen für Modul %1 ist fehlgeschlagen"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RibbonModel|"
 msgid ""
 "Loading of the bundled module %1 failed with the following error:\n"
 "\n"
 "%2"
 msgstr ""
-"Das Laden der Pakete von Modul %1 ist fehlgeschlagen mit der folgenden "
+"Das Laden der Pakete von Modul %1 ist fehlgeschlagen mit folgender "
 "Fehlermeldung:\n"
 "\n"
 " %2"
@@ -2792,7 +2792,6 @@ msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
 msgstr "Upgrades konnten nicht gelesen werden"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid ""
 "The necessary upgrades for reading older JASP-files could not be read...\n"
@@ -2946,17 +2945,16 @@ msgstr ""
 "In einer zukünftigen Version von JASP soll hier Dokumentation hinzugefügt "
 "werden."
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "valid R code"
 msgstr "gültiger R-Code"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr "Unbekannte Option %1 in Dropdown %2"
+msgstr "Unbekannte Option %1 in DropDown %2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown error in ComboBox %1"
 msgstr "Unbekannter Fehler in ComboBox %1"
@@ -3180,17 +3178,16 @@ msgctxt "ResourceButtons|"
 msgid "Advanced"
 msgstr "Erweitert"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "The list %1 has a rowComponent with the same name (%2) as its optionKey. "
 "Change the optionKey property of the list or the control name."
 msgstr ""
-"Die Liste %1 hat eine rowComponent mit dem gleichen Namen (%2) wie ihre "
-"optionKey. Ändern Sie die optionKey-Eigenschaft der Liste oder den Control-"
-"Namen."
+"Die Liste %1 hat eine rowComponent mit dem gleichen Namen (%2) wie ihr "
+"optionKey. Ändere die optionKey-Eigenschaft der Liste oder den Control-Namen."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPListControl|"
 msgid "Wrong column type: %1 for ListView %2"
 msgstr "Falscher Spaltentyp: %1 für ListView %2"
@@ -3234,7 +3231,7 @@ msgctxt "ListModelTableViewBase|"
 msgid "Unknown column specified (%1) in TableView source %2"
 msgstr "Unbekannte Spalte (%1) in TableView Quelle %2 angegeben"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
@@ -3242,22 +3239,22 @@ msgid ""
 msgstr ""
 "Ein RadioButton in der RadioButtonGroup Element (Name: %1) hat keinen Namen"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr "Keine radiobutton komt overeen met naam %1"
+msgstr "Kein RadioButton ist dem Namen %1 zugeordnet"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "Radio button clicked is unknown: %1"
 msgstr "Angeklickter Radiobutton ist unbekannt: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RepeatedMeasuresFactorsListBase|"
 msgid "Level %1"
 msgstr "Stufe %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RepeatedMeasuresFactorsListBase|"
 msgid "RM Factor %1"
 msgstr "MW-Faktor %1"
@@ -3304,95 +3301,83 @@ msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
 msgstr "SortMenuModel wurde nicht mit einem sortierbaren Parent aufgerufen"
 
-#, fuzzy
 msgctxt "TextAreaBase|"
 msgid "Model applied"
 msgstr "Modell angewendet"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
 msgstr "Dieser Ausdruck hat keine Zahl ausgegeben."
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Integer Field"
-msgstr "Ganze-Zahl-Feld"
+msgstr "Ganzzahliges Feld"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Number Field"
 msgstr "Zahlen-Feld"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
 msgstr "Prozent-Feld"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Integers Field"
-msgstr "Ganze-Zahlen-Feld"
+msgstr "Ganzzahliges Feld"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
 msgstr "Double-Präzisions-Feld"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
 msgstr "Spalten-Feld hinzufügen"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
 msgstr "Berechnete-Spalte-Feld hinzufügen"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Formula Field"
 msgstr "Formel-Feld"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Formulas Field"
 msgstr "Formel-Feld"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Text Field"
 msgstr "Text-Feld"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
 msgstr "Der Wert (%1) muss %2 sein"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
 msgstr "Quell-Modell von %1 muss aus einer Faktorenliste kommen"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Cannot find source for VariableList %1"
 msgstr "Kann keine Quelle finden von VariableList %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr "Falsche Art von Quelle von VariableList %1"
+msgstr "Falsche Art von Quelle für VariableList %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
 msgstr "Keine verwandte Liste für VariabeleList %1 gefunden"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
-msgstr "Falsche Art von verwandter Liste (%1) für VariabeleLijst %2 gefunden"
+msgstr "Falsche Art von verwandter Liste (%1) für VariablesList %2 gefunden"
 
 #, qt-format
 msgctxt "QObject|"
