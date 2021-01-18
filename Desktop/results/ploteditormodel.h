@@ -59,6 +59,8 @@ signals:
 	void loadingChanged(		bool		loading			);
 	void advancedChanged(		bool		advanced		);
 
+	void saveImage(int	id,	QString		options)	const;
+
 public slots:
 	void showPlotEditor(int id, QString options);
 
@@ -98,7 +100,8 @@ private:
 							_originalImgOps	= Json::nullValue;
 	QString					_name,
 							_data,
-							_title;
+							_title,
+							_options;
 	bool					_visible		= false,
 							_goBlank		= false,
 							_loading		= false,

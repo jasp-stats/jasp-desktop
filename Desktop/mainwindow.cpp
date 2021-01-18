@@ -383,6 +383,9 @@ void MainWindow::makeConnections()
 	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);	
 
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
+
+	connect(_plotEditorModel,		&PlotEditorModel::saveImage,						this,					&MainWindow::analysisSaveImageHandler						);
+
 }
 
 void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)

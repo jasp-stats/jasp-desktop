@@ -31,6 +31,7 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 	_analysis		= Analyses::analyses()->get(id);
 	_imgOptions		= Json::objectValue;
 	_prevImgOptions	= Json::nullValue;
+	_options		= options;
 
 	Json::Reader().parse(fq(options), _imgOptions);
 	
@@ -57,7 +58,7 @@ void PlotEditorModel::resetPlot()
 
 void PlotEditorModel::savePlot() const
 {
-	MessageForwarder::showWarning("Plot saving", "Sorry but this hasnt been implemented yet");	
+	saveImage(_analysisId, _options);
 }
 
 void PlotEditorModel::reset()

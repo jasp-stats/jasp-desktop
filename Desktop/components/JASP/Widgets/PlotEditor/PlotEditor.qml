@@ -210,8 +210,6 @@ Popup
 
 			JASPW.RectangularButton
 			{
-				// TODO: this would be a nice to have but I'm not sure how to access MainWindow::analysisSaveImageHandler properly
-				visible: false
 				id:					saveButton
 				anchors
 				{
@@ -220,7 +218,7 @@ Popup
 					margins:		jaspTheme.generalAnchorMargin
 				}
 				text:				qsTr("Save plot as")
-				on_PressedChanged:	plotEditorModel.savePlot()
+				onClicked:			plotEditorModel.savePlot()
 			}
 
 			Item
