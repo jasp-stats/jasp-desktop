@@ -401,7 +401,6 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 {
 	std::stringstream R;
 
-
 	if(_modulePackage == "")
 	{
 		Log::log() << "generateModuleInstallingR has some trouble because package was not unpacked anywhere..." << std::endl;
@@ -423,63 +422,8 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	}
 	setInstallLog("Installing module " + _name + ".\n");
 
-	std::string typeInstall = "'source'";
-
-	//<< ".runSeparateR(\"{"
-
-	std::string libPathsToUse = getLibPathsToUse();
-	
-	Log::log() << "DynamicModule::generateModuleInstallingR(bool onlyModPkg) gets the following libPathsToUse:\t" << libPathsToUse << std::endl;
-
-	R << standardRIndent << "loadLog <- '';\n";
-	
-#if  defined(_WIN32) || defined(__APPLE__)
-	R << "options(install.packages.compile.from.source = 'never')\n";
-#endif
-
-	auto installDeps = [&](const std::string & pkg)
-	{
-		R	<< standardRIndent << "withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= "	<< pkg << ", lib='" << moduleRLibrary().toStdString() << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade='never', repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n";
-	};
-
-	auto installLocal = [&](std::string pkgPath)
-	{
-		R	<< standardRIndent << "pkgPath <- sub('\\\\', '/', " << pkgPath << ", fixed=TRUE);\n"; //replace any backslashes by forward slashes...
-		R	<< standardRIndent << "print(paste0(\"pkgPath: '\", pkgPath, \"'\"));\n";
-		R	<< standardRIndent << "loadLog <- paste0(loadLog, '\\n', .runSeparateR(paste0(\"withr::with_libpaths(new=" << libPathsToUse << ", pkgbuild::with_build_tools(install.packages(pkgs='\", pkgPath, \"', lib='" << moduleRLibrary().toStdString() << "', type='source', repos=NULL, INSTALL_opts=c('--no-multiarch')), required=FALSE ))\")));\n";
-	};
-
-	if(!onlyModPkg)
-	{
-		//Install dependencies:
-		//First the ones from CRAN because they cant depend on one from github
-		installDeps("'" + _modulePackage + "/.'");
-
-		//And fix Mac OS libraries of dependencies:
-		R << standardRIndent << ".postProcessLibraryModule(\"" << moduleRLibrary().toStdString() << "\");\n";
-	}
-
-		//Remove old copy of library (because we might be reinstalling and want the find.package check on the end to fail if something went wrong)
-	R	<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", { find.package(package='" << _name << "'); remove.packages(pkg='"	<< _name << "', lib='" << moduleRLibrary().toStdString() << "');})}, error=function(e) {});\n";
-
-	R	<< standardRIndent << "print('Module library now looks like: ');\n" << standardRIndent << "print(list.files(path='" << moduleRLibrary().toStdString() << "', recursive=FALSE));\n";
-
-		//Install module
-	installLocal("'" + _modulePackage + "/.'");
-	
-	//And fix Mac OS libraries of module pkg in case it contains cpp (and it will check all the deps again, but that shouldnt be a problem):
-	R << standardRIndent << ".postProcessLibraryModule(\"" << moduleRLibrary().toStdString() << "\");\n";
-
-
-		//Check if install worked and through loadlog as error otherwise
-	std::string moduleNotFoundMsg = "'\\nCouldn\\'t find the module by name of " + _name + "'";
-	
-	R << standardRIndent << "tryCatch(expr={ withr::with_libpaths(new='" << moduleRLibrary().toStdString() << "', find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setLog(paste0(loadLog, " << moduleNotFoundMsg <<")); return('fail'); });\n";
-
-
-	//Log::log() << "DynamicModule(" << _name << ")::generateModuleInstallingR() generated:\n" << R.str() << std::endl;
-
-	return R.str();
+	//installJaspModule <- function(modulePkg, libPathsToUse, moduleLibrary, repos, onlyModPkg)
+	return "jaspBase::installJaspModule(modulePkg='" + _modulePackage + "', libPathsToUse=" + getLibPathsToUse() + ", moduleLibrary='" + moduleRLibrary().toStdString() + "', repos='" + Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() + "', onlyModPkg=" + (onlyModPkg ? "TRUE" : "FALSE") + ");";
 }
 
 std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
