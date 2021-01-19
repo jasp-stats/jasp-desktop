@@ -297,6 +297,13 @@ void AxisModel::setRange(const double value, const size_t idx)
 	else if(_range[idx] == value)		return;
 	
 	_range[idx] = value;
+
+	if (!_plotEditor->advanced())
+	{
+		if (idx == 0 && value < _limits[0])		setLimits(value, 0);
+		if (idx == 1 && value > _limits[1])		setLimits(value, 1);
+	}
+
 	emit rangeChanged();
 	emit somethingChanged();
 }

@@ -32,7 +32,7 @@ class AxisModel : public QAbstractTableModel
 	Q_PROPERTY(double		limitLower	READ lower			WRITE setLower			NOTIFY limitsChanged			)
 	Q_PROPERTY(double		limitUpper	READ upper			WRITE setUpper			NOTIFY limitsChanged			)
 
-	Q_PROPERTY(bool		continuous	READ continuous								NOTIFY continuousChanged		)
+	Q_PROPERTY(bool			continuous	READ continuous								NOTIFY continuousChanged		)
 	//Q_PROPERTY(bool		hasBreaks	READ hasBreaks								NOTIFY hasBreaksChanged			) //Is a bit misleading as apparently you can have breaks without _breaks containing anything?
 
 public:

@@ -6,6 +6,7 @@
 #include "jsonredirect.h"
 #include "ploteditoraxismodel.h"
 #include "ploteditorcoordinates.h"
+#include <stack>
 
 class Analyses;
 class Analysis;
@@ -28,6 +29,9 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged			)
 	Q_PROPERTY(bool						loading			READ loading		WRITE setLoading		NOTIFY loadingChanged		)
 	Q_PROPERTY(bool						advanced		READ advanced		WRITE setAdvanced		NOTIFY advancedChanged		)
+	Q_PROPERTY(bool						undoEnabled		READ undoEnabled	WRITE setUndoEnabled	NOTIFY undoEnabledChanged	)
+	Q_PROPERTY(bool						redoEnabled		READ redoEnabled	WRITE setRedoEnabled	NOTIFY redoEnabledChanged	)
+
 
 public:
 	explicit PlotEditorModel();
@@ -46,6 +50,9 @@ public:
 	bool					advanced()	const {	return _advanced;	}
 	void					reset();
 
+	bool					undoEnabled()	const {	return _undoEnabled;	}
+	bool					redoEnabled()	const {	return _redoEnabled;	}
+
 signals:
 	void visibleChanged(		bool		visible			);
 	void nameChanged(			QString		name			);
@@ -60,6 +67,9 @@ signals:
 	void advancedChanged(		bool		advanced		);
 
 	void saveImage(int	id,	QString		options)	const;
+
+	void undoEnabledChanged(bool undoEnabled);
+	void redoEnabledChanged(bool redoEnabled);
 
 public slots:
 	void showPlotEditor(int id, QString options);
@@ -81,6 +91,11 @@ public slots:
 
 	QString clickHitsElement(double x, double y) const;
 	
+	void setUndoEnabled(bool undoEnabled);
+	void setRedoEnabled(bool redoEnabled);
+
+	Q_INVOKABLE	void undoSomething();
+	Q_INVOKABLE	void redoSomething();
 
 
 private:
@@ -105,7 +120,9 @@ private:
 	bool					_visible		= false,
 							_goBlank		= false,
 							_loading		= false,
-							_advanced		= false;
+							_advanced		= false,
+							_redoEnabled	= false,
+							_undoEnabled	= false;
 	int						_width,
 							_height,
 							_analysisId,
@@ -113,6 +130,9 @@ private:
 	double					_ppi;
 
 	static int				_editRequest;
+
+	std::stack<Json::Value>	_undo,
+							_redo;
 
 };
 

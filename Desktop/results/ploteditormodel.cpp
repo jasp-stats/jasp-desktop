@@ -130,9 +130,74 @@ void PlotEditorModel::somethingChanged()
 
 	if(newImgOptions != _prevImgOptions)
 	{
+
+		if (_prevImgOptions != Json::nullValue && (_undo.empty() || _undo.top() != _prevImgOptions))
+		{
+			_undo.push(_prevImgOptions);
+			setUndoEnabled(true);
+		}
+
+		while (!_redo.empty())
+			_redo.pop();
+
 		_prevImgOptions = newImgOptions;
 		_analysis->editImage(_prevImgOptions);
 	}
+}
+
+void PlotEditorModel::undoSomething()
+{
+	if (!_undo.empty())
+	{
+		_imgOptions = _undo.top();
+		_undo.pop();
+		_redo.push(_imgOptions);
+
+		if (!_redo.empty())
+			setRedoEnabled(true);
+
+		_prevImgOptions = _imgOptions;
+		_analysis->editImage(_prevImgOptions);
+		processImgOptions();
+	}
+}
+
+void PlotEditorModel::redoSomething()
+{
+	if (!_redo.empty())
+	{
+		_imgOptions = _redo.top();
+
+		_redo.pop();
+		if (_redo.size() == 0)
+			setRedoEnabled(false);
+
+		_undo.push(_imgOptions);
+		if (_undo.size() > 0)
+			setUndoEnabled(false);
+
+		_prevImgOptions = _imgOptions;
+		_analysis->editImage(_prevImgOptions);
+		processImgOptions();
+	}
+}
+
+void PlotEditorModel::setUndoEnabled(bool undoEnabled)
+{
+	if (_undoEnabled == undoEnabled)
+		return;
+
+	_undoEnabled = undoEnabled;
+	emit undoEnabledChanged(_undoEnabled);
+}
+
+void PlotEditorModel::setRedoEnabled(bool redoEnabled)
+{
+	if (_redoEnabled == redoEnabled)
+		return;
+
+	_redoEnabled = redoEnabled;
+	emit redoEnabledChanged(_redoEnabled);
 }
 
 void PlotEditorModel::setVisible(bool visible)
