@@ -206,8 +206,6 @@
         <file>icons/darkTheme/code-icon.png</file>
         <file>icons/lightTheme/code-icon.png</file>
         <file>icons/Rlogo.svg</file>
-        <file>icons/lightTheme/undo.png</file>
-        <file>icons/lightTheme/redo.png</file>
         <file>icons/lightTheme/redo.svg</file>
         <file>icons/lightTheme/undo.svg</file>
     </qresource>
