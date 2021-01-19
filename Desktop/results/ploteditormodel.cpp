@@ -58,7 +58,7 @@ void PlotEditorModel::resetPlot()
 
 void PlotEditorModel::savePlot() const
 {
-	saveImage(_analysisId, _options);
+	emit saveImage(_analysisId, _options);
 }
 
 void PlotEditorModel::reset()

@@ -8,6 +8,20 @@ import JASP.PlotEditor		1.0
 
 /*
 	TODO: it might make sense to add a global title/ box around all the options inside one axis.
+
+
+	Naming scheme (maybe this should just go in some documentation file):
+
+	JASP/ user				|			Internal name				|			ggplot2
+	-------------------------------------------------------------------------------------------
+	Title of ...			|			axisTitle					|			name
+	Title type				|			titleType					|			NA
+	Ticks					|			breaks						|			breaks
+	Ticks type				|			breaksType					|			NA
+	Range					|			limits						|			limits
+
+	There are also labels, but those can only be edited in the table.
+
  */
 
 Column
@@ -16,7 +30,6 @@ Column
 					spacing:	jaspTheme.columnGroupSpacing
 	property var	axisModel:	null
 	property string title:		""
-
 
 	JASPC.TextField
 	{
