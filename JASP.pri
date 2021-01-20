@@ -4,7 +4,7 @@
 JASP_R_INTERFACE_TARGET = R-Interface
 
 JASP_R_INTERFACE_MAJOR_VERSION =  10  # Interface changes or whenever you feel majorlike
-JASP_R_INTERFACE_MINOR_VERSION =  12   # Code changes
+JASP_R_INTERFACE_MINOR_VERSION =  13   # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
@@ -124,19 +124,21 @@ GENERATE_LANGUAGE_FILES = false
 message("AM_I_BUILDBOT: '$$[AM_I_BUILDBOT]'")
 COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equals function below actually works...
 !equals(COPY_BUILDBOTNESS, "") {
-!equals(COPY_BUILDBOTNESS, "\"\"") { #this should be done less stupidly but I do not want to waste my time on that now
-	GENERATE_LANGUAGE_FILES = true
-}
+	!equals(COPY_BUILDBOTNESS, "\"\"") { #this should be done less stupidly but I do not want to waste my time on that now
+		GENERATE_LANGUAGE_FILES = true
+	}
 }
 
 GETTEXT_LOCATION = $$(GETTEXT_PATH) #The GETTEXT_PATH can be used as environment for a specific gettext location
-unix{
-isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
-EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$dirname(QMAKE_QMAKE)
+
+unix {
+	isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
+	EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$dirname(QMAKE_QMAKE)
 }
-win32{
-isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
-WINQTBIN=$$QMAKE_QMAKE
-WINQTBIN ~= s,qmake.exe,,gs
-WINQTBIN ~= s,/,\\,g
+
+win32 {
+	isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
+	WINQTBIN=$$QMAKE_QMAKE
+	WINQTBIN ~= s,qmake.exe,,gs	
+	WINQTBIN ~= s,/,\\,g
 }

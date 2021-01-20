@@ -73,6 +73,9 @@ public slots:
 signals:
 	void currentIndexChanged();
 	void languageChanged();
+	void aboutToChangeLanguage();
+	void pauseEngines();
+	void resumeEngines();
 
 private:
 	static char		suffixChar() { return _singleton->_suffixChar; }

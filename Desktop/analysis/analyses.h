@@ -125,6 +125,7 @@ public slots:
 	void duplicateAnalysis(size_t id);
 	void showDependenciesInAnalysis(size_t analysis_id, QString optionName);
 	void analysisTitleChangedHandler(std::string moduleName, std::string oldTitle, std::string newTitle);
+	void prepareForLanguageChange();
 	void languageChangedHandler();
 	void resultsMetaChanged(QString json);
 	void allUserDataChanged(QString json);

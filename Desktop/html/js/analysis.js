@@ -3,6 +3,7 @@ JASPWidgets.Analysis = Backbone.Model.extend({
 		id: -1,
 		progress: -1,
 		results: {},
+		title: 'Analysis Title',
 		status: 'waiting',
 		optionschanged: [],
 		saveimage: [],
@@ -514,17 +515,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 			if (!_.has(results, name))
 				continue
+
 			let data = results[name];
-
-			/*if (meta.type == 'collection' && data.title == "") {  // remove collections without a title from view
-				let collectionMeta = meta.meta;
-				if (Array.isArray(collectionMeta)) { // the meta comes from a jaspResult analysis
-					this.createResultsViewFromMeta(data["collection"], collectionMeta, $result);
-					continue;
-				}
-			}*/
-
 			let itemView = this.createChild(data, this.model.get("status"), meta);
+			
 			if (itemView === null)
 				continue;
 
@@ -580,40 +574,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	createChild: function (result, status, metaEntry) {
 
-		var itemView = null;
-
-//backwards compatibility//////////////////
-		if (metaEntry.type == "title") {
-			this.titleRequest = { title: result, titleFormat: 'h2' };
-			this.labelRequest = null;
-		}
-		else if (metaEntry.type == "h1")
-			this.labelRequest = { title: result, titleFormat: 'h3' };
-		else if (metaEntry.type == "h2")
-			this.labelRequest = { title: result, titleFormat: 'h4' };
-		else {
-
-			if (_.isArray(result)) {
-
-				result = { collection: result };
-				if (this.labelRequest) {
-					result.title = this.labelRequest.title;
-					result.titleFormat = this.labelRequest.titleFormat;
-				}
-				if (metaEntry.type === 'tables')
-					metaEntry.meta = 'table';
-				else if (metaEntry.type === 'images')
-					metaEntry.meta = 'image';
-
-				metaEntry.type = 'collection'
-			}
-			this.labelRequest = null;
-///////////////////////////////////////////
-
-			itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status, childOfCollection: false, embeddedLevel: 1, indent: false }, false);
-		}
-
-		return itemView;
+		return JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status, childOfCollection: false, embeddedLevel: 1, indent: false }, false);
 	},
 
 	overwriteUserData: function(userdata) {
@@ -632,15 +593,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	render: function () {
 
-		var results = this.model.get("results");
-
-		// once everything becomes jaspResults this is always an object and the following can be removed
-		var progress = this.model.get("progress")
-		if (typeof progress == "number")
-			this.model.set("progress", { value: progress, label: "" })
-		else if (!progress)
-			this.model.set("progress", { value: -1, label: "" })
-		// up to here
+		var results			= this.model.get("results");
+		var titleAnalysis	= this.model.get("title");
 
 		if (results == "" || results == null) {
 			progress = this.model.get("progress");
@@ -677,10 +631,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.setErrorOnPreviousResults(errorMessage, status, $tempClone, $innerElement);
 		}
 
-		if (this.titleRequest)
-			this._setTitle(this.titleRequest.title, this.titleRequest.titleFormat);
-		else
-			this._setTitle(results.title, 'h2');
+		this._setTitle(titleAnalysis, 'h2');
 
 		this.progressbar.render();
 		$innerElement.prepend(this.progressbar.$el);

@@ -305,7 +305,7 @@ const char * jaspResults::constructResultJson()
 {
 	_response["typeRequest"]	= "analysis"; // Should correspond to engineState::analysis to string
 	_response["results"]		= dataEntry();
-	_response["name"]			= _response["results"]["title"];
+	//Why was this here anyway and why is the title used as "name" because that is confusing: _response["name"]			= _response["results"]["title"];
 
 	if(errorMessage != "" )
 	{
@@ -352,7 +352,7 @@ Json::Value jaspResults::dataEntry(std::string &) const
 {
 	Json::Value dataJson(jaspObject::dataEntryBase());
 
-	dataJson["title"]	= _title;
+	//dataJson["title"]	= _title; We dont need this anymore. Js doesnt look at this anymore because of the solution to https://github.com/jasp-stats/jasp-issues/issues/1088. Leaving comment here for a feautre moment where someone wonders why title is a property of jaspResults but doesnt do anything.
 	dataJson["name"]	= getUniqueNestedName();
 	dataJson[".meta"]	= metaEntry();
 

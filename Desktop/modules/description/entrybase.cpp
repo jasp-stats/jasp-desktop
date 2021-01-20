@@ -152,6 +152,8 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) cons
 	entry->_isGroupTitle	= _entryType == EntryType::groupTitle;
 
 	entry->_dynamicModule	= _description->dynMod();
+	
+	//Log::log()<<"convertToAnalysisEntry has title '"<<title()<<"'"<<std::endl;
 
 	return entry;
 }

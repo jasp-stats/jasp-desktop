@@ -366,7 +366,6 @@ void MainWindow::makeConnections()
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter							);
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
-	connect(_ribbonModel,			&RibbonModel::analysisTitleChanged,					_analyses,				&Analyses::analysisTitleChangedHandler						);
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
@@ -380,8 +379,11 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::loadQmlData,						this,					&MainWindow::loadQmlData,									Qt::UniqueConnection);
 
 	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
+	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_analyses,				&Analyses::prepareForLanguageChange							);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
-	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);	
+	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::pauseEngines,						_engineSync,			&EngineSync::pause											);
+	connect(_languageModel,			&LanguageModel::resumeEngines,						_engineSync,			&EngineSync::resume,										Qt::QueuedConnection);
 
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
 

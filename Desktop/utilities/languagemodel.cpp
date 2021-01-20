@@ -15,7 +15,7 @@
 #include "dirs.h"
 #include "qutils.h"
 #include <QDirIterator>
-
+#include "results/resultsjsinterface.h"
 
 LanguageInfo::LanguageInfo()
 {
@@ -133,6 +133,12 @@ void LanguageModel::changeLanguage(int index)
 {	
 	Log::log() << "LanguageModel::changeLanguage(int index = " << index << ") called." << std::endl;
 	// Called from PrefsUI.qml
+	
+	if(index < 0 || index >= _languages.size()) 
+	{
+		Log::log() << "Index out of range, make sure the dropdown is behaving well." << std::endl;
+		return;	
+	}
 
 	QLocale::Language cl = _languages[index];
 	if (currentLanguageInfo().language == cl) //We could have just checked against _currentIndex right?
@@ -145,11 +151,18 @@ void LanguageModel::changeLanguage(int index)
 	if (cl == QLocale::English)	removeTranslators();
 	else						loadQmFilesForLanguage(currentLanguageInfo().language);
 
-
+	//prepare for language change
+	emit aboutToChangeLanguage();								//asks all analyses to abort and to block refresh
+	ResultsJsInterface::singleton()->setResultsLoaded(false);	//So that javascript starts queueing any Js (such as title changed of an analysis) until the page is reloaded
+	emit pauseEngines();												//Hopefully avoids process being called while we are in the middle of changing the language
+	
+	//do it
 	_qml->retranslate();
 	Settings::setValue(Settings::PREFERRED_LANGUAGE, cl);
 	setCurrentIndex(index);
 	_shouldEmitLanguageChanged = true;
+	
+	//resumeEngines() will be emitted in resultsPageLoaded
 }
 
 void LanguageModel::resultsPageLoaded()
@@ -157,8 +170,11 @@ void LanguageModel::resultsPageLoaded()
 	if(!_shouldEmitLanguageChanged)
 		return;
 
+	//Log::log() << "void LanguageModel::resultsPageLoaded() and we should emit language changed" << std::endl;
+	
 	_shouldEmitLanguageChanged = false;
 	emit languageChanged();
+	emit resumeEngines();
 }
 
 QString LanguageModel::getLocalName(QLocale::Language cl) const
@@ -263,7 +279,7 @@ void LanguageModel::loadModuleTranslationFiles(Modules::DynamicModule *dyn)
 		if (cl != currentLanguageInfo().language)
 		{
 			//Module language differs from Jasp language. Just add to qmFiles for further use.			
-			Log::log() << "This module translation" << dyn->name() << " with " << fi.fileName().toStdString() << "does not support the current language "<<  currentLanguageInfo().languageName << std::endl ;
+			//Log::log() << "The translation for module '" << dyn->name() << "' with " << fi.fileName().toStdString() << " does not support the current language "<<  currentLanguageInfo().languageName << std::endl ;
 		}
 		else
 		{

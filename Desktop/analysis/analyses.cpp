@@ -736,14 +736,24 @@ void Analyses::analysisTitleChangedHandler(string moduleName, string oldTitle, s
 	});
 }
 
+void Analyses::prepareForLanguageChange()
+{
+	applyToAll([&](Analysis * a)
+	{ 
+		a->setRefreshBlocked(true); 
+		a->abort();
+	});
+}
+
+
 void Analyses::languageChangedHandler()
 {
-	refreshAllAnalyses();
 	applyToAll([&](Analysis * a)
 	{
+		a->setRefreshBlocked(false);
 		emit a->form()->languageChanged();
 	});
-
+	refreshAllAnalyses();
 	emit setResultsMeta(tq(_resultsMeta.toStyledString()));
 }
 

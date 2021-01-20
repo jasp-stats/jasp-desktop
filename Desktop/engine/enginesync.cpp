@@ -242,7 +242,7 @@ void EngineSync::process()
 	std::vector<EngineRepresentation *> boredEngines;
 	for (auto engine : _engines)
 	{
-		engine->process();
+		engine->processReplies();
 		
 		if(
 			_workers.count(engine) > 0	&& 
@@ -616,7 +616,7 @@ void EngineSync::stopEngines()
 
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
-		engine->process();
+		engine->processReplies();
 
 	_engineStarted		= false;
 
@@ -635,12 +635,13 @@ void EngineSync::stopEngines()
 		}
 		else
 			for (auto * engine : _engines)
-				engine->process();
+				engine->processReplies();
 
 	//timeout = QDateTime::currentSecsSinceEpoch() + 10;
 
 	/*
-
+		This is all commented out because it is very dangerous to just go and processEvents in the middle of other functions...
+	  
 	  Log::log() << "Checking if engines are running by using QApplication::processEvents to get answers." << std::endl;
 
 	bool stillRunning;
@@ -676,7 +677,7 @@ void EngineSync::pause()
 
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
-		engine->process();
+		engine->processReplies();
 
 	for(EngineRepresentation * e : _engines)
 		e->pauseEngine();
@@ -685,7 +686,7 @@ void EngineSync::pause()
 
 	while(!allEnginesPaused() && tryTill >= Utils::currentSeconds())
 		for (auto * engine : _engines)
-			engine->process();
+			engine->processReplies();
 
 	for (auto * engine : _engines)
 		if(!engine->paused())
@@ -712,7 +713,7 @@ void EngineSync::resume()
 
 	while(!allEnginesResumed())
 		for (auto * engine : _engines)
-			engine->process();
+			engine->processReplies();
 
 	if(restartedAnEngine)
 		setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());

@@ -86,7 +86,6 @@ signals:
 				void currentButtonModelChanged();
 				void analysisClickedSignal(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 				void highlightedModuleIndexChanged(int highlightedModuleIndex);
-				void analysisTitleChanged(std::string moduleName, std::string oldTitle, std::string newTitle);
 				void showRCommander();
 
 public slots:

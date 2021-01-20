@@ -192,7 +192,7 @@ Item
 				Connections
 				{
 					target:		resultsJsInterface
-					function onRunJavaScript(js)				{ resultsView.runJavaScript(js); }
+					function onRunJavaScriptSignal(js)			{ resultsView.runJavaScript(js); }
 					function onScrollAtAllChanged(scrollAtAll)	{ resultsView.runJavaScript("window.setScrollAtAll("+(scrollAtAll ? "true" : "false")+")"); }
 
 					function onExportToPDF(pdfPath)

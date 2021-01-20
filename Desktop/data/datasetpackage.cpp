@@ -281,8 +281,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		{
 		case int(specialRoles::filter):				return labels[index.row()].filterAllows();
 		case int(specialRoles::value):				return tq(labels.getValueFromRow(index.row()));
-		case Qt::DisplayRole:
-		default:									return tq(labels.getLabelFromRow(index.row()));
+		case Qt::DisplayRole:						return tq(labels.getLabelFromRow(index.row()));
+		default:									return QVariant();
 		}
 	}
 	}

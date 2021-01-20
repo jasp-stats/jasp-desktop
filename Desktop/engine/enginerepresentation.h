@@ -77,7 +77,7 @@ public:
 
 	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr && !killed(); }
 
-	void process();
+	void processReplies();
 	void restartAbortedAnalysis();
 	void checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }
 	bool willProcessAnalysis(Analysis * analysis) const;
