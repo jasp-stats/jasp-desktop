@@ -58,7 +58,6 @@ Popup
 			JASPW.MenuButton
 			{
 				id:					undoButton
-//				iconSource:			jaspTheme.iconPath + "/undo.png"//enabled ? jaspTheme.iconPath + "/undo.svg" : jaspTheme.iconPath + "/duplicate_disabled.png"
 				iconSource:			jaspTheme.iconPath + "/undo.svg"//enabled ? jaspTheme.iconPath + "/undo.svg" : jaspTheme.iconPath + "/duplicate_disabled.png"
 				enabled:			plotEditorModel.undoEnabled
 				toolTip:			qsTr("Undo last change")
@@ -74,12 +73,10 @@ Popup
 					bottomMargin:	4 * preferencesModel.uiScale
 				}
 				onClicked:			plotEditorModel.undoSomething()
-				visible:			false
 			}
 			JASPW.MenuButton
 			{
 				id:					redoButton
-//				iconSource:			jaspTheme.iconPath + "/redo.png"//enabled ? jaspTheme.iconPath + "/duplicate.png" : jaspTheme.iconPath + "/duplicate_disabled.png"
 				iconSource:			jaspTheme.iconPath + "/redo.svg"//enabled ? jaspTheme.iconPath + "/duplicate.png" : jaspTheme.iconPath + "/duplicate_disabled.png"
 				enabled:			plotEditorModel.redoEnabled
 				toolTip:			qsTr("Redo last change")
@@ -94,7 +91,6 @@ Popup
 					bottomMargin:	undoButton.anchors.bottomMargin
 				}
 				onClicked:			plotEditorModel.redoSomething()
-				visible:			false
 			}
 			
 			Rectangle

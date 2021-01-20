@@ -44,6 +44,10 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 	
 	processImgOptions();
 
+	// don't signal this to qml
+	Log::log() << "initial edit options for undo are: " + generateImgOptions().toStyledString() << std::endl;
+	_undo.push(generateImgOptions());
+
 	setVisible(true);
 	setLoading(false);
 }
@@ -72,6 +76,11 @@ void PlotEditorModel::reset()
 	setTitle(			"");
 	setWidth(			100);
 	setHeight(			100);
+
+	clear(_undo);
+	clear(_redo);
+	setUndoEnabled(false);
+	setRedoEnabled(false);
 }
 
 void PlotEditorModel::processImgOptions()
@@ -122,6 +131,12 @@ Json::Value PlotEditorModel::generateEditOptions() const
 	return editOptions;
 }
 
+void PlotEditorModel::clear(std::stack<Json::Value>& x)
+{
+	while(!x.empty())
+		x.pop();
+}
+
 void PlotEditorModel::somethingChanged()
 {
 	if(_loading || !_visible) return;
@@ -131,34 +146,37 @@ void PlotEditorModel::somethingChanged()
 	if(newImgOptions != _prevImgOptions)
 	{
 
-		if (_prevImgOptions != Json::nullValue && (_undo.empty() || _undo.top() != _prevImgOptions))
+		_prevImgOptions = newImgOptions;
+		// ensure that the undo stack is unique and the first previous image options are skipped (since those are null)
+		if (_undo.empty() || _undo.top() != _prevImgOptions)
 		{
+			Log::log() << "_undo.push(_prevImgOptions): " << _prevImgOptions.toStyledString() << std::endl;
 			_undo.push(_prevImgOptions);
 			setUndoEnabled(true);
 		}
 
-		while (!_redo.empty())
-			_redo.pop();
+		clear(_redo);
+		setRedoEnabled(false);
 
-		_prevImgOptions = newImgOptions;
+
 		_analysis->editImage(_prevImgOptions);
 	}
 }
 
+
+
 void PlotEditorModel::undoSomething()
 {
-	if (!_undo.empty())
+	if (_undo.size() > 1)
 	{
-		_imgOptions = _undo.top();
+		_redo.push(_undo.top());
 		_undo.pop();
-		_redo.push(_imgOptions);
+		_imgOptions = _undo.top();
 
-		if (!_redo.empty())
-			setRedoEnabled(true);
+		setRedoEnabled(true);
+		setUndoEnabled(_undo.size() > 1);
 
-		_prevImgOptions = _imgOptions;
-		_analysis->editImage(_prevImgOptions);
-		processImgOptions();
+		applyChangesFromUndoOrRedo();
 	}
 }
 
@@ -167,19 +185,25 @@ void PlotEditorModel::redoSomething()
 	if (!_redo.empty())
 	{
 		_imgOptions = _redo.top();
-
 		_redo.pop();
-		if (_redo.size() == 0)
-			setRedoEnabled(false);
+		setRedoEnabled(!_redo.empty());
 
 		_undo.push(_imgOptions);
-		if (_undo.size() > 0)
-			setUndoEnabled(false);
+		setUndoEnabled(true);
 
-		_prevImgOptions = _imgOptions;
-		_analysis->editImage(_prevImgOptions);
-		processImgOptions();
+		applyChangesFromUndoOrRedo();
 	}
+}
+
+void PlotEditorModel::applyChangesFromUndoOrRedo()
+{
+	_editOptions = _imgOptions["editOptions"];
+
+	_xAxis->setAxisData(_editOptions["xAxis"]);
+	_yAxis->setAxisData(_editOptions["yAxis"]);
+
+	_prevImgOptions = _imgOptions;
+	_analysis->editImage(_prevImgOptions);
 }
 
 void PlotEditorModel::setUndoEnabled(bool undoEnabled)

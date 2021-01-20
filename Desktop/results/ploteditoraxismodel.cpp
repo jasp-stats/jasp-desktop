@@ -43,6 +43,8 @@ void AxisModel::setAxisData(const Json::Value & axis)
 	else
 		_range.clear();
 	
+	emit rangeChanged();
+
 	fillFromJSON(_labels, labels);
 	fillFromJSON(_limits, limits);
 
@@ -300,8 +302,10 @@ void AxisModel::setRange(const double value, const size_t idx)
 
 	if (!_plotEditor->advanced())
 	{
-		if (idx == 0 && value < _limits[0])		setLimits(value, 0);
-		if (idx == 1 && value > _limits[1])		setLimits(value, 1);
+		if (idx == 0 && value < _limits[0])
+			setLimits(value, 0);
+		else if (idx == 1 && value > _limits[1])
+			setLimits(value, 1);
 	}
 
 	emit rangeChanged();
@@ -341,7 +345,11 @@ void AxisModel::setLimits(const double value, const size_t idx)
 	
 	_limits[idx] = value;
 	emit limitsChanged();
-	emit somethingChanged();
+
+	// if we're not in advanced mode, this function is always triggered as a side effect and thus it shouldn't trigger
+	// somethingChanged as that already happens in the caller
+	if (_plotEditor->advanced())
+		emit somethingChanged();
 }
 
 void AxisModel::fillFromJSON(std::vector<double> &obj, Json::Value value)

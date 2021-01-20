@@ -65,11 +65,11 @@ signals:
 	void resetPlotChanged(		bool		resetPlot		);
 	void loadingChanged(		bool		loading			);
 	void advancedChanged(		bool		advanced		);
+	void undoEnabledChanged(	bool		undoEnabled		);
+	void redoEnabledChanged(	bool		redoEnabled		);
 
 	void saveImage(int	id,	QString		options)	const;
 
-	void undoEnabledChanged(bool undoEnabled);
-	void redoEnabledChanged(bool redoEnabled);
 
 public slots:
 	void showPlotEditor(int id, QString options);
@@ -96,12 +96,15 @@ public slots:
 
 	Q_INVOKABLE	void undoSomething();
 	Q_INVOKABLE	void redoSomething();
+	void applyChangesFromUndoOrRedo();
 
 
 private:
 	void		processImgOptions();
 	Json::Value generateImgOptions()	const;
 	Json::Value generateEditOptions()	const;
+
+	void		clear(std::stack<Json::Value>& x);
 
 private:
 	Analysis			*	_analysis		= nullptr;
