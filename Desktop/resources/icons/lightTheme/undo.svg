@@ -28,18 +28,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8284272"
-     inkscape:cx="187.21758"
-     inkscape:cy="298.48937"
+     inkscape:zoom="1"
+     inkscape:cx="216.25016"
+     inkscape:cy="218.02275"
      inkscape:document-units="mm"
      inkscape:current-layer="layer4"
      showgrid="false"
      showguides="false"
      inkscape:guide-bbox="true"
-     inkscape:window-width="2560"
-     inkscape:window-height="1374"
-     inkscape:window-x="0"
-     inkscape:window-y="36"
+     inkscape:window-width="1920"
+     inkscape:window-height="1050"
+     inkscape:window-x="2560"
+     inkscape:window-y="180"
      inkscape:window-maximized="1">
     <sodipodi:guide
        position="99.999999,99.999999"
@@ -240,6 +240,20 @@
        inkscape:locked="false"
        inkscape:label=""
        inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="-10.054166,118.75"
+       orientation="0,1"
+       id="guide852"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="78.569999,120.43833"
+       orientation="1,0"
+       id="guide854"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
   </sodipodi:namedview>
   <metadata
      id="metadata15">
@@ -312,7 +326,7 @@
      inkscape:label="Arrow Head">
     <path
        style="opacity:0.98999999;fill:#ffffff;fill-opacity:1;stroke:#f9ffff;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 18.845,87.500001 H 63.224 L 39.615,112.5 Z"
+       d="M 7.097176,81.249999 H 78.57 L 40.547,121.513 Z"
        id="rect1028"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc" />

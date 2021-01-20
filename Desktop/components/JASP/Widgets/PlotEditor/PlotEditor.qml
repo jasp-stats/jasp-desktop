@@ -55,44 +55,6 @@ Popup
 				y:							jaspTheme.generalAnchorMargin
 			}
 
-			JASPW.MenuButton
-			{
-				id:					undoButton
-				iconSource:			jaspTheme.iconPath + "/undo.svg"//enabled ? jaspTheme.iconPath + "/undo.svg" : jaspTheme.iconPath + "/duplicate_disabled.png"
-				enabled:			plotEditorModel.undoEnabled
-				toolTip:			qsTr("Undo last change")
-				radius:				height
-				width:				height
-				opacity:			enabled ? 1 : 0.1
-				anchors
-				{
-					top:			parent.top
-					left:			parent.left
-					// same as in AnalysisFormExpandser.qml
-					topMargin:		4 * preferencesModel.uiScale
-					bottomMargin:	4 * preferencesModel.uiScale
-				}
-				onClicked:			plotEditorModel.undoSomething()
-			}
-			JASPW.MenuButton
-			{
-				id:					redoButton
-				iconSource:			jaspTheme.iconPath + "/redo.svg"//enabled ? jaspTheme.iconPath + "/duplicate.png" : jaspTheme.iconPath + "/duplicate_disabled.png"
-				enabled:			plotEditorModel.redoEnabled
-				toolTip:			qsTr("Redo last change")
-				radius:				height
-				width:				height
-				opacity:			enabled ? 1 : 0.1
-				anchors
-				{
-					top:			parent.top
-					left:			undoButton.right
-					topMargin:		undoButton.anchors.topMargin
-					bottomMargin:	undoButton.anchors.bottomMargin
-				}
-				onClicked:			plotEditorModel.redoSomething()
-			}
-			
 			Rectangle
 			{
 				id:					axes
@@ -190,6 +152,51 @@ Popup
 					flickable:		axesFlickable
 					vertical:		true
 				}
+
+				JASPW.MenuButton
+				{
+					id:					redoButton
+					iconSource:			jaspTheme.iconPath + "/redo.svg"
+					enabled:			plotEditorModel.redoEnabled
+					toolTip:			qsTr("Redo last change")
+					// Don: the default value is a bit too small on my machine
+					height:				42
+					radius:				height
+					width:				height
+					opacity:			enabled ? 1 : 0.1
+					anchors
+					{
+						top:			axesFlickable.top
+						right:			axesFlickable.right
+						// same as in AnalysisFormExpandser.qml
+						topMargin:		4 * preferencesModel.uiScale
+						bottomMargin:	4 * preferencesModel.uiScale
+					}
+					onClicked:			plotEditorModel.redoSomething()
+				}
+
+				JASPW.MenuButton
+				{
+					id:					undoButton
+					iconSource:			jaspTheme.iconPath + "/undo.svg"
+					enabled:			plotEditorModel.undoEnabled
+					toolTip:			qsTr("Undo last change")
+					height:				42
+					radius:				height
+					width:				height
+					opacity:			enabled ? 1 : 0.1
+					anchors
+					{
+						top:			axesFlickable.top
+						right:			redoButton.left
+						topMargin:		redoButton.anchors.topMargin
+						bottomMargin:	redoButton.anchors.bottomMargin
+
+					}
+					onClicked:			plotEditorModel.undoSomething()
+				}
+
+
 				JASPC.CheckBox
 				{
 					id:					advanced

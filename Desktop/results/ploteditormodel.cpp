@@ -20,8 +20,11 @@ PlotEditorModel::PlotEditorModel()
 	_ppi   = PreferencesModel::prefs()->plotPPI();
 	// _resetPlot is always false, it should only be set to TRUE from QML
 
-	connect(_xAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
-	connect(_yAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
+	connect(_xAxis,		&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
+	connect(_yAxis,		&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
+	connect(_xAxis,		&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
+	connect(_yAxis,		&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
+
 }
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
@@ -45,8 +48,8 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 	processImgOptions();
 
 	// don't signal this to qml
-	Log::log() << "initial edit options for undo are: " + generateImgOptions().toStyledString() << std::endl;
-	_undo.push(generateImgOptions());
+	//	Log::log() << "initial edit options for undo are: " + generateImgOptions().toStyledString() << std::endl;
+	//	_undo.push(generateImgOptions());
 
 	setVisible(true);
 	setLoading(false);
@@ -77,8 +80,8 @@ void PlotEditorModel::reset()
 	setWidth(			100);
 	setHeight(			100);
 
-	clear(_undo);
-	clear(_redo);
+	_undo = std::stack<Json::Value>();
+	_redo = std::stack<Json::Value>();
 	setUndoEnabled(false);
 	setRedoEnabled(false);
 }
@@ -131,12 +134,6 @@ Json::Value PlotEditorModel::generateEditOptions() const
 	return editOptions;
 }
 
-void PlotEditorModel::clear(std::stack<Json::Value>& x)
-{
-	while(!x.empty())
-		x.pop();
-}
-
 void PlotEditorModel::somethingChanged()
 {
 	if(_loading || !_visible) return;
@@ -145,36 +142,22 @@ void PlotEditorModel::somethingChanged()
 
 	if(newImgOptions != _prevImgOptions)
 	{
-
 		_prevImgOptions = newImgOptions;
-		// ensure that the undo stack is unique and the first previous image options are skipped (since those are null)
-		if (_undo.empty() || _undo.top() != _prevImgOptions)
-		{
-			Log::log() << "_undo.push(_prevImgOptions): " << _prevImgOptions.toStyledString() << std::endl;
-			_undo.push(_prevImgOptions);
-			setUndoEnabled(true);
-		}
-
-		clear(_redo);
-		setRedoEnabled(false);
-
-
 		_analysis->editImage(_prevImgOptions);
 	}
 }
 
-
-
 void PlotEditorModel::undoSomething()
 {
-	if (_undo.size() > 1)
+	if (!_undo.empty())
 	{
-		_redo.push(_undo.top());
-		_undo.pop();
+		_redo.push(_imgOptions);
+
 		_imgOptions = _undo.top();
+		_undo.pop();
 
 		setRedoEnabled(true);
-		setUndoEnabled(_undo.size() > 1);
+		setUndoEnabled(!_undo.empty());
 
 		applyChangesFromUndoOrRedo();
 	}
@@ -184,11 +167,12 @@ void PlotEditorModel::redoSomething()
 {
 	if (!_redo.empty())
 	{
+		_undo.push(_imgOptions);
+
 		_imgOptions = _redo.top();
 		_redo.pop();
-		setRedoEnabled(!_redo.empty());
 
-		_undo.push(_imgOptions);
+		setRedoEnabled(!_redo.empty());
 		setUndoEnabled(true);
 
 		applyChangesFromUndoOrRedo();
@@ -197,13 +181,18 @@ void PlotEditorModel::redoSomething()
 
 void PlotEditorModel::applyChangesFromUndoOrRedo()
 {
+	setLoading(true);
 	_editOptions = _imgOptions["editOptions"];
 
+	Log::log() << "_xAxis->setAxisData(_editOptions[\"xAxis\"]);" + _editOptions["xAxis"].toStyledString() << std::endl;
+	Log::log() << "from was: "		+ std::to_string(_xAxis->from()) << std::endl;
 	_xAxis->setAxisData(_editOptions["xAxis"]);
+	Log::log() << "from is now: "	+ std::to_string(_xAxis->from()) << std::endl;
 	_yAxis->setAxisData(_editOptions["yAxis"]);
 
 	_prevImgOptions = _imgOptions;
 	_analysis->editImage(_prevImgOptions);
+	setLoading(false);
 }
 
 void PlotEditorModel::setUndoEnabled(bool undoEnabled)
@@ -222,6 +211,23 @@ void PlotEditorModel::setRedoEnabled(bool redoEnabled)
 
 	_redoEnabled = redoEnabled;
 	emit redoEnabledChanged(_redoEnabled);
+}
+
+void PlotEditorModel::addToUndoStack()
+{
+	if(_loading || !_visible) return;
+
+	Json::Value options = generateImgOptions();
+
+	if (_undo.empty() || _undo.top() != options)
+	{
+		_undo.push(options);
+		setUndoEnabled(true);
+	}
+
+	_redo = std::stack<Json::Value>();
+	setRedoEnabled(false);
+
 }
 
 void PlotEditorModel::setVisible(bool visible)

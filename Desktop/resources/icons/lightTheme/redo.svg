@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.0000001"
-     inkscape:cx="498.70423"
-     inkscape:cy="377.94125"
+     inkscape:zoom="0.3535534"
+     inkscape:cx="1037.4771"
+     inkscape:cy="-438.20116"
      inkscape:document-units="mm"
      inkscape:current-layer="layer4"
      showgrid="false"
@@ -331,8 +331,8 @@
      inkscape:label="Arrow Head"
      style="display:inline">
     <path
-       style="opacity:0.98999999;fill:#ffffff;fill-opacity:1;stroke:#f9ffff;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 136.961,87.45 h 44.379 l -23.609,25 z"
+       style="display:inline;opacity:0.98999999;fill:#ffffff;fill-opacity:1;stroke:#f9ffff;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 121.43,81.25 h 71.473 l -33.45,40.263 z"
        id="rect1028"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc" />

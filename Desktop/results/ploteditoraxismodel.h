@@ -110,6 +110,7 @@ signals:
 	void continuousChanged();
 	void somethingChanged();
 	void hasBreaksChanged();
+	void addToUndoStack();
 
 private:
 	std::string				TitleTypeToString (TitleType  type) const;

@@ -94,6 +94,8 @@ public slots:
 	void setUndoEnabled(bool undoEnabled);
 	void setRedoEnabled(bool redoEnabled);
 
+	void addToUndoStack();
+
 	Q_INVOKABLE	void undoSomething();
 	Q_INVOKABLE	void redoSomething();
 	void applyChangesFromUndoOrRedo();
@@ -103,8 +105,6 @@ private:
 	void		processImgOptions();
 	Json::Value generateImgOptions()	const;
 	Json::Value generateEditOptions()	const;
-
-	void		clear(std::stack<Json::Value>& x);
 
 private:
 	Analysis			*	_analysis		= nullptr;

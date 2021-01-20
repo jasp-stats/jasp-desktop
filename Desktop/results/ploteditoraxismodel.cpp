@@ -28,22 +28,23 @@ void AxisModel::setAxisData(const Json::Value & axis)
 	Json::Value labels	= settings.get(	"labels",		Json::arrayValue);
 	Json::Value limits	= settings.get(	"limits",		Json::arrayValue);
 	Json::Value expands	= settings.get(	"expands",		Json::arrayValue);
+	Json::Value range	= settings.get(	"range",		Json::arrayValue);
 
 	fillFromJSON(_breaks, breaks);
-	emit hasBreaksChanged();
-	
-	if(hasBreaks())
-	{
-		_range.clear();
-		_range.reserve(3);
-		_range.push_back(_breaks[0]);
-		_range.push_back(_breaks[_breaks.size() - 1]);
-		_range.push_back(_range[0] != _range[1] ? (_range[1] - _range[0]) / (_breaks.size() - 1) : 1);
-	}
-	else
-		_range.clear();
-	
-	emit rangeChanged();
+	fillFromJSON(_range, range);
+
+//	code below may be useful if we wish to update the breaks in C++ upon adjusting the range
+//	if(hasBreaks())
+//	{
+//		_range.clear();
+//		_range.reserve(3);
+//		_range.push_back()
+//		_range.push_back(_breaks[0]);
+//		_range.push_back(_breaks[_breaks.size() - 1]);
+//		_range.push_back(_range[0] != _range[1] ? (_range[1] - _range[0]) / (_breaks.size() - 1) : 1);
+//	}
+//	else
+//		_range.clear();
 
 	fillFromJSON(_labels, labels);
 	fillFromJSON(_limits, limits);
@@ -78,6 +79,8 @@ void AxisModel::setTitle(QString title)
 	if (_title == title)
 		return;
 
+	emit addToUndoStack();
+
 	_title = title;
 	emit titleChanged(_title);
 	emit somethingChanged();
@@ -87,6 +90,8 @@ void AxisModel::setTitleType(TitleType titleType)
 {
 	if (_titleType == titleType)
 		return;
+
+	emit addToUndoStack();
 
 	_titleType = titleType;
 	emit titleTypeChanged(_titleType);
@@ -219,6 +224,7 @@ void AxisModel::setType(QString type)
 	if (_type == type)
 		return;
 
+	emit addToUndoStack();
 	_type = type;
 	emit typeChanged(_type);
 	emit somethingChanged();
@@ -229,6 +235,7 @@ void AxisModel::setVertical(bool vertical)
 	if (_vertical == vertical)
 		return;
 
+	emit addToUndoStack();
 	_vertical = vertical;
 	emit verticalChanged(_vertical);
 }
@@ -270,6 +277,7 @@ void AxisModel::insertBreak(const QModelIndex &index, const size_t column, const
 void AxisModel::deleteBreak(const QModelIndex &index, const size_t column)
 {
 	Log::log()	<<	"AxisModel::deleteBreak() column index is: " << column  << std::endl;
+	emit addToUndoStack();
 
 	beginRemoveColumns(QModelIndex(), column, column + 1);
 
@@ -287,6 +295,7 @@ void AxisModel::setBreaksType(const BreaksType breaksType)
 	if (_breaksType == breaksType)
 		return;
 
+	emit addToUndoStack();
 	_breaksType = breaksType;
 	emit rangeChanged();
 	emit somethingChanged();
@@ -297,7 +306,8 @@ void AxisModel::setRange(const double value, const size_t idx)
 {
 	if(_range.size() <= idx)			_range.resize(idx + 1);
 	else if(_range[idx] == value)		return;
-	
+
+	emit addToUndoStack();
 	_range[idx] = value;
 
 	if (!_plotEditor->advanced())
@@ -332,7 +342,8 @@ void AxisModel::setLimitsType(const LimitsType limitsType)
 {
 	if (_limitsType == limitsType)
 		return;
-	
+
+	emit addToUndoStack();
 	_limitsType = limitsType;
 	emit limitsChanged();
 	emit somethingChanged();
@@ -342,7 +353,12 @@ void AxisModel::setLimits(const double value, const size_t idx)
 {
 	if(_limits.size() <= idx)			_limits.resize(idx + 1);
 	else if (_limits[idx] == value)		return;
-	
+
+	// if we're not in advanced mode, this function is always triggered as a side effect and thus it shouldn't trigger
+	// somethingChanged as that already happens in the caller
+	if (_plotEditor->advanced())
+		emit addToUndoStack();
+
 	_limits[idx] = value;
 	emit limitsChanged();
 
