@@ -743,7 +743,9 @@ std::vector<std::vector<std::string> > Analysis::getValuesFromRSource(const QStr
 
 	size_t nbRows = 1;
 
-	// We have to transpose columns to rows
+	// The data starts with the rows then the columns, we have to transpose it.
+	// We want to send the data per column. This will be stored in a Terms object.
+	// A Term can have several components, so if a column has several rows, each row will be a component of the corresponding term.
 	std::vector<std::vector<std::string> > result;
 	for (const Json::Value& rowValue : dataValue)
 	{
