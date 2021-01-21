@@ -119,6 +119,13 @@ void AxisModel::getEntryAndBreaks(size_t & entry, bool & breaks, const QModelInd
 	breaks	= hasBreaks() && (	_vertical ? index.row()		: index.column()) == 0;
 }
 
+void AxisModel::simplifyLimitsType()
+{
+	// floating point comparision is fine here
+	if (_range[0] == _limits[0] && _range[1] == _limits[1])
+		setLimitsType(LimitsType::LimitsBreaks);
+}
+
 QVariant AxisModel::data(const QModelIndex &index, int role) const
 {
 	if(role != Qt::DisplayRole || index.row() < 0 || index.row() >= rowCount() || index.column() < 0 || index.column() >= columnCount())
@@ -311,12 +318,7 @@ void AxisModel::setRange(const double value, const size_t idx)
 	_range[idx] = value;
 
 	if (!_plotEditor->advanced())
-	{
-		if (idx == 0 && value < _limits[0])
-			setLimits(value, 0);
-		else if (idx == 1 && value > _limits[1])
-			setLimits(value, 1);
-	}
+		setLimits(value, idx);
 
 	emit rangeChanged();
 	emit somethingChanged();
@@ -326,7 +328,7 @@ void AxisModel::setFrom(const double from)
 {
 	setRange(from, 0);
 
-	if (_plotEditor->advanced())
+	if (!_plotEditor->advanced())
 		setLimits(from, 0);
 }
 
@@ -334,7 +336,7 @@ void AxisModel::setTo(const double to)
 {
 	setRange(to, 1);
 
-	if (_plotEditor->advanced())
+	if (!_plotEditor->advanced())
 		setLimits(to, 1);
 }
 
@@ -343,10 +345,14 @@ void AxisModel::setLimitsType(const LimitsType limitsType)
 	if (_limitsType == limitsType)
 		return;
 
-	emit addToUndoStack();
+	if (_plotEditor->advanced())
+		emit addToUndoStack();
+
 	_limitsType = limitsType;
 	emit limitsChanged();
-	emit somethingChanged();
+
+	if (_plotEditor->advanced())
+		emit somethingChanged();
 }
 
 void AxisModel::setLimits(const double value, const size_t idx)
@@ -354,16 +360,12 @@ void AxisModel::setLimits(const double value, const size_t idx)
 	if(_limits.size() <= idx)			_limits.resize(idx + 1);
 	else if (_limits[idx] == value)		return;
 
-	// if we're not in advanced mode, this function is always triggered as a side effect and thus it shouldn't trigger
-	// somethingChanged as that already happens in the caller
 	if (_plotEditor->advanced())
 		emit addToUndoStack();
 
 	_limits[idx] = value;
 	emit limitsChanged();
 
-	// if we're not in advanced mode, this function is always triggered as a side effect and thus it shouldn't trigger
-	// somethingChanged as that already happens in the caller
 	if (_plotEditor->advanced())
 		emit somethingChanged();
 }

@@ -159,8 +159,6 @@ Popup
 					iconSource:			jaspTheme.iconPath + "/redo.svg"
 					enabled:			plotEditorModel.redoEnabled
 					toolTip:			qsTr("Redo last change")
-					// Don: the default value is a bit too small on my machine
-					height:				42
 					radius:				height
 					width:				height
 					opacity:			enabled ? 1 : 0.1
@@ -181,7 +179,6 @@ Popup
 					iconSource:			jaspTheme.iconPath + "/undo.svg"
 					enabled:			plotEditorModel.undoEnabled
 					toolTip:			qsTr("Undo last change")
-					height:				42
 					radius:				height
 					width:				height
 					opacity:			enabled ? 1 : 0.1

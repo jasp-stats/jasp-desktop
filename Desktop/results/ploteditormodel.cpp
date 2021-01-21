@@ -334,6 +334,13 @@ void PlotEditorModel::setAdvanced(bool advanced)
 	if (_advanced == advanced)
 		return;
 
+	// ease the transition to advanced mode by simplifying where possible
+	if (advanced)
+	{
+		_xAxis->simplifyLimitsType();
+		_yAxis->simplifyLimitsType();
+	}
+
 	_advanced = advanced;
 	emit advancedChanged(_advanced);
 }

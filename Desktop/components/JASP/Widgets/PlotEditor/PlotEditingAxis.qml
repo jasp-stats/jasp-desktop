@@ -40,7 +40,7 @@ Column
 		onEditingFinished:	if(axisModel) axisModel.title = value
 		enabled:			plotEditorModel.advanced || axisModel.titleType === parseInt(AxisModel.TitleCharacter)
 
-		// does not work!
+		// TODO: does not work!
 		toolTip:			plotEditorModel.advanced ? "test" : qsTr("The title can only be modified in advanced mode because it is not plain text.");
 
 	}
@@ -55,7 +55,7 @@ Column
 		[
 			{ label: qsTr("Plain text"),		value: AxisModel.TitleCharacter		},
 			{ label: qsTr("R expression"),		value: AxisModel.TitleExpression	},
-			{ label: qsTr("LateX"),				value: AxisModel.TitleLaTeX			},
+//			{ label: qsTr("LateX"),				value: AxisModel.TitleLaTeX			},		<-- maybe later, see https://github.com/stefano-meschiari/latex2exp
 			{ label: qsTr("Hide title"),		value: AxisModel.TitleNull			}
 		]
 
@@ -69,6 +69,7 @@ Column
 	{
 		id:		axisBreaksRadioButton
 		title:	qsTr("Ticks")
+		visible: axisModel.continuous
 
 		JASPC.RadioButton { id: axisBreaksRange;	value: "range";		label:	qsTr("Specify sequence");	checked: if(axisModel) axisModel.continuous ? plotEditorModel.advanced || axisModel.breaksType === AxisModel.BreaksRange	: false										}
 		JASPC.RadioButton { id: axisBreaksManual;	value: "manual";	label:	qsTr("Manually");			checked: if(axisModel) axisModel.continuous ? plotEditorModel.advanced || axisModel.breaksType === AxisModel.BreaksManual	: true	;	visible: axisModel.continuous;	}
@@ -88,7 +89,7 @@ Column
 	Column
 	{
 		id:			breaksGroup
-		visible:	!axisBreaksNull.checked
+		visible:	axisModel.continuous && !axisBreaksNull.checked
 		spacing:	jaspTheme.columnGroupSpacing
 		anchors
 		{
