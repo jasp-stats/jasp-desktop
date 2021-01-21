@@ -47,10 +47,6 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 	
 	processImgOptions();
 
-	// don't signal this to qml
-	//	Log::log() << "initial edit options for undo are: " + generateImgOptions().toStyledString() << std::endl;
-	//	_undo.push(generateImgOptions());
-
 	setVisible(true);
 	setLoading(false);
 }
@@ -184,10 +180,7 @@ void PlotEditorModel::applyChangesFromUndoOrRedo()
 	setLoading(true);
 	_editOptions = _imgOptions["editOptions"];
 
-	Log::log() << "_xAxis->setAxisData(_editOptions[\"xAxis\"]);" + _editOptions["xAxis"].toStyledString() << std::endl;
-	Log::log() << "from was: "		+ std::to_string(_xAxis->from()) << std::endl;
 	_xAxis->setAxisData(_editOptions["xAxis"]);
-	Log::log() << "from is now: "	+ std::to_string(_xAxis->from()) << std::endl;
 	_yAxis->setAxisData(_editOptions["yAxis"]);
 
 	_prevImgOptions = _imgOptions;
