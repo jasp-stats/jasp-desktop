@@ -658,7 +658,6 @@ void Engine::saveImage()
 
 	_analysisStatus								= Status::complete;
 	_analysisResults["results"]["inputOptions"]	= _imageOptions;
-	_progress									= -1;
 
 	sendAnalysisResults();
 
@@ -677,7 +676,6 @@ void Engine::editImage()
 		_analysisResults["results"]["request"] = _imageOptions.get("request", -1);
 
 	_analysisStatus			= Status::complete;
-	_progress				= -1;
 
 	sendAnalysisResults();
 
@@ -692,7 +690,6 @@ void Engine::rewriteImages()
 	_analysisStatus				= Status::complete;
 	_analysisResults			= Json::Value();
 	_analysisResults["status"]	= analysisResultStatusToString(analysisResultStatus::imagesRewritten);
-	_progress					= -1;
 
 	sendAnalysisResults();
 
@@ -714,14 +711,14 @@ analysisResultStatus Engine::getStatusToAnalysisStatus()
 
 void Engine::sendAnalysisResults()
 {
-	Json::Value response = Json::Value(Json::objectValue);
+	Json::Value response			= Json::Value(Json::objectValue);
 
-	response["typeRequest"]	= engineStateToString(engineState::analysis);
-	response["id"]			= _analysisId;
-	response["name"]		= _analysisName;
-	response["revision"]	= _analysisRevision;
-	response["progress"]	= _progress;
-
+	response["typeRequest"]			= engineStateToString(engineState::analysis);
+	response["id"]					= _analysisId;
+	response["name"]				= _analysisName;
+	response["revision"]			= _analysisRevision;
+	response["progress"]			= Json::nullValue;
+	
 	bool					sensibleResultsStatus	= _analysisResults.isObject() && _analysisResults.get("status", Json::nullValue) != Json::nullValue;
 	analysisResultStatus	resultStatus			= !sensibleResultsStatus ? getStatusToAnalysisStatus() : analysisResultStatusFromString(_analysisResults["status"].asString());
 

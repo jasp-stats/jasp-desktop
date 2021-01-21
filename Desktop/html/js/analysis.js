@@ -1,7 +1,7 @@
 JASPWidgets.Analysis = Backbone.Model.extend({
 	defaults: {
 		id: -1,
-		progress: -1,
+		progress: null,
 		results: {},
 		title: 'Analysis Title',
 		status: 'waiting',
@@ -596,9 +596,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var results			= this.model.get("results");
 		var titleAnalysis	= this.model.get("title");
 
-		if (results == "" || results == null) {
+		if (results === "" || results === null) {
 			progress = this.model.get("progress");
-			if (progress.value > -1)
+
+			if (progress !== null && progress.value > -1)
 				this.updateProgressbarInResults();
 			return this;
 		}
