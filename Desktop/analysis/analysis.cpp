@@ -300,7 +300,7 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 		_status = Empty;
 	
 	connect(_analysisForm,			&AnalysisForm::helpMDChanged,		this,			&Analysis::helpMDChanged					);
-	connect(this,					&Analysis::RSourceChanged,	_analysisForm,	&AnalysisForm::rSourceChanged				);
+	connect(this,					&Analysis::rSourceChanged,	_analysisForm,	&AnalysisForm::rSourceChanged				);
 	connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
 }
 
@@ -732,22 +732,45 @@ std::string Analysis::upgradeMsgsForOption(const std::string & name) const
 	return out.str();
 }
 
-std::vector<std::string> Analysis::getValuesFromRSource(const QString &sourceID) const
+std::vector<std::vector<std::string> > Analysis::getValuesFromRSource(const QString &sourceID) const
 {
-	const Json::Value& jsonValue = _RSources.count(fq(sourceID)) == 0 ? Json::nullValue : _RSources.at(fq(sourceID));
-	std::vector<std::string> result;
+	const Json::Value& jsonValue = _rSources.count(fq(sourceID)) == 0 ? Json::nullValue : _rSources.at(fq(sourceID));
 
-	if (!jsonValue.isObject()) return result;
+	if (!jsonValue.isObject())	return {{}};
 
 	const Json::Value& dataValue = jsonValue["data"];
+	if (dataValue.size() == 0)	return {{}};
+
+	size_t nbRows = 1;
+
+	// We have to transpose columns to rows
+	std::vector<std::vector<std::string> > result;
 	for (const Json::Value& rowValue : dataValue)
-		for (const Json::Value& colValue : rowValue)
+	{
+		if (result.size() == 0)			result.push_back({});
+
+		if (rowValue.isString())		result[0].push_back( { rowValue.asString() } );
+		else if (rowValue.isNumeric())	result[0].push_back( { std::to_string(rowValue.asDouble()) } );
+		else if (rowValue.isArray() || rowValue.isObject())
 		{
-			if (colValue.isString())
-				result.push_back(colValue.asString());
-			else if (colValue.isNumeric())
-				result.push_back(std::to_string(colValue.asDouble()));
+			size_t row = 0;
+			for (const Json::Value& oneValue : rowValue)
+			{
+				std::string str;
+				if (oneValue.isString())		str = oneValue.asString();
+				else if (oneValue.isNumeric())	str = std::to_string(oneValue.asDouble());
+
+				if (row >= nbRows)
+				{
+					result.push_back({});
+					nbRows++;
+				}
+				result[row].push_back(str);
+
+				row++;
+			}
 		}
+	}
 
 	return result;
 }
@@ -1068,31 +1091,31 @@ void Analysis::checkForRSources()
 	//And then calculate the delta
 	std::set<std::string> removeAfterwards;
 
-	for(auto & sourceJson : _RSources)
+	for(auto & sourceJson : _rSources)
 		if(newSources.count(sourceJson.first) == 0)
 		{
 			removeAfterwards.insert(sourceJson.first);
 			sourceJson.second = Json::nullValue;
-			emit RSourceChanged(tq(sourceJson.first));
+			emit rSourceChanged(tq(sourceJson.first));
 		}
 
 	for(auto & newOptionJson : newSources)
 	{
-		_RSources[newOptionJson.first] = newOptionJson.second;
-		emit RSourceChanged(tq(newOptionJson.first));
+		_rSources[newOptionJson.first] = newOptionJson.second;
+		emit rSourceChanged(tq(newOptionJson.first));
 	}
 
 	for(const std::string & removeThis : removeAfterwards)
-		_RSources.erase(removeThis);
+		_rSources.erase(removeThis);
 }
 
 void Analysis::clearRSources()
 {
-	for(auto & optionJson : _RSources)
+	for(auto & optionJson : _rSources)
 	{
 		optionJson.second = Json::nullValue;
-		emit RSourceChanged(tq(optionJson.first));
+		emit rSourceChanged(tq(optionJson.first));
 	}
 
-	_RSources.clear();
+	_rSources.clear();
 }
