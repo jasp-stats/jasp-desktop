@@ -7,7 +7,7 @@ In this document we keep track of some general guidelines that translators of JA
 JASP uses the online localisation tool 'Weblate' for its translations. <br>To contribute to the translations of JASP you need to make an account for Weblate:<br>
 * Open the page https://weblate.org/en-gb/  
 * Press the persons icon  
-* And register your new account in https://hosted.weblate.org/accounts/register/
+* And register your new account in https://hosted.weblate.org/accounts/register/<br>
 Once you've registered your account you can open the JASP project at https://hosted.weblate.org/projects/jasp/
 Here you can find an overview of all the different modules JASP consists of and the translations it contains. Every single module contains two components: an interface component and an R component. 
 E.g. the Anova module consists of the jaspANOVA-QML component for the interface and the jaspANOVA-R component for the R part. Pressing on the component show the current translation of the component.<br><br>
