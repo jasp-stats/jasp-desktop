@@ -117,13 +117,11 @@ FocusScope
 
 					property real filterColWidth:	60  * jaspTheme.uiScale
 					property real valueColWidth:	120 * jaspTheme.uiScale
-					property real selectColWidth:	60  * jaspTheme.uiScale
-					property real labelColWidth:	levelsTableView.flickableWidth - (filterColWidth + valueColWidth + selectColWidth)
+					property real labelColWidth:	levelsTableView.flickableWidth - (filterColWidth + valueColWidth)
 
 					Binding	{ target: labelModel; property: "filterColWidth";	value: levelsTableView.filterColWidth; }
 					Binding	{ target: labelModel; property: "valueColWidth";	value: levelsTableView.valueColWidth;  }
 					Binding	{ target: labelModel; property: "labelColWidth";	value: levelsTableView.labelColWidth;  }
-					Binding	{ target: labelModel; property: "selectColWidth";	value: levelsTableView.selectColWidth;  }
 
 					columnHeaderDelegate:	Item
 						{
@@ -159,6 +157,7 @@ FocusScope
 
 						Rectangle
 						{
+							id:				selectionRectangle
 							color:			itemSelected ? jaspTheme.itemHighlight : "transparent"
 							anchors
 							{
@@ -170,6 +169,29 @@ FocusScope
 							}
 							z:	-10
 						}
+						
+						MouseArea
+						{
+							anchors.fill:		selectionRectangle
+							acceptedButtons:	Qt.LeftButton
+							cursorShape:		Qt.PointingHandCursor
+							z:					2
+							
+							onClicked:			
+							{
+								labelModel.singleClickForSelect(rowIndex) //Starts a timer... If no doubleClick comes within a certain time (like 500ms or so) labelModel will toggle selection
+								levelsTableView.forceActiveFocus(); //To take focus out of some TextInput
+							}
+							
+							onDoubleClicked:	
+							{
+								labelModel.doubleClickSoonAfterSelect(rowIndex);
+								labelEdit.forceActiveFocus()
+							}
+												
+							enabled:			!labelEdit.activeFocus && columnIndex !== LabelModel.Filter
+							visible:			enabled
+						}
 
 						Button
 						{
@@ -179,7 +201,7 @@ FocusScope
 							checked:		itemText === "true"
 							anchors.fill:	parent
 
-							onClicked:
+							onClicked:		
 							{
 								labelModel.setData(labelModel.index(rowIndex, columnIndex), checked, -1);
 								checked = Qt.binding(function(){ return itemText === "true" ; });
@@ -202,14 +224,6 @@ FocusScope
 									}
 								}
 							}
-
-							MouseArea
-							{
-								anchors.fill:		parent
-								acceptedButtons:	Qt.NoButton
-								cursorShape:		Qt.PointingHandCursor
-							}
-
 						}
 
 						Text
@@ -226,6 +240,7 @@ FocusScope
 
 						TextInput
 						{
+							id:				labelEdit
 							visible:		columnIndex === LabelModel.Label
 
 							color:			jaspTheme.textEnabled
@@ -259,57 +274,14 @@ FocusScope
 										focus = false
 									acceptChanges()
 								}
-
-
+							
 							MouseArea
 							{
 								anchors.fill:		parent
 								acceptedButtons:	Qt.NoButton
 								cursorShape:		Qt.IBeamCursor
+								z:					0
 							}
-						}
-
-						Button
-						{
-							id:				selectionButton
-							checkable:		true
-							visible:		columnIndex === LabelModel.Selection
-							checked:		itemSelected
-							anchors.fill:	parent
-
-							onClicked:
-							{
-								var wasChecked = checked;
-								checked = Qt.binding(function(){ return itemSelected ; });
-								labelModel.setData(labelModel.index(rowIndex, columnIndex), wasChecked, -1);
-							}
-
-							background: Item
-							{
-
-								Rectangle
-								{
-									border.color:		jaspTheme.uiBorder
-									border.width:		2 * jaspTheme.uiScale
-									color:				selectionButton.checked ? jaspTheme.jaspBlue : "transparent"
-									//radius:				width
-									width:				height
-									anchors
-									{
-										top:				parent.top
-										bottom:				parent.bottom
-										horizontalCenter:	parent.horizontalCenter
-									}
-								}
-							}
-
-							MouseArea
-							{
-								anchors.fill:		parent
-								acceptedButtons:	Qt.NoButton
-								cursorShape:		Qt.PointingHandCursor
-							}
-
 						}
 					}
 				}

@@ -1,5 +1,6 @@
 #include "labelmodel.h"
 
+
 LabelModel::LabelModel() : DataSetTableProxy(parIdxType::label)
 {
 	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &LabelModel::filteredOutChangedHandler);
@@ -92,44 +93,31 @@ int	LabelModel::roleFromColumn(Column col) const
 	case Column::Filter:	return int(DataSetPackage::specialRoles::filter);
 	case Column::Value:		return int(DataSetPackage::specialRoles::value);
 	case Column::Label:		return int(DataSetPackage::specialRoles::label);
-	case Column::Selection:	return int(DataSetPackage::specialRoles::selected);
 	default:				return Qt::DisplayRole;
 	}
 }
 
 bool LabelModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
-	if((role == int(DataSetPackage::specialRoles::selected) || (Column(index.column()) == Column::Selection && role == -1)) && value.type() == QVariant::Bool)
-	{
-		QString rowValue = data(index, int(DataSetPackage::specialRoles::value)).toString();
-
-		bool changed = false;
-		if(value.toBool())
-		{
-			if(_selected.count(rowValue) == 0)
-			{
-				_selected.insert(rowValue);
-				changed = true;
-			}
-		}
-		else if(_selected.count(rowValue) > 0)
-		{
-			_selected.erase(rowValue);
-			changed = true;
-		}
-
-		if(changed)
-			emit dataChanged(LabelModel::index(index.row(), 0), LabelModel::index(index.row(), int(Column::Selection)));
-
-		return true;
-	}
+	if(role == int(DataSetPackage::specialRoles::selected))
+		return false;
 
 	return DataSetPackage::pkg()->setData(mapToSource(index), value, role != -1 ? role : roleFromColumn(Column(index.column())));
 }
 
+void LabelModel::toggleSelected(int row)
+{
+	QString rowValue = data(index(row, 0), int(DataSetPackage::specialRoles::value)).toString();
+	
+	if(_selected.count(rowValue) == 0)	_selected.insert(rowValue);
+	else								_selected.erase(rowValue);
+
+	emit dataChanged(LabelModel::index(row, 0), LabelModel::index(row, int(Column::Label)));
+}
+
 QVariant LabelModel::data(	const QModelIndex & index, int role) const
 {
-	if(role == int(DataSetPackage::specialRoles::selected) || (Column(index.column()) == Column::Selection && role == Qt::DisplayRole))
+	if(role == int(DataSetPackage::specialRoles::selected))
 		return _selected.count(data(index, int(DataSetPackage::specialRoles::value)).toString()) > 0;
 
 	return DataSetPackage::pkg()->data(mapToSource(index), role > 0 ? role : roleFromColumn(Column(index.column())));
@@ -218,4 +206,34 @@ void LabelModel::onChosenColumnChanged()
 {
 	_selected.clear();
 	//dataChanged probably not needed 'cause we are in a reset
+}
+
+//I really really wish I couldve done this without a timer, but without this the row already gets selected through QML at the first single click.
+//To undo it after, in the doubleClick, would reset the model.
+//Which would leave you unable to edit the label anymore because the Item you are trying to set activeFocus on dissappears in the middle of the functioncall :(
+void LabelModel::singleClickForSelect(int row)
+{
+	if(_toggleSelectTimers.count(row) == 0)	
+	{
+		_toggleSelectTimers[row] = new QTimer(this);
+		connect(_toggleSelectTimers[row], &QTimer::timeout, [=]()
+		{ 
+			toggleSelected(row); 
+			_toggleSelectTimers[row]->deleteLater();  //If the timer finishes remove it.
+			_toggleSelectTimers.erase(row);
+		}); 
+	}
+	
+	_toggleSelectTimers[row]->start(250);  //This means 250ms delay between a click and the row being selected, but so be it. I think 500ms is the time within which windows for instance counts a doubleclick. But having the selection show up half a second later feels really slow.
+}
+
+void LabelModel::doubleClickSoonAfterSelect(int row)
+{
+	//If the toggleSelect timer is still running we can now remove it and that is it, no more select.
+	if(_toggleSelectTimers.count(row) > 0)
+	{
+		_toggleSelectTimers[row]->stop();
+		_toggleSelectTimers[row]->deleteLater();
+		_toggleSelectTimers.erase(row);
+	}
 }
