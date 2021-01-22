@@ -19,23 +19,22 @@ class PlotEditorModel : public QObject
 	Q_OBJECT
 	Q_ENUMS(AxisType)
 
-	Q_PROPERTY(bool						visible			READ visible		WRITE setVisible		NOTIFY visibleChanged		)
-	Q_PROPERTY(QString					name			READ name			WRITE setName			NOTIFY nameChanged			)
-	Q_PROPERTY(QString					data			READ data			WRITE setData			NOTIFY dataChanged			)
-	Q_PROPERTY(QUrl						imgFile			READ imgFile								NOTIFY dataChanged			)
-	Q_PROPERTY(QString					title			READ title			WRITE setTitle			NOTIFY titleChanged			)
-	Q_PROPERTY(int						width			READ width			WRITE setWidth			NOTIFY widthChanged			)
-	Q_PROPERTY(int						height			READ height			WRITE setHeight			NOTIFY heightChanged		)
-	Q_PROPERTY(AxisModel *				xAxis			READ xAxis									NOTIFY dummyAxisChanged		)
-	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged		)
-	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged			)
-	Q_PROPERTY(bool						loading			READ loading		WRITE setLoading		NOTIFY loadingChanged		)
-	Q_PROPERTY(bool						advanced		READ advanced		WRITE setAdvanced		NOTIFY advancedChanged		)
-	Q_PROPERTY(bool						undoEnabled		READ undoEnabled	WRITE setUndoEnabled	NOTIFY undoEnabledChanged	)
-	Q_PROPERTY(bool						redoEnabled		READ redoEnabled	WRITE setRedoEnabled	NOTIFY redoEnabledChanged	)
-
-	Q_PROPERTY(AxisModel *				currentAxis		READ currentAxis							NOTIFY currentAxisChanged	)
-	Q_PROPERTY(AxisType					axisType		READ axisType		WRITE setAxisType		NOTIFY axisTypeChanged		)
+	Q_PROPERTY(bool						visible			READ visible		WRITE setVisible		NOTIFY visibleChanged			)
+	Q_PROPERTY(QString					name			READ name			WRITE setName			NOTIFY nameChanged				)
+	Q_PROPERTY(QString					data			READ data			WRITE setData			NOTIFY dataChanged				)
+	Q_PROPERTY(QUrl						imgFile			READ imgFile								NOTIFY dataChanged				)
+	Q_PROPERTY(QString					title			READ title			WRITE setTitle			NOTIFY titleChanged				)
+	Q_PROPERTY(int						width			READ width			WRITE setWidth			NOTIFY widthChanged				)
+	Q_PROPERTY(int						height			READ height			WRITE setHeight			NOTIFY heightChanged			)
+	Q_PROPERTY(AxisModel *				xAxis			READ xAxis									NOTIFY dummyAxisChanged			)
+	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged			)
+	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged				)
+	Q_PROPERTY(bool						loading			READ loading		WRITE setLoading		NOTIFY loadingChanged			)
+	Q_PROPERTY(bool						advanced		READ advanced		WRITE setAdvanced		NOTIFY advancedChanged			)
+	Q_PROPERTY(bool						undoEnabled		READ undoEnabled							NOTIFY unOrRedoEnabledChanged	)
+	Q_PROPERTY(bool						redoEnabled		READ redoEnabled							NOTIFY unOrRedoEnabledChanged	)
+	Q_PROPERTY(AxisModel *				currentAxis		READ currentAxis							NOTIFY currentAxisChanged		)
+	Q_PROPERTY(AxisType					axisType		READ axisType		WRITE setAxisType		NOTIFY axisTypeChanged			)
 
 public:
 	explicit PlotEditorModel();
@@ -56,8 +55,8 @@ public:
 	bool					advanced()	const {	return _advanced;	}
 	void					reset();
 
-	bool					undoEnabled()	const {	return _undoEnabled;	}
-	bool					redoEnabled()	const {	return _redoEnabled;	}
+	bool					undoEnabled()	const {	return _undo.size() > 0;	}
+	bool					redoEnabled()	const {	return _redo.size() > 0;	}
 
 	AxisModel			*	currentAxis()	const {	return _currentAxis;	}
 	AxisType				axisType()		const { return _axisType;		}
@@ -74,8 +73,8 @@ signals:
 	void resetPlotChanged(		bool		resetPlot		);
 	void loadingChanged(		bool		loading			);
 	void advancedChanged(		bool		advanced		);
-	void undoEnabledChanged(	bool		undoEnabled		);
-	void redoEnabledChanged(	bool		redoEnabled		);
+	void unOrRedoEnabledChanged();
+	
 
 	void saveImage(int	id,	QString		options)	const;
 
@@ -102,14 +101,11 @@ public slots:
 	void refresh();
 
 	QString clickHitsElement(double x, double y) const;
-	
-	void setUndoEnabled(bool undoEnabled);
-	void setRedoEnabled(bool redoEnabled);
 
 	void addToUndoStack();
 
-	Q_INVOKABLE	void undoSomething();
-	Q_INVOKABLE	void redoSomething();
+	void undoSomething(); //No need to do Q_INVOKABLE for slots, they are always available from QML
+	void redoSomething();
 	void applyChangesFromUndoOrRedo();
 
 
@@ -136,9 +132,7 @@ private:
 	bool					_visible		= false,
 							_goBlank		= false,
 							_loading		= false,
-							_advanced		= false,
-							_redoEnabled	= false,
-							_undoEnabled	= false;
+							_advanced		= false;
 	int						_width,
 							_height,
 							_analysisId,
