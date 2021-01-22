@@ -21,8 +21,8 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 	switch(role)
 	{
 	case NameRole:					return _tableModel->columnTitle(index.row());
-	case TypeRole:					return int(_tableModel->getColumnType(size_t(index.row())));
-	case TypeNameRole:				return tq(columnTypeToString(_tableModel->getColumnType(size_t(index.row()))));
+	case TypeRole:					return "column";
+	case ColumnTypeRole:			return int(_tableModel->getColumnType(size_t(index.row())));
 	case IconSourceRole:			return getIconFile(_tableModel->getColumnType(size_t(index.row())), ColumnsModel::DefaultIconType);
 	case DisabledIconSourceRole:	return getIconFile(_tableModel->getColumnType(size_t(index.row())), ColumnsModel::DisabledIconType);
 	case InactiveIconSourceRole:	return getIconFile(_tableModel->getColumnType(size_t(index.row())), ColumnsModel::InactiveIconType);
@@ -45,7 +45,7 @@ QHash<int, QByteArray> ColumnsModel::roleNames() const
 	static const auto roles = QHash<int, QByteArray>{
 		{ NameRole,					"columnName"			},
 		{ TypeRole,					"type"					},
-		{ TypeNameRole,				"typeName"				},
+		{ ColumnTypeRole,			"columnType"			},
 		{ IconSourceRole,			"columnIcon"			},
 		{ DisabledIconSourceRole,	"columnDisabledIcon"	},
 		{ InactiveIconSourceRole,	"columnInactiveIcon"	},

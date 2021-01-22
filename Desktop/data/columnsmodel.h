@@ -13,7 +13,7 @@ public:
 	enum ColumnsModelRoles {
 		NameRole = Qt::UserRole + 1,
 		TypeRole,
-		TypeNameRole,
+		ColumnTypeRole,
 		IconSourceRole,
 		DisabledIconSourceRole,
 		InactiveIconSourceRole,
@@ -30,7 +30,6 @@ public:
 
 	QVariant				data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 	QHash<int, QByteArray>	roleNames()																			const	override;
-	QModelIndex				index(int row, int column, const QModelIndex &parent = QModelIndex())				const	override	{ return _tableModel->index(row, column, parent); }
 
 	int						getColumnIndex(const std::string& col)												const	{ return _tableModel->getColumnIndex(col);						}
 	QString					getIconFile(columnType colType, IconType type)										const;
