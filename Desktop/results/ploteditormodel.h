@@ -17,6 +17,8 @@ namespace PlotEditor
 class PlotEditorModel : public QObject
 {
 	Q_OBJECT
+	Q_ENUMS(AxisType)
+
 	Q_PROPERTY(bool						visible			READ visible		WRITE setVisible		NOTIFY visibleChanged		)
 	Q_PROPERTY(QString					name			READ name			WRITE setName			NOTIFY nameChanged			)
 	Q_PROPERTY(QString					data			READ data			WRITE setData			NOTIFY dataChanged			)
@@ -32,9 +34,13 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(bool						undoEnabled		READ undoEnabled	WRITE setUndoEnabled	NOTIFY undoEnabledChanged	)
 	Q_PROPERTY(bool						redoEnabled		READ redoEnabled	WRITE setRedoEnabled	NOTIFY redoEnabledChanged	)
 
+	Q_PROPERTY(AxisModel *				currentAxis		READ currentAxis							NOTIFY currentAxisChanged	)
+	Q_PROPERTY(AxisType					axisType		READ axisType		WRITE setAxisType		NOTIFY axisTypeChanged		)
 
 public:
 	explicit PlotEditorModel();
+
+	enum class AxisType  { Xaxis, Yaxis }; // add right axis, top axis, etc.
 
 	bool					visible()	const {	return _visible;	}
 	QString					name()		const { return _name;		}
@@ -53,6 +59,9 @@ public:
 	bool					undoEnabled()	const {	return _undoEnabled;	}
 	bool					redoEnabled()	const {	return _redoEnabled;	}
 
+	AxisModel			*	currentAxis()	const {	return _currentAxis;	}
+	AxisType				axisType()		const { return _axisType;		}
+
 signals:
 	void visibleChanged(		bool		visible			);
 	void nameChanged(			QString		name			);
@@ -70,6 +79,8 @@ signals:
 
 	void saveImage(int	id,	QString		options)	const;
 
+	void currentAxisChanged(	AxisModel * currentAxis);
+	void axisTypeChanged(		AxisType	axisType);
 
 public slots:
 	void showPlotEditor(int id, QString options);
@@ -85,6 +96,7 @@ public slots:
 	
 	void					resetPlot();
 	void					savePlot()	const;
+	void setAxisType(		const AxisType			axisType		);
 
 	void somethingChanged();
 	void refresh();
@@ -109,7 +121,8 @@ private:
 private:
 	Analysis			*	_analysis		= nullptr;
 	AxisModel			*	_xAxis			= nullptr,
-						*	_yAxis			= nullptr;
+						*	_yAxis			= nullptr,
+						*	_currentAxis	= nullptr;
 
 	Coordinates				_coordinates;
 	Json::Value				_editOptions	= Json::nullValue,
@@ -137,6 +150,7 @@ private:
 	std::stack<Json::Value>	_undo,
 							_redo;
 
+	AxisType				_axisType		= AxisType::Xaxis;
 };
 
 }

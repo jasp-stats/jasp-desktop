@@ -17,6 +17,7 @@ PlotEditorModel::PlotEditorModel()
 {
 	_xAxis = new AxisModel(this, true);
 	_yAxis = new AxisModel(this, true);
+	_currentAxis = _xAxis;
 	_ppi   = PreferencesModel::prefs()->plotPPI();
 	// _resetPlot is always false, it should only be set to TRUE from QML
 
@@ -76,6 +77,7 @@ void PlotEditorModel::reset()
 	setWidth(			100);
 	setHeight(			100);
 
+	setAxisType(AxisType::Xaxis);
 	_undo = std::stack<Json::Value>();
 	_redo = std::stack<Json::Value>();
 	setUndoEnabled(false);
@@ -147,7 +149,8 @@ void PlotEditorModel::undoSomething()
 {
 	if (!_undo.empty())
 	{
-		_redo.push(_imgOptions);
+		Json::Value options = generateImgOptions();
+		_redo.push(options);
 
 		_imgOptions = _undo.top();
 		_undo.pop();
@@ -163,7 +166,8 @@ void PlotEditorModel::redoSomething()
 {
 	if (!_redo.empty())
 	{
-		_undo.push(_imgOptions);
+		Json::Value options = generateImgOptions();
+		_undo.push(options);
 
 		_imgOptions = _redo.top();
 		_redo.pop();
@@ -186,6 +190,23 @@ void PlotEditorModel::applyChangesFromUndoOrRedo()
 	_prevImgOptions = _imgOptions;
 	_analysis->editImage(_prevImgOptions);
 	setLoading(false);
+}
+
+void PlotEditorModel::setAxisType(const AxisType axisType)
+{
+
+	if (_axisType == axisType)
+		return;
+
+	_axisType = axisType;
+	switch (_axisType)
+	{
+		case AxisType::Xaxis:	_currentAxis = _xAxis;		break;
+		case AxisType::Yaxis:	_currentAxis = _yAxis;		break;
+	}
+
+	emit currentAxisChanged(_currentAxis);
+	emit axisTypeChanged(_axisType);
 }
 
 void PlotEditorModel::setUndoEnabled(bool undoEnabled)

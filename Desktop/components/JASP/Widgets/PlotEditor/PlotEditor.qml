@@ -4,6 +4,7 @@ import QtQuick.Layouts		1.3
 import JASP.Widgets			1.0		as	JASPW
 import JASP.Theme			1.0
 import JASP.Controls		1.0		as	JASPC
+import JASP.PlotEditorModel	1.0
 
 Popup
 {
@@ -97,10 +98,12 @@ Popup
 							label: qsTr("Which axis should be shown?")
 							values:
 							[
-								{ label: qsTr("x-axis"),		value:	"x-axis"		},
-								{ label: qsTr("y-axis"),		value:	"y-axis"		}
+								{ label: qsTr("x-axis"),		value:	PlotEditorModel.Xaxis		},
+								{ label: qsTr("y-axis"),		value:	PlotEditorModel.Yaxis		}
 							]
-							startValue: "x-axis"
+
+							startValue: plotEditorModel.axisType
+							onCurrentValueChanged: plotEditorModel.axisType = parseInt(currentValue)
 
 							anchors
 							{
@@ -114,9 +117,8 @@ Popup
 						PlotEditingAxis
 						{
 							id:				xAxis
-							title:			qsTr("x-axis")
-							axisModel:		plotEditorModel.xAxis
-							visible:		axisDropDown.value === "x-axis"
+							title:			axisDropDown.label
+							axisModel:		plotEditorModel.currentAxis
 
 							anchors
 							{
@@ -126,23 +128,6 @@ Popup
 								margins:	jaspTheme.generalAnchorMargin
 							}
 						}
-
-						PlotEditingAxis
-						{
-							id:				yAxis
-							title:			qsTr("y-axis")
-							axisModel:		plotEditorModel.yAxis
-							visible:		axisDropDown.value === "y-axis"
-		
-							anchors
-							{
-								top:		axisDropDown.bottom
-								left:		parent.left
-								right:		parent.right
-								margins:	jaspTheme.generalAnchorMargin
-							}
-						}
-
 					}
 				}
 				

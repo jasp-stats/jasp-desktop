@@ -4,7 +4,7 @@ import QtQuick.Layouts		1.3
 import JASP.Widgets			1.0		as	JASPW
 import JASP.Theme			1.0
 import JASP.Controls		1.0		as	JASPC
-import JASP.PlotEditor		1.0
+import JASP.PlotEditorAxis	1.0
 
 /*
 	TODO: it might make sense to add a global title/ box around all the options inside one axis.
