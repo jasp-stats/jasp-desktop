@@ -1082,7 +1082,7 @@ void Analysis::checkForRSources()
 
 			for(const std::string & memberName : results.getMemberNames())
 				if(sourceIDs.count(memberName) > 0)
-					newSources[memberName] = results[memberName];
+					newSources[results[memberName]["sourceID"].asString()] = results[memberName];
 				else if(isCollection.count(memberName) > 0 && results[memberName].isMember("collection")) //Checking for "collection" is to avoid stupid crashes but shouldnt really be necessary anyhow
 					collectSources(results[memberName]["collection"]);
 		}

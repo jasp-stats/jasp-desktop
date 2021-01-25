@@ -557,7 +557,7 @@ jaspObject * jaspObject::convertFromJSON(Json::Value in)
 
 	switch(newType)
 	{
-	case jaspObjectType::qmlSource:	newObject = new jaspQmlSource();	break;
+	case jaspObjectType::qmlSource:	newObject = new jaspQmlSource(in["name"].asString());	break;
 	case jaspObjectType::container:	newObject = new jaspContainer();	break;
 	case jaspObjectType::table:		newObject = new jaspTable();		break;
 	case jaspObjectType::plot:		newObject = new jaspPlot();			break;
