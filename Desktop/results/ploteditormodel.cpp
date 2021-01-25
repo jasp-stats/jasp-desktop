@@ -17,11 +17,15 @@ PlotEditorModel::PlotEditorModel()
 {
 	_xAxis = new AxisModel(this, true);
 	_yAxis = new AxisModel(this, true);
+	_currentAxis = _xAxis;
 	_ppi   = PreferencesModel::prefs()->plotPPI();
 	// _resetPlot is always false, it should only be set to TRUE from QML
 
-	connect(_xAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
-	connect(_yAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
+	connect(_xAxis,		&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
+	connect(_yAxis,		&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
+	connect(_xAxis,		&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
+	connect(_yAxis,		&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
+
 }
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
@@ -31,6 +35,7 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 	_analysis		= Analyses::analyses()->get(id);
 	_imgOptions		= Json::objectValue;
 	_prevImgOptions	= Json::nullValue;
+	_options		= options;
 
 	Json::Reader().parse(fq(options), _imgOptions);
 	
@@ -57,7 +62,7 @@ void PlotEditorModel::resetPlot()
 
 void PlotEditorModel::savePlot() const
 {
-	MessageForwarder::showWarning("Plot saving", "Sorry but this hasnt been implemented yet");	
+	emit saveImage(_analysisId, _options);
 }
 
 void PlotEditorModel::reset()
@@ -71,6 +76,11 @@ void PlotEditorModel::reset()
 	setTitle(			"");
 	setWidth(			100);
 	setHeight(			100);
+
+	setAxisType(AxisType::Xaxis);
+	_undo = std::stack<Json::Value>();
+	_redo = std::stack<Json::Value>();
+	emit unOrRedoEnabledChanged();
 }
 
 void PlotEditorModel::processImgOptions()
@@ -134,6 +144,81 @@ void PlotEditorModel::somethingChanged()
 	}
 }
 
+
+void PlotEditorModel::addToUndoStack()
+{
+	if(_loading || !_visible) return;
+
+	Json::Value options = generateImgOptions();
+
+	if (_undo.empty() || _undo.top() != options)
+		_undo.push(options);
+
+	_redo = std::stack<Json::Value>();
+	
+	emit unOrRedoEnabledChanged();
+}
+
+void PlotEditorModel::undoSomething()
+{
+	if (!_undo.empty())
+	{
+		Json::Value options		= generateImgOptions();
+					_imgOptions	= _undo.top();
+					
+		_redo.push(options);
+		_undo.pop();
+		
+		applyChangesFromUndoOrRedo();
+	}
+}
+
+void PlotEditorModel::redoSomething()
+{
+	if (!_redo.empty())
+	{
+		Json::Value options		= generateImgOptions();
+					_imgOptions = _redo.top();
+		
+		_undo.push(options);
+		_redo.pop();
+
+		applyChangesFromUndoOrRedo();
+	}
+}
+
+void PlotEditorModel::applyChangesFromUndoOrRedo()
+{
+	setLoading(true);
+	_editOptions = _imgOptions["editOptions"];
+
+	_xAxis->setAxisData(_editOptions["xAxis"]);
+	_yAxis->setAxisData(_editOptions["yAxis"]);
+
+	_prevImgOptions = _imgOptions;
+	_analysis->editImage(_prevImgOptions);
+	setLoading(false);
+	
+	emit unOrRedoEnabledChanged();
+}
+
+void PlotEditorModel::setAxisType(const AxisType axisType)
+{
+
+	if (_axisType == axisType)
+		return;
+
+	_axisType = axisType;
+	switch (_axisType)
+	{
+		case AxisType::Xaxis:	_currentAxis = _xAxis;		break;
+		case AxisType::Yaxis:	_currentAxis = _yAxis;		break;
+	}
+
+	emit currentAxisChanged(_currentAxis);
+	emit axisTypeChanged(_axisType);
+}
+
 void PlotEditorModel::setVisible(bool visible)
 {
 	if (_visible == visible)
@@ -146,7 +231,7 @@ void PlotEditorModel::setVisible(bool visible)
 		reset();
 }
 
-void PlotEditorModel::setName(QString name)
+void PlotEditorModel::setName(const QString & name)
 {
 	if (_name == name)
 		return;
@@ -180,7 +265,7 @@ QUrl PlotEditorModel::imgFile() const
 	return QUrl::fromLocalFile(pad);
 }
 
-void PlotEditorModel::setData(QString data)
+void PlotEditorModel::setData(const QString & data)
 {
 	if (_data == data)
 		return;
@@ -190,7 +275,7 @@ void PlotEditorModel::setData(QString data)
 	somethingChanged();
 }
 
-void PlotEditorModel::setTitle(QString title)
+void PlotEditorModel::setTitle(const QString & title)
 {
 	if (_title == title)
 		return;
@@ -231,6 +316,22 @@ void PlotEditorModel::setLoading(bool loading)
 	
 	_loading = loading;
 	emit loadingChanged(_loading);
+}
+
+void PlotEditorModel::setAdvanced(bool advanced)
+{
+	if (_advanced == advanced)
+		return;
+
+	// ease the transition to advanced mode by simplifying where possible
+	if (advanced)
+	{
+		_xAxis->simplifyLimitsType();
+		_yAxis->simplifyLimitsType();
+	}
+
+	_advanced = advanced;
+	emit advancedChanged(_advanced);
 }
 
 }

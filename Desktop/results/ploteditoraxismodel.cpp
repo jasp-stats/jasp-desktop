@@ -1,4 +1,5 @@
 #include "ploteditoraxismodel.h"
+#include "ploteditormodel.h"
 #include "utilities/qutils.h"
 #include "utilities/jsonutilities.h"
 #include "log.h"
@@ -27,21 +28,24 @@ void AxisModel::setAxisData(const Json::Value & axis)
 	Json::Value labels	= settings.get(	"labels",		Json::arrayValue);
 	Json::Value limits	= settings.get(	"limits",		Json::arrayValue);
 	Json::Value expands	= settings.get(	"expands",		Json::arrayValue);
+	Json::Value range	= settings.get(	"range",		Json::arrayValue);
 
 	fillFromJSON(_breaks, breaks);
-	emit hasBreaksChanged();
-	
-	if(hasBreaks())
-	{
-		_range.clear();
-		_range.reserve(3);
-		_range.push_back(_breaks[0]);
-		_range.push_back(_breaks[_breaks.size() - 1]);
-		_range.push_back(_range[0] != _range[1] ? (_range[1] - _range[0]) / (_breaks.size() - 1) : 1);
-	}
-	else
-		_range.clear();
-	
+	fillFromJSON(_range, range);
+
+//	code below may be useful if we wish to update the breaks in C++ upon adjusting the range
+//	if(hasBreaks())
+//	{
+//		_range.clear();
+//		_range.reserve(3);
+//		_range.push_back()
+//		_range.push_back(_breaks[0]);
+//		_range.push_back(_breaks[_breaks.size() - 1]);
+//		_range.push_back(_range[0] != _range[1] ? (_range[1] - _range[0]) / (_breaks.size() - 1) : 1);
+//	}
+//	else
+//		_range.clear();
+
 	fillFromJSON(_labels, labels);
 	fillFromJSON(_limits, limits);
 
@@ -75,6 +79,8 @@ void AxisModel::setTitle(QString title)
 	if (_title == title)
 		return;
 
+	emit addToUndoStack();
+
 	_title = title;
 	emit titleChanged(_title);
 	emit somethingChanged();
@@ -85,9 +91,16 @@ void AxisModel::setTitleType(TitleType titleType)
 	if (_titleType == titleType)
 		return;
 
+	emit addToUndoStack();
+
 	_titleType = titleType;
 	emit titleTypeChanged(_titleType);
 	emit somethingChanged();
+}
+
+AxisModel::AxisModel(PlotEditorModel *parent, bool vertical) : QAbstractTableModel(parent), _plotEditor(parent), _vertical(vertical)
+{
+
 }
 
 int AxisModel::rowCount(const QModelIndex &) const
@@ -104,6 +117,13 @@ void AxisModel::getEntryAndBreaks(size_t & entry, bool & breaks, const QModelInd
 {
 	entry	= size_t(			_vertical ? index.column()	: index.row()	);
 	breaks	= hasBreaks() && (	_vertical ? index.row()		: index.column()) == 0;
+}
+
+void AxisModel::simplifyLimitsType()
+{
+	// floating point comparision is fine here
+	if (_range[0] == _limits[0] && _range[1] == _limits[1])
+		setLimitsType(LimitsType::LimitsBreaks);
 }
 
 QVariant AxisModel::data(const QModelIndex &index, int role) const
@@ -172,6 +192,16 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 		if(_breaks[entry] != newBreak)
 		{
 			_breaks[entry] = newBreak;
+
+			if (!_plotEditor->advanced())
+			{
+				if (newBreak < _limits[0])
+					setLimits(newBreak, 0);
+				else if (newBreak > _limits[1])
+					setLimits(newBreak, 1);
+			}
+
+
 			emit dataChanged(index, index);
 			emit somethingChanged();
 		}
@@ -201,6 +231,7 @@ void AxisModel::setType(QString type)
 	if (_type == type)
 		return;
 
+	emit addToUndoStack();
 	_type = type;
 	emit typeChanged(_type);
 	emit somethingChanged();
@@ -211,6 +242,7 @@ void AxisModel::setVertical(bool vertical)
 	if (_vertical == vertical)
 		return;
 
+	emit addToUndoStack();
 	_vertical = vertical;
 	emit verticalChanged(_vertical);
 }
@@ -252,6 +284,7 @@ void AxisModel::insertBreak(const QModelIndex &index, const size_t column, const
 void AxisModel::deleteBreak(const QModelIndex &index, const size_t column)
 {
 	Log::log()	<<	"AxisModel::deleteBreak() column index is: " << column  << std::endl;
+	emit addToUndoStack();
 
 	beginRemoveColumns(QModelIndex(), column, column + 1);
 
@@ -269,6 +302,7 @@ void AxisModel::setBreaksType(const BreaksType breaksType)
 	if (_breaksType == breaksType)
 		return;
 
+	emit addToUndoStack();
 	_breaksType = breaksType;
 	emit rangeChanged();
 	emit somethingChanged();
@@ -279,30 +313,61 @@ void AxisModel::setRange(const double value, const size_t idx)
 {
 	if(_range.size() <= idx)			_range.resize(idx + 1);
 	else if(_range[idx] == value)		return;
-	
+
+	emit addToUndoStack();
 	_range[idx] = value;
+
+	if (!_plotEditor->advanced())
+		setLimits(value, idx);
+
 	emit rangeChanged();
 	emit somethingChanged();
+}
+
+void AxisModel::setFrom(const double from)
+{
+	setRange(from, 0);
+
+	if (!_plotEditor->advanced())
+		setLimits(from, 0);
+}
+
+void AxisModel::setTo(const double to)
+{
+	setRange(to, 1);
+
+	if (!_plotEditor->advanced())
+		setLimits(to, 1);
 }
 
 void AxisModel::setLimitsType(const LimitsType limitsType)
 {
 	if (_limitsType == limitsType)
 		return;
-	
+
+	if (_plotEditor->advanced())
+		emit addToUndoStack();
+
 	_limitsType = limitsType;
 	emit limitsChanged();
-	emit somethingChanged();
+
+	if (_plotEditor->advanced())
+		emit somethingChanged();
 }
 
 void AxisModel::setLimits(const double value, const size_t idx)
 {
 	if(_limits.size() <= idx)			_limits.resize(idx + 1);
 	else if (_limits[idx] == value)		return;
-	
+
+	if (_plotEditor->advanced())
+		emit addToUndoStack();
+
 	_limits[idx] = value;
 	emit limitsChanged();
-	emit somethingChanged();
+
+	if (_plotEditor->advanced())
+		emit somethingChanged();
 }
 
 void AxisModel::fillFromJSON(std::vector<double> &obj, Json::Value value)
@@ -371,6 +436,7 @@ std::string		AxisModel::TitleTypeToString (TitleType  type) const
 	case TitleType::TitleCharacter:		return "character";
 	case TitleType::TitleExpression:	return "expression";
 	case TitleType::TitleLaTeX:			return "LaTeX";
+	case TitleType::TitleNull:			return "NULL";
 	}
 
 	return "???"; //Can't get here but GCC doesnt understand that
@@ -382,6 +448,7 @@ std::string		AxisModel::BreaksTypeToString(BreaksType type) const
 	{
 	case BreaksType::BreaksManual:		return "manual";
 	case BreaksType::BreaksRange:		return "range";
+	case BreaksType::BreaksNull:		return "NULL";
 	}
 
 	return "???"; //Can't get here but GCC doesnt understand that
@@ -399,20 +466,22 @@ std::string		AxisModel::LimitsTypeToString(LimitsType type) const
 	return "???"; //Can't get here but GCC doesnt understand that
 }
 
-AxisModel::TitleType	AxisModel::TitleTypeFromString (std::string type) const
+AxisModel::TitleType	AxisModel::TitleTypeFromString (const std::string& type) const
 {
 	if(type == "expression")	return TitleType::TitleExpression;
 	if(type == "LaTeX")			return TitleType::TitleLaTeX;
+	if(type == "NULL")			return TitleType::TitleNull;
 								return TitleType::TitleCharacter; //default
 }
 
-AxisModel::BreaksType	AxisModel::BreaksTypeFromString(std::string type) const
+AxisModel::BreaksType	AxisModel::BreaksTypeFromString(const std::string& type) const
 {
 	if(type == "manual"	)	return BreaksType::BreaksManual;
+	if(type == "NULL")		return BreaksType::BreaksNull;
 							return BreaksType::BreaksRange; //default
 }
 
-AxisModel::LimitsType	AxisModel::LimitsTypeFromString(std::string type) const
+AxisModel::LimitsType	AxisModel::LimitsTypeFromString(const std::string& type) const
 {
 	if(type == "breaks"	)	return LimitsType::LimitsBreaks;
 	if(type == "manual"	)	return LimitsType::LimitsManual;

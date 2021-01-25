@@ -168,7 +168,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
 
-	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",		1, 0, "AxisModel",		"Can't make it");
+	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",			"Can't make it");
+	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",	"Can't make it");
 
 	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description"						);
 	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis"						);
@@ -383,6 +384,9 @@ void MainWindow::makeConnections()
 	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);	
 
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
+
+	connect(_plotEditorModel,		&PlotEditorModel::saveImage,						this,					&MainWindow::analysisSaveImageHandler						);
+
 }
 
 void MainWindow::printQmlWarnings(const QList<QQmlError> &warnings)

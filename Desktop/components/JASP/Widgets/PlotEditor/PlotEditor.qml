@@ -4,6 +4,7 @@ import QtQuick.Layouts		1.3
 import JASP.Widgets			1.0		as	JASPW
 import JASP.Theme			1.0
 import JASP.Controls		1.0		as	JASPC
+import JASP.PlotEditor		1.0
 
 Popup
 {
@@ -54,7 +55,7 @@ Popup
 				anchors.horizontalCenter:	parent.horizontalCenter
 				y:							jaspTheme.generalAnchorMargin
 			}
-			
+
 			Rectangle
 			{
 				id:					axes
@@ -70,7 +71,7 @@ Popup
 					bottom:			buttonSeparator.top
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				
+
 				Flickable
 				{
 					id:						axesFlickable
@@ -81,56 +82,47 @@ Popup
 					contentHeight:			flickChild.height
 					contentWidth:			flickChild.width
 					flickableDirection:		Flickable.VerticalFlick
-					
-					
+										
 					onFlickStarted:			forceActiveFocus();
 					
 					Item
 					{
 						id:					flickChild
 						width:				axesFlickable.width
-						height:				yAxis.y + yAxis.height + jaspTheme.generalAnchorMargin
-					
-					
-						PlotEditingAxis
+						height:				xAxis.y + xAxis.height + jaspTheme.generalAnchorMargin
+
+
+						JASPC.DropDown
 						{
-							id:				xAxis
-							title:			qsTr("x-axis")
-							axisModel:		plotEditorModel.xAxis
-		
+							id:		axisDropDown
+							label: qsTr("Which axis should be shown?")
+							values:
+							[
+								{ label: qsTr("x-axis"),		value:	PlotEditorModel.Xaxis		},
+								{ label: qsTr("y-axis"),		value:	PlotEditorModel.Yaxis		}
+							]
+
+							startValue: plotEditorModel.axisType
+							onCurrentValueChanged: plotEditorModel.axisType = parseInt(currentValue)
+
 							anchors
 							{
 								top:		parent.top
 								left:		parent.left
 								right:		parent.right
 								margins:	jaspTheme.generalAnchorMargin
-		
 							}
 						}
-		
-						Rectangle
-						{
-							id:				axisSeparator
-							height:			1
-							color:			jaspTheme.uiBorder
-							anchors
-							{
-								top:		xAxis.bottom
-								topMargin:	jaspTheme.generalAnchorMargin
-								left:		parent.left
-								right:		parent.right
-							}
-						}
-		
+					
 						PlotEditingAxis
 						{
-							id:				yAxis
-							title:			qsTr("y-axis")
-							axisModel:		plotEditorModel.yAxis
-		
+							id:				xAxis
+							title:			axisDropDown.label
+							axisModel:		plotEditorModel.currentAxis
+
 							anchors
 							{
-								top:		axisSeparator.bottom
+								top:		axisDropDown.bottom
 								left:		parent.left
 								right:		parent.right
 								margins:	jaspTheme.generalAnchorMargin
@@ -144,6 +136,62 @@ Popup
 					id:				axesScrollbar
 					flickable:		axesFlickable
 					vertical:		true
+				}
+
+				JASPW.MenuButton
+				{
+					id:					redoButton
+					iconSource:			jaspTheme.iconPath + "/redo.svg"
+					enabled:			plotEditorModel.redoEnabled
+					toolTip:			qsTr("Redo last change")
+					radius:				height
+					width:				height
+					opacity:			enabled ? 1 : 0.1
+					anchors
+					{
+						top:			axesFlickable.top
+						right:			axesFlickable.right
+						// same as in AnalysisFormExpandser.qml
+						topMargin:		4 * preferencesModel.uiScale
+						bottomMargin:	4 * preferencesModel.uiScale
+					}
+					onClicked:			plotEditorModel.redoSomething()
+				}
+
+				JASPW.MenuButton
+				{
+					id:					undoButton
+					iconSource:			jaspTheme.iconPath + "/undo.svg"
+					enabled:			plotEditorModel.undoEnabled
+					toolTip:			qsTr("Undo last change")
+					radius:				height
+					width:				height
+					opacity:			enabled ? 1 : 0.1
+					anchors
+					{
+						top:			axesFlickable.top
+						right:			redoButton.left
+						topMargin:		redoButton.anchors.topMargin
+						bottomMargin:	redoButton.anchors.bottomMargin
+
+					}
+					onClicked:			plotEditorModel.undoSomething()
+				}
+
+
+				JASPC.CheckBox
+				{
+					id:					advanced
+					label:				qsTr("Advanced settings")
+					checked:			false
+					anchors
+					{
+						right:			parent.right
+						bottom:			parent.bottom
+						margins:		jaspTheme.generalAnchorMargin
+					}
+					onCheckedChanged:	plotEditorModel.advanced = this.checked
+
 				}
 			}
 			
@@ -170,7 +218,7 @@ Popup
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				text:				qsTr("Exit")
+				text:				qsTr("Finish")
 				on_PressedChanged:	plotEditorPopup.close()
 			}
 
@@ -183,14 +231,12 @@ Popup
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				text:				qsTr("Reset plot")
+				text:				qsTr("Original plot")
 				on_PressedChanged:	plotEditorModel.resetPlot()
 			}
 
 			JASPW.RectangularButton
 			{
-				// TODO: this would be a nice to have but I'm not sure how to access MainWindow::analysisSaveImageHandler properly
-				visible: false
 				id:					saveButton
 				anchors
 				{
@@ -199,7 +245,7 @@ Popup
 					margins:		jaspTheme.generalAnchorMargin
 				}
 				text:				qsTr("Save plot as")
-				on_PressedChanged:	plotEditorModel.savePlot()
+				onClicked:			plotEditorModel.savePlot()
 			}
 
 			Item
