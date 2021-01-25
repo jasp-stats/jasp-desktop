@@ -197,6 +197,8 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 														  "FALSE");
 #endif
 
+	jaspRCPP_parseEvalQNT("library(kknn);"); //Make ML work again, K-neighbor and regression: https://github.com/jasp-stats/INTERNAL-jasp/issues/1227
+
 	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
 }
 
