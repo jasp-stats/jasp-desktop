@@ -168,8 +168,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
 
-	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditorAxis",		1, 0, "AxisModel",			"Can't make it");
-	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditorModel",	1, 0, "PlotEditorModel",	"Can't make it");
+	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",			"Can't make it");
+	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",	"Can't make it");
 
 	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description"						);
 	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis"						);

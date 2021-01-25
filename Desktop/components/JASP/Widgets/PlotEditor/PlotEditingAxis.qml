@@ -4,7 +4,7 @@ import QtQuick.Layouts		1.3
 import JASP.Widgets			1.0		as	JASPW
 import JASP.Theme			1.0
 import JASP.Controls		1.0		as	JASPC
-import JASP.PlotEditorAxis	1.0
+import JASP.PlotEditor		1.0
 
 /*
 	TODO: it might make sense to add a global title/ box around all the options inside one axis.
@@ -71,9 +71,9 @@ Column
 		title:	qsTr("Ticks")
 		visible: axisModel.continuous
 
-		JASPC.RadioButton { id: axisBreaksRange;	value: "range";		label:	qsTr("Specify sequence");	checked: if(axisModel) axisModel.continuous ? plotEditorModel.advanced || axisModel.breaksType === AxisModel.BreaksRange	: false										}
-		JASPC.RadioButton { id: axisBreaksManual;	value: "manual";	label:	qsTr("Manually");			checked: if(axisModel) axisModel.continuous ? plotEditorModel.advanced || axisModel.breaksType === AxisModel.BreaksManual	: true	;	visible: axisModel.continuous;	}
-		JASPC.RadioButton { id: axisBreaksNull;		value: "NULL";		label:	qsTr("Hide ticks");			checked: if(axisModel) axisModel.continuous ? plotEditorModel.advanced || axisModel.breaksType === AxisModel.BreaksNull		: false										}
+		JASPC.RadioButton { id: axisBreaksRange;	value: "range";		label:	qsTr("Specify sequence");	checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksRange	: false										}
+		JASPC.RadioButton { id: axisBreaksManual;	value: "manual";	label:	qsTr("Manually");			checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true	;	visible: axisModel.continuous;	}
+		JASPC.RadioButton { id: axisBreaksNull;		value: "NULL";		label:	qsTr("Hide ticks");			checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksNull		: false										}
 
 		onValueChanged:
 		{
