@@ -160,8 +160,9 @@ jaspResultsR <- R6Class(
 			return(switch(
 				class(cppObj),
         "Rcpp_jaspPlot"      = jaspPlotR$new(     jaspObject = cppObj),
-        "Rcpp_jaspTable"     = jaspTableR$new(    jaspObject = cppObj),
-        "Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
+		"Rcpp_jaspTable"     = jaspTableR$new(    jaspObject = cppObj),
+		"Rcpp_jaspQmlSource" = jaspQmlSourceR$new(jaspObject = cppObj),
+		"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
         "Rcpp_jaspColumn"    = jaspColumnR$new(   jaspObject = cppObj),
         "Rcpp_jaspState"     = jaspStateR$new(    jaspObject = cppObj),
         "Rcpp_jaspHtml"      = jaspHtmlR$new(     jaspObject = cppObj),

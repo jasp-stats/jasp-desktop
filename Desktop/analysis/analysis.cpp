@@ -736,10 +736,10 @@ std::vector<std::vector<std::string> > Analysis::getValuesFromRSource(const QStr
 {
 	const Json::Value& jsonValue = _rSources.count(fq(sourceID)) == 0 ? Json::nullValue : _rSources.at(fq(sourceID));
 
-	if (!jsonValue.isObject())	return {{}};
+	if (!jsonValue.isObject())	return {};
 
 	const Json::Value& dataValue = jsonValue["data"];
-	if (dataValue.size() == 0)	return {{}};
+	if (dataValue.size() == 0)	return {};
 
 	size_t nbRows = 1;
 
@@ -1082,14 +1082,13 @@ void Analysis::checkForRSources()
 
 			for(const std::string & memberName : results.getMemberNames())
 				if(sourceIDs.count(memberName) > 0)
-					newSources[results[memberName]["sourceID"].asString()] = results[memberName];
+					newSources[memberName] = results[memberName];
 				else if(isCollection.count(memberName) > 0 && results[memberName].isMember("collection")) //Checking for "collection" is to avoid stupid crashes but shouldnt really be necessary anyhow
 					collectSources(results[memberName]["collection"]);
 		}
 	};
 
 	collectSources(_results);
-
 	//And then calculate the delta
 	std::set<std::string> removeAfterwards;
 
