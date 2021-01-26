@@ -161,7 +161,7 @@ public:
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 	std::string				upgradeMsgsForOption(const std::string & name) const;
 
-
+	std::vector<std::vector<std::string> >	getValuesFromRSource(const QString & sourceID) const;
 
 signals:
 	void				nameChanged();
@@ -179,12 +179,13 @@ signals:
 	void				resultsChangedSignal(	Analysis * analysis);
 	void				userDataChangedSignal(	Analysis * analysis);
 	void				imageChanged();
+	void				rSourceChanged(QString optionName);
 
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
 	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);
 	void				requestComputedColumnDestruction(	QString columnName);
 
-
+	void				refreshTableViewModels();
 	Q_INVOKABLE void	expandAnalysis();
 
 
@@ -221,6 +222,8 @@ private:
 	void					fitOldUserDataEtc();
 	bool					updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root);
 	Modules::AnalysisEntry	*moduleData();
+	void					checkForRSources();
+	void					clearRSources();
 
 protected:
 	Status					_status			= Initializing;
@@ -267,6 +270,8 @@ private:
 	QString					_helpFile;
 
 	Modules::UpgradeMsgs	_msgs;
+
+	std::map<std::string, Json::Value>	_rSources;
 };
 
 #endif // ANALYSIS_H

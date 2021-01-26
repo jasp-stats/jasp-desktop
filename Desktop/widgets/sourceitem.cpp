@@ -41,9 +41,10 @@ SourceItem::SourceItem(
 	_values					= values;
 	_nativeModel			= nativeModel;
 	_discardSources			= discardSources;
+	_rSource				= map["rSource"].toString();
 
 	_isValuesSource			= map.contains("isValuesSource")			? map["isValuesSource"].toBool()			: false;
-	_isColumnsModel		= map.contains("isDataSetColumns")			? map["isDataSetColumns"].toBool()			: false;
+	_isColumnsModel			= map.contains("isDataSetColumns")			? map["isDataSetColumns"].toBool()			: false;
 	_combineWithOtherModels	= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
 	_nativeModelRole		= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
 
@@ -77,15 +78,20 @@ SourceItem::SourceItem(JASPListControl *listControl)
 
 void SourceItem::_connectModels()
 {
-	if (!_listControl->initialized() || !_nativeModel) return;
+	if (!_listControl->initialized()) return;
 
 	ListModel *controlModel = _listControl->model();
 
-	connect(_nativeModel, &QAbstractItemModel::dataChanged,			controlModel,	&ListModel::sourceTermsReset );
-	connect(_nativeModel, &QAbstractItemModel::rowsInserted,		controlModel,	&ListModel::sourceTermsReset );
-	connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			controlModel,	&ListModel::sourceTermsReset );
-	connect(_nativeModel, &QAbstractItemModel::rowsMoved,			controlModel,	&ListModel::sourceTermsReset );
-	connect(_nativeModel, &QAbstractItemModel::modelReset,			controlModel,	&ListModel::sourceTermsReset );
+	if (!_rSource.isEmpty() && _listControl->form()) _listControl->form()->addRSource(_rSource, controlModel);
+
+	if (!_nativeModel) return;
+
+
+	connect(_nativeModel, &QAbstractItemModel::dataChanged,			controlModel, &ListModel::sourceTermsReset );
+	connect(_nativeModel, &QAbstractItemModel::rowsInserted,		controlModel, &ListModel::sourceTermsReset );
+	connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			controlModel, &ListModel::sourceTermsReset );
+	connect(_nativeModel, &QAbstractItemModel::rowsMoved,			controlModel, &ListModel::sourceTermsReset );
+	connect(_nativeModel, &QAbstractItemModel::modelReset,			controlModel, &ListModel::sourceTermsReset );
 
 	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
 	if (columnsModel)
@@ -118,7 +124,7 @@ void SourceItem::_setUp()
 		_nativeModelRole = ColumnsModel::NameRole;
 	}
 
-	if (_nativeModel)
+	if (_nativeModel || !_rSource.isEmpty())
 	{
 		_listModel = qobject_cast<ListModel*>(_nativeModel);
 		// Do not connect before this control (and the controls of the source) are completely initialized
@@ -378,6 +384,8 @@ Terms SourceItem::_readAllTerms()
 {
 	Terms terms;
 
+	if (!_rSource.isEmpty())
+		terms = _listControl->form()->getValuesFromRSource(_rSource);
 	if (_listModel)
 	{
 		terms = _listModel->termsEx(_modelUse);

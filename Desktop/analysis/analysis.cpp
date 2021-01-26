@@ -153,6 +153,9 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 
 	processResultsForDependenciesToBeShown();
 
+	if(_status == Analysis::Complete)
+		checkForRSources();
+
 	_wasUpgraded = false;
 }
 
@@ -179,11 +182,11 @@ void Analysis::run()
 
 void Analysis::refresh()
 {
+	clearRSources();
 	TempFiles::deleteAll(_id);
 	run();
 
-	if(_analysisForm)
-		_analysisForm->refreshTableViewModels();
+	emit refreshTableViewModels();
 }
 
 void Analysis::saveImage(const Json::Value &options)
@@ -297,6 +300,8 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 		_status = Empty;
 	
 	connect(_analysisForm,			&AnalysisForm::helpMDChanged,		this,			&Analysis::helpMDChanged					);
+	connect(this,					&Analysis::rSourceChanged,	_analysisForm,	&AnalysisForm::rSourceChanged				);
+	connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
 }
 
 
@@ -727,6 +732,51 @@ std::string Analysis::upgradeMsgsForOption(const std::string & name) const
 	return out.str();
 }
 
+std::vector<std::vector<std::string> > Analysis::getValuesFromRSource(const QString &sourceID) const
+{
+	const Json::Value& jsonValue = _rSources.count(fq(sourceID)) == 0 ? Json::nullValue : _rSources.at(fq(sourceID));
+
+	if (!jsonValue.isObject())	return {};
+
+	const Json::Value& dataValue = jsonValue["data"];
+	if (dataValue.size() == 0)	return {};
+
+	size_t nbRows = 1;
+
+	// The data starts with the rows then the columns, we have to transpose it.
+	// We want to send the data per column. This will be stored in a Terms object.
+	// A Term can have several components, so if a column has several rows, each row will be a component of the corresponding term.
+	std::vector<std::vector<std::string> > result;
+	for (const Json::Value& rowValue : dataValue)
+	{
+		if (result.size() == 0)			result.push_back({});
+
+		if (rowValue.isString())		result[0].push_back( { rowValue.asString() } );
+		else if (rowValue.isNumeric())	result[0].push_back( { std::to_string(rowValue.asDouble()) } );
+		else if (rowValue.isArray() || rowValue.isObject())
+		{
+			size_t row = 0;
+			for (const Json::Value& oneValue : rowValue)
+			{
+				std::string str;
+				if (oneValue.isString())		str = oneValue.asString();
+				else if (oneValue.isNumeric())	str = std::to_string(oneValue.asDouble());
+
+				if (row >= nbRows)
+				{
+					result.push_back({});
+					nbRows++;
+				}
+				result[row].push_back(str);
+
+				row++;
+			}
+		}
+	}
+
+	return result;
+}
+
 void Analysis::storeUserDataEtc()
 {
 	if(!needsRefresh())
@@ -984,4 +1034,89 @@ void Analysis::setDynamicModule(Modules::DynamicModule * module)
 	_dynamicModule = module;
 
 	checkAnalysisEntry();
+}
+
+void Analysis::checkForRSources()
+{
+	if(!_results.isMember(".meta"))
+	{
+		clearRSources();
+		return;
+	}
+
+	//First check meta for qmlSources and collections
+	std::set<std::string> sourceIDs, isCollection;
+
+	std::function<void(Json::Value & meta)> findNewSource = [&](Json::Value & meta) -> void
+	{
+		if(meta.isArray())
+			for(Json::Value & entry : meta)
+				findNewSource(entry);
+		else if(meta.isObject())
+		{
+			if(meta.isMember("type") && meta["type"].asString() == "qmlSource")
+				sourceIDs.insert(meta["name"].asString());
+
+			if(meta.isMember("type") && meta["type"].asString() == "collection")
+				isCollection.insert(meta["name"].asString());
+
+			if(meta.isMember("meta")) //means there is an array of more meta below there
+				findNewSource(meta["meta"]);
+		}
+	};
+
+	findNewSource(_results[".meta"]);
+
+	//Then uses the found collections and qmlSources to create the new list of qmlSources
+	std::map<std::string, Json::Value> newSources;
+
+	std::function<void(Json::Value & meta)> collectSources = [&](Json::Value & results) -> void
+	{
+		if(results.isArray())
+			for(Json::Value & entry : results)
+				findNewSource(entry);
+		else if(results.isObject())
+		{
+			if(results.isMember("name") && sourceIDs.count(results["name"].asString()) > 0)
+				newSources[results["sourceID"].asString()] = results;
+
+			for(const std::string & memberName : results.getMemberNames())
+				if(sourceIDs.count(memberName) > 0)
+					newSources[results[memberName]["sourceID"].asString()] = results[memberName];
+				else if(isCollection.count(memberName) > 0 && results[memberName].isMember("collection")) //Checking for "collection" is to avoid stupid crashes but shouldnt really be necessary anyhow
+					collectSources(results[memberName]["collection"]);
+		}
+	};
+
+	collectSources(_results);
+	//And then calculate the delta
+	std::set<std::string> removeAfterwards;
+
+	for(auto & sourceJson : _rSources)
+		if(newSources.count(sourceJson.first) == 0)
+		{
+			removeAfterwards.insert(sourceJson.first);
+			sourceJson.second = Json::nullValue;
+			emit rSourceChanged(tq(sourceJson.first));
+		}
+
+	for(auto & newOptionJson : newSources)
+	{
+		_rSources[newOptionJson.first] = newOptionJson.second;
+		emit rSourceChanged(tq(newOptionJson.first));
+	}
+
+	for(const std::string & removeThis : removeAfterwards)
+		_rSources.erase(removeThis);
+}
+
+void Analysis::clearRSources()
+{
+	for(auto & optionJson : _rSources)
+	{
+		optionJson.second = Json::nullValue;
+		emit rSourceChanged(tq(optionJson.first));
+	}
+
+	_rSources.clear();
 }

@@ -575,6 +575,12 @@ void AnalysisForm::setAnalysis(QVariant analysis)
 	setAnalysisUp();
 }
 
+void AnalysisForm::rSourceChanged(const QString &name)
+{
+	if (_rSourceModelMap.contains(name))
+		_rSourceModelMap[name]->sourceTermsReset();
+}
+
 
 void AnalysisForm::formCompletedHandler()  { QTimer::singleShot(0, this, &AnalysisForm::_formCompletedHandler); }
 void AnalysisForm::_formCompletedHandler()

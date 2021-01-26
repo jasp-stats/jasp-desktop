@@ -111,6 +111,9 @@ createJaspState <- function(object = NULL,   dependencies = NULL)
 createJaspColumn <- function(columnName = "",         dependencies = NULL)
   return(jaspColumnR$new(    columnName = columnName, dependencies = dependencies))
 
+createJaspQmlSource <- function( sourceID = "",          data = NULL, dependencies = NULL)
+  return(jaspQmlSourceR$new(     sourceID = sourceID,  data = data, dependencies = dependencies))
+
 # also imported but that doesn't work in JASP
 R6Class <- R6::R6Class
 
@@ -157,8 +160,9 @@ jaspResultsR <- R6Class(
 			return(switch(
 				class(cppObj),
         "Rcpp_jaspPlot"      = jaspPlotR$new(     jaspObject = cppObj),
-        "Rcpp_jaspTable"     = jaspTableR$new(    jaspObject = cppObj),
-        "Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
+		"Rcpp_jaspTable"     = jaspTableR$new(    jaspObject = cppObj),
+		"Rcpp_jaspQmlSource" = jaspQmlSourceR$new(jaspObject = cppObj),
+		"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
         "Rcpp_jaspColumn"    = jaspColumnR$new(   jaspObject = cppObj),
         "Rcpp_jaspState"     = jaspStateR$new(    jaspObject = cppObj),
         "Rcpp_jaspHtml"      = jaspHtmlR$new(     jaspObject = cppObj),
@@ -349,8 +353,8 @@ jaspHtmlR <- R6Class(
 	),
 	active = list(
 		text        = function(value) { if (missing(value)) private$jaspObject$text        else private$jaspObject$text        <- value },
-    class       = function(value) { if (missing(value)) private$jaspObject$class       else private$jaspObject$class       <- value },
-    maxWidth    = function(value) { if (missing(value)) private$jaspObject$maxWidth    else private$jaspObject$maxWidth    <- .jaspHtmlPixelizer(value) },
+		class       = function(value) { if (missing(value)) private$jaspObject$class       else private$jaspObject$class       <- value },
+		maxWidth    = function(value) { if (missing(value)) private$jaspObject$maxWidth    else private$jaspObject$maxWidth    <- .jaspHtmlPixelizer(value) },
 		elementType = function(value) { if (missing(value)) private$jaspObject$elementType else private$jaspObject$elementType <- value }
 	)
 )
@@ -449,9 +453,9 @@ jaspPlotR <- R6Class(
       }
       else
       {
-				checkForJaspResultsInit()
-        private$jaspObject  <- create_cpp_jaspPlot(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspPlot, title)
-			}
+	    checkForJaspResultsInit()
+		private$jaspObject  <- create_cpp_jaspPlot(title) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspPlot, title)
+	  }
 
       jaspPlotObj <- private$jaspObject
 			
@@ -650,6 +654,58 @@ jaspTableR <- R6Class(
 }
 `[[.jaspTableR`   <- function(x, field)
 	x$.__enclos_env__$private$getField(field)
+
+
+
+jaspQmlSourceR <- R6Class(
+    classname = "jaspQmlSourceR",
+	inherit   = jaspTableR,
+	cloneable = FALSE,
+
+    public    = list(
+		initialize = function(sourceID="", column=NULL, dependencies=NULL, data=NULL, jaspObject=NULL) {
+		    if (!is.null(jaspObject)) {
+			  private$jaspObject <- jaspObject
+			  return()
+			} else if (jaspResultsCalledFromJasp()) {
+				jaspObj <- jaspResultsModule$create_cpp_jaspQmlSource(sourceID)
+			} else {
+			    checkForJaspResultsInit()
+				jaspObj <- create_cpp_jaspQmlSource(sourceID) # If we use R's constructor it will garbage collect our objects prematurely.. #new(jaspResultsModule$jaspTable, title)
+			}
+
+			if (sourceID != "")
+				jaspObj$sourceID <- sourceID
+
+			if (!is.null(column))
+				jaspObj$addColumns(column)
+
+            if (!is.null(data))
+			    jaspObj$setData(data)
+
+            if (!is.null(dependencies))
+			    jaspObj$dependOnOptions(dependencies)
+
+            private$jaspObject <- jaspObj
+			return()
+		}
+	),
+	active = list(
+		sourceID                = function(x) if (missing(x)) private$jaspObject$sourceID                else private$jaspObject$sourceID                <- x
+	),
+	private = list(
+	    setField = function(field, value) private$jaspObject[[field]] <- value,
+		getField = function(field)        return(private$jaspObject[[field]])
+	)
+)
+
+`[[<-.jaspQmlSourceR` <- function(x, field, value) {
+    x$.__enclos_env__$private$setField(field, value)
+	return(x)
+}
+`[[.jaspQmlSourceR`   <- function(x, field)
+    x$.__enclos_env__$private$getField(field)
+
 
 jaspColumnR <- R6Class(
   classname = "jaspColumnR",

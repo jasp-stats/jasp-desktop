@@ -6,6 +6,7 @@
 #include "jaspState.h"
 #include "jaspJson.h"
 #include "jaspHtml.h"
+#include "jaspQmlSource.h"
 #include <map>
 
 

@@ -34,6 +34,7 @@ DEFINES     += JASP_R_INTERFACE_LIBRARY QT_DEPRECATED_WARNINGS
 # deprecated API in order to know how to port your code away from it.
 
 SOURCES += \
+    jaspResults/src/jaspQmlSource.cpp \
     jasprcpp.cpp \
     RInside/MemBuf.cpp \
     RInside/RInside.cpp \
@@ -48,6 +49,7 @@ SOURCES += \
     jaspResults/src/jaspColumn.cpp
 
 HEADERS += \
+    jaspResults/src/jaspQmlSource.h \
 	jasprcpp.h \
     jasprcpp_interface.h \
     RInside/Callbacks.h \

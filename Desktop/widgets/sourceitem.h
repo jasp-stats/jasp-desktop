@@ -87,7 +87,8 @@ private:
 	JASPListControl		*			_listControl			= nullptr;
 	QString							_name,
 									_controlName,
-									_modelUse;
+									_modelUse,
+									_rSource;
 	QVector<SourceItem*>			_discardSources;
 	JASPListControl::LabelValueMap	_values;
 	bool							_isValuesSource			= false;
