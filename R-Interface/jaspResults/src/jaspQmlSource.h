@@ -14,6 +14,9 @@ public:
 	Json::Value	metaEntry()								const	override { return constructMetaEntry("qmlSource"); }
 	Json::Value	dataEntry(std::string & errorMessage)	const	override;
 
+	void		convertFromJSON_SetFields(Json::Value in)		override;
+	Json::Value convertToJSON()							const	override;
+
 	std::string		_sourceID;
 };
 

@@ -13,3 +13,18 @@ Json::Value jaspQmlSource::dataEntry(std::string & errorMessage) const
 
 	return dataJson;
 }
+
+void jaspQmlSource::convertFromJSON_SetFields(Json::Value in)
+{
+	jaspTable::convertFromJSON_SetFields(in);
+
+	_sourceID = in["sourceID"].asString();
+}
+
+Json::Value jaspQmlSource::convertToJSON() const
+{
+	Json::Value obj		= jaspTable::convertToJSON();
+	obj["sourceID"]		= _sourceID;
+
+	return obj;
+}

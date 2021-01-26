@@ -156,7 +156,7 @@ public:
 	void		setExpectedRows(size_t rows)					{ _expectedRowCount = rows;								}
 	void		setExpectedColumns(size_t columns)				{ _expectedColumnCount = columns;						}
 
-private:
+protected:
 	std::vector<std::string>	getDisplayableColTitles(bool normalizeLengths = true, bool onlySpecifiedColumns = true)		const;
 	std::vector<std::string>	getDisplayableRowTitles(bool normalizeLengths = true)										const;
 	void						rectangularDataWithNamesToString(	std::stringstream & out, std::string prefix,	std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles) const;
