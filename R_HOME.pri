@@ -43,6 +43,7 @@ isEmpty(_RLibrary) {
 
 message(using R_HOME of $$_R_HOME)
 
+LOAD_WORKAROUND = false
 include(R_INSTALL_CMDS.pri)
 
 INCLUDEPATH += \

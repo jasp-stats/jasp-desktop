@@ -18,6 +18,7 @@ isEmpty(MODULE_NAME) {
 
 	win32: JASP_LIBARY_DIR_FIX ~= s,/,\\,g
 
+    LOAD_WORKAROUND = true
 	include(../R_INSTALL_CMDS.pri)
 	#First we remove the installed module to make sure it gets properly update. We leave the library dir to avoid having to install the dependencies all the time.
 	#This will just have to get cleaned up by "clean"
