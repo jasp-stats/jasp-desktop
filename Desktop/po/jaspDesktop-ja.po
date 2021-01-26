@@ -1,134 +1,140 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-01-26 11:51+0000\n"
+"Last-Translator: Koji Kosugi <kosugitti@gmail.com>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.5-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
-msgstr ""
+msgstr "行を追加する"
 
 msgctxt "ComponentsList|"
 msgid "Remove a row"
-msgstr ""
+msgstr "行を削除"
 
 msgctxt "FileSelector|"
 msgid "Save file to:"
-msgstr ""
+msgstr "ファイルの保存先:"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr ""
+msgstr "ファイルの読み込み:"
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr ""
+msgstr "保存するファイルを選択"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr ""
+msgstr "読み込むファイルを選択してください"
 
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr ""
+msgstr "参照"
 
 msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
-msgstr ""
+msgstr "この分析は、古いバージョンのJASP（または動的モジュール）を使用して作成されました"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ""
+msgstr "更新すると、異なる結果が得られる可能性があります。"
 
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
-msgstr ""
+msgstr "ノートを今ある場所に保存しておき、まず分析を更新することを強くお勧めします"
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr ""
+msgstr "新しい値"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
-msgstr ""
+msgstr "モデル項"
 
 msgctxt "ModelTermsList|"
 msgid "Add to null model"
-msgstr ""
+msgstr "NULL モデルに追加"
 
 msgctxt "TableView|"
 msgid "Row #"
-msgstr ""
+msgstr "行#"
 
 msgctxt "TabView|"
 msgid "Add a tab"
-msgstr ""
+msgstr "タブを追加する"
 
 msgctxt "TabView|"
 msgid "Remove this tab"
-msgstr ""
+msgstr "このタブを削除します"
 
 msgctxt "TabView|"
 msgid "New tab"
-msgstr ""
+msgstr "新しいタブ"
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
-msgstr ""
+msgstr "⌘ + Enter で適用"
 
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
-msgstr ""
+msgstr "Ctrl + Enterで適用"
 
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr ""
+msgstr "最後の正しい値を復元します：%1"
 
 msgctxt "VariablesForm|"
 msgid "Main Effects"
-msgstr ""
+msgstr "主効果"
 
 msgctxt "VariablesForm|"
 msgid "Only 2 way"
-msgstr ""
+msgstr "2要因のみ"
 
 msgctxt "VariablesForm|"
 msgid "Only 3 way"
-msgstr ""
+msgstr "3要因のみ"
 
 msgctxt "VariablesForm|"
 msgid "Only 4 way"
-msgstr ""
+msgstr "4要因のみ"
 
 msgctxt "VariablesForm|"
 msgid "Only 5 way"
-msgstr ""
+msgstr "5要因のみ"
 
 msgctxt "VariablesForm|"
 msgid "All"
-msgstr ""
+msgstr "すべて"
 
 msgctxt "VariablesForm|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr ""
+msgstr "変数フォームで設定できる変数リストは 1 つだけです。"
 
 msgctxt "VariablesForm|"
 msgid "There is no Available List in the Variables Form"
-msgstr ""
+msgstr "変数フォームに使用可能なリストがありません"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
-msgstr ""
+msgstr "JASPについて"
 
 msgctxt "AboutWindow|"
 msgid "Version:"
-msgstr ""
+msgstr "バージョン："
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
@@ -136,119 +142,119 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr ""
+msgstr "ソース："
 
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr ""
+msgstr "ソースへのアクセスはこちら"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr ""
+msgstr "ダウンロード："
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr ""
+msgstr "引用："
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr ""
+msgstr "すべて選択"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr ""
+msgstr "選択範囲のコピー"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
-msgstr ""
+msgstr "BibTeX"
 
 msgctxt "AboutWindow|"
 msgid "Close"
-msgstr ""
+msgstr "閉じる"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr ""
+msgstr "ドラッグして解析の順序を変更する"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr ""
+msgstr "この分析のタイトルを編集します"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr ""
+msgstr "この分析を複製する"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr ""
+msgstr "この分析の情報を表示する"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr ""
+msgstr "この分析を削除する"
 
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "データ/結果のサイズを変更する"
 
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "ドラッグしてデータを表示"
 
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
-msgstr ""
+msgstr "入力オプションを非表示にする"
 
 msgctxt "AnalysisForms|"
 msgid "Show input options"
-msgstr ""
+msgstr "入力オプションを表示する"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
-msgstr ""
+msgstr "追加"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
-msgstr ""
+msgstr "削除"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "リセット"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr ""
+msgstr "ベイズファクター"
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
-msgstr ""
+msgstr "BF₁₀"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
-msgstr ""
+msgstr "帰無仮説に対する代替仮説の証拠を定量化するためのベイズファクター"
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
-msgstr ""
+msgstr "BF₀₁"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
-msgstr ""
+msgstr "帰無仮説に対する対立仮説の証拠を定量化するためのベイズファクター"
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr ""
+msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "BF10の自然対数"
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "列を追加"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
@@ -256,196 +262,203 @@ msgstr ""
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "リセット"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr ""
+msgstr "計算された列: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
-msgstr ""
+msgstr "列を選択"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "絶対値"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "標準偏差"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr ""
+msgstr "分散"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr ""
+msgstr "総和"
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "値の積"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "最小値を返します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "最大値を返します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr ""
+msgstr "平均"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "y を小数点以下 n 桁に丸めます"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "yの要素数を返します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr ""
+msgstr "中央値"
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr ""
+msgstr "自然対数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "2を底とする対数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "10を底とする対数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr ""
+msgstr "'base' を底とした y の対数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr ""
+msgstr "指数関数"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
-msgstr ""
+msgstr "相関を変換するフィッシャーのZ変換(すなわち、逆双曲線正接)により、-1と1の間の数値を実線に変換する"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
-msgstr ""
+msgstr "逆フィッシャーのZ変換(すなわち双曲正接)で実数を-1から1の間の数に変換します。"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr ""
+msgstr "データを numBreaks 水準に分割します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr ""
+msgstr "列の欠落値（NA）をreplaceWithの値に置き換えます"
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "if-else文"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Gaussian distribution with specified mean and standard "
 "deviation sd"
-msgstr ""
+msgstr "指定した平均と標準偏差sdを持つガウス分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
 "centrality parameter ncp"
-msgstr ""
+msgstr "自由度dfと非中心性パラメーターncpをもつt分布からデータを生成します"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
-msgstr ""
+msgstr "自由度dfと非中心性パラメータncpを持つカイ2乗分布からデータを生成します。"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
 "df1, df2 and non-centrality parameter ncp"
-msgstr ""
+msgstr "指定された自由度 df1, df2 と非中心性パラメータ ncp を持つ F 分布からデータを生成します．"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
 "probability prob"
-msgstr ""
+msgstr "指定された試行数と確率の二項分布からデータを生成します。"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a negative binomial distribution with specified trials "
 "and probability prob"
-msgstr ""
+msgstr "指定された試行と確率をもつ負の二項分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a geometric distribution with specified probability prob"
-msgstr ""
+msgstr "指定された確率をもつ幾何学的分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr ""
+msgstr "指定された比率λのポアソン分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
-msgstr ""
+msgstr "指定された形状パラメータ，アルファとベータのをもつベータ分布からデータを生成します"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr ""
+msgstr "minとmaxの間の一様分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr ""
+msgstr "指定された形状パラメータとスケールパラメータを持つガンマ分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
-msgstr ""
+msgstr "指定された比率のパラメータを持つ指数分布からデータを生成します"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
 "mean meanLog and standard deviation sdLog"
-msgstr ""
+msgstr "指定された対数平均meanLogと標準偏差sdLogを使用して対数正規分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
-msgstr ""
+msgstr "指定された形状パラメータとスケールパラメータを持つワイブル分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr ""
+msgstr "計算された列を削除"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr ""
+msgstr "生成されたRコードを表示"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr ""
+msgstr "計算された列:"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
-msgstr ""
+msgstr "計算された列"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr ""
+msgstr "クリックして列を計算します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
@@ -453,57 +466,58 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "ドキュメントを開く"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
-msgstr ""
+msgstr "計算列ウィンドウを閉じる"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
-msgstr ""
+msgstr "計算列が変更されました"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
-msgstr ""
+msgstr "計算列に適用されていない変更があります。どうしますか?"
 
 msgctxt "ContrastsList|"
 msgid "none"
-msgstr ""
+msgstr "なし"
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr ""
+msgstr "偏差"
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr ""
+msgstr "シンプル"
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr ""
+msgstr "差"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr ""
+msgstr "Helmert"
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr ""
+msgstr "繰り返し"
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr ""
+msgstr "多項"
 
+#, fuzzy
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr ""
+msgstr "カスタム"
 
 msgctxt "ContrastsList|"
 msgid "Factors"
-msgstr ""
+msgstr "要因"
 
 #, qt-format
 msgctxt "ContrastsList|"
@@ -512,117 +526,117 @@ msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr ""
+msgstr "計算された列の作成"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr ""
+msgstr "名前:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr ""
+msgstr "列名はすでに使用されています。別の名前を選択してください。"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr ""
+msgstr "R コードを使用して列を定義する"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr ""
+msgstr "ドラッグアンドドロップ式で列を定義する"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr ""
+msgstr "スケール"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr ""
+msgstr "順序"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr ""
+msgstr "名義"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr ""
+msgstr "テキスト"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "ドキュメントを開く"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr ""
+msgstr "列の作成"
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr ""
+msgstr "新しい計算列 '%1' を作成するには、ここをクリックしてください"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr ""
+msgstr "計算された列に有効な（未使用の）名前を入力してください"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr ""
+msgstr "計算列を作成せずに閉じる"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr ""
+msgstr "コントラストを追加"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr ""
+msgstr "コントラストを削除"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "リセット"
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr ""
+msgstr "フィルタを非表示"
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr ""
+msgstr "フィルタを表示"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr ""
+msgstr "計算された列を追加"
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
-msgstr ""
+msgstr "列タイプを変更するには、ここをクリックしてください"
 
 msgctxt "DataTableView|"
 msgid "Click here to change the columns formulas"
-msgstr ""
+msgstr "列の数式を変更するには、ここをクリックしてください"
 
 msgctxt "DataTableView|"
 msgid "Click here to change labels"
-msgstr ""
+msgstr "ラベルを変更するには、ここをクリックしてください"
 
 msgctxt "DataTableView|"
 msgid " or inspect filter"
-msgstr ""
+msgstr " または検査フィルタ"
 
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr ""
+msgstr "%1に戻る"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr ""
+msgstr "あなたはここにいます"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr ""
+msgstr "最近使用したフォルダ"
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "参照"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
