@@ -21,12 +21,12 @@ When you select your language from the list you will get an overview of the tran
 <img src="https://static.jasp-stats.org/images/Weblate-Chosen-Dutch.png" width="800" height="250" /> <br>
 Selecting the part of strings you want to change will bring you to the form where you do the actual translation work. Be aware that all Weblate users have the same rights filling in this form.<br><br>
 <img src="https://static.jasp-stats.org/images/Weblate-Dutch.png" width="800" height="250" /> <br><br>
-There are a lot of options to be chosen here but all are well described in the online documentaion you can find in the right corner of the page. <br><img src="https://static.jasp-stats.org/images/Weblate-Documentation.png" width="80" height="100" /> <br>The working procedure is now as follows:  
-*  When you save (Save button) your work, your translated strings are stored in Weblates repository. And everybody will see your work.<br>  
-*  Once you have committed your work (the Manage/Commit button in the previous screen) a PR (pull request) is made to the JASP github repository belonging to this component.  For instance see the [JASP Anova repository](https://github.com/jasp-stats/jaspAnova) for the JASP Anova module repository.<br>  
-*  This PR is then merged into this JASP module repository by the responsable developer of this repository.<br>  
-*  During the nightly build new JASP binary translation files (.qm and .mo) are generated. These files are added to the setup of JASP, so the new translations should be available in this [nightly](http://static.jasp-stats.org/Nightlies/) made version.<br>
-*  Every week new JASP .po files are generated containing the new translatable strings inside JASP. They will then be merged into Weblate. Some component may then have new strings to translate.<br>
+There are a lot of options to be chosen here but all are well described in the online documentaion you can find in the right corner of the page. <br><img src="https://static.jasp-stats.org/images/Weblate-Documentation.png" width="80" height="100" /> <br>The working procedure is now as follows:<br>  
+* When you save (Save button) your work, your translated strings are stored in Weblates repository. And everybody will see your work.<br>  
+* Once you have committed your work (the Manage/Commit button in the previous screen) a PR (pull request) is made to the JASP github repository belonging to this component.  For instance see the [JASP Anova repository](https://github.com/jasp-stats/jaspAnova) for the JASP Anova module repository.<br>  
+* This PR is then merged into this JASP module repository by the responsable developer of this repository.<br>  
+* During the nightly build new JASP binary translation files (.qm and .mo) are generated. These files are added to the setup of JASP, so the new translations should be available in this [nightly](http://static.jasp-stats.org/Nightlies/) made version.<br>
+* Every week new JASP .po files are generated containing the new translatable strings inside JASP. They will then be merged into Weblate. Some component may then have new strings to translate.<br>
 
 ## Translation of statistical terms
 1. Weblate has the functionality of defining glossaries. Each project can have an assigned glossary for any language as a shorthand for storing terminology. Consistency is more easily maintained this way. If a term is defined in the Weblate glossery in its proper context this definition should be used. Definitions defined in the glossery can be exported and imported.
