@@ -13,9 +13,9 @@ Once you've registered your account you can open the JASP project at https://hos
 Here you can find an overview of all the different modules JASP consists of and the translations it contains. Every single module contains two components: an interface component and an R component. 
 E.g. the Anova module consists of the jaspANOVA-QML component for the interface and the jaspANOVA-R component for the R part. Pressing on the component show the current translation of the component.<br><br>
 <img src="https://static.jasp-stats.org/images/Weblate-component.png" width="800" height="250" /><br>For adding a new translation:<br>
-- Press the Start New Translation button.  
-- Choose your language from the available Languages list.  
-- If your language is not in the list, report this to Weblate with the 'Cannot find your language in the list above?' link.
+* Press the Start New Translation button.   
+* Choose your language from the available Languages list.  
+* If your language is not in the list, report this to Weblate with the 'Cannot find your language in the list above?' link.
 <br>
 When you select your language from the list you will get an overview of the translated and not yet translated strings.<br><br>
 <img src="https://static.jasp-stats.org/images/Weblate-Chosen-Dutch.png" width="800" height="250" /> <br>
