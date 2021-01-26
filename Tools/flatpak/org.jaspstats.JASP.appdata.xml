@@ -57,6 +57,11 @@
 						- fixing marginal custom CI in predictive distributions #4397
 			</description>
 		</release>
+		<release version="0.14.2" date="2021-01-26">
+			<description>
+				Linux only release to solve the missing variableswindow: https://github.com/jasp-stats/jasp-issues/issues/1109
+			</description>
+		</release>
 		<release version="0.14.1" date="2020-10-14">
 					<description>
 						New release 0.14
