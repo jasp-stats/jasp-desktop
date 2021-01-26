@@ -504,7 +504,7 @@ void MainWindow::loadQML()
 	_ribbonModel->loadModules(	
 		{ 	"jaspDescriptives", "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },
 		{ 	"jaspAudit", "jaspBain", "jaspDistributions" , "jaspEquivalenceTTests", "jaspJags", "jaspLearnBayes", "jaspMachineLearning",
-			"jaspMetaAnalysis", "jaspNetwork", "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
+			"jaspMetaAnalysis", "jaspNetwork", "jaspProcessControl", "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
 }
 
 QObject * MainWindow::loadQmlData(QString data, QUrl url)

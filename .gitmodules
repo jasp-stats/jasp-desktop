@@ -94,3 +94,7 @@
 	path = Modules/jaspProphet
 	url = https://github.com/jasp-stats/jaspProphet
 	branch = master
+[submodule "Modules/jaspProcessControl"]
+	path = Modules/jaspProcessControl
+	url = https://github.com/jasp-stats/jaspProcessControl
+	branch = master

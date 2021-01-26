@@ -1,7 +1,10 @@
 # This is part of https://github.com/jasp-stats/INTERNAL-jasp/issues/996 and works, but requires me to install V8 because of stupid dependency resolution based on CRAN
 # So ive turned it off for now, but if you'd like to use it you can!
+
+UNSET_INSTALL_LATER = false
 isEmpty(R_MODULES_INSTALL_DEPENDENCIES) { 
 	R_MODULES_INSTALL_DEPENDENCIES = false
+	UNSET_INSTALL_LATER=true
 }
 
 
@@ -19,7 +22,7 @@ isEmpty(MODULE_NAME) {
 	#First we remove the installed module to make sure it gets properly update. We leave the library dir to avoid having to install the dependencies all the time.
 	#This will just have to get cleaned up by "clean"
 
-	unix:	Install$${MODULE_NAME}.commands        =  rm -rf   $$JASP_LIBRARY_DIR/$${MODULE_NAME} && ( [ -d $$JASP_LIBRARY_DIR ] ||  mkdir $$JASP_LIBRARY_DIR ) ;	$$escape_expand(\\n\\t)
+    unix:	Install$${MODULE_NAME}.commands        = rm -rf   $$JASP_LIBRARY_DIR/$${MODULE_NAME} && ( [ -d $$JASP_LIBRARY_DIR ] ||  mkdir $$JASP_LIBRARY_DIR ) ;	$$escape_expand(\\n\\t)
 	win32:	Install$${MODULE_NAME}.commands        = IF EXIST $$JASP_LIBARY_DIR_FIX\\$${MODULE_NAME}	( rd /s /q $$JASP_LIBARY_DIR_FIX\\$${MODULE_NAME} );		$$escape_expand(\\n\\t)
 	win32:  Install$${MODULE_NAME}.commands       += IF NOT EXIST \"$$JASP_LIBARY_DIR_FIX\"				( mkdir \"$$JASP_LIBARY_DIR_FIX\") ;						$$escape_expand(\\n\\t)
 
@@ -192,4 +195,5 @@ isEmpty(MODULE_NAME) {
 #reset the special vars:
 MODULE_NAME =
 MODULE_DEPS = 
-R_MODULES_INSTALL_DEPENDENCIES = false
+
+$$UNSET_INSTALL_LATER: R_MODULES_INSTALL_DEPENDENCIES =

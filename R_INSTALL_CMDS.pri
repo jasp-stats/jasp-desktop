@@ -39,8 +39,10 @@ defineReplace(generateExtraLibPaths) {
 win32:  LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$${JASP_BUILDROOT_DIR}/R/library\'$$generateExtraLibPaths(MODULE_DEPS)))"
 unix:	LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$$_R_HOME/library\'$$generateExtraLibPaths(MODULE_DEPS)))"
 
-INSTALL_R_PKG_CMD_PREFIX		= \"$$R_EXE\" -e \"$$LIBPATHS; pkgbuild::with_build_tools( \{ install.packages(\'
-INSTALL_R_PKG_DEPS_CMD_PREFIX	= \"$$R_EXE\" -e \"$$LIBPATHS; pkgbuild::with_build_tools( \{ Sys.setenv(\'R_REMOTES_NO_ERRORS_FROM_WARNINGS\'=TRUE); remotes::install_deps(pkg=\'
+LOAD_WORKAROUND = source(\'../workarounds.R\');
+
+INSTALL_R_PKG_CMD_PREFIX		= \"$$R_EXE\" -e \"$$LIBPATHS; $$LOAD_WORKAROUND pkgbuild::with_build_tools( \{ install.packages(\'
+INSTALL_R_PKG_DEPS_CMD_PREFIX	= \"$$R_EXE\" -e \"$$LIBPATHS; $$LOAD_WORKAROUND pkgbuild::with_build_tools( \{ Sys.setenv(\'R_REMOTES_NO_ERRORS_FROM_WARNINGS\'=TRUE); remotes::install_deps(pkg=\'
 
 mac {
 	INSTALL_R_PKG_CMD_PREFIX		= JASP_R_HOME=\"$$_R_HOME\" $$INSTALL_R_PKG_CMD_PREFIX
