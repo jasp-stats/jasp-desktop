@@ -30,22 +30,22 @@ struct ItemContextualized
 class DataSetView : public QQuickItem
 {
 	Q_OBJECT
-	Q_PROPERTY( QAbstractItemModel * model				READ model					WRITE setModel					NOTIFY modelChanged					)
-	Q_PROPERTY( int itemHorizontalPadding				READ itemHorizontalPadding	WRITE setItemHorizontalPadding	NOTIFY itemHorizontalPaddingChanged )
-	Q_PROPERTY( int itemVerticalPadding					READ itemVerticalPadding	WRITE setItemVerticalPadding	NOTIFY itemVerticalPaddingChanged	)
-	Q_PROPERTY( double viewportX						READ viewportX				WRITE setViewportX				NOTIFY viewportXChanged				)
-	Q_PROPERTY( double viewportY						READ viewportY				WRITE setViewportY				NOTIFY viewportYChanged				)
-	Q_PROPERTY( double viewportW						READ viewportW				WRITE setViewportW				NOTIFY viewportWChanged				)
-	Q_PROPERTY( double viewportH						READ viewportH				WRITE setViewportH				NOTIFY viewportHChanged				)
-	Q_PROPERTY( QQmlComponent * itemDelegate			READ itemDelegate			WRITE setItemDelegate			NOTIFY itemDelegateChanged			)
-	Q_PROPERTY( QQmlComponent * rowNumberDelegate		READ rowNumberDelegate		WRITE setRowNumberDelegate		NOTIFY rowNumberDelegateChanged		)
-	Q_PROPERTY( QQmlComponent * columnHeaderDelegate	READ columnHeaderDelegate	WRITE setColumnHeaderDelegate	NOTIFY columnHeaderDelegateChanged	)
-	Q_PROPERTY( QQuickItem * leftTopCornerItem			READ leftTopCornerItem		WRITE setLeftTopCornerItem		NOTIFY leftTopCornerItemChanged		)
-	Q_PROPERTY( QQuickItem * extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged		)
-	Q_PROPERTY( double headerHeight						READ headerHeight											NOTIFY headerHeightChanged			)
-	Q_PROPERTY( double rowNumberWidth					READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
-	Q_PROPERTY( bool cacheItems							READ cacheItems				WRITE setCacheItems				NOTIFY cacheItemsChanged			)
-	Q_PROPERTY( QQuickItem * tableViewItem				READ tableViewItem			WRITE setTableViewItem												)
+	Q_PROPERTY( QAbstractItemModel	*	model					READ model					WRITE setModel					NOTIFY modelChanged					)
+	Q_PROPERTY( int						itemHorizontalPadding	READ itemHorizontalPadding	WRITE setItemHorizontalPadding	NOTIFY itemHorizontalPaddingChanged )
+	Q_PROPERTY( int						itemVerticalPadding		READ itemVerticalPadding	WRITE setItemVerticalPadding	NOTIFY itemVerticalPaddingChanged	)
+	Q_PROPERTY( double					viewportX				READ viewportX				WRITE setViewportX				NOTIFY viewportXChanged				)
+	Q_PROPERTY( double					viewportY				READ viewportY				WRITE setViewportY				NOTIFY viewportYChanged				)
+	Q_PROPERTY( double					viewportW				READ viewportW				WRITE setViewportW				NOTIFY viewportWChanged				)
+	Q_PROPERTY( double					viewportH				READ viewportH				WRITE setViewportH				NOTIFY viewportHChanged				)
+	Q_PROPERTY( QQmlComponent		*	itemDelegate			READ itemDelegate			WRITE setItemDelegate			NOTIFY itemDelegateChanged			)
+	Q_PROPERTY( QQmlComponent		*	rowNumberDelegate		READ rowNumberDelegate		WRITE setRowNumberDelegate		NOTIFY rowNumberDelegateChanged		)
+	Q_PROPERTY( QQmlComponent		*	columnHeaderDelegate	READ columnHeaderDelegate	WRITE setColumnHeaderDelegate	NOTIFY columnHeaderDelegateChanged	)
+	Q_PROPERTY( QQuickItem			*	leftTopCornerItem		READ leftTopCornerItem		WRITE setLeftTopCornerItem		NOTIFY leftTopCornerItemChanged		)
+	Q_PROPERTY( QQuickItem			*	extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged		)
+	Q_PROPERTY( double					headerHeight			READ headerHeight											NOTIFY headerHeightChanged			)
+	Q_PROPERTY( double					rowNumberWidth			READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
+	Q_PROPERTY( bool					cacheItems				READ cacheItems				WRITE setCacheItems				NOTIFY cacheItemsChanged			)
+	Q_PROPERTY( QQuickItem			*	tableViewItem			READ tableViewItem			WRITE setTableViewItem												)
 
 public:
 	DataSetView(QQuickItem *parent = nullptr);
@@ -126,6 +126,7 @@ signals:
 	void cacheItemsChanged();
 
 
+
 public slots:
 	void calculateCellSizes()	{ calculateCellSizesAndClear(false); }
 	void aContentSizeChanged()	{ _recalculateCellSizes = true; }
@@ -135,7 +136,6 @@ public slots:
 	void reloadTextItems();
 	void reloadRowNumbers();
 	void reloadColumnHeaders();
-
 
 	void modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &);
 	void modelHeaderDataChanged(Qt::Orientation, int, int);
@@ -191,7 +191,7 @@ protected:
 	std::vector<float>										_lines;
 	QQuickItem											*	_leftTopItem		= nullptr,
 														*	_extraColumnItem	= nullptr,
-														*	_tableViewItem			= nullptr;
+														*	_tableViewItem		= nullptr;
 
 	bool		_recalculateCellSizes	= false,
 				_ignoreViewpoint		= true;
@@ -217,7 +217,7 @@ protected:
 		_previousViewportColMax = -1,
 		_previousViewportRowMin = -1,
 		_previousViewportRowMax = -1,
-		_viewportMargin			= 1,
+		_viewportMargin			=  1,
 		_currentViewportColMin	= -1,
 		_currentViewportColMax	= -1,
 		_currentViewportRowMin	= -1,

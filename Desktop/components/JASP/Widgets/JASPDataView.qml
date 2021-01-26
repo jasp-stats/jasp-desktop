@@ -19,12 +19,19 @@ FocusScope
 
 				property alias itemHorizontalPadding:	theView.itemHorizontalPadding
 				property alias itemVerticalPadding:		theView.itemVerticalPadding
-				property alias rowNumberWidth:			theView.rowNumberWidth
+	readonly	property alias rowNumberWidth:			theView.rowNumberWidth
 
 	readonly	property alias contentX:				myFlickable.contentX
 	readonly	property alias contentY:				myFlickable.contentY
 	readonly	property alias contentWidth:			myFlickable.contentWidth
 	readonly	property alias contentHeight:			myFlickable.contentHeight
+
+	readonly	property alias verticalScrollWidth:		vertiScroller.width
+	readonly	property alias horizontalScrollHeight:	horiScroller.height
+	///Aka without a scrollbar
+	readonly	property real  flickableWidth:			myFlickable.width
+	///Aka without a scrollbar
+	readonly	property real  flickableHeight:			myFlickable.height
 
 	JASPMouseAreaToolTipped
 	{
