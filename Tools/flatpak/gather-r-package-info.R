@@ -62,7 +62,7 @@ defineSpecials <- function()
   specials <<- new.env(hash = TRUE, parent = parent.frame())
   specials[['bstats']]       <- list(type='github', commit='1b0b925d0404537b908a6380b70d80382df2d374', repo='AlexanderLyNL/bstats'  )
   specials[['flexplot']]     <- list(type='github', commit='163137fe30d9541234eb0053d6d86e1f96cd3dc5', repo='dustinfife/flexplot'   )
-  specials[['Bayesrel']]     <- list(type='github', commit='8bd009e3360fe8ae8db36bb1b1f640c51ca92e97', repo='juliuspf/Bayesrel'     )
+  specials[['Bayesrel']]     <- list(type='github', commit='06bfd2fe3e7dba988adbf2e328131067b8d50361', repo='juliuspf/Bayesrel'     )
   specials[['stanova']]      <- list(type='github', commit='3e5635816fb2e4cda06704778e5bcd382f14717d', repo='bayesstuff/stanova'    )
   #specials[['afex']]         <- list(type='github', commit='71e22f0020399de1b35189d7c0dd4e5a2729b843', repo='singmann/afex'         )
   specials[['ggpol']]        <- list(type='github', commit='dea9db2503b04b81dbc746fdeccf92e9849ce64b', repo='jasp-stats/ggpol'      ) # temporary fix for conflicting ggplot2 dependencies in jasp 0.12.2. Should be removed after that release and shit should be fixed!
