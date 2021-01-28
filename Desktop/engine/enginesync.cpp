@@ -64,11 +64,7 @@ EngineSync::EngineSync(QObject *parent)
 	connect(PreferencesModel::prefs(),	&PreferencesModel::languageCodeChanged,				this,						&EngineSync::settingsChanged					);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::developerModeChanged,			this,						&EngineSync::settingsChanged					);
 
-#ifdef __gnu_linux__
-	//On linux it somehow ignores the newer settings, so we better kill the engines... https://github.com/jasp-stats/jasp-test-release/issues/1046
-	connect(PreferencesModel::prefs(),	&PreferencesModel::languageCodeChanged,				this,						&EngineSync::haveYouTriedTurningItOffAndOnAgain,	Qt::QueuedConnection);
-#endif
-    // delay start so as not to increase program start up time 10sec is better than 100ms, because they are orphaned anyway
+	// delay start so as not to increase program start up time 10sec is better than 100ms, because they are orphaned anyway
 	// Except, that it might somehow cause a crash? If the timer goes off while waiting for a download from OSF than it might remove the files while making them..
 	// So lets put it on 500ms...
 	QTimer::singleShot(500, this, &EngineSync::deleteOrphanedTempFiles);
@@ -155,9 +151,13 @@ EngineRepresentation * EngineSync::createNewEngine()
 		connect(engine,						&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
 		connect(engine,						&EngineRepresentation::plotEditorRefresh,				this,					&EngineSync::plotEditorRefresh											);
 		connect(engine,						&EngineRepresentation::requestEngineRestart,			this,					&EngineSync::restartEngineAfterCrash									);
+		connect(engine,						&EngineRepresentation::loadAllActiveModules,			this,					&EngineSync::loadAllActiveModules										);
 		connect(this,						&EngineSync::settingsChanged,							engine,					&EngineRepresentation::settingsChanged									);
 		connect(Analyses::analyses(),		&Analyses::analysisRemoved,								engine,					&EngineRepresentation::analysisRemoved									);
 		connect(PreferencesModel::prefs(),	&PreferencesModel::maxEnginesChanged,					this,					&EngineSync::maxEngineCountChanged,				Qt::QueuedConnection	);
+
+		//On (re)starts this makes sure all modules are loaded. But on first startup (when JASP is loading) this will do nothing.
+		loadAllActiveModules();
 
 		return engine;
 
@@ -167,6 +167,11 @@ EngineRepresentation * EngineSync::createNewEngine()
 		Log::log()  << "interprocess exception! " << e.what() <<  std::endl;
 		throw e;
 	}
+}
+
+void EngineSync::loadAllActiveModules()
+{
+	setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 }
 
 void EngineSync::start(int )
@@ -204,7 +209,6 @@ void EngineSync::restartEngines()
 		Log::log() << "restarted engine " << engine->channelNumber() << " but should still reload any active (dynamic) modules!"<< std::endl;
 	}
 
-	setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 	logCfgRequest();
 
 	_engineStarted = true;
@@ -213,9 +217,6 @@ void EngineSync::restartEngines()
 void EngineSync::restartEngineAfterCrash(EngineRepresentation * engine)
 {
 	engine->restartEngine(startSlaveProcess(engine->channelNumber()));
-
-	//Make sure to load the modules and settings again otherwise this engine is pretty much useless
-	setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 	logCfgRequest();
 }
 
@@ -230,9 +231,6 @@ void EngineSync::restartKilledEngines()
 			engine->restartEngine(startSlaveProcess(engine->channelNumber()));
 			restartedAnEngine = true;
 		}
-
-	if(restartedAnEngine)
-		setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 }
 
 void EngineSync::process()
@@ -242,7 +240,7 @@ void EngineSync::process()
 	std::vector<EngineRepresentation *> boredEngines;
 	for (auto engine : _engines)
 	{
-		engine->process();
+		engine->processReplies();
 		
 		if(
 			_workers.count(engine) > 0	&& 
@@ -321,9 +319,9 @@ void EngineSync::processFilterScript()
 	//First we make sure nothing else is running before we ask the engine to run the filter
 	if(!_filterRunning)
 	{
-		pause(); //Make sure engines pause/stop
+		pauseEngines(); //Make sure engines pause/stop
 		_filterRunning = true;
-		resume();
+		resumeEngines();
 	}
 	else //So previous loop we made sure nothing else is running, and maybe we had to kill an engine to make it understand, followed by a restart. Now we are ready to run the filter
 	{
@@ -475,7 +473,6 @@ void EngineSync::startExtraEngine()
 		newEngineStartTime = Utils::currentSeconds();
 		Log::log() << "New engine requested, so starting it!" << std::endl;
 		_workers.insert(createNewEngine());
-		setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 	}
 }
 
@@ -616,7 +613,7 @@ void EngineSync::stopEngines()
 
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
-		engine->process();
+		engine->processReplies();
 
 	_engineStarted		= false;
 
@@ -635,12 +632,13 @@ void EngineSync::stopEngines()
 		}
 		else
 			for (auto * engine : _engines)
-				engine->process();
+				engine->processReplies();
 
 	//timeout = QDateTime::currentSecsSinceEpoch() + 10;
 
 	/*
-
+		This is all commented out because it is very dangerous to just go and processEvents in the middle of other functions...
+	  
 	  Log::log() << "Checking if engines are running by using QApplication::processEvents to get answers." << std::endl;
 
 	bool stillRunning;
@@ -668,15 +666,15 @@ void EngineSync::stopEngines()
 	Log::log() << "Engines stopped(/killed)" << std::endl;
 }
 
-void EngineSync::pause()
+void EngineSync::pauseEngines()
 {
-	JASPTIMER_SCOPE(EngineSync::pause);
+	JASPTIMER_SCOPE(EngineSync::pauseEngines);
 
 	if(!_engineStarted) return;
 
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
-		engine->process();
+		engine->processReplies();
 
 	for(EngineRepresentation * e : _engines)
 		e->pauseEngine();
@@ -685,16 +683,16 @@ void EngineSync::pause()
 
 	while(!allEnginesPaused() && tryTill >= Utils::currentSeconds())
 		for (auto * engine : _engines)
-			engine->process();
+			engine->processReplies();
 
 	for (auto * engine : _engines)
 		if(!engine->paused())
 			engine->killEngine();
 }
 
-void EngineSync::resume()
+void EngineSync::resumeEngines()
 {
-	JASPTIMER_SCOPE(EngineSync::resume);
+	JASPTIMER_SCOPE(EngineSync::resumeEngines);
 
 	if(!_engineStarted)
 		return;
@@ -712,10 +710,7 @@ void EngineSync::resume()
 
 	while(!allEnginesResumed())
 		for (auto * engine : _engines)
-			engine->process();
-
-	if(restartedAnEngine)
-		setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
+			engine->processReplies();
 }
 
 bool EngineSync::allEnginesStopped()
@@ -879,7 +874,7 @@ void EngineSync::processLogCfgRequests()
 void EngineSync::cleanUpAfterClose()
 {
 	//try { stopEngines(); } //Tends to go wrong when the engine was already killed (for instance because it didnt want to pause)
-	try {	pause(); }
+	try {	pauseEngines(); }
 	catch(unexpectedEngineReply e) {} // If we are cleaning up after close we can get all sorts of things, lets just ignore them.
 
 	while(_waitingScripts.size() > 0)
@@ -897,7 +892,7 @@ void EngineSync::cleanUpAfterClose()
 	for(EngineRepresentation * e : _engines)
 		e->cleanUpAfterClose();
 
-	try { resume(); }
+	try { resumeEngines(); }
 	//try { restartEngines(); }
 	catch(unexpectedEngineReply e) {}
 

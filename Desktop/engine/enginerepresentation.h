@@ -77,7 +77,7 @@ public:
 
 	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr && !killed(); }
 
-	void process();
+	void processReplies();
 	void restartAbortedAnalysis();
 	void checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }
 	bool willProcessAnalysis(Analysis * analysis) const;
@@ -109,6 +109,7 @@ public slots:
 	void setRunsRCmd(		bool runsRCmd);
 
 signals:
+	void loadAllActiveModules();
 	void engineTerminated();
 	void filterDone(															int requestID);
 	void processFilterErrorMsg(			const QString & error,					int requestId = -1);

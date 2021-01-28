@@ -86,8 +86,8 @@ public slots:
 	void setRequiresData(bool requiresData);
 	void setIsCommon(bool isCommonModule);
 	void setTitle(std::string title);
-	void setIconSource(QString iconSource);
 	void setTitleQ(QString title)									{ setTitle(title.toStdString()); }
+	void setIconSource(QString iconSource);
 	void setEnabled(bool enabled);
 	void setModuleName(std::string moduleName);
 	void setModuleNameQ(QString moduleName)							{ setModuleName(moduleName.toStdString()); }
@@ -113,7 +113,6 @@ signals:
 	void iconSourceChanged();
 	void dataLoadedChanged();
 	void activeChanged();
-	void analysisTitleChanged(std::string moduleName, std::string oldTitle, std::string newTitle);
 	void toolTipChanged(QString toolTip);
 	void analysisMenuChanged();
 	void isSpecialChanged(); //This wont be called it is just here to keep qml from complaining

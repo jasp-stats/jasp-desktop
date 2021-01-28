@@ -366,7 +366,6 @@ void MainWindow::makeConnections()
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter							);
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
-	connect(_ribbonModel,			&RibbonModel::analysisTitleChanged,					_analyses,				&Analyses::analysisTitleChangedHandler						);
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
@@ -380,8 +379,12 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::loadQmlData,						this,					&MainWindow::loadQmlData,									Qt::UniqueConnection);
 
 	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
+	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_analyses,				&Analyses::prepareForLanguageChange							);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
-	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);	
+	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::pauseEngines,						_engineSync,			&EngineSync::pauseEngines									);
+	connect(_languageModel,			&LanguageModel::stopEngines,						_engineSync,			&EngineSync::stopEngines									);
+	connect(_languageModel,			&LanguageModel::resumeEngines,						_engineSync,			&EngineSync::resumeEngines,									Qt::QueuedConnection);
 
 	connect(_qml,					&QQmlApplicationEngine::warnings,					this,					&MainWindow::printQmlWarnings								);
 
@@ -505,6 +508,9 @@ void MainWindow::loadQML()
 		{ 	"jaspDescriptives", "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },
 		{ 	"jaspAudit", "jaspBain", "jaspDistributions" , "jaspEquivalenceTTests", "jaspJags", "jaspLearnBayes", "jaspMachineLearning",
 			"jaspMetaAnalysis", "jaspNetwork", "jaspProcessControl", "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
+
+	_engineSync->loadAllActiveModules();
+	_dynamicModules->startUpCompleted();
 }
 
 QObject * MainWindow::loadQmlData(QString data, QUrl url)
@@ -1015,8 +1021,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if (resultXmlCompare::compareResults::theOne()->testMode())
 			{
 				//Make sure the engine gets enough time to load data
-				_engineSync->pause();
-				_engineSync->resume();
+				_engineSync->pauseEngines();
+				_engineSync->resumeEngines();
 
 				//Also give it like 3secs to have the ribbon load
 				QTimer::singleShot(3000, this, &MainWindow::startComparingResults);

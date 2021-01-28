@@ -117,7 +117,6 @@ void RibbonModel::addRibbonButtonModel(RibbonButton* model)
 	emit endInsertRows();
 
 	connect(model, &RibbonButton::iChanged,				this, &RibbonModel::ribbonButtonModelChanged);
-	connect(model, &RibbonButton::analysisTitleChanged, this, &RibbonModel::analysisTitleChanged	);
 }
 
 void RibbonModel::dynamicModuleReplaced(Modules::DynamicModule * oldModule, Modules::DynamicModule * module)

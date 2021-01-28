@@ -149,7 +149,7 @@ void EngineRepresentation::setAnalysisInProgress(Analysis* analysis)
 	_engineState		= engineState::analysis;
 }
 
-void EngineRepresentation::process()
+void EngineRepresentation::processReplies()
 {
 	if (_engineState == engineState::idle)
 	{
@@ -555,7 +555,7 @@ void EngineRepresentation::shutEngineDown()
 		
 		//Wait for the engine to get the message.
 		while(_analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME + 1 < Utils::currentSeconds())
-			process();
+			processReplies();
 		
 		if(!killed() && !stopped())
 			killEngine();
@@ -566,7 +566,7 @@ void EngineRepresentation::shutEngineDown()
 		stopEngine();
 		
 		while(!stopped() && stopTime + ENGINE_KILLTIME < Utils::currentSeconds())
-			process();
+			processReplies();
 		
 		if(!stopped())
 			killEngine();
@@ -600,6 +600,7 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 	sendString("");
 	setSlaveProcess(jaspEngineProcess);
 	cleanUpAfterClose();
+	loadAllActiveModules();
 
 	_engineState	 = engineState::initializing;
 }

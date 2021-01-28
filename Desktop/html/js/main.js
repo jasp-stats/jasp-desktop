@@ -70,7 +70,8 @@ $(document).ready(function () {
 	
 	window.setStatus = function(id, status) {
 		var analysis = analyses.getAnalysis(id);
-		if (analysis === undefined) return;
+		if (analysis === undefined) 
+			return;
 
 		analysis.toolbar.setStatus(status);
 		analysis.toolbar.render();
@@ -78,7 +79,8 @@ $(document).ready(function () {
 
 	window.changeTitle = function(id, title) {
 		var analysis = analyses.getAnalysis(id);
-		if (analysis === undefined) return;
+		if (analysis === undefined) 
+			return;
 
 		analysis.toolbar.setTitle(title);
 		analysis.toolbar.render();
@@ -86,7 +88,8 @@ $(document).ready(function () {
 
 	window.overwriteUserdata = function(id, userData) {
 		var analysis = analyses.getAnalysis(id);
-		if (analysis === undefined) return;
+		if (analysis === undefined) 
+			return;
 
 		analysis.overwriteUserData(userData)
 	}

@@ -30,7 +30,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 	  QObject(Analyses::analyses()),
 	  _options(new Options()),
 	  _id(id),
-	  _name(analysisEntry->title()),
+	  _name(analysisEntry->function()),
 	  _qml(analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
 	  _titleDefault(analysisEntry->title()),
 	  _title(title == "" ? _titleDefault : title),
@@ -102,6 +102,13 @@ bool Analysis::checkAnalysisEntry()
 			Modules::ModuleException("???", "No coded reference stored or _dynamicModule == nullptr...");
 
 		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
+		
+		bool updateTitleToDefault = _title == _titleDefault;
+		
+		_titleDefault = _moduleData->title();
+		
+		if(updateTitleToDefault)
+			setTitle(_titleDefault);
 
 		return true;
 	}
@@ -157,6 +164,8 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 		checkForRSources();
 
 	_wasUpgraded = false;
+	
+	
 }
 
 void Analysis::reload()
@@ -353,6 +362,8 @@ Json::Value Analysis::asJSON() const
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["version"]		= _version.asString();
 	analysisAsJson["results"]		= _results;
+	
+	
 
 	std::string status;
 
@@ -547,6 +558,8 @@ void Analysis::setHelpFile(QString helpFile)
 
 void Analysis::setTitleQ(QString title)
 {
+	//Log::log() << "void Analysis::setTitleQ('" << title << "')" << std::endl;
+	
 	std::string strippedTitle	= title.simplified().toStdString();
 
 	if(strippedTitle == "")

@@ -49,7 +49,7 @@ class Analysis : public QObject
 	Q_PROPERTY(bool		hasVolatileNotes	READ hasVolatileNotes	WRITE setHasVolatileNotes	NOTIFY hasVolatileNotesChanged	)
 	Q_PROPERTY(bool		optionsBound		READ optionsBound		WRITE setOptionsBound		NOTIFY optionsBoundChanged		)
 
-
+	friend class Analyses;
 
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
@@ -204,6 +204,7 @@ public slots:
 	void					emitDuplicationSignals();
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
 	void					setOptionsBound(bool optionsBound);
+
 
 protected:
 	void					abort();

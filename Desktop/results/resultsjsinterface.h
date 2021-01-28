@@ -24,6 +24,7 @@
 #include <QQmlWebChannel>
 #include <QAuthenticator>
 #include <QNetworkReply>
+#include <queue>
 
 #include "utilities/jsonutilities.h"
 #include "analysis/analysis.h"
@@ -46,7 +47,7 @@ public:
 	void analysisChanged(	Analysis *	analysis);
 	void overwriteUserdata(	Analysis *	analysis);
 	void showAnalysis(		int			id);
-	void setResultsMeta(	QString		str);
+	void setResultsMeta(	const QString &	str);
 	void showInstruction();
 	void exportPreviewHTML();
 	void exportHTML();
@@ -60,6 +61,7 @@ public:
 	Q_INVOKABLE void unselect();
 	Q_INVOKABLE void purgeClipboard();
 	Q_INVOKABLE void analysisEditImage(int id, QString options);
+	Q_INVOKABLE void runJavaScript(const QString & js);
 
 	//Callable from javascript through resultsJsInterfaceInterface...
 signals:
@@ -104,7 +106,8 @@ signals:
 	void resultsMetaChanged(	QString resultsMeta);
 	void allUserDataChanged(	QString userData);
 	void resultsPageUrlChanged(	QUrl	resultsPageUrl);
-	void runJavaScript(			QString js);
+	void runJavaScriptSignal(			QString js); //Do not call this directly here, use runJavaScript()
+	void runJavaScriptSignalQueued(		QString js); //Same same
 	void zoomChanged();
 	void resultsPageLoadedSignal();
 	void resultsLoadedChanged(bool resultsLoaded);
@@ -121,20 +124,22 @@ public slots:
 	void setZoomInWebEngine();
 	void setResultsLoaded(			bool			resultsLoaded);
 	void setScrollAtAll(			bool			scrollAtAll);
-
+	
 private:
 	void	setGlobalJsValues();
 	QString escapeJavascriptString(const QString &str);
-
+	void	dequeueJsQueue();
 
 private slots:
-	void menuHidding();
+	void menuHiding();
 
 private:
-	double			_webEngineZoom	= 1.0;
-	QString			_resultsPageUrl = "qrc:///html/index.html";
-	bool			_resultsLoaded	= false,
-					_scrollAtAll	= true;
+	double				_webEngineZoom	= 1.0;
+	QString				_resultsPageUrl = "qrc:///html/index.html";
+	bool				_resultsLoaded	= false,
+						_scrollAtAll	= true;
+	
+	std::queue<QString>	_delayedJs;
 
 	static ResultsJsInterface * _singleton;
 };

@@ -140,6 +140,7 @@ public:
 	void				setLoadingSucces(bool succes);
 	void				setInstallingSucces(bool succes);
 	void				setLoadingNeeded();
+	void				setReadyForUse();
 	void				setStatus(moduleStatus newStatus);
 
 	const AnalysisEntries & menu()		const	{ return _menuEntries; }

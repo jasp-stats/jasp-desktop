@@ -38,6 +38,7 @@
 #include <QApplication>
 #include "gui/preferencesmodel.h"
 #include <QThread>
+#include "log.h"
 
 ResultsJsInterface * ResultsJsInterface::_singleton = nullptr;
 
@@ -46,6 +47,8 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 	_singleton = this;
 
 	connect(this, &ResultsJsInterface::zoomChanged,					this, &ResultsJsInterface::setZoomInWebEngine);
+	connect(this, &ResultsJsInterface::runJavaScriptSignalQueued,	this, &ResultsJsInterface::runJavaScriptSignal, Qt::QueuedConnection);
+	
 
 	setZoom(Settings::value(Settings::UI_SCALE).toDouble());
 }
@@ -61,7 +64,7 @@ void ResultsJsInterface::setZoom(double zoom)
 
 void ResultsJsInterface::setZoomInWebEngine()
 {
-	emit runJavaScript("window.setZoom(" + QString::number(_webEngineZoom) + ")");
+	runJavaScript("window.setZoom(" + QString::number(_webEngineZoom) + ")");
 }
 
 void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
@@ -76,7 +79,7 @@ void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 	{
 		QString version = AboutModel::version();
 
-		emit runJavaScript("window.setAppVersion('" + version + "')");
+		runJavaScript("window.setAppVersion('" + version + "')");
 
 		setGlobalJsValues();
 		setFontFamily();
@@ -85,6 +88,8 @@ void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 		emit zoomChanged();
 
 		setThemeCss(Settings::value(Settings::THEME_NAME).toString());
+		
+		dequeueJsQueue();
 	}
 }
 
@@ -104,7 +109,7 @@ void ResultsJsInterface::purgeClipboard()
 
 void ResultsJsInterface::setExactPValuesHandler(bool exact)
 {
-	emit runJavaScript("window.globSet.pExact = " + QString(exact ? "true" : "false") + "; window.reRenderAnalyses();");
+	runJavaScript("window.globSet.pExact = " + QString(exact ? "true" : "false") + "; window.reRenderAnalyses();");
 }
 
 void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
@@ -112,7 +117,7 @@ void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
 	if (numDecimals == "")
 		numDecimals = "\"\"";
 	QString js = "window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();";
-	emit runJavaScript(js);
+	runJavaScript(js);
 }
 
 void ResultsJsInterface::setGlobalJsValues()
@@ -125,7 +130,7 @@ void ResultsJsInterface::setGlobalJsValues()
 	QString js = "window.globSet.pExact = " + exactPValueString;
 	js += "; window.globSet.decimals = " + (numDecimals.isEmpty() ? "\"\"" : numDecimals);
 	js += "; window.globSet.tempFolder = \"" + tempFolder + "/\"";
-	emit runJavaScript(js);
+	runJavaScript(js);
 }
 
 void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
@@ -140,7 +145,7 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 	file.close();
 
 	QString eval = QString("window.imageSaved({ id: %1, fullPath: '%2'});").arg(id).arg(fullpath);
-	emit runJavaScript(eval);
+	runJavaScript(eval);
 }
 
 void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
@@ -149,19 +154,19 @@ void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
 	QString	results = tq(imgJson.toStyledString());
 	results = escapeJavascriptString(results);
 	results = "window.refreshEditedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
-	emit runJavaScript(results);
+	runJavaScript(results);
 
 	return;
 }
 
 void ResultsJsInterface::cancelImageEdit(int id)
 {
-	emit runJavaScript("window.cancelImageEdit(" + QString::number(id) + ");");
+	runJavaScript("window.cancelImageEdit(" + QString::number(id) + ");");
 }
 
-void ResultsJsInterface::menuHidding()
+void ResultsJsInterface::menuHiding()
 {
-	emit runJavaScript("window.analysisMenuHidden();");
+	runJavaScript("window.analysisMenuHidden();");
 }
 
 void ResultsJsInterface::getImageInBase64(int id, const QString &path)
@@ -173,7 +178,7 @@ void ResultsJsInterface::getImageInBase64(int id, const QString &path)
 	QString result = QString(image.toBase64());
 
 	QString eval = QString("window.convertToBase64Done({ id: %1, result: '%2'});").arg(id).arg(result);
-	emit runJavaScript(eval);
+	runJavaScript(eval);
 
 }
 
@@ -235,15 +240,17 @@ void ResultsJsInterface::setStatus(Analysis *analysis)
 	int id = analysis->id();
 	QString status = analysis->statusQ();
 
-	emit runJavaScript("window.setStatus(" + QString::number(id) + ", '" + status + "')");
+	runJavaScript("window.setStatus(" + QString::number(id) + ", '" + status + "')");
 }
 
 void ResultsJsInterface::changeTitle(Analysis *analysis)
 {
     int id = analysis->id();
     QString title = analysis->titleQ();
+	
+	Log::log() << " void ResultsJsInterface::changeTitle(Analysis *analysis)" << std::endl;
 
-    emit runJavaScript("window.changeTitle(" + QString::number(id) + ", '" + escapeJavascriptString(title) + "')");
+    runJavaScript("window.changeTitle(" + QString::number(id) + ", '" + escapeJavascriptString(title) + "')");
 }
 
 void ResultsJsInterface::overwriteUserdata(Analysis *analysis)
@@ -251,27 +258,27 @@ void ResultsJsInterface::overwriteUserdata(Analysis *analysis)
 	size_t id = analysis->id();
 	QString userData = tq(analysis->userData().toStyledString());
 
-	emit runJavaScript("window.overwriteUserdata(" + QString::number(id) + ", JSON.parse('" + escapeJavascriptString(userData) + "'))");
+	runJavaScript("window.overwriteUserdata(" + QString::number(id) + ", JSON.parse('" + escapeJavascriptString(userData) + "'))");
 }
 
 void ResultsJsInterface::showAnalysis(int id)
 {
-	emit runJavaScript("window.select(" % QString::number(id) % ")");
+	runJavaScript("window.select(" % QString::number(id) % ")");
 }
 
 void ResultsJsInterface::exportSelected(const QString &filename)
 {
-	emit runJavaScript("window.exportHTML('" + filename + "');");
+	runJavaScript("window.exportHTML('" + filename + "');");
 }
 
 void ResultsJsInterface::analysisChanged(Analysis *analysis)
 {
-	emit runJavaScript("window.analysisChanged(JSON.parse('" + escapeJavascriptString(tq(analysis->asJSON().toStyledString())) + "'));");
+	runJavaScript("window.analysisChanged(JSON.parse('" + escapeJavascriptString(tq(analysis->asJSON().toStyledString())) + "'));");
 }
 
-void ResultsJsInterface::setResultsMeta(QString str)
+void ResultsJsInterface::setResultsMeta(const QString & str)
 {
-	emit runJavaScript("window.setResultsMeta(JSON.parse('" + escapeJavascriptString(str) + "'));");
+	runJavaScript("window.setResultsMeta(JSON.parse('" + escapeJavascriptString(str) + "'));");
 }
 
 void ResultsJsInterface::resetResults()
@@ -281,39 +288,39 @@ void ResultsJsInterface::resetResults()
 
 void ResultsJsInterface::unselect()
 {
-	emit runJavaScript("window.unselect()");
+	runJavaScript("window.unselect()");
 }
 
 void ResultsJsInterface::removeAnalysis(Analysis *analysis)
 {
-	emit runJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
+	runJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
 }
 
 void ResultsJsInterface::removeAnalyses()
 {
-	emit runJavaScript("window.removeAllAnalyses()");
+	runJavaScript("window.removeAllAnalyses()");
 }
 
 void ResultsJsInterface::moveAnalyses(quint64 fromId, quint64 toId)
 {
-	emit runJavaScript("window.moveAnalyses(" % QString::number(fromId) % "," % QString::number(toId) % ")");
+	runJavaScript("window.moveAnalyses(" % QString::number(fromId) % "," % QString::number(toId) % ")");
 }
 
 void ResultsJsInterface::showInstruction()
 {
-	emit runJavaScript("window.showInstructions()");
+	runJavaScript("window.showInstructions()");
 }
 
 void ResultsJsInterface::exportPreviewHTML()
 {
 	DataSetPackage::pkg()->setWaitingForReady();
-	emit runJavaScript("window.exportHTML('%PREVIEW%');");
+	runJavaScript("window.exportHTML('%PREVIEW%');");
 }
 
 void ResultsJsInterface::exportHTML()
 {
 	DataSetPackage::pkg()->setWaitingForReady();
-	emit runJavaScript("window.exportHTML('%EXPORT%');");
+	runJavaScript("window.exportHTML('%EXPORT%');");
 }
 
 QString ResultsJsInterface::escapeJavascriptString(const QString &str)
@@ -398,5 +405,23 @@ void ResultsJsInterface::setFontFamily()
 	{
 		QString font = PreferencesModel::prefs()->resultFont(true);
 		runJavaScript("window.setFontFamily(\"" + escapeJavascriptString(font) + "\");");
+	}
+}
+
+void ResultsJsInterface::runJavaScript(const QString & js)
+{
+	if(_resultsLoaded)	emit runJavaScriptSignal(js);
+	else				_delayedJs.push(js);
+}
+
+void ResultsJsInterface::dequeueJsQueue()
+{
+	Log::log() << "ResultsJsInterface::dequeueJsQueue has " + std::to_string(_delayedJs.size()) + " waiting Js-scripts." << std::endl;
+	
+	while(_delayedJs.size() > 0)
+	{
+		Log::log() << "Running delayed script: '" <<_delayedJs.front() << "'." << std::endl;
+		emit runJavaScriptSignalQueued(_delayedJs.front());
+		_delayedJs.pop();
 	}
 }

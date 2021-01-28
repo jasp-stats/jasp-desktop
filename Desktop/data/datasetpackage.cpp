@@ -50,8 +50,8 @@ void DataSetPackage::setEngineSync(EngineSync * engineSync)
 	_engineSync = engineSync;
 
 	//These signals should *ONLY* be called from a different thread than _engineSync!
-	connect(this,	&DataSetPackage::pauseEnginesSignal,	_engineSync,	&EngineSync::pause,		Qt::BlockingQueuedConnection);
-	connect(this,	&DataSetPackage::resumeEnginesSignal,	_engineSync,	&EngineSync::resume,	Qt::BlockingQueuedConnection);
+	connect(this,	&DataSetPackage::pauseEnginesSignal,	_engineSync,	&EngineSync::pauseEngines,		Qt::BlockingQueuedConnection);
+	connect(this,	&DataSetPackage::resumeEnginesSignal,	_engineSync,	&EngineSync::resumeEngines,	Qt::BlockingQueuedConnection);
 
 	reset();
 }
@@ -63,13 +63,13 @@ bool DataSetPackage::isThisTheSameThreadAsEngineSync()
 
 void DataSetPackage::pauseEngines()
 {
-	if(isThisTheSameThreadAsEngineSync())	_engineSync->pause();
+	if(isThisTheSameThreadAsEngineSync())	_engineSync->pauseEngines();
 	else									emit pauseEnginesSignal();
 }
 
 void DataSetPackage::resumeEngines()
 {
-	if(isThisTheSameThreadAsEngineSync())	_engineSync->resume();
+	if(isThisTheSameThreadAsEngineSync())	_engineSync->resumeEngines();
 	else									emit resumeEnginesSignal();
 
 	ColumnEncoder::setCurrentColumnNames(getColumnNames()); //Same place as in engine, should be fine right?
@@ -281,8 +281,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		{
 		case int(specialRoles::filter):				return labels[index.row()].filterAllows();
 		case int(specialRoles::value):				return tq(labels.getValueFromRow(index.row()));
-		case Qt::DisplayRole:
-		default:									return tq(labels.getLabelFromRow(index.row()));
+		case Qt::DisplayRole:						return tq(labels.getLabelFromRow(index.row()));
+		default:									return QVariant();
 		}
 	}
 	}
