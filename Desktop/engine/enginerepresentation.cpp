@@ -600,6 +600,7 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 	sendString("");
 	setSlaveProcess(jaspEngineProcess);
 	cleanUpAfterClose();
+	loadAllActiveModules();
 
 	_engineState	 = engineState::initializing;
 }

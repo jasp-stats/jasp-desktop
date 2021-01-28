@@ -109,6 +109,7 @@ public slots:
 	void setRunsRCmd(		bool runsRCmd);
 
 signals:
+	void loadAllActiveModules();
 	void engineTerminated();
 	void filterDone(															int requestID);
 	void processFilterErrorMsg(			const QString & error,					int requestId = -1);

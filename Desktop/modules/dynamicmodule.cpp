@@ -322,6 +322,14 @@ void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 	emit descriptionReloaded(this);
 }
 
+
+
+void DynamicModule::setReadyForUse()
+{
+	if(_status != moduleStatus::installNeeded)
+		setStatus(moduleStatus::readyForUse);
+}
+
 void DynamicModule::setLoadingNeeded()
 {
 	if(_status != moduleStatus::installNeeded)

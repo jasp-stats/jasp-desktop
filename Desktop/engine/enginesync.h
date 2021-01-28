@@ -57,13 +57,15 @@ public slots:
 	int			sendFilter(		const QString & generatedFilter,	const QString & filter);
 	void		sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion);
 	void		computeColumn(	const QString & columnName,			const QString & computeCode,	columnType columnType);
-	void		pause();
-	void		resume();
-	void		refreshAllPlots();
+	void		pauseEngines();
 	void		stopEngines();
+	void		resumeEngines();
+	void		restartEngines();
+	void		refreshAllPlots();
 	void		logCfgRequest();
 	void		logToFileChanged(bool) { logCfgRequest(); }
 	void		cleanUpAfterClose();
+	void		loadAllActiveModules();
 	void		filterDone(int requestID);
 	std::string	currentStateForDebug() const;
 	void		haveYouTriedTurningItOffAndOnAgain() { stopEngines(); restartEngines(); } // https://www.youtube.com/watch?v=DPqdyoTpyEs
@@ -119,7 +121,6 @@ private slots:
 	void	moduleLoadingSucceededHandler(	const QString & moduleName, int channelID);
 	void	moduleUnloadingFinishedHandler(	const QString & moduleName, int channelID);
 
-	void	restartEngines();
 	void	restartEngineAfterCrash(EngineRepresentation * engine);
 	void	restartKilledEngines();
 

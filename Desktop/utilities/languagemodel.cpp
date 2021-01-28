@@ -154,8 +154,15 @@ void LanguageModel::changeLanguage(int index)
 	//prepare for language change
 	emit aboutToChangeLanguage();								//asks all analyses to abort and to block refresh
 	ResultsJsInterface::singleton()->setResultsLoaded(false);	//So that javascript starts queueing any Js (such as title changed of an analysis) until the page is reloaded
-	emit pauseEngines();												//Hopefully avoids process being called while we are in the middle of changing the language
-	
+
+	//On linux it somehow ignores the newer settings, so instead of pausing we kill the engines... https://github.com/jasp-stats/jasp-test-release/issues/1046
+	//But I do not know if it necessary, because the modules-translations aren't working.
+#ifdef __gnu_linux__
+	emit stopEngines();
+#else
+	emit pauseEngines();										//Hopefully avoids process being called while we are in the middle of changing the language
+#endif
+
 	//do it
 	_qml->retranslate();
 	Settings::setValue(Settings::PREFERRED_LANGUAGE, cl);

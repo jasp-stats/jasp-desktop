@@ -75,6 +75,7 @@ signals:
 	void languageChanged();
 	void aboutToChangeLanguage();
 	void pauseEngines();
+	void stopEngines();
 	void resumeEngines();
 
 private:

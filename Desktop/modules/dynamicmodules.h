@@ -40,6 +40,7 @@ public:
 	static DynamicModules * dynMods()	{ return _singleton; }
 
 	void					initializeInstalledModules();
+	void					startUpCompleted()				{ _startingUp = false; }
 
 	bool					unpackAndInstallModule(		const	std::string & moduleZipFilename);
 	void					uninstallModule(			const	std::string & moduleName);
@@ -90,7 +91,7 @@ public:
 
 	void startWatchingDevelopersModule();
 
-	bool developersModuleInstallButtonEnabled() const { return _developersModuleInstallButtonEnabled; }
+	bool developersModuleInstallButtonEnabled() const { return _devModInstallButtonOn; }
 	bool dataLoaded()							const { return _dataLoaded;	}
 
 	void stopAndRestartEngines();
@@ -156,16 +157,17 @@ private:
 															_modulesWaitingForDependency;
 	std::map<std::string, Json::Value>						_modulesToBeUnloaded;
 	boost::filesystem::path									_modulesInstallDirectory;
-	QString													_currentInstallMsg = "",
-															_currentInstallName = "";
-	bool													_currentInstallDone = false;
+	QString													_currentInstallMsg			= "",
+															_currentInstallName			= "";
+	bool													_currentInstallDone			= false,
+															_devModInstallButtonOn		= true,
+															_dataLoaded					= false,
+															_startingUp					= true;
 	QDir													_devModSourceDirectory;
 	QFileSystemWatcher									*	_devModDescriptionWatcher	= nullptr,
 														*	_devModRWatcher				= nullptr,
 														*	_devModHelpWatcher			= nullptr;
 	Modules::DynamicModule								*	_devModule					= nullptr;
-	bool													_developersModuleInstallButtonEnabled = true,
-															_dataLoaded = false;
 };
 
 #endif // DYNAMICMODULES_H

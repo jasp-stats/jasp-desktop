@@ -77,13 +77,17 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled
 
 	Modules::DynamicModule	*newMod		= new Modules::DynamicModule(QString::fromStdString(moduleDir), this, bundled, isCommon);
 
-	_commonModuleNames.insert(newMod->name());
+	if(isCommon)
+		_commonModuleNames.insert(newMod->name());
 
 	if(!initializeModule(newMod))
 		return false;
 
 	if(isCommon)
-		newMod->setLoadingNeeded();
+	{
+		if(_startingUp)	newMod->setReadyForUse();  //To make sure "engineSync->loadAllActiveModules()" loads it.
+		else			newMod->setLoadingNeeded();
+	}
 
 	return true;
 }
@@ -166,7 +170,9 @@ std::string DynamicModules::loadModule(const std::string & moduleName)
 
 
 		Modules::DynamicModule	*loadMe	= _modules[moduleName];
-		loadMe->setLoadingNeeded();
+
+		if(_startingUp)	loadMe->setReadyForUse(); //So that engineSync->loadAllActiveModules will load this module
+		else			loadMe->setLoadingNeeded();
 
 		return moduleName;
 	}
@@ -815,11 +821,11 @@ std::wstring DynamicModules::moduleDirectoryW(const std::string & moduleName)	co
 
 void DynamicModules::setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled)
 {
-	if (_developersModuleInstallButtonEnabled == developersModuleInstallButtonEnabled)
+	if (_devModInstallButtonOn == developersModuleInstallButtonEnabled)
 		return;
 
-	_developersModuleInstallButtonEnabled = developersModuleInstallButtonEnabled;
-	emit developersModuleInstallButtonEnabledChanged(_developersModuleInstallButtonEnabled);
+	_devModInstallButtonOn = developersModuleInstallButtonEnabled;
+	emit developersModuleInstallButtonEnabledChanged(_devModInstallButtonOn);
 }
 
 QString DynamicModules::getDescriptionFormattedFromArchive(QString archiveFilePath)
