@@ -20,19 +20,9 @@
 #define TEXTINPUTBASE_H
 
 #include "analysis/jaspcontrol.h"
-#include "analysis/options/boundcontrol.h"
-#include "analysis/options/optioninteger.h"
-#include "analysis/options/optionnumber.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optioncomputedcolumn.h"
-#include "analysis/options/optionintegerarray.h"
-#include "analysis/options/optiondoublearray.h"
-#include "analysis/options/optionterm.h"
-#include <QObject>
-#include "enumutilities.h"
+#include "analysis/boundcontrolbase.h"
 
-
-class TextInputBase : public JASPControl, public BoundControl
+class TextInputBase : public JASPControl, public BoundControlBase
 {
 	Q_OBJECT
 
@@ -43,11 +33,9 @@ public:
 
 	TextInputBase(QQuickItem* parent = nullptr);
 
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
-	bool		isJsonValid(const Json::Value& optionValue) override;
-	Option*		boundTo()									override { return _option; }
+	bool		isJsonValid(const Json::Value& value)		override;
+	Json::Value createJson()								override;
+	void		bindTo(const Json::Value& value)			override;
 	void		setUp()										override;
 	void		rScriptDoneHandler(const QString& result)	override;
 
@@ -67,23 +55,15 @@ private slots:
 	void		resetValue();
 
 private:
-	void		_setOptionValue(Option* option, QString& text);
+	Json::Value	_getJsonValue(QString& text);
 	bool		_formulaResultInBounds(double result);
 
-	QString		_getPercentValue();
-	QString		_getIntegerArrayValue();
-	QString		_getDoubleArrayValue();
+	QString		_getPercentValue(double val);
+	QString		_getIntegerArrayValue(const std::vector<int>& intValues);
+	QString		_getDoubleArrayValue(const std::vector<double>& dblValues);
 
-	TextInputType			  _inputType;
-	OptionInteger			* _integer			= nullptr;
-	OptionIntegerArray		* _integerArray		= nullptr;
-	OptionDoubleArray		* _doubleArray		= nullptr;
-	OptionNumber			* _number			= nullptr;
-	OptionString			* _string			= nullptr;
-	OptionString			* _formula			= nullptr;
-	OptionComputedColumn	* _computedColumn	= nullptr;
-	Option					* _option			= nullptr;
-	QString					  _value;
+	TextInputType			_inputType;
+	QString					_value;
 
 	bool					_parseDefaultValue	= true;
 	QString					_defaultValue		= "";

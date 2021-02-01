@@ -22,46 +22,47 @@
 #include "jasplistcontrol.h"
 #include <QVariant>
 #include <QList>
-#include "analysis/jaspcontrol.h"
-#include "listmodeldraggable.h"
-#include "analysis/options/boundcontrol.h"
 
+class ListModelDraggable;
+class CheckBoxBase;
 
 class VariablesListBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( ListViewType	listViewType			READ listViewType			WRITE setListViewType			NOTIFY listViewTypeChanged			)
-	Q_PROPERTY( int				columns					READ columns				WRITE setColumns				NOTIFY columnsChanged				)
-	Q_PROPERTY( QStringList		allowedColumns			READ allowedColumns			WRITE setAllowedColumns			NOTIFY allowedColumnsChanged		)
-	Q_PROPERTY( QStringList		suggestedColumns		READ suggestedColumns		WRITE setSuggestedColumns		NOTIFY suggestedColumnsChanged		)
-	Q_PROPERTY(	QStringList		suggestedColumnsIcons	READ suggestedColumnsIcons									NOTIFY suggestedColumnsIconsChanged	)
-	Q_PROPERTY( QStringList		columnsTypes			READ columnsTypes											NOTIFY columnsTypesChanged			)
-	Q_PROPERTY( QStringList		dropKeys				READ dropKeys				WRITE setDropKeys				NOTIFY dropKeysChanged				)
+	Q_PROPERTY( ListViewType	listViewType					READ listViewType					WRITE setListViewType					NOTIFY listViewTypeChanged					)
+	Q_PROPERTY( int				columns							READ columns						WRITE setColumns						NOTIFY columnsChanged						)
+	Q_PROPERTY( QStringList		allowedColumns					READ allowedColumns					WRITE setAllowedColumns					NOTIFY allowedColumnsChanged				)
+	Q_PROPERTY( QStringList		suggestedColumns				READ suggestedColumns				WRITE setSuggestedColumns				NOTIFY suggestedColumnsChanged				)
+	Q_PROPERTY(	QStringList		suggestedColumnsIcons			READ suggestedColumnsIcons													NOTIFY suggestedColumnsIconsChanged			)
+	Q_PROPERTY( QStringList		columnsTypes					READ columnsTypes															NOTIFY columnsTypesChanged					)
+	Q_PROPERTY( QStringList		dropKeys						READ dropKeys						WRITE setDropKeys						NOTIFY dropKeysChanged						)
+	Q_PROPERTY( QString			interactionHighOrderCheckBox	READ interactionHighOrderCheckBox	WRITE setInteractionHighOrderCheckBox	NOTIFY interactionHighOrderCheckBoxChanged	)
 
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
 	
 	void						setUp()										override;
-	ListModel*					model()								const	override	{ return _draggableModel;							}
+	ListModel*					model()								const	override;
 	ListModelDraggable*			draggableModel()					const				{ return _draggableModel;							}
 	void						setUpModel()								override;
-	void						bindTo(Option *option)						override	{ _boundControl->bindTo(option);					}
-	void						unbind()									override	{ _boundControl->unbind();							}
-	Option*						createOption()								override	{ return _boundControl->createOption();				}
-	Option*						boundTo()									override	{ return _boundControl->boundTo();					}
-	bool						isOptionValid(Option* option)				override	{ return _boundControl->isOptionValid(option);		}
+	void						bindTo(const Json::Value &value)			override	{ _boundControl->bindTo(value);						}
+	const Json::Value&			boundValue()								override	{ return _boundControl->boundValue();				}
 	bool						isJsonValid(const Json::Value& optionValue) override	{ return _boundControl->isJsonValid(optionValue);	}
+	void						updateOption()								override	{ return _boundControl->updateOption();				}
+	Json::Value					createJson()								override	{ return _boundControl->createJson();				}
+	void						setBoundValue(const Json::Value& value, bool emitChange = true) override	{ return _boundControl->setBoundValue(value, emitChange);	}
 
 	ListViewType				listViewType()						const				{ return _listViewType;								}
-	BoundControl*				boundControl()											{ return _boundControl;								}
+	BoundControl*				boundControl()								override	{ return _boundControl;								}
 	int							columns()							const				{ return _columns;									}
 	const QStringList&			allowedColumns()					const				{ return _allowedColumns;							}
 	const QStringList&			suggestedColumns()					const				{ return _suggestedColumns;							}
 	const QStringList&			suggestedColumnsIcons()				const				{ return _suggestedColumnsIcons;					}
 	const QStringList&			columnsTypes()						const				{ return _columnsTypes;								}
 	const QStringList&			dropKeys()							const				{ return _dropKeys;									}
-
+	const QString&				interactionHighOrderCheckBox()		const				{ return _interactionHighOrderCheckBox;				}
+	bool						addRowControl(const QString& key, JASPControl* control) override;
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault);
 
 signals:
@@ -72,15 +73,17 @@ signals:
 	void suggestedColumnsIconsChanged();
 	void columnsTypesChanged();
 	void dropKeysChanged();
+	void interactionHighOrderCheckBoxChanged();
 
 protected:
-	GENERIC_SET_FUNCTION(ListViewType,			_listViewType,			listViewTypeChanged,			ListViewType	)
-	GENERIC_SET_FUNCTION(Columns,				_columns,				columnsChanged,					int				)
-	GENERIC_SET_FUNCTION(AllowedColumns,		_allowedColumns,		allowedColumnsChanged,			QStringList		)
-	GENERIC_SET_FUNCTION(SuggestedColumns,		_suggestedColumns,		suggestedColumnsChanged,		QStringList		)
-	GENERIC_SET_FUNCTION(SuggestedColumnsIcons,	_suggestedColumnsIcons,	suggestedColumnsIconsChanged,	QStringList		)
-	GENERIC_SET_FUNCTION(ColumnsTypes,			_columnsTypes,			columnsTypesChanged,			QStringList		)
-	GENERIC_SET_FUNCTION(DropKeys,				_dropKeys,				dropKeysChanged,				QStringList		)
+	GENERIC_SET_FUNCTION(ListViewType,					_listViewType,					listViewTypeChanged,					ListViewType	)
+	GENERIC_SET_FUNCTION(Columns,						_columns,						columnsChanged,							int				)
+	GENERIC_SET_FUNCTION(AllowedColumns,				_allowedColumns,				allowedColumnsChanged,					QStringList		)
+	GENERIC_SET_FUNCTION(SuggestedColumns,				_suggestedColumns,				suggestedColumnsChanged,				QStringList		)
+	GENERIC_SET_FUNCTION(SuggestedColumnsIcons,			_suggestedColumnsIcons,			suggestedColumnsIconsChanged,			QStringList		)
+	GENERIC_SET_FUNCTION(ColumnsTypes,					_columnsTypes,					columnsTypesChanged,					QStringList		)
+	GENERIC_SET_FUNCTION(DropKeys,						_dropKeys,						dropKeysChanged,						QStringList		)
+	GENERIC_SET_FUNCTION(InteractionHighOrderCheckBox,	_interactionHighOrderCheckBox,	interactionHighOrderCheckBoxChanged,	QString			)
 
 	ListModel*					getRelatedModel();
 
@@ -93,7 +96,8 @@ protected slots:
 	void moveItemsDelayedHandler();
 	void itemDoubleClickedHandler(int index);
 	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex, int assignOption);
-	
+	void interactionHighOrderHandler(JASPControl* checkBoxControl);
+
 private:
 	int							_getAllowedColumnsTypes();
 	void						_setAllowedVariables();
@@ -110,6 +114,8 @@ private:
 								_suggestedColumnsIcons,
 								_columnsTypes,
 								_dropKeys;
+	QString						_interactionHighOrderCheckBox;
+	
 };
 
 #endif // VARIABLESLISTBASE_H

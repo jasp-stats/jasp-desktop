@@ -139,3 +139,13 @@ bool Term::replaceVariableName(const std::string & oldName, const std::string & 
 
 	return changed;
 }
+
+Term Term::readTerm(std::string str)
+{
+	return readTerm(tq(str));
+}
+
+Term Term::readTerm(QString str)
+{
+	return Term(str.split(separator));
+}

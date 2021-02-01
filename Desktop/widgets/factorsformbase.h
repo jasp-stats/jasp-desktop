@@ -20,12 +20,11 @@
 #define FACTORSFORMBASE_H
 
 #include "jasplistcontrol.h"
-#include "analysis/options/boundcontrol.h"
-#include "analysis/options/optionstable.h"
+#include "analysis/boundcontrolbase.h"
 #include "listmodelfactorsform.h"
 
 
-class FactorsFormBase :  public JASPListControl, public BoundControl
+class FactorsFormBase :  public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
 
@@ -33,13 +32,11 @@ class FactorsFormBase :  public JASPListControl, public BoundControl
 public:
 	FactorsFormBase(QQuickItem* parent = nullptr);
 
-	ListModel*	model()								const	override { return _factorsModel;	}
-	void		setUpModel()								override;
-	Option*		boundTo()									override { return _boundTo;			}
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
-	bool		isJsonValid(const Json::Value& optionValue) override;
+	bool			isJsonValid(const Json::Value& optionValue)	override;
+	Json::Value		createJson()								override;
+	void			bindTo(const Json::Value& value)			override;
+	ListModel*		model()								const	override { return _factorsModel; }
+	void			setUpModel()								override;
 
 	Q_INVOKABLE	void	addFactor()								{ _factorsModel->addFactor();						}
 	Q_INVOKABLE void	removeFactor()							{ _factorsModel->removeFactor();					}
@@ -48,11 +45,10 @@ public:
 
 
 protected slots:
-	void termsChangedHandler() override;
+	void			termsChangedHandler() override;
 	
 private:
 	ListModelFactorsForm*	_factorsModel				= nullptr;
-	OptionsTable*			_boundTo					= nullptr;
 	QString					_availableVariablesListName;
 	JASPControl*			_availableVariablesListItem	= nullptr;
 	int						_initNumberFactors			= 1;

@@ -1,7 +1,4 @@
 #include "interactionmodel.h"
-#include "analysis/options/options.h"
-#include "analysis/options/optionterm.h"
-#include "analysis/options/optionboolean.h"
 
 void InteractionModel::addFixedFactors(const Terms &terms, bool combineWithExistingTerms)
 {

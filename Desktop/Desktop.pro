@@ -274,27 +274,8 @@ INSTALLS += Resources
 HEADERS += \
     analysis/analysisform.h \
     analysis/knownissues.h \
-    analysis/options/option.h \
-    analysis/options/optionboolean.h \
-    analysis/options/optioncomputedcolumn.h \
-    analysis/options/optiondoublearray.h \
-    analysis/options/optionencodablestring.h \
-    analysis/options/optioni.h \
-    analysis/options/optioninteger.h \
-    analysis/options/optionintegerarray.h \
-    analysis/options/optionlist.h \
-    analysis/options/optionnumber.h \
-    analysis/options/options.h \
-    analysis/options/optionstable.h \
-    analysis/options/optionstring.h \
-    analysis/options/optionterm.h \
-    analysis/options/optionterms.h \
-    analysis/options/optionvariable.h \
-    analysis/options/optionvariablei.h \
-    analysis/options/optionvariables.h \
-    analysis/options/optionvariablesgroups.h \
-    analysis/options/term.h \
-    analysis/options/terms.h \
+	analysis/term.h \
+	analysis/terms.h \
     analysis/analyses.h \
     analysis/analysis.h \
     data/datasettableproxy.h \
@@ -333,7 +314,7 @@ HEADERS += \
     data/datasetloader.h \
     data/datasetpackage.h \
     data/fileevent.h \
-    analysis/options/variableinfo.h \
+	analysis/variableinfo.h \
     engine/enginerepresentation.h \
     engine/enginesync.h \
     engine/rscriptstore.h \
@@ -392,7 +373,6 @@ HEADERS += \
     widgets/filemenu/computerfilesystem.h \
     widgets/filemenu/filesystementry.h \
     widgets/listmodeljagsdatainput.h \
-    widgets/listmodeltableviewsimple.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
     mainwindow.h \
@@ -462,7 +442,6 @@ HEADERS += \
     widgets/factorsformbase.h \
     widgets/inputlistbase.h \
     widgets/sliderbase.h \
-    analysis/options/boundcontrol.h \
     widgets/expanderbuttonbase.h \
     widgets/variableslistbase.h \
     widgets/boundcontrolmeasurescells.h \
@@ -479,30 +458,18 @@ HEADERS += \
     widgets/jasplistcontrol.h \
     widgets/radiobuttonbase.h \
     widgets/repeatedmeasuresfactorslistbase.h \
-    widgets/sourceitem.h
+    widgets/sourceitem.h \
+    analysis/boundcontrol.h \
+    analysis/boundcontrolbase.h \
+    widgets/boundcontroltableview.h \
+    widgets/boundcontrolcontraststableview.h \
+    widgets/boundcontrolfilteredtableview.h
 
 SOURCES += \
     analysis/analysisform.cpp \
     analysis/knownissues.cpp \
-    analysis/options/option.cpp \
-    analysis/options/optionboolean.cpp \
-    analysis/options/optioncomputedcolumn.cpp \
-    analysis/options/optiondoublearray.cpp \
-    analysis/options/optionencodablestring.cpp \
-    analysis/options/optioninteger.cpp \
-    analysis/options/optionintegerarray.cpp \
-    analysis/options/optionlist.cpp \
-    analysis/options/optionnumber.cpp \
-    analysis/options/options.cpp \
-    analysis/options/optionstable.cpp \
-    analysis/options/optionstring.cpp \
-    analysis/options/optionterm.cpp \
-    analysis/options/optionterms.cpp \
-    analysis/options/optionvariable.cpp \
-    analysis/options/optionvariables.cpp \
-    analysis/options/optionvariablesgroups.cpp \
-    analysis/options/term.cpp \
-    analysis/options/terms.cpp \
+	analysis/term.cpp \
+	analysis/terms.cpp \
     analysis/analyses.cpp \
     analysis/analysis.cpp \
     data/datasettableproxy.cpp \
@@ -594,7 +561,6 @@ SOURCES += \
     widgets/filemenu/datalibrarylistmodel.cpp \
     widgets/filemenu/computerfilesystem.cpp \
     widgets/listmodeljagsdatainput.cpp \
-    widgets/listmodeltableviewsimple.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
     main.cpp \
@@ -679,7 +645,11 @@ SOURCES += \
     widgets/jasplistcontrol.cpp \
     widgets/radiobuttonbase.cpp \
     widgets/repeatedmeasuresfactorslistbase.cpp \
-    widgets/sourceitem.cpp
+    widgets/sourceitem.cpp \
+    analysis/boundcontrolbase.cpp \
+    widgets/boundcontroltableview.cpp \
+    widgets/boundcontrolcontraststableview.cpp \
+    widgets/boundcontrolfilteredtableview.cpp
 
 RESOURCES += \
     html/html.qrc \

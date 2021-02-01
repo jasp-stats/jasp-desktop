@@ -56,7 +56,6 @@ VariablesListBase
 	property bool	setHeightInForm					: false
 	property bool	addInteractionsByDefault		: true
 	property bool	interactionContainLowerTerms	: true
-	property string	interactionHighOrderCheckBox
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
 	property bool	allowAnalysisOwnComputedColumns	: true
 	property bool	allowDuplicatesInMultipleColumns: false // This property is used in the constructor and is not updatable afterwards.

@@ -20,6 +20,7 @@
 #define JASPLISTCONTROL_H
 
 #include "../analysis/jaspcontrol.h"
+#include "../analysis/boundcontrol.h"
 #include "common.h"
 #include <QObject>
 #include <QVector>
@@ -55,38 +56,37 @@ public:
 
 	JASPListControl(QQuickItem* parent);
 	
-	virtual ListModel		*	model()			const	= 0;
+	virtual ListModel		*	model()						const	= 0;
 	virtual void				setUpModel();
-			void				setUp()			override;
-			void				cleanUp()		override;
+			void				setUp()						override;
+			void				cleanUp()					override;
 	
-			int					variableTypesAllowed()		const	{ return _variableTypesAllowed; }
+			int					variableTypesAllowed()		const			{ return _variableTypesAllowed; }
 
-	const QVector<SourceItem*>& sourceItems()				const	{ return _sourceItems; }
-	void						applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
+	const QVector<SourceItem*>& sourceItems()				const			{ return _sourceItems; }
+			void				applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
 
-			bool				hasSource()					const	{ return _sourceItems.size() > 0; }
+			bool				hasSource()					const			{ return _sourceItems.size() > 0; }
 
-			JASPControl		*	getRowControl(const QString& key, const QString& name)		const;
-			bool				addRowControl(const QString& key, JASPControl* control);
+			JASPControl		*	getRowControl(const QString& key, const QString& name)	const;
+	virtual	bool				addRowControl(const QString& key, JASPControl* control);
 			bool				hasRowComponent()			const;
 
-			void				addRowComponentsDefaultOptions(Options* optionTable);
-			const QString&		optionKey()					const	{ return _optionKey; }
+			const QString&		optionKey()					const			{ return _optionKey; }
 			JASPControl		*	getChildControl(QString key, QString name) override;
 
 	Q_INVOKABLE QString			getSourceType(QString name);
 
-			const QVariant&		source()					const	{ return _source;				}
-			const QVariant&		values()					const	{ return _values;				}
+			const QVariant&		source()					const			{ return _source;				}
+			const QVariant&		values()					const			{ return _values;				}
 			int					count();
-			bool				addEmptyValue()				const	{ return _addEmptyValue;		}
-			const QString&		placeholderText()			const	{ return _placeHolderText;		}
-			const QString&		labelRole()					const	{ return _labelRole;			}
-			const QString&		valueRole()					const	{ return _valueRole;			}
-			bool				containsVariables()			const	{ return _containsVariables;	}
-			bool				containsInteractions()		const	{ return _containsInteractions;	}
-
+			bool				addEmptyValue()				const			{ return _addEmptyValue;		}
+			const QString&		placeholderText()			const			{ return _placeHolderText;		}
+			const QString&		labelRole()					const			{ return _labelRole;			}
+			const QString&		valueRole()					const			{ return _valueRole;			}
+			bool				containsVariables()			const			{ return _containsVariables;	}
+			bool				containsInteractions()		const			{ return _containsInteractions;	}
+			bool				encodeValue()				const override	{ return containsVariables(); }
 
 signals:
 			void				modelChanged();
@@ -131,8 +131,6 @@ protected:
 							_labelRole				= "label",
 							_valueRole				= "value";
 
-	static const QString	_defaultKey;
-	
 private:
 	void									_setupSources();
 	Terms									_getCombinedTerms(SourceItem* sourceToCombine);

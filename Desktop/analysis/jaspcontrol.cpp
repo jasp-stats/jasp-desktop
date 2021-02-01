@@ -150,25 +150,6 @@ void JASPControl::setHasWarning(bool hasWarning)
 	}
 }
 
-void JASPControl::setRunOnChangeToChildren(bool change)
-{
-	if (_childControlsArea)
-		for (JASPControl* childControl : getChildJASPControls(_childControlsArea))
-			childControl->setRunOnChange(change);
-}
-
-void JASPControl::setRunOnChange(bool change)
-{
-	if (change != _runOnChange)
-	{
-		_runOnChange = change;
-
-		setRunOnChangeToChildren(change);
-
-		emit runOnChangeChanged();
-	}
-}
-
 void JASPControl::componentComplete()
 {
 	QQuickItem::componentComplete();
@@ -204,16 +185,12 @@ void JASPControl::componentComplete()
 
 		QVariant listViewVar = context->contextProperty("listView");
 		if (!listViewVar.isNull())
-			listView = dynamic_cast<JASPListControl*>(listViewVar.value<QObject*>());
+			listView = listViewVar.value<JASPListControl*>();
 		else
 		{
 			QVariant tableViewVar = context->contextProperty("tableView");
 			if (!tableViewVar.isNull())
-			{
-				JASPControl* tableViewControl = dynamic_cast<JASPControl*>(tableViewVar.value<QObject*>());
-				if (tableViewControl)
-					listView = dynamic_cast<JASPListControl*>(tableViewControl);
-			}
+				listView = tableViewVar.value<JASPListControl*>();
 		}
 
 		if (listView)
@@ -245,9 +222,8 @@ void JASPControl::componentComplete()
 	if (_debug)
 		setParentDebugToChildren(_debug);
 
-	// Also, set the runOnChange property to children items
-	if (!_runOnChange)
-		setRunOnChangeToChildren(_runOnChange);
+	if (_form)
+		connect(this, &JASPControl::boundValueChanged, _form, &AnalysisForm::boundValueChangedHandler);
 }
 
 void JASPControl::setCursorShape(int shape)
@@ -305,7 +281,13 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item)
 		else				result.append(getChildJASPControls(childItem));
 	}
 
-	return result;
+		return result;
+}
+
+BoundControl *JASPControl::boundControl()
+{
+	if (isBound())	return dynamic_cast<BoundControl*>(this);
+	return nullptr;
 }
 
 bool JASPControl::addDependency(JASPControl *item)
@@ -520,7 +502,6 @@ void JASPControl::parentListViewKeyChanged(const QString &oldName, const QString
 		_parentListViewKey = newName;
 }
 
-
 bool JASPControl::hasError() const
 {
 	if(_controlType != ControlType::Expander)	return _hasError;
@@ -576,6 +557,20 @@ QString JASPControl::humanFriendlyLabel() const
 
 	return label;
 
+}
+
+QVector<JASPControl::ParentKey> JASPControl::getParentKeys()
+{
+	QVector<JASPControl::ParentKey> parentKeys;
+	JASPListControl* parentControl =  qobject_cast<JASPListControl*>(parentListView());
+
+	while (parentControl)
+	{
+		parentKeys.prepend({parentControl->name().toStdString(), parentControl->optionKey().toStdString(), Term::readTerm(parentListViewKey()).scomponents()});
+		parentControl = qobject_cast<JASPListControl*>(parentControl->parentListView());
+	}
+
+	return parentKeys;
 }
 
 void JASPControl::runRScript(const QString &script, bool whiteListedVersion)

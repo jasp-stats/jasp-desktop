@@ -18,19 +18,15 @@
 
 #include "factorsformbase.h"
 #include "boundcontrolterms.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optionvariables.h"
 #include "analysis/analysisform.h"
-#include "analysis/jaspcontrol.h"
 #include "utilities/qutils.h"
 #include "variableslistbase.h"
-
 #include "log.h"
 
 using namespace std;
 
 FactorsFormBase::FactorsFormBase(QQuickItem *parent)
-	: JASPListControl(parent)
+	: JASPListControl(parent), BoundControlBase(this)
 {
 	_controlType			= ControlType::FactorsForm;
 	_useControlMouseArea	= false;
@@ -48,85 +44,75 @@ void FactorsFormBase::setUpModel()
 	_initNumberFactors = property("initNumberFactors").toInt();
 }
 
-void FactorsFormBase::bindTo(Option *option)
+void FactorsFormBase::bindTo(const Json::Value& value)
 {
-	_boundTo = dynamic_cast<OptionsTable*>(option);
-	
+	BoundControlBase::bindTo(value);
 	ListModelFactorsForm::FactorVec factors;
-	vector<Options*> allOptions = _boundTo->value();
-	
-	for (const Options* options : allOptions)
+
+	for (const Json::Value& factor : value)
 	{
-		OptionString *factorNameOption = static_cast<OptionString *>(options->get("name"));
-		OptionString *factorTitleOption = static_cast<OptionString *>(options->get("title"));
-		OptionVariables *factorLevelsOption = static_cast<OptionVariables *>(options->get("indicators"));
+		vector<string> indicators;
+		for (const Json::Value& indicator : factor["indicators"])
+			indicators.push_back(indicator.asString());
 		
-		factors.push_back(make_tuple(factorNameOption->value(), factorTitleOption->value(), factorLevelsOption->variables()));
+		factors.push_back(make_tuple(factor["name"].asString(), factor["title"].asString(), indicators));
 	}
 	
 	_factorsModel->initFactors(factors);
 }
 
-Option* FactorsFormBase::createOption()
+Json::Value FactorsFormBase::createJson()
 {
-	
-	Options* templote = new Options();
-	templote->add("name", new OptionString());
-	templote->add("title", new OptionString());
-	templote->add("indicators", new OptionVariables());
-	
-	OptionsTable* optionsTable = new OptionsTable(templote);
-	std::vector<Options*> allOptions;
-	
+	Json::Value result(Json::arrayValue);
+
 	for (int i = 0; i < _initNumberFactors; i++)
 	{
-		Options* options = new Options();
+		Json::Value row(Json::objectValue);
 		QString name("Factor");
 		name += QString::number(i+1);
 		QString title("Factor ");
 		title += QString::number(i+1);
-		options->add("name", new OptionString(name.toStdString()));
-		options->add("title", new OptionString(title.toStdString()));
-		OptionVariables* levels = new OptionVariables();
-		options->add("indicators", levels);
-		allOptions.push_back(options);
+		row["name"] = fq(name);
+		row["title"] = fq(title);
+		row["indicators"] = Json::Value(Json::arrayValue);
 	}
-	
-	optionsTable->connectOptions(allOptions);
-	
-	return optionsTable;
+		
+	return result;
 }
 
-bool FactorsFormBase::isOptionValid(Option *option)
+bool FactorsFormBase::isJsonValid(const Json::Value &value)
 {
-	return dynamic_cast<OptionsTable*>(option) != nullptr;
-}
+	bool valid = value.isArray();
+	if (valid)
+	{
+		for (const Json::Value& factor : value)
+		{
+			valid = factor.isArray() && factor["name"].isString() && factor["title"].isString() && factor["indicators"].isArray();
+			if (!valid) break;
+		}
+	}
 
-bool FactorsFormBase::isJsonValid(const Json::Value &optionValue)
-{
-	return optionValue.type() == Json::arrayValue;
+	return valid;
 }
 
 void FactorsFormBase::termsChangedHandler()
 {
 	const ListModelFactorsForm::FactorVec &factors = _factorsModel->getFactors();
-	vector<Options *> allOptions;
+	Json::Value boundValue(Json::arrayValue);
 	
 	for (const auto &factor : factors)
 	{
-		Options* options = new Options();
-		options->add("name", new OptionString(get<0>(factor)));
-		options->add("title", new OptionString(get<1>(factor)));
-		OptionVariables* levelVariables = new OptionVariables();
-		vector<string> levels;
+		Json::Value factorJson(Json::objectValue);
+		factorJson["name"] = get<0>(factor);
+		factorJson["title"] = get<1>(factor);
+		Json::Value indicators(Json::arrayValue);
 		for (const string &level : get<2>(factor))
-			levels.push_back(level);
-		levelVariables->setValue(levels);
-		options->add("indicators", levelVariables);
-		allOptions.push_back(options);
+			indicators.append(level);
+		factorJson["indicators"] = indicators;
+		boundValue.append(factorJson);
 	}
 	
-	_boundTo->setValue(allOptions);	
+	setBoundValue(boundValue);
 }
 
 void FactorsFormBase::factorAdded(int index, QVariant item)

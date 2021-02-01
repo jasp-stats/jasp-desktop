@@ -35,11 +35,9 @@ TableViewBase
 	shouldStealHover:	false
 
 	property string factorsSource	: ""
-	property alias	syncModels		: tableView.source
-	property string	modelType
 	property string	itemType		: "string"
 	property string filter			: "rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
-    property string colName			: modelType == "CustomContrasts" ? "" : "data"					//Used by ListModelFilteredDataEntry
+	property string colName			: modelType == JASP.CustomContrasts ? "" : "data"					//Used by ListModelFilteredDataEntry
 	property string	extraCol		: ""						//Used by ListModelFilteredDataEntry
 	property string	tableType
 	property alias	rowNumberWidth	: theView.rowNumberWidth
@@ -48,16 +46,9 @@ TableViewBase
 	property int	decimals		: 1
 	property int	colSelected		: -1
 	property int	rowSelected		: -1
-	property int	columnCount		: 0	//Readonly
-	property int	rowCount		: 0	//Readonly
-	property int	variableCount	: 0 //Readonly only used by MarginalMeansContrasts
 	property real	scaleFactor		: 1 // Only used by marginalMeansContrast
 	property string cornerText		: qsTr("Row #")
 	property bool	parseDefaultValue: true
-	property string defaultEmptyValue:	""
-
-	property int	initialColumnCount	: 0	//Only read on init
-	property int	initialRowCount		: 0	//Only read on init
 
 	//The size of the table *inside* the Flickable. + 2 for margins of flickable and scrollbars
 	readonly property int tableWidth:  theView.width  + 2 + (vertiScroller.visible ? jaspTheme.scrollbarBoxWidth : 0)

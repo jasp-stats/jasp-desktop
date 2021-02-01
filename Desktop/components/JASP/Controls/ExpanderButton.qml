@@ -41,7 +41,6 @@ FocusScope
 	readonly	property string iconsFolder				: jaspTheme.iconPath
 	readonly	property string	expanderButtonIcon		: "expander-arrow-up.png"
 				property alias	columns					: expanderArea.columns
-				property alias	runOnChange				: expanderButton.runOnChange
 	
 	states: [
 		State

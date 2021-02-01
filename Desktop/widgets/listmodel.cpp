@@ -17,11 +17,10 @@
 //
 
 #include "listmodel.h"
+#include "jasplistcontrol.h"
 #include "../analysis/analysisform.h"
 #include "boundcontrolterms.h"
 #include "rowcontrols.h"
-#include "../analysis/jaspcontrol.h"
-#include "jasplistcontrol.h"
 #include "sourceitem.h"
 #include <boost/bind.hpp>
 #include "log.h"
@@ -76,15 +75,15 @@ void ListModel::addControlError(const QString &error) const
 	_listView->addControlError(error);
 }
 
-void ListModel::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
+void ListModel::initTerms(const Terms &terms, const RowControlsValues& allValuesMap)
 {
-	_initTerms(terms, allOptionsMap, true);
+	_initTerms(terms, allValuesMap, true);
 }
 
-void ListModel::_initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap, bool setupControlConnections)
+void ListModel::_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool setupControlConnections)
 {
 	beginResetModel();
-	_rowControlsOptions = allOptionsMap;
+	_rowControlsValues = allValuesMap;
 	_setTerms(terms);
 	endResetModel();
 
@@ -105,10 +104,10 @@ void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QStrin
 		for (const Term& term : terms)
 		{
 			JASPControl* control = sourceModel->getRowControl(term.asQString(), controlName);
-			BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
-			if (control->isBound() && boundControl && !_rowControlsConnected.contains(boundControl))
+			BoundControl* boundControl = control->boundControl();
+			if (boundControl && !_rowControlsConnected.contains(boundControl))
 			{
-				boundControl->boundTo()->changed.connect(boost::bind(&ListModel::_sourceTermsChangedHandler, this, _1));
+				connect(control, &JASPControl::boundValueChanged, this, &ListModel::sourceTermsReset);
 				_rowControlsConnected.push_back(boundControl);
 			}
 		}
@@ -157,8 +156,8 @@ void ListModel::setUpRowControls()
 		const QString& key = term.asQString();
 		if (!_rowControlsMap.contains(key))
 		{
-			bool hasOptions = _rowControlsOptions.contains(key);
-			RowControls* rowControls = new RowControls(this, _rowComponent, _rowControlsOptions[key]);
+			bool hasOptions = _rowControlsValues.contains(key);
+			RowControls* rowControls = new RowControls(this, _rowComponent, _rowControlsValues[key]);
 			_rowControlsMap[key] = rowControls;
 			rowControls->init(row, term, !hasOptions);
 		}
@@ -185,12 +184,7 @@ JASPControl *ListModel::getRowControl(const QString &key, const QString &name) c
 
 bool ListModel::addRowControl(const QString &key, JASPControl *control)
 {
-	bool success = false;
-
-	if (_rowControlsMap.contains(key))
-		success = _rowControlsMap[key]->addJASPControl(control);
-
-	return success;
+	return _rowControlsMap.contains(key) ? _rowControlsMap[key]->addJASPControl(control) : false;
 }
 
 QStringList ListModel::termsTypes()
@@ -242,11 +236,6 @@ void ListModel::_addSelectedItemType(int _index)
 	QString type = data(index(_index, 0), ListModel::ColumnTypeRole).toString();
 	if (!type.isEmpty())
 		_selectedItemsTypes.insert(type);
-}
-
-void ListModel::_sourceTermsChangedHandler(Option *)
-{
-	sourceTermsReset();
 }
 
 void ListModel::selectItem(int _index, bool _select)
@@ -342,7 +331,7 @@ void ListModel::selectAllItems()
 
 void ListModel::sourceTermsReset()
 {
-	_initTerms(getSourceTerms(), RowControlsOptions(), false);	
+	_initTerms(getSourceTerms(), RowControlsValues(), false);
 }
 
 int ListModel::rowCount(const QModelIndex &) const

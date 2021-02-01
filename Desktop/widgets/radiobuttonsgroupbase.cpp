@@ -26,9 +26,9 @@
 using namespace std;
 
 RadioButtonsGroupBase::RadioButtonsGroupBase(QQuickItem* item)
-	: JASPControl(item)
+	: JASPControl(item), BoundControlBase(this)
 {
-	_controlType		= ControlType::RadioButtonGroup;
+	_controlType = ControlType::RadioButtonGroup;
 }
 
 void RadioButtonsGroupBase::setUp()
@@ -37,6 +37,8 @@ void RadioButtonsGroupBase::setUp()
 	QList<RadioButtonBase* > buttons;
 	_getRadioButtons(this, buttons);
 	QVariant buttonGroup = property("buttonGroup");
+
+	connect(this,	&RadioButtonsGroupBase::clicked, this,	&RadioButtonsGroupBase::clickedSlot);
 
 	for (RadioButtonBase* button: buttons)
 	{	
@@ -58,8 +60,6 @@ void RadioButtonsGroupBase::setUp()
 
 	if (!_checkedButton)
 		Log::log() << "No checked button found in radio buttons " << name() << std::endl;
-
-	QQuickItem::connect(this, SIGNAL(clicked(const QVariant &)), this, SLOT(radioButtonClickedHandler(const QVariant &)));
 }
 
 void RadioButtonsGroupBase::_getRadioButtons(QQuickItem* item, QList<RadioButtonBase *> &buttons) {
@@ -79,20 +79,14 @@ void RadioButtonsGroupBase::_getRadioButtons(QQuickItem* item, QList<RadioButton
 	}	
 }
 
-void RadioButtonsGroupBase::bindTo(Option *option)
+void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 {
-	_boundTo = dynamic_cast<OptionList *>(option);
+	BoundControlBase::bindTo(jsonValue);
 
-	if (_boundTo == nullptr)
-	{
-		Log::log()  << "could not bind to OptionList in BoundQuickRadioButtons" << std::endl;
-		return;
-	}
-
-	string value = _boundTo->value();
+	string value = jsonValue.asString();
 	if (!value.empty())
 	{
-		RadioButtonBase* button = _buttons[QString::fromStdString(value)];
+		RadioButtonBase* button = _buttons[tq(value)];
 		if (!button)
 		{
 			addControlError(tr("No radio button corresponding to name %1").arg(QString::fromStdString(value)));
@@ -104,32 +98,21 @@ void RadioButtonsGroupBase::bindTo(Option *option)
 			button->setProperty("checked", true);
 			_checkedButton = button;
 			setProperty("value", _checkedButton->name());
-
 		}
 	}
 }
 
-Option *RadioButtonsGroupBase::createOption()
+Json::Value RadioButtonsGroupBase::createJson()
 {
-	QString defaultValue = _checkedButton ? _checkedButton->name() : "";
-	std::vector<std::string> options;
-	for (QString value : _buttons.keys())
-		options.push_back(value.toStdString());
-	
-	return new OptionList(options, defaultValue.toStdString());
+	return _checkedButton ? fq(_checkedButton->name()) : "";
 }
 
-bool RadioButtonsGroupBase::isOptionValid(Option *option)
+bool RadioButtonsGroupBase::isJsonValid(const Json::Value &value)
 {
-	return dynamic_cast<OptionList*>(option) != nullptr;
+	return value.isString();
 }
 
-bool RadioButtonsGroupBase::isJsonValid(const Json::Value &optionValue)
-{
-	return optionValue.type() == Json::stringValue;
-}
-
-void RadioButtonsGroupBase::radioButtonClickedHandler(const QVariant& button)
+void RadioButtonsGroupBase::clickedSlot(const QVariant& button)
 {
 	QObject* objButton = button.value<QObject*>();
 	if (objButton)
@@ -144,12 +127,10 @@ void RadioButtonsGroupBase::radioButtonClickedHandler(const QVariant& button)
 			if (_checkedButton != foundButton)
 			{
 				if (_checkedButton)
-					_checkedButton->setProperty("checked",false);
+					_checkedButton->setProperty("checked", false);
 				_checkedButton = foundButton;
 				setProperty("value", _checkedButton->name());
-
-				if (_boundTo)
-					_boundTo->setValue(buttonName.toStdString());
+				setBoundValue(fq(buttonName));
 			}
 		}
 		else

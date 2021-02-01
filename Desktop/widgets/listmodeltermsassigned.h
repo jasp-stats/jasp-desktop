@@ -29,7 +29,7 @@ class ListModelTermsAssigned : public ListModelAssignedInterface
 public:
 	ListModelTermsAssigned(JASPListControl* listView, int maxRows = -1);
 	
-	void			initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())			override;
+	void			initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues())			override;
 	Terms			canAddTerms(const Terms& terms)																	const	override;
 	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault)	override;
 	void			removeTerm(int index);

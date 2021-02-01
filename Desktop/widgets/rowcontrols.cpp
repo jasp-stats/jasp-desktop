@@ -27,9 +27,9 @@
 
 RowControls::RowControls(ListModel* parent
 						 , QQmlComponent* component
-						 , const QMap<QString, Option*>& rowOptions
+						 , const QMap<QString, Json::Value>& rowValues
 						 , bool isDummy)
- : QObject(parent), _parentModel(parent), _rowComponent(component), _rowOptions(rowOptions), _isDummy(isDummy)
+ : QObject(parent), _parentModel(parent), _rowComponent(component), _rowValues(rowValues), _isDummy(isDummy)
 {
 }
 
@@ -90,14 +90,15 @@ bool RowControls::addJASPControl(JASPControl *control)
 
 		_rowControlsVarMap[control->name()] = QVariant::fromValue(control);
 		_rowJASPControlMap[control->name()] = control;
-		BoundControl* boundItem = dynamic_cast<BoundControl*>(control);
+		BoundControl* boundItem = control->boundControl();
 
-		if (control->isBound() && boundItem && !isDummy)
+		if (boundItem && !isDummy)
 		{
-			bool hasOption = _rowOptions.contains(control->name());
-			Option* option =  hasOption ? _rowOptions[control->name()] : boundItem->createOption();
+			bool hasOption = _rowValues.contains(control->name());
+			Json::Value option =  hasOption ? (_rowValues[control->name()]) : boundItem->createJson();
 
 			boundItem->bindTo(option);
+
 			if (!hasOption)
 			{
 				JASPListControl* listView = dynamic_cast<JASPListControl*>(control);

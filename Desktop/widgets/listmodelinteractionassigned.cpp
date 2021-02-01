@@ -20,7 +20,6 @@
 #include "utilities/qutils.h"
 #include "listmodeltermsavailable.h"
 #include "listmodeltermsassigned.h"
-#include "analysis/options/optionboolean.h"
 
 using namespace std;
 
@@ -32,10 +31,10 @@ ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* list
 	_addInteractionsByDefault	= addInteractionsByDefault;
 }
 
-void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
+void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap)
 {
 	_addTerms(terms, false);
-	ListModelAssignedInterface::initTerms(interactionTerms(), allOptionsMap);
+	ListModelAssignedInterface::initTerms(interactionTerms(), allValuesMap);
 }
 
 Terms ListModelInteractionAssigned::termsEx(const QString &what)

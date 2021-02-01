@@ -19,6 +19,7 @@
 #include "boundcontrolmeasurescells.h"
 #include "listmodelmeasurescellsassigned.h"
 #include "listmodelrepeatedmeasuresfactors.h"
+#include "jasplistcontrol.h"
 #include "../analysis/analysisform.h"
 #include "utilities/qutils.h"
 
@@ -27,15 +28,19 @@
 using namespace std;
 
 
-BoundControlMeasuresCells::BoundControlMeasuresCells(ListModelMeasuresCellsAssigned* model)
+BoundControlMeasuresCells::BoundControlMeasuresCells(ListModelMeasuresCellsAssigned* model) : BoundControlBase(model->listView())
 {
 	_measuresCellsModel = model;
 }
 
-void BoundControlMeasuresCells::bindTo(Option *option)
+void BoundControlMeasuresCells::bindTo(const Json::Value &value)
 {
-	_boundTo = dynamic_cast<OptionVariables *>(option);
-	_measuresCellsModel->initLevels(getLevels(), _boundTo->value(), true);
+	BoundControlBase::bindTo(value);
+	Terms variables;
+
+	for (const Json::Value& variable : value)
+		variables.add(variable.asString());
+	_measuresCellsModel->initLevels(getLevels(), variables, true);
 }
 
 Terms BoundControlMeasuresCells::getLevels()
@@ -47,17 +52,15 @@ Terms BoundControlMeasuresCells::getLevels()
 	return levels;
 }
 
-Option* BoundControlMeasuresCells::createOption()
+Json::Value BoundControlMeasuresCells::createJson()
 {
-	OptionVariables *result = new OptionVariables();
-	result->setValue(vector<string>(getLevels().size(), ""));
+	Json::Value result(Json::arrayValue);
+	size_t nbLevels = getLevels().size();
+
+	for (int i = 0; i < nbLevels; i++)
+		result.append("");
 	
 	return result;
-}
-
-bool BoundControlMeasuresCells::isOptionValid(Option *option)
-{
-	return dynamic_cast<OptionVariables*>(option) != nullptr;
 }
 
 bool BoundControlMeasuresCells::isJsonValid(const Json::Value &optionValue)
@@ -72,8 +75,11 @@ void BoundControlMeasuresCells::addFactorModel(ListModelRepeatedMeasuresFactors 
 
 void BoundControlMeasuresCells::updateOption()
 {
+	Json::Value boundValue(Json::arrayValue);
 	const Terms& terms = _measuresCellsModel->terms();
 	
-	if (_boundTo)
-		_boundTo->setValue(terms.asVector());
+	for (const Term& term : terms)
+		boundValue.append(term.asString());
+
+	setBoundValue(boundValue);
 }

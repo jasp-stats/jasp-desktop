@@ -472,7 +472,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		analysis->setResults(results, status);
 		clearAnalysisInProgress();
 
-		if(analysis->columnsCreated().size() > 0)
+		if(analysis->computedColumns().size() > 0)
 			checkForComputedColumns(results);
 		break;
 

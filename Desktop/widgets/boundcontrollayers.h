@@ -19,25 +19,22 @@
 #ifndef BOUNDCONTROLLAYERS_H
 #define BOUNDCONTROLLAYERS_H
 
-#include "analysis/options/boundcontrol.h"
-#include "listmodellayersassigned.h"
-#include "analysis/options/optionstable.h"
+#include "analysis/boundcontrolbase.h"
 
-class BoundControlLayers : public BoundControl
+class ListModelLayersAssigned;
+
+class BoundControlLayers : public BoundControlBase
 {
 	
 public:
 	BoundControlLayers(ListModelLayersAssigned* model);
 	
-	Option*		boundTo()									override { return _boundTo; }
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
-	bool		isJsonValid(const Json::Value& optionValue) override;
-	void		updateOption()								override;
+	bool		isJsonValid(const Json::Value& optionValue)		override;
+	Json::Value	createJson()									override;
+	void		bindTo(const Json::Value &value)				override;
+	void		updateOption()									override;
 	
 private:
-	OptionsTable*				_boundTo		= nullptr;
 	ListModelLayersAssigned*	_layersModel	= nullptr;
 	
 };

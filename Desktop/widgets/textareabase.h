@@ -21,8 +21,7 @@
 #define TEXTAREABASE_H
 
 #include "jasplistcontrol.h"
-#include "analysis/options/boundcontrol.h"
-#include "analysis/options/optionstring.h"
+#include "analysis/boundcontrolbase.h"
 #include "listmodeltermsavailable.h"
 #include "boundcontroltextarea.h"
 
@@ -43,11 +42,13 @@ class TextAreaBase : public JASPListControl, public BoundControl
 public:
 	TextAreaBase(QQuickItem* parent = nullptr);
 
-	void						bindTo(Option *option)						override	{ _boundControl->bindTo(option);				}
-	Option*						createOption()								override	{ return _boundControl->createOption();			}
-	bool						isOptionValid(Option* option)				override	{ return _boundControl->isOptionValid(option);	}
-	bool						isJsonValid(const Json::Value& optionValue) override	{ return _boundControl->isJsonValid(optionValue); }
-	Option*						boundTo()									override	{ return _boundControl->boundTo();				}
+	void						bindTo(const Json::Value &value)			override	{ _boundControl->bindTo(value);						}
+	bool						isJsonValid(const Json::Value& optionValue) override	{ return _boundControl->isJsonValid(optionValue);	}
+	void						updateOption()								override	{ return _boundControl->updateOption();				}
+	const Json::Value&			boundValue()								override	{ return _boundControl->boundValue();				}
+	Json::Value					createJson()								override	{ return _boundControl->createJson();				}
+	void						setBoundValue(const Json::Value& value, bool emitChange = true) override	{ return _boundControl->setBoundValue(value, emitChange);	}
+
 	ListModel*					model()								const	override	{ return _model; }
 	ListModelTermsAvailable*	availableModel()					const				{ return _model; }
 	void						setUp()										override;

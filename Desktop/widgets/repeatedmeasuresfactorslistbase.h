@@ -20,32 +20,34 @@
 #define REPEATEDMEASURESFACTORSLISTBASE_H
 
 #include "jasplistcontrol.h"
-#include "analysis/options/boundcontrol.h"
+#include "analysis/boundcontrolbase.h"
 #include "listmodelrepeatedmeasuresfactors.h"
-#include "analysis/options/optionstable.h"
 
-class RepeatedMeasuresFactorsListBase :  public JASPListControl, public BoundControl
+class RepeatedMeasuresFactorsListBase :  public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
 	
 public:
 	RepeatedMeasuresFactorsListBase(QQuickItem* parent = nullptr);
 
-	ListModel*	model()								const	override { return _factorsModel; }
-	void		setUpModel()								override;
-	void		setUp()										override;
-	Option*		boundTo()									override { return _boundTo; }
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
-	bool		isJsonValid(const Json::Value& optionValue) override;
+	bool			isJsonValid(const Json::Value& optionValue)	override;
+	Json::Value		createJson()								override;
+	void			bindTo(const Json::Value& value)			override;
+	bool			encodeValue()						const	override	{ return true; }
+	ListModel*		model()								const	override	{ return _factorsModel; }
+	void			setUpModel()								override;
+	void			setUp()										override;
+
+signals:
+	void			itemChanged(int index, QString name);
+	void			itemRemoved(int index);
+
 
 protected slots:
-	void termsChangedHandler() override;
+	void			termsChangedHandler() override;
 	
 private:
 	ListModelRepeatedMeasuresFactors*	_factorsModel	= nullptr;
-	OptionsTable*						_boundTo		= nullptr;
 	
 };
 

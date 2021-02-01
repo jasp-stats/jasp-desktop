@@ -59,6 +59,8 @@ public:
 	bool replaceVariableName(const std::string & oldName, const std::string & newName);
 
 	static const char* separator;
+	static Term	readTerm(std::string str);
+	static Term	readTerm(QString str);
 
 private:
 	void initFrom(const QStringList components);

@@ -20,33 +20,30 @@
 #define RADIOBUTTONSGROUPBASE_H
 
 #include "analysis/jaspcontrol.h"
-#include "analysis/options/optionlist.h"
-#include "analysis/options/boundcontrol.h"
-#include <QObject>
+#include "analysis/boundcontrolbase.h"
 #include <QMap>
 
 class RadioButtonBase;
 
-class RadioButtonsGroupBase : public JASPControl, public BoundControl
+class RadioButtonsGroupBase : public JASPControl, public BoundControlBase
 {
 	Q_OBJECT
 	
 public:
 	RadioButtonsGroupBase(QQuickItem* parent = nullptr);
-	void	bindTo(Option *option)						override;
-	Option* boundTo()									override { return _boundTo; }	
-	Option* createOption()								override;
-	bool	isOptionValid(Option* option)				override;
-	bool	isJsonValid(const Json::Value& optionValue) override;
-	void	setUp()										override;
 
-signals:
-	
-private slots:
-	void radioButtonClickedHandler(const QVariant& button);
+	bool		isJsonValid(const Json::Value& value)		override;
+	Json::Value createJson()								override;
+	void		bindTo(const Json::Value& value)			override;
+	void		setUp()										override;
     
+signals:
+	void clicked(const QVariant& button);
+
+protected slots:
+	void clickedSlot(const QVariant& button);
+
 protected:
-	OptionList*							_boundTo		= nullptr;
 	QMap<QString, RadioButtonBase *>	_buttons;
 	RadioButtonBase*					_checkedButton	= nullptr;
 	

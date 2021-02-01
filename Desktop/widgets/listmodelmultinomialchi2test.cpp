@@ -20,39 +20,27 @@
 #include "utilities/qutils.h"
 #include "listmodelmultinomialchi2test.h"
 #include "analysis/analysisform.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optiondoublearray.h"
 
 ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(TableViewBase * parent, QString tableType)
 	: ListModelTableViewBase(parent, tableType)
 {
-	_defaultCellVal		= 1;
-	_initialColCnt		= 1;
-	_keepRowsOnReset	= true;
 }
 
 void ListModelMultinomialChi2Test::sourceTermsReset()
 {
 	beginResetModel();
 
-	_rowNames.clear();
-	_colNames.clear();
-	_values.clear();
-	_columnCount = 0;
-	_rowCount    = 0;
+	_tableTerms.clear();
 
 	Terms newTerms = getSourceTerms();
 	if (newTerms.size() > 0)
 	{
-		_columnBeingTracked	= tq(newTerms.at(0).asString());
-		_rowNames			= requestInfo(_columnBeingTracked, VariableInfo::Labels).toStringList();
-		_rowCount			= size_t(_rowNames.size());
+		_columnBeingTracked		= tq(newTerms.at(0).asString());
+		_tableTerms.rowNames	= requestInfo(_columnBeingTracked, VariableInfo::Labels).toStringList();
 
-		QVector<QVariant> newValues(_rowNames.length(), 1.0);
-		_values.push_back(newValues);
-		_colNames.push_back(getDefaultColName(0));
-		_columnCount = 1;
-
+		QVector<QVariant> newValues(_tableTerms.rowNames.length(), 1.0);
+		_tableTerms.values.push_back(newValues);
+		_tableTerms.colNames.push_back(getDefaultColName(0));
 	}
 
 	endResetModel();
@@ -66,10 +54,10 @@ int ListModelMultinomialChi2Test::sourceLabelChanged(QString columnName, QString
 	if(columnName != _columnBeingTracked)
 		return -1;
 
-	for(int row=0; row<_rowNames.size(); row++)
-		if(_rowNames[row] == originalLabel)
+	for(int row=0; row<_tableTerms.rowNames.size(); row++)
+		if(_tableTerms.rowNames[row] == originalLabel)
 		{
-			_rowNames[row] = newLabel;
+			_tableTerms.rowNames[row] = newLabel;
 			emit headerDataChanged(Qt::Vertical, row, row);
 			break;
 		}
@@ -85,18 +73,18 @@ int ListModelMultinomialChi2Test::sourceLabelsReordered(QString columnName)
 	std::map<QString, std::vector<QVariant>> tempStore;
 
 	//because everything is stored in columns we first need to map all the rows, to well rows (with the name being key)
-	for(int row=0; row<_rowCount; row++)
-		for(int col=0; col<_columnCount; col++)
-			tempStore[_rowNames[row]].push_back(_values[col][row]);
+	for(int row = 0; row < rowCount(); row++)
+		for(int col = 0; col < columnCount(); col++)
+			tempStore[_tableTerms.rowNames[row]].push_back(_tableTerms.values[col][row]);
 
 	beginResetModel();
-	_rowNames	= requestInfo(_columnBeingTracked, VariableInfo::Labels).toStringList();
-	_values.clear();
-	_values.resize(_columnCount);
+	_tableTerms.rowNames	= requestInfo(_columnBeingTracked, VariableInfo::Labels).toStringList();
+	_tableTerms.values.clear();
+	_tableTerms.values.resize(columnCount());
 
-	for(int row=0; row<_rowCount; row++)
-		for(int col=0; col<_columnCount; col++)
-			_values[col].push_back(tempStore[_rowNames[row]][col]);
+	for(int row = 0; row < rowCount(); row++)
+		for(int col = 0; col < columnCount(); col++)
+			_tableTerms.values[col].push_back(tempStore[_tableTerms.rowNames[row]][col]);
 
 	endResetModel();
 

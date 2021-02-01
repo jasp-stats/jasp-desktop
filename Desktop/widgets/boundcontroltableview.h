@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2021 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,28 +16,29 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDCONTROLTEXTAREA_H
-#define BOUNDCONTROLTEXTAREA_H
+#ifndef BOUNDCONTROLTABLEVIEW_H
+#define BOUNDCONTROLTABLEVIEW_H
 
 #include "analysis/boundcontrolbase.h"
+#include "listmodeltableviewbase.h"
 
-class TextAreaBase;
+class TableViewBase;
 
-class BoundControlTextArea : public BoundControlBase
+class BoundControlTableView : public BoundControlBase
 {
 public:
-	friend TextAreaBase;
+	BoundControlTableView(TableViewBase* tableView);
 
-	BoundControlTextArea(TextAreaBase* textArea);
-
-	bool					isJsonValid(const Json::Value& optionValue) override;
+	bool					isJsonValid(const Json::Value& value)		override;
 	Json::Value				createJson()								override;
 	void					bindTo(const Json::Value& value)			override;
-
-	virtual	void			checkSyntax();
+	void					updateOption()								override;
 
 protected:
-	TextAreaBase*				_textArea	= nullptr;
+	virtual void			fillTableTerms(const Json::Value& value, ListModelTableViewBase::TableTerms& tableTerms);
+	virtual void			fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms);
+
+	TableViewBase			* _tableView	= nullptr;
 };
 
-#endif // BOUNDCONTROLTEXTAREA_H
+#endif // BOUNDCONTROLTABLEVIEW_H

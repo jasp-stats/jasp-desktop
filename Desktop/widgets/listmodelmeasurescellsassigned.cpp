@@ -28,7 +28,6 @@ using namespace std;
 ListModelMeasuresCellsAssigned::ListModelMeasuresCellsAssigned(JASPListControl* listView)
 	: ListModelAssignedInterface(listView)
 {
-	_needsSource = true;
 }
 
 void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms &variables, bool initVariables)
@@ -98,9 +97,9 @@ Terms ListModelMeasuresCellsAssigned::termsFromIndexes(const QList<int> &indexes
 	return result;
 }
 
-void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListModel::RowControlsOptions &allOptionsMap)
+void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListModel::RowControlsValues &allValuesMap)
 {
-	ListModelAssignedInterface::initTerms(terms, allOptionsMap);
+	ListModelAssignedInterface::initTerms(terms, allValuesMap);
 	_fitTermsWithLevels();
 }
 

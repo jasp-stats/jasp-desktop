@@ -19,27 +19,22 @@
 #ifndef BOUNDCONTROLMULTITERMS_H
 #define BOUNDCONTROLMULTITERMS_H
 
-#include "analysis/options/boundcontrol.h"
-#include "listmodelassignedinterface.h"
-#include "analysis/options/optionvariablesgroups.h"
-#include "listmodelmultitermsassigned.h"
+#include "analysis/boundcontrolbase.h"
 
+class ListModelMultiTermsAssigned;
 
-class BoundControlMultiTerms : public BoundControl
+class BoundControlMultiTerms : public BoundControlBase
 {
 public:
 	BoundControlMultiTerms(ListModelMultiTermsAssigned* listModel);
 
-	Option*		boundTo()									override	{ return _optionVariablesGroups; }
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
+	Json::Value	createJson()								override;
+	void		bindTo(const Json::Value &value)			override;
 	void		updateOption()								override;
 
 
 private:
-	OptionVariablesGroups*			_optionVariablesGroups	= nullptr;
 	ListModelMultiTermsAssigned*	_listModel;
 };
 

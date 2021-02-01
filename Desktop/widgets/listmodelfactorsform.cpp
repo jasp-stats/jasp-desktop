@@ -17,13 +17,9 @@
 //
 
 #include "listmodelfactorsform.h"
-#include "analysis/options/options.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optionvariables.h"
 #include "utilities/qutils.h"
 #include "variableslistbase.h"
 #include "log.h"
-#include <QQuickItem>
 #include "analysis/jaspcontrol.h"
 #include "analysis/analysisform.h"
 

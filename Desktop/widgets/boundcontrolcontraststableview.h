@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2020 University of Amsterdam
+// Copyright (C) 2013-2021 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,22 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELTABLEVIEWSIMPLE_H
-#define LISTMODELTABLEVIEWSIMPLE_H
+#ifndef BOUNDCONTROLCONTRASTSTABLEVIEW_H
+#define BOUNDCONTROLCONTRASTSTABLEVIEW_H
 
-#include "listmodeltableviewbase.h"
+#include "boundcontroltableview.h"
 
-class ListModelTableViewSimple : public ListModelTableViewBase
+class BoundControlContrastsTableView : public BoundControlTableView
 {
-    Q_OBJECT
 public:
-    explicit ListModelTableViewSimple(TableViewBase * parent, QString tableType);
+	BoundControlContrastsTableView(TableViewBase* tableView);
 
-	OptionsTable*	createOption()							override;
-	QString			getDefaultColName(size_t index)	const	override;
-
-private:
-    void _readValues();
+	Json::Value				createJson()									override;
+	void					fillTableTerms(const Json::Value& value, ListModelTableViewBase::TableTerms &tableTerms)		override;
+	void					fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms)		override;
 };
 
-#endif // LISTMODELTABLEVIEWSIMPLE_H
+#endif // BOUNDCONTROLCONTRASTSTABLEVIEW_H

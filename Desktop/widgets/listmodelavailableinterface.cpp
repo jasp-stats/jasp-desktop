@@ -21,7 +21,7 @@
 #include "jasplistcontrol.h"
 #include "log.h"
 
-void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControlsOptions&)
+void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControlsValues&)
 {
 	beginResetModel();
 	

@@ -35,13 +35,14 @@ public:
 	QVariant		data(	const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
 	Qt::ItemFlags	flags(	const QModelIndex &index)								const	override;
 	void			rScriptDoneHandler(const QString & result)								override;
-	QString			filter()														const				{ return _filter;		}
-	QString			colName()														const				{ return _colName;		}
-	QString			extraCol()														const				{ return _extraCol;	}
-	OptionsTable *	createOption()															override;
-	void			initValues(OptionsTable * bindHere)										override;
+	const QString&	filter()														const				{ return _tableTerms.filter;	}
+	const QString&	colName()														const				{ return _tableTerms.colName;	}
+	const QString	extraCol()														const				{ return _tableTerms.extraCol;	}
+	const std::vector<size_t>& filteredRowToData()									const				{ return _filteredRowToData;	}
+	const QStringList& dataColumns()												const				{ return _dataColumns;			}
+	void			initTableTerms(const TableTerms& terms)									override;
 	int				getMaximumColumnWidthInCharacters(size_t columnIndex)			const	override;
-	bool			isEditable(const QModelIndex& index)							const	override	{ return index.column() >= _columnCount; }
+	bool			isEditable(const QModelIndex& index)							const	override	{ return index.column() >= columnCount(); }
 	void			itemChanged(int column, int row, QVariant value, QString type)			override;
 
 	void			refreshModel()															override;
@@ -49,7 +50,6 @@ public:
 
 public slots:
 	void	sourceTermsReset()															override;
-	void	modelChangedSlot()																override;
 	void	setFilter(QString filter);
 	void	setColName(QString colName);
 	void	setExtraCol(QString extraCol);
@@ -69,9 +69,6 @@ private:
 	size_t	getDataSetRowCount()	const;
 	void	fillTable();
 
-	QString						_filter,
-								_colName,
-								_extraCol;
 	std::vector<bool>			_acceptedRows;
 	std::vector<size_t>			_filteredRowToData;
 	std::map<size_t, double>	_enteredValues;

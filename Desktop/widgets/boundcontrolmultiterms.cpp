@@ -17,26 +17,36 @@
 //
 
 #include "boundcontrolmultiterms.h"
+#include "jasplistcontrol.h"
+#include "listmodelmultitermsassigned.h"
 
-BoundControlMultiTerms::BoundControlMultiTerms(ListModelMultiTermsAssigned* listModel)
+BoundControlMultiTerms::BoundControlMultiTerms(ListModelMultiTermsAssigned* listModel) : BoundControlBase(listModel->listView())
 {
 	_listModel = listModel;
 }
 
-void BoundControlMultiTerms::bindTo(Option *option)
+void BoundControlMultiTerms::bindTo(const Json::Value& value)
 {
-	_optionVariablesGroups = dynamic_cast<OptionVariablesGroups *>(option);
-	_listModel->initTerms(_optionVariablesGroups->value());
+	BoundControlBase::bindTo(value);
+	std::vector<std::vector<std::string> > values;
+
+	for (const Json::Value& rowJson : value)
+	{
+		std::vector<std::string> rowValues;
+		if (rowJson.isArray())
+		{
+			for (const Json::Value& val : rowJson)
+				rowValues.push_back(val.asString());
+		} else if (rowJson.isString())
+			rowValues.push_back(rowJson.asString());
+	}
+
+	_listModel->initTerms(values);
 }
 
-Option* BoundControlMultiTerms::createOption()
+Json::Value BoundControlMultiTerms::createJson()
 {
-	return new OptionVariablesGroups();
-}
-
-bool BoundControlMultiTerms::isOptionValid(Option *option)
-{
-	return dynamic_cast<OptionVariablesGroups*>(option) != nullptr;
+	return Json::Value(Json::arrayValue);
 }
 
 bool BoundControlMultiTerms::isJsonValid(const Json::Value &optionValue)
@@ -47,8 +57,14 @@ bool BoundControlMultiTerms::isJsonValid(const Json::Value &optionValue)
 void BoundControlMultiTerms::updateOption()
 {
 	const QList<Terms>& tuples = _listModel->tuples();
-	std::vector<std::vector<std::string> > values;
+	Json::Value boundValue(Json::arrayValue);
 	for (const Terms& terms : tuples)
-		values.push_back(terms.asVector());
-	_optionVariablesGroups->setValue(values);
+	{
+		Json::Value rowValue;
+		for (std::string val : terms.asVector())
+			rowValue.append(val);
+		boundValue.append(rowValue);
+	}
+
+	setBoundValue(boundValue);
 }

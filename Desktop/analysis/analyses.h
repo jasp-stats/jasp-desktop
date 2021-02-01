@@ -158,9 +158,9 @@ signals:
 	void setResultsMeta(QString json);
 	void moveAnalyses(quint64 fromId, quint64 toId);
 
-	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
-	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);
-	void				requestComputedColumnDestruction(QString columnName);
+	ComputedColumn *	requestComputedColumnCreation(const std::string& columnName, Analysis *source);
+	void				requestColumnCreation(const std::string& columnName, Analysis *source, columnType type);
+	void				requestComputedColumnDestruction(const std::string& columnName);
 
 	void currentFormPrevHChanged(double currentFormPrevH);
 

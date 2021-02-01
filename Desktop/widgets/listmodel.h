@@ -23,14 +23,14 @@
 #include <QQmlComponent>
 
 #include "common.h"
-#include "analysis/options/variableinfo.h"
-#include "analysis/options/terms.h"
+#include "analysis/variableinfo.h"
+#include "analysis/terms.h"
+#include "jsonredirect.h"
 
 class JASPListControl;
 class RowControls;
 class JASPControl;
 class BoundControl;
-class Option;
 
 class ListModel : public QAbstractTableModel, public VariableInfoConsumer
 {
@@ -50,7 +50,7 @@ public:
 		RowComponentRole,
 		ValueRole
     };
-	typedef QMap<QString, QMap<QString, Option*> > RowControlsOptions;
+	typedef QMap<QString, QMap<QString, Json::Value> > RowControlsValues;
 
 	ListModel(JASPListControl* listView);
 	
@@ -69,7 +69,7 @@ public:
 			void					setItemType(QString type)												{ _itemType = type; }
 			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
-	virtual void					initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions());
+	virtual void					initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues());
 			Terms					getSourceTerms();
 			ListModel*				getSourceModelOfTerm(const Term& term);
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
@@ -124,15 +124,14 @@ protected:
 			bool							_needsSource			= true;
 			QMap<QString, RowControls* >	_rowControlsMap;
 			QQmlComponent *					_rowComponent			= nullptr;
-			RowControlsOptions				_rowControlsOptions;
+			RowControlsValues				_rowControlsValues;
 			QList<BoundControl *>			_rowControlsConnected;
 			QList<int>						_selectedItems;
 			QSet<QString>					_selectedItemsTypes;
 
 private:
 			void	_addSelectedItemType(int _index);
-			void	_sourceTermsChangedHandler(Option *option = nullptr);
-			void	_initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap, bool setupRowConnections = true);
+			void	_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool setupRowConnections = true);
 			void	_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls);
 
 			JASPListControl*				_listView = nullptr;

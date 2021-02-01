@@ -17,12 +17,8 @@
 //
 
 #include "listmodelrepeatedmeasuresfactors.h"
-#include "analysis/options/options.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optionvariables.h"
 #include "utilities/qutils.h"
 #include "log.h"
-
 
 
 using namespace std;

@@ -17,9 +17,10 @@
 //
 
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.11
-import JASP.Controls 1.0
+import QtQuick			2.0
+import QtQuick.Layouts	1.11
+import JASP.Controls	1.0
+import JASP				1.0
 
 BasicThreeButtonTableView
 {
@@ -27,7 +28,7 @@ BasicThreeButtonTableView
 
 	tableType		: "ExpectedProportions"
 	itemType		: "double"
-	modelType		: "MultinomialChi2Model"
+	modelType		: JASP.MultinomialChi2Model
 
 	property	int		maxNumHypotheses	: 10
 

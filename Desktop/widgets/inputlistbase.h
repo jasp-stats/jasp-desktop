@@ -20,31 +20,31 @@
 #define INPUTLISTBASE_H
 
 #include "jasplistcontrol.h"
-#include "analysis/options/boundcontrol.h"
+#include "analysis/boundcontrolbase.h"
 #include "listmodelinputvalue.h"
-#include "analysis/options/optionstable.h"
 
-class InputListBase : public JASPListControl, public BoundControl
+class InputListBase : public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
 	
 public:
 	InputListBase(QQuickItem* parent = nullptr);
 
-	ListModel*	model()								const	override { return _inputModel; }
-	void		setUpModel()								override;
-	Option*		boundTo()									override { return _boundTo; }
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
-	bool		isJsonValid(const Json::Value& optionValue)	override;
+	bool			isJsonValid(const Json::Value& optionValue)	override;
+	Json::Value		createJson()								override;
+	void			bindTo(const Json::Value& value)			override;
+	ListModel*		model()								const	override { return _inputModel; }
+	void			setUpModel()								override;
+
+signals:
+	void			itemChanged(int index, QString name);
+	void			itemRemoved(int index);
 
 protected slots:
-	void		termsChangedHandler()						override;
+	void			termsChangedHandler()						override;
 
 private:
 	ListModelInputValue*		_inputModel			= nullptr;
-	OptionsTable*				_boundTo			= nullptr;
 	std::vector<std::string>	_defaultValues;
 	
 };

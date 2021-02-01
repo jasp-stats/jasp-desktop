@@ -53,10 +53,6 @@ ComponentsListBase
 	property string removeTooltip		: qsTr("Remove a row")
 	property var	defaultValues		: []
 
-	signal addItem();
-	signal removeItem(int index);
-	signal nameChanged(int index, string name)
-
 	Text
 	{
 		id				: itemTitle

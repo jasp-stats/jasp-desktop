@@ -17,9 +17,10 @@
 //
 
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.11
-import JASP.Controls 1.0
+import QtQuick			2.0
+import QtQuick.Layouts	1.11
+import JASP.Controls	1.0
+import JASP				1.0
 
 BasicThreeButtonTableView
 {
@@ -29,7 +30,7 @@ BasicThreeButtonTableView
 
 	tableType			: "userDataInput"
 	itemType			: "string"
-	modelType			: "CustomContrasts"
+	modelType			: JASP.CustomContrasts
 	initialColumnCount	: 1
 	initialRowCount		: 0
 	buttonsInRow		: true

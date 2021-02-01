@@ -20,7 +20,6 @@
 #define BOUNDCONTROLJAGSTEXTAREA_H
 
 #include "boundcontroltextarea.h"
-#include "analysis/options/options.h"
 #include <QSet>
 
 class BoundControlJAGSTextArea : public BoundControlTextArea
@@ -28,16 +27,13 @@ class BoundControlJAGSTextArea : public BoundControlTextArea
 public:
 	BoundControlJAGSTextArea(TextAreaBase* textArea) : BoundControlTextArea(textArea) {}
 
-	void	bindTo(Option *option)						override;
-	Option* createOption()								override;
-	bool	isOptionValid(Option* option)				override;
-	bool	isJsonValid(const Json::Value& optionValue) override;
-	Option* boundTo()									override { return _options; }
+	bool		isJsonValid(const Json::Value& optionValue)		override;
+	Json::Value	createJson()									override;
+	void		bindTo(const Json::Value &value)				override;
 
-	void	checkSyntax()								override;
+	void		checkSyntax()									override;
 
 private:
-	Options*					_options = nullptr;
 	std::set<std::string>		_usedColumnNames;
 	QSet<QString>				_usedParameters;
 	QString						_textEncoded;

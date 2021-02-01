@@ -20,8 +20,8 @@
 #define LISTMODELAVAILABLEINTERFACE_H
 
 #include "listmodeldraggable.h"
-#include "analysis/options/terms.h"
-#include "analysis/options/variableinfo.h"
+#include "analysis/terms.h"
+#include "analysis/variableinfo.h"
 #include "sortmenumodel.h"
 #include "sortable.h"
 
@@ -35,7 +35,7 @@ public:
 		: ListModelDraggable(listView) {}
 	
 	virtual const Terms& allTerms()																						const { return _allSortedTerms; }
-			void initTerms(const Terms &terms, const RowControlsOptions& _rowControlsOptions = RowControlsOptions())	override;
+			void initTerms(const Terms &terms, const RowControlsValues& _rowControlsValues = RowControlsValues())	override;
 	virtual void resetTermsFromSources(bool updateAssigned = true)			= 0;
 	virtual void removeTermsInAssignedList();
 	

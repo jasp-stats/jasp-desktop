@@ -32,15 +32,13 @@ public:
 	int getMaximumColumnWidthInCharacters(size_t columnIndex)	const	override;
 
 	QString			getDefaultColName(size_t index)				const	override;
-	OptionsTable *	createOption()										override;
-	void			initValues(OptionsTable * bindHere)					override;
 	bool			isEditable(const QModelIndex& index)		const	override	{ return _tableType == "initialValues" ? (index.column() >= 1) : true; }
 	QString			getItemInputType(const QModelIndex& index)	const	override	{ return isRCodeColumn(1) ? "formulaArray" : "string"; }
-	bool			isRCodeColumn(int col)						const				{ return col == 1; }
+	bool			isRCodeColumn(int col)				const	override	{ return col == 1; }
 
 public slots:
 	void sourceTermsReset()											override;
-	void modelChangedSlot()												override;
+
 };
 
 #endif // ListModelJAGSDataInput_H

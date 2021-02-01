@@ -27,7 +27,6 @@ class ListModelCustomContrasts : public ListModelTableViewBase
 {
 	Q_OBJECT
 	Q_PROPERTY(QString colName		READ colName	WRITE setColName	NOTIFY colNameChanged	)
-	Q_PROPERTY(int variableCount	READ variableCount					NOTIFY variableCountChanged)
 
 public:
 	explicit ListModelCustomContrasts(TableViewBase * parent, QString tableType);
@@ -39,17 +38,14 @@ public:
 
 	void			reset()												override;
 	void			setup()												override;
-	OptionsTable *	createOption()										override;
-	void			initValues(OptionsTable * bindHere)					override;
-	bool			isEditable(const QModelIndex& index)		const	override	{ return index.column() >= _variables.length(); }
-	QString			getItemInputType(const QModelIndex& index)	const	override	{ return index.column() >= _variables.length() ? (getItemType(Term(QString())) == "double" ? "double"  : "formula") : "string"; }
-	int				variableCount()								const				{ return _variableCount; }
+	bool			isEditable(const QModelIndex& index)		const	override	{ return index.column() >= _tableTerms.variables.length(); }
+	QString			getItemInputType(const QModelIndex& index)	const	override	{ return index.column() >= _tableTerms.variables.length() ? (getItemType(Term(QString())) == "double" ? "double"  : "formula") : "string"; }
 	QString			colName()									const				{ return _colName;	}
 
+	void			getVariablesAndLabels(QStringList& variables, QVector<QVector<QVariant> >& allLabels);
 
 public slots:
 	void sourceTermsReset()																		override;
-	void modelChangedSlot()																		override;
 	int  sourceLabelChanged(	 QString columnName, QString originalLabel, QString newLabel)	override;
 	int  sourceLabelsReordered(QString columnName)												override;
 	void scaleFactorChanged();
@@ -57,11 +53,9 @@ public slots:
 	void factorsSourceChanged();
 
 signals:
-	void variableCountChanged();
 	void colNameChanged(QString colName);
 
 protected:
-	QList<QString>						_variables;
 	int									_variableCount	= 0;
 	double								_scaleFactor	= 1;
 	ListModelRepeatedMeasuresFactors*	_factorsSourceModel;
@@ -76,7 +70,6 @@ private:
 	void		_setFactors();
 	void		_loadColumnInfo();
 	QStringList	_getVariables();
-	void		_getVariablesAndLabels(QStringList& variables, QVector<QVector<QVariant> >& allLabels);
 
 
 };

@@ -22,6 +22,7 @@
 #include "common.h"
 #include <QQmlComponent>
 #include <QQuickItem>
+#include "jsonredirect.h"
 
 class JASPListControl;
 class ListModel;
@@ -38,7 +39,7 @@ public:
 	RowControls(
 			ListModel* parent
 			, QQmlComponent* components
-			, const QMap<QString, Option*>& rowOptions
+			, const QMap<QString, Json::Value>& rowValues
 			, bool isDummy = false);
 
 	void										init(int row, const Term& key, bool isNew);
@@ -57,7 +58,7 @@ private:
 	QMap<QString, JASPControl*>				_rowJASPControlMap;
 	QQmlContext*							_context;
 	QMap<QString, QVariant>					_rowControlsVarMap;
-	QMap<QString, Option*>					_rowOptions;
+	QMap<QString, Json::Value>				_rowValues;
 	bool									_isDummy = false;
 };
 

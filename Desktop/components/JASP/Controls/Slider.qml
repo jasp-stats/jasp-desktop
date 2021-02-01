@@ -28,8 +28,6 @@ SliderBase
 	property alias	max:			control.to
 	property alias	textField:		textField
 
-	signal moved();
-
 	Component.onCompleted: control.moved.connect(moved);
 
 	ColumnLayout
