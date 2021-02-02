@@ -100,6 +100,8 @@ FocusScope
 		MouseArea
 		{
 			anchors.fill	: parent
+			acceptedButtons	: Qt.NoButton
+			onWheel			: wheel.accepted = true
 		}
 
 		JASPControl.JASPScrollBar
@@ -123,6 +125,7 @@ FocusScope
 		{
 			id						: itemFlickable
 			anchors.fill			: parent
+			anchors.topMargin		: jaspTheme.menuPadding / 2
 			anchors.leftMargin		: jaspTheme.menuPadding / 2
 			anchors.rightMargin		: itemScrollbar.width + anchors.margins
 			clip					: true
