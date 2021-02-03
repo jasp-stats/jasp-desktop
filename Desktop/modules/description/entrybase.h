@@ -98,7 +98,7 @@ public: \
 }
 
 MAKE_ENTRY_CLASS(Separator,		separator);
-MAKE_ENTRY_CLASS(Analysis,		analysis);
+MAKE_ENTRY_CLASS(AnalysisItem,	analysis);
 MAKE_ENTRY_CLASS(GroupTitle,	groupTitle);
 }
 #endif // ENTRYBASE_H

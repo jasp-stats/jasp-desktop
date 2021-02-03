@@ -17,21 +17,23 @@
 //
 
 
+#include "log.h"
+#include <locale>
+#include <QThread>
+#include "tempfiles.h"
+#include <QQmlContext>
+#include <QQmlIncubator>
 #include "dynamicmodule.h"
+#include "dynamicmodules.h"
+#include <QRegularExpression>
+#include "upgrader/upgrades.h"
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include <boost/filesystem.hpp>
-#include "utilities/extractarchive.h"
-#include "tempfiles.h"
-#include <locale>
-#include "log.h"
+#include "gui/messageforwarder.h"
 #include "utilities/languagemodel.h"
-#include "dynamicmodules.h"
-#include <QQmlContext>
-#include <QQmlIncubator>
 #include "description/description.h"
-#include <QThread>
-#include <QRegularExpression>
+#include "utilities/extractarchive.h"
 
 namespace Modules
 {
@@ -153,6 +155,34 @@ void DynamicModule::initialize()
 	}
 	
 	loadDescriptionQml(qmlTxt, url);
+
+	try
+	{
+		QFileInfo upgradesInfo = checkForExistence(getQmlUpgradesFilename(), true);
+		
+		url = QUrl::fromLocalFile(upgradesInfo.absoluteFilePath());
+
+		QFile upgradesFile(upgradesInfo.absoluteFilePath());
+	
+		upgradesFile.open(QFile::ReadOnly);
+
+		qmlTxt = upgradesFile.readAll();
+
+		if(qmlTxt == "")
+			throw std::runtime_error(getQmlUpgradesFilename() + " is empty!");
+		
+		loadUpgradesQML(qmlTxt, url);
+	
+	}
+	catch(upgradeLoadError & loadError)
+	{
+		MessageForwarder::showWarning(tr("Loading upgrades for module %1 failed").arg(nameQ()), tr("Loading upgrades gave the following error: %1").arg(tq(loadError.what())));
+	}
+	catch(std::runtime_error & qmlNotFound)
+	{
+		; //Doesn't matter if this file couldn't be found or whatever
+		Log::log() << "Loading " << getQmlUpgradesFilename() << " had the following std:runtime_error: '" << qmlNotFound.what() << "' this will be ignored." << std::endl;
+	}
 	
 	QFile DESCRIPTION(checkForExistence("DESCRIPTION", true).absoluteFilePath());
 	DESCRIPTION.open(QFile::ReadOnly);
@@ -224,25 +254,43 @@ void DynamicModule::loadRequiredModulesFromDESCRIPTIONTxt(const QString & DESCRI
 	setImportsR(reqModules);
 }
 
+
+
+Description * DynamicModule::instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName)
+{
+	Description * description = qobject_cast<Description*>(instantiateQml(descriptionTxt, url, moduleName, "Description", getQmlDescriptionFilename()));
+
+	return description;
+}
+
+
+Upgrades * DynamicModule::instantiateUpgradesQml(const QString & upgradesTxt, const QUrl & url, const std::string & moduleName)
+{
+	Upgrades * upgrades = qobject_cast<Upgrades*>(instantiateQml(upgradesTxt, url, moduleName, "Upgrades", getQmlUpgradesFilename()));
+
+	return upgrades;
+}
+
 //Turning QMLENGINE_DOES_ALL_THE_WORK on also works fine, but has slightly less transparent errormsgs so isn't recommended
 //#define QMLENGINE_DOES_ALL_THE_WORK
 
-Description * DynamicModule::instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName)
-{	
+QObject * DynamicModule::instantiateQml(const QString & qmlTxt, const QUrl & url, const std::string & moduleName, const std::string & whatAmILoading, const std::string & filename)
+{
 	QObject * obj = nullptr;
+
 #ifdef QMLENGINE_DOES_ALL_THE_WORK
-	obj = DynamicModules::dynMods()->loadQmlData(descriptionTxt, url);
-#else		
+	obj = DynamicModules::dynMods()->loadQmlData(qmlTxt, url);
+#else
 	QQmlContext * ctxt = DynamicModules::dynMods()->requestRootContext();
-		
-	QQmlComponent descriptionQmlComp(ctxt->engine());
+
+	QQmlComponent qmlComp(ctxt->engine());
 
 	//Log::log() << "Setting url to '" << url.toString() << "' for Description.qml.\n" << std::endl;// data: '" << descriptionTxt << "'\n"<< std::endl;
 
-	descriptionQmlComp.setData(descriptionTxt.toUtf8(), url);
+	qmlComp.setData(qmlTxt.toUtf8(), url);
 
-	if(descriptionQmlComp.isLoading())
-		Log::log() << "Description for module " << moduleName << " is still loading, make sure you load a local file and that Windows doesnt mess this up for you..." << std::endl;
+	if(qmlComp.isLoading())
+		Log::log() << whatAmILoading << " for module " << moduleName << " is still loading, make sure you load a local file and that Windows doesn't mess this up for you..." << std::endl;
 
 
 	auto errorLogger =[&](bool isError, QList<QQmlError> errors)
@@ -251,34 +299,32 @@ Description * DynamicModule::instantiateDescriptionQml(const QString & descripti
 
 		std::stringstream out;
 
-		out << "Loading "+ getQmlDescriptionFilename() + " for module " + moduleName << " had errors:\n";
+		out << "Loading " << filename << " for module " << moduleName << " had errors:\n";
 
-		for(const QQmlError error : errors)
+		for(const QQmlError & error : errors)
 			out << error.toString() << "\n";
 
 		Log::log() << out.str() << std::flush;
 
-		throw ModuleException(moduleName, "There were errors loading " + getQmlDescriptionFilename() + ":\n" + out.str());
+		throw ModuleException(moduleName, "There were errors loading " + filename + ":\n" + out.str());
 	};
 
-	errorLogger(descriptionQmlComp.isError(), descriptionQmlComp.errors());
+	errorLogger(qmlComp.isError(), qmlComp.errors());
 
-	if(!descriptionQmlComp.isReady())
-		throw ModuleException(moduleName, "Description Component is not ready!");
-	
+	if(!qmlComp.isReady())
+		throw ModuleException(moduleName, whatAmILoading + " Component is not ready!");
+
 	QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
 
-	descriptionQmlComp.create(localIncubator);
-	
+	qmlComp.create(localIncubator);
+
 	errorLogger(localIncubator.isError(), localIncubator.errors());
 
 	obj = localIncubator.object();
 
 #endif
 
-	Description * description = qobject_cast<Description*>(obj);
-
-	return description;
+	return obj;
 }
 
 
@@ -287,19 +333,42 @@ void DynamicModule::loadDescriptionQml(const QString & descriptionTxt, const QUr
 	Description * description = instantiateDescriptionQml(descriptionTxt, url, name());
 
 	if(!description)
-		throw ModuleException(name(), getQmlDescriptionFilename() + " must have Description object as root!");
+		throw ModuleException(name(), getQmlDescriptionFilename() + " must have Description item as root!");
 
 	description->setDynMod(this);
 
 	loadInfoFromDescriptionItem(description);
 }
 
+void DynamicModule::loadUpgradesQML(const QString & upgradesTxt, const QUrl & url)
+{
+	Upgrades * upgrades = instantiateUpgradesQml(upgradesTxt, url, name());
+
+	if(!upgrades)
+		throw ModuleException(name(), getQmlUpgradesFilename() + " must have Upgrades item as root!");
+
+	_upgrades = upgrades;
+}
+
+bool DynamicModule::hasUpgradesToApply(const std::string & function, const Version & version)
+{
+	return _upgrades != nullptr && _upgrades->hasUpgradesToApply(function, version);
+}
+
+void DynamicModule::applyUpgrade(const std::string	& function,	const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken)
+{
+	if(!analysesJson.isMember("dynamicModule"))
+		analysesJson["dynamicModule"] = asJsonForJaspFile(function);
+	
+	_upgrades->applyUpgrade(function, version, analysesJson, msgs, stepsTaken);
+}
+
 void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 {
-	if(_descriptionObj && _descriptionObj != description)
-		delete _descriptionObj;
+	if(_description && _description != description)
+		delete _description;
 
-	_descriptionObj = description;
+	_description = description;
 
 	if(_name != fq(description->name()))
 		Log::log() << "Description has different name (" << description->name() << ") from DynMod (" << _name << ")" << std::endl;
@@ -310,7 +379,7 @@ void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 	_license						= fq(description->license());
 	_website						= fq(description->website().toString());
 	_maintainer						= fq(description->maintainer());
-	_description					= fq(description->description());
+	_descriptionTxt					= fq(description->description());
 	_version						= fq(description->version());
 
 	for(auto * menuEntry : _menuEntries)
@@ -558,7 +627,7 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Val
 	if(moduleName != name())
 		throw ModuleException(name(), "Tried to load an AnalysisEntry for module (" + moduleName +") from me...");
 
-	if(moduleVersion != version())
+	if(Version(moduleVersion) != version())
 		std::cerr << "Loading analysis based on different version of module(" << moduleName << "), but going ahead anyway. Analysis based on version: " << moduleVersion << " and actual loaded version of module is: " << version() << std::endl;
 
 	std::string codedReference = jsonFromJaspFile.get("analysisEntry", "AnalysisEntry's coded reference wasn't actually specified!").asString();

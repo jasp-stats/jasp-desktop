@@ -19,28 +19,37 @@
 #ifndef QUTILS_H
 #define QUTILS_H
 
+#include <QJSValueIterator>
 #include <QStringList>
+#include <QQuickItem>
+#include <QProcess>
+#include <QJSValue>
 #include <QString>
 #include <QVector>
-#include <QProcess>
 #include <QMap>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
 #include <sstream>
+#include "jsonredirect.h"
 
 enum Encryption { NoEncryption, SimpleCryptEncryption };
 
-		std::string							fq(const QString							& from);
-		std::vector<std::string>			fq(const QVector<QString>					& vec);
-inline	std::vector<std::string>			fq(const QStringList						& vec)	{ return fq(vec.toVector()); }
-		std::map<std::string, std::string>	fq(const QMap<QString, QString>				& map);
-		QMap<QString, QString>				tq(const std::map<std::string, std::string> & map);
-		QString								tq(const std::string						& from);
-		QVector<QString>					tq(const std::vector<std::string>			& vec);
-		QStringList							tql(const std::vector<std::string>			& from);
-inline	QStringList							tql(const std::set<std::string>				& from) { return tql(std::vector<std::string>(from.begin(), from.end())); }
+inline	std::string							fq (const QString							 & from)	{ return from.toUtf8().toStdString(); }
+		std::vector<std::string>			fq (const QVector<QString>					 & vec);
+inline	std::vector<std::string>			fq (const QStringList						 & vec)		{ return fq(vec.toVector()); }
+		std::map<std::string, std::string>	fq (const QMap<QString, QString>			 & map);
+		QMap<QString, QString>				tq (const std::map<std::string, std::string> & map);
+inline	QString								tq (const std::string						 & from)	{ return QString::fromUtf8(from.c_str(), from.length()); }
+		QVector<QString>					tq (const std::vector<std::string>			 & vec);
+		QStringList							tql(const std::vector<std::string>			 & from);
+inline	QStringList							tql(const std::set<std::string>				 & from)	{ return tql(std::vector<std::string>(from.begin(), from.end())); }
+
+		//These need to have a different name because otherwise the default Json::Value(const std::string & str) constructor steals any fq(std::string()) call...
+		Json::Value							fqj(const QJSValue							 & jsVal);
+		QJSValue							tqj(const Json::Value						 & json,	const QQuickItem * qItem);
+
 		std::vector<std::string>			fromQstringToStdVector(const QString &input, const QString &delimeter);
 
 template<typename T> inline		std::vector<T>	fq(QVector<T>		in) { return in.toStdVector();				}
@@ -51,6 +60,7 @@ QString getShortCutKey();
 QString encrypt(const QString &input);
 QString decrypt(const QString &input);
 QString getSortableTimestamp();
+QString QJSErrorToString(QJSValue::ErrorType errorType);
 
 bool pathIsSafeForR(const QString & checkThis);
 

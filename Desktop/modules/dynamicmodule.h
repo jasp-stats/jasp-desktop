@@ -25,13 +25,15 @@
 #include <QFile>
 #include <sstream>
 #include <QObject>
-#include <QQmlEngine>
+#include "version.h"
 #include <QFileInfo>
 #include <QDateTime>
+#include <QQmlEngine>
 #include "jsonredirect.h"
-#include "enginedefinitions.h"
 #include "analysisentry.h"
 #include "utilities/qutils.h"
+#include "enginedefinitions.h"
+#include "upgrader/upgradeDefinitions.h"
 
 namespace Modules
 {
@@ -44,6 +46,7 @@ struct ModuleException : public std::runtime_error
 };
 
 class Description;
+class Upgrades;
 
 class DynamicModule : public QObject
 {
@@ -83,6 +86,7 @@ public:
 	static std::string  defaultDevelopmentModuleName()  { return "DevelopmentModule";		}
 	static std::wstring defaultDevelopmentModuleNameW() { return L"DevelopmentModule";		}
 	static std::string	getQmlDescriptionFilename()		{ return "Description.qml";			}
+	static std::string	getQmlUpgradesFilename()		{ return "Upgrades.qml";			}
 	static QFileInfo	developmentModuleFolder();
 	static void			developmentModuleFolderCreate();
 	static bool			isDescriptionFile(const std::string & filename);
@@ -98,7 +102,7 @@ public:
 	std::string			website()			const { return _website;								}
 	std::string			license()			const { return _license;								}
 	std::string			maintainer()		const { return _maintainer;								}
-	std::string			description()		const { return _description;							}
+	std::string			description()		const { return _descriptionTxt;							}
 	std::string			modulePackage()		const { return _modulePackage;							}
 	bool				isCommon()			const { return _isCommon;								}
 
@@ -165,8 +169,10 @@ public:
 	bool isBundled()	const { return _bundled;		}
 
 	void initialize(); //returns true if install of package(s) should be done
-	void loadDescriptionQml(const QString & descriptionTxt, const QUrl & url);
-
+	void loadDescriptionQml(const QString		& descriptionTxt,	const QUrl		& url);
+	void loadUpgradesQML(	const QString		& upgradesTxt,		const QUrl		& url);
+	bool hasUpgradesToApply(const std::string	& function,			const Version	& version);
+	void applyUpgrade(		const std::string	& function,			const Version	& version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken);
 
 	void loadDescriptionFromFolder(									const std::string & folderPath);
 	void loadDescriptionFromArchive(								const std::string & archivePath);
@@ -187,7 +193,9 @@ public:
 
 	void unpackage();
 	///Make sure url ends with the actual filename of the qml you are loading, otherwise translations will not work! Also make it with QUrl::fromLocalFile otherwise Windows messes things up
-	static Description * instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName);
+	static Description	* instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName);
+	static Upgrades		* instantiateUpgradesQml(	const QString & upgradesTxt,	const QUrl & url, const std::string & moduleName);
+	static QObject		* instantiateQml(			const QString & qml,			const QUrl & url, const std::string & moduleName, const std::string & whatAmILoading, const std::string & filename);
 
 	std::string toString();
 	void loadInfoFromDescriptionItem(Description * description);
@@ -222,7 +230,7 @@ signals:
 
 private:
 	QFileInfo			_moduleFolder;
-	moduleStatus		_status = moduleStatus::initializing;
+	moduleStatus		_status				= moduleStatus::initializing;
 	std::string			_name,
 						_title,
 						_icon,
@@ -232,7 +240,7 @@ private:
 						_loadLog			= "",
 						_installLog			= "",
 						_maintainer,
-						_description,
+						_descriptionTxt,
 						_modulePackage		= "",
 						_version;
 	bool				_installing			= false,
@@ -245,15 +253,13 @@ private:
 						_isCommon			= false;
 	AnalysisEntries		_menuEntries;
 	stringset			_importsR;
-
-	const char			*_modulePostFix		= "_module",
-						*_exposedPostFix	= "_exposed";
+	const char		*	_modulePostFix		= "_module",
+					*	_exposedPostFix		= "_exposed";
+	Description		*	_description		= nullptr;
+	Upgrades		*	_upgrades			= nullptr;
 
 	static std::string			_developmentModuleName;
 	static const std::string	_moduleDirPostfix;
-
-	Description		*	_descriptionObj		= nullptr;
-	bool m_error;
 };
 
 

@@ -65,7 +65,7 @@ void JASPImporter::loadDataSet(const std::string &path, boost::function<void(int
 
 void JASPImporter::loadDataArchive(const std::string &path, boost::function<void(int)> progressCallback)
 {
-	if (DataSetPackage::pkg()->dataArchiveVersion().major == 1)
+	if (DataSetPackage::pkg()->dataArchiveVersion().major() == 1)
 		loadDataArchive_1_00(path, progressCallback);
 	else
 		throw std::runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
@@ -271,7 +271,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 
 void JASPImporter::loadJASPArchive(const std::string &path, boost::function<void(int)> progressCallback)
 {
-	if (DataSetPackage::pkg()->archiveVersion().major >= 1 && DataSetPackage::pkg()->archiveVersion().major <= 3) //2.x version have a different analyses.json structure but can be loaded using the 1_00 loader. 3.x adds computed columns
+	if (DataSetPackage::pkg()->archiveVersion().major() >= 1 && DataSetPackage::pkg()->archiveVersion().major() <= 3) //2.x version have a different analyses.json structure but can be loaded using the 1_00 loader. 3.x adds computed columns
 		loadJASPArchive_1_00(path, progressCallback);
 	else
 		throw std::runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
@@ -444,10 +444,12 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const std::string &path,  c
 
 JASPImporter::Compatibility JASPImporter::isCompatible()
 {
-	if (DataSetPackage::pkg()->archiveVersion().major > JASPExporter::jaspArchiveVersion.major || DataSetPackage::pkg()->dataArchiveVersion().major > JASPExporter::dataArchiveVersion.major)
+	if (DataSetPackage::pkg()->archiveVersion().major()		> JASPExporter::jaspArchiveVersion.major() ||
+		DataSetPackage::pkg()->dataArchiveVersion().major() > JASPExporter::dataArchiveVersion.major() )
 		return JASPImporter::NotCompatible;
 
-	if (DataSetPackage::pkg()->archiveVersion().minor > JASPExporter::jaspArchiveVersion.minor || DataSetPackage::pkg()->dataArchiveVersion().minor > JASPExporter::dataArchiveVersion.minor)
+	if (DataSetPackage::pkg()->archiveVersion().minor()		> JASPExporter::jaspArchiveVersion.minor() ||
+		DataSetPackage::pkg()->dataArchiveVersion().minor() > JASPExporter::dataArchiveVersion.minor() )
 		return JASPImporter::Limited;
 
 	return JASPImporter::Compatible;

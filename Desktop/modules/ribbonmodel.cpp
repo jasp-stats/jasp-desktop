@@ -22,6 +22,8 @@
 #include "gui/messageforwarder.h"
 #include "log.h"
 
+using namespace Modules;
+
 RibbonModel * RibbonModel::_singleton = nullptr;
 
 RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())

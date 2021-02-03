@@ -8,19 +8,13 @@
 namespace Modules
 {
 
-const char * UpgradeChange::upgradeError::what() const noexcept
-{
-	//Just here to have an out-of-line virtual method so that clang and gcc don't complain so much
-	return std::runtime_error::what();
-}
-
 const char			*	_boolOp		= "_boolOp",
 					*	_args		= "_args",
 					*	_renamed	= "_renamed",
 					*	_copied		= "_copied",
-					*	_modified	= "_modified",
-					* logId = "!log!";;
-const std::string		prefixLog	= "\t\t";
+					*	_modified	= "_modified";
+
+
 
 
 BoolOp::BoolOp(Json::Value def)
@@ -38,7 +32,7 @@ BoolOp::BoolOp(Json::Value def)
 		_type = BoolOpTypeFromQString(tq(def.get(_boolOp, "AND").asString()).toUpper());
 
 		if(!def[_args].isArray())
-			throw UpgradeStep::upgradeLoadError(def, "Loading boolean conditional failed because \"args\" was not an array...");
+			throw upgradeLoadError(def, "Loading boolean conditional failed because \"args\" was not an array...");
 
 		for(const Json::Value & arg : def[_args])
 			if(arg.isObject())
@@ -47,20 +41,20 @@ BoolOp::BoolOp(Json::Value def)
 				else												_valArgs.push_back(arg);
 			}
 			else
-				throw UpgradeStep::upgradeLoadError(arg, "Could not parse arguments to boolean conditional!");
+				throw upgradeLoadError(arg, "Could not parse arguments to boolean conditional!");
 
 		if(_type == BoolOpType::NOT && _funcArgs.size() + _valArgs.size() != 1)
-			throw UpgradeStep::upgradeLoadError(def, "A boolean conditional with NOT was defined, but it was given more than one argument, this is not allowed!");
+			throw upgradeLoadError(def, "A boolean conditional with NOT was defined, but it was given more than one argument, this is not allowed!");
 	}
 	else
-		throw UpgradeStep::upgradeLoadError(def, "Could not parse boolean conditional... Make sure it is either a set of options or something like: { \"boolOp\":\"AND\", \"args\":[{\"someOption\":true}]}");
+		throw upgradeLoadError(def, "Could not parse boolean conditional... Make sure it is either a set of options or something like: { \"boolOp\":\"AND\", \"args\":[{\"someOption\":true}]}");
 }
 
 bool BoolOp::optionContainsConditional(const Json::Value & conditional, const Json::Value & options)
 {
 	for(const std::string & option : conditional.getMemberNames())
 		if(!options.isMember(option))
-			//throw UpgradeChange::upgradeError("There was an error updating because a boolean operator in a conditional depends on a non-existent option.\nThe option is: " + option + " and the boolean operator: '" + conditional.toStyledString() + "'");
+			//throw upgradeError("There was an error updating because a boolean operator in a conditional depends on a non-existent option.\nThe option is: " + option + " and the boolean operator: '" + conditional.toStyledString() + "'");
 			return false; //Actually makes more sense to just return false
 
 	for(const std::string & option : conditional.getMemberNames())
@@ -185,7 +179,7 @@ UpgradeChange::UpgradeChange(const Json::Value & upgradeStep)
 	const Json::Value & changes = upgradeStep["changes"];
 
 	if(!changes.isObject())
-		throw UpgradeStep::upgradeLoadError(changes, "Loading an upgrade step failed because the changes were not a json object, it should be. Each name is the name of the option that will be added, set to a certain value or removed.");
+		throw upgradeLoadError(changes, "Loading an upgrade step failed because the changes were not a json object, it should be. Each name is the name of the option that will be added, set to a certain value or removed.");
 
 
 	for(const std::string & option : changes.getMemberNames())

@@ -72,7 +72,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		Log::log() << "It is a builtin analysis, " << std::flush;
 		
 		Json::Value	&	versionJson		= analysisData["version"];
-		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
+		Version			version			= Version(versionJson.isNull() ? "0.0.0" : versionJson.asString()); //0.0.0 as module version to be sure we show the "made with old version". If the version was given we should make sure all the modules have a version > 0.14.2
 
 		QString			name			= tq(analysisData["name"].asString()),
 						module			= analysisData["module"].asString() != "" ? tq(analysisData["module"].asString()) : "Common",
@@ -88,7 +88,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		if(title == "")
 			title = tq(analysisEntry->title());
 		
-		analysis = create(analysisEntry, id, status, false, fq(title), "0.0.0", &optionsJson); //0.0.0 as module version to be sure we show the "made with old version"
+		analysis = create(analysisData, analysisEntry, id, status, false, fq(title), version.asString(3), &optionsJson); 
 	}
 	else
 	{
@@ -96,11 +96,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		
 		Log::log() << "It is a dynmod analysis with title: '" << title << "'" << std::endl;
 		
-		analysisEntry		= DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
-		analysis			= create(analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), &optionsJson);
+		analysisEntry		= Modules::DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
+		analysis			= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), &optionsJson);
 	}
-
-	analysis->loadExtraFromJSON(analysisData);
 
 	if(analysisEntry && analysisEntry->dynamicModule() && !analysisEntry->dynamicModule()->loaded())
 		analysisEntry->dynamicModule()->setLoadingNeeded();
@@ -111,13 +109,19 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	return analysis;
 }
 
-Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title, std::string moduleVersion, Json::Value *options)
+Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title, std::string moduleVersion, Json::Value *options)
 {
 	Analysis *analysis = new Analysis(id, analysisEntry, title, moduleVersion, options);
 
-	analysis->setResults(analysisEntry->getDefaultResults(), status);
+	analysis->checkDefaultTitleFromJASPFile(analysisData);
+	
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
+	
+	if(!analysisData.isNull())	analysis->loadResultsUserdataFromJASPFile(analysisData);
+	else						analysis->setResults(analysisEntry->getDefaultResults(), status);
+	
+
 
 	return analysis;
 }
@@ -506,7 +510,7 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 
 void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
 {
-	Modules::DynamicModule * dynamicModule = DynamicModules::dynMods()->dynamicModule(module.toStdString());
+	Modules::DynamicModule * dynamicModule = Modules::DynamicModules::dynMods()->dynamicModule(module.toStdString());
 
 	create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysisFunction)));
 }

@@ -50,6 +50,8 @@ EngineSync::EngineSync(QObject *parent)
 {
 	assert(!_singleton);
 	_singleton = this;
+	
+	using namespace Modules;
 
 	connect(Analyses::analyses(),		&Analyses::sendRScript,								this,						&EngineSync::sendRCode							);
 	connect(this,						&EngineSync::moduleLoadingFailed,					DynamicModules::dynMods(),	&DynamicModules::loadingFailed					);
@@ -171,7 +173,7 @@ EngineRepresentation * EngineSync::createNewEngine()
 
 void EngineSync::loadAllActiveModules()
 {
-	setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
+	setModuleWideCastVars(Modules::DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 }
 
 void EngineSync::start(int )
@@ -388,6 +390,8 @@ bool EngineSync::processScriptQueue()
 
 bool EngineSync::processDynamicModules()
 {
+	using namespace Modules;
+	
 	if(!amICastingAModuleRequestWide() && (DynamicModules::dynMods()->aModuleNeedsToBeLoadedInR() || DynamicModules::dynMods()->aModuleNeedsToBeUnloadedFromR()))
 	{
 		if(DynamicModules::dynMods()->aModuleNeedsToBeLoadedInR())			setModuleWideCastVars(DynamicModules::dynMods()->getJsonForPackageLoadingRequest());

@@ -5,10 +5,10 @@
 #include <vector>
 #include "jsonredirect.h"
 #include "enumutilities.h"
+#include "upgradeDefinitions.h"
+
 
 namespace Modules {
-
-typedef std::map<std::string, std::vector<std::string>> UpgradeMsgs; //option name -> list msgs. "" as option means entire analysis/form
 
 DECLARE_ENUM(BoolOpType, AND, OR, NOT, XOR);
 DECLARE_ENUM(ModifyType, Flatten); //Looks silly now but maybe we will have more then one possibility later ;)
@@ -33,16 +33,10 @@ private:
 	bool						_noOp = false;
 };
 
+///Part of the monolithic upgrade process as defined by upgrades.json
 class UpgradeChange
 {
 public:
-
-	struct upgradeError  : public std::runtime_error
-	{
-		upgradeError(std::string msg) : std::runtime_error(msg) {}
-		const char* what() const noexcept override;
-	};
-
 	UpgradeChange(const Json::Value & upgradeStep);
 
 	void applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const;

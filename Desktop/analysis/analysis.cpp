@@ -394,11 +394,19 @@ Json::Value Analysis::asJSON() const
 	return analysisAsJson;
 }
 
-void Analysis::loadExtraFromJSON(Json::Value & analysisData)
+void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 {
-	_titleDefault	= analysisData.get("titleDef", _titleDefault).asString();
-	_oldVersion		= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();
+	//Lets make sure the title changes if the default changed compared with last time. (and the user didnt change it manually of course)
+	std::string oldTitleDefault = analysisData.get("titleDef", _titleDefault).asString();
+	
+	if(_title == oldTitleDefault && _titleDefault != oldTitleDefault)
+		_title = _titleDefault;
+	
+	_oldVersion		= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();	
+}
 
+void Analysis::loadResultsUserdataFromJASPFile(const Json::Value & analysisData)
+{
 	Log::log() << "Now loading userdata and results for analysis " << _name << " from file." << std::endl;
 	setUserData(analysisData["userdata"]);
 	setResults(analysisData["results"], _status);
@@ -814,7 +822,7 @@ void Analysis::fitOldUserDataEtc()
 		std::map<std::string, std::string> oldToNew;
 
 		//Only do special fix for older ANOVA's
-		if(module() == "ANOVA" && Modules::Version(_oldVersion) < Modules::Version("0.12"))
+		if(module() == "ANOVA" && Version(_oldVersion) < Version("0.12"))
 		{
 			//Gotta do some manual repairing for https://github.com/jasp-stats/jasp-test-release/issues/649
 			//All of these replacements are based on the unittests.

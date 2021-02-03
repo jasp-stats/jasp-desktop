@@ -10,7 +10,7 @@ A module folder should look as follows:
 - ModuleName/
   - [inst/](#inst)
     - [Description.qml](#Descriptionqml)
-    - [Upgrade.qml](#Upgradeqml)
+    - [Upgrades.qml](#Upgradesqml)
     - [icons/](#icons)
     - [qml/](#qml)
     - [help/](#help)
@@ -145,9 +145,8 @@ Description
 </details>
 
 
-### Upgrade.qml
-**This will be rewritten later, when upgrade is no longer a json but a qml...**
-The (optional) upgrade.json file contains any upgrades that must be done on older, saved, versions of your analyses. So this is only of importance after you release a second or later version of your module and it will allow for seamless loading of these older files. For more information on this, see [the manual on upgrade.json](jasp-upgrade-json.md).
+### Upgrades.qml
+The optional Upgrades.qml file contains any upgrades that must be done on older, saved, versions of your analyses. So this is only of importance after you release a second or later version of your module and it will allow for seamless loading of these older files. For more information on this, see [the manual on Upgrades.qml](jasp-upgrade-qml.md).
 
 #### icons
 The icons folder is where you should place all icons you want to show, aka one for the ribbonbar that opens the [menu](#description-menu) and possibly more for use with headers and/or analyses. Preferably this is an [svg](https://nl.wikipedia.org/wiki/Scalable_Vector_Graphics) because this scales very gracefully. You could also use [png](https://nl.wikipedia.org/wiki/Portable_network_graphics) or [jpg](https://nl.wikipedia.org/wiki/JPEG) but since these do not scale very well they could make your icon look pretty bad on some computers.  If you specify an icon somewhere in [Description.qml](#Description.qml) you should include the extension but not the path. As an example, the file `ModuleName/inst/icons/myGorgeousIcon.svg` would be specified only as `myGorgeousIcon.svg` and JASP will make sure to retrieve it from this directory.

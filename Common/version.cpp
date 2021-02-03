@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2021 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,175 +14,96 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
-#include "../Common/version.h"
-#include <string.h>
-#include <iomanip>
+#include "version.h"
+#include <regex>
 #include <sstream>
-#include <stdio.h>
 
-//For https://github.com/jasp-stats/INTERNAL-jasp/issues/264 (major and minor defined by GNU C):
-#ifdef major
-#undef major
-#endif
-
-#ifdef minor
-#undef minor
-#endif
-
-Version::Version(unsigned char _major, unsigned char _minor, unsigned char _revision, unsigned short _build)
-	: major(_major), minor(_minor), revision(_revision), build(_build)
-{}
-
-Version::Version(std::string versionString)
+const char * Version::encodingError::what() const noexcept
 {
-	char buildString[8];
-	unsigned short buildIndex = 0;
+	//Just here to have an out-of-line virtual method so that clang and gcc don't complain so much
+	return std::runtime_error::what();
+}
 
-	int v0 = sscanf(versionString.c_str(), "%hhu.%hhu.%hhu.%hu", &major, &minor, &revision, &buildIndex);
-	bool error = v0 <= 0;
 
-	if (v0 == 4 && !error)
+Version::Version(std::string version)
+{
+	const static std::regex parseIt("(\\d+)(\\.(\\d+))?(\\.(\\d+))?(\\.(\\d+))?"); //(sub)groups: 1 3 5 7//0 is whole match/line
+
+	std::smatch found;
+	if(!std::regex_match(version, found, parseIt))
+		throw encodingError(version);
+
+	std::string majorStr	= found[1],
+				minorStr	= found[3],
+				releaseStr	= found[5],
+				fourthStr	= found[7];
+
+
+	try
 	{
-		build = 255 + buildIndex;
+		if(majorStr		!= "")	_major		= std::stoul(majorStr);
+		if(minorStr		!= "")	_minor		= std::stoul(minorStr);
+		if(releaseStr	!= "")	_release	= std::stoul(releaseStr);
+		if(fourthStr	!= "")	_fourth		= std::stoul(fourthStr);
 	}
-	else if (v0 < 4 && !error)
-	{
-		int v1 = sscanf(versionString.c_str(), "%hhu.%hhu.%hhu %7s %hu", &major, &minor, &revision, buildString, &buildIndex);
-		bool hasRevision = v1 >= 3;
-		if ( ! hasRevision)
-		{
-			revision = 0;
-			v1 = sscanf(versionString.c_str(), "%hhu.%hhu %7s %hu", &major, &minor, buildString, &buildIndex);
-		}
-
-		error = v1 <= 0;
-		if (! error)
-		{
-			bool hasBuild = v1 > 3;
-			bool hasBuildIndex = v1 == 5;
-			if ( ! hasRevision)
-			{
-				hasBuild = v1 > 2;
-				hasBuildIndex = v1 == 4;
-			}
-
-			if (hasBuild)
-			{
-				if (hasBuildIndex == true && strcmp(buildString, "Alpha") == 0)
-					build = buildIndex;
-				else if(hasBuildIndex == true && strcmp(buildString, "Beta") == 0)
-					build = 100 + buildIndex;
-				else if (hasBuildIndex == true && strcmp(buildString, "Release") == 0)
-					build = 255 + buildIndex;
-				else
-					error = true;
-			}
-			else
-				build = 255;
-		}
-	}
-
-	if (error)
-	{
-		major		= 0;
-		minor		= 0;
-		revision	= 0;
-		build		= 0;
-	}
+	catch(...) { throw encodingError(version); }
 }
 
-bool Version::operator>(const Version& version) const
+std::string Version::asString(size_t nums) const
 {
-	return ((this->major > version.major) ||
-		(this->major == version.major && this->minor > version.minor) ||
-		(this->major == version.major && this->minor == version.minor && this->revision > version.revision) ||
-		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build > version.build));
+	bool	addFourth	=				_fourth  > 0 || nums > 3,
+			addRelease	= addFourth  || _release > 0 || nums > 2,
+			addMinor	= addRelease || _minor   > 0 || nums > 1;
+
+	std::stringstream out;
+						out			<< std::to_string(_major);
+	if(addMinor)		out << "."	<< std::to_string(_minor);
+	if(addRelease)		out << "."	<< std::to_string(_release);
+	if(addFourth)		out << "."	<< std::to_string(_fourth);
+
+	return out.str();
 }
 
-bool Version::operator<(const Version& version) const
+void Version::swap(Version &other)
 {
-	return ((this->major < version.major) ||
-		(this->major == version.major && this->minor < version.minor) ||
-		(this->major == version.major && this->minor == version.minor && this->revision < version.revision) ||
-		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build < version.build));
+	std::swap(_major,	other._major	);
+	std::swap(_minor,	other._minor	);
+	std::swap(_release, other._release	);
+	std::swap(_fourth,  other._fourth	);
 }
 
-bool Version::operator>=(const Version& version) const
+bool	Version::operator ==	(const Version & other) const {	return !operator!=(other);						}
+bool	Version::operator <=	(const Version & other) const {	return operator==(other) || operator<(other);	}
+bool	Version::operator >=	(const Version & other) const {	return !operator<(other);						}
+bool	Version::operator >		(const Version & other) const { return operator!=(other) && operator>=(other);	}
+
+bool Version::operator !=	(const Version & other) const
 {
-	return ((this->major > version.major) ||
-		(this->major == version.major && this->minor > version.minor) ||
-		(this->major == version.major && this->minor == version.minor && this->revision > version.revision) ||
-		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build >= version.build));
+	return _major != other._major || _minor != other._minor || _release != other._release || _fourth != other._fourth;
 }
 
-bool Version::operator<=(const Version& version) const
+bool Version::operator <	(const Version & other) const
 {
-	return ((this->major < version.major) ||
-		(this->major == version.major && this->minor < version.minor) ||
-		(this->major == version.major && this->minor == version.minor && this->revision < version.revision) ||
-		(this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build <= version.build));
+	if(_major	< other._major)		return true;
+	if(_major	> other._major)		return false;
+
+	if(_minor	< other._minor)		return true;
+	if(_minor	> other._minor)		return false;
+
+	if(_release < other._release)	return true;
+	if(_release > other._release)	return false;
+
+	if(_fourth	< other._fourth)	return true;
+
+	return false;
 }
 
-bool Version::operator==(const Version& version) const
-{
-	return this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build == version.build;
-}
-
-bool Version::operator!=(const Version& version) const
-{
-	return this->major != version.major || this->minor != version.minor || this->revision != version.revision || this->build != version.build;
-}
-
-bool Version::isRelease() const
-{
-	return build >= 255;
-}
-
-bool Version::isAlpha() const
-{
-	return build >= 1 && build <= 100;
-}
-
-bool Version::isBeta() const
-{
-	return build >= 101 && build <= 254;
-}
-
-std::string Version::asString(bool addDebugFlag) const
-{
-	std::stringstream stream;
-
-	stream << (int)major << "." << (int)minor;
-
-	if (revision != 0 || build > 255 )
-		stream << "." << (int)revision;
-
-	/*if (isRelease()) {
-		if (build > 255)
-			stream << "." << (int)(build - 255);
-	}
-	else if (isAlpha())
-		stream << " Alpha " << (int)build;
-	else if (isBeta())
-		stream << " Beta " << (int)(build - 100);*/
-
-	if(addDebugFlag) //Moved from aboutmodel.cpp
-	{
-#ifdef JASP_DEBUG
-		stream << "-Debug";
-#endif
-
-	}
-
-	return stream.str();
-}
 
 bool Version::isEmpty() const
 {
 	return
-		major		== 0 &&
-		minor		== 0 &&
-		revision	== 0 &&
-		build		== 0;
+		_major		== 0 &&
+		_minor		== 0 &&
+		_release	== 0 &&
+		_fourth		== 0;
 }
