@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QUrl>
 
-#include "../upgrader/version.h"
+#include "version.h"
 #include "utilities/qutils.h"
 #include "jsonredirect.h"
 
@@ -43,7 +43,7 @@ public:
 	QString			title()				const { return _title;						}
 	QString			icon()				const { return _icon;						}
 	QString			description()		const { return _description;				}
-	QString			version()			const { return tq(_version.toString(3));	}
+	QString			version()			const { return tq(_version.asString(3));	}
 	QString			author()			const { return _author;						}
 	QString			maintainer()		const { return _maintainer;					}
 	QUrl			website()			const { return _website;					}
@@ -102,7 +102,7 @@ private:
 	QUrl					_website;
 	Version					_version;
 	bool					_requiresDataDef	= true;
-	DynamicModule		*	_dynMod			= nullptr;
+	DynamicModule		*	_dynMod				= nullptr;
 	QList<EntryBase*>		_entries;
 	QTimer					_timer;
 };

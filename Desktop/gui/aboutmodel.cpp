@@ -1,6 +1,7 @@
 #include "aboutmodel.h"
 #include "appinfo.h"
 #include "utilities/qutils.h"
+#include "mainwindow.h"
 
 bool AboutModel::visible() const
 {
@@ -9,7 +10,7 @@ bool AboutModel::visible() const
 
 QString AboutModel::version()
 {
-	return "Version " + tq(AppInfo::version.asString(true));
+	return MainWindow::versionString();
 }
 
 QString AboutModel::buildDate()
@@ -24,7 +25,11 @@ QString AboutModel::copyrightMessage()
 
 QString AboutModel::citation()
 {
-	return "JASP Team (" +  tq(AppInfo::getBuildYear()) + "). JASP (Version " + tq(AppInfo::version.asString(true)) +") [Computer software].";
+	return tq("JASP Team (" +  AppInfo::getBuildYear() + "). JASP (Version " + AppInfo::version.asString() +
+		#ifdef JASP_DEBUG
+			"-Debug-" + AppInfo::gitCommit //If it is a debug version that is actually being cited (highly unusual I suppose and downright dangerous, but ok.) In that scenario I'm pretty sure one would want to know the exact commit even though it might be ugly.
+		#endif
+			+ ") [Computer software].");
 }
 
 QString AboutModel::commit()

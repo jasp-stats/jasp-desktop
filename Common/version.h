@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2018 University of Amsterdam
+// Copyright (C) 2013-2021 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,33 +19,46 @@
 #define VERSION_H
 
 #include <string>
+#include <stdexcept>
 
 class Version
 {
 public:
-	Version(unsigned char _major, unsigned char _minor, unsigned char _revision, unsigned short _build);
+	struct encodingError  : public std::runtime_error
+	{
+		encodingError(std::string versionStr) : std::runtime_error("Module version not understood: " + versionStr) {}
+		const char* what() const noexcept override;
+	};
+
 	Version(std::string version);
-	Version() {}
+	Version(unsigned int major = 0, unsigned int minor = 0, unsigned int release = 0, unsigned int fourth = 0) : _major(major), _minor(minor), _release(release), _fourth(fourth) {}
 
-	bool operator<(const Version&)	const;
-	bool operator>(const Version&)	const;
-	bool operator<=(const Version&) const;
-	bool operator>=(const Version&) const;
-	bool operator==(const Version&) const;
-	bool operator!=(const Version&) const;
+	///By default this tries to minimize the string, so all trailing zeroes + dots are removed. Unless versionNumbersToInclude is set to something >1. If 2 then major and minor are always shown, etc.
+	std::string asString(size_t versionNumbersToInclude = 0) const;
 
-	bool isRelease()	const;
-	bool isAlpha()		const;
-	bool isBeta()		const;
-	bool isEmpty()		const;
 
-	std::string asString(bool addDebugFlag = false) const;
+	unsigned int major()	const { return _major; }
+	unsigned int minor()	const { return _minor; }
+	unsigned int release()	const { return _release; }
+	unsigned int fourth()	const { return _fourth; }
 
-	unsigned char	major		= 0,
-					minor		= 0,
-					revision	= 0,
-					build		= 0;
+	bool		isEmpty() const;
+
+	void		swap(Version &other );
+
+	bool		operator <	(const Version & other) const;
+	bool		operator <=	(const Version & other) const;
+	bool		operator >=	(const Version & other) const;
+	bool		operator >	(const Version & other) const;
+	bool		operator ==	(const Version & other) const;
+	bool		operator !=	(const Version & other) const;
+
+
+private:
+	unsigned int	_major		= 0,
+					_minor		= 0,
+					_release	= 0,
+					_fourth		= 0; //This is just here to be able to parse older files...
 };
-
 
 #endif // VERSION_H

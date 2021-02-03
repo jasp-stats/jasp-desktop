@@ -50,8 +50,8 @@ void JASPVersionChecker::downloadVersionFinished()
 
 	Version cv		= AppInfo::version,
 			lv		= version.toStdString();
-	long	cur		= cv.major*1000000 + cv.minor*100000 + cv.revision*1000 + cv.build,
-			latest	= lv.major*1000000 + lv.minor*100000 + lv.revision*1000 + lv.build;
+	long	cur		= cv.major()*1000000 + cv.minor()*100000 + cv.release()*1000 + cv.fourth(),
+			latest	= lv.major()*1000000 + lv.minor()*100000 + lv.release()*1000 + lv.fourth();
 
 	if (latest > cur)
 		emit showDownloadButton(downloadfile);

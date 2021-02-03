@@ -1542,15 +1542,13 @@ msgctxt "ModulesMenu|"
 msgid "Ready"
 msgstr ""
 
-#, fuzzy, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr "Installeren:"
+msgstr "Installeren: %1\n"
 
-#, fuzzy, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr "Laden:"
+msgstr "Laden: %1\n"
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"

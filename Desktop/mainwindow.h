@@ -131,7 +131,7 @@ public slots:
 
 	QQmlContext * giveRootQmlContext();
 
-	QString	versionString()	{ return "JASP " + QString::fromStdString(AppInfo::version.asString(true)); }
+	static QString	versionString();
 
 	void	openFolderExternally(QDir folder);
 	void	showLogFolder();
@@ -251,7 +251,7 @@ private:
 	ComputedColumnsModel		*	_computedColumnsModel	= nullptr;
 	FilterModel					*	_filterModel			= nullptr;
 	OnlineDataManager			*	_odm					= nullptr;
-	DynamicModules				*	_dynamicModules			= nullptr;
+	Modules::DynamicModules		*	_dynamicModules			= nullptr;
 	RibbonModel					*	_ribbonModel			= nullptr;
 	RibbonModelFiltered			*	_ribbonModelFiltered	= nullptr;
 	RibbonModelUncommon			*	_ribbonModelUncommon	= nullptr;

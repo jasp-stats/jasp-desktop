@@ -341,10 +341,18 @@ HEADERS += \
     modules/description/description.h \
     modules/description/descriptionchildbase.h \
     modules/description/entrybase.h \
+    modules/upgrader/changebase.h \
+    modules/upgrader/changecopy.h \
+    modules/upgrader/changejs.h \
+    modules/upgrader/changeremove.h \
+    modules/upgrader/changerename.h \
+    modules/upgrader/changesetvalue.h \
+    modules/upgrader/upgrade.h \
+    modules/upgrader/upgradeDefinitions.h \
     modules/upgrader/upgradechange.h \
     modules/upgrader/upgrader.h \
+    modules/upgrader/upgrades.h \
     modules/upgrader/upgradestep.h \
-    modules/upgrader/version.h \
     modules/ribbonmodeluncommon.h \
     qquick/datasetview.h \
     modules/analysisentry.h \
@@ -537,10 +545,18 @@ SOURCES += \
     modules/description/description.cpp \
     modules/description/descriptionchildbase.cpp \
     modules/description/entrybase.cpp \
+    modules/upgrader/changebase.cpp \
+    modules/upgrader/changecopy.cpp \
+    modules/upgrader/changejs.cpp \
+    modules/upgrader/changeremove.cpp \
+    modules/upgrader/changerename.cpp \
+    modules/upgrader/changesetvalue.cpp \
+    modules/upgrader/upgrade.cpp \
+    modules/upgrader/upgradeDefinitions.cpp \
     modules/upgrader/upgradechange.cpp \
     modules/upgrader/upgrader.cpp \
+    modules/upgrader/upgrades.cpp \
     modules/upgrader/upgradestep.cpp \
-    modules/upgrader/version.cpp \
     modules/ribbonmodeluncommon.cpp \
     qquick/datasetview.cpp \
     modules/analysisentry.cpp \

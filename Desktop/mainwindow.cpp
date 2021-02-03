@@ -84,6 +84,7 @@
 
 
 using namespace std;
+using namespace Modules;
 
 MainWindow * MainWindow::_singleton	= nullptr;
 
@@ -168,16 +169,10 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);
 
-	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",			"Can't make it");
-	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",	"Can't make it");
+	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
+	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
 
-	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description"						);
-	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis"						);
-	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator"						);
-	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle"						);
-	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",				"Superclass for menu entries, shouldn't be instantiated manually");
-	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",			"Can only be instantiated by JASP");
-	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",	"Superclass for Description info, shouldn't be instantiated manually");
+	_dynamicModules->registerQMLTypes();
 
 	QTimer::singleShot(0, [&]() { loadQML(); });
 
@@ -1700,4 +1695,14 @@ void MainWindow::setDownloadNewJASPUrl(QString downloadNewJASPUrl)
 QQmlContext * MainWindow::giveRootQmlContext()
 {
 	return _qml->rootContext();
+}
+
+QString MainWindow::versionString()
+{
+	return	"JASP "
+		+	QString::fromStdString(AppInfo::version.asString())
+#ifdef JASP_DEBUG
+		+	"-Debug"
+#endif
+			;
 }

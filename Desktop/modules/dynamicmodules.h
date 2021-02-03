@@ -23,9 +23,14 @@
 #include <map>
 #include <set>
 #include <QObject>
+#include "version.h"
 #include "dynamicmodule.h"
-#include <boost/filesystem.hpp>
 #include <QFileSystemWatcher>
+#include <boost/filesystem.hpp>
+#include "upgrader/upgradeDefinitions.h"
+
+namespace Modules
+{
 
 class DynamicModules : public QObject
 {
@@ -41,6 +46,7 @@ public:
 
 	void					initializeInstalledModules();
 	void					startUpCompleted()				{ _startingUp = false; }
+	void					registerQMLTypes();
 
 	bool					unpackAndInstallModule(		const	std::string & moduleZipFilename);
 	void					uninstallModule(			const	std::string & moduleName);
@@ -56,7 +62,10 @@ public:
 	std::wstring			moduleDirectoryW(			const	std::string & moduleName)	const;
 	QString					moduleDirectoryQ(			const	QString     & moduleName)	const;
 
-	bool					moduleIsInstalledByUser(const std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
+	bool					moduleIsInstalledByUser(	const	std::string & moduleName)	const { return boost::filesystem::exists(moduleDirectoryW(moduleName));	}
+
+	bool					moduleHasUpgradesToApply(	const	 std::string & module,		const std::string & function, const Version & version);
+	void					applyUpgrade(				const	 std::string & module,		const std::string & function, const Version	& version, Json::Value & analysesJson, Modules::UpgradeMsgs & msgs, Modules::StepsTaken & stepsTaken);
 
 	bool					aModuleNeedsToBeLoadedInR()					{ return !_modulesToBeLoaded.empty();				}
 	bool					aModuleNeedsToBeUnloadedFromR()				{ return !_modulesToBeUnloaded.empty();				}
@@ -165,9 +174,12 @@ private:
 															_startingUp					= true;
 	QDir													_devModSourceDirectory;
 	QFileSystemWatcher									*	_devModDescriptionWatcher	= nullptr,
+														*	_devModUpgradesWatcher		= nullptr,
 														*	_devModRWatcher				= nullptr,
 														*	_devModHelpWatcher			= nullptr;
 	Modules::DynamicModule								*	_devModule					= nullptr;
 };
+
+}
 
 #endif // DYNAMICMODULES_H

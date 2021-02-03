@@ -17,25 +17,14 @@
 //
 
 #include "utilities/qutils.h"
-
+#include <QQmlEngine>
+#include <QQmlContext>
 #include <QStringList>
-
 #include <QDateTime>
 #include "simplecrypt.h"
 #include "simplecryptkey.h"
 
 using namespace std;
-
-std::string fq(const QString &from)
-{
-	QByteArray bytes = from.toUtf8();
-	return std::string(bytes.constData(), bytes.length());
-}
-
-QString tq(const std::string &from)
-{
-	return QString::fromUtf8(from.c_str(), from.length());
-}
 
 QStringList tql(const std::vector<string> &from)
 {
@@ -156,4 +145,89 @@ const char * QProcessErrorToString(QProcess::ProcessError error)
 bool pathIsSafeForR(const QString & checkThis)
 {
 	return checkThis.toLocal8Bit() == checkThis.toUtf8();
+}
+
+Json::Value fqj(const QJSValue & jsVal)
+{
+	if(jsVal.isNull())		return Json::nullValue;
+	if(jsVal.isBool())		return jsVal.toBool();
+	if(jsVal.isNumber())	return jsVal.toNumber();
+	if(jsVal.isString())	return fq(jsVal.toString());
+
+	if(jsVal.isArray())
+	{
+		Json::Value  json	= Json::arrayValue;
+		const size_t length = jsVal.property("length").toUInt();
+
+		for(size_t i=0; i<length; i++)
+			json.append(fqj(jsVal.property(i)));
+
+		return json;
+	}
+
+	if(jsVal.isObject() && !(jsVal.isCallable() || jsVal.isQObject() || jsVal.isVariant()))
+	{
+		Json::Value json = Json::objectValue;
+		QJSValueIterator it(jsVal);
+
+		while(it.hasNext())
+		{
+			it.next();
+			json[fq(it.name())] = fqj(it.value());
+		}
+
+		return json;
+	}
+
+	return Json::nullValue; //Qt supports more types in QJSValue than Json::Value does. So make it null
+}
+
+QJSValue tqj(const Json::Value & json, const QQuickItem * qItem)
+{
+	switch(json.type())
+	{
+	default:
+	case Json::nullValue:		return QJSValue(QJSValue::SpecialValue::NullValue);
+	case Json::stringValue:		return QJSValue(tq(json.asString()));
+	case Json::intValue:
+	case Json::uintValue:
+	case Json::realValue:		return QJSValue(json.asDouble());
+	case Json::booleanValue:	return QJSValue(json.asBool());
+	case Json::arrayValue:
+	{
+		QJSValue array = QQmlEngine::contextForObject(qItem)->engine()->newArray(json.size());
+
+		for(size_t i=0; i<json.size(); i++)
+			array.setProperty(i, tqj(json[i], qItem));
+
+		return array;
+	}
+	case Json::objectValue:
+	{
+		QJSValue obj = QQmlEngine::contextForObject(qItem)->engine()->newObject();
+
+		for(const std::string & member : json.getMemberNames())
+			obj.setProperty(tq(member), tqj(json[member], qItem));
+
+		return obj;
+	}
+	}
+
+	return QJSValue(QJSValue::SpecialValue::NullValue); //In case some compiler doesnt get that I covered everything already.
+}
+
+QString QJSErrorToString(QJSValue::ErrorType errorType)
+{
+	switch(errorType)
+	{
+	default:
+	case QJSValue::ErrorType::GenericError:		return "A non-specific error...";
+	case QJSValue::ErrorType::RangeError:		return "A value did not match the expected set or range.";
+	case QJSValue::ErrorType::ReferenceError:	return "A non-existing variable referenced.";
+	case QJSValue::ErrorType::SyntaxError:		return "An invalid token or sequence of tokens was encountered that does not conform with the syntax of the language.";
+	case QJSValue::ErrorType::TypeError:		return "An operand or argument is incompatible with the type expected.";
+	case QJSValue::ErrorType::URIError:			return "A URI handling function was used incorrectly or the URI provided is malformed.";
+	}
+	
+	return "Could not determine error from type.";
 }

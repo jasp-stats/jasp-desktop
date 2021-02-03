@@ -61,8 +61,8 @@ public:
 
 	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 
-	Analysis	*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "", std::string moduleVersion = "", Json::Value *options = nullptr);
-	Analysis	*	create(Modules::AnalysisEntry * analysisEntry)													{ return create(analysisEntry, _nextId++);						}
+	Analysis	*	create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "", std::string moduleVersion = "", Json::Value *options = nullptr);
+	Analysis	*	create(Modules::AnalysisEntry * analysisEntry)													{ return create(Json::nullValue, analysisEntry, _nextId++);						}
 
 	Analysis	*	operator[](size_t index)	{ return _analysisMap[_orderedIds[index]]; }
 	Analysis	*	get(size_t id) const		{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}

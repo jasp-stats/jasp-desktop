@@ -1,16 +1,10 @@
-#include "upgradestep.h"
+	#include "upgradestep.h"
 #include <sstream>
 
 namespace Modules
 {
 
-const char * UpgradeStep::upgradeLoadError::what() const noexcept
-{
-	//Just here to have an out-of-line virtual method so that clang and gcc don't complain so much
-	return std::runtime_error::what();
-}
-
-UpgradeStep::UpgradeStep(const Json::Value & upgradeEntry, const std::string & module, DynamicModule * dynamicModule) : _toModule(module), _dynamicModule(dynamicModule)
+UpgradeStep::UpgradeStep(const Json::Value & upgradeEntry, const std::string & module) : _toModule(module)
 {
 	if(!upgradeEntry.isMember("from"))	throw upgradeLoadError(upgradeEntry, "UpgradeStep cannot be loaded because 'from' is missing from:");
 	if(!upgradeEntry.isMember("to"))	throw upgradeLoadError(upgradeEntry, "UpgradeStep cannot be loaded because 'to' is missing from:");
@@ -63,7 +57,7 @@ std::string UpgradeStep::toString() const
 		<< (sameModule	? "for module "	+ _fromModule	: "where module " + _fromModule + " -> " + _toModule)
 		<< ", "
 		<< (sameName	? "for analysis "	+ _fromFunction		: "where analysis " + _fromFunction + " to " + _toFunction)
-		<< ", for version " << _fromVersion.toString() << " -> " << _toVersion.toString()
+		<< ", for version " << _fromVersion.asString() << " -> " << _toVersion.asString()
 		<< " and with #" << _changes.size() << " optionchanges)";
 
 	return out.str();

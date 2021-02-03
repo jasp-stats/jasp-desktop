@@ -136,7 +136,8 @@ public:
 			void		remove();
 
 			Json::Value asJSON()		const;
-			void		loadExtraFromJSON(Json::Value & options);
+			void		checkDefaultTitleFromJASPFile(	const Json::Value & analysisData);
+			void		loadResultsUserdataFromJASPFile(const Json::Value & analysisData);
 			Json::Value createAnalysisRequestJson();
 
 	static	Status		parseStatus(std::string name);
