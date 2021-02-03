@@ -16,10 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import QtGraphicalEffects 1.12
-
+import QtQuick				2.11
+import QtQuick.Controls		2.4
+import QtGraphicalEffects	1.12
+import JASP.Controls		1.0 as JASPControl
 
 FocusScope
 {
@@ -94,170 +94,206 @@ FocusScope
 		z		: menuShadow.z + 1
 		color	: jaspTheme.fileMenuColorBackground
 		focus	: true
+		width	: column.maxWidth + (itemScrollbar.visible ? itemScrollbar.width : 0)
+		height	: menuOffset.y + column.maxHeight > menuMaxPos.y ? menuMaxPos.y - menuOffset.y : column.maxHeight
 
 		MouseArea
 		{
 			anchors.fill	: parent
+			acceptedButtons	: Qt.NoButton
+			onWheel			: wheel.accepted = true
 		}
 
-	}
-
-	Column
-	{
-		id		: column
-		x		: menuRectangle.x
-		y		: menuRectangle.y + (jaspTheme.menuPadding / 2)
-		z		: menuRectangle.z + 1
-		spacing	: jaspTheme.menuSpacing
-
-		Repeater
+		JASPControl.JASPScrollBar
 		{
-			id		: repeater
-			model	: menu.props === undefined ? undefined : menu.props["model"]
+			id				: itemScrollbar
+			flickable		: itemFlickable
+			manualAnchor	: true
+			vertical		: true
+			z				: 1337
 
-			onItemAdded:
+			anchors
 			{
-				if (index === 0)
-				{
-					menuRectangle.width  = 0;
-					menuRectangle.height = 0;
-				}
-
-				menuRectangle.width   = Math.max(item.width, menuRectangle.width);
-				menuRectangle.height += (item.height + jaspTheme.menuSpacing)
-
-				if (index === count - 1)
-				{
-					menuRectangle.height += (jaspTheme.menuPadding - jaspTheme.menuSpacing)
-					menu.resizeElements(menuRectangle.width);
-				}
+				top			: parent.top
+				right		: parent.right
+				bottom		: parent.bottom
+				margins		: 2
 			}
+		}
 
-			delegate: Loader
+		Flickable
+		{
+			id						: itemFlickable
+			anchors.fill			: parent
+			anchors.topMargin		: jaspTheme.menuPadding / 2
+			anchors.leftMargin		: jaspTheme.menuPadding / 2
+			anchors.rightMargin		: itemScrollbar.width + anchors.margins
+			clip					: true
+			boundsBehavior			: Flickable.StopAtBounds
+			contentWidth			: column.width
+			contentHeight			: column.height
+
+
+			Column
 			{
-				sourceComponent :
+				id		: column
+				z		: menuRectangle.z + 1
+				spacing	: jaspTheme.menuSpacing
+
+				property real maxWidth	: 0
+				property real maxHeight	: 0
+
+				Repeater
 				{
-					if (model.isSeparator !== undefined && model.isSeparator)			return menuSeparator;
-					else if (model.isGroupTitle !== undefined && model.isGroupTitle)	return menuGroupTitle;
+					id		: repeater
+					model	: menu.props === undefined ? undefined : menu.props["model"]
 
-					return menuDelegate
-				}
-
-				Component
-				{
-					id: menuDelegate
-
-					Rectangle
+					onItemAdded:
 					{
-						id:		menuItem
-						width:	initWidth
-						height: jaspTheme.menuItemHeight
-						color:	!model.isEnabled
-									? "transparent"
-									: mouseArea.pressed
-										? jaspTheme.buttonColorPressed
-										: mouseArea.containsMouse
-											? jaspTheme.buttonColorHovered
-											: "transparent"
-
-						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? menu._iconPad * 5 : menu._iconPad * 4)
-
-						Image
+						if (index === 0)
 						{
-							id						: menuItemImage
-							height					: menuItem.height - (2 * menu._iconPad)
-							width					: menuItem.height - menu._iconPad
-
-							source					: menuImageSource
-							smooth					: true
-							mipmap					: true
-							fillMode				: Image.PreserveAspectFit
-
-							anchors.left			: parent.left
-							anchors.leftMargin		: menu._iconPad * 2
-							anchors.verticalCenter	: parent.verticalCenter
+							column.maxWidth  = 0;
+							column.maxHeight = 0;
 						}
 
-						Text
+						column.maxHeight = column.maxHeight + (item.height + jaspTheme.menuSpacing)
+
+						if (index === count - 1)
+							column.maxHeight += (jaspTheme.menuPadding - jaspTheme.menuSpacing)
+
+						column.maxWidth = Math.max(item.width + jaspTheme.menuPadding, column.maxWidth);
+
+						if (index === count - 1)
+							menu.resizeElements(column.maxWidth);
+					}
+
+					delegate: Loader
+					{
+						sourceComponent :
 						{
-							id					: menuItemText
-							text				: displayText
-							font				: jaspTheme.font
-							color				: isEnabled ? jaspTheme.black : jaspTheme.gray
-							anchors
+							if (model.isSeparator !== undefined && model.isSeparator)			return menuSeparator;
+							else if (model.isGroupTitle !== undefined && model.isGroupTitle)	return menuGroupTitle;
+
+							return menuDelegate
+						}
+
+						Component
+						{
+							id: menuDelegate
+
+							Rectangle
 							{
-								left			: menu.hasIcons ? menuItemImage.right : parent.left
-								leftMargin		: menu.hasIcons ? menu._iconPad : menu._iconPad * 2
-								rightMargin		: menu._iconPad * 2
-								verticalCenter	: parent.verticalCenter
-							}
+								id:		menuItem
+								width:	initWidth
+								height: jaspTheme.menuItemHeight
+								color:	!model.isEnabled
+											? "transparent"
+											: mouseArea.pressed
+												? jaspTheme.buttonColorPressed
+												: mouseArea.containsMouse
+													? jaspTheme.buttonColorHovered
+													: "transparent"
 
+								property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? menu._iconPad * 5 : menu._iconPad * 4)
+
+								Image
+								{
+									id						: menuItemImage
+									height					: menuItem.height - (2 * menu._iconPad)
+									width					: menuItem.height - menu._iconPad
+
+									source					: menuImageSource
+									smooth					: true
+									mipmap					: true
+									fillMode				: Image.PreserveAspectFit
+
+									anchors.left			: parent.left
+									anchors.leftMargin		: menu._iconPad * 2
+									anchors.verticalCenter	: parent.verticalCenter
+								}
+
+								Text
+								{
+									id					: menuItemText
+									text				: displayText
+									font				: jaspTheme.font
+									color				: isEnabled ? jaspTheme.black : jaspTheme.gray
+									anchors
+									{
+										left			: menu.hasIcons ? menuItemImage.right : parent.left
+										leftMargin		: menu.hasIcons ? menu._iconPad : menu._iconPad * 2
+										rightMargin		: menu._iconPad * 2
+										verticalCenter	: parent.verticalCenter
+									}
+
+								}
+
+								MouseArea
+								{
+									id				: mouseArea
+									hoverEnabled	: true
+									anchors.fill	: parent
+									onClicked		: menu.props['functionCall'](index)
+									enabled			: isEnabled
+								}
+							}
 						}
 
-						MouseArea
+						Component
 						{
-							id				: mouseArea
-							hoverEnabled	: true
-							anchors.fill	: parent
-							onClicked		: menu.props['functionCall'](index)
-							enabled			: isEnabled
+							id: menuGroupTitle
+
+							Item
+							{
+								id		: menuItem
+								width	: initWidth
+								height	: jaspTheme.menuGroupTitleHeight
+
+								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
+
+								Image
+								{
+									id					: menuItemImage
+									height				: parent.height - (menu._iconPad * 2)
+									width				: height
+
+									source				: menuImageSource
+									smooth				: true
+									mipmap				: true
+									fillMode			: Image.PreserveAspectFit
+									visible				: menuImageSource !== ""
+
+									anchors
+									{
+										top				: parent.top
+										left			: parent.left
+										bottom			: parent.bottom
+										leftMargin		: visible ? menu._iconPad : 0
+									}
+								}
+
+								Text
+								{
+									id					: menuItemText
+									text				: displayText
+									font				: jaspTheme.fontGroupTitle
+									color				: jaspTheme.textEnabled
+									anchors
+									{
+										left			: menuItemImage.right
+										leftMargin		: menu._iconPad
+										verticalCenter	: parent.verticalCenter
+									}
+								}
+							}
+						}
+
+						Component
+						{
+							id	: menuSeparator
+							ToolSeparator { orientation	: Qt.Horizontal }
 						}
 					}
-				}
-
-				Component
-				{
-					id: menuGroupTitle
-
-					Item
-					{
-						id		: menuItem
-						width	: initWidth
-						height	: jaspTheme.menuGroupTitleHeight
-
-						property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
-
-						Image
-						{
-							id					: menuItemImage
-							height				: parent.height - (menu._iconPad * 2)
-							width				: height
-
-							source				: menuImageSource
-							smooth				: true
-							mipmap				: true
-							fillMode			: Image.PreserveAspectFit
-							visible				: menuImageSource !== ""
-
-							anchors
-							{
-								top				: parent.top
-								left			: parent.left
-								bottom			: parent.bottom
-								leftMargin		: visible ? menu._iconPad : 0
-							}
-						}
-
-						Text
-						{
-							id					: menuItemText
-							text				: displayText
-							font				: jaspTheme.fontGroupTitle
-							color				: jaspTheme.textEnabled
-							anchors
-							{
-								left			: menuItemImage.right
-								leftMargin		: menu._iconPad
-								verticalCenter	: parent.verticalCenter
-							}
-						}
-					}
-				}
-
-				Component
-				{
-					id	: menuSeparator
-					ToolSeparator { orientation	: Qt.Horizontal }
 				}
 			}
 		}
