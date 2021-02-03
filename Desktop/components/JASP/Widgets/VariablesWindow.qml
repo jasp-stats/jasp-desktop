@@ -110,7 +110,12 @@ FocusScope
 						bottom:			parent.bottom
 					}
 
-					model:					labelModel
+					model:						labelModel
+					toolTip:					qsTr("Edit the labels here or choose which values should be filtered out.")
+					mouseArea.enabled:			false
+					mouseArea.visible:			false
+					//flickableInteractive:		false
+					doubleClickWorkaround:		false
 					//cacheItems:				false //messes up updating of the table on mac somehow
 
 					property real filterColWidth:	60  * jaspTheme.uiScale
@@ -152,7 +157,6 @@ FocusScope
 					{
 						z:	-4
 
-
 						Rectangle
 						{
 							id:				selectionRectangle
@@ -171,24 +175,16 @@ FocusScope
 						MouseArea
 						{
 							anchors.fill:		selectionRectangle
-							acceptedButtons:	Qt.LeftButton
+							acceptedButtons:	columnIndex !== LabelModel.Filter ? Qt.LeftButton : Qt.NoButton
 							cursorShape:		Qt.PointingHandCursor
-							z:					2
-							
-							onClicked:			
+							z:					0
+							hoverEnabled: 		true
+
+							onClicked:	if(columnIndex !== LabelModel.Filter)
 							{
-								labelModel.singleClickForSelect(rowIndex) //Starts a timer... If no doubleClick comes within a certain time (like 500ms or so) labelModel will toggle selection
-								levelsTableView.forceActiveFocus(); //To take focus out of some TextInput
+								labelModel.toggleSelected(rowIndex, !((mouse.modifiers & Qt.ControlModifier) || (mouse.modifiers & Qt.MetaModifier)));
+								selectionRectangle.forceActiveFocus(); //To take focus out of some TextInput
 							}
-							
-							onDoubleClicked:	
-							{
-								labelModel.doubleClickSoonAfterSelect(rowIndex);
-								labelEdit.forceActiveFocus()
-							}
-												
-							enabled:			!labelEdit.activeFocus && columnIndex !== LabelModel.Filter
-							visible:			enabled
 						}
 
 						Button
@@ -198,6 +194,7 @@ FocusScope
 							visible:		columnIndex === LabelModel.Filter
 							checked:		itemText === "true"
 							anchors.fill:	parent
+							z:				-1
 
 							onClicked:		
 							{
@@ -238,19 +235,26 @@ FocusScope
 
 						TextInput
 						{
-							id:				labelEdit
-							visible:		columnIndex === LabelModel.Label
+							id:					labelEdit
+							visible:			columnIndex === LabelModel.Label
 
-							color:			jaspTheme.textEnabled
+							color:				jaspTheme.textEnabled
 
-							text:			itemText
-							font:			jaspTheme.font
-							clip:			true
-							selectByMouse:	true
-							autoScroll:		true
+							text:				itemText
+							font:				jaspTheme.font
+							clip:				true
+							selectByMouse:		true
+							autoScroll:			true
+							z:					1
 
-							anchors.fill:	parent
-							verticalAlignment: Text.AlignVCenter
+							anchors
+							{
+								top:			parent.top
+								left:			parent.left
+								bottom:			parent.bottom
+							}
+							width:				Math.min(Math.max(contentWidth, 20), parent.width) //Minimal contentWidth to allow editing after label set to ""
+							verticalAlignment:	Text.AlignVCenter
 
 							property int chosenColumnWas: -1
 
@@ -278,7 +282,8 @@ FocusScope
 								anchors.fill:		parent
 								acceptedButtons:	Qt.NoButton
 								cursorShape:		Qt.IBeamCursor
-								z:					0
+								hoverEnabled:		true
+								z:					3
 							}
 						}
 					}
