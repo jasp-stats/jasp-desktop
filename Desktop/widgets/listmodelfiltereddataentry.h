@@ -61,6 +61,7 @@ signals:
 	void	extraColChanged(QString extraCol);
 
 private slots:
+	void	dataSetChangedHandler();
 	void	runFilter(QString filter);
 
 private:
@@ -75,6 +76,10 @@ private:
 	int							_editableColumn = 0;
 	QStringList					_dataColumns,
 								_extraColsStr;
+	QString						_colName,
+								_extraCol,
+								_filter;
+
 };
 
 #endif // LISTMODELFILTEREDDATAENTRY_H

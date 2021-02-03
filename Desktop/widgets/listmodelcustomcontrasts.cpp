@@ -175,7 +175,7 @@ void ListModelCustomContrasts::_resetValuesEtc()
 		for (int i = 0; i < _tableView->initialColumnCount(); i++)
 		{
 			for (int row = 0; row < newMaxRows; row++)
-				contrasts.push_back(_tableView->defaultEmptyValue());
+				contrasts.push_back(_tableView->defaultValue());
 			newValues.push_back(contrasts);
 		}
 	}
@@ -194,7 +194,7 @@ void ListModelCustomContrasts::_resetValuesEtc()
 			}
 
 			for (int row = 0; row < newMaxRows; row++)
-				contrasts.push_back(rowMapping[row] >= 0 ? _tableTerms.values[oldContrastIndex][rowMapping[row]] : _tableView->defaultEmptyValue());
+				contrasts.push_back(rowMapping[row] >= 0 ? _tableTerms.values[oldContrastIndex][rowMapping[row]] : _tableView->defaultValue());
 
 			newValues.push_back(contrasts);
 		}
@@ -258,6 +258,16 @@ void ListModelCustomContrasts::setup()
 			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::termsChanged, this, &ListModelCustomContrasts::factorsSourceChanged);
 		}
 	}
+}
+
+QString ListModelCustomContrasts::getItemInputType(const QModelIndex &index) const
+{
+	if (index.column() >= _tableTerms.variables.length())
+	{
+		if (_tableView->itemType() == JASPControl::ItemType::Double)	return "double";
+		else															return "formula";
+	}
+	else																return "string";
 }
 
 int ListModelCustomContrasts::getMaximumColumnWidthInCharacters(size_t) const

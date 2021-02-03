@@ -87,6 +87,7 @@ public:
 	enum class AssignType	{ AssignDefault		= static_cast<int>(ListViewType::AvailableInteraction)	+ 1,	AssignCross, AssignMainEffects, AssignInteraction, AssignAll2Way, AssignAll3Way, AssignAll4Way, AssignAll5Way };
 	enum class TextType		{ TextTypeDefault	= static_cast<int>(AssignType::AssignAll5Way)			+ 1,	TextTypeModel, TextTypeRcode, TextTypeJAGSmodel, TextTypeSource, TextTypeLavaan };
 	enum class ModelType	{ Simple			= static_cast<int>(TextType::TextTypeLavaan)			+ 1,	CustomContrasts, MultinomialChi2Model, JAGSDataInputModel, FilteredDataEntryModel };
+	enum class ItemType		{ String			= static_cast<int>(ModelType::FilteredDataEntryModel)	+ 1,	Integer, Double	};
 
 	Q_ENUM(ControlType)
 	Q_ENUM(Inclusive)
@@ -95,6 +96,7 @@ public:
 	Q_ENUM(AssignType)
 	Q_ENUM(TextType)
 	Q_ENUM(ModelType)
+	Q_ENUM(ItemType)
 
 	JASPControl(QQuickItem *parent = nullptr);
 

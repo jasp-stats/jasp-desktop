@@ -33,6 +33,7 @@ Json::Value BoundControlContrastsTableView::createJson()
 
 	QStringList variables;
 	QVector<QVector<QVariant> > allLables;
+	Json::Value defaultValue = _defaultValue();
 
 	contrastsModel->getVariablesAndLabels(variables, allLables);
 
@@ -59,23 +60,22 @@ Json::Value BoundControlContrastsTableView::createJson()
 			col++;
 
 			result.append(row);
-
 		}
 
 		if (_tableView->initialColumnCount() > 0)
 		{
-			std::string defValue = fq(_tableView->defaultEmptyValue());
+			Json::Value defaultValue;
 
 			for (int colIndex = 0; colIndex < _tableView->initialColumnCount(); colIndex++)
 			{
 				Json::Value row(Json::objectValue);
-				row["name"] = fq(contrastsModel->getDefaultColName(variables.length() + colIndex));
+				row["name"] = fq(contrastsModel->getDefaultColName(size_t(variables.length() + colIndex)));
 				row["levels"] = rowNames;
 				row["isContrast"] = true;
 
 				Json::Value values(Json::arrayValue);
 				for (size_t i = 0; i < rowNames.size(); i++)
-					values.append(defValue);
+					values.append(defaultValue);
 				row["values"] = values;
 
 				result.append(row);

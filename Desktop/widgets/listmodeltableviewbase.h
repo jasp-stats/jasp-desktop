@@ -84,7 +84,7 @@ public:
 	virtual		QString				getDefaultColName(size_t index)				const;
 	virtual		QString				getDefaultRowName(size_t index)				const	{ return tr("Row %1").arg(index); }
 	virtual		bool				isEditable(const QModelIndex &)				const	{ return true; }
-	virtual		QString				getItemInputType(const QModelIndex &)		const	{ return "string"; }
+	virtual		QString				getItemInputType(const QModelIndex &)		const;
 
 	const		TableTerms	&		tableTerms()								const { return _tableTerms;		}
 				Terms				termsEx(const QString& what)				override;

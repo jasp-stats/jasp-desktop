@@ -49,9 +49,10 @@ public:
 	void						bindTo(const Json::Value &value)			override	{ _boundControl->bindTo(value);						}
 	const Json::Value&			boundValue()								override	{ return _boundControl->boundValue();				}
 	bool						isJsonValid(const Json::Value& optionValue) override	{ return _boundControl->isJsonValid(optionValue);	}
-	void						updateOption()								override	{ return _boundControl->updateOption();				}
+	void						resetBoundValue()							override	{ return _boundControl->resetBoundValue();				}
 	Json::Value					createJson()								override	{ return _boundControl->createJson();				}
 	void						setBoundValue(const Json::Value& value, bool emitChange = true) override	{ return _boundControl->setBoundValue(value, emitChange);	}
+	std::vector<std::string>	usedVariables()								override	{ return _boundControl->usedVariables();			}
 
 	ListViewType				listViewType()						const				{ return _listViewType;								}
 	BoundControl*				boundControl()								override	{ return _boundControl;								}

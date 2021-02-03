@@ -36,43 +36,19 @@ TableViewBase::TableViewBase(QQuickItem* parent)
 
 void TableViewBase::setUpModel()
 {
-	QString tableType	= property("tableType").toString(),
-			itemType	= property("itemType").toString();
+	QString tableType	= property("tableType").toString();
 
 	switch (modelType())
 	{
-	case ModelType::MultinomialChi2Model	:
-	{
-		setInitialColumnCount(1);
-		setDefaultEmptyValue("1");
-		_tableModel	= new ListModelMultinomialChi2Test(	this, tableType	);
-		break;
-	}
-	case ModelType::JAGSDataInputModel		:
-	{
-		setDefaultEmptyValue("...");
-		_tableModel	= new ListModelJAGSDataInput(		this, tableType	);
-		break;
-	}
-	case ModelType::CustomContrasts			:
-	{
-		_tableModel = new ListModelCustomContrasts(		this, tableType	);
-		setDefaultEmptyValue("0");
-		break;
-	}
-	case ModelType::FilteredDataEntryModel	:	_tableModel = new ListModelFilteredDataEntry(	this, tableType	); break;
+	case ModelType::MultinomialChi2Model	: _tableModel = new ListModelMultinomialChi2Test(	this, tableType	);	break;
+	case ModelType::JAGSDataInputModel		: _tableModel = new ListModelJAGSDataInput(			this, tableType	);	break;
+	case ModelType::CustomContrasts			: _tableModel = new ListModelCustomContrasts(		this, tableType	);	break;
+	case ModelType::FilteredDataEntryModel	: _tableModel = new ListModelFilteredDataEntry(		this, tableType	);	break;
 	case ModelType::Simple					:
-	default									:
-	{
-		setDefaultEmptyValue("1");
-		_tableModel = new ListModelTableViewBase(     this, tableType );
-		break;
-	}
+	default									: _tableModel = new ListModelTableViewBase(			this, tableType );	break;
 	}
 
 	JASPListControl::setUpModel();
-
-	_tableModel->setItemType(itemType);
 
 	connect(this, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));
 	connect(this, SIGNAL(removeColumn(int)),				this, SLOT(removeColumnSlot(int)));
@@ -150,6 +126,16 @@ void TableViewBase::rScriptDoneHandler(const QString & result)
 		_tableModel->rScriptDoneHandler(result);
 }
 
+QVariant TableViewBase::defaultValue()
+{
+	if (itemType() == JASPControl::ItemType::Double)
+		return defaultEmptyValue().toDouble();
+	else if (itemType() == JASPControl::ItemType::Integer)
+		return defaultEmptyValue().toInt();
+	else
+		return defaultEmptyValue();
+}
+
 void TableViewBase::refreshMe()
 {
 	if(_tableModel)
@@ -159,5 +145,5 @@ void TableViewBase::refreshMe()
 void TableViewBase::termsChangedHandler()
 {
 	if (_boundControl)
-		_boundControl->updateOption();
+		_boundControl->resetBoundValue();
 }

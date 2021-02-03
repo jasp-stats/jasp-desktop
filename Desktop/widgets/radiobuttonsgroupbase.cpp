@@ -81,8 +81,6 @@ void RadioButtonsGroupBase::_getRadioButtons(QQuickItem* item, QList<RadioButton
 
 void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 {
-	BoundControlBase::bindTo(jsonValue);
-
 	string value = jsonValue.asString();
 	if (!value.empty())
 	{
@@ -100,6 +98,8 @@ void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 			setProperty("value", _checkedButton->name());
 		}
 	}
+
+	BoundControlBase::bindTo(jsonValue);
 }
 
 Json::Value RadioButtonsGroupBase::createJson()

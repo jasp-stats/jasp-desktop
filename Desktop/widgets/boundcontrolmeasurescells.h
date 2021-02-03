@@ -33,7 +33,7 @@ public:
 	bool		isJsonValid(const Json::Value& optionValue) override;
 	Json::Value	createJson()								override;
 	void		bindTo(const Json::Value &value)			override;
-	void		updateOption()								override;
+	void		resetBoundValue()							override;
 
 	void		addFactorModel(ListModelRepeatedMeasuresFactors* factorModel);
 	Terms		getLevels();

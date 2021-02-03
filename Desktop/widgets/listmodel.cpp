@@ -347,43 +347,27 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	if (row_t >= myTerms.size())
 		return QVariant();
 
-	if (role == Qt::DisplayRole || role == ListModel::NameRole)
+	switch (role)
+	{
+	case Qt::DisplayRole:
+	case ListModel::NameRole:			return QVariant(myTerms.at(row_t).asQString());
+	case ListModel::SelectableRole:		return !myTerms.at(row_t).asQString().isEmpty();
+	case ListModel::SelectedRole:		return _selectedItems.contains(row);
+	case ListModel::RowComponentRole:	return _rowControlsMap.size() > 0 ? QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getRowObject()) : QVariant();
+	case ListModel::TypeRole:			return listView()->containsVariables() ? "variable" : "";
+	case ListModel::ColumnTypeRole:
+	case ListModel::ColumnTypeIconRole:
+	case ListModel::ColumnTypeDisabledIconRole:
 	{
 		const Term& term = myTerms.at(row_t);
-		return QVariant(term.asQString());
+		if (!listView()->containsVariables() || term.size() != 1)	return "";
+		if (role == ListModel::ColumnTypeRole)						return requestInfo(term, VariableInfo::VariableTypeName);
+		else if (role == ListModel::ColumnTypeIconRole)				return requestInfo(term, VariableInfo::VariableTypeIcon);
+		else if (role == ListModel::ColumnTypeDisabledIconRole)		return requestInfo(term, VariableInfo::VariableTypeDisabledIcon);
+		break;
 	}
-	if (role == ListModel::SelectableRole)
-		return !myTerms.at(row_t).asQString().isEmpty();
-	if (role == ListModel::SelectedRole)
-	{
-		if (_selectedItems.contains(row))
-			return true;
-		else
-			return false;
 	}
-	if (role == ListModel::RowComponentRole)
-	{
-		if (_rowControlsMap.size() > 0)
-			return QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getRowObject());
-		else
-			return QVariant();
-	}
-	
-	if (!listView()->containsVariables())
-		return QVariant();
-	
-	if (role == ListModel::TypeRole)
-		return QVariant("variable");
-	else
-	{
-		const Term& term = myTerms.at(row_t);
-		if (term.size() != 1)	return QVariant();
 
-		if (role == ListModel::ColumnTypeRole)					return requestInfo(term, VariableInfo::VariableTypeName);
-		else if (role == ListModel::ColumnTypeIconRole)			return requestInfo(term, VariableInfo::VariableTypeIcon);
-		else if (role == ListModel::ColumnTypeDisabledIconRole)	return requestInfo(term, VariableInfo::VariableTypeName);
-	}
-	
 	return QVariant();
 }
 

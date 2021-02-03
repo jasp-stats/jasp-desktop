@@ -23,6 +23,7 @@
 ListModelInputValue::ListModelInputValue(JASPListControl* listView, int minRows)
 	: ListModel(listView), _minRows(minRows)
 {
+	_needsSource = false;
 }
 
 

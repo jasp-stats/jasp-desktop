@@ -69,8 +69,6 @@ QString TextInputBase::_getDoubleArrayValue(const std::vector<double>& doubleVal
 
 void TextInputBase::bindTo(const Json::Value& value)
 {
-	BoundControlBase::bindTo(value);
-
 	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:
@@ -154,6 +152,8 @@ void TextInputBase::bindTo(const Json::Value& value)
 	}
 
 	setProperty("value", _value);
+
+	BoundControlBase::bindTo(value);
 }
 
 Json::Value TextInputBase::createJson()

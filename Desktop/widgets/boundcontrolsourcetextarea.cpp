@@ -21,8 +21,9 @@
 
 void BoundControlSourceTextArea::bindTo(const Json::Value &value)
 {
-	BoundControlTextArea::bindTo(value);
 	_setSourceTerms();
+
+	BoundControlTextArea::bindTo(value);
 }
 
 void BoundControlSourceTextArea::checkSyntax()

@@ -30,22 +30,22 @@ class BoundControlBase : public BoundControl
 {
 public:
 	BoundControlBase(JASPControl* control);
-	virtual				~BoundControlBase()												{}
+	virtual				~BoundControlBase()	{}
 
-	Json::Value			createJson()													override { return Json::nullValue;		}
-	void				bindTo(const Json::Value& value)								override { setBoundValue(value, false); }
-	const Json::Value&	boundValue()													override;
-	void				updateOption()													override { }
-	void				setBoundValue(const Json::Value& value, bool emitChange = true)	override;
-	bool				isComputedColumn()												override { return _isComputedColumn;	}
-	void				setIsRCode(std::string key = "");
-	void				setIsColumn(bool isComputed, columnType type = columnType::unknown);
+	Json::Value					createJson()														override { return Json::nullValue;		}
+	void						bindTo(const Json::Value& value)									override { setBoundValue(value, false); }
+	const Json::Value&			boundValue()														override;
+	void						resetBoundValue()													override { }
+	void						setBoundValue(const Json::Value& value, bool emitChange = true)		override;
+	std::vector<std::string>	usedVariables()														override;
+	void						setIsRCode(std::string key = "");
+	void						setIsColumn(bool isComputed, columnType type = columnType::unknown);
 
 protected:
 	inline const std::string&	getName();
 
-	void				_readTableValue(const Json::Value& value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues);
-	void				_setTableValue(const Terms& terms, const QMap<QString, RowControls*>& allControls, const std::string& key, bool hasMultipleTerms);
+	void						_readTableValue(const Json::Value& value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues);
+	void						_setTableValue(const Terms& terms, const QMap<QString, RowControls*>& allControls, const std::string& key, bool hasMultipleTerms);
 
 	JASPControl*	_control			= nullptr;
 	bool			_isComputedColumn	= false,

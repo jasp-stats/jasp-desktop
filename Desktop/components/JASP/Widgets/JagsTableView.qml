@@ -27,8 +27,8 @@ BasicThreeButtonTableView
 	id					: jagsTableView
 
 	tableType			: "userDataInput"
-	itemType			: "string"
 	modelType			: JASP.JAGSDataInputModel
+	itemType			: JASP.String
 	initialColumnCount	: 2
 	initialRowCount		: 0
 	showButtons			: tableType === "userDataInput"

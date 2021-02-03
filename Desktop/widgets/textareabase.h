@@ -44,10 +44,11 @@ public:
 
 	void						bindTo(const Json::Value &value)			override	{ _boundControl->bindTo(value);						}
 	bool						isJsonValid(const Json::Value& optionValue) override	{ return _boundControl->isJsonValid(optionValue);	}
-	void						updateOption()								override	{ return _boundControl->updateOption();				}
+	void						resetBoundValue()							override	{ return _boundControl->resetBoundValue();				}
 	const Json::Value&			boundValue()								override	{ return _boundControl->boundValue();				}
 	Json::Value					createJson()								override	{ return _boundControl->createJson();				}
 	void						setBoundValue(const Json::Value& value, bool emitChange = true) override	{ return _boundControl->setBoundValue(value, emitChange);	}
+	std::vector<std::string>	usedVariables()								override	{ return _boundControl->usedVariables();			}
 
 	ListModel*					model()								const	override	{ return _model; }
 	ListModelTermsAvailable*	availableModel()					const				{ return _model; }

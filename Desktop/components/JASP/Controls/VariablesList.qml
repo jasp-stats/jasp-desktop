@@ -503,8 +503,8 @@ VariablesListBase
 					anchors.verticalCenter:	parent.verticalCenter
 					source:					variablesList.showVariableTypeIcon && itemRectangle.isVariable ? (enabled ? model.columnTypeIcon : model.columnTypeDisabledIcon) : ""
 					visible:				source
-					mipmap:	true
-					smooth:	true
+					mipmap:					true
+					smooth:					true
 				}
 
 				Text

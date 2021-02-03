@@ -12,46 +12,34 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent, Q
 	_keepRowsOnReset = false;
 	setAcceptedRowsTrue();
 
-	setFilter(	_tableView->property("filter").toString());
-	setColName(	_tableView->property("colName").toString());
-	setExtraCol(_tableView->property("extraCol").toString());
-
-	_tableView->setProperty("itemType", "double"); //Force itemtype to be double
-
-	connect(this,				&ListModelFilteredDataEntry::filterChanged,		this, &ListModelFilteredDataEntry::runFilter										);
-	connect(_tableView,			SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))														);
-	connect(_tableView,			SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))														);
-	connect(_tableView,			SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))													);
-	connect(this,				&ListModelFilteredDataEntry::filterChanged,		[&](){ _tableView->setProperty("filter",	_tableTerms.filter);	}				);
-	connect(this,				&ListModelFilteredDataEntry::colNameChanged,	[&](){ _tableView->setProperty("colName",	_tableTerms.colName);	}				);
-
-	if(_tableTerms.colNames.size() == 0 && !_tableTerms.colName.isEmpty())
-		_tableTerms.colNames.push_back(_tableTerms.colName);
+	connect(this,				&ListModelFilteredDataEntry::filterChanged,		this, &ListModelFilteredDataEntry::runFilter				);
+	connect(DataSetTableModel::singleton(),	&DataSetTableModel::modelReset,		this, &ListModelFilteredDataEntry::dataSetChangedHandler,	Qt::QueuedConnection	);
+	connect(_tableView,			SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))								);
+	connect(_tableView,			SIGNAL(colNameSignal(QString)),					this, SLOT(setColName(QString))								);
+	connect(_tableView,			SIGNAL(extraColSignal(QString)),				this, SLOT(setExtraCol(QString))							);
 
 }
 
-//TODO: This is not called anymore, but should be handled by termsChangedHandler
-/*void ListModelFilteredDataEntry::dataSetChangedHandler()
+void ListModelFilteredDataEntry::dataSetChangedHandler()
 {
-	//std::cout << "ListModelFilteredDataEntry::dataSetChangedHandler()" << std::endl;
 	setAcceptedRowsTrue();
 	runFilter(_filter);
-}*/
+}
 
 void ListModelFilteredDataEntry::setFilter(QString filter)
 {
-	if (_tableTerms.filter == filter)
+	if (_filter == filter)
 		return;
 
-	_tableTerms.filter = filter;
-	emit filterChanged(_tableTerms.filter);
+	_filter = filter;
+	emit filterChanged(_filter);
 }
 
 void ListModelFilteredDataEntry::runFilter(QString filter)
 {
 	//std::cout << "ListModelFilteredDataEntry::runFilter(" << filter.toStdString() << ")" << std::endl;
 
-	if(getDataSetRowCount() > 0)
+	if (getDataSetRowCount() > 0)
 		runRScript(	"filterResult <- {" + filter + "};"										"\n"
 					"if(!is.logical(filterResult)) filterResult <- rep(TRUE, rowcount);"	"\n"
 					"return(paste0(sep=' ', collapse='', as.character(filterResult)));"		"\n"
@@ -60,8 +48,7 @@ void ListModelFilteredDataEntry::runFilter(QString filter)
 
 size_t ListModelFilteredDataEntry::getDataSetRowCount() const
 {
-	// ColumnsModel is a transpose proxy of the dataset model. So columnCount is the row count of the dataset
-	return size_t(ColumnsModel::singleton()->columnCount());
+	return size_t(DataSetTableModel::singleton()->rowCount());
 }
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
@@ -74,12 +61,12 @@ void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
 
 	auto newRows = std::vector<bool>(dataSetRows, true);
 
-	if(dataSetRows == 0)
+	if (dataSetRows == 0)
 		return;
 
 	size_t i = 0;
-	for(const QString & value : values)
-		if(value == "TRUE" || value == "FALSE")
+	for (const QString & value : values)
+		if (value == "TRUE" || value == "FALSE")
 		{
 			if(i < dataSetRows)
 				newRows[i] = value == "TRUE";
@@ -95,17 +82,17 @@ void ListModelFilteredDataEntry::setAcceptedRows(std::vector<bool> newRows)
 	//std::cout << "setAcceptedRows(# newRows == " << newRows.size() << ")" << std::endl;
 	bool changed = newRows.size() != _acceptedRows.size();
 
-	if(changed)
+	if (changed)
 		_acceptedRows = newRows;
 	else
-		for(size_t i=0; i<_acceptedRows.size(); i++)
-			if(_acceptedRows[i] != newRows[i])
+		for (size_t i=0; i<_acceptedRows.size(); i++)
+			if (_acceptedRows[i] != newRows[i])
 			{
 				_acceptedRows[i] = newRows[i];
 				changed = true;
 			}
 
-	if(changed)
+	if (changed)
 	{
 		emit acceptedRowsChanged();
 		fillTable();
@@ -114,7 +101,7 @@ void ListModelFilteredDataEntry::setAcceptedRows(std::vector<bool> newRows)
 
 void ListModelFilteredDataEntry::itemChanged(int column, int row, QVariant value, QString)
 {
-	if(column != _editableColumn)
+	if (column != _editableColumn)
 		return;
 
 	//std::cout << "ListModelFilteredDataEntry::itemChanged(" << column << ", " << row << ", " << value << ")" << std::endl;
@@ -130,7 +117,7 @@ void ListModelFilteredDataEntry::itemChanged(int column, int row, QVariant value
 
 			emit dataChanged(index(row, column), index(row, column), { Qt::DisplayRole });
 
-			if(gotLarger)
+			if (gotLarger)
 				emit headerDataChanged(Qt::Orientation::Horizontal, column, column);
 
 
@@ -154,8 +141,8 @@ void ListModelFilteredDataEntry::sourceTermsReset()
 	_dataColumns			= sourceTerms.asQList();
 	_tableTerms.colNames	= _dataColumns;
 
-	if(_tableTerms.extraCol != "")
-		_tableTerms.colNames.push_back(_tableTerms.extraCol);
+	if (_extraCol != "")
+		_tableTerms.colNames.push_back(_extraCol);
 
 	if (!colName.isEmpty())
 	{
@@ -172,16 +159,19 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 {
 	//std::cout << "ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)" << std::endl;
 
-	if(terms.colNames.size() > 1)
-		addControlError(tr("Too many rows in OptionsTable for ListModelFilteredDataEntry"));
+	if (terms.values.size() > 1)
+		Log::log() << "Too many values in ListModelFilteredDataEntry" << std::endl;
 
-	if(terms.colNames.size() == 0)
+	if (terms.values.size() == 0)
 	{
 		fillTable();
 		return;
 	}
 
 	_tableTerms = terms;
+	setFilter(_tableTerms.filter);
+	setColName(_tableTerms.colName);
+	setExtraCol(_tableTerms.extraCol);
 
 	_acceptedRows = std::vector<bool>(getDataSetRowCount(), false);
 
@@ -189,15 +179,15 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 
 	_dataColumns	= _tableTerms.colNames;
 
-	if (_tableTerms.extraCol != "")
-		_tableTerms.colNames.push_back(_tableTerms.extraCol);
+	if (_extraCol != "")
+		_tableTerms.colNames.push_back(_extraCol);
 
-	_editableColumn = _tableTerms.colName.isEmpty() ? -1 : _tableTerms.colNames.size();
+	_editableColumn = _colName.isEmpty() ? -1 : _tableTerms.colNames.size();
 
-	if (!_tableTerms.colName.isEmpty()) _tableTerms.colNames.push_back(_tableTerms.colName);
+	if (!_colName.isEmpty()) _tableTerms.colNames.push_back(_colName);
 
 	int valIndex = 0;
-	for(int rowIndex : _tableTerms.rowIndices)
+	for (int rowIndex : _tableTerms.rowIndices)
 	{
 		size_t row = static_cast<size_t>(rowIndex) - 1;
 
@@ -206,7 +196,6 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 	}
 
 	fillTable();
-	setFilter(_tableTerms.filter);
 }
 
 void ListModelFilteredDataEntry::fillTable()
@@ -219,7 +208,7 @@ void ListModelFilteredDataEntry::fillTable()
 
 	size_t dataRows = getDataSetRowCount();
 
-	if(_acceptedRows.size() != dataRows)
+	if (_acceptedRows.size() != dataRows)
 		_acceptedRows = std::vector<bool>(dataRows, true);
 
 
@@ -234,7 +223,7 @@ void ListModelFilteredDataEntry::fillTable()
 
 		}
 
-	_editableColumn = _tableTerms.colName.isEmpty() ? -1 : (columnCount() - 1);
+	_editableColumn = _colName.isEmpty() ? -1 : (columnCount() - 1);
 	endResetModel();
 
 	emit columnCountChanged();
@@ -260,12 +249,10 @@ QVariant ListModelFilteredDataEntry::data(const QModelIndex &index, int role) co
 
 	std::string colName = _tableTerms.colNames[column].toStdString();
 	size_t rowData		= _filteredRowToData[static_cast<size_t>(row)];
-
 	DataSetTableModel* dataSetModel = DataSetTableModel::singleton();
-
 	int colIndex = dataSetModel->getColumnIndex(colName);
 
-	return dataSetModel->data(dataSetModel->index(int(rowData), colIndex, dataSetModel->parentModelForType(parIdxType::data)));
+	return dataSetModel->data(dataSetModel->index(int(rowData), colIndex), role);
 }
 
 
@@ -294,10 +281,10 @@ int ListModelFilteredDataEntry::getMaximumColumnWidthInCharacters(size_t column)
 
 void ListModelFilteredDataEntry::setColName(QString colName)
 {
-	if (_tableTerms.colName == colName)
+	if (_colName == colName)
 		return;
 
-	if (_tableTerms.colName.isEmpty())
+	if (_colName.isEmpty())
 	{
 		_tableTerms.colNames.push_back(colName);
 		_editableColumn = _tableTerms.colNames.size() - 1;
@@ -315,8 +302,8 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 			Log::log() << "Warning: editableColumn is negative!" << std::endl;
 	}
 
-	_tableTerms.colName = colName;
-	emit colNameChanged(_tableTerms.colName);
+	_colName = colName;
+	emit colNameChanged(_colName);
 	refresh();
 
 	if (_editableColumn >= 0)
@@ -326,14 +313,14 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 
 void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
 {
-	if (_tableTerms.extraCol == extraCol)
+	if (_extraCol == extraCol)
 		return;
 
 	//std::cout << "ListModelFilteredDataEntry::setExtraCol("<< extraCol.toStdString() <<")" << std::endl;
 
-	QString oldExtraCol = _tableTerms.extraCol;
+	QString oldExtraCol = _extraCol;
 
-	_tableTerms.extraCol = extraCol;
+	_extraCol = extraCol;
 
 
 	beginResetModel();
@@ -352,11 +339,11 @@ void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
 	{
 		//std::cout << "Volmaken!" << std::endl;
 
-		if (_editableColumn >= 0 && !_tableTerms.colName.isEmpty())
+		if (_editableColumn >= 0 && !_colName.isEmpty())
 		{
 			_tableTerms.colNames[_editableColumn] = extraCol;
 			_editableColumn++;
-			_tableTerms.colNames.push_back(_tableTerms.colName);
+			_tableTerms.colNames.push_back(_colName);
 		}
 		else
 			_tableTerms.colNames.push_back(extraCol);
@@ -376,12 +363,12 @@ void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
 	endResetModel();
 
 	emit columnCountChanged();
-	emit extraColChanged(_tableTerms.extraCol);
+	emit extraColChanged(_extraCol);
 }
 
 void ListModelFilteredDataEntry::refreshModel()
 {
 	ListModel::refresh();
 
-	runFilter(_tableTerms.filter);
+	runFilter(_filter);
 }

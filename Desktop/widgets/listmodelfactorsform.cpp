@@ -52,17 +52,10 @@ QVariant ListModelFactorsForm::data(const QModelIndex &index, int role) const
 	
 	Factor* factor = _factors[row];
 	
-	QVariant value;
-	if (role == Qt::DisplayRole || role == ListModelFactorsForm::FactorNameRole)
-	{
-		value = factor->name;
-	}
-	else if (role == ListModelFactorsForm::FactorTitleRole)
-	{
-		value = factor->title;
-	}
+	if (role == Qt::DisplayRole || role == ListModelFactorsForm::FactorNameRole)	return factor->name;
+	else if (role == ListModelFactorsForm::FactorTitleRole)							return factor->title;
 	
-	return value;	
+	return ListModel::data(index, role);
 }
 
 void ListModelFactorsForm::initFactors(const FactorVec &factors)

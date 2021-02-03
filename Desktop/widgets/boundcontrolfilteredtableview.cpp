@@ -25,6 +25,19 @@ BoundControlFilteredTableView::BoundControlFilteredTableView(TableViewBase* tabl
 {
 }
 
+Json::Value BoundControlFilteredTableView::createJson()
+{
+	Json::Value result(Json::arrayValue);
+	Json::Value row(Json::objectValue);
+
+	row["colName"]	= fq(_tableView->property("colName").toString());
+	row["filter"]	= fq(_tableView->property("filter").toString());
+	row["extraCol"] = fq(_tableView->property("extraCol").toString());
+
+	result.append(row);
+	return result;
+}
+
 void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, ListModelTableViewBase::TableTerms &tableTerms)
 {
 	if (value.size() > 0)
@@ -33,6 +46,7 @@ void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, Lis
 
 		tableTerms.filter	= tq(firstRow["filter"].asString());
 
+		tableTerms.values.push_back({});
 		for (const Json::Value& value : firstRow["values"])
 			tableTerms.values[0].push_back(value.asDouble());
 
@@ -62,9 +76,10 @@ void BoundControlFilteredTableView::fillBoundValue(Json::Value &value, const Lis
 	for (size_t index : filteredModel->filteredRowToData())
 		stdRowIndices.append(static_cast<int>(index + 1));
 
-	if (!tableTerms.colName.isEmpty())
-		row["colName"] = fq(tableTerms.colName);
-	row["filter"] =	fq(tableTerms.filter);
+	std::string colName = fq(filteredModel->colName());
+	if (!colName.empty())
+		row["colName"] = colName;
+	row["filter"] =	fq(filteredModel->filter());
 	row["rowIndices"] = stdRowIndices;
 
 	Json::Value values(Json::arrayValue);
@@ -77,10 +92,11 @@ void BoundControlFilteredTableView::fillBoundValue(Json::Value &value, const Lis
 		dataCols.append(fq(dataCol));
 	row["dataCols"] = dataCols;
 
-	Json::Value extraCol(Json::arrayValue);
-	if (!tableTerms.extraCol.isEmpty())
-		extraCol.append(fq(tableTerms.extraCol));
-	row["extraCol"] = extraCol;
+	Json::Value extraColJson(Json::arrayValue);
+	std::string extraCol = fq(filteredModel->extraCol());
+	if (!extraCol.empty())
+		extraColJson.append(extraCol);
+	row["extraCol"] = extraColJson;
 
 	value.append(row);
 }

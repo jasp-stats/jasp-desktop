@@ -97,7 +97,7 @@ Item
 			{
 				preferredWidth	: itemCustomContrasts.width
 				name			: "values"
-				itemType		: "double"
+				itemType		: JASP.Double
 				minimum			: -Infinity
 				decimals		: 3
 				//buttonsInRow	: false

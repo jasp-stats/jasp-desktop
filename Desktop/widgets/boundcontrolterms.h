@@ -31,7 +31,7 @@ public:
 	bool		isJsonValid(const Json::Value& value)		override;
 	Json::Value	createJson()								override;
 	void		bindTo(const Json::Value &value)			override;
-	void		updateOption()								override;
+	void		resetBoundValue()							override;
 	
 private:
 	ListModelAssignedInterface*		_termsModel				= nullptr;

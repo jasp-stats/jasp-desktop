@@ -29,8 +29,8 @@ BasicThreeButtonTableView
 	preferredHeight	: Math.max(150 * preferencesModel.uiScale,10 * preferencesModel.uiScale + tableView.y + tableView.tableHeight)
 
 	tableType			: "userDataInput"
-	itemType			: "string"
 	modelType			: JASP.CustomContrasts
+	itemType			: JASP.String
 	initialColumnCount	: 1
 	initialRowCount		: 0
 	buttonsInRow		: true

@@ -27,7 +27,6 @@ BasicThreeButtonTableView
 	id				: chi2TestTableView
 
 	tableType		: "ExpectedProportions"
-	itemType		: "double"
 	modelType		: JASP.MultinomialChi2Model
 
 	property	int		maxNumHypotheses	: 10

@@ -39,17 +39,18 @@ Json::Value BoundControlTableView::createJson()
 
 	Json::Value levels(Json::arrayValue);
 	Json::Value values(Json::arrayValue);
+	Json::Value defaultValue = _defaultValue();
 
 	for (const QVariant& itemVariant : list)
 	{
 		levels.append(fq(itemVariant.toString()));
-		values.append(fq(_tableView->defaultEmptyValue()));
+		values.append(defaultValue);
 	}
 
 	for (int row=list.length(); row < _tableView->initialRowCount(); row++)
 	{
 		levels.append(fq(_tableView->tableModel()->getDefaultRowName(size_t(row))));
-		values.append(fq(_tableView->defaultEmptyValue()));
+		values.append(defaultValue);
 	}
 
 	for (int i = 0; i < _tableView->initialColumnCount(); i++)
@@ -64,7 +65,7 @@ Json::Value BoundControlTableView::createJson()
 	return result;
 }
 
-void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTableViewBase::TableTerms &tableTerms)
+void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTableViewBase::TableTerms &tableTerms )
 {
 	int index = 0;
 
@@ -95,12 +96,14 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 
 void BoundControlTableView::bindTo(const Json::Value &value)
 {
-	BoundControlBase::bindTo(value);
-
 	ListModelTableViewBase::TableTerms tableTerms;
+	QMap<QString, QString> extra;
+
 	fillTableTerms(value, tableTerms);
 
 	_tableView->tableModel()->initTableTerms(tableTerms);
+
+	BoundControlBase::bindTo(value);
 }
 
 void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListModelTableViewBase::TableTerms &tableTerms)
@@ -128,7 +131,22 @@ void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListM
 	}
 }
 
-void BoundControlTableView::updateOption()
+Json::Value BoundControlTableView::_defaultValue()
+{
+	Json::Value defaultValue;
+	JASPControl::ItemType itemType = _tableView->itemType();
+
+	if (itemType == JASPControl::ItemType::Double)
+		defaultValue = _tableView->defaultEmptyValue().toDouble();
+	else if (itemType == JASPControl::ItemType::Integer)
+		defaultValue = _tableView->defaultEmptyValue().toInt();
+	else
+		defaultValue = fq(_tableView->defaultEmptyValue());
+
+	return defaultValue;
+}
+
+void BoundControlTableView::resetBoundValue()
 {
 	Json::Value boundValue(Json::arrayValue);
 	const ListModelTableViewBase::TableTerms& tableTerms = _tableView->tableModel()->tableTerms();

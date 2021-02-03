@@ -130,6 +130,7 @@ public:
 	void		addColumnControl(JASPControl* control, bool isComputed);
 
 	void		setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	std::set<std::string> usedVariables();
 
 protected:
 	QString		msgsListToString(const QStringList & list) const;

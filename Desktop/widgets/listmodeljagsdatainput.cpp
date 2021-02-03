@@ -66,7 +66,7 @@ void ListModelJAGSDataInput::sourceTermsReset()
 		for (const QString& firstValue : firstColumnValues)
 		{
 			firstColumn.push_back(firstValue);
-			QVariant secondValue = mapping.contains(firstValue) ? mapping[firstValue] : _tableView->defaultEmptyValue();
+			QVariant secondValue = mapping.contains(firstValue) ? mapping[firstValue] : _tableView->defaultValue();
 			secondColumn.push_back(secondValue);
 		}
 

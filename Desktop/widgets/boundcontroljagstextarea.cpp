@@ -24,11 +24,11 @@ void BoundControlJAGSTextArea::bindTo(const Json::Value &value)
 {
 	if (value.type() != Json::objectValue)	return;
 
-	BoundControlBase::bindTo(value);
-
 	_textArea->setText(tq(value["modelOriginal"].asString()));
 
 	checkSyntax();
+
+	BoundControlBase::bindTo(value);
 }
 
 Json::Value BoundControlJAGSTextArea::createJson()

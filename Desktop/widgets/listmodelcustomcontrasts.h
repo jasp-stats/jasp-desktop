@@ -39,7 +39,7 @@ public:
 	void			reset()												override;
 	void			setup()												override;
 	bool			isEditable(const QModelIndex& index)		const	override	{ return index.column() >= _tableTerms.variables.length(); }
-	QString			getItemInputType(const QModelIndex& index)	const	override	{ return index.column() >= _tableTerms.variables.length() ? (getItemType(Term(QString())) == "double" ? "double"  : "formula") : "string"; }
+	QString			getItemInputType(const QModelIndex& index)	const	override;
 	QString			colName()									const				{ return _colName;	}
 
 	void			getVariablesAndLabels(QStringList& variables, QVector<QVector<QVariant> >& allLabels);

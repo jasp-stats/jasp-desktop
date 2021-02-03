@@ -32,11 +32,12 @@ public:
 	bool					isJsonValid(const Json::Value& value)		override;
 	Json::Value				createJson()								override;
 	void					bindTo(const Json::Value& value)			override;
-	void					updateOption()								override;
+	void					resetBoundValue()							override;
 
 protected:
 	virtual void			fillTableTerms(const Json::Value& value, ListModelTableViewBase::TableTerms& tableTerms);
 	virtual void			fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms);
+	Json::Value				_defaultValue();
 
 	TableViewBase			* _tableView	= nullptr;
 };

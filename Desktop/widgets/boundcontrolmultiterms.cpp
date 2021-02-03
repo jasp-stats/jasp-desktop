@@ -27,7 +27,6 @@ BoundControlMultiTerms::BoundControlMultiTerms(ListModelMultiTermsAssigned* list
 
 void BoundControlMultiTerms::bindTo(const Json::Value& value)
 {
-	BoundControlBase::bindTo(value);
 	std::vector<std::vector<std::string> > values;
 
 	for (const Json::Value& rowJson : value)
@@ -42,6 +41,8 @@ void BoundControlMultiTerms::bindTo(const Json::Value& value)
 	}
 
 	_listModel->initTerms(values);
+
+	BoundControlBase::bindTo(value);
 }
 
 Json::Value BoundControlMultiTerms::createJson()
@@ -54,7 +55,7 @@ bool BoundControlMultiTerms::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::arrayValue;
 }
 
-void BoundControlMultiTerms::updateOption()
+void BoundControlMultiTerms::resetBoundValue()
 {
 	const QList<Terms>& tuples = _listModel->tuples();
 	Json::Value boundValue(Json::arrayValue);

@@ -326,7 +326,7 @@ void VariablesListBase::termsChangedHandler()
 {
 	setColumnsTypes(model()->termsTypes());
 
-	if (_boundControl)	_boundControl->updateOption();
+	if (_boundControl)	_boundControl->resetBoundValue();
 	else JASPListControl::termsChangedHandler();
 }
 

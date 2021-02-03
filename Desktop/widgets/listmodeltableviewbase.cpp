@@ -62,7 +62,7 @@ QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
 	}		
 	case int(specialRoles::itemInputType):	return getItemInputType(index);
 	case Qt::DisplayRole:					return QVariant(_tableTerms.values[column][row]);
-	default:								return QVariant();
+	default:								return ListModel::data(index, role);
 	}
 }
 
@@ -104,7 +104,7 @@ void ListModelTableViewBase::addColumn(bool emitStuff)
 	if (count < _maxColumn)
 	{
 		_tableTerms.colNames.push_back(getDefaultColName(count));
-		_tableTerms.values.push_back(QVector<QVariant>(_tableTerms.rowNames.length(), _tableView->defaultEmptyValue()));
+		_tableTerms.values.push_back(QVector<QVariant>(_tableTerms.rowNames.length(), _tableView->defaultValue()));
 	}
 
 	if (emitStuff)
@@ -146,7 +146,7 @@ void ListModelTableViewBase::addRow(bool emitStuff)
 
 		for (QVector<QVariant> & value : _tableTerms.values)
 			while (value.size() < _tableTerms.rowNames.size()) //Lets make sure the data is rectangular!
-				value.push_back(_tableView->defaultEmptyValue());
+				value.push_back(_tableView->defaultValue());
 	}
 
 	if (emitStuff)
@@ -209,7 +209,8 @@ void ListModelTableViewBase::itemChanged(int column, int row, QVariant value, QS
 	{
 		if (_tableTerms.values[column][row] != value)
 		{
-			_tableTerms.values[column][row] = _itemType == "integer" ? value.toInt() : _itemType == "double" ? value.toDouble() : value;
+			JASPControl::ItemType itemType = _tableView->itemType();
+			_tableTerms.values[column][row] = itemType == JASPControl::ItemType::Integer ? value.toInt() : itemType == JASPControl::ItemType::Double ? value.toDouble() : value;
 
 		if (type != "formula") // For formula type, wait for the formulaCheckSucceeded signal before emitting modelChanged
 			emit termsChanged();
@@ -329,9 +330,10 @@ void ListModelTableViewBase::runRScript(const QString & script)
 bool ListModelTableViewBase::valueOk(QVariant value)
 {
 	bool	ok	= true;
+	JASPControl::ItemType itemType = _tableView->itemType();
 
-	if		(_itemType == "double")		value.toDouble(&ok);
-	else if	(_itemType == "integer")	value.toInt(&ok);
+	if		(itemType == JASPControl::ItemType::Double)		value.toDouble(&ok);
+	else if	(itemType == JASPControl::ItemType::Integer)	value.toInt(&ok);
 
 	return ok;
 }
@@ -358,7 +360,7 @@ bool ListModelTableViewBase::addRowControl(const QString &key, JASPControl *cont
 
 void ListModelTableViewBase::formulaCheckSucceededSlot()
 {
-	_tableView->updateOption();
+	_tableView->resetBoundValue();
 }
 
 
@@ -387,4 +389,13 @@ void ListModelTableViewBase::initTableTerms(const TableTerms& terms)
 QString ListModelTableViewBase::getDefaultColName(size_t index) const
 {
 	return listView()->property("colName").toString() + " " + QString::number(index + 1);
+}
+
+QString ListModelTableViewBase::getItemInputType(const QModelIndex &) const
+{
+	JASPControl::ItemType itemType = _tableView->itemType();
+
+	if (itemType == JASPControl::ItemType::Double)			return "double";
+	else if (itemType == JASPControl::ItemType::Integer)	return "integer";
+	else													return "string";
 }

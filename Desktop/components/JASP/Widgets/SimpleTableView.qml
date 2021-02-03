@@ -25,7 +25,6 @@ import JASP				1.0
 BasicThreeButtonTableView
 {
     tableType		: "ExpectedProportions"
-    itemType		: "double"
 	modelType		: JASP.Simple
 
     buttonAddText		: qsTr("Add Column")

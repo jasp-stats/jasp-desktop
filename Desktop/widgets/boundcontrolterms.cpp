@@ -35,7 +35,6 @@ BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool
 
 void BoundControlTerms::bindTo(const Json::Value &value)
 {
-	BoundControlBase::bindTo(value);
 	Terms terms;
 	ListModel::RowControlsValues allControlValues;
 
@@ -66,6 +65,8 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	}
 
 	_termsModel->initTerms(terms, allControlValues);
+
+	BoundControlBase::bindTo(value);
 }
 
 Json::Value BoundControlTerms::createJson()
@@ -136,7 +137,7 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 	return valid;
 }
 
-void BoundControlTerms::updateOption()
+void BoundControlTerms::resetBoundValue()
 {
 	const Terms& terms = _termsModel->terms();
 	const QMap<QString, RowControls*>& allControls = _termsModel->getRowControls();

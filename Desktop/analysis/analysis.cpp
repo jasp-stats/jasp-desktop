@@ -556,16 +556,9 @@ std::string Analysis::qmlFormPath() const
 
 std::set<std::string> Analysis::usedVariables()
 {
-	std::set<std::string> result;
-	const Json::Value& meta = _boundValues[".meta"];
-	for (Json::Value::iterator iter = meta.begin(); iter != meta.end(); ++iter)
-	{
-		const Json::Value& value = *iter;
-		if (value.isObject() && value.get("shouldEncode", false).asBool())
-			result.insert(iter.key().asString());
-	}
+	if (form())	return form()->usedVariables();
 
-	return result;
+	return {};
 }
 
 void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)
@@ -604,7 +597,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 
 		bool imgP = perform == performType::saveImg || perform == performType::editImg;
 		if (imgP)	json["image"]		= imgOptions();
-		else		json["options"]		= _boundValues.size() == 0 ? optionsFromJASPFile() : _boundValues;
+		else		json["options"]		= _boundValues;
 	}
 
 	return json;
