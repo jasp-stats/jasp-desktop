@@ -39,9 +39,8 @@ public:
 	Q_INVOKABLE void moveSelectionUp();
 	Q_INVOKABLE void moveSelectionDown();
 	Q_INVOKABLE void resetFilterAllows();
-	
-	Q_INVOKABLE void singleClickForSelect(			int row);
-	Q_INVOKABLE void doubleClickSoonAfterSelect(	int row);
+
+	Q_INVOKABLE void unselectAll();
 
 	std::vector<bool>			filterAllows(size_t col);
 	std::vector<std::string>	labels(size_t col);
@@ -53,7 +52,7 @@ public:
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
-	void toggleSelected(int row);
+	void toggleSelected(int row, bool unselectRest = false);
 	void columnAboutToBeRemoved(int column);
 	void columnDataTypeChanged(const QString & colName);
 
@@ -77,14 +76,13 @@ private:
 	bool				setColumnWidth(int col, float width);
 	float				getColumnWidth(int col)					const { return _colWidths[col]; }
 	int					roleFromColumn(Column col)				const;
+	void				setSelectedOnRow(int row, bool selected);
 	std::vector<size_t> getSortedSelection()					const;
 
 private:
 	bool				_visible		= false;
 	std::vector<float>	_colWidths		= { 60, 120, 400} ;
 	std::set<QString>	_selected;
-	
-	std::map<int, QTimer*>	_toggleSelectTimers;
 };
 Q_DECLARE_METATYPE(LabelModel::Column)
 

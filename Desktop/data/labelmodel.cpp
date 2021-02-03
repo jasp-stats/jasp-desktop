@@ -1,4 +1,5 @@
 #include "labelmodel.h"
+#include "log.h"
 
 
 LabelModel::LabelModel() : DataSetTableProxy(parIdxType::label)
@@ -105,16 +106,6 @@ bool LabelModel::setData(const QModelIndex & index, const QVariant & value, int 
 	return DataSetPackage::pkg()->setData(mapToSource(index), value, role != -1 ? role : roleFromColumn(Column(index.column())));
 }
 
-void LabelModel::toggleSelected(int row)
-{
-	QString rowValue = data(index(row, 0), int(DataSetPackage::specialRoles::value)).toString();
-	
-	if(_selected.count(rowValue) == 0)	_selected.insert(rowValue);
-	else								_selected.erase(rowValue);
-
-	emit dataChanged(LabelModel::index(row, 0), LabelModel::index(row, int(Column::Label)));
-}
-
 QVariant LabelModel::data(	const QModelIndex & index, int role) const
 {
 	if(role == int(DataSetPackage::specialRoles::selected))
@@ -208,32 +199,41 @@ void LabelModel::onChosenColumnChanged()
 	//dataChanged probably not needed 'cause we are in a reset
 }
 
-//I really really wish I couldve done this without a timer, but without this the row already gets selected through QML at the first single click.
-//To undo it after, in the doubleClick, would reset the model.
-//Which would leave you unable to edit the label anymore because the Item you are trying to set activeFocus on dissappears in the middle of the functioncall :(
-void LabelModel::singleClickForSelect(int row)
+void LabelModel::toggleSelected(int row, bool unselectRest)
 {
-	if(_toggleSelectTimers.count(row) == 0)	
+	QString rowValue = data(index(row, 0), int(DataSetPackage::specialRoles::value)).toString();
+
+	bool disableCurrent = _selected.count(rowValue) > 0;
+
+	if(unselectRest)
 	{
-		_toggleSelectTimers[row] = new QTimer(this);
-		connect(_toggleSelectTimers[row], &QTimer::timeout, [=]()
-		{ 
-			toggleSelected(row); 
-			_toggleSelectTimers[row]->deleteLater();  //If the timer finishes remove it.
-			_toggleSelectTimers.erase(row);
-		}); 
+		beginResetModel();
+		_selected.clear();
 	}
-	
-	_toggleSelectTimers[row]->start(250);  //This means 250ms delay between a click and the row being selected, but so be it. I think 500ms is the time within which windows for instance counts a doubleclick. But having the selection show up half a second later feels really slow.
+
+	if(!disableCurrent)	_selected.insert(rowValue);
+	else				_selected.erase(rowValue);
+
+	if(unselectRest)	endResetModel();
+	else				emit dataChanged(LabelModel::index(row, 0), LabelModel::index(row, int(Column::Label)), {int(DataSetPackage::specialRoles::selected)});
 }
 
-void LabelModel::doubleClickSoonAfterSelect(int row)
+void LabelModel::setSelectedOnRow(int row, bool selected)
 {
-	//If the toggleSelect timer is still running we can now remove it and that is it, no more select.
-	if(_toggleSelectTimers.count(row) > 0)
-	{
-		_toggleSelectTimers[row]->stop();
-		_toggleSelectTimers[row]->deleteLater();
-		_toggleSelectTimers.erase(row);
-	}
+	QString rowValue = data(index(row, 0), int(DataSetPackage::specialRoles::value)).toString();
+
+	if(selected == (_selected.count(rowValue) > 0))
+		return;
+
+	if(selected)	_selected.insert(rowValue);
+	else			_selected.erase(rowValue);
+
+	emit dataChanged(LabelModel::index(row, 0), LabelModel::index(row, int(Column::Label)), {int(DataSetPackage::specialRoles::selected)});
+}
+
+
+void LabelModel::unselectAll()
+{
+	_selected.clear();
+	emit dataChanged(LabelModel::index(0, 0), LabelModel::index(rowCount(), int(Column::Label)), {int(DataSetPackage::specialRoles::selected)});
 }
