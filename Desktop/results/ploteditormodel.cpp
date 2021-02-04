@@ -48,7 +48,8 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 	
 	processImgOptions();
 
-	setVisible(true);
+	if (_validOptions)
+		setVisible(true);
 	setLoading(false);
 }
 
@@ -91,8 +92,17 @@ void PlotEditorModel::processImgOptions()
 	setWidth(				_imgOptions.get(	"width",		100).asInt());
 	setHeight(				_imgOptions.get(	"height",		100).asInt());
 
-	//_editOptions		=	_imgOptions.get(	"editOptions",	Json::objectValue);
-	_editOptions		=	_name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlot(_name.toStdString());
+	_editOptions = _name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlot(_name.toStdString());
+
+	std::string reasonOptionsAreInvalid = _editOptions.get("reasonNotEditable", "").asString();
+
+	_validOptions = reasonOptionsAreInvalid.empty();
+	if (!_validOptions)
+	{
+		MessageForwarder::showWarning(reasonOptionsAreInvalid);
+		return;
+	}
+
 	Json::Value	xAxis	=	_editOptions.get(	"xAxis",		Json::objectValue),
 				yAxis	=	_editOptions.get(	"yAxis",		Json::objectValue);
 

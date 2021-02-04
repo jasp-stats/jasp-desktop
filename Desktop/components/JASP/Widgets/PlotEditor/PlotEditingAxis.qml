@@ -29,12 +29,11 @@ Column
 					id:			axis
 					spacing:	jaspTheme.columnGroupSpacing
 	property var	axisModel:	null
-	property string title:		""
 
 	JASPC.TextField
 	{
 		id:					axisTitle
-		label:				qsTr("Title of %1").arg(axis.title);
+		label:				qsTr("Title");
 		fieldWidth:			200
 		value:				axisModel.title
 		onEditingFinished:	if(axisModel) axisModel.title = value
