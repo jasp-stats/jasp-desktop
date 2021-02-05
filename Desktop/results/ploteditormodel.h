@@ -111,7 +111,6 @@ public slots:
 
 private:
 	void		processImgOptions();
-	void		validateEditOptions();
 	Json::Value generateImgOptions()	const;
 	Json::Value generateEditOptions()	const;
 

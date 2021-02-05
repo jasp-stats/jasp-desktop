@@ -92,7 +92,8 @@ void PlotEditorModel::processImgOptions()
 	setWidth(				_imgOptions.get(	"width",		100).asInt());
 	setHeight(				_imgOptions.get(	"height",		100).asInt());
 
-	_editOptions = _name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlot(_name.toStdString());
+	//_editOptions		=	_imgOptions.get(	"editOptions",	Json::objectValue);
+	_editOptions		=	_name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlot(_name.toStdString());
 
 	std::string reasonOptionsAreInvalid = _editOptions.get("reasonNotEditable", "").asString();
 
