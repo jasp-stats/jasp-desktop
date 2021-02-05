@@ -110,7 +110,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   }
   #If we have jaspGraphs available we can get the plotEditingOptions for this plot
   if(requireNamespace("jaspGraphs", quietly = TRUE))
-    image[["editOptions"]] <- jaspGraphs::plotEditingOptions(graph = plot, asJSON = TRUE)
+    image[["editOptions"]] <- jaspGraphs::plotEditingOptions(plot, asJSON = TRUE)
 
   return(image)
 }
