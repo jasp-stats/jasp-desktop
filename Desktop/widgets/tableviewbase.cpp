@@ -36,16 +36,14 @@ TableViewBase::TableViewBase(QQuickItem* parent)
 
 void TableViewBase::setUpModel()
 {
-	QString tableType	= property("tableType").toString();
-
 	switch (modelType())
 	{
-	case ModelType::MultinomialChi2Model	: _tableModel = new ListModelMultinomialChi2Test(	this, tableType	);	break;
-	case ModelType::JAGSDataInputModel		: _tableModel = new ListModelJAGSDataInput(			this, tableType	);	break;
-	case ModelType::CustomContrasts			: _tableModel = new ListModelCustomContrasts(		this, tableType	);	break;
-	case ModelType::FilteredDataEntryModel	: _tableModel = new ListModelFilteredDataEntry(		this, tableType	);	break;
+	case ModelType::MultinomialChi2Model	: _tableModel = new ListModelMultinomialChi2Test(	this );	break;
+	case ModelType::JAGSDataInputModel		: _tableModel = new ListModelJAGSDataInput(			this );	break;
+	case ModelType::CustomContrasts			: _tableModel = new ListModelCustomContrasts(		this );	break;
+	case ModelType::FilteredDataEntryModel	: _tableModel = new ListModelFilteredDataEntry(		this );	break;
 	case ModelType::Simple					:
-	default									: _tableModel = new ListModelTableViewBase(			this, tableType );	break;
+	default									: _tableModel = new ListModelTableViewBase(			this );	break;
 	}
 
 	JASPListControl::setUpModel();

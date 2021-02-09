@@ -38,11 +38,11 @@ public:
 
 	ListModelFactorsForm(JASPListControl* listView);
 	
-	QHash<int, QByteArray>	roleNames()													const override;
-	int						rowCount(const QModelIndex &parent = QModelIndex())			const override { return count(); }
-	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
+	QHash<int, QByteArray>	roleNames()													const	override;
+	int						rowCount(const QModelIndex &parent = QModelIndex())			const	override { return count(); }
+	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
 	
-	Terms					termsEx(const QString& what)									override;
+	Terms					filterTerms(const Terms& terms, const QStringList& what)			override;
 	void					initFactors(const FactorVec &factors);
 	int						count() const { return int(_factors.size()); }
 	FactorVec				getFactors();

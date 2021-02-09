@@ -63,7 +63,7 @@ public:
 
 	ListModel*				listModel()							{ return _listModel;				}
 	const QString&			controlName()				const	{ return _controlName;				}
-	const QString&			modelUse()					const	{ return _modelUse;					}
+	const QStringList&		modelUse()					const	{ return _modelUse;					}
 	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;	}
 	const QSet<QString>&	usedControls()				const	{ return _usedControls;				}
 	bool					isColumnsModel()			const	{ return _isColumnsModel;			}
@@ -87,8 +87,8 @@ private:
 	JASPListControl		*			_listControl			= nullptr;
 	QString							_name,
 									_controlName,
-									_modelUse,
 									_rSource;
+	QStringList						_modelUse;
 	QVector<SourceItem*>			_discardSources;
 	JASPListControl::LabelValueMap	_values;
 	bool							_isValuesSource			= false;

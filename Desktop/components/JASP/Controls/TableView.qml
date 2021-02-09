@@ -40,7 +40,6 @@ TableViewBase
 	property string filter			: "rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
 	property string colName			: modelType === JASP.CustomContrasts ? "" : "data"					//Used by ListModelFilteredDataEntry
 	property string	extraCol		: ""						//Used by ListModelFilteredDataEntry
-	property string	tableType
 	property alias	rowNumberWidth	: theView.rowNumberWidth
 	property var	validator		: (itemType === JASP.Integer) ? intValidator : (itemType === JASP.Double ? doubleValidator : stringValidator)
 	property int	minimum			: 0
@@ -49,7 +48,8 @@ TableViewBase
 	property int	rowSelected		: -1
 	property real	scaleFactor		: 1 // Only used by marginalMeansContrast
 	property string cornerText		: qsTr("Row #")
-	property bool	parseDefaultValue: true
+	property bool	parseDefaultValue	: true
+	property bool	isFirstColEditable	: true
 
 	//The size of the table *inside* the Flickable. + 2 for margins of flickable and scrollbars
 	readonly property int tableWidth:  theView.width  + 2 + (vertiScroller.visible ? jaspTheme.scrollbarBoxWidth : 0)

@@ -86,7 +86,7 @@ void JASPListControl::setContainsVariables()
 			if (sourceItem->isColumnsModel())	containsVariables = true;
 			else if (sourceItem->listModel())
 			{
-				if (sourceItem->listModel()->listView()->containsVariables() && sourceItem->controlName().isEmpty() && sourceItem->modelUse() != "levels")
+				if (sourceItem->listModel()->listView()->containsVariables() && sourceItem->controlName().isEmpty() && !sourceItem->modelUse().contains("levels"))
 					containsVariables = true;
 			}
 		}

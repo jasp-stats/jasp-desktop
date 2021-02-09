@@ -37,7 +37,7 @@ public:
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
 	void			removeTerms(const QList<int> &indices)											override;
 	QString			getItemType(const Term &term)											const	override;
-	Terms			termsEx(const QString& what)													override;
+	Terms			filterTerms(const Terms& terms, const QStringList& filters)						override;
 		
 public slots:
 	void availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;

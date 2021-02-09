@@ -58,7 +58,7 @@ public:
 
 	enum class	specialRoles		{ active = Qt::UserRole, lines, maxColString, maxRowHeaderString, itemInputType };
 
-	explicit						ListModelTableViewBase(TableViewBase * tableView, QString tableType = "");
+	explicit						ListModelTableViewBase(TableViewBase * tableView);
 
 	QHash<int, QByteArray>			roleNames() const override;
 
@@ -80,25 +80,25 @@ public:
 	virtual		void				reset();
 	virtual		void				setup() {}
 	virtual		void				itemChanged(int column, int row, QVariant value, QString type);
-	virtual		void				refreshModel()							{ return ListModel::refresh(); }
-	virtual		QString				getDefaultColName(size_t index)				const;
-	virtual		QString				getDefaultRowName(size_t index)				const	{ return tr("Row %1").arg(index); }
-	virtual		bool				isEditable(const QModelIndex &)				const	{ return true; }
-	virtual		QString				getItemInputType(const QModelIndex &)		const;
+	virtual		void				refreshModel()																			{ return ListModel::refresh(); }
+	virtual		QString				getDefaultColName(size_t index)										const;
+	virtual		QString				getDefaultRowName(size_t index)										const				{ return tr("Row %1").arg(index); }
+	virtual		bool				isEditable(const QModelIndex &)										const				{ return true; }
+	virtual		QString				getItemInputType(const QModelIndex &)								const;
 
-	const		TableTerms	&		tableTerms()								const { return _tableTerms;		}
-				Terms				termsEx(const QString& what)				override;
+	const		TableTerms	&		tableTerms()														const				{ return _tableTerms; }
+				Terms				filterTerms(const Terms& terms, const QStringList& filters)					override;
 
 
 				void				runRScript(		const QString & script);
 	virtual		void				rScriptDoneHandler(const QString & result) { throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler and usesRScript\nResult was: "+result.toStdString()); }
 
 				bool				valueOk(QVariant value);
-	virtual		bool				isRCodeColumn(int)					const			{ return false; }
+	virtual		bool				isRCodeColumn(int)													const				{ return false; }
 
 
-				JASPControl*		getRowControl(const QString& key, const QString& name)	const	override;
-				bool				addRowControl(const QString& key, JASPControl* control)			override;
+				JASPControl*		getRowControl(const QString& key, const QString& name)				const	override;
+				bool				addRowControl(const QString& key, JASPControl* control)						override;
 
 signals:
 	void columnCountChanged();
@@ -116,7 +116,6 @@ protected:
 	const size_t				_maxColumn		= 10,
 								_maxRow			= 100;
 	int							_rowSelected	= -1;
-	QString						_tableType;
 	bool						_keepRowsOnReset = true,
 								_keepColsOnReset = false;
 

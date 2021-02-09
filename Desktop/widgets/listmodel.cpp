@@ -376,38 +376,26 @@ const QString &ListModel::name() const
 	return _listView->name();
 }
 
-Terms ListModel::termsEx(const QString &what)
+Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 {
-	Terms result;
+	if (filters.empty())	return terms;
 
-	if (what == "levels")
-	{
-		for (const Term& term : _terms)
-		{
-			Terms labels = requestInfo(term, VariableInfo::Labels).toStringList();
-			result.add(labels);
-		}
-
-		return result;
-	}
+	Terms result = terms;
 
 	const QString typeIs = "type=";
 	const QString controlIs = "control=";
 
-	if (!what.startsWith(controlIs) && !what.startsWith(typeIs))
-		return _terms; // in most cases, it comes here.
-
-	QStringList allConditions = what.split(",");
 	QString useTheseVariableTypes, useThisControl;
 
-	for (const QString& condition : allConditions)
+	for (const QString& filter : filters)
 	{
-		if (condition.startsWith(typeIs))		useTheseVariableTypes	= condition.right(condition.length() - typeIs.length());
-		if (condition.startsWith(controlIs))	useThisControl			= condition.right(condition.length() - controlIs.length());
+		if (filter.startsWith(typeIs))		useTheseVariableTypes	= filter.right(filter.length() - typeIs.length());
+		if (filter.startsWith(controlIs))	useThisControl			= filter.right(filter.length() - controlIs.length());
 	}
 
 	if (!useTheseVariableTypes.isEmpty())
 	{
+		result.clear();
 		QStringList typesStr = useTheseVariableTypes.split("|");
 		QList<columnType> types;
 
@@ -418,15 +406,13 @@ Terms ListModel::termsEx(const QString &what)
 				types.push_back(type);
 		}
 
-		for (const Term& term : _terms)
+		for (const Term& term : terms)
 		{
 			columnType type = columnType(requestInfo(term, VariableInfo::VariableType).toInt());
 			if (types.contains(type))
 				result.add(term);
 		}
 	}
-	else
-		result = _terms;
 
 	if (!useThisControl.isEmpty())
 	{
@@ -445,7 +431,25 @@ Terms ListModel::termsEx(const QString &what)
 		result = controlTerms;
 	}
 
+	if (filters.contains("levels"))
+	{
+		Terms allLabels;
+		for (const Term& term : result)
+		{
+			Terms labels = requestInfo(term, VariableInfo::Labels).toStringList();
+			if (labels.size() > 0)	allLabels.add(labels);
+			else					allLabels.add(term);
+		}
+
+		result = allLabels;
+	}
+
 	return result;
+}
+
+Terms ListModel::termsEx(const QStringList &filters)
+{
+	return filterTerms(terms(), filters);
 }
 
 void ListModel::sourceNamesChanged(QMap<QString, QString> map)
@@ -489,41 +493,59 @@ int ListModel::sourceColumnTypeChanged(QString name)
 	return i;
 }
 
-int ListModel::sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel)
+bool ListModel::sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)
 {
-	int i = -1;
+	bool change = false;
 	if (_columnsUsedForLabels.contains(columnName))
 	{
-		i = terms().indexOf(originalLabel);
-		if (i >= 0)
-			sourceNamesChanged({std::make_pair(originalLabel, newLabel)});
+		if (changedLabels.size() == 0)
+		{
+			// The changed labels are not specified. Requery the source.
+			sourceTermsReset();
+			change = true;
+		}
+		else
+		{
+			QMap<QString, QString> newChangedValues;
+			QMapIterator<QString, QString> it(changedLabels);
+			while (it.hasNext())
+			{
+				it.next();
+				if (terms().contains(it.key()))
+				{
+					change = true;
+					newChangedValues[it.key()] = it.value();
+				}
+			}
+			sourceNamesChanged(newChangedValues);
+		}
 	}
 	else
 	{
-		i = terms().indexOf(columnName);
-		if (i >= 0)
-			emit labelChanged(columnName, originalLabel, newLabel);
+		change = terms().contains(columnName);
+		if (change)
+			emit labelsChanged(columnName, changedLabels);
 	}
 
-	return i;
+	return change;
 }
 
-int ListModel::sourceLabelsReordered(QString columnName)
+bool ListModel::sourceLabelsReordered(QString columnName)
 {
-	int i = -1;
+	bool change = false;
 	if (_columnsUsedForLabels.contains(columnName))
 	{
 		sourceTermsReset();
-		i = 0;
+		change = true;
 	}
 	else
 	{
-		i = terms().indexOf(columnName);
-		if (i >= 0)
+		change = terms().contains(columnName);
+		if (change)
 			emit labelsReordered(columnName);
 	}
 
-	return i;
+	return change;
 }
 
 void ListModel::sourceColumnsChanged(QStringList columns)
@@ -532,16 +554,18 @@ void ListModel::sourceColumnsChanged(QStringList columns)
 
 	for (const QString& column : columns)
 	{
-		if (terms().contains(column))
+		if (_columnsUsedForLabels.contains(column))
+			sourceLabelsChanged(column);
+		else if (terms().contains(column))
 			changedColumns.push_back(column);
 	}
 
 	if (changedColumns.size() > 0)
 	{
+		emit columnsChanged(changedColumns);
+
 		if (listView()->isBound())
 			listView()->form()->refreshAnalysis();
-		else
-			emit columnsChanged(changedColumns);
 	}
 }
 

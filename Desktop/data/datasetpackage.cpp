@@ -938,8 +938,8 @@ void DataSetPackage::enlargeDataSetIfNecessary(std::function<void()> tryThis, co
 			try							{ setDataSet(SharedMemory::enlargeDataSet(_dataSet)); }
 			catch (std::exception &)	{ throw std::runtime_error("Out of memory: this data set is too large for your computer's available memory");	}
 		}
-		catch (std::exception & e)	{ Log::log() << "std::exception in enlargeDataSetIfNecessary for " << callerText << ": " << e.what() << std::endl;	}
-		catch (...)					{ Log::log() << "something went wrong while enlargeDataSetIfNecessary for " << callerText << "..." << std::endl;	}
+		catch (std::exception & e)	{ Log::log() << "std::exception in enlargeDataSetIfNecessary for " << callerText << ": " << e.what() << std::endl;	return;}
+		catch (...)					{ Log::log() << "something went wrong while enlargeDataSetIfNecessary for " << callerText << "..." << std::endl;	return;}
 
 	}
 }

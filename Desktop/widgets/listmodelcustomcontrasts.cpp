@@ -25,7 +25,7 @@
 #include "listmodelrepeatedmeasuresfactors.h"
 #include "data/columnsmodel.h"
 
-ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
+ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent) : ListModelTableViewBase(parent)
 {
 	_keepRowsOnReset = false;
 
@@ -39,8 +39,9 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QStrin
 
 	connect(this, &ListModelCustomContrasts::variableCountChanged,		_tableView, &TableViewBase::variableCountChanged);
 	connect(listView(), SIGNAL(scaleFactorChanged()),					this,		SLOT(scaleFactorChanged()));
-	connect(ColumnsModel::singleton(), &ColumnsModel::labelChanged,		this,		&ListModelCustomContrasts::sourceLabelChanged);
+	connect(ColumnsModel::singleton(), &ColumnsModel::labelsChanged,	this,		&ListModelCustomContrasts::sourceLabelsChanged);
 	connect(ColumnsModel::singleton(), &ColumnsModel::labelsReordered,	this,		&ListModelCustomContrasts::sourceLabelsReordered);
+	connect(ColumnsModel::singleton(), &ColumnsModel::columnsChanged,	this,		&ListModelCustomContrasts::sourceColumnsChanged);
 }
 
 void ListModelCustomContrasts::sourceTermsReset()
@@ -275,12 +276,23 @@ int ListModelCustomContrasts::getMaximumColumnWidthInCharacters(size_t) const
 	return 5;
 }
 
-int ListModelCustomContrasts::sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel)
+bool ListModelCustomContrasts::sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)
 {
-	if (_labelChanged(columnName, originalLabel, newLabel))
-		refresh();
+	bool doRefresh = false;
 
-	return 0;
+	if (changedLabels.size() == 0)	_resetValuesEtc();
+	else
+	{
+		QMapIterator<QString, QString> it(changedLabels);
+		while (it.hasNext())
+		{
+			it.next();
+			if (_labelChanged(columnName, it.key(), it.value())) doRefresh = true;
+		}
+	}
+	if (doRefresh)	refresh();
+
+	return true;
 }
 
 bool ListModelCustomContrasts::_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel)
@@ -333,10 +345,19 @@ void ListModelCustomContrasts::_loadColumnInfo()
 	setColName(	_tableView->property("colName").toString());
 }
 
-int ListModelCustomContrasts::sourceLabelsReordered(QString )
+bool ListModelCustomContrasts::sourceLabelsReordered(QString )
 {
 	_resetValuesEtc();
-	return 0;
+	return true;
+}
+
+void ListModelCustomContrasts::sourceColumnsChanged(QStringList columns)
+{
+	bool doReset = false;
+	for (const QString& col : columns)
+		if (_tableTerms.variables.contains(col)) doReset = true;
+
+	if (doReset) _resetValuesEtc();
 }
 
 void ListModelCustomContrasts::scaleFactorChanged()

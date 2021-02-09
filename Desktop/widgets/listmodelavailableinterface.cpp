@@ -160,24 +160,24 @@ int ListModelAvailableInterface::sourceColumnTypeChanged(QString name)
 	return index;
 }
 
-int ListModelAvailableInterface::sourceLabelChanged(QString columnName, QString orgLabel, QString newLabel)
+bool ListModelAvailableInterface::sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)
 {
-	int index = ListModelDraggable::sourceLabelChanged(columnName, orgLabel, newLabel);
+	bool change = ListModelDraggable::sourceLabelsChanged(columnName, changedLabels);
 
-	if (index == -1 && _allTerms.contains(columnName))
-		emit labelChanged(columnName, orgLabel, newLabel);
+	if (!change && _allTerms.contains(columnName))
+		emit labelsChanged(columnName, changedLabels);
 
-	return index;
+	return change;
 }
 
-int ListModelAvailableInterface::sourceLabelsReordered(QString columnName)
+bool ListModelAvailableInterface::sourceLabelsReordered(QString columnName)
 {
-	int index = ListModelDraggable::sourceLabelsReordered(columnName);
+	bool change = ListModelDraggable::sourceLabelsReordered(columnName);
 
-	if (index == -1 && _allTerms.contains(columnName))
+	if (!change && _allTerms.contains(columnName))
 		emit labelsReordered(columnName);
 
-	return index;
+	return change;
 }
 
 void ListModelAvailableInterface::removeTermsInAssignedList()
@@ -209,7 +209,7 @@ void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *a
 	connect(this, &ListModelAvailableInterface::namesChanged, assignedModel, &ListModelAssignedInterface::sourceNamesChanged);
 	connect(this, &ListModelAvailableInterface::columnsChanged, assignedModel, &ListModelAssignedInterface::sourceColumnsChanged);
 	connect(this, &ListModelAvailableInterface::columnTypeChanged, assignedModel, &ListModelAssignedInterface::sourceColumnTypeChanged);
-	connect(this, &ListModelAvailableInterface::labelChanged, assignedModel, &ListModelAssignedInterface::sourceLabelChanged);
+	connect(this, &ListModelAvailableInterface::labelsChanged, assignedModel, &ListModelAssignedInterface::sourceLabelsChanged);
 	connect(this, &ListModelAvailableInterface::labelsReordered, assignedModel, &ListModelAssignedInterface::sourceLabelsReordered);
 	connect(listView(), &JASPListControl::containsVariablesChanged, assignedModel->listView(), &JASPListControl::setContainsVariables);
 	connect(listView(), &JASPListControl::containsInteractionsChanged, assignedModel->listView(), &JASPListControl::setContainsInteractions);

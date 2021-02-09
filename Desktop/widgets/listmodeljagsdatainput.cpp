@@ -23,7 +23,7 @@
 #include "r_functionwhitelist.h"
 #include "tableviewbase.h"
 
-ListModelJAGSDataInput::ListModelJAGSDataInput(TableViewBase *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
+ListModelJAGSDataInput::ListModelJAGSDataInput(TableViewBase *parent) : ListModelTableViewBase(parent)
 {
 	_keepRowsOnReset = false;
 	_tableTerms.colNames.push_back(getDefaultColName(0));
@@ -86,6 +86,11 @@ QString ListModelJAGSDataInput::getDefaultColName(size_t index) const
 	if(index == 0)
 		return "Parameter";
 	return "R Code";
+}
+
+bool ListModelJAGSDataInput::isEditable(const QModelIndex &index) const
+{
+	return index.column() >= 1 || _tableView->property("isFirstColEditable").toBool();
 }
 
 int ListModelJAGSDataInput::getMaximumColumnWidthInCharacters(size_t columnIndex) const

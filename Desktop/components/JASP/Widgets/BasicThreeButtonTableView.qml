@@ -43,7 +43,6 @@ Item
 	property	alias	factorsSource		: tableView.factorsSource
 	property	alias	control				: tableView //Needed for RowComponent
 
-	property	alias	tableType			: tableView.tableType
 	property	alias	itemType			: tableView.itemType
 	property	alias	modelType			: tableView.modelType
 
@@ -54,6 +53,7 @@ Item
 	property	alias	columnName			: tableView.colName
 	property	alias	decimals			: tableView.decimals
 	property	alias	scaleFactor			: tableView.scaleFactor
+	property	alias	isFirstColEditable	: tableView.isFirstColEditable
 
 	property	bool	showButtons			: true
 

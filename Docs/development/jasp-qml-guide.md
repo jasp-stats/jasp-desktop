@@ -568,7 +568,6 @@ Properties
 - `modelType`: [required, must be either `MultinomialChi2Model`, `JAGSDataInputModel`, `FilteredDataEntryModel` or `CustomContrasts`] Specify which kind of TableView is used.
 - `colName`: [optional, default `data`]: name of the generated column when `modelType` is `ListModelFilteredDataEntry` or `CustomContrasts`
 - `itemType`: [optional, default `string`, can be also `double` or `integer`]
-- `tableType`: [optional, default `ExpectedProportions`, can be also `PriorCounts`]
 - `source`: [optional, default ``] source of the values the table is based on
 
 <details>
@@ -578,8 +577,7 @@ Properties
   TableView
   {
       modelType		: "MultinomialChi2Model"
-      itemType		: "ExpectedProportions"
-      tableType		: "double"
+	  inputType		: "double"
       source            : "factor"
   }
   ```

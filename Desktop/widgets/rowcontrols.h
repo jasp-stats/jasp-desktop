@@ -39,8 +39,7 @@ public:
 	RowControls(
 			ListModel* parent
 			, QQmlComponent* components
-			, const QMap<QString, Json::Value>& rowValues
-			, bool isDummy = false);
+			, const QMap<QString, Json::Value>& rowValues);
 
 	void										init(int row, const Term& key, bool isNew);
 	void										setContext(int row, const QString& key);
@@ -59,7 +58,6 @@ private:
 	QQmlContext*							_context;
 	QMap<QString, QVariant>					_rowControlsVarMap;
 	QMap<QString, Json::Value>				_rowValues;
-	bool									_isDummy = false;
 };
 
 #endif // ROWCOMPONENTS_H

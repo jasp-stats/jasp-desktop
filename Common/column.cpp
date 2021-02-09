@@ -670,7 +670,7 @@ bool Column::overwriteDataWithNominal(std::vector<std::string> nominalData)
 	if(nominalData.size() != rowCount())
 		nominalData.resize(rowCount());
 
-	bool changedSomething;
+	bool changedSomething = false;
 	setColumnAsNominalText(nominalData, &changedSomething);
 
 	return changedSomething;
@@ -832,7 +832,12 @@ std::map<int, std::string> Column::setColumnAsNominalText(const std::vector<std:
 		else
 		{
 			if (map.find(value) == map.end())
-				throw std::runtime_error("Error when reading column " + name() + ": cannot convert it to Nominal Text");
+			{
+				std::string allLabels;
+				for (auto const& imap: map)
+					allLabels += imap.first + ", ";
+				throw std::runtime_error("Error when reading column " + name() + ": cannot convert value " + value + " to Nominal Text (all labels: " + allLabels + ")");
+			}
 			
 			if(changedSomething != nullptr && *intInputItr != map[value])
 				*changedSomething = true;

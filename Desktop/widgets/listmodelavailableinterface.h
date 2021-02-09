@@ -50,12 +50,12 @@ signals:
 			void availableTermsReset(Terms termsAdded, Terms termsRemoved);
 
 public slots:
-			void sourceTermsReset()										override;
-			void sourceNamesChanged(QMap<QString, QString> map)			override;
-			void sourceColumnsChanged(QStringList columns)				override;
-			int  sourceColumnTypeChanged(QString name)						override;
-			int  sourceLabelChanged(QString columnName, QString orgLabel, QString newLabel)	override;
-			int  sourceLabelsReordered(QString columnName)				override;
+			void sourceTermsReset()															override;
+			void sourceNamesChanged(QMap<QString, QString> map)								override;
+			void sourceColumnsChanged(QStringList columns)									override;
+			int  sourceColumnTypeChanged(QString name)										override;
+			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})		override;
+			bool sourceLabelsReordered(QString columnName)									override;
 			void removeAssignedModel(ListModelDraggable* model);
 
 protected:

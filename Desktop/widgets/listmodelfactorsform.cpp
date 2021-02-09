@@ -82,17 +82,17 @@ void ListModelFactorsForm::initFactors(const FactorVec &factors)
 }
 
 
-Terms ListModelFactorsForm::termsEx(const QString& what)
+Terms ListModelFactorsForm::filterTerms(const Terms& terms, const QStringList& filters)
 {
-	if (what == "title")
-	{
-		Terms terms;
-		for (Factor* factor : _factors)
-			terms.add(factor->title);
-		return terms;
-	}
+	Terms result;
 
-	return ListModel::termsEx(what);
+	if (filters.contains("title"))
+		for (Factor* factor : _factors)
+			result.add(factor->title);
+	else
+		result = terms;
+
+	return ListModel::filterTerms(result, filters);
 }
 
 ListModelFactorsForm::FactorVec ListModelFactorsForm::getFactors()

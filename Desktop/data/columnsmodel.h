@@ -38,7 +38,7 @@ signals:
 	void namesChanged(QMap<QString, QString> changedNames);
 	void columnsChanged(QStringList changedColumns);
 	void columnTypeChanged(QString colName);
-	void labelChanged(QString columnName, QString originalLabel, QString newLabel);
+	void labelsChanged(QString columnName, QMap<QString, QString> changedLabels);
 	void labelsReordered(QString columnName);
 
 public slots:

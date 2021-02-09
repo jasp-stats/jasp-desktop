@@ -37,20 +37,19 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowContro
 	ListModelAssignedInterface::initTerms(interactionTerms(), allValuesMap);
 }
 
-Terms ListModelInteractionAssigned::termsEx(const QString &what)
+Terms ListModelInteractionAssigned::filterTerms(const Terms& terms, const QStringList& filters)
 {
-	if (what == "noInteraction")
+	Terms result;
+	if (filters.contains("noInteraction"))
 	{
-		Terms terms;
-
-		terms.add(_fixedFactors);
-		terms.add(_randomFactors);
-		terms.add(_covariates);
-
-		return terms;
+		result.add(_fixedFactors);
+		result.add(_randomFactors);
+		result.add(_covariates);
 	}
 	else
-		return ListModelAssignedInterface::termsEx(what);
+		result = terms;
+
+	return ListModelAssignedInterface::filterTerms(result, filters);
 }
 
 void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)

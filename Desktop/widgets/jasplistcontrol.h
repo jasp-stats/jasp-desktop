@@ -86,7 +86,9 @@ public:
 			const QString&		valueRole()					const			{ return _valueRole;			}
 			bool				containsVariables()			const			{ return _containsVariables;	}
 			bool				containsInteractions()		const			{ return _containsInteractions;	}
-			bool				encodeValue()				const override	{ return containsVariables(); }
+			bool				encodeValue()				const override	{ return containsVariables();	}
+			bool				useSourceLevels()			const			{ return _useSourceLevels;		}
+			void				setUseSourceLevels(bool b)					{ _useSourceLevels = b;			}
 
 signals:
 			void				modelChanged();
@@ -126,7 +128,8 @@ protected:
 	bool					_addEmptyValue			= false,
 							_containsVariables		= false,
 							_containsInteractions	= false,
-							_termsAreInteractions	= false;
+							_termsAreInteractions	= false,
+							_useSourceLevels		= false;
 	QString					_placeHolderText		= tr("<no choice>"),
 							_labelRole				= "label",
 							_valueRole				= "value";

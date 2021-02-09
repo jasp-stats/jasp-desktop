@@ -28,8 +28,8 @@
 
 using namespace std;
 
-ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView, QString tableType)
-	: ListModel(tableView), _tableView(tableView), _tableType(tableType)
+ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView)
+	: ListModel(tableView), _tableView(tableView)
 {
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
@@ -221,33 +221,38 @@ void ListModelTableViewBase::itemChanged(int column, int row, QVariant value, QS
 	}
 }
 
-Terms ListModelTableViewBase::termsEx(const QString &what)
+Terms ListModelTableViewBase::filterTerms(const Terms& terms, const QStringList& filters)
 {
 	Terms tempTerms;
+	QStringList otherFilters;
 
-	int colNb = -1;
-	if (what.isEmpty() && _tableTerms.values.length() == 1)
-		colNb = 0;
-	else if (!what.isEmpty())
+	std::set<int> colNbs;
+	if (filters.empty() && _tableTerms.values.length() == 1)
+		colNbs.insert(0);
+
+	for (const QString& filter : filters)
 	{
-		colNb = _tableTerms.colNames.indexOf(what);
-		if (colNb == -1 && what.startsWith("column"))
+		int colNb = _tableTerms.colNames.indexOf(filter);
+		if (colNb == -1 && filter.startsWith("column"))
 		{
-			QString tempWhat = what;
+			QString tempWhat = filter;
 			QString colNbStr = tempWhat.remove("column");
 			bool ok = false;
 			colNb = colNbStr.toInt(&ok);
 			if (!ok) colNb = -1;
 			if (colNb > 0) colNb--;
 		}
+
+		if (colNb != -1)	colNbs.insert(colNb);
+		else				otherFilters.append(filter);
 	}
 
-	if (colNb >= 0)
+	for (int colNb : colNbs)
 	{
 		if (_tableTerms.values.length() > colNb)
 		{
-			const QVector<QVariant> firstCol = _tableTerms.values[colNb];
-			for (const QVariant& val : firstCol)
+			const QVector<QVariant>& values = _tableTerms.values[colNb];
+			for (const QVariant& val : values)
 			{
 				QString value = val.toString();
 				if (!value.isEmpty() && value != "...")
@@ -255,18 +260,10 @@ Terms ListModelTableViewBase::termsEx(const QString &what)
 			}
 		}
 		else
-			addControlError(tr("Column number in source use is bigger than the number of columns of %1").arg(name()));
-	}
-	else
-	{
-		if (what.isEmpty())
-			addControlError(tr("No column in TableView source %1").arg(name()));
-		else
-			addControlError(tr("Unknown column specified (%1) in TableView source %2").arg(what).arg(name()));
+			addControlError(tr("Column number in source is bigger than the number of columns of %1").arg(name()));
 	}
 
-
-	return tempTerms;
+	return ListModel::filterTerms(tempTerms, otherFilters);
 }
 
 QVariant ListModelTableViewBase::headerData( int section, Qt::Orientation orientation, int role) const

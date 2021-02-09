@@ -29,7 +29,7 @@ class ListModelCustomContrasts : public ListModelTableViewBase
 	Q_PROPERTY(QString colName		READ colName	WRITE setColName	NOTIFY colNameChanged	)
 
 public:
-	explicit ListModelCustomContrasts(TableViewBase * parent, QString tableType);
+	explicit ListModelCustomContrasts(TableViewBase * parent);
 
 	int getMaximumColumnWidthInCharacters(size_t columnIndex)	const	override;
 
@@ -45,9 +45,10 @@ public:
 	void			getVariablesAndLabels(QStringList& variables, QVector<QVector<QVariant> >& allLabels);
 
 public slots:
-	void sourceTermsReset()																		override;
-	int  sourceLabelChanged(	 QString columnName, QString originalLabel, QString newLabel)	override;
-	int  sourceLabelsReordered(QString columnName)												override;
+	void sourceTermsReset()														override;
+	bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})	override;
+	bool sourceLabelsReordered(QString columnName)								override;
+	void sourceColumnsChanged(QStringList columns)								override;
 	void scaleFactorChanged();
 	void setColName(QString colName);
 	void factorsSourceChanged();

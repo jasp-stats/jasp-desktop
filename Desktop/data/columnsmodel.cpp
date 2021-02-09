@@ -8,7 +8,7 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) : QTransposeProxyModel
 	setSourceModel(tableModel);
 
 	connect(_tableModel, &DataSetTableModel::columnTypeChanged,		this, &ColumnsModel::columnTypeChanged	);
-	connect(_tableModel, &DataSetTableModel::labelChanged,			this, &ColumnsModel::labelChanged		);
+	connect(_tableModel, &DataSetTableModel::labelChanged,			this, [&](QString col, QString orgLabel, QString newLabel) { emit labelsChanged(col, {std::make_pair(orgLabel, newLabel) }); } );
 	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
 
 	if (_singleton == nullptr) _singleton = this;

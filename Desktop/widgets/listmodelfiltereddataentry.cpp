@@ -6,8 +6,8 @@
 #include "analysis/jaspcontrol.h"
 #include "data/columnsmodel.h"
 
-ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent, QString tableType)
-	: ListModelTableViewBase(parent, tableType)
+ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
+	: ListModelTableViewBase(parent)
 {
 	_keepRowsOnReset = false;
 	setAcceptedRowsTrue();

@@ -33,7 +33,6 @@ Json::Value BoundControlContrastsTableView::createJson()
 
 	QStringList variables;
 	QVector<QVector<QVariant> > allLables;
-	Json::Value defaultValue = _defaultValue();
 
 	contrastsModel->getVariablesAndLabels(variables, allLables);
 
@@ -64,7 +63,7 @@ Json::Value BoundControlContrastsTableView::createJson()
 
 		if (_tableView->initialColumnCount() > 0)
 		{
-			Json::Value defaultValue;
+			Json::Value defaultValue = _defaultValue();
 
 			for (int colIndex = 0; colIndex < _tableView->initialColumnCount(); colIndex++)
 			{

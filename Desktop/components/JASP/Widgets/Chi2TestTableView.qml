@@ -26,10 +26,10 @@ BasicThreeButtonTableView
 {
 	id				: chi2TestTableView
 
-	tableType		: "ExpectedProportions"
 	modelType		: JASP.MultinomialChi2Model
 
 	property	int		maxNumHypotheses	: 10
+	property	string	colHeader			: ""
 
 	buttonAddText		: qsTr("Add Column")
 	onAddClicked		: tableView.addColumn()
@@ -42,4 +42,6 @@ BasicThreeButtonTableView
 	buttonResetText		: qsTr("Reset")
 	onResetClicked		: tableView.reset()
 	buttonResetEnabled	: tableView.columnCount > 0
+
+	function getColHeaderText(headerText, columnIndex)	{ return colHeader ? colHeader : "H₀ (" + String.fromCharCode(97 + columnIndex) + ")" ; }
 }
