@@ -17,7 +17,7 @@ Item
 	property variant functionNameToImageSource: { "sum": jaspTheme.iconPath + "/sum.png", "prod": jaspTheme.iconPath + "/product.png", "sd": jaspTheme.iconPath + "/sigma.png", "var": jaspTheme.iconPath + "/variance.png", "!": jaspTheme.iconPath + "/negative.png", "sqrt":jaspTheme.iconPath + "/rootHead.png"}
 	property string functionImageSource: functionNameToImageSource[functionName] !== undefined ? functionNameToImageSource[functionName] : ""
 	property bool isNested: false
-	property var booleanReturningFunctions: ["!"]
+	property var booleanReturningFunctions: ["!", "hasSubstring"]
 
 	readonly property bool isIfElse: functionName === "ifelse"
 	property var ifElseReturn: ["string", "number", "boolean"]

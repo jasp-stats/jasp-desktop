@@ -197,11 +197,13 @@ FocusScope
 				functionModel: ListModel
 				{
 
-					ListElement	{ type: "function";	functionName: "abs";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("absolute value") }
-					ListElement	{ type: "function";	functionName: "sd";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("standard deviation") }
-					ListElement	{ type: "function";	functionName: "var";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("variance") }
-					ListElement	{ type: "function";	functionName: "sum";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("summation") }
-					ListElement	{ type: "function";	functionName: "prod";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("product of values") }
+					ListElement	{ type: "function";	functionName: "abs";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("absolute value") }
+					ListElement	{ type: "function";	functionName: "sd";			functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("standard deviation") }
+					ListElement	{ type: "function";	functionName: "var";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("variance") }
+					ListElement	{ type: "function";	functionName: "sum";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("summation") }
+					ListElement	{ type: "function";	functionName: "prod";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("product of values") }
+					ListElement	{ type: "function";	functionName: "zScores";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("Standardizes the variable") }
+
 
 					ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns minimum of values") }
 					ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns maximum of values") }
@@ -220,9 +222,10 @@ FocusScope
 					ListElement	{ type: "function";	functionName: "invFishZ";	functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform real numbers to numbers between -1 and 1") }
 
 					ListElement	{ type: "separator" }
-					ListElement	{ type: "function";	functionName: "cut";		functionParameters: "values,numBreaks";		functionParamTypes: "number,number";                                            toolTip: qsTr("break your data up in numBreaks levels") }
-					ListElement	{ type: "function";	functionName: "replaceNA";	functionParameters: "column,replaceWith";	functionParamTypes: "string:boolean:number,string:boolean:number";                            toolTip: qsTr("replace any missing values (NA) in column by the value in replaceWith") }
-					ListElement	{ type: "function";	functionName: "ifElse";		functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";      toolTip: qsTr("if-else statement") }
+					ListElement	{ type: "function";	functionName: "cut";			functionParameters: "values,numBreaks";		functionParamTypes: "number,number";                                            toolTip: qsTr("break your data up in numBreaks levels") }
+					ListElement	{ type: "function";	functionName: "replaceNA";		functionParameters: "column,replaceWith";	functionParamTypes: "string:boolean:number,string:boolean:number";              toolTip: qsTr("replace any missing values (NA) in column by the value in replaceWith") }
+					ListElement	{ type: "function";	functionName: "ifElse";			functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";      toolTip: qsTr("if-else statement") }
+					ListElement	{ type: "function";	functionName: "hasSubstring";	functionParameters: "string,substring";		functionParamTypes: "string,string";											toolTip: qsTr("returns true if string contains substring at least once") }
 
 					ListElement	{ type: "separator" }
 					ListElement	{ type: "function";	functionName: "normalDist";     functionParameters: "mean,sd";                  functionParamTypes: "number,number";            toolTip: qsTr("generates data from a Gaussian distribution with specified mean and standard deviation sd") }

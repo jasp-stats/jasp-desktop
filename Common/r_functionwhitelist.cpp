@@ -225,6 +225,9 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"dweibull",		"pweibull",		"qweibull",		"rweibull",
 	"dsignrank",	"psignrank",	"qsignrank",	"rsignrank",
 
+	"zScores",
+	"hasSubstring",
+
 	"pbirthday",
 	"ptukey",
 	"dwilcox",
