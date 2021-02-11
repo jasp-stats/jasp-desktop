@@ -83,7 +83,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		Log::log() << " titled: '" << title << "'" << std::endl;
 
 		if(!analysisEntry)
-			throw Modules::ModuleException(fq(module), "Problem loading analysis \"" + fq(name) + "\" from module \"" + fq(module) + "\". This module cannot be found in your JASP, this is likely a bug as we still ship all modules in the installer.");
+			throw Modules::ModuleException(fq(module), "Problem loading analysis \"" + fq(name) + "\" from module \"" + fq(module) + "\". This module cannot be found in your JASP or the analysis cannot be found in it, this is likely a bug as we still ship all modules in the installer.");
 
 		if(title == "")
 			title = tq(analysisEntry->title());
