@@ -40,7 +40,9 @@ Json::Value jaspPlot::dataEntry(std::string & errorMessage) const
 	data["revision"]	= _revision;
 	data["name"]		= getUniqueNestedName();
 	data["editOptions"]	= _editOptions;
-	data["editable"]	= !_editOptions.isNull();
+	data["reasonNotEditable"] = _editOptions.get("reasonNotEditable", "unknown reason");
+	data["errorType"]	= _editOptions.get("errorType", "fatalError");
+	data["editable"]	= !_editOptions.isNull() && data["errorType"] == "success";
 
 	return data;
 }

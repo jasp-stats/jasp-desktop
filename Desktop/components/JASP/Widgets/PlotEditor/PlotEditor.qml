@@ -117,7 +117,6 @@ Popup
 						PlotEditingAxis
 						{
 							id:				xAxis
-							title:			axisDropDown.label
 							axisModel:		plotEditorModel.currentAxis
 
 							anchors

@@ -75,10 +75,6 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
       limitsize = FALSE # only necessary if users make the plot ginormous.
     )
 
-    #If we have jaspGraphs available we can get the plotEditingOptions for this plot
-    if(requireNamespace("jaspGraphs", quietly = TRUE))
-      plotEditingOptions <- jaspGraphs::plotEditingOptions(graph=plot, asJSON=TRUE)
-
   } else {
     
     isRecordedPlot <- inherits(plot2draw, "recordedplot")
@@ -111,8 +107,10 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
 
   if (obj) {
     image[["obj"]]         <- plot2draw
-    image[["editOptions"]] <- plotEditingOptions
   }
+  #If we have jaspGraphs available we can get the plotEditingOptions for this plot
+  if(requireNamespace("jaspGraphs", quietly = TRUE))
+    image[["editOptions"]] <- jaspGraphs::plotEditingOptions(plot, asJSON = TRUE)
 
   return(image)
 }

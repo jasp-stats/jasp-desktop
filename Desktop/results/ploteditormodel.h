@@ -132,7 +132,8 @@ private:
 	bool					_visible		= false,
 							_goBlank		= false,
 							_loading		= false,
-							_advanced		= false;
+							_advanced		= false,
+							_validOptions	= false;
 	int						_width,
 							_height,
 							_analysisId,
