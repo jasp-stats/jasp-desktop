@@ -27,7 +27,7 @@ Item
 		border.width:		1
 		height:				120 * preferencesModel.uiScale
 		radius:				height
-		width:				parent.width * 0.5
+		width:				Math.min(Math.max(loadingText.implicitWidth + height, parent.width * 0.5), parent.width - height)
 		anchors.centerIn:	parent
 
 		Text
