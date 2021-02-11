@@ -30,6 +30,9 @@ Upgrades
 
 To actually change the options for the qml form belonging to the analysis/function in question one needs to add one or more `Change*` QML items as described in the rest of this document.
 
+### Upgrade Order
+Keep in mind that the order of `Upgrade`s within `Upgrades` is not important. However you should only ever have a single `Upgrade` with a particular combination of `functionName` and `fromVersion`, because those are used to find the right `Upgrade` to be applied to a particular version of an analysis. And these will be chained for multiple versions. So suppose you have an upgrade for an analysis from version `0.1` to `0.2`, and an upgrade from `0.3` to `0.4`. Then when you load an analysis made with module version `0.0.1` JASP is smart enough to figure that it should apply `0.1 -> 0.2` and then `0.3 -> 0.4`. So you do not need to specify an `Upgrade` for each version of your module, but just for the changes that need to be made. And JASP will chain them for you.
+
 # Changing Options
 Besides changing the name of your module or the function called for analysis you can also change the options stored in a jasp-file by older versions of your module. In case you aren't sure what is meant by options: these are the values stored in a json format by the QML form of your analysis. Each option has a name and this is the exact same `name:` as you specify in the QML forms. 
 
@@ -37,7 +40,7 @@ This also means that if you change the name of some option and the user loads a 
 
 The problem here is that the results shown in JASP are also loaded from the jasp-file and are of course based on whatever the options were when the user saved her or his file, and presumably the desired output as well. To make sure that loading a file with a newer version of your module will still lead to the same results as before you can add `Change*`s as specified below.
 
-Something important to keep in mind is that a list of these `Changes` will be applied in the order you've specified them. 
+Something important to keep in mind is that a list of these `Changes` will be applied in the order you've specified them. As opposed to the `Upgrade`s where they are executed in [order of versions](#upgrade-order).
 
 For all following examples the full QML file would look something like:
 ```qml
@@ -74,6 +77,7 @@ Upgrade
 }
 ```
 In the above example the option "vars" in version 0.1 of SomeAnalysis is renamed to "variables" in version 0.2 of SomeAnalysis. You could add more renames or other changes to `Upgrade` as needed.
+If you've renamed the `value`s of `RadioButton` this cannot be solved by `ChangeRename`, however it is easily solved by `ChangeJS` as is shown under [renaming radiobuttons](#renaming-radiobuttons).
 
 ## Copy Option
 This is exactly the same as [rename option](#rename-option) except that you use a `ChangeCopy` item and it well, makes a copy instead of renaming. It would look like this:
@@ -146,6 +150,7 @@ Upgrade
 
 Many more examples could be given here but the basic takeaway is that `jsFunction` gets an `options` javascript-object consisting of named entries.
 Each name is the same `name:` as each item in the qml form for your analysis has and the value is whatever kind of value such an item stores.
+If you've nested QML Items within each other that doesn't mean that they will be nested in `options`, in fact everything will be on the same level.
 An example of the options from a very simple form with a `Checkbox` and a `TextField` would be:
 ```json
 {
@@ -153,8 +158,47 @@ An example of the options from a very simple form with a `Checkbox` and a `TextF
 	"textEntry":	"some nice string"
 }
 ```
+The `textEntry` textfield could be inside `checkboxA` in the form or next to it, for both cases the `options` would look like they do now.
 You can access the information in it in any way you like and you can also change it completely. But those changes won't go back to JASP.
 Only the returnvalue of `jsFunction` is used and it is *always* stored in the options under the name you gave in `ChangeJS { name: ... }`.
+
+### Renaming RadioButtons
+A very good example of `ChangeJS` being used productively is when you've renamed the `value` of one or more `RadioButton`s. These are stored as the `value` of the corresponding `RadioButtonGroup`. Suppose the previous version of the module had:
+```qml
+RadioButtonGroup
+{
+	name:	"someRadios"
+	RadioButton { value: "aOption"; title: "A" }
+	RadioButton { value: "bOption"; title: "B" }
+	RadioButton { value: "cOption"; title: "C" }
+}
+```
+And you want to change it to:
+```qml
+RadioButtonGroup
+{
+	name:	"someRadios"
+	RadioButton { value: "optionA"; title: "A" }
+	RadioButton { value: "optionB"; title: "B" }
+	RadioButton { value: "optionC"; title: "C" }
+}
+```
+This can be easily achieved through:
+```qml
+ChangeJS
+{
+	name:		"someRadios"
+	jsFunction:	function(options)
+	{
+		switch(options["someRadios"])
+		{
+			case "aOption":	return "optionA";
+			case "bOption":	return "optionB";
+			case "cOption":	return "optionC";
+		}
+	}
+}
+```
 
 ## Remove option
 For completion's sake a `ChangeRemove` item was added and it allows for an option to be completely removed from an option list if it isn't necessary anymore.
