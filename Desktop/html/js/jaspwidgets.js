@@ -375,6 +375,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.ghostTextDefault = 'Click here to add text';
 
 		this.editing = false;
+		this.hovered = false;
 
 		this.visible = this.model.get('visible');
 		if (this.visible === undefined || this.visible === null)
@@ -412,10 +413,12 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	},
 
 	_hoveringStart: function (e) {
+		this.hovered = true;
 		this.closeButton.setVisibility(true);
 	},
 
 	_hoveringEnd: function (e) {
+		this.hovered = false;
 		this.closeButton.setVisibility(false);
 	},
 
@@ -459,7 +462,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$el.append("<div id=\"editor\"></div>");
 
 		var toolbarOptions = [
-			['bold', 'italic', 'underline', 'link'],
+			['bold', 'italic', 'underline', 'link', 'image'],
 			// [{ 'size': ['small', false, 'large', 'huge'] }],
 			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
 			[{ 'color': [] }, { 'background': [] }],
@@ -477,6 +480,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var options = {
 			theme: 'snow',
 			modules: {
+				imageResize: {
+					modules: [ 'Resize', 'Toolbar' ]
+				},
 				toolbar: toolbarOptions,
 				keyboard: {
 					bindings: {
@@ -531,7 +537,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$quillToolbar.querySelector('button.ql-bold').setAttribute('title', 'Bold');
 		this.$quillToolbar.querySelector('button.ql-italic').setAttribute('title', 'Italic');
 		this.$quillToolbar.querySelector('button.ql-underline').setAttribute('title', 'Underline');
-		this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', 'Link');
+		this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', 'Add Link');
+		this.$quillToolbar.querySelector('button.ql-image').setAttribute('title', 'Select Image');
 
 		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', 'Header');
 		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
@@ -559,7 +566,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		});
 
 		quillEditorElement.addEventListener('focusout', (event) => {
-			self.setQuillToolbarVisibility('none');
+			if (!self.hovered) {
+				self.setQuillToolbarVisibility('none');
+			}
 		});
 
 		if (this.model.get('deltaAvailable')) {
