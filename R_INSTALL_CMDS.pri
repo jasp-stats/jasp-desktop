@@ -57,8 +57,8 @@ isEmpty(DEPS_LIBRARY_DIR)
 	} else {								DEPS_LIBRARY_DIR=$${ROOT_LIBRARY_DIR} }
 }
 
-INSTALL_R_PKG_CMD_POSTFIX      = \', lib=\'$${JASP_LIBRARY_DIR}\', INSTALL_opts=\'--no-multiarch --no-docs --no-test-load\', repos=NULL, type=\'source\') \} )\"
-INSTALL_R_PKG_DEPS_CMD_POSTFIX = \', lib=\'$${DEPS_LIBRARY_DIR}\', INSTALL_opts=\'--no-multiarch --no-docs --no-test-load\', repos=\'https://cloud.r-project.org/\', upgrade=\'never\', THREADS=1) \} )\"
+INSTALL_R_PKG_CMD_POSTFIX      = \', lib=\'$${JASP_LIBRARY_DIR}\', INSTALL_opts=\'--no-multiarch --no-docs --no-test-load\', repos=NULL, type=\'source\') \}, required=FALSE )\"
+INSTALL_R_PKG_DEPS_CMD_POSTFIX = \', lib=\'$${DEPS_LIBRARY_DIR}\', INSTALL_opts=\'--no-multiarch --no-docs --no-test-load\', repos=\'https://cloud.r-project.org/\', upgrade=\'never\', THREADS=1) \}, required=FALSE )\"
 
 PKG_LOCK_CMD_PREFIX  = IF exist \"$${JASP_BUILDROOT_DIR}/R/library/
 PKG_LOCK_CMD_INFIX   = /\" (rd /s /q \"$${JASP_BUILDROOT_DIR}/R/library/

@@ -37,13 +37,16 @@ Item
 			text:					mainWindow.progressBarStatus
 			font:					jaspTheme.fontLabel
 			color:					jaspTheme.textEnabled
+			elide:					Text.ElideMiddle
 
 			anchors
 			{
-				top:		parent.top
-				left:		parent.left
-				right:		parent.right
-				topMargin:	16 * preferencesModel.uiScale
+				top:			parent.top
+				left:			parent.left
+				right:			parent.right
+				topMargin:		16 * preferencesModel.uiScale
+				leftMargin:		height / 2
+				rightMargin:	height / 2
 			}
 		}
 
