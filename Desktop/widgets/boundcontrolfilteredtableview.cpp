@@ -42,7 +42,7 @@ void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, Lis
 {
 	if (value.size() > 0)
 	{
-		const Json::Value& firstRow = value[size_t(0)];
+		const Json::Value& firstRow = value[Json::UInt(0)];
 
 		tableTerms.filter	= tq(firstRow["filter"].asString());
 
@@ -59,7 +59,7 @@ void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, Lis
 		if (extraCol.isString())
 			tableTerms.extraCol = tq(extraCol.asString());
 		else if (extraCol.isArray() && extraCol.size() > 0)
-			tableTerms.extraCol = tq(extraCol[size_t(0)].asString());
+			tableTerms.extraCol = tq(extraCol[Json::UInt(0)].asString());
 
 		for (const Json::Value& value : firstRow["rowIndices"])
 			tableTerms.rowIndices.push_back(value.asInt());
