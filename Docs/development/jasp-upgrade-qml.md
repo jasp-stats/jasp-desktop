@@ -9,8 +9,11 @@ Then whenever a jasp-file is loaded
 # Upgrades.qml
 This file contains a description of what upgrades your module offers, of which the simplest case is simply [renaming an analysis function](#rename-analysis). Further possibilities are [renaming an option](#rename-option) or [adding an option with a default value](#set-option). You can also [remove an option](#set-option) or even run custom [javascript](#javascript). And in all cases this can be done under certain [conditions](#conditionals) but that will probably be rarely used.
 
-The rough structure of `Upgrades.qml` is an `Upgrades{}` QML Item with one or more `Upgrade{}` items in it. Each of these upgrades consists at least of a `functionName`, `fromVersion` and a `toVersion` field. The `functionName`-field specifies which analysis (called `function` here) is targeted while `fromVersion` and `toVersion` predictably define from which module-version it will be upgraded and to which one. Just having that would do very little and the simplest possible change you might want to make is by adding `newFunctionName` with the new name of the analysis.
+The rough structure of `Upgrades.qml` is an `Upgrades{}` QML Item with one or more `Upgrade{}` items in it. Each of these upgrades consists at least of a `functionName`, `fromVersion` and a `toVersion` field. The `functionName`-field specifies which analysis (called `function` here) is targeted while `fromVersion` and `toVersion` predictably define from which module-version it will be upgraded and to which one. 
 
+If you are writing an `Upgrade` for an analysis as it was in JASP before version `0.15` see [migrating from oldschool modules](#migrating-from-oldschool-modules).
+
+Just having a `functionName` and the two `version`s would do very little and the minimal sensible change you could make is adding `newFunctionName` with a new name for the analysis.
 A very short example of that would be fixing the typo that someone could have made in 0.9 of a fictional module:
 ```qml
 import QtQuick		2.12
@@ -322,3 +325,12 @@ Upgrade
 
 }
 ```
+
+## Migrating from Oldschool Modules
+This process of upgrading modules via Upgrades.qml and having all the code for a single module in a single separate repository and `git submodule` was introduced with version `0.15` of JASP. Because there were no modules then, there were also no module-versions and so the version of JASP is used.
+This is important to keep in mind, because it means that the basic version for each module is actually `0.14.2`.
+This because while the latest version that we had displayed on [our website](https://jasp-stats.org) was `0.14.1` and you might expect that to be the correct version to start off from. But we actually also silently released a `0.14.2` to fix a linux-specific problem and by using that version in combination with the "version chaining" described in the introduction of this manual it will resolve nicely.
+
+Because the componentnumbers of each version are all separate numbers that means that the first version of your module, if it was already present in JASP before `0.15` should be `0.15` or at `0.>14` or `>0.?.?`. And in that case the easiest scenario is choosing `0.15`.
+
+The modules were also renamed from for instance "Reliability" to "jaspReliability" but JASP already handles that for you so you can be sure the right module is selected on loading.
