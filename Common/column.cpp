@@ -452,12 +452,12 @@ columnType Column::getColumnType() const
 	return _columnType;
 }
 
-bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
+columnTypeChangeResult Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 {
 	if (_columnType == columnType::nominal || _columnType == columnType::ordinal)
 	{
 		_columnType = newColumnType;
-		return true;
+		return columnTypeChangeResult::changed;
 	}
 
 	if (_columnType == columnType::nominalText)
@@ -494,12 +494,12 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 		{
 			_labels.clear();
 			setColumnAsNominalOrOrdinal(values, intLabels, newColumnType == columnType::ordinal);
-			return true;
+			return columnTypeChangeResult::changed;
 		}
 
 		// nominalText to nominal: we could not make the values as integers, but
 		// the column can still stay a NominalText, so it is not a failure.
-		return newColumnType == columnType::nominal;
+		return newColumnType == columnType::nominal ? columnTypeChangeResult::changed : columnTypeChangeResult::cannotConvertStringValueToInteger;
 	}
 	else if (_columnType == columnType::scale)
 	{
@@ -518,7 +518,7 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 		if (values.size() == rowCount())
 		{
 			setColumnAsNominalOrOrdinal(values, newColumnType == columnType::ordinal);
-			return true;
+			return columnTypeChangeResult::changed;
 		}
 		else if (newColumnType == columnType::nominal)
 		{
@@ -529,14 +529,17 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 				else							values.push_back(Utils::doubleToString(doubleValue));
 
 			setColumnAsNominalText(values);
-			return true;
+			return columnTypeChangeResult::changed;
 		}
+
+		//Because newColumnType != nominal and values.size() != rowCount that means we were trying to convert to Ordinal, but we couldnt convert all scalar values to integers.
+		return columnTypeChangeResult::cannotConvertDoubleValueToInteger;
 	}
 
-	return false;
+	return columnTypeChangeResult::unknownError;
 }
 
-bool Column::_changeColumnToScale()
+columnTypeChangeResult Column::_changeColumnToScale()
 {
 	std::vector<double> values;
 
@@ -572,18 +575,21 @@ bool Column::_changeColumnToScale()
 				converted = true; //Because if key == INT_MIN then it is missing value
 
 			if (converted)	values.push_back(doubleValue);
-			else			return false;
+			else			return columnTypeChangeResult::cannotConvertStringValueToDouble;
 		}
+		break;
+
+	default:
 		break;
 	}
 
 	setColumnAsScale(values);
-	return true;
+	return columnTypeChangeResult::changed;
 }
 
-bool Column::changeColumnType(enum columnType newColumnType)
+columnTypeChangeResult Column::changeColumnType(enum columnType newColumnType)
 {
-	if (newColumnType == _columnType)		return true;
+	if (newColumnType == _columnType)		return columnTypeChangeResult::changed;
 	if (newColumnType == columnType::scale)	return _changeColumnToScale();
 											return _changeColumnToNominalOrOrdinal(newColumnType);
 }

@@ -25,6 +25,7 @@
 #include "timers.h"
 #include "utilities/appdirs.h"
 #include "utils.h"
+#include "gui/messageforwarder.h"
 
 #define ENUM_DECLARATION_CPP
 #include "datasetpackage.h"
@@ -714,19 +715,41 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 	if (_dataSet == nullptr)
 		return true;
 
-	bool changed;
+	columnTypeChangeResult	feedback;
 
-	enlargeDataSetIfNecessary([&](){ changed = _dataSet->column(columnIndex).changeColumnType(newColumnType); }, "setColumnType");
+	enlargeDataSetIfNecessary([&](){ feedback = _dataSet->column(columnIndex).changeColumnType(newColumnType); }, "setColumnType");
 
-	if (changed)
+	if (feedback == columnTypeChangeResult::changed) //Everything went splendidly
 	{
 		QString colName = tq(_dataSet->column(columnIndex).name());
 
 		emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
 		emit columnDataTypeChanged(colName);
 	}
+	else
+	{
+		QString informUser = tr("Something went wrong converting columntype, but it is unclear what.");
 
-	return changed;
+		switch(feedback)
+		{
+		default:	break; //default text already set above.
+		case columnTypeChangeResult::cannotConvertDoubleValueToInteger: //Aka something failed converting to ordinal because to nominal would yield nominalText
+			informUser = tr("Could not convert all values to integer because they have decimal values.");
+			break;
+
+		case columnTypeChangeResult::cannotConvertStringValueToDouble: //Aka something failed converting to scaler from nominaltext
+			informUser = tr("Could not convert all values to scalar because they contained text.");
+			break;
+
+		case columnTypeChangeResult::cannotConvertStringValueToInteger: //Aka something failed converting to ordinal from nominaltext
+			informUser = tr("Could not convert all values to integer because they contained text.");
+			break;
+		}
+
+		MessageForwarder::showWarning("Changing column type failed", informUser);
+	}
+
+	return feedback == columnTypeChangeResult::changed;
 }
 
 void DataSetPackage::refreshColumn(QString columnName)
