@@ -24,21 +24,19 @@
 #include "utilities/qutils.h"
 #include "tableviewbase.h"
 #include "textinputbase.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optiondoublearray.h"
 #include "gui/preferencesmodel.h"
 
 using namespace std;
 
-ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView, QString tableType)
-	: ListModel(tableView), _tableView(tableView), _tableType(tableType)
+ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView)
+	: ListModel(tableView), _tableView(tableView)
 {
 	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
 
 QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
 {
-	if (_rowNames.length() == 0)
+	if (_tableTerms.rowNames.length() == 0)
 		return QVariant();
 
 	int		column	= index.column(),
@@ -63,8 +61,8 @@ QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
 				(down ?		8 : 0);
 	}		
 	case int(specialRoles::itemInputType):	return getItemInputType(index);
-	case Qt::DisplayRole:					return QVariant(_values[column][row]);
-	default:								return QVariant();
+	case Qt::DisplayRole:					return QVariant(_tableTerms.values[column][row]);
+	default:								return ListModel::data(index, role);
 	}
 }
 
@@ -72,9 +70,10 @@ QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
 int ListModelTableViewBase::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
 	int maxL = 3;
+	int column = int(columnIndex);
 
-	if(columnIndex < _values.size())
-		for(QVariant val : _values[columnIndex])
+	if (column < _tableTerms.values.size())
+		for (QVariant val : _tableTerms.values[column])
 			maxL = std::max(val.toString().size(), maxL);
 
 	return maxL + 3;
@@ -85,11 +84,11 @@ QString ListModelTableViewBase::getMaximumRowHeaderString() const
 {
 	int maxL = 7;
 
-	for(QString val : _rowNames)
+	for (QString val : _tableTerms.rowNames)
 			maxL = std::max(val.size() + 4, maxL);
 
 	QString dummyText;
-	while(maxL > dummyText.length())
+	while (maxL > dummyText.length())
 		dummyText += "X";
 
 	return dummyText;
@@ -97,17 +96,18 @@ QString ListModelTableViewBase::getMaximumRowHeaderString() const
 
 void ListModelTableViewBase::addColumn(bool emitStuff)
 {
-	if(emitStuff)
+	if (emitStuff)
 		beginResetModel();
 
-	if (columnCount() < _maxColumn)
+	size_t count = size_t(columnCount());
+
+	if (count < _maxColumn)
 	{
-		_colNames.push_back(getDefaultColName(columnCount()));
-		_values.push_back(QVector<QVariant>(_rowNames.length(), _defaultCellVal));
-		_columnCount++;
+		_tableTerms.colNames.push_back(getDefaultColName(count));
+		_tableTerms.values.push_back(QVector<QVariant>(_tableTerms.rowNames.length(), _tableView->defaultValue()));
 	}
 
-	if(emitStuff)
+	if (emitStuff)
 	{
 		endResetModel();
 
@@ -117,17 +117,17 @@ void ListModelTableViewBase::addColumn(bool emitStuff)
 
 void ListModelTableViewBase::removeColumn(size_t col, bool emitStuff)
 {
-	if(emitStuff)
+	if (emitStuff)
 		beginResetModel();
+	int colIndex = int(col);
 
-	if (col < columnCount())
+	if (colIndex < columnCount())
 	{
-		_values.removeAt(int(col));
-		_colNames.pop_back();	
-		_columnCount--;
+		_tableTerms.values.removeAt(colIndex);
+		_tableTerms.colNames.pop_back();
 	}
 
-	if(emitStuff)
+	if (emitStuff)
 	{
 		endResetModel();
 
@@ -137,20 +137,19 @@ void ListModelTableViewBase::removeColumn(size_t col, bool emitStuff)
 
 void ListModelTableViewBase::addRow(bool emitStuff)
 {
-	if(emitStuff)
+	if (emitStuff)
 		beginResetModel();
 
-	if (rowCount() < _maxRow)
+	if (rowCount() < int(_maxRow))
 	{
-		_rowNames.push_back(getDefaultRowName(rowCount()));
-		_rowCount++;
+		_tableTerms.rowNames.push_back(getDefaultRowName(rowCount()));
 
-		for (QVector<QVariant> & value : _values)
-			while(value.size() < _rowCount) //Lets make sure the data is rectangular!
-				value.push_back(_defaultCellVal);
+		for (QVector<QVariant> & value : _tableTerms.values)
+			while (value.size() < _tableTerms.rowNames.size()) //Lets make sure the data is rectangular!
+				value.push_back(_tableView->defaultValue());
 	}
 
-	if(emitStuff)
+	if (emitStuff)
 	{
 		endResetModel();
 
@@ -160,18 +159,17 @@ void ListModelTableViewBase::addRow(bool emitStuff)
 
 void ListModelTableViewBase::removeRow(size_t row, bool emitStuff)
 {
-	if(emitStuff)
+	if (emitStuff)
 		beginResetModel();
 
 	if (row < rowCount())
 	{
-		for (QVector<QVariant> & value : _values)
+		for (QVector<QVariant> & value : _tableTerms.values)
 			value.removeAt(int(row));
-		_rowNames.pop_back(); //Should we remove the exact right rowName? Or I guess there just generated row for row in the base..
-		_rowCount--;
+		_tableTerms.rowNames.pop_back(); //Should we remove the exact right rowName? Or I guess there just generated row for row in the base..
 	}
 
-	if(emitStuff)
+	if (emitStuff)
 	{
 		endResetModel();
 
@@ -183,28 +181,19 @@ void ListModelTableViewBase::reset()
 {
 	beginResetModel();
 
-	if(!_keepColsOnReset)
-	{
-		_colNames.clear();
-		_columnCount	= 0;
-	}
+	if (!_keepColsOnReset)	_tableTerms.colNames.clear();
+	if (!_keepRowsOnReset)	_tableTerms.rowNames.clear();
 
-	if(!_keepRowsOnReset)
-	{
-		_rowNames.clear();
-		_rowCount		= 0;
-	}
+	_tableTerms.values.clear();
 
-	_values.clear();
-
-	if(!_keepColsOnReset)
-		for(size_t col=0; col < _initialColCnt; col++)
+	if (!_keepColsOnReset)
+		for (int col=0; col < _tableView->initialColumnCount(); col++)
 			addColumn(false);
 
-	size_t rows = std::max(size_t(_rowNames.length()), _initialRowCnt);
+	int rows = std::max(_tableTerms.rowNames.length(), _tableView->initialRowCount());
 
-	if(!_keepRowsOnReset)
-		for(size_t row=0; row < rows; row++)
+	if (!_keepRowsOnReset)
+		for (int row=0; row < rows; row++)
 			addRow();
 
 	endResetModel();
@@ -216,14 +205,15 @@ void ListModelTableViewBase::reset()
 void ListModelTableViewBase::itemChanged(int column, int row, QVariant value, QString type)
 {
 	//If you change this function, also take a look at ListModelFilteredDataEntry::itemChanged
-	if (column > -1 && column < columnCount() && row > -1 && row < _rowNames.length())
+	if (column > -1 && column < columnCount() && row > -1 && row < rowCount())
 	{
-		if (_values[column][row] != value)
+		if (_tableTerms.values[column][row] != value)
 		{
-			_values[column][row] = _itemType == "integer" ? value.toInt() : _itemType == "double" ? value.toDouble() : value;
+			JASPControl::ItemType itemType = _tableView->itemType();
+			_tableTerms.values[column][row] = itemType == JASPControl::ItemType::Integer ? value.toInt() : itemType == JASPControl::ItemType::Double ? value.toDouble() : value;
 
 		if (type != "formula") // For formula type, wait for the formulaCheckSucceeded signal before emitting modelChanged
-			modelChangedSlot();
+			emit termsChanged();
 
 			// Here we should *actually* check if specialRoles::maxColString changes and in that case: (so that the view can recalculate stuff)
 			//	emit headerDataChanged(Qt::Orientation::Horizontal, column, column);
@@ -231,33 +221,38 @@ void ListModelTableViewBase::itemChanged(int column, int row, QVariant value, QS
 	}
 }
 
-Terms ListModelTableViewBase::termsEx(const QString &what)
+Terms ListModelTableViewBase::filterTerms(const Terms& terms, const QStringList& filters)
 {
 	Terms tempTerms;
+	QStringList otherFilters;
 
-	int colNb = -1;
-	if (what.isEmpty() && _values.length() == 1)
-		colNb = 0;
-	else if (!what.isEmpty())
+	std::set<int> colNbs;
+	if (filters.empty() && _tableTerms.values.length() == 1)
+		colNbs.insert(0);
+
+	for (const QString& filter : filters)
 	{
-		colNb = _colNames.indexOf(what);
-		if (colNb == -1 && what.startsWith("column"))
+		int colNb = _tableTerms.colNames.indexOf(filter);
+		if (colNb == -1 && filter.startsWith("column"))
 		{
-			QString tempWhat = what;
+			QString tempWhat = filter;
 			QString colNbStr = tempWhat.remove("column");
 			bool ok = false;
 			colNb = colNbStr.toInt(&ok);
 			if (!ok) colNb = -1;
 			if (colNb > 0) colNb--;
 		}
+
+		if (colNb != -1)	colNbs.insert(colNb);
+		else				otherFilters.append(filter);
 	}
 
-	if (colNb >= 0)
+	for (int colNb : colNbs)
 	{
-		if (_values.length() > colNb)
+		if (_tableTerms.values.length() > colNb)
 		{
-			const QVector<QVariant> firstCol = _values[colNb];
-			for (const QVariant& val : firstCol)
+			const QVector<QVariant>& values = _tableTerms.values[colNb];
+			for (const QVariant& val : values)
 			{
 				QString value = val.toString();
 				if (!value.isEmpty() && value != "...")
@@ -265,23 +260,15 @@ Terms ListModelTableViewBase::termsEx(const QString &what)
 			}
 		}
 		else
-			addControlError(tr("Column number in source use is bigger than the number of columns of %1").arg(name()));
-	}
-	else
-	{
-		if (what.isEmpty())
-			addControlError(tr("No column in TableView source %1").arg(name()));
-		else
-			addControlError(tr("Unknown column specified (%1) in TableView source %2").arg(what).arg(name()));
+			addControlError(tr("Column number in source is bigger than the number of columns of %1").arg(name()));
 	}
 
-
-	return tempTerms;
+	return ListModel::filterTerms(tempTerms, otherFilters);
 }
 
 QVariant ListModelTableViewBase::headerData( int section, Qt::Orientation orientation, int role) const
 {
-	if(section < 0 || section >= (orientation == Qt::Horizontal ? _colNames.length() : _rowNames.length()))
+	if (section < 0 || section >= (orientation == Qt::Horizontal ? _tableTerms.colNames.length() : _tableTerms.rowNames.length()))
 		return QVariant();
 
 	switch(role)
@@ -291,13 +278,13 @@ QVariant ListModelTableViewBase::headerData( int section, Qt::Orientation orient
 		QString dummyText	= headerData(section, orientation, Qt::DisplayRole).toString() + "XXXXX";
 		int colWidth		= getMaximumColumnWidthInCharacters(size_t(section));
 
-		while(colWidth > dummyText.length())
+		while (colWidth > dummyText.length())
 			dummyText += "X";
 
 		return dummyText;
 	}
 	case int(specialRoles::maxRowHeaderString):	return getMaximumRowHeaderString();
-	case Qt::DisplayRole:						return QVariant(orientation == Qt::Horizontal ? _colNames[section] : _rowNames[section]);
+	case Qt::DisplayRole:						return QVariant(orientation == Qt::Horizontal ? _tableTerms.colNames[section] : _tableTerms.rowNames[section]);
 	case Qt::TextAlignmentRole:					return QVariant(Qt::AlignCenter);
 	default:									return QVariant();
 	}
@@ -309,7 +296,7 @@ QHash<int, QByteArray> ListModelTableViewBase::roleNames() const
 
 	static bool addRoles = true;
 
-	if(addRoles)
+	if (addRoles)
 	{
 		roles[int(specialRoles::active)]				= QString("active").toUtf8();
 		roles[int(specialRoles::lines)]					= QString("lines").toUtf8();
@@ -340,9 +327,10 @@ void ListModelTableViewBase::runRScript(const QString & script)
 bool ListModelTableViewBase::valueOk(QVariant value)
 {
 	bool	ok	= true;
+	JASPControl::ItemType itemType = _tableView->itemType();
 
-	if		(_itemType == "double")		value.toDouble(&ok);
-	else if	(_itemType == "integer")	value.toInt(&ok);
+	if		(itemType == JASPControl::ItemType::Double)		value.toDouble(&ok);
+	else if	(itemType == JASPControl::ItemType::Integer)	value.toInt(&ok);
 
 	return ok;
 }
@@ -369,100 +357,42 @@ bool ListModelTableViewBase::addRowControl(const QString &key, JASPControl *cont
 
 void ListModelTableViewBase::formulaCheckSucceededSlot()
 {
-	modelChangedSlot();
-}
-
-void ListModelTableViewBase::modelChangedSlot()
-{
-	if (_boundTo)
-	{
-		std::vector<std::string> stdlevels;
-		for (const QString& rowName : _rowNames)
-			stdlevels.push_back(rowName.toStdString());
-
-		std::vector<Options*> allOptions;
-
-		for (int colIndex = 0; colIndex < _colNames.size(); colIndex++)
-		{
-			Options* options =		new Options();
-			options->add("name",	new OptionString(_colNames[colIndex].toStdString()));
-			options->add("levels",	new OptionVariables(stdlevels));
-
-			std::vector<double> tempValues;
-			for (QVariant val : _values[colIndex].toStdVector())
-				tempValues.push_back(val.toDouble());
-			options->add("values",	new OptionDoubleArray(tempValues));
-
-			allOptions.push_back(options);
-		}
-
-		_boundTo->setValue(allOptions);
-	}
+	_tableView->resetBoundValue();
 }
 
 
-OptionsTable *ListModelTableViewBase::createOption()
+void ListModelTableViewBase::initTableTerms(const TableTerms& terms)
 {
-	Options* optsTemplate =		new Options();
-	optsTemplate->add("name",	new OptionString());
-	optsTemplate->add("levels", new OptionVariables());
-	optsTemplate->add("values", new OptionDoubleArray());
-
-	return new OptionsTable(optsTemplate);
-}
-
-void ListModelTableViewBase::initValues(OptionsTable * bindHere)
-{
-	_colNames.clear();
-	_rowNames.clear();
-	_values.clear();
-
-	_boundTo = bindHere;
-
-	std::vector<Options *>	options = bindHere->value();
-
-	OptionVariables		* optionLevels = nullptr;
-
-	for (Options * newRow : options)
-	{
-		OptionString		*	optionName		= static_cast<OptionString		*>(newRow->get("name"));
-								optionLevels	= static_cast<OptionVariables	*>(newRow->get("levels")); // why not store it once?
-		OptionDoubleArray	*	optionValues	= static_cast<OptionDoubleArray	*>(newRow->get("values"));
-
-		_colNames.push_back(QString::fromStdString(optionName->value()));
-		//levels = optionLevels->variables(); //The old code (in boundqmltableview.cpp) seemed to specify to simply use the *last* OptionVariables called "levels" in the binding option. So I'll just repeat that despite not getting it.
-		_values.push_back({});
-		for (double val : optionValues->value())
-			_values[_values.size()-1].push_back(_itemType == "integer" ? round(val) : val);
-	}
-
-	if(optionLevels)
-		for(const std::string & level : optionLevels->variables())
-			_rowNames.push_back(QString::fromStdString(level));
-
-	//No need to check colnames to cols in values because they are created during the same loop and thus crash if non-matching somehow
-	if (_values.size() > 0 && int(_values[0].size()) != _rowNames.size())
-		Log::log() << "Number of rows specifed in Options for ListModelTableViewBase does not match number of rows in values!" << std::endl;
-
-
 	beginResetModel();
 
-	_columnCount = _colNames.size();
+	_tableTerms = terms;
 
-	for(auto & col : _values)
-		if(_rowNames.size() < col.size())
+	for (auto & col : _tableTerms.values)
+		if(_tableTerms.rowNames.size() < col.size())
 		{
 			Log::log() << "Too many rows in a column of OptionsTable for ListModelTableViewBase! Shrinking column to fit." << std::endl;
-			col.resize(_rowNames.size());
+			col.resize(_tableTerms.rowNames.size());
 		}
 		else
-			for (int row = col.size(); row < _rowNames.size(); row++)
+			for (int row = col.size(); row < _tableTerms.rowNames.size(); row++)
 				col.push_back(1);
-
-	//Ok, going to assume that the following: for (size_t i = values.size(); i < _columnCount; ++i) means we should add columns in case the data wasn't filled correctly (aka colNames did not match with values) but that cannot be now.
 
 	endResetModel();
 
 	emit columnCountChanged();
 	emit rowCountChanged();
+}
+
+QString ListModelTableViewBase::getDefaultColName(size_t index) const
+{
+	return listView()->property("colName").toString() + " " + QString::number(index + 1);
+}
+
+QString ListModelTableViewBase::getItemInputType(const QModelIndex &) const
+{
+	JASPControl::ItemType itemType = _tableView->itemType();
+
+	if (itemType == JASPControl::ItemType::Double)			return "double";
+	else if (itemType == JASPControl::ItemType::Integer)	return "integer";
+	else													return "string";
 }

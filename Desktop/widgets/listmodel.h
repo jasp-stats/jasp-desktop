@@ -23,14 +23,14 @@
 #include <QQmlComponent>
 
 #include "common.h"
-#include "analysis/options/variableinfo.h"
-#include "analysis/options/terms.h"
+#include "analysis/variableinfo.h"
+#include "analysis/terms.h"
+#include "jsonredirect.h"
 
 class JASPListControl;
 class RowControls;
 class JASPControl;
 class BoundControl;
-class Option;
 
 class ListModel : public QAbstractTableModel, public VariableInfoConsumer
 {
@@ -50,7 +50,7 @@ public:
 		RowComponentRole,
 		ValueRole
     };
-	typedef QMap<QString, QMap<QString, Option*> > RowControlsOptions;
+	typedef QMap<QString, QMap<QString, Json::Value> > RowControlsValues;
 
 	ListModel(JASPListControl* listView);
 	
@@ -61,15 +61,16 @@ public:
 
 			JASPListControl*		listView()													const		{ return _listView; }
 			const QString &			name() const;
-	virtual Terms					termsEx(const QString& what);
+			Terms					termsEx(const QStringList& what);
 			const Terms &			terms()														const		{ return _terms;	}
+	virtual Terms					filterTerms(const Terms& terms, const QStringList& filters);
 			bool					needsSource()												const		{ return _needsSource;			}
 			void					setNeedsSource(bool needs)												{ _needsSource = needs;			}
 	virtual QString					getItemType(const Term& term)								const		{ return _itemType; }
 			void					setItemType(QString type)												{ _itemType = type; }
 			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
-	virtual void					initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions());
+	virtual void					initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues());
 			Terms					getSourceTerms();
 			ListModel*				getSourceModelOfTerm(const Term& term);
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
@@ -93,7 +94,7 @@ signals:
 			void termsChanged();		// Used to signal all kinds of changes in the model. Do not call it directly
 			void namesChanged(QMap<QString, QString> map);
 			void columnTypeChanged(QString name);
-			void labelChanged(QString columnName, QString originalLabel, QString newLabel);
+			void labelsChanged(QString columnName, QMap<QString, QString> = {});
 			void labelsReordered(QString columnName);
 			void columnsChanged(QStringList columns);
 			void selectedItemsChanged();
@@ -103,8 +104,8 @@ public slots:
 	virtual void sourceTermsReset();
 	virtual void sourceNamesChanged(QMap<QString, QString> map);
 	virtual int  sourceColumnTypeChanged(QString colName);
-	virtual int	 sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel);
-	virtual int	 sourceLabelsReordered(QString columnName);
+	virtual bool sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels = {});
+	virtual bool sourceLabelsReordered(QString columnName);
 	virtual void sourceColumnsChanged(QStringList columns);
 
 			void dataChangedHandler(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
@@ -124,20 +125,19 @@ protected:
 			bool							_needsSource			= true;
 			QMap<QString, RowControls* >	_rowControlsMap;
 			QQmlComponent *					_rowComponent			= nullptr;
-			RowControlsOptions				_rowControlsOptions;
+			RowControlsValues				_rowControlsValues;
 			QList<BoundControl *>			_rowControlsConnected;
 			QList<int>						_selectedItems;
 			QSet<QString>					_selectedItemsTypes;
+			QStringList						_columnsUsedForLabels;
 
 private:
 			void	_addSelectedItemType(int _index);
-			void	_sourceTermsChangedHandler(Option *option = nullptr);
-			void	_initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap, bool setupRowConnections = true);
+			void	_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool setupRowConnections = true);
 			void	_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls);
 
 			JASPListControl*				_listView = nullptr;
 			Terms							_terms;
-			QStringList						_columnsUsedForLabels;
 
 };
 

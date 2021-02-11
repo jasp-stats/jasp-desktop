@@ -20,8 +20,8 @@
 #define LISTMODELAVAILABLEINTERFACE_H
 
 #include "listmodeldraggable.h"
-#include "analysis/options/terms.h"
-#include "analysis/options/variableinfo.h"
+#include "analysis/terms.h"
+#include "analysis/variableinfo.h"
 #include "sortmenumodel.h"
 #include "sortable.h"
 
@@ -35,7 +35,7 @@ public:
 		: ListModelDraggable(listView) {}
 	
 	virtual const Terms& allTerms()																						const { return _allSortedTerms; }
-			void initTerms(const Terms &terms, const RowControlsOptions& _rowControlsOptions = RowControlsOptions())	override;
+			void initTerms(const Terms &terms, const RowControlsValues& _rowControlsValues = RowControlsValues())	override;
 	virtual void resetTermsFromSources(bool updateAssigned = true)			= 0;
 	virtual void removeTermsInAssignedList();
 	
@@ -50,12 +50,12 @@ signals:
 			void availableTermsReset(Terms termsAdded, Terms termsRemoved);
 
 public slots:
-			void sourceTermsReset()										override;
-			void sourceNamesChanged(QMap<QString, QString> map)			override;
-			void sourceColumnsChanged(QStringList columns)				override;
-			int  sourceColumnTypeChanged(QString name)						override;
-			int  sourceLabelChanged(QString columnName, QString orgLabel, QString newLabel)	override;
-			int  sourceLabelsReordered(QString columnName)				override;
+			void sourceTermsReset()															override;
+			void sourceNamesChanged(QMap<QString, QString> map)								override;
+			void sourceColumnsChanged(QStringList columns)									override;
+			int  sourceColumnTypeChanged(QString name)										override;
+			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})		override;
+			bool sourceLabelsReordered(QString columnName)									override;
 			void removeAssignedModel(ListModelDraggable* model);
 
 protected:

@@ -59,7 +59,6 @@
 #include "widgets/radiobuttonbase.h"
 #include "widgets/radiobuttonsgroupbase.h"
 #include "analysis/jaspdoublevalidator.h"
-#include "analysis/options/optionvariablesgroups.h"
 
 
 #include "gui/jaspversionchecker.h"
@@ -1296,7 +1295,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	Json::Reader parser;
 	parser.parse(utf8, root);
 
-	analysis->options()->set(root);
+	analysis->setBoundValues(root);
 }
 
 void MainWindow::startDataEditorHandler()

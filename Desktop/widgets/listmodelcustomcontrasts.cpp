@@ -20,32 +20,28 @@
 #include "utilities/qutils.h"
 #include "listmodelcustomcontrasts.h"
 #include "analysis/analysisform.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optionterm.h"
-#include "analysis/options/optionboolean.h"
 #include "r_functionwhitelist.h"
 #include "tableviewbase.h"
 #include "listmodelrepeatedmeasuresfactors.h"
 #include "data/columnsmodel.h"
 
-ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
+ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent) : ListModelTableViewBase(parent)
 {
-	_defaultCellVal = "0";
-	_colNames.clear();
-	_values.clear();
-	_colNames.push_back(getDefaultColName(0));
-	_values.push_back({});
+	_keepRowsOnReset = false;
+
+	_tableTerms.colNames.push_back(getDefaultColName(0));
+	_tableTerms.values.push_back({});
 	_loadColumnInfo();
 
 	_needsSource = _colName.isEmpty();
 
 	parent->setProperty("parseDefaultValue", false);
-	parent->setProperty("defaultEmptyValue", _defaultCellVal);
 
-	connect(this, &ListModelCustomContrasts::variableCountChanged,	[&]() { listView()->setProperty("variableCount", _variables.size()); });
-	connect(listView(), SIGNAL(scaleFactorChanged()),					this,	SLOT(scaleFactorChanged()));
-	connect(ColumnsModel::singleton(), &ColumnsModel::labelChanged,		this,	&ListModelCustomContrasts::sourceLabelChanged);
-	connect(ColumnsModel::singleton(), &ColumnsModel::labelsReordered,	this,	&ListModelCustomContrasts::sourceLabelsReordered);
+	connect(this, &ListModelCustomContrasts::variableCountChanged,		_tableView, &TableViewBase::variableCountChanged);
+	connect(listView(), SIGNAL(scaleFactorChanged()),					this,		SLOT(scaleFactorChanged()));
+	connect(ColumnsModel::singleton(), &ColumnsModel::labelsChanged,	this,		&ListModelCustomContrasts::sourceLabelsChanged);
+	connect(ColumnsModel::singleton(), &ColumnsModel::labelsReordered,	this,		&ListModelCustomContrasts::sourceLabelsReordered);
+	connect(ColumnsModel::singleton(), &ColumnsModel::columnsChanged,	this,		&ListModelCustomContrasts::sourceColumnsChanged);
 }
 
 void ListModelCustomContrasts::sourceTermsReset()
@@ -61,7 +57,7 @@ QStringList ListModelCustomContrasts::_getVariables()
 		return getSourceTerms().asQList();
 }
 
-void ListModelCustomContrasts::_getVariablesAndLabels(QStringList& variables, QVector<QVector<QVariant> >& allLabels)
+void ListModelCustomContrasts::getVariablesAndLabels(QStringList& variables, QVector<QVector<QVariant> >& allLabels)
 {
 	variables = _getVariables();
 
@@ -114,16 +110,16 @@ void ListModelCustomContrasts::_resetValuesEtc()
 	QStringList newVariables;
 	QVector<QVector<QVariant> > newValues;
 
-	_getVariablesAndLabels(newVariables, newValues);
+	getVariablesAndLabels(newVariables, newValues);
 
 	beginResetModel();
 
-	int nbContrast = int(_columnCount) - _variables.size();
+	int nbContrast = int(columnCount()) - _tableTerms.variables.size();
 
 	// Maps the new variables with the old ones (if they existed)
 	QMap<int, int> variablesMap;
 	for (int i = 0; i < newVariables.length(); i++)
-		variablesMap[i] = _variables.indexOf(newVariables.at(i));
+		variablesMap[i] = _tableTerms.variables.indexOf(newVariables.at(i));
 
 	int newMaxRows = newValues.length() > 0 ? newValues[0].length() : 0;
 
@@ -137,11 +133,11 @@ void ListModelCustomContrasts::_resetValuesEtc()
 
 		for (int col = 0; col < newVariables.length(); col++)
 		{
-			if (variablesMap[col] >= 0 && variablesMap[col] < _values.length())
+			if (variablesMap[col] >= 0 && variablesMap[col] < _tableTerms.values.length())
 			{
 				QVector<bool> bools;
 				QVariant label = newValues[col][row];
-				const QVector<QVariant>& oldValues = _values[variablesMap[col]];
+				const QVector<QVariant>& oldValues = _tableTerms.values[variablesMap[col]];
 				for (int oldRow = 0; oldRow < oldValues.length(); oldRow++)
 					bools.push_back(oldValues.at(oldRow) == label);
 
@@ -153,7 +149,7 @@ void ListModelCustomContrasts::_resetValuesEtc()
 		int bestFit = -1;
 
 		// From the boolean matrix, find the row where the new labels are found the most.
-		for (int oldRow = 0; oldRow < int(_rowCount); oldRow++)
+		for (int oldRow = 0; oldRow < rowCount(); oldRow++)
 		{
 			int max = 0;
 			for (int oldCol = 0; oldCol < allBools.length(); oldCol++)
@@ -177,10 +173,10 @@ void ListModelCustomContrasts::_resetValuesEtc()
 	{
 		// No contrast yet: fill contrasts with default values.
 		QVector<QVariant> contrasts;
-		for (size_t i = 0; i < _initialColCnt; i++)
+		for (int i = 0; i < _tableView->initialColumnCount(); i++)
 		{
 			for (int row = 0; row < newMaxRows; row++)
-				contrasts.push_back(_defaultCellVal);
+				contrasts.push_back(_tableView->defaultValue());
 			newValues.push_back(contrasts);
 		}
 	}
@@ -190,34 +186,33 @@ void ListModelCustomContrasts::_resetValuesEtc()
 		for (int i = 0; i < nbContrast; i++)
 		{
 			QVector<QVariant> contrasts;
-			int oldContrastIndex = _variables.length() + i;
+			int oldContrastIndex = _tableTerms.variables.length() + i;
 
-			if (_values.length() <= oldContrastIndex)
+			if (_tableTerms.values.length() <= oldContrastIndex)
 			{
 				Log::log() << "ListModelCustomContrasts::sourceTermsChanged: Not the same amount of contrasts!!!" << std::endl;
 				continue;
 			}
 
 			for (int row = 0; row < newMaxRows; row++)
-				contrasts.push_back(rowMapping[row] >= 0 ? _values[oldContrastIndex][rowMapping[row]] : _defaultCellVal);
+				contrasts.push_back(rowMapping[row] >= 0 ? _tableTerms.values[oldContrastIndex][rowMapping[row]] : _tableView->defaultValue());
 
 			newValues.push_back(contrasts);
 		}
 	}
 
+	_tableTerms.clear();
 
-	_variables = newVariables;
-	_values = newValues;
-	_colNames.clear();
-	_columnCount = size_t(_values.length());
-	_rowNames.clear();
-	_rowCount = _values.length() > 0 ? size_t(_values[0].length()) : 0;
+	_tableTerms.variables = newVariables;
+	_tableTerms.values = newValues;
+	size_t colCount = size_t(_tableTerms.values.length());
+	size_t rowCount = _tableTerms.values.length() > 0 ? size_t(_tableTerms.values[0].length()) : 0;
 
-	for (size_t rowNb = 0; rowNb < _rowCount; rowNb++)
-		_rowNames.push_back(getDefaultRowName(rowNb));
+	for (size_t rowNb = 0; rowNb < rowCount; rowNb++)
+		_tableTerms.rowNames.push_back(getDefaultRowName(rowNb));
 
-	for (size_t colNb = 0; colNb < _columnCount; colNb++)
-		_colNames.push_back(getDefaultColName(colNb));
+	for (size_t colNb = 0; colNb < colCount; colNb++)
+		_tableTerms.colNames.push_back(getDefaultColName(colNb));
 
 	endResetModel();
 
@@ -231,22 +226,21 @@ QString ListModelCustomContrasts::getDefaultColName(size_t index) const
 {
 	int indexi = int(index);
 
-	if (indexi < _variables.size())
-		return _variables.at(indexi);
+	if (indexi < _tableTerms.variables.size())
+		return _tableTerms.variables.at(indexi);
 	else
-		return tr("Contrast %1").arg(indexi - _variables.size() + 1);
+		return tr("Contrast %1").arg(indexi - _tableTerms.variables.size() + 1);
 }
 
 void ListModelCustomContrasts::reset()
 {
-	if (_values.length() <= _variables.length() + _initialColCnt)
+	if (_tableTerms.values.length() <= _tableTerms.variables.length() + _tableView->initialColumnCount())
 		return;
 
 	beginResetModel();
 
-	_values.erase(_values.begin() + _variables.length() + _initialColCnt, _values.end());
-	_columnCount = size_t(_values.length());
-	_colNames.erase(_colNames.begin() + _columnCount, _colNames.end());
+	_tableTerms.values.erase(_tableTerms.values.begin() + _tableTerms.variables.length() + _tableView->initialColumnCount(), _tableTerms.values.end());
+	_tableTerms.colNames.erase(_tableTerms.colNames.begin() + _tableTerms.values.length(), _tableTerms.colNames.end());
 
 	endResetModel();
 
@@ -267,190 +261,52 @@ void ListModelCustomContrasts::setup()
 	}
 }
 
+QString ListModelCustomContrasts::getItemInputType(const QModelIndex &index) const
+{
+	if (index.column() >= _tableTerms.variables.length())
+	{
+		if (_tableView->itemType() == JASPControl::ItemType::Double)	return "double";
+		else															return "formula";
+	}
+	else																return "string";
+}
+
 int ListModelCustomContrasts::getMaximumColumnWidthInCharacters(size_t) const
 {
 	return 5;
 }
 
-OptionsTable *ListModelCustomContrasts::createOption()
+bool ListModelCustomContrasts::sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)
 {
-	Options* optsTemplate =		new Options();
-	optsTemplate->add("name",	new OptionString());
-	optsTemplate->add("levels", new OptionVariables());
-	optsTemplate->add("values", new OptionTerm());
-	optsTemplate->add("isContrast",	new OptionBoolean(true));
+	bool doRefresh = false;
 
-	OptionsTable * returnThis = new OptionsTable(optsTemplate);
-
-	QStringList variables;
-	QVector<QVector<QVariant> > allLables;
-
-	_getVariablesAndLabels(variables, allLables);
-
-	if (variables.length() > 0)
+	if (changedLabels.size() == 0)	_resetValuesEtc();
+	else
 	{
-		std::vector<Options*> allOptions;
-		std::vector<std::string> rowNames;
-
-		for (int row = 0; row < allLables[0].length(); row++)
-			rowNames.push_back(fq(getDefaultRowName(row)));
-
-		int col = 0;
-		for (const QString& variable : variables)
+		QMapIterator<QString, QString> it(changedLabels);
+		while (it.hasNext())
 		{
-			Options* options =			new Options();
-			options->add("name",		new OptionString(fq(variable)));
-			options->add("levels",		new OptionVariables(rowNames));
-			options->add("isContrast",	new OptionBoolean(false));
-
-			std::vector<std::string> tempValues;
-			for (const QVariant & label: allLables[col])
-				tempValues.push_back(label.toString().toStdString());
-			options->add("values",	new OptionTerm(tempValues));
-
-			allOptions.push_back(options);
-			col++;
+			it.next();
+			if (_labelChanged(columnName, it.key(), it.value())) doRefresh = true;
 		}
-
-		if (_initialColCnt > 0)
-		{
-			std::string defValue = _defaultCellVal.toString().toStdString();
-
-			for (int colIndex = 0; colIndex < _initialColCnt; colIndex++)
-			{
-				Options* options =			new Options();
-				options->add("name",		new OptionString(fq(getDefaultColName(variables.length() + colIndex))));
-				options->add("levels",		new OptionVariables(rowNames));
-				options->add("isContrast",	new OptionBoolean(true));
-
-				std::vector<std::string> tempValues;
-				for (const auto & level: rowNames)
-					tempValues.push_back(defValue);
-				options->add("values",	new OptionTerm(tempValues));
-
-				allOptions.push_back(options);
-			}
-		}
-
-		returnThis->setValue(allOptions);
 	}
+	if (doRefresh)	refresh();
 
-	return returnThis;
-}
-
-void ListModelCustomContrasts::initValues(OptionsTable * bindHere)
-{
-	_colNames.clear();
-	_rowNames.clear();
-	_values.clear();
-	_variables.clear();
-
-	_boundTo = bindHere;
-
-	std::vector<Options *>	options = bindHere->value();
-
-	OptionVariables		* optionLevels = nullptr;
-
-	for (Options * newRow : options)
-	{
-		OptionBoolean	*	optionContrast	= static_cast<OptionBoolean		*>(newRow->get("isContrast"));
-		OptionString	*	optionName		= static_cast<OptionString		*>(newRow->get("name"));
-							optionLevels	= static_cast<OptionVariables	*>(newRow->get("levels")); // why not store it once?
-		OptionTerm		*	optionValues	= static_cast<OptionTerm		*>(newRow->get("values"));
-
-		QString colName = QString::fromStdString(optionName->value());
-		_colNames.push_back(colName);
-		if (!optionContrast->value())
-			_variables.push_back(colName);
-
-		//levels = optionLevels->variables(); //The old code (in boundqmltableview.cpp) seemed to specify to simply use the *last* OptionVariables called "levels" in the binding option. So I'll just repeat that despite not getting it.
-		_values.push_back({});
-		for (const std::string & val : optionValues->term())
-			_values[_values.size()-1].push_back(tq(val));
-	}
-
-	if(optionLevels)
-		for(const std::string & level : optionLevels->variables())
-			_rowNames.push_back(QString::fromStdString(level));
-
-	//No need to check colnames to cols in values because they are created during the same loop and thus crash if non-matching somehow
-	if (_values.size() > 0 && int(_values[0].size()) != _rowNames.size())
-		Log::log() << "Number of rows specifed in Options for ListModelCustumContrasts does not match number of rows in values!" << std::endl;
-
-
-	beginResetModel();
-
-	_columnCount = _colNames.size();
-	_rowCount = _rowNames.size();
-
-	for(auto & col : _values)
-		if(_rowNames.size() < col.size())
-		{
-			Log::log() << "Too many rows in a column of OptionsTable for ListModelMarginalMeansContrasts! Shrinking column to fit." << std::endl;
-			col.resize(_rowNames.size());
-		}
-		else
-			for (int row = col.size(); row < _rowNames.size(); row++)
-				col.push_back(1);
-
-	//Ok, going to assume that the following: for (size_t i = values.size(); i < _columnCount; ++i) means we should add columns in case the data wasn't filled correctly (aka colNames did not match with values) but that cannot be now.
-
-	endResetModel();
-
-	emit columnCountChanged();
-	emit rowCountChanged();
-}
-
-void ListModelCustomContrasts::modelChangedSlot() // Should move this to listmodeltableviewbase as well probably? And also connect columnCount and colNames etc
-{
-	if (_boundTo)
-	{
-		std::vector<std::string> stdlevels;
-		for (const QString& rowName : _rowNames)
-			stdlevels.push_back(rowName.toStdString());
-
-		std::vector<Options*> allOptions;
-
-		for (int colIndex = 0; colIndex < _colNames.size(); colIndex++)
-		{
-			Options* options =			new Options();
-			options->add("name",		new OptionString(_colNames[colIndex].toStdString()));
-			options->add("levels",		new OptionVariables(stdlevels));
-			options->add("isContrast",	new OptionBoolean(colIndex >= _variables.length()));
-
-			std::vector<std::string> tempValues;
-			for (QVariant val : _values[colIndex].toStdVector())
-				tempValues.push_back(val.toString().toStdString());
-			options->add("values",	new OptionTerm(tempValues));
-
-			allOptions.push_back(options);
-
-		}
-
-		_boundTo->setValue(allOptions);
-	}
-}
-
-int ListModelCustomContrasts::sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel)
-{
-	if (_labelChanged(columnName, originalLabel, newLabel))
-		refresh();
-
-	return 0;
+	return true;
 }
 
 bool ListModelCustomContrasts::_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel)
 {
 	bool isChanged = false;
-	int col = _variables.indexOf(columnName);
+	int col = _tableTerms.variables.indexOf(columnName);
 
-	if (col >= 0 && col < _values.length())
+	if (col >= 0 && col < _tableTerms.values.length())
 	{
-		for (int row = 0; row < _values[col].length(); row++)
+		for (int row = 0; row < _tableTerms.values[col].length(); row++)
 		{
-			if (_values[col][row].toString() == originalLabel)
+			if (_tableTerms.values[col][row].toString() == originalLabel)
 			{
-				_values[col][row] = newLabel;
+				_tableTerms.values[col][row] = newLabel;
 				isChanged = true;
 			}
 		}
@@ -489,10 +345,19 @@ void ListModelCustomContrasts::_loadColumnInfo()
 	setColName(	_tableView->property("colName").toString());
 }
 
-int ListModelCustomContrasts::sourceLabelsReordered(QString )
+bool ListModelCustomContrasts::sourceLabelsReordered(QString )
 {
 	_resetValuesEtc();
-	return 0;
+	return true;
+}
+
+void ListModelCustomContrasts::sourceColumnsChanged(QStringList columns)
+{
+	bool doReset = false;
+	for (const QString& col : columns)
+		if (_tableTerms.variables.contains(col)) doReset = true;
+
+	if (doReset) _resetValuesEtc();
 }
 
 void ListModelCustomContrasts::scaleFactorChanged()
@@ -501,7 +366,7 @@ void ListModelCustomContrasts::scaleFactorChanged()
 	_scaleFactor = listView()->property("scaleFactor").toDouble();
 
 	QVector<QString> scaleVariables;
-	for (const QString& variable : _variables)
+	for (const QString& variable : _tableTerms.variables)
 	{
 		if (requestInfo(variable, VariableInfo::VariableType).toInt() == int(columnType::scale))
 			scaleVariables.push_back(variable);

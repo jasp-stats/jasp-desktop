@@ -40,8 +40,6 @@ RadioButtonsGroupBase
 			property int	leftPadding:			jaspTheme.groupContentPadding
 			property string	value:					""
 
-    signal clicked(var item)
-
 	implicitWidth:	radioButtonsOnSameRow
 						? contentArea.x + contentArea.implicitWidth
 						: Math.max(label.implicitWidth, contentArea.x + contentArea.implicitWidth)

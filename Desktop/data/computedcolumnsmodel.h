@@ -42,8 +42,8 @@ public:
 
 	Q_INVOKABLE bool	isColumnNameFree(QString name)						{ return DataSetPackage::pkg()->isColumnNameFree(name.toStdString()); }
 
-				ComputedColumn*		createComputedColumn(QString name, int columnType, ComputedColumn::computedType computeType, Analysis * analysis = nullptr);
-	Q_INVOKABLE void				createComputedColumn(QString name, int columnType, bool jsonPlease)									{ createComputedColumn(name, columnType, jsonPlease ? ComputedColumn::computedType::constructorCode : ComputedColumn::computedType::rCode);	}
+				ComputedColumn*		createComputedColumn(const std::string& name, int columnType, ComputedColumn::computedType computeType, Analysis * analysis = nullptr);
+	Q_INVOKABLE void				createComputedColumn(const std::string& name, int columnType, bool jsonPlease)									{ createComputedColumn(name, columnType, jsonPlease ? ComputedColumn::computedType::constructorCode : ComputedColumn::computedType::rCode);	}
 
 				bool				areLoopDependenciesOk(std::string columnName);
 				bool				areLoopDependenciesOk(std::string columnName, std::string code);
@@ -83,9 +83,9 @@ public slots:
 				void				computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
 				void				computeColumnFailed(QString columnName, QString error);
 				void				checkForDependentColumnsToBeSentSlot(std::string columnName)					{ checkForDependentColumnsToBeSent(columnName, false); }
-				ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis * analysis);
-				void				requestColumnCreation(QString columnName, Analysis * analysis, int columnType);
-				void				requestComputedColumnDestruction(QString columnName);
+				ComputedColumn *	requestComputedColumnCreation(const std::string& columnName, Analysis * analysis);
+				void				requestColumnCreation(const std::string& columnName, Analysis * analysis, columnType type);
+				void				requestComputedColumnDestruction(const std::string& columnName);
 				void				recomputeColumn(QString columnName);
 				void				setLastCreatedColumn(QString lastCreatedColumn);
 				void				analysisRemoved(Analysis * analysis);

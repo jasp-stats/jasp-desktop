@@ -23,8 +23,8 @@
 #include "common.h"
 #include "../Common/version.h"
 
-#include "options/options.h"
 #include "enginedefinitions.h"
+#include "jaspcontrol.h"
 
 #include <set>
 #include <QObject>
@@ -66,10 +66,13 @@ public:
 
 	virtual ~Analysis();
 
-	void				resetOptionsFromJASPFile()			{ _optionsDotJASP.clear();	}
 	void				clearOptions();
-	Options				*options()					const	{ return _options;			}
 	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
+
+	const Json::Value&	boundValues()				const	{ return _boundValues;		}
+	void				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	const Json::Value&	boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	void				setBoundValues(const Json::Value& boundValues)			{ _boundValues = boundValues; }
 
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 	Q_INVOKABLE void	duplicateMe();
@@ -155,14 +158,15 @@ public:
 	performType				desiredPerformTypeFromAnalysisStatus() const;
 	std::string				qmlFormPath() const;
 
-	std::set<std::string>	usedVariables()																	{ return _options->usedVariables();					}
-	std::set<std::string>	columnsCreated()																{ return _options->columnsCreated();				}
+	std::set<std::string>	usedVariables();
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 	std::string				upgradeMsgsForOption(const std::string & name) const;
 
 	std::vector<std::vector<std::string> >	getValuesFromRSource(const QString & sourceID) const;
+
+	const QList<std::string>&	computedColumns()	const	{ return _computedColumns; }
 
 signals:
 	void				nameChanged();
@@ -174,7 +178,6 @@ signals:
 
 	void				sendRScript(			Analysis * analysis, QString script, QString controlName, bool whiteListedVersion);
 	void				statusChanged(			Analysis * analysis);
-	void				optionsChanged(			Analysis * analysis);
 	void				imageSavedSignal(		Analysis * analysis);
 	void				imageEditedSignal(		Analysis * analysis);
 	void				resultsChangedSignal(	Analysis * analysis);
@@ -182,9 +185,9 @@ signals:
 	void				imageChanged();
 	void				rSourceChanged(QString optionName);
 
-	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
-	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);
-	void				requestComputedColumnDestruction(	QString columnName);
+	ComputedColumn *	requestComputedColumnCreation(		const std::string& columnName, Analysis * analysis);
+	void				requestColumnCreation(				const std::string& columnName, Analysis *source, columnType type);
+	void				requestComputedColumnDestruction(	const std::string& columnName);
 
 	void				refreshTableViewModels();
 	Q_INVOKABLE void	expandAnalysis();
@@ -205,17 +208,18 @@ public slots:
 	void					emitDuplicationSignals();
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
 	void					setOptionsBound(bool optionsBound);
+	void					boundValueChangedHandler();
+	ComputedColumn *		requestComputedColumnCreationHandler(const std::string& columnName);
+	void					requestColumnCreationHandler(const std::string&columnName, columnType colType)	{ requestColumnCreation(columnName, this, colType); }
+	void					requestComputedColumnDestructionHandler(const std::string& columnName);
 
 
 protected:
 	void					abort();
-	void					bindOptionHandlers();
+	void					addOwnComputedColumn(const std::string& col)				{ _computedColumns.push_back(col); }
+	void					removeOwnComputedColumn(const std::string& col)				{ _computedColumns.removeAll(col); }
 
 private:
-	void					optionsChangedHandler(Option *option = nullptr);
-	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName);
-	void					requestColumnCreationHandler(std::string columnName, int colType)	{ requestColumnCreation(tq(columnName), this, colType); }
-	void					requestComputedColumnDestructionHandler(std::string columnName);
 	void					processResultsForDependenciesToBeShown();
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions);
@@ -226,12 +230,14 @@ private:
 	Modules::AnalysisEntry	*moduleData();
 	void					checkForRSources();
 	void					clearRSources();
+	Json::Value&			_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
 
 protected:
 	Status					_status			= Initializing;
 	bool					_refreshBlocked	= false;
 
-	Options*				_options;
+	Json::Value				_boundValues;
+
 
 	///For backward compatibility: _optionsDotJASP = options from (old) JASP file.
 	Json::Value				_optionsDotJASP = Json::nullValue,
@@ -267,6 +273,7 @@ private:
 	Modules::AnalysisEntry*	_moduleData		= nullptr;
 	Modules::DynamicModule* _dynamicModule	= nullptr;
 	AnalysisForm*			_analysisForm	= nullptr;
+	QList<std::string>		_computedColumns;
 
 	std::string				_codedReferenceToAnalysisEntry = "";
 	QString					_helpFile;

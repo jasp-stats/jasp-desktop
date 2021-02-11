@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2020 University of Amsterdam
+// Copyright (C) 2013-2021 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,26 +16,20 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDCONTROLMULTITERMS_H
-#define BOUNDCONTROLMULTITERMS_H
+#ifndef BOUNDCONTROLFILTEREDTABLEVIEW_H
+#define BOUNDCONTROLFILTEREDTABLEVIEW_H
 
-#include "analysis/boundcontrolbase.h"
+#include "boundcontroltableview.h"
 
-class ListModelMultiTermsAssigned;
-
-class BoundControlMultiTerms : public BoundControlBase
+class BoundControlFilteredTableView : public BoundControlTableView
 {
 public:
-	BoundControlMultiTerms(ListModelMultiTermsAssigned* listModel);
+	BoundControlFilteredTableView(TableViewBase* tableView);
 
-	bool		isJsonValid(const Json::Value& optionValue) override;
-	Json::Value	createJson()								override;
-	void		bindTo(const Json::Value &value)			override;
-	void		resetBoundValue()							override;
+	Json::Value		createJson()																				override;
 
-
-private:
-	ListModelMultiTermsAssigned*	_listModel;
+	void			fillTableTerms(const Json::Value& value, ListModelTableViewBase::TableTerms& tableTerms)	override;
+	void			fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms)	override;
 };
 
-#endif // BOUNDCONTROLMULTITERMS_H
+#endif // BOUNDCONTROLFILTEREDTABLEVIEW_H

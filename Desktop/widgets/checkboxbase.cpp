@@ -17,61 +17,47 @@
 //
 
 #include "checkboxbase.h"
-#include "../analysis/analysisform.h"
 #include "log.h"
+#include "../analysis/analysisform.h"
 
 CheckBoxBase::CheckBoxBase(QQuickItem* parent)
-	: JASPControl(parent)
+	: JASPControl(parent), BoundControlBase(this)
 {
 	_controlType = ControlType::CheckBox;
 }
 
-void CheckBoxBase::bindTo(Option *option)
+bool CheckBoxBase::isJsonValid(const Json::Value &value)
 {
-	_boundTo = dynamic_cast<OptionBoolean *>(option);
-
-	if (_boundTo != nullptr)
-	{
-		_checked = _boundTo->value();
-		setProperty("checked", _checked);
-	}
-	else
-		Log::log()  << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp" << std::endl;
+	return value.type() == Json::booleanValue;
 }
 
-bool CheckBoxBase::isOptionValid(Option* option)
+Json::Value CheckBoxBase::createJson()
 {
-	return dynamic_cast<OptionBoolean*>(option) != nullptr;
+	return checked();
 }
 
-bool CheckBoxBase::isJsonValid(const Json::Value &optionValue)
+void CheckBoxBase::bindTo(const Json::Value &value)
 {
-	return optionValue.type() == Json::booleanValue;
+	setChecked(value.asBool());
+	BoundControlBase::bindTo(value);
 }
 
 void CheckBoxBase::setUp()
 {
-	JASPControl::setUp();
-	QQuickItem::connect(this, SIGNAL(clicked()), this, SLOT(checkBoxClickedSlot()));
+	connect(this,	&CheckBoxBase::clicked, this,	&CheckBoxBase::clickedSlot);
 }
 
-Option *CheckBoxBase::createOption()
+void CheckBoxBase::setChecked(bool checked)
 {
-	QVariant checkedVariant = property("checked");
-	if (!checkedVariant.isNull())
-		_checked = checkedVariant.toBool();
-	return new OptionBoolean(_checked);
-}
-
-void CheckBoxBase::setQMLItemChecked(bool checked)
-{
-	_checked = checked;
 	setProperty("checked", checked);
 }
 
-void CheckBoxBase::checkBoxClickedSlot()
+bool CheckBoxBase::checked()
 {
-	_checked = property("checked").toBool();
-	if (_boundTo != nullptr)
-		_boundTo->setValue(_checked);
+	return property("checked").toBool();
+}
+
+void CheckBoxBase::clickedSlot()
+{
+	setBoundValue(checked());
 }

@@ -18,7 +18,6 @@
 
 #include "textareabase.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrol.h"
 #include "boundcontrolsourcetextarea.h"
 #include "boundcontroljagstextarea.h"
 #include "boundcontrollavaantextarea.h"
@@ -68,7 +67,7 @@ void TextAreaBase::setUp()
 			_separators.push_back(separator.toString());
 	}
 
-	QQuickItem::connect(this, SIGNAL(applyRequest()), this, SLOT(checkSyntaxHandler()));
+	connect(this, SIGNAL(applyRequest()), this, SLOT(checkSyntaxHandler()));
 }
 
 void TextAreaBase::rScriptDoneHandler(const QString & result)
@@ -78,9 +77,8 @@ void TextAreaBase::rScriptDoneHandler(const QString & result)
 	{
 		setHasScriptError(false);
 		setProperty("infoText", tr("Model applied"));
-		OptionString* option = dynamic_cast<OptionString*>(boundTo());
-		if (option != nullptr)
-			option->setValue(text().toStdString());
+
+		_boundControl->setBoundValue(Json::Value(text().toStdString()));
 	}
 	else
 	{

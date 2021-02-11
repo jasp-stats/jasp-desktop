@@ -22,8 +22,6 @@
 #include "listmodelassignedinterface.h"
 #include "listmodelavailableinterface.h"
 #include "interactionmodel.h"
-#include "analysis/options/options.h"
-#include "analysis/options/optionterm.h"
 
 class ListModelInteractionAssigned : public ListModelAssignedInterface, public InteractionModel
 {
@@ -32,14 +30,14 @@ class ListModelInteractionAssigned : public ListModelAssignedInterface, public I
 public:
 	ListModelInteractionAssigned(JASPListControl* listView, bool mustContainLowerTerms, bool addInteractionsByDefault);
 
-	void			initTerms(const Terms &terms, const RowControlsOptions& = RowControlsOptions())	override;
+	void			initTerms(const Terms &terms, const RowControlsValues& = RowControlsValues())	override;
 	Terms			termsFromIndexes(const QList<int> &indexes)								const	override;
 	Terms			canAddTerms(const Terms& terms) const override;
 	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControl::AssignType assignType = JASPControl::AssignType::AssignDefault) override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
 	void			removeTerms(const QList<int> &indices)											override;
 	QString			getItemType(const Term &term)											const	override;
-	Terms			termsEx(const QString& what)													override;
+	Terms			filterTerms(const Terms& terms, const QStringList& filters)						override;
 		
 public slots:
 	void availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;

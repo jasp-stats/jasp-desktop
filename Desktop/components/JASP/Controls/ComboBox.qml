@@ -31,8 +31,6 @@ ComboBoxBase
 	property bool	showEmptyValueAsNormal:	false
 	property bool	addLineAfterEmptyValue:	false
 
-	signal activated(int index);
-
 	onControlMinWidthChanged: _resetWidth(textMetrics.width)
 
 	function resetWidth(values)

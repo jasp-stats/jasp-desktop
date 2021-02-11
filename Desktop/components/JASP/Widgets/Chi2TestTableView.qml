@@ -17,19 +17,19 @@
 //
 
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.11
-import JASP.Controls 1.0
+import QtQuick			2.0
+import QtQuick.Layouts	1.11
+import JASP.Controls	1.0
+import JASP				1.0
 
 BasicThreeButtonTableView
 {
 	id				: chi2TestTableView
 
-	tableType		: "ExpectedProportions"
-	itemType		: "double"
-	modelType		: "MultinomialChi2Model"
+	modelType		: JASP.MultinomialChi2Model
 
 	property	int		maxNumHypotheses	: 10
+	property	string	colHeader			: ""
 
 	buttonAddText		: qsTr("Add Column")
 	onAddClicked		: tableView.addColumn()
@@ -42,4 +42,6 @@ BasicThreeButtonTableView
 	buttonResetText		: qsTr("Reset")
 	onResetClicked		: tableView.reset()
 	buttonResetEnabled	: tableView.columnCount > 0
+
+	function getColHeaderText(headerText, columnIndex)	{ return colHeader ? colHeader : "H₀ (" + String.fromCharCode(97 + columnIndex) + ")" ; }
 }

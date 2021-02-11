@@ -91,14 +91,15 @@ std::map<string, int> Labels::_resetLabelValues(int& maxValue)
 	for (Label& label : _labels)
 	{
 		int oldLabelValue = label.value();
+		std::string labelText = label.text();
 
 		if (orgStringValues.find(oldLabelValue) != orgStringValues.end())
-			newOrgStringValues[labelValue] = orgStringValues[oldLabelValue];
+			labelText = newOrgStringValues[labelValue] = orgStringValues[oldLabelValue];
 
 		if (oldLabelValue != labelValue)
-			label.setValue(labelValue);
+			label.setValue(labelValue, false);
 
-		result[label.text()] = labelValue;
+		result[labelText] = labelValue;
 		labelValue++;
 	}
 

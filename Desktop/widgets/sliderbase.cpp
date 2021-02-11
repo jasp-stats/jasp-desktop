@@ -18,72 +18,47 @@
 
 #include "sliderbase.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrol.h"
-#include <QQmlProperty>
-#include <QQuickItem>
-#include <QAbstractListModel>
+#include <limits>
 #include <QTimer>
 #include "log.h"
 
 SliderBase::SliderBase(QQuickItem* parent)
-	: JASPControl(parent)
+	: JASPControl(parent), BoundControlBase(this)
 {
 	_controlType = ControlType::Slider;
-	QQuickItem::connect(this, SIGNAL(moved()), this, SLOT(sliderMovedSlot()));
 }
 
-void SliderBase::bindTo(Option *option)
+bool SliderBase::isJsonValid(const Json::Value &value)
 {
-	_boundTo = dynamic_cast<OptionNumber *>(option);
-	if (_boundTo != nullptr)
-	{
-		_number = _boundTo->value();
-		setProperty("value", _number);
-	}
-	else
-		Log::log()  << "Option is not an OptionNumber in BoundQMLSlider" << std::endl;
+	return value.isNumeric();
 }
 
-Option *SliderBase::createOption()
+Json::Value SliderBase::createJson()
 {
-	_number = property("value").toDouble();
-	OptionNumber* option = new OptionNumber();
-	option->setValue(_number);
-	
-	return option;
+	return property("value").toDouble();
 }
 
-bool SliderBase::isOptionValid(Option *option)
+void SliderBase::bindTo(const Json::Value &value)
 {
-	return dynamic_cast<OptionNumber*>(option) != nullptr;
+	setProperty("value", value.asDouble());
+	BoundControlBase::bindTo(value);
 }
 
-bool SliderBase::isJsonValid(const Json::Value &optionValue)
+void SliderBase::setUp()
 {
-	return optionValue.type() == Json::realValue || optionValue.type() == Json::intValue;
+	connect(this,	&SliderBase::moved, this,	&SliderBase::movedSlot);
 }
 
-void SliderBase::sliderMovedSlot()
+void SliderBase::movedSlot()
 {
-	double newValue = property("value").toDouble();
-	
-	if (newValue == _number)
+	if (_changing)
 		return;
-	
-	_number = newValue;
-	
-	if (_boundTo != nullptr)
-	{
-		if (_changing)
-			return;
-		_changing = true;
-		QTimer::singleShot(300, this, SLOT(_changeOptionHandler()));
-	}
+	_changing = true;
+	QTimer::singleShot(300, this, SLOT(_movedDelayedSlot()));
 }
 
-void SliderBase::_changeOptionHandler()
+void SliderBase::_movedDelayedSlot()
 {
-	Log::log()  << "Slider set new value: " << _number << std::endl;
-	_boundTo->setValue(_number);
+	setBoundValue(property("value").toDouble());
 	_changing = false;
 }

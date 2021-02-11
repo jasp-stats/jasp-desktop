@@ -20,33 +20,34 @@
 #define COMPONENTSLIST_H
 
 #include "jasplistcontrol.h"
-#include "analysis/options/boundcontrol.h"
-#include "analysis/options/optionstable.h"
+#include "analysis/boundcontrolbase.h"
 #include "listmodeltermsassigned.h"
 
-class ComponentsListBase : public JASPListControl, public BoundControl
+class ComponentsListBase : public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
 public:
 	ComponentsListBase(QQuickItem* item = nullptr);
 
-	ListModel*	model()								const	override { return _termsModel; }
-	void		setUpModel()								override;
-	Option*		boundTo()									override { return _boundTo; }
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
-	bool		isJsonValid(const Json::Value& optionValue)	override;
+	bool			isJsonValid(const Json::Value& optionValue)	override;
+	Json::Value		createJson()								override;
+	void			bindTo(const Json::Value& value)			override;
+	ListModel*		model()								const	override { return _termsModel; }
+	void			setUpModel()								override;
+
+signals:
+	void			addItem();
+	void			removeItem(int index);
+	void			nameChanged(int index, QString name);
 
 protected slots:
-	void		termsChangedHandler()						override;
-	void		addItemHandler();
-	void		removeItemHandler(int index);
-	void		nameChangedHandler(int index, QString name);
+	void			termsChangedHandler()						override;
+	void			addItemHandler();
+	void			removeItemHandler(int index);
+	void			nameChangedHandler(int index, QString name);
 
 private:
 	ListModelTermsAssigned*		_termsModel		= nullptr;
-	OptionsTable*				_boundTo		= nullptr;
 
 protected:
 	QString				_makeUnique(const QString& val, int index = -1);

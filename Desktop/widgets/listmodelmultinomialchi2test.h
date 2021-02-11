@@ -27,17 +27,12 @@ class ListModelMultinomialChi2Test : public ListModelTableViewBase
 	Q_OBJECT
 
 public:
-	explicit ListModelMultinomialChi2Test(TableViewBase * parent, QString tableType);
-
-	QString	getDefaultColName(size_t index) const	override;
+	explicit ListModelMultinomialChi2Test(TableViewBase * parent);
 
 public slots:
-	void sourceTermsReset()																override;
-	int sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel)	override;
-	int sourceLabelsReordered(QString columnName)										override;
-
-private:
-	QString _columnBeingTracked = "";
+	void sourceTermsReset()														override;
+	bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})	override;
+	bool sourceLabelsReordered(QString columnName)								override;
 };
 
 #endif // LISTMODELMULTINOMIALCHI2TEST_H

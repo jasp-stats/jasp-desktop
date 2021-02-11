@@ -20,39 +20,37 @@
 #include "utilities/qutils.h"
 #include "listmodelmultinomialchi2test.h"
 #include "analysis/analysisform.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optiondoublearray.h"
+#include "tableviewbase.h"
 
-ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(TableViewBase * parent, QString tableType)
-	: ListModelTableViewBase(parent, tableType)
+ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(TableViewBase * parent)
+	: ListModelTableViewBase(parent)
 {
-	_defaultCellVal		= 1;
-	_initialColCnt		= 1;
-	_keepRowsOnReset	= true;
+	_tableView->setUseSourceLevels(true);
 }
 
 void ListModelMultinomialChi2Test::sourceTermsReset()
 {
 	beginResetModel();
 
-	_rowNames.clear();
-	_colNames.clear();
-	_values.clear();
-	_columnCount = 0;
-	_rowCount    = 0;
+	QMap<QString, QVector<QVariant>> tempStore;
 
-	Terms newTerms = getSourceTerms();
-	if (newTerms.size() > 0)
+	for (int row = 0; row < rowCount(); row++)
+		for (int col = 0; col < columnCount(); col++)
+			tempStore[_tableTerms.rowNames[row]].push_back(_tableTerms.values[col][row]);
+
+	_tableTerms.values.clear();
+	_tableTerms.rowNames = getSourceTerms().asQList();
+	if (_tableTerms.colNames.size() == 0)
+		_tableTerms.colNames.push_back(getDefaultColName(0));
+
+	for (int col = 0; col < columnCount(); col++)
 	{
-		_columnBeingTracked	= tq(newTerms.at(0).asString());
-		_rowNames			= requestInfo(_columnBeingTracked, VariableInfo::Labels).toStringList();
-		_rowCount			= size_t(_rowNames.size());
+		QVector<QVariant> newValues(rowCount(), _tableView->defaultValue());
+		_tableTerms.values.push_back(newValues);
 
-		QVector<QVariant> newValues(_rowNames.length(), 1.0);
-		_values.push_back(newValues);
-		_colNames.push_back(getDefaultColName(0));
-		_columnCount = 1;
-
+		for (int row = 0; row < rowCount(); row++)
+			if (tempStore.contains(_tableTerms.rowNames[row]) && tempStore[_tableTerms.rowNames[row]].size() > col)
+				_tableTerms.values[col][row] = tempStore[_tableTerms.rowNames[row]][col];
 	}
 
 	endResetModel();
@@ -61,60 +59,53 @@ void ListModelMultinomialChi2Test::sourceTermsReset()
 	emit rowCountChanged();
 }
 
-int ListModelMultinomialChi2Test::sourceLabelChanged(QString columnName, QString originalLabel, QString newLabel)
+bool ListModelMultinomialChi2Test::sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)
 {
-	if(columnName != _columnBeingTracked)
-		return -1;
+	if (!_columnsUsedForLabels.contains(columnName))
+		return false;
 
-	for(int row=0; row<_rowNames.size(); row++)
-		if(_rowNames[row] == originalLabel)
+	if (changedLabels.size() == 0)
+	{
+		// the changed labels are not specified. Reset the values from the source.
+		sourceTermsReset();
+		return true;
+	}
+
+	QList<QString> keys = changedLabels.keys();
+	for (int row=0; row<_tableTerms.rowNames.size(); row++)
+		if (changedLabels.contains(_tableTerms.rowNames[row]))
 		{
-			_rowNames[row] = newLabel;
+			_tableTerms.rowNames[row] = changedLabels[_tableTerms.rowNames[row]];
 			emit headerDataChanged(Qt::Vertical, row, row);
 			break;
 		}
 
-	return 0;
+	return false;
 }
 
-int ListModelMultinomialChi2Test::sourceLabelsReordered(QString columnName)
+bool ListModelMultinomialChi2Test::sourceLabelsReordered(QString columnName)
 {
-	if(columnName != _columnBeingTracked)
-		return -1;
+	if (!_columnsUsedForLabels.contains(columnName))
+		return false;
 
 	std::map<QString, std::vector<QVariant>> tempStore;
 
 	//because everything is stored in columns we first need to map all the rows, to well rows (with the name being key)
-	for(int row=0; row<_rowCount; row++)
-		for(int col=0; col<_columnCount; col++)
-			tempStore[_rowNames[row]].push_back(_values[col][row]);
+	for (int row = 0; row < rowCount(); row++)
+		for (int col = 0; col < columnCount(); col++)
+			tempStore[_tableTerms.rowNames[row]].push_back(_tableTerms.values[col][row]);
 
 	beginResetModel();
-	_rowNames	= requestInfo(_columnBeingTracked, VariableInfo::Labels).toStringList();
-	_values.clear();
-	_values.resize(_columnCount);
+	_tableTerms.rowNames = getSourceTerms().asQList();
+	_tableTerms.values.clear();
+	_tableTerms.values.resize(columnCount());
 
-	for(int row=0; row<_rowCount; row++)
-		for(int col=0; col<_columnCount; col++)
-			_values[col].push_back(tempStore[_rowNames[row]][col]);
+	for (int row = 0; row < rowCount(); row++)
+		for( int col = 0; col < columnCount(); col++)
+			_tableTerms.values[col].push_back(tempStore[_tableTerms.rowNames[row]][size_t(col)]);
 
 	endResetModel();
 
-	return 0;
+	return true;
 }
-
-
-QString ListModelMultinomialChi2Test::getDefaultColName(size_t index) const
-{
-	if (_tableType == "PriorCounts")
-		return "Counts";
-
-	if (index >= _maxColumn)
-		index = _maxColumn - 1;
-
-	char letter = char(97 + index);
-	return tq("H₀ (") + letter + tq(")");
-}
-
-
 

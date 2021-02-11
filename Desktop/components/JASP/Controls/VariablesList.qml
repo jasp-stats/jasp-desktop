@@ -56,7 +56,6 @@ VariablesListBase
 	property bool	setHeightInForm					: false
 	property bool	addInteractionsByDefault		: true
 	property bool	interactionContainLowerTerms	: true
-	property string	interactionHighOrderCheckBox
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
 	property bool	allowAnalysisOwnComputedColumns	: true
 	property bool	allowDuplicatesInMultipleColumns: false // This property is used in the constructor and is not updatable afterwards.
@@ -504,8 +503,8 @@ VariablesListBase
 					anchors.verticalCenter:	parent.verticalCenter
 					source:					variablesList.showVariableTypeIcon && itemRectangle.isVariable ? (enabled ? model.columnTypeIcon : model.columnTypeDisabledIcon) : ""
 					visible:				source
-					mipmap:	true
-					smooth:	true
+					mipmap:					true
+					smooth:					true
 				}
 
 				Text

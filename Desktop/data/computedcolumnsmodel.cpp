@@ -305,7 +305,7 @@ void ComputedColumnsModel::removeColumn()
 	if(_currentlySelectedName == "")
 		return;
 
-	requestComputedColumnDestruction(_currentlySelectedName);
+	requestComputedColumnDestruction(fq(_currentlySelectedName));
 
 	setComputeColumnNameSelected("");
 
@@ -391,7 +391,7 @@ void ComputedColumnsModel::datasetChanged(	QStringList				changedColumns,
 }
 
 
-ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int colType, ComputedColumn::computedType computeType, Analysis * analysis)
+ComputedColumn * ComputedColumnsModel::createComputedColumn(const std::string& name, int colType, ComputedColumn::computedType computeType, Analysis * analysis)
 {
 	bool success			= false;
 
@@ -402,44 +402,43 @@ ComputedColumn * ComputedColumnsModel::createComputedColumn(QString name, int co
 
 	if(createActualComputedColumn)
 	{
-		createdColumn = computedColumns()->createComputedColumn(name.toStdString(), columnType(colType), computeType);
+		createdColumn = computedColumns()->createComputedColumn(name, columnType(colType), computeType);
 		createdColumn->setAnalysis(analysis);
 	}
 	else
-		computedColumns()->createColumn(name.toStdString(), columnType(colType));
+		computedColumns()->createColumn(name, columnType(colType));
 
 	emit refreshData();
 
+	QString nameQ = tq(name);
 
-
-	if(createActualComputedColumn)		setLastCreatedColumn(name);
-	else								emit dataColumnAdded(name);
-	if(showComputedColumn)				setShowThisColumn(name);
+	if(createActualComputedColumn)		setLastCreatedColumn(nameQ);
+	else								emit dataColumnAdded(nameQ);
+	if(showComputedColumn)				setShowThisColumn(nameQ);
 
 	return createdColumn;
 }
 
-ComputedColumn *	ComputedColumnsModel::requestComputedColumnCreation(QString columnName, Analysis * analysis)
+ComputedColumn *	ComputedColumnsModel::requestComputedColumnCreation(const std::string& columnName, Analysis * analysis)
 {
-	if(!DataSetPackage::pkg()->isColumnNameFree(columnName.toStdString()))
+	if(!DataSetPackage::pkg()->isColumnNameFree(columnName))
 		return nullptr;
 
 	return createComputedColumn(columnName, int(columnType::scale), ComputedColumn::computedType::analysis, analysis);
 }
 
-void ComputedColumnsModel::requestColumnCreation(QString columnName, Analysis * analysis, int columnType)
+void ComputedColumnsModel::requestColumnCreation(const std::string& columnName, Analysis * analysis, columnType type)
 {
-	if(DataSetPackage::pkg()->isColumnNameFree(columnName.toStdString()))
-		createComputedColumn(columnName, columnType, ComputedColumn::computedType::analysisNotComputed, analysis);
+	if(DataSetPackage::pkg()->isColumnNameFree(columnName))
+		createComputedColumn(columnName, int(type), ComputedColumn::computedType::analysisNotComputed, analysis);
 }
 
 
-void ComputedColumnsModel::requestComputedColumnDestruction(QString columnNameQ)
+void ComputedColumnsModel::requestComputedColumnDestruction(const std::string& columnName)
 {
-	if(columnNameQ == "")
+	if(columnName.empty())
 		return;
 
-	std::string columnName = columnNameQ.toStdString();
 
 	int index = DataSetPackage::pkg()->getColumnIndex(columnName);
 
@@ -449,6 +448,7 @@ void ComputedColumnsModel::requestComputedColumnDestruction(QString columnNameQ)
 
 	checkForDependentColumnsToBeSent(columnName);
 
+	QString columnNameQ = tq(columnName);
 	if(columnNameQ == lastCreatedColumn())
 		setLastCreatedColumn("");
 
@@ -495,7 +495,7 @@ void ComputedColumnsModel::analysisRemoved(Analysis * analysis)
 			colsToRemove.insert(QString::fromStdString(col->name()));
 
 	for(const QString & col : colsToRemove)
-		requestComputedColumnDestruction(col);
+		requestComputedColumnDestruction(fq(col));
 }
 
 void ComputedColumnsModel::setShowThisColumn(QString showThisColumn)

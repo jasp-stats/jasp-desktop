@@ -27,9 +27,8 @@
 
 RowControls::RowControls(ListModel* parent
 						 , QQmlComponent* component
-						 , const QMap<QString, Option*>& rowOptions
-						 , bool isDummy)
- : QObject(parent), _parentModel(parent), _rowComponent(component), _rowOptions(rowOptions), _isDummy(isDummy)
+						 , const QMap<QString, Json::Value>& rowValues)
+ : QObject(parent), _parentModel(parent), _rowComponent(component), _rowValues(rowValues)
 {
 }
 
@@ -40,8 +39,6 @@ void RowControls::init(int row, const Term& key, bool isNew)
 	JASPListControl* listView = _parentModel->listView();
 
 	QQmlContext* context = new QQmlContext(qmlContext(listView), listView);
-	if (_isDummy)
-		context->setContextProperty("noDirectSetup", true);
 	context->setContextProperty("isDynamic", true);
 	context->setContextProperty("form", listView->form());
 	context->setContextProperty("listView", listView);
@@ -52,12 +49,7 @@ void RowControls::init(int row, const Term& key, bool isNew)
 	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context));
 
 	if (_rowObject)
-	{
 		_context = context;
-
-		if (_isDummy) // A dummy will never be used in QML, and does not get a parent, but a parent is needed to destroy it
-			_rowObject->setParent(this);
-	}
 	else
 		Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
 
@@ -86,18 +78,18 @@ bool RowControls::addJASPControl(JASPControl *control)
 	else
 	{
 		QQmlContext* context = qmlContext(control);
-		bool isDummy = context->contextProperty("noDirectSetup").toBool();
 
 		_rowControlsVarMap[control->name()] = QVariant::fromValue(control);
 		_rowJASPControlMap[control->name()] = control;
-		BoundControl* boundItem = dynamic_cast<BoundControl*>(control);
+		BoundControl* boundItem = control->boundControl();
 
-		if (control->isBound() && boundItem && !isDummy)
+		if (boundItem)
 		{
-			bool hasOption = _rowOptions.contains(control->name());
-			Option* option =  hasOption ? _rowOptions[control->name()] : boundItem->createOption();
+			bool hasOption = _rowValues.contains(control->name());
+			Json::Value option =  hasOption ? (_rowValues[control->name()]) : boundItem->createJson();
 
 			boundItem->bindTo(option);
+
 			if (!hasOption)
 			{
 				JASPListControl* listView = dynamic_cast<JASPListControl*>(control);

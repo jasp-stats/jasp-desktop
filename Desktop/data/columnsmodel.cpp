@@ -8,7 +8,7 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel) : QTransposeProxyModel
 	setSourceModel(tableModel);
 
 	connect(_tableModel, &DataSetTableModel::columnTypeChanged,		this, &ColumnsModel::columnTypeChanged	);
-	connect(_tableModel, &DataSetTableModel::labelChanged,			this, &ColumnsModel::labelChanged		);
+	connect(_tableModel, &DataSetTableModel::labelChanged,			this, [&](QString col, QString orgLabel, QString newLabel) { emit labelsChanged(col, {std::make_pair(orgLabel, newLabel) }); } );
 	connect(_tableModel, &DataSetTableModel::labelsReordered,		this, &ColumnsModel::labelsReordered	);
 
 	if (_singleton == nullptr) _singleton = this;
@@ -104,7 +104,7 @@ QString ColumnsModel::getIconFile(columnType colType, ColumnsModel::IconType typ
 		case columnType::scale:			return path + "variable-scale-disabled.png";
 		case columnType::ordinal:		return path + "variable-ordinal-disabled.png";
 		case columnType::nominal:		return path + "variable-nominal-disabled.png";
-		case columnType::nominalText:	return path + "variable-nominal-text-disabled.png";
+		case columnType::nominalText:	return path + "variable-nominal-text-inactive.svg";
 		default:						return "";
 		}
 	case ColumnsModel::InactiveIconType:
@@ -113,7 +113,7 @@ QString ColumnsModel::getIconFile(columnType colType, ColumnsModel::IconType typ
 		case columnType::scale:			return path + "variable-scale-inactive.png";
 		case columnType::ordinal:		return path + "variable-ordinal-inactive.png";
 		case columnType::nominal:		return path + "variable-nominal-inactive.png";
-		case columnType::nominalText:	return path + "variable-nominal-text-inactive.png";
+		case columnType::nominalText:	return path + "variable-nominal-text-inactive.svg";
 		default:						return "";
 		}
 	}

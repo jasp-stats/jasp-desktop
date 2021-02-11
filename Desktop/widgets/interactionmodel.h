@@ -1,11 +1,7 @@
 #ifndef INTERACTIONMODEL_H
 #define INTERACTIONMODEL_H
 
-#include "analysis/options/terms.h"
-
-class OptionTerm;
-class Options;
-
+#include "analysis/terms.h"
 
 class InteractionModel
 {

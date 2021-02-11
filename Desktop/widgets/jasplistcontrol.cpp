@@ -28,8 +28,6 @@
 
 #include <QQmlContext>
 
-const QString JASPListControl::_defaultKey = "_JASPDefaultKey";
-
 
 JASPListControl::JASPListControl(QQuickItem *parent)
 	: JASPControl(parent)
@@ -88,17 +86,10 @@ void JASPListControl::setContainsVariables()
 			if (sourceItem->isColumnsModel())	containsVariables = true;
 			else if (sourceItem->listModel())
 			{
-				if (sourceItem->listModel()->listView()->containsVariables() && sourceItem->controlName().isEmpty() && sourceItem->modelUse() != "levels")
+				if (sourceItem->listModel()->listView()->containsVariables() && sourceItem->controlName().isEmpty() && !sourceItem->modelUse().contains("levels"))
 					containsVariables = true;
 			}
 		}
-	}
-
-	if (isBound())
-	{
-		BoundControl* boundControl = dynamic_cast<BoundControl*>(this);
-		if (boundControl && boundControl->boundTo())
-			boundControl->boundTo()->setShouldEncode(containsVariables);
 	}
 
 	if (_containsVariables != containsVariables)
@@ -139,41 +130,6 @@ void JASPListControl::setContainsInteractions()
 	{
 		_containsInteractions = containsInteractions;
 		emit containsInteractionsChanged();
-	}
-}
-
-void JASPListControl::addRowComponentsDefaultOptions(Options *options)
-{
-	if (!hasRowComponent())
-		return;
-
-	if (_defaultRowControls)
-		delete _defaultRowControls;
-
-	// Create a dummy QML control, so that we can create the right kind of options.
-	_defaultRowControls = new RowControls(this->model(), rowComponent(), QMap<QString, Option*>(), true);
-	_defaultRowControls->init(0, Term(_defaultKey), true);
-
-	const QMap<QString, JASPControl*>& map = _defaultRowControls->getJASPControlsMap();
-	QMapIterator<QString, JASPControl*> it(map);
-
-	while (it.hasNext())
-	{
-		it.next();
-		JASPControl* control = it.value();
-		BoundControl* boundItem = dynamic_cast<BoundControl*>(control);
-		if (control->isBound() && boundItem)
-		{
-			// The options might depend on properties set by the setup
-			// e.g. setup of BoundQMLListViewTerms sets whether the terms have interactions, which influences the kind of options that will be used.
-			control->setUp();
-			Option* option = boundItem->createOption();
-			std::string optionName = control->name().toStdString();
-
-			if (form() && (optionName == _optionKey.toStdString()))
-				form()->addFormError(tr("The list %1 has a rowComponent with the same name (%2) as its optionKey. Change the optionKey property of the list or the control name.").arg(name()).arg(tq(optionName)));
-			options->add(optionName, option);
-		}
 	}
 }
 
@@ -250,17 +206,7 @@ void JASPListControl::applyToAllSources(std::function<void(SourceItem *sourceIte
 
 bool JASPListControl::addRowControl(const QString &key, JASPControl *control)
 {
-	bool success = false;
-
-	if (key == _defaultKey)
-	{
-		if (_defaultRowControls)
-			success = _defaultRowControls->addJASPControl(control);
-	}
-	else if (model())
-		success = model()->addRowControl(key, control);
-
-	return success;
+	return model() ? model()->addRowControl(key, control) : false;
 }
 
 bool JASPListControl::hasRowComponent() const

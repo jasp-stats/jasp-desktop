@@ -36,7 +36,7 @@ SourceItem::SourceItem(
 {
 	_name					= map["name"].toString();
 	_controlName			= map["controlName"].toString();
-	_modelUse				= map["use"].toString();
+	_modelUse				= map["use"].toString().split(",");
 	_conditionExpression	= map["condition"].toString();
 	_values					= values;
 	_nativeModel			= nativeModel;
@@ -48,8 +48,10 @@ SourceItem::SourceItem(
 	_combineWithOtherModels	= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
 	_nativeModelRole		= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
 
-	if (!_controlName.isEmpty()) _usedControls.insert(_controlName);
-
+	if (!_controlName.isEmpty())											_usedControls.insert(_controlName);
+	if (_nativeModel == ColumnsModel::singleton())							_isColumnsModel = true;
+	if (_modelUse.contains("levels"))										_listControl->setUseSourceLevels(true);
+	if (_listControl->useSourceLevels() && !_modelUse.contains("levels"))	_modelUse.append("levels");
 
 	for (const QMap<QString, QVariant>& conditionVariable : conditionVariables)
 	{
@@ -98,7 +100,7 @@ void SourceItem::_connectModels()
 	{
 		connect(columnsModel,	&ColumnsModel::namesChanged,		controlModel, &ListModel::sourceNamesChanged );
 		connect(columnsModel,	&ColumnsModel::columnTypeChanged,	controlModel, &ListModel::sourceColumnTypeChanged );
-		connect(columnsModel,	&ColumnsModel::labelChanged,		controlModel, &ListModel::sourceLabelChanged );
+		connect(columnsModel,	&ColumnsModel::labelsChanged,		controlModel, &ListModel::sourceLabelsChanged );
 		connect(columnsModel,	&ColumnsModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 		connect(columnsModel,	&ColumnsModel::columnsChanged,		controlModel, &ListModel::sourceColumnsChanged );
 	}
@@ -108,7 +110,7 @@ void SourceItem::_connectModels()
 		_listControl->addDependency(_listModel->listView());
 		connect(_listModel,		&ListModel::namesChanged,			controlModel, &ListModel::sourceNamesChanged);
 		connect(_listModel,		&ListModel::columnTypeChanged,		controlModel, &ListModel::sourceColumnTypeChanged);
-		connect(_listModel,		&ListModel::labelChanged,			controlModel, &ListModel::sourceLabelChanged );
+		connect(_listModel,		&ListModel::labelsChanged,			controlModel, &ListModel::sourceLabelsChanged );
 		connect(_listModel,		&ListModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 		connect(_listModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
 	}
@@ -161,7 +163,7 @@ SourceItem::~SourceItem()
 		{
 			disconnect(columnsModel, &ColumnsModel::namesChanged,			controlModel, &ListModel::sourceNamesChanged );
 			disconnect(columnsModel, &ColumnsModel::columnTypeChanged,		controlModel, &ListModel::sourceColumnTypeChanged );
-			disconnect(columnsModel, &ColumnsModel::labelChanged,			controlModel, &ListModel::sourceLabelChanged );
+			disconnect(columnsModel, &ColumnsModel::labelsChanged,			controlModel, &ListModel::sourceLabelsChanged );
 			disconnect(columnsModel, &ColumnsModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 			disconnect(columnsModel, &ColumnsModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
 		}
@@ -170,8 +172,8 @@ SourceItem::~SourceItem()
 		{
 			_listControl->removeDependency(_listModel->listView());
 			disconnect(_listModel,	&ListModel::namesChanged,				controlModel, &ListModel::sourceNamesChanged);
-			disconnect(_listModel,	&ListModel::columnTypeChanged,				controlModel, &ListModel::sourceColumnTypeChanged);
-			disconnect(_listModel,	&ListModel::labelChanged,				controlModel, &ListModel::sourceLabelChanged );
+			disconnect(_listModel,	&ListModel::columnTypeChanged,			controlModel, &ListModel::sourceColumnTypeChanged);
+			disconnect(_listModel,	&ListModel::labelsChanged,				controlModel, &ListModel::sourceLabelsChanged );
 			disconnect(_listModel,	&ListModel::labelsReordered,			controlModel, &ListModel::sourceLabelsReordered );
 			disconnect(_listModel,	&ListModel::columnsChanged,				controlModel, &ListModel::sourceColumnsChanged );
 		}
@@ -258,7 +260,7 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 		}
 
 		if (map.contains("model"))
-			nativeModel = source.value<QAbstractItemModel*>();
+			nativeModel = map["model"].value<QAbstractItemModel*>();
 	}
 	else
 		nativeModel = source.value<QAbstractItemModel*>();
@@ -389,7 +391,7 @@ Terms SourceItem::_readAllTerms()
 	if (_listModel)
 	{
 		terms = _listModel->termsEx(_modelUse);
-		if (_modelUse == "levels")
+		if (_listControl->useSourceLevels())
 			_listControl->model()->setColumnsUsedForLabels(_listModel->terms().asQList());
 	}
 	else if (_nativeModel)
@@ -400,6 +402,11 @@ Terms SourceItem::_readAllTerms()
 			QModelIndex modelIndex(_nativeModel->index(i, 0));
 			terms.add(_nativeModel->data(modelIndex, _nativeModelRole).toString());
 		}
+		if (!_modelUse.empty())
+			// If the 'use' parameter of the source property asks for the levels, or to filter some types
+			// of the variables of this 'native' model (probably the columnsModel),
+			// then just use the filterTerms method of the model object of the current control.
+			terms = _listControl->model()->filterTerms(terms, _modelUse);
 	}
 
 	return terms;

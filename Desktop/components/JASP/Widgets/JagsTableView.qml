@@ -17,21 +17,19 @@
 //
 
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.11
-import JASP.Controls 1.0
+import QtQuick			2.0
+import QtQuick.Layouts	1.11
+import JASP.Controls	1.0
+import JASP				1.0
 
 BasicThreeButtonTableView
 {
 	id					: jagsTableView
 
-	tableType			: "userDataInput"
-	itemType			: "string"
-	modelType			: "JAGSDataInputModel"
+	modelType			: JASP.JAGSDataInputModel
+	itemType			: JASP.String
 	initialColumnCount	: 2
 	initialRowCount		: 0
-	showButtons			: tableType === "userDataInput"
-
 
 	property	int		maxDataEntries  	: 30
 

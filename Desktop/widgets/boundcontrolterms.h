@@ -19,37 +19,24 @@
 #ifndef BOUNDQMLLISTVIEWTERMS_H
 #define BOUNDQMLLISTVIEWTERMS_H
 
-#include "analysis/options/boundcontrol.h"
+#include "analysis/boundcontrolbase.h"
 #include "listmodelassignedinterface.h"
-#include "analysis/options/optionvariables.h"
-#include "analysis/options/optionstable.h"
 
-class CheckBoxBase;
-class VariablesListBase;
-
-class BoundControlTerms : public BoundControl
+class BoundControlTerms : public BoundControlBase
 {
 	
 public:
-	BoundControlTerms(ListModelAssignedInterface* listmodel, bool isSingleRow = false);
+	BoundControlTerms(ListModelAssignedInterface* listModel, bool isSingleRow = false);
 	
-	Option*		boundTo()									override;
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
-	bool		isJsonValid(const Json::Value& optionValue) override;
-	void		updateOption()								override;
-
-private:
-	void		interactionHighOrderHandler(Option* option);
+	bool		isJsonValid(const Json::Value& value)		override;
+	Json::Value	createJson()								override;
+	void		bindTo(const Json::Value &value)			override;
+	void		resetBoundValue()							override;
 	
 private:
-	OptionVariables*				_optionVariables		= nullptr;
-	OptionsTable*					_optionsTable			= nullptr;
 	ListModelAssignedInterface*		_termsModel				= nullptr;
 	JASPListControl*				_listView				= nullptr;
 	bool							_isSingleRow			= false;
-	QString							_interactionHighOrderCheckBoxName;
 	std::string						_optionKey,
 									_optionKeyFromFile;
 };

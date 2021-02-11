@@ -17,15 +17,14 @@
 //
 
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.11
-import JASP.Controls 1.0
+import QtQuick			2.0
+import QtQuick.Layouts	1.11
+import JASP.Controls	1.0
+import JASP				1.0
 
 BasicThreeButtonTableView
 {
-    tableType		: "ExpectedProportions"
-    itemType		: "double"
-    modelType		: "Simple"
+	modelType		: JASP.Simple
 
     buttonAddText		: qsTr("Add Column")
     onAddClicked		: tableView.addColumn()

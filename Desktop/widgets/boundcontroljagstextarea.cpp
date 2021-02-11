@@ -17,64 +17,41 @@
 //
 
 #include "boundcontroljagstextarea.h"
-#include "analysis/options/optionvariables.h"
-#include "analysis/options/optionstring.h"
 #include "textareabase.h"
 #include "columnencoder.h"
 
-
-void BoundControlJAGSTextArea::bindTo(Option *option)
+void BoundControlJAGSTextArea::bindTo(const Json::Value &value)
 {
-	_options = dynamic_cast<Options *>(option);
-	if (_options != nullptr)
-	{
-		OptionString* modelOption = dynamic_cast<OptionString*>(_options->get("modelOriginal"));
-		if (modelOption)
-			_textArea->setText(QString::fromStdString(modelOption->value()));
+	if (value.type() != Json::objectValue)	return;
 
-		OptionString* modelEncodedOption = dynamic_cast<OptionString*>(_options->get("model"));
-		if (modelEncodedOption)
-			_textEncoded = QString::fromStdString(modelEncodedOption->value());
+	_textArea->setText(tq(value["modelOriginal"].asString()));
 
-		OptionVariables* columnsOption = dynamic_cast<OptionVariables*>(_options->get("columns"));
-		if (columnsOption)
-		{
-			std::vector<std::string> variables = columnsOption->variables();
-			for (const std::string& variable : variables)
-				_usedColumnNames.insert(variable);
-		}
-		OptionVariables* parametersOption = dynamic_cast<OptionVariables*>(_options->get("parameters"));
-		if (parametersOption)
-		{
-			std::vector<std::string> variables = parametersOption->variables();
-			for (const std::string& variable : variables)
-				_usedParameters.insert(QString::fromStdString(variable));
-		}
+	checkSyntax();
 
-		checkSyntax();
-	}
+	BoundControlBase::bindTo(value);
 }
 
-Option *BoundControlJAGSTextArea::createOption()
+Json::Value BoundControlJAGSTextArea::createJson()
 {
-	Options* result = new Options();
+	Json::Value result;
 	std::string text = _textArea->text().toStdString();
 
-	result->add("modelOriginal",	new OptionString(text));
-	result->add("model",			new OptionString(text));
-	result->add("columns",			new OptionVariables());
-	result->add("parameters",		new OptionVariables());
+	result["modelOriginal"] = text;
+	result["model"]			= text;
+	result["columns"]		= Json::Value(Json::arrayValue);
+	result["parameters"]	= Json::Value(Json::arrayValue);
 
 	return result;
 }
 
-bool BoundControlJAGSTextArea::isOptionValid(Option *option)
+bool BoundControlJAGSTextArea::isJsonValid(const Json::Value &value)
 {
-	return dynamic_cast<Options*>(option) != nullptr;
-}
+	if (!value.isObject())					return false;
+	if (!value["modelOriginal"].isString())	return false;
+	if (!value["model"].isString())			return false;
+	if (!value["columns"].isArray())		return false;
+	if (!value["parameters"].isArray())		return false;
 
-bool BoundControlJAGSTextArea::isJsonValid(const Json::Value &optionValue)
-{
 	return true;
 }
 
@@ -118,48 +95,23 @@ void BoundControlJAGSTextArea::checkSyntax()
 		}
 	}
 
-	if (_options != nullptr)
-	{
-		OptionString* modelOption = dynamic_cast<OptionString*>(_options->get("modelOriginal"));
-		if (!modelOption)
-		{
-			modelOption = new OptionString();
-			_options->add("modelOriginal", modelOption);
-		}
-		modelOption->setValue(text.toStdString());
+	Json::Value boundValue(Json::objectValue);
 
-		OptionString* modelEncodedOption = dynamic_cast<OptionString*>(_options->get("model"));
-		if (!modelEncodedOption)
-		{
-			modelEncodedOption = new OptionString();
-			_options->add("model", modelEncodedOption);
-		}
-		modelEncodedOption->setValue(_textEncoded.toStdString());
-		OptionVariables* columns = dynamic_cast<OptionVariables*>(_options->get("columns"));
-		if (!columns)
-		{
-			columns = new OptionVariables();
-			_options->add("columns", columns);
-		}
-		std::vector<std::string> columnsVec;
-		for (const std::string& col : _usedColumnNames)
-			columnsVec.push_back(col);
-		columns->setValue(columnsVec);
+	boundValue["modelOriginal"] = text.toStdString();
+	boundValue["model"] = _textEncoded.toStdString();
+	Json::Value columns(Json::arrayValue);
+	for (const std::string& column : _usedColumnNames)
+		columns.append(column);
+	boundValue["columns"] = columns;
+	Json::Value parameters(Json::arrayValue);
+	for (const QString& parameter : _usedParameters)
+		parameters.append(parameter.toStdString());
+	boundValue["parameters"] = parameters;
 
-		OptionVariables* parameters = dynamic_cast<OptionVariables*>(_options->get("parameters"));
-		if (!parameters)
-		{
-			parameters = new OptionVariables();
-			_options->add("parameters", parameters);
-		}
-		std::vector<std::string> parametersVec;
-		for (const QString& param : _usedParameters)
-			parametersVec.push_back(param.toStdString());
-		parameters->setValue(parametersVec);
-	}
+	setBoundValue(boundValue);
 
 	ListModelTermsAvailable* model = _textArea->availableModel();
-	model->initTerms(_usedParameters.toList());
+	model->initTerms(_usedParameters.values());
 }
 
 

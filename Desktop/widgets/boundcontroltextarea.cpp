@@ -17,41 +17,28 @@
 //
 
 #include "boundcontroltextarea.h"
-#include "analysis/options/optionstring.h"
 #include "textareabase.h"
-#include "log.h"
 #include "r_functionwhitelist.h"
 
 BoundControlTextArea::BoundControlTextArea(TextAreaBase* textArea)
-	: _textArea(textArea)
+	: BoundControlBase(textArea), _textArea(textArea)
 {
 }
 
-void BoundControlTextArea::bindTo(Option *option)
+void BoundControlTextArea::bindTo(const Json::Value &value)
 {
-	_boundTo = option;
-	OptionString* optionString = dynamic_cast<OptionString *>(option);
-
-	if (optionString != nullptr)
-		_textArea->setText(QString::fromStdString(optionString->value()));
-	else
-		Log::log()  << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp" << std::endl;
-}
-
-Option *BoundControlTextArea::createOption()
-{
-	std::string text = _textArea->text().toStdString();
-	return new OptionString(text);
-}
-
-bool BoundControlTextArea::isOptionValid(Option *option)
-{
-	return dynamic_cast<OptionString*>(option) != nullptr;
+	_textArea->setText(tq(value.asString()));
+	BoundControlBase::bindTo(value);
 }
 
 bool BoundControlTextArea::isJsonValid(const Json::Value &optionValue)
 {
 	return optionValue.type() == Json::stringValue;
+}
+
+Json::Value BoundControlTextArea::createJson()
+{
+	return Json::Value(_textArea->text().toStdString());
 }
 
 void BoundControlTextArea::checkSyntax()
@@ -75,7 +62,5 @@ void BoundControlTextArea::checkSyntax()
 		}
 	}
 
-	OptionString* optionString = dynamic_cast<OptionString*>(_boundTo);
-	if (optionString != nullptr)
-		optionString->setValue(text.toStdString());
+	setBoundValue(fq(text));
 }

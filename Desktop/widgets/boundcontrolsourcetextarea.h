@@ -27,8 +27,8 @@ public:
 	BoundControlSourceTextArea(TextAreaBase* textArea)
 		: BoundControlTextArea(textArea) {}
 
-	void	bindTo(Option *option)	override;
-	void	checkSyntax()			override;
+	void	bindTo(const Json::Value &value)	override;
+	void	checkSyntax()						override;
 
 protected:
 	void	_setSourceTerms();

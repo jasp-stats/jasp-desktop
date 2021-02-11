@@ -17,147 +17,66 @@
 //
 
 #include "boundcontrolterms.h"
-#include "checkboxbase.h"
-#include "analysis/options/optionvariable.h"
+#include "variableslistbase.h"
+#include "log.h"
 #include "../analysis/analysisform.h"
 #include "listmodeltermsavailable.h"
-#include "analysis/options/optionstable.h"
-#include "analysis/options/optionterm.h"
-#include "analysis/options/optionboolean.h"
 #include "listmodeltermsassigned.h"
 #include "listmodelinteractionassigned.h"
-#include "log.h"
 #include "rowcontrols.h"
-#include "jasplistcontrol.h"
 
-BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool isSingleRow)
+BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool isSingleRow) : BoundControlBase(listModel->listView())
 {
 	_termsModel = listModel;
-	_listView = listModel->listView();
+	_listView = qobject_cast<JASPListControl*>(_control);
 	_isSingleRow = isSingleRow;
 	_optionKey = _listView->optionKey().toStdString();
-	_interactionHighOrderCheckBoxName	= _listView->property("interactionHighOrderCheckBox").toString();
 }
 
-Option* BoundControlTerms::boundTo()
+void BoundControlTerms::bindTo(const Json::Value &value)
 {
-	if (_listView->hasRowComponent() || _listView->containsInteractions())
-		return _optionsTable;
-	else
-		return _optionVariables;
-}
+	Terms terms;
+	ListModel::RowControlsValues allControlValues;
 
-void BoundControlTerms::bindTo(Option *option)
-{
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
 	{
-		_optionsTable = dynamic_cast<OptionsTable *>(option);
-		if (!_optionsTable)
-		{
-			Log::log()  << "Options for list view " << _listView->name().toStdString() << " is not of type Table!" << std::endl;
-			return;
-		}
-
 		if (_optionKey != _optionKeyFromFile)
 		{
 			// Backward compatibility: the key in the JASP file does not correspond to the current key. This must be replaced
-			_optionsTable->replaceKey(_optionKeyFromFile, _optionKey);
+			// TODO: value[_optionKey] = value[_optionKeyFromFile];
 		}
-		
-		std::vector<Options*> optionsList = _optionsTable->value();
-		Terms terms;
-		QMap<QString, QMap<QString, Option*> > allOptionsMap;
-		for (Options* options : optionsList)
-		{
-			std::string key;
-			if (_listView->containsInteractions())
-			{
-				OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_optionKey));
-
-				if (termOption)
-				{
-					termOption->setShouldEncode(_listView->containsVariables());
-					Term term(termOption->term());
-					key = term.asString();
-					terms.add(term);
-				}
-				else
-				{
-					Log::log() << "Bind Option is not an OptionTerm in " << _listView->name().toStdString() << std::endl;
-					return;
-				}
-			}
-			else
-			{
-				OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_optionKey));
-				if (variableOption)
-				{
-					key = variableOption->variable();
-					terms.add(Term(key));
-				}
-				else
-				{
-					Log::log() << "Bind Option is not an OptionVariable in " << _listView->name().toStdString() << std::endl;
-					return;
-				}
-			}
-			
-			QMap<QString, Option*> optionsMap;
-			for (const std::string& name : options->names)
-				if (name != _optionKey)
-				{
-					QString qname = QString::fromStdString(name);
-					Option* option = options->get(name);
-					if (!_interactionHighOrderCheckBoxName.isEmpty() && _interactionHighOrderCheckBoxName == qname)
-						option->changed.connect(boost::bind(&BoundControlTerms::interactionHighOrderHandler, this, _1));
-					optionsMap[qname] = option;
-				}
-			allOptionsMap[QString::fromStdString(key)] = optionsMap;
-		}
-		
-		_termsModel->initTerms(terms, allOptionsMap);
+		_readTableValue(value, _optionKey, _listView->containsInteractions(), terms, allControlValues);
 	}
 	else
 	{
-		_optionVariables = dynamic_cast<OptionVariables *>(option);
-		if (_optionVariables)
-			_termsModel->initTerms(_optionVariables->value());
+		if (value.isArray())
+		{
+			for (const Json::Value& variable : value)
+				terms.add(Term(variable.asString()));
+		}
+		else if (value.isString())
+		{
+			std::string str = value.asString();
+			if (!str.empty())
+				terms.add(Term(str));
+		}
 		else
-			Log::log()  << "Options for list view " << _listView->name().toStdString() << " is not of type Variables!" << std::endl;
+			Log::log() << "Control " << _control->name() << " is bound with a value that is neither an array, an object bor a string :" << value.toStyledString() << std::endl;
 	}
+
+	_termsModel->initTerms(terms, allControlValues);
+
+	BoundControlBase::bindTo(value);
 }
 
-Option* BoundControlTerms::createOption()
+Json::Value BoundControlTerms::createJson()
 {
-	Option* result = nullptr;
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
-	{
-		Options* templote = new Options();
-
-		if (_listView->containsInteractions())
-		{
-			OptionTerm * newOptTerm = new OptionTerm();
-			newOptTerm->setShouldEncode(_listView->containsVariables());
-			templote->add(_optionKey, newOptTerm);
-		}
-		else
-			templote->add(_optionKey, new OptionVariable());
-
-		if (_listView->hasRowComponent())
-			_listView->addRowComponentsDefaultOptions(templote);
-		result = new OptionsTable(templote);
-	}
+		return Json::Value(Json::arrayValue);
+	else if (_isSingleRow)
+		return Json::Value("");
 	else
-		result = (_isSingleRow) ? new OptionVariable() : new OptionVariables();
-	
-	return result;
-}
-
-bool BoundControlTerms::isOptionValid(Option *option)
-{
-	if (_listView->hasRowComponent() || _listView->containsInteractions())	return dynamic_cast<OptionsTable*>(option) != nullptr;
-	else if (_isSingleRow)													return dynamic_cast<OptionVariable*>(option) != nullptr;
-	else																	return dynamic_cast<OptionVariables*>(option) != nullptr;
+		return Json::Value(Json::arrayValue);
 }
 
 bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
@@ -218,128 +137,26 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 	return valid;
 }
 
-void BoundControlTerms::updateOption()
+void BoundControlTerms::resetBoundValue()
 {
-	if (_optionsTable)
+	const Terms& terms = _termsModel->terms();
+	const QMap<QString, RowControls*>& allControls = _termsModel->getRowControls();
+
+	if (_listView->hasRowComponent() || _listView->containsInteractions())
+		_setTableValue(terms, allControls, _optionKey, _listView->containsInteractions());
+	else if (_isSingleRow)
 	{
-		std::vector<Options*> allOptions;
-		const Terms& terms = _termsModel->terms();
-		const QMap<QString, RowControls*>& allControls = _termsModel->getRowControls();
+		std::string str = terms.size() > 0 ? terms[0].asString() : "";
+		Json::Value boundValue(str);
+		setBoundValue(boundValue);
+	}
+	else
+	{
+		Json::Value boundValue(Json::arrayValue);
 		for (const Term& term : terms)
-		{
-			Options *rowOptions = static_cast<Options *>(_optionsTable->rowTemplate()->clone());
-			if (_listView->containsInteractions())
-			{
-				OptionTerm *optionTerm = dynamic_cast<OptionTerm *>(rowOptions->get(_optionKey));
-				if (optionTerm)
-				{
-					optionTerm->setShouldEncode(_listView->containsVariables());
-					optionTerm->setValue(term.scomponents());
-				}
-				else
-					Log::log()  << "An option is not of type OptionTerm!!" << std::endl;
-			}
-			else
-			{
-				OptionVariable* optionVariable = dynamic_cast<OptionVariable*>(rowOptions->get(_optionKey));
-				if (optionVariable)
-					optionVariable->setValue(term.asString());
-				else
-					Log::log()  << "An option is not of type OptionVariable!!" << std::endl;
-			}
-			RowControls* rowControls = allControls[term.asQString()];
-			if (rowControls)
-			{
-				const QMap<QString, JASPControl*>& controlsMap = rowControls->getJASPControlsMap();
-				QMapIterator<QString, JASPControl*> it(controlsMap);
-				while (it.hasNext())
-				{
-					it.next();
-					BoundControl* boundItem = dynamic_cast<BoundControl*>(it.value());
-					if (it.value()->isBound() && boundItem)
-					{
-						const QString& name = it.key();
-						Option* option = boundItem->boundTo();
-						rowOptions->add(name.toStdString(), option);
-						if (!_interactionHighOrderCheckBoxName.isEmpty() && _interactionHighOrderCheckBoxName == name)
-							option->changed.connect(boost::bind(&BoundControlTerms::interactionHighOrderHandler, this, _1));
-					}
-				}
-			}
-			allOptions.push_back(rowOptions);
-		}
-
-		_optionsTable->connectOptions(allOptions);
+			boundValue.append(term.asString());
+		setBoundValue(boundValue);
 	}
-	else if (_optionVariables)
-		_optionVariables->setValue(_termsModel->terms().asVectorOfVectors());
 }
 
-
-void BoundControlTerms::interactionHighOrderHandler(Option *option)
-{
-	OptionBoolean* optionChanged = dynamic_cast<OptionBoolean*>(option);
-	if (!optionChanged)
-	{
-		Log::log() << "High order option is not of type OptionBoolean!!" << std::endl;
-		return;
-	}
-
-	bool checked = optionChanged->value();
-	_optionsTable->blockSignals(true);
-	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
-	std::vector<Options*> allOptions = _optionsTable->value();
-	for (Options* options : allOptions)
-	{
-		OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_optionKey));
-		OptionBoolean *highOrderOption = static_cast<OptionBoolean*>(options->get(_interactionHighOrderCheckBoxName.toStdString()));
-		Term term = Term(termOption->term());
-
-		if (highOrderOption->value() == checked)
-		{
-			for (Options* optionsBis : allOptions)
-			{
-				if (optionsBis == options)
-					continue;
-
-				OptionTerm *tOption = static_cast<OptionTerm*>(optionsBis->get(_optionKey));
-				OptionBoolean *nOption = static_cast<OptionBoolean*>(optionsBis->get(_interactionHighOrderCheckBoxName.toStdString()));
-				Term t = Term(tOption->term());
-
-				if (checked)
-				{
-					if (term.containsAll(t))
-					{
-						if (!nOption->value())
-						{
-							RowControls* rowControls = _termsModel->getRowControls()[t.asQString()];
-							JASPControl* control = rowControls->getJASPControlsMap()[_interactionHighOrderCheckBoxName];
-							CheckBoxBase* checkBox = dynamic_cast<CheckBoxBase*>(control);
-							if (checkBox)
-								checkBox->setQMLItemChecked(true);							
-							nOption->setValue(true);
-						}
-					}
-				}
-				else
-				{
-					if (t.containsAll(term))
-					{
-						if (nOption->value())
-						{
-							RowControls* rowControls = _termsModel->getRowControls()[t.asQString()];
-							JASPControl* control = rowControls->getJASPControlsMap()[_interactionHighOrderCheckBoxName];
-							CheckBoxBase* checkBox = dynamic_cast<CheckBoxBase*>(control);
-							if (checkBox)
-								checkBox->setQMLItemChecked(false);							
-							
-							nOption->setValue(false);
-						}
-					}
-				}
-			}
-		}
-	}
-	_optionsTable->blockSignals(false, false);
-}
 

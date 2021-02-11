@@ -5,9 +5,12 @@
 #include <QPropertyAnimation>
 
 #include "utilities/qutils.h"
-
+#include "columntype.h"
 
 class AnalysisForm;
+class JASPListControl;
+class BoundControl;
+class ComputedColumn;
 
 class JASPControl : public QQuickItem
 {
@@ -27,7 +30,6 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( bool								focusOnTab			READ focusOnTab				WRITE setFocusOnTab			NOTIFY focusOnTabChanged			)
 	Q_PROPERTY( bool								hasError			READ hasError				WRITE setHasError			NOTIFY hasErrorChanged				)
 	Q_PROPERTY( bool								hasWarning			READ hasWarning				WRITE setHasWarning			NOTIFY hasWarningChanged			)
-	Q_PROPERTY( bool								runOnChange			READ runOnChange			WRITE setRunOnChange		NOTIFY runOnChangeChanged			)
 	Q_PROPERTY( bool								initialized			READ initialized										NOTIFY initializedChanged			)
 	Q_PROPERTY( bool								shouldShowFocus		READ shouldShowFocus		WRITE setShouldShowFocus	NOTIFY shouldShowFocusChanged		)
 	Q_PROPERTY( bool								shouldStealHover	READ shouldStealHover		WRITE setShouldStealHover	NOTIFY shouldStealHoverChanged		)
@@ -47,6 +49,14 @@ class JASPControl : public QQuickItem
 	typedef std::set<JASPControl*> Set;
 
 public:
+	struct ParentKey
+	{
+		std::string name, key;
+		std::vector<std::string> value;
+		ParentKey(const std::string & _name, const std::string & _key, const std::vector<std::string>& _value)
+			: name(_name), key(_key), value(_value) {}
+	};
+
 	// Any addition here should also be added manually to ControlTypeToFriendlyString... I couldnt get this to work with DECLARE_ENUM...
 	enum class ControlType {
 		  DefaultControl
@@ -76,7 +86,8 @@ public:
 	enum class ListViewType { AssignedVariables = static_cast<int>(DropMode::DropReplace)				+ 1,	Interaction, AvailableVariables, RepeatedMeasures, Layers, AvailableInteraction };
 	enum class AssignType	{ AssignDefault		= static_cast<int>(ListViewType::AvailableInteraction)	+ 1,	AssignCross, AssignMainEffects, AssignInteraction, AssignAll2Way, AssignAll3Way, AssignAll4Way, AssignAll5Way };
 	enum class TextType		{ TextTypeDefault	= static_cast<int>(AssignType::AssignAll5Way)			+ 1,	TextTypeModel, TextTypeRcode, TextTypeJAGSmodel, TextTypeSource, TextTypeLavaan };
-
+	enum class ModelType	{ Simple			= static_cast<int>(TextType::TextTypeLavaan)			+ 1,	CustomContrasts, MultinomialChi2Model, JAGSDataInputModel, FilteredDataEntryModel };
+	enum class ItemType		{ String			= static_cast<int>(ModelType::FilteredDataEntryModel)	+ 1,	Integer, Double	};
 
 	Q_ENUM(ControlType)
 	Q_ENUM(Inclusive)
@@ -84,6 +95,8 @@ public:
 	Q_ENUM(ListViewType)
 	Q_ENUM(AssignType)
 	Q_ENUM(TextType)
+	Q_ENUM(ModelType)
+	Q_ENUM(ItemType)
 
 	JASPControl(QQuickItem *parent = nullptr);
 
@@ -114,7 +127,6 @@ public:
 	QQuickItem*		innerControl()			const	{ return _innerControl;			}
 	QQuickItem*		background()			const	{ return _background;			}
 	QQuickItem*		focusIndicator()		const	{ return _focusIndicator;		}
-	bool			runOnChange()			const	{ return _runOnChange;			}
 	QStringList		dependencyMustContain()	const	{ return _dependencyMustContain; }
 	int				preferredHeight()		const	{ return _preferredHeight;		}
 	int				preferredWidth()		const	{ return _preferredWidth;		}
@@ -124,7 +136,7 @@ public:
 
 	QString			humanFriendlyLabel()	const;
 	void			setInitialized()	{ if (!_initialized) { _initialized = true; emit initializedChanged();} }
-
+	QVector<JASPControl::ParentKey>	getParentKeys();
 
 	QQmlComponent					*	rowComponent()				const { return _rowComponent;	}
 
@@ -133,6 +145,8 @@ public:
 
 	virtual void					setUp()										{}
 	virtual void					cleanUp()									{ disconnect(); }
+	virtual BoundControl*			boundControl();
+	virtual bool					encodeValue()						const	{ return false; }
 
 	const Set					&	depends()							const	{ return _depends; }
 	bool							addDependency(JASPControl* item);
@@ -153,7 +167,6 @@ public slots:
 	void	setFocusOnTab(			bool focus);
 	void	setHasError(			bool hasError);
 	void	setHasWarning(			bool hasWarning);
-	void	setRunOnChange(			bool change);
 	void	setDebug(				bool debug);
 	void	setParentDebug(			bool parentDebug);
 	void	setFocusIndicator(		QQuickItem* focusIndicator);
@@ -207,11 +220,9 @@ signals:
 	void focusOnTabChanged();
 	void parentListViewChanged();
 	void rowComponentChanged();
-	void runOnChangeChanged();
 	void innerControlChanged();
 	void backgroundChanged();
 	void focusIndicatorChanged();
-	void valueChanged();
 	void infoChanged();
 	void toolTipChanged();
 	void titleChanged();
@@ -221,13 +232,16 @@ signals:
 	void preferredWidthChanged();
 	void hoveredChanged();
 	void controlTypeChanged();			// Not used, defined only to suppress warning in QML
+	void boundValueChanged(JASPControl* control);
+	void				requestColumnCreation(std::string columnName, columnType columnType);
+	ComputedColumn *	requestComputedColumnCreation(std::string columnName);
+	void				requestComputedColumnDestruction(std::string columnName);
 
 protected:
 			void					componentComplete() override;
 			void					_setType();
 			void					setCursorShape(int shape);
 			void					setParentDebugToChildren(bool debug);
-			void					setRunOnChangeToChildren(bool change);
 
 protected:
 	ControlType				_controlType;
@@ -245,7 +259,6 @@ protected:
 							_hasError				= false,
 							_hasWarning				= false,
 							_isDependency			= false,
-							_runOnChange			= true,
 							_useControlMouseArea	= true,
 							_shouldShowFocus		= false,
 							_shouldStealHover		= false,

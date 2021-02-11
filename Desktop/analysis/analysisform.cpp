@@ -18,7 +18,7 @@
 
 #include "analysisform.h"
 #include "knownissues.h"
-#include "options/boundcontrol.h"
+#include "boundcontrol.h"
 #include "utilities/qutils.h"
 #include "widgets/listmodeltermsavailable.h"
 #include "widgets/jasplistcontrol.h"
@@ -48,7 +48,10 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 	if (!colModel) return QVariant();
 
 	try {
-		QModelIndex index = colModel->index(colModel->getColumnIndex(term.asString()), 0);
+		int i = colModel->getColumnIndex(term.asString());
+		if (i < 0)									return "";
+
+		QModelIndex index = colModel->index(i, 0);
 		switch(info)
 		{
 		case VariableInfo::VariableType:			return colModel->data(index, ColumnsModel::ColumnTypeRole);
@@ -65,13 +68,13 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
 		throw e;
 	}
-	return QVariant();
+	return QVariant("");
 
 }
 
 void AnalysisForm::runRScript(QString script, QString controlName, bool whiteListedVersion)
 {
-	if(_analysis && !_removed)
+	if(_analysis && !_removed && _signalValueChangedBlocked == 0)
 		emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
 }
 
@@ -154,11 +157,27 @@ void AnalysisForm::addControl(JASPControl *control)
 			_controls[name] = control;
 	}
 
+	if (_analysis)
+	{
+		connect(control, &JASPControl::requestColumnCreation, _analysis, &Analysis::requestColumnCreationHandler);
+	}
+
 	if (control->controlType() == JASPControl::ControlType::Expander)
 	{
 		ExpanderButtonBase* expander = dynamic_cast<ExpanderButtonBase*>(control);
 		_expanders.push_back(expander);
 	}
+}
+
+void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)
+{
+	if (isComputed)
+	{
+		connect(control, &JASPControl::requestComputedColumnCreation, _analysis, &Analysis::requestComputedColumnCreationHandler);
+		connect(control, &JASPControl::requestComputedColumnDestruction, _analysis, &Analysis::requestComputedColumnDestructionHandler);
+	}
+	else
+		connect(control, &JASPControl::requestColumnCreation, _analysis, &Analysis::requestColumnCreationHandler);
 }
 
 void AnalysisForm::_setUpControls()
@@ -319,65 +338,34 @@ void AnalysisForm::_addLoadingError(QStringList wrongJson)
 
 void AnalysisForm::bindTo()
 {
-	if (_options != nullptr)
-		unbind();
+	unbind();
 
 	const Json::Value & optionsFromJASPFile = _analysis->optionsFromJASPFile();
-	_options = _analysis->options();
 	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
 
-	_options->blockSignals(true);
-	
 	std::set<std::string> controlsJsonWrong;
 	
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
-		BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
+		BoundControl* boundControl = control->boundControl();
 		JASPListControl* listControl = dynamic_cast<JASPListControl *>(control);
 
-		if (control->isBound() && boundControl)
+		if (boundControl)
 		{
 			std::string name = control->name().toStdString();
-			Option* option   = _options->get(name);
+			Json::Value optionValue =  optionsFromJASPFile != Json::nullValue ? optionsFromJASPFile[name] : Json::nullValue;
 
-			if (option && !boundControl->isOptionValid(option))
+			if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
 			{
-				option = nullptr;
+				optionValue = Json::nullValue;
 				control->setHasWarning(true);
 				controlsJsonWrong.insert(name);
 			}
 
-			if (!option && optionsFromJASPFile != Json::nullValue)
-			{
-				const Json::Value& optionValue = optionsFromJASPFile[name];
-				if (optionValue != Json::nullValue)
-				{
-					if (!boundControl->isJsonValid(optionValue))
-					{
-						control->setHasWarning(true);
-						controlsJsonWrong.insert(name);
-					}
-					else
-					{
-						// call createOption after checking Json options in isJsonValid: if Json comes from an older version of JASP, createOption can take care of backward compatibility issues.
-						option = boundControl->createOption();
-						option->set(optionValue);
-						_options->add(name, option);
-					}
-				}
-			}
+			if (optionValue == Json::nullValue)
+				optionValue = boundControl->createJson();
 
-			if (!option)
-			{
-				option = boundControl->createOption();
-				_options->add(name, option);
-			}
-
-			if (listControl)
-				option->setShouldEncode(listControl->containsVariables());
-
-			boundControl->bindTo(option);
-			_optionControlMap[option] = control;
+			boundControl->bindTo(optionValue);
 		}
 
 		if (listControl && listControl->hasSource())
@@ -406,8 +394,6 @@ void AnalysisForm::bindTo()
 	
 	_addLoadingError(tql(controlsJsonWrong));
 
-	_options->blockSignals(false, false);
-
 	//Ok we can only set the warnings on the components now, because otherwise _addLoadingError() will add a big fat red warning on top of the analysisform without reason...
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
@@ -428,17 +414,6 @@ void AnalysisForm::bindTo()
 
 void AnalysisForm::unbind()
 {
-	if (_options == nullptr)
-		return;
-	
-	for (JASPControl* control : _dependsOrderedCtrls)
-	{
-		BoundControl* boundControl = dynamic_cast<BoundControl*>(control);
-		if (control->isBound() && boundControl)
-			boundControl->unbind();
-	}
-
-	_options = nullptr;
 	_analysis->setOptionsBound(false);
 }
 
@@ -581,6 +556,12 @@ void AnalysisForm::rSourceChanged(const QString &name)
 		_rSourceModelMap[name]->sourceTermsReset();
 }
 
+void AnalysisForm::boundValueChangedHandler(JASPControl *)
+{
+	if (_signalValueChangedBlocked == 0 && _analysis)
+		_analysis->boundValueChangedHandler();
+}
+
 
 void AnalysisForm::formCompletedHandler()  { QTimer::singleShot(0, this, &AnalysisForm::_formCompletedHandler); }
 void AnalysisForm::_formCompletedHandler()
@@ -597,13 +578,15 @@ void AnalysisForm::setAnalysisUp()
 	connect(_analysis, &Analysis::hasVolatileNotesChanged,	this, &AnalysisForm::hasVolatileNotesChanged);
 	connect(_analysis, &Analysis::needsRefreshChanged,		this, &AnalysisForm::needsRefreshChanged	);
 
+	bool isNewAnalysis = _analysis->optionsFromJASPFile().size() == 0;
+
+	blockValueChangeSignal(true);
+
 	_setUpControls();
-
-	bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
-
 	bindTo();
 
-	_analysis->resetOptionsFromJASPFile();
+	blockValueChangeSignal(false, false);
+
 	_analysis->initialized(this, isNewAnalysis);
 
 	emit analysisChanged();
@@ -675,30 +658,25 @@ void AnalysisForm::setRunOnChange(bool change)
 	{
 		_runOnChange = change;
 
-		if (_options)
-			_options->blockSignals(change, false);
+		blockValueChangeSignal(change, false);
 
 		emit runOnChangeChanged();
 	}
 }
 
-bool AnalysisForm::runWhenThisOptionIsChanged(Option *option)
+void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 {
-	JASPControl* control = getControl(option);
+	if (block)
+		_signalValueChangedBlocked++;
+	else
+	{
+		_signalValueChangedBlocked--;
+		if (_signalValueChangedBlocked < 0)	_signalValueChangedBlocked = 0;
 
-	emit valueChanged(control);
-	if (control)
-		emit control->valueChanged();
-
-	if (!_runOnChange)
-		return false;
-
-	if (control && !control->runOnChange())
-		return false;
-
-	return true;
+		if (_signalValueChangedBlocked == 0 && notifyOnceUnblocked && _analysis)
+			_analysis->boundValueChangedHandler();
+	}
 }
-
 
 bool AnalysisForm::needsRefresh() const
 {
@@ -742,6 +720,29 @@ QString AnalysisForm::metaHelpMD() const
 	};
 
 	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->meta(), 2);
+}
+
+void AnalysisForm::setBoundValue(const string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey> &parentKeys)
+{
+	if (_analysis)
+		_analysis->setBoundValue(name, value, meta, parentKeys);
+}
+
+std::set<string> AnalysisForm::usedVariables()
+{
+	std::set<string> result;
+
+	for (JASPControl* control : _controls)
+	{
+		BoundControl* boundControl = control->boundControl();
+		if (boundControl)
+		{
+			std::vector<std::string> usedVariables = boundControl->usedVariables();
+			result.insert(usedVariables.begin(), usedVariables.end());
+		}
+	}
+
+	return result;
 }
 
 QString AnalysisForm::helpMD() const

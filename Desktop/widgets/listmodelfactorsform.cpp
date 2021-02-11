@@ -17,13 +17,9 @@
 //
 
 #include "listmodelfactorsform.h"
-#include "analysis/options/options.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optionvariables.h"
 #include "utilities/qutils.h"
 #include "variableslistbase.h"
 #include "log.h"
-#include <QQuickItem>
 #include "analysis/jaspcontrol.h"
 #include "analysis/analysisform.h"
 
@@ -56,17 +52,10 @@ QVariant ListModelFactorsForm::data(const QModelIndex &index, int role) const
 	
 	Factor* factor = _factors[row];
 	
-	QVariant value;
-	if (role == Qt::DisplayRole || role == ListModelFactorsForm::FactorNameRole)
-	{
-		value = factor->name;
-	}
-	else if (role == ListModelFactorsForm::FactorTitleRole)
-	{
-		value = factor->title;
-	}
+	if (role == Qt::DisplayRole || role == ListModelFactorsForm::FactorNameRole)	return factor->name;
+	else if (role == ListModelFactorsForm::FactorTitleRole)							return factor->title;
 	
-	return value;	
+	return ListModel::data(index, role);
 }
 
 void ListModelFactorsForm::initFactors(const FactorVec &factors)
@@ -93,17 +82,17 @@ void ListModelFactorsForm::initFactors(const FactorVec &factors)
 }
 
 
-Terms ListModelFactorsForm::termsEx(const QString& what)
+Terms ListModelFactorsForm::filterTerms(const Terms& terms, const QStringList& filters)
 {
-	if (what == "title")
-	{
-		Terms terms;
-		for (Factor* factor : _factors)
-			terms.add(factor->title);
-		return terms;
-	}
+	Terms result;
 
-	return ListModel::termsEx(what);
+	if (filters.contains("title"))
+		for (Factor* factor : _factors)
+			result.add(factor->title);
+	else
+		result = terms;
+
+	return ListModel::filterTerms(result, filters);
 }
 
 ListModelFactorsForm::FactorVec ListModelFactorsForm::getFactors()

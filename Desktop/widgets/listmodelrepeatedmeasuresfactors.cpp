@@ -17,12 +17,8 @@
 //
 
 #include "listmodelrepeatedmeasuresfactors.h"
-#include "analysis/options/options.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optionvariables.h"
 #include "utilities/qutils.h"
 #include "log.h"
-
 
 
 using namespace std;
@@ -30,6 +26,7 @@ using namespace std;
 ListModelRepeatedMeasuresFactors::ListModelRepeatedMeasuresFactors(JASPListControl* listView)
 	: ListModel(listView)
 {
+	_needsSource = false;
 	_itemType = "fixedFactors";
 }
 
@@ -52,11 +49,8 @@ QVariant ListModelRepeatedMeasuresFactors::data(const QModelIndex &index, int ro
 	const Factor& factor = _factors.at(row);
 	int factorIndex = _getIndex(factor);
 	
-	QString value;
 	if (role == Qt::DisplayRole || role == ListModelRepeatedMeasuresFactors::NameRole)
-	{
-		value = factor.value;
-	}
+		return factor.value;
 	else if (role == ListModelRepeatedMeasuresFactors::TypeRole)
 	{
 		QStringList listValues;
@@ -74,10 +68,10 @@ QVariant ListModelRepeatedMeasuresFactors::data(const QModelIndex &index, int ro
 			if (factorIndex > 1 && !factor.isVirtual)
 				listValues.push_back(tq("deletable"));
 		}
-		value = listValues.join(',');
+		return listValues.join(',');
 	}
 	
-	return QVariant(value);	
+	return ListModel::data(index, role);
 }
 
 void ListModelRepeatedMeasuresFactors::initFactors(const vector<pair<string, vector<string> > > &factors)

@@ -19,10 +19,11 @@
 #include "boundcontrolsourcetextarea.h"
 #include "textareabase.h"
 
-void BoundControlSourceTextArea::bindTo(Option *option)
+void BoundControlSourceTextArea::bindTo(const Json::Value &value)
 {
-	BoundControlTextArea::bindTo(option);
 	_setSourceTerms();
+
+	BoundControlTextArea::bindTo(value);
 }
 
 void BoundControlSourceTextArea::checkSyntax()
@@ -38,7 +39,7 @@ void BoundControlSourceTextArea::_setSourceTerms()
 	{
 		QStringList newList;
 		for (const QString& listPart : list)
-			newList.append(listPart.split(separator, QString::SkipEmptyParts));
+			newList.append(listPart.split(separator, Qt::SkipEmptyParts));
 		list = newList;
 	}
 

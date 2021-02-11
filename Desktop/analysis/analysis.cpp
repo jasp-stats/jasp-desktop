@@ -17,7 +17,6 @@
 
 #include "analysis.h"
 #include <boost/bind.hpp>
-#include "options/options.h"
 #include "tempfiles.h"
 #include "appinfo.h"
 #include "dirs.h"
@@ -28,7 +27,6 @@
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  QObject(Analyses::analyses()),
-	  _options(new Options()),
 	  _id(id),
 	  _name(analysisEntry->function()),
 	  _qml(analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
@@ -47,13 +45,12 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 
 	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	setHelpFile(dynamicModule()->helpFolderPath() + tq(analysisEntry->function()));
-	bindOptionHandlers();
 }
 
 Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	: QObject(			Analyses::analyses()		)
 	, _status(			duplicateMe->_status		)
-	, _options(			static_cast<Options*>(duplicateMe->_options->clone()))
+	, _boundValues(		duplicateMe->boundValues()	)
 	, _optionsDotJASP(	duplicateMe->_optionsDotJASP)
 	, _results(			duplicateMe->_results		)
 	, _meta(			_results.get(".meta", Json::arrayValue))
@@ -75,23 +72,20 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry)
 	, _helpFile(						duplicateMe->_helpFile)
 {
-	bindOptionHandlers();
 }
 
 Analysis::~Analysis()
 {
-	const auto & cols = columnsCreated();
+	const auto & cols = computedColumns();
 
 	if(cols.size() > 0)
 		for(const std::string & col : cols)
-			emit requestComputedColumnDestruction(tq(col));
-
-	delete _options;
+			emit requestComputedColumnDestruction(col);
 }
 
 void Analysis::clearOptions()
 {
-	_options->clear();
+	_boundValues.clear();
 }
 
 bool Analysis::checkAnalysisEntry()
@@ -126,18 +120,9 @@ QString Analysis::helpMD() const
 	return _analysisForm ? _analysisForm->helpMD() : "";
 }
 
-void Analysis::bindOptionHandlers()
-{
-	_options->changed.connect(							boost::bind( &Analysis::optionsChangedHandler,						this, _1));
-	_options->requestComputedColumnCreation.connect(	boost::bind( &Analysis::requestComputedColumnCreationHandler,		this, _1));
-	_options->requestColumnCreation.connect(			boost::bind( &Analysis::requestColumnCreationHandler,				this, _1, _2));
-	_options->requestComputedColumnDestruction.connect(	boost::bind( &Analysis::requestComputedColumnDestructionHandler,	this, _1));
-}
-
 void Analysis::abort()
 {
 	setStatus(Aborting);
-	emit optionsChanged(this);
 }
 
 void Analysis::remove()
@@ -382,7 +367,7 @@ Json::Value Analysis::asJSON() const
 	}
 
 	analysisAsJson["status"]		= status;
-	analysisAsJson["options"]		= options()->asJSON();
+	analysisAsJson["options"]		= boundValues();
 	analysisAsJson["userdata"]		= userData();
 
 
@@ -392,6 +377,72 @@ Json::Value Analysis::asJSON() const
 	Log::log() << "Analysis::asJSON():\n" << analysisAsJson.toStyledString() << std::endl;
 
 	return analysisAsJson;
+}
+
+Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys)
+{
+	Json::Value* result = &_boundValues;
+	for (const auto& parent : parentKeys)
+	{
+		Json::Value& parentBoundValues = (*result)[parent.name];
+		bool found = false;
+		if (parentBoundValues.isArray() && parent.value.size() > 0)
+		{
+			for (Json::Value & boundValue : parentBoundValues)
+			{
+				for (Json::Value::iterator iter = boundValue.begin(); iter != boundValue.end(); iter++)
+				{
+					Json::Value &val = *iter;
+					if (iter.key().asString() == parent.key)
+					{
+						// The value can be a string or an array of strings (for interaction terms)
+						if (val.isString())
+						{
+							if (val.asString() == parent.value[0])	found = true;
+						}
+						else if (val.isArray() && val.size() == parent.value.size())
+						{
+							found = true;
+							size_t i = 0;
+							for (const Json::Value& compVal : val)
+							{
+								if (!compVal.isString() || compVal.asString() != parent.value[i]) found = false;
+								i++;
+							}
+						}
+					}
+					if (found)
+					{
+						result = &boundValue;
+						break;
+					}
+				}
+				if (found) break;
+			}
+		}
+		else
+			Log::log() << "Could not find the right parent (" << parent.key << ", " << Term(parent.value).asQString() << ") for parent " << parent.name << ", in " << result->toStyledString() << std::endl;
+	}
+
+	return *result;
+}
+
+void Analysis::setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey>& parentKeys)
+{
+	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys);
+	if (parentBoundValue.isObject())
+		parentBoundValue[name] = value;
+
+	if (!meta.isNull())
+		_boundValues[".meta"][name] = meta;
+}
+
+const Json::Value &Analysis::boundValue(const std::string &name, const QVector<JASPControl::ParentKey> &parentKeys)
+{
+	const Json::Value& parentBoundValue = _getParentBoundValue(parentKeys);
+
+	if (parentBoundValue.isObject())	return parentBoundValue[name];
+	else								return Json::Value::null;
 }
 
 void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
@@ -450,37 +501,36 @@ void Analysis::setStatus(Analysis::Status status)
 	emit statusChanged(this);
 }
 
-void Analysis::optionsChangedHandler(Option *option)
+void Analysis::boundValueChangedHandler()
 {
 	incrementRevision(); // To make sure we always process all changed options we increment the revision whenever anything changes
 
-	Log::log() << "Option changed for analysis '" << name() << "' and id " << id() << ", revision incremented to: " << _revision << " and options are now: " << option->asJSON().toStyledString() << std::endl;
+	Log::log() << "Option changed for analysis '" << name() << "' and id " << id() << ", revision incremented to: " << _revision << std::endl;
 
 	if (_refreshBlocked)
 		return;
 
-	if (form() && (form()->hasError() || !form()->runWhenThisOptionIsChanged(option)))
+	if (form() && (form()->hasError() || !form()->runOnChange()))
 		return;
 
 	run();
 }
 
-ComputedColumn *Analysis::requestComputedColumnCreationHandler(std::string columnName)
+ComputedColumn *Analysis::requestComputedColumnCreationHandler(const std::string& columnName)
 {
-	ComputedColumn *result = requestComputedColumnCreation(tq(columnName), this);
+	ComputedColumn *result = requestComputedColumnCreation(columnName, this);
 
-	if (result && form())
-		form()->addOwnComputedColumn(tq(columnName));
+	if (result)
+		addOwnComputedColumn(columnName);
 
 	return result;
 }
 
-void Analysis::requestComputedColumnDestructionHandler(std::string columnName)
+void Analysis::requestComputedColumnDestructionHandler(const std::string& columnName)
 {
-	requestComputedColumnDestruction(tq(columnName));
+	requestComputedColumnDestruction(columnName);
 
-	if (form())
-		form()->removeOwnComputedColumn(tq(columnName));
+	removeOwnComputedColumn(columnName);
 }
 
 performType Analysis::desiredPerformTypeFromAnalysisStatus() const
@@ -502,6 +552,13 @@ std::string Analysis::qmlFormPath() const
 	return "file:" + (_moduleData != nullptr	?
 				_moduleData->qmlFilePath()	:
 				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
+}
+
+std::set<std::string> Analysis::usedVariables()
+{
+	if (form())	return form()->usedVariables();
+
+	return {};
 }
 
 void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)
@@ -540,7 +597,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 
 		bool imgP = perform == performType::saveImg || perform == performType::editImg;
 		if (imgP)	json["image"]		= imgOptions();
-		else		json["options"]		= options()->size() == 0 ? optionsFromJASPFile() : options()->asJSONWithMeta();
+		else		json["options"]		= _boundValues;
 	}
 
 	return json;

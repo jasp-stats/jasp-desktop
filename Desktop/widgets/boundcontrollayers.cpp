@@ -18,52 +18,46 @@
 
 #include "boundcontrollayers.h"
 #include "listmodellayersassigned.h"
+#include "jasplistcontrol.h"
 #include "analysis/analysisform.h"
 #include "utilities/qutils.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optionvariables.h"
-
-#include <QQmlProperty>
 
 using namespace std;
 
 
-BoundControlLayers::BoundControlLayers(ListModelLayersAssigned* model)
+BoundControlLayers::BoundControlLayers(ListModelLayersAssigned* model) : BoundControlBase(model->listView())
 {
-	_boundTo = nullptr;
 	_layersModel = model;
 }
 
-void BoundControlLayers::bindTo(Option *option)
+void BoundControlLayers::bindTo(const Json::Value &value)
 {
-	_boundTo = dynamic_cast<OptionsTable *>(option);
-	
-	vector<Options*> allOptions = _boundTo->value();
 	vector<vector<string> > variables;	
 	
-	for (const Options* options : allOptions)
+	for (const Json::Value& row : value)
 	{
-		OptionVariables *variablesOption = static_cast<OptionVariables *>(options->get("variables"));
-		variables.push_back(variablesOption->variables());
+		const Json::Value& rowVariables = row["variables"];
+		vector<string> rowValues;
+
+		if (rowVariables.isString())
+			rowValues.push_back(rowVariables.asString());
+		else if (rowVariables.isArray())
+		{
+			for (const Json::Value& rowVariable : rowVariables)
+				rowValues.push_back(rowVariable.asString());
+		}
+
+		variables.push_back(rowValues);
 	}
 	
 	_layersModel->initLayers(variables);
+
+	BoundControlBase::bindTo(value);
 }
 
-Option* BoundControlLayers::createOption()
-{
-	Options* templote = new Options();
-	templote->add("name", new OptionString());
-	templote->add("variables", new OptionVariables());
-	
-	OptionsTable* optionsTable = new OptionsTable(templote);
-	
-	return optionsTable;
-}
-
-bool BoundControlLayers::isOptionValid(Option *option)
-{
-	return dynamic_cast<OptionsTable*>(option) != nullptr;
+Json::Value BoundControlLayers::createJson()
+{	
+	return Json::Value(Json::arrayValue);
 }
 
 bool BoundControlLayers::isJsonValid(const Json::Value &optionValue)
@@ -90,23 +84,22 @@ bool BoundControlLayers::isJsonValid(const Json::Value &optionValue)
 	return valid;
 }
 
-void BoundControlLayers::updateOption()
+void BoundControlLayers::resetBoundValue()
 {
 	vector<pair<string, vector<string> > > layers = _layersModel->getLayers();
-	vector<Options *> allOptions;
+	Json::Value boundValue(Json::arrayValue);
 	
 	for (const auto &layer : layers)
 	{
-		Options* options = new Options();
-		options->add("name", new OptionString(layer.first));
-		OptionVariables* optionVariables = new OptionVariables();
-		vector<string> variables;
+		Json::Value rowValues(Json::objectValue);
+		rowValues["name"] = layer.first;
+
+		Json::Value rowVariables(Json::arrayValue);
 		for (const string &variable : layer.second)
-			variables.push_back(variable);
-		optionVariables->setValue(variables);
-		options->add("variables", optionVariables);
-		allOptions.push_back(options);
+			rowVariables.append(variable);
+		rowValues["variables"] = rowVariables;
+		boundValue.append(rowValues);
 	}
 	
-	_boundTo->setValue(allOptions);	
+	setBoundValue(boundValue);
 }

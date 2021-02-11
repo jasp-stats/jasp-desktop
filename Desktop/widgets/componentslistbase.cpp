@@ -17,16 +17,13 @@
 //
 
 #include "componentslistbase.h"
-#include "analysis/jaspcontrol.h"
 #include "rowcontrols.h"
 #include "log.h"
-#include "analysis/options/optionvariable.h"
-#include "analysis/options/optionterm.h"
 
 #include <QJsonValue>
 
 ComponentsListBase::ComponentsListBase(QQuickItem *parent)
-	: JASPListControl(parent)
+	: JASPListControl(parent), BoundControlBase(this)
 {
 	_controlType			= ControlType::ComponentsList;
 	_useControlMouseArea	= false;
@@ -37,103 +34,46 @@ void ComponentsListBase::setUpModel()
 	_termsModel = new ListModelTermsAssigned(this);
 	JASPListControl::setUpModel();
 
-	QQuickItem::connect(this, SIGNAL(nameChanged(int, QString)), this, SLOT(nameChangedHandler(int, QString)));
-	QQuickItem::connect(this, SIGNAL(addItem()), this, SLOT(addItemHandler()));
-	QQuickItem::connect(this, SIGNAL(removeItem(int)), this, SLOT(removeItemHandler(int)));
+	connect(this, &ComponentsListBase::nameChanged, this, &ComponentsListBase::nameChangedHandler);
+	connect(this, &ComponentsListBase::addItem,		this, &ComponentsListBase::addItemHandler);
+	connect(this, &ComponentsListBase::removeItem,	this, &ComponentsListBase::removeItemHandler);
 }
 
-void ComponentsListBase::bindTo(Option *option)
+void ComponentsListBase::bindTo(const Json::Value& value)
 {
-	_boundTo = dynamic_cast<OptionsTable*>(option);
-	if (!_boundTo)
-	{
-		Log::log()  << "Options for Components List " << name().toStdString() << " is not of type Table!" << std::endl;
-		return;
-	}
-
-	std::string keyName = _optionKey.toStdString();
+	std::string keyName = fq(_optionKey);
 	Terms terms;
-	QMap<QString, QMap<QString, Option*> > allOptionsMap;
-	std::vector<Options*> optionsList = _boundTo->value();
-	for (Options* options : optionsList)
-	{
-		std::string key;
+	ListModel::RowControlsValues allControlValues;
 
-		if (containsInteractions())
-		{
-			OptionTerm* termOption = dynamic_cast<OptionTerm*>(options->get(keyName));
-			if (termOption)
-			{
-				Term term(termOption->term());
-				key = term.asString();
-				terms.add(term);
-			}
-			else
-			{
-				Log::log() << "Bind Option is not an OptionTerm in " << name().toStdString() << std::endl;
-				return;
-			}
-		}
-		else
-		{
-			OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(keyName));
-			if (variableOption)
-			{
-				key = variableOption->variable();
-				terms.add(Term(key));
-			}
-			else
-			{
-				Log::log() << "Bind Option is not an OptionVariable in " << name().toStdString() << std::endl;
-				return;
-			}
-		}
+	_readTableValue(value, keyName, containsInteractions(), terms, allControlValues);
 
-		QMap<QString, Option*> optionsMap;
-		for (const std::string& name : options->names)
-			if (name != keyName)
-				optionsMap[QString::fromStdString(name)] = options->get(name);
+	_termsModel->initTerms(terms, allControlValues);
 
-		allOptionsMap[QString::fromStdString(key)] = optionsMap;
-
-	}
-
-	_termsModel->initTerms(terms, allOptionsMap);
+	BoundControlBase::bindTo(value);
 }
 
-Option* ComponentsListBase::createOption()
+Json::Value ComponentsListBase::createJson()
 {
-	Options* templote = new Options();
-	std::string keyName = _optionKey.toStdString();
+	std::string keyName = fq(_optionKey);
 
-	if (containsInteractions())
-		templote->add(keyName, new OptionTerm());
-	else
-		templote->add(keyName, new OptionVariable());
-	addRowComponentsDefaultOptions(templote);
-
-	OptionsTable* result = new OptionsTable(templote);
-	std::vector<Options*> allOptions;
+	Json::Value result(Json::arrayValue);
 
 	if (hasSource())
 	{
 		Terms initTerms = _termsModel->getSourceTerms();
 		for (const Term& term : initTerms)
 		{
-			Options* row = dynamic_cast<Options*>(templote->clone());
+			Json::Value row(Json::objectValue);
 			if (containsInteractions())
 			{
-				OptionTerm* optionVar = new OptionTerm();
-				optionVar->setValue(term.scomponents());
-				row->add(keyName, optionVar);
+				Json::Value keyTerm(Json::arrayValue);
+				for (const std::string& term: term.scomponents())
+					keyTerm.append(term);
+				row[keyName] = keyTerm;
 			}
 			else
-			{
-				OptionVariables* optionVar = new OptionVariable();
-				optionVar->setValue(term.asString());
-				row->add(keyName, optionVar);
-			}
-			allOptions.push_back(row);
+				row[keyName] = term.asString();
+			result.append(row);
 		}
 	}
 	else
@@ -151,8 +91,7 @@ Option* ComponentsListBase::createOption()
 		for (const QVariant& defaultValue : defaultValues)
 		{
 			QVariantMap defaultValueMap = defaultValue.toMap();
-			Options* row = dynamic_cast<Options*>(templote->clone());
-			OptionVariables* optionVar = new OptionVariable();
+			Json::Value row(Json::objectValue);
 
 			QString keyValue = (defaultValue.type() == QVariant::String) ? defaultValue.toString() : defaultName;
 			if (defaultValueMap.contains(_optionKey))
@@ -161,8 +100,7 @@ Option* ComponentsListBase::createOption()
 			keyValue = _makeUnique(keyValue, keyValues);
 			keyValues.push_back(keyValue);
 
-			optionVar->setValue(keyValue.toStdString());
-			row->add(keyName, optionVar);
+			row[keyName] = fq(keyValue);
 
 			QMapIterator<QString, QVariant> it(defaultValueMap);
 			while (it.hasNext())
@@ -172,81 +110,30 @@ Option* ComponentsListBase::createOption()
 
 				if (name != _optionKey)
 				{
-					QVariant value = it.value();
-					Option* option = row->get(fq(name));
-					if (option)		option->set(value.toJsonValue().toString().toStdString());
-					else			Log::log() << "Default value with name " << name << " is unknown in the ComponentsList " << this->name() << std::endl;
+					QVariant valueVar = it.value();
+					Json::Value valueJson;
+					Json::Reader().parse(fq(valueVar.toString()), valueJson);
+					row[fq(name)] = valueJson;
 				}
 			}
-			allOptions.push_back(row);
+			result.append(row);
 		}
 	}
-	result->connectOptions(allOptions);
 
 	return result;
 }
 
-bool ComponentsListBase::isOptionValid(Option *option)
+bool ComponentsListBase::isJsonValid(const Json::Value &value)
 {
-	return dynamic_cast<OptionsTable*>(option) != nullptr;
-}
-
-bool ComponentsListBase::isJsonValid(const Json::Value &optionValue)
-{
-	return optionValue.type() == Json::arrayValue;
+	return value.isArray();
 }
 
 void ComponentsListBase::termsChangedHandler()
 {
-	if (_boundTo)
-	{
-		std::string keyName = _optionKey.toStdString();
-		std::vector<Options*> allOptions;
-		const Terms& terms = _termsModel->terms();
-		const QMap<QString, RowControls*>& allControls = _termsModel->getRowControls();
-		for (const Term& term : terms)
-		{
-			Options *rowOptions = static_cast<Options *>(_boundTo->rowTemplate()->clone());
+	const Terms& terms = _termsModel->terms();
+	const QMap<QString, RowControls*>& allControls = _termsModel->getRowControls();
 
-			if (containsInteractions())
-			{
-				OptionTerm* optionTerm = dynamic_cast<OptionTerm*>(rowOptions->get(keyName));
-				if (optionTerm)
-					optionTerm->setValue(term.scomponents());
-				else
-					Log::log()  << "An option is not of type OptionTerm!!" << std::endl;
-			}
-			else
-			{
-				OptionVariable* optionVariable = dynamic_cast<OptionVariable*>(rowOptions->get(keyName));
-				if (optionVariable)
-					optionVariable->setValue(term.asString());
-				else
-					Log::log()  << "An option is not of type OptionVariable!!" << std::endl;
-			}
-
-			RowControls* rowControls = allControls[term.asQString()];
-			if (rowControls)
-			{
-				const QMap<QString, JASPControl*>& controlsMap = rowControls->getJASPControlsMap();
-				QMapIterator<QString, JASPControl*> it(controlsMap);
-				while (it.hasNext())
-				{
-					it.next();
-					BoundControl* boundItem = dynamic_cast<BoundControl*>(it.value());
-					if (it.value()->isBound() && boundItem)
-					{
-						const QString& name = it.key();
-						Option* option = boundItem->boundTo();
-						rowOptions->add(name.toStdString(), option);
-					}
-				}
-			}
-			allOptions.push_back(rowOptions);
-		}
-
-		_boundTo->connectOptions(allOptions);
-	}
+	_setTableValue(terms, allControls, fq(_optionKey), containsInteractions());
 }
 
 void ComponentsListBase::addItemHandler()

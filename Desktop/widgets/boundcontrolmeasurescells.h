@@ -19,29 +19,26 @@
 #ifndef BOUNDCONTROLMEASURESCELLS_H
 #define BOUNDCONTROLMEASURESCELLS_H
 
-#include "analysis/options/boundcontrol.h"
-#include "listmodelmeasurescellsassigned.h"
+#include "analysis/boundcontrolbase.h"
 #include "listmodelrepeatedmeasuresfactors.h"
-#include "analysis/options/optionvariables.h"
 
-class BoundControlMeasuresCells : public BoundControl
+class ListModelMeasuresCellsAssigned;
+
+class BoundControlMeasuresCells : public BoundControlBase
 {
 
 public:
 	BoundControlMeasuresCells(ListModelMeasuresCellsAssigned* model);
 	
-	Option*		boundTo()									override { return _boundTo; }
-	void		bindTo(Option *option)						override;
-	Option*		createOption()								override;
-	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
-	void		updateOption()								override;
+	Json::Value	createJson()								override;
+	void		bindTo(const Json::Value &value)			override;
+	void		resetBoundValue()							override;
 
 	void		addFactorModel(ListModelRepeatedMeasuresFactors* factorModel);
 	Terms		getLevels();
 	
 private:
-	OptionVariables*							_boundTo				= nullptr;
 	ListModelMeasuresCellsAssigned*				_measuresCellsModel;
 	QList<ListModelRepeatedMeasuresFactors*>	_sourceFactorsModels;
 	

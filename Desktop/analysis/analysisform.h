@@ -22,14 +22,10 @@
 #include <QMap>
 #include <QQuickItem>
 
-#include "options/boundcontrol.h"
-#include "options/options.h"
-#include "options/optionvariables.h"
-
-#include "analysis/options/variableinfo.h"
+#include "boundcontrol.h"
+#include "analysis/variableinfo.h"
 #include "analysis.h"
 #include "widgets/listmodel.h"
-#include "options/variableinfo.h"
 #include "widgets/listmodeltermsavailable.h"
 #include "gui/messageforwarder.h"
 #include "utilities/qutils.h"
@@ -67,15 +63,14 @@ public:
 
 				bool			runOnChange()	{ return _runOnChange; }
 				void			setRunOnChange(bool change);
+				void			blockValueChangeSignal(bool block, bool notifyOnceUnblocked = true);
 
-				bool			runWhenThisOptionIsChanged(Option* option);
-					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
 				void			setInfo(QString info);
 				void			setAnalysis(QVariant analysis);
 				void			rSourceChanged(const QString& name);
-
+				void			boundValueChangedHandler(JASPControl* control);
 
 signals:
 				void			sendRScript(QString script, int key);
@@ -87,7 +82,6 @@ signals:
 				void			needsRefreshChanged();
 				void			hasVolatileNotesChanged();
 				void			runOnChangeChanged();
-				void			valueChanged(JASPControl* item);
 				void			infoChanged();
 				void			helpMDChanged();
 				void			errorsChanged();
@@ -98,15 +92,11 @@ protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info)	const override;
 
 public:
-	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.value(modelName);	} // Maps create elements if they do not exist yet
+	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
 	void					addModel(ListModel* model)												{ if (!model->name().isEmpty())	_modelMap[model->name()] = model;			}
-	Options				*	getAnalysisOptions()													{ return _analysis->options();												}
 	JASPControl			*	getControl(const QString& name)											{ return _controls.contains(name) ? _controls[name] : nullptr;				}
 	void					addListView(JASPListControl* listView, JASPListControl* sourceListView);
 	ExpanderButtonBase	*	nextExpander(ExpanderButtonBase* expander)								{ return _nextExpanderMap[expander];										}
-	JASPControl			*	getControl(Option* option)												{ return _optionControlMap[option];											}
-
-	Options				*	options() { return _options; }
 	void					addControl(JASPControl* control);
 
 	Q_INVOKABLE void		clearFormErrors();
@@ -122,9 +112,7 @@ public:
 	void		cleanUpForm();
 	bool		hasError();
 
-	bool		isOwnComputedColumn(const QString& col)			const	{ return _computedColumns.contains(col); }
-	void		addOwnComputedColumn(const QString& col)				{ _computedColumns.push_back(col); }
-	void		removeOwnComputedColumn(const QString& col)				{ _computedColumns.removeAll(col); }
+	bool		isOwnComputedColumn(const std::string& col)			const	{ return _analysis ? _analysis->computedColumns().contains(col) : false; }
 
 	bool		needsRefresh()		const;
 	bool		hasVolatileNotes()	const;
@@ -135,14 +123,20 @@ public:
 	QString		errors()			const {	return msgsListToString(_formErrors);	}
 	QString		warnings()			const { return msgsListToString(_formWarnings);	}
 	QVariant	analysis()			const { return QVariant::fromValue(_analysis);	}
+	Analysis*	analysisObj()		const { return _analysis;						}
 	void		addRSource(const QString& name, ListModel* model)	{ _rSourceModelMap[name] = model; }
 
 	std::vector<std::vector<std::string> >	getValuesFromRSource(const QString& sourceID) { if (_analysis) return _analysis->getValuesFromRSource(sourceID); else return {}; }
+	void		addColumnControl(JASPControl* control, bool isComputed);
+
+	void		setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	std::set<std::string> usedVariables();
 
 protected:
 	QString		msgsListToString(const QStringList & list) const;
 
 private:
+	Json::Value& _getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
 	void		_setUpControls();
 	void		_setUpModels();
 	void		_setUp();
@@ -163,12 +157,10 @@ private slots:
 
 protected:
 	Analysis								*	_analysis			= nullptr;
-	Options									*	_options			= nullptr;
 	QMap<QString, JASPControl* >				_controls;
 
 	///Ordered on dependencies within QML, aka an assigned variables list depends on the available list it is connected to.
 	QVector<JASPControl*>						_dependsOrderedCtrls;
-	QMap<Option*, JASPControl*>					_optionControlMap;
 	QMap<QString, ListModel* >					_modelMap;
 	QVector<ExpanderButtonBase*>				_expanders;
 	QMap<ExpanderButtonBase*, ExpanderButtonBase*>	_nextExpanderMap;
@@ -183,12 +175,11 @@ private:
 
 	QQmlComponent*								_controlErrorMessageComponent = nullptr;
 	QList<QQuickItem*>							_controlErrorMessageCache;
-	QList<QString>								_computedColumns;
 	bool										_runOnChange	= true,
 												_formCompleted = false;
 	QString										_info;
 	QMap<QString, ListModel*>					_rSourceModelMap;
-
+	int											_signalValueChangedBlocked = 0;
 };
 
 #endif // ANALYSISFORM_H

@@ -21,44 +21,37 @@
 
 
 ComboBoxBase::ComboBoxBase(QQuickItem* parent)
-	: JASPListControl(parent)
+	: JASPListControl(parent), BoundControlBase(this)
 {
 	_controlType = ControlType::ComboBox;
 }
 
-void ComboBoxBase::bindTo(Option *option)
+void ComboBoxBase::bindTo(const Json::Value& value)
 {
-	_boundTo = dynamic_cast<OptionList *>(option);
+	std::vector<std::string> values = _model->getValues();
+	std::string selectedValue = value.asString();
+	int index = -1;
 
-	if (_boundTo != nullptr)
+	if (values.size() > 0)
 	{
-		QString selectedValue = QString::fromStdString(_boundTo->value());
-		int index = -1;
-		QList<QString> labels = _model->terms().asQList();
-		if (labels.size() > 0)
+		if (selectedValue.empty())	index = 0;
+		else
 		{
-			if (selectedValue.isEmpty())
-				index = 0;
-			else
+			auto itr = std::find(values.begin(), values.end(), selectedValue);
+			if (itr == values.end())
 			{
-				QString selectedLabel = _model->getLabel(selectedValue);
-				index = labels.indexOf(selectedLabel);
-				if (index == -1)
-				{
-					addControlError(tr("Unknown option %1 in DropDown %2").arg(selectedValue).arg(name()));
-					index = 0;
-				}
+				addControlError(tr("Unknown option %1 in DropDown %2").arg(tq(selectedValue)).arg(name()));
+				index = 0;
 			}
+			index = int(std::distance(values.begin(), itr));
 		}
-		std::vector<std::string> options = _model->getValues();
-		_boundTo->resetOptions(options, index);
-		
-		_setCurrentProperties(index, false);
-		
-		_resetItemWidth();
 	}
-	else
-		addControlError(tr("Unknown error in ComboBox %1").arg(name()));
+
+	_setCurrentProperties(index, false);
+
+	_resetItemWidth();
+
+	BoundControlBase::bindTo(value);
 }
 
 int ComboBoxBase::_getStartIndex()
@@ -70,7 +63,7 @@ int ComboBoxBase::_getStartIndex()
 	return -1;
 }
 
-Option *ComboBoxBase::createOption()
+Json::Value ComboBoxBase::createJson()
 {
 	std::vector<std::string> options = _model->getValues();
 	
@@ -79,16 +72,9 @@ Option *ComboBoxBase::createOption()
 	if (options.size() == 0)								index = -1;
 	else if (index == -1 || (index >= int(options.size())))	index = 0;
 	
-	std::string selected = "";
-	if (index >= 0)
-		selected = options[size_t(index)];
+	std::string selected = index >= 0 ? options[size_t(index)] : "";
 	
-	return new OptionList(options, selected);
-}
-
-bool ComboBoxBase::isOptionValid(Option *option)
-{
-	return dynamic_cast<OptionList*>(option) != nullptr;
+	return selected;
 }
 
 bool ComboBoxBase::isJsonValid(const Json::Value &optionValue)
@@ -102,9 +88,10 @@ void ComboBoxBase::setUp()
 
 	_model->resetTermsFromSources();
 
+	connect(this,	&ComboBoxBase::activated,					this,	&ComboBoxBase::activatedSlot);
 	connect(this,	&JASPListControl::addEmptyValueChanged,		[this] () { _model->resetTermsFromSources(); }	);
 	connect(this,	&ComboBoxBase::currentIndexChanged,			[this] () { _setCurrentProperties(currentIndex()); } ); // Case when currentIndex is changed in QML
-	connect(this,	SIGNAL(activated(int)),						this,		SLOT(activatedSlot(int)));
+
 	if (form())
 		connect(form(), &AnalysisForm::languageChanged,			[this] () { _model->resetTermsFromSources(); }	);
 
@@ -118,33 +105,23 @@ void ComboBoxBase::setUpModel()
 
 void ComboBoxBase::termsChangedHandler()
 {
-	std::vector<std::string> options;
-	const Terms& terms = _model->terms();
+	std::vector<std::string> values = _model->getValues();
 	int index = -1;
 
-	if (initialized())
+	if (values.size() > 0)
 	{
-		for (size_t counter = 0; counter < terms.size(); counter++)
+		if (initialized())
 		{
-			const Term& term = terms.at(counter);
-			QString label = term.asQString();
-			QString value = _model->getValue(label);
-			options.push_back(value.toStdString());
-			if (value == _currentValue)
-				index = int(counter);
-		}
+			auto itr = std::find(values.begin(), values.end(), fq(_currentValue));
 
-		if (index == -1) index = _getStartIndex();
+			if (itr == values.end())	index = _getStartIndex();
+			else						index = int(std::distance(values.begin(), itr));
+		}
+		else							index = _getStartIndex();
+
+		if (index < 0 || index > int(values.size())) index = 0;
 	}
-	else
-		index = _getStartIndex();
-	
-	if (terms.size() == 0)									index = -1;
-	else if (index == -1 || (index >= int(terms.size())))	index = 0;
-	
-	if (_boundTo)
-		_boundTo->resetOptions(options, index);
-	
+
 	_setCurrentProperties(index);
 	
 	_resetItemWidth();
@@ -184,7 +161,7 @@ void ComboBoxBase::setCurrentIndex(int index)
 		_currentIndex = index; // In this case it is used as start index
 }
 
-void ComboBoxBase::_setCurrentProperties(int index, bool setOption)
+void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 {
 	QString currentColumnType, currentValue, currentText, currentColumnTypeIcon;
 
@@ -219,6 +196,5 @@ void ComboBoxBase::_setCurrentProperties(int index, bool setOption)
 	if (emitCurrentColumnTypeIconSignal)	emit currentColumnTypeIconChanged();
 	if (emitCurrentIndexSignal)				emit currentIndexChanged();
 
-	if (_boundTo && setOption)
-		_boundTo->set(size_t(index));
+	if (bindValue)	setBoundValue(fq(_currentValue));
 }

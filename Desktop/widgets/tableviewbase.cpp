@@ -18,7 +18,6 @@
 
 #include "log.h"
 #include <QTimer>
-#include "analysis/jaspcontrol.h"
 #include "tableviewbase.h"
 #include "listmodeljagsdatainput.h"
 #include "../analysis/analysisform.h"
@@ -26,11 +25,8 @@
 #include "listmodelmultinomialchi2test.h"
 #include "listmodelrepeatedmeasuresfactors.h"
 #include "listmodelcustomcontrasts.h"
-#include "listmodeltableviewsimple.h"
-#include "analysis/options/optionstring.h"
-#include "analysis/options/optionvariables.h"
-#include "analysis/options/optiondoublearray.h"
-
+#include "boundcontrolcontraststableview.h"
+#include "boundcontrolfilteredtableview.h"
 
 TableViewBase::TableViewBase(QQuickItem* parent)
 	: JASPListControl(parent)
@@ -38,68 +34,44 @@ TableViewBase::TableViewBase(QQuickItem* parent)
 	_controlType = ControlType::TableView;
 }
 
-void TableViewBase::bindTo(Option *option)
-{
-	_boundTo = dynamic_cast<OptionsTable *>(option);
-
-	if (_boundTo != nullptr && _tableModel)		_tableModel->initValues(_boundTo);
-	else										Log::log()  << "could not bind to OptionTable in boundqmltableview.cpp" << std::endl;
-}
-
 void TableViewBase::setUpModel()
 {
-	QString modelType	= property("modelType").toString(),
-			tableType	= property("tableType").toString(),
-			itemType	= property("itemType").toString();
-
-	if (modelType == "MultinomialChi2Model")	_tableModel	= new ListModelMultinomialChi2Test(	this, tableType	);
-	if (modelType == "JAGSDataInputModel")		_tableModel	= new ListModelJAGSDataInput(		this, tableType	);
-	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType	);
-	if (modelType == "CustomContrasts")			_tableModel = new ListModelCustomContrasts(		this, tableType	);
-	if (!_tableModel)							_tableModel = new ListModelTableViewSimple(     this, tableType );
+	switch (modelType())
+	{
+	case ModelType::MultinomialChi2Model	: _tableModel = new ListModelMultinomialChi2Test(	this );	break;
+	case ModelType::JAGSDataInputModel		: _tableModel = new ListModelJAGSDataInput(			this );	break;
+	case ModelType::CustomContrasts			: _tableModel = new ListModelCustomContrasts(		this );	break;
+	case ModelType::FilteredDataEntryModel	: _tableModel = new ListModelFilteredDataEntry(		this );	break;
+	case ModelType::Simple					:
+	default									: _tableModel = new ListModelTableViewBase(			this );	break;
+	}
 
 	JASPListControl::setUpModel();
 
-	_tableModel->setItemType(itemType);
+	connect(this, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));
+	connect(this, SIGNAL(removeColumn(int)),				this, SLOT(removeColumnSlot(int)));
+	connect(this, SIGNAL(addRow()),							this, SLOT(addRowSlot()));
+	connect(this, SIGNAL(removeRow(int)),					this, SLOT(removeRowSlot(int)));
+	connect(this, SIGNAL(reset()),							this, SLOT(resetSlot()));
+	connect(this, SIGNAL(itemChanged(int, int, QString, QString)),	this, SLOT(itemChangedSlot(int, int, QString, QString)));
 
-	QQuickItem::connect(this, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));
-	QQuickItem::connect(this, SIGNAL(removeColumn(int)),				this, SLOT(removeColumnSlot(int)));
-	QQuickItem::connect(this, SIGNAL(addRow()),							this, SLOT(addRowSlot()));
-	QQuickItem::connect(this, SIGNAL(removeRow(int)),					this, SLOT(removeRowSlot(int)));
-	QQuickItem::connect(this, SIGNAL(reset()),							this, SLOT(resetSlot()));
-	QQuickItem::connect(this, SIGNAL(itemChanged(int, int, QString, QString)),	this, SLOT(itemChangedSlot(int, int, QString, QString)));
-
-	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	[&](){ setProperty("columnCount",	_tableModel->colNames().size()); }); //Possibly the best way to connect the signals of the listmodel to the slots of the qml item?
-	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		[&](){ setProperty("rowCount",		_tableModel->rowNames().size()); });
-
-	int		initialColumnCount	= property("initialColumnCount").toInt(),
-			initialRowCount		= property("initialRowCount").toInt();
-
-	if(initialColumnCount > 0 && _tableModel)
-		_tableModel->setInitialColumnCount(initialColumnCount);
-
-	if(initialRowCount > 0 && _tableModel)
-		_tableModel->setInitialRowCount(initialRowCount);
-}
-
-
-Option *TableViewBase::createOption()
-{
-	return !_tableModel ? nullptr : _tableModel->createOption();
-}
-
-bool TableViewBase::isOptionValid(Option *option)
-{
-	return dynamic_cast<OptionsTable*>(option) != nullptr;
-}
-
-bool TableViewBase::isJsonValid(const Json::Value &optionValue)
-{
-	return optionValue.type() == Json::arrayValue;
+	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	this, &TableViewBase::columnCountChanged);
+	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		this, &TableViewBase::rowCountChanged);
+	connect(_tableModel, &ListModelTableViewBase::variableCountChanged,	this, &TableViewBase::variableCountChanged);
 }
 
 void TableViewBase::setUp()
 {
+	switch (modelType())
+	{
+	case ModelType::CustomContrasts			: _boundControl = new BoundControlContrastsTableView(this); break;
+	case ModelType::FilteredDataEntryModel	: _boundControl = new BoundControlFilteredTableView(this); break;
+	case ModelType::MultinomialChi2Model	:
+	case ModelType::JAGSDataInputModel		:
+	case ModelType::Simple					:
+	default									: _boundControl = new BoundControlTableView(this);
+	}
+
 	JASPListControl::setUp();
 
 	// form is not always known in the constructor, so all references to form (and dataset) must be done here
@@ -152,6 +124,16 @@ void TableViewBase::rScriptDoneHandler(const QString & result)
 		_tableModel->rScriptDoneHandler(result);
 }
 
+QVariant TableViewBase::defaultValue()
+{
+	if (itemType() == JASPControl::ItemType::Double)
+		return defaultEmptyValue().toDouble();
+	else if (itemType() == JASPControl::ItemType::Integer)
+		return defaultEmptyValue().toInt();
+	else
+		return defaultEmptyValue();
+}
+
 void TableViewBase::refreshMe()
 {
 	if(_tableModel)
@@ -160,5 +142,6 @@ void TableViewBase::refreshMe()
 
 void TableViewBase::termsChangedHandler()
 {
-	_tableModel->modelChangedSlot();
+	if (_boundControl)
+		_boundControl->resetBoundValue();
 }

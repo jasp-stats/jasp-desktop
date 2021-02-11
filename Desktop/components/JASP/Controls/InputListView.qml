@@ -44,9 +44,6 @@ InputListBase
 
 	readonly	property string deleteIcon			: "cross.png"
 
-	signal itemChanged(int index, var name);
-	signal itemRemoved(int index);
-
 	Text
 	{
 		id				: itemTitle

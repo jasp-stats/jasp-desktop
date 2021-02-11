@@ -67,16 +67,19 @@ void Label::setLabel(const std::string &label) {
 	_setLabel(label);
 }
 
-void Label::setValue(int value)
+void Label::setValue(int value, bool labelIsInt)
 {
-	std::stringstream ss;
-	ss << value;
-	std::string asString = ss.str();
+	if (labelIsInt)
+	{
+		std::stringstream ss;
+		ss << value;
+		std::string asString = ss.str();
 
-	std::memcpy(_stringValue, asString.c_str(), asString.length());
-	_stringLength = asString.length();
+		std::memcpy(_stringValue, asString.c_str(), asString.length());
+		_stringLength = asString.length();
 
-	_hasIntValue = true;
+		_hasIntValue = true;
+	}
 	_intValue = value;
 }
 

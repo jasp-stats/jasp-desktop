@@ -17,14 +17,11 @@
 //
 
 #include "repeatedmeasuresfactorslistbase.h"
-#include "analysis/options/optionencodablestring.h"
-#include "analysis/options/optionvariables.h"
-#include "analysis/jaspcontrol.h"
 
 using namespace std;
 
 RepeatedMeasuresFactorsListBase::RepeatedMeasuresFactorsListBase(QQuickItem *parent)
-	: JASPListControl(parent)
+	: JASPListControl(parent), BoundControlBase(this)
 {
 	_controlType = ControlType::RepeatedMeasuresFactorsList;
 }
@@ -39,80 +36,53 @@ void RepeatedMeasuresFactorsListBase::setUp()
 {
 	JASPListControl::setUp();
 
-	QQuickItem::connect(this, SIGNAL(itemChanged(int, QVariant)), _factorsModel, SLOT(itemChanged(int, QVariant)));
-	QQuickItem::connect(this, SIGNAL(itemRemoved(int)), _factorsModel, SLOT(itemRemoved(int)));
-
+	connect(this, &RepeatedMeasuresFactorsListBase::itemChanged, _factorsModel, &ListModelRepeatedMeasuresFactors::itemChanged);
+	connect(this, &RepeatedMeasuresFactorsListBase::itemRemoved, _factorsModel, &ListModelRepeatedMeasuresFactors::itemRemoved);
 }
 
-void RepeatedMeasuresFactorsListBase::bindTo(Option *option)
+void RepeatedMeasuresFactorsListBase::bindTo(const Json::Value& value)
 {
-	_boundTo = dynamic_cast<OptionsTable*>(option);
-	
 	vector<pair<string, vector<string> > > factors;
-	vector<Options*> allOptions = _boundTo->value();
 	
-	for (const Options* options : allOptions)
+	for (const Json::Value& row : value)
 	{
-		OptionEncodableString	* factorNameOption		= static_cast<OptionEncodableString *>(options->get("name"));
-		OptionVariables			* factorLevelsOption	= static_cast<OptionVariables		*>(options->get("levels"));
+		vector<string> factorLevels;
+		for (const Json::Value& level : row["levels"])
+			factorLevels.push_back(level.asString());
 		
-		factors.push_back(make_pair(factorNameOption->value(), factorLevelsOption->variables()));
+		factors.push_back(make_pair(row["name"].asString(), factorLevels));
 	}
 	
 	_factorsModel->initFactors(factors);
+
+	BoundControlBase::bindTo(value);
 }
 
-Option* RepeatedMeasuresFactorsListBase::createOption()
+Json::Value RepeatedMeasuresFactorsListBase::createJson()
 {
-	
-	Options* templote =				new Options();
-	templote->add("name",			new OptionEncodableString());
-	templote->add("levels",			new OptionVariables(true));
-	
-	OptionsTable* optionsTable =	new OptionsTable(templote);
+	Json::Value result(Json::arrayValue);
 
-	OptionVariables* levels =		new OptionVariables(true);
-	std::vector<std::string> firstLevels;
-	firstLevels.push_back(tr("Level %1").arg(1).toStdString());
-	firstLevels.push_back(tr("Level %1").arg(2).toStdString());
-	levels->setValue(firstLevels);
+	Json::Value firstFactor(Json::objectValue);
+	firstFactor["name"] = fq(tr("RM Factor %1").arg(1));
+	Json::Value firstLevels(Json::arrayValue);
+	firstLevels.append(fq(tr("Level %1").arg(1)));
+	firstLevels.append(fq(tr("Level %1").arg(2)));
+	firstFactor["levels"] = firstLevels;
+	result.append(firstFactor);
 
-	Options* options =		new Options();
-	options->add("name",	new OptionEncodableString(tr("RM Factor %1").arg(1).toStdString()));
-	options->add("levels", levels);
-	
-	std::vector<Options*> allOptions;
-	allOptions.push_back(options);
-	optionsTable->connectOptions(allOptions);
-	
-	return optionsTable;
+	return result;
 }
 
-bool RepeatedMeasuresFactorsListBase::isOptionValid(Option *option)
+bool RepeatedMeasuresFactorsListBase::isJsonValid(const Json::Value &value)
 {
-	return dynamic_cast<OptionsTable*>(option) != nullptr;
-}
-
-bool RepeatedMeasuresFactorsListBase::isJsonValid(const Json::Value &optionValue)
-{
-	bool valid = optionValue.type() == Json::arrayValue;
+	bool valid = value.isArray();
 
 	if (valid)
 	{
-		for (uint i = 0; i < optionValue.size(); i++)
+		for (const Json::Value& row : value)
 		{
-			const Json::Value& value = optionValue[i];
-			valid = value.type() == Json::objectValue;
-			if (valid)
-			{
-				const Json::Value & nameOption		= value["name"],
-								  & variablesOption	= value["levels"];
-
-				valid = nameOption.type() == Json::stringValue && variablesOption.type() == Json::arrayValue;
-
-				if (!valid)
-					break;
-			}
+			valid = row.isObject() && row["name"].isString() && row["levels"].isArray();
+			if (!valid) break;
 		}
 	}
 
@@ -121,23 +91,21 @@ bool RepeatedMeasuresFactorsListBase::isJsonValid(const Json::Value &optionValue
 
 void RepeatedMeasuresFactorsListBase::termsChangedHandler()
 {
+	Json::Value boundValue(Json::arrayValue);
 	const vector<pair<string, vector<string> > > &factors = _factorsModel->getFactors();
-	vector<Options *> allOptions;
 	
 	for (const auto &factor : factors)
 	{
-		OptionVariables* levelVariables = new OptionVariables(true);
-		vector<string> levels;
+		Json::Value row(Json::objectValue);
+		row["name"] = factor.first;
+
+		Json::Value levels(Json::arrayValue);
 		for (const string &level : factor.second)
-			levels.push_back(level);
-		levelVariables->setValue(levels);
+			levels.append(level);
 
-		Options* options = new Options();
-		options->add("name", new OptionEncodableString(factor.first));
-		options->add("levels", levelVariables);
-
-		allOptions.push_back(options);
+		row["levels"] = levels;
+		boundValue.append(row);
 	}
 	
-	_boundTo->setValue(allOptions);	
+	setBoundValue(boundValue);
 }

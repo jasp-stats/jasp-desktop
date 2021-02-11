@@ -27,20 +27,18 @@ class ListModelJAGSDataInput : public ListModelTableViewBase
 	Q_OBJECT
 
 public:
-	explicit ListModelJAGSDataInput(TableViewBase * parent, QString tableType);
+	explicit ListModelJAGSDataInput(TableViewBase * parent);
 
 	int getMaximumColumnWidthInCharacters(size_t columnIndex)	const	override;
 
 	QString			getDefaultColName(size_t index)				const	override;
-	OptionsTable *	createOption()										override;
-	void			initValues(OptionsTable * bindHere)					override;
-	bool			isEditable(const QModelIndex& index)		const	override	{ return _tableType == "initialValues" ? (index.column() >= 1) : true; }
-	QString			getItemInputType(const QModelIndex& index)	const	override	{ return isRCodeColumn(1) ? "formulaArray" : "string"; }
-	bool			isRCodeColumn(int col)						const				{ return col == 1; }
+	bool			isEditable(const QModelIndex& index)		const	override;
+	QString			getItemInputType(const QModelIndex& )		const	override	{ return isRCodeColumn(1) ? "formulaArray" : "string"; }
+	bool			isRCodeColumn(int col)				const	override			{ return col == 1; }
 
 public slots:
-	void sourceTermsReset()											override;
-	void modelChangedSlot()												override;
+	void			sourceTermsReset()									override;
+
 };
 
 #endif // ListModelJAGSDataInput_H

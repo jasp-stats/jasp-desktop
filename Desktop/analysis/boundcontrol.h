@@ -16,22 +16,22 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELTABLEVIEWSIMPLE_H
-#define LISTMODELTABLEVIEWSIMPLE_H
+#ifndef BOUNDCONTROL_H
+#define BOUNDCONTROL_H
 
-#include "listmodeltableviewbase.h"
+#include "jsonredirect.h"
 
-class ListModelTableViewSimple : public ListModelTableViewBase
+class BoundControl
 {
-    Q_OBJECT
+
 public:
-    explicit ListModelTableViewSimple(TableViewBase * parent, QString tableType);
-
-	OptionsTable*	createOption()							override;
-	QString			getDefaultColName(size_t index)	const	override;
-
-private:
-    void _readValues();
+	virtual Json::Value					createJson()									= 0;
+	virtual bool						isJsonValid(const Json::Value& optionValue)		= 0;
+	virtual void						bindTo(const Json::Value& value)				= 0;
+	virtual const Json::Value&			boundValue()									= 0;
+	virtual void						resetBoundValue()								= 0;
+	virtual std::vector<std::string>	usedVariables()									= 0;
+	virtual void						setBoundValue(const Json::Value& value, bool emitChange = true) = 0;
 };
 
-#endif // LISTMODELTABLEVIEWSIMPLE_H
+#endif // BOUNDCONTROL_H

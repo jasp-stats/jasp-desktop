@@ -20,13 +20,12 @@
 #define COMBOBOXBASE_H
 
 #include "jasplistcontrol.h"
-#include "analysis/options/boundcontrol.h"
-#include "analysis/options/optionlist.h"
+#include "analysis/boundcontrolbase.h"
 #include "listmodel.h"
 #include "listmodellabelvalueterms.h"
 #include <QMap>
 
-class ComboBoxBase : public JASPListControl, public BoundControl
+class ComboBoxBase : public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
 
@@ -39,11 +38,9 @@ class ComboBoxBase : public JASPListControl, public BoundControl
 public:
 	ComboBoxBase(QQuickItem* parent = nullptr);
 
-	void				bindTo(Option *option)						override;
-	Option*				createOption()								override;
-	bool				isOptionValid(Option* option)				override;
+	void				bindTo(const Json::Value& value)			override;
 	bool				isJsonValid(const Json::Value& optionValue) override;
-	Option*				boundTo()									override	{ return _boundTo;				}
+	Json::Value			createJson()								override;
 	void				setUp()										override;
 	ListModel*			model()								const	override	{ return _model;				}
 	void				setUpModel()								override;
@@ -55,6 +52,7 @@ public:
 	const QString&		currentColumnTypeIcon()				const				{ return _currentColumnTypeIcon;}
 	int					currentIndex()						const				{ return _currentIndex;			}
 
+
 signals:
 	void currentTextChanged();
 	void currentValueChanged();
@@ -62,18 +60,18 @@ signals:
 	void currentColumnTypeChanged();
 	void currentColumnTypeIconChanged();
 	void currentIndexChanged();
+	void activated(int index);
 
 protected slots:
 	void termsChangedHandler() override;
-	void activatedSlot(int index);
 	void setCurrentIndex(int index);
 	void setCurrentValue(QString value);
 	void setCurrentText(QString text);
+	void activatedSlot(int index);
 
 	GENERIC_SET_FUNCTION(StartValue,	_startValue,	startValueChanged,	QString	)
 
 protected:
-	OptionList*					_boundTo				= nullptr;
 	ListModelLabelValueTerms*	_model					= nullptr;
 	QString						_currentText,
 								_currentValue,
@@ -84,7 +82,7 @@ protected:
 
 	int	 _getStartIndex();
 	void _resetItemWidth();
-	void _setCurrentProperties(int index, bool setOption = true);
+	void _setCurrentProperties(int index, bool bindValue = true);
 
 };
 

@@ -32,9 +32,9 @@ ListModelTermsAssigned::ListModelTermsAssigned(JASPListControl* listView, int ma
 {
 }
 
-void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
+void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap)
 {
-	ListModelAssignedInterface::initTerms(terms, allOptionsMap);
+	ListModelAssignedInterface::initTerms(terms, allValuesMap);
 
 	if (availableModel() != nullptr)
 	{
@@ -132,9 +132,9 @@ void ListModelTermsAssigned::changeTerm(int index, const QString& name)
 	if (oldName != name)
 	{
 		_rowControlsMap[name] = _rowControlsMap[oldName];
-		_rowControlsOptions[name] = _rowControlsOptions[oldName];
+		_rowControlsValues[name] = _rowControlsValues[oldName];
 		_rowControlsMap.remove(oldName);
-		_rowControlsOptions.remove(oldName);
+		_rowControlsValues.remove(oldName);
 		_replaceTerm(index, Term(name));
 
 		emit oneTermChanged(oldName, name);

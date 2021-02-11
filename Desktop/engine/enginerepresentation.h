@@ -6,7 +6,6 @@
 #include <QTimer>
 #include <vector>
 
-#include "analysis/options/options.h"
 #include "analysis/analysis.h"
 #include "analysis/analyses.h"
 #include "ipcchannel.h"

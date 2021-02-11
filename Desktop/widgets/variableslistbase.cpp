@@ -17,6 +17,7 @@
 //
 
 #include "variableslistbase.h"
+#include "checkboxbase.h"
 #include "listmodeltermsavailable.h"
 #include "listmodelinteractionavailable.h"
 #include "listmodeltermsassigned.h"
@@ -28,8 +29,8 @@
 #include "boundcontrollayers.h"
 #include "boundcontrolterms.h"
 #include "boundcontrolmultiterms.h"
+#include "rowcontrols.h"
 #include "../analysis/analysisform.h"
-#include "../analysis/jaspcontrol.h"
 #include "sourceitem.h"
 #include "data/columnsmodel.h"
 #include <QTimer>
@@ -101,6 +102,11 @@ void VariablesListBase::setUp()
 	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int, int)));
 }
 
+ListModel *VariablesListBase::model() const
+{
+	return _draggableModel;
+}
+
 void VariablesListBase::setUpModel()
 {
 	switch (_listViewType)
@@ -169,6 +175,16 @@ void VariablesListBase::setUpModel()
 	JASPListControl::setUpModel();
 }
 
+bool VariablesListBase::addRowControl(const QString &key, JASPControl *control)
+{
+	bool result = JASPListControl::addRowControl(key, control);
+
+	if (result && !_interactionHighOrderCheckBox.isEmpty() && _interactionHighOrderCheckBox == control->name())
+		connect(control, &JASPControl::boundValueChanged, this, &VariablesListBase::interactionHighOrderHandler);
+
+	return result;
+}
+
 void VariablesListBase::itemDoubleClickedHandler(int index)
 {
 	ListModel *targetModel = getRelatedModel();
@@ -233,10 +249,8 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 	if (targetModel && indexes.size() > 0)
 	{
 		std::sort(indexes.begin(), indexes.end());
-		Options* options = form()->getAnalysisOptions();
-		if (options != nullptr)
-			options->blockSignals(true);
-		
+		if (form()) form()->blockValueChangeSignal(true);
+
 		ListModelDraggable* sourceModel = _draggableModel;
 		if (sourceModel == targetModel)
 			sourceModel->moveTerms(indexes, dropItemIndex);
@@ -293,8 +307,7 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 				sourceModel->refresh();
 		}
 		
-		if (options != nullptr)
-			options->blockSignals(false);	
+		if (form()) form()->blockValueChangeSignal(false);
 	}
 	else
 	{
@@ -313,7 +326,7 @@ void VariablesListBase::termsChangedHandler()
 {
 	setColumnsTypes(model()->termsTypes());
 
-	if (_boundControl)	_boundControl->updateOption();
+	if (_boundControl)	_boundControl->resetBoundValue();
 	else JASPListControl::termsChangedHandler();
 }
 
@@ -373,4 +386,55 @@ void VariablesListBase::_setAllowedVariables()
 	}
 	setSuggestedColumnsIcons(iconList);
 }
+
+void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl)
+{
+	CheckBoxBase* checkBox = qobject_cast<CheckBoxBase*>(checkBoxControl);
+	if (checkBox == nullptr)
+	{
+		Log::log() << "interactionHighOrderHandler is called with a control that is not a CheckBox!" << std::endl;
+		return;
+	}
+
+	bool checked = checkBox->checked();
+	if (form()) form()->blockValueChangeSignal(true);
+
+	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
+	for (const Term& term : _draggableModel->terms())
+	{
+		RowControls* rowControls = _draggableModel->getRowControls()[term.asQString()];
+		if (rowControls->getJASPControlsMap()[_interactionHighOrderCheckBox] == checkBox)
+		{
+			for (const Term& otherTerm : _draggableModel->terms())
+			{
+				if (otherTerm == term)
+					continue;
+
+				rowControls = _draggableModel->getRowControls()[otherTerm.asQString()];
+				CheckBoxBase* otherCheckBox = qobject_cast<CheckBoxBase*>(rowControls->getJASPControlsMap()[_interactionHighOrderCheckBox]);
+				bool otherChecked = otherCheckBox->checked();
+
+				if (checked)
+				{
+					if (term.containsAll(otherTerm) && !otherChecked)
+					{
+						otherCheckBox->setChecked(true);
+						otherCheckBox->setBoundValue(Json::Value(true));
+					}
+				}
+				else
+				{
+					if (otherTerm.containsAll(term) && otherChecked)
+					{
+						otherCheckBox->setChecked(false);
+						otherCheckBox->setBoundValue(Json::Value(false));
+					}
+				}
+			}
+		}
+	}
+
+	if (form()) form()->blockValueChangeSignal(false);
+}
+
 

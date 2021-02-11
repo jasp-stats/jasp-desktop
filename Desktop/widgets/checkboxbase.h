@@ -20,34 +20,29 @@
 #define CHECKBOXBASE_H
 
 #include "analysis/jaspcontrol.h"
-#include "analysis/options/boundcontrol.h"
-#include "analysis/options/optionboolean.h"
+#include "analysis/boundcontrolbase.h"
 #include <QObject>
 
-class CheckBoxBase : public JASPControl, public BoundControl
+class CheckBoxBase : public JASPControl, public BoundControlBase
 {
 	Q_OBJECT
 	
 public:
 	CheckBoxBase(QQuickItem* parent = nullptr);
 	
-	void	bindTo(Option *option)							override;
-	Option* createOption()									override;
-	Option* boundTo()										override { return _boundTo; }
-	bool	isOptionValid(Option* option)					override;
-	bool	isJsonValid(const Json::Value& optionValue)		override;
-	void	setUp()											override;
-	
-	void setQMLItemChecked(bool checked);
+	bool		isJsonValid(const Json::Value& value)		override;
+	Json::Value createJson()								override;
+	void		bindTo(const Json::Value& value)			override;
+	void		setUp()										override;
+
+	void		setChecked(bool checked);
+	bool		checked();
 
 signals:
-	
-private slots:
-	void checkBoxClickedSlot();
-    
-protected:
-	OptionBoolean *_boundTo = nullptr;
-	bool _checked = false;
+	void clicked();
+
+protected slots:
+	void clickedSlot();
 
 };
 

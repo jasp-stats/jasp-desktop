@@ -21,7 +21,6 @@
 
 #include "listmodel.h"
 #include "common.h"
-#include "analysis/options/optionstable.h"
 
 class TableViewBase;
 
@@ -29,18 +28,43 @@ class TableViewBase;
 class ListModelTableViewBase : public ListModel
 {
 	Q_OBJECT
-	Q_PROPERTY(int columnCount	READ columnCount	NOTIFY columnCountChanged)
-	Q_PROPERTY(int rowCount		READ rowCount		NOTIFY rowCountChanged)
 
 public:
+	struct TableTerms
+	{
+		QVector<QVector<QVariant> >	values;
+		QStringList					rowNames,
+									colNames,
+									variables;
+		QString						colName,
+									extraCol,
+									filter;
+		QVector<int>				rowIndices;
+
+		TableTerms() {}
+
+		void clear()
+		{
+			values.clear();
+			rowNames.clear();
+			colNames.clear();
+			variables.clear();
+			colName.clear();
+			extraCol.clear();
+			filter.clear();
+		}
+	};
+
+
 	enum class	specialRoles		{ active = Qt::UserRole, lines, maxColString, maxRowHeaderString, itemInputType };
 
-	explicit						ListModelTableViewBase(TableViewBase * tableView, QString tableType = "");
+	explicit						ListModelTableViewBase(TableViewBase * tableView);
 
 	QHash<int, QByteArray>			roleNames() const override;
 
-				int					rowCount(	const QModelIndex & = QModelIndex())									const	override {	return _rowNames.length();				} //This should probably be _rowCount but who knows what will break if I change that now...
-				int					columnCount(const QModelIndex & = QModelIndex())									const	override {	return static_cast<int>(_columnCount);	}
+				int					rowCount(	const QModelIndex & = QModelIndex())									const	override { return _tableTerms.rowNames.length();	}
+				int					columnCount(const QModelIndex & = QModelIndex())									const	override { return _tableTerms.colNames.length();	}
+				int					variableCount()																		const			 { return _tableTerms.variables.length();	}
 				QVariant			data(		const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
 				Qt::ItemFlags		flags(		const QModelIndex &index)												const	override;
 				QVariant			headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
@@ -48,63 +72,51 @@ public:
 	virtual		int					getMaximumColumnWidthInCharacters(size_t columnIndex)								const;
 				QString				getMaximumRowHeaderString()															const;
 
+	virtual		void				initTableTerms(const TableTerms& terms);
 				void				addColumn(					bool emitStuff = true);
 				void				removeColumn(size_t index,	bool emitStuff = true);
 				void				addRow(						bool emitStuff = true);
 				void				removeRow(size_t index,		bool emitStuff = true);
 	virtual		void				reset();
 	virtual		void				setup() {}
-				void				setInitialColumnCount(	size_t initialColumnCount)	{ _initialColCnt = initialColumnCount;	}
-				void				setInitialRowCount(		size_t initialRowCount)		{ _initialRowCnt = initialRowCount;		}
 	virtual		void				itemChanged(int column, int row, QVariant value, QString type);
-	virtual		void				refreshModel()							{ return ListModel::refresh(); }
-	virtual		void				initValues(OptionsTable * bindHere);
-	virtual		QString				getDefaultColName(size_t index)				const	{ return tr("Col %1").arg(index); }
-	virtual		QString				getDefaultRowName(size_t index)				const	{ return tr("Row %1").arg(index); }
-	virtual		bool				isEditable(const QModelIndex &index)		const	{ return true; }
-	virtual		QString				getItemInputType(const QModelIndex &index)	const	{ return "string"; }
-	virtual		OptionsTable *		createOption();
-	virtual		void				modelChangedSlot();
+	virtual		void				refreshModel()																			{ return ListModel::refresh(); }
+	virtual		QString				getDefaultColName(size_t index)										const;
+	virtual		QString				getDefaultRowName(size_t index)										const				{ return tr("Row %1").arg(index); }
+	virtual		bool				isEditable(const QModelIndex &)										const				{ return true; }
+	virtual		QString				getItemInputType(const QModelIndex &)								const;
 
-				const QVector<QVector<QVariant>>	&	values()					const { return _values;		}
-				const QStringList					&	rowNames()					const { return _rowNames;	}
-				const QStringList					&	colNames()					const { return _colNames;	}
-					  Terms								termsEx(const QString& what)	override;
+	const		TableTerms	&		tableTerms()														const				{ return _tableTerms; }
+				Terms				filterTerms(const Terms& terms, const QStringList& filters)					override;
 
 
-				void runRScript(		const QString & script);
-	virtual		void rScriptDoneHandler(const QString & result) { throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler and usesRScript\nResult was: "+result.toStdString()); }
+				void				runRScript(		const QString & script);
+	virtual		void				rScriptDoneHandler(const QString & result) { throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler and usesRScript\nResult was: "+result.toStdString()); }
 
-				bool valueOk(QVariant value);
+				bool				valueOk(QVariant value);
+	virtual		bool				isRCodeColumn(int)													const				{ return false; }
 
-				JASPControl*	getRowControl(const QString& key, const QString& name)			const	override;
-				bool			addRowControl(const QString& key, JASPControl* control)				override;
+
+				JASPControl*		getRowControl(const QString& key, const QString& name)				const	override;
+				bool				addRowControl(const QString& key, JASPControl* control)						override;
 
 signals:
 	void columnCountChanged();
 	void rowCountChanged();
+	void variableCountChanged();
 	void itemChangedSignal(int column, int row, double value);
 
 protected slots:
 	void formulaCheckSucceededSlot();
 
 protected:
-	TableViewBase		*	_tableView		= nullptr;
-	OptionsTable			*	_boundTo		= nullptr;
+	TableViewBase			*	_tableView		= nullptr;
+	TableTerms					_tableTerms;
 
 	const size_t				_maxColumn		= 10,
 								_maxRow			= 100;
-	QStringList					_rowNames,
-								_colNames;
-	QVector<QVector<QVariant> >	_values;
 	int							_rowSelected	= -1;
-	QString						_tableType;
-	size_t						_columnCount	= 0,
-								_rowCount		= 0,
-								_initialColCnt	= 0,
-								_initialRowCnt	= 0;
-	QVariant					_defaultCellVal;
-	bool						_keepRowsOnReset = false,
+	bool						_keepRowsOnReset = true,
 								_keepColsOnReset = false;
 
 	QMap<QString, QMap<QString, JASPControl*> >	_itemControls;

@@ -48,7 +48,6 @@ CheckBoxBase
 			property alias	columns:				childControlsArea.columns
 			property bool	enableChildrenOnChecked: true
 
-	signal clicked();
 	function click()	{ control.toggle(); }
 	function toggle()	{ control.toggle(); }
 
