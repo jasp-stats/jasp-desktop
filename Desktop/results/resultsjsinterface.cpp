@@ -263,7 +263,7 @@ void ResultsJsInterface::overwriteUserdata(Analysis *analysis)
 
 void ResultsJsInterface::showAnalysis(int id)
 {
-	runJavaScript("window.select(" % QString::number(id) % ")");
+	runJavaScript("window.select(" % QString::number(id) % ", true)");
 }
 
 void ResultsJsInterface::exportSelected(const QString &filename)

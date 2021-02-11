@@ -51,7 +51,7 @@ $(document).ready(function () {
 			analysis.undoImageResize();
 	}
 
-	window.select = function (id) {
+	window.select = function (id, fromQML) {
 
 		if (selectedAnalysis != null)
 			selectedAnalysis.unselect()
@@ -65,7 +65,8 @@ $(document).ready(function () {
 		selectedAnalysis.select();
 		$("body").addClass("selected")
 
-		window.scrollToTopView(selectedAnalysis.$el);
+		if(fromQML)
+			window.scrollToTopView(selectedAnalysis.$el); //Only when selected in QML should we be scrollin'
 	}
 	
 	window.setStatus = function(id, status) {
@@ -392,7 +393,7 @@ $(document).ready(function () {
 		if (selectedAnalysisId !== idAsInt)
 		{
 			if (wasLastClickNote !== true) {
-				window.select(idAsInt)
+				window.select(idAsInt, false)
 				jasp.analysisSelected(idAsInt)
 			} else {
 				window.unselect()
