@@ -243,6 +243,8 @@ jaspObjR <- R6Class(
 				for (i in seq_along(optionContainsValue)) {
 					name <- names(optionContainsValue)[i]
 					value <- optionContainsValue[[i]]
+					if (!is.character(value))
+						stop(sprintf("Expected a character vector but got object of class %s", paste(class(value), collapse = ", ")))
 					private$jaspObject$setOptionMustContainDependency(name, value)
 				}
 			}
