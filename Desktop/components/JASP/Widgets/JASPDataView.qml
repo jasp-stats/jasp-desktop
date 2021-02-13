@@ -20,6 +20,7 @@ FocusScope
 				property alias columnHeaderDelegate:	theView.columnHeaderDelegate
 				property alias leftTopCornerItem:		theView.leftTopCornerItem
 				property alias extraColumnItem:			theView.extraColumnItem
+				property alias cacheItems:				theView.cacheItems
 
 				property alias itemHorizontalPadding:	theView.itemHorizontalPadding
 				property alias itemVerticalPadding:		theView.itemVerticalPadding

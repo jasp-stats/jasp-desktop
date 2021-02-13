@@ -207,7 +207,7 @@ int DataSetPackage::columnCount(const QModelIndex &parent) const
 	switch(parentIndexTypeIs(parent))
 	{
 	case parIdxType::filter:	return 1;
-	case parIdxType::label:		return 3; //The parent index has a column index in it that tells you which actual column was selected!
+	case parIdxType::label:		return 1; //The parent index has a column index in it that tells you which actual column was selected!
 	case parIdxType::root:		//Default is columnCount of data because it makes programming easier. I do hope it doesn't mess up the use of the tree-like-structure of the data though
 	case parIdxType::data:		return _dataSet == nullptr ? 0 : _dataSet->columnCount();
 	}

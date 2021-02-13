@@ -8,20 +8,16 @@
 class LabelModel : public DataSetTableProxy
 {
 	Q_OBJECT
-	Q_ENUMS(Column)
 
 	Q_PROPERTY(int		filteredOut		READ filteredOut									NOTIFY filteredOutChanged		)
 	Q_PROPERTY(int		chosenColumn	READ proxyParentColumn	WRITE setProxyParentColumn	NOTIFY proxyParentColumnChanged	)
 	Q_PROPERTY(bool		visible			READ visible			WRITE setVisible			NOTIFY visibleChanged			)
 	Q_PROPERTY(QString	columnName		READ columnNameQ									NOTIFY columnNameChanged		)
-	Q_PROPERTY(float	filterColWidth	READ filterColWidth		WRITE setFilterColWidth		NOTIFY filterColWidthChanged	)
-	Q_PROPERTY(float	valueColWidth	READ valueColWidth		WRITE setValueColWidth		NOTIFY valueColWidthChanged		)
-	Q_PROPERTY(float	labelColWidth	READ labelColWidth		WRITE setLabelColWidth		NOTIFY labelColWidthChanged		)
+	Q_PROPERTY(double	rowWidth		READ rowWidth			WRITE setRowWidth			NOTIFY rowWidthChanged			)
+	Q_PROPERTY(double	valueMaxWidth	READ valueMaxWidth									NOTIFY valueMaxWidthChanged		)
+	Q_PROPERTY(double	labelMaxWidth	READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
 
 public:
-	///These are also used directly (aka without this enum) in DataSetPackage::data
-	enum class	Column { Filter=0, Value=1, Label=2 };
-
 				LabelModel();
 
 	bool		labelNeedsFilter(size_t col);
@@ -39,28 +35,27 @@ public:
 	Q_INVOKABLE void moveSelectionUp();
 	Q_INVOKABLE void moveSelectionDown();
 	Q_INVOKABLE void resetFilterAllows();
-
 	Q_INVOKABLE void unselectAll();
+	Q_INVOKABLE bool setChecked(int rowIndex, bool checked);
+	Q_INVOKABLE void setLabel(int rowIndex, QString label);
 
 	std::vector<bool>			filterAllows(size_t col);
 	std::vector<std::string>	labels(size_t col);
 
-	float filterColWidth() const { return getColumnWidth(0); }
-	float valueColWidth()  const { return getColumnWidth(1); }
-	float labelColWidth()  const { return getColumnWidth(2); }
+	double rowWidth()			const	{ return _rowWidth;			}
+	double valueMaxWidth()		const	{ return _valueMaxWidth;	}
+	double labelMaxWidth()		const	{ return _labelMaxWidth;	}
 
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
-	void toggleSelected(int row, bool unselectRest = false);
+	void setSelected(int row, int modifier);
+	void removeAllSelected();
 	void columnAboutToBeRemoved(int column);
 	void columnDataTypeChanged(const QString & colName);
-
-	void setFilterColWidth(float colWidth) { if(setColumnWidth(0, colWidth)) emit filterColWidthChanged(filterColWidth());	}
-	void setValueColWidth (float colWidth) { if(setColumnWidth(1, colWidth)) emit valueColWidthChanged(valueColWidth());	}
-	void setLabelColWidth (float colWidth) { if(setColumnWidth(2, colWidth)) emit labelColWidthChanged(labelColWidth());	}
-
+	void setRowWidth(double len);
 	void onChosenColumnChanged();
+	void refresh();
 
 signals:
 	void visibleChanged(bool visible);
@@ -68,22 +63,22 @@ signals:
 	void columnNameChanged();
 	void allFiltersReset();
 	void labelFilterChanged();
-	void filterColWidthChanged(float filterColWidth);
-	void valueColWidthChanged( float valueColWidth);
-	void labelColWidthChanged( float labelColWidth);
+	void rowWidthChanged();
+	void valueMaxWidthChanged();
+	void labelMaxWidthChanged();
 
 private:
-	bool				setColumnWidth(int col, float width);
-	float				getColumnWidth(int col)					const { return _colWidths[col]; }
-	int					roleFromColumn(Column col)				const;
-	void				setSelectedOnRow(int row, bool selected);
 	std::vector<size_t> getSortedSelection()					const;
+	void				setValueMaxWidth();
+	void				setLabelMaxWidth();
 
 private:
 	bool				_visible		= false;
-	std::vector<float>	_colWidths		= { 60, 120, 400} ;
+	double				_valueMaxWidth	= 10,
+						_labelMaxWidth	= 10,
+						_rowWidth		= 60;
 	std::set<QString>	_selected;
+	int					_lastSelected	= -1;
 };
-Q_DECLARE_METATYPE(LabelModel::Column)
 
 #endif // LABELMODEL_H

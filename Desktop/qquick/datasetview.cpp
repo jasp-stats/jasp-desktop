@@ -9,6 +9,7 @@
 #include "gui/preferencesmodel.h"
 #include "qquick/jasptheme.h"
 #include <QScreen>
+#include "data/datasetpackage.h"
 
 DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
 
@@ -108,13 +109,29 @@ QSizeF DataSetView::getRowHeaderSize()
 	return getTextSize(text);
 }
 
-void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &)
+void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
 	int col = topLeft.column();
 	QSizeF calcSize = getColumnSize(col);
 
 	if (_cacheItems || int(_cellSizes[size_t(col)].width() * 10) != int(calcSize.width() * 10)) //If we cache items we are not expecting the user to make regular manual changes to the data, so if something changes we can do a reset. Otherwise we are in TableView and we do it only when the column size changes.
 		calculateCellSizes();
+	else if (roles.contains(int(DataSetPackage::specialRoles::selected)))
+	{
+		// This is a special case for the VariablesWindows: caching mixed up the items, so it can't be used
+		// but the selected context property must be updated
+		for (int col = topLeft.column(); col <= bottomRight.column(); col++)
+			for (int row = topLeft.row(); row <= bottomRight.row(); row++)
+			{
+				ItemContextualized* itemCon = _cellTextItems[col][row];
+
+				if (itemCon)
+				{
+					QQmlContext* context = itemCon->context;
+					context->setContextProperty("itemSelected",	_model->data(_model->index(row, col), _roleNameToRole["selected"]));
+				}
+			}
+	}
 	
 	//The following else would be good but it doesnt seem to work on mac for some reason. It does work on linux though
 	/*else 
@@ -860,6 +877,8 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	previousContext->setContextProperty("itemActive",		active);
 	previousContext->setContextProperty("itemEditable",		isEditable);
 	previousContext->setContextProperty("itemSelected",		_model->data(idx, _roleNameToRole["selected"]));
+	previousContext->setContextProperty("itemFiltered",		_model->data(idx, _roleNameToRole["filter"]));
+	previousContext->setContextProperty("itemValue",		_model->data(idx, _roleNameToRole["value"]));
 	previousContext->setContextProperty("itemInputType",	_model->data(idx, _roleNameToRole["itemInputType"]));
 	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
 	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));
