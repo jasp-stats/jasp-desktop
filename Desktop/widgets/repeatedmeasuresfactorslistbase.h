@@ -27,6 +27,11 @@ class RepeatedMeasuresFactorsListBase :  public JASPListControl, public BoundCon
 {
 	Q_OBJECT
 	
+	Q_PROPERTY( QStringList		defaultFactors		READ defaultFactors			WRITE setDefaultFactors			NOTIFY defaultFactorsChanged		)
+	Q_PROPERTY( QStringList		defaultLevels		READ defaultLevels			WRITE setDefaultLevels			NOTIFY defaultLevelsChanged			)
+	Q_PROPERTY( QString			factorPlaceHolder	READ factorPlaceHolder		WRITE setFactorPlaceHolder		NOTIFY factorPlaceHolderChanged		)
+	Q_PROPERTY( QString			levelPlaceHolder	READ levelPlaceHolder		WRITE setLevelPlaceHolder		NOTIFY levelPlaceHolderChanged		)
+
 public:
 	RepeatedMeasuresFactorsListBase(QQuickItem* parent = nullptr);
 
@@ -38,17 +43,37 @@ public:
 	void			setUpModel()								override;
 	void			setUp()										override;
 
+	QStringList		defaultFactors()					const				{ return _defaultFactors;		}
+	QStringList		defaultLevels()						const				{ return _defaultLevels;		}
+	QString			factorPlaceHolder()					const				{ return _factorPlaceHolder;	}
+	QString			levelPlaceHolder()					const				{ return _levelPlaceHolder;		}
+
 signals:
 	void			itemChanged(int index, QString name);
 	void			itemRemoved(int index);
 
+	void			defaultFactorsChanged();
+	void			defaultLevelsChanged();
+	void			factorPlaceHolderChanged();
+	void			levelPlaceHolderChanged();
 
 protected slots:
 	void			termsChangedHandler() override;
-	
+
+protected:
+	GENERIC_SET_FUNCTION(DefaultFactors,		_defaultFactors,		defaultFactorsChanged,		QStringList		)
+	GENERIC_SET_FUNCTION(DefaultLevels,			_defaultLevels,			defaultLevelsChanged,		QStringList		)
+	GENERIC_SET_FUNCTION(FactorPlaceHolder,		_factorPlaceHolder,		factorPlaceHolderChanged,	QString			)
+	GENERIC_SET_FUNCTION(LevelPlaceHolder,		_levelPlaceHolder,		levelPlaceHolderChanged,	QString			)
+
 private:
 	ListModelRepeatedMeasuresFactors*	_factorsModel	= nullptr;
-	
+
+	QStringList							_defaultFactors		=	{ tr("RM Factor 1")					};
+	QStringList							_defaultLevels		=	{ tr("Levels 1"), tr("Levels 2")	};
+	QString								_factorPlaceHolder	=	tr("New Factor");
+	QString								_levelPlaceHolder	=	tr("New Level");
+
 };
 
 #endif // REPEATEDMEASURESFACTORSLISTBASE_H

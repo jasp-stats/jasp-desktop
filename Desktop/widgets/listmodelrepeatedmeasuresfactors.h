@@ -21,6 +21,8 @@
 
 #include "listmodel.h"
 
+class RepeatedMeasuresFactorsListBase;
+
 class ListModelRepeatedMeasuresFactors : public ListModel
 {
 	Q_OBJECT
@@ -41,6 +43,8 @@ public slots:
 	void itemRemoved(int row);
 		
 protected:
+	RepeatedMeasuresFactorsListBase* _repeatedMeasuresFactorsList = nullptr;
+
 	struct Factor
 	{
 		QString		value;

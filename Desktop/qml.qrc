@@ -142,5 +142,7 @@
         <file>components/JASP/Widgets/PlotEditor/PlotEditingAxisTable.qml</file>
         <file>components/JASP/Widgets/ImageInverter.qml</file>
         <file>components/JASP/Widgets/PlotEditor/PlotEditingAxis.qml</file>
+        <file>components/JASP/Widgets/FactorsForm.qml</file>
+        <file>components/JASP/Widgets/FactorsList.qml</file>
     </qresource>
 </RCC>

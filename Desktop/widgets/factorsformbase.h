@@ -28,7 +28,8 @@ class FactorsFormBase :  public JASPListControl, public BoundControlBase
 {
 	Q_OBJECT
 
-	
+	Q_PROPERTY( int		initNumberFactors		READ initNumberFactors		WRITE setInitNumberFactors	NOTIFY initNumberFactorsChanged	)
+
 public:
 	FactorsFormBase(QQuickItem* parent = nullptr);
 
@@ -43,10 +44,17 @@ public:
 	Q_INVOKABLE void	titleChanged(int index, QString title)	{ _factorsModel->titleChangedSlot(index, title);	}
 	Q_INVOKABLE void	factorAdded(int index, QVariant item);
 
+	int	initNumberFactors()	const	{ return _initNumberFactors; }
+
+signals:
+	void initNumberFactorsChanged();
 
 protected slots:
 	void			termsChangedHandler() override;
-	
+
+protected:
+	GENERIC_SET_FUNCTION(InitNumberFactors,	_initNumberFactors,		initNumberFactorsChanged,	int	)
+
 private:
 	ListModelFactorsForm*	_factorsModel				= nullptr;
 	QString					_availableVariablesListName;
