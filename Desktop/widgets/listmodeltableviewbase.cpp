@@ -268,6 +268,8 @@ Terms ListModelTableViewBase::filterTerms(const Terms& terms, const QStringList&
 
 QVariant ListModelTableViewBase::headerData( int section, Qt::Orientation orientation, int role) const
 {
+	if (role == int(specialRoles::maxRowHeaderString))	return getMaximumRowHeaderString();
+
 	if (section < 0 || section >= (orientation == Qt::Horizontal ? _tableTerms.colNames.length() : _tableTerms.rowNames.length()))
 		return QVariant();
 
@@ -283,11 +285,41 @@ QVariant ListModelTableViewBase::headerData( int section, Qt::Orientation orient
 
 		return dummyText;
 	}
-	case int(specialRoles::maxRowHeaderString):	return getMaximumRowHeaderString();
 	case Qt::DisplayRole:						return QVariant(orientation == Qt::Horizontal ? _tableTerms.colNames[section] : _tableTerms.rowNames[section]);
 	case Qt::TextAlignmentRole:					return QVariant(Qt::AlignCenter);
 	default:									return QVariant();
 	}
+}
+
+void ListModelTableViewBase::sourceTermsReset()
+{
+	beginResetModel();
+
+	QMap<QString, QVector<QVariant>> tempStore;
+
+	for (int row = 0; row < rowCount(); row++)
+		for (int col = 0; col < columnCount(); col++)
+			tempStore[_tableTerms.rowNames[row]].push_back(_tableTerms.values[col][row]);
+
+	_tableTerms.values.clear();
+	_tableTerms.rowNames = getSourceTerms().asQList();
+	if (_tableTerms.colNames.size() == 0)
+		_tableTerms.colNames.push_back(getDefaultColName(0));
+
+	for (int col = 0; col < columnCount(); col++)
+	{
+		QVector<QVariant> newValues(rowCount(), _tableView->defaultValue());
+		_tableTerms.values.push_back(newValues);
+
+		for (int row = 0; row < rowCount(); row++)
+			if (tempStore.contains(_tableTerms.rowNames[row]) && tempStore[_tableTerms.rowNames[row]].size() > col)
+				_tableTerms.values[col][row] = tempStore[_tableTerms.rowNames[row]][col];
+	}
+
+	endResetModel();
+
+	emit columnCountChanged();
+	emit rowCountChanged();
 }
 
 QHash<int, QByteArray> ListModelTableViewBase::roleNames() const

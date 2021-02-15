@@ -28,37 +28,6 @@ ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(TableViewBase * paren
 	_tableView->setUseSourceLevels(true);
 }
 
-void ListModelMultinomialChi2Test::sourceTermsReset()
-{
-	beginResetModel();
-
-	QMap<QString, QVector<QVariant>> tempStore;
-
-	for (int row = 0; row < rowCount(); row++)
-		for (int col = 0; col < columnCount(); col++)
-			tempStore[_tableTerms.rowNames[row]].push_back(_tableTerms.values[col][row]);
-
-	_tableTerms.values.clear();
-	_tableTerms.rowNames = getSourceTerms().asQList();
-	if (_tableTerms.colNames.size() == 0)
-		_tableTerms.colNames.push_back(getDefaultColName(0));
-
-	for (int col = 0; col < columnCount(); col++)
-	{
-		QVector<QVariant> newValues(rowCount(), _tableView->defaultValue());
-		_tableTerms.values.push_back(newValues);
-
-		for (int row = 0; row < rowCount(); row++)
-			if (tempStore.contains(_tableTerms.rowNames[row]) && tempStore[_tableTerms.rowNames[row]].size() > col)
-				_tableTerms.values[col][row] = tempStore[_tableTerms.rowNames[row]][col];
-	}
-
-	endResetModel();
-
-	emit columnCountChanged();
-	emit rowCountChanged();
-}
-
 bool ListModelMultinomialChi2Test::sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)
 {
 	if (!_columnsUsedForLabels.contains(columnName))

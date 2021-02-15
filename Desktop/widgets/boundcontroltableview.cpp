@@ -34,20 +34,19 @@ Json::Value BoundControlTableView::createJson()
 {
 	Json::Value result(Json::arrayValue);
 
-	QVariant modelVar = _tableView->property("values");
-	QList<QVariant> list = modelVar.toList();
+	Terms terms = _tableView->model()->getSourceTerms();
 
 	Json::Value levels(Json::arrayValue);
 	Json::Value values(Json::arrayValue);
 	Json::Value defaultValue = _defaultValue();
 
-	for (const QVariant& itemVariant : list)
+	for (const Term& term : terms)
 	{
-		levels.append(fq(itemVariant.toString()));
+		levels.append(term.asString());
 		values.append(defaultValue);
 	}
 
-	for (int row=list.length(); row < _tableView->initialRowCount(); row++)
+	for (int row = int(terms.size()); row < _tableView->initialRowCount(); row++)
 	{
 		levels.append(fq(_tableView->tableModel()->getDefaultRowName(size_t(row))));
 		values.append(defaultValue);
