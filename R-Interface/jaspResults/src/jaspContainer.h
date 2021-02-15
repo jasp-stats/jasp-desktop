@@ -48,6 +48,8 @@ public:
 	void		letChildrenRun();
 	void		setError()															override;
 	void		setError(std::string message)										override;
+	void		renderPlotsOfChild(jaspObject * child);
+	void		renderPlotsOfChildren();
 
 	bool		containsNonContainer();
 	bool		canShowErrorMessage()										const	override;

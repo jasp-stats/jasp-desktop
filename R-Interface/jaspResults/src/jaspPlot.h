@@ -19,6 +19,7 @@ public:
 
 	///For safekeeping (aka state replacement?)
 	void setPlotObject(Rcpp::RObject plotSerialized);
+	void renderPlot();
 	Rcpp::RObject getPlotObject();
 
 	std::string dataToString(std::string prefix)			const	override;
@@ -38,6 +39,8 @@ public:
 private:
 	void initEnvName();
 	void setUserPlotChangesFromRStateObject();
+
+	Rcpp::List getOldPlotInfo(Rcpp::List & plotInfo);
 
 	//Rcpp::Vector<RAWSXP> _plotObjSerialized;
 };

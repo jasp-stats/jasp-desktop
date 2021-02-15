@@ -73,6 +73,8 @@ public:
 	static void				setObjectInEnv(std::string envName, Rcpp::RObject obj);
 	static bool				objectExistsInEnv(std::string envName);
 
+	jaspContainer	*	getOldResults()		const	{ return _oldResults; }
+
 private:
 
 	// silences e.g., "./jaspResults.h:36:15: warning: 'jaspResults::dataEntry' hides overloaded virtual function [-Woverloaded-virtual]"

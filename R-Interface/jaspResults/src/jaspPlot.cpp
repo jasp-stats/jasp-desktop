@@ -59,15 +59,36 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 	Rcpp::List plotInfo = Rcpp::List::create(Rcpp::_["obj"] = obj, Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["revision"] = _revision);
 	_filePathPng = "";
 
+	jaspResults::setObjectInEnv(_envName, plotInfo);
+
+	if (connectedToJaspResults())
+		renderPlot();
+
+}
+
+void jaspPlot::renderPlot()
+{
+	// if  a png exists the plot was already rendered
+	if (_filePathPng != "")
+		return;
+
+	Rcpp::List plotInfo = Rcpp::as<Rcpp::List>(jaspResults::getObjectFromEnv(_envName));
+	Rcpp::RObject obj = plotInfo["obj"];
+	jaspPrint("Now rendering a plot!");
+
 	if(!obj.isNULL())
 	{
+
+		Rcpp::List oldPlotInfo = getOldPlotInfo(plotInfo);
+		//getOldPlotInfo may update height & width
+
 		static Rcpp::Function tryToWriteImage = jaspResults::isInsideJASP() ? Rcpp::Function("tryToWriteImageJaspResults") : Rcpp::Environment::namespace_env("jaspResults")["tryToWriteImageJaspResults"];
-		Rcpp::List writeResult = tryToWriteImage(Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["plot"] = obj);
+		Rcpp::List writeResult = tryToWriteImage(Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["plot"] = obj, Rcpp::_["oldPlotInfo"] = oldPlotInfo);
 
 		// we need to overwrite plot functions with their recordedplot result
 		if(Rcpp::is<Rcpp::Function>(obj) && writeResult.containsElementNamed("obj"))
 			plotInfo["obj"] = writeResult["obj"];
-		
+
 		if(writeResult.containsElementNamed("png"))
 			_filePathPng = Rcpp::as<std::string>(writeResult["png"]);
 
@@ -126,6 +147,55 @@ void jaspPlot::setUserPlotChangesFromRStateObject()
 	
 	if (plotInfoList.containsElementNamed("revision"))
 		_revision = Rcpp::as<int>(plotInfoList["revision"]);
+}
+
+Rcpp::List jaspPlot::getOldPlotInfo(Rcpp::List & plotInfo)
+{
+	std::stack<std::string> names;
+	jaspContainer * oldResults = getNamesChainToJaspResults(names);
+
+	if (oldResults == nullptr)
+		return Rcpp::List();
+
+	jaspObject * temp;
+	while (!names.empty())
+	{
+
+		temp = oldResults->getJaspObjectFromData(names.top());
+		// should be impossible, but who knows
+		if (temp == nullptr)
+			break;
+
+		jaspPrint("found a " + temp->type() + " with name: " + names.top());
+		switch(temp->getType())
+		{
+		case jaspObjectType::container:
+			oldResults = static_cast<jaspContainer *>(temp);
+			break;
+		case jaspObjectType::plot:
+		{
+			jaspPlot * oldPlot = static_cast<jaspPlot *>(temp);
+			// we could reuse the old environment, but it might get thrown away / cleaned?
+			Rcpp::List oldOptions = Rcpp::as<Rcpp::List>(jaspResults::getObjectFromEnv(oldPlot->_envName));
+			_width				= oldPlot->_width;
+			_height				= oldPlot->_height;
+			plotInfo["width"]	= _width;
+			plotInfo["heitgh"]	= _height;
+
+			if (oldPlot->_editOptions == Json::nullValue)
+				return Rcpp::List();
+			else
+				return Rcpp::List::create(Rcpp::_["editOptions"] = Rcpp::String(oldPlot->_editOptions.toStyledString()));
+
+		}
+		default: // possible but means the R code reuses the same names for e.g., tables and plots
+			return Rcpp::List();
+		}
+		names.pop();
+	}
+
+	// there never was a plot
+	return Rcpp::List();
 }
 
 Json::Value jaspPlot::convertToJSON() const

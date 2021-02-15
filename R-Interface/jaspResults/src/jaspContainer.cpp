@@ -41,6 +41,9 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 
 	addChild(obj);
 
+	if ((obj->getType() == jaspObjectType::container || obj->getType() == jaspObjectType::plot) && connectedToJaspResults())
+		renderPlotsOfChild(obj);
+
 	//jaspResults doesn't have any parents
 	if(getType() == jaspObjectType::results)	childrenUpdatedCallback(true);
 	else										notifyParentOfChanges();
@@ -427,4 +430,25 @@ void jaspContainer::setError(std::string message)
 {
 	_errorMessage = message;
 	setError();
+}
+
+void jaspContainer::renderPlotsOfChild(jaspObject * child)
+{
+	switch (child->getType())
+	{
+	case jaspObjectType::container:
+		static_cast<jaspContainer*>(child)->renderPlotsOfChildren();
+		break;
+	case jaspObjectType::plot:
+		static_cast<jaspPlot*>(child)->renderPlot();
+		break;
+	default:
+		break;
+	}
+}
+
+void jaspContainer::renderPlotsOfChildren()
+{
+	for(auto & d : _data)
+		renderPlotsOfChild(d.second);
 }

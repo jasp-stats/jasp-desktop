@@ -20,6 +20,8 @@ DECLARE_ENUM(jaspColumnType, unknown, scale, ordinal, nominal, nominalText); //c
 
 jaspObjectType jaspObjectTypeStringToObjectType(std::string type);
 
+class jaspContainer;
+
 std::string					stringExtend(std::string & str, size_t len, char kar = ' ');
 std::string					stringRemove(std::string str,				char kar = ' ');
 std::vector<std::string>	stringSplit(std::string str,				char kar = ';');
@@ -126,6 +128,9 @@ public:
 
 	static int getCurrentTimeMs();
 	static void setDeveloperMode(bool developerMode);
+
+	jaspContainer * getNamesChainToJaspResults(std::stack<std::string> & names);
+	bool			connectedToJaspResults();
 
 protected:
 	jaspObjectType				_type;

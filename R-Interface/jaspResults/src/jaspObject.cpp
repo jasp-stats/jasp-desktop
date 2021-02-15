@@ -1,6 +1,7 @@
 #define ENUM_DECLARATION_CPP
 #include "jaspObject.h"
 #include "jaspJson.h"
+#include "jaspResults.h"
 #include <chrono>
 
 #if defined(_WIN32) || !defined(JASP_R_INTERFACE_LIBRARY)
@@ -413,6 +414,34 @@ bool jaspObject::_developerMode	= false;
 void jaspObject::setDeveloperMode(bool developerMode)
 {
 	_developerMode = developerMode;
+}
+
+jaspContainer * jaspObject::getNamesChainToJaspResults(std::stack<std::string> & names)
+{
+	if (getType() == jaspObjectType::results)
+		return static_cast<jaspResults *>(this)->getOldResults();
+
+	// add the name of the container or plot only here since jaspResults has name ""
+	names.push(_name);
+	if (parent != nullptr)
+		return parent->getNamesChainToJaspResults(names);
+	// parent == nullptr but not jaspResults
+	return nullptr;
+
+}
+
+bool jaspObject::connectedToJaspResults()
+{
+
+	// we could add a private bool to jaspObject to shortcircuit this recursive chain
+	if (getType() == jaspObjectType::results)
+		return true;
+
+	if (parent == nullptr)
+		return false;
+
+	return parent->connectedToJaspResults();
+
 }
 
 std::set<std::string> jaspObject::nestedMustBes() const
