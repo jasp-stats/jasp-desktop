@@ -16,375 +16,386 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.7
-import QtQuick.Controls 2.12 as New
-import QtQuick.Controls 1.4 as OLD
-import QtQuick.Layouts	1.3
-
+import QtQuick			2.15
+import JASP				1.0
+import JASP.Widgets		1.0
+import JASP.Controls	1.0
+import QtQuick.Controls 2.15
+import QtQuick.Layouts	1.15
+import "."
 
 FocusScope
 {
-	visible:						labelModel.visible
+	id:			variablesContainer
+	visible:	labelModel.visible
 
-	property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6 + (jaspTheme.generalAnchorMargin * 2)
+	property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 10 + (jaspTheme.generalAnchorMargin * 2)
 
 	Connections
 	{
 		target: labelModel
 		
-		function onChosenColumnChanged()
+		onChosenColumnChanged:
 		{
-			if (labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
-			{
+			if(labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
 				levelsTableViewRectangle.focus = true //So we just put it somewhere
-				levelsTableView.selection.clear()
-			}
 		}
-	}
-	
-	Rectangle
-	{
-		color:				jaspTheme.uiBackground
-		border.color:		jaspTheme.uiBorder
-		border.width:		1
-		anchors.fill:		parent
 	}
 
 	Item
 	{
-		id:					levelsTableViewRectangle
-		anchors.fill:		parent
-		anchors.margins:	jaspTheme.generalAnchorMargin
-		
-		Text
+		id:		minWidthVariables
+
+		property int minWidth: 500 * preferencesModel.uiScale
+
+		anchors
 		{
-			id:				columnNameVariablesWindow
-			text:			labelModel.columnName
-			color:			jaspTheme.textEnabled
-			font:			jaspTheme.fontGroupTitle
-			anchors.top:	parent.top
-			anchors.left:	parent.left
+			fill:			parent
+			rightMargin:	Math.min(0, variablesContainer.width - minWidth)
 		}
-		
+
+		Rectangle
+		{
+			color:				jaspTheme.uiBackground
+			border.color:		jaspTheme.uiBorder
+			border.width:		1
+			anchors.fill:		parent
+			z:					-1
+		}
+
 		Item
 		{
-			anchors
-			{
-				top:			columnNameVariablesWindow.bottom
-				left:			parent.left
-				right:			parent.right
-				bottom:			parent.bottom
-				bottomMargin:	6
-				topMargin:		6
-			}
+			id:					levelsTableViewRectangle
+			anchors.fill:		parent
+			anchors.margins:	jaspTheme.generalAnchorMargin
 
-			TableViewJasp
+			Text
 			{
-				id:				levelsTableView
-				objectName:		"levelsTableView"
+				id:					columnNameVariablesWindow
+				text:				labelModel.columnName
+				color:				jaspTheme.textEnabled
+				font:				jaspTheme.fontGroupTitle
 				anchors
 				{
-					top:			parent.top
+					horizontalCenter:	parent.horizontalCenter
+					top:				parent.top
+					topMargin:			jaspTheme.generalAnchorMargin
+				}
+			}
+
+			Rectangle
+			{
+				id:					tableBackground
+				color:				jaspTheme.controlBackgroundColor
+				border.color:		jaspTheme.uiBorder
+				border.width:		1
+
+				anchors
+				{
+					top:			columnNameVariablesWindow.bottom
 					left:			parent.left
 					right:			buttonColumnVariablesWindow.left
 					bottom:			parent.bottom
-					rightMargin:	2
+					margins:		jaspTheme.generalAnchorMargin
 				}
-				
-				model: labelModel
-				
-				selectionMode: OLD.SelectionMode.ExtendedSelection
-				
-				property var copiedSelection: []
-				
-				function copySelection()
-				{
-					copiedSelection = []
-					selection.forEach( function(rowIndex) { copiedSelection.push(rowIndex) } )
-				}
-				
-				function copySelectionReversed()
-				{
-					copiedSelection = []
-					var nonreversedSelectionCopy = []
-					selection.forEach( function(rowIndex) { nonreversedSelectionCopy.push(rowIndex) } )
-					for(var i=nonreversedSelectionCopy.length - 1; i >= 0; i--)
-						copiedSelection.push(nonreversedSelectionCopy[i])
-				}
-				
-				function resizeValueColumn()
-				{
-					var title = "Values!"
-					var minimumWidth = calculateMinimumRequiredColumnWidthTitle(1, title, 0, 0)
-					levelsTableViewValueColumn.width = minimumWidth + 10
-				}
-				
-				function moveUp()
-				{
-					levelsTableViewRectangle.focus = true
-					copySelection()
-					if(copiedSelection.length > 0 && copiedSelection[0] !== 0)
-					{
-						labelModel.moveUpFromQML(copiedSelection)
-						
-						selection.clear()
-						
-						for(var i=0; i<copiedSelection.length; i++)
-						{
-							var selectThis = copiedSelection[i]
-							if(selectThis > 0)
-								selection.select(selectThis - 1, selectThis - 1)
-						}
-					}
-				}
-				
-				function moveDown()
-				{
-					levelsTableViewRectangle.focus = true
-					copySelectionReversed()
-					if(copiedSelection.length > 0 && (copiedSelection[0] != (labelModel.rowCount() - 1)))
-					{
-						labelModel.moveDownFromQML(copiedSelection)
-						
-						selection.clear()
-						
-						for(var i=0; i<copiedSelection.length; i++)
-						{
-							var selectThis = copiedSelection[i]
-							
-							if(selectThis < labelModel.rowCount() - 1)
-								selection.select(selectThis + 1, selectThis + 1)
-						}
-					}
-				}
-				
-				function reverse()
-				{
-					levelsTableViewRectangle.focus = true
-					copySelection()
-					labelModel.reverse()
-					selection.clear()
-					var maxSelect = labelModel.rowCount() - 1
-					
-					for(var i=0; i<copiedSelection.length; i++)
-					{
-						var selectThis = maxSelect - copiedSelection[i]
-						selection.select(selectThis, selectThis)
-					}
-				}
-				
-				function closeYourself() { labelModel.visible = false; }
-				
-				
-				OLD.TableViewColumn	{ id: levelsTableViewFilterColumn;	title: qsTr("Filter");	role: "filter";		width: 60 * preferencesModel.uiScale;				}
-				OLD.TableViewColumn { id: levelsTableViewValueColumn;	title: qsTr("Value");	role: "value";		width: 120 * preferencesModel.uiScale;				}
-				OLD.TableViewColumn { id: levelsTableViewLabelColumn;	title: qsTr("Label");	role: "display";	width:
-						levelsTableView.width - levelsTableViewValueColumn.width - (20 * preferencesModel.uiScale) - levelsTableViewFilterColumn.width;					}
-				
-				headerDelegate: Rectangle
-				{
-					//Two rectangles to show a border of exactly 1px around cells
-					id:				headerBorderRectangleVars
-					color:			jaspTheme.grayDarker
-					border.width:	0
-					radius:			0
-					height:			headerTextVars.contentHeight + (jaspTheme.itemPadding * 2)
-					//width: headerTextVars.width + 8
-					
-					Rectangle
-					{
-						id:		colHeaderVars
-						color:	jaspTheme.uiBackground
-						
-						x:		headerBorderRectangleVars.x
-						y:		headerBorderRectangleVars.y
-						height: headerBorderRectangleVars.height - 1
-						width:	headerBorderRectangleVars.width - 1
-						
-						Text
-						{
-							id:		headerTextVars
-							text:	styleData.value
-							color:	jaspTheme.textEnabled
-							font:	jaspTheme.font
-							x:		jaspTheme.itemPadding
-							
-							anchors.verticalCenter: parent.verticalCenter
-						}
-					}
-				}
-				
-				rowDelegate: Item { height: (30 * preferencesModel.uiScale)  }
-				
-				itemDelegate: Rectangle
-				{
-					color:			levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(styleData.row) ? jaspTheme.itemHighlight : "transparent"
-					
-					New.Button
-					{
-						id: filterCheckButton
-						checkable: true
-						visible: styleData.column === 0
-						
-						anchors
-						{
-							top:				parent.top
-							bottom:				parent.bottom
-							horizontalCenter:	parent.horizontalCenter
-							margins:			4
-						}
-						
-						width: height
-						
-						checked: styleData.value
-						
-						
-						onClicked:
-						{
-							labelModel.setData(labelModel.index(styleData.row, styleData.column), checked);
-							checked = Qt.binding(function(){ return styleData.value; });
-						}
 
-						
-						background: Image
-						{
-							source:				filterCheckButton.checked ? jaspTheme.iconPath + "/check-mark.png" : jaspTheme.iconPath + "cross.png"
-							sourceSize.width:	Math.max(40, width)
-							sourceSize.height:	Math.max(40, height)
-							width:				filterCheckButton.width
-							height:				filterCheckButton.height
-							
-						}
-						
-					}
-					
-					Text
-					{
-						visible:			styleData.column === 1
-						
-						color:				jaspTheme.grayDarker
-						text:				styleData.value
-						elide:				Text.ElideMiddle
-						font:				jaspTheme.font
-						anchors.fill:		parent
-						verticalAlignment:	Text.AlignVCenter
-					}
-					
-					TextInput
-					{
-						visible:		styleData.column === 2
-						
-						color:			jaspTheme.textEnabled
-						
-						text:			styleData.value
-						font:			jaspTheme.font
-						clip:			true
-						selectByMouse:	true
-						autoScroll:		true
-						
-						anchors.fill:	parent
-						verticalAlignment: Text.AlignVCenter
 
-						property int chosenColumnWas: -1
-						
-						function acceptChanges()
-						{
-							if(chosenColumnWas === labelModel.chosenColumn && styleData.row >= 0 && styleData.column >= 0)
-								labelModel.setData(labelModel.index(styleData.row, styleData.column), text)
-						}
-						onEditingFinished: focus = false
-						
-						onActiveFocusChanged:
-							if(activeFocus)
+				JASPDataView
+				{
+					id:				levelsTableView
+					anchors
+					{
+						top:			parent.top
+						left:			parent.left
+						right:			parent.right
+						bottom:			parent.bottom
+					}
+
+					model:						labelModel
+					cacheItems:					false
+					toolTip:					qsTr("Edit the labels here or choose which values should be filtered out.")
+					mouseArea.enabled:			false
+					mouseArea.visible:			false
+					//flickableInteractive:		false
+					doubleClickWorkaround:		false
+
+					Binding { target: labelModel; property: "rowWidth"; value: Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) }
+
+					property real filterColWidth:	60  * jaspTheme.uiScale
+					property real valueColWidth:	(labelModel.valueMaxWidth + 10) * jaspTheme.uiScale
+					property real labelColMinWidth:	(labelModel.labelMaxWidth + 10) * jaspTheme.uiScale
+
+					columnHeaderDelegate:	Item
+					{
+							z: -4
+							Rectangle
 							{
-								chosenColumnWas = labelModel.chosenColumn
-								levelsTableView.selection.clear()
-								levelsTableView.selection.select(styleData.row, styleData.row)
+								color:						jaspTheme.uiBackground
+								anchors.left:				parent.left
+								anchors.rightMargin:		1
+								height:						parent.height
+								width:						levelsTableView.contentWidth
 							}
-							else
+
+							Row
 							{
-								if(focus)
-									focus = false
-								acceptChanges()
+								anchors.left:				parent.left
+								height:						parent.height
+								Text
+								{
+									text:					qsTr("Filter")
+									font:					jaspTheme.font
+									color:					jaspTheme.textEnabled
+									width:					levelsTableView.filterColWidth;
+									anchors.verticalCenter:	parent.verticalCenter
+									horizontalAlignment:	Text.AlignHCenter
+								}
+								Rectangle
+								{
+									width:					1
+									height:					parent.height
+									color:					jaspTheme.uiBorder
+								}
+								Text
+								{
+									text:					qsTr("Value")
+									font:					jaspTheme.font
+									color:					jaspTheme.textEnabled
+									width:					levelsTableView.valueColWidth;
+									leftPadding:			3 * jaspTheme.uiScale
+									anchors.verticalCenter:	parent.verticalCenter
+								}
+								Rectangle
+								{
+									width:					1
+									height:					parent.height
+									color:					jaspTheme.uiBorder
+								}
+								Text
+								{
+									text:					qsTr("Label")
+									font:					jaspTheme.font
+									color:					jaspTheme.textEnabled
+									leftPadding:			3 * jaspTheme.uiScale
+									anchors.verticalCenter:	parent.verticalCenter
+								}
 							}
-						
-						
-						MouseArea
+					}
+
+					rowNumberDelegate:	Item { width: 0; height: 0; }
+
+					itemDelegate: Item
+					{
+						id: backroundItem
+						z:	-4
+
+						Rectangle
 						{
-							anchors.fill:		parent
-							acceptedButtons:	Qt.NoButton
-							cursorShape:		Qt.IBeamCursor
+							id:				selectionRectangle
+							color:			itemSelected ? jaspTheme.itemHighlight : "transparent"
+							anchors
+							{
+								fill:			parent
+								topMargin:		-levelsTableView.itemVerticalPadding
+								leftMargin:		-levelsTableView.itemHorizontalPadding
+								rightMargin:	-levelsTableView.itemHorizontalPadding
+								bottomMargin:	-levelsTableView.itemVerticalPadding
+							}
+							z:	-10
+						
+							MouseArea
+							{
+								anchors.fill:		selectionRectangle
+								acceptedButtons:	Qt.LeftButton
+								cursorShape:		Qt.PointingHandCursor
+								z:					0
+								hoverEnabled: 		true
+
+								onClicked:
+								{
+									labelModel.setSelected(rowIndex, mouse.modifiers);
+									selectionRectangle.forceActiveFocus(); //To take focus out of some TextInput
+								}
+							}
+
+							Row
+							{
+								Button
+								{
+									id:						filterCheckButton
+									checkable:				true
+									checked:				itemFiltered
+									height:					backroundItem.height
+									width:					levelsTableView.filterColWidth;
+									anchors.top:			parent.top
+									anchors.topMargin:		levelsTableView.itemVerticalPadding
+									z:						-1
+
+									onClicked:				if (!labelModel.setChecked(rowIndex, checked)) checked = true; // Case when all labels are unchecked.
+
+									background: Item
+									{
+										Image
+										{
+											source:					filterCheckButton.checked ? jaspTheme.iconPath + "check-mark.png" : jaspTheme.iconPath + "cross.png"
+											sourceSize.width:		Math.max(40, width)
+											sourceSize.height:		Math.max(40, height)
+											width:					height
+											anchors
+											{
+												top:				parent.top
+												bottom:				parent.bottom
+												horizontalCenter:	parent.horizontalCenter
+											}
+										}
+									}
+								}
+
+								Rectangle
+								{
+									width:					1
+									height:					selectionRectangle.height
+									color:					jaspTheme.uiBorder
+								}
+
+								Text
+								{
+									color:					jaspTheme.grayDarker
+									text:					itemValue
+									elide:					Text.ElideMiddle
+									font:					jaspTheme.font
+									leftPadding:			3 * jaspTheme.uiScale
+									width:					levelsTableView.valueColWidth;
+									anchors.top:			parent.top
+									anchors.topMargin:		levelsTableView.itemVerticalPadding
+									verticalAlignment:		Text.AlignVCenter
+
+								}
+
+								Rectangle
+								{
+									width:					1
+									height:					selectionRectangle.height
+									color:					jaspTheme.uiBorder
+								}
+
+								TextInput
+								{
+									color:				jaspTheme.textEnabled
+
+									text:				itemText
+									font:				jaspTheme.font
+									clip:				true
+									selectByMouse:		true
+									autoScroll:			true
+									z:					1
+
+									leftPadding:		3 * jaspTheme.uiScale
+									width:				Math.min(Math.max(contentWidth, 20), parent.width + 20) + 3 * jaspTheme.uiScale//Minimal contentWidth to allow editing after label set to ""
+									anchors.top:		parent.top
+									anchors.topMargin:	levelsTableView.itemVerticalPadding
+
+									verticalAlignment:	Text.AlignVCenter
+
+									property int chosenColumnWas: -1
+
+									onEditingFinished:
+									{
+										if(chosenColumnWas === labelModel.chosenColumn && rowIndex >= 0)
+											labelModel.setLabel(rowIndex, text)
+									}
+
+									onActiveFocusChanged:
+									{
+										if (activeFocus)
+										{
+											chosenColumnWas = labelModel.chosenColumn
+											labelModel.removeAllSelected()
+										}
+									}
+
+									MouseArea
+									{
+										anchors.fill:		parent
+										acceptedButtons:	Qt.NoButton
+										cursorShape:		Qt.IBeamCursor
+										hoverEnabled:		true
+										z:					3
+									}
+								}
+							}
 						}
 					}
 				}
 			}
-			
+
 			ColumnLayout
 			{
 				id:					buttonColumnVariablesWindow
-				
-				anchors.top:		parent.top
+
+				anchors.top:		tableBackground.top
 				anchors.right:		parent.right
-				anchors.bottom:		parent.bottom
+				anchors.bottom:		tableBackground.bottom
 				spacing:			Math.max(1, 2 * preferencesModel.uiScale)
+
 				property int	shownButtons:		4 + (eraseFiltersOnThisColumn.visible ? 1 : 0) + (eraseFiltersOnAllColumns.visible ? 1 : 0)
 				property real	minimumHeight:		(buttonHeight + spacing) * shownButtons + (3 * spacing)
 				property real	buttonHeight:		32 * preferencesModel.uiScale
-				
+
 				RectangularButton
 				{
 					//text: "UP"
 					iconSource:		jaspTheme.iconPath + "arrow-up.png"
-					
-					onClicked:		levelsTableView.moveUp()
+
+					onClicked:		labelModel.moveSelectionUp()
 					toolTip:		qsTr("Move selected labels up")
-					
+
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
 				}
-				
+
 				RectangularButton
 				{
 					//text: "DOWN"
 					iconSource:		jaspTheme.iconPath + "arrow-down.png"
-					
-					onClicked:		levelsTableView.moveDown()
+
+					onClicked:		labelModel.moveSelectionDown()
 					toolTip:		qsTr("Move selected labels down")
-					
+
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
 				}
-				
+
 				RectangularButton
 				{
 					//text: "REVERSE"
 					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
-					onClicked:		levelsTableView.reverse()
-					
+					onClicked:		labelModel.reverse()
+
 					toolTip:		qsTr("Reverse order of all labels")
-					
+
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
 				}
-				
+
 				RectangularButton
 				{
 					id:				eraseFiltersOnThisColumn
 					iconSource:		jaspTheme.iconPath + "eraser.png"
 					onClicked:		labelModel.resetFilterAllows()
 					visible:		labelModel.filteredOut > 0
-					
+
 					toolTip:		qsTr("Reset all filter checkmarks for this column")
-					
+
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
 				}
-				
+
 				RectangularButton
 				{
 					id:				eraseFiltersOnAllColumns
@@ -394,15 +405,15 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					
+
 					toolTip:		qsTr("Reset all filter checkmarks for all columns")
 				}
-				
+
 				Item //Spacer
 				{
 					Layout.fillHeight: true
 				}
-				
+
 				RectangularButton
 				{
 					id:				variablesWindowCloseButton
@@ -411,12 +422,13 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					
+
 					toolTip: qsTr("Close this view")
 				}
 			}
+
+
 		}
-		
+
 	}
-	
 }

@@ -52,7 +52,8 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
 
 public:
-	enum class	specialRoles { filter = Qt::UserRole, lines, maxColString, maxRowHeaderString, columnIsComputed, computedColumnIsInvalidated, labelsHasFilter, computedColumnError, value, columnType };
+	///Special roles for the different submodels of DataSetPackage. If both maxColString and columnWidthFallback are defined by a model DataSetView will only use maxColString. selected is now only used in LabelModel, but defined here for convenience.
+	enum class	specialRoles { filter = Qt::UserRole, lines, maxColString, maxRowHeaderString, columnIsComputed, computedColumnIsInvalidated, labelsHasFilter, computedColumnError, value, columnType, columnWidthFallback, label, selected };
 
 	static DataSetPackage *	pkg() { return _singleton; }
 
@@ -86,18 +87,19 @@ public:
 											bool										hasNewColumns);
 
 
-		QHash<int, QByteArray>		roleNames()																			const	override;
-				int					rowCount(	const QModelIndex &parent = QModelIndex())								const	override;
-				int					columnCount(const QModelIndex &parent = QModelIndex())								const	override;
-				QVariant			data(		const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
-				QVariant			headerData(	int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
-				bool				setData(	const QModelIndex &index, const QVariant &value, int role)						override;
-				Qt::ItemFlags		flags(		const QModelIndex &index)												const	override;
-				QModelIndex			parent(		const QModelIndex & index)												const	override;
-				QModelIndex			index(int row, int column, const QModelIndex &parent)								const	override;
-				parIdxType			parentIndexTypeIs(const QModelIndex &index)											const;
-				QModelIndex			parentModelForType(parIdxType type, int column = 0)									const;
-				int					filteredRowCount()																	const { return _dataSet ? _dataSet->filteredRowCount() : 0; }
+		QHash<int, QByteArray>		roleNames()																					const	override;
+				int					rowCount(	const QModelIndex &parent = QModelIndex())										const	override;
+				int					columnCount(const QModelIndex &parent = QModelIndex())										const	override;
+				QVariant			data(		const QModelIndex &index, int role = Qt::DisplayRole)							const	override;
+				QVariant			headerData(	int section, Qt::Orientation orientation, int role = Qt::DisplayRole )			const	override;
+				bool				setData(	const QModelIndex &index, const QVariant &value, int role)								override;
+				Qt::ItemFlags		flags(		const QModelIndex &index)														const	override;
+				QModelIndex			parent(		const QModelIndex & index)														const	override;
+				QModelIndex			index(int row, int column, const QModelIndex &parent)										const	override;
+				parIdxType			parentIndexTypeIs(const QModelIndex &index)													const;
+				QModelIndex			parentModelForType(parIdxType type, int column = 0)											const;
+				int					filteredRowCount()																			const { return _dataSet ? _dataSet->filteredRowCount() : 0; }
+				QVariant			getDataSetViewLines(bool up=false, bool left=false, bool down=true, bool right=true)		const;
 
 				int					dataRowCount()		const { return rowCount(parentModelForType(parIdxType::data));		}
 				int					dataColumnCount()	const { return columnCount(parentModelForType(parIdxType::data));	}
@@ -241,10 +243,10 @@ signals:
 				void				badDataEntered(const QModelIndex index);
 				void				allFiltersReset();
 				void				labelFilterChanged();
-				void				labelChanged(QString columnName, QString originalLabel, QString newLabel);
+				void				labelChanged(			QString columnName, QString originalLabel, QString newLabel);
 				void				dataSetChanged();
-				void				columnDataTypeChanged(QString columnName);
-				void				labelsReordered(		  QString columnName);
+				void				columnDataTypeChanged(	QString columnName);
+				void				labelsReordered(		QString columnName);
 				void				isModifiedChanged();
 				void				pauseEnginesSignal();
 				void				resumeEnginesSignal();

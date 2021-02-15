@@ -208,7 +208,7 @@ int DataSetPackage::columnCount(const QModelIndex &parent) const
 	switch(parentIndexTypeIs(parent))
 	{
 	case parIdxType::filter:	return 1;
-	case parIdxType::label:		return 3; //The parent index has a column index in it that tells you which actual column was selected!
+	case parIdxType::label:		return 1; //The parent index has a column index in it that tells you which actual column was selected!
 	case parIdxType::root:		//Default is columnCount of data because it makes programming easier. I do hope it doesn't mess up the use of the tree-like-structure of the data though
 	case parIdxType::data:		return _dataSet == nullptr ? 0 : _dataSet->columnCount();
 	}
@@ -223,11 +223,22 @@ bool DataSetPackage::getRowFilter(int row) const
 	return data(this->index(row, 0, filterParent)).toBool();
 }
 
+QVariant DataSetPackage::getDataSetViewLines(bool up, bool left, bool down, bool right) const
+{
+	return			(left ?		1 : 0) +
+					(right ?	2 : 0) +
+					(up ?		4 : 0) +
+					(down ?		8 : 0);
+}
+
 QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 {
 	if(!index.isValid()) return QVariant();
 
 	parIdxType parentType = parentIndexTypeIs(index);
+	
+	if(role == int(specialRoles::selected))
+		return false; //DataSetPackage doesnt know anything about selected, only LabelModel does (now)
 
 	switch(parentType)
 	{
@@ -245,7 +256,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 
 		switch(role)
 		{
-		case Qt::DisplayRole:						return tq(_dataSet->column(index.column())[index.row()]);
+		case Qt::DisplayRole:
+		case int(specialRoles::label):				return tq(_dataSet->column(index.column())[index.row()]);
 		case int(specialRoles::value):				return tq(_dataSet->column(index.column()).getOriginalValue(index.row()));
 		case int(specialRoles::filter):				return getRowFilter(index.row());
 		case int(specialRoles::columnType):			return int(_dataSet->columns()[index.column()].getColumnType());
@@ -254,25 +266,20 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 			bool	iAmActive		= getRowFilter(index.row()),
 					belowMeIsActive = index.row() < rowCount() - 1	&& data(this->index(index.row() + 1, index.column(), index.parent()), int(specialRoles::filter)).toBool();
 
-
-			bool	up		= iAmActive,
-					left	= iAmActive,
-					down	= iAmActive && !belowMeIsActive,
-					right	= iAmActive && index.column() == columnCount(index.parent()) - 1; //always draw left line and right line only if last col
-
-			return			(left ?		1 : 0) +
-							(right ?	2 : 0) +
-							(up ?		4 : 0) +
-							(down ?		8 : 0);
+			return getDataSetViewLines(
+				iAmActive,
+				iAmActive,
+				iAmActive && !belowMeIsActive,
+				iAmActive && index.column() == columnCount(index.parent()) - 1 //always draw left line and right line only if last col
+			);
 		}
 		}
 
 	case parIdxType::label:
 	{
-		int parColCount = columnCount(index.parent()),
-			parRowCount = rowCount(index.parent());
+		int parRowCount = rowCount(index.parent());
 
-		if(!_dataSet || index.column() >= parColCount || index.row() >= parRowCount)
+		if(!_dataSet || index.row() >= parRowCount)
 			return QVariant(); // if there is no data then it doesn't matter what role we play
 
 		//We know which column we need through the parent index!
@@ -282,7 +289,9 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		{
 		case int(specialRoles::filter):				return labels[index.row()].filterAllows();
 		case int(specialRoles::value):				return tq(labels.getValueFromRow(index.row()));
-		case Qt::DisplayRole:						return tq(labels.getLabelFromRow(index.row()));
+		case int(specialRoles::lines):				return getDataSetViewLines(index.row() == 0, index.column() == 0, true, true);
+		case Qt::DisplayRole:
+		case int(specialRoles::label):				return tq(labels.getLabelFromRow(index.row()));
 		default:									return QVariant();
 		}
 	}
@@ -410,12 +419,16 @@ void DataSetPackage::resetFilterAllows(size_t columnIndex)
 
 	_dataSet->column(columnIndex).resetFilter();
 
+	emit labelFilterChanged();
+
 	QModelIndex parentModel = parentModelForType(parIdxType::data);
 	emit dataChanged(DataSetPackage::index(0, columnIndex,	parentModel),	DataSetPackage::index(rowCount(), columnIndex, parentModel), {int(specialRoles::filter)} );
 
 	parentModel = parentModelForType(parIdxType::label, columnIndex);
 	emit dataChanged(DataSetPackage::index(0, 0,	parentModel),			DataSetPackage::index(rowCount(parentModel), columnCount(parentModel), parentModel), {int(specialRoles::filter)} );
 
+
+	emit filteredOutChanged(columnIndex);
 }
 
 bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAllowValue)
@@ -498,12 +511,15 @@ QHash<int, QByteArray> DataSetPackage::roleNames() const
 	{
 		roles[int(specialRoles::value)]							= QString("value").toUtf8();
 		roles[int(specialRoles::lines)]							= QString("lines").toUtf8();
+		roles[int(specialRoles::label)]							= QString("label").toUtf8();
 		roles[int(specialRoles::filter)]						= QString("filter").toUtf8();
+		roles[int(specialRoles::selected)]						= QString("selected").toUtf8();
 		roles[int(specialRoles::columnType)]					= QString("columnType").toUtf8();
 		roles[int(specialRoles::maxColString)]					= QString("maxColString").toUtf8();
 		roles[int(specialRoles::labelsHasFilter)]				= QString("labelsHasFilter").toUtf8();
 		roles[int(specialRoles::columnIsComputed)]				= QString("columnIsComputed").toUtf8();
 		roles[int(specialRoles::maxRowHeaderString)]			= QString("maxRowHeaderString").toUtf8();
+		roles[int(specialRoles::columnWidthFallback)]			= QString("columnWidthFallback").toUtf8();
 		roles[int(specialRoles::computedColumnError)]			= QString("computedColumnError").toUtf8();
 		roles[int(specialRoles::computedColumnIsInvalidated)]	= QString("computedColumnIsInvalidated").toUtf8();
 
@@ -721,10 +737,8 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 
 	if (feedback == columnTypeChangeResult::changed) //Everything went splendidly
 	{
-		QString colName = tq(_dataSet->column(columnIndex).name());
-
 		emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
-		emit columnDataTypeChanged(colName);
+		emit columnDataTypeChanged(tq(_dataSet->column(columnIndex).name()));
 	}
 	else
 	{
@@ -766,7 +780,7 @@ void DataSetPackage::refreshColumn(QString columnName)
 	}
 }
 
-void DataSetPackage::columnWasOverwritten(std::string columnName, std::string possibleError)
+void DataSetPackage::columnWasOverwritten(std::string columnName, std::string)
 {
 	for(size_t col=0; col<_dataSet->columns().columnCount(); col++)
 		if(_dataSet->columns()[col].name() == columnName)
@@ -1322,6 +1336,12 @@ void DataSetPackage::labelMoveRows(size_t column, std::vector<size_t> rows, bool
 	std::vector<Label> new_labels(labels.begin(), labels.end());
 
 	int mod = up ? -1 : 1;
+
+	std::sort(rows.begin(), rows.end(), [&](const size_t & l, const size_t & r) { return up ? l < r : r < l; });
+
+	for (size_t row : rows)
+		if(int(row) + mod < 0 || int(row) + mod >= int(labels.size()))
+			return; //Because we can't move out of our labels for obvious reasons
 
 	std::set<size_t> rowsChanged;
 

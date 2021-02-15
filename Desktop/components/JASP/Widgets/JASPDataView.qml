@@ -10,47 +10,67 @@ FocusScope
 	id: __JASPDataViewRoot
 
 				property alias model:					theView.model
+				property alias toolTip:					datasetMouseArea.toolTipText
+				property alias cursorShape:				datasetMouseArea.cursorShape
+				property alias mouseArea:				datasetMouseArea
+				property bool  doubleClickWorkaround:	true
 
 				property alias itemDelegate:			theView.itemDelegate
 				property alias rowNumberDelegate:		theView.rowNumberDelegate
 				property alias columnHeaderDelegate:	theView.columnHeaderDelegate
 				property alias leftTopCornerItem:		theView.leftTopCornerItem
 				property alias extraColumnItem:			theView.extraColumnItem
+				property alias cacheItems:				theView.cacheItems
 
 				property alias itemHorizontalPadding:	theView.itemHorizontalPadding
 				property alias itemVerticalPadding:		theView.itemVerticalPadding
-				property alias rowNumberWidth:			theView.rowNumberWidth
+	readonly	property alias rowNumberWidth:			theView.rowNumberWidth
 
 	readonly	property alias contentX:				myFlickable.contentX
 	readonly	property alias contentY:				myFlickable.contentY
 	readonly	property alias contentWidth:			myFlickable.contentWidth
 	readonly	property alias contentHeight:			myFlickable.contentHeight
 
+	readonly	property alias verticalScrollWidth:		vertiScroller.width
+	readonly	property alias horizontalScrollHeight:	horiScroller.height
+	///Aka without a scrollbar
+	readonly	property real  flickableWidth:			myFlickable.width
+	///Aka without a scrollbar
+	readonly	property real  flickableHeight:			myFlickable.height
+
+				property alias flickableInteractive:	myFlickable.interactive
+
 	JASPMouseAreaToolTipped
 	{
 		id:					datasetMouseArea
 		z:					2
-		anchors.fill:		parent
+		anchors.fill:		myFlickable
 		anchors.leftMargin:	theView.rowNumberWidth
 		anchors.topMargin:	theView.headerHeight
 
-		toolTipText:		qsTr("Double click to edit data")
+		toolTipText:		doubleClickWorkaround ? qsTr("Double click to edit data") : ""
 
-		acceptedButtons:	Qt.LeftButton
+		acceptedButtons:	doubleClickWorkaround ? Qt.LeftButton : Qt.NoButton
 		dragging:			myFlickable.dragging
+		//hoverEnabled:		!flickableInteractive
 
 		property real	lastTimeClicked:	-1
 		property real	doubleClickTime:	400
 
 		onPressed:
 		{
+			if(!doubleClickWorkaround)
+			{
+				mouse.accepted = false;
+				return;
+			}
+
 			var curTime = new Date().getTime()
 
 			if(lastTimeClicked === -1 || curTime - lastTimeClicked > doubleClickTime)
 			{
 				lastTimeClicked = curTime
 				mouse.accepted = false
-
 			}
 			else
 			{
@@ -61,25 +81,24 @@ FocusScope
 
 		onWheel:
 		{
-			//console.log("wheel.angleDelta ",wheel.angleDelta)
-
-
 			if(wheel.angleDelta.y == 120)
 			{
-				if(wheel.modifiers & Qt.ShiftModifier)
-					horiScroller.scrollUp()
-				else
-					vertiScroller.scrollUp()
+				if(wheel.modifiers & Qt.ShiftModifier)	horiScroller.scrollUp()
+				else									vertiScroller.scrollUp()
 			}
 			else if(wheel.angleDelta.y == -120)
 			{
-				if(wheel.modifiers & Qt.ShiftModifier)
-					horiScroller.scrollDown()
-				else
-					vertiScroller.scrollDown()
+				if(wheel.modifiers & Qt.ShiftModifier)	horiScroller.scrollDown()
+				else									vertiScroller.scrollDown()
 			}
+			/* Might be needed to have scrolling when flickable is !interactive. But something else seems to be stealing the wheel.
+			else if(!flickableInteractive)
+			{
+				horiScroller.scroll( -wheel.pixelDelta.x);
+				vertiScroller.scroll(-wheel.pixelDelta.y);
+			}*/
 			else
-				wheel.accepted = false
+				wheel.accepted = false;
 		}
 
 
@@ -90,7 +109,7 @@ FocusScope
 	Flickable
 	{
 		id:				myFlickable
-
+		z:				-1
 		clip:			true
 
 		anchors.top:	parent.top
