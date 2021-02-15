@@ -183,7 +183,7 @@ public:
 	void setColumnType(enum columnType columnType);
 	enum columnType getColumnType() const;
 
-	bool changeColumnType(enum columnType newColumnType);
+	columnTypeChangeResult changeColumnType(enum columnType newColumnType);
 
 	size_t rowCount() const { return _rowCount; }
 
@@ -224,8 +224,8 @@ private:
 	bool		_resetEmptyValuesForScale(std::map<int, std::string> &emptyValuesMap);
 	bool		_resetEmptyValuesForNominalText(std::map<int, std::string> &emptyValuesMap, bool tryToConvert = true);
 
-	bool		_changeColumnToNominalOrOrdinal(enum columnType newColumnType);
-	bool		_changeColumnToScale();
+	columnTypeChangeResult	_changeColumnToNominalOrOrdinal(enum columnType newColumnType);
+	columnTypeChangeResult	_changeColumnToScale();
 
 private:
 	boost::interprocess::managed_shared_memory * _mem = nullptr;

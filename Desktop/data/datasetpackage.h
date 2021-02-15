@@ -269,8 +269,7 @@ public slots:
 				void				setColumnsUsedInEasyFilter(std::set<std::string> usedColumns);
 				void				emptyValuesChangedHandler();
 				void				setCurrentFile(QString currentFile);
-
-				void setFolder(QString folder);
+				void				setFolder(QString folder);
 
 private:
 				///This function allows you to run some code that changes something in the _dataSet and will try to enlarge it if it fails with an allocation error. Otherwise it might keep going for ever?
