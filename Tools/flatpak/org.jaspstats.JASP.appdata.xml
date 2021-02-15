@@ -35,6 +35,11 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+                <release version="0.14.3" date="2021-02-15">
+                        <description>
+                                Linux only release to solve the crashing mixed models: https://github.com/jasp-stats/jasp-issues/issues/1159
+                        </description>
+                </release>
 		<release version="0.14.2" date="2021-01-26">
 			<description>
 				Linux only release to solve the missing variableswindow: https://github.com/jasp-stats/jasp-issues/issues/1109
