@@ -734,15 +734,15 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 		{
 		default:	break; //default text already set above.
 		case columnTypeChangeResult::cannotConvertDoubleValueToInteger: //Aka something failed converting to ordinal because to nominal would yield nominalText
-			informUser = tr("Could not convert all values to integer because they have decimal values.");
+			informUser = tr("Failed to convert column to ordinal: values contain decimals.");
 			break;
 
 		case columnTypeChangeResult::cannotConvertStringValueToDouble: //Aka something failed converting to scaler from nominaltext
-			informUser = tr("Could not convert all values to scalar because they contained text.");
+			informUser = tr("Failed to convert column to continuous: values contain text.");
 			break;
 
 		case columnTypeChangeResult::cannotConvertStringValueToInteger: //Aka something failed converting to ordinal from nominaltext
-			informUser = tr("Could not convert all values to integer because they contained text.");
+			informUser = tr("Failed to convert column to ordinal: values contain text or decimals.");
 			break;
 		}
 
