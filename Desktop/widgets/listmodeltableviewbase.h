@@ -69,6 +69,8 @@ public:
 				Qt::ItemFlags		flags(		const QModelIndex &index)												const	override;
 				QVariant			headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
 
+				void				sourceTermsReset()																			override;
+
 	virtual		int					getMaximumColumnWidthInCharacters(size_t columnIndex)								const;
 				QString				getMaximumRowHeaderString()															const;
 

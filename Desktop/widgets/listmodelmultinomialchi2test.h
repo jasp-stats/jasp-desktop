@@ -30,7 +30,6 @@ public:
 	explicit ListModelMultinomialChi2Test(TableViewBase * parent);
 
 public slots:
-	void sourceTermsReset()														override;
 	bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})	override;
 	bool sourceLabelsReordered(QString columnName)								override;
 };
