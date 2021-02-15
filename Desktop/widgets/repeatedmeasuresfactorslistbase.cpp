@@ -62,13 +62,18 @@ Json::Value RepeatedMeasuresFactorsListBase::createJson()
 {
 	Json::Value result(Json::arrayValue);
 
-	Json::Value firstFactor(Json::objectValue);
-	firstFactor["name"] = fq(tr("RM Factor %1").arg(1));
-	Json::Value firstLevels(Json::arrayValue);
-	firstLevels.append(fq(tr("Level %1").arg(1)));
-	firstLevels.append(fq(tr("Level %1").arg(2)));
-	firstFactor["levels"] = firstLevels;
-	result.append(firstFactor);
+	for (const QString& factorStr : defaultFactors())
+	{
+		Json::Value factor(Json::objectValue);
+		factor["name"] = fq(factorStr);
+
+		Json::Value levels(Json::arrayValue);
+		for (const QString& levelStr: defaultLevels())
+			levels.append(fq(levelStr));
+
+		factor["levels"] = levels;
+		result.append(factor);
+	}
 
 	return result;
 }

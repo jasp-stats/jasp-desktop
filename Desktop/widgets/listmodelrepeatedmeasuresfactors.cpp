@@ -19,13 +19,14 @@
 #include "listmodelrepeatedmeasuresfactors.h"
 #include "utilities/qutils.h"
 #include "log.h"
-
+#include "repeatedmeasuresfactorslistbase.h"
 
 using namespace std;
 
 ListModelRepeatedMeasuresFactors::ListModelRepeatedMeasuresFactors(JASPListControl* listView)
 	: ListModel(listView)
 {
+	_repeatedMeasuresFactorsList = qobject_cast<RepeatedMeasuresFactorsListBase*>(listView);
 	_needsSource = false;
 	_itemType = "fixedFactors";
 }
@@ -94,12 +95,12 @@ void ListModelRepeatedMeasuresFactors::initFactors(const vector<pair<string, vec
 			levelIndex++;
 		}
 		
-		Factor extraLevel(tr("Level %1").arg(levelIndex), true, true, &factorHeaderRef);
+		Factor extraLevel(_repeatedMeasuresFactorsList->levelPlaceHolder(), true, true, &factorHeaderRef);
 		_factors.append(extraLevel);
 		factorIndex++;
 	}
 	
-	Factor extraFactor(tr("RM Factor %1").arg(factorIndex), true, false);
+	Factor extraFactor(_repeatedMeasuresFactorsList->factorPlaceHolder(), true, false);
 	_factors.append(extraFactor);
 
 	_setAllLevelsCombinations();

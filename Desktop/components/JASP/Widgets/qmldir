@@ -47,3 +47,6 @@ CrossButton		    		1.0 CrossButton.qml
 SimpleTableView             1.0 SimpleTableView.qml
 ImageInverter				1.0 ImageInverter.qml
 PlotEditor                  1.0 PlotEditor/PlotEditor.qml
+FactorsList					1.0 FactorsList.qml
+FactorsForm					1.0 FactorsForm.qml
+

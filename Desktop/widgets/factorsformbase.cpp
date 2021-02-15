@@ -41,7 +41,6 @@ void FactorsFormBase::setUpModel()
 	_availableVariablesListName = property("availableVariablesListName").toString();
 	QVariant availableListVariant = property("availableVariablesList");
 	_availableVariablesListItem = dynamic_cast<JASPControl*>(qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>()));
-	_initNumberFactors = property("initNumberFactors").toInt();
 }
 
 void FactorsFormBase::bindTo(const Json::Value& value)
@@ -76,6 +75,8 @@ Json::Value FactorsFormBase::createJson()
 		row["name"] = fq(name);
 		row["title"] = fq(title);
 		row["indicators"] = Json::Value(Json::arrayValue);
+
+		result.append(row);
 	}
 		
 	return result;
