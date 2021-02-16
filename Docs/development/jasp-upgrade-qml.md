@@ -328,8 +328,8 @@ Upgrade
 
 ## Migrating from Oldschool Modules
 This process of upgrading modules via Upgrades.qml and having all the code for a single module in a single separate repository and `git submodule` was introduced with version `0.15` of JASP. Because there were no modules then, there were also no module-versions and so the version of JASP is used.
-This is important to keep in mind, because it means that the basic version for each module is actually `0.14.2`.
-This because while the latest version that we had displayed on [our website](https://jasp-stats.org) was `0.14.1` and you might expect that to be the correct version to start off from. But we actually also silently released a `0.14.2` to fix a linux-specific problem and by using that version in combination with the "version chaining" described in the introduction of this manual it will resolve nicely.
+This is important to keep in mind, because it means that the basic version for each module is actually `0.14.3`.
+This because while the latest version that we had displayed on [our website](https://jasp-stats.org) was `0.14.1` and you might expect that to be the correct version to start off from. But we actually also silently released a `0.14.3` to fix a linux-specific problem and by using that version in combination with the "version chaining" described in the introduction of this manual it will resolve nicely.
 
 Because the componentnumbers of each version are all separate numbers that means that the first version of your module, if it was already present in JASP before `0.15` should be `0.15` or at `0.>14` or `>0.?.?`. And in that case the easiest scenario is choosing `0.15`.
 
