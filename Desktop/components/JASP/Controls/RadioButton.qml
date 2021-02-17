@@ -51,14 +51,9 @@ RadioButtonBase
 
 	function click()
 	{
-		if (!checked)
-		{
-			control.toggle();
-			control.clicked()
-		}
+		if (buttonGroup) buttonGroup.clicked(control)
 	}
 
-	function toggle() { control.toggle() }
 
 	RadioButton
 	{
@@ -66,6 +61,8 @@ RadioButtonBase
 		ButtonGroup.group:	buttonGroup
 		padding:			jaspTheme.jaspControlPadding
 		focus:				true
+
+		onCheckedChanged:	if (buttonGroup && checked) buttonGroup.clicked(control)
 
 		indicator: Rectangle
 		{

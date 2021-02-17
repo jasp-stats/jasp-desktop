@@ -29,6 +29,8 @@ class RadioButtonsGroupBase : public JASPControl, public BoundControlBase
 {
 	Q_OBJECT
 	
+	Q_PROPERTY( QString		value	READ value	WRITE setValue	NOTIFY valueChanged	)
+
 public:
 	RadioButtonsGroupBase(QQuickItem* parent = nullptr);
 
@@ -37,17 +39,24 @@ public:
 	void		bindTo(const Json::Value& value)			override;
 	void		setUp()										override;
     
+	const QString&	value()										const	{ return _value; }
+
 signals:
+	void valueChanged();
 	void clicked(const QVariant& button);
 
 protected slots:
 	void clickedSlot(const QVariant& button);
 
 protected:
-	QMap<QString, RadioButtonBase *>	_buttons;
-	RadioButtonBase*					_checkedButton	= nullptr;
-	
+	GENERIC_SET_FUNCTION(Value,		_value,		valueChanged,	QString	)
+
+	void _setCheckedButton(RadioButtonBase* button);
 	void _getRadioButtons(QQuickItem* item, QList<RadioButtonBase* >& buttons);
+
+	QMap<QString, RadioButtonBase *>	_buttons;
+	QString								_value;
+	
 };
 
 #endif // RADIOBUTTONSGROUPBASE_H
