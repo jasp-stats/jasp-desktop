@@ -376,6 +376,11 @@ void JASPControl::_setFocusBorder()
 				_borderAnimation.start();
 			}
 		}
+		else
+		{
+			_borderAnimation.stop();
+			border->setProperty("width", borderWidth); // just to be sure..
+		}
 	}
 }
 

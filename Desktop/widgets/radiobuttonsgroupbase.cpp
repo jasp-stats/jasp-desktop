@@ -41,25 +41,24 @@ void RadioButtonsGroupBase::setUp()
 	connect(this,	&RadioButtonsGroupBase::clicked, this,	&RadioButtonsGroupBase::clickedSlot);
 
 	for (RadioButtonBase* button: buttons)
-	{	
+	{
 		const QString& controlName = button->name();
 		if (controlName.isEmpty())
 			addControlError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
 		else
 		{
 			_buttons[controlName] = button;
-			bool checked = button->property("checked").toBool();
-			if (checked)
-			{
-				_checkedButton = button;
-				setProperty("value", _checkedButton->name());
-			}
+			if (button->property("checked").toBool())	setValue(controlName);
 			button->setProperty("buttonGroup", buttonGroup);
 		}
 	}
 
-	if (!_checkedButton)
-		Log::log() << "No checked button found in radio buttons " << name() << std::endl;
+	if (value().isEmpty() && _buttons.size() > 0)
+	{
+		RadioButtonBase* firstButton = _buttons.values()[0];
+		Log::log() << "No checked button found in radio buttons " << name() << ". First one (" << firstButton->name() << ") is checked per default" << std::endl;
+		_setCheckedButton(firstButton);
+	}
 }
 
 void RadioButtonsGroupBase::_getRadioButtons(QQuickItem* item, QList<RadioButtonBase *> &buttons) {
@@ -92,11 +91,7 @@ void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 			Log::log()  << "Known button: " << names.join(',').toStdString() << std::endl;
 		}
 		else
-		{
-			button->setProperty("checked", true);
-			_checkedButton = button;
-			setProperty("value", _checkedButton->name());
-		}
+			_setCheckedButton(button);
 	}
 
 	BoundControlBase::bindTo(jsonValue);
@@ -104,7 +99,7 @@ void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 
 Json::Value RadioButtonsGroupBase::createJson()
 {
-	return _checkedButton ? fq(_checkedButton->name()) : "";
+	return fq(value());
 }
 
 bool RadioButtonsGroupBase::isJsonValid(const Json::Value &value)
@@ -119,23 +114,19 @@ void RadioButtonsGroupBase::clickedSlot(const QVariant& button)
 		objButton = objButton->parent();
 	RadioButtonBase *radioButton = qobject_cast<RadioButtonBase*>(objButton);
 	if (radioButton)
-	{
-		QString buttonName = radioButton->name();
-		RadioButtonBase* foundButton = _buttons[buttonName];
-		if (foundButton)
-		{
-			if (_checkedButton != foundButton)
-			{
-				if (_checkedButton)
-					_checkedButton->setProperty("checked", false);
-				_checkedButton = foundButton;
-				setProperty("value", _checkedButton->name());
-				setBoundValue(fq(buttonName));
-			}
-		}
-		else
-			addControlError(tr("Radio button clicked is unknown: %1").arg(buttonName));
-	}
+		_setCheckedButton(radioButton);
 	else
 		Log::log() << "Object clicked is not a RadioButton item! Name" << objButton->objectName().toStdString();
+}
+
+void RadioButtonsGroupBase::_setCheckedButton(RadioButtonBase* button)
+{
+	QString buttonName = button->name();
+	button->setProperty("checked", true);
+
+	if (_value != buttonName)
+	{
+		setValue(buttonName);
+		setBoundValue(fq(buttonName));
+	}
 }

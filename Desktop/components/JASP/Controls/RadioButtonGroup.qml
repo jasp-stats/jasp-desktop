@@ -33,12 +33,11 @@ RadioButtonsGroupBase
 	default property alias	content:				contentArea.children
 			property alias	buttons:				buttonGroup.buttons
 			property alias	checkedButton:			buttonGroup.checkedButton
-			property var	buttonGroup:			buttonGroup
+			property alias	buttonGroup:			buttonGroup
 			property bool	radioButtonsOnSameRow:	false
 			property alias	columns:				contentArea.columns
 			property alias	text:					control.title
 			property int	leftPadding:			jaspTheme.groupContentPadding
-			property string	value:					""
 
 	implicitWidth:	radioButtonsOnSameRow
 						? contentArea.x + contentArea.implicitWidth
@@ -49,6 +48,11 @@ RadioButtonsGroupBase
 						: contentArea.y + contentArea.implicitHeight	
     
 	L.Layout.leftMargin:	indent ? jaspTheme.indentationLength : 0
+
+	Component.onCompleted:
+	{
+		buttonGroup.clicked.connect(clicked);
+	}
 	
 	Label
 	{
@@ -73,12 +77,7 @@ RadioButtonsGroupBase
 		anchors.topMargin:	control.title && !radioButtonsOnSameRow ? jaspTheme.titleBottomMargin : 0
 		anchors.left:		control.title && radioButtonsOnSameRow ? label.right : control.left
 		anchors.leftMargin: control.title ? jaspTheme.groupContentPadding : 0
-    }
-	
-	Component.onCompleted:
-	{
-        buttonGroup.clicked.connect(clicked);
-    }
+	}
 
 	background: backgroundBox
 
