@@ -3,13 +3,13 @@
 #Jasp-R-Interface
 JASP_R_INTERFACE_TARGET = R-Interface
 
-JASP_R_INTERFACE_MAJOR_VERSION =  10  # Interface changes or whenever you feel majorlike
-JASP_R_INTERFACE_MINOR_VERSION =  15  # Code changes
+JASP_R_INTERFACE_MAJOR_VERSION =  11  # Interface changes or whenever you feel majorlike
+JASP_R_INTERFACE_MINOR_VERSION =  0   # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
 #R settings
-CURRENT_R_VERSION = 3.6
+CURRENT_R_VERSION = 4.0
 DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
 
 #JASP Version
@@ -129,6 +129,21 @@ COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equa
 	}
 }
 
+win32 {
+	defineReplace(winPathFix) {
+		THE_PATH  = $$1
+		THE_PATH ~= s,/,\\,g
+		return($$THE_PATH)
+	}	
+}
+
+unix {
+	defineReplace(winPathFix) {
+		return($$1)
+	}	
+}
+
+
 GETTEXT_LOCATION = $$(GETTEXT_PATH) #The GETTEXT_PATH can be used as environment for a specific gettext location
 
 unix {
@@ -138,7 +153,6 @@ unix {
 
 win32 {
 	isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
-	WINQTBIN=$$QMAKE_QMAKE
+	WINQTBIN  = $$winPathFix($$QMAKE_QMAKE)
 	WINQTBIN ~= s,qmake.exe,,gs	
-	WINQTBIN ~= s,/,\\,g
 }

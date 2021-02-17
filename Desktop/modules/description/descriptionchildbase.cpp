@@ -11,7 +11,7 @@ DescriptionChildBase::DescriptionChildBase()
 
 void DescriptionChildBase::registerDescription(QQuickItem * parent)
 {
-	Description * newDesc = dynamic_cast<Description*>(parent);
+	Description * newDesc = qobject_cast<Description*>(parent);
 
 	if(newDesc != _description)
 	{

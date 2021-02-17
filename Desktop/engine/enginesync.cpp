@@ -483,6 +483,8 @@ void EngineSync::startExtraEngine()
 //Should this function go to EngineRepresentation?
 QProcess * EngineSync::startSlaveProcess(int channel)
 {
+	Log::log() << "Attempting to start an engine for JASP on channel #" << channel << std::endl;
+	
 	JASPTIMER_SCOPE(EngineSync::startSlaveProcess);
 	QDir programDir			= AppDirs::programDir();
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
@@ -491,12 +493,18 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	QStringList args;
 	args << QString::number(channel) << QString::number(ProcessInfo::currentPID()) << QString::fromStdString(Log::logFileNameBase) << QString::fromStdString(Log::whereStr());
 
-	env.insert("TMPDIR", tq(TempFiles::createTmpFolder()));
+	env.insert("TMPDIR",							tq(TempFiles::createTmpFolder()));
 	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warnings
-
+	env.insert("RENV_PATHS_ROOT",					AppDirs::renvRootLocation());
+	env.insert("RENV_PATHS_CACHE",					AppDirs::renvCacheLocations());
+	
+	//Seems a bit weird but we need to tell this to jaspBase so it can tell renv to run it again because that will be running in a subprocess. 
+	//Which also means we have the following process -> subprocess structure while installing a dynamic module:
+	// jasp -> JASPEngine with R-embedded -> Separate R -> separate instances of JASPEngine...
+	env.insert("JASPENGINE_LOCATION",				engineExe); 
+	
 	QString rHomePath = AppDirs::rHome();
 	QDir rHome(rHomePath);
-	
 
 	QString custom_R_library = "";
 #ifdef JASP_DEBUG

@@ -31,7 +31,7 @@ windows {
 		isEmpty(JASP_BUILDROOT_DIR)	{ _R_HOME = $$OUT_PWD/../R				}
 		else						{ _R_HOME = $${JASP_BUILDROOT_DIR}/R	}
 	}
-        R_EXE  = $$_R_HOME/bin/$$ARCH/R
+        R_EXE  = $$winPathFix($$_R_HOME/bin/$$ARCH/R)
 }
 
 _RLibrary = $$(JASP_R_Library)

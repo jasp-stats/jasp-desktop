@@ -159,7 +159,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspResults::setBaseCitation(baseCitation);
 	jaspResults::setInsideJASP();
 
-	jaspRCPP_logString("Initializing jaspResultsModule, jaspBase, jaspGraphs and more.\n");
+	jaspRCPP_logString("Initializing jaspResultsModule, jaspBase and more.\n");
 
 	rInside["jaspResultsModule"]			= givejaspResultsModule();
 
@@ -169,7 +169,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
 
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"jaspBase\"))");
-	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"jaspGraphs\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"modules\"))");
 	jaspRCPP_parseEvalQNT("source(file='writeImage.R')");
@@ -196,8 +195,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 #else
 														  "FALSE");
 #endif
-
-	jaspRCPP_parseEvalQNT("library(kknn);"); //Make ML work again, K-neighbor and regression: https://github.com/jasp-stats/INTERNAL-jasp/issues/1227
 
 	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
 }
@@ -258,15 +255,6 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	jaspRCPP_checkForCrashRequest();
 
 	return str.c_str();
-}
-
-const char* STDCALL jaspRCPP_check()
-{
-	SEXP result = rinside->parseEvalNT("checkPackages()");
-	static std::string staticResult;
-
-	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
-	return staticResult.c_str();
 }
 
 void STDCALL jaspRCPP_runScript(const char * scriptCode)
@@ -412,12 +400,14 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	rinside->instance()[".rCode"] = CSTRING_TO_R(rCode);
 	const std::string rCodeTryCatch(""
 		"returnVal = 'null';	"
-		"tryCatch(				"
-		"	suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
-		"		error	= function(e) { .setRError(toString(e$message))	  }, 	"
-		"		warning	= function(w) { .setRWarning(toString(w$message)) }		"
-		");			"
-		"returnVal	");
+	//	"tryCatch("
+		"  withCallingHandlers(	"
+		"    suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
+		"      error	= function(e) { .setRError(  paste0(toString(e$message), '\n', paste0(sys.calls(), collapse='\n'))) } 	"
+		//",		warning	= function(w) { .setRWarning(paste0(toString(w$message), '\n', paste0(sys.calls(), collapse='\n'))) }		" //I guess this one doesn't make a lot of sense when we are suppressing warnings...q
+		")"
+	//	", error = function(e) {} )"			 //Already printed
+		"; returnVal	");
 
 	SEXP result = jaspRCPP_parseEval(rCodeTryCatch);
 

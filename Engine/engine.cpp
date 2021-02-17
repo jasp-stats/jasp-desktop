@@ -103,14 +103,6 @@ void Engine::initialize()
 		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings);
 
 		Log::log() << "rbridge_init completed" << std::endl;
-
-#if defined(JASP_DEBUG) || defined(__linux__)
-		if (_slaveNo == 0)
-		{
-			Log::log() << rbridge_check()			<< std::endl;
-			Log::log() << "rbridge_check completed" << std::endl;
-		}
-#endif
 	
 		//Is there maybe already some data? Like, if we just killed and restarted the engine
 		ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());

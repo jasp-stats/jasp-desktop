@@ -105,7 +105,7 @@ QString AppDirs::documents()
 	return processPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 }
 
-QString AppDirs::logDir()
+QString AppDirs::logDir()	
 {
 	QString path = appData();
 	path += "/Logs/";
@@ -151,4 +151,35 @@ QString AppDirs::rHome()
 QDir AppDirs::programDir()
 {
 	return QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();	
+}
+
+//After getting an error on giving "consent" to renv to do stuff I checked the page https://rstudio.github.io/renv/reference/paths.html
+//I think it would be good to make sure the root-renv folder is also within the appdata of JASP and not in their own, because then we would be partially clobbering users own renv stuff
+QString AppDirs::renvRootLocation()
+{
+	const char * renvRootName = "renv";
+	
+	QDir(appData()).mkpath(renvRootName); //create it if missing
+	
+	return appData() + "/" + renvRootName;
+}
+
+QString AppDirs::renvCacheLocations()
+{
+	const char * renvCacheName = "cache";
+	
+	QDir(renvRootLocation()).mkpath(renvCacheName); //create it if missing
+	
+	QString dynamicCache = renvRootLocation() + "/" + renvCacheName,
+			staticCache  = processPath(programDir().absoluteFilePath("renv-cache"));
+	
+	const QChar separator =
+#ifdef WIN32
+							';';
+#else
+							':';
+#endif
+	
+	return dynamicCache + separator + staticCache;
+	
 }

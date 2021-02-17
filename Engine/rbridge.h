@@ -93,8 +93,6 @@ extern "C" {
 													boost::function<bool(const std::string &, const std::vector<std::string>&)										> nominalTextSource);
 	void rbridge_setGetDataSetRowCountSource(		boost::function<int()> source);
 
-	std::string rbridge_check();
-
 	void	rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::string & readFunction);
 	void	rbridge_setupRCodeEnv(int rowCount, const std::string & dataname = "data");
 	void	rbridge_detachRCodeEnv(				const std::string & dataname = "data");

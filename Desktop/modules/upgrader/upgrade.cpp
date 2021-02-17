@@ -90,7 +90,7 @@ QString Upgrade::module() const
 
 void Upgrade::registerStep(QQuickItem * parent)
 {
-	Upgrades * upgrades = dynamic_cast<Upgrades*>(parent);
+	Upgrades * upgrades = qobject_cast<Upgrades*>(parent);
 	
 	if(!upgrades && parent)
 		throw upgradeLoadError(fq(toString()), "An Upgrade Item must always be a child of Upgrades");
