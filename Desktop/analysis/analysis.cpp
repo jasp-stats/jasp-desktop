@@ -24,6 +24,7 @@
 #include "analysisform.h"
 #include "utilities/qutils.h"
 #include "log.h"
+#include "utils.h"
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  QObject(Analyses::analyses()),
@@ -812,11 +813,11 @@ std::string Analysis::upgradeMsgsForOption(const std::string & name) const
 
 std::vector<std::vector<std::string> > Analysis::getValuesFromRSource(const QString &sourceID) const
 {
-	const Json::Value& jsonValue = _rSources.count(fq(sourceID)) == 0 ? Json::nullValue : _rSources.at(fq(sourceID));
+	const Json::Value& jsonSource = _rSources.count(fq(sourceID)) == 0 ? Json::nullValue : _rSources.at(fq(sourceID));
 
-	if (!jsonValue.isObject())	return {};
+	if (!jsonSource.isObject())	return {};
 
-	const Json::Value& dataValue = jsonValue["data"];
+	const Json::Value& dataValue = jsonSource["data"];
 	if (dataValue.size() == 0)	return {};
 
 	size_t nbRows = 1;
@@ -825,30 +826,84 @@ std::vector<std::vector<std::string> > Analysis::getValuesFromRSource(const QStr
 	// We want to send the data per column. This will be stored in a Terms object.
 	// A Term can have several components, so if a column has several rows, each row will be a component of the corresponding term.
 	std::vector<std::vector<std::string> > result;
+
+	auto addValue = [&](size_t row, const std::string & val)
+	{
+		if (row >= nbRows)
+		{
+			result.push_back({});
+			nbRows++;
+		}
+		result[row].push_back(val);
+	};
+
+	auto getStringFromJson = [](const Json::Value& jsonValue) -> std::string
+	{
+		if (jsonValue.isString())		return jsonValue.asString();
+		else if (jsonValue.isNumeric())	return std::to_string(jsonValue.asDouble());
+		else							return "";
+	};
+
+
 	for (const Json::Value& rowValue : dataValue)
 	{
+		size_t row = 0;
 		if (result.size() == 0)			result.push_back({});
 
 		if (rowValue.isString())		result[0].push_back( { rowValue.asString() } );
 		else if (rowValue.isNumeric())	result[0].push_back( { std::to_string(rowValue.asDouble()) } );
-		else if (rowValue.isArray() || rowValue.isObject())
+		else if (rowValue.isArray())
 		{
-			size_t row = 0;
-			for (const Json::Value& oneValue : rowValue)
+			for (const Json::Value& jsonValue : rowValue)
 			{
-				std::string str;
-				if (oneValue.isString())		str = oneValue.asString();
-				else if (oneValue.isNumeric())	str = std::to_string(oneValue.asDouble());
-
-				if (row >= nbRows)
-				{
-					result.push_back({});
-					nbRows++;
-				}
-				result[row].push_back(str);
-
+				addValue(row, getStringFromJson(jsonValue));
 				row++;
 			}
+		}
+		else if (rowValue.isObject())
+		{
+			QList<std::string> values;
+			QMap<int, std::string> valueIntMap;
+			bool columnNamesAreColIntegers = true;
+			for (Json::Value::iterator iter = rowValue.begin(); iter != rowValue.end(); iter++)
+			{
+				Json::Value &val = *iter;
+				std::string valStr = getStringFromJson(val);
+				values.push_back(valStr);
+
+				if (columnNamesAreColIntegers)
+				{
+					// If all column names are of the form col<x> with x being an integer, then use the integers to sort the values.
+					std::string col = iter.key().asString();
+					if (col.length() > 3 && col.substr(0, 3) == "col")
+					{
+						int colInt;
+						if (Utils::getIntValue(col.substr(3), colInt))	valueIntMap[colInt] = valStr;
+						else											columnNamesAreColIntegers = false;
+					}
+					else columnNamesAreColIntegers = false;
+				}
+			}
+
+			if (columnNamesAreColIntegers)
+			{
+				QList<int> keys = valueIntMap.keys();
+				std::sort(keys.begin(), keys.end());
+				for (int key : keys)
+				{
+					addValue(row, valueIntMap[key]);
+					row++;
+				}
+			}
+			else
+			{
+				for (const std::string& val : values)
+				{
+					addValue(row, val);
+					row++;
+				}
+			}
+
 		}
 	}
 
@@ -860,7 +915,7 @@ void Analysis::storeUserDataEtc()
 	if(!needsRefresh())
 			return;
 
-	_oldUserData = _userData,
+	_oldUserData = _userData;
 	_oldMetaData = _results.get(".meta", Json::arrayValue);
 
 	_tryToFixNotes = !_userData.isNull();

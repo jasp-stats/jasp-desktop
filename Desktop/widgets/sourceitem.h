@@ -57,6 +57,8 @@ public:
 
 	SourceItem(JASPListControl* _listControl, const JASPListControl::LabelValueMap& _values);
 
+	SourceItem(JASPListControl* _listControl, const QString& rSource);
+
 	SourceItem(JASPListControl* _listControl = nullptr);
 
 	virtual ~SourceItem();

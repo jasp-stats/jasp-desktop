@@ -72,6 +72,12 @@ SourceItem::SourceItem(JASPListControl *listControl, const JASPListControl::Labe
 	_setUp();
 }
 
+SourceItem::SourceItem(JASPListControl *listControl, const QString& rSource)
+	: _listControl(listControl), _rSource(rSource)
+{
+	_setUp();
+}
+
 SourceItem::SourceItem(JASPListControl *listControl)
 	:  _listControl(listControl), _isColumnsModel(true)
 {
@@ -339,6 +345,9 @@ QVector<SourceItem*> SourceItem::readAllSources(JASPListControl* listControl)
 
 	if (listControl->values().isValid() && !listControl->values().isNull())
 		sources.append(new SourceItem(listControl, _readValues(listControl, listControl->values())));
+
+	if (!listControl->rSource().isEmpty())
+		sources.append(new SourceItem(listControl, listControl->rSource()));
 
 	QList<QVariant> rawSources = _getListVariant(listControl->source());
 
