@@ -684,7 +684,7 @@ void Engine::saveImage()
 void Engine::editImage()
 {
 	std::string optionsJson	= _imageOptions.toStyledString(),
-				result		= jaspRCPP_editImage(optionsJson.c_str(), _ppi, _imageBackground.c_str());
+				result		= jaspRCPP_editImage(_analysisName.c_str(), optionsJson.c_str(), _ppi, _imageBackground.c_str(), _analysisId);
 
 	Json::Reader().parse(result, _analysisResults, false);
 

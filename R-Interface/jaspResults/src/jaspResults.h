@@ -73,7 +73,9 @@ public:
 	static void				setObjectInEnv(std::string envName, Rcpp::RObject obj);
 	static bool				objectExistsInEnv(std::string envName);
 
-	jaspContainer	*	getOldResults()		const	{ return _oldResults; }
+	jaspContainer *			getOldResults()		const	{ return _oldResults; }
+
+	jaspObject *			getOldObjectFromUniqueNestedNameVector(const std::vector<std::string>& uniqueNames)	override { return _oldResults == nullptr ? nullptr : _oldResults->findObjectWithNestedNameVector(uniqueNames); } ;
 
 private:
 
@@ -128,6 +130,8 @@ public:
 
 	void		send()								{ ((jaspResults*)myJaspObject)->send();								}
 	void		complete()							{ ((jaspResults*)myJaspObject)->complete();							}
+	void		saveResults()						{ ((jaspResults*)myJaspObject)->saveResults();						}
+	void		finishWriting()						{ ((jaspResults*)myJaspObject)->finishWriting();					}
 	Rcpp::List	getOtherObjectsForState()			{ return ((jaspResults*)myJaspObject)->getOtherObjectsForState();	}
 	Rcpp::List	getPlotObjectsForState()			{ return ((jaspResults*)myJaspObject)->getPlotObjectsForState();	}
 	Rcpp::List	getKeepList()						{ return ((jaspResults*)myJaspObject)->getKeepList();				}

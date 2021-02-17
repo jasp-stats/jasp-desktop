@@ -26,7 +26,8 @@ openGrDevice <- function(...) {
   grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
 }
 
-writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathpng=NULL, ppi=300, backgroundColor="white", location=getImageLocation(), oldPlotInfo=list())
+writeImageJaspResults <- function(plot, width = 320, height = 320, obj = TRUE, relativePathpng = NULL, ppi = 300, backgroundColor = "white",
+                                  location = getImageLocation(), oldPlotInfo = list())
 {
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
@@ -47,8 +48,6 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   setwd(root)
   on.exit(setwd(oldwd))
 
-  print(fullPathpng)
-  saveRDS(list(plot = plot, oldPlotInfo = oldPlotInfo), "~/jaspDeletable/oldJaspPLot.rds")
   if (length(oldPlotInfo) != 0L && !is.null(oldPlotInfo[["editOptions"]]) && ggplot2::is.ggplot(plot)) {
 
     # TODO:

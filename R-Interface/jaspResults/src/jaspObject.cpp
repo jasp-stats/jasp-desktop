@@ -240,6 +240,17 @@ std::string jaspObject::getUniqueNestedName() const
 	return parent_prefix + (_name != "" ? _name : "");
 }
 
+void jaspObject::getUniqueNestedNameVector(std::vector<std::string> &names) const
+{
+	if (parent)
+		parent->getUniqueNestedNameVector(names);
+
+	// jaspResults doesn't have a name
+	if (_name != "")
+		names.push_back(_name);
+
+}
+
 
 void jaspObjectFinalizer(jaspObject * obj)
 {
@@ -416,20 +427,6 @@ void jaspObject::setDeveloperMode(bool developerMode)
 	_developerMode = developerMode;
 }
 
-jaspContainer * jaspObject::getNamesChainToJaspResults(std::stack<std::string> & names)
-{
-	if (getType() == jaspObjectType::results)
-		return static_cast<jaspResults *>(this)->getOldResults();
-
-	// add the name of the container or plot only here since jaspResults has name ""
-	names.push(_name);
-	if (parent != nullptr)
-		return parent->getNamesChainToJaspResults(names);
-	// parent == nullptr but not jaspResults
-	return nullptr;
-
-}
-
 bool jaspObject::connectedToJaspResults()
 {
 
@@ -442,6 +439,11 @@ bool jaspObject::connectedToJaspResults()
 
 	return parent->connectedToJaspResults();
 
+}
+
+jaspObject *jaspObject::getOldObjectFromUniqueNestedNameVector(const std::vector<std::string> &uniqueName)
+{
+	return parent != nullptr ? parent->getOldObjectFromUniqueNestedNameVector(uniqueName) : nullptr;
 }
 
 std::set<std::string> jaspObject::nestedMustBes() const

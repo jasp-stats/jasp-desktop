@@ -30,19 +30,19 @@ Json::Value jaspPlot::dataEntry(std::string & errorMessage) const
 {
 	Json::Value data(jaspObject::dataEntry(errorMessage));
 
-	data["title"]		= _title;
-	data["convertible"]	= true;
-	data["data"]		= _filePathPng;
-	data["height"]		= _height;
-	data["width"]		= _width;
-	data["aspectRatio"]	= _aspectRatio;
-	data["status"]		= _error ? "error" : _status;
-	data["revision"]	= _revision;
-	data["name"]		= getUniqueNestedName();
-	data["editOptions"]	= _editOptions;
-	data["reasonNotEditable"] = _editOptions.get("reasonNotEditable", "unknown reason");
-	data["errorType"]	= _editOptions.get("errorType", "fatalError");
-	data["editable"]	= !_editOptions.isNull() && data["errorType"] == "success";
+	data["title"]				= _title;
+	data["convertible"]			= true;
+	data["data"]				= _filePathPng;
+	data["height"]				= _height;
+	data["width"]				= _width;
+	data["aspectRatio"]			= _aspectRatio;
+	data["status"]				= _error ? "error" : _status;
+	data["revision"]			= _revision;
+	data["name"]				= getUniqueNestedName();
+	data["editOptions"]			= _editOptions;
+	data["reasonNotEditable"]	= _editOptions.get("reasonNotEditable", "unknown reason");
+	data["errorType"]			= _editOptions.get("errorType", "fatalError");
+	data["editable"]			= !_editOptions.isNull() && data["errorType"] == "success";
 
 	return data;
 }
@@ -57,7 +57,9 @@ void jaspPlot::initEnvName()
 void jaspPlot::setPlotObject(Rcpp::RObject obj)
 {
 	Rcpp::List plotInfo = Rcpp::List::create(Rcpp::_["obj"] = obj, Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["revision"] = _revision);
-	_filePathPng = "";
+
+	if (!_editing)
+		_filePathPng = "";
 
 	jaspResults::setObjectInEnv(_envName, plotInfo);
 
@@ -68,22 +70,37 @@ void jaspPlot::setPlotObject(Rcpp::RObject obj)
 
 void jaspPlot::renderPlot()
 {
-	// if  a png exists the plot was already rendered
-	if (_filePathPng != "")
+	// if a png exists the plot was already rendered, unless we're editing it
+	if (_filePathPng != "" && !_editing)
 		return;
 
-	Rcpp::List plotInfo = Rcpp::as<Rcpp::List>(jaspResults::getObjectFromEnv(_envName));
+	// empty plots were added to the state
+	Rcpp::RObject plotInfoObj = jaspResults::getObjectFromEnv(_envName);
+	if (plotInfoObj.isNULL())
+		return;
+
+	Rcpp::List plotInfo = Rcpp::as<Rcpp::List>(plotInfoObj);
 	Rcpp::RObject obj = plotInfo["obj"];
-	jaspPrint("Now rendering a plot!");
 
 	if(!obj.isNULL())
 	{
 
-		Rcpp::List oldPlotInfo = getOldPlotInfo(plotInfo);
-		//getOldPlotInfo may update height & width
+		jaspPrint("Now rendering a plot!");
 
 		static Rcpp::Function tryToWriteImage = jaspResults::isInsideJASP() ? Rcpp::Function("tryToWriteImageJaspResults") : Rcpp::Environment::namespace_env("jaspResults")["tryToWriteImageJaspResults"];
-		Rcpp::List writeResult = tryToWriteImage(Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["plot"] = obj, Rcpp::_["oldPlotInfo"] = oldPlotInfo);
+		Rcpp::List writeResult, oldPlotInfo;
+		if (_editing)
+		{
+			oldPlotInfo = Rcpp::List();
+			_revision++;
+			writeResult = tryToWriteImage(Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["plot"] = obj, Rcpp::_["oldPlotInfo"] = oldPlotInfo, Rcpp::_["relativePathpng"] = _filePathPng);
+		}
+		else
+		{
+			//getOldPlotInfo may update height & width
+			oldPlotInfo = getOldPlotInfo(plotInfo);
+			writeResult = tryToWriteImage(Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["plot"] = obj, Rcpp::_["oldPlotInfo"] = oldPlotInfo, Rcpp::_["relativePathpng"] = R_NilValue);
+		}
 
 		// we need to overwrite plot functions with their recordedplot result
 		if(Rcpp::is<Rcpp::Function>(obj) && writeResult.containsElementNamed("obj"))
@@ -107,14 +124,14 @@ void jaspPlot::renderPlot()
 
 		if(writeResult.containsElementNamed("error"))
 		{
-			_error			= "Error during writeImage";
+			_error			= true;
 			_errorMessage	= Rcpp::as<std::string>(writeResult["error"]);
 		}
 
 		complete();
-	}
 
-	jaspResults::setObjectInEnv(_envName, plotInfo);
+		jaspResults::setObjectInEnv(_envName, plotInfo);
+	}
 }
 
 Rcpp::RObject jaspPlot::getPlotObject()
@@ -151,51 +168,30 @@ void jaspPlot::setUserPlotChangesFromRStateObject()
 
 Rcpp::List jaspPlot::getOldPlotInfo(Rcpp::List & plotInfo)
 {
-	std::stack<std::string> names;
-	jaspContainer * oldResults = getNamesChainToJaspResults(names);
+	std::vector<std::string> names;
+	getUniqueNestedNameVector(names);
+	jaspPlot * oldPlot = dynamic_cast<jaspPlot *>(getOldObjectFromUniqueNestedNameVector(names));
 
-	if (oldResults == nullptr)
-		return Rcpp::List();
-
-	jaspObject * temp;
-	while (!names.empty())
+	if (oldPlot == nullptr)
 	{
-
-		temp = oldResults->getJaspObjectFromData(names.top());
-		// should be impossible, but who knows
-		if (temp == nullptr)
-			break;
-
-		jaspPrint("found a " + temp->type() + " with name: " + names.top());
-		switch(temp->getType())
-		{
-		case jaspObjectType::container:
-			oldResults = static_cast<jaspContainer *>(temp);
-			break;
-		case jaspObjectType::plot:
-		{
-			jaspPlot * oldPlot = static_cast<jaspPlot *>(temp);
-			// we could reuse the old environment, but it might get thrown away / cleaned?
-			Rcpp::List oldOptions = Rcpp::as<Rcpp::List>(jaspResults::getObjectFromEnv(oldPlot->_envName));
-			_width				= oldPlot->_width;
-			_height				= oldPlot->_height;
-			plotInfo["width"]	= _width;
-			plotInfo["heitgh"]	= _height;
-
-			if (oldPlot->_editOptions == Json::nullValue)
-				return Rcpp::List();
-			else
-				return Rcpp::List::create(Rcpp::_["editOptions"] = Rcpp::String(oldPlot->_editOptions.toStyledString()));
-
-		}
-		default: // possible but means the R code reuses the same names for e.g., tables and plots
-			return Rcpp::List();
-		}
-		names.pop();
+		jaspPrint("could not find an old plot");
+		return Rcpp::List();
 	}
+	jaspPrint("found a " + oldPlot->type() + " with name: " + oldPlot->_name);
 
-	// there never was a plot
-	return Rcpp::List();
+	_width				= oldPlot->_width;
+	_height				= oldPlot->_height;
+	plotInfo["width"]	= _width;
+	plotInfo["height"]	= _height;
+
+	if (oldPlot->_editOptions == Json::nullValue)
+		return Rcpp::List();
+	else
+		return	Rcpp::List::create(
+					Rcpp::_["editOptions"]	= Rcpp::String(oldPlot->_editOptions.toStyledString()),
+					Rcpp::_["oldPlot"]		= oldPlot->getPlotObject()
+				);
+
 }
 
 Json::Value jaspPlot::convertToJSON() const

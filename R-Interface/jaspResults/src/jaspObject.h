@@ -90,6 +90,7 @@ public:
 
 			///Gives nested name to avoid namingclashes
 			std::string getUniqueNestedName() const;
+			void		getUniqueNestedNameVector(std::vector<std::string> & names)	const;
 			void		setName(std::string name) { _name = name; }
 
 			void		childrenUpdatedCallback(bool ignoreSendTimer);
@@ -129,8 +130,10 @@ public:
 	static int getCurrentTimeMs();
 	static void setDeveloperMode(bool developerMode);
 
-	jaspContainer * getNamesChainToJaspResults(std::stack<std::string> & names);
 	bool			connectedToJaspResults();
+
+	virtual		jaspObject *	getOldObjectFromUniqueNestedNameVector(const std::vector<std::string> &uniqueName);
+
 
 protected:
 	jaspObjectType				_type;
