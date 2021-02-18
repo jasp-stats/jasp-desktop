@@ -604,42 +604,49 @@
         {
           "name": "One Sample T-Test",
           "path": "bainOneSample.jasp",
-          "description":"Dit JASP-bestand toont een Bain T-Toets voor Eén Gemiddelde met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "description":"Dit JASP-bestand toont een Bain T-Toets voor Eén Gemiddelde met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
            "kind": "file",
           "associated_datafile": "sesame.csv"
         },
         {
           "name": "Welch's T-Test",
           "path": "bainIndependentSamples.jasp",
-          "description":"Dit JASP-bestand toont een Bain Welch's T-Toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "description":"Dit JASP-bestand toont een Bain Welch's T-Toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
           "kind": "file",
           "associated_datafile": "sesame.csv"
         },
         {
           "name": "Paired Samples T-Test",
           "path": "bainPairedSamples.jasp",
-          "description":"Dit JASP-bestand toont een Bain Gepaarde T-Toets toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "description":"Dit JASP-bestand toont een Bain Gepaarde T-Toets toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
            "kind": "file",
           "associated_datafile": "sesame.csv"
         },
         {
           "name": "ANOVA",
           "path": "bainAnova.jasp",
-          "description":"Dit JASP-bestand toont een Bain ANOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "description":"Dit JASP-bestand toont een Bain ANOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
           "kind": "file",
           "associated_datafile": "sesame.csv"
         },
         {
           "name": "ANCOVA",
           "path": "bainAncova.jasp",
-          "description":"Dit JASP-bestand toont een Bain ANCOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "description":"Dit JASP-bestand toont een Bain ANCOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
           "kind": "file",
           "associated_datafile": "sesame.csv"
         },
         {
           "name": "Regressie",
           "path": "bainRegression.jasp",
-          "description": "Dit JASP-bestand toont een Bain regressie met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "description": "Dit JASP-bestand toont een Bain regressie met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\/i>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "Structural Equation Model",
+          "path": "bainSem.jasp",
+          "description": "Dit JASP bestand toont een Bain Structual Equation Model met behulp van de Sesamstraat gegevens. <br><br> <i>Gegevensset opgenomen in het bain R-pakket. <\/i>",
           "kind": "file",
           "associated_datafile": "sesame.csv"
         }

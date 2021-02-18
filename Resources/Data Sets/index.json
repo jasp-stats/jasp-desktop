@@ -642,6 +642,13 @@
             "description": "This JASP file demonstrates a Bain regression using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
             "kind": "file",
             "associated_datafile": "sesame.csv"
+          },
+          {
+            "name": "Structural Equation Modeling",
+            "path": "bainSem.jasp",
+            "description": "This JASP file demonstrates a Bain Structural Equation Model using the Sesame Street data. <br><br> <i>Data set included in the bain R package.<\/i>",
+            "kind": "file",
+            "associated_datafile": "sesame.csv"
           }
         ],
         "debug": false
