@@ -40,8 +40,8 @@ Json::Value SliderBase::createJson()
 
 void SliderBase::bindTo(const Json::Value &value)
 {
-	setProperty("value", value.asDouble());
 	BoundControlBase::bindTo(value);
+	setProperty("value", value.asDouble());
 }
 
 void SliderBase::setUp()

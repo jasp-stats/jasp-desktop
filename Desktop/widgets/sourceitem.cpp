@@ -113,7 +113,6 @@ void SourceItem::_connectModels()
 
 	if (_listModel)
 	{
-		_listControl->addDependency(_listModel->listView());
 		connect(_listModel,		&ListModel::namesChanged,			controlModel, &ListModel::sourceNamesChanged);
 		connect(_listModel,		&ListModel::columnTypeChanged,		controlModel, &ListModel::sourceColumnTypeChanged);
 		connect(_listModel,		&ListModel::labelsChanged,			controlModel, &ListModel::sourceLabelsChanged );
@@ -135,6 +134,8 @@ void SourceItem::_setUp()
 	if (_nativeModel || !_rSource.isEmpty())
 	{
 		_listModel = qobject_cast<ListModel*>(_nativeModel);
+		if (_listModel)	_listControl->addDependency(_listModel->listView());
+
 		// Do not connect before this control (and the controls of the source) are completely initialized
 		// The source could sent some data to this control before it is completely ready for it.
 		connect(_listControl, &JASPControl::initializedChanged,			this,	&SourceItem::_connectModels);

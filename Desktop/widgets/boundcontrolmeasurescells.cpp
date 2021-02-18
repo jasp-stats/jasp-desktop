@@ -35,13 +35,13 @@ BoundControlMeasuresCells::BoundControlMeasuresCells(ListModelMeasuresCellsAssig
 
 void BoundControlMeasuresCells::bindTo(const Json::Value &value)
 {
+	BoundControlBase::bindTo(value);
+
 	Terms variables;
 
 	for (const Json::Value& variable : value)
 		variables.add(variable.asString());
 	_measuresCellsModel->initLevels(getLevels(), variables, true);
-
-	BoundControlBase::bindTo(value);
 }
 
 Terms BoundControlMeasuresCells::getLevels()

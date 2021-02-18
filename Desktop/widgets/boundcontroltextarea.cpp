@@ -27,8 +27,8 @@ BoundControlTextArea::BoundControlTextArea(TextAreaBase* textArea)
 
 void BoundControlTextArea::bindTo(const Json::Value &value)
 {
-	_textArea->setText(tq(value.asString()));
 	BoundControlBase::bindTo(value);
+	_textArea->setText(tq(value.asString()));
 }
 
 bool BoundControlTextArea::isJsonValid(const Json::Value &optionValue)

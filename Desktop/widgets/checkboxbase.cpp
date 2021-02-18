@@ -38,8 +38,8 @@ Json::Value CheckBoxBase::createJson()
 
 void CheckBoxBase::bindTo(const Json::Value &value)
 {
-	setChecked(value.asBool());
 	BoundControlBase::bindTo(value);
+	setChecked(value.asBool());
 }
 
 void CheckBoxBase::setUp()

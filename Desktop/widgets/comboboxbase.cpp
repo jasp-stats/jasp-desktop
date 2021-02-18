@@ -28,6 +28,8 @@ ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 
 void ComboBoxBase::bindTo(const Json::Value& value)
 {
+	BoundControlBase::bindTo(value);
+
 	std::vector<std::string> values = _model->getValues();
 	std::string selectedValue = value.asString();
 	int index = -1;
@@ -50,8 +52,6 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 	_setCurrentProperties(index, false);
 
 	_resetItemWidth();
-
-	BoundControlBase::bindTo(value);
 }
 
 int ComboBoxBase::_getStartIndex()

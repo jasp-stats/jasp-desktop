@@ -35,6 +35,8 @@ BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool
 
 void BoundControlTerms::bindTo(const Json::Value &value)
 {
+	BoundControlBase::bindTo(value);
+
 	Terms terms;
 	ListModel::RowControlsValues allControlValues;
 
@@ -65,8 +67,6 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	}
 
 	_termsModel->initTerms(terms, allControlValues);
-
-	BoundControlBase::bindTo(value);
 }
 
 Json::Value BoundControlTerms::createJson()

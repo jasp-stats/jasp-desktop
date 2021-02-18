@@ -95,14 +95,14 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 
 void BoundControlTableView::bindTo(const Json::Value &value)
 {
+	BoundControlBase::bindTo(value);
+
 	ListModelTableViewBase::TableTerms tableTerms;
 	QMap<QString, QString> extra;
 
 	fillTableTerms(value, tableTerms);
 
 	_tableView->tableModel()->initTableTerms(tableTerms);
-
-	BoundControlBase::bindTo(value);
 }
 
 void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListModelTableViewBase::TableTerms &tableTerms)

@@ -49,6 +49,8 @@ void InputListBase::setUpModel()
 
 void InputListBase::bindTo(const Json::Value& value)
 {
+	BoundControlBase::bindTo(value);
+
 	std::string keyName = fq(_optionKey);
 	Terms terms;
 	ListModel::RowControlsValues allControlValues;
@@ -62,8 +64,6 @@ void InputListBase::bindTo(const Json::Value& value)
 	}
 
 	_inputModel->initTerms(terms, allControlValues);
-
-	BoundControlBase::bindTo(value);
 }
 
 Json::Value InputListBase::createJson()

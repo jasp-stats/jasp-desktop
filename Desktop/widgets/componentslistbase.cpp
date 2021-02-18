@@ -41,6 +41,8 @@ void ComponentsListBase::setUpModel()
 
 void ComponentsListBase::bindTo(const Json::Value& value)
 {
+	BoundControlBase::bindTo(value);
+
 	std::string keyName = fq(_optionKey);
 	Terms terms;
 	ListModel::RowControlsValues allControlValues;
@@ -48,8 +50,6 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 	_readTableValue(value, keyName, containsInteractions(), terms, allControlValues);
 
 	_termsModel->initTerms(terms, allControlValues);
-
-	BoundControlBase::bindTo(value);
 }
 
 Json::Value ComponentsListBase::createJson()

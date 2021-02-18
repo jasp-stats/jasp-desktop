@@ -45,6 +45,8 @@ void FactorsFormBase::setUpModel()
 
 void FactorsFormBase::bindTo(const Json::Value& value)
 {
+	BoundControlBase::bindTo(value);
+
 	ListModelFactorsForm::FactorVec factors;
 
 	for (const Json::Value& factor : value)
@@ -57,8 +59,6 @@ void FactorsFormBase::bindTo(const Json::Value& value)
 	}
 	
 	_factorsModel->initFactors(factors);
-
-	BoundControlBase::bindTo(value);
 }
 
 Json::Value FactorsFormBase::createJson()
