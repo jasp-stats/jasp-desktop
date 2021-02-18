@@ -70,7 +70,7 @@ private:
 	ListModelRepeatedMeasuresFactors*	_factorsModel	= nullptr;
 
 	QStringList							_defaultFactors		=	{ tr("RM Factor 1")					};
-	QStringList							_defaultLevels		=	{ tr("Levels 1"), tr("Levels 2")	};
+	QStringList							_defaultLevels		=	{ tr("Level 1"), tr("Level 2")	};
 	QString								_factorPlaceHolder	=	tr("New Factor");
 	QString								_levelPlaceHolder	=	tr("New Level");
 

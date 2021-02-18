@@ -32,7 +32,8 @@ BoundControlLayers::BoundControlLayers(ListModelLayersAssigned* model) : BoundCo
 
 void BoundControlLayers::bindTo(const Json::Value &value)
 {
-	vector<vector<string> > variables;	
+	BoundControlBase::bindTo(value);
+	vector<vector<string> > variables;
 	
 	for (const Json::Value& row : value)
 	{
@@ -52,7 +53,6 @@ void BoundControlLayers::bindTo(const Json::Value &value)
 	
 	_layersModel->initLayers(variables);
 
-	BoundControlBase::bindTo(value);
 }
 
 Json::Value BoundControlLayers::createJson()

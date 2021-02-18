@@ -42,6 +42,8 @@ void RepeatedMeasuresFactorsListBase::setUp()
 
 void RepeatedMeasuresFactorsListBase::bindTo(const Json::Value& value)
 {
+	BoundControlBase::bindTo(value);
+
 	vector<pair<string, vector<string> > > factors;
 	
 	for (const Json::Value& row : value)
@@ -54,8 +56,6 @@ void RepeatedMeasuresFactorsListBase::bindTo(const Json::Value& value)
 	}
 	
 	_factorsModel->initFactors(factors);
-
-	BoundControlBase::bindTo(value);
 }
 
 Json::Value RepeatedMeasuresFactorsListBase::createJson()

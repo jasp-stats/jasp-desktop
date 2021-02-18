@@ -386,7 +386,7 @@ Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey
 	{
 		Json::Value& parentBoundValues = (*result)[parent.name];
 		bool found = false;
-		if (parentBoundValues.isArray() && parent.value.size() > 0)
+		if (!parentBoundValues.isNull() && parentBoundValues.isArray() && parent.value.size() > 0)
 		{
 			for (Json::Value & boundValue : parentBoundValues)
 			{

@@ -114,12 +114,12 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 {
 	for (const Json::Value& row : value)
 	{
+		std::vector<std::string> term;
 		const Json::Value& keyValue = row[key];
 		if (hasMultipleTerms)
 		{
 			if (keyValue.isArray())
 			{
-				std::vector<std::string> term;
 				for (const Json::Value& component : keyValue)
 					term.push_back(component.asString());
 				terms.add(Term(term));
@@ -130,7 +130,10 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 		else
 		{
 			if (keyValue.isString())
-				terms.add(Term(keyValue.asString()));
+			{
+				term.push_back(keyValue.asString());
+				terms.add(Term(term));
+			}
 			else
 				Log::log() << "Key (" << key << ") bind value is not a string in " << _name << ": " << value.toStyledString() << std::endl;
 		}
@@ -143,7 +146,7 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 				controlMap[tq(name)] = *itr;
 		}
 
-		allControlValues[tq(key)] = controlMap;
+		allControlValues[Term(term).asQString()] = controlMap;
 	}
 }
 
