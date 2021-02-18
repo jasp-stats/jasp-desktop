@@ -50,25 +50,23 @@ writeImageJaspResults <- function(plot, width = 320, height = 320, obj = TRUE, r
 
   if (length(oldPlotInfo) != 0L && !is.null(oldPlotInfo[["editOptions"]]) && ggplot2::is.ggplot(plot)) {
 
-    # TODO:
-    #    1. Add a flag to an image if it's actually edited, and only then do this!
-    #    2. Design some heuristics for when to reapply plot editing information.
-    #       For example, the range of the axis breaks need to overlap for 80% and/ or the layers need to be identical?
+    # uncommenting this applies the edits previously done with plot editing to an older figure to the new figure.
+    # see https://github.com/jasp-stats/INTERNAL-jasp/issues/1257 for discussion on what needs to be done before we can do this.
 
-    e <- try({
-      # same construction as in editImage
-      newPlot <- ggplot2:::plot_clone(plot)
-
-      newOpts       <- jaspBase::fromJSON(oldPlotInfo[["editOptions"]])
-      oldOpts       <- jaspGraphs::plotEditingOptions(plot)
-      newOpts$xAxis <- list(type = oldOpts$xAxis$type, settings = newOpts$xAxis$settings[names(newOpts$xAxis$settings) != "type"])
-      newOpts$yAxis <- list(type = oldOpts$yAxis$type, settings = newOpts$yAxis$settings[names(newOpts$yAxis$settings) != "type"])
-
-      newPlot <- jaspGraphs::plotEditing(newPlot, newOpts)
-    })
-
-    if (!inherits(e, "try-error"))
-      plot <- newPlot
+    # e <- try({
+    #   # same construction as in editImage
+    #   newPlot <- ggplot2:::plot_clone(plot)
+    #
+    #   newOpts       <- jaspBase::fromJSON(oldPlotInfo[["editOptions"]])
+    #   oldOpts       <- jaspGraphs::plotEditingOptions(plot)
+    #   newOpts$xAxis <- list(type = oldOpts$xAxis$type, settings = newOpts$xAxis$settings[names(newOpts$xAxis$settings) != "type"])
+    #   newOpts$yAxis <- list(type = oldOpts$yAxis$type, settings = newOpts$yAxis$settings[names(newOpts$yAxis$settings) != "type"])
+    #
+    #   newPlot <- jaspGraphs::plotEditing(newPlot, newOpts)
+    # })
+    #
+    # if (!inherits(e, "try-error"))
+    #   plot <- newPlot
 
   }
   
