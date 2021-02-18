@@ -642,6 +642,13 @@
           "description": "Dit JASP-bestand toont een Bain regressie met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
           "kind": "file",
           "associated_datafile": "sesame.csv"
+        },
+        {
+          "name": "Structural Equation Model",
+          "path": "bainSem.jasp",
+          "description": "Dit JASP bestand toont een Bain Structual Equation Model met behulp van de Sesamstraat gegevens. <br><br> <i>Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+          "kind": "file",
+          "associated_datafile": "sesame.csv"
         }
       ],
         "debug": false
