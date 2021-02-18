@@ -55,10 +55,6 @@ ComponentsListBase
 
 	property var	buttonComponent		: defaultButtonButton
 
-	signal addItem();
-	signal removeItem(int index);
-	signal nameChanged(int index, string value)
-
 	Text
 	{
 		id				: itemTitle
