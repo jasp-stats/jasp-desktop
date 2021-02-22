@@ -142,7 +142,7 @@ void EngineSync::start(int )
 
 	_engineStarted = true;
 
-	size_t enginesWanted = 4;
+	size_t enginesWanted = 1; //rollapp doesnt allow for enough ram for 4 engines. so lets try just one.
 #ifdef JASP_DEBUG
 		enginesWanted = 1;
 #endif

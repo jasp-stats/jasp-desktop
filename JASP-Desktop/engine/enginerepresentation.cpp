@@ -10,10 +10,10 @@ EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slav
 {
 	setSlaveProcess(slaveProcess);
 
-#ifndef JASP_DEBUG
+/*#ifndef JASP_DEBUG
 	if(channelNumber() == 0)
 		setRunsAnalysis(false); // don't perform 'runs' on process 0, "only" inits & filters & rCode & columnComputes & moduleRequests.
-#endif
+#endif*/
 }
 
 

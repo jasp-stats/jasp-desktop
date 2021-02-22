@@ -154,8 +154,6 @@ private:
 					_runsUtility		= true,		//is this engine meant for running filters, installing modules or running R Code (not the r prompt though)
 					_runsRCmd			= false;	//is this engine meant for the R prompt?
 	std::string		_lastCompColName	= "???";
-
-
 };
 
 #endif // ENGINEREPRESENTATION_H
