@@ -484,11 +484,14 @@ void jaspContainer::renderPlotsOfChildren()
 		case jaspObjectType::container:
 			static_cast<jaspContainer*>(child.second)->renderPlotsOfChildren();
 			break;
+
 		case jaspObjectType::plot:
 			static_cast<jaspPlot*>(child.second)->renderPlot();
 			break;
+
 		default:
 			break;
+
 		}
 }
 

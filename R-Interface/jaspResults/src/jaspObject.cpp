@@ -430,7 +430,6 @@ void jaspObject::setDeveloperMode(bool developerMode)
 bool jaspObject::connectedToJaspResults()
 {
 
-	// we could add a private bool to jaspObject to shortcircuit this recursive chain
 	if (getType() == jaspObjectType::results)
 		return true;
 
