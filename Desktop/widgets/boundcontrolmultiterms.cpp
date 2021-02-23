@@ -40,6 +40,8 @@ void BoundControlMultiTerms::bindTo(const Json::Value& value)
 				rowValues.push_back(val.asString());
 		} else if (rowJson.isString())
 			rowValues.push_back(rowJson.asString());
+
+		values.push_back(rowValues);
 	}
 
 	_listModel->initTerms(values);
