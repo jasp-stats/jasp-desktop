@@ -29,10 +29,12 @@ Json::Value BoundControlFilteredTableView::createJson()
 {
 	Json::Value result(Json::arrayValue);
 	Json::Value row(Json::objectValue);
+	Json::Value values(Json::arrayValue);
 
 	row["colName"]	= fq(_tableView->property("colName").toString());
 	row["filter"]	= fq(_tableView->property("filter").toString());
 	row["extraCol"] = fq(_tableView->property("extraCol").toString());
+	row["values"] = values;
 
 	result.append(row);
 	return result;

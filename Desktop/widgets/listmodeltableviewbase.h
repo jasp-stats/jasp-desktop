@@ -108,6 +108,9 @@ signals:
 	void variableCountChanged();
 	void itemChangedSignal(int column, int row, double value);
 
+public slots:
+	virtual void initialValuesChanged() {}
+
 protected slots:
 	void formulaCheckSucceededSlot();
 

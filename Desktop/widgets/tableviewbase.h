@@ -27,14 +27,15 @@ class TableViewBase : public JASPListControl, public BoundControl
 {
 	Q_OBJECT
 
-	Q_PROPERTY( ModelType		modelType			READ modelType			WRITE setModelType			NOTIFY modelTypeChanged				)
-	Q_PROPERTY( ItemType		itemType			READ itemType			WRITE setItemType			NOTIFY itemTypeChanged				)
-	Q_PROPERTY( QString			defaultEmptyValue	READ defaultEmptyValue	WRITE setDefaultEmptyValue	NOTIFY defaultEmptyValueChanged		)
-	Q_PROPERTY( int				initialColumnCount	READ initialColumnCount	WRITE setInitialColumnCount	NOTIFY initialColumnCountChanged	)
-	Q_PROPERTY( int				initialRowCount		READ initialRowCount	WRITE setInitialRowCount	NOTIFY initialRowCountChanged		)
-	Q_PROPERTY( int				columnCount			READ columnCount									NOTIFY columnCountChanged			)
-	Q_PROPERTY( int				rowCount			READ rowCount										NOTIFY rowCountChanged				)
-	Q_PROPERTY( int				variableCount		READ variableCount									NOTIFY variableCountChanged			)
+	Q_PROPERTY( ModelType		modelType			READ modelType				WRITE setModelType				NOTIFY modelTypeChanged				)
+	Q_PROPERTY( ItemType		itemType			READ itemType				WRITE setItemType				NOTIFY itemTypeChanged				)
+	Q_PROPERTY( QString			defaultEmptyValue	READ defaultEmptyValue		WRITE setDefaultEmptyValue		NOTIFY defaultEmptyValueChanged		)
+	Q_PROPERTY( QVariant		initialValuesSource	READ initialValuesSource	WRITE setInitialValuesSource	NOTIFY initialValuesSourceChanged	)
+	Q_PROPERTY( int				initialColumnCount	READ initialColumnCount		WRITE setInitialColumnCount		NOTIFY initialColumnCountChanged	)
+	Q_PROPERTY( int				initialRowCount		READ initialRowCount		WRITE setInitialRowCount		NOTIFY initialRowCountChanged		)
+	Q_PROPERTY( int				columnCount			READ columnCount											NOTIFY columnCountChanged			)
+	Q_PROPERTY( int				rowCount			READ rowCount												NOTIFY rowCountChanged				)
+	Q_PROPERTY( int				variableCount		READ variableCount											NOTIFY variableCountChanged			)
 
 public:
 	TableViewBase(QQuickItem* parent = nullptr);
@@ -57,6 +58,8 @@ public:
 	JASPControl::ItemType		itemType()								const				{ return _itemType;						}
 	const QString&				defaultEmptyValue()						const				{ return _defaultEmptyValue;			}
 	QVariant					defaultValue();
+	QVariant					initialValuesSource()					const				{ return _initialValuesSource;			}
+	JASPListControl*			initialValuesControl()					const				{ return _initialValuesControl;			}
 	int							initialColumnCount()					const				{ return _initialColumnCount;			}
 	int							initialRowCount()						const				{ return _initialRowCount;				}
 	int							rowCount()								const				{ return _tableModel ? _tableModel->rowCount()		: 0; }
@@ -69,6 +72,7 @@ signals:
 	void						defaultEmptyValueChanged();
 	void						initialRowCountChanged();
 	void						initialColumnCountChanged();
+	void						initialValuesSourceChanged();
 	void						rowCountChanged();
 	void						columnCountChanged();
 	void						variableCountChanged();
@@ -84,6 +88,7 @@ protected slots:
 	GENERIC_SET_FUNCTION(DefaultEmptyValue,		_defaultEmptyValue,		defaultEmptyValueChanged,	QString		)
 	GENERIC_SET_FUNCTION(InitialRowCount,		_initialRowCount,		initialRowCountChanged,		int			)
 	GENERIC_SET_FUNCTION(InitialColumnCount,	_initialColumnCount,	initialColumnCountChanged,	int			)
+	GENERIC_SET_FUNCTION(InitialValuesSource,	_initialValuesSource,	initialValuesSourceChanged,	QVariant	)
 
 protected:
 	BoundControlTableView		* _boundControl	= nullptr;
@@ -96,6 +101,7 @@ private slots:
 	void removeRowSlot(int row);
 	void resetSlot();
 	void itemChangedSlot(int col, int row, QString value, QString type);
+	void setInitialValuesControl();
 
 private:
 	QString					_defaultEmptyValue;
@@ -103,6 +109,8 @@ private:
 	ItemType				_itemType				= ItemType::Double;
 	int						_initialRowCount		= 0,
 							_initialColumnCount		= 0;
+	QVariant				_initialValuesSource;
+	JASPListControl*		_initialValuesControl	= nullptr;
 };
 
 #endif // TABLEVIEWBASE_H

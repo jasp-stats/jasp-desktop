@@ -74,6 +74,9 @@ void TableViewBase::setUp()
 
 	JASPListControl::setUp();
 
+	setInitialValuesControl();
+	connect(this,	&TableViewBase::initialValuesSourceChanged, this, &TableViewBase::setInitialValuesControl);
+
 	// form is not always known in the constructor, so all references to form (and dataset) must be done here
 	connect(form(),		&AnalysisForm::refreshTableViewModels,			this, &TableViewBase::refreshMe	);
 	_tableModel->setup();
@@ -115,6 +118,21 @@ void TableViewBase::itemChangedSlot(int col, int row, QString value, QString typ
 	{
 		if (_tableModel->valueOk(value))	_tableModel->itemChanged(col, row, value, type);
 		else								QTimer::singleShot(0, _tableModel, &ListModelTableViewBase::refreshModel);
+	}
+}
+
+void TableViewBase::setInitialValuesControl()
+{
+	if (_initialValuesControl)
+		disconnect(_initialValuesControl->model(), &ListModel::termsChanged, _tableModel, &ListModelTableViewBase::initialValuesChanged);
+
+	QString initialValuesSourceName = initialValuesSource().toString();
+	if (!initialValuesSourceName.isEmpty() && form())
+	{
+		_initialValuesControl = qobject_cast<JASPListControl*>(form()->getControl(initialValuesSourceName));
+		addDependency(_initialValuesControl);
+		connect(_initialValuesControl->model(), &ListModel::termsChanged, _tableModel, &ListModelTableViewBase::initialValuesChanged);
+		_tableModel->initialValuesChanged();
 	}
 }
 

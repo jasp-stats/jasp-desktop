@@ -50,6 +50,7 @@ public:
 
 public slots:
 	void	sourceTermsReset()															override;
+	void	initialValuesChanged()														override;
 	void	setFilter(QString filter);
 	void	setColName(QString colName);
 	void	setExtraCol(QString extraCol);
@@ -73,6 +74,7 @@ private:
 	std::vector<bool>			_acceptedRows;
 	std::vector<size_t>			_filteredRowToData;
 	std::map<size_t, double>	_enteredValues;
+	std::vector<double>			_initialValues;
 	int							_editableColumn = 0;
 	QStringList					_dataColumns,
 								_extraColsStr;
