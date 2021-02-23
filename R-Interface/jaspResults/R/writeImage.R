@@ -23,7 +23,8 @@ openGrDevice <- function(...) {
   #if (jaspResultsCalledFromJasp())
   #  svglite::svglite(...)
   #else
-  grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+  # grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+  ragg::agg_png(...)
 }
 
 writeImageJaspResults <- function(plot, width = 320, height = 320, obj = TRUE, relativePathpng = NULL, ppi = 300, backgroundColor = "white",
@@ -77,34 +78,22 @@ writeImageJaspResults <- function(plot, width = 320, height = 320, obj = TRUE, r
   # width  <- width / 72
   # height <- height / 72
   
-  width  <- width * (ppi / 96)
+  width  <- width  * (ppi / 96)
   height <- height * (ppi / 96)
 
   plot2draw <- decodeplot(plot)
 
+  openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), background = backgroundColor)#, dpi = ppi)
+  on.exit(dev.off())
+
   if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable", "gTree"))) {
 
-    # TODO: ggsave adds very little when we use a function as device...
-    ggplot2::ggsave(
-      filename  = relativePathpng, 
-      plot      = plot2draw,
-      device    = grDevices::png,
-      dpi       = ppi,
-      width     = width,
-      height    = height,
-      bg        = backgroundColor,
-      res       = 72 * (ppi / 96),
-      type      = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"),
-      limitsize = FALSE # only necessary if users make the plot ginormous.
-    )
+    # inherited from ggplot2::ggsave
+    grid::grid.draw(plot2draw)
 
   } else {
-    
-    isRecordedPlot <- inherits(plot2draw, "recordedplot")
 
-    # Open graphics device and plot
-    openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), bg = backgroundColor)
-    on.exit(dev.off())
+    isRecordedPlot <- inherits(plot2draw, "recordedplot")
 
     if (is.function(plot2draw) && !isRecordedPlot) {
 

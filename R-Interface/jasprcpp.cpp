@@ -225,9 +225,9 @@ void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMod
 	jaspResults::setWriteSealLocation(root, relativePath);
 }
 
-const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode)
+const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode, const char* resultsFont)
 {
-	RInside &rInside				= rinside->instance();
+	RInside &rInside			= rinside->instance();
 
 	rInside["name"]				= CSTRING_TO_R(name);
 	rInside["title"]			= CSTRING_TO_R(title);
@@ -239,6 +239,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rInside["resultsMeta"]		= "null";
 	rInside["requiresInit"]		= false;
 	rInside[".imageBackground"]	= imageBackground;
+	rInside[".resultsFont"]		= resultsFont;
 
 	_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
 
