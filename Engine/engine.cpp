@@ -702,7 +702,7 @@ void Engine::editImage()
 
 void Engine::rewriteImages()
 {
-	jaspRCPP_rewriteImages(_analysisName.c_str(), _ppi, _imageBackground.c_str(), _analysisId);
+	jaspRCPP_rewriteImages(_analysisName.c_str(), _ppi, _imageBackground.c_str(), _resultsFont.c_str(), _analysisId);
 
 	/* Already sent from R! (Through jaspResultsCPP$send())
 	_analysisStatus				= Status::complete;
