@@ -1750,16 +1750,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "AnalysisForm|"
-msgid "Cannot find a source %1 for VariableList %2"
-msgstr ""
-
-#, qt-format
-msgctxt "AnalysisForm|"
-msgid "No drop key found for %1"
-msgstr ""
-
-#, qt-format
-msgctxt "AnalysisForm|"
 msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
@@ -2317,193 +2307,6 @@ msgid "Do you really want to remove all analyses?"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"An error occured trying to initialize a module from dir %1, the error was: %2"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"Something went wrong removing files for module %1 at path '%2' and the error "
-"was: %3"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"The installation of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Loading packages for Module %1 failed"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"Loading the packages of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Path cannot be handled by R"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You are trying to install a module but because the path '%1' contains non-"
-"ascii characters (or a space) R might have some trouble installing there. If "
-"the installation of this module fails you can work around this by changing "
-"your username (or making a new username) that only contains ascii-characters "
-"and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
-">Advanced->DeveloperMode."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Cannot install module because %1 does not exist."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"Cannot install module because it is named '%1' and that name is reserved for "
-"installing the development module.\n"
-"Change the name (in DESCRIPTION and description.json) and try it again. If "
-"you are not the author of this module and do not know how to do this, "
-"contact: %2"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Select a folder"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid ""
-"To install a development module you need to select the folder you want to "
-"watch and load, you can do this under the filemenu, Preferences->Advanced."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Problem initializing module"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid ""
-"There was a problem loading the developer module:\n"
-"\n"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Missing files or folders"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid ""
-"The selected folder cannot be installed as a developer module because it "
-"does not contain all the necessary files and folders."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Create a inst/description.json file."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Create a R directory containing your analysis code."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid ""
-"Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing %1"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 from your development module directory. Without "
-"it your module cannot work, make sure to put it back. For now your old %2 "
-"file will be kept."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had a %1 in your development module directory. "
-"Without it your module cannot work, make sure to create one. How you "
-"installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "%1 was removed!"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 but this file is required for your module to "
-"work. The development module is going to be uninstalled now."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing folder %1"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed the folder %1 from your development module "
-"directory. Without it your module cannot work, make sure to put it back. For "
-"now your old folder will be kept."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had the folder %1 in your development module "
-"directory. Without it your module cannot work, make sure to create one. How "
-"you installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Loading module description encountered a problem"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a href="
-"\"http://%6\">%6</a></i><br>"
-msgstr ""
-
-#, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
 msgstr ""
@@ -2678,11 +2481,6 @@ msgstr ""
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr ""
-
-#, qt-format
-msgctxt "ComboBoxBase|"
-msgid "Unknown error in ComboBox %1"
 msgstr ""
 
 msgctxt "ActionButtons|"
@@ -2883,24 +2681,8 @@ msgid "Advanced"
 msgstr ""
 
 #, qt-format
-msgctxt "JASPListControl|"
-msgid ""
-"The list %1 has a rowComponent with the same name (%2) as its optionKey. "
-"Change the optionKey property of the list or the control name."
-msgstr ""
-
-#, qt-format
-msgctxt "JASPListControl|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr ""
-
-#, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr ""
-
-msgctxt "ListModelFilteredDataEntry|"
-msgid "Too many rows in OptionsTable for ListModelFilteredDataEntry"
 msgstr ""
 
 #, qt-format
@@ -2919,21 +2701,6 @@ msgid "RM Factor %1"
 msgstr ""
 
 #, qt-format
-msgctxt "ListModelTableViewBase|"
-msgid "Column number in source use is bigger than the number of columns of %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelTableViewBase|"
-msgid "No column in TableView source %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelTableViewBase|"
-msgid "Unknown column specified (%1) in TableView source %2"
-msgstr ""
-
-#, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
@@ -2943,21 +2710,6 @@ msgstr ""
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr ""
-
-#, qt-format
-msgctxt "RadioButtonsGroupBase|"
-msgid "Radio button clicked is unknown: %1"
-msgstr ""
-
-#, qt-format
-msgctxt "RepeatedMeasuresFactorsListBase|"
-msgid "Level %1"
-msgstr ""
-
-#, qt-format
-msgctxt "RepeatedMeasuresFactorsListBase|"
-msgid "RM Factor %1"
 msgstr ""
 
 #, qt-format
@@ -3093,4 +2845,404 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Standardizes the variable"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns true if string contains substring at least once"
+msgstr ""
+
+msgctxt "FactorsForm|"
+msgid "+"
+msgstr ""
+
+msgctxt "FactorsForm|"
+msgid "-"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Standardizes the variable"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "returns true if string contains substring at least once"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid ""
+"The title can only be modified in advanced mode because it is not plain text."
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Title Type"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Plain text"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "R expression"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Hide title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Ticks"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Specify sequence"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Manually"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Hide ticks"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Specify ticks:"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "from"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "to"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "steps"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Range"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Based on data"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Based on ticks"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Set manually"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Lower limit"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Upper limit"
+msgstr ""
+
+msgctxt "PlotEditingAxisTable|"
+msgid "Insert break left"
+msgstr ""
+
+msgctxt "PlotEditingAxisTable|"
+msgid "Insert break right"
+msgstr ""
+
+msgctxt "PlotEditingAxisTable|"
+msgid "Delete break"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Which axis should be shown?"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "x-axis"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "y-axis"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Redo last change"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Undo last change"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Advanced settings"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Finish"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Original plot"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Save plot as"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Edit the labels here or choose which values should be filtered out."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Something went wrong converting columntype, but it is unclear what."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Failed to convert column to ordinal: values contain decimals."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Failed to convert column to continuous: values contain text."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Failed to convert column to ordinal: values contain text or decimals."
+msgstr ""
+
+msgctxt "LabelModel|"
+msgid "Value"
+msgstr ""
+
+msgctxt "LabelModel|"
+msgid "Label"
+msgstr ""
+
+#, qt-format
+msgctxt "EngineRepresentation|"
+msgid ""
+"Unfortunately the plot could not be edited.\n"
+"\n"
+"Error message:\n"
+"%1\n"
+"\n"
+"If the problem persists, please report the message above at: https://jasp-"
+"stats.org/bug-reports"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades for module %1 failed"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades gave the following error: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"An error occured trying to initialize a module from dir %1, the error was: %2"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "An error occured trying to load module %1, the error was: '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Something went wrong removing files for module %1 at path '%2' and the error "
+"was: %3"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"The installation of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Loading packages for Module %1 failed"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Loading the packages of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Path cannot be handled by R"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You are trying to install a module but because the path '%1' contains non-"
+"ascii characters (or a space) R might have some trouble installing there. If "
+"the installation of this module fails you can work around this by changing "
+"your username (or making a new username) that only contains ascii-characters "
+"and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
+">Advanced->DeveloperMode."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Cannot install module because %1 does not exist."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Cannot install module because it is named '%1' and that name is reserved for "
+"installing the development module.\n"
+"Change the name (in DESCRIPTION and description.json) and try it again. If "
+"you are not the author of this module and do not know how to do this, "
+"contact: %2"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Select a folder"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select the folder you want to "
+"watch and load, you can do this under the filemenu, Preferences->Advanced."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Problem initializing module"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"There was a problem loading the developer module:\n"
+"\n"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Missing files or folders"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"The selected folder cannot be installed as a developer module because it "
+"does not contain all the necessary files and folders."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Create a inst/Description.qml file."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Create a R directory containing your analysis code."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Create a inst/qml directory containing your optionsforms."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Create a inst/icons directory containing the icons for your ribbonbuttons."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Missing %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have removed %1 from your development module directory. Without "
+"it your module cannot work, make sure to put it back. For now your old %2 "
+"file will be kept."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have never had a %1 in your development module directory. "
+"Without it your module cannot work, make sure to create one. How you "
+"installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "%1 was removed!"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have removed %1 but this file is required for your module to "
+"work. The development module is going to be uninstalled now."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Missing folder %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have removed the folder %1 from your development module "
+"directory. Without it your module cannot work, make sure to put it back. For "
+"now your old folder will be kept."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have never had the folder %1 in your development module "
+"directory. Without it your module cannot work, make sure to create one. How "
+"you installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Loading module description encountered a problem"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "<i>Could not load the description of the module in archive: '%1'</i>"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
+"maintained by %5.</i><br><i>See website for further details: <a href="
+"\"http://%6\">%6</a></i><br>"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelTableViewBase|"
+msgid "Column number in source is bigger than the number of columns of %1"
+msgstr ""
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Wrong column type: %1 for ListView %2"
 msgstr ""

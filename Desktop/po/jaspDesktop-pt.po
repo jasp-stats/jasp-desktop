@@ -1,143 +1,133 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-01-26 11:51+0000\n"
-"Last-Translator: Koji Kosugi <kosugitti@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/ja/>\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
-msgstr "行を追加する"
+msgstr ""
 
 msgctxt "ComponentsList|"
 msgid "Remove a row"
-msgstr "行を削除"
+msgstr ""
 
 msgctxt "FileSelector|"
 msgid "Save file to:"
-msgstr "ファイルの保存先:"
+msgstr ""
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr "ファイルの読み込み:"
+msgstr ""
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr "保存するファイルを選択"
+msgstr ""
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr "読み込むファイルを選択してください"
+msgstr ""
 
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr "参照"
+msgstr ""
 
 msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
-"この分析は、古いバージョンのJASP（または動的モジュール）を使用して作成されま"
-"した"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr "更新すると、異なる結果が得られる可能性があります。"
+msgstr ""
 
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
 msgstr ""
-"ノートを今ある場所に保存しておき、まず分析を更新することを強くお勧めします"
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr "新しい値"
+msgstr ""
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
-msgstr "モデル項"
+msgstr ""
 
 msgctxt "ModelTermsList|"
 msgid "Add to null model"
-msgstr "NULL モデルに追加"
+msgstr ""
 
 msgctxt "TableView|"
 msgid "Row #"
-msgstr "行#"
+msgstr ""
 
 msgctxt "TabView|"
 msgid "Add a tab"
-msgstr "タブを追加する"
+msgstr ""
 
 msgctxt "TabView|"
 msgid "Remove this tab"
-msgstr "このタブを削除します"
+msgstr ""
 
 msgctxt "TabView|"
 msgid "New tab"
-msgstr "新しいタブ"
+msgstr ""
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
-msgstr "⌘ + Enter で適用"
+msgstr ""
 
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
-msgstr "Ctrl + Enterで適用"
+msgstr ""
 
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr "最後の正しい値を復元します：%1"
+msgstr ""
 
 msgctxt "VariablesForm|"
 msgid "Main Effects"
-msgstr "主効果"
+msgstr ""
 
 msgctxt "VariablesForm|"
 msgid "Only 2 way"
-msgstr "2要因のみ"
+msgstr ""
 
 msgctxt "VariablesForm|"
 msgid "Only 3 way"
-msgstr "3要因のみ"
+msgstr ""
 
 msgctxt "VariablesForm|"
 msgid "Only 4 way"
-msgstr "4要因のみ"
+msgstr ""
 
 msgctxt "VariablesForm|"
 msgid "Only 5 way"
-msgstr "5要因のみ"
+msgstr ""
 
 msgctxt "VariablesForm|"
 msgid "All"
-msgstr "すべて"
+msgstr ""
 
 msgctxt "VariablesForm|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr "変数フォームで設定できる変数リストは 1 つだけです。"
+msgstr ""
 
 msgctxt "VariablesForm|"
 msgid "There is no Available List in the Variables Form"
-msgstr "変数フォームに使用可能なリストがありません"
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
-msgstr "JASPについて"
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Version:"
-msgstr "バージョン："
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
@@ -145,119 +135,119 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr "ソース："
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr "ソースへのアクセスはこちら"
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr "ダウンロード："
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr "引用："
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr "すべて選択"
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr "選択範囲のコピー"
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
-msgstr "BibTeX"
+msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Close"
-msgstr "閉じる"
+msgstr ""
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr "ドラッグして解析の順序を変更する"
+msgstr ""
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr "この分析のタイトルを編集します"
+msgstr ""
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr "この分析を複製する"
+msgstr ""
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr "この分析の情報を表示する"
+msgstr ""
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr "この分析を削除する"
+msgstr ""
 
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
-msgstr "データ/結果のサイズを変更する"
+msgstr ""
 
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
-msgstr "ドラッグしてデータを表示"
+msgstr ""
 
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
-msgstr "入力オプションを非表示にする"
+msgstr ""
 
 msgctxt "AnalysisForms|"
 msgid "Show input options"
-msgstr "入力オプションを表示する"
+msgstr ""
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
-msgstr "追加"
+msgstr ""
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
-msgstr "削除"
+msgstr ""
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
-msgstr "リセット"
+msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr "ベイズファクター"
+msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
-msgstr "BF₁₀"
+msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
-msgstr "帰無仮説に対する代替仮説の証拠を定量化するためのベイズファクター"
+msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
-msgstr "BF₀₁"
+msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
-msgstr "帰無仮説に対する対立仮説の証拠を定量化するためのベイズファクター"
+msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr "Log(BF₁₀)"
+msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr "BF10の自然対数"
+msgstr ""
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr "列を追加"
+msgstr ""
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
@@ -265,217 +255,204 @@ msgstr ""
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr "リセット"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr "計算された列: "
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
-msgstr "列を選択"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr "絶対値"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr "標準偏差"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr "分散"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr "総和"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr "値の積"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Standardizes the variable"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr "最小値を返します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr "最大値を返します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr "平均"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr "y を小数点以下 n 桁に丸めます"
+msgstr ""
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr "yの要素数を返します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr "中央値"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr "自然対数"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr "2を底とする対数"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr "10を底とする対数"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr "'base' を底とした y の対数"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr "指数関数"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
 msgstr ""
-"相関を変換するフィッシャーのZ変換(すなわち、逆双曲線正接)により、-1と1の間の"
-"数値を実線に変換する"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
 msgstr ""
-"逆フィッシャーのZ変換(すなわち双曲正接)で実数を-1から1の間の数に変換します。"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr "データを numBreaks 水準に分割します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr "列の欠落値（NA）をreplaceWithの値に置き換えます"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr "if-else文"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns true if string contains substring at least once"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Gaussian distribution with specified mean and standard "
 "deviation sd"
-msgstr "指定した平均と標準偏差sdを持つガウス分布からデータを生成します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
 "centrality parameter ncp"
-msgstr "自由度dfと非中心性パラメーターncpをもつt分布からデータを生成します"
+msgstr ""
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
 msgstr ""
-"自由度dfと非中心性パラメータncpを持つカイ2乗分布からデータを生成します。"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
 "df1, df2 and non-centrality parameter ncp"
 msgstr ""
-"指定された自由度 df1, df2 と非中心性パラメータ ncp を持つ F 分布からデータを"
-"生成します．"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
 "probability prob"
-msgstr "指定された試行数と確率の二項分布からデータを生成します。"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a negative binomial distribution with specified trials "
 "and probability prob"
-msgstr "指定された試行と確率をもつ負の二項分布からデータを生成します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a geometric distribution with specified probability prob"
-msgstr "指定された確率をもつ幾何学的分布からデータを生成します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr "指定された比率λのポアソン分布からデータを生成します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
 msgstr ""
-"指定された形状パラメータ，アルファとベータのをもつベータ分布からデータを生成"
-"します"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr "minとmaxの間の一様分布からデータを生成します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
 msgstr ""
-"指定された形状パラメータとスケールパラメータを持つガンマ分布からデータを生成"
-"します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
-msgstr "指定された比率のパラメータを持つ指数分布からデータを生成します"
+msgstr ""
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
 "mean meanLog and standard deviation sdLog"
 msgstr ""
-"指定された対数平均meanLogと標準偏差sdLogを使用して対数正規分布からデータを生"
-"成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
 msgstr ""
-"指定された形状パラメータとスケールパラメータを持つワイブル分布からデータを生"
-"成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr "計算された列を削除"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr "生成されたRコードを表示"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr "計算された列:"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
-msgstr "計算された列"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr "クリックして列を計算します"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
@@ -483,58 +460,57 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr "ドキュメントを開く"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
-msgstr "計算列ウィンドウを閉じる"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
-msgstr "計算列が変更されました"
+msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
-msgstr "計算列に適用されていない変更があります。どうしますか?"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "none"
-msgstr "なし"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr "偏差"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr "シンプル"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr "差"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr "Helmert"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr "繰り返し"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr "多項"
+msgstr ""
 
-#, fuzzy
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr "カスタム"
+msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "Factors"
-msgstr "要因"
+msgstr ""
 
 #, qt-format
 msgctxt "ContrastsList|"
@@ -543,117 +519,125 @@ msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr "計算された列の作成"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr "名前:"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr "列名はすでに使用されています。別の名前を選択してください。"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr "R コードを使用して列を定義する"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr "ドラッグアンドドロップ式で列を定義する"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr "スケール"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr "順序"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr "名義"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr "テキスト"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr "ドキュメントを開く"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr "列の作成"
+msgstr ""
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr "新しい計算列 '%1' を作成するには、ここをクリックしてください"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr "計算された列に有効な（未使用の）名前を入力してください"
+msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr "計算列を作成せずに閉じる"
+msgstr ""
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr "コントラストを追加"
+msgstr ""
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr "コントラストを削除"
+msgstr ""
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr "リセット"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr "フィルタを非表示"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr "フィルタを表示"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr "計算された列を追加"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
-msgstr "列タイプを変更するには、ここをクリックしてください"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Click here to change the columns formulas"
-msgstr "列の数式を変更するには、ここをクリックしてください"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Click here to change labels"
-msgstr "ラベルを変更するには、ここをクリックしてください"
+msgstr ""
 
 msgctxt "DataTableView|"
 msgid " or inspect filter"
-msgstr " または検査フィルタ"
+msgstr ""
+
+msgctxt "FactorsForm|"
+msgid "+"
+msgstr ""
+
+msgctxt "FactorsForm|"
+msgid "-"
+msgstr ""
 
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr "%1に戻る"
+msgstr ""
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr "あなたはここにいます"
+msgstr ""
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr "最近使用したフォルダ"
+msgstr ""
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr "参照"
+msgstr ""
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
@@ -1296,6 +1280,10 @@ msgid "product of values"
 msgstr ""
 
 msgctxt "FilterWindow|"
+msgid "Standardizes the variable"
+msgstr ""
+
+msgctxt "FilterWindow|"
 msgid "returns minimum of values"
 msgstr ""
 
@@ -1321,6 +1309,10 @@ msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "if-else statement"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "returns true if string contains substring at least once"
 msgstr ""
 
 msgctxt "FilterWindow|"
@@ -1510,6 +1502,135 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr ""
 
+msgctxt "PlotEditingAxis|"
+msgid "Title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid ""
+"The title can only be modified in advanced mode because it is not plain text."
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Title Type"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Plain text"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "R expression"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Hide title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Ticks"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Specify sequence"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Manually"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Hide ticks"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Specify ticks:"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "from"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "to"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "steps"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Range"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Based on data"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Based on ticks"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Set manually"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Lower limit"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Upper limit"
+msgstr ""
+
+msgctxt "PlotEditingAxisTable|"
+msgid "Insert break left"
+msgstr ""
+
+msgctxt "PlotEditingAxisTable|"
+msgid "Insert break right"
+msgstr ""
+
+msgctxt "PlotEditingAxisTable|"
+msgid "Delete break"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Which axis should be shown?"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "x-axis"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "y-axis"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Redo last change"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Undo last change"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Advanced settings"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Finish"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Original plot"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Save plot as"
+msgstr ""
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr ""
@@ -1665,6 +1786,10 @@ msgid "Half-normal"
 msgstr ""
 
 msgctxt "VariablesWindow|"
+msgid "Edit the labels here or choose which values should be filtered out."
+msgstr ""
+
+msgctxt "VariablesWindow|"
 msgid "Filter"
 msgstr ""
 
@@ -1778,16 +1903,6 @@ msgstr ""
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
-msgstr ""
-
-#, qt-format
-msgctxt "AnalysisForm|"
-msgid "Cannot find a source %1 for VariableList %2"
-msgstr ""
-
-#, qt-format
-msgctxt "AnalysisForm|"
-msgid "No drop key found for %1"
 msgstr ""
 
 #, qt-format
@@ -2011,6 +2126,22 @@ msgctxt "ColumnsModel|"
 msgid "'-column "
 msgstr ""
 
+msgctxt "DataSetPackage|"
+msgid "Something went wrong converting columntype, but it is unclear what."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Failed to convert column to ordinal: values contain decimals."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Failed to convert column to continuous: values contain text."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Failed to convert column to ordinal: values contain text or decimals."
+msgstr ""
+
 #, qt-format
 msgctxt "FileEvent|"
 msgid "Importing Data from %1"
@@ -2056,6 +2187,14 @@ msgctxt "FileEvent|"
 msgid "Processing File"
 msgstr ""
 
+msgctxt "LabelModel|"
+msgid "Value"
+msgstr ""
+
+msgctxt "LabelModel|"
+msgid "Label"
+msgstr ""
+
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run this analysis..."
 msgstr ""
@@ -2090,6 +2229,18 @@ msgstr ""
 
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
+msgstr ""
+
+#, qt-format
+msgctxt "EngineRepresentation|"
+msgid ""
+"Unfortunately the plot could not be edited.\n"
+"\n"
+"Error message:\n"
+"%1\n"
+"\n"
+"If the problem persists, please report the message above at: https://jasp-"
+"stats.org/bug-reports"
 msgstr ""
 
 msgctxt "ColumnTypesModel|"
@@ -2349,48 +2500,58 @@ msgid "Do you really want to remove all analyses?"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades for module %1 failed"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades gave the following error: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Loading packages for Module %1 failed"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "Loading the packages of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Path cannot be handled by R"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "You are trying to install a module but because the path '%1' contains non-"
 "ascii characters (or a space) R might have some trouble installing there. If "
@@ -2401,12 +2562,12 @@ msgid ""
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "Cannot install module because it is named '%1' and that name is reserved for "
 "installing the development module.\n"
@@ -2415,60 +2576,60 @@ msgid ""
 "contact: %2"
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
 "\n"
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
 msgstr ""
 
-msgctxt "DynamicModules|"
-msgid "Create a inst/description.json file."
+msgctxt "Modules::DynamicModules|"
+msgid "Create a inst/Description.qml file."
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 from your development module directory. Without "
 "it your module cannot work, make sure to put it back. For now your old %2 "
@@ -2476,7 +2637,7 @@ msgid ""
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have never had a %1 in your development module directory. "
 "Without it your module cannot work, make sure to create one. How you "
@@ -2485,24 +2646,24 @@ msgid ""
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed the folder %1 from your development module "
 "directory. Without it your module cannot work, make sure to put it back. For "
@@ -2510,7 +2671,7 @@ msgid ""
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have never had the folder %1 in your development module "
 "directory. Without it your module cannot work, make sure to create one. How "
@@ -2518,17 +2679,17 @@ msgid ""
 "uninstalled now"
 msgstr ""
 
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
+msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
 "maintained by %5.</i><br><i>See website for further details: <a href="
@@ -2710,11 +2871,6 @@ msgstr ""
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr ""
-
-#, qt-format
-msgctxt "ComboBoxBase|"
-msgid "Unknown error in ComboBox %1"
 msgstr ""
 
 msgctxt "ActionButtons|"
@@ -2915,24 +3071,8 @@ msgid "Advanced"
 msgstr ""
 
 #, qt-format
-msgctxt "JASPListControl|"
-msgid ""
-"The list %1 has a rowComponent with the same name (%2) as its optionKey. "
-"Change the optionKey property of the list or the control name."
-msgstr ""
-
-#, qt-format
-msgctxt "JASPListControl|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr ""
-
-#, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr ""
-
-msgctxt "ListModelFilteredDataEntry|"
-msgid "Too many rows in OptionsTable for ListModelFilteredDataEntry"
 msgstr ""
 
 #, qt-format
@@ -2952,17 +3092,7 @@ msgstr ""
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
-msgid "Column number in source use is bigger than the number of columns of %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelTableViewBase|"
-msgid "No column in TableView source %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelTableViewBase|"
-msgid "Unknown column specified (%1) in TableView source %2"
+msgid "Column number in source is bigger than the number of columns of %1"
 msgstr ""
 
 #, qt-format
@@ -2975,21 +3105,6 @@ msgstr ""
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr ""
-
-#, qt-format
-msgctxt "RadioButtonsGroupBase|"
-msgid "Radio button clicked is unknown: %1"
-msgstr ""
-
-#, qt-format
-msgctxt "RepeatedMeasuresFactorsListBase|"
-msgid "Level %1"
-msgstr ""
-
-#, qt-format
-msgctxt "RepeatedMeasuresFactorsListBase|"
-msgid "RM Factor %1"
 msgstr ""
 
 #, qt-format
@@ -3032,6 +3147,21 @@ msgstr ""
 
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "No name given for the source of %1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "No source given for %1"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Cannot find component %1 for the source of %2"
 msgstr ""
 
 msgctxt "TextAreaBase|"
@@ -3113,16 +3243,6 @@ msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr ""
 
 #, qt-format
-msgctxt "QObject|"
-msgid "No name given for the source of %1"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
-msgid "No source given for %1"
-msgstr ""
-
-#, qt-format
-msgctxt "QObject|"
-msgid "Cannot find component %1 for the source of %2"
+msgctxt "VariablesListBase|"
+msgid "Wrong column type: %1 for ListView %2"
 msgstr ""
