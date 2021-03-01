@@ -84,7 +84,7 @@ extern "C" {
 	void rbridge_setDataSetSource(			boost::function<DataSet *()> source);
 	void rbridge_memoryCleaning();
 
-	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground, bool developerMode, const std::string &jaspFont);
+	std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground, bool developerMode, const std::string &resultsFont);
 
 	void rbridge_setColumnFunctionSources(			boost::function<int (const std::string &)																		> getTypeSource,
 													boost::function<bool(const std::string &, const std::vector<double>&)											> scaleSource,
