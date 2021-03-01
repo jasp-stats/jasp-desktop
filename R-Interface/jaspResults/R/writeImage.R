@@ -26,7 +26,8 @@ openGrDevice <- function(...) {
   grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
 }
 
-writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathpng=NULL, ppi=300, backgroundColor="white", location=getImageLocation())
+writeImageJaspResults <- function(plot, width = 320, height = 320, obj = TRUE, relativePathpng = NULL, ppi = 300, backgroundColor = "white",
+                                  location = getImageLocation(), oldPlotInfo = list())
 {
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
@@ -46,6 +47,28 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))
+
+  if (length(oldPlotInfo) != 0L && !is.null(oldPlotInfo[["editOptions"]]) && ggplot2::is.ggplot(plot)) {
+
+    # uncommenting this applies the edits previously done with plot editing to an older figure to the new figure.
+    # see https://github.com/jasp-stats/INTERNAL-jasp/issues/1257 for discussion on what needs to be done before we can do this.
+
+    # e <- try({
+    #   # same construction as in editImage
+    #   newPlot <- ggplot2:::plot_clone(plot)
+    #
+    #   newOpts       <- jaspBase::fromJSON(oldPlotInfo[["editOptions"]])
+    #   oldOpts       <- jaspGraphs::plotEditingOptions(plot)
+    #   newOpts$xAxis <- list(type = oldOpts$xAxis$type, settings = newOpts$xAxis$settings[names(newOpts$xAxis$settings) != "type"])
+    #   newOpts$yAxis <- list(type = oldOpts$yAxis$type, settings = newOpts$yAxis$settings[names(newOpts$yAxis$settings) != "type"])
+    #
+    #   newPlot <- jaspGraphs::plotEditing(newPlot, newOpts)
+    # })
+    #
+    # if (!inherits(e, "try-error"))
+    #   plot <- newPlot
+
+  }
   
   # IN CASE WE SWITCH TO SVG:
   # # convert width & height from pixels to inches. ppi = pixels per inch. 72 is a magic number inherited from the past.

@@ -1,4 +1,5 @@
 #include "jaspContainer.h"
+#include "columnencoder.h"
 
 
 void jaspContainer::insert(std::string field, Rcpp::RObject value)
@@ -41,6 +42,9 @@ void jaspContainer::insert(std::string field, Rcpp::RObject value)
 
 	addChild(obj);
 
+	if (connectedToJaspResults())
+		renderPlotsOfChildren();
+
 	//jaspResults doesn't have any parents
 	if(getType() == jaspObjectType::results)	childrenUpdatedCallback(true);
 	else										notifyParentOfChanges();
@@ -70,7 +74,11 @@ Rcpp::RObject jaspContainer::at(std::string field)
 		return R_NilValue;
 
 	jaspObject * ref = _data[field];
+	return wrapJaspObject(ref);
+}
 
+Rcpp::RObject jaspContainer::wrapJaspObject(jaspObject * ref)
+{
 	switch(ref->getType())
 	{
 	case jaspObjectType::container:	return Rcpp::wrap(jaspContainer_Interface(ref));
@@ -160,6 +168,45 @@ std::vector<std::string> jaspContainer::getSortedDataFields() const
 bool jaspContainer::jaspObjectComesFromOldResults(std::string fieldName, jaspContainer * oldResult) const
 {
 	return !(oldResult == nullptr || _data.count(fieldName) > 0);
+}
+
+jaspObject * jaspContainer::findObjectWithNestedNameVector(const std::vector<std::string>& uniqueNames, const size_t position)
+{
+	if (_data.count(uniqueNames[position]) == 0)
+		return nullptr;
+
+	jaspObject * ptr = _data[uniqueNames[position]];
+	if (uniqueNames.size() == position + 1)
+		return ptr;
+
+	if (ptr->getType() == jaspObjectType::container)
+		return static_cast<jaspContainer *>(ptr)->findObjectWithNestedNameVector(uniqueNames, position + 1);
+
+	return ptr;
+
+}
+
+jaspObject * jaspContainer::findObjectWithUniqueNestedName(const std::string &uniqueNestedName)
+{
+
+	if (getUniqueNestedName() == uniqueNestedName)
+		return this;
+
+	for (auto & d: _data)
+	{
+		if (d.second->getUniqueNestedName() == uniqueNestedName)
+			return d.second;
+
+		if (d.second->getType() == jaspObjectType::container)
+		{
+			jaspObject * ptr = static_cast<jaspContainer *>(d.second)->findObjectWithUniqueNestedName(uniqueNestedName);
+			if (ptr)
+				return ptr;
+		}
+	}
+
+	return nullptr;
+
 }
 
 jaspObject * jaspContainer::getJaspObjectNewOrOld(std::string fieldName, jaspContainer * oldResult) const
@@ -427,4 +474,29 @@ void jaspContainer::setError(std::string message)
 {
 	_errorMessage = message;
 	setError();
+}
+
+void jaspContainer::renderPlotsOfChildren()
+{
+	for(auto & child : _data)
+		switch (child.second->getType())
+		{
+		case jaspObjectType::container:
+			static_cast<jaspContainer*>(child.second)->renderPlotsOfChildren();
+			break;
+
+		case jaspObjectType::plot:
+			static_cast<jaspPlot*>(child.second)->renderPlot();
+			break;
+
+		default:
+			break;
+
+		}
+}
+
+Rcpp::RObject jaspContainer_Interface::findObjectWithUniqueNestedName(std::string uniqueNestedName)
+{
+	std::string encodedUniqueNestedName = ColumnEncoder::columnEncoder()->encodeAll(uniqueNestedName);
+	return jaspContainer::wrapJaspObject(((jaspContainer*)myJaspObject)->findObjectWithUniqueNestedName(encodedUniqueNestedName));
 }

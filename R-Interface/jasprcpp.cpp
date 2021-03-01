@@ -365,16 +365,19 @@ const char* STDCALL jaspRCPP_saveImage(const char * data, const char *type, cons
 	return staticResult.c_str();
 }
 
-const char* STDCALL jaspRCPP_editImage(const char * optionsJson, const int ppi, const char* imageBackground)
+const char* STDCALL jaspRCPP_editImage(const char * name, const char * optionsJson, const int ppi, const char* imageBackground, int analysisID)
 {
 
 	RInside &rInside = rinside->instance();
 
 	rInside[".imageBackground"] = imageBackground;
-	rInside["editImgOptions"]	= CSTRING_TO_R(optionsJson);
+	rInside[".editImgOptions"]	= CSTRING_TO_R(optionsJson);
+	rInside[".analysisName"]	= CSTRING_TO_R(name);
 	rInside[".ppi"]				= ppi;
 
-	SEXP result = jaspRCPP_parseEval("editImage(editImgOptions)");
+	_setJaspResultsInfo(analysisID, 0, false);
+
+	SEXP result = jaspRCPP_parseEval("editImage(.analysisName, .editImgOptions)");
 	static std::string staticResult;
 	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
 
@@ -383,14 +386,18 @@ const char* STDCALL jaspRCPP_editImage(const char * optionsJson, const int ppi, 
 }
 
 
-void STDCALL jaspRCPP_rewriteImages(const int ppi, const char* imageBackground) {
+void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char* imageBackground, int analysisID)
+{
 
 	RInside &rInside = rinside->instance();
 
 	rInside[".ppi"]				= ppi;
 	rInside[".imageBackground"] = imageBackground;
+	rInside[".analysisName"]	= CSTRING_TO_R(name);
 
-	jaspRCPP_parseEvalQNT("rewriteImages()");
+	_setJaspResultsInfo(analysisID, 0, false);
+
+	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)");
 }
 
 const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {

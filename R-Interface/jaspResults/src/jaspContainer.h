@@ -48,6 +48,7 @@ public:
 	void		letChildrenRun();
 	void		setError()															override;
 	void		setError(std::string message)										override;
+	void		renderPlotsOfChildren();
 
 	bool		containsNonContainer();
 	bool		canShowErrorMessage()										const	override;
@@ -62,6 +63,10 @@ public:
 	jaspObject *								getJaspObjectFromData(std::string fieldName)										const;
 	bool										jaspObjectComesFromOldResults(std::string fieldName, jaspContainer * oldResult)		const;
 
+	jaspObject *								findObjectWithNestedNameVector(const std::vector<std::string> &uniqueName, const size_t position = 0);
+	jaspObject *								findObjectWithUniqueNestedName(const std::string & uniqueNestedName);
+	static	Rcpp::RObject						wrapJaspObject(jaspObject * ref);
+
 protected:
 	std::map<std::string, jaspObject*>	_data;
 	std::map<std::string, int>			_data_order;
@@ -74,9 +79,10 @@ class jaspContainer_Interface : public jaspObject_Interface
 public:
 	jaspContainer_Interface(jaspObject * dataObj) : jaspObject_Interface(dataObj) {}
 
-	int length()													{ return ((jaspContainer*)myJaspObject)->length(); }
-	Rcpp::RObject	at(std::string field)							{ return ((jaspContainer*)myJaspObject)->at(field); }
-	void			insert(std::string field, Rcpp::RObject value)	{ ((jaspContainer*)myJaspObject)->insert(field, value); }
+	int length()																	{ return ((jaspContainer*)myJaspObject)->length(); }
+	Rcpp::RObject	at(std::string field)											{ return ((jaspContainer*)myJaspObject)->at(field); }
+	void			insert(std::string field, Rcpp::RObject value)					{ ((jaspContainer*)myJaspObject)->insert(field, value); }
+	Rcpp::RObject	findObjectWithUniqueNestedName(std::string uniqueNestedName);
 
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspContainer, bool,	_initiallyCollapsed,	InitiallyCollapsed)
 };

@@ -1,6 +1,7 @@
 #define ENUM_DECLARATION_CPP
 #include "jaspObject.h"
 #include "jaspJson.h"
+#include "jaspResults.h"
 #include <chrono>
 
 #if defined(_WIN32) || !defined(JASP_R_INTERFACE_LIBRARY)
@@ -239,6 +240,17 @@ std::string jaspObject::getUniqueNestedName() const
 	return parent_prefix + (_name != "" ? _name : "");
 }
 
+void jaspObject::getUniqueNestedNameVector(std::vector<std::string> &names) const
+{
+	if (parent)
+		parent->getUniqueNestedNameVector(names);
+
+	// jaspResults doesn't have a name
+	if (_name != "")
+		names.push_back(_name);
+
+}
+
 
 void jaspObjectFinalizer(jaspObject * obj)
 {
@@ -413,6 +425,24 @@ bool jaspObject::_developerMode	= false;
 void jaspObject::setDeveloperMode(bool developerMode)
 {
 	_developerMode = developerMode;
+}
+
+bool jaspObject::connectedToJaspResults()
+{
+
+	if (getType() == jaspObjectType::results)
+		return true;
+
+	if (parent == nullptr)
+		return false;
+
+	return parent->connectedToJaspResults();
+
+}
+
+jaspObject *jaspObject::getOldObjectFromUniqueNestedNameVector(const std::vector<std::string> &uniqueName)
+{
+	return parent != nullptr ? parent->getOldObjectFromUniqueNestedNameVector(uniqueName) : nullptr;
 }
 
 std::set<std::string> jaspObject::nestedMustBes() const
