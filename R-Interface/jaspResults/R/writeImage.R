@@ -82,11 +82,6 @@ writeImageJaspResults <- function(plot, width = 320, height = 320, obj = TRUE, r
   height <- height * (ppi / 96)
 
   plot2draw <- decodeplot(plot)
-  #   if (ggplot2::is.ggplot(plot))
-  #     plot + ggplot2::theme(text = ggplot2::element_text(family = jaspGraphs::getGraphOption("family")))
-  #   else
-  #     plot
-  # )
 
   openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), background = backgroundColor)#, dpi = ppi)
   on.exit(dev.off())
