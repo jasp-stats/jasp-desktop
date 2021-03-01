@@ -422,7 +422,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	if (analysis->id() != id || analysis->revision() < revision)
 		throw std::runtime_error("Received results for wrong analysis!");
 
-	if(analysis->revision() > revision) //I guess we changed some option or something?
+	if(analysis->revision() > revision && status != analysisResultStatus::imagesRewritten) //imagesRewritten always has revision 0
 	{
 		Log::log() << "Analysis reply was for an older revision (" << revision << ") than the one currently requested (" << analysis->revision() << "), so it can be ignored.\n";
 		Log::log() << "Current status of analysis is: " << analysis->statusQ() << std::endl;
@@ -463,7 +463,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		break;
 
 	case analysisResultStatus::imagesRewritten:
-		analysis->imagesRewritten();
+		analysis->imagesRewritten(results);
 		clearAnalysisInProgress();
 		break;
 

@@ -703,11 +703,12 @@ void Engine::rewriteImages()
 {
 	jaspRCPP_rewriteImages(_analysisName.c_str(), _ppi, _imageBackground.c_str(), _analysisId);
 
+	/* Already sent from R! (Through jaspResultsCPP$send())
 	_analysisStatus				= Status::complete;
 	_analysisResults			= Json::Value();
 	_analysisResults["status"]	= analysisResultStatusToString(analysisResultStatus::imagesRewritten);
 
-	sendAnalysisResults();
+	sendAnalysisResults();*/ 
 
 	_analysisStatus				= Status::empty;
 	_engineState				= engineState::idle;

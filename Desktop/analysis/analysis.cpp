@@ -264,9 +264,9 @@ void Analysis::rewriteImages()
 	setStatus(Analysis::RewriteImgs);
 }
 
-void Analysis::imagesRewritten()
+void Analysis::imagesRewritten(const Json::Value & results)
 {
-	setStatus(Analysis::Complete);
+	setResults(results, Analysis::Complete);
 	emit resultsChangedSignal(this);
 	emit imageChanged();
 

@@ -80,14 +80,14 @@ public:
 	bool needsRefresh()			const;
 	bool isWaitingForModule();
 	bool isDynamicModule()		const { return bool(_dynamicModule); }
-	void setResults(	const Json::Value & results, analysisResultStatus	status, const Json::Value & progress = Json::nullValue) { setResults(results, analysisResultsStatusToAnalysisStatus(status), progress); }
-	void setResults(	const Json::Value & results, Status					status, const Json::Value & progress = Json::nullValue);
-	void imageSaved(	const Json::Value & results);
-	void saveImage(		const Json::Value & options);
-	void editImage(		const Json::Value & options);
-	void imageEdited(	const Json::Value & results);
+	void setResults(		const Json::Value & results, analysisResultStatus	status, const Json::Value & progress = Json::nullValue) { setResults(results, analysisResultsStatusToAnalysisStatus(status), progress); }
+	void setResults(		const Json::Value & results, Status					status, const Json::Value & progress = Json::nullValue);
+	void imageSaved(		const Json::Value & results);
+	void saveImage(			const Json::Value & options);
+	void editImage(			const Json::Value & options);
+	void imageEdited(		const Json::Value & results);
+	void imagesRewritten(	const Json::Value & results);
 	void rewriteImages();
-	void imagesRewritten();
 
 	void setRFile(const std::string &file)				{ _rfile = file;								}
 	void setUserData(Json::Value userData);
