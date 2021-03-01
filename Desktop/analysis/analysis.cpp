@@ -476,6 +476,8 @@ void Analysis::setStatus(Analysis::Status status)
 
 	if(_status == status)
 		return;
+	
+	Log::log() << "Analysis " << title() << " (" << id() << ") changes status from: " << statusToString(_status);
 
 	//Make sure old notes etc aren't lost on table/plot-renames, see: https://github.com/jasp-stats/jasp-test-release/issues/469
 	if(_status == Analysis::Complete)									storeUserDataEtc();
@@ -497,7 +499,7 @@ void Analysis::setStatus(Analysis::Status status)
 
 	_status = status;
 
-	Log::log() << "Analysis " << title() << " (" << id() << ") now has status: " << statusToString(_status) << std::endl;
+	Log::log(false) << " to: " << statusToString(_status) << std::endl;
 
 	emit statusChanged(this);
 }

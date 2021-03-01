@@ -9,14 +9,10 @@ body.selected .jasp-analysis:not(.selected){
     background-color: #333 ;
 }
 
-
 .jasp-collapsed {
 	background-color:	#404040; /*grayLighter*/
         border:			1px solid #747677  ; /*grayDarker but not really because this is #696969 */
 }
-
-
-
 
 tr:nth-child(odd) th,
 tr:nth-child(odd) td {
@@ -46,9 +42,8 @@ tr:nth-child(even) td {
 
 .chart > g > rect { fill: #666625 }
 
-
 .jasp-collection-image {
-  display:				block;
+  display:				inline-block;
   background-color:		#000;
 }
 
@@ -61,43 +56,41 @@ tr:nth-child(even) td {
    filter: invert(1);
 }
 
-.jasp-image-resizer {
-
+.jasp-image-resizer 
+{
   background-color :  #5F89A7 ;
   border:             1px solid #7C95CB ;
   border-radius :     3px ;
 }
 
-.jasp-image-resizable {
-
+.jasp-image-resizable 
+{
   border:			2px solid #5F89A7 ;
   border-radius:	2px ;
 }
 
-
-
-div.status.running {
-
-    background : url('images/darkTheme/running.gif') no-repeat ;
-  visibility: visible ;
+div.status.running 
+{
+	background : url('images/darkTheme/running.gif') no-repeat ;
+	visibility: visible ;
 }
 
-div.status.waiting {
-
-        background : url('images/darkTheme/waiting.gif') no-repeat ;
-  visibility: visible ;
+div.status.waiting 
+{
+	background : url('images/darkTheme/waiting.gif') no-repeat ;
+	visibility: visible ;
 }
 
-div.image-status.running {
-
-        background-image : url('images/darkTheme/running-large.gif') ;
-  visibility: visible ;
+div.image-status.running 
+{
+	background-image : url('images/darkTheme/running-large.gif') ;
+	visibility: visible ;
 }
 
-div.image-status.waiting {
-
-        background-image : url('images/darkTheme/waiting-large.png') ;
-  visibility: visible ;
+div.image-status.waiting 
+{
+	background-image : url('images/darkTheme/waiting-large.png') ;
+	visibility: visible ;
 }
 
 div.jasp-image-image.no-data {
