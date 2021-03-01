@@ -142,16 +142,6 @@ void TableViewBase::rScriptDoneHandler(const QString & result)
 		_tableModel->rScriptDoneHandler(result);
 }
 
-QVariant TableViewBase::defaultValue()
-{
-	if (itemType() == JASPControl::ItemType::Double)
-		return defaultEmptyValue().toDouble();
-	else if (itemType() == JASPControl::ItemType::Integer)
-		return defaultEmptyValue().toInt();
-	else
-		return defaultEmptyValue();
-}
-
 void TableViewBase::refreshMe()
 {
 	if(_tableModel)

@@ -29,7 +29,7 @@ class TableViewBase : public JASPListControl, public BoundControl
 
 	Q_PROPERTY( ModelType		modelType			READ modelType				WRITE setModelType				NOTIFY modelTypeChanged				)
 	Q_PROPERTY( ItemType		itemType			READ itemType				WRITE setItemType				NOTIFY itemTypeChanged				)
-	Q_PROPERTY( QString			defaultEmptyValue	READ defaultEmptyValue		WRITE setDefaultEmptyValue		NOTIFY defaultEmptyValueChanged		)
+	Q_PROPERTY( QVariant		defaultValue		READ defaultValue			WRITE setDefaultValue			NOTIFY defaultValueChanged			)
 	Q_PROPERTY( QVariant		initialValuesSource	READ initialValuesSource	WRITE setInitialValuesSource	NOTIFY initialValuesSourceChanged	)
 	Q_PROPERTY( int				initialColumnCount	READ initialColumnCount		WRITE setInitialColumnCount		NOTIFY initialColumnCountChanged	)
 	Q_PROPERTY( int				initialRowCount		READ initialRowCount		WRITE setInitialRowCount		NOTIFY initialRowCountChanged		)
@@ -56,8 +56,7 @@ public:
 
 	JASPControl::ModelType		modelType()								const				{ return _modelType;					}
 	JASPControl::ItemType		itemType()								const				{ return _itemType;						}
-	const QString&				defaultEmptyValue()						const				{ return _defaultEmptyValue;			}
-	QVariant					defaultValue();
+	QVariant					defaultValue()							const				{ return _defaultValue;					}
 	QVariant					initialValuesSource()					const				{ return _initialValuesSource;			}
 	JASPListControl*			initialValuesControl()					const				{ return _initialValuesControl;			}
 	int							initialColumnCount()					const				{ return _initialColumnCount;			}
@@ -69,7 +68,7 @@ public:
 signals:
 	void						modelTypeChanged();
 	void						itemTypeChanged();
-	void						defaultEmptyValueChanged();
+	void						defaultValueChanged();
 	void						initialRowCountChanged();
 	void						initialColumnCountChanged();
 	void						initialValuesSourceChanged();
@@ -85,7 +84,7 @@ protected slots:
 
 	GENERIC_SET_FUNCTION(ModelType,				_modelType,				modelTypeChanged,			ModelType	)
 	GENERIC_SET_FUNCTION(ItemType,				_itemType,				itemTypeChanged,			ItemType	)
-	GENERIC_SET_FUNCTION(DefaultEmptyValue,		_defaultEmptyValue,		defaultEmptyValueChanged,	QString		)
+	GENERIC_SET_FUNCTION(DefaultValue,			_defaultValue,			defaultValueChanged,		QVariant	)
 	GENERIC_SET_FUNCTION(InitialRowCount,		_initialRowCount,		initialRowCountChanged,		int			)
 	GENERIC_SET_FUNCTION(InitialColumnCount,	_initialColumnCount,	initialColumnCountChanged,	int			)
 	GENERIC_SET_FUNCTION(InitialValuesSource,	_initialValuesSource,	initialValuesSourceChanged,	QVariant	)
@@ -104,7 +103,7 @@ private slots:
 	void setInitialValuesControl();
 
 private:
-	QString					_defaultEmptyValue;
+	QVariant				_defaultValue;
 	ModelType				_modelType				= ModelType::Simple;
 	ItemType				_itemType				= ItemType::Double;
 	int						_initialRowCount		= 0,
