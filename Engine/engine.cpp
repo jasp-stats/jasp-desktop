@@ -47,7 +47,9 @@ bool PollMessagesFunctionForJaspResults()
 			case engineAnalysisStatus::stopped:
 				Log::log() << "Analysis status changed for engine #" << Engine::theEngine()->slaveNo() << " to: " << engineAnalysisStatusToString(Engine::theEngine()->getAnalysisStatus()) << std::endl;
 				return true;
-			default:							break;
+				
+			default:							
+				break;
 			}
 	}
 	return false;
@@ -465,18 +467,24 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 	if(_engineState != engineState::idle && _engineState != engineState::analysis)
 		throw std::runtime_error("Unexpected analysis message, current state is not idle or analysis (" + engineStateToString(_engineState) + ")");
 
+	int analysisId		= jsonRequest.get("id",			-1).asInt(),
+		analysisRev		= jsonRequest.get("revision",	-1).asInt();
+	performType perform	= performTypeFromString(jsonRequest.get("perform", "run").asString());
+	
 #ifdef PRINT_ENGINE_MESSAGES
-	Log::log() << "Engine::receiveAnalysisMessage:\n" << jsonRequest.toStyledString() << std::endl;
+	Log::log() << "Engine::receiveAnalysisMessage:\n" << jsonRequest.toStyledString() << " while current analysisStatus is: " << engineAnalysisStatusToString(_analysisStatus) << "\n";
 #endif
 
-	int analysisId		= jsonRequest.get("id", -1).asInt();
-	performType perform	= performTypeFromString(jsonRequest.get("perform", "run").asString());
-
-	if (analysisId == _analysisId && _analysisStatus == Status::running) // if the current running analysis has changed
+	if (analysisId == _analysisId && _analysisStatus == Status::running)
+	{
+		Log::log() << "Currently running analysis changed option, " << (perform == performType::run ? " it's status will become changed because a new run is requested." : " it will be aborted because the new request isn't toRun.") << std::endl;
+		// if the current running analysis has changed
 		_analysisStatus = perform == performType::run ? Status::changed : Status::aborted;
+	}
 	else
 	{
 		// the new analysis should be init or run (existing analyses will be aborted)
+		Log::log() << "It is either not the same analysis or the current one isn't \"running\", so the new one will do: ";
 		_analysisId = analysisId;
 
 		switch(perform)
@@ -485,8 +493,11 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		case performType::saveImg:		_analysisStatus = Status::saveImg;		break;
 		case performType::editImg:		_analysisStatus = Status::editImg;		break;
 		case performType::rewriteImgs:	_analysisStatus = Status::rewriteImgs;	break;
+		case performType::abort:		_analysisStatus = Status::aborted;		break;
 		default:						_analysisStatus = Status::error;		break;
 		}
+		
+		Log::log(false) << engineAnalysisStatusToString(_analysisStatus) << std::endl;
 
 	}
 
@@ -500,6 +511,8 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_analysisStatus == Status::editImg		||
 		_analysisStatus == Status::rewriteImgs	  )
 	{
+		Log::log() << "Loading new settings for analysis ";
+		
 		_analysisName			= jsonRequest.get("name",				Json::nullValue).asString();
 		_analysisTitle			= jsonRequest.get("title",				Json::nullValue).asString();
 		_analysisDataKey		= jsonRequest.get("dataKey",			Json::nullValue).toStyledString();
@@ -513,6 +526,8 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
 		
+		Log::log(false) << _analysisTitle << " with ID " << _analysisId << std::endl;
+		
 		_extraEncodings->setCurrentNamesFromOptionsMeta(optionsEnc);
 		
 #ifdef JASP_COLUMN_ENCODE_ALL
@@ -520,6 +535,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 #endif
 		_analysisOptions		= optionsEnc.toStyledString();
 	}
+	// No need to check else for aborted because PollMessagesFunctionForJaspResults will pasws that msg on by itself.
 }
 
 void Engine::encodeColumnNamesinOptions(Json::Value & options)

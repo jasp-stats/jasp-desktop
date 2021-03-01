@@ -424,7 +424,8 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 	if(analysis->revision() > revision) //I guess we changed some option or something?
 	{
-		Log::log() << "Analysis reply was for an older revision (" << revision << ") than the one currently requested (" << analysis->revision() << "), so it can be ignored." << std::endl;
+		Log::log() << "Analysis reply was for an older revision (" << revision << ") than the one currently requested (" << analysis->revision() << "), so it can be ignored.\n";
+		Log::log() << "Current status of analysis is: " << analysis->statusQ() << std::endl;
 
 		if(_pauseRequested || _analysisAborted == analysis)
 		{
