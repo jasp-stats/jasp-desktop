@@ -701,7 +701,7 @@ void Engine::editImage()
 
 void Engine::rewriteImages()
 {
-	jaspRCPP_rewriteImages(_ppi, _imageBackground.c_str());
+	jaspRCPP_rewriteImages(_analysisName.c_str(), _ppi, _imageBackground.c_str(), _analysisId);
 
 	_analysisStatus				= Status::complete;
 	_analysisResults			= Json::Value();

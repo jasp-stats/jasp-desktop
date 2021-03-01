@@ -126,7 +126,7 @@ RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_check();
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_saveImage(const char *data, const char *type, const int height, const int width, const int ppi, const char* imageBackground);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_editImage(const char *name, const char *optionsJson, const int ppi, const char* imageBackground, int analysisID);
-RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_rewriteImages(const int ppi, const char* imageBackground);
+RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char* imageBackground, int analysisID);
 
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_check();

@@ -386,14 +386,18 @@ const char* STDCALL jaspRCPP_editImage(const char * name, const char * optionsJs
 }
 
 
-void STDCALL jaspRCPP_rewriteImages(const int ppi, const char* imageBackground) {
+void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char* imageBackground, int analysisID)
+{
 
 	RInside &rInside = rinside->instance();
 
 	rInside[".ppi"]				= ppi;
 	rInside[".imageBackground"] = imageBackground;
+	rInside[".analysisName"]	= CSTRING_TO_R(name);
 
-	jaspRCPP_parseEvalQNT("rewriteImages()");
+	_setJaspResultsInfo(analysisID, 0, false);
+
+	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)");
 }
 
 const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
