@@ -1,7 +1,16 @@
 Guide to writing an analysis interface in QML
 =============================================
 
-QML (Qt Modeling Language) is a user interface markup language that JASP uses to show the analysis input panel. In this panel the user can specify what options should be set to what values and thereby change the tables and plots that the analysis computes. QML is a very flexible language that allows us to easily generate checkboxes, dropdowns and other common interface components. It also gives the possiblility to insert JavaScript expressions to dynamically alter the interface based on actions a user makes. To create a more uniform layout and make it easier to add new analyses we have provided a number of standardized components. These components should satify most analysis creators, although you can always [add your own](#advance-usage).
+QML (Qt Modeling Language) is a user interface markup language that JASP uses to show the analysis input panel. In this panel the user can specify what options should be set to what values and thereby change the tables and plots that the analysis computes. QML is a very flexible language that allows us to easily generate checkboxes, dropdowns and other common interface components.  
+To create a more uniform layout and make it easier to add new analyses we have provided a number of standardized components. These components should satisfy most analyses, and are explained in this document.  
+One important pardigm in QML is containment: the implementation of a component is hidden, only public properties (specified by the component self) can be used to manipulate the component.  
+QML uses JavaScript expressions to set values of these properties. Another important paradigm in QML is property binding: this means that when you set a property of a component with a JavaScript expression that uses values of other elements, whenever the values of those elements change, the property value will change automatically:
+  ```qml
+  CheckBox { id: addFrequencyTable; label: "Frequency tables" }
+  IntegerField { label: "Maximum distinct values" ; enabled: addFrequencyTable.checked }
+  ```
+  In this example, the `enabled` property of the IntegerField is bound to the addFrequencyTable CheckBox `checked` property: whenever the `checked` property changes, the `enabled` property will change automatically. Here the expression `addFrequencyTable.checked` is simple, but it can be much more complex using several other propeties of other components.  
+For more explanation on QML, you can read [wikipedia on QML](https://en.wikipedia.org/wiki/QML) or the [official site](https://doc.qt.io/qt-5/qtqml-index.html)  
 To write a QML form you should follow the [styleguide](jasp-qml-style-example.qml).
 
 Table of Contents:
@@ -16,12 +25,15 @@ Table of Contents:
     + [PercentField](#percentfield)
     + [CIField](#cifield)
     + [TextField](#textfield)
+    + [FormulaField](#formulafield)
     + [TextArea](#textarea)
   * [Variable Specification](#variable-specification)
     + [AvailableVariablesList](#availablevariableslist)
     + [AssignedVariablesList](#assignedvariableslist)
     + [RepeatedMeasuresFactorsList](#repeatedmeasuresfactorslist)
-  * [Input List / Table](#input-list--table)
+  * [Complex Components](#complex-components)
+    + [ComponentsList](#componentslist)
+    + [TabView](#tabview)
     + [InputListView](#inputlistview)
     + [TableView](#tableview)
   * [Grouping](#grouping)
@@ -42,7 +54,6 @@ Table of Contents:
 The components can roughly be divided in three classes. One that deals with general inputs (e.g., checkboxes), one that deals with assigning variables and one that groups components together. Each will be covered in the following section.
 Some remarks about these components:
 - They are all QML items, so they automatically get generic QML properties like `enabled` or `visible`.
-- The properties of the components can be set directly with a value. You can use also a JavaScript expression so that the value will depend on other components (see the section on [Connecting Multiple Components](#connecting-multiple-components)).
 - In several examples you may encounter `qsTr()`, it is important that this function wraps all text that will be shown in the interface. It will provide the possibility to translate JASP in the future.
 - The components described below may generally be nested to an arbitrary level (e.g., a checkbox in a group in a checkbox).
 
@@ -143,10 +154,13 @@ Properties
 - `name`: string identifier (in your R code you will be able to retrieve the value of the dropdown through this identifier)
 - `label`: [optional, default: `""`] text that will be shown above the dropdown
 - `values`: [optional, default: empty] array of (named) values that is shown in the dropdown list, in the case of an unnamed array the value and the label are the same, but when a named array is provided the label shown to the user can be different from the value send to R (see example below)
-- `indexDefaultValue`: [optional, default: `0`] integer specifying the index of the dropdown item that is selected by default, take note that the numbering starts at zero
-- `source`: [optional, default: empty] if `values` is empty, you can use the name of a VariablesList (see [Variable Specification](#variable-specification)) to set the source of the values of the DropDown. Is source is also empty, then all available columns of the dataset are used.
+- `startValue`: [optional, default: ``] string specifying the value of the dropdown item that is selected by default
+- `currentIndex`, `currentValue`, `currentLabel`: [optional] gives the current index, value or label of the selected item. Can be used to set the current item.
+- `currentColumnType`: [read-only] if the values of the dropdown are variables of the dataset, then this property gives the type of this variable, i.e. `scale`, `nominal`, `nominalText`, `ordinal`.
+- `source`: [optional, default: empty] if `values` is empty, you can use the name of a VariablesList or other kind of source (see [Variable Specification](#variable-specification)) to set the values of the DropDown. If source is empty, then all available columns of the dataset are used.
 - `addEmptyValue`: [optional, default: `false`] if `true`, add an empty value with a place holder (see `placeHolderText`) as first element of the dropdown list
 - `placeHolderText`: [optional, default: `<no choice>`] name used if an ampty value is added in the dropdown list
+- `addScrollBar`: [optional, default: `false`] add a scrollbar when the list is displayed.
 
 <details>
 	<summary>Examples</summary>
@@ -309,7 +323,7 @@ Properties
 </details>
 
 #### CIField
-Specialized control for Confident Interval Input field (with right default values)<br>
+Specialized component for Confident Interval Input field (with right default values)<br>
 Properties:
 - `name`: string identifier (in your R code you will be able to retrieve the value of the field through this identifier)
 - `label`: [optional, default: `""`] text that will be shown to the left of the field
@@ -338,15 +352,28 @@ Properties:
 
 </details>
 
+#### FormulaField
+Specialized component that allows to enter an R expression that must gives an number, for example 1/3, pi or sin(30).
+It has all properties of the TextField, and these ones:
+- `realValue`: [read-only] gives the value of the formula.
+- `min`: [optional, default `-Infinity`] minimum value that the result of the formula can give.
+- `max`: [optional, default `Infinity`] maximum value that the result of the formula can give.
+- `inclusive`: [optional, default: `yes`, possible values: `yes`, `minOnly`, `maxOnly`, `no`] specify whether the `min` and `max` parameters are inclusive or not. For example if `min` is `1` and `inclusive` is `yes` or `minOnly` then value `1` is allowed.
+- `parseDefaultValue`: [optional, default `true`] if the default value is a string which is not a R expression, then this property should be set to `false`
+- `multiple`: [optional, default `false`] If `true`, it gives the right to have a formula that gives several values.
+- `realValues`: [read-only] when `multiple` is `true`, this gives all the results of the R expression in an array
+
 #### TextArea
 For an input with text that can have many lines, use this component. As an `Enter` just adds a new line, and thus does not finish the editing, in order to apply the text you entered, you need to type `Ctrl-Enter`.<br>
 Properties:
 - `title`: [optional, default: `""`] title displayed above the TextArea.
+- `text`: [default: `''`] text enterd by the user. This can be used also to set the default text the user will see when opening the analysis.
 - `textType`: [optional, default: `""`, values: `JASP.TextTypeLavaan`, `JASP.TextTypeJAGS`, `JASP.TextTypeRcode`, `JASP.TextTypeModel`, `JASP.TextTypeSource`]: this component is in fact often used in a specialized mode, specified by this property):<br>
   * `JASP.TextTypeLavaan`, `JASP.TextTypeJAGS` and `JASP.TextTypeRcode`: the TextArea is used for Lavaan, JAGS or R code: it gets automatically the right syntax check
   * `JASP.TextTypeModel`: the TextArea is used as R model.
   * `JASP.TextTypeSource`: The TextArea can be then used as source for a VariablesList: all unique strings separated by a separator (per default a new line, but can be change via property `separator` will be then the terms of the VariablesList.<br>
 - `separator`, `separators`: [optional, default: `"\n"`] string or array of strings used to split the string of a `source` TextArea
+- `applyScriptInfo`: [optional, default: `Ctrl + Enter to apply`] information given at the bottom-right of the TextArea.
 
 ### Variable Specification
 Most analyses are performed on variables. JASP offers a few ways of visualizing these variables in the input form. The general idea is that you get a field of available variables (taken from the dataset) and then one or more fields that the variables can be dragged to. Variable fields should be wrapped in a `VariablesForm`. This makes it possible to automatically align multiple variable fields and add assign-buttons.
@@ -360,10 +387,13 @@ Properties
   * `discard` attribute: if a Variables List source is itself composed by several kinds of sources, you can discard one of them in this way: `source: [{ name: "modelTerms", discard: "covariates" }]`
   * `condition` attribute: if a Variables List source has some components, and you want to retrieve the variables whose components have some specific values, type: `[ { name: "contrasts", condition: "contrast.currentValue == 'custom'" } ]` where `contrast` is the name of a DropDown component (added in the `contrasts` Variables List). In this example only variables with contrast having `custom` as value will be read from the source `contrasts`.
   * `values` attribute: if you want to add specific values to the list, you can add them in this way `source: [ { values: ["one", "two"] }, "myvariables" ]`. Here the values `one` and `two` are prepend to the names of the variables of the Variables List `myvariables`. If you want to display a label (that can be translated) different from the value used in the analysis, use: `source: [ { values: [ { label: qsTr("One"), value: "one" }, { label: qsTr("Two"), value: "two" } ], "myvariables" ]` (qsTr is the function you need to use if you want the string to be translatable).
+  * `rSource`: name of a R source. This source should be generated in R with the jaspQmlSource function.
   * if you want to display not the variable names of the source, but the values of some component of this list, use the syntax `name.component`. For example, if the source `myvariables` has a TextField named `field`, a Variables List with source `source: "myvariables.field"` will display all values of the TextField component in place of the variable names.<br>
 
 - `values`: [optional, default: `""`] this is a shortcut: in place of writing `source: [ values: ["one", "two"] ]`, type `values: ["one", "two"]`. If you want to display labels different from the values used by the analysis, use the same syntax as in the `source` property. You can also use an integer n: in this case the values are just [1, 2, ... n]
+- `rSource`: [optional, default: `""`] this is a shortcut: in place of writing `source: [ { rSource: "myRSource" } ]`, type `rSource: "myRSource"]`.
 - `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
+- `count`: [read-only integer] Gives the number of rows of the list.
 
 Note: `height` should be defined on `VariablesForm` itself.
 
@@ -413,25 +443,26 @@ Properties
 - `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
 - `height`: [optional] in pixels how heigh should the field be. Per default, it is set so that all AssignedVariablesList's fit the VariablesForm. If you set the height for 1 AssignedVariablesList, it will try to set height of the other AssignedVariablesLists's so that they all fit the heigth of the VariablesForm.
 - `count`: [read-only integer] Gives the number of rows of the list.
-
-- `rowComponentsLabels`: [optional, default empty array]: array of labels used for rowComponents.
-- `rowComponents`: It is possible to add one or more components (a CheckBox or a DropDown for example) for each assigned variable. To do this, add the `rowComponents` property with a list of components you want to add:<br>
+- `rowComponentTitle`: [optional, default '']: title for rowComponent. It will be added at the right side above the list.
+- `rowComponent`: It is possible to add one or more components for each assigned variable. To do this, add the `rowComponent` property. If you want to add just one extra component, a CheckBox for example, just add it here: <br>
     ```qml
-    rowComponents:
-    [
-        Component { CheckBox { name: "enableNumber"; checked: true } },
-        Component { DoubleField { name: "myNumber"; defaultValue: rowIndex; enabled: fromRowComponents["enableNumber"].checked } }
-    ]
+    rowComponent:  CheckBox { name: "enableNumber"; checked: true }
+	```
+	
+    If you want several components, then wrap it with a `Row` item, like this:
+	```qml
+	rowComponent: Row 
+    {
+        CheckBox { name: "enableNumber"; checked: true }
+        TextField { name: "myField"; value: rowValue }
+    }
+	```
+	![Image example](/Docs/development/img/qml-guide/RowComponents_example.png)
 
-![Image example](/Docs/development/img/qml-guide/RowComponents_example.png)
-
-    ```
     You can use so-called context properties in the components:
-    - rowIndex: gives the row number in the list
-    - rowValue: gives the name of the variable in the same row
-    - colIndex: gives the column number in the corresponding row
-    - fromRowComponents["`name`"]: gives the component with corresponding name in the same row. See example above.
-
+    * rowIndex: gives the row number in the list
+    * rowValue: gives the name of the variable in the same row
+- `optionKey`: [optional, default: 'variable' (for Interaction type, default is 'components'] If there is no rowComponent, the values are just given as an array of strings. But if one or more components are specified, the values are more complex: it is also an array, but each element of the array contains the name of the variable with as key the value of this `optionKey`, and the values of each component with as key the name of the component. 
 
 <details>
 	<summary>Examples</summary>
@@ -462,15 +493,8 @@ Properties
       label: qsTr("Model terms")
       listViewType: JASP.Interaction
 
-      rowComponentsLabels: ["Add to null model"]
-      rowComponents:
-      [
-          Component
-          {
-              CheckBox { name: "isNuisance" }
-          }
-      ]
-
+      rowComponentTitle: "Add to null model"
+      rowComponent: CheckBox { name: "isNuisance" }
     }
   }
   ```
@@ -512,21 +536,36 @@ Properties
 
 </details>
 
-### Input List / Table
-InputListView and TableView are 2 components that allow to view a variable number of input
+### Complex components
+ComponentsList, TabView, InputListView and TableView are complex components that allow to view a variable number of input or other components
+
+#### ComponentsList
+This allows to displays a list of components either from a source or from user input.
+- `name`: identifier of this component (in your R code you will be able to retrieve the text value(s) through this identifier)
+- `title`: [optional, default: `""`] text that will be shown above this component
+- `rowComponent`: as for the Variables List, you can specify all the components that will be repeated for each row.
+- `source`: [optional, default: empty] as for Variables List you can specify any kind of source (see [Variable Specification]). It a source is used, the number of rows will automatically depends on the number of elements of this source. You can then also use the `rowValue` context property if you want to use the value of the source in one of the component.
+- `values`: [optional, default: empty] In place of a source, you can specify direcly a list of values or value/label list as in the DropDown component.
+- `addItemManually`: [optional, default 'false' if `source` and `values` are empty, else 'true'] If this is true, then it displays a '+' icon so that the user can add new rows, and a 'X' icon to delete a row.
+- `minimumItems`: [optional, default '0'] if `addItemManually` is true, then at least this number of rows will be dislayed. These rows do not get the 'X' icon.
+- `maximumItems`: [optional, default '-1'] if `addItemManually` is true, then it tells the maximum number of rows it will displayed: if the maximum is reached, the '+' icon won't be displayed.
+- `optionKey`: [optional, default: 'value'] The values of this component is an array of object: each object as for key the name of the components specified in rowComponent, the key of the source or of the value (in `values`) is the value of this `optionKey`.
+
+#### TabView
+This is in fact the same as the ComponentsList, but the elements are displayed in Tab View.
 
 #### InputListView
-This component allows the user to specify as many input values as he/she wants.
+This component is nearly the same as the ComponentsList, but here there is no source or '+' icon to add a new row, but the user has an Input field where he can specify the name of the new row.
 Properties
 - `name`: identifier of this component (in your R code you will be able to retrieve the text value(s) through this identifier)
-- `label`: [optional, default: `""`] text that will be shown above this component
+- `title`: [optional, default: `""`] text that will be shown above this component
 - `placeHolder`: [optional, default `"New Value"`] text that is displayed as long as the user did not give a value. When a value is given a new input is then automatically added.
 - `defaultValues`: [optional, default empty array] array of strings setting the first value(s) if the input controls.
 - `minRows`: [optional, default 0] Minimum of rows the list view should display. No delete icon will be then displayed to these rows.
 - `inputComponent`: [optional, default a TextField component] Per default the input field is a TextField component, but you may change this by setting a DoubleField of an IntegerField component.
-- `rowComponents`: As for AssignedVariablesList, it is possible to add other components.
-- `rowComponentsLabels`: [optional, default empty array] array of labels used for rowComponents.
-- `optionKey`: [optional, default `"value"`] when using rowComponents, the `name` property indicates the name to use to retrieve all values of this component. These values are specified per row, and each row has different columns. The names of the rowComponents are used to specify the value of each component. The `optionKey` speficies then the name of the value of the Input field.
+- `rowComponent`: As for AssignedVariablesList, it is possible to add other components.
+- `rowComponentTitle`: [optional, default ''] titel used for rowComponent.
+- `optionKey`: [optional, default `"value"`] when using rowComponent, the `name` property indicates the name to use to retrieve all values of this component. These values are specified per row, and each row has different columns. The names of the rowComponents are used to specify the value of each component. The `optionKey` speficies then the name of the value of the Input field.
 
 <details>
 	<summary>Example</summary>
@@ -540,19 +579,13 @@ Properties
       defaultValues         : ["Group 1", "Group 2"]
       placeHolder           : qsTr("New Group")
       minimumItems          : 2
-      rowComponentsLabels   : [qsTr("Group color")]
+      rowComponentTitle     : "Group color"
 
-      rowComponents:
-      [
-              Component
-              {
-                      DropDown
-                      {
-                              name: "groupColors"
-                              values: ["red", "blue", "yellow", "green", "purple", "orange"]
-                      }
-              }
-      ]
+      rowComponent 			: DropDown
+                      		{
+                             	name: "groupColors"
+                             	values: ["red", "blue", "yellow", "green", "purple", "orange"]
+                      		}
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/InputListView_Example.png)
@@ -568,7 +601,7 @@ Properties
 - `modelType`: [required, must be either `MultinomialChi2Model`, `JAGSDataInputModel`, `FilteredDataEntryModel` or `CustomContrasts`] Specify which kind of TableView is used.
 - `colName`: [optional, default `data`]: name of the generated column when `modelType` is `ListModelFilteredDataEntry` or `CustomContrasts`
 - `itemType`: [optional, default `string`, can be also `double` or `integer`]
-- `source`: [optional, default ``] source of the values the table is based on
+- `source`: [optional, default `source of the values the table is based on`]
 
 <details>
 	<summary>Example</summary>
