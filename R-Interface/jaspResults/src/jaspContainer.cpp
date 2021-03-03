@@ -1,7 +1,4 @@
 #include "jaspContainer.h"
-#ifdef JASP_R_INTERFACE_LIBRARY
-#include "columnencoder.h"
-#endif
 
 void jaspContainer::insert(std::string field, Rcpp::RObject value)
 {
@@ -498,10 +495,5 @@ void jaspContainer::renderPlotsOfChildren()
 
 Rcpp::RObject jaspContainer_Interface::findObjectWithUniqueNestedName(std::string uniqueNestedName)
 {
-#ifdef JASP_R_INTERFACE_LIBRARY
-	std::string encodedUniqueNestedName = ColumnEncoder::columnEncoder()->encodeAll(uniqueNestedName);
-#else
-	std::string encodedUniqueNestedName = uniqueNestedName;
-#endif
-	return jaspContainer::wrapJaspObject(((jaspContainer*)myJaspObject)->findObjectWithUniqueNestedName(encodedUniqueNestedName));
+	return jaspContainer::wrapJaspObject(((jaspContainer*)myJaspObject)->findObjectWithUniqueNestedName(uniqueNestedName));
 }

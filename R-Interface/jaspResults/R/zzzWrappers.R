@@ -40,6 +40,12 @@ startProgressbar <- function(expectedTicks, label="") {
 		cpp_startProgressbar(expectedTicks, label)
 }
 
+# we need to decode all the names for jaspObjects before going to CPP to avoid some problems. This because otherwise some jaspPlots (and others) might contain encoded columnnames. Which breaks plot-resizing-persistence
+decodeName <- function(name) {
+  if(jaspResultsCalledFromJasp())    return(.decodeColNamesLax(name))
+  else                               return(name)
+}
+
 progressbarTick <- function() { 
 	if (jaspResultsCalledFromJasp())
 		jaspResultsModule$cpp_progressbarTick()
@@ -171,10 +177,12 @@ jaspResultsR <- R6Class(
 		},
     #These two functions should be the exact same as those on jaspContainer
 		setField	= function(field, value) {
+			field <- decodeName(field)
 			private$jaspObject[[field]] <- private$getJaspObject(value);
 			private$children[[field]]   <- value;
 		},
 		getField	= function(field) {
+			field <- decodeName(field)
 			#maybe changing the dependencies removed this object when we weren't looking!
 			if (is.null(private$jaspObject[[field]]) && !is.null(private$children[[field]]))
 				private$children[[field]] <- NULL
@@ -414,10 +422,12 @@ jaspContainerR <- R6Class(
 		},
     #These two functions should be the exact same as those for jaspResults
 		setField   = function(field, value) {
+			field <- decodeName(field)
 			private$jaspObject[[field]] <- private$getJaspObject(value);
 			private$children[[field]]   <- value;
 		},
 		getField   = function(field) {
+			field <- decodeName(field)
 			#maybe changing the dependencies removed this object when we weren't looking!
 			if (is.null(private$jaspObject[[field]]) && !is.null(private$children[[field]]))
 				private$children[[field]] <- NULL

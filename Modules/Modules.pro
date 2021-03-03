@@ -86,7 +86,6 @@ MODULE_NAME = jaspProcessControl
 MODULE_DEPS = jaspDescriptives
 include(InstallModule.pri)
 
-
 #see https://stackoverflow.com/questions/29853832/adding-custom-commands-to-existing-targets-in-qmake
 win32 {
 	clean.depends          = libraryClean
