@@ -15,8 +15,8 @@ Upgrade::Upgrade()
 
 void Upgrade::applyUpgrade(const std::string & function, const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken)
 {
-	if(function != fq(functionName()))	throw upgradeError("Wrong Upgrade being applied, was looking for function '"	+ function				+ "' but this upgrade is for: '" + fq(functionName())		+ "'");
-	if(version	!= fromVersion())		throw upgradeError("Wrong Upgrade being applied, was looking for version '"		+ version.asString()	+ "' but this upgrade is for: '" + fromVersion().asString() + "'");
+	if(function != fq(functionName()))	throw upgradeError(fq(tr("Wrong Upgrade being applied, was looking for function '%1' but this upgrade is for: '%2'").arg(tq(function)).arg(functionName())));
+	if(version	>  fromVersion())		throw upgradeError(fq(tr("Wrong Upgrade being applied, was looking for version '%1' but this upgrade is for: '%2' or lower").arg(tq(version.asString())).arg(tq(fromVersion().asString()))));
 	
 	StepTaken	fromStep(		{fq(module()),	fq(functionName()),		fromVersion()	}),
 				aboutToStep(	{fq(module()),	fq(newFunctionName()),	toVersion()		});
@@ -24,7 +24,7 @@ void Upgrade::applyUpgrade(const std::string & function, const Version & version
 	stepsTaken.insert(fromStep); //We want to remember where we come from
 
 	if(stepsTaken.count(aboutToStep) > 0)
-		throw upgradeError(fq("Aborting upgrade because a loop was detected!\n\nIf " +	toString() + " is taken, eventually it is reached again.\n\nThis should definitely not happen, perhaps the module author of '" + module() + "' can be of assistance"));
+		throw upgradeError(fq(tr("Aborting upgrade because a loop was detected!\n\nIf %1 is taken, eventually it is reached again.\n\nThis should definitely not happen, perhaps the module author of '%2' can be of assistance").arg(toString()).arg(module())));
 	
 	analysesJson["name"]							= fq(newFunctionName());
 	analysesJson["dynamicModule"]["analysisEntry"]	= fq(newFunctionName());
