@@ -128,17 +128,3 @@ COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equa
 		GENERATE_LANGUAGE_FILES = true
 	}
 }
-
-GETTEXT_LOCATION = $$(GETTEXT_PATH) #The GETTEXT_PATH can be used as environment for a specific gettext location
-
-unix {
-	isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
-	EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$dirname(QMAKE_QMAKE)
-}
-
-win32 {
-	isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
-	WINQTBIN=$$QMAKE_QMAKE
-	WINQTBIN ~= s,qmake.exe,,gs	
-	WINQTBIN ~= s,/,\\,g
-}

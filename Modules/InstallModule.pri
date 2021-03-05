@@ -129,9 +129,9 @@ isEmpty(MODULE_NAME) {
 		}
 
 		#Update and Cleanup QML-$${MODULE_NAME}.pot file
-		GenerateLanguageFiles$${MODULE_NAME}.commands += export PATH=$$EXTENDED_PATH;
-		GenerateLanguageFiles$${MODULE_NAME}.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/$${MODULE_NAME} -ts $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot ;
-		GenerateLanguageFiles$${MODULE_NAME}.commands += msgattrib --no-obsolete --no-location $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot -o $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot ;
+		GenerateLanguageFiles$${MODULE_NAME}.commands += export ;  export ; $$escape_expand(\\n\\t)
+		GenerateLanguageFiles$${MODULE_NAME}.commands += PATH=$$EXTENDED_PATH lupdate -locations none -extensions cpp,qml -recursive $$PWD/$${MODULE_NAME} -ts $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot ; $$escape_expand(\\n\\t)
+		GenerateLanguageFiles$${MODULE_NAME}.commands += PATH=$$EXTENDED_PATH msgattrib --no-obsolete --no-location $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot -o $$PWD/$${MODULE_NAME}/po/QML-$${MODULE_NAME}.pot ; $$escape_expand(\\n\\t)
 
 		for(LANGUAGE_CODE, SUPPORTED_LANGUAGES) {
 			#Busy Message
@@ -153,15 +153,15 @@ isEmpty(MODULE_NAME) {
 			#}
 
 			#Update and Cleanup QML-xx.po file
-			GenerateLanguageFiles$${MODULE_NAME}.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/$${MODULE_NAME} -ts $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po ;	
-			GenerateLanguageFiles$${MODULE_NAME}.commands += msgattrib --no-obsolete --no-location $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po -o $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po ;
+			GenerateLanguageFiles$${MODULE_NAME}.commands += PATH=$$EXTENDED_PATH lupdate -locations none -extensions cpp,qml -recursive $$PWD/$${MODULE_NAME} -ts $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po ;				$$escape_expand(\\n\\t)
+			GenerateLanguageFiles$${MODULE_NAME}.commands += PATH=$$EXTENDED_PATH msgattrib --no-obsolete --no-location $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po -o $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po ;		$$escape_expand(\\n\\t)
 
 			#Create $${MODULE_NAME}.qm
-			GenerateLanguageFiles$${MODULE_NAME}.commands += lrelease $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po -qm $${QM_FILE_LOCATION}/$${MODULE_NAME}-$${LANGUAGE_CODE}.qm ;
+			GenerateLanguageFiles$${MODULE_NAME}.commands += PATH=$$EXTENDED_PATH lrelease $$PWD/$${MODULE_NAME}/po/QML-$${LANGUAGE_CODE}.po -qm $${QM_FILE_LOCATION}/$${MODULE_NAME}-$${LANGUAGE_CODE}.qm ;							$$escape_expand(\\n\\t)
 			}
 
 		#Create $${MODULE_NAME}.mo translation file. (Need to add GETTEXT location to PATH environment.)
-		GenerateLanguageFiles$${MODULE_NAME}.commands +=  Rscript $$PWD/../Tools/translate.R $$PWD/$${MODULE_NAME} ;
+		GenerateLanguageFiles$${MODULE_NAME}.commands += JASP_R_HOME=$$_R_HOME \"$$R_EXE\" -e \"rootfolder <- \'$$PWD/$${MODULE_NAME}\';  source(\'$$PWD/../Tools/translate.R\');\"
 	}#Unix
 	}#########################################################
 

@@ -43,6 +43,21 @@ isEmpty(_RLibrary) {
 
 message(using R_HOME of $$_R_HOME)
 
+GETTEXT_LOCATION = $$(GETTEXT_PATH) #The GETTEXT_PATH can be used as environment for a specific gettext location
+
+unix {
+	isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
+	EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$_R_HOME/bin:$$dirname(QMAKE_QMAKE)
+}
+
+win32 {
+	isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
+	WINQTBIN=$$QMAKE_QMAKE
+	WINQTBIN ~= s,qmake.exe,,gs	
+	WINQTBIN ~= s,/,\\,g
+}
+
+
 LOAD_WORKAROUND = false
 include(R_INSTALL_CMDS.pri)
 
