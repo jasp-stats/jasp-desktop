@@ -44,7 +44,7 @@ SourceItem::SourceItem(
 	_rSource				= map["rSource"].toString();
 
 	_isValuesSource			= map.contains("isValuesSource")			? map["isValuesSource"].toBool()			: false;
-	_isColumnsModel			= map.contains("isDataSetColumns")			? map["isDataSetColumns"].toBool()			: false;
+	_isColumnsModel			= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()		: false;
 	_combineWithOtherModels	= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()	: false;
 	_nativeModelRole		= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()			: Qt::DisplayRole;
 

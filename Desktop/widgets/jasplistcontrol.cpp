@@ -165,10 +165,6 @@ void JASPListControl::cleanUp()
 					control->cleanUp();
 		}
 
-		if (_defaultRowControls)
-			for (JASPControl* control : _defaultRowControls->getJASPControlsMap().values())
-				control->cleanUp();
-
 		_sourceItems.clear();
 
 		JASPControl::cleanUp();

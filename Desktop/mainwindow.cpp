@@ -54,6 +54,7 @@
 #include "widgets/sliderbase.h"
 #include "widgets/expanderbuttonbase.h"
 #include "widgets/variableslistbase.h"
+#include "widgets/variablesformbase.h"
 #include "widgets/repeatedmeasuresfactorslistbase.h"
 #include "widgets/tableviewbase.h"
 #include "widgets/radiobuttonbase.h"
@@ -164,6 +165,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<InputListBase>								("JASP",		1, 0, "InputListBase"					);
 	qmlRegisterType<RepeatedMeasuresFactorsListBase>			("JASP",		1, 0, "RepeatedMeasuresFoctorsListBase"	);
 	qmlRegisterType<VariablesListBase>							("JASP",		1, 0, "VariablesListBase"				);
+	qmlRegisterType<VariablesFormBase>							("JASP",		1, 0, "VariablesFormBase"				);
 	qmlRegisterType<TableViewBase>								("JASP",		1, 0, "TableViewBase"					);
 	qmlRegisterType<JASPDoubleValidator>						("JASP",		1, 0, "JASPDoubleValidator"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",		1, 0, "ResultsJsInterface"				);

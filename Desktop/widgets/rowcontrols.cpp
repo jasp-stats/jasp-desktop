@@ -49,7 +49,41 @@ void RowControls::init(int row, const Term& key, bool isNew)
 	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context));
 
 	if (_rowObject)
+	{
 		_context = context;
+
+		QList<JASPControl*> controls = _rowJASPControlMap.values();
+
+		for (JASPControl* control : controls)
+			control->setUp();
+
+		if (listView->form())
+			listView->form()->sortControls(controls);
+
+		for (JASPControl* control : controls)
+		{
+			BoundControl* boundItem = control->boundControl();
+			bool hasOption = _rowValues.contains(control->name());
+
+			if (boundItem)
+			{
+				Json::Value option =  hasOption ? (_rowValues[control->name()]) : boundItem->createJson();
+				boundItem->bindTo(option);
+			}
+
+			if (!boundItem || !hasOption)
+			{
+				JASPListControl* listView = dynamic_cast<JASPListControl*>(control);
+				// If a ListView depends on a source, it has to be initialized by this source
+				// For this just call the sourceTermsChanged handler.
+				if (listView && listView->hasSource())
+					listView->model()->sourceTermsReset();
+			}
+
+			control->setInitialized();
+		}
+
+	}
 	else
 		Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
 
@@ -69,39 +103,15 @@ bool RowControls::addJASPControl(JASPControl *control)
 	bool success = false;
 	JASPListControl* listView = _parentModel->listView();
 
-	if (!control->isBound())
-		success = true;
-	else if (control->name().isEmpty())
+	if (control->isBound() && control->name().isEmpty())
 		listView->addControlError(tr("A row component in %1 does not have a name").arg(listView->name()));
-	else if (_rowControlsVarMap.contains(control->name()))
+	else if (_rowJASPControlMap.contains(control->name()))
 		listView->addControlError(tr("2 row components in %1 have the same name").arg(listView->name()).arg(control->name()));
 	else
-	{
-		QQmlContext* context = qmlContext(control);
-
-		_rowControlsVarMap[control->name()] = QVariant::fromValue(control);
-		_rowJASPControlMap[control->name()] = control;
-		BoundControl* boundItem = control->boundControl();
-
-		if (boundItem)
-		{
-			bool hasOption = _rowValues.contains(control->name());
-			Json::Value option =  hasOption ? (_rowValues[control->name()]) : boundItem->createJson();
-
-			boundItem->bindTo(option);
-
-			if (!hasOption)
-			{
-				JASPListControl* listView = dynamic_cast<JASPListControl*>(control);
-				// If a ListView depends on a source, it has to be initialized by this source
-				// For this just call the sourceTermsChanged handler.
-				if (listView && listView->hasSource())
-					listView->model()->sourceTermsReset();
-			}
-		}
-
 		success = true;
-	}
+
+	if (!control->name().isEmpty() && success)
+		_rowJASPControlMap[control->name()] = control;
 
 	return success;
 }

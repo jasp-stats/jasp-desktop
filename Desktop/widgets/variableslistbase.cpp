@@ -317,9 +317,20 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 
 ListModel *VariablesListBase::getRelatedModel()
 {
-	if (dropKeys().count() > 0) return form()->getModel(dropKeys()[0]); // The first key gives the default drop item.
+	ListModel* result = nullptr;
+	if (dropKeys().count() > 0)
+	{
+		QString relatedName = dropKeys()[0]; // The first key gives the default drop item.
+		if (_parentListView)
+		{
+			JASPListControl* relatedControl = qobject_cast<JASPListControl*>(_parentListView->model()->getRowControl(_parentListViewKey, relatedName));
+			if (relatedControl)
+				result = relatedControl->model();
+		}
+		if (!result && form())	result = form()->getModel(relatedName);
+	}
 
-	return nullptr;
+	return result;
 }
 
 void VariablesListBase::termsChangedHandler()
