@@ -31,7 +31,7 @@ msgstr "Sobre JASP"
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr "Elaborado"
+msgstr "Elaborado:"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
@@ -43,11 +43,11 @@ msgstr "Acesse as fontes aqui"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr "Baixar"
+msgstr "Baixar:"
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr "Citação"
+msgstr "Citação:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
@@ -358,8 +358,8 @@ msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
 msgstr ""
-"Isso torna o fundo de todos os Diagramas transparente, bastante útil se você "
-"quiserpara usá-lo perfeitamente em qualquer fundo que não seja branco."
+"Isso torna o fundo de todos os diagramas transparente, bastante útil se você "
+"quiser usá-lo perfeitamente em qualquer fundo que não seja branco."
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
@@ -437,7 +437,7 @@ msgstr "Não está pronto para usar?"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr "Desinstalar módulo"
+msgstr "Desinstalar módulo "
 
 msgctxt "RibbonBar|"
 msgid "Show Modules Menu"
@@ -465,7 +465,7 @@ msgstr "Cauchy"
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr "Escala"
+msgstr "escala"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
@@ -473,11 +473,11 @@ msgstr "Informado"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr "Localização:"
+msgstr "localização:"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr "escala"
+msgstr "escala:"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
@@ -485,7 +485,7 @@ msgstr "Normal"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr "média"
+msgstr "média:"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
@@ -509,11 +509,11 @@ msgstr "Uniforme"
 
 msgctxt "SubjectivePriors|"
 msgid "lower bound:"
-msgstr "Limite inferior"
+msgstr "limite inferior:"
 
 msgctxt "SubjectivePriors|"
 msgid "upper bound:"
-msgstr "Limite superior"
+msgstr "limite superior:"
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
@@ -584,11 +584,11 @@ msgid ""
 "JASP has an intuitive interface that was designed with the user in mind."
 msgstr ""
 "JASP possui uma interface intuitiva a qual foi projetada tendo o usuário em "
-"mente"
+"mente."
 
 msgctxt "WelcomePage|"
 msgid "Flexible:"
-msgstr "Flexível"
+msgstr "Flexível:"
 
 msgctxt "WelcomePage|"
 msgid ""
@@ -2219,13 +2219,13 @@ msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
 msgstr ""
 "Desativa todas as animações, o que está implícito quando o \"Modo Gráfico "
-"Seguro \" está ativado"
+"Seguro\" está ativado."
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
 msgstr ""
-"As animações já estão desativadas porque o \"Modo de gráficos seguros\" está "
-"ativado"
+"As animações já estão desativadas porque o \"Modo de gráficos seguros \" "
+"está ativado"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run the filter..."
@@ -2491,12 +2491,12 @@ msgstr ""
 #, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr "De"
+msgstr "de"
 
 #, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "to"
-msgstr "Para"
+msgstr "para"
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
@@ -3092,6 +3092,31 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "R (Beta)"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::Upgrade|"
+msgid ""
+"Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
+"is for: '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::Upgrade|"
+msgid ""
+"Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
+"is for: '%2' or lower"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::Upgrade|"
+msgid ""
+"Aborting upgrade because a loop was detected!\n"
+"\n"
+"If %1 is taken, eventually it is reached again.\n"
+"\n"
+"This should definitely not happen, perhaps the module author of '%2' can be "
+"of assistance"
 msgstr ""
 
 msgctxt "Modules::Upgrader|"
