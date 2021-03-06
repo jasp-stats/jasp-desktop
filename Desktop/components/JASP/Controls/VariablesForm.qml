@@ -20,33 +20,25 @@ import QtQuick			2.12
 import QtQuick.Layouts	1.12
 import JASP				1.0
 
-Item
+VariablesFormBase
 {
-	id					: variablesForm
-	implicitHeight		: jaspTheme.defaultVariablesFormHeight
-	implicitWidth		: form.width
-	height				: implicitHeight
-	width				: implicitWidth
-	Layout.columnSpan	: parent.columns
-	visible				: !debug || DEBUG_MODE
+	id							: variablesForm
+	implicitHeight				: jaspTheme.defaultVariablesFormHeight
+	implicitWidth				: form.width
+	Layout.columnSpan			: (parent && parent.hasOwnProperty('columns')) ? parent.columns : 1
+	isBound						: false
+	shouldStealHover			: false
+	marginBetweenVariablesLists	: 8 * preferencesModel.uiScale
+	minimumHeightVariablesLists	: 25 * preferencesModel.uiScale
+	preferredHeight				: implicitHeight
+	preferredWidth				: implicitWidth
+	Layout.preferredHeight		: preferredHeight // Cannot set Layout attached property in c++
 
-	default property alias	content:						items.children
-			property int	listWidth:						width * 2 / 5
-			property var	availableVariablesList
-			property var	allAssignedVariablesList:		[]
-			property var	allJASPControls:				[]
-			property bool	debug:							false
-			property int	marginBetweenVariablesLists:	8 * preferencesModel.uiScale
-			property int	minimumHeightVariablesLists:	25 * preferencesModel.uiScale
-			property bool	formInitialized:				false
+	default property alias	content				: items.children
+			property int	listWidth			: width * 2 / 5
+			property alias	contentItems		: items
 
-			property double	_lastListWidth:					0
-	
-	property int preferredHeight:	implicitHeight
-	property int preferredWidth:	implicitWidth
-
-	Layout.preferredWidth:	preferredWidth
-	Layout.preferredHeight:	preferredHeight
+			property double	_lastListWidth		: 0
 
 	Item { id: items }
 
@@ -64,9 +56,9 @@ Item
 		}
 	}
 
-	onListWidthChanged: if (formInitialized && listWidth > 0 && listWidth != _lastListWidth) _lastListWidth = listWidth;
+	onListWidthChanged: if (initialized && listWidth > 0 && listWidth != _lastListWidth) _lastListWidth = listWidth;
 
-	onHeightChanged:	if (formInitialized )	setControlsSize();
+	onHeightChanged:	if (initialized )	setControlsSize();
 
 	Repeater
 	{
@@ -87,10 +79,10 @@ Item
 		
 			onLoaded:
 			{
-				allAssignedVariablesList[index]	.activeFocusChanged.connect(		item.setIconToLeft);
-				availableVariablesList			.activeFocusChanged.connect(		item.setIconToRight);
-				allAssignedVariablesList[index]	.selectedItemsChanged.connect(	item.setState);
-				availableVariablesList			.selectedItemsChanged.connect(	item.setState);
+				allAssignedVariablesList[index]	.activeFocusChanged		.connect(item.setIconToLeft	);
+				availableVariablesList			.activeFocusChanged		.connect(item.setIconToRight);
+				allAssignedVariablesList[index]	.selectedItemsChanged	.connect(item.setState		);
+				availableVariablesList			.selectedItemsChanged	.connect(item.setState		);
 				
 				if (interactionAssign)
 				{
@@ -158,134 +150,67 @@ Item
 			}			
 		}
 	}
-	
-	Component.onCompleted: setup()
-	
-	function setup()
+
+	function init()
 	{
-		allJASPControls = []
-		allAssignedVariablesList = []
-		availableVariablesList = null
-		
-        for (var i = 0; i < items.children.length; ++i) {
-            var child = items.children[i];
-			if (variablesForm.debug)
-				child.debug = true
-			if (child.name && (DEBUG_MODE || !child.debug)) {
-                allJASPControls.push(child);
-            }
-        }
-
-		var availableVariablesListIndex = -1;
-		
-        for (i = 0; i < allJASPControls.length; i++) {
-            var control = allJASPControls[i];
-			if (control instanceof VariablesList)
-			{
-				if (control.listViewType === JASP.AvailableVariables || control.listViewType === JASP.AvailableInteraction)
-				{
-					if (availableVariablesList)
-						control.addControlError(qsTr("Only 1 Available Variables list can be set in a VariablesForm"));
-
-					availableVariablesList = control;
-					availableVariablesListIndex = i;
-				}
-				else
-					allAssignedVariablesList.push(control);
-			}
-
-            // Do not set the parent in the previous loop: this removes it from the items children.
-            control.parent = variablesForm;
-        }
-		
-		if (!availableVariablesList)
-		{
-			form.addFormError(qsTr("There is no Available List in the Variables Form"));
-			return;
-		}
-		else
-			allJASPControls.splice(availableVariablesListIndex, 1);
-				
-		availableVariablesList.parent		= variablesForm
-		availableVariablesList.anchors.top	= variablesForm.top
-		availableVariablesList.anchors.left = variablesForm.left
-
-		
+		var first = true
 		var anchorTop = variablesForm.top;
-        for (i = 0; i < allJASPControls.length; ++i) {
+		for (var i in allJASPControls)
+		{
 			allJASPControls[i].anchors.top			= anchorTop;
-			allJASPControls[i].anchors.topMargin	= i === 0 ? 0 : marginBetweenVariablesLists;
+			allJASPControls[i].anchors.topMargin	= first ? 0 : marginBetweenVariablesLists;
 			allJASPControls[i].anchors.right		= variablesForm.right;
 			anchorTop								= allJASPControls[i].bottom;
-        }
-		
-		// Set the width of the VariablesList to listWidth only if it is not set explicitely
-		// Implicitely, the width is set to the parent width.
-		if (availableVariablesList.width === variablesForm.width)
-			availableVariablesList.setWidthInForm = true
-		
-		for (i = 0; i < allJASPControls.length; i++)
-		{
-			control = allJASPControls[i];
-			if ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList) || (control instanceof InputListView))
-			{
-				if (control.width === variablesForm.width)
-					control.setWidthInForm = true
-
-				if (control.height === jaspTheme.defaultVariablesFormHeight)
-					control.setHeightInForm = true
-			}
-			else if (control instanceof ComboBox)
-				control.heightChanged.connect(setControlsSize);
-
+			first = false
 		}
-		
-        for (i = 0; i < allAssignedVariablesList.length; i++)
-		{
-			var assignedList = allAssignedVariablesList[i]
-            availableVariablesList.dropKeys.push(assignedList.name);
-			availableVariablesList.draggingChanged.connect(assignedList.setEnabledState);
-            assignedList.dropKeys.push(availableVariablesList.name);
 
-			for (var j = 0; j < allAssignedVariablesList.length; ++j)
+		var countAssignedList = 0
+		for (var key in allAssignedVariablesList)
+		{
+			countAssignedList++;
+			var assignedList = allAssignedVariablesList[key]
+			availableVariablesList.dropKeys.push(assignedList.name);
+			availableVariablesList.draggingChanged.connect(assignedList.setEnabledState);
+			assignedList.dropKeys.push(availableVariablesList.name);
+
+			for (var key2 in allAssignedVariablesList)
 			{
-				assignedList.dropKeys.push(allAssignedVariablesList[j].name);
-				if (assignedList != allAssignedVariablesList[j])
-					assignedList.draggingChanged.connect(allAssignedVariablesList[j].setEnabledState);
+				assignedList.dropKeys.push(allAssignedVariablesList[key2].name);
+				if (assignedList !== allAssignedVariablesList[key2])
+					assignedList.draggingChanged.connect(allAssignedVariablesList[key2].setEnabledState);
 			}
-        }
-		
+		}
+
 		setControlsSize()
-		
-		assignButtonRepeater.model = allAssignedVariablesList.length;
-		formInitialized = true
-    }
-	
+
+		assignButtonRepeater.model = countAssignedList;
+	}
+
 	function setControlsSize()
 	{
 		availableVariablesList.height = Qt.binding(function() { return variablesForm.height; })
 		// Set the width of the VariablesList to listWidth only if it is not set explicitely
 		// Implicitely, the width is set to the parent width.
-		if (availableVariablesList.setWidthInForm) 
+		if (widthSetByForm(availableVariablesList))
 			availableVariablesList.width = Qt.binding(function() { return variablesForm.listWidth; })
 		
 		var firstControl				= true;
 		var minHeightOfAssignedControls = 0;
 		var	changeableHeightControls	= [];
 		
-		for (var i = 0; i < allJASPControls.length; ++i)
+		for (var key in allJASPControls)
 		{
-			var control				= allJASPControls[i]
+			var control				= allJASPControls[key]
 			var isControlList		= ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList) || (control instanceof InputListView))
 			var isControlComboBox	= (control instanceof ComboBox)
 
-			if (isControlList && control.setWidthInForm)
+			if (isControlList && widthSetByForm(control))
 				// Change the width of the VariablesList only if was not set explicitely
 				control.width = Qt.binding(function() {return variablesForm.listWidth; })
-			else if (isControlComboBox && control.setWidthInForm)
+			else if (isControlComboBox && widthSetByForm(control))
 			{
 				control.setLabelAbove	= true
-				control.controlMinWidth = variablesForm.listWidth
+				control.controlMinWidth = Qt.binding(function() {return variablesForm.listWidth; })
 			}
 
 			if (!firstControl)
@@ -295,7 +220,7 @@ Item
 
 			if (!isControlList)
 				minHeightOfAssignedControls += control.height;
-			else if (control.maxRows === 1 || !control.setHeightInForm)
+			else if (control.maxRows === 1 || !heightSetByForm(control))
 				minHeightOfAssignedControls += control.height;
 			else
 			{
@@ -314,7 +239,7 @@ Item
 			if (controlHeight < minimumHeightVariablesLists)
 				controlHeight = minimumHeightVariablesLists; // Set a minimum height
 
-			for (i = 0; i < changeableHeightControls.length; i++)
+			for (var i = 0; i < changeableHeightControls.length; i++)
                 changeableHeightControls[i].height = changeableHeightControls[i].title ? (jaspTheme.variablesListTitle + controlHeight) : controlHeight;
         }
 		

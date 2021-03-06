@@ -34,7 +34,7 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( bool								shouldShowFocus		READ shouldShowFocus		WRITE setShouldShowFocus	NOTIFY shouldShowFocusChanged		)
 	Q_PROPERTY( bool								shouldStealHover	READ shouldStealHover		WRITE setShouldStealHover	NOTIFY shouldStealHoverChanged		)
 	Q_PROPERTY( QQuickItem						*	childControlsArea	READ childControlsArea		WRITE setChildControlsArea										)
-	Q_PROPERTY( JASPControl						*	parentListView		READ parentListView										NOTIFY parentListViewChanged		)
+	Q_PROPERTY( JASPControl						*	parentListView		READ parentListViewEx									NOTIFY parentListViewChanged		)
 	Q_PROPERTY( QQuickItem						*	innerControl		READ innerControl			WRITE setInnerControl		NOTIFY innerControlChanged			)
 	Q_PROPERTY( QQuickItem						*	background			READ background				WRITE setBackground			NOTIFY backgroundChanged			)
 	Q_PROPERTY( QQuickItem						*	focusIndicator		READ focusIndicator			WRITE setFocusIndicator		NOTIFY focusIndicatorChanged		)
@@ -78,6 +78,7 @@ public:
 		, ComponentsList
 		, GroupBox
 		, TabView
+		, VariablesForm
 	};
 
 	// Be careful not to reuse a name in a enum type: in QML, they are mixed up with a 'JASP' prefix: JASP.DropNone or JASP.None
@@ -122,7 +123,8 @@ public:
 	bool			focusOnTab()			const	{ return activeFocusOnTab();	}
 	AnalysisForm*	form()					const	{ return _form;					}
 	QQuickItem*		childControlsArea()		const	{ return _childControlsArea;	}
-	JASPControl*	parentListView()		const	{ return _parentListView;		}
+	JASPListControl* parentListView()		const	{ return _parentListView;		}
+	JASPControl*	parentListViewEx()		const;
 	QString			parentListViewKey()		const	{ return _parentListViewKey;	}
 	QQuickItem*		innerControl()			const	{ return _innerControl;			}
 	QQuickItem*		background()			const	{ return _background;			}
@@ -263,7 +265,7 @@ protected:
 							_shouldShowFocus		= false,
 							_shouldStealHover		= false,
 							_nameMustBeUnique		= true;
-	JASPControl			*	_parentListView			= nullptr;
+	JASPListControl		*	_parentListView			= nullptr;
 	QQuickItem			*	_childControlsArea		= nullptr,
 						*	_innerControl			= nullptr,
 						*	_background				= nullptr,

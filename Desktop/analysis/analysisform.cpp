@@ -196,14 +196,8 @@ void AnalysisForm::_setUpModels()
 	}
 }
 
-void AnalysisForm::_setUp()
+void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 {
-	QList<JASPControl*> controls = _controls.values();
-
-	// set the order of the BoundItems according to their dependencies (for binding purpose)
-	for (JASPControl* control : controls)
-		control->setUp();
-
 	for (JASPControl* control : controls)
 	{
 		std::vector<JASPControl*> depends(control->depends().begin(), control->depends().end());
@@ -224,10 +218,21 @@ void AnalysisForm::_setUp()
 		}
 	}
 
-	std::sort(controls.begin(), controls.end(), 
+	std::sort(controls.begin(), controls.end(),
 		[](JASPControl* a, JASPControl* b) {
 			return a->depends().size() < b->depends().size();
 		});
+}
+
+void AnalysisForm::_setUp()
+{
+	QList<JASPControl*> controls = _controls.values();
+
+	// set the order of the BoundItems according to their dependencies (for binding purpose)
+	for (JASPControl* control : controls)
+		control->setUp();
+
+	sortControls(controls);
 
 	for (JASPControl* control : controls)
 	{

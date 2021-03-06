@@ -24,7 +24,6 @@ ComboBoxBase
 	property var	enabledOptions:			[]
 	property bool	setLabelAbove:			false
 	property int	controlMinWidth:		0
-	property bool	setWidthInForm:			true
 	property bool	useExternalBorder:		true
 	property bool	showBorder:				true
 	property bool	addScrollBar:			false
