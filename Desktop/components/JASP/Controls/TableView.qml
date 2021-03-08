@@ -33,7 +33,7 @@ TableViewBase
 	implicitWidth:		400
 	implicitHeight:		400
 	shouldStealHover:	false
-	defaultEmptyValue:	modelType === JASP.JAGSDataInputModel	? "..." : (modelType === JASP.CustomContrasts	? "0" : "1")
+	defaultValue:		modelType === JASP.JAGSDataInputModel	? "..." : (modelType === JASP.CustomContrasts	? "0" : "1")
 	initialColumnCount: modelType === JASP.MultinomialChi2Model ? 1 : 0
 
 	property string factorsSource	: ""
@@ -186,7 +186,7 @@ TableViewBase
 						value:					itemText
 						useLastValidValue:		false
 						parseDefaultValue:		tableView.parseDefaultValue
-						defaultEmptyValue:		tableView.defaultEmptyValue
+						defaultEmptyValue:		tableView.defaultValue
 						selectValueOnFocus:		true
 						validator:				tableView.validator
 						onPressed:				tableView.colSelected = columnIndex

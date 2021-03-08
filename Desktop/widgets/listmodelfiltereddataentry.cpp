@@ -155,6 +155,24 @@ void ListModelFilteredDataEntry::sourceTermsReset()
 	fillTable();
 }
 
+void ListModelFilteredDataEntry::initialValuesChanged()
+{
+	_initialValues.clear();
+	if (_tableView->initialValuesControl())
+	{
+		const Terms& terms = _tableView->initialValuesControl()->model()->terms();
+		if (terms.size() > 0)
+		{
+			std::string initColName = terms[0].asString();
+			DataSetTableModel* dataSetModel = DataSetTableModel::singleton();
+			int colIndex = dataSetModel->getColumnIndex(initColName);
+			for (int i = 0; i < dataSetModel->rowCount(); i++)
+				_initialValues.push_back(dataSetModel->data(dataSetModel->index(i, colIndex)).toDouble());
+		}
+	}
+	fillTable();
+}
+
 void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 {
 	//std::cout << "ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)" << std::endl;
@@ -190,9 +208,12 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 	for (int rowIndex : _tableTerms.rowIndices)
 	{
 		size_t row = static_cast<size_t>(rowIndex) - 1;
-
-		_enteredValues[row] = _tableTerms.values[0][valIndex++].toDouble();
+		if (_tableTerms.values[0].size() < valIndex)
+			_enteredValues[row] = _tableTerms.values[0][valIndex].toDouble();
+		else
+			_tableTerms.values[0].push_back(_tableView->defaultValue());
 		_acceptedRows[row]	= true;
+		valIndex++;
 	}
 
 	fillTable();
@@ -218,7 +239,12 @@ void ListModelFilteredDataEntry::fillTable()
 		if (_acceptedRows[row])
 		{
 			_filteredRowToData.push_back(row);
-			_tableTerms.values[0].push_back(_enteredValues[row]);
+
+			QVariant val = _tableView->defaultValue();
+			if (_enteredValues.count(row) > 0)		val = _enteredValues[row];
+			else if (_initialValues.size() > row)	val = _initialValues[row];
+
+			_tableTerms.values[0].push_back(val);
 			_tableTerms.rowNames.push_back(tq(std::to_string(row + 1)));
 
 		}
