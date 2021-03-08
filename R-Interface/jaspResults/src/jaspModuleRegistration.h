@@ -204,9 +204,11 @@ RCPP_MODULE(jaspResults)
 	;
 
 	Rcpp::class_<jaspQmlSource_Interface>("jaspQmlSource")
-		.derives<jaspTable_Interface>("jaspTable")
+		.derives<jaspObject_Interface>("jaspObject")
 		.property("sourceID",				&jaspQmlSource_Interface::getSourceID,
-											&jaspQmlSource_Interface::setSourceID,							"The name of the qml object for which this r-source is meant.");
+											&jaspQmlSource_Interface::setSourceID,							"The name of the qml object for which this r-source is meant.")
+		.method("getValue",					&jaspQmlSource_Interface::getValue,								"Get json string encoded value")
+		.method("setValue",					&jaspQmlSource_Interface::setValue,								"Set R object to value");
 }
 
 

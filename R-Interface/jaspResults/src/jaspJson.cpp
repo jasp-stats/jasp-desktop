@@ -108,7 +108,7 @@ Json::Value jaspJson::dataEntry(std::string & errorMessage) const
 	Json::Value data(jaspObject::dataEntry(errorMessage));
 
 	data["title"]		= _title;
-	data["json"]		= data;
+	data["json"]		= _json;
 	data["name"]		= getUniqueNestedName();
 
 	return data;

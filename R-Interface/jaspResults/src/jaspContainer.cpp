@@ -331,7 +331,6 @@ void jaspContainer::letChildrenRun()
 			break;
 
 		case jaspObjectType::table:
-		case jaspObjectType::qmlSource:
 			static_cast<jaspTable*>(obj)->letRun();
 			break;
 
@@ -359,7 +358,6 @@ void jaspContainer::completeChildren()
 			break;
 
 		case jaspObjectType::table:
-		case jaspObjectType::qmlSource:
 			static_cast<jaspTable*>(obj)->complete();
 			break;
 
