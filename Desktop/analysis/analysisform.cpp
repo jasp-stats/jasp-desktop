@@ -202,9 +202,12 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 	{
 		std::vector<JASPControl*> depends(control->depends().begin(), control->depends().end());
 
-		// This looks like a for-each loop right? Except that we add a dependency to control.depends and also to our local copy...
-		// Which means that won't work because then we invalidate the loop, instead we do it old-school with an index.
-		// But I thought it would be nice to add a comment here describing the magic going on here for the next forlorn soul looking into this.
+		// By adding at the end of the vector new dependencies, this makes sure that these dependencies of these new dependencies are
+		// added and so on recursively, so that the 'depends' set of each control gets all (direct or indirect) controls it depends on.
+		// (that's why we cannot use a for-each loop here or an iterator, because it loops on a vector that is growing during the loop).
+		// Afterwards, if a control depends (directly or indirectly) of another control, the number of elements in its 'depends' set is then
+		// automatically strictly bigger than the 'depends' set of all controls it depends on.
+		// We have then simply to use the size of their 'depends' set, to sort the controls.
 		for (size_t index = 0; index < depends.size(); index++)
 		{
 			JASPControl					* depend		= depends[index];
@@ -212,7 +215,7 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 
 			for (JASPControl* dependdepend : dependdepends)
 				if (dependdepend == control)
-					addFormError(tq("Circular dependency between control ") + control->name() + tq(" and ") + depend->name());
+					addFormError(tq("Circular dependency between control %1 and %2").arg(control->name()).arg(depend->name()));
 				else if (control->addDependency(dependdepend))
 					depends.push_back(dependdepend);
 		}
