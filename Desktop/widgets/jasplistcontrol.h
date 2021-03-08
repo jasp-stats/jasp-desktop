@@ -125,7 +125,6 @@ protected:
 	QVector<SourceItem*>	_sourceItems;
 	int						_variableTypesAllowed	= 0xff;
 	QString					_optionKey				= "value";
-	RowControls*			_defaultRowControls		= nullptr;
 	QVariant				_source;
 	QString					_rSource;
 	QVariant				_values;

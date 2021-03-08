@@ -52,8 +52,6 @@ VariablesListBase
 	property bool	dropModeReplace					: dropMode === JASP.DropReplace
 	property bool	showElementBorder				: false
 	property bool	showVariableTypeIcon			: containsVariables
-	property bool	setWidthInForm					: false
-	property bool	setHeightInForm					: false
 	property bool	addInteractionsByDefault		: true
 	property bool	interactionContainLowerTerms	: true
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction

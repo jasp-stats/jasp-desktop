@@ -56,7 +56,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::focusOnTabChanged,		this, &JASPControl::_setShouldShowFocus);
 	connect(this, &JASPControl::innerControlChanged,	this, &JASPControl::_setShouldShowFocus);
 	//connect(this, &JASPControl::implicitWidthChanged,	[this] () { setWidth(implicitWidth());		if (_preferredWidthBinding) setPreferredWidth(int(implicitWidth()), true);		});
-	//connect(this, &JASPControl::implicitHeightChanged,[this] () { setHeight(implicitHeight());	if (_preferredHeightBinding) setPreferredHeight(int(implicitHeight()), true);	});
+	//connect(this, &JASPControl::implicitHeightChanged,	[this] () { setHeight(implicitHeight());	if (_preferredHeightBinding) setPreferredHeight(int(implicitHeight()), true);	});
 	connect(this, &JASPControl::indentChanged,			[this] () { QQmlProperty(this, "Layout.leftMargin", qmlContext(this)).write( (indent() && JaspTheme::currentTheme()) ? JaspTheme::currentTheme()->indentationLength() : 0); });
 	connect(this, &JASPControl::debugChanged,			[this] () { _setBackgroundColor(); _setVisible(); } );
 	connect(this, &JASPControl::parentDebugChanged,		[this] () { _setBackgroundColor(); _setVisible(); } );
@@ -92,7 +92,7 @@ void JASPControl::setPreferredHeight(int preferredHeight, bool isBinding)
 	{
 		_preferredHeight = preferredHeight;
 		//setProperty("Layout.preferredHeight", preferredHeight); // This does not work...
-		QQmlProperty(this, "Layout.preferredHeight", qmlContext(this)).write(preferredHeight);
+		bool success = QQmlProperty(this, "Layout.preferredHeight", qmlContext(this)).write(preferredHeight);
 
 		emit preferredHeightChanged();
 	}
@@ -179,8 +179,6 @@ void JASPControl::componentComplete()
 		_form->addControl(this);
 	else
 	{
-		setUp();
-		setInitialized();
 		JASPListControl* listView = nullptr;
 
 		QVariant listViewVar = context->contextProperty("listView");
@@ -208,6 +206,11 @@ void JASPControl::componentComplete()
 			listView->addRowControl(_parentListViewKey, this);
 
 			emit parentListViewChanged();
+		}
+		else
+		{
+			setUp();
+			setInitialized();
 		}
 	}
 
@@ -537,6 +540,12 @@ bool JASPControl::childHasWarning() const
 	return _hasWarning;
 }
 
+// This method is just for the parentListView property that needs a JASPControl (JASPListControl is unknown in QML).
+JASPControl *JASPControl::parentListViewEx() const
+{
+	return _parentListView;
+}
+
 bool JASPControl::hovered() const
 {
 	if (_mouseAreaObj)
@@ -567,12 +576,12 @@ QString JASPControl::humanFriendlyLabel() const
 QVector<JASPControl::ParentKey> JASPControl::getParentKeys()
 {
 	QVector<JASPControl::ParentKey> parentKeys;
-	JASPListControl* parentControl =  qobject_cast<JASPListControl*>(parentListView());
+	JASPListControl* parentControl =  parentListView();
 
 	while (parentControl)
 	{
 		parentKeys.prepend({parentControl->name().toStdString(), parentControl->optionKey().toStdString(), Term::readTerm(parentListViewKey()).scomponents()});
-		parentControl = qobject_cast<JASPListControl*>(parentControl->parentListView());
+		parentControl = parentControl->parentListView();
 	}
 
 	return parentKeys;

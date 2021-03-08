@@ -28,8 +28,6 @@ RepeatedMeasuresFoctorsListBase
 	implicitHeight:				jaspTheme.defaultVariablesFormHeight
 	background:					rectangle
 
-				property bool	setWidthInForm: false
-				property bool	setHeightInForm: false
 	readonly	property string deleteIcon: "cross.png"
 
 	Text

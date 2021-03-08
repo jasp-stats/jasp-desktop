@@ -201,7 +201,7 @@ ComponentsListBase
 		height			: 28 * preferencesModel.uiScale //jaspTheme.defaultRectangularButtonHeight
 		width			: height
 		radius			: height
-		visible			: tabView.showAddIcon && (tabView.maximumItems <= 0 || tabView.maximumItems >= tabView.count)
+		visible			: tabView.showAddIcon && (tabView.maximumItems <= 0 || tabView.maximumItems > tabView.count)
 		iconSource		: jaspTheme.iconPath + tabView.addIcon
 		onClicked		: addItem()
 		toolTip			: tabView.addTooltip

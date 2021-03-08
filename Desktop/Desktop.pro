@@ -444,7 +444,8 @@ HEADERS += \
     analysis/boundcontrolbase.h \
     widgets/boundcontroltableview.h \
     widgets/boundcontrolcontraststableview.h \
-    widgets/boundcontrolfilteredtableview.h
+    widgets/boundcontrolfilteredtableview.h \
+    widgets/variablesformbase.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -630,7 +631,8 @@ SOURCES += \
     analysis/boundcontrolbase.cpp \
     widgets/boundcontroltableview.cpp \
     widgets/boundcontrolcontraststableview.cpp \
-    widgets/boundcontrolfilteredtableview.cpp
+    widgets/boundcontrolfilteredtableview.cpp \
+    widgets/variablesformbase.cpp
 
 RESOURCES += \
     html/html.qrc \
