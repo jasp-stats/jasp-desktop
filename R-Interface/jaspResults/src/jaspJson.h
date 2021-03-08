@@ -9,6 +9,9 @@ public:
 	jaspJson(Json::Value json = Json::nullValue)	: jaspObject(jaspObjectType::json, ""), _json(json) {}
 	jaspJson(Rcpp::RObject Robj)					: jaspObject(jaspObjectType::json, ""), _json(RObject_to_JsonValue(Robj)) {}
 
+	void		setValue(Rcpp::RObject Robj)	{ _json = RObject_to_JsonValue(Robj);	}
+	std::string	getValue()						{ return _json.toStyledString();		}
+
 	static Json::Value RObject_to_JsonValue(Rcpp::RObject		obj);
 	static Json::Value RObject_to_JsonValue(Rcpp::List 			obj);
 
@@ -133,5 +136,15 @@ template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<STRSXP>(
 
 template<> inline Json::Value jaspJson::RVectorEntry_to_JsonValue<REALSXP>(Rcpp::Vector<REALSXP> obj, int row)				TO_INFINITY_AND_BEYOND
 template<> inline Json::Value jaspJson::RMatrixColumnEntry_to_JsonValue<REALSXP>(Rcpp::MatrixColumn<REALSXP> obj, int row)	TO_INFINITY_AND_BEYOND
+
+
+class jaspJson_Interface : public jaspObject_Interface
+{
+public:
+	jaspJson_Interface(jaspObject * dataObj) : jaspObject_Interface(dataObj) {}
+
+	void 		setValue(Rcpp::RObject Robj)	{ 			static_cast<jaspJson *>(myJaspObject)->setValue(Robj); }
+	std::string geValue()						{ return 	static_cast<jaspJson *>(myJaspObject)->getValue(); }
+};
 
 RCPP_EXPOSED_CLASS_NODECL(jaspJson)

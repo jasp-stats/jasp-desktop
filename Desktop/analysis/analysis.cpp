@@ -1189,6 +1189,7 @@ void Analysis::checkForRSources()
 				findNewSource(entry);
 		else if(meta.isObject())
 		{
+			//Here we collect the meta's names for collections and qmlSources
 			if(meta.isMember("type") && meta["type"].asString() == "qmlSource")
 				sourceIDs.insert(meta["name"].asString());
 
@@ -1210,14 +1211,16 @@ void Analysis::checkForRSources()
 		if(results.isArray())
 			for(Json::Value & entry : results)
 				findNewSource(entry);
+
 		else if(results.isObject())
 		{
 			if(results.isMember("name") && sourceIDs.count(results["name"].asString()) > 0)
-				newSources[results["sourceID"].asString()] = results;
+				newSources[results["sourceID"].asString()] = results["json"]; //We take the json from this qmlSource as that is the value we want
 
 			for(const std::string & memberName : results.getMemberNames())
 				if(sourceIDs.count(memberName) > 0)
-					newSources[results[memberName]["sourceID"].asString()] = results[memberName];
+					newSources[results[memberName]["sourceID"].asString()] = results[memberName]["json"];
+
 				else if(isCollection.count(memberName) > 0 && results[memberName].isMember("collection")) //Checking for "collection" is to avoid stupid crashes but shouldnt really be necessary anyhow
 					collectSources(results[memberName]["collection"]);
 		}

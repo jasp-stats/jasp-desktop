@@ -317,7 +317,6 @@ protected:
 		}
 	}
 
-
 	///The general case might work for matrices and dataframes?
 	template <typename RCPP_CLASS> std::vector<std::string> extractElementOrColumnNames(RCPP_CLASS rObj, bool setColNamesInTable=false)
 	{
@@ -410,14 +409,14 @@ public:
 	jaspStringlist_Interface	getRowNames()			{ return jaspStringlist_Interface(	&(((jaspTable*)myJaspObject)->_rowNames)		); }
 	jaspStringlist_Interface	getRowTitles()			{ return jaspStringlist_Interface(	&(((jaspTable*)myJaspObject)->_rowTitles)		); }
 
-	void setColNames(Rcpp::List newNames)				{ ((jaspTable*)myJaspObject)->setColNames(newNames);		}
-	void setColTypes(Rcpp::List newTypes)				{ ((jaspTable*)myJaspObject)->setColTypes(newTypes);		}
-	void setColTitles(Rcpp::List newTitles)				{ ((jaspTable*)myJaspObject)->setColTitles(newTitles);		}
-	void setColOvertitles(Rcpp::List newTitles)			{ ((jaspTable*)myJaspObject)->setColOvertitles(newTitles);	}
-	void setColFormats(Rcpp::List newFormats)			{ ((jaspTable*)myJaspObject)->setColFormats(newFormats);	}
-	void setColCombines(Rcpp::List newCombines)			{ ((jaspTable*)myJaspObject)->setColCombines(newCombines);	}
-	void setRowNames(Rcpp::List newNames)				{ ((jaspTable*)myJaspObject)->setRowNames(newNames);		}
-	void setRowTitles(Rcpp::List newTitles)				{ ((jaspTable*)myJaspObject)->setRowTitles(newTitles);		}
+	void setColNames(		Rcpp::List newNames)		{ ((jaspTable*)myJaspObject)->setColNames(newNames);		}
+	void setColTypes(		Rcpp::List newTypes)		{ ((jaspTable*)myJaspObject)->setColTypes(newTypes);		}
+	void setColTitles(		Rcpp::List newTitles)		{ ((jaspTable*)myJaspObject)->setColTitles(newTitles);		}
+	void setColOvertitles(	Rcpp::List newTitles)		{ ((jaspTable*)myJaspObject)->setColOvertitles(newTitles);	}
+	void setColFormats(		Rcpp::List newFormats)		{ ((jaspTable*)myJaspObject)->setColFormats(newFormats);	}
+	void setColCombines(	Rcpp::List newCombines)		{ ((jaspTable*)myJaspObject)->setColCombines(newCombines);	}
+	void setRowNames(		Rcpp::List newNames)		{ ((jaspTable*)myJaspObject)->setRowNames(newNames);		}
+	void setRowTitles(		Rcpp::List newTitles)		{ ((jaspTable*)myJaspObject)->setRowTitles(newTitles);		}
 
 	void addColumnInfo(Rcpp::RObject name, Rcpp::RObject title, Rcpp::RObject type, Rcpp::RObject format, Rcpp::RObject combine, Rcpp::RObject overtitle)	{ ((jaspTable*)myJaspObject)->addColumnInfo(name, title, type, format, combine, overtitle); }
 	void addFootnote(Rcpp::RObject message, Rcpp::RObject symbol, Rcpp::RObject col_names, Rcpp::RObject row_names)											{ ((jaspTable*)myJaspObject)->addFootnote(message, symbol, col_names, row_names); }

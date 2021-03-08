@@ -117,8 +117,8 @@ createJaspState <- function(object = NULL,   dependencies = NULL)
 createJaspColumn <- function(columnName = "",         dependencies = NULL)
   return(jaspColumnR$new(    columnName = columnName, dependencies = dependencies))
 
-createJaspQmlSource <- function( sourceID = "",          data = NULL, dependencies = NULL)
-  return(jaspQmlSourceR$new(     sourceID = sourceID,  data = data, dependencies = dependencies))
+createJaspQmlSource <- function(sourceID="", value=NULL, dependencies=NULL)
+  return(jaspQmlSourceR$new(     sourceID = sourceID,  value = value, dependencies = dependencies))
 
 # also imported but that doesn't work in JASP
 R6Class <- R6::R6Class
@@ -671,11 +671,11 @@ jaspTableR <- R6Class(
 
 jaspQmlSourceR <- R6Class(
     classname = "jaspQmlSourceR",
-	inherit   = jaspTableR,
+	inherit   = jaspOutputObjR,
 	cloneable = FALSE,
 
     public    = list(
-		initialize = function(sourceID="", column=NULL, dependencies=NULL, data=NULL, jaspObject=NULL) {
+	    initialize = function(sourceID="", value=NULL, dependencies=NULL, jaspObject=NULL) {
 		    if (!is.null(jaspObject)) {
 			  private$jaspObject <- jaspObject
 			  return()
@@ -689,11 +689,8 @@ jaspQmlSourceR <- R6Class(
 			if (sourceID != "")
 				jaspObj$sourceID <- sourceID
 
-			if (!is.null(column))
-				jaspObj$addColumns(column)
-
-            if (!is.null(data))
-			    jaspObj$setData(data)
+            if (!is.null(value))
+			    jaspObj$setValue(value)
 
             if (!is.null(dependencies))
 			    jaspObj$dependOnOptions(dependencies)
@@ -703,21 +700,10 @@ jaspQmlSourceR <- R6Class(
 		}
 	),
 	active = list(
-		sourceID                = function(x) if (missing(x)) private$jaspObject$sourceID                else private$jaspObject$sourceID                <- x
-	),
-	private = list(
-	    setField = function(field, value) private$jaspObject[[field]] <- value,
-		getField = function(field)        return(private$jaspObject[[field]])
+	    sourceID                = function(x) if (missing(x)) private$jaspObject$sourceID   else private$jaspObject$sourceID    <- x,
+		value					= function(x) if (missing(x)) private$jaspObject$getValue()	else private$jaspObject$setValue(x) #accepts anything returns json in string
 	)
 )
-
-`[[<-.jaspQmlSourceR` <- function(x, field, value) {
-    x$.__enclos_env__$private$setField(field, value)
-	return(x)
-}
-`[[.jaspQmlSourceR`   <- function(x, field)
-    x$.__enclos_env__$private$getField(field)
-
 
 jaspColumnR <- R6Class(
   classname = "jaspColumnR",
