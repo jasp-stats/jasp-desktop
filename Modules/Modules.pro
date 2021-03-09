@@ -54,12 +54,13 @@ MODULE_NAME = jaspMachineLearning
 include(InstallModule.pri)
 
 MODULE_NAME = jaspSummaryStatistics
-MODULE_DEPS = jaspFrequencies jaspRegression jaspTTests
+MODULE_DEPS = jaspFrequencies jaspRegression jaspTTests jaspAnova jaspDescriptives
 include(InstallModule.pri)
 
 MODULE_NAME = jaspMetaAnalysis
 include(InstallModule.pri)
 
+R_MODULES_INSTALL_DEPENDENCIES = true
 MODULE_NAME = jaspDistributions
 include(InstallModule.pri)
 
