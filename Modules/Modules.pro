@@ -26,7 +26,7 @@ MODULE_NAME = jaspFrequencies
 include(InstallModule.pri)
 
 MODULE_NAME = jaspRegression
-MODULE_DEPS = jaspDescriptives jaspAnova
+MODULE_DEPS = jaspDescriptives jaspAnova jaspTTests
 include(InstallModule.pri)
 
 MODULE_NAME = jaspTTests
