@@ -74,7 +74,7 @@ extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
 	logFlushDef logFlushFunction, logWriteDef logWriteFunction,
-	systemDef systemFunc, libraryFixerDef libraryFixerFunc)
+	systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultsFont)
 {
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
@@ -153,6 +153,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	char baseCitation[200];
 	sprintf(baseCitation, baseCitationFormat, buildYear, version);
 	rInside[".baseCitation"]		= CSTRING_TO_R(baseCitation);
+	rInside[".resultsFont"]			= resultsFont;
 
 	jaspResults::setSendFunc(sendToDesktopFunction);
 	jaspResults::setPollMessagesFunc(pollMessagesFunction);

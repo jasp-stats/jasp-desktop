@@ -100,7 +100,7 @@ void Engine::initialize()
 
 	try
 	{
-		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings);
+		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings, _resultsFont.c_str());
 
 		Log::log() << "rbridge_init completed" << std::endl;
 
