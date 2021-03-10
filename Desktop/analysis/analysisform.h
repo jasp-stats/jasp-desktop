@@ -124,9 +124,10 @@ public:
 	QString		warnings()			const { return msgsListToString(_formWarnings);	}
 	QVariant	analysis()			const { return QVariant::fromValue(_analysis);	}
 	Analysis*	analysisObj()		const { return _analysis;						}
-	void		addRSource(const QString& name, ListModel* model)	{ _rSourceModelMap[name] = model; }
+	void		addRSource(const QString& name, ListModel* model)		{ _rSourceModelMap[name].insert(model); }
+	void		removeRSource(const QString& name, ListModel* model)	{ _rSourceModelMap[name].remove(model);	}
 
-	std::vector<std::vector<std::string> >	getValuesFromRSource(const QString& sourceID) { if (_analysis) return _analysis->getValuesFromRSource(sourceID); else return {}; }
+	std::vector<std::vector<std::string> >	getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
 	void		addColumnControl(JASPControl* control, bool isComputed);
 
 	void		setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
@@ -151,6 +152,7 @@ private:
 	void		setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
 	QQuickItem* _getControlErrorMessageOfControl(JASPControl* jaspControl);
 	void		setAnalysisUp();
+	std::vector<std::vector<std::string> > _getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath);
 
 private slots:
 	   void		formCompletedHandler();
@@ -180,7 +182,7 @@ private:
 	bool										_runOnChange	= true,
 												_formCompleted = false;
 	QString										_info;
-	QMap<QString, ListModel*>					_rSourceModelMap;
+	QMap<QString, QSet<ListModel*> >			_rSourceModelMap;
 	int											_signalValueChangedBlocked = 0;
 };
 

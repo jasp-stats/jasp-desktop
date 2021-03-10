@@ -40,7 +40,7 @@ class JASPListControl : public JASPControl
 
 	Q_PROPERTY( ListModel*		model					READ model													NOTIFY modelChanged					)
 	Q_PROPERTY( QVariant		source					READ source					WRITE setSource					NOTIFY sourceChanged				)
-	Q_PROPERTY( QString			rSource					READ rSource				WRITE setRSource				NOTIFY sourceChanged				)
+	Q_PROPERTY( QVariant		rSource					READ rSource				WRITE setRSource				NOTIFY sourceChanged				)
 	Q_PROPERTY( QVariant		values					READ values					WRITE setValues					NOTIFY sourceChanged				)
 	Q_PROPERTY( int				count					READ count													NOTIFY countChanged					)
 	Q_PROPERTY( QString			optionKey				READ optionKey				WRITE setOptionKey													)
@@ -80,7 +80,7 @@ public:
 
 			const QVariant&		source()					const			{ return _source;				}
 			const QVariant&		values()					const			{ return _values;				}
-			const QString&		rSource()					const			{ return _rSource;				}
+			const QVariant&		rSource()					const			{ return _rSource;				}
 			int					count();
 			bool				addEmptyValue()				const			{ return _addEmptyValue;		}
 			const QString&		placeholderText()			const			{ return _placeHolderText;		}
@@ -114,7 +114,7 @@ protected slots:
 			void				setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
 
 			GENERIC_SET_FUNCTION(Source,				_source,				sourceChanged,					QVariant	)
-			GENERIC_SET_FUNCTION(RSource,				_rSource,				sourceChanged,					QString		)
+			GENERIC_SET_FUNCTION(RSource,				_rSource,				sourceChanged,					QVariant	)
 			GENERIC_SET_FUNCTION(Values,				_values,				sourceChanged,					QVariant	)
 			GENERIC_SET_FUNCTION(AddEmptyValue,			_addEmptyValue,			addEmptyValueChanged,			bool		)
 			GENERIC_SET_FUNCTION(PlaceHolderText,		_placeHolderText,		placeHolderTextChanged,			QString		)
@@ -126,7 +126,7 @@ protected:
 	int						_variableTypesAllowed	= 0xff;
 	QString					_optionKey				= "value";
 	QVariant				_source;
-	QString					_rSource;
+	QVariant				_rSource;
 	QVariant				_values;
 	bool					_addEmptyValue			= false,
 							_containsVariables		= false,

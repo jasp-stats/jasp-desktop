@@ -561,7 +561,10 @@ void AnalysisForm::setAnalysis(QVariant analysis)
 void AnalysisForm::rSourceChanged(const QString &name)
 {
 	if (_rSourceModelMap.contains(name))
-		_rSourceModelMap[name]->sourceTermsReset();
+	{
+		for (ListModel* model : _rSourceModelMap[name])
+			model->sourceTermsReset();
+	}
 }
 
 void AnalysisForm::boundValueChangedHandler(JASPControl *)
@@ -728,6 +731,113 @@ QString AnalysisForm::metaHelpMD() const
 	};
 
 	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->meta(), 2);
+}
+
+std::vector<std::vector<string> > AnalysisForm::getValuesFromRSource(const QString &sourceID, const QStringList &searchPath)
+{
+	if (!_analysis) return {};
+
+	const Json::Value& jsonSource = _analysis->getRSource(fq(sourceID));
+	return  _getValuesFromJson(jsonSource, searchPath);
+}
+
+std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath)
+{
+	auto getValueFromJson = [](const Json::Value& jsonValue) -> std::vector<std::string>
+	{
+		if (jsonValue.isString())			return {jsonValue.asString()};
+		else if (jsonValue.isIntegral())	return {std::to_string(jsonValue.asInt())};
+		else if (jsonValue.isNumeric())		return {std::to_string(jsonValue.asDouble())};
+		else if (jsonValue.isArray())
+		{
+			std::vector<std::string> values;
+			for (const Json::Value& oneValue: jsonValue)
+			{
+				if (oneValue.isString())	values.push_back(oneValue.asString());
+				if (oneValue.isIntegral())	values.push_back(std::to_string(oneValue.asInt()));
+				if (oneValue.isNumeric())	values.push_back(std::to_string(oneValue.asDouble()));
+			}
+			return values;
+		}
+		else return {};
+	};
+
+	if (!jsonValues.isArray() && !jsonValues.isObject())
+		return {getValueFromJson(jsonValues)};
+
+	std::vector<std::vector<string> > result;
+	QString path;
+	QStringList nextPaths;
+	if (searchPath.length() > 0)
+	{
+		path = searchPath[0];
+		nextPaths = searchPath;
+		nextPaths.removeAt(0);
+	}
+
+	if (jsonValues.isObject())
+	{
+		if (path.isEmpty())
+		{
+			std::vector<std::string> keys = jsonValues.getMemberNames();
+			for (const std::string& key : keys)
+				result.push_back({key});
+		}
+		else
+		{
+			std::string key = fq(path);
+			if (jsonValues.isMember(key))
+				result = _getValuesFromJson(jsonValues[key], nextPaths);
+			else if (key == "values")
+			{
+				for (const Json::Value& jsonValue : jsonValues)
+				{
+					std::vector<std::vector<string> > values = _getValuesFromJson(jsonValue, nextPaths);
+					if (values.size() > 0)
+						result.push_back(values[0]);
+				}
+			}
+			else
+				Log::log() << "Key " << key << " not found in R source " << jsonValues.toStyledString() << std::endl;
+		}
+	}
+	else // jsonValues is an array
+	{
+		bool pathIsIndex = false;
+		uint index = path.isEmpty() ? 0 : path.toUInt(&pathIsIndex);
+
+		if (pathIsIndex)
+		{
+			if (jsonValues.size() > index)
+				result = _getValuesFromJson(jsonValues[index], nextPaths);
+			else
+				Log::log() << "Cannot retrieve values from R Source: index (" << index << ") bigger than size of the source (" << jsonValues.size() << ")" << std::endl;
+		}
+		else
+		{
+			for (const Json::Value& jsonValue : jsonValues)
+			{
+				if (path.isEmpty())
+					result.push_back(getValueFromJson(jsonValue));
+				else if (jsonValue.isObject())
+				{
+					std::string key = fq(path);
+					if (jsonValue.isMember(key))
+					{
+						std::vector<std::vector<string> > values =_getValuesFromJson(jsonValue[key], nextPaths);
+						if (values.size() > 0)
+							result.push_back(values[0]);
+					}
+					else
+						Log::log() << "Key " << key << " not found in R source " << jsonValue.toStyledString() << std::endl;
+				}
+				else
+					Log::log() << "Caanot find path " << path << " in R source " << jsonValue.toStyledString() << std::endl;
+			}
+		}
+	}
+
+	return result;
 }
 
 void AnalysisForm::setBoundValue(const string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey> &parentKeys)
