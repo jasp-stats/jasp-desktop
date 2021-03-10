@@ -50,6 +50,7 @@ public:
 			  JASPListControl* _listControl
 			, QMap<QString, QVariant>& map
 			, const JASPListControl::LabelValueMap& _values
+			, const QVector<SourceItem*> _rSources
 			, QAbstractItemModel* _nativeModel = nullptr
 			, const QVector<SourceItem*>& _discardSources = QVector<SourceItem*>()
 			, const QVector<QMap<QString, QVariant> >& _conditionVariables = QVector<QMap<QString, QVariant> >()
@@ -57,7 +58,7 @@ public:
 
 	SourceItem(JASPListControl* _listControl, const JASPListControl::LabelValueMap& _values);
 
-	SourceItem(JASPListControl* _listControl, const QString& rSource);
+	SourceItem(JASPListControl* _listControl, const QString& sourceName, const QString& sourceUse);
 
 	SourceItem(JASPListControl* _listControl = nullptr);
 
@@ -75,8 +76,10 @@ public:
 
 private:
 	static QString							_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse);
-	static QMap<QString, QVariant>			_readSource(JASPListControl* _listControl, const QVariant& source, JASPListControl::LabelValueMap& sourceValues, QAbstractItemModel*& _nativeModel);
+	static QString							_readRSourceName(const QString& sourceNameExt, QString& sourceUse);
+	static QMap<QString, QVariant>			_readSource(JASPListControl* _listControl, const QVariant& source, JASPListControl::LabelValueMap& sourceValues, QVector<SourceItem*>& rSources, QAbstractItemModel*& _nativeModel);
 	static JASPListControl::LabelValueMap	_readValues(JASPListControl* _listControl, const QVariant& _values);
+	static SourceItem*						_readRSource(JASPListControl* listControl, const QVariant& rSource);
 	static QList<QVariant>					_getListVariant(QVariant var);
 
 	void									_setUp();
@@ -88,12 +91,13 @@ private slots:
 private:
 	JASPListControl		*			_listControl			= nullptr;
 	QString							_name,
-									_controlName,
-									_rSource;
+									_controlName;
 	QStringList						_modelUse;
 	QVector<SourceItem*>			_discardSources;
+	QVector<SourceItem*>			_rSources;
 	JASPListControl::LabelValueMap	_values;
 	bool							_isValuesSource			= false;
+	bool							_isRSource				= false;
 	ListModel			*			_listModel				= nullptr;
 	QAbstractItemModel	*			_nativeModel			= nullptr;
 	int								_nativeModelRole		= Qt::DisplayRole;

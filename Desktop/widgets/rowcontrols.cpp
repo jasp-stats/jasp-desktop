@@ -57,8 +57,12 @@ void RowControls::init(int row, const Term& key, bool isNew)
 		for (JASPControl* control : controls)
 			control->setUp();
 
-		if (listView->form())
-			listView->form()->sortControls(controls);
+		AnalysisForm* form = listView->form();
+		if (form)
+		{
+			form->sortControls(controls);
+			form->blockValueChangeSignal(true);
+		}
 
 		for (JASPControl* control : controls)
 		{
@@ -82,6 +86,9 @@ void RowControls::init(int row, const Term& key, bool isNew)
 
 			control->setInitialized();
 		}
+
+		if (form)
+			form->blockValueChangeSignal(false, false);
 
 	}
 	else

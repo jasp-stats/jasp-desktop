@@ -162,11 +162,10 @@ public:
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
-	std::string				upgradeMsgsForOption(const std::string & name) const;
+	std::string				upgradeMsgsForOption(const std::string & name)		const;
 
-	std::vector<std::vector<std::string> >	getValuesFromRSource(const QString & sourceID) const;
-
-	const QList<std::string>&	computedColumns()	const	{ return _computedColumns; }
+	const QList<std::string>&	computedColumns()								const	{ return _computedColumns; }
+	const Json::Value&		getRSource(const std::string& name)					const	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
 
 signals:
 	void				nameChanged();

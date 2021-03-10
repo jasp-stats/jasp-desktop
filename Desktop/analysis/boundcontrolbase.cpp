@@ -29,6 +29,8 @@ BoundControlBase::BoundControlBase(JASPControl* control) : _control(control)
 
 void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 {
+	if (value == boundValue()) return;
+
 	AnalysisForm* form = _control->form();
 
 	if (form && _control->isBound())

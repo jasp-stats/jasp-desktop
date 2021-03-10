@@ -42,7 +42,7 @@ ComponentsListBase
 	property alias	rowSpacing			: itemGrid.rowSpacing
 	property alias	columnSpacing		: itemGrid.columnSpacing
 
-	property bool	addItemManually		: !source && !values
+	property bool	addItemManually		: !source && !values && !rSource
 	property bool	showAddIcon			: addItemManually
 	property int	minimumItems		: 0
 	property int	maximumItems		: -1
