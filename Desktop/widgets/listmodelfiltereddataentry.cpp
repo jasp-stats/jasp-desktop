@@ -292,7 +292,7 @@ int ListModelFilteredDataEntry::getMaximumColumnWidthInCharacters(size_t column)
 
 	DataSetTableModel* dataSetModel = DataSetTableModel::singleton();
 
-	if (!(dataSetModel->columnCount() >= 0 || colIndex > _tableTerms.colNames.size() || colIndex < 0))
+	if (dataSetModel->columnCount() >= 0 && colIndex < _tableTerms.colNames.size() && colIndex >= 0)
 	{
 		std::string colName		= _tableTerms.colNames[colIndex].toStdString();
 		int			colIndex	= dataSetModel->getColumnIndex(colName);
