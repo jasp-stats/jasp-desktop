@@ -201,7 +201,7 @@ VariablesFormBase
 		for (var key in allJASPControls)
 		{
 			var control				= allJASPControls[key]
-			var isControlList		= ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList) || (control instanceof InputListView))
+			var isControlList		= ((control instanceof VariablesList) || (control instanceof FactorLevelList) || (control instanceof InputListView))
 			var isControlComboBox	= (control instanceof ComboBox)
 
 			if (isControlList && widthSetByForm(control))

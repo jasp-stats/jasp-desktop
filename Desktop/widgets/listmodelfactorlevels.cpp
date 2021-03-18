@@ -16,43 +16,43 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "listmodelrepeatedmeasuresfactors.h"
+#include "listmodelfactorlevels.h"
 #include "utilities/qutils.h"
 #include "log.h"
-#include "repeatedmeasuresfactorslistbase.h"
+#include "factorlevellistbase.h"
 
 using namespace std;
 
-ListModelRepeatedMeasuresFactors::ListModelRepeatedMeasuresFactors(JASPListControl* listView)
+ListModelFactorLevels::ListModelFactorLevels(JASPListControl* listView)
 	: ListModel(listView)
 {
-	_repeatedMeasuresFactorsList = qobject_cast<RepeatedMeasuresFactorsListBase*>(listView);
+	_factorLevelList = qobject_cast<FactorLevelListBase*>(listView);
 	_needsSource = false;
 	_itemType = "fixedFactors";
 }
 
-int ListModelRepeatedMeasuresFactors::rowCount(const QModelIndex &parent) const
+int ListModelFactorLevels::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
-	return _factors.length();
+	return _items.length();
 }
 
-QVariant ListModelRepeatedMeasuresFactors::data(const QModelIndex &index, int role) const
+QVariant ListModelFactorLevels::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
 	
-	if (row >= _factors.length())
+	if (row >= _items.length())
 	{
-		Log::log()  << "Unknown row " << row << " in ListModelFactors. Length is " << _factors.length() << std::endl;
+		Log::log()  << "Unknown row " << row << " in ListModelFactorLevels. Length is " << _items.length() << std::endl;
 		return QVariant();
 	}
 	
-	const Factor& factor = _factors.at(row);
+	const FactorLevelItem& factor = _items.at(row);
 	int factorIndex = _getIndex(factor);
 	
-	if (role == Qt::DisplayRole || role == ListModelRepeatedMeasuresFactors::NameRole)
+	if (role == Qt::DisplayRole || role == ListModelFactorLevels::NameRole)
 		return factor.value;
-	else if (role == ListModelRepeatedMeasuresFactors::TypeRole)
+	else if (role == ListModelFactorLevels::TypeRole)
 	{
 		QStringList listValues;
 		if (factor.isVirtual)
@@ -75,33 +75,31 @@ QVariant ListModelRepeatedMeasuresFactors::data(const QModelIndex &index, int ro
 	return ListModel::data(index, role);
 }
 
-void ListModelRepeatedMeasuresFactors::initFactors(const vector<pair<string, vector<string> > > &factors)
+void ListModelFactorLevels::initFactors(const vector<pair<string, vector<string> > > &factors)
 {
 	beginResetModel();
 	
-	_factors.clear();
-	int factorIndex = 1;
+	_items.clear();
 	for (const pair<string, vector<string> > &factor : factors)
 	{
-		Factor factorHeader(tq(factor.first), false, false);
-		_factors.append(factorHeader);
-		Factor& factorHeaderRef = _factors[_factors.length() - 1];
+		FactorLevelItem factorHeader(tq(factor.first), false, false);
+		_items.append(factorHeader);
+		FactorLevelItem& factorHeaderRef = _items[_items.length() - 1];
 		
 		int levelIndex = 1;
 		for (const string& level : factor.second)
 		{
-			Factor factorLevel(tq(level), false, true, &factorHeaderRef);
-			_factors.append(factorLevel);
+			FactorLevelItem factorLevel(tq(level), false, true, &factorHeaderRef);
+			_items.append(factorLevel);
 			levelIndex++;
 		}
 		
-		Factor extraLevel(_repeatedMeasuresFactorsList->levelPlaceHolder(), true, true, &factorHeaderRef);
-		_factors.append(extraLevel);
-		factorIndex++;
+		FactorLevelItem extraLevel(_factorLevelList->levelPlaceHolder(), true, true, &factorHeaderRef);
+		_items.append(extraLevel);
 	}
 	
-	Factor extraFactor(_repeatedMeasuresFactorsList->factorPlaceHolder(), true, false);
-	_factors.append(extraFactor);
+	FactorLevelItem extraFactor(_factorLevelList->factorPlaceHolder(), true, false);
+	_items.append(extraFactor);
 
 	_setAllLevelsCombinations();
 
@@ -109,12 +107,12 @@ void ListModelRepeatedMeasuresFactors::initFactors(const vector<pair<string, vec
 	
 }
 
-vector<pair<string, vector<string> > > ListModelRepeatedMeasuresFactors::getFactors() const
+vector<pair<string, vector<string> > > ListModelFactorLevels::getFactors() const
 {
 	vector<pair<string, vector<string> > > result;
 	string currentFactorName;
 	vector<string> currentLevels;
-	for (const Factor& factor: _factors)
+	for (const FactorLevelItem& factor: _items)
 	{
 		if (!factor.isVirtual && !factor.isLevel)
 		{
@@ -135,40 +133,40 @@ vector<pair<string, vector<string> > > ListModelRepeatedMeasuresFactors::getFact
 	return result;
 }
 
-const Terms &ListModelRepeatedMeasuresFactors::getLevels() const
+const Terms &ListModelFactorLevels::getLevels() const
 {
 	return _allLevelsCombinations;
 }
 
-void ListModelRepeatedMeasuresFactors::_updateVirtualLevelIndex(Factor* headFactor)
+void ListModelFactorLevels::_updateVirtualLevelIndex(FactorLevelItem* headFactor)
 {
-	int row = _factors.indexOf(*headFactor);
+	int row = _items.indexOf(*headFactor);
 	int levelIndex = 1;
-	for (int i = row + 1; i < _factors.length(); i++, levelIndex++)
+	for (int i = row + 1; i < _items.length(); i++, levelIndex++)
 	{
-		Factor& factor = _factors[i];
+		FactorLevelItem& factor = _items[i];
 		if (factor.headFactor != headFactor)
 			break;
 		if (factor.isVirtual)
 		{
-			factor.value = tr("Level %1").arg(levelIndex);
+			factor.value = _factorLevelList->getLevelName(levelIndex);
 			QModelIndex modelIndex = index(i, 0);
 			emit dataChanged(modelIndex, modelIndex);
 		}
 	}
 }
 
-void ListModelRepeatedMeasuresFactors::_updateVirtualFactorIndex()
+void ListModelFactorLevels::_updateVirtualFactorIndex()
 {
 	int factorIndex = 1;
-	for (Factor& factor: _factors)
+	for (FactorLevelItem& factor: _items)
 	{
 		if (!factor.isLevel)
 		{
 			if (factor.isVirtual)
 			{
-				int row = _factors.indexOf(factor);
-				factor.value = tr("RM Factor %1").arg(factorIndex);
+				int row = _items.indexOf(factor);
+				factor.value = _factorLevelList->getFactorName(factorIndex);
 				QModelIndex modelIndex = index(row, 0);
 				emit dataChanged(modelIndex, modelIndex);
 			}
@@ -178,14 +176,14 @@ void ListModelRepeatedMeasuresFactors::_updateVirtualFactorIndex()
 	}
 }
 
-void ListModelRepeatedMeasuresFactors::_setAllLevelsCombinations()
+void ListModelFactorLevels::_setAllLevelsCombinations()
 {
 	vector<vector<string> > allLevelsCombinations;
 	_setTerms(_getAllFactorsStringList());
 	
 	vector<vector<string> > allLevels;	
 	vector<string> currentLevels;
-	for (const Factor& factor: _factors)
+	for (const FactorLevelItem& factor: _items)
 	{
 		if (factor.isLevel && !factor.isVirtual)
 			currentLevels.push_back(factor.value.toStdString());
@@ -222,11 +220,11 @@ void ListModelRepeatedMeasuresFactors::_setAllLevelsCombinations()
 	_allLevelsCombinations.set(allLevelsCombinations);
 }
 
-QStringList ListModelRepeatedMeasuresFactors::_getAllFactorsStringList()
+QStringList ListModelFactorLevels::_getAllFactorsStringList()
 {
 	QStringList result;
 
-	for (const Factor& factor: _factors)
+	for (const FactorLevelItem& factor: _items)
 	{
 		if (!factor.isVirtual && !factor.isLevel)
 			result.push_back(factor.value);
@@ -235,61 +233,65 @@ QStringList ListModelRepeatedMeasuresFactors::_getAllFactorsStringList()
 	return result;
 }
 
-void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
+void ListModelFactorLevels::itemChanged(int row, QVariant value)
 {
-	if (row >= _factors.length())
+	if (row >= _items.length())
 	{
-		Log::log()  << "Index " << row << " in ListModelFactors is greater than the maximum " << _factors.length() << std::endl;
+		Log::log()  << "Index " << row << " in ListModelFactors is greater than the maximum " << _items.length() << std::endl;
 		return;
 	}
 
-	QString val = value.toString();
-	Factor& factor = _factors[row];
-	int		factorIndex = _getIndex(factor);
+	QString				val = value.toString();
+	FactorLevelItem& item	= _items[row];
+	int			itemIndex	= _getIndex(item);
 	
-	if ((!factor.isVirtual && factor.value == val) || (factor.isVirtual && val.isEmpty()))
+	if ((!item.isVirtual && item.value == val) || (item.isVirtual && val.isEmpty()))
 		return;
 	
-	if (val.isEmpty() && !factor.isVirtual)
-		val = _removeFactor(row);
+	if (val.isEmpty() && !item.isVirtual)
+		val = _removeItem(row);
 
 	if (!val.isEmpty())
 	{
-		if (factor.isLevel)
+		if (item.isLevel)
 		{
-			QStringList levels = _getOtherLevelsStringList(factor);
+			QStringList levels = _getOtherLevelsStringList(item);
 			val = _giveUniqueName(levels, val);
 		}
 		else
 		{
 			QStringList allFactors = _getAllFactorsStringList();
-			allFactors.removeAt(factorIndex - 1);
+			allFactors.removeAt(itemIndex - 1);
 			val = _giveUniqueName(allFactors, val);
 		}
 
-		factor.value = val;
+		item.value = val;
 
-		if (factor.isVirtual)
+		if (item.isVirtual)
 		{
-			factor.isVirtual = false;
-			if (factor.isLevel)
+			item.isVirtual = false;
+			if (item.isLevel)
 			{
 				beginInsertRows(QModelIndex(), row+1, row+1);
-				Factor newLevel(tr("Level %1").arg(factorIndex + 1), true, true, factor.headFactor);
-				_factors.insert(row + 1, newLevel);
+				FactorLevelItem newLevel(_factorLevelList->getLevelName(itemIndex + 1), true, true, item.headFactor);
+				_items.insert(row + 1, newLevel);
 				endInsertRows();
 			}
 			else
 			{
-				beginInsertRows(QModelIndex(), _factors.length(), _factors.length() + 3);
-				Factor newLevel1(tr("Level %1").arg(1), false, true, &factor);
-				_factors.push_back(newLevel1);
-				Factor newLevel2(tr("Level %1").arg(2), false, true, &factor);
-				_factors.push_back(newLevel2);
-				Factor newVirtualLevel(tr("Level %1").arg(3), true, true, &factor);
-				_factors.push_back(newVirtualLevel);
-				Factor newVirtualFactor(tr("RM Factor %1").arg(factorIndex + 1), true, false);
-				_factors.push_back(newVirtualFactor);
+				beginInsertRows(QModelIndex(), _items.length(), _items.length() + 3);
+
+				int i = 0;
+				for (; i < _factorLevelList->minLevels(); i++)
+				{
+					FactorLevelItem newLevel(_factorLevelList->getLevelName(i + 1), false, true, &item);
+					_items.push_back(newLevel);
+				}
+				FactorLevelItem newVirtualLevel(_factorLevelList->getLevelName(i + 1), true, true, &item);
+				_items.push_back(newVirtualLevel);
+				FactorLevelItem newVirtualFactor(_factorLevelList->getFactorName(itemIndex + 1), true, false);
+				_items.push_back(newVirtualFactor);
+
 				endInsertRows();
 			}
 		}
@@ -301,36 +303,39 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 	
 }
 
-QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
+QString ListModelFactorLevels::_removeItem(int row)
 {
 	QString value;
 
-	if (row >= _factors.length())
+	if (row >= _items.length())
 		return value;
 
-	const Factor& factor = _factors[row];
-	int factorIndex = _getIndex(factor);
-	if (factor.isLevel)
+	const FactorLevelItem& item = _items[row];
+	if (item.isVirtual) return value;
+
+	int itemIndex = _getIndex(item);
+	if (item.isLevel)
 	{
-		if (factorIndex > 2)
+		if (itemIndex > _factorLevelList->minLevels())
 		{
+			FactorLevelItem* factor = item.headFactor;
 			beginRemoveRows(QModelIndex(), row, row);
-			_factors.removeAt(row);
+			_items.removeAt(row);
 			_setAllLevelsCombinations();
 			endRemoveRows();
-			_updateVirtualLevelIndex(factor.headFactor);
+			_updateVirtualLevelIndex(factor);
 		}
 		else
-			value = tr("Level %1").arg(factorIndex);
+			value = _factorLevelList->getLevelName(itemIndex);
 	}
 	else
 	{
-		if (factorIndex > 1)
+		if (itemIndex > _factorLevelList->minFactors())
 		{
 			int countRemoved = 1;
-			while (row + countRemoved < _factors.length())
+			while (row + countRemoved < _items.length())
 			{
-				const Factor& factor2 = _factors.at(row + countRemoved);
+				const FactorLevelItem& factor2 = _items.at(row + countRemoved);
 				if (factor2.isLevel)
 					countRemoved++;
 				else
@@ -339,28 +344,28 @@ QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
 
 			beginRemoveRows(QModelIndex(), row, row + countRemoved - 1);
 			for (int i = 0; i < countRemoved; i++)
-				_factors.removeAt(row);
+				_items.removeAt(row);
 			_setAllLevelsCombinations();
 			endRemoveRows();
 
 			_updateVirtualFactorIndex();
 		}
 		else
-			value = tr("RM Factor %1").arg(factorIndex);
+			value = _factorLevelList->getFactorName(itemIndex);
 	}
 
 	return value;
 }
 
-void ListModelRepeatedMeasuresFactors::itemRemoved(int row)
+void ListModelFactorLevels::itemRemoved(int row)
 {
-	_removeFactor(row);
+	_removeItem(row);
 }
 
-QStringList ListModelRepeatedMeasuresFactors::_getOtherLevelsStringList(const Factor& item)
+QStringList ListModelFactorLevels::_getOtherLevelsStringList(const FactorLevelItem& item)
 {
 	QStringList result;
-	for (const Factor& factor : _factors)
+	for (const FactorLevelItem& factor : _items)
 	{
 		if (!factor.isVirtual && factor.isLevel && (&factor != &item) && factor.headFactor == item.headFactor)
 			result.push_back(factor.value);
@@ -369,7 +374,7 @@ QStringList ListModelRepeatedMeasuresFactors::_getOtherLevelsStringList(const Fa
 	return result;
 }
 
-QString ListModelRepeatedMeasuresFactors::_giveUniqueName(const QStringList &names, const QString startName)
+QString ListModelFactorLevels::_giveUniqueName(const QStringList &names, const QString startName)
 {
 	int i = 1;
 	bool isUnique = false;
@@ -389,16 +394,16 @@ QString ListModelRepeatedMeasuresFactors::_giveUniqueName(const QStringList &nam
 	return result;
 }
 
-int ListModelRepeatedMeasuresFactors::_getIndex(const ListModelRepeatedMeasuresFactors::Factor &factor) const
+int ListModelFactorLevels::_getIndex(const ListModelFactorLevels::FactorLevelItem &item) const
 {
 	int index = 1;
-	if (factor.isLevel)
-		index =  _factors.indexOf(factor) - _factors.indexOf(*(factor.headFactor));
+	if (item.isLevel)
+		index =  _items.indexOf(item) - _items.indexOf(*(item.headFactor));
 	else
 	{
-		for (const Factor& _factor : _factors)
+		for (const FactorLevelItem& _factor : _items)
 		{
-			if (_factor.headFactor == factor.headFactor)
+			if (_factor.headFactor == item.headFactor)
 				return index;
 			if (!_factor.isLevel)
 				index++;

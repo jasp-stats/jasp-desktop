@@ -119,6 +119,7 @@ public:
 				QString				windowTitle()						const;
 				QString				currentFile()						const	{ return _currentFile;						 }
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;			  }
+				bool				synchingData()						const	{ return _synchingData;						  }
 				std::string			dataFilePath()						const	{ return _dataFilePath;						   }
 		const	std::string		&	analysesHTML()						const	{ return _analysesHTML;							}
 		const	Json::Value		&	analysesData()						const	{ return _analysesData;							 }
@@ -312,7 +313,7 @@ private:
 	uint						_dataFileTimestamp;
 
 	ComputedColumns				_computedColumns;
-	bool						_synchingData;
+	bool						_synchingData				= false;
 	std::map<std::string, bool> _columnNameUsedInEasyFilter;
 
 	friend class ComputedColumns; //temporary! Or well, should be thought about anyway

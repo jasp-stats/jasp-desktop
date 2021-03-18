@@ -84,6 +84,7 @@ private:
 
 private slots:
 	void									_connectModels();
+	void									_resetModel();
 
 private:
 	JASPListControl		*			_listControl			= nullptr;

@@ -54,6 +54,7 @@ public:
 	QStringList				getColumnLabelsAsStringList(int col)	const				{ return DataSetPackage::pkg()->getColumnLabelsAsStringList(col);					}
 	size_t					getMaximumColumnWidthInCharacters(int index) const			{ return DataSetPackage::pkg()->getMaximumColumnWidthInCharacters(index);			}
 	QModelIndex				parentModelForType(parIdxType type, int column = 0)	const	{ return DataSetPackage::pkg()->parentModelForType(type, column);					}
+	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
 
 				bool		showInactive()							const				{ return _showInactive;	}
 

@@ -30,7 +30,7 @@ PercentField                 1.0 PercentField.qml
 CIField                       1.0 CIField.qml
 RadioButton                    1.0 RadioButton.qml
 RadioButtonGroup                1.0 RadioButtonGroup.qml
-RepeatedMeasuresFactorsList      1.0 RepeatedMeasuresFactorsList.qml
+FactorLevelList					 1.0 FactorLevelList.qml
 InputListView                     1.0 InputListView.qml
 ComponentsList                   1.0 ComponentsList.qml
 FileSelector			 	   1.0 FileSelector.qml

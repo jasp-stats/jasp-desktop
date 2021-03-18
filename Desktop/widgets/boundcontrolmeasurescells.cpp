@@ -18,7 +18,7 @@
 
 #include "boundcontrolmeasurescells.h"
 #include "listmodelmeasurescellsassigned.h"
-#include "listmodelrepeatedmeasuresfactors.h"
+#include "listmodelfactorlevels.h"
 #include "jasplistcontrol.h"
 #include "../analysis/analysisform.h"
 #include "utilities/qutils.h"
@@ -47,7 +47,7 @@ void BoundControlMeasuresCells::bindTo(const Json::Value &value)
 Terms BoundControlMeasuresCells::getLevels()
 {
 	Terms levels;
-	for (ListModelRepeatedMeasuresFactors* factorsModel : _sourceFactorsModels)
+	for (ListModelFactorLevels* factorsModel : _sourceFactorsModels)
 		levels.add(factorsModel->getLevels());
 	
 	return levels;
@@ -69,7 +69,7 @@ bool BoundControlMeasuresCells::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::arrayValue;
 }
 
-void BoundControlMeasuresCells::addFactorModel(ListModelRepeatedMeasuresFactors *factorModel)
+void BoundControlMeasuresCells::addFactorModel(ListModelFactorLevels *factorModel)
 {
 	_sourceFactorsModels.push_back(factorModel);
 }

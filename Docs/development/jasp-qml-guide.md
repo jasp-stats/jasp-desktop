@@ -30,7 +30,7 @@ Table of Contents:
   * [Variable Specification](#variable-specification)
     + [AvailableVariablesList](#availablevariableslist)
     + [AssignedVariablesList](#assignedvariableslist)
-    + [RepeatedMeasuresFactorsList](#repeatedmeasuresfactorslist)
+	+ [FactorLevelList](#factorlevellist)
   * [Complex Components](#complex-components)
     + [ComponentsList](#componentslist)
     + [TabView](#tabview)
@@ -502,12 +502,17 @@ Properties
 
 </details>
 
-#### RepeatedMeasuresFactorsList
+#### FactorLevelList
+With this component, the user can set names of fcators, and for each factor, the names of its levels. This is used in Repeated Measures ANOVA.
 Properties
 - `name`: identifier of the particular variable field (in your R code you will be able to retrieve the assigned variable(s) through this identifier)
 - `label`: [optional, default: `""`] text that will be shown above the variable field
 - `width`: [optional, default: ±`230`] in pixels how wide should the field be
 - `height`: [optional, default: `350`] in pixels how heigh should the field be
+- `factorName`: [optional, default: `Factor`] default name of the factor.
+- `levelName`: [optional, default: `Level`] default name of the level.
+- `minFactors`: [optional, default: `1`] minimum number of factors.
+- `minLevels`: [optional, default: `2`] minimum numbe of levels.
 
 <details>
 	<summary>Examples</summary>
@@ -515,11 +520,12 @@ Properties
   ```qml
   VariablesForm
   {
-    RepeatedMeasuresFactorsList
+	FactorLevelList
     {
-      name: "repeatedMeasuresFactors"
+	  name: "repeatedMeasuresFactors"
       label: qsTr("Repeated Measures Factors")
       height: 180
+	  factorName: qsTr("RM Factor")
     }
     AssignedVariablesList
     {

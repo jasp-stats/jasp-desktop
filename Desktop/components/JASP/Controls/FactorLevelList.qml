@@ -21,7 +21,7 @@ import QtQml.Models		2.2
 import JASP.Controls	1.0
 import JASP				1.0
 
-RepeatedMeasuresFoctorsListBase
+FactorLevelListBase
 {
 	id:							repeatedMeasuresFactorsList
 	implicitWidth:				parent.width

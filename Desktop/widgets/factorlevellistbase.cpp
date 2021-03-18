@@ -16,31 +16,31 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "repeatedmeasuresfactorslistbase.h"
+#include "factorlevellistbase.h"
 
 using namespace std;
 
-RepeatedMeasuresFactorsListBase::RepeatedMeasuresFactorsListBase(QQuickItem *parent)
+FactorLevelListBase::FactorLevelListBase(QQuickItem *parent)
 	: JASPListControl(parent), BoundControlBase(this)
 {
-	_controlType = ControlType::RepeatedMeasuresFactorsList;
+	_controlType = ControlType::FactorLevelList;
 }
 
-void RepeatedMeasuresFactorsListBase::setUpModel()
+void FactorLevelListBase::setUpModel()
 {
-	_factorsModel = new ListModelRepeatedMeasuresFactors(this);
+	_factorLevelsModel = new ListModelFactorLevels(this);
 	JASPListControl::setUpModel();
 }
 
-void RepeatedMeasuresFactorsListBase::setUp()
+void FactorLevelListBase::setUp()
 {
 	JASPListControl::setUp();
 
-	connect(this, &RepeatedMeasuresFactorsListBase::itemChanged, _factorsModel, &ListModelRepeatedMeasuresFactors::itemChanged);
-	connect(this, &RepeatedMeasuresFactorsListBase::itemRemoved, _factorsModel, &ListModelRepeatedMeasuresFactors::itemRemoved);
+	connect(this, &FactorLevelListBase::itemChanged, _factorLevelsModel, &ListModelFactorLevels::itemChanged);
+	connect(this, &FactorLevelListBase::itemRemoved, _factorLevelsModel, &ListModelFactorLevels::itemRemoved);
 }
 
-void RepeatedMeasuresFactorsListBase::bindTo(const Json::Value& value)
+void FactorLevelListBase::bindTo(const Json::Value& value)
 {
 	BoundControlBase::bindTo(value);
 
@@ -55,21 +55,21 @@ void RepeatedMeasuresFactorsListBase::bindTo(const Json::Value& value)
 		factors.push_back(make_pair(row["name"].asString(), factorLevels));
 	}
 	
-	_factorsModel->initFactors(factors);
+	_factorLevelsModel->initFactors(factors);
 }
 
-Json::Value RepeatedMeasuresFactorsListBase::createJson()
+Json::Value FactorLevelListBase::createJson()
 {
 	Json::Value result(Json::arrayValue);
 
-	for (const QString& factorStr : defaultFactors())
+	for (int i = 0; i < minFactors(); i++)
 	{
 		Json::Value factor(Json::objectValue);
-		factor["name"] = fq(factorStr);
+		factor["name"] = fq(getFactorName(i + 1));
 
 		Json::Value levels(Json::arrayValue);
-		for (const QString& levelStr: defaultLevels())
-			levels.append(fq(levelStr));
+		for (int j = 0; j < minLevels(); j++)
+			levels.append(fq(getLevelName(j + 1)));
 
 		factor["levels"] = levels;
 		result.append(factor);
@@ -78,7 +78,7 @@ Json::Value RepeatedMeasuresFactorsListBase::createJson()
 	return result;
 }
 
-bool RepeatedMeasuresFactorsListBase::isJsonValid(const Json::Value &value)
+bool FactorLevelListBase::isJsonValid(const Json::Value &value)
 {
 	bool valid = value.isArray();
 
@@ -94,10 +94,10 @@ bool RepeatedMeasuresFactorsListBase::isJsonValid(const Json::Value &value)
 	return valid;
 }
 
-void RepeatedMeasuresFactorsListBase::termsChangedHandler()
+void FactorLevelListBase::termsChangedHandler()
 {
 	Json::Value boundValue(Json::arrayValue);
-	const vector<pair<string, vector<string> > > &factors = _factorsModel->getFactors();
+	const vector<pair<string, vector<string> > > &factors = _factorLevelsModel->getFactors();
 	
 	for (const auto &factor : factors)
 	{

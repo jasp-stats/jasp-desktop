@@ -22,7 +22,7 @@
 #include "analysis/analysisform.h"
 #include "r_functionwhitelist.h"
 #include "tableviewbase.h"
-#include "listmodelrepeatedmeasuresfactors.h"
+#include "listmodelfactorlevels.h"
 #include "data/columnsmodel.h"
 
 ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent) : ListModelTableViewBase(parent)
@@ -252,11 +252,11 @@ void ListModelCustomContrasts::setup()
 	QString factorsSourceName = _tableView->property("factorsSource").toString();
 	if (!factorsSourceName.isEmpty())
 	{
-		ListModelRepeatedMeasuresFactors* factorsSourceModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(_tableView->form()->getModel(factorsSourceName));
+		ListModelFactorLevels* factorsSourceModel = dynamic_cast<ListModelFactorLevels*>(_tableView->form()->getModel(factorsSourceName));
 		if (factorsSourceModel)
 		{
 			_setFactorsSource(factorsSourceModel);
-			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::termsChanged, this, &ListModelCustomContrasts::factorsSourceChanged);
+			connect(factorsSourceModel, &ListModelFactorLevels::termsChanged, this, &ListModelCustomContrasts::factorsSourceChanged);
 		}
 	}
 }
@@ -315,7 +315,7 @@ bool ListModelCustomContrasts::_labelChanged(const QString& columnName, const QS
 	return isChanged;
 }
 
-void ListModelCustomContrasts::_setFactorsSource(ListModelRepeatedMeasuresFactors *factorsSourceModel)
+void ListModelCustomContrasts::_setFactorsSource(ListModelFactorLevels *factorsSourceModel)
 {
 	_factorsSourceModel = factorsSourceModel;
 

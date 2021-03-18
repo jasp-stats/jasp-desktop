@@ -68,7 +68,7 @@ public:
 		, RadioButtonGroup
 		, VariablesListView
 		, ComboBox
-		, RepeatedMeasuresFactorsList
+		, FactorLevelList
 		, InputListView
 		, TableView
 		, Slider

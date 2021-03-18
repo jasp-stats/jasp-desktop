@@ -55,7 +55,7 @@
 #include "widgets/expanderbuttonbase.h"
 #include "widgets/variableslistbase.h"
 #include "widgets/variablesformbase.h"
-#include "widgets/repeatedmeasuresfactorslistbase.h"
+#include "widgets/factorlevellistbase.h"
 #include "widgets/tableviewbase.h"
 #include "widgets/radiobuttonbase.h"
 #include "widgets/radiobuttonsgroupbase.h"
@@ -163,7 +163,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<ComponentsListBase>							("JASP",		1, 0, "ComponentsListBase"				);
 	qmlRegisterType<FactorsFormBase>							("JASP",		1, 0, "FactorsFormBase"					);
 	qmlRegisterType<InputListBase>								("JASP",		1, 0, "InputListBase"					);
-	qmlRegisterType<RepeatedMeasuresFactorsListBase>			("JASP",		1, 0, "RepeatedMeasuresFoctorsListBase"	);
+	qmlRegisterType<FactorLevelListBase>						("JASP",		1, 0, "FactorLevelListBase"				);
 	qmlRegisterType<VariablesListBase>							("JASP",		1, 0, "VariablesListBase"				);
 	qmlRegisterType<VariablesFormBase>							("JASP",		1, 0, "VariablesFormBase"				);
 	qmlRegisterType<TableViewBase>								("JASP",		1, 0, "TableViewBase"					);
