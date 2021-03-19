@@ -78,9 +78,7 @@ private:
 	int							_editableColumn = 0;
 	QStringList					_dataColumns,
 								_extraColsStr;
-	QString						_colName,
-								_extraCol,
-								_filter;
+	QString						_filter;
 
 };
 
