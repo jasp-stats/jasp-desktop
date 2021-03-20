@@ -314,7 +314,7 @@ void CSV::determineDelimiters(size_t fromHere)
 		}
 	}
 
-	_delim = ',';
+	_delim = commas == 0 ? ';' : ',';
 	int countDelim = commas; 
 	
 	if (semicolons > countDelim)
