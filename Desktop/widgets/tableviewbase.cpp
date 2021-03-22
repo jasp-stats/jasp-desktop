@@ -23,7 +23,7 @@
 #include "../analysis/analysisform.h"
 #include "listmodelfiltereddataentry.h"
 #include "listmodelmultinomialchi2test.h"
-#include "listmodelrepeatedmeasuresfactors.h"
+#include "listmodelfactorlevels.h"
 #include "listmodelcustomcontrasts.h"
 #include "boundcontrolcontraststableview.h"
 #include "boundcontrolfilteredtableview.h"

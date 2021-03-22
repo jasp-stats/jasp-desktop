@@ -99,14 +99,14 @@ void SourceItem::_connectModels()
 
 	if (!_nativeModel) return;
 
-
-	connect(_nativeModel, &QAbstractItemModel::dataChanged,			controlModel, &ListModel::sourceTermsReset );
-	connect(_nativeModel, &QAbstractItemModel::rowsInserted,		controlModel, &ListModel::sourceTermsReset );
-	connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			controlModel, &ListModel::sourceTermsReset );
-	connect(_nativeModel, &QAbstractItemModel::rowsMoved,			controlModel, &ListModel::sourceTermsReset );
-	connect(_nativeModel, &QAbstractItemModel::modelReset,			controlModel, &ListModel::sourceTermsReset );
-
 	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
+
+	connect(_nativeModel, &QAbstractItemModel::dataChanged,			this, &SourceItem::_resetModel);
+	connect(_nativeModel, &QAbstractItemModel::rowsInserted,		this, &SourceItem::_resetModel);
+	connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			this, &SourceItem::_resetModel);
+	connect(_nativeModel, &QAbstractItemModel::rowsMoved,			this, &SourceItem::_resetModel);
+	connect(_nativeModel, &QAbstractItemModel::modelReset,			this, &SourceItem::_resetModel);
+
 	if (columnsModel)
 	{
 		connect(columnsModel,	&ColumnsModel::namesChanged,		controlModel, &ListModel::sourceNamesChanged );
@@ -124,6 +124,14 @@ void SourceItem::_connectModels()
 		connect(_listModel,		&ListModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 		connect(_listModel,		&ListModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
 	}
+}
+
+void SourceItem::_resetModel()
+{
+	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
+
+	if (!columnsModel || !columnsModel->blockSignals())
+		_listControl->model()->sourceTermsReset();
 }
 
 void SourceItem::_setUp()

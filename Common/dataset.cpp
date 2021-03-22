@@ -135,16 +135,6 @@ size_t DataSet::rowCount()	const
 	return min;
 }
 
-
-void DataSet::setSynchingData(bool newVal)
-{
-	if (newVal == _synchingData)
-		return;
-	Log::log() << "dataset synching ? " << (newVal ? "yes" : "no") << std::endl;
-
-	_synchingData = newVal;
-}
-
 size_t DataSet::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
 	if(columnIndex >= columnCount()) return 0;

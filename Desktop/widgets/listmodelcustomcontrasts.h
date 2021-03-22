@@ -21,7 +21,7 @@
 
 #include "listmodeltableviewbase.h"
 
-class ListModelRepeatedMeasuresFactors;
+class ListModelFactorLevels;
 
 class ListModelCustomContrasts : public ListModelTableViewBase
 {
@@ -59,7 +59,7 @@ signals:
 protected:
 	int									_variableCount	= 0;
 	double								_scaleFactor	= 1;
-	ListModelRepeatedMeasuresFactors*	_factorsSourceModel;
+	ListModelFactorLevels*	_factorsSourceModel;
 	QString								_colName;
 	QMap<QString, QList<QString> >		_factors;
 
@@ -67,7 +67,7 @@ protected:
 private:
 	void		_resetValuesEtc();
 	bool		_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel);
-	void		_setFactorsSource(ListModelRepeatedMeasuresFactors* factorsSourceModel);
+	void		_setFactorsSource(ListModelFactorLevels* factorsSourceModel);
 	void		_setFactors();
 	void		_loadColumnInfo();
 	QStringList	_getVariables();

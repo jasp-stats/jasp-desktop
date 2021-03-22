@@ -17,7 +17,7 @@
 //
 
 #include "listmodelmeasurescellsassigned.h"
-#include "listmodelrepeatedmeasuresfactors.h"
+#include "listmodelfactorlevels.h"
 #include "variableslistbase.h"
 #include "boundcontrolmeasurescells.h"
 #include "log.h"
@@ -193,7 +193,7 @@ QVariant ListModelMeasuresCellsAssigned::data(const QModelIndex &index, int role
 	int realCol = indexRow % 2;
 	int realRow = indexRow / 2;
 
-	if (realRow >= _levels.size())
+	if (realRow >= int(terms().size()))
 		return QVariant();
 
 	if (role == Qt::DisplayRole || role == ListModel::NameRole)

@@ -60,8 +60,6 @@ public:
 	int					filteredRowCount()	const	{ return _filteredRowCount; }
 
 	bool allColumnsPassFilter()				const;
-	bool synchingData()						const	{ return _synchingData; }
-	void setSynchingData(bool newVal);
 
 	size_t						getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 	std::vector<std::string> 	getColumnNames() { return _columns.getColumnNames();};
@@ -70,7 +68,6 @@ private:
 	Columns			_columns;
 	int				_filteredRowCount = 0;
 	BoolVector		_filterVector;
-	bool			_synchingData;
 
 	boost::interprocess::managed_shared_memory *_mem;
 };

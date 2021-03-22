@@ -796,7 +796,7 @@ int DataSetPackage::setColumnTypeFromQML(int columnIndex, int newColumnType)
 void DataSetPackage::beginSynchingData()
 {
 	beginLoadingData();
-	_dataSet->setSynchingData(true);
+	_synchingData = true;
 }
 
 void DataSetPackage::endSynchingDataChangedColumns(std::vector<std::string>	&	changedColumns)
@@ -813,11 +813,11 @@ void DataSetPackage::endSynchingData(std::vector<std::string>			&	changedColumns
 									 bool									rowCountChanged,
 									 bool									hasNewColumns)
 {
-	_dataSet->setSynchingData(false);
 
+	endLoadingData();
+	_synchingData = false;
 	//We convert all of this stuff to qt containers even though this takes time etc. Because it needs to go through a (queued) connection and it might not work otherwise
 	emit datasetChanged(tql(changedColumns), tql(missingColumns), tq(changeNameColumns), rowCountChanged, hasNewColumns);
-	endLoadingData();
 }
 
 
@@ -1421,7 +1421,8 @@ void DataSetPackage::removeColumn(std::string name)
 
 	if(isLoaded()) setModified(true);
 
-	emit datasetChanged({}, {tq(name)}, {}, false, false);
+	if (!_synchingData) // If wwe are synchronising, the datasetChanged is already called
+		emit datasetChanged({}, {tq(name)}, {}, false, false);
 }
 
 std::vector<bool> DataSetPackage::filterVector()

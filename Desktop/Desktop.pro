@@ -388,7 +388,6 @@ HEADERS += \
     widgets/filemenu/actionbuttons.h \
     widgets/filemenu/resourcebuttons.h \
     widgets/filemenu/resourcebuttonsvisible.h \
-    widgets/listmodelrepeatedmeasuresfactors.h \
     widgets/interactionmodel.h \
     widgets/listmodelinteractionavailable.h \
     results/resultmenuentry.h \
@@ -438,14 +437,15 @@ HEADERS += \
     widgets/radiobuttonsgroupbase.h \
     widgets/jasplistcontrol.h \
     widgets/radiobuttonbase.h \
-    widgets/repeatedmeasuresfactorslistbase.h \
     widgets/sourceitem.h \
     analysis/boundcontrol.h \
     analysis/boundcontrolbase.h \
     widgets/boundcontroltableview.h \
     widgets/boundcontrolcontraststableview.h \
     widgets/boundcontrolfilteredtableview.h \
-    widgets/variablesformbase.h
+    widgets/variablesformbase.h \
+    widgets/factorlevellistbase.h \
+    widgets/listmodelfactorlevels.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -577,7 +577,6 @@ SOURCES += \
     widgets/filemenu/actionbuttons.cpp \
     widgets/filemenu/resourcebuttons.cpp \
     widgets/filemenu/resourcebuttonsvisible.cpp \
-    widgets/listmodelrepeatedmeasuresfactors.cpp \
     widgets/interactionmodel.cpp \
     widgets/listmodelinteractionavailable.cpp \
     results/resultmenumodel.cpp \
@@ -626,13 +625,14 @@ SOURCES += \
     widgets/radiobuttonsgroupbase.cpp \
     widgets/jasplistcontrol.cpp \
     widgets/radiobuttonbase.cpp \
-    widgets/repeatedmeasuresfactorslistbase.cpp \
     widgets/sourceitem.cpp \
     analysis/boundcontrolbase.cpp \
     widgets/boundcontroltableview.cpp \
     widgets/boundcontrolcontraststableview.cpp \
     widgets/boundcontrolfilteredtableview.cpp \
-    widgets/variablesformbase.cpp
+    widgets/variablesformbase.cpp \
+    widgets/factorlevellistbase.cpp \
+    widgets/listmodelfactorlevels.cpp
 
 RESOURCES += \
     html/html.qrc \

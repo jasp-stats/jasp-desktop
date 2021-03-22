@@ -409,7 +409,7 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	switch(controlType)
 	{
 	default:
-	case ControlType::DefaultControl:					return tr("Option");				break;
+	case ControlType::DefaultControl:				return tr("Option");				break;
 	case ControlType::Expander:						return tr("Section");				break;
 	case ControlType::CheckBox:						return tr("CheckBox");				break;
 	case ControlType::Switch:						return tr("Switch");				break;
@@ -418,7 +418,7 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	case ControlType::RadioButtonGroup:				return tr("Radio Buttons");			break;
 	case ControlType::VariablesListView:			return tr("Variables");				break;
 	case ControlType::ComboBox:						return tr("ComboBox");				break;
-	case ControlType::RepeatedMeasuresFactorsList:	return tr("RM Factors List");		break;
+	case ControlType::FactorLevelList:				return tr("Factor Level List");		break;
 	case ControlType::InputListView:				return tr("Input ListView");		break;
 	case ControlType::TableView:					return tr("TableView");				break;
 	case ControlType::Slider:						return tr("Slider");				break;

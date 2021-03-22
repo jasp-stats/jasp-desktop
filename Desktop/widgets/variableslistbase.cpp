@@ -52,7 +52,7 @@ void VariablesListBase::setUp()
 	{
 		for (SourceItem* sourceItem : _sourceItems)
 		{
-			ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(sourceItem->listModel());
+			ListModelFactorLevels* factorsModel = dynamic_cast<ListModelFactorLevels*>(sourceItem->listModel());
 			if (!factorsModel)
 				addControlError(tr("Source model of %1 must be from a Factor List").arg(name()));
 			addDependency(factorsModel->listView());

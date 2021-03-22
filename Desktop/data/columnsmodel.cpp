@@ -68,19 +68,22 @@ void ColumnsModel::datasetChanged(	QStringList				changedColumns,
 									bool					rowCountChanged,
 									bool					hasNewColumns)
 {
-	if (changeNameColumns.size() > 0)
-		emit namesChanged(changeNameColumns);
-	else if (missingColumns.size() > 0 || hasNewColumns)
+	if (missingColumns.size() > 0 || hasNewColumns)
 		refresh();
-	else if (changedColumns.size() > 0 || rowCountChanged)
+	else
 	{
-		if (rowCountChanged)
+		if (changeNameColumns.size() > 0)
+			emit namesChanged(changeNameColumns);
+		else if (changedColumns.size() > 0 || rowCountChanged)
 		{
-			changedColumns.clear();
-			for (int i = 0; i < rowCount(); i++)
-				changedColumns.push_back(_tableModel->columnTitle(i).toString());
+			if (rowCountChanged)
+			{
+				changedColumns.clear();
+				for (int i = 0; i < rowCount(); i++)
+					changedColumns.push_back(_tableModel->columnTitle(i).toString());
+			}
+			emit columnsChanged(changedColumns);
 		}
-		emit columnsChanged(changedColumns);
 	}
 }
 

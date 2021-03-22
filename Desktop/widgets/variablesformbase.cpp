@@ -86,7 +86,7 @@ void VariablesFormBase::componentComplete()
 	for (JASPControl* control : _allJASPControls)
 	{
 		ControlType type = control->controlType();
-		if ((type == ControlType::VariablesListView) || (type == ControlType::RepeatedMeasuresFactorsList) || (type == ControlType::InputListView))
+		if ((type == ControlType::VariablesListView) || (type == ControlType::FactorLevelList) || (type == ControlType::InputListView))
 		{
 			if (qFuzzyCompare(control->width(), width()))
 				_controlsWidthSetByForm.push_back(control);

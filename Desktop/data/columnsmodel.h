@@ -31,8 +31,9 @@ public:
 	QVariant				data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 	QHash<int, QByteArray>	roleNames()																			const	override;
 
-	int						getColumnIndex(const std::string& col)												const	{ return _tableModel->getColumnIndex(col);						}
+	int						getColumnIndex(const std::string& col)												const	{ return _tableModel->getColumnIndex(col);		}
 	QString					getIconFile(columnType colType, IconType type)										const;
+	bool					blockSignals()																		const	{ return _tableModel->synchingData();			}
 
 signals:
 	void namesChanged(QMap<QString, QString> changedNames);

@@ -98,7 +98,6 @@
         <file>components/JASP/Widgets/FileMenu/PrefsAdvanced.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsMissingValues.qml</file>
         <file>components/JASP/Widgets/AnalysisFormExpander.qml</file>
-        <file>components/JASP/Controls/RepeatedMeasuresFactorsList.qml</file>
         <file>components/JASP/Widgets/SplitHandle.qml</file>
         <file>components/JASP/Controls/AvailableVariablesList.qml</file>
         <file>components/JASP/Controls/ComputedColumnField.qml</file>
@@ -144,5 +143,6 @@
         <file>components/JASP/Widgets/PlotEditor/PlotEditingAxis.qml</file>
         <file>components/JASP/Widgets/FactorsForm.qml</file>
         <file>components/JASP/Widgets/FactorsList.qml</file>
+        <file>components/JASP/Controls/FactorLevelList.qml</file>
     </qresource>
 </RCC>

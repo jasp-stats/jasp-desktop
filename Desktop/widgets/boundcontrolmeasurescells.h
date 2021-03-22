@@ -20,7 +20,7 @@
 #define BOUNDCONTROLMEASURESCELLS_H
 
 #include "analysis/boundcontrolbase.h"
-#include "listmodelrepeatedmeasuresfactors.h"
+#include "listmodelfactorlevels.h"
 
 class ListModelMeasuresCellsAssigned;
 
@@ -35,12 +35,12 @@ public:
 	void		bindTo(const Json::Value &value)			override;
 	void		resetBoundValue()							override;
 
-	void		addFactorModel(ListModelRepeatedMeasuresFactors* factorModel);
+	void		addFactorModel(ListModelFactorLevels* factorModel);
 	Terms		getLevels();
 	
 private:
 	ListModelMeasuresCellsAssigned*				_measuresCellsModel;
-	QList<ListModelRepeatedMeasuresFactors*>	_sourceFactorsModels;
+	QList<ListModelFactorLevels*>	_sourceFactorsModels;
 	
 	void _initLevels();
 };

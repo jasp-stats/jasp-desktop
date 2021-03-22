@@ -113,14 +113,6 @@ msgctxt "VariablesForm|"
 msgid "All"
 msgstr ""
 
-msgctxt "VariablesForm|"
-msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr ""
-
-msgctxt "VariablesForm|"
-msgid "There is no Available List in the Variables Form"
-msgstr ""
-
 msgctxt "AboutWindow|"
 msgid "About JASP"
 msgstr ""
@@ -1843,10 +1835,6 @@ msgid "ComboBox"
 msgstr ""
 
 msgctxt "JASPControl|"
-msgid "RM Factors List"
-msgstr ""
-
-msgctxt "JASPControl|"
 msgid "Input ListView"
 msgstr ""
 
@@ -2691,16 +2679,6 @@ msgid "Layer %1"
 msgstr ""
 
 #, qt-format
-msgctxt "ListModelRepeatedMeasuresFactors|"
-msgid "Level %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelRepeatedMeasuresFactors|"
-msgid "RM Factor %1"
-msgstr ""
-
-#, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
@@ -3270,4 +3248,32 @@ msgid ""
 "\n"
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Factor Level List"
+msgstr ""
+
+msgctxt "VariablesFormBase|"
+msgid "Only 1 Available Variables list can be set in a VariablesForm"
+msgstr ""
+
+msgctxt "VariablesFormBase|"
+msgid "There is no Available List in the Variables Form"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "Factor"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "Level"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "New Factor"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "New Level"
 msgstr ""

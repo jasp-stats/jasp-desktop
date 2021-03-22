@@ -16,19 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELREPEATEDMEASURESFACTORS_H
-#define LISTMODELREPEATEDMEASURESFACTORS_H
+#ifndef LISTMODELFACTORLEVELS_H
+#define LISTMODELFACTORLEVELS_H
 
 #include "listmodel.h"
 
-class RepeatedMeasuresFactorsListBase;
+class FactorLevelListBase;
 
-class ListModelRepeatedMeasuresFactors : public ListModel
+class ListModelFactorLevels : public ListModel
 {
 	Q_OBJECT
 public:
 	
-	ListModelRepeatedMeasuresFactors(JASPListControl* listView);
+	ListModelFactorLevels(JASPListControl* listView);
 	
 	int rowCount(const QModelIndex &parent = QModelIndex())						const override;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole)			const override;
@@ -43,15 +43,15 @@ public slots:
 	void itemRemoved(int row);
 		
 protected:
-	RepeatedMeasuresFactorsListBase* _repeatedMeasuresFactorsList = nullptr;
+	FactorLevelListBase* _factorLevelList = nullptr;
 
-	struct Factor
+	struct FactorLevelItem
 	{
-		QString		value;
-		bool		isVirtual;
-		bool		isLevel;
-		Factor*		headFactor;
-		Factor(const QString& _value, bool _isVirtual, bool _isLevel, Factor* _factor = nullptr) :
+		QString				value;
+		bool				isVirtual;
+		bool				isLevel;
+		FactorLevelItem*	headFactor;
+		FactorLevelItem(const QString& _value, bool _isVirtual, bool _isLevel, FactorLevelItem* _factor = nullptr) :
 			value(_value), isVirtual(_isVirtual), isLevel(_isLevel)
 		{
 			if (_factor)
@@ -60,34 +60,34 @@ protected:
 				headFactor = this;
 		}
 
-		Factor(const Factor& factor) : value(factor.value), isVirtual(factor.isVirtual), isLevel(factor.isLevel)
+		FactorLevelItem(const FactorLevelItem& item) : value(item.value), isVirtual(item.isVirtual), isLevel(item.isLevel)
 		{
-			if (&factor == factor.headFactor)
+			if (&item == item.headFactor)
 				headFactor = this;
 			else
-				headFactor = factor.headFactor;
+				headFactor = item.headFactor;
 		}
 
-		bool operator==(const Factor& factor)
+		bool operator==(const FactorLevelItem& item)
 		{
-			return factor.headFactor == headFactor
-					&& factor.isLevel == isLevel
-					&& factor.isVirtual == isVirtual
-					&& factor.value == value;
+			return item.headFactor == headFactor
+					&& item.isLevel == isLevel
+					&& item.isVirtual == isVirtual
+					&& item.value == value;
 		}
 	};
-	QList<Factor>	_factors;
-	Terms			_allLevelsCombinations;
+	QList<FactorLevelItem>	_items;
+	Terms					_allLevelsCombinations;
 
-	QStringList		_getOtherLevelsStringList(const Factor& factor);
+	QStringList		_getOtherLevelsStringList(const FactorLevelItem& item);
 	QStringList		_getAllFactorsStringList();
 	QString			_giveUniqueName(const QStringList& names, const QString startName);
-	int				_getIndex(const Factor& factor) const;
+	int				_getIndex(const FactorLevelItem& item) const;
 	
-	void			_updateVirtualLevelIndex(Factor* headFactor);
+	void			_updateVirtualLevelIndex(FactorLevelItem* headFactor);
 	void			_updateVirtualFactorIndex();
 	void			_setAllLevelsCombinations();
-	QString			_removeFactor(int row);
+	QString			_removeItem(int row);
 };
 
-#endif // LISTMODELREPEATEDMEASURESFACTORS_H
+#endif // LISTMODELFACTORLEVELS_H
