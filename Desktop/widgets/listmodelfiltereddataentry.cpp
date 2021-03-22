@@ -23,16 +23,16 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 void ListModelFilteredDataEntry::dataSetChangedHandler()
 {
 	setAcceptedRowsTrue();
-	runFilter(_filter);
+	runFilter(_tableTerms.filter);
 }
 
 void ListModelFilteredDataEntry::setFilter(QString filter)
 {
-	if (_filter == filter)
+	if (_tableTerms.filter == filter)
 		return;
 
-	_filter = filter;
-	emit filterChanged(_filter);
+	_tableTerms.filter = filter;
+	emit filterChanged(_tableTerms.filter);
 }
 
 void ListModelFilteredDataEntry::runFilter(QString filter)
@@ -399,5 +399,5 @@ void ListModelFilteredDataEntry::refreshModel()
 {
 	ListModel::refresh();
 
-	runFilter(_filter);
+	runFilter(_tableTerms.filter);
 }
