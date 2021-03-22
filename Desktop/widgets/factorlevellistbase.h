@@ -80,10 +80,10 @@ protected:
 private:
 	ListModelFactorLevels*				_factorLevelsModel	= nullptr;
 
-	QString								_factorName			=	tr("Factor");
-	QString								_levelName			=	tr("Level");
-	QString								_factorPlaceHolder	=	tr("New Factor");
-	QString								_levelPlaceHolder	=	tr("New Level");
+	QString								_factorName;
+	QString								_levelName;
+	QString								_factorPlaceHolder;
+	QString								_levelPlaceHolder;
 	int									_minFactors			=	1,
 										_minLevels			=	2;
 

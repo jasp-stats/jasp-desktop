@@ -503,7 +503,7 @@ Properties
 </details>
 
 #### FactorLevelList
-With this component, the user can set names of fcators, and for each factor, the names of its levels. This is used in Repeated Measures ANOVA.
+With this component, the user can set names of factors, and for each factor, the names of its levels. This is used in Repeated Measures ANOVA.
 Properties
 - `name`: identifier of the particular variable field (in your R code you will be able to retrieve the assigned variable(s) through this identifier)
 - `label`: [optional, default: `""`] text that will be shown above the variable field

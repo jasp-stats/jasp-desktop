@@ -27,6 +27,10 @@ FactorLevelListBase
 	implicitWidth:				parent.width
 	implicitHeight:				jaspTheme.defaultVariablesFormHeight
 	background:					rectangle
+	factorName:					qsTr("Factor")
+	levelName:					qsTr("Level")
+	factorPlaceHolder:			qsTr("New Factor")
+	levelPlaceHolder:			qsTr("New Level")
 
 	readonly	property string deleteIcon: "cross.png"
 
