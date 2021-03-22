@@ -23,16 +23,16 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(TableViewBase * parent)
 void ListModelFilteredDataEntry::dataSetChangedHandler()
 {
 	setAcceptedRowsTrue();
-	runFilter(_filter);
+	runFilter(_tableTerms.filter);
 }
 
 void ListModelFilteredDataEntry::setFilter(QString filter)
 {
-	if (_filter == filter)
+	if (_tableTerms.filter == filter)
 		return;
 
-	_filter = filter;
-	emit filterChanged(_filter);
+	_tableTerms.filter = filter;
+	emit filterChanged(_tableTerms.filter);
 }
 
 void ListModelFilteredDataEntry::runFilter(QString filter)
@@ -141,13 +141,14 @@ void ListModelFilteredDataEntry::sourceTermsReset()
 	_dataColumns			= sourceTerms.asQList();
 	_tableTerms.colNames	= _dataColumns;
 
-	if (_extraCol != "")
-		_tableTerms.colNames.push_back(_extraCol);
+	if (_tableTerms.extraCol != "" && !_tableTerms.colNames.contains(_tableTerms.extraCol))
+		_tableTerms.colNames.push_back(_tableTerms.extraCol);
 
 	if (!colName.isEmpty())
 	{
-		_editableColumn		= _tableTerms.colNames.size();
-		_tableTerms.colNames.push_back(colName);
+		_editableColumn	= _tableTerms.colNames.size();
+		if (!_tableTerms.colNames.contains(colName))
+			_tableTerms.colNames.push_back(colName);
 	}
 	else
 		_editableColumn = -1;
@@ -197,18 +198,19 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 
 	_dataColumns	= _tableTerms.colNames;
 
-	if (_extraCol != "")
-		_tableTerms.colNames.push_back(_extraCol);
+	if (_tableTerms.extraCol != "" && !_tableTerms.colNames.contains(_tableTerms.extraCol))
+		_tableTerms.colNames.push_back(_tableTerms.extraCol);
 
-	_editableColumn = _colName.isEmpty() ? -1 : _tableTerms.colNames.size();
+	_editableColumn = _tableTerms.colName.isEmpty() ? -1 : _tableTerms.colNames.size();
 
-	if (!_colName.isEmpty()) _tableTerms.colNames.push_back(_colName);
+	if (!_tableTerms.colName.isEmpty() && !_tableTerms.colNames.contains(_tableTerms.colName))
+		_tableTerms.colNames.push_back(_tableTerms.colName);
 
 	int valIndex = 0;
 	for (int rowIndex : _tableTerms.rowIndices)
 	{
 		size_t row = static_cast<size_t>(rowIndex) - 1;
-		if (_tableTerms.values[0].size() < valIndex)
+		if (valIndex < _tableTerms.values[0].size())
 			_enteredValues[row] = _tableTerms.values[0][valIndex].toDouble();
 		else
 			_tableTerms.values[0].push_back(_tableView->defaultValue());
@@ -249,7 +251,7 @@ void ListModelFilteredDataEntry::fillTable()
 
 		}
 
-	_editableColumn = _colName.isEmpty() ? -1 : (columnCount() - 1);
+	_editableColumn = _tableTerms.colName.isEmpty() ? -1 : (columnCount() - 1);
 	endResetModel();
 
 	emit columnCountChanged();
@@ -307,12 +309,13 @@ int ListModelFilteredDataEntry::getMaximumColumnWidthInCharacters(size_t column)
 
 void ListModelFilteredDataEntry::setColName(QString colName)
 {
-	if (_colName == colName)
+	if (_tableTerms.colName == colName)
 		return;
 
-	if (_colName.isEmpty())
+	if (_tableTerms.colName.isEmpty())
 	{
-		_tableTerms.colNames.push_back(colName);
+		if (!_tableTerms.colNames.contains(colName))
+			_tableTerms.colNames.push_back(colName);
 		_editableColumn = _tableTerms.colNames.size() - 1;
 	}
 	else if (colName.isEmpty())
@@ -328,8 +331,8 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 			Log::log() << "Warning: editableColumn is negative!" << std::endl;
 	}
 
-	_colName = colName;
-	emit colNameChanged(_colName);
+	_tableTerms.colName = colName;
+	emit colNameChanged(_tableTerms.colName);
 	refresh();
 
 	if (_editableColumn >= 0)
@@ -339,14 +342,14 @@ void ListModelFilteredDataEntry::setColName(QString colName)
 
 void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
 {
-	if (_extraCol == extraCol)
+	if (_tableTerms.extraCol == extraCol)
 		return;
 
 	//std::cout << "ListModelFilteredDataEntry::setExtraCol("<< extraCol.toStdString() <<")" << std::endl;
 
-	QString oldExtraCol = _extraCol;
+	QString oldExtraCol = _tableTerms.extraCol;
 
-	_extraCol = extraCol;
+	_tableTerms.extraCol = extraCol;
 
 
 	beginResetModel();
@@ -365,13 +368,13 @@ void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
 	{
 		//std::cout << "Volmaken!" << std::endl;
 
-		if (_editableColumn >= 0 && !_colName.isEmpty())
+		if (_editableColumn >= 0 && !_tableTerms.colName.isEmpty())
 		{
 			_tableTerms.colNames[_editableColumn] = extraCol;
 			_editableColumn++;
-			_tableTerms.colNames.push_back(_colName);
+			_tableTerms.colNames.push_back(_tableTerms.colName);
 		}
-		else
+		else if (!_tableTerms.colNames.contains(extraCol))
 			_tableTerms.colNames.push_back(extraCol);
 
 
@@ -389,12 +392,12 @@ void ListModelFilteredDataEntry::setExtraCol(QString extraCol)
 	endResetModel();
 
 	emit columnCountChanged();
-	emit extraColChanged(_extraCol);
+	emit extraColChanged(_tableTerms.extraCol);
 }
 
 void ListModelFilteredDataEntry::refreshModel()
 {
 	ListModel::refresh();
 
-	runFilter(_filter);
+	runFilter(_tableTerms.filter);
 }
