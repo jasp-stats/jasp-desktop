@@ -160,12 +160,6 @@ void Analysis::reload()
 	Analyses::analyses()->reload(this, true);
 }
 
-void Analysis::rebind()
-{
-	if (_analysisForm)
-		_analysisForm->bindTo();
-}
-
 void Analysis::exportResults()
 {
 	emit Analyses::analyses()->analysesExportResults();

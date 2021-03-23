@@ -24,6 +24,7 @@ ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 	: JASPListControl(parent), BoundControlBase(this)
 {
 	_controlType = ControlType::ComboBox;
+	_hasUserInteractiveValue = true;
 }
 
 void ComboBoxBase::bindTo(const Json::Value& value)

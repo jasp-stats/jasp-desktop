@@ -32,6 +32,7 @@
 JASPListControl::JASPListControl(QQuickItem *parent)
 	: JASPControl(parent)
 {
+	_hasUserInteractiveValue = false;
 }
 
 void JASPListControl::setUpModel()

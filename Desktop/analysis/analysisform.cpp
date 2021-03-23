@@ -399,7 +399,7 @@ void AnalysisForm::bindTo()
 
 	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)
 		availableModel->resetTermsFromSources(true);
-	
+
 	_addLoadingError(tql(controlsJsonWrong));
 
 	//Ok we can only set the warnings on the components now, because otherwise _addLoadingError() will add a big fat red warning on top of the analysisform without reason...
@@ -599,6 +599,7 @@ void AnalysisForm::setAnalysisUp()
 	blockValueChangeSignal(false, false);
 
 	_analysis->initialized(this, isNewAnalysis);
+	_initialized = true;
 
 	emit analysisChanged();
 }
