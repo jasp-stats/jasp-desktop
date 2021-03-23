@@ -121,6 +121,8 @@ public:
 	bool			childHasError()			const;
 	bool			childHasWarning()		const;
 	bool			focusOnTab()			const	{ return activeFocusOnTab();	}
+	bool			hasUserInteractiveValue() const	{ return _hasUserInteractiveValue; }
+
 	AnalysisForm*	form()					const	{ return _form;					}
 	QQuickItem*		childControlsArea()		const	{ return _childControlsArea;	}
 	JASPListControl* parentListView()		const	{ return _parentListView;		}
@@ -205,6 +207,7 @@ private slots:
 	void	_setBackgroundColor();
 	void	_setVisible();
 	void	_hoveredChangedSlot() { emit hoveredChanged(); }
+	void	_resetBindingValue();
 
 signals:
 	void setOptionBlockSignal(	bool blockSignal);
@@ -264,7 +267,8 @@ protected:
 							_useControlMouseArea	= true,
 							_shouldShowFocus		= false,
 							_shouldStealHover		= false,
-							_nameMustBeUnique		= true;
+							_nameMustBeUnique		= true,
+							_hasUserInteractiveValue = true;
 	JASPListControl		*	_parentListView			= nullptr;
 	QQuickItem			*	_childControlsArea		= nullptr,
 						*	_innerControl			= nullptr,

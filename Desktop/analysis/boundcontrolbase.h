@@ -33,9 +33,9 @@ public:
 	virtual				~BoundControlBase()	{}
 
 	Json::Value					createJson()														override { return Json::nullValue;		}
-	void						bindTo(const Json::Value& value)									override { setBoundValue(value, false); }
+	void						bindTo(const Json::Value& value)									override { _orgValue = value; setBoundValue(value, false); }
 	const Json::Value&			boundValue()														override;
-	void						resetBoundValue()													override { }
+	void						resetBoundValue()													override { bindTo(_orgValue); }
 	void						setBoundValue(const Json::Value& value, bool emitChange = true)		override;
 	std::vector<std::string>	usedVariables()														override;
 	void						setIsRCode(std::string key = "");
@@ -50,7 +50,8 @@ protected:
 	JASPControl*	_control			= nullptr;
 	bool			_isComputedColumn	= false,
 					_isColumn			= false;
-	Json::Value		_meta;
+	Json::Value		_meta,
+					_orgValue;
 	std::string		_name;
 	columnType		_columnType			= columnType::unknown;
 };

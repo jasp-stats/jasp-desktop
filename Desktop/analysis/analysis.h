@@ -134,7 +134,6 @@ public:
 			void		run();
 			void		refresh();
 			void		reload();
-			void		rebind();
 			void        exportResults();
 			void		remove();
 

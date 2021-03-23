@@ -61,6 +61,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::debugChanged,			[this] () { _setBackgroundColor(); _setVisible(); } );
 	connect(this, &JASPControl::parentDebugChanged,		[this] () { _setBackgroundColor(); _setVisible(); } );
 	connect(this, &JASPControl::toolTipChanged,			[this] () { QQmlProperty(this, "ToolTip.text", qmlContext(this)).write(toolTip()); } );
+	connect(this, &JASPControl::boundValueChanged,		this, &JASPControl::_resetBindingValue);
 }
 
 void JASPControl::setFocusOnTab(bool focus)
@@ -130,6 +131,15 @@ void JASPControl::_setVisible()
 #endif
 	if (!isDebug && (debug() || parentDebug()))
 		setVisible(false);
+}
+
+void JASPControl::_resetBindingValue()
+{
+	// If a control gets a value from a JASP file, this value may differ from its default value sets by a QML binding:
+	// this QML binding may then change the value during the initialization of the form.
+	// In this case, restore the original value.
+	if (isBound() && hasUserInteractiveValue() && initialized() && form() && !form()->initialized())
+		boundControl()->resetBoundValue();
 }
 
 void JASPControl::setHasError(bool hasError)

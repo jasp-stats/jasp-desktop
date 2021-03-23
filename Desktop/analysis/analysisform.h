@@ -106,6 +106,7 @@ public:
 	Q_INVOKABLE void		addFormError(const QString& message);
 	Q_INVOKABLE void		refreshAnalysis();
 	Q_INVOKABLE void		runAnalysis();
+	Q_INVOKABLE bool		initialized()	const	{ return _initialized; }
 
 	void		addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false);
 	void		clearControlError(JASPControl* control);
@@ -180,7 +181,8 @@ private:
 	QQmlComponent*								_controlErrorMessageComponent = nullptr;
 	QList<QQuickItem*>							_controlErrorMessageCache;
 	bool										_runOnChange	= true,
-												_formCompleted = false;
+												_formCompleted = false,
+												_initialized = false;
 	QString										_info;
 	QMap<QString, QSet<ListModel*> >			_rSourceModelMap;
 	int											_signalValueChangedBlocked = 0;

@@ -124,6 +124,11 @@ void RadioButtonsGroupBase::_setCheckedButton(RadioButtonBase* button)
 	QString buttonName = button->name();
 	button->setProperty("checked", true);
 
+	// Ensure that other buttons are unchecked
+	for (RadioButtonBase* otherButton : _buttons)
+		if (otherButton != button)
+			otherButton->setProperty("checked", false);
+
 	if (_value != buttonName)
 	{
 		setValue(buttonName);
