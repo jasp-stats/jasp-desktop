@@ -1406,12 +1406,6 @@ void MainWindow::startDataEditor(QString path)
 	bool useDefaultSpreadsheetEditor = Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR).toBool();
 	QString appname = Settings::value(Settings::SPREADSHEET_EDITOR_NAME).toString();
 
-	if (QString::compare(fileInfo.suffix(), "sav", Qt::CaseInsensitive) == 0)
-	{
-		if (!useDefaultSpreadsheetEditor && !appname.contains("SPSS", Qt::CaseInsensitive))
-			useDefaultSpreadsheetEditor = true;
-	}
-
 	if (appname.isEmpty())
 		useDefaultSpreadsheetEditor = true;
 
