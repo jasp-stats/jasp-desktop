@@ -9,10 +9,14 @@ FocusScope
 {
 	id: fileMenu
 
-	Keys.onEscapePressed:	fileMenuModel.visible = false;
+	Keys.onEscapePressed:
+	{
+		ribbon.focus			 = true;
+		ribbon.isFileMenuPressed = true;  // Close FileMenu but show the button as pressed
+		fileMenuModel.visible	= false;
+	}
 	Keys.onDownPressed:		fileMenuModel.actionButtons.selectButtonDown();
 	Keys.onUpPressed:		fileMenuModel.actionButtons.selectButtonUp();
-
 
 	function showToolSeperator(typeRole)
 	{
@@ -33,7 +37,11 @@ FocusScope
 	Connections
 	{
 		target:				fileMenuModel
-		function onVisibleChanged() { if (fileMenuModel.visible) actionMenu.forceActiveFocus(); else fileMenu.focus = false; }
+		function onVisibleChanged()
+		{
+			if (fileMenuModel.visible)
+				actionMenu.forceActiveFocus();
+		}
 	}
 
 	Item
@@ -117,7 +125,12 @@ FocusScope
 								left:		itemActionMenu.left
 							}
 
-							Keys.onLeftPressed:		fileMenuModel.visible = false;
+							Keys.onLeftPressed:
+							{
+								fileMenuModel.visible    = false;
+								ribbon.isFileMenuPressed = true;
+								ribbon.focus             = true;
+							}
 							Keys.onRightPressed:	if(hasSubMenuRole) resourceMenu.forceActiveFocus()
 							Keys.onDownPressed:		fileMenuModel.actionButtons.selectButtonDown()
 							Keys.onUpPressed:		fileMenuModel.actionButtons.selectButtonUp()

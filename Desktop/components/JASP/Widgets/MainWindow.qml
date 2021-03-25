@@ -58,6 +58,28 @@ Window
 		mainWindowRoot.visibility = mainWindowRoot.visibility === Window.FullScreen ? Window.Windowed : Window.FullScreen;
 	}
 
+	function changeFocusToRibbon()
+	{
+		ribbon.focus = true;
+ 		ribbon.focusOnRibbonMenu();
+	}
+
+	function changeFocusToModulesMenu()
+	{
+		ribbon.showModulesMenuPressed();
+	}
+
+	function changeFocusToFileMenu()
+	{
+		ribbon.focus = true;
+		ribbon.showFileMenuPressed();
+	}
+
+	function mod (a, n)
+	{
+		return ((a % n) + n) % n;
+	}
+
 	Item
 	{
 		anchors.fill:	parent
@@ -73,7 +95,7 @@ Window
 		Shortcut { onActivated: mainWindowRoot.close();							sequences: ["Ctrl+Q", Qt.Key_Close];							}
 		Shortcut { onActivated: fileMenuModel.close();							sequences: ["Ctrl+W"];											}
 		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();				sequences: ["Ctrl+M", Qt.Key_F11];								}
-		Shortcut { onActivated: fileMenuModel.visible = !fileMenuModel.visible; sequences: ["Home",   Qt.Key_Home, Qt.Key_Menu];				}
+		Shortcut { onActivated: mainWindowRoot.changeFocusToFileMenu();			sequences: ["Home",   Qt.Key_Home, Qt.Key_Menu];				}
 		Shortcut { onActivated: mainWindow.setLanguage(0);						sequences: ["Ctrl+1"];											}
 		Shortcut { onActivated: mainWindow.setLanguage(1);						sequences: ["Ctrl+2"];											}
 
@@ -182,6 +204,7 @@ Window
 
 				fileMenuModel.visible	= false
 				modulesMenu.opened		= false
+				ribbon.focusOutRibbonBar();
 			}
 		}
 
