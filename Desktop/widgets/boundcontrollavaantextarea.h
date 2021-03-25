@@ -27,10 +27,18 @@ class BoundControlLavaanTextArea : public BoundControlTextArea
 public:
 	BoundControlLavaanTextArea(TextAreaBase* textArea);
 
+	bool		isJsonValid(const Json::Value& optionValue)		override;
+	Json::Value	createJson()									override;
+	void		bindTo(const Json::Value &value)				override;
+
 	void	checkSyntax()			override;
 
 protected:
 	LavaanSyntaxHighlighter*	_lavaanHighlighter		= nullptr;
+
+	std::set<std::string>		_usedColumnNames;
+	QString						_textEncoded;
+
 };
 
 #endif // BOUNDCONTROLLAVAANTEXTAREA_H
