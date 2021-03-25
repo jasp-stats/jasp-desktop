@@ -1424,8 +1424,35 @@ void MainWindow::startDataEditor(QString path)
 	else
 #endif
 		if (!QDesktopServices::openUrl(QUrl::fromLocalFile(path)))
-			MessageForwarder::showWarning(tr("Start Spreadsheet Editor"), tr("No default spreadsheet editor for file %1. Use Preferences to set the right editor.").arg(fileInfo.fileName()));
+		{
+			if (fileInfo.suffix() == "csv")
+				MessageForwarder::showWarning(tr("Start Spreadsheet Editor"), tr("No default spreadsheet editor for file %1. Use Preferences to set the right editor.").arg(fileInfo.fileName()));
+			else
+			{
+				QString message = tr("No default spreadsheet editor for file %1. Do you want to export the data into a CSV file and start the default spreadsheet editor for this CSV file?.").arg(fileInfo.fileName());
+				if (MessageForwarder::showYesNo(tr("Start Spreadsheet Editor"), message, tr("Generate Data File as CSV"), tr("Cancel")))
+				{
+					QString	caption = tr("Generate Data File as CSV"),
+							filter = "CSV Files (*.csv)",
+							name = fileInfo.baseName() + ".csv";
 
+					path = MessageForwarder::browseSaveFile(caption, name, filter);
+
+					if (path == "")
+						return;
+
+					if (!path.endsWith(".csv", Qt::CaseInsensitive))
+						path.append(".csv");
+
+					FileEvent *event = new FileEvent(this, FileEvent::FileGenerateData);
+					connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
+					connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
+					event->setPath(path);
+					_loader->io(event);
+					showProgress();
+				}
+			}
+		}
 }
 
 void MainWindow::showProgress()
