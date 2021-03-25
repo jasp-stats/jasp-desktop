@@ -29,9 +29,10 @@ Rectangle
 	height			: jaspTheme.ribbonButtonHeight
 	color			: showPressed ? jaspTheme.grayLighter : "transparent"
 	z				: 1
-	objectName      : "ribbonButton"
+	objectName		: "ribbonButton"
 
 	property alias	text		: innerText.text
+	property int	listIndex   : -1
 	property string	source		: ""
 	property bool	enabled		: true
 	property bool	ready		: false
@@ -52,31 +53,125 @@ Rectangle
 	ToolTip.delay:				jaspTheme.toolTipDelay
 	ToolTip.visible:			toolTip !== "" && mice.containsMouse
 
-    Rectangle
-    {
-        id      : borderLeft
-        width   : showPressed ? 1 : 0
-		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
-        anchors
-        {
-            left	: parent.left
-            top		: parent.top
-            bottom	: parent.bottom
-        }
-    }
+	Keys.onPressed:
+	{
+		if (event.key === Qt.Key_Escape)
+		{
+			customMenu.hide();
+		}
+		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+		{
+			if (ribbonButton.enabled)
+			{
+				if (ribbonButton.menu.rowCount() > 1) {
+					ribbonButton.showMyMenu();
+					event.accepted = true;
+				}
+			}
+		}
+		else if (event.key === Qt.Key_Down)
+		{
+			if (ribbonButton.enabled && ribbonButton.menu.rowCount() > 1)
+				ribbonButton.showMyMenu();
+			event.accepted = true;
+		}
+	}
 
-    Rectangle
-    {
-        id      : borderRight
-        width   : showPressed ? 1 : 0
+	onFocusChanged:
+	{
+		if (ribbonButton.focus)
+			myMenuOpen = true;
+		else
+		{
+			myMenuOpen = false;
+			customMenu.hide();
+		}
+	}
+
+	function showMyMenu()
+	{
+		if (ribbonButton.menu.rowCount() === 0) //Probably special?
+		{
+			customMenu.hide()
+			ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
+		}
+		else if (ribbonButton.menu.rowCount() === 1)
+		{
+			customMenu.hide()
+			ribbonModel.analysisClicked(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
+			ribbon.focusOutRibbonBar();
+		}
+		else
+		{
+			var functionCall = function (index)
+			{
+				var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
+				var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
+				var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
+
+				ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
+				customMenu.hide();
+				customMenu.focus = false;
+			}
+
+			// Key Navigation with Up or Down. Only navigate valid analysis items
+			//	@index
+			//	@direction: +1 or -1
+			var navigateFunc = function (index, direction)
+			{
+				let nextIndex = mod(index + direction, customMenu.props['model'].rowCount());
+				while(true)
+				{
+					let name	  = customMenu.props['model'].getAnalysisFunction(nextIndex);
+					let isEnabled = customMenu.props['model'].isAnalysisEnabled(nextIndex);
+
+					if (name !== "" && name !== '???' && isEnabled)
+						break;
+
+					nextIndex = mod(nextIndex + direction, customMenu.props['model'].rowCount());
+				}
+				return nextIndex;
+			}
+
+			var props =
+			{
+				"model"			: ribbonButton.menu,
+				"functionCall"	: functionCall,
+				"hasIcons"		: ribbonButton.menu.hasIcons(),
+				"navigateFunc"	: navigateFunc
+			};
+
+			customMenu.toggle(ribbonButton, props, 0, ribbonButton.height);
+
+			myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem === ribbonButton; });
+		}
+	}
+
+	Rectangle
+	{
+		id		: borderLeft
+		width   : showPressed ? 1 : 0
 		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
-        anchors
-        {
-            right	: parent.right
-            top		: parent.top
-            bottom	: parent.bottom
-        }
-    }
+		anchors
+		{
+			left	: parent.left
+			top		: parent.top
+			bottom	: parent.bottom
+		}
+	}
+
+	Rectangle
+	{
+		id		: borderRight
+		width   : showPressed ? 1 : 0
+		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
+		anchors
+		{
+			right	: parent.right
+			top		: parent.top
+			bottom	: parent.bottom
+		}
+	}
 
 	Item
 	{
@@ -156,40 +251,13 @@ Rectangle
 			{
 				fileMenuModel.visible	= false;
 				modulesMenu.opened		= false;
+				ribbon.focusOutFileMenu();
+				ribbon.focusOutModules();
+				ribbon.focusOutPreviousRibbonButton();
+				ribbon.goToRibbonIndex(ribbonButton.listIndex);
 				mouse.accepted			= false;
-				
-				if (ribbonButton.menu.rowCount() === 0) //Probably special?
-				{
-					customMenu.hide()
-					ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
-				}
-				else if (ribbonButton.menu.rowCount() === 1)
-				{
-					customMenu.hide()
-					ribbonModel.analysisClicked(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
-				}
-				else
-				{
-					var functionCall = function (index)
-					{
-						var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
-						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
-						var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
-						ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
-						customMenu.hide();
-					}
 
-					var props =
-					{
-						"model"			: ribbonButton.menu,
-						"functionCall"	: functionCall,
-						"hasIcons"		: ribbonButton.menu.hasIcons()
-					};
-
-					customMenu.toggle(ribbonButton, props, 0 , ribbonButton.height);
-
-					myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem === ribbonButton; });
-				}
+				ribbonButton.showMyMenu();
 			}
 		}
 	}

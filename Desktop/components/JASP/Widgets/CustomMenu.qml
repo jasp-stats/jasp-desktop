@@ -43,6 +43,45 @@ FocusScope
 	property var    sourceItem  : null
 	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
 
+	property int	currentIndex: -1
+
+	Keys.onPressed:
+	{
+		if (event.key === Qt.Key_Up)
+		{
+			if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
+				menu.currentIndex = mod(menu.currentIndex - 1, repeater.count)
+			else
+				menu.currentIndex = menu.props["navigateFunc"](currentIndex, -1);
+		}
+		else if (event.key === Qt.Key_Down)
+		{
+			if (menu.props["navigateFunc"] === undefined || typeof(menu.props["navigateFunc"]) === "undefined")
+				menu.currentIndex = mod(menu.currentIndex + 1, repeater.count)
+			else
+				menu.currentIndex = menu.props["navigateFunc"](currentIndex, 1);
+		}
+		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+		{
+			if (currentIndex > -1)
+			{
+				menu.props['functionCall'](currentIndex)
+				menu.currentIndex = -1;
+			}
+		}
+		else if (event.key === Qt.Key_Escape)
+		{
+			menu.currentIndex = -1;
+			if (menu.sourceItem !== null)
+			{
+				menu.sourceItem.forceActiveFocus();
+				if (menu.sourceItem.myMenuOpen !== undefined && typeof(menu.sourceItem.myMenuOpen) !== 'undefined')
+					menu.sourceItem.myMenuOpen = true;
+			}
+			menu.hide();
+		}
+	}
+
 	onPropsChanged:
 	{
 		hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
@@ -188,7 +227,7 @@ FocusScope
 								height: jaspTheme.menuItemHeight
 								color:	!model.isEnabled
 											? "transparent"
-											: mouseArea.pressed
+											: mouseArea.pressed || index == currentIndex
 												? jaspTheme.buttonColorPressed
 												: mouseArea.containsMouse
 													? jaspTheme.buttonColorHovered

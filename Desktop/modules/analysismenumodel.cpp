@@ -78,3 +78,8 @@ const std::vector<Modules::AnalysisEntry*> &	AnalysisMenuModel::analysisEntries(
 
 	return _module ? _module->menu() : dummy;
 }
+
+bool AnalysisMenuModel::isAnalysisEnabled(int index)
+{
+	return analysisEntries().at(index)->isEnabled() && (!analysisEntries().at(index)->requiresData() || _ribbonButton->dataLoaded());
+}

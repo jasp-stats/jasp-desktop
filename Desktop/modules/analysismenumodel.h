@@ -59,6 +59,7 @@ public:
 	Q_INVOKABLE QString						getAnalysisFunction(int index)								const			{	return QString::fromStdString(analysisEntries().at(index)->function());	}
 	Q_INVOKABLE QString						getAnalysisTitle(int index)									const			{	return QString::fromStdString(analysisEntries().at(index)->title());	}
 	Q_INVOKABLE QString						getAnalysisQML(int index)									const			{	return QString::fromStdString(analysisEntries().at(index)->qml());	}
+	Q_INVOKABLE bool						isAnalysisEnabled(int index);
 	void									setDynamicModule(Modules::DynamicModule * module)							{ beginResetModel(); _module = module; endResetModel(); }
 
 	Q_INVOKABLE bool						hasIcons()													const			{	return _hasIcons; }

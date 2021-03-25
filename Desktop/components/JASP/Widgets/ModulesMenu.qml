@@ -15,18 +15,44 @@ FocusScope
 	visible:	slidePart.x < slidePart.width
 
 	property bool opened: false //should be from some model
+	property int currentIndex: preferencesModel.developerMode ? -3 : -1  // -2, -3 denote install module and developer mode buttons
 
 	onOpenedChanged: if(!opened) ribbonModel.highlightedModuleIndex = -1; else forceActiveFocus();
 
-	Keys.onEscapePressed: closeAndUnfocus();
-	Keys.onRightPressed:  closeAndUnfocus();
+	Keys.onEscapePressed: closeAndFocusRibbon();
+	Keys.onRightPressed:  closeAndFocusRibbon();
 
-	function closeAndUnfocus()
+	function closeAndFocusRibbon()
 	{
-		if(opened)
+		opened       = false;
+		ribbon.focus = true;
+	}
+
+	Keys.onPressed:
+	{
+		if (event.key === Qt.Key_Down)
 		{
-			opened = false;
-			focus = false;
+			if (preferencesModel.developerMode)
+			{
+				let nextIndex  = currentIndex + 1;
+				if (nextIndex === repeater.count)
+					nextIndex  = -2;
+				currentIndex   = nextIndex;
+			}
+			else
+				currentIndex   = mod(currentIndex + 1, repeater.count);
+		}
+		else if (event.key === Qt.Key_Up)
+		{
+			if (preferencesModel.developerMode)
+			{
+				let nextIndex   = currentIndex - 1;
+				if (nextIndex  === -3)
+					nextIndex   = repeater.count -1;
+				currentIndex    = nextIndex;
+			}
+			else
+				currentIndex = mod(currentIndex - 1, repeater.count);
 		}
 	}
 
@@ -90,6 +116,7 @@ FocusScope
 					iconLeft:			false
 					toolTip:			qsTr("Install a module")
 					visible:			preferencesModel.developerMode
+					focus:				currentIndex === -2
 				}
 
 				ToolSeparator
@@ -112,6 +139,7 @@ FocusScope
 					toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install selected developer module") : qsTr("Installing developer module now")) : qsTr("Select a developer module by clicking here")
 					visible:			preferencesModel.developerMode
 					enabled:			dynamicModules.developersModuleInstallButtonEnabled
+					focus:				currentIndex === -1
 
 					readonly property bool folderSelected: preferencesModel.developerFolder != ""
 				}
@@ -126,7 +154,8 @@ FocusScope
 
 				Repeater
 				{
-					model: ribbonModelUncommon
+					id:		repeater
+					model:	ribbonModelUncommon
 
 					Rectangle
 					{
@@ -144,6 +173,7 @@ FocusScope
 							onCheckedChanged:	ribbonModelUncommon.setModuleEnabled(index, checked)
 							enabled:			isSpecial || !(dynamicModule.loading || dynamicModule.installing)
 							font:				jaspTheme.fontRibbon
+							focus:				index === currentIndex
 
 							toolTip:			isSpecial									? qsTr("Ready") //Always ready!
 												: dynamicModule.installing					? qsTr("Installing: %1\n").arg(dynamicModule.installLog)

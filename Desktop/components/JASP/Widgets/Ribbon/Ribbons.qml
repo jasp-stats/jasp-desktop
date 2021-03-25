@@ -27,6 +27,74 @@ Item
 	width:			500
 	height:			jaspTheme.ribbonButtonHeight
 
+	onActiveFocusChanged: buttonList.focus = true;
+
+	function setCurrentIndex(which, _index=null)
+	{
+		if      (which === 'last')
+		{
+			buttonList.currentIndex = buttonList.count - 1;
+			if (!buttonList.itemAtIndex(buttonList.currentIndex))
+				navigateFunction(-1);
+		}
+		else if (which === 'first')
+		{
+			buttonList.currentIndex = 0;
+			if (!buttonList.itemAtIndex(0).enabled)
+				navigateFunction(1);
+		}
+		else if (which === 'other')
+		{
+			buttonList.currentIndex = _index;
+		}
+	}
+
+	function focusOut()
+	{
+		if (buttonList !== null && buttonList.currentItem !== null)
+		{
+			buttonList.currentItem.focus = false;
+			buttonList.currentIndex      = -1;
+		}
+	}
+
+	// navigation when left or right arrow keys are pressed
+	// direction is an integer, acceptable values: {+1, 0, -1}
+	function navigateFunction(direction)
+	{
+		let nextIndex = buttonList.currentIndex + direction;
+
+		while(true)
+		{
+			if      (nextIndex === -1) {
+				buttonList.currentItem.focus      = false;
+				buttonList.currentItem.myMenuOpen = false;
+				showFileMenuPressed();
+				return;
+			}
+			else if (nextIndex === buttonList.count)
+			{
+				buttonList.currentItem.focus      = false;
+				buttonList.currentItem.myMenuOpen = false;
+				buttonList.currentIndex           = -1;
+				showModulesMenuPressed();
+				return;
+			}
+
+			if (buttonList.itemAtIndex(nextIndex).enabled)
+				break;
+
+			nextIndex = nextIndex + direction;
+		}
+
+		if (nextIndex !== buttonList.currentIndex)
+		{
+			buttonList.currentItem.focus      = false;
+			buttonList.currentItem.myMenuOpen = false;
+			buttonList.currentIndex           = nextIndex;
+		}
+	}
+
 	MouseArea
 	{
 		id:					convertVerticalIntoHorizontalScrolling
@@ -58,7 +126,35 @@ Item
 
 		onDragStarted:					customMenu.hide()
 		onMovementStarted:				customMenu.hide()
-		
+		Keys.onPressed:
+		{
+			if      (event.key   === Qt.Key_Left)
+			{
+				if (currentIndex === 0)
+					showFileMenuPressed();
+				else
+					navigateFunction(-1);
+				event.accepted    = true;
+			}
+			else if (event.key   === Qt.Key_Right)
+			{
+				if (currentIndex === buttonList.count - 1)
+				{
+					buttonList.currentItem.focus = false;
+					buttonList.currentIndex      = -1;
+					showModulesMenuPressed();
+				}
+				else
+					navigateFunction(1);
+				event.accepted    = true;
+			}
+			else if (event.key   === Qt.Key_Return || event.key === Qt.Key_Space || event.key === Qt.Key_Down)
+			{
+				buttonList.focus = true;
+				buttonList.currentItem.showMyMenu();
+			}
+		}
+
 		anchors
 		{
 			left:			leftArrow.right
@@ -66,10 +162,10 @@ Item
 			verticalCenter:	parent.verticalCenter
 		}
 
-
 		delegate: RibbonButton
 		{
 			text:			 model.moduleTitle
+			listIndex:       index
 			moduleName:		 model.moduleName
 			source:			!model.ribbonButton || model.ribbonButton.iconSource === "" ? ""		: (!model.ribbonButton.special ? "file:" : "qrc:/icons/") + model.ribbonButton.iconSource
 			menu:			!model.ribbonButton ? undefined : model.ribbonButton.analysisMenu
@@ -77,6 +173,25 @@ Item
 			enabled:		 model.ribbonButton && model.active
 			visible:		 model.ribbonButton
 			ready:			 model.ribbonButton && (model.ribbonButton.ready || model.ribbonButton.special || model.ribbonButton.error)
+		}
+
+		onFocusChanged:
+		{
+			if (!buttonList.focus)
+			{
+				if (buttonList.currentItem !== null)
+				{
+					buttonList.currentItem.myMenuOpen = false;
+					buttonList.currentItem.focus      = false;
+				}
+			} 
+			else
+			{
+				if (buttonList.currentIndex === -1)
+					buttonList.currentIndex  = 0;
+
+				buttonList.currentItem.focus = true;
+			}
 		}
 	}
 	

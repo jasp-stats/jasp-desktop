@@ -25,6 +25,120 @@ FocusScope
 	id		: ribbonBar
 	height	: ribbonMenu.height
 
+	// This property is required to show filemenu button press in KeyNavigation
+	property bool isFileMenuPressed: false
+
+	function focusOnRibbonMenu()
+	{
+		ribbonMenu.focus = true;
+		ribbonMenu.setCurrentIndex('first');
+	}
+
+	function focusOutRibbonBar()
+	{
+		modulesPlusButton.showPressed = false;
+		isFileMenuPressed             = false;
+		ribbonMenu.focusOut();
+	}
+
+	function focusOutFileMenu()
+	{
+		isFileMenuPressed        = false;
+		fileMenuOpenButton.focus = false;
+	}
+
+	function focusOutModules()
+	{
+		modulesPlusButton.showPressed = false;
+		modulesPlusButton.focus       = false;
+	}
+
+	function focusOutPreviousRibbonButton()
+	{
+		ribbonMenu.focusOut();
+	}
+
+	function goToRibbonIndex(_index)
+	{
+		ribbonMenu.setCurrentIndex('other', _index);
+	}
+
+	Keys.onPressed:
+	{
+		if      (event.key === Qt.Key_Left)
+		{
+			if (modulesPlusButton.focus)
+			{
+				modulesPlusButton.focus        = false;
+				modulesPlusButton.showPressed  = false;
+				ribbonMenu.focus               = true;
+				ribbonMenu.setCurrentIndex('last');
+			}
+			else if (fileMenuOpenButton.focus)
+			{
+				fileMenuOpenButton.focus = false;
+				isFileMenuPressed        = false;
+				showModulesMenuPressed();
+			}
+		}
+		else if (event.key === Qt.Key_Right)
+		{
+			if (modulesPlusButton.focus)
+			{
+				modulesPlusButton.focus       = false;
+				modulesPlusButton.showPressed = false;
+				showFileMenuPressed();
+			}
+			else if (fileMenuOpenButton.focus)
+			{
+				fileMenuOpenButton.focus = false;
+				isFileMenuPressed        = false;
+				ribbonMenu.focus         = true;
+				ribbonMenu.setCurrentIndex('first')
+			}
+		}
+		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space || event.key === Qt.Key_Down)
+		{
+			if (modulesPlusButton.focus)
+				modulesMenu.opened = true;
+			else if (fileMenuOpenButton.focus)
+			{
+				fileMenuModel.visible = true;
+				isFileMenuPressed     = false;
+			}
+		}
+		else if (event.key === Qt.Key_Escape)
+		{
+			if      (modulesPlusButton.focus)
+			{
+				modulesMenu.opened            = false;
+				modulesPlusButton.focus       = false;
+				modulesPlusButton.showPressed = false;
+			}
+			else if (fileMenuOpenButton.focus)
+			{
+				fileMenuModel.visible    = false;
+				isFileMenuPressed        = false;
+				fileMenuOpenButton.focus = false;
+			}
+			else
+				ribbonMenu.focusOut();
+			ribbonBar.focus = false;
+		}
+	}
+
+	function showModulesMenuPressed()
+	{
+		modulesPlusButton.focus       = true;
+		modulesPlusButton.showPressed = true;
+	}
+
+	function showFileMenuPressed()
+	{
+		isFileMenuPressed        = true;
+		fileMenuOpenButton.focus = true;
+	}
+
 	Rectangle
 	{
 		color			: jaspTheme.uiBackground
@@ -35,16 +149,24 @@ FocusScope
 	MenuArrowButton
 	{
 		id			: fileMenuOpenButton
-		showPressed	: fileMenuModel.visible
+		showPressed	: fileMenuModel.visible || isFileMenuPressed
 		buttonType	: MenuArrowButton.ButtonType.Hamburger
 		z			: 2
 		width		: 0.75 * height
 
 		onClicked:
 		{
-			fileMenuModel.visible	= !fileMenuModel.visible;
-			modulesMenu.opened		= false;
-			
+			fileMenuModel.visible = !fileMenuModel.visible;
+
+			if (fileMenuModel.visible)
+				showFileMenuPressed();
+			else
+				focusOutFileMenu();
+
+			modulesMenu.opened			  = false;
+			modulesPlusButton.showPressed = false;
+			isFileMenuPressed             = false;
+			ribbonMenu.focusOut();
 			customMenu.hide()
 		}
 
@@ -82,10 +204,17 @@ FocusScope
 
 		onClicked	:
 		{
-			modulesMenu.opened		= !modulesMenu.opened;
-			fileMenuModel.visible	= false;
-			
+			modulesMenu.opened = !modulesMenu.opened;
+
+			if (modulesMenu.opened)
+				showModulesMenuPressed();
+			else
+				focusOutModules();
+
+			fileMenuModel.visible = false;
+			isFileMenuPressed     = false;
 			customMenu.hide()
+			ribbonMenu.focusOut();
 		}
 
 		anchors
@@ -126,7 +255,6 @@ FocusScope
 		gradient	: Gradient {
 			GradientStop { position: 0.0; color: jaspTheme.shadow }
 			GradientStop { position: 1.0; color: "transparent" } }
-
 	}
 	
 	Rectangle
@@ -145,6 +273,5 @@ FocusScope
 		gradient	: Gradient {
 			GradientStop { position: 0.0; color: jaspTheme.shadow }
 			GradientStop { position: 1.0; color: "transparent" } }
-
 	}
 }
