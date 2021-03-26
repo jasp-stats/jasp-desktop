@@ -31,7 +31,8 @@ public:
 	Json::Value	createJson()									override;
 	void		bindTo(const Json::Value &value)				override;
 
-	void	checkSyntax()			override;
+	void		checkSyntax()									override;
+	void		rScriptDoneHandler(const QString &result)		override;
 
 protected:
 	LavaanSyntaxHighlighter*	_lavaanHighlighter		= nullptr;

@@ -35,6 +35,7 @@ public:
 	void					bindTo(const Json::Value& value)			override;
 
 	virtual	void			checkSyntax();
+	virtual void			rScriptDoneHandler(const QString &result)	{ throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler!\nResult was: " + result.toStdString()); };
 
 protected:
 	TextAreaBase*				_textArea	= nullptr;

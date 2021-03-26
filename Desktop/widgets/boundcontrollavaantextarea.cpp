@@ -85,7 +85,7 @@ void BoundControlLavaanTextArea::checkSyntax()
 	for (const std::string& column : _usedColumnNames)
 	{
 		encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
-		if (column != *_usedColumnNames.rbegin())
+		if (column != *_usedColumnNames.rbegin()) // avoid trailing ,
 			encodedColNames.append(", ");
 	}
 	encodedColNames.append(")");
@@ -97,19 +97,32 @@ void BoundControlLavaanTextArea::checkSyntax()
 		.append(encodedColNames)
 		.append(")");
 
-	Json::Value boundValue(Json::objectValue);
-
-	boundValue["modelOriginal"] = text.toStdString();
-	boundValue["model"] = _textEncoded.toStdString();
-
-	Json::Value columns(Json::arrayValue);
-	for (const std::string& column : _usedColumnNames)
-		columns.append(ColumnEncoder::columnEncoder()->encode(column));
-
-	boundValue["columns"] = columns;
-
-	setBoundValue(boundValue);
-
 	_textArea->runRScript(checkCode, false);
 
+}
+
+void BoundControlLavaanTextArea::rScriptDoneHandler(const QString &result)
+{
+
+	if (result.length() == 0)
+	{
+
+		Json::Value boundValue(Json::objectValue);
+
+		boundValue["modelOriginal"] = _textArea->text().toStdString();
+		boundValue["model"]			= _textEncoded.toStdString();
+
+		Json::Value columns(Json::arrayValue);
+		for (const std::string& column : _usedColumnNames)
+			columns.append(ColumnEncoder::columnEncoder()->encode(column));
+
+		boundValue["columns"] = columns;
+
+		setBoundValue(boundValue);
+	}
+	else
+	{
+		_textArea->setHasScriptError(true);
+		_textArea->setProperty("infoText", result);
+	}
 }

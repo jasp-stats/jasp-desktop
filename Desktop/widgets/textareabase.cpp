@@ -78,7 +78,8 @@ void TextAreaBase::rScriptDoneHandler(const QString & result)
 		setHasScriptError(false);
 		setProperty("infoText", tr("Model applied"));
 
-		_boundControl->setBoundValue(Json::Value(text().toStdString()));
+		_boundControl->rScriptDoneHandler(result);
+
 	}
 	else
 	{
