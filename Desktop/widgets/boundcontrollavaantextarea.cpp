@@ -19,6 +19,7 @@
 #include "boundcontrollavaantextarea.h"
 #include "textareabase.h"
 #include "log.h"
+#include "columnencoder.h"
 
 #include <QQuickTextDocument>
 
@@ -38,43 +39,86 @@ BoundControlLavaanTextArea::BoundControlLavaanTextArea(TextAreaBase *textArea)
 		Log::log()  << "No document object found!" << std::endl;
 }
 
+void BoundControlLavaanTextArea::bindTo(const Json::Value &value)
+{
+	if (value.type() != Json::objectValue)	return;
+	BoundControlBase::bindTo(value);
+
+	_textArea->setText(tq(value["modelOriginal"].asString()));
+
+	checkSyntax();
+
+}
+
+Json::Value BoundControlLavaanTextArea::createJson()
+{
+	Json::Value result;
+	std::string text = _textArea->text().toStdString();
+
+	result["modelOriginal"] = text;
+	result["model"]			= text;
+	result["columns"]		= Json::Value(Json::arrayValue);
+
+	return result;
+}
+
+bool BoundControlLavaanTextArea::isJsonValid(const Json::Value &value)
+{
+	if (!value.isObject())					return false;
+	if (!value["modelOriginal"].isString())	return false;
+	if (!value["model"].isString())			return false;
+	if (!value["columns"].isArray())		return false;
+
+	return true;
+}
+
 void BoundControlLavaanTextArea::checkSyntax()
 {
 	QString text = _textArea->text();
 
-	// create an R vector of available column names
-	// TODO: Proper handling of end-of-string characters and funny colnames
-	QString colNames = "c(";
-	bool firstCol = true;
-
-	QList<QString> vars = _textArea->availableModel()->allTerms().asQList();
-	for (QString &var : vars)
-	{
-		if (!firstCol)
-			colNames.append(',');
-		colNames.append('\'')
-				.append(var.replace("\'", "\\u0027")
-						   .replace("\"", "\\u0022")
-						   .replace("\\", "\\\\"))
-				.append('\'');
-		firstCol = false;
-	}
-
-	colNames.append(')');
-
-	// replace ' and " with their unicode counterparts
-	// This protects against arbitrary code being run through string escaping.
-	text.replace("\'", "\\u0027").replace("\"", "\\u0022");
-	// This protects against crashes due to backslashes
-	text.replace("\\", "\\\\");
+	// get the column names of the data set
+	_usedColumnNames.clear();
+	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(text)), &_usedColumnNames));
 
 	// Create R code string
-	QString checkCode = "checkLavaanModel('";
+	QString encodedColNames = "c(";
+	for (const std::string& column : _usedColumnNames)
+	{
+		encodedColNames.append("'" + tq(ColumnEncoder::columnEncoder()->encode(column)) + "'");
+		if (column != *_usedColumnNames.rbegin()) // avoid trailing ,
+			encodedColNames.append(", ");
+	}
+	encodedColNames.append(")");
+
+	QString checkCode = "jaspSem:::checkLavaanModel('";
 	checkCode
-		.append(text)
+		.append(_textEncoded)
 		.append("', ")
-		.append(colNames)
+		.append(encodedColNames)
 		.append(")");
 
 	_textArea->runRScript(checkCode, false);
+
+}
+
+QString BoundControlLavaanTextArea::rScriptDoneHandler(const QString & result)
+{
+	if (!result.isEmpty())
+		return result;
+
+	Json::Value boundValue(Json::objectValue);
+
+	boundValue["modelOriginal"] = _textArea->text().toStdString();
+	boundValue["model"]			= _textEncoded.toStdString();
+
+	Json::Value columns(Json::arrayValue);
+	for (const std::string& column : _usedColumnNames)
+		columns.append(ColumnEncoder::columnEncoder()->encode(column));
+
+	boundValue["columns"] = columns;
+
+	setBoundValue(boundValue);
+
+	return QString();
+
 }
