@@ -101,8 +101,10 @@ void BoundControlLavaanTextArea::checkSyntax()
 
 }
 
-void BoundControlLavaanTextArea::rScriptDoneHandler(const QString &)
+QString BoundControlLavaanTextArea::rScriptDoneHandler(const QString & result)
 {
+	if (!result.isEmpty())
+		return result;
 
 	Json::Value boundValue(Json::objectValue);
 
@@ -116,5 +118,7 @@ void BoundControlLavaanTextArea::rScriptDoneHandler(const QString &)
 	boundValue["columns"] = columns;
 
 	setBoundValue(boundValue);
+
+	return QString();
 
 }

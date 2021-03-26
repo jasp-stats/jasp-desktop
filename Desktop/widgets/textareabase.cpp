@@ -72,14 +72,11 @@ void TextAreaBase::setUp()
 
 void TextAreaBase::rScriptDoneHandler(const QString & result)
 {
-	//This is for the lavaan model, but can be used by other type
-	if (result.length() == 0)
+	QString error = _boundControl->rScriptDoneHandler(result);
+	if (error.isEmpty())
 	{
 		setHasScriptError(false);
 		setProperty("infoText", tr("Model applied"));
-
-		_boundControl->rScriptDoneHandler(result);
-
 	}
 	else
 	{
