@@ -101,28 +101,20 @@ void BoundControlLavaanTextArea::checkSyntax()
 
 }
 
-void BoundControlLavaanTextArea::rScriptDoneHandler(const QString &result)
+void BoundControlLavaanTextArea::rScriptDoneHandler(const QString &)
 {
 
-	if (result.length() == 0)
-	{
+	Json::Value boundValue(Json::objectValue);
 
-		Json::Value boundValue(Json::objectValue);
+	boundValue["modelOriginal"] = _textArea->text().toStdString();
+	boundValue["model"]			= _textEncoded.toStdString();
 
-		boundValue["modelOriginal"] = _textArea->text().toStdString();
-		boundValue["model"]			= _textEncoded.toStdString();
+	Json::Value columns(Json::arrayValue);
+	for (const std::string& column : _usedColumnNames)
+		columns.append(ColumnEncoder::columnEncoder()->encode(column));
 
-		Json::Value columns(Json::arrayValue);
-		for (const std::string& column : _usedColumnNames)
-			columns.append(ColumnEncoder::columnEncoder()->encode(column));
+	boundValue["columns"] = columns;
 
-		boundValue["columns"] = columns;
+	setBoundValue(boundValue);
 
-		setBoundValue(boundValue);
-	}
-	else
-	{
-		_textArea->setHasScriptError(true);
-		_textArea->setProperty("infoText", result);
-	}
 }
