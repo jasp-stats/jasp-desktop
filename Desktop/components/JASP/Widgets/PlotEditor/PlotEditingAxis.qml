@@ -30,13 +30,22 @@ Column
 					spacing:	jaspTheme.columnGroupSpacing
 	property var	axisModel:	null
 
+	function updateLastControl(id) {
+		if (plotEditorModel)
+		{
+			console.log("QML sets lastControl to " + id)
+			plotEditorModel.lastControl = id;
+		}
+	}
+
+
 	JASPC.TextField
 	{
 		id:					axisTitle
 		label:				qsTr("Title");
 		fieldWidth:			200
 		value:				axisModel.title
-		onEditingFinished:	if(axisModel) axisModel.title = value
+		onEditingFinished:	{updateLastControl(axisTitle); if(axisModel) axisModel.title = value}
 		enabled:			plotEditorModel.advanced || axisModel.titleType === parseInt(AxisModel.TitleCharacter)
 
 		// TODO: does not work!
@@ -60,7 +69,11 @@ Column
 
 		startValue: axisModel.titleType
 
-		onCurrentValueChanged: axisModel.titleType = parseInt(currentValue)
+		onCurrentValueChanged:
+		{
+			updateLastControl(titleTypeDropDown)
+			axisModel.titleType = parseInt(currentValue)
+		}
 		visible: plotEditorModel.advanced
 	}
 
@@ -78,11 +91,12 @@ Column
 		{
 			switch	(axisBreaksRadioButton.value)
 			{
-				case "range":	axisModel.breaksType = AxisModel.BreaksRange;		break;
-				case "manual":	axisModel.breaksType = AxisModel.BreaksManual;		break;
-				case "NULL":	axisModel.breaksType = AxisModel.BreaksNull;		break;
+				case "range":	updateLastControl(axisBreaksRange);		axisModel.breaksType = AxisModel.BreaksRange;		break;
+				case "manual":	updateLastControl(axisBreaksManual);	axisModel.breaksType = AxisModel.BreaksManual;		break;
+				case "NULL":	updateLastControl(axisBreaksNull);		axisModel.breaksType = AxisModel.BreaksNull;		break;
 			}
 		}
+
 	}
 
 	Column
@@ -107,9 +121,10 @@ Column
 		{
 			visible:	 axisBreaksRange.checked
 
-			JASPC.DoubleField	{	id: axisBreaksRangeFrom;	label: qsTr("from");	value: 	axisModel.from;		onValueChanged: if(axisModel) axisModel.from	= value;	negativeValues: true	}
-			JASPC.DoubleField	{	id: axisBreaksRangeTo;		label: qsTr("to");		value:	axisModel.to;		onValueChanged: if(axisModel) axisModel.to		= value;	negativeValues: true	}
-			JASPC.DoubleField	{	id: axisBreaksRangeSteps;	label: qsTr("steps");	value:	axisModel.steps;	onValueChanged: if(axisModel) axisModel.steps	= value;							}
+			JASPC.DoubleField	{	id: axisBreaksRangeFrom;	label: qsTr("from");	value:	axisModel.from;		onEditingFinished: {updateLastControl(axisBreaksRangeFrom);		if(axisModel) axisModel.from		= value		}		negativeValues: true	}
+			JASPC.DoubleField	{	id: axisBreaksRangeTo;		label: qsTr("to");		value:	axisModel.to;		onEditingFinished: {updateLastControl(axisBreaksRangeTo);		if(axisModel) axisModel.to			= value		}		negativeValues: true	}
+			JASPC.DoubleField	{	id: axisBreaksRangeSteps;	label: qsTr("steps");	value:	axisModel.steps;	onEditingFinished: {updateLastControl(axisBreaksRangeSteps);	if(axisModel) axisModel.steps		= value		}								}
+
 		}
 
 		PlotEditingAxisTable
@@ -134,6 +149,6 @@ Column
 		onValueChanged: axisModel.limitsType = (axisLimitsRadioButton.value === "data" ? AxisModel.LimitsData : axisLimitsRadioButton.value === "breaks" ? AxisModel.LimitsBreaks : AxisModel.LimitsManual)
 	}
 
-	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsLower;	label: qsTr("Lower limit");	negativeValues: true;	max: axisModel.limitUpper;		value: axisModel.limitLower;	onValueChanged: if(axisModel) axisModel.limitLower = value; 	}
-	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsUpper;	label: qsTr("Upper limit");	negativeValues: true;	min: axisModel.limitLower;		value: axisModel.limitUpper;	onValueChanged: if(axisModel) axisModel.limitUpper = value; 	}
+	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsLower;	label: qsTr("Lower limit");	negativeValues: true;	max: axisModel.limitUpper;		value: axisModel.limitLower;	onEditingFinished: if(axisModel) axisModel.limitLower = value; 	}
+	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsUpper;	label: qsTr("Upper limit");	negativeValues: true;	min: axisModel.limitLower;		value: axisModel.limitUpper;	onEditingFinished: if(axisModel) axisModel.limitUpper = value; 	}
 }
