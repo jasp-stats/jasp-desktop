@@ -62,7 +62,7 @@ size_t _logWriteFunction(const void * buf, size_t len)
 	return len;
 }
 
-void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder)
+void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultsFont)
 {
 	JASPTIMER_SCOPE(rbridge_init);
 	
@@ -107,7 +107,8 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					[](){ Log::log(false).flush(); return 0;},
 					_logWriteFunction,
 					rbridge_system,
-					rbridge_moduleLibraryFixer
+					rbridge_moduleLibraryFixer,
+					resultsFont
 	);
 	JASPTIMER_STOP(jaspRCPP_init);
 
@@ -248,13 +249,13 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 	return true;
 }
 
-std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground, bool developerMode)
+std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground, bool developerMode, const std::string &resultsFont)
 {
 	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
 	if (rbridge_dataSet != nullptr)
 		rbridge_dataSet		= rbridge_dataSetSource();
 
-	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), ppi, analysisID, analysisRevision, imageBackground.c_str(), developerMode);
+	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), ppi, analysisID, analysisRevision, imageBackground.c_str(), developerMode, resultsFont.c_str());
 }
 
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)

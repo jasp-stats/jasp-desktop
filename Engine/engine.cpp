@@ -100,7 +100,7 @@ void Engine::initialize()
 
 	try
 	{
-		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings);
+		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings, _resultsFont.c_str());
 
 		Log::log() << "rbridge_init completed" << std::endl;
 
@@ -522,6 +522,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_imageOptions			= jsonRequest.get("image",				Json::nullValue);
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
+		_resultsFont			= jsonRequest.get("resultsFont",		"").asString();
 		_engineState			= engineState::analysis;
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
@@ -635,7 +636,7 @@ void Engine::runAnalysis()
 
 	Log::log() << "Analysis will be run now." << std::endl;
 
-	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode);
+	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode, _resultsFont);
 
 	switch(_analysisStatus)
 	{
@@ -701,7 +702,7 @@ void Engine::editImage()
 
 void Engine::rewriteImages()
 {
-	jaspRCPP_rewriteImages(_analysisName.c_str(), _ppi, _imageBackground.c_str(), _analysisId);
+	jaspRCPP_rewriteImages(_analysisName.c_str(), _ppi, _imageBackground.c_str(), _resultsFont.c_str(), _analysisId);
 
 	/* Already sent from R! (Through jaspResultsCPP$send())
 	_analysisStatus				= Status::complete;

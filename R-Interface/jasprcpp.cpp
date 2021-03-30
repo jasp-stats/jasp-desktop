@@ -74,7 +74,7 @@ extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
 	logFlushDef logFlushFunction, logWriteDef logWriteFunction,
-	systemDef systemFunc, libraryFixerDef libraryFixerFunc)
+	systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultsFont)
 {
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
@@ -153,6 +153,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	char baseCitation[200];
 	sprintf(baseCitation, baseCitationFormat, buildYear, version);
 	rInside[".baseCitation"]		= CSTRING_TO_R(baseCitation);
+	rInside[".resultsFont"]			= resultsFont;
 
 	jaspResults::setSendFunc(sendToDesktopFunction);
 	jaspResults::setPollMessagesFunc(pollMessagesFunction);
@@ -225,9 +226,9 @@ void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMod
 	jaspResults::setWriteSealLocation(root, relativePath);
 }
 
-const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode)
+const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode, const char* resultsFont)
 {
-	RInside &rInside				= rinside->instance();
+	RInside &rInside			= rinside->instance();
 
 	rInside["name"]				= CSTRING_TO_R(name);
 	rInside["title"]			= CSTRING_TO_R(title);
@@ -239,6 +240,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rInside["resultsMeta"]		= "null";
 	rInside["requiresInit"]		= false;
 	rInside[".imageBackground"]	= imageBackground;
+	rInside[".resultsFont"]		= resultsFont;
 
 	_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
 
@@ -386,7 +388,7 @@ const char* STDCALL jaspRCPP_editImage(const char * name, const char * optionsJs
 }
 
 
-void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char* imageBackground, int analysisID)
+void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char* imageBackground, const char* resultsFont, int analysisID)
 {
 
 	RInside &rInside = rinside->instance();
@@ -394,6 +396,7 @@ void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char
 	rInside[".ppi"]				= ppi;
 	rInside[".imageBackground"] = imageBackground;
 	rInside[".analysisName"]	= CSTRING_TO_R(name);
+	rInside[".resultsFont"]     = resultsFont;
 
 	_setJaspResultsInfo(analysisID, 0, false);
 

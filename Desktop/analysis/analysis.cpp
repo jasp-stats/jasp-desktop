@@ -25,6 +25,7 @@
 #include "utilities/qutils.h"
 #include "log.h"
 #include "utils.h"
+#include "utilities/settings.h"
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  QObject(Analyses::analyses()),
@@ -592,6 +593,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 	json["revision"]			= revision();
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
+	json["resultsFont"]			= Settings::value(Settings::RESULT_FONT).toString().toStdString();
 
 	if (!isAborted())
 	{
