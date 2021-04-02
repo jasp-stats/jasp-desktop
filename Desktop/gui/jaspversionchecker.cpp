@@ -48,13 +48,17 @@ void JASPVersionChecker::downloadVersionFinished()
 	QString version			= _networkReply->readAll().trimmed(),
 			downloadfile	= "https://jasp-stats.org/download/";
 
-	Version cv		= AppInfo::version,
-			lv		= version.toStdString();
-	long	cur		= cv.major()*1000000 + cv.minor()*100000 + cv.release()*1000 + cv.fourth(),
-			latest	= lv.major()*1000000 + lv.minor()*100000 + lv.release()*1000 + lv.fourth();
+	if(version != "")
+	{
 
-	if (latest > cur)
-		emit showDownloadButton(downloadfile);
+		Version cv		= AppInfo::version,
+				lv		= version.toStdString();
+		long	cur		= cv.major()*1000000 + cv.minor()*100000 + cv.release()*1000 + cv.fourth(),
+				latest	= lv.major()*1000000 + lv.minor()*100000 + lv.release()*1000 + lv.fourth();
+
+		if (latest > cur)
+			emit showDownloadButton(downloadfile);
+	}
 
 	if(KnownIssues::issues()->downloadNeededOrLoad())	downloadKnownIssues();
 	else												deleteLater(); //Remove yourself!
