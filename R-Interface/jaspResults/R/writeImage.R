@@ -84,7 +84,7 @@ writeImageJaspResults <- function(plot, width = 320, height = 320, obj = TRUE, r
   plot2draw <- decodeplot(plot)
 
   openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), background = backgroundColor)#, dpi = ppi)
-  on.exit(dev.off())
+  on.exit(dev.off(), add = TRUE)
 
   if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable", "gTree"))) {
 
