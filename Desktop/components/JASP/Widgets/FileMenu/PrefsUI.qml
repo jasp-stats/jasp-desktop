@@ -83,7 +83,7 @@ ScrollView
 					}
 				}
 
-				Text { text: qsTr("R, JAGS or Lavaan code:") }
+				Text { text: qsTr("R, JAGS, or lavaan code:") }
 
 				DropDown
 				{
@@ -110,7 +110,7 @@ ScrollView
 
 				}
 
-				Text { text: qsTr("Result & Help:") }
+				Text { text: qsTr("Result & help:") }
 
 				DropDown
 				{
@@ -149,7 +149,7 @@ ScrollView
 				RadioButton
 				{
 					id:					lightThemeButton
-					label:				qsTr("Light Theme")
+					label:				qsTr("Light theme")
 					checked:			preferencesModel.currentThemeName === "lightTheme"
 					onCheckedChanged:	preferencesModel.currentThemeName  =  "lightTheme"
 					toolTip:			qsTr("Switches to a light theme, this is the default and original flavour of JASP.")
@@ -160,7 +160,7 @@ ScrollView
 				RadioButton
 				{
 					id:					darkThemeButton
-					label:				qsTr("Dark Theme")
+					label:				qsTr("Dark theme")
 					checked:			preferencesModel.currentThemeName === "darkTheme"
 					onCheckedChanged:	preferencesModel.currentThemeName  =  "darkTheme"
 					toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
@@ -173,14 +173,14 @@ ScrollView
 		PrefsGroupRect
 		{
 			id:		languageGroup
-			title:	qsTr("Preferred Language")
+			title:	qsTr("Preferred language")
 
 			ComboBox
 			{
 				id:						languages
 				fieldWidth:				100
 
-				label:					qsTr("Choose Language  ")
+				label:					qsTr("Choose language  ")
 
 				currentIndex:			languageModel.currentIndex
 				onActivated:			languageModel.changeLanguage(index);
@@ -236,7 +236,7 @@ ScrollView
 			CheckBox
 			{
 				id:					safeGraphicsMode
-				label:				qsTr("Safe Graphics Mode")
+				label:				qsTr("Safe graphics mode")
 				checked:			preferencesModel.safeGraphics
 				onCheckedChanged:	preferencesModel.safeGraphics = checked
 				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
@@ -250,7 +250,7 @@ ScrollView
 			CheckBox
 			{
 				id:					disableAnimations
-				label:				qsTr("Disable Animations")
+				label:				qsTr("Disable animations")
 				checked:			preferencesModel.disableAnimations
 				onCheckedChanged:	preferencesModel.disableAnimations = checked
 				toolTip:			enabled ? qsTr("Turns off all animations, this is implied when \"Safe Graphics Mode\" is on.") : qsTr("Already disabled animations because \"Safe Graphics Mode\" is on")
@@ -265,7 +265,7 @@ ScrollView
 			CheckBox
 			{
 				id:					useNativeFileDialog
-				label:				qsTr("Use Native File Dialogs")
+				label:				qsTr("Use native file dialogs")
 				checked:			preferencesModel.useNativeFileDialog
 				onCheckedChanged:	preferencesModel.useNativeFileDialog = checked
 				toolTip:			qsTr("If disabled it will not use your operating system's file dialogs but those made by Qt. This might solve some problems on Windows where JASP crashes on pressing \"Browse\".")

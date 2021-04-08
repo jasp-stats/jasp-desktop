@@ -33,7 +33,7 @@ ScrollView
 			CheckBox
 			{
 				id:					rememberModulesSelected
-				label:				qsTr("Remember Enabled Modules")
+				label:				qsTr("Remember enabled modules")
 				checked:			preferencesModel.modulesRemember
 				onCheckedChanged:	preferencesModel.modulesRemember = checked
 				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")
@@ -207,7 +207,7 @@ ScrollView
 				RadioButton
 				{
 					id:					checkForLC_CTYPE_C
-					label:				qsTr("Let JASP guess the best setting for LC_CTYPE (Recommended!)")		
+					label:				qsTr("Let JASP guess the best setting for LC_CTYPE (recommended!)")		
 					toolTip:			qsTr("Check the install and user directory path for compatibility with LC_CTYPE=\"C\" and set if reasonable.")
 					checked:			preferencesModel.lcCtypeWin == 0
 					onCheckedChanged:	if(checked) preferencesModel.lcCtypeWin = 0
@@ -218,7 +218,7 @@ ScrollView
 				RadioButton
 				{
 					id:					alwaysSetLC_CTYPE_C
-					label:				qsTr("Always set LC_CTYPE to \"C\".")		
+					label:				qsTr("Always set LC_CTYPE to \"C\"")		
 					toolTip:			qsTr("See the documentation for more info.")
 					info:				qsTr("If this is enabled and you have non-ascii characters in your install path JASP won't work anymore.  If you only have non-ascii characters in your username then installing modules will probably break.")
 					checked:			preferencesModel.lcCtypeWin == 1
@@ -230,7 +230,7 @@ ScrollView
 				RadioButton
 				{
 					id:					neverSetLC_CTYPE_C
-					label:				qsTr("Keep LC_CTYPE at systemdefault.")		
+					label:				qsTr("Keep LC_CTYPE at system default")		
 					toolTip:			qsTr("See the documentation for more info.")
 					info:				qsTr("Enabling this will make certain characters in the results look weird, but at least you can use JASP if you installed it in a folder with non-ascii characters in the path. Sorry for the inconvenience, we are working on it and hopefully have this fixed next release.")
 					checked:			preferencesModel.lcCtypeWin == 2
