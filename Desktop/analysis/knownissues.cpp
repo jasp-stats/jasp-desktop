@@ -31,9 +31,12 @@ void KnownIssues::loadLocalJson(const std::string & filePath, bool saveIt)
 
 void KnownIssues::loadJson(const std::string & jsonTxt,	bool saveIt)
 {
+	if(jsonTxt == "") 
+		MessageForwarder::showWarning(tr("Problem loading known issues"), tr("JASP ran into a problem downloading the known issues for this version, it probably could not connect to the server. Don't worry, JASP will work fine it just might not tell you about a few small known issues."));
+	
 	Json::Value known;
 	if(Json::Reader().parse(jsonTxt, known))	loadJson(known, saveIt);
-	else										MessageForwarder::showWarning(tr("Problem loading known issues"), tr("JASP ran into a problem loading the known issues for this version, contact the JASP team for assistance."));
+	else										MessageForwarder::showWarning(tr("Problem loading known issues"), tr("JASP ran into a problem loading the known issues for this version, this isn't necessarily a problem but if it keeps occuring you could contact the JASP team for assistance."));
 }
 
 
@@ -59,8 +62,8 @@ void KnownIssues::loadJson(const Json::Value & json, bool saveIt)
 							addIssue(module, analysis, entry);
 				}
 	}
-	catch(const std::runtime_error & e) { MessageForwarder::showWarning(tr("Problem loading known issues"), tr("JASP ran into a problem loading the known issues for this version: '%1', contact the JASP team for assistance.").arg(e.what())); }
-	catch(...)							{ MessageForwarder::showWarning(tr("Problem loading known issues"), tr("JASP ran into a problem loading the known issues for this version, contact the JASP team for assistance.")); }
+	catch(const std::runtime_error & e) { MessageForwarder::showWarning(tr("Problem loading known issues"), tr("JASP ran into a problem ('%1') loading the known issues for this version, this isn't necessarily a problem but if it keeps occuring you could contact the JASP team for assistance.").arg(e.what())); }
+	catch(...)							{ MessageForwarder::showWarning(tr("Problem loading known issues"), tr("JASP ran into a problem loading the known issues for this version, this isn't necessarily a problem but if it keeps occuring you could contact the JASP team for assistance.")); }
 
 	emit knownIssuesUpdated();
 
