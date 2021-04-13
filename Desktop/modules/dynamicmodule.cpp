@@ -39,7 +39,7 @@ namespace Modules
 {
 
 ModuleException::ModuleException(std::string moduleName, std::string problemDescription)
-	: std::runtime_error("Module \"" + moduleName + "\" had a problem: " + problemDescription)
+	: std::runtime_error("Module \"" + moduleName + "\" had a problem: " + problemDescription), moduleName(moduleName), problemDescription(problemDescription)
 {}
 
 const char * standardRIndent = "  ";
@@ -52,7 +52,7 @@ DynamicModule::DynamicModule(QString moduleDirectory, QObject *parent, bool bund
 {
 	QDir moduleDir(_moduleFolder.absoluteDir());
 	if(!moduleDir.exists())
-		throw std::runtime_error("Module folder '" + moduleDir.absolutePath().toStdString() + "' does not exist so cannot load from there!");
+		throw ModuleException("???", "Module folder '" + moduleDir.absolutePath().toStdString() + "' does not exist so cannot load from there!");
 
 	_name		= stringUtils::stripNonAlphaNum(moduleDir.dirName().toStdString());
 
