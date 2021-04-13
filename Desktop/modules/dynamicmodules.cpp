@@ -69,21 +69,36 @@ void DynamicModules::initializeInstalledModules()
 	boost::system::error_code error;
 	for (boost::filesystem::directory_iterator itr(_modulesInstallDirectory, error); !error && itr != boost::filesystem::directory_iterator(); itr++)
 	{
-		std::string path = itr->path().generic_string();
-		std::string name = itr->path().filename().generic_string();
+		std::string path			= itr->path().generic_string(),
+					name			= itr->path().filename().generic_string(),
+					problem			= fq(tr("Initializing module during JASP startup failed, should the module be removed?"));
+		bool		askForCleanup	= false;
 
 		//Development Module should always be fresh!
-		if(name == defaultDevelopmentModuleName())	boost::filesystem::remove_all(itr->path());
-		else if(name.size() > 0		&& 
-				name[0] != '.'		&&
-				QFileInfo(tq(path)).isDir()		)	initializeModuleFromDir(path);
+		if(name == defaultDevelopmentModuleName())	
+			boost::filesystem::remove_all(itr->path());
+		
+		else if(name.size() > 0 && name[0] != '.' && QFileInfo(tq(path)).isDir())	
+			try
+			{
+				if(!initializeModuleFromDir(path))
+					askForCleanup = true;
+			}
+			catch(ModuleException & modException)
+			{
+				askForCleanup = true;
+				problem = fq(tr("Initializing module during JASP startup failed with the following message:\n%1\n\nShould the module be removed?").arg(tq(modException.problemDescription)));
+			}
+		
+		if(askForCleanup && MessageForwarder::showYesNo(tr("Initializing module %1 failed").arg(tq(name)), tq(problem)))
+			boost::filesystem::remove_all(itr->path());
 	}
 }
 
 bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled, bool isCommon)
 {
 	if(moduleDir.size() == 0)
-		throw std::runtime_error("Empty path was supplied to DynamicsModules::loadModule..");
+		throw ModuleException("???", "Empty path was supplied to DynamicsModules::loadModule..");
 
 	if(moduleDir[moduleDir.size() - 1] != '/')
 		moduleDir += '/';
@@ -111,9 +126,9 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 
 	try
 	{
-									moduleName				= module->name();
+							moduleName				= module->name();
 		DynamicModule	*	oldModule				= _modules.count(moduleName) > 0 && _modules[moduleName] != module ? _modules[moduleName] : nullptr;
-		bool						wasAddedAlready			= true;
+		bool				wasAddedAlready			= true;
 
 		if(std::count(_moduleNames.begin(), _moduleNames.end(), moduleName) == 0)
 		{

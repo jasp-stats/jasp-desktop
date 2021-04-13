@@ -43,6 +43,8 @@ typedef std::set<std::string> stringset;
 struct ModuleException : public std::runtime_error
 {
 	ModuleException(std::string moduleName, std::string problemDescription);
+	
+	std::string moduleName, problemDescription;
 };
 
 class Description;

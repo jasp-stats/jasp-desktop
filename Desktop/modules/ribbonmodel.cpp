@@ -52,7 +52,15 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 			{
 				try {
 					std::string moduleLibrary = DynamicModules::bundledModuleLibraryPath(moduleName);
-					DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, common);
+					
+					//Check if the module pkg actually exists in the module library and otherwise show a friendly warning instead of confusing stuff about icons: https://github.com/jasp-stats/INTERNAL-jasp/issues/1287
+					if(!QFileInfo(tq(moduleLibrary + "/" + moduleName)).exists())
+						MessageForwarder::showWarning(
+							tr("Module missing"), 
+							tr(	"It seems the bundled module %1 wasn't correctly installed, and thus cannot be loaded.\n"
+								"If you installed this version of JASP via an official installer let the JASP team know.").arg(tq(moduleName)));
+					else
+						DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, common);
 				} 
 				catch (std::runtime_error & e) 
 				{
