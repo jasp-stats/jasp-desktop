@@ -11,15 +11,19 @@
 
 <div id="bovenkant" class="container">
   <div id="titel" >
-  <img id="logo"  src="http://jasp-stats.org/wp-content/themes/jasp/images/logo.svg"></img>
+  <img id="logo"  src="https://jasp-stats.org/wp-content/themes/jasp/images/logo.svg"></img>
     <h1>Nightly builds</h1>
   </div>
-  <img id="blauw" src="http://jasp-stats.org/wp-content/themes/jasp/images/wave-down-blue.svg"></img>   
+  <img id="blauw" src="https://jasp-stats.org/wp-content/themes/jasp/images/wave-down-blue.svg"></img>   
 </div>
 
 <div id="disclaimer">
   <p><i>These installers are generated automatically each night and contain development code; this means that they might not be stable.</i></p>
   <p><b>Use at your own risk!</b></p>
+  <p><i>
+    Keep in mind that, as these versions are in active development, no attempt is made to ensure backward- or forward-compatibility between jasp-files made with nightlies.
+    So if you want to share your work, or even load it with some other version of JASP, you <b>should not use these nightlies</b> but are better off using some official release of JASP.
+  </i></p>
   <p><i>
     If you happen to find a bug in a nightly then it can't hurt to issue a bug report at our issue-tracker, 
     but please be sure to mention that you used a nightly and indicate its commit. 
@@ -146,7 +150,7 @@
 	<div id="onderkant"></div>
 
       </div></div>
-  <img id="groen" src="http://jasp-stats.org/wp-content/themes/jasp/images/wave-up-green.svg"></img>
+  <img id="groen" src="https://jasp-stats.org/wp-content/themes/jasp/images/wave-up-green.svg"></img>
 
 </body>
 
