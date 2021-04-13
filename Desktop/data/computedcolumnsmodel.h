@@ -42,8 +42,8 @@ public:
 
 	Q_INVOKABLE bool	isColumnNameFree(QString name)						{ return DataSetPackage::pkg()->isColumnNameFree(name.toStdString()); }
 
-				ComputedColumn*		createComputedColumn(const std::string& name, int columnType, ComputedColumn::computedType computeType, Analysis * analysis = nullptr);
-	Q_INVOKABLE void				createComputedColumn(const std::string& name, int columnType, bool jsonPlease)									{ createComputedColumn(name, columnType, jsonPlease ? ComputedColumn::computedType::constructorCode : ComputedColumn::computedType::rCode);	}
+				ComputedColumn*		createComputedColumn(const std::string & name, int columnType, ComputedColumn::computedType computeType, Analysis * analysis = nullptr);
+	Q_INVOKABLE void				createComputedColumn(const QString     & name, int columnType, bool jsonPlease)	{ createComputedColumn(fq(name), columnType, jsonPlease ? ComputedColumn::computedType::constructorCode : ComputedColumn::computedType::rCode);	}
 
 				bool				areLoopDependenciesOk(std::string columnName);
 				bool				areLoopDependenciesOk(std::string columnName, std::string code);
