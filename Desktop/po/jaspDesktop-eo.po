@@ -1,26 +1,32 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-04-19 13:26+0000\n"
+"Last-Translator: phlostically <phlostically@mailinator.com>\n"
+"Language-Team: Esperanto <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/eo/>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.6\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
-msgstr ""
+msgstr "Aldoni vicon"
 
 msgctxt "ComponentsList|"
 msgid "Remove a row"
-msgstr ""
+msgstr "Forigi vicon"
 
 msgctxt "FileSelector|"
 msgid "Save file to:"
-msgstr ""
+msgstr "Konservi dosieron ĉe:"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr ""
+msgstr "Ŝargi dosieron de:"
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
@@ -32,7 +38,7 @@ msgstr ""
 
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr ""
+msgstr "Foliumi"
 
 msgctxt "Form|"
 msgid ""
@@ -51,7 +57,7 @@ msgstr ""
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr ""
+msgstr "Nova Valoro"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
@@ -67,15 +73,15 @@ msgstr ""
 
 msgctxt "TabView|"
 msgid "Add a tab"
-msgstr ""
+msgstr "Aldoni langeton"
 
 msgctxt "TabView|"
 msgid "Remove this tab"
-msgstr ""
+msgstr "Forigi ĉi tiun langeton"
 
 msgctxt "TabView|"
 msgid "New tab"
-msgstr ""
+msgstr "Nova langeto"
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
@@ -116,11 +122,11 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
-msgstr ""
+msgstr "Pri JASP"
 
 msgctxt "AboutWindow|"
 msgid "Version:"
-msgstr ""
+msgstr "Versio:"
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
@@ -128,7 +134,7 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr ""
+msgstr "Fonto:"
 
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
@@ -136,15 +142,15 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr ""
+msgstr "Elŝuti:"
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr ""
+msgstr "Referenco:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr ""
+msgstr "Elekti Ĉion"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
@@ -152,11 +158,11 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
-msgstr ""
+msgstr "BibTeX"
 
 msgctxt "AboutWindow|"
 msgid "Close"
-msgstr ""
+msgstr "Fermi"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
@@ -196,11 +202,11 @@ msgstr ""
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
-msgstr ""
+msgstr "Aldoni"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
-msgstr ""
+msgstr "Forigi"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
@@ -208,11 +214,11 @@ msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr ""
+msgstr "Bayes-Faktoro"
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
-msgstr ""
+msgstr "BF₁₀"
 
 msgctxt "BayesFactorType|"
 msgid ""
@@ -222,7 +228,7 @@ msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
-msgstr ""
+msgstr "BF₀₁"
 
 msgctxt "BayesFactorType|"
 msgid ""
@@ -232,19 +238,19 @@ msgstr ""
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr ""
+msgstr "log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "Natura logaritmo de BF₁₀."
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "Aldoni Kolumnon"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "Forigi Kolumnon"
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
@@ -252,31 +258,31 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr ""
+msgstr "Komputita Kolumno: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
-msgstr ""
+msgstr "Elekti kolumnon"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "absoluta valoro"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "norma devio"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr ""
+msgstr "varianco"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr ""
+msgstr "sumado"
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "produto de valoroj"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
@@ -288,7 +294,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr ""
+msgstr "aritmetika meznombro"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
@@ -300,27 +306,27 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr ""
+msgstr "mediano"
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr ""
+msgstr "natura logaritmo"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "dubaza logaritmo"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "dekbaza logaritmo"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr ""
+msgstr "logaritmo de y en 'bazo'"
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr ""
+msgstr "eksponencialo"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -344,7 +350,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "se-alie-ordono"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -421,7 +427,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr ""
+msgstr "Forigi komputitan kolumnon"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
@@ -429,7 +435,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr ""
+msgstr "Komputi kolumnon"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
@@ -467,19 +473,19 @@ msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr ""
+msgstr "devio"
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr ""
+msgstr "simpla"
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr ""
+msgstr "diferenco"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr ""
+msgstr "Helmert"
 
 msgctxt "ContrastsList|"
 msgid "repeated"
@@ -487,15 +493,15 @@ msgstr ""
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr ""
+msgstr "polinomo"
 
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr ""
+msgstr "propra"
 
 msgctxt "ContrastsList|"
 msgid "Factors"
-msgstr ""
+msgstr "Faktoroj"
 
 #, qt-format
 msgctxt "ContrastsList|"
@@ -508,7 +514,7 @@ msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr ""
+msgstr "Nomo:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
@@ -536,15 +542,15 @@ msgstr ""
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr ""
+msgstr "Teksto"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Malfermi Dokumentaron"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr ""
+msgstr "Krei Kolumnon"
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
@@ -573,15 +579,15 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr ""
+msgstr "Kaŝi filtrilon"
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr ""
+msgstr "Montri filtrilon"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr ""
+msgstr "Aldoni komputitan kolumnon"
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
@@ -602,11 +608,11 @@ msgstr ""
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr ""
+msgstr "Reen al %1"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr ""
+msgstr "Vi estas ĉi tie"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
@@ -614,7 +620,7 @@ msgstr ""
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "Foliumi"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
@@ -622,7 +628,7 @@ msgstr ""
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr ""
+msgstr "Datenbiblioteko"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
@@ -634,11 +640,11 @@ msgstr ""
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr ""
+msgstr "Malfermi JASP-dosieron"
 
 msgctxt "ListItem|"
 msgid "Open data file"
-msgstr ""
+msgstr "Malfermi datendosieron"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
@@ -646,31 +652,31 @@ msgstr ""
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
-msgstr ""
+msgstr "Open Science Framework"
 
 msgctxt "OSF|"
 msgid "Logout"
-msgstr ""
+msgstr "Adiaŭi"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr ""
+msgstr "Krei Dosierujon"
 
 msgctxt "OSF|"
 msgid "Foldername"
-msgstr ""
+msgstr "Nomo de dosierujo"
 
 msgctxt "OSF|"
 msgid "Filename"
-msgstr ""
+msgstr "Nomo de dosiero"
 
 msgctxt "OSF|"
 msgid "Save"
-msgstr ""
+msgstr "Konservi"
 
 msgctxt "OSFLogin|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
@@ -678,19 +684,19 @@ msgstr ""
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr ""
+msgstr "Saluti"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr ""
+msgstr "Memorigi pri mi"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
-msgstr ""
+msgstr "Pri OSF"
 
 msgctxt "OSFLogin|"
 msgid "Register"
-msgstr ""
+msgstr "Registriĝi"
 
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
@@ -698,7 +704,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr ""
+msgstr "Opcioj pri moduloj"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember Enabled Modules"
@@ -745,7 +751,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Handling LC_CTYPE"
-msgstr ""
+msgstr "Trakti LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
@@ -759,7 +765,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Always set LC_CTYPE to \"C\"."
-msgstr ""
+msgstr "Ĉiam uzi \"C\" kiel LC_CTYPE."
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
@@ -786,7 +792,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr ""
+msgstr "Opcioj pri protokolado"
 
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
@@ -802,7 +808,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr ""
+msgstr "Montri protokolojn"
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
@@ -857,7 +863,7 @@ msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr ""
+msgstr "Opcioj pri tabelo"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
@@ -889,7 +895,7 @@ msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "White"
-msgstr ""
+msgstr "Blanko"
 
 msgctxt "PrefsResults|"
 msgid ""
@@ -913,32 +919,32 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "Tiparoj"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "Fasado:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr ""
+msgstr "implicite: %1"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS or Lavaan code:"
-msgstr ""
+msgstr "Kodo de R, JAGS aŭ Lavaan:"
 
 msgctxt "PrefsUI|"
 msgid "Result & Help:"
-msgstr ""
+msgstr "Rezulto & Helpo:"
 
 msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr ""
+msgstr "Etosoj"
 
 msgctxt "PrefsUI|"
 msgid "Light Theme"
-msgstr ""
+msgstr "Hela Etoso"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -947,7 +953,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Dark Theme"
-msgstr ""
+msgstr "Malhela Etoso"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -969,7 +975,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr ""
+msgstr "Zomo (%): "
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -2852,7 +2858,7 @@ msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 msgctxt "PlotEditingAxis|"
 msgid ""
@@ -2897,11 +2903,11 @@ msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr ""
+msgstr "de"
 
 msgctxt "PlotEditingAxis|"
 msgid "to"
-msgstr ""
+msgstr "ĝis"
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
@@ -2949,11 +2955,11 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr ""
+msgstr "x-akso"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
+msgstr "y-akso"
 
 msgctxt "PlotEditor|"
 msgid "Redo last change"
@@ -2969,7 +2975,7 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Finish"
-msgstr ""
+msgstr "Fini"
 
 msgctxt "PlotEditor|"
 msgid "Original plot"
@@ -3098,7 +3104,7 @@ msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
-msgstr ""
+msgstr "Elekti dosierujon"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
@@ -3146,7 +3152,7 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
-msgstr ""
+msgstr "Mankanta %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3180,7 +3186,7 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
-msgstr ""
+msgstr "Mankanta dosierujo %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3253,7 +3259,7 @@ msgstr ""
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
-msgstr ""
+msgstr "Listo de Faktorniveloj"
 
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
@@ -3265,16 +3271,16 @@ msgstr ""
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr ""
+msgstr "Faktoro"
 
 msgctxt "FactorLevelList|"
 msgid "Level"
-msgstr ""
+msgstr "Nivelo"
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr ""
+msgstr "Nova Faktoro"
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr ""
+msgstr "Nova Nivelo"
