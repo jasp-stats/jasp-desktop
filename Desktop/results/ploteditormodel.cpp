@@ -163,10 +163,7 @@ void PlotEditorModel::addToUndoStack()
 	Json::Value options = generateImgOptions();
 
 	if (_undo.empty() || _undo.top().options != options)
-	{
-		Log::log() << "undo.top now contains _axisType: " + QString(_axisType == AxisType::Xaxis ? "Xaxis" : "Yaxis") + " and _advanced: " + _advanced << std::endl;
 		_undo.push(undoRedoData{_axisType, _advanced, options});
-	}
 
 	_redo = std::stack<undoRedoData>();
 	
@@ -178,8 +175,7 @@ void PlotEditorModel::undoSomething()
 	if (!_undo.empty())
 	{
 
-		Log::log() << "undoing something and redo now contains _axisType: " + QString(_axisType == AxisType::Xaxis ? "Xaxis" : "Yaxis") + " and _advanced: " + _advanced << std::endl;
-		_redo.push(undoRedoData{_axisType, _advanced, generateImgOptions()});
+		_redo.push(undoRedoData{_undo.top().currentAxis, _undo.top().advanced, generateImgOptions()});
 
 		undoRedoData newData = _undo.top();
 		_undo.pop();
@@ -194,7 +190,6 @@ void PlotEditorModel::redoSomething()
 	if (!_redo.empty())
 	{
 
-		Log::log() << "redoing something and undo now contains _axisType: " + QString(_axisType == AxisType::Xaxis ? "Xaxis" : "Yaxis") + " and _advanced: " + _advanced << std::endl;
 		_undo.push(undoRedoData{_axisType, _advanced, generateImgOptions()});
 
 		undoRedoData newData = _redo.top();
@@ -212,7 +207,6 @@ void PlotEditorModel::applyChangesFromUndoOrRedo(const undoRedoData& newData)
 	setAdvanced(newData.advanced);
 
 	setLoading(true);
-
 	_editOptions = _imgOptions["editOptions"];
 
 	_xAxis->setAxisData(_editOptions["xAxis"]);
@@ -220,11 +214,9 @@ void PlotEditorModel::applyChangesFromUndoOrRedo(const undoRedoData& newData)
 
 	_prevImgOptions = _imgOptions;
 	_analysis->editImage(_prevImgOptions);
-
 	setLoading(false);
 
 	emit unOrRedoEnabledChanged();
-
 }
 
 void PlotEditorModel::setAxisType(const AxisType axisType)
@@ -236,8 +228,8 @@ void PlotEditorModel::setAxisType(const AxisType axisType)
 	_axisType = axisType;
 	switch (_axisType)
 	{
-	case AxisType::Xaxis:	_currentAxis = _xAxis;		break;
-	case AxisType::Yaxis:	_currentAxis = _yAxis;		break;
+		case AxisType::Xaxis:	_currentAxis = _xAxis;		break;
+		case AxisType::Yaxis:	_currentAxis = _yAxis;		break;
 	}
 
 	emit currentAxisChanged(_currentAxis);
@@ -338,7 +330,7 @@ void PlotEditorModel::setLoading(bool loading)
 {
 	if (_loading == loading)
 		return;
-
+	
 	_loading = loading;
 	emit loadingChanged(_loading);
 }

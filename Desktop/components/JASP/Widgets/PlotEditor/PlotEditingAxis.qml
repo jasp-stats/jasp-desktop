@@ -30,22 +30,13 @@ Column
 					spacing:	jaspTheme.columnGroupSpacing
 	property var	axisModel:	null
 
-	function updateLastControl(id) {
-		if (plotEditorModel)
-		{
-			console.log("QML sets lastControl to " + id)
-			plotEditorModel.lastControl = id;
-		}
-	}
-
-
 	JASPC.TextField
 	{
 		id:					axisTitle
 		label:				qsTr("Title");
 		fieldWidth:			200
 		value:				axisModel.title
-		onEditingFinished:	{updateLastControl(axisTitle); if(axisModel) axisModel.title = value}
+		onEditingFinished:	if(axisModel) axisModel.title = value
 		enabled:			plotEditorModel.advanced || axisModel.titleType === parseInt(AxisModel.TitleCharacter)
 
 		// TODO: does not work!
@@ -69,11 +60,7 @@ Column
 
 		startValue: axisModel.titleType
 
-		onCurrentValueChanged:
-		{
-			updateLastControl(titleTypeDropDown)
-			axisModel.titleType = parseInt(currentValue)
-		}
+		onCurrentValueChanged: axisModel.titleType = parseInt(currentValue)
 		visible: plotEditorModel.advanced
 	}
 
@@ -91,12 +78,11 @@ Column
 		{
 			switch	(axisBreaksRadioButton.value)
 			{
-				case "range":	updateLastControl(axisBreaksRange);		axisModel.breaksType = AxisModel.BreaksRange;		break;
-				case "manual":	updateLastControl(axisBreaksManual);	axisModel.breaksType = AxisModel.BreaksManual;		break;
-				case "NULL":	updateLastControl(axisBreaksNull);		axisModel.breaksType = AxisModel.BreaksNull;		break;
+				case "range":	axisModel.breaksType = AxisModel.BreaksRange;		break;
+				case "manual":	axisModel.breaksType = AxisModel.BreaksManual;		break;
+				case "NULL":	axisModel.breaksType = AxisModel.BreaksNull;		break;
 			}
 		}
-
 	}
 
 	Column
@@ -121,9 +107,9 @@ Column
 		{
 			visible:	 axisBreaksRange.checked
 
-			JASPC.DoubleField	{	id: axisBreaksRangeFrom;	label: qsTr("from");	value:	axisModel.from;		onEditingFinished: {updateLastControl(axisBreaksRangeFrom);		if(axisModel) axisModel.from		= value		}		negativeValues: true	}
-			JASPC.DoubleField	{	id: axisBreaksRangeTo;		label: qsTr("to");		value:	axisModel.to;		onEditingFinished: {updateLastControl(axisBreaksRangeTo);		if(axisModel) axisModel.to			= value		}		negativeValues: true	}
-			JASPC.DoubleField	{	id: axisBreaksRangeSteps;	label: qsTr("steps");	value:	axisModel.steps;	onEditingFinished: {updateLastControl(axisBreaksRangeSteps);	if(axisModel) axisModel.steps		= value		}								}
+			JASPC.DoubleField	{	id: axisBreaksRangeFrom;	label: qsTr("from");	value:	axisModel.from;		onEditingFinished: {if(axisModel) axisModel.from		= value		}		negativeValues: true	}
+			JASPC.DoubleField	{	id: axisBreaksRangeTo;		label: qsTr("to");		value:	axisModel.to;		onEditingFinished: {if(axisModel) axisModel.to			= value		}		negativeValues: true	}
+			JASPC.DoubleField	{	id: axisBreaksRangeSteps;	label: qsTr("steps");	value:	axisModel.steps;	onEditingFinished: {if(axisModel) axisModel.steps		= value		}								}
 
 		}
 

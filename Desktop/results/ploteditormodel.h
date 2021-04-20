@@ -8,7 +8,6 @@
 #include "ploteditorcoordinates.h"
 #include <stack>
 
-class JASPControl;
 class Analyses;
 class Analysis;
 
@@ -20,22 +19,22 @@ class PlotEditorModel : public QObject
 	Q_OBJECT
 	Q_ENUMS(AxisType)
 
-	Q_PROPERTY(bool						visible				READ visible			WRITE setVisible			NOTIFY visibleChanged			)
-	Q_PROPERTY(QString					name				READ name				WRITE setName				NOTIFY nameChanged				)
-	Q_PROPERTY(QString					data				READ data				WRITE setData				NOTIFY dataChanged				)
-	Q_PROPERTY(QUrl						imgFile				READ imgFile										NOTIFY dataChanged				)
-	Q_PROPERTY(QString					title				READ title				WRITE setTitle				NOTIFY titleChanged				)
-	Q_PROPERTY(int						width				READ width				WRITE setWidth				NOTIFY widthChanged				)
-	Q_PROPERTY(int						height				READ height				WRITE setHeight				NOTIFY heightChanged			)
-	Q_PROPERTY(AxisModel *				xAxis				READ xAxis											NOTIFY dummyAxisChanged			)
-	Q_PROPERTY(AxisModel *				yAxis				READ yAxis											NOTIFY dummyAxisChanged			)
-	Q_PROPERTY(double					ppi					READ ppi											NOTIFY ppiChanged				)
-	Q_PROPERTY(bool						loading				READ loading			WRITE setLoading			NOTIFY loadingChanged			)
-	Q_PROPERTY(bool						advanced			READ advanced			WRITE setAdvanced			NOTIFY advancedChanged			)
-	Q_PROPERTY(bool						undoEnabled			READ undoEnabled									NOTIFY unOrRedoEnabledChanged	)
-	Q_PROPERTY(bool						redoEnabled			READ redoEnabled									NOTIFY unOrRedoEnabledChanged	)
-	Q_PROPERTY(AxisModel *				currentAxis			READ currentAxis									NOTIFY currentAxisChanged		)
-	Q_PROPERTY(AxisType					axisType			READ axisType			WRITE setAxisType			NOTIFY axisTypeChanged			)
+	Q_PROPERTY(bool						visible			READ visible		WRITE setVisible		NOTIFY visibleChanged			)
+	Q_PROPERTY(QString					name			READ name			WRITE setName			NOTIFY nameChanged				)
+	Q_PROPERTY(QString					data			READ data			WRITE setData			NOTIFY dataChanged				)
+	Q_PROPERTY(QUrl						imgFile			READ imgFile								NOTIFY dataChanged				)
+	Q_PROPERTY(QString					title			READ title			WRITE setTitle			NOTIFY titleChanged				)
+	Q_PROPERTY(int						width			READ width			WRITE setWidth			NOTIFY widthChanged				)
+	Q_PROPERTY(int						height			READ height			WRITE setHeight			NOTIFY heightChanged			)
+	Q_PROPERTY(AxisModel *				xAxis			READ xAxis									NOTIFY dummyAxisChanged			)
+	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged			)
+	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged				)
+	Q_PROPERTY(bool						loading			READ loading		WRITE setLoading		NOTIFY loadingChanged			)
+	Q_PROPERTY(bool						advanced		READ advanced		WRITE setAdvanced		NOTIFY advancedChanged			)
+	Q_PROPERTY(bool						undoEnabled		READ undoEnabled							NOTIFY unOrRedoEnabledChanged	)
+	Q_PROPERTY(bool						redoEnabled		READ redoEnabled							NOTIFY unOrRedoEnabledChanged	)
+	Q_PROPERTY(AxisModel *				currentAxis		READ currentAxis							NOTIFY currentAxisChanged		)
+	Q_PROPERTY(AxisType					axisType		READ axisType		WRITE setAxisType		NOTIFY axisTypeChanged			)
 
 public:
 	explicit PlotEditorModel();
@@ -69,8 +68,6 @@ public:
 	AxisModel			*	currentAxis()	const {	return _currentAxis;	}
 	AxisType				axisType()		const { return _axisType;		}
 
-	JASPControl			*	lastControl()	const {	return _lastControl;	}
-
 signals:
 	void visibleChanged(		bool		visible			);
 	void nameChanged(			QString		name			);
@@ -90,7 +87,6 @@ signals:
 
 	void currentAxisChanged(	AxisModel * currentAxis);
 	void axisTypeChanged(		AxisType	axisType);
-
 
 public slots:
 	void showPlotEditor(int id, QString options);
@@ -124,7 +120,6 @@ private:
 	void		processImgOptions();
 	Json::Value generateImgOptions()	const;
 	Json::Value generateEditOptions()	const;
-//	void		highlightLastControl(JASPControl *highlightControl) const;
 
 private:
 	Analysis			*	_analysis		= nullptr;
@@ -159,7 +154,6 @@ private:
 								_redo;
 
 	AxisType				_axisType		= AxisType::Xaxis;
-	JASPControl			*	_lastControl = nullptr;
 };
 
 }
