@@ -52,13 +52,16 @@ char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevel
 
 size_t _logWriteFunction(const void * buf, size_t len)
 {
-	try {
-		if(len > 0)
-			Log::log(false).write(static_cast<const char *>(buf), len);
-	} catch (...) {
-		Log::log() << "there was a problem writing to buffer from R"<< std::flush;
+	try 
+	{
+		if(len > 0 && buf)
+			Log::log(false).write(static_cast<const char *>(buf), len) << std::flush;
+	} 
+	catch (...) 
+	{
+		Log::log() << "there was a problem writing to buffer from R" << std::endl;
 	}
-
+	
 	return len;
 }
 
@@ -112,6 +115,11 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 	);
 	JASPTIMER_STOP(jaspRCPP_init);
 
+}
+
+void rbridge_junctionHelper(bool collectNotRestore, const std::string & folder)
+{
+	jaspRCPP_junctionHelper(collectNotRestore, folder.c_str());	
 }
 
 void rbridge_setDataSetSource(			boost::function<DataSet* ()> source)												{	rbridge_dataSetSource			= source; }
@@ -793,14 +801,6 @@ char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevel
 	}
 
 	return results;
-}
-
-
-std::string rbridge_check()
-{
-	Json::Value v;
-	Json::Reader().parse(jaspRCPP_check(), v);
-	return v.toStyledString(); //Adds some nice newlines etc
 }
 
 std::string	rbridge_encodeColumnNamesInScript(const std::string & filterCode)

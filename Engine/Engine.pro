@@ -57,38 +57,38 @@ INCLUDEPATH += $$PWD/../Common/
 
 
 mkpath($$OUT_PWD/../R/library)
+mkpath($$OUT_PWD/../renv-cache)
 
 exists(/app/lib/*) {
     # org.jaspstats.JASP.json and flatpakbuilder do all this
 } else {
 
-	
 	InstallJASPRPackage.commands        = ""
     #InstallJASPRPackage.commands        =  $${INSTALL_R_PKG_DEPS_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_DEPS_CMD_POSTFIX};	 $$escape_expand(\\n\\t) 
 	InstallJASPRPackage.commands       +=       $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_CMD_POSTFIX}
 	
-	InstalljaspGraphsRPackage.commands  =  ""
+	#InstalljaspGraphsRPackage.commands  =  ""
 	#InstalljaspGraphsRPackage.commands  =  $${INSTALL_R_PKG_DEPS_CMD_PREFIX}$$PWD/jaspGraphs$${INSTALL_R_PKG_DEPS_CMD_POSTFIX};	 $$escape_expand(\\n\\t) 
-	InstalljaspGraphsRPackage.commands +=       $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspGraphs$${INSTALL_R_PKG_CMD_POSTFIX}
+	#InstalljaspGraphsRPackage.commands +=       $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspGraphs$${INSTALL_R_PKG_CMD_POSTFIX}
 
-    InstalljaspGraphsRPackage.depends	= InstallJASPRPackage
+    #InstalljaspGraphsRPackage.depends	= InstallJASPRPackage
 
 	win32 {
 	    RemoveJASPRPkgLock       = $${PKG_LOCK_CMD_PREFIX}00LOCK-jaspBase$${PKG_LOCK_CMD_INFIX}00LOCK-jaspBase$${PKG_LOCK_CMD_POSTFIX}
-		RemovejaspGraphsRPkgLock = $${PKG_LOCK_CMD_PREFIX}00LOCK-jaspGraphs$${PKG_LOCK_CMD_INFIX}00LOCK-jaspGraphs$${PKG_LOCK_CMD_POSTFIX}
+		#RemovejaspGraphsRPkgLock = $${PKG_LOCK_CMD_PREFIX}00LOCK-jaspGraphs$${PKG_LOCK_CMD_INFIX}00LOCK-jaspGraphs$${PKG_LOCK_CMD_POSTFIX}
 
-		InstalljaspGraphsRPackage.depends	= RemovejaspGraphsRPkgLock
+		#InstalljaspGraphsRPackage.depends	= RemovejaspGraphsRPkgLock
 		InstallJASPRPackage.depends 		= RemoveJASPRPkgLock
 
-        QMAKE_EXTRA_TARGETS += RemovejaspGraphsRPkgLock
-		POST_TARGETDEPS     += RemovejaspGraphsRPkgLock
+        #QMAKE_EXTRA_TARGETS += RemovejaspGraphsRPkgLock
+		#POST_TARGETDEPS     += RemovejaspGraphsRPkgLock
 
         QMAKE_EXTRA_TARGETS += RemoveJASPRPkgLock
 		POST_TARGETDEPS     += RemoveJASPRPkgLock
 	}
 
-	QMAKE_EXTRA_TARGETS += InstalljaspGraphsRPackage
-	POST_TARGETDEPS     += InstalljaspGraphsRPackage
+	#QMAKE_EXTRA_TARGETS += InstalljaspGraphsRPackage
+	#POST_TARGETDEPS     += InstalljaspGraphsRPackage
 
 	QMAKE_EXTRA_TARGETS += InstallJASPRPackage
 	POST_TARGETDEPS     += InstallJASPRPackage
@@ -98,10 +98,10 @@ QMAKE_CLEAN += $$OUT_PWD/../R/library/* #Does this not mess up Windows somehow?
 
 SOURCES += 	main.cpp \
  			engine.cpp \
-  otoolstuff.cpp \
+			otoolstuff.cpp \
 			rbridge.cpp
 
 HEADERS += \
   			engine.h \
-  otoolstuff.h \
+			otoolstuff.h \
 			rbridge.h

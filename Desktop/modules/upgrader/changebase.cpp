@@ -52,7 +52,7 @@ QString ChangeBase::_toString() const
 
 void ChangeBase::registerChange(QQuickItem * parent)
 {
-	Upgrade * upgrade = dynamic_cast<Upgrade*>(parent);
+	Upgrade * upgrade = qobject_cast<Upgrade*>(parent);
 	
 	if(!upgrade && parent)
 		throw upgradeLoadError(fq(toString()), "A Change* Item must always be a child of Upgrade");

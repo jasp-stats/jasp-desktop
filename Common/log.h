@@ -32,6 +32,8 @@ public:
 
 	static std::string	whereStr() { return logTypeToString(_where); }
 
+	static bool			toCout() { return _where == logType::cout; }
+
 private:
 						Log() { }
 	static void			redirectStdOut();

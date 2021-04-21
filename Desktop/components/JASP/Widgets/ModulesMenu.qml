@@ -109,7 +109,7 @@ FocusScope
 					anchors.leftMargin: modules.buttonMargin
 					anchors.left:		parent.left
 					onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
-					toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install selected developer module") : qsTr("Installing developer module now")) : qsTr("Select a developer module under Left menu->Preference->Advanced")
+					toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install selected developer module") : qsTr("Installing developer module now")) : qsTr("Select a developer module by clicking here")
 					visible:			preferencesModel.developerMode
 					enabled:			dynamicModules.developersModuleInstallButtonEnabled
 
@@ -126,7 +126,6 @@ FocusScope
 
 				Repeater
 				{
-
 					model: ribbonModelUncommon
 
 					Rectangle

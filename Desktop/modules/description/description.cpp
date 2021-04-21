@@ -72,7 +72,7 @@ void Description::addChild(DescriptionChildBase * child)
 {
 	assert(child);
 
-	if(dynamic_cast<EntryBase*>(child))			_entries.push_back(dynamic_cast<EntryBase*>			(child));
+	if(qobject_cast<EntryBase*>(child))			_entries.push_back(dynamic_cast<EntryBase*>			(child));
 	
 	connect(child, &DescriptionChildBase::somethingChanged, this, &Description::childChanged, Qt::UniqueConnection);
 }
@@ -82,7 +82,7 @@ void Description::removeChild(DescriptionChildBase * child)
 {
 	assert(child);
 
-	if(dynamic_cast<EntryBase*>(child))			_entries.removeAll(dynamic_cast<EntryBase*>			(child));
+	if(qobject_cast<EntryBase*>(child))			_entries.removeAll(dynamic_cast<EntryBase*>			(child));
 
 	disconnect(child, &DescriptionChildBase::somethingChanged, this, &Description::childChanged);
 }

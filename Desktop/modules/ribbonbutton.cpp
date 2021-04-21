@@ -44,15 +44,15 @@ void RibbonButton::setDynamicModule(DynamicModule * module)
 	{
 		_module = module;
 		connect(_module, &DynamicModule::descriptionReloaded,	this, &RibbonButton::reloadDynamicModule,	Qt::QueuedConnection);
-		connect(_module, &DynamicModule::loadedChanged,			this, &RibbonButton::setReady			);
-		connect(_module, &DynamicModule::errorChanged,			this, &RibbonButton::setError			);
+		connect(_module, &DynamicModule::installedChanged,		this, &RibbonButton::setReady									);
+		connect(_module, &DynamicModule::errorChanged,			this, &RibbonButton::setError									);
 
 		if(!_analysisMenuModel)
 			_analysisMenuModel = new AnalysisMenuModel(this, _module);
 
 		_analysisMenuModel->setDynamicModule(_module);
 
-		setReady(false);
+		setReady(_module->installed());
 	}
 }
 

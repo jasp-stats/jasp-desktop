@@ -43,18 +43,32 @@ isEmpty(_RLibrary) {
 
 message(using R_HOME of $$_R_HOME)
 
+win32 {
+	defineReplace(winPathFix) {
+		THE_PATH  = $$1
+		THE_PATH ~= s,/,\\,g
+		return($$THE_PATH)
+	}	
+}
+
+unix {
+	defineReplace(winPathFix) {
+		return($$1)
+	}	
+}
+
+
 GETTEXT_LOCATION = $$(GETTEXT_PATH) #The GETTEXT_PATH can be used as environment for a specific gettext location
 
 unix {
 	isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
-	EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$_R_HOME/bin:$$dirname(QMAKE_QMAKE)
+	EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$dirname(QMAKE_QMAKE)
 }
 
 win32 {
 	isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
-	WINQTBIN=$$QMAKE_QMAKE
+	WINQTBIN  = $$winPathFix($$QMAKE_QMAKE)
 	WINQTBIN ~= s,qmake.exe,,gs	
-	WINQTBIN ~= s,/,\\,g
 }
 
 

@@ -23,6 +23,7 @@
 #include <boost/filesystem.hpp>
 #include <codecvt>
 #include "otoolstuff.h"
+#include "rbridge.h"
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -113,8 +114,22 @@ int main(int argc, char *argv[])
 
 		exit(0);
 	}
+#ifdef _WIN32
+	else if(argc == 3)
+	{
+		std::string arg1(argv[1]), arg2(argv[2]);
+		const std::string junctionCollectArg("--collectJunctions"), junctionRecreateArg("--recreateJunctions");
+		
+		if(arg1 == junctionCollectArg || arg1 == junctionRecreateArg)
+		{
+			std::cout << "Engine started for junctions!" << std::endl;
+			rbridge_junctionHelper(arg1 == junctionCollectArg, arg2);
+			exit(0);
+		}
+	}
+#endif
 
-	std::cout << "Engine started in testing mode because it didn't receive 4 (or 1) arguments." << std::endl;
+	std::cout << "Engine started in testing mode because it didn't receive any count of arguments otherwise, (1, 3 or 4), it got " << argc << " instead." << std::endl;
 
 	const char * testFileName = "testFile.txt";
 	std::ofstream writeTestFile(testFileName);

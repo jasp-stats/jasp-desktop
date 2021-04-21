@@ -74,7 +74,9 @@ void DynamicModules::initializeInstalledModules()
 
 		//Development Module should always be fresh!
 		if(name == defaultDevelopmentModuleName())	boost::filesystem::remove_all(itr->path());
-		else if(name.size() > 0 && name[0] != '.')	initializeModuleFromDir(path);
+		else if(name.size() > 0		&& 
+				name[0] != '.'		&&
+				QFileInfo(tq(path)).isDir()		)	initializeModuleFromDir(path);
 	}
 }
 
