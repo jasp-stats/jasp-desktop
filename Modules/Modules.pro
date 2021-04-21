@@ -9,14 +9,22 @@ include(../R_HOME.pri)
 TEMPLATE = aux
 CONFIG -= app_bundle
 
-MODULE_DIR  = $$PWD
+MODULES_RENV_ROOT   = $$SYS_RENV_ROOT
+isEmpty(MODULES_RENV_ROOT): MODULES_RENV_ROOT	= "$$OUT_PWD/../renv-root"  #I assume we will not need to ship this, but we do need the following folder:
+							MODULES_RENV_CACHE	= "$$OUT_PWD/../renv-cache" #While this one needs to be shipped and the symlinks will need to be relative, but we will find out quick enough if not
+mkpath($$MODULES_RENV_ROOT)
+mkpath($$MODULES_RENV_CACHE)
+
+message("Using renv-root: $$MODULES_RENV_ROOT")
+
+MODULE_DIR			= $$PWD
 
 ################################## Common ##################################
+PREVIOUS_MODULE = 
 MODULE_NAME = jaspDescriptives
 include(InstallModule.pri)
 
 MODULE_NAME = jaspAnova
-MODULE_DEPS = jaspDescriptives jaspTTests
 include(InstallModule.pri)
 
 MODULE_NAME = jaspFactor
@@ -26,13 +34,11 @@ MODULE_NAME = jaspFrequencies
 include(InstallModule.pri)
 
 MODULE_NAME = jaspRegression
-MODULE_DEPS = jaspDescriptives jaspAnova jaspTTests
 include(InstallModule.pri)
 
 MODULE_NAME = jaspTTests
 include(InstallModule.pri)
 
-#R_MODULES_INSTALL_DEPENDENCIES = true
 MODULE_NAME = jaspMixedModels
 include(InstallModule.pri)
 
@@ -49,12 +55,10 @@ include(InstallModule.pri)
 MODULE_NAME = jaspSem
 include(InstallModule.pri)
 
-#R_MODULES_INSTALL_DEPENDENCIES = true
 MODULE_NAME = jaspMachineLearning
 include(InstallModule.pri)
 
 MODULE_NAME = jaspSummaryStatistics
-MODULE_DEPS = jaspFrequencies jaspRegression jaspTTests jaspAnova jaspDescriptives
 include(InstallModule.pri)
 
 MODULE_NAME = jaspMetaAnalysis
@@ -82,10 +86,11 @@ include(InstallModule.pri)
 MODULE_NAME = jaspProphet
 include(InstallModule.pri)
 
-R_MODULES_INSTALL_DEPENDENCIES = true
 MODULE_NAME = jaspProcessControl
-MODULE_DEPS = jaspDescriptives
 include(InstallModule.pri)
+
+macx:	QMAKE_CLEAN				+=  $$MODULES_RENV_CACHE/* #Dont do this on linux because we are building from source...
+win32:	libraryClean.commands	+= rd $$quote($$winPathFix($$MODULES_RENV_CACHE/*)) /S /Q || exit 0;	$$escape_expand(\\n\\t)
 
 #see https://stackoverflow.com/questions/29853832/adding-custom-commands-to-existing-targets-in-qmake
 win32 {

@@ -24,7 +24,7 @@ else
 fi
 
 # This script builds the JASP.dmg installer
-# Check that your R.framework is unique (no other test versions).
+# This is hopefully no longer true -> Check that your R.framework is unique (no other test versions).
 # Check also that the right dylib are placed in the build-jasp-desktop-Release folder
 # Then run this script from the build-jasp-desktop-Release folder
 
@@ -63,7 +63,6 @@ cp *.R app/JASP.app/Contents/MacOS/
 
 echo "Create apps from each executable"
 echo "We do this to the JASPEngine, because this process fixes the rpaths"
-
 $QT_KIT_FULL/bin/macdeployqt app/JASP.app/ -qmldir=$JASP_DESKTOP/Desktop
 $QT_KIT_FULL/bin/macdeployqt app/JASPEngine.app/
 
@@ -71,17 +70,22 @@ echo "Copy the JASPEngine out of the JASPEngine.app into the JASP.app"
 echo "This will now have had it's rpaths fixed"
 
 mv app/JASPEngine.app/Contents/MacOS/JASPEngine app/JASP.app/Contents/MacOS/
-rm -rf app/JASPEngine.app/
+rm -rf app/JASPEngine.app/ 
 
 echo "Copy the R.framework in, the Resources, App info, icon, etc."
 APP_R_FRAMEWORK=app/JASP.app/Contents/Frameworks/R.framework
-cp -R $R_FRAMEWORK $APP_R_FRAMEWORK
-cp -R $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
-rm app/JASP.app/Contents/Resources/TestFiles.zip
-cp -R R app/JASP.app/Contents/MacOS
+cp -a $R_FRAMEWORK $APP_R_FRAMEWORK
+cp -a $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
+cp -a R app/JASP.app/Contents/MacOS
 
-echo "Copy the module( librarie)s from the buildfolder to Resources"
-cp -R $JASP_FULL_BUILD_DIR/Modules app/JASP.app/Contents/Resources
+echo "Making sure the module libraries' symlinks to renv-cache are relative before copying"
+JASP_R_HOME=$R_FRAMEWORK/Versions/Current/Resources
+export JASP_R_HOME
+$JASP_R_HOME/bin/R -e "source('$JASP_DESKTOP/R-Interface/R/symlinkTools.R'); convertAbsoluteSymlinksToRelative('$JASP_FULL_BUILD_DIR/Modules', '$JASP_FULL_BUILD_DIR/renv-cache'); warnings();"
+
+echo "Copy the module (librarie)s and renv-cache from the buildfolder to Resources"
+cp -PR $JASP_FULL_BUILD_DIR/Modules    app/JASP.app/Contents/Resources
+cp -PR $JASP_FULL_BUILD_DIR/renv-cache app/JASP.app/Contents/Resources
 
 #This is now made part of jasp-required-files: https://github.com/jasp-stats/jasp-required-files/commit/34cdebfda1e5bc27c30d5bf11cd07471449162e7
 #echo "Make symbolic link to Frameworks in bin folder to let @executable_path/... stuff work from R executable as well."
@@ -90,23 +94,29 @@ cp -R $JASP_FULL_BUILD_DIR/Modules app/JASP.app/Contents/Resources
 #popd
 
 echo "Copying JAGS to executable folder"
-cp -R ../jasp-required-files/JAGS app/JASP.app/Contents/MacOS
+cp -PR ../jasp-required-files/JAGS app/JASP.app/Contents/MacOS
 
-cd $APP_R_FRAMEWORK/Versions
-ln -s $CURRENT_R_VERSION Current
-cd Current
-ln -s ./Resources/include Headers
-ln -s ./Resources/lib/libR.dylib R
-cd ../..
-ln -s ./Versions/Current/Headers Headers
-ln -s ./Versions/Current/Libraries Libraries
-ln -s ./Versions/Current/PrivateHeaders PrivateHeaders
-ln -s ./Versions/Current/Resources Resources
+# Aargh, I just did this in jasp-required-files itself (because not having this there breaks building r-pkgs) by just copying the real framework so Sisyphus would be proud of our frameworkflow... 
+# Ah and this used to be necessary because cp -R doesnt respect symlinks, but hopefully cp -a does
+#cd $APP_R_FRAMEWORK/Versions
+#ln -s $CURRENT_R_VERSION Current
+#cd Current
+#ln -s ./Resources/include Headers
+#n -s ./Resources/lib/libR.dylib R
+#cd ../..
+#ln -s ./Versions/Current/Headers Headers
+#ln -s ./Versions/Current/Libraries Libraries
+#ln -s ./Versions/Current/PrivateHeaders PrivateHeaders
+#ln -s ./Versions/Current/Resources Resources
+
+echo "Remove superfluous stuff from renv-cache"
+pushd app/JASP.app/Contents/Resources/renv-cache
 find . -name '*.cpp' -exec rm {} \;
 find . -name '*.c' -exec rm {} \;
 #find . -name '*.h' -exec rm {} \; See https://github.com/jasp-stats/INTERNAL-jasp/issues/1169 (Allow compiling of cpp in JASP with regards to dynamic modules etc. I dont think anything else then the headers is required for that. )
 find . -name '*.f' -exec rm {} \;
-cd ../../../../..
+find . -name "BH"  -exec rm -rf {} \;  #So many boostheaders... https://github.com/jasp-stats/INTERNAL-jasp/issues/1285
+popd
 
 echo "Copy the Openssl from Qt to our Framework because OSF no longer supports tlsv1 traffic"
 cp libcrypto.1.0.0.dylib app/JASP.app/Contents/Libraries/
@@ -120,7 +130,7 @@ cp $JASP_DESKTOP/Tools/macOS/Info.plist.template app/JASP.app/Contents/Info.plis
 sed -ie s/JASP_VERSION/$JASP_VERSION/g app/JASP.app/Contents/Info.plist
 
 echo "Create the .dmg"
-hdiutil create -size 1500m tmp.dmg -ov -volname "JASP" -fs HFS+ -srcfolder "app"
+hdiutil create -size 3000m tmp.dmg -ov -volname "JASP" -fs HFS+ -srcfolder "app"
 hdiutil convert tmp.dmg -format UDZO -o JASP.dmg
 #mv JASP.dmg JASP-$JASP_VERSION.dmg #easier for upload-script to know dmg-name for sure
 rm -f tmp.dmg

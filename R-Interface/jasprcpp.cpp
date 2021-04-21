@@ -160,7 +160,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspResults::setBaseCitation(baseCitation);
 	jaspResults::setInsideJASP();
 
-	jaspRCPP_logString("Initializing jaspResultsModule, jaspBase, jaspGraphs and more.\n");
+	jaspRCPP_logString("Initializing jaspResultsModule.\n");
 
 	rInside["jaspResultsModule"]			= givejaspResultsModule();
 
@@ -168,15 +168,16 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//To do: move this entirely to zzzWrapper if this wasn't done yet.
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
-
-	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"jaspBase\"))");
-	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"jaspGraphs\"))");
-	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
-	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"modules\"))");
+	
+	jaspRCPP_logString("Initializing jaspBase.\n");
+	jaspRCPP_parseEvalQNT("library(\"jaspBase\")");
+		
+	jaspRCPP_logString("Loading auxillary R-files.\n");
 	jaspRCPP_parseEvalQNT("source(file='writeImage.R')");
 	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')");
 	jaspRCPP_parseEvalQNT("source(file='workarounds.R')");
 
+	jaspRCPP_logString("initEnvironment().\n");
 	jaspRCPP_parseEvalQNT("initEnvironment()");
 
 	
@@ -185,10 +186,11 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	
 
 #ifdef __APPLE__
+	/*This won't actually work because rjags and runjags are not part of the standard library...
 	jaspRCPP_parseEvalQNT("options(jags.moddir=paste0(Sys.getenv('JAGS_HOME'),'/modules-4'))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"rjags\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"runjags\"))");
-	jaspRCPP_parseEvalQNT("runjags::runjags.options(jagspath=Sys.getenv('JAGS_HOME'))");
+	jaspRCPP_parseEvalQNT("runjags::runjags.options(jagspath=Sys.getenv('JAGS_HOME'))");*/
 #endif
 
 	jaspRCPP_parseEvalQNT(".automaticColumnEncDecoding <- "
@@ -198,9 +200,23 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 														  "FALSE");
 #endif
 
-	jaspRCPP_parseEvalQNT("library(kknn);"); //Make ML work again, K-neighbor and regression: https://github.com/jasp-stats/INTERNAL-jasp/issues/1227
-
+	jaspRCPP_logString("initializeDoNotRemoveList().\n");
 	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
+}
+
+void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder)
+{
+	rinside = new RInside();
+	RInside &rInside = rinside->instance();
+	
+	std::cout << "RInside created, now about to " << (collectNotRestore ? "collect" :  "recreate") << " Modules junctions in renv-cache" << std::endl;
+	
+	rinside->parseEvalQNT("source('symlinkTools.R')");
+	
+	rInside["symFolder"] = folder;
+	
+	if(collectNotRestore)	rinside->parseEvalQNT("collectAndStoreJunctions(symFolder)");
+	else					rinside->parseEvalQNT("restoreModulesIfNeeded(  symFolder)");
 }
 
 void STDCALL jaspRCPP_purgeGlobalEnvironment()
@@ -247,8 +263,8 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	SEXP results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)");
 
 	static std::string str;
-	if(Rcpp::is<std::string>(results))	str = Rcpp::as<std::string>(results);
-	else								str = "error!";
+	if(results != NULL && Rcpp::is<std::string>(results))	str = Rcpp::as<std::string>(results);
+	else													str = "error!";
 
 
 #ifdef PRINT_ENGINE_MESSAGES
@@ -260,15 +276,6 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	jaspRCPP_checkForCrashRequest();
 
 	return str.c_str();
-}
-
-const char* STDCALL jaspRCPP_check()
-{
-	SEXP result = rinside->parseEvalNT("checkPackages()");
-	static std::string staticResult;
-
-	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
-	return staticResult.c_str();
 }
 
 void STDCALL jaspRCPP_runScript(const char * scriptCode)
@@ -415,12 +422,11 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	rinside->instance()[".rCode"] = CSTRING_TO_R(rCode);
 	const std::string rCodeTryCatch(""
 		"returnVal = 'null';	"
-		"tryCatch(				"
-		"	suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
-		"		error	= function(e) { .setRError(toString(e$message))	  }, 	"
-		"		warning	= function(w) { .setRWarning(toString(w$message)) }		"
-		");			"
-		"returnVal	");
+		"tryCatch("
+		"    suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
+		"    error	= function(e) { .setRError(  paste0(toString(e$message), '\n', paste0(sys.calls(), collapse='\n'))) } 	"
+		")"
+		"; returnVal	");
 
 	SEXP result = jaspRCPP_parseEval(rCodeTryCatch);
 

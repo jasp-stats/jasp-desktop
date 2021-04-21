@@ -103,14 +103,6 @@ void Engine::initialize()
 		rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings, _resultsFont.c_str());
 
 		Log::log() << "rbridge_init completed" << std::endl;
-
-#if defined(JASP_DEBUG) || defined(__linux__)
-		if (_slaveNo == 0)
-		{
-			Log::log() << rbridge_check()			<< std::endl;
-			Log::log() << "rbridge_check completed" << std::endl;
-		}
-#endif
 	
 		//Is there maybe already some data? Like, if we just killed and restarted the engine
 		ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
@@ -445,9 +437,13 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	std::string		moduleRequest	= jsonRequest["moduleRequest"].asString();
 	std::string		moduleCode		= jsonRequest["moduleCode"].asString();
 	std::string		moduleName		= jsonRequest["moduleName"].asString();
+	
+	Log::log() << "About to run module request for module '" << moduleName << "' and code to run:\n'" << moduleCode << "'" << std::endl; 
 
 	std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str());
 	bool			succes			= result == "succes!"; //Defined in DynamicModule::succesResultString()
+	
+	Log::log() << "Was " << (succes ? "succesful" : "a failure") << ", now crafting answer." << std::endl;
 
 	Json::Value		jsonAnswer		= Json::objectValue;
 
@@ -456,6 +452,8 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	jsonAnswer["succes"]			= succes;
 	jsonAnswer["error"]				= jaspRCPP_getLastErrorMsg();
 	jsonAnswer["typeRequest"]		= engineStateToString(_engineState);
+	
+	Log::log() << "Sending it." << std::endl;
 
 	sendString(jsonAnswer.toStyledString());
 
@@ -930,6 +928,9 @@ void Engine::receiveLogCfg(const Json::Value & jsonRequest)
 	Log::log() << "Log Config received" << std::endl;
 
 	Log::parseLogCfgMsg(jsonRequest);
+
+	//Show the buildoutput where and when it matters!
+	jaspRCPP_runScript(("options(renv.config.install.verbose=" + std::string(Log::toCout() ? "TRUE" : "FALSE") + ")").c_str());
 
 	Json::Value logCfgResponse		= Json::objectValue;
 	logCfgResponse["typeRequest"]	= engineStateToString(engineState::logCfg);

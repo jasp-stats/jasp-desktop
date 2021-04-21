@@ -44,10 +44,6 @@ std::string AppInfo::getBuildYear()
 
 std::string AppInfo::getRVersion()
 {
-	std::stringstream ss;
-	ss << CURRENT_R_VERSION;
-	std::string str;
-	ss >> str;
-	return str;
+	return CURRENT_R_VERSION;
 }
 

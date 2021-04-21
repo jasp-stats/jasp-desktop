@@ -38,6 +38,8 @@ public:
 	static QString appData();
 	static QString rHome();
 	static QDir    programDir();
+	static QString renvRootLocation();
+	static QString renvCacheLocations(); //Just one for now, but expected to become at least two separated by ;
 	
 private:
 	static QString processPath(const QString & path);

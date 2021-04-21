@@ -75,7 +75,7 @@ extern "C" {
 	typedef boost::function<std::string (const std::string &, int progress)> RCallback;
 
 	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultsFont);
-
+	void rbridge_junctionHelper(bool collectNotRestore, const std::string & folder);
 
 	void rbridge_setFileNameSource(			boost::function<void(const std::string &, std::string &, std::string &)> source);
 	void rbridge_setSpecificFileNameSource(	boost::function<void(const std::string &, std::string &, std::string &)> source);
@@ -92,8 +92,6 @@ extern "C" {
 													boost::function<bool(const std::string &,		std::vector<int>&,			const std::map<int, std::string>&)	> nominalSource,
 													boost::function<bool(const std::string &, const std::vector<std::string>&)										> nominalTextSource);
 	void rbridge_setGetDataSetRowCountSource(		boost::function<int()> source);
-
-	std::string rbridge_check();
 
 	void	rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::string & readFunction);
 	void	rbridge_setupRCodeEnv(int rowCount, const std::string & dataname = "data");

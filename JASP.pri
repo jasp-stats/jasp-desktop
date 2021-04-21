@@ -3,14 +3,14 @@
 #Jasp-R-Interface
 JASP_R_INTERFACE_TARGET = R-Interface
 
-JASP_R_INTERFACE_MAJOR_VERSION =  10  # Interface changes or whenever you feel majorlike
-JASP_R_INTERFACE_MINOR_VERSION =  17  # Code changes
+JASP_R_INTERFACE_MAJOR_VERSION =  11  # Interface changes or whenever you feel majorlike
+JASP_R_INTERFACE_MINOR_VERSION =  0   # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
 #R settings
-CURRENT_R_VERSION = 3.6
-DEFINES += "CURRENT_R_VERSION=\"$$CURRENT_R_VERSION\""
+CURRENT_R_VERSION = "4.0"
+DEFINES += "CURRENT_R_VERSION=\\\"$$CURRENT_R_VERSION\\\""
 
 #JASP Version
 JASP_VERSION_MAJOR      = 0
@@ -117,14 +117,3 @@ macx {
 DEFINES += JASP_COLUMN_ENCODE_ALL
 
 linux: QMAKE_LFLAGS += -fuse-ld=gold
-
-#All language translation related defines are below
-GENERATE_LANGUAGE_FILES = false
-#AM_I_BUILDBOT is set as a "qmake internal var" in the command line
-message("AM_I_BUILDBOT: '$$[AM_I_BUILDBOT]'")
-COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equals function below actually works...
-!equals(COPY_BUILDBOTNESS, "") {
-	!equals(COPY_BUILDBOTNESS, "\"\"") { #this should be done less stupidly but I do not want to waste my time on that now
-		GENERATE_LANGUAGE_FILES = true
-	}
-}

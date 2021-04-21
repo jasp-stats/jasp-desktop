@@ -39,6 +39,7 @@
 #include "utilities/appdirs.h"
 #include "log.h"
 #include "utilities/qutils.h"
+#include "utilities/processhelper.h"
 
 
 using namespace boost::interprocess;
@@ -486,86 +487,10 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	JASPTIMER_SCOPE(EngineSync::startSlaveProcess);
 	QDir programDir			= AppDirs::programDir();
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
-	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine(true, PreferencesModel::prefs()->setLC_CTYPE_C());
 
 	QStringList args;
 	args << QString::number(channel) << QString::number(ProcessInfo::currentPID()) << QString::fromStdString(Log::logFileNameBase) << QString::fromStdString(Log::whereStr());
-
-	env.insert("TMPDIR", tq(TempFiles::createTmpFolder()));
-	env.insert("R_REMOTES_NO_ERRORS_FROM_WARNINGS", "true"); //Otherwise installing dependencies for modules can crap out on ridiculous warnings
-
-	QString rHomePath = AppDirs::rHome();
-	QDir rHome(rHomePath);
-	
-
-	QString custom_R_library = "";
-#ifdef JASP_DEBUG
-	// allow an environment variables to specify the location of packages
-	if (env.contains("JASP_R_Library"))
-		custom_R_library = ":" + env.value("JASP_R_Library");
-#endif
-#ifdef _WIN32
-#if defined(ARCH_32)
-#define ARCH_SUBPATH "i386"
-#else
-#define ARCH_SUBPATH "x64"
-#endif
-	
-	auto longToShort = [](QString in) -> QString { return QString::fromStdWString(Utils::getShortPathWin(in.toStdWString())); };
-	
-	QString PATH		= longToShort(programDir.absoluteFilePath("R/library/RInside/libs/" ARCH_SUBPATH)) + ";" + longToShort(programDir.absoluteFilePath("R/library/Rcpp/libs/" ARCH_SUBPATH)) + ";" + longToShort(programDir.absoluteFilePath("R/bin/" ARCH_SUBPATH)) + ";" + longToShort(env.value("PATH")),
-			R_HOME		= longToShort(rHome.absolutePath()),
-			JAGS_HOME	= longToShort(programDir.absoluteFilePath("JAGS/"));
-	
-	Log::log() << "R_HOME set to " << R_HOME << std::endl;
-
-	env.insert("PATH",				PATH);
-	env.insert("R_HOME",			R_HOME);
-	env.insert("JAGS_HOME",			JAGS_HOME);
-	
-#undef ARCH_SUBPATH
-
-	env.insert("R_LIBS",			 R_HOME + "/library");
-
-	env.insert("R_ENVIRON",			"something-which-doesn't-exist");
-	env.insert("R_PROFILE",			"something-which-doesn't-exist");
-	env.insert("R_PROFILE_USER",	"something-which-doesn't-exist");
-	env.insert("R_ENVIRON_USER",	"something-which-doesn't-exist");
-	
-	if(PreferencesModel::prefs()->setLC_CTYPE_C())
-	{
-		Log::log() << "Setting LC_CTYPE to C!" << std::endl;
-		env.insert("LC_CTYPE",			"C"); //To force utf-8 output from gettext et al.
-	}
-	else
-		Log::log() << "Leaving LC_CTYPE at systemdefault" << std::endl;
-					  
-
-#elif __APPLE__
-
-	env.insert("R_HOME",			rHome.absolutePath());
-	env.insert("JASP_R_HOME",		rHome.absolutePath()); //Used by the modified R script in jasp-required-files/Framework/etc/bin to make sure we use the actual R of JASP! (https://github.com/jasp-stats/INTERNAL-jasp/issues/452)
-	env.insert("R_LIBS",			rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
-	env.insert("JAGS_HOME",			programDir.absoluteFilePath("JAGS/"));
-
-	//env.insert("R_ENVIRON",			"something-which-doesnt-exist");
-	//env.insert("R_PROFILE",			"something-which-doesnt-exist");
-	//env.insert("R_PROFILE_USER",	"something-which-doesnt-exist");
-	//env.insert("R_ENVIRON_USER",	"something-which-doesnt-exist");
-
-	env.insert("LC_CTYPE",			"UTF-8"); //This isn't really a locale but seems necessary to get proper output from gettext on mac
-
-#else  // linux
-	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
-	env.insert("R_HOME",			rHome.absolutePath());
-	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + custom_R_library + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
-
-	//Let's just trust linux and *not set* LC_CTYPE at all. It'll be fine.
-#endif
-
-
-	env.insert("R_LIBS_SITE",		"");
-	env.insert("R_LIBS_USER",		AppDirs::userRLibrary().toStdString().c_str());
 
 	QProcess *slave = new QProcess(this);
 	slave->setProcessChannelMode(QProcess::ForwardedChannels);

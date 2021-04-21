@@ -1,10 +1,10 @@
 rem @echo off
-REM autorun
-SETLOCAL EnableDelayedExpansion
+rem autorun
+setlocal EnableDelayedExpansion
 
 SET ARCH=%1
 
-REM - Check arguments -
+rem - Check arguments -
 if NOT "%1"=="32" (
 if NOT "%1"=="64" (
 echo "First argument could be architecture, i.e 32 or 64 bits, to upload"
@@ -12,8 +12,8 @@ echo "But for now the default of 64 will be assumed."
 SET ARCH=64
 ))
 
-FOR /F "tokens=*" %%g IN ('git rev-parse --abbrev-ref HEAD') do (SET GIT_BRANCH=%%g)
-FOR /F "tokens=*" %%h IN ('git rev-parse --verify HEAD')     do (SET GIT_COMMIT=%%h)
+for /F "tokens=*" %%g IN ('git rev-parse --abbrev-ref HEAD') do (SET GIT_BRANCH=%%g)
+for /F "tokens=*" %%h IN ('git rev-parse --verify HEAD')     do (SET GIT_COMMIT=%%h)
 
 SET DEST_FILE=JASP-nightly-%GIT_BRANCH%-%GIT_COMMIT%
 echo "Copying MSI & ZIP to jasp-static with filename : %DEST_FILE%"

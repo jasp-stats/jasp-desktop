@@ -522,7 +522,7 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 	//Add the module name to the "do not remove from global env" list in R. See jaspRCPP_purgeGlobalEnvironment
 	R << "jaspBase:::.addModuleToDoNotRemove('" << _name << _modulePostFix << "');\n";
 
-	R << _name << _modulePostFix << " <- module({\n" << standardRIndent << ".libPaths(" << getLibPathsToUse() <<");\n\n";
+	R << _name << _modulePostFix << " <- modules::module({\n" << standardRIndent << ".libPaths(" << getLibPathsToUse() <<");\n\n";
 
 	for(const std::string & reqMod : requiredModules())
 		R << standardRIndent << "import('" << reqMod << "');\n";

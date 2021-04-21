@@ -486,7 +486,8 @@ int PreferencesModel::lcCtypeWin() const
 bool PreferencesModel::setLC_CTYPE_C() const
 {
 #ifndef _WIN32
-	throw std::runtime_error("PreferencesModel::setLC_CTYPE_C() should only be used on Windows.");
+	//throw std::runtime_error("PreferencesModel::setLC_CTYPE_C() should only be used on Windows.");
+	return false; //The result is interpreted as "force LC_CTYPE to C". I guess the "neverC" enum is also a bit misleading then... But all of this can be thrown away once utf-8 is supported on win.
 #endif
 	
 	switch(Settings::getWinLcCtypeSetting())
