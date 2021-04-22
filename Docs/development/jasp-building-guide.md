@@ -260,25 +260,9 @@ This means that whenever **jasp-required-files** gets updated the same happens f
 
 To get this same structure  you will need to make a so-called symbolic link by issuing the following command: `"ln -s jasp-required-files/Frameworks Frameworks"`
 
-5. Install packages in your local R for JASP to build JASPGraph:
+5. Make sure you have `jasp-required-files` right next to `jasp-desktop`.
 
-```
- install.packages(c("ggplot2", "scales", "cowplot", "gridExtra", "stringr","gbm", "kknn"))
-```
-If you do not have R installed:  
-In this case inside Qt you must specify where the R version
-shipped with the jasp-required-files is located.
-You can do this by setting the JASP_R_HOME build environment.
-For this open the projects tab in Qt and select the Build Environment.
-Here you add the environment setting to specify where the Resources from
-the jasp-required-files is located:  
-e.g. JASP_R_HOME=\<my-jasp-required-files-location\>/Frameworks/R.framework/Versions/3.6/Resources
-
- ![Image of folder structure](https://static.jasp-stats.org/images/jasp-r-home.png)
-
-The process will be smoothened out in the near future.
-
- 6. Build JASP in Qt.
+6. Build JASP in Qt.
 
 Linux
 -----
@@ -286,16 +270,12 @@ Linux
 ### Build
 
 #### All linux
-Besides the packages mentioned under Ubuntu and Fedora one needs a multitude of R-packages to run every analysis. To make life easier a script has been added: `jasp-desktop/Tools/installExpectedPackages.R` which can be used to install all required R-packages. To run it simply open a terminal, make sure you are running as administrator and execute the following in your jasp-desktop source directory:
-```
-cd Tools
-Rscript installExpectedPackages.R
-```
-At certain points this may fail when it misses some kind of header or something. For instance, an R-package might need `#include <png.h>` or something. In this example you should install the Fedora-package `libpng-devel` or the Ubuntu-package `libpng-dev`. In other cases you should figure out which development distribution-package you would need on the linux-distribution you're running and install that.
+Besides the packages mentioned below for Ubuntu and Fedora one needs a few R-packages to build JASP. 
+Using the latest R you can run: `install.packages(c('renv', 'modules', 'remotes', 'rjson', 'jsonlite', 'Rcpp', 'ragg', 'systemfonts', 'pkgbuild'))`.
+This will install all that is necessary to install the modules with the actual analyses.
+At certain points this may fail when it misses some kind of header or something. For instance, an R-package might need `#include <png.h>` or something. In this example you should install the Fedora-package `libpng-devel` or the Ubuntu-package `libpng-dev`. In other cases you should figure out which development distribution-package you would need on the linux-distribution you're running and install that. This will probably also happen while you are building JASP and `renv` is collecting and building all the required pkgs for each module, so the same response is warranted.
 
-After installing the missing sources you can try to run `installExpectedPackages.R` again and see if it stops complaining, it will skip all packages that are already installed to save you time. And hopefully after some time it will be done and you can try everything included with JASP.
-
-Besides this we now use [ReadStat](https://github.com/WizardMac/ReadStat) to read a variety of data-formats into JASP. This is however not available as a package on (most) linuxes. Instead you can either build it yourself like:
+Besides this we use [ReadStat](https://github.com/WizardMac/ReadStat) to read a variety of data-formats into JASP. This is however not available as a package on (most) linuxes. Instead you can either build it yourself like:
 ```
 cd To/some/folder/where/you/want/your/sources
 git clone https://github.com/WizardMac/ReadStat && cd ReadStat && git checkout v1.0.2
@@ -309,7 +289,7 @@ To build JASP under Ubuntu (17.10+), debian, and derivatives, you will need:
 ```
 sudo apt-get install libboost-dev r-base-core r-cran-rcpp r-cran-rinside libqt5widgets5 qtwebengine5-dev libqt5webchannel5-dev libqt5svg5-dev qt5-qmake libarchive-dev libboost-filesystem-dev libboost-system-dev libjsoncpp-dev qt5-default qtcreator qml-module-qtquick-controls2 qtquickcontrols2-5-dev qml-module-qtwebengine qml-module-qtwebchannel qml-module-qt-labs-folderlistmodel
 ```
-> We used R 3.6.1 for 0.11.1 and 0.12. Although other versions of R probably work as well.
+> Install the latest version of R and the same pkgs as described above.
 
 Then you start qtcreator and open JASP.pro, run qmake and build all. After that you should be able to run JASP.
 
