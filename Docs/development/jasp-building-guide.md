@@ -29,7 +29,7 @@ JASP depends on:
  - [libarchive](http://libarchive.org/)
  - [zlib](http://zlib.net/)
 
-Required files on Windows and Mac OS X
+Required files on Windows and macOS
 --------------
 To be able to build JASP the listed dependencies are required and can be easily installed on your system through [jasp-required-files](https://github.com/jasp-stats/jasp-required-files.git)
 Simply clone the git repository next to your jasp-desktop folder as follows:
@@ -205,35 +205,38 @@ For the R-Interface the Build directory should be build-release-64\R-Interface. 
 ![Screenshot of Projects and dependencies](./img/WindowsJaspRInterfaceDependency.png)
 
 
-Mac OS X
---------
-To build JASP you need to clone **jasp-desktop** and **jasp-required-files** repositories, install XCode, Command line tools, Qt and some packages in R.
+macOS
+-----
 
- 0. Clone the repository **jasp-desktop**
- 1. [XCode and command line tools](https://developer.apple.com/xcode/) Qt on OS X relies on XCode and Command line tools to function. You can install them through the App Store or the link provided above. Once you've installed both, you should:
- - open XCode
- - Go to "Preferences" - "Locations"
- - Tell XCode which "Command Line Tools" to use
- - Close
+To build JASP you need to clone **jasp-desktop** and **jasp-required-files** repositories, install XCode, Command Line Tools, gfortran for macOS, Qt and some packages in R.
 
- 2. [Qt](https://www.qt.io/): **Install Qt 5.15.2**
- Select:
-  - macOS
-  - Qt WebEngine
+0. Clone the repository **jasp-desktop**
+1. Qt requires the Xcode and Command Line Tools to be installed on your system.
+	- You can install the Xcode from the [Mac App Store](https://apps.apple.com/us/app/xcode/id497799835?mt=12).
+	- To install the Command Line Tools, **after installing the Xcode**, open the Terminal app and run this command: `xcode-select --install`.
+
+2. Install the [gfortran for macOS](https://github.com/fxcoudert/gfortran-for-macOS). You can check your macOS version from the ** → About This Mac** menu item.
+
+3. [Qt](https://www.qt.io/): **Install Qt 5.15.2**
+Select:
+	- macOS
+	- Qt WebEngine
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/jasp2.InstallQt.png)
 
-2.a. **Configure Qt5.15.2**: Once installed:
-- Go to "Qt Creator" - "Preference" - "Kits"
-- Auto-detect should give "Desktop Qt 5.15.2 clang 64bit". Click on this.
-- Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
+- 3.a. **Configure Qt5.15.2**: Once installed:
+
+	- Go to "Qt Creator" - "Preference" - "Kits"
+	- Auto-detect should give "Desktop Qt 5.15.2 clang 64bit". Click on this.
+	- Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
 
 ![Image of Qt Configuration](https://static.jasp-stats.org/images/jasp2a.ConfigureQt.png)
 
-2.b. **Configure project**: 
-Open "JASP.pro" as the project in qtcreator.
-Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers.
-These folders should be placed in the same directory as `jasp-desktop` and `jasp-required-files` (so next to them).
+- 3.b. **Configure project**: 
+
+	- Open "JASP.pro" as the project in qtcreator.
+	- Click "Projects" in the left ribbon and provide the "debug build" and "release build" folders with the correct compilers.
+	- These folders should be placed in the same directory as `jasp-desktop` and `jasp-required-files` (so next to them).
 
 The projects, once configure, should look like:
 
@@ -245,24 +248,21 @@ and like:
 
 In both case, I've added the flag "-j4" to make use of all my four cores on my mac. (This seems to be enabled by default in newer versions of qtcreator)
 
-3. Clone the repository **jasp-required-files** and select the **MacOS** branch. These files can now be put in the folders as shown here:
+4. Clone the repository **jasp-required-files** and select the **MacOS** branch. These files can now be put in the folders as shown here:
 
 ![Image of folder structure](https://static.jasp-stats.org/images/jasp5.FolderStructure.png)
 
-where the blue files are the binaries that are added manually. Keep in mind that the screenshot is kind of old and is missing the `jasp-required-files` folder.
-The process will be smoothened out in the near future.
-You should also make sure to copy the `JAGS` folder together with the binaries.
+where the blue files are the binaries that are added manually. Keep in mind that the screenshot is kind of old and is missing the `jasp-required-files` folder. The process will be smoothened out in the near future. You should also make sure to copy the `JAGS` folder together with the binaries.
 
-4. Make a symbolic link to Frameworks
-If you've paid an exceptional amount of attention to the above folder-structure you will notice that there is a folder **Frameworks** next to **jasp-required-files** and the others. With even more attention it will be noticed that **jasp-required-files** also contains a folder called **Frameworks**. These are in fact one and the same!
+5. Make a symbolic link to Frameworks
 
-This means that whenever **jasp-required-files** gets updated the same happens for the contents of the **Frameworks** folder next to it, and this is required to compile JASP.
+	- If you've paid an exceptional amount of attention to the above folder-structure you will notice that there is a folder **Frameworks** next to **jasp-required-files** and the others. With even more attention it will be noticed that **jasp-required-files** also contains a folder called **Frameworks**. These are in fact one and the same! This means that whenever **jasp-required-files** gets updated the same happens for the contents of the **Frameworks** folder next to it, and this is required to compile JASP.
 
-To get this same structure  you will need to make a so-called symbolic link by issuing the following command: `"ln -s jasp-required-files/Frameworks Frameworks"`
+	- To get this same structure you will need to make a so-called symbolic link. You can do this by first navigating into your `JASP/` directory, and issuing the following command: `ln -s jasp-required-files/Frameworks Frameworks`.
 
-5. Make sure you have `jasp-required-files` right next to `jasp-desktop`.
+6. Make sure you have `jasp-required-files` right next to `jasp-desktop`.
 
-6. Build JASP in Qt.
+7. Build JASP in Qt.
 
 Linux
 -----
