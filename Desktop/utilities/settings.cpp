@@ -46,10 +46,17 @@ const Settings::Setting Settings::Values[] = {
 	{"interfaceFont",
 #ifdef WIN32
 									"Arial"},	// https://github.com/jasp-stats/INTERNAL-jasp/issues/1146
+#elif defined(Q_OS_MACOS)
+									".AppleSystemUIFont"},
 #else
 									"SansSerif"},
 #endif
-	{"codeFont",					"Fira Code"},
+	{"codeFont",
+#ifndef Q_OS_MACOS
+									"Fira Code"},
+#else
+									".AppleSystemUIFontMonospaced"},
+#endif									
 	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans,Segoe UI"},
 	{"win_LC_CTYPE_C",				"check" }, //"check" should be an actual value in the underlying enum that is defined in preferencesmode.h
 	{"maxEngineCount",				4}, //In debug always 1
