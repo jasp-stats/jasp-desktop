@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-03-13 23:02+0000\n"
-"Last-Translator: Paulina Elizabeth Robalino <paulina.e.robalino@gmail.com>\n"
+"PO-Revision-Date: 2021-05-04 18:31+0000\n"
+"Last-Translator: Coba <coba@cobac.eu>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
 "Language: es\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -50,7 +50,7 @@ msgstr ""
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ", la actualización podría dar un resultado ligeramente diferente"
+msgstr ", la actualización podría dar un resultado ligeramente diferente."
 
 msgctxt "Form|"
 msgid ""
@@ -1789,15 +1789,15 @@ msgctxt "ModulesMenu|"
 msgid "Ready"
 msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr "Instalando:"
+msgstr "Instalando: %1\n"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr "Cargando:"
+msgstr "Cargando: %1\n"
 
 #, fuzzy
 msgctxt "ModulesMenu|"
@@ -2918,6 +2918,7 @@ msgid ""
 msgstr ""
 "La carga de los paquetes del Módulo %1 falló con el siguiente mensaje de "
 "error:\n"
+"\n"
 "%2"
 
 #, fuzzy
