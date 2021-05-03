@@ -52,7 +52,7 @@ class RibbonButton : public QObject
 public:
 
 	RibbonButton(QObject *parent, Modules::DynamicModule * module);
-	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction);
+	RibbonButton(QObject *parent, std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction, std::string toolTip = "");
 	~RibbonButton() {}
 
 

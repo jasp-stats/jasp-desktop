@@ -94,7 +94,7 @@ void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule *
 
 void RibbonModel::addRibbonButtonRPrompt()
 {
-	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R (Beta)")), "Rlogo.svg", false, [&](){ emit showRCommander(); }));
+	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R (Beta)")), "Rlogo.svg", false, [&](){ emit showRCommander(); }, fq(tr("Execute R code in a console"))));
 }
 
 void RibbonModel::dynamicModuleChanged(Modules::DynamicModule * dynMod)

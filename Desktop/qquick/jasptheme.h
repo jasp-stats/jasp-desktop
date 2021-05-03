@@ -696,10 +696,10 @@ private:
 						_menuHeaderHeight;
 
 	//Times: https://www.youtube.com/watch?v=90WDats6eE
-	theme_timeType		_hoverTime							= 400,
-						_fileMenuSlideDuration				= 150,
-						_toolTipDelay						= 1500,
-						_toolTipTimeout						= 4500;
+	theme_timeType		_hoverTime							=  400,
+						_fileMenuSlideDuration				=  150,
+						_toolTipDelay						=  500,
+						_toolTipTimeout						=60000;
 
 	QFont				_font,
 						_fontLabel,

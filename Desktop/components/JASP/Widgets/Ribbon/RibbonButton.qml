@@ -48,11 +48,11 @@ Rectangle
 
 	signal clicked
 
-	ToolTip.text:				toolTip
+	ToolTip.text:				ribbonButton.toolTip
 	ToolTip.timeout:			jaspTheme.toolTipTimeout
 	ToolTip.delay:				jaspTheme.toolTipDelay
-	ToolTip.visible:			toolTip !== "" && mice.containsMouse
-
+	ToolTip.visible:			ribbonButton.toolTip !== "" && mice.containsMouse && !ribbonButton.showPressed
+	
 	Keys.onPressed:
 	{
 		if (event.key === Qt.Key_Escape)
@@ -204,12 +204,12 @@ Rectangle
 
 		LoadingIndicator
 		{
-			anchors.top:		backgroundImage.top
-			anchors.left:		backgroundImage.left
-			width:				backgroundImage.width
-			height:				backgroundImage.height
+			anchors.top:		 backgroundImage.top
+			anchors.left:		 backgroundImage.left
+			width:				 backgroundImage.width
+			height:				 backgroundImage.height
 			visible:			!ribbonButton.ready
-			z:					backgroundImage.z + 1
+			z:					 backgroundImage.z + 1
 		}
 
 		Image
