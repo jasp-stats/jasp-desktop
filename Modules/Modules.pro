@@ -67,6 +67,7 @@ include(InstallModule.pri)
 R_MODULES_INSTALL_DEPENDENCIES = true
 MODULE_NAME = jaspDistributions
 include(InstallModule.pri)
+R_MODULES_INSTALL_DEPENDENCIES = false
 
 MODULE_NAME = jaspEquivalenceTTests
 include(InstallModule.pri)

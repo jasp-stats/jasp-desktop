@@ -30,6 +30,7 @@ RibbonButton::RibbonButton(QObject *parent, DynamicModule * module)  : QObject(p
 	setDynamicModule(module);
 
 	setTitle(			_module->title()					);
+	setToolTip(		tq(	_module->description()	)			);
 	setRequiresData(	_module->requiresData()				);
 	setIsCommon(		_module->isCommon()					);
 	setModuleName(		_module->name()						);
@@ -64,8 +65,10 @@ void RibbonButton::reloadDynamicModule(DynamicModule * dynMod)
 		setDynamicModule(dynMod);
 
 	setTitle(			_module->title()		);
+	setToolTip(		tq(	_module->description())	);
 	setRequiresData(	_module->requiresData()	);
 	setIconSource(tq(	_module->iconFilePath()));
+	setModuleName(		_module->name()			);
 
 	//if(dynamicModuleChanged)
 	emit iChanged(this);
@@ -91,12 +94,13 @@ void RibbonButton::setReady(bool ready)
 	emit readyChanged(_ready);
 }
 
-RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction)
+RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction, std::string toolTip)
 	: QObject(parent), _module(nullptr), _specialButtonFunc(justThisFunction)
 {
 	_analysisMenuModel = new AnalysisMenuModel(this, nullptr);
 	setModuleName(name);
 	setTitle(title);
+	setToolTip(tq(toolTip));
 	setIconSource(tq(icon));
 
 	setRequiresData(requiresData); //setRequiresData because setMenu changes it based on the menu entries, but that doesnt work for this special dummy
@@ -108,7 +112,7 @@ void RibbonButton::bindYourself()
 {
 	connect(this,						&RibbonButton::enabledChanged,		this, &RibbonButton::somePropertyChanged);
 	connect(this,						&RibbonButton::titleChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this,						&RibbonButton::titleChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,						&RibbonButton::toolTipChanged,		this, &RibbonButton::somePropertyChanged);
 	connect(this,						&RibbonButton::moduleNameChanged,	this, &RibbonButton::somePropertyChanged);
 	connect(this,						&RibbonButton::dataLoadedChanged,	this, &RibbonButton::somePropertyChanged);
 	connect(this,						&RibbonButton::requiresDataChanged,	this, &RibbonButton::somePropertyChanged);
@@ -118,7 +122,7 @@ void RibbonButton::bindYourself()
 	connect(this,						&RibbonButton::dataLoadedChanged,	this, &RibbonButton::activeChanged		);
 	connect(this,						&RibbonButton::requiresDataChanged,	this, &RibbonButton::activeChanged		);
 
-	connect(DynamicModules::dynMods(),			&DynamicModules::dataLoadedChanged,	this, &RibbonButton::dataLoadedChanged	);
+	connect(DynamicModules::dynMods(),	&DynamicModules::dataLoadedChanged,	this, &RibbonButton::dataLoadedChanged	);
 }
 
 void RibbonButton::setRequiresData(bool requiresDataset)

@@ -265,5 +265,6 @@ Window
 			text:			ToolTip.toolTip.text
 		}
 		ToolTip.toolTip.implicitWidth:			Math.min(jaspTheme.formWidth * 0.8, ToolTip.toolTip.contentItem.implicitWidth + (2 * ToolTip.toolTip.padding))
+		ToolTip.toolTip.z:						1234
 	}
 }

@@ -149,6 +149,7 @@ FocusScope
 	MenuArrowButton
 	{
 		id			: fileMenuOpenButton
+		toolTip		: qsTr("Show main menu")
 		showPressed	: fileMenuModel.visible || isFileMenuPressed
 		buttonType	: MenuArrowButton.ButtonType.Hamburger
 		z			: 2
@@ -196,7 +197,7 @@ FocusScope
 	MenuArrowButton
 	{
 		id			: modulesPlusButton
-		toolTip		: qsTr("Show Modules Menu")
+		toolTip		: qsTr("Show modules menu")
 		buttonType	: MenuArrowButton.ButtonType.Plus
 		width		: 0.75 * height
 		showPressed	: modulesMenu.opened
