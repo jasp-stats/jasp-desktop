@@ -181,7 +181,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("initEnvironment()");
 
 	
-	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')"));
+	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')", false));
 	jaspRCPP_logString("R_HOME is: " + _R_HOME);
 	
 
@@ -280,7 +280,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 
 void STDCALL jaspRCPP_runScript(const char * scriptCode)
 {
-	jaspRCPP_parseEvalQNT(scriptCode);
+	jaspRCPP_parseEvalQNT(scriptCode, true);
 
 	jaspRCPP_checkForCrashRequest();
 
@@ -407,7 +407,7 @@ void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char
 
 	_setJaspResultsInfo(analysisID, 0, false);
 
-	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)");
+	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)", true);
 }
 
 const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
@@ -479,7 +479,7 @@ const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
 		");"
 		);
 
-	jaspRCPP_parseEvalQNT(rCodeTryCatch, false);
+	jaspRCPP_parseEvalQNT(rCodeTryCatch, true, false);
 
 	_logFlushFunction			= originalFlush;
 	_logWriteFunction			= originalLogger;
@@ -1103,8 +1103,18 @@ std::string __sinkMe(const std::string code)
 	return	"sink(.outputSink);\n\n" + code; //default type = c('message', 'output') anyway
 }
 
-void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
+void jaspRCPP_setWorkingDirectory()
 {
+	std::string root = requestTempRootNameCB();
+	std::string code = "setwd(\"" + root + "\")";
+	rinside->parseEvalQNT(__sinkMe(code));
+}
+
+void jaspRCPP_parseEvalQNT(const std::string & code, bool setWd, bool preface)
+{
+	if(setWd)
+		jaspRCPP_setWorkingDirectory();
+
 	if(preface)	
 		jaspRCPP_parseEvalPreface(code);
 	
@@ -1114,8 +1124,11 @@ void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
 	rinside->parseEvalQNT("sink();"); //Back to normal!
 }
 
-RInside::Proxy jaspRCPP_parseEval(const std::string & code,	bool preface)
+RInside::Proxy jaspRCPP_parseEval(const std::string & code, bool setWd, bool preface)
 {
+	if (setWd)
+		jaspRCPP_setWorkingDirectory();
+
 	if(preface)	
 		jaspRCPP_parseEvalPreface(code);
 	
