@@ -166,19 +166,19 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	//Adding some functions in R to the RefClass (generator) in the module
 	//To do: move this entirely to zzzWrapper if this wasn't done yet.
-	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
-	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
+	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })", false);
+	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })", false);
 	
 	jaspRCPP_logString("Initializing jaspBase.\n");
-	jaspRCPP_parseEvalQNT("library(\"jaspBase\")");
+	jaspRCPP_parseEvalQNT("library(\"jaspBase\")", false);
 		
 	jaspRCPP_logString("Loading auxillary R-files.\n");
-	jaspRCPP_parseEvalQNT("source(file='writeImage.R')");
-	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')");
-	jaspRCPP_parseEvalQNT("source(file='workarounds.R')");
+	jaspRCPP_parseEvalQNT("source(file='writeImage.R')", false);
+	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')", false);
+	jaspRCPP_parseEvalQNT("source(file='workarounds.R')", false);
 
 	jaspRCPP_logString("initEnvironment().\n");
-	jaspRCPP_parseEvalQNT("initEnvironment()");
+	jaspRCPP_parseEvalQNT("initEnvironment()", false);
 
 	
 	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')", false));
@@ -195,13 +195,13 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_parseEvalQNT(".automaticColumnEncDecoding <- "
 #ifdef JASP_COLUMN_ENCODE_ALL
-														  "TRUE" );
+														  "TRUE", false );
 #else
-														  "FALSE");
+														  "FALSE", false);
 #endif
 
 	jaspRCPP_logString("initializeDoNotRemoveList().\n");
-	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
+	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()", false);
 }
 
 void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder)
@@ -221,7 +221,7 @@ void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder
 
 void STDCALL jaspRCPP_purgeGlobalEnvironment()
 {
-	jaspRCPP_parseEvalQNT("jaspBase:::.cleanEngineMemory()");
+	jaspRCPP_parseEvalQNT("jaspBase:::.cleanEngineMemory()", false);
 }
 
 void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMode)
@@ -280,7 +280,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 
 void STDCALL jaspRCPP_runScript(const char * scriptCode)
 {
-	jaspRCPP_parseEvalQNT(scriptCode, true);
+	jaspRCPP_parseEvalQNT(scriptCode);
 
 	jaspRCPP_checkForCrashRequest();
 
@@ -407,7 +407,7 @@ void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char
 
 	_setJaspResultsInfo(analysisID, 0, false);
 
-	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)", true);
+	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)");
 }
 
 const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
