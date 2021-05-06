@@ -166,22 +166,22 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	//Adding some functions in R to the RefClass (generator) in the module
 	//To do: move this entirely to zzzWrapper if this wasn't done yet.
-	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
-	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
+	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })", false);
+	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })", false);
 	
 	jaspRCPP_logString("Initializing jaspBase.\n");
-	jaspRCPP_parseEvalQNT("library(\"jaspBase\")");
+	jaspRCPP_parseEvalQNT("library(\"jaspBase\")", false);
 		
 	jaspRCPP_logString("Loading auxillary R-files.\n");
-	jaspRCPP_parseEvalQNT("source(file='writeImage.R')");
-	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')");
-	jaspRCPP_parseEvalQNT("source(file='workarounds.R')");
+	jaspRCPP_parseEvalQNT("source(file='writeImage.R')", false);
+	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')", false);
+	jaspRCPP_parseEvalQNT("source(file='workarounds.R')", false);
 
 	jaspRCPP_logString("initEnvironment().\n");
-	jaspRCPP_parseEvalQNT("initEnvironment()");
+	jaspRCPP_parseEvalQNT("initEnvironment()", false);
 
 	
-	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')"));
+	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')", false));
 	jaspRCPP_logString("R_HOME is: " + _R_HOME);
 	
 
@@ -195,13 +195,13 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_parseEvalQNT(".automaticColumnEncDecoding <- "
 #ifdef JASP_COLUMN_ENCODE_ALL
-														  "TRUE" );
+														  "TRUE", false );
 #else
-														  "FALSE");
+														  "FALSE", false);
 #endif
 
 	jaspRCPP_logString("initializeDoNotRemoveList().\n");
-	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
+	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()", false);
 }
 
 void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder)
@@ -221,7 +221,7 @@ void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder
 
 void STDCALL jaspRCPP_purgeGlobalEnvironment()
 {
-	jaspRCPP_parseEvalQNT("jaspBase:::.cleanEngineMemory()");
+	jaspRCPP_parseEvalQNT("jaspBase:::.cleanEngineMemory()", false);
 }
 
 void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMode)
@@ -479,7 +479,7 @@ const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
 		");"
 		);
 
-	jaspRCPP_parseEvalQNT(rCodeTryCatch, false);
+	jaspRCPP_parseEvalQNT(rCodeTryCatch, true, false);
 
 	_logFlushFunction			= originalFlush;
 	_logWriteFunction			= originalLogger;
@@ -1103,8 +1103,18 @@ std::string __sinkMe(const std::string code)
 	return	"sink(.outputSink);\n\n" + code; //default type = c('message', 'output') anyway
 }
 
-void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
+void jaspRCPP_setWorkingDirectory()
 {
+	std::string root = requestTempRootNameCB();
+	std::string code = "setwd(\"" + root + "\")";
+	rinside->parseEvalQNT(__sinkMe(code));
+}
+
+void jaspRCPP_parseEvalQNT(const std::string & code, bool setWd, bool preface)
+{
+	if(setWd)
+		jaspRCPP_setWorkingDirectory();
+
 	if(preface)	
 		jaspRCPP_parseEvalPreface(code);
 	
@@ -1114,8 +1124,11 @@ void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
 	rinside->parseEvalQNT("sink();"); //Back to normal!
 }
 
-RInside::Proxy jaspRCPP_parseEval(const std::string & code,	bool preface)
+RInside::Proxy jaspRCPP_parseEval(const std::string & code, bool setWd, bool preface)
 {
+	if (setWd)
+		jaspRCPP_setWorkingDirectory();
+
 	if(preface)	
 		jaspRCPP_parseEvalPreface(code);
 	
