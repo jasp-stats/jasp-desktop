@@ -1,0 +1,24 @@
+on:
+  schedule:
+    - cron:  '50 2 * * 6'
+    
+  workflow_dispatch:
+
+name: generate-translations
+
+jobs:
+  generate-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.REPO_KEY }}
+
+      - uses: r-lib/actions/setup-r@master
+        with:
+          r-version: "4.0.5"
+
+      - uses: jasp-stats/jasp-actions/translations@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_KEY }}
