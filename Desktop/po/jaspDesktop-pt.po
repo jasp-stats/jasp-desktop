@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-03-24 13:29+0000\n"
+"PO-Revision-Date: 2021-04-19 13:26+0000\n"
 "Last-Translator: Laura Durans <lauraadurans@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/pt/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.6\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -668,7 +668,6 @@ msgctxt "ActionButtons|"
 msgid "Sync Data"
 msgstr "Sincronizar dados"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Close"
 msgstr "Fechar"
@@ -769,7 +768,6 @@ msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
 msgstr "Remover contraste"
 
-#, fuzzy
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
 msgstr "Redefinir"
@@ -842,7 +840,6 @@ msgctxt "JagsTableView|"
 msgid "Delete Data"
 msgstr "Apagar dados"
 
-#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "Redefinir"
@@ -1075,7 +1072,7 @@ msgstr "Recarregar as análises pode mudar os resultados."
 
 msgctxt "PrefsUI|"
 msgid "Use Native File Dialogs"
-msgstr ""
+msgstr "Usar Diálogos de Arquivos Nativos"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -2545,11 +2542,11 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS or Lavaan code:"
-msgstr ""
+msgstr "R, JAGS ou código de Lavaan:"
 
 msgctxt "PrefsUI|"
 msgid "Result & Help:"
-msgstr ""
+msgstr "Resultado & Ajuda:"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
