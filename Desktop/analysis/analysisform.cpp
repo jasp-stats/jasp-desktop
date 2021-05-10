@@ -348,7 +348,7 @@ void AnalysisForm::bindTo()
 {
 	unbind();
 
-	const Json::Value & optionsFromJASPFile = _analysis->optionsFromJASPFile();
+	const Json::Value & defaultOptions = _analysis->isDuplicate() ? _analysis->boundValues() : _analysis->optionsFromJASPFile();
 	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
 
 	std::set<std::string> controlsJsonWrong;
@@ -361,7 +361,7 @@ void AnalysisForm::bindTo()
 		if (boundControl)
 		{
 			std::string name = control->name().toStdString();
-			Json::Value optionValue =  optionsFromJASPFile != Json::nullValue ? optionsFromJASPFile[name] : Json::nullValue;
+			Json::Value optionValue =  defaultOptions != Json::nullValue ? defaultOptions[name] : Json::nullValue;
 
 			if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
 			{
@@ -387,7 +387,7 @@ void AnalysisForm::bindTo()
 			// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
 			if (availableModel)
 			{
-				if (optionsFromJASPFile != Json::nullValue || _analysis->isDuplicate())
+				if (defaultOptions != Json::nullValue || _analysis->isDuplicate())
 					availableModel->resetTermsFromSources(false);
 				else
 					availableModelsToBeReset.push_back(availableModel);
