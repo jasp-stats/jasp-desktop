@@ -64,10 +64,8 @@ include(InstallModule.pri)
 MODULE_NAME = jaspMetaAnalysis
 include(InstallModule.pri)
 
-R_MODULES_INSTALL_DEPENDENCIES = true
 MODULE_NAME = jaspDistributions
 include(InstallModule.pri)
-R_MODULES_INSTALL_DEPENDENCIES = false
 
 MODULE_NAME = jaspEquivalenceTTests
 include(InstallModule.pri)
@@ -88,6 +86,9 @@ MODULE_NAME = jaspProphet
 include(InstallModule.pri)
 
 MODULE_NAME = jaspProcessControl
+include(InstallModule.pri)
+
+MODULE_NAME = jaspCircular
 include(InstallModule.pri)
 
 macx:	QMAKE_CLEAN				+=  $$MODULES_RENV_CACHE/* #Dont do this on linux because we are building from source...
