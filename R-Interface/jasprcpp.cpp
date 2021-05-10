@@ -166,27 +166,27 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	//Adding some functions in R to the RefClass (generator) in the module
 	//To do: move this entirely to zzzWrapper if this wasn't done yet.
-	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })", false);
-	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })", false);
+	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
+	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
 	
 	jaspRCPP_logString("Initializing jaspBase.\n");
-	jaspRCPP_parseEvalQNT("library(\"jaspBase\")", false);
+	jaspRCPP_parseEvalQNT("library(\"jaspBase\")");
 		
 	jaspRCPP_logString("Loading auxillary R-files.\n");
-	jaspRCPP_parseEvalQNT("source(file='writeImage.R')", false);
-	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')", false);
-	jaspRCPP_parseEvalQNT("source(file='workarounds.R')", false);
+	jaspRCPP_parseEvalQNT("source(file='writeImage.R')");
+	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')");
+	jaspRCPP_parseEvalQNT("source(file='workarounds.R')");
 
 	jaspRCPP_logString("initEnvironment().\n");
-	jaspRCPP_parseEvalQNT("initEnvironment()", false);
+	jaspRCPP_parseEvalQNT("initEnvironment()");
 
 	
-	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')", false));
+	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')"));
 	jaspRCPP_logString("R_HOME is: " + _R_HOME);
 	
 
 #ifdef __APPLE__
-	/*This won't actually work because rjags and runjags are not part of the standard library...
+	/*This won't actually work because rjags and runjags are not part of the standard library... See https://github.com/jasp-stats/INTERNAL-jasp/issues/1345
 	jaspRCPP_parseEvalQNT("options(jags.moddir=paste0(Sys.getenv('JAGS_HOME'),'/modules-4'))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"rjags\"))");
 	jaspRCPP_parseEvalQNT("suppressPackageStartupMessages(library(\"runjags\"))");
@@ -195,13 +195,13 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_parseEvalQNT(".automaticColumnEncDecoding <- "
 #ifdef JASP_COLUMN_ENCODE_ALL
-														  "TRUE", false );
+														  "TRUE" );
 #else
-														  "FALSE", false);
+														  "FALSE");
 #endif
 
 	jaspRCPP_logString("initializeDoNotRemoveList().\n");
-	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()", false);
+	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
 }
 
 void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder)
@@ -260,7 +260,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 
 	_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
 
-	SEXP results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)");
+	SEXP results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)", true);
 
 	static std::string str;
 	if(results != NULL && Rcpp::is<std::string>(results))	str = Rcpp::as<std::string>(results);
@@ -368,7 +368,7 @@ const char* STDCALL jaspRCPP_saveImage(const char * data, const char *type, cons
 	rInside["width"]			= width;
 	rInside[".ppi"]				= ppi;
 
-	SEXP result = jaspRCPP_parseEval("saveImage(plotName,format,height,width)");
+	SEXP result = jaspRCPP_parseEval("saveImage(plotName, format, height, width)", true);
 	static std::string staticResult;
 	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
 	return staticResult.c_str();
@@ -386,7 +386,7 @@ const char* STDCALL jaspRCPP_editImage(const char * name, const char * optionsJs
 
 	_setJaspResultsInfo(analysisID, 0, false);
 
-	SEXP result = jaspRCPP_parseEval("editImage(.analysisName, .editImgOptions)");
+	SEXP result = jaspRCPP_parseEval("editImage(.analysisName, .editImgOptions)", true);
 	static std::string staticResult;
 	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
 
@@ -407,7 +407,7 @@ void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char
 
 	_setJaspResultsInfo(analysisID, 0, false);
 
-	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)");
+	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)", true);
 }
 
 const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
@@ -428,7 +428,7 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 		")"
 		"; returnVal	");
 
-	SEXP result = jaspRCPP_parseEval(rCodeTryCatch);
+	SEXP result = jaspRCPP_parseEval(rCodeTryCatch, true);
 
 	static std::string staticResult;
 	try

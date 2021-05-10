@@ -40,9 +40,9 @@ SEXP jaspRCPP_allColumnNamesDataset(SEXP encoded);
 SEXP jaspRCPP_RunSeparateR(SEXP code);
 
 				//Custom parseEvals to make sure sink is set (to capture output)
-void			jaspRCPP_parseEvalQNT(const std::string & code,	bool setWd = true,	bool preface = true);
-RInside::Proxy	jaspRCPP_parseEval(const std::string & code,	bool setWd = true,	bool preface = true);
-void			jaspRCPP_logString(const std::string & code);
+void			jaspRCPP_parseEvalQNT(	const std::string & code,	bool setWd = false,	bool preface = true);
+RInside::Proxy	jaspRCPP_parseEval(		const std::string & code,	bool setWd = false,	bool preface = true);
+void			jaspRCPP_logString(		const std::string & code);
 SEXP			jaspRCPP_CreateCaptureConnection();
 
 bool jaspRCPP_requestSpecificRelativeFilePath(std::string specificFilename, std::string & root, std:: string & relativePath);
