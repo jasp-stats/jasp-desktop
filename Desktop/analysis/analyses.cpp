@@ -720,8 +720,7 @@ void Analyses::duplicateAnalysis(size_t id)
 	bindAnalysisHandler(analysis);
 	analysis->emitDuplicationSignals();
 
-	if(analysis->status() != Analysis::Status::Complete)
-		analysis->refresh();
+	analysis->refresh();
 }
 
 void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName)
