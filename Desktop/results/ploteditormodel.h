@@ -41,6 +41,13 @@ public:
 
 	enum class AxisType  { Xaxis, Yaxis }; // add right axis, top axis, etc.
 
+	struct undoRedoData
+	{
+		AxisType			currentAxis;
+		bool				advanced;
+		Json::Value			options;
+	};
+
 	bool					visible()	const {	return _visible;	}
 	QString					name()		const { return _name;		}
 	QString					data()		const { return _data;		}
@@ -106,7 +113,7 @@ public slots:
 
 	void undoSomething(); //No need to do Q_INVOKABLE for slots, they are always available from QML
 	void redoSomething();
-	void applyChangesFromUndoOrRedo();
+	void applyChangesFromUndoOrRedo(const undoRedoData& newData);
 
 
 private:
@@ -142,8 +149,9 @@ private:
 
 	static int				_editRequest;
 
-	std::stack<Json::Value>	_undo,
-							_redo;
+
+	std::stack<undoRedoData>	_undo,
+								_redo;
 
 	AxisType				_axisType		= AxisType::Xaxis;
 };

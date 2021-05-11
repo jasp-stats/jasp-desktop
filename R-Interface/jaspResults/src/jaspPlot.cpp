@@ -127,6 +127,11 @@ void jaspPlot::renderPlot()
 			_error			= true;
 			_errorMessage	= Rcpp::as<std::string>(writeResult["error"]);
 		}
+		else
+		{
+			_error = false;
+			_errorMessage.clear();
+		}
 
 		complete();
 

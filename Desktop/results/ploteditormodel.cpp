@@ -79,8 +79,8 @@ void PlotEditorModel::reset()
 	setHeight(			100);
 
 	setAxisType(AxisType::Xaxis);
-	_undo = std::stack<Json::Value>();
-	_redo = std::stack<Json::Value>();
+	_undo = std::stack<undoRedoData>();
+	_redo = std::stack<undoRedoData>();
 	emit unOrRedoEnabledChanged();
 }
 
@@ -162,10 +162,10 @@ void PlotEditorModel::addToUndoStack()
 
 	Json::Value options = generateImgOptions();
 
-	if (_undo.empty() || _undo.top() != options)
-		_undo.push(options);
+	if (_undo.empty() || _undo.top().options != options)
+		_undo.push(undoRedoData{_axisType, _advanced, options});
 
-	_redo = std::stack<Json::Value>();
+	_redo = std::stack<undoRedoData>();
 	
 	emit unOrRedoEnabledChanged();
 }
@@ -174,13 +174,14 @@ void PlotEditorModel::undoSomething()
 {
 	if (!_undo.empty())
 	{
-		Json::Value options		= generateImgOptions();
-					_imgOptions	= _undo.top();
-					
-		_redo.push(options);
+
+		_redo.push(undoRedoData{_undo.top().currentAxis, _undo.top().advanced, generateImgOptions()});
+
+		undoRedoData newData = _undo.top();
 		_undo.pop();
-		
-		applyChangesFromUndoOrRedo();
+		applyChangesFromUndoOrRedo(newData);
+
+
 	}
 }
 
@@ -188,18 +189,23 @@ void PlotEditorModel::redoSomething()
 {
 	if (!_redo.empty())
 	{
-		Json::Value options		= generateImgOptions();
-					_imgOptions = _redo.top();
-		
-		_undo.push(options);
-		_redo.pop();
 
-		applyChangesFromUndoOrRedo();
+		_undo.push(undoRedoData{_axisType, _advanced, generateImgOptions()});
+
+		undoRedoData newData = _redo.top();
+		_redo.pop();
+		applyChangesFromUndoOrRedo(newData);
+
+
 	}
 }
 
-void PlotEditorModel::applyChangesFromUndoOrRedo()
+void PlotEditorModel::applyChangesFromUndoOrRedo(const undoRedoData& newData)
 {
+	_imgOptions = newData.options;
+	setAxisType(newData.currentAxis);
+	setAdvanced(newData.advanced);
+
 	setLoading(true);
 	_editOptions = _imgOptions["editOptions"];
 
@@ -209,7 +215,7 @@ void PlotEditorModel::applyChangesFromUndoOrRedo()
 	_prevImgOptions = _imgOptions;
 	_analysis->editImage(_prevImgOptions);
 	setLoading(false);
-	
+
 	emit unOrRedoEnabledChanged();
 }
 

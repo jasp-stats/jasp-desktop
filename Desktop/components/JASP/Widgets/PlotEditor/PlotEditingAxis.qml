@@ -107,9 +107,10 @@ Column
 		{
 			visible:	 axisBreaksRange.checked
 
-			JASPC.DoubleField	{	id: axisBreaksRangeFrom;	label: qsTr("from");	value: 	axisModel.from;		onValueChanged: if(axisModel) axisModel.from	= value;	negativeValues: true	}
-			JASPC.DoubleField	{	id: axisBreaksRangeTo;		label: qsTr("to");		value:	axisModel.to;		onValueChanged: if(axisModel) axisModel.to		= value;	negativeValues: true	}
-			JASPC.DoubleField	{	id: axisBreaksRangeSteps;	label: qsTr("steps");	value:	axisModel.steps;	onValueChanged: if(axisModel) axisModel.steps	= value;							}
+			JASPC.DoubleField	{	id: axisBreaksRangeFrom;	label: qsTr("from");	value:	axisModel.from;		onEditingFinished: {if(axisModel) axisModel.from		= value		}		negativeValues: true	}
+			JASPC.DoubleField	{	id: axisBreaksRangeTo;		label: qsTr("to");		value:	axisModel.to;		onEditingFinished: {if(axisModel) axisModel.to			= value		}		negativeValues: true	}
+			JASPC.DoubleField	{	id: axisBreaksRangeSteps;	label: qsTr("steps");	value:	axisModel.steps;	onEditingFinished: {if(axisModel) axisModel.steps		= value		}								}
+
 		}
 
 		PlotEditingAxisTable
@@ -134,6 +135,6 @@ Column
 		onValueChanged: axisModel.limitsType = (axisLimitsRadioButton.value === "data" ? AxisModel.LimitsData : axisLimitsRadioButton.value === "breaks" ? AxisModel.LimitsBreaks : AxisModel.LimitsManual)
 	}
 
-	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsLower;	label: qsTr("Lower limit");	negativeValues: true;	max: axisModel.limitUpper;		value: axisModel.limitLower;	onValueChanged: if(axisModel) axisModel.limitLower = value; 	}
-	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsUpper;	label: qsTr("Upper limit");	negativeValues: true;	min: axisModel.limitLower;		value: axisModel.limitUpper;	onValueChanged: if(axisModel) axisModel.limitUpper = value; 	}
+	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsLower;	label: qsTr("Lower limit");	negativeValues: true;	max: axisModel.limitUpper;		value: axisModel.limitLower;	onEditingFinished: if(axisModel) axisModel.limitLower = value; 	}
+	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsUpper;	label: qsTr("Upper limit");	negativeValues: true;	min: axisModel.limitLower;		value: axisModel.limitUpper;	onEditingFinished: if(axisModel) axisModel.limitUpper = value; 	}
 }
