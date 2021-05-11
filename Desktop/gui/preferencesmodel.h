@@ -37,6 +37,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QStringList	modulesRemembered		READ modulesRemembered			WRITE setModulesRemembered			NOTIFY modulesRememberedChanged			)
 	Q_PROPERTY(bool			safeGraphics			READ safeGraphics				WRITE setSafeGraphics				NOTIFY safeGraphicsChanged				)
 	Q_PROPERTY(QString		cranRepoURL				READ cranRepoURL				WRITE setCranRepoURL				NOTIFY cranRepoURLChanged				)
+	Q_PROPERTY(bool			githubPatUseDefault		READ githubPatUseDefault		WRITE setGithubPatUseDefault		NOTIFY githubPatUseDefaultChanged		)
+	Q_PROPERTY(QString		githubPatCustom			READ githubPatCustom			WRITE setGithubPatCustom			NOTIFY githubPatCustomChanged			)
 	Q_PROPERTY(QString		interfaceFont			READ interfaceFont				WRITE setInterfaceFont				NOTIFY interfaceFontChanged				)
 	Q_PROPERTY(QString		codeFont				READ codeFont					WRITE setCodeFont					NOTIFY codeFontChanged					)
 	Q_PROPERTY(QString		resultFont				READ resultFont					WRITE setResultFont					NOTIFY resultFontChanged				)
@@ -89,6 +91,9 @@ public:
 	QStringList	modulesRemembered()			const;
 	bool		safeGraphics()				const;
 	QString		cranRepoURL()				const;
+	QString		githubPatResolved()			const;
+	QString		githubPatCustom()			const;
+	bool		githubPatUseDefault()		const;
 	QString		interfaceFont()				const;
 	QString		codeFont()					const;
 	QString		resultFont(bool forWebEngine = false)	const;
@@ -142,6 +147,8 @@ public slots:
 	void setModulesRemembered(			QStringList modulesRemembered);
 	void setSafeGraphics(				bool		safeGraphics);
 	void setCranRepoURL(				QString		cranRepoURL);
+	void setGithubPatUseDefault(		bool		useDefault);
+	void setGithubPatCustom(			QString		pat);
 	void moduleEnabledChanged(			QString		moduleName, bool enabled);
 	void onUseDefaultPPIChanged(		bool		useDefault);
 	void onCustomPPIChanged(			int);
@@ -158,7 +165,7 @@ public slots:
 	void resetRememberedModules(		bool		clear);
 	void setLcCtypeWin(					int			lcCtypeWin);
 	void setMaxEngines(					int			maxEngines);
-
+	
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -187,6 +194,8 @@ signals:
 	void modulesRememberedChanged();
 	void safeGraphicsChanged(			bool		safeGraphics);
 	void cranRepoURLChanged(			QString		cranRepoURL);
+	void githubPatUseDefaultChanged(	bool		githubPatUseDefault);
+	void githubPatCustomChanged();
 	void interfaceFontChanged(			QString		interfaceFont);
 	void codeFontChanged(				QString		codeFont);
 	void resultFontChanged(				QString		resultFont);
@@ -201,6 +210,7 @@ signals:
 	void restartAllEngines();
 	void maxEnginesChanged(				int			maxEngines);
 
+
 private:
 	static PreferencesModel * _singleton;
 
@@ -210,6 +220,7 @@ private:
 					_allInterfaceFonts,
 					_allResultFonts,
 					_allCodeFonts;
+	bool			_githubPatCustom; //Should be initialized on prefs construction
 
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts) const;

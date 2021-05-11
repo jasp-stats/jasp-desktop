@@ -8,9 +8,14 @@ JASP_R_INTERFACE_MINOR_VERSION =  1   # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
+GITHUB_PAT_DEF=$$(GITHUB_PAT_DEF)						#First check if we set this special env var (on buildbot)
+isEmpty(GITHUB_PAT_DEF): GITHUB_PAT_DEF=$$(GITHUB_PAT)	#Otherwise use the one we are using
+isEmpty(GITHUB_PAT_DEF): GITHUB_PAT_DEF="NO PAT FOUND"	#To indicate a clearer error
+
 #R settings
 CURRENT_R_VERSION = "4.0"
 DEFINES += "CURRENT_R_VERSION=\\\"$$CURRENT_R_VERSION\\\""
+DEFINES += "GITHUB_PAT_DEFINE=\\\"$$GITHUB_PAT_DEF\\\""
 
 #JASP Version
 JASP_VERSION_MAJOR      = 0
@@ -38,6 +43,7 @@ GIT_COMMIT=$$system(\"$$GIT_EXEC\" rev-parse --verify HEAD)
 
 DEFINES += GIT_CURRENT_BRANCH=\"$$GIT_BRANCH\"
 DEFINES += GIT_CURRENT_COMMIT=\"$$GIT_COMMIT\"
+
 
 JASP_REQUIRED_FILES = $$PWD/../jasp-required-files
 

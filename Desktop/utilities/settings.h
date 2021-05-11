@@ -51,7 +51,9 @@ public:
 		CODE_FONT,
 		RESULT_FONT,
 		LC_CTYPE_C_WIN,
-		MAX_ENGINE_COUNT
+		MAX_ENGINE_COUNT,
+		GITHUB_PAT_CUSTOM,
+		GITHUB_PAT_USE_DEFAULT
 	};
 
 	static QVariant value(Settings::Type key);

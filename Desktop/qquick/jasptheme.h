@@ -73,7 +73,7 @@ class JaspTheme : public QQuickItem
 
 	Q_PROPERTY(QColor             analysisBackgroundColor         READ analysisBackgroundColor         WRITE setAnalysisBackgroundColor         NOTIFY analysisBackgroundColorChanged         )
 	Q_PROPERTY(QColor             controlBackgroundColor          READ controlBackgroundColor          WRITE setControlBackgroundColor          NOTIFY controlBackgroundColorChanged          )
-	Q_PROPERTY(QColor             disableControlBackgroundColor   READ disableControlBackgroundColor   WRITE setDisableControlBackgroundColor   NOTIFY disableControlBackgroundColorChanged   )
+	Q_PROPERTY(QColor             controlDisabledBackgroundColor  READ controlDisabledBackgroundColor  WRITE setControlDisabledBackgroundColor  NOTIFY controlDisabledBackgroundColorChanged   )
 	Q_PROPERTY(QColor             rowEvenColor                    READ rowEvenColor                    WRITE setRowEvenColor                    NOTIFY rowEvenColorChanged                    )
 	Q_PROPERTY(QColor             rowOnevenColor                  READ rowOnevenColor                  WRITE setRowOnevenColor                  NOTIFY rowOnevenColorChanged                  )
 	Q_PROPERTY(QColor             controlErrorBackgroundColor     READ controlErrorBackgroundColor     WRITE setControlErrorBackgroundColor     NOTIFY controlErrorBackgroundColorChanged     )
@@ -228,7 +228,7 @@ public:
 	QColor				containsDragBorderColor()			const	{ return _containsDragBorderColor; }
 	QColor				analysisBackgroundColor()			const	{ return _analysisBackgroundColor; }
 	QColor				controlBackgroundColor()			const	{ return _controlBackgroundColor; }
-	QColor				disableControlBackgroundColor()		const	{ return _disableControlBackgroundColor; }
+	QColor				controlDisabledBackgroundColor()		const	{ return _controlDisabledBackgroundColor; }
 	QColor				rowEvenColor()						const	{ return _rowEvenColor; }
 	QColor				rowOnevenColor() 					const	{ return _rowOnevenColor; }
 	QColor				controlErrorBackgroundColor() 		const	{ return _controlErrorBackgroundColor; }
@@ -360,7 +360,7 @@ signals:
 	void containsDragBorderColorChanged(QColor containsDragBorderColor);
 	void analysisBackgroundColorChanged(QColor analysisBackgroundColor);
 	void controlBackgroundColorChanged(QColor controlBackgroundColor);
-	void disableControlBackgroundColorChanged(QColor disableControlBackgroundColor);
+	void controlDisabledBackgroundColorChanged(QColor controlDisabledBackgroundColor);
 	void rowEvenColorChanged(QColor rowEvenColor);
 	void rowOnevenColorChanged(QColor rowOnevenColor);
 	void controlErrorBackgroundColorChanged(QColor controlErrorBackgroundColor);
@@ -489,7 +489,7 @@ public slots:
 	void setContainsDragBorderColor(QColor containsDragBorderColor);
 	void setAnalysisBackgroundColor(QColor analysisBackgroundColor);
 	void setControlBackgroundColor(QColor controlBackgroundColor);
-	void setDisableControlBackgroundColor(QColor disableControlBackgroundColor);
+	void setControlDisabledBackgroundColor(QColor controlDisabledBackgroundColor);
 	void setRowEvenColor(QColor rowEvenColor);
 	void setRowOnevenColor(QColor rowOnevenColor);
 	void setControlErrorBackgroundColor(QColor controlErrorBackgroundColor);
@@ -626,7 +626,7 @@ private:
 						_containsDragBorderColor,
 						_analysisBackgroundColor,
 						_controlBackgroundColor,
-						_disableControlBackgroundColor,
+						_controlDisabledBackgroundColor,
 						_rowEvenColor,
 						_rowOnevenColor,
 						_controlErrorBackgroundColor,

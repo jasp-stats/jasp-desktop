@@ -853,6 +853,7 @@ void EngineRepresentation::addSettingsToJson(Json::Value & msg)
 	msg["developerMode"]	= PreferencesModel::prefs()->developerMode();
 	msg["imageBackground"]	= fq(PreferencesModel::prefs()->plotBackground());
 	msg["languageCode"]		= fq(PreferencesModel::prefs()->languageCode());
+	msg["GITHUB_PAT"]		= fq(PreferencesModel::prefs()->githubPatResolved());
 }
 
 void EngineRepresentation::processSettingsReply()

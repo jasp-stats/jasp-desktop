@@ -528,13 +528,13 @@ void JaspTheme::setControlBackgroundColor(QColor controlBackgroundColor)
 	emit controlBackgroundColorChanged(_controlBackgroundColor);
 }
 
-void JaspTheme::setDisableControlBackgroundColor(QColor disableControlBackgroundColor)
+void JaspTheme::setControlDisabledBackgroundColor(QColor controlDisabledBackgroundColor)
 {
-	if (_disableControlBackgroundColor == disableControlBackgroundColor)
+	if (_controlDisabledBackgroundColor == controlDisabledBackgroundColor)
 		return;
 
-	_disableControlBackgroundColor = disableControlBackgroundColor;
-	emit disableControlBackgroundColorChanged(_disableControlBackgroundColor);
+	_controlDisabledBackgroundColor = controlDisabledBackgroundColor;
+	emit controlDisabledBackgroundColorChanged(_controlDisabledBackgroundColor);
 }
 
 void JaspTheme::setRowEvenColor(QColor rowEvenColor)
