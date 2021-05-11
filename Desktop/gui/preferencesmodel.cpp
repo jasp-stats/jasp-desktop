@@ -1,5 +1,6 @@
 #include "preferencesmodel.h"
 #include "utils.h"
+#include "utilities/qutils.h"
 
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
@@ -20,7 +21,7 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 {
 	if(_singleton) throw std::runtime_error("PreferencesModel can only be instantiated once!");
 	_singleton = this;
-
+	
 	connect(this,					&PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
 
 	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
@@ -90,6 +91,7 @@ void PreferencesModel::browseDeveloperFolder()
 #define GET_PREF_FUNC_DBL(NAME, SETTING)					GET_PREF_FUNC(double,	NAME, SETTING, toDouble())
 #define GET_PREF_FUNC_WHT(NAME, SETTING)					GET_PREF_FUNC(bool,		NAME, SETTING, toString() == "white")
 
+
 GET_PREF_FUNC_BOOL(	fixedDecimals,				Settings::FIXED_DECIMALS							)
 GET_PREF_FUNC_INT(	numDecimals,				Settings::NUM_DECIMALS								)
 GET_PREF_FUNC_BOOL(	exactPValues,				Settings::EXACT_PVALUES								)
@@ -110,11 +112,18 @@ GET_PREF_FUNC_INT(	maxFlickVelocity,			Settings::QML_MAX_FLICK_VELOCITY					)
 GET_PREF_FUNC_BOOL(	modulesRemember,			Settings::MODULES_REMEMBER							)
 GET_PREF_FUNC_BOOL(	safeGraphics,				Settings::SAFE_GRAPHICS_MODE						)
 GET_PREF_FUNC_STR(	cranRepoURL,				Settings::CRAN_REPO_URL								)
+GET_PREF_FUNC_BOOL(	githubPatUseDefault,		Settings::GITHUB_PAT_USE_DEFAULT					)
 GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
 GET_PREF_FUNC_BOOL(	useNativeFileDialog,		Settings::USE_NATIVE_FILE_DIALOG					)
 GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
 GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
 GET_PREF_FUNC_INT(	maxEngines,					Settings::MAX_ENGINE_COUNT							)
+
+QString PreferencesModel::githubPatCustom() const
+{
+	return 	decrypt(Settings::value(Settings::GITHUB_PAT_CUSTOM).toString());
+}
+
 
 double PreferencesModel::uiScale()
 {
@@ -153,6 +162,14 @@ void PreferencesModel::moduleEnabledChanged(QString moduleName, bool enabled)
 QString PreferencesModel::languageCode() const
 {
 	return LanguageModel::lang()->currentLanguageCode();
+}
+
+QString PreferencesModel::githubPatResolved() const
+{
+	if(githubPatUseDefault())
+		return QProcessEnvironment::systemEnvironment().value("GITHUB_PAT", GITHUB_PAT_DEFINE);
+
+	return githubPatCustom();
 }
 
 QString PreferencesModel::fixedDecimalsForJS() const
@@ -228,6 +245,8 @@ SET_PREF_FUNCTION(int,		setLogFilesMax,				logFilesMax,				logFilesMaxChanged,		
 SET_PREF_FUNCTION(int,		setMaxFlickVelocity,		maxFlickVelocity,			maxFlickVelocityChanged,		Settings::QML_MAX_FLICK_VELOCITY					)
 SET_PREF_FUNCTION(bool,		setModulesRemember,			modulesRemember,			modulesRememberChanged,			Settings::MODULES_REMEMBER							)
 SET_PREF_FUNCTION(QString,	setCranRepoURL,				cranRepoURL,				cranRepoURLChanged,				Settings::CRAN_REPO_URL								)
+//SET_PREF_FUNCTION(QString,	setGithubPatCustom,			githubPatCustom,			githubPatCustomChanged,			Settings::GITHUB_PAT_CUSTOM							)
+SET_PREF_FUNCTION(bool,		setGithubPatUseDefault,		githubPatUseDefault,		githubPatUseDefaultChanged,		Settings::GITHUB_PAT_USE_DEFAULT					)
 SET_PREF_FUNCTION(QString,	setCurrentThemeName,		currentThemeName,			currentThemeNameChanged,		Settings::THEME_NAME								)
 SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroundChanged,			Settings::IMAGE_BACKGROUND							)
 SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativeFileDialogChanged,		Settings::USE_NATIVE_FILE_DIALOG					)
@@ -237,6 +256,16 @@ SET_PREF_FUNCTION(QString,	setInterfaceFont,			interfaceFont,				interfaceFontCh
 SET_PREF_FUNCTION(QString,	setCodeFont,				codeFont,					codeFontChanged,				Settings::CODE_FONT									)
 SET_PREF_FUNCTION(QString,	setResultFont,				resultFont,					resultFontChanged,				Settings::RESULT_FONT								)
 SET_PREF_FUNCTION(int,		setMaxEngines,				maxEngines,					maxEnginesChanged,				Settings::MAX_ENGINE_COUNT							)
+
+void PreferencesModel::setGithubPatCustom(QString newPat)
+{
+	if (githubPatCustom() == newPat)
+		return;
+
+	Settings::setValue(Settings::GITHUB_PAT_CUSTOM, encrypt(newPat));
+
+	emit githubPatCustomChanged();
+}
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {

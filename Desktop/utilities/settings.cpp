@@ -51,7 +51,9 @@ const Settings::Setting Settings::Values[] = {
 	{"codeFont",					"Fira Code"},
 	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans,Segoe UI"},
 	{"win_LC_CTYPE_C",				"check" }, //"check" should be an actual value in the underlying enum that is defined in preferencesmode.h
-	{"maxEngineCount",				4} //In debug always 1
+	{"maxEngineCount",				4}, //In debug always 1
+	{"GITHUB_PAT_Custom",			"" },
+	{"GITHUB_PAT_UseDefault",		true}
 };
 
 QVariant Settings::value(Settings::Type key)

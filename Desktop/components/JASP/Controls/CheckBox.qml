@@ -70,8 +70,8 @@ CheckBoxBase
 			y:		control.padding
 			x:		control.padding
 
-			color:			control.checked ? (control.enabled ? jaspTheme.buttonBackgroundColor : jaspTheme.disableControlBackgroundColor) : jaspTheme.controlBackgroundColor
-			border.color:	control.enabled ? (control.checked ? jaspTheme.buttonBackgroundColor : jaspTheme.borderColor)					: jaspTheme.disableControlBackgroundColor
+			color:			control.checked ? (control.enabled ? jaspTheme.buttonBackgroundColor : jaspTheme.controlDisabledBackgroundColor) : jaspTheme.controlBackgroundColor
+			border.color:	control.enabled ? (control.checked ? jaspTheme.buttonBackgroundColor : jaspTheme.borderColor)					: jaspTheme.controlDisabledBackgroundColor
 			border.width:	1
 			radius:			jaspTheme.borderRadius
 

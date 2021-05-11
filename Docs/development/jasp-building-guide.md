@@ -191,7 +191,7 @@ For the R-Interface the Build directory should be build-release-64\R-Interface. 
 
 11. **Start building the R-Interface first**, you will need this to finish the JASP build properly.
 
-12. Now set JASP as Active project and build JASP.  
+12. Now set JASP as Active project and build JASP. [Setting a github personal access token first](#github_pat) is also highly recommended. 
 
 13. Whenever changes are made to R-Interface it will need to be built anew, while on Mac and Linux this happens automatically on Windows this must, in principle, be done manually. There is however a way to automate this and can be done as follows:
 	- Open both the JASP and R-Interface project in Qt Creator.
@@ -260,7 +260,7 @@ where the blue files are the binaries that are added manually. Keep in mind that
 
 	- To get this same structure you will need to make a so-called symbolic link. You can do this by first navigating into your `JASP/` directory, and issuing the following command: `ln -s jasp-required-files/Frameworks Frameworks`.
 
-6. Make sure you have `jasp-required-files` right next to `jasp-desktop`.
+6. Make sure you have `jasp-required-files` right next to `jasp-desktop`. [Setting a github personal access token](#github_pat) is also highly recommended.
 
 7. Build JASP in Qt.
 
@@ -283,6 +283,8 @@ git clone https://github.com/WizardMac/ReadStat && cd ReadStat && git checkout v
 cp .libs/libreadstat.a /path/to/your/jasp/build/folder
 ```
 *or* you can take it easy and download the file from [jasp-required-files](https://github.com/jasp-stats/jasp-required-files/blob/Linux/libreadstat.a)
+
+[Setting a github personal access token](#github_pat) is also highly recommended.
 
 #### Ubuntu (and alike)
 To build JASP under Ubuntu (17.10+), debian, and derivatives, you will need:
@@ -329,3 +331,32 @@ It works under Fedora, if you install these R packages manually in R:
 ```
 install.packages(c("BayesFactor","lme4","afex","car","effects","logspline","hypergeo","rjson"))
 ```
+
+## GITHUB_PAT
+We use R both inside JASP and during building. During the buildprocess [renv](https://github.com/rstudio/renv) is used to recreate the r-library that a module expects.
+As it does so it often queries [github](https://github.com), this can run foul of the rate limiter they have for anonymous requests. 
+
+This look like:
+```
+Error: failed to resolve remote 'jasp-stats/jaspBase' -- failed to retrieve 'https://api.github.com/repos/jasp-stats/jaspBase' [error code 22]
+In addition: Warning message:
+curl: (22) The requested URL returned error: 403  
+Traceback (most recent calls last):
+26: pkgbuild::with_bui...
+```
+
+Luckily it is easy to solve, just create a personal access token just to let github know you are not trying to DDOS them (I guess).
+You can create one under `Settings -> Developer settings -> Personal access tokens" or just [click here](https://github.com/settings/tokens/new).
+You don't need to give it any scopes/permissions. 
+
+![Shows the settings page on github](img/GithubPersonalToken.png)
+
+This will generate a hashcode and you can copy it to a environment variable.
+This can be done systemwide and that has the advantage that other instances of R can also use it.
+
+The simplest cross-platform way will be described here though, just open up the projects pane in qt creator.
+Then change the build environment to include an environment variable called `GITHUB_PAT` and paste the token you create in github as the value.
+
+![Shows the projects pane of qt creator with an example of a GITHUB_PAT](img/GithubPatEnv.png)
+
+This can also be set in JASP itself under `Preferences -> Advanced`.
