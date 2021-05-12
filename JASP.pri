@@ -11,6 +11,7 @@ JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSIO
 #R settings
 CURRENT_R_VERSION = "4.0"
 DEFINES += "CURRENT_R_VERSION=\\\"$$CURRENT_R_VERSION\\\""
+DEFINES += BUILDING_JASP
 
 #JASP Version
 JASP_VERSION_MAJOR      = 0
@@ -112,8 +113,5 @@ macx {
 
   CONFIG(debug): QMAKE_CXXFLAGS +=  -fstandalone-debug
 }
-
-#uncomment the following line to enable automatic encoding and decoding of columnNames. Be sure to recompile all necessary objects
-DEFINES += JASP_COLUMN_ENCODE_ALL
 
 linux: QMAKE_LFLAGS += -fuse-ld=gold

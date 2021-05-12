@@ -18,12 +18,12 @@ windows {
 	QMAKE_CXXFLAGS	+= -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 }
 
-INCLUDEPATH += $$PWD/
+INCLUDEPATH += $$PWD/ jaspColumnEncoder
 
 SOURCES += \
 	appinfo.cpp \
 	column.cpp \
-	columnencoder.cpp \
+	jaspColumnEncoder/columnencoder.cpp \
 	columns.cpp \
 	datablock.cpp \
 	dataset.cpp \
@@ -42,7 +42,7 @@ SOURCES += \
 	enginedefinitions.cpp \
 	timers.cpp \
     log.cpp \
-    columntype.cpp
+	jaspColumnEncoder/columntype.cpp
 
 HEADERS += \
 	appinfo.h \
@@ -59,7 +59,7 @@ HEADERS += \
 	boost/nowide/system.hpp \
 	boost/nowide/windows.hpp \
 	column.h \
-	columnencoder.h \
+	jaspColumnEncoder/columnencoder.h \
 	columns.h \
 	common.h \
 	datablock.h \
@@ -81,10 +81,10 @@ HEADERS += \
 	jsonredirect.h \
 	enginedefinitions.h \
 	timers.h \
-	enumutilities.h \
-    stringutils.h \
+	jaspColumnEncoder/enumutilities.h \
+	jaspColumnEncoder/stringutils.h \
     log.h \
-    columntype.h
+	jaspColumnEncoder/columntype.h
 
 #exists(/app/lib/*) should only be true when building flatpak
 #macx | windows | exists(/app/lib/*)

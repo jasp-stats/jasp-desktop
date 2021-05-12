@@ -24,7 +24,7 @@ windows{
 
 macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
-INCLUDEPATH += ../Common RInside
+INCLUDEPATH += ../Common ../Common/jaspColumnEncoder RInside
 DEFINES     += JASP_R_INTERFACE_LIBRARY QT_DEPRECATED_WARNINGS
 
 # QT_DEPRECATED_WARNINGS is there for:

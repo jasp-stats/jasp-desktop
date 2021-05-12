@@ -53,7 +53,7 @@ $$JASPTIMER_USED {
 
 unix: LIBS += -L$$_R_HOME/lib -lR
 
-INCLUDEPATH += $$PWD/../Common/
+INCLUDEPATH += $$PWD/../Common/ $$PWD/../Common/jaspColumnEncoder
 
 
 mkpath($$OUT_PWD/../R/library)

@@ -1,3 +1,0 @@
-CXX_STD = CXX11
-PKG_CPPFLAGS= -I../../../Common -I../../Common
-CXX11STD	= -std=c++11

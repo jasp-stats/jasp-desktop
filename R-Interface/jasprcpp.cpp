@@ -193,13 +193,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("runjags::runjags.options(jagspath=Sys.getenv('JAGS_HOME'))");*/
 #endif
 
-	jaspRCPP_parseEvalQNT(".automaticColumnEncDecoding <- "
-#ifdef JASP_COLUMN_ENCODE_ALL
-														  "TRUE" );
-#else
-														  "FALSE");
-#endif
-
 	jaspRCPP_logString("initializeDoNotRemoveList().\n");
 	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
 }

@@ -399,9 +399,7 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	std::string	computeColumnCode =						 jsonRequest.get("computeCode", "").asString();
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 
-#ifdef JASP_COLUMN_ENCODE_ALL
 	computeColumnName = ColumnEncoder::columnEncoder()->encode(computeColumnName);
-#endif
 
 	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
 }
@@ -529,70 +527,12 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		
 		_extraEncodings->setCurrentNamesFromOptionsMeta(optionsEnc);
 		
-#ifdef JASP_COLUMN_ENCODE_ALL
-		encodeColumnNamesinOptions(optionsEnc);
-#endif
+		ColumnEncoder::encodeColumnNamesinOptions(optionsEnc);
 		_analysisOptions		= optionsEnc.toStyledString();
 	}
 	// No need to check else for aborted because PollMessagesFunctionForJaspResults will pasws that msg on by itself.
 }
 
-void Engine::encodeColumnNamesinOptions(Json::Value & options)
-{
-	_encodeColumnNamesinOptions(options, options[".meta"]);
-}
-
-void Engine::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta)
-{
-#ifdef JASP_COLUMN_ENCODE_ALL
-	if(meta.isNull())
-		return;
-	
-	bool	encodePlease	= meta.isObject() && meta.get("shouldEncode",	false).asBool(),
-			isRCode			= meta.isObject() && meta.get("rCode",			false).asBool();
-
-	switch(options.type())
-	{
-	case Json::arrayValue:
-		if(encodePlease)
-			ColumnEncoder::columnEncoder()->encodeJson(options, false); //If we already think we have columnNames just change it all
-		
-		else if(meta.type() == Json::arrayValue)
-			for(size_t i=0; i<options.size() && i < meta.size(); i++)
-				_encodeColumnNamesinOptions(options[i], meta[i]);
-		
-		else if(isRCode)
-			for(size_t i=0; i<options.size(); i++)
-				if(options[i].isString())
-					options[i] = ColumnEncoder::columnEncoder()->encodeRScript(options[i].asString());
-	
-		return;
-
-	case Json::objectValue:
-		for(const std::string & memberName : options.getMemberNames())
-			if(memberName != ".meta" && meta.isMember(memberName))
-				_encodeColumnNamesinOptions(options[memberName], meta[memberName]);
-		
-			else if(isRCode && options[memberName].isString())
-				options[memberName] = ColumnEncoder::columnEncoder()->encodeRScript(options[memberName].asString());
-		
-			else if(encodePlease)
-				ColumnEncoder::columnEncoder()->encodeJson(options, false); //If we already think we have columnNames just change it all I guess?
-		
-		return;
-
-	case Json::stringValue:
-			
-			if(isRCode)				options = ColumnEncoder::columnEncoder()->encodeRScript(options.asString());
-			else if(encodePlease)	options = ColumnEncoder::columnEncoder()->encodeAll(options.asString());
-			
-		return;
-
-	default:
-		return;
-	}
-#endif
-}
 
 void Engine::sendString(std::string message)
 {
@@ -602,9 +542,7 @@ void Engine::sendString(std::string message)
 
 	if(Json::Reader().parse(message, msgJson)) //If everything is converted to jaspResults maybe we can do this there?
 	{
-#ifdef JASP_COLUMN_ENCODE_ALL
 		ColumnEncoder::columnEncoder()->decodeJson(msgJson); // decode all columnnames as far as you can
-#endif
 		_channel->send(msgJson.toStyledString());
 	}
 	else

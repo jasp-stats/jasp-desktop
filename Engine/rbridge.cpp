@@ -290,11 +290,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSetHelper(size_t * colMax,
 
 	for(int i=0; i<(*colMax); i++)
 	{
-#ifdef JASP_COLUMN_ENCODE_ALL
 		colHeaders[i].name = strdup(ColumnEncoder::columnEncoder()->encode(columns[i].name()).c_str());
-#else
-		colHeaders[i].name = strdup(columns[i].name().c_str());
-#endif
 		colHeaders[i].type = (int)columns[i].getColumnType();
 	}
 
@@ -382,13 +378,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	{
 		RBridgeColumnType	&	columnInfo		= colHeaders[colNo];
 		RBridgeColumn		&	resultCol		= datasetStatic[colNo];
-#ifdef JASP_COLUMN_ENCODE_ALL
 		std::string				columnName		= ColumnEncoder::columnEncoder()->decode(columnInfo.name);
 								resultCol.name	= strdup(columnInfo.name);
-#else
-		std::string				columnName		= columnInfo.name;
-								resultCol.name	= strdup(ColumnEncoder::columnEncoder()->encode(columnName).c_str());
-#endif
 		Column				&	column			= columns.get(columnName);
 		columnType				colType			= column.getColumnType(),
 								requestedType	= columnType(columnInfo.type);
@@ -553,12 +544,7 @@ extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 
 	int colNo = 0;
 	for (const Column &column: columns)
-		staticResult[colNo++] =
-#ifdef JASP_COLUMN_ENCODE_ALL
-				strdup(ColumnEncoder::columnEncoder()->encode(column.name()).c_str());
-#else
-				strdup(column.name().c_str());
-#endif
+		staticResult[colNo++] = strdup(ColumnEncoder::columnEncoder()->encode(column.name()).c_str());
 
 	*colMax = staticColMax;
 	return staticResult;
@@ -584,13 +570,8 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	{
 		RBridgeColumnType			&	columnInfo		= columnsType[colNo];
 		RBridgeColumnDescription	&	resultCol		= resultCols[colNo];
-#ifdef JASP_COLUMN_ENCODE_ALL
 		std::string						columnName		= ColumnEncoder::columnEncoder()->decode(columnInfo.name);
 										resultCol.name	= strdup(columnInfo.name);
-#else
-		std::string						columnName		= columnInfo.name;
-										resultCol.name	= strdup(ColumnEncoder::columnEncoder()->encode(columnInfo.name).c_str());
-#endif
 		Column						&	column			= columns.get(columnName);
 		columnType						colType			= column.getColumnType(),
 										requestedType	= columnType(columnInfo.type);
@@ -653,11 +634,7 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	return resultCols;
 }
 
-#ifdef JASP_COLUMN_ENCODE_ALL
 #define JASP_COLUMN_DECODE_HERE std::string colName(ColumnEncoder::columnEncoder()->decode(columnName))
-#else
-#define JASP_COLUMN_DECODE_HERE std::string colName(columnName)
-#endif
 
 extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
 {
