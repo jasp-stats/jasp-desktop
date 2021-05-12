@@ -55,7 +55,7 @@ ScrollView
 			Item
 			{
 				id:					editDeveloperFolder
-				visible:			preferencesModel.developerMode
+				enabled:			preferencesModel.developerMode
 				width:				parent.width
 				height:				browseDeveloperFolderButton.height
 
@@ -67,54 +67,24 @@ ScrollView
 					anchors.left:		parent.left
 					anchors.leftMargin: jaspTheme.subOptionOffset
 					toolTip:			qsTr("Browse to your JASP Module folder.")
-					KeyNavigation.tab:	developerFolderText
-					KeyNavigation.down:	developerFolderText
+					KeyNavigation.tab:	developerFolderText.textInput
+					KeyNavigation.down:	developerFolderText.textInput
 				}
-
-				Rectangle
+				
+				PrefsTextInput
 				{
-					id:					developerFolderTextRect
+					id:				developerFolderText
+					
+					text:			preferencesModel.developerFolder
+					onTextChanged:	preferencesModel.developerFolder = text
+					nextEl:			cranRepoUrl.textInput
+					
+					height:			browseDeveloperFolderButton.height
 					anchors
 					{
 						left:			browseDeveloperFolderButton.right
 						right:			parent.right
 						top:			parent.top
-					}
-
-					height:				browseDeveloperFolderButton.height
-					color:				jaspTheme.white
-					border.color:		jaspTheme.buttonBorderColor
-					border.width:		1
-
-					TextInput
-					{
-						id:					developerFolderText
-						text:				preferencesModel.developerFolder
-						clip:				true
-						font:				jaspTheme.font
-						onTextChanged:		preferencesModel.developerFolder = text
-						color:				jaspTheme.textEnabled
-						KeyNavigation.tab:	cranRepoUrlItem
-						KeyNavigation.down:	cranRepoUrlItem
-						selectByMouse:		true
-						selectedTextColor:	jaspTheme.white
-						selectionColor:		jaspTheme.itemSelectedColor
-
-
-						anchors
-						{
-							left:			parent.left
-							right:			parent.right
-							verticalCenter:	parent.verticalCenter
-							margins:		jaspTheme.generalAnchorMargin
-						}
-
-						Connections
-						{
-							target:			preferencesModel
-							function onCustomEditorChanged(customEditor) { developerFolderText = preferencesModel.developerFolder; }
-						}
-
 					}
 				}
 			}
@@ -123,7 +93,7 @@ ScrollView
 			{
 				id:		cranRepoUrlItem
 				width:	parent.width
-				height:	cranRepoUrlRect.height
+				height:	cranRepoUrl.height
 
 				Label
 				{
@@ -137,48 +107,79 @@ ScrollView
 						margins:		jaspTheme.generalAnchorMargin
 					}
 				}
-
-				Rectangle
+				
+				PrefsTextInput
 				{
-					id:					cranRepoUrlRect
-
-					height:				browseDeveloperFolderButton.height
-
-					color:				jaspTheme.white
-					border.color:		jaspTheme.buttonBorderColor
-					border.width:		1
-
+					id:				cranRepoUrl
+					
+					text:			preferencesModel.cranRepoURL
+					onTextChanged:	preferencesModel.cranRepoURL = text
+					nextEl:			githubPatDefault
+					
+					height:			browseDeveloperFolderButton.height
 					anchors
 					{
 						left:		cranRepoUrlLabel.right
 						right:		parent.right
 					}
-
-					TextInput
-					{
-						id:					cranRepoUrl
-						text:				preferencesModel.cranRepoURL
-						clip:				true
-						font:				jaspTheme.font
-						onTextChanged:		preferencesModel.cranRepoURL = text
-						color:				jaspTheme.textEnabled
-						KeyNavigation.tab:	generateMarkdown
-						KeyNavigation.down:	generateMarkdown
-						selectByMouse:		true
-						selectedTextColor:	jaspTheme.white
-						selectionColor:		jaspTheme.itemSelectedColor
-
-
-						anchors
-						{
-							left:			parent.left
-							right:			parent.right
-							verticalCenter:	parent.verticalCenter
-							margins:		jaspTheme.generalAnchorMargin
-						}
-					}
 				}
 			}
+			
+		
+			CheckBox
+			{
+				id:					githubPatDefault
+				label:				qsTr("Use default PAT for Github")
+				checked:			preferencesModel.githubPatUseDefault
+				onCheckedChanged:	preferencesModel.githubPatUseDefault = checked
+				toolTip:			qsTr("Either use the bundled GITHUB_PAT or, if available, use the one set in environment variables.")
+				KeyNavigation.tab:	githubPatCustomToken
+				KeyNavigation.down:	githubPatCustomToken
+			}
+			
+
+				
+			
+			Item
+			{
+				id:			githubPatCustomTokenItem
+				width:		parent.width
+				height:		cranRepoUrl.height
+				enabled:	!preferencesModel.githubPatUseDefault
+
+				Label
+				{
+					id:					githubPatCustomLabel
+					text:				qsTr("Private GITHUB_PAT:")
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						leftMargin:		jaspTheme.subOptionOffset
+					}
+				}
+				
+				PrefsTextInput
+				{
+					id:				githubPatCustomToken
+					
+					text:			preferencesModel.githubPatCustom
+					onTextChanged:	preferencesModel.githubPatCustom = text
+
+					nextEl:			generateMarkdown
+					
+					height:			browseDeveloperFolderButton.height
+					anchors
+					{
+						left:		githubPatCustomLabel.right
+						right:		parent.right
+						margins:	jaspTheme.generalAnchorMargin
+					}
+
+					textInput.echoMode:	TextInput.PasswordEchoOnEdit
+				}
+			}				
 
 			CheckBox
 			{

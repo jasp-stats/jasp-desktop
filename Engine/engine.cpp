@@ -884,6 +884,8 @@ void Engine::absorbSettings(const Json::Value & jsonRequest)
 	_developerMode		= jsonRequest.get("developerMode",		_developerMode	).asBool();
 	_imageBackground	= jsonRequest.get("imageBackground",	_imageBackground).asString();
 	_langR				= jsonRequest.get("languageCode",		_langR			).asString();
+	
+	setenv("GITHUB_PAT",  jsonRequest.get("GITHUB_PAT",			getenv("GITHUB_PAT")).asCString(), 1);
 
 	rbridge_setLANG(_langR);
 }

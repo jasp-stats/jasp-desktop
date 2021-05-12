@@ -125,7 +125,7 @@ JaspTheme
 
 	analysisBackgroundColor:			grayMuchLighter
 	controlBackgroundColor:				white
-	disableControlBackgroundColor:		whiteBroken
+	controlDisabledBackgroundColor:		whiteBroken
 	rowEvenColor:						controlBackgroundColor
 	rowOnevenColor:						whiteBroken
 	controlErrorBackgroundColor:		roseLight
