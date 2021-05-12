@@ -110,9 +110,6 @@ private: // Methods:
 	void provideJaspResultsFileName(									std::string & root,	std::string & relativePath);
 	void provideSpecificFileName(	const std::string & specificName,	std::string & root,	std::string & relativePath);
 
-	void encodeColumnNamesinOptions(Json::Value & options);
-	void _encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta);
-
 private: // Data:
 	static Engine	*	_EngineInstance;
 	const int			_slaveNo;

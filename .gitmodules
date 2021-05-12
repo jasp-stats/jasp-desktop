@@ -102,3 +102,11 @@
 	path = Modules/jaspCircular
 	url = https://github.com/jasp-stats/jaspCircular
 	branch = master
+[submodule "Common/jaspColumnEncoder"]
+	path = Common/jaspColumnEncoder
+	url = https://github.com/jasp-stats/jaspColumnEncoder
+	branch = master
+[submodule "R-Interface/jaspResults"]
+	path = R-Interface/jaspResults
+	url = https://github.com/jasp-stats/jaspResults
+	branch = master

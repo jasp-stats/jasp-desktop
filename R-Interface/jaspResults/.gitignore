@@ -1,6 +1,0 @@
-
-# build stuff for jaspresults on windows
-src-*
-.*
-!.gitignore
-

@@ -16,6 +16,7 @@ isEmpty(GITHUB_PAT_DEF): GITHUB_PAT_DEF="NO PAT FOUND"	#To indicate a clearer er
 CURRENT_R_VERSION = "4.0"
 DEFINES += "CURRENT_R_VERSION=\\\"$$CURRENT_R_VERSION\\\""
 DEFINES += "GITHUB_PAT_DEFINE=\\\"$$GITHUB_PAT_DEF\\\""
+DEFINES += BUILDING_JASP
 
 #JASP Version
 JASP_VERSION_MAJOR      = 0
@@ -118,8 +119,5 @@ macx {
 
   CONFIG(debug): QMAKE_CXXFLAGS +=  -fstandalone-debug
 }
-
-#uncomment the following line to enable automatic encoding and decoding of columnNames. Be sure to recompile all necessary objects
-DEFINES += JASP_COLUMN_ENCODE_ALL
 
 linux: QMAKE_LFLAGS += -fuse-ld=gold

@@ -28,7 +28,7 @@ linux {
 }
 
 DEPENDPATH = ..
-INCLUDEPATH += ../Common/
+INCLUDEPATH += ../Common/ ../Common/jaspColumnEncoder
 QML_IMPORT_PATH +=  components/JASP/        \
                     components/JASP/Theme/   \
                     components/JASP/Widgets/  \
