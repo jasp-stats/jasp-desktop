@@ -104,12 +104,17 @@ void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QStrin
 		for (const Term& term : terms)
 		{
 			JASPControl* control = sourceModel->getRowControl(term.asQString(), controlName);
-			BoundControl* boundControl = control->boundControl();
-			if (boundControl && !_rowControlsConnected.contains(boundControl))
+			if (control)
 			{
-				connect(control, &JASPControl::boundValueChanged, this, &ListModel::sourceTermsReset);
-				_rowControlsConnected.push_back(boundControl);
+				BoundControl* boundControl = control->boundControl();
+				if (boundControl && !_rowControlsConnected.contains(boundControl))
+				{
+					connect(control, &JASPControl::boundValueChanged, this, &ListModel::sourceTermsReset);
+					_rowControlsConnected.push_back(boundControl);
+				}
 			}
+			else
+				Log::log() << "Cannot find control " << controlName << " in model " << name() << std::endl;
 		}
 	}
 }
@@ -171,9 +176,9 @@ JASPControl *ListModel::getRowControl(const QString &key, const QString &name) c
 {
 	JASPControl* control = nullptr;
 
-	if (_rowControlsMap.contains(key))
+	RowControls* rowControls = _rowControlsMap.value(key);
+	if (rowControls)
 	{
-		RowControls* rowControls = _rowControlsMap[key];
 		const QMap<QString, JASPControl*>& controls = rowControls->getJASPControlsMap();
 		if (controls.contains(name))
 			control = controls[name];
@@ -353,7 +358,11 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	case ListModel::NameRole:			return QVariant(myTerms.at(row_t).asQString());
 	case ListModel::SelectableRole:		return !myTerms.at(row_t).asQString().isEmpty();
 	case ListModel::SelectedRole:		return _selectedItems.contains(row);
-	case ListModel::RowComponentRole:	return _rowControlsMap.size() > 0 ? QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getRowObject()) : QVariant();
+	case ListModel::RowComponentRole:
+	{
+		QString term = myTerms.at(row_t).asQString();
+		return _rowControlsMap.contains(term) ? QVariant::fromValue(_rowControlsMap[term]->getRowObject()) : QVariant();
+	}
 	case ListModel::TypeRole:			return listView()->containsVariables() ? "variable" : "";
 	case ListModel::ColumnTypeRole:
 	case ListModel::ColumnTypeIconRole:
@@ -419,7 +428,7 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 		Terms controlTerms;
 		for (const Term& term : result)
 		{
-			RowControls* rowControls = _rowControlsMap[term.asQString()];
+			RowControls* rowControls = _rowControlsMap.value(term.asQString());
 			if (rowControls)
 			{
 				JASPControl* control = rowControls->getJASPControl(useThisControl);
