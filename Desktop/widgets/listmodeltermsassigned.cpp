@@ -109,15 +109,14 @@ void ListModelTermsAssigned::removeTerm(int index)
 	const Term& term = terms().at(size_t(index));
 	const QString& termQ = term.asQString();
 
-	if (_rowControlsMap.contains(termQ))
+	RowControls* controls = _rowControlsMap.value(termQ);
+	if (controls)
 	{
-		RowControls* controls = _rowControlsMap[termQ];
-		if (controls)
-			for (JASPControl* control : controls->getJASPControlsMap().values())
-			{
-				control->setHasError(false);
-				listView()->form()->clearControlError(control);
-			}
+		for (JASPControl* control : controls->getJASPControlsMap().values())
+		{
+			control->setHasError(false);
+			listView()->form()->clearControlError(control);
+		}
 
 		_rowControlsMap.remove(termQ);
 	}
@@ -131,8 +130,8 @@ void ListModelTermsAssigned::changeTerm(int index, const QString& name)
 	QString oldName = terms()[size_t(index)].asQString();
 	if (oldName != name)
 	{
-		_rowControlsMap[name] = _rowControlsMap[oldName];
-		_rowControlsValues[name] = _rowControlsValues[oldName];
+		_rowControlsMap[name] = _rowControlsMap.value(oldName);
+		_rowControlsValues[name] = _rowControlsValues.value(oldName);
 		_rowControlsMap.remove(oldName);
 		_rowControlsValues.remove(oldName);
 		_replaceTerm(index, Term(name));

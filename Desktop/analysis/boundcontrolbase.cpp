@@ -171,7 +171,7 @@ void BoundControlBase::_setTableValue(const Terms& terms, const QMap<QString, Ro
 			rowValues[key] = keyValue;
 		}
 
-		RowControls* rowControls = allControls[term.asQString()];
+		RowControls* rowControls = allControls.value(term.asQString());
 		if (rowControls)
 		{
 			const QMap<QString, JASPControl*>& controlsMap = rowControls->getJASPControlsMap();
