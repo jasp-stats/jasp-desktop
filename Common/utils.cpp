@@ -37,6 +37,7 @@
 #include "utilenums.h"
 #include <codecvt>
 #include <regex>
+#include <iomanip>
 
 using namespace std;
 using namespace boost::posix_time;
@@ -398,9 +399,10 @@ bool Utils::convertValueToDoubleForImport(const std::string &strValue, double &d
 	return true;
 }
 
-std::string Utils::doubleToString(double dbl)
+std::string Utils::doubleToString(double dbl, int precision)
 {
 	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes (and to get full precision)
+	conv << std::setprecision(precision);
 	conv << dbl;
 	return conv.str();
 }

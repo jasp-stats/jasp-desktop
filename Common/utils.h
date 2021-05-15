@@ -65,7 +65,7 @@ public:
 
 	static bool			convertValueToIntForImport(		const std::string &strValue, int &intValue);
 	static bool			convertValueToDoubleForImport(	const std::string &strValue, double &doubleValue);
-	static std::string	doubleToString(double dbl);
+	static std::string	doubleToString(double dbl, int precision = 10);
 	static void			convertEscapedUnicodeToUTF8(	std::string &inputStr);
 	
 #ifdef _WIN32
