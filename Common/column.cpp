@@ -21,7 +21,6 @@
 
 #include <sstream>
 #include <string>
-
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <cmath>
@@ -179,9 +178,7 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 			// This value is now considered as empty
 			*doubles = NAN;
 			hasChanged = true;
-			std::ostringstream strs;
-			strs << doubleValue;
-			emptyValuesMap.insert(make_pair(row, strs.str()));
+			emptyValuesMap.insert(make_pair(row, Utils::doubleToString(doubleValue)));
 		}
 		row++;
 	}
@@ -1021,26 +1018,10 @@ string Column::_getScaleValue(int row)
 {
 	double v = AsDoubles[row];
 
-	if (v > DBL_MAX)
-	{
-		char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
-		return string(inf);
-	}
-	else if (v < -DBL_MAX)
-	{
-		char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
-		return string(ninf);
-	}
-	else if (Utils::isEmptyValue(v))
-	{
-		return Utils::emptyValue;
-	}
-	else
-	{
-		stringstream s;
-		s << v;
-		return s.str();
-	}
+	if (v > DBL_MAX)					return string({ (char)0xE2, (char)0x88, (char)0x9E, 0 });
+	else if (v < -DBL_MAX)				return string({ (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 });
+	else if (Utils::isEmptyValue(v))	return Utils::emptyValue;
+	else								return Utils::doubleToString(v);
 }
 
 string Column::getOriginalValue(int row)
