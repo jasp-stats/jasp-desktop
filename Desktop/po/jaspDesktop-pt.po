@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-10 21:32+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2021-05-15 20:50+0000\n"
+"Last-Translator: Alex França <alex.tonante@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/pt/>\n"
 "Language: pt\n"
@@ -522,9 +522,10 @@ msgctxt "SubjectivePriors|"
 msgid "upper bound:"
 msgstr "limite superior:"
 
+#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
-msgstr ""
+msgstr "A metade do normal"
 
 msgctxt "VariablesWindow|"
 msgid "Filter"
@@ -745,13 +746,14 @@ msgctxt "SortMenuModel|"
 msgid "Sort by size"
 msgstr "Ordenar por tamanho"
 
+#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
-msgstr ""
+msgstr "SortMenuModel não chamado com um pai classificável"
 
 msgctxt "MainWindow|"
 msgid "Datafile changed"
-msgstr ""
+msgstr "Arquivo de dados modificado"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -791,7 +793,7 @@ msgstr "Mostrar linhas filtradas."
 
 msgctxt "FilterWindow|"
 msgid "Apply pass-through filter"
-msgstr ""
+msgstr "Aplicar filtro de passagem"
 
 msgctxt "FilterWindow|"
 msgid "Filter applied"
@@ -956,7 +958,7 @@ msgstr "Categorias"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
-msgstr ""
+msgstr "Termos do modelo"
 
 msgctxt "ModelTermsList|"
 msgid "Add to null model"
@@ -973,6 +975,7 @@ msgstr "Ctrl + Enter para aplicar"
 msgctxt "VariablesForm|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
 msgstr ""
+"Apenas 1 lista de Variáveis Disponíveis pode ser definida em um VariablesForm"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -1020,19 +1023,19 @@ msgstr "Efeitos principais"
 
 msgctxt "VariablesForm|"
 msgid "Only 2 way"
-msgstr ""
+msgstr "Apenas 2 vias"
 
 msgctxt "VariablesForm|"
 msgid "Only 3 way"
-msgstr ""
+msgstr "Apenas 3 vias"
 
 msgctxt "VariablesForm|"
 msgid "Only 4 way"
-msgstr ""
+msgstr "Apenas de 4 vias"
 
 msgctxt "VariablesForm|"
 msgid "Only 5 way"
-msgstr ""
+msgstr "Apenas 5 vias"
 
 msgctxt "VariablesForm|"
 msgid "All"
@@ -1040,7 +1043,7 @@ msgstr "Todos"
 
 msgctxt "VariablesForm|"
 msgid "There is no Available List in the Variables Form"
-msgstr ""
+msgstr "Não existe uma Lista Disponível no Formulário de Variáveis"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -1049,11 +1052,11 @@ msgstr "Filtro alterado"
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "Control with label '%1' has no name"
-msgstr ""
+msgstr "Controle com rótulo '%1' não tem nome"
 
 msgctxt "AnalysisForm|"
 msgid "A control has no name"
-msgstr ""
+msgstr "Um controle não tem nome"
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
@@ -1214,20 +1217,26 @@ msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
 msgstr ""
+"Transformação em Z de Fisher (ou seja, a tangente hiperbólica inversa) para "
+"transformar correlações, números entre -1 e 1 para a linha real"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
 msgstr ""
+"Transformação Z inversa de Fisher (isto é, a tangente hiperbólica) para "
+"transformar números reais em números entre -1 e 1"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr ""
+msgstr "divida os seus dados em níveis numBreaks"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
 msgstr ""
+"substituir quaisquer valores em falta (NA) na coluna pelo valor em "
+"substituiçãoCom"
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
@@ -1355,7 +1364,7 @@ msgstr "Fechar janela de colunas computadas"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
-msgstr ""
+msgstr "Coluna Computadorizada Alterada"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -1433,6 +1442,7 @@ msgstr "Voltar a %1"
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
 msgstr ""
+"Despeje trechos indesejados aqui; clique duas vezes para apagar todo o quadro"
 
 msgctxt "FilterWindow|"
 msgid "absolute value"
@@ -1493,6 +1503,8 @@ msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
 msgstr ""
+"Não consegui encontrar opções de edição definidas do diagrama %1, então a "
+"edição do diagrama não se lembrará de nada (se funcionar)..."
 
 msgctxt "EngineRepresentation|"
 msgid "Error saving plot"
@@ -1529,10 +1541,9 @@ msgctxt "PreferencesModel|"
 msgid "Select a folder..."
 msgstr "Selecionar pasta..."
 
-#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr "Modo Gráfico Seguro"
+msgstr "Modo Gráfico Seguro alterado"
 
 msgctxt "PreferencesModel|"
 msgid ""
@@ -1842,13 +1853,12 @@ msgstr ""
 
 msgctxt "OSF|"
 msgid "OSF Error"
-msgstr ""
+msgstr "Erro OSF"
 
 msgctxt "OSF|"
 msgid "Projects"
 msgstr "Projetos"
 
-#, fuzzy
 msgctxt "OSF|"
 msgid ""
 "Files cannot be added to the projects list.\n"
@@ -1956,10 +1966,9 @@ msgctxt "MessageForwarder|"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr "Salvae"
+msgstr "Salvar"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
@@ -1987,17 +1996,14 @@ msgstr ""
 "Por favor insira todos os argumentos - veja os campos destacados em "
 "vermelho.<br>"
 
-#, fuzzy
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
 msgstr "Escala"
 
-#, fuzzy
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
 msgstr "Ordinal"
 
-#, fuzzy
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
 msgstr "Nominal"
@@ -2028,11 +2034,11 @@ msgstr "Coluna computada"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "Código para computar as colunas computadas limpo (ed)"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "Código para computar as colunas computadas aplicado"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
@@ -2251,7 +2257,7 @@ msgstr "Módulo: retorna o resto de uma divisão"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr ""
+msgstr "retorna lógicas"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
@@ -2307,7 +2313,7 @@ msgctxt "ListModelRepeatedMeasuresFactors|"
 msgid "Level %1"
 msgstr "Nível %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ListModelRepeatedMeasuresFactors|"
 msgid "RM Factor %1"
 msgstr "Fator RM %1"
@@ -2405,7 +2411,6 @@ msgctxt "FileSelector|"
 msgid "Select file to load"
 msgstr "Selecione ficheiro para carregar"
 
-#, fuzzy
 msgctxt "FileSelector|"
 msgid "Browse"
 msgstr "Procurar"
@@ -2428,31 +2433,35 @@ msgstr "⊞ Win + Enter para aplicar"
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
-msgstr ""
+msgstr "BF₁₀"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
 msgstr ""
+"Fator Bayes para quantificar a evidência para a hipótese alternativa em "
+"relação à hipótese nula."
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
-msgstr ""
+msgstr "BF₀₁"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
+"Fator Bayes para quantificar a evidência da hipótese nula em relação à "
+"hipótese alternativa."
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr ""
+msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "Logaritmo natural de BF10."
 
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
@@ -2460,47 +2469,51 @@ msgstr "Padroniza a variável"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "retorna verdadeiro se a string contém substring pelo menos uma vez"
 
 #, qt-format
 msgctxt "ContrastsList|"
 msgid "Custom for %1"
-msgstr ""
+msgstr "Personalizado para %1"
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr ""
+msgstr "Gerar arquivos de remarcação para ajuda"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
 msgstr ""
+"Ativar isto irá gerar um ficheiro de ajuda de remarcação a partir das "
+"informações nas opções qml."
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows workarounds"
-msgstr ""
+msgstr "soluções Windows"
 
 msgctxt "PrefsAdvanced|"
 msgid "Handling LC_CTYPE"
-msgstr ""
+msgstr "Manuseio de LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
-msgstr ""
+msgstr "Deixe JASP adivinhar a melhor configuração para LC_CTYPE (Recomendado!)"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
 msgstr ""
+"Verifique a compatibilidade com LC_CTYPE=\"C\" no caminho de instalação e "
+"diretório do usuário e defina se razoável."
 
 msgctxt "PrefsAdvanced|"
 msgid "Always set LC_CTYPE to \"C\"."
-msgstr ""
+msgstr "Defina sempre LC_CTYPE para \"C\"."
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
-msgstr ""
+msgstr "Consulte a documentação para obter mais informações."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -2508,10 +2521,14 @@ msgid ""
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
 msgstr ""
+"Se isto estiver ativado e você tiver caracteres não-ascii no seu caminho de "
+"instalação, o JASP não funcionará mais.  Se só tiver caracteres não-ascii no "
+"seu nome de utilizador, então a instalação de módulos irá provavelmente "
+"falhar."
 
 msgctxt "PrefsAdvanced|"
 msgid "Keep LC_CTYPE at systemdefault."
-msgstr ""
+msgstr "Mantenha LC_CTYPE em systemdefault."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -2520,27 +2537,31 @@ msgid ""
 "characters in the path. Sorry for the inconvenience, we are working on it "
 "and hopefully have this fixed next release."
 msgstr ""
+"Ao ativar isto fará com que certos caracteres nos resultados pareçam "
+"estranhos, mas pelo menos pode utilizar o JASP se o tiver instalado numa "
+"pasta com caracteres não-ascii no caminho. Desculpe pelo inconveniente, "
+"estamos trabalhando nisso e esperamos ter isso corrigido na próxima versão."
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
-msgstr ""
+msgstr "Opções de registro"
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
-msgstr ""
+msgstr "# máximo de registros: "
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "Fontes"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "Interface:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr ""
+msgstr "padrão: %1"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS or Lavaan code:"
@@ -2552,191 +2573,194 @@ msgstr "Resultado & Ajuda:"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "Padroniza a variável"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "retorna verdadeiro se a string contém substring pelo menos uma vez"
 
 msgctxt "ModuleInstaller|"
 msgid "<i>Browse for a JASP Module to see more information here</i>"
-msgstr ""
+msgstr "<i>Procure um Módulo JASP para ver mais informações aqui</i>"
 
 #, qt-format
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
-msgstr ""
+msgstr "<i>%1 não é um Módulo JASP (correto)!</i>"
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr ""
+msgstr "Pronto"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr ""
+msgstr "Instalando: %1\n"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr ""
+msgstr "Carregando: %1\n"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 msgctxt "PlotEditingAxis|"
 msgid ""
 "The title can only be modified in advanced mode because it is not plain text."
 msgstr ""
+"O título só pode ser modificado em modo avançado porque não é texto simples."
 
 msgctxt "PlotEditingAxis|"
 msgid "Title Type"
-msgstr ""
+msgstr "Tipo de Título"
 
 msgctxt "PlotEditingAxis|"
 msgid "Plain text"
-msgstr ""
+msgstr "Texto simples"
 
 msgctxt "PlotEditingAxis|"
 msgid "R expression"
-msgstr ""
+msgstr "expressão R"
 
 msgctxt "PlotEditingAxis|"
 msgid "Hide title"
-msgstr ""
+msgstr "Ocultar título"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks"
-msgstr ""
+msgstr "Marcações"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr ""
+msgstr "Especificar a sequência"
 
 msgctxt "PlotEditingAxis|"
 msgid "Manually"
-msgstr ""
+msgstr "Manualmente"
 
 msgctxt "PlotEditingAxis|"
 msgid "Hide ticks"
-msgstr ""
+msgstr "Esconder marcações"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify ticks:"
-msgstr ""
+msgstr "Especifique as marcações:"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "from"
 msgstr "de"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "to"
 msgstr "para"
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
-msgstr ""
+msgstr "passos"
 
 msgctxt "PlotEditingAxis|"
 msgid "Range"
-msgstr ""
+msgstr "Alcance"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
-msgstr ""
+msgstr "Com base em dados"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
-msgstr ""
+msgstr "Com base nas marcações"
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
-msgstr ""
+msgstr "Definir manualmente"
 
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
-msgstr ""
+msgstr "Limite inferior"
 
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
-msgstr ""
+msgstr "Limite superior"
 
 msgctxt "PlotEditingAxisTable|"
 msgid "Insert break left"
-msgstr ""
+msgstr "Inserir quebra à esquerda"
 
 msgctxt "PlotEditingAxisTable|"
 msgid "Insert break right"
-msgstr ""
+msgstr "Inserir quebra à direita"
 
 msgctxt "PlotEditingAxisTable|"
 msgid "Delete break"
-msgstr ""
+msgstr "Excluir quebra"
 
 msgctxt "PlotEditor|"
 msgid "Which axis should be shown?"
-msgstr ""
+msgstr "Qual eixo deve ser mostrado?"
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr ""
+msgstr "eixo x"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
+msgstr "eixo-y"
 
 msgctxt "PlotEditor|"
 msgid "Redo last change"
-msgstr ""
+msgstr "Refazer última alteração"
 
 msgctxt "PlotEditor|"
 msgid "Undo last change"
-msgstr ""
+msgstr "Desfazer última alteração"
 
 msgctxt "PlotEditor|"
 msgid "Advanced settings"
-msgstr ""
+msgstr "Configurações avançadas"
 
 msgctxt "PlotEditor|"
 msgid "Finish"
-msgstr ""
+msgstr "Terminar"
 
 msgctxt "PlotEditor|"
 msgid "Original plot"
-msgstr ""
+msgstr "Diagrama original"
 
 msgctxt "PlotEditor|"
 msgid "Save plot as"
-msgstr ""
+msgstr "Salvar diagrama como"
 
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
-msgstr ""
+msgstr "R no JASP"
 
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
-msgstr ""
+msgstr "Bem-vindo ao R no JASP!"
 
 msgctxt "RCommanderWindow|"
 msgid ""
 "Enter your R code here.\n"
 "The data is fully available as 'data' and filtered as 'filteredData'."
 msgstr ""
+"Introduza aqui o seu código R.\n"
+"Os dados estão totalmente disponíveis como 'dados' e filtrados como 'dados "
+"filtrados'."
 
 msgctxt "RCommanderWindow|"
 msgid "Enter your R code here."
-msgstr ""
+msgstr "Digite seu código R aqui."
 
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
-msgstr ""
+msgstr "Executar código"
 
+#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
-msgstr ""
+msgstr "Pressionando Ctrl+Enter ou F5 também executará o código"
 
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
