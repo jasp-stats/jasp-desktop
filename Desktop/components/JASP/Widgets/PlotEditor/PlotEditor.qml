@@ -89,42 +89,81 @@ Popup
 					{
 						id:					flickChild
 						width:				axesFlickable.width
-						height:				xAxis.y + xAxis.height + jaspTheme.generalAnchorMargin
+						height:				stack.y + stack.height + jaspTheme.generalAnchorMargin
 
-
-						JASPC.DropDown
+						TabBar
 						{
-							id:		axisDropDown
-							label: qsTr("Which axis should be shown?")
-							values:
-							[
-								{ label: qsTr("x-axis"),		value:	PlotEditorModel.Xaxis		},
-								{ label: qsTr("y-axis"),		value:	PlotEditorModel.Yaxis		}
-							]
-
-							startValue: plotEditorModel.axisType
-							onCurrentValueChanged: plotEditorModel.axisType = parseInt(currentValue)
-
-							anchors
+							id:	tabbar
+							width: 200 * jaspTheme.uiScale
+							background: Rectangle { color: jaspTheme.grayLighter }
+							Repeater
 							{
-								top:		parent.top
-								left:		parent.left
-								right:		parent.right
-								margins:	jaspTheme.generalAnchorMargin
+								model: [qsTr("x-axis"), qsTr("y-axis")]
+								TabButton
+								{
+									height: 35 * jaspTheme.uiScale
+									background: Rectangle
+									{
+										color: checked ? jaspTheme.uiBackground : jaspTheme.grayLighter
+										radius: checked ? 6 : 0
+										border.width: checked ? 1 : 0
+										border.color: jaspTheme.borderColor
+									}
+
+									contentItem: Text
+									{
+										text: modelData
+										color: jaspTheme.black
+										horizontalAlignment: Text.AlignHCenter
+										verticalAlignment: Text.AlignVCenter
+										opacity: checked ? 1 : .6
+									}
+								}
 							}
 						}
-					
-						PlotEditingAxis
-						{
-							id:				xAxis
-							axisModel:		plotEditorModel.currentAxis
 
+						Rectangle
+						{
 							anchors
 							{
-								top:		axisDropDown.bottom
-								left:		parent.left
-								right:		parent.right
-								margins:	jaspTheme.generalAnchorMargin
+								top: parent.top
+								left: tabbar.right
+								right: flickChild.right
+							}
+							height: 35 * jaspTheme.uiScale
+							color: jaspTheme.grayLighter
+						}
+
+						Rectangle
+						{
+							width: parent.width
+							height: 7
+							anchors.top: parent.top
+							anchors.topMargin: 28 * jaspTheme.uiScale
+							color: jaspTheme.uiBackground
+						}
+
+						StackLayout
+						{
+							id: stack
+							anchors
+							{
+								top			: tabbar.bottom
+								topMargin	: 10 * preferencesModel.uiScale
+								left		: parent.left
+								leftMargin	: 3 * preferencesModel.uiScale
+								right		: parent.right
+							}
+							currentIndex: tabbar.currentIndex
+
+							Repeater
+							{
+								model: [plotEditorModel.xAxis, plotEditorModel.yAxis]
+								PlotEditingAxis
+								{
+									axisModel:		modelData
+									width:			flickChild.width
+								}
 							}
 						}
 					}
@@ -151,7 +190,7 @@ Popup
 						top:			axesFlickable.top
 						right:			axesFlickable.right
 						// same as in AnalysisFormExpandser.qml
-						topMargin:		4 * preferencesModel.uiScale
+						topMargin:		-2 * preferencesModel.uiScale
 						bottomMargin:	4 * preferencesModel.uiScale
 					}
 					onClicked:			plotEditorModel.redoSomething()
@@ -165,7 +204,7 @@ Popup
 					toolTip:			qsTr("Undo last change")
 					radius:				height
 					width:				height
-					opacity:			enabled ? 1 : 0.1
+					opacity:			enabled ? 1 : 0.2
 					anchors
 					{
 						top:			axesFlickable.top
