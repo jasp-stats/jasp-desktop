@@ -94,14 +94,15 @@ Popup
 						TabBar
 						{
 							id:	tabbar
-							width: 200 * jaspTheme.uiScale
+							contentHeight: 35 * preferencesModel.uiScale
+							width: 200 * preferencesModel.uiScale
 							background: Rectangle { color: jaspTheme.grayLighter }
 							Repeater
 							{
 								model: [qsTr("x-axis"), qsTr("y-axis")]
 								TabButton
 								{
-									height: 35 * jaspTheme.uiScale
+									height: tabbar.height
 									background: Rectangle
 									{
 										color: checked ? jaspTheme.uiBackground : jaspTheme.grayLighter
@@ -112,7 +113,9 @@ Popup
 
 									contentItem: Text
 									{
+										topPadding: -5 * preferencesModel.uiScale
 										text: modelData
+										font: jaspTheme.font
 										color: jaspTheme.black
 										horizontalAlignment: Text.AlignHCenter
 										verticalAlignment: Text.AlignVCenter
@@ -124,24 +127,48 @@ Popup
 
 						Rectangle
 						{
+							id: menuUnused
 							anchors
 							{
-								top: parent.top
 								left: tabbar.right
 								right: flickChild.right
 							}
-							height: 35 * jaspTheme.uiScale
+							height: 35 * preferencesModel.uiScale
 							color: jaspTheme.grayLighter
 						}
 
 						Rectangle
 						{
+							id: roundingHider
 							width: parent.width
-							height: 7
+							height: 7 * preferencesModel.uiScale
 							anchors.top: parent.top
-							anchors.topMargin: 28 * jaspTheme.uiScale
+							anchors.topMargin: 28 * preferencesModel.uiScale
 							color: jaspTheme.uiBackground
 						}
+
+						Rectangle
+						{
+							anchors.top: roundingHider.top
+							anchors.left: parent.left
+							anchors.leftMargin: tabbar.currentIndex === 0 ? 100 * preferencesModel.uiScale - 1 : 0
+							anchors.right: tabbar.right
+							anchors.rightMargin: tabbar.currentIndex === 0 ? 0 : 100 * preferencesModel.uiScale - 1
+							height: 1
+							color: jaspTheme.borderColor
+						}
+						Rectangle
+						{
+							anchors
+							{
+								top: roundingHider.top
+								left: menuUnused.left
+								right: menuUnused.right
+							}
+							height: 1
+							color: jaspTheme.borderColor
+						}
+
 
 						StackLayout
 						{
