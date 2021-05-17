@@ -546,8 +546,18 @@ void MainWindow::showRCommander()
 	else
 	{
 		Log::log() << "Loading RCommander"  << std::endl;
-		_qml->load(QUrl("qrc:///components/JASP/Widgets/RCommanderWindow.qml"));
+		_qml		-> load(QUrl("qrc:///components/JASP/Widgets/RCommanderWindow.qml"));
+
+		_resultsJsInterface->resetResults();//To reload page
+
+		QTimer::singleShot(500, this, &MainWindow::resendResultsToWebEngine);
 	}
+}
+
+void MainWindow::resendResultsToWebEngine()
+{
+	//Make sure the result are reloaded after triggering a qml wipe
+	_analyses	-> applyToAll([&](Analysis * a){ emit a->resultsChangedSignal(a); });
 }
 
 void MainWindow::jaspThemeChanged(JaspTheme * newTheme)
