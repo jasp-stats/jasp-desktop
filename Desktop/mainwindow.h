@@ -212,6 +212,7 @@ private slots:
 	void populateUIfromDataSet();
 	void startDataEditorEventCompleted(FileEvent *event);
 	void analysisAdded(Analysis *analysis);
+	void resendResultsToWebEngine();
 
 	void fatalError();
 
