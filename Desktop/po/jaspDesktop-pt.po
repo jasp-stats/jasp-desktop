@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-15 20:50+0000\n"
-"Last-Translator: Alex França <alex.tonante@gmail.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/pt/>\n"
-"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -206,10 +200,6 @@ msgstr "Registrar"
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
 msgstr "Preferências Avançadas"
-
-msgctxt "PrefsAdvanced|"
-msgid "Remember Enabled Modules"
-msgstr "Lembrar dos módulos ativados"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -425,12 +415,6 @@ msgid "Installing developer module now"
 msgstr "Instalando módulo de desenvolvedor agora"
 
 msgctxt "ModulesMenu|"
-msgid "Select a developer module under Left menu->Preference->Advanced"
-msgstr ""
-"Selecione um módulo de desenvolvedor no menu esquerdo-> Preferência-> "
-"Avançado"
-
-msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
 msgstr "Carregado e pronto para usar!"
 
@@ -445,10 +429,6 @@ msgstr "Não está pronto para usar?"
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr "Desinstalar módulo "
-
-msgctxt "RibbonBar|"
-msgid "Show Modules Menu"
-msgstr "Exibir Menu de Módulos"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
@@ -876,17 +856,9 @@ msgid "Themes"
 msgstr "Temas"
 
 msgctxt "PrefsUI|"
-msgid "Light Theme"
-msgstr "Tema claro"
-
-msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
 msgstr "Muda para o tema claro, o original do JASP."
-
-msgctxt "PrefsUI|"
-msgid "Dark Theme"
-msgstr "Tema escuro"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -895,14 +867,6 @@ msgid ""
 msgstr ""
 "Muda para o tema escuro, tornando o JASP mais fácil de ser utilizado por "
 "vocês, corujas."
-
-msgctxt "PrefsUI|"
-msgid "Preferred Language"
-msgstr "Idioma"
-
-msgctxt "PrefsUI|"
-msgid "Choose Language  "
-msgstr "Escolher idioma  "
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
@@ -930,10 +894,6 @@ msgid ""
 msgstr ""
 "Ajuste a velocidade da sua barra de rolagem no menu de opções, na "
 "visualização dos dados e outros lugares."
-
-msgctxt "PrefsUI|"
-msgid "Safe Graphics Mode"
-msgstr "Modo Gráfico Seguro"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -971,11 +931,6 @@ msgstr "Linha #"
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
 msgstr "Ctrl + Enter para aplicar"
-
-msgctxt "VariablesForm|"
-msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr ""
-"Apenas 1 lista de Variáveis Disponíveis pode ser definida em um VariablesForm"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -1041,10 +996,6 @@ msgctxt "VariablesForm|"
 msgid "All"
 msgstr "Todos"
 
-msgctxt "VariablesForm|"
-msgid "There is no Available List in the Variables Form"
-msgstr "Não existe uma Lista Disponível no Formulário de Variáveis"
-
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
 msgstr "Filtro alterado"
@@ -1073,10 +1024,6 @@ msgstr ""
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
 msgstr "Recarregar as análises pode mudar os resultados."
-
-msgctxt "PrefsUI|"
-msgid "Use Native File Dialogs"
-msgstr "Usar diálogos de ficheiros nativos"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -1665,8 +1612,8 @@ msgid ""
 "issues/issues"
 msgstr ""
 "Algo deu errado ao tentarmos levar você ao GitHub.\n"
-"Você ainda pode reportar o bug aqui: https://github.com/jasp-stats/"
-"jasp-issues/issues"
+"Você ainda pode reportar o bug aqui: https://github.com/jasp-stats/jasp-"
+"issues/issues"
 
 msgctxt "MainWindow|"
 msgid "Error"
@@ -1727,8 +1674,8 @@ msgid ""
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
 msgstr ""
-"O JASP foi inicializado com um ficheiro de dados de apenas leitura ("
-"provavelmente dos exemplos). Para editar os dados, o JASP precisa ter "
+"O JASP foi inicializado com um ficheiro de dados de apenas leitura "
+"(provavelmente dos exemplos). Para editar os dados, o JASP precisa ter "
 "permissão para modificar o ficheiro. O ficheiro existe em seu computador, ou "
 "você quer gerá-lo?"
 
@@ -1993,8 +1940,8 @@ msgstr "Filtro limpo<br>"
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.<br>"
 msgstr ""
-"Por favor insira todos os argumentos - veja os campos destacados em "
-"vermelho.<br>"
+"Por favor insira todos os argumentos - veja os campos destacados em vermelho."
+"<br>"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
@@ -2308,16 +2255,6 @@ msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
 msgstr "Não: %1"
 
-#, qt-format
-msgctxt "ListModelRepeatedMeasuresFactors|"
-msgid "Level %1"
-msgstr "Nível %1"
-
-#, qt-format
-msgctxt "ListModelRepeatedMeasuresFactors|"
-msgid "RM Factor %1"
-msgstr "Fator RM %1"
-
 msgctxt "HelpModel|"
 msgid ""
 "Coming Soon!\n"
@@ -2353,10 +2290,6 @@ msgstr "Exibir informação sobre esta análise"
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
 msgstr "Removar esta análise"
-
-msgctxt "PrefsUI|"
-msgid "Disable Animations"
-msgstr "Desativar Animações"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -2496,20 +2429,12 @@ msgid "Handling LC_CTYPE"
 msgstr "Manuseio de LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
-msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
-msgstr "Deixe JASP adivinhar a melhor configuração para LC_CTYPE (Recomendado!)"
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
 msgstr ""
 "Verifique a compatibilidade com LC_CTYPE=\"C\" no caminho de instalação e "
 "diretório do usuário e defina se razoável."
-
-msgctxt "PrefsAdvanced|"
-msgid "Always set LC_CTYPE to \"C\"."
-msgstr "Defina sempre LC_CTYPE para \"C\"."
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
@@ -2525,10 +2450,6 @@ msgstr ""
 "instalação, o JASP não funcionará mais.  Se só tiver caracteres não-ascii no "
 "seu nome de utilizador, então a instalação de módulos irá provavelmente "
 "falhar."
-
-msgctxt "PrefsAdvanced|"
-msgid "Keep LC_CTYPE at systemdefault."
-msgstr "Mantenha LC_CTYPE em systemdefault."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -2562,14 +2483,6 @@ msgstr "Interface:"
 msgctxt "PrefsUI|"
 msgid "default: %1"
 msgstr "padrão: %1"
-
-msgctxt "PrefsUI|"
-msgid "R, JAGS or Lavaan code:"
-msgstr "R, JAGS ou código de Lavaan:"
-
-msgctxt "PrefsUI|"
-msgid "Result & Help:"
-msgstr "Resultado & Ajuda:"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
@@ -2880,10 +2793,6 @@ msgid "ComboBox"
 msgstr ""
 
 msgctxt "JASPControl|"
-msgid "RM Factors List"
-msgstr ""
-
-msgctxt "JASPControl|"
 msgid "Input ListView"
 msgstr ""
 
@@ -2917,19 +2826,6 @@ msgstr ""
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
-
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version, contact "
-"the JASP team for assistance."
-msgstr ""
-
-#, qt-format
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version: '%1', "
-"contact the JASP team for assistance."
 msgstr ""
 
 msgctxt "AsyncLoader|"
@@ -3338,9 +3234,10 @@ msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
 msgstr ""
 
+#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
-msgstr ""
+msgstr "Exportar resultados"
 
 msgctxt "QObject|"
 msgid "valid R code"
@@ -3482,3 +3379,219 @@ msgstr ""
 msgctxt "VariablesListBase|"
 msgid "Wrong column type: %1 for ListView %2"
 msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "Factor"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "Level"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "New Factor"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "New Level"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Remember enabled modules"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Use default PAT for Github"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Either use the bundled GITHUB_PAT or, if available, use the one set in "
+"environment variables."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Private GITHUB_PAT:"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Always set LC_CTYPE to \"C\""
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Keep LC_CTYPE at system default"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "R, JAGS, or lavaan code:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Result & help:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Light theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Dark theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Preferred language"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Choose language  "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Safe graphics mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Disable animations"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use native file dialogs"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Select a developer module by clicking here"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show main menu"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show modules menu"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "A nice grouping of elements"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "You can enter an integer here: "
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "This is an incredibly useful tooltip right?"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The first checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The second checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The last checkbox"
+msgstr ""
+
+#, fuzzy
+msgctxt "jasp-qml-style-example|"
+msgid "Variables"
+msgstr "Variáveis"
+
+msgctxt "jasp-qml-style-example|"
+msgid "Split"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Factor Level List"
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem downloading the known issues for this version, it "
+"probably could not connect to the server. Don't worry, JASP will work fine "
+"it just might not tell you about a few small known issues."
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version, this "
+"isn't necessarily a problem but if it keeps occuring you could contact the "
+"JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem ('%1') loading the known issues for this version, "
+"this isn't necessarily a problem but if it keeps occuring you could contact "
+"the JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"No default spreadsheet editor for file %1. Do you want to export the data "
+"into a CSV file and start the default spreadsheet editor for this CSV file?."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Generate Data File as CSV"
+msgstr ""
+
+#, fuzzy
+msgctxt "MainWindow|"
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed, should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed with the following message:\n"
+"%1\n"
+"\n"
+"Should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Initializing module %1 failed"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Module missing"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid ""
+"It seems the bundled module %1 wasn't correctly installed, and thus cannot "
+"be loaded.\n"
+"If you installed this version of JASP via an official installer let the JASP "
+"team know."
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Execute R code in a console"
+msgstr ""
+
+#, fuzzy
+msgctxt "VariablesFormBase|"
+msgid "Only 1 Available Variables list can be set in a VariablesForm"
+msgstr ""
+"Apenas 1 lista de Variáveis Disponíveis pode ser definida em um VariablesForm"
+
+#, fuzzy
+msgctxt "VariablesFormBase|"
+msgid "There is no Available List in the Variables Form"
+msgstr "Não existe uma Lista Disponível no Formulário de Variáveis"

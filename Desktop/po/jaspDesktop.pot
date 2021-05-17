@@ -700,10 +700,6 @@ msgid "Modules options"
 msgstr ""
 
 msgctxt "PrefsAdvanced|"
-msgid "Remember Enabled Modules"
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
@@ -747,17 +743,9 @@ msgid "Handling LC_CTYPE"
 msgstr ""
 
 msgctxt "PrefsAdvanced|"
-msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid "Always set LC_CTYPE to \"C\"."
 msgstr ""
 
 msgctxt "PrefsAdvanced|"
@@ -769,10 +757,6 @@ msgid ""
 "If this is enabled and you have non-ascii characters in your install path "
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid "Keep LC_CTYPE at systemdefault."
 msgstr ""
 
 msgctxt "PrefsAdvanced|"
@@ -924,19 +908,7 @@ msgid "default: %1"
 msgstr ""
 
 msgctxt "PrefsUI|"
-msgid "R, JAGS or Lavaan code:"
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Result & Help:"
-msgstr ""
-
-msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Light Theme"
 msgstr ""
 
 msgctxt "PrefsUI|"
@@ -945,21 +917,9 @@ msgid ""
 msgstr ""
 
 msgctxt "PrefsUI|"
-msgid "Dark Theme"
-msgstr ""
-
-msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Preferred Language"
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Choose Language  "
 msgstr ""
 
 msgctxt "PrefsUI|"
@@ -986,19 +946,11 @@ msgid ""
 msgstr ""
 
 msgctxt "PrefsUI|"
-msgid "Safe Graphics Mode"
-msgstr ""
-
-msgctxt "PrefsUI|"
 msgid ""
 "Switches to a \"safer\" mode for graphics aka software rendering.\n"
 "It will make your interface slower but if you have some problems (weird "
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Disable Animations"
 msgstr ""
 
 msgctxt "PrefsUI|"
@@ -1008,10 +960,6 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Use Native File Dialogs"
 msgstr ""
 
 msgctxt "PrefsUI|"
@@ -1437,10 +1385,6 @@ msgid "Installing developer module now"
 msgstr ""
 
 msgctxt "ModulesMenu|"
-msgid "Select a developer module under Left menu->Preference->Advanced"
-msgstr ""
-
-msgctxt "ModulesMenu|"
 msgid "Ready"
 msgstr ""
 
@@ -1502,10 +1446,6 @@ msgstr ""
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
-msgstr ""
-
-msgctxt "RibbonBar|"
-msgid "Show Modules Menu"
 msgstr ""
 
 msgctxt "SaveDiscardCancelDialog|"
@@ -1900,19 +1840,6 @@ msgstr ""
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
-
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version, contact "
-"the JASP team for assistance."
-msgstr ""
-
-#, qt-format
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version: '%1', "
-"contact the JASP team for assistance."
 msgstr ""
 
 msgctxt "AsyncLoader|"
@@ -3276,4 +3203,187 @@ msgstr ""
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Remember enabled modules"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Use default PAT for Github"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Either use the bundled GITHUB_PAT or, if available, use the one set in "
+"environment variables."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Private GITHUB_PAT:"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Always set LC_CTYPE to \"C\""
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Keep LC_CTYPE at system default"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "R, JAGS, or lavaan code:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Result & help:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Light theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Dark theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Preferred language"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Choose language  "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Safe graphics mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Disable animations"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use native file dialogs"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Select a developer module by clicking here"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show main menu"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show modules menu"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "A nice grouping of elements"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "You can enter an integer here: "
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "This is an incredibly useful tooltip right?"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The first checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The second checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The last checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "Variables"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "Split"
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem downloading the known issues for this version, it "
+"probably could not connect to the server. Don't worry, JASP will work fine "
+"it just might not tell you about a few small known issues."
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version, this "
+"isn't necessarily a problem but if it keeps occuring you could contact the "
+"JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem ('%1') loading the known issues for this version, "
+"this isn't necessarily a problem but if it keeps occuring you could contact "
+"the JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"No default spreadsheet editor for file %1. Do you want to export the data "
+"into a CSV file and start the default spreadsheet editor for this CSV file?."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Generate Data File as CSV"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Cancel"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed, should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed with the following message:\n"
+"%1\n"
+"\n"
+"Should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Initializing module %1 failed"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Module missing"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid ""
+"It seems the bundled module %1 wasn't correctly installed, and thus cannot "
+"be loaded.\n"
+"If you installed this version of JASP via an official installer let the JASP "
+"team know."
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Execute R code in a console"
 msgstr ""

@@ -120,16 +120,6 @@ msgctxt "VariablesForm|"
 msgid "All"
 msgstr "Alle"
 
-msgctxt "VariablesForm|"
-msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr ""
-"Er kan maar één beschikbare variabelelijst worden toegepast in een "
-"VariablesForm"
-
-msgctxt "VariablesForm|"
-msgid "There is no Available List in the Variables Form"
-msgstr "Er is geen beschikbare lijst in het Variabelen Scherm"
-
 msgctxt "AboutWindow|"
 msgid "About JASP"
 msgstr "Over JASP"
@@ -751,10 +741,6 @@ msgid "Modules options"
 msgstr "Module-opties"
 
 msgctxt "PrefsAdvanced|"
-msgid "Remember Enabled Modules"
-msgstr "Bewaar Gekozen Modules"
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
@@ -802,20 +788,12 @@ msgid "Handling LC_CTYPE"
 msgstr "Behandeling van LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
-msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
-msgstr "Laat JASP de beste waarde voor LC_TYPE bepalen (Aanbevolen!)"
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
 msgstr ""
 "Controleer het pad van de installatie- en gebruikersmap op compatibiliteit "
 "met LC_CTYPE=\"C\" en gebruik dit als het redelijk is."
-
-msgctxt "PrefsAdvanced|"
-msgid "Always set LC_CTYPE to \"C\"."
-msgstr "Zet LC_CTYPE altijd op \"C\"."
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
@@ -831,10 +809,6 @@ msgstr ""
 "zal JASP niet meer werken.  Als je alleen non-ascii karakters in je "
 "gebruikersnaam hebt, dan zal het installeren van modules waarschijnlijk "
 "mislukken."
-
-msgctxt "PrefsAdvanced|"
-msgid "Keep LC_CTYPE at systemdefault."
-msgstr "Houd LC_TYPE waarde zoals systeemvoorkeur."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -999,20 +973,8 @@ msgid "default: %1"
 msgstr "standaard: %1"
 
 msgctxt "PrefsUI|"
-msgid "R, JAGS or Lavaan code:"
-msgstr "R, JAGS of Lavaan code:"
-
-msgctxt "PrefsUI|"
-msgid "Result & Help:"
-msgstr "Resultaat & Help:"
-
-msgctxt "PrefsUI|"
 msgid "Themes"
 msgstr "Thema's"
-
-msgctxt "PrefsUI|"
-msgid "Light Theme"
-msgstr "Licht thema"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -1022,24 +984,12 @@ msgstr ""
 "oorspronkelijke instelling van JASP."
 
 msgctxt "PrefsUI|"
-msgid "Dark Theme"
-msgstr "Donker thema"
-
-msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
 msgstr ""
 "Schakelt naar een donker thema, maakt JASP een stuk makkelijker voor de ogen "
 "van nachtbrakers."
-
-msgctxt "PrefsUI|"
-msgid "Preferred Language"
-msgstr "Voorkeurstaal"
-
-msgctxt "PrefsUI|"
-msgid "Choose Language  "
-msgstr "Kies taal  "
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
@@ -1069,10 +1019,6 @@ msgstr ""
 "plekken."
 
 msgctxt "PrefsUI|"
-msgid "Safe Graphics Mode"
-msgstr "Veilige Grafische Modus"
-
-msgctxt "PrefsUI|"
 msgid ""
 "Switches to a \"safer\" mode for graphics aka software rendering.\n"
 "It will make your interface slower but if you have some problems (weird "
@@ -1086,10 +1032,6 @@ msgstr ""
 "Analyses zijn echter even snel."
 
 msgctxt "PrefsUI|"
-msgid "Disable Animations"
-msgstr "Schakel Animaties uit"
-
-msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
 msgstr ""
@@ -1099,10 +1041,6 @@ msgstr ""
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
 msgstr "Animaties al uitgezet omdat de \"Veilige Grafische Mode\" aan staat"
-
-msgctxt "PrefsUI|"
-msgid "Use Native File Dialogs"
-msgstr "Gebruik systeembestandsdialoogvensters"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -1533,12 +1471,6 @@ msgid "Installing developer module now"
 msgstr "Ontwikkelaarsmodule aan het installeren"
 
 msgctxt "ModulesMenu|"
-msgid "Select a developer module under Left menu->Preference->Advanced"
-msgstr ""
-"Selecteer een ontwikkelaarsmodule onder Linker menu -> Voorkeuren -> "
-"Geavanceerd"
-
-msgctxt "ModulesMenu|"
 msgid "Ready"
 msgstr ""
 
@@ -1604,10 +1536,6 @@ msgstr "Wis uitvoer"
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
 msgstr "Gewist..."
-
-msgctxt "RibbonBar|"
-msgid "Show Modules Menu"
-msgstr "Geef modulemenu weer"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
@@ -1967,11 +1895,6 @@ msgstr "Keuzelijst"
 
 #, fuzzy
 msgctxt "JASPControl|"
-msgid "RM Factors List"
-msgstr "RM Factoren Lijst"
-
-#, fuzzy
-msgctxt "JASPControl|"
 msgid "Input ListView"
 msgstr "Invoer Lijstweergave"
 
@@ -2045,23 +1968,6 @@ msgstr "Geen validatiefout"
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
 msgstr "Probleem bij het laden van bekende issues"
-
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version, contact "
-"the JASP team for assistance."
-msgstr ""
-"JASP ondervond een probleem bij het laden van de bekende issues voor deze "
-"versie, neem contact op met het JASP-team voor hulp."
-
-#, qt-format
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version: '%1', "
-"contact the JASP team for assistance."
-msgstr ""
-"JASP ondervond een probleem bij het laden van de bekende issues voor deze "
-"versie: '%1', neem contact op met het JASP-team voor ondersteuning."
 
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
@@ -2932,16 +2838,6 @@ msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
 msgstr "Laag %1"
 
-#, qt-format
-msgctxt "ListModelRepeatedMeasuresFactors|"
-msgid "Level %1"
-msgstr "Level %1"
-
-#, qt-format
-msgctxt "ListModelRepeatedMeasuresFactors|"
-msgid "RM Factor %1"
-msgstr "BP Factor %1"
-
 #, fuzzy, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid ""
@@ -3587,3 +3483,220 @@ msgid ""
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
 msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "Factor"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "Level"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "New Factor"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "New Level"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Remember enabled modules"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Use default PAT for Github"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Either use the bundled GITHUB_PAT or, if available, use the one set in "
+"environment variables."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Private GITHUB_PAT:"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Always set LC_CTYPE to \"C\""
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Keep LC_CTYPE at system default"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "R, JAGS, or lavaan code:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Result & help:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Light theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Dark theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Preferred language"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Choose language  "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Safe graphics mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Disable animations"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use native file dialogs"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Select a developer module by clicking here"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show main menu"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show modules menu"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "A nice grouping of elements"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "You can enter an integer here: "
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "This is an incredibly useful tooltip right?"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The first checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The second checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The last checkbox"
+msgstr ""
+
+#, fuzzy
+msgctxt "jasp-qml-style-example|"
+msgid "Variables"
+msgstr "Variabelen"
+
+msgctxt "jasp-qml-style-example|"
+msgid "Split"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Factor Level List"
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem downloading the known issues for this version, it "
+"probably could not connect to the server. Don't worry, JASP will work fine "
+"it just might not tell you about a few small known issues."
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version, this "
+"isn't necessarily a problem but if it keeps occuring you could contact the "
+"JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem ('%1') loading the known issues for this version, "
+"this isn't necessarily a problem but if it keeps occuring you could contact "
+"the JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"No default spreadsheet editor for file %1. Do you want to export the data "
+"into a CSV file and start the default spreadsheet editor for this CSV file?."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Generate Data File as CSV"
+msgstr ""
+
+#, fuzzy
+msgctxt "MainWindow|"
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed, should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed with the following message:\n"
+"%1\n"
+"\n"
+"Should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Initializing module %1 failed"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Module missing"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid ""
+"It seems the bundled module %1 wasn't correctly installed, and thus cannot "
+"be loaded.\n"
+"If you installed this version of JASP via an official installer let the JASP "
+"team know."
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Execute R code in a console"
+msgstr ""
+
+#, fuzzy
+msgctxt "VariablesFormBase|"
+msgid "Only 1 Available Variables list can be set in a VariablesForm"
+msgstr ""
+"Er kan maar één beschikbare variabelelijst worden toegepast in een "
+"VariablesForm"
+
+#, fuzzy
+msgctxt "VariablesFormBase|"
+msgid "There is no Available List in the Variables Form"
+msgstr "Er is geen beschikbare lijst in het Variabelen Scherm"
