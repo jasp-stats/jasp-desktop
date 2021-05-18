@@ -499,10 +499,13 @@ VariablesListBase
 					width:					source === "" ? 0 : 16 * preferencesModel.uiScale
 					x:						jaspTheme.borderRadius
 					anchors.verticalCenter:	parent.verticalCenter
-					source:					variablesList.showVariableTypeIcon && itemRectangle.isVariable ? (enabled ? model.columnTypeIcon : model.columnTypeDisabledIcon) : ""
+					source:					sourceVar !== undefined ? sourceVar : ""
 					visible:				source
 					mipmap:					true
 					smooth:					true
+
+					//So Im pushing this through a property because it seems to results in "undefined" during loading and this adds a ton of warnings to the output which is not helpful. I tried less heavyhanded approaches first but this works perfectly fine.
+					property var sourceVar:	variablesList.showVariableTypeIcon && itemRectangle.isVariable ? (enabled ? model.columnTypeIcon : model.columnTypeDisabledIcon) : ""
 				}
 
 				Text
