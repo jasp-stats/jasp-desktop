@@ -320,11 +320,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 	for(size_t iIn=0, iOut=0; iIn < columns.columnCount() && iOut < filterColumnsUsed.size(); iIn++)
 		if(filterColumnsUsed.count(columns[iIn].name()) > 0)
 		{
-#ifdef JASP_COLUMN_ENCODE_ALL
 			colHeaders[iOut].name = strdup(ColumnEncoder::columnEncoder()->encode(columns[iIn].name()).c_str());
-#else
-			colHeaders[iOut].name = strdup(columns[iIn].name().c_str());
-#endif
 			colHeaders[iOut].type = (int)columns[iIn].getColumnType();
 
 			iOut++;
