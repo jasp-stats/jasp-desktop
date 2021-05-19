@@ -56,27 +56,41 @@ Popup
 				y:							jaspTheme.generalAnchorMargin
 			}
 
-			Rectangle
+			Item
 			{
-				id:					axes
-				width:				500 * jaspTheme.uiScale
-				color:				jaspTheme.uiBackground
-				border.color:		jaspTheme.uiBorder
-				border.width:		1
-
+				id:				axes
+				width:			500 * jaspTheme.uiScale
 				anchors
 				{
-					top:			title.bottom
-					left:			parent.left
-					bottom:			buttonSeparator.top
-					margins:		jaspTheme.generalAnchorMargin
+					top:		title.bottom
+					left:		parent.left
+					bottom:		buttonSeparator.top
+					margins:	jaspTheme.generalAnchorMargin
+				}
+
+				property real	tabBarHeight:		28 * preferencesModel.uiScale
+				property real	tabButtonRadius:	5 * preferencesModel.uiScale
+				property real	tabButtonWidth:		100 * preferencesModel.uiScale
+				property var	axeTitles:			[ qsTr("x-axis"), qsTr("y-axis") ]
+				property var	axeModels:			[ plotEditorModel.xAxis, plotEditorModel.yAxis ]
+
+				Rectangle
+				{
+					// Rectangle to draw the border under the tabbar
+					anchors
+					{
+						fill:		parent
+						topMargin:	axes.tabBarHeight
+					}
+					border.width:	1
+					border.color:	jaspTheme.uiBorder
+					color:			"transparent"
 				}
 
 				Flickable
 				{
 					id:						axesFlickable
 					anchors.fill:			parent
-					anchors.margins:		axes.border.width
 					clip:					true
 					
 					contentHeight:			flickChild.height
@@ -93,33 +107,37 @@ Popup
 
 						TabBar
 						{
-							id:	tabbar
-							contentHeight: 35 * preferencesModel.uiScale
-							width: 200 * preferencesModel.uiScale
-							background: Rectangle { color: jaspTheme.grayLighter }
+							id:				tabbar
+							contentHeight:	axes.tabBarHeight + axes.tabButtonRadius
+							width:			axes.axeTitles.length * axes.tabButtonWidth
+
+							background: Rectangle { color: jaspTheme.uiBackground } // Per default the background is white
+
 							Repeater
 							{
-								model: [qsTr("x-axis"), qsTr("y-axis")]
+								model: axes.axeTitles
 								TabButton
 								{
-									height: tabbar.height
+									height:		tabbar.height
 									background: Rectangle
 									{
-										color: checked ? jaspTheme.uiBackground : jaspTheme.grayLighter
-										radius: checked ? 6 : 0
-										border.width: checked ? 1 : 0
-										border.color: jaspTheme.borderColor
+										color:			checked ? jaspTheme.uiBackground : jaspTheme.grayLighter
+										radius:			axes.tabButtonRadius
+										border.width:	1
+										border.color:	checked ? jaspTheme.uiBorder : jaspTheme.borderColor
 									}
 
 									contentItem: Text
 									{
-										topPadding: -5 * preferencesModel.uiScale
-										text: modelData
-										font: jaspTheme.font
-										color: jaspTheme.black
+										// The bottom of buttons are hidden to remove their bottom line with the radius
+										// So the text has to be moved higher from the horizontal middle line.
+										topPadding:			-axes.tabButtonRadius * 3/4
+										text:				modelData
+										font:				jaspTheme.font
+										color:				jaspTheme.black
 										horizontalAlignment: Text.AlignHCenter
-										verticalAlignment: Text.AlignVCenter
-										opacity: checked ? 1 : .6
+										verticalAlignment:	Text.AlignVCenter
+										opacity:			checked ? 1 : .6
 									}
 								}
 							}
@@ -127,48 +145,44 @@ Popup
 
 						Rectangle
 						{
-							id: menuUnused
+							// This hides the bottom border of the buttons (with their radius)
+							id		: roundingHider
+							width	: parent.width
+							height	: axes.tabButtonRadius + 1
 							anchors
 							{
-								left: tabbar.right
-								right: flickChild.right
+								left:		parent.left
+								right:		tabbar.right
+								top:		parent.top
+								topMargin:	axes.tabBarHeight
 							}
-							height: 35 * preferencesModel.uiScale
-							color: jaspTheme.grayLighter
-						}
-
-						Rectangle
-						{
-							id: roundingHider
-							width: parent.width
-							height: 7 * preferencesModel.uiScale
-							anchors.top: parent.top
-							anchors.topMargin: 28 * preferencesModel.uiScale
 							color: jaspTheme.uiBackground
+
+							Rectangle
+							{
+								// The Tabbar removes the left border. Redraw it.
+								anchors.left:	parent.left
+								anchors.top:	parent.top
+								anchors.bottom: parent.bottom
+								width:			1
+								color:			jaspTheme.uiBorder
+							}
 						}
 
 						Rectangle
 						{
-							anchors.top: roundingHider.top
-							anchors.left: parent.left
-							anchors.leftMargin: tabbar.currentIndex === 0 ? 100 * preferencesModel.uiScale - 1 : 0
-							anchors.right: tabbar.right
-							anchors.rightMargin: tabbar.currentIndex === 0 ? 0 : 100 * preferencesModel.uiScale - 1
-							height: 1
-							color: jaspTheme.borderColor
-						}
-						Rectangle
-						{
+							// Redraw a line below the unchecked tab
 							anchors
 							{
-								top: roundingHider.top
-								left: menuUnused.left
-								right: menuUnused.right
+								top:			roundingHider.top
+								left:			parent.left
+								leftMargin:		tabbar.currentIndex === 0 ? axes.tabButtonWidth - 1 : 0
+								right:			tabbar.right
+								rightMargin:	tabbar.currentIndex === 0 ? 0 : axes.tabButtonWidth  - 1
 							}
-							height: 1
-							color: jaspTheme.borderColor
+							height:	1
+							color:	jaspTheme.uiBorder
 						}
-
 
 						StackLayout
 						{
@@ -176,16 +190,15 @@ Popup
 							anchors
 							{
 								top			: tabbar.bottom
-								topMargin	: 10 * preferencesModel.uiScale
 								left		: parent.left
-								leftMargin	: 3 * preferencesModel.uiScale
 								right		: parent.right
+								margins		: jaspTheme.generalAnchorMargin
 							}
 							currentIndex: tabbar.currentIndex
 
 							Repeater
 							{
-								model: [plotEditorModel.xAxis, plotEditorModel.yAxis]
+								model: axes.axeModels
 								PlotEditingAxis
 								{
 									axisModel:		modelData
@@ -196,13 +209,6 @@ Popup
 					}
 				}
 				
-				JASPC.JASPScrollBar
-				{
-					id:				axesScrollbar
-					flickable:		axesFlickable
-					vertical:		true
-				}
-
 				JASPW.MenuButton
 				{
 					id:					redoButton
@@ -217,8 +223,8 @@ Popup
 						top:			axesFlickable.top
 						right:			axesFlickable.right
 						// same as in AnalysisFormExpandser.qml
-						topMargin:		-2 * preferencesModel.uiScale
-						bottomMargin:	4 * preferencesModel.uiScale
+						topMargin:		-4 * preferencesModel.uiScale
+						bottomMargin:	6 * preferencesModel.uiScale
 					}
 					onClicked:			plotEditorModel.redoSomething()
 				}
@@ -242,6 +248,14 @@ Popup
 					}
 					onClicked:			plotEditorModel.undoSomething()
 				}
+
+				JASPC.JASPScrollBar
+				{
+					id:				axesScrollbar
+					flickable:		axesFlickable
+					vertical:		true
+				}
+
 
 
 				JASPC.CheckBox
