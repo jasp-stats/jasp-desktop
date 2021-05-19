@@ -20,8 +20,6 @@
 #include "rowcontrols.h"
 #include "log.h"
 
-#include <QJsonValue>
-
 ComponentsListBase::ComponentsListBase(QQuickItem *parent)
 	: JASPListControl(parent), BoundControlBase(this)
 {
@@ -111,9 +109,18 @@ Json::Value ComponentsListBase::createJson()
 				if (name != _optionKey)
 				{
 					QVariant valueVar = it.value();
-					Json::Value valueJson;
-					Json::Reader().parse(fq(valueVar.toString()), valueJson);
-					row[fq(name)] = valueJson;
+					switch (valueVar.type())
+					{
+					case QVariant::Int:		row[fq(name)] = valueVar.toInt();			break;
+					case QVariant::Double:	row[fq(name)] = valueVar.toDouble();		break;
+					case QVariant::Bool:	row[fq(name)] = valueVar.toBool();			break;
+					case QVariant::String:	row[fq(name)] = fq(valueVar.toString());	break;
+					default:
+					{
+						if (valueVar.canConvert<QString>())	row[fq(name)] = fq(valueVar.toString());
+						else Log::log() << "Cannot convert default values with key " << name << " in ComponentList " << this->name() << std::endl;
+					}
+					}
 				}
 			}
 			result.append(row);

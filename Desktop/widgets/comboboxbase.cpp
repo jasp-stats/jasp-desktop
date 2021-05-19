@@ -29,7 +29,7 @@ ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 
 void ComboBoxBase::bindTo(const Json::Value& value)
 {
-	BoundControlBase::bindTo(value);
+	// Do not call BoundControlBase::bindTo now because the value might be changed to the default value.
 
 	std::vector<std::string> values = _model->getValues();
 	std::string selectedValue = value.asString();
@@ -50,7 +50,7 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 		}
 	}
 
-	_setCurrentProperties(index, false);
+	_setCurrentProperties(index); // This will call the BoundControlBase::bindTo method
 
 	_resetItemWidth();
 }
@@ -197,5 +197,5 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 	if (emitCurrentColumnTypeIconSignal)	emit currentColumnTypeIconChanged();
 	if (emitCurrentIndexSignal)				emit currentIndexChanged();
 
-	if (bindValue)	setBoundValue(fq(_currentValue));
+	if (bindValue)	BoundControlBase::bindTo(fq(_currentValue));
 }
