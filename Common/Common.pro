@@ -46,18 +46,18 @@ SOURCES += \
 
 HEADERS += \
 	appinfo.h \
-	boost/nowide/args.hpp \
-	boost/nowide/cenv.hpp \
-	boost/nowide/config.hpp \
-	boost/nowide/convert.hpp \
-	boost/nowide/cstdio.hpp \
-	boost/nowide/cstdlib.hpp \
-	boost/nowide/filebuf.hpp \
-	boost/nowide/fstream.hpp \
-	boost/nowide/iostream.hpp \
-	boost/nowide/stackstring.hpp \
-	boost/nowide/system.hpp \
-	boost/nowide/windows.hpp \
+	jaspColumnEncoder/boost/nowide/args.hpp \
+	jaspColumnEncoder/boost/nowide/cenv.hpp \
+	jaspColumnEncoder/boost/nowide/config.hpp \
+	jaspColumnEncoder/boost/nowide/convert.hpp \
+	jaspColumnEncoder/boost/nowide/cstdio.hpp \
+	jaspColumnEncoder/boost/nowide/cstdlib.hpp \
+	jaspColumnEncoder/boost/nowide/filebuf.hpp \
+	jaspColumnEncoder/boost/nowide/fstream.hpp \
+	jaspColumnEncoder/boost/nowide/iostream.hpp \
+	jaspColumnEncoder/boost/nowide/stackstring.hpp \
+	jaspColumnEncoder/boost/nowide/system.hpp \
+	jaspColumnEncoder/boost/nowide/windows.hpp \
 	column.h \
 	jaspColumnEncoder/columnencoder.h \
 	columns.h \
@@ -69,8 +69,8 @@ HEADERS += \
 	ipcchannel.h \
 	label.h \
 	labels.h \
-	libzip/archive.h \
-	libzip/archive_entry.h \
+	jaspColumnEncoder/libzip/archive.h \
+	jaspColumnEncoder/libzip/archive_entry.h \
 	processinfo.h \
 	r_functionwhitelist.h \
 	sharedmemory.h \
@@ -91,23 +91,23 @@ HEADERS += \
 contains(DEFINES, JASP_LIBJSON_STATIC) {
 
     SOURCES += \
-            lib_json/json_internalarray.inl \
-            lib_json/json_internalmap.inl \
-            lib_json/json_reader.cpp \
-            lib_json/json_value.cpp \
-            lib_json/json_valueiterator.inl \
-            lib_json/json_writer.cpp
+            jaspColumnEncoder/lib_json/json_internalarray.inl \
+            jaspColumnEncoder/lib_json/json_internalmap.inl \
+            jaspColumnEncoder/lib_json/json_reader.cpp \
+            jaspColumnEncoder/lib_json/json_value.cpp \
+            jaspColumnEncoder/lib_json/json_valueiterator.inl \
+            jaspColumnEncoder/lib_json/json_writer.cpp
 
     HEADERS += \
-            lib_json/autolink.h \
-            lib_json/config.h \
-            lib_json/features.h \
-            lib_json/forwards.h \
-            lib_json/json_batchallocator.h \
-            lib_json/json.h \
-            lib_json/reader.h \
-            lib_json/value.h \
-            lib_json/writer.h
+            jaspColumnEncoder/lib_json/autolink.h \
+            jaspColumnEncoder/lib_json/config.h \
+            jaspColumnEncoder/lib_json/features.h \
+            jaspColumnEncoder/lib_json/forwards.h \
+            jaspColumnEncoder/lib_json/json_batchallocator.h \
+            jaspColumnEncoder/lib_json/json.h \
+            jaspColumnEncoder/lib_json/reader.h \
+            jaspColumnEncoder/lib_json/value.h \
+            jaspColumnEncoder/lib_json/writer.h
 }
 
 
