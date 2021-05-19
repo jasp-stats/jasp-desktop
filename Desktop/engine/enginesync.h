@@ -105,6 +105,11 @@ private:
 	bool		allEnginesPaused();
 	bool		allEnginesResumed();
 	QProcess*	startSlaveProcess(int channelNumber);
+
+#ifdef _WIN32 
+	void		fixPATHForWindows(QProcessEnvironment & env);
+#endif
+	
 	void		checkModuleWideCastDone();
 	void		resetModuleWideCastVars();
 	void		setModuleWideCastVars(Json::Value newVars);

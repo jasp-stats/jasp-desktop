@@ -483,6 +483,22 @@ void EngineSync::startExtraEngine()
 	}
 }
 
+
+#ifdef _WIN32 
+///Overwrites the PATH with a simple clean one
+void EngineSync::fixPATHForWindows(QProcessEnvironment & env)
+{
+	const QString R_ARCH =
+#ifdef _WIN64
+		"x64";
+#else
+		"i386";
+#endif
+	
+	env.insert("PATH", AppDirs::programDir().absolutePath() + ";" + QDir(AppDirs::rHome()).absoluteFilePath("bin") + ";" + QDir(AppDirs::rHome()).absoluteFilePath("bin/" + R_ARCH)); // + rtoolsInPath); 
+}
+#endif
+
 //Should this function go to EngineRepresentation?
 QProcess * EngineSync::startSlaveProcess(int channel)
 {
@@ -490,6 +506,10 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	QDir programDir			= AppDirs::programDir();
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
 	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine(true, PreferencesModel::prefs()->setLC_CTYPE_C());
+	
+#ifdef _WIN32 
+	fixPATHForWindows(env);
+#endif
 	
 	env.insert("GITHUB_PAT", PreferencesModel::prefs()->githubPatResolved());
 
