@@ -158,7 +158,10 @@ The qml folder is where you place your [qml](https://en.wikipedia.org/wiki/QML) 
 In the R folder you should place your R file(s). You could add all your analyses into one file, or store separately them into separate files (recommended). You might event want to separate the reusable parts of your code further into their own file(s). The important part is that the name(s) of your main function(s) match the name(s) you specified under `function` in the analysis-entries of the [menu](#description-menu). A detailed guide on creating R analyses can be found [here](r-analyses-guide.md).
 
 #### help
-The help folder is where you place the documentation for your module. You should name the helpfile for each analysis with the exact same functionname as your analysis has. **Only all characters should be lowercase**.
+The help folder is where you place the documentation for your module. You should name the helpfile for each analysis with the exact same functionname as your analysis has. **Only all characters should be lowercase**. 
+To be able to refer to another helpfile or an image in your module's  helpfile or in the `info` field of the = options in QML you can use a special string.
+This string is `%HELP_FOLDER%` and when loaded it will be replaced with the path to the `help`-folder of your module.
+So suppose you have an image in `module/help/img/picture.png`, to link to it you would put `"%HELP_FOLDER%/img/picture.png"` in your markdown.
 
 #### Package Metadata
 Because a JASP Module is also an R package it should contain a [DESCRIPTION](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#The-DESCRIPTION-file) file and a [NAMESPACE](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Package-namespaces) file. 

@@ -364,7 +364,7 @@ DropArea
 										else
 										{
 											helpModel.markdown = ""; //To break any previous binding we might have made
-											helpModel.showOrTogglePage(loader.myAnalysis.helpFile)
+											helpModel.showOrTogglePageForAnalysis(loader.myAnalysis)
 										}
 					toolTip:			qsTr("Show info for this analysis")
 					radius:				height

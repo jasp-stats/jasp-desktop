@@ -882,6 +882,11 @@ QString AnalysisForm::helpMD() const
 		markdown.push_back(control->helpMD());
 
 	markdown.push_back(metaHelpMD());
-
-	return markdown.join("");
+	
+	QString md = markdown.join("");
+	
+	if(_analysis && _analysis->dynamicModule())
+		_analysis->dynamicModule()->preprocessMarkdownHelp(md);
+	
+	return md;
 }

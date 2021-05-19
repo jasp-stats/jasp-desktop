@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "languagemodel.h"
+#include "analysis/analysis.h"
 
 class HelpModel : public QObject
 {
@@ -25,6 +26,8 @@ public slots:
 	void	setAnalysispagePath(QString analysisName) { setPagePath("analyses/" + analysisName); }
 	void	generateJavascript();
 	void	showOrTogglePage(QString pagePath);
+	void	showOrTogglePageForAnalysis(Analysis * analysis)	{ showOrToggleParticularPageForAnalysis(analysis, ""); }
+	void	showOrToggleParticularPageForAnalysis(Analysis * analysis, QString helpPage);
 	QString	indexURL();
 	void	reloadPage();
 	void	setThemeCss(QString themeName);
@@ -47,9 +50,10 @@ private:
 	bool loadHelpContent(const QString & pagePath, bool ignorelanguage, QString &renderFunc, QString &content);
 
 private:
-	bool	_visible	= false;
-	QString _pagePath	= "",
-			_markdown	= "";
+	bool		_visible	= false;
+	QString		_pagePath	= "",
+				_markdown	= "";
+	Analysis *	_analysis	= nullptr;
 };
 
 #endif // HELPMODEL_H

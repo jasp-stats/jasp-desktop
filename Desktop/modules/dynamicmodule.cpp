@@ -619,6 +619,13 @@ QString DynamicModule::helpFolderPath() const
 	return tq(moduleInstFolder() + "/help/");
 }
 
+///The helpcontents might contain relative paths, this is sadly enough not easy to solve because the HelpWindow relies on its url to find relevant things in Resources
+///What we can do however is preprocess the markdown and replace certain string(s), in this case "%HELP_FOLDER%"
+void DynamicModule::preprocessMarkdownHelp(QString & md) const
+{
+	md.replace("%HELP_FOLDER%",  helpFolderPath());
+}
+
 AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile) const
 {
 	std::string moduleName		= jsonFromJaspFile.get("moduleName", "Modulename wasn't actually filled!").asString(),
