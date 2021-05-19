@@ -201,6 +201,7 @@ public:
 
 	std::string toString();
 	void loadInfoFromDescriptionItem(Description * description);
+	void preprocessMarkdownHelp(QString & md) const;
 
 public slots:
 	void reloadDescription();
@@ -210,7 +211,7 @@ public slots:
 	void setBundled(			bool		isBundled);
 	void setInstallLog(			std::string installLog);
 	void setLoadLog(			std::string loadLog);
-	void setImportsR(	stringset	importsR);
+	void setImportsR(			stringset	importsR);
 
 signals:
 	void		installLogChanged();

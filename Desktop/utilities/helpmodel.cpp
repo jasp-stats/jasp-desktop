@@ -60,6 +60,9 @@ void HelpModel::setMarkdown(QString markdown)
 
 void HelpModel::setPagePath(QString pagePath)
 {
+	setMarkdown("");
+	_analysis = nullptr;
+	
 	pagePath = convertPagePathToLower(pagePath); //Otherwise we get into to trouble on systems that discern between cases in the filesystem. Also means we should make sure all documentation html are named lowercase!
 
 	_pagePath = pagePath;
@@ -116,6 +119,8 @@ QString HelpModel::convertPagePathToLower(const QString & pagePath)
 
 void HelpModel::showOrTogglePage(QString pagePath)
 {
+	_analysis = nullptr;
+	
 	pagePath = convertPagePathToLower(pagePath);
 
 	if(pagePath == _pagePath && _visible)
@@ -126,6 +131,41 @@ void HelpModel::showOrTogglePage(QString pagePath)
 		setVisible(true);
 	}
 }
+
+void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QString helpPage)
+{
+	if(!analysis)
+	{
+		_analysis = nullptr;
+		
+		setVisible(false);
+		return;
+	}
+	
+	QString renderFunc, 
+			contentMD,
+			pagePath = convertPagePathToLower(helpPage == "" ? analysis->helpFile() : analysis->fullHelpPath(helpPage));
+	
+	
+	if(analysis == _analysis && pagePath == _pagePath && _visible)
+		setVisible(false);
+	else if((loadHelpContent(pagePath, false, renderFunc, contentMD) || loadHelpContent(pagePath, true, renderFunc, contentMD)) && renderFunc == "window.render")
+	{
+		//If we get here the file exists and it is a markdown file.
+		_analysis = analysis;
+		
+		if(analysis->dynamicModule())
+			analysis->dynamicModule()->preprocessMarkdownHelp(contentMD);
+		
+		_pagePath = pagePath; //dont trigger generateJavascript through emit pagePathChanged!
+		
+		setMarkdown(contentMD);
+		setVisible(true);
+	}
+	else
+		setPagePath(pagePath);
+}
+
 
 void HelpModel::reloadPage()
 {
