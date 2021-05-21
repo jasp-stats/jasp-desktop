@@ -128,6 +128,7 @@ public slots:
 	void analysesExportResults();
 	void refresh();
 	void close();
+	void enableButtonsForOpenedWorkspace(bool enableSaveButton = false);
 
 
 

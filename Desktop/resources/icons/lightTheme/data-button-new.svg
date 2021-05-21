@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 128 128"
+   xml:space="preserve"
+   sodipodi:docname="data-button-new.svg"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15, custom)"
+   width="128"
+   height="128"><metadata
+   id="metadata29"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs27" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="3832"
+   inkscape:window-height="2076"
+   id="namedview25"
+   showgrid="false"
+   inkscape:zoom="11.171875"
+   inkscape:cx="-2.2377606e-08"
+   inkscape:cy="58.060787"
+   inkscape:window-x="0"
+   inkscape:window-y="36"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="g899"
+   inkscape:snap-intersection-paths="true"
+   inkscape:document-rotation="0" />
+<style
+   type="text/css"
+   id="style2">
+	.st0{fill:none;stroke:#CCCCCC;stroke-width:1.3455;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#CCCCCC;stroke-width:1.4178;stroke-miterlimit:10;}
+	.st2{fill:#CCCCCC;stroke:#CCCCCC;stroke-width:1.4178;stroke-miterlimit:10;}
+	.st3{fill:#FFFFFF;}
+	.st4{fill:none;stroke:#231F20;stroke-width:0.0752;stroke-miterlimit:10;}
+	.st5{fill:#8CC63E;}
+</style>
+<g
+   id="g22"
+   transform="matrix(2.8052262,0,0,2.817463,-25.526788,-25.910443)">
+	<g
+   id="g20">
+		<g
+   id="g14">
+			<line
+   class="st0"
+   x1="23.92"
+   y1="10.12"
+   x2="23.92"
+   y2="53.880001"
+   id="line4" />
+			<line
+   class="st0"
+   x1="53.959999"
+   y1="35.130001"
+   x2="10.04"
+   y2="35.130001"
+   id="line6" />
+			<line
+   class="st0"
+   x1="53.959999"
+   y1="16.370001"
+   x2="10.04"
+   y2="16.370001"
+   id="line8" />
+			<line
+   class="st0"
+   x1="53.959999"
+   y1="25.75"
+   x2="10.04"
+   y2="25.75"
+   id="line10" />
+			<line
+   class="st0"
+   x1="53.959999"
+   y1="44.5"
+   x2="10.04"
+   y2="44.5"
+   id="line12" />
+		</g>
+		<path
+   class="st1"
+   d="M 52.92,53.88 H 11.08 c -0.58,0 -1.05,-0.38 -1.05,-0.85 V 16.37 h 43.92 v 36.65 c 0.01,0.47 -0.46,0.86 -1.03,0.86 z"
+   id="path16" />
+		<path
+   class="st2"
+   d="M 53.96,16.37 H 10.04 v -5.4 c 0,-0.47 0.47,-0.85 1.05,-0.85 h 41.83 c 0.58,0 1.05,0.38 1.05,0.85 v 5.4 z"
+   id="path18" />
+	</g>
+</g>
+<g
+   id="g859"
+   transform="matrix(0.96495068,0,0,0.96495068,7.8631835,4.5352835)"><circle
+     style="fill:#00cf00;fill-opacity:1"
+     id="path852"
+     cx="94.575943"
+     cy="98.711159"
+     r="25.644121" /><g
+     id="g899"
+     transform="matrix(2.4467833,0,0,2.3952472,-41.603809,-33.66656)"><circle
+       style="fill:#00d300;fill-opacity:1;stroke-width:1.26276;stroke-miterlimit:4.2;stroke-dasharray:none"
+       id="path872"
+       cx="55.759495"
+       cy="55.457527"
+       r="0" /><rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:7.92874;stroke-linejoin:round;stroke-miterlimit:4.2;stroke-dasharray:none;stroke-opacity:1"
+       id="rect874"
+       width="12.241492"
+       height="4.1093612"
+       x="49.52187"
+       y="53.274132" /><rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:7.33993;stroke-linejoin:round;stroke-miterlimit:4.2;stroke-dasharray:none;stroke-opacity:1"
+       id="rect874-3"
+       width="13.098535"
+       height="3.2912426"
+       x="-61.817322"
+       y="54.082195"
+       transform="rotate(-90)" /></g></g></svg>
