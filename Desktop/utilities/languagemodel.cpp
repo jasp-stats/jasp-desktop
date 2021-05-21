@@ -141,7 +141,7 @@ void LanguageModel::setCurrentLanguage(QString language)
 	Settings::setValue(Settings::PREFERRED_LANGUAGE , _currentLanguageCode);
 	Settings::setValue(Settings::PREFERRED_COUNTRY, _languages[_currentLanguageCode].locale.country());
 	_shouldEmitLanguageChanged = true;
-	
+
 	ResultsJsInterface::singleton()->resetResults();
 	
 	//resumeEngines() will be emitted in resultsPageLoaded

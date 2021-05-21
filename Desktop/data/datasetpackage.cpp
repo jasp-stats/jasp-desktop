@@ -29,6 +29,9 @@
 #include "utilities/messageforwarder.h"
 #include "datasetpackagesubnodemodel.h"
 #include "databaseconnectioninfo.h"
+#include "utilities/settings.h"
+#include "modules/ribbonmodel.h"
+
 
 DataSetPackage * DataSetPackage::_singleton = nullptr;
 
@@ -43,6 +46,7 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::folderChanged,		this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::nameChanged);
+	connect(this, &DataSetPackage::dataModeChanged,		this, &DataSetPackage::logDataModeChanged);
 
 	_dataSubModel	= new SubNodeModel(parIdxType::dataRoot);
 	_filterSubModel = new SubNodeModel(parIdxType::filterRoot);
@@ -116,6 +120,7 @@ void DataSetPackage::reset()
 	endLoadingData();
 }
 
+
 void DataSetPackage::setDataSet(DataSet * dataSet)
 {
 	if(_dataSet == dataSet)
@@ -155,6 +160,31 @@ void DataSetPackage::regenerateInternalPointers()
 		_internalPointers.push_back({parIdxType::label,		col}); //these do because they need to know which column is ref'd
 }
 
+void DataSetPackage::generateEmptyData()
+{
+	if(_dataSet || isLoaded())
+	{
+		Log::log() << "void DataSetPackage::generateEmptyData() called but dataset already exists, ignoring it." << std::endl;
+		return;
+	}
+
+	beginLoadingData();
+	createDataSet();
+	setDataSetSize(1, 1);
+	initColumnAsScale(0, freeNewColumnName(0), { NAN });
+	endLoadingData();
+	emit newDataLoaded();
+	resetAllFilters();
+}
+
+//Some debugprinting
+void DataSetPackage::logDataModeChanged(bool dataMode)
+{
+	Log::log() << "Data Mode " << (dataMode ? "on" : "off") << "!" << std::endl;
+	beginResetModel();
+	endResetModel();
+}
+
 QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent) const
 {
 	const void * pointer = nullptr;
@@ -192,8 +222,6 @@ QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent
 		}
 			
 	}
-
-	return createIndex(row, column, pointer);
 }
 
 const DataSetPackage::intnlPntPair * DataSetPackage::getInternalPointerPairFromIndex(const QModelIndex & index) const
@@ -312,9 +340,10 @@ int DataSetPackage::rowCount(const QModelIndex & parent) const
 		int labelSize = col.labels().size();
 		return labelSize;
 	}
-	case parIdxType::filterRoot:	[[fallthrough]];
-	case parIdxType::dataRoot:		return !_dataSet ? 0 : _dataSet->rowCount();
-	default:						return 0;
+
+	case parIdxType::filter:	[[fallthrough]];
+	default:					[[fallthrough]];
+	case parIdxType::data:		return !_dataSet ? 0 : _dataSet->rowCount();
 	}
 
 	return 0; // <- because gcc is stupid
@@ -373,6 +402,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		if(_dataSet == nullptr || index.column() >= int(_dataSet->columnCount()) || index.row() >= int(_dataSet->rowCount()))
 			return QVariant(); // if there is no data then it doesn't matter what role we play
 
+	// 	Log::log() << "Data requested for col " << index.column() << " and row " << index.row() << std::endl;
+		
 		switch(role)
 		{
 		case Qt::DisplayRole:
@@ -483,8 +514,8 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 			return false;
 
 	case parIdxType::data:
-		Log::log() << "setData for data is not supported!" << std::endl;
-		return false;
+		pasteSpreadsheet(index.row(), index.column(), {{value.toString()}});
+		return true;
 
 	case parIdxType::label:
 	{
@@ -915,35 +946,36 @@ int DataSetPackage::setColumnTypeFromQML(int columnIndex, int newColumnType)
 	return int(getColumnType(columnIndex));
 }
 
-void DataSetPackage::beginSynchingData()
+void DataSetPackage::beginSynchingData(bool informEngines)
 {
-	beginLoadingData();
+	beginLoadingData(informEngines);
 	_synchingData = true;
 }
 
-void DataSetPackage::endSynchingDataChangedColumns(std::vector<std::string>	&	changedColumns)
+void DataSetPackage::endSynchingDataChangedColumns(std::vector<std::string>	&	changedColumns, bool hasNewColumns, bool informEngines)
 {
 	 std::vector<std::string>				missingColumns;
 	 std::map<std::string, std::string>		changeNameColumns;
 
-	endSynchingData(changedColumns, missingColumns, changeNameColumns, false, false);
+	endSynchingData(changedColumns, missingColumns, changeNameColumns, hasNewColumns, informEngines);
 }
 
 void DataSetPackage::endSynchingData(std::vector<std::string>			&	changedColumns,
 									 std::vector<std::string>			&	missingColumns,
 									 std::map<std::string, std::string>	&	changeNameColumns,  //origname -> newname
 									 bool									rowCountChanged,
-									 bool									hasNewColumns)
+									 bool									hasNewColumns,
+									 bool									informEngines)
 {
 
-	endLoadingData();
+	endLoadingData(informEngines);
 	_synchingData = false;
 	//We convert all of this stuff to qt containers even though this takes time etc. Because it needs to go through a (queued) connection and it might not work otherwise
 	emit datasetChanged(tq(changedColumns), tq(missingColumns), tq(changeNameColumns), rowCountChanged, hasNewColumns);
 }
 
 
-void DataSetPackage::beginLoadingData()
+void DataSetPackage::beginLoadingData(bool informEngines)
 {
 	JASPTIMER_SCOPE(DataSetPackage::beginLoadingData);
 
@@ -951,7 +983,7 @@ void DataSetPackage::beginLoadingData()
 	beginResetModel();
 }
 
-void DataSetPackage::endLoadingData()
+void DataSetPackage::endLoadingData(bool informEngines)
 {
 	JASPTIMER_SCOPE(DataSetPackage::endLoadingData);
 
@@ -1080,6 +1112,35 @@ bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, std::string n
 	}
 	else
 		return initColumnAsNominalOrOrdinal(colID.toString().toStdString(), newName, values, uniqueValues, is_ordinal);
+}
+
+
+void DataSetPackage::initColumnWithStrings(QVariant colId, std::string newName, const std::vector<std::string> &values)
+{
+	// interpret the column as a datatype
+	std::set<int>				uniqueValues;
+	std::vector<int>			intValues;
+	std::vector<double>			doubleValues;
+	std::map<int, std::string>	emptyValuesMap;
+
+	//If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
+	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
+	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
+
+	bool valuesAreIntegers		= Utils::convertVecToInt(values, intValues, uniqueValues, emptyValuesMap);
+	
+	size_t minIntForThresh		= thresholdScale > 2 ? 2 : 0;
+
+	auto isNominalInt			= [&](){ return valuesAreIntegers && uniqueValues.size() == minIntForThresh; };
+	auto isOrdinal				= [&](){ return valuesAreIntegers && uniqueValues.size() >  minIntForThresh && uniqueValues.size() <= thresholdScale; };
+	auto isScalar				= [&](){ return Utils::convertVecToDouble(values, doubleValues, emptyValuesMap); };
+
+	if		(isOrdinal())					initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		true	);
+	else if	(isNominalInt())				initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		false	);
+	else if	(isScalar())					initColumnAsScale(				colId,	newName,	doubleValues	);
+	else				emptyValuesMap =	initColumnAsNominalText(		colId,	newName,	values			);
+
+	storeInEmptyValues(newName, emptyValuesMap);
 }
 
 void DataSetPackage::enlargeDataSetIfNecessary(std::function<void()> tryThis, const char * callerText)
@@ -1351,6 +1412,46 @@ std::vector<double> DataSetPackage::getColumnDataDbls(size_t columnIndex)
 	return std::vector<double>(col.AsDoubles.begin(), col.AsDoubles.end());
 }
 
+std::vector<std::string> DataSetPackage::getColumnDataStrs(size_t columnIndex)
+{
+	if(_dataSet == nullptr) return {};
+
+	Column & col = _dataSet->column(columnIndex);
+	
+	std::vector<std::string> out;
+	
+	for(size_t r=0; r<col.rowCount(); r++)
+	{
+		std::string value = col.getOriginalValue(r);
+		if (value != ".")
+		{
+			out.push_back(value);
+			/*if (stringUtils::escapeValue(value))	out << '"' + value + '"';
+			else									out << value;*/
+		}
+		else
+			out.push_back("");
+	}
+	
+	return out;
+}
+
+void DataSetPackage::setColumnName(size_t columnIndex, const std::string & newName)
+{
+	if(!_dataSet)
+		return;
+
+	std::string oldName = getColumnName(columnIndex);
+
+	beginResetModel();
+	_dataSet->column(columnIndex).setName(newName);
+	endResetModel();
+
+	emit datasetChanged({}, {}, QMap<QString, QString>({{tq(oldName), tq(newName)}}), false, false);
+}
+
+
+
 void DataSetPackage::setColumnDataInts(size_t columnIndex, std::vector<int> ints)
 {
 	Column & col = _dataSet->column(columnIndex);
@@ -1540,6 +1641,221 @@ void DataSetPackage::columnSetDefaultValues(std::string columnName, columnType c
 	}
 }
 
+std::string DataSetPackage::freeNewColumnName(size_t startHere)
+{
+	const QString nameBase = tr("Column %1");
+
+	while(true)
+	{
+		const std::string newColName = fq(nameBase.arg(++startHere));
+		if(isColumnNameFree(newColName))
+			return newColName;
+	}
+}
+
+void DataSetPackage::unicifyColumnNames()
+{
+	for(int c=0; c<columnCount(); c++)
+	{
+		std::string name = getColumnName(c);
+
+		for(int c1=c+1; c1<columnCount(); c1++)
+			if(getColumnName(c1) == name)
+			{
+				std::string newName = name + "'";
+				while(!isColumnNameFree(newName))
+					newName = newName + "'";
+				setColumnName(c1, newName);
+			}
+	}
+}
+
+void DataSetPackage::resizeData(size_t rows, size_t cols)
+{
+	auto	namesBefore = tq(getColumnNames(false));
+	bool	rowsChanged = int(rows) != rowCount(),
+			newCols		= int(cols) >  columnCount(),
+			newRows		= int(rows) >  rowCount();
+	size_t	oriRows		= rowCount(),
+			oriCols		= columnCount();
+
+	beginSynchingData(false); //I assume this is all being called in dataMode, so the engines will be informed once we are done
+	setDataSetSize(cols, rows);
+
+	for(size_t c=newRows ? 0 : oriCols; c<cols; c++)
+	{
+		std::vector<std::string>	colVals = getColumnDataStrs(c);
+		std::string					colName = getColumnName(c);
+
+		for(size_t r=oriRows; r<rows; r++)
+			colVals[r] = "";
+
+		initColumnWithStrings(int(c), colName == "" ? freeNewColumnName(c) : colName, colVals);
+	}
+
+	auto namesAfter = getColumnNames(false);
+
+	for(const std::string & n : namesAfter)
+		namesBefore.removeAll(tq(n));
+
+	stringvec	changed = rowsChanged ? namesAfter : std::vector<std::string>(),
+				missing = fq(namesBefore);
+
+	std::map<std::string, std::string>	changeNameColumns;
+
+	endSynchingData(changed, missing, changeNameColumns, rowsChanged, newCols, false);
+
+}
+
+void DataSetPackage::pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames)
+{
+	int		rowMax			= ( cells.size() > 0 ? cells[0].size() : 0), 
+			colMax			= cells.size();
+	bool	rowCountChanged = int(row + rowMax) > rowCount()	,
+			colCountChanged = int(col + colMax) > columnCount()	;
+	
+	setSynchingExternally(false); //Don't synch with external file after editing
+
+	//beginResetModel();
+	beginSynchingData(false);
+	
+	if(colCountChanged || rowCountChanged)	
+		setDataSetSize(std::max(size_t(columnCount()), colMax + col), std::max(size_t(rowCount()), rowMax + row));
+
+
+
+	stringvec colNames = getColumnNames(false);
+	
+	std::vector<std::string> changed;
+
+	for(int c=0; c<colMax; c++)
+	{
+		int							dataCol = c +  col;
+		std::vector<std::string>	colVals = getColumnDataStrs(dataCol);
+
+		for(int r=0; r<rowMax; r++)
+		{
+			std::string cellVal = fq(cells[c][r]);
+			colVals[r + row] = cellVal;
+		}
+
+		std::string colName = getColumnName(dataCol),
+					newName = newColNames.size() > c && newColNames[c] != "" ? fq(newColNames[c]) : colName == "" ? freeNewColumnName(dataCol) : colName;
+		
+		initColumnWithStrings(dataCol, newName, colVals);
+
+		if(newName != "")
+			changed.push_back(newName);
+
+	}
+
+	std::map<std::string, std::string>		changeNameColumns;
+	if(newColNames.size() > 0)
+	{
+		unicifyColumnNames();
+
+		stringvec colNamesNew = getColumnNames(false);
+
+		for(size_t i=0; i<colNames.size() && i < colNamesNew.size(); i++)
+			if(colNames[i] != colNamesNew[i])
+				changeNameColumns[colNames[i]] = colNamesNew[i];
+	}
+	
+
+	std::vector<std::string>				missingColumns;
+
+
+   endSynchingData(changed, missingColumns, changeNameColumns, rowCountChanged, colCountChanged, false);
+
+	if(isLoaded()) setModified(true);
+}
+
+void DataSetPackage::columnInsert(size_t column)
+{
+	setSynchingExternally(false); //Don't synch with external file after editing
+	beginSynchingData(false);
+
+	_dataSet->columns().insertColumn(column);
+	setColumnName(column, freeNewColumnName(column));
+
+	stringvec changed({getColumnName(column)});
+	endSynchingDataChangedColumns(changed, true, false);
+}
+
+void DataSetPackage::columnDelete(size_t column)
+{
+	setSynchingExternally(false); //Don't synch with external file after editing
+	beginSynchingData(false);
+
+	std::vector<std::string>				changed;
+	std::map<std::string, std::string>		changeNameColumns;
+	std::vector<std::string>				missingColumns({getColumnName(column)});
+
+	_dataSet->columns().removeColumn(column);
+
+	endSynchingData(changed, missingColumns, changeNameColumns, false, true, false);
+}
+
+void DataSetPackage::rowInsert(size_t row)
+{
+	setSynchingExternally(false); //Don't synch with external file after editing
+	beginSynchingData(false);
+	stringvec changed;
+
+	setDataSetSize(columnCount(), rowCount()+1);
+
+	for(int c=0; c<columnCount(); c++)
+	{
+		const std::string name = getColumnName(c);
+		changed.push_back(name);
+
+		std::vector<std::string>	colVals = getColumnDataStrs(c);
+
+		colVals.insert(colVals.begin() + row, "");
+
+		if(int(colVals.size()) > rowCount())
+		{
+			Log::log() << "ASSUMPTION CORRECT! I guess?" << std::endl;
+			colVals.resize(rowCount());
+		}
+		initColumnWithStrings(c, name, colVals);
+	}
+
+	std::map<std::string, std::string>		changeNameColumns;
+	std::vector<std::string>				missingColumns;
+
+	endSynchingData(changed, missingColumns, changeNameColumns, true, false, false);
+}
+
+
+
+void DataSetPackage::rowDelete(size_t row)
+{
+	setSynchingExternally(false); //Don't synch with external file after editing
+	beginSynchingData(false);
+	stringvec changed;
+
+	for(int c=0; c<columnCount(); c++)
+	{
+		const std::string name = getColumnName(c);
+		changed.push_back(name);
+
+		std::vector<std::string>	colVals = getColumnDataStrs(c);
+
+		colVals.erase(colVals.begin() + row);
+		colVals.push_back("");
+
+		initColumnWithStrings(c, name, colVals);
+	}
+
+	setDataSetSize(columnCount(), rowCount()-1);
+
+	std::map<std::string, std::string>		changeNameColumns;
+	std::vector<std::string>				missingColumns;
+
+	endSynchingData(changed, missingColumns, changeNameColumns, true, false, false);
+}
+
 bool DataSetPackage::createColumn(std::string name, columnType columnType)
 {
 	if(getColumnIndex(name) >= 0) return false;
@@ -1630,9 +1946,35 @@ void DataSetPackage::databaseStartSynching(bool syncImmediately)
 		
 		if(syncImmediately)
 			emit synchingIntervalPassed();
+
+		emit synchingExternallyChanged();
 	}
 }
 
+bool DataSetPackage::synchingExternally() const
+{
+	return PreferencesModel::prefs()->dataAutoSynchronization() && (_dataFilePath != "" || (_database != Json::nullValue && _databaseIntervalSyncher.isActive()));
+}
+
+void DataSetPackage::setSynchingExternally(bool synchingExternally_)
+{
+	if(synchingExternally() == synchingExternally_)
+		return;
+
+	if (!synchingExternally_)
+	{
+		PreferencesModel::prefs()->setDataAutoSynchronization(false);
+	}
+	else
+	{
+		if(_dataFilePath == "")
+			emit askUserForExternalDataFile();
+		else
+			PreferencesModel::prefs()->setDataAutoSynchronization(true);
+	}
+
+	emit synchingExternallyChanged();
+}
 
 void DataSetPackage::setCurrentFile(QString currentFile)
 {
@@ -1676,7 +2018,6 @@ void DataSetPackage::setFolder(QString folder)
 	emit folderChanged();
 }
 
-
 QString DataSetPackage::name() const
 {
 	QFileInfo	file(_currentFile);
@@ -1685,6 +2026,16 @@ QString DataSetPackage::name() const
 		return file.completeBaseName();
 
 	return "JASP";
+}
+
+bool DataSetPackage::dataMode() const
+{
+	return RibbonModel::singleton()->dataMode();
+}
+
+QModelIndex DataSetPackage::lastCurrentCell()
+{
+ throw std::runtime_error("Not implemented!");
 }
 
 QString DataSetPackage::windowTitle() const

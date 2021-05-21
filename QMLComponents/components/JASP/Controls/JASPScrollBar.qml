@@ -26,13 +26,13 @@ Item
 									id							: scrollbar
 									width						: vertical ? breadth   : undefined
 									height						: vertical ? undefined : breadth
-									visible						: flickable.visible && ((vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0)
+									visible						: flickable.visible && ((vertical ? heightRatio : widthRatio ) < 1.0)
 
 	readonly	property int		visibleBreadth				: bigBar ? jaspTheme.scrollbarBoxWidthBig : jaspTheme.scrollbarBoxWidth
 				property int		breadth						: visible ? visibleBreadth : 0
 				property int		extraMarginRightOrBottom	: 0
 				property int		extraMarginLeftOrTop		: 0
-				property Flickable	flickable					: null
+				property Item		flickable					: null
 				property int		minimumLength				: 16 * preferencesModel.uiScale
 				property string		bkColor						: jaspTheme.white
 				property string		fgColor						: jaspTheme.gray
@@ -41,7 +41,9 @@ Item
 				property bool		vertical					: true
 				property bool		manualAnchor				: false
 				property bool		bigBar						: false
-
+				property real		heightRatio					: flickable.height / flickable.contentHeight
+				property real		widthRatio					: flickable.width /  flickable.contentWidth
+	
 	anchors
 	{
 		right:			manualAnchor ? undefined : flickable.right
@@ -59,24 +61,30 @@ Item
 
 	function scroll(movement)
 	{
-		if(vertical)	flickable.contentY = Math.max (0, Math.min (flickable.contentY + (flickable.height * movement), flickable.contentHeight - flickable.height));
-		else			flickable.contentX = Math.max (0, Math.min (flickable.contentX + (flickable.width  * movement), flickable.contentWidth  - flickable.width));
+		if(vertical)	flickable.contentY = Math.max (0, Math.min (flickable.contentY + (flickable.height * movement), flickable.contentHeight - flickable.height)) ;
+		else			flickable.contentX = Math.max (0, Math.min (flickable.contentX + (flickable.width  * movement), flickable.contentWidth  - flickable.width))  ;
 	}
 
-	function scrollDown() { scroll( 0.125); }
-	function scrollUp ()  { scroll(-0.125); }
+	function scrollDown(smallTicks = false) { scroll( (smallTicks ? 0.05 : 0.125) ); }
+	function scrollUp  (smallTicks = false)	{ scroll(-(smallTicks ? 0.05 : 0.125) ); }
 
-	function scrollWheel(wheel)
+	function scrollWheel(wheel, smallTicks=false)
 	{
-		if(scrollbar.vertical)
+		var tryVertical = true;
+		if(wheel.pixelDelta.y == 0 && wheel.angleDelta.y == 0)
+			tryVertical = false;
+		
+		if(tryVertical)
 		{
 					if(wheel.pixelDelta.y !== 0)	scrollbar.scroll(-wheel.pixelDelta.y / scrollbar.height)
-			else	if(wheel.angleDelta.y < 0)		scrollbar.scrollDown();
-			else	if(wheel.angleDelta.y > 0)		scrollbar.scrollUp();
+			else	if(wheel.angleDelta.y < 0)		scrollbar.scrollDown(smallTicks);
+			else	if(wheel.angleDelta.y > 0)		scrollbar.scrollUp(  smallTicks);
+			else									wheel.accepted = false
 		} else {
 					if(wheel.pixelDelta.x !== 0)	scrollbar.scroll(-wheel.pixelDelta.x / scrollbar.width)
-			else	if(wheel.angleDelta.x < 0)		scrollbar.scrollDown();
-			else	if(wheel.angleDelta.x > 0)		scrollbar.scrollUp();
+			else	if(wheel.angleDelta.x < 0)		scrollbar.scrollDown(smallTicks);
+			else	if(wheel.angleDelta.x > 0)		scrollbar.scrollUp(  smallTicks);
+			else									wheel.accepted = false
 		}
 	}
 	
@@ -134,8 +142,8 @@ Item
 
 			}
 
-			onClicked:	if(scrollbar.vertical)	flickable.contentY = (mouse.y / groove.height * (flickable.contentHeight - flickable.height));
-						else					flickable.contentX = (mouse.x / groove.width  * (flickable.contentWidth  - flickable.width));
+			onClicked:	if(scrollbar.vertical)	flickable.contentY = (mouse.y / groove.height * (flickable.contentHeight - flickable.height)) ;
+						else					flickable.contentX = (mouse.x / groove.width  * (flickable.contentWidth  - flickable.width))  ;
 
 		}
 	}
@@ -217,8 +225,8 @@ Item
 		Item
 		{
 			id:			handle;
-			height:		!scrollbar.vertical ? parent.height : Math.max (scrollbar.minimumLength, (flickable.visibleArea.heightRatio * groove.height))
-			width:		 scrollbar.vertical ? parent.width	: Math.max (scrollbar.minimumLength, (flickable.visibleArea.widthRatio  * groove.width))
+			height:		!scrollbar.vertical ? parent.height : Math.max (scrollbar.minimumLength, (scrollbar.heightRatio * groove.height))
+			width:		 scrollbar.vertical ? parent.width	: Math.max (scrollbar.minimumLength, (scrollbar.widthRatio  * groove.width))
 			anchors
 			{
 				top:	scrollbar.vertical ? undefined		: parent.top

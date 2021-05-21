@@ -34,3 +34,5 @@ ImageInverter               1.0 ImageInverter.qml
 PlotEditor                  1.0 PlotEditor/PlotEditor.qml
 ErrorMessage				1.0 ErrorMessage.qml
 EnginesWindow				1.0 EnginesWindow.qml
+ResizeDataDialog			1.0	ResizeDataDialog.qml
+RenameColumnDialog			1.0	RenameColumnDialog.qml

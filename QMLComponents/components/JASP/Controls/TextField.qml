@@ -221,19 +221,19 @@ TextInputBase
 
 	Rectangle
 	{
-		id:				afterLabelRect
-		width:			afterLabel.implicitWidth
-		height:			control.height
-		color:			debug ? jaspTheme.debugBackgroundColor : "transparent"
-		visible:		afterLabel.text && textField.visible
-		anchors.left:	control.right
+		id:					afterLabelRect
+		width:				afterLabel.implicitWidth
+		height:				control.height
+		color:				debug ? jaspTheme.debugBackgroundColor : "transparent"
+		visible:			afterLabel.text && textField.visible
+		anchors.left:		control.right
 		anchors.leftMargin: jaspTheme.labelSpacing
 		Label
 		{
-			id:			afterLabel
-			font:		jaspTheme.font
+			id:						afterLabel
+			font:					jaspTheme.font
 			anchors.verticalCenter: parent.verticalCenter
-			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 		}
 	}
 }

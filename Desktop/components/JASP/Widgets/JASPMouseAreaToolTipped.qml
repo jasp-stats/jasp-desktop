@@ -3,9 +3,10 @@ import QtQuick.Controls 2.2
 
 MouseArea
 {
-	id:				theMouseArea
-	anchors.fill:	parent
-	hoverEnabled:	true
+	id:							theMouseArea
+	//hoverEnabled:				true
+	propagateComposedEvents:	true
+	//preventStealing:			true
 
 	cursorShape:	dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
 
@@ -25,7 +26,7 @@ MouseArea
 		text:		theMouseArea.toolTipText
 		delay:		0
 		timeout:	theMouseArea.toolTipTimeOut
-		visible:	theMouseArea._toolTipVisible
+		visible:	theMouseArea._toolTipVisible && toolTipText != ""
 
 		x:			theMouseArea.mouseX - (width / 2)
 		y:			theMouseArea.mouseY + height

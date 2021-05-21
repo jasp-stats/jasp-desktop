@@ -70,7 +70,7 @@ Window
 
 	function changeFocusToFileMenu()
 	{
-		ribbon.focus = true;
+		ribbon.forceActiveFocus();
 		ribbon.showFileMenuPressed();
 	}
 
@@ -224,12 +224,9 @@ Window
 
 		CreateComputeColumnDialog	{ id: createComputeDialog	}
 		ModuleInstaller				{ id: moduleInstallerDialog	}
-		
-		PlotEditor
-		{
-			id:					plotEditingDialog
-			visible:			plotEditorModel.visible
-		}
+		ResizeDataDialog			{ id: resizeDataDialog		}
+		RenameColumnDialog			{ id: renameColumnDialog	}
+		PlotEditor					{ id: plotEditingDialog		}
 
 		/*MessageBox
 		{

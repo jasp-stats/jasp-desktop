@@ -54,8 +54,6 @@ public:
 	EngineRepresentation *	createNewEngine(bool addToEngines = true, int overrideChannel = -1);
 	EngineRepresentation *	createRCmdEngine();
 
-	std::string	currentStateForDebug() const;
-
 	int						rowCount(const QModelIndex & = QModelIndex())				const override;
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()													const override;
@@ -83,6 +81,9 @@ public slots:
 	void		enginesPrepareForData();
 	void		enginesReceiveNewData();
 	bool		isModuleInstallRequestActive(const QString & moduleName);
+	std::string	currentStateForDebug() const;
+	void		dataModeChanged(bool dataMode);
+	
 
 signals:
 	void		processNewFilterResult(const std::vector<bool> & filterResult, int requestID);

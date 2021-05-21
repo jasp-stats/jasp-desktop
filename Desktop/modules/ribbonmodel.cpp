@@ -21,6 +21,7 @@
 #include "utilities/appdirs.h"
 #include "utilities/messageforwarder.h"
 #include "log.h"
+#include "data/datasetpackage.h"
 
 using namespace Modules;
 
@@ -31,16 +32,20 @@ RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
 	if(_singleton) throw std::runtime_error("RibbonModel can only be instantiated once!");
 	_singleton = this;	
 
-	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleAdded,			this, &RibbonModel::addDynamicRibbonButtonModel		);
-	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel	);
-	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleReplaced,		this, &RibbonModel::dynamicModuleReplaced			);
-	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleChanged,		this, &RibbonModel::dynamicModuleChanged			);
+	_buttonNames = std::vector<stringvec>(2); //Analyses & Data
+
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleAdded,			this, &RibbonModel::addRibbonButtonModelFromDynamicModule	);
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel			);
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleReplaced,		this, &RibbonModel::dynamicModuleReplaced					);
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleChanged,		this, &RibbonModel::dynamicModuleChanged					);
 }
 
 void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
 {
 	DynamicModules::dynMods()->initializeInstalledModules();	
 	DynamicModules::dynMods()->insertCommonModuleNames(std::set<std::string>(commonModulesToLoad.begin(), commonModulesToLoad.end()));
+
+	addSpecialRibbonButtonsEarly();
 
 	auto loadModulesFromBundledOrUserData = [&](bool common)
 	{
@@ -80,7 +85,7 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 		if(!isModuleName(modName)) //Was it already added from commonModulesToLoad or extraModulesToLoad?
 			addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[modName]);
 
-	addRibbonButtonRPrompt();
+	addSpecialRibbonButtonsLate();
 
 	if(PreferencesModel::prefs()->modulesRemember())
 	{
@@ -90,7 +95,7 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 		{
 			std::string mod = enabledModule.toStdString();
 
-			if(_buttonModelsByName.count(mod) > 0)
+			if(_buttonModelsByName.count(mod) > 0 && _buttonModelsByName[mod]->remember())
 				_buttonModelsByName[mod]->setEnabled(true);
 		}
 	}
@@ -98,14 +103,46 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 
 void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module)
 {
-	RibbonButton * button = new RibbonButton(this, module);
-
-	addRibbonButtonModel(button);
+	addRibbonButtonModel(new RibbonButton(this, module), size_t(RowType::Analyses));
 }
 
-void RibbonModel::addRibbonButtonRPrompt()
+void RibbonModel::addSpecialRibbonButtonsEarly()
 {
-	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R (Beta)")), "Rlogo.svg", false, [&](){ emit showRCommander(); }, fq(tr("Execute R code in a console"))));
+	auto * switchData	=	new RibbonButton(this, "Data",			fq(tr("Edit Data")),		"data-button.svg",			false, [&](){ emit showData(); },									fq(tr("Switch JASP to data editing mode")),		false);
+	addRibbonButtonModel(	new RibbonButton(this, "Analyses",		fq(tr("Analyses")),			"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	fq(tr("Switch JASP to analyses mode")),			true),			size_t(RowType::Data)		);
+
+
+	auto * newData		=	new RibbonButton(this, "Data-New",		fq(tr("New Data")),			"data-button-new.svg",		false, [&](){ emit genShowEmptyData();  emit resizeData(); },			fq(tr("Open a workspace without data")),			true);
+	//auto * insertData	=	new RibbonButton(this, "Data-Insert",	fq(tr("Insert")),			"data-button-insert.svg",	insertDataEntries,														fq(tr("")),											false);
+	//auto * eraseData	=	new RibbonButton(this, "Data-Erase",	fq(tr("Erase")),			"data-button-erase.svg",	eraseDataEntries,														fq(tr("")),											false);
+	auto * resizeDataB	=	new RibbonButton(this, "Data-Resize",	fq(tr("Resize Data")),		"data-button-resize.svg",	false, [&](){ emit resizeData(); },										fq(tr("Resize your dataset")),						false);
+	//auto * externalEdit	=	new RibbonButton(this, "Data-External",	fq(tr("External Editor")),	"data-button-external.svg",	false, [&](){ DataSetPackage::pkg()->setSynchingExternally(true);  },	fq(tr("Open data in external editor")),				false);
+	//auto * internalEdit	=	new RibbonButton(this, "Data-Internal", fq(tr("Editing in JASP")),	"data-button-internal.svg",	false, [&](){ DataSetPackage::pkg()->setSynchingExternally(false); },	fq(tr("Stop synchronizing with external data")),	false);
+
+	connect(this, &RibbonModel::dataLoadedChanged, switchData,		&RibbonButton::setEnabled);
+	connect(this, &RibbonModel::dataLoadedChanged, newData,			[=](bool loaded){ newData->setEnabled(	 !loaded); });
+	//connect(this, &RibbonModel::dataLoadedChanged, insertData,		&RibbonButton::setEnabled);
+	//connect(this, &RibbonModel::dataLoadedChanged, eraseData,		&RibbonButton::setEnabled);
+	connect(this, &RibbonModel::dataLoadedChanged, resizeDataB,		&RibbonButton::setEnabled);
+
+	//connect(this, &RibbonModel::dataLoadedChanged,	externalEdit,	[=](bool loaded) { externalEdit->setEnabled(!DataSetPackage::pkg()->synchingExternally()); });
+	//connect(this, &RibbonModel::dataLoadedChanged,	internalEdit,	[=](bool loaded) { internalEdit->setEnabled(DataSetPackage::pkg()->synchingExternally()); });
+
+	//connect(DataSetPackage::pkg(),		&DataSetPackage::synchingExternallyChanged,			externalEdit,	[=]() { externalEdit->setEnabled(!DataSetPackage::pkg()->synchingExternally()); });
+	//connect(DataSetPackage::pkg(),		&DataSetPackage::synchingExternallyChanged,			internalEdit,	[=]() { internalEdit->setEnabled( DataSetPackage::pkg()->synchingExternally()); });
+
+	addRibbonButtonModel(switchData,	size_t(RowType::Analyses));
+	addRibbonButtonModel(newData,		size_t(RowType::Analyses));
+	//addRibbonButtonModel(insertData,	size_t(RowType::Data));
+	//addRibbonButtonModel(eraseData,		size_t(RowType::Data));
+	addRibbonButtonModel(resizeDataB,	size_t(RowType::Data));
+	//addRibbonButtonModel(externalEdit,	size_t(RowType::Data));
+	//addRibbonButtonModel(internalEdit,	size_t(RowType::Data));
+}
+
+void RibbonModel::addSpecialRibbonButtonsLate()
+{
+	addRibbonButtonModel(new RibbonButton(this, "R",			fq(tr("R (Beta)")),		"Rlogo.svg",			false, [&](){ emit showRCommander(); }, fq(tr("Execute R code in a console")), false, true),	size_t(RowType::Analyses)	);
 }
 
 void RibbonModel::dynamicModuleChanged(Modules::DynamicModule * dynMod)
@@ -117,17 +154,19 @@ void RibbonModel::dynamicModuleChanged(Modules::DynamicModule * dynMod)
 			nameButton.second->reloadDynamicModule(dynMod);
 }
 
-void RibbonModel::addRibbonButtonModel(RibbonButton* model)
+void RibbonModel::addRibbonButtonModel(RibbonButton* model, size_t row)
 {
-	if(isModuleName(model->moduleName()))
-		removeRibbonButtonModel(model->moduleName());
+	if(isModuleName(model->name()))
+		removeRibbonButtonModel(model->name());
 
-	beginInsertRows(QModelIndex(), rowCount(), rowCount());
+	if(_currentRow == row)
+		emit beginInsertRows(QModelIndex(), rowCount(), rowCount());
 
-	_moduleNames.push_back(model->moduleName());
-	_buttonModelsByName[model->moduleName()] = model;
+	_buttonNames[row].push_back(model->name());
+	_buttonModelsByName[model->name()] = model;
 
-	endInsertRows();
+	if(_currentRow == row)
+		emit endInsertRows();
 
 	connect(model, &RibbonButton::iChanged,				this, &RibbonModel::ribbonButtonModelChanged);
 }
@@ -154,7 +193,7 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 	case EnabledRole:		return ribbonButtonModelAt(row)->enabled();
 	case ActiveRole:		return ribbonButtonModelAt(row)->active();
 	case CommonRole:		return ribbonButtonModelAt(row)->isCommon();
-	case ModuleNameRole:	return ribbonButtonModelAt(row)->moduleNameQ();
+	case ModuleNameRole:	return ribbonButtonModelAt(row)->nameQ();
 	case ModuleRole:		return QVariant::fromValue(ribbonButtonModelAt(row)->dynamicModule());
 	case BundledRole:		return ribbonButtonModelAt(row)->isBundled();
 	case VersionRole:		return ribbonButtonModelAt(row)->version();
@@ -198,31 +237,53 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 	if(!isModuleName(moduleName))
 		return;
 
-	int indexRemoved = -1;
+	for(size_t row=0; row<size_t(RowType::Data); row++)
+	{
+		int indexRemoved = -1;
 
-	for(int i=_moduleNames.size() - 1; i >= 0; i--)
-		if(_moduleNames[i] == moduleName)
+		for(int i=_buttonNames.size() - 1; i >= 0; i--)
+			if(_buttonNames[row][i] == moduleName)
+			{
+				indexRemoved = i;
+				break;
+			}
+
+		if(indexRemoved != -1)
 		{
-			indexRemoved = i;
-			break;
+			if(row == _currentRow)
+				beginRemoveRows(QModelIndex(), indexRemoved, indexRemoved);
+
+			delete _buttonModelsByName[moduleName];
+			_buttonModelsByName.erase(moduleName);
+
+			_buttonNames[row].erase(_buttonNames[row].begin() + indexRemoved);
+
+			if(row == _currentRow)
+				endRemoveRows();
 		}
-
-	emit beginRemoveRows(QModelIndex(), indexRemoved, indexRemoved);
-
-	delete _buttonModelsByName[moduleName];
-	_buttonModelsByName.erase(moduleName);
-
-	_moduleNames.erase(_moduleNames.begin() + indexRemoved);
-
-	emit endRemoveRows();
+	}
 }
 
 void RibbonModel::analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
 {
 	RibbonButton * button = ribbonButtonModel(fq(module));
 
-	if(button->isSpecial())		button->runSpecial();
+	if(button->isSpecial())		button->runSpecial(analysisFunction);
 	else						emit analysisClickedSignal(analysisFunction, analysisQML, analysisTitle, module);
+}
+
+void RibbonModel::setCurrentRow(int currentRow)
+{
+	size_t cur = currentRow;
+	if (_currentRow == cur)
+		return;
+
+	beginResetModel();
+	_currentRow = cur;
+	endResetModel();
+
+	emit currentRowChanged();
+	emit dataModeChanged(dataMode());
 }
 
 void RibbonModel::setHighlightedModuleIndex(int highlightedModuleIndex)
@@ -253,9 +314,9 @@ QStringList RibbonModel::getModulesEnabled() const
 {
 	QStringList list;
 	
-	for(auto nameButton : _buttonModelsByName)
+	for(auto & nameButton : _buttonModelsByName)
 		if(nameButton.second->enabled())
-			list.append(nameButton.second->moduleNameQ());
+			list.append(nameButton.second->nameQ());
 	
 	return list;
 }
@@ -269,7 +330,7 @@ Modules::AnalysisEntry *RibbonModel::getAnalysis(std::string moduleName, const s
 	RibbonButton			* ribbonButton	= ribbonButtonModel(moduleName);
 
 	if (ribbonButton)
-		return ribbonButton->getAnalysis(analysisName);
+		return ribbonButton->getEntry(analysisName);
 	else
 	{
 		std::string strippedModuleName = stringUtils::stripNonAlphaNum(moduleName);
@@ -286,8 +347,8 @@ Modules::AnalysisEntry *RibbonModel::getAnalysis(std::string moduleName, const s
 std::string RibbonModel::getModuleNameFromAnalysisName(const std::string & analysisName)
 {
 	// This function is needed for old JASP file: they still have a reference to the common module that does not exist anymore.
-	for (const std::string & moduleName : _moduleNames)
-		for (const std::string & name : _buttonModelsByName[moduleName]->getAllAnalysisNames())
+	for (const std::string & moduleName : _buttonNames[size_t(RowType::Analyses)])
+		for (const std::string & name : _buttonModelsByName[moduleName]->getAllEntries())
 			if (name == analysisName)
 				return moduleName;
 
@@ -310,8 +371,8 @@ int RibbonModel::ribbonButtonModelIndex(RibbonButton * model)	const
 {
 	for(auto & keyval : _buttonModelsByName)
 		if(keyval.second == model)
-			for(size_t i=0; i<_moduleNames.size(); i++)
-				if(_moduleNames[i] == keyval.first)
+			for(size_t i=0; i<_buttonNames[_currentRow].size(); i++)
+				if(_buttonNames[_currentRow][i] == keyval.first)
 					return int(i);
 	return -1;
 }
@@ -320,7 +381,8 @@ int RibbonModel::ribbonButtonModelIndex(RibbonButton * model)	const
 void RibbonModel::ribbonButtonModelChanged(RibbonButton* model)
 {
 	int row = ribbonButtonModelIndex(model);
-	emit dataChanged(index(row), index(row));
+	if(row > -1)
+		emit dataChanged(index(row), index(row));
 }
 
 /*void RibbonModel::moduleLoadingSucceeded(const QString & moduleName)

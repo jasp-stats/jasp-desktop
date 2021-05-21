@@ -23,6 +23,10 @@
 namespace Modules
 {
 
+AnalysisEntry::AnalysisEntry(std::function<void ()> specialFunc, std::string menuTitle, bool requiresData, std::string icon)
+	: _title(menuTitle), _function(menuTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(!specialFunc), _requiresData(requiresData), _icon(icon), _specialFunc(specialFunc)
+{}
+
 AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData) :
 	_title(				analysisEntry.get("title",			"???").asString()				),
 	_function(			analysisEntry.get("function",		"???").asString()				),
@@ -97,6 +101,16 @@ std::string AnalysisEntry::codedReference() const
 std::string	AnalysisEntry::buttonMenuString() const
 {
 	return dynamicModule() == nullptr ? function() : codedReference();
+}
+
+
+bool AnalysisEntry::requiresDataEntries(const AnalysisEntries & entries)
+{
+	for(const AnalysisEntry * entry : entries)
+		if(!entry->requiresData())
+			return false;
+
+	return true;
 }
 
 } // namespace Modules
