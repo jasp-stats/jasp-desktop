@@ -23,6 +23,29 @@
 namespace Modules
 {
 
+AnalysisEntry::AnalysisEntry(std::function<void ()> specialFunc, std::string menuTitle, bool requiresData, std::string icon)
+	: _title(menuTitle), _function(menuTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(!specialFunc), _requiresData(requiresData), _icon(icon), _specialFunc(specialFunc)
+{}
+
+AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData) :
+	_title(				analysisEntry.get("title",			"???").asString()				),
+	_function(			analysisEntry.get("function",		"???").asString()				),
+	_qml(				analysisEntry.get("qml",			_function != "???" ? _function + ".qml" : "???").asString()			),
+	_menu(				analysisEntry.get("menu",			_title).asString()				),
+	_dynamicModule(		dynamicModule														),
+	_isSeparator(		true),
+	_requiresData(		analysisEntry.get("requiresData",	defaultRequiresData).asBool()	),
+	_icon(				analysisEntry.get("icon",			"").asString()					)
+{
+	for (size_t i = 0; i < _title.length(); ++i)
+		if (_title[i] != '-') _isSeparator = false;
+
+	_isGroupTitle	= !_isSeparator && !(analysisEntry.isMember("qml") || analysisEntry.isMember("function"));
+	_isAnalysis		= !_isGroupTitle && !_isSeparator;
+}
+
+AnalysisEntry::AnalysisEntry(){}
+
 DynamicModule*	AnalysisEntry::dynamicModule() const
 {
 	return _dynamicModule;
@@ -78,6 +101,16 @@ std::string AnalysisEntry::codedReference() const
 std::string	AnalysisEntry::buttonMenuString() const
 {
 	return dynamicModule() == nullptr ? function() : codedReference();
+}
+
+
+bool AnalysisEntry::requiresDataEntries(const AnalysisEntries & entries)
+{
+	for(const AnalysisEntry * entry : entries)
+		if(!entry->requiresData())
+			return false;
+
+	return true;
 }
 
 } // namespace Modules
