@@ -51,3 +51,5 @@ PlotEditor                  1.0 PlotEditor/PlotEditor.qml
 FactorsList					1.0 FactorsList.qml
 FactorsForm					1.0 FactorsForm.qml
 ErrorMessage				1.0 ErrorMessage.qml
+ResizeDataDialog			1.0	ResizeDataDialog.qml
+RenameColumnDialog			1.0	RenameColumnDialog.qml

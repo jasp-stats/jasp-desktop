@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.12
-import QtWebEngine		1.7
+import QtQuick			2.15
+import QtWebEngine		1.8
 import QtWebChannel		1.0
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
@@ -29,7 +29,8 @@ Item
 
 	onWidthChanged:
 	{
-		if(!mainWindow.analysesAvailable)												data.maximizeData();
+
+		if(!mainWindow.analysesAvailable || ribbonModel.dataMode)						data.maximizeData();
 		else if(data.wasMaximized)														return; //wasMaximized binds!
 		else if(splitViewContainer.width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
 	}
@@ -58,7 +59,7 @@ Item
 			z:						1
 			leftHandSpace:			panelSplit.leftHandSplitHandlerSpace
 
-			property real baseMaxWidth:					fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0)
+			property real baseMaxWidth:					fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable && !ribbonModel.dataMode ? jaspTheme.splitHandleWidth : 0)
 			property real maxWidth:						leftHandSpace + baseMaxWidth
 			property bool fakeEmptyDataForSumStatsEtc:	!mainWindow.dataAvailable && mainWindow.analysesAvailable
 			property bool wasMaximized:					false
@@ -121,7 +122,8 @@ Item
 		handle: Item
 		{
 			implicitWidth:			splitHandle.width + analyses.implicitWidth
-			width:					implicitWidth
+			width:					visible ? implicitWidth : 0
+			visible:				!ribbonModel.dataMode
 
 			JASPSplitHandle
 			{
@@ -152,7 +154,7 @@ Item
 			SplitView.preferredWidth:		jaspTheme.resultWidth + panelSplit.hackySplitHandlerHideWidth
 			SplitView.fillWidth:			true
 			z:								3
-			visible:						mainWindow.analysesAvailable
+			visible:						mainWindow.analysesAvailable && !ribbonModel.dataMode
 			onVisibleChanged:				if(visible) width = jaspTheme.resultWidth; else data.maximizeData()
 			color:							analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
 

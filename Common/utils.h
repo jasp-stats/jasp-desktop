@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include <limits>
+#include <set>
 #include <boost/filesystem.hpp>
 #include "timers.h"
 
@@ -63,6 +64,9 @@ public:
 	static bool getIntValue(const double& value, int& intValue);
 	static bool getDoubleValue(const std::string& value, double& doubleValue);
 
+	static bool convertVecToInt(const std::vector<std::string> &values, std::vector<int> &intValues, std::set<int> &uniqueValues, std::map<int, std::string> &emptyValuesMap);
+	static bool convertVecToDouble(const std::vector<std::string> &values, std::vector<double> &doubleValues, std::map<int, std::string> &emptyValuesMap);
+	
 	static bool isEmptyValue(const std::string& val);
 	static bool isEmptyValue(const double& val);
 

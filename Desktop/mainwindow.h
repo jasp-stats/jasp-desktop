@@ -235,6 +235,7 @@ private slots:
 	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
 	void resetQmlCache();
+	void onDataModeChanged(bool dataMode) { if(analysesAvailable()) setDataPanelVisible(dataMode); }
 	void jaspThemeChanged(JaspTheme * newTheme);
 	void printQmlWarnings(const QList<QQmlError> &warnings);
 	void setQmlImportPaths();

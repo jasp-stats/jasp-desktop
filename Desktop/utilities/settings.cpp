@@ -69,7 +69,7 @@ const Settings::Setting Settings::Values[] = {
 	{"maxEngineCountAdmin",			0		}, //If set to something >0 it will be the max allowed max engine count. This is here to allow admins to override the number of processes spawned as they might each consume quite some RAM.
 	{"GITHUB_PAT_Custom",			""		},
 	{"GITHUB_PAT_UseDefault",		true	},
-	{"WindowsNoBomNative",			false	}, //false as default because then we keep the behaviour we had before.
+	{"WindowsNoBomNative",			true	}, //true because SKF uses excel
 	{"dbImportDbType",				0		},
 	{"dbImportDbName",				""		},
 	{"dbImportHostName",			""		},

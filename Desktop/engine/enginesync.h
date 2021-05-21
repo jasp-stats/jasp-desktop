@@ -69,6 +69,7 @@ public slots:
 	void		filterDone(int requestID);
 	std::string	currentStateForDebug() const;
 	void		haveYouTriedTurningItOffAndOnAgain() { stopEngines(); restartEngines(); } // https://www.youtube.com/watch?v=DPqdyoTpyEs
+	void		dataModeChanged(bool dataMode);
 	
 signals:
 	void		processNewFilterResult(const std::vector<bool> & filterResult, int requestID);

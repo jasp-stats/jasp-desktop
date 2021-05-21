@@ -1070,6 +1070,8 @@ void Column::append(int rows)
 	if (rows == 0)
 		return;
 
+	size_t originalRowCount = _rowCount;
+
 	BlockMap::reverse_iterator itr = _blocks.rbegin();
 
 	if (itr == _blocks.rend()) // no blocks
@@ -1091,39 +1093,65 @@ void Column::append(int rows)
 	{
 		block->insert(rows);
 		_rowCount += rows;
-		return;
+		goto finishingUp; //yeah yeah this is a goto, no problem right?
 	}
 
-	block->insert(room);
-	_rowCount += room;
-
-	int newBlocksRequired = rowsLeft / DataBlock::capacity();
-	if (rowsLeft % DataBlock::capacity())
-		newBlocksRequired++;
-
-	for (int i = 0; i < newBlocksRequired; i++)
+	//Extra scope to avoid var init between goto and label
 	{
-		try {
+		block->insert(room);
+		_rowCount += room;
 
-		DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
+		int newBlocksRequired = rowsLeft / DataBlock::capacity();
+		if (rowsLeft % DataBlock::capacity())
+			newBlocksRequired++;
 
-		int toInsert = min(rowsLeft, DataBlock::capacity());
-		newBlock->insert(toInsert);
-		rowsLeft -= toInsert;
-
-		id += DataBlock::capacity();
-		_blocks.insert(BlockEntry(id, newBlock));
-
-		_rowCount += toInsert;
-
-		}
-		catch (boost::interprocess::bad_alloc &e)
+		for (int i = 0; i < newBlocksRequired; i++)
 		{
-			std::cout << e.what() << " ";
-			std::cout << "append column " << name() << ", append: " << rows << ", rowCount: " << _rowCount << std::endl;
-			throw e;
+			try {
+
+			DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
+
+			int toInsert = min(rowsLeft, DataBlock::capacity());
+			newBlock->insert(toInsert);
+			rowsLeft -= toInsert;
+
+			id += DataBlock::capacity();
+			_blocks.insert(BlockEntry(id, newBlock));
+
+			_rowCount += toInsert;
+
+			}
+			catch (boost::interprocess::bad_alloc &e)
+			{
+				cout << e.what() << " ";
+				cout << "append column " << name() << ", append: " << rows << ", rowCount: " << _rowCount << std::endl;
+				throw e;
+			}
 		}
 	}
+
+finishingUp:
+
+	//Make sure the new rows are empty looking
+	switch(_columnType)
+	{
+	case columnType::unknown:
+	case columnType::scale:
+		for(size_t r=originalRowCount; r<_rowCount; r++)
+			AsDoubles[r] = NAN;
+		break;
+
+	case columnType::ordinal:
+	case columnType::nominal:
+		for(size_t r=originalRowCount; r<_rowCount; r++)
+			AsInts[r] = INT_MIN;
+		break;
+
+	case columnType::nominalText:
+		break;
+	}
+
+
 }
 
 void Column::truncate(int rows)
@@ -1137,6 +1165,8 @@ void Column::truncate(int rows)
 
 	if (rowsToDelete > _rowCount)
 		rowsToDelete = _rowCount;
+	
+	std::vector<DataBlock*> destroyThese;
 
 	while (rowsToDelete > 0)
 	{
@@ -1151,7 +1181,7 @@ void Column::truncate(int rows)
 			rowsToDelete -= block->rowCount();
 			_rowCount -= block->rowCount();
 			block->erase(block->rowCount());
-			//_mem->destroy_ptr<DataBlock>(block);
+			destroyThese.push_back(block);
 			itr++;
 			if (itr == _blocks.rend())
 			{
@@ -1165,6 +1195,19 @@ void Column::truncate(int rows)
 			}
 		}
 	}
+	
+	for(DataBlock * block : destroyThese)
+	{
+		_mem->destroy_ptr<DataBlock>(block);
+		
+		for(const auto & keyval : _blocks)
+			if(keyval.second == block)
+			{
+				_blocks.erase(keyval.first);
+				break;
+			}
+	}
+
 }
 
 void Column::setColumnType(enum columnType columnType)

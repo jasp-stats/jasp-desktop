@@ -17,17 +17,25 @@
 //
 
 
-#include "analysismenumodel.h"
+#include "menumodel.h"
 #include "modules/ribbonbutton.h"
 
 
-AnalysisMenuModel::AnalysisMenuModel(RibbonButton *parent, Modules::DynamicModule * module)
+MenuModel::MenuModel(RibbonButton *parent, Modules::DynamicModule * module)
 	: QAbstractListModel(parent), _ribbonButton(parent), _module(module)
 {
 
 }
 
-QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
+MenuModel::MenuModel(RibbonButton * parent, Modules::AnalysisEntries * entries)
+: QAbstractListModel(parent), _ribbonButton(parent), _entries(entries)
+{
+	for(const auto * entry : *_entries)
+		if(entry->icon() != "")
+			_hasIcons = true;
+}
+
+QVariant MenuModel::data(const QModelIndex &index, int role) const
 {
 	if (index.row() >= rowCount())
 		return QVariant();
@@ -47,7 +55,7 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 }
 
 
-QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
+QHash<int, QByteArray> MenuModel::roleNames() const
 {
 	static const auto roles = QHash<int, QByteArray>{
 		{	DisplayRole,            "displayText"		},
@@ -61,25 +69,23 @@ QHash<int, QByteArray> AnalysisMenuModel::roleNames() const
 	return roles;
 }
 
-Modules::AnalysisEntry *AnalysisMenuModel::getAnalysisEntry(const std::string& name)
+Modules::AnalysisEntry *MenuModel::getAnalysisEntry(const std::string& func)
 {
 	for (Modules::AnalysisEntry* analysis : analysisEntries())
 	{
-		if (analysis->function() == name)
+		if (analysis->function() == func)
 			return analysis;
 	}
 
 	return nullptr;
 }
 
-const std::vector<Modules::AnalysisEntry*> &	AnalysisMenuModel::analysisEntries() const
+const std::vector<Modules::AnalysisEntry*> &	MenuModel::analysisEntries() const
 {
-	static const std::vector<Modules::AnalysisEntry*> dummy;
-
-	return _module ? _module->menu() : dummy;
+	return _module ? _module->menu() : *_entries;
 }
 
-bool AnalysisMenuModel::isAnalysisEnabled(int index)
+bool MenuModel::isAnalysisEnabled(int index)
 {
 	return analysisEntries().at(index)->isEnabled() && (!analysisEntries().at(index)->requiresData() || _ribbonButton->dataLoaded());
 }

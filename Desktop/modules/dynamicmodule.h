@@ -100,7 +100,7 @@ public:
 	std::string			name()				const { return _name;									}
 	QString				nameQ()				const { return QString::fromStdString(name());			}
 	std::string			title()				const { return (isDevMod() ? "Dev: " : "") + _title;	}
-	bool				requiresData()		const;
+	bool				requiresData()		const { return AnalysisEntry::requiresDataEntries(_menuEntries); }
 	std::string			author()			const { return _author;									}
 	std::string			version()			const { return _version;								}
 	QString				versionQ()			const { return QString::fromStdString(_version);		}
