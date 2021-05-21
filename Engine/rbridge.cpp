@@ -814,7 +814,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	rbridge_dataSet = rbridge_dataSetSource();
 
 	if(rbridge_dataSet == nullptr)
-		throw filterException("No more data!");
+		throw filterException("rbridge_dataSet == nullptr!");
 
 	int rowCount = rbridge_dataSet->rowCount();
 

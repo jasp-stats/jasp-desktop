@@ -496,6 +496,8 @@ void EngineSync::fixPATHForWindows(QProcessEnvironment & env)
 #endif
 	
 	env.insert("PATH", AppDirs::programDir().absolutePath() + ";" + QDir(AppDirs::rHome()).absoluteFilePath("bin") + ";" + QDir(AppDirs::rHome()).absoluteFilePath("bin/" + R_ARCH)); // + rtoolsInPath); 
+
+	Log::log() << "Windows PATH was changed to: '" << env.value("PATH", "???") << "'" << std::endl;
 }
 #endif
 
