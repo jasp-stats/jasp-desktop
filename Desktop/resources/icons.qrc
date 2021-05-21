@@ -205,7 +205,6 @@
         <file>icons/lightTheme/jasp-logo-black.svg</file>
         <file>icons/darkTheme/code-icon.png</file>
         <file>icons/lightTheme/code-icon.png</file>
-        <file>icons/Rlogo.svg</file>
         <file>icons/lightTheme/redo.svg</file>
         <file>icons/lightTheme/undo.svg</file>
         <file>icons/darkTheme/undo.svg</file>
@@ -214,5 +213,20 @@
         <file>icons/lightTheme/cross-sign-small-red.svg</file>
         <file>icons/darkTheme/addition-sign-small-green.svg</file>
         <file>icons/darkTheme/cross-sign-small-red.svg</file>
+        <file>icons/darkTheme/Rlogo.svg</file>
+        <file>icons/lightTheme/Rlogo.svg</file>
+        <file>icons/darkTheme/data-button.svg</file>
+        <file>icons/darkTheme/data-button-new.svg</file>
+        <file>icons/darkTheme/data-button-insert.svg</file>
+        <file>icons/darkTheme/data-button-erase.svg</file>
+        <file>icons/darkTheme/data-button-external.svg</file>
+        <file>icons/lightTheme/data-button-erase.svg</file>
+        <file>icons/lightTheme/data-button-external.svg</file>
+        <file>icons/lightTheme/data-button-insert.svg</file>
+        <file>icons/lightTheme/data-button-new.svg</file>
+        <file>icons/darkTheme/data-button-resize.svg</file>
+        <file>icons/lightTheme/data-button-resize.svg</file>
+        <file>icons/lightTheme/data-button.svg</file>
+        <file>icons/darkTheme/data-button-internal.svg</file>
     </qresource>
 </RCC>

@@ -271,11 +271,11 @@ const Label &Labels::getLabelObjectFromKey(int index) const
 			return label;
 	}
 
-	Log::log() << "Cannot find entry " << index << std::endl;
+	/*Log::log() << "Cannot find entry " << index << std::endl;
 	for(const Label &label: _labels)
 	{
 		Log::log() << "Label Value: " << label.value() << ", Text: " << label.text() << std::endl;
-	}
+	}*/
 
 	throw labelNotFound("Cannot find this entry");
 }
@@ -351,7 +351,7 @@ string Labels::getValueFromKey(int key) const
 	}
 	catch (const labelNotFound & e)
 	{
-		Log::log() << "Label not found, msg: " << e.what() << ", returning emptyValue\n";
+		//Log::log() << "Label not found, msg: " << e.what() << ", returning emptyValue\n";
 		return Utils::emptyValue;
 	}
 }

@@ -23,16 +23,20 @@
 #include <string>
 #include <vector>
 #include "jsonredirect.h"
+#include <functional>
 
 namespace Modules
 {
 class DynamicModule;
 class EntryBase;
+class AnalysisEntry;
+typedef std::vector<AnalysisEntry*> AnalysisEntries;
 
 class AnalysisEntry
 {
 	friend EntryBase;
 public:
+	AnalysisEntry(std::function<void()> specialFunc, std::string menuTitle, bool requiresData=true, std::string icon = "");
 	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);
 	AnalysisEntry();
 
@@ -57,21 +61,24 @@ public:
 	std::string		codedReference()		const;
 	std::string		buttonMenuString()		const;
 
-private:
-	std::string		_title			= "???",
-					_function		= "???",
-					_qml			= "???",
-					_menu			= "???";
-	DynamicModule*	_dynamicModule	= nullptr;
-	bool			_isSeparator	= true,
-					_isGroupTitle	= false,
-					_isAnalysis		= false,
-					_isEnabled		= true,
-					_requiresData	= true;
-	std::string		_icon			= "";
-};
+	void			runSpecialFunc()		const { _specialFunc(); }
 
-typedef std::vector<AnalysisEntry*> AnalysisEntries;
+	static bool		requiresDataEntries(const AnalysisEntries & entries);
+
+private:
+	std::string				_title			= "???"		,
+							_function		= "???"		,
+							_qml			= "???"		,
+							_menu			= "???"		;
+	DynamicModule*			_dynamicModule	= nullptr	;
+	bool					_isSeparator	= true		,
+							_isGroupTitle	= false		,
+							_isAnalysis		= false		,
+							_isEnabled		= true		,
+							_requiresData	= true		;
+	std::string				_icon			= ""		;
+	std::function<void()>	_specialFunc	= nullptr;
+};
 
 }
 

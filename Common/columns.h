@@ -53,6 +53,7 @@ public:
 
 	void removeColumn(size_t index);
 	void removeColumn(std::string name);
+	void insertColumn(size_t index);
 
 	ColumnVector _columnStore;
 

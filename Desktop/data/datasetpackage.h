@@ -41,13 +41,15 @@ class EngineSync;
 class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940 (And this being a tree model)
 {
 	Q_OBJECT
-	Q_PROPERTY(int			columnsFilteredCount	READ columnsFilteredCount							NOTIFY columnsFilteredCountChanged	)
-	Q_PROPERTY(QString		name					READ name											NOTIFY nameChanged					)
-	Q_PROPERTY(QString		folder					READ folder					WRITE setFolder			NOTIFY folderChanged				)
-	Q_PROPERTY(QString		windowTitle				READ windowTitle									NOTIFY windowTitleChanged			)
-	Q_PROPERTY(bool			modified				READ isModified				WRITE setModified		NOTIFY isModifiedChanged			)
-	Q_PROPERTY(bool			loaded					READ isLoaded				WRITE setLoaded			NOTIFY loadedChanged				)
-	Q_PROPERTY(QString		currentFile				READ currentFile			WRITE setCurrentFile	NOTIFY currentFileChanged			)
+	Q_PROPERTY(int			columnsFilteredCount	READ columnsFilteredCount								NOTIFY columnsFilteredCountChanged	)
+	Q_PROPERTY(QString		name					READ name												NOTIFY nameChanged					)
+	Q_PROPERTY(QString		folder					READ folder					WRITE setFolder				NOTIFY folderChanged				)
+	Q_PROPERTY(QString		windowTitle				READ windowTitle										NOTIFY windowTitleChanged			)
+	Q_PROPERTY(bool			modified				READ isModified				WRITE setModified			NOTIFY isModifiedChanged			)
+	Q_PROPERTY(bool			loaded					READ isLoaded				WRITE setLoaded				NOTIFY loadedChanged				)
+	Q_PROPERTY(QString		currentFile				READ currentFile			WRITE setCurrentFile		NOTIFY currentFileChanged			)
+	Q_PROPERTY(bool			dataMode				READ dataMode											NOTIFY dataModeChanged				)
+	Q_PROPERTY(bool			synchingExternally		READ synchingExternally		WRITE setSynchingExternally NOTIFY synchingExternallyChanged	)
 
 	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
 
@@ -61,6 +63,7 @@ public:
 							~DataSetPackage() { _singleton = nullptr; }
 		void				setEngineSync(EngineSync * engineSync);
 		void				reset();
+		void				resizeData(size_t rowCount, size_t columnCount); //Should do reset and such things unlike setDataSetSize
 		void				setDataSetSize(size_t columnCount, size_t rowCount);
 		void				setDataSetColumnCount(size_t columnCount)			{ setDataSetSize(columnCount,			dataRowCount()); }
 		void				setDataSetRowCount(size_t rowCount)					{ setDataSetSize(dataColumnCount(),		rowCount); }
@@ -76,16 +79,19 @@ public:
 		
 		void				waitForExportResultsReady();
 
-		void				beginLoadingData();
-		void				endLoadingData();
-		void				beginSynchingData();
-		void				endSynchingDataChangedColumns(std::vector<std::string>	&	changedColumns);
+		void				beginLoadingData(	bool informEngines = true);
+		void				endLoadingData(		bool informEngines = true);
+		void				beginSynchingData(	bool informEngines = true);
+		void				endSynchingDataChangedColumns(std::vector<std::string>	&	changedColumns,		bool hasNewColumns = false, bool informEngines = true);
 		void				endSynchingData(std::vector<std::string>				&	changedColumns,
 											std::vector<std::string>				&	missingColumns,
 											std::map<std::string, std::string>		&	changeNameColumns,  //origname -> newname
 											bool										rowCountChanged,
-											bool										hasNewColumns);
+											bool										hasNewColumns,		bool informEngines = true);
 
+		
+		
+		void initColumnWithStrings(QVariant colId, std::string newName, const std::vector<std::string> &values);
 
 		QHash<int, QByteArray>		roleNames()																					const	override;
 				int					rowCount(	const QModelIndex &parent = QModelIndex())										const	override;
@@ -110,6 +116,8 @@ public:
 				std::string			id()								const	{ return _id;							}
 				QString				name()								const;
 				QString				folder()							const	{ return _folder;						}
+				bool				dataMode()							const;
+				
 				bool				isReady()							const	{ return _analysesHTMLReady;			}
 				bool				isLoaded()							const	{ return _isLoaded;						 }
 				bool				isArchive()							const	{ return _isArchive;					  }
@@ -140,7 +148,7 @@ public:
 				void				setAnalysesData(Json::Value analysesData)		{ _analysesData					= analysesData;		}
 				void				setArchiveVersion(Version archiveVersion)		{ _archiveVersion				= archiveVersion;	}
 				void				setWarningMessage(std::string message)			{ _warningMessage				= message;			}
-				void				setDataFilePath(std::string filePath)			{ _dataFilePath					= filePath;			}
+				void				setDataFilePath(std::string filePath)			{ _dataFilePath					= filePath;			emit synchingExternallyChanged();	}
 				void				setInitialMD5(std::string initialMD5)			{ _initialMD5					= initialMD5;		}
 				void				setDataFileTimestamp(uint timestamp)			{ _dataFileTimestamp			= timestamp;		}
 				void				setDataFileReadOnly(bool readOnly)				{ _dataFileReadOnly				= readOnly;			}
@@ -153,7 +161,7 @@ public:
 				void				setAnalysesHTMLReady()							{ _analysesHTMLReady			= true;				}
 				void				setId(std::string id)							{ _id							= id;				}
 				void				setWaitingForReady()							{ _analysesHTMLReady			= false;			}
-				void				setLoaded(bool loaded = true);
+				void				setLoaded(bool loaded);
 
 				bool						initColumnAsScale(				size_t colNo,			std::string newName, const std::vector<double>		& values);
 				bool						initColumnAsScale(				std::string colName,	std::string newName, const std::vector<double>		& values)	{ return initColumnAsScale(_dataSet->getColumnIndex(colName), newName, values); }
@@ -170,6 +178,12 @@ public:
 				std::map<int, std::string>	initColumnAsNominalText(		size_t colNo,			std::string newName, const std::vector<std::string>	& values,	const std::map<std::string, std::string> & labels = std::map<std::string, std::string>());
 				std::map<int, std::string>	initColumnAsNominalText(		std::string colName,	std::string newName, const std::vector<std::string>	& values,	const std::map<std::string, std::string> & labels = std::map<std::string, std::string>())	{ return initColumnAsNominalText(_dataSet->getColumnIndex(colName), newName, values, labels); }
 				std::map<int, std::string>	initColumnAsNominalText(		QVariant colID,			std::string newName, const std::vector<std::string>	& values,	const std::map<std::string, std::string> & labels = std::map<std::string, std::string>());
+				
+				void						pasteSpreadsheet(size_t row, size_t column, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
+				void						columnInsert(	size_t column	); //Maybe these  functions should be made to depend on "columnInsert" etc from AbstractItemModel
+				void						columnDelete(	size_t column	);
+				void						rowInsert(		size_t row		);
+				void						rowDelete(		size_t row		);
 
 				void						columnSetDefaultValues(std::string columnName, columnType colType = columnType::unknown);
 				bool						createColumn(std::string name, columnType colType);
@@ -204,18 +218,21 @@ public:
 				Json::Value					columnToJsonForJASPFile(size_t columnIndex, Json::Value & labelsData, size_t & dataSize);
 				void						columnLabelsFromJsonForJASPFile(Json::Value xData, Json::Value columnDesc, size_t columnIndex, std::map<std::string, std::map<int, int> > & mapNominalTextValues);
 
-				enum columnType				getColumnType(std::string columnName)	const;
-				enum columnType				getColumnType(size_t columnIndex)		const	{ return _dataSet ? _dataSet->column(columnIndex).getColumnType() : columnType::unknown; }
-				std::string					getColumnName(size_t columnIndex)		const	{ return _dataSet ? _dataSet->column(columnIndex).name() : ""; }
-				int							getColumnIndex(std::string name)		const	{ return !_dataSet ? -1 : _dataSet->getColumnIndex(name); }
-				int							getColumnIndex(QString name)			const	{ return getColumnIndex(name.toStdString()); }
-				std::vector<int>			getColumnDataInts(size_t columnIndex);
-				std::vector<double>			getColumnDataDbls(size_t columnIndex);
-				void						setColumnDataInts(size_t columnIndex, std::vector<int> ints);
-				void						setColumnDataDbls(size_t columnIndex, std::vector<double> dbls);
+				int							getColumnIndex(		std::string name)		const	{ return !_dataSet ? -1 : _dataSet->getColumnIndex(name); }
+				int							getColumnIndex(		QString name)			const	{ return getColumnIndex(name.toStdString()); }
+				enum columnType				getColumnType(		std::string columnName)	const;
+				enum columnType				getColumnType(		size_t columnIndex)		const	{ return _dataSet ? _dataSet->column(columnIndex).getColumnType() : columnType::unknown; }
+				std::string					getColumnName(		size_t columnIndex)		const	{ return _dataSet ? _dataSet->column(columnIndex).name() : ""; }
+				std::vector<int>			getColumnDataInts(	size_t columnIndex);
+				std::vector<double>			getColumnDataDbls(	size_t columnIndex);
+				std::vector<std::string>	getColumnDataStrs(	size_t columnIndex);
+				void						setColumnName(		size_t columnIndex, const std::string & newName);
+				void						setColumnDataInts(	size_t columnIndex, std::vector<int> ints);
+				void						setColumnDataDbls(	size_t columnIndex, std::vector<double> dbls);
 				size_t						getMaximumColumnWidthInCharacters(int columnIndex) const;
 				QStringList					getColumnLabelsAsStringList(std::string columnName)		const;
 				QStringList					getColumnLabelsAsStringList(size_t columnIndex)			const;
+				void						unicifyColumnNames();
 
 				bool						setFilterData(std::string filter, std::vector<bool> filterResult);
 				void						resetFilterAllows(size_t columnIndex);
@@ -228,10 +245,7 @@ public:
 				std::vector<bool>			filterVector();
 				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->setFilterVector(newFilterVector); }
 
-
-
-
-
+				bool						synchingExternally() const;
 
 signals:
 				void				datasetChanged(	QStringList				changedColumns,
@@ -263,6 +277,10 @@ signals:
 				void				windowTitleChanged();
 				void				loadedChanged();
 				void				currentFileChanged();
+				void				newDataLoaded();
+				void				dataModeChanged(bool dataMode);
+				void				synchingExternallyChanged();
+				void				askUserForExternalDataFile();
 
 public slots:
 				void				refresh() { beginResetModel(); endResetModel(); }
@@ -273,12 +291,19 @@ public slots:
 				void				emptyValuesChangedHandler();
 				void				setCurrentFile(QString currentFile);
 				void				setFolder(QString folder);
+				void				generateEmptyData();
+				void				logDataModeChanged(bool dataMode);
+
+			
+				void setSynchingExternally(bool synchingExternally);
 
 private:
 				///This function allows you to run some code that changes something in the _dataSet and will try to enlarge it if it fails with an allocation error. Otherwise it might keep going for ever?
 				void				enlargeDataSetIfNecessary(std::function<void()> tryThis, const char * callerText);
 				bool				isThisTheSameThreadAsEngineSync();
 				bool				setAllowFilterOnLabel(const QModelIndex & index, bool newAllowValue);
+				std::string			freeNewColumnName(size_t startHere);
+				QModelIndex			lastCurrentCell();
 
 
 private:

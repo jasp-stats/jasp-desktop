@@ -130,6 +130,7 @@ public slots:
 	void resultsMetaChanged(QString json);
 	void allUserDataChanged(QString json);
 	void moveAnalysesResults(Analysis* fromAnalysis, int index);
+	void dataModeChanged(bool dataMode);
 
 signals:
 	void analysesUnselected();

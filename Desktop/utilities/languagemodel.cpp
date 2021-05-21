@@ -133,7 +133,7 @@ void LanguageModel::setCurrentLanguage(QString language)
 	Settings::setValue(Settings::PREFERRED_LANGUAGE, _languages[_currentLanguage].locale.language());
 	Settings::setValue(Settings::PREFERRED_COUNTRY, _languages[_currentLanguage].locale.country());
 	_shouldEmitLanguageChanged = true;
-	
+		
 	//resumeEngines() will be emitted in resultsPageLoaded
 }
 

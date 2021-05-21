@@ -32,6 +32,20 @@ std::string LabelModel::columnName(size_t col)
 	return DataSetPackage::pkg()->getColumnName(col);
 }
 
+QString LabelModel::columnNameQ()
+{
+	return QString::fromStdString(columnName(proxyParentColumn()));
+}
+
+
+void LabelModel::setColumnNameQ(QString newColumnName)
+{
+	if(DataSetPackage::pkg()->columnCount() <= int(proxyParentColumn()))
+		return;
+
+	return DataSetPackage::pkg()->setColumnName(proxyParentColumn(), fq(newColumnName));
+}
+
 std::vector<bool> LabelModel::filterAllows(size_t col)
 {
 	DataSetPackage *	pkg = DataSetPackage::pkg();
@@ -287,7 +301,6 @@ void LabelModel::setSelected(int row, int modifier)
 	_lastSelected = row;
 
 }
-
 
 void LabelModel::unselectAll()
 {

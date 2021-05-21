@@ -12,7 +12,7 @@ class LabelModel : public DataSetTableProxy
 	Q_PROPERTY(int		filteredOut		READ filteredOut									NOTIFY filteredOutChanged		)
 	Q_PROPERTY(int		chosenColumn	READ proxyParentColumn	WRITE setProxyParentColumn	NOTIFY proxyParentColumnChanged	)
 	Q_PROPERTY(bool		visible			READ visible			WRITE setVisible			NOTIFY visibleChanged			)
-	Q_PROPERTY(QString	columnName		READ columnNameQ									NOTIFY columnNameChanged		)
+	Q_PROPERTY(QString	columnName		READ columnNameQ		WRITE setColumnNameQ		NOTIFY columnNameChanged		)
 	Q_PROPERTY(double	rowWidth		READ rowWidth			WRITE setRowWidth			NOTIFY rowWidthChanged			)
 	Q_PROPERTY(double	valueMaxWidth	READ valueMaxWidth									NOTIFY valueMaxWidthChanged		)
 	Q_PROPERTY(double	labelMaxWidth	READ labelMaxWidth									NOTIFY labelMaxWidthChanged		)
@@ -22,7 +22,7 @@ public:
 
 	bool		labelNeedsFilter(size_t col);
 	std::string columnName(size_t col);
-	QString		columnNameQ()			{ return QString::fromStdString(columnName(proxyParentColumn()));	}
+	QString		columnNameQ();
 	bool		setData(const QModelIndex & index, const QVariant & value,	int role = -1)						override;
 	QVariant	data(	const QModelIndex & index,							int role = Qt::DisplayRole)	const	override;
 	QVariant	headerData(int section, Qt::Orientation orientation, int role)							const	override;
@@ -50,6 +50,7 @@ public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
 	void setSelected(int row, int modifier);
+	void setColumnNameQ(QString newColumnName);
 	void removeAllSelected();
 	void columnAboutToBeRemoved(int column);
 	void columnDataTypeChanged(const QString & colName);
