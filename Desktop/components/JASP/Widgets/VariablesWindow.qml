@@ -70,18 +70,42 @@ FocusScope
 			anchors.fill:		parent
 			anchors.margins:	jaspTheme.generalAnchorMargin
 
-			Text
+			TextInput
 			{
 				id:					columnNameVariablesWindow
 				text:				labelModel.columnName
+				onTextChanged:		labelModel.columnName = text
 				color:				jaspTheme.textEnabled
 				font:				jaspTheme.fontGroupTitle
+				enabled:			ribbonModel.dataMode
+				selectByMouse:		true
+
 				anchors
 				{
 					horizontalCenter:	parent.horizontalCenter
 					top:				parent.top
 					topMargin:			jaspTheme.generalAnchorMargin
 				}
+
+				Rectangle
+				{
+					color:				jaspTheme.controlBackgroundColor
+					border.color:		jaspTheme.uiBorder
+					border.width:		1
+					visible:			enabled
+
+					anchors.fill:		parent
+					anchors.margins:	-1 * jaspTheme.jaspControlPadding
+					z:					-1
+				}
+
+				MouseArea
+				{
+					acceptedButtons:	Qt.NoButton
+					anchors.fill:		parent
+					cursorShape:		Qt.IBeamCursor
+				}
+
 			}
 
 			Rectangle

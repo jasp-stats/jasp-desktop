@@ -18,8 +18,13 @@ void RibbonModelUncommon::setRibbonModel(RibbonModel * ribbonModel)
 bool RibbonModelUncommon::filterAcceptsRow(int source_row, const QModelIndex &) const
 {
 	if(source_row < 0) return false;
+	
+	if(!_ribbonModel)
+		return false;
+	
+	auto * button = _ribbonModel->ribbonButtonModelAt(size_t(source_row));
 
-	return  _ribbonModel != nullptr && (!_ribbonModel->ribbonButtonModelAt(size_t(source_row))->isCommon() || !_ribbonModel->ribbonButtonModelAt(size_t(source_row))->isBundled());
+	return  button->remember() && (!button->isCommon() || !button->isBundled());
 }
 
 void RibbonModelUncommon::setModuleEnabled(int filteredRow, bool checked)
