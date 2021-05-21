@@ -47,18 +47,20 @@ const Settings::Setting Settings::Values[] = {
 	{"generateMarkdownHelp",		false},
 	{"interfaceFont",
 #ifdef WIN32
-									"Arial"},	// https://github.com/jasp-stats/INTERNAL-jasp/issues/1146
-#elif defined(Q_OS_MACOS)
-									".AppleSystemUIFont"},
+									"Arial"	// https://github.com/jasp-stats/INTERNAL-jasp/issues/1146
+#elif defined(__APPLE__)
+									".AppleSystemUIFont"
 #else
-									"SansSerif"},
+									"SansSerif"
 #endif
+	},
 	{"codeFont",
-#ifndef Q_OS_MACOS
-									"Fira Code"},
+#ifndef __APPLE__
+									"Fira Code"
 #else
-									".AppleSystemUIFontMonospaced"},
+									".AppleSystemUIFontMonospaced"
 #endif
+	},
 #ifdef WIN32
 	{"resultFont",					"Arial,sans-serif,freesans,\"Segoe UI\""},
 #elif __APPLE__
@@ -86,7 +88,8 @@ const Settings::Setting Settings::Values[] = {
 	{"guiQtTextRender",				true	},
 	{"showReports",					false	},
 	{"showRSyntax",					false	},
-	{"showAllROptions",				false	}
+	{"showAllROptions",				false	},
+	{"guiQtTextRender",				true	}
 };	
 
 QVariant Settings::value(Settings::Type key)

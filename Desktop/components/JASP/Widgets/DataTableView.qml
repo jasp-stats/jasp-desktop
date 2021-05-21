@@ -1,7 +1,9 @@
-import QtQuick				2.9
-//import QtQuick.Controls		1.4 as Old
-import QtQuick.Controls		2.2
-import JASP.Controls		1.0 as JaspControls
+
+import QtQuick
+import QtQuick.Controls
+import JASP.Controls		as JaspControls
+import QtQml.Models
+import QtGraphicalEffects
 
 
 FocusScope
@@ -20,19 +22,259 @@ FocusScope
 
 		JASPDataView
 		{
-			focus:				__myRoot.focus
+			focus:					__myRoot.focus
 
-			id:					dataTableView
-			anchors.top:		parent.top
-			anchors.left:		parent.left
-			anchors.right:		parent.right
-			anchors.bottom:		dataStatusBar.top
+			id:						dataTableView
+			anchors.top:			parent.top
+			anchors.left:			parent.left
+			anchors.right:			parent.right
+			anchors.bottom:			dataStatusBar.top
 
 			itemHorizontalPadding:	8 * jaspTheme.uiScale
 			itemVerticalPadding:	8 * jaspTheme.uiScale
 
-			model:				dataSetModel
-			onDoubleClicked:	__myRoot.doubleClicked()
+			model:					dataSetModel
+			cacheItems:				!ribbonModel.dataMode
+
+			doubleClickWorkaround:	!ribbonModel.dataMode
+			//flickableInteractive:	!ribbonModel.dataMode
+			onDoubleClicked:		__myRoot.doubleClicked()
+
+			function showCopyPasteMenu(fromItem, globalPos, indexClicked)
+			{
+				console.log("showCopyPasteMenu!")
+
+				view.contextMenuClickedAtIndex(indexClicked);
+
+				var ctrlCmd = MACOS ? qsTr("Cmd") : qsTr("Ctrl");
+
+				var copyPasteMenuModel =
+				[
+							qsTr("Select All"),
+
+							"---",
+
+							qsTr("Cut             (%1+X)").arg(ctrlCmd),
+							qsTr("Copy            (%1+C)").arg(ctrlCmd),
+							qsTr("Paste           (%1+V)").arg(ctrlCmd),
+
+							"---", //Works but is ugly:  + qsTr("Including header:"),
+
+							qsTr("Header cut      (%1+Shift+X)").arg(ctrlCmd),
+							qsTr("Header copy     (%1+Shift+C)").arg(ctrlCmd),
+							qsTr("Header paste    (%1+Shift+V)").arg(ctrlCmd),
+
+							"---",
+
+							qsTr("Select column"),
+							qsTr("Insert column before"),
+							qsTr("Insert column after"),
+							qsTr("Delete column"),
+
+							"---",
+
+							qsTr("Select row"),
+							qsTr("Insert row before"),
+							qsTr("Insert row after"),
+							qsTr("Delete row"),
+
+				]
+
+				var copyPasteMenuFunctions =
+				[
+						function() { dataTableView.view.selectAll() },
+
+						function(){},
+
+						function() { dataTableView.view.cut(  false)},
+						function() { dataTableView.view.copy( false)},
+						function() { dataTableView.view.paste(false)},
+
+						function (){},
+
+						function() { dataTableView.view.cut(  true )},
+						function() { dataTableView.view.copy( true )},
+						function() { dataTableView.view.paste(true )},
+
+						function (){},
+
+						function() { dataTableView.view.columnSelect(		indexClicked.column) },
+						function() { dataTableView.view.columnInsertBefore(	indexClicked.column) },
+						function() { dataTableView.view.columnInsertAfter(	indexClicked.column) },
+						function() { dataTableView.view.columnDelete(		indexClicked.column) },
+
+						function (){},
+
+						function() { dataTableView.view.rowSelect(			indexClicked.row) },
+						function() { dataTableView.view.rowInsertBefore(	indexClicked.row) },
+						function() { dataTableView.view.rowInsertAfter(		indexClicked.row) },
+						function() { dataTableView.view.rowDelete(			indexClicked.row) }
+
+				]
+
+				var props = {
+					"model":		copyPasteMenuModel,
+					"functionCall": function (index)
+					{
+						var chosenElement = copyPasteMenuModel[index];
+
+					//	console.log("Option " + chosenElement + " chosen, running function.");
+
+						copyPasteMenuFunctions[index]();
+
+						customMenu.hide()
+					}
+				};
+
+				//customMenu.scrollOri.x	= __JASPDataViewRoot.contentX;
+				//customMenu.scrollOri.y	= 0;
+
+				var fromItemPos = fromItem.mapFromGlobal(globalPos.x, globalPos.y)
+
+				customMenu.show(fromItem, props, fromItemPos.x, fromItemPos.y);
+
+				//customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (__JASPDataViewRoot.contentX - customMenu.scrollOri.x); });
+				//customMenu.menuScroll.y	= 0;
+				//customMenu.menuMinIsMin	= true
+				//customMenu.menuMaxPos.x	= __JASPDataViewRoot.width + __JASPDataViewRoot.x
+			}
+
+			editDelegate:
+				TextInput
+				{
+					id:						editItem
+					text:					itemText
+					color:					itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
+					font:					jaspTheme.font
+					verticalAlignment:		Text.AlignVCenter
+					onEditingFinished:		finishEdit();
+					z:						10
+
+
+					Component.onCompleted:	focusTimer.start();
+					Timer
+					{
+						id:					focusTimer
+						interval:			10
+						repeat:				false
+						onTriggered:
+						{
+							editItem.forceActiveFocus()
+							dataTableView.moveItemIntoView(editItem);
+						}
+					}
+
+					property bool alreadyFinished:	false
+
+					Connections
+					{
+						target:					ribbonModel
+						onFinishCurrentEdit:	finishEdit();
+					}
+
+					function finishEdit()
+					{
+						if(!alreadyFinished)
+							dataTableView.view.editFinished(index, text);
+						alreadyFinished = true;
+					}
+
+					Keys.onPressed:
+					{
+						var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
+						var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
+						var arrowPressed	= false;
+						var arrowIndex;
+
+						switch(event.key)
+						{
+						case Qt.Key_C:
+							if(controlPressed)
+							{
+								theView.copy(shiftPressed);
+								event.accepted = true;
+							}
+							break;
+
+						case Qt.Key_X:
+							if(controlPressed)
+							{
+								theView.cut(shiftPressed);
+								event.accepted = true;
+							}
+							break;
+
+						case Qt.Key_V:
+							if(controlPressed)
+							{
+								theView.paste(shiftPressed);
+								event.accepted = true;
+							}
+							break;
+
+						case Qt.Key_A:
+							if(controlPressed)
+							{
+								theView.selectAll();
+								event.accepted = true;
+							}
+							break;
+
+						case Qt.Key_Home:	mainWindowRoot.changeFocusToFileMenu(); break;
+
+						case Qt.Key_Up:		if(rowIndex		> 0)								{ arrowPressed = true; arrowIndex   = dataSetModel.index(rowIndex - 1,	columnIndex);		} break;
+						case Qt.Key_Down:	if(rowIndex		< dataSetModel.rowCount()    - 1)	{ arrowPressed = true; arrowIndex   = dataSetModel.index(rowIndex + 1,	columnIndex);		} break;
+						case Qt.Key_Left:	if(columnIndex	> 0)								{ arrowPressed = true; arrowIndex   = dataSetModel.index(rowIndex,		columnIndex - 1);	} break;
+						case Qt.Key_Right:	if(columnIndex	< dataSetModel.columnCount() - 1)	{ arrowPressed = true; arrowIndex   = dataSetModel.index(rowIndex,		columnIndex + 1);	} break;
+						}
+
+						if(arrowPressed)
+						{
+							finishEdit();
+
+							if(!shiftPressed)
+								dataTableView.view.selectionStart	= arrowIndex;
+							else
+							{
+								dataTableView.view.selectionEnd  = arrowIndex;
+								dataTableView.view.edit(arrowIndex);
+							}
+
+							event.accepted = true;
+						}
+
+					}
+
+					Rectangle
+					{
+						id:					highlighter
+						color:				jaspTheme.itemHighlight
+						z:					-1
+						visible:			ribbonModel.dataMode
+						anchors
+						{
+							fill:			 parent
+							topMargin:		-dataTableView.itemVerticalPadding
+							leftMargin:		-dataTableView.itemHorizontalPadding
+							rightMargin:	-dataTableView.itemHorizontalPadding
+							bottomMargin:	-dataTableView.itemVerticalPadding
+						}
+
+						MouseArea
+						{
+							z:					1234
+							anchors.fill:		parent
+							acceptedButtons:	Qt.RightButton
+
+							onPressed:
+								if(mouse.buttons & Qt.RightButton)
+								{
+									finishEdit()
+									dataTableView.showCopyPasteMenu(editItem, mapToGlobal(mouse.x, mouse.y), dataSetModel.index(rowIndex, columnIndex));
+								}
+						}
+					}
+				}
 
 			itemDelegate:
 				Text
@@ -41,6 +283,61 @@ FocusScope
 					color:				itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
 					font:				jaspTheme.font
 					verticalAlignment:	Text.AlignVCenter
+					
+					MouseArea
+					{
+						z:					1234
+						hoverEnabled:		true
+						anchors.fill:		itemHighlight
+						acceptedButtons:	Qt.LeftButton | Qt.RightButton
+						
+						onPressed:			
+							if(ribbonModel.dataMode)
+							{
+								var shiftPressed = Boolean(mouse.modifiers & Qt.ShiftModifier);
+
+								if(Boolean(mouse.buttons & Qt.RightButton))
+								{
+									forceActiveFocus();
+									dataTableView.showCopyPasteMenu(itemHighlight, mapToGlobal(mouse.x, mouse.y), dataSetModel.index(rowIndex, columnIndex));
+								}
+								else
+								{
+									if(!shiftPressed)	dataTableView.view.selectionStart   = dataTableView.view.model.index(rowIndex, columnIndex);
+									else				dataTableView.view.selectionEnd		= dataTableView.view.model.index(rowIndex, columnIndex);
+
+								
+									forceActiveFocus();
+								}
+							}
+											
+						onPositionChanged:	if(ribbonModel.dataMode && Boolean(mouse.modifiers & Qt.ShiftModifier))
+											{
+												var idx = dataTableView.view.model.index(rowIndex, columnIndex)
+												dataTableView.view.pollSelectScroll(idx)
+												dataTableView.view.selectionEnd = idx
+											}
+
+					}
+					
+					Rectangle
+					{
+						id:				itemHighlight
+						visible:		ribbonModel.dataMode && (dataTableView.selection.hasSelection, dataTableView.selection.isSelected(dataTableView.view.model.index(rowIndex, columnIndex)))
+						
+						color:			jaspTheme.itemHighlight
+						opacity:		1.0
+						z:				-1
+
+						anchors
+						{
+							fill:			 parent
+							topMargin:		-dataTableView.itemVerticalPadding
+							leftMargin:		-dataTableView.itemHorizontalPadding
+							rightMargin:	-dataTableView.itemHorizontalPadding
+							bottomMargin:	-dataTableView.itemVerticalPadding
+						}
+					}
 				}
 
 			leftTopCornerItem:
@@ -277,6 +574,8 @@ FocusScope
 								labelModel.chosenColumn	= columnIndex;
 								labelModel.visible		= changedIndex ? true : !labelModel.visible;
 							}
+							else
+								dataSetModel.renameColumnDialog(columnIndex);
 
 							if(dataSetModel.columnUsedInEasyFilter(columnIndex))
 							{

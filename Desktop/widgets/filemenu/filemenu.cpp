@@ -226,6 +226,16 @@ QString FileMenu::getDefaultOutFileName()
 	return DefaultOutFileName;	
 }
 
+void FileMenu::enableButtonsForOpenedWorkspace(bool enableSaveButton)
+{
+	_actionButtons->setEnabled(ActionButtons::Save,				enableSaveButton);
+	_actionButtons->setEnabled(ActionButtons::SaveAs,			true);
+	_actionButtons->setEnabled(ActionButtons::ExportResults,	true);
+	_actionButtons->setEnabled(ActionButtons::ExportData,		true);
+	_actionButtons->setEnabled(ActionButtons::SyncData,			true);
+	_actionButtons->setEnabled(ActionButtons::Close,			true);
+}
+
 void FileMenu::dataSetIOCompleted(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileSave || event->operation() == FileEvent::FileOpen)
@@ -273,19 +283,14 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	}
 
 	_resourceButtons->setButtonEnabled(ResourceButtons::CurrentFile, !_currentDataFile->getCurrentFilePath().isEmpty());
-		
+
 	if (event->isSuccessful())
 	{
 		switch(event->operation())
 		{
 		case FileEvent::FileOpen:
 		case FileEvent::FileSave:
-			_actionButtons->setEnabled(ActionButtons::Save,				event->type() == Utils::FileType::jasp || event->operation() == FileEvent::FileSave);
-			_actionButtons->setEnabled(ActionButtons::SaveAs,			true);
-			_actionButtons->setEnabled(ActionButtons::ExportResults,	true);
-			_actionButtons->setEnabled(ActionButtons::ExportData,		true);
-			_actionButtons->setEnabled(ActionButtons::SyncData,			true);
-			_actionButtons->setEnabled(ActionButtons::Close,			true);
+			enableButtonsForOpenedWorkspace(event->type() == Utils::FileType::jasp || event->operation() == FileEvent::FileSave);
 			break;
 
 		case FileEvent::FileClose:
