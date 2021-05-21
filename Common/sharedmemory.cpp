@@ -67,9 +67,12 @@ DataSet *SharedMemory::retrieveDataSet(unsigned long parentPID)
 	}
 	catch (const interprocess::interprocess_exception& e)
 	{
+		Log::log() << "Error when retrieving the data set: " << e.what() << std::endl;
 		data = nullptr;
-
 	}
+
+	if (data == nullptr)
+		Log::log() << "No data set found in shared memory with name: " << _memoryName << std::endl;
 
 	return data;
 }
