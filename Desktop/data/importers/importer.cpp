@@ -39,34 +39,6 @@ void Importer::initColumn(QVariant colId, ImportColumn *importColumn)
 	initColumnWithStrings(colId, importColumn->name(),  importColumn->allValuesAsStrings());
 }
 
-void Importer::initColumnWithStrings(QVariant colId, std::string newName, const std::vector<std::string> &values)
-{
-	// interpret the column as a datatype
-	std::set<int>				uniqueValues;
-	std::vector<int>			intValues;
-	std::vector<double>			doubleValues;
-	std::map<int, std::string>	emptyValuesMap;
-
-	//If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
-	bool	useCustomThreshold	= Settings::value(Settings::USE_CUSTOM_THRESHOLD_SCALE).toBool();
-	size_t	thresholdScale		= (useCustomThreshold ? Settings::value(Settings::THRESHOLD_SCALE) : Settings::defaultValue(Settings::THRESHOLD_SCALE)).toUInt();
-
-	bool valuesAreIntegers		= ImportColumn::convertVecToInt(values, intValues, uniqueValues, emptyValuesMap);
-	
-	size_t minIntForThresh		= thresholdScale > 2 ? 2 : 0;
-
-	auto isNominalInt			= [&](){ return valuesAreIntegers && uniqueValues.size() == minIntForThresh; };
-	auto isOrdinal				= [&](){ return valuesAreIntegers && uniqueValues.size() >  minIntForThresh && uniqueValues.size() <= thresholdScale; };
-	auto isScalar				= [&](){ return ImportColumn::convertVecToDouble(values, doubleValues, emptyValuesMap); };
-
-	if		(isOrdinal())					initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		true	);
-	else if	(isNominalInt())				initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		false	);
-	else if	(isScalar())					initColumnAsScale(				colId,	newName,	doubleValues	);
-	else				emptyValuesMap =	initColumnAsNominalText(		colId,	newName,	values			);
-
-	storeInEmptyValues(newName, emptyValuesMap);
-}
-
 void Importer::syncDataSet(const std::string &locator, boost::function<void(int)> progress)
 {
 	ImportDataSet *importDataSet	= loadFile(locator, progress);
