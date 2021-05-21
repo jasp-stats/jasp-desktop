@@ -587,7 +587,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 	json["revision"]			= revision();
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
-	json["resultsFont"]			= Settings::value(Settings::RESULT_FONT).toString().toStdString();
+	json["resultsFont"]			= PreferencesModel::prefs()->resultFont().toStdString();
 
 	if (!isAborted())
 	{
