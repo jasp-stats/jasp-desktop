@@ -63,7 +63,7 @@ const Settings::Setting Settings::Values[] = {
 	{"maxEngineCount",				4}, //In debug always 1
 	{"GITHUB_PAT_Custom",			"" },
 	{"GITHUB_PAT_UseDefault",		true},
-	{"WindowsNoBomNative",			false} //false as default because then we keep the behaviour we had before. 
+	{"WindowsNoBomNative",			true} //true because SKF uses excel
 };
 
 QVariant Settings::value(Settings::Type key)

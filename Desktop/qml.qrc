@@ -145,5 +145,7 @@
         <file>components/JASP/Controls/FactorLevelList.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsTextInput.qml</file>
         <file>components/JASP/Widgets/RoundedButton.qml</file>
+        <file>components/JASP/Widgets/ResizeDataDialog.qml</file>
+        <file>components/JASP/Widgets/RenameColumnDialog.qml</file>
     </qresource>
 </RCC>

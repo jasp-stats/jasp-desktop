@@ -13,6 +13,7 @@ ComputedColumnsModel::ComputedColumnsModel()
 	assert(_singleton == nullptr);
 	_singleton = this;
 
+	//Is it really dataSetChanged that needs to connect to datasetLoadedChanged?
 	connect(DataSetPackage::pkg(),	&DataSetPackage::dataSetChanged,				this,					&ComputedColumnsModel::datasetLoadedChanged					);
 
 	connect(this,					&ComputedColumnsModel::datasetLoadedChanged,	this,					&ComputedColumnsModel::computeColumnJsonChanged				);

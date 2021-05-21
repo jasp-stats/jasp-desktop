@@ -232,6 +232,7 @@ HEADERS += \
     modules/description/description.h \
     modules/description/descriptionchildbase.h \
     modules/description/entrybase.h \
+    modules/menumodel.h \
     modules/upgrader/changebase.h \
     modules/upgrader/changecopy.h \
     modules/upgrader/changejs.h \
@@ -250,7 +251,6 @@ HEADERS += \
     modules/dynamicmodule.h \
     modules/dynamicmodules.h \
     modules/ribbonmodel.h \
-    modules/analysismenumodel.h \
     osf/onlinedataconnection.h \
     osf/onlinedatamanager.h \
     osf/onlinedatanode.h \
@@ -425,6 +425,7 @@ SOURCES += \
     modules/description/description.cpp \
     modules/description/descriptionchildbase.cpp \
     modules/description/entrybase.cpp \
+    modules/menumodel.cpp \
     modules/upgrader/changebase.cpp \
     modules/upgrader/changecopy.cpp \
     modules/upgrader/changejs.cpp \
@@ -443,7 +444,6 @@ SOURCES += \
     modules/dynamicmodule.cpp \
     modules/dynamicmodules.cpp \
     modules/ribbonmodel.cpp \
-    modules/analysismenumodel.cpp \
     osf/onlinedataconnection.cpp \
     osf/onlinedatamanager.cpp \
     osf/onlinedatanode.cpp \

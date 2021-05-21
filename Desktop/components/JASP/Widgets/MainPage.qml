@@ -16,10 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick			2.12
-import QtWebEngine		1.7
+import QtQuick			2.15
+import QtWebEngine		1.8
 import QtWebChannel		1.0
-import QtQuick.Controls 2.4
+import QtQuick.Controls 2.15
 import QtQuick.Controls 1.4 as OLD
 import QtQuick.Layouts	1.3
 
@@ -32,8 +32,8 @@ Item
 
 	onWidthChanged:
 	{
-		if(!mainWindow.analysesAvailable)											data.width = splitViewContainer.width
-		else if(data.wasMaximized)													return; //wasMaximized binds!
+		if(!mainWindow.analysesAvailable || ribbonModel.dataMode)						data.width = splitViewContainer.width
+		else if(data.wasMaximized)														return; //wasMaximized binds!
 		else if(splitViewContainer.width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
 	}
 
@@ -53,7 +53,7 @@ Item
 			visible:				mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
 			z:						1
 
-			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0)
+			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable && !ribbonModel.dataMode ? jaspTheme.splitHandleWidth : 0)
 			property bool fakeEmptyDataForSumStatsEtc:	!mainWindow.dataAvailable && mainWindow.analysesAvailable
 			property bool wasMaximized:					false
 
@@ -91,8 +91,9 @@ Item
 
 		handleDelegate: Item
 		{
-			width:				splitHandle.width + analyses.width
+			width:				visible ? splitHandle.width + analyses.width : 0
 			//onWidthChanged:		parent.width = width
+			visible:			!ribbonModel.dataMode
 
 			SplitHandle
 			{
@@ -123,7 +124,7 @@ Item
 			implicitWidth:			jaspTheme.resultWidth + panelSplit.hackySplitHandlerHideWidth
 			Layout.fillWidth:		true
 			z:						3
-			visible:				mainWindow.analysesAvailable
+			visible:				mainWindow.analysesAvailable && !ribbonModel.dataMode
 			onVisibleChanged:		if(visible) width = jaspTheme.resultWidth; else data.maximizeData()
 			color:					analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
 
