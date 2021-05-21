@@ -89,6 +89,7 @@ Rectangle
 		{
 			customMenu.hide()
 			ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
+
 		}
 		else if (ribbonButton.menu.rowCount() === 1)
 		{

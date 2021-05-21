@@ -132,14 +132,14 @@ FocusScope
 
 	function showModulesMenuPressed()
 	{
-		modulesPlusButton.focus       = true;
+		modulesPlusButton.forceActiveFocus()
 		modulesPlusButton.showPressed = true;
 	}
 
 	function showFileMenuPressed()
 	{
 		isFileMenuPressed        = true;
-		fileMenuOpenButton.focus = true;
+		fileMenuOpenButton.forceActiveFocus();
 	}
 
 	Rectangle
