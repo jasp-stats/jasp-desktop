@@ -31,10 +31,10 @@ void ColumnUtils::processEmptyValues()
 {
 	_currentDoubleEmptyValues.clear();
 
-	for (vector<string>::const_iterator it = _currentEmptyValues.begin(); it != _currentEmptyValues.end(); ++it)
+	for (const std::string & curEmptyVal : _currentEmptyValues)
 	{
 		double doubleValue;
-		if (ColumnUtils::getDoubleValue(*it, doubleValue))
+		if (ColumnUtils::getDoubleValue(curEmptyVal, doubleValue))
 			_currentDoubleEmptyValues.push_back(doubleValue);
 	}
 }
@@ -163,6 +163,72 @@ bool ColumnUtils::convertValueToDoubleForImport(const std::string &strValue, dou
 	}
 	else
 		doubleValue = NAN;
+
+	return true;
+}
+
+std::string ColumnUtils::doubleToString(double dbl, int precision)
+{
+	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes (and to get full precision)
+	conv << std::setprecision(precision);
+	conv << dbl;
+	return conv.str();
+}
+
+
+bool ColumnUtils::convertVecToInt(const std::vector<std::string> &values, std::vector<int> &intValues, std::set<int> &uniqueValues, std::map<int, std::string> &emptyValuesMap)
+{
+	emptyValuesMap.clear();
+	uniqueValues.clear();
+	intValues.clear();
+	intValues.reserve(values.size());
+
+	int row = 0;
+
+	for (const std::string &value : values)
+	{
+		int intValue = std::numeric_limits<int>::lowest();
+
+		if (ColumnUtils::convertValueToIntForImport(value, intValue))
+		{
+			if (intValue != std::numeric_limits<int>::lowest())	uniqueValues.insert(intValue);
+			else if (!value.empty())							emptyValuesMap.insert(make_pair(row, value));
+
+			intValues.push_back(intValue);
+		}
+		else
+			return false;
+
+		row++;
+	}
+
+	return true;
+}
+
+
+bool ColumnUtils::convertVecToDouble(const std::vector<std::string> &values, std::vector<double> &doubleValues, std::map<int, std::string> &emptyValuesMap)
+{
+	emptyValuesMap.clear();
+	doubleValues.clear();
+	doubleValues.reserve(values.size());
+
+	int row = 0;
+	for (const std::string &value : values)
+	{
+		double doubleValue = static_cast<double>(NAN);
+
+		if (ColumnUtils::convertValueToDoubleForImport(value, doubleValue))
+		{
+			doubleValues.push_back(doubleValue);
+
+			if (std::isnan(doubleValue) && value != ColumnUtils::emptyValue)
+				emptyValuesMap.insert(std::make_pair(row, value));
+		}
+		else
+			return false;
+
+		row++;
+	}
 
 	return true;
 }

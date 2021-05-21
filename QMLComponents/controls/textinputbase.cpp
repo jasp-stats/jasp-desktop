@@ -84,7 +84,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 		if (_inputType == TextInputType::PercentIntputType)
 			_value = _getPercentValue(dblVal);
 		else
-			_value = tq(Utils::doubleToString(dblVal));
+			_value = tq(ColumnUtils::doubleToString(dblVal));
 
 		break;
 	}

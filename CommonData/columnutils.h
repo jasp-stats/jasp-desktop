@@ -28,6 +28,11 @@ public:
 	static bool			convertValueToDoubleForImport(	const std::string &strValue, double &doubleValue);
 	static void			convertEscapedUnicodeToUTF8(	std::string &inputStr);
 
+	static bool convertVecToInt(const std::vector<std::string> &values, std::vector<int> &intValues, std::set<int> &uniqueValues, std::map<int, std::string> &emptyValuesMap);
+	static bool convertVecToDouble(const std::vector<std::string> &values, std::vector<double> &doubleValues, std::map<int, std::string> &emptyValuesMap);
+
+	static std::string	doubleToString(double dbl, int precision = 10);
+
 private:
 	static std::string _deEuropeaniseForImport(			const std::string &value);
 	static std::string _convertEscapedUnicodeToUTF8(	std::string hex);

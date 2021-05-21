@@ -35,14 +35,6 @@
 
 using namespace std;
 
-std::string Utils::doubleToString(double dbl, int precision)
-{
-	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes (and to get full precision)
-	conv << std::setprecision(precision);
-	conv << dbl;
-	return conv.str();
-}
-
 Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 {
 
@@ -231,7 +223,6 @@ void Utils::sleep(int ms)
 	nanosleep(&ts, NULL);
 #endif
 }
-
 
 bool Utils::isEqual(const double a, const double b)
 {

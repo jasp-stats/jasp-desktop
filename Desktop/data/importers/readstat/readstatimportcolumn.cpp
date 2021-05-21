@@ -31,7 +31,7 @@ std::string ReadStatImportColumn::valueAsString(size_t row) const
 	switch(_type)
 	{
 	default:						return missingValueString();
-	case columnType::scale:			return Utils::doubleToString(_doubles[row]);
+	case columnType::scale:			return ColumnUtils::doubleToString(_doubles[row]);
 	case columnType::ordinal:		[[fallthrough]];
 	case columnType::nominal:		return std::to_string(_ints[row]);
 	case columnType::nominalText:	return _strings[row];
@@ -164,14 +164,14 @@ void ReadStatImportColumn::setType(columnType newType)
 		case columnType::nominal:
 			for(double d : _doubles)
 				if(isMissingValue(d))			_ints.push_back(missingValueInt());
-				else if(d != double(int(d)))	conversionFailed("Double '" + Utils::doubleToString(d) + "' cannot be converted to int.");
+				else if(d != double(int(d)))	conversionFailed("Double '" + ColumnUtils::doubleToString(d) + "' cannot be converted to int.");
 				else							_ints.push_back(int(d));
 
 			break;
 
 		case columnType::nominalText:
 			for(double d : _doubles)
-				_strings.push_back(isMissingValue(d) ? missingValueString() : Utils::doubleToString(d));
+				_strings.push_back(isMissingValue(d) ? missingValueString() : ColumnUtils::doubleToString(d));
 			_doubles.clear();
 			break;
 		default: break;
@@ -345,7 +345,7 @@ void ReadStatImportColumn::addValue(const double & val)
 		[[fallthrough]];
 
 	case columnType::nominalText:
-		addValue(Utils::doubleToString(val));
+		addValue(ColumnUtils::doubleToString(val));
 		break;
 	}
 }
@@ -421,7 +421,7 @@ void ReadStatImportColumn::addLabel(const double & val, const std::string & labe
 		setType(columnType::nominalText); //Because we do not support having doubles as values for labels
 	}
 
-	addLabel(Utils::doubleToString(val), label);
+	addLabel(ColumnUtils::doubleToString(val), label);
 }
 
 void ReadStatImportColumn::addLabel(const std::string & val, const std::string & label)

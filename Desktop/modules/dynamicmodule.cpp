@@ -839,16 +839,6 @@ std::string DynamicModule::extractPackageNameFromFolder(const std::string & fold
 	return foundName;
 }
 
-bool DynamicModule::requiresData() const
-{
-	for(const AnalysisEntry * entry : _menuEntries)
-		if(!entry->requiresData())
-			return false;
-
-	return true;
-}
-
-
 Json::Value DynamicModule::asJsonForJaspFile(const std::string & analysisFunction) const
 {
 	Json::Value json(Json::objectValue);

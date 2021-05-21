@@ -29,7 +29,7 @@ protected:
 	///colID can be either an integer (the column index in the data) or a string (the (old) name of the column in the data)
 	virtual void initColumn(QVariant colId, ImportColumn *importColumn);
 
-	void initColumnWithStrings(QVariant colId, std::string newName, const std::vector<std::string> &values);
+	void initColumnWithStrings(QVariant colId, const std::string & newName, const std::vector<std::string> & values) { DataSetPackage::pkg()->initColumnWithStrings(colId, newName, values); }
 
 	///colID can be either an integer (the column index in the data) or a string (the (old) name of the column in the data)
 	bool						initColumnAsNominalOrOrdinal(	QVariant colID,			std::string newName, const std::vector<int>			& values, bool is_ordinal = false)	{ return DataSetPackage::pkg()->initColumnAsNominalOrOrdinal(colID, newName, values, is_ordinal);				}

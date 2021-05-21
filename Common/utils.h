@@ -22,6 +22,8 @@
 #include <vector>
 #include <limits>
 #include <filesystem>
+#include <set>
+#include <map>
 #include "timers.h"
 
 enum class FileTypeBase;
@@ -44,14 +46,11 @@ public:
 	static bool renameOverwrite(		const std::string &oldName, const std::string &newName);
 	static bool removeFile(				const std::string &path);
 
-	static std::string	doubleToString(double dbl, int precision = 10);
-
 	static std::filesystem::path osPath(const std::string &path);
 	static std::string osPath(const std::filesystem::path &path);
 
 	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
 	static void sleep(int ms);
-
 
 	static bool isEqual(const float a, const float b);
 	static bool isEqual(const double a, const double b);

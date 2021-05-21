@@ -45,6 +45,7 @@ Item
 	function minimizeDataPanel()
 	{
 		handleDataAnalyses.x = 0
+
 	}
 
 	function maximizeDataPanel()
@@ -162,7 +163,7 @@ Item
 	{
 		id:						handleAnalysesResults
 		anchors.left:			!dragging ? analysesPane.right : undefined
-		visible:				hasAnalysis
+		visible:				hasAnalysis && !ribbonModel.dataMode
 		pointingLeft:			analysesModel.visible
 		onArrowClicked:			analysesModel.visible = !analysesModel.visible
 		toolTipDrag:			hasData	? (handleAnalysesResults.pointingLeft	? qsTr("Resize data/results")	: qsTr("Drag to show data")) : ""
@@ -221,7 +222,7 @@ Item
 			right:				parent.right
 			bottom:				parent.bottom
 		}
-		visible:				hasAnalysis
+		visible:				hasAnalysis && !ribbonModel.dataMode
 		color:					analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
 
 		WebEngineView
