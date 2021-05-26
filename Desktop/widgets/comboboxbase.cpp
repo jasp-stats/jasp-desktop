@@ -53,6 +53,8 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 	_setCurrentProperties(index); // This will call the BoundControlBase::bindTo method
 
 	_resetItemWidth();
+
+	BoundControlBase::bindTo(value);
 }
 
 int ComboBoxBase::_getStartIndex()
@@ -197,5 +199,5 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 	if (emitCurrentColumnTypeIconSignal)	emit currentColumnTypeIconChanged();
 	if (emitCurrentIndexSignal)				emit currentIndexChanged();
 
-	if (bindValue)	BoundControlBase::bindTo(fq(_currentValue));
+	if (bindValue)	setBoundValue(fq(_currentValue));
 }
