@@ -153,3 +153,25 @@ void TableViewBase::termsChangedHandler()
 	if (_boundControl)
 		_boundControl->resetBoundValue();
 }
+
+QVariant TableViewBase::defaultValue() const
+{
+	// Force the QVariant to have the right type
+	if (itemType() == JASPControl::ItemType::Integer)
+	{
+		if (_defaultValue.type() == QVariant::Int)		return _defaultValue;
+		if (_defaultValue.canConvert(QVariant::Int))	return _defaultValue.toInt();
+	}
+	else if (itemType() == JASPControl::ItemType::Double)
+	{
+		if (_defaultValue.type() == QVariant::Double)	return _defaultValue;
+		if (_defaultValue.canConvert(QVariant::Double))	return _defaultValue.toDouble();
+	}
+	else if (itemType() == JASPControl::ItemType::String)
+	{
+		if (_defaultValue.type() == QVariant::String)	return _defaultValue;
+		if (_defaultValue.canConvert(QVariant::String))	return _defaultValue.toString();
+	}
+
+	return _defaultValue;
+}

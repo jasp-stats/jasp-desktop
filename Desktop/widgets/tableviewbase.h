@@ -56,7 +56,7 @@ public:
 
 	JASPControl::ModelType		modelType()								const				{ return _modelType;					}
 	JASPControl::ItemType		itemType()								const				{ return _itemType;						}
-	QVariant					defaultValue()							const				{ return _defaultValue;					}
+	QVariant					defaultValue()							const;
 	QVariant					initialValuesSource()					const				{ return _initialValuesSource;			}
 	JASPListControl*			initialValuesControl()					const				{ return _initialValuesControl;			}
 	int							initialColumnCount()					const				{ return _initialColumnCount;			}
