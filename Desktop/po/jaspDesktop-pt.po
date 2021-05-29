@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-05-23 17:35+0000\n"
+"Last-Translator: Alex França <alex.tonante@gmail.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.7-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -19,7 +25,7 @@ msgstr "-"
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr "Restaur o último valor correto:% 1"
+msgstr "Restaur o último valor correto: %1"
 
 msgctxt "AboutWindow|"
 msgid "Version:"
@@ -328,7 +334,7 @@ msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr "PPI customizado"
+msgstr "PPI customizado: "
 
 msgctxt "PrefsResults|"
 msgid "Image background color"
@@ -502,7 +508,6 @@ msgctxt "SubjectivePriors|"
 msgid "upper bound:"
 msgstr "limite superior:"
 
-#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
 msgstr "A metade do normal"
@@ -726,7 +731,6 @@ msgctxt "SortMenuModel|"
 msgid "Sort by size"
 msgstr "Ordenar por tamanho"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
 msgstr "SortMenuModel não chamado com um pai classificável"
@@ -1258,7 +1262,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr "gera dados a partir de uma distribuição uniforme entre mín. e máx."
+msgstr "gera dados a partir de uma distribuição uniforme entre mín. e máx"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
@@ -2118,7 +2122,7 @@ msgstr "Raiz quadrada"
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "Módulo: retorna o resto de uma divisão"
+msgstr "Módulo: retorna o resto de uma divisão. 3%2 retorna 1"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
@@ -2200,7 +2204,7 @@ msgstr "Raiz quadrada"
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "Módulo: retorna o resto de uma divisão"
+msgstr "Módulo: retorna o resto de uma divisão.  3%2 retorna 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
@@ -2670,30 +2674,26 @@ msgctxt "RCommanderWindow|"
 msgid "Run Code"
 msgstr "Executar código"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
 msgstr "Pressionando Ctrl+Enter ou F5 também executará o código"
 
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
-msgstr ""
+msgstr "Limpar Saída"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
-msgstr ""
+msgstr "Apagado ..."
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
 msgstr "Adicionar Coluna"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
 msgstr "Deletar Coluna"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr "Redefinir"
@@ -2701,6 +2701,7 @@ msgstr "Redefinir"
 msgctxt "VariablesWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
 msgstr ""
+"Edite aqui as etiquetas ou escolha quais os valores que devem ser filtrados."
 
 msgctxt "WelcomePage|"
 msgid ""
@@ -2710,6 +2711,11 @@ msgid ""
 "If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
 "being developed at break-neck speed!"
 msgstr ""
+"Lembre-se de que esta é uma versão de pré-lançamento e alguns recursos ainda "
+"estão faltando.\n"
+"\n"
+"Se o JASP não faz tudo o que você quer hoje, verifique novamente amanhã: o "
+"JASP está sendo desenvolvido em uma velocidade alucinante!"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -2717,6 +2723,8 @@ msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
 msgstr ""
+"O componente %1 foi carregado com o tipo errado de valor e foi redefinido "
+"para o seu valor padrão."
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -2724,197 +2732,200 @@ msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
 msgstr ""
+"Estes componentes foram carregados com o tipo errado de valor e foram "
+"redefinidos para seus valores padrão:%1"
 
 msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
 msgstr ""
+"Muitos componentes foram carregados com o tipo errado de valor e foram "
+"redefinidos para seus valores padrão."
 
 msgctxt "AnalysisForm|"
 msgid "Table"
-msgstr ""
+msgstr "Tabela"
 
 msgctxt "AnalysisForm|"
 msgid "Plot"
-msgstr ""
+msgstr "Diagrama"
 
 msgctxt "AnalysisForm|"
 msgid "Collection"
-msgstr ""
+msgstr "Coleção"
 
 msgctxt "AnalysisForm|"
 msgid "Result"
-msgstr ""
+msgstr "Resultado"
 
 msgctxt "AnalysisForm|"
 msgid "Output"
-msgstr ""
+msgstr "Saída"
 
 msgctxt "AnalysisForm|"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 msgctxt "JASPControl|"
 msgid "Option"
-msgstr ""
+msgstr "Opção"
 
 msgctxt "JASPControl|"
 msgid "Section"
-msgstr ""
+msgstr "Seção"
 
 msgctxt "JASPControl|"
 msgid "CheckBox"
-msgstr ""
+msgstr "Caixa de seleção"
 
 msgctxt "JASPControl|"
 msgid "Switch"
-msgstr ""
+msgstr "Switch"
 
 msgctxt "JASPControl|"
 msgid "Entry Field"
-msgstr ""
+msgstr "Campo de Entrada"
 
 msgctxt "JASPControl|"
 msgid "Radio Button"
-msgstr ""
+msgstr "Botão de Rádio"
 
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
-msgstr ""
+msgstr "Botões de Rádio"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Variables"
 msgstr "Variáveis"
 
 msgctxt "JASPControl|"
 msgid "ComboBox"
-msgstr ""
+msgstr "ComboBox"
 
 msgctxt "JASPControl|"
 msgid "Input ListView"
-msgstr ""
+msgstr "Lista de entradaVer"
 
 msgctxt "JASPControl|"
 msgid "TableView"
-msgstr ""
+msgstr "TableView"
 
 msgctxt "JASPControl|"
 msgid "Slider"
-msgstr ""
+msgstr "Deslizador"
 
 msgctxt "JASPControl|"
 msgid "TextArea"
-msgstr ""
+msgstr "Área de texto"
 
 msgctxt "JASPControl|"
 msgid "Button"
-msgstr ""
+msgstr "Botão"
 
 msgctxt "JASPControl|"
 msgid "Factors Form"
-msgstr ""
+msgstr "Formulário de Fatores"
 
 msgctxt "JASPControl|"
 msgid "List of Components"
-msgstr ""
+msgstr "Lista de Componentes"
 
 msgctxt "JASPControl|"
 msgid "Group Box"
-msgstr ""
+msgstr "Caixa de Grupo"
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
+msgstr "Problema ao carregar problemas conhecidos"
 
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
-msgstr ""
+msgstr "Carregando conjunto de dados"
 
 msgctxt "AsyncLoader|"
 msgid "Saving Data Set"
-msgstr ""
+msgstr "Salvando conjunto de dados"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Result Set"
-msgstr ""
+msgstr "Exportando conjunto de resultados"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Data Set"
-msgstr ""
+msgstr "Exportando conjunto de dados"
 
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
-msgstr ""
+msgstr "Sincronizar conjunto de dados"
 
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
 msgstr ""
+"Algo deu errado ao converter o tipo de coluna, mas não está claro o quê."
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain decimals."
-msgstr ""
+msgstr "Falha na conversão da coluna para ordinal: os valores contêm decimais."
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to continuous: values contain text."
-msgstr ""
+msgstr "Falha ao converter coluna em contínua: os valores contêm texto."
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain text or decimals."
 msgstr ""
+"Falha ao converter a coluna em ordinal: os valores contêm texto ou decimais."
 
 #, qt-format
 msgctxt "FileEvent|"
 msgid "Importing Data from %1"
-msgstr ""
+msgstr "Importando dados de %1"
 
 msgctxt "FileEvent|"
 msgid "Importing SPSS File"
-msgstr ""
+msgstr "Importando arquivo SPSS"
 
 msgctxt "FileEvent|"
 msgid "Importing SAS File"
-msgstr ""
+msgstr "Importando arquivo SAS"
 
 msgctxt "FileEvent|"
 msgid "Importing STATA File"
-msgstr ""
+msgstr "Importando Arquivo STATA"
 
 msgctxt "FileEvent|"
 msgid "Loading JASP File"
-msgstr ""
+msgstr "Carregando arquivo JASP"
 
 msgctxt "FileEvent|"
 msgid "Loading File"
-msgstr ""
+msgstr "Carregando arquivo"
 
 msgctxt "FileEvent|"
 msgid "Saving JASP File"
-msgstr ""
+msgstr "Salvando o arquivo JASP"
 
 msgctxt "FileEvent|"
 msgid "Exporting Results"
-msgstr ""
+msgstr "Exportando Resultados"
 
 msgctxt "FileEvent|"
 msgid "Exporting Data"
-msgstr ""
+msgstr "Exportando dados"
 
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr ""
+msgstr "Sincronizando dados"
 
 msgctxt "FileEvent|"
 msgid "Processing File"
-msgstr ""
+msgstr "Processando Arquivo"
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Value"
 msgstr "Valor"
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Label"
 msgstr "Rótulo"
@@ -2930,6 +2941,13 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"Infelizmente, o diagrama não pôde ser editado.\n"
+"\n"
+"Mensagem de erro:\n"
+"%1\n"
+"\n"
+"Se o problema persistir, por favor reporte a mensagem acima em: https://jasp-"
+"stats.org/bug-reports"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2937,27 +2955,31 @@ msgid ""
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
-msgstr ""
+msgstr "Falha ao carregar atualizações para o módulo %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error: %1"
-msgstr ""
+msgstr "O carregamento de atualizações gerou o seguinte erro: %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr ""
+"Ocorreu um erro ao tentar inicializar um módulo de dir %1, o erro foi: %2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
+msgstr "Ocorreu um erro ao tentar carregar o módulo %1, o erro foi: '%2'"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2965,6 +2987,8 @@ msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
 msgstr ""
+"Algo deu errado ao remover arquivos para o módulo %1 no caminho '%2' e o "
+"erro foi: %3"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2972,11 +2996,13 @@ msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"A instalação do Módulo %1 falhou com a seguinte mensagem de erro:\n"
+"%2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Loading packages for Module %1 failed"
-msgstr ""
+msgstr "O carregamento de pacotes para o Módulo %1 falhou"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2984,10 +3010,12 @@ msgid ""
 "Loading the packages of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"Carregando os pacotes do Módulo %1 falhou com a seguinte mensagem de erro:\n"
+"%2"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Path cannot be handled by R"
-msgstr ""
+msgstr "O caminho não pode ser tratado por R"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2999,11 +3027,17 @@ msgid ""
 "and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
 ">Advanced->DeveloperMode."
 msgstr ""
+"Você está tentando instalar um módulo, mas porque o caminho '%1' contém "
+"caracteres não-ascii (ou um espaço) R pode ter alguns problemas para "
+"instalar. Se a instalação deste módulo falhar, você pode contornar isso "
+"alterando seu nome de usuário (ou fazendo um novo nome de usuário) que "
+"contenha apenas ascii-caracteres e sem espaços. Ou você pode desativar "
+"\"LC_CTYPE-set-to-C\" em Preferências->Avançado->Modo de Desenvolvedor."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
-msgstr ""
+msgstr "Não é possível instalar o módulo porque %1 não existe."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3014,58 +3048,70 @@ msgid ""
 "you are not the author of this module and do not know how to do this, "
 "contact: %2"
 msgstr ""
+"Não é possível instalar o módulo porque ele se chama '%1' e esse nome é "
+"reservado para a instalação do módulo de desenvolvimento.\n"
+"Mude o nome (em DESCRIÇÃO e descrição.json) e tente novamente. Se você não é "
+"o autor deste módulo e não sabe como fazer isso, entre em contato: %2"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
-msgstr ""
+msgstr "Selecione uma pasta"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
+"Para instalar um módulo de desenvolvimento que você precisa selecionar a "
+"pasta que deseja observar e carregar, você pode fazer isso sob o menu "
+"arquivo, Preferências->Avançado."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
-msgstr ""
+msgstr "Módulo inicializador de problemas"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
 "\n"
 msgstr ""
+"Houve um problema ao carregar o módulo de desenvolvimento:\n"
+"\n"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
-msgstr ""
+msgstr "Faltam arquivos ou pastas"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
 msgstr ""
+"A pasta selecionada não pode ser instalada como módulo de desenvolvimento "
+"porque não contém todos os ficheiros e pastas necessários."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/Description.qml file."
-msgstr ""
+msgstr "Crie um arquivo inst/Descrição.qml."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr ""
+msgstr "Crie um diretório R contendo seu código de análise."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
+msgstr "Crie um diretório inst/qml contendo seus formulários de opção."
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
 msgstr ""
+"Crie um diretório inst/icons contendo os ícones para seus botões de fitas."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
-msgstr ""
+msgstr "Omisso %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3074,6 +3120,9 @@ msgid ""
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
 msgstr ""
+"Você parece ter removido %1 do diretório do seu módulo de desenvolvimento. "
+"Sem ele o seu módulo não pode funcionar, certifique-se de colocá-lo de "
+"volta. Por enquanto seu antigo arquivo %2 será mantido."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3083,11 +3132,15 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"Você parece nunca ter tido um %1 no diretório do seu módulo de "
+"desenvolvimento. Sem ele o seu módulo não pode funcionar, certifique-se de "
+"criar um. Como você instalou é um pouco misterioso e assim o módulo de "
+"desenvolvimento deve ser desinstalado agora"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
-msgstr ""
+msgstr "%1 foi removido!"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3095,11 +3148,13 @@ msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr ""
+"Você parece ter removido %1 mas este arquivo é necessário para que o seu "
+"módulo funcione. O módulo de desenvolvimento vai ser desinstalado agora."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
-msgstr ""
+msgstr "Pasta ausente %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3108,6 +3163,9 @@ msgid ""
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
 msgstr ""
+"Você parece ter removido a pasta %1 do diretório do seu módulo de "
+"desenvolvimento. Sem ela o seu módulo não pode funcionar, certifique-se de "
+"colocá-lo de volta. Por enquanto, sua antiga pasta será mantida."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3117,15 +3175,20 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"Você parece nunca ter tido um %1 no diretório do seu módulo de "
+"desenvolvimento. Sem ele o seu módulo não pode funcionar, certifique-se de "
+"criar um. Como você instalou é um pouco misterioso e assim o módulo de "
+"desenvolvimento deve ser desinstalado agora"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr ""
+msgstr "A descrição do módulo de carregamento encontrou um problema"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
 msgstr ""
+"<i> Não foi possível carregar a descrição do módulo no arquivo: '%1'</i>"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3134,11 +3197,14 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a href="
 "\"http://%6\">%6</a></i><br>"
 msgstr ""
+"<h3>%1</h3><i>Versão %2</i><br><p>%3</p>>>br>>>br>>i>Criado por %4 e mantido "
+"por %5.</i><br>>i>Veja o website para mais detalhes: <a href=\"http://%6\""
+">%6</a></i><br>"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
-msgstr ""
+msgstr "O carregamento do módulo agrupado %1 falhou"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -3147,10 +3213,13 @@ msgid ""
 "\n"
 "%2"
 msgstr ""
+"O carregamento do módulo agrupado %1 falhou com o seguinte erro:\n"
+"\n"
+"%2"
 
 msgctxt "RibbonModel|"
 msgid "R (Beta)"
-msgstr ""
+msgstr "R (Beta)"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -3158,6 +3227,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
 "is for: '%2'"
 msgstr ""
+"Atualização errada sendo aplicada, estava procurando pela função '%1', mas "
+"esta atualização é para: '%2'"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -3165,6 +3236,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
 "is for: '%2' or lower"
 msgstr ""
+"Atualização errada sendo aplicada, estava procurando pela versão '%1', mas "
+"esta atualização é para: '%2' ou inferior"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -3176,6 +3249,12 @@ msgid ""
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
 msgstr ""
+"Abortando a atualização porque foi detectado um loop!\n"
+"\n"
+"Se %1 for tomado, eventualmente é alcançado novamente.\n"
+"\n"
+"Isto definitivamente não deveria acontecer, talvez o autor do módulo '%2' "
+"possa ser de ajuda"
 
 msgctxt "Modules::Upgrader|"
 msgid ""
@@ -3184,91 +3263,100 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
+"Os upgrades necessários para ler arquivos JASP mais antigos não puderam ser "
+"lidos...\n"
+"Você ainda pode usar JASP e até mesmo ler (alguns) arquivos mais antigos, "
+"mas algumas opções podem não ser entendidas corretamente e algumas análises "
+"podem falhar em carregar completamente."
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
-msgstr ""
+msgstr "Iniciando o upload de "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating download of "
-msgstr ""
+msgstr "Iniciando o download de "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new file "
-msgstr ""
+msgstr "Iniciando a criação de um novo arquivo "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
-msgstr ""
+msgstr "Iniciando a criação de uma nova pasta "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
-msgstr ""
+msgstr "Iniciando a ação de "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Upload of "
-msgstr ""
+msgstr "Upload de "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Download of "
-msgstr ""
+msgstr "Download de "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new file "
-msgstr ""
+msgstr "Criando um novo arquivo "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
-msgstr ""
+msgstr "Criando nova pasta "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
-msgstr ""
+msgstr "Acção Osf "
 
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
-msgstr ""
+msgstr "%1 %2 falhou porque %3"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
-msgstr ""
+msgstr " em andamento"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
 msgstr "Exportar resultados"
 
 msgctxt "QObject|"
 msgid "valid R code"
-msgstr ""
+msgstr "código R válido"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr "Opção desconhecida% 1 no DropDown% 2"
+msgstr "Opção desconhecida %1 no DropDown %2"
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
 msgstr ""
+"Uma nova pasta não pode ser adicionada à lista de projetos.<br>Para "
+"adicionar um novo projeto por favor use os serviços OSF online."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
+"Uma nova pasta não pode ser adicionada a uma lista de provedores de dados de "
+"projetos.<br>Para adicionar um novo provedor de dados (por exemplo, google "
+"drive) por favor use os serviços online OSF."
 
 #, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr ""
+msgstr "Contraste %1"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
-msgstr ""
+msgstr "O número de colunas na fonte é maior do que o número de colunas de %1"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
@@ -3276,240 +3364,243 @@ msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
 msgstr ""
+"Um botão de opção dentro do elemento RadioButtonGroup (nome: %1) não tem nome"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr ""
+msgstr "Nenhum botão de opção correspondente ao nome %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr ""
+msgstr "Nenhum nome foi dado para a fonte de %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr ""
+msgstr "Nenhuma fonte fornecida para %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr ""
+msgstr "Não é possível encontrar o componente %1 para a fonte de %2"
 
 msgctxt "TextAreaBase|"
 msgid "Model applied"
-msgstr ""
+msgstr "Modelo aplicado"
 
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
-msgstr ""
+msgstr "A expressão não devolveu um número."
 
 msgctxt "TextInputBase|"
 msgid "Integer Field"
-msgstr ""
+msgstr "Campo Inteiro"
 
 msgctxt "TextInputBase|"
 msgid "Number Field"
-msgstr ""
+msgstr "Campo Numérico"
 
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
-msgstr ""
+msgstr "Campo percentual"
 
 msgctxt "TextInputBase|"
 msgid "Integers Field"
-msgstr ""
+msgstr "Campo de Inteiros"
 
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr ""
+msgstr "Campo Double"
 
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
-msgstr ""
+msgstr "Adicionar Campo de Coluna"
 
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr ""
+msgstr "Adicionar Campo de Coluna Computada"
 
 msgctxt "TextInputBase|"
 msgid "Formula Field"
-msgstr ""
+msgstr "Campo de Fórmula"
 
 msgctxt "TextInputBase|"
 msgid "Formulas Field"
-msgstr ""
+msgstr "Campo de Fórmulas"
 
 msgctxt "TextInputBase|"
 msgid "Text Field"
-msgstr ""
+msgstr "Campo de Texto"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr ""
+msgstr "O valor (%1) deve ser %2"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr ""
+msgstr "O modelo fonte de %1 deve ser de uma Lista de Fatores"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Cannot find source for VariableList %1"
-msgstr ""
+msgstr "Não é possível encontrar fonte para VariableList %1"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr ""
+msgstr "Tipo errado de fonte para a VariableList %1"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
-msgstr ""
+msgstr "Nenhuma lista relacionada encontrada para a VariablesList %1"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr ""
+"Tipo errado de lista relacionada (%1) encontrada para a VariablesList %2"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong column type: %1 for ListView %2"
-msgstr ""
+msgstr "Tipo de coluna errado: %1 para ListView %2"
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr ""
+msgstr "Fator"
 
 msgctxt "FactorLevelList|"
 msgid "Level"
-msgstr ""
+msgstr "Nível"
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr ""
+msgstr "Novo Fator"
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr ""
+msgstr "Novo Nível"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
-msgstr ""
+msgstr "Lembrar dos módulos ativados"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
-msgstr ""
+msgstr "Use o PAT padrão para Github"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
 "environment variables."
 msgstr ""
+"Use o pacote GITHUB_PAT ou, se disponível, use o conjunto em variáveis de "
+"ambiente."
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
+msgstr "Privado GITHUB_PAT:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
-msgstr ""
+msgstr "Deixe JASP adivinhar a melhor configuração para LC_CTYPE (recomendado!)"
 
 msgctxt "PrefsAdvanced|"
 msgid "Always set LC_CTYPE to \"C\""
-msgstr ""
+msgstr "Definir sempre LC_CTYPE para \"C\""
 
 msgctxt "PrefsAdvanced|"
 msgid "Keep LC_CTYPE at system default"
-msgstr ""
+msgstr "Manter LC_CTYPE no padrão do sistema"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr ""
+msgstr "R, JAGS, ou código de lavaan:"
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr ""
+msgstr "Resultado & ajuda:"
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr ""
+msgstr "Tema claro"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
-msgstr ""
+msgstr "Tema escuro"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr ""
+msgstr "Língua preferida"
 
 msgctxt "PrefsUI|"
 msgid "Choose language  "
-msgstr ""
+msgstr "Escolha o idioma  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
-msgstr ""
+msgstr "Modo gráfico seguro"
 
 msgctxt "PrefsUI|"
 msgid "Disable animations"
-msgstr ""
+msgstr "Desativar Animações"
 
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
-msgstr ""
+msgstr "Usar diálogos de arquivo nativo"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
-msgstr ""
+msgstr "Selecione um módulo do desenvolvedor clicando aqui"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr ""
+msgstr "Mostrar menu principal"
 
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
-msgstr ""
+msgstr "Exibir menu de módulos"
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr ""
+msgstr "Um bom agrupamento de elementos"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr ""
+msgstr "Você pode inserir um número inteiro aqui: "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr ""
+msgstr "Esta é uma ponta de ferramenta incrivelmente útil, certo?"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr ""
+msgstr "A primeira caixa de seleção"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr ""
+msgstr "A segunda caixa de seleção"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr ""
+msgstr "A última caixa de seleção"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
 msgstr "Variáveis"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "Dividir"
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
-msgstr ""
+msgstr "Lista de Nível de Fatores"
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -3517,6 +3608,10 @@ msgid ""
 "probably could not connect to the server. Don't worry, JASP will work fine "
 "it just might not tell you about a few small known issues."
 msgstr ""
+"JASP teve um problema ao fazer o download dos problemas conhecidos para esta "
+"versão, provavelmente não conseguiu conectar-se ao servidor. Não se "
+"preocupe, o JASP funcionará bem, mas pode não lhe contar sobre alguns "
+"pequenos problemas conhecidos."
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -3524,6 +3619,9 @@ msgid ""
 "isn't necessarily a problem but if it keeps occuring you could contact the "
 "JASP team for assistance."
 msgstr ""
+"O JASP deparou-se com um problema ao carregar os problemas conhecidos para "
+"esta versão, isto não é necessariamente um problema, mas se continuar a "
+"acontecer pode contactar a equipa JASP para obter assistência."
 
 #, qt-format
 msgctxt "KnownIssues|"
@@ -3532,6 +3630,9 @@ msgid ""
 "this isn't necessarily a problem but if it keeps occuring you could contact "
 "the JASP team for assistance."
 msgstr ""
+"JASP encontrou um problema ('%1') carregando os problemas conhecidos para "
+"esta versão, isto não é necessariamente um problema, mas se continuar a "
+"acontecer você pode contactar a equipa JASP para obter assistência."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -3539,12 +3640,14 @@ msgid ""
 "No default spreadsheet editor for file %1. Do you want to export the data "
 "into a CSV file and start the default spreadsheet editor for this CSV file?."
 msgstr ""
+"Nenhum editor de planilhas padrão para arquivo %1. Você quer exportar os "
+"dados para um arquivo CSV e iniciar o editor de planilhas padrão para este "
+"arqui.vo CSV?"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
-msgstr ""
+msgstr "Gerar arquivo de dados como CSV"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Cancel"
 msgstr "Cancelar"
@@ -3553,6 +3656,8 @@ msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
 msgstr ""
+"O módulo de inicialização durante a inicialização do JASP falhou, o módulo "
+"deve ser removido?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3562,15 +3667,20 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
+"O módulo de inicialização durante a inicialização do JASP falhou com a "
+"seguinte mensagem:\n"
+"%1\n"
+"\n"
+"O módulo deve ser removido?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
-msgstr ""
+msgstr "Módulo inicializador %1 falhou"
 
 msgctxt "RibbonModel|"
 msgid "Module missing"
-msgstr ""
+msgstr "Módulo faltando"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -3580,18 +3690,20 @@ msgid ""
 "If you installed this version of JASP via an official installer let the JASP "
 "team know."
 msgstr ""
+"Parece que o módulo agrupado %1 não foi instalado corretamente, e portanto "
+"não pode ser carregado.\n"
+"Se você instalou esta versão do JASP através de um instalador oficial "
+"informe a equipe JASP."
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr ""
+msgstr "Executar código R em um console"
 
-#, fuzzy
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
 msgstr ""
 "Apenas 1 lista de Variáveis Disponíveis pode ser definida em um VariablesForm"
 
-#, fuzzy
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
 msgstr "Não existe uma Lista Disponível no Formulário de Variáveis"
