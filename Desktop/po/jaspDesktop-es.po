@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-30 05:34+0000\n"
+"PO-Revision-Date: 2021-06-01 17:34+0000\n"
 "Last-Translator: Paulina Elizabeth Robalino <paulina.e.robalino@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -3081,15 +3081,13 @@ msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
 msgstr "Se produjo un error y no se pudo crear la carpeta."
 
-#, fuzzy
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
 msgstr ""
-"No se puede agregar una nueva carpeta a la lista de proyectos.\n"
-"\n"
-"Para agregar un nuevo proyecto, utilice los servicios OSF en línea."
+"No se puede agregar una nueva carpeta a la lista de proyectos.<br>Para "
+"agregar un nuevo proyecto, utilice los servicios OSF en línea."
 
 #, fuzzy
 msgctxt "OSF|"
