@@ -63,12 +63,13 @@ Terms::Terms(Terms *parent)
 	_parent = parent;
 }
 
-void Terms::set(const std::vector<Term> &terms, bool isUnique)
+void Terms::set(const std::vector<Term> &terms, bool hasDuplicate)
 {
 	_terms.clear();
+	_hasDuplicate = hasDuplicate;
 
 	for(const Term &term : terms)
-		add(term, isUnique);
+		add(term);
 }
 
 void Terms::set(const std::vector<string> &terms)
@@ -95,12 +96,13 @@ void Terms::set(const QList<Term> &terms)
 		add(term);
 }
 
-void Terms::set(const Terms &terms, bool isUnique)
+void Terms::set(const Terms &terms, bool hasDuplicate)
 {
 	_terms.clear();
+	_hasDuplicate = terms.hasDuplicate() || hasDuplicate;
 
 	for(const Term &term : terms)
-		add(term, isUnique);
+		add(term);
 }
 
 void Terms::set(const QList<QList<QString> > &terms)
@@ -130,7 +132,9 @@ void Terms::removeParent() {
 
 void Terms::add(const Term &term, bool isUnique)
 {
-	if (!isUnique)
+	if (!isUnique)	_hasDuplicate = true;
+
+	if (_hasDuplicate)
 		_terms.push_back(term);
 	else if (_parent != nullptr)
 	{
@@ -192,6 +196,8 @@ void Terms::insert(int index, const Terms &terms)
 
 void Terms::add(const Terms &terms)
 {
+	_hasDuplicate = _hasDuplicate || terms.hasDuplicate();
+
 	for(const Term & term : terms)
 		add(term);
 }

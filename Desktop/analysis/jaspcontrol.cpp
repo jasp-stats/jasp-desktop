@@ -203,7 +203,7 @@ void JASPControl::componentComplete()
 				listView = tableViewVar.value<JASPListControl*>();
 		}
 
-		if (listView)
+		if (listView && listView != this)
 		{
 			_parentListView = listView;
 

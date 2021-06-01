@@ -122,7 +122,7 @@ void AxisModel::getEntryAndBreaks(size_t & entry, bool & breaks, const QModelInd
 void AxisModel::simplifyLimitsType()
 {
 	// floating point comparision is fine here
-	if (_range[0] == _limits[0] && _range[1] == _limits[1])
+	if (_range.size() > 0 && _limits.size() > 0 && _range[0] == _limits[0] && _range[1] == _limits[1])
 		setLimitsType(LimitsType::LimitsBreaks);
 }
 
@@ -147,6 +147,34 @@ QVariant AxisModel::headerData ( int section, Qt::Orientation orientation, int r
 
 	if(section == 0 && hasBreaks()) return "Breaks";
 	else							return "Labels";
+}
+
+bool AxisModel::insertColumns(int column, int count, const QModelIndex &)
+{
+	for (int i = 0; i < count; i++)
+	{
+		bool left = true;
+
+		if (column < 0 || columnCount() == 0)	column = 0;
+		else if (column >= columnCount())
+		{
+			column = columnCount() - 1;
+			left = false;
+		}
+		insertBreak(index(column, column), size_t(column), left);
+	}
+
+	return true;
+}
+
+bool AxisModel::removeColumns(int column, int count, const QModelIndex &)
+{
+	if (column < 0 || column >= columnCount()) return false;
+
+	for (int i = 0; i < count; i++)
+		deleteBreak(index(column, column), size_t(column));
+
+	return true;
 }
 
 bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -191,6 +219,19 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 
 		if(_breaks[entry] != newBreak)
 		{
+			QString label = _labels[entry];
+			bool ok = false;
+			double labelDouble = label.toDouble(&ok);
+			QModelIndex index2 = index;
+
+			if (ok && (std::abs(labelDouble - _breaks[entry]) < 0.00001))
+			{
+				_labels[entry] = value.toString();
+				int col = _vertical ? int(entry) : 1;
+				int row = _vertical ? 1 : int(entry);
+				index2 = AxisModel::index(row, col);
+			}
+
 			_breaks[entry] = newBreak;
 
 			if (!_plotEditor->advanced())
@@ -202,7 +243,7 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 			}
 
 
-			emit dataChanged(index, index);
+			emit dataChanged(index, index2);
 			emit somethingChanged();
 		}
 	}

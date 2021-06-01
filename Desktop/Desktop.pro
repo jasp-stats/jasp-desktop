@@ -380,7 +380,9 @@ HEADERS += \
     widgets/boundcontrolfilteredtableview.h \
     widgets/variablesformbase.h \
     widgets/factorlevellistbase.h \
-    widgets/listmodelfactorlevels.h
+    widgets/listmodelfactorlevels.h \
+    widgets/listmodelgridinput.h \
+    widgets/boundcontrolgridtableview.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -568,7 +570,9 @@ SOURCES += \
     widgets/boundcontrolfilteredtableview.cpp \
     widgets/variablesformbase.cpp \
     widgets/factorlevellistbase.cpp \
-    widgets/listmodelfactorlevels.cpp
+    widgets/listmodelfactorlevels.cpp \
+    widgets/listmodelgridinput.cpp \
+    widgets/boundcontrolgridtableview.cpp
 
 RESOURCES += \
     html/html.qrc \

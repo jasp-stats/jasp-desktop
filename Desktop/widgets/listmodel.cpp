@@ -592,15 +592,15 @@ void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)
 	_setTerms(terms);
 }
 
-void ListModel::_setTerms(const std::vector<Term> &terms, bool isUnique)
+void ListModel::_setTerms(const std::vector<Term> &terms, bool hasDuplicate)
 {
-	_terms.set(terms, isUnique);
+	_terms.set(terms, hasDuplicate);
 	setUpRowControls();
 }
 
-void ListModel::_setTerms(const Terms &terms, bool isUnique)
+void ListModel::_setTerms(const Terms &terms, bool hasDuplicate)
 {
-	_terms.set(terms, isUnique);
+	_terms.set(terms, hasDuplicate);
 	setUpRowControls();
 }
 

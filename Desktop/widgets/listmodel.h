@@ -111,9 +111,9 @@ public slots:
 			void dataChangedHandler(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 
 protected:
-			void	_setTerms(const Terms& terms, bool isUnique = true);
+			void	_setTerms(const Terms& terms, bool hasDuplicate = false);
 			void	_setTerms(const Terms& terms, const Terms& parentTerms);
-			void	_setTerms(const std::vector<Term>& terms, bool isUnique = true);
+			void	_setTerms(const std::vector<Term>& terms, bool hasDuplicate = false);
 			void	_removeTerms(const Terms& terms);
 			void	_removeTerm(int index);
 			void	_removeTerm(const Term& term);

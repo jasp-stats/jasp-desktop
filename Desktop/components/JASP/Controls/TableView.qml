@@ -18,10 +18,10 @@
 
 
 import QtQuick			2.11
-import QtQuick.Controls	2.5
 import QtQuick.Controls	2.5 as QTC
 import QtQuick.Layouts	1.3
 import JASP.Controls	1.0
+import JASP.Widgets		1.0
 
 import QtQuick.Window	2.3
 import JASP				1.0
@@ -50,20 +50,18 @@ TableViewBase
 	property string cornerText		: qsTr("Row #")
 	property bool	parseDefaultValue	: true
 	property bool	isFirstColEditable	: true
+	property bool	showAddRemoveButtons: modelType === JASP.GridInput
+
+	property alias	addLeftButton	: addLeftButton
+	property alias	addRightButton	: addRightButton
+	property alias	deleteButton	: deleteButton
 
 	//The size of the table *inside* the Flickable. + 2 for margins of flickable and scrollbars
 	readonly property int tableWidth:  theView.width  + 2 + (vertiScroller.visible ? jaspTheme.scrollbarBoxWidth : 0)
 	readonly property int tableHeight: theView.height + 2 + (horiScroller.visible ? jaspTheme.scrollbarBoxWidth : 0)
 
-	function getColHeaderText(headerText, columnIndex)			{ return headerText; }
-	function getRowHeaderText(headerText, rowIndex)				{ return headerText; }
-
-	signal reset()
-	signal addRow()
-	signal addColumn()
-	signal removeRow(int row)
-	signal removeColumn(int col)
-	signal itemChanged(int col, int row, string value, string type)
+	function getColHeaderText(headerText, columnIndex)			{ return (columnNames.length > columnIndex)	? columnNames[columnIndex]	: headerText; }
+	function getRowHeaderText(headerText, rowIndex)				{ return (rowNames.length > rowIndex)		? rowNames[rowIndex]		: headerText; }
 
 	//These signals are added because I had some trouble connecting the filterChanged from C++ (in constructor of ListModelFilteredDataEntry)
 	signal filterSignal(string filter)
@@ -73,6 +71,50 @@ TableViewBase
 	onFilterChanged:	filterSignal(tableView.filter)
 	onColNameChanged:	colNameSignal(tableView.colName)
 	onExtraColChanged:	extraColSignal(tableView.extraCol)
+
+	property real iconHeight: 28 * preferencesModel.uiScale
+
+	onColSelectedChanged: setButtons()
+
+	function setButtons()
+	{
+		if (!showAddRemoveButtons) return
+
+		var item
+		if (colSelected >= 0) item = theView.getColumnHeader(colSelected);
+
+		if (item)
+		{
+			if (maxColumn < 0 || maxColumn > model.columnCount())
+			{
+				var maxNumberWidth = theView.rowNumberWidth;
+				addLeftButton.x = Qt.binding(function() { return 1 + item.x - iconHeight/2 - myFlickable.contentX } )
+				addLeftButton.y = Qt.binding(function() { return item.y + item.height/2 - iconHeight/2 } )
+				addLeftButton.visible = Qt.binding(function() { return (addLeftButton.x + iconHeight/2 > theView.rowNumberWidth) && (addLeftButton.x + iconHeight/2 < tableView.width + 1) } )
+				addRightButton.x = Qt.binding(function() { return 1 + item.x + item.width - iconHeight/2 - myFlickable.contentX } )
+				addRightButton.y = Qt.binding(function() { return item.y + item.height/2 - iconHeight/2 } )
+				addRightButton.visible = Qt.binding(function() { return (addRightButton.x + iconHeight/2 > theView.rowNumberWidth) && (addRightButton.x + iconHeight/2 < tableView.width + 1) } )
+			}
+			else
+			{
+				addLeftButton.visible = false
+				addRightButton.visible = false;
+			}
+			if (minColumn < model.columnCount())
+			{
+				deleteButton.x = Qt.binding(function() { return item.x + item.width/2 - iconHeight/2 - myFlickable.contentX } )
+				deleteButton.visible = Qt.binding(function() { return (deleteButton.x + iconHeight/2 > theView.rowNumberWidth ) && (deleteButton.x + iconHeight/2 < tableView.width + 1) } )
+			}
+			else
+				deleteButton.visible = false
+		}
+		else
+		{
+			addLeftButton.visible = false
+			addRightButton.visible = false
+			deleteButton.visible = false
+		}
+	}
 
 	function removeAColumn()
 	{
@@ -96,6 +138,68 @@ TableViewBase
 		border.color:		jaspTheme.uiBorder
 		color:				jaspTheme.white
 
+		MenuButton
+		{
+			id:					addLeftButton
+			z:					100
+			height:				iconHeight
+			width:				height
+			iconSource:			jaspTheme.iconPath + "/duplicate.png"
+			toolTip:			qsTr("Add to the left")
+			radius:				height
+			visible:			false
+			onClicked:
+			{
+				if (maxColumn < 0 || maxColumn > model.columnCount())
+				{
+					addColumn(colSelected, true);
+					colSelected++;
+				}
+			}
+		}
+		MenuButton
+		{
+			id:					addRightButton
+			z:					100
+			height:				iconHeight
+			width:				height
+			iconSource:			jaspTheme.iconPath + "/duplicate.png"
+			toolTip:			qsTr("Add to the right")
+			radius:				height
+			visible:			false
+			onClicked:
+			{
+				if (maxColumn < 0 || maxColumn > model.columnCount())
+				{
+					addColumn(colSelected, false)
+					setButtons()
+				}
+			}
+		}
+		MenuButton
+		{
+			id:					deleteButton
+			anchors.top:		parent.top
+			anchors.topMargin:	-height/2
+			z:					100
+			height:				iconHeight
+			width:				height
+			iconSource:			jaspTheme.iconPath + "/close-button.png"
+			toolTip:			qsTr("Delete")
+			radius:				height
+			visible:			false
+			onClicked:
+			{
+				if (minColumn < model.columnCount())
+				{
+					removeColumn(colSelected);
+					if (colSelected > 0) colSelected--
+					else setButtons()
+				}
+			}
+		}
+
+
 		Flickable
 		{
 			id:				myFlickable
@@ -114,7 +218,7 @@ TableViewBase
 
 			boundsBehavior	: Flickable.StopAtBounds
 			boundsMovement	: Flickable.StopAtBounds
-			clip:				true
+			clip:			true
 
 			DataSetView
 			{
@@ -190,7 +294,14 @@ TableViewBase
 						selectValueOnFocus:		true
 						validator:				tableView.validator
 						onPressed:				tableView.colSelected = columnIndex
-						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value, inputType)
+						onEditingFinished:
+						{
+							if (value !== itemText)
+							{
+								tableView.itemChanged(columnIndex, rowIndex, value, inputType)
+								tableView.setButtons()
+							}
+						}
 						editable:				itemEditable
 						multiple:				itemInputType === "formulaArray"
 					}

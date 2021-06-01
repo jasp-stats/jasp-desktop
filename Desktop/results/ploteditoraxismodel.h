@@ -56,7 +56,8 @@ public:
 	Qt::ItemFlags			flags(		const QModelIndex &index)												const	override;
 	QHash<int, QByteArray>	roleNames()																			const	override;
 	QVariant				headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
-
+	bool					insertColumns(int column, int count, const QModelIndex &parent = QModelIndex())				override;
+	bool					removeColumns(int column, int count, const QModelIndex &parent = QModelIndex())				override;
 
 	void				setAxisData(const Json::Value & Axis);
 	Json::Value			getAxisData()																		const;

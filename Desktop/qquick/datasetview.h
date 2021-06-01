@@ -93,11 +93,13 @@ public:
 
 	void setTableViewItem(			QQuickItem * tableViewItem) { _tableViewItem = tableViewItem; }
 
-	int headerHeight()			{ return _dataRowsMaxHeight; }
-	int rowNumberWidth()		{ return _rowNumberMaxWidth; }
+	int headerHeight()					{ return _dataRowsMaxHeight; }
+	int rowNumberWidth()	{ return _rowNumberMaxWidth; }
 
 	void resetItems();
 
+	Q_INVOKABLE QQuickItem*	getColumnHeader(int col)	{ return _columnHeaderItems.count(col) > 0	? _columnHeaderItems[col]->item : nullptr;	}
+	Q_INVOKABLE QQuickItem*	getRowHeader(int row)		{ return _rowNumberItems.count(row) > 0		? _rowNumberItems[row]->item	: nullptr;	}
 
 	GENERIC_SET_FUNCTION(HeaderHeight,		_dataRowsMaxHeight, headerHeightChanged,		double)
 	GENERIC_SET_FUNCTION(RowNumberWidth,	_rowNumberMaxWidth, rowNumberWidthChanged,		double)

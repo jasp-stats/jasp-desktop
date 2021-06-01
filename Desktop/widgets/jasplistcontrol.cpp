@@ -155,8 +155,6 @@ void JASPListControl::cleanUp()
 	try
 	{
 		ListModel* _model = model();
-		for (SourceItem* sourceItem : _sourceItems)
-			delete sourceItem;
 
 		if (_model)
 		{
@@ -165,8 +163,6 @@ void JASPListControl::cleanUp()
 				for (JASPControl* control : rowControls->getJASPControlsMap().values())
 					control->cleanUp();
 		}
-
-		_sourceItems.clear();
 
 		JASPControl::cleanUp();
 	}
@@ -199,6 +195,11 @@ void JASPListControl::applyToAllSources(std::function<void(SourceItem *sourceIte
 {
 	for (SourceItem* sourceItem : _sourceItems)
 		applyThis(sourceItem, sourceItem->combineWithOtherModels() ? _getCombinedTerms(sourceItem) : sourceItem->getTerms());
+}
+
+bool JASPListControl::hasNativeSource() const
+{
+	return _sourceItems.size() == 1 && _sourceItems[0]->isNativeModel();
 }
 
 bool JASPListControl::addRowControl(const QString &key, JASPControl *control)

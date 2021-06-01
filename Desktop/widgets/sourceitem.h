@@ -62,14 +62,14 @@ public:
 
 	SourceItem(JASPListControl* _listControl = nullptr);
 
-	virtual ~SourceItem();
-
 	ListModel*				listModel()							{ return _listModel;				}
 	const QString&			controlName()				const	{ return _controlName;				}
 	const QStringList&		modelUse()					const	{ return _modelUse;					}
 	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;	}
 	const QSet<QString>&	usedControls()				const	{ return _usedControls;				}
 	bool					isColumnsModel()			const	{ return _isColumnsModel;			}
+	bool					isNativeModel()				const	{ return _nativeModel != nullptr;	}
+	QAbstractItemModel*		nativeModel()						{ return _nativeModel;				}
 	Terms					getTerms();
 
 	static QVector<SourceItem*>				readAllSources(JASPListControl* _listControl);

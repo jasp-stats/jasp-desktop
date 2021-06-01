@@ -5,6 +5,7 @@ import JASP.Widgets			1.0		as	JASPW
 import JASP.Theme			1.0
 import JASP.Controls		1.0		as	JASPC
 import JASP.PlotEditor		1.0
+import JASP					1.0
 
 /*
 	TODO: it might make sense to add a global title/ box around all the options inside one axis.
@@ -71,7 +72,7 @@ Column
 		visible: axisModel.continuous
 
 		JASPC.RadioButton { id: axisBreaksRange;	value: "range";		label:	qsTr("Specify sequence");	checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksRange	: false										}
-		JASPC.RadioButton { id: axisBreaksManual;	value: "manual";	label:	qsTr("Manually");			checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true	;	visible: axisModel.continuous;	}
+		JASPC.RadioButton { id: axisBreaksManual;	value: "manual";	label:	qsTr("Set Manually");		checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true	;	visible: axisModel.continuous;	}
 		JASPC.RadioButton { id: axisBreaksNull;		value: "NULL";		label:	qsTr("Hide ticks");			checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksNull		: false										}
 
 		onValueChanged:
@@ -113,11 +114,25 @@ Column
 
 		}
 
-		PlotEditingAxisTable
+		JASPC.TableView
 		{
-			visible:			axisBreaksManual.checked
-			model:				axisModel
-			implicitWidth:		breaksGroup.width
+			modelType:				JASP.GridInput
+			width					: tableWidth  < breaksGroup.width  ? tableWidth : breaksGroup.width
+			height					: tableHeight
+			itemTypePerRow			: [JASP.Double, JASP.String]
+			itemType				: JASP.String // To set the String Validator
+			rowNames				: [qsTr("Value"), qsTr("Label")]
+			cornerText				: qsTr("Tick #")
+			minColumn				: 2
+			addLeftButton.toolTip	: qsTr("Insert tick left")
+			addRightButton.toolTip	: qsTr("Insert tick right")
+			deleteButton.toolTip	: qsTr("Delete tick")
+
+			visible					: axisBreaksManual.checked
+			source					: axisModel
+
+			function getColHeaderText(headerText, columnIndex) { return columnIndex + 1; }
+
 		}
 	}
 

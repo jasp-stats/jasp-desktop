@@ -68,6 +68,7 @@ public:
 			void				applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
 
 			bool				hasSource()					const			{ return _sourceItems.size() > 0; }
+			bool				hasNativeSource()			const;
 
 			JASPControl		*	getRowControl(const QString& key, const QString& name)	const;
 	virtual	bool				addRowControl(const QString& key, JASPControl* control);

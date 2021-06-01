@@ -33,7 +33,7 @@ SourceItem::SourceItem(
 		, QAbstractItemModel*						nativeModel
 		, const QVector<SourceItem*>&				discardSources
 		, const QVector<QMap<QString, QVariant> >&	conditionVariables
-		) : _listControl(listControl)
+		) : QObject(listControl), _listControl(listControl)
 {
 	_name					= map["name"].toString();
 	_controlName			= map["controlName"].toString();
@@ -70,13 +70,13 @@ SourceItem::SourceItem(
 }
 
 SourceItem::SourceItem(JASPListControl *listControl, const JASPListControl::LabelValueMap &values)
-	:  _listControl(listControl), _values(values), _isValuesSource(true)
+	:  QObject(listControl), _listControl(listControl), _values(values), _isValuesSource(true)
 {
 	_setUp();
 }
 
 SourceItem::SourceItem(JASPListControl *listControl, const QString& rSourceName, const QString& modelUse)
-	: _listControl(listControl), _name(rSourceName), _isRSource(true)
+	: QObject(listControl), _listControl(listControl), _name(rSourceName), _isRSource(true)
 {
 	if (!modelUse.isEmpty())	_modelUse = modelUse.split(".");
 
@@ -84,7 +84,7 @@ SourceItem::SourceItem(JASPListControl *listControl, const QString& rSourceName,
 }
 
 SourceItem::SourceItem(JASPListControl *listControl)
-	:  _listControl(listControl), _isColumnsModel(true)
+	:  QObject(listControl), _listControl(listControl), _isColumnsModel(true)
 {
 	_setUp();
 }
@@ -162,50 +162,6 @@ void SourceItem::_setUp()
 		}
 		else								_listControl->addControlError(QObject::tr("Cannot find component %1 for the source of %2").arg(_name).arg(_listControl->name()));
 	}
-}
-
-SourceItem::~SourceItem()
-{
-	if (_isRSource)
-	{
-		if (_listControl->form())
-			_listControl->form()->removeRSource(_name, _listControl->model());
-	}
-	else if (_isValuesSource)
-		delete _listModel; // In case of values, the model is created just to contain the values, and does not come from another listview.
-	else if (_nativeModel)
-	{
-		ListModel *controlModel = _listControl->model();
-
-		disconnect(_nativeModel, &QAbstractItemModel::dataChanged,			controlModel,	&ListModel::sourceTermsReset );
-		disconnect(_nativeModel, &QAbstractItemModel::rowsInserted,			controlModel,	&ListModel::sourceTermsReset );
-		disconnect(_nativeModel, &QAbstractItemModel::rowsRemoved,			controlModel,	&ListModel::sourceTermsReset );
-		disconnect(_nativeModel, &QAbstractItemModel::rowsMoved,			controlModel,	&ListModel::sourceTermsReset );
-		disconnect(_nativeModel, &QAbstractItemModel::modelReset,			controlModel,	&ListModel::sourceTermsReset );
-
-		ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
-		if (columnsModel)
-		{
-			disconnect(columnsModel, &ColumnsModel::namesChanged,			controlModel, &ListModel::sourceNamesChanged );
-			disconnect(columnsModel, &ColumnsModel::columnTypeChanged,		controlModel, &ListModel::sourceColumnTypeChanged );
-			disconnect(columnsModel, &ColumnsModel::labelsChanged,			controlModel, &ListModel::sourceLabelsChanged );
-			disconnect(columnsModel, &ColumnsModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
-			disconnect(columnsModel, &ColumnsModel::columnsChanged,			controlModel, &ListModel::sourceColumnsChanged );
-		}
-
-		if (_listModel)
-		{
-			_listControl->removeDependency(_listModel->listView());
-			disconnect(_listModel,	&ListModel::namesChanged,				controlModel, &ListModel::sourceNamesChanged);
-			disconnect(_listModel,	&ListModel::columnTypeChanged,			controlModel, &ListModel::sourceColumnTypeChanged);
-			disconnect(_listModel,	&ListModel::labelsChanged,				controlModel, &ListModel::sourceLabelsChanged );
-			disconnect(_listModel,	&ListModel::labelsReordered,			controlModel, &ListModel::sourceLabelsReordered );
-			disconnect(_listModel,	&ListModel::columnsChanged,				controlModel, &ListModel::sourceColumnsChanged );
-		}
-	}
-
-	for (SourceItem* discardModel : _discardSources)
-		delete discardModel;
 }
 
 QList<QVariant> SourceItem::_getListVariant(QVariant var)
@@ -480,10 +436,13 @@ Terms SourceItem::_readAllTerms()
 	else if (_nativeModel)
 	{
 		int nbRows = _nativeModel->rowCount();
+		int nbCols = _nativeModel->columnCount();
 		for (int i = 0; i < nbRows; i++)
 		{
-			QModelIndex modelIndex(_nativeModel->index(i, 0));
-			terms.add(_nativeModel->data(modelIndex, _nativeModelRole).toString());
+			QStringList row;
+			for (int j = 0; j < nbCols; j++)
+				row.append(_nativeModel->data(_nativeModel->index(i, j), _nativeModelRole).toString());
+			terms.add(Term(row), false);
 		}
 		if (!_modelUse.empty())
 			// If the 'use' parameter of the source property asks for the levels, or to filter some types

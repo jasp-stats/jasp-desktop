@@ -44,6 +44,8 @@ Item
 	property	alias	control				: tableView //Needed for RowComponent
 
 	property	alias	itemType			: tableView.itemType
+	property	alias	itemTypePerColumn	: tableView.itemTypePerColumn
+	property	alias	itemTypePerRow		: tableView.itemTypePerRow
 	property	alias	modelType			: tableView.modelType
 
 	property	alias	cornerText			: tableView.cornerText
@@ -54,6 +56,8 @@ Item
 	property	alias	decimals			: tableView.decimals
 	property	alias	scaleFactor			: tableView.scaleFactor
 	property	alias	isFirstColEditable	: tableView.isFirstColEditable
+	property	alias	columnNames			: tableView.columnNames
+	property	alias	rowNames			: tableView.rowNames
 
 	property	bool	showButtons			: true
 
@@ -76,8 +80,8 @@ Item
 
 	signal tableViewCompleted();
 
-	function getColHeaderText(defaultName, colIndex)				{ return defaultName; }
-	function getRowHeaderText(defaultName, rowIndex)				{ return defaultName; }
+	function getColHeaderText(headerText, columnIndex)			{ return (columnNames.length > columnIndex)	? columnNames[columnIndex]	: headerText; }
+	function getRowHeaderText(headerText, rowIndex)				{ return (rowNames.length > rowIndex)		? rowNames[rowIndex]		: headerText; }
 
 	Grid
 	{
