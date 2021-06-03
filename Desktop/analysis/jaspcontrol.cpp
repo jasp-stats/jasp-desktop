@@ -189,6 +189,8 @@ void JASPControl::componentComplete()
 		_form->addControl(this);
 	else
 	{
+		setUp();
+
 		JASPListControl* listView = nullptr;
 
 		QVariant listViewVar = context->contextProperty("listView");
@@ -217,11 +219,8 @@ void JASPControl::componentComplete()
 
 			emit parentListViewChanged();
 		}
-		else
-		{
-			setUp();
-			setInitialized();
-		}
+
+		setInitialized();
 	}
 
 	if (_background == nullptr && _innerControl != nullptr)
@@ -587,10 +586,12 @@ QVector<JASPControl::ParentKey> JASPControl::getParentKeys()
 {
 	QVector<JASPControl::ParentKey> parentKeys;
 	JASPListControl* parentControl =  parentListView();
+	QString parentKeyValue = parentListViewKey();
 
 	while (parentControl)
 	{
-		parentKeys.prepend({parentControl->name().toStdString(), parentControl->optionKey().toStdString(), Term::readTerm(parentListViewKey()).scomponents()});
+		parentKeys.prepend({parentControl->name().toStdString(), parentControl->optionKey().toStdString(), Term::readTerm(parentKeyValue).scomponents()});
+		parentKeyValue = parentControl->parentListViewKey();
 		parentControl = parentControl->parentListView();
 	}
 

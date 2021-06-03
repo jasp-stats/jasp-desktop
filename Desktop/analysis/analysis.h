@@ -228,7 +228,7 @@ private:
 	Modules::AnalysisEntry	*moduleData();
 	void					checkForRSources();
 	void					clearRSources();
-	Json::Value&			_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
+	Json::Value&			_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, bool& found, bool createAnyway = false);
 
 protected:
 	Status					_status			= Initializing;

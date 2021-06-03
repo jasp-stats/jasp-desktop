@@ -47,62 +47,60 @@ void RowControls::init(int row, const Term& key, bool isNew)
 	context->setContextProperty("rowValue", key.asQString());
 
 	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context));
+	_context = context;
 
-	if (_rowObject)
+	if (_rowObject)	_setupControls();
+	else			Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
+}
+
+void RowControls::_setupControls(bool reuseBoundValue)
+{
+	// The controls (when created or reused) may need to be bound with some values:
+	// either with the initial values (in _rowValues), new values (by calling createJson)
+	// And if a control depends on a source, its values must be refreshed by this source.
+	QList<JASPControl*> controls = _rowJASPControlMap.values();
+	AnalysisForm* form = _parentModel->listView()->form();
+
+	if (form)
 	{
-		_context = context;
-
-		QList<JASPControl*> controls = _rowJASPControlMap.values();
-
-		for (JASPControl* control : controls)
-			control->setUp();
-
-		AnalysisForm* form = listView->form();
-		if (form)
-		{
-			form->sortControls(controls);
-			form->blockValueChangeSignal(true);
-		}
-
-		for (JASPControl* control : controls)
-		{
-			BoundControl* boundItem = control->boundControl();
-			bool hasOption = _rowValues.contains(control->name());
-
-			if (boundItem)
-			{
-				Json::Value option =  hasOption ? (_rowValues[control->name()]) : boundItem->createJson();
-				boundItem->bindTo(option);
-			}
-
-			if (!boundItem || !hasOption)
-			{
-				JASPListControl* listView = dynamic_cast<JASPListControl*>(control);
-				// If a ListView depends on a source, it has to be initialized by this source
-				// For this just call the sourceTermsChanged handler.
-				if (listView && listView->hasSource())
-					listView->model()->sourceTermsReset();
-			}
-
-			control->setInitialized();
-		}
-
-		if (form)
-			form->blockValueChangeSignal(false, false);
-
+		form->sortControls(controls);
+		form->blockValueChangeSignal(true);
 	}
-	else
-		Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
 
+	for (JASPControl* control : controls)
+	{
+		bool hasInitialValues = _rowValues.contains(control->name());
+		BoundControl* boundItem = control->boundControl();
+
+		if (boundItem)
+		{
+			if (!reuseBoundValue || boundItem->boundValue().isNull())
+				boundItem->bindTo(hasInitialValues ? (_rowValues[control->name()]) : boundItem->createJson());
+		}
+
+		if (!boundItem || !hasInitialValues || reuseBoundValue)
+		{
+			JASPListControl* listView = dynamic_cast<JASPListControl*>(control);
+			// If a ListView depends on a source, it has to be initialized by this source
+			// For this just call the sourceTermsChanged handler.
+			if (listView && listView->hasSource())
+				listView->model()->sourceTermsReset();
+		}
+	}
+
+	if (form)
+		form->blockValueChangeSignal(false, false);
 }
 
 void RowControls::setContext(int row, const QString &key)
 {
 	// Cannot use qmlContext(item) : setContextProperty would generate: 'Cannot set property on internal context.' error
-	_context->setContextProperty("rowIndex",	row);
+	_context->setContextProperty("rowIndex", row);
 	_context->setContextProperty("rowValue", key);
 	_context->setContextProperty("isNew", false);
 	_rowObject->setParentItem(nullptr);
+
+	_setupControls(true);
 }
 
 bool RowControls::addJASPControl(JASPControl *control)
