@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-06-01 17:34+0000\n"
+"PO-Revision-Date: 2021-06-03 16:46+0000\n"
 "Last-Translator: Paulina Elizabeth Robalino <paulina.e.robalino@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -501,13 +501,11 @@ msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
 msgstr "Columna calculada modificada"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
-msgstr ""
-"Hay cambios sin aplicar a su columna calculada; ¿Que te gustaría hacer?"
+msgstr "Hay cambios sin aplicar a su columna calculada; ¿Qué te gustaría hacer?"
 
 msgctxt "ContrastsList|"
 msgid "none"
@@ -793,17 +791,19 @@ msgstr "Soluciones para Windows"
 
 msgctxt "PrefsAdvanced|"
 msgid "Handling LC_CTYPE"
-msgstr ""
+msgstr "Manejo de LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
 msgstr ""
+"Verifique que la ruta del directorio de instalación y de usuario sea "
+"compatible con LC_CTYPE = \"C\" y establezca si es razonable."
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
-msgstr ""
+msgstr "Consulte la documentación para obtener más información."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -811,6 +811,9 @@ msgid ""
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
 msgstr ""
+"Si está habilitado y tiene caracteres no ascii en su ruta de instalación, "
+"JASP ya no funcionará. Si solo tiene caracteres no ascii en su nombre de "
+"usuario, es probable que la instalación de los módulos se rompa."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -819,35 +822,33 @@ msgid ""
 "characters in the path. Sorry for the inconvenience, we are working on it "
 "and hopefully have this fixed next release."
 msgstr ""
+"Habilitar esto hará que ciertos caracteres en los resultados se vean "
+"extraños, pero al menos puede usar JASP si lo instaló en una carpeta con "
+"caracteres no ascii en la ruta. Disculpe las molestias, estamos trabajando "
+"en ello y esperamos poder solucionar este problema en la próxima versión."
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
 msgstr "Opciones de registro"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
-msgstr "Unido al expediente"
+msgstr "Registro en el archivo"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
 msgstr ""
 "Para almacenar registros de depuración de JASP en un archivo, marque esta "
 "casilla."
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr "Max archivos de registro para mantener: "
+msgstr "Máximo de archivos de registro a conservar: "
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
 msgstr "Mostrar registros"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
 msgstr "Opciones de registro"
@@ -857,82 +858,68 @@ msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
 msgstr "Tiempo máximo de adaptación"
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Data Preferences"
 msgstr "Preferencias de datos"
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Synchronize automatically on data file save"
 msgstr "Sincronizar automáticamente al guardar el archivo de datos"
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
 msgstr "Usar el editor de hojas de cálculo predeterminado"
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Select custom editor"
 msgstr "Seleccionar editor personalizado"
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
 msgstr "Umbral de importación entre categórico o escala"
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid ""
 "Threshold number of unique integers before classifying a variable as "
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
-"Número de umbral de enteros únicos antes de clasificar una variable como "
+"Umbral de números enteros únicos antes de clasificar una variable como "
 "'escala'.\n"
-"¡Necesita recargar sus datos para que surta efecto! Consulte la ayuda para "
-"obtener más información."
+"¡Necesita volver a cargar sus datos para que surtan efecto! Consulta la "
+"ayuda para obtener más información."
 
-#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
 msgstr "Lista de valores perdidos"
 
-#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
 msgstr "Eliminar valor faltante"
 
-#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
 msgstr "Reiniciar"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
 msgstr "Preferencias de resultados"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr "Opciones de mesa"
+msgstr "Opciones de Tablas"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
 msgstr "Mostrar valores p exactos"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
 msgstr "Fijar el número de decimales"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr "Opciones de parcela"
+msgstr "Opciones de gráficos"
 
 #, fuzzy
 msgctxt "PrefsResults|"
