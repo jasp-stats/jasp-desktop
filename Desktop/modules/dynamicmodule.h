@@ -121,10 +121,10 @@ public:
 	std::string			getLibPathsToUse();
 
 	bool				requiresModule(const std::string & moduleName) { return _importsR.count(moduleName) > 0; }
-	
 
 	std::string			moduleInstFolder()									const; //Where is the "inst" folder?
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
+	std::string			qmlFolder()											const;
 	std::string			iconFilePath(std::string whichIcon = "")			const;
 	std::string			iconFolder()										const;
 	std::string			rModuleCall(	const std::string & function)		const { return _name + _modulePostFix + "$" + function + _exposedPostFix; }

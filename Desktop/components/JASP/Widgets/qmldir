@@ -1,4 +1,4 @@
-module JASP.Widgets
+module <JASP.Widgets>
 ModuleInstaller             1.0 ModuleInstaller.qml
 BayesFactorType             1.0 BayesFactorType.qml
 Divider                     1.0 Divider.qml

@@ -100,7 +100,6 @@ void DynamicModule::initialize()
 {
 	//Check some stuff
 	_moduleFolder.makeAbsolute();
-	QDir moduleDir(_moduleFolder.absoluteDir());
 
 	if(!_moduleFolder.exists())				throw std::runtime_error(_moduleFolder.absolutePath().toStdString() + " does not exist!");
 	else if(!_moduleFolder.isDir())			throw std::runtime_error(_moduleFolder.absolutePath().toStdString() + " is not a directory!");
@@ -132,7 +131,7 @@ void DynamicModule::initialize()
 	//checkForExistence("R"); The module is now a package so there is no point in checking for R code because what kind of R package has *no* r-code?
 
 	//Ok everything seems to be in order, let's load!
-	QString qmlTxt = "", jsonTxt = "";
+	QString qmlTxt = "";
 	
 	QUrl url;
 	try
@@ -326,7 +325,6 @@ QObject * DynamicModule::instantiateQml(const QString & qmlTxt, const QUrl & url
 
 	return obj;
 }
-
 
 void DynamicModule::loadDescriptionQml(const QString & descriptionTxt, const QUrl & url)
 {
@@ -599,7 +597,12 @@ std::string DynamicModule::moduleInstFolder() const
 
 std::string	DynamicModule::qmlFilePath(const std::string & qmlFileName)	const
 {
-	return moduleInstFolder() + "/qml/" + qmlFileName;
+	return qmlFolder() + qmlFileName;
+}
+
+std::string	DynamicModule::qmlFolder()	const
+{
+	return moduleInstFolder() + "/qml/";
 }
 
 std::string DynamicModule::iconFolder() const

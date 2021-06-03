@@ -829,6 +829,9 @@ We can begin actual work on the QML file, first we have to tell the engine where
   import JASP.Widgets 1.0
   ```
 
+  If you want to import QML components from another jasp module, you can! 
+  Have a look at [custom imports](#custom-imports).
+
 </details>
 
 
@@ -905,3 +908,16 @@ QML is a very flexible format, besides giving you access to all of the built-in 
 This will give you the opportunity to create reusable parts, for instance, each of your analyses might share a common core. You could add this to a `Core.qml` and then this could be part of each analysis and be exactly the same everywhere. If you then also make sure to have a common function in R that uses the options specified in the `Core.qml`-component you can reuse that as well.
 
 The possibilities here are rather extended and possibly even endless. See [the Qt QML tutorials](https://doc.qt.io/qt-5/qml-tutorial.html) or the [official documentation](https://doc.qt.io/qt-5/qtqml-index.html) for more information on this.
+
+
+## Custom Imports
+To allow other jasp modules to reuse your qml code you need to turn it into a "QML Module" and you do this by adding a textfile to you `inst` folder called `qmldir`.
+This file specifies which qml-components your module makes available to other modules.
+
+For instance, suppose you want to share the entire `Descriptives` analysisform with other modules you can create `jaspDescriptives/qmldir` and that should contain:
+```
+module <jaspDescriptives>
+Descriptives 1.0 qml/Descriptives.qml
+```
+
+And then suppose you want to use it in any other module you can simply do `import jaspDescriptives 1.0` and use it directly as `Descriptives {}`.
