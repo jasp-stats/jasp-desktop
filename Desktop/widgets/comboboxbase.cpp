@@ -199,5 +199,5 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 	if (emitCurrentColumnTypeIconSignal)	emit currentColumnTypeIconChanged();
 	if (emitCurrentIndexSignal)				emit currentIndexChanged();
 
-	if (bindValue)	setBoundValue(fq(_currentValue));
+	if (bindValue && initialized())	setBoundValue(fq(_currentValue));
 }
