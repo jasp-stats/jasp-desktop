@@ -297,7 +297,7 @@ Popup
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				text:				qsTr("Save and close")
+				text:				qsTr("Finish")
 				on_PressedChanged:	plotEditorPopup.close()
 			}
 

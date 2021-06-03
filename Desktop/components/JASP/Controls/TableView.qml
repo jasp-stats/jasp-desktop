@@ -72,7 +72,8 @@ TableViewBase
 	onColNameChanged:	colNameSignal(tableView.colName)
 	onExtraColChanged:	extraColSignal(tableView.extraCol)
 
-	property real iconHeight: 28 * preferencesModel.uiScale
+	property real iconHeight:			20 * preferencesModel.uiScale
+	property real iconHeightHovered:	22 * preferencesModel.uiScale
 
 	onColSelectedChanged: setButtons()
 
@@ -142,9 +143,11 @@ TableViewBase
 		{
 			id:					addLeftButton
 			z:					100
-			height:				iconHeight
+			height:				hovered ? iconHeightHovered : iconHeight
 			width:				height
-			iconSource:			jaspTheme.iconPath + "/duplicate.png"
+			buttonPadding:		0
+			color:				"transparent"
+			iconSource:			jaspTheme.iconPath + "/arrow-left.png"
 			toolTip:			qsTr("Add to the left")
 			radius:				height
 			visible:			false
@@ -161,9 +164,11 @@ TableViewBase
 		{
 			id:					addRightButton
 			z:					100
-			height:				iconHeight
+			height:				hovered ? iconHeightHovered : iconHeight
 			width:				height
-			iconSource:			jaspTheme.iconPath + "/duplicate.png"
+			buttonPadding:		0
+			color:				"transparent"
+			iconSource:			jaspTheme.iconPath + "/arrow-right.png"
 			toolTip:			qsTr("Add to the right")
 			radius:				height
 			visible:			false
@@ -181,10 +186,12 @@ TableViewBase
 			id:					deleteButton
 			anchors.top:		parent.top
 			anchors.topMargin:	-height/2
-			z:					100
-			height:				iconHeight
+			height:				hovered ? iconHeightHovered - 2 : iconHeight - 2
 			width:				height
-			iconSource:			jaspTheme.iconPath + "/close-button.png"
+			buttonPadding:		0
+			color:				"transparent"
+			z:					100
+			iconSource:			jaspTheme.iconPath + "/cross.png"
 			toolTip:			qsTr("Delete")
 			radius:				height
 			visible:			false

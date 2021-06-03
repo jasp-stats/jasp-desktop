@@ -72,7 +72,7 @@ Column
 		visible: axisModel.continuous
 
 		JASPC.RadioButton { id: axisBreaksRange;	value: "range";		label:	qsTr("Specify sequence");	checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksRange	: false										}
-		JASPC.RadioButton { id: axisBreaksManual;	value: "manual";	label:	qsTr("Set Manually");		checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true	;	visible: axisModel.continuous;	}
+		JASPC.RadioButton { id: axisBreaksManual;	value: "manual";	label:	qsTr("Set manually");		checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true	;	visible: axisModel.continuous;	}
 		JASPC.RadioButton { id: axisBreaksNull;		value: "NULL";		label:	qsTr("Hide ticks");			checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksNull		: false										}
 
 		onValueChanged:

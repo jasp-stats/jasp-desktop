@@ -177,7 +177,7 @@ bool AxisModel::removeColumns(int column, int count, const QModelIndex &)
 	return true;
 }
 
-bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int)
 {
 	if(index.row() < 0 || index.row() >= rowCount() || index.column() < 0 || index.column() >= columnCount())
 		return false;
@@ -186,45 +186,25 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 	bool	breaks;
 	getEntryAndBreaks(entry, breaks, index);
 
-	switch(role)
-	{
-	case int(specialRoles::insertLeft):
-	{
-		Log::log() << "insertLeft" << std::endl;
-		insertBreak(index, entry, true);
-		return true;
-	}
-
-	case int(specialRoles::insertRight):
-	{
-		Log::log() << "insertRight" << std::endl;
-		insertBreak(index, entry, false);
-		return true;
-	}
-
-	case int(specialRoles::deleteBreak):
-	{
-		Log::log() << "deleteBreak" << std::endl;
-		deleteBreak(index, entry);
-		return true;
-	}
-
-	default:
-		break;
-	}
-
 	if(breaks)
 	{
 		double newBreak = value.toDouble();
 
 		if(_breaks[entry] != newBreak)
 		{
+			if ((entry > 0 && _breaks[entry-1] >= newBreak)
+				|| (entry < _breaks.size() - 1 && _breaks[entry+1] <= newBreak))
+			{
+				emit dataChanged(index, index);
+				return false;
+			}
+
 			QString label = _labels[entry];
-			bool ok = false;
-			double labelDouble = label.toDouble(&ok);
+			bool labelIsDouble = false;
+			double labelDouble = label.toDouble(&labelIsDouble);
 			QModelIndex index2 = index;
 
-			if (ok && (std::abs(labelDouble - _breaks[entry]) < 0.00001))
+			if (labelIsDouble && (std::abs(labelDouble - _breaks[entry]) < 0.00001))
 			{
 				_labels[entry] = value.toString();
 				int col = _vertical ? int(entry) : 1;
@@ -453,22 +433,6 @@ void AxisModel::fillFromJSON(std::vector<QString> &obj, Json::Value value)
 	}
 }
 
-QHash<int, QByteArray> AxisModel::roleNames() const
-{
-	static bool						set = false;
-	static QHash<int, QByteArray> roles = QAbstractItemModel::roleNames ();
-
-	if(!set)
-	{
-		roles[int(specialRoles::insertLeft)]							= QString("insertLeft").toUtf8();
-		roles[int(specialRoles::insertRight)]							= QString("insertRight").toUtf8();
-		roles[int(specialRoles::deleteBreak)]							= QString("deleteBreak").toUtf8();
-
-		set = true;
-	}
-
-	return roles;
-}
 
 std::string		AxisModel::TitleTypeToString (TitleType  type) const
 {
