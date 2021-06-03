@@ -375,24 +375,47 @@ Json::Value Analysis::asJSON() const
 	return analysisAsJson;
 }
 
-Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys)
+Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, bool& found, bool createAnyway)
 {
+	found = (parentKeys.size() == 0);
 	Json::Value* result = &_boundValues;
+
+	// A parentKey has a 'name', a 'key' and a 'value': it assumes that the json boundValue is an abject, one of its member is 'name',
+	// whom value is an array of json objects. These objects have member 'key', and one of them has for value 'value': this method returns
+	// this json object (if there are several parentKeys, it repeats this operation, and returns the last json object)
+	//
+	// {
+	//		a : "one"
+	//		...
+	//		name: [
+	//			{
+	//				key: "anothervalue"
+	//				b: "xxx"
+	//			},
+	//			{
+	//				key: "value"  // This object is returned.
+	//				b: "yyy"
+	//			}
+	//		]
+	// }
+
 	for (const auto& parent : parentKeys)
 	{
-		Json::Value& parentBoundValues = (*result)[parent.name];
-		bool found = false;
-		if (!parentBoundValues.isNull() && parentBoundValues.isArray() && parent.value.size() > 0)
+		found = false;
+		if (createAnyway && !result->isMember(parent.name))	(*result)[parent.name] = Json::Value(Json::arrayValue);
+
+		if (result->isMember(parent.name))
 		{
-			for (Json::Value & boundValue : parentBoundValues)
+			Json::Value& parentBoundValues = (*result)[parent.name];
+			if (!parentBoundValues.isNull() && parentBoundValues.isArray())
 			{
-				for (Json::Value::iterator iter = boundValue.begin(); iter != boundValue.end(); iter++)
+				for (Json::Value & boundValue : parentBoundValues)
 				{
-					Json::Value &val = *iter;
-					if (iter.key().asString() == parent.key)
+					if (boundValue.isMember(parent.key))
 					{
+						Json::Value &val = boundValue[parent.key];
 						// The value can be a string or an array of strings (for interaction terms)
-						if (val.isString())
+						if (val.isString() && parent.value.size() > 0)
 						{
 							if (val.asString() == parent.value[0])	found = true;
 						}
@@ -406,18 +429,32 @@ Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey
 								i++;
 							}
 						}
-					}
-					if (found)
-					{
-						result = &boundValue;
-						break;
+						if (found)
+						{
+							result = &boundValue;
+							break;
+						}
 					}
 				}
-				if (found) break;
+
+				if (!found && createAnyway)
+				{
+					Json::Value row(Json::objectValue);
+					if (parent.value.size() == 1)
+						row[parent.key] = parent.value[0];
+					else
+					{
+						Json::Value newValue(Json::arrayValue);
+						for (size_t i = 0; i < parent.value.size(); i++)
+							newValue.append(parent.value[i]);
+						row[parent.key] = newValue;
+					}
+					parentBoundValues.append(row);
+					result = &(parentBoundValues[parentBoundValues.size() - 1]);
+					found = true;
+				}
 			}
 		}
-		else
-			Log::log() << "Could not find the right parent (" << parent.key << ", " << Term(parent.value).asQString() << ") for parent " << parent.name << ", in " << result->toStyledString() << std::endl;
 	}
 
 	return *result;
@@ -425,20 +462,25 @@ Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey
 
 void Analysis::setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey>& parentKeys)
 {
-	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys);
-	if (parentBoundValue.isObject())
+	bool found = false;
+	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, found, true);
+
+	if (found && parentBoundValue.isObject())
+	{
 		parentBoundValue[name] = value;
 
-	if (!meta.isNull())
-		_boundValues[".meta"][name] = meta;
+		if (!meta.isNull())
+			_boundValues[".meta"][name] = meta;
+	}
 }
 
 const Json::Value &Analysis::boundValue(const std::string &name, const QVector<JASPControl::ParentKey> &parentKeys)
 {
-	const Json::Value& parentBoundValue = _getParentBoundValue(parentKeys);
+	bool found = false;
+	const Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, found);
 
-	if (parentBoundValue.isObject())	return parentBoundValue[name];
-	else								return Json::Value::null;
+	if (found && !parentBoundValue.isNull() && parentBoundValue.isObject())	return parentBoundValue[name];
+	else																	return Json::Value::null;
 }
 
 void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)

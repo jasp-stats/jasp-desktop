@@ -51,6 +51,8 @@ public:
 
 private:
 
+	void										_setupControls(bool reuseBoundValue = false);
+
 	ListModel*								_parentModel;
 	QQmlComponent*							_rowComponent = nullptr;
 	QQuickItem*								_rowObject;

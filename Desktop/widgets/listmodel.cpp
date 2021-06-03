@@ -309,6 +309,8 @@ void ListModel::clearSelectedItems(bool emitSelectedChange)
 
 void ListModel::setSelectedItem(int _index)
 {
+	if (_selectedItems.size() == 1 && _selectedItems[0] == _index) return;
+
 	clearSelectedItems(false);
 	selectItem(_index, true);
 }
