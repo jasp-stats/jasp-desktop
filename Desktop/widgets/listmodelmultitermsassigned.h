@@ -33,6 +33,10 @@ public:
 	void			removeTerms(const QList<int> &indexes)																override;
 
 	const QList<Terms>&	tuples() const { return _tuples; }
+
+public slots:
+	void			availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;
+
 private:
 	void			_setTerms();
 

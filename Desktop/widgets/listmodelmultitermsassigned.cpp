@@ -136,6 +136,20 @@ void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 	endResetModel();
 }
 
+void ListModelMultiTermsAssigned::availableTermsResetHandler(Terms , Terms termsToRemove)
+{
+	QList<int> indexes;
+	int i = 0;
+	for (const Term& oneTerm : terms())
+	{
+		if (termsToRemove.contains(oneTerm))		indexes.append(i);
+		i++;
+	}
+
+	if (indexes.size() > 0)
+		removeTerms(indexes);
+}
+
 void ListModelMultiTermsAssigned::_setTerms()
 {
 	Terms newTerms;
