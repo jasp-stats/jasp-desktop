@@ -62,6 +62,9 @@ To build JASP follow the next steps:
 
 	You should now have:  
 	\<JASP\>\jasp-desktop
+	
+	Also make sure to download all the submodules for jasp by running:
+	`git submodule init && git submodule update`
 
 2. Clone some third party binaries, boost and used R-packages  from **jasp-required-files** repository on GitHub.  
 	From the \<JASP\> root folder in a terminal, type:
@@ -210,7 +213,7 @@ macOS
 
 To build JASP you need to clone **jasp-desktop** and **jasp-required-files** repositories, install XCode, Command Line Tools, gfortran for macOS, Qt and some packages in R.
 
-0. Clone the repository **jasp-desktop**
+0. Clone the repository **jasp-desktop** and make sure to download all the submodules for jasp by running `git submodule init && git submodule update`
 1. Qt requires the Xcode and Command Line Tools to be installed on your system.
 	- You can install the Xcode from the [Mac App Store](https://apps.apple.com/us/app/xcode/id497799835?mt=12).
 	- To install the Command Line Tools, **after installing the Xcode**, open the Terminal app and run this command: `xcode-select --install`.
@@ -268,6 +271,11 @@ Linux
 -----
 
 ### Build
+First things first, in this case it is cloning the `jasp-desktop` repository:
+`git clone https://github.com/jasp-stats/jasp-desktop`
+
+JASP also contains several sub-repositories which can be intialized and cloned as:
+`git submodule init && git submodule update`
 
 #### All linux
 Besides the packages mentioned below for Ubuntu and Fedora one needs a few R-packages to build JASP. 
