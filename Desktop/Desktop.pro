@@ -270,6 +270,7 @@ HEADERS += \
     utilities/application.h \
     utilities/jsonutilities.h \
     utilities/processhelper.h \
+    utilities/qmlutils.h \
     utilities/qutils.h \
     results/resultsjsinterface.h \
     utilities/settings.h \
@@ -462,6 +463,7 @@ SOURCES += \
     utilities/application.cpp \
     utilities/jsonutilities.cpp \
     utilities/processhelper.cpp \
+    utilities/qmlutils.cpp \
     utilities/qutils.cpp \
     results/resultsjsinterface.cpp \
     utilities/settings.cpp \
