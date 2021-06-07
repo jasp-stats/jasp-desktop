@@ -94,7 +94,6 @@ FocusScope
 	{
 		id: osfLoginBox
 
-		// TODO: Should be in jaspTheme? Yes! And probably scaled as well ;)
 		height: 240 * preferencesModel.uiScale
 		width : 250 * preferencesModel.uiScale
 		color : jaspTheme.grayMuchLighter
@@ -147,6 +146,22 @@ FocusScope
 				KeyNavigation.down	: passwordText
 				KeyNavigation.tab	: passwordText
 				focus				: true
+			}
+		}
+
+		Text
+		{
+			text			: qsTr("<sup>*</sup>")
+			textFormat		: Text.RichText
+			font.pointSize	: 12 * preferencesModel.uiScale
+			font.family		: jaspTheme.font.family
+			color			: jaspTheme.textEnabled
+
+			anchors
+			{
+				top:				usernameInput.top
+				left:				usernameInput.right
+				leftMargin:			2 * jaspTheme.uiScale
 			}
 		}
 
@@ -205,7 +220,7 @@ FocusScope
 
 			height   : 35  * preferencesModel.uiScale
 			text     : qsTr("Sign in")
-			color    : "#5cb85c"  // TODO: Move this to jaspTheme.qml
+			color    : jaspTheme.jaspGreen
 			border.width: loginButton.activeFocus ? 3 : 1
 			border.color: loginButton.activeFocus ? jaspTheme.focusBorderColor : jaspTheme.grayDarker
 
@@ -249,17 +264,16 @@ FocusScope
 		}
 	}
 
-	Rectangle
+	Item
 	{
 		id: linksBox
 
 		width : osfLoginBox.width
-		height: 30 * preferencesModel.uiScale
-		color : "transparent"
+		height: 60 * preferencesModel.uiScale
 
 		anchors.top             : osfLoginBox.bottom
 		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.topMargin       : 5 * preferencesModel.uiScale
+		anchors.topMargin       : 10 * preferencesModel.uiScale
 
 		Text {
 			id: linkOSF
@@ -271,8 +285,8 @@ FocusScope
 			font.underline	: true
 			color			: jaspTheme.blueDarker
 
-			anchors.left      : parent.left
-			anchors.bottom    : parent.bottom
+			anchors.left    : parent.left
+			anchors.top	    : parent.top
 			anchors.leftMargin: 5 * preferencesModel.uiScale
 
 			MouseArea
@@ -295,7 +309,7 @@ FocusScope
 			font.underline	: true
 			color			: jaspTheme.blueDarker
 
-			anchors.bottom     : parent.bottom
+			anchors.top        : parent.top
 			anchors.right      : parent.right
 			anchors.rightMargin: 5 * preferencesModel.uiScale
 
@@ -305,6 +319,24 @@ FocusScope
 				hoverEnabled: true
 				cursorShape : Qt.PointingHandCursor
 				onClicked   : Qt.openUrlExternally("https://osf.io")
+			}
+		}
+
+		Text
+		{
+			text			: qsTr("<sup>*</sup>OSF account login only, ORCID or institutional login are not supported.")
+			textFormat		: Text.RichText
+			font.pointSize	: 8 * preferencesModel.uiScale
+			font.family		: jaspTheme.font.family
+			font.italic		: true
+			color			: jaspTheme.textEnabled
+			wrapMode		: Text.Wrap
+
+			anchors
+			{
+				bottom:				parent.bottom
+				left:				parent.left
+				right:				parent.right
 			}
 		}
 	}
