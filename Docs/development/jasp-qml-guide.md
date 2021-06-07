@@ -48,6 +48,7 @@ Table of Contents:
   * [2. Adding the Form](#2-adding-the-form)
   * [3. Adding the Components](#3-adding-the-components)
 - [Advanced Usage](#advanced-usage)
+- [Custom Imports](#custom-imports)
 
 
 ## Components
