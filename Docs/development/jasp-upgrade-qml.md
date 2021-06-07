@@ -203,6 +203,14 @@ ChangeJS
 }
 ```
 
+### Encoding or decoding columns
+In certain cases you might need to decode and encode the columns used in a JASP file during your upgrade step. This requires some functioncalls and these only make sense inside `ChangeJS` because only at that moment is the correct dataset for your `options` actually loaded. The following functions have been made available in an object called `qmlUtils` and those are:
+- `qmlUtils.encodeAllColumnNames(string)`: converts all occurences of original columnnames in `string` into encoded  columnames.
+- `qmlUtils.decodeAllColumnNames(string)`: converts all occurences of encoded  columnnames in `string` into original columnames.
+- `qmlUtils.encodeJson(jsonVal, qmlItem)`: converts all occurences of original columnnames in the `jsonVal` into encoded columnames. You need to add a reference to any qml-item as `qmlItem`, I recommend using the `ChangeJS` you are writing.
+- `qmlUtils.decodeJson(jsonVal, qmlItem)`: converts all occurences of encoded  columnnames in the `jsonVal` into original columnames. The same goes here for `qmlItem`.
+All of the above return the changed string/json.
+
 ## Remove option
 For completion's sake a `ChangeRemove` item was added and it allows for an option to be completely removed from an option list if it isn't necessary anymore.
 But honestly, this is not very useful because it would be silently dropped by JASP anyway. However, you can use it like:

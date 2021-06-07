@@ -78,6 +78,7 @@
 #include "utilities/qutils.h"
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
+#include "utilities/qmlutils.h"
 
 #include "widgets/filemenu/filemenu.h"
 
@@ -425,6 +426,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("helpModel",				_helpModel				);
 	_qml->rootContext()->setContextProperty("jaspTheme",				nullptr					); //Will be set from jaspThemeChanged()!
 	_qml->rootContext()->setContextProperty("messages",					MessageForwarder::msgForwarder());
+	_qml->rootContext()->setContextProperty("qmlUtils",					new QmlUtils(this)		);
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
