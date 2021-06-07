@@ -107,6 +107,8 @@ public:
 
 	void insertCommonModuleNames(std::set<std::string> commonModules) { for(const std::string & common : commonModules) _commonModuleNames.insert(common); };
 
+	QStringList importPaths() const;
+
 public slots:
 	void installationPackagesSucceeded(	const QString		& moduleName);
 	void installationPackagesFailed(	const QString		& moduleName, const QString & errorMessage);
@@ -121,6 +123,7 @@ public slots:
 
 	QStringList requiredModulesLibPaths(QString moduleName);
 
+
 signals:
 	void dynamicModuleUninstalled(const QString & moduleName);
 	void dynamicModuleAdded(			Modules::DynamicModule * dynamicModule);
@@ -129,6 +132,7 @@ signals:
 	void descriptionReloaded(			Modules::DynamicModule * dynamicModule);
 	void loadModuleTranslationFile(		Modules::DynamicModule * dynamicModule);
 	void dynamicModuleReplaced(			Modules::DynamicModule * oldMod, Modules::DynamicModule *  newMod);
+	void reloadQmlImportPaths();
 
 	void stopEngines();
 	void restartEngines();

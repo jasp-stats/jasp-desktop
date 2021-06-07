@@ -375,6 +375,7 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::loadModuleTranslationFile,			_languageModel,			&LanguageModel::loadModuleTranslationFiles					);
 	connect(_dynamicModules,		&DynamicModules::requestRootContext,				this,					&MainWindow::giveRootQmlContext,							Qt::UniqueConnection);
 	connect(_dynamicModules,		&DynamicModules::loadQmlData,						this,					&MainWindow::loadQmlData,									Qt::UniqueConnection);
+	connect(_dynamicModules,		&DynamicModules::reloadQmlImportPaths,				this,					&MainWindow::setQmlImportPaths,								Qt::QueuedConnection); //If this is queued this should make the loadingprocess of qml a bit less weird I think.
 
 	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
 	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_analyses,				&Analyses::prepareForLanguageChange							);
@@ -459,7 +460,7 @@ void MainWindow::loadQML()
 
 	_qml->setOutputWarningsToStandardError(true);
 
-	_qml->addImportPath("qrc:///components");
+	setQmlImportPaths();
 
 	QMetaObject::Connection exitOnFailConnection = connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url)
 	{
@@ -509,6 +510,24 @@ void MainWindow::loadQML()
 
 	_engineSync->loadAllActiveModules();
 	_dynamicModules->startUpCompleted();
+}
+
+void MainWindow::setQmlImportPaths()
+{
+	static QStringList originalImportPaths = _qml->importPathList();
+
+	QStringList newImportPaths = originalImportPaths;
+
+	newImportPaths.append("qrc:///components");
+	newImportPaths.append(_dynamicModules->importPaths());
+
+	_qml->setImportPathList(newImportPaths);
+
+	Log::log() << "QML has the following import paths:\n";
+
+	for(const QString & p : _qml->importPathList())
+		Log::log() << "\t" << p << "\n";
+	Log::log() << std::endl;
 }
 
 QObject * MainWindow::loadQmlData(QString data, QUrl url)

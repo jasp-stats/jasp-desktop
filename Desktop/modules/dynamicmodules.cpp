@@ -36,6 +36,7 @@
 #include "modules/upgrader/changesetvalue.h"
 #include "gui/preferencesmodel.h"
 #include "dirs.h"
+#include <QRegularExpression>
 
 namespace Modules
 {
@@ -57,9 +58,7 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 
 DynamicModules::~DynamicModules()
 {
-	for(auto dynamic : _modules)
-		delete dynamic.second;
-	_modules.clear();
+	_modules.clear(); //We do not need to delete them as they get DynamicModules as parent.
 
 	_singleton = nullptr;
 }
@@ -138,7 +137,7 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 
 		if(oldModule) //I guess we could also check wasAddedAlready because I assume the only way oldModule can exist is if _moduleNames already contains moduleName.
 		{
-			stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
+			emit stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
 			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
 		}
 
@@ -166,8 +165,11 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 			delete oldModule;
 			emit dynamicModuleChanged(module);
 			emit loadModuleTranslationFile(module);
-			restartEngines();
+			emit restartEngines();
+
 		}		
+
+		emit reloadQmlImportPaths();
 
 		return true;
 	}
@@ -184,7 +186,7 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 				_moduleNames.erase(_moduleNames.begin() + i - 1);
 	}
 
-	restartEngines();
+	emit restartEngines();
 
 	return false;
 }
@@ -223,9 +225,24 @@ void DynamicModules::registerForInstallingModPkg(const std::string & moduleName)
 
 void DynamicModules::stopAndRestartEngines()
 {
-	stopEngines();
+	emit stopEngines();
 	_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
-	restartEngines();
+	emit restartEngines();
+}
+
+QStringList DynamicModules::importPaths() const
+{
+	QStringList allImportPaths;
+
+	for(const auto & nameMod : _modules)
+	{
+		QDir moduleFolder(tq(nameMod.second->moduleInstFolder()));
+
+		if(moduleFolder.exists("qmldir")) //So the inst contained a qmldir, and we give the library as an importpath
+			allImportPaths.append(nameMod.second->moduleRLibrary());
+	}
+
+	return allImportPaths;
 }
 
 void DynamicModules::registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg)
@@ -291,6 +308,7 @@ void DynamicModules::unloadModule(const std::string & moduleName)
 		dynMod->setUnloaded();
 
 		emit dynamicModuleUnloadBegin(dynMod);
+		emit reloadQmlImportPaths();
 	}
 }
 
@@ -303,7 +321,7 @@ void DynamicModules::replaceModule(DynamicModule * module)
 
 	DynamicModule * oldModule = _modules[moduleName];
 
-	stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
+	emit stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
 	_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
 
 	_modules[moduleName] = module;
@@ -314,11 +332,14 @@ void DynamicModules::replaceModule(DynamicModule * module)
 
 	//registerForInstalling(moduleName);
 
+
+
 	emit dynamicModuleReplaced(oldModule, module);
 	emit dynamicModuleChanged(module);
+	emit reloadQmlImportPaths();
 	delete oldModule;
 
-	restartEngines();
+	emit restartEngines();
 }
 
 void DynamicModules::uninstallModule(const std::string & moduleName)
@@ -380,10 +401,10 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 		{
 			Log::log() << "Probably some library was still loaded in R... Let's stop the engines!" << std::endl;
 
-			stopEngines();
+			emit stopEngines();
 			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
 			removeUninstalledModuleFolder(moduleName, true);
-			restartEngines();
+			emit restartEngines();
 		}
 
 		return;
@@ -429,7 +450,9 @@ void DynamicModules::installationPackagesFailed(const QString & moduleName, cons
 	if(_modules.count(moduleName.toStdString()) > 0)
 		_modules[moduleName.toStdString()]->setInstallingSucces(false);
 
-	MessageForwarder::showWarning(tq("Installation of Module %1 failed").arg(moduleName), tr("The installation of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
+	MessageForwarder::showWarning(
+				tq("Installation of Module %1 failed").arg(moduleName),
+				tr("The installation of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
 
 	uninstallModule(moduleName.toStdString());
 
@@ -460,6 +483,8 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
 	}
 	else
 		emit dynamicModuleChanged(dynMod);
+
+	emit reloadQmlImportPaths();
 }
 
 
@@ -470,7 +495,9 @@ void DynamicModules::loadingFailed(const QString & moduleName, const QString & e
 	{
 		_modules[moduleName.toStdString()]->setLoadingSucces(false);
 
-		MessageForwarder::showWarning(tr("Loading packages for Module %1 failed").arg(moduleName), tr("Loading the packages of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
+		MessageForwarder::showWarning(
+					tr("Loading packages for Module %1 failed").arg(moduleName),
+					tr("Loading the packages of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
 	}
 	else
 		for(const auto & nameModule : _modules)
@@ -512,7 +539,11 @@ Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const
 	if(_modules.count(moduleName) > 0)
 		return _modules[moduleName]->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
 
-	throw ModuleException(moduleName, "Module is not available, to load this JASP file properly you will need to install it first and then retry.\nIf you do not have this module you can try the module's website: \""  + jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()	 +  "\" or, if that doesn't help, you could try to contact the module's maintainer: \"" + jsonFromJaspFile.get("moduleMaintainer", "the JASP team").asString() + "\".");
+	throw ModuleException(moduleName,
+		"Module is not available, to load this JASP file properly you will need to install it first and then retry.\n"
+		"If you do not have this module you can try the module's website: \""  + jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()	 +  "\" or"
+		", if that doesn't help, you could try to contact the module's maintainer: \"" + jsonFromJaspFile.get("moduleMaintainer", "the JASP team").asString() + "\"."
+	);
 }
 
 bool DynamicModules::isFileAnArchive(const QString &  filepath)
@@ -550,7 +581,11 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 
 	if(moduleName == defaultDevelopmentModuleName())
 	{
-		MessageForwarder::showWarning(tr("Cannot install module because it is named '%1' and that name is reserved for installing the development module.\nChange the name (in DESCRIPTION and description.json) and try it again. If you are not the author of this module and do not know how to do this, contact: %2").arg(tq(defaultDevelopmentModuleName())).arg(tq(dynMod->author())));
+		MessageForwarder::showWarning(tr(
+			"Cannot install module because it is named '%1' and that name is reserved for installing the development module.\n"
+			"Change the name (in DESCRIPTION and description.json) and try it again. "
+			"If you are not the author of this module and do not know how to do this, contact: %2").arg(tq(defaultDevelopmentModuleName())).arg(tq(dynMod->author()))
+		);
 		delete dynMod;
 		return;
 	}

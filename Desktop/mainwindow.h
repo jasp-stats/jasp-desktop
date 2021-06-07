@@ -222,15 +222,15 @@ private slots:
 	void setProgressStatus(QString status, int progress);
 
 	bool checkDoSync();
-	void resetQmlCache();
 	void unitTestTimeOut();
 	void saveJaspFileHandler();
 	void logToFileChanged(bool logToFile);
 	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
+	void resetQmlCache();
 	void jaspThemeChanged(JaspTheme * newTheme);
-
 	void printQmlWarnings(const QList<QQmlError> &warnings);
+	void setQmlImportPaths();
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
