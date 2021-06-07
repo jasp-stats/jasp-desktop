@@ -58,9 +58,7 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 
 DynamicModules::~DynamicModules()
 {
-	for(const auto & dynamic : _modules)
-		delete dynamic.second;
-	_modules.clear();
+	_modules.clear(); //We do not need to delete them as they get DynamicModules as parent.
 
 	_singleton = nullptr;
 }
@@ -139,7 +137,7 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 
 		if(oldModule) //I guess we could also check wasAddedAlready because I assume the only way oldModule can exist is if _moduleNames already contains moduleName.
 		{
-			stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
+			emit stopEngines();					// Stop engines so that process will not try to work with Analyses while we are changing stuff...
 			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
 		}
 
@@ -167,7 +165,7 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 			delete oldModule;
 			emit dynamicModuleChanged(module);
 			emit loadModuleTranslationFile(module);
-			restartEngines();
+			emit restartEngines();
 
 		}		
 
@@ -188,7 +186,7 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 				_moduleNames.erase(_moduleNames.begin() + i - 1);
 	}
 
-	restartEngines();
+	emit restartEngines();
 
 	return false;
 }
