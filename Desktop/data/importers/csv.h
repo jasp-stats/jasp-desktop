@@ -45,7 +45,7 @@ private:
 	long _fileSize;
 	long _filePosition;
 
-	enum Encoding { Unknown = -1, UTF8 = 0, UTF16BE = 1, UTF16LE = 2, UTF32LE = 3, UTF32BE = 4 };
+	enum Encoding { Unknown = -1, UTF8 = 0, UTF16BE = 1, UTF16LE = 2, UTF32LE = 3, UTF32BE = 4, Native };
 
     Encoding _encoding;
     char _delim;
