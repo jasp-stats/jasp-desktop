@@ -13,7 +13,8 @@ Rectangle
 	border.width:	1
 	color:			jaspTheme.uiBackground
 
-	property alias firstComponent: missingValuesList
+	property alias firstComponent:	missingValuesList
+	property var   navigateAfter:	undefined
 
 	Text
 	{
@@ -150,8 +151,8 @@ Rectangle
 		id:					resetButton
 		text:				qsTr("Reset")
 		onClicked:			preferencesModel.resetMissingValues()
-		KeyNavigation.tab:	synchronizeDataSave //PrefsData!
-		KeyNavigation.down:	synchronizeDataSave
+		KeyNavigation.tab:	navigateAfter
+		KeyNavigation.down:	navigateAfter
 		anchors
 		{
 			top:			addValueItem.bottom

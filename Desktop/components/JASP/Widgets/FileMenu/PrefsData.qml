@@ -177,7 +177,25 @@ Item
 				}
 			}
 
-			PrefsMissingValues { id: missingFileList }
+			PrefsMissingValues { id: missingFileList; navigateAfter: noBomNative }
+			
+			PrefsGroupRect
+			{
+				visible:	WINDOWS
+				title:		qsTr("Windows workaround")
+				
+				CheckBox
+				{
+					id:					noBomNative
+					label:				qsTr("Assume CSV is in native encoding when no BOM has been specified")
+					checked:			preferencesModel.windowsNoBomNative
+					onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
+					toolTip:			qsTr("See documentation for more information ")
+					KeyNavigation.down:	synchronizeDataSave
+					KeyNavigation.tab:	synchronizeDataSave
+
+				}
+			}
 		}
 	}
 }

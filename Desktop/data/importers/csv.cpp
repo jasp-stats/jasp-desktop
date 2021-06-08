@@ -24,6 +24,8 @@
 #include <stdexcept>
 
 #include "utils.h"
+#include "utilities/qutils.h"
+#include "utilities/settings.h"
 
 using namespace std;
 using boost::algorithm::trim;
@@ -135,41 +137,48 @@ void CSV::determineEncoding()
 	}
 	else
 	{
-		// tab, lf, cr, space, double-quote, single-quote, comma, semi-colon
-
-		uint16_t utf16be[] = { 0x0009, 0x000A, 0x000D, 0x0020, 0x0022, 0x0027, 0x002C, 0x003B };
-		uint16_t utf16le[] = { 0x0900, 0x0A00, 0x0D00, 0x2000, 0x2200, 0x2700, 0x2C00, 0x3B00 };
-
-		uint16_t *buffer = (uint16_t*)&_rawBuffer[_rawBufferStartPos];
-		int count = (_rawBufferEndPos - _rawBufferStartPos) / 2;
-
-		int beCount = 0;
-		int leCount = 0;
-
-		for (int i = 0; i < count; i++)
+#ifdef _WIN32
+		//If we are on windows and there is no BOM, then we can assume it is encoded in the native locale. Unless the user decides otherwise
+		if(Settings::value(Settings::WINDOWS_NO_BOM_NATIVE).toBool())
+			_encoding = Native;
+		else
+#endif
 		{
-			for (int j = 0; j < 8; j++)
+			// tab, lf, cr, space, double-quote, single-quote, comma, semi-colon
+	
+			uint16_t utf16be[] = { 0x0009, 0x000A, 0x000D, 0x0020, 0x0022, 0x0027, 0x002C, 0x003B };
+			uint16_t utf16le[] = { 0x0900, 0x0A00, 0x0D00, 0x2000, 0x2200, 0x2700, 0x2C00, 0x3B00 };
+	
+			uint16_t *buffer = (uint16_t*)&_rawBuffer[_rawBufferStartPos];
+			int count = (_rawBufferEndPos - _rawBufferStartPos) / 2;
+	
+			int beCount = 0;
+			int leCount = 0;
+	
+			for (int i = 0; i < count; i++)
 			{
-				if (buffer[i] == utf16be[j])
+				for (int j = 0; j < 8; j++)
 				{
-					beCount++;
-					break;
-				}
-				if (buffer[i] == utf16le[j])
-				{
-					leCount++;
-					break;
+					if (buffer[i] == utf16be[j])
+					{
+						beCount++;
+						break;
+					}
+					if (buffer[i] == utf16le[j])
+					{
+						leCount++;
+						break;
+					}
 				}
 			}
+	
+			if (beCount > leCount)
+				_encoding = UTF16LE;
+			else if (leCount > 1)
+				_encoding = UTF16BE;
+			else
+				_encoding = UTF8;
 		}
-
-		if (beCount > leCount)
-			_encoding = UTF16LE;
-		else if (leCount > 1)
-			_encoding = UTF16BE;
-		else
-			_encoding = UTF8;
-
 	}
 }
 
@@ -195,7 +204,10 @@ bool CSV::readUtf8()
 	_utf8BufferEndPos = bytesToMove;
 	_utf8BufferStartPos = 0;
 
-	if (_encoding == UTF16BE || _encoding == UTF16LE)
+	switch(_encoding)
+	{
+	
+	default:
 	{
 		int written, read;
 
@@ -213,13 +225,32 @@ bool CSV::readUtf8()
 
 		_utf8BufferEndPos += written;
 		_rawBufferStartPos += read;
+		
+		break;
 	}
-	else
+		
+	case UTF8:
 	{
 		std::memcpy(&_utf8Buffer[_utf8BufferEndPos], &_rawBuffer[_rawBufferStartPos], _rawBufferEndPos - _rawBufferStartPos);
 
 		_utf8BufferEndPos += _rawBufferEndPos - _rawBufferStartPos;
 		_rawBufferStartPos = _rawBufferEndPos;
+
+		break;
+	}
+		
+	case Native:
+	{
+		std::string raw	(&_rawBuffer[_rawBufferStartPos], &_rawBuffer[_rawBufferEndPos]),
+					utf8(QString::fromLocal8Bit(raw.c_str()).toStdString());
+		
+		std::memcpy(&_utf8Buffer[_utf8BufferEndPos], utf8.c_str(), utf8.size());
+
+		_utf8BufferEndPos += _rawBufferEndPos - _rawBufferStartPos;
+		_rawBufferStartPos = _rawBufferEndPos;
+		
+		break;
+	}
 	}
 
 	for (int i = 0 ; i < _utf8BufferEndPos; i++)

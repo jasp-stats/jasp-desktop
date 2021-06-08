@@ -58,6 +58,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QStringList	allInterfaceFonts		READ allInterfaceFonts			CONSTANT																	)
 	Q_PROPERTY(QStringList	allResultFonts			READ allResultFonts				CONSTANT																	)
 	Q_PROPERTY(int			maxEngines				READ maxEngines					WRITE setMaxEngines					NOTIFY maxEnginesChanged				)
+	Q_PROPERTY(bool			windowsNoBomNative		READ windowsNoBomNative			WRITE setWindowsNoBomNative			NOTIFY windowsNoBomNativeChanged		)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
@@ -112,11 +113,13 @@ public:
 	bool		setLC_CTYPE_C()				const;
 	int			lcCtypeWin()				const;
 	int			maxEngines()				const;
+	bool		windowsNoBomNative()		const;
 
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
-
+	
+	
 public slots:
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
@@ -165,6 +168,8 @@ public slots:
 	void resetRememberedModules(		bool		clear);
 	void setLcCtypeWin(					int			lcCtypeWin);
 	void setMaxEngines(					int			maxEngines);
+	void setWindowsNoBomNative(			bool		windowsNoBomNative);
+	
 	
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);
@@ -209,8 +214,8 @@ signals:
 	void lcCtypeChanged();
 	void restartAllEngines();
 	void maxEnginesChanged(				int			maxEngines);
-
-
+	void windowsNoBomNativeChanged(		bool		windowsNoBomNative);
+	
 private:
 	static PreferencesModel * _singleton;
 

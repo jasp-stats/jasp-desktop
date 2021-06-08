@@ -53,7 +53,8 @@ public:
 		LC_CTYPE_C_WIN,
 		MAX_ENGINE_COUNT,
 		GITHUB_PAT_CUSTOM,
-		GITHUB_PAT_USE_DEFAULT
+		GITHUB_PAT_USE_DEFAULT,
+		WINDOWS_NO_BOM_NATIVE
 	};
 
 	static QVariant value(Settings::Type key);
