@@ -279,8 +279,9 @@ JASP also contains several sub-repositories which can be intialized and cloned a
 
 #### All linux
 Besides the packages mentioned below for Ubuntu and Fedora one needs a few R-packages to build JASP. 
-Using the latest R you can run: `install.packages(c('renv', 'modules', 'remotes', 'rjson', 'jsonlite', 'Rcpp', 'ragg', 'systemfonts', 'pkgbuild'))`.
-This will install all that is necessary to install the modules with the actual analyses.
+Using the latest R you can run: `install.packages(c('gridGraphics', 'modules', 'pkgbuild', 'renv', 'remotes', 'jsonlite', 'rjson', 'Rcpp', 'ragg', 'systemfonts'))`.
+This will install all that is necessary to install the modules with the actual analyses. This ought to include at least all the dependencies of [jaspBase](https://github.com/jasp-stats/jaspBase/blob/master/DESCRIPTION).
+
 At certain points this may fail when it misses some kind of header or something. For instance, an R-package might need `#include <png.h>` or something. In this example you should install the Fedora-package `libpng-devel` or the Ubuntu-package `libpng-dev`. In other cases you should figure out which development distribution-package you would need on the linux-distribution you're running and install that. This will probably also happen while you are building JASP and `renv` is collecting and building all the required pkgs for each module, so the same response is warranted.
 
 Besides this we use [ReadStat](https://github.com/WizardMac/ReadStat) to read a variety of data-formats into JASP. This is however not available as a package on (most) linuxes. Instead you can either build it yourself like:
@@ -304,6 +305,8 @@ sudo apt-get install libboost-dev r-base-core r-cran-rcpp r-cran-rinside libqt5w
 Then you start qtcreator and open JASP.pro, run qmake and build all. After that you should be able to run JASP.
 
 #### Fedora
+*Disclaimer: this hasn't been tested in quite some time*
+
 Under Fedora, you need these packages:
  - qt-devel
  - qt5-qtwebengine-devel (probably)
@@ -311,12 +314,6 @@ Under Fedora, you need these packages:
  - boost-devel
  - libarchive-devel
 You will also need to install packages for the QML code, not sure what they are but probably something like: qt5-qtquickcontrols2 qml-module-qtwebengine qml-module-qtwebchannel qml-module-qt-labs-folderlistmodel
-
-And (under fedora only), in R (started as root so packages are installed systemwide), you need to install:
-
-```
-install.packages(c("Rcpp","RInside"))
-```
 
 Finally, under Fedora only, you might need to create a symlink so that R is found:
 
@@ -330,14 +327,7 @@ If you get stuck compiling or wherever in the process, we would be glad to help 
 #### Ubuntu (and alike)
 In order to run, you will need (Ubuntu and alike):
 ```
-sudo apt-get install libjsoncpp1 r-base-core r-cran-rcpp r-cran-rinside r-cran-bayesfactor r-cran-lme4 r-cran-afex r-cran-car r-cran-effects r-cran-logspline r-cran-lsmeans r-cran-plotrix r-cran-rjson r-cran-vcd r-cran-vcdextra r-cran-ggplot2 r-cran-hypergeo libqt5webenginewidgets5 libqt5webengine5 libqt5webenginecore5 libqt5svg5 openssl
-```
-
-### Fedora
-It works under Fedora, if you install these R packages manually in R:
-
-```
-install.packages(c("BayesFactor","lme4","afex","car","effects","logspline","hypergeo","rjson"))
+sudo apt-get install libjsoncpp1 r-base-core libqt5webenginewidgets5 libqt5webengine5 libqt5webenginecore5 libqt5svg5 openssl
 ```
 
 ## GITHUB_PAT
