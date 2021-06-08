@@ -871,7 +871,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	return returnThis;
 }
 
-std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
+std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)
 {
 	rbridge_dataSet = rbridge_dataSetSource();
 	int rowCount	= rbridge_dataSet == nullptr ? 0 : rbridge_dataSet->rowCount();
@@ -885,7 +885,7 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
 
 
 	rbridge_setupRCodeEnv(rowCount);
-	std::string result = jaspRCPP_evalRCode(rCode64.c_str());
+	std::string result = jaspRCPP_evalRCode(rCode64.c_str(), setWd);
 	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
 	jaspRCPP_setErrorMsg(ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
@@ -906,7 +906,7 @@ bool rbridge_rCodeSafe(const char * rCode)
 
 void rbridge_setLANG(const std::string & lang)
 {
-	jaspRCPP_evalRCode(("Sys.setenv(LANG='" + lang + "');\nSys.setenv(LANGUAGE='" + lang + "');\nprint(Sys.getlocale());").c_str());
+	jaspRCPP_evalRCode(("Sys.setenv(LANG='" + lang + "');\nSys.setenv(LANGUAGE='" + lang + "');\nprint(Sys.getlocale());").c_str(), false);
 }
 
 extern "C" const char *	 STDCALL rbridge_system(const char * cmd)

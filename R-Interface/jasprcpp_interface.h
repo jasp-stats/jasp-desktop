@@ -127,7 +127,7 @@ RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_saveImage(const char *dat
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_editImage(const char *name, const char *optionsJson, const int ppi, const char* imageBackground, int analysisID);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char* imageBackground, const char* resultsFont, int analysisID);
 
-RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalRCode(const char *rCode);
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalRCode(			const char *rCode, bool setWd);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode);
 
 RBRIDGE_TO_JASP_INTERFACE int			STDCALL jaspRCPP_runFilter(const char * filtercode, bool ** arraypointer); //arraypointer points to a pointer that will contain the resulting list of filter-booleans if jaspRCPP_runFilter returns > 0

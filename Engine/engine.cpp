@@ -320,7 +320,7 @@ void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteListed)
 {
 
-	std::string rCodeResult = whiteListed ? rbridge_evalRCodeWhiteListed(rCode.c_str()) : jaspRCPP_evalRCode(rCode.c_str());
+	std::string rCodeResult = whiteListed ? rbridge_evalRCodeWhiteListed(rCode.c_str(), true) : jaspRCPP_evalRCode(rCode.c_str(), true);
 
 	if (rCodeResult == "null")	sendRCodeError(rCodeRequestId);
 	else						sendRCodeResult(rCodeResult, rCodeRequestId);
@@ -415,7 +415,7 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 		{columnType::nominalText,	".setColumnDataAsNominalText"	}};
 
 	std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnName +"', calcedVals)));})";
-	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete);
+	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete, false);
 
 	Json::Value computeColumnResponse		= Json::objectValue;
 	computeColumnResponse["typeRequest"]	= engineStateToString(engineState::computeColumn);
@@ -438,7 +438,7 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	
 	Log::log() << "About to run module request for module '" << moduleName << "' and code to run:\n'" << moduleCode << "'" << std::endl; 
 
-	std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str());
+	std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str(), false);
 	bool			succes			= result == "succes!"; //Defined in DynamicModule::succesResultString()
 	
 	Log::log() << "Was " << (succes ? "succesful" : "a failure") << ", now crafting answer." << std::endl;

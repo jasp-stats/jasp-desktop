@@ -403,7 +403,7 @@ void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char
 	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)", true);
 }
 
-const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
+const char*	STDCALL jaspRCPP_evalRCode(const char *rCode, bool setWd) {
 	// Function to evaluate arbitrary R code from C++
 	// Returns string if R result is a string, else returns "null"
 	// Can also load the entire dataset if need be
@@ -421,7 +421,7 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 		")"
 		"; returnVal	");
 
-	SEXP result = jaspRCPP_parseEval(rCodeTryCatch, true);
+	SEXP result = jaspRCPP_parseEval(rCodeTryCatch, setWd);
 
 	static std::string staticResult;
 	try
