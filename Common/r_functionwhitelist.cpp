@@ -175,6 +175,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"setdiff",
 	"setequal",
 	"sin",
+	"sign",
 	"solve",
 	"sort",
 	"spline",

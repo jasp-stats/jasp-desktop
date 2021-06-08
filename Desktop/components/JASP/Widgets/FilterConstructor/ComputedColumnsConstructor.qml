@@ -349,7 +349,7 @@ Item
 
 		ElementView
 		{
-			id:						functieLijst
+			id:					functieLijst
 			anchors
 			{
 				top:			parent.top

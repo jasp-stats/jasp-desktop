@@ -208,6 +208,7 @@ FocusScope
 					ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns minimum of values") }
 					ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns maximum of values") }
 					ListElement	{ type: "function";	functionName: "mean";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("mean") }
+					ListElement	{ type: "function";	functionName: "sign";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns the sign of values") }
 					ListElement	{ type: "function";	functionName: "round";	functionParameters: "y,n";		functionParamTypes: "number,number";			toolTip: qsTr("rounds y to n decimals") }
 					ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";		functionParamTypes: "string:number:boolean";	toolTip: qsTr("returns number of elements in y") }
 					ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("median") }
