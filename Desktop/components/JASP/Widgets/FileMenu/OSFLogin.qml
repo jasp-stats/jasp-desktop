@@ -151,7 +151,7 @@ FocusScope
 
 		Text
 		{
-			text			: qsTr("<sup>*</sup>")
+			text			: "<sup>*</sup>"
 			textFormat		: Text.RichText
 			font.pointSize	: 12 * preferencesModel.uiScale
 			font.family		: jaspTheme.font.family
