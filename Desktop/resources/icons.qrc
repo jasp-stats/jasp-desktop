@@ -210,5 +210,7 @@
         <file>icons/lightTheme/undo.svg</file>
         <file>icons/darkTheme/undo.svg</file>
         <file>icons/darkTheme/redo.svg</file>
+        <file>icons/cross-sign-small-red.svg</file>
+        <file>icons/addition-sign-small-green.svg</file>
     </qresource>
 </RCC>

@@ -131,7 +131,7 @@ void TableViewBase::reset()
 
 void TableViewBase::itemChanged(int col, int row, QString value, QString type)
 {
-	if (!_tableModel)	return;
+	if (!_tableModel || _tableModel->data(_tableModel->index(row, col)).toString() == value) return;
 
 	if (_tableModel->valueOk(value, col, row))
 	{

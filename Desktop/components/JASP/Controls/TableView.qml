@@ -72,8 +72,8 @@ TableViewBase
 	onColNameChanged:	colNameSignal(tableView.colName)
 	onExtraColChanged:	extraColSignal(tableView.extraCol)
 
-	property real iconHeight:			20 * preferencesModel.uiScale
-	property real iconHeightHovered:	22 * preferencesModel.uiScale
+	property real iconSize:			16 * preferencesModel.uiScale
+	property real iconSizeHovered:	18 * preferencesModel.uiScale
 
 	onColSelectedChanged: setButtons()
 
@@ -89,12 +89,12 @@ TableViewBase
 			if (maxColumn < 0 || maxColumn > model.columnCount())
 			{
 				var maxNumberWidth = theView.rowNumberWidth;
-				addLeftButton.x = Qt.binding(function() { return 1 + item.x - iconHeight/2 - myFlickable.contentX } )
-				addLeftButton.y = Qt.binding(function() { return item.y + item.height/2 - iconHeight/2 } )
-				addLeftButton.visible = Qt.binding(function() { return (addLeftButton.x + iconHeight/2 > theView.rowNumberWidth) && (addLeftButton.x + iconHeight/2 < tableView.width + 1) } )
-				addRightButton.x = Qt.binding(function() { return 1 + item.x + item.width - iconHeight/2 - myFlickable.contentX } )
-				addRightButton.y = Qt.binding(function() { return item.y + item.height/2 - iconHeight/2 } )
-				addRightButton.visible = Qt.binding(function() { return (addRightButton.x + iconHeight/2 > theView.rowNumberWidth) && (addRightButton.x + iconHeight/2 < tableView.width + 1) } )
+				addLeftButton.x = Qt.binding(function() { return 1 + item.x - iconSize/2 - myFlickable.contentX } )
+				addLeftButton.y = Qt.binding(function() { return item.y + item.height/2 - iconSize/2 } )
+				addLeftButton.visible = Qt.binding(function() { return (addLeftButton.x + iconSize/2 > theView.rowNumberWidth) && (addLeftButton.x + iconSize/2 < tableView.width + 1) } )
+				addRightButton.x = Qt.binding(function() { return 1 + item.x + item.width - iconSize/2 - myFlickable.contentX } )
+				addRightButton.y = Qt.binding(function() { return item.y + item.height/2 - iconSize/2 } )
+				addRightButton.visible = Qt.binding(function() { return (addRightButton.x + iconSize/2 > theView.rowNumberWidth) && (addRightButton.x + iconSize/2 < tableView.width + 1) } )
 			}
 			else
 			{
@@ -103,8 +103,8 @@ TableViewBase
 			}
 			if (minColumn < model.columnCount())
 			{
-				deleteButton.x = Qt.binding(function() { return item.x + item.width/2 - iconHeight/2 - myFlickable.contentX } )
-				deleteButton.visible = Qt.binding(function() { return (deleteButton.x + iconHeight/2 > theView.rowNumberWidth ) && (deleteButton.x + iconHeight/2 < tableView.width + 1) } )
+				deleteButton.x = Qt.binding(function() { return item.x + item.width/2 + 2 - iconSize/2 - myFlickable.contentX } )
+				deleteButton.visible = Qt.binding(function() { return (deleteButton.x + iconSize/2 > theView.rowNumberWidth ) && (deleteButton.x + iconSize/2 < tableView.width + 1) } )
 			}
 			else
 				deleteButton.visible = false
@@ -143,11 +143,13 @@ TableViewBase
 		{
 			id:					addLeftButton
 			z:					100
-			height:				hovered ? iconHeightHovered : iconHeight
+			anchors.top:		parent.top
+			anchors.topMargin:	-height/2
+			height:				hovered ? iconSizeHovered : iconSize
 			width:				height
 			buttonPadding:		0
 			color:				"transparent"
-			iconSource:			jaspTheme.iconPath + "/arrow-left.png"
+			iconSource:			jaspTheme.iconPath + "/../addition-sign-small-green.svg"
 			toolTip:			qsTr("Add to the left")
 			radius:				height
 			visible:			false
@@ -160,15 +162,18 @@ TableViewBase
 				}
 			}
 		}
+
 		MenuButton
 		{
 			id:					addRightButton
 			z:					100
-			height:				hovered ? iconHeightHovered : iconHeight
+			anchors.top:		parent.top
+			anchors.topMargin:	-height/2
+			height:				hovered ? iconSizeHovered : iconSize
 			width:				height
 			buttonPadding:		0
 			color:				"transparent"
-			iconSource:			jaspTheme.iconPath + "/arrow-right.png"
+			iconSource:			jaspTheme.iconPath + "/../addition-sign-small-green.svg"
 			toolTip:			qsTr("Add to the right")
 			radius:				height
 			visible:			false
@@ -181,17 +186,18 @@ TableViewBase
 				}
 			}
 		}
+
 		MenuButton
 		{
 			id:					deleteButton
+			z:					100
 			anchors.top:		parent.top
-			anchors.topMargin:	-height/2
-			height:				hovered ? iconHeightHovered - 2 : iconHeight - 2
+			anchors.topMargin:	-height/2 + 1
+			height:				hovered ? iconSizeHovered : iconSize
 			width:				height
 			buttonPadding:		0
 			color:				"transparent"
-			z:					100
-			iconSource:			jaspTheme.iconPath + "/cross.png"
+			iconSource:			jaspTheme.iconPath + "/../cross-sign-small-red.svg"
 			toolTip:			qsTr("Delete")
 			radius:				height
 			visible:			false
@@ -303,11 +309,8 @@ TableViewBase
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:
 						{
-							if (value !== itemText)
-							{
-								tableView.itemChanged(columnIndex, rowIndex, value, inputType)
-								tableView.setButtons()
-							}
+							tableView.itemChanged(columnIndex, rowIndex, value, inputType)
+							tableView.setButtons()
 						}
 						editable:				itemEditable
 						multiple:				itemInputType === "formulaArray"
