@@ -41,11 +41,11 @@ public:
 
 	void set(const QList<QList<QString> >					& terms);
 	void set(const QList<QString>							& terms);
-	void set(const std::vector<Term>						& terms, bool hasDuplicate = false);
+	void set(const std::vector<Term>						& terms);
 	void set(const std::vector<std::string>					& terms);
 	void set(const std::vector<std::vector<std::string> >	& terms);
 	void set(const QList<Term>								& terms);
-	void set(const Terms									& terms, bool hasDuplicate = false);
+	void set(const Terms									& terms);
 	void set(const QByteArray								& array);
 
 	void removeParent();

@@ -145,7 +145,7 @@ void ListModelMultiTermsAssigned::_setTerms()
 			newTerms.add(term, false);
 	}
 
-	ListModel::_setTerms(newTerms, true);
+	ListModel::_setTerms(newTerms);
 }
 
 

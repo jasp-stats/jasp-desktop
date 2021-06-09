@@ -47,7 +47,7 @@ void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms
 	}
 	
 	if (initVariables)
-		_setTerms(variables, true);
+		_setTerms(variables);
 
 	_fitTermsWithLevels();
 
@@ -64,10 +64,8 @@ void ListModelMeasuresCellsAssigned::_fitTermsWithLevels()
 
 	if (terms().size() > size_t(_levels.size()))
 	{
-		std::vector<Term> newTerms = terms().terms();
-		while (newTerms.size() > size_t(_levels.size()))
-			newTerms.pop_back();
-		_setTerms(newTerms, true);
+		while (terms().size() > size_t(_levels.size()))
+			_removeLastTerm();
 	}
 }
 
