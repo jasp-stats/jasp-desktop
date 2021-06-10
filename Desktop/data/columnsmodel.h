@@ -30,6 +30,7 @@ public:
 
 	QVariant				data(			const QModelIndex & index, int role = Qt::DisplayRole)				const	override;
 	QHash<int, QByteArray>	roleNames()																			const	override;
+	int						columnCount(const QModelIndex & = QModelIndex())									const	override { return 1;	}
 
 	int						getColumnIndex(const std::string& col)												const	{ return _tableModel->getColumnIndex(col);		}
 	QString					getIconFile(columnType colType, IconType type)										const;

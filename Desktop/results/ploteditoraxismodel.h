@@ -38,13 +38,6 @@ class AxisModel : public QAbstractTableModel
 public:
 	AxisModel(PlotEditorModel * parent, bool vertical);
 
-	enum class	specialRoles
-	{
-		insertLeft	= Qt::UserRole,
-		insertRight,
-		deleteBreak
-	};
-
 	enum class TitleType  { TitleCharacter, TitleExpression, TitleLaTeX, TitleNull };
 	enum class BreaksType { BreaksRange, BreaksManual, BreaksNull};
 	enum class LimitsType { LimitsData,  LimitsBreaks, LimitsManual };
@@ -54,9 +47,9 @@ public:
 	QVariant				data(		const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
 	bool					setData(	const QModelIndex &index, const QVariant &value, int role)						override;
 	Qt::ItemFlags			flags(		const QModelIndex &index)												const	override;
-	QHash<int, QByteArray>	roleNames()																			const	override;
 	QVariant				headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
-
+	bool					insertColumns(int column, int count, const QModelIndex &parent = QModelIndex())				override;
+	bool					removeColumns(int column, int count, const QModelIndex &parent = QModelIndex())				override;
 
 	void				setAxisData(const Json::Value & Axis);
 	Json::Value			getAxisData()																		const;

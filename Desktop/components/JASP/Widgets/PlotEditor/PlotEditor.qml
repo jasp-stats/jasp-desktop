@@ -310,7 +310,7 @@ Popup
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				text:				qsTr("Original plot")
+				text:				qsTr("Discard changes")
 				on_PressedChanged:	plotEditorModel.resetPlot()
 			}
 

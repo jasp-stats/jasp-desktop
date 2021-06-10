@@ -138,7 +138,6 @@
         <file>components/JASP/Widgets/SimpleTableView.qml</file>
         <file>components/JASP/Controls/JAGSTextArea.qml</file>
         <file>components/JASP/Widgets/PlotEditor/PlotEditor.qml</file>
-        <file>components/JASP/Widgets/PlotEditor/PlotEditingAxisTable.qml</file>
         <file>components/JASP/Widgets/ImageInverter.qml</file>
         <file>components/JASP/Widgets/PlotEditor/PlotEditingAxis.qml</file>
         <file>components/JASP/Widgets/FactorsForm.qml</file>

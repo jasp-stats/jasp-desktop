@@ -86,7 +86,7 @@ public:
 	virtual		QString				getDefaultColName(size_t index)										const;
 	virtual		QString				getDefaultRowName(size_t index)										const				{ return tr("Row %1").arg(index); }
 	virtual		bool				isEditable(const QModelIndex &)										const				{ return true; }
-	virtual		QString				getItemInputType(const QModelIndex &)								const;
+	virtual		QString				getItemInputType(const QModelIndex &index)							const;
 
 	const		TableTerms	&		tableTerms()														const				{ return _tableTerms; }
 				Terms				filterTerms(const Terms& terms, const QStringList& filters)					override;
@@ -95,7 +95,7 @@ public:
 				void				runRScript(		const QString & script);
 	virtual		void				rScriptDoneHandler(const QString & result) { throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler and usesRScript\nResult was: "+result.toStdString()); }
 
-				bool				valueOk(QVariant value);
+				bool				valueOk(QVariant value, int col = -1, int row = -1);
 	virtual		bool				isRCodeColumn(int)													const				{ return false; }
 
 

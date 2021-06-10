@@ -25,8 +25,11 @@
 #include "listmodelmultinomialchi2test.h"
 #include "listmodelfactorlevels.h"
 #include "listmodelcustomcontrasts.h"
+#include "listmodelgridinput.h"
 #include "boundcontrolcontraststableview.h"
 #include "boundcontrolfilteredtableview.h"
+#include "boundcontrolgridtableview.h"
+#include "sourceitem.h"
 
 TableViewBase::TableViewBase(QQuickItem* parent)
 	: JASPListControl(parent)
@@ -42,18 +45,11 @@ void TableViewBase::setUpModel()
 	case ModelType::JAGSDataInputModel		: _tableModel = new ListModelJAGSDataInput(			this );	break;
 	case ModelType::CustomContrasts			: _tableModel = new ListModelCustomContrasts(		this );	break;
 	case ModelType::FilteredDataEntryModel	: _tableModel = new ListModelFilteredDataEntry(		this );	break;
-	case ModelType::Simple					:
-	default									: _tableModel = new ListModelTableViewBase(			this );	break;
+	case ModelType::GridInput				: _tableModel = new ListModelGridInput(				this ); break;
+	case ModelType::Simple					: _tableModel = new ListModelTableViewBase(			this );	break;
 	}
 
 	JASPListControl::setUpModel();
-
-	connect(this, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));
-	connect(this, SIGNAL(removeColumn(int)),				this, SLOT(removeColumnSlot(int)));
-	connect(this, SIGNAL(addRow()),							this, SLOT(addRowSlot()));
-	connect(this, SIGNAL(removeRow(int)),					this, SLOT(removeRowSlot(int)));
-	connect(this, SIGNAL(reset()),							this, SLOT(resetSlot()));
-	connect(this, SIGNAL(itemChanged(int, int, QString, QString)),	this, SLOT(itemChangedSlot(int, int, QString, QString)));
 
 	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	this, &TableViewBase::columnCountChanged);
 	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		this, &TableViewBase::rowCountChanged);
@@ -65,7 +61,8 @@ void TableViewBase::setUp()
 	switch (modelType())
 	{
 	case ModelType::CustomContrasts			: _boundControl = new BoundControlContrastsTableView(this); break;
-	case ModelType::FilteredDataEntryModel	: _boundControl = new BoundControlFilteredTableView(this); break;
+	case ModelType::FilteredDataEntryModel	: _boundControl = new BoundControlFilteredTableView(this);	break;
+	case ModelType::GridInput				: _boundControl = new BoundControlGridTableView(this);		break;
 	case ModelType::MultinomialChi2Model	:
 	case ModelType::JAGSDataInputModel		:
 	case ModelType::Simple					:
@@ -74,52 +71,81 @@ void TableViewBase::setUp()
 
 	JASPListControl::setUp();
 
+	if (modelType() == ModelType::GridInput && hasNativeSource()) setUpdateSource(true);
+
 	setInitialValuesControl();
 	connect(this,	&TableViewBase::initialValuesSourceChanged, this, &TableViewBase::setInitialValuesControl);
 
 	// form is not always known in the constructor, so all references to form (and dataset) must be done here
-	connect(form(),		&AnalysisForm::refreshTableViewModels,			this, &TableViewBase::refreshMe	);
+	if (form())
+		connect(form(),		&AnalysisForm::refreshTableViewModels,			this, &TableViewBase::refreshMe	);
 	_tableModel->setup();
 }
 
-void TableViewBase::addColumnSlot()
+void TableViewBase::addColumn(int col, bool left)
 {
-	if (_tableModel)
+	if (!_tableModel) return;
+
+	if (_sourceItems.length() > 0 && updateSource())
+	{
+		SourceItem* source = _sourceItems[0];
+		QAbstractItemModel* nativeModel = source->nativeModel();
+		if (!left) col++;
+		nativeModel->insertColumns(col, 1);
+	}
+	else
 		_tableModel->addColumn();
 }
 
-void TableViewBase::removeColumnSlot(int col)
+void TableViewBase::removeColumn(int col)
 {
-	if (_tableModel)
+	if (!_tableModel) return;
+
+	if (_sourceItems.length() > 0 && updateSource())
+	{
+		SourceItem* source = _sourceItems[0];
+		QAbstractItemModel* nativeModel = source->nativeModel();
+		nativeModel->removeColumns(col, 1);
+	}
+	else
 		_tableModel->removeColumn(col);
 }
 
-void TableViewBase::addRowSlot()
+void TableViewBase::addRow()
 {
 	if (_tableModel)
 		_tableModel->addRow();
 }
 
-void TableViewBase::removeRowSlot(int row)
+void TableViewBase::removeRow(int row)
 {
 	if (_tableModel)
 		_tableModel->removeRow(row);
 }
 
-void TableViewBase::resetSlot()
+void TableViewBase::reset()
 {
 	if (_tableModel)
 		_tableModel->reset();
 }
 
-void TableViewBase::itemChangedSlot(int col, int row, QString value, QString type)
+void TableViewBase::itemChanged(int col, int row, QString value, QString type)
 {
-	if (_tableModel)
+	if (!_tableModel || _tableModel->data(_tableModel->index(row, col)).toString() == value) return;
+
+	if (_tableModel->valueOk(value, col, row))
 	{
-		if (_tableModel->valueOk(value))	_tableModel->itemChanged(col, row, value, type);
-		else								QTimer::singleShot(0, _tableModel, &ListModelTableViewBase::refreshModel);
+		if (_sourceItems.length() > 0 && updateSource())
+		{
+			QAbstractItemModel* nativeModel = _sourceItems[0]->nativeModel();
+			nativeModel->setData(nativeModel->index(row, col), value);
+		}
+		else
+			_tableModel->itemChanged(col, row, value, type);
 	}
-}
+	else
+		QTimer::singleShot(0, _tableModel, &ListModelTableViewBase::refreshModel);
+	}
 
 void TableViewBase::setInitialValuesControl()
 {
@@ -140,6 +166,14 @@ void TableViewBase::rScriptDoneHandler(const QString & result)
 {
 	if(_tableModel)
 		_tableModel->rScriptDoneHandler(result);
+}
+
+JASPControl::ItemType TableViewBase::itemTypePerItem(int col, int row) const
+{
+	if (col >= 0 && _itemTypePerColumn.length() > col)	return _itemTypePerColumn[col];
+	if (row >= 0 && _itemTypePerRow.length() > row)		return _itemTypePerRow[row];
+
+	return _itemType;
 }
 
 void TableViewBase::refreshMe()
@@ -180,4 +214,28 @@ QVariant TableViewBase::defaultValue() const
 	}
 
 	return _defaultValue;
+}
+
+void TableViewBase::setItemTypePerRow(QVariantList list)
+{
+	QList<JASPControl::ItemType> typeList;
+	for (const QVariant& t : list) typeList.append(JASPControl::ItemType(t.toInt()));
+
+	if (typeList != _itemTypePerRow)
+	{
+		_itemTypePerRow = typeList;
+		emit itemTypePerRowChanged();
+	}
+}
+
+void TableViewBase::setItemTypePerColumn(QVariantList list)
+{
+	QList<JASPControl::ItemType> typeList;
+	for (const QVariant& t : list) typeList.append(JASPControl::ItemType(t.toInt()));
+
+	if (typeList != _itemTypePerColumn)
+	{
+		_itemTypePerColumn = typeList;
+		emit itemTypePerColumnChanged();
+	}
 }

@@ -29,6 +29,8 @@ class TableViewBase : public JASPListControl, public BoundControl
 
 	Q_PROPERTY( ModelType		modelType			READ modelType				WRITE setModelType				NOTIFY modelTypeChanged				)
 	Q_PROPERTY( ItemType		itemType			READ itemType				WRITE setItemType				NOTIFY itemTypeChanged				)
+	Q_PROPERTY( QVariantList	itemTypePerColumn	READ itemTypePerColumn		WRITE setItemTypePerColumn		NOTIFY itemTypePerColumnChanged		)
+	Q_PROPERTY( QVariantList	itemTypePerRow		READ itemTypePerRow			WRITE setItemTypePerRow			NOTIFY itemTypePerRowChanged		)
 	Q_PROPERTY( QVariant		defaultValue		READ defaultValue			WRITE setDefaultValue			NOTIFY defaultValueChanged			)
 	Q_PROPERTY( QVariant		initialValuesSource	READ initialValuesSource	WRITE setInitialValuesSource	NOTIFY initialValuesSourceChanged	)
 	Q_PROPERTY( int				initialColumnCount	READ initialColumnCount		WRITE setInitialColumnCount		NOTIFY initialColumnCountChanged	)
@@ -36,6 +38,13 @@ class TableViewBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( int				columnCount			READ columnCount											NOTIFY columnCountChanged			)
 	Q_PROPERTY( int				rowCount			READ rowCount												NOTIFY rowCountChanged				)
 	Q_PROPERTY( int				variableCount		READ variableCount											NOTIFY variableCountChanged			)
+	Q_PROPERTY( int				minRow				READ minRow					WRITE setMinRow					NOTIFY minRowChanged				)
+	Q_PROPERTY( int				maxRow				READ maxRow					WRITE setMaxRow					NOTIFY maxRowChanged				)
+	Q_PROPERTY( int				minColumn			READ minColumn				WRITE setMinColumn				NOTIFY minColumnChanged				)
+	Q_PROPERTY( int				maxColumn			READ maxColumn				WRITE setMaxColumn				NOTIFY maxColumnChanged				)
+	Q_PROPERTY( QStringList		columnNames			READ columnNames			WRITE setColumnNames			NOTIFY columnNamesChanged			)
+	Q_PROPERTY( QStringList		rowNames			READ rowNames				WRITE setRowNames				NOTIFY rowNamesChanged				)
+	Q_PROPERTY( bool			updateSource		READ updateSource			WRITE setUpdateSource			NOTIFY updateSourceChanged			)
 
 public:
 	TableViewBase(QQuickItem* parent = nullptr);
@@ -54,9 +63,13 @@ public:
 	void						setUp()											override;
 	void						rScriptDoneHandler(const QString & result)		override;
 
+	ItemType itemTypePerItem(int col = -1, int row = -1) const;
+
 	JASPControl::ModelType		modelType()								const				{ return _modelType;					}
 	JASPControl::ItemType		itemType()								const				{ return _itemType;						}
 	QVariant					defaultValue()							const;
+	QVariantList				itemTypePerRow()						const				{ QVariantList l; for (auto t : _itemTypePerRow) l.append(int(t)); return l;	}
+	QVariantList				itemTypePerColumn()						const				{ QVariantList l; for (auto t : _itemTypePerColumn) l.append(int(t)); return l;	}
 	QVariant					initialValuesSource()					const				{ return _initialValuesSource;			}
 	JASPListControl*			initialValuesControl()					const				{ return _initialValuesControl;			}
 	int							initialColumnCount()					const				{ return _initialColumnCount;			}
@@ -64,10 +77,28 @@ public:
 	int							rowCount()								const				{ return _tableModel ? _tableModel->rowCount()		: 0; }
 	int							columnCount()							const				{ return _tableModel ? _tableModel->columnCount()	: 0; }
 	int							variableCount()							const				{ return _tableModel ? _tableModel->variableCount()	: 0; }
+	int							minRow()								const				{ return _minRow;						}
+	int							maxRow()								const				{ return _maxRow;						}
+	int							minColumn()								const				{ return _minColumn;					}
+	int							maxColumn()								const				{ return _maxColumn;					}
+	QStringList					columnNames()							const				{ return _columnNames;					}
+	QStringList					rowNames()								const				{ return _rowNames;						}
+	bool						updateSource()							const				{ return _updateSource;					}
+
+
+	Q_INVOKABLE void addColumn(int col = -1, bool left = true);
+	Q_INVOKABLE void removeColumn(int col);
+	Q_INVOKABLE void addRow();
+	Q_INVOKABLE void removeRow(int row);
+	Q_INVOKABLE void reset();
+	Q_INVOKABLE void itemChanged(int col, int row, QString value, QString type);
+
 
 signals:
 	void						modelTypeChanged();
 	void						itemTypeChanged();
+	void						itemTypePerRowChanged();
+	void						itemTypePerColumnChanged();
 	void						defaultValueChanged();
 	void						initialRowCountChanged();
 	void						initialColumnCountChanged();
@@ -75,6 +106,13 @@ signals:
 	void						rowCountChanged();
 	void						columnCountChanged();
 	void						variableCountChanged();
+	void						minRowChanged();
+	void						maxRowChanged();
+	void						minColumnChanged();
+	void						maxColumnChanged();
+	void						columnNamesChanged();
+	void						rowNamesChanged();
+	void						updateSourceChanged();
 
 public slots:
 	void						refreshMe();
@@ -88,28 +126,41 @@ protected slots:
 	GENERIC_SET_FUNCTION(InitialRowCount,		_initialRowCount,		initialRowCountChanged,		int			)
 	GENERIC_SET_FUNCTION(InitialColumnCount,	_initialColumnCount,	initialColumnCountChanged,	int			)
 	GENERIC_SET_FUNCTION(InitialValuesSource,	_initialValuesSource,	initialValuesSourceChanged,	QVariant	)
+	GENERIC_SET_FUNCTION(MinRow,				_minRow,				minRowChanged,				int			)
+	GENERIC_SET_FUNCTION(MaxRow,				_maxRow,				maxRowChanged,				int			)
+	GENERIC_SET_FUNCTION(MinColumn,				_minColumn,				minColumnChanged,			int			)
+	GENERIC_SET_FUNCTION(MaxColumn,				_maxColumn,				maxColumnChanged,			int			)
+	GENERIC_SET_FUNCTION(ColumnNames,			_columnNames,			columnNamesChanged,			QStringList	)
+	GENERIC_SET_FUNCTION(RowNames,				_rowNames,				rowNamesChanged,			QStringList	)
+	GENERIC_SET_FUNCTION(UpdateSource,			_updateSource,			updateSourceChanged,		bool		)
+
+	void	setItemTypePerRow(QVariantList list);
+	void	setItemTypePerColumn(QVariantList list);
 
 protected:
 	BoundControlTableView		* _boundControl	= nullptr;
 	ListModelTableViewBase		* _tableModel	= nullptr;
 	
 private slots:
-	void addColumnSlot();
-	void removeColumnSlot(int col);
-	void addRowSlot();
-	void removeRowSlot(int row);
-	void resetSlot();
-	void itemChangedSlot(int col, int row, QString value, QString type);
 	void setInitialValuesControl();
 
 private:
 	QVariant				_defaultValue;
 	ModelType				_modelType				= ModelType::Simple;
 	ItemType				_itemType				= ItemType::Double;
+	QList<ItemType>			_itemTypePerRow,
+							_itemTypePerColumn;
 	int						_initialRowCount		= 0,
-							_initialColumnCount		= 0;
+							_initialColumnCount		= 0,
+							_minRow					= 0,
+							_minColumn				= 0,
+							_maxRow					= -1,
+							_maxColumn				= -1;
+	QStringList				_columnNames,
+							_rowNames;
 	QVariant				_initialValuesSource;
 	JASPListControl*		_initialValuesControl	= nullptr;
+	bool					_updateSource			= false;
 };
 
 #endif // TABLEVIEWBASE_H

@@ -122,7 +122,7 @@ void AxisModel::getEntryAndBreaks(size_t & entry, bool & breaks, const QModelInd
 void AxisModel::simplifyLimitsType()
 {
 	// floating point comparision is fine here
-	if (_range[0] == _limits[0] && _range[1] == _limits[1])
+	if (_range.size() > 0 && _limits.size() > 0 && _range[0] == _limits[0] && _range[1] == _limits[1])
 		setLimitsType(LimitsType::LimitsBreaks);
 }
 
@@ -149,7 +149,35 @@ QVariant AxisModel::headerData ( int section, Qt::Orientation orientation, int r
 	else							return "Labels";
 }
 
-bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool AxisModel::insertColumns(int column, int count, const QModelIndex &)
+{
+	for (int i = 0; i < count; i++)
+	{
+		bool left = true;
+
+		if (column < 0 || columnCount() == 0)	column = 0;
+		else if (column >= columnCount())
+		{
+			column = columnCount() - 1;
+			left = false;
+		}
+		insertBreak(index(column, column), size_t(column), left);
+	}
+
+	return true;
+}
+
+bool AxisModel::removeColumns(int column, int count, const QModelIndex &)
+{
+	if (column < 0 || column >= columnCount()) return false;
+
+	for (int i = 0; i < count; i++)
+		deleteBreak(index(column, column), size_t(column));
+
+	return true;
+}
+
+bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int)
 {
 	if(index.row() < 0 || index.row() >= rowCount() || index.column() < 0 || index.column() >= columnCount())
 		return false;
@@ -158,39 +186,32 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 	bool	breaks;
 	getEntryAndBreaks(entry, breaks, index);
 
-	switch(role)
-	{
-	case int(specialRoles::insertLeft):
-	{
-		Log::log() << "insertLeft" << std::endl;
-		insertBreak(index, entry, true);
-		return true;
-	}
-
-	case int(specialRoles::insertRight):
-	{
-		Log::log() << "insertRight" << std::endl;
-		insertBreak(index, entry, false);
-		return true;
-	}
-
-	case int(specialRoles::deleteBreak):
-	{
-		Log::log() << "deleteBreak" << std::endl;
-		deleteBreak(index, entry);
-		return true;
-	}
-
-	default:
-		break;
-	}
-
 	if(breaks)
 	{
 		double newBreak = value.toDouble();
 
 		if(_breaks[entry] != newBreak)
 		{
+			if ((entry > 0 && _breaks[entry-1] >= newBreak)
+				|| (entry < _breaks.size() - 1 && _breaks[entry+1] <= newBreak))
+			{
+				emit dataChanged(index, index);
+				return false;
+			}
+
+			QString label = _labels[entry];
+			bool labelIsDouble = false;
+			double labelDouble = label.toDouble(&labelIsDouble);
+			QModelIndex index2 = index;
+
+			if (labelIsDouble && (std::abs(labelDouble - _breaks[entry]) < 0.00001))
+			{
+				_labels[entry] = value.toString();
+				int col = _vertical ? int(entry) : 1;
+				int row = _vertical ? 1 : int(entry);
+				index2 = AxisModel::index(row, col);
+			}
+
 			_breaks[entry] = newBreak;
 
 			if (!_plotEditor->advanced())
@@ -202,7 +223,7 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int rol
 			}
 
 
-			emit dataChanged(index, index);
+			emit dataChanged(index, index2);
 			emit somethingChanged();
 		}
 	}
@@ -412,22 +433,6 @@ void AxisModel::fillFromJSON(std::vector<QString> &obj, Json::Value value)
 	}
 }
 
-QHash<int, QByteArray> AxisModel::roleNames() const
-{
-	static bool						set = false;
-	static QHash<int, QByteArray> roles = QAbstractItemModel::roleNames ();
-
-	if(!set)
-	{
-		roles[int(specialRoles::insertLeft)]							= QString("insertLeft").toUtf8();
-		roles[int(specialRoles::insertRight)]							= QString("insertRight").toUtf8();
-		roles[int(specialRoles::deleteBreak)]							= QString("deleteBreak").toUtf8();
-
-		set = true;
-	}
-
-	return roles;
-}
 
 std::string		AxisModel::TitleTypeToString (TitleType  type) const
 {

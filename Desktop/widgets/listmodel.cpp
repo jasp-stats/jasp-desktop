@@ -592,15 +592,15 @@ void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)
 	_setTerms(terms);
 }
 
-void ListModel::_setTerms(const std::vector<Term> &terms, bool isUnique)
+void ListModel::_setTerms(const std::vector<Term> &terms)
 {
-	_terms.set(terms, isUnique);
+	_terms.set(terms);
 	setUpRowControls();
 }
 
-void ListModel::_setTerms(const Terms &terms, bool isUnique)
+void ListModel::_setTerms(const Terms &terms)
 {
-	_terms.set(terms, isUnique);
+	_terms.set(terms);
 	setUpRowControls();
 }
 
@@ -620,6 +620,12 @@ void ListModel::_removeTerm(const Term &term)
 {
 	_terms.remove(term);
 	setUpRowControls();
+}
+
+void ListModel::_removeLastTerm()
+{
+	if (_terms.size() > 0)
+		_terms.remove(_terms.size() - 1);
 }
 
 void ListModel::_addTerms(const Terms &terms)

@@ -36,9 +36,6 @@ ListModelTableViewBase::ListModelTableViewBase(TableViewBase * tableView)
 
 QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
 {
-	if (_tableTerms.rowNames.length() == 0)
-		return QVariant();
-
 	int		column	= index.column(),
 			row		= index.row();
 
@@ -209,7 +206,7 @@ void ListModelTableViewBase::itemChanged(int column, int row, QVariant value, QS
 	{
 		if (_tableTerms.values[column][row] != value)
 		{
-			JASPControl::ItemType itemType = _tableView->itemType();
+			JASPControl::ItemType itemType = _tableView->itemTypePerItem(column, row);
 			_tableTerms.values[column][row] = itemType == JASPControl::ItemType::Integer ? value.toInt() : itemType == JASPControl::ItemType::Double ? value.toDouble() : value;
 
 		if (type != "formula") // For formula type, wait for the formulaCheckSucceeded signal before emitting modelChanged
@@ -356,10 +353,10 @@ void ListModelTableViewBase::runRScript(const QString & script)
 	_tableView->runRScript(script);
 }
 
-bool ListModelTableViewBase::valueOk(QVariant value)
+bool ListModelTableViewBase::valueOk(QVariant value, int col, int row)
 {
 	bool	ok	= true;
-	JASPControl::ItemType itemType = _tableView->itemType();
+	JASPControl::ItemType itemType = _tableView->itemTypePerItem(col, row);
 
 	if		(itemType == JASPControl::ItemType::Double)		value.toDouble(&ok);
 	else if	(itemType == JASPControl::ItemType::Integer)	value.toInt(&ok);
@@ -420,9 +417,9 @@ QString ListModelTableViewBase::getDefaultColName(size_t index) const
 	return listView()->property("colName").toString() + " " + QString::number(index + 1);
 }
 
-QString ListModelTableViewBase::getItemInputType(const QModelIndex &) const
+QString ListModelTableViewBase::getItemInputType(const QModelIndex &index) const
 {
-	JASPControl::ItemType itemType = _tableView->itemType();
+	JASPControl::ItemType itemType = _tableView->itemTypePerItem(index.column(), index.row());
 
 	if (itemType == JASPControl::ItemType::Double)			return "double";
 	else if (itemType == JASPControl::ItemType::Integer)	return "integer";

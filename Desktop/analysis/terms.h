@@ -41,11 +41,11 @@ public:
 
 	void set(const QList<QList<QString> >					& terms);
 	void set(const QList<QString>							& terms);
-	void set(const std::vector<Term>						& terms, bool isUnique = true);
+	void set(const std::vector<Term>						& terms);
 	void set(const std::vector<std::string>					& terms);
 	void set(const std::vector<std::vector<std::string> >	& terms);
 	void set(const QList<Term>								& terms);
-	void set(const Terms									& terms, bool isUnique = true);
+	void set(const Terms									& terms);
 	void set(const QByteArray								& array);
 
 	void removeParent();
@@ -99,6 +99,7 @@ public:
 	Terms ffCombinations(const Terms &terms);
 
 	std::string asString() const;
+	bool hasDuplicate() const	{ return _hasDuplicate; }
 
 	bool operator==(const Terms &terms) const;
 	bool operator!=(const Terms &terms) const;
@@ -113,6 +114,7 @@ private:
 
 	const Terms			*	_parent;
 	std::vector<Term>		_terms;
+	bool					_hasDuplicate = false;
 };
 
 #endif // TERMS_H
