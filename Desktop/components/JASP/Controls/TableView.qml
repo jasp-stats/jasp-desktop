@@ -72,8 +72,8 @@ TableViewBase
 	onColNameChanged:	colNameSignal(tableView.colName)
 	onExtraColChanged:	extraColSignal(tableView.extraCol)
 
-	property real iconSize:			16 * preferencesModel.uiScale
-	property real iconSizeHovered:	18 * preferencesModel.uiScale
+	property real iconSize:			14 * preferencesModel.uiScale
+	property real iconSizeHovered:	16 * preferencesModel.uiScale
 
 	onColSelectedChanged: setButtons()
 
@@ -103,7 +103,7 @@ TableViewBase
 			}
 			if (minColumn < model.columnCount())
 			{
-				deleteButton.x = Qt.binding(function() { return item.x + item.width/2 + 2 - iconSize/2 - myFlickable.contentX } )
+				deleteButton.x = Qt.binding(function() { return item.x + item.width/2 - iconSize/2 - myFlickable.contentX } )
 				deleteButton.visible = Qt.binding(function() { return (deleteButton.x + iconSize/2 > theView.rowNumberWidth ) && (deleteButton.x + iconSize/2 < tableView.width + 1) } )
 			}
 			else
@@ -149,7 +149,7 @@ TableViewBase
 			width:				height
 			buttonPadding:		0
 			color:				"transparent"
-			iconSource:			jaspTheme.iconPath + "/../addition-sign-small-green.svg"
+			iconSource:			jaspTheme.iconPath + "/addition-sign-small-green.svg"
 			toolTip:			qsTr("Add to the left")
 			radius:				height
 			visible:			false
@@ -173,7 +173,7 @@ TableViewBase
 			width:				height
 			buttonPadding:		0
 			color:				"transparent"
-			iconSource:			jaspTheme.iconPath + "/../addition-sign-small-green.svg"
+			iconSource:			jaspTheme.iconPath + "/addition-sign-small-green.svg"
 			toolTip:			qsTr("Add to the right")
 			radius:				height
 			visible:			false
@@ -192,12 +192,12 @@ TableViewBase
 			id:					deleteButton
 			z:					100
 			anchors.top:		parent.top
-			anchors.topMargin:	-height/2 + 1
-			height:				hovered ? iconSizeHovered : iconSize
+			anchors.topMargin:	-height/2
+			height:				(hovered ? iconSizeHovered : iconSize) - 1
 			width:				height
 			buttonPadding:		0
 			color:				"transparent"
-			iconSource:			jaspTheme.iconPath + "/../cross-sign-small-red.svg"
+			iconSource:			jaspTheme.iconPath + "/cross-sign-small-red.svg"
 			toolTip:			qsTr("Delete")
 			radius:				height
 			visible:			false
