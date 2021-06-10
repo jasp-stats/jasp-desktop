@@ -8,7 +8,7 @@ DropArea {
 
 	id: dragTarget
 	objectName: "DropSpot"
-	property string __debugName: "DropSpot"
+	property string __debugName: "DropSpot " + (parent !== undefined && parent.__debugName !== undefined ? parent.__debugName : "???")
 
 	property var dropKeys: [ "number", "boolean", "string", "variable" ]
 	property alias dropProxy: dragTarget
@@ -26,8 +26,6 @@ DropArea {
 	implicitWidth: dropText.contentWidth
 	implicitHeight: filterConstructor.blockDim
 
-	//readonly property color jaspBlue: "#14a1e3"
-	//readonly property color jaspGreen: "#8cc63e"
 	property bool beingDragHovered: false
 	property color dragHoverColor: jaspTheme.blue
 
@@ -46,6 +44,8 @@ DropArea {
 	function checkCompletenessFormulas()
 	{
 		iWasChecked = true
+
+		//console.log("checkCompletenessFormulas on " + __debugName + " and containsItem: " + ( containsItem === null ? "null" : containsItem.__debugName))
 
 		if(containsItem !== null)
 		{
@@ -69,7 +69,7 @@ DropArea {
 		var ancestry = parent
 		while(ancestry !== null)
 		{
-			if((ancestry.objectName == "DragGeneric" && ancestry.dragChild === drag.source) || ancestry == drag.source)
+			if((ancestry.objectName === "DragGeneric" && ancestry.dragChild === drag.source) || ancestry === drag.source)
 			{
 				drag.accepted = false
 				return
@@ -106,7 +106,7 @@ DropArea {
 	property var containsItem: null
 
 	onContainsItemChanged: {
-		//console.log(__debugName," onContainsItemChanged")
+		//console.log(__debugName," onContainsItemChanged to " + (containsItem !== null ? containsItem.__debugName : "null"))
 
 		if(containsItem === null)
 			width = Qt.binding(function(){ return dropText.contentWidth })
@@ -150,41 +150,48 @@ DropArea {
 
 		Text
 		{
-			id: dropTextStatic
+			id:				dropTextStatic
 
-			text: dragTarget.containsItem === null ? dropText.text : ""
+			text:			dragTarget.containsItem === null ? dropText.text : ""
 			font.pixelSize: filterConstructor.fontPixelSize
-			anchors.top: parent.top
+			anchors.top:	parent.top
 
-			visible: !dropTextInput.visible
-			color:	jaspTheme.textEnabled
+			visible:		!dropTextInput.visible
+			color:			jaspTheme.textEnabled
 		}
 
 		TextInput
 		{
-			id: dropTextInput
+			id:				dropTextInput
 
-			text: dropText.text
-			color: errorMarker.visible ? jaspTheme.white : jaspTheme.black
+			text:			dropText.text
+			color:			errorMarker.visible ? jaspTheme.white : jaspTheme.black
 			font.pixelSize: filterConstructor.fontPixelSize
-			anchors.top: parent.top
+			anchors.top:	parent.top
 
-			visible: dragTarget.acceptsDrops && dragTarget.containsItem === null
+			visible:		dragTarget.acceptsDrops && dragTarget.containsItem === null
 
-			onAccepted: focus = false
+			onAccepted:		focus = false
 
 			onActiveFocusChanged: {
+				//console.log(__debugName + " onActiveFocusChanged to " + (activeFocus? "true" : "false"))
 				if(!activeFocus)
 					tryConvertToObject()
 
-				dropText.text = activeFocus ? "" : dragTarget.defaultText
+				//console.log("dragTarget.containsItem: " + (dragTarget.containsItem === null ? "null" : dragTarget.containsItem.__debugName))
+
+				var keepItEmpty = activeFocus || dragTarget.containsItem
+				dropText.text = keepItEmpty ? "" : dragTarget.defaultText
+				//console.log("Setting text to " +  (keepItEmpty ? "" : dragTarget.defaultText));
 
 				if(!activeFocus) text = Qt.binding(function(){return dropText.text})
 			}
 
 			function tryConvertToObject()
 			{
-				if(dragTarget.containsItem !== null) return
+				//console.log("tryConvertToObject")
+				if(dragTarget.containsItem !== null)
+					return
 
 				var asNumber = parseFloat(text)
 				if(!isNaN(asNumber) && dropKeys.indexOf("number") >= 0)
@@ -193,12 +200,13 @@ DropArea {
 					createString(text)
 			}
 
-			function createNumber(value)	{ setCreatedObjectUp(numberComp.createObject(dragTarget, { "value": value, "canBeDragged": true, "acceptsDrops": true } ) ) }
-			function createString(string)	{ setCreatedObjectUp(stringComp.createObject(dragTarget, { "text": text, "canBeDragged": true, "acceptsDrops": true } ) ) }
+			function createNumber(value)	{ setCreatedObjectUp(numberComp.createObject(dragTarget, { "value": value,  "canBeDragged": true, "acceptsDrops": true } ) ) }
+			function createString(string)	{ setCreatedObjectUp(stringComp.createObject(dragTarget, { "text":  string, "canBeDragged": true, "acceptsDrops": true } ) ) }
 
 
 			function setCreatedObjectUp(obj)
 			{
+				//console.log("setCreatedObjectUp");
 				filterConstructor.somethingChanged = true
 				dragTarget.originalWidth = dragTarget.width
 				dragTarget.width = Qt.binding(function(){ return obj.width } )
