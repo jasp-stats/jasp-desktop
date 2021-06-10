@@ -128,17 +128,16 @@ MouseArea
 
 	onReleased:
 	{
-		//console.log(__debugName," onReleased")
-
-		if(alternativeDropFunction !== null)
+		if(mouseArea.alternativeDropFunction !== null)
 		{
-			var obj = this.alternativeDropFunction(this)
+			var obj = mouseArea.alternativeDropFunction(mouseArea)
 			if(obj !== null)
 				obj.releaseHere(dragMe.Drag.target)
 		}
 		else
-			this.releaseHere(dragMe.Drag.target)
+			mouseArea.releaseHere(dragMe.Drag.target)
 	}
+
 
 	function releaseHere(dropTarget)
 	{
@@ -147,12 +146,15 @@ MouseArea
 		filterConstructor.somethingChanged = true
 		wasChecked = false
 
-		if(oldParent === null && dropTarget === null) //just created and not dropped anywhere specific!
+		if(oldParent === null && dropTarget === null)
 		{
+			//console.log("just created and not dropped anywhere specific!\nSo lets try to find a better place, making it as userfriendly as possible")
 
-            var newDropTarget = this.determineReasonableInsertionSpot() //So lets try to find a better place, make it as userfriendly as possible
+			var newDropTarget = this.determineReasonableInsertionSpot();
+
 			if(newDropTarget !== null)
 			{
+				//console.log("Found a new droptarget: " + newDropTarget.__debugName)
 				this.releaseHere(newDropTarget)
 				return
 			}
@@ -161,8 +163,12 @@ MouseArea
                return
 		}
 
+		//console.log("Second half of release here")
+
 		if(dropTarget !== null && dropTarget.objectName === "DropSpot")
 		{
+			//console.log("it is in fact dropped on a dropspot!");
+
 			var foundAtLeastOneMatchingKey = false
 			for(var dragI=0; dragI<dragKeys.length; dragI++)
 				if(dropTarget.dropKeys.indexOf(dragKeys[dragI]) >= 0)
@@ -170,27 +176,31 @@ MouseArea
 
 			if(!foundAtLeastOneMatchingKey)
 			{
+				//console.log("Didnt find a matching key...")
 				this.releaseHere(scriptColumn)
 				return
 			}
 		}
 
 
-		if(oldParent !== null && oldParent.objectName === "DropSpot" && dropTarget !== oldParent )
+		if(oldParent !== null && oldParent.objectName === "DropSpot" && dropTarget !== oldParent && oldParent.containsItem === this)
 		{
-			oldParent.width = oldParent.implicitWidth
-			oldParent.height = oldParent.implicitHeight
-			oldParent.containsItem = null
+			//console.log("restoring size of oldParent: " + oldParent.__debugName)
+			oldParent.width			= oldParent.implicitWidth
+			oldParent.height		= oldParent.implicitHeight
+			oldParent.containsItem	= null
 		}
 
 		if(dropTarget !== null && dropTarget.objectName === "DropTrash")
 		{
+			//console.log("Dropped in trash!")
 			this.destroy();
-			//dropTarget.somethingHovers = false
 			return;
 		}
 
 		parent = dropTarget !== null ? dropTarget : scriptColumn
+
+		//console.log("Set parent to " + parent.__debugName)
 
 		if(parent === oldParent )
 		{
@@ -207,14 +217,14 @@ MouseArea
 
 		if(parent.objectName === "DropSpot")
 		{
-			parent.width = Qt.binding(function() { return dragMe.width })
+			//console.log("Setting " + this.__debugName + " to containsItem in parent " + parent.__debugName)
+			parent.width  = Qt.binding(function() { return dragMe.width })
 			parent.height = Qt.binding(function() { return dragMe.height })
 			parent.containsItem = this
 
 			shouldShowHoverOutline = false
 			this.removeAncestorsHoverOutlines()
 		}
-
 
 		scriptColumn.focus = true
 	}
@@ -234,7 +244,10 @@ MouseArea
 
 			lastScriptScrap = scriptColumn.data[scriptColumn.data.length - 2]
 			if(lastScriptScrap === this)
+			{
+				console.log("Somehow the function to determineReasonableInsertionSpot found itself, which should be impossible.")
 				return null //cannot happen hopefully?
+			}
 		}
 
 		return lastScriptScrap.returnEmptyRightMostDropSpot(true)
@@ -297,7 +310,8 @@ MouseArea
 			}
 	}
 
-	Item {
+	Item
+	{
 		id: dragMe
 
 		width: mouseArea.width
