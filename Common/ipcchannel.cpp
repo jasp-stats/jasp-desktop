@@ -28,7 +28,7 @@ using namespace boost::posix_time;
 
 IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 	:
-	  _baseName(		name + "#" + std::to_string(channelNumber)	),
+	  _baseName(		name + "_" + std::to_string(channelNumber)	),
 	  _nameControl(		name + "_control"							),
 	  _nameMtS(			name + "_MasterToSlave"						),
 	  _nameStM(			name + "_SlaveToMaster"						),

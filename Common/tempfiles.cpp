@@ -355,4 +355,10 @@ void TempFiles::deleteList(const vector<string> &files)
 void TempFiles::addShmemFileName(std::string &name)
 {
 	_shmemNames.push_back(Dirs::tempDir()+ "/" + name);
+
+	Log::log() << "TempFiles::addShmemFileName(" << name << ") called, whole list is now: " ;
+	int c=0;
+	for(const auto & n : _shmemNames)
+		Log::log(false) << ( c++ > 0 ? ", " : "") << "'" << n << "'";
+	Log::log(false) << std::endl;
 }
