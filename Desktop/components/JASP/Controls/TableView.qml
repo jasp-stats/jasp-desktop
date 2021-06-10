@@ -72,8 +72,8 @@ TableViewBase
 	onColNameChanged:	colNameSignal(tableView.colName)
 	onExtraColChanged:	extraColSignal(tableView.extraCol)
 
-	property real iconSize:			14 * preferencesModel.uiScale
-	property real iconSizeHovered:	16 * preferencesModel.uiScale
+	property real iconSize:			12 * preferencesModel.uiScale
+	property real iconSizeHovered:	14 * preferencesModel.uiScale
 
 	onColSelectedChanged: setButtons()
 
