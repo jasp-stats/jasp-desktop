@@ -46,12 +46,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 	printStuff = true; //If debugging please always print stuff
 #endif
 
-	filesystem::path	modLibpath	= Utils::osPath(moduleLibraryPath),
-						rcppPath	= Utils::osPath(moduleLibraryPath + "/Rcpp");
-
-	//I still think it is a bad plan to have Rcpp installed doubly, so lets remove it from the module directory if its there
-	if(exists(rcppPath))
-		remove_all(rcppPath);
+	filesystem::path modLibpath	= Utils::osPath(moduleLibraryPath);
 
 #ifdef __APPLE__
 	std::cout << "This is a mac so we will fix the otool mess of folder '" << modLibpath << "'...\n";
