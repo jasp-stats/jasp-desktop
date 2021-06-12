@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-05-19 09:34+0000\n"
+"PO-Revision-Date: 2021-06-11 08:34+0000\n"
 "Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
@@ -1147,7 +1147,7 @@ msgstr "Modulo: ergibt den Rest einer ganzzahligen Division. 3%2 ergibt 1"
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
 msgstr ""
-"ergibt logische Werte und kann als Ausgangspunkt einer Formel für einen "
+"liefert Wahrheitswerte und kann als Ausgangspunkt einer Formel für einen "
 "Filter dienen"
 
 #, qt-format
@@ -1230,7 +1230,7 @@ msgstr "Modulo: geeft het restant van een deling. 3%2 is 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr "geeft logicals"
+msgstr "liefert Wahrheitswerte"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
