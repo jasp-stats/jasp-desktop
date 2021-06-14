@@ -60,7 +60,7 @@ Rectangle
 		}
 		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
 		{
-			if (ribbonButton.enabled)
+			if (ribbonButton.enabled && ribbonButton.ready)
 			{
 				if (ribbonButton.menu.rowCount() > 1) {
 					ribbonButton.showMyMenu();
@@ -70,7 +70,7 @@ Rectangle
 		}
 		else if (event.key === Qt.Key_Down)
 		{
-			if (ribbonButton.enabled && ribbonButton.menu.rowCount() > 1)
+			if (ribbonButton.ready && ribbonButton.enabled && ribbonButton.menu.rowCount() > 1)
 				ribbonButton.showMyMenu();
 			event.accepted = true;
 		}
@@ -89,6 +89,7 @@ Rectangle
 
 	function showMyMenu()
 	{
+
 		if (ribbonButton.menu.rowCount() === 0) //Probably special?
 		{
 			customMenu.hide()
@@ -248,6 +249,8 @@ Rectangle
 
 			onClicked: (mouse)=>
 			{
+				if(!ribbonButton.ready) return; //Be patient!
+
 				fileMenuModel.visible	= false;
 				modulesMenu.opened		= false;
 				ribbon.focusOutFileMenu();

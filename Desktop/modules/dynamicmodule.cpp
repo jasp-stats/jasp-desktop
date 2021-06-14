@@ -27,6 +27,7 @@
 #include "dynamicmodule.h"
 #include "dynamicmodules.h"
 #include <QRegularExpression>
+#include "utilities/qutils.h"
 #include "upgrader/upgrades.h"
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
@@ -79,7 +80,7 @@ void DynamicModule::developmentModuleFolderCreate()
 {
 	if(developmentModuleFolder().dir().exists()) return;
 
-	QDir(AppDirs::userModulesDir()).mkdir(QString::fromStdString(defaultDevelopmentModuleName()));
+	QDir(AppDirs::userModulesDir()).mkpath(QString::fromStdString(defaultDevelopmentModuleName()));
 }
 
 ///This constructor is meant specifically for the development module and only *it*!
@@ -94,6 +95,8 @@ DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMo
 	Log::log() << "Development Module is constructed with name: '" << _name << "' and will be installed to '" << _moduleFolder.absoluteFilePath().toStdString() << "' from source dir: '" << _modulePackage << "'" << std::endl;
 
 	_developmentModuleName = _name;
+
+	loadDescriptionFromFolder(_modulePackage);
 }
 
 
@@ -189,8 +192,11 @@ void DynamicModule::initialize()
 	loadRequiredModulesFromDESCRIPTIONTxt(DESCRIPTION.readAll());
 }
 
-void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath)
+void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath, bool onlyIfNotLoadedYet)
 {
+	if(onlyIfNotLoadedYet && _description)
+		return;
+
 	std::string descriptionQml  = getDescriptionQmlFromFolder(folderPath);
 
 	if(descriptionQml == "")
@@ -271,61 +277,6 @@ Upgrades * DynamicModule::instantiateUpgradesQml(const QString & upgradesTxt, co
 	return upgrades;
 }
 
-//Turning QMLENGINE_DOES_ALL_THE_WORK on also works fine, but has slightly less transparent errormsgs so isn't recommended
-//#define QMLENGINE_DOES_ALL_THE_WORK
-
-QObject * DynamicModule::instantiateQml(const QString & qmlTxt, const QUrl & url, const std::string & moduleName, const std::string & whatAmILoading, const std::string & filename)
-{
-	QObject * obj = nullptr;
-
-#ifdef QMLENGINE_DOES_ALL_THE_WORK
-	obj = DynamicModules::dynMods()->loadQmlData(qmlTxt, url);
-#else
-	QQmlContext * ctxt = DynamicModules::dynMods()->requestRootContext();
-
-	QQmlComponent qmlComp(ctxt->engine());
-
-	//Log::log() << "Setting url to '" << url.toString() << "' for Description.qml.\n" << std::endl;// data: '" << descriptionTxt << "'\n"<< std::endl;
-
-	qmlComp.setData(qmlTxt.toUtf8(), url);
-
-	if(qmlComp.isLoading())
-		Log::log() << whatAmILoading << " for module " << moduleName << " is still loading, make sure you load a local file and that Windows doesn't mess this up for you..." << std::endl;
-
-
-	auto errorLogger =[&](bool isError, QList<QQmlError> errors)
-	{
-		if(!isError) return;
-
-		std::stringstream out;
-
-		out << "Loading " << filename << " for module " << moduleName << " had errors:\n";
-
-		for(const QQmlError & error : errors)
-			out << error.toString() << "\n";
-
-		Log::log() << out.str() << std::flush;
-
-		throw ModuleException(moduleName, "There were errors loading " + filename + ":\n" + out.str());
-	};
-
-	errorLogger(qmlComp.isError(), qmlComp.errors());
-
-	if(!qmlComp.isReady())
-		throw ModuleException(moduleName, whatAmILoading + " Component is not ready!");
-
-	QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
-
-	qmlComp.create(localIncubator);
-
-	errorLogger(localIncubator.isError(), localIncubator.errors());
-
-	obj = localIncubator.object();
-
-#endif
-
-	return obj;
-}
 
 void DynamicModule::loadDescriptionQml(const QString & descriptionTxt, const QUrl & url)
 {
@@ -372,6 +323,8 @@ void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 	if(_name != fq(description->name()))
 		Log::log() << "Description has different name (" << description->name() << ") from DynMod (" << _name << ")" << std::endl;
 
+	const std::string oldTitle		= _title;
+
 	_title							= fq(description->title());
 	_icon							= fq(description->icon());
 	_author							= fq(description->author());
@@ -388,6 +341,11 @@ void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 	_menuEntries = description->menuEntries();
 
 	emit descriptionReloaded(this);
+
+	if(oldTitle != _title)
+		emit titleChanged();
+	
+	emit readyChanged(installed());
 }
 
 
@@ -398,11 +356,6 @@ void DynamicModule::setReadyForUse()
 		setStatus(moduleStatus::readyForUse);
 }
 
-void DynamicModule::setLoadingNeeded()
-{
-	if(_status != moduleStatus::installNeeded)
-		setStatus(moduleStatus::loadingNeeded);
-}
 
 Json::Value	DynamicModule::requestJsonForPackageInstallationRequest(bool onlyModPkg)
 {
@@ -426,22 +379,9 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 {
 	Json::Value requestJson(Json::objectValue);
 
-	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::loadingNeeded);
+	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::loading);
 	requestJson["moduleName"]		= _name;
 	requestJson["moduleCode"]		= generateModuleLoadingR();
-
-	setLoading(true);
-
-	return requestJson;
-}
-
-Json::Value	DynamicModule::requestJsonForPackageUnloadingRequest()
-{
-	Json::Value requestJson(Json::objectValue);
-
-	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::unloadingNeeded);
-	requestJson["moduleName"]		= _name;
-	requestJson["moduleCode"]		= generateModuleUnloadingR();
 
 	return requestJson;
 }
@@ -472,10 +412,10 @@ std::string DynamicModule::getLibPathsToUse()
 {
 	std::string libPathsToUse = "c('" + shortenWinPaths(moduleRLibrary()).toStdString()	+ "'";
 
-	std::vector<std::string> requiredLibPaths = fq(DynamicModules::dynMods()->requiredModulesLibPaths(tq(_name)));
+	/*std::vector<std::string> requiredLibPaths = fq(DynamicModules::dynMods()->requiredModulesLibPaths(tq(_name)));
 
 	for(const std::string & path : requiredLibPaths)
-		libPathsToUse += ", '" + path + "'";
+		libPathsToUse += ", '" + path + "'";*/
 
 	libPathsToUse += ", '" + AppDirs::rHome().toStdString() + "/library" + "'";
 
@@ -509,48 +449,21 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 		return "stop('Something went wrong during intialization of the Description!\nMake sure it follows the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionqml\n')";
 	}
 	setInstallLog("Installing module " + _name + ".\n");
-
+	
 	//installJaspModule <- function(modulePkg, libPathsToUse, moduleLibrary, repos, onlyModPkg)
-	return "jaspBase::installJaspModule(modulePkg='" + _modulePackage + "', libPathsToUse=" + getLibPathsToUse() + ", moduleLibrary='" + moduleRLibrary().toStdString() + "', repos='" + Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() + "', onlyModPkg=" + (onlyModPkg ? "TRUE" : "FALSE") + ");";
+	return "jaspBase::installJaspModule(modulePkg='" + _modulePackage + "', libPathsToUse=" + getLibPathsToUse() + ", moduleLibrary='" + moduleRLibrary().toStdString() + "', repos='" + Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() + "', onlyModPkg=" + (onlyModPkg ? "TRUE" : "FALSE") + ", force=TRUE);";
 }
 
 std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 {
 	std::stringstream R;
 
-	setLoadLog("Module " + _name + " is loading from " + _moduleFolder.absolutePath().toStdString() + "\n");
-
-	//Add the module name to the "do not remove from global env" list in R. See jaspRCPP_purgeGlobalEnvironment
-	R << "jaspBase:::.addModuleToDoNotRemove('" << _name << _modulePostFix << "');\n";
-
-	R << _name << _modulePostFix << " <- modules::module({\n" << standardRIndent << ".libPaths(" << getLibPathsToUse() <<");\n\n";
-
-	for(const std::string & reqMod : requiredModules())
-		R << standardRIndent << "import('" << reqMod << "');\n";
-	R << standardRIndent << "import('" << _name << "');\n\n";
-
-	size_t maxL = 0;
-	for(const AnalysisEntry * analysis : _menuEntries)
-		if(analysis->shouldBeExposed())
-			maxL = std::max(analysis->function().size(), maxL);
-
-	auto filler = [](size_t spaces)
-	{
-		std::stringstream out;
-		for(size_t i=0; i<spaces; i++)
-			out << " ";
-		return out.str();
-	};
-
-	for(const AnalysisEntry * analysis : _menuEntries)
-		if(analysis->shouldBeExposed())
-			R << standardRIndent << analysis->function() << _exposedPostFix << filler(maxL - analysis->function().size()) << " <- function(...) " << analysis->function() << "(...)\n";
-	R << "})\n";
+	R << ".libPaths(" << getLibPathsToUse() <<");\n";
+	R << standardRIndent << "library('" << _name << "');\n";
 
 	if(shouldReturnSucces)
 		R << "return('"+succesResultString()+"')";
 
-	//Log::log() << "DynamicModule(" << _name << ")::generateModuleLoadingR() generated:\n" << R.str() << std::endl;
 
 	return R.str();
 }
@@ -674,15 +587,6 @@ void DynamicModule::setInstallLog(std::string installLog)
 	emit installLogChanged();
 }
 
-void DynamicModule::setLoadLog(std::string loadLog)
-{
-	if (_loadLog == loadLog)
-		return;
-
-	_loadLog = loadLog;
-	emit loadLogChanged();
-}
-
 void DynamicModule::setInstallingSucces(bool succes)
 {
 	if(!succes)
@@ -705,42 +609,9 @@ void DynamicModule::setInstalled(bool installed)
 
 	if(installing())
 		setInstalling(false);
-}
 
-void DynamicModule::setLoadingSucces(bool succes)
-{
-	setStatus(succes ? moduleStatus::readyForUse		: moduleStatus::error);
-	setLoadLog(loadLog().toStdString() + "Loading " + (succes ? "succeeded" : "failed") + "\n");
-
-	setLoaded(succes);
-	setLoading(false);
-}
-
-void DynamicModule::setUnloaded()
-{
-	setLoaded(false);
-	setLoading(false);
-}
-
-void DynamicModule::setLoaded(bool loaded)
-{
-	if(_loaded != loaded)
-	{
-		_loaded = loaded;
-
-		Log::log() << "DYNMOD " << _name << " changed loaded to " << (loaded ? "YES" : "NO") << std::endl;
-
-		emit loadedChanged(_loaded);
-	}
-}
-
-void DynamicModule::setLoading(bool loading)
-{
-	if (_loading == loading)
-		return;
-
-	_loading = loading;
-	emit loadingChanged(_loading);
+	if(installed)
+		setStatus(moduleStatus::readyForUse);
 }
 
 void DynamicModule::setInstalling(bool installing)
@@ -770,26 +641,29 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	if(_status == moduleStatus::installNeeded && newStatus == moduleStatus::installModPkgNeeded)
 		return;
 
-	_status = newStatus;
+	bool readyForUseInvolved = newStatus == moduleStatus::readyForUse || _status == moduleStatus::readyForUse;
 
-	emit statusChanged();
+	_status = newStatus;
 
 	switch(_status)
 	{
-	case moduleStatus::loadingNeeded:			emit registerForLoading(_name);				break;
-	case moduleStatus::installNeeded:			emit registerForInstalling(_name);			break;
-	case moduleStatus::installModPkgNeeded:		emit registerForInstallingModPkg(_name);	break;
-	case moduleStatus::error:
-		Log::log() << "Just set an error on the status of module "<< _name << std::endl;	break;
+	case moduleStatus::installNeeded:			emit registerForInstalling(_name);			setInstalled(false);					break;
+	case moduleStatus::installModPkgNeeded:		emit registerForInstallingModPkg(_name);	setInstalled(false);					break;
+	case moduleStatus::error:					Log::log() << "Just set an error on the status of module "<< _name << std::endl;	break;
 	default:																				break;
 	}
+
+	emit statusChanged();
+
+	if(readyForUseInvolved)
+		emit readyForUseChanged();
 }
 
 void DynamicModule::reloadDescription()
 {
 	try
 	{
-		loadDescriptionFromFolder(fq(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/"));
+		loadDescriptionFromFolder(fq(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/"), false);
 	}
 	catch(std::runtime_error e) { return; } //If it doesnt work then never mind.
 }
@@ -1039,12 +913,6 @@ void DynamicModule::setImportsR(stringset importsR)
 	{
 		_importsR = importsR;
 		emit importsRChanged();
-		
-		if(_status == moduleStatus::readyForUse || _status == moduleStatus::loadingNeeded)
-		{
-			Log::log() << "R Pkg imports for module '" << name() << "' changed!\nReinstalling module deps, just in case." << std::endl;
-			setStatus(moduleStatus::installModPkgNeeded);
-		}
 	}
 }
 

@@ -57,16 +57,15 @@ class DynamicModule : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(QString		installLog			READ installLog										NOTIFY installLogChanged		)
-	Q_PROPERTY(QString		loadLog				READ loadLog										NOTIFY loadLogChanged			)
-	Q_PROPERTY(QString		status				READ status											NOTIFY statusChanged			)
-	Q_PROPERTY(bool			loaded				READ loaded				WRITE setLoaded				NOTIFY loadedChanged			)
+	Q_PROPERTY(QString		status				READ statusQ										NOTIFY statusChanged			)
 	Q_PROPERTY(bool			installed			READ installed			WRITE setInstalled			NOTIFY installedChanged			)
-	Q_PROPERTY(bool			loading				READ loading			WRITE setLoading			NOTIFY loadingChanged			)
 	Q_PROPERTY(bool			installing			READ installing			WRITE setInstalling			NOTIFY installingChanged		)
 	Q_PROPERTY(bool			initialized			READ initialized		WRITE setInitialized		NOTIFY initializedChanged		)
 	Q_PROPERTY(bool			isBundled			READ isBundled			WRITE setBundled			NOTIFY bundledChanged			)
+	Q_PROPERTY(bool			readyForUse			READ readyForUse									NOTIFY readyForUseChanged		)
 	Q_PROPERTY(QStringList	importsR			READ importsRQ										NOTIFY importsRChanged			)
 	Q_PROPERTY(bool			error				READ error											NOTIFY errorChanged				)
+	Q_PROPERTY(QString		title				READ titleQ											NOTIFY titleChanged				)
 
 public:
 	//To do make the constructors less misleading (std::string vs QString does not do the same thing at all!) Some kind of a static MakeDynamicModule function and making the constructors private should do the trick
@@ -97,9 +96,10 @@ public:
 	static bool			isDescriptionFile(const std::string & filename);
 	static bool			isDescriptionFile(const QString		& filename);
 
-	std::string			name()				const { return _name;									}
+	const std::string &	name()				const { return _name;									}
 	QString				nameQ()				const { return QString::fromStdString(name());			}
 	std::string			title()				const { return (isDevMod() ? "Dev: " : "") + _title;	}
+	QString				titleQ()			const { return QString::fromStdString(title());			}
 	bool				requiresData()		const;
 	std::string			author()			const { return _author;									}
 	std::string			version()			const { return _version;								}
@@ -115,7 +115,6 @@ public:
 	bool				error()				const { return _status == moduleStatus::error;			}
 	bool				readyForUse()		const { return _status == moduleStatus::readyForUse;	}
 	bool				installNeeded()		const { return _status == moduleStatus::installNeeded;	}
-	bool				loadingNeeded()		const { return _status == moduleStatus::loadingNeeded;	}
 	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath();			}
 	const stringset &	importsR()			const { return _importsR;						}
 	QStringList			importsRQ()			const { return tql(_importsR);					}
@@ -130,7 +129,7 @@ public:
 	std::string			qmlFolder()											const;
 	std::string			iconFilePath(std::string whichIcon = "")			const;
 	std::string			iconFolder()										const;
-	std::string			rModuleCall(	const std::string & function)		const { return _name + _modulePostFix + "$" + function + _exposedPostFix; }
+	std::string			rModuleCall(	const std::string & function)		const { return _name + "::" + function ; }
 	QString				helpFolderPath()									const;
 
 	std::string			generateModuleLoadingR(bool shouldReturnSucces = true);
@@ -139,16 +138,11 @@ public:
 	std::string			generateModuleUninstallingR();
 
 	Json::Value			requestJsonForPackageLoadingRequest();
-	Json::Value			requestJsonForPackageUnloadingRequest();
 	Json::Value			requestJsonForPackageInstallationRequest(bool onlyModPkg);
 	Json::Value			requestJsonForPackageUninstallingRequest();
 
 	void				setInstalled(bool installed);
-	void				setLoaded(bool loaded);
-	void				setUnloaded();
-	void				setLoadingSucces(bool succes);
 	void				setInstallingSucces(bool succes);
-	void				setLoadingNeeded();
 	void				setReadyForUse();
 	void				setStatus(moduleStatus newStatus);
 
@@ -160,26 +154,24 @@ public:
 
 	static std::string	succesResultString() { return "succes!"; }
 
-	QString installLog()	const	{ return QString::fromStdString(_installLog);	}
-	QString loadLog()		const	{ return QString::fromStdString(_loadLog);		}
-	QString status()		const	{ return moduleStatusToQString(_status);		}
+	QString			installLog()	const	{ return QString::fromStdString(_installLog);	}
+	QString			statusQ()		const	{ return moduleStatusToQString(_status);		}
+	moduleStatus	status()		const	{ return _status;		}
 
 	bool shouldUninstallPackagesInRForUninstall();
 
-	bool loaded()		const { return _loaded;			}
 	bool installed()	const { return _installed;		}
-	bool loading()		const { return _loading;		}
 	bool installing()	const { return _installing;		}
 	bool initialized()	const { return _initialized;	}
 	bool isBundled()	const { return _bundled;		}
 
-	void initialize(); //returns true if install of package(s) should be done
+	void initialize();
 	void loadDescriptionQml(const QString		& descriptionTxt,	const QUrl		& url);
 	void loadUpgradesQML(	const QString		& upgradesTxt,		const QUrl		& url);
 	bool hasUpgradesToApply(const std::string	& function,			const Version	& version);
 	void applyUpgrade(		const std::string	& function,			const Version	& version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken);
 
-	void loadDescriptionFromFolder(									const std::string & folderPath);
+	void loadDescriptionFromFolder(									const std::string & folderPath, bool onlyIfNotLoadedYet = true);
 	void loadDescriptionFromArchive(								const std::string & archivePath);
 	void loadRequiredModulesFromFolder(								const std::string & folderPath)			{ loadRequiredModulesFromDESCRIPTIONTxt( tq( getDESCRIPTIONFromFolder ( folderPath  ) ) ); }
 	void loadRequiredModulesFromArchive(							const std::string & archivePath)		{ loadRequiredModulesFromDESCRIPTIONTxt( tq( getDESCRIPTIONFromArchive( archivePath ) ) ); }
@@ -200,7 +192,6 @@ public:
 	///Make sure url ends with the actual filename of the qml you are loading, otherwise translations will not work! Also make it with QUrl::fromLocalFile otherwise Windows messes things up
 	static Description	* instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName);
 	static Upgrades		* instantiateUpgradesQml(	const QString & upgradesTxt,	const QUrl & url, const std::string & moduleName);
-	static QObject		* instantiateQml(			const QString & qml,			const QUrl & url, const std::string & moduleName, const std::string & whatAmILoading, const std::string & filename);
 
 	std::string toString();
 	void loadInfoFromDescriptionItem(Description * description);
@@ -208,12 +199,10 @@ public:
 
 public slots:
 	void reloadDescription();
-	void setLoading(			bool		loading);
 	void setInstalling(			bool		installing);
 	void setInitialized(		bool		initialized);
 	void setBundled(			bool		isBundled);
 	void setInstallLog(			std::string installLog);
-	void setLoadLog(			std::string loadLog);
 	void setImportsR(			stringset	importsR);
 
 signals:
@@ -221,18 +210,20 @@ signals:
 	void		loadLogChanged();
 	void		statusChanged();
 	void		requiredPackagesChanged();
+	void		readyForUseChanged();
 	void		loadedChanged(		bool loaded);
 	void		installedChanged(	bool installed);
 	void		loadingChanged(		bool loading);
 	void		installingChanged(	bool installing);
 	void		initializedChanged(	bool initialized);
 	void		bundledChanged(		bool isBundled);
-	void		registerForLoading(				const std::string & moduleName);
 	void		registerForInstalling(			const std::string & moduleName);
 	void		registerForInstallingModPkg(	const std::string & moduleName);
 	void		descriptionReloaded(Modules::DynamicModule * dynMod);
 	void		importsRChanged();
 	void		errorChanged(bool error);
+	void		readyChanged(bool ready);	
+	void		titleChanged();
 
 private:
 	QFileInfo			_moduleFolder;
@@ -243,7 +234,6 @@ private:
 						_author,
 						_website,
 						_license,
-						_loadLog			= "",
 						_installLog			= "",
 						_maintainer,
 						_descriptionTxt,
@@ -251,8 +241,6 @@ private:
 						_version;
 	bool				_installing			= false,
 						_installed			= false,
-						_loaded				= false,
-						_loading			= false,
 						_isDeveloperMod		= false,
 						_initialized		= false,
 						_bundled			= false,

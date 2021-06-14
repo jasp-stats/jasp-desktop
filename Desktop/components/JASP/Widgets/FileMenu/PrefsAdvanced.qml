@@ -333,9 +333,18 @@ ScrollView
 				to:					16
 				defaultValue:		4
 				stepSize:			1
+				KeyNavigation.tab:	showEnginesWindow
+				KeyNavigation.down:	showEnginesWindow
+				text:				qsTr("Maximum # of engines: ")
+			}
+
+			RoundedButton
+			{
+				id:					showEnginesWindow
+				text:				qsTr("Show engines")
+				onClicked:			mainWindow.showEnginesWindow()
 				KeyNavigation.tab:	rememberModulesSelected
 				KeyNavigation.down:	rememberModulesSelected
-				text:				qsTr("Maximum # of engines: ")
 			}
 			
 		}
