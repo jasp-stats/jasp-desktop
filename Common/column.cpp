@@ -608,8 +608,6 @@ bool Column::overwriteDataWithScale(std::vector<double> scalarData)
 
 bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData, std::map<int, std::string> levels)
 {
-	labels().clear();
-
 	size_t setVals = ordinalData.size();
 
 	if(ordinalData.size() != rowCount())
@@ -623,8 +621,6 @@ bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData, std::map<int
 
 bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData)
 {
-	labels().clear();
-
 	size_t setVals = ordinalData.size();
 
 	if(ordinalData.size() != rowCount())
@@ -638,8 +634,6 @@ bool Column::overwriteDataWithOrdinal(std::vector<int> ordinalData)
 
 bool Column::overwriteDataWithNominal(std::vector<int> nominalData, std::map<int, std::string> levels)
 {
-	labels().clear();
-
 	size_t setVals = nominalData.size();
 
 	if(nominalData.size() != rowCount())
@@ -653,8 +647,6 @@ bool Column::overwriteDataWithNominal(std::vector<int> nominalData, std::map<int
 
 bool Column::overwriteDataWithNominal(std::vector<int> nominalData)
 {
-	labels().clear();
-
 	size_t setVals = nominalData.size();
 
 	if(nominalData.size() != rowCount())
@@ -668,8 +660,6 @@ bool Column::overwriteDataWithNominal(std::vector<int> nominalData)
 
 bool Column::overwriteDataWithNominal(std::vector<std::string> nominalData)
 {
-	labels().clear();
-
 	if(nominalData.size() != rowCount())
 		nominalData.resize(rowCount());
 
