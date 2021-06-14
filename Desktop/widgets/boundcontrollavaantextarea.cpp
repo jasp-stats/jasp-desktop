@@ -66,8 +66,9 @@ bool BoundControlLavaanTextArea::isJsonValid(const Json::Value &value)
 {
 	if (!value.isObject())					return false;
 	if (!value["modelOriginal"].isString())	return false;
-	if (!value["model"].isString())			return false;
-	if (!value["columns"].isArray())		return false;
+	//If we have modelOriginal the rest follows automatically because of checkSyntax and the result
+	//if (!value["model"].isString())			return false;
+	//if (!value["columns"].isArray())		return false;
 
 	return true;
 }

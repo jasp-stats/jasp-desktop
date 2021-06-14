@@ -70,9 +70,10 @@ public:
 	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
 
 	const Json::Value&	boundValues()				const	{ return _boundValues;		}
-	void				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
 	const Json::Value&	boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys = {});
-	void				setBoundValues(const Json::Value& boundValues)			{ _boundValues = boundValues; }
+	
+	bool				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	bool				setBoundValues(const Json::Value& boundValues);
 
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 	Q_INVOKABLE void	duplicateMe();

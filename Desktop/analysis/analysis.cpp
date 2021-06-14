@@ -460,10 +460,11 @@ Json::Value& Analysis::_getParentBoundValue(const QVector<JASPControl::ParentKey
 	return *result;
 }
 
-void Analysis::setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey>& parentKeys)
+bool Analysis::setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey>& parentKeys)
 {
 	bool found = false;
-	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, found, true);
+	Json::Value &	parentBoundValue	= _getParentBoundValue(parentKeys, found, true),
+					copyPBV				= parentBoundValue; 
 
 	if (found && parentBoundValue.isObject())
 	{
@@ -472,6 +473,16 @@ void Analysis::setBoundValue(const std::string &name, const Json::Value &value, 
 		if ((meta.isObject() || meta.isArray()) && meta.size() > 0)
 			_boundValues[".meta"][name] = meta;
 	}
+	
+	return copyPBV != parentBoundValue;
+}
+
+bool Analysis::setBoundValues(const Json::Value &boundValues)		
+{
+	bool changed = _boundValues != boundValues;
+	_boundValues = boundValues; 
+	
+	return changed;
 }
 
 const Json::Value &Analysis::boundValue(const std::string &name, const QVector<JASPControl::ParentKey> &parentKeys)
