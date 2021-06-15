@@ -332,13 +332,18 @@ void AxisModel::setBreaksType(const BreaksType breaksType)
 
 void AxisModel::setRange(const double value, const size_t idx)
 {
-	if(_range.size() <= idx)			_range.resize(idx + 1);
+
+	if(_range.size() <= idx)
+	{
+		Log::log() << "Impossible index passed to setRange: idx: " << idx << " | value: " << value << std::endl;
+		return;
+	}
 	else if(_range[idx] == value)		return;
 
 	emit addToUndoStack();
 	_range[idx] = value;
 
-	if (!_plotEditor->advanced())
+	if (!_plotEditor->advanced() && idx <= 1) // only need to update the limits if from (0) or to (1) is modified
 		setLimits(value, idx);
 
 	emit rangeChanged();
@@ -347,18 +352,26 @@ void AxisModel::setRange(const double value, const size_t idx)
 
 void AxisModel::setFrom(const double from)
 {
-	setRange(from, 0);
 
 	if (!_plotEditor->advanced())
+	{
 		setLimits(from, 0);
+		setLimitsType(LimitsType::LimitsBreaks);
+	}
+
+	setRange(from, 0);
 }
 
 void AxisModel::setTo(const double to)
 {
-	setRange(to, 1);
 
 	if (!_plotEditor->advanced())
+	{
 		setLimits(to, 1);
+		setLimitsType(LimitsType::LimitsBreaks);
+	}
+
+	setRange(to, 1);
 }
 
 void AxisModel::setLimitsType(const LimitsType limitsType)
@@ -378,7 +391,11 @@ void AxisModel::setLimitsType(const LimitsType limitsType)
 
 void AxisModel::setLimits(const double value, const size_t idx)
 {
-	if(_limits.size() <= idx)			_limits.resize(idx + 1);
+	if(_limits.size() <= idx)
+	{
+		Log::log() << "Impossible index passed to setLimits: idx: " << idx << " | value: " << value << std::endl;
+		return;
+	}
 	else if (_limits[idx] == value)		return;
 
 	if (_plotEditor->advanced())

@@ -262,7 +262,7 @@ Popup
 				{
 					id:					advanced
 					label:				qsTr("Advanced settings")
-					checked:			false
+					checked:			plotEditorModel.advanced
 					anchors
 					{
 						right:			parent.right
