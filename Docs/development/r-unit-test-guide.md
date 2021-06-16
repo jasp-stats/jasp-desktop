@@ -6,8 +6,8 @@ Note that it is required to have the R package [jaspTools](https://github.com/ja
 
 - [Unit Tests](#unit-tests)
   - [Folder structure](#folder-structure)
-    - [figs](#figs)
     - [testthat](#testthat)
+    - [_snaps](#_snaps)
     - [testthat.R](#testthatr)
     - [.github/workflows/unittests.yml](#githubworkflowsunittestsyml)
   - [Creating unit tests](#creating-unit-tests)
@@ -23,22 +23,21 @@ Note that it is required to have the R package [jaspTools](https://github.com/ja
     - [Failures](#failures)
       - [Plots](#plots)
     - [Errors](#errors)
-  - [Dependencies related to plots](#dependencies-related-to-plots)
 
 ## Folder structure
 Your module should include the following structure:
 - ModuleName/
   - tests/
-    - [figs/](#figs)
     - [testthat/](#testthat)
+      - [_snaps/](#_snaps)
     - [testthat.R](#testthatr)
   - [.github/workflows/unittests.yml](#githubworkflowsunittestsyml)
-  
-### figs
-An empty folder, will be automatically filled later, see [Adding plot tests](#adding-plot-tests).
 
 ### testthat
 An empty folder, until you add tests, at that point it will contain a number of test files as described in [Creating a test file](#creating-a-test-file).
+
+### _snaps
+An empty folder, will be automatically filled later, see [Adding plot tests](#adding-plot-tests).
 
 ### testthat.R
 ```
@@ -150,12 +149,11 @@ test_that("Binomial table results match", {
 ### Adding plot tests
 This section explains how to manually create a unit test for a plot. For automatic creation of this type of test look [here](#creating-tests-automatically-for-tables-and-plots).
 
-As with tables, we want to make sure that the plot does not change as a result of unintended side effects of code changes. To ensure this, we create a reference .svg of the plot and store this in `tests/figs` (note that the storage will be done automatically). We then use `jaspTools::expect_equal_plots()` to check if the reference .svg is identical to the plot obtained at a later point in time (and if it's not the test will fail). This function is a wrapper around `vdiffr::expect_doppelganger()` (for more information about `vdiffr` see their [GitHub page](https://github.com/lionel-/vdiffr)).
+As with tables, we want to make sure that the plot does not change as a result of unintended side effects of code changes. To ensure this, we create a reference .svg of the plot and store this in `tests/testthat/_snaps/` (note that the storage will be done automatically). We then use `jaspTools::expect_equal_plots()` to check if the reference .svg is identical to the plot obtained at a later point in time (and if it's not the test will fail). This function is a wrapper around `vdiffr::expect_doppelganger()` (for more information about `vdiffr` see their [GitHub page](https://github.com/lionel-/vdiffr)).
 
 `expect_equal_plots` has the following arguments:  
 `test`: The new plot object, this should point to the `[["state"]][["figures"]][[INDEX/PLOTNAME]][["obj"]]` entry of a plot in a results list obtained from `jaspTools::runAnalysis()`.  
 `name`: The name the plot (will be) stored under (commonly the name of the plot type, e.g., `"prior-posterior"`).  
-`dir`: 	The directory in `tests/figs` where the reference .svg will be/is stored (commonly the name of the analysis)
 
 The creation of the reference .svg is an automatic process which cannot be started until the entire unit test has been written.
 So first we create a unit test for a specific descriptives plot:
@@ -168,18 +166,19 @@ test_that("Descriptives plot matches", {
   results <- jaspTools::runAnalysis("BinomialTest", "test.csv", options)
   plotName <- results[["results"]][["containerPlots"]][["collection"]][["containerPlots_contBinom"]][["collection"]][["containerPlots_contBinom_0"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  expect_equal_plots(testPlot, "descriptives", dir = "BinomialTest")
+  expect_equal_plots(testPlot, "descriptives")
 })
 ```
 Note that the creation of the options shown in the above example can be done in various different ways as described [here](https://github.com/jasp-stats/jaspTools#obtaining-options).  
 Notice also that we first obtain the plotname and then use this to index in the `state`. Plot objects are not stored in `results[["results"]]` but instead in `results[["state"]]`. You can also use a numeric index instead of the plotname.
 
-After creating the unit test and storing it in a file, we call `jaspTools::manageTestPlots()`. This function starts a Shiny application that allows you to view and then validate your new plot. Validating a plot creates the reference .svg in `tests/figs/` (in the above example: `tests/figs/BinomialTest/descriptives.svg`).  
-It does not matter when you perform this validation step: this could be after 1 or multiple plot unit tests.
+After creating the unit test and storing it in a file we'll want to generate the reference image. To accomplish this you should run all unit tests (through `jaspTools::testAll()` or `jaspTools::testAnalysis()`). It does not matter when you create the reference image of a unit test: this could be after you create only a single plot unit test, or after multiple.
+Running the unit tests the very first time causes a reference .svg to be created and placed in `tests/testthat/_snaps/` (in the above example: `tests/testthat/_snaps/BinomialTest/descriptives.svg`).  
+
 
 In our example we created a plot test for one analysis so we can be specific in what test file we want to look:
 ```
-jaspTools::manageTestPlots("BinomialTest")
+jaspTools::testAnalysis("BinomialTest")
 ```
 
 ### Creating tests automatically for tables and plots
@@ -211,13 +210,13 @@ test_that("Binomial Test table results match", {
 test_that("0 plot matches", {
 	plotName <- results[["results"]][["containerPlots"]][["collection"]][["containerPlots_contBinom"]][["collection"]][["containerPlots_contBinom_0"]][["data"]]
 	testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-	jaspTools::expect_equal_plots(testPlot, "0", dir = "BinomialTest")
+	jaspTools::expect_equal_plots(testPlot, "0")
 })
 
 test_that("1 plot matches", {
 	plotName <- results[["results"]][["containerPlots"]][["collection"]][["containerPlots_contBinom"]][["collection"]][["containerPlots_contBinom_1"]][["data"]]
 	testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-	jaspTools::expect_equal_plots(testPlot, "1", dir = "BinomialTest")
+	jaspTools::expect_equal_plots(testPlot, "1")
 })
 ```
 
@@ -227,13 +226,13 @@ In the example above we should adjust the two plot tests, because "0" and "1" ar
 test_that("Descriptives plot contBinom-level 0 matches", {
 	plotName <- results[["results"]][["containerPlots"]][["collection"]][["containerPlots_contBinom"]][["collection"]][["containerPlots_contBinom_0"]][["data"]]
 	testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-	jaspTools::expect_equal_plots(testPlot, "descriptives-0", dir = "BinomialTest")
+	jaspTools::expect_equal_plots(testPlot, "descriptives-0")
 })
 
 test_that("Descriptives plot contBinom-level 1 matches", {
 	plotName <- results[["results"]][["containerPlots"]][["collection"]][["containerPlots_contBinom"]][["collection"]][["containerPlots_contBinom_1"]][["data"]]
 	testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-	jaspTools::expect_equal_plots(testPlot, "descriptives-1", dir="BinomialTest")
+	jaspTools::expect_equal_plots(testPlot, "descriptives-1")
 })
 ```
 Note that it is not recommended to add multiple tests for the same element if the tests do not test distinct aspects of the element.  
@@ -256,7 +255,7 @@ test_that("Binomial Test table results match", {
 test_that("Descriptives plot matches", {
 	plotName <- results[["results"]][["containerPlots"]][["collection"]][["containerPlots_contBinom"]][["collection"]][["containerPlots_contBinom_0"]][["data"]]
 	testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-	jaspTools::expect_equal_plots(testPlot, "descriptives", dir = "BinomialTest")
+	jaspTools::expect_equal_plots(testPlot, "descriptives")
 })
 ```
 
@@ -270,7 +269,7 @@ jaspTools::runAnalysis("BinomialTest", "test.csv", options[[2]], makeTests = TRU
 
 As explained earlier (see [Adding plot tests](#adding-plot-tests)), to validate the new plots you should run:
 ```
-jaspTools::manageTestPlots()
+jaspTools::testAll() # or jaspTools::testAnalysis()
 ```
 
 ### Adding error handling tests
@@ -354,20 +353,7 @@ You can locate the offending test inside `tests/testthat`; your R console will s
 If `testthat` shows that a `failure` occurred then that means the unit test ran okay, but the results do not match. If it is anything but a plot (e.g., a table) the R console will notify you of the exact problem. You should determine why this change occurred and if it is desired. If it is desired, then you can update the unit test.
 
 #### Plots
-To view changes in plot tests you should run `jaspTools::manageTestPlots()` (e.g., `manageTestPlots("jagsModule")`). If the change is legitimate you can validate the failing plot in the Shiny application; the reference .svg in the `tests/figs` folder will be updated automatically.
+To view changes in plot tests you should run `jaspTools::manageTestPlots()` (e.g., `manageTestPlots("jagsModule")`). If the change is legitimate you can validate the failing plot in the Shiny application; the reference .svg in the `tests/testthat/_snaps/` folder will be updated automatically.
 
 ### Errors
 If `testthat` shows that an `error` occurred then that means the unit test could not run properly; it terminated too soon. To figure out the cause of termination it is often useful to run the unit test code directly in RStudio. This means going to the test file, locating the unit test and then running everything between `jaspTools::analysisOptions(...)` and `jaspTools::runAnalysis(...)` so see what the output of `runAnalysis()` is.
-
-## Dependencies related to plots
-Note that it is very important that all plots are created with equal versions of certain dependencies.  
-If this is not the case, then we cannot compare plots across different systems.
-The settings used to create plots can be found in `tests/figs/deps.txt` and `tests/figs/jasp-deps.txt`. Both of these files are created automatically by `jaspTools::manageTestPlots()`. It's good practice to look at the dependencies of other modules and to match these on your system.
-
-The files will look something like (but not necessarily the same as):
-```
-- vdiffr-svg-engine: 1.0
-- vdiffr: 0.3.2.2
-- freetypeharfbuzz: 0.2.5
-```
-You must never edit these files directly. If `jaspTools::manageTestPlots()` tells you that you have a newer version of some dependency, then that version will automatically be included in the txt file. All you must do is ensure that the newer version of the dependency does not have any adverse effects (i.e., the Shiny application showing plot changes that are not correct).
