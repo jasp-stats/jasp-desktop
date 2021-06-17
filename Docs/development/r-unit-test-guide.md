@@ -37,7 +37,7 @@ Your module should include the following structure:
 An empty folder, until you add tests, at that point it will contain a number of test files as described in [Creating a test file](#creating-a-test-file).
 
 ### _snaps
-An empty folder, will be automatically filled later, see [Adding plot tests](#adding-plot-tests).
+An empty folder, will be automatically created and filled later, see [Adding plot tests](#adding-plot-tests).
 
 ### testthat.R
 ```
