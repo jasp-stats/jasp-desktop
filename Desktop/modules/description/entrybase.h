@@ -66,15 +66,15 @@ public slots:
 	void devModeChanged(	bool	devMode);
 
 signals:
-	void menuChanged(			QString		menu);
-	void titleChanged(			QString		title);
-	void functionChanged(		QString		function);
-	void iconChanged(			QString		icon);
-	void entryTypeChanged(		EntryType	entryType);
-	void requiresDataChanged(	bool		requiresData);
-	void enabledChanged(		bool		enabled);
-	void qmlChanged(			QString		qml);
-	void debugChanged(			bool		debug);
+	void menuChanged();
+	void titleChanged();
+	void functionChanged();
+	void iconChanged();
+	void entryTypeChanged();
+	void requiresDataChanged();
+	void enabledChanged();
+	void qmlChanged();
+	void debugChanged();
 
 private:
 	QString			_menu					= "",

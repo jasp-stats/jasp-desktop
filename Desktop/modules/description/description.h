@@ -86,7 +86,7 @@ signals:
 	void iShouldBeUpdated(			Description	  *	desc		);
 
 private slots:
-	void childChanged(DescriptionChildBase * ) { delayedUpdate(); }
+	void childChanged() { delayedUpdate(); }
 
 private:
 	void					setUpDelayedUpdate();

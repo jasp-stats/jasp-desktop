@@ -14,7 +14,7 @@ public:
 	DescriptionChildBase();
 
 signals:
-	void somethingChanged(DescriptionChildBase * inMe);
+	void somethingChanged();
 
 private slots:
 	void registerDescription(QQuickItem * parent);
