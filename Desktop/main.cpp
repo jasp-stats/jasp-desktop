@@ -71,6 +71,13 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool exitAfterwards = tr
 
 #endif
 
+
+#ifdef _WIN32
+#define QSTRING_FILE_ARG QString::fromLocal8Bit
+#else
+#define QSTRING_FILE_ARG QString::fromStdString
+#endif
+
 void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & LC_CTYPE_C, bool & LC_CTYPE_system)
 {
 	filePath		= "";
@@ -106,7 +113,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 				letsExplainSomeThings = true;
 			else
 			{
-				QDir folder(QString::fromStdString(args[arg + 1]));
+				QDir folder(QSTRING_FILE_ARG(args[arg + 1].c_str()));
 
 				if(!folder.exists())
 				{
@@ -126,7 +133,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 			{
 				filePath = args[arg + 1];
 
-				QFileInfo testMe(QString::fromStdString(filePath));
+				QFileInfo testMe(QSTRING_FILE_ARG(filePath.c_str()));
 
 				if(!testMe.exists())
 				{
@@ -182,7 +189,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 					//if it isn't anything else it must be a file to open right?
 					// Well yes, but it might also be the url of an OSF file, then we do not need to check if it exists.
 
-					QFileInfo openMe(QString::fromStdString(args[arg]));
+					QFileInfo openMe(QSTRING_FILE_ARG(args[arg].c_str()));
 
 					if(startsWith("https:") || startsWith("http:") || openMe.exists())
 						filePath = args[arg];
@@ -326,7 +333,7 @@ int main(int argc, char *argv[])
 	if(setLC_CTYPE_C)		Settings::setValue(Settings::LC_CTYPE_C_WIN, "alwaysC"); 
 	if(setLC_CTYPE_system)	Settings::setValue(Settings::LC_CTYPE_C_WIN, "neverC");
 
-	QString filePathQ(QString::fromStdString(filePath));
+	QString filePathQ(QSTRING_FILE_ARG(filePath.c_str()));
 
 	//Now, to allow us to add some arguments we store the ones we got in a vector
 	std::vector<std::string> args(argv, argv + argc);
