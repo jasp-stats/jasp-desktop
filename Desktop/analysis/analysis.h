@@ -79,6 +79,7 @@ public:
 	Q_INVOKABLE void	duplicateMe();
 
 	bool needsRefresh()			const;
+	bool wasUpgraded()			const { return _wasUpgraded; }
 	bool isWaitingForModule();
 	bool isDynamicModule()		const { return bool(_dynamicModule); }
 	void setResults(		const Json::Value & results, analysisResultStatus	status, const Json::Value & progress = Json::nullValue) { setResults(results, analysisResultsStatusToAnalysisStatus(status), progress); }
@@ -280,7 +281,8 @@ private:
 
 	Modules::UpgradeMsgs	_msgs;
 
-	std::map<std::string, Json::Value>	_rSources;
+	std::map<std::string,
+		Json::Value>		_rSources;
 };
 
 #endif // ANALYSIS_H

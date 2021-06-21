@@ -695,13 +695,16 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 			if(notifyOnceUnblocked && _analysis)
 				_analysis->boundValueChangedHandler();
 		
-			while(_waitingRScripts.size() > 0)
-			{
-				const auto & front = _waitingRScripts.front();
-				emit _analysis->sendRScript(_analysis, std::get<0>(front), std::get<1>(front), std::get<2>(front));
-				_waitingRScripts.pop();
-			}
-		}	
+			if(_analysis->wasUpgraded()) //Maybe something was upgraded and we want to run the dropped rscripts (for instance for https://github.com/jasp-stats/INTERNAL-jasp/issues/1399)
+				while(_waitingRScripts.size() > 0)
+				{
+					const auto & front = _waitingRScripts.front();
+					emit _analysis->sendRScript(_analysis, std::get<0>(front), std::get<1>(front), std::get<2>(front));
+					_waitingRScripts.pop();
+				}
+			else //Otherwise just clean it up
+				_waitingRScripts = std::queue<std::tuple<QString, QString, bool>>();
+		}
 	}
 }
 

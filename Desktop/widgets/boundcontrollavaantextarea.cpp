@@ -20,7 +20,7 @@
 #include "textareabase.h"
 #include "log.h"
 #include "columnencoder.h"
-
+#include "analysis/analysisform.h"
 #include <QQuickTextDocument>
 
 BoundControlLavaanTextArea::BoundControlLavaanTextArea(TextAreaBase *textArea)
@@ -118,7 +118,7 @@ QString BoundControlLavaanTextArea::rScriptDoneHandler(const QString & result)
 
 	boundValue["columns"] = columns;
 
-	setBoundValue(boundValue);
+	setBoundValue(boundValue, !_control->form()->analysisObj()->wasUpgraded());
 
 	return QString();
 
