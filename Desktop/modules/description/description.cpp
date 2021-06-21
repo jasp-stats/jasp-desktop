@@ -4,7 +4,6 @@
 #include "entrybase.h"
 #include "../analysisentry.h"
 #include "../dynamicmodule.h"
-#include "utilities/languagemodel.h"
 
 namespace Modules
 {
