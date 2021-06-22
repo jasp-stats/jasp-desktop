@@ -73,7 +73,7 @@ Json::Value AnalysisEntry::getDefaultResults() const
 	res["title"]			= title();
 	res[".meta"]			= Json::arrayValue;
 	res["notice"]			= Json::objectValue;
-	res["notice"]["title"]	= "Waiting for intialization of module: " + dynamicModule()->title();
+	res["notice"]["title"]	= "Waiting for initialization of module: " + dynamicModule()->title();
 	res["notice"]["height"] = 0;
 	res["notice"]["width"]	= 0;
 
