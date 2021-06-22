@@ -55,7 +55,7 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _boundValues(		duplicateMe->boundValues()	)
 	, _optionsDotJASP(	duplicateMe->_optionsDotJASP)
 	, _results(			duplicateMe->_results		)
-	, _meta(			_results.get(".meta", Json::arrayValue))
+	, _resultsMeta(			_results.get(".meta", Json::arrayValue))
 	, _imgResults(		duplicateMe->_imgResults	)
 	, _userData(		duplicateMe->_userData		)
 	, _imgOptions(		duplicateMe->_imgOptions	)
@@ -139,7 +139,7 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 {
 	_results	= results;
 	_progress	= progress;
-	_meta		= _results.get(".meta", Json::arrayValue);
+	_resultsMeta		= _results.get(".meta", Json::arrayValue);
 
 	setStatus(status);
 
@@ -469,7 +469,7 @@ void Analysis::setBoundValue(const std::string &name, const Json::Value &value, 
 	{
 		parentBoundValue[name] = value;
 
-		if (!meta.isNull())
+		if ((meta.isObject() || meta.isArray()) && meta.size() > 0)
 			_boundValues[".meta"][name] = meta;
 	}
 }

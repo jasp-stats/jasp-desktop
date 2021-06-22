@@ -78,6 +78,27 @@ Json::Value FactorLevelListBase::createJson()
 	return result;
 }
 
+Json::Value FactorLevelListBase::createMeta()
+{
+	Json::Value meta(BoundControlBase::createMeta()); //Work from parent to get everything it defines
+	
+	auto factors = _factorLevelsModel->getFactors();
+	
+	if(factors.size() == 0)
+		return meta;
+	
+	meta["encodeThis"] = Json::arrayValue;
+	for (const auto & factor : factors)
+	{
+		meta["encodeThis"].append(factor.first);
+		
+		for(const auto & level : factor.second)
+			meta["encodeThis"].append(level);
+	}
+	
+	return meta;
+}
+
 bool FactorLevelListBase::isJsonValid(const Json::Value &value)
 {
 	bool valid = value.isArray();

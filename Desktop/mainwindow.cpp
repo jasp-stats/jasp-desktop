@@ -872,6 +872,9 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 		string utf8 = fq(options);
 		Json::Value root;
 		Json::Reader().parse(utf8, root);
+		
+		root[".meta"] = analysis->optionsMeta();
+		
 		analysis->editImage(root);
 	}
 }
