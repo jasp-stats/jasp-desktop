@@ -16,6 +16,7 @@
 //
 
 #include "readstatimportdataset.h"
+#include "log.h"
 
 bool operator<(const readstat_value_t & l, const readstat_value_t & r)
 {
@@ -68,6 +69,8 @@ void ReadStatImportDataSet::setLabelsToColumns()
 	for(auto & colKeyVal : _cols)
 	{
 		ReadStatImportColumn * col = colKeyVal.second;
+		
+		Log::log() << "Setting labels for column " << col->name() << std::endl;		
 
 		if(col->hasLabels())
 		{

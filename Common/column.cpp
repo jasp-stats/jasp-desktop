@@ -710,13 +710,19 @@ bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, str
 {
 	std::set<int> uniqueValuesData(values.begin(), values.end());
 	uniqueValuesData.erase(INT_MIN);
+	
+	std::stringstream labelsMissing;
+	int cnt = 0;
 
 	for(int uniqVal : uniqueValuesData)
 		if(uniqueValues.count(uniqVal) == 0)
 		{
-			Log::log() << "Setting column '" << name() << "' data to " << (is_ordinal ? "ordinal" : "nominal") << " but it is missing a label for value (" << uniqVal << "), adding the value as label." << std::endl;
+			labelsMissing << (cnt++ > 0 ? ", " : "") << uniqVal;
 			uniqueValues[uniqVal] = std::to_string(uniqVal);
 		}
+	
+	if(cnt)
+		Log::log() << "Setting column '" << name() << "' data to " << (is_ordinal ? "ordinal" : "nominal") << " but it was missing (a) label(s) for value(s) (" << labelsMissing.str() << "), adding them as label." << std::endl;
 
 	bool	labelChanged	= _labels.syncInts(uniqueValues),
 			dataChanged		= _setColumnAsNominalOrOrdinal(values, is_ordinal);

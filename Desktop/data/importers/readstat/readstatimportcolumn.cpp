@@ -472,7 +472,12 @@ void ReadStatImportColumn::addValue(const readstat_value_t & value)
 	else
 	{
 		if(!readstat_value_is_system_missing(value))
-			Log::log() << "Column '" << _name << "' has non-system missing value: '" << readstatValueToString(value) << "' dropping the value." << std::endl;
+		{
+			const auto missStr = readstatValueToString(value);
+			if(!_loggedMissing.count(missStr))
+				Log::log() << "Column '" << _name << "' has non-system missing value: '" << readstatValueToString(value) << "' dropping the value." << std::endl;
+			_loggedMissing.insert(missStr);
+		}
 		addMissingValue();
 	}
 }

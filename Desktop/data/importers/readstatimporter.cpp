@@ -69,6 +69,8 @@ bool ReadStatImporter::extSupported(const std::string & ext)
 
 ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::function<void(int)> progressCallback)
 {
+	Log::log() << "ReadStatImporter loads " << locator << std::endl;
+	
 	ReadStatImportDataSet	*	data	= new ReadStatImportDataSet(this, progressCallback);
 	readstat_error_t			error	= READSTAT_OK;
 	readstat_parser_t		*	parser	= readstat_parser_init();
@@ -80,6 +82,8 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 	init_io_handlers(parser);
 #endif
 
+	Log::log() << "Setting up readstat handlers" << std::endl;
+	
 	readstat_set_metadata_handler(		parser, &handle_metadata	);
 	readstat_set_variable_handler(		parser, &handle_variable	);
 	readstat_set_value_handler(			parser, &handle_value		);
@@ -93,19 +97,23 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 	else if	(_ext == "xpt")			error = readstat_parse_xport(	parser, locator.c_str(), data);
 	else							throw std::runtime_error("JASP does not support extension " + _ext);
 
+	Log::log() << "Done parsing file" << std::endl;
 	readstat_parser_free(parser);
-
+	
 #ifdef WIN32
 	io_cleanup();
 #endif
 
+	Log::log() << "Setting labels to column" << std::endl;
 	data->setLabelsToColumns();
 
 	if (error != READSTAT_OK)
 		throw std::runtime_error("Error processing " + locator + " " + readstat_error_message(error));
 
+	Log::log() << "Building dictionary" << std::endl;
 	data->buildDictionary(); //Not necessary for opening this file but synching will break otherwise...
 
+	Log::log() << "Returning data" << std::endl;
 	return data;
 }
 

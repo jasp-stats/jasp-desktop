@@ -65,6 +65,7 @@ private:
 
 	std::map<int,			std::string>	_intLabels;
 	std::map<std::string,	std::string>	_strLabels;
+	std::set<std::string>					_loggedMissing;
 };
 
 #endif // ReadStatImportColumn_H
