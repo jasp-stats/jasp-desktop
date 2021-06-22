@@ -226,7 +226,6 @@ MainWindow::~MainWindow()
 			_package->reset();
 
 		//delete _engineSync; it will be deleted by Qt!
-
 	}
 	catch(...)	{}
 }
@@ -1409,6 +1408,29 @@ void MainWindow::startDataEditorHandler()
 	else
 		startDataEditor(path);
 }
+
+void MainWindow::clearModulesFoldersUser()
+{
+	if(!MessageForwarder::showYesNo(tr("Clean user installed modules and pkgs"), tr("Cleaning up your modules and packages will make sure you only use those bundled with JASP. \n\nMake sure to restart JASP afterwards!"), tr("Clean"), tr("Cancel")))
+		return;
+	
+	delete _engineSync;
+	_engineSync = nullptr;
+	
+	QDir	renvroot(AppDirs::renvRootLocation()),
+			usermods(AppDirs::userModulesDir());
+	
+	if(renvroot.exists())	renvroot.removeRecursively();
+	if(usermods.exists())	usermods.removeRecursively();
+
+}
+
+/* the following does not seem to work: the new process crashes immediately... 
+void MainWindow::restartJASP()
+{
+	QProcess::startDetached(QCoreApplication::applicationFilePath());
+	QApplication::quit();
+}*/
 
 void MainWindow::showAbout()
 {

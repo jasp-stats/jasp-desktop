@@ -115,6 +115,7 @@ public slots:
 
 	bool checkPackageModifiedBeforeClosing();
 	void startDataEditorHandler();
+	void clearModulesFoldersUser();
 
 	void showAbout();
 
@@ -126,6 +127,7 @@ public slots:
 	void zoomOutKeyPressed();
 	void zoomResetKeyPressed();
 	void setLanguage(int languageIndex);
+	
 
 	QObject * loadQmlData(QString data, QUrl url);
 

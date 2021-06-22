@@ -185,12 +185,22 @@ ScrollView
 			{
 				id:					generateMarkdown
 				label:				qsTr("Generate markdown files for help")
+				toolTip:			qsTr("Enabling this will generate markdown helpfile from the info at qml options.")
 				checked:			preferencesModel.generateMarkdown
 				onCheckedChanged:	preferencesModel.generateMarkdown = checked
-				toolTip:			qsTr("Enabling this will generate markdown helpfile from the info at qml options.")
+				KeyNavigation.tab:	cleanModulesFolder
+				KeyNavigation.down:	cleanModulesFolder
+
+			}
+	
+			RectangularButton
+			{	
+				id:					cleanModulesFolder
+				text:				qsTr("Clear installed modules and packages")
+				toolTip:			qsTr("This will erase the 'renv' and 'Modules' folders in the appdata.")
+				onClicked:			mainWindow.clearModulesFoldersUser();
 				KeyNavigation.tab:	checkForLC_CTYPE_C
 				KeyNavigation.down:	checkForLC_CTYPE_C
-
 			}
 		}
 		
