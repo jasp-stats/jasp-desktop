@@ -530,7 +530,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		ColumnEncoder::encodeColumnNamesinOptions(optionsEnc);
 		_analysisOptions		= optionsEnc.toStyledString();
 	}
-	// No need to check else for aborted because PollMessagesFunctionForJaspResults will pasws that msg on by itself.
+	// No need to check else for aborted because PollMessagesFunctionForJaspResults will pass that msg on by itself.
 }
 
 

@@ -127,7 +127,8 @@ public:
 			bool				hasVolatileNotes()	const	{ return _hasVolatileNotes;					}
 			bool				utilityRunAllowed() const	{ return  isSaveImg() || isEditImg() || isRewriteImgs();									}
 			bool				shouldRun()					{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() ) && optionsBound();	}
-	const	Json::Value		&	meta()				const	{ return _meta;																				}
+	const	Json::Value		&	resultsMeta()		const	{ return _resultsMeta;						}
+	const	Json::Value			optionsMeta()		const	{ return _boundValues.get(".meta", Json::nullValue);	}
 			QString				helpMD()			const;
 			bool				optionsBound()		const	{ return _optionsBound;	}
 
@@ -240,7 +241,7 @@ protected:
 	///For backward compatibility: _optionsDotJASP = options from (old) JASP file.
 	Json::Value				_optionsDotJASP = Json::nullValue,
 							_results		= Json::nullValue,
-							_meta			= Json::nullValue,
+							_resultsMeta			= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,
 							_imgOptions		= Json::nullValue,

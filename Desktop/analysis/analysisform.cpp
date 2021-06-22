@@ -731,7 +731,7 @@ QString AnalysisForm::metaHelpMD() const
 		return markdown.join("");
 	};
 
-	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->meta(), 2);
+	return "---\n# " + tr("Output") + "\n\n" + metaMDer(_analysis->resultsMeta(), 2);
 }
 
 std::vector<std::vector<string> > AnalysisForm::getValuesFromRSource(const QString &sourceID, const QStringList &searchPath)
