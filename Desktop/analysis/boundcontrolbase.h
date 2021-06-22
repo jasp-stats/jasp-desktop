@@ -33,6 +33,7 @@ public:
 	virtual				~BoundControlBase()	{}
 
 	Json::Value					createJson()														override { return Json::nullValue;		}
+	Json::Value					createMeta()														override;
 	void						bindTo(const Json::Value& value)									override { _orgValue = value; setBoundValue(value, false); }
 	const Json::Value&			boundValue()														override;
 	void						resetBoundValue()													override { bindTo(_orgValue); }
@@ -40,6 +41,7 @@ public:
 	std::vector<std::string>	usedVariables()														override;
 	void						setIsRCode(std::string key = "");
 	void						setIsColumn(bool isComputed, columnType type = columnType::unknown);
+	
 
 protected:
 	inline const std::string&	getName();
@@ -47,13 +49,13 @@ protected:
 	void						_readTableValue(const Json::Value& value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues);
 	void						_setTableValue(const Terms& terms, const QMap<QString, RowControls*>& allControls, const std::string& key, bool hasMultipleTerms);
 
-	JASPControl*	_control			= nullptr;
-	bool			_isComputedColumn	= false,
-					_isColumn			= false;
-	Json::Value		_meta,
-					_orgValue;
-	std::string		_name;
-	columnType		_columnType			= columnType::unknown;
+	JASPControl*				_control			= nullptr;
+	bool						_isComputedColumn	= false,
+								_isColumn			= false;
+	std::set<std::string>		_isRCode;
+	Json::Value					_orgValue;
+	std::string					_name;
+	columnType					_columnType			= columnType::unknown;
 };
 
 #endif // BOUNDCONTROLBASE_H

@@ -469,7 +469,7 @@ void Analysis::setBoundValue(const std::string &name, const Json::Value &value, 
 	{
 		parentBoundValue[name] = value;
 
-		if (!meta.isNull())
+		if ((meta.isObject() || meta.isArray()) && meta.size() > 0)
 			_boundValues[".meta"][name] = meta;
 	}
 }

@@ -27,6 +27,22 @@ BoundControlBase::BoundControlBase(JASPControl* control) : _control(control)
 {
 }
 
+
+//To do: define these fields (isRCode, shouldEncode, etc) somewhere centrally through an enum or something
+Json::Value BoundControlBase::createMeta() 
+{ 
+	Json::Value meta(Json::objectValue);
+	
+	if (_isColumn || _control->encodeValue())	
+		meta["shouldEncode"] = true;
+	
+	for(const std::string & key : _isRCode)
+		if(key.empty())		meta	 ["isRCode"] = true;
+		else				meta[key]["isRCode"] = true;
+	
+	return meta;
+}
+
 void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 {
 	if (value == boundValue()) return;
@@ -37,26 +53,24 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 	{
 		if (_isColumn && value.isString())
 		{
-			const Json::Value& orgValue = boundValue();
-			std::string newName = value.asString();
-			std::string orgName = orgValue.asString();
+			const Json::Value & orgValue = boundValue();
+			std::string			newName  = value.asString(),
+								orgName  = orgValue.asString();
+			
 			if (newName.empty() && !orgName.empty())
 				emit _control->requestComputedColumnDestruction(orgName);
+			
 			else if (newName != orgName)
 			{
-				if (_isComputedColumn)
-					emit _control->requestComputedColumnCreation(newName);
-				else
-					emit _control->requestColumnCreation(newName, _columnType);
+				if (_isComputedColumn)	emit _control->requestComputedColumnCreation(newName);
+				else					emit _control->requestColumnCreation(newName, _columnType);
 
 				if (!orgName.empty())
 					emit _control->requestComputedColumnDestruction(orgName);
 			}
 		}
 
-		if (_isColumn || _control->encodeValue())	_meta["shouldEncode"] = true;
-
-		form->setBoundValue(getName(), value, _meta, _control->getParentKeys());
+		form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
 	}
 	if (emitChange)	emit _control->boundValueChanged(_control);
 }
@@ -81,8 +95,7 @@ std::vector<std::string> BoundControlBase::usedVariables()
 
 void BoundControlBase::setIsRCode(std::string key)
 {
-	if (key.empty())	_meta["isRCode"] = true;
-	else				_meta[key]["isRCode"] = true;
+	_isRCode.insert(key);
 }
 
 const Json::Value &BoundControlBase::boundValue()

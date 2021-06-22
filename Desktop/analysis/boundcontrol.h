@@ -25,12 +25,13 @@ class BoundControl
 {
 
 public:
-	virtual Json::Value					createJson()									= 0;
-	virtual bool						isJsonValid(const Json::Value& optionValue)		= 0;
-	virtual void						bindTo(const Json::Value& value)				= 0;
-	virtual const Json::Value&			boundValue()									= 0;
-	virtual void						resetBoundValue()								= 0;
-	virtual std::vector<std::string>	usedVariables()									= 0;
+	virtual Json::Value					createJson()													= 0;
+	virtual Json::Value					createMeta()													= 0;
+	virtual bool						isJsonValid(const Json::Value& optionValue)						= 0;
+	virtual void						bindTo(const Json::Value& value)								= 0;
+	virtual const Json::Value&			boundValue()													= 0;
+	virtual void						resetBoundValue()												= 0;
+	virtual std::vector<std::string>	usedVariables()													= 0;
 	virtual void						setBoundValue(const Json::Value& value, bool emitChange = true) = 0;
 };
 

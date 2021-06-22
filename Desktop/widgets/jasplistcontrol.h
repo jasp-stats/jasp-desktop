@@ -89,7 +89,7 @@ public:
 			const QString&		valueRole()					const			{ return _valueRole;			}
 			bool				containsVariables()			const			{ return _containsVariables;	}
 			bool				containsInteractions()		const			{ return _containsInteractions;	}
-			bool				encodeValue()				const override	{ return containsVariables();	}
+			bool				encodeValue()				const override	{ return containsVariables() || containsInteractions();	}
 			bool				useSourceLevels()			const			{ return _useSourceLevels;		}
 			void				setUseSourceLevels(bool b)					{ _useSourceLevels = b;			}
 

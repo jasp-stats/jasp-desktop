@@ -39,7 +39,7 @@ public:
 	Terms		getLevels();
 	
 private:
-	ListModelMeasuresCellsAssigned*				_measuresCellsModel;
+	ListModelMeasuresCellsAssigned*	_measuresCellsModel;
 	QList<ListModelFactorLevels*>	_sourceFactorsModels;
 	
 	void _initLevels();

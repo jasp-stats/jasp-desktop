@@ -39,6 +39,7 @@ public:
 
 	bool			isJsonValid(const Json::Value& optionValue)	override;
 	Json::Value		createJson()								override;
+	Json::Value		createMeta()								override;
 	void			bindTo(const Json::Value& value)			override;
 	bool			encodeValue()						const	override	{ return true; }
 	ListModel*		model()								const	override	{ return _factorLevelsModel; }

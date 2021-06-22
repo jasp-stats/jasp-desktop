@@ -47,7 +47,9 @@ public:
 	void						resetBoundValue()							override	{ return _boundControl->resetBoundValue();				}
 	const Json::Value&			boundValue()								override	{ return _boundControl->boundValue();				}
 	Json::Value					createJson()								override	{ return _boundControl->createJson();				}
-	void						setBoundValue(const Json::Value& value, bool emitChange = true) override	{ return _boundControl->setBoundValue(value, emitChange);	}
+	Json::Value					createMeta()								override	{ return _boundControl->createMeta();				}
+	void						setBoundValue(const Json::Value& value, 
+											  bool emitChange = true)		override	{ return _boundControl->setBoundValue(value, emitChange);	}
 	std::vector<std::string>	usedVariables()								override	{ return _boundControl->usedVariables();			}
 
 	ListModel*					model()								const	override	{ return _model; }
