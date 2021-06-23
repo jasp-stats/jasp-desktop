@@ -16,11 +16,21 @@ const char * EntryError::what() const noexcept { return std::runtime_error::what
 EntryBase::EntryBase(EntryType entryType) : DescriptionChildBase(), _entryType(entryType)
 {
 	connect(PreferencesModel::prefs(), &PreferencesModel::developerModeChanged, this, &EntryBase::devModeChanged);
+
+	connect(this, &EntryBase::menuChanged,			this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::titleChanged,			this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::functionChanged,		this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::iconChanged,			this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::entryTypeChanged,		this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::requiresDataChanged,	this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::enabledChanged,		this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::qmlChanged,			this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::debugChanged,			this, &EntryBase::somethingChanged);
 }
 
 void EntryBase::devModeChanged(bool)
 {
-	if(debug()) emit somethingChanged(this);
+	if(debug()) emit somethingChanged();
 }
 
 QString EntryBase::toString() const
@@ -55,7 +65,7 @@ void EntryBase::setMenu(QString menu)
 		return;
 
 	_menu = menu;
-	emit menuChanged(_menu);
+	emit menuChanged();
 }
 
 void EntryBase::setTitle(QString title)
@@ -67,7 +77,7 @@ void EntryBase::setTitle(QString title)
 		return;
 
 	_title = title;
-	emit titleChanged(_title);
+	emit titleChanged();
 }
 
 void EntryBase::setFunction(QString function)
@@ -79,7 +89,7 @@ void EntryBase::setFunction(QString function)
 		return;
 
 	_function = function;
-	emit functionChanged(_function);
+	emit functionChanged();
 }
 
 void EntryBase::setIcon(QString icon)
@@ -91,7 +101,7 @@ void EntryBase::setIcon(QString icon)
 		return;
 
 	_icon = icon;
-	emit iconChanged(_icon);
+	emit iconChanged();
 }
 
 void EntryBase::setRequiresData(bool requiresData)
@@ -102,7 +112,7 @@ void EntryBase::setRequiresData(bool requiresData)
 		return;
 
 	_requiresData = requiresData;
-	emit requiresDataChanged(_requiresData);
+	emit requiresDataChanged();
 }
 
 void EntryBase::setEnabled(bool enabled)
@@ -111,7 +121,7 @@ void EntryBase::setEnabled(bool enabled)
 		return;
 
 	_enabled = enabled;
-	emit enabledChanged(_enabled);
+	emit enabledChanged();
 }
 
 void EntryBase::setQml(QString qml)
@@ -123,7 +133,7 @@ void EntryBase::setQml(QString qml)
 		return;
 
 	_qml = qml;
-	emit qmlChanged(_qml);
+	emit qmlChanged();
 }
 
 void EntryBase::setDebug(bool debug)
@@ -132,7 +142,7 @@ void EntryBase::setDebug(bool debug)
 		return;
 
 	_debug = debug;
-	emit debugChanged(_debug);
+	emit debugChanged();
 }
 
 AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) const
