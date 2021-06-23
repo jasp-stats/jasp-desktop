@@ -695,7 +695,7 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 			if(notifyOnceUnblocked && _analysis)
 				_analysis->boundValueChangedHandler();
 		
-			if(_analysis->wasUpgraded()) //Maybe something was upgraded and we want to run the dropped rscripts (for instance for https://github.com/jasp-stats/INTERNAL-jasp/issues/1399)
+			if(_analysis && (notifyOnceUnblocked || _analysis->wasUpgraded())) //Maybe something was upgraded and we want to run the dropped rscripts (for instance for https://github.com/jasp-stats/INTERNAL-jasp/issues/1399)
 				while(_waitingRScripts.size() > 0)
 				{
 					const auto & front = _waitingRScripts.front();
