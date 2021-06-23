@@ -32,6 +32,7 @@ IF "%PKG_NAME:~0,4%"=="jasp" (
     if exist %SRCE_DIR%\%REL_PATH%\po           ( xcopy %SRCE_DIR%\%REL_PATH%\po           /Y /Q /E /I po          >nul )
     if exist %SRCE_DIR%\%REL_PATH%\afm          ( xcopy %SRCE_DIR%\%REL_PATH%\afm          /Y /Q /E /I afm         >nul )
     if exist %SRCE_DIR%\%REL_PATH%\enc          ( xcopy %SRCE_DIR%\%REL_PATH%\enc          /Y /Q /E /I enc         >nul )
+    if exist %SRCE_DIR%\%REL_PATH%\lib          ( xcopy %SRCE_DIR%\%REL_PATH%\lib          /Y /Q /E /I lib         >nul )
     if exist %SRCE_DIR%\%REL_PATH%\icc          ( xcopy %SRCE_DIR%\%REL_PATH%\icc          /Y /Q /E /I icc         >nul )
     if exist %SRCE_DIR%\%REL_PATH%\include      ( xcopy %SRCE_DIR%\%REL_PATH%\include      /Y /Q /E /I include     >nul )
     if exist %SRCE_DIR%\%REL_PATH%\shinythemes  ( xcopy %SRCE_DIR%\%REL_PATH%\shinythemes  /Y /Q /E /I shinythemes >nul )
