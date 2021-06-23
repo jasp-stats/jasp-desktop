@@ -920,7 +920,8 @@ extern "C" const char *	 STDCALL rbridge_system(const char * cmd)
 
 extern "C" void STDCALL rbridge_moduleLibraryFixer(const char * moduleLibrary)
 {
-	_moduleLibraryFixer(moduleLibrary);
+	Log::log() << "rbridge_moduleLibraryFixer(\"" << moduleLibrary << "\");" << std::endl;
+	_moduleLibraryFixer(moduleLibrary, true, true);
 }
 
 extern "C" const char ** STDCALL rbridge_allColumnNames(size_t & numCols, bool encoded)

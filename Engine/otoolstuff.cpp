@@ -6,6 +6,8 @@
 #include "boost/nowide/fstream.hpp"
 #include "utils.h"
 #include <iostream>
+#include "log.h"
+
 
 std::string _system(std::string cmd)
 {
@@ -37,8 +39,8 @@ std::string _system(std::string cmd)
 }
 
 #define MAC_RHOME "@executable_path/../Frameworks/R.framework/Versions/"  CURRENT_R_VERSION "/Resources"
-
-void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
+#define logCout (useLogger ? Log::log(false) : std::cout)
+void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool useLogger, bool printStuff)
 {
 	using namespace boost;
 	
@@ -49,7 +51,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 	filesystem::path modLibpath	= Utils::osPath(moduleLibraryPath);
 
 #ifdef __APPLE__
-	std::cout << "This is a mac so we will fix the otool mess of folder '" << modLibpath << "'...\n";
+	logCout << "This is a mac so we will fix the otool mess of folder '" << modLibpath << "'...\n";
 
 	typedef filesystem::recursive_directory_iterator	recIt;
 	
@@ -68,7 +70,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 				continue;
 	
 			if(printStuff)
-				std::cout << "- Now checking and fixing otool paths for file '" << path.string() << "'.\n";
+				logCout << "- Now checking and fixing otool paths for file '" << path.string() << "'.\n";
 	
 			std::string libDir		= stringUtils::replaceBy(path.string(), " ", "\\ "),
 						otoolCmd	= "otool -L " + libDir,
@@ -77,11 +79,11 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 	
 			/*if(printStuff)
 			{
-				std::cout << "- jaspRCPP_postProcessLocalPackageInstall used otool -L on " << libDir;
-				std::cout << " and found this output:\n";
+				logCout << "- jaspRCPP_postProcessLocalPackageInstall used otool -L on " << libDir;
+				logCout << " and found this output:\n";
 		
 				for(const auto & line : otoolLines)
-					std::cout << line << std::endl;
+					logCout << line << std::endl;
 			
 			}*/
 			
@@ -114,14 +116,14 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 					const std::string cmd = "install_name_tool -change " + replaceThisLine + " " + withThisLine + " " + libDir;
 	
 					if(printStuff)
-						std::cout << cmd << std::endl;
+						logCout << cmd << std::endl;
 	
 					_system(cmd);
 				};
 				
 				if(printStuff && stringUtils::startsWith(line, MAC_RHOME)) //This binary was already fixed
 				{
-					std::cout << "- Already fixed!\n";;
+					logCout << "- Already fixed!\n";;
 					break;
 				}
 	
@@ -145,10 +147,10 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 	}
 	catch(boost::filesystem::filesystem_error & error)
 	{
-		std::cout << "Filesystem iterating had error: '" << error.what() << "' last path was: '" << path.string() << "'" << std::endl;
+		logCout << "Filesystem iterating had error: '" << error.what() << "' last path was: '" << path.string() << "'" << std::endl;
 	}
 
 #else
-	std::cout << "This isn't a mac so we aren't trying to fix the otool mess..." << std::endl;
+	logCout << "This isn't a mac so we aren't trying to fix the otool mess..." << std::endl;
 #endif
 }

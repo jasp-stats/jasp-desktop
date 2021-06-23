@@ -1173,6 +1173,8 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 
 void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibrary)
 {
+	jaspRCPP_logString("jaspRCPP_postProcessLocalPackageInstall called!"); 
+	
 	if(Rcpp::is<std::string>(moduleLibrary))
 		_libraryFixerFunc(Rcpp::as<std::string>(moduleLibrary).c_str());
 	else
