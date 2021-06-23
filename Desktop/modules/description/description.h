@@ -84,9 +84,7 @@ signals:
 	void requiresDataDefChanged(	bool			defRequiresData);
 	void dynModChanged(				DynamicModule * dynMod		);
 	void iShouldBeUpdated(			Description	  *	desc		);
-
-private slots:
-	void childChanged() { delayedUpdate(); }
+	void childChanged();
 
 private:
 	void					setUpDelayedUpdate();
