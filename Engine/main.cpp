@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 		
 		Engine e(0, 0); //It needs to start to make sure rbridge functions work
 		
-		_moduleLibraryFixer(argv[1], true, true);
+		_moduleLibraryFixer(argv[1], true, false, true);
 
 		exit(0);
 	}

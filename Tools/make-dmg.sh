@@ -54,9 +54,14 @@ cd ..
 
 echo "Copy the two executables into place (after renaming jasp -> JASP)"
 install_name_tool -add_rpath @loader_path/../Libraries JASP
+install_name_tool -add_rpath @loader_path/../Libraries otool
 install_name_tool -add_rpath @loader_path/../Libraries JASPEngine
-cp JASP app/JASP.app/Contents/MacOS/
-cp JASPEngine app/JASPEngine.app/Contents/MacOS/
+install_name_tool -add_rpath @loader_path/../Libraries install_name_tool
+
+cp JASP 				app/JASP.app/Contents/MacOS/
+cp otool 				app/JASP.app/Contents/MacOS/
+cp install_name_tool 	app/JASP.app/Contents/MacOS/
+cp JASPEngine 			app/JASPEngine.app/Contents/MacOS/
 
 echo "Copy any R-files in buildfolder"
 cp *.R app/JASP.app/Contents/MacOS/
@@ -69,7 +74,7 @@ $QT_KIT_FULL/bin/macdeployqt app/JASPEngine.app/
 echo "Copy the JASPEngine out of the JASPEngine.app into the JASP.app"
 echo "This will now have had it's rpaths fixed"
 
-mv app/JASPEngine.app/Contents/MacOS/JASPEngine app/JASP.app/Contents/MacOS/
+mv app/JASPEngine.app/Contents/MacOS/JASPEngine 		app/JASP.app/Contents/MacOS/
 rm -rf app/JASPEngine.app/ 
 
 echo "Copy the R.framework in, the Resources, App info, icon, etc."

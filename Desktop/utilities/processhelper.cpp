@@ -21,7 +21,8 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 	//Seems a bit weird but we need to tell this to jaspBase so it can tell renv to run it again because that will be running in a subprocess. 
 	//Which also means we have the following process -> subprocess structure while installing a dynamic module:
 	// jasp -> JASPEngine with R-embedded -> Separate R -> separate instances of JASPEngine...
-	env.insert("JASPENGINE_LOCATION",				engineExe); 
+	env.insert("JASPENGINE_LOCATION",				engineExe);
+	env.insert("JASPENGINE_FOLDER",					programDir.absolutePath() + '/');
 	
 	QString rHomePath = AppDirs::rHome();
 	QDir rHome(rHomePath);

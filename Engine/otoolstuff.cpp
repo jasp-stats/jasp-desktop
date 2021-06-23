@@ -6,6 +6,8 @@
 #include "boost/nowide/fstream.hpp"
 #include "utils.h"
 #include <iostream>
+#include "log.h"
+
 
 std::string _system(std::string cmd)
 {
@@ -39,15 +41,12 @@ std::string _system(std::string cmd)
 #define MAC_LIB_FOLDER "Frameworks/R.framework/Versions/"  CURRENT_R_VERSION "/Resources/lib"
 #define MAC_LIB_FOLDER_FROM_EXE "@executable_path/../" MAC_LIB_FOLDER "/"
 #define MAC_LIB_FOLDER_FROM_MODULE "../../../" MAC_LIB_FOLDER "/"
+#define logCout (useLogger ? Log::log(false) : std::cout)
 
-void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall, bool printStuff)
+void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall, bool useLogger, bool printStuff)
 {
 	using namespace boost;
 	
-#ifdef JASP_DEBUG
-	printStuff = true; //If debugging please always print stuff
-#endif
-
 	filesystem::path	modLibpath	= Utils::osPath(moduleLibraryPath),
 						rcppPath	= Utils::osPath(moduleLibraryPath + "/Rcpp");
 
@@ -56,9 +55,14 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 		remove_all(rcppPath);
 
 #ifdef __APPLE__
-	std::cout << "This is a mac so we will fix the otool mess of folder '" << modLibpath << "'...\n";
+#ifdef JASP_DEBUG
+	printStuff = true; //If debugging please always print stuff
+#endif
+	logCout << "This is a mac so we will fix the otool mess of folder '" << modLibpath << "'...\n";
 
 	typedef filesystem::recursive_directory_iterator	recIt;
+
+	const std::string progDir = stringUtils::replaceBy(std::string(getenv("JASPENGINE_FOLDER")), " ", "\\ ");
 	
 	filesystem::path path;
 	
@@ -75,22 +79,22 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				continue;
 	
 			if(printStuff)
-				std::cout << "- Now checking and fixing otool paths for file '" << path.string() << "'.\n";
+				logCout << "- Now checking and fixing otool paths for file '" << path.string() << "'.\n";
 	
 			std::string libDir		= stringUtils::replaceBy(path.string(), " ", "\\ "),
-						otoolCmd	= "otool -L " + libDir,
+						otoolCmd	= progDir + "otool -L " + libDir,
 						otoolOut	= _system(otoolCmd);
 			auto		otoolLines	= stringUtils::splitString(otoolOut, '\n');
 	
-			/*if(printStuff)
+			if(printStuff)
 			{
-				std::cout << "- jaspRCPP_postProcessLocalPackageInstall used otool -L on " << libDir;
-				std::cout << " and found this output:\n";
+				logCout << "- jaspRCPP_postProcessLocalPackageInstall used otool -L on " << libDir;
+				logCout << " and found this output:\n";
 		
 				for(const auto & line : otoolLines)
-					std::cout << line << std::endl;
+					logCout << line << std::endl;
 			
-			}*/
+			}
 			
 			//ok otoolLines[1] represents the "id" of the lib but we do not need to change it because it probably points directly back to itself. The other lines however we should change
 	
@@ -118,10 +122,10 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 	
 				auto install_name_tool_cmd = [&](const std::string & replaceThisLine, const std::string & withThisLine)
 				{
-					const std::string cmd = "install_name_tool -change " + replaceThisLine + " " + withThisLine + " " + libDir;
+					const std::string cmd = progDir + "install_name_tool -change " + replaceThisLine + " " + withThisLine + " " + libDir;
 	
 					if(printStuff)
-						std::cout << cmd << std::endl;
+						logCout << cmd << std::endl;
 	
 					_system(cmd);
 				};
@@ -157,10 +161,10 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 	}
 	catch(boost::filesystem::filesystem_error & error)
 	{
-		std::cout << "Filesystem iterating had error: '" << error.what() << "' last path was: '" << path.string() << "'" << std::endl;
+		logCout << "Filesystem iterating had error: '" << error.what() << "' last path was: '" << path.string() << "'" << std::endl;
 	}
 
 #else
-	std::cout << "This isn't a mac so we aren't trying to fix the otool mess..." << std::endl;
+	logCout << "This isn't a mac so we aren't trying to fix the otool mess..." << std::endl;
 #endif
 }
