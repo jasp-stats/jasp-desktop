@@ -96,11 +96,13 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool printStuff)
 	
 				//For all the libs of R we have the following startsWith we can check:
 				const std::string libStart = "/Library/Frameworks/R.framework/Versions/";
-	
+
 				//For the JAGS stuff we need to replace like so:
 				const std::map<std::string, std::string> replaceThese =
 				{
-					{	"/usr/local/lib/libjags.4.dylib",	"@executable_path/JAGS/libjags.4.dylib"														},
+					{	"/usr/local/lib/libjags.4.dylib",				"@executable_path/JAGS/libjags.4.dylib"		},
+					{	"/usr/local/gfortran/lib/libgfortran.5.dylib",	MAC_RHOME "/lib/libgfortran.5.dylib"		},
+					{	"/usr/local/gfortran/lib/libquadmath.0.dylib",	MAC_RHOME "/lib/libquadmath.0.dylib"		}
 				/*	R 4 doesnt have the following anymore:
 					{	"/usr/lib/libc++abi.dylib",			MAC_RHOME "/lib/libc++abi.1.dylib"	}, 
 					{	"/usr/lib/libc++.1.dylib",			MAC_RHOME "/lib/libc++.1.dylib"		} */
