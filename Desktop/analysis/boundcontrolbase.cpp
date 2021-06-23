@@ -72,7 +72,11 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 
 		form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
 	}
-	if (emitChange)	emit _control->boundValueChanged(_control);
+	else
+		emitChange = false;
+	
+	if (emitChange)	
+		emit _control->boundValueChanged(_control);
 }
 
 std::vector<std::string> BoundControlBase::usedVariables()

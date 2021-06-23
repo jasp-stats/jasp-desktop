@@ -30,7 +30,7 @@
 #include "gui/messageforwarder.h"
 #include "utilities/qutils.h"
 
-
+#include <queue>
 
 class ListModelTermsAssigned;
 class JASPControl;
@@ -131,7 +131,7 @@ public:
 	std::vector<std::vector<std::string> >	getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
 	void		addColumnControl(JASPControl* control, bool isComputed);
 
-	void		setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	bool		setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
 	std::set<std::string> usedVariables();
 
 	void		sortControls(QList<JASPControl*>& controls);
@@ -186,6 +186,8 @@ private:
 	QString										_info;
 	QMap<QString, QSet<ListModel*> >			_rSourceModelMap;
 	int											_signalValueChangedBlocked = 0;
+	
+	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?
 };
 
 #endif // ANALYSISFORM_H

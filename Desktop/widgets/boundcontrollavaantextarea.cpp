@@ -20,7 +20,7 @@
 #include "textareabase.h"
 #include "log.h"
 #include "columnencoder.h"
-
+#include "analysis/analysisform.h"
 #include <QQuickTextDocument>
 
 BoundControlLavaanTextArea::BoundControlLavaanTextArea(TextAreaBase *textArea)
@@ -66,8 +66,9 @@ bool BoundControlLavaanTextArea::isJsonValid(const Json::Value &value)
 {
 	if (!value.isObject())					return false;
 	if (!value["modelOriginal"].isString())	return false;
-	if (!value["model"].isString())			return false;
-	if (!value["columns"].isArray())		return false;
+	//If we have modelOriginal the rest follows automatically because of checkSyntax and the result
+	//if (!value["model"].isString())			return false;
+	//if (!value["columns"].isArray())		return false;
 
 	return true;
 }
@@ -117,7 +118,7 @@ QString BoundControlLavaanTextArea::rScriptDoneHandler(const QString & result)
 
 	boundValue["columns"] = columns;
 
-	setBoundValue(boundValue);
+	setBoundValue(boundValue, !_control->form()->analysisObj()->wasUpgraded());
 
 	return QString();
 

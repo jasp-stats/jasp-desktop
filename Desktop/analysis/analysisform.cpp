@@ -74,8 +74,11 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 
 void AnalysisForm::runRScript(QString script, QString controlName, bool whiteListedVersion)
 {
-	if(_analysis && !_removed && _signalValueChangedBlocked == 0)
-		emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
+	if(_analysis && !_removed)
+	{
+		if(_signalValueChangedBlocked == 0)	emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
+		else								_waitingRScripts.push(std::make_tuple(script, controlName, whiteListedVersion));
+	}
 }
 
 void AnalysisForm::refreshAnalysis()
@@ -683,10 +686,25 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 	else
 	{
 		_signalValueChangedBlocked--;
-		if (_signalValueChangedBlocked < 0)	_signalValueChangedBlocked = 0;
+		
+		if (_signalValueChangedBlocked < 0)	
+			_signalValueChangedBlocked = 0;
 
-		if (_signalValueChangedBlocked == 0 && notifyOnceUnblocked && _analysis)
-			_analysis->boundValueChangedHandler();
+		if (_signalValueChangedBlocked == 0)
+		{
+			if(notifyOnceUnblocked && _analysis)
+				_analysis->boundValueChangedHandler();
+		
+			if(_analysis && (notifyOnceUnblocked || _analysis->wasUpgraded())) //Maybe something was upgraded and we want to run the dropped rscripts (for instance for https://github.com/jasp-stats/INTERNAL-jasp/issues/1399)
+				while(_waitingRScripts.size() > 0)
+				{
+					const auto & front = _waitingRScripts.front();
+					emit _analysis->sendRScript(_analysis, std::get<0>(front), std::get<1>(front), std::get<2>(front));
+					_waitingRScripts.pop();
+				}
+			else //Otherwise just clean it up
+				_waitingRScripts = std::queue<std::tuple<QString, QString, bool>>();
+		}
 	}
 }
 
@@ -841,10 +859,12 @@ std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::V
 	return result;
 }
 
-void AnalysisForm::setBoundValue(const string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey> &parentKeys)
+bool AnalysisForm::setBoundValue(const string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey> &parentKeys)
 {
 	if (_analysis)
-		_analysis->setBoundValue(name, value, meta, parentKeys);
+		return _analysis->setBoundValue(name, value, meta, parentKeys);
+	
+	return false;
 }
 
 std::set<string> AnalysisForm::usedVariables()

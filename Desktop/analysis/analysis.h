@@ -70,14 +70,16 @@ public:
 	const Json::Value&	optionsFromJASPFile()		const	{ return _optionsDotJASP;	}
 
 	const Json::Value&	boundValues()				const	{ return _boundValues;		}
-	void				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
 	const Json::Value&	boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys = {});
-	void				setBoundValues(const Json::Value& boundValues)			{ _boundValues = boundValues; }
+	
+	bool				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	bool				setBoundValues(const Json::Value& boundValues);
 
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 	Q_INVOKABLE void	duplicateMe();
 
 	bool needsRefresh()			const;
+	bool wasUpgraded()			const { return _wasUpgraded; }
 	bool isWaitingForModule();
 	bool isDynamicModule()		const { return bool(_dynamicModule); }
 	void setResults(		const Json::Value & results, analysisResultStatus	status, const Json::Value & progress = Json::nullValue) { setResults(results, analysisResultsStatusToAnalysisStatus(status), progress); }
@@ -279,7 +281,8 @@ private:
 
 	Modules::UpgradeMsgs	_msgs;
 
-	std::map<std::string, Json::Value>	_rSources;
+	std::map<std::string,
+		Json::Value>		_rSources;
 };
 
 #endif // ANALYSIS_H
