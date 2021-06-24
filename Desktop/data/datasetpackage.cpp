@@ -51,7 +51,7 @@ void DataSetPackage::setEngineSync(EngineSync * engineSync)
 	_engineSync = engineSync;
 
 	//These signals should *ONLY* be called from a different thread than _engineSync!
-	connect(this,	&DataSetPackage::pauseEnginesSignal,	_engineSync,	&EngineSync::pauseEngines,		Qt::BlockingQueuedConnection);
+	connect(this,	&DataSetPackage::pauseEnginesSignal,	_engineSync,	&EngineSync::pauseEngines,	Qt::BlockingQueuedConnection);
 	connect(this,	&DataSetPackage::resumeEnginesSignal,	_engineSync,	&EngineSync::resumeEngines,	Qt::BlockingQueuedConnection);
 
 	reset();
@@ -64,8 +64,8 @@ bool DataSetPackage::isThisTheSameThreadAsEngineSync()
 
 void DataSetPackage::pauseEngines()
 {
-	if(isThisTheSameThreadAsEngineSync())	_engineSync->pauseEngines();
-	else									emit pauseEnginesSignal();
+	if(isThisTheSameThreadAsEngineSync())	_engineSync->pauseEngines(true);
+	else									emit pauseEnginesSignal(true);
 }
 
 void DataSetPackage::resumeEngines()

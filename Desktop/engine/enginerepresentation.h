@@ -54,7 +54,7 @@ public:
 	void stopEngine();
 	
 	///Tell the engine it shouldn't be doing anything else, aka pause.
-	void pauseEngine();
+	void pauseEngine(bool unloadData = false);
 	
 	///Tell engine to resume running
 	void resumeEngine();
@@ -166,7 +166,8 @@ private:
 					_runsAnalysis		= true,		//is this engine meant for running analyses?
 					_runsUtility		= true,		//is this engine meant for running filters, installing modules or running R Code (not the r prompt though)
 					_runsRCmd			= false,	//is this engine meant for the R prompt?
-					_removeEngine		= false;
+					_removeEngine		= false,
+					_pauseUnloadData	= false;
 	std::string		_lastCompColName	= "???";
 
 	QMetaObject::Connection	_slaveFinishedConnection;

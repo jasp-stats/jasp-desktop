@@ -621,7 +621,7 @@ void EngineSync::stopEngines()
 	Log::log() << "Engines stopped(/killed)" << std::endl;
 }
 
-void EngineSync::pauseEngines()
+void EngineSync::pauseEngines(bool unloadData)
 {
 	JASPTIMER_SCOPE(EngineSync::pauseEngines);
 
@@ -632,7 +632,7 @@ void EngineSync::pauseEngines()
 		engine->processReplies();
 
 	for(EngineRepresentation * e : _engines)
-		e->pauseEngine();
+		e->pauseEngine(unloadData);
 
 	long tryTill = Utils::currentSeconds() + ENGINE_KILLTIME; //Ill give the engine 1 sec to respond
 
