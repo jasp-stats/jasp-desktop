@@ -52,7 +52,7 @@ public:
 	const QString&		currentColumnTypeIcon()				const				{ return _currentColumnTypeIcon;}
 	int					currentIndex()						const				{ return _currentIndex;			}
 
-
+	std::vector<std::string> usedVariables()				const	override;
 signals:
 	void currentTextChanged();
 	void currentValueChanged();

@@ -54,7 +54,6 @@ public:
 	Json::Value					createMeta()								override	{ return _boundControl->createMeta();				}
 	void						setBoundValue(const Json::Value& value, 
 											  bool emitChange = true)		override	{ return _boundControl->setBoundValue(value, emitChange);	}
-	std::vector<std::string>	usedVariables()								override	{ return _boundControl->usedVariables();			}
 
 	ListViewType				listViewType()						const				{ return _listViewType;								}
 	BoundControl*				boundControl()								override	{ return _boundControl;								}

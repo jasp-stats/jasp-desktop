@@ -873,10 +873,10 @@ std::set<string> AnalysisForm::usedVariables()
 
 	for (JASPControl* control : _controls)
 	{
-		BoundControl* boundControl = control->boundControl();
-		if (boundControl)
+		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
+		if (listControl)
 		{
-			std::vector<std::string> usedVariables = boundControl->usedVariables();
+			std::vector<std::string> usedVariables = listControl->usedVariables();
 			result.insert(usedVariables.begin(), usedVariables.end());
 		}
 	}

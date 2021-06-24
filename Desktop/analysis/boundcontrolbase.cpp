@@ -79,24 +79,6 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 		emit _control->boundValueChanged(_control);
 }
 
-std::vector<std::string> BoundControlBase::usedVariables()
-{
-	if (_isColumn || _control->encodeValue())
-	{
-		JASPListControl* listControl = qobject_cast<JASPListControl*>(_control);
-		if (listControl)
-			return listControl->model()->terms().asVector();
-		else
-		{
-			const Json::Value value = boundValue();
-			if (value.isString())
-				return { value.asString() };
-		}
-	}
-
-	return {};
-}
-
 void BoundControlBase::setIsRCode(std::string key)
 {
 	_isRCode.insert(key);

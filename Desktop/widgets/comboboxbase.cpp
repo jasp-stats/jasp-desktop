@@ -106,6 +106,12 @@ void ComboBoxBase::setUpModel()
 	JASPListControl::setUpModel();
 }
 
+std::vector<std::string> ComboBoxBase::usedVariables() const
+{
+	if (containsVariables())	return { fq(_currentValue) };
+	else						return {};
+}
+
 void ComboBoxBase::termsChangedHandler()
 {
 	std::vector<std::string> values = _model->getValues();
