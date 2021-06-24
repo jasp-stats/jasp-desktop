@@ -135,6 +135,9 @@ void ReadStatImportColumn::setType(columnType newType)
 		throw std::runtime_error("An attempt was made to change the columntype of '" + _name + "' to "+ columnTypeToString(newType) + " from " + columnTypeToString(_type) + " but the conversion failed.\n" + extraMsg);
 	};
 
+	if(_type != columnType::unknown && newType == columnType::unknown)
+		throw std::runtime_error("Changing the importcolumns type back to unknown from " + columnTypeToString(_type) + " is not allowed!");
+
 	switch(_type)
 	{
 	case columnType::unknown:
@@ -146,8 +149,6 @@ void ReadStatImportColumn::setType(columnType newType)
 	case columnType::scale:
 		switch(newType)
 		{
-		case columnType::unknown:		throw std::runtime_error("Changing the importcolumns type back to unknown from " + columnTypeToString(_type) + " is not allowed!");
-
 		case columnType::ordinal:		[[clang::fallthrough]];
 		case columnType::nominal:
 			for(double d : _doubles)
@@ -170,7 +171,6 @@ void ReadStatImportColumn::setType(columnType newType)
 	case columnType::nominal:
 		switch(newType)
 		{
-		case columnType::unknown:		throw std::runtime_error("Changing the importcolumns type back to unknown from " + columnTypeToString(_type) + " is not allowed!");
 		case columnType::ordinal:		[[clang::fallthrough]];
 		case columnType::nominal:
 			_type = newType; //Ordinal <> Nominal?
@@ -201,7 +201,6 @@ void ReadStatImportColumn::setType(columnType newType)
 	case columnType::nominalText:
 		switch(newType)
 		{
-		case columnType::unknown:		throw std::runtime_error("Changing the importcolumns type back to unknown from " + columnTypeToString(_type) + " is not allowed!");
 		case columnType::scale:
 			if(_strLabels.size() > 0)
 				conversionFailed("Because we would have to drop some labels.");
@@ -357,6 +356,8 @@ void ReadStatImportColumn::addValue(const int & val)
 
 void ReadStatImportColumn::addLabel(const int & val, const std::string & label)
 {
+	//Log::log() << "ReadStatImportColumn::addLabel(int '" << val << "', '" << label << "');" <<std::endl;
+
 	if(_type == columnType::unknown)
 		setType(columnType::nominal);
 
@@ -387,6 +388,8 @@ void ReadStatImportColumn::addLabel(const int & val, const std::string & label)
 
 void ReadStatImportColumn::addLabel(const double & val, const std::string & label)
 {
+	//Log::log() << "ReadStatImportColumn::addLabel(dbl '" << val << "', '" << label << "');" <<std::endl;
+
 	if(_type != columnType::nominalText)
 	{
 		if(double(int(val)) == val)
@@ -404,6 +407,8 @@ void ReadStatImportColumn::addLabel(const double & val, const std::string & labe
 
 void ReadStatImportColumn::addLabel(const std::string & val, const std::string & label)
 {
+	//Log::log() << "ReadStatImportColumn::addLabel(str '" << val << "', '" << label << "');" <<std::endl;
+
 	if(_ints.size() == 0 && _doubles.size() == 0)
 		setType(columnType::nominalText); //If we haven't added anything else and the first value is a string then the rest should also be a string from now on
 

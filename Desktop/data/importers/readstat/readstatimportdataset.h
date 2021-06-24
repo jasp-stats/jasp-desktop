@@ -29,14 +29,15 @@ bool operator<(const readstat_value_t & l, const readstat_value_t & r);
 
 class ReadStatImportDataSet : public ImportDataSet
 {
-	typedef std::map<std::string, std::map<readstat_value_t, std::string>> labelsMapT;
+	typedef std::pair<readstat_type_t, std::string>							keyTypeAndLabelT;
+	typedef std::map<std::string, std::map<std::string, keyTypeAndLabelT>>	labelsMapT;
 public:
 				ReadStatImportDataSet(ReadStatImporter * importer, boost::function<void(int)>	progressCallback)
 					: ImportDataSet(importer), _progressCallback(progressCallback) {}
 
 				~ReadStatImportDataSet()					override;
 
-	int			var_count()						const	{ return _var_count; }
+	int			var_count()							const	{ return _var_count; }
 	void		setVariableCount(int newCount)				{ _var_count = newCount; }
 
 	void						addLabelKeyValue(	const std::string & labelsID, const readstat_value_t & key, const std::string & label);

@@ -98,13 +98,8 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 	else							throw std::runtime_error("JASP does not support extension " + _ext);
 
 	Log::log() << "Done parsing file" << std::endl;
-	readstat_parser_free(parser);
-	
-#ifdef WIN32
-	io_cleanup();
-#endif
 
-	Log::log() << "Setting labels to column" << std::endl;
+	Log::log() << "Setting labels to columns" << std::endl;
 	data->setLabelsToColumns();
 
 	if (error != READSTAT_OK)
@@ -112,6 +107,14 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 
 	Log::log() << "Building dictionary" << std::endl;
 	data->buildDictionary(); //Not necessary for opening this file but synching will break otherwise...
+
+
+	Log::log() << "Freeing readstat structs" << std::endl;
+	readstat_parser_free(parser);
+
+#ifdef WIN32
+	io_cleanup();
+#endif
 
 	Log::log() << "Returning data" << std::endl;
 	return data;
