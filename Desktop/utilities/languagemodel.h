@@ -63,7 +63,7 @@ public slots:
 signals:
 	void currentLanguageChanged();
 	void aboutToChangeLanguage();
-	void pauseEngines();
+	void pauseEngines(bool unloadData = false);
 	void stopEngines();
 	void resumeEngines();
 

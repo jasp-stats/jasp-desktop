@@ -249,7 +249,7 @@ signals:
 				void				columnDataTypeChanged(	QString columnName);
 				void				labelsReordered(		QString columnName);
 				void				isModifiedChanged();
-				void				pauseEnginesSignal();
+				void				pauseEnginesSignal(bool unloadData);
 				void				resumeEnginesSignal();
 				bool				enginesInitializingSignal();
 				void				freeDatasetSignal(DataSet * dataset);

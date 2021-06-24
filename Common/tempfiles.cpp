@@ -352,6 +352,8 @@ void TempFiles::deleteList(const vector<string> &files)
 	}
 }
 
+
+///Fairly sure this function is pointless, the "_shmemNames" it collects do not seem to reflect the actual paths to the sharedmem files...
 void TempFiles::addShmemFileName(std::string &name)
 {
 	_shmemNames.push_back(Dirs::tempDir()+ "/" + name);
