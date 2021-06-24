@@ -74,7 +74,7 @@ signals:
 	void currentIndexChanged();
 	void languageChanged();
 	void aboutToChangeLanguage();
-	void pauseEngines();
+	void pauseEngines(bool unloadData = false);
 	void stopEngines();
 	void resumeEngines();
 

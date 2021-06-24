@@ -230,7 +230,7 @@ bool Engine::receiveMessages(int timeout)
 		case engineState::filter:				receiveFilterMessage(jsonRequest);			break;
 		case engineState::rCode:				receiveRCodeMessage(jsonRequest);			break;
 		case engineState::computeColumn:		receiveComputeColumnMessage(jsonRequest);	break;
-		case engineState::pauseRequested:		pauseEngine();								break;
+		case engineState::pauseRequested:		pauseEngine(jsonRequest);					break;
 		case engineState::resuming:				resumeEngine(jsonRequest);					break;
 		case engineState::moduleInstallRequest:	
 		case engineState::moduleLoadRequest:	receiveModuleRequestMessage(jsonRequest);	break;
@@ -813,7 +813,7 @@ void Engine::sendEngineStopped()
 	sendString(rCodeResponse.toStyledString());
 }
 
-void Engine::pauseEngine()
+void Engine::pauseEngine(const Json::Value & json)
 {
 	Log::log() << "Engine paused" << std::endl;
 
@@ -828,7 +828,8 @@ void Engine::pauseEngine()
 	_engineState = engineState::paused;
 
 	freeRBridgeColumns();
-	SharedMemory::unloadDataSet();
+	if(json.get("unloadData", false).asBool()) //Don't do it too often or otherwise the sharedmemfile might get lost. See https://github.com/jasp-stats/jasp-issues/issues/1302
+		SharedMemory::unloadDataSet();
 	sendEnginePaused();
 }
 

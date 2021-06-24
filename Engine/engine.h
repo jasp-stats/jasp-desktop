@@ -86,8 +86,8 @@ private: // Methods:
 
 
 	void stopEngine();
-	void pauseEngine();
-	void resumeEngine(const Json::Value & jsonRequest); //It is practical if resume also gets the settings
+	void pauseEngine(	const Json::Value & jsonRequest);
+	void resumeEngine(	const Json::Value & jsonRequest); 
 	void sendEnginePaused();
 	void sendEngineResumed();
 	void sendEngineStopped();

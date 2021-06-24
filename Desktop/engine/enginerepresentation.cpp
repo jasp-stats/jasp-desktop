@@ -612,12 +612,13 @@ bool EngineRepresentation::isBored() const
 	return _idleStartSecs != -1 && _idleStartSecs + ENGINE_BORED_SHUTDOWN < Utils::currentSeconds();		
 }
 
-void EngineRepresentation::pauseEngine()
+void EngineRepresentation::pauseEngine(bool unloadData)
 {
 	if(initializing())
 		return;
 	
-	_pauseRequested = true;
+	_pauseRequested  = true;
+	_pauseUnloadData = unloadData;
 	abortAnalysisInProgress(true);
 }
 
@@ -626,6 +627,7 @@ void EngineRepresentation::sendPauseEngine()
 	Json::Value json		= Json::Value(Json::objectValue);
 	_engineState			= engineState::pauseRequested;
 	json["typeRequest"]		= engineStateToString(_engineState);
+	json["unloadData"]		= _pauseUnloadData;
 
 	Log::log() << "informing engine #" << channelNumber() << " that it ought to pause for a bit" << std::endl;
 
