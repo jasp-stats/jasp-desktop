@@ -268,16 +268,7 @@ void DynamicModules::registerForLoading(const std::string & moduleName)
 		return; //When the install is done it will trigger the need for loading anyway.
 
 	_modulesToBeUnloaded.erase(moduleName);
-
-	//Ok, it might be the case that this module depends on some other module that isn't loaded yet.
-
-	if(!requiredModulesForModuleReady(moduleName))
-	{
-		Log::log() << "Required modules for module '" << moduleName << "' not ready, so will not load it now." << std::endl;
-		_modulesWaitingForDependency.insert(moduleName);
-	}
-	else
-		_modulesToBeLoaded.insert(moduleName);
+	_modulesToBeLoaded.insert(moduleName);
 }
 
 bool DynamicModules::requiredModulesForModuleReady(const std::string & moduleName) const
