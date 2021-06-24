@@ -5,8 +5,6 @@
 #include "readstat.h"
 #include "../importcolumn.h"
 
-
-
 class ReadStatImportColumn : public ImportColumn
 {
 public:
