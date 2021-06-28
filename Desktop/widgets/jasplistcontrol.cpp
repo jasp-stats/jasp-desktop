@@ -232,6 +232,12 @@ int JASPListControl::count()
 	return model() ? model()->rowCount() : 0;
 }
 
+std::vector<std::string> JASPListControl::usedVariables() const
+{
+	if (containsVariables() && isBound() && model())	return model()->terms().asVector();
+	else												return {};
+}
+
 void JASPListControl::sourceChangedHandler()
 {
 	if (!model())	return;

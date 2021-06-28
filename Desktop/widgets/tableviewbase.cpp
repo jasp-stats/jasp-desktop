@@ -216,6 +216,19 @@ QVariant TableViewBase::defaultValue() const
 	return _defaultValue;
 }
 
+std::vector<std::string> TableViewBase::usedVariables() const
+{
+	std::vector<std::string> result;
+
+	if (_tableModel && _tableModel->areColumnNamesVariables())
+	{
+		for (int i = 0; i < _tableModel->columnCount(); i++)
+			result.push_back(fq(_tableModel->headerData(i, Qt::Horizontal).toString()));
+	}
+
+	return result;
+}
+
 void TableViewBase::setItemTypePerRow(QVariantList list)
 {
 	QList<JASPControl::ItemType> typeList;

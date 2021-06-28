@@ -38,7 +38,6 @@ public:
 	const Json::Value&			boundValue()														override;
 	void						resetBoundValue()													override { bindTo(_orgValue); }
 	void						setBoundValue(const Json::Value& value, bool emitChange = true)		override;
-	std::vector<std::string>	usedVariables()														override;
 	void						setIsRCode(std::string key = "");
 	void						setIsColumn(bool isComputed, columnType type = columnType::unknown);
 	

@@ -97,6 +97,7 @@ public:
 
 				bool				valueOk(QVariant value, int col = -1, int row = -1);
 	virtual		bool				isRCodeColumn(int)													const				{ return false; }
+	virtual		bool				areColumnNamesVariables()											const				{ return false; }
 
 
 				JASPControl*		getRowControl(const QString& key, const QString& name)				const	override;

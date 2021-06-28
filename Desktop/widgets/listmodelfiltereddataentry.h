@@ -47,6 +47,7 @@ public:
 
 	void			refreshModel()															override;
 
+	bool			areColumnNamesVariables()										const	override	{ return true; }
 
 public slots:
 	void	sourceTermsReset()															override;
