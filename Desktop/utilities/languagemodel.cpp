@@ -70,23 +70,18 @@ void LanguageModel::initialize()
 	findQmFiles(_qmlocation);
 
 	QLocale::Language prefLanguage = static_cast<QLocale::Language>(Settings::value(Settings::PREFERRED_LANGUAGE).toInt());
-	if (!isJaspSupportedLanguage(prefLanguage)) prefLanguage =  QLocale::English; //If some preferred language in the settings is not supported any more (could crash)
+	if (prefLanguage == QLocale::AnyLanguage || !isJaspSupportedLanguage(prefLanguage)) prefLanguage =  QLocale::English; //If some preferred language in the settings is not supported any more (could crash)
 	
 	LanguageInfo & li = _languagesInfo[prefLanguage];
 	_currentLanguageInfo = li;
-		
-	if (prefLanguage == 0 || prefLanguage == QLocale::English) // No preferred language yet set or native JASP language English
-	{
+	setCurrentIndex(_languages.indexOf(prefLanguage)); //Update the PrefAdvanced info
+
+	if (prefLanguage == QLocale::English) // No preferred language yet set or native JASP language English
 		Settings::setValue(Settings::PREFERRED_LANGUAGE, QLocale::English);
-		setCurrentIndex(0);
-	}
 	else
 	{
-		setCurrentIndex(_languages.indexOf(prefLanguage)); //Update the PrefAdvanced info
-
 		// Load all translated language files for specific language
 		loadQmFilesForLanguage(li.language);
-
 		_qml->retranslate();
 	}
 
@@ -336,7 +331,9 @@ void LanguageModel::findQmFiles(QString qmlocation)
 		{
 			Log::log() << "Language (" << loc.language() << ") not registered in LanguageModel, adding it now" << std::endl;
 
-			_languages.push_back(loc.language());
+			int i = 0;
+			while (i < _languages.size() && loc.nativeLanguageName().compare(_languagesInfo[_languages[i]].nativeLanguageName, Qt::CaseInsensitive) > 0)	i++;
+			_languages.insert(i, loc.language());
 			_languagesInfo.insert(loc.language(), LanguageInfo(loc.language(), QLocale::languageToString(loc.language()), loc.nativeLanguageName(), localname, fi.filePath(), qmlocation));
 		}
 		else

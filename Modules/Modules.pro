@@ -1,7 +1,6 @@
 QT -= core gui
 
 JASP_BUILDROOT_DIR = $$OUT_PWD/..
-SUPPORTED_LANGUAGES = nl de es #Just setting this once is enough...
 
 include(../JASP.pri)
 include(../R_HOME.pri)

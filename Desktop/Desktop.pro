@@ -1,8 +1,6 @@
 QT      += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
 
-SUPPORTED_LANGUAGES = nl de es pt#ja tr
-
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
 
 include(../JASP.pri)
