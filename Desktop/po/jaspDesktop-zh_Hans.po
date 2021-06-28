@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-06-27 09:34+0000\n"
+"PO-Revision-Date: 2021-06-28 06:29+0000\n"
 "Last-Translator: sun wong <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -118,207 +118,210 @@ msgstr "5因素"
 
 msgctxt "VariablesForm|"
 msgid "All"
-msgstr ""
+msgstr "全部"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
-msgstr ""
+msgstr "关于JASP"
 
 msgctxt "AboutWindow|"
 msgid "Version:"
-msgstr ""
+msgstr "版本："
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr ""
+msgstr "构建于："
 
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr ""
+msgstr "源："
 
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr ""
+msgstr "在此处访问源"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr ""
+msgstr "下载："
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr ""
+msgstr "引文："
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr ""
+msgstr "全选"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr ""
+msgstr "复制所选"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
-msgstr ""
+msgstr "BibTeX"
 
 msgctxt "AboutWindow|"
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr ""
+msgstr "拖拽以重新排布分析"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr ""
+msgstr "编辑此分析的标题"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr ""
+msgstr "重复此分析"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr ""
+msgstr "显示此分析的信息"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr ""
+msgstr "移除此分析"
 
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "调整数据/结果的大小"
 
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "拖动以显示数据"
 
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
-msgstr ""
+msgstr "隐藏输入选项"
 
 msgctxt "AnalysisForms|"
 msgid "Show input options"
-msgstr ""
+msgstr "显示输入选项"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
-msgstr ""
+msgstr "添加"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
-msgstr ""
+msgstr "删除"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr ""
+msgstr "贝叶斯因子"
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
-msgstr ""
+msgstr "BF₁₀"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
-msgstr ""
+msgstr "贝叶斯因子用于量化备择假设相对于零假设的证据。"
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
-msgstr ""
+msgstr "BF₀₁"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
-msgstr ""
+msgstr "贝叶斯因子用于量化相零假设对于备择假设的证据。"
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr ""
+msgstr "Log(BF₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "BF10 的自然对数。"
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "添加列"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "删除列"
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr ""
+msgstr "计算列： "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
-msgstr ""
+msgstr "选择列"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "绝对值"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "标准差"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr ""
+msgstr "方差"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr ""
+msgstr "求和"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "值的乘积"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "返回最小值"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "返回最大值"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr ""
+msgstr "平均值"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "y 舍入到 n 位小数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "返回y中的元素数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr ""
+msgstr "中位数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr ""
+msgstr "自然对数"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "以 2 为底的对数"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "以 10 为底的对数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
@@ -326,7 +329,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr ""
+msgstr "指数"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -340,9 +343,10 @@ msgid ""
 "real numbers to numbers between -1 and 1"
 msgstr ""
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr ""
+msgstr "将您的数据分解为 numBreaks 级别"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
@@ -350,179 +354,181 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "if-else 语句"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Gaussian distribution with specified mean and standard "
 "deviation sd"
-msgstr ""
+msgstr "从具有指定均值和标准差 sd 的高斯分布中生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
 "centrality parameter ncp"
-msgstr ""
+msgstr "从具有自由度 df 和非中心参数 ncp 的 t 分布上生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
-msgstr ""
+msgstr "从具有自由度 df 和非中心参数 ncp 的 卡方分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
 "df1, df2 and non-centrality parameter ncp"
-msgstr ""
+msgstr "从具有指定自由度df1、df2和非中心性参数ncp的F分布中生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
 "probability prob"
-msgstr ""
+msgstr "从具有指定试验和概率区间的二项分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a negative binomial distribution with specified trials "
 "and probability prob"
-msgstr ""
+msgstr "从具有指定试验和概率区间的负二项分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a geometric distribution with specified probability prob"
-msgstr ""
+msgstr "从具有指定概率区间的几何分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr ""
+msgstr "从具有指定参数lambda 的泊松分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
-msgstr ""
+msgstr "从具有指定形状参数 alpha 和 beta 的 beta 分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr ""
+msgstr "从具有指定最小值和最大值之间的均匀分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr ""
+msgstr "从具有指定形状参数和尺度的伽马分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
-msgstr ""
+msgstr "从具有指定参数的指数分布生成数据"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
 "mean meanLog and standard deviation sdLog"
-msgstr ""
+msgstr "从具有指定对数均值 meanLog 和标准偏差 sdLog 的对数正态分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
-msgstr ""
+msgstr "从具有指定形状参数和尺度的韦布尔分布生成数据"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr ""
+msgstr "移除计算列"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr ""
+msgstr "显示生成的R代码"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr ""
+msgstr "计算列"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
-msgstr ""
+msgstr "计算的列"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr ""
+msgstr "单击以计算列"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
-msgstr ""
+msgstr "(以行为单位)计算的列"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "打开文档"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
-msgstr ""
+msgstr "关闭计算列窗口"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
-msgstr ""
+msgstr "计算列已更改"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
-msgstr ""
+msgstr "您的计算列有未应用的更改；您想做什么？"
 
 msgctxt "ContrastsList|"
 msgid "none"
-msgstr ""
+msgstr "无"
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr ""
+msgstr "偏差"
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr ""
+msgstr "简单"
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr ""
+msgstr "差异"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr ""
+msgstr "Helmert"
 
+#, fuzzy
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr ""
+msgstr "重复"
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr ""
+msgstr "多项式"
 
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr ""
+msgstr "自定义"
 
 msgctxt "ContrastsList|"
 msgid "Factors"
-msgstr ""
+msgstr "因子"
 
 #, qt-format
 msgctxt "ContrastsList|"
 msgid "Custom for %1"
-msgstr ""
+msgstr "自定义为 %1"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr ""
+msgstr "创建计算列"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr ""
+msgstr "名称："
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr ""
+msgstr "列名已被使用，请选择其他名称。"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr ""
+msgstr "通过R代码定义列"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
