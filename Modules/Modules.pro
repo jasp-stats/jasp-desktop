@@ -1,20 +1,42 @@
 QT -= core gui
 
-JASP_BUILDROOT_DIR = $$OUT_PWD/..
+exists(/app/lib/*){
+	message("On flatpak!")
+	JASP_BUILDROOT_DIR	= /app/bin
+	mkpath($${JASP_BUILDROOT_DIR}/Modules)
+
+	MODULES_RENV_ROOT	= /app/lib64/renv-root
+	MODULES_RENV_CACHE	= /app/lib64/renv-cache
+	R_REPOSITORY		= file:///app/lib64/local-cran
+
+}else{
+
+	JASP_BUILDROOT_DIR  = $$OUT_PWD/.. #We expect this to be run from at least one folder deep into the buildroot! Engine/Desktop/Etc
+
+	MODULES_RENV_ROOT   = $$SYS_RENV_ROOT
+	isEmpty(MODULES_RENV_ROOT):		MODULES_RENV_ROOT	= "$$OUT_PWD/../renv-root"  #I assume we will not need to ship this, but we do need the following folder:
+									MODULES_RENV_CACHE	= "$$OUT_PWD/../renv-cache" #While this one needs to be shipped and the symlinks will need to be relative, but we will find out quick enough if not
+
+	mkpath($$MODULES_RENV_ROOT)
+	mkpath($$MODULES_RENV_CACHE)
+
+	R_REPOSITORY = $$JASP_R_REPOSITORY
+	isEmpty(R_REPOSITORY): R_REPOSITORY = "https://cloud.r-project.org/"
+
+}
+
+message(Modules uses JASP_BUILDROOT_DIR of $${JASP_BUILDROOT_DIR})
+message("Using renv-root: $$MODULES_RENV_ROOT")
+message("Using renv-cache: $$MODULES_RENV_CACHE")
+message("Using repository: $$R_REPOSITORY")
+
+SUPPORTED_LANGUAGES = nl de es #Just setting this once is enough...
 
 include(../JASP.pri)
 include(../R_HOME.pri)
 
 TEMPLATE = aux
 CONFIG -= app_bundle
-
-MODULES_RENV_ROOT   = $$SYS_RENV_ROOT
-isEmpty(MODULES_RENV_ROOT): MODULES_RENV_ROOT	= "$$OUT_PWD/../renv-root"  #I assume we will not need to ship this, but we do need the following folder:
-							MODULES_RENV_CACHE	= "$$OUT_PWD/../renv-cache" #While this one needs to be shipped and the symlinks will need to be relative, but we will find out quick enough if not
-mkpath($$MODULES_RENV_ROOT)
-mkpath($$MODULES_RENV_CACHE)
-
-message("Using renv-root: $$MODULES_RENV_ROOT")
 
 MODULE_DIR			= $$PWD
 
