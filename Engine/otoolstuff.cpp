@@ -77,7 +77,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool useLogger, 
 						otoolOut	= _system(otoolCmd);
 			auto		otoolLines	= stringUtils::splitString(otoolOut, '\n');
 	
-			/*if(printStuff)
+			if(printStuff)
 			{
 				logCout << "- jaspRCPP_postProcessLocalPackageInstall used otool -L on " << libDir;
 				logCout << " and found this output:\n";
@@ -85,7 +85,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool useLogger, 
 				for(const auto & line : otoolLines)
 					logCout << line << std::endl;
 			
-			}*/
+			}
 			
 			//ok otoolLines[1] represents the "id" of the lib but we do not need to change it because it probably points directly back to itself. The other lines however we should change
 	
