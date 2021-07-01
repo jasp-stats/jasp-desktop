@@ -1576,10 +1576,6 @@ msgstr ""
 "defecto de JASP."
 
 msgctxt "PrefsUI|"
-msgid "User Interface options"
-msgstr "Opcións da interface de usuario"
-
-msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
 msgstr "Opcións diversas"
 
@@ -3799,3 +3795,40 @@ msgstr "Atopouse un tipo de lista (%1) incorrecto para VariablesList %2"
 msgctxt "VariablesListBase|"
 msgid "Wrong column type: %1 for ListView %2"
 msgstr "Tipo de columna incorrecto: %1 para ListView %2"
+
+msgctxt "PrefsUI|"
+msgid "User Interface Options"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "A nice grouping of elements"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "You can enter an integer here: "
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "This is an incredibly useful tooltip right?"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The first checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The second checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The last checkbox"
+msgstr ""
+
+#, fuzzy
+msgctxt "jasp-qml-style-example|"
+msgid "Variables"
+msgstr "Variables"
+
+msgctxt "jasp-qml-style-example|"
+msgid "Split"
+msgstr ""

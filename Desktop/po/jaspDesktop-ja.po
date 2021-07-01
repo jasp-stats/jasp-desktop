@@ -1,16 +1,10 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-06-23 07:35+0000\n"
-"Last-Translator: Koji Kosugi <kosugitti@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/ja/>\n"
-"Language: ja\n"
-"X-Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7.1-dev\n"
+"X-Language: ja\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -123,14 +117,6 @@ msgstr "5要因のみ"
 msgctxt "VariablesForm|"
 msgid "All"
 msgstr "すべて"
-
-msgctxt "VariablesForm|"
-msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr "変数フォームで設定できる変数リストは 1 つだけです。"
-
-msgctxt "VariablesForm|"
-msgid "There is no Available List in the Variables Form"
-msgstr "変数フォームに使用可能なリストがありません"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
@@ -741,16 +727,13 @@ msgid "Modules options"
 msgstr "モジュールオプション"
 
 msgctxt "PrefsAdvanced|"
-msgid "Remember Enabled Modules"
-msgstr "有効なモジュールを記憶する"
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
 "次回JASPを起動したときに、前回の続きを行います。\n"
-"このオプションを有効にすると、どのモジュールを有効にしたかがJASPに記憶されます。"
+"このオプションを有効にすると、どのモジュールを有効にしたかがJASPに記憶されま"
+"す。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
@@ -779,7 +762,9 @@ msgstr "ヘルプ用マークダウンファイルの生成"
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
-msgstr "これを有効にすると、qml オプションの情報からマークダウンヘルプファイルが生成されます。"
+msgstr ""
+"これを有効にすると、qml オプションの情報からマークダウンヘルプファイルが生成"
+"されます。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows workarounds"
@@ -790,18 +775,12 @@ msgid "Handling LC_CTYPE"
 msgstr "LC_CTYPEの処理"
 
 msgctxt "PrefsAdvanced|"
-msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
-msgstr "LC_CTYPEの最適な設定をJASPに推測させる(推奨!)"
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
-msgstr "インストールおよびユーザーディレクトリのパスでLC_CTYPE = \"C\"との互換性を確認し、必要に応じて設定します。"
-
-msgctxt "PrefsAdvanced|"
-msgid "Always set LC_CTYPE to \"C\"."
-msgstr "常にLC_CTYPEを \"C \"に設定してください。"
+msgstr ""
+"インストールおよびユーザーディレクトリのパスでLC_CTYPE = \"C\"との互換性を確"
+"認し、必要に応じて設定します。"
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
@@ -813,12 +792,9 @@ msgid ""
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
 msgstr ""
-"これが有効になっていて、インストールパスにASCII以外の文字がある場合、JASPは機能しなくなります。ユーザー名にASCII以外の文字しかない場合は、モ"
-"ジュールのインストールが失敗する可能性があります。"
-
-msgctxt "PrefsAdvanced|"
-msgid "Keep LC_CTYPE at systemdefault."
-msgstr "システムのデフォルトでLC_CTYPEを維持します。"
+"これが有効になっていて、インストールパスにASCII以外の文字がある場合、JASPは機"
+"能しなくなります。ユーザー名にASCII以外の文字しかない場合は、モジュールのイン"
+"ストールが失敗する可能性があります。"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -827,8 +803,10 @@ msgid ""
 "characters in the path. Sorry for the inconvenience, we are working on it "
 "and hopefully have this fixed next release."
 msgstr ""
-"これを有効にすると、結果に表示される特定の文字がおかしくなりますが、少なくともパスに非アスキー文字が含まれるフォルダにインストールした場合は、JASPを使"
-"用することができます。ご不便をおかけして申し訳ありません。現在作業を進めており、次のリリースではこの問題を解決できるようにしたいと考えています。"
+"これを有効にすると、結果に表示される特定の文字がおかしくなりますが、少なくと"
+"もパスに非アスキー文字が含まれるフォルダにインストールした場合は、JASPを使用"
+"することができます。ご不便をおかけして申し訳ありません。現在作業を進めてお"
+"り、次のリリースではこの問題を解決できるようにしたいと考えています。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
@@ -840,7 +818,9 @@ msgstr "ファイルにログを記録する"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr "JASPのデバッグログをファイルに保存するには、このチェックボックスをオンにします。"
+msgstr ""
+"JASPのデバッグログをファイルに保存するには、このチェックボックスをオンにしま"
+"す。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
@@ -885,7 +865,8 @@ msgid ""
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
 "変数を「スケール」に分類する前に一意な整数値の閾値。\n"
-"有効にするには、データをリロードする必要があります。詳細はヘルプをご覧ください。"
+"有効にするには、データをリロードする必要があります。詳細はヘルプをご覧くださ"
+"い。"
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
@@ -943,7 +924,9 @@ msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
-msgstr "これは、すべてのプロットの背景を白くし、LaTeXで使用したり、ジャーナルに投稿したりする場合に非常に便利です。"
+msgstr ""
+"これは、すべてのプロットの背景を白くし、LaTeXで使用したり、ジャーナルに投稿し"
+"たりする場合に非常に便利です。"
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
@@ -953,11 +936,9 @@ msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
-msgstr "これは、すべてのプロットの背景を透明にするもので、白以外の背景でもシームレスに使用したい場合に便利です。"
-
-msgctxt "PrefsUI|"
-msgid "User Interface options"
-msgstr "ユーザーインターフェースオプション"
+msgstr ""
+"これは、すべてのプロットの背景を透明にするもので、白以外の背景でもシームレス"
+"に使用したい場合に便利です。"
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
@@ -973,43 +954,22 @@ msgid "default: %1"
 msgstr "デフォルト: %1"
 
 msgctxt "PrefsUI|"
-msgid "R, JAGS or Lavaan code:"
-msgstr "R、JAGS、またはLavaanコード："
-
-msgctxt "PrefsUI|"
-msgid "Result & Help:"
-msgstr "結果とヘルプ："
-
-msgctxt "PrefsUI|"
 msgid "Themes"
 msgstr "テーマ"
 
 msgctxt "PrefsUI|"
-msgid "Light Theme"
-msgstr "明るいテーマ"
-
-msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
-msgstr "ライトテーマに切り替えます。これは、JASPのデフォルトのオリジナルフレーバーです。"
-
-msgctxt "PrefsUI|"
-msgid "Dark Theme"
-msgstr "ダークテーマ"
+msgstr ""
+"ライトテーマに切り替えます。これは、JASPのデフォルトのオリジナルフレーバーで"
+"す。"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
-msgstr "ダークテーマに変更し、夜更かしする人のためにJASPをより見やすくしました。"
-
-msgctxt "PrefsUI|"
-msgid "Preferred Language"
-msgstr "優先する言語"
-
-msgctxt "PrefsUI|"
-msgid "Choose Language  "
-msgstr "言語を選択  "
+msgstr ""
+"ダークテーマに変更し、夜更かしする人のためにJASPをより見やすくしました。"
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
@@ -1022,7 +982,9 @@ msgstr "ズーム(%): "
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
-msgstr "インターフェイスの要素（テキスト、ボタンなど）のサイズを大きくしたり小さくしたりすることができます。"
+msgstr ""
+"インターフェイスの要素（テキスト、ボタンなど）のサイズを大きくしたり小さくし"
+"たりすることができます。"
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
@@ -1035,37 +997,30 @@ msgid ""
 msgstr "オプションやデータビューアーなどでのスクロールの速度を設定します。"
 
 msgctxt "PrefsUI|"
-msgid "Safe Graphics Mode"
-msgstr "安全なグラフィックモード"
-
-msgctxt "PrefsUI|"
 msgid ""
 "Switches to a \"safer\" mode for graphics aka software rendering.\n"
 "It will make your interface slower but if you have some problems (weird "
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
-"グラフィックス、ソフトウェア レンダリングの 「安全な」モードに切り替えます。\n"
-"実行するとインターフェイスが遅くなりますが、いくつかの問題がある場合(奇妙な不具合、結果を見ることができない、または何も)それらを修正するかもしれません。"
-"\n"
+"グラフィックス、ソフトウェア レンダリングの 「安全な」モードに切り替えま"
+"す。\n"
+"実行するとインターフェイスが遅くなりますが、いくつかの問題がある場合(奇妙な不"
+"具合、結果を見ることができない、または何も)それらを修正するかもしれません。\n"
 "分析の速度はそれほど変わりません。"
-
-msgctxt "PrefsUI|"
-msgid "Disable Animations"
-msgstr "アニメーションの無効化"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
-msgstr "すべてのアニメーションをオフにします。これは「セーフ・グラフィックス・モード」がオンになっている場合に表示されます。"
+msgstr ""
+"すべてのアニメーションをオフにします。これは「セーフ・グラフィックス・モー"
+"ド」がオンになっている場合に表示されます。"
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr "セーフ・グラフィックス・モード \"がオンになっているため、すでにアニメーションが無効になっています"
-
-msgctxt "PrefsUI|"
-msgid "Use Native File Dialogs"
-msgstr "ネイティブファイルダイアログの使用"
+msgstr ""
+"セーフ・グラフィックス・モード \"がオンになっているため、すでにアニメーション"
+"が無効になっています"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -1073,8 +1028,9 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
-"無効にすると、オペレーティングシステムのファイルダイアログではなく、Qtで作られたダイアログを使用します。これにより、Windowsで \"Browse "
-"\"を押すとJASPがクラッシュする問題が解決するかもしれません。"
+"無効にすると、オペレーティングシステムのファイルダイアログではなく、Qtで作ら"
+"れたダイアログを使用します。これにより、Windowsで \"Browse \"を押すとJASPがク"
+"ラッシュする問題が解決するかもしれません。"
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
@@ -1091,7 +1047,9 @@ msgstr "計算列コードが適用されました"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr "すべての引数を入力してください - 赤でマークされたフィールドを参照してください。"
+msgstr ""
+"すべての引数を入力してください - 赤でマークされたフィールドを参照してくださ"
+"い。"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
@@ -1291,53 +1249,65 @@ msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "絶対値"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "標準偏差"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr ""
+msgstr "分散"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr ""
+msgstr "総和"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "値の積"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "最小値を返します"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "最大値を返します"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "mean"
-msgstr ""
+msgstr "平均"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "y を小数点以下 n 桁に丸めます"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "yの要素数を返します"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "median"
-msgstr ""
+msgstr "中央値"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "if-else文"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -1375,13 +1345,15 @@ msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "ドキュメントを開く"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Hide filter"
-msgstr ""
+msgstr "フィルタを非表示"
 
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
@@ -1419,9 +1391,10 @@ msgctxt "JagsTableView|"
 msgid "Delete Data"
 msgstr ""
 
+#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "リセット"
 
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
@@ -1435,13 +1408,15 @@ msgctxt "MainPage|"
 msgid "Show data"
 msgstr ""
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "データ/結果のサイズを変更する"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "ドラッグしてデータを表示"
 
 msgctxt "MainPage|"
 msgid "Results"
@@ -1490,10 +1465,6 @@ msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr ""
-
-msgctxt "ModulesMenu|"
-msgid "Select a developer module under Left menu->Preference->Advanced"
 msgstr ""
 
 msgctxt "ModulesMenu|"
@@ -1560,10 +1531,6 @@ msgctxt "RCommanderWindow|"
 msgid "Cleared..."
 msgstr ""
 
-msgctxt "RibbonBar|"
-msgid "Show Modules Menu"
-msgstr ""
-
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
 msgstr ""
@@ -1592,17 +1559,20 @@ msgctxt "SetSeed|"
 msgid "Set seed:"
 msgstr ""
 
+#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "列を追加"
 
+#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "列を削除"
 
+#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "リセット"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
@@ -1798,16 +1768,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "AnalysisForm|"
-msgid "Cannot find a source %1 for VariableList %2"
-msgstr ""
-
-#, qt-format
-msgctxt "AnalysisForm|"
-msgid "No drop key found for %1"
-msgstr ""
-
-#, qt-format
-msgctxt "AnalysisForm|"
 msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
@@ -1901,10 +1861,6 @@ msgid "ComboBox"
 msgstr ""
 
 msgctxt "JASPControl|"
-msgid "RM Factors List"
-msgstr ""
-
-msgctxt "JASPControl|"
 msgid "Input ListView"
 msgstr ""
 
@@ -1970,19 +1926,6 @@ msgstr ""
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
-
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version, contact "
-"the JASP team for assistance."
-msgstr ""
-
-#, qt-format
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version: '%1', "
-"contact the JASP team for assistance."
 msgstr ""
 
 msgctxt "AsyncLoader|"
@@ -2108,17 +2051,20 @@ msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
 msgstr ""
 
+#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr ""
+msgstr "スケール"
 
+#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr ""
+msgstr "順序"
 
+#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
-msgstr ""
+msgstr "名義"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
@@ -2132,9 +2078,10 @@ msgctxt "MessageForwarder|"
 msgid "Cancel"
 msgstr ""
 
+#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
@@ -2365,193 +2312,6 @@ msgid "Do you really want to remove all analyses?"
 msgstr ""
 
 #, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"An error occured trying to initialize a module from dir %1, the error was: %2"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"Something went wrong removing files for module %1 at path '%2' and the error "
-"was: %3"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"The installation of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Loading packages for Module %1 failed"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"Loading the packages of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Path cannot be handled by R"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You are trying to install a module but because the path '%1' contains non-"
-"ascii characters (or a space) R might have some trouble installing there. If "
-"the installation of this module fails you can work around this by changing "
-"your username (or making a new username) that only contains ascii-characters "
-"and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
-">Advanced->DeveloperMode."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Cannot install module because %1 does not exist."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"Cannot install module because it is named '%1' and that name is reserved for "
-"installing the development module.\n"
-"Change the name (in DESCRIPTION and description.json) and try it again. If "
-"you are not the author of this module and do not know how to do this, "
-"contact: %2"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Select a folder"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid ""
-"To install a development module you need to select the folder you want to "
-"watch and load, you can do this under the filemenu, Preferences->Advanced."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Problem initializing module"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid ""
-"There was a problem loading the developer module:\n"
-"\n"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Missing files or folders"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid ""
-"The selected folder cannot be installed as a developer module because it "
-"does not contain all the necessary files and folders."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Create a inst/description.json file."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Create a R directory containing your analysis code."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid ""
-"Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing %1"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 from your development module directory. Without "
-"it your module cannot work, make sure to put it back. For now your old %2 "
-"file will be kept."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had a %1 in your development module directory. "
-"Without it your module cannot work, make sure to create one. How you "
-"installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "%1 was removed!"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed %1 but this file is required for your module to "
-"work. The development module is going to be uninstalled now."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "Missing folder %1"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have removed the folder %1 from your development module "
-"directory. Without it your module cannot work, make sure to put it back. For "
-"now your old folder will be kept."
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"You seem to have never had the folder %1 in your development module "
-"directory. Without it your module cannot work, make sure to create one. How "
-"you installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-
-msgctxt "DynamicModules|"
-msgid "Loading module description encountered a problem"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
-
-#, qt-format
-msgctxt "DynamicModules|"
-msgid ""
-"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a href="
-"\"http://%6\">%6</a></i><br>"
-msgstr ""
-
-#, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
 msgstr ""
@@ -2728,18 +2488,14 @@ msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
 msgstr ""
 
-#, qt-format
-msgctxt "ComboBoxBase|"
-msgid "Unknown error in ComboBox %1"
-msgstr ""
-
 msgctxt "ActionButtons|"
 msgid "Open"
 msgstr ""
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
@@ -2757,9 +2513,10 @@ msgctxt "ActionButtons|"
 msgid "Sync Data"
 msgstr ""
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Close"
-msgstr ""
+msgstr "閉じる"
 
 msgctxt "ActionButtons|"
 msgid "Preferences"
@@ -2894,9 +2651,10 @@ msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
 msgstr ""
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
-msgstr ""
+msgstr "最近使ったファイル"
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
@@ -2906,13 +2664,15 @@ msgctxt "ResourceButtons|"
 msgid "Computer"
 msgstr ""
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr ""
+msgstr "データ ライブラリ"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
@@ -2931,54 +2691,13 @@ msgid "Advanced"
 msgstr ""
 
 #, qt-format
-msgctxt "JASPListControl|"
-msgid ""
-"The list %1 has a rowComponent with the same name (%2) as its optionKey. "
-"Change the optionKey property of the list or the control name."
-msgstr ""
-
-#, qt-format
-msgctxt "JASPListControl|"
-msgid "Wrong column type: %1 for ListView %2"
-msgstr ""
-
-#, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr ""
-
-msgctxt "ListModelFilteredDataEntry|"
-msgid "Too many rows in OptionsTable for ListModelFilteredDataEntry"
 msgstr ""
 
 #, qt-format
 msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelRepeatedMeasuresFactors|"
-msgid "Level %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelRepeatedMeasuresFactors|"
-msgid "RM Factor %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelTableViewBase|"
-msgid "Column number in source use is bigger than the number of columns of %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelTableViewBase|"
-msgid "No column in TableView source %1"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelTableViewBase|"
-msgid "Unknown column specified (%1) in TableView source %2"
 msgstr ""
 
 #, qt-format
@@ -2991,21 +2710,6 @@ msgstr ""
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr ""
-
-#, qt-format
-msgctxt "RadioButtonsGroupBase|"
-msgid "Radio button clicked is unknown: %1"
-msgstr ""
-
-#, qt-format
-msgctxt "RepeatedMeasuresFactorsListBase|"
-msgid "Level %1"
-msgstr ""
-
-#, qt-format
-msgctxt "RepeatedMeasuresFactorsListBase|"
-msgid "RM Factor %1"
 msgstr ""
 
 #, qt-format
@@ -3141,4 +2845,713 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "Factor"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "Level"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "New Factor"
+msgstr ""
+
+msgctxt "FactorLevelList|"
+msgid "New Level"
+msgstr ""
+
+msgctxt "TableView|"
+msgid "Add to the left"
+msgstr ""
+
+msgctxt "TableView|"
+msgid "Add to the right"
+msgstr ""
+
+#, fuzzy
+msgctxt "TableView|"
+msgid "Delete"
+msgstr "削除"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Standardizes the variable"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns true if string contains substring at least once"
+msgstr ""
+
+msgctxt "FactorsForm|"
+msgid "+"
+msgstr ""
+
+msgctxt "FactorsForm|"
+msgid "-"
+msgstr ""
+
+msgctxt "OSFLogin|"
+msgid ""
+"<sup>*</sup>OSF account login only, ORCID or institutional login are not "
+"supported."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Remember enabled modules"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Use default PAT for Github"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Either use the bundled GITHUB_PAT or, if available, use the one set in "
+"environment variables."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Private GITHUB_PAT:"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Clear installed modules and packages"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Always set LC_CTYPE to \"C\""
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Keep LC_CTYPE at system default"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Windows workaround"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Assume CSV is in native encoding when no BOM has been specified"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "See documentation for more information "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "User Interface Options"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "R, JAGS, or lavaan code:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Result & help:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Light theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Dark theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Preferred language"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Choose language  "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Safe graphics mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Disable animations"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use native file dialogs"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "Standardizes the variable"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "returns true if string contains substring at least once"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Select a developer module by clicking here"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid ""
+"The title can only be modified in advanced mode because it is not plain text."
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Title Type"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Plain text"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "R expression"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Hide title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Ticks"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Specify sequence"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Set manually"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Hide ticks"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Specify ticks:"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "from"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "to"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "steps"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Value"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Label"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Tick #"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick left"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick right"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Delete tick"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Range"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Based on data"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Based on ticks"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Lower limit"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Upper limit"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "x-axis"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "y-axis"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Redo last change"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Undo last change"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Advanced settings"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Finish"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Discard changes"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Save plot as"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show main menu"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show modules menu"
+msgstr ""
+
+msgctxt "VariablesWindow|"
+msgid "Edit the labels here or choose which values should be filtered out."
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "A nice grouping of elements"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "You can enter an integer here: "
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "This is an incredibly useful tooltip right?"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The first checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The second checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The last checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "Variables"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "Split"
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Factor Level List"
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem downloading the known issues for this version, it "
+"probably could not connect to the server. Don't worry, JASP will work fine "
+"it just might not tell you about a few small known issues."
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version, this "
+"isn't necessarily a problem but if it keeps occuring you could contact the "
+"JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem ('%1') loading the known issues for this version, "
+"this isn't necessarily a problem but if it keeps occuring you could contact "
+"the JASP team for assistance."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Something went wrong converting columntype, but it is unclear what."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Failed to convert column to ordinal: values contain decimals."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Failed to convert column to continuous: values contain text."
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Failed to convert column to ordinal: values contain text or decimals."
+msgstr ""
+
+msgctxt "LabelModel|"
+msgid "Value"
+msgstr ""
+
+msgctxt "LabelModel|"
+msgid "Label"
+msgstr ""
+
+#, qt-format
+msgctxt "EngineRepresentation|"
+msgid ""
+"Unfortunately the plot could not be edited.\n"
+"\n"
+"Error message:\n"
+"%1\n"
+"\n"
+"If the problem persists, please report the message above at: https://jasp-"
+"stats.org/bug-reports"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean user installed modules and pkgs"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Cleaning up your modules and packages will make sure you only use those "
+"bundled with JASP. \n"
+"\n"
+"Make sure to restart JASP afterwards!"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Cancel"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"No default spreadsheet editor for file %1. Do you want to export the data "
+"into a CSV file and start the default spreadsheet editor for this CSV file?."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Generate Data File as CSV"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades for module %1 failed"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModule|"
+msgid "Loading upgrades gave the following error: %1"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed, should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed with the following message:\n"
+"%1\n"
+"\n"
+"Should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Initializing module %1 failed"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"An error occured trying to initialize a module from dir %1, the error was: %2"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "An error occured trying to load module %1, the error was: '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Something went wrong removing files for module %1 at path '%2' and the error "
+"was: %3"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"The installation of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Loading packages for Module %1 failed"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Loading the packages of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Path cannot be handled by R"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You are trying to install a module but because the path '%1' contains non-"
+"ascii characters (or a space) R might have some trouble installing there. If "
+"the installation of this module fails you can work around this by changing "
+"your username (or making a new username) that only contains ascii-characters "
+"and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
+">Advanced->DeveloperMode."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Cannot install module because %1 does not exist."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Cannot install module because it is named '%1' and that name is reserved for "
+"installing the development module.\n"
+"Change the name (in DESCRIPTION and description.json) and try it again. If "
+"you are not the author of this module and do not know how to do this, "
+"contact: %2"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Select a folder"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"To install a development module you need to select the folder you want to "
+"watch and load, you can do this under the filemenu, Preferences->Advanced."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Problem initializing module"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"There was a problem loading the developer module:\n"
+"\n"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Missing files or folders"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"The selected folder cannot be installed as a developer module because it "
+"does not contain all the necessary files and folders."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Create a inst/Description.qml file."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Create a R directory containing your analysis code."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Create a inst/qml directory containing your optionsforms."
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Create a inst/icons directory containing the icons for your ribbonbuttons."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Missing %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have removed %1 from your development module directory. Without "
+"it your module cannot work, make sure to put it back. For now your old %2 "
+"file will be kept."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have never had a %1 in your development module directory. "
+"Without it your module cannot work, make sure to create one. How you "
+"installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "%1 was removed!"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have removed %1 but this file is required for your module to "
+"work. The development module is going to be uninstalled now."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Missing folder %1"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have removed the folder %1 from your development module "
+"directory. Without it your module cannot work, make sure to put it back. For "
+"now your old folder will be kept."
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"You seem to have never had the folder %1 in your development module "
+"directory. Without it your module cannot work, make sure to create one. How "
+"you installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid "Loading module description encountered a problem"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "<i>Could not load the description of the module in archive: '%1'</i>"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
+"maintained by %5.</i><br><i>See website for further details: <a href="
+"\"http://%6\">%6</a></i><br>"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Module missing"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid ""
+"It seems the bundled module %1 wasn't correctly installed, and thus cannot "
+"be loaded.\n"
+"If you installed this version of JASP via an official installer let the JASP "
+"team know."
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Execute R code in a console"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::Upgrade|"
+msgid ""
+"Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
+"is for: '%2'"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::Upgrade|"
+msgid ""
+"Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
+"is for: '%2' or lower"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::Upgrade|"
+msgid ""
+"Aborting upgrade because a loop was detected!\n"
+"\n"
+"If %1 is taken, eventually it is reached again.\n"
+"\n"
+"This should definitely not happen, perhaps the module author of '%2' can be "
+"of assistance"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelTableViewBase|"
+msgid "Column number in source is bigger than the number of columns of %1"
+msgstr ""
+
+#, fuzzy
+msgctxt "VariablesFormBase|"
+msgid "Only 1 Available Variables list can be set in a VariablesForm"
+msgstr "変数フォームで設定できる変数リストは 1 つだけです。"
+
+#, fuzzy
+msgctxt "VariablesFormBase|"
+msgid "There is no Available List in the Variables Form"
+msgstr "変数フォームに使用可能なリストがありません"
+
+#, qt-format
+msgctxt "VariablesListBase|"
+msgid "Wrong column type: %1 for ListView %2"
 msgstr ""

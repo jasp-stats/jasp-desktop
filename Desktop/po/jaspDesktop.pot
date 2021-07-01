@@ -891,10 +891,6 @@ msgid ""
 msgstr ""
 
 msgctxt "PrefsUI|"
-msgid "User Interface options"
-msgstr ""
-
-msgctxt "PrefsUI|"
 msgid "Fonts"
 msgstr ""
 
@@ -2810,10 +2806,6 @@ msgid "Specify sequence"
 msgstr ""
 
 msgctxt "PlotEditingAxis|"
-msgid "Manually"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
 msgid "Hide ticks"
 msgstr ""
 
@@ -2857,22 +2849,6 @@ msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
 msgstr ""
 
-msgctxt "PlotEditingAxisTable|"
-msgid "Insert break left"
-msgstr ""
-
-msgctxt "PlotEditingAxisTable|"
-msgid "Insert break right"
-msgstr ""
-
-msgctxt "PlotEditingAxisTable|"
-msgid "Delete break"
-msgstr ""
-
-msgctxt "PlotEditor|"
-msgid "Which axis should be shown?"
-msgstr ""
-
 msgctxt "PlotEditor|"
 msgid "x-axis"
 msgstr ""
@@ -2895,10 +2871,6 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Finish"
-msgstr ""
-
-msgctxt "PlotEditor|"
-msgid "Original plot"
 msgstr ""
 
 msgctxt "PlotEditor|"
@@ -3386,4 +3358,98 @@ msgstr ""
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
+msgstr ""
+
+msgctxt "TableView|"
+msgid "Add to the left"
+msgstr ""
+
+msgctxt "TableView|"
+msgid "Add to the right"
+msgstr ""
+
+msgctxt "TableView|"
+msgid "Delete"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+msgctxt "OSFLogin|"
+msgid ""
+"<sup>*</sup>OSF account login only, ORCID or institutional login are not "
+"supported."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Clear installed modules and packages"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Windows workaround"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Assume CSV is in native encoding when no BOM has been specified"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "See documentation for more information "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "User Interface Options"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Value"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Label"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Tick #"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick left"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick right"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Delete tick"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Discard changes"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean user installed modules and pkgs"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Cleaning up your modules and packages will make sure you only use those "
+"bundled with JASP. \n"
+"\n"
+"Make sure to restart JASP afterwards!"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean"
 msgstr ""

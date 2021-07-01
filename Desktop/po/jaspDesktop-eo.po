@@ -1,16 +1,10 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-04-19 13:26+0000\n"
-"Last-Translator: phlostically <phlostically@mailinator.com>\n"
-"Language-Team: Esperanto <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/eo/>\n"
-"Language: eo\n"
-"X-Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Language: eo\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -450,9 +444,10 @@ msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
 msgstr ""
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Malfermi Dokumentaron"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
@@ -708,10 +703,6 @@ msgid "Modules options"
 msgstr "Opcioj pri moduloj"
 
 msgctxt "PrefsAdvanced|"
-msgid "Remember Enabled Modules"
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
@@ -755,18 +746,10 @@ msgid "Handling LC_CTYPE"
 msgstr "Trakti LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
-msgid "Let JASP guess the best setting for LC_CTYPE (Recommended!)"
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
 msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid "Always set LC_CTYPE to \"C\"."
-msgstr "Ĉiam uzi \"C\" kiel LC_CTYPE."
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
@@ -777,10 +760,6 @@ msgid ""
 "If this is enabled and you have non-ascii characters in your install path "
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
-msgstr ""
-
-msgctxt "PrefsAdvanced|"
-msgid "Keep LC_CTYPE at systemdefault."
 msgstr ""
 
 msgctxt "PrefsAdvanced|"
@@ -915,10 +894,6 @@ msgid ""
 msgstr ""
 
 msgctxt "PrefsUI|"
-msgid "User Interface options"
-msgstr ""
-
-msgctxt "PrefsUI|"
 msgid "Fonts"
 msgstr "Tiparoj"
 
@@ -932,20 +907,8 @@ msgid "default: %1"
 msgstr "implicite: %1"
 
 msgctxt "PrefsUI|"
-msgid "R, JAGS or Lavaan code:"
-msgstr "Kodo de R, JAGS aŭ Lavaan:"
-
-msgctxt "PrefsUI|"
-msgid "Result & Help:"
-msgstr "Rezulto & Helpo:"
-
-msgctxt "PrefsUI|"
 msgid "Themes"
 msgstr "Etosoj"
-
-msgctxt "PrefsUI|"
-msgid "Light Theme"
-msgstr "Hela Etoso"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -953,21 +916,9 @@ msgid ""
 msgstr ""
 
 msgctxt "PrefsUI|"
-msgid "Dark Theme"
-msgstr "Malhela Etoso"
-
-msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Preferred Language"
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Choose Language  "
 msgstr ""
 
 msgctxt "PrefsUI|"
@@ -994,19 +945,11 @@ msgid ""
 msgstr ""
 
 msgctxt "PrefsUI|"
-msgid "Safe Graphics Mode"
-msgstr ""
-
-msgctxt "PrefsUI|"
 msgid ""
 "Switches to a \"safer\" mode for graphics aka software rendering.\n"
 "It will make your interface slower but if you have some problems (weird "
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Disable Animations"
 msgstr ""
 
 msgctxt "PrefsUI|"
@@ -1016,10 +959,6 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr ""
-
-msgctxt "PrefsUI|"
-msgid "Use Native File Dialogs"
 msgstr ""
 
 msgctxt "PrefsUI|"
@@ -1243,25 +1182,30 @@ msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "absoluta valoro"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "norma devio"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr ""
+msgstr "varianco"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr ""
+msgstr "sumado"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "produto de valoroj"
 
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
@@ -1271,9 +1215,10 @@ msgctxt "FilterWindow|"
 msgid "returns maximum of values"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "mean"
-msgstr ""
+msgstr "aritmetika meznombro"
 
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
@@ -1283,13 +1228,15 @@ msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "median"
-msgstr ""
+msgstr "mediano"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "se-alie-ordono"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -1327,13 +1274,15 @@ msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Malfermi Dokumentaron"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Hide filter"
-msgstr ""
+msgstr "Kaŝi filtrilon"
 
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
@@ -1445,10 +1394,6 @@ msgid "Installing developer module now"
 msgstr ""
 
 msgctxt "ModulesMenu|"
-msgid "Select a developer module under Left menu->Preference->Advanced"
-msgstr ""
-
-msgctxt "ModulesMenu|"
 msgid "Ready"
 msgstr ""
 
@@ -1512,10 +1457,6 @@ msgctxt "RCommanderWindow|"
 msgid "Cleared..."
 msgstr ""
 
-msgctxt "RibbonBar|"
-msgid "Show Modules Menu"
-msgstr ""
-
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
 msgstr ""
@@ -1544,13 +1485,15 @@ msgctxt "SetSeed|"
 msgid "Set seed:"
 msgstr ""
 
+#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "Aldoni Kolumnon"
 
+#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "Forigi Kolumnon"
 
 msgctxt "SimpleTableView|"
 msgid "Reset"
@@ -1910,19 +1853,6 @@ msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
 msgstr ""
 
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version, contact "
-"the JASP team for assistance."
-msgstr ""
-
-#, qt-format
-msgctxt "KnownIssues|"
-msgid ""
-"JASP ran into a problem loading the known issues for this version: '%1', "
-"contact the JASP team for assistance."
-msgstr ""
-
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
 msgstr ""
@@ -2070,9 +2000,10 @@ msgctxt "MessageForwarder|"
 msgid "Cancel"
 msgstr ""
 
+#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr ""
+msgstr "Konservi"
 
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
@@ -2483,9 +2414,10 @@ msgctxt "ActionButtons|"
 msgid "Open"
 msgstr ""
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr ""
+msgstr "Konservi"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
@@ -2503,9 +2435,10 @@ msgctxt "ActionButtons|"
 msgid "Sync Data"
 msgstr ""
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Close"
-msgstr ""
+msgstr "Fermi"
 
 msgctxt "ActionButtons|"
 msgid "Preferences"
@@ -2652,13 +2585,15 @@ msgctxt "ResourceButtons|"
 msgid "Computer"
 msgstr ""
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr ""
+msgstr "Datenbiblioteko"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
@@ -2891,10 +2826,6 @@ msgid "Specify sequence"
 msgstr ""
 
 msgctxt "PlotEditingAxis|"
-msgid "Manually"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
 msgid "Hide ticks"
 msgstr ""
 
@@ -2938,22 +2869,6 @@ msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
 msgstr ""
 
-msgctxt "PlotEditingAxisTable|"
-msgid "Insert break left"
-msgstr ""
-
-msgctxt "PlotEditingAxisTable|"
-msgid "Insert break right"
-msgstr ""
-
-msgctxt "PlotEditingAxisTable|"
-msgid "Delete break"
-msgstr ""
-
-msgctxt "PlotEditor|"
-msgid "Which axis should be shown?"
-msgstr ""
-
 msgctxt "PlotEditor|"
 msgid "x-axis"
 msgstr "x-akso"
@@ -2977,10 +2892,6 @@ msgstr ""
 msgctxt "PlotEditor|"
 msgid "Finish"
 msgstr "Fini"
-
-msgctxt "PlotEditor|"
-msgid "Original plot"
-msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Save plot as"
@@ -3285,3 +3196,281 @@ msgstr "Nova Faktoro"
 msgctxt "FactorLevelList|"
 msgid "New Level"
 msgstr "Nova Nivelo"
+
+msgctxt "TableView|"
+msgid "Add to the left"
+msgstr ""
+
+msgctxt "TableView|"
+msgid "Add to the right"
+msgstr ""
+
+#, fuzzy
+msgctxt "TableView|"
+msgid "Delete"
+msgstr "Forigi"
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+msgctxt "OSFLogin|"
+msgid ""
+"<sup>*</sup>OSF account login only, ORCID or institutional login are not "
+"supported."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Remember enabled modules"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Use default PAT for Github"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid ""
+"Either use the bundled GITHUB_PAT or, if available, use the one set in "
+"environment variables."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Private GITHUB_PAT:"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Clear installed modules and packages"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Always set LC_CTYPE to \"C\""
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Keep LC_CTYPE at system default"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Windows workaround"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Assume CSV is in native encoding when no BOM has been specified"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "See documentation for more information "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "User Interface Options"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "R, JAGS, or lavaan code:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Result & help:"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Light theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Dark theme"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Preferred language"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Choose language  "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Safe graphics mode"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Disable animations"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Use native file dialogs"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Select a developer module by clicking here"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Value"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Label"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Tick #"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick left"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick right"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Delete tick"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Discard changes"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show main menu"
+msgstr ""
+
+msgctxt "RibbonBar|"
+msgid "Show modules menu"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "A nice grouping of elements"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "You can enter an integer here: "
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "This is an incredibly useful tooltip right?"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The first checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The second checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "The last checkbox"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "Variables"
+msgstr ""
+
+msgctxt "jasp-qml-style-example|"
+msgid "Split"
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem downloading the known issues for this version, it "
+"probably could not connect to the server. Don't worry, JASP will work fine "
+"it just might not tell you about a few small known issues."
+msgstr ""
+
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem loading the known issues for this version, this "
+"isn't necessarily a problem but if it keeps occuring you could contact the "
+"JASP team for assistance."
+msgstr ""
+
+#, qt-format
+msgctxt "KnownIssues|"
+msgid ""
+"JASP ran into a problem ('%1') loading the known issues for this version, "
+"this isn't necessarily a problem but if it keeps occuring you could contact "
+"the JASP team for assistance."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean user installed modules and pkgs"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Cleaning up your modules and packages will make sure you only use those "
+"bundled with JASP. \n"
+"\n"
+"Make sure to restart JASP afterwards!"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Cancel"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"No default spreadsheet editor for file %1. Do you want to export the data "
+"into a CSV file and start the default spreadsheet editor for this CSV file?."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Generate Data File as CSV"
+msgstr ""
+
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed, should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid ""
+"Initializing module during JASP startup failed with the following message:\n"
+"%1\n"
+"\n"
+"Should the module be removed?"
+msgstr ""
+
+#, qt-format
+msgctxt "Modules::DynamicModules|"
+msgid "Initializing module %1 failed"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Module missing"
+msgstr ""
+
+#, qt-format
+msgctxt "RibbonModel|"
+msgid ""
+"It seems the bundled module %1 wasn't correctly installed, and thus cannot "
+"be loaded.\n"
+"If you installed this version of JASP via an official installer let the JASP "
+"team know."
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Execute R code in a console"
+msgstr ""

@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-06-11 08:34+0000\n"
-"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
-"de/>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -963,10 +957,6 @@ msgid ""
 msgstr ""
 "Dies setzt die Hintergrundfarbe aller Abbildungen auf transparent.Nützlich "
 "für die Verwendung mit allen Hintergründen, die nicht weiß sind."
-
-msgctxt "PrefsUI|"
-msgid "User Interface options"
-msgstr "Bedienoberflächenoptionen"
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
@@ -3053,10 +3043,6 @@ msgid "Specify sequence"
 msgstr "Reihenfolge festlegen"
 
 msgctxt "PlotEditingAxis|"
-msgid "Manually"
-msgstr "Manuell"
-
-msgctxt "PlotEditingAxis|"
 msgid "Hide ticks"
 msgstr "Teilstriche ausblenden"
 
@@ -3100,22 +3086,6 @@ msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
 msgstr "Obere Grenze"
 
-msgctxt "PlotEditingAxisTable|"
-msgid "Insert break left"
-msgstr "Unterbrechung links einfügen"
-
-msgctxt "PlotEditingAxisTable|"
-msgid "Insert break right"
-msgstr "Unterbrechung rechts einfügen"
-
-msgctxt "PlotEditingAxisTable|"
-msgid "Delete break"
-msgstr "Unterbrechung löschen"
-
-msgctxt "PlotEditor|"
-msgid "Which axis should be shown?"
-msgstr "Welche Achse soll angezeigt werden?"
-
 msgctxt "PlotEditor|"
 msgid "x-axis"
 msgstr "x-Achse"
@@ -3139,10 +3109,6 @@ msgstr "Erweiterte Einstellungen"
 msgctxt "PlotEditor|"
 msgid "Finish"
 msgstr "Fertig"
-
-msgctxt "PlotEditor|"
-msgid "Original plot"
-msgstr "Ursprüngliche Abbildung"
 
 msgctxt "PlotEditor|"
 msgid "Save plot as"
@@ -3736,3 +3702,100 @@ msgstr ""
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
 msgstr "Es gibt keine Available List in der Variables Form"
+
+msgctxt "TableView|"
+msgid "Add to the left"
+msgstr ""
+
+msgctxt "TableView|"
+msgid "Add to the right"
+msgstr ""
+
+#, fuzzy
+msgctxt "TableView|"
+msgid "Delete"
+msgstr "Löschen"
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+msgctxt "OSFLogin|"
+msgid ""
+"<sup>*</sup>OSF account login only, ORCID or institutional login are not "
+"supported."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Clear installed modules and packages"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Windows workaround"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Assume CSV is in native encoding when no BOM has been specified"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "See documentation for more information "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "User Interface Options"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditingAxis|"
+msgid "Value"
+msgstr "Wert"
+
+#, fuzzy
+msgctxt "PlotEditingAxis|"
+msgid "Label"
+msgstr "Bezeichnung"
+
+msgctxt "PlotEditingAxis|"
+msgid "Tick #"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick left"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick right"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Delete tick"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Discard changes"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean user installed modules and pkgs"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Cleaning up your modules and packages will make sure you only use those "
+"bundled with JASP. \n"
+"\n"
+"Make sure to restart JASP afterwards!"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean"
+msgstr ""
