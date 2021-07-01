@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-06-28 06:29+0000\n"
+"PO-Revision-Date: 2021-07-01 04:33+0000\n"
 "Last-Translator: sun wong <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7.1-dev\n"
+"X-Generator: Weblate 4.8-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -280,10 +280,9 @@ msgctxt "ComputeColumnWindow|"
 msgid "summation"
 msgstr "求和"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr "值的乘积"
+msgstr "积"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
@@ -313,19 +312,17 @@ msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
 msgstr "自然对数"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
 msgstr "以 2 为底的对数"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
 msgstr "以 10 为底的对数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr ""
+msgstr "y在\"基底\"中的对数"
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
@@ -335,22 +332,21 @@ msgctxt "ComputeColumnWindow|"
 msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
-msgstr ""
+msgstr "Fisher's Z-transform （费舍尔的 Z 变换，即反双曲正切）将相关性、-1 和 1 之间的数字转换为实线"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
-msgstr ""
+msgstr "Fisher's Z-transform（费舍尔的逆变换，即双曲正切）将实数转换为 -1 和 1 之间的数字"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
 msgstr "将您的数据分解为 numBreaks 级别"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr ""
+msgstr "用替换列中的值替换任何缺失值（NA）"
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
@@ -418,7 +414,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
 msgstr "从具有指定参数的指数分布生成数据"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
@@ -492,7 +487,6 @@ msgctxt "ContrastsList|"
 msgid "Helmert"
 msgstr "Helmert"
 
-#, fuzzy
 msgctxt "ContrastsList|"
 msgid "repeated"
 msgstr "重复"
@@ -532,238 +526,240 @@ msgstr "通过R代码定义列"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr ""
+msgstr "通过拖放公式定义列"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr ""
+msgstr "定距"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr ""
+msgstr "定序"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr ""
+msgstr "名义"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr ""
+msgstr "文本"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "打开文档"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr ""
+msgstr "创建列"
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr ""
+msgstr "单击此处创建新的计算列“%1”"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr ""
+msgstr "输入计算列的有效（未使用）名称"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr ""
+msgstr "关闭而不创建计算列"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr ""
+msgstr "添加对比"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr ""
+msgstr "删除对比"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr ""
+msgstr "隐藏筛选器"
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr ""
+msgstr "显示筛选器"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr ""
+msgstr "添加计算列"
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
-msgstr ""
+msgstr "单击此处更改列类型"
 
 msgctxt "DataTableView|"
 msgid "Click here to change the columns formulas"
-msgstr ""
+msgstr "单击此处更改列公式"
 
 msgctxt "DataTableView|"
 msgid "Click here to change labels"
-msgstr ""
+msgstr "单击此处更改标签"
 
 msgctxt "DataTableView|"
 msgid " or inspect filter"
-msgstr ""
+msgstr " 或检查筛选器"
 
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr ""
+msgstr "返回 %1"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr ""
+msgstr "你在这里"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr ""
+msgstr "最近的文件夹"
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "浏览"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr ""
+msgstr "当前用于同步的数据文件"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr ""
+msgstr "数据库"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr ""
+msgstr "与此数据文件同步"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
-msgstr ""
+msgstr "导航到文件夹"
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr ""
+msgstr "打开JASP文件"
 
 msgctxt "ListItem|"
 msgid "Open data file"
-msgstr ""
+msgstr "打开数据文件"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr ""
+msgstr "显示有关这些首选项的信息"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
-msgstr ""
+msgstr "开放科学框架"
 
 msgctxt "OSF|"
 msgid "Logout"
-msgstr ""
+msgstr "注销"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr ""
+msgstr "创建文件夹"
 
 msgctxt "OSF|"
 msgid "Foldername"
-msgstr ""
+msgstr "文件夹名"
 
 msgctxt "OSF|"
 msgid "Filename"
-msgstr ""
+msgstr "文件名"
 
 msgctxt "OSF|"
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 msgctxt "OSFLogin|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr ""
+msgstr "使用您的 OSF 帐户登录以继续"
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr ""
+msgstr "登录"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr ""
+msgstr "记住我"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
-msgstr ""
+msgstr "关于 OSF"
 
 msgctxt "OSFLogin|"
 msgid "Register"
-msgstr ""
+msgstr "注册"
 
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
-msgstr ""
+msgstr "高级设置"
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr ""
+msgstr "模块选项"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
+"下次JASP启动时，从您离开的位置继续。\n"
+"启用这个选项可以使JASP记住你所启用的模块。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
-msgstr ""
+msgstr "开发者模式（Beta 版）"
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr ""
+msgstr "要使用 JASP 模块，请启用此选项。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Select developer folder"
-msgstr ""
+msgstr "选择开发者文件夹"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr ""
+msgstr "浏览到你的JASP模块文件夹。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
-msgstr ""
+msgstr "更改 CRAN 源： "
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr ""
+msgstr "生成用于帮助的markdown文件"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
-msgstr ""
+msgstr "启用此项将从qml选项的信息中生成markdown帮助文件。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows workarounds"
-msgstr ""
+msgstr "Windows 解决方法"
 
 msgctxt "PrefsAdvanced|"
 msgid "Handling LC_CTYPE"
-msgstr ""
+msgstr "处理 LC_CTYPE"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
-msgstr ""
+msgstr "检查安装和用户目录路径是否与 LC_CTYPE=\"C\" 兼容，并在必要时进行设置。"
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
-msgstr ""
+msgstr "更多信息请参见文档。"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -771,6 +767,7 @@ msgid ""
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
 msgstr ""
+"如果启用此选项并且您的安装路径中有非 ascii 字符，JASP 将不再工作。如果您的用户名中只有非 ASCII 字符，那么安装模块可能会中断。"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -779,54 +776,56 @@ msgid ""
 "characters in the path. Sorry for the inconvenience, we are working on it "
 "and hopefully have this fixed next release."
 msgstr ""
+"启用它会使结果中的某些字符看起来很奇怪，但是如果您将它安装在路径中包含非 ascii 字符的文件夹中，至少您可以使用 "
+"JASP。很抱歉给您带来不便，我们正在努力解决这个问题，希望在下一个版本中修复此问题。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr ""
+msgstr "记录选项"
 
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
-msgstr ""
+msgstr "将日志保存到文件"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr ""
+msgstr "要将 JASP 的调试日志存储在文件中，请选中此框。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr ""
+msgstr "要保留的最大日志文件数： "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr ""
+msgstr "显示日志"
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
-msgstr ""
+msgstr "引擎选项"
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
-msgstr ""
+msgstr "最大# 引擎数： "
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
-msgstr ""
+msgstr "数据首选项"
 
 msgctxt "PrefsData|"
 msgid "Synchronize automatically on data file save"
-msgstr ""
+msgstr "在数据文件保存时自动同步"
 
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
-msgstr ""
+msgstr "使用默认的电子表格编辑器"
 
 msgctxt "PrefsData|"
 msgid "Select custom editor"
-msgstr ""
+msgstr "选择自定义编辑器"
 
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
-msgstr ""
+msgstr "Categorical 或 Scale 之间的导入阈值"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -834,129 +833,131 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
+"在将变量分类为“定距”之前的唯一整数阈值。\n"
+"必须重新加载数据才能生效。 有关详细信息，请参阅帮助。"
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr ""
+msgstr "缺失值列表"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
-msgstr ""
+msgstr "移除缺失值"
 
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
-msgstr ""
+msgstr "结果首选项"
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr ""
+msgstr "表格选项"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr ""
+msgstr "显示精确的p值"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
-msgstr ""
+msgstr "固定小数位"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr ""
+msgstr "绘图选项"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr ""
+msgstr "在绘图中使用屏幕的PPI: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
-msgstr ""
+msgstr "使用屏幕的每英寸像素数来渲染您的绘图。"
 
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr ""
+msgstr "自定义PPI： "
 
 msgctxt "PrefsResults|"
 msgid "Image background color"
-msgstr ""
+msgstr "图像背景颜色"
 
 msgctxt "PrefsResults|"
 msgid "White"
-msgstr ""
+msgstr "白色"
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
-msgstr ""
+msgstr "这使所有绘图的背景变为白色，如果您想在 LaTeX 中使用它或将其提交给期刊，这将非常有用。"
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
-msgstr ""
+msgstr "透明"
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
-msgstr ""
+msgstr "这使所有绘图的背景透明，如果您想在任何非白色背景上无缝使用它，这将非常有用。"
 
 msgctxt "PrefsUI|"
 msgid "User Interface options"
-msgstr ""
+msgstr "用户界面选项"
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "字体"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "界面:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr ""
+msgstr "默认:%1"
 
 msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr ""
+msgstr "主题"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
-msgstr ""
+msgstr "切换到浅色主题，这是 JASP 的默认初始风格。"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
-msgstr ""
+msgstr "切换到一个黑暗的主题，适用于夜间使用 JASP。"
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
-msgstr ""
+msgstr "其他选项"
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr ""
+msgstr "缩放（%）： "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
-msgstr ""
+msgstr "增加或减少界面元素（文本、按钮等）的大小。"
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr ""
+msgstr "滚动速度（像素/秒）： "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
-msgstr ""
+msgstr "设置您在选项、数据查看器和其他地方滚动的速度。"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -965,15 +966,18 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
+"切换到“更安全”的图形模式，也就是软件渲染。\n"
+"它会使你的界面变慢，但如果你有一些问题（奇怪的故障，看不到结果甚至任何东西）可能会修复它们。\n"
+"分析速度并不受影响。"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
-msgstr ""
+msgstr "关闭所有动画，这在“安全图形模式”开启时生效。"
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr ""
+msgstr "由于 \"安全图形模式 \"处于开启状态，已经禁用了动画"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -981,682 +985,685 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
+"如果禁用，它不会使用您操作系统的文件对话框，而是使用 Qt 制作的对话框。这可能会解决 Windows 上 JASP 在按下“浏览”时崩溃的一些问题。"
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr ""
+msgstr "最近的文件"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "清除（或已清除）计算列的代码"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "已应用计算列代码"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
+msgstr "请输入所有参数 - 参阅标红的字段。"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr ""
+msgstr "每个计算列只允许有一个公式。"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr ""
+msgstr "欢迎使用拖放式计算列构建器！"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr ""
+msgstr "在此处转储不需要的片段；双击以清空整个候选"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared<br>"
-msgstr ""
+msgstr "筛选器已清除<br>"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
-msgstr ""
+msgstr "筛选已应用"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.<br>"
-msgstr ""
+msgstr "请输入所有参数 - 参阅红色的字段。<br>"
 
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.<br>"
-msgstr ""
+msgstr "公式不返回一组逻辑值，因此不能在过滤器中使用。<br>"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!<br>"
-msgstr ""
+msgstr "欢迎使用拖放筛选器！<br>"
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr ""
+msgstr "加"
 
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr ""
+msgstr "减"
 
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
-msgstr ""
+msgstr "乘"
 
 msgctxt "OperatorSelector|"
 msgid "Division"
-msgstr ""
+msgstr "除"
 
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "幂（2^3 返回 8）"
 
 msgctxt "OperatorSelector|"
 msgid "Square root"
-msgstr ""
+msgstr "平方根"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "取模：返回除法的余数。 3%2 返回 1"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
-msgstr ""
+msgstr "返回逻辑值，并且可以是筛选器公式的根"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "等： %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "不等于：%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "小于：%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "小于等于：%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "大于：%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "大于等于：%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
-msgstr ""
+msgstr "与：%1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
-msgstr ""
+msgstr "或：%1"
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "拆分：分别对每个子组应用过滤器"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
-msgstr ""
+msgstr "非：%1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr ""
+msgstr "加"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr ""
+msgstr "减"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr ""
+msgstr "乘"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr ""
+msgstr "除"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "幂（2^3 返回 8）"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr ""
+msgstr "平方根"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "取模：返回除法的余数。 3%2 返回 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr ""
+msgstr "返回逻辑值"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "等： %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "不等于：%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "小于：%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "小于等于：%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "大于：%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "大于等于：%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr ""
+msgstr "与：%1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
-msgstr ""
+msgstr "或：%1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "拆分：分别对每个子组应用过滤器"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr ""
+msgstr "非：%1"
 
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "绝对值"
 
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "标准差"
 
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr ""
+msgstr "方差"
 
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr ""
+msgstr "求和"
 
 msgctxt "FilterWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "积"
 
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "返回最小值"
 
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "返回最大值"
 
 msgctxt "FilterWindow|"
 msgid "mean"
-msgstr ""
+msgstr "平均值"
 
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "y 舍入到 n 位小数"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "返回y中的元素数"
 
 msgctxt "FilterWindow|"
 msgid "median"
-msgstr ""
+msgstr "中位数"
 
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "if-else 语句"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
-msgstr ""
+msgstr "筛选器已更改"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr ""
+msgstr "你的筛选器有未应用的更改；你想做什么？"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
-msgstr ""
+msgstr "切换到R筛选器"
 
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
-msgstr ""
+msgstr "隐藏那些被过滤掉的行。"
 
 msgctxt "FilterWindow|"
 msgid "Show rows that were filtered out."
-msgstr ""
+msgstr "显示被过滤掉的行。"
 
 msgctxt "FilterWindow|"
 msgid "Apply pass-through filter"
-msgstr ""
+msgstr "应用直通式筛选器"
 
 msgctxt "FilterWindow|"
 msgid "Filter applied"
-msgstr ""
+msgstr "应用了筛选器"
 
 msgctxt "FilterWindow|"
 msgid "Click to apply filter"
-msgstr ""
+msgstr "单击以应用筛选器"
 
 msgctxt "FilterWindow|"
 msgid "Filter is already applied"
-msgstr ""
+msgstr "筛选器已应用"
 
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "打开文档"
 
 msgctxt "FilterWindow|"
 msgid "Hide filter"
-msgstr ""
+msgstr "隐藏筛选器"
 
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
-msgstr ""
+msgstr "重置所有标签上的复选标记"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
-msgstr ""
+msgstr "切换到拖放式筛选器"
 
 msgctxt "FilterWindow|"
 msgid "Reset to default filter"
-msgstr ""
+msgstr "重置为默认筛选器"
 
 msgctxt "FilterWindow|"
 msgid "Default filter applied"
-msgstr ""
+msgstr "已应用默认筛选器"
 
 msgctxt "FilterWindow|"
 msgid "Filter is unchanged from default"
-msgstr ""
+msgstr "筛选器与默认值保持不变"
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
-msgstr ""
+msgstr "JASP帮助"
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
-msgstr ""
+msgstr "搜索："
 
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr ""
+msgstr "添加数据"
 
 msgctxt "JagsTableView|"
 msgid "Delete Data"
-msgstr ""
+msgstr "删除数据"
 
 msgctxt "JagsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
-msgstr ""
+msgstr "双击以编辑数据"
 
 msgctxt "MainPage|"
 msgid "Hide data"
-msgstr ""
+msgstr "隐藏数据"
 
 msgctxt "MainPage|"
 msgid "Show data"
-msgstr ""
+msgstr "显示数据"
 
 msgctxt "MainPage|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "调整数据/结果"
 
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "拖动以显示数据"
 
 msgctxt "MainPage|"
 msgid "Results"
-msgstr ""
+msgstr "结果"
 
 msgctxt "ModuleInstaller|"
 msgid "Browse for JASP Module"
-msgstr ""
+msgstr "浏览 JASP 模块"
 
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module"
-msgstr ""
+msgstr "选择 JASP 模块"
 
 msgctxt "ModuleInstaller|"
 msgid "<i>Browse for a JASP Module to see more information here</i>"
-msgstr ""
+msgstr "<i>浏览 JASP 模块，在此处查看更多信息</i>"
 
 #, qt-format
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
-msgstr ""
+msgstr "<i>%1 不是（正确的）JASP 模块！</i>"
 
 msgctxt "ModulesMenu|"
 msgid "Install Module"
-msgstr ""
+msgstr "安装模块"
 
 msgctxt "ModulesMenu|"
 msgid "Install a module"
-msgstr ""
+msgstr "安装一个模块"
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr ""
+msgstr "安装开发者模块"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr ""
+msgstr "安装开发者模块"
 
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr ""
+msgstr "选择一个开发者模块"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
-msgstr ""
+msgstr "安装选定的开发者模块"
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr ""
+msgstr "立即安装开发者模块"
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr ""
+msgstr "就绪"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr ""
+msgstr "安装：%1\n"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr ""
+msgstr "正在加载：%1\n"
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
-msgstr ""
+msgstr "已加载并准备使用！"
 
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
-msgstr ""
+msgstr "发生错误!"
 
 msgctxt "ModulesMenu|"
 msgid "Not ready for use?"
-msgstr ""
+msgstr "还没准备好使用？"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr ""
+msgstr "卸载模块 "
 
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
-msgstr ""
+msgstr "JASP中的R"
 
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
-msgstr ""
+msgstr "欢迎使用 JASP 中的 R！"
 
 msgctxt "RCommanderWindow|"
 msgid ""
 "Enter your R code here.\n"
 "The data is fully available as 'data' and filtered as 'filteredData'."
 msgstr ""
+"在此处输入您的R代码。\n"
+"数据完全以\"数据\"身份提供，并作为\"过滤数据\"进行过滤。"
 
 msgctxt "RCommanderWindow|"
 msgid "Enter your R code here."
-msgstr ""
+msgstr "在此输入你的R代码。"
 
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
-msgstr ""
+msgstr "运行代码"
 
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
-msgstr ""
+msgstr "按 Ctrl+Enter 或 F5 也将运行代码"
 
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
-msgstr ""
+msgstr "清除输出"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
-msgstr ""
+msgstr "已清除..."
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
-msgstr ""
+msgstr "已进行更改"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
-msgstr ""
+msgstr "有未应用的更改；你想做什么？"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
-msgstr ""
+msgstr "应用"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
-msgstr ""
+msgstr "丢弃"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 msgctxt "SetSeed|"
 msgid "Repeatability"
-msgstr ""
+msgstr "可重复性"
 
 msgctxt "SetSeed|"
 msgid "Set seed:"
-msgstr ""
+msgstr "设置种子："
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "添加列"
 
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "删除列"
 
 msgctxt "SimpleTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
-msgstr ""
+msgstr "对项目进行排序"
 
 msgctxt "SubjectivePriors|"
 msgid "Prior"
-msgstr ""
+msgstr "先验"
 
 msgctxt "SubjectivePriors|"
 msgid "Standardized effect size"
-msgstr ""
+msgstr "标准化效应量"
 
 msgctxt "SubjectivePriors|"
 msgid "Default"
-msgstr ""
+msgstr "默认"
 
 msgctxt "SubjectivePriors|"
 msgid "Cauchy"
-msgstr ""
+msgstr "Cauchy"
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr ""
+msgstr "scale"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
-msgstr ""
+msgstr "Informed"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr ""
+msgstr "位置："
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr ""
+msgstr "scale:"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr ""
+msgstr "mean:"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr ""
+msgstr "std:"
 
 msgctxt "SubjectivePriors|"
 msgid "t"
-msgstr ""
+msgstr "t"
 
 msgctxt "SubjectivePriors|"
 msgid "df:"
-msgstr ""
+msgstr "df:"
 
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
-msgstr ""
+msgstr "原始效应大小（Dienes）"
 
 msgctxt "SubjectivePriors|"
 msgid "Uniform"
-msgstr ""
+msgstr "均匀分布"
 
 msgctxt "SubjectivePriors|"
 msgid "lower bound:"
-msgstr ""
+msgstr "下限："
 
 msgctxt "SubjectivePriors|"
 msgid "upper bound:"
-msgstr ""
+msgstr "上限："
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
-msgstr ""
+msgstr "半正态"
 
 msgctxt "VariablesWindow|"
 msgid "Filter"
-msgstr ""
+msgstr "筛选"
 
 msgctxt "VariablesWindow|"
 msgid "Value"
-msgstr ""
+msgstr "值"
 
 msgctxt "VariablesWindow|"
 msgid "Label"
-msgstr ""
+msgstr "标签"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels up"
-msgstr ""
+msgstr "上移所选标签"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels down"
-msgstr ""
+msgstr "下移所选标签"
 
 msgctxt "VariablesWindow|"
 msgid "Reverse order of all labels"
-msgstr ""
+msgstr "倒置所有标签的顺序"
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for this column"
-msgstr ""
+msgstr "重置此列的所有过滤器复选标记"
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr ""
+msgstr "重置所有列的所有筛选器复选标记"
 
 msgctxt "VariablesWindow|"
 msgid "Close this view"
-msgstr ""
+msgstr "关闭此视图"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
-msgstr ""
+msgstr "欢迎使用 JASP"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
-msgstr ""
+msgstr "一种全新的统计解决方案：自由、友好且灵活"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
-msgstr ""
+msgstr "自由："
 
 msgctxt "WelcomePage|"
 msgid "Friendly:"
-msgstr ""
+msgstr "友好："
 
 msgctxt "WelcomePage|"
 msgid "Flexible:"
-msgstr ""
+msgstr "灵活："
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the University "
 "of Amsterdam."
-msgstr ""
+msgstr "JASP是一个开源项目，由阿姆斯特丹大学提供结构性支持。"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP has an intuitive interface that was designed with the user in mind."
-msgstr ""
+msgstr "JASP 有一个以用户为中心设计的直观界面。"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP offers standard analysis procedures in both their classical and "
 "Bayesian manifestations."
-msgstr ""
+msgstr "JASP提供了经典和贝叶斯两种表现形式的标准分析程序。"
 
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr ""
+msgstr "因此，打开一个数据文件并尝试使用 JASP！"
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
-msgstr ""
+msgstr "点击获取最新版本"
 
 msgctxt "WelcomePage|"
 msgid ""
@@ -1666,301 +1673,304 @@ msgid ""
 "If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
 "being developed at break-neck speed!"
 msgstr ""
+"请记住，这是一个预览版本，仍然缺少许多功能。\n"
+"\n"
+"如果 JASP 今天不能满足您的需求，那么明天再来看看：JASP 正在以惊人的速度开发！"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr ""
+msgstr "找不到绘图%1的编辑选项，因此绘图编辑无法工作。。。"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
-msgstr ""
+msgstr "找不到绘图%1的设置编辑选项，所以绘图编辑不会记住任何东西（如果它甚至可以工作）......"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "Control with label '%1' has no name"
-msgstr ""
+msgstr "标签为'%1'的控件没有名称"
 
 msgctxt "AnalysisForm|"
 msgid "A control has no name"
-msgstr ""
+msgstr "控件没有名称"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
-msgstr ""
+msgstr "2 个控件的名称相同：%1"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
-msgstr ""
+msgstr "组件 %1 加载了错误的值类型，并已重置为其默认值。"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
-msgstr ""
+msgstr "这些组件加载了错误的值类型，并已重置为其默认值：%1"
 
 msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
-msgstr ""
+msgstr "许多组件加载了错误的值类型，并且已重置为其默认值。"
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
-msgstr ""
+msgstr "该文件可能来自旧版本的 JASP。"
 
 msgctxt "AnalysisForm|"
 msgid ""
 "That means that the results currently displayed do not correspond to the "
 "options selected."
-msgstr ""
+msgstr "这意味着当前显示的结果与所选选项不符。"
 
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
-msgstr ""
+msgstr "刷新分析可能会更改结果。"
 
 msgctxt "AnalysisForm|"
 msgid "Table"
-msgstr ""
+msgstr "表"
 
 msgctxt "AnalysisForm|"
 msgid "Plot"
-msgstr ""
+msgstr "绘图"
 
 msgctxt "AnalysisForm|"
 msgid "Collection"
-msgstr ""
+msgstr "收藏"
 
 msgctxt "AnalysisForm|"
 msgid "Result"
-msgstr ""
+msgstr "结果"
 
 msgctxt "AnalysisForm|"
 msgid "Output"
-msgstr ""
+msgstr "输出"
 
 msgctxt "AnalysisForm|"
 msgid "Input"
-msgstr ""
+msgstr "输入"
 
 msgctxt "JASPControl|"
 msgid "Option"
-msgstr ""
+msgstr "选项"
 
 msgctxt "JASPControl|"
 msgid "Section"
-msgstr ""
+msgstr "章节"
 
 msgctxt "JASPControl|"
 msgid "CheckBox"
-msgstr ""
+msgstr "复选框"
 
 msgctxt "JASPControl|"
 msgid "Switch"
-msgstr ""
+msgstr "切换"
 
 msgctxt "JASPControl|"
 msgid "Entry Field"
-msgstr ""
+msgstr "输入字段"
 
 msgctxt "JASPControl|"
 msgid "Radio Button"
-msgstr ""
+msgstr "单选按钮"
 
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
-msgstr ""
+msgstr "单选按钮"
 
 msgctxt "JASPControl|"
 msgid "Variables"
-msgstr ""
+msgstr "变量"
 
 msgctxt "JASPControl|"
 msgid "ComboBox"
-msgstr ""
+msgstr "组合框"
 
 msgctxt "JASPControl|"
 msgid "Input ListView"
-msgstr ""
+msgstr "输入列表视图"
 
 msgctxt "JASPControl|"
 msgid "TableView"
-msgstr ""
+msgstr "表视图"
 
 msgctxt "JASPControl|"
 msgid "Slider"
-msgstr ""
+msgstr "滑块"
 
 msgctxt "JASPControl|"
 msgid "TextArea"
-msgstr ""
+msgstr "文本区"
 
 msgctxt "JASPControl|"
 msgid "Button"
-msgstr ""
+msgstr "按钮"
 
 msgctxt "JASPControl|"
 msgid "Factors Form"
-msgstr ""
+msgstr "因子表"
 
 msgctxt "JASPControl|"
 msgid "List of Components"
-msgstr ""
+msgstr "组件列表"
 
 msgctxt "JASPControl|"
 msgid "Group Box"
-msgstr ""
+msgstr "组箱"
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
-msgstr ""
+msgstr "该值必须是 "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8805; %1"
-msgstr ""
+msgstr "&#8805; %1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&gt; %1"
-msgstr ""
+msgstr "&gt; %1"
 
 msgctxt "JASPDoubleValidator|"
 msgid " and "
-msgstr ""
+msgstr " 和 "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8804; %1"
-msgstr ""
+msgstr "&#8804; %1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
-msgstr ""
+msgstr "&lt; %1"
 
 msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
-msgstr ""
+msgstr "无验证错误"
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
+msgstr "加载已知问题时出现问题"
 
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
-msgstr ""
+msgstr "加载数据集"
 
 msgctxt "AsyncLoader|"
 msgid "Saving Data Set"
-msgstr ""
+msgstr "保存数据集"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Result Set"
-msgstr ""
+msgstr "导出结果集"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Data Set"
-msgstr ""
+msgstr "导出数据集"
 
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
-msgstr ""
+msgstr "同步数据集"
 
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons"
-msgstr ""
+msgstr "可用于数值比较"
 
 msgctxt "ColumnsModel|"
 msgid ""
 "which can only be used in (in)equivalence, greater and lesser than "
 "comparisons"
-msgstr ""
+msgstr "只能用于（不）等于、大于和小于的比较中"
 
 msgctxt "ColumnsModel|"
 msgid "which can only be used in (in)equivalence comparisons"
-msgstr ""
+msgstr "这只能用于（不）等于的比较"
 
 msgctxt "ColumnsModel|"
 msgid "The '"
-msgstr ""
+msgstr "此“"
 
 msgctxt "ColumnsModel|"
 msgid "'-column "
-msgstr ""
+msgstr "”-列 "
 
 #, qt-format
 msgctxt "FileEvent|"
 msgid "Importing Data from %1"
-msgstr ""
+msgstr "从%1导入数据"
 
 msgctxt "FileEvent|"
 msgid "Importing SPSS File"
-msgstr ""
+msgstr "导入 SPSS 文件"
 
 msgctxt "FileEvent|"
 msgid "Importing SAS File"
-msgstr ""
+msgstr "导入 SAS 文件"
 
 msgctxt "FileEvent|"
 msgid "Importing STATA File"
-msgstr ""
+msgstr "导入 STATA 文件"
 
 msgctxt "FileEvent|"
 msgid "Loading JASP File"
-msgstr ""
+msgstr "加载 JASP 文件"
 
 msgctxt "FileEvent|"
 msgid "Loading File"
-msgstr ""
+msgstr "加载文件"
 
 msgctxt "FileEvent|"
 msgid "Saving JASP File"
-msgstr ""
+msgstr "保存 JASP 文件"
 
 msgctxt "FileEvent|"
 msgid "Exporting Results"
-msgstr ""
+msgstr "导出结果"
 
 msgctxt "FileEvent|"
 msgid "Exporting Data"
-msgstr ""
+msgstr "导出数据"
 
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr ""
+msgstr "同步数据"
 
 msgctxt "FileEvent|"
 msgid "Processing File"
-msgstr ""
+msgstr "处理文件"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run this analysis..."
-msgstr ""
+msgstr "尝试运行此分析时引擎崩溃了..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run the filter..."
-msgstr ""
+msgstr "引擎在尝试运行此筛选器时崩溃了..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to compute this column..."
-msgstr ""
+msgstr "引擎在尝试计算此列时崩溃了..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run rscript..."
-msgstr ""
+msgstr "引擎在尝试运行 r 脚本时崩溃了..."
 
 msgctxt "EngineRepresentation|"
 msgid "Error saving plot"
-msgstr ""
+msgstr "保存绘图时出错"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -1973,74 +1983,80 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"很遗憾，该绘图无法保存。\n"
+"\n"
+"错误信息:\n"
+"%1\n"
+"\n"
+"如果问题仍然存在，请将上述信息报告给：https://jasp-stats.org/bug-reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
-msgstr ""
+msgstr "调整图大小时出错"
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr ""
+msgstr "定距"
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr ""
+msgstr "定序"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
-msgstr ""
+msgstr "名义"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 msgctxt "MessageForwarder|"
 msgid "No"
-msgstr ""
+msgstr "否"
 
 msgctxt "MessageForwarder|"
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
-msgstr ""
+msgstr "不保存"
 
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
-msgstr ""
+msgstr "选择一个文件..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
-msgstr ""
+msgstr "选择一个文件夹..."
 
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr ""
+msgstr "安全图形模式已更改"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
-msgstr ""
+msgstr "您已经更改了 JASP 的安全图形模式，如使该选项生效，需要重新启动 JASP"
 
 msgctxt "MainWindow|"
 msgid "Datafile changed"
-msgstr ""
+msgstr "数据文件已更改"
 
 msgctxt "MainWindow|"
 msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
-msgstr ""
+msgstr "此 JASP 文件使用的数据文件已被修改。您想用这些新数据重新加载分析吗？"
 
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
-msgstr ""
+msgstr "版本不兼容"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2049,6 +2065,9 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
+"您的分析是在旧版本的 JASP 中创建的，要更改图像的 PPI，必须先刷新它们。\n"
+"\n"
+"刷新所有分析？"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2057,10 +2076,13 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"此分析是在旧版本的 JASP 中创建的，要保存图像，必须先刷新它。\n"
+"\n"
+"是否刷新分析？"
 
 msgctxt "MainWindow|"
 msgid "Save JASP Image"
-msgstr ""
+msgstr "保存JASP图像"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2068,6 +2090,8 @@ msgid ""
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
+"便携式网络图形 (*.png);;便携式文档格式 (*.pdf);;封装 PostScript (*.eps);;300 dpi 标记图像文件 (*."
+"tiff);;PowerPoint (*.pptx);;可扩展矢量图形 (*.svg)"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2076,10 +2100,13 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"此分析是在JASP的旧版本中创建的，要调整图像的大小，必须先刷新它。\n"
+"\n"
+"是否刷新分析？"
 
 msgctxt "MainWindow|"
 msgid "Save File?"
-msgstr ""
+msgstr "保存文件？"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2088,10 +2115,13 @@ msgid ""
 "\n"
 "Your changes will be lost if you don't save them."
 msgstr ""
+"在关闭之前保存对文件%1的更改？\n"
+"\n"
+"如果不保存它们，您的更改将丢失。"
 
 msgctxt "MainWindow|"
 msgid "File has changed"
-msgstr ""
+msgstr "文件已更改"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2099,10 +2129,12 @@ msgid ""
 "Unable to open file because:\n"
 "%1"
 msgstr ""
+"无法打开文件，因为:\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr ""
+msgstr "保存失败"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2111,20 +2143,23 @@ msgid ""
 "\n"
 "%1"
 msgstr ""
+"无法保存文件。\n"
+"\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
-msgstr ""
+msgstr "您有 GitHub 账户吗？"
 
 msgctxt "MainWindow|"
 msgid ""
 "To be able to report the bug you need to have a GitHub account, do you have "
 "such an account?"
-msgstr ""
+msgstr "为报告该错误，您需要拥有 GitHub 帐户，您是否有这样的帐户？"
 
 msgctxt "MainWindow|"
 msgid "Join GitHub"
-msgstr ""
+msgstr "加入GitHub"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2136,10 +2171,15 @@ msgid ""
 "\n"
 "Please fill in all missing information there."
 msgstr ""
+"我们将在您的浏览器中为你打开两个页面。\n"
+"第二个页面是 \"加入GitHub\"，您可以在那里注册一个GitHub账户。\n"
+"第一个将是一个登录页面，在用新的GitHub账户登录后，会有一个部分内容的错误报告。\n"
+"\n"
+"请在那里填写所有缺失的信息。"
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr ""
+msgstr "GitHub 无法为您开放"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2147,10 +2187,12 @@ msgid ""
 "You can still report the bug by going to https://github.com/jasp-stats/jasp-"
 "issues/issues"
 msgstr ""
+"引导您访问 GitHub 时出了点问题。\n"
+"您仍然可以通过转到 https://github.com/jasp-stats/jasp-issues/issues 报告错误"
 
 msgctxt "MainWindow|"
 msgid "Error"
-msgstr ""
+msgstr "错误"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2158,6 +2200,8 @@ msgid ""
 "JASP has experienced an unexpected internal error:\n"
 "%1"
 msgstr ""
+"JASP 遇到了意外的内部错误：\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2165,14 +2209,17 @@ msgid ""
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
+"JASP 无法继续并将关闭。\n"
+"\n"
+"如果您能将此错误报告给 JASP 团队，我们将不胜感激。"
 
 msgctxt "MainWindow|"
 msgid "Report"
-msgstr ""
+msgstr "报告"
 
 msgctxt "MainWindow|"
 msgid "Exit"
-msgstr ""
+msgstr "退出"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2181,6 +2228,8 @@ msgid ""
 "synchronize the data when the file is saved. Does this data file exist "
 "already, or do you want to generate it?"
 msgstr ""
+"JASP 是在没有关联数据文件（csv、sav 或 ods 文件）的情况下启动的。但为了编辑数据，JASP "
+"会根据这个文件启动一个电子表格编辑器，并在保存文件时同步数据。该数据文件是否已经存在，或者您是否想生成它？"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2188,56 +2237,58 @@ msgid ""
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP 是从在线数据文件（csv、sav 或 ods "
+"文件）启动的。但是要编辑数据，这个文件需要在您本地计算机上。您的计算机上是否也存在此数据文件，还是要生成它？"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP was started with a read-only data file (probably from the examples). "
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
-msgstr ""
+msgstr "JASP 是从只读数据文件开始的（可能来自示例）。但是要编辑数据，JASP 需要写入数据文件。您的计算机上是否也存在相同的文件，还是要生成它？"
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr ""
+msgstr "启动电子表格编辑器"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr ""
+msgstr "生成数据文件"
 
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr ""
+msgstr "查找数据文件"
 
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr ""
+msgstr "开始编辑"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to start the editor : %1. Please check your editor settings in the "
 "preference menu."
-msgstr ""
+msgstr "无法启动编辑器：%1。请在首选项菜单中检查您的编辑器设置。"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "No default spreadsheet editor for file %1. Use Preferences to set the right "
 "editor."
-msgstr ""
+msgstr "文件 %1 没有默认的电子表格编辑器。请在首选项中设置正确的编辑器。"
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr ""
+msgstr "移除所有分析"
 
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
-msgstr ""
+msgstr "你真的想删除所有分析吗？"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
-msgstr ""
+msgstr "捆绑模块 %1 加载失败"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -2246,23 +2297,26 @@ msgid ""
 "\n"
 "%2"
 msgstr ""
+"捆绑模块%1的加载失败，出现以下错误:\n"
+"\n"
+"%2"
 
 msgctxt "RibbonModel|"
 msgid "R (Beta)"
-msgstr ""
+msgstr "R (Beta)"
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
-msgstr ""
+msgstr "加载升级时出错"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
 msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr ""
+msgstr "在加载%1的升级时，遇到了一个错误: %2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
-msgstr ""
+msgstr "无法读取升级"
 
 msgctxt "Modules::Upgrader|"
 msgid ""
@@ -2271,10 +2325,12 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
+"无法读取读取旧 JASP 文件的必要升级...\n"
+"您仍然可以使用 JASP，甚至读取（某些）较旧的文件，但某些选项可能无法正确理解，并且某些分析可能无法完全加载。"
 
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
-msgstr ""
+msgstr "文件已更改"
 
 msgctxt "OnlineDataManager|"
 msgid ""
@@ -2282,115 +2338,118 @@ msgid ""
 "\n"
 "Would you like to override the online file?"
 msgstr ""
+"该文件的在线副本在打开后已发生更改。\n"
+"\n"
+"您想覆盖在线文件吗？"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
-msgstr ""
+msgstr "启动上传 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating download of "
-msgstr ""
+msgstr "启动下载 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new file "
-msgstr ""
+msgstr "开始制作新文件 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
-msgstr ""
+msgstr "开始制作新文件夹 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
-msgstr ""
+msgstr "启动 osf 操作 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Upload of "
-msgstr ""
+msgstr "上传 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Download of "
-msgstr ""
+msgstr "下载 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new file "
-msgstr ""
+msgstr "创建新文件 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
-msgstr ""
+msgstr "创建新文件夹 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
-msgstr ""
+msgstr "Osf 活动 "
 
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
-msgstr ""
+msgstr "%1 %2 失败，因为 %3"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
-msgstr ""
+msgstr " 进行中"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr ""
+msgstr "折叠"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
-msgstr ""
+msgstr "编辑标题"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy"
-msgstr ""
+msgstr "拷贝"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy LaTeX"
-msgstr ""
+msgstr "拷贝 LaTeX"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy Citations"
-msgstr ""
+msgstr "拷贝引文"
 
 msgctxt "ResultMenuModel|"
 msgid "Save Image As"
-msgstr ""
+msgstr "图片另存为"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Image"
-msgstr ""
+msgstr "编辑图片"
 
 msgctxt "ResultMenuModel|"
 msgid "Add Note"
-msgstr ""
+msgstr "添加注释"
 
 msgctxt "ResultMenuModel|"
 msgid "Duplicate"
-msgstr ""
+msgstr "复制副本"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove"
-msgstr ""
+msgstr "移除"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove All"
-msgstr ""
+msgstr "移除全部"
 
 msgctxt "ResultMenuModel|"
 msgid "Refresh All"
-msgstr ""
+msgstr "刷新全部"
 
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
-msgstr ""
+msgstr "显示依赖关系"
 
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
-msgstr ""
+msgstr "导出结果"
 
 msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
-msgstr ""
+msgstr "结果警告"
 
 msgctxt "HelpModel|"
 msgid ""
@@ -2401,67 +2460,73 @@ msgid ""
 "\n"
 "Additional documentation will be available in future releases of JASP."
 msgstr ""
+"即将推出！\n"
+"========\n"
+"\n"
+"目前没有可用于此分析的帮助。\n"
+"\n"
+"其他文档将在 JASP 的未来版本中提供。"
 
 msgctxt "QObject|"
 msgid "valid R code"
-msgstr ""
+msgstr "有效的 R 代码"
 
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr ""
+msgstr "DropDown %2 中的未知选项 %1"
 
 msgctxt "ActionButtons|"
 msgid "Open"
-msgstr ""
+msgstr "打开"
 
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
-msgstr ""
+msgstr "另存为"
 
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr ""
+msgstr "导出结果"
 
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr ""
+msgstr "导出数据"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr ""
+msgstr "同步数据"
 
 msgctxt "ActionButtons|"
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
 msgctxt "ActionButtons|"
 msgid "Preferences"
-msgstr ""
+msgstr "首选项"
 
 msgctxt "ActionButtons|"
 msgid "About"
-msgstr ""
+msgstr "关于"
 
 msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
-msgstr ""
+msgstr "类别"
 
 msgctxt "FileMenu|"
 msgid "File Types"
-msgstr ""
+msgstr "文件类型"
 
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "无法从 OSF 打开文件"
 
 msgctxt "FileMenu|"
 msgid "No associated data file"
-msgstr ""
+msgstr "没有关联的数据文件"
 
 msgctxt "FileMenu|"
 msgid ""
@@ -2469,34 +2534,37 @@ msgid ""
 "Do you want to search for such a data file on your computer?\n"
 "NB: You can also set this data file via menu File/Sync Data."
 msgstr ""
+"JASP 没有可与之同步的关联数据文件。\n"
+"您想在您的计算机上搜索这样的数据文件吗？\n"
+"注：您也可以通过菜单“文件/同步数据”设置此数据文件。"
 
 msgctxt "FileMenu|"
 msgid "Find Data File"
-msgstr ""
+msgstr "查找数据文件"
 
 msgctxt "FileMenu|"
 msgid "Data File"
-msgstr ""
+msgstr "数据文件"
 
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
-msgstr ""
+msgstr "用户名和/或密码不正确。请重试。"
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
-msgstr ""
+msgstr "OSF服务不可用。请检查您的网络连接。"
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
-msgstr ""
+msgstr "连接超时错误。请检查您的网络连接。"
 
 msgctxt "OSF|"
 msgid "OSF Error"
-msgstr ""
+msgstr "OSF 错误"
 
 msgctxt "OSF|"
 msgid "Projects"
-msgstr ""
+msgstr "项目"
 
 msgctxt "OSF|"
 msgid ""
@@ -2504,10 +2572,13 @@ msgid ""
 "\n"
 "To add a new project please use the online OSF services."
 msgstr ""
+"无法将文件添加到项目列表中。\n"
+"\n"
+"要添加新项目，请使用在线 OSF 服务。"
 
 msgctxt "OSF|"
 msgid "Data Providers"
-msgstr ""
+msgstr "数据提供者"
 
 msgctxt "OSF|"
 msgid ""
@@ -2516,435 +2587,438 @@ msgid ""
 "To add a new data provider (eg. google drive) please use the online OSF "
 "services."
 msgstr ""
+"无法将文件添加到项目数据提供者列表中。\n"
+"\n"
+"要添加新的数据提供者（例如 google drive），请使用在线 OSF 服务。"
 
 #, qt-format
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "由于未知原因，无法将文件添加到“%1”。"
 
 msgctxt "OSF|"
 msgid "File Types"
-msgstr ""
+msgstr "文件类型"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "无法从 OSF 打开文件"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr ""
+msgstr "发生错误，无法创建文件夹。"
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
-msgstr ""
+msgstr "无法将新文件夹添加到项目列表中。<br>要添加新项目，请使用在线 OSF 服务。"
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
-msgstr ""
+msgstr "无法将新文件夹添加到项目数据提供者列表中。<br>要添加新数据提供者（例如 Google drive），请使用在线 OSF 服务。"
 
 #, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "由于未知原因，无法将新文件夹添加到“%1”。"
 
 msgctxt "OSF|"
 msgid "Folder"
-msgstr ""
+msgstr "文件夹"
 
 msgctxt "OSF|"
 msgid "Login"
-msgstr ""
+msgstr "登录"
 
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
-msgstr ""
+msgstr "用户名或密码不能为空。"
 
 msgctxt "OSF|"
 msgid "Entry name cannot be empty."
-msgstr ""
+msgstr "条目名称不能为空。"
 
 #, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
-msgstr ""
+msgstr "%1 名称只能包含以下字符 A-Z a-z 0-9 _ %2"
 
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
-msgstr ""
+msgstr "最近的文件"
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
-msgstr ""
+msgstr "当前文件"
 
 msgctxt "ResourceButtons|"
 msgid "Computer"
-msgstr ""
+msgstr "计算机"
 
 msgctxt "ResourceButtons|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr ""
+msgstr "数据库"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
-msgstr ""
+msgstr "数据"
 
 msgctxt "ResourceButtons|"
 msgid "Results"
-msgstr ""
+msgstr "结果"
 
 msgctxt "ResourceButtons|"
 msgid "Interface"
-msgstr ""
+msgstr "界面"
 
 msgctxt "ResourceButtons|"
 msgid "Advanced"
-msgstr ""
+msgstr "高级"
 
 #, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr ""
+msgstr "对比 %1"
 
 #, qt-format
 msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
-msgstr ""
+msgstr "层 %1"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
-msgstr ""
+msgstr "单选按钮组 元素中的 单选按钮（名称：%1）没有任何名称"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr ""
+msgstr "没有与名称对应的单选按钮 %1"
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "A row component in %1 does not have a name"
-msgstr ""
+msgstr "%1 中的行组件没有名称"
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
-msgstr ""
+msgstr "%1 中的 2 个行组件具有相同的名称"
 
 msgctxt "SortMenuModel|"
 msgid "None"
-msgstr ""
+msgstr "None"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
-msgstr ""
+msgstr "按名称排序"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name A-Z"
-msgstr ""
+msgstr "按名称 A-Z 排序"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
-msgstr ""
+msgstr "按名称 Z-A 排序"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by type"
-msgstr ""
+msgstr "按类型排序"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
-msgstr ""
+msgstr "按日期排序"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by size"
-msgstr ""
+msgstr "按大小排序"
 
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
-msgstr ""
+msgstr "SortMenuModel 未使用可排序的父级调用"
 
 msgctxt "TextAreaBase|"
 msgid "Model applied"
-msgstr ""
+msgstr "应用模型"
 
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
-msgstr ""
+msgstr "该表达式没有返回数字。"
 
 msgctxt "TextInputBase|"
 msgid "Integer Field"
-msgstr ""
+msgstr "整数字段"
 
 msgctxt "TextInputBase|"
 msgid "Number Field"
-msgstr ""
+msgstr "数字字段"
 
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
-msgstr ""
+msgstr "百分比字段"
 
 msgctxt "TextInputBase|"
 msgid "Integers Field"
-msgstr ""
+msgstr "整数字段"
 
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr ""
+msgstr "双精度字段"
 
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
-msgstr ""
+msgstr "添加列字段"
 
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr ""
+msgstr "添加计算列字段"
 
 msgctxt "TextInputBase|"
 msgid "Formula Field"
-msgstr ""
+msgstr "公式字段"
 
 msgctxt "TextInputBase|"
 msgid "Formulas Field"
-msgstr ""
+msgstr "公式字段"
 
 msgctxt "TextInputBase|"
 msgid "Text Field"
-msgstr ""
+msgstr "文本字段"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr ""
+msgstr "值 (%1) 必须是 %2"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr ""
+msgstr "%1 的源模型必须来自因子列表"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Cannot find source for VariableList %1"
-msgstr ""
+msgstr "找不到变量列表 %1 的源"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr ""
+msgstr "变量列表 %1 的源类型错误"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
-msgstr ""
+msgstr "找不到与 变量列表 %1 相关的列表"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
-msgstr ""
+msgstr "为变量列表 %2 找到了错误的相关列表 (%1)"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr ""
+msgstr "没有给出 %1 来源的名称"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr ""
+msgstr "没有给出 %1 的源"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr ""
+msgstr "找不到来源于%2 的组件%1"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "标准化变量"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "如果字符串至少包含一次子字符串，则返回 true"
 
 msgctxt "FactorsForm|"
 msgid "+"
-msgstr ""
+msgstr "+"
 
 msgctxt "FactorsForm|"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "标准化变量"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "如果字符串至少包含一次子字符串，则返回 true"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "标题"
 
 msgctxt "PlotEditingAxis|"
 msgid ""
 "The title can only be modified in advanced mode because it is not plain text."
-msgstr ""
+msgstr "标题只能在高级模式下修改，因为它不是纯文本。"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title Type"
-msgstr ""
+msgstr "标题类型"
 
 msgctxt "PlotEditingAxis|"
 msgid "Plain text"
-msgstr ""
+msgstr "纯文本"
 
 msgctxt "PlotEditingAxis|"
 msgid "R expression"
-msgstr ""
+msgstr "R 表达式"
 
 msgctxt "PlotEditingAxis|"
 msgid "Hide title"
-msgstr ""
+msgstr "隐藏标题"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks"
-msgstr ""
+msgstr "刻度"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr ""
+msgstr "指定序列"
 
 msgctxt "PlotEditingAxis|"
 msgid "Manually"
-msgstr ""
+msgstr "手动"
 
 msgctxt "PlotEditingAxis|"
 msgid "Hide ticks"
-msgstr ""
+msgstr "隐藏刻度"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify ticks:"
-msgstr ""
+msgstr "指定刻度："
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr ""
+msgstr "从"
 
 msgctxt "PlotEditingAxis|"
 msgid "to"
-msgstr ""
+msgstr "至"
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
-msgstr ""
+msgstr "步长"
 
 msgctxt "PlotEditingAxis|"
 msgid "Range"
-msgstr ""
+msgstr "范围"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
-msgstr ""
+msgstr "基于数据"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
-msgstr ""
+msgstr "基于刻度"
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
-msgstr ""
+msgstr "手动设置"
 
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
-msgstr ""
+msgstr "下限"
 
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
-msgstr ""
+msgstr "上限"
 
 msgctxt "PlotEditingAxisTable|"
 msgid "Insert break left"
-msgstr ""
+msgstr "向左插入隔断"
 
 msgctxt "PlotEditingAxisTable|"
 msgid "Insert break right"
-msgstr ""
+msgstr "向右插入隔断"
 
 msgctxt "PlotEditingAxisTable|"
 msgid "Delete break"
-msgstr ""
+msgstr "删除隔断"
 
 msgctxt "PlotEditor|"
 msgid "Which axis should be shown?"
-msgstr ""
+msgstr "应该显示哪个轴？"
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr ""
+msgstr "x 轴"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
+msgstr "y 轴"
 
 msgctxt "PlotEditor|"
 msgid "Redo last change"
-msgstr ""
+msgstr "重做上次更改"
 
 msgctxt "PlotEditor|"
 msgid "Undo last change"
-msgstr ""
+msgstr "撤消上次更改"
 
 msgctxt "PlotEditor|"
 msgid "Advanced settings"
-msgstr ""
+msgstr "高级设置"
 
 msgctxt "PlotEditor|"
 msgid "Finish"
-msgstr ""
+msgstr "完成"
 
 msgctxt "PlotEditor|"
 msgid "Original plot"
-msgstr ""
+msgstr "原图"
 
 msgctxt "PlotEditor|"
 msgid "Save plot as"
-msgstr ""
+msgstr "将绘图另存为"
 
 msgctxt "VariablesWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
+msgstr "在此处编辑标签或选择应过滤掉哪些值。"
 
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
-msgstr ""
+msgstr "转换列类型时出了点问题，但不清楚是什么。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain decimals."
-msgstr ""
+msgstr "无法将列转换为定序变量：值包含小数。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to continuous: values contain text."
-msgstr ""
+msgstr "未能将列转换为连续变量：值包含文本。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain text or decimals."
-msgstr ""
+msgstr "未能将列转换为定序变量：值包含文本或小数。"
 
 msgctxt "LabelModel|"
 msgid "Value"
-msgstr ""
+msgstr "值"
 
 msgctxt "LabelModel|"
 msgid "Label"
-msgstr ""
+msgstr "标签"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -2957,34 +3031,40 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"不幸的是，情节无法编辑。\n"
+"\n"
+"错误信息：\n"
+"%1\n"
+"\n"
+"如果问题仍然存在，请报告以上消息：https://jasp-stats.org/bug-reports"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
-msgstr ""
+msgstr "模块%1的升级加载失败"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error: %1"
-msgstr ""
+msgstr "加载升级出了以下错误：%1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
-msgstr ""
+msgstr "尝试从目录 %1 初始化模块时发生错误，错误为：%2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
+msgstr "在尝试加载模块 %1 时出现错误，错误为：\"%2\""
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
-msgstr ""
+msgstr "在路径“%2”中删除模块 %1 的文件时出错，错误是：%3"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2992,11 +3072,13 @@ msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"模块 %1 安装失败，错误信息如下：\n"
+"%2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Loading packages for Module %1 failed"
-msgstr ""
+msgstr "模块 %1 的包加载失败"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3004,10 +3086,12 @@ msgid ""
 "Loading the packages of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"模块 %1 的包加载失败，以下是错误信息：\n"
+"%2"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Path cannot be handled by R"
-msgstr ""
+msgstr "路径无法由 R 处理"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3019,11 +3103,14 @@ msgid ""
 "and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
 ">Advanced->DeveloperMode."
 msgstr ""
+"您正在尝试安装一个模块，但由于路径“%1”包含非 ascii 字符（或空格），因此 R 安装可能会遇到一些问题。如果此模块的安装失败，"
+"您可以通过更改仅包含 ascii 字符且不包含空格的用户名（或创建新用户名）来解决此问题。或者您可以在 “首选项->高级->开发者模式” 下禁用"
+"“LC_CTYPE-set-to-C”。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
-msgstr ""
+msgstr "无法安装模块，因为 %1 不存在。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3034,58 +3121,62 @@ msgid ""
 "you are not the author of this module and do not know how to do this, "
 "contact: %2"
 msgstr ""
+"无法安装模块，因为它被命名为“%1”并且该名称是为安装开发模块保留的。\n"
+"更改名称（在DESCRIPTION 和 description.json 中）并重试。如果您不是该模块的作者并且不知道如何操作，请联系：%2"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
-msgstr ""
+msgstr "选择件夹"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
-msgstr ""
+msgstr "要安装开发模块，您需要选择要观看和加载的文件夹，您可以在 文件菜单的 首选项->高级 下执行此操作。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
-msgstr ""
+msgstr "初始化模块问题"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
 "\n"
 msgstr ""
+"加载开发者模块时出现问题：\n"
+"\n"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
-msgstr ""
+msgstr "丢失文件或文件夹"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
-msgstr ""
+msgstr "所选文件夹无法安装为开发者模块，因为它不包含所有必需的文件和文件夹。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/Description.qml file."
-msgstr ""
+msgstr "创建一个 inst/Description.qml 文件。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr ""
+msgstr "创建包含分析代码的 R 目录。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
+msgstr "创建包含选项表的 inst/qml 目录。"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr ""
+msgstr "创建一个包含ribbonbuttons图标的 inst/icons 目录。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
-msgstr ""
+msgstr "缺少 %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3093,7 +3184,7 @@ msgid ""
 "You seem to have removed %1 from your development module directory. Without "
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
-msgstr ""
+msgstr "您似乎已经从开发模块目录中移除了 %1 。没有它，您的模块无法工作，请务必将其放回原位。现在，您的旧文件 %2 将被保留。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3102,24 +3193,24 @@ msgid ""
 "Without it your module cannot work, make sure to create one. How you "
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
-msgstr ""
+msgstr "您的开发模块目录中似乎从未出现过 %1 。没有它，您的模块无法工作，请务必创建一个模块。如何安装有点神秘，因此现在应卸载开发模块"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
-msgstr ""
+msgstr "%1 被删除了！"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
-msgstr ""
+msgstr "您似乎已经删除了 %1，但您的模块需要此文件才能工作。现在将卸载开发模块。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
-msgstr ""
+msgstr "缺少文件夹 %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3127,7 +3218,7 @@ msgid ""
 "You seem to have removed the folder %1 from your development module "
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
-msgstr ""
+msgstr "您似乎已从开发模块目录中删除了文件夹 %1。没有它，您的模块将无法工作，请确保将其放回原处。现在您的旧文件夹将被保留。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3136,16 +3227,16 @@ msgid ""
 "directory. Without it your module cannot work, make sure to create one. How "
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
-msgstr ""
+msgstr "您的开发模块目录中似乎从未有过文件夹 %1。没有它，您的模块无法工作，请确保创建一个。您如何安装有点神秘，因此现在应卸载开发模块"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr ""
+msgstr "加载模块描述遇到问题"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
+msgstr "<i>无法加载存档中模块的描述：'%1'</i>"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3154,30 +3245,32 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a href="
 "\"http://%6\">%6</a></i><br>"
 msgstr ""
+"<h3>%1</h3><i>版本 %2</i><br><p>%3</p><br><br><i>由 %4 创建并由 "
+"%5维护。</i><br><i>有关详细信息，请参阅网站：<a href=\"http://%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
-msgstr ""
+msgstr "源中的列数大于 %1 的列数"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong column type: %1 for ListView %2"
-msgstr ""
+msgstr "错误的列类型： %1 用于列表视图 %2"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
 "is for: '%2'"
-msgstr ""
+msgstr "应用了错误的升级，正在寻找功能“%1”，但这个升级是为了: “%2”"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
 "is for: '%2' or lower"
-msgstr ""
+msgstr "应用了错误的升级，正在寻找版本“%1”，但此升级适用于：“%2”或更低版本"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -3189,158 +3282,163 @@ msgid ""
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
 msgstr ""
+"由于检测到循环而中止升级！\n"
+"\n"
+"如果 %1 被占用，最终循环会再次到达。\n"
+"\n"
+"这绝对不应该发生，也许“%2”的模块作者可以提供帮助"
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
-msgstr ""
+msgstr "因子水平列表"
 
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr ""
+msgstr "在 变量列表 中只能设置 1 个可用变量列表"
 
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
-msgstr ""
+msgstr "变量表单中没有可用列表"
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr ""
+msgstr "因子"
 
 msgctxt "FactorLevelList|"
 msgid "Level"
-msgstr ""
+msgstr "水平"
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr ""
+msgstr "新因子"
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr ""
+msgstr "新水平"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
-msgstr ""
+msgstr "记住已启用的模块"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
-msgstr ""
+msgstr "对 Github 使用默认 PAT"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
 "environment variables."
-msgstr ""
+msgstr "要么使用捆绑的 GITHUB_PAT，要么使用环境变量中的一组（如果可用）。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
+msgstr "私有 GITHUB_PAT："
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
-msgstr ""
+msgstr "让 JASP 猜测 LC_CTYPE 的最佳设置（推荐！）"
 
 msgctxt "PrefsAdvanced|"
 msgid "Always set LC_CTYPE to \"C\""
-msgstr ""
+msgstr "始终将 LC_CTYPE 设置为“C”"
 
 msgctxt "PrefsAdvanced|"
 msgid "Keep LC_CTYPE at system default"
-msgstr ""
+msgstr "保持 LC_CTYPE 为系统默认值"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr ""
+msgstr "R、JAGS 或 lavaan 代码："
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr ""
+msgstr "结果与帮助："
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr ""
+msgstr "浅色主题"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
-msgstr ""
+msgstr "深色主题"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr ""
+msgstr "首选语言"
 
 msgctxt "PrefsUI|"
 msgid "Choose language  "
-msgstr ""
+msgstr "选择语言  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
-msgstr ""
+msgstr "安全图形模式"
 
 msgctxt "PrefsUI|"
 msgid "Disable animations"
-msgstr ""
+msgstr "禁用动画"
 
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
-msgstr ""
+msgstr "使用本地文件对话框"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
-msgstr ""
+msgstr "单击此处选择开发人员模块"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr ""
+msgstr "显示主菜单"
 
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
-msgstr ""
+msgstr "显示模块菜单"
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr ""
+msgstr "一个很好的元素分组"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr ""
+msgstr "您可以在此处输入整数： "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr ""
+msgstr "这是一个非常有用的工具提示，对吗？"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr ""
+msgstr "第一个复选框"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr ""
+msgstr "第二个复选框"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr ""
+msgstr "最后一个复选框"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr ""
+msgstr "变量"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "拆分"
 
 msgctxt "KnownIssues|"
 msgid ""
 "JASP ran into a problem downloading the known issues for this version, it "
 "probably could not connect to the server. Don't worry, JASP will work fine "
 "it just might not tell you about a few small known issues."
-msgstr ""
+msgstr "JASP 在下载此版本的已知问题时遇到问题，可能无法连接到服务器。别担心，JASP 可以正常工作，只是可能不会告诉您一些已知的小问题。"
 
 msgctxt "KnownIssues|"
 msgid ""
 "JASP ran into a problem loading the known issues for this version, this "
 "isn't necessarily a problem but if it keeps occuring you could contact the "
 "JASP team for assistance."
-msgstr ""
+msgstr "JASP 在加载此版本的已知问题时遇到问题，这不一定是问题，但如果它一直出现，您可以联系 JASP 团队寻求帮助。"
 
 #, qt-format
 msgctxt "KnownIssues|"
@@ -3348,27 +3446,27 @@ msgid ""
 "JASP ran into a problem ('%1') loading the known issues for this version, "
 "this isn't necessarily a problem but if it keeps occuring you could contact "
 "the JASP team for assistance."
-msgstr ""
+msgstr "JASP 在加载此版本的已知问题时遇到问题 ('%1')，这不一定是问题，但如果它不断出现，您可以联系 JASP 团队寻求帮助。"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "No default spreadsheet editor for file %1. Do you want to export the data "
 "into a CSV file and start the default spreadsheet editor for this CSV file?."
-msgstr ""
+msgstr "文件 %1 没有默认的电子表格编辑器。是否要将数据导出到 CSV 文件并启动CSV文件默认的电子表格编辑器？"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
-msgstr ""
+msgstr "生成CSV格式的数据文件"
 
 msgctxt "MainWindow|"
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
-msgstr ""
+msgstr "JASP 启动过程中初始化模块失败，是否应该删除该模块？"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3378,15 +3476,19 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
+"JASP 启动期间初始化模块失败并显示以下消息：\n"
+"%1\n"
+"\n"
+"是否应该删除模块？"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
-msgstr ""
+msgstr "初始化模块 %1 失败"
 
 msgctxt "RibbonModel|"
 msgid "Module missing"
-msgstr ""
+msgstr "模块缺失"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -3396,7 +3498,9 @@ msgid ""
 "If you installed this version of JASP via an official installer let the JASP "
 "team know."
 msgstr ""
+"似乎捆绑模块 %1 没有正确安装，因此无法加载。\n"
+"如果您通过官方安装程序安装了此版本的 JASP，请告知 JASP 团队。"
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr ""
+msgstr "在控制台执行 R 代码"
