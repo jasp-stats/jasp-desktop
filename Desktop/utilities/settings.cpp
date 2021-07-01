@@ -38,6 +38,7 @@ const Settings::Setting Settings::Values[] = {
 	{"cranRepositoryURL",			"https://cloud.r-project.org"},
 	{"userHasGitHubAccount",		false},
 	{"preferredLanguage",			QLocale::English},
+	{"preferredCountry",			QLocale::UnitedKingdom},
 	{"themeName",					"lightTheme"},
 	{"useNativeFileDialog",			true},
 	{"disableAnimations",			false},

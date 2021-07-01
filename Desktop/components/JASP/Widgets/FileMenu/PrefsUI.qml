@@ -26,7 +26,7 @@ ScrollView
 	Connections
 	{
 		target:				languageModel
-		function onCurrentIndexChanged()			{ scrollPrefs.resetMe(); }
+		function onCurrentLanguageChanged()			{ scrollPrefs.resetMe(); }
 	}
 
 	Column
@@ -37,7 +37,7 @@ ScrollView
 		MenuHeader
 		{
 			id:				menuHeader
-			headertext:		qsTr("User Interface options")
+			headertext:		qsTr("User Interface Options")
 			helpfile:		"preferences/prefsui"
 			anchorMe:		false
 			width:			scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
@@ -182,8 +182,8 @@ ScrollView
 
 				label:					qsTr("Choose language  ")
 
-				currentIndex:			languageModel.currentIndex
-				onActivated:			languageModel.changeLanguage(index);
+				currentValue:			languageModel.currentLanguage
+				onCurrentValueChanged:	languageModel.currentLanguage = currentValue;
 
 				source:					languageModel
 
