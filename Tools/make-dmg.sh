@@ -69,7 +69,9 @@ $QT_KIT_FULL/bin/macdeployqt app/JASPEngine.app/
 echo "Copy the JASPEngine out of the JASPEngine.app into the JASP.app"
 echo "This will now have had it's rpaths fixed"
 
-mv app/JASPEngine.app/Contents/MacOS/JASPEngine app/JASP.app/Contents/MacOS/
+mv app/JASPEngine.app/Contents/MacOS/JASPEngine 		app/JASP.app/Contents/MacOS/
+mv app/JASPEngine.app/Contents/MacOS/otool 				app/JASP.app/Contents/MacOS/
+mv app/JASPEngine.app/Contents/MacOS/install_name_tool 	app/JASP.app/Contents/MacOS/
 rm -rf app/JASPEngine.app/ 
 
 echo "Copy the R.framework in, the Resources, App info, icon, etc."
