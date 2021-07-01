@@ -190,12 +190,8 @@ QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 	
 	if (!exists)
 	{
-		//Fall back to English
-		if (!(LanguageModel::lang()->currentLanguage() == QLocale::English))
-		{	
-			index.setFileName(AppDirs::examples() + QDir::separator() + "index.json");
-			exists = index.exists();		
-		}
+		index.setFileName(AppDirs::examples() + QDir::separator() + "index.json");
+		exists = index.exists();
 	}
 	
 	if (!exists)

@@ -125,9 +125,7 @@ public slots:
 	void refreshKeyPressed();
 	void zoomInKeyPressed();
 	void zoomOutKeyPressed();
-	void zoomResetKeyPressed();
-	void setLanguage(int languageIndex);
-	
+	void zoomResetKeyPressed();	
 
 	QObject * loadQmlData(QString data, QUrl url);
 
