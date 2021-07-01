@@ -54,6 +54,8 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool useLogger, 
 	logCout << "This is a mac so we will fix the otool mess of folder '" << modLibpath << "'...\n";
 
 	typedef filesystem::recursive_directory_iterator	recIt;
+
+	const std::string progDir = getenv("JASPENGINE_FOLDER");
 	
 	filesystem::path path;
 	
@@ -73,7 +75,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool useLogger, 
 				logCout << "- Now checking and fixing otool paths for file '" << path.string() << "'.\n";
 	
 			std::string libDir		= stringUtils::replaceBy(path.string(), " ", "\\ "),
-						otoolCmd	= "otool -L " + libDir,
+						otoolCmd	= progDir + "otool -L " + libDir,
 						otoolOut	= _system(otoolCmd);
 			auto		otoolLines	= stringUtils::splitString(otoolOut, '\n');
 	
@@ -113,7 +115,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool useLogger, 
 	
 				auto install_name_tool_cmd = [&](const std::string & replaceThisLine, const std::string & withThisLine)
 				{
-					const std::string cmd = "install_name_tool -change " + replaceThisLine + " " + withThisLine + " " + libDir;
+					const std::string cmd = progDir + "install_name_tool -change " + replaceThisLine + " " + withThisLine + " " + libDir;
 	
 					if(printStuff)
 						logCout << cmd << std::endl;
