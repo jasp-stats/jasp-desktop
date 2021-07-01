@@ -44,18 +44,17 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool useLogger, 
 {
 	using namespace boost;
 	
-#ifdef JASP_DEBUG
-	printStuff = true; //If debugging please always print stuff
-#endif
-
 	filesystem::path modLibpath	= Utils::osPath(moduleLibraryPath);
 
 #ifdef __APPLE__
+#ifdef JASP_DEBUG
+	printStuff = true; //If debugging please always print stuff
+#endif
 	logCout << "This is a mac so we will fix the otool mess of folder '" << modLibpath << "'...\n";
 
 	typedef filesystem::recursive_directory_iterator	recIt;
 
-	const std::string progDir = getenv("JASPENGINE_FOLDER");
+	const std::string progDir = stringUtils::replaceBy(std::string(getenv("JASPENGINE_FOLDER")), " ", "\\ ");
 	
 	filesystem::path path;
 	

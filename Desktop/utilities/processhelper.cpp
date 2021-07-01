@@ -22,7 +22,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 	//Which also means we have the following process -> subprocess structure while installing a dynamic module:
 	// jasp -> JASPEngine with R-embedded -> Separate R -> separate instances of JASPEngine...
 	env.insert("JASPENGINE_LOCATION",				engineExe);
-	env.insert("JASPENGINE_FOLDER",					programDir.absolutePath());
+	env.insert("JASPENGINE_FOLDER",					programDir.absolutePath() + '/');
 	
 	QString rHomePath = AppDirs::rHome();
 	QDir rHome(rHomePath);
