@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2021-07-02 14:04+0000\n"
-"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
+"Last-Translator: JASP Stats <b.boutin@uva.nl>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
 "Language: de\n"
@@ -3757,7 +3757,7 @@ msgstr "Siehe Dokumentation für weitere Informationen "
 
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr ""
+msgstr "Bedienoberflächenoptionen"
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
