@@ -10,7 +10,7 @@
   - [x] a. how to update jasp? can look at specific commit I guess
 
 - [x] 7. can we do without the custom download script? No we can't
-- [ ] 8. make this a github repo and push it (too much work went into it already!)
+- [x] 8. make this a github repo and push it (too much work went into it already!)
 - [x] 9. add renv to the local CRAN repo and install it from there!
 
 - [x] 10. Somehow put stuff in /app/lib64/

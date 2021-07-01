@@ -507,17 +507,6 @@ downloadRemotes <- function(destdir) {
   downloadFile("https://cran.r-project.org/src/contrib/remotes_2.4.0.tar.gz", destdir)
 }
 
-downloadV8 <- function(dirs) {
-
-  # see https://github.com/jeroen/V8/blob/master/configure#L61
-  # this might need to be updated from time to time!
-  tarfile <- downloadFile("http://jeroen.github.io/V8/v8-8.3.110.13-linux.tar.gz", dirs["other-dependencies"])
-  untar(tarfile, exdir = dirs["other-dependencies"]) # otherwise we need to do this on flatpak
-  unlink(tarfile)
-  # delelte all the ._ files?
-  # unlink(list.files(path = dirs["other-dependencies"], pattern = "\\._(.+)", recursive = TRUE, full.names = TRUE))
-
-}
 
 copyRfiles <- function(dirs) {
   file.copy(from = list.files("R", pattern = "*\\.R$", full.names = TRUE), to = dirs["r-helpers"], overwrite = TRUE)
@@ -637,28 +626,6 @@ prettyCat <- function(x) {
     cat(name, '\n', paste(x, collapse = '\n'), '\n', sep = "")
 }
 
-updateV8Rpackage <- function(dirs) {
-
-  pathV8 <- list.files(file.path(dirs["local-cran"], "src", "contrib"), pattern = "^V8_*", full.names = TRUE)
-  dirTemp <- file.path(tempdir(), "V8_fix")
-  mkdir(dirTemp)
-  untar(tarfile = pathV8, exdir = dirTemp)
-  dirTempV8 <- file.path(dirTemp, "V8")
-  configureLines <- readLines(file.path(dirTempV8, "configure"))
-  configureLines[startsWith(configureLines, "PKG_LIBS=\"-lv8")] <- "PKG_LIBS=\"-lv8_monolith\""
-  configureLines[startsWith(configureLines, "PKG_CFLAGS=\"-I/usr/include/v8")] <- "PKG_CFLAGS=\"\""
-  writeLines(configureLines, file.path(dirTempV8, "configure"))
-
-  newPathV8 <- file.path(dirTemp, basename(pathV8))
-  oldwd <- getwd()
-  on.exit(setwd(oldwd))
-  setwd(dirTemp)
-  tar(tarfile = newPathV8, files = "V8", compression = "gzip")
-
-  file.copy(from = newPathV8, to = pathV8, overwrite = TRUE)
-
-}
-
 installJaspStats <- function(pkgs, dirs) {
 
   paths <- character(length(pkgs))
@@ -692,6 +659,13 @@ makeTar <- function(pathOriginal, dirTemp) {
 }
 
 cleanupBigPackages <- function(dirs) {
+
+  # So the GitHub downloads contain EVERYTHING in a repo. That's much more than we need.
+  # Luckily, almost every package has an .Rbuildignore. So when we unpack the github tarball
+  # and ask R to build a source package then anything listed in .Rbuildignore is excluded
+  # from the tarball. This provides a very effective way for deleting useless files while not
+  # having to make any guesses about what the package authors intended.
+  # In addition, this function deletes the folders "tests" and "vignettes".
 
   oldwd <- getwd()
   on.exit(setwd(oldwd))
@@ -731,5 +705,62 @@ cleanupBigPackages <- function(dirs) {
     file.copy(from = dir(dirTemp2), to = path, overwrite = TRUE)
 
   }
+
+}
+
+downloadFakeV8 <- function(dirs) {
+
+  tdir <- file.path(tempdir(), "fakeV8")
+  if (dir.exists(tdir)) unlink(tdir, recursive = TRUE)
+  mkdir(tdir)
+  downloadFile("https://github.com/vandenman/V8/raw/master/V8_100.0.0.tar.gz", tdir)
+  file <- dir(tdir, full.names = TRUE)[1L]
+
+  V8dir <- file.path(dirs["renv-root"], "source", "repository", "V8")
+  V8origFile <- dir(V8dir, full.names = TRUE)
+
+  if (length(V8origFile) > 1L) {
+    stop("There are multiple V8 packages at ", V8dir)
+  } else if (length(V8origFile) == 1L) {
+    unlink(V8origFile)
+  }
+
+  newFileName <- file.path(V8dir, basename(file))
+  file.copy(from = file, to = newFileName, overwrite = TRUE)
+
+}
+
+# This downloads the precompiled V8 source from jeroen/V8 -- but this only works on x86
+downloadV8 <- function(dirs) {
+
+  # see https://github.com/jeroen/V8/blob/master/configure#L61
+  # this might need to be updated from time to time!
+  tarfile <- downloadFile("http://jeroen.github.io/V8/v8-8.3.110.13-linux.tar.gz", dirs["other-dependencies"])
+  untar(tarfile, exdir = dirs["other-dependencies"]) # otherwise we need to do this on flatpak
+  unlink(tarfile)
+  # delelte all the ._ files?
+  # unlink(list.files(path = dirs["other-dependencies"], pattern = "\\._(.+)", recursive = TRUE, full.names = TRUE))
+
+}
+
+updateV8Rpackage <- function(dirs) {
+
+  pathV8 <- list.files(file.path(dirs["local-cran"], "src", "contrib"), pattern = "^V8_*", full.names = TRUE)
+  dirTemp <- file.path(tempdir(), "V8_fix")
+  mkdir(dirTemp)
+  untar(tarfile = pathV8, exdir = dirTemp)
+  dirTempV8 <- file.path(dirTemp, "V8")
+  configureLines <- readLines(file.path(dirTempV8, "configure"))
+  configureLines[startsWith(configureLines, "PKG_LIBS=\"-lv8")] <- "PKG_LIBS=\"-lv8_monolith\""
+  configureLines[startsWith(configureLines, "PKG_CFLAGS=\"-I/usr/include/v8")] <- "PKG_CFLAGS=\"\""
+  writeLines(configureLines, file.path(dirTempV8, "configure"))
+
+  newPathV8 <- file.path(dirTemp, basename(pathV8))
+  oldwd <- getwd()
+  on.exit(setwd(oldwd))
+  setwd(dirTemp)
+  tar(tarfile = newPathV8, files = "V8", compression = "gzip")
+
+  file.copy(from = newPathV8, to = pathV8, overwrite = TRUE)
 
 }

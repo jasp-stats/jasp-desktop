@@ -30,15 +30,17 @@ installRecommendedPackages(dirs)
 
 cleanupBigPackages(dirs)
 
+downloadFakeV8(dirs)
+
 createLocalPackageRepository(dirs)
 
-updateV8Rpackage(dirs)
+# updateV8Rpackage(dirs)
 
 # TRUE implies all pkgs only appear once -- not sure what will happen when this is not true anymore
 # pkgs <- list.files("toplevelRepository/src/contrib/", pattern = "\\.tar\\.gz$")
 # all(table(sapply(strsplit(pkgs, "_", fixed = TRUE), `[`, 1)) == 1)
 
-downloadV8(dirs)
+# downloadV8(dirs)
 copyRfiles(dirs)
 
 # debugonce(createTarArchive)

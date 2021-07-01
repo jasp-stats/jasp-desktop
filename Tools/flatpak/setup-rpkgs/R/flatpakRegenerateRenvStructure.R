@@ -38,15 +38,12 @@ options(renv.cache.linkable = TRUE)
 # remotes is called through loadNamespace somewhere..
 install.packages(c("renv", "remotes"))
 
-moduleEnvironments <- readRDS(file.path(dirs["module-environments"], "module-environments.rds"))
-
-
-dirV8 <- file.path(dirs["other-dependencies"], "v8")
-configureVars <- c(
-  V8 = sprintf("INCLUDE_DIR=%1$s/include LIB_DIR=%1$s/lib", dirV8)
-)
-options(configure.vars = configureVars)
-prettyCat(configureVars)
+# dirV8 <- file.path(dirs["other-dependencies"], "v8")
+# configureVars <- c(
+#   V8 = sprintf("INCLUDE_DIR=%1$s/include LIB_DIR=%1$s/lib", dirV8)
+# )
+# options(configure.vars = configureVars)
+# prettyCat(configureVars)
 
 renv::install("V8")
 
