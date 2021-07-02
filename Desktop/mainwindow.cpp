@@ -915,7 +915,11 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		connectFileEventCompleted(event);
 
 		if(!event->path().endsWith(".pdf"))
+		{
+			if(_preferences->currentThemeName() != "lightTheme")
+				_resultsJsInterface->setThemeCss("lightTheme");
 			_resultsJsInterface->exportHTML();
+		}
 
 		_loader->io(event);
 		showProgress();
@@ -1119,6 +1123,11 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		else
 			_applicationExiting = false;
 
+	}
+	else if (event->operation() == FileEvent::FileExportResults)
+	{
+		if(!event->path().endsWith(".pdf") && _preferences->currentThemeName() != "lightTheme")
+			_resultsJsInterface->setThemeCss(_preferences->currentThemeName());
 	}
 }
 
