@@ -17,8 +17,13 @@ dirs <- setupJaspDirs("flatpak_folder")
 Sys.setenv("RENV_PATHS_CACHE" = dirs["renv-cache"])
 Sys.setenv("RENV_PATHS_ROOT"  = dirs["renv-root"])
 
-# all jaspModules
+# use the default branch of all modules -- always the latest version
 jaspModules <- paste0("jasp-stats/", Filter(function(x) startsWith(x, "jasp"), dir("~/github/jasp-desktop/Modules/")))
+
+# this uses the local versions -- but modules that are dependencies are still retrieved from github
+# isJaspModule <- function(path) file.exists(file.path(path, "DESCRIPTION")) && file.exists(file.path(path, "inst", "Description.qml"))
+# jaspModules <- Filter(isJaspModule, list.dirs("~/github/jasp-desktop/Modules", recursive = FALSE))
+
 names(jaspModules) <- basename(jaspModules)
 
 moduleEnvironments <- getModuleEnvironments(jaspModules)
