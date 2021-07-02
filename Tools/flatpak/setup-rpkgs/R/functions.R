@@ -153,7 +153,17 @@ stripUrl <- function(url) {
   tolower(gsub("/+", "_", strsplit(url, "repos/", fixed = TRUE)[[1L]][2]))
 }
 
-mkdir <- function(x) if (!dir.exists(x)) dir.create(x, recursive = TRUE)
+mkdir <- function(x, deleteIfExists = FALSE) {
+
+  if (deleteIfExists) {
+    if (dir.exists(x))
+      unlink(x, recursive = TRUE)
+    dir.create(x, recursive = TRUE)
+  } else if (!dir.exists(x)) {
+    dir.create(x, recursive = TRUE)
+  }
+
+}
 
 hasRenvLockFile <- function(modulePkg) {
   return(file.exists(file.path(modulePkg, "renv.lock")))
@@ -243,13 +253,16 @@ customRenvInstall <- function(packages, library = NULL, rebuild = TRUE, customDo
 
 installRecommendedPackages <- function(dirs) {
 
-  .libPaths()
   installed <- installed.packages(.libPaths())
   rec_pkgs <- unname(installed[installed[, "Priority"] %in% "recommended", "Package"])
   customRenvInstall(rec_pkgs, customDownload = FALSE)
 
+  # for some reason, these two are missing...
+  customRenvInstall(c("devtools", "roxygen2"), customDownload = FALSE)
+
   downloadRenv(file.path(dirs["local-cran"], "src", "contrib"))
   downloadRemotes(file.path(dirs["local-cran"], "src", "contrib"))
+
 }
 
 getFlatpakJSONFromLockfile <- function(pathToModule, dirForPkgs = tempdir(), downloadPkgs = FALSE) {
@@ -312,10 +325,8 @@ getFlatpakJSONFromModule <- function(pathToModule, dirForPkgs = tempdir(), downl
 createFolderStructure <- function(toplevel = file.path(getwd(), "toplevelRepository")) {
 
   contrib  <- file.path(toplevel, "src", "contrib")
-  github   <- file.path(toplevel, "github")
   mkdir(contrib)
-  mkdir(github)
-  return(c("root" = toplevel, "contrib" = contrib, "github" = github))
+  return(c("root" = toplevel, "contrib" = contrib))
 
 }
 
@@ -671,13 +682,8 @@ cleanupBigPackages <- function(dirs) {
   on.exit(setwd(oldwd))
   paths <- list.files(dirs["local-github"], pattern = "*_tarball_*", full.names = TRUE)
 
-  mkdir2 <- function(x) {
-    if (dir.exists(x)) unlink(x, recursive = TRUE)
-    mkdir(x)
-  }
-
   dirTemp <- file.path(tempdir(), "resize-github-pkgs")
-  mkdir2(dirTemp)
+  mkdir(dirTemp, deleteIfExists = TRUE)
 
   rpath <- file.path(Sys.getenv("R_HOME"), "bin", "R")
 
@@ -685,7 +691,7 @@ cleanupBigPackages <- function(dirs) {
 
     path <- paths[i]
     dirTempPkg <- file.path(dirTemp, basename(path))
-    mkdir2(dirTempPkg)
+    mkdir(dirTempPkg, deleteIfExists = TRUE)
     untar(path, exdir = dirTempPkg)
 
     newPath <- file.path(dirTempPkg, dir(dirTempPkg))
@@ -696,7 +702,7 @@ cleanupBigPackages <- function(dirs) {
     )), recursive = TRUE)
 
     dirTemp2 <- file.path(tempdir(), basename(path))
-    mkdir2(dirTemp2)
+    mkdir(dirTemp2, deleteIfExists = TRUE)
 
     setwd(dirTemp2)
     cmd <- sprintf("%s CMD build --no-build-vignettes --no-manual --resave-data %s", rpath, newPath)
@@ -712,7 +718,7 @@ downloadFakeV8 <- function(dirs) {
 
   tdir <- file.path(tempdir(), "fakeV8")
   if (dir.exists(tdir)) unlink(tdir, recursive = TRUE)
-  mkdir(tdir)
+  mkdir(tdir, deleteIfExists = TRUE)
   downloadFile("https://github.com/vandenman/V8/raw/master/V8_100.0.0.tar.gz", tdir)
   file <- dir(tdir, full.names = TRUE)[1L]
 
@@ -738,20 +744,23 @@ downloadV8 <- function(dirs) {
   tarfile <- downloadFile("http://jeroen.github.io/V8/v8-8.3.110.13-linux.tar.gz", dirs["other-dependencies"])
   untar(tarfile, exdir = dirs["other-dependencies"]) # otherwise we need to do this on flatpak
   unlink(tarfile)
-  # delelte all the ._ files?
   # unlink(list.files(path = dirs["other-dependencies"], pattern = "\\._(.+)", recursive = TRUE, full.names = TRUE))
 
 }
 
+copyV8Lib <- function(dirs, source = "other_deps/v8") {
+  file.copy(source, to = dirs["other-dependencies"], recursive = TRUE)
+}
+
 updateV8Rpackage <- function(dirs) {
 
-  pathV8 <- list.files(file.path(dirs["local-cran"], "src", "contrib"), pattern = "^V8_*", full.names = TRUE)
+  pathV8 <- list.files(file.path(dirs["renv-root"], "source", "repository", "V8"), pattern = "^V8_*", full.names = TRUE)
   dirTemp <- file.path(tempdir(), "V8_fix")
-  mkdir(dirTemp)
+  mkdir(dirTemp, deleteIfExists = TRUE)
   untar(tarfile = pathV8, exdir = dirTemp)
   dirTempV8 <- file.path(dirTemp, "V8")
   configureLines <- readLines(file.path(dirTempV8, "configure"))
-  configureLines[startsWith(configureLines, "PKG_LIBS=\"-lv8")] <- "PKG_LIBS=\"-lv8_monolith\""
+  configureLines[startsWith(configureLines, "PKG_LIBS=\"-lv8")] <- "PKG_LIBS=\"-lv8_monolith_$LIB_ARCH\""
   configureLines[startsWith(configureLines, "PKG_CFLAGS=\"-I/usr/include/v8")] <- "PKG_CFLAGS=\"\""
   writeLines(configureLines, file.path(dirTempV8, "configure"))
 

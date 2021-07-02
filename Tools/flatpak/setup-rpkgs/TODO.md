@@ -23,12 +23,4 @@
 
 - [ ] 14. The moduleEnvironments object is no longer necessary. It's probably useful for debugging to create it but it shouldn't be in the archive.
 
-# BONUS
-
-- [x] 1. Clean out the massive pile of shit that some people put in uncommon directories.
-         At least flexplot/vignettes/* & flexplot/flexplot.jmo should be deleted.
-- [ ] 2. delete ._v8?
-- [x] 3. Don't install helpfiles and stuff
-- [x] 4. Don't compress the archive locally so it can be updated. No bad idea.
-- [ ] 5. the url for github should be case insensitive (since web urls are, but remotes specification is not)
-  - a. [ ] Test the above.
+- [ ] 15. Reduce the size of the flatpak object (1.2 GB is a bit much). Check if unnecessary stuff is actually deleted (like local-github)

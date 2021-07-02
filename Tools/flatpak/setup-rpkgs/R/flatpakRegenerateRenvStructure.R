@@ -16,7 +16,8 @@ dirs <- setupJaspDirs(clearAll = FALSE)
 prettyCat(dirs)
 
 # if you're running this locally, we pretend /app is just app so the code can be run
-dirApp <- if (dir.exists("/app")) "/app" else "app"
+runningLocally <- !dir.exists("/app")
+dirApp <- if (runningLocally) "app" else "/app"
 dirLib64 <- file.path(dirApp, "lib64")
 flatpakDirs <- setupJaspDirs(dirLib64, jaspSubdir = "", clearAll = FALSE, renvOnly = TRUE)
 
@@ -35,16 +36,28 @@ options(renv.cache.linkable = TRUE)
 # uncomment to test locally (and not pollute renv/library)
 # .libPaths(c(tempdir(), .libPaths()))
 
-# remotes is called through loadNamespace somewhere..
+# remotes is called through loadNamespace somewhere although we no longer need/ use it...
 install.packages(c("renv", "remotes"))
 
-# dirV8 <- file.path(dirs["other-dependencies"], "v8")
-# configureVars <- c(
-#   V8 = sprintf("INCLUDE_DIR=%1$s/include LIB_DIR=%1$s/lib", dirV8)
-# )
-# options(configure.vars = configureVars)
-# prettyCat(configureVars)
+# V8 needs to be present after installing as well
+file.copy(from = file.path(dirs["other-dependencies"], "v8"), to = dirLib64, recursive = TRUE)
 
+dirV8 <- file.path(dirLib64, "v8")
+# This must be an absolute path, since installation is staged
+if (runningLocally) dirV8 <- normalizePath(dirV8)
+
+configureVars <- c(
+  V8 = sprintf("INCLUDE_DIR=%1$s/include LIB_DIR=%1$s/lib", dirV8)
+)
+options(configure.vars = configureVars)
+prettyCat(configureVars)
+
+# set environment variable for V8
+libArch <- system("uname -m", intern = TRUE)
+Sys.setenv("LIB_ARCH" = if (identical(libArch, "x86_64")) "x64" else "aarch64")
+prettyCat(Sys.getenv("LIB_ARCH"))
+
+# install V8 here so later it only needs to be retrieved from the cache
 renv::install("V8")
 
 installJaspStats(c("jaspBase", "jaspGraphs"), dirs)
