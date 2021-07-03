@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-07-01 04:33+0000\n"
+"PO-Revision-Date: 2021-07-02 14:04+0000\n"
 "Last-Translator: sun wong <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -166,7 +166,7 @@ msgstr "关闭"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr "拖拽以重新排布分析"
+msgstr "拖拽可重新排布分析栏"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
@@ -174,7 +174,7 @@ msgstr "编辑此分析的标题"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr "重复此分析"
+msgstr "重建此分析"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
@@ -469,7 +469,7 @@ msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
-msgstr "您的计算列有未应用的更改；您想做什么？"
+msgstr "您的计算列有未应用的更改；请确认您的操作？"
 
 msgctxt "ContrastsList|"
 msgid "none"
@@ -749,7 +749,7 @@ msgstr "启用此项将从qml选项的信息中生成markdown帮助文件。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows workarounds"
-msgstr "Windows 解决方法"
+msgstr "Windows 环境变量策略"
 
 msgctxt "PrefsAdvanced|"
 msgid "Handling LC_CTYPE"
@@ -787,7 +787,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr "记录选项"
+msgstr "日志选项"
 
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
@@ -951,7 +951,7 @@ msgstr "其他选项"
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr "缩放（%）： "
+msgstr "界面缩放（%）： "
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -1024,7 +1024,7 @@ msgstr "欢迎使用拖放式计算列构建器！"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr "在此处转储不需要的片段；双击以清空整个候选"
+msgstr "拖拽至此可删除部分条件；双击将清空全部候选内容"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared<br>"
@@ -1456,8 +1456,8 @@ msgid ""
 "Enter your R code here.\n"
 "The data is fully available as 'data' and filtered as 'filteredData'."
 msgstr ""
-"在此处输入您的R代码。\n"
-"数据完全以\"数据\"身份提供，并作为\"过滤数据\"进行过滤。"
+"在这里输入您的R代码。\n"
+"数据以'data'的形式提供，以'filteredData'的形式进行过滤。"
 
 msgctxt "RCommanderWindow|"
 msgid "Enter your R code here."
@@ -1918,7 +1918,7 @@ msgstr "此“"
 
 msgctxt "ColumnsModel|"
 msgid "'-column "
-msgstr "”-列 "
+msgstr "”列 "
 
 #, qt-format
 msgctxt "FileEvent|"
@@ -2128,7 +2128,7 @@ msgid ""
 "\n"
 "Your changes will be lost if you don't save them."
 msgstr ""
-"在关闭之前保存对文件%1的更改？\n"
+"在关闭之前保存对 %1 的更改？\n"
 "\n"
 "如果不保存它们，您的更改将丢失。"
 
@@ -2532,7 +2532,7 @@ msgstr "关于"
 
 msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
-msgstr "类别"
+msgstr "目录"
 
 msgctxt "FileMenu|"
 msgid "File Types"
