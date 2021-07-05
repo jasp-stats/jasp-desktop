@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-07-06 13:34+0000\n"
+"Last-Translator: Johannes Keyser <johanneskeyser@posteo.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.8-dev\n"
 "X-Language: en_US\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -1182,7 +1188,7 @@ msgstr "Oder: %1"
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr "Split: wendet Filter separat auf jede Untergruppe an"
+msgstr "Aufteilung: wendet Filter separat auf jede Untergruppe an"
 
 #, qt-format
 msgctxt "OperatorSelector|"
@@ -1264,7 +1270,7 @@ msgstr "Oder: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr "Split: wendet Filter separate auf jede Subgruppe an"
+msgstr "Aufteilung: wendet Filter separate auf jede Subgruppe an"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
