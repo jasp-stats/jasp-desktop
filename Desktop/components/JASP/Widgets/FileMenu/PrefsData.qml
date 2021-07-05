@@ -64,7 +64,7 @@ Item
 				Label
 				{
 					id:					linuxInfo
-					text:				"<i>On linux the default spreadsheet editor is always used.</i>"
+					text:				qsTr("<i>On Linux the default spreadsheet editor is always used.</i>")
 					visible:			LINUX
 					textFormat:			Text.StyledText
 
