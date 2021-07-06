@@ -29,6 +29,6 @@ ShaderEffect
 
 	void main() {
 		highp vec4 tex = texture2D(src, coord);
-		gl_FragColor = vec4(vec3(1.0) - (tex.rgb), 1.0f) * tex.a * qt_Opacity;
+		gl_FragColor = vec4(vec3(1.0) - (tex.rgb), 1.0) * tex.a * qt_Opacity;
 	}"
 }
