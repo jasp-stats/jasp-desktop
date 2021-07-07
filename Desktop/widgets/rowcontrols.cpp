@@ -89,7 +89,7 @@ void RowControls::_setupControls(bool reuseBoundValue)
 	}
 
 	if (form)
-		form->blockValueChangeSignal(false, false);
+		form->blockValueChangeSignal(false);
 }
 
 void RowControls::setContext(int row, const QString &key)
