@@ -23,6 +23,7 @@
         <file>js/jquery-ui-1.10.1.custom.js</file>
         <file>js/jquery-ui-1.10.1.custom.min.js</file>
         <file>js/quill.js</file>
+        <file>js/image_resize.js</file>
         <file>js/table.js</file>
         <file>js/utils.js</file>
         <file>css/quill.snow.css</file>
