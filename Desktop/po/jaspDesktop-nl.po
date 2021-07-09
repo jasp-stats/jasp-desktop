@@ -3610,7 +3610,7 @@ msgstr ""
 msgctxt "MainWindow|"
 msgid ""
 "No default spreadsheet editor for file %1. Do you want to export the data "
-"into a CSV file and start the default spreadsheet editor for this CSV file?."
+"into a CSV file and start the default spreadsheet editor for this CSV file?"
 msgstr ""
 
 msgctxt "MainWindow|"
