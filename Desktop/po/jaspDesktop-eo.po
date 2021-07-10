@@ -3474,3 +3474,7 @@ msgstr ""
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
 msgstr ""
+
+msgctxt "PrefsData|"
+msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
+msgstr ""

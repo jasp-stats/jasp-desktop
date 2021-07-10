@@ -3455,3 +3455,7 @@ msgstr ""
 msgctxt "MainWindow|"
 msgid "Clean"
 msgstr ""
+
+msgctxt "PrefsData|"
+msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
+msgstr ""
