@@ -59,7 +59,7 @@ Popup
 			Item
 			{
 				id:				axes
-				width:			500 * jaspTheme.uiScale
+				width:			parent.width * .3
 				anchors
 				{
 					top:		title.bottom
@@ -208,7 +208,8 @@ Popup
 						}
 					}
 				}
-				
+
+				/* Redo/Undo buttons: let's do that later.
 				JASPW.MenuButton
 				{
 					id:					redoButton
@@ -247,7 +248,7 @@ Popup
 
 					}
 					onClicked:			plotEditorModel.undoSomething()
-				}
+				} */
 
 				JASPC.JASPScrollBar
 				{
@@ -293,25 +294,40 @@ Popup
 				id:					exitButton
 				anchors
 				{
-					left:			parent.left
+					right:			parent.right
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				text:				qsTr("Finish")
+				text:				qsTr("OK")
+				width:				cancelButton.width
+				color:				jaspTheme.blueLighter
 				on_PressedChanged:	plotEditorPopup.close()
 			}
 
 			JASPW.RectangularButton
 			{
-				id:					resetButton
+				id:					cancelButton
 				anchors
 				{
-					left:			exitButton.right
+					right:			exitButton.left
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				text:				qsTr("Discard changes")
-				on_PressedChanged:	plotEditorModel.resetPlot()
+				text:				qsTr("Cancel")
+				on_PressedChanged:	{ plotEditorModel.cancelPlot(); plotEditorPopup.close() }
+			}
+
+			JASPW.RectangularButton
+			{
+				id:					resetDefaultButton
+				anchors
+				{
+					right:			cancelButton.left
+					bottom:			parent.bottom
+					margins:		jaspTheme.generalAnchorMargin
+				}
+				text:				qsTr("Reset defaults")
+				onClicked:			plotEditorModel.resetDefaults()
 			}
 
 			JASPW.RectangularButton
@@ -319,7 +335,7 @@ Popup
 				id:					saveButton
 				anchors
 				{
-					left:			resetButton.right
+					right:			resetDefaultButton.left
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
@@ -337,7 +353,9 @@ Popup
 					left:			axes.right
 					right:			parent.right
 					bottom:			axes.bottom
-					margins:		jaspTheme.generalAnchorMargin
+					leftMargin:		jaspTheme.generalAnchorMargin
+					rightMargin:	jaspTheme.generalAnchorMargin
+					topMargin:		0
 				}
 
 				Rectangle
@@ -347,7 +365,7 @@ Popup
 					border.color:		jaspTheme.uiBorder
 					border.width:		preferencesModel.uiScale
 					z:					-1
-					anchors.fill:		plotImg
+					anchors.fill:		parent
 					anchors.margins:	-plotImgRect.border.width
 				}
 

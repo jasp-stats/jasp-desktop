@@ -90,6 +90,7 @@ signals:
 
 public slots:
 	void showPlotEditor(int id, QString options);
+	void updatePlotEditor(Analysis* analysis);
 
 	void setVisible(		bool					visible			);
 	void setName(			const QString	&		name			);
@@ -100,7 +101,8 @@ public slots:
 	void setLoading(		bool					loading			);
 	void setAdvanced(		bool					advanced		);
 	
-	void					resetPlot();
+	void					resetDefaults();
+	void					cancelPlot();
 	void					savePlot()	const;
 	void setAxisType(		const AxisType			axisType		);
 
@@ -134,17 +136,14 @@ private:
 							_originalImgOps	= Json::nullValue;
 	QString					_name,
 							_data,
-							_title,
-							_options;
+							_title;
 	bool					_visible		= false,
 							_goBlank		= false,
 							_loading		= false,
 							_advanced		= false,
 							_validOptions	= false;
 	int						_width,
-							_height,
-							_analysisId,
-							_lastAnalID;
+							_height;
 	double					_ppi;
 
 	static int				_editRequest;

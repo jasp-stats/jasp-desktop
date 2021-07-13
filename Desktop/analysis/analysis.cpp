@@ -137,9 +137,16 @@ void Analysis::remove()
 
 void Analysis::setResults(const Json::Value & results, Status status, const Json::Value & progress)
 {
-	_results	= results;
-	_progress	= progress;
-	_resultsMeta		= _results.get(".meta", Json::arrayValue);
+	_results		= results;
+	_progress		= progress;
+	_resultsMeta	= _results.get(".meta", Json::arrayValue);
+
+	for (const auto& it : _plotOptions)
+	{
+		Json::Value option = editOptionsOfPlot(it.first, false);
+		if (!option.isNull())
+			_plotOptions[it.first] = option;
+	}
 
 	setStatus(status);
 
@@ -151,8 +158,6 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 		checkForRSources();
 
 	_wasUpgraded = false;
-	
-	
 }
 
 void Analysis::reload()
@@ -173,7 +178,7 @@ void Analysis::run()
 void Analysis::refresh()
 {
 	clearRSources();
-	TempFiles::deleteAll(_id);
+	TempFiles::deleteAll(int(_id));
 	run();
 
 	emit refreshTableViewModels();
@@ -202,13 +207,16 @@ void Analysis::editImage(const Json::Value &options)
 
 void Analysis::imageEdited(const Json::Value & results)
 {
+	std::string name = _imgOptions.get("name", "").asString();
 	_imgResults = results;
 
-	if(		 _imgResults.get(	"resized",	false).asBool()		&&
-			!_imgResults.get(	"error",	true).asBool()		&&
-			_imgOptions.get(	"name",		"").asString() != "" )
-		updatePlotSize(_imgOptions["name"].asString(), _imgResults.get("width", -1).asInt(), _imgResults.get("height", -1).asInt(), _results);
+	if (name != "")
+	{
+		setEditOptionsOfPlot(name, results["editOptions"]);
 
+		if (_imgResults.get("resized", false).asBool() && !_imgResults.get("error", true).asBool())
+			updatePlotSize(_imgOptions["name"].asString(), _imgResults.get("width", -1).asInt(), _imgResults.get("height", -1).asInt(), _results);
+	}
 	setStatus(Analysis::Complete);
 
 	emit imageEditedSignal(this);
@@ -772,13 +780,18 @@ void Analysis::processResultsForDependenciesToBeShown()
 	processResultsForDependenciesToBeShownMetaTraverser(_results[".meta"]);
 }
 
-Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName)
+Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName, bool emitError)
 {
-	Json::Value editOptions = Json::nullValue;
+	Json::Value editOptions = _plotOptions.count(uniqueName) > 0 ? _plotOptions[uniqueName] : Json::nullValue;
 
 	if(!_editOptionsOfPlot(_results, uniqueName, editOptions))
-		MessageForwarder::showWarning(tr("Could not find edit options of plot %1 so plot editing will not work...").arg(tq(uniqueName)));
+	{
+		if (emitError)
+			MessageForwarder::showWarning(tr("Could not find edit options of plot %1 so plot editing will not work...").arg(tq(uniqueName)));
+		editOptions = Json::nullValue;
+	}
 
+	_plotOptions[uniqueName] = editOptions;
 	return editOptions;
 }
 
@@ -812,6 +825,8 @@ void Analysis::setEditOptionsOfPlot(const std::string & uniqueName, const Json::
 {
 	if(!_setEditOptionsOfPlot(_results, uniqueName, editOptions))
 		MessageForwarder::showWarning(tr("Could not find set edit options of plot %1 so plot editing will not remember anything (if it evens works)...").arg(tq(uniqueName)));
+
+	_plotOptions[uniqueName] = editOptions;
 }
 
 bool Analysis::_setEditOptionsOfPlot(Json::Value & results, const std::string & uniqueName, const Json::Value & editOptions)

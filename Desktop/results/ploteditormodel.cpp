@@ -19,7 +19,6 @@ PlotEditorModel::PlotEditorModel()
 	_yAxis = new AxisModel(this, true);
 	_currentAxis = _xAxis;
 	_ppi   = PreferencesModel::prefs()->plotPPI();
-	// _resetPlot is always false, it should only be set to TRUE from QML
 
 	connect(_xAxis,		&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
 	connect(_yAxis,		&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
@@ -30,45 +29,59 @@ PlotEditorModel::PlotEditorModel()
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
 {
-	setLoading(true);
-	_analysisId		= id;
 	_analysis		= Analyses::analyses()->get(id);
 	_imgOptions		= Json::objectValue;
-	_prevImgOptions	= Json::nullValue;
-	_options		= options;
-
 	Json::Reader().parse(fq(options), _imgOptions);
+
+	setLoading(true);
+	_prevImgOptions	= Json::nullValue;
 	
 	//maybe the following checks are a bit extreme but whatever
 	if(!_analysis || !_imgOptions.isMember("type") || _imgOptions["type"].type() != Json::stringValue || _imgOptions["type"] != "interactive")
 		return;
 
-	_originalImgOps = _imgOptions;
-	_lastAnalID		= _analysisId;
-	
 	processImgOptions();
+	_originalImgOps = generateImgOptions();
 
 	if (_validOptions)
 		setVisible(true);
 	setLoading(false);
 }
 
-void PlotEditorModel::resetPlot()
+void PlotEditorModel::updatePlotEditor(Analysis *analysis)
 {
+	if (_analysis != analysis)	return;
+
 	setLoading(true);
-	reset();
-	showPlotEditor(_lastAnalID, tq(_originalImgOps.toStyledString()));	
-	emit somethingChanged();
+	_editOptions = analysis->editOptionsOfPlot(_name.toStdString());
+	_xAxis->setAxisData(_editOptions["xAxis"]);
+	_yAxis->setAxisData(_editOptions["yAxis"]);
+	setLoading(false);
+}
+
+void PlotEditorModel::cancelPlot()
+{
+	// After this call, the plotEditor is closed. So no need to set all members here.
+	_imgOptions		= _prevImgOptions = _originalImgOps;
+	_editOptions	= _originalImgOps["editOptions"];
+	_editOptions["resetPlot"] = false;
+	_analysis->editImage(_originalImgOps);
+}
+
+void PlotEditorModel::resetDefaults()
+{
+	Json::Value resetDefaultValue = _originalImgOps;
+	resetDefaultValue["editOptions"]["resetPlot"] = true;
+	_analysis->editImage(resetDefaultValue);
 }
 
 void PlotEditorModel::savePlot() const
 {
-	emit saveImage(_analysisId, _options);
+	emit saveImage(int(_analysis->id()), tq(generateImgOptions().toStyledString()));
 }
 
 void PlotEditorModel::reset()
 {
-	_analysisId		=	-1;
 	_analysis		=	nullptr;
 	_imgOptions		=	Json::nullValue;
 	_editOptions	=	Json::nullValue;
@@ -94,6 +107,7 @@ void PlotEditorModel::processImgOptions()
 
 	//_editOptions		=	_imgOptions.get(	"editOptions",	Json::objectValue);
 	_editOptions		=	_name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlot(_name.toStdString());
+	_editOptions["resetPlot"] = false;
 
 	std::string reasonOptionsAreInvalid = _editOptions.get("reasonNotEditable", "").asString();
 
