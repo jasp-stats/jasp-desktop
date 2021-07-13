@@ -100,7 +100,7 @@ public:
 	void setErrorInResults(const std::string & msg);
 
 
-	Json::Value editOptionsOfPlot(const std::string & uniqueName);
+	Json::Value editOptionsOfPlot(const std::string & uniqueName, bool emitError = true);
 	void		setEditOptionsOfPlot(const std::string & uniqueName, const Json::Value & editOptions);
 	bool		checkAnalysisEntry();
 
@@ -282,7 +282,8 @@ private:
 	Modules::UpgradeMsgs	_msgs;
 
 	std::map<std::string,
-		Json::Value>		_rSources;
+		Json::Value>		_rSources,
+							_plotOptions;
 };
 
 #endif // ANALYSIS_H
