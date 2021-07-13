@@ -64,7 +64,7 @@ Popup
 				{
 					top:		title.bottom
 					left:		parent.left
-					bottom:		buttonSeparator.top
+					bottom:		exitButton.top
 					margins:	jaspTheme.generalAnchorMargin
 				}
 
@@ -274,20 +274,6 @@ Popup
 
 				}
 			}
-			
-			Rectangle
-			{
-				id:				buttonSeparator
-				height:			1
-				color:			jaspTheme.uiBorder
-				anchors
-				{
-					bottom:			exitButton.top
-					bottomMargin:	jaspTheme.generalAnchorMargin
-					left:			parent.left
-					right:			parent.right
-				}
-			}
 
 			JASPW.RectangularButton
 			{
@@ -322,7 +308,7 @@ Popup
 				id:					resetDefaultButton
 				anchors
 				{
-					right:			cancelButton.left
+					left:			parent.left
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
@@ -335,7 +321,7 @@ Popup
 				id:					saveButton
 				anchors
 				{
-					right:			resetDefaultButton.left
+					left:			resetDefaultButton.right
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
