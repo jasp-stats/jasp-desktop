@@ -10,9 +10,14 @@ JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSIO
 
 GITHUB_PAT_DEF=$$(GITHUB_PAT_DEF)						#First check if we set this special env var (on buildbot)
 isEmpty(GITHUB_PAT_DEF): GITHUB_PAT_DEF=$$(GITHUB_PAT)	#Otherwise use the one we are using
+exists(/app/lib/*){
+	# Note: this crashes is the env variables aren't base64 encoded
+	GITHUB_PAT_DEF	= $$system(echo $${GITHUB_PAT_DEF}	| base64 -d)
+	GITHUB_PAT		= $$system(echo $${GITHUB_PAT}		| base64 -d)
+}
+
 isEmpty(GITHUB_PAT_DEF){
 	error("No GITHUB_PAT or GITHUB_PAT_DEF found!  Follow the steps at https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-building-guide.md$${LITERAL_HASH}github_pat")
-	
 	GITHUB_PAT_DEF="NO_GITHUB_PAT_FOUND"	#To indicate a clearer error
 }
 #R settings
