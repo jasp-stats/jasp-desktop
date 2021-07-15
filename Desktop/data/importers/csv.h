@@ -66,8 +66,8 @@ private:
 	boost::nowide::ifstream _stream;
 	bool _eof;
 
-	char _rawBuffer[4096];
-	char _utf8Buffer[8192];
+	char _rawBuffer[32768];
+	char _utf8Buffer[65536];
 
 	static inline bool utf16to8(char *out, char *in, int outSize, int inSize, int &written, int &read, bool bigEndian = false);
 	static inline bool utf16to32(uint32_t &out, char *in, int inSize, int &bytesRead, bool bigEndian = false);
