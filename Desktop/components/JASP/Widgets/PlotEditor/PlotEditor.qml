@@ -38,6 +38,7 @@ Popup
 			border.color:	jaspTheme.uiBorder
 			border.width:	preferencesModel.uiScale
 
+			/* This prevents the cursor to get its right shape.
 			MouseArea
 			{
 				id:				focusCatcher	//Because then people can click away from the axistableview or something
@@ -46,6 +47,7 @@ Popup
 				z:				100
 				
 			}
+			*/
 
 			JASPC.Text
 			{
@@ -138,6 +140,13 @@ Popup
 										horizontalAlignment: Text.AlignHCenter
 										verticalAlignment:	Text.AlignVCenter
 										opacity:			checked ? 1 : .6
+									}
+
+									MouseArea
+									{
+										anchors.fill	: parent
+										cursorShape		: checked ? Qt.ArrowCursor : Qt.PointingHandCursor
+										acceptedButtons	: Qt.NoButton
 									}
 								}
 							}
@@ -325,7 +334,7 @@ Popup
 					bottom:			parent.bottom
 					margins:		jaspTheme.generalAnchorMargin
 				}
-				text:				qsTr("Save plot as")
+				text:				qsTr("Save image as")
 				onClicked:			plotEditorModel.savePlot()
 			}
 
@@ -380,7 +389,7 @@ Popup
 						// Later we can make it so that it only shows the pointing hand when it overlaps a clickable element (which informs the user and makes it feel a bit more interactive)
 						id:				elementPicker
 						anchors.fill:	parent
-						cursorShape:	Qt.PointingHandCursor
+						cursorShape:	Qt.ArrowCursor
 						onClicked:
 						{
 							forceActiveFocus();

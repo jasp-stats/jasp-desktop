@@ -68,6 +68,9 @@ public:
 	AxisModel			*	currentAxis()	const {	return _currentAxis;	}
 	AxisType				axisType()		const { return _axisType;		}
 
+	void					setBlockChanges(bool change) { _blockChanges = change; }
+	bool					blockChanges()	const { return _blockChanges;	}
+
 signals:
 	void visibleChanged(		bool		visible			);
 	void nameChanged(			QString		name			);
@@ -141,7 +144,8 @@ private:
 							_goBlank		= false,
 							_loading		= false,
 							_advanced		= false,
-							_validOptions	= false;
+							_validOptions	= false,
+							_blockChanges	= false;
 	int						_width,
 							_height;
 	double					_ppi;
