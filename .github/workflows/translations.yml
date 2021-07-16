@@ -22,3 +22,5 @@ jobs:
       - uses: jasp-stats/jasp-actions/translations@master
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_KEY }}
+          WEBLATE_KEY: ${{ secrets.WEBLATE_KEY }}
+          QML_REPO: jaspdesktop
