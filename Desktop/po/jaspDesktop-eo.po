@@ -2878,20 +2878,8 @@ msgid "y-axis"
 msgstr "y-akso"
 
 msgctxt "PlotEditor|"
-msgid "Redo last change"
-msgstr ""
-
-msgctxt "PlotEditor|"
-msgid "Undo last change"
-msgstr ""
-
-msgctxt "PlotEditor|"
 msgid "Advanced settings"
 msgstr ""
-
-msgctxt "PlotEditor|"
-msgid "Finish"
-msgstr "Fini"
 
 msgctxt "PlotEditor|"
 msgid "Save plot as"
@@ -3342,10 +3330,6 @@ msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
 msgstr ""
 
-msgctxt "PlotEditor|"
-msgid "Discard changes"
-msgstr ""
-
 msgctxt "RibbonBar|"
 msgid "Show main menu"
 msgstr ""
@@ -3477,4 +3461,16 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "OK"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Cancel"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Reset defaults"
 msgstr ""
