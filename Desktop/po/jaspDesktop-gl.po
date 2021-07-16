@@ -3797,3 +3797,16 @@ msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
 msgstr ""
 "<i>En Linux utilízase sempre o editor de follas de cálculo "
 "predeterminado.</i>"
+
+msgctxt "PlotEditor|"
+msgid "OK"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor|"
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgctxt "PlotEditor|"
+msgid "Reset defaults"
+msgstr ""

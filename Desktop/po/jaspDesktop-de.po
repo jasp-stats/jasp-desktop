@@ -3101,20 +3101,8 @@ msgid "y-axis"
 msgstr "y-Achse"
 
 msgctxt "PlotEditor|"
-msgid "Redo last change"
-msgstr "Letzte Änderung wiederholen"
-
-msgctxt "PlotEditor|"
-msgid "Undo last change"
-msgstr "Letzte Änderung rückgängig machen"
-
-msgctxt "PlotEditor|"
 msgid "Advanced settings"
 msgstr "Erweiterte Einstellungen"
-
-msgctxt "PlotEditor|"
-msgid "Finish"
-msgstr "Fertig"
 
 msgctxt "PlotEditor|"
 msgid "Save plot as"
@@ -3787,10 +3775,6 @@ msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
 msgstr "Teilstrich löschen"
 
-msgctxt "PlotEditor|"
-msgid "Discard changes"
-msgstr "Änderungen verwerfen"
-
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
 msgstr "Benutzer-installierte Module und Pkgs bereinigen"
@@ -3814,3 +3798,16 @@ msgstr "Bereinigen"
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
 msgstr "<i>Unter Linux wird immer der Standard-Tabelleneditor verwendet.</i>"
+
+msgctxt "PlotEditor|"
+msgid "OK"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor|"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgctxt "PlotEditor|"
+msgid "Reset defaults"
+msgstr ""
