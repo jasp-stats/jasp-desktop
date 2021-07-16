@@ -4,6 +4,6 @@
 #include <string>
 
 std::string _system(					std::string		cmd);
-void		_moduleLibraryFixer(const	std::string &	moduleLibrary, bool printStuff = false);
+void		_moduleLibraryFixer(const	std::string &	moduleLibrary, bool engineCall = false, bool printStuff = false);
 
 #endif // OTOOLSTUFF_H
