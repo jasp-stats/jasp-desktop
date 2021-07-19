@@ -52,11 +52,11 @@ void PlotEditorModel::updatePlotEditor(Analysis *analysis)
 {
 	if (_analysis != analysis)	return;
 
-	setLoading(true);
+	setBlockChanges(true);
 	_editOptions = analysis->editOptionsOfPlot(_name.toStdString());
 	_xAxis->setAxisData(_editOptions["xAxis"]);
 	_yAxis->setAxisData(_editOptions["yAxis"]);
-	setLoading(false);
+	setBlockChanges(false);
 }
 
 void PlotEditorModel::cancelPlot()
@@ -158,7 +158,7 @@ Json::Value PlotEditorModel::generateEditOptions() const
 
 void PlotEditorModel::somethingChanged()
 {
-	if(_loading || !_visible) return;
+	if(_loading || !_visible || _blockChanges) return;
 
 	Json::Value newImgOptions = generateImgOptions();
 
@@ -220,7 +220,7 @@ void PlotEditorModel::applyChangesFromUndoOrRedo(const undoRedoData& newData)
 	setAxisType(newData.currentAxis);
 	setAdvanced(newData.advanced);
 
-	setLoading(true);
+	setBlockChanges(true);
 	_editOptions = _imgOptions["editOptions"];
 
 	_xAxis->setAxisData(_editOptions["xAxis"]);
@@ -228,7 +228,7 @@ void PlotEditorModel::applyChangesFromUndoOrRedo(const undoRedoData& newData)
 
 	_prevImgOptions = _imgOptions;
 	_analysis->editImage(_prevImgOptions);
-	setLoading(false);
+	setBlockChanges(false);
 
 	emit unOrRedoEnabledChanged();
 }
