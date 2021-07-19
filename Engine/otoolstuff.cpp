@@ -36,7 +36,9 @@ std::string _system(std::string cmd)
 	return out.str();
 }
 
-#define MAC_RHOME "@executable_path/../Frameworks/R.framework/Versions/"  CURRENT_R_VERSION "/Resources"
+#define MAC_LIB_FOLDER "Frameworks/R.framework/Versions/"  CURRENT_R_VERSION "/Resources/lib"
+#define MAC_LIB_FOLDER_FROM_EXE "@executable_path/../" MAC_LIB_FOLDER "/"
+#define MAC_LIB_FOLDER_FROM_MODULE "../../../" MAC_LIB_FOLDER "/"
 
 void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall, bool printStuff)
 {
@@ -106,11 +108,11 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				const std::map<std::string, std::string> replaceThese =
 				{
 					{	"/usr/local/lib/libjags.4.dylib",				"@executable_path/JAGS/libjags.4.dylib"		},
-					{	"/usr/local/gfortran/lib/libgfortran.5.dylib",	MAC_RHOME "/lib/libgfortran.5.dylib"		},
-					{	"/usr/local/gfortran/lib/libquadmath.0.dylib",	MAC_RHOME "/lib/libquadmath.0.dylib"		}
+					{	"/usr/local/gfortran/lib/libgfortran.5.dylib",	MAC_LIB_FOLDER_FROM_EXE "libgfortran.5.dylib"		},
+					{	"/usr/local/gfortran/lib/libquadmath.0.dylib",	MAC_LIB_FOLDER_FROM_EXE "libquadmath.0.dylib"		}
 				/*	R 4 doesnt have the following anymore:
-					{	"/usr/lib/libc++abi.dylib",			MAC_RHOME "/lib/libc++abi.1.dylib"	}, 
-					{	"/usr/lib/libc++.1.dylib",			MAC_RHOME "/lib/libc++.1.dylib"		} */
+					{	"/usr/lib/libc++abi.dylib",			MAC_LIB_FOLDER_FROM_EXE "libc++abi.1.dylib"	},
+					{	"/usr/lib/libc++.1.dylib",			MAC_LIB_FOLDER_FROM_EXE "libc++.1.dylib"		} */
 				};
 				//This ought to be sort of mirrored in jasp-required-files/MacOS/Frameworks/create-framework.py
 	
@@ -124,27 +126,32 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					_system(cmd);
 				};
 				
-				if(printStuff && stringUtils::startsWith(line, MAC_RHOME)) //This binary was already fixed
+				if(stringUtils::startsWith(line, MAC_LIB_FOLDER_FROM_EXE)) //This binary was already fixed
 				{
-					std::cout << "- Already fixed!\n";;
-					break;
+					if (printStuff)
+						std::cout << "Already fixed: " << line << std::endl;
 				}
-	
-				if(replaceThese.count(line) > 0)
+				else if(replaceThese.count(line) > 0)
 				{
 					install_name_tool_cmd(line, replaceThese.at(line));
 				}
-				if(stringUtils::startsWith(line, libStart))
+				else if(stringUtils::startsWith(line, libStart))
 				{
 					install_name_tool_cmd(line, stringUtils::replaceBy("@executable_path/../Frameworks/R.framework/Versions/" + line.substr(libStart.size()), " ", "\\ "));
 				}
 				else if(stringUtils::startsWith(line, "/opt/") || stringUtils::startsWith(line, "/usr/local/"))
 				{
 					std::string baseName	= line.substr(line.find_last_of('/') == std::string::npos ? 0 : line.find_last_of('/') + 1),
-								newLine		= stringUtils::replaceBy(MAC_RHOME "/lib/" + baseName, " ", "\\ ");
-	
-					install_name_tool_cmd(line, newLine);
+								newLine		= stringUtils::replaceBy(MAC_LIB_FOLDER_FROM_EXE + baseName, " ", "\\ ");
+					filesystem::path	libPath	= Utils::osPath(moduleLibraryPath + "/" + MAC_LIB_FOLDER_FROM_MODULE + baseName);
+
+					if (exists(libPath))
+						install_name_tool_cmd(line, newLine);
+					else if (printStuff)
+						std::cout << "Cannot find library " << baseName << " in JASP libraries: " << line << std::endl;
 				}
+				else if (printStuff)
+					std::cout << "Line not changed: " << line << std::endl;
 			}
 		}
 	}
