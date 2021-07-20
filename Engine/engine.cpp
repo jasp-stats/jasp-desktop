@@ -90,7 +90,7 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 
 	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
 	
-	_extraEncodings = new ColumnEncoder("JaspExtraOptions_.");
+	_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
 
 }
 

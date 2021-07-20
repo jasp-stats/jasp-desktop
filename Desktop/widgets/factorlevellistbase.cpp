@@ -42,8 +42,6 @@ void FactorLevelListBase::setUp()
 
 void FactorLevelListBase::bindTo(const Json::Value& value)
 {
-	BoundControlBase::bindTo(value);
-
 	vector<pair<string, vector<string> > > factors;
 	
 	for (const Json::Value& row : value)
@@ -56,6 +54,8 @@ void FactorLevelListBase::bindTo(const Json::Value& value)
 	}
 	
 	_factorLevelsModel->initFactors(factors);
+	
+	BoundControlBase::bindTo(value);
 }
 
 Json::Value FactorLevelListBase::createJson()
