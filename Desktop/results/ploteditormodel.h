@@ -30,7 +30,6 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged			)
 	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged				)
 	Q_PROPERTY(bool						loading			READ loading		WRITE setLoading		NOTIFY loadingChanged			)
-	Q_PROPERTY(bool						advanced		READ advanced		WRITE setAdvanced		NOTIFY advancedChanged			)
 	Q_PROPERTY(bool						undoEnabled		READ undoEnabled							NOTIFY unOrRedoEnabledChanged	)
 	Q_PROPERTY(bool						redoEnabled		READ redoEnabled							NOTIFY unOrRedoEnabledChanged	)
 	Q_PROPERTY(AxisModel *				currentAxis		READ currentAxis							NOTIFY currentAxisChanged		)
@@ -44,7 +43,6 @@ public:
 	struct undoRedoData
 	{
 		AxisType			currentAxis;
-		bool				advanced;
 		Json::Value			options;
 	};
 
@@ -59,7 +57,6 @@ public:
 	AxisModel			*	yAxis()		const { return _yAxis;		}
 	double					ppi()		const {	return _ppi;		}
 	bool					loading()	const { return _loading;	}
-	bool					advanced()	const {	return _advanced;	}
 	void					reset();
 
 	bool					undoEnabled()	const {	return _undo.size() > 0;	}
@@ -82,7 +79,6 @@ signals:
 	void ppiChanged();// TODO, refresh all
 	void resetPlotChanged(		bool		resetPlot		);
 	void loadingChanged(		bool		loading			);
-	void advancedChanged(		bool		advanced		);
 	void unOrRedoEnabledChanged();
 	
 
@@ -102,7 +98,6 @@ public slots:
 	void setWidth(			int						width			);
 	void setHeight(			int						height			);
 	void setLoading(		bool					loading			);
-	void setAdvanced(		bool					advanced		);
 	
 	void					resetDefaults();
 	void					cancelPlot();
@@ -122,9 +117,8 @@ public slots:
 
 
 private:
-	void		processImgOptions();
+	void		setup();
 	Json::Value generateImgOptions()	const;
-	Json::Value generateEditOptions()	const;
 
 private:
 	Analysis			*	_analysis		= nullptr;
@@ -133,9 +127,7 @@ private:
 						*	_currentAxis	= nullptr;
 
 	Coordinates				_coordinates;
-	Json::Value				_editOptions	= Json::nullValue,
-							_imgOptions		= Json::nullValue,
-							_prevImgOptions	= Json::nullValue,
+	Json::Value				_imgOptions		= Json::nullValue,
 							_originalImgOps	= Json::nullValue;
 	QString					_name,
 							_data,
@@ -143,7 +135,6 @@ private:
 	bool					_visible		= false,
 							_goBlank		= false,
 							_loading		= false,
-							_advanced		= false,
 							_validOptions	= false,
 							_blockChanges	= false;
 	int						_width,

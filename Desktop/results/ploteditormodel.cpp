@@ -29,43 +29,71 @@ PlotEditorModel::PlotEditorModel()
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
 {
-	_analysis		= Analyses::analyses()->get(id);
+	_analysis		= Analyses::analyses()->get(size_t(id));
 	_imgOptions		= Json::objectValue;
 	Json::Reader().parse(fq(options), _imgOptions);
 
 	setLoading(true);
-	_prevImgOptions	= Json::nullValue;
 	
 	//maybe the following checks are a bit extreme but whatever
 	if(!_analysis || !_imgOptions.isMember("type") || _imgOptions["type"].type() != Json::stringValue || _imgOptions["type"] != "interactive")
 		return;
 
-	processImgOptions();
-	_originalImgOps = generateImgOptions();
+	setup();
 
 	if (_validOptions)
 		setVisible(true);
 	setLoading(false);
 }
 
+void PlotEditorModel::setup()
+{
+	setName(	tq(			_imgOptions.get(	"name",			"").asString()));
+	setData(	tq(			_imgOptions.get(	"data",			"").asString()));
+	setTitle(	tq(			_imgOptions.get(	"title",		"").asString()));
+	setWidth(				_imgOptions.get(	"width",		100).asInt());
+	setHeight(				_imgOptions.get(	"height",		100).asInt());
+
+	Json::Value editOptions		=	_name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlot(_name.toStdString());
+	editOptions["resetPlot"] = false;
+	_imgOptions["editOptions"] = editOptions;
+
+	std::string reasonOptionsAreInvalid = editOptions.get("reasonNotEditable", "").asString();
+
+	_validOptions = reasonOptionsAreInvalid.empty();
+	if (!_validOptions)
+	{
+		MessageForwarder::showWarning(reasonOptionsAreInvalid);
+		return;
+	}
+
+	Json::Value	xAxis	=	editOptions.get(	"xAxis",		Json::objectValue),
+				yAxis	=	editOptions.get(	"yAxis",		Json::objectValue);
+
+	_xAxis->setAxisData(xAxis);
+	_yAxis->setAxisData(yAxis);
+
+	_coordinates.loadCoordinates(editOptions.get("coordinates", Json::objectValue)); // To Do Vincent Pedata: is this the right json object?
+
+	_originalImgOps = _imgOptions = generateImgOptions();
+}
+
+
 void PlotEditorModel::updatePlotEditor(Analysis *analysis)
 {
 	if (_analysis != analysis)	return;
 
 	setBlockChanges(true);
-	_editOptions = analysis->editOptionsOfPlot(_name.toStdString());
-	_xAxis->setAxisData(_editOptions["xAxis"]);
-	_yAxis->setAxisData(_editOptions["yAxis"]);
+	_imgOptions["editOptions"] = analysis->editOptionsOfPlot(_name.toStdString());
+	_xAxis->setAxisData(_imgOptions["editOptions"]["xAxis"]);
+	_yAxis->setAxisData(_imgOptions["editOptions"]["yAxis"]);
 	setBlockChanges(false);
 }
 
 void PlotEditorModel::cancelPlot()
 {
-	// After this call, the plotEditor is closed. So no need to set all members here.
-	_imgOptions		= _prevImgOptions = _originalImgOps;
-	_editOptions	= _originalImgOps["editOptions"];
-	_editOptions["resetPlot"] = false;
-	_analysis->editImage(_originalImgOps);
+	if (_imgOptions != _originalImgOps)
+		_analysis->editImage(_originalImgOps);
 }
 
 void PlotEditorModel::resetDefaults()
@@ -77,14 +105,13 @@ void PlotEditorModel::resetDefaults()
 
 void PlotEditorModel::savePlot() const
 {
-	emit saveImage(int(_analysis->id()), tq(generateImgOptions().toStyledString()));
+	emit saveImage(int(_analysis->id()), tq(_imgOptions.toStyledString()));
 }
 
 void PlotEditorModel::reset()
 {
 	_analysis		=	nullptr;
 	_imgOptions		=	Json::nullValue;
-	_editOptions	=	Json::nullValue;
 	setName(			"");
 	setData(			"");
 	setTitle(			"");
@@ -97,63 +124,21 @@ void PlotEditorModel::reset()
 	emit unOrRedoEnabledChanged();
 }
 
-void PlotEditorModel::processImgOptions()
-{
-	setName(	tq(			_imgOptions.get(	"name",			"").asString()));
-	setData(	tq(			_imgOptions.get(	"data",			"").asString()));
-	setTitle(	tq(			_imgOptions.get(	"title",		"").asString()));
-	setWidth(				_imgOptions.get(	"width",		100).asInt());
-	setHeight(				_imgOptions.get(	"height",		100).asInt());
-
-	//_editOptions		=	_imgOptions.get(	"editOptions",	Json::objectValue);
-	_editOptions		=	_name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlot(_name.toStdString());
-	_editOptions["resetPlot"] = false;
-
-	std::string reasonOptionsAreInvalid = _editOptions.get("reasonNotEditable", "").asString();
-
-	_validOptions = reasonOptionsAreInvalid.empty();
-	if (!_validOptions)
-	{
-		MessageForwarder::showWarning(reasonOptionsAreInvalid);
-		return;
-	}
-
-	Json::Value	xAxis	=	_editOptions.get(	"xAxis",		Json::objectValue),
-				yAxis	=	_editOptions.get(	"yAxis",		Json::objectValue);
-
-	_xAxis->setAxisData(xAxis);
-	_yAxis->setAxisData(yAxis);
-
-	_coordinates.loadCoordinates(_editOptions.get("coordinates", Json::objectValue)); // To Do Vincent Pedata: is this the right json object?
-
-}
 
 Json::Value PlotEditorModel::generateImgOptions() const
 {
-	Json::Value		imgOptions	= _imgOptions;
+	Json::Value newOptions = _imgOptions;
+	newOptions["editOptions"]["xAxis"]	= _xAxis->getAxisData();
+	newOptions["editOptions"]["yAxis"]	= _yAxis->getAxisData();
 
-	imgOptions["editOptions"]	= generateEditOptions();
+	newOptions["name"]		= name().toStdString();
+	newOptions["data"]		= data().toStdString();
+	newOptions["title"]		= title().toStdString();
+	newOptions["width"]		= width();
+	newOptions["height"]	= height();
+	newOptions["request"]	= _editRequest++;
 
-	imgOptions["name"]			= name().toStdString();
-	imgOptions["data"]			= data().toStdString();
-	imgOptions["title"]			= title().toStdString();
-	imgOptions["width"]			= width();
-	imgOptions["height"]		= height();
-	imgOptions["request"]		= _editRequest++;
-
-	return imgOptions;
-}
-
-Json::Value PlotEditorModel::generateEditOptions() const
-{
-	Json::Value		editOptions = _editOptions;
-
-	editOptions["xAxis"]		= _xAxis->getAxisData();
-	editOptions["yAxis"]		= _yAxis->getAxisData();
-
-	// To Do Vincent Pedata: Do we need to send the coordinates back? No right?
-
-	return editOptions;
+	return newOptions;
 }
 
 void PlotEditorModel::somethingChanged()
@@ -162,10 +147,10 @@ void PlotEditorModel::somethingChanged()
 
 	Json::Value newImgOptions = generateImgOptions();
 
-	if(newImgOptions != _prevImgOptions)
+	if(newImgOptions != _imgOptions)
 	{
-		_prevImgOptions = newImgOptions;
-		_analysis->editImage(_prevImgOptions);
+		_imgOptions = newImgOptions;
+		_analysis->editImage(_imgOptions);
 	}
 }
 
@@ -177,7 +162,7 @@ void PlotEditorModel::addToUndoStack()
 	Json::Value options = generateImgOptions();
 
 	if (_undo.empty() || _undo.top().options != options)
-		_undo.push(undoRedoData{_axisType, _advanced, options});
+		_undo.push(undoRedoData{_axisType, options});
 
 	_redo = std::stack<undoRedoData>();
 	
@@ -189,7 +174,7 @@ void PlotEditorModel::undoSomething()
 	if (!_undo.empty())
 	{
 
-		_redo.push(undoRedoData{_undo.top().currentAxis, _undo.top().advanced, generateImgOptions()});
+		_redo.push(undoRedoData{_undo.top().currentAxis, generateImgOptions()});
 
 		undoRedoData newData = _undo.top();
 		_undo.pop();
@@ -203,14 +188,11 @@ void PlotEditorModel::redoSomething()
 {
 	if (!_redo.empty())
 	{
-
-		_undo.push(undoRedoData{_axisType, _advanced, generateImgOptions()});
+		_undo.push(undoRedoData{_axisType, generateImgOptions()});
 
 		undoRedoData newData = _redo.top();
 		_redo.pop();
 		applyChangesFromUndoOrRedo(newData);
-
-
 	}
 }
 
@@ -218,16 +200,13 @@ void PlotEditorModel::applyChangesFromUndoOrRedo(const undoRedoData& newData)
 {
 	_imgOptions = newData.options;
 	setAxisType(newData.currentAxis);
-	setAdvanced(newData.advanced);
 
 	setBlockChanges(true);
-	_editOptions = _imgOptions["editOptions"];
 
-	_xAxis->setAxisData(_editOptions["xAxis"]);
-	_yAxis->setAxisData(_editOptions["yAxis"]);
+	_xAxis->setAxisData(_imgOptions["editOptions"]["xAxis"]);
+	_yAxis->setAxisData(_imgOptions["editOptions"]["yAxis"]);
 
-	_prevImgOptions = _imgOptions;
-	_analysis->editImage(_prevImgOptions);
+	_analysis->editImage(_imgOptions);
 	setBlockChanges(false);
 
 	emit unOrRedoEnabledChanged();
@@ -283,7 +262,7 @@ void PlotEditorModel::refresh()
 	_goBlank = false;
 	emit dataChanged();
 
-	_analysis->setEditOptionsOfPlot(_name.toStdString(), generateEditOptions());
+	_analysis->setEditOptionsOfPlot(_name.toStdString(), _imgOptions["editOptions"]);
 }
 
 QUrl PlotEditorModel::imgFile() const
@@ -347,22 +326,6 @@ void PlotEditorModel::setLoading(bool loading)
 	
 	_loading = loading;
 	emit loadingChanged(_loading);
-}
-
-void PlotEditorModel::setAdvanced(bool advanced)
-{
-	if (_advanced == advanced)
-		return;
-
-	// ease the transition to advanced mode by simplifying where possible
-	if (advanced)
-	{
-		_xAxis->simplifyLimitsType();
-		_yAxis->simplifyLimitsType();
-	}
-
-	_advanced = advanced;
-	emit advancedChanged(_advanced);
 }
 
 }
