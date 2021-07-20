@@ -204,15 +204,15 @@ void ListModelAvailableInterface::addAssignedModel(ListModelAssignedInterface *a
 {
 	_assignedModels.push_back(assignedModel);
 
-	connect(assignedModel, &ListModelAssignedInterface::destroyed, this, &ListModelAvailableInterface::removeAssignedModel);
-	connect(this, &ListModelAvailableInterface::availableTermsReset, assignedModel, &ListModelAssignedInterface::availableTermsResetHandler);
-	connect(this, &ListModelAvailableInterface::namesChanged, assignedModel, &ListModelAssignedInterface::sourceNamesChanged);
-	connect(this, &ListModelAvailableInterface::columnsChanged, assignedModel, &ListModelAssignedInterface::sourceColumnsChanged);
-	connect(this, &ListModelAvailableInterface::columnTypeChanged, assignedModel, &ListModelAssignedInterface::sourceColumnTypeChanged);
-	connect(this, &ListModelAvailableInterface::labelsChanged, assignedModel, &ListModelAssignedInterface::sourceLabelsChanged);
-	connect(this, &ListModelAvailableInterface::labelsReordered, assignedModel, &ListModelAssignedInterface::sourceLabelsReordered);
-	connect(listView(), &JASPListControl::containsVariablesChanged, assignedModel->listView(), &JASPListControl::setContainsVariables);
-	connect(listView(), &JASPListControl::containsInteractionsChanged, assignedModel->listView(), &JASPListControl::setContainsInteractions);
+	connect(assignedModel,	&ListModelAssignedInterface::destroyed,				this,						&ListModelAvailableInterface::removeAssignedModel		);
+	connect(this,			&ListModelAvailableInterface::availableTermsReset,	assignedModel,				&ListModelAssignedInterface::availableTermsResetHandler	);
+	connect(this,			&ListModelAvailableInterface::namesChanged,			assignedModel,				&ListModelAssignedInterface::sourceNamesChanged			);
+	connect(this,			&ListModelAvailableInterface::columnsChanged,		assignedModel,				&ListModelAssignedInterface::sourceColumnsChanged		);
+	connect(this,			&ListModelAvailableInterface::columnTypeChanged,	assignedModel,				&ListModelAssignedInterface::sourceColumnTypeChanged	);
+	connect(this,			&ListModelAvailableInterface::labelsChanged,		assignedModel,				&ListModelAssignedInterface::sourceLabelsChanged		);
+	connect(this,			&ListModelAvailableInterface::labelsReordered,		assignedModel,				&ListModelAssignedInterface::sourceLabelsReordered		);
+	connect(listView(),		&JASPListControl::containsVariablesChanged,			assignedModel->listView(),	&JASPListControl::setContainsVariables					);
+	connect(listView(),		&JASPListControl::containsInteractionsChanged,		assignedModel->listView(),	&JASPListControl::setContainsInteractions				);
 }
 
 void ListModelAvailableInterface::removeAssignedModel(ListModelDraggable* assignedModel)

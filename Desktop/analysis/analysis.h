@@ -166,8 +166,8 @@ public:
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 	std::string				upgradeMsgsForOption(const std::string & name)		const;
 
-	const QList<std::string>&	computedColumns()								const	{ return _computedColumns; }
-	const Json::Value&		getRSource(const std::string& name)					const	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
+	const QList<std::string>	& computedColumns()								const	{ return _computedColumns; }
+	const Json::Value			& getRSource(const std::string& name)			const	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
 	
 signals:
 	void				nameChanged();
@@ -243,7 +243,7 @@ protected:
 	///For backward compatibility: _optionsDotJASP = options from (old) JASP file.
 	Json::Value				_optionsDotJASP = Json::nullValue,
 							_results		= Json::nullValue,
-							_resultsMeta			= Json::nullValue,
+							_resultsMeta	= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,
 							_imgOptions		= Json::nullValue,
