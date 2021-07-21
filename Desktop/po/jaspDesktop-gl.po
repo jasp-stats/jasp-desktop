@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-07-20 19:07+0000\n"
+"PO-Revision-Date: 2021-07-22 17:34+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/gl/>\n"
@@ -244,7 +244,7 @@ msgstr "Copiar"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr "Colapso"
+msgstr "Colapsar"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Image"
