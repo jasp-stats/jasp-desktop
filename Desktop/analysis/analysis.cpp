@@ -298,7 +298,7 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 		_status = Empty;
 	
 	connect(_analysisForm,			&AnalysisForm::helpMDChanged,		this,			&Analysis::helpMDChanged					);
-	connect(this,					&Analysis::rSourceChanged,	_analysisForm,	&AnalysisForm::rSourceChanged				);
+	connect(this,					&Analysis::rSourceChanged,			_analysisForm,	&AnalysisForm::rSourceChanged				);
 	connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
 }
 

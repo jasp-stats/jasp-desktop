@@ -92,7 +92,7 @@ public:
 			bool				encodeValue()				const override	{ return containsVariables() || containsInteractions();	}
 			bool				useSourceLevels()			const			{ return _useSourceLevels;		}
 			void				setUseSourceLevels(bool b)					{ _useSourceLevels = b;			}
-	virtual std::vector<std::string> usedVariables()		const;
+	virtual stringvec			usedVariables()				const;
 
 signals:
 			void				modelChanged();
