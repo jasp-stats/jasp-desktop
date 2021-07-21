@@ -89,7 +89,7 @@ signals:
 
 public slots:
 	void showPlotEditor(int id, QString options);
-	void updatePlotEditor(Analysis* analysis);
+	void updateOptions(Analysis* analysis);
 
 	void setVisible(		bool					visible			);
 	void setName(			const QString	&		name			);
@@ -107,7 +107,7 @@ public slots:
 	void somethingChanged();
 	void refresh();
 
-	QString clickHitsElement(double x, double y) const;
+	//QString clickHitsElement(double x, double y) const;
 
 	void addToUndoStack();
 
@@ -119,6 +119,7 @@ public slots:
 private:
 	void		setup();
 	Json::Value generateImgOptions()	const;
+	void		updatePlot(Json::Value& imageOptions);
 
 private:
 	Analysis			*	_analysis		= nullptr;
@@ -126,9 +127,10 @@ private:
 						*	_yAxis			= nullptr,
 						*	_currentAxis	= nullptr;
 
-	Coordinates				_coordinates;
+	//Coordinates				_coordinates;
 	Json::Value				_imgOptions		= Json::nullValue,
 							_originalImgOps	= Json::nullValue;
+	std::map<int, Json::Value> _editedImgsMap;
 	QString					_name,
 							_data,
 							_title;

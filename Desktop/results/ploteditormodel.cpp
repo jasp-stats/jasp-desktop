@@ -73,34 +73,22 @@ void PlotEditorModel::setup()
 	_xAxis->setAxisData(xAxis);
 	_yAxis->setAxisData(yAxis);
 
-	_coordinates.loadCoordinates(editOptions.get("coordinates", Json::objectValue)); // To Do Vincent Pedata: is this the right json object?
+	//_coordinates.loadCoordinates(editOptions.get("coordinates", Json::objectValue)); // To Do Vincent Pedata: is this the right json object?
 
 	_originalImgOps = _imgOptions = generateImgOptions();
-}
-
-
-void PlotEditorModel::updatePlotEditor(Analysis *analysis)
-{
-	if (_analysis != analysis)	return;
-
-	setBlockChanges(true);
-	_imgOptions["editOptions"] = analysis->editOptionsOfPlot(_name.toStdString());
-	_xAxis->setAxisData(_imgOptions["editOptions"]["xAxis"]);
-	_yAxis->setAxisData(_imgOptions["editOptions"]["yAxis"]);
-	setBlockChanges(false);
 }
 
 void PlotEditorModel::cancelPlot()
 {
 	if (_imgOptions != _originalImgOps)
-		_analysis->editImage(_originalImgOps);
+		updatePlot(_originalImgOps);
 }
 
 void PlotEditorModel::resetDefaults()
 {
 	Json::Value resetDefaultValue = _originalImgOps;
 	resetDefaultValue["editOptions"]["resetPlot"] = true;
-	_analysis->editImage(resetDefaultValue);
+	updatePlot(resetDefaultValue);
 }
 
 void PlotEditorModel::savePlot() const
@@ -136,9 +124,47 @@ Json::Value PlotEditorModel::generateImgOptions() const
 	newOptions["title"]		= title().toStdString();
 	newOptions["width"]		= width();
 	newOptions["height"]	= height();
-	newOptions["request"]	= _editRequest++;
 
 	return newOptions;
+}
+
+void PlotEditorModel::updatePlot(Json::Value& imageOptions)
+{
+	imageOptions["request"] = _editRequest;
+	_editedImgsMap[_editRequest] = imageOptions["editOptions"];
+	_editRequest++;
+	_analysis->editImage(imageOptions);
+}
+
+void PlotEditorModel::updateOptions(Analysis *analysis)
+{
+	if (_analysis != analysis)	return;
+
+	int request = _analysis->imgResults()["request"].asInt();
+	const Json::Value& optionsSend = _editedImgsMap[request];
+	Json::Value optionsReceived = analysis->editOptionsOfPlot(_name.toStdString());
+	// After editing a plot the engine returns the current edit options.
+	// These options may differ from the ones send to the engine (currently only when resetDefault is called, but later there could have other situation):
+	// in this case the plot editor options must be updated.
+	// It is important not to update the plot editor unnecessarily: as it can take a little while to update a plot,
+	// the user during this time may have changed other options, and the update of the plot editor would undo the last update of the user
+	// (temporarily, until this last change is returned from the engine), making the user confused.
+	// Unfortunately most of the time the optionsSend and optionsReceived json differs because of real to int change (100.0 becomes 100 e.g)
+	// So to check (optionsSend == optionsReceived) will not work.
+	// Until a better solution, the plot editor will only be updated after a resetPlot
+
+	Log::log() << "OPTIONS SEND" << optionsSend.toStyledString() << std::endl;
+	Log::log() << "OPTIONS RECEIVED" << optionsReceived.toStyledString() << std::endl;
+	if (optionsSend["resetPlot"] == true)
+	{
+		setBlockChanges(true);
+		_imgOptions["editOptions"] = optionsReceived;
+		_xAxis->setAxisData(_imgOptions["editOptions"]["xAxis"]);
+		_yAxis->setAxisData(_imgOptions["editOptions"]["yAxis"]);
+		setBlockChanges(false);
+	}
+
+	_editedImgsMap.erase(request);
 }
 
 void PlotEditorModel::somethingChanged()
@@ -150,7 +176,7 @@ void PlotEditorModel::somethingChanged()
 	if(newImgOptions != _imgOptions)
 	{
 		_imgOptions = newImgOptions;
-		_analysis->editImage(_imgOptions);
+		updatePlot(_imgOptions);
 	}
 }
 
@@ -206,7 +232,7 @@ void PlotEditorModel::applyChangesFromUndoOrRedo(const undoRedoData& newData)
 	_xAxis->setAxisData(_imgOptions["editOptions"]["xAxis"]);
 	_yAxis->setAxisData(_imgOptions["editOptions"]["yAxis"]);
 
-	_analysis->editImage(_imgOptions);
+	updatePlot(_imgOptions);
 	setBlockChanges(false);
 
 	emit unOrRedoEnabledChanged();
@@ -313,11 +339,12 @@ void PlotEditorModel::setHeight(int height)
 	emit heightChanged(_height);
 }
 
+/*
 QString PlotEditorModel::clickHitsElement(double x, double y) const
 {
 	std::string elementName;
 	return 	_coordinates.elementHit(x, y, elementName) ? tq(elementName) : "";
-}
+}*/
 
 void PlotEditorModel::setLoading(bool loading)
 {

@@ -63,16 +63,25 @@ Column
 			title					: qsTr("Ticks:")
 			radioButtonsOnSameRow	: true
 
-			JASPC.RadioButton { id: axisBreaksRange;	value: "range";		label:	qsTr("Specify sequence");	checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksRange	: false }
-			JASPC.RadioButton { id: axisBreaksManual;	value: "manual";	label:	qsTr("Set manually");		checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true	}
-
-			onValueChanged:
+			JASPC.RadioButton
 			{
-				switch	(axisBreaksRadioButton.value)
-				{
-					case "range":	axisModel.breaksType = AxisModel.BreaksRange;		break;
-					case "manual":	axisModel.breaksType = AxisModel.BreaksManual;		break;
-				}
+				id			: axisBreaksRange
+				value		: "range"
+				label		:	qsTr("Specify sequence")
+				checked		: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksRange	: false
+			}
+			JASPC.RadioButton
+			{
+				id			: axisBreaksManual
+				value		: "manual"
+				label		:	qsTr("Set manually")
+				checked		: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true
+			}
+
+			onClicked:
+			{
+				if (axisBreaksRange.checked) axisModel.breaksType = AxisModel.BreaksRange
+				else if (axisBreaksManual.checked) axisModel.breaksType = AxisModel.BreaksManual
 			}
 		}
 
@@ -117,7 +126,7 @@ Column
 
 		JASPC.CheckBox
 		{
-			label		: qsTr("Use R expression in title")
+			label		: qsTr("Parse title as R expression")
 			checked		: axisModel.titleType === AxisModel.TitleExpression
 			enabled		: axisModel.titleType !== AxisModel.TitleNull
 			onClicked	: axisModel.titleType = (checked ? AxisModel.TitleExpression : AxisModel.TitleCharacter)

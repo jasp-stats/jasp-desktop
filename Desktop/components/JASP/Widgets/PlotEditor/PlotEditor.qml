@@ -48,17 +48,6 @@ Popup
 			border.color:	jaspTheme.uiBorder
 			border.width:	preferencesModel.uiScale
 
-			/* This prevents the cursor to get its right shape.
-			MouseArea
-			{
-				id:				focusCatcher	//Because then people can click away from the axistableview or something
-				onPressed:		{ forceActiveFocus(); mouse.accepted = false; }
-				anchors.fill:	parent
-				z:				100
-				
-			}
-			*/
-
 			JASPC.Text
 			{
 				id:							title
@@ -214,6 +203,20 @@ Popup
 							id:					flickChild
 							width:				axesFlickable.width
 							height:				stack.y + stack.height + jaspTheme.generalAnchorMargin
+
+							MouseArea
+							{
+								id:				focusCatcher	//Because then people can click away from the axistableview or something
+								onPressed:		{ forceActiveFocus(); mouse.accepted = false; }
+								anchors
+								{
+									top:		parent.top
+									left:		parent.left
+									right:		parent.right
+								}
+								height:			Math.max(flickChild.height, axesFlickable.height)
+								z:				-100
+							}
 
 							TabBar
 							{
@@ -382,7 +385,7 @@ Popup
 					Rectangle
 					{
 						id:					plotImgRect
-						color:				"white"
+						color:				jaspTheme.white
 						border.color:		jaspTheme.uiBorder
 						border.width:		1
 						anchors.fill:		parent
@@ -407,7 +410,7 @@ Popup
 							y:					plotImgRect.border.width + (parent.height - (height + plotImgRect.border.width * 2)) * 0.5
 							mipmap:				true
 
-							/*MouseArea
+							MouseArea
 							{
 								// To Do Vincent Pedata: For now we will just work with a single MouseArea that handles the clicks. It will just show a pointing hand all the time
 								// Later we can make it so that it only shows the pointing hand when it overlaps a clickable element (which informs the user and makes it feel a bit more interactive)
@@ -418,6 +421,7 @@ Popup
 								{
 									forceActiveFocus();
 
+									/*
 									var x = mouse.x; //real and relative to mouseArea
 									var y = mouse.y; //real
 
@@ -426,8 +430,9 @@ Popup
 
 									if(pickedElement !== "")
 										message("Element " + pickedElement + " was picked!"); // To Do Vincent Pedata: This should obviously be something more than just a msg :p
+									*/
 								}
-							} */
+							}
 
 							JASPW.ImageInverter
 							{

@@ -57,10 +57,14 @@ CheckBoxBase
 		id:						control
 		padding:				jaspTheme.jaspControlPadding
 		focus:					true
-		onCheckedChanged:		checkBox.clicked()
-
+		// When the checked is changed by a binding, run the clicked slot without emiting the clicked signal
+		// The clicked signal should be emitted only when the user really clicks on the CheckBox.
+		onCheckedChanged:		checkBox.clickedSlot()
 		Keys.onReturnPressed:	checked = !checked
 		Keys.onEnterPressed:	checked = !checked
+
+		// When the user clicks on the CheckBox, the clicked signal of the parent (CheckBoxBase) must be emitted.
+		Component.onCompleted: control.clicked.connect(checkBox.clicked)
 
 		indicator: Rectangle
 		{
