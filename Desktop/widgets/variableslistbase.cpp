@@ -83,6 +83,12 @@ void VariablesListBase::setUp()
 				addDependency(availableModel->listView());
 				setContainsVariables();
 				setContainsInteractions();
+				
+				//For https://github.com/jasp-stats/jasp-test-release/issues/1369 (Analysis doesnt respond to labelchanges/reorders) 
+				//This could be done more elegantly through setting a "invalidated" property in the `createMeta()` function, but this would be ignored now because the Anlysis caches `_boundValues`.
+				//In the future we could dynamically generate them instead and avoid this kind of rough-riding
+				connect(assignedModel, &ListModel::labelsReordered, this, [&](){ if(form()) form()->refreshAnalysis(); });
+				connect(assignedModel, &ListModel::labelsChanged,	this, [&](){ if(form()) form()->refreshAnalysis(); });
 			}
 		}
 	}
@@ -98,9 +104,12 @@ void VariablesListBase::setUp()
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());
 	_draggableModel->setDropMode(dropMode);
 	
+	//We use macros here because the signals come from QML
 	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),							this, SLOT(itemDoubleClickedHandler(int)));
 	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int, int)));
 }
+
+
 
 ListModel *VariablesListBase::model() const
 {
@@ -112,64 +121,66 @@ void VariablesListBase::setUpModel()
 	switch (_listViewType)
 	{
 	case ListViewType::AvailableVariables:
-	{
-		_isBound = false;
+		_isBound		= false;
 		_draggableModel = new ListModelTermsAvailable(this);
 		break;
-	}
+
 	case ListViewType::AvailableInteraction:
-	{
-		_isBound = false;
-		_termsAreInteractions = true;
-		_draggableModel = new ListModelInteractionAvailable(this);
+		_isBound				= false;
+		_termsAreInteractions	= true;
+		_draggableModel			= new ListModelInteractionAvailable(this);
 		break;
-	}
+
 	case ListViewType::Layers:
 	{
-		ListModelLayersAssigned* layersModel = new ListModelLayersAssigned(this);
-		_boundControl = new BoundControlLayers(layersModel);
-		_draggableModel = layersModel;
+		auto *	layersModel		= new ListModelLayersAssigned(this);
+				_boundControl	= new BoundControlLayers(layersModel);
+				_draggableModel = layersModel;
 		break;
 	}
+		
 	case ListViewType::RepeatedMeasures:
 	{
-		 ListModelMeasuresCellsAssigned* measuresCellsModel = new ListModelMeasuresCellsAssigned(this);
-		_boundControl	= new BoundControlMeasuresCells(measuresCellsModel);
-		_draggableModel = measuresCellsModel;
+		 auto * measuresCellsModel	= new ListModelMeasuresCellsAssigned(this);
+				_boundControl		= new BoundControlMeasuresCells(measuresCellsModel);
+				_draggableModel		= measuresCellsModel;
 		break;
 	}
+		
 	case ListViewType::AssignedVariables:
 	{
 		ListModelAssignedInterface* termsModel = nullptr;
 
 		if (columns() > 1)
 		{
-			ListModelMultiTermsAssigned* multiTermsModel = new ListModelMultiTermsAssigned(this, columns());
-			_boundControl = new BoundControlMultiTerms(multiTermsModel);
-			_draggableModel = multiTermsModel;
+			auto *	multiTermsModel = new ListModelMultiTermsAssigned(this, columns());
+					_boundControl	= new BoundControlMultiTerms(multiTermsModel);
+					_draggableModel = multiTermsModel;
 		}
 		else
 		{
-			int maxRows = property("maxRows").toInt();
+			int maxRows		= property("maxRows").toInt();
 
-			termsModel = new ListModelTermsAssigned(this, maxRows);
+			termsModel		= new ListModelTermsAssigned(this, maxRows);
 			_boundControl	= new BoundControlTerms(termsModel, maxRows == 1);
 			_draggableModel = termsModel;
 		}
 		break;
 	}
+		
 	case ListViewType::Interaction:
 	{
 		_termsAreInteractions = true;
 
-		bool interactionContainLowerTerms	= property("interactionContainLowerTerms").toBool();
-		bool addInteractionsByDefault		= property("addInteractionsByDefault").toBool();
+		bool	interactionContainLowerTerms	= property("interactionContainLowerTerms").toBool(),
+				addInteractionsByDefault		= property("addInteractionsByDefault").toBool();
 
-		ListModelInteractionAssigned* termsModel = new ListModelInteractionAssigned(this, interactionContainLowerTerms, addInteractionsByDefault);
-		_boundControl	= new BoundControlTerms(termsModel);
-		_draggableModel = termsModel;
+		auto *	termsModel		= new ListModelInteractionAssigned(this, interactionContainLowerTerms, addInteractionsByDefault);
+				_boundControl	= new BoundControlTerms(termsModel);
+				_draggableModel = termsModel;
 		break;
 	}
+		
 	}
 
 	JASPListControl::setUpModel();
@@ -209,12 +220,10 @@ void VariablesListBase::itemDoubleClickedHandler(int index)
 
 void VariablesListBase::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex, int assignOption)
 {
-	JASPListControl* dropList = qobject_cast<JASPListControl*>(vdropList.value<QObject*>());
-	ListModelDraggable* dropModel = nullptr;
-	
-	if (!dropList)	dropModel = qobject_cast<ListModelDraggable*>(getRelatedModel());
-	else			dropModel = qobject_cast<ListModelDraggable*>(dropList->model());
-	
+	JASPListControl		* dropList  = qobject_cast<JASPListControl*>(vdropList.value<QObject*>());
+	ListModelDraggable	* dropModel = !dropList	? qobject_cast<ListModelDraggable*>(getRelatedModel())
+												: qobject_cast<ListModelDraggable*>(dropList->model());
+
 	if (!dropModel)
 	{
 		Log::log()  << "No drop element!" << std::endl;
@@ -231,9 +240,9 @@ void VariablesListBase::itemsDroppedHandler(QVariant vindexes, QVariant vdropLis
 	else
 		_tempIndexes = vindexes.value<QList<int> >();
 	
-	_tempDropModel = dropModel;
-	_tempDropItemIndex = dropItemIndex;
-	_tempAssignOption = JASPControl::AssignType(assignOption);
+	_tempDropModel		= dropModel;
+	_tempDropItemIndex	= dropItemIndex;
+	_tempAssignOption	= JASPControl::AssignType(assignOption);
 	// the call to itemsDropped is called from an item that will be removed (the items of the variable list
 	// will be re-created). So itemsDropped should not call _moveItems directly.
 	QTimer::singleShot(0, this, SLOT(moveItemsDelayedHandler()));
