@@ -527,11 +527,10 @@ SEXP jaspRCPP_requestTempRootNameSEXP()
 	return paths;
 }
 
-SEXP jaspRCPP_allColumnNamesDataset(SEXP encoded)
+SEXP jaspRCPP_allColumnNamesDataset()
 {
-	bool			encode	= Rf_isNull(encoded) || !Rf_isLogical(encoded) ? true :  Rcpp::as<bool>(encoded);
 	size_t			cols;
-	const char **	names = getAllColumnNames(cols, encode);
+	const char **	names = getAllColumnNames(cols, true);
 	
 	Rcpp::StringVector colNames;
 	
