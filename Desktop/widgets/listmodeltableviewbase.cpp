@@ -82,7 +82,7 @@ QString ListModelTableViewBase::getMaximumRowHeaderString() const
 	int maxL = 7;
 
 	for (QString val : _tableTerms.rowNames)
-			maxL = std::max(val.size() + 4, maxL);
+			maxL = std::max(val.size() + 2, maxL);
 
 	QString dummyText;
 	while (maxL > dummyText.length())

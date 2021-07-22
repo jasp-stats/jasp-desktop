@@ -31,125 +31,126 @@ Column
 					spacing:	jaspTheme.columnGroupSpacing
 	property var	axisModel:	null
 
-	JASPC.TextField
+	JASPC.CheckBox
 	{
-		id:					axisTitle
-		label:				qsTr("Title");
-		fieldWidth:			200
-		value:				axisModel.title
-		onEditingFinished:	if(axisModel) axisModel.title = value
-		enabled:			plotEditorModel.advanced || axisModel.titleType === parseInt(AxisModel.TitleCharacter)
+		id		: showTitle
+		label	: qsTr("Show title")
+		checked	: axisModel.titleType !== AxisModel.TitleNull
+		onClicked: axisModel.titleType = (checked ? AxisModel.TitleCharacter : AxisModel.TitleNull)
 
-		// TODO: does not work!
-		toolTip:			plotEditorModel.advanced ? "test" : qsTr("The title can only be modified in advanced mode because it is not plain text.");
-
-	}
-
-
-	JASPC.DropDown
-	{
-		id:		titleTypeDropDown
-		label: qsTr("Title Type")
-
-		values:
-		[
-			{ label: qsTr("Plain text"),		value: AxisModel.TitleCharacter		},
-			{ label: qsTr("R expression"),		value: AxisModel.TitleExpression	},
-//			{ label: qsTr("LateX"),				value: AxisModel.TitleLaTeX			},		<-- maybe later, see https://github.com/stefano-meschiari/latex2exp
-			{ label: qsTr("Hide title"),		value: AxisModel.TitleNull			}
-		]
-
-		startValue: axisModel.titleType
-
-		onCurrentValueChanged: axisModel.titleType = parseInt(currentValue)
-		visible: plotEditorModel.advanced
-	}
-
-	JASPC.RadioButtonGroup
-	{
-		id:		axisBreaksRadioButton
-		title:	qsTr("Ticks")
-		visible: axisModel.continuous
-
-		JASPC.RadioButton { id: axisBreaksRange;	value: "range";		label:	qsTr("Specify sequence");	checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksRange	: false										}
-		JASPC.RadioButton { id: axisBreaksManual;	value: "manual";	label:	qsTr("Set manually");		checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true	;	visible: axisModel.continuous;	}
-		JASPC.RadioButton { id: axisBreaksNull;		value: "NULL";		label:	qsTr("Hide ticks");			checked: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksNull		: false										}
-
-		onValueChanged:
+		JASPC.TextField
 		{
-			switch	(axisBreaksRadioButton.value)
+			id:					axisTitle
+			label:				qsTr("Title");
+			fieldWidth:			200
+			value:				axisModel.title
+			onEditingFinished:	if(axisModel) axisModel.title = value
+		}
+	}
+
+	JASPC.CheckBox
+	{
+		id		: showAxis
+		label	: qsTr("Show axis")
+		visible	: axisModel.continuous
+		checked	: axisModel.breaksType !== AxisModel.BreaksNull
+		onClicked: axisModel.breaksType = (checked ? AxisModel.BreaksRange : AxisModel.BreaksNull)
+		columns	: 1
+
+		JASPC.RadioButtonGroup
+		{
+			id						: axisBreaksRadioButton
+			title					: qsTr("Ticks:")
+			radioButtonsOnSameRow	: true
+
+			JASPC.RadioButton
 			{
-				case "range":	axisModel.breaksType = AxisModel.BreaksRange;		break;
-				case "manual":	axisModel.breaksType = AxisModel.BreaksManual;		break;
-				case "NULL":	axisModel.breaksType = AxisModel.BreaksNull;		break;
+				id			: axisBreaksRange
+				value		: "range"
+				label		:	qsTr("Specify sequence")
+				checked		: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksRange	: false
 			}
-		}
-	}
+			JASPC.RadioButton
+			{
+				id			: axisBreaksManual
+				value		: "manual"
+				label		:	qsTr("Set manually")
+				checked		: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true
+			}
 
-	Column
-	{
-		id:			breaksGroup
-		visible:	axisModel.continuous && !axisBreaksNull.checked
-		spacing:	jaspTheme.columnGroupSpacing
-		anchors
-		{
-			left:		parent.left
-			right:		parent.right
-			leftMargin:	jaspTheme.indentationLength
-		}
-
-		JASPC.Text
-		{
-			text:	qsTr("Specify ticks:")
-			x:		-jaspTheme.indentationLength
+			onClicked:
+			{
+				if (axisBreaksRange.checked) axisModel.breaksType = AxisModel.BreaksRange
+				else if (axisBreaksManual.checked) axisModel.breaksType = AxisModel.BreaksManual
+			}
 		}
 
 		JASPC.Group
 		{
 			visible:	 axisBreaksRange.checked
+			Layout.leftMargin: jaspTheme.indentationLength
 
-			JASPC.DoubleField	{	id: axisBreaksRangeFrom;	label: qsTr("from");	value:	axisModel.from;		onEditingFinished: {if(axisModel) axisModel.from		= value		}		negativeValues: true	}
-			JASPC.DoubleField	{	id: axisBreaksRangeTo;		label: qsTr("to");		value:	axisModel.to;		onEditingFinished: {if(axisModel) axisModel.to			= value		}		negativeValues: true	}
-			JASPC.DoubleField	{	id: axisBreaksRangeSteps;	label: qsTr("steps");	value:	axisModel.steps;	onEditingFinished: {if(axisModel) axisModel.steps		= value		}								}
+			JASPC.DoubleField	{	id: axisBreaksRangeFrom;	label: qsTr("from");	value:	axisModel.from;		onEditingFinished: {if(axisModel) axisModel.from		= value		}		negativeValues: true;	fieldWidth: 2 * jaspTheme.numericFieldWidth	}
+			JASPC.DoubleField	{	id: axisBreaksRangeTo;		label: qsTr("to");		value:	axisModel.to;		onEditingFinished: {if(axisModel) axisModel.to			= value		}		negativeValues: true;	fieldWidth: 2 * jaspTheme.numericFieldWidth	}
+			JASPC.DoubleField	{	id: axisBreaksRangeSteps;	label: qsTr("steps");	value:	axisModel.steps;	onEditingFinished: {if(axisModel) axisModel.steps		= value		}								fieldWidth: 2 * jaspTheme.numericFieldWidth	}
 
 		}
 
 		JASPC.TableView
 		{
-			modelType:				JASP.GridInput
-			width					: tableWidth  < breaksGroup.width  ? tableWidth : breaksGroup.width
-			height					: tableHeight
+			visible					: axisBreaksManual.checked
+			modelType				: JASP.GridInput
+			implicitWidth 			: tableWidth < maxWidth  ? tableWidth : maxWidth
+			implicitHeight			: tableHeight
 			itemTypePerRow			: [JASP.Double, JASP.String]
 			itemType				: JASP.String // To set the String Validator
-			rowNames				: [qsTr("Value"), qsTr("Label")]
+			rowNames				: [qsTr("Position"), qsTr("Label")]
 			cornerText				: qsTr("Tick #")
 			minColumn				: 2
 			addLeftButton.toolTip	: qsTr("Insert tick left")
 			addRightButton.toolTip	: qsTr("Insert tick right")
 			deleteButton.toolTip	: qsTr("Delete tick")
-
-			visible					: axisBreaksManual.checked
 			source					: axisModel
 
 			function getColHeaderText(headerText, columnIndex) { return columnIndex + 1; }
 
+			property real maxWidth: axis.width - 2 * jaspTheme.columnGroupSpacing;
+
 		}
 	}
 
-	JASPC.RadioButtonGroup
+	JASPC.Section
 	{
-		id:			axisLimitsRadioButton
-		name:		"axisLimits";
-		title:		qsTr("Range")
-		visible:	plotEditorModel.advanced && axisModel.continuous
+		title	: qsTr("Advanced")
+		columns	: 1
 
-		JASPC.RadioButton	{							value: "data";		label:	qsTr("Based on data");		checked: if(axisModel) axisModel.limitsType === AxisModel.LimitsData	}
-		JASPC.RadioButton	{	id: axisLimitsBreaks;	value: "breaks";	label:	qsTr("Based on ticks");		checked: if(axisModel) axisModel.limitsType === AxisModel.LimitsBreaks;		enabled: !axisBreaksNull.checked	}
-		JASPC.RadioButton	{	id: axisLimitsManual;	value: "manual";	label:	qsTr("Set manually");		checked: if(axisModel) axisModel.limitsType === AxisModel.LimitsManual	}
+		JASPC.CheckBox
+		{
+			label		: qsTr("Parse title as R expression")
+			checked		: axisModel.titleType === AxisModel.TitleExpression
+			enabled		: axisModel.titleType !== AxisModel.TitleNull
+			onClicked	: axisModel.titleType = (checked ? AxisModel.TitleExpression : AxisModel.TitleCharacter)
+		}
 
-		onValueChanged: axisModel.limitsType = (axisLimitsRadioButton.value === "data" ? AxisModel.LimitsData : axisLimitsRadioButton.value === "breaks" ? AxisModel.LimitsBreaks : AxisModel.LimitsManual)
+		JASPC.RadioButtonGroup
+		{
+			id:			axisLimitsRadioButton
+			name:		"axisLimits";
+			title:		qsTr("Limits:")
+			visible	:	axisModel.continuous
+
+			JASPC.RadioButton	{							value: "data";		label:	qsTr("Based on data");		checked: if(axisModel) axisModel.limitsType === AxisModel.LimitsData	}
+			JASPC.RadioButton	{	id: axisLimitsBreaks;	value: "breaks";	label:	qsTr("Based on ticks");		checked: if(axisModel) axisModel.limitsType === AxisModel.LimitsBreaks;		enabled: showAxis.checked	}
+			JASPC.RadioButton
+			{
+				id: axisLimitsManual;	value: "manual";	label:	qsTr("Set manually");		checked: if(axisModel) axisModel.limitsType === AxisModel.LimitsManual
+				columns: 1
+
+				JASPC.DoubleField	{	id: axisLimitsLower;	label: qsTr("Lower limit");	negativeValues: true;	max: axisModel.limitUpper;		value: axisModel.limitLower;	onEditingFinished: if(axisModel) axisModel.limitLower = value; 	decimals: 20; fieldWidth: 2 * jaspTheme.numericFieldWidth}
+				JASPC.DoubleField	{	id: axisLimitsUpper;	label: qsTr("Upper limit");	negativeValues: true;	min: axisModel.limitLower;		value: axisModel.limitUpper;	onEditingFinished: if(axisModel) axisModel.limitUpper = value; 	decimals: 20; fieldWidth: 2 * jaspTheme.numericFieldWidth}
+			}
+			onValueChanged: axisModel.limitsType = (axisLimitsRadioButton.value === "data" ? AxisModel.LimitsData : axisLimitsRadioButton.value === "breaks" ? AxisModel.LimitsBreaks : AxisModel.LimitsManual)
+		}
 	}
 
-	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsLower;	label: qsTr("Lower limit");	negativeValues: true;	max: axisModel.limitUpper;		value: axisModel.limitLower;	onEditingFinished: if(axisModel) axisModel.limitLower = value; 	decimals: 20; fieldWidth: 3 * jaspTheme.numericFieldWidth}
-	JASPC.DoubleField	{	visible: plotEditorModel.advanced && axisLimitsManual.checked;	id: axisLimitsUpper;	label: qsTr("Upper limit");	negativeValues: true;	min: axisModel.limitLower;		value: axisModel.limitUpper;	onEditingFinished: if(axisModel) axisModel.limitUpper = value; 	decimals: 20; fieldWidth: 3 * jaspTheme.numericFieldWidth}
 }

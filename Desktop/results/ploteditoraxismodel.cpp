@@ -214,7 +214,7 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int)
 
 			_breaks[entry] = newBreak;
 
-			if (!_plotEditor->advanced())
+			if (_limitsType != LimitsType::LimitsManual)
 			{
 				if (newBreak < _limits[0])
 					setLimits(newBreak, 0);
@@ -343,7 +343,7 @@ void AxisModel::setRange(const double value, const size_t idx)
 	emit addToUndoStack();
 	_range[idx] = value;
 
-	if (!_plotEditor->advanced() && idx <= 1) // only need to update the limits if from (0) or to (1) is modified
+	if (idx <= 1) // only need to update the limits if from (0) or to (1) is modified
 		setLimits(value, idx);
 
 	emit rangeChanged();
@@ -353,11 +353,8 @@ void AxisModel::setRange(const double value, const size_t idx)
 void AxisModel::setFrom(const double from)
 {
 
-	if (!_plotEditor->advanced())
-	{
-		setLimits(from, 0);
-		setLimitsType(LimitsType::LimitsBreaks);
-	}
+	setLimits(from, 0);
+	setLimitsType(LimitsType::LimitsBreaks);
 
 	setRange(from, 0);
 }
@@ -365,11 +362,8 @@ void AxisModel::setFrom(const double from)
 void AxisModel::setTo(const double to)
 {
 
-	if (!_plotEditor->advanced())
-	{
-		setLimits(to, 1);
-		setLimitsType(LimitsType::LimitsBreaks);
-	}
+	setLimits(to, 1);
+	setLimitsType(LimitsType::LimitsBreaks);
 
 	setRange(to, 1);
 }
@@ -379,14 +373,12 @@ void AxisModel::setLimitsType(const LimitsType limitsType)
 	if (_limitsType == limitsType)
 		return;
 
-	if (_plotEditor->advanced())
-		emit addToUndoStack();
+	emit addToUndoStack();
 
 	_limitsType = limitsType;
 	emit limitsChanged();
 
-	if (_plotEditor->advanced())
-		emit somethingChanged();
+	emit somethingChanged();
 }
 
 void AxisModel::setLimits(const double value, const size_t idx)
@@ -398,14 +390,12 @@ void AxisModel::setLimits(const double value, const size_t idx)
 	}
 	else if (_limits[idx] == value)		return;
 
-	if (_plotEditor->advanced())
-		emit addToUndoStack();
+	emit addToUndoStack();
 
 	_limits[idx] = value;
 	emit limitsChanged();
 
-	if (_plotEditor->advanced())
-		emit somethingChanged();
+	emit somethingChanged();
 }
 
 void AxisModel::fillFromJSON(std::vector<double> &obj, Json::Value value)

@@ -282,8 +282,7 @@ private:
 	Modules::UpgradeMsgs	_msgs;
 
 	std::map<std::string,
-		Json::Value>		_rSources,
-							_plotOptions;
+		Json::Value>		_rSources;
 };
 
 #endif // ANALYSIS_H

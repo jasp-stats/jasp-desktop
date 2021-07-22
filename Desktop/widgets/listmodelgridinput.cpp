@@ -77,7 +77,7 @@ void ListModelGridInput::_readSource()
 	}
 
 	for (int i = 0; i < _rowCount; i++)
-		_tableTerms.rowNames.append(QString::number(i));
+		_tableTerms.rowNames.append(_tableView->rowNames().count() > i ? _tableView->rowNames()[i] : QString::number(i));
 
 	endResetModel();
 }

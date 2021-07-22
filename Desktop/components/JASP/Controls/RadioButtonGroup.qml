@@ -61,6 +61,8 @@ RadioButtonsGroupBase
 		visible:		control.title && control.visible ? true : false
 		anchors.top:	control.top
 		anchors.left:	control.left
+		anchors.bottom:	radioButtonsOnSameRow ? contentArea.bottom : undefined
+		verticalAlignment: Text.AlignVCenter
 		font:			jaspTheme.font
 		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled		
     }
