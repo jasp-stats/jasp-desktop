@@ -34,8 +34,6 @@ public:
 	explicit				DataSetTableModel();
 	~DataSetTableModel()	override { if(_singleton == this) _singleton = nullptr; }
 
-	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const	override;
-
 	bool					filterAcceptsRow(int source_row, const QModelIndex & source_parent)	const override;
 
 				int			columnsFilteredCount()					const				{ return DataSetPackage::pkg()->columnsFilteredCount();								}
