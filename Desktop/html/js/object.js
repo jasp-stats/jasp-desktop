@@ -18,7 +18,7 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	if (metaData.type)
 		type = metaData.type;
 
-	if (type === "qmlSource")
+	if (type === "qmlSource" || type === "title") //title is for backwards compatibiliity: https://github.com/jasp-stats/jasp-desktop/pull/4579
 		return null;
 
 	if(_.has(results, "title") && results.title === "" && type === "collection")
