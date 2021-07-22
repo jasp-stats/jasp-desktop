@@ -58,7 +58,9 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 			try
 			{
 				int number = std::stoi(colName);
-				colName = "V" + colName;
+				
+				if(std::to_string(number) == colName) //Check if it is a number or has more afterwards (stoi won't fail if it starts with numbers. So it would convert "1hahaha" into "V1hahaha")
+					colName = "V" + colName;
 			} catch (...) {
 			}
 		}
