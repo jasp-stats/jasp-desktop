@@ -50,9 +50,3 @@ bool DataSetTableModel::filterAcceptsRow(int source_row, const QModelIndex &)	co
 {
 	return _showInactive || DataSetPackage::pkg()->getRowFilter(source_row);
 }
-
-QVariant DataSetTableModel::data(const QModelIndex &index, int role)	const
-{
-	DataSetPackage * package = DataSetPackage::pkg();
-	return package->data(package->index(index.row(), index.column(), package->parentModelForType(parIdxType::data)), role);
-}
