@@ -385,7 +385,7 @@ Popup
 					Rectangle
 					{
 						id:					plotImgRect
-						color:				jaspTheme.white
+						color:				jaspTheme.themeName === "darkTheme" ? "black" : jaspTheme.white
 						border.color:		jaspTheme.uiBorder
 						border.width:		1
 						anchors.fill:		parent
