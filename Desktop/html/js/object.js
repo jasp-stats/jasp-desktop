@@ -18,7 +18,7 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	if (metaData.type)
 		type = metaData.type;
 
-	if (type === "qmlSource")
+	if (type === "qmlSource" || type === "title")
 		return null;
 
 	if(_.has(results, "title") && results.title === "" && type === "collection")
