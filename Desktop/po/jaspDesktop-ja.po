@@ -3013,44 +3013,11 @@ msgid "Title"
 msgstr ""
 
 msgctxt "PlotEditingAxis|"
-msgid ""
-"The title can only be modified in advanced mode because it is not plain text."
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
-msgid "Title Type"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
-msgid "Plain text"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
-msgid "R expression"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
-msgid "Hide title"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
-msgid "Ticks"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
 msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
-msgid "Hide ticks"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
-msgid "Specify ticks:"
 msgstr ""
 
 msgctxt "PlotEditingAxis|"
@@ -3063,10 +3030,6 @@ msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
-msgid "Value"
 msgstr ""
 
 msgctxt "PlotEditingAxis|"
@@ -3087,10 +3050,6 @@ msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
-msgstr ""
-
-msgctxt "PlotEditingAxis|"
-msgid "Range"
 msgstr ""
 
 msgctxt "PlotEditingAxis|"
@@ -3115,14 +3074,6 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
-
-msgctxt "PlotEditor|"
-msgid "Advanced settings"
-msgstr ""
-
-msgctxt "PlotEditor|"
-msgid "Save plot as"
 msgstr ""
 
 msgctxt "RibbonBar|"
@@ -3554,4 +3505,36 @@ msgstr ""
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Show title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Show axis"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Ticks:"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Position"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Advanced"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Parse title as R expression"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Limits:"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Save image as"
 msgstr ""

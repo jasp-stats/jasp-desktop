@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-07-22 19:34+0000\n"
-"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
-"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/gl/>\n"
-"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.2-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -2867,46 +2861,12 @@ msgid "Title"
 msgstr "Título"
 
 msgctxt "PlotEditingAxis|"
-msgid ""
-"The title can only be modified in advanced mode because it is not plain text."
-msgstr ""
-"O título só se pode modificar no modo avanzado porque non é texto plano."
-
-msgctxt "PlotEditingAxis|"
-msgid "Title Type"
-msgstr "Tipo de Título"
-
-msgctxt "PlotEditingAxis|"
-msgid "Plain text"
-msgstr "Texto plano"
-
-msgctxt "PlotEditingAxis|"
-msgid "R expression"
-msgstr "Expresión de R"
-
-msgctxt "PlotEditingAxis|"
-msgid "Hide title"
-msgstr "Agochar o título"
-
-msgctxt "PlotEditingAxis|"
-msgid "Ticks"
-msgstr "Marcas"
-
-msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
 msgstr "Especificar a secuencia"
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
 msgstr "Establecer manualmente"
-
-msgctxt "PlotEditingAxis|"
-msgid "Hide ticks"
-msgstr "Agochar as marcas"
-
-msgctxt "PlotEditingAxis|"
-msgid "Specify ticks:"
-msgstr "Especificar as marcas:"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
@@ -2919,10 +2879,6 @@ msgstr "a"
 msgctxt "PlotEditingAxis|"
 msgid "steps"
 msgstr "pasos"
-
-msgctxt "PlotEditingAxis|"
-msgid "Value"
-msgstr "Valor"
 
 msgctxt "PlotEditingAxis|"
 msgid "Label"
@@ -2943,10 +2899,6 @@ msgstr "Inserir marca á dereita"
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
 msgstr "Eliminar a marca"
-
-msgctxt "PlotEditingAxis|"
-msgid "Range"
-msgstr "Rango"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
@@ -2971,14 +2923,6 @@ msgstr "eixe x"
 msgctxt "PlotEditor|"
 msgid "y-axis"
 msgstr "eixe y"
-
-msgctxt "PlotEditor|"
-msgid "Advanced settings"
-msgstr "Configuracións avanzadas"
-
-msgctxt "PlotEditor|"
-msgid "Save plot as"
-msgstr "Gardar a gráfica como"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
@@ -3795,3 +3739,36 @@ msgstr "Cancelar"
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
 msgstr "Restablecer os predeterminados"
+
+msgctxt "PlotEditingAxis|"
+msgid "Show title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Show axis"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Ticks:"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Position"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditingAxis|"
+msgid "Advanced"
+msgstr "Avanzado"
+
+msgctxt "PlotEditingAxis|"
+msgid "Parse title as R expression"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Limits:"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Save image as"
+msgstr ""
