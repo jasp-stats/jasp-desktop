@@ -38,13 +38,13 @@ using namespace std;
 
 QString AppDirs::examples()
 {
-    static QString dir = tq(Dirs::resourcesDir()) + tq("Data Sets");
+    static QString dir = QDir(tq(Dirs::resourcesDir()) + tq("Data Sets")).canonicalPath();
 	return dir;
 }
 
 QString AppDirs::help()
 {
-	static QString dir = tq(Dirs::resourcesDir()) + tq("Help");
+	static QString dir = QDir(tq(Dirs::resourcesDir()) + tq("Help")).canonicalPath();
 
 	return dir;
 }

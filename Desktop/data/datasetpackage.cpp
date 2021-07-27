@@ -1497,7 +1497,7 @@ QString DataSetPackage::windowTitle() const
 {
 	QString name	= DataSetPackage::name(),
 			folder	= DataSetPackage::folder();
-
+	
 #ifdef _WIN32
 	if(folder.startsWith(AppDirs::examples().replace('/', '\\')))
 #else

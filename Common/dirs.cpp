@@ -290,15 +290,19 @@ string Dirs::rHomeDir()
 
 string Dirs::resourcesDir()
 {
-	string dir = exeDir();
+	static string dir;
+	
+	if(dir == "")
+	{
+		dir = exeDir();
 
 #ifdef __APPLE__
-	static bool isQtBuild = filesystem::exists("Makefile");
-	if (!isQtBuild)
+	if (!filesystem::exists("Makefile"))
 		dir += "/..";
 #endif
 
-	dir += "/Resources/";
+		dir += "/Resources/";
+	}
 
-	return dir;
+	return dir; 
 }
