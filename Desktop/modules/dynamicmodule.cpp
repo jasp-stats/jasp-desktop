@@ -469,7 +469,7 @@ void DynamicModule::unpackage()
 
 std::string DynamicModule::getLibPathsToUse()
 {
-	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "'";
+	std::string libPathsToUse = "c('" + shortenWinPaths(moduleRLibrary()).toStdString()	+ "'";
 
 	std::vector<std::string> requiredLibPaths = fq(DynamicModules::dynMods()->requiredModulesLibPaths(tq(_name)));
 

@@ -964,7 +964,7 @@ QStringList DynamicModules::requiredModulesLibPaths(QString moduleName)
 
 	for(const std::string & reqMod : requiredModules)
 		if(_modules.count(reqMod) > 0)
-			returnThis.append(_modules[reqMod]->moduleRLibrary());
+			returnThis.append(shortenWinPaths(_modules[reqMod]->moduleRLibrary()));
 
 	return returnThis;
 }

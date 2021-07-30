@@ -62,6 +62,8 @@ QString decrypt(const QString &input);
 QString getSortableTimestamp();
 QString QJSErrorToString(QJSValue::ErrorType errorType);
 
+QString shortenWinPaths(QString);
+
 bool pathIsSafeForR(const QString & checkThis);
 
 const char * QProcessErrorToString(QProcess::ProcessError error);

@@ -23,6 +23,7 @@
 #include <QDateTime>
 #include "simplecrypt.h"
 #include "simplecryptkey.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -230,4 +231,13 @@ QString QJSErrorToString(QJSValue::ErrorType errorType)
 	}
 	
 	return "Could not determine error from type.";
+}
+
+QString shortenWinPaths(QString in)
+{
+#ifdef _WIN32
+	return QString::fromStdWString(Utils::getShortPathWin(in.toStdWString()));
+#else
+	return in;
+#endif
 }

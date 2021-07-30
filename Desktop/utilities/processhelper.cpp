@@ -39,11 +39,9 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 #define ARCH_SUBPATH "x64"
 #endif
 	
-	auto longToShort = [](QString in) -> QString { return QString::fromStdWString(Utils::getShortPathWin(in.toStdWString())); };
-	
-	QString PATH		= longToShort(programDir.absoluteFilePath("R/library/RInside/libs/" ARCH_SUBPATH)) + ";" + longToShort(programDir.absoluteFilePath("R/library/Rcpp/libs/" ARCH_SUBPATH)) + ";" + longToShort(programDir.absoluteFilePath("R/bin/" ARCH_SUBPATH)) + ";" + longToShort(env.value("PATH")),
-			R_HOME		= longToShort(rHome.absolutePath()),
-			JAGS_HOME	= longToShort(programDir.absoluteFilePath("JAGS/"));
+	QString PATH		= shortenWinPaths(programDir.absoluteFilePath("R/library/RInside/libs/" ARCH_SUBPATH)) + ";" + shortenWinPaths(programDir.absoluteFilePath("R/library/Rcpp/libs/" ARCH_SUBPATH)) + ";" + shortenWinPaths(programDir.absoluteFilePath("R/bin/" ARCH_SUBPATH)) + ";" + shortenWinPaths(env.value("PATH")),
+			R_HOME		= shortenWinPaths(rHome.absolutePath()),
+			JAGS_HOME	= shortenWinPaths(programDir.absoluteFilePath("JAGS/"));
 	
 	Log::log() << "R_HOME set to " << R_HOME << std::endl;
 

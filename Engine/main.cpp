@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 		
 		if(arg1 == junctionCollectArg || arg1 == junctionRecreateArg)
 		{
-			std::cout << "Engine started for junctions!" << std::endl;
+			std::cout << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
 			rbridge_junctionHelper(arg1 == junctionCollectArg, arg2);
 			exit(0);
 		}
