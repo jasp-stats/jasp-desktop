@@ -523,10 +523,16 @@ copyRfiles <- function(dirs) {
   file.copy(from = list.files("R", pattern = "*\\.R$", full.names = TRUE), to = dirs["r-helpers"], overwrite = TRUE)
 }
 
-createTarArchive <- function(dirs, outputPath = "archives/flatpak_archive.tar.gz", compression = c("fast", "none", "best"),
+createTarArchive <- function(dirs, jaspDir, outputPath = "archives/flatpak_archive_%s.tar.gz", compression = c("fast", "none", "best"),
                              verbose = TRUE, update = FALSE) {
 
   # TODO: update does not work
+
+  if (grepl("%s", outputPath)) {
+    # get the tag of the current jasp-desktop clone or the commit hash as a fallback
+    commitHash <- system(sprintf("cd %s && git describe --exact-match --tags 2> /dev/null || git rev-parse HEAD", jaspDir), intern = TRUE)
+    outputPath <- sprintf(outputPath, commitHash)
+  }
 
   if (update && !identical(compression[1L], "none")) {
     warning("can only update when compression is 'none'! Not updating instead.", immediate. = TRUE)
@@ -577,14 +583,15 @@ createTarArchive <- function(dirs, outputPath = "archives/flatpak_archive.tar.gz
   ))
 }
 
-uploadTarArchive <- function(archivePath = "archives/flatpak_archive.tar.gz") {
+uploadTarArchive <- function(archivePath = "archives/flatpak_archive.tar.gz", verbose = TRUE) {
 
   if (!file.exists(archivePath))
     stop("Archive does not exist")
 
   archivePath <- normalizePath(archivePath)
+  archiveName <- basename(archivePath)
 
-  cmd <- sprintf("scp %s jonathonlove@static.jasp-stats.org:static.jasp-stats.org/flatpak_archive.tar.gz", archivePath)
+  cmd <- sprintf("scp %s jonathonlove@static.jasp-stats.org:static.jasp-stats.org/%s", archivePath, archiveName)
   system(cmd)
 
 }
@@ -616,7 +623,7 @@ writeRpkgsJson <- function(path, info, local = FALSE) {
   location <- if (local) {
     file.path("file:/", normalizePath(info["tar-file"]))
   } else {
-    "http://static.jasp-stats.org/flatpak_archive.tar.gz"
+    paste0("http://static.jasp-stats.org/", basename(info["tar-file"]))
   }
 
   new <- sprintf(template, location, info["sha256"], info["r-file"])

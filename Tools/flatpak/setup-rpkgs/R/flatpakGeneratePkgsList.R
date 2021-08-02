@@ -4,6 +4,10 @@
 # it would be nice to be able to outsource this to miniCRAN which has a method for adding local pkgs to a repository
 # the only downside is that it looks like miniCRAN is not actively maintained anymore.
 
+# when running this file on a new computer, adjust these paths
+jaspDir    <- "~/github/jasp-desktop"               # local clone of https://github.com/jasp-stats/jasp-desktop
+flatpakDir <- "~/github/flatpak/org.jaspstats.JASP" # local clone of https://github.com/flathub/org.jaspstats.JASP
+
 source("R/functions.R")
 
 # you probably want to set a GITHUB_PAT because otherwise you WILL get rate-limited by GitHub.
@@ -18,7 +22,7 @@ Sys.setenv("RENV_PATHS_CACHE" = dirs["renv-cache"])
 Sys.setenv("RENV_PATHS_ROOT"  = dirs["renv-root"])
 
 # use the default branch of all modules -- always the latest version
-jaspModules <- paste0("jasp-stats/", Filter(function(x) startsWith(x, "jasp"), dir("~/github/jasp-desktop/Modules/")))
+jaspModules <- paste0("jasp-stats/", Filter(function(x) startsWith(x, "jasp"), dir(file.path(jaspDir, "Modules"))))
 
 # this uses the local versions -- but modules that are dependencies are still retrieved from github
 # isJaspModule <- function(path) file.exists(file.path(path, "DESCRIPTION")) && file.exists(file.path(path, "inst", "Description.qml"))
@@ -51,10 +55,10 @@ copyV8Lib(dirs)
 copyRfiles(dirs)
 
 # debugonce(createTarArchive)
-info <- createTarArchive(dirs, verbose = FALSE, compression = "best")
+info <- createTarArchive(dirs, jaspDir, verbose = FALSE, compression = "best")
 
 # update Rpackages.json & install build flatpak
-writeRpkgsJson("~/github/flatpak/org.jaspstats.JASP/RPackages.json", info)
+writeRpkgsJson(file.path(flatpakDir, "RPackages.json"), info)
 
 # IF you have ssh setup this will upload the tar.gz to static-jasp. It's nicer to do this via a terminal because there you see a progress bar
-# uploadTarArchive()
+uploadTarArchive(info["tar-file"])
