@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-08-08 23:34+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.8-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -1990,10 +1996,9 @@ msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
 msgstr "Actualizar el análisis puede cambiar los resultados."
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Table"
-msgstr "Mesa"
+msgstr "Tabla"
 
 #, fuzzy
 msgctxt "AnalysisForm|"
@@ -3370,19 +3375,19 @@ msgstr ""
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr ""
+msgstr "de"
 
 msgctxt "PlotEditingAxis|"
 msgid "to"
-msgstr ""
+msgstr "a"
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
-msgstr ""
+msgstr "pasos"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
-msgstr ""
+msgstr "Basado en los datos"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
