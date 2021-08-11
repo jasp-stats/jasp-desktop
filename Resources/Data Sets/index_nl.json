@@ -782,10 +782,26 @@
         }
       ],
       "debug": false
-    },	
+    },
     {
-      "name": "15. Overig",
-      "path": "15. Miscellaneous",
+      "name": "15. Prophet",
+      "path": "15. Prophet",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "JASP Webpage Visits",
+          "path": "JASP Webpage Visits.jasp",
+          "description": "Number of visits to the JASP website from January to October 2020.<br><br> <i>Data set collected by the JASP team.<\/i>",
+          "kind": "file",
+          "associated_datafile": "JASP Webpage Visits.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "16. Overig",
+      "path": "16. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
