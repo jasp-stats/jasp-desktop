@@ -22,18 +22,19 @@ IF "%PKG_NAME:~0,4%"=="jasp" (
     popd
 
 ) ELSE (
+    rem if you add things here, be sure to also add them to the function "copyRPkg" in make-dmg.sh
     copy %SRCE_DIR%\%REL_PATH%\INDEX INDEX                /Y >nul
     copy %SRCE_DIR%\%REL_PATH%\NAMESPACE NAMESPACE        /Y >nul
     copy %SRCE_DIR%\%REL_PATH%\DESCRIPTION DESCRIPTION    /Y >nul
     copy %SRCE_DIR%\%REL_PATH%\*.R .                      /Y >nul
 
     if exist %SRCE_DIR%\%REL_PATH%\R            ( xcopy %SRCE_DIR%\%REL_PATH%\R            /Y /Q /E /I R           >nul )
-    if exist %SRCE_DIR%\%REL_PATH%\Meta         ( xcopy %SRCE_DIR%\%REL_PATH%\Meta         /Y /Q /E /I Meta        >nul )
     if exist %SRCE_DIR%\%REL_PATH%\po           ( xcopy %SRCE_DIR%\%REL_PATH%\po           /Y /Q /E /I po          >nul )
     if exist %SRCE_DIR%\%REL_PATH%\afm          ( xcopy %SRCE_DIR%\%REL_PATH%\afm          /Y /Q /E /I afm         >nul )
     if exist %SRCE_DIR%\%REL_PATH%\enc          ( xcopy %SRCE_DIR%\%REL_PATH%\enc          /Y /Q /E /I enc         >nul )
     if exist %SRCE_DIR%\%REL_PATH%\lib          ( xcopy %SRCE_DIR%\%REL_PATH%\lib          /Y /Q /E /I lib         >nul )
     if exist %SRCE_DIR%\%REL_PATH%\icc          ( xcopy %SRCE_DIR%\%REL_PATH%\icc          /Y /Q /E /I icc         >nul )
+    if exist %SRCE_DIR%\%REL_PATH%\Meta         ( xcopy %SRCE_DIR%\%REL_PATH%\Meta         /Y /Q /E /I Meta        >nul )
     if exist %SRCE_DIR%\%REL_PATH%\include      ( xcopy %SRCE_DIR%\%REL_PATH%\include      /Y /Q /E /I include     >nul )
     if exist %SRCE_DIR%\%REL_PATH%\shinythemes  ( xcopy %SRCE_DIR%\%REL_PATH%\shinythemes  /Y /Q /E /I shinythemes >nul )
 

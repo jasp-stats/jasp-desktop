@@ -83,9 +83,84 @@ JASP_R_HOME=$R_FRAMEWORK/Versions/Current/Resources
 export JASP_R_HOME
 $JASP_R_HOME/bin/R -e "source('$JASP_DESKTOP/R-Interface/R/symlinkTools.R'); convertAbsoluteSymlinksToRelative('$JASP_FULL_BUILD_DIR/Modules', '$JASP_FULL_BUILD_DIR/renv-cache'); warnings();"
 
-echo "Copy the module (librarie)s and renv-cache from the buildfolder to Resources"
+echo "Copy the module( librarie)s and renv-cache from the buildfolder to Resources"
 cp -PR $JASP_FULL_BUILD_DIR/Modules    app/JASP.app/Contents/Resources
-cp -PR $JASP_FULL_BUILD_DIR/renv-cache app/JASP.app/Contents/Resources
+
+
+copyFolderIfThere()
+{
+	if [[ -d $1 ]]; then
+		cp -R $1 $DEST_PATH
+	fi
+}
+
+#Define a function to copy each r-pkg, but only required stuff as determined in copyRSub.cmd for windows.
+#So, if you add things here, be sure to add them there as well.
+copyRPkg() {
+	# $1 is relative path to pkg
+	echo Copying $1 which is pkg $2
+	REL_PATH=$1
+	PKG_NAME=$2
+	DEST_PATH=$JASP_FULL_BUILD_DIR/app/JASP.app/Contents/Resources/$REL_PATH
+	mkdir -p $DEST_PATH
+
+	pushd $JASP_FULL_BUILD_DIR/$REL_PATH
+
+	if [[ $PKG_NAME == jasp* ]]; then 
+		echo Its a jasp-pkg, we copy all!
+		cp -R * $DEST_PATH
+	else
+		echo Its a normal pkg so we copy what we need.
+		cp INDEX 			$DEST_PATH
+		cp NAMESPACE 		$DEST_PATH
+		cp DESCRIPTION 		$DEST_PATH
+		cp *.R 				$DEST_PATH
+
+		copyFolderIfThere R
+		copyFolderIfThere po
+		copyFolderIfThere afm
+		copyFolderIfThere enc
+		copyFolderIfThere icc
+		copyFolderIfThere lib
+		copyFolderIfThere libs
+		copyFolderIfThere Meta
+		copyFolderIfThere include
+		copyFolderIfThere template		#for issue https://github.com/jasp-stats/jasp-test-release/issues/823
+		copyFolderIfThere shinythemes
+
+		if [[ $PKG_NAME == viridisLite ]]; then # for issue https://github.com/jasp-stats/jasp-test-release/issues/416#issuecomment-591899068
+			cp -R data $DEST_PATH
+		fi 
+	fi
+	popd
+}
+
+pushd $JASP_FULL_BUILD_DIR
+
+for PKG_ROOT in "renv-cache/v5"/*; do
+	if [[ ! -L "$PKG_ROOT" && -d "$PKG_ROOT" ]]; then
+		for PKG_VERSION_R in "$PKG_ROOT"/*; do
+			if [[ ! -L "$PKG_VERSION_R" && -d "$PKG_VERSION_R" ]]; then
+				for PKG_COMMIT_R in "$PKG_VERSION_R"/*; do
+					if [[ ! -L "$PKG_COMMIT_R" && -d "$PKG_COMMIT_R" ]]; then
+						pushd $PKG_COMMIT_R
+
+						for PKG_NAME in *; do
+							if [[ ! -L "$PKG_NAME" && -d "$PKG_NAME" && $PKG_NAME != BH ]]; then
+								# PKG_COMMIT_R should now contain the relative path from the buildfolder all the way to the actual pkg in there, aka renv-cache/v5/pkgname/cmomit/pkgversion and PKG_NAME contains, well you guess it ;)
+								copyRPkg $PKG_COMMIT_R/$PKG_NAME $PKG_NAME
+							fi
+						done
+
+						popd
+					fi
+				done
+			fi
+		done
+	fi
+done
+
+popd
 
 #This is now made part of jasp-required-files: https://github.com/jasp-stats/jasp-required-files/commit/34cdebfda1e5bc27c30d5bf11cd07471449162e7
 #echo "Make symbolic link to Frameworks in bin folder to let @executable_path/... stuff work from R executable as well."
