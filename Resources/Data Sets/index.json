@@ -427,6 +427,20 @@
           "associated_datafile": "Physical Activity and BMI.csv"
         },
         {
+          "name": "Presidents' Height",
+          "path": "Presidents' Height.jasp",
+          "description": "Heights of US presidents and their proportion of the popular vote. <br><br> The example JASP file demonstrates the use of conducting an interval-null hypothesis.<br><br> <i>Subset of the data reported in Stulp et al. (2015).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Presidents' Height.csv"
+        },
+        {
+          "name": "World Happiness",
+          "path": "World Happiness.jasp",
+          "description": "National happiness scores and various life factors of 155 countries reported in 2017. <br><br> The example JASP file demonstrates the use of Bayesian linear regression.<br><br> <i>Data from Helliwell, Layard, & Sachs (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "World Happiness.csv"
+        },
+        {
           "name": "The Biggest Liar",
           "path": "The Biggest Liar.jasp",
           "description": "Creativity test scores and ranking in a lying competition. <br><br> The example JASP file demonstrates the use of Spearman's and Kendall's correlation.<br><br> <i>Fictional data from Andy Field.<\/i>",
@@ -768,10 +782,26 @@
         }
       ],
       "debug": false
-    },	
+    },
     {
-      "name": "15. Miscellaneous",
-      "path": "15. Miscellaneous",
+      "name": "15. Prophet",
+      "path": "15. Prophet",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "JASP Webpage Visits",
+          "path": "JASP Webpage Visits.jasp",
+          "description": "Number of visits to the JASP website from January to October 2020.<br><br> <i>Data set collected by the JASP team.<\/i>",
+          "kind": "file",
+          "associated_datafile": "JASP Webpage Visits.csv"
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "16. Miscellaneous",
+      "path": "16. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
@@ -785,14 +815,14 @@
         {
           "name": "The Datasaurus Dozen (Long)",
           "path": "The Datasaurus Dozen (Long).jasp",
-          "description": "Twelve variations of two variables that have the same summary statistics but different distributions provide a quirkier example of the lesson traditionally taught by the Anscombe's Quartet. <br><br>  The example JASP file demonstrates the use of inspecting data thoroughly using plots. <br><br> <i>Synthetic data from Matejka & Fitzmaurice (2018). Data set included in R (Locke & McGowan, 2018).</i>",
+          "description": "Twelve variable pairs with the same summary statistics (i.e., means, standard deviations, and Pearson correlation coefficients) but dramatically different distributions. <br><br>  The example JASP file demonstrates the use of data visualization. <br><br> <i>Synthetic data from Matejka & Fitzmaurice (2018). Data set included in R (Locke & McGowan, 2018).</i>",
           "kind": "file",
           "associated_datafile": "The Datasaurus Dozen (Long).csv"
         },
         {
           "name": "The Datasaurus Dozen (Wide)",
           "path": "The Datasaurus Dozen (Wide).jasp",
-          "description": "Twelve variations of two variables that have the same summary statistics but different distributions provide a quirkier example of the lesson traditionally taught by the Anscbome's Quartet. <br><br>  The example JASP file demonstrates the use of inspecting data thoroughly using plots. <br><br> <i>Synthetic data from Matejka & Fitzmaurice (2018). Data set included in R (Locke & McGowan, 2018).</i>",
+          "description": "Twelve variable pairs with the same summary statistics (i.e., means, standard deviations, and Pearson correlation coefficients) but dramatically different distributions. <br><br>  The example JASP file demonstrates the use of data visualization. <br><br> <i>Synthetic data from Matejka & Fitzmaurice (2018). Data set included in R (Locke & McGowan, 2018).</i>",
           "kind": "file",
           "associated_datafile": "The Datasaurus Dozen (Wide).csv"
         },
@@ -802,13 +832,6 @@
           "description": "Synthetic data with missing values. <br><br> The example JASP file demonstrates the use of missing values.<br><br> <i>Fictional data from Alexander Ly.<\/i>",
           "kind": "file",
           "associated_datafile": "Missing Data.csv"
-        },
-        {
-          "name": "Presidents' Height",
-          "path": "Presidents' Height.jasp",
-          "description": "Heights of US presidents and their proportion of the popular vote. <br><br> The example JASP file demonstrates the use of conducting an interval-null hypothesis.<br><br> <i>Subset of the data reported in Stulp et al. (2015).<\/i>",
-          "kind": "file",
-          "associated_datafile": "Presidents' Height.csv"
         }
       ],
       "debug": false
