@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-08-14 10:48+0000\n"
+"Last-Translator: D.J. Dekker <dj_dekker@hotmail.com>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.8-dev\n"
 "X-Language: nl\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -850,7 +856,7 @@ msgstr "Logopties"
 #, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
-msgstr "Maximale pastijd"
+msgstr "Maximaal aantal engines: "
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
@@ -1466,9 +1472,10 @@ msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
 msgstr "Ontwikkelaarsmodule aan het installeren"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr ""
+msgstr "Gereed"
 
 #, qt-format
 msgctxt "ModulesMenu|"
@@ -2980,109 +2987,115 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr ""
+msgstr "Geen naam gegeven voor bron van %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr ""
+msgstr "Geen bron gegeven voor %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr ""
+msgstr "Kan component %1 voor bron van %2 niet vinden"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "Standaardiseert de variabele"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "retourneert waar als de string de substring minstens eenmaal bevat"
 
+#, fuzzy
 msgctxt "FactorsForm|"
 msgid "+"
-msgstr ""
+msgstr "+"
 
+#, fuzzy
 msgctxt "FactorsForm|"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "Standaardiseert de variabele"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "retourneert waar als de string de substring minstens eenmaal bevat"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr ""
+msgstr "Volgorde opgeven"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr ""
+msgstr "Van"
 
 msgctxt "PlotEditingAxis|"
 msgid "to"
-msgstr ""
+msgstr "tot"
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
-msgstr ""
+msgstr "stappen"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
-msgstr ""
+msgstr "Gebaseerd op data"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
-msgstr ""
+msgstr "Gebaseerd op streepjes"
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
-msgstr ""
+msgstr "Handmatig instellen"
 
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
-msgstr ""
+msgstr "Ondergrens"
 
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
-msgstr ""
+msgstr "Bovengrens"
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr ""
+msgstr "x-as"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
+msgstr "y-as"
 
 msgctxt "VariablesWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
+msgstr "Bewerk hier de labels of kies welke waarden uitgefilterd moeten worden."
 
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
 msgstr ""
+"Er is iets fout gegaan bij het omzetten van het kolomtype, maar het is "
+"onduidelijk wat."
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain decimals."
-msgstr ""
+msgstr "Kan kolom niet omzetten naar ordinaal: waarden bevatten decimalen."
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to continuous: values contain text."
-msgstr ""
+msgstr "Kan kolom niet omzetten naar continu: waarden bevatten tekst."
 
+#, fuzzy
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain text or decimals."
 msgstr ""
+"Kan kolom niet omzetten naar ordinaal: waarden bevatten tekst of decimalen."
 
 #, fuzzy
 msgctxt "LabelModel|"
