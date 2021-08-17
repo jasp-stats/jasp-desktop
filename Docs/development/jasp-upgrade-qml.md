@@ -36,6 +36,11 @@ To actually change the options for the qml form belonging to the analysis/functi
 ### Upgrade Order
 Keep in mind that the order of `Upgrade`s within `Upgrades` is not important. However you should only ever have a single `Upgrade` with a particular combination of `functionName` and `fromVersion`, because those are used to find the right `Upgrade` to be applied to a particular version of an analysis. And these will be chained for multiple versions. So suppose you have an upgrade for an analysis from version `0.1` to `0.2`, and an upgrade from `0.3` to `0.4`. Then when you load an analysis made with module version `0.0.1` JASP is smart enough to figure that it should apply `0.1 -> 0.2` and then `0.3 -> 0.4`. So you do not need to specify an `Upgrade` for each version of your module, but just for the changes that need to be made. And JASP will chain them for you.
 
+### Versions
+Before JASP 0.15 was released the analyses were always saved with the version of JASP itself, so all analyses/modules in 0.14.1 would have that version. For 0.15 I manually made sure that the versions for each module were also 0.15 by setting that in `Description.qml` (this should be centralized to `DESCRIPTION` as [specified here](https://github.com/jasp-stats/INTERNAL-jasp/issues/1251)).
+
+After that version is released the version you need to upgrade to will be the **version of the module** and not of JASP.
+
 # Changing Options
 Besides changing the name of your module or the function called for analysis you can also change the options stored in a jasp-file by older versions of your module. In case you aren't sure what is meant by options: these are the values stored in a json format by the QML form of your analysis. Each option has a name and this is the exact same `name:` as you specify in the QML forms. 
 
