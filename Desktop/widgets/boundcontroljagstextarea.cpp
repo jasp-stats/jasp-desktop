@@ -101,7 +101,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 	boundValue["model"] = _textEncoded.toStdString();
 	Json::Value columns(Json::arrayValue);
 	for (const std::string& column : _usedColumnNames)
-		columns.append(column);
+		columns.append(ColumnEncoder::columnEncoder()->encode(column));
 	boundValue["columns"] = columns;
 	Json::Value parameters(Json::arrayValue);
 	for (const QString& parameter : _usedParameters)
