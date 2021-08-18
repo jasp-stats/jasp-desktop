@@ -61,8 +61,9 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 	logCout << "This is a mac so we will fix the otool mess of folder '" << modLibpath << "'...\n";
 
 	typedef filesystem::recursive_directory_iterator	recIt;
-
-	const std::string progDir = stringUtils::replaceBy(std::string(getenv("JASPENGINE_FOLDER")), " ", "\\ ");
+	
+	const std::string JASP_ENGINE_FOLDER = getenv("JASPENGINE_FOLDER") != NULL ? getenv("JASPENGINE_FOLDER") : boost::filesystem::current_path().string().c_str();
+	const std::string progDir = stringUtils::replaceBy(JASP_ENGINE_FOLDER, " ", "\\ ");
 	
 	filesystem::path path;
 	
