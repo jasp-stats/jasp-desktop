@@ -16,7 +16,7 @@ isEmpty(MODULE_NAME) {
 	
 	#Install the actual module package
 	#Install$${MODULE_NAME}.commands     +=  $${INSTALL_R_PKG_CMD_PREFIX}$${MODULE_DIR}/$${MODULE_NAME}$${INSTALL_R_PKG_CMD_POSTFIX}; $$escape_expand(\\n\\t)
-	SETTING_UP_RENV= "Sys.setenv(RENV_PATHS_ROOT=\'$$MODULES_RENV_ROOT\', RENV_PATHS_CACHE=\'$$MODULES_RENV_CACHE\');"
+	SETTING_UP_RENV= "Sys.setenv(RENV_PATHS_ROOT=\'$$MODULES_RENV_ROOT\', RENV_PATHS_CACHE=\'$$MODULES_RENV_CACHE\', JAGS_ROOT=\"$${JASP_BUILDROOT_DIR}/JAGS\");"
 
 	linux {
 		exists(/app/lib/*) {
