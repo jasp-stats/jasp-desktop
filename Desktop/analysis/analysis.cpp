@@ -650,7 +650,8 @@ Json::Value Analysis::createAnalysisRequestJson()
 
 		bool imgP = perform == performType::saveImg || perform == performType::editImg;
 		if (imgP)	json["image"]		= imgOptions();
-		else		json["options"]		= _boundValues;
+		
+		json["options"]		= _boundValues;
 	}
 
 	return json;
