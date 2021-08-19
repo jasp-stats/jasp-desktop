@@ -54,8 +54,10 @@ Column
 		label	: qsTr("Show axis")
 		visible	: axisModel.continuous
 		checked	: axisModel.breaksType !== AxisModel.BreaksNull
-		onClicked: axisModel.breaksType = (checked ? AxisModel.BreaksRange : AxisModel.BreaksNull)
+		onClicked: axisModel.breaksType = (checked ? lastBreakType : AxisModel.BreaksNull)
 		columns	: 1
+
+		property int lastBreakType: AxisModel.BreaksRange
 
 		JASPC.RadioButtonGroup
 		{
@@ -80,8 +82,7 @@ Column
 
 			onClicked:
 			{
-				if (axisBreaksRange.checked) axisModel.breaksType = AxisModel.BreaksRange
-				else if (axisBreaksManual.checked) axisModel.breaksType = AxisModel.BreaksManual
+				showAxis.lastBreakType = axisModel.breaksType = axisBreaksRange.checked ? AxisModel.BreaksRange : AxisModel.BreaksManual
 			}
 		}
 
