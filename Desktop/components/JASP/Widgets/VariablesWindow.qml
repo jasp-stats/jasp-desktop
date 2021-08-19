@@ -343,7 +343,7 @@ FocusScope
 				property real	minimumHeight:		(buttonHeight + spacing) * shownButtons + (3 * spacing)
 				property real	buttonHeight:		32 * preferencesModel.uiScale
 
-				RectangularButton
+				RoundedButton
 				{
 					//text: "UP"
 					iconSource:		jaspTheme.iconPath + "arrow-up.png"
@@ -356,7 +356,7 @@ FocusScope
 					width:			height
 				}
 
-				RectangularButton
+				RoundedButton
 				{
 					//text: "DOWN"
 					iconSource:		jaspTheme.iconPath + "arrow-down.png"
@@ -369,7 +369,7 @@ FocusScope
 					width:			height
 				}
 
-				RectangularButton
+				RoundedButton
 				{
 					//text: "REVERSE"
 					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
@@ -382,7 +382,7 @@ FocusScope
 					width:			height
 				}
 
-				RectangularButton
+				RoundedButton
 				{
 					id:				eraseFiltersOnThisColumn
 					iconSource:		jaspTheme.iconPath + "eraser.png"
@@ -396,7 +396,7 @@ FocusScope
 					width:			height
 				}
 
-				RectangularButton
+				RoundedButton
 				{
 					id:				eraseFiltersOnAllColumns
 					iconSource:		jaspTheme.iconPath + "eraser_all.png"
@@ -414,7 +414,7 @@ FocusScope
 					Layout.fillHeight: true
 				}
 
-				RectangularButton
+				RoundedButton
 				{
 					id:				variablesWindowCloseButton
 					iconSource:		jaspTheme.iconPath + "cross.png"

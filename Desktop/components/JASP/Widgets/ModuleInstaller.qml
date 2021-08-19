@@ -52,7 +52,7 @@ QTCONTROLS.Popup
 		{
 			id:			moduleInstallerRect
 
-			RectangularButton
+			RoundedButton
 			{
 				id:					browseButton
 				iconSource:			jaspTheme.iconPath + "folder.svg"
@@ -74,7 +74,7 @@ QTCONTROLS.Popup
 				onClicked:		descriptionViewer.currentlySelectedFilePath = browse();
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:				closeButtonCross
 				iconSource:		jaspTheme.iconPath + "cross.png"
@@ -172,7 +172,7 @@ QTCONTROLS.Popup
 				}
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:					installButton
 				anchors

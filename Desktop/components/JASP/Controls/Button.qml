@@ -41,10 +41,9 @@ JASPControl
     
 	Component.onCompleted: control.clicked.connect(clicked);
 
-	RectangularButton
+	RoundedButton
 	{
 		id:				control
-		radius:			jaspTheme.borderRadius
 		anchors.fill:	parent
     }
 }

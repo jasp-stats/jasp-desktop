@@ -64,7 +64,7 @@ ListView
 				}
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:				rectButton
 				anchors.left:	index > 0 ? rectArrow.right : rect.left

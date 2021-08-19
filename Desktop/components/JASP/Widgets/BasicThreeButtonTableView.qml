@@ -96,7 +96,7 @@ Item
 		spacing				: jaspTheme.columnGroupSpacing
 		visible				: basicButtonTableView.showButtons
 
-		RectangularButton
+		RoundedButton
 		{
 			id				: addButton
 			text			: qsTr("Add")
@@ -104,7 +104,7 @@ Item
 			onClicked		: { forceActiveFocus(); basicButtonTableView.addClicked() }
 		}
 
-		RectangularButton
+		RoundedButton
 		{
 			id				: deleteButton
 			text			: qsTr("Delete")
@@ -112,7 +112,7 @@ Item
 			onClicked		: { forceActiveFocus(); basicButtonTableView.deleteClicked() }
 		}
 
-		RectangularButton
+		RoundedButton
 		{
 			id				: resetButton
 			text			: qsTr("Reset")

@@ -133,7 +133,7 @@ Popup
 			id:				yesNoButtons
 			anchors.fill:	parent
 
-			RectangularButton
+			RoundedButton
 			{
 				id:				yes
 				text:			"Yes"
@@ -149,7 +149,7 @@ Popup
 				onClicked: messageRoot.close()
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:				no
 				text:			"No"

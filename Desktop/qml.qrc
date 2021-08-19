@@ -144,5 +144,6 @@
         <file>components/JASP/Widgets/FactorsList.qml</file>
         <file>components/JASP/Controls/FactorLevelList.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsTextInput.qml</file>
+        <file>components/JASP/Widgets/RoundedButton.qml</file>
     </qresource>
 </RCC>

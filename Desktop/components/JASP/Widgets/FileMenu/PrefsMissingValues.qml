@@ -129,7 +129,7 @@ Rectangle
 		}
 
 
-		RectangularButton
+		RoundedButton
 		{
 			id:					addButton
 			iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
@@ -146,7 +146,7 @@ Rectangle
 		}
 	}
 
-	RectangularButton
+	RoundedButton
 	{
 		id:					resetButton
 		text:				qsTr("Reset")

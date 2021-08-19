@@ -13,6 +13,7 @@ DataPanel                   1.0 DataPanel.qml
 DataTableView               1.0 DataTableView.qml
 MenuButton                  1.0 MenuButton.qml
 RectangularButton           1.0 RectangularButton.qml
+RoundedButton	            1.0 RoundedButton.qml
 FilterWindow                1.0 FilterWindow.qml
 JASPDataView                1.0 JASPDataView.qml
 JASPMouseAreaToolTipped     1.0 JASPMouseAreaToolTipped.qml

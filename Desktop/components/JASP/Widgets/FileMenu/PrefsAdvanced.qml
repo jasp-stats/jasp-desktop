@@ -193,7 +193,7 @@ ScrollView
 
 			}
 	
-			RectangularButton
+			RoundedButton
 			{	
 				id:					cleanModulesFolder
 				text:				qsTr("Clear installed modules and packages")
@@ -301,7 +301,7 @@ ScrollView
 					}
 				}
 
-				RectangularButton
+				RoundedButton
 				{
 					id:			showLogs
 					text:		qsTr("Show logs")

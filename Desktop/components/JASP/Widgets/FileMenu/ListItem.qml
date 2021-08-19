@@ -21,6 +21,7 @@ FocusScope
 		color:			rectTitle.color
 		z:				-1
 		anchors.fill:	parent
+		radius:			jaspTheme.borderRadius
 	}
 
 	property var cppModel:			undefined
@@ -55,6 +56,7 @@ FocusScope
 		anchors.right:		parent.right
 		anchors.top:		parent.top
 		anchors.margins:	1
+		radius:				jaspTheme.borderRadius
 
 		color:				rectTitleAndDescripton.allPressed || (rectTitleAndDescripton.activeFocus && !datafileMouseArea.containsMouse) ?
 								jaspTheme.buttonColorPressed :
@@ -113,6 +115,7 @@ FocusScope
 												   jaspTheme.buttonColorHovered : jaspTheme.buttonColor
 			border.color:	jaspTheme.uiBorder
 			border.width:	hasDatafile ? 1 : 0
+			radius:			jaspTheme.borderRadius
 
 			property bool hasDatafile: model.associated_datafile !== ""
 
@@ -235,6 +238,7 @@ FocusScope
 		anchors.right:		parent.right
 		anchors.top:		rectTitle.bottom
 		anchors.margins:	visible ? 1 : 0
+		radius:				jaspTheme.borderRadius
 
 		color:				rectTitleAndDescripton.color//allHovered ? jaspTheme.buttonColorHovered : jaspTheme.buttonColor
 		visible:			model.description !== ""

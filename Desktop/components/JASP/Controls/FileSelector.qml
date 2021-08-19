@@ -13,7 +13,7 @@ TextField
 
 	implicitWidth				: button.x + button.width
 
-	RectangularButton
+	RoundedButton
 	{
 		id				: button
 		text			: qsTr("Browse")

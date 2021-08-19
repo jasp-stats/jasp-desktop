@@ -443,7 +443,7 @@ Popup
 				}
 			}
 
-			JASPW.RectangularButton
+			JASPW.RoundedButton
 			{
 				id:					exitButton
 				anchors
@@ -458,7 +458,7 @@ Popup
 				on_PressedChanged:	plotEditorPopup.close()
 			}
 
-			JASPW.RectangularButton
+			JASPW.RoundedButton
 			{
 				id:					cancelButton
 				anchors
@@ -472,7 +472,7 @@ Popup
 				on_PressedChanged:	cancel()
 			}
 
-			JASPW.RectangularButton
+			JASPW.RoundedButton
 			{
 				id:					resetDefaultButton
 				anchors
@@ -485,7 +485,7 @@ Popup
 				onClicked:			plotEditorModel.resetDefaults()
 			}
 
-			JASPW.RectangularButton
+			JASPW.RoundedButton
 			{
 				id:					saveButton
 				anchors
