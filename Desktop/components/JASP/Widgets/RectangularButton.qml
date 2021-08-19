@@ -71,7 +71,6 @@ Item
 		border.width:	1
 		width:			parent.width
 		height:			parent.height
-		radius:			jaspTheme.borderRadius
 
 		MouseArea
 		{

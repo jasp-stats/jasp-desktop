@@ -84,7 +84,7 @@ Item
 					height:				browseEditorButton.height
 					anchors.top:		useDefaultEditor.bottom
 
-					RectangularButton
+					RoundedButton
 					{
 						id:					browseEditorButton
 						text:				qsTr("Select custom editor")

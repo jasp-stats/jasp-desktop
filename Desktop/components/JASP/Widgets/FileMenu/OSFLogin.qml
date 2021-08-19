@@ -214,7 +214,7 @@ FocusScope
 			}
 		}
 
-		RectangularButton
+		RoundedButton
 		{
 			id: loginButton
 

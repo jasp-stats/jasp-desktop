@@ -17,7 +17,7 @@ Item
 		toolseparator:		false
 	}
 
-	RectangularButton
+	RoundedButton
 	{
 		id:						browseButton
 		text:					qsTr("Browse")

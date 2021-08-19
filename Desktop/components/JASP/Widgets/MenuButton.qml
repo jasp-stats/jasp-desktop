@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 
 import JASP.Widgets 1.0
 
-RectangularButton
+RoundedButton
 {
 	property bool hasSubMenu:			false
 	property bool showHovered:			hasSubMenu ? delayOnhoverTimer.running : hovered

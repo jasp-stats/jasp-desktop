@@ -180,7 +180,7 @@ Popup
 				anchors.horizontalCenter:	parent.horizontalCenter
 				height:						45 * preferencesModel.uiScale
 
-				RectangularButton
+				RoundedButton
 				{
 					id:						rCodeSelectah
 
@@ -199,7 +199,7 @@ Popup
 					toolTip:				qsTr("Define column through R code")
 				}
 
-				RectangularButton
+				RoundedButton
 				{
 					id:					jsonSelectah
 
@@ -231,7 +231,8 @@ Popup
 				anchors.topMargin:			10
 				anchors.horizontalCenter:	parent.horizontalCenter
 
-				Repeater{
+				Repeater
+				{
 					id:		iconRepeater
 					model:	[columnTypeScale, columnTypeOrdinal, columnTypeNominal, columnTypeNominalText] //these are set in the rootcontext in mainwindow!
 
@@ -243,6 +244,7 @@ Popup
 						color:			iAmSelected ? jaspTheme.buttonColorPressed : popupIconComputeMouseArea.useThisColor
 						border.color:	iAmSelected ? jaspTheme.buttonBorderColorHovered : jaspTheme.buttonBorderColor
 						border.width:	1
+						radius:			jaspTheme.borderRadius
 
 						property bool iAmSelected: rootCreateComputedColumn.selectedColumnType === iconRepeater.model[index]
 
@@ -302,7 +304,7 @@ Popup
 				}
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:				helpButton
 				iconSource:		jaspTheme.iconPath + "info-button.png"
@@ -318,7 +320,7 @@ Popup
 				}
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:			createButton
 				text:		qsTr("Create Column")
@@ -334,7 +336,7 @@ Popup
 				}
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:				closeButtonCross
 				iconSource:		jaspTheme.iconPath + "cross.png"

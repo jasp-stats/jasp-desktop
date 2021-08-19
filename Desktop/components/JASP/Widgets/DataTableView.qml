@@ -44,7 +44,7 @@ FocusScope
 				}
 
 			leftTopCornerItem:
-				RectangularButton
+				RoundedButton
 				{
 					id:				filterToggleButton
 					width:			dataTableView.rowNumberWidth
@@ -55,7 +55,7 @@ FocusScope
 				}
 
 			extraColumnItem:
-				RectangularButton
+				RoundedButton
 				{
 					id:				addColumnButton
 					width:			height

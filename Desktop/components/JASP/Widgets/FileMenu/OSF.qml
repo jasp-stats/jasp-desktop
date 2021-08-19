@@ -46,7 +46,7 @@ Item
 		toolseparator	: !loggedin
 	}
 
-	RectangularButton
+	RoundedButton
 	{
 		id						: logoutButton
 		text					: qsTr("Logout")
@@ -115,7 +115,7 @@ Item
 
 	/////////////////////////// File dialog to save in OSF ////////////////////////////////////
 
-	RectangularButton
+	RoundedButton
 	{
 		id		: newDirectoryButton
 		text	: qsTr("Create Folder")
@@ -201,7 +201,7 @@ Item
 			}
 		}
 
-		RectangularButton
+		RoundedButton
 		{
 			id		: saveFoldernameButton
 			width	: 30 * preferencesModel.uiScale
@@ -222,7 +222,7 @@ Item
 			}
 		}
 
-		RectangularButton
+		RoundedButton
 		{
 			id					: cancelCreateFolderButton
 			width				: 30 * preferencesModel.uiScale
@@ -310,7 +310,7 @@ Item
 			}
 		}
 
-		RectangularButton
+		RoundedButton
 		{
 			id					: saveFilenameButton
 			width				: saveFoldernameButton.width + cancelCreateFolderButton.width + jaspTheme.generalAnchorMargin
