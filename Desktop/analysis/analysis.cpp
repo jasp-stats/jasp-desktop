@@ -196,6 +196,8 @@ void Analysis::editImage(const Json::Value &options)
 {
 	setStatus(Analysis::EditImg);
 	_imgOptions = options;
+	
+	incrementRevision(); //Fix for https://github.com/jasp-stats/jasp-test-release/issues/1389
 }
 
 void Analysis::imageEdited(const Json::Value & results)
