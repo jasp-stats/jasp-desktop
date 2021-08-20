@@ -69,20 +69,21 @@ Column
 			{
 				id			: axisBreaksRange
 				value		: "range"
-				label		:	qsTr("Specify sequence")
+				label		: qsTr("Specify sequence")
 				checked		: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksRange	: false
 			}
 			JASPC.RadioButton
 			{
 				id			: axisBreaksManual
 				value		: "manual"
-				label		:	qsTr("Set manually")
+				label		: qsTr("Set manually")
 				checked		: if(axisModel) axisModel.continuous ? axisModel.breaksType === AxisModel.BreaksManual	: true
 			}
 
 			onClicked:
 			{
-				showAxis.lastBreakType = axisModel.breaksType = axisBreaksRange.checked ? AxisModel.BreaksRange : AxisModel.BreaksManual
+				axisModel.breaksType = axisBreaksRange.checked ? AxisModel.BreaksRange : AxisModel.BreaksManual
+				showAxis.lastBreakType = axisModel.breaksType
 			}
 		}
 
