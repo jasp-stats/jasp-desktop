@@ -25,6 +25,7 @@
 
 ListModelJAGSDataInput::ListModelJAGSDataInput(TableViewBase *parent) : ListModelTableViewBase(parent)
 {
+	_needsSource = false;
 	_keepRowsOnReset = false;
 	_tableTerms.colNames.push_back(getDefaultColName(0));
 	_tableTerms.values.push_back({});
