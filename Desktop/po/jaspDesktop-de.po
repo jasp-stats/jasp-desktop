@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-08-23 07:56+0000\n"
-"Last-Translator: D.J. Dekker <dj_dekker@hotmail.com>\n"
+"PO-Revision-Date: 2021-08-23 17:24+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
 "Language: de\n"
@@ -1480,10 +1480,9 @@ msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
 msgstr "Entwicklungsmodul wird gerade installiert"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr "fertig"
+msgstr "Bereit"
 
 #, qt-format
 msgctxt "ModulesMenu|"
