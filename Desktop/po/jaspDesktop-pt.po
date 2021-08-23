@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-08-23 17:24+0000\n"
+"Last-Translator: Alex França <alex.tonante@gmail.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 "X-Language: pt\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -2194,7 +2200,7 @@ msgstr "Raiz quadrada"
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "Módulo: retorna o resto de uma divisão.  3%2 retorna 1"
+msgstr "Módulo: retorna o resto de uma divisão. 3%2 retorna 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
@@ -3619,79 +3625,81 @@ msgstr "Não existe uma Lista Disponível no Formulário de Variáveis"
 
 msgctxt "TableView|"
 msgid "Add to the left"
-msgstr ""
+msgstr "Adicionar à esquerda"
 
 msgctxt "TableView|"
 msgid "Add to the right"
-msgstr ""
+msgstr "Adicionar à direita"
 
-#, fuzzy
 msgctxt "TableView|"
 msgid "Delete"
-msgstr "Remover"
+msgstr "Excluir"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "retorna o sinal dos valores"
 
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
 msgstr ""
+"<sup>*</sup>apenas o login da conta OSF, ORCID ou login institucional não "
+"são suportados."
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
-msgstr ""
+msgstr "Excluir módulos e pacotes instalados"
 
 msgctxt "PrefsAdvanced|"
 msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
-msgstr ""
+msgstr "Isso apagará as pastas 'renv' e 'Módulos' nos dados de aplicativos."
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr ""
+msgstr "Solução alternativa do Windows"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is in native encoding when no BOM has been specified"
 msgstr ""
+"Assumir que CSV esteja em codificação nativa quando nenhum BOM tiver sido "
+"especificado"
 
 msgctxt "PrefsData|"
 msgid "See documentation for more information "
-msgstr ""
+msgstr "Veja a documentação para obter maiores informações "
 
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr ""
+msgstr "Opções de interface do usuário"
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "retorna o sinal de valores"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Label"
 msgstr "Rótulo"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr ""
+msgstr "Marcação #"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
-msgstr ""
+msgstr "Inserir marcação à esquerda"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick right"
-msgstr ""
+msgstr "Inserir marcação à direita"
 
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
-msgstr ""
+msgstr "Excluir marcação"
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
-msgstr ""
+msgstr "Excluir os módulos e pacotes instalados pelo usuário"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -3700,57 +3708,59 @@ msgid ""
 "\n"
 "Make sure to restart JASP afterwards!"
 msgstr ""
+"Excluindo seus módulos e pacotes garantirá que você use apenas aqueles "
+"incluídos no JASP.\n"
+"\n"
+"Certifique-se de reiniciar o JASP depois!"
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr ""
+msgstr "Excluir"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
-msgstr ""
+msgstr "<i>No Linux é sempre utilizado o editor de planilhas padrão</i>"
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
-#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Cancel"
 msgstr "Cancelar"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr ""
+msgstr "Restaurar padrões"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "Mostrar título"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr ""
+msgstr "Mostrar eixos"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
-msgstr ""
+msgstr "Marcações:"
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr ""
+msgstr "Posição"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
 msgstr "Avançado"
 
 msgctxt "PlotEditingAxis|"
 msgid "Parse title as R expression"
-msgstr ""
+msgstr "Analisa o título como uma expressão R"
 
 msgctxt "PlotEditingAxis|"
 msgid "Limits:"
-msgstr ""
+msgstr "Limites:"
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr ""
+msgstr "Salvar imagem como"
