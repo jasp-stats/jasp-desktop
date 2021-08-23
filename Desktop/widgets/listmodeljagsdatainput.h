@@ -33,7 +33,7 @@ public:
 
 	QString			getDefaultColName(size_t index)				const	override;
 	bool			isEditable(const QModelIndex& index)		const	override;
-	QString			getItemInputType(const QModelIndex& )		const	override	{ return isRCodeColumn(1) ? "formulaArray" : "string"; }
+	QString			getItemInputType(const QModelIndex&index )	const	override	{ return isRCodeColumn(index.column()) ? "formulaArray" : "string"; }
 	bool			isRCodeColumn(int col)				const	override			{ return col == 1; }
 
 public slots:

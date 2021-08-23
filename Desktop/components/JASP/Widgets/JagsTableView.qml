@@ -40,7 +40,7 @@ BasicThreeButtonTableView
 
 	buttonDeleteText	: qsTr("Delete Data")
 	onDeleteClicked		: tableView.removeARow()
-	buttonDeleteEnabled	: tableView.rowCount > 1
+	buttonDeleteEnabled	: tableView.rowCount > 0
 
 	buttonResetText		: qsTr("Reset")
 	onResetClicked		: tableView.reset()
