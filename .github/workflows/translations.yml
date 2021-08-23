@@ -23,7 +23,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r@master
         with:
-          r-version: "4.0.5"
+          r-version: "4.1.0"
 
       - uses: jasp-stats/jasp-actions/translations@master
 
