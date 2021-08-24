@@ -133,11 +133,19 @@ void HelpModel::showOrTogglePage(QString pagePath)
 
 void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QString helpPage)
 {
+	if(!analysis)
+	{
+		_analysis = nullptr;
+		_pagePath = "";
+		setVisible(false);
+		return;
+	}
+	
 	QString renderFunc, 
 			contentMD,
 			pagePath = convertPagePathToLower(helpPage == "" ? analysis->helpFile() : analysis->fullHelpPath(helpPage));
 	
-	if(!analysis || (analysis == _analysis && pagePath == _pagePath && _visible))
+	if(analysis == _analysis && pagePath == _pagePath && _visible)
 	{
 		_analysis = nullptr;
 		_pagePath = "";
@@ -162,6 +170,8 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 		}
 		else
 			setPagePath(pagePath);
+		
+		return;
 	}
 }
 
