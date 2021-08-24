@@ -30,6 +30,7 @@ BasicThreeButtonTableView
 
 	modelType			: JASP.CustomContrasts
 	itemType			: JASP.Double
+	minimum				: -Infinity
 	initialColumnCount	: 1
 	initialRowCount		: 0
 	buttonsInRow		: true
