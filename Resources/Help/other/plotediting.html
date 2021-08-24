@@ -1,0 +1,105 @@
+<h1>Plot Editing</h1>
+
+<p>
+	Although we try our best, sometimes plots created by JASP need some tweaks.
+	For that purpose, we provide some rudimentary plot editor.
+	The current editor allows you to modify the axes of a plot, but future versions of JASP should provide more options.
+</p>
+
+<h3>Basic options</h3>
+
+<p>
+	In the top left you can select which axis you want to modify.
+	You can select either the x-axis or the y-axis.
+	All of the options below modify either the x-axis or the y-axis, depending on which is currently selected.
+</p>
+
+<ul>
+	<li><code>Show title.</code> Should the title of the selected axis be shown?</li>
+	<li><code>Title.</code> Specify what to put on the axis title.</li>
+</ul>
+
+<h4>Ticks</h4>
+<p>
+	Aside from a title, an axis also has ticks, which consist of two components: positions and labels.
+	Very often, but not always, the labels simply show the positions, for example, a position at -4 is indicated with the label "-4".
+</p>
+
+<p>
+	If you want that the labels and positions are the same, it is convenient to select <code>Specify sequence</code>.
+	If you select <code>Specify sequence</code> then the ticks are fully determined by three numbers.
+	The left and right endpoints are determined by <code>from</code> and <code>to</code> respectively.
+	After every <code>steps</code> numbers, there is a label.
+	For example if <code>from</code> is -4, <code>to</code> is 4, and <code>steps</code> is 2, then you would get ticks at -4, -2, 0, 2, 4.
+</p>
+
+<p>
+	Sometimes you may want that the labels are different from the positions, or maybe you do not want equally spaced labels.
+	In that case, you can select <code>Set manually</code>.
+	Once selected, a table is shown that allows for individually modifying the positions and labels.
+	If you left-click on a column, two green + icons appear and one red cross.
+	The left and right + icons allow you to insert a new position and label on the left and right of the selected column.
+	The red cross allows you to delete the selected column.
+</p>
+
+
+<p>Note that for discrete axes, the ticks cannot be adjusted.</p>
+
+
+<h3>Advanced options</h3>
+
+<code>Parse title as R expression.</code>
+Some figures have complicated titles, which cannot be typeset in plain text.
+For example, to put the symbol δ (delta) on an axis you can type "delta" and enable this option.
+However, you can also create more complicated equations, such as <code>over(alpha, beta)</code>.
+For more details, see <a href="https://stat.ethz.ch/R-manual/R-devel/library/grDevices/html/plotmath.html">here</a> for more details.
+
+<h4>Limits</h4>
+
+The limits consist of two values, called <code>Upper limit</code> and <code>Lower limit</code>, which determine the outer end points of an axis or plotable area.
+For example, even though the axis positions are going from 80 to 100 in steps of 10, it might be that there is a data point at 102.
+The limits provide some leeway to show all data without being forced to increase <code>to</code> to 105.
+
+If there is 
+
+<ul>
+	<li>
+		<code>Based on data.</code>
+		Uses ggplot2's default choices for the limits which usually means that all data is shown, despite the choice ticks.
+	</li>
+	<li>
+		<code>Based on ticks.</code>
+		Automatically rescale the limits with the ticks. 
+		For example, if you increase <code>to</code> to some valuer larger than the <code>Upper limit</code>, this will automatically set <code>Upper limit</code> to <code>to</code>.
+	</li>
+	<li>
+	<code>Set manually.</code>
+	Specify two values for the <code>Upper limit</code> and <code>Lower limit</code> manually.
+	</li>
+</ul>
+When adjusting the limits manually, take these two warnings to heart:
+
+<ol>
+	<li>Any data that falls outside of the limits is not shown.</li>
+	<li>
+		To adjust the <code>Ticks</code> you now also must adjust the <code>Limits</code>.
+		For example, if the <code>Upper limit</code> is set to 4, and you now set <code>to</code> to 8, then no ticks after 4 are shown.
+	</li>
+</ol>
+ 
+
+<h3>References</h3>
+
+<p>
+	Almost all plots in JASP use the R package ggplot2.
+	This package is an implementation of the grammer of graphics.
+	For more information, see
+</p>
+
+<ul>
+	<li>Wickham, H. (2016). <i><a href="https://ggplot2-book.org/">ggplot2: Elegant Graphics for Data Analysis</a></i> (3rd ed.). Springer-Verlag.
+	<li><a href="https://ggplot2.tidyverse.org/index.html">https://ggplot2.tidyverse.org/index.html</a></li>
+	<li>Wilkinson, L. (2005). <i><a href="https://dx.doi.org/10.1007/0-387-28695-0">The grammar of graphics</a></i> (2nd ed.). Springer.</li>
+	<li><a href="https://stat.ethz.ch/R-manual/R-devel/library/grDevices/html/plotmath.html">https://stat.ethz.ch/R-manual/R-devel/library/grDevices/html/plotmath.html</a></li>
+</ul>
+
