@@ -10,7 +10,7 @@
 #include "modules/dynamicmodule.h"
 
 LanguageModel * LanguageModel::_singleton = nullptr;
-QLocale LanguageModel::_defaultLocale = QLocale(QLocale::English, QLocale::UnitedKingdom);
+QLocale LanguageModel::_defaultLocale = QLocale(QLocale::English, QLocale::World);
 
 LanguageModel::LanguageInfo::LanguageInfo(const QLocale& _locale, const QString& _qmFilename)
 	 : locale(_locale)
