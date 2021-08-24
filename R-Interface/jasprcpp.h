@@ -40,8 +40,10 @@ SEXP jaspRCPP_allColumnNamesDataset();
 SEXP jaspRCPP_RunSeparateR(SEXP code);
 
 				//Custom parseEvals to make sure sink is set (to capture output)
-void			jaspRCPP_parseEvalQNT(	const std::string & code,	bool setWd = false,	bool preface = true);
-RInside::Proxy	jaspRCPP_parseEval(		const std::string & code,	bool setWd = false,	bool preface = true);
+void			jaspRCPP_parseEvalQNT(			const std::string & code,	bool setWd = false,	bool preface = true);
+RInside::Proxy	jaspRCPP_parseEval(				const std::string & code,	bool setWd = false,	bool preface = true);
+std::string		jaspRCPP_parseEvalStringReturn(	const std::string & code,	bool setWd = false, bool preface = true);
+
 void			jaspRCPP_logString(		const std::string & code);
 SEXP			jaspRCPP_CreateCaptureConnection();
 
@@ -54,10 +56,11 @@ void jaspRCPP_setRWarning(SEXP Message);
 void jaspRCPP_setRError(SEXP Message);
 void jaspRCPP_setLog(SEXP Message);
 
-std::string jaspRCPP_encodeColumnName(		std::string in);
-std::string jaspRCPP_decodeColumnName(		std::string in);
-std::string jaspRCPP_encodeAllColumnNames(	std::string in);
-std::string jaspRCPP_decodeAllColumnNames(	std::string in);
+std::string jaspRCPP_encodeColumnName(		const std::string  & in);
+std::string jaspRCPP_decodeColumnName(		const std::string  & in);
+std::string jaspRCPP_encodeAllColumnNames(	const std::string  & in);
+std::string jaspRCPP_decodeAllColumnNames(	const std::string  & in);
+std::string jaspRCPP_nativeToUtf8(			const Rcpp::String & in);
 
 
 int jaspRCPP_dataSetRowCount();

@@ -63,7 +63,7 @@ int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
 int main(int argc, char *argv[])
 {
 	boost::nowide::args a(argc,argv); //This gets the arguments again through GetCommandLineW apparently, so theoretically this might gives us actual unicode? (utf-8)
-
+	
 	if(argc > 4)
 	{
 		unsigned long	slaveNo			= strtoul(argv[1], NULL, 10),

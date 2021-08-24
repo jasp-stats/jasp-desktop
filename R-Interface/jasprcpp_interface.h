@@ -119,7 +119,7 @@ typedef size_t			(*logWriteDef)			(const void * buf, size_t len);
 
 
 // Calls from rbridge to jaspRCPP
-RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, logFlushDef logFlushFunction, logWriteDef logWriteFunction, systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultsFont);
+RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, logFlushDef logFlushFunction, logWriteDef logWriteFunction, systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultsFont,	EnDecodeDef nativeToUtf8);
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode, const char* resultsFont);
 
@@ -141,8 +141,6 @@ RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setErrorMsg(const char* msg);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_purgeGlobalEnvironment();
 
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder);
-
-
 
 } // extern "C"
 

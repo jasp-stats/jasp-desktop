@@ -22,7 +22,7 @@
 
 static const	std::string NullString			= "null";
 static			std::string lastErrorMessage	= "";
-static			cetype_t	Encoding			= CE_NATIVE;// CE_UTF8;
+static			cetype_t	Encoding			= CE_UTF8;
 
 //Ok so CSTRING_TO_R could actually be replaced by std::string and everything would keep functioning regardless as far as I can see. But, in case later we want to change the encoding more drastically this gives an issue startpoint. In that case one should also do something about jaspRCPP_parseEval & jaspRCPP_parseEvalQNT (which will lead to horrible looking code ;) )
 #define CSTRING_TO_R_CHARSXP(constchar) Rf_mkCharCE(constchar, Encoding)
@@ -65,6 +65,7 @@ static logWriteDef				_logWriteFunction		= nullptr;
 static sendFuncDef				_sendToDesktop			= nullptr;
 static systemDef				_systemFunc				= nullptr;
 static libraryFixerDef			_libraryFixerFunc		= nullptr;
+static EnDecodeDef				_stringNativeToUtf8		= nullptr;
 
 static std::string				_R_HOME = "";
 
@@ -74,13 +75,15 @@ extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
 	logFlushDef logFlushFunction, logWriteDef logWriteFunction,
-	systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultsFont)
+	systemDef systemFunc, libraryFixerDef libraryFixerFunc, const char* resultsFont,
+	EnDecodeDef nativeToUtf8)
 {
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
 	_sendToDesktop			= sendToDesktopFunction;
 	_systemFunc				= systemFunc;
 	_libraryFixerFunc		= libraryFixerFunc;
+	_stringNativeToUtf8		= nativeToUtf8;
 
 	jaspRCPP_logString("Creating RInside.\n");
 	rinside = new RInside();
@@ -181,7 +184,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("initEnvironment()");
 
 	
-	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')"));
+	_R_HOME = jaspRCPP_parseEvalStringReturn("R.home('')");
 	jaspRCPP_logString("R_HOME is: " + _R_HOME);
 	
 
@@ -256,7 +259,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	SEXP results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)", true);
 
 	static std::string str;
-	if(results != NULL && Rcpp::is<std::string>(results))	str = Rcpp::as<std::string>(results);
+	if(results != NULL && Rcpp::is<std::string>(results))	str = jaspNativeToUtf8(Rcpp::as<Rcpp::String>(results));
 	else													str = "error!";
 
 
@@ -284,7 +287,7 @@ const char * STDCALL jaspRCPP_runScriptReturnString(const char * scriptCode)
 {
 	static std::string returnStr;
 	std::string script(scriptCode);
-	returnStr = Rcpp::as<std::string>(jaspRCPP_parseEval(script));
+	returnStr = jaspRCPP_parseEvalStringReturn(script);
 
 	jaspRCPP_checkForCrashRequest();
 
@@ -361,9 +364,8 @@ const char* STDCALL jaspRCPP_saveImage(const char * data, const char *type, cons
 	rInside["width"]			= width;
 	rInside[".ppi"]				= ppi;
 
-	SEXP result = jaspRCPP_parseEval("saveImage(plotName, format, height, width)", true);
 	static std::string staticResult;
-	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
+	staticResult = jaspRCPP_parseEvalStringReturn("saveImage(plotName, format, height, width)", true);
 	return staticResult.c_str();
 }
 
@@ -379,12 +381,10 @@ const char* STDCALL jaspRCPP_editImage(const char * name, const char * optionsJs
 
 	_setJaspResultsInfo(analysisID, 0, false);
 
-	SEXP result = jaspRCPP_parseEval("editImage(.analysisName, .editImgOptions)", true);
 	static std::string staticResult;
-	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
+	staticResult =  jaspRCPP_parseEvalStringReturn("editImage(.analysisName, .editImgOptions)", true);
 
 	return staticResult.c_str();
-
 }
 
 
@@ -421,12 +421,10 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode, bool setWd) {
 		")"
 		"; returnVal	");
 
-	SEXP result = jaspRCPP_parseEval(rCodeTryCatch, setWd);
-
 	static std::string staticResult;
 	try
 	{
-		staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
+		staticResult = jaspRCPP_parseEvalStringReturn(rCodeTryCatch, setWd);
 	}
 	catch(...)
 	{
@@ -491,7 +489,7 @@ const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension)
 {
 	const char *root, *relativePath;
-	std::string extensionAsString = Rcpp::as<std::string>(extension);
+	std::string extensionAsString = jaspNativeToUtf8(Rcpp::as<Rcpp::String>(extension));
 
 	if (!requestTempFileNameCB(extensionAsString.c_str(), &root, &relativePath))
 		return R_NilValue;
@@ -506,7 +504,7 @@ SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension)
 SEXP jaspRCPP_requestSpecificFileNameSEXP(SEXP filename)
 {
 	const char *root, *relativePath;
-	std::string filenameAsString = Rcpp::as<std::string>(filename);
+	std::string filenameAsString = jaspNativeToUtf8(Rcpp::as<Rcpp::String>(filename));
 
 	if (!requestSpecificFileNameCB(filenameAsString.c_str(), &root, &relativePath))
 		return R_NilValue;
@@ -593,7 +591,7 @@ SEXP jaspRCPP_requestStateFileNameSEXP()
 
 SEXP jaspRCPP_callbackSEXP(SEXP in, SEXP progress)
 {
-	std::string inStr	= Rf_isNull(in)			? "null"	: Rcpp::as<std::string>(in);
+	std::string inStr	= Rf_isNull(in)			? "null"	: jaspNativeToUtf8(Rcpp::as<Rcpp::String>(in));
 	int progressInt		= Rf_isNull(progress)	? -1		: Rcpp::as<int>(progress);
 	const char *out;
 
@@ -628,17 +626,17 @@ void jaspRCPP_returnString(SEXP Message)
 
 void jaspRCPP_setRWarning(SEXP Message)
 {
-	lastErrorMessage = "Warning: " + Rcpp::as<std::string>(Message);
+	lastErrorMessage = "Warning: " + jaspNativeToUtf8(Rcpp::as<Rcpp::String>(Message));
 }
 
 void jaspRCPP_setRError(SEXP Message)
 {
-	lastErrorMessage = "Error: " + Rcpp::as<std::string>(Message);
+	lastErrorMessage = "Error: " + jaspNativeToUtf8(Rcpp::as<Rcpp::String>(Message));
 }
 
 void jaspRCPP_setLog(SEXP Message)
 {
-	lastErrorMessage = Rcpp::as<std::string>(Message);
+	lastErrorMessage = jaspNativeToUtf8(Rcpp::as<Rcpp::String>(Message));
 }
 
 int jaspRCPP_dataSetRowCount()
@@ -1117,6 +1115,14 @@ void jaspRCPP_parseEvalQNT(const std::string & code, bool setWd, bool preface)
 	rinside->parseEvalQNT("sink();"); //Back to normal!
 }
 
+std::string jaspRCPP_parseEvalStringReturn(const std::string & code, bool setWd, bool preface)
+{
+	RInside::Proxy res = jaspRCPP_parseEval(code, setWd, preface);
+	
+	return Rf_isString(res) ? jaspNativeToUtf8(Rcpp::as<Rcpp::String>(res)) : NullString;
+}
+
+
 RInside::Proxy jaspRCPP_parseEval(const std::string & code, bool setWd, bool preface)
 {
 	if (setWd)
@@ -1157,7 +1163,7 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 
 	static std::string R = bendSlashes("\""+ _R_HOME + "/bin/R\"");
 
-	std::string codestr = Rcpp::as<std::string>(code),
+	std::string codestr = jaspNativeToUtf8(Rcpp::as<Rcpp::String>((code))),
 				command = R + " --slave -e \"" + codestr + "\"";
 
 	std::string out = _jaspRCPP_System(command);
@@ -1173,30 +1179,44 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 
 void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibrary)
 {
-	if(Rcpp::is<std::string>(moduleLibrary))
-		_libraryFixerFunc(Rcpp::as<std::string>(moduleLibrary).c_str());
+	if(Rf_isString(moduleLibrary))
+		_libraryFixerFunc(jaspNativeToUtf8(Rcpp::as<Rcpp::String>(moduleLibrary)).c_str());
 	else
 		Rf_error("jaspRCPP_postProcessLocalPackageInstall did not receive a string, it should get that and the string should represent some kind of R library path.");
 }
 
-std::string jaspRCPP_encodeColumnName(std::string in)
+std::string jaspRCPP_encodeColumnName(const std::string & in)
 {
 	return encodeColumnName(in.c_str());
 }
 
-std::string jaspRCPP_decodeColumnName(std::string in)
+std::string jaspRCPP_decodeColumnName(const std::string & in)
 {
 	return decodeColumnName(in.c_str());
 }
 
-std::string jaspRCPP_encodeAllColumnNames(	std::string in)
+std::string jaspRCPP_encodeAllColumnNames(const std::string & in)
 {
 	return encodeAllColumnNames(in.c_str());
 }
 
-std::string jaspRCPP_decodeAllColumnNames(	std::string in)
+std::string jaspRCPP_decodeAllColumnNames(const std::string & in)
 {
 	return decodeAllColumnNames(in.c_str());
+}
+
+
+///Makes sure that whatever string encoding it got, it comes out as utf-8. At least when it is ran *inside* jasp(engine)
+std::string jaspRCPP_nativeToUtf8(const Rcpp::String & string)
+{
+#ifdef JASP_R_INTERFACE_LIBRARY
+	if(string.get_encoding() == CE_UTF8)
+		return string;
+	
+	return _stringNativeToUtf8(string.get_cstring());	
+#else
+	return string;
+#endif
 }
 
 // ------------------- Below here be dragons -------------------- //

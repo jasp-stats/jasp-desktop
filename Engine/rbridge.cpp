@@ -111,7 +111,8 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					_logWriteFunction,
 					rbridge_system,
 					rbridge_moduleLibraryFixer,
-					resultsFont
+					resultsFont,
+					rbridge_nativeToUtf8
 	);
 	JASPTIMER_STOP(jaspRCPP_init);
 
@@ -176,6 +177,34 @@ extern "C" const char * STDCALL rbridge_decodeAllColumnNames(const char * in)
 	out = ColumnEncoder::columnEncoder()->decodeAll(in);
 	return out.c_str();
 }
+
+extern "C" const char * STDCALL rbridge_nativeToUtf8(const char * in)
+{
+	static std::string out;
+#ifdef _WIN32
+	//I cannot use Qt here, because even though "Qt += core" it seems that whenever I include QString here jaspEngine just dies immediately. And I *only* wanted to use fromLocal8Bit.. 
+	//But I can't so let me be very inspired by https://stackoverflow.com/a/21575607 who came up with the following:
+	
+	std::string codepage_str(in);
+	
+	int size = MultiByteToWideChar(CP_ACP, MB_COMPOSITE, codepage_str.c_str(), codepage_str.length(), nullptr, 0);
+	std::wstring utf16_str(size, '\0');
+	
+	MultiByteToWideChar(CP_ACP, MB_COMPOSITE, codepage_str.c_str(), codepage_str.length(), &utf16_str[0], size);
+	
+	int utf8_size = WideCharToMultiByte(CP_UTF8, 0, utf16_str.c_str(), utf16_str.length(), nullptr, 0, nullptr, nullptr);
+	std::string utf8_str(utf8_size, '\0');
+	
+	WideCharToMultiByte(CP_UTF8, 0, utf16_str.c_str(), utf16_str.length(), &utf8_str[0], utf8_size,	nullptr, nullptr);
+	
+	out = utf8_str;
+#else
+	out = in;
+#endif
+	return out.c_str();
+}
+
+
 
 extern "C" bool STDCALL rbridge_requestJaspResultsFileSource(const char** root, const char **relativePath)
 {
