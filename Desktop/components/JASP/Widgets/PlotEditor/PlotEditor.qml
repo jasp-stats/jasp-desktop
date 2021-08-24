@@ -57,23 +57,6 @@ Popup
 				y:							jaspTheme.generalAnchorMargin
 			}
 
-			JASPW.MenuButton
-			{
-				id:				helpButton
-				iconSource:		jaspTheme.iconPath + "info-button.png"
-				width:			height
-				radius:			height
-				onClicked:		helpModel.showOrTogglePage("other/plotediting");
-				toolTip:		qsTr("Open Documentation")
-				anchors
-				{
-					right:			parent.right
-					top:			parent.top
-					verticalCenter: title.verticalCenter
-					margins:		4 * preferencesModel.uiScale
-				}
-			}
-
 			OLD.SplitView
 			{
 				id:				splitView
@@ -341,6 +324,23 @@ Popup
 										axisModel:		modelData
 										width:			flickChild.width
 									}
+								}
+							}
+
+							JASPW.MenuButton
+							{
+								id:				helpButton
+								iconSource:		jaspTheme.iconPath + "info-button.png"
+								width:			height
+								radius:			height
+								onClicked:		helpModel.showOrTogglePage("other/plotediting");
+								toolTip:		qsTr("Open Documentation")
+								anchors
+								{
+									top:			tabbar.top
+									left:			tabbar.right
+									bottom:			roundingHider.top
+									leftMargin:		4 * preferencesModel.uiScale
 								}
 							}
 						}
