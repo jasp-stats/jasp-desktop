@@ -241,9 +241,10 @@ void ListModelFactorLevels::itemChanged(int row, QVariant value)
 		return;
 	}
 
-	QString				val = value.toString();
-	FactorLevelItem& item	= _items[row];
-	int			itemIndex	= _getIndex(item);
+	FactorLevelItem&	item	= _items[row];
+	QString				val		= value.toString(),
+						oldVal	= item.value;
+	int				itemIndex	= _getIndex(item);
 	
 	if ((!item.isVirtual && item.value == val) || (item.isVirtual && val.isEmpty()))
 		return;
@@ -295,6 +296,8 @@ void ListModelFactorLevels::itemChanged(int row, QVariant value)
 				endInsertRows();
 			}
 		}
+		else
+			emit namesChanged({ {oldVal, val} });
 
 		_setAllLevelsCombinations();
 		QModelIndex modelIndex = index(row, 0);

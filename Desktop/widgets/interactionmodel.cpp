@@ -1,4 +1,5 @@
 #include "interactionmodel.h"
+#include <QSet>
 
 void InteractionModel::addFixedFactors(const Terms &terms, bool combineWithExistingTerms)
 {
@@ -48,4 +49,13 @@ void InteractionModel::removeInteractionTerms(const Terms& terms)
 		_interactionTerms.discardWhatDoesContainTheseTerms(terms);
 	else
 		_interactionTerms.remove(terms);
+}
+
+QSet<int> InteractionModel::changeComponentName(const std::string& oldName, const std::string& newName)
+{
+	_fixedFactors.replaceVariableName(oldName, newName);
+	_randomFactors.replaceVariableName(oldName, newName);
+	_covariates.replaceVariableName(oldName, newName);
+
+	return _interactionTerms.replaceVariableName(oldName, newName);
 }

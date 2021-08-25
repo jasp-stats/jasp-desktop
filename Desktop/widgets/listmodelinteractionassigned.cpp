@@ -258,3 +258,27 @@ void ListModelInteractionAssigned::setTerms()
 	
 	endResetModel();
 }
+
+void ListModelInteractionAssigned::sourceNamesChanged(QMap<QString, QString> map)
+{
+	QSet<int>				allChangedTermsIndex;
+	Terms					oldInteractionTerms = interactionTerms();
+	QMapIterator<QString, QString> it(map);
+
+	while (it.hasNext())
+	{
+		it.next();
+		const QString& oldName = it.key(), newName = it.value();
+
+		QSet<int> indexes = changeComponentName(oldName.toStdString(), newName.toStdString());
+		allChangedTermsIndex += indexes;
+	}
+
+	QMap<QString, QString>	allTermsChangedMap;
+	const Terms& newInteractionTerms = interactionTerms();
+	for (int index : allChangedTermsIndex)
+		allTermsChangedMap[oldInteractionTerms.at(size_t(index)).asQString()] = newInteractionTerms.at(size_t(index)).asQString();
+
+	if (allTermsChangedMap.size() > 0)
+		emit namesChanged(allTermsChangedMap);
+}

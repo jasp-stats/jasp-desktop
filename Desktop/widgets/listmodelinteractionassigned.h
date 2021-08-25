@@ -41,6 +41,7 @@ public:
 		
 public slots:
 	void availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;
+	void sourceNamesChanged(QMap<QString, QString> map)												override;
 	
 protected:
 	void addCombinedTerms(const Terms& terms, JASPControl::AssignType assignType);
