@@ -360,12 +360,20 @@ DropArea
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(loader.myAnalysis.helpFile))
-											helpModel.markdown = Qt.binding(function(){ return myAnalysis.helpMD; });
+										{
+											if(helpModel.markdown !== myAnalysis.helpMD)
+												helpModel.markdown = Qt.binding(function(){ return myAnalysis.helpMD; });
+											else
+												helpModel.visible  = false;
+											
+												
+										}
 										else
 										{
-											helpModel.markdown = ""; //To break any previous binding we might have made
+											helpModel.markdown = "";	
 											helpModel.showOrTogglePageForAnalysis(loader.myAnalysis)
 										}
+										
 					toolTip:			qsTr("Show info for this analysis")
 					radius:				height
 					anchors

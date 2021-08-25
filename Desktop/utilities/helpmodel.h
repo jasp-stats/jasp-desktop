@@ -5,6 +5,7 @@
 #include "languagemodel.h"
 #include "analysis/analysis.h"
 
+///This class is a bit of a mess. Would be good to move all helpfiles to `info` so that this can be cleaned up.
 class HelpModel : public QObject
 {
 	Q_OBJECT

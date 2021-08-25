@@ -38,6 +38,14 @@ void HelpModel::setVisible(bool visible)
 		return;
 
 	_visible = visible;
+	
+	if(!_visible)
+	{
+		_analysis = nullptr;
+		_pagePath = "";	
+		_markdown = "";
+	}
+	
 	emit visibleChanged(_visible);
 
 }
@@ -53,19 +61,18 @@ void HelpModel::setMarkdown(QString markdown)
 {
 	if (_markdown == markdown)
 		return;
-
+	
+	if(markdown != "")
+		_pagePath = "";
+	
 	_markdown = markdown;
+	
 	emit markdownChanged(_markdown);
 }
 
 void HelpModel::setPagePath(QString pagePath)
-{
-	setMarkdown("");
-	_analysis = nullptr;
-	
-	pagePath = convertPagePathToLower(pagePath); //Otherwise we get into to trouble on systems that discern between cases in the filesystem. Also means we should make sure all documentation html are named lowercase!
-
-	_pagePath = pagePath;
+{	
+	_pagePath = convertPagePathToLower(pagePath); //Otherwise we get into to trouble on systems that discern between cases in the filesystem. Also means we should make sure all documentation html are named lowercase!
 	emit pagePathChanged(_pagePath);
 }
 
@@ -136,8 +143,6 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 {
 	if(!analysis)
 	{
-		_analysis = nullptr;
-		
 		setVisible(false);
 		return;
 	}
@@ -146,24 +151,32 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 			contentMD,
 			pagePath = convertPagePathToLower(helpPage == "" ? analysis->helpFile() : analysis->fullHelpPath(helpPage));
 	
-	
 	if(analysis == _analysis && pagePath == _pagePath && _visible)
-		setVisible(false);
-	else if((loadHelpContent(pagePath, false, renderFunc, contentMD) || loadHelpContent(pagePath, true, renderFunc, contentMD)) && renderFunc == "window.render")
 	{
-		//If we get here the file exists and it is a markdown file.
+		setVisible(false);
+		return;
+	}
+	else 
+	{
 		_analysis = analysis;
 		
-		if(analysis->dynamicModule())
-			analysis->dynamicModule()->preprocessMarkdownHelp(contentMD);
+		if((loadHelpContent(pagePath, false, renderFunc, contentMD) || loadHelpContent(pagePath, true, renderFunc, contentMD)) && renderFunc == "window.render")
+		{
+			//If we get here the file exists and it is a markdown file.			
+			if(analysis->dynamicModule())
+				analysis->dynamicModule()->preprocessMarkdownHelp(contentMD);
+			
+			setMarkdown(contentMD);
+			setVisible(true);
+			
+			//Set pagepath here because setMarkdown erases it
+			_pagePath = pagePath; //dont trigger generateJavascript through emit pagePathChanged!
+		}
+		else
+			setPagePath(pagePath);
 		
-		_pagePath = pagePath; //dont trigger generateJavascript through emit pagePathChanged!
-		
-		setMarkdown(contentMD);
-		setVisible(true);
+		return;
 	}
-	else
-		setPagePath(pagePath);
 }
 
 
