@@ -43,6 +43,7 @@ void HelpModel::setVisible(bool visible)
 	{
 		_analysis = nullptr;
 		_pagePath = "";	
+		_markdown = "";
 	}
 	
 	emit visibleChanged(_visible);
