@@ -38,6 +38,13 @@ void HelpModel::setVisible(bool visible)
 		return;
 
 	_visible = visible;
+	
+	if(!_visible)
+	{
+		_analysis = nullptr;
+		_pagePath = "";	
+	}
+	
 	emit visibleChanged(_visible);
 
 }
@@ -135,8 +142,6 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 {
 	if(!analysis)
 	{
-		_analysis = nullptr;
-		_pagePath = "";
 		setVisible(false);
 		return;
 	}
@@ -147,8 +152,6 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 	
 	if(analysis == _analysis && pagePath == _pagePath && _visible)
 	{
-		_analysis = nullptr;
-		_pagePath = "";
 		setVisible(false);
 		return;
 	}
