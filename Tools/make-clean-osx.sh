@@ -43,6 +43,7 @@ mkdir $JASP_BUILD_DIR
 
 echo "Copying files from $JASP_REQUIRED_FILES_DIR to $JASP_BUILD_DIR"
 cp $JASP_REQUIRED_FILES_DIR/* $JASP_BUILD_DIR/
+cp -R $JASP_REQUIRED_FILES_DIR/JAGS $JASP_BUILD_DIR/
 
 echo "Get the latest version of development from github!"
 cd $JASP_GIT_DIR
