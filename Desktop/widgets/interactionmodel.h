@@ -14,7 +14,8 @@ public:
 	void addCovariates(const Terms &terms);
 	void removeInteractionTerms(const Terms& terms);
 	void clearInteractions();
-	
+	QSet<int> changeComponentName(const std::string& oldName, const std::string& newName);
+
 	const Terms& interactionTerms() const { return _interactionTerms; }
 
 protected:	
