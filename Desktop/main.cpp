@@ -28,6 +28,7 @@
 #include "appinfo.h"
 #include <iostream>
 #include "timers.h"
+#include <QMessageBox>
 
 const std::string	jaspExtension	= ".jasp",
 					unitTestArg		= "--unitTest",
@@ -320,12 +321,12 @@ int main(int argc, char *argv[])
 				setLC_CTYPE_system;
 	int			timeOut;
 
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, setLC_CTYPE_C, setLC_CTYPE_system);
-	
 	QCoreApplication::setOrganizationName("JASP");
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
-
+	
+	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, setLC_CTYPE_C, setLC_CTYPE_system);
+	
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
 	
@@ -340,19 +341,6 @@ int main(int argc, char *argv[])
 
 	boost::filesystem::path::imbue(std::locale( std::locale(), new std::codecvt_utf8_utf16<wchar_t>() ) );
 	
-#ifdef _WIN32
-	// Since we introduced renv to JASP the win installer needs to recreate the junctions from Modules -> renv-cache on install. Because they do not support relative paths
-	// For this JASP has the --junctions argument, and is run by JASP-*.msi during install to make sure everything is ready.
-	// However, we also want to support ZIP distributions of jasp, and there is no installer. But the good thing is it also means the user has write access to the main folder. Which means we can fix it now.
-	QDir modulesDir("Modules");
-	
-	if(!modulesDir.exists() && !runJaspEngineJunctionFixer(argc, argv, false)) 
-	{
-		std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support, or try the MSI." << std::endl;	
-		exit(1234);
-	}
-#endif
-
 	if(!dirTest)
 		//try
 		{
@@ -398,15 +386,36 @@ int main(int argc, char *argv[])
 
 			JASPTIMER_START("JASP");
 
-			Application a(argvsize, argvs, filePathQ, unitTest, timeOut, save, logToFile);
+			Application a(argvsize, argvs);
 			
 			std::cout << "Application initialized" << std::endl;
+
+#ifdef _WIN32
+			// Since we introduced renv to JASP the win installer needs to recreate the junctions from Modules -> renv-cache on install. Because they do not support relative paths
+			// For this JASP has the --junctions argument, and is run by JASP-*.msi during install to make sure everything is ready.
+			// However, we also want to support ZIP distributions of jasp, and there is no installer. But the good thing is it also means the user has write access to the main folder. Which means we can fix it now.
+			QDir modulesDir("Modules");
+						
+			if(!modulesDir.exists())
+			{
+					
+				QMessageBox::information(nullptr, Application::tr("One time setup for JASP Modules"), Application::tr("JASP has been installed from a zip and it needs to recreate certain paths for your analyses to work.\n\nPlease be patient and wait for the application to show before attempting to start JASP again."));
+				
+				if(!runJaspEngineJunctionFixer(argc, argv, false))
+				{					
+					std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support, or try the MSI." << std::endl;	
+					exit(1234);
+				}
+			}
+#endif
+			
+			a.init(filePathQ, unitTest, timeOut, save, logToFile);
 
 			QtWebEngine::initialize(); //We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
 
 			std::cout << "QtWebEngine initialized" << std::endl;
 			
-			try
+			try 
 			{
 				std::cout << "Entering eventloop" << std::endl;
 				
