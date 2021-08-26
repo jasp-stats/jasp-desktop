@@ -55,7 +55,7 @@ class Analysis : public QObject
 
 public:
 
-	enum Status { Empty, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing, KeepStatus };
+	enum Status { Empty, Running, RunningImg, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing, KeepStatus };
 	void setStatus(Status status);
 	static std::string statusToString(Status status);
 	///This function transforms an analysisResultStatus to Analysis::Status so that the Analysis gets the correct status after returning from Engine
@@ -152,6 +152,7 @@ public:
 	bool isSaveImg()		const { return status() == SaveImg;		}
 	bool isRewriteImgs()	const { return status() == RewriteImgs;	}
 	bool isEditImg()		const { return status() == EditImg;		}
+	bool isRunningImg()		const { return status() == RunningImg;	}
 	bool isFinished()		const { return status() == Complete || status() == ValidationError || status() == FatalError; }
 
 

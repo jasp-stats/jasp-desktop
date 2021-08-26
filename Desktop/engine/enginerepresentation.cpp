@@ -478,11 +478,14 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		break;
 
 	case analysisResultStatus::running:
+		if(!(analysis->isRunningImg()))
+			analysis->setResults(results, status, progress);
+		break;
+
 	default:
 		analysis->setResults(results, status, progress);
 		break;
 	}
-
 }
 
 void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
