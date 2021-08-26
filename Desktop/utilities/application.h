@@ -27,11 +27,13 @@ class Application : public QApplication
 {
 	Q_OBJECT
 public:
-	explicit Application(int &argc, char **argv, QString filePath, bool unitTest, int timeOut, bool save, bool logToFile);
+	explicit Application(int &argc, char **argv) : QApplication(argc, argv) {}
 	~Application() override;
 
 	virtual bool notify(QObject *receiver, QEvent *event) OVERRIDE;
 	virtual bool event(QEvent *event) OVERRIDE;
+	
+	void init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile);
 
 signals:
 
