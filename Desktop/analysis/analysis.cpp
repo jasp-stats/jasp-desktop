@@ -196,8 +196,6 @@ void Analysis::editImage(const Json::Value &options)
 {
 	setStatus(Analysis::EditImg);
 	_imgOptions = options;
-	
-	incrementRevision(); //Fix for https://github.com/jasp-stats/jasp-test-release/issues/1389
 }
 
 void Analysis::imageEdited(const Json::Value & results)
@@ -275,6 +273,7 @@ Analysis::Status Analysis::parseStatus(std::string name)
 	if		(name == "empty")			return Analysis::Empty;
 	else if (name == "waiting")			return Analysis::Running; //For backwards compatibility
 	else if (name == "running")			return Analysis::Running;
+	else if (name == "runningImg")		return Analysis::RunningImg;
 	else if (name == "complete")		return Analysis::Complete;
 	else if (name == "initializing")	return Analysis::Initializing;
 	else if (name == "RewriteImgs")		return Analysis::RewriteImgs;
@@ -320,6 +319,7 @@ std::string Analysis::statusToString(Status status)
 	{
 	case Analysis::Empty:			return "empty";
 	case Analysis::Running:			return "running";
+	case Analysis::RunningImg:		return "runningImg";
 	case Analysis::Complete:		return "complete";
 	case Analysis::Aborted:			return "aborted";
 	case Analysis::Aborting:		return "aborting";
@@ -355,6 +355,7 @@ Json::Value Analysis::asJSON() const
 	{
 	case Analysis::Empty:			status = "empty";			break;
 	case Analysis::Running:			status = "running";			break;
+	case Analysis::RunningImg:		status = "runningImg";		break;
 	case Analysis::Complete:		status = "complete";		break;
 	case Analysis::Aborted:			status = "aborted";			break;
 	case Analysis::SaveImg:			status = "SaveImg";			break;
@@ -628,10 +629,10 @@ Json::Value Analysis::createAnalysisRequestJson()
 	switch(perform)
 	{
 	case performType::abort:		setStatus(Analysis::Aborted);	break;
-	case performType::run:
+	case performType::run:			setStatus(Analysis::Running);	break;
 	case performType::saveImg:
 	case performType::editImg:
-	case performType::rewriteImgs:	setStatus(Analysis::Running);	break;
+	case performType::rewriteImgs:	setStatus(Analysis::RunningImg); break;
 	default:														break;
 	}
 
