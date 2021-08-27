@@ -116,10 +116,11 @@ void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
 
 	if (_cacheItems || int(_cellSizes[size_t(col)].width() * 10) != int(calcSize.width() * 10)) //If we cache items we are not expecting the user to make regular manual changes to the data, so if something changes we can do a reset. Otherwise we are in TableView and we do it only when the column size changes.
 		calculateCellSizes();
-	else if (roles.contains(int(DataSetPackage::specialRoles::selected)))
+	else if (roles.contains(int(DataSetPackage::specialRoles::selected)) || roles.contains(Qt::DisplayRole))
 	{
-		// This is a special case for the VariablesWindows: caching mixed up the items, so it can't be used
-		// but the selected context property must be updated
+		// This is a special case for the VariablesWindows & TableView: caching mixed up the items, so it can't be used
+		// but the selected context property must be updated for VariablesWindows
+		// and the itemText must be updated for Grid TableView (used in Plot Editor).
 		for (int col = topLeft.column(); col <= bottomRight.column(); col++)
 			for (int row = topLeft.row(); row <= bottomRight.row(); row++)
 			{
@@ -128,10 +129,14 @@ void DataSetView::modelDataChanged(const QModelIndex &topLeft, const QModelIndex
 				if (itemCon)
 				{
 					QQmlContext* context = itemCon->context;
-					context->setContextProperty("itemSelected",	_model->data(_model->index(row, col), _roleNameToRole["selected"]));
+					if (roles.contains(int(DataSetPackage::specialRoles::selected)))
+						context->setContextProperty("itemSelected",	_model->data(_model->index(row, col), _roleNameToRole["selected"]));
+					if (roles.contains(Qt::DisplayRole))
+						context->setContextProperty("itemText", _model->data(_model->index(row, col)));
 				}
 			}
 	}
+
 	
 	//The following else would be good but it doesnt seem to work on mac for some reason. It does work on linux though
 	/*else 

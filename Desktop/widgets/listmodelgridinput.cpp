@@ -46,38 +46,62 @@ void ListModelGridInput::sourceTermsReset()
 
 void ListModelGridInput::_readSource()
 {
-	beginResetModel();
-
-	_tableTerms.clear();
-
 	Terms terms = getSourceTerms();
-	int maxColumn = _tableView->minColumn();
-	_rowCount = _tableView->minRow();
+	int nbColumns	= _tableView->minColumn(),
+		nbRows		= _tableView->minRow();
 
 	for (const Term& term : terms)
 	{
 		const QStringList& row = term.components();
-		if (row.length() > maxColumn)											maxColumn = row.length();
+		if (row.length() > nbColumns)											nbColumns = row.length();
 	}
-	if (int(terms.size()) > _rowCount)											_rowCount = int(terms.size());
-	if (_tableView->maxRow() >= 0 && _rowCount > _tableView->maxRow())			_rowCount = _tableView->maxRow();
-	if (_tableView->maxColumn() >= 0 && maxColumn > _tableView->maxColumn())	maxColumn = _tableView->maxColumn();
+	if (int(terms.size()) > nbRows)												nbRows = int(terms.size());
+	if (_tableView->maxRow() >= 0 && nbRows > _tableView->maxRow())				nbRows = _tableView->maxRow();
+	if (_tableView->maxColumn() >= 0 && nbColumns > _tableView->maxColumn())	nbColumns = _tableView->maxColumn();
 
-	for (int colNb = 0; colNb < maxColumn; colNb++)
+	if (nbRows == _rowCount && nbColumns == _tableTerms.colNames.length())
 	{
-		QVector<QVariant> column;
-		for (size_t rowNb = 0; rowNb < size_t(_rowCount); rowNb++)
+		// Apparently only some valuee has been changed. Just emit a dataChanged in this case
+		for (int colNb = 0; colNb < nbColumns; colNb++)
 		{
-			const Term& term = terms.size() > rowNb ? terms.at(rowNb) : Term(QStringList());
-			const QStringList& rowValues = term.components();
-			column.append(rowValues.length() > colNb ? rowValues.at(colNb) : _tableView->defaultValue());
+			QVector<QVariant> column;
+			for (int rowNb = 0; rowNb < nbRows; rowNb++)
+			{
+				const Term& term = int(terms.size()) > rowNb ? terms.at(size_t(rowNb)) : Term(QStringList());
+				const QStringList& rowValues = term.components();
+				QVariant value = rowValues.length() > colNb ? rowValues.at(colNb) : _tableView->defaultValue();
+				if (value != _tableTerms.values[colNb][rowNb])
+				{
+					_tableTerms.values[colNb][rowNb] = value;
+					QModelIndex ind = index(rowNb, colNb);
+					emit dataChanged(ind, ind, {Qt::DisplayRole});
+				}
+			}
 		}
-		_tableTerms.values.append(column);
-		_tableTerms.colNames.append(QString::number(colNb));
 	}
+	else
+	{
+		beginResetModel();
 
-	for (int i = 0; i < _rowCount; i++)
-		_tableTerms.rowNames.append(_tableView->rowNames().count() > i ? _tableView->rowNames()[i] : QString::number(i));
+		_tableTerms.clear();
 
-	endResetModel();
+		for (int colNb = 0; colNb < nbColumns; colNb++)
+		{
+			QVector<QVariant> column;
+			for (size_t rowNb = 0; rowNb < size_t(nbRows); rowNb++)
+			{
+				const Term& term = terms.size() > rowNb ? terms.at(rowNb) : Term(QStringList());
+				const QStringList& rowValues = term.components();
+				column.append(rowValues.length() > colNb ? rowValues.at(colNb) : _tableView->defaultValue());
+			}
+			_tableTerms.values.append(column);
+			_tableTerms.colNames.append(QString::number(colNb));
+		}
+
+		for (int i = 0; i < _rowCount; i++)
+			_tableTerms.rowNames.append(_tableView->rowNames().count() > i ? _tableView->rowNames()[i] : QString::number(i));
+		_rowCount = nbRows;
+
+		endResetModel();
+	}
 }
