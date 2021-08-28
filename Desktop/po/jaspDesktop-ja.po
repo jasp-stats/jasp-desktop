@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-08-27 13:34+0000\n"
+"Last-Translator: Laura Durans <lauraadurans@gmail.com>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
 
@@ -38,9 +44,7 @@ msgstr "参照"
 msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
-msgstr ""
-"この分析は、古いバージョンのJASP（または動的モジュール）を使用して作成されま"
-"した"
+msgstr "この分析は、古いバージョンのJASP（または動的モジュール）を使用して作成されました"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
@@ -50,8 +54,7 @@ msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
-msgstr ""
-"ノートを今ある場所に保存しておき、まず分析を更新することを強くお勧めします"
+msgstr "ノートを今ある場所に保存しておき、まず分析を更新することを強くお勧めします"
 
 msgctxt "InputListView|"
 msgid "New Value"
@@ -1053,201 +1056,201 @@ msgstr ""
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr ""
+msgstr "1つの計算列につき、1つの数式しか使用できません."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr ""
+msgstr "ドラッグ＆ドロップ式の計算列コンストラクタへようこそ!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr ""
+msgstr "不要な部分をここに捨て、ダブルクリックで全体を消去する"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared<br>"
-msgstr ""
+msgstr "フィルタークリア <br>"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
-msgstr ""
+msgstr "フィルター適用<br>"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.<br>"
-msgstr ""
+msgstr "すべての引数を入力してください - 赤でマークされたフィールドを参照してください<br>"
 
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.<br>"
-msgstr ""
+msgstr "数式は一連の論理値を返さないため、フィルタで使用することはできません。<br>"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!<br>"
-msgstr ""
+msgstr "ドラッグ＆ドロップフィルターへようこそ！<br>"
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr ""
+msgstr "足し算"
 
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr ""
+msgstr "引き算"
 
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
-msgstr ""
+msgstr "掛け算"
 
 msgctxt "OperatorSelector|"
 msgid "Division"
-msgstr ""
+msgstr "割り算"
 
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "累乗 (2^3 returns 8)"
 
 msgctxt "OperatorSelector|"
 msgid "Square root"
-msgstr ""
+msgstr "平方根"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "[剰余]: 除算の残りを返します。3%2 は 1 を返す"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
-msgstr ""
+msgstr "は論理式を返し、フィルター式のルートにもなります"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "等式: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "不等式: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "未満: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "以下: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "より大きい: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "以上: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
-msgstr ""
+msgstr "論理積: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
-msgstr ""
+msgstr "論理和: %1"
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "分割: 各サブグループにフィルタを個別に適用"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
-msgstr ""
+msgstr "否定: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr ""
+msgstr "足し算"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr ""
+msgstr "減算"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr ""
+msgstr "乗算"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr ""
+msgstr "除算"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "累乗 (2^3 returns 8)"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr ""
+msgstr "平方根"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "[剰余]: 除算の残りを返します。3%2 は 1 を返す"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr ""
+msgstr "論理値を返す"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "等式: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "不等式: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "未満: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "以下: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "より大きい: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "以上: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr ""
+msgstr "論理積: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
-msgstr ""
+msgstr "論理和: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "分割: 各サブグループにフィルタを個別に適用"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr ""
+msgstr "否定: %1"
 
 #, fuzzy
 msgctxt "FilterWindow|"
@@ -1311,39 +1314,39 @@ msgstr "if-else文"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
-msgstr ""
+msgstr "フィルターの変更"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr ""
+msgstr "計算列に適用されていない変更があります。どうしますか?"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
-msgstr ""
+msgstr "Rフィルターに切り替え"
 
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
-msgstr ""
+msgstr "フィルタリングで除外された行を隠す。"
 
 msgctxt "FilterWindow|"
 msgid "Show rows that were filtered out."
-msgstr ""
+msgstr "フィルターで除外された行を表示します。"
 
 msgctxt "FilterWindow|"
 msgid "Apply pass-through filter"
-msgstr ""
+msgstr "パススルーフィルターを適用する"
 
 msgctxt "FilterWindow|"
 msgid "Filter applied"
-msgstr ""
+msgstr "フィルタが適用されました"
 
 msgctxt "FilterWindow|"
 msgid "Click to apply filter"
-msgstr ""
+msgstr "クリックしてフィルタを適用"
 
 msgctxt "FilterWindow|"
 msgid "Filter is already applied"
-msgstr ""
+msgstr "フィルタはすでに適用されています。"
 
 #, fuzzy
 msgctxt "FilterWindow|"
@@ -1357,39 +1360,39 @@ msgstr "フィルタを非表示"
 
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
-msgstr ""
+msgstr "すべてのラベルのチェックマークをリセット"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
-msgstr ""
+msgstr "ドラッグ＆ドロップフィルターに切り替え"
 
 msgctxt "FilterWindow|"
 msgid "Reset to default filter"
-msgstr ""
+msgstr "デフォルトのフィルターに戻す"
 
 msgctxt "FilterWindow|"
 msgid "Default filter applied"
-msgstr ""
+msgstr "デフォルトで適用されるフィルタ"
 
 msgctxt "FilterWindow|"
 msgid "Filter is unchanged from default"
-msgstr ""
+msgstr "フィルタはデフォルトから変更されていません"
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
-msgstr ""
+msgstr "JASPヘルプ"
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
-msgstr ""
+msgstr "検索する："
 
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr ""
+msgstr "データの追加"
 
 msgctxt "JagsTableView|"
 msgid "Delete Data"
-msgstr ""
+msgstr "データの削除"
 
 #, fuzzy
 msgctxt "JagsTableView|"
@@ -1398,15 +1401,15 @@ msgstr "リセット"
 
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
-msgstr ""
+msgstr "ダブルクリックしてデータを編集"
 
 msgctxt "MainPage|"
 msgid "Hide data"
-msgstr ""
+msgstr "データを非表示にする"
 
 msgctxt "MainPage|"
 msgid "Show data"
-msgstr ""
+msgstr "データを表示する"
 
 #, fuzzy
 msgctxt "MainPage|"
@@ -1420,144 +1423,146 @@ msgstr "ドラッグしてデータを表示"
 
 msgctxt "MainPage|"
 msgid "Results"
-msgstr ""
+msgstr "結果"
 
 msgctxt "ModuleInstaller|"
 msgid "Browse for JASP Module"
-msgstr ""
+msgstr "JASP モジュールの参照"
 
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module"
-msgstr ""
+msgstr "JASP モジュールの選択"
 
 msgctxt "ModuleInstaller|"
 msgid "<i>Browse for a JASP Module to see more information here</i>"
-msgstr ""
+msgstr "<i>JASPモジュールの詳細はこちら</i>"
 
 #, qt-format
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
-msgstr ""
+msgstr "<i>%1 は (正しい) JASP モジュールではありません。</i>"
 
 msgctxt "ModulesMenu|"
 msgid "Install Module"
-msgstr ""
+msgstr "モジュールのインストール"
 
 msgctxt "ModulesMenu|"
 msgid "Install a module"
-msgstr ""
+msgstr "モジュールのインストール"
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr ""
+msgstr "開発者モジュールのインストール"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr ""
+msgstr "開発者モジュールのインストール"
 
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr ""
+msgstr "開発者モジュールの選択"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
-msgstr ""
+msgstr "選択された開発者モジュールのインストール"
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr ""
+msgstr "今すぐ開発者モジュールをインストールする"
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr ""
+msgstr "準備"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr ""
+msgstr "インストールしています。%1\n"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr ""
+msgstr "読み込み中：%1\n"
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
-msgstr ""
+msgstr "ロードされ、使用する準備ができました!"
 
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
-msgstr ""
+msgstr "エラーが発生しました!"
 
 msgctxt "ModulesMenu|"
 msgid "Not ready for use?"
-msgstr ""
+msgstr "使用する準備ができていませんか？"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr ""
+msgstr "モジュールのアンインストール "
 
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
-msgstr ""
+msgstr "JASPでR"
 
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
-msgstr ""
+msgstr "R in JASPへようこそ!"
 
 msgctxt "RCommanderWindow|"
 msgid ""
 "Enter your R code here.\n"
 "The data is fully available as 'data' and filtered as 'filteredData'."
 msgstr ""
+"ここにあなたのRコードを入力してください。\n"
+"データは'data'として利用可能で、'filteredData'としてフィルタリングされています。"
 
 msgctxt "RCommanderWindow|"
 msgid "Enter your R code here."
-msgstr ""
+msgstr "ここにRコードを入力してください。"
 
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
-msgstr ""
+msgstr "コードの実行"
 
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
-msgstr ""
+msgstr "Ctrl + EnterまたはF5を押すと、コードが実行されます"
 
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
-msgstr ""
+msgstr "出力のクリア"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
-msgstr ""
+msgstr "クリアされました..."
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
-msgstr ""
+msgstr "変更が加えられました"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
-msgstr ""
+msgstr "未適用の変更がありますが、どのようにしたいですか？"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
-msgstr ""
+msgstr "適用する"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
-msgstr ""
+msgstr "破棄"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
 msgctxt "SetSeed|"
 msgid "Repeatability"
-msgstr ""
+msgstr "再現性"
 
 msgctxt "SetSeed|"
 msgid "Set seed:"
-msgstr ""
+msgstr "シードを設定します。"
 
 #, fuzzy
 msgctxt "SimpleTableView|"
@@ -1576,160 +1581,163 @@ msgstr "リセット"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
-msgstr ""
+msgstr "アイテムを並べ替える"
 
 msgctxt "SubjectivePriors|"
 msgid "Prior"
-msgstr ""
+msgstr "事前分布"
 
 msgctxt "SubjectivePriors|"
 msgid "Standardized effect size"
-msgstr ""
+msgstr "標準化された効果量"
 
 msgctxt "SubjectivePriors|"
 msgid "Default"
-msgstr ""
+msgstr "初期設定"
 
 msgctxt "SubjectivePriors|"
 msgid "Cauchy"
-msgstr ""
+msgstr "コーシー"
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr ""
+msgstr "スケール"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
-msgstr ""
+msgstr "インフォームド"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr ""
+msgstr "位置："
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr ""
+msgstr "スケール："
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
-msgstr ""
+msgstr "正規"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr ""
+msgstr "平均："
 
+#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr ""
+msgstr "標準偏差："
 
 msgctxt "SubjectivePriors|"
 msgid "t"
-msgstr ""
+msgstr "t"
 
 msgctxt "SubjectivePriors|"
 msgid "df:"
-msgstr ""
+msgstr "自由度："
 
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
-msgstr ""
+msgstr "生の効果量（Dienes）"
 
 msgctxt "SubjectivePriors|"
 msgid "Uniform"
-msgstr ""
+msgstr "一様"
 
 msgctxt "SubjectivePriors|"
 msgid "lower bound:"
-msgstr ""
+msgstr "下限："
 
 msgctxt "SubjectivePriors|"
 msgid "upper bound:"
-msgstr ""
+msgstr "上限："
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
-msgstr ""
+msgstr "ハーフノーマル"
 
 msgctxt "VariablesWindow|"
 msgid "Filter"
-msgstr ""
+msgstr "フィルター"
 
 msgctxt "VariablesWindow|"
 msgid "Value"
-msgstr ""
+msgstr "値"
 
 msgctxt "VariablesWindow|"
 msgid "Label"
-msgstr ""
+msgstr "ラベル"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels up"
-msgstr ""
+msgstr "選択したラベルを上に移動"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels down"
-msgstr ""
+msgstr "選択したラベルを下に移動します"
 
 msgctxt "VariablesWindow|"
 msgid "Reverse order of all labels"
-msgstr ""
+msgstr "すべてのラベルの順序を逆にする"
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for this column"
-msgstr ""
+msgstr "この列のすべてのフィルタ チェックマークをリセットする"
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr ""
+msgstr "すべての列のフィルターのチェックマークをリセット"
 
 msgctxt "VariablesWindow|"
 msgid "Close this view"
-msgstr ""
+msgstr "このビューを閉じる"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
-msgstr ""
+msgstr "JASPへようこそ"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
-msgstr ""
+msgstr "統計を行うための新しい方法：無料、フレンドリー、そして柔軟"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
-msgstr ""
+msgstr "フリー："
 
+#, fuzzy
 msgctxt "WelcomePage|"
 msgid "Friendly:"
-msgstr ""
+msgstr "フレンドリー："
 
 msgctxt "WelcomePage|"
 msgid "Flexible:"
-msgstr ""
+msgstr "フレキシブル："
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the University "
 "of Amsterdam."
-msgstr ""
+msgstr "JASPは、アムステルダム大学の構造的支援を受けたオープンソースプロジェクトです。"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP has an intuitive interface that was designed with the user in mind."
-msgstr ""
+msgstr "JASPは、ユーザーを念頭に置いて設計された直感的なインターフェイスを備えています。"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP offers standard analysis procedures in both their classical and "
 "Bayesian manifestations."
-msgstr ""
+msgstr "JASPには、古典的な解析方法とベイズ解析方法の両方の標準的な解析方法が用意されています。"
 
+#, fuzzy
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr ""
+msgstr "それでは、データファイルを開いて、JASPを試してみましょう。"
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
-msgstr ""
+msgstr "クリックして最新バージョンを入手"
 
 msgctxt "WelcomePage|"
 msgid ""
@@ -1739,301 +1747,304 @@ msgid ""
 "If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
 "being developed at break-neck speed!"
 msgstr ""
+"なお、今回のリリースはプレビュー版であり、多くの機能が未実装であることをご了承ください。\n"
+"\n"
+"もしJASPが今日、あなたの望むすべての機能を備えていなかったら、明日またチェックしてください。JASPは猛烈なスピードで開発されています！"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr ""
+msgstr "プロット%1の編集オプションが見つからないので、プロットの編集ができません...。"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
-msgstr ""
+msgstr "プロット%1の編集オプションの設定が見つからなかったので、プロットの編集は何も記録されていません（もし機能していたとしても）...。"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "Control with label '%1' has no name"
-msgstr ""
+msgstr "ラベル '%1' のコントロールには名前がありません"
 
 msgctxt "AnalysisForm|"
 msgid "A control has no name"
-msgstr ""
+msgstr "コントロールには名前がありません"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
-msgstr ""
+msgstr "2つのコントロールは同じ名前です：%1"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
-msgstr ""
+msgstr "コンポーネント %1 は、間違った値の型で読み込まれ、既定値にリセットされました。"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
-msgstr ""
+msgstr "これらのコンポーネントには、誤ったタイプの値が読み込まれていたため、デフォルトの値にリセットされています：%1"
 
 msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
-msgstr ""
+msgstr "多くのコンポーネントに誤ったタイプの値が読み込まれていたため、デフォルトの値に戻しました。"
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
-msgstr ""
+msgstr "このファイルは、おそらく古いバージョンのJASPのものです。"
 
 msgctxt "AnalysisForm|"
 msgid ""
 "That means that the results currently displayed do not correspond to the "
 "options selected."
-msgstr ""
+msgstr "つまり、現在表示されている結果は、選択されたオプションに対応していないということです。"
 
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
-msgstr ""
+msgstr "分析結果を更新すると、結果が変わることがあります。"
 
 msgctxt "AnalysisForm|"
 msgid "Table"
-msgstr ""
+msgstr "表"
 
 msgctxt "AnalysisForm|"
 msgid "Plot"
-msgstr ""
+msgstr "プロット"
 
 msgctxt "AnalysisForm|"
 msgid "Collection"
-msgstr ""
+msgstr "コレクション"
 
 msgctxt "AnalysisForm|"
 msgid "Result"
-msgstr ""
+msgstr "結果"
 
 msgctxt "AnalysisForm|"
 msgid "Output"
-msgstr ""
+msgstr "出力"
 
 msgctxt "AnalysisForm|"
 msgid "Input"
-msgstr ""
+msgstr "入力"
 
 msgctxt "JASPControl|"
 msgid "Option"
-msgstr ""
+msgstr "オプション"
 
 msgctxt "JASPControl|"
 msgid "Section"
-msgstr ""
+msgstr "セクション"
 
 msgctxt "JASPControl|"
 msgid "CheckBox"
-msgstr ""
+msgstr "チェックボックス"
 
 msgctxt "JASPControl|"
 msgid "Switch"
-msgstr ""
+msgstr "スイッチ"
 
 msgctxt "JASPControl|"
 msgid "Entry Field"
-msgstr ""
+msgstr "入力フィールド"
 
 msgctxt "JASPControl|"
 msgid "Radio Button"
-msgstr ""
+msgstr "ラジオボタン"
 
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
-msgstr ""
+msgstr "ラジオボタン"
 
 msgctxt "JASPControl|"
 msgid "Variables"
-msgstr ""
+msgstr "変数"
 
 msgctxt "JASPControl|"
 msgid "ComboBox"
-msgstr ""
+msgstr "コンボボックス"
 
 msgctxt "JASPControl|"
 msgid "Input ListView"
-msgstr ""
+msgstr "入力リストビュー"
 
 msgctxt "JASPControl|"
 msgid "TableView"
-msgstr ""
+msgstr "テーブルビュー"
 
 msgctxt "JASPControl|"
 msgid "Slider"
-msgstr ""
+msgstr "スライダー"
 
 msgctxt "JASPControl|"
 msgid "TextArea"
-msgstr ""
+msgstr "テキストエリア"
 
 msgctxt "JASPControl|"
 msgid "Button"
-msgstr ""
+msgstr "ボタン"
 
 msgctxt "JASPControl|"
 msgid "Factors Form"
-msgstr ""
+msgstr "因子フォーム"
 
 msgctxt "JASPControl|"
 msgid "List of Components"
-msgstr ""
+msgstr "コンポーネントの一覧"
 
 msgctxt "JASPControl|"
 msgid "Group Box"
-msgstr ""
+msgstr "グループボックス"
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
-msgstr ""
+msgstr "値は次の値である必要があります。 "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8805; %1"
-msgstr ""
+msgstr "&#8805; %1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&gt; %1"
-msgstr ""
+msgstr "&gt; %1"
 
 msgctxt "JASPDoubleValidator|"
 msgid " and "
-msgstr ""
+msgstr " と "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8804; %1"
-msgstr ""
+msgstr "&#8805; %1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
-msgstr ""
+msgstr "&gt; %1"
 
 msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
-msgstr ""
+msgstr "検証エラーはありません"
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
+msgstr "既知の争点を読み込む問題"
 
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
-msgstr ""
+msgstr "データセットの読み込み"
 
 msgctxt "AsyncLoader|"
 msgid "Saving Data Set"
-msgstr ""
+msgstr "データセットの保存"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Result Set"
-msgstr ""
+msgstr "結果セットのエクスポート"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Data Set"
-msgstr ""
+msgstr "データセットのエクスポート"
 
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
-msgstr ""
+msgstr "データセットの同期"
 
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons"
-msgstr ""
+msgstr "数値比較に使用できます"
 
 msgctxt "ColumnsModel|"
 msgid ""
 "which can only be used in (in)equivalence, greater and lesser than "
 "comparisons"
-msgstr ""
+msgstr "これは、(非)同等性、大なり小なりの比較でのみ使われるものです"
 
 msgctxt "ColumnsModel|"
 msgid "which can only be used in (in)equivalence comparisons"
-msgstr ""
+msgstr "これは、（非）同等性の比較でのみ使用できます"
 
 msgctxt "ColumnsModel|"
 msgid "The '"
-msgstr ""
+msgstr "'"
 
 msgctxt "ColumnsModel|"
 msgid "'-column "
-msgstr ""
+msgstr "'-列 "
 
 #, qt-format
 msgctxt "FileEvent|"
 msgid "Importing Data from %1"
-msgstr ""
+msgstr "%1からのデータのインポート"
 
 msgctxt "FileEvent|"
 msgid "Importing SPSS File"
-msgstr ""
+msgstr "SPSSファイルの読み込み"
 
 msgctxt "FileEvent|"
 msgid "Importing SAS File"
-msgstr ""
+msgstr "SASファイルのインポート"
 
 msgctxt "FileEvent|"
 msgid "Importing STATA File"
-msgstr ""
+msgstr "STATAファイルのインポート"
 
 msgctxt "FileEvent|"
 msgid "Loading JASP File"
-msgstr ""
+msgstr "JASPファイルの読み込み"
 
 msgctxt "FileEvent|"
 msgid "Loading File"
-msgstr ""
+msgstr "ファイルの読み込み"
 
 msgctxt "FileEvent|"
 msgid "Saving JASP File"
-msgstr ""
+msgstr "JASPファイルの保存"
 
 msgctxt "FileEvent|"
 msgid "Exporting Results"
-msgstr ""
+msgstr "結果のエクスポート"
 
 msgctxt "FileEvent|"
 msgid "Exporting Data"
-msgstr ""
+msgstr "データのエクスポート"
 
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr ""
+msgstr "データの同期"
 
 msgctxt "FileEvent|"
 msgid "Processing File"
-msgstr ""
+msgstr "ファイルの処理"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run this analysis..."
-msgstr ""
+msgstr "この解析を実行しようとすると、エンジンがクラッシュしてしまいました...。"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run the filter..."
-msgstr ""
+msgstr "フィルターを作動させようとしてエンジンがクラッシュしました...。"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to compute this column..."
-msgstr ""
+msgstr "このコラムを計算しようとしてエンジンがクラッシュしました..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run rscript..."
-msgstr ""
+msgstr "R scriptを実行しようとするとエンジンがクラッシュしました..."
 
 msgctxt "EngineRepresentation|"
 msgid "Error saving plot"
-msgstr ""
+msgstr "プロットの保存エラー"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -2046,10 +2057,16 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"残念ながら、プロットを保存できませんでした。\n"
+"\n"
+"エラーメッセージ：\n"
+"%1\n"
+"\n"
+"問題が解決しない場合は、上記のメッセージを報告してください: https://jasp-stats.org/bug-reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
-msgstr ""
+msgstr "プロットのサイズ変更中にエラーが発生しました"
 
 #, fuzzy
 msgctxt "ColumnTypesModel|"
@@ -2068,15 +2085,15 @@ msgstr "名義"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
-msgstr ""
+msgstr "はい"
 
 msgctxt "MessageForwarder|"
 msgid "No"
-msgstr ""
+msgstr "いいえ"
 
 msgctxt "MessageForwarder|"
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
 #, fuzzy
 msgctxt "MessageForwarder|"
@@ -2085,39 +2102,40 @@ msgstr "保存"
 
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
-msgstr ""
+msgstr "保存しない"
 
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
-msgstr ""
+msgstr "ファイルを選択してください..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
-msgstr ""
+msgstr "フォルダを選択してください..."
 
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr ""
+msgstr "セーフグラフィックモードが変更されました"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
-msgstr ""
+msgstr "JASPのセーフ・グラフィックス・モードを変更しました。このオプションを有効にするには、JASPを再起動する必要があります"
 
 msgctxt "MainWindow|"
 msgid "Datafile changed"
-msgstr ""
+msgstr "データファイルが変更されました"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
-msgstr ""
+msgstr "このJASPファイルで使用していたデータファイルが変更されました。この新しいデータで分析をリロードしますか？"
 
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
-msgstr ""
+msgstr "バージョンの非互換性"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2126,6 +2144,9 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
+"あなたの分析は古いバージョンのJASPで作成されています。画像のPPIを変更するには、まずリフレッシュする必要があります。\n"
+"\n"
+"すべての分析を更新しますか？"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2134,10 +2155,13 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"この分析は古いバージョンのJASPで作成されたもので、画像を保存するにはまず更新する必要があります。\n"
+"\n"
+"分析結果を更新しますか？"
 
 msgctxt "MainWindow|"
 msgid "Save JASP Image"
-msgstr ""
+msgstr "JASP イメージの保存"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2145,6 +2169,8 @@ msgid ""
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
+"ポータブルネットワークグラフィックス(*.png);;ポータブルドキュメント形式(*.pdf);;エンカプセルドポストスクリプト (*.eps);300 "
+"dpi タグ付きイメージ ファイル (*.tiff);PowerPoint (*.pptx);;スケーラブルベクターグラフィックス(*.svg)"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2153,10 +2179,13 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"この分析は古いバージョンのJASPで作成されたもので、画像のサイズを変更するには、まずリフレッシュする必要があります。\n"
+"\n"
+"分析結果を更新しますか？"
 
 msgctxt "MainWindow|"
 msgid "Save File?"
-msgstr ""
+msgstr "ファイルを保存しますか？"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2165,21 +2194,26 @@ msgid ""
 "\n"
 "Your changes will be lost if you don't save them."
 msgstr ""
+"閉じる前にファイル%1への変更を保存しますか？\n"
+"\n"
+"保存しないと、変更内容は失われます。"
 
 msgctxt "MainWindow|"
 msgid "File has changed"
-msgstr ""
+msgstr "ファイルが変更されました"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to open file because:\n"
 "%1"
 msgstr ""
+"次の理由でファイルを開くことができません：\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr ""
+msgstr "保存に失敗しました"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2188,20 +2222,23 @@ msgid ""
 "\n"
 "%1"
 msgstr ""
+"ファイルを保存できませんでした。\n"
+"\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
-msgstr ""
+msgstr "GitHubのアカウントはお持ちですか？"
 
 msgctxt "MainWindow|"
 msgid ""
 "To be able to report the bug you need to have a GitHub account, do you have "
 "such an account?"
-msgstr ""
+msgstr "バグを報告するにはGitHubのアカウントが必要ですが、そのようなアカウントはお持ちですか？"
 
 msgctxt "MainWindow|"
 msgid "Join GitHub"
-msgstr ""
+msgstr "GitHubに参加する"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2213,10 +2250,15 @@ msgid ""
 "\n"
 "Please fill in all missing information there."
 msgstr ""
+"ウェブブラウザで2つのページを開きます。\n"
+"2つ目は「Join GitHub」ページで、GitHubにアカウントを登録することができます。\n"
+"1つ目はログインページで、GitHubの新しいアカウントでサインインした後に、一部が記入されたバグレポートにつながるものです。\n"
+"\n"
+"そこに足りない情報をすべて記入してください。"
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr ""
+msgstr "あなたのGitHubを開くことができませんでした"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2224,10 +2266,12 @@ msgid ""
 "You can still report the bug by going to https://github.com/jasp-stats/jasp-"
 "issues/issues"
 msgstr ""
+"GitHubへの誘導に問題がありました。\n"
+"https://github.com/jasp-stats/jasp-issues/issues にアクセスして、バグを報告することができます。"
 
 msgctxt "MainWindow|"
 msgid "Error"
-msgstr ""
+msgstr "エラー"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2235,6 +2279,8 @@ msgid ""
 "JASP has experienced an unexpected internal error:\n"
 "%1"
 msgstr ""
+"JASPに予期せぬ内部エラーが発生しました。\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2242,14 +2288,17 @@ msgid ""
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
+"JASPは継続することができず、終了します。\n"
+"\n"
+"お手数ですが、このエラーをJASPチームに報告していただけますと幸いです。"
 
 msgctxt "MainWindow|"
 msgid "Report"
-msgstr ""
+msgstr "レポート"
 
 msgctxt "MainWindow|"
 msgid "Exit"
-msgstr ""
+msgstr "閉じる"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2258,6 +2307,9 @@ msgid ""
 "synchronize the data when the file is saved. Does this data file exist "
 "already, or do you want to generate it?"
 msgstr ""
+"JASP は、関連付けられたデータ ファイル (csv、sav または ods ファイル) なしで開始されました。ただし、データを編集するために、JASP"
+"はこのファイルに基づいてスプレッドシートエディタを起動し、ファイルが保存されるときにデータを同期します。このデータ "
+"ファイルは既に存在しますか、それとも生成しますか?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2265,6 +2317,8 @@ msgid ""
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASPは、オンラインデータファイル（csv、sav、odsファイル）を使ってスタートしました。しかし、データを編集するには、JASPはあなたのコンピュー"
+"タにこのファイルを必要とします。このデータファイルはあなたのコンピュータにも存在するのでしょうか、それとも生成したいのでしょうか？"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2272,44 +2326,46 @@ msgid ""
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASPは、読み取り専用のデータファイル（おそらくexamplesから）で開始されました。ただし、データを編集するには、JASPがデータファイルに書き込む"
+"必要があります。同じファイルがコンピューターにも存在しますか、それとも生成しますか？"
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr ""
+msgstr "表計算ソフトの起動"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr ""
+msgstr "データファイルの生成"
 
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr ""
+msgstr "データファイルの検索"
 
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr ""
+msgstr "エディタを起動"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to start the editor : %1. Please check your editor settings in the "
 "preference menu."
-msgstr ""
+msgstr "エディターを起動できません : %1.環境設定メニューでエディタの設定を確認してください。"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "No default spreadsheet editor for file %1. Use Preferences to set the right "
 "editor."
-msgstr ""
+msgstr "ファイル%1にはデフォルトのスプレッドシートエディタがありません。環境設定で適切なエディタを設定してください。"
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr ""
+msgstr "すべての分析を削除"
 
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
-msgstr ""
+msgstr "本当にすべての分析を削除しますか？"
 
 #, qt-format
 msgctxt "RibbonModel|"
