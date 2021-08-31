@@ -74,8 +74,6 @@ public:
 
 	bool				continuous()	const	{ return _continuous;	}
 
-	void				simplifyLimitsType();
-
 public slots:
 	void setTitle(		QString title);
 	void setTitleType(	TitleType title);
