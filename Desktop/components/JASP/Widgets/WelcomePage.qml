@@ -28,11 +28,6 @@ FocusScope
 
 	property real scaler: Math.max(0.9, Math.min(1.5, 0.9 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
 
-
-	FontLoader { id: latoLightFontFamily;	source: "qrc:/html/font/Lato-Light.ttf" }
-	FontLoader { id: latoRegularFontFamily;	source: "qrc:/html/font/Lato-Regular.ttf" }
-
-
 	Rectangle
 	{
 		id:					centerPiece
