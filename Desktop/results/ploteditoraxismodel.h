@@ -73,6 +73,7 @@ public:
 	bool				hasBreaks()		const	{ return _breaks.size() > 0; }
 
 	bool				continuous()	const	{ return _continuous;	}
+	void				refresh();
 
 public slots:
 	void setTitle(		QString title);

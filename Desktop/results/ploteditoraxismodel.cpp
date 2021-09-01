@@ -120,6 +120,16 @@ void AxisModel::getEntryAndBreaks(size_t & entry, bool & breaks, const QModelInd
 	breaks	= hasBreaks() && (	_vertical ? index.row()		: index.column()) == 0;
 }
 
+void AxisModel::refresh()
+{
+	beginResetModel();
+	endResetModel();
+	emit titleTypeChanged(titleType());
+	emit typeChanged(type());
+	emit rangeChanged();
+	emit limitsChanged();
+}
+
 QVariant AxisModel::data(const QModelIndex &index, int role) const
 {
 	if(role != Qt::DisplayRole || index.row() < 0 || index.row() >= rowCount() || index.column() < 0 || index.column() >= columnCount())

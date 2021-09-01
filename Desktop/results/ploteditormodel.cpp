@@ -282,13 +282,16 @@ void PlotEditorModel::refresh()
 	if(!_analysis)
 		return;
 
+	_analysis->setEditOptionsOfPlot(_name.toStdString(), _imgOptions["editOptions"]);
+
 	//Lets make sure the plot gets reloaded by QML
 	_goBlank = true;
 	emit dataChanged();
 	_goBlank = false;
 	emit dataChanged();
 
-	_analysis->setEditOptionsOfPlot(_name.toStdString(), _imgOptions["editOptions"]);
+	_xAxis->refresh();
+	_yAxis->refresh();
 }
 
 QUrl PlotEditorModel::imgFile() const
