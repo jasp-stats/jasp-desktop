@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-09-02 07:34+0000\n"
+"Last-Translator: Koji Kosugi <kosugitti@gmail.com>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.8.1-dev\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
 
@@ -298,7 +304,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
 msgstr "y を小数点以下 n 桁に丸めます"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
 msgstr "yの要素数を返します"
@@ -335,13 +340,11 @@ msgstr ""
 "相関を変換するフィッシャーのZ変換(すなわち、逆双曲線正接)により、-1と1の間の"
 "数値を実線に変換する"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
-msgstr ""
-"逆フィッシャーのZ変換(すなわち双曲正接)で実数を-1から1の間の数に変換します。"
+msgstr "逆フィッシャーのZ変換(すなわち双曲正接)で実数を-1から1の間の数に変換します。"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
@@ -367,24 +370,18 @@ msgid ""
 "centrality parameter ncp"
 msgstr "自由度dfと非中心性パラメーターncpをもつt分布からデータを生成します"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
-msgstr ""
-"自由度dfと非中心性パラメータncpを持つカイ2乗分布からデータを生成します。"
+msgstr "自由度dfと非中心性パラメータncpを持つカイ2乗分布からデータを生成します。"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
 "df1, df2 and non-centrality parameter ncp"
-msgstr ""
-"指定された自由度 df1, df2 と非中心性パラメータ ncp を持つ F 分布からデータを"
-"生成します．"
+msgstr "指定された自由度 df1, df2 と非中心性パラメータ ncp を持つ F 分布からデータを生成します．"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
@@ -413,7 +410,6 @@ msgstr ""
 "指定された形状パラメータ，アルファとベータのをもつベータ分布からデータを生成"
 "します"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
 msgstr "minとmaxの間の一様分布からデータを生成します"
@@ -428,14 +424,11 @@ msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
 msgstr "指定された比率のパラメータを持つ指数分布からデータを生成します"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
 "mean meanLog and standard deviation sdLog"
-msgstr ""
-"指定された対数平均meanLogと標準偏差sdLogを使用して対数正規分布からデータを生"
-"成します"
+msgstr "指定された対数平均meanLogと標準偏差sdLogを使用して対数正規分布からデータを生成します"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -514,7 +507,6 @@ msgctxt "ContrastsList|"
 msgid "polynomial"
 msgstr "多項"
 
-#, fuzzy
 msgctxt "ContrastsList|"
 msgid "custom"
 msgstr "カスタム"
@@ -1036,7 +1028,6 @@ msgctxt "RecentFiles|"
 msgid "Recent Files"
 msgstr "最近使ったファイル"
 
-#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
 msgstr "計算された列のコードをクリアする(あるいはクリアされている)"
@@ -1252,62 +1243,50 @@ msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
 msgstr "否定: %1"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "absolute value"
 msgstr "絶対値"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "standard deviation"
 msgstr "標準偏差"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "variance"
 msgstr "分散"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
 msgstr "総和"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "product of values"
 msgstr "値の積"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
 msgstr "最小値を返します"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
 msgstr "最大値を返します"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "mean"
 msgstr "平均"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
 msgstr "y を小数点以下 n 桁に丸めます"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
 msgstr "yの要素数を返します"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "median"
 msgstr "中央値"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
 msgstr "if-else文"
@@ -1348,12 +1327,10 @@ msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr "フィルタはすでに適用されています。"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
 msgstr "ドキュメントを開く"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Hide filter"
 msgstr "フィルタを非表示"
@@ -1394,7 +1371,6 @@ msgctxt "JagsTableView|"
 msgid "Delete Data"
 msgstr "データの削除"
 
-#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "リセット"
@@ -1411,12 +1387,10 @@ msgctxt "MainPage|"
 msgid "Show data"
 msgstr "データを表示する"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Resize data/results"
 msgstr "データ/結果のサイズを変更する"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Drag to show data"
 msgstr "ドラッグしてデータを表示"
@@ -1565,17 +1539,14 @@ msgctxt "SetSeed|"
 msgid "Set seed:"
 msgstr "シードを設定します。"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
 msgstr "列を追加"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
 msgstr "列を削除"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr "リセット"
@@ -1624,7 +1595,6 @@ msgctxt "SubjectivePriors|"
 msgid "mean:"
 msgstr "平均："
 
-#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "std:"
 msgstr "標準偏差："
@@ -1705,7 +1675,6 @@ msgctxt "WelcomePage|"
 msgid "Free:"
 msgstr "フリー："
 
-#, fuzzy
 msgctxt "WelcomePage|"
 msgid "Friendly:"
 msgstr "フレンドリー："
@@ -1737,7 +1706,6 @@ msgstr ""
 "JASPには、古典的な解析方法とベイズ解析方法の両方の標準的な解析方法が用意され"
 "ています。"
 
-#, fuzzy
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
 msgstr "それでは、データファイルを開いて、JASPを試してみましょう。"
@@ -2090,17 +2058,14 @@ msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
 msgstr "プロットのサイズ変更中にエラーが発生しました"
 
-#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
 msgstr "スケール"
 
-#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
 msgstr "順序"
 
-#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
 msgstr "名義"
@@ -2117,7 +2082,6 @@ msgctxt "MessageForwarder|"
 msgid "Cancel"
 msgstr "キャンセル"
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Save"
 msgstr "保存"
@@ -2150,14 +2114,11 @@ msgctxt "MainWindow|"
 msgid "Datafile changed"
 msgstr "データファイルが変更されました"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
-msgstr ""
-"このJASPファイルで使用していたデータファイルが変更されました。この新しいデー"
-"タで分析をリロードしますか？"
+msgstr "このJASPファイルで使用していたデータファイルが変更されました。この新しいデータで分析をリロードしますか？"
 
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
@@ -2232,7 +2193,7 @@ msgctxt "MainWindow|"
 msgid "File has changed"
 msgstr "ファイルが変更されました"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to open file because:\n"
@@ -2413,7 +2374,7 @@ msgstr "本当にすべての分析を削除しますか？"
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
-msgstr ""
+msgstr "バンドルモジュール%1の読み込みに失敗しました"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -2422,23 +2383,26 @@ msgid ""
 "\n"
 "%2"
 msgstr ""
+"バンドルモジュール %1 のロードに失敗し、次のエラーが発生しました:\n"
+"\n"
+"%2"
 
 msgctxt "RibbonModel|"
 msgid "R (Beta)"
-msgstr ""
+msgstr "R (ベータ)"
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
-msgstr ""
+msgstr "アップグレードの読み込みエラー"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
 msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr ""
+msgstr "%1 のアップグレードを読み込んでいる間にエラーが発生しました: %2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
-msgstr ""
+msgstr "アップグレードを読み取れませんでした"
 
 msgctxt "Modules::Upgrader|"
 msgid ""
@@ -2447,10 +2411,13 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
+"古いJASPファイルを読むために必要なアップグレードができませんでした...。\n"
+"JASPを使用することはできますし、古いファイルを読むこともできますが、いくつかのオプションが正しく理解できなかったり、いくつかの分析が完全に読み込めなか"
+"ったりすることがあります。"
 
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
-msgstr ""
+msgstr "ファイルが変更されました"
 
 msgctxt "OnlineDataManager|"
 msgid ""
@@ -2458,115 +2425,118 @@ msgid ""
 "\n"
 "Would you like to override the online file?"
 msgstr ""
+"このファイルのオンライン コピーは、開かれてから変更されています。\n"
+"\n"
+"オンライン ファイルを上書きしますか?"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
-msgstr ""
+msgstr "アップロードの実行 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating download of "
-msgstr ""
+msgstr "ダウンロードの開始: "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new file "
-msgstr ""
+msgstr "新規ファイル作成の開始 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
-msgstr ""
+msgstr "新規フォルダ作成の開始 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
-msgstr ""
+msgstr "OSF関係のアクションの開始 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Upload of "
-msgstr ""
+msgstr "アップロード: "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Download of "
-msgstr ""
+msgstr "ダウンロード: "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new file "
-msgstr ""
+msgstr "新規ファイルの作成 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
-msgstr ""
+msgstr "新規フォルダの作成 "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
-msgstr ""
+msgstr "OSFアクション "
 
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
-msgstr ""
+msgstr "%3 が原因で%1 %2 が失敗しました"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
-msgstr ""
+msgstr " 進行中"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr ""
+msgstr "折りたたむ"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
-msgstr ""
+msgstr "タイトルの編集"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy"
-msgstr ""
+msgstr "コピー"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy LaTeX"
-msgstr ""
+msgstr "LaTeXをコピーする"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy Citations"
-msgstr ""
+msgstr "引用をコピーする"
 
 msgctxt "ResultMenuModel|"
 msgid "Save Image As"
-msgstr ""
+msgstr "画像を名前を付けて保存"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Image"
-msgstr ""
+msgstr "画像の編集"
 
 msgctxt "ResultMenuModel|"
 msgid "Add Note"
-msgstr ""
+msgstr "ノートの追加"
 
 msgctxt "ResultMenuModel|"
 msgid "Duplicate"
-msgstr ""
+msgstr "複製"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove"
-msgstr ""
+msgstr "削除"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove All"
-msgstr ""
+msgstr "すべて削除"
 
 msgctxt "ResultMenuModel|"
 msgid "Refresh All"
-msgstr ""
+msgstr "すべて更新"
 
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
-msgstr ""
+msgstr "依存関係の表示"
 
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
-msgstr ""
+msgstr "結果のエクスポート"
 
 msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
-msgstr ""
+msgstr "結果の警告"
 
 msgctxt "HelpModel|"
 msgid ""
@@ -2577,69 +2547,73 @@ msgid ""
 "\n"
 "Additional documentation will be available in future releases of JASP."
 msgstr ""
+"近日公開\n"
+"========\n"
+"\n"
+"現在、この分析に利用できるヘルプはありません。\n"
+"\n"
+"JASPの将来のリリースでは、追加のドキュメントが利用可能になる予定です。"
 
 msgctxt "QObject|"
 msgid "valid R code"
-msgstr ""
+msgstr "有効な R コード"
 
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr ""
+msgstr "ドロップダウン %2で不明なオプション %1が発生しました"
 
 msgctxt "ActionButtons|"
 msgid "Open"
-msgstr ""
+msgstr "開く"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Save"
 msgstr "保存"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
-msgstr ""
+msgstr "名前を付けて保存"
 
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr ""
+msgstr "結果のエクスポート"
 
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr ""
+msgstr "データのエクスポート"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr ""
+msgstr "データの同期"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Close"
 msgstr "閉じる"
 
 msgctxt "ActionButtons|"
 msgid "Preferences"
-msgstr ""
+msgstr "設定"
 
 msgctxt "ActionButtons|"
 msgid "About"
-msgstr ""
+msgstr "これについて"
 
 msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
-msgstr ""
+msgstr "カテゴリ"
 
 msgctxt "FileMenu|"
 msgid "File Types"
-msgstr ""
+msgstr "ファイルの種類"
 
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "OSF からファイルを開くことができませんでした"
 
 msgctxt "FileMenu|"
 msgid "No associated data file"
-msgstr ""
+msgstr "関連付けられたデータ ファイルがありません"
 
 msgctxt "FileMenu|"
 msgid ""
@@ -2647,35 +2621,37 @@ msgid ""
 "Do you want to search for such a data file on your computer?\n"
 "NB: You can also set this data file via menu File/Sync Data."
 msgstr ""
+"JASPは同期すべき関連データファイルをみつけられませんでした。\n"
+"そのようなデータファイルをコンピュータ上で探しますか？\n"
+"注：このデータファイルは、メニューの［ファイル］／［データの同期］で設定することもできます。"
 
-#, fuzzy
 msgctxt "FileMenu|"
 msgid "Find Data File"
 msgstr "データファイルの検索"
 
 msgctxt "FileMenu|"
 msgid "Data File"
-msgstr ""
+msgstr "データファイル"
 
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
-msgstr ""
+msgstr "ユーザー名かパスワードが正しくありません。もう一度やり直してください。"
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
-msgstr ""
+msgstr "OSFサービスが利用できません。インターネットの接続状況をご確認ください。"
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
-msgstr ""
+msgstr "接続タイムアウトエラーです。インターネット接続を確認してください。"
 
 msgctxt "OSF|"
 msgid "OSF Error"
-msgstr ""
+msgstr "OSF エラー"
 
 msgctxt "OSF|"
 msgid "Projects"
-msgstr ""
+msgstr "プロジェクト"
 
 msgctxt "OSF|"
 msgid ""
@@ -2683,10 +2659,13 @@ msgid ""
 "\n"
 "To add a new project please use the online OSF services."
 msgstr ""
+"ファイルをプロジェクト リストに追加できません。\n"
+"\n"
+"新しいプロジェクトを追加するには、オンライン OSF サービスを使用してください。"
 
 msgctxt "OSF|"
 msgid "Data Providers"
-msgstr ""
+msgstr "データ提供者"
 
 msgctxt "OSF|"
 msgid ""
@@ -2695,537 +2674,536 @@ msgid ""
 "To add a new data provider (eg. google drive) please use the online OSF "
 "services."
 msgstr ""
+"プロジェクトのデータ提供者リストにファイルを追加することはできません。\n"
+"\n"
+"新しいデータプロバイダー（例：google drive）を追加するには、オンラインOSFサービスをご利用ください。"
 
 #, qt-format
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "不明な理由により、ファイルを '%1 に追加することはできません。"
 
 msgctxt "OSF|"
 msgid "File Types"
-msgstr ""
+msgstr "ファイルの種類"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "OSF からファイルを開くことができませんでした"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr ""
+msgstr "エラーが発生し、フォルダを作成できませんでした。"
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
 msgstr ""
+"新しいフォルダをプロジェクトリストに追加することはできません。<br>新しいプロジェクトを追加するには、OSFのオンラインサービスをご利用ください。"
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
+"プロジェクトのデータ提供者リストにファイルを追加することはできません。<br>新しいデータプロバイダー（例：google "
+"drive）を追加するには、オンラインOSFサービスをご利用ください。"
 
 #, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "不明な理由により、「%1」に新しいフォルダを追加できません。"
 
 msgctxt "OSF|"
 msgid "Folder"
-msgstr ""
+msgstr "フォルダ"
 
 msgctxt "OSF|"
 msgid "Login"
-msgstr ""
+msgstr "ログイン"
 
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
-msgstr ""
+msgstr "ユーザーまたはパスワードを空にすることはできません。"
 
 msgctxt "OSF|"
 msgid "Entry name cannot be empty."
-msgstr ""
+msgstr "エントリー名を空にすることはできません。"
 
 #, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
-msgstr ""
+msgstr "%1名前には以下の文字しか使用できません。 A-Z a-z 0-9 _ %2"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
 msgstr "最近使ったファイル"
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
-msgstr ""
+msgstr "現在のファイル"
 
 msgctxt "ResourceButtons|"
 msgid "Computer"
-msgstr ""
+msgstr "コンピュータ"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "OSF"
 msgstr "OSF"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Data Library"
 msgstr "データ ライブラリ"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
-msgstr ""
+msgstr "データ"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Results"
 msgstr "結果"
 
 msgctxt "ResourceButtons|"
 msgid "Interface"
-msgstr ""
+msgstr "インターフェース"
 
 msgctxt "ResourceButtons|"
 msgid "Advanced"
-msgstr ""
+msgstr "詳細"
 
 #, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr ""
+msgstr "コントラスト %1"
 
 #, qt-format
 msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
-msgstr ""
+msgstr "レイヤー %1"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
-msgstr ""
+msgstr "ラジオボタングループ要素内(名前: %1)のラジオボタンには名前がありません"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr ""
+msgstr "名前%1に対応するラジオボタンがありません"
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "A row component in %1 does not have a name"
-msgstr ""
+msgstr "%1 の行コンポーネントに名前がありません"
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
-msgstr ""
+msgstr "%1の2つの行コンポーネントが同じ名前です"
 
 msgctxt "SortMenuModel|"
 msgid "None"
-msgstr ""
+msgstr "なし"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
-msgstr ""
+msgstr "名前で並べ替え"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name A-Z"
-msgstr ""
+msgstr "名前 A から Z で並べ替え"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
-msgstr ""
+msgstr "名前 Z-A で並べ替え"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by type"
-msgstr ""
+msgstr "タイプで並べ替え"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
-msgstr ""
+msgstr "日付順に並べ替え"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by size"
-msgstr ""
+msgstr "サイズ順に並べ替え"
 
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
-msgstr ""
+msgstr "並べ替え可能な親でSortMenuModelが呼び出されていません"
 
 msgctxt "TextAreaBase|"
 msgid "Model applied"
-msgstr ""
+msgstr "適用されるモデル"
 
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
-msgstr ""
+msgstr "式は数値を返しませんでした。"
 
 msgctxt "TextInputBase|"
 msgid "Integer Field"
-msgstr ""
+msgstr "整数フィールド"
 
 msgctxt "TextInputBase|"
 msgid "Number Field"
-msgstr ""
+msgstr "数値フィールド"
 
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
-msgstr ""
+msgstr "パーセンテージフィールド"
 
 msgctxt "TextInputBase|"
 msgid "Integers Field"
-msgstr ""
+msgstr "整数フィールド"
 
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr ""
+msgstr "二倍長のフィールド"
 
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
-msgstr ""
+msgstr "列フィールドの追加"
 
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr ""
+msgstr "計算列フィールドの追加"
 
 msgctxt "TextInputBase|"
 msgid "Formula Field"
-msgstr ""
+msgstr "数式フィールド"
 
 msgctxt "TextInputBase|"
 msgid "Formulas Field"
-msgstr ""
+msgstr "数式フィールド"
 
 msgctxt "TextInputBase|"
 msgid "Text Field"
-msgstr ""
+msgstr "テキストフィールド"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr ""
+msgstr "値 (%1) は %2 でなければなりません"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr ""
+msgstr "%1のソースモデルは因子リストからでなければなりません"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Cannot find source for VariableList %1"
-msgstr ""
+msgstr "変数一覧 %1 のソースが見つかりません"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr ""
+msgstr "変数リスト%1のソースの種類が正しくありません"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
-msgstr ""
+msgstr "変数リスト %1 の関連リストが見つかりません"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
-msgstr ""
+msgstr "関連リスト(%1)に誤った種類の変数リスト%2 が見つかりました"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr ""
+msgstr "%1のソースに名前が付けられていません"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr ""
+msgstr "%1のソースが提供されていません"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr ""
+msgstr "%2 のソースに関するコンポーネント%1が見つかりません"
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr ""
+msgstr "要因"
 
 msgctxt "FactorLevelList|"
 msgid "Level"
-msgstr ""
+msgstr "水準"
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr ""
+msgstr "新しい要因"
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr ""
+msgstr "新しい水準"
 
 msgctxt "TableView|"
 msgid "Add to the left"
-msgstr ""
+msgstr "左に追加"
 
 msgctxt "TableView|"
 msgid "Add to the right"
-msgstr ""
+msgstr "右に追加"
 
-#, fuzzy
 msgctxt "TableView|"
 msgid "Delete"
 msgstr "削除"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "変数を標準化します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "値の符号を返します"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "文字列に少なくとも1回は部分文字列が含まれている場合、trueを返します"
 
 msgctxt "FactorsForm|"
 msgid "+"
-msgstr ""
+msgstr "+"
 
 msgctxt "FactorsForm|"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
-msgstr ""
+msgstr "<sup>*</sup>OSFアカウントでのログインのみで、ORCIDや機関へのログインはサポートされていません。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
-msgstr ""
+msgstr "有効なモジュールを記憶する"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
-msgstr ""
+msgstr "Github の既定の PAT を使用する"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
 "environment variables."
-msgstr ""
+msgstr "バンドルされているGITHUB_PATを使用するか、利用可能な場合は環境変数で設定されているものを使用してください。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
+msgstr "プライベート GITHUB_PAT:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
-msgstr ""
+msgstr "インストールされているモジュールやパッケージの消去"
 
 msgctxt "PrefsAdvanced|"
 msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
-msgstr ""
+msgstr "これにより、appdataの 'renv' フォルダーと 'Modules' フォルダーが消去されます。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
-msgstr ""
+msgstr "LC_CTYPEの最適な設定をJASPに推測させる（推奨！）"
 
 msgctxt "PrefsAdvanced|"
 msgid "Always set LC_CTYPE to \"C\""
-msgstr ""
+msgstr "LC_CTYPEを常に「C」に設定する"
 
 msgctxt "PrefsAdvanced|"
 msgid "Keep LC_CTYPE at system default"
-msgstr ""
+msgstr "システムのデフォルトでLC_CTYPEを維持します"
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr ""
+msgstr "Windowsの回避策"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is in native encoding when no BOM has been specified"
-msgstr ""
+msgstr "BOM が指定されていない場合、CSV がネイティブ エンコードであると仮定します"
 
 msgctxt "PrefsData|"
 msgid "See documentation for more information "
-msgstr ""
+msgstr "詳しくはドキュメントをご覧ください "
 
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr ""
+msgstr "ユーザーインターフェースオプション"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr ""
+msgstr "R、JAGS、またはLavaanのコード："
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr ""
+msgstr "結果とヘルプ："
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr ""
+msgstr "明るいテーマ"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
-msgstr ""
+msgstr "ダークテーマ"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr ""
+msgstr "優先する言語"
 
 msgctxt "PrefsUI|"
 msgid "Choose language  "
-msgstr ""
+msgstr "言語を選択  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
-msgstr ""
+msgstr "セーフグラフィックモード"
 
 msgctxt "PrefsUI|"
 msgid "Disable animations"
-msgstr ""
+msgstr "アニメーションの無効化"
 
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
-msgstr ""
+msgstr "ネイティブファイルダイアログの使用"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "変数を標準化します"
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "値の符号を返します"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "文字列に少なくとも1回は部分文字列が含まれている場合、trueを返します"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
-msgstr ""
+msgstr "ここをクリックして開発者モジュールを選択します。"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "タイトル"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr ""
+msgstr "シーケンスの指定"
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
-msgstr ""
+msgstr "手動で設定"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr ""
+msgstr "From"
 
 msgctxt "PlotEditingAxis|"
 msgid "to"
-msgstr ""
+msgstr "To"
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
-msgstr ""
+msgstr "ステップ"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Label"
 msgstr "ラベル"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr ""
+msgstr "チェック #"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
-msgstr ""
+msgstr "左にチェックを挿入"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick right"
-msgstr ""
+msgstr "チェックを右に挿入"
 
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
-msgstr ""
+msgstr "チェックの削除"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
-msgstr ""
+msgstr "データに基づく"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
-msgstr ""
+msgstr "チェックに基づく"
 
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
-msgstr ""
+msgstr "下限"
 
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
-msgstr ""
+msgstr "上限"
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr ""
+msgstr "x軸"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
+msgstr "y軸"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr ""
+msgstr "メインメニューの表示"
 
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
-msgstr ""
+msgstr "モジュールメニューの表示"
 
 msgctxt "VariablesWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
+msgstr "ここでラベルを編集したり、どの値をフィルタリングするかを選択します。"
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr ""
+msgstr "要素をうまくグループ化"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr ""
+msgstr "ここに整数を入力できます： "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr ""
+msgstr "これは非常に便利なツールチップですよね？"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr ""
+msgstr "最初のチェックボックス"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr ""
+msgstr "2 番目のチェックボックス"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr ""
+msgstr "最後のチェックボックス"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
 msgstr "変数"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "分割"
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
-msgstr ""
+msgstr "要因水準一覧"
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -3233,6 +3211,8 @@ msgid ""
 "probably could not connect to the server. Don't worry, JASP will work fine "
 "it just might not tell you about a few small known issues."
 msgstr ""
+"JASPは、このバージョンの既知の問題をダウンロードする際に問題が発生し、おそらくサーバーに接続できませんでした。JASPは正常に動作しますので、ご心配な"
+"く。ただし、いくつかの小さな既知の問題については教えてくれないかもしれません。"
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -3240,6 +3220,8 @@ msgid ""
 "isn't necessarily a problem but if it keeps occuring you could contact the "
 "JASP team for assistance."
 msgstr ""
+"JASPはこのバージョンの既知の問題をロードする際に問題が発生しました。これは必ずしも問題ではありませんが、この問題が発生し続ける場合は、JASPチームに"
+"問い合わせてください。"
 
 #, qt-format
 msgctxt "KnownIssues|"
@@ -3248,29 +3230,29 @@ msgid ""
 "this isn't necessarily a problem but if it keeps occuring you could contact "
 "the JASP team for assistance."
 msgstr ""
+"JASPでは、このバージョンの既知の問題をロードする際に問題（'%1'）が発生しました。これは必ずしも問題ではありませんが、この問題が発生し続ける場合は、"
+"JASPチームに問い合わせてください。"
 
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
-msgstr ""
+msgstr "列型を変換する方法に何か問題があり、何が起こるかわかりません。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain decimals."
-msgstr ""
+msgstr "値に小数が含まれているため、列を順序に変換するのに失敗しました。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to continuous: values contain text."
-msgstr ""
+msgstr "値にテキストが含まれているため，列を連続変数に変換できませんでした。"
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain text or decimals."
-msgstr ""
+msgstr "列を順序変数に変換できませんでした：値にテキストまたは小数が含まれています。"
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Value"
 msgstr "値"
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Label"
 msgstr "ラベル"
@@ -3286,10 +3268,16 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"残念ながらプロットの編集はできませんでした。\n"
+"\n"
+"エラーメッセージは次の通りです。\n"
+"%1.\n"
+"\n"
+"問題が解決しない場合は、上記のメッセージを https://jasp-stats.org/bug-reports に報告してください。"
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
-msgstr ""
+msgstr "インストールされているモジュールやパッケージの消去"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -3298,12 +3286,14 @@ msgid ""
 "\n"
 "Make sure to restart JASP afterwards!"
 msgstr ""
+"モジュールやパッケージを整理することで、JASPにバンドルされているものだけを使用することができます。\n"
+"\n"
+"終わったら必ずJASPを再起動してください！"
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr ""
+msgstr "掃除"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Cancel"
 msgstr "キャンセル"
@@ -3314,25 +3304,26 @@ msgid ""
 "No default spreadsheet editor for file %1. Do you want to export the data "
 "into a CSV file and start the default spreadsheet editor for this CSV file?"
 msgstr ""
+"ファイル%1用の既定の表計算エディタがありません。データをCSVファイルにエクスポートして、このCSVファイルのデフォルトの表計算エディタを起動しますか？"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
-msgstr ""
+msgstr "CSV 形式でデータ ファイルを生成"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
-msgstr ""
+msgstr "モジュール %1 のアップグレードの読み込みに失敗しました"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error: %1"
-msgstr ""
+msgstr "アップグレードの読み込み時に次のエラーが発生しました: %1"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
-msgstr ""
+msgstr "JASP起動時のモジュールの初期化に失敗しましたが、モジュールを削除すべきですか？"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3342,29 +3333,34 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
+"JASP の始動中にモジュールを初期化できませんでした。メッセージは次の通りです。\n"
+"\n"
+"%1\n"
+"\n"
+"モジュールを削除しますか？"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
-msgstr ""
+msgstr "モジュール%1の初期化に失敗しました"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
-msgstr ""
+msgstr "ディレクトリ%1からモジュールを初期化しようとしてエラーが発生しました。エラーは次の通りです:%2."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
+msgstr "モジュール %1 をロードしようとしてエラーが発生しました。エラーは次の通りです。'%2'"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
-msgstr ""
+msgstr "パス '%2'にあるモジュール%1のファイルの削除で問題が発生し、エラーは次のとおりでした：%3"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3372,11 +3368,13 @@ msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"モジュール%1のインストールが失敗し、次のエラーメッセージが表示されました。\n"
+"%2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Loading packages for Module %1 failed"
-msgstr ""
+msgstr "モジュール%1のパッケージのロードに失敗しました。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3384,10 +3382,12 @@ msgid ""
 "Loading the packages of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"モジュール%1のパッケージのロードに失敗し、次のエラーメッ セージが表示されました。\n"
+"%2"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Path cannot be handled by R"
-msgstr ""
+msgstr "パスはRでは処理できません。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3399,11 +3399,14 @@ msgid ""
 "and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
 ">Advanced->DeveloperMode."
 msgstr ""
+"モジュールをインストールしようとしていますが、パス「%1」に非アスキー文字（またはスペース）が含まれているため、Rのインストールに問題が発生する可能性があ"
+"ります。このモジュールのインストールに失敗した場合は、スペースを含まないアスキー文字だけのユーザー名に変更する（または新しいユーザー名を作る）ことで回避で"
+"きます。あるいは、環境設定->詳細->開発者モードで \"LC_CTYPE-set-to-C \"を無効にすることもできます。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
-msgstr ""
+msgstr "%1 が存在しないため、モジュールをインストールできません。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3414,58 +3417,64 @@ msgid ""
 "you are not the author of this module and do not know how to do this, "
 "contact: %2"
 msgstr ""
+"モジュールの名前が「%1」で、その名前は開発モジュールをインストールするために予約されているため、モジュールをインストールできません。\n"
+"（DESCRIPTIONとdescription."
+"jsonにある）名前を変更して、もう一度試してください。あなたがこのモジュールの作者ではなく、この方法がわからない場合は、以下に連絡してください。%2."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
-msgstr ""
+msgstr "フォルダの選択"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
+"開発モジュールをインストールするには、監視と読み込みを行うフォルダを選択する必要があります。これは、ファイルメニューの設定->詳細で行うことができます。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
-msgstr ""
+msgstr "モジュールの初期化の問題"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
 "\n"
 msgstr ""
+"開発者モジュールの読み込みに問題が発生しました:\n"
+"\n"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
-msgstr ""
+msgstr "ファイルまたはフォルダーがありません"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
-msgstr ""
+msgstr "選択したフォルダーには必要なファイルやフォルダーが含まれていないため、開発者用モジュールとしてインストールできません。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/Description.qml file."
-msgstr ""
+msgstr "inst/Description.qmlファイルを作成します。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr ""
+msgstr "分析コードを含むRディレクトリを作成します。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
+msgstr "optionsformの入ったinst/qmlディレクトリを作成します。"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr ""
+msgstr "リボンボタン用のアイコンを含む inst/icons ディレクトリを作成します。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
-msgstr ""
+msgstr "%1がありません"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3474,6 +3483,8 @@ msgid ""
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
 msgstr ""
+"開発モジュールのディレクトリから%1が削除されているようです。このファイルがないとモジュールは動作しませんので、必ず戻してください。今のところ、あなたの古"
+"い%2ファイルは維持されます。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3483,23 +3494,25 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"開発モジュールのディレクトリに%1が入っていないようです。これがないとモジュールが動作しませんので、必ず作成してください。どうやってインストールされたのか"
+"わかりませんので、開発モジュールは今すぐアンインストールしてください。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
-msgstr ""
+msgstr "%1を削除しました！"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
-msgstr ""
+msgstr "%1 を削除したようですが、このファイルはモジュールが動作するために必要です。開発モジュールは今アンインストールされます。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
-msgstr ""
+msgstr "フォルダー%1がありません"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3508,6 +3521,8 @@ msgid ""
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
 msgstr ""
+"開発モジュールのディレクトリから%1フォルダが削除されているようです。これがないとモジュールが動作しませんので、必ず元に戻してください。今のところ、古いフ"
+"ォルダは維持されます。"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3517,15 +3532,17 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"開発モジュールのディレクトリに%1というフォルダがなかったようです。これがないとモジュールが動作しませんので、必ず作成してください。どうやってインストール"
+"されたのかがわかりませんので、開発モジュールは今すぐアンインストールしてください。"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr ""
+msgstr "モジュールの説明を読み込んでいるときに問題が発生しました"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
+msgstr "<i>アーカイブ内のモジュールの説明を読み込めませんでした: '%1'</i>"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3534,10 +3551,12 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a href="
 "\"http://%6\">%6</a></i><br>"
 msgstr ""
+"<h3>%1</h3><i>バージョン %2</i><br><p>%3</p><br><br><i>%4によって作成され、%5によって維持されています</"
+"i><br><i>詳細についてはウェブサイトを参照してください: <a href=\"http://%6\">%6</a></i><br>"
 
 msgctxt "RibbonModel|"
 msgid "Module missing"
-msgstr ""
+msgstr "モジュールがありません"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -3547,24 +3566,26 @@ msgid ""
 "If you installed this version of JASP via an official installer let the JASP "
 "team know."
 msgstr ""
+"同梱されているモジュール%1が正しくインストールされていないため、ロードできないようです。\n"
+"このバージョンのJASPを公式インストーラーでインストールした場合は、JASPチームにお知らせください。"
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr ""
+msgstr "Rコードをコンソールで実行"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
 "is for: '%2'"
-msgstr ""
+msgstr "間違ったアップグレードが適用され、関数 '%1' を探していますが、このアップグレードは%2を対象にしています"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
 "is for: '%2' or lower"
-msgstr ""
+msgstr "間違ったアップグレードが適用され、バージョン '%1' を探していましたが、このアップグレードは '%2' 以下の場合です"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -3576,75 +3597,77 @@ msgid ""
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
 msgstr ""
+"ループが検出されたため、アップグレードを中止しました。\n"
+"\n"
+"%1を取ると、最終的にまた到達してしまいます。\n"
+"\n"
+"これは起こってはいけない問題です。%2のモジュール開発者が助けてくれるかもしれません。"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
-msgstr ""
+msgstr "ソースの列番号が%1の列数よりも大きい"
 
-#, fuzzy
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
 msgstr "変数フォームで設定できる変数リストは 1 つだけです。"
 
-#, fuzzy
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
-msgstr "変数フォームに使用可能なリストがありません"
+msgstr "変数フォームに使用可能なリストがありません。"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong column type: %1 for ListView %2"
-msgstr ""
+msgstr "リストビュー%2にまちがった列タイプ%1があります"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
-msgstr ""
+msgstr "<i> Linuxでは、デフォルトのスプレッドシートエディタが常に使用されます。</i>"
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
-#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Cancel"
 msgstr "キャンセル"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr ""
+msgstr "既定値をリセットする"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "タイトルを表示する"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr ""
+msgstr "軸の表示"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
-msgstr ""
+msgstr "チェック:"
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr ""
+msgstr "ポジション"
 
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
-msgstr ""
+msgstr "詳細"
 
 msgctxt "PlotEditingAxis|"
 msgid "Parse title as R expression"
-msgstr ""
+msgstr "タイトルをR式で解析"
 
 msgctxt "PlotEditingAxis|"
 msgid "Limits:"
-msgstr ""
+msgstr "制限："
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr ""
+msgstr "画像を別名で保存"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -3657,7 +3680,13 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"残念ながらプロットのサイズを変更することはできませんでした。\n"
+"\n"
+"エラーメッセージは次の通りです。\n"
+"%1\n"
+"\n"
+"問題が解決しない場合は、上記のメッセージを https://jasp-stats.org/bug-reports に報告してください。"
 
 msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
-msgstr ""
+msgstr "プロットの編集中にエラーが発生しました"
