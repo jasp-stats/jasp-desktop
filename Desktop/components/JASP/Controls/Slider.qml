@@ -30,10 +30,11 @@ SliderBase
 
 	Component.onCompleted: control.moved.connect(moved);
 
-	ColumnLayout
+    GridLayout
 	{
-		id:			columnLayout;
-		spacing:	controlLabel.visible ? jaspTheme.labelSpacing : 0
+        id:             columnLayout;
+        rows:           control.vertical ? 3 : 1
+        columns:        control.vertical ? 1 : 3
 
 		Label
 		{
@@ -46,7 +47,7 @@ SliderBase
 		Slider
 		{
 			id:					control
-			Layout.alignment:	control.orientation === Qt.Vertical ? Qt.AlignCenter : Qt.AlignLeft
+            Layout.alignment:	Qt.AlignCenter
 			Layout.leftMargin:	control.orientation === Qt.Vertical ? leftPadding + jaspTheme.sliderWidth : 0
 			value:				0.5
 			stepSize:			1 / slider.power
@@ -55,8 +56,8 @@ SliderBase
 			background: Rectangle
 			{
 				id:				sliderBackground
-				x:				control.leftPadding
-				y:				control.topPadding
+                x:				control.leftPadding
+                y:				control.topPadding + (control.vertical ? 0 : control.height / 4)
 				implicitWidth:	control.vertical ? jaspTheme.sliderWidth : jaspTheme.sliderLength
 				implicitHeight: control.vertical ? jaspTheme.sliderLength : jaspTheme.sliderWidth
 				width:			control.vertical ? implicitWidth : control.availableWidth
@@ -75,9 +76,9 @@ SliderBase
 
 			handle: Rectangle
 			{
-				id:				sliderHandle
-				x:				control.leftPadding + (control.vertical ? sliderBackground.radius - sliderHandle.radius : control.visualPosition * (control.availableWidth - width))
-				y:				control.topPadding + (control.vertical ? control.visualPosition * (control.availableHeight - height) : sliderBackground.radius - sliderHandle.radius)
+                id:				sliderHandle
+                x:				control.leftPadding + (control.vertical ? sliderBackground.radius - sliderHandle.radius : control.visualPosition * (control.availableWidth - width))
+                y:				control.topPadding + (control.vertical ? control.visualPosition * (control.availableHeight - height) : sliderBackground.radius - sliderHandle.radius) + (control.vertical ? 0 : control.height / 4)
 				implicitWidth:	jaspTheme.sliderHandleDiameter
 				implicitHeight: jaspTheme.sliderHandleDiameter
 				radius:			jaspTheme.sliderHandleDiameter / 2
