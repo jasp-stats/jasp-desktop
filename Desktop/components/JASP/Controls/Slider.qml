@@ -62,13 +62,13 @@ SliderBase
 				width:			control.vertical ? implicitWidth : control.availableWidth
 				height:			control.vertical ? control.availableHeight : implicitHeight
 				radius:			jaspTheme.sliderWidth / 2
-				color:			jaspTheme.sliderPartOn
+                color:			control.vertical ? jaspTheme.sliderPartOn : jaspTheme.sliderPartOff
 
 				Rectangle
 				{
 					width:		control.vertical ? parent.width : control.visualPosition * parent.width
 					height:		control.vertical ? control.visualPosition * parent.height : parent.height
-					color:		jaspTheme.sliderPartOff
+                    color:		control.vertical ? jaspTheme.sliderPartOff : jaspTheme.sliderPartOn
 					radius:		jaspTheme.sliderWidth / 2
 				}
 			}
