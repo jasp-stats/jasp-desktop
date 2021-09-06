@@ -442,6 +442,19 @@ void Utils::convertEscapedUnicodeToUTF8(std::string& inputStr)
 	}
 }
 
+bool Utils::isEqual(const double a, const double b)
+{
+	if (isnan(a) || isnan(b)) return false;
+
+	return (fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * DBL_EPSILON));
+}
+bool Utils::isEqual(const float a, const float b)
+{
+	if (isnan(a) || isnan(b)) return false;
+
+	return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * FLT_EPSILON);
+}
+
 #ifdef _WIN32
 std::wstring Utils::getShortPathWin(const std::wstring & longPath) 
 {

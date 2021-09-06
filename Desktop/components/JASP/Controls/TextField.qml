@@ -76,6 +76,7 @@ TextInputBase
 		control.textEdited.connect(textEdited);
 		control.pressed.connect(pressed);
 		control.released.connect(released);
+		lastValidValue = control.text;
 	}	
 		
 	Rectangle

@@ -67,7 +67,10 @@ public:
 	static bool			convertValueToDoubleForImport(	const std::string &strValue, double &doubleValue);
 	static std::string	doubleToString(double dbl, int precision = 10);
 	static void			convertEscapedUnicodeToUTF8(	std::string &inputStr);
-	
+
+	static bool isEqual(const float a, const float b);
+	static bool isEqual(const double a, const double b);
+
 #ifdef _WIN32
 	static std::wstring	getShortPathWin(const std::wstring & path);
 #endif

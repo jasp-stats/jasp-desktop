@@ -4,6 +4,7 @@
 #include "utilities/jsonutilities.h"
 #include "log.h"
 #include "gui/messageforwarder.h"
+#include "utils.h"
 
 namespace PlotEditor
 {
@@ -119,11 +120,14 @@ void AxisModel::getEntryAndBreaks(size_t & entry, bool & breaks, const QModelInd
 	breaks	= hasBreaks() && (	_vertical ? index.row()		: index.column()) == 0;
 }
 
-void AxisModel::simplifyLimitsType()
+void AxisModel::refresh()
 {
-	// floating point comparision is fine here
-	if (_range.size() > 0 && _limits.size() > 0 && _range[0] == _limits[0] && _range[1] == _limits[1])
-		setLimitsType(LimitsType::LimitsBreaks);
+	beginResetModel();
+	endResetModel();
+	emit titleTypeChanged(titleType());
+	emit typeChanged(type());
+	emit rangeChanged();
+	emit limitsChanged();
 }
 
 QVariant AxisModel::data(const QModelIndex &index, int role) const
@@ -190,11 +194,20 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int)
 	{
 		double newBreak = value.toDouble();
 
-		if(_breaks[entry] != newBreak)
+		if(!Utils::isEqual(_breaks[entry], newBreak))
 		{
+			double oldBreak = _breaks[entry];
+
 			if ((entry > 0 && _breaks[entry-1] >= newBreak)
 				|| (entry < _breaks.size() - 1 && _breaks[entry+1] <= newBreak))
 			{
+				// A break value should not be smaller that its left one, and higher than its reight one.
+				// Force the view to change its value back to the old value.
+				// This model is the source of a TableView, and if the _breaks[entry] is not changed,
+				// the TableView model will not see any difference in its values and will not ask the TableView to be updated.
+				_breaks[entry] = newBreak;
+				emit dataChanged(index, index);
+				_breaks[entry] = oldBreak;
 				emit dataChanged(index, index);
 				return false;
 			}
@@ -204,8 +217,9 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int)
 			double labelDouble = label.toDouble(&labelIsDouble);
 			QModelIndex index2 = index;
 
-			if (labelIsDouble && (std::abs(labelDouble - _breaks[entry]) < 0.00001))
+			if (labelIsDouble && (Utils::isEqual(labelDouble, oldBreak)))
 			{
+				// If the label is the same as the break value, then change olso the label.
 				_labels[entry] = value.toString();
 				int col = _vertical ? int(entry) : 1;
 				int row = _vertical ? 1 : int(entry);
@@ -214,14 +228,8 @@ bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int)
 
 			_breaks[entry] = newBreak;
 
-			if (_limitsType != LimitsType::LimitsManual)
-			{
-				if (newBreak < _limits[0])
-					setLimits(newBreak, 0);
-				else if (newBreak > _limits[1])
-					setLimits(newBreak, 1);
-			}
-
+			if (entry == _breaks.size() - 1)	setTo(newBreak);
+			if (entry == 0)						setFrom(newBreak);
 
 			emit dataChanged(index, index2);
 			emit somethingChanged();
@@ -297,6 +305,10 @@ void AxisModel::insertBreak(const QModelIndex &index, const size_t column, const
 	_labels.insert(_labels.begin() + column + position, QString::number(insertedValue));//, 'f', 3))
 
 	endInsertColumns();
+
+	if (insertedValue > to())	setTo(insertedValue);
+	if (insertedValue < from())	setFrom(insertedValue);
+
 	emit dataChanged(index, index);
 	emit somethingChanged();
 	emit hasBreaksChanged();
@@ -305,6 +317,8 @@ void AxisModel::insertBreak(const QModelIndex &index, const size_t column, const
 void AxisModel::deleteBreak(const QModelIndex &index, const size_t column)
 {
 	Log::log()	<<	"AxisModel::deleteBreak() column index is: " << column  << std::endl;
+	if (_breaks.size() <= 2) return;
+
 	emit addToUndoStack();
 
 	beginRemoveColumns(QModelIndex(), column, column + 1);
@@ -313,6 +327,10 @@ void AxisModel::deleteBreak(const QModelIndex &index, const size_t column)
 	_labels.erase(_labels.begin() + column);
 
 	endRemoveColumns();
+
+	if (column == _breaks.size())	setTo(_breaks[column - 1]);
+	if (column == 0)				setFrom(_breaks[0]);
+
 	emit dataChanged(index, index);
 	emit somethingChanged();
 	emit hasBreaksChanged();
@@ -338,34 +356,29 @@ void AxisModel::setRange(const double value, const size_t idx)
 		Log::log() << "Impossible index passed to setRange: idx: " << idx << " | value: " << value << std::endl;
 		return;
 	}
-	else if(_range[idx] == value)		return;
+	else if(Utils::isEqual(_range[idx], value))		return;
 
 	emit addToUndoStack();
 	_range[idx] = value;
-
-	if (idx <= 1) // only need to update the limits if from (0) or to (1) is modified
-		setLimits(value, idx);
 
 	emit rangeChanged();
 	emit somethingChanged();
 }
 
-void AxisModel::setFrom(const double from)
+void AxisModel::setFrom(const double newFrom)
 {
+	double oldFrom = from();
+	setRange(newFrom, 0);
 
-	setLimits(from, 0);
-	setLimitsType(LimitsType::LimitsBreaks);
-
-	setRange(from, 0);
+	if (Utils::isEqual(lower(), oldFrom))	setLimits(newFrom, 0);
 }
 
-void AxisModel::setTo(const double to)
+void AxisModel::setTo(const double newTo)
 {
+	double oldTo = to();
+	setRange(newTo, 1);
 
-	setLimits(to, 1);
-	setLimitsType(LimitsType::LimitsBreaks);
-
-	setRange(to, 1);
+	if (Utils::isEqual(upper(), oldTo))		setLimits(newTo, 1);
 }
 
 void AxisModel::setLimitsType(const LimitsType limitsType)
@@ -388,7 +401,7 @@ void AxisModel::setLimits(const double value, const size_t idx)
 		Log::log() << "Impossible index passed to setLimits: idx: " << idx << " | value: " << value << std::endl;
 		return;
 	}
-	else if (_limits[idx] == value)		return;
+	else if (Utils::isEqual(_limits[idx], value))		return;
 
 	emit addToUndoStack();
 
