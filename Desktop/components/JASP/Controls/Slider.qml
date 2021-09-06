@@ -30,11 +30,11 @@ SliderBase
 
 	Component.onCompleted: control.moved.connect(moved);
 
-    GridLayout
+	GridLayout
 	{
-        id:             columnLayout;
-        rows:           control.vertical ? 3 : 1
-        columns:        control.vertical ? 1 : 3
+		id:				columnLayout;
+		rows:			control.vertical ? 3 : 1
+		columns:		control.vertical ? 1 : 3
 
 		Label
 		{
@@ -47,7 +47,7 @@ SliderBase
 		Slider
 		{
 			id:					control
-            Layout.alignment:	Qt.AlignCenter
+			Layout.alignment:	Qt.AlignCenter
 			Layout.leftMargin:	control.orientation === Qt.Vertical ? leftPadding + jaspTheme.sliderWidth : 0
 			value:				0.5
 			stepSize:			1 / slider.power
@@ -56,29 +56,29 @@ SliderBase
 			background: Rectangle
 			{
 				id:				sliderBackground
-                x:				control.leftPadding
-                y:				control.topPadding + (control.vertical ? 0 : control.height / 4)
+				x:				control.leftPadding
+				y:				control.topPadding + (control.vertical ? 0 : control.height / 4)
 				implicitWidth:	control.vertical ? jaspTheme.sliderWidth : jaspTheme.sliderLength
 				implicitHeight: control.vertical ? jaspTheme.sliderLength : jaspTheme.sliderWidth
 				width:			control.vertical ? implicitWidth : control.availableWidth
 				height:			control.vertical ? control.availableHeight : implicitHeight
 				radius:			jaspTheme.sliderWidth / 2
-                color:			control.vertical ? jaspTheme.sliderPartOn : jaspTheme.sliderPartOff
+				color:			control.vertical ? jaspTheme.sliderPartOn : jaspTheme.sliderPartOff
 
 				Rectangle
 				{
 					width:		control.vertical ? parent.width : control.visualPosition * parent.width
 					height:		control.vertical ? control.visualPosition * parent.height : parent.height
-                    color:		control.vertical ? jaspTheme.sliderPartOff : jaspTheme.sliderPartOn
+					color:		control.vertical ? jaspTheme.sliderPartOff : jaspTheme.sliderPartOn
 					radius:		jaspTheme.sliderWidth / 2
 				}
 			}
 
 			handle: Rectangle
 			{
-                id:				sliderHandle
-                x:				control.leftPadding + (control.vertical ? sliderBackground.radius - sliderHandle.radius : control.visualPosition * (control.availableWidth - width))
-                y:				control.topPadding + (control.vertical ? control.visualPosition * (control.availableHeight - height) : sliderBackground.radius - sliderHandle.radius) + (control.vertical ? 0 : control.height / 4)
+				id:				sliderHandle
+				x:				control.leftPadding + (control.vertical ? sliderBackground.radius - sliderHandle.radius : control.visualPosition * (control.availableWidth - width))
+				y:				control.topPadding + (control.vertical ? control.visualPosition * (control.availableHeight - height) : sliderBackground.radius - sliderHandle.radius) + (control.vertical ? 0 : control.height / 4)
 				implicitWidth:	jaspTheme.sliderHandleDiameter
 				implicitHeight: jaspTheme.sliderHandleDiameter
 				radius:			jaspTheme.sliderHandleDiameter / 2
