@@ -291,7 +291,7 @@ bool Utils::getIntValue(const double &value, int &intValue)
 
 		if (modf(value, &intPart) == 0.0)
 		{
-			if (intPart <=  INT_MAX && intPart >= INT_MIN)
+			if (intPart <=  std::numeric_limits<int>::max() && intPart >= std::numeric_limits<int>::min())
 			{
 				intValue = int(intPart);
 				return true;
@@ -379,7 +379,7 @@ bool Utils::convertValueToIntForImport(const std::string &strValue, int &intValu
 			return false;
 	}
 	else
-		intValue = INT_MIN;
+		intValue = std::numeric_limits<int>::min();
 
 	return true;
 }
@@ -446,13 +446,13 @@ bool Utils::isEqual(const double a, const double b)
 {
 	if (isnan(a) || isnan(b)) return false;
 
-	return (fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * DBL_EPSILON));
+	return (fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<double>::epsilon()));
 }
 bool Utils::isEqual(const float a, const float b)
 {
 	if (isnan(a) || isnan(b)) return false;
 
-	return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * FLT_EPSILON);
+	return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
 }
 
 #ifdef _WIN32

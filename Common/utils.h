@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <limits>
 #include <boost/filesystem.hpp>
 #include "timers.h"
 

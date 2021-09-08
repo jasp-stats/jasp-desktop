@@ -199,7 +199,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 			{
 				int value = *reinterpret_cast<int*>(buff);
 
-				if (columnType == columnType::nominalText && value != INT_MIN)
+				if (columnType == columnType::nominalText && value != std::numeric_limits<int>::min())
 					value = mapValues[value];
 
 				ints[r] = value;
