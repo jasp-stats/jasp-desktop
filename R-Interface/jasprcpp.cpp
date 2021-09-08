@@ -1185,24 +1185,24 @@ void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibrary)
 		Rf_error("jaspRCPP_postProcessLocalPackageInstall did not receive a string, it should get that and the string should represent some kind of R library path.");
 }
 
-std::string jaspRCPP_encodeColumnName(const std::string & in)
+Rcpp::String jaspRCPP_encodeColumnName(const Rcpp::String & in)
 {
-	return encodeColumnName(in.c_str());
+	return CSTRING_TO_R_UTF8(encodeColumnName(jaspRCPP_nativeToUtf8(in).c_str()));
 }
 
-std::string jaspRCPP_decodeColumnName(const std::string & in)
+Rcpp::String jaspRCPP_decodeColumnName(const Rcpp::String & in)
 {
-	return decodeColumnName(in.c_str());
+	return CSTRING_TO_R_UTF8(decodeColumnName(jaspRCPP_nativeToUtf8(in).c_str()));
 }
 
-std::string jaspRCPP_encodeAllColumnNames(const std::string & in)
+Rcpp::String jaspRCPP_encodeAllColumnNames(const Rcpp::String & in)
 {
-	return encodeAllColumnNames(in.c_str());
+	return CSTRING_TO_R_UTF8(encodeAllColumnNames(jaspRCPP_nativeToUtf8(in).c_str()));
 }
 
-std::string jaspRCPP_decodeAllColumnNames(const std::string & in)
+Rcpp::String jaspRCPP_decodeAllColumnNames(const Rcpp::String & in)
 {
-	return decodeAllColumnNames(in.c_str());
+	return CSTRING_TO_R_UTF8(decodeAllColumnNames(jaspRCPP_nativeToUtf8(in).c_str()));
 }
 
 

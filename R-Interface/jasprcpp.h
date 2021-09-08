@@ -56,11 +56,11 @@ void jaspRCPP_setRWarning(SEXP Message);
 void jaspRCPP_setRError(SEXP Message);
 void jaspRCPP_setLog(SEXP Message);
 
-std::string jaspRCPP_encodeColumnName(		const std::string  & in);
-std::string jaspRCPP_decodeColumnName(		const std::string  & in);
-std::string jaspRCPP_encodeAllColumnNames(	const std::string  & in);
-std::string jaspRCPP_decodeAllColumnNames(	const std::string  & in);
-std::string jaspRCPP_nativeToUtf8(			const Rcpp::String & in);
+Rcpp::String jaspRCPP_encodeColumnName(		const Rcpp::String & in);
+Rcpp::String jaspRCPP_decodeColumnName(		const Rcpp::String & in);
+Rcpp::String jaspRCPP_encodeAllColumnNames(	const Rcpp::String & in);
+Rcpp::String jaspRCPP_decodeAllColumnNames(	const Rcpp::String & in);
+std::string  jaspRCPP_nativeToUtf8(			const Rcpp::String & in);
 
 
 int jaspRCPP_dataSetRowCount();
