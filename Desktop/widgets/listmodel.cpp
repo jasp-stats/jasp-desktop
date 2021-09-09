@@ -87,9 +87,13 @@ void ListModel::_initTerms(const Terms &terms, const RowControlsValues& allValue
 	_setTerms(terms);
 	endResetModel();
 
-	if (setupControlConnections)
-		for (SourceItem* sourceItem : listView()->sourceItems())
-			_connectSourceControls(sourceItem->listModel(), sourceItem->usedControls());
+	if (setupControlConnections) _connectAllSourcesControls();
+}
+
+void ListModel::_connectAllSourcesControls()
+{
+	for (SourceItem* sourceItem : listView()->sourceItems())
+		_connectSourceControls(sourceItem->listModel(), sourceItem->usedControls());
 }
 
 void ListModel::_connectSourceControls(ListModel* sourceModel, const QSet<QString>& controls)

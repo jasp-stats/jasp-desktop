@@ -54,6 +54,8 @@ void ListModelLabelValueTerms::resetTermsFromSources(bool )
 	setLabelValuesFromSource();
 
 	endResetModel();
+
+	_connectAllSourcesControls();
 }
 
 
