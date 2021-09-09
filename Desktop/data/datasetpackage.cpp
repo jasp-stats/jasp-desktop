@@ -1241,7 +1241,7 @@ void DataSetPackage::setColumnDataInts(size_t columnIndex, std::vector<int> ints
 		//Maybe something went wrong somewhere and we do not have labels for all values...
 		try
 		{
-			if (value != std::numeric_limits<int>::min())
+			if (value != std::numeric_limits<int>::lowest())
 				lab.getLabelObjectFromKey(value);
 		}
 		catch (const labelNotFound &)

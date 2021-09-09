@@ -28,10 +28,10 @@ public:
 	void						addLabel(const std::string		& val,	const std::string & label);
 
 	static bool						isMissingValue(double d)		{ return isnan(d);				}
-	static bool						isMissingValue(int i)			{ return i == std::numeric_limits<int>::min();			}
+	static bool						isMissingValue(int i)			{ return i == std::numeric_limits<int>::lowest();			}
 	static bool						isMissingValue(std::string s);
 
-	static int							missingValueInt()			{ return std::numeric_limits<int>::min();		}
+	static int							missingValueInt()			{ return std::numeric_limits<int>::lowest();		}
 	static double						missingValueDouble()		{ return NAN; }
 	static std::string					missingValueString();
 
