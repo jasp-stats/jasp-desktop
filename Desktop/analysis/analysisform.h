@@ -186,6 +186,7 @@ private:
 	QString										_info;
 	QMap<QString, QSet<ListModel*> >			_rSourceModelMap;
 	int											_signalValueChangedBlocked = 0;
+	bool										_signalValueChangedWasEmittedButBlocked = false;
 	
 	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?
 };
