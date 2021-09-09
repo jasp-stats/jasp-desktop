@@ -121,6 +121,7 @@ protected:
 			void	_addTerms(const Terms& terms);
 			void	_addTerm(const QString& term, bool isUnique = true);
 			void	_replaceTerm(int index, const Term& term);
+			void	_connectAllSourcesControls();
 
 			QString							_itemType;
 			bool							_needsSource			= true;
