@@ -1,0 +1,14 @@
+JASP includes other open source software components. The following
+is a list of these components (full copies of the license agreements
+used by these components are included below):
+
+- R logo (CC-BY-SA 4.0) 
+
+
+
+
+
+R logo (CC-BY-SA 4.0)
+---------------------
+
+The color of the logo has been slightly adjust to improve its contrast in the dark mode.
