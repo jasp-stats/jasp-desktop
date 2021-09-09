@@ -42,7 +42,7 @@ const std::string	jaspExtension	= ".jasp",
 //This function simply sets the proper environment of jaspengine, and starts it in junction-fixing mode. This is called after the installer runs to fix the junctions in Modules that actually point to renv-cache instead of nowhere
 bool runJaspEngineJunctionFixer(int argc, char *argv[], bool exitAfterwards = true)
 {
-	QApplication		app(argc, argv);
+	QApplication	*	app		= exitAfterwards ? new QApplication(argc, argv) : nullptr;
 	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine(false, false);
 	QString				workDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath();
 	
