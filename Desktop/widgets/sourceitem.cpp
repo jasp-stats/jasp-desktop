@@ -101,7 +101,7 @@ void SourceItem::_connectModels()
 
 	ColumnsModel* columnsModel = qobject_cast<ColumnsModel*>(_nativeModel);
 
-	connect(_nativeModel, &QAbstractItemModel::dataChanged,			this, &SourceItem::_resetModel);
+	connect(_nativeModel, &QAbstractItemModel::dataChanged,			this, &SourceItem::_dataChangedHandler);
 	connect(_nativeModel, &QAbstractItemModel::rowsInserted,		this, &SourceItem::_resetModel);
 	connect(_nativeModel, &QAbstractItemModel::rowsRemoved,			this, &SourceItem::_resetModel);
 	connect(_nativeModel, &QAbstractItemModel::rowsMoved,			this, &SourceItem::_resetModel);
@@ -132,6 +132,14 @@ void SourceItem::_resetModel()
 
 	if (!columnsModel || !columnsModel->blockSignals())
 		_listControl->model()->sourceTermsReset();
+}
+
+void SourceItem::_dataChangedHandler(const QModelIndex &, const QModelIndex &, const QVector<int> &roles)
+{
+	// If the dataChanged is due to a selection, don't reset the model: it is just that the QML item should get the right color.
+	if (roles.size() == 1 && roles.contains(ListModel::SelectedRole)) return;
+
+	_resetModel();
 }
 
 void SourceItem::_setUp()

@@ -88,6 +88,7 @@ private:
 private slots:
 	void									_connectModels();
 	void									_resetModel();
+	void									_dataChangedHandler(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 
 private:
 	JASPListControl		*			_listControl			= nullptr;
