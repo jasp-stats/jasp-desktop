@@ -12,6 +12,7 @@ class AboutModel : public QObject
 	Q_PROPERTY(QString	buildDate			READ buildDate											NOTIFY dummyNotifyBecauseWarNeverChanges	)
 	Q_PROPERTY(QString	copyrightMessage	READ copyrightMessage									NOTIFY dummyNotifyBecauseWarNeverChanges	)
 	Q_PROPERTY(QString	downloadUrl			READ downloadUrl										NOTIFY dummyNotifyBecauseWarNeverChanges	)
+	Q_PROPERTY(QString	openSourceUrl		READ openSourceUrl										NOTIFY dummyNotifyBecauseWarNeverChanges	)
 	Q_PROPERTY(QString	citation			READ citation											NOTIFY dummyNotifyBecauseWarNeverChanges	)
 	Q_PROPERTY(QString	warranty			READ warranty											NOTIFY dummyNotifyBecauseWarNeverChanges	)
 	Q_PROPERTY(QString	citationUrl			READ citationUrl										NOTIFY dummyNotifyBecauseWarNeverChanges	)
