@@ -292,7 +292,6 @@ Window
 		JC.Text
 		{
 			id:				warrantyText
-			height:			75
 			text:			aboutModel.warranty
 			textFormat:		Text.StyledText
 			opacity:		0.5
