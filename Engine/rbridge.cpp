@@ -449,7 +449,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
 					{
 						if (value == std::numeric_limits<int>::lowest())	resultCol.ints[rowNo++] = std::numeric_limits<int>::lowest();
-						else					resultCol.ints[rowNo++] = value;
+						else												resultCol.ints[rowNo++] = value;
 					}
 
 				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
@@ -476,7 +476,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
 					{
 						if (value == std::numeric_limits<int>::lowest())	resultCol.ints[rowNo++] = std::numeric_limits<int>::lowest();
-						else					resultCol.ints[rowNo++] = indices.at(value);
+						else												resultCol.ints[rowNo++] = indices.at(value);
 					}
 
 				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);
@@ -514,7 +514,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				{
 					valueToIndex[value] = index++;
 
-					if (value == std::numeric_limits<int>::max())		labels.push_back("Inf");
+					if (value == std::numeric_limits<int>::max())			labels.push_back("Inf");
 					else if (value == std::numeric_limits<int>::lowest())	labels.push_back("-Inf");
 					else
 					{
@@ -644,9 +644,9 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 
 				for (int value: uniqueValues)
 				{
-					if (value == std::numeric_limits<int>::max())			labels.push_back("Inf");
+					if (value == std::numeric_limits<int>::max())				labels.push_back("Inf");
 					else if (value == std::numeric_limits<int>::lowest())		labels.push_back("-Inf");
-					else							labels.push_back(std::to_string((double)value / 1000.0f));
+					else														labels.push_back(std::to_string((double)value / 1000.0f));
 				}
 
 				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);

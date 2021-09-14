@@ -35,7 +35,7 @@ bool ImportColumn::convertVecToInt(const std::vector<std::string> &values, std::
 		if (Utils::convertValueToIntForImport(value, intValue))
 		{
 			if (intValue != std::numeric_limits<int>::lowest())	uniqueValues.insert(intValue);
-			else if (!value.empty())	emptyValuesMap.insert(make_pair(row, value));
+			else if (!value.empty())							emptyValuesMap.insert(make_pair(row, value));
 
 			intValues.push_back(intValue);
 		}

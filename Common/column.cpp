@@ -677,8 +677,8 @@ void Column::setDefaultValues(enum columnType columnType)
 	switch(columnType)
 	{
 	case columnType::scale:			overwriteDataWithScale(std::vector<double>(rowCount(), static_cast<double>(std::nanf(""))));	break;
-	case columnType::ordinal:		overwriteDataWithOrdinal(std::vector<int>(rowCount(), std::numeric_limits<int>::lowest()));								break;
-	case columnType::nominal:		overwriteDataWithNominal(std::vector<int>(rowCount(), std::numeric_limits<int>::lowest()));								break;
+	case columnType::ordinal:		overwriteDataWithOrdinal(std::vector<int>(rowCount(), std::numeric_limits<int>::lowest()));		break;
+	case columnType::nominal:		overwriteDataWithNominal(std::vector<int>(rowCount(), std::numeric_limits<int>::lowest()));		break;
 	case columnType::nominalText:	overwriteDataWithNominal(std::vector<std::string>(rowCount()));									break;
 	case columnType::unknown:		throw std::runtime_error("Trying to set default values of a column with unknown column type...");
 	}
@@ -1016,8 +1016,8 @@ string Column::_getScaleValue(int row)
 
 	if (v > std::numeric_limits<double>::max())					return string({ (char)0xE2, (char)0x88, (char)0x9E, 0 });
 	else if (v < std::numeric_limits<double>::lowest())			return string({ (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 });
-	else if (Utils::isEmptyValue(v))	return Utils::emptyValue;
-	else								return Utils::doubleToString(v);
+	else if (Utils::isEmptyValue(v))							return Utils::emptyValue;
+	else														return Utils::doubleToString(v);
 }
 
 string Column::getOriginalValue(int row)
