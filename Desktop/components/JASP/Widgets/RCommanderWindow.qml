@@ -248,8 +248,8 @@ Window
 				anchors
 				{
 					top:		parent.top
-					left:		runButton.right
-					right:		parent.right
+					right:		runButton.left
+					left:		parent.left
 					bottom:		parent.bottom
 					margins:	jaspTheme.generalAnchorMargin
 				}
@@ -270,7 +270,7 @@ Window
 				anchors
 				{
 					top:			parent.top
-					left:			parent.left
+					right:			parent.right
 					bottom:			parent.verticalCenter
 					margins:		jaspTheme.generalAnchorMargin
 					bottomMargin:	jaspTheme.generalAnchorMargin * 0.5
@@ -305,8 +305,8 @@ Window
 				anchors
 				{
 					top:		parent.verticalCenter
-					left:		parent.left
-					bottom:	parent.bottom
+					right:		parent.right
+					bottom:		parent.bottom
 					margins:	jaspTheme.generalAnchorMargin
 					topMargin:	jaspTheme.generalAnchorMargin * 0.5
 				}
