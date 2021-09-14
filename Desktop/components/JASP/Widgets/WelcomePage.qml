@@ -79,12 +79,13 @@ FocusScope
 			Text
 			{
 				id:				welcomeToJASP
-				text:			qsTr("Welcome to JASP")
+				text:			qsTr("Welcome to JASP").replace(/, /g, ",&nbsp;")
 				color:			jaspTheme.white
 				font.family:	jaspTheme.font
 				font.pixelSize: 30 * welcomeRoot.scaler
 				font.weight:	Font.Bold
 				renderType:		Text.QtRendering
+				textFormat:		Text.StyledText
 
 				anchors
 				{
@@ -128,12 +129,13 @@ FocusScope
 			Text
 			{
 				id:				freshAndFunky
-				text:			qsTr("A Fresh Way to Do Statistics: Free, Friendly, and Flexible")
+				text:			qsTr("A Fresh Way to Do Statistics: Free, Friendly, and Flexible").replace(/, /g, ",&nbsp;")
 				color:			jaspTheme.white
 				font.family:	jaspTheme.font
 				font.pixelSize: 16 * welcomeRoot.scaler
 				font.weight:	Font.Normal
 				renderType:		Text.QtRendering
+				textFormat:		Text.StyledText
 
 				anchors
 				{
@@ -171,6 +173,7 @@ FocusScope
 					//font.weight:		Font.Bold
 					verticalAlignment:	Text.AlignVCenter
 					renderType:			Text.QtRendering
+					textFormat:			Text.StyledText
 					color:				"#23a1df"
 				}
 			}
@@ -193,6 +196,7 @@ FocusScope
 					color:				jaspTheme.black
 					wrapMode:			Text.WordWrap
 					renderType:			Text.QtRendering
+					textFormat:			Text.StyledText
 				}
 			}
 
@@ -222,9 +226,9 @@ FocusScope
 				Repeater
 				{
 					model:		[
-									qsTr("JASP is an open-source project with structural support from the University of Amsterdam."),
-									qsTr("JASP has an intuitive interface that was designed with the user in mind."),
-									qsTr("JASP offers standard analysis procedures in both their classical and Bayesian manifestations.")
+									qsTr("JASP is an open-source project with structural support from the University of Amsterdam.").replace(/, /g, ",&nbsp;"),
+									qsTr("JASP has an intuitive interface that was designed with the user in mind.").replace(/, /g, ",&nbsp;"),
+									qsTr("JASP offers standard analysis procedures in both their classical and Bayesian manifestations.").replace(/, /g, ",&nbsp;")
 								]
 					delegate:	explanationElement
 				}
@@ -234,12 +238,14 @@ FocusScope
 			Text
 			{
 				id:						openADataFile
-				text:					qsTr("So open a data file and take JASP for a spin!")
+				text:					qsTr("So open a data file and take JASP for a spin!").replace(/, /g, ",&nbsp;")
 				color:					jaspTheme.black
 				font.underline:			openDataFileMouse.containsMouse
 				font.family:			jaspTheme.font
 				font.pixelSize:			freshAndFunky.font.pixelSize + (2 * welcomeRoot.scaler)
 				renderType:				Text.QtRendering
+				textFormat:				Text.StyledText
+
 				anchors
 				{
 					horizontalCenter:	parent.horizontalCenter
@@ -278,13 +284,15 @@ FocusScope
 				{
 					id:						downloadNewJASP
 					anchors.centerIn:		parent
-					text:					qsTr("Click to get latest version")
+					text:					qsTr("Click to get latest version").replace(/, /g, ",&nbsp;")
 					font.family:			jaspTheme.font
 					font.pixelSize:			openADataFile.font.pixelSize + (downloadMouseArea.containsMouse ? 4 * welcomeRoot.scaler : 0)
 					font.weight:			Font.Bold
 					color:					jaspTheme.white
 					horizontalAlignment:	Text.AlignHCenter
 					verticalAlignment:		Text.AlignVCenter
+					renderType:				Text.QtRendering
+					textFormat:				Text.StyledText
 				}
 
 				MouseArea
@@ -300,10 +308,10 @@ FocusScope
 
 			property int widthOverflowers:	width * 0.9
 
-			TextArea
+			Text
 			{
 				id:						keepInMindBeta
-				text:					qsTr("Please keep in mind that this is a preview release and a number of features are still missing.\n\nIf JASP doesn’t do all you want today, then check back tomorrow: JASP is being developed at break-neck speed!")
+				text:					qsTr("Please keep in mind that this is a preview release and a number of features are still missing.\n\nIf JASP doesn’t do all you want today, then check back tomorrow: JASP is being developed at break-neck speed!").replace(/, /g, ",&nbsp;").replace(/\n\n/g, "<br><br>")
 				font.family:			jaspTheme.font
 				font.pixelSize:			12 * welcomeRoot.scaler
 				font.weight:			Font.Normal
@@ -311,9 +319,10 @@ FocusScope
 				width:					parent.widthOverflowers
 				wrapMode:				TextEdit.Wrap
 				renderType:				Text.QtRendering
-				readOnly:				true
-				selectByKeyboard:		false
-				selectByMouse:			false
+				textFormat:				Text.StyledText
+//				readOnly:				true
+//				selectByKeyboard:		false
+//				selectByMouse:			false
 				horizontalAlignment:	Text.AlignHCenter
 
 				anchors
