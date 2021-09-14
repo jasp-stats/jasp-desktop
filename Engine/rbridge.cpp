@@ -448,8 +448,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				for(int value : column.AsInts)
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
 					{
-						if (value == INT_MIN)	resultCol.ints[rowNo++] = INT_MIN;
-						else					resultCol.ints[rowNo++] = value;
+						if (value == std::numeric_limits<int>::lowest())	resultCol.ints[rowNo++] = std::numeric_limits<int>::lowest();
+						else												resultCol.ints[rowNo++] = value;
 					}
 
 				resultCol.labels = rbridge_getLabels(column.labels(), resultCol.nbLabels);
@@ -475,8 +475,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				for(int value : column.AsInts)
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
 					{
-						if (value == INT_MIN)	resultCol.ints[rowNo++] = INT_MIN;
-						else					resultCol.ints[rowNo++] = indices.at(value);
+						if (value == std::numeric_limits<int>::lowest())	resultCol.ints[rowNo++] = std::numeric_limits<int>::lowest();
+						else												resultCol.ints[rowNo++] = indices.at(value);
 					}
 
 				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);
@@ -500,8 +500,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 					int intValue;
 
 					if (std::isfinite(value))	intValue = (int)(value * 1000);
-					else if (value < 0)			intValue = INT_MIN;
-					else						intValue = INT_MAX;
+					else if (value < 0)			intValue = std::numeric_limits<int>::lowest();
+					else						intValue = std::numeric_limits<int>::max();
 
 					uniqueValues.insert(intValue);
 				}
@@ -514,8 +514,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				{
 					valueToIndex[value] = index++;
 
-					if (value == INT_MAX)		labels.push_back("Inf");
-					else if (value == INT_MIN)	labels.push_back("-Inf");
+					if (value == std::numeric_limits<int>::max())			labels.push_back("Inf");
+					else if (value == std::numeric_limits<int>::lowest())	labels.push_back("-Inf");
 					else
 					{
 						std::stringstream ss;
@@ -528,10 +528,10 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
 					{
 
-						if (std::isnan(value))			resultCol.ints[rowNo] = INT_MIN;
+						if (std::isnan(value))			resultCol.ints[rowNo] = std::numeric_limits<int>::lowest();
 						else if (std::isfinite(value))	resultCol.ints[rowNo] = valueToIndex[(int)(value * 1000)] + 1;
-						else if (value > 0)				resultCol.ints[rowNo] = valueToIndex[INT_MAX] + 1;
-						else							resultCol.ints[rowNo] = valueToIndex[INT_MIN] + 1;
+						else if (value > 0)				resultCol.ints[rowNo] = valueToIndex[std::numeric_limits<int>::max()] + 1;
+						else							resultCol.ints[rowNo] = valueToIndex[std::numeric_limits<int>::lowest()] + 1;
 
 						rowNo++;
 					}
@@ -634,8 +634,8 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 					int intValue;
 
 					if (std::isfinite(value))	intValue = (int)(value * 1000);
-					else if (value < 0)			intValue = INT_MIN;
-					else						intValue = INT_MAX;
+					else if (value < 0)			intValue = std::numeric_limits<int>::lowest();
+					else						intValue = std::numeric_limits<int>::max();
 
 					uniqueValues.insert(intValue);
 				}
@@ -644,9 +644,9 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 
 				for (int value: uniqueValues)
 				{
-					if (value == INT_MAX)			labels.push_back("Inf");
-					else if (value == INT_MIN)		labels.push_back("-Inf");
-					else							labels.push_back(std::to_string((double)value / 1000.0f));
+					if (value == std::numeric_limits<int>::max())				labels.push_back("Inf");
+					else if (value == std::numeric_limits<int>::lowest())		labels.push_back("-Inf");
+					else														labels.push_back(std::to_string((double)value / 1000.0f));
 				}
 
 				resultCol.labels = rbridge_getLabels(labels, resultCol.nbLabels);
