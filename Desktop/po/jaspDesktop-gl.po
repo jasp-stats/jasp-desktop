@@ -3812,3 +3812,7 @@ msgstr ""
 "\n"
 "Por favor, ten paciencia e agarda a que se amose o aplicativo antes de "
 "tratar de iniciar JASP outra vez."
+
+msgctxt "PlotEditor|"
+msgid "Open Documentation"
+msgstr ""

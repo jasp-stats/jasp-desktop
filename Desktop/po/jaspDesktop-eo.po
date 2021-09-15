@@ -3486,3 +3486,8 @@ msgid ""
 "Please be patient and wait for the application to show before attempting to "
 "start JASP again."
 msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor|"
+msgid "Open Documentation"
+msgstr "Malfermi Dokumentaron"

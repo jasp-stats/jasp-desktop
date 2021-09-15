@@ -3826,3 +3826,8 @@ msgstr ""
 "\n"
 "Bitte habe etwas Geduld und warte, bis die Anwendung angezeigt wird, bevor "
 "Du versuchst, JASP erneut zu starten."
+
+#, fuzzy
+msgctxt "PlotEditor|"
+msgid "Open Documentation"
+msgstr "Dokumentation öffnen"
