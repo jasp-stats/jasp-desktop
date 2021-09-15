@@ -11,9 +11,19 @@
 
 LanguageModel * LanguageModel::_singleton = nullptr;
 QLocale LanguageModel::_defaultLocale = QLocale(QLocale::English, QLocale::World);
+QMap<QString, bool> LanguageModel::_allowedLanguages =
+{
+	{ "nl",	true	},
+	{ "de",	true	},
+	{ "pt",	true	},
+	{ "gl",	true	},
+	{ "ja",	true	},
+	{ "es",	false	},
+	{ "zh",	false	}
+};
 
-LanguageModel::LanguageInfo::LanguageInfo(const QLocale& _locale, const QString& _qmFilename)
-	 : locale(_locale)
+LanguageModel::LanguageInfo::LanguageInfo(const QLocale& _locale, const QString& _qmFilename, bool _isComplete)
+	 : locale(_locale), isComplete(_isComplete)
 {
 	if (!_qmFilename.isEmpty()) qmFilenames.push_back(_qmFilename);
 }
@@ -59,6 +69,7 @@ QVariant LanguageModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	QString languageName = _languages.keys()[index.row()];
+	bool isComplete = _languages[languageName].isComplete;
 
 	QString result;
 	switch(role)
@@ -66,7 +77,7 @@ QVariant LanguageModel::data(const QModelIndex &index, int role) const
 	case NameRole:
 	case Qt::DisplayRole:
 	case LabelRole:
-	case ValueRole:			result = languageName; break;
+	case ValueRole:			result = languageName + (isComplete ? "" : " (incomplete)"); break;
 	case NationFlagRole:	result = "qrc:/translations/images/flag_" + languageCode(languageName) + ".png"; break;
 	case LocalNameRole:		result = languageCode(languageName); break;
 	default: result = "";
@@ -224,12 +235,20 @@ void LanguageModel::findQmFiles()
 			continue;
 		}
 
+		QString _languageCode = languageCode(loc);
+
+		if (!_allowedLanguages.contains(_languageCode))
+		{
+			Log::log() << "Language " << loc.language() << " (" << _languageCode << ") is not allowed";
+			continue;
+		}
+
 		QString language = languageName(loc);
 
 		if (!_languages.contains(language))
 		{
 			Log::log() << "Language (" << loc.language() << ") not registered in LanguageModel, adding it now" << std::endl;
-			_languages[language] = LanguageInfo(loc, fi.filePath());
+			_languages[language] = LanguageInfo(loc, fi.filePath(), _allowedLanguages[_languageCode]);
 		}
 		else
 		{

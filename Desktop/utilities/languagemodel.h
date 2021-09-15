@@ -15,10 +15,11 @@ class LanguageModel : public QAbstractListModel
 
 	struct LanguageInfo
 	{
-		LanguageInfo(const QLocale& _locale = LanguageModel::_defaultLocale, const QString& _qmFilename = "");
+		LanguageInfo(const QLocale& _locale = LanguageModel::_defaultLocale, const QString& _qmFilename = "", bool _isComplete = true);
 
 		QLocale				locale;
 		QVector<QString>	qmFilenames;
+		bool				isComplete;
 	};
 
 public:
@@ -70,6 +71,7 @@ signals:
 private:
 	static LanguageModel	* _singleton;
 	static QLocale			_defaultLocale;
+	static QMap<QString, bool> _allowedLanguages;
 
 	void					findQmFiles();
 	void					loadQmFilesForLanguage(const QString& language);
