@@ -1,15 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-08-22 09:35+0000\n"
-"Last-Translator: shun wang <shuonwang@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"jasp/jaspdesktop/zh_Hans/>\n"
-"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -913,10 +907,6 @@ msgid ""
 "to use it seamlessly on any background that isn't white."
 msgstr ""
 "这使所有绘图的背景透明，如果您想在任何非白色背景上无缝使用它，这将非常有用。"
-
-msgctxt "PrefsUI|"
-msgid "User Interface options"
-msgstr "用户界面选项"
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
@@ -2890,45 +2880,8 @@ msgid "Title"
 msgstr "标题"
 
 msgctxt "PlotEditingAxis|"
-msgid ""
-"The title can only be modified in advanced mode because it is not plain text."
-msgstr "标题只能在高级模式下修改，因为它不是纯文本。"
-
-msgctxt "PlotEditingAxis|"
-msgid "Title Type"
-msgstr "标题类型"
-
-msgctxt "PlotEditingAxis|"
-msgid "Plain text"
-msgstr "纯文本"
-
-msgctxt "PlotEditingAxis|"
-msgid "R expression"
-msgstr "R 表达式"
-
-msgctxt "PlotEditingAxis|"
-msgid "Hide title"
-msgstr "隐藏标题"
-
-msgctxt "PlotEditingAxis|"
-msgid "Ticks"
-msgstr "刻度"
-
-msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
 msgstr "指定序列"
-
-msgctxt "PlotEditingAxis|"
-msgid "Manually"
-msgstr "手动"
-
-msgctxt "PlotEditingAxis|"
-msgid "Hide ticks"
-msgstr "隐藏刻度"
-
-msgctxt "PlotEditingAxis|"
-msgid "Specify ticks:"
-msgstr "指定刻度："
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
@@ -2941,10 +2894,6 @@ msgstr "至"
 msgctxt "PlotEditingAxis|"
 msgid "steps"
 msgstr "步长"
-
-msgctxt "PlotEditingAxis|"
-msgid "Range"
-msgstr "范围"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
@@ -2966,22 +2915,6 @@ msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
 msgstr "上限"
 
-msgctxt "PlotEditingAxisTable|"
-msgid "Insert break left"
-msgstr "向左插入隔断"
-
-msgctxt "PlotEditingAxisTable|"
-msgid "Insert break right"
-msgstr "向右插入隔断"
-
-msgctxt "PlotEditingAxisTable|"
-msgid "Delete break"
-msgstr "删除隔断"
-
-msgctxt "PlotEditor|"
-msgid "Which axis should be shown?"
-msgstr "应该显示哪个轴？"
-
 msgctxt "PlotEditor|"
 msgid "x-axis"
 msgstr "x 轴"
@@ -2989,30 +2922,6 @@ msgstr "x 轴"
 msgctxt "PlotEditor|"
 msgid "y-axis"
 msgstr "y 轴"
-
-msgctxt "PlotEditor|"
-msgid "Redo last change"
-msgstr "重做上次更改"
-
-msgctxt "PlotEditor|"
-msgid "Undo last change"
-msgstr "撤消上次更改"
-
-msgctxt "PlotEditor|"
-msgid "Advanced settings"
-msgstr "高级设置"
-
-msgctxt "PlotEditor|"
-msgid "Finish"
-msgstr "完成"
-
-msgctxt "PlotEditor|"
-msgid "Original plot"
-msgstr "原图"
-
-msgctxt "PlotEditor|"
-msgid "Save plot as"
-msgstr "将绘图另存为"
 
 msgctxt "VariablesWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
@@ -3547,3 +3456,175 @@ msgstr ""
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
 msgstr "在控制台执行 R 代码"
+
+msgctxt "TableView|"
+msgid "Add to the left"
+msgstr ""
+
+msgctxt "TableView|"
+msgid "Add to the right"
+msgstr ""
+
+#, fuzzy
+msgctxt "TableView|"
+msgid "Delete"
+msgstr "删除"
+
+msgctxt "ComputeColumnWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+msgctxt "OSFLogin|"
+msgid ""
+"<sup>*</sup>OSF account login only, ORCID or institutional login are not "
+"supported."
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "Clear installed modules and packages"
+msgstr ""
+
+msgctxt "PrefsAdvanced|"
+msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Windows workaround"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Assume CSV is in native encoding when no BOM has been specified"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "See documentation for more information "
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "User Interface Options"
+msgstr ""
+
+msgctxt "FilterWindow|"
+msgid "returns the sign of values"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Show title"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Show axis"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Ticks:"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Position"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditingAxis|"
+msgid "Label"
+msgstr "标签"
+
+msgctxt "PlotEditingAxis|"
+msgid "Tick #"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick left"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Insert tick right"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Delete tick"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditingAxis|"
+msgid "Advanced"
+msgstr "高级"
+
+msgctxt "PlotEditingAxis|"
+msgid "Parse title as R expression"
+msgstr ""
+
+msgctxt "PlotEditingAxis|"
+msgid "Limits:"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor|"
+msgid "Open Documentation"
+msgstr "打开文档"
+
+msgctxt "PlotEditor|"
+msgid "OK"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor|"
+msgid "Cancel"
+msgstr "取消"
+
+msgctxt "PlotEditor|"
+msgid "Reset defaults"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Save image as"
+msgstr ""
+
+#, qt-format
+msgctxt "EngineRepresentation|"
+msgid ""
+"Unfortunately the plot could not be resized.\n"
+"\n"
+"Error message:\n"
+"%1\n"
+"\n"
+"If the problem persists, please report the message above at: https://jasp-"
+"stats.org/bug-reports"
+msgstr ""
+
+msgctxt "EngineRepresentation|"
+msgid "Error editing plot"
+msgstr ""
+
+msgctxt "Application|"
+msgid "One time setup for JASP Modules"
+msgstr ""
+
+msgctxt "Application|"
+msgid ""
+"JASP has been installed from a zip and it needs to recreate certain paths "
+"for your analyses to work.\n"
+"\n"
+"Please be patient and wait for the application to show before attempting to "
+"start JASP again."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean user installed modules and pkgs"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Cleaning up your modules and packages will make sure you only use those "
+"bundled with JASP. \n"
+"\n"
+"Make sure to restart JASP afterwards!"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Clean"
+msgstr ""
