@@ -175,13 +175,10 @@ ScrollView
 			id:		languageGroup
 			title:	qsTr("Preferred language")
 
-			height: 85
-
 			ComboBox
 			{
 				id:						languages
 				fieldWidth:				100
-				height:					25
 
 				label:					qsTr("Choose language  ")
 
@@ -196,11 +193,7 @@ ScrollView
 
 			Text
 			{
-				id:				translationDocLink
-				anchors.top:	languages.bottom
-				anchors.left:	parent.left
-				height:			25
-
+                id:                     translationDocLink
 
 				text:			qsTr("Help us translate or improve JASP in your language.")
 				color:			jaspTheme.blue
@@ -210,7 +203,7 @@ ScrollView
 				{
 					id:				mouseAreaTranslationDocLink
 					anchors.fill:	parent
-					onClicked:		Qt.openUrlExternally("https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-guideline-translators.md")
+                    onClicked:		Qt.openUrlExternally("https://jasp-stats.org/translation-guidelines")
 					cursorShape:	Qt.PointingHandCursor
 				}
 			}
