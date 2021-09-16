@@ -10,6 +10,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.8.1-dev\n"
+"X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
