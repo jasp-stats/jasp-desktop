@@ -19,7 +19,7 @@ Every single module contains two components: an interface component and an R com
 E.g. the Anova module consists of the jaspANOVA-QML component for the interface and the jaspANOVA-R component for the R part.
 Pressing on the component show the current translation of the component.
 
-<img src="https://static.jasp-stats.org/images/Weblate-component.png" width="800" height="250" />
+<img src="https://static.jasp-stats.org/images/Weblate-component.png" height="250px" />
 
 For adding a new translation:
 
@@ -30,16 +30,16 @@ For adding a new translation:
 
 When you select your language from the list you will get an overview of the translated and the not-yet-translated strings.
 
-<img src="https://static.jasp-stats.org/images/Weblate-Chosen-Dutch.png" width="800" height="250" />
+<img src="https://static.jasp-stats.org/images/Weblate-Chosen-Dutch.png" height="250px" />
 
 Selecting the part of strings you want to change will bring you to the form where you do the actual translation work.
 Be aware that all Weblate users have the same rights filling in this form.
 
-<img src="https://static.jasp-stats.org/images/Weblate-Dutch.png" width="800" height="250" />
+<img src="https://static.jasp-stats.org/images/Weblate-Dutch.png" height="250px" />
 
 There are a lot of options to be chosen here but all are well described in the online documentation you can find in the right corner of the page.
 
-<img src="https://static.jasp-stats.org/images/Weblate-Documentation.png" width="80" height="100" />
+<img src="https://static.jasp-stats.org/images/Weblate-Documentation.png" />
 
 The working procedure is now as follows:
 
