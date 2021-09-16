@@ -108,6 +108,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				const std::map<std::string, std::string> replaceThese =
 				{
 					{	"/usr/local/lib/libjags.4.dylib",				"@executable_path/JAGS/libjags.4.dylib"		},
+					{	"/usr/local/lib/libjrmath.0.dylib",				"@executable_path/JAGS/libjrmath.0.dylib"		},
 					{	"/usr/local/gfortran/lib/libgfortran.5.dylib",	MAC_LIB_FOLDER_FROM_EXE "libgfortran.5.dylib"		},
 					{	"/usr/local/gfortran/lib/libquadmath.0.dylib",	MAC_LIB_FOLDER_FROM_EXE "libquadmath.0.dylib"		}
 				/*	R 4 doesnt have the following anymore:
