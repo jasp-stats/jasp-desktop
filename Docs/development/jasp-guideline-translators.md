@@ -1,11 +1,11 @@
 # Guideline for JASP translators
 
 Thank you for your interest in the translation of JASP.
-This document provides some first steps and general guidelines to maintain consistency of the translations.
-Like the rest of JASP development, this is an ongoing process, and participation is welcome.
+This document provides some first steps and general guidelines to maintain consistency.
+As part of JASP's development, translation is an ongoing process, and participation is welcome.
 
 ## Weblate
-JASP uses the web-based localization tool [Weblate](https://hosted.weblate.org/projects/jasp/).
+To make translation easy, JASP uses the web-based localization tool [Weblate](https://hosted.weblate.org/projects/jasp/).
 All you need to translate is a web browser — you can start as soon as you log in.
 
 Once you save translations on *Weblate*, they are on their way into JASP.
@@ -27,13 +27,13 @@ The two components are distinguishable their name suffix (`-QML` or `-R`) that i
 - A component to define the user interface, written in the language [QML](https://en.wikipedia.org/wiki/QML).
 - A component to define the statistical analysis, written in the language [R](https://en.wikipedia.org/wiki/R_(programming_language)).
 
-For example, the `jaspAnova` module consists of the [jaspAnova-QML](https://hosted.weblate.org/projects/jasp/jaspanova-qml/) component for the interface and [`jaspAnova-R`](https://hosted.weblate.org/projects/jasp/jaspanova-r/) for the analysis code.
-Clicking on a component shows an overview of the current translation status, as shown in this screenshot:
+For example, the `jaspAnova` module consists of the components [jaspAnova-QML](https://hosted.weblate.org/projects/jasp/jaspanova-qml/) for the interface and [jaspAnova-R](https://hosted.weblate.org/projects/jasp/jaspanova-r/) for the analysis code.
+Clicking on a component shows an overview of the current translation status:
 
 <img src="https://static.jasp-stats.org/images/Weblate-component.png" height="250px" />
 
 ### Adding languages
-To add a new translation language to a component, click on the button *Start New Translation* and select from the list of available languages.
+To add a new translation language to a component, click on the button *Start New Translation* (see screenshot above) and select from the list of available languages.
 If you cannot find your language, please [report that to the JASP team](https://jasp-stats.org/feature-requests-bug-reports/).
 
 ### Contributing to existing languages
@@ -58,11 +58,12 @@ Now you can log out of *Weblate*, or translate some more.
 
 #### Glossary
 *Weblate* offers glossaries, which are useful to maintain consistency of terminology translations, especially across modules.
-Terms that are defined in the glossary are marked yellow in the translation form.
+Terminology defined in the glossary is marked yellow in the translation form, to help the translator.
 If a term is defined in the Weblate glossary in its proper context, you should use it.
-If you disagree with a glossary term, don't just ignore it, but try to or discuss or change it first.
+If you disagree with a term translation, don't just ignore it.
+Instead, try to or discuss it with other translators, or change it in the glossary first.
 
-All translators can define new terminology into the glossary.
+Note that all translators can define new terminology into the glossary.
 Each project can have an assigned glossary for any language as a shorthand for storing terminology.
 
 #### Automatic suggestions
