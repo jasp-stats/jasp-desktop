@@ -1,15 +1,13 @@
 # Guideline for JASP translators
 
 Thank you for your interest in translating JASP.
-This document provides some first steps and general guidelines to maintain consistency.
-As part of JASP's development, translating is an ongoing process, and participation is welcome.
+This document provides information to get you started and general guidelines to maintain consistency.
+JASP's constantly being extended and further developed. As such, translations are ongoing, and participation is very much appreciated. 
 
 ## Weblate
-To make translating easy, JASP uses the web-based localization tool [Weblate](https://hosted.weblate.org/projects/jasp/).
+JASP uses the web-based localization tool [Weblate](https://hosted.weblate.org/projects/jasp/) for translations. 
 All you need is a web browser, and you can start as soon as you log in.
-
-Once you save translations on *Weblate*, they will be incorporated in JASP.
-(Below you can read [how your translations get into JASP after you commit them to *Weblate*](#how-your-translations-get-into-jasp-after-you-commit-them-to-weblate).)
+Once you save translations on *Weblate*, they will be incorporated into JASP.
 
 ### Log in to Weblate
 Before you can add or modify translations, you have to log in at <https://hosted.weblate.org/>.
