@@ -6,10 +6,10 @@ As part of JASP's development, translation is an ongoing process, and participat
 
 ## Weblate
 To make translation easy, JASP uses the web-based localization tool [Weblate](https://hosted.weblate.org/projects/jasp/).
-All you need to translate is a web browser — you can start as soon as you log in.
+All you need to is a web browser, and you can start as soon as you log in.
 
 Once you save translations on *Weblate*, they are on their way into JASP.
-(And if you are interested, you can read about [the pipeline past *Weblate*](#the-pipeline-past-weblate).)
+(If you are interested, you can read about [the pipeline past *Weblate*](#the-pipeline-past-weblate).)
 
 ### Log in to Weblate
 Before you can add or change translations, you have to log in at <https://hosted.weblate.org/>.
@@ -23,7 +23,7 @@ JASP consists of many modules that offer different statistical analyses.
 For example, the module `jaspAnova` offers analyses of variance (ANOVA).
 
 On *Weblate*, every JASP module is split into two components.
-The two components are distinguishable their name suffix (`-QML` or `-R`) that indicates their programming language:
+The two components have different name suffixes (`-QML` or `-R`) that indicate their programming language:
 - A component to define the user interface, written in the language [QML](https://en.wikipedia.org/wiki/QML).
 - A component to define the statistical analysis, written in the language [R](https://en.wikipedia.org/wiki/R_(programming_language)).
 
@@ -41,9 +41,11 @@ If you select an existing language, *Weblate* shows more details about the curre
 
 <img src="https://static.jasp-stats.org/images/Weblate-Chosen-Dutch.png" height="250px" />
 
-When you select a set of strings within a component, *Weblate* opens the form to create/change a single translation string.
+When you select a set of strings within a component, *Weblate* opens the form to create or change a single translation string.
+Strings are the smallest unit to translate, and they can vary in length from a just one character to entire paragraphs, as decided by the module developers.
+
 Note that all *Weblate* users have the same privileges to use this form: If you click the *Save* button after a change, it will remain until it is revised and saved again.
-If you are unsure about a change, you can also use the *Suggest* button to inform other translators about your opinion.
+If you are unsure about a change, you can also click the *Suggest* button to inform other translators about your opinion.
 
 <img src="https://static.jasp-stats.org/images/Weblate-Dutch.png" height="250px" />
 
@@ -67,9 +69,9 @@ Note that all translators can define new terminology into the glossary.
 Each project can have an assigned glossary for any language as a shorthand for storing terminology.
 
 #### Automatic suggestions
-*Weblate* features machine translations in the *"Automatic suggestions"* tab.
+*Weblate* can suggest machine translations in the *Automatic suggestions* tab.
 This can be very useful as a starting point for a translation, but make sure to always scrutinize the output for errors.
-Be aware that glossary terms are ignored and that these tools lack any understanding of the specific context of a string.
+Note that glossary terms are ignored and that these tools lack any understanding of the specific context of a string.
 
 ### The pipeline past Weblate
 If you are interested, here is a summary what happens after you save translations on *Weblate*.
