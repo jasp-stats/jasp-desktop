@@ -56,7 +56,7 @@ Once you press the *Save* button, your translated string is stored in *Weblate*.
 Once saved, everyone will be able to see your change.
 Now you can log out of *Weblate*, or translate some more.
 
-#### Glossary
+### Glossary
 To help translators, *Weblate* offers glossaries to maintain consistency of translated terminology, especially across modules.
 Terminology defined in the glossary are marked yellow in the translation form. 
 If a term is defined in the Weblate glossary in its proper context, you should use it.
@@ -66,7 +66,7 @@ Instead, try to discuss it with other translators, or change it in the glossary 
 Note that all translators can define new terminology into the glossary.
 Each project can have an assigned glossary for any language as a shorthand to store terminology.
 
-#### Automatic suggestions
+### Automatic suggestions
 *Weblate* can suggest machine translations in the *Automatic suggestions* tab.
 This can be very useful as a starting point for a translation, but make sure to always scrutinize the output for errors.
 Note that glossary terms are ignored and that these tools lack any understanding of the specific context of a string.
@@ -74,7 +74,7 @@ Note that glossary terms are ignored and that these tools lack any understanding
 ## Translation conventions
 This section lists general rules for translation.
 
-## Statistical terms
+### Statistical terms
 Use statistical terms as they occur in introductory statistics textbooks and courses in the target language.
 Users should be able to recognize established terminology in JASP's interface.
 If you deem it useful to offer alternative terms (e.g., that may be more suitable for beginners), provide them in the help file.
@@ -88,8 +88,10 @@ All words in the section title are also capitalized *'Results Display'*, but onl
 ### Address the user formally
 The JASP interface occasionally addresses the user directly, e.g., 'what would *you* like to do?'.
 Some languages have multiple ways to translate the English 'you', which could be formal or informal (see [T-V distinction](https://en.wikipedia.org/wiki/T%E2%80%93V_distinction)).
-If you translate JASP into such language, you should choose the formal form to address the user.
-For example, in Dutch please use the pronoun *'U'* instead of *'jij'*, in French please use *'vous'* instead of *'tu'*, and in German please use *'Sie'* instead of *'du'*.
+When translating JASP into such language, pleasechoose the formal form of 'you' to address the user. 
+For example, in Dutch please use the pronoun <i>'u'</i> instead of <i>'jij'</i>, in French please use <i>'vous'</i> instead of <i>'tu'</i>, in Chinese please use <i>'您'</i> instead of <i>'你'</i>, and in German please use <i>'Sie'</i> instead of <i>'du'</i>.
+
+and in German please use *'Sie'* instead of *'du'*.
 
 ## How your translations get into JASP after you commit them to Weblate
 This section provides a summary of what happens to your translation once it is saved on *Weblate*.
