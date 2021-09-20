@@ -44,8 +44,8 @@ FocusScope
 					width:					plus.x + plus.width
 					height:					valueField.height
 
-					Keys.onLeftPressed:		{ minus.clicked(); event.accepted = true; }
-					Keys.onRightPressed:	{ plus.clicked();  event.accepted = true; }
+					Keys.onDownPressed:		{ minus.clicked(); event.accepted = true; }
+					Keys.onUpPressed:		{ plus.clicked();  event.accepted = true; }
 					Keys.onEnterPressed:	valueField.focus = !valueField.focus;
 					Keys.onReturnPressed:	valueField.focus = !valueField.focus;
 					Keys.onEscapePressed:	focus = false;
@@ -113,7 +113,7 @@ FocusScope
 		selectByMouse:				true
 		selectedTextColor:			jaspTheme.white
 		selectionColor:				jaspTheme.itemSelectedColor
-		color:						jaspTheme.textEnabled
+		color:						enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 
 		function processInput()
 		{
