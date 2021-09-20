@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-09-20 08:35+0000\n"
+"Last-Translator: shun wang <yootell@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -3459,130 +3465,125 @@ msgstr "在控制台执行 R 代码"
 
 msgctxt "TableView|"
 msgid "Add to the left"
-msgstr ""
+msgstr "添加到左侧"
 
 msgctxt "TableView|"
 msgid "Add to the right"
-msgstr ""
+msgstr "添加到右侧"
 
-#, fuzzy
 msgctxt "TableView|"
 msgid "Delete"
 msgstr "删除"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "返回值的符号"
 
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
-msgstr ""
+msgstr "<sup>*</sup>仅 OSF 账户登录，不支持ORCID或机构登录。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
-msgstr ""
+msgstr "清除已安装的模块和包"
 
 msgctxt "PrefsAdvanced|"
 msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
-msgstr ""
+msgstr "此操作将删除 appdata 中的“renv”和“Modules”文件夹。"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
-msgstr ""
+msgstr "<i>在 Linux 上总是使用默认的电子表格编辑器。</i>"
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr ""
+msgstr "Windows 环境变量策略"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is in native encoding when no BOM has been specified"
-msgstr ""
+msgstr "当没有指定 BOM 时，假设 CSV 是本地编码"
 
 msgctxt "PrefsData|"
 msgid "See documentation for more information "
-msgstr ""
+msgstr "有关更多信息，请参阅文档 "
 
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr ""
+msgstr "用户界面选项"
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "返回值的符号"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "显示标题"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr ""
+msgstr "显示轴"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
-msgstr ""
+msgstr "刻度："
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr ""
+msgstr "位置"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Label"
 msgstr "标签"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr ""
+msgstr "刻度 #"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
-msgstr ""
+msgstr "在左侧插入刻度"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick right"
-msgstr ""
+msgstr "在右侧插入刻度"
 
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
-msgstr ""
+msgstr "删除刻度"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
 msgstr "高级"
 
 msgctxt "PlotEditingAxis|"
 msgid "Parse title as R expression"
-msgstr ""
+msgstr "将标题解析为 R 表达式"
 
 msgctxt "PlotEditingAxis|"
 msgid "Limits:"
-msgstr ""
+msgstr "边界："
 
-#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr "打开文档"
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr ""
+msgstr "确认"
 
-#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Cancel"
 msgstr "取消"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr ""
+msgstr "重置默认值"
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr ""
+msgstr "图像另存为"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -3595,14 +3596,20 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"不幸的是，无法调整绘图大小。\n"
+"\n"
+"错误信息：\n"
+"%1\n"
+"\n"
+"如果问题仍然存在，请报告以上消息：https://jasp-stats.org/bug-reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
-msgstr ""
+msgstr "编辑绘图时出错"
 
 msgctxt "Application|"
 msgid "One time setup for JASP Modules"
-msgstr ""
+msgstr "JASP 模块的一次性设置"
 
 msgctxt "Application|"
 msgid ""
@@ -3612,10 +3619,13 @@ msgid ""
 "Please be patient and wait for the application to show before attempting to "
 "start JASP again."
 msgstr ""
+"JASP 是从 zip 安装的，它需要重新创建某些路径才能使您的分析工作。\n"
+"\n"
+"请耐心等待应用程序显示，然后再尝试再次启动 JASP。"
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
-msgstr ""
+msgstr "清理用户安装的模块和包"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -3624,7 +3634,10 @@ msgid ""
 "\n"
 "Make sure to restart JASP afterwards!"
 msgstr ""
+"清理您的模块和包将让您只使用那些与 JASP 捆绑的模块。\n"
+"\n"
+"请务必在之后重新启动 JASP！"
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr ""
+msgstr "清除"
