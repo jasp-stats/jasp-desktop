@@ -89,7 +89,7 @@ bool FactorsFormBase::isJsonValid(const Json::Value &value)
 	{
 		for (const Json::Value& factor : value)
 		{
-			valid = factor.isArray() && factor["name"].isString() && factor["title"].isString() && factor["indicators"].isArray();
+			valid = factor.isObject() && factor["name"].isString() && factor["title"].isString() && factor["indicators"].isArray();
 			if (!valid) break;
 		}
 	}
