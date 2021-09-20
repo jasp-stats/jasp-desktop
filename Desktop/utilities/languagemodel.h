@@ -46,11 +46,11 @@ public:
 	QString languageCode(const QString& language)	const;
 	QString	languageName(const QLocale& loc)		const;
 	QString currentLanguageCode()					const	{ return languageCode(_currentLanguage); }
-	QString currentLanguage()						const	{ return _currentLanguage; }
+	QString currentLanguage()						const;
+	bool	hasDefaultLanguage()					const;
 
-	static	bool	hasDefaultLanguage()		{ return _singleton->currentLanguage() == _singleton->languageName(_defaultLocale); }
 	//This function (currentTranslationSuffix) should be made obsolete through the abolishment of all the _nl etc files:
-	static	QString	currentTranslationSuffix()	{ return hasDefaultLanguage() ? "" : ("_" + _singleton->currentLanguageCode()); }
+	static	QString	currentTranslationSuffix()	{ return _singleton->hasDefaultLanguage() ? "" : ("_" + _singleton->currentLanguageCode()); }
 
 	void setApplicationEngine(QQmlApplicationEngine	 * ae) { _qml = ae; }
 	void initialize();
@@ -72,6 +72,7 @@ private:
 	static LanguageModel	* _singleton;
 	static QLocale			_defaultLocale;
 	static QMap<QString, bool> _allowedLanguages;
+	static QString			_incompleteFlag;
 
 	void					findQmFiles();
 	void					loadQmFilesForLanguage(const QString& language);
