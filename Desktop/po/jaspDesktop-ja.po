@@ -3770,3 +3770,7 @@ msgstr ""
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr "ドキュメントを開く"
+
+msgctxt "AboutWindow|"
+msgid "Open Source Components"
+msgstr ""

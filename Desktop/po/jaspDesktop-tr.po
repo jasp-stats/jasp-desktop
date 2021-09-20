@@ -3471,3 +3471,7 @@ msgstr ""
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "Open Source Components"
+msgstr ""

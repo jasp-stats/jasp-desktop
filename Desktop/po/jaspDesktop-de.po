@@ -3830,3 +3830,7 @@ msgstr ""
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr "Dokumentation öffnen"
+
+msgctxt "AboutWindow|"
+msgid "Open Source Components"
+msgstr ""
