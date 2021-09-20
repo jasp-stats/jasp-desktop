@@ -21,6 +21,7 @@ QMap<QString, bool> LanguageModel::_allowedLanguages =
 	{ "es",	false	},
 	{ "zh",	false	}
 };
+QString LanguageModel::_incompleteFlag = "(incomplete)";
 
 LanguageModel::LanguageInfo::LanguageInfo(const QLocale& _locale, const QString& _qmFilename, bool _isComplete)
 	 : locale(_locale), isComplete(_isComplete)
@@ -77,7 +78,7 @@ QVariant LanguageModel::data(const QModelIndex &index, int role) const
 	case NameRole:
 	case Qt::DisplayRole:
 	case LabelRole:
-	case ValueRole:			result = languageName + (isComplete ? "" : " (incomplete)"); break;
+	case ValueRole:			result = languageName + (isComplete ? "" : (" " + _incompleteFlag)); break;
 	case NationFlagRole:	result = "qrc:/translations/images/flag_" + languageCode(languageName) + ".png"; break;
 	case LocalNameRole:		result = languageCode(languageName); break;
 	default: result = "";
@@ -103,7 +104,12 @@ QHash<int, QByteArray> LanguageModel::roleNames() const
 
 void LanguageModel::setCurrentLanguage(QString language)
 {	
-	if (language == _currentLanguage)
+
+	int index = language.indexOf(_incompleteFlag);
+	if (index > 0)	language = language.left(index);
+	language = language.trimmed();
+
+	if (language == _currentLanguage || language.isEmpty())
 		return;
 
 	_currentLanguage = language;
@@ -315,4 +321,16 @@ QString LanguageModel::languageCode(const QString& languageName) const
 QString LanguageModel::languageName(const QLocale &loc) const
 {
 	return languageCode(loc) + " - " + loc.nativeLanguageName();
+}
+
+QString LanguageModel::currentLanguage() const
+{
+	const LanguageInfo & li = _languages[_currentLanguage];
+	return _currentLanguage + (li.isComplete ? "" : (" " + _incompleteFlag));
+}
+
+bool LanguageModel::hasDefaultLanguage() const
+{
+	const LanguageInfo & li = _languages[_currentLanguage];
+	return li.locale == _defaultLocale;
 }
