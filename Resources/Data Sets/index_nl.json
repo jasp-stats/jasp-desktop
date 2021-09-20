@@ -779,6 +779,20 @@
           "description": "Indicatoren van industrialisatie in 1960, en politieke democratie in 1960 en 1965. <br><br> Het voorbeeldbestand in JASP laat zien hoe structural equation modeling kan worden toegepast. <br><br> <i>Dataset in R.<\/i>",
           "kind": "file",
           "associated_datafile": "Political Democracy.csv"
+        },
+        {
+          "name": "Grand Point Average",
+          "path": "Grand Point Average.jasp",
+          "description": "Grand Point Average of 200 college students across 6 semesters, along with information on gender, high school GPA and whether they were admitted to their university of choice. <br><br> The JASP file currently does not contain any analysis. <br><br> <i>Data from Hox, Moerbeek and Van de Schoot (2017).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Grand Point Average.csv"
+        },
+        {
+          "name": "Social Participation",
+          "path": "Social Participation.jasp",
+          "description": "Measurements of Social Participation (church membership, memberships in voluntary organizations, and number of friends seen), as well as measures on potential causes of social interaction (income, occupation and education). <br><br> The JASP file currently does not contain any analysis. <br><br>  <i>Simulated data based on Hodge and Treiman (1986).<\/i>",
+          "kind": "file",
+          "associated_datafile": "Social Participation.csv"
         }
       ],
       "debug": false
