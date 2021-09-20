@@ -12,10 +12,13 @@ Window
 	id:				aboutWindow
 
 	width:			850 * preferencesModel.uiScale
-	height:			500 * preferencesModel.uiScale
+	height:			550 * preferencesModel.uiScale
     
 	minimumWidth:	850 
-	minimumHeight:	500 
+	minimumHeight:	550 
+
+	// maximumWidth:	850 
+	maximumHeight:	550 
    
 	property string labelcolor:			"#F99800"
 	property string closebuttoncolor:	"#50B0E3"
@@ -289,7 +292,6 @@ Window
 		JC.Text
 		{
 			id:				warrantyText
-			height:			75
 			text:			aboutModel.warranty
 			textFormat:		Text.StyledText
 			opacity:		0.5
@@ -301,6 +303,29 @@ Window
 				left:		parent.left
 				right:		parent.right
 				topMargin:	30
+			}
+		}
+
+		JC.Text
+		{
+			id:				openSourceText
+			height:			25
+			anchors {
+				left:		warrantyText.left
+				top:		warrantyText.bottom
+			}
+
+			text:			qsTr("Open Source Components")
+			color:			jaspTheme.blue
+			font.underline:	true
+
+			MouseArea
+			{
+				id:				mouseAreaOpenSource
+				anchors.fill:	parent
+				onClicked:		Qt.openUrlExternally(aboutModel.openSourceUrl)
+				cursorShape:	Qt.PointingHandCursor
+
 			}
 		}
 	}
