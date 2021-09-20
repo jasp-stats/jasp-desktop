@@ -13,6 +13,8 @@ Hier kan worden gespecificeerd of de gebruiker liever een 'licht' of 'donker' th
 ### Voorkeurstaal
 Hier kan de voorkeurstaal voor JASP worden geselecteerd. 
 
+Als je een vertaling wilt verbeteren, of een nieuwe taal toevoegen, kijk eerst hier https://jasp-stats.org/translation-guideline/
+
 ### Zoom
 Dit nummer specificeert hoe de JASP interface wordt geschaald. 
 Alle menus en resultaten zijn geschaald op deze factor.
