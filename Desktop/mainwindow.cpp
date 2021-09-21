@@ -518,9 +518,9 @@ void MainWindow::loadQML()
 
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
 	_ribbonModel->loadModules(	
-		{ 	"jaspDescriptives", "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },
+		{ 	"jaspDescriptives", "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor", "jaspProcessControl" },
 		{ 	"jaspAudit", "jaspBain", "jaspCircular", "jaspDistributions" , "jaspEquivalenceTTests", "jaspJags", "jaspLearnBayes", "jaspMachineLearning",
-			"jaspMetaAnalysis", "jaspNetwork"/*, "jaspProcessControl"*/, "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
+			"jaspMetaAnalysis", "jaspNetwork", "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
 
 	_engineSync->loadAllActiveModules();
 	_dynamicModules->startUpCompleted();
