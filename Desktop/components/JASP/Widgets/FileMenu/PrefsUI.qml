@@ -191,6 +191,23 @@ ScrollView
 				KeyNavigation.down:		uiScaleSpinBox
 			}
 
+			Text
+			{
+                id:                     translationDocLink
+
+				text:			qsTr("Help us translate or improve JASP in your language.")
+				color:			jaspTheme.blue
+				font.underline:	true
+
+				MouseArea
+				{
+					id:				mouseAreaTranslationDocLink
+					anchors.fill:	parent
+                    onClicked:		Qt.openUrlExternally("https://jasp-stats.org/translation-guidelines")
+					cursorShape:	Qt.PointingHandCursor
+				}
+			}
+
 		}
 
 		PrefsGroupRect
