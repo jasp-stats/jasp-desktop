@@ -1164,6 +1164,8 @@ void Column::truncate(int rows)
 
 	if (rowsToDelete > _rowCount)
 		rowsToDelete = _rowCount;
+	
+	std::vector<DataBlock*> destroyThese;
 
 	while (rowsToDelete > 0)
 	{
@@ -1178,7 +1180,7 @@ void Column::truncate(int rows)
 			rowsToDelete -= block->rowCount();
 			_rowCount -= block->rowCount();
 			block->erase(block->rowCount());
-			//_mem->destroy_ptr<DataBlock>(block);
+			destroyThese.push_back(block);
 			itr++;
 			if (itr == _blocks.rend())
 			{
@@ -1192,6 +1194,19 @@ void Column::truncate(int rows)
 			}
 		}
 	}
+	
+	for(DataBlock * block : destroyThese)
+	{
+		_mem->destroy_ptr<DataBlock>(block);
+		
+		for(const auto & keyval : _blocks)
+			if(keyval.second == block)
+			{
+				_blocks.erase(keyval.first);
+				break;
+			}
+	}
+
 }
 
 void Column::setColumnType(enum columnType columnType)
