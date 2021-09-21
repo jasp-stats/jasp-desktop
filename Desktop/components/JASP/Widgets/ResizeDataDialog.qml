@@ -142,7 +142,7 @@ Popup
 				}
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:						resizeButton
 				activeFocusOnTab:		true
@@ -164,7 +164,7 @@ Popup
 				}
 			}
 
-			RectangularButton
+			RoundedButton
 			{
 				id:						closeButtonCross
 				activeFocusOnTab:		true
