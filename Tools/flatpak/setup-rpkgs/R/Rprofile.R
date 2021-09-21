@@ -10,7 +10,7 @@
 }
 
 stripUrl <- function(url) {
-  tolower(gsub("/+", "_", strsplit(url, "repos/", fixed = TRUE)[[1L]][2]))
+  gsub("/+", "_", strsplit(url, "repos/", fixed = TRUE)[[1L]][2])
 }
 
 download_override_flatpak <- function(url, destfile, mode = "wb", quiet = FALSE, headers = NULL) {

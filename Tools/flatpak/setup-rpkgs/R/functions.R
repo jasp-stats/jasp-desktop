@@ -30,6 +30,11 @@ stopEarlyExit <- function(message = "expected error: early exit", call = NULL, .
 
 download_override <- function(url, destfile, mode = "wb", quiet = FALSE, headers = NULL) {
 
+  # TODO:
+  # tweak this so that previously downloaded packages are not downloaded again
+  # just make an environment with recorded urls + local file locations
+  # right now, jaspBase + jaspGraphs are redownloaded for every module...
+
   # this allows us to just use the standard renv construction for installing stuff
   tryCatch({
     options("renv.download.override" = NULL)
@@ -38,15 +43,60 @@ download_override <- function(url, destfile, mode = "wb", quiet = FALSE, headers
     # a little bit hacky, but without the correct type the GITHUB_PAT is not used (and we really want that to be used)
     type <- get("type", parent.frame(1))
 
+    dirs <- getDirs()
+
+    if (!is.null(type)) {
+      if (type == "repository") {
+
+        # check if this pkg has been downloaded before
+        pkg <- basename(url)
+        if (pkg != "PACKAGES.rds") {
+          pkgName <- gsub("_.*", "", pkg)
+          localFile0 <- file.path(dirs["local-cran"], "src", "contrib", pkg)
+          localFile1 <- file.path(dirs["renv-root"], "source", "repository", pkgName, pkg)
+          if (file.exists(localFile1)) {
+            ws <- strrep(" ", 35 - nchar(pkg)) # NetworkComparisonTest is the longest package name I encountered
+            maybecat(sprintf("Already downloaded %s%sreusing %s\n", pkg, ws, makePathRelative(localFile1, dirs["jasp-subdir"])))
+            if (!file.exists(localFile0))
+              file.copy(from = localFile1, to = localFile0)
+            return(localFile1)
+          }
+        }
+      } else if (type == "github") {
+
+        if (grepl("/tarball/.+$", url)) {
+
+          pieces <- strsplit(url, "/", TRUE)[[1]]
+          pkgName <- pieces[6]
+          SHA     <- pieces[8]
+
+          localFile0 <- file.path(dirs["local-github"], stripUrl(url))
+          localFile1 <- file.path(dirs["renv-root"], "source", "github", pkgName, paste0(pkgName, "_", SHA, ".tar.gz"))
+          if (file.exists(localFile1)) {
+            ws <- strrep(" ", 35 - nchar(pkgName)) # NetworkComparisonTest is the longest package name I encountered
+            maybecat(sprintf("Already downloaded %s%sreusing %s\n", pkgName, ws, makePathRelative(localFile1, dirs["jasp-subdir"])))
+            if (!file.exists(localFile0))
+              file.copy(from = localFile1, to = localFile0)
+            return(localFile1)
+          }
+        }
+      }
+    }
+
     file <- renv:::download(url, destfile, type = type, quiet = quiet, headers = headers)
     if (!identical(type, "github")) {
       maybecat(sprintf("skipping url: %s\n", url))
     } else {
 
       to <- file.path(dirs["local-github"], stripUrl(url))
-      maybecat(sprintf("recording github url: %s to %s\n", url, to))
-      if (file.exists(to))
-        maybecat(sprintf("%s already exists!", to))
+      maybecat(sprintf("recording github url: %s to %s\n", makeGitHubUrlRelative(url), makePathRelative(to)))
+      if (file.exists(to)) {
+        maybecat(sprintf("%s already exists, deleting older versions!\n", makePathRelative(to)))
+        existingFiles <- list.files(path = dirname(to), pattern = paste(basename(to), "*"), full.names = TRUE)
+        res <- file.remove(existingFiles)
+        if (!all(res))
+          stop("Failed to remove previously downloaded GitHub packages: ", paste(existingFiles[!res], collapse = ", "), domain = NA)
+      }
       file.copy(from = destfile, to = to, overwrite = TRUE)
 
     }
@@ -55,36 +105,11 @@ download_override <- function(url, destfile, mode = "wb", quiet = FALSE, headers
     if (endsWith(url, "PACKAGES.rds") || endsWith(destfile, ".json") || startsWith(basename(destfile), "renv-")) {
       return(file)
     }
-    # browser()
-    # maybecat(sprintf("recording url: %s, destfile: %s\n", url, destfile))
     maybecat(sprintf("recording package url: %s\n", url))
-
-    # resultsEnv <- getResultsEnv()
 
     storeUrl(url, destfile)
 
     return(file)
-#
-#     # here we optionally download the package to a temporary directory (useful for testing a local CRAN repo)
-#     if (resultsEnv$downloadPkgs) {
-#     # renv expects this function to return where a package was downloaded
-#       path <- renv:::download(url, destfile, type = type, quiet = quiet, headers = headers)
-#
-#       maybe_copy(path)
-#
-#       if (resultsEnv$fromLockFile)
-#         stopEarlyExit()
-#
-#       return(path)
-#     } else {
-#
-#       if (resultsEnv$fromLockFile)
-#         stopEarlyExit()
-#
-#       file.copy(from = resultsEnv$fakepkgtar, to = destfile, overwrite = TRUE)
-#
-#       return(destfile)
-#     }
 
     }, error = function(e) {
       browser()
@@ -150,11 +175,10 @@ storeUrl <- function(url, destfile) {
 stripUrl <- function(url) {
   # since repos is hardcoded in renv:::renv_remotes_resolve_github_ref_impl and we modify host,
   # this ooks like the safest approach
-  tolower(gsub("/+", "_", strsplit(url, "repos/", fixed = TRUE)[[1L]][2]))
+  gsub("/+", "_", strsplit(url, "repos/", fixed = TRUE)[[1L]][2])
 }
 
 mkdir <- function(x, deleteIfExists = FALSE) {
-
   if (deleteIfExists) {
     if (dir.exists(x))
       unlink(x, recursive = TRUE)
@@ -162,7 +186,6 @@ mkdir <- function(x, deleteIfExists = FALSE) {
   } else if (!dir.exists(x)) {
     dir.create(x, recursive = TRUE)
   }
-
 }
 
 hasRenvLockFile <- function(modulePkg) {
@@ -175,18 +198,20 @@ postProcessResults <- function() {
   resultsEnv$packages <- character(length(resultsEnv$url))
   resultsEnv$version  <- character(length(resultsEnv$url))
 
-  idx_cran <- grep("src/contrib/",    resultsEnv$url)
-  temp <- strsplit(basename(resultsEnv$url[idx_cran]), "_", fixed = TRUE)
+  idx_cran <- grep("src/contrib/", resultsEnv$url)
+  if (length(resultsEnv$url) > 0L) {
+    temp <- strsplit(basename(resultsEnv$url[idx_cran]), "_", fixed = TRUE)
 
-  resultsEnv$packages[idx_cran] <- vapply(temp, `[`, character(1L), 1L)
-  resultsEnv$version [idx_cran] <- sub(".tar.gz$", "", vapply(temp, `[`, character(1L), 2L))
-  resultsEnv$source  [idx_cran] <- "repository"
+    resultsEnv$packages[idx_cran] <- vapply(temp, `[`, character(1L), 1L)
+    resultsEnv$version [idx_cran] <- sub(".tar.gz$", "", vapply(temp, `[`, character(1L), 2L))
+    resultsEnv$source  [idx_cran] <- "repository"
 
-  idx_github <- grep("api.github.com/", resultsEnv$url)
+    idx_github <- grep("api.github.com/", resultsEnv$url)
 
-  resultsEnv$packages[idx_github] <- gsub(".*/(.+)/tarball/.*", "\\1", resultsEnv$url[idx_github])
-  resultsEnv$version [idx_github] <- basename(resultsEnv$url[idx_github]) # actually just the commit
-  resultsEnv$source  [idx_github] <- "github"
+    resultsEnv$packages[idx_github] <- gsub(".*/(.+)/tarball/.*", "\\1", resultsEnv$url[idx_github])
+    resultsEnv$version [idx_github] <- basename(resultsEnv$url[idx_github]) # actually just the commit
+    resultsEnv$source  [idx_github] <- "github"
+  }
 
   for (i in seq_along(resultsEnv$records))
     if (isGitHubRecord(resultsEnv$records[[i]]))
@@ -195,39 +220,19 @@ postProcessResults <- function() {
   return(resultsEnv)
 }
 
-makePathRelative <- function(path, base = getwd()) {
-  gsub(pattern = paste0(base, .Platform$file.sep), replacement = "", x = path, fixed = TRUE)
+makePathRelative <- function(path, base = getwd(), prepend = TRUE) {
+  if (prepend) base <- paste0(base, .Platform$file.sep)
+  gsub(pattern = base, replacement = "", x = path, fixed = TRUE)
+}
+
+makeGitHubUrlRelative <- function(url) {
+  makePathRelative(url, "https://api.github.com/", FALSE)
 }
 
 getFlatpakJSONFromDESCRIPTION <- function(pathToModule, dirForPkgs = tempdir(), downloadPkgs = FALSE) {
 
   if (!downloadPkgs)
     warning("with downloadPkgs = FALSE dependencies of DEPENDENCIES won't show up in the results!", immediate. = TRUE)
-
-  # options("renv.download.override" = download_override)
-  # on.exit(options("renv.download.override" = NULL))
-
-  # oldinstall.opts <- options("install.opts")
-  # on.exit(options(install.opts = oldinstall.opts), add = TRUE)
-  # options(install.opts = "--no-byte-compile --no-test-load --fake --no-R --no-libs --no-data --no-help --no-demo --no-exec --no-inst")
-
-  # oldCache <- Sys.getenv("RENV_PATHS_CACHE")
-  # tempCache <- tempdir()
-  # if (dir.exists(file.path(tempCache, "v5")))
-  #   unlink(file.path(tempCache, "v5"), recursive = TRUE)
-  # Sys.setenv("RENV_PATHS_CACHE" = tempCache)
-  # on.exit(Sys.setenv("RENV_PATHS_CACHE" = oldCache), add = TRUE)
-
-  # old_renv_install <- renv:::renv_install
-  # on.exit(assignFunctionInPackage(old_renv_install, "renv_install", "renv"), add = TRUE)
-  # assignFunctionInPackage(identity, "renv_install", "renv")
-  #
-  # library <- file.path(dirForPkgs, "library")
-  # mkdir(library)
-  #
-  # resultsEnv <- createResultsEnv(dirForPkgs, downloadPkgs)
-  # records <- renv::install(packages = pathToModule, library = library, rebuild = TRUE, sources = "")
-  # resultsEnv$records <- records
 
   library <- file.path(dirForPkgs, "library")
   mkdir(library)
@@ -243,9 +248,9 @@ customRenvInstall <- function(packages, library = NULL, rebuild = TRUE, customDo
     on.exit(options("renv.download.override" = NULL))
   }
 
-  old_renv_install <- renv:::renv_install
-  on.exit(assignFunctionInPackage(old_renv_install, "renv_install", "renv"), add = TRUE)
-  assignFunctionInPackage(identity, "renv_install", "renv")
+  old_renv_impl_install <- renv:::renv_install_impl
+  on.exit(assignFunctionInPackage(old_renv_impl_install, "renv_install_impl", "renv"), add = TRUE)
+  assignFunctionInPackage(identity, "renv_install_impl", "renv")
 
   renv::install(packages = packages, library = library, rebuild = rebuild)
 
@@ -413,13 +418,14 @@ setupJaspDirs <- function(root = getwd(), jaspSubdir = "jasp-build", flatpakSubd
 }
 
 getModuleEnvironments <- function(jaspModules) {
+  # moduleEnvironments contains all meta data for the packages (versions, url, etc.)
   moduleEnvironments <- setNames(vector("list", length(jaspModules)), names(jaspModules))
 
   for (url in jaspModules) {
     nm <- basename(url)
     moduleEnvironments[[nm]] <- getFlatpakJSONFromModule(url, downloadPkgs = TRUE)
   }
-  return(moduleEnvironments)
+  return(invisible(moduleEnvironments))
 }
 
 installGitHubRecords <- function(githubRecords, tempLib) {
@@ -511,16 +517,19 @@ downloadFile <- function(url, destdir) {
 
 downloadRenv <- function(destdir) {
   # TODO: don't hardcode the renv version? maybe use 1 older than the current release so the url always works?
-  downloadFile("https://cran.r-project.org/src/contrib/renv_0.13.2.tar.gz", destdir)
+  downloadFile("https://cran.r-project.org/src/contrib/renv_0.14.0.tar.gz", destdir)
 }
 
 downloadRemotes <- function(destdir) {
   downloadFile("https://cran.r-project.org/src/contrib/remotes_2.4.0.tar.gz", destdir)
 }
 
-
 copyRfiles <- function(dirs) {
-  file.copy(from = list.files("R", pattern = "*\\.R$", full.names = TRUE), to = dirs["r-helpers"], overwrite = TRUE)
+  rfiles <- list.files("R", pattern = "*\\.R$", full.names = TRUE)
+  successes <- file.copy(from = rfiles, to = dirs["r-helpers"], overwrite = TRUE)
+  if (!all(successes))
+    stop("failed to copy these R files: ", paste(rfiles[!successes], collapse = ", "), " to ", dirs["r-helpers"])
+
 }
 
 createTarArchive <- function(dirs, jaspDir, outputPath = "archives/flatpak_archive_%s.tar.gz", compression = c("fast", "none", "best"),
@@ -559,7 +568,7 @@ createTarArchive <- function(dirs, jaspDir, outputPath = "archives/flatpak_archi
   mkdir(dirname(outputPath))
 
   creatArchive <- sprintf(
-    "tar %s -%s%sf %s %s",
+    "tar  --mode=a+rw %s -%s%sf %s %s",
     compression,
     if (verbose) "v" else "",
     if (update)  "u" else "c",
@@ -648,7 +657,7 @@ installJaspStats <- function(pkgs, dirs) {
 
   paths <- character(length(pkgs))
   for (i in seq_along(pkgs)) {
-    pathsFound <- list.files(path = dirs["local-github"], pattern = sprintf("^jasp-stats_%s_tarball_", tolower(pkgs[i])), full.names = TRUE)
+    pathsFound <- list.files(path = dirs["local-github"], pattern = sprintf("^jasp-stats_%s_tarball_", pkgs[i]), full.names = TRUE)
     if (length(pathsFound) != 1L)
       stop("There are ", if (length(pathsFound) < 1L) "zero" else "multiple", " ", pkgs[i], "_*.tar.gz present!")
     paths[i] <- pathsFound
@@ -756,12 +765,17 @@ downloadV8 <- function(dirs) {
 }
 
 copyV8Lib <- function(dirs, source = "other_deps/v8") {
-  file.copy(source, to = dirs["other-dependencies"], recursive = TRUE)
+  if (!file.copy(source, to = dirs["other-dependencies"], recursive = TRUE))
+    stop("Failed to copy from ", source, " to ", dirs["other-dependencies"], domain = NA)
 }
 
 updateV8Rpackage <- function(dirs) {
 
   pathV8 <- list.files(file.path(dirs["renv-root"], "source", "repository", "V8"), pattern = "^V8_*", full.names = TRUE)
+  if (length(pathV8) == 0L) {
+    warning("No V8 package found. This is fine if you adjusted some things and are not building everything.", domain = NA)
+    return()
+  }
   dirTemp <- file.path(tempdir(), "V8_fix")
   mkdir(dirTemp, deleteIfExists = TRUE)
   untar(tarfile = pathV8, exdir = dirTemp)
@@ -779,4 +793,58 @@ updateV8Rpackage <- function(dirs) {
 
   file.copy(from = newPathV8, to = pathV8, overwrite = TRUE)
 
+}
+
+moveMissingTarBalls <- function(dirs) {
+  # sometimes renv realizes that it does not need to redownload a github package because it already has the source in
+  # flatpak_folder/jasp-build/renv-root/source/github.
+  # this function locates any missing tarballs and copies them to flatpak_folder/flatpak-helper/local-github/
+
+  allFiles <- list.files(dirs["local-github"])
+
+  r <- "^(.*)_contents_DESCRIPTION\\?ref=(.+)$"
+  matches <- regmatches(allFiles, regexec(r, allFiles))
+  matches <- matches[lengths(matches) > 0L]
+
+  SHAs <- unlist(lapply(matches, `[[`, 3L), use.names = FALSE)
+  names(SHAs) <- unlist(lapply(matches, `[[`, 2L), use.names = FALSE)
+  tarballs <- file.path(dirs["local-github"], paste0(names(SHAs), "_tarball_", SHAs))
+  missing <- which(!file.exists(tarballs))
+
+  if (length(missing) > 0L) {
+    repoNames <- vapply(strsplit(names(SHAs[missing]), "_", fixed = TRUE), `[[`, character(1L), 2L)
+    backupTarballNames <- paste0(repoNames, "_", SHAs[missing], ".tar.gz")
+    backupTarballs <- file.path(dirs["renv-root"], "source", "github", repoNames, backupTarballNames)
+
+    found <- file.exists(backupTarballs)
+    file.copy(from = backupTarballs[found], to = tarballs[missing][found])
+
+    cat("Moved these tarballs:\n", paste(basename(tarballs[missing][found]), collapse = ", "), "\n")
+
+    if (any(!found)) {
+      warning("Did not find these tarballs: ",     paste(backupTarballs[!found],    collapse = ","),
+              " check if these tarballs are ok: ", paste(tarballs[missing][!found], collapse = ","), domain = NA)
+    }
+  } else {
+    cat("No missing tarballs.\n")
+  }
+}
+
+downloadV8ifneeded <- function(destination = "other_deps") {
+
+  if (!dir.exists(file.path(destination, "v8"))) {
+    # ensure parent folder exists
+    mkdir(destination)
+    downloadFile(url = "http://static.jasp-stats.org/v8.tar.gz", destination)
+
+    oldwd <- getwd()
+    setwd(destination)
+    on.exit(setwd(oldwd))
+    untar(tarfile = normalizePath("v8.tar.gz"))
+  }
+
+}
+
+getDirs <- function() {
+  get("dirs", envir = .GlobalEnv)
 }

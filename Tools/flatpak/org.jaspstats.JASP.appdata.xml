@@ -35,6 +35,68 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+		<release version="0.15.0" date="2021-09-21">
+					<description>
+						New release 0.15
+
+						New features and improvements
+
+						- Plot editing
+						-- Allow custom fonts in plots
+						-- Resized plots are kept after refreshing 
+						- Supports more languages, English, German, Dutch, Galician, Japanese, Portuguese and rudimentary Chinese and Spanish
+						- Windows workarounds:
+						-- Support reading "native" locale encoded csvs and utf-8 both, dependent on BOM. (Aka save as csv vs csv with utf-8 in excel)
+						-- Support installing jasp for user with username in native locale characters
+						- New module “Prophet” for time series prediction
+						- Descriptives: 
+						-- Dot plots
+						-- Stem-and-leaf tables
+						-- Descriptives table can now be transposed
+						- SEM: 
+						-- Possibility to define several models
+						-- MIMIC model analysis
+						-- Latent Growth analysis
+						-- Improved labels in tables
+						-- Footnote fit-table listwise deletion
+						- T-Tests and ANOVAs: Raincloud plots
+						- Distributions: Major update including 23 new continuous and 5 discrete distributions
+						- Learn Bayes:
+						-- Binary classification
+						-- Game of chance
+						-- Game of skill
+						-- Buffon’s needle
+						-- Some edge case scenario and esthetical fixes for binomial estimation
+						- Regression:
+						-- Bootstrapping in correlation
+						-- Categorical variables can be used as predictors in linear regression
+						-- Adjusted lower limit for wls weights 
+						-- Relaxed error check on the covariance matrix of predictors 
+						- Frequencies:
+						- Show more informative footnote when phi cannot be calculated
+						-- Choose odds ratio for contingency table
+						-- Guttman and Kruskal’s lambda for contingency tables
+						- Factor analysis: Factor loadings can now be sorted in EFA and CFA
+						- Mixed Models
+						-- Fixing plotting themes
+						-- Improving warning messages
+						-- Changing default links for gamma and negative binomial family
+						- Meta-Analyses - Complete update of the RoBMA module
+						- Reliability
+						-- Classical intraclass correlation coefficients 
+						-- Adding options for mean and SD
+						-- Restructuring of R-code to improve computational time and reduce error-proneness
+						-- Manage huge .jasp file sizes produced by sampling in reliability analysis
+						- Audit - Added mean and median to descriptive output of prior and posterior distribution
+
+					Bug fixes
+						- Several fixes to sav loading (spss files)
+						- Loading data repeated measures ANOVA
+						- Cohen’s d was incorrectly calculated
+						- Fixed error in density graph Bayesian meta-analysis
+						- Fixed error in computing the total number of edges in Network analysis
+			</description>
+		</release>
 		<release version="0.14.1" date="2020-10-14">
 					<description>
 						New release 0.14

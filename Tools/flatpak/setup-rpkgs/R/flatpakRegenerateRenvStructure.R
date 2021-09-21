@@ -46,8 +46,13 @@ dirV8 <- file.path(dirLib64, "v8")
 # This must be an absolute path, since installation is staged
 if (runningLocally) dirV8 <- normalizePath(dirV8)
 
+prettyCat(dir())
+prettyCat(dir(dirApp))
+
+dirLibGit2 <- file.path(dirApp, "libgit2")
 configureVars <- c(
-  V8 = sprintf("INCLUDE_DIR=%1$s/include LIB_DIR=%1$s/lib", dirV8)
+  V8   = sprintf("INCLUDE_DIR=%1$s/include LIB_DIR=%1$s/lib", dirV8),
+  gert = sprintf("INCLUDE_DIR=%1$s/include LIB_DIR=%1$s", dirLibGit2)
 )
 options(configure.vars = configureVars)
 prettyCat(configureVars)
@@ -57,8 +62,10 @@ libArch <- system("uname -m", intern = TRUE)
 Sys.setenv("LIB_ARCH" = if (identical(libArch, "x86_64")) "x64" else "aarch64")
 prettyCat(Sys.getenv("LIB_ARCH"))
 
-# install V8 here so later it only needs to be retrieved from the cache
-renv::install("V8")
+# install V8 and gert here so later they only need to be retrieved from the cache
+availablePkgs <- available.packages()
+toInstall <- intersect(c("V8", "gert"), availablePkgs[, "Package"])
+renv::install(toInstall)
 
 installJaspStats(c("jaspBase", "jaspGraphs"), dirs)
 

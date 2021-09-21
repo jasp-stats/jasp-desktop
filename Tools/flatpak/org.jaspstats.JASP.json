@@ -1,8 +1,10 @@
 {
 	"app-id":			"org.jaspstats.JASP",
 	"runtime": 			"org.kde.Platform",
-	"runtime-version": 		"5.12",
+	"runtime-version":	"5.15",
 	"sdk": 				"org.kde.Sdk",
+	"base":				"io.qt.qtwebengine.BaseApp",
+	"base-version":		"5.15",
 	"command": 			"org.jaspstats.JASP",
 	"finish-args": [
 		"--socket=x11",
@@ -13,38 +15,45 @@
 		"--device=dri"
 	],
 	"build-options": {
-		"env": {
-			"CXX11":		"g++",
-			"CXX14":		"g++",
-			"CXX11FLAGS":	"-std=gnu++11",
-			"CXX14FLAGS":	"-std=gnu++14"
-		},
 		"cxxflags": 				"-O2 -g -Wno-error",
 		"cflags": 					"-Wno-error",
 		"ldflags":					"-lgfortran",
 		"append-ld-library-path": 	"/app/lib64/R/lib",
 		"env": {
-			"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",
-			"R_HOME": "/app/lib64/R/",
-			"PREFIX": "/app"
+
+            "CXX11":		"g++",
+			"CXX14":		"g++",
+			"CXX11FLAGS":	"-std=gnu++11",
+			"CXX14FLAGS":	"-std=gnu++14",
+
+			"JASP_R_REPOSITORY":				"file:///app/lib64/local-cran",
+			"GITHUB_PAT_DEF":					"Z2hwX0M3YnZhaEJIYjF5QVVxN0p5NmtjTXhpcWRveXIyOTEwOXc4Rwo",
+			"GITHUB_PAT":						"Z2hwX1FVQmt2dWk0WFV5SWJrN0VKc2JUWWVnTzFaVnQxbzROWmxwdwo",
+
+			"GIT_DISCOVERY_ACROSS_FILESYSTEM":	"true",
+
+			"PREFIX": 							"/app",
+			"R_HOME": 							"/app/lib64/R/",
+
+			"QMAKEPATH":						"/app/lib"
 		}
 	},
 	"cleanup": [
 		"/include"
 	],
-	"modules":[	
-		{ 
-			"name": "boost",
-			"buildsystem": "simple",
+	"modules":[
+		{
+			"name": 		"boost",
+			"buildsystem": 	"simple",
 			"build-commands":[
 				"./bootstrap.sh --with-libraries=filesystem,system",
 				"./b2 -j${FLATPAK_BUILDER_N_JOBS} install --prefix=/app" 
 			],
 			"sources":[
 				{
-					"type": "archive",
-					"url": "https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz",
-					"sha256": "96b34f7468f26a141f6020efb813f1a2f3dfb9797ecf76a7d7cbd843cc95f5bd"
+					"type": 	"archive",
+					"url": 		"https://boostorg.jfrog.io/artifactory/main/release/1.71.0/source/boost_1_71_0.tar.gz",
+					"sha256": 	"96b34f7468f26a141f6020efb813f1a2f3dfb9797ecf76a7d7cbd843cc95f5bd"
 				}
 			]
 		},
@@ -62,11 +71,11 @@
 			"sources": [
 				{
 					"type":   "archive",
-					"url":    "http://cran.r-project.org/src/base/R-3/R-3.6.1.tar.gz",
-					"sha256": "5baa9ebd3e71acecdcc3da31d9042fb174d55a42829f8315f2457080978b1389"
+					"url":    "http://cran.r-project.org/src/base/R-4/R-4.1.0.tar.gz",
+					"sha256": "e8e68959d7282ca147360fc9644ada9bd161bab781bab14d33b8999a95182781"
 				}
 			]
-		},	
+		},
 		{
 			"name": 		"LAPACK",
 			"buildsystem":	"cmake",
@@ -85,8 +94,8 @@
 					"type":   "archive",
 					"sha256": "8ac5dd57982bfd7d5f0ee384499d62f3e0bb35b5f1660feb368545f1186371fc",
 					"url":    "https://static.jasp-stats.org/RPkgs/JAGS-4.3.0.tar.gz"
-				} ]	
-		},	
+				} ]
+		},
 		"RPackages.json",
 		{
 			"name": "readstat",
@@ -100,12 +109,15 @@
 		{
 			"name": 		"jasp",
 			"buildsystem": 	"qmake",
+			"config-opts": [
+                "QMAKE_INCDIR+=/app/include/QtWebEngine"
+			],
 			"sources":
 			[
 				{
 					"type":		"git",
-					"tag":		"v0.13.0.0_rc0_flathub_fix0",
-					"url": 		"https://github.com/jasp-stats/jasp-desktop"
+					"commit":	"0046fa53f209a50577f25b439be74994844f2bff",
+					"url": 		"https://github.com/vandenman/jasp-desktop"
 				}
 			]
 		}
