@@ -783,7 +783,7 @@
         {
           "name": "Grand Point Average",
           "path": "Grand Point Average.jasp",
-          "description": "Grand Point Average of 200 college students across 6 semesters, along with information on gender, high school GPA and whether they were admitted to their university of choice. <br><br> The JASP file currently does not contain any analysis. <br><br> <i>Data from Hox, Moerbeek and Van de Schoot (2017).<\/i>",
+          "description": "Grand Point Average of 200 college students across 6 semesters, along with information on gender, high school GPA and whether they were admitted to their university of choice. <br><br> The JASP file currently does not contain any analysis. <br><br> <i>Data from Hox, Moerbeek, and Van de Schoot (2017).<\/i>",
           "kind": "file",
           "associated_datafile": "Grand Point Average.csv"
         },
