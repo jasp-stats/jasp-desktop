@@ -508,7 +508,7 @@ void MainWindow::loadQML()
 	_ribbonModel->loadModules(	
 		{ 	"jaspDescriptives", "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },
 		{ 	"jaspAudit", "jaspBain", /*"jaspCircular",*/ "jaspDistributions" , "jaspEquivalenceTTests", "jaspJags", "jaspLearnBayes", "jaspMachineLearning",
-			"jaspMetaAnalysis", "jaspNetwork", "jaspProcessControl", "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
+			"jaspMetaAnalysis", "jaspNetwork"/*, "jaspProcessControl"*/, "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
 
 	_engineSync->loadAllActiveModules();
 	_dynamicModules->startUpCompleted();

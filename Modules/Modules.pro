@@ -106,8 +106,8 @@ include(InstallModule.pri)
 MODULE_NAME = jaspProphet
 include(InstallModule.pri)
 
-MODULE_NAME = jaspProcessControl
-include(InstallModule.pri)
+#MODULE_NAME = jaspProcessControl
+#include(InstallModule.pri)
 
 #MODULE_NAME = jaspCircular
 #include(InstallModule.pri)
