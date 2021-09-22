@@ -760,10 +760,24 @@
           {
             "name": "Fear of Statistics",
             "path": "Fear of Statistics.jasp",
-            "description": "Responses of 2571 students on an SPSS Anxiety Questionnaire. <br><br> The example JASP file demonstrates the use of a reliability analysis.<br><br> <i>Fictional data from Andy Field.<\/i>",
+            "description": "Responses of 2571 students on an SPSS Anxiety Questionnaire. <br><br> The example JASP file demonstrates the use of a classical unidimensional reliability analysis.<br><br> <i>Fictional data from Andy Field.<\/i>",
             "kind": "file",
             "associated_datafile": "Fear of Statistics.csv"
-          }
+          },
+		  {
+			"name": "ASRM - Mania Scale",
+			"path": "ASRM - Mania Scale.jasp",
+			"description": "Responses of 78 participants to the Altman Self-Rating Mania Scale (ASRM), from Nicolai & Moshagen (2018). The file demonstrates the use of a Bayesian unidimensional reliability analysis",
+			"kind": "file",
+			"associated_datafile": "ASRM - Mania Scale.csv"
+		  },
+		  {
+			"name": "Interrater Data from Shrout and Fleiss (1979)",
+			"path": "Interrater Data from Shrout and Fleiss (1979).jasp",
+			"description": "Hypothetical data set from a paper on ICCs by Shrout and Fleiss (1979). The file demonstrates the use of classical intraclass correlation coefficients",
+			"kind": "file",
+			"associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+		  },
         ],
         "debug": false
       },
