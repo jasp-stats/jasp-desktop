@@ -20,22 +20,34 @@ APP_FRAMEWORKS="${APP_PATH}/Contents/Frameworks"
 ENTITLEMENTS_PLIST="${APP_PATH}/Contents/entitlements.plist"
 
 sign () {
-	codesign --force --verbose --verify --sign "${SIGNING_CERTIFICATE}" --entitlements "${ENTITLEMENTS_PLIST}" --timestamp --options runtime "$1"
-	codesign --verify --strict --verbose=2 "$1"
+	echo Signing "$1"
+	codesign --force --verbose --sign "${SIGNING_CERTIFICATE}" --entitlements "${ENTITLEMENTS_PLIST}" --timestamp --options runtime "$1"
+	
+	echo Verifying "$1"
+	codesign -vvvv --deep "$1"
 }
 
 signRecursively () {
-	#make sure all executable files, or those with dylib or so as extension are signed
-	for f in "$1"/*; do
-		if [[ -f "$f" && ( "$2" == "Aggressive" || -x "$f" || $f =~ [[:\<:]].+\.(dylib|so|plist)[[:\>:]] ) ]]; then
-			sign "$f"
-		fi
-	done
-
 	#Descend into each folder here unless it is a symbolic link (Because otherwise we get stuck in an infinite loop due to the fix for https://github.com/jasp-stats/jasp-test-release/issues/641)
 	for d in "$1"/*; do
 		if [[ ! -L "$d" && -d "$d" ]]; then
 			signRecursively "$d" $2
+		fi
+	done
+
+	#make sure all executable files, or those with dylib or so as extension are signed
+	# do all this while avoiding signing files that are secretly a symlink
+	for f in "$1"/*; do
+		if [[ -f "$f" && (! -L "$f") && ( "$2" == "Aggressive" || -x "$f" || $f =~ [[:\<:]].+\.(dylib|so|plist)[[:\>:]] ) ]]; then
+			sign "$f"
+		fi
+	done
+
+	#Stupid workaround to get jasp signed after everything else
+	for f in "$1"/*; do
+		if [[ -f "$f" && $f = JASP.app/Contents/MacOS/JASP ]]; then
+			echo Signing JASP last
+			sign "$f"
 		fi
 	done
 
@@ -46,8 +58,11 @@ signRecursively () {
 }
 
 signDMG () {
-	codesign --deep --force --verbose --verify --sign "${SIGNING_CERTIFICATE}" --timestamp  --options runtime "$1"
-	codesign --deep --verify --strict --verbose=2 "$1"
+	echo Signing "$1"
+	codesign --verbose --sign "${SIGNING_CERTIFICATE}" --timestamp  --options runtime "$1"
+	
+	echo Verifying "$1"
+	codesign -vvvv --deep "$1"
 }
 
 echo "Check the background image DPI and convert it if it isn't 72x72"
@@ -74,8 +89,6 @@ echo "clean up .dmg file"
 chflags nouchg $1
 xattr -rc $1
 
-
-
 # Extracting app from dmg file
 #We should actually check if the dmg was already mounted or not though...
 echo "attaching image file"
@@ -89,6 +102,13 @@ echo "detaching image file"
 hdiutil detach /Volumes/JASP
 
 pushd "${STAGING_DIR}"
+
+echo "Remove stuff from R.framework"
+rm "$APP_PATH/Contents/Frameworks/R.framework/.Rhistory"
+rm "$APP_PATH/Contents/Frameworks/R.framework/.DS_Store"
+unlink "$APP_PATH/Contents/Frameworks/R.framework/Headers"
+unlink "$APP_PATH/Contents/Frameworks/R.framework/Libraries"
+unlink "$APP_PATH/Contents/Frameworks/R.framework/PrivateHeaders"
 
 # strip the executable
 echo "Stripping ${APP_EXE}..."
@@ -108,7 +128,12 @@ signRecursively "$APP_PATH"
 
 echo "Signing MacOS folder more aggressively (aka everything) because main application will otherwise not be signed"
 signRecursively "$APP_PATH/Contents/MacOS" Aggressive
+
+echo "Now try to sign JASP executable itself again"
+echo sign "$APP_PATH/Contents/MacOS/JASP"
 sign "$APP_PATH/Contents/MacOS/JASP"
+
+echo "And the whole bundle"
 sign "$APP_PATH"
 
 echo "Making the R library readonly"  #https://github.com/jasp-stats/INTERNAL-jasp/issues/896
@@ -116,7 +141,7 @@ chmod -R a-w $APP_FRAMEWORKS/R.framework/Versions/*/Resources/library
 chmod -R a+w $APP_FRAMEWORKS/R.framework/Versions/*/Resources/library/officer # Fixes https://github.com/jasp-stats/INTERNAL-jasp/issues/972 (Can't save as pptx on mac)
 popd
 
-echo "Figure out the size of the DMG"
+#echo "Figure out the size of the DMG"
 # figure out how big our DMG needs to be
 #  assumes our contents are at least 1M!
 #SIZE=`du -sh "${STAGING_DIR}" | sed 's/\([0-9]*\)M\(.*\)/\1/'`
@@ -129,7 +154,7 @@ echo "Figure out the size of the DMG"
 #fi
 
 # create the temp DMG file
-hdiutil create -srcfolder "${STAGING_DIR}" -volname "${VOL_NAME}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 1500M "${DMG_TMP}"
+hdiutil create -srcfolder "${STAGING_DIR}" -volname "${VOL_NAME}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 3000M "${DMG_TMP}"
 echo "Created DMG: ${DMG_TMP}"
 
 # mount it and save the device
