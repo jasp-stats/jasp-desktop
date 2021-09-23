@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-09-22 07:14+0000\n"
+"PO-Revision-Date: 2021-09-24 01:33+0000\n"
 "Last-Translator: Daiki Hojo <dhojo.bayes@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/ja/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
-msgstr "行を追加する"
+msgstr "行を追加"
 
 msgctxt "ComponentsList|"
 msgid "Remove a row"
@@ -35,7 +35,7 @@ msgstr "保存するファイルを選択"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr "読み込むファイルを選択してください"
+msgstr "読み込むファイルを選択"
 
 msgctxt "FileSelector|"
 msgid "Browse"
@@ -228,7 +228,7 @@ msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
-msgstr "帰無仮説に対する代替仮説の証拠を定量化するためのベイズファクター"
+msgstr "帰無仮説に対する対立仮説の証拠を定量化するためのベイズファクター."
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
@@ -3060,7 +3060,7 @@ msgstr "ユーザーインターフェースオプション"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr "R、JAGS、またはLavaanのコード："
+msgstr "R、JAGS、またはlavaanのコード："
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
