@@ -5,29 +5,27 @@ import JASP.Widgets		1.0
 import JASP.Controls	1.0
 
 
-Item
+ScrollView
 {
-	focus:					true
+    id:                     scrollPrefs
+    focus:                  true
 	onActiveFocusChanged:	if(activeFocus) synchronizeDataSave.forceActiveFocus();
+	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
-	MenuHeader
-	{
-		id:			menuHeader
-		headertext:	qsTr("Data Preferences")
-		helpfile:	"preferences/prefsdata"
-	}
+	Column {
 
-	ScrollView
-	{
-		id:					scrollPrefs
-		anchors.top:		menuHeader.bottom
-		anchors.left:		menuHeader.left
-		anchors.right:		menuHeader.right
-		anchors.bottom:		menuHeader.bottom
-		anchors.topMargin:	jaspTheme.generalMenuMargin
-		focus:				true
-		Keys.onLeftPressed: resourceMenu.forceActiveFocus();
-		focusPolicy:		Qt.WheelFocus
+		width: scrollPrefs.width
+		spacing: jaspTheme.rowSpacing
+
+		MenuHeader
+		{
+			id:			menuHeader
+			headertext:	qsTr("Data Preferences")
+			helpfile:	"preferences/prefsdata"
+			anchorMe:	false
+			width:		scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
+			x:			jaspTheme.generalMenuMargin
+		}
 
 		PrefsGroupRect
 		{
