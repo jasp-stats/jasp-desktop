@@ -764,6 +764,20 @@
                 "kind": "file",
                 "associated_datafile": "Fear of Statistics.csv"
               }
+			{
+			  "name": "ASRM - Manie Schaal",
+			  "path": "ASRM - Mania Scale.jasp",
+			  "description": "Antwoorden van 78 deelnemers op de Altman self-rating manie schaal (ASRM), van Nicolai & Moshagen (2018). Het bestand demonstreert het gebruik van een Bayesiaanse unidimensionale betrouwbaarheidsanalyse",
+			  "kind": "file",
+			  "associated_datafile": "ASRM - Mania Scale.csv"
+			},
+			{
+			  "name": "Interbeoordelaarsgegevens van Shrout en Fleiss (1979)",
+			  "path": "Interrater Data from Shrout and Fleiss (1979).jasp",
+			  "description": "Hypothetische dataset uit een artikel over ICC's van Shrout en Fleiss (1979). Het bestand demonstreert het gebruik van klassieke intra-klasse correlatiecoëfficiënten",
+			  "kind": "file",
+			  "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+			}
         ],
         "debug": false
       },

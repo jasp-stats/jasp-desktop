@@ -777,7 +777,7 @@
 			"description": "Hypothetical data set from a paper on ICCs by Shrout and Fleiss (1979). The file demonstrates the use of classical intraclass correlation coefficients",
 			"kind": "file",
 			"associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
-		  },
+		  }
         ],
         "debug": false
       },
