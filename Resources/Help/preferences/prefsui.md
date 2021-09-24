@@ -14,7 +14,7 @@ Here you can specify if you would like to have a "light" or a "dark" theme on th
 ### Preferred Language
 Select the language in which you would like to use JASP.
 
-If you would like to improve our translations, or to add a new language, please visit https://jasp-stats.org/translation-guideline/
+If you would like to improve our translations, or to add a new language, please visit https://jasp-stats.org/translation-guidelines/
 
 ### Zoom
 This number specifies how the JASP interface will be scaled.
