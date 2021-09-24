@@ -58,9 +58,9 @@ Window
 		anchors
 		{
 			left:		parent.left
-			leftMargin: 50
+			leftMargin: 50 * preferencesModel.uiScale
 			top:		aboutInfoBox.top
-			topMargin:	25
+			topMargin:	25 * preferencesModel.uiScale
 		}
 
 		Image
@@ -88,244 +88,149 @@ Window
 			top:			topWave.bottom
 			left:			jaspLogo.right
 			right:			parent.right
-			bottom:			bottomWave.top
 			leftMargin:		25
-			rightMargin:	25
+			rightMargin:	15
 		}
-
-		border.color:	jaspTheme.gray
-		border.width:	0
+		height:			contentInfo.height
 		color:			jaspTheme.white
 
-		JC.Text
+		Column
 		{
-			id:				copyrightMessage
+			id: contentInfo
 			anchors.left:	parent.left
 			anchors.top:	parent.top
 			anchors.right:	parent.right
-			height:			25
+			spacing:		5 * preferencesModel.uiScale
 
-			text:			aboutModel.copyrightMessage
-			color:			jaspTheme.textEnabled
-		}
+			JC.Text { text: aboutModel.copyrightMessage; color: jaspTheme.textEnabled	}
 
-		JC.Label
-		{
-			id:				jaspVersionLabel
-			anchors.left:	parent.left
-			anchors.top:	copyrightMessage.bottom
-			height:			25
-			width:			aboutInfoBox.labelwidth
-
-			text:			qsTr("Version:")
-			color:			labelcolor
-			font.bold:		true
-
-			JC.Text
+			Row
 			{
-				id:				jaspVersionText
-
-				text:			aboutModel.version
-				anchors.left:	parent.right
-				anchors.top:	parent.top
-				height:			25
-				color:			jaspTheme.textEnabled
+				JC.Label { text: "<b>" + qsTr("Version:") + "</b>";		color: labelcolor; width: aboutInfoBox.labelwidth; id: jaspVersionLabel }
+				JC.Text	 { text: aboutModel.version;	color: jaspTheme.textEnabled											}
 			}
-		}
 
-		JC.Label
-		{
-			id:				buildDateLabel
-			anchors.left:	parent.left
-			anchors.top:	jaspVersionLabel.bottom
-			height:			25
-			width:			aboutInfoBox.labelwidth
-
-			text:			qsTr("Built on:")
-			color:			labelcolor
-			font.bold:		true
-
-			JC.Text
+			Row
 			{
-				id:				buildDateText
-				anchors.left:	parent.right
-				anchors.top:	parent.top
-				height:			25
-				color:			jaspTheme.textEnabled
-
-				text:			aboutModel.buildDate
+				JC.Label { text: "<b>" + qsTr("Built on:") + "</b>";		color: labelcolor; width: aboutInfoBox.labelwidth; id: buildDateLabel	}
+				JC.Text	 { text: aboutModel.buildDate;	color: jaspTheme.textEnabled											}
 			}
-		}
 
-		JC.Label
-		{
-			id:				sourceLabel
-			anchors.left:	parent.left
-			anchors.top:	buildDateLabel.bottom
-			height:			25
-			width:			aboutInfoBox.labelwidth
-
-			text:			qsTr("Source:")
-			color:			labelcolor
-			font.bold:		true
-
-			JC.Text
+			Row
 			{
-				id:				commitLink
-				anchors.left:	parent.right
-				anchors.top:	parent.top
-				height:			25
-
-
-				text:			qsTr("Access the sources here")
-				color:			jaspTheme.blue
-				font.underline:	true
-
-				MouseArea
+				JC.Label { text: "<b>" + qsTr("Source:") + "</b>";		color: labelcolor; width: aboutInfoBox.labelwidth; id: sourceLabel		}
+				JC.Text
 				{
-					id:				mouseAreaSources
-					anchors.fill:	parent
-					onClicked:		Qt.openUrlExternally(aboutModel.commitUrl)
-					cursorShape:	Qt.PointingHandCursor
+					text:		"<u>" + qsTr("Access the sources here") + "</u>"
+					color:		jaspTheme.blue
+
+					MouseArea
+					{
+						id:				mouseAreaSources
+						anchors.fill:	parent
+						onClicked:		Qt.openUrlExternally(aboutModel.commitUrl)
+						cursorShape:	Qt.PointingHandCursor
+					}
 				}
 			}
-		}
 
-		JC.Label
-		{
-			id:				downloadLabel
-			anchors.left:	parent.left
-			anchors.top:	sourceLabel.bottom
-			height:			25
-			width:			aboutInfoBox.labelwidth
+			Row
+			{
+				JC.Label { text: "<b>" + qsTr("Download:") + "</b>";		color:	labelcolor; width: aboutInfoBox.labelwidth; id:	downloadLabel	}
+				JC.Text
+				{
+					text:			"<u>" + aboutModel.downloadUrl + "</u>"
+					color:			jaspTheme.blue
 
-			text:			qsTr("Download:")
-			color:			labelcolor
-			font.bold:		true
+					MouseArea
+					{
+						id:				mouseAreaDownload
+						anchors.fill:	parent
+						onClicked:		Qt.openUrlExternally(aboutModel.downloadUrl)
+						cursorShape:	Qt.PointingHandCursor
+
+					}
+				}
+			}
+
+			Row
+			{
+				JC.Label
+				{
+					id:				citationLabel
+					width:			aboutInfoBox.labelwidth
+					text:			"<b>" + qsTr("Citation:") + "</b>"
+					color:			labelcolor
+				}
+
+				Column
+				{
+					TextArea
+					{
+						id:				citationText
+						textFormat:		Text.StyledText
+						text:			aboutModel.citation
+						color:			jaspTheme.textEnabled
+						leftPadding:	0
+						topPadding:		0
+						bottomPadding:	0
+						width:			aboutInfoBox.width - aboutInfoBox.labelwidth
+						wrapMode:		TextEdit.WordWrap
+						font:			jaspTheme.font
+
+						selectByMouse:	true
+						readOnly:		true
+
+						onPressed:		if (event.button === Qt.RightButton)	contextMenu.popup()
+
+						Menu
+						{
+							id:		contextMenu
+							width:	120
+
+							Action { text: qsTr("Select All");		onTriggered: citationText.selectAll();	}
+							Action { text: qsTr("Copy Selection");	onTriggered: citationText.copy();		} //citationText.deselect(); is not really necessary right?
+						}
+					}
+
+					JC.Text
+					{
+						text:			"<u>" + qsTr("BibTeX") + "</u>"
+						color:			jaspTheme.blue
+
+						MouseArea
+						{
+							id:				mouseAreaBibTex
+							anchors.fill:	parent
+							onClicked:		Qt.openUrlExternally(aboutModel.citationUrl)
+							cursorShape:	Qt.PointingHandCursor
+						}
+					}
+				}
+			}
 
 			JC.Text
 			{
-				id:				downloadText
-				anchors.left:	parent.right
-				anchors.top:	parent.top
-				height:			25
-
-				text:			aboutModel.downloadUrl
-				color:			jaspTheme.blue
-				font.underline:	true
-
-				MouseArea
-				{
-					id:				mouseAreaDownload
-					anchors.fill:	parent
-					onClicked:		Qt.openUrlExternally(aboutModel.downloadUrl)
-					cursorShape:	Qt.PointingHandCursor
-
-				}
-			}
-		}
-
-		JC.Label
-		{
-			id:				citationLabel
-			anchors.left:	parent.left
-			anchors.top:	downloadLabel.bottom
-			height:			20
-			width:			aboutInfoBox.labelwidth
-
-			text:			qsTr("Citation:")
-			color:			labelcolor
-			font.bold:		true
-
-			TextArea
-			{
-				id:				citationText
-				anchors.left:	parent.right
-				anchors.top:	parent.top
-				height:			20
-				leftPadding:	0
-				topPadding:		0
-				bottomPadding:	0
-
-//				font:			jaspTheme.font
-				font.bold:		false
+				id:				warrantyText
+				text:			aboutModel.warranty
 				textFormat:		Text.StyledText
-				text:			aboutModel.citation
+				opacity:		0.5
 				color:			jaspTheme.textEnabled
-
-				selectByMouse:	true
-				readOnly:		true
-
-				onPressed:		if (event.button === Qt.RightButton)	contextMenu.popup()
-
-				Menu
-				{
-					id:		contextMenu
-					width:	120
-
-					Action { text: qsTr("Select All");		onTriggered: citationText.selectAll();	}
-					Action { text: qsTr("Copy Selection");	onTriggered: citationText.copy();		} //citationText.deselect(); is not really necessary right?
-				}
 			}
 
 			JC.Text
 			{
-				id:				bibTexText
-				anchors.left:	citationLabel.right
-				anchors.top:	citationText.bottom
-				height:			15
-
-				text:			qsTr("BibTeX")
+				id:				openSourceText
+				text:			"<u>" + qsTr("Open Source Components") + "</u>"
 				color:			jaspTheme.blue
-				font.underline:	true
 
 				MouseArea
 				{
-					id:				mouseAreaBibTex
+					id:				mouseAreaOpenSource
 					anchors.fill:	parent
-					onClicked:		Qt.openUrlExternally(aboutModel.citationUrl)
+					onClicked:		Qt.openUrlExternally(aboutModel.openSourceUrl)
 					cursorShape:	Qt.PointingHandCursor
 				}
-			}
-		}
-
-		JC.Text
-		{
-			id:				warrantyText
-			text:			aboutModel.warranty
-			textFormat:		Text.StyledText
-			opacity:		0.5
-			color:			jaspTheme.textEnabled
-
-			anchors
-			{
-				top:		citationLabel.bottom
-				left:		parent.left
-				right:		parent.right
-				topMargin:	30
-			}
-		}
-
-		JC.Text
-		{
-			id:				openSourceText
-			height:			25
-			anchors {
-				left:		warrantyText.left
-				top:		warrantyText.bottom
-			}
-
-			text:			qsTr("Open Source Components")
-			color:			jaspTheme.blue
-			font.underline:	true
-
-			MouseArea
-			{
-				id:				mouseAreaOpenSource
-				anchors.fill:	parent
-				onClicked:		Qt.openUrlExternally(aboutModel.openSourceUrl)
-				cursorShape:	Qt.PointingHandCursor
-
 			}
 		}
 	}
@@ -334,11 +239,12 @@ Window
 	{
 		id:				closeButton
 		x:				aboutWindow.width / 2 - parent.x -width / 2
+		anchors.top:	aboutInfoBox.bottom
+		anchors.topMargin: 10 * preferencesModel.uiScale
 		color:			closebuttoncolor
-		radius:			5
-		anchors.bottom:	bottomWave.top
-		height:			25
-		width:			75
+		radius:			5 * preferencesModel.uiScale
+		height:			25 * preferencesModel.uiScale
+		width:			75 * preferencesModel.uiScale
 
 		JC.Text
 		{
@@ -364,6 +270,7 @@ Window
 	Image
 	{
 		id:					bottomWave
+		z:					-1
 
 		anchors.bottom:		parent.bottom
 		anchors.left:		parent.left
