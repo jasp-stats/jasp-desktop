@@ -752,21 +752,35 @@
       "debug": false
     },
     {
-        "name": "13. Betrouwbaarheid",
-        "path": "13. Reliability",
-        "description": "",
-        "kind": "folder",
-        "children": [
-            {
-                "name": "Angst voor Statistiek",
-                "path": "Fear of Statistics.jasp",
-                "description": "Antwoorden van 2571 studenten op een SPSS Angstvragenlijst. <br> <br> Het voorbeeld-JASP-bestand toont het gebruik van een betrouwbaarheidsanalyse. <br> <br> <i> Fictieve gegevens van Andy Field. <\ / i>",
-                "kind": "file",
-                "associated_datafile": "Fear of Statistics.csv"
-              }
-        ],
-        "debug": false
-      },
+      "name": "13. Betrouwbaarheid",
+      "path": "13. Reliability",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Angst voor Statistiek",
+          "path": "Fear of Statistics.jasp",
+          "description": "Antwoorden van 2571 studenten op een SPSS Angstvragenlijst. <br> <br> Het voorbeeld-JASP-bestand toont het gebruik van een betrouwbaarheidsanalyse. <br> <br> <i> Fictieve gegevens van Andy Field. <\ / i>",
+          "kind": "file",
+          "associated_datafile": "Fear of Statistics.csv"
+        },
+        {
+          "name": "ASRM - Manie Schaal",
+          "path": "ASRM - Mania Scale.jasp",
+          "description": "Antwoorden van 78 deelnemers op de Altman self-rating manie schaal (ASRM), van Nicolai & Moshagen (2018). Het bestand demonstreert het gebruik van een Bayesiaanse unidimensionale betrouwbaarheidsanalyse",
+          "kind": "file",
+          "associated_datafile": "ASRM - Mania Scale.csv"
+        },
+        {
+          "name": "Interbeoordelaarsgegevens van Shrout en Fleiss (1979)",
+          "path": "Interrater Data from Shrout and Fleiss (1979).jasp",
+          "description": "Hypothetische dataset uit een artikel over ICC's van Shrout en Fleiss (1979). Het bestand demonstreert het gebruik van klassieke intra-klasse correlatiecoëfficiënten",
+          "kind": "file",
+          "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+        }
+      ],
+      "debug": false
+    },
     {
       "name": "14. SEM",
       "path": "14. SEM",
