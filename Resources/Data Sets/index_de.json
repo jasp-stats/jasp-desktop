@@ -752,35 +752,35 @@
       "debug": false
     },
     {
-        "name": "13. Reliabilität",
-        "path": "13. Reliability",
-        "description": "",
-        "kind": "folder",
-        "children": [
-          {
-            "name": "Fear of Statistics",
-            "path": "Fear of Statistics.jasp",
-            "description": "Responses of 2571 students on an SPSS Anxiety Questionnaire. <br><br> The example JASP file demonstrates the use of a reliability analysis.<br><br> <i>Fictional data from Andy Field.<\/i>",
-            "kind": "file",
-            "associated_datafile": "Fear of Statistics.csv"
-          },
-		  {
-			"name": "ASRM - Manie Skala",
-			"path": "ASRM - Mania Scale.jasp",
-			"description": "Antworten von 78 Teilnehmern auf der Altman Selbstbericht Manie Skala (ASRM), aus Nicolai & Moshagen (2018). Die Datei demonstriert die Verwendung einer eindimensionalen Bayes'schen Reliabilitätsanalyse",
-			"kind": "file",
-			"associated_datafile": "ASRM - Mania Scale.csv"
-		  },
-		  {
-			"name": "Interrater-Daten von Shrout und Fleiss (1979)",
-			"path": "Interrater Data from Shrout and Fleiss (1979).jasp",
-			"description": "Hypothetischer Datensatz aus einer Arbeit über ICCs von Shrout und Fleiss (1979). Die Datei demonstriert die Verwendung der klassischen Intraklassen-Korrelationskoeffizienten",
-			"kind": "file",
-			"associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
-		  }
-        ],
-        "debug": false
-      },
+      "name": "13. Reliabilität",
+      "path": "13. Reliability",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Fear of Statistics",
+          "path": "Fear of Statistics.jasp",
+          "description": "Responses of 2571 students on an SPSS Anxiety Questionnaire. <br><br> The example JASP file demonstrates the use of a reliability analysis.<br><br> <i>Fictional data from Andy Field.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Fear of Statistics.csv"
+        },
+        {
+          "name": "ASRM - Manie Skala",
+          "path": "ASRM - Mania Scale.jasp",
+          "description": "Antworten von 78 Teilnehmern auf der Altman Selbstbericht Manie Skala (ASRM), aus Nicolai & Moshagen (2018). Die Datei demonstriert die Verwendung einer eindimensionalen Bayes'schen Reliabilitätsanalyse",
+          "kind": "file",
+          "associated_datafile": "ASRM - Mania Scale.csv"
+        },
+        {
+          "name": "Interrater-Daten von Shrout und Fleiss (1979)",
+          "path": "Interrater Data from Shrout and Fleiss (1979).jasp",
+          "description": "Hypothetischer Datensatz aus einer Arbeit über ICCs von Shrout und Fleiss (1979). Die Datei demonstriert die Verwendung der klassischen Intraklassen-Korrelationskoeffizienten",
+          "kind": "file",
+          "associated_datafile": "Interrater Data from Shrout and Fleiss (1979).csv"
+        }
+      ],
+      "debug": false
+    },
     {
       "name": "14. SEM",
       "path": "14. SEM",
