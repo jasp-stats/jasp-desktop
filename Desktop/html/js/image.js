@@ -38,9 +38,10 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 
 
 	hasNotes:					function() {	return this.$el.hasClass('jasp-collection-item')	=== false;	},
-	isEditable:					function() {	return true;													},
+	hasCopy:					function() {	return this.model.get("error") === null;						},
+	isEditable:					function() {	return this.model.get("error") === null;						},
+	isConvertible:				function() {	return this.model.get("error") === null && this.model.get("convertible") ===  true;	},
 	hasCollapse:				function() {	return this.$el.hasClass('jasp-collection-item')	=== false;	},
-	isConvertible:				function() {	return this.model.get("convertible")				==  true;	},
 	saveImageClicked:			function() {	this.model.trigger("SaveImage:clicked",							{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name")							});	},
 	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name"), title: this.model.get("title"), type: "interactive"		});	},
 	showDependenciesClicked:	function() {	this.model.trigger("ShowDependencies:clicked",	this.model.get("name")); },
