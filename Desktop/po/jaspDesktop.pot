@@ -3473,3 +3473,7 @@ msgstr ""
 msgctxt "AboutWindow|"
 msgid "Open Source Components"
 msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Help us translate or improve JASP in your language."
+msgstr ""
