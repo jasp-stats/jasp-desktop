@@ -24,8 +24,8 @@ import JASP				1.0
 TextInputBase
 {
 	id:					textField
-	implicitHeight:		control.height
-	implicitWidth:		afterLabel.text ? (afterLabelRect.x + afterLabelRect.width) : (control.x + control.width)
+	implicitHeight:		layout.height
+	implicitWidth:		layout.width
 	background:			useExternalBorder ? externalControlBackground : control.background
 	cursorShape:		Qt.IBeamCursor
 	innerControl:		control
@@ -78,134 +78,125 @@ TextInputBase
 		control.released.connect(released);
 		lastValidValue = control.text;
 	}	
+
+	RowLayout {
+		id: layout
+		spacing: jaspTheme.labelSpacing
 		
-	Rectangle
-	{
-		id:					beforeLabelRect
-		width:				beforeLabel.implicitWidth + beforeLabel.x
-		height:				control.height
-		color:				debug ? jaspTheme.debugBackgroundColor : "transparent"
-		visible:			beforeLabel.text && textField.visible
 		Label
 		{
 			id:						beforeLabel
 			font:					jaspTheme.font
-			anchors.verticalCenter: parent.verticalCenter
 			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-		}
-	}
 
-	TextField
-	{
-		id:						control
-		anchors.left:			beforeLabelRect.visible ? beforeLabelRect.right : parent.left
-		anchors.leftMargin:		controlXOffset + (beforeLabelRect.visible ? jaspTheme.labelSpacing : 0)
-		width:					textField.fieldWidth //+ (textField.useExternalBorder ? 2 * jaspTheme.jaspControlHighlightWidth : 0)
-		font:					jaspTheme.font
-		activeFocusOnPress:		textField.editable
-		color:					enabled || !textField.editable ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			verticalAlignment: 		Text.AlignVCenter
+			horizontalAlignment:	Text.AlignLeft
+			Layout.preferredHeight:	control.height
+			Layout.minimumWidth:	beforeLabel.text.length ? 15 : 0
+			Layout.alignment: 		Qt.AlignLeft | Qt.AlignBottom
 
-		padding:				jaspTheme.jaspControlPadding
-		leftPadding:			jaspTheme.labelSpacing
-		selectByMouse:			true
-		focus:					textField.editable
-		selectedTextColor:		jaspTheme.white
-		selectionColor:			jaspTheme.itemSelectedColor
-		enabled:				textField.editable
-
-		background: Rectangle
-		{
-			id:				controlBackground
-			color:			jaspTheme.controlBackgroundColor
-			border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
-			border.color:	jaspTheme.borderColor //If the border width is zero the color is inconsequential
-			radius:			jaspTheme.borderRadius
 		}
 
-		Rectangle
-		{
-			id:					externalControlBackground
-			height:				parent.height + jaspTheme.jaspControlHighlightWidth
-			width:				parent.width  + jaspTheme.jaspControlHighlightWidth
-			color:				"transparent"
-			border.width:		control.acceptableInput ? 0 : 3 //See comment below
-			border.color:		jaspTheme.red // Needed when the QML file has wrong default value
-			anchors.centerIn:	parent
-			opacity:			debug ? .3 : 1
-			visible:			textField.useExternalBorder
-			radius:				jaspTheme.jaspControlHighlightWidth
-		}
 
-		onActiveFocusChanged:
+		TextField
 		{
-			if (activeFocus)
+			id:						control
+			font:					jaspTheme.font
+			activeFocusOnPress:		textField.editable
+			color:					enabled || !textField.editable ? jaspTheme.textEnabled : jaspTheme.textDisabled
+
+			padding:				jaspTheme.jaspControlPadding
+			leftPadding:			jaspTheme.labelSpacing
+			selectByMouse:			true
+			focus:					textField.editable
+			selectedTextColor:		jaspTheme.white
+			selectionColor:			jaspTheme.itemSelectedColor
+			enabled:				textField.editable
+
+			Layout.alignment: 		Qt.AlignRight | Qt.AlignBottom
+			Layout.fillWidth:		true
+			Layout.preferredWidth:	textField.fieldWidth
+
+			background: Rectangle
 			{
-				if (textField.selectValueOnFocus)
-					control.selectAll()
+				id:				controlBackground
+				color:			jaspTheme.controlBackgroundColor
+				border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
+				border.color:	jaspTheme.borderColor //If the border width is zero the color is inconsequential
+				radius:			jaspTheme.borderRadius
 			}
 
-			if (!control.acceptableInput)
+			Rectangle
 			{
-				var msg
-				if (control.validator && (typeof control.validator.validationMessage === "function"))
-					msg = control.validator.validationMessage(beforeLabel.text) + "<br><br>";
-
-				if (textField.useLastValidValue)
-					text = textField.lastValidValue
-				msg += qsTr("Restoring last correct value: %1").arg(text);
-				addControlErrorTemporary(msg)
+				id:					externalControlBackground
+				height:				parent.height + jaspTheme.jaspControlHighlightWidth
+				width:				parent.width  + jaspTheme.jaspControlHighlightWidth
+				color:				"transparent"
+				border.width:		control.acceptableInput ? 0 : 3 //See comment below
+				border.color:		jaspTheme.red // Needed when the QML file has wrong default value
+				anchors.centerIn:	parent
+				opacity:			debug ? .3 : 1
+				visible:			textField.useExternalBorder
+				radius:				jaspTheme.jaspControlHighlightWidth
 			}
-			else if (!hasScriptError)
-				clearControlError()
+
+			onActiveFocusChanged:
+			{
+				if (activeFocus)
+				{
+					if (textField.selectValueOnFocus)
+						control.selectAll()
+				}
+
+				if (!control.acceptableInput)
+				{
+					var msg
+					if (control.validator && (typeof control.validator.validationMessage === "function"))
+						msg = control.validator.validationMessage(beforeLabel.text) + "<br><br>";
+
+					if (textField.useLastValidValue)
+						text = textField.lastValidValue
+					msg += qsTr("Restoring last correct value: %1").arg(text);
+					addControlErrorTemporary(msg)
+				}
+				else if (!hasScriptError)
+					clearControlError()
+			}
+
+			Keys.onReturnPressed:
+			{
+				if (!control.acceptableInput)
+				{
+					if (control.validator && (typeof control.validator.validationMessage === "function"))
+						addControlError(control.validator.validationMessage(beforeLabel.text));
+				}
+				else
+				{
+					if (!hasScriptError)
+						clearControlError();
+
+					var nextItem = nextItemInFocusChain();
+					if (nextItem)
+						nextItem.forceActiveFocus();
+
+					event.accepted = false;
+				}
+			}
+
 		}
 
-		Keys.onReturnPressed:
-		{
-			if (!control.acceptableInput)
-			{
-				if (control.validator && (typeof control.validator.validationMessage === "function"))
-					addControlError(control.validator.validationMessage(beforeLabel.text));
-			}
-			else
-			{
-				if (!hasScriptError)
-					clearControlError();
-
-				var nextItem = nextItemInFocusChain();
-				if (nextItem)
-					nextItem.forceActiveFocus();
-
-				event.accepted = false;
-			}
-		}
-
-	}
-
-	Binding
-	{
-		// This is a way to set the property height only if fieldHeight is set
-		// If not, height should keep its implicit binding.
-		target:		control
-		property:	"height"
-		value:		textField.fieldHeight
-		when:		textField.fieldHeight != 0
-	}
-
-	Rectangle
-	{
-		id:				afterLabelRect
-		width:			afterLabel.implicitWidth
-		height:			control.height
-		color:			debug ? jaspTheme.debugBackgroundColor : "transparent"
-		visible:		afterLabel.text && textField.visible
-		anchors.left:	control.right
-		anchors.leftMargin: jaspTheme.labelSpacing
 		Label
 		{
 			id:			afterLabel
 			font:		jaspTheme.font
-			anchors.verticalCenter: parent.verticalCenter
 			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+
+			verticalAlignment: 			Text.AlignVCenter
+			horizontalAlignment:		Text.AlignLeft
+			Layout.preferredHeight:		control.height
+			Layout.minimumWidth:		afterLabel.text.length ? afterLabel.width : 0
+			Layout.alignment: 			Qt.AlignLeft | Qt.AlignBottom
 		}
+
 	}
 }
