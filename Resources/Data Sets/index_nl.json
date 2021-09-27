@@ -828,8 +828,23 @@
       "debug": false
     },
     {
-      "name": "16. Overig",
-      "path": "16. Miscellaneous",
+      "name": "16. Circular Statistics",
+      "path": "16. Circular Statistics",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "El Nino",
+          "path": "El Nino.jasp",
+          "description": "Metingen van de windrichting in Hawaii gedurende de maanden augustus, juli en september. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van circulaire beschrijvingen en vergelijking van meerdere circulaire variabelen. <br><br> <i>Fictieve gegevens van Aaron Bahde onder CC-BY 4.0 licentie.<\/i>",
+          "kind": "file",
+          "associated_datafile": "El Nino.csv"
+        }
+      ]
+    },
+    {
+      "name": "17. Overig",
+      "path": "17. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [

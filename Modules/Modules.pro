@@ -109,8 +109,8 @@ include(InstallModule.pri)
 #MODULE_NAME = jaspProcessControl
 #include(InstallModule.pri)
 
-#MODULE_NAME = jaspCircular
-#include(InstallModule.pri)
+MODULE_NAME = jaspCircular
+include(InstallModule.pri)
 
 macx:	QMAKE_CLEAN				+=  $$MODULES_RENV_CACHE/* #Dont do this on linux because we are building from source...
 win32:	libraryClean.commands	+= rd $$quote($$winPathFix($$MODULES_RENV_CACHE/*)) /S /Q || exit 0;	$$escape_expand(\\n\\t)
