@@ -836,7 +836,7 @@
         {
           "name": "El Nino",
           "path": "El Nino.jasp",
-          "description": "Wind direction measurements in Hawaii during the months August, July, and September. <br><br> The example JASP file demonstrates the use of circular descriptives and comparison of multiple circular variables. <br><br> <i>Fictional data form Aaron Bahde under CC-BY 4.0 license.<\/i>",
+          "description": "Metingen van de windrichting in Hawaii gedurende de maanden augustus, juli en september. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van circulaire beschrijvingen en vergelijking van meerdere circulaire variabelen. <br><br> <i>Fictieve gegevens van Aaron Bahde onder CC-BY 4.0 licentie.<\/i>",
           "kind": "file",
           "associated_datafile": "El Nino.csv"
         }
