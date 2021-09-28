@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-09-29 11:36+0000\n"
+"Last-Translator: Francisco J. Miguel Quesada <fxmiguel@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -2890,15 +2896,13 @@ msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
 msgstr "Opción desconocida %1 en DropDown %2"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Open"
-msgstr "Abierto"
+msgstr "Abrir"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr "Salvar"
+msgstr "Guardar"
 
 #, fuzzy
 msgctxt "ActionButtons|"
@@ -2920,10 +2924,9 @@ msgctxt "ActionButtons|"
 msgid "Sync Data"
 msgstr "Sincronizar datos"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Close"
-msgstr "Cerca"
+msgstr "Cerrar"
 
 #, fuzzy
 msgctxt "ActionButtons|"
