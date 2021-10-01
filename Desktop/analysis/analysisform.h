@@ -77,7 +77,6 @@ public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
 				void			setInfo(QString info);
 				void			setAnalysis(QVariant analysis);
-				void			rSourceChanged(const QString& name);
 				void			boundValueChangedHandler(JASPControl* control);
 
 signals:
@@ -95,6 +94,7 @@ signals:
 				void			errorsChanged();
 				void			warningsChanged();
 				void			analysisChanged();
+				void			rSourceChanged(const QString& name);
 
 protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info)	const override;
@@ -133,8 +133,6 @@ public:
 	QString		warnings()			const { return msgsListToString(_formWarnings);	}
 	QVariant	analysis()			const { return QVariant::fromValue(_analysis);	}
 	Analysis*	analysisObj()		const { return _analysis;						}
-	void		addRSource(const QString& name, ListModel* model)		{ _rSourceModelMap[name].insert(model); }
-	void		removeRSource(const QString& name, ListModel* model)	{ _rSourceModelMap[name].remove(model);	}
 
 	std::vector<std::vector<std::string> >	getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
 	void		addColumnControl(JASPControl* control, bool isComputed);
@@ -192,7 +190,6 @@ private:
 												_formCompleted = false,
 												_initialized = false;
 	QString										_info;
-	QMap<QString, QSet<ListModel*> >			_rSourceModelMap;
 	int											_signalValueChangedBlocked = 0;
 	bool										_signalValueChangedWasEmittedButBlocked = false;
 	

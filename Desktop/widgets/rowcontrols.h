@@ -58,7 +58,7 @@ private:
 	QQuickItem*								_rowObject;
 	QMap<QString, JASPControl*>				_rowJASPControlMap;
 	QQmlContext*							_context;
-	QMap<QString, Json::Value>				_rowValues;
+	QMap<QString, Json::Value>				_initialValues;
 };
 
 #endif // ROWCOMPONENTS_H

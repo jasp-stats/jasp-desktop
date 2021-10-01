@@ -561,15 +561,6 @@ void AnalysisForm::setAnalysis(QVariant analysis)
 	setAnalysisUp();
 }
 
-void AnalysisForm::rSourceChanged(const QString &name)
-{
-	if (_rSourceModelMap.contains(name))
-	{
-		for (ListModel* model : _rSourceModelMap[name])
-			model->sourceTermsReset();
-	}
-}
-
 void AnalysisForm::boundValueChangedHandler(JASPControl *)
 {
 	if (_signalValueChangedBlocked == 0 && _analysis)

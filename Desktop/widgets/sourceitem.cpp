@@ -94,8 +94,10 @@ void SourceItem::_connectModels()
 	if (!_listControl->initialized()) return;
 
 	ListModel *controlModel = _listControl->model();
+	AnalysisForm* form		= _listControl->form();
 
-	if (_isRSource && _listControl->form()) _listControl->form()->addRSource(_name, controlModel);
+	if (_isRSource && form)
+		connect(form,	&AnalysisForm::rSourceChanged,				this, &SourceItem::_rSourceChanged);
 
 	if (!_nativeModel) return;
 
@@ -140,6 +142,12 @@ void SourceItem::_dataChangedHandler(const QModelIndex &, const QModelIndex &, c
 	if (roles.size() == 1 && roles.contains(ListModel::SelectedRole)) return;
 
 	_resetModel();
+}
+
+void SourceItem::_rSourceChanged(const QString& name)
+{
+	if (_isRSource && name == _name)
+		_listControl->model()->sourceTermsReset();
 }
 
 void SourceItem::_setUp()
