@@ -38,7 +38,7 @@ ListModel::ListModel(JASPListControl* listView)
 	connect(this,	&ListModel::rowsInserted,			this,	&ListModel::termsChanged);
 	connect(this,	&ListModel::dataChanged,			this,	&ListModel::dataChangedHandler);
 	connect(this,	&ListModel::namesChanged,			this,	&ListModel::termsChanged);
-	connect(this,	&ListModel::columnTypeChanged,			this,	&ListModel::termsChanged);
+	connect(this,	&ListModel::columnTypeChanged,		this,	&ListModel::termsChanged);
 }
 
 QHash<int, QByteArray> ListModel::roleNames() const

@@ -28,7 +28,7 @@
 RowControls::RowControls(ListModel* parent
 						 , QQmlComponent* component
 						 , const QMap<QString, Json::Value>& rowValues)
- : QObject(parent), _parentModel(parent), _rowComponent(component), _rowValues(rowValues)
+ : QObject(parent), _parentModel(parent), _rowComponent(component), _initialValues(rowValues)
 {
 }
 
@@ -69,13 +69,21 @@ void RowControls::_setupControls(bool reuseBoundValue)
 
 	for (JASPControl* control : controls)
 	{
-		bool hasInitialValues = _rowValues.contains(control->name());
+		bool hasInitialValues = _initialValues.contains(control->name());
 		BoundControl* boundItem = control->boundControl();
 
 		if (boundItem)
 		{
-			if (!reuseBoundValue || boundItem->boundValue().isNull())
-				boundItem->bindTo(hasInitialValues ? (_rowValues[control->name()]) : boundItem->createJson());
+			// When a control is created before its parent, it has no bound value yet.
+			// In this case we need to create a bound volue.
+			bool hasNoBoundValue = boundItem->boundValue().isNull();
+			if (!reuseBoundValue || hasNoBoundValue)
+			{
+				boundItem->bindTo(hasInitialValues ? (_initialValues[control->name()]) : boundItem->createJson());
+				// bindTo does not emit the signal that the bound value is changed.
+				// But (at least) if it did not have any value, it should emit this signal.
+				if (hasNoBoundValue)	emit control->boundValueChanged(control);
+			}
 		}
 
 		if (!boundItem || !hasInitialValues || reuseBoundValue)
