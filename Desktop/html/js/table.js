@@ -871,15 +871,15 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 							.replace(/>/g, '&gt;')
 							.replace(/\u2212/g, '-')
 
-						text += "\n" + tabs + value + "\n"
+						text += "" + value + ""
 					}
 				}
 				else {
-					text += "\n" + this.exportHTML(exportParams, contents[i], tabs + "\t");
+					text += "" + this.exportHTML(exportParams, contents[i], "");
 				}
 			}
 
-			text += tabs + '</' + tag + '>\n'
+			text += '</' + tag + '>\n'
 		}
 		else {
 

@@ -217,7 +217,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 				}
 				else {
 
-					var paddingNeeded = Math.max(maxFSDOE - fSD(content), 0)
+					// var paddingNeeded = Math.max(maxFSDOE - fSD(content), 0)
+					var paddingNeeded = 0
 
 					var exponent = Math.abs(Math.floor(content))
 
@@ -261,9 +262,17 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					let reassembled;
 
 					if (html) {
-						reassembled = mantissa + "e&thinsp;" + padding + sign + exponent;
+						if (window.globSet.normalizedNotation) {
+							reassembled = mantissa + "&times;10" + "<sup>" + padding + sign + exponent + "</sup>";
+						} else {
+							reassembled = mantissa + "e" + padding + sign + exponent;
+						}
 					} else {
-						reassembled = mantissa + "e" + sign + exponent;
+						if (window.globSet.normalizedNotation) {
+							reassembled = mantissa + "×10" + "<sup>" + sign + exponent + "</sup>";
+						} else {
+							reassembled = mantissa + "e" + sign + exponent;
+						}
 					}
 
 					formatted = { content: reassembled, "class": "number" }
@@ -274,7 +283,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp)) {
 
 				var decimalsExpon = fixDecimals ? dp : sf - 1;
-				var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
+				// var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
+				var paddingNeeded = 0
 
 				let reassembled = toExponential(content, decimalsExpon, paddingNeeded, html)
 				formatted = { content: reassembled, "class": "number" }
@@ -871,9 +881,17 @@ function toExponential(number, decimalsExpon, paddingNeeded, html) {
 
 	let reassembled;
 	if (html) {
-		reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum;
+		if (window.globSet.normalizedNotation) {
+			reassembled = mantissa + "&times;10" + "<sup>" + padding + exponentSign + exponentNum + "</sup>";
+		} else {
+			reassembled = mantissa + "e" + padding + exponentSign + exponentNum;
+		}
 	} else {
-		reassembled = mantissa + "e" + exponentSign + exponentNum;
+		if (window.globSet.normalizedNotation) {
+			reassembled = mantissa + "×10" + "<sup>" + exponentSign + exponentNum + "</sup>";
+		} else {
+			reassembled = mantissa + "e" + exponentSign + exponentNum;
+		}
 	}
 
 	return reassembled;

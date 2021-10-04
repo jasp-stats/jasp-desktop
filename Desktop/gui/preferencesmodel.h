@@ -17,6 +17,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			fixedDecimals			READ fixedDecimals				WRITE setFixedDecimals				NOTIFY fixedDecimalsChanged				)
 	Q_PROPERTY(int			numDecimals				READ numDecimals				WRITE setNumDecimals				NOTIFY numDecimalsChanged				)
 	Q_PROPERTY(bool			exactPValues			READ exactPValues				WRITE setExactPValues				NOTIFY exactPValuesChanged				)
+	Q_PROPERTY(bool			normalizedNotation		READ normalizedNotation			WRITE setNormalizedNotation			NOTIFY normalizedNotationChanged		)
 	Q_PROPERTY(bool			dataAutoSynchronization	READ dataAutoSynchronization	WRITE setDataAutoSynchronization	NOTIFY dataAutoSynchronizationChanged	)
 	Q_PROPERTY(bool			useDefaultEditor		READ useDefaultEditor			WRITE setUseDefaultEditor			NOTIFY useDefaultEditorChanged			)
 	Q_PROPERTY(QString		customEditor			READ customEditor				WRITE setCustomEditor				NOTIFY customEditorChanged				)
@@ -72,6 +73,7 @@ public:
 	int			plotPPI()					const	{ return useDefaultPPI() ? defaultPPI() : customPPI();	}
 	bool		fixedDecimals()				const;
 	bool		exactPValues()				const;
+	bool		normalizedNotation()		const;
 	bool		dataAutoSynchronization()	const;
 	bool		useDefaultEditor()			const;
 	bool		useDefaultPPI()				const;
@@ -126,6 +128,7 @@ public slots:
 	void setDefaultPPI(					int			defaultPPI);
 	void setNumDecimals(				int			numDecimals);
 	void setExactPValues(				bool		exactPValues);
+	void setNormalizedNotation(			bool		normalizedNotation);
 	void setCustomEditor(				QString		customEditor);
 	void setFixedDecimals(				bool		fixedDecimals);
 	void setUseDefaultPPI(				bool		useDefaultPPI);
@@ -177,6 +180,7 @@ signals:
 	void fixedDecimalsChangedString(	QString		fixedDecimals);
 	void numDecimalsChanged(			int			numDecimals);
 	void exactPValuesChanged(			bool		exactPValues);
+	void normalizedNotationChanged(		bool		normalizedNotation);
 	void dataAutoSynchronizationChanged(bool		dataAutoSynchronization);
 	void useDefaultEditorChanged(		bool		useDefaultEditor);
 	void customEditorChanged(			QString		customEditor);

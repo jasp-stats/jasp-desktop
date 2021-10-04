@@ -112,6 +112,11 @@ void ResultsJsInterface::setExactPValuesHandler(bool exact)
 	runJavaScript("window.globSet.pExact = " + QString(exact ? "true" : "false") + "; window.reRenderAnalyses();");
 }
 
+void ResultsJsInterface::setNormalizedNotationHandler(bool normalized)
+{
+    runJavaScript("window.globSet.normalizedNotation = " + QString(normalized ? "true" : "false") + "; window.reRenderAnalyses();");
+}
+
 void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
 {
 	if (numDecimals == "")
@@ -124,10 +129,15 @@ void ResultsJsInterface::setGlobalJsValues()
 {
 	bool exactPValues = Settings::value(Settings::EXACT_PVALUES).toBool();
 	QString exactPValueString = (exactPValues ? "true" : "false");
+	
+	bool normalizedNotation = Settings::value(Settings::NORMALIZED_NOTATION).toBool();
+	QString normalizedNotationString = (normalizedNotation ? "true" : "false");
+
 	QString numDecimals = Settings::value(Settings::NUM_DECIMALS).toString();
 	QString tempFolder = "file:///" + tq(TempFiles::sessionDirName());
 
 	QString js = "window.globSet.pExact = " + exactPValueString;
+	js += "; window.globSet.normalizedNotation = " + normalizedNotationString;
 	js += "; window.globSet.decimals = " + (numDecimals.isEmpty() ? "\"\"" : numDecimals);
 	js += "; window.globSet.tempFolder = \"" + tempFolder + "/\"";
 	runJavaScript(js);

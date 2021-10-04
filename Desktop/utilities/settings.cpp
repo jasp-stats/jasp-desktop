@@ -8,6 +8,7 @@ const char *	Settings::defaultMissingValues = "NaN|nan|.|NA";
 const Settings::Setting Settings::Values[] = {
 	{"numDecimals",					3},
 	{"exactPVals",					0},
+	{"normalizedNotation",			0},
 	{"dataAutoSynchronization",		1},
 	{"useDefaultSpreadsheetEditor",	1},
 	{"spreadsheetEditorName",		""},

@@ -95,6 +95,7 @@ void PreferencesModel::browseDeveloperFolder()
 GET_PREF_FUNC_BOOL(	fixedDecimals,				Settings::FIXED_DECIMALS							)
 GET_PREF_FUNC_INT(	numDecimals,				Settings::NUM_DECIMALS								)
 GET_PREF_FUNC_BOOL(	exactPValues,				Settings::EXACT_PVALUES								)
+GET_PREF_FUNC_BOOL(	normalizedNotation,			Settings::NORMALIZED_NOTATION						)
 GET_PREF_FUNC_BOOL(	dataAutoSynchronization,	Settings::DATA_AUTO_SYNCHRONIZATION					)
 GET_PREF_FUNC_BOOL(	useDefaultEditor,			Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
 GET_PREF_FUNC_STR(	customEditor,				Settings::SPREADSHEET_EDITOR_NAME					)
@@ -234,6 +235,7 @@ void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 
 
 SET_PREF_FUNCTION(bool,		setExactPValues,			exactPValues,				exactPValuesChanged,			Settings::EXACT_PVALUES								)
+SET_PREF_FUNCTION(bool,		setNormalizedNotation,		normalizedNotation,			normalizedNotationChanged,		Settings::NORMALIZED_NOTATION						)
 SET_PREF_FUNCTION(bool,		setDataAutoSynchronization, dataAutoSynchronization,	dataAutoSynchronizationChanged, Settings::DATA_AUTO_SYNCHRONIZATION					)
 SET_PREF_FUNCTION(bool,		setUseDefaultEditor,		useDefaultEditor,			useDefaultEditorChanged,		Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
 SET_PREF_FUNCTION(QString,	setCustomEditor,			customEditor,				customEditorChanged,			Settings::SPREADSHEET_EDITOR_NAME					)
