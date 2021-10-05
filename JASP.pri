@@ -28,7 +28,7 @@ DEFINES += BUILDING_JASP
 
 #JASP Version
 JASP_VERSION_MAJOR      = 0
-JASP_VERSION_MINOR      = 15
+JASP_VERSION_MINOR      = 16
 JASP_VERSION_REVISION   = 0
 JASP_VERSION_BUILD      = 0 #Should be ignored because the code handling it is buggy as hell (aka https://www.youtube.com/watch?v=otCpCn0l4Wo )
 
