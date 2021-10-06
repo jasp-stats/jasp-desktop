@@ -18,7 +18,7 @@ Popup
 		color:			jaspTheme.uiBackground
 		border.color:	jaspTheme.uiBorder
 		border.width:	1
-		radius:  10
+		radius:  		10
 	}
 
     Connections
@@ -84,7 +84,6 @@ Popup
 					KeyNavigation.tab:		cancelButton
 					KeyNavigation.backtab:	cols
 				}
-
 
 			}
 		}
