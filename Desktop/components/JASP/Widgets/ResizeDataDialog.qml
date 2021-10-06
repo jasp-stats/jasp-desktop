@@ -34,7 +34,7 @@ Popup
 	contentItem: Item
 	{
 		width:	inputs.width + 3 * popupResizeData.padding
-		height: title.height + inputs.height + okButton.height + 3 * popupResizeData.padding
+		height: title.height + inputs.height + resizeButton.height + 3 * popupResizeData.padding
 
 		Text
 		{
@@ -96,22 +96,21 @@ Popup
 			text:					qsTr("Cancel")
 			onClicked:				popupResizeData.close()
 
-			KeyNavigation.tab:		okButton
+			KeyNavigation.tab:		resizeButton
 			KeyNavigation.backtab:	cols
 			anchors
 			{
-				right:				okButton.left
-				bottom:				okButton.bottom
+				right:				resizeButton.left
+				bottom:				resizeButton.bottom
 				rightMargin:		jaspTheme.generalAnchorMargin
 			}
 		}
 
 		RoundedButton
 		{
-			id:						okButton
+			id:						resizeButton
 			activeFocusOnTab:		true
-			text:					qsTr("OK")
-            buttonPadding:          20
+			text:					qsTr("Resize")
 			
 			onClicked: {
 				dataSetModel.resizeData(rows.value, cols.value);
