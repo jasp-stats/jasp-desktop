@@ -17,8 +17,9 @@ Popup
 		color:			jaspTheme.uiBackground
 		border.color:	jaspTheme.uiBorder
 		border.width:	1
+		radius:  10
 	}
-	padding:	0
+	padding:	15
 
     Connections
 	{
@@ -39,146 +40,127 @@ Popup
 
 		Item
 		{
-			height:	resizeButton.y + resizeButton.height + jaspTheme.generalAnchorMargin
-			width:	inputs.width
+			width:	inputs.width + 2 * popupResizeData.padding
+			height: title.height + inputs.height + okButton.height + 2 * popupResizeData.padding
 
 			Component.onCompleted:	cols.forceActiveFocus();
 
 			Text
 			{
 				id:					title
-				text:				qsTr("Resize Data")
+                text:				qsTr("Table Size")
 				font:				jaspTheme.fontGroupTitle
 				color:				jaspTheme.textEnabled
-				verticalAlignment:	Text.AlignVCenter
+
 				anchors
 				{
-					top:				parent.top
-					topMargin:			jaspTheme.generalAnchorMargin
-					horizontalCenter:	parent.horizontalCenter
+					top:			parent.top
+					left:			parent.left
 				}
 			}
 
 			Item
 			{
 				id:				inputs
-				width:			200 * jaspTheme.uiScale
-				height:			cols.y + cols.height + jaspTheme.generalAnchorMargin
+				width:			1.25 * groupBox.implicitWidth
+				height:			groupBox.implicitHeight
 
 				anchors
 				{
 					top:		title.bottom
 					left:		parent.left
-					right:		parent.right
+					// right:		parent.right
 					margins:	jaspTheme.generalAnchorMargin
 				}
 
-				Label
-				{
-					id:				colsLabel
-					text:			qsTr("Columns")
-					anchors
-					{
-						top:		inputs.top
-						left:		cols.left
-						right:		cols.right
-					}
-				}
+				Group {
+					id: groupBox
 
-				Label
-				{
-					id:				rowsLabel
-					text:			qsTr("Rows")
-					anchors
+					IntegerField
 					{
-						top:		inputs.top
-						left:		rows.left
-						right:		rows.right
-					}
-				}
+						id:						cols
+						label:					qsTr("Number of columns")
+						value:					dataSetModel.columnCount()
+						// fieldWidth:				width
+						// anchors
+						// {
+						// 	// top:				x.verticalCenter
+						// 	left:				parent.left
+						// 	// right:				x.left
+						// 	margins:			jaspTheme.generalAnchorMargin
+						// }
 
-				Label
-				{
-					id:						x
-					text:					"X"
-					horizontalAlignment:	Text.AlignHCenter
-					verticalAlignment:		Text.AlignVCenter
-					anchors.centerIn:		parent
-				}
-
-				IntegerField
-				{
-					id:						cols
-					value:					dataSetModel.columnCount()
-					fieldWidth:				width
-					anchors
-					{
-						top:				x.verticalCenter
-						left:				parent.left
-						right:				x.left
-						margins:			jaspTheme.generalAnchorMargin
+						//KeyNavigation.tab:		rows
+						// KeyNavigation.right:	rows
+						// KeyNavigation.down:		okButton
 					}
 
-					//KeyNavigation.tab:		rows
-					KeyNavigation.right:	rows
-					KeyNavigation.down:		resizeButton
-				}
-
-				IntegerField
-				{
-					id:						rows
-					value:					dataSetModel.rowCount()
-					fieldWidth:				width
-					anchors
+					IntegerField
 					{
-						top:				x.verticalCenter
-						left:				x.right
-						right:				parent.right
-						margins:			jaspTheme.generalAnchorMargin
+						id:						rows
+						label:					qsTr("Number of rows")
+						value:					dataSetModel.rowCount()
+						// fieldWidth:				width
+						// anchors
+						// {
+						// 	// top:				x.verticalCenter
+						// 	// left:				x.right
+						// 	right:				parent.right
+						// 	margins:			jaspTheme.generalAnchorMargin
+						// }
+						// KeyNavigation.down:		okButton
+						// KeyNavigation.right:	okButton
+						//KeyNavigation.tab:		okButton
 					}
-					KeyNavigation.down:		resizeButton
-					KeyNavigation.right:	resizeButton
-					//KeyNavigation.tab:		resizeButton
+
 				}
 			}
 
-			RoundedButton
-			{
-				id:						resizeButton
-				activeFocusOnTab:		true
-				text:					qsTr("Resize")
-				onClicked:				{ dataSetModel.resizeData(rows.value, cols.value); popupResizeData.close(); }
-				toolTip:				qsTr("Resize data to set values")
-				KeyNavigation.right:	closeButtonCross
-				//KeyNavigation.tab:		closeButtonCross
-				//KeyNavigation.backtab:	rows
-				KeyNavigation.left:		rows
-				KeyNavigation.up:		cols
-
-				anchors
-				{
-					top:				inputs.bottom
-					margins:			jaspTheme.generalAnchorMargin
-					left:				parent.left
-					right:				closeButtonCross.left
-				}
-			}
 
 			RoundedButton
 			{
-				id:						closeButtonCross
+				id:						cancelButton
 				activeFocusOnTab:		true
-				iconSource:				jaspTheme.iconPath + "cross.png"
-				width:					height
-				height:					resizeButton.height
+				text:					qsTr("Cancel")
+				// iconSource:				jaspTheme.iconPath + "cross.png"
+				// width:					height
+				// height:					okButton.height
 				onClicked:				popupResizeData.close()
-				toolTip:				qsTr("Close without resizing data")
-				KeyNavigation.up:		rows
+				// toolTip:				qsTr("Close without resizing data")
+				// KeyNavigation.up:		rows
+				KeyNavigation.tab:		okButton
+				KeyNavigation.backtab:	cols
 				anchors
 				{
-					right:				parent.right
+					right:				okButton.left
 					top:				inputs.bottom
-					margins:			jaspTheme.generalAnchorMargin
+					// topMargin:			jaspTheme.generalAnchorMargin
+					leftMargin:			jaspTheme.generalAnchorMargin
+					rightMargin:		jaspTheme.generalAnchorMargin
+				}
+			}
+
+			RoundedButton
+			{
+				id:						okButton
+				activeFocusOnTab:		true
+				text:					qsTr("OK")
+                buttonPadding:          20
+				onClicked:				{ dataSetModel.resizeData(rows.value, cols.value); popupResizeData.close(); }
+				// toolTip:				qsTr("Resize data to set values")
+				// KeyNavigation.right:	cancelButton
+				KeyNavigation.tab:		rows
+				KeyNavigation.backtab:	cancelButton
+				// KeyNavigation.left:		rows
+				// KeyNavigation.up:		cols
+
+				anchors
+				{
+					top:				inputs.bottom
+					right:				inputs.right
+					// topMargin:			jaspTheme.generalAnchorMargin
+					leftMargin:			jaspTheme.generalAnchorMargin
+//					rightMargin:		jaspTheme.generalAnchorMargin
 				}
 			}
 		}
