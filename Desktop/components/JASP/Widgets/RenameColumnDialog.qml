@@ -1,6 +1,7 @@
 import QtQuick			2.15
 import QtQuick.Controls 2.15
-import JASP.Controls	1.0
+import JASP.Controls	1.0 as JC
+import JASP.Widgets     1.0 as JW
 
 Popup
 {
@@ -58,50 +59,31 @@ Popup
 		}
 
 
-		TextInput
+		JC.TextField
 		{
 			id:						columnName
-			text:					dataSetModel.columnName(popupRenameColumnDialog.colIndex)
-			color:					jaspTheme.textEnabled
-			selectByMouse:			true
-			width:					200
+			value:					dataSetModel.columnName(popupRenameColumnDialog.colIndex)
+			// color:					jaspTheme.textEnabled
+			// selectByMouse:			true
+			fieldWidth:					250
 			anchors
 			{
 				top:				title.bottom
-				left:				parent.left
-				right:				parent.right
+				left:				contentItem.left
+				right:				contentItem.right
 				topMargin:			jaspTheme.generalAnchorMargin
 				bottomMargin:		jaspTheme.generalAnchorMargin
 				rightMargin:		jaspTheme.generalAnchorMargin
 			}
 
-			onEditingFinished:		renameButton.clicked();
 			Keys.onEnterPressed:	renameButton.clicked();
 
 			KeyNavigation.tab:			renameButton
 			KeyNavigation.backtab:		cancelButton
-
-			Rectangle
-			{
-				color:				jaspTheme.controlBackgroundColor
-				border.width:		1
-				border.color:		jaspTheme.borderColor
-				radius:				jaspTheme.borderRadius
-				z:					-1
-				anchors.fill:		parent
-				anchors.margins:	-jaspTheme.jaspControlPadding
-			}
-
-			MouseArea
-			{
-				acceptedButtons:	Qt.NoButton
-				anchors.fill:		parent
-				cursorShape:		Qt.IBeamCursor
-			}
 		}
 
 
-		RoundedButton
+        JW.RoundedButton
 		{
 			id:						cancelButton
 			activeFocusOnTab:		true
@@ -121,14 +103,14 @@ Popup
 			}
 		}
 
-		RoundedButton
+        JW.RoundedButton
 		{
 			id:						renameButton
 			activeFocusOnTab:		true
 			text:					qsTr("Rename")
 			
 			onClicked: { 
-				dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.text); 
+				dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value); 
 				popupRenameColumnDialog.close(); 
 			}
 			

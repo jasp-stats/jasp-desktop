@@ -1,6 +1,7 @@
 import QtQuick			2.15
 import QtQuick.Controls 2.15
-import JASP.Controls	1.0
+import JASP.Controls	1.0 as JC
+import JASP.Widgets		1.0 as JW
 
 Popup
 {
@@ -63,19 +64,21 @@ Popup
 				margins:	jaspTheme.generalAnchorMargin
 			}
 
-			Group {
+			JC.Group {
 				id: groupBox
 
-				IntegerField
+				JC.IntegerField
 				{
 					id:						cols
 					label:					qsTr("Number of columns")
 					value:					dataSetModel.columnCount()
 
 					KeyNavigation.tab:		rows
+
+					Keys.onEnterPressed:	resizeButton.clicked();
 				}
 
-				IntegerField
+				JC.IntegerField
 				{
 					id:						rows
 					label:					qsTr("Number of rows")
@@ -83,13 +86,15 @@ Popup
 
 					KeyNavigation.tab:		cancelButton
 					KeyNavigation.backtab:	cols
+
+					Keys.onEnterPressed:	resizeButton.clicked();
 				}
 
 			}
 		}
 
 
-		RoundedButton
+		JW.RoundedButton
 		{
 			id:						cancelButton
 			activeFocusOnTab:		true
@@ -106,7 +111,7 @@ Popup
 			}
 		}
 
-		RoundedButton
+		JW.RoundedButton
 		{
 			id:						resizeButton
 			activeFocusOnTab:		true
