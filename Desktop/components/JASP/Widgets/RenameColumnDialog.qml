@@ -72,11 +72,11 @@ Popup
 				id:						columnName
 				value:					dataSetModel.columnName(popupRenameColumnDialog.colIndex)
 
-				KeyNavigation.tab:			renameButton
-				KeyNavigation.backtab:		cancelButton
+				validator: RegularExpressionValidator { regularExpression: /^(?!\s*$).+/ }
 
-				Keys.onEnterPressed: renameButton.clicked()
-				Keys.onReturnPressed: renameButton.clicked()
+				Keys.onEnterPressed: if (acceptableInput) renameButton.clicked();
+						
+				Keys.onReturnPressed: if (acceptableInput) renameButton.clicked();
 			}
 
 
@@ -92,10 +92,6 @@ Popup
 					text:					qsTr("Cancel")
 
 					onClicked:				popupRenameColumnDialog.close()
-
-					KeyNavigation.tab:		columnName
-					KeyNavigation.backtab:	columnName
-
 				}
 
 				JW.RoundedButton
@@ -108,9 +104,6 @@ Popup
 						dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value); 
 						popupRenameColumnDialog.close(); 
 					}
-
-					KeyNavigation.tab:			columnName
-					KeyNavigation.backtab:		cancelButton
 				}
 			}
 

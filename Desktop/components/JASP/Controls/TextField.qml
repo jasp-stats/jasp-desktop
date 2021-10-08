@@ -46,6 +46,7 @@ TextInputBase
 	property string defaultEmptyValue:	""
 	
 	property alias	validator:			control.validator
+	property alias 	acceptableInput:	control.acceptableInput
 	property alias	controlLabel:		beforeLabel
 	property alias	afterLabel:			afterLabel.text
 	property string	inputType:			"string"
