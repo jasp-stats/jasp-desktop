@@ -1,5 +1,6 @@
 import QtQuick			2.15
 import QtQuick.Controls 2.15
+import QtQuick.Layouts 	1.15
 import JASP.Controls	1.0 as JC
 import JASP.Widgets     1.0 as JW
 
@@ -24,7 +25,7 @@ Popup
 		radius:			10
 	}
 
-    Connections
+	Connections
 	{
 		target:					dataSetModel
 		onRenameColumnDialog:
@@ -33,98 +34,83 @@ Popup
 			colIndex = columnIndex;
 			popupRenameColumnDialog.open()
 		}
-    }
-
-    onOpened: {
-		cols.forceActiveFocus();
 	}
 
 	contentItem: Item
 	{
-		width:	columnName.width + 3 * popupRenameColumnDialog.padding
-		height:	title.height + columnName.height + renameButton.height + 3 * popupRenameColumnDialog.padding
+		width:	layout.width + 2 * popupRenameColumnDialog.padding
+		height:	layout.height + 2 * popupRenameColumnDialog.padding
 
-		Text
-		{
-			id:					title
-			text:				qsTr("Rename column")
-			font:				jaspTheme.fontGroupTitle
-			color:				jaspTheme.textEnabled
+		ColumnLayout {
+			id:	layout
+			spacing: 2 * jaspTheme.generalAnchorMargin
+
+			Layout.fillWidth: true
+			Layout.minimumWidth: columnName.width
 
 			anchors
 			{
 				top:	parent.top
 				left:	parent.left
 			}
-		}
 
-
-		JC.TextField
-		{
-			id:						columnName
-			value:					dataSetModel.columnName(popupRenameColumnDialog.colIndex)
-			// color:					jaspTheme.textEnabled
-			// selectByMouse:			true
-			fieldWidth:					250
-			anchors
+			Text
 			{
-				top:				title.bottom
-				left:				contentItem.left
-				right:				contentItem.right
-				topMargin:			jaspTheme.generalAnchorMargin
-				bottomMargin:		jaspTheme.generalAnchorMargin
-				rightMargin:		jaspTheme.generalAnchorMargin
+				id:					title
+				text:				qsTr("Rename Column")
+				font:				jaspTheme.fontGroupTitle
+				color:				jaspTheme.textEnabled
+
 			}
 
-			Keys.onEnterPressed:	renameButton.clicked();
-
-			KeyNavigation.tab:			renameButton
-			KeyNavigation.backtab:		cancelButton
-		}
-
-
-        JW.RoundedButton
-		{
-			id:						cancelButton
-			activeFocusOnTab:		true
-			text:					qsTr("Cancel")
-
-			onClicked:				popupRenameColumnDialog.close()
-
-			KeyNavigation.tab:		columnName
-			KeyNavigation.backtab:	columnName
-
-			anchors
+			JC.TextField
 			{
-				right:				renameButton.left
-				bottom:				renameButton.bottom
+				id:						columnName
+				value:					dataSetModel.columnName(popupRenameColumnDialog.colIndex)
 
-				rightMargin:		jaspTheme.generalAnchorMargin
-			}
-		}
+				onEditingFinished: {
+					renameButton.clicked();
+				}
 
-        JW.RoundedButton
-		{
-			id:						renameButton
-			activeFocusOnTab:		true
-			text:					qsTr("Rename")
-			
-			onClicked: { 
-				dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value); 
-				popupRenameColumnDialog.close(); 
+				KeyNavigation.tab:			renameButton
+				KeyNavigation.backtab:		cancelButton
 			}
-			
-			KeyNavigation.tab:			columnName
-			KeyNavigation.backtab:		cancelButton
 
-			anchors
-			{
-				top:				columnName.bottom
-				right:				contentItem.right
-				
-				topMargin:			jaspTheme.generalAnchorMargin
-				leftMargin:			jaspTheme.generalAnchorMargin
+
+			RowLayout {
+				spacing: jaspTheme.generalAnchorMargin
+
+				Layout.alignment: Qt.AlignRight
+
+				JW.RoundedButton
+				{
+					id:						cancelButton
+					activeFocusOnTab:		true
+					text:					qsTr("Cancel")
+
+					onClicked:				popupRenameColumnDialog.close()
+
+					KeyNavigation.tab:		columnName
+					KeyNavigation.backtab:	columnName
+
+				}
+
+				JW.RoundedButton
+				{
+					id:						renameButton
+					activeFocusOnTab:		true
+					text:					qsTr("Rename")
+
+					onClicked: { 
+						dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value); 
+						popupRenameColumnDialog.close(); 
+					}
+
+					KeyNavigation.tab:			columnName
+					KeyNavigation.backtab:		cancelButton
+				}
 			}
+
 		}
 	}
 }
