@@ -36,6 +36,10 @@ Popup
 		}
 	}
 
+	onOpened: {
+		columnName.forceActiveFocus();
+	}
+
 	contentItem: Item
 	{
 		width:	layout.width + 2 * popupRenameColumnDialog.padding
@@ -68,12 +72,11 @@ Popup
 				id:						columnName
 				value:					dataSetModel.columnName(popupRenameColumnDialog.colIndex)
 
-				onEditingFinished: {
-					renameButton.clicked();
-				}
-
 				KeyNavigation.tab:			renameButton
 				KeyNavigation.backtab:		cancelButton
+
+				Keys.onEnterPressed: renameButton.clicked()
+				Keys.onReturnPressed: renameButton.clicked()
 			}
 
 
