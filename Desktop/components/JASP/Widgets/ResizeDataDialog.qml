@@ -1,11 +1,12 @@
 import QtQuick			2.15
 import QtQuick.Controls 2.15
+import QtQuick.Layouts 	1.15
 import JASP.Controls	1.0 as JC
 import JASP.Widgets		1.0 as JW
 
 Popup
 {
-    id:			popupResizeData;
+	id:			popupResizeData;
 	modal:		true
 	padding:	15
 	focus:		true
@@ -22,46 +23,34 @@ Popup
 		radius:  		10
 	}
 
-    Connections
+	Connections
 	{
 		target:			ribbonModel
 		onResizeData:	popupResizeData.open()
-    }
+	}
 
-    onOpened: {
+	onOpened: {
 		cols.forceActiveFocus();
 	}
 
 	contentItem: Item
 	{
-		width:	inputs.width + 3 * popupResizeData.padding
-		height: title.height + inputs.height + resizeButton.height + 3 * popupResizeData.padding
+		width:	layout.width + 2 * popupResizeData.padding
+		height: layout.height + 2 * popupResizeData.padding
 
-		Text
-		{
-			id:					title
-            text:				qsTr("Table Size")
-			font:				jaspTheme.fontGroupTitle
-			color:				jaspTheme.textEnabled
+		ColumnLayout {
+			id: layout
+			spacing: 2 * jaspTheme.generalAnchorMargin
 
-			anchors
+			Layout.fillWidth: true
+			Layout.maximumWidth: groupBox.content.width
+
+			Text
 			{
-				top:			parent.top
-				left:			parent.left
-			}
-		}
-
-		Item
-		{
-			id:				inputs
-			width:			1.25 * groupBox.implicitWidth
-			height:			groupBox.implicitHeight
-
-			anchors
-			{
-				top:		title.bottom
-				left:		parent.left
-				margins:	jaspTheme.generalAnchorMargin
+				id:					title
+				text:				qsTr("Table Size")
+				font:				jaspTheme.fontGroupTitle
+				color:				jaspTheme.textEnabled
 			}
 
 			JC.Group {
@@ -76,6 +65,7 @@ Popup
 					KeyNavigation.tab:		rows
 
 					Keys.onEnterPressed:	resizeButton.clicked();
+					Keys.onReturnPressed:	resizeButton.clicked();
 				}
 
 				JC.IntegerField
@@ -88,49 +78,46 @@ Popup
 					KeyNavigation.backtab:	cols
 
 					Keys.onEnterPressed:	resizeButton.clicked();
+					Keys.onReturnPressed:	resizeButton.clicked();
 				}
 
 			}
-		}
 
 
-		JW.RoundedButton
-		{
-			id:						cancelButton
-			activeFocusOnTab:		true
-			text:					qsTr("Cancel")
-			onClicked:				popupResizeData.close()
+			RowLayout {
+				spacing: jaspTheme.generalAnchorMargin
 
-			KeyNavigation.tab:		resizeButton
-			KeyNavigation.backtab:	cols
-			anchors
-			{
-				right:				resizeButton.left
-				bottom:				resizeButton.bottom
-				rightMargin:		jaspTheme.generalAnchorMargin
+				Layout.alignment: Qt.AlignRight
+
+				JW.RoundedButton
+				{
+					id:						cancelButton
+					activeFocusOnTab:		true
+					text:					qsTr("Cancel")
+					onClicked:				popupResizeData.close()
+
+					KeyNavigation.tab:		resizeButton
+					KeyNavigation.backtab:	cols
+				}
+
+				JW.RoundedButton
+				{
+					id:						resizeButton
+					activeFocusOnTab:		true
+					text:					qsTr("Resize")
+
+					onClicked: {
+						dataSetModel.resizeData(rows.value, cols.value);
+						popupResizeData.close(); 
+					}
+
+					KeyNavigation.tab:		rows
+					KeyNavigation.backtab:	cancelButton
+
+				}
+
 			}
-		}
 
-		JW.RoundedButton
-		{
-			id:						resizeButton
-			activeFocusOnTab:		true
-			text:					qsTr("Resize")
-			
-			onClicked: {
-				dataSetModel.resizeData(rows.value, cols.value);
-				popupResizeData.close(); 
-			}
-
-			KeyNavigation.tab:		rows
-			KeyNavigation.backtab:	cancelButton
-			anchors
-			{
-				top:				inputs.bottom
-				right:				contentItem.right
-				topMargin:			jaspTheme.generalAnchorMargin
-				leftMargin:			jaspTheme.generalAnchorMargin
-			}
 		}
 	}
 }
