@@ -63,6 +63,7 @@ Popup
 					value:					dataSetModel.columnCount()
 
 					KeyNavigation.tab:		rows
+					KeyNavigation.backtab:	cols
 
 					Keys.onEnterPressed:	resizeButton.clicked();
 					Keys.onReturnPressed:	resizeButton.clicked();
@@ -74,7 +75,7 @@ Popup
 					label:					qsTr("Number of rows")
 					value:					dataSetModel.rowCount()
 
-					KeyNavigation.tab:		cancelButton
+					KeyNavigation.tab:		rows
 					KeyNavigation.backtab:	cols
 
 					Keys.onEnterPressed:	resizeButton.clicked();
@@ -95,9 +96,6 @@ Popup
 					activeFocusOnTab:		true
 					text:					qsTr("Cancel")
 					onClicked:				popupResizeData.close()
-
-					KeyNavigation.tab:		resizeButton
-					KeyNavigation.backtab:	cols
 				}
 
 				JW.RoundedButton
@@ -110,10 +108,6 @@ Popup
 						dataSetModel.resizeData(rows.value, cols.value);
 						popupResizeData.close(); 
 					}
-
-					KeyNavigation.tab:		rows
-					KeyNavigation.backtab:	cancelButton
-
 				}
 
 			}
