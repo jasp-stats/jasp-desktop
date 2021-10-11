@@ -20,15 +20,25 @@ MessageForwarder * MessageForwarder::_singleton = nullptr;
 
 void MessageForwarder::showWarning(QString title, QString message)
 {
-	QMessageBox::warning(nullptr, title, message);
+    QMessageBox box;
+
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setIcon(QMessageBox::Warning);
 }
 
 bool MessageForwarder::showYesNo(QString title, QString message, QString YesButtonText, QString NoButtonText)
 {
+
+	QMessageBox box;
+
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	box.setIcon(QMessageBox::Question);
+
 	if(YesButtonText == "")		YesButtonText	= tr("Yes");
 	if(NoButtonText == "")		NoButtonText	= tr("No");
-
-	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Yes | QMessageBox::No);
 
 	box.setButtonText(QMessageBox::Yes,		YesButtonText);
 	box.setButtonText(QMessageBox::No,		NoButtonText);
@@ -38,11 +48,17 @@ bool MessageForwarder::showYesNo(QString title, QString message, QString YesButt
 
 MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title, QString message, QString YesButtonText, QString NoButtonText, QString CancelButtonText)
 {
+
+	QMessageBox box;
+
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+	box.setIcon(QMessageBox::Question);
+
 	if(YesButtonText == "")		YesButtonText		= tr("Yes");
 	if(NoButtonText == "")		NoButtonText		= tr("No");
 	if(CancelButtonText == "")	CancelButtonText	= tr("Cancel");
-
-	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
 	box.setButtonText(QMessageBox::Yes,		YesButtonText);
 	box.setButtonText(QMessageBox::No,		NoButtonText);
@@ -58,7 +74,12 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 
 MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message, QString saveTxt, QString discardText, QString cancelText)
 {
-	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+	QMessageBox box;
+
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+	box.setIcon(QMessageBox::Question);
 
 	if(saveTxt == "")		saveTxt		= tr("Save");
 	if(discardText == "")	discardText = tr("Don't Save");
