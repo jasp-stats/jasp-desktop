@@ -34,7 +34,10 @@ MessageForwarder * MessageForwarder::_singleton = nullptr;
 
 void MessageForwarder::showWarning(QString title, QString message)
 {
-	QMessageBox::warning(nullptr, title, message);
+	QMessageBox box;
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setIcon(QMessageBox::Warning);
 }
 
 bool MessageForwarder::showYesNo(QString title, QString message, QString YesButtonText, QString NoButtonText)
@@ -42,13 +45,16 @@ bool MessageForwarder::showYesNo(QString title, QString message, QString YesButt
 	if(YesButtonText == "")		YesButtonText	= tr("Yes");
 	if(NoButtonText == "")		NoButtonText	= tr("No");
 
-	QMessageBox box(QMessageBox::Question, title, message);
+	QMessageBox box;
 
-	QPushButton* yesButton =	box.addButton(YesButtonText,	QMessageBox::ButtonRole::YesRole);
-	QPushButton* noButton =		box.addButton(NoButtonText,		QMessageBox::ButtonRole::NoRole);
-	box.exec();
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	box.setIcon(QMessageBox::Question);
 
-	return box.clickedButton() == yesButton;
+	box.setButtonText(QMessageBox::Yes,		YesButtonText);
+	box.setButtonText(QMessageBox::No,		NoButtonText);
+	return box.exec() == QMessageBox::Yes;
 }
 
 MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title, QString message, QString YesButtonText, QString NoButtonText, QString CancelButtonText)
@@ -57,44 +63,48 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 	if(NoButtonText == "")		NoButtonText		= tr("No");
 	if(CancelButtonText == "")	CancelButtonText	= tr("Cancel");
 
-	QMessageBox box(QMessageBox::Question, title, message);
+	QMessageBox box;
 
-	QPushButton* yesButton =	box.addButton(YesButtonText,		QMessageBox::ButtonRole::YesRole);
-	QPushButton* noButton =		box.addButton(NoButtonText,			QMessageBox::ButtonRole::NoRole);
-	QPushButton* cancelButton = box.addButton(CancelButtonText,		QMessageBox::ButtonRole::RejectRole);
-	box.setDefaultButton(cancelButton);
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+	box.setIcon(QMessageBox::Question);
 
-	box.exec();
+	box.setButtonText(QMessageBox::Yes,		YesButtonText);
+	box.setButtonText(QMessageBox::No,		NoButtonText);
+	box.setButtonText(QMessageBox::Cancel,	CancelButtonText);
 
-	QAbstractButton* clicked = box.clickedButton();
-	if (clicked == yesButton)		return DialogResponse::Yes;
-	else if (clicked == noButton)	return DialogResponse::No;
-
-	return DialogResponse::Cancel;
+	switch(box.exec())
+	{
+	case QMessageBox::Yes:	return DialogResponse::Yes;
+	case QMessageBox::No:	return DialogResponse::No;
+	default:				return DialogResponse::Cancel;
+	}
 }
 
-MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message, QString saveText, QString noSaveText, QString cancelText)
+MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message, QString saveText, QString discardText, QString cancelText)
 {
-	QMessageBox box(QMessageBox::Question, title, message);
+	QMessageBox box;
 
-	if(saveText == "")		saveText	= tr("Save");
+	box.setText(title);
+	box.setInformativeText(message);
+	box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+	box.setIcon(QMessageBox::Question);
+
+	if(saveText == "")		saveText		= tr("Save");
+	if(discardText == "")	discardText = tr("Don't Save");
 	if(cancelText == "")	cancelText	= tr("Cancel");
-	if(noSaveText == "")	noSaveText	= tr("Don't Save");
 
-	// In order to have the noSaveButton as first in the row of buttons, it has to get the role RejectRole.
-	QPushButton* saveButton =	box.addButton(saveText,		QMessageBox::ButtonRole::AcceptRole);
-	QPushButton* noSaveButton =	box.addButton(noSaveText,	QMessageBox::ButtonRole::DestructiveRole);
-	QPushButton* cancelButton =	box.addButton(cancelText,	QMessageBox::ButtonRole::RejectRole);
-	box.setDefaultButton(saveButton);
+	box.setButtonText(QMessageBox::Save,		saveText);
+	box.setButtonText(QMessageBox::Discard,		discardText);
+	box.setButtonText(QMessageBox::Cancel,		cancelText);
 
-	box.exec();
-
-	QAbstractButton* clicked = box.clickedButton();
-
-	if (clicked == saveButton)			return DialogResponse::Save;
-	else if (clicked == noSaveButton)	return DialogResponse::Discard;
-
-	return DialogResponse::Cancel;
+	switch(box.exec())
+	{
+	case QMessageBox::Save:			return DialogResponse::Save;
+	case QMessageBox::Discard:		return DialogResponse::Discard;
+	default:						return DialogResponse::Cancel;
+	}
 }
 
 QString MessageForwarder::askPassword(QString title, QString message)
