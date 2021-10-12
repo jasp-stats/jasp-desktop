@@ -145,7 +145,7 @@ FocusScope
 				{
 					id:		easySaveDialog
 
-					title:	qsTr("Do you want to save your changes to the Filtered Column?")
+					title:	qsTr("Would you like to save your changes to the Filter?")
 					text:	qsTr("Your changes will be lost if you don't save them.")
 
 					property var closeFunc: undefined

@@ -367,7 +367,7 @@ FocusScope
 		SaveDiscardCancelDialog
 		{
 			id:			saveDialog
-			title:		qsTr("Do you want to save your changes to the Computed Column?")
+			title:		qsTr("Would you like to save your changes to the Computed Column?")
 			text:		qsTr("Your changes will be lost if you don't save them.")
 			onDiscard:	computedColumnContainer.close()
 			onSave:

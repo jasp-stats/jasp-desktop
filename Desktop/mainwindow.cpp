@@ -947,7 +947,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			QString title = windowTitle();
 			title.chop(1);
 
-			switch(MessageForwarder::showSaveDiscardCancel(tr("Do you want to save your changes to %1?").arg(title), tr("Your changes will be lost if you don't save them.")))
+			switch(MessageForwarder::showSaveDiscardCancel(tr("Would you like to save your changes to %1 file?").arg(title), tr("Your changes will be lost if you don't save them.")))
 			{
 			default:
 			case MessageForwarder::DialogResponse::Cancel:
