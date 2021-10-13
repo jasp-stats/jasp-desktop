@@ -45,6 +45,8 @@ public:
 	//Some non-static links to have QML handle it. Without figuring out how qmlRegisterSingletonType() works :p
 public slots:
 	DialogResponse	showSaveDiscardCancelQML(QString title, QString message, QString saveTxt = "", QString discardText = "",	QString cancelText = "")	{ return showSaveDiscardCancel(title, message, saveTxt, discardText, cancelText); }
+    DialogResponse  showYesNoCancelQML(QString title, QString message, QString yesTxt = "", QString noText = "",    QString cancelText = "")                { return showYesNoCancel(title, message, yesTxt, noText, cancelText); }
+    bool            showYesNoQML(QString title, QString message, QString yesTxt = "", QString noText = "")                                                  { return showYesNo(title, message, yesTxt, noText); }
 	void			showWarningQML(QString title, QString message)																							{ showWarning(title, message); }
 	QString			browseOpenFileQML(QString caption, QString browsePath, QString filter)																	{ return browseOpenFile(caption, browsePath, filter); }
 	QString			browseOpenFileDocumentsQML(QString caption, QString filter)																				{ return browseOpenFileDocuments(caption, filter); }

@@ -104,14 +104,30 @@ Popup
 					activeFocusOnTab:		true
 					text:					qsTr("Resize")
 
-					onClicked: {
-						dataSetModel.resizeData(rows.value, cols.value);
-						popupResizeData.close(); 
-					}
+                    onClicked: {
+                        if (rows.value < dataSetModel.rowCount() || cols.value < dataSetModel.columnCount()) {
+                            yesNoDialog.open();
+                        } else {
+                            dataSetModel.resizeData(rows.value, cols.value);
+                            popupResizeData.close();
+                        }
+
+                    }
 				}
 
 			}
-
 		}
+	}
+
+    JW.YesNoDialog {
+		id: yesNoDialog
+		title: qsTr("Would you like to delete some of the rows or columns of %!?").arg(dataSetModel.name())
+        text: qsTr("You are about to shrink the size of your dataset by dropping some of its rows or columns. This action cannot be reversed.")
+
+        onYes: {
+            dataSetModel.resizeData(rows.value, cols.value);
+            popupResizeData.close();
+        }
+
 	}
 }

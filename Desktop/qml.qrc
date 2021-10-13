@@ -111,6 +111,8 @@
         <file>components/JASP/Controls/HelpButton.qml</file>
         <file>components/JASP/Widgets/SortMenuButton.qml</file>
         <file>components/JASP/Widgets/SaveDiscardCancelDialog.qml</file>
+        <file>components/JASP/Widgets/YesNoCancelDialog.qml</file>
+        <file>components/JASP/Widgets/YesNoDialog.qml</file>
         <file>components/JASP/Widgets/JagsTableView.qml</file>
         <file>components/JASP/Widgets/CustomContrastsTableView.qml</file>
         <file>translations/images/flag_en.png</file>
