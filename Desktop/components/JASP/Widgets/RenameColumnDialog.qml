@@ -116,7 +116,7 @@ Popup
 
     JW.WarningDialog {
         id: warningDialog
-		title: qsTr("The name "%1" is already taken.").args(columnIndex.value)
+        title: qsTr("The name '%1' is already taken.").args(columnIndex.value)
 		text: qsTr("Please choose a different name.")
 	}
 }
