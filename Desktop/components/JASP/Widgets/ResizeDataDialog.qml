@@ -61,6 +61,7 @@ Popup
 					id:						cols
 					label:					qsTr("Number of columns")
 					value:					dataSetModel.columnCount()
+					min:					1
 
 					KeyNavigation.tab:		rows
 					KeyNavigation.backtab:	cols
@@ -74,6 +75,7 @@ Popup
 					id:						rows
 					label:					qsTr("Number of rows")
 					value:					dataSetModel.rowCount()
+					min:					1
 
 					KeyNavigation.tab:		rows
 					KeyNavigation.backtab:	cols
