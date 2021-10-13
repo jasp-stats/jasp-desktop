@@ -185,8 +185,8 @@ tell application "Finder"
 		set arrangement of viewOptions to not arranged
 		set icon size of viewOptions to 72
 		set background picture of viewOptions to file ".background:'${DMG_BACKGROUND_IMG}'"
-		set position of item "'${APP_NAME}'.app" of container window to {150, 640}
-		set position of item "Applications" of container window to {450, 640}
+		set position of item "'${APP_NAME}'.app" of container window to {150, 660}
+		set position of item "Applications" of container window to {450, 660}
 		close
 		open
 		update without registering applications
