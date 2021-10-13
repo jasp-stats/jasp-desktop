@@ -123,8 +123,8 @@ Popup
 
     JW.YesNoDialog {
 		id: yesNoDialog
-		title: qsTr("Would you like to delete some of the rows or columns of %!?").arg(dataSetModel.name())
-        text: qsTr("You are about to shrink the size of your dataset by dropping some of its rows or columns. This action cannot be reversed.")
+        title: qsTr("Would you like to remove some of the rows or columns of the data set?")
+		text: qsTr("The provided rows and columns are smaller than the rows or columns currently present in the data set. This will remove some rows or columns. Please be aware that once the data set is shrunk the lost data cannot be retrieved.")
 
         onYes: {
             dataSetModel.resizeData(rows.value, cols.value);
