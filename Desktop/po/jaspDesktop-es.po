@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-10-11 20:05+0000\n"
+"PO-Revision-Date: 2021-10-14 01:51+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -66,7 +66,7 @@ msgstr "Nuevo valor"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
-msgstr "Condiciones de modelo"
+msgstr "Elementos del Modelo"
 
 msgctxt "ModelTermsList|"
 msgid "Add to null model"
@@ -1727,12 +1727,10 @@ msgctxt "SubjectivePriors|"
 msgid "Cauchy"
 msgstr "Cauchy"
 
-#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr "escala"
+msgstr "Escala"
 
-#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "Informed"
 msgstr "Informado"
@@ -1967,37 +1965,30 @@ msgctxt "AnalysisForm|"
 msgid "Table"
 msgstr "Tabla"
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Plot"
-msgstr "Trama"
+msgstr "Gráfico"
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Collection"
 msgstr "Colección"
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Result"
 msgstr "Resultado"
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Output"
 msgstr "Salida"
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Input"
 msgstr "Entrada"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Option"
 msgstr "Opción"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Section"
 msgstr "Sección"
@@ -2027,90 +2018,77 @@ msgctxt "JASPControl|"
 msgid "Radio Buttons"
 msgstr "Botones de radio"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Variables"
 msgstr "Variables"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "ComboBox"
-msgstr "Caja combo"
+msgstr "Cuadro combinado"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Input ListView"
-msgstr "Entrada ListView"
+msgstr "Introducir ListView"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "TableView"
-msgstr "TableView"
+msgstr "Vista de tabla"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Slider"
 msgstr "Deslizador"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "TextArea"
-msgstr "TextArea"
+msgstr "Zona de texto"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Button"
 msgstr "Botón"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Factors Form"
-msgstr "Forma de factores"
+msgstr "Formulario de Factores"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "List of Components"
-msgstr "Lista de componentes"
+msgstr "Lista de Componentes"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Group Box"
-msgstr "Cuadro de grupo"
+msgstr "Cuadro de Grupo"
 
-#, fuzzy
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
 msgstr "El valor debe ser "
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8805; %1"
 msgstr "&#8805; %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&gt; %1"
 msgstr "&gt; %1"
 
-#, fuzzy
 msgctxt "JASPDoubleValidator|"
 msgid " and "
 msgstr " y "
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8804; %1"
 msgstr "&#8805; %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
 msgstr "&gt; %1"
 
-#, fuzzy
 msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
-msgstr "Sin error de validación"
+msgstr "Sin error de verificación"
 
 #, fuzzy
 msgctxt "KnownIssues|"
@@ -3690,27 +3668,27 @@ msgstr ""
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr ""
+msgstr "Factor"
 
 msgctxt "FactorLevelList|"
 msgid "Level"
-msgstr ""
+msgstr "Nivel"
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr ""
+msgstr "Factor Nuevo"
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr ""
+msgstr "Nuevo Nivel"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
-msgstr ""
+msgstr "Recordar los módulos habilitados"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
-msgstr ""
+msgstr "Usar el PAT para Github por defecto"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -3806,14 +3784,13 @@ msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
 msgstr ""
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
 msgstr "Variables"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "Separar"
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
