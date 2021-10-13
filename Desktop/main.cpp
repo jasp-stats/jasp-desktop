@@ -395,10 +395,10 @@ int main(int argc, char *argv[])
 			// For this JASP has the --junctions argument, and is run by JASP-*.msi during install to make sure everything is ready.
 			// However, we also want to support ZIP distributions of jasp, and there is no installer. But the good thing is it also means the user has write access to the main folder. Which means we can fix it now.
 			QDir modulesDir("Modules");
+			QFile jaspEngine("JASPEngine.exe");
 						
-			if(!modulesDir.exists())
+			if(jaspEngine.exists() && !modulesDir.exists())
 			{
-					
 				QMessageBox::information(nullptr, Application::tr("One time setup for JASP Modules"), Application::tr("JASP has been installed from a zip and it needs to recreate certain paths for your analyses to work.\n\nPlease be patient and wait for the application to show before attempting to start JASP again."));
 				
 				if(!runJaspEngineJunctionFixer(argc, argv, false))
