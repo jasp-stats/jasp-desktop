@@ -149,5 +149,6 @@
         <file>components/JASP/Widgets/RoundedButton.qml</file>
         <file>components/JASP/Widgets/ResizeDataDialog.qml</file>
         <file>components/JASP/Widgets/RenameColumnDialog.qml</file>
+        <file>components/JASP/Widgets/WarningDialog.qml</file>
     </qresource>
 </RCC>

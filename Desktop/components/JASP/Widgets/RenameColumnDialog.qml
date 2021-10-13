@@ -101,12 +101,22 @@ Popup
 					text:					qsTr("Rename")
 
 					onClicked: { 
-						dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value); 
-						popupRenameColumnDialog.close(); 
+                        if (dataSetModel.isColumnNameFree(columnName.value))
+                        {
+                            dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value);
+                            popupRenameColumnDialog.close();
+                        } else {
+                            warningDialog.open();
+                        }
 					}
 				}
 			}
-
 		}
+	}
+
+    JW.WarningDialog {
+        id: warningDialog
+		title: qsTr("The name "%1" is already taken.").args(columnIndex.value)
+		text: qsTr("Please choose a different name.")
 	}
 }

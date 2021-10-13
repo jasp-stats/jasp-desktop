@@ -41,6 +41,7 @@ ModulesMenu                 1.0 ModulesMenu.qml
 SaveDiscardCancelDialog     1.0 SaveDiscardCancelDialog.qml
 YesNoCancelDialog           1.0 YesNoCancelDialog.qml
 YesNoDialog 				1.0 YesNoDialog.qml
+WarningDialog 				1.0 WarningDialog.qml
 CustomContrastsTableView    1.0 CustomContrastsTableView.qml
 SetSeed                     1.0 SetSeed.qml
 BasicThreeButtonTableView   1.0 BasicThreeButtonTableView.qml

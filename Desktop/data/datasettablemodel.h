@@ -57,6 +57,8 @@ public:
 	QModelIndex				parentModelForType(parIdxType type, int column = 0)	const	{ return DataSetPackage::pkg()->parentModelForType(type, column);					}
 	bool					synchingData()							const				{ return DataSetPackage::pkg()->synchingData();										}
 
+    bool 					isColumnNameFree(const std::string& colname) const 			{ return DataSetPackage::pkg()->isColumnNameFree(colname);                          }
+
 	void					pasteSpreadsheet(size_t row, size_t col, const std::vector<std::vector<QString>> & cells, QStringList newColNames = QStringList());
 	void					columnInsert(	size_t column	);
 	void					columnDelete(	size_t column	);
