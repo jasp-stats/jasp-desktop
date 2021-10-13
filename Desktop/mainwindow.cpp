@@ -993,7 +993,7 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 	QString title = windowTitle();
 	title.chop(1);
 
-	switch(MessageForwarder::showSaveDiscardCancel(tr("File has changed"), tr("Save changes to the file %1 before closing?\n\nYour changes will be lost if you don't save them.").arg(title)))
+	switch(MessageForwarder::showSaveDiscardCancel(tr("Would you like to save your changes to %1 file?").arg(title), tr("Your changes will be lost if you don't save them.")))
 	{
 	case MessageForwarder::DialogResponse::Save:
 	{
