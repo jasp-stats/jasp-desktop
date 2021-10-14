@@ -102,14 +102,17 @@ Popup
                     enabled:				columnName.value.trim()
 
 					onClicked: { 
-						if (dataSetModel.columnName(popupRenameColumnDialog.colIndex) == columnName.value) 
+						if (dataSetModel.columnName(popupRenameColumnDialog.colIndex) === columnName.value) 
 						{
 							popupRenameColumnDialog.close();
-						} else if (dataSetModel.isColumnNameFree(columnName.value))
+						} 
+						else if (dataSetModel.isColumnNameFree(columnName.value))
 						{
 							dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value);
 							popupRenameColumnDialog.close();
-						} else {
+						}
+						else
+						{
 							warningDialog.open();
 						}
 					}

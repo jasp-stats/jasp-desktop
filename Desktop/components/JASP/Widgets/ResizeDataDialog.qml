@@ -108,9 +108,15 @@ Popup
 					enabled:				rows.value && cols.value
 
 					onClicked: {
-						if (rows.value < dataSetModel.rowCount() || cols.value < dataSetModel.columnCount()) {
+						if (rows.value === dataSetModel.rowCount() && cols.value === dataSetModel.columnCount())
+						{
+							popupResizeData.close();
+						} 
+						else if (rows.value < dataSetModel.rowCount() || cols.value < dataSetModel.columnCount()) {
 							yesNoDialog.open();
-						} else {
+						}
+						else
+						{
 							dataSetModel.resizeData(rows.value, cols.value);
 							popupResizeData.close();
 						}
