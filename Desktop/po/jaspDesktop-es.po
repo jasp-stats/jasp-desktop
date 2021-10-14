@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-10-14 01:51+0000\n"
+"PO-Revision-Date: 2021-10-14 20:07+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -255,11 +255,11 @@ msgstr "Logaritmo natural de BF10."
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr "Añadir columna"
+msgstr "Añadir Columna"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
-msgstr "Eliminar columna"
+msgstr "Eliminar Columna"
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
@@ -1681,32 +1681,26 @@ msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#, fuzzy
 msgctxt "SetSeed|"
 msgid "Repeatability"
 msgstr "Repetibilidad"
 
-#, fuzzy
 msgctxt "SetSeed|"
 msgid "Set seed:"
 msgstr "Establecer semilla:"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr "Añadir columna"
+msgstr "Añadir Columna"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr "Eliminar columna"
+msgstr "Eliminar Columna"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr "Reiniciar"
 
-#, fuzzy
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
 msgstr "Ordenar los elementos"
