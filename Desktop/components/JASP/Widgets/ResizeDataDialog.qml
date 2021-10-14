@@ -105,6 +105,7 @@ Popup
 					id:						resizeButton
 					activeFocusOnTab:		true
 					text:					qsTr("Resize")
+					enabled:				rows.value && cols.value
 
 					onClicked: {
 						if (rows.value < dataSetModel.rowCount() || cols.value < dataSetModel.columnCount()) {
