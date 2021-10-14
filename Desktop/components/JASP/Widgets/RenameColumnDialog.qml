@@ -101,7 +101,10 @@ Popup
 					text:					qsTr("Rename")
 
 					onClicked: { 
-                        if (dataSetModel.isColumnNameFree(columnName.value))
+						if (dataSetModel.columnName(popupRenameColumnDialog.colIndex) == columnName.value) 
+						{
+							popupRenameColumnDialog.close();
+						} else if (dataSetModel.isColumnNameFree(columnName.value))
                         {
                             dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value);
                             popupRenameColumnDialog.close();
