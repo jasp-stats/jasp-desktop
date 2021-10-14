@@ -37,7 +37,8 @@ Popup
 	}
 
 	onOpened: {
-		columnName.forceActiveFocus();
+		columnName.forceActiveFocus()
+		columnName.value = dataSetModel.columnName(popupRenameColumnDialog.colIndex)
 	}
 
 	contentItem: Item
@@ -70,7 +71,6 @@ Popup
 			JC.TextField
 			{
 				id:						columnName
-				value:					dataSetModel.columnName(popupRenameColumnDialog.colIndex)
 
 				validator: RegularExpressionValidator { regularExpression: /^(?!\s*$).+/ }
 
@@ -99,27 +99,28 @@ Popup
 					id:						renameButton
 					activeFocusOnTab:		true
 					text:					qsTr("Rename")
+                    enabled:				columnName.value.trim()
 
 					onClicked: { 
 						if (dataSetModel.columnName(popupRenameColumnDialog.colIndex) == columnName.value) 
 						{
 							popupRenameColumnDialog.close();
 						} else if (dataSetModel.isColumnNameFree(columnName.value))
-                        {
-                            dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value);
-                            popupRenameColumnDialog.close();
-                        } else {
-                            warningDialog.open();
-                        }
+						{
+							dataSetModel.setColumnName(popupRenameColumnDialog.colIndex, columnName.value);
+							popupRenameColumnDialog.close();
+						} else {
+							warningDialog.open();
+						}
 					}
 				}
 			}
 		}
 	}
 
-    JW.WarningDialog {
-        id: warningDialog
-        title: qsTr("The name '%1' is already taken.").args(columnIndex.value)
+	JW.WarningDialog {
+		id: warningDialog
+		title: qsTr("The name '%1' is already taken.").args(columnIndex.value)
 		text: qsTr("Please choose a different name.")
 	}
 }

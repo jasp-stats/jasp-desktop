@@ -30,7 +30,9 @@ Popup
 	}
 
 	onOpened: {
-		cols.forceActiveFocus();
+		cols.forceActiveFocus()
+		cols.value = dataSetModel.columnCount()
+		rows.value = dataSetModel.rowCount()
 	}
 
 	contentItem: Item
@@ -60,7 +62,6 @@ Popup
 				{
 					id:						cols
 					label:					qsTr("Number of columns")
-					value:					dataSetModel.columnCount()
 					min:					1
 
 					KeyNavigation.tab:		rows
@@ -74,7 +75,6 @@ Popup
 				{
 					id:						rows
 					label:					qsTr("Number of rows")
-					value:					dataSetModel.rowCount()
 					min:					1
 
 					KeyNavigation.tab:		rows
