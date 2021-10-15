@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-10-15 11:32+0000\n"
+"PO-Revision-Date: 2021-10-15 19:45+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -854,10 +854,9 @@ msgctxt "PrefsAdvanced|"
 msgid "Engine options"
 msgstr "Opciones de registro"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
-msgstr "Tiempo máximo de adaptación"
+msgstr "Máximo de registros: "
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
@@ -896,7 +895,7 @@ msgstr "Lista de valores perdidos"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
-msgstr "Eliminar valor faltante"
+msgstr "Eliminar el valor ausente"
 
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
@@ -944,65 +943,57 @@ msgctxt "PrefsResults|"
 msgid "White"
 msgstr "Blanco"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
 msgstr ""
-"Esto hace que el fondo de todos los gráficos sea blanco, bastante útil si "
-"desea usarlo en LaTeX o enviarlo a una revista."
+"Esto hace que el fondo de todos los gráficos sea blanco. Resulta bastante "
+"útil para usarlo en LaTeX o enviarlo a una revista."
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Transparent"
 msgstr "Transparente"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
 msgstr ""
-"Esto hace que el fondo de todos los gráficos sea transparente, lo que "
-"resulta muy útil si desea utilizarlo sin problemas en cualquier fondo que no "
-"sea blanco."
+"Esto hace que el fondo de todos los gráficos sea transparente Resulta muy "
+"útil para utilizarlo sin problemas en cualquier fondo que no sea blanco."
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr "Fuentes"
+msgstr "Tipos de letra"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Interface:"
 msgstr "Interfaz:"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr "Defecto"
+msgstr "por defecto: %1"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr "Temas"
+msgstr "Esquemas de colores"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
 msgstr ""
-"Cambia a un tema claro, este es el sabor original y predeterminado de JASP."
+"Cambiar a un esquema claro de colores, que es la vista original y "
+"predeterminada de JASP."
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
 msgstr ""
-"Cambia a un tema oscuro, hace que JASP sea mucho más agradable para los ojos "
-"de los noctámbulos."
+"Cambiar a un esquema oscuro de colores, hace que JASP sea mucho más "
+"agradable a la vista de los noctámbulos."
 
 #, fuzzy
 msgctxt "PrefsUI|"
@@ -2222,12 +2213,10 @@ msgctxt "ColumnTypesModel|"
 msgid "Scale"
 msgstr "Escala"
 
-#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
 msgstr "Ordinal"
 
-#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
 msgstr "Nominal"
@@ -2581,15 +2570,15 @@ msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
 msgstr "Error al cargar paquetes para el módulo %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RibbonModel|"
 msgid ""
 "Loading of the bundled module %1 failed with the following error:\n"
 "\n"
 "%2"
 msgstr ""
-"La carga de los paquetes del Módulo %1 falló con el siguiente mensaje de "
-"error:\n"
+"Falló la carga del módulo %1 empaquetado, con el siguiente mensaje de error:"
+"\n"
 "\n"
 "%2"
 
@@ -2971,17 +2960,14 @@ msgstr ""
 "No se puede agregar una nueva carpeta a la lista de proyectos.<br>Para "
 "agregar un nuevo proyecto, utilice los servicios OSF en línea."
 
-#, fuzzy
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
-"No se puede agregar una nueva carpeta a una lista de proveedores de datos de "
-"proyectos.\n"
-"\n"
-"Para agregar un nuevo proveedor de datos (por ejemplo, Google Drive), "
-"utilice los servicios OSF en línea."
+"No se puede agregar una nueva carpeta a la lista de proveedores de datos de "
+"proyectos. Para agregar un nuevo proveedor de datos (por ejemplo, Google "
+"Drive), por favor, utilizar los servicios en línea de OSF."
 
 #, fuzzy, qt-format
 msgctxt "OSF|"
@@ -3190,10 +3176,10 @@ msgctxt "TextInputBase|"
 msgid "Text Field"
 msgstr "Campo de texto"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr "El valor debe ser "
+msgstr "El valor (%1) debe ser %2"
 
 #, fuzzy, qt-format
 msgctxt "VariablesListBase|"
