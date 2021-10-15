@@ -36,7 +36,7 @@ Item
 		border.width: 1
 		height: 2
 		width: parent.implicitWidth
-		border.color: jaspTheme.black
+		border.color: jaspTheme.gray
 	}
 
 	Rectangle
