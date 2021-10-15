@@ -2,6 +2,7 @@ import QtQuick				2.15
 import QtQuick.Controls		1.4 as Old
 import QtQuick.Controls		2.15
 import QtQml.Models			2.15
+import QtQuick.Layouts 		1.15
 import QtGraphicalEffects	1.0
 
 
@@ -381,215 +382,264 @@ FocusScope
 				id:		headerRoot
 				color:	jaspTheme.uiBackground
 
-							property real	iconTextPadding:	10
-				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
+				implicitWidth: 	columnHeaderLayout.implicitWidth
+				implicitHeight: columnHeaderLayout.implicitHeight
 
-				Image
-				{
-					id:						colIcon
-					anchors.verticalCenter: parent.verticalCenter
-					anchors.left:			parent.left
-					anchors.margins:		4
+				RowLayout {
+					id: columnHeaderLayout
+					
+					spacing: 				6
+					anchors.fill: 			parent
+					Layout.fillWidth: 	 	true
 
-					function myColumnType() {return dataSetModel.columnIcon(columnIndex)}
+					anchors.leftMargin:  	jaspTheme.generalAnchorMargin
+					anchors.rightMargin: 	jaspTheme.generalAnchorMargin
 
-					source: jaspTheme.iconPath + dataSetModel.getColumnTypesWithCorrespondingIcon()[myColumnType()]
-					width:	headerRoot.__iconDim
-					height: headerRoot.__iconDim
+					RowLayout {
+						id: iconsLayout
 
-					sourceSize {	width:	width * 2
-									height:	height * 2 }
+						spacing: 2
 
+						Layout.alignment:			Qt.AlignLeft || Qt.AlignVCenter
 
-					function setColumnType(columnType)
-					{
-						dataSetModel.setColumnTypeFromQML(columnIndex, columnType)
-
-						if(labelModel.chosenColumn === columnIndex && colIcon.myColumnType() === columnTypeScale)
-							labelModel.visible = false;
-					}
-
-
-					MouseArea
-					{
-						anchors.fill:		parent
-						onClicked:
+						Image
 						{
-							var functionCall      = function (index)
+							id:							colIcon
+							Layout.preferredHeight: 	0.6 * headerRoot.height
+							Layout.preferredWidth: 		0.6 * headerRoot.height
+							Layout.alignment:			Qt.AlignHCenter
+							fillMode: 					Image.PreserveAspectFit
+
+							function myColumnType() {return dataSetModel.columnIcon(columnIndex)}
+
+							source: jaspTheme.iconPath + dataSetModel.getColumnTypesWithCorrespondingIcon()[myColumnType()]
+
+							function setColumnType(columnType)
 							{
-								// FIXME:
-								var columnType = [columnTypeScale, columnTypeOrdinal, columnTypeNominal][index];
+								dataSetModel.setColumnTypeFromQML(columnIndex, columnType)
 
-								if (columnType !== undefined)
-									colIcon.setColumnType(columnType);
-
-								customMenu.hide()
+								if(labelModel.chosenColumn === columnIndex && colIcon.myColumnType() === columnTypeScale)
+									labelModel.visible = false;
 							}
 
-							var props = {
-								"model":		columnTypesModel,
-								"functionCall": functionCall
-							};
 
-							customMenu.scrollOri.x	= dataTableView.contentX;
-							customMenu.scrollOri.y	= 0;
-
-							customMenu.toggle(dataTableView, props, headerRoot.x - contentX, headerRoot.y + headerRoot.height - dataTableView.contentY);
-
-							customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (dataTableView.contentX - customMenu.scrollOri.x); });
-							customMenu.menuScroll.y	= 0;
-							customMenu.menuMinIsMin	= true
-							customMenu.menuMaxPos.x	= dataTableView.width + dataTableView.x
-						}
-
-						hoverEnabled:		true
-						ToolTip.visible:	containsMouse
-						ToolTip.text:		qsTr("Click here to change column type")
-						ToolTip.timeout:	3000
-						ToolTip.delay:		500
-						cursorShape:		Qt.PointingHandCursor
-					}
-				}
-
-				Image
-				{
-					id:			colIsComputed
-
-					width:		visible ? headerRoot.__iconDim : 0
-					height:		headerRoot.__iconDim
-					visible:	columnIsComputed
-
-					anchors.left:			colIcon.right
-					anchors.verticalCenter: parent.verticalCenter
-					anchors.margins:		visible ? 1 : 0
-
-					source:				jaspTheme.iconPath + "/computed.png"
-					sourceSize {	width:	headerRoot.__iconDim * 2
-									height:	headerRoot.__iconDim * 2 }
-
-					MouseArea
-					{
-						anchors.fill:	parent
-						onClicked:		computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
-
-						hoverEnabled:		true
-						ToolTip.visible:	containsMouse
-						ToolTip.text:		qsTr("Click here to change the columns formulas")
-						ToolTip.timeout:	3000
-						ToolTip.delay:		500
-
-						cursorShape:		Qt.PointingHandCursor
-
-					}
-				}
-
-				Text
-				{
-					id:				headerTextItem
-
-					text:			headerText
-					font:			jaspTheme.font
-					color:			jaspTheme.textEnabled
-
-					horizontalAlignment:		Text.AlignHCenter
-
-					anchors.horizontalCenter:	headerRoot.horizontalCenter
-					anchors.verticalCenter:		headerRoot.verticalCenter
-				}
-
-				LoadingIndicator
-				{
-					id:			colIsInvalidated
-
-					width:		headerRoot.__iconDim
-					visible:	columnIsInvalidated
-
-					anchors.right:			colFilterOn.left
-					anchors.verticalCenter:	parent.verticalCenter
-					anchors.margins:		visible ? 1 : 0
-				}
-
-				Image
-				{
-					id:			colHasError
-
-					width:		columnError.length > 0 ? headerRoot.__iconDim : 0
-					height:		headerRoot.__iconDim
-					visible:	columnError.length > 0 // && !columnIsInvalidated
-
-					source:					jaspTheme.iconPath + "/error.png"
-					sourceSize {	width:	headerRoot.__iconDim * 2
-									height:	headerRoot.__iconDim * 2 }
-
-					anchors.right:			colIsInvalidated.left
-					anchors.verticalCenter:	parent.verticalCenter
-					anchors.margins:		visible ? 1 : 0
-
-					MouseArea
-					{
-						anchors.fill:		parent
-						onClicked:			computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
-
-						hoverEnabled:		true
-						ToolTip.visible:	containsMouse && columnError.length > 0
-						ToolTip.text:		columnError
-						ToolTip.timeout:	3000
-						ToolTip.delay:		500
-						cursorShape:		Qt.PointingHandCursor
-
-					}
-
-				}
-
-				Image
-				{
-					id:						colFilterOn
-
-					width:					columnIsFiltered ? headerRoot.__iconDim : 0
-					height:					headerRoot.__iconDim
-
-					source:					jaspTheme.iconPath + "filter.png"
-					sourceSize {	width:	headerRoot.__iconDim * 2
-									height:	headerRoot.__iconDim * 2 }
-
-					anchors.right:			parent.right
-					anchors.margins:		columnIsFiltered ? 1 : 0
-					anchors.verticalCenter:	parent.verticalCenter
-				}
-
-				MouseArea
-				{
-					anchors.left:	colIsComputed.right
-					anchors.top:	parent.top
-					anchors.bottom: parent.bottom
-					anchors.right:	colHasError.left
-
-					onClicked:
-						if(columnIndex >= 0)
-						{
-
-							if(dataSetModel.columnIcon(columnIndex)  !== columnTypeScale)
+							MouseArea
 							{
-								var changedIndex		= labelModel.chosenColumn	!== columnIndex
-								labelModel.chosenColumn	= columnIndex;
-								labelModel.visible		= changedIndex ? true : !labelModel.visible;
-							}
-							else
-								dataSetModel.renameColumnDialog(columnIndex);
+								anchors.fill:		parent
+								onClicked:
+								{
+									var functionCall      = function (index)
+									{
+										// FIXME: Talk to me, what's wrong with you!
+										var columnType = [columnTypeScale, columnTypeOrdinal, columnTypeNominal][index];
 
-							if(dataSetModel.columnUsedInEasyFilter(columnIndex))
-							{
-								filterWindow.showEasyFilter = true
-								filterWindow.open()
+										if (columnType !== undefined)
+											colIcon.setColumnType(columnType);
+
+										customMenu.hide()
+									}
+
+									var props = {
+										"model":		columnTypesModel,
+										"functionCall": functionCall
+									};
+
+									customMenu.scrollOri.x	= dataTableView.contentX;
+									customMenu.scrollOri.y	= 0;
+
+									customMenu.toggle(dataTableView, props, headerRoot.x - contentX, headerRoot.y + headerRoot.height - dataTableView.contentY);
+
+									customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (dataTableView.contentX - customMenu.scrollOri.x); });
+									customMenu.menuScroll.y	= 0;
+									customMenu.menuMinIsMin	= true
+									customMenu.menuMaxPos.x	= dataTableView.width + dataTableView.x
+								}
+
+								hoverEnabled:		true
+								ToolTip.visible:	containsMouse
+								ToolTip.text:		qsTr("Click here to change column type")
+								ToolTip.timeout:	3000
+								ToolTip.delay:		500
+								cursorShape:		Qt.PointingHandCursor
 							}
 						}
 
-					hoverEnabled:		true
-					ToolTip.visible:	containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale
-					ToolTip.text:		qsTr("Click here to change labels") + (columnIsFiltered ? qsTr(" or inspect filter") : "" )
-					ToolTip.timeout:	3000
-					ToolTip.delay:		500
-					cursorShape:		dataSetModel.columnIcon(columnIndex)  !== columnTypeScale || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor
+						Image
+						{
+							id:							colIsComputed
+							Layout.preferredHeight: 	0.6 * headerRoot.height
+							Layout.preferredWidth: 		0.6 * headerRoot.height
+							Layout.alignment:			Qt.AlignHCenter
+							fillMode: 					Image.PreserveAspectFit
+
+							visible:					columnIsComputed
+
+							source:				jaspTheme.iconPath + "/computed.png"
+
+							MouseArea
+							{
+								anchors.fill:	parent
+								onClicked:		computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
+
+								hoverEnabled:		true
+								ToolTip.visible:	containsMouse
+								ToolTip.text:		qsTr("Click here to change the columns formulas")
+								ToolTip.timeout:	3000
+								ToolTip.delay:		500
+
+								cursorShape:		Qt.PointingHandCursor
+
+							}
+						}
+
+						Image
+						{
+							id:							colFilterOn
+							Layout.preferredHeight: 	0.6 * headerRoot.height
+							Layout.preferredWidth: 		0.6 * headerRoot.height
+							Layout.alignment:			Qt.AlignHCenter
+							fillMode: 					Image.PreserveAspectFit
+
+							visible:					columnIsFiltered
+
+							source:						jaspTheme.iconPath + "filter.png"
+
+							MouseArea
+							{
+								anchors.fill: parent
+
+								hoverEnabled:		true
+								ToolTip.visible:	containsMouse
+								ToolTip.text:		qsTr("Click here to change the columns filter")
+								ToolTip.timeout:	3000
+								ToolTip.delay:		500
+
+								cursorShape:		Qt.PointingHandCursor
+
+								onClicked: 
+								{
+									if(dataSetModel.columnUsedInEasyFilter(columnIndex))
+									{
+										filterWindow.showEasyFilter = true
+										filterWindow.open()
+									}
+								}
+							}
+						}
+					}
+
+					RowLayout {
+						id: textLayout
+
+						Layout.alignment:			Qt.AlignLeft || Qt.AlignVCenter
+
+						Text
+						{
+							id:				headerTextItem
+
+							text:			headerText
+							font:			jaspTheme.font
+							color:			jaspTheme.textEnabled
+
+							MouseArea
+							{
+								id: changeTypeMouseArea
+								anchors.fill: parent
+
+								onClicked:  
+								{
+									if(dataSetModel.columnIcon(columnIndex)  !== columnTypeScale)
+									{
+										var changedIndex		= labelModel.chosenColumn	!== columnIndex
+										labelModel.chosenColumn	= columnIndex;
+										labelModel.visible		= changedIndex ? true : !labelModel.visible;
+									}
+								}
+
+								hoverEnabled:		true
+								ToolTip.visible:	containsMouse
+								ToolTip.text:		qsTr("Click here to change labels") + (columnIsFiltered ? qsTr(" or inspect filter") : "" )
+								ToolTip.timeout:	3000
+								ToolTip.delay:		500
+								cursorShape:		dataSetModel.columnIcon(columnIndex)  !== columnTypeScale || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor
+							}
+						}
+
+						Image
+						{
+							id:							colHasError
+							Layout.preferredHeight: 	0.6 * headerRoot.height
+							Layout.preferredWidth: 		0.6 * headerRoot.height
+							Layout.alignment:			Qt.AlignLeft
+							fillMode: 					Image.PreserveAspectFit
+
+							visible:					columnError.length > 0 // && !columnIsInvalidated
+
+							source:					jaspTheme.iconPath + "/error.png"
+
+							MouseArea
+							{
+								anchors.fill:		parent
+								onClicked:			computeColumnWindow.open(dataSetModel.headerData(columnIndex, Qt.Horizontal))
+
+								hoverEnabled:		true
+								ToolTip.visible:	containsMouse && columnError.length > 0
+								ToolTip.text:		columnError
+								ToolTip.timeout:	3000
+								ToolTip.delay:		500
+								cursorShape:		Qt.PointingHandCursor
+
+							}
+						}
+
+						LoadingIndicator
+						{
+							id:			colIsInvalidated
+
+							width:		headerRoot.__iconDim
+							visible:	columnIsInvalidated
+						}
+
+
+					}
+
+					Image
+					{
+						id:							colMenuImage
+						Layout.preferredHeight: 	0.6 * headerRoot.height
+						Layout.preferredWidth: 		0.6 * headerRoot.height
+						Layout.alignment:			Qt.AlignRight || Qt.AlignVCenter
+						fillMode: 					Image.PreserveAspectFit
+
+						// visible:					renameMenuMouseArea.containsMouse
+
+						source:						jaspTheme.iconPath + "/edit-pencil.png"
+
+						MouseArea
+						{
+							id: renameMenuMouseArea
+							anchors.fill: parent
+
+							onClicked:  dataSetModel.renameColumnDialog(columnIndex);
+
+							// if(dataSetModel.columnIcon(columnIndex)  !== columnTypeScale)
+							// {
+							// 	var changedIndex		= labelModel.chosenColumn	!== columnIndex
+							// 	labelModel.chosenColumn	= columnIndex;
+							// 	labelModel.visible		= changedIndex ? true : !labelModel.visible;
+							// }
+							// else
+							// ToolTip.text:		qsTr("Click here to change labels") + (columnIsFiltered ? qsTr(" or inspect filter") : "" )
+
+							hoverEnabled:		true
+							ToolTip.visible:	containsMouse
+							ToolTip.text:		qsTr("Click here to rename the column")
+							ToolTip.timeout:	3000
+							ToolTip.delay:		500
+							cursorShape:		dataSetModel.columnIcon(columnIndex)  !== columnTypeScale || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor
+						}
+					}
+
 				}
 			}
 		}
