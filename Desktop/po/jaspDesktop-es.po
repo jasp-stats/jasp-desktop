@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-10-14 20:07+0000\n"
+"PO-Revision-Date: 2021-10-15 11:32+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -40,7 +40,7 @@ msgstr "Seleccionar archivo para cargar"
 
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr "Navegar"
+msgstr "Buscar"
 
 msgctxt "Form|"
 msgid ""
@@ -50,19 +50,19 @@ msgstr ""
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ", la actualización podría dar un resultado ligeramente diferente."
+msgstr ", una actualización podría dar un resultado ligeramente diferente."
 
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
 msgstr ""
-", para mantener sus notas donde están, es altamente recomendable que primero "
-"actualice sus análisis!"
+", para mantener las notas donde están, es altamente recomendable que primero "
+"se actualicen los análisis!"
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr "Nuevo valor"
+msgstr "Nuevo Valor"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
@@ -94,32 +94,32 @@ msgstr "⌘ + Enter para aplicar"
 
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
-msgstr "Ctrl + Enter para aplicar"
+msgstr "Ctrl + Intro para aplicar"
 
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr "Restaurando el último valor correcto: %1"
+msgstr "Restableciendo el último valor correcto: %1"
 
 msgctxt "VariablesForm|"
 msgid "Main Effects"
-msgstr "Efectos principales"
+msgstr "Efectos Principales"
 
 msgctxt "VariablesForm|"
 msgid "Only 2 way"
-msgstr "Solo 2 caminos"
+msgstr "Solo el modo 2"
 
 msgctxt "VariablesForm|"
 msgid "Only 3 way"
-msgstr "Solo 3 caminos"
+msgstr "Solo el modo 3"
 
 msgctxt "VariablesForm|"
 msgid "Only 4 way"
-msgstr "Solo 4 caminos"
+msgstr "Solo el modo 4"
 
 msgctxt "VariablesForm|"
 msgid "Only 5 way"
-msgstr "Solo 5 caminos"
+msgstr "Solo el modo 5"
 
 msgctxt "VariablesForm|"
 msgid "All"
@@ -135,7 +135,7 @@ msgstr "Versión:"
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr "Construido sobre:"
+msgstr "Compilación:"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
@@ -151,15 +151,15 @@ msgstr "Descargar:"
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr "Citación:"
+msgstr "Referencia:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr "Seleccionar todo"
+msgstr "Seleccionar Todo"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr "Copiar selección"
+msgstr "Copiar la Selección"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
@@ -171,11 +171,11 @@ msgstr "Cerrar"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr "Arrastra para reordenar los análisis"
+msgstr "Arrastrar para reordenar los análisis"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr "Edite el título de este análisis"
+msgstr "Editar el título de este análisis"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
@@ -191,19 +191,19 @@ msgstr "Quitar este análisis"
 
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
-msgstr "Cambiar el tamaño de los datos / resultados"
+msgstr "Redimensionar los datos/resultados"
 
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
-msgstr "Arrastrar para mostrar datos"
+msgstr "Arrastrar para mostrar los datos"
 
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
-msgstr "Ocultar opciones de entrada"
+msgstr "Ocultar las opciones de entrada"
 
 msgctxt "AnalysisForms|"
 msgid "Show input options"
-msgstr "Mostrar opciones de entrada"
+msgstr "Mostrar las opciones de entrada"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
@@ -223,35 +223,35 @@ msgstr "Factor de Bayes"
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
-msgstr "BF₁₀"
+msgstr "FB₁₀"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
 msgstr ""
-"Factor de Bayes para cuantificar la evidencia de la hipótesis alternativa "
-"relativa a la hipótesis nula."
+"Factor de Bayes para cuantificar la evidencia para la hipótesis alternativa "
+"frente a la hipótesis nula."
 
 msgctxt "BayesFactorType|"
 msgid "BF₀₁"
-msgstr "BF₀₁"
+msgstr "FB₀₁"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
-"Factor de Bayes para cuantificar la evidencia de la hipótesis nula relativa "
+"Factor de Bayes para cuantificar la evidencia para la hipótesis nula frente "
 "a la hipótesis alternativa."
 
 msgctxt "BayesFactorType|"
 msgid "Log(BF₁₀)"
-msgstr "Log(BF₁₀)"
+msgstr "Log(FB₁₀)"
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr "Logaritmo natural de BF10."
+msgstr "Logaritmo natural de FB10."
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
@@ -279,7 +279,7 @@ msgstr "valor absoluto"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr "Desviación Estándar"
+msgstr "desviación típica"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
@@ -287,7 +287,7 @@ msgstr "varianza"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr "Resumen"
+msgstr "suma"
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
@@ -295,11 +295,11 @@ msgstr "producto de valores"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr "devuelve un mínimo de valores"
+msgstr "devuelve el mínimo de los valores"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr "devuelve el máximo de valores"
+msgstr "devuelve el máximo de los valores"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
@@ -307,11 +307,11 @@ msgstr "media"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr "redondea a n decimales"
+msgstr "redondea y a n decimales"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr "devuelve el número de elementos en y"
+msgstr "devuelve el número de elementos de y"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
@@ -620,27 +620,27 @@ msgstr "Reiniciar"
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr "Ocultar filtro"
+msgstr "Ocultar el filtro"
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr "Mostrar filtro"
+msgstr "Mostrar el filtro"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr "Agregar columna calculada"
+msgstr "Agregar una columna calculada"
 
 msgctxt "DataTableView|"
 msgid "Click here to change column type"
-msgstr "Haga clic aquí para cambiar el tipo de columna"
+msgstr "Hacer clic aquí para cambiar el tipo de columna"
 
 msgctxt "DataTableView|"
 msgid "Click here to change the columns formulas"
-msgstr "Haga clic aquí para cambiar las fórmulas de las columnas"
+msgstr "Hacer clic aquí para cambiar las fórmulas de las columnas"
 
 msgctxt "DataTableView|"
 msgid "Click here to change labels"
-msgstr "Haga clic aquí para cambiar las etiquetas"
+msgstr "Hacer clic aquí para cambiar las etiquetas"
 
 msgctxt "DataTableView|"
 msgid " or inspect filter"
@@ -657,11 +657,11 @@ msgstr "Estás aquí"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr "Carpetas recientes"
+msgstr "Carpetas Recientes"
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr "Explorar"
+msgstr "Buscar"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
@@ -922,28 +922,24 @@ msgctxt "PrefsResults|"
 msgid "Plot options"
 msgstr "Opciones de gráficos"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr "Utilice el PPI de la pantalla en los gráficos: "
+msgstr "Utilizar el PPI de la pantalla en los gráficos: "
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
 msgstr ""
-"Utilice los píxeles por pulgada de su pantalla para representar sus gráficos."
+"Utilizar los Píxeles Por Pulgada (PPI) de la pantalla para representar los "
+"gráficos."
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
 msgstr "PPI personalizado: "
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Image background color"
 msgstr "Color de fondo de la imagen"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "White"
 msgstr "Blanco"
@@ -1438,148 +1434,122 @@ msgctxt "FilterWindow|"
 msgid "Open Documentation"
 msgstr "Documentación abierta"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Hide filter"
-msgstr "Ocultar filtro"
+msgstr "Ocultar el filtro"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
 msgstr "Restablecer todas las marcas de verificación en todas las etiquetas"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
-msgstr "Cambiar al filtro de arrastrar y soltar"
+msgstr "Cambiarse al filtro de arrastrar y soltar"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Reset to default filter"
 msgstr "Restablecer el filtro predeterminado"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Default filter applied"
-msgstr "Filtro predeterminado aplicado"
+msgstr "Aplicado el filtro predeterminado"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Filter is unchanged from default"
 msgstr "El filtro no ha cambiado del predeterminado"
 
-#, fuzzy
 msgctxt "HelpWindow|"
 msgid "JASP Help"
 msgstr "Ayuda de JASP"
 
-#, fuzzy
 msgctxt "HelpWindow|"
 msgid "Search for:"
 msgstr "Buscar:"
 
-#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr "Agregar datos"
+msgstr "Agregar Datos"
 
-#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Delete Data"
-msgstr "Borrar datos"
+msgstr "Eliminar Datos"
 
-#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "Reiniciar"
 
-#, fuzzy
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
-msgstr "Haga doble clic para editar los datos"
+msgstr "Hacer doble clic para editar los datos"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide data"
-msgstr "Ocultar datos"
+msgstr "Ocultar los datos"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Show data"
-msgstr "Mostrar datos"
+msgstr "Mostrar los datos"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Resize data/results"
-msgstr "Cambiar el tamaño de los datos / resultados"
+msgstr "Redimensionar los datos/resultados"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr "Arrastra para mostrar datos"
+msgstr "Arrastrar para mostrar los datos"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Results"
 msgstr "Resultados"
 
-#, fuzzy
 msgctxt "ModuleInstaller|"
 msgid "Browse for JASP Module"
-msgstr "Busque el módulo JASP"
+msgstr "Buscar el Módulo de JASP"
 
-#, fuzzy
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module"
-msgstr "Seleccione un módulo JASP"
+msgstr "Seleccionar un Módulo de JASP"
 
 msgctxt "ModuleInstaller|"
 msgid "<i>Browse for a JASP Module to see more information here</i>"
-msgstr ""
+msgstr "<i>Buscar un Módulo de JASP para ver aquí más información</i>"
 
 #, qt-format
 msgctxt "ModuleInstaller|"
 msgid "<i>%1 is not a (correct) JASP Module!</i>"
-msgstr ""
+msgstr "<i>%1 no es un Módulo (correcto) de JASP!</i>"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Install Module"
-msgstr "Instalar módulo"
+msgstr "Instalar Módulo"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Install a module"
 msgstr "Instalar un módulo"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr "Instalar el módulo de desarrollador"
+msgstr "Instalar Módulo de Desarrollador"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr "Instalación del módulo de desarrollador"
+msgstr "Instalando un Módulo de Desarrollador"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr "Seleccione un módulo de desarrollador"
+msgstr "Seleccionar un Módulo de Desarrollador"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
 msgstr "Instalar el módulo de desarrollador seleccionado"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr "Instalando el módulo de desarrollador ahora"
+msgstr "Instalando ahora el módulo de desarrollador"
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr ""
+msgstr "Preparado"
 
 #, qt-format
 msgctxt "ModulesMenu|"
@@ -3364,7 +3334,6 @@ msgctxt "LabelModel|"
 msgid "Value"
 msgstr "Valor"
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Label"
 msgstr "Etiqueta"
@@ -3883,14 +3852,13 @@ msgctxt "TableView|"
 msgid "Add to the right"
 msgstr ""
 
-#, fuzzy
 msgctxt "TableView|"
 msgid "Delete"
 msgstr "Eliminar"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "devuelve el signo de los valores"
 
 msgctxt "OSFLogin|"
 msgid ""
@@ -3924,28 +3892,27 @@ msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "devuelve el signo de los valores"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Label"
 msgstr "Etiqueta"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr ""
+msgstr "Marca #"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
-msgstr ""
+msgstr "Insertar marca a la izquierda"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick right"
-msgstr ""
+msgstr "Insertar marca a la derecha"
 
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
-msgstr ""
+msgstr "Eliminar marca"
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
