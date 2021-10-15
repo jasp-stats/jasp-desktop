@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-10-11 20:05+0000\n"
+"PO-Revision-Date: 2021-10-15 11:32+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/gl/>\n"
@@ -104,7 +104,7 @@ msgstr "Magnitude do efecto bruto (Dienes)"
 
 msgctxt "VariablesForm|"
 msgid "All"
-msgstr "Todo"
+msgstr "Todos"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
@@ -168,7 +168,7 @@ msgstr "Só o xeito 4"
 
 msgctxt "VariablesForm|"
 msgid "Main Effects"
-msgstr "Efectos principais"
+msgstr "Efectos Principais"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
@@ -1490,7 +1490,7 @@ msgstr "BibTeX"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr "Copiar a selección"
+msgstr "Copiar a Selección"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
@@ -1502,7 +1502,7 @@ msgstr "Referencia:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr "Escoller todo"
+msgstr "Escoller Todo"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
@@ -1514,7 +1514,7 @@ msgstr "Versión:"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr "Descarga:"
+msgstr "Descargar:"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
@@ -1893,7 +1893,7 @@ msgstr "PPI personalizado : "
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr "Opcións de táboa"
+msgstr "Opcións de Táboas"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
@@ -2058,7 +2058,7 @@ msgstr "Importando Datos de %1"
 
 msgctxt "DataTableView|"
 msgid " or inspect filter"
-msgstr " ou filtro de revisión"
+msgstr " ou revisar o filtro"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
@@ -2181,19 +2181,19 @@ msgstr "Problema ao cargar as cousas coñecidas"
 
 msgctxt "ModulesMenu|"
 msgid "Install Module"
-msgstr "Instalar un Módulo"
+msgstr "Instalar Módulo"
 
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr "Escoller un módulo de desenvolvemento"
+msgstr "Escoller un Módulo de Desenvolvemento"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr "Instalando un Módulo de desenvolvemento"
+msgstr "Instalando un Módulo de Desenvolvemento"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
-msgstr "Instalar o Módulo de desenvolvemento seleccionado"
+msgstr "Instalar o módulo de desenvolvemento seleccionado"
 
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
@@ -2209,19 +2209,19 @@ msgstr "Non está preparado para usar?"
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr "Instalando agora o Módulo de desenvolvemento"
+msgstr "Instalando agora o módulo de desenvolvemento"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr "Desinstalar o Módulo "
+msgstr "Desinstalar o módulo "
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr "Instalar un Módulo de desenvolvemento"
+msgstr "Instalar un Módulo de Desenvolvemento"
 
 msgctxt "ModulesMenu|"
 msgid "Install a module"
-msgstr "Instalar un Módulo"
+msgstr "Instalar un módulo"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
@@ -2299,7 +2299,7 @@ msgstr "Abrir un ficheiro JASP"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr "Cartafoles recentes"
+msgstr "Cartafoles Recentes"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
@@ -2380,7 +2380,7 @@ msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
-"Esta análise creouse cunha unha versión máis antiga de JASP (ou un Módulo "
+"Esta análise creouse cunha unha versión máis antiga de JASP (ou un módulo "
 "dinámico)"
 
 msgctxt "Form|"
@@ -2412,7 +2412,7 @@ msgstr "Estrato %1"
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr "Novo valor"
+msgstr "Novo Valor"
 
 msgctxt "OnlineDataManager|"
 msgid ""
