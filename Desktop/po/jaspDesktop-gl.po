@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-10-15 19:45+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -98,7 +104,7 @@ msgstr "Magnitude do efecto bruto (Dienes)"
 
 msgctxt "VariablesForm|"
 msgid "All"
-msgstr "Todo"
+msgstr "Todos"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
@@ -162,7 +168,7 @@ msgstr "Só o xeito 4"
 
 msgctxt "VariablesForm|"
 msgid "Main Effects"
-msgstr "Efectos principais"
+msgstr "Efectos Principais"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
@@ -908,8 +914,8 @@ msgid ""
 "new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
 "Non se pode engadir un novo cartafol á listaxe de provedores de datos de "
-"proxectos .<br>Para engadir un novo provedor de datos (p.e. Google Drive), "
-"por favor usa os servizos en liña de OSF."
+"proxectos. Para engadir un novo provedor de datos (p.e. Google Drive), por "
+"favor usa os servizos en liña de OSF."
 
 msgctxt "OSF|"
 msgid "Projects"
@@ -1484,7 +1490,7 @@ msgstr "BibTeX"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr "Copiar a selección"
+msgstr "Copiar a Selección"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
@@ -1496,7 +1502,7 @@ msgstr "Referencia:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr "Escoller todo"
+msgstr "Escoller Todo"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
@@ -1508,7 +1514,7 @@ msgstr "Versión:"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr "Descarga:"
+msgstr "Descargar:"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
@@ -1678,7 +1684,7 @@ msgstr "Fai clic para obter a derradeira versión"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
-msgstr "Un xeito innovador de facer Estatística: libre, amable e flexible"
+msgstr "Un Xeito Innovador de Facer Estatística: Libre, Amable e Flexible"
 
 msgctxt "WelcomePage|"
 msgid "Friendly:"
@@ -1714,31 +1720,31 @@ msgstr "Etiqueta"
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for this column"
-msgstr "Restablece tódalas marcas de filtro para esta columna"
+msgstr "Restablecer tódalas marcas de filtro para esta columna"
 
 msgctxt "VariablesWindow|"
 msgid "Filter"
-msgstr "Filtro"
+msgstr "Filtrar"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels down"
-msgstr "Move cara abaixo as etiquetas seleccionadas"
+msgstr "Mover cara abaixo as etiquetas seleccionadas"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels up"
-msgstr "Move cara arriba as etiquetas seleccionadas"
+msgstr "Mover cara arriba as etiquetas seleccionadas"
 
 msgctxt "VariablesWindow|"
 msgid "Close this view"
-msgstr "Pecha esta visualización"
+msgstr "Pechar esta visualización"
 
 msgctxt "VariablesWindow|"
 msgid "Reverse order of all labels"
-msgstr "Inverte a orde de todas as etiquetas"
+msgstr "Inverter a orde de todas as etiquetas"
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr "Restablece tódalas marcas de filtro para tódalas columnas"
+msgstr "Restablecer tódalas marcas de filtro para tódalas columnas"
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
@@ -1746,7 +1752,7 @@ msgstr "Engadir Columna"
 
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr "Eliminar columna"
+msgstr "Eliminar Columna"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
@@ -1754,15 +1760,15 @@ msgstr "Engadir Contraste"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr "Eliminar proba"
+msgstr "Eliminar Contraste"
 
 msgctxt "JagsTableView|"
 msgid "Delete Data"
-msgstr "Eliminar datos"
+msgstr "Eliminar Datos"
 
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr "Engadir datos"
+msgstr "Engadir Datos"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
@@ -1770,7 +1776,7 @@ msgstr "Eliminar o valor ausente"
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr "Lista de valores ausentes"
+msgstr "Lista de Valores Ausentes"
 
 msgctxt "TableView|"
 msgid "Row #"
@@ -1887,7 +1893,7 @@ msgstr "PPI personalizado : "
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr "Opcións de táboa"
+msgstr "Opcións de Táboas"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
@@ -2052,7 +2058,7 @@ msgstr "Importando Datos de %1"
 
 msgctxt "DataTableView|"
 msgid " or inspect filter"
-msgstr " ou filtro de revisión"
+msgstr " ou revisar o filtro"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
@@ -2175,19 +2181,19 @@ msgstr "Problema ao cargar as cousas coñecidas"
 
 msgctxt "ModulesMenu|"
 msgid "Install Module"
-msgstr "Instalar un Módulo"
+msgstr "Instalar Módulo"
 
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr "Escoller un módulo de desenvolvemento"
+msgstr "Escoller un Módulo de Desenvolvemento"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr "Instalando un Módulo de desenvolvemento"
+msgstr "Instalando un Módulo de Desenvolvemento"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
-msgstr "Instalar o Módulo de desenvolvemento seleccionado"
+msgstr "Instalar o módulo de desenvolvemento seleccionado"
 
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
@@ -2203,19 +2209,19 @@ msgstr "Non está preparado para usar?"
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr "Instalando agora o Módulo de desenvolvemento"
+msgstr "Instalando agora o módulo de desenvolvemento"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr "Desinstalar o Módulo "
+msgstr "Desinstalar o módulo "
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr "Instalar un Módulo de desenvolvemento"
+msgstr "Instalar un Módulo de Desenvolvemento"
 
 msgctxt "ModulesMenu|"
 msgid "Install a module"
-msgstr "Instalar un Módulo"
+msgstr "Instalar un módulo"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
@@ -2293,7 +2299,7 @@ msgstr "Abrir un ficheiro JASP"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr "Cartafoles recentes"
+msgstr "Cartafoles Recentes"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
@@ -2374,7 +2380,7 @@ msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
-"Esta análise creouse cunha unha versión máis antiga de JASP (ou un Módulo "
+"Esta análise creouse cunha unha versión máis antiga de JASP (ou un módulo "
 "dinámico)"
 
 msgctxt "Form|"
@@ -2384,7 +2390,7 @@ msgstr ""
 
 msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
-msgstr "Aviso de resultados"
+msgstr "Aviso de Resultados"
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
@@ -2406,7 +2412,7 @@ msgstr "Estrato %1"
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr "Novo valor"
+msgstr "Novo Valor"
 
 msgctxt "OnlineDataManager|"
 msgid ""
@@ -2690,7 +2696,7 @@ msgstr "Opcións de rexistro"
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
-msgstr "Máximo # de rexistros: "
+msgstr "Máximo de rexistros: "
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
@@ -3453,7 +3459,7 @@ msgid ""
 "\n"
 "%2"
 msgstr ""
-"Fallou a carga do módulo %1 empaquetado co seguinte fallo:\n"
+"Fallou a carga do módulo %1 empaquetado, co seguinte fallo:\n"
 "\n"
 "%2"
 
