@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-10-19 15:06+0000\n"
+"PO-Revision-Date: 2021-10-20 15:38+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -1553,22 +1553,19 @@ msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
 msgstr "Se hicieron cambios"
 
-#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
-msgstr "Hay cambios sin aplicar; ¿Que te gustaría hacer?"
+msgstr "Hay cambios sin aplicar. ¿Qué quieres hacer?"
 
 #, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
 msgstr "Aplicar"
 
-#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
-msgstr "Descarte"
+msgstr "Descartar"
 
-#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
 msgstr "Cancelar"
@@ -1769,80 +1766,75 @@ msgstr ""
 "Si JASP no hace todo lo que usted desea hoy, vuelva a consultar mañana: "
 "¡JASP se está desarrollando a una velocidad vertiginosa!"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
 msgstr ""
 "No se pudieron encontrar las opciones de edición del gráfico %1, por lo que "
-"la edición del gráfico no funcionará ..."
+"la edición de gráficos no funcionará ..."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Analysis|"
 msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
 msgstr ""
-"No se pudieron encontrar las opciones de edición establecidas de la trama "
-"%1, por lo que la edición de la trama no recordará nada (si funciona "
-"uniformemente) ..."
+"No se pudieron encontrar las opciones de configuración de la edición del "
+"gráfico %1, por lo que la edición de gráficos no recordará nada (si funciona)"
+" ..."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AnalysisForm|"
 msgid "Control with label '%1' has no name"
 msgstr "El control con etiqueta '%1' no tiene nombre"
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "A control has no name"
 msgstr "Un control no tiene nombre"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
 msgstr "2 controles tienen el mismo nombre: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
 msgstr ""
-"El componente %1 se cargó con el tipo de valor incorrecto y se restableció a "
+"El componente %1 se cargó con un tipo de valor incorrecto y se restableció a "
 "su valor predeterminado."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
 msgstr ""
-"Estos componentes se cargaron con el tipo de valor incorrecto y se "
+"Estos componentes se cargaron con un tipo de valor incorrecto y se "
 "restablecieron a sus valores predeterminados: %1"
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
 msgstr ""
-"Muchos componentes se cargaron con el tipo de valor incorrecto y se "
+"Muchos componentes se cargaron con un tipo de valor incorrecto y se "
 "restablecieron a sus valores predeterminados."
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
 msgstr "El archivo probablemente proviene de una versión anterior de JASP."
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid ""
 "That means that the results currently displayed do not correspond to the "
 "options selected."
 msgstr ""
-"Eso significa que los resultados que se muestran actualmente no corresponden "
-"a las opciones seleccionadas."
+"Eso significa que los resultados que se muestran actualmente, no "
+"corresponden con las opciones seleccionadas."
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
 msgstr "Actualizar el análisis puede cambiar los resultados."
