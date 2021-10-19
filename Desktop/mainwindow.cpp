@@ -1307,7 +1307,6 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 		QFile file(filename);
 		file.open(QIODevice::WriteOnly | QIODevice::Truncate);
 		QTextStream stream(&file);
-		stream.setCodec("UTF-8");
 
 		stream << data;
 		stream.flush();
