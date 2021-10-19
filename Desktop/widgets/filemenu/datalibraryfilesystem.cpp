@@ -122,7 +122,7 @@ void DataLibraryFileSystem::loadFilesAndFolders(const QString &docpath)
 	QJsonObject jsonroot = _doc->object();
 	QJsonArray folder = jsonroot.value("children").toArray();
 
-	QStringList list = docpath.split(QChar( QDir::separator() ), QString::SkipEmptyParts);
+    QStringList list = docpath.split(QChar( QDir::separator() ), Qt::SkipEmptyParts);
 
 	for(QString itm : list)
 	{
