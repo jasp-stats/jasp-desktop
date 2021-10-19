@@ -18,7 +18,7 @@ class FilterModel : public QObject
 	Q_PROPERTY( QString constructedR		READ constructedR		WRITE setConstructedR		NOTIFY constructedRChanged		)
 	Q_PROPERTY( QString statusBarText		READ statusBarText									NOTIFY statusBarTextChanged		)
 	Q_PROPERTY( QString filterErrorMsg		READ filterErrorMsg									NOTIFY filterErrorMsgChanged	)
-	Q_PROPERTY( QString hasFilter			READ hasFilter										NOTIFY hasFilterChanged			)
+	Q_PROPERTY( bool 	hasFilter			READ hasFilter										NOTIFY hasFilterChanged			)
 	Q_PROPERTY( QString defaultRFilter		READ defaultRFilter									NOTIFY defaultRFilterChanged	)
 
 public:
