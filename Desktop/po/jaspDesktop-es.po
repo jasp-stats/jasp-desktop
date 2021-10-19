@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-10-19 12:38+0000\n"
+"PO-Revision-Date: 2021-10-19 15:06+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -1496,72 +1496,59 @@ msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
 msgstr "Cargando: %1\n"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
 msgstr "¡Cargado y listo para usar!"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
 msgstr "¡Se produjo un error!"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Not ready for use?"
-msgstr "¿No estás listo para usar?"
+msgstr "¿No está listo para usar?"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr "Módulo de desinstalación "
+msgstr "Desinstalar el módulo "
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr "R en JASP"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
 msgstr "¡Bienvenido a R en JASP!"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid ""
 "Enter your R code here.\n"
 "The data is fully available as 'data' and filtered as 'filteredData'."
 msgstr ""
-"Ingrese su código R aquí.\n"
+"Introducir aquí el código R.\n"
 "Los datos están completamente disponibles como 'datos' y filtrados como "
 "'filtrados'."
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Enter your R code here."
-msgstr "Ingrese su código R aquí."
+msgstr "Introducir aquí su código R."
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
 msgstr "Ejecutar código"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
-msgstr "Al presionar Ctrl + Enter o F5 también se ejecutará el código"
+msgstr "Al presionar Ctrl + Intro o F5 también se ejecutará el código"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
-msgstr "Salida clara"
+msgstr "Borrar la salida de resultados"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
 msgstr "Borrado ..."
 
-#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
 msgstr "Se hicieron cambios"
