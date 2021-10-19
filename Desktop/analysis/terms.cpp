@@ -439,7 +439,7 @@ void Terms::set(const QByteArray & array)
 Term Terms::sortComponents(const Term &term) const
 {
 	QStringList components = term.components();
-	qSort(components.begin(), components.end(), boost::bind(&Terms::componentLessThan, this, _1, _2));
+    std::sort(components.begin(), components.end(), boost::bind(&Terms::componentLessThan, this, _1, _2));
 	return Term(components);
 }
 
