@@ -1,22 +1,21 @@
-import QtQuick						2.11
-import QtQuick.Controls				2.4
-import JASP.Controls				1.0
-import Qt5Compat.GraphicalEffects
+import QtQuick			2.11
+import QtQuick.Controls 2.4
+import JASP.Controls	1.0
 
 DropArea
 {
-						id:						analysisFormExpander
-						anchors.left:			parent.left
-						anchors.right:			parent.right
-						height:					expanderButton.height + 1
-						keys:					["analysis"]
+	id:					analysisFormExpander
+	anchors.left:		parent.left
+	anchors.right:		parent.right
+	height:				expanderButton.height + 1
+	keys:				["analysis"]
 
-	property alias		myIndex:				draggableItem.myIndex
-	property alias		myAnalysis:				loader.myAnalysis
-	property alias		formQmlUrl:				loader.formQmlUrl
-	property alias		backgroundFlickable:	loader.backgroundFlickable
+	property alias		myIndex:			draggableItem.myIndex
+	property alias		myAnalysis:         loader.myAnalysis
+	property alias		formQmlUrl:			loader.formQmlUrl
+	property alias		backgroundFlickable:loader.backgroundFlickable
 
-	onEntered: (drag)=>
+	onEntered:
 	{
 		if (drag.source.myIndex !== myIndex)
 		{
@@ -27,7 +26,7 @@ DropArea
 
 	function toggleExpander()
 	{
-		if(analysesModel.currentAnalysisIndex == draggableItem.myIndex)		analysesModel.unselectAnalysis()
+		if(analysesModel.currentAnalysisIndex === draggableItem.myIndex)	analysesModel.unselectAnalysis()
 		else																analysesModel.selectAnalysisAtRow(draggableItem.myIndex);
 	}
 
@@ -35,13 +34,16 @@ DropArea
 
 	Rectangle
 	{
-		id:				bottomLine
-		anchors.bottom:	parent.bottom
-		anchors.left:	parent.left
-		height:			1
-		width:			parent.width + 1
-		color:			jaspTheme.buttonBorderColor
-		visible:		draggableItem.state != "dragging"
+		id:		bottomLine
+		anchors
+		{
+			bottom:	parent.bottom
+			left:	parent.left
+		}
+		height:	1
+		width:	parent.width + 1
+		color:	jaspTheme.buttonBorderColor
+		visible: draggableItem.state != "dragging"
 	}
 
 	Item
@@ -140,66 +142,64 @@ DropArea
 			height: jaspTheme.formExpanderHeaderHeight + (2 * jaspTheme.formMargin) //We only want to see a tooltip when we are hovering the "button" part of AnalysisFormExpander
 		}
 
-		RectangularGlow
-		{
-			id				: shadow
-			anchors.centerIn: draggableItem
-			width			: draggableItem.width
-			height			: draggableItem.height
-			visible			: false
-			color			: jaspTheme.grayDarker
-			spread			: 0.2
-			cornerRadius	: expanderButton.radius + glowRadius
-			glowRadius		: 5
-		}
+//		RectangularGlow
+//		{
+//			id				: shadow
+//			anchors.centerIn: draggableItem
+//			width			: draggableItem.width
+//			height			: draggableItem.height
+//			visible			: false
+//			color			: jaspTheme.grayDarker
+//			spread			: 0.2
+//			cornerRadius	: expanderButton.radius + glowRadius
+//			glowRadius		: 5
+//		}
 
 		Rectangle
 		{
 			// This line appears only when the analysis above this one is dragged.
 			anchors
 			{
-				top:		parent.top
-				topMargin:	-1
-				left:		parent.left
+				top: parent.top
+				topMargin: -1
+				left:	parent.left
 			}
-			height:			1
-			width:			parent.width
-			color:			jaspTheme.buttonBorderColor
+			height: 1
+			width: parent.width
+			color: jaspTheme.buttonBorderColor
 		}
 
 		Rectangle
 		{
 			id:					expanderButton
-			implicitHeight:		loaderAndError.y
-			height:				implicitHeight
+			height:				loaderAndError.y
 			anchors.top:		parent.top
 			anchors.left:		parent.left
 			anchors.right:		parent.right
-			z:					shadow.z + 1
+//			z:					shadow.z + 1
 			color:				jaspTheme.uiBackground
 			clip:				true
 
-			property bool		expanded:			analysesModel.currentAnalysisIndex == myIndex
+			property bool		expanded:			analysesModel.currentAnalysisIndex === myIndex
+			property bool		imploded:			height == loader.y
 			property real		formHeight:			0
 
-			Connections
-			{
-				target:										analysesModel
-				function onCurrentAnalysisIndexChanged() {	if(analysesModel.currentAnalysisIndex == draggableItem.myIndex) analysesModel.currentFormHeight = Qt.binding(function(){ return expanderButton.formHeight; }); }
-			}
+			onFormHeightChanged: if(analysesModel.currentAnalysisIndex === draggableItem.myIndex) analysesModel.currentFormHeight = expanderButton.formHeight
 
 			states: [
-				State {	name: "expanded";	when: expanderButton.expanded;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y + loaderAndError.implicitHeight;	}	},
-				State { name: "imploded";	when: !expanderButton.expanded;	PropertyChanges {	target: expanderButton;		implicitHeight: loaderAndError.y;									}	}
+				State
+				{
+					name: "expanded";	when: expanderButton.expanded
+					PropertyChanges {	target: expanderButton;		height: loaderAndError.y + loaderAndError.height;	}
+				}
 			]
 
 			transitions: Transition
 			{
-				enabled:	preferencesModel.animationsOn
-				reversible:	true
+				enabled: preferencesModel.animationsOn
 
 				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
-				NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
+				NumberAnimation		{ property: "height";	duration: 200 }
 			}
 
 			Item
@@ -288,7 +288,7 @@ DropArea
 
 						Keys.onEscapePressed: 	stopEditing(false);
 						Keys.onEnterPressed:	stopEditing(true);
-						Keys.onReturnPressed: (event)=> 	stopEditing(true);
+						Keys.onReturnPressed: 	stopEditing(true);
 						onActiveFocusChanged:	if(!activeFocus && visible)	stopEditing(true);
 
 						function startEditing()
@@ -409,10 +409,9 @@ DropArea
 
 			Item
 			{
-				id:					loaderAndError
-				implicitHeight:		loader.loaded ? Math.max(loader.height, errorRect.height * preferencesModel.uiScale) : 0
-				height:				implicitHeight
-				visible:			expanderButton.expanded
+				id:			loaderAndError
+				height:		Math.max(loader.height, errorRect.height * preferencesModel.uiScale)
+				visible:	!expanderButton.imploded
 
 				anchors
 				{
@@ -445,14 +444,14 @@ DropArea
 
 				Connections
 				{
-					target:		loader.item
-					function	onHeightChanged() { if(loader.loaded) expanderButton.formHeight = loader.item.height; }
+					target:				loader.item
+					function onHeightChanged() { expanderButton.formHeight = loader.item.height; }
 				}
 
 				Loader
 				{
 					id:					loader
-					source:				loader.formQmlUrl
+					source:				!expanderButton.imploded || expanderButton.expanded ? loader.formQmlUrl : ""
 					asynchronous:		false // makes it slow when true
 
 					anchors
@@ -467,7 +466,7 @@ DropArea
 					property var backgroundFlickable:	null
 					property string formQmlUrl
 
-					onLoaded:	if(source != "") expanderButton.formHeight = loader.item.height
+					onLoaded:	if(source !== "") analysesModel.currentFormHeight = loader.item.height
 				}
 			}
 		}
