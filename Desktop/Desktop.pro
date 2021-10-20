@@ -1,4 +1,4 @@
-QT      += webenginequick webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2 core core5compat
+QT      += webenginewidgets webenginequick webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2 core core5compat
 DEFINES += JASP_USES_QT_HERE
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
@@ -195,8 +195,6 @@ HEADERS += \
     analysis/terms.h \
     analysis/analyses.h \
     analysis/analysis.h \
-  data/datasetdefinitions.h \
-  data/datasetpackagesubnodemodel.h \
     data/datasettableproxy.h \
     data/exporters/dataexporter.h \
     data/exporters/exporter.h \
@@ -270,7 +268,6 @@ HEADERS += \
     utilities/appdirs.h \
     utilities/application.h \
     utilities/jsonutilities.h \
-  utilities/plotschemehandler.h \
     utilities/processhelper.h \
     utilities/qmlutils.h \
     utilities/qutils.h \
@@ -394,8 +391,6 @@ SOURCES += \
     analysis/terms.cpp \
     analysis/analyses.cpp \
     analysis/analysis.cpp \
-    data/datasetdefinitions.cpp \
-    data/datasetpackagesubnodemodel.cpp \
     data/datasettableproxy.cpp \
     data/exporters/dataexporter.cpp \
     data/exporters/exporter.cpp \
@@ -466,7 +461,6 @@ SOURCES += \
     utilities/appdirs.cpp \
     utilities/application.cpp \
     utilities/jsonutilities.cpp \
-    utilities/plotschemehandler.cpp \
     utilities/processhelper.cpp \
     utilities/qmlutils.cpp \
     utilities/qutils.cpp \
