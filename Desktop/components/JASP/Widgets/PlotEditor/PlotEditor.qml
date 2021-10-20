@@ -21,7 +21,7 @@ Popup
 	onVisibleChanged:	plotEditorModel.visible = visible
 	focus:				true
 
-	Shortcut { onActivated: cancel(); sequence: StandardKey.Cancel; autoRepeat: false; enabled: visible }
+//	Shortcut { onActivated: cancel(); sequence: StandardKey.Cancel; autoRepeat: false; enabled: visible }
 
 	function cancel()
 	{

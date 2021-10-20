@@ -17,8 +17,8 @@
 //
 
 
-import QtQuick			2.15
-import QtQuick.Controls	2.12 as QTC
+import QtQuick			2.11
+import QtQuick.Controls	2.5 as QTC
 import QtQuick.Layouts	1.3
 import JASP.Controls	1.0
 import JASP.Widgets		1.0
@@ -283,9 +283,9 @@ TableViewBase
 					}
 				}
 
-				JASPDoubleValidator			{ id: intValidator;		bottom: tableView.minimum; decimals: 0					}
-				JASPDoubleValidator			{ id: doubleValidator;	bottom: tableView.minimum; decimals: tableView.decimals	}
-				RegularExpressionValidator	{ id: stringValidator	}
+                JASPDoubleValidator	{ id: intValidator;		bottom: tableView.minimum; decimals: 0	}
+                JASPDoubleValidator { id: doubleValidator;	bottom: tableView.minimum; decimals: tableView.decimals	}
+//                RegExpValidator		{ id: stringValidator							}
 
 				itemDelegate: Item
 				{
