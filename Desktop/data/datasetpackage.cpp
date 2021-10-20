@@ -126,7 +126,7 @@ void DataSetPackage::freeDataSet()
 
 QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent) const
 {
-	parIdxType * pointer = 0;
+    parIdxType * pointer;
 
 	if(!parent.isValid())
 	{

@@ -22,7 +22,7 @@
 #include "utilities/application.h"
 #include <QQuickWindow>
 #include "utilities/settings.h"
-#include <QtWebEngine>
+#include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <boost/filesystem.hpp>
 #include <codecvt>
 #include "appinfo.h"
@@ -416,7 +416,7 @@ int main(int argc, char *argv[])
 			
 			a.init(filePathQ, unitTest, timeOut, save, logToFile);
 
-			QtWebEngine::initialize(); //We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
+			QtWebEngineQuick::initialize(); //We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
 
 			std::cout << "QtWebEngine initialized" << std::endl;
 			

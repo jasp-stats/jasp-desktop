@@ -25,7 +25,7 @@
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQuickStyle>
-#include <QtWebEngine>
+#include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <QAction>
 #include <QMenuBar>
 
