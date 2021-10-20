@@ -12,12 +12,12 @@ TEMPLATE   = lib
 
 include(../R_HOME.pri)
 
-unix{
+unix {
   CONFIG      += staticlib
   QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'
 }
 
-windows{
+windows {
   QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.dll'
   LIBS        += -L$$_R_HOME/bin/$$ARCH -lR
 }
@@ -110,7 +110,7 @@ unix {
 	copyRFiles.commands += cp $$SRC_SYMLINKTOOL $$DEST_DIR_AUX_R ;
 }
 
-! equals(PWD, $${OUT_PWD}) {
+!equals(PWD, $${OUT_PWD}) {
     QMAKE_EXTRA_TARGETS += copyRFiles
     POST_TARGETDEPS     += copyRFiles
 }

@@ -3,11 +3,17 @@ _R_HOME = $$(R_HOME)
 
 linux {
 	exists(/app/lib/*) {
-		contains(QMAKE_HOST.arch, x86_64) {	_R_HOME = /app/lib64/R
-		} else {							_R_HOME = /app/lib/R			}
+		contains(QMAKE_HOST.arch, x86_64) {
+			_R_HOME = /app/lib64/R
+		} else {
+			_R_HOME = /app/lib/R
+		}
 	} else {
-		exists(/usr/lib64/R) {	isEmpty(_R_HOME): _R_HOME = /usr/lib64/R		
-		} else {				isEmpty(_R_HOME): _R_HOME = /usr/lib/R		}
+		exists(/usr/lib64/R) {
+			isEmpty(_R_HOME): _R_HOME = /usr/lib64/R		
+		} else {
+			isEmpty(_R_HOME): _R_HOME = /usr/lib/R
+		}
 	}
 
   #QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
