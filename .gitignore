@@ -52,3 +52,7 @@ flatpak-builder-folder/
 .RData
 .Rhistory
 .vscode
+
+
+# CMake stuff
+build/
