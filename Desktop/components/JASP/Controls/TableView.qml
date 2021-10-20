@@ -283,9 +283,9 @@ TableViewBase
 					}
 				}
 
-				JASPDoubleValidator	{ id: intValidator;		bottom: tableView.minimum; decimals: 0	}
-				JASPDoubleValidator { id: doubleValidator;	bottom: tableView.minimum; decimals: tableView.decimals	}
-				RegExpValidator		{ id: stringValidator							}
+                JASPDoubleValidator	{ id: intValidator;		bottom: tableView.minimum; decimals: 0	}
+                JASPDoubleValidator { id: doubleValidator;	bottom: tableView.minimum; decimals: tableView.decimals	}
+//                RegExpValidator		{ id: stringValidator							}
 
 				itemDelegate: Item
 				{

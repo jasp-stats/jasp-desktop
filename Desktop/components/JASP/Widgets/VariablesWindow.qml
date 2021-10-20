@@ -221,11 +221,11 @@ FocusScope
 
 							Row
 							{
-								Button
+                                Button
 								{
 									id:						filterCheckButton
-									checkable:				true
-									checked:				itemFiltered
+//									checkable:				true
+//									checked:				itemFiltered
 									height:					backroundItem.height
 									width:					levelsTableView.filterColWidth;
 									anchors.top:			parent.top

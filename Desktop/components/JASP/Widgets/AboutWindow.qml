@@ -1,7 +1,6 @@
 import QtQuick 2.11
 import QtQuick.Window 2.11
 import QtQuick.Controls 2.5
-import QtQuick.Controls.Styles 1.4
 import QtWebEngine 1.7
 import JASP.Widgets 1.0
 import JASP.Controls 1.0 as JC
