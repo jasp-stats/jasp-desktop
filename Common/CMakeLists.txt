@@ -12,7 +12,28 @@ configure_file(appinfo.cpp.in appinfo.cpp)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
-# TODO: The link to R, and Rcpp is still missing.
+
+# This is how we can link to the system R
+set(BUILD_WITH_SYSTEM_R OFF)
+
+if (BUILD_WITH_SYSTEM_R)
+	message(STATUS "Building with system R..")
+	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
+	include_directories(${LIBR_INCLUDE_DIRS})
+
+	# I am still missing the Rcpp
+	include_directories(${_R_HOME}/library/Rcpp/include)
+else()
+	find_library(LIBR
+			NAMES R
+			PATHS "${_R_HOME}"
+			REQUIRED
+		)
+
+	include_directories(${_R_HOME}/include)
+	include_directories(${_R_HOME}/library/Rcpp/include)
+endif()
+
 
 find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono REQUIRED)
 
@@ -21,8 +42,6 @@ include_directories(${LIBARCHIVE_INCLUDE_DIRS})
 include_directories(${LIBJSON_INCLUDE_DIRS})
 
 include_directories(jaspColumnEncoder)
-include_directories(${_R_HOME}/include)
-include_directories(${_R_HOME}/library/Rcpp/include)
 
 SET(HEADER_FILES
 
@@ -92,7 +111,7 @@ SET(HEADER_FILES
 
 SET(SOURCE_FILES
 
-	appinfo.cpp 
+	appinfo.cpp.in 		# This is a template 
 	column.cpp 
 	columns.cpp 
 	datablock.cpp 
@@ -116,16 +135,30 @@ SET(SOURCE_FILES
 	jaspColumnEncoder/columntype.cpp 
 )
 
-qt_add_library(Common
+add_library(Common
 	${HEADER_FILES}
 	${SOURCE_FILES}
 	)
 
-target_link_libraries(Common
-	${BOOST_LIBRARIES}
-	PkgConfig::LIBARCHIVE
-	PkgConfig::LIBJSON
+if (BUILD_WITH_SYSTEM_R)
+
+target_link_libraries(
+	Common
+		${Boost_LIBRARIES}
+		PkgConfig::LIBARCHIVE
+		PkgConfig::LIBJSON
+		PkgConfig::LIBR
 	)
+else()
+	target_link_libraries(
+	Common
+		${Boost_LIBRARIES}
+		PkgConfig::LIBARCHIVE
+		PkgConfig::LIBJSON
+		LIBR
+	)
+endif()
+
 
 # qt_add_library(Common
 #     OUTPUT_DIRECTORY ".."
