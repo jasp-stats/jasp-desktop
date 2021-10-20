@@ -1,4 +1,4 @@
-QT      += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
+QT      += webenginewidgets webenginequick webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2 core core5compat
 DEFINES += JASP_USES_QT_HERE
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
@@ -11,18 +11,19 @@ include(../R_HOME.pri)
 
 TEMPLATE = app
 
-CONFIG += c++11
+CONFIG += c++17
 CONFIG -= app_bundle
 
 DESTDIR = ..
 
 linux {
   exists(/app/lib/*) {
-      TARGET = org.jaspstats.JASP
+    TARGET = org.jaspstats.JASP
   } else {
-      TARGET = jasp
-}} else { #not linux
-      TARGET = JASP
+    TARGET = jasp
+  }
+} else { #not linux
+    TARGET = JASP
 }
 
 DEPENDPATH = ..
@@ -42,7 +43,10 @@ INSTALLS += target
 LIBS += -L.. -lCommon
 
 windows:	LIBS += -llibboost_filesystem$$BOOST_POSTFIX -llibboost_system$$BOOST_POSTFIX -llibboost_date_time$$BOOST_POSTFIX -larchive.dll -llibreadstat -lole32 -loleaut32
-macx:   	LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz -lreadstat -liconv
+macx {
+  LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz -lreadstat -liconv
+  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
+}
 
 linux {
     LIBS += -larchive
@@ -172,7 +176,7 @@ unix {
 
 copyres.depends = delres
 
-! equals(PWD, $${OUT_PWD}) {
+!equals(PWD, $${OUT_PWD}) {
   QMAKE_EXTRA_TARGETS += delres copyres maketranslations
   POST_TARGETDEPS     += delres copyres maketranslations
 }

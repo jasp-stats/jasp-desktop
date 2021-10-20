@@ -6,12 +6,15 @@ DESTDIR = ..
 TARGET = Common
 TEMPLATE = lib
 CONFIG += staticlib
-CONFIG += c++11
+CONFIG += c++17
  
 include(../JASP.pri)
 
 
-macx: QMAKE_CXXFLAGS += -DBOOST_INTERPROCESS_SHARED_DIR_FUNC
+macx{
+	QMAKE_CXXFLAGS += -DBOOST_INTERPROCESS_SHARED_DIR_FUNC
+	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
+} 
 
 windows {
 	LIBS			+= -lole32 -loleaut32 -larchive.dll

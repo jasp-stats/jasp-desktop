@@ -2,7 +2,7 @@ QT -= gui core
 
 include(../JASP.pri)
 
-CONFIG    += c++11
+CONFIG    += c++17
 TARGET     = $$JASP_R_INTERFACE_NAME
 DESTDIR    = ..
 TEMPLATE   = lib

@@ -122,8 +122,8 @@ exists(/app/lib/*)	{
 DEFINES += QT_NO_FOREACH #Come on Qt we can just use the nice new ranged for from c++11 and higher, we dont need your help!
 
 macx {
-  QMAKE_CXXFLAGS_WARN_ON  += -Wno-unused-parameter -Wno-unused-local-typedef
-  QMAKE_CXXFLAGS          += -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++ -Wno-deprecated-declarations
+  # QMAKE_CXXFLAGS_WARN_ON  += -Wno-unused-parameter -Wno-unused-local-typedef
+  # QMAKE_CXXFLAGS          += -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++ -Wno-deprecated-declarations
 
   CONFIG(debug): QMAKE_CXXFLAGS +=  -fstandalone-debug
 }
