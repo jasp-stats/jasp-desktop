@@ -68,7 +68,6 @@ Popup
 					margins:		jaspTheme.generalAnchorMargin
 				}
 				orientation:	Qt.Horizontal
-
                 handle:	Rectangle
 				{
 					implicitWidth:	jaspTheme.splitHandleWidth * 0.8;
@@ -78,22 +77,21 @@ Popup
 					{
 						anchors
 						{
-							fill:		parent
-							topMargin:	axes.tabBarHeight
+							fill: parent
+							topMargin: axes.tabBarHeight
 						}
-
-						color: SplitHandle.hovered || SplitHandle.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
+						color: styleData.hovered || styleData.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
 
 						Rectangle
 						{
 							anchors
 							{
-								top:	parent.top
-								right:	parent.right
-								left:	parent.left
+								top: parent.top
+								right: parent.right
+								left: parent.left
 							}
-							height:		1
-							color:	jaspTheme.uiBorder
+							height: 1
+							color: jaspTheme.uiBorder
 						}
 
 						Rectangle
@@ -101,8 +99,8 @@ Popup
 							anchors
 							{
 								bottom: parent.bottom
-								right:	parent.right
-								left:	parent.left
+								right: parent.right
+								left: parent.left
 							}
 							height: 1
 							color: jaspTheme.uiBorder

@@ -8,18 +8,15 @@ Rectangle
 	id:				rootDataset
 	color:			jaspTheme.uiBackground
 
-	property int leftHandSpace: 0 //Used to allow splithandler to move out of the screen on the left a bit.
-
     SplitView
     {
-		id:					splitViewData
-		anchors.fill:		parent
-		anchors.leftMargin: rootDataset.leftHandSpace
-		orientation:		Qt.Vertical
-		handle:				Rectangle
+		id:				splitViewData
+		anchors.fill:	parent
+		orientation:	Qt.Vertical
+        handle:	Rectangle
 		{
 			implicitHeight:	jaspTheme.splitHandleWidth * 0.8;
-			color:			SplitHandle.hovered || SplitHandle.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
+			color:			styleData.hovered || styleData.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
 
 			Item
 			{
@@ -76,9 +73,9 @@ Rectangle
 		{
 			id:							filterWindow
 			objectName:					"filterWindow"
-			SplitView.minimumHeight:	desiredMinimumHeight
-			SplitView.preferredHeight:	rootDataset.height * 0.25
-			SplitView.maximumHeight:	rootDataset.height * 0.8
+			Layout.minimumHeight:		desiredMinimumHeight
+			Layout.preferredHeight:		rootDataset.height * 0.25
+			Layout.maximumHeight:		rootDataset.height * 0.8
 
 		}
 
@@ -86,23 +83,23 @@ Rectangle
 		{
 			id:							computeColumnWindow
 			objectName:					"computeColumnWindow"
-			SplitView.minimumHeight:	desiredMinimumHeight
-			SplitView.preferredHeight:	rootDataset.height * 0.25
-			SplitView.maximumHeight:	rootDataset.height * 0.8
+			Layout.minimumHeight:		desiredMinimumHeight
+			Layout.preferredHeight:		rootDataset.height * 0.25
+			Layout.maximumHeight:		rootDataset.height * 0.8
 		}
 
         VariablesWindow
         {
 			id:							variablesWindow
-			SplitView.minimumHeight:	calculatedMinimumHeight
-			SplitView.preferredHeight:	rootDataset.height * 0.25
-			SplitView.maximumHeight:	rootDataset.height * 0.8
+			Layout.minimumHeight:		calculatedMinimumHeight
+			Layout.preferredHeight:		rootDataset.height * 0.25
+			Layout.maximumHeight:		rootDataset.height * 0.8
         }
 
 		DataTableView
 		{
 			objectName:				"dataSetTableView"
-			SplitView.fillHeight:	true
+			Layout.fillHeight:		true
 			onDoubleClicked:		mainWindow.startDataEditorHandler()
         }
 	}
