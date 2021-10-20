@@ -17,6 +17,7 @@
 
 #include "tempfiles.h"
 
+#include <iostream>
 #include <sstream>
 #include <boost/filesystem.hpp>
 #include <boost/nowide/convert.hpp>

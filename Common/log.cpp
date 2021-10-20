@@ -1,6 +1,7 @@
 #define ENUM_DECLARATION_CPP
 #include "log.h"
 #include "boost/nowide/cstdio.hpp"
+#include <iostream>
 #include <chrono>
 #ifdef WIN32
 #include <io.h>

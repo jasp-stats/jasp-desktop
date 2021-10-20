@@ -19,6 +19,7 @@
 #include "utils.h"
 
 
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <boost/lexical_cast.hpp>
@@ -1118,8 +1119,8 @@ void Column::append(int rows)
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			cout << e.what() << " ";
-			cout << "append column " << name() << ", append: " << rows << ", rowCount: " << _rowCount << std::endl;
+			std::cout << e.what() << " ";
+			std::cout << "append column " << name() << ", append: " << rows << ", rowCount: " << _rowCount << std::endl;
 			throw e;
 		}
 	}

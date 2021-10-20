@@ -32,9 +32,9 @@ JASP_VERSION_MINOR      = 16
 JASP_VERSION_REVISION   = 2
 JASP_VERSION_BUILD      = 0 #Should be ignored because the code handling it is buggy as hell (aka https://www.youtube.com/watch?v=otCpCn0l4Wo )
 
-DEFINES +=    "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
-DEFINES +=    "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
-DEFINES +=    "JASP_VERSION_BUILD=$$JASP_VERSION_BUILD"
+DEFINES += "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
+DEFINES += "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
+DEFINES += "JASP_VERSION_BUILD=$$JASP_VERSION_BUILD"
 DEFINES += "JASP_VERSION_REVISION=$$JASP_VERSION_REVISION"
 
 linux: QMAKE_CXXFLAGS += -gdwarf-4 #Running into some issues with default DWARF 5 and ld.gold not supporting that.

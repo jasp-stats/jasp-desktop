@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <boost/nowide/fstream.hpp>
 
-#include "libzip/archive.h"
+#include "archive.h"
 
 /**
  * @brief The ArchiveReader class - Reads archives.
