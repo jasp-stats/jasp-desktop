@@ -19,12 +19,13 @@
 import QtQuick			2.12
 import QtWebEngine		1.7
 import QtWebChannel		1.0
-import QtQuick.Controls 2.4
-import QtQuick.Controls 1.4 as OLD
+
+//import QtQuick.Controls 1.4 as OLD
 import QtQuick.Layouts	1.3
 
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
+import QtQuick.Controls 6.0
 
 Item
 {
@@ -37,7 +38,7 @@ Item
 		else if(splitViewContainer.width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
 	}
 
-	OLD.SplitView
+    SplitView
 	{
 		id:				panelSplit
 		orientation:	Qt.Horizontal
@@ -89,7 +90,7 @@ Item
 		}
 
 
-		handleDelegate: Item
+        handle: Item
 		{
 			width:				splitHandle.width + analyses.width
 			//onWidthChanged:		parent.width = width

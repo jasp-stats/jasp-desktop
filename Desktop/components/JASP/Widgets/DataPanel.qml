@@ -1,6 +1,5 @@
 import QtQuick			2.12
-import QtQuick.Controls 2.12
-import QtQuick.Controls 1.4 as OLD
+import QtQuick.Controls 6.0
 import QtQuick.Layouts	1.0
 
 
@@ -9,12 +8,12 @@ Rectangle
 	id:				rootDataset
 	color:			jaspTheme.uiBackground
 
-	OLD.SplitView
+    SplitView
     {
 		id:				splitViewData
 		anchors.fill:	parent
 		orientation:	Qt.Vertical
-		handleDelegate:	Rectangle
+        handle:	Rectangle
 		{
 			implicitHeight:	jaspTheme.splitHandleWidth * 0.8;
 			color:			styleData.hovered || styleData.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
