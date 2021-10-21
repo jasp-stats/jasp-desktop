@@ -54,6 +54,9 @@ flatpak-builder-folder/
 .vscode
 
 
-# CMake stuff
-build/**/
+# CMake Stuff
+build/**/*
+
+# CLion Stuff
 cmake-build-debug/
+.idea
