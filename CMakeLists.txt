@@ -26,8 +26,8 @@ find_package(Qt6 REQUIRED
 				 Qml
 				 )
 
-# add_subdirectory(R-Interface)
 add_subdirectory(Common)
+# add_subdirectory(R-Interface)
 # add_subdirectory(Engine)
 # add_subdirectory(Desktop)
 # add_subdirectory(Modules)

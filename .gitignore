@@ -55,4 +55,5 @@ flatpak-builder-folder/
 
 
 # CMake stuff
-build/
+build/**/
+cmake-build-debug/

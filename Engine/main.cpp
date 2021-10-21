@@ -18,6 +18,7 @@
 #include "engine.h"
 #include "timers.h"
 #include "log.h"
+#include <iostream>
 #include <fstream>
 #include <boost/nowide/args.hpp>
 #include <boost/filesystem.hpp>

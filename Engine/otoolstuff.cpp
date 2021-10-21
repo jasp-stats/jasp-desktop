@@ -36,6 +36,9 @@ std::string _system(std::string cmd)
 	return out.str();
 }
 
+// TODO: This should be handled from the CMake. 
+// But, I am thinking to replace these MACROs and maybe find something better
+#define CURRENT_R_VERSION "4.1"
 #define MAC_LIB_FOLDER "Frameworks/R.framework/Versions/"  CURRENT_R_VERSION "/Resources/lib"
 #define MAC_LIB_FOLDER_FROM_EXE "@executable_path/../" MAC_LIB_FOLDER "/"
 #define MAC_LIB_FOLDER_FROM_MODULE "../../../" MAC_LIB_FOLDER "/"
