@@ -17,3 +17,6 @@ set(GITHUB_PAT_DEFINE ${GITHUB_PAT_DEF})
 # Amir: We probably won't need them soon
 set(JASP_LIBJSON_STATIC OFF)
 set(PRINT_ENGINE_MESSAGES OFF)
+
+# This is how we can link to the system R
+set(BUILD_WITH_SYSTEM_R OFF)

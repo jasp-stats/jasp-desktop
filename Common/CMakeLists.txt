@@ -13,9 +13,6 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
 
-# This is how we can link to the system R
-set(BUILD_WITH_SYSTEM_R OFF)
-
 if (BUILD_WITH_SYSTEM_R)
 	message(STATUS "Building with system R..")
 	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
@@ -33,8 +30,6 @@ else()
 	include_directories(${_R_HOME}/include)
 	include_directories(${_R_HOME}/library/Rcpp/include)
 endif()
-
-
 find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
@@ -142,21 +137,24 @@ add_library(Common
 
 if (BUILD_WITH_SYSTEM_R)
 
-target_link_libraries(
-	Common
-		${Boost_LIBRARIES}
-		PkgConfig::LIBARCHIVE
-		PkgConfig::LIBJSON
-		PkgConfig::LIBR
-	)
+	target_link_libraries(
+		Common
+			${Boost_LIBRARIES}
+			PkgConfig::LIBARCHIVE
+			PkgConfig::LIBJSON
+			# PkgConfig::LIBR
+		)
+
 else()
+
 	target_link_libraries(
 	Common
 		${Boost_LIBRARIES}
 		PkgConfig::LIBARCHIVE
 		PkgConfig::LIBJSON
-		LIBR
+		# ${LIBR}
 	)
+
 endif()
 
 
