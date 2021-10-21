@@ -27,8 +27,8 @@ find_package(Qt6 REQUIRED
 				 )
 
 add_subdirectory(Common)
-# add_subdirectory(R-Interface)
-# add_subdirectory(Engine)
+add_subdirectory(R-Interface)
+add_subdirectory(Engine)
 # add_subdirectory(Desktop)
 # add_subdirectory(Modules)
 

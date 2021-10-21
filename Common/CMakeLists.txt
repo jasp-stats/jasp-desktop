@@ -6,9 +6,6 @@ cmake_minimum_required(VERSION 3.2)
 
 message(STATUS "Building Common")
 
-
-configure_file(appinfo.cpp.in appinfo.cpp)
-
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
@@ -30,11 +27,12 @@ else()
 	include_directories(${_R_HOME}/include)
 	include_directories(${_R_HOME}/library/Rcpp/include)
 endif()
+
 find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${LIBARCHIVE_INCLUDE_DIRS})
 include_directories(${LIBJSON_INCLUDE_DIRS})
+include_directories(${LIBARCHIVE_INCLUDE_DIRS})
 
 include_directories(jaspColumnEncoder)
 
@@ -106,7 +104,7 @@ SET(HEADER_FILES
 
 SET(SOURCE_FILES
 
-	appinfo.cpp.in 		# This is a template 
+	appinfo.cpp 		# This is a template 
 	column.cpp 
 	columns.cpp 
 	datablock.cpp 
@@ -129,6 +127,9 @@ SET(SOURCE_FILES
 	jaspColumnEncoder/columnencoder.cpp 
 	jaspColumnEncoder/columntype.cpp 
 )
+
+
+configure_file(appinfo.cpp.in appinfo.cpp)
 
 add_library(Common
 	${HEADER_FILES}

@@ -18,7 +18,7 @@
 #ifndef APPINFO_H
 #define APPINFO_H
 
-#include "../Common/version.h"
+#include "version.h"
 
 
 ///

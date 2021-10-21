@@ -30,10 +30,11 @@
 #include <set>
 #include <regex>
 #include <boost/function.hpp>
-#include "../Common/dataset.h"
-#include "../R-Interface/jasprcpp_interface.h"
+#include "dataset.h"
+#include "jasprcpp_interface.h"
 #include "r_functionwhitelist.h"
 #include "columnencoder.h"
+#include "appinfo.h"
 
 /// The R Bridge provides functions to the R analyses;
 /// i.e. functions to read the data set from shared memory

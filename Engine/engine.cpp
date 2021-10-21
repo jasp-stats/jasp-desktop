@@ -22,9 +22,9 @@
 
 //#include "../Common/analysisloader.h"
 #include <boost/bind.hpp>
-#include "../Common/tempfiles.h"
-#include "../Common/utils.h"
-#include "../Common/sharedmemory.h"
+#include "tempfiles.h"
+#include "utils.h"
+#include "sharedmemory.h"
 #include <csignal>
 
 #include "rbridge.h"
@@ -187,7 +187,6 @@ bool Engine::receiveMessages(int timeout)
 	{
 		if(data =="")
 			return false;
-
 
         JSONCPP_STRING          err;
 		Json::Value		        jsonRequest;

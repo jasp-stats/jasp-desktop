@@ -19,4 +19,6 @@ set(JASP_LIBJSON_STATIC OFF)
 set(PRINT_ENGINE_MESSAGES OFF)
 
 # This is how we can link to the system R
-set(BUILD_WITH_SYSTEM_R OFF)
+set(BUILD_WITH_SYSTEM_R ON)
+
+add_definitions(-DBUILDING_JASP)
