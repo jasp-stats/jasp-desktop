@@ -28,8 +28,8 @@
 #include "dataset.h"
 
 //#include "libzip/config.h"
-#include "libzip/archive.h"
-#include "libzip/archive_entry.h"
+#include "archive.h"
+#include "archive_entry.h"
 #include "jsonredirect.h"
 #include "archivereader.h"
 #include "tempfiles.h"

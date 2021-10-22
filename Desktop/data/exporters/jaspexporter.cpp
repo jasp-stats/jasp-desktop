@@ -24,8 +24,8 @@
 
 #include "dataset.h"
 #include <ios>
-#include "libzip/archive.h"
-#include "libzip/archive_entry.h"
+#include "archive.h"
+#include "archive_entry.h"
 #include "jsonredirect.h"
 #include "archivereader.h"
 #include "../Common/version.h"

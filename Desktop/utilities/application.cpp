@@ -23,6 +23,7 @@
 
 #include "log.h"
 #include "settings.h"
+#include <iostream>
 
 void Application::init(QString filePath, bool unitTest, int timeOut, bool save, bool logToFile)
 {	

@@ -19,7 +19,7 @@
 #define JASPEXPORTER_H
 
 #include "exporter.h"
-#include "libzip/archive.h"
+#include "archive.h"
 
 ///
 /// To export to *.JASP files

@@ -20,6 +20,7 @@
 #include "log.h"
 #include <locale>
 #include <QThread>
+#include <iostream>
 #include "tempfiles.h"
 #include <QQmlContext>
 #include <QQmlIncubator>
