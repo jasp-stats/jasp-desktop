@@ -131,7 +131,7 @@ SET(SOURCE_FILES
 
 configure_file(appinfo.cpp.in appinfo.cpp)
 
-add_library(Common
+qt_add_library(Common
 	${HEADER_FILES}
 	${SOURCE_FILES}
 	)

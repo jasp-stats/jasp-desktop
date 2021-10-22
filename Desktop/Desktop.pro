@@ -136,7 +136,7 @@ COPY_CRYPT = $$[ENVIRONMENT_CRYPTKEY] # We need to copy it to make sure the equa
   }
 }
 
-   macx:ICON = macOS/icon.icns
+macx:ICON = macOS/icon.icns
 windows:RC_FILE = icon.rc
 
 HELP_PATH = $${PWD}/../Docs/help

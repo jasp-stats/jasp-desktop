@@ -153,7 +153,7 @@ endif()
 #         -stdlib=libc++ -stdlib=libc++
 # )
 
-add_executable(JASPEngine
+qt_add_executable(JASPEngine
 	${HEADER_FILES}
 	${SOURCE_FILES}
 )
@@ -162,8 +162,8 @@ add_executable(JASPEngine
 if (BUILD_WITH_SYSTEM_R)
 
 	target_link_libraries(
-		JASPEngine Common R-Interface
-			Qt6::Core
+		JASPEngine PRIVATE Common R-Interface
+			Qt::Core
 			PkgConfig::LIBARCHIVE
 			PkgConfig::LIBR
 			${Boost_LIBRARIES}
@@ -173,7 +173,7 @@ else()
 
 	target_link_libraries(
 		JASPEngine Common R-Interface
-			Qt6::Core
+			Qt::Core
 			PkgConfig::LIBARCHIVE
 			PkgConfig::LIBJSON
 			${LIBR}

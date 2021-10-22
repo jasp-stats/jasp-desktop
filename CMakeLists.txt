@@ -24,12 +24,12 @@ find_package(Qt6 REQUIRED
 				 OpenGL
 				 Widgets 
 				 Qml
-				 )
+				)
 
 add_subdirectory(Common)
 add_subdirectory(R-Interface)
 add_subdirectory(Engine)
-# add_subdirectory(Desktop)
+add_subdirectory(Desktop)
 # add_subdirectory(Modules)
 
 # if(UNIX)
