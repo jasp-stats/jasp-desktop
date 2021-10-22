@@ -393,6 +393,11 @@ int main(int argc, char *argv[])
 
 			JASPTIMER_START("JASP");
 
+			// This needs to be created before the Application. Qt has a deprecation notice for it, and it's how it is described in their documentation as well.
+			// @todo, Amir: I'm not sure what the comment means here, but we need to make sure that it's still valid, and moving this here still satisfies the timer stuff.
+			QtWebEngineQuick::initialize(); // We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
+			std::cout << "QtWebEngineQuick initialized" << std::endl;
+
 			Application a(argvsize, argvs);
 			
 			std::cout << "Application initialized" << std::endl;
@@ -419,10 +424,6 @@ int main(int argc, char *argv[])
 #endif
 			
 			a.init(filePathQ, unitTest, timeOut, save, logToFile);
-
-			QtWebEngineQuick::initialize(); //We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
-
-			std::cout << "QtWebEngine initialized" << std::endl;
 			
 			try 
 			{
