@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-10-22 11:38+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -40,7 +46,8 @@ msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
-"Este análisis se creó con una versión anterior de JASP (o un módulo dinámico)"
+"Este análisis se creó con una versión anterior de JASP (o con un módulo "
+"dinámico)"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
@@ -84,7 +91,7 @@ msgstr "Nueva pestaña"
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
-msgstr "⌘ + Enter para aplicar"
+msgstr "⌘ + Intro para aplicar"
 
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
@@ -117,7 +124,7 @@ msgstr "Solo el modo 5"
 
 msgctxt "VariablesForm|"
 msgid "All"
-msgstr "Todos"
+msgstr "Todo"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
@@ -209,7 +216,7 @@ msgstr "Eliminar"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
-msgstr "Reiniciar"
+msgstr "Restablecer"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
@@ -257,11 +264,11 @@ msgstr "Eliminar Columna"
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr "Reiniciar"
+msgstr "Restablecer"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column: "
-msgstr "Columna calculada: "
+msgstr "Columna Calculada: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a column"
@@ -344,132 +351,131 @@ msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
 msgstr ""
-"Transformada Z inversa de Fisher (es decir, la tangente hiperbólica) para "
-"transformar números reales en números entre -1 y 1"
+"Inversa de la transformación Z de Fisher (es decir, la tangente hiperbólica) "
+"para transformar números reales en números entre -1 y 1"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr "dividir sus datos en niveles numBreaks"
+msgstr "dividir los datos en niveles de numBreaks"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
 msgstr ""
-"reemplace los valores perdidos (NA) en la columna por el valor en remplaceCon"
+"reemplaza cualquier valor ausente (NA) de la columna por el valor de "
+"remplaceCon"
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr "declaración si-entonces"
+msgstr "enunciado si-entonces"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Gaussian distribution with specified mean and standard "
 "deviation sd"
 msgstr ""
-"genera datos a partir de una distribución gaussiana con una desviación "
-"estándar de y media especificada"
+"genera datos de una distribución Normal con la media y la desviación típica "
+"(sd) indicados"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
 "centrality parameter ncp"
 msgstr ""
-"genera datos a partir de la distribución t con grados de libertad gl y "
-"parámetro de no centralidad ncp"
+"genera datos de una distribución t con grados de libertad (gl) y parámetro "
+"de no centralidad (ncp)"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
 msgstr ""
-"genera datos a partir de una distribución chi-cuadrado con grados de "
-"libertad gl y parámetro de no centralidad ncp"
+"genera datos de una distribución Chi-cuadrado con grados de libertad (gl( y "
+"parámetro de no centralidad (ncp)"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
 "df1, df2 and non-centrality parameter ncp"
 msgstr ""
-"genera datos a partir de una distribución F con grados de libertad "
-"especificados gl1, gl2 y parámetro de no centralidad ncp"
+"genera datos de una distribución F con grados de libertad (gl1, gl2) y el "
+"parámetro de no centralidad (ncp) indicados"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
 "probability prob"
 msgstr ""
-"genera datos a partir de una distribución binomial con ensayos específicos y "
-"problemas de probabilidad"
+"genera datos de una distribución Binomial con los ensayos y la probabilidad "
+"(prob) indicados"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a negative binomial distribution with specified trials "
 "and probability prob"
 msgstr ""
-"genera datos a partir de una distribución binomial negativa con ensayos "
-"específicos y problemas de probabilidad"
+"genera datos de una distribución Binomial Negativa con los ensayos y la "
+"probabilidad (prob) indicados"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a geometric distribution with specified probability prob"
 msgstr ""
-"genera datos a partir de una distribución geométrica con un problema de "
-"probabilidad especificado"
+"genera datos de una distribución Geométrica con la probabilidad (prob) "
+"indicada"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
 msgstr ""
-"genera datos a partir de una distribución de Poisson con una frecuencia "
-"lambda especificada"
+"genera datos de una distribución de Poisson con una frecuencia (lambda) "
+"indicada"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
 msgstr ""
-"genera datos de una distribución beta con formas específicas alfa y beta"
+"genera datos de una distribución Beta con los parámetros de forma (alfa y "
+"beta) indicados"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr ""
-"genera datos a partir de una distribución uniforme entre mínimo y máximo"
+msgstr "genera datos de una distribución Uniforme entre mínimo y máximo"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
 msgstr ""
-"genera datos a partir de una distribución gamma con forma y escala "
-"específicas"
+"genera datos de una distribución Gamma con los parámetros (de forma y escala)"
+" indicados"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
-msgstr ""
-"genera datos a partir de una distribución exponencial con una tasa "
-"especificada"
+msgstr "genera datos de una distribución Exponencial con una tasa indicada"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
 "mean meanLog and standard deviation sdLog"
 msgstr ""
-"genera datos a partir de una distribución logarítmica normal con media "
-"logarítmica especificada meanLog y desviación estándar sdLog"
+"genera datos de una distribución Log-Normal con la media logarítmica "
+"(meanLog) y la desviación típica (sdLog) indicados"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
 msgstr ""
-"genera datos a partir de una distribución de Weibull con forma y escala "
-"específicas"
+"genera datos de una distribución de Weibull con los parámetros (de forma y "
+"escala) indicados"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Remove computed column"
-msgstr "Quitar columna calculada"
+msgstr "Eliminar la columna calculada"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr "Mostrar código R generado"
+msgstr "Mostrar el código R generado"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr "Columna de cálculo"
+msgstr "Calcular columna"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column computed"
@@ -477,34 +483,33 @@ msgstr "Columna calculada"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr "Haga clic para calcular la columna"
+msgstr "Hacer clic para calcular una columna"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
-msgstr "Columna (en línea para ser) calculada"
+msgstr "Columna (en la línea que será) calculada"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr "Documentación abierta"
+msgstr "Abrir la Documentación"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Close computed column window"
-msgstr "Cerrar ventana de columna calculada"
+msgstr "Cerrar la ventana de la columna calculada"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Computed Column Changed"
-msgstr "Columna calculada modificada"
+msgstr "La Columna Calculada cambió"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
-msgstr ""
-"Hay cambios sin aplicar a su columna calculada; ¿Qué te gustaría hacer?"
+msgstr "Hay cambios sin aplicar a la columna calculada. ¿Qué se debería hacer?"
 
 msgctxt "ContrastsList|"
 msgid "none"
-msgstr "ninguna"
+msgstr "ninguno"
 
 msgctxt "ContrastsList|"
 msgid "deviation"
@@ -528,7 +533,7 @@ msgstr "repetido"
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr "polinomio"
+msgstr "polinómico"
 
 msgctxt "ContrastsList|"
 msgid "custom"
@@ -545,7 +550,7 @@ msgstr "Personalizado para %1"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr "Crear columna calculada"
+msgstr "Crear Columna Calculada"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
@@ -553,15 +558,16 @@ msgstr "Nombre:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr "El nombre de la columna ya está en uso, elija uno diferente."
+msgstr ""
+"El nombre de la columna ya está en uso; por favor, elegir uno diferente."
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr "Definir la columna a través del código R"
+msgstr "Definir una columna mediante código de R"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr "Definir columna mediante fórmulas de arrastrar y soltar"
+msgstr "Definir una columna mediante fórmulas de Arrastrar y Soltar"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
@@ -581,20 +587,20 @@ msgstr "Texto"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr "Documentación abierta"
+msgstr "Abrir la Documentación"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr "Crear columna"
+msgstr "Crear Columna"
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr "Haga clic aquí para crear su nueva columna calculada '%1'"
+msgstr "Hacer clic aquí para crear una nueva columna calculada '%1'"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr "Ingrese un nombre válido (sin usar) para la columna calculada"
+msgstr "Introducir un nombre válido (sin usar) para la columna calculada"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
@@ -602,15 +608,15 @@ msgstr "Cerrar sin crear una columna calculada"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr "Agregar contraste"
+msgstr "Agregar Contraste"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr "Eliminar contraste"
+msgstr "Eliminar Contraste"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr "Reiniciar"
+msgstr "Restablecer"
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
@@ -638,7 +644,7 @@ msgstr "Hacer clic aquí para cambiar las etiquetas"
 
 msgctxt "DataTableView|"
 msgid " or inspect filter"
-msgstr " o inspeccionar el filtro"
+msgstr " o revisar el filtro"
 
 #, qt-format
 msgctxt "BreadCrumbs|"
@@ -659,27 +665,27 @@ msgstr "Buscar"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr "Archivo de datos actual para sincronización"
+msgstr "Archivo de datos vigente para sincronización"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr "Biblioteca de datos"
+msgstr "Biblioteca de Datos"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr "Sincronizar con este archivo de datos"
+msgstr "Sincronizar con este Archivo de Datos"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
-msgstr "Navegar en la carpeta"
+msgstr "Navegar hasta la carpeta"
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr "Abrir archivo JASP"
+msgstr "Abrir un archivo JASP"
 
 msgctxt "ListItem|"
 msgid "Open data file"
-msgstr "Abrir archivo de datos"
+msgstr "Abrir un archivo de datos"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
@@ -687,7 +693,7 @@ msgstr "Mostrar información sobre estas preferencias"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
-msgstr "Open Science Framework"
+msgstr "Abrir Science Framework"
 
 msgctxt "OSF|"
 msgid "Logout"
@@ -695,7 +701,7 @@ msgstr "Cerrar sesión"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr "Crear carpeta"
+msgstr "Crear Carpeta"
 
 msgctxt "OSF|"
 msgid "Foldername"
@@ -707,7 +713,7 @@ msgstr "Nombre del archivo"
 
 msgctxt "OSF|"
 msgid "Save"
-msgstr "Salvar"
+msgstr "Guardar"
 
 msgctxt "OSFLogin|"
 msgid "OSF"
@@ -715,15 +721,15 @@ msgstr "OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr "Inicie sesión con su cuenta OSF para continuar"
+msgstr "Para continuar, iniciar sesión con una cuenta de OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr "Registrarse"
+msgstr "Iniciar sesión"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr "Recuérdame"
+msgstr "Recordame"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
@@ -731,23 +737,23 @@ msgstr "Sobre el OSF"
 
 msgctxt "OSFLogin|"
 msgid "Register"
-msgstr "Registrarse"
+msgstr "Registrar"
 
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
-msgstr "Preferencias avanzadas"
+msgstr "Preferencias Avanzadas"
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr "Opciones de módulos"
+msgstr "Opciones de los módulos"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
-"Continúe donde lo dejó la próxima vez que comience JASP.\n"
-"Habilitar esta opción hace que JASP recuerde qué módulos ha habilitado."
+"La próxima vez que se inicie JASP, continuar donde se dejó .\n"
+"Activar esta opción hace que JASP recuerde qué Módulos estaban habilitados."
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
@@ -755,34 +761,34 @@ msgstr "Modo de desarrollador (versión Beta)"
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr "Para utilizar módulos JASP, habilite esta opción."
+msgstr "Habilitar esta opción para utilizar los Módulos de JASP."
 
 msgctxt "PrefsAdvanced|"
 msgid "Select developer folder"
-msgstr "Seleccionar carpeta de desarrollador"
+msgstr "Seleccionar la carpeta de desarrollador"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "Busque la carpeta del módulo JASP."
+msgstr "Navegar hasta la carpeta de Módulos de JASP."
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
-msgstr "Cambie el repositorio de CRAN: "
+msgstr "Cambiar el repositorio de CRAN: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr "Generar archivos markdown para la ayuda"
+msgstr "Generar archivos reducidos para la ayuda"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
 msgstr ""
-"Habilitar esto generará un archivo de ayuda de markdown a partir de la "
-"información en las opciones qml."
+"Habilitar esto generará un archivo de ayuda reducido a partir de la "
+"información sobre las opciones qml."
 
 msgctxt "PrefsAdvanced|"
 msgid "Windows workarounds"
-msgstr "Soluciones para Windows"
+msgstr "Soluciones provisionales de Windows"
 
 msgctxt "PrefsAdvanced|"
 msgid "Handling LC_CTYPE"
@@ -793,12 +799,12 @@ msgid ""
 "Check the install and user directory path for compatibility with LC_CTYPE=\"C"
 "\" and set if reasonable."
 msgstr ""
-"Verifique que la ruta del directorio de instalación y de usuario sea "
-"compatible con LC_CTYPE = \"C\" y establezca si es razonable."
+"Verificar las rutas de instalación y de usuario por compatibilidad con "
+"LC_CTYPE = \"C\" y fijarlas, si son aceptables."
 
 msgctxt "PrefsAdvanced|"
 msgid "See the documentation for more info."
-msgstr "Consulte la documentación para obtener más información."
+msgstr "Consultar la documentación para obtener más información."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -806,9 +812,9 @@ msgid ""
 "JASP won't work anymore.  If you only have non-ascii characters in your "
 "username then installing modules will probably break."
 msgstr ""
-"Si está habilitado y tiene caracteres no ascii en su ruta de instalación, "
-"JASP ya no funcionará. Si solo tiene caracteres no ascii en su nombre de "
-"usuario, es probable que la instalación de los módulos se rompa."
+"Si está habilitado y tiene caracteres no ASCII en la ruta de instalación, "
+"JASP no funcionará. Si solo hay caracteres no ASCII en el nombre de usuario, "
+"es probable que la instalación de los módulos se rompa."
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -817,32 +823,33 @@ msgid ""
 "characters in the path. Sorry for the inconvenience, we are working on it "
 "and hopefully have this fixed next release."
 msgstr ""
-"Habilitar esto hará que ciertos caracteres en los resultados se vean "
-"extraños, pero al menos puede usar JASP si lo instaló en una carpeta con "
-"caracteres no ascii en la ruta. Disculpe las molestias, estamos trabajando "
-"en ello y esperamos poder solucionar este problema en la próxima versión."
+"Habilitar esto hará que ciertos caracteres en los resultados parezcan "
+"extraños, pero al menos se puede usar JASP si se instaló en una carpeta con "
+"caracteres que no son ASCII en la ruta. Disculpe las molestias, estamos "
+"trabajando en ello y esperamos poder solucionar este problema en la próxima "
+"versión."
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr "Opciones de registro"
+msgstr "Opciones de inicio de sesión"
 
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
-msgstr "Registro en el archivo"
+msgstr "Registrar en el archivo"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
 msgstr ""
-"Para almacenar registros de depuración de JASP en un archivo, marque esta "
-"casilla."
+"Para almacenar los registros de depuración de JASP en un archivo, marque "
+"esta casilla."
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr "Máximo de archivos de registro a conservar: "
+msgstr "Máximo de archivos de inicio a conservar: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr "Mostrar registros"
+msgstr "Mostrar registros de inicio"
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
@@ -850,11 +857,11 @@ msgstr "Opciones de registro"
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum # of engines: "
-msgstr "Máximo de registros: "
+msgstr "Máximo número de registros: "
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
-msgstr "Preferencias de datos"
+msgstr "Preferencias de Datos"
 
 msgctxt "PrefsData|"
 msgid "Synchronize automatically on data file save"
@@ -870,7 +877,7 @@ msgstr "Seleccionar editor personalizado"
 
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
-msgstr "Umbral de importación entre categórico o escala"
+msgstr "Umbral para diferenciar entre Categórica o de Escala"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -878,14 +885,14 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
-"Umbral de números enteros únicos antes de clasificar una variable como "
+"Umbral de números enteros únicos antes de clasificar una variable como de "
 "'escala'.\n"
-"¡Necesita volver a cargar sus datos para que surtan efecto! Consulta la "
+"¡Se necesita volver a cargar los datos para que surta efecto! Consultar la "
 "ayuda para obtener más información."
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr "Lista de valores perdidos"
+msgstr "Lista de Valores Ausentes"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
@@ -893,11 +900,11 @@ msgstr "Eliminar el valor ausente"
 
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
-msgstr "Reiniciar"
+msgstr "Restablecer"
 
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
-msgstr "Preferencias de resultados"
+msgstr "Preferencias de Resultados"
 
 msgctxt "PrefsResults|"
 msgid "Table options"
@@ -905,7 +912,7 @@ msgstr "Opciones de Tablas"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr "Mostrar valores p exactos"
+msgstr "Mostrar los valores p exactos"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
@@ -943,7 +950,7 @@ msgid ""
 "use it in LaTeX or submit it to a journal."
 msgstr ""
 "Esto hace que el fondo de todos los gráficos sea blanco. Resulta bastante "
-"útil para usarlo en LaTeX o enviarlo a una revista."
+"útil para usarlo en LaTeX o publicarlo en una revista."
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
@@ -954,7 +961,7 @@ msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
 msgstr ""
-"Esto hace que el fondo de todos los gráficos sea transparente Resulta muy "
+"Esto hace que el fondo de todos los gráficos sea transparente. Resulta muy "
 "útil para utilizarlo sin problemas en cualquier fondo que no sea blanco."
 
 msgctxt "PrefsUI|"
@@ -989,39 +996,33 @@ msgstr ""
 "Cambiar a un esquema oscuro de colores, hace que JASP sea mucho más "
 "agradable a la vista de los noctámbulos."
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
-msgstr "Opciones misceláneas"
+msgstr "Opciones diversas"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
 msgstr "Zoom (%): "
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
 msgstr ""
-"Aumente o disminuya el tamaño de los elementos de la interfaz (texto, "
+"Aumentar o disminuir el tamaño de los elementos de la interfaz (texto, "
 "botones, etc.)."
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr "Velocidad de desplazamiento (pix / s): "
+msgstr "Velocidad de desplazamiento (pix/s): "
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
 msgstr ""
-"Configure la velocidad con la que puede desplazarse en las opciones, visor "
-"de datos y otros lugares."
+"Configurar la velocidad con la que es posible desplazarse por las opciones, "
+"por el visor de datos y por otras opciones."
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a \"safer\" mode for graphics aka software rendering.\n"
@@ -1029,395 +1030,345 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
-"Cambia a un modo \"más seguro\" para gráficos, también conocido como "
-"procesamiento de software.\n"
-"Hará que su interfaz sea más lenta, pero si tiene algunos problemas (fallas "
-"extrañas, no puede ver los resultados o incluso algo) podría solucionarlos.\n"
-"Sin embargo, los análisis seguirán siendo igual de rápidos."
+"Cambiarse a un modo gráfico (o software acelerador) \"más seguro\".\n"
+"Esto hará más lenta la interfaz, pero si se tiene algún problema (fallos "
+"raros, no poder ver resultados o cualquier otro) podría solucionarse.\n"
+"Sin embargo, los análisis seguirán haciéndose igual de rápidos."
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
 msgstr ""
-"Desactiva todas las animaciones, esto está implícito cuando el \"Modo de "
-"gráficos seguros\" está activado."
+"Desactiva todas las animaciones, lo que está implícito cuando el \"Modo "
+"Gráfico Seguro\" está activado."
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
 msgstr ""
-"Animaciones ya deshabilitadas porque el \"Modo de gráficos seguros\" está "
-"activado"
+"Animaciones ya deshabilitadas porque el \"Modo Gráfico Seguro\" está activado"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "If disabled it will not use your operating system's file dialogs but those "
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
-"Si está deshabilitado, no usará los cuadros de diálogo de archivos de su "
-"sistema operativo, sino los creados por Qt. Esto podría resolver algunos "
-"problemas en Windows donde JASP falla al presionar \"Examinar\"."
+"Si está deshabilitado, no se usarán los diálogos de archivo del sistema "
+"operativo, sino los creados por Qt. Esto podría resolver algunos problemas "
+"en Windows cuando JASP falla al presionar \"Buscar\"."
 
-#, fuzzy
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr "Archivos recientes"
+msgstr "Archivos Recientes"
 
-#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr "Código de columnas calculado claro (ed)"
+msgstr "Código despejado de columnas calculadas"
 
-#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr "Se aplicó el código de columnas calculadas"
+msgstr "Código aplicado de columnas calculadas"
 
-#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr "Ingrese todos los argumentos; consulte los campos marcados en rojo."
+msgstr ""
+"Por favor, introducir todos los argumentos (observar los campos marcados en "
+"rojo)."
 
-#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
 msgstr "Solo se permite una fórmula por columna calculada."
 
-#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
 msgstr ""
-"¡Bienvenido al constructor de columnas calculadas de arrastrar y soltar!"
+"¡Bienvenido al constructor de columnas calculadas mediante Arrastrar y "
+"Soltar!"
 
-#, fuzzy
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
 msgstr ""
-"Volcar fragmentos no deseados aquí; haga doble clic para borrar toda la "
+"Volcar aquí los fragmentos no deseados; hacer doble clic para borrar toda la "
 "pizarra"
 
-#, fuzzy
 msgctxt "FilterConstructor|"
 msgid "Filter cleared<br>"
 msgstr "Filtro eliminado <br>"
 
-#, fuzzy
 msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
 msgstr "Filtro aplicado <br>"
 
-#, fuzzy
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.<br>"
 msgstr ""
-"Introduzca todos los argumentos; consulte los campos marcados en rojo. <br>"
+"Por favor, introducir todos los argumentos (observar los campos marcados en "
+"rojo).<br>"
 
-#, fuzzy
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.<br>"
 msgstr ""
-"La fórmula no devuelve un conjunto de valores lógicos y, por lo tanto, no se "
-"puede utilizar en el filtro. <br>"
+"La fórmula no devuelve un conjunto de valores lógicos, por lo que no se "
+"puede utilizar en el filtro.<br>"
 
-#, fuzzy
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!<br>"
-msgstr "¡Bienvenido al filtro de arrastrar y soltar! <br>"
+msgstr "¡Bienvenido al filtro de Arrastrar y Soltar!<br>"
 
-#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr "Adición"
+msgstr "Suma"
 
-#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr "Sustracción"
+msgstr "Resta"
 
-#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
 msgstr "Multiplicación"
 
-#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "Division"
 msgstr "División"
 
-#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr "Potencia (2 ^ 3 devuelve 8)"
+msgstr "Potencia (2^3 devuelve 8)"
 
-#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "Square root"
 msgstr "Raíz cuadrada"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
 msgstr "Módulo: devuelve el resto de una división. 3 %2 devuelve 1"
 
-#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
-msgstr "devuelve lógicas y puede ser la raíz de una fórmula de filtro"
+msgstr ""
+"devuelve los valores lógicos y puede ser la raíz de una fórmula de filtrado"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
 msgstr "Igualdad: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
 msgstr "Desigualdad: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr "Menos de: %1"
+msgstr "Menor que: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr "Menor o igual a: %1"
+msgstr "Menor que o igual a: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
 msgstr "Mayor que: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr "Mayor o igual a: %1"
+msgstr "Mayor que o igual a: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
 msgstr "Y: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
 msgstr "O: %1"
 
-#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr "Dividir: aplica el filtro por separado a cada subgrupo"
+msgstr "Dividir: aplica un filtro por separado a cada subgrupo"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
 msgstr "no: %1"
 
-#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr "Adición"
+msgstr "Suma"
 
-#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr "Sustracción"
+msgstr "Resta"
 
-#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
 msgstr "Multiplicación"
 
-#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
 msgstr "División"
 
-#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr "Potencia (2 ^ 3 devuelve 8)"
+msgstr "Potencia (2^3 devuelve 8)"
 
-#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
 msgstr "Raíz cuadrada"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
 msgstr "Módulo: devuelve el resto de una división. 3 %2 devuelve 1"
 
-#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr "devuelve lógicas"
+msgstr "devuelve los valores lógicos"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
 msgstr "Igualdad: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
 msgstr "Desigualdad: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr "Menos de: %1"
+msgstr "Menor que: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr "Menor o igual a: %1"
+msgstr "Menor que o igual a: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
 msgstr "Mayor que: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr "Mayor o igual a: %1"
+msgstr "Mayor que o igual a: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
 msgstr "Y: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
 msgstr "O: %1"
 
-#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr "Dividir: aplica el filtro por separado a cada subgrupo"
+msgstr "Dividir: aplica un filtro por separado a cada subgrupo"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
 msgstr "No: %1"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "absolute value"
 msgstr "valor absoluto"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr "Desviación Estándar"
+msgstr "desviación típica"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr "diferencia"
+msgstr "varianza"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
 msgstr "suma"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "product of values"
 msgstr "producto de valores"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr "devuelve un mínimo de valores"
+msgstr "devuelve el mínimo de los valores"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr "devuelve el máximo de valores"
+msgstr "devuelve el máximo de los valores"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "mean"
 msgstr "media"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr "redondea y an decimales"
+msgstr "redondea y a n decimales"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
-msgstr "devuelve el número de elementos en y"
+msgstr "devuelve el número de elementos de y"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "median"
 msgstr "mediana"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr "declaración if-else"
+msgstr "enunciado si-entonces"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
-msgstr "Filtro cambiado"
+msgstr "El filtro cambió"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr "Hay cambios sin aplicar a su filtro; ¿Que te gustaría hacer?"
+msgstr "Hay cambios sin aplicar al filtro. ¿Que se quiere hacer?"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
-msgstr "Cambiar al filtro R"
+msgstr "Cambiarse al filtro de R"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
-msgstr "Ocultar filas que se filtraron."
+msgstr "Ocultar las filas que se filtraron."
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Show rows that were filtered out."
-msgstr "Muestra las filas que se filtraron."
+msgstr "Mostrar las filas que se filtraron."
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Apply pass-through filter"
-msgstr "Aplicar filtro de paso"
+msgstr "Aplicar el filtro pasar-por"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Filter applied"
 msgstr "Filtro aplicado"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Click to apply filter"
-msgstr "Haga clic para aplicar el filtro"
+msgstr "Hacer clic para aplicar el filtro"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr "El filtro ya está aplicado"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr "Documentación abierta"
+msgstr "Abrir la Documentación"
 
 msgctxt "FilterWindow|"
 msgid "Hide filter"
@@ -1429,7 +1380,7 @@ msgstr "Restablecer todas las marcas de verificación en todas las etiquetas"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
-msgstr "Cambiarse al filtro de arrastrar y soltar"
+msgstr "Cambiarse al filtro de Arrastrar y Soltar"
 
 msgctxt "FilterWindow|"
 msgid "Reset to default filter"
@@ -1461,7 +1412,7 @@ msgstr "Eliminar Datos"
 
 msgctxt "JagsTableView|"
 msgid "Reset"
-msgstr "Reiniciar"
+msgstr "Restablecer"
 
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
@@ -1477,7 +1428,7 @@ msgstr "Mostrar los datos"
 
 msgctxt "MainPage|"
 msgid "Resize data/results"
-msgstr "Redimensionar los datos/resultados"
+msgstr "Volver a dimensionar los datos/resultados"
 
 msgctxt "MainPage|"
 msgid "Drag to show data"
@@ -1514,7 +1465,7 @@ msgstr "Instalar un módulo"
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr "Instalar Módulo de Desarrollador"
+msgstr "Instalar un Módulo de Desarrollador"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
@@ -1546,92 +1497,75 @@ msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
 msgstr "Cargando: %1\n"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
 msgstr "¡Cargado y listo para usar!"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
-msgstr "¡Se produjo un error!"
+msgstr "¡Se produjo un fallo!"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Not ready for use?"
-msgstr "¿No estás listo para usar?"
+msgstr "¿No está listo para usar?"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr "Módulo de desinstalación "
+msgstr "Desinstalar el módulo "
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr "R en JASP"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
 msgstr "¡Bienvenido a R en JASP!"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid ""
 "Enter your R code here.\n"
 "The data is fully available as 'data' and filtered as 'filteredData'."
 msgstr ""
-"Ingrese su código R aquí.\n"
+"Introducir aquí el código R.\n"
 "Los datos están completamente disponibles como 'datos' y filtrados como "
 "'filtrados'."
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Enter your R code here."
-msgstr "Ingrese su código R aquí."
+msgstr "Introducir aquí su código R."
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Run Code"
-msgstr "Ejecutar código"
+msgstr "Ejecutar Código"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
-msgstr "Al presionar Ctrl + Enter o F5 también se ejecutará el código"
+msgstr "Al presionar Ctrl + Intro o F5 también se ejecutará el código"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Clear Output"
-msgstr "Salida clara"
+msgstr "Borrar la Salida de Resultados"
 
-#, fuzzy
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
 msgstr "Borrado ..."
 
-#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
 msgstr "Se hicieron cambios"
 
-#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
-msgstr "Hay cambios sin aplicar; ¿Que te gustaría hacer?"
+msgstr "Hay cambios sin aplicar. ¿Qué se quiere hacer?"
 
-#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
 msgstr "Aplicar"
 
-#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
-msgstr "Descarte"
+msgstr "Descartar"
 
-#, fuzzy
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
 msgstr "Cancelar"
@@ -1654,7 +1588,7 @@ msgstr "Eliminar Columna"
 
 msgctxt "SimpleTableView|"
 msgid "Reset"
-msgstr "Reiniciar"
+msgstr "Restablecer"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
@@ -1666,7 +1600,7 @@ msgstr "Previo"
 
 msgctxt "SubjectivePriors|"
 msgid "Standardized effect size"
-msgstr "Magnitud del efecto tipificado"
+msgstr "Magnitud del efecto tipificada"
 
 msgctxt "SubjectivePriors|"
 msgid "Default"
@@ -1678,7 +1612,7 @@ msgstr "Cauchy"
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr "Escala"
+msgstr "escala"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
@@ -1730,7 +1664,7 @@ msgstr "límite superior:"
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
-msgstr "Semi-Normal"
+msgstr "Mitad-Normal"
 
 msgctxt "VariablesWindow|"
 msgid "Filter"
@@ -1793,7 +1727,7 @@ msgid ""
 "JASP is an open-source project with structural support from the University "
 "of Amsterdam."
 msgstr ""
-"JASP es un proyecto de código abierto con apoyo estructural de la "
+"JASP es un proyecto de código abierto, con apoyo estructural de la "
 "Universidad de Amsterdam."
 
 msgctxt "WelcomePage|"
@@ -1812,7 +1746,7 @@ msgstr ""
 
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr "¡Abra un archivo de datos y pruebe JASP!"
+msgstr "¡Abra entonces un archivo de datos y dé una vuelta por JASP!"
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
@@ -1827,85 +1761,80 @@ msgid ""
 "being developed at break-neck speed!"
 msgstr ""
 "Tenga en cuenta que esta es una vista previa y que todavía faltan algunas "
-"funciones.\n"
+"características.\n"
 "\n"
-"Si JASP no hace todo lo que usted desea hoy, vuelva a consultar mañana: "
-"¡JASP se está desarrollando a una velocidad vertiginosa!"
+"Si JASP no hace hoy todo lo que desea, vuélvalo a comprobar mañana: ¡JASP se "
+"está desarrollando a una velocidad vertiginosa!"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
 msgstr ""
 "No se pudieron encontrar las opciones de edición del gráfico %1, por lo que "
-"la edición del gráfico no funcionará ..."
+"la edición de gráficos no funcionará ..."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Analysis|"
 msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
 msgstr ""
-"No se pudieron encontrar las opciones de edición establecidas de la trama "
-"%1, por lo que la edición de la trama no recordará nada (si funciona "
-"uniformemente) ..."
+"No se pudieron encontrar las opciones de configuración de la edición del "
+"gráfico %1, por lo que la edición de gráficos no recordará nada (si funciona)"
+" ..."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AnalysisForm|"
 msgid "Control with label '%1' has no name"
 msgstr "El control con etiqueta '%1' no tiene nombre"
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "A control has no name"
 msgstr "Un control no tiene nombre"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
 msgstr "2 controles tienen el mismo nombre: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
 msgstr ""
-"El componente %1 se cargó con el tipo de valor incorrecto y se restableció a "
+"El componente %1 se cargó con un tipo de valor incorrecto y se restableció a "
 "su valor predeterminado."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AnalysisForm|"
 msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
 msgstr ""
-"Estos componentes se cargaron con el tipo de valor incorrecto y se "
+"Estos componentes se cargaron con un tipo de valor incorrecto y se "
 "restablecieron a sus valores predeterminados: %1"
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
 msgstr ""
-"Muchos componentes se cargaron con el tipo de valor incorrecto y se "
+"Muchos componentes se cargaron con un tipo de valor incorrecto y se "
 "restablecieron a sus valores predeterminados."
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
-msgstr "El archivo probablemente proviene de una versión anterior de JASP."
+msgstr "El archivo probablemente proviene de una versión antigua de JASP."
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid ""
 "That means that the results currently displayed do not correspond to the "
 "options selected."
 msgstr ""
-"Eso significa que los resultados que se muestran actualmente no corresponden "
-"a las opciones seleccionadas."
+"Esto significa que los resultados que se muestran actualmente, no "
+"corresponden con las opciones seleccionadas."
 
-#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
 msgstr "Actualizar el análisis puede cambiar los resultados."
@@ -1942,30 +1871,25 @@ msgctxt "JASPControl|"
 msgid "Section"
 msgstr "Sección"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "CheckBox"
-msgstr "Caja"
+msgstr "Recuadro"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Switch"
 msgstr "Cambiar"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Entry Field"
-msgstr "Campo de entrada"
+msgstr "Campo de Entrada"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Button"
-msgstr "Boton de radio"
+msgstr "Botón de Opción"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
-msgstr "Botones de radio"
+msgstr "Botones de Opción"
 
 msgctxt "JASPControl|"
 msgid "Variables"
@@ -2039,146 +1963,120 @@ msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
 msgstr "Sin error de verificación"
 
-#, fuzzy
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr "Problema al cargar problemas conocidos"
+msgstr "Problema al cargar los problemas ya conocidos"
 
-#, fuzzy
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
-msgstr "Cargando conjunto de datos"
+msgstr "Cargando el Conjunto de Datos"
 
-#, fuzzy
 msgctxt "AsyncLoader|"
 msgid "Saving Data Set"
-msgstr "Guardar conjunto de datos"
+msgstr "Guardando el Conjunto de Datos"
 
-#, fuzzy
 msgctxt "AsyncLoader|"
 msgid "Exporting Result Set"
-msgstr "Exportar conjunto de resultados"
+msgstr "Exportando el Conjunto de Resultados"
 
-#, fuzzy
 msgctxt "AsyncLoader|"
 msgid "Exporting Data Set"
-msgstr "Exportar conjunto de datos"
+msgstr "Exportando el Conjunto de Datos"
 
-#, fuzzy
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
-msgstr "Sincronizar conjunto de datos"
+msgstr "Sincronizando el Conjunto de Datos"
 
-#, fuzzy
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons"
 msgstr "que se puede utilizar en comparaciones numéricas"
 
-#, fuzzy
 msgctxt "ColumnsModel|"
 msgid ""
 "which can only be used in (in)equivalence, greater and lesser than "
 "comparisons"
 msgstr ""
-"que solo se puede usar en (in) equivalencia, mayor y menor que las "
-"comparaciones"
+"que solo se puede usar en comparaciones de (no-)equivalencia, de mayor que y "
+"de menor que"
 
-#, fuzzy
 msgctxt "ColumnsModel|"
 msgid "which can only be used in (in)equivalence comparisons"
-msgstr "que solo se puede usar en comparaciones de (in) equivalencia"
+msgstr "que solo se puede usar en comparaciones de (no-)equivalencia"
 
-#, fuzzy
 msgctxt "ColumnsModel|"
 msgid "The '"
-msgstr "Los '"
+msgstr "El '"
 
-#, fuzzy
 msgctxt "ColumnsModel|"
 msgid "'-column "
 msgstr "'-columna "
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "FileEvent|"
 msgid "Importing Data from %1"
-msgstr "Importando datos de %1"
+msgstr "Importando Datos de %1"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Importing SPSS File"
-msgstr "Importación de archivo SPSS"
+msgstr "Importando Archivo SPSS"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Importing SAS File"
-msgstr "Importación de archivo SAS"
+msgstr "Importando Archivo SAS"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Importing STATA File"
-msgstr "Importación de archivo STATA"
+msgstr "Importando Archivo STATA"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Loading JASP File"
-msgstr "Cargando archivo JASP"
+msgstr "Cargando Archivo JASP"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Loading File"
-msgstr "Cargando archivo"
+msgstr "Cargando Archivo"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Saving JASP File"
-msgstr "Guardar archivo JASP"
+msgstr "Guardando Archivo JASP"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Exporting Results"
-msgstr "Exportación de resultados"
+msgstr "Exportando Resultados"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Exporting Data"
-msgstr "Exportación de datos"
+msgstr "Exportando Datos"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr "Sincronizar datos"
+msgstr "Sincronizando Datos"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Processing File"
-msgstr "Procesando archivo"
+msgstr "Procesando Archivo"
 
-#, fuzzy
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run this analysis..."
-msgstr "El motor se estrelló al intentar ejecutar este análisis ..."
+msgstr "El procedimiento se quebró tratando de ejecutar este análisis ..."
 
-#, fuzzy
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run the filter..."
-msgstr "El motor se estrelló al intentar hacer funcionar el filtro ..."
+msgstr "El procedimiento se quebró tratando de hacer funcionar el filtro ..."
 
-#, fuzzy
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to compute this column..."
-msgstr "El motor se estrelló al intentar calcular esta columna ..."
+msgstr "El procedimiento se quebró tratando de calcular esta columna ..."
 
-#, fuzzy
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run rscript..."
-msgstr "El motor se estrelló al intentar ejecutar rscript ..."
+msgstr "El procedimiento se quebró tratando de ejecutar el rscript ..."
 
-#, fuzzy
 msgctxt "EngineRepresentation|"
 msgid "Error saving plot"
-msgstr "Error al guardar el gráfico"
+msgstr "Fallo al guardar el gráfico"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "EngineRepresentation|"
 msgid ""
 "Unfortunately the plot could not be saved.\n"
@@ -2189,20 +2087,18 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
-"Desafortunadamente, la trama no se pudo salvar.\n"
+"Por desgracia, el gráfico no se pudo guardar.\n"
 "\n"
 "Mensaje de error:\n"
 "%1\n"
 "\n"
-"Si el problema persiste, informe el mensaje anterior en: https://jasp-stats."
-"org/bug-reports"
+"Si el problema persiste, por favor, enviar el mensaje anterior a: https"
+"://jasp-stats.org/bug-reports"
 
-#, fuzzy
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
-msgstr "Error al cambiar el tamaño del gráfico"
+msgstr "Fallo al cambiar el tamaño del gráfico"
 
-#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
 msgstr "Escala"
@@ -2215,61 +2111,50 @@ msgctxt "ColumnTypesModel|"
 msgid "Nominal"
 msgstr "Nominal"
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Yes"
-msgstr "si"
+msgstr "Si"
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "No"
 msgstr "No"
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr "Salvar"
+msgstr "Guardar"
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
-msgstr "No guardar"
+msgstr "No Guardar"
 
-#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
-msgstr "Seleccione un archivo..."
+msgstr "Seleccionar un archivo..."
 
-#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
-msgstr "Seleccione una carpeta ..."
+msgstr "Seleccionar una carpeta ..."
 
-#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr "El modo de gráficos seguros ha cambiado"
+msgstr "El modo gráfico seguro ha cambiado"
 
-#, fuzzy
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
 msgstr ""
-"Ha cambiado el modo de gráficos seguros de JASP, para que esta opción surta "
-"efecto, debe reiniciar JASP"
+"Ha cambiado el modo gráfico seguro de JASP, por lo que se debe reiniciar "
+"JASP para que esta opción surta efecto"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Datafile changed"
-msgstr "Archivo de datos cambiado"
+msgstr "El archivo de datos ha cambiado"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
@@ -2278,12 +2163,10 @@ msgstr ""
 "Se modificó el archivo de datos que utilizó este archivo JASP. ¿Quieres "
 "recargar los análisis con estos nuevos datos?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
 msgstr "Incompatibilidad de versión"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "Your analyses were created in an older version of JASP, to change the PPI of "
@@ -2291,12 +2174,11 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
-"Sus análisis se crearon en una versión anterior de JASP, para cambiar el PPI "
-"de las imágenes, primero deben actualizarse.\n"
+"Los análisis se crearon con una versión anterior de JASP; para cambiar el "
+"PPI de las imágenes, primero deben actualizarse.\n"
 "\n"
 "¿Actualizar todos los análisis?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "This analysis was created in an older version of JASP, to save the image it "
@@ -2304,29 +2186,26 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
-"Este análisis se creó en una versión anterior de JASP, para guardar la "
-"imagen debe actualizarse primero.\n"
+"Este análisis se creó en una versión antigua de JASP; para guardar la imagen "
+"debe actualizarse primero.\n"
 "\n"
 "¿Actualizar el análisis?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Save JASP Image"
-msgstr "Guardar imagen JASP"
+msgstr "Guardar imagen de JASP"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
-"Gráficos de red portátiles (* .png) ;; Formato de documento portátil (* ."
-"pdf) ;; PostScript encapsulado (* .eps) ;; Archivo de imagen con etiquetas "
-"de 300 ppp (* .tiff) ;; PowerPoint (* .pptx) ;; Escalable Gráficos "
-"vectoriales (* .svg)"
+"Gráficos de Red Portátiles (*.png) ;; Formato de Documento Portátil (*.pdf) "
+";; PostScript Encapsulado (*.eps) ;; Archivo de Imagen con Etiquetas de 300 "
+"ppp (*.tiff) ;; PowerPoint (*.pptx) ;; Gráficos Vectoriales Escalables (*."
+"svg)"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "This analysis was created in an older version of JASP, to resize the image "
@@ -2334,33 +2213,31 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
-"Este análisis se creó en una versión anterior de JASP, para cambiar el "
-"tamaño de la imagen, primero debe actualizarse.\n"
+"Este análisis se creó en una versión antigua de JASP; para cambiar el tamaño "
+"de la imagen, primero debe actualizarse.\n"
 "\n"
 "¿Actualizar el análisis?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Save File?"
-msgstr "¿Guardar el archivo?"
+msgstr "¿Guardar el Archivo?"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Save changes to the file %1 before closing?\n"
 "\n"
 "Your changes will be lost if you don't save them."
 msgstr ""
-"¿Guardar cambios en el archivo %1 antes de cerrar?\n"
+"¿Guardar los cambios en el archivo %1 antes de cerrar?\n"
 "\n"
-"Sus cambios se perderán si no los guarda."
+"Los cambios se perderán si no se guardan."
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "File has changed"
 msgstr "El archivo ha cambiado"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to open file because:\n"
@@ -2369,40 +2246,36 @@ msgstr ""
 "No se puede abrir el archivo porque:\n"
 "%1"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr "Error al guardar"
+msgstr "Fallo al guardar"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to save file.\n"
 "\n"
 "%1"
 msgstr ""
-"No se pudo guardar el archivo.\n"
+"No se puede guardar el archivo.\n"
 "\n"
 "%1"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
-msgstr "¿Tienes una cuenta de GitHub?"
+msgstr "¿Tiene una cuenta en GitHub?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "To be able to report the bug you need to have a GitHub account, do you have "
 "such an account?"
 msgstr ""
-"Para poder informar el error, necesita tener una cuenta de GitHub, ¿tiene "
-"una cuenta de este tipo?"
+"Para poder informar del fallo, se necesita tener una cuenta en GitHub. ¿"
+"Tiene una cuenta de este tipo?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Join GitHub"
-msgstr "Únete a GitHub"
+msgstr "Unirse a GitHub"
 
 #, fuzzy
 msgctxt "MainWindow|"
@@ -3010,15 +2883,13 @@ msgctxt "ResourceButtons|"
 msgid "Computer"
 msgstr "Computadora"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "OSF"
 msgstr "OSF"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr "Biblioteca de datos"
+msgstr "Biblioteca de Datos"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
@@ -3205,49 +3076,51 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr ""
+msgstr "No se indicó ningún nombre para la fuente de %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr ""
+msgstr "No se indicó la fuente para %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr ""
+msgstr "No puede encontrarse el componente %1 para la fuente de %2"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "Tipifica la variable"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr ""
+"devuelve Verdadero si la cadena contiene una subcadena, por lo menos una vez"
 
 msgctxt "FactorsForm|"
 msgid "+"
-msgstr ""
+msgstr "+"
 
 msgctxt "FactorsForm|"
 msgid "-"
-msgstr ""
+msgstr "-"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "Tipifica la variable"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr ""
+"devuelve Verdadero si la cadena contiene una subcadena, por lo menos una vez"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr ""
+msgstr "Especificar la secuencia"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
@@ -3267,49 +3140,52 @@ msgstr "Basado en los datos"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
-msgstr ""
+msgstr "Basado en las marcas"
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
-msgstr ""
+msgstr "Establecer manualmente"
 
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
-msgstr ""
+msgstr "Límite inferior"
 
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
-msgstr ""
+msgstr "Límite superior"
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr ""
+msgstr "eje x"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
+msgstr "eje y"
 
 msgctxt "VariablesWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
+msgstr "Editar aquí las etiquetas o escoger qué valores deben filtrarse."
 
 msgctxt "DataSetPackage|"
 msgid "Something went wrong converting columntype, but it is unclear what."
 msgstr ""
+"Algo funcionó mal a convertir el tipo de columna, pero no está claro qué."
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain decimals."
 msgstr ""
+"Error al convertir la columna a ordinal: los valores contienen decimales."
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to continuous: values contain text."
-msgstr ""
+msgstr "Error al convertir la columna a continua: los valores contienen texto."
 
 msgctxt "DataSetPackage|"
 msgid "Failed to convert column to ordinal: values contain text or decimals."
 msgstr ""
+"Error al convertir la columna a ordinal: los valores contienen texto o "
+"decimales."
 
-#, fuzzy
 msgctxt "LabelModel|"
 msgid "Value"
 msgstr "Valor"
@@ -3329,16 +3205,23 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"Por desgracia, el gráfico non puede editarse.\n"
+"\n"
+"Mensaje de error:\n"
+"%1\n"
+"\n"
+"Si persiste el problema, por favor, informa del mensaje anterior a: https"
+"://jasp-stats.org/bug-reports"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
-msgstr ""
+msgstr "Falló la carga de actualizaciones para el módulo %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error: %1"
-msgstr ""
+msgstr "La carga de actualizaciones generó el siguiente error: %1"
 
 #, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3388,7 +3271,7 @@ msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Path cannot be handled by R"
-msgstr ""
+msgstr "R no puede gestionar la ruta"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3400,6 +3283,12 @@ msgid ""
 "and no spaces. Or you can disable \"LC_CTYPE-set-to-C\" under Preferences-"
 ">Advanced->DeveloperMode."
 msgstr ""
+"Estás tratando de instalar un módulo, pero como la ruta '%1' contiene "
+"caracteres que no son ASCII (o un espacio), R podría tener algún problema "
+"para instalarlo ahí. Si falla la instalación de este módulo, puedes esquivar "
+"esto cambiando tu nombre de usuario (o haciendo uno nuevo) que solo contenga "
+"caracteres ASCII y ningún espacio. O puedes deshabilitar el \"LC_CTYPE para "
+"C\" en Preferencias->Avanzado->Modo de desarrollador."
 
 #, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3464,7 +3353,7 @@ msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/Description.qml file."
-msgstr ""
+msgstr "Crear un archivo inst/Description.qml."
 
 #, fuzzy
 msgctxt "Modules::DynamicModules|"
@@ -3559,12 +3448,12 @@ msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr ""
+msgstr "Se encontró un problema al cargar la descripción del módulo"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
+msgstr "<i>No se puede cargar la descripción del módulo en el archivo: '%1'</i>"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3573,11 +3462,15 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a href="
 "\"http://%6\">%6</a></i><br>"
 msgstr ""
+"<h3>%1</h3><i>Versión %2</i><br><p>%3</p><br><br><i>Creada por %4 y "
+"mantenida por %5.</i> <br><i>Mira en el sitio web para más detalles: <a href="
+"\"http://%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
 msgstr ""
+"El número de columna en la fuente es mayor que el número de columnas de %1"
 
 #, fuzzy, qt-format
 msgctxt "VariablesListBase|"
@@ -3590,6 +3483,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
 "is for: '%2'"
 msgstr ""
+"Se está aplicando una Actualización incorrecta; se buscaba la función '%1' "
+"pero esta actualización es para: '%2'"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -3597,6 +3492,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
 "is for: '%2' or lower"
 msgstr ""
+"Se está aplicando una Actualización incorrecta; se buscaba la versión '%1' "
+"pero esta actualización es para: '%2' o inferior"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -3608,6 +3505,12 @@ msgid ""
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
 msgstr ""
+"Se detiene la actualización porque se detectó un bucle!\n"
+"\n"
+"Si se coge %1, posiblemente surgirá otra vez.\n"
+"\n"
+"Esto no debiera suceder en absoluto; tal vez pueda ayudar el autor de "
+"módulos de '%2'"
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
@@ -3638,94 +3541,98 @@ msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
 "environment variables."
 msgstr ""
+"Usar el GITHUB_PAT empaquetado, o bien el establecido en las variables de "
+"entorno si está disponible."
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
+msgstr "GITHUB_PAT privado:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Let JASP guess the best setting for LC_CTYPE (recommended!)"
 msgstr ""
+"Permitir que JASP adivine la mejor configuración para LC_CTYPE "
+"(¡recomendable!)"
 
 msgctxt "PrefsAdvanced|"
 msgid "Always set LC_CTYPE to \"C\""
-msgstr ""
+msgstr "Establecer siempre LC_CTYPE para \"C\""
 
 msgctxt "PrefsAdvanced|"
 msgid "Keep LC_CTYPE at system default"
-msgstr ""
+msgstr "Manter LC_CTYPE en lo predeterminado del sistema"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr ""
+msgstr "Código R, JAGS o Lavaan:"
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr ""
+msgstr "Resultados y Ayudas:"
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr ""
+msgstr "Esquema claro de colores"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
-msgstr ""
+msgstr "Esquema oscuro de colores"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr ""
+msgstr "Idioma preferido"
 
 msgctxt "PrefsUI|"
 msgid "Choose language  "
-msgstr ""
+msgstr "Escoger idioma  "
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
-msgstr ""
+msgstr "Modo gráfico seguro"
 
 msgctxt "PrefsUI|"
 msgid "Disable animations"
-msgstr ""
+msgstr "Deshabilitar las animaciones"
 
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
-msgstr ""
+msgstr "Utilizar los diálogos de archivos propios"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
-msgstr ""
+msgstr "Seleccionar un módulo de desarrollo haciendo clic aquí"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr ""
+msgstr "Mostrar el menú principal"
 
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
-msgstr ""
+msgstr "Mostrar el menú de los módulos"
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr ""
+msgstr "Un buen grupo de elementos"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr ""
+msgstr "Puedes introducir un número entero aquí: "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr ""
+msgstr "Este es un globo emergente increíblemente útil. ¿O no?"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr ""
+msgstr "El primer recuadro"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr ""
+msgstr "El segundo recuadro"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr ""
+msgstr "El último recuadro"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
@@ -3737,7 +3644,7 @@ msgstr "Separar"
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
-msgstr ""
+msgstr "Lista de Niveles de Factores"
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -3745,6 +3652,10 @@ msgid ""
 "probably could not connect to the server. Don't worry, JASP will work fine "
 "it just might not tell you about a few small known issues."
 msgstr ""
+"JASP se encontró con un problema al descargar las incidencias ya conocidas "
+"de esta versión, y posiblemente no pudo conectarse con el servidor. No tiene "
+"importancia, JASP funcionará bien aunque podría no comunicarte algunas "
+"pequeñas incidencias ya conocidas."
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -3752,6 +3663,9 @@ msgid ""
 "isn't necessarily a problem but if it keeps occuring you could contact the "
 "JASP team for assistance."
 msgstr ""
+"JASP se encontró con un problema al descargar las incidencias ya conocidas "
+"de esta versión, y esto no tiene por qué ser un problema; pero si sigue "
+"ocurriendo, puedes contactar con el equipo de JASP para obtener ayuda."
 
 #, qt-format
 msgctxt "KnownIssues|"
@@ -3760,6 +3674,9 @@ msgid ""
 "this isn't necessarily a problem but if it keeps occuring you could contact "
 "the JASP team for assistance."
 msgstr ""
+"JASP se encontró con un problema ('%1') al descargar las incidencias ya "
+"conocidas de esta versión, y esto no tiene por qué ser un problema; pero si "
+"sigue ocurriendo, puedes contactar con el equipo de JASP para obtener ayuda."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -3767,12 +3684,14 @@ msgid ""
 "No default spreadsheet editor for file %1. Do you want to export the data "
 "into a CSV file and start the default spreadsheet editor for this CSV file?"
 msgstr ""
+"No hay un editor predeterminado de hojas de cálculo para el archivo %1. "
+"Quieres exportar los datos a un archivo CSV e iniciar el editor "
+"predeterminado de hojas de cálculo con ese archivo CSV?"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
-msgstr ""
+msgstr "Generar un Archivo de Datos como CSV"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Cancel"
 msgstr "Cancelar"
@@ -3781,6 +3700,8 @@ msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
 msgstr ""
+"Falló el módulo de inicio mientras comenzaba JASP; ¿se debe eliminar el "
+"módulo?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3790,15 +3711,19 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
+"Falló el módulo de inicio mientras comenzaba JASP con el siguiente mensaje:\n"
+"%1\n"
+"\n"
+"Se debe eliminar el módulo?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
-msgstr ""
+msgstr "Falló el módulo %1 de inicio"
 
 msgctxt "RibbonModel|"
 msgid "Module missing"
-msgstr ""
+msgstr "Módulo ausente"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -3808,10 +3733,14 @@ msgid ""
 "If you installed this version of JASP via an official installer let the JASP "
 "team know."
 msgstr ""
+"Parece que el módulo %1 empaquetado no estaba instalado correctamente, por "
+"lo que no se puede cargar.\n"
+"Si has instalado esta versión de JASP a partir de un instalador oficial, "
+"informa al equipo de JASP."
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr ""
+msgstr "Ejecutar un código de R en la consola"
 
 #, fuzzy
 msgctxt "VariablesFormBase|"
@@ -3826,11 +3755,11 @@ msgstr "No hay una lista disponible en el formulario de variables"
 
 msgctxt "TableView|"
 msgid "Add to the left"
-msgstr ""
+msgstr "Añadir a la izquierda"
 
 msgctxt "TableView|"
 msgid "Add to the right"
-msgstr ""
+msgstr "Añadir a la derecha"
 
 msgctxt "TableView|"
 msgid "Delete"
@@ -3845,30 +3774,33 @@ msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
 msgstr ""
+"<sup>*</sup>Solo acceso a cuenta OSF; no se admite el acceso ORCID o "
+"institucional."
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
-msgstr ""
+msgstr "Borrar los módulos y paquetes instalados"
 
 msgctxt "PrefsAdvanced|"
 msgid "This will erase the 'renv' and 'Modules' folders in the appdata."
-msgstr ""
+msgstr "Esto va a borrar las carpetas 'renv' e 'Módulos' de appdata."
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr ""
+msgstr "Solución provisional de Windows"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is in native encoding when no BOM has been specified"
 msgstr ""
+"Asumir que CSV es una codificación propia cuando no se especifique ningún BOM"
 
 msgctxt "PrefsData|"
 msgid "See documentation for more information "
-msgstr ""
+msgstr "Consultar la documentación para obtener más información "
 
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr ""
+msgstr "Opciones de la Interfaz de Usuario"
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
@@ -3896,7 +3828,7 @@ msgstr "Eliminar marca"
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
-msgstr ""
+msgstr "Borrar los módulos y paquetes instalados por el usuario"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -3905,43 +3837,48 @@ msgid ""
 "\n"
 "Make sure to restart JASP afterwards!"
 msgstr ""
+"Al borrar tus módulos y paquetes, te asegurarás de usar solo los "
+"empaquetados con JASP. \n"
+"\n"
+"¡Asegúrate de reiniciar JASP después!"
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr ""
+msgstr "Borrar"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
 msgstr ""
+"<i>En Linux se utiliza siempre el editor predeterminado de hojas de "
+"cálculo.</i>"
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
-#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Cancel"
 msgstr "Cancelar"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr ""
+msgstr "Restablecer los predeterminados"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "Mostrar el título"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr ""
+msgstr "Mostrar los ejes"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
-msgstr ""
+msgstr "Marcas:"
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr ""
+msgstr "Posición"
 
 #, fuzzy
 msgctxt "PlotEditingAxis|"
@@ -3950,15 +3887,15 @@ msgstr "Avanzado"
 
 msgctxt "PlotEditingAxis|"
 msgid "Parse title as R expression"
-msgstr ""
+msgstr "Analizar el título como expresión de R"
 
 msgctxt "PlotEditingAxis|"
 msgid "Limits:"
-msgstr ""
+msgstr "Límites:"
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr ""
+msgstr "Guardar imagen como"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -3971,14 +3908,21 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"Por desgracia, no se puede cambiar el tamaño del gráfico.\n"
+"\n"
+"Mensaje de error:\n"
+"%1\n"
+"\n"
+"Si el problema persiste, por favor, informa del mensaje anterior a: https"
+"://jasp-stats.org/bug-reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
-msgstr ""
+msgstr "Error al editar el gráfico"
 
 msgctxt "Application|"
 msgid "One time setup for JASP Modules"
-msgstr ""
+msgstr "Configuración única para los Módulos de JASP"
 
 msgctxt "Application|"
 msgid ""
@@ -3988,16 +3932,20 @@ msgid ""
 "Please be patient and wait for the application to show before attempting to "
 "start JASP again."
 msgstr ""
+"JASP se instaló a partir de un archivo zip y necesita crear algunas rutas "
+"para que funcionen tus análisis.\n"
+"\n"
+"Por favor, ten paciencia y espera a que se muestre la aplicación antes de "
+"tratar de iniciar JASP otra vez."
 
-#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
-msgstr "Documentación abierta"
+msgstr "Abrir la Documentación"
 
 msgctxt "AboutWindow|"
 msgid "Open Source Components"
-msgstr ""
+msgstr "Componentes de Código Abierto"
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language."
-msgstr ""
+msgstr "Ayúdanos a traducir o mejorar JASP en tu idioma."
