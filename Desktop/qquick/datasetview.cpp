@@ -10,6 +10,7 @@
 #include "qquick/jasptheme.h"
 #include <QScreen>
 #include "data/datasetpackage.h"
+#include <iostream>
 
 DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
 
@@ -228,6 +229,10 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 	float w = _rowNumberMaxWidth;
 	for(int col=0; col<_model->columnCount(); col++)
 		w += _dataColsMaxWidth[col];
+  /// @todo, AMIR: the line above randomly throws! So, for some reason columnCount() returns 1 at line 221, and
+  /// then 0 here! I am not yet 100% sure how the model is initialized but I see that most of the initialization
+  /// are happening outside the constructor. Generally, we don't want uninitialized variables around. One way to
+  /// deal with this is to follow RAII principle, https://en.cppreference.com/w/cpp/language/raii.
 
 	float x = _rowNumberMaxWidth;
 

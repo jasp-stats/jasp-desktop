@@ -1,14 +1,5 @@
 # Generated from Desktop.pro.
-
 cmake_minimum_required(VERSION 3.2)
-
-
-
-#####################################################################
-## Desktop Binary:
-#####################################################################
-
-
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
@@ -36,8 +27,13 @@ include_directories(${LIBREADSTAT_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/Common)
 include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
+add_definitions(-DBUILDING_JASP)
 add_definitions(-DJASP_USES_QT_HERE)
 add_definitions(-DPRINT_ENGINE_MESSAGES)
+
+
+# I think we can put some of these files into the JASP binary, e.g., translations, and helps
+file(COPY ${CMAKE_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # TODO: This can all be done using the include_directories I think
 set(HEADER_FILES
@@ -432,47 +428,31 @@ set(SOURCE_FILES
     widgets/boundcontrolgridtableview.cpp
 )
 
-set(RESOURCE_FILES
-    html/html.qrc
-    resources/icons.qrc
-    resources/resources.qrc
-    qml.qrc
-)
-
-set(TRANSLATION_FILES
-    po/jaspDesktop-zh_Hans.po
-    po/jaspDesktop-de.po
-    po/jaspDesktop-eo.po
-    po/jaspDesktop-es.po
-    po/jaspDesktop-fr.po
-    po/jaspDesktop-gl.po
-    po/jaspDesktop-hu.po
-    po/jaspDesktop-id.po
-    po/jaspDesktop-ja.po
-    po/jaspDesktop-nl.po
-    po/jaspDesktop-pt.po
-    po/jaspDesktop-tr.po
-)
-
-
-# qt_add_resources(
-#     SOURCE_FILES
-#     ${RESOURCE_FILES}
-# )
-
 qt_add_executable(JASP
     ${HEADER_FILES}
     ${SOURCE_FILES}
-    ${RESOURCE_FILES}
 )
 
 target_link_libraries(
-    JASP PUBLIC Common
-    Qt::Core Qt::Gui Qt::OpenGL 
-    Qt::Widgets Qt::Qml Qt::WebEngineWidgets
-    Qt::WebEngineQuick Qt::WebChannel Qt::Svg
-    Qt::Network Qt::PrintSupport Qt::Xml
-    Qt::Quick Qt::QuickControls2 Qt::QuickWidgets
+    JASP PUBLIC 
+    
+    Common
+
+    Qt::Core 
+    Qt::Gui 
+    Qt::OpenGL 
+    Qt::Widgets 
+    Qt::Qml 
+    Qt::WebEngineWidgets
+    Qt::WebEngineQuick 
+    Qt::WebChannel 
+    Qt::Svg
+    Qt::Network 
+    Qt::PrintSupport 
+    Qt::Xml
+    Qt::Quick 
+    Qt::QuickControls2 
+    Qt::QuickWidgets
     Qt::Core5Compat
 
     ${Boost_LIBRARIES}
@@ -480,244 +460,6 @@ target_link_libraries(
     PkgConfig::LIBARCHIVE
     PkgConfig::LIBREADSTAT
 )
-
-# add_qt_executable(Desktop
-#     OUTPUT_DIRECTORY ".."
-#     SOURCES
-#         analysis/analyses.cpp analysis/analyses.h
-#         analysis/analysis.cpp analysis/analysis.h
-#         analysis/analysisform.cpp analysis/analysisform.h
-#         analysis/boundcontrol.h
-#         analysis/boundcontrolbase.cpp analysis/boundcontrolbase.h
-#         analysis/jaspcontrol.cpp analysis/jaspcontrol.h
-#         analysis/jaspdoublevalidator.cpp analysis/jaspdoublevalidator.h
-#         analysis/knownissues.cpp analysis/knownissues.h
-#         analysis/term.cpp analysis/term.h
-#         analysis/terms.cpp analysis/terms.h
-#         analysis/variableinfo.h
-#         data/asyncloader.cpp data/asyncloader.h
-#         data/asyncloaderthread.cpp data/asyncloaderthread.h
-#         data/columnsmodel.cpp data/columnsmodel.h
-#         data/computedcolumn.cpp data/computedcolumn.h
-#         data/computedcolumns.cpp data/computedcolumns.h
-#         data/computedcolumnsmodel.cpp data/computedcolumnsmodel.h
-#         data/datasetloader.cpp data/datasetloader.h
-#         data/datasetpackage.cpp data/datasetpackage.h
-#         data/datasettablemodel.cpp data/datasettablemodel.h
-#         data/datasettableproxy.cpp data/datasettableproxy.h
-#         data/exporters/dataexporter.cpp data/exporters/dataexporter.h
-#         data/exporters/exporter.cpp data/exporters/exporter.h
-#         data/exporters/jaspexporter.cpp data/exporters/jaspexporter.h
-#         data/exporters/resultexporter.cpp data/exporters/resultexporter.h
-#         data/fileevent.cpp data/fileevent.h
-#         data/filtermodel.cpp data/filtermodel.h
-#         data/importers/codepageconvert.cpp data/importers/codepageconvert.h
-#         data/importers/convertedstringcontainer.cpp data/importers/convertedstringcontainer.h
-#         data/importers/csv.cpp data/importers/csv.h
-#         data/importers/csvimportcolumn.cpp data/importers/csvimportcolumn.h
-#         data/importers/csvimporter.cpp data/importers/csvimporter.h
-#         data/importers/importcolumn.cpp data/importers/importcolumn.h
-#         data/importers/importdataset.cpp data/importers/importdataset.h
-#         data/importers/importer.cpp data/importers/importer.h
-#         data/importers/importerutils.h
-#         data/importers/jaspimporter.cpp data/importers/jaspimporter.h
-#         data/importers/ods/odsimportcolumn.cpp data/importers/ods/odsimportcolumn.h
-#         data/importers/ods/odsimportdataset.cpp data/importers/ods/odsimportdataset.h
-#         data/importers/ods/odssheetcell.cpp data/importers/ods/odssheetcell.h
-#         data/importers/ods/odstypes.cpp data/importers/ods/odstypes.h
-#         data/importers/ods/odsxmlcontentshandler.cpp data/importers/ods/odsxmlcontentshandler.h
-#         data/importers/ods/odsxmlhandler.cpp data/importers/ods/odsxmlhandler.h
-#         data/importers/ods/odsxmlmanifesthandler.cpp data/importers/ods/odsxmlmanifesthandler.h
-#         data/importers/odsimporter.cpp data/importers/odsimporter.h
-#         data/importers/readstat/readstat.h
-#         data/importers/readstat/readstat_custom_io.cpp data/importers/readstat/readstat_custom_io.h
-#         data/importers/readstat/readstat_windows_helper.h
-#         data/importers/readstat/readstatimportcolumn.cpp data/importers/readstat/readstatimportcolumn.h
-#         data/importers/readstat/readstatimportdataset.cpp data/importers/readstat/readstatimportdataset.h
-#         data/importers/readstatimporter.cpp data/importers/readstatimporter.h
-#         data/labelfiltergenerator.cpp data/labelfiltergenerator.h
-#         data/labelmodel.cpp data/labelmodel.h
-#         engine/enginerepresentation.cpp engine/enginerepresentation.h
-#         engine/enginesync.cpp engine/enginesync.h
-#         engine/rscriptstore.h
-#         gui/aboutmodel.cpp gui/aboutmodel.h
-#         gui/columntypesmodel.cpp gui/columntypesmodel.h
-#         gui/jaspversionchecker.cpp gui/jaspversionchecker.h
-#         gui/messageforwarder.cpp gui/messageforwarder.h
-#         gui/preferencesmodel.cpp gui/preferencesmodel.h
-#         main.cpp
-#         mainwindow.cpp mainwindow.h
-#         modules/analysisentry.cpp modules/analysisentry.h
-#         modules/analysismenumodel.cpp modules/analysismenumodel.h
-#         modules/description/description.cpp modules/description/description.h
-#         modules/description/descriptionchildbase.cpp modules/description/descriptionchildbase.h
-#         modules/description/entrybase.cpp modules/description/entrybase.h
-#         modules/dynamicmodule.cpp modules/dynamicmodule.h
-#         modules/dynamicmodules.cpp modules/dynamicmodules.h
-#         modules/ribbonbutton.cpp modules/ribbonbutton.h
-#         modules/ribbonmodel.cpp modules/ribbonmodel.h
-#         modules/ribbonmodelfiltered.cpp modules/ribbonmodelfiltered.h
-#         modules/ribbonmodeluncommon.cpp modules/ribbonmodeluncommon.h
-#         modules/upgrader/changebase.cpp modules/upgrader/changebase.h
-#         modules/upgrader/changecopy.cpp modules/upgrader/changecopy.h
-#         modules/upgrader/changejs.cpp modules/upgrader/changejs.h
-#         modules/upgrader/changeremove.cpp modules/upgrader/changeremove.h
-#         modules/upgrader/changerename.cpp modules/upgrader/changerename.h
-#         modules/upgrader/changesetvalue.cpp modules/upgrader/changesetvalue.h
-#         modules/upgrader/upgrade.cpp modules/upgrader/upgrade.h
-#         modules/upgrader/upgradeDefinitions.cpp modules/upgrader/upgradeDefinitions.h
-#         modules/upgrader/upgradechange.cpp modules/upgrader/upgradechange.h
-#         modules/upgrader/upgrader.cpp modules/upgrader/upgrader.h
-#         modules/upgrader/upgrades.cpp modules/upgrader/upgrades.h
-#         modules/upgrader/upgradestep.cpp modules/upgrader/upgradestep.h
-#         osf/onlinedataconnection.cpp osf/onlinedataconnection.h
-#         osf/onlinedatamanager.cpp osf/onlinedatamanager.h
-#         osf/onlinedatanode.cpp osf/onlinedatanode.h
-#         osf/onlinedatanodeosf.cpp osf/onlinedatanodeosf.h
-#         osf/onlinenode.cpp osf/onlinenode.h
-#         osf/onlineusernode.cpp osf/onlineusernode.h
-#         osf/onlineusernodeosf.cpp osf/onlineusernodeosf.h
-#         osf/osfnam.cpp osf/osfnam.h
-#         qquick/datasetview.cpp qquick/datasetview.h
-#         qquick/jasptheme.cpp qquick/jasptheme.h
-#         qquick/rcommander.cpp qquick/rcommander.h
-#         results/ploteditoraxismodel.cpp results/ploteditoraxismodel.h
-#         results/ploteditorcoordinates.cpp results/ploteditorcoordinates.h
-#         results/ploteditormodel.cpp results/ploteditormodel.h
-#         results/resultmenuentry.cpp results/resultmenuentry.h
-#         results/resultmenumodel.cpp results/resultmenumodel.h
-#         results/resultsjsinterface.cpp results/resultsjsinterface.h
-#         resultstesting/compareresults.cpp resultstesting/compareresults.h
-#         resultstesting/resultscomparetable.cpp resultstesting/resultscomparetable.h
-#         utilities/appdirs.cpp utilities/appdirs.h
-#         utilities/application.cpp utilities/application.h
-#         utilities/extractarchive.cpp utilities/extractarchive.h
-#         utilities/helpmodel.cpp utilities/helpmodel.h
-#         utilities/jsonutilities.cpp utilities/jsonutilities.h
-#         utilities/languagemodel.cpp utilities/languagemodel.h
-#         utilities/processhelper.cpp utilities/processhelper.h
-#         utilities/qmlutils.cpp utilities/qmlutils.h
-#         utilities/qutils.cpp utilities/qutils.h
-#         utilities/settings.cpp utilities/settings.h
-#         utilities/simplecrypt.cpp utilities/simplecrypt.h
-#         utilities/simplecryptkey.h
-#         widgets/boundcontrolcontraststableview.cpp widgets/boundcontrolcontraststableview.h
-#         widgets/boundcontrolfilteredtableview.cpp widgets/boundcontrolfilteredtableview.h
-#         widgets/boundcontrolgridtableview.cpp widgets/boundcontrolgridtableview.h
-#         widgets/boundcontroljagstextarea.cpp widgets/boundcontroljagstextarea.h
-#         widgets/boundcontrollavaantextarea.cpp widgets/boundcontrollavaantextarea.h
-#         widgets/boundcontrollayers.cpp widgets/boundcontrollayers.h
-#         widgets/boundcontrolmeasurescells.cpp widgets/boundcontrolmeasurescells.h
-#         widgets/boundcontrolmultiterms.cpp widgets/boundcontrolmultiterms.h
-#         widgets/boundcontrolsourcetextarea.cpp widgets/boundcontrolsourcetextarea.h
-#         widgets/boundcontroltableview.cpp widgets/boundcontroltableview.h
-#         widgets/boundcontrolterms.cpp widgets/boundcontrolterms.h
-#         widgets/boundcontroltextarea.cpp widgets/boundcontroltextarea.h
-#         widgets/checkboxbase.cpp widgets/checkboxbase.h
-#         widgets/comboboxbase.cpp widgets/comboboxbase.h
-#         widgets/componentslistbase.cpp widgets/componentslistbase.h
-#         widgets/expanderbuttonbase.cpp widgets/expanderbuttonbase.h
-#         widgets/factorlevellistbase.cpp widgets/factorlevellistbase.h
-#         widgets/factorsformbase.cpp widgets/factorsformbase.h
-#         widgets/filemenu/actionbuttons.cpp widgets/filemenu/actionbuttons.h
-#         widgets/filemenu/computer.cpp widgets/filemenu/computer.h
-#         widgets/filemenu/computerfilesystem.cpp widgets/filemenu/computerfilesystem.h
-#         widgets/filemenu/computerlistmodel.cpp widgets/filemenu/computerlistmodel.h
-#         widgets/filemenu/currentdatafile.cpp widgets/filemenu/currentdatafile.h
-#         widgets/filemenu/currentfilefilesystem.cpp widgets/filemenu/currentfilefilesystem.h
-#         widgets/filemenu/currentfilelistmodel.cpp widgets/filemenu/currentfilelistmodel.h
-#         widgets/filemenu/datalibrary.cpp widgets/filemenu/datalibrary.h
-#         widgets/filemenu/datalibrarybreadcrumbsmodel.cpp widgets/filemenu/datalibrarybreadcrumbsmodel.h
-#         widgets/filemenu/datalibraryfilesystem.cpp widgets/filemenu/datalibraryfilesystem.h
-#         widgets/filemenu/datalibrarylistmodel.cpp widgets/filemenu/datalibrarylistmodel.h
-#         widgets/filemenu/filemenu.cpp widgets/filemenu/filemenu.h
-#         widgets/filemenu/filemenubasiclistmodel.cpp widgets/filemenu/filemenubasiclistmodel.h
-#         widgets/filemenu/filemenulistitem.h
-#         widgets/filemenu/filemenuobject.cpp widgets/filemenu/filemenuobject.h
-#         widgets/filemenu/filesystem.cpp widgets/filemenu/filesystem.h
-#         widgets/filemenu/filesystementry.h
-#         widgets/filemenu/osf.cpp widgets/filemenu/osf.h
-#         widgets/filemenu/osfbreadcrumbslistmodel.cpp widgets/filemenu/osfbreadcrumbslistmodel.h
-#         widgets/filemenu/osffilesystem.cpp widgets/filemenu/osffilesystem.h
-#         widgets/filemenu/osflistmodel.cpp widgets/filemenu/osflistmodel.h
-#         widgets/filemenu/recentfiles.cpp widgets/filemenu/recentfiles.h
-#         widgets/filemenu/recentfilesfilesystem.cpp widgets/filemenu/recentfilesfilesystem.h
-#         widgets/filemenu/recentfileslistmodel.cpp widgets/filemenu/recentfileslistmodel.h
-#         widgets/filemenu/resourcebuttons.cpp widgets/filemenu/resourcebuttons.h
-#         widgets/filemenu/resourcebuttonsvisible.cpp widgets/filemenu/resourcebuttonsvisible.h
-#         widgets/inputlistbase.cpp widgets/inputlistbase.h
-#         widgets/interactionmodel.cpp widgets/interactionmodel.h
-#         widgets/jasplistcontrol.cpp widgets/jasplistcontrol.h
-#         widgets/lavaansyntaxhighlighter.cpp widgets/lavaansyntaxhighlighter.h
-#         widgets/listmodel.cpp widgets/listmodel.h
-#         widgets/listmodelassignedinterface.cpp widgets/listmodelassignedinterface.h
-#         widgets/listmodelavailableinterface.cpp widgets/listmodelavailableinterface.h
-#         widgets/listmodelcustomcontrasts.cpp widgets/listmodelcustomcontrasts.h
-#         widgets/listmodeldraggable.cpp widgets/listmodeldraggable.h
-#         widgets/listmodelfactorlevels.cpp widgets/listmodelfactorlevels.h
-#         widgets/listmodelfactorsform.cpp widgets/listmodelfactorsform.h
-#         widgets/listmodelfiltereddataentry.cpp widgets/listmodelfiltereddataentry.h
-#         widgets/listmodelgridinput.cpp widgets/listmodelgridinput.h
-#         widgets/listmodelinputvalue.cpp widgets/listmodelinputvalue.h
-#         widgets/listmodelinteractionassigned.cpp widgets/listmodelinteractionassigned.h
-#         widgets/listmodelinteractionavailable.cpp widgets/listmodelinteractionavailable.h
-#         widgets/listmodeljagsdatainput.cpp widgets/listmodeljagsdatainput.h
-#         widgets/listmodellabelvalueterms.cpp widgets/listmodellabelvalueterms.h
-#         widgets/listmodellayersassigned.cpp widgets/listmodellayersassigned.h
-#         widgets/listmodelmeasurescellsassigned.cpp widgets/listmodelmeasurescellsassigned.h
-#         widgets/listmodelmultinomialchi2test.cpp widgets/listmodelmultinomialchi2test.h
-#         widgets/listmodelmultitermsassigned.cpp widgets/listmodelmultitermsassigned.h
-#         widgets/listmodeltableviewbase.cpp widgets/listmodeltableviewbase.h
-#         widgets/listmodeltermsassigned.cpp widgets/listmodeltermsassigned.h
-#         widgets/listmodeltermsavailable.cpp widgets/listmodeltermsavailable.h
-#         widgets/radiobuttonbase.cpp widgets/radiobuttonbase.h
-#         widgets/radiobuttonsgroupbase.cpp widgets/radiobuttonsgroupbase.h
-#         widgets/rowcontrols.cpp widgets/rowcontrols.h
-#         widgets/sliderbase.cpp widgets/sliderbase.h
-#         widgets/sortable.cpp widgets/sortable.h
-#         widgets/sortmenumodel.cpp widgets/sortmenumodel.h
-#         widgets/sourceitem.cpp widgets/sourceitem.h
-#         widgets/tableviewbase.cpp widgets/tableviewbase.h
-#         widgets/textareabase.cpp widgets/textareabase.h
-#         widgets/textinputbase.cpp widgets/textinputbase.h
-#         widgets/variablesformbase.cpp widgets/variablesformbase.h
-#         widgets/variableslistbase.cpp widgets/variableslistbase.h
-#     DEFINES
-#         BUILDING_JASP
-#         CURRENT_R_VERSION=\"4.1\"
-#         GITHUB_PAT_DEFINE=\"$ENV{GITHUB_PAT_DEF}\"
-#         GIT_CURRENT_BRANCH=\"(\"git\" rev-parse --abbrev-ref HEAD)\"
-#         GIT_CURRENT_COMMIT=\"(\"git\" rev-parse --verify HEAD)\"
-#         JASP_LIBJSON_STATIC
-#         JASP_USES_QT_HERE
-#         JASP_VERSION_BUILD=0
-#         JASP_VERSION_MAJOR=0
-#         JASP_VERSION_MINOR=16
-#         JASP_VERSION_REVISION=0
-#         PRINT_ENGINE_MESSAGES
-#         QT_NO_FOREACH
-#     INCLUDE_DIRECTORIES
-#         $ENV{R_HOME}/include
-#         $ENV{R_HOME}/library/Rcpp/include
-#         ../../jasp-required-files/boost_1_71_0
-#         ../Common ../Common
-#         ../Common/jaspColumnEncoder
-#         /
-#     PUBLIC_LIBRARIES
-#         # Remove: L..
-#         Common
-#         Qt::Gui
-#         Qt::Network
-#         Qt::PrintSupport
-#         Qt::Qml
-#         Qt::Quick
-#         Qt::QuickControls2
-#         Qt::QuickWidgets
-#         Qt::Svg
-#         Qt::WebChannel
-#         Qt::WebEngine
-#         Qt::Xml
-# )
 
 # Resources:
 # set_source_files_properties("html/css/bootstrap.min.css"
@@ -945,486 +687,517 @@ target_link_libraries(
 # set_source_files_properties("html/js/utils.js"
 #     PROPERTIES QT_SKIP_QUICKCOMPILER 1
 # )
-# set(html_resource_files
-#     "html/css/bootstrap.min.css"
-#     "html/css/darkTheme-jasp.css"
-#     "html/css/etch.css"
-#     "html/css/images/animated-overlay.gif"
-#     "html/css/images/darkTheme/arrowsmalldownbtn.png"
-#     "html/css/images/darkTheme/closer.png"
-#     "html/css/images/darkTheme/collapse.png"
-#     "html/css/images/darkTheme/empty-plot.png"
-#     "html/css/images/darkTheme/expand.png"
-#     "html/css/images/darkTheme/menu-indicator.svg"
-#     "html/css/images/darkTheme/resizer.png"
-#     "html/css/images/darkTheme/running-large.gif"
-#     "html/css/images/darkTheme/running.gif"
-#     "html/css/images/darkTheme/waiting-large.png"
-#     "html/css/images/darkTheme/waiting.gif"
-#     "html/css/images/darkTheme/waiting.svg"
-#     "html/css/images/editor_icons.png"
-#     "html/css/images/lightTheme/arrowsmalldownbtn.png"
-#     "html/css/images/lightTheme/closer.png"
-#     "html/css/images/lightTheme/collapse.png"
-#     "html/css/images/lightTheme/empty-plot.png"
-#     "html/css/images/lightTheme/expand.png"
-#     "html/css/images/lightTheme/menu-indicator.svg"
-#     "html/css/images/lightTheme/resizer.png"
-#     "html/css/images/lightTheme/running-large.gif"
-#     "html/css/images/lightTheme/running.gif"
-#     "html/css/images/lightTheme/waiting-large.png"
-#     "html/css/images/lightTheme/waiting.gif"
-#     "html/css/images/lightTheme/waiting.svg"
-#     "html/css/images/ui-bg_flat_0_aaaaaa_40x100.png"
-#     "html/css/images/ui-bg_flat_75_ffffff_40x100.png"
-#     "html/css/images/ui-bg_glass_55_fbf9ee_1x400.png"
-#     "html/css/images/ui-bg_glass_65_ffffff_1x400.png"
-#     "html/css/images/ui-bg_glass_75_dadada_1x400.png"
-#     "html/css/images/ui-bg_glass_75_e6e6e6_1x400.png"
-#     "html/css/images/ui-bg_glass_95_fef1ec_1x400.png"
-#     "html/css/images/ui-bg_highlight-soft_75_cccccc_1x100.png"
-#     "html/css/images/ui-icons_222222_256x240.png"
-#     "html/css/images/ui-icons_2e83ff_256x240.png"
-#     "html/css/images/ui-icons_454545_256x240.png"
-#     "html/css/images/ui-icons_888888_256x240.png"
-#     "html/css/images/ui-icons_cd0a0a_256x240.png"
-#     "html/css/jasp.css"
-#     "html/css/jquery-ui-1.10.1.custom.css"
-#     "html/css/lightTheme-jasp.css"
-#     "html/css/printing.css"
-#     "html/css/quill.snow.css"
-#     "html/font/Lato-Light.ttf"
-#     "html/font/Lato-Regular.ttf"
-#     "html/img/jasp-logo-black.svg"
-#     "html/img/jasp-wave-down-blue-120-squat.svg"
-#     "html/img/snow.gif"
-#     "html/img/ul-orange-dot.png"
-#     "html/index.html"
-#     "html/js/analyses.js"
-#     "html/js/analysis.js"
-#     "html/js/backbone-1.1.2.js"
-#     "html/js/collection.js"
-#     "html/js/column.js"
-#     "html/js/etch.js"
-#     "html/js/htmlNode.js"
-#     "html/js/image.js"
-#     "html/js/jaspwidgets.js"
-#     "html/js/jquery-1.9.1.js"
-#     "html/js/jquery-ui-1.10.1.custom.js"
-#     "html/js/jquery-ui-1.10.1.custom.min.js"
-#     "html/js/main.js"
-#     "html/js/mrkdwn.js"
-#     "html/js/object.js"
-#     "html/js/quill.js"
-#     "html/js/qwebchannel.js"
-#     "html/js/table.js"
-#     "html/js/underscore-min.js"
-#     "html/js/underscore.js"
-#     "html/js/utils.js"
+
+
+# Amir:
+# We can either add the resources using the `.qrc` files, or ask CMake to
+# build them for us based on the directory that they are in. This can be 
+# simplified with some GLOBing, then we can just create a new files, and 
+# don't worry about keeping the `.qrc` files up-to-date.
+
+# Either this or the qt_add_resources.
+# set(RESOURCE_FILES
+#     html/html.qrc
+#     resources/icons.qrc
+#     resources/resources.qrc
+#     qml.qrc
 # )
 
-# add_qt_resource(Desktop "html"
-#     PREFIX
-#         "/html"
-#     BASE
-#         "html"
-#     FILES
-#         ${html_resource_files}
-# )
-# set(icons_resource_files
-#     "resources/icons/Rlogo.svg"
-#     "resources/icons/darkTheme/ConditionBy.png"
-#     "resources/icons/darkTheme/JASP-logo_blue.svg"
-#     "resources/icons/darkTheme/JASP_logo_gray.svg"
-#     "resources/icons/darkTheme/JASP_logo_green.svg"
-#     "resources/icons/darkTheme/NotR.png"
-#     "resources/icons/darkTheme/QuestionMark.png"
-#     "resources/icons/darkTheme/R.png"
-#     "resources/icons/darkTheme/addition-sign-small-green.svg"
-#     "resources/icons/darkTheme/addition-sign-small.svg"
-#     "resources/icons/darkTheme/addition-sign.svg"
-#     "resources/icons/darkTheme/and.png"
-#     "resources/icons/darkTheme/arrow-down.png"
-#     "resources/icons/darkTheme/arrow-left.png"
-#     "resources/icons/darkTheme/arrow-reverse.png"
-#     "resources/icons/darkTheme/arrow-right.png"
-#     "resources/icons/darkTheme/arrow-up.png"
-#     "resources/icons/darkTheme/check-mark.png"
-#     "resources/icons/darkTheme/cite.png"
-#     "resources/icons/darkTheme/close-button-black.png"
-#     "resources/icons/darkTheme/close-button.png"
-#     "resources/icons/darkTheme/code-icon.png"
-#     "resources/icons/darkTheme/collapse.png"
-#     "resources/icons/darkTheme/columnConstructorBackground.png"
-#     "resources/icons/darkTheme/computed.png"
-#     "resources/icons/darkTheme/copy.png"
-#     "resources/icons/darkTheme/create-folder.png"
-#     "resources/icons/darkTheme/cross-sign-small-red.svg"
-#     "resources/icons/darkTheme/cross.png"
-#     "resources/icons/darkTheme/delete_icon.png"
-#     "resources/icons/darkTheme/delete_icon_gray.png"
-#     "resources/icons/darkTheme/divide.png"
-#     "resources/icons/darkTheme/document-save-as.png"
-#     "resources/icons/darkTheme/duplicate.png"
-#     "resources/icons/darkTheme/duplicate_disabled.png"
-#     "resources/icons/darkTheme/edit-pencil.png"
-#     "resources/icons/darkTheme/editImage.png"
-#     "resources/icons/darkTheme/equal.png"
-#     "resources/icons/darkTheme/eraser.png"
-#     "resources/icons/darkTheme/eraser_all.png"
-#     "resources/icons/darkTheme/error.png"
-#     "resources/icons/darkTheme/exclamation.svg"
-#     "resources/icons/darkTheme/expand.png"
-#     "resources/icons/darkTheme/expanded.png"
-#     "resources/icons/darkTheme/expander-arrow-down-disabled.png"
-#     "resources/icons/darkTheme/expander-arrow-down-hover.png"
-#     "resources/icons/darkTheme/expander-arrow-down.png"
-#     "resources/icons/darkTheme/expander-arrow-up-disabled.png"
-#     "resources/icons/darkTheme/expander-arrow-up-hover.png"
-#     "resources/icons/darkTheme/expander-arrow-up.png"
-#     "resources/icons/darkTheme/eyeClosed.png"
-#     "resources/icons/darkTheme/eyeOpen.png"
-#     "resources/icons/darkTheme/file-jasp.svg"
-#     "resources/icons/darkTheme/filter.png"
-#     "resources/icons/darkTheme/filterConstructorBackground.png"
-#     "resources/icons/darkTheme/folder.svg"
-#     "resources/icons/darkTheme/gear.svg"
-#     "resources/icons/darkTheme/greaterThan.png"
-#     "resources/icons/darkTheme/greaterThanEqual.png"
-#     "resources/icons/darkTheme/info-button-black.png"
-#     "resources/icons/darkTheme/info-button.png"
-#     "resources/icons/darkTheme/install_icon.png"
-#     "resources/icons/darkTheme/jasp-logo.svg"
-#     "resources/icons/darkTheme/jasp-wave-down-blue-120.svg"
-#     "resources/icons/darkTheme/jasp-wave-up-green-120.svg"
-#     "resources/icons/darkTheme/large-arrow-right.png"
-#     "resources/icons/darkTheme/lessThan.png"
-#     "resources/icons/darkTheme/lessThanEqual.png"
-#     "resources/icons/darkTheme/loading.svg"
-#     "resources/icons/darkTheme/modulo.png"
-#     "resources/icons/darkTheme/negative.png"
-#     "resources/icons/darkTheme/notEqual.png"
-#     "resources/icons/darkTheme/or.png"
-#     "resources/icons/darkTheme/osf-logo.png"
-#     "resources/icons/darkTheme/product.png"
-#     "resources/icons/darkTheme/redo.svg"
-#     "resources/icons/darkTheme/right-arrow.png"
-#     "resources/icons/darkTheme/rootHead.png"
-#     "resources/icons/darkTheme/rootTail.png"
-#     "resources/icons/darkTheme/sigma.png"
-#     "resources/icons/darkTheme/sort-az.png"
-#     "resources/icons/darkTheme/sort-za.png"
-#     "resources/icons/darkTheme/spreadsheet.svg"
-#     "resources/icons/darkTheme/square_trashcan.png"
-#     "resources/icons/darkTheme/subtraction-sign-small.svg"
-#     "resources/icons/darkTheme/subtraction-sign.svg"
-#     "resources/icons/darkTheme/sum.png"
-#     "resources/icons/darkTheme/summarize.svg"
-#     "resources/icons/darkTheme/toolbutton-menu-indicator.svg"
-#     "resources/icons/darkTheme/trashcan.png"
-#     "resources/icons/darkTheme/trashcan.svg"
-#     "resources/icons/darkTheme/trashcan_open.png"
-#     "resources/icons/darkTheme/trashcan_open.svg"
-#     "resources/icons/darkTheme/ul-orange-dot.png"
-#     "resources/icons/darkTheme/undo.svg"
-#     "resources/icons/darkTheme/variable-nominal-disabled.png"
-#     "resources/icons/darkTheme/variable-nominal-inactive.png"
-#     "resources/icons/darkTheme/variable-nominal-text-inactive.svg"
-#     "resources/icons/darkTheme/variable-nominal-text.png"
-#     "resources/icons/darkTheme/variable-nominal.png"
-#     "resources/icons/darkTheme/variable-ordinal-disabled.png"
-#     "resources/icons/darkTheme/variable-ordinal-inactive.png"
-#     "resources/icons/darkTheme/variable-ordinal.png"
-#     "resources/icons/darkTheme/variable-scale-disabled.png"
-#     "resources/icons/darkTheme/variable-scale-inactive.png"
-#     "resources/icons/darkTheme/variable-scale.png"
-#     "resources/icons/darkTheme/variance.png"
-#     "resources/icons/lightTheme/ConditionBy.png"
-#     "resources/icons/lightTheme/JASP-logo_blue.svg"
-#     "resources/icons/lightTheme/JASP_logo_gray.svg"
-#     "resources/icons/lightTheme/JASP_logo_green.svg"
-#     "resources/icons/lightTheme/NotR.png"
-#     "resources/icons/lightTheme/QuestionMark.png"
-#     "resources/icons/lightTheme/R.png"
-#     "resources/icons/lightTheme/addition-sign-small-green.svg"
-#     "resources/icons/lightTheme/addition-sign-small.svg"
-#     "resources/icons/lightTheme/addition-sign.svg"
-#     "resources/icons/lightTheme/and.png"
-#     "resources/icons/lightTheme/arrow-down.png"
-#     "resources/icons/lightTheme/arrow-left.png"
-#     "resources/icons/lightTheme/arrow-reverse.png"
-#     "resources/icons/lightTheme/arrow-right.png"
-#     "resources/icons/lightTheme/arrow-up.png"
-#     "resources/icons/lightTheme/check-mark.png"
-#     "resources/icons/lightTheme/cite.png"
-#     "resources/icons/lightTheme/close-button-black.png"
-#     "resources/icons/lightTheme/close-button.png"
-#     "resources/icons/lightTheme/code-icon.png"
-#     "resources/icons/lightTheme/collapse.png"
-#     "resources/icons/lightTheme/columnConstructorBackground.png"
-#     "resources/icons/lightTheme/computed.png"
-#     "resources/icons/lightTheme/copy.png"
-#     "resources/icons/lightTheme/create-folder.png"
-#     "resources/icons/lightTheme/cross-sign-small-red.svg"
-#     "resources/icons/lightTheme/cross.png"
-#     "resources/icons/lightTheme/delete_icon.png"
-#     "resources/icons/lightTheme/delete_icon_gray.png"
-#     "resources/icons/lightTheme/divide.png"
-#     "resources/icons/lightTheme/document-save-as.png"
-#     "resources/icons/lightTheme/duplicate.png"
-#     "resources/icons/lightTheme/duplicate_disabled.png"
-#     "resources/icons/lightTheme/edit-pencil.png"
-#     "resources/icons/lightTheme/editImage.png"
-#     "resources/icons/lightTheme/equal.png"
-#     "resources/icons/lightTheme/eraser.png"
-#     "resources/icons/lightTheme/eraser_all.png"
-#     "resources/icons/lightTheme/error.png"
-#     "resources/icons/lightTheme/exclamation.svg"
-#     "resources/icons/lightTheme/expand.png"
-#     "resources/icons/lightTheme/expanded.png"
-#     "resources/icons/lightTheme/expander-arrow-down-disabled.png"
-#     "resources/icons/lightTheme/expander-arrow-down-hover.png"
-#     "resources/icons/lightTheme/expander-arrow-down.png"
-#     "resources/icons/lightTheme/expander-arrow-up-disabled.png"
-#     "resources/icons/lightTheme/expander-arrow-up-hover.png"
-#     "resources/icons/lightTheme/expander-arrow-up.png"
-#     "resources/icons/lightTheme/eyeClosed.png"
-#     "resources/icons/lightTheme/eyeOpen.png"
-#     "resources/icons/lightTheme/file-jasp.svg"
-#     "resources/icons/lightTheme/filter.png"
-#     "resources/icons/lightTheme/filterConstructorBackground.png"
-#     "resources/icons/lightTheme/folder.svg"
-#     "resources/icons/lightTheme/gear.svg"
-#     "resources/icons/lightTheme/greaterThan.png"
-#     "resources/icons/lightTheme/greaterThanEqual.png"
-#     "resources/icons/lightTheme/info-button-black.png"
-#     "resources/icons/lightTheme/info-button.png"
-#     "resources/icons/lightTheme/install_icon.png"
-#     "resources/icons/lightTheme/jasp-logo-black.svg"
-#     "resources/icons/lightTheme/jasp-logo.svg"
-#     "resources/icons/lightTheme/jasp-wave-down-blue-120.svg"
-#     "resources/icons/lightTheme/jasp-wave-up-green-120.svg"
-#     "resources/icons/lightTheme/large-arrow-right.png"
-#     "resources/icons/lightTheme/lessThan.png"
-#     "resources/icons/lightTheme/lessThanEqual.png"
-#     "resources/icons/lightTheme/loading.svg"
-#     "resources/icons/lightTheme/modulo.png"
-#     "resources/icons/lightTheme/negative.png"
-#     "resources/icons/lightTheme/notEqual.png"
-#     "resources/icons/lightTheme/or.png"
-#     "resources/icons/lightTheme/osf-logo.png"
-#     "resources/icons/lightTheme/product.png"
-#     "resources/icons/lightTheme/redo.svg"
-#     "resources/icons/lightTheme/right-arrow.png"
-#     "resources/icons/lightTheme/rootHead.png"
-#     "resources/icons/lightTheme/rootTail.png"
-#     "resources/icons/lightTheme/sigma.png"
-#     "resources/icons/lightTheme/sort-az.png"
-#     "resources/icons/lightTheme/sort-za.png"
-#     "resources/icons/lightTheme/spreadsheet.svg"
-#     "resources/icons/lightTheme/square_trashcan.png"
-#     "resources/icons/lightTheme/subtraction-sign-small.svg"
-#     "resources/icons/lightTheme/subtraction-sign.svg"
-#     "resources/icons/lightTheme/sum.png"
-#     "resources/icons/lightTheme/summarize.svg"
-#     "resources/icons/lightTheme/toolbutton-menu-indicator.svg"
-#     "resources/icons/lightTheme/trashcan.png"
-#     "resources/icons/lightTheme/trashcan.svg"
-#     "resources/icons/lightTheme/trashcan_open.png"
-#     "resources/icons/lightTheme/trashcan_open.svg"
-#     "resources/icons/lightTheme/ul-orange-dot.png"
-#     "resources/icons/lightTheme/undo.svg"
-#     "resources/icons/lightTheme/variable-nominal-disabled.png"
-#     "resources/icons/lightTheme/variable-nominal-inactive.png"
-#     "resources/icons/lightTheme/variable-nominal-text-inactive.svg"
-#     "resources/icons/lightTheme/variable-nominal-text.png"
-#     "resources/icons/lightTheme/variable-nominal.png"
-#     "resources/icons/lightTheme/variable-ordinal-disabled.png"
-#     "resources/icons/lightTheme/variable-ordinal-inactive.png"
-#     "resources/icons/lightTheme/variable-ordinal.png"
-#     "resources/icons/lightTheme/variable-scale-disabled.png"
-#     "resources/icons/lightTheme/variable-scale-inactive.png"
-#     "resources/icons/lightTheme/variable-scale.png"
-#     "resources/icons/lightTheme/variance.png"
-# )
 
-# add_qt_resource(Desktop "icons"
-#     PREFIX
-#         "/"
-#     BASE
-#         "resources"
-#     FILES
-#         ${icons_resource_files}
-# )
-# set(resources_resource_files
-#     "resources/../modules/upgrader/upgrades.json"
-#     "resources/fonts/FiraCode-Retina.ttf"
-#     "resources/fonts/FreeSans.ttf"
-#     "resources/icons/darkTheme/jasp-logo-black.svg"
-# )
+set(HTML_SOURCE_FILES
+    "html/css/bootstrap.min.css"
+    "html/css/darkTheme-jasp.css"
+    "html/css/etch.css"
+    "html/css/images/animated-overlay.gif"
+    "html/css/images/darkTheme/arrowsmalldownbtn.png"
+    "html/css/images/darkTheme/closer.png"
+    "html/css/images/darkTheme/collapse.png"
+    "html/css/images/darkTheme/empty-plot.png"
+    "html/css/images/darkTheme/expand.png"
+    "html/css/images/darkTheme/menu-indicator.svg"
+    "html/css/images/darkTheme/resizer.png"
+    "html/css/images/darkTheme/running-large.gif"
+    "html/css/images/darkTheme/running.gif"
+    "html/css/images/darkTheme/waiting-large.png"
+    "html/css/images/darkTheme/waiting.gif"
+    "html/css/images/darkTheme/waiting.svg"
+    "html/css/images/editor_icons.png"
+    "html/css/images/lightTheme/arrowsmalldownbtn.png"
+    "html/css/images/lightTheme/closer.png"
+    "html/css/images/lightTheme/collapse.png"
+    "html/css/images/lightTheme/empty-plot.png"
+    "html/css/images/lightTheme/expand.png"
+    "html/css/images/lightTheme/menu-indicator.svg"
+    "html/css/images/lightTheme/resizer.png"
+    "html/css/images/lightTheme/running-large.gif"
+    "html/css/images/lightTheme/running.gif"
+    "html/css/images/lightTheme/waiting-large.png"
+    "html/css/images/lightTheme/waiting.gif"
+    "html/css/images/lightTheme/waiting.svg"
+    "html/css/images/ui-bg_flat_0_aaaaaa_40x100.png"
+    "html/css/images/ui-bg_flat_75_ffffff_40x100.png"
+    "html/css/images/ui-bg_glass_55_fbf9ee_1x400.png"
+    "html/css/images/ui-bg_glass_65_ffffff_1x400.png"
+    "html/css/images/ui-bg_glass_75_dadada_1x400.png"
+    "html/css/images/ui-bg_glass_75_e6e6e6_1x400.png"
+    "html/css/images/ui-bg_glass_95_fef1ec_1x400.png"
+    "html/css/images/ui-bg_highlight-soft_75_cccccc_1x100.png"
+    "html/css/images/ui-icons_222222_256x240.png"
+    "html/css/images/ui-icons_2e83ff_256x240.png"
+    "html/css/images/ui-icons_454545_256x240.png"
+    "html/css/images/ui-icons_888888_256x240.png"
+    "html/css/images/ui-icons_cd0a0a_256x240.png"
+    "html/css/jasp.css"
+    "html/css/jquery-ui-1.10.1.custom.css"
+    "html/css/lightTheme-jasp.css"
+    "html/css/printing.css"
+    "html/css/quill.snow.css"
+    "html/font/Lato-Light.ttf"
+    "html/font/Lato-Regular.ttf"
+    "html/img/jasp-logo-black.svg"
+    "html/img/jasp-wave-down-blue-120-squat.svg"
+    "html/img/snow.gif"
+    "html/img/ul-orange-dot.png"
+    "html/index.html"
+    "html/js/analyses.js"
+    "html/js/analysis.js"
+    "html/js/backbone-1.1.2.js"
+    "html/js/collection.js"
+    "html/js/column.js"
+    "html/js/etch.js"
+    "html/js/htmlNode.js"
+    "html/js/image.js"
+    "html/js/jaspwidgets.js"
+    "html/js/jquery-1.9.1.js"
+    "html/js/jquery-ui-1.10.1.custom.js"
+    "html/js/jquery-ui-1.10.1.custom.min.js"
+    "html/js/main.js"
+    "html/js/mrkdwn.js"
+    "html/js/object.js"
+    "html/js/quill.js"
+    "html/js/qwebchannel.js"
+    "html/js/table.js"
+    "html/js/underscore-min.js"
+    "html/js/underscore.js"
+    "html/js/utils.js"
+)
 
-# add_qt_resource(Desktop "resources"
-#     PREFIX
-#         "/"
-#     BASE
-#         "resources"
-#     FILES
-#         ${resources_resource_files}
-# )
-# set(qml_resource_files
-#     "components/JASP/Controls/AddColumnField.qml"
-#     "components/JASP/Controls/AssignButton.qml"
-#     "components/JASP/Controls/AssignedPairsVariablesList.qml"
-#     "components/JASP/Controls/AssignedRepeatedMeasuresCells.qml"
-#     "components/JASP/Controls/AssignedVariablesList.qml"
-#     "components/JASP/Controls/AvailableVariablesList.qml"
-#     "components/JASP/Controls/Button.qml"
-#     "components/JASP/Controls/CIField.qml"
-#     "components/JASP/Controls/CheckBox.qml"
-#     "components/JASP/Controls/ColumnLayout.qml"
-#     "components/JASP/Controls/ComboBox.qml"
-#     "components/JASP/Controls/ComponentsList.qml"
-#     "components/JASP/Controls/ComputedColumnField.qml"
-#     "components/JASP/Controls/DoubleField.qml"
-#     "components/JASP/Controls/ExpanderButton.qml"
-#     "components/JASP/Controls/FactorLevelList.qml"
-#     "components/JASP/Controls/FileSelector.qml"
-#     "components/JASP/Controls/Form.qml"
-#     "components/JASP/Controls/FormulaField.qml"
-#     "components/JASP/Controls/GridLayout.qml"
-#     "components/JASP/Controls/GroupBox.qml"
-#     "components/JASP/Controls/HelpButton.qml"
-#     "components/JASP/Controls/InputListView.qml"
-#     "components/JASP/Controls/IntegerField.qml"
-#     "components/JASP/Controls/JAGSTextArea.qml"
-#     "components/JASP/Controls/JASPScrollBar.qml"
-#     "components/JASP/Controls/Label.qml"
-#     "components/JASP/Controls/ModelTermsList.qml"
-#     "components/JASP/Controls/PercentField.qml"
-#     "components/JASP/Controls/RadioButton.qml"
-#     "components/JASP/Controls/RadioButtonGroup.qml"
-#     "components/JASP/Controls/RowLayout.qml"
-#     "components/JASP/Controls/Slider.qml"
-#     "components/JASP/Controls/Switch.qml"
-#     "components/JASP/Controls/TabView.qml"
-#     "components/JASP/Controls/TableView.qml"
-#     "components/JASP/Controls/Text.qml"
-#     "components/JASP/Controls/TextArea.qml"
-#     "components/JASP/Controls/TextField.qml"
-#     "components/JASP/Controls/VariablesForm.qml"
-#     "components/JASP/Controls/VariablesList.qml"
-#     "components/JASP/Controls/qmldir"
-#     "components/JASP/Theme/DarkTheme.qml"
-#     "components/JASP/Theme/Theme.qml"
-#     "components/JASP/Theme/qmldir"
-#     "components/JASP/Widgets/AboutWindow.qml"
-#     "components/JASP/Widgets/AnalysisFormExpander.qml"
-#     "components/JASP/Widgets/AnalysisForms.qml"
-#     "components/JASP/Widgets/BasicTableViewJasp.qml"
-#     "components/JASP/Widgets/BasicThreeButtonTableView.qml"
-#     "components/JASP/Widgets/BayesFactorType.qml"
-#     "components/JASP/Widgets/Chi2TestTableView.qml"
-#     "components/JASP/Widgets/ComputeColumnWindow.qml"
-#     "components/JASP/Widgets/ContrastsList.qml"
-#     "components/JASP/Widgets/ControlErrorMessage.qml"
-#     "components/JASP/Widgets/CreateComputeColumnDialog.qml"
-#     "components/JASP/Widgets/CrossButton.qml"
-#     "components/JASP/Widgets/CustomContrastsTableView.qml"
-#     "components/JASP/Widgets/CustomMenu.qml"
-#     "components/JASP/Widgets/DataPanel.qml"
-#     "components/JASP/Widgets/DataTableView.qml"
-#     "components/JASP/Widgets/Divider.qml"
-#     "components/JASP/Widgets/FactorsForm.qml"
-#     "components/JASP/Widgets/FactorsList.qml"
-#     "components/JASP/Widgets/FileMenu/BreadCrumbs.qml"
-#     "components/JASP/Widgets/FileMenu/Computer.qml"
-#     "components/JASP/Widgets/FileMenu/CurrentFile.qml"
-#     "components/JASP/Widgets/FileMenu/DataLibrary.qml"
-#     "components/JASP/Widgets/FileMenu/FileList.qml"
-#     "components/JASP/Widgets/FileMenu/FileMenu.qml"
-#     "components/JASP/Widgets/FileMenu/ListItem.qml"
-#     "components/JASP/Widgets/FileMenu/MenuHeader.qml"
-#     "components/JASP/Widgets/FileMenu/OSF.qml"
-#     "components/JASP/Widgets/FileMenu/OSFLogin.qml"
-#     "components/JASP/Widgets/FileMenu/PrefsAdvanced.qml"
-#     "components/JASP/Widgets/FileMenu/PrefsData.qml"
-#     "components/JASP/Widgets/FileMenu/PrefsGroupRect.qml"
-#     "components/JASP/Widgets/FileMenu/PrefsMissingValues.qml"
-#     "components/JASP/Widgets/FileMenu/PrefsResults.qml"
-#     "components/JASP/Widgets/FileMenu/PrefsTextInput.qml"
-#     "components/JASP/Widgets/FileMenu/PrefsUI.qml"
-#     "components/JASP/Widgets/FileMenu/RecentFiles.qml"
-#     "components/JASP/Widgets/FilterConstructor/ColumnDrag.qml"
-#     "components/JASP/Widgets/FilterConstructor/ColumnsSelector.qml"
-#     "components/JASP/Widgets/FilterConstructor/ComputedColumnsConstructor.qml"
-#     "components/JASP/Widgets/FilterConstructor/DragGeneric.qml"
-#     "components/JASP/Widgets/FilterConstructor/DropSpot.qml"
-#     "components/JASP/Widgets/FilterConstructor/DropTrash.qml"
-#     "components/JASP/Widgets/FilterConstructor/ElementView.qml"
-#     "components/JASP/Widgets/FilterConstructor/FilterConstructor.qml"
-#     "components/JASP/Widgets/FilterConstructor/FilterConstructor.qmlc"
-#     "components/JASP/Widgets/FilterConstructor/Function.qml"
-#     "components/JASP/Widgets/FilterConstructor/FunctionDrag.qml"
-#     "components/JASP/Widgets/FilterConstructor/JASPColumn.qml"
-#     "components/JASP/Widgets/FilterConstructor/JSONtoFormulas.qml"
-#     "components/JASP/Widgets/FilterConstructor/Number.qml"
-#     "components/JASP/Widgets/FilterConstructor/NumberDrag.qml"
-#     "components/JASP/Widgets/FilterConstructor/Operator.qml"
-#     "components/JASP/Widgets/FilterConstructor/OperatorDrag.qml"
-#     "components/JASP/Widgets/FilterConstructor/OperatorSelector.qml"
-#     "components/JASP/Widgets/FilterConstructor/OperatorSelectorComputedColumns.qml"
-#     "components/JASP/Widgets/FilterConstructor/OperatorVertical.qml"
-#     "components/JASP/Widgets/FilterConstructor/OperatorVerticalDrag.qml"
-#     "components/JASP/Widgets/FilterConstructor/String.qml"
-#     "components/JASP/Widgets/FilterConstructor/StringDrag.qml"
-#     "components/JASP/Widgets/FilterWindow.qml"
-#     "components/JASP/Widgets/HelpWindow.qml"
-#     "components/JASP/Widgets/ImageInverter.qml"
-#     "components/JASP/Widgets/JASPDataView.qml"
-#     "components/JASP/Widgets/JASPMouseAreaToolTipped.qml"
-#     "components/JASP/Widgets/JagsTableView.qml"
-#     "components/JASP/Widgets/LoadingIndicator.qml"
-#     "components/JASP/Widgets/MainPage.qml"
-#     "components/JASP/Widgets/MainWindow.qml"
-#     "components/JASP/Widgets/MenuButton.qml"
-#     "components/JASP/Widgets/MessageBox.qml"
-#     "components/JASP/Widgets/ModuleInstaller.qml"
-#     "components/JASP/Widgets/ModulesMenu.qml"
-#     "components/JASP/Widgets/PlotEditor/PlotEditingAxis.qml"
-#     "components/JASP/Widgets/PlotEditor/PlotEditor.qml"
-#     "components/JASP/Widgets/ProgressBarHolder.qml"
-#     "components/JASP/Widgets/RCommanderWindow.qml"
-#     "components/JASP/Widgets/RectangularButton.qml"
-#     "components/JASP/Widgets/Ribbon/MenuArrowButton.qml"
-#     "components/JASP/Widgets/Ribbon/RibbonBar.qml"
-#     "components/JASP/Widgets/Ribbon/RibbonButton.qml"
-#     "components/JASP/Widgets/Ribbon/Ribbons.qml"
-#     "components/JASP/Widgets/RoundedButton.qml"
-#     "components/JASP/Widgets/SaveDiscardCancelDialog.qml"
-#     "components/JASP/Widgets/SetSeed.qml"
-#     "components/JASP/Widgets/SimpleTableView.qml"
-#     "components/JASP/Widgets/SortMenuButton.qml"
-#     "components/JASP/Widgets/SpinBox.qml"
-#     "components/JASP/Widgets/SplitHandle.qml"
-#     "components/JASP/Widgets/SubjectivePriors.qml"
-#     "components/JASP/Widgets/TableViewJasp.qml"
-#     "components/JASP/Widgets/TableViewStyleJasp.qml"
-#     "components/JASP/Widgets/UIScaleNotifier.qml"
-#     "components/JASP/Widgets/VariablesWindow.qml"
-#     "components/JASP/Widgets/WelcomePage.qml"
-#     "components/JASP/Widgets/qmldir"
-#     "translations/images/flag_en.png"
-#     "translations/images/flag_fr.png"
-#     "translations/images/flag_ge.png"
-#     "translations/images/flag_nl.png"
-# )
+qt_add_resources(JASP "html"
+    PREFIX
+        "/html"
+    BASE
+        "html"
+    FILES
+        ${HTML_RESOURCE_FILES}
+)
 
-# add_qt_resource(Desktop "qml"
-#     PREFIX
-#         "/"
-#     FILES
-#         ${qml_resource_files}
-# )
+set(TRANSLATION_RESOURCE_FILES
+    "translations/images/flag_en.png"
+    "translations/images/flag_fr.png"
+    "translations/images/flag_ge.png"
+    "translations/images/flag_nl.png"
+)
+
+qt_add_resources(JASP "translations"
+    PREFIX
+        "/translations"
+    BASE
+        "translations"
+    FILES
+        ${TRANSLATION_RESOURCE_FILES}
+)
+
+
+set(ICONS_RESOURCE_FILES
+    "resources/icons/Rlogo.svg"
+    "resources/icons/darkTheme/ConditionBy.png"
+    "resources/icons/darkTheme/JASP-logo_blue.svg"
+    "resources/icons/darkTheme/JASP_logo_gray.svg"
+    "resources/icons/darkTheme/JASP_logo_green.svg"
+    "resources/icons/darkTheme/NotR.png"
+    "resources/icons/darkTheme/QuestionMark.png"
+    "resources/icons/darkTheme/R.png"
+    "resources/icons/darkTheme/addition-sign-small-green.svg"
+    "resources/icons/darkTheme/addition-sign-small.svg"
+    "resources/icons/darkTheme/addition-sign.svg"
+    "resources/icons/darkTheme/and.png"
+    "resources/icons/darkTheme/arrow-down.png"
+    "resources/icons/darkTheme/arrow-left.png"
+    "resources/icons/darkTheme/arrow-reverse.png"
+    "resources/icons/darkTheme/arrow-right.png"
+    "resources/icons/darkTheme/arrow-up.png"
+    "resources/icons/darkTheme/check-mark.png"
+    "resources/icons/darkTheme/cite.png"
+    "resources/icons/darkTheme/close-button-black.png"
+    "resources/icons/darkTheme/close-button.png"
+    "resources/icons/darkTheme/code-icon.png"
+    "resources/icons/darkTheme/collapse.png"
+    "resources/icons/darkTheme/columnConstructorBackground.png"
+    "resources/icons/darkTheme/computed.png"
+    "resources/icons/darkTheme/copy.png"
+    "resources/icons/darkTheme/create-folder.png"
+    "resources/icons/darkTheme/cross-sign-small-red.svg"
+    "resources/icons/darkTheme/cross.png"
+    "resources/icons/darkTheme/delete_icon.png"
+    "resources/icons/darkTheme/delete_icon_gray.png"
+    "resources/icons/darkTheme/divide.png"
+    "resources/icons/darkTheme/document-save-as.png"
+    "resources/icons/darkTheme/duplicate.png"
+    "resources/icons/darkTheme/duplicate_disabled.png"
+    "resources/icons/darkTheme/edit-pencil.png"
+    "resources/icons/darkTheme/editImage.png"
+    "resources/icons/darkTheme/equal.png"
+    "resources/icons/darkTheme/eraser.png"
+    "resources/icons/darkTheme/eraser_all.png"
+    "resources/icons/darkTheme/error.png"
+    "resources/icons/darkTheme/exclamation.svg"
+    "resources/icons/darkTheme/expand.png"
+    "resources/icons/darkTheme/expanded.png"
+    "resources/icons/darkTheme/expander-arrow-down-disabled.png"
+    "resources/icons/darkTheme/expander-arrow-down-hover.png"
+    "resources/icons/darkTheme/expander-arrow-down.png"
+    "resources/icons/darkTheme/expander-arrow-up-disabled.png"
+    "resources/icons/darkTheme/expander-arrow-up-hover.png"
+    "resources/icons/darkTheme/expander-arrow-up.png"
+    "resources/icons/darkTheme/eyeClosed.png"
+    "resources/icons/darkTheme/eyeOpen.png"
+    "resources/icons/darkTheme/file-jasp.svg"
+    "resources/icons/darkTheme/filter.png"
+    "resources/icons/darkTheme/filterConstructorBackground.png"
+    "resources/icons/darkTheme/folder.svg"
+    "resources/icons/darkTheme/gear.svg"
+    "resources/icons/darkTheme/greaterThan.png"
+    "resources/icons/darkTheme/greaterThanEqual.png"
+    "resources/icons/darkTheme/info-button-black.png"
+    "resources/icons/darkTheme/info-button.png"
+    "resources/icons/darkTheme/install_icon.png"
+    "resources/icons/darkTheme/jasp-logo.svg"
+    "resources/icons/darkTheme/jasp-wave-down-blue-120.svg"
+    "resources/icons/darkTheme/jasp-wave-up-green-120.svg"
+    "resources/icons/darkTheme/large-arrow-right.png"
+    "resources/icons/darkTheme/lessThan.png"
+    "resources/icons/darkTheme/lessThanEqual.png"
+    "resources/icons/darkTheme/loading.svg"
+    "resources/icons/darkTheme/modulo.png"
+    "resources/icons/darkTheme/negative.png"
+    "resources/icons/darkTheme/notEqual.png"
+    "resources/icons/darkTheme/or.png"
+    "resources/icons/darkTheme/osf-logo.png"
+    "resources/icons/darkTheme/product.png"
+    "resources/icons/darkTheme/redo.svg"
+    "resources/icons/darkTheme/right-arrow.png"
+    "resources/icons/darkTheme/rootHead.png"
+    "resources/icons/darkTheme/rootTail.png"
+    "resources/icons/darkTheme/sigma.png"
+    "resources/icons/darkTheme/sort-az.png"
+    "resources/icons/darkTheme/sort-za.png"
+    "resources/icons/darkTheme/spreadsheet.svg"
+    "resources/icons/darkTheme/square_trashcan.png"
+    "resources/icons/darkTheme/subtraction-sign-small.svg"
+    "resources/icons/darkTheme/subtraction-sign.svg"
+    "resources/icons/darkTheme/sum.png"
+    "resources/icons/darkTheme/summarize.svg"
+    "resources/icons/darkTheme/toolbutton-menu-indicator.svg"
+    "resources/icons/darkTheme/trashcan.png"
+    "resources/icons/darkTheme/trashcan.svg"
+    "resources/icons/darkTheme/trashcan_open.png"
+    "resources/icons/darkTheme/trashcan_open.svg"
+    "resources/icons/darkTheme/ul-orange-dot.png"
+    "resources/icons/darkTheme/undo.svg"
+    "resources/icons/darkTheme/variable-nominal-disabled.png"
+    "resources/icons/darkTheme/variable-nominal-inactive.png"
+    "resources/icons/darkTheme/variable-nominal-text-inactive.svg"
+    "resources/icons/darkTheme/variable-nominal-text.png"
+    "resources/icons/darkTheme/variable-nominal.png"
+    "resources/icons/darkTheme/variable-ordinal-disabled.png"
+    "resources/icons/darkTheme/variable-ordinal-inactive.png"
+    "resources/icons/darkTheme/variable-ordinal.png"
+    "resources/icons/darkTheme/variable-scale-disabled.png"
+    "resources/icons/darkTheme/variable-scale-inactive.png"
+    "resources/icons/darkTheme/variable-scale.png"
+    "resources/icons/darkTheme/variance.png"
+    "resources/icons/lightTheme/ConditionBy.png"
+    "resources/icons/lightTheme/JASP-logo_blue.svg"
+    "resources/icons/lightTheme/JASP_logo_gray.svg"
+    "resources/icons/lightTheme/JASP_logo_green.svg"
+    "resources/icons/lightTheme/NotR.png"
+    "resources/icons/lightTheme/QuestionMark.png"
+    "resources/icons/lightTheme/R.png"
+    "resources/icons/lightTheme/addition-sign-small-green.svg"
+    "resources/icons/lightTheme/addition-sign-small.svg"
+    "resources/icons/lightTheme/addition-sign.svg"
+    "resources/icons/lightTheme/and.png"
+    "resources/icons/lightTheme/arrow-down.png"
+    "resources/icons/lightTheme/arrow-left.png"
+    "resources/icons/lightTheme/arrow-reverse.png"
+    "resources/icons/lightTheme/arrow-right.png"
+    "resources/icons/lightTheme/arrow-up.png"
+    "resources/icons/lightTheme/check-mark.png"
+    "resources/icons/lightTheme/cite.png"
+    "resources/icons/lightTheme/close-button-black.png"
+    "resources/icons/lightTheme/close-button.png"
+    "resources/icons/lightTheme/code-icon.png"
+    "resources/icons/lightTheme/collapse.png"
+    "resources/icons/lightTheme/columnConstructorBackground.png"
+    "resources/icons/lightTheme/computed.png"
+    "resources/icons/lightTheme/copy.png"
+    "resources/icons/lightTheme/create-folder.png"
+    "resources/icons/lightTheme/cross-sign-small-red.svg"
+    "resources/icons/lightTheme/cross.png"
+    "resources/icons/lightTheme/delete_icon.png"
+    "resources/icons/lightTheme/delete_icon_gray.png"
+    "resources/icons/lightTheme/divide.png"
+    "resources/icons/lightTheme/document-save-as.png"
+    "resources/icons/lightTheme/duplicate.png"
+    "resources/icons/lightTheme/duplicate_disabled.png"
+    "resources/icons/lightTheme/edit-pencil.png"
+    "resources/icons/lightTheme/editImage.png"
+    "resources/icons/lightTheme/equal.png"
+    "resources/icons/lightTheme/eraser.png"
+    "resources/icons/lightTheme/eraser_all.png"
+    "resources/icons/lightTheme/error.png"
+    "resources/icons/lightTheme/exclamation.svg"
+    "resources/icons/lightTheme/expand.png"
+    "resources/icons/lightTheme/expanded.png"
+    "resources/icons/lightTheme/expander-arrow-down-disabled.png"
+    "resources/icons/lightTheme/expander-arrow-down-hover.png"
+    "resources/icons/lightTheme/expander-arrow-down.png"
+    "resources/icons/lightTheme/expander-arrow-up-disabled.png"
+    "resources/icons/lightTheme/expander-arrow-up-hover.png"
+    "resources/icons/lightTheme/expander-arrow-up.png"
+    "resources/icons/lightTheme/eyeClosed.png"
+    "resources/icons/lightTheme/eyeOpen.png"
+    "resources/icons/lightTheme/file-jasp.svg"
+    "resources/icons/lightTheme/filter.png"
+    "resources/icons/lightTheme/filterConstructorBackground.png"
+    "resources/icons/lightTheme/folder.svg"
+    "resources/icons/lightTheme/gear.svg"
+    "resources/icons/lightTheme/greaterThan.png"
+    "resources/icons/lightTheme/greaterThanEqual.png"
+    "resources/icons/lightTheme/info-button-black.png"
+    "resources/icons/lightTheme/info-button.png"
+    "resources/icons/lightTheme/install_icon.png"
+    "resources/icons/lightTheme/jasp-logo-black.svg"
+    "resources/icons/lightTheme/jasp-logo.svg"
+    "resources/icons/lightTheme/jasp-wave-down-blue-120.svg"
+    "resources/icons/lightTheme/jasp-wave-up-green-120.svg"
+    "resources/icons/lightTheme/large-arrow-right.png"
+    "resources/icons/lightTheme/lessThan.png"
+    "resources/icons/lightTheme/lessThanEqual.png"
+    "resources/icons/lightTheme/loading.svg"
+    "resources/icons/lightTheme/modulo.png"
+    "resources/icons/lightTheme/negative.png"
+    "resources/icons/lightTheme/notEqual.png"
+    "resources/icons/lightTheme/or.png"
+    "resources/icons/lightTheme/osf-logo.png"
+    "resources/icons/lightTheme/product.png"
+    "resources/icons/lightTheme/redo.svg"
+    "resources/icons/lightTheme/right-arrow.png"
+    "resources/icons/lightTheme/rootHead.png"
+    "resources/icons/lightTheme/rootTail.png"
+    "resources/icons/lightTheme/sigma.png"
+    "resources/icons/lightTheme/sort-az.png"
+    "resources/icons/lightTheme/sort-za.png"
+    "resources/icons/lightTheme/spreadsheet.svg"
+    "resources/icons/lightTheme/square_trashcan.png"
+    "resources/icons/lightTheme/subtraction-sign-small.svg"
+    "resources/icons/lightTheme/subtraction-sign.svg"
+    "resources/icons/lightTheme/sum.png"
+    "resources/icons/lightTheme/summarize.svg"
+    "resources/icons/lightTheme/toolbutton-menu-indicator.svg"
+    "resources/icons/lightTheme/trashcan.png"
+    "resources/icons/lightTheme/trashcan.svg"
+    "resources/icons/lightTheme/trashcan_open.png"
+    "resources/icons/lightTheme/trashcan_open.svg"
+    "resources/icons/lightTheme/ul-orange-dot.png"
+    "resources/icons/lightTheme/undo.svg"
+    "resources/icons/lightTheme/variable-nominal-disabled.png"
+    "resources/icons/lightTheme/variable-nominal-inactive.png"
+    "resources/icons/lightTheme/variable-nominal-text-inactive.svg"
+    "resources/icons/lightTheme/variable-nominal-text.png"
+    "resources/icons/lightTheme/variable-nominal.png"
+    "resources/icons/lightTheme/variable-ordinal-disabled.png"
+    "resources/icons/lightTheme/variable-ordinal-inactive.png"
+    "resources/icons/lightTheme/variable-ordinal.png"
+    "resources/icons/lightTheme/variable-scale-disabled.png"
+    "resources/icons/lightTheme/variable-scale-inactive.png"
+    "resources/icons/lightTheme/variable-scale.png"
+    "resources/icons/lightTheme/variance.png"
+)
+
+qt_add_resources(JASP "icons"
+    PREFIX
+        "/"
+    BASE
+        "resources"
+    FILES
+        ${ICONS_RESOURCE_FILES}
+)
+set(resources_resource_files
+    "resources/../modules/upgrader/upgrades.json"
+    "resources/fonts/FiraCode-Retina.ttf"
+    "resources/fonts/FreeSans.ttf"
+    "resources/icons/darkTheme/jasp-logo-black.svg"
+)
+
+qt_add_resources(JASP "resources"
+    PREFIX
+        "/"
+    BASE
+        "resources"
+    FILES
+        ${RESOURCES_RESOURCE_FILES}
+)
+set(QML_RESOURCE_FILES
+    "components/JASP/Controls/AddColumnField.qml"
+    "components/JASP/Controls/AssignButton.qml"
+    "components/JASP/Controls/AssignedPairsVariablesList.qml"
+    "components/JASP/Controls/AssignedRepeatedMeasuresCells.qml"
+    "components/JASP/Controls/AssignedVariablesList.qml"
+    "components/JASP/Controls/AvailableVariablesList.qml"
+    "components/JASP/Controls/Button.qml"
+    "components/JASP/Controls/CIField.qml"
+    "components/JASP/Controls/CheckBox.qml"
+    "components/JASP/Controls/ColumnLayout.qml"
+    "components/JASP/Controls/ComboBox.qml"
+    "components/JASP/Controls/ComponentsList.qml"
+    "components/JASP/Controls/ComputedColumnField.qml"
+    "components/JASP/Controls/DoubleField.qml"
+    "components/JASP/Controls/ExpanderButton.qml"
+    "components/JASP/Controls/FactorLevelList.qml"
+    "components/JASP/Controls/FileSelector.qml"
+    "components/JASP/Controls/Form.qml"
+    "components/JASP/Controls/FormulaField.qml"
+    "components/JASP/Controls/GridLayout.qml"
+    "components/JASP/Controls/GroupBox.qml"
+    "components/JASP/Controls/HelpButton.qml"
+    "components/JASP/Controls/InputListView.qml"
+    "components/JASP/Controls/IntegerField.qml"
+    "components/JASP/Controls/JAGSTextArea.qml"
+    "components/JASP/Controls/JASPScrollBar.qml"
+    "components/JASP/Controls/Label.qml"
+    "components/JASP/Controls/ModelTermsList.qml"
+    "components/JASP/Controls/PercentField.qml"
+    "components/JASP/Controls/RadioButton.qml"
+    "components/JASP/Controls/RadioButtonGroup.qml"
+    "components/JASP/Controls/RowLayout.qml"
+    "components/JASP/Controls/Slider.qml"
+    "components/JASP/Controls/Switch.qml"
+    "components/JASP/Controls/TabView.qml"
+    "components/JASP/Controls/TableView.qml"
+    "components/JASP/Controls/Text.qml"
+    "components/JASP/Controls/TextArea.qml"
+    "components/JASP/Controls/TextField.qml"
+    "components/JASP/Controls/VariablesForm.qml"
+    "components/JASP/Controls/VariablesList.qml"
+    "components/JASP/Controls/qmldir"
+    "components/JASP/Theme/DarkTheme.qml"
+    "components/JASP/Theme/Theme.qml"
+    "components/JASP/Theme/qmldir"
+    "components/JASP/Widgets/AboutWindow.qml"
+    "components/JASP/Widgets/AnalysisFormExpander.qml"
+    "components/JASP/Widgets/AnalysisForms.qml"
+    "components/JASP/Widgets/BasicTableViewJasp.qml"
+    "components/JASP/Widgets/BasicThreeButtonTableView.qml"
+    "components/JASP/Widgets/BayesFactorType.qml"
+    "components/JASP/Widgets/Chi2TestTableView.qml"
+    "components/JASP/Widgets/ComputeColumnWindow.qml"
+    "components/JASP/Widgets/ContrastsList.qml"
+    "components/JASP/Widgets/ControlErrorMessage.qml"
+    "components/JASP/Widgets/CreateComputeColumnDialog.qml"
+    "components/JASP/Widgets/CrossButton.qml"
+    "components/JASP/Widgets/CustomContrastsTableView.qml"
+    "components/JASP/Widgets/CustomMenu.qml"
+    "components/JASP/Widgets/DataPanel.qml"
+    "components/JASP/Widgets/DataTableView.qml"
+    "components/JASP/Widgets/Divider.qml"
+    "components/JASP/Widgets/FactorsForm.qml"
+    "components/JASP/Widgets/FactorsList.qml"
+    "components/JASP/Widgets/FileMenu/BreadCrumbs.qml"
+    "components/JASP/Widgets/FileMenu/Computer.qml"
+    "components/JASP/Widgets/FileMenu/CurrentFile.qml"
+    "components/JASP/Widgets/FileMenu/DataLibrary.qml"
+    "components/JASP/Widgets/FileMenu/FileList.qml"
+    "components/JASP/Widgets/FileMenu/FileMenu.qml"
+    "components/JASP/Widgets/FileMenu/ListItem.qml"
+    "components/JASP/Widgets/FileMenu/MenuHeader.qml"
+    "components/JASP/Widgets/FileMenu/OSF.qml"
+    "components/JASP/Widgets/FileMenu/OSFLogin.qml"
+    "components/JASP/Widgets/FileMenu/PrefsAdvanced.qml"
+    "components/JASP/Widgets/FileMenu/PrefsData.qml"
+    "components/JASP/Widgets/FileMenu/PrefsGroupRect.qml"
+    "components/JASP/Widgets/FileMenu/PrefsMissingValues.qml"
+    "components/JASP/Widgets/FileMenu/PrefsResults.qml"
+    "components/JASP/Widgets/FileMenu/PrefsTextInput.qml"
+    "components/JASP/Widgets/FileMenu/PrefsUI.qml"
+    "components/JASP/Widgets/FileMenu/RecentFiles.qml"
+    "components/JASP/Widgets/FilterConstructor/ColumnDrag.qml"
+    "components/JASP/Widgets/FilterConstructor/ColumnsSelector.qml"
+    "components/JASP/Widgets/FilterConstructor/ComputedColumnsConstructor.qml"
+    "components/JASP/Widgets/FilterConstructor/DragGeneric.qml"
+    "components/JASP/Widgets/FilterConstructor/DropSpot.qml"
+    "components/JASP/Widgets/FilterConstructor/DropTrash.qml"
+    "components/JASP/Widgets/FilterConstructor/ElementView.qml"
+    "components/JASP/Widgets/FilterConstructor/FilterConstructor.qml"
+    "components/JASP/Widgets/FilterConstructor/FilterConstructor.qmlc"
+    "components/JASP/Widgets/FilterConstructor/Function.qml"
+    "components/JASP/Widgets/FilterConstructor/FunctionDrag.qml"
+    "components/JASP/Widgets/FilterConstructor/JASPColumn.qml"
+    "components/JASP/Widgets/FilterConstructor/JSONtoFormulas.qml"
+    "components/JASP/Widgets/FilterConstructor/Number.qml"
+    "components/JASP/Widgets/FilterConstructor/NumberDrag.qml"
+    "components/JASP/Widgets/FilterConstructor/Operator.qml"
+    "components/JASP/Widgets/FilterConstructor/OperatorDrag.qml"
+    "components/JASP/Widgets/FilterConstructor/OperatorSelector.qml"
+    "components/JASP/Widgets/FilterConstructor/OperatorSelectorComputedColumns.qml"
+    "components/JASP/Widgets/FilterConstructor/OperatorVertical.qml"
+    "components/JASP/Widgets/FilterConstructor/OperatorVerticalDrag.qml"
+    "components/JASP/Widgets/FilterConstructor/String.qml"
+    "components/JASP/Widgets/FilterConstructor/StringDrag.qml"
+    "components/JASP/Widgets/FilterWindow.qml"
+    "components/JASP/Widgets/HelpWindow.qml"
+    "components/JASP/Widgets/ImageInverter.qml"
+    "components/JASP/Widgets/JASPDataView.qml"
+    "components/JASP/Widgets/JASPMouseAreaToolTipped.qml"
+    "components/JASP/Widgets/JagsTableView.qml"
+    "components/JASP/Widgets/LoadingIndicator.qml"
+    "components/JASP/Widgets/MainPage.qml"
+    "components/JASP/Widgets/MainWindow.qml"
+    "components/JASP/Widgets/MenuButton.qml"
+    "components/JASP/Widgets/MessageBox.qml"
+    "components/JASP/Widgets/ModuleInstaller.qml"
+    "components/JASP/Widgets/ModulesMenu.qml"
+    "components/JASP/Widgets/PlotEditor/PlotEditingAxis.qml"
+    "components/JASP/Widgets/PlotEditor/PlotEditor.qml"
+    "components/JASP/Widgets/ProgressBarHolder.qml"
+    "components/JASP/Widgets/RCommanderWindow.qml"
+    "components/JASP/Widgets/RectangularButton.qml"
+    "components/JASP/Widgets/Ribbon/MenuArrowButton.qml"
+    "components/JASP/Widgets/Ribbon/RibbonBar.qml"
+    "components/JASP/Widgets/Ribbon/RibbonButton.qml"
+    "components/JASP/Widgets/Ribbon/Ribbons.qml"
+    "components/JASP/Widgets/RoundedButton.qml"
+    "components/JASP/Widgets/SaveDiscardCancelDialog.qml"
+    "components/JASP/Widgets/SetSeed.qml"
+    "components/JASP/Widgets/SimpleTableView.qml"
+    "components/JASP/Widgets/SortMenuButton.qml"
+    "components/JASP/Widgets/SpinBox.qml"
+    "components/JASP/Widgets/SplitHandle.qml"
+    "components/JASP/Widgets/SubjectivePriors.qml"
+    "components/JASP/Widgets/TableViewJasp.qml"
+    "components/JASP/Widgets/TableViewStyleJasp.qml"
+    "components/JASP/Widgets/UIScaleNotifier.qml"
+    "components/JASP/Widgets/VariablesWindow.qml"
+    "components/JASP/Widgets/WelcomePage.qml"
+    "components/JASP/Widgets/qmldir"
+)
+
+qt_add_resources(JASP "qml"
+    PREFIX
+        "/"
+    FILES
+        ${QML_RESOURCE_FILES}
+)
 
 
 # #### Keys ignored in scope 1:.:.:Desktop.pro:<TRUE>:

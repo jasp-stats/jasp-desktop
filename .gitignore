@@ -55,8 +55,11 @@ flatpak-builder-folder/
 
 
 # CMake Stuff
-build/**/*
+build/
 
 # CLion Stuff
-cmake-build-debug/
+cmake-build-*
 .idea
+
+# Xcode project
+xcode-project/
