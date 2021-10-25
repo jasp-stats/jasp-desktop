@@ -36,6 +36,9 @@ struct columnNotFound : public std::runtime_error
 typedef boost::interprocess::allocator<Column, boost::interprocess::managed_shared_memory::segment_manager> ColumnAllocator;
 typedef boost::container::vector<Column, ColumnAllocator> ColumnVector;
 
+///
+/// Container class for Column, used in DataSet
+///
 class Columns
 {
 	friend class DataSet;
@@ -64,8 +67,8 @@ public:
 	const_iterator begin()	const	{ return _columnStore.begin();	}
 	const_iterator end()	const	{ return _columnStore.end();	}
 	size_t columnCount()	const	{ return _columnStore.size();	}
-	size_t minRowCount()	const;
-	size_t maxRowCount()	const;
+	size_t minRowCount()	const; ///< minRowCount() returns the smallest rowcount of all the columns (because they do not necessarily have the same length. (but they should)
+	size_t maxRowCount()	const; ///< maxRowCount() returns the largest rowcount of all the columns (because they do not necessarily have the same length. (but they should)
 
 			Column & operator[](size_t i)				{ return _columnStore[i]; }
 	const	Column & operator[](size_t i) const			{ return _columnStore[i]; }

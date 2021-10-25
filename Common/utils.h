@@ -26,6 +26,8 @@
 
 enum class FileTypeBase;
 
+/// One of the utility classes
+/// This is for the sort of functions that you might want to use in either Desktop or Engine. Should not be used in R-Interface or jaspResults.
 class Utils
 {
 public:

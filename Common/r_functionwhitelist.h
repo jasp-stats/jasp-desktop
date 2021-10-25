@@ -13,7 +13,12 @@ public:
 	filterException(const char * what_arg)			: std::logic_error(what_arg) {}
 };
 
-
+///
+/// This class provides for a modicum of security when opening JASP files created by strangers.
+/// Because one can write filter or computed column code in R and R allows you to do almost anything.
+/// This class attempts to restrict those scripts to use only whitelisted functions (in R_FunctionWhiteList::functionWhiteList)
+/// Of course, R is very flexible and there might be ways around it that we haven't thought of but this is much better than nothing.
+///
 class R_FunctionWhiteList
 {
 private:

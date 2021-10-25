@@ -18,6 +18,10 @@
 #ifndef PROCESSINFO_H
 #define PROCESSINFO_H
 
+
+///
+/// Get your PID here!
+///
 class ProcessInfo
 {
 public:

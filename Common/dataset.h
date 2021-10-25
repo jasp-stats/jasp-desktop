@@ -25,6 +25,11 @@
 typedef boost::interprocess::allocator<bool, boost::interprocess::managed_shared_memory::segment_manager> BoolAllocator;
 typedef boost::container::vector<bool, BoolAllocator> BoolVector;
 
+
+///
+/// The interface class for storing the dataset used in JASP as a collection of Columns with Labels
+/// Doesn't do a lot and could probably be merged with Columns
+///
 class DataSet
 {
 	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;

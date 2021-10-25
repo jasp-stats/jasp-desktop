@@ -21,14 +21,14 @@
 #include <string>
 #include <stdexcept>
 
+///
+/// Some default folders so that they are accesible even without Qt (unlike Desktop/utilities/appdirs.h)
+///
 class Dirs
 {
 public:
-
-	static std::string appDataDir();
 	static std::string tempDir();
 	static std::string exeDir();
-	static std::string rHomeDir();
 	static std::string resourcesDir();
 
 

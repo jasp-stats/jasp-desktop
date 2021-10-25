@@ -15,6 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+///
+/// Just some common defines 
+///
+
 #ifndef COMMON_H
 #define COMMON_H
 

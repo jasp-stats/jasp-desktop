@@ -21,25 +21,18 @@
 #include <string>
 #include <vector>
 
-/*
- * Each running UI process creates a series of temporary directories
- * Within these temporary directories, subdirectories exist, numbered
- * with the analysisId, for each analysis.
- * In these the state file exists, as well as all the plots.
- *
- * In the event that the UI process crashes, and fails to clean up
- * after itself, these 'orphans' are deleted next time the program
- * starts up. This performed by the deleteOrphans() function below.
- *
- * During normal operation, the UI process 'touch'es a status file
- * in the temp directory, every 30 seconds or so this is handled by
- * the heartbeat() function below.
- *
- * deleteOrphans() checks the modification time of this status file
- * and if it is more than a minute old, the temp directory is
- * considered orphaned and is deleted.
- */
-
+/// Each running UI process creates a series of temporary directories
+/// 
+/// Within these temporary directories, subdirectories exist, numbered with the analysisId, for each analysis.
+/// 
+/// In these the state file exists, as well as all the plots. 
+/// 
+/// In the event that the UI process crashes, and fails to clean up after itself, these 'orphans' are deleted next time the program starts up. 
+/// This is performed by the deleteOrphans() function below.
+/// During normal operation, the UI process 'touch'es a status file in the temp directory, every 30 seconds or so this is handled by the heartbeat() function below.
+/// 
+/// deleteOrphans() checks the modification time of this status file and if it is more than a minute old, the temp directory is considered orphaned and is deleted.
+/// 
 class TempFiles
 {
 	typedef std::vector<std::string> stringvec;

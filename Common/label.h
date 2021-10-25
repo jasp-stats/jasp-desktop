@@ -20,16 +20,17 @@
 
 #include <string>
 
-/*********
- * Label is a class that stores the value of a column if it is not a Scale (a Nominal Int, Nominal Text, or Ordinal).
- * The value is either an integer or a string.
- * If it is an integer, the _intValue is this value, and _stringValue is at first the corresponding string.
- * _stringValue can be then changed in the Variable tab in JASP.
- * If the value is a string, _intValue is the key that maps the label with the AsInts property of the column object.
- * _stringValue is then the value, that can be changed in the Variable tab in JASP. If changed the original value
- * is saved in the _orgStringValues static property of the Labels class.
- *********/
-
+///
+/// Label is a class that stores the value of a column if it is not a Scale (a Nominal Int, Nominal Text, or Ordinal).
+/// The value is either an integer or a string.
+///
+/// If it is an integer, the _intValue is this value, and _stringValue is at first the corresponding string.
+/// _stringValue can be then changed in the Variable tab in JASP.
+///
+/// If the value is a string, _intValue is the key that maps the label with the AsInts property of the column object.
+/// _stringValue is then the value, that can be changed in the Variable tab in JASP. If changed the original value
+/// is saved in the _orgStringValues static property of the Labels class.
+///
 class Label
 {
 public:
