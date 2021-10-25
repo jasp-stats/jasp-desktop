@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.20)
 
 set(JASP_REQUIRED_FILES ${CMAKE_SOURCE_DIR}/../jasp-required-files)
 
@@ -18,7 +18,7 @@ set(JASP_LIBJSON_STATIC OFF)
 set(PRINT_ENGINE_MESSAGES OFF)
 
 # This is how we can link to the system R
-set(BUILD_WITH_SYSTEM_R ON)
+# set(BUILD_WITH_SYSTEM_R OFF)
 
 add_definitions(-DBUILDING_JASP)
 add_definitions(-DJASP_DEBUG)

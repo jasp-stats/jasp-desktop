@@ -1,12 +1,6 @@
-# Generated from R-Interface.pro.
-
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.20)
 
 message(STATUS "[JASP]: Configuring the R-Interface...")
-
-#####################################################################
-## R-Interface11'.'6 Generic Library:
-#####################################################################
 
 find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono REQUIRED)
 
@@ -17,26 +11,42 @@ if (BUILD_WITH_SYSTEM_R)
 	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
 	include_directories(${LIBR_INCLUDE_DIRS})
 
-	# I am still missing the Rcpp
-	include_directories(${_R_HOME}/library/Rcpp/include)
+	include_directories(${_Rcpp_HOME}/include)
+	include_directories(${_RInside_HOME}/include)
+
+	find_library(_LIB_RCPP
+		NAMES Rcpp.so
+		PATHS ${_Rcpp_HOME}/libs
+		REQUIRED)
+
+	find_library(_LIB_RInside
+		NAMES RInside.so
+		PATHS ${_RInside_HOME}/libs
+		REQUIRED)
+
 else()
-	find_library(LIBR
+	message(STATUS "[R-Interface]: Building with R.framework...")
+
+	find_library(_LIB_R
 			NAMES R
-			PATHS "${_R_HOME}"
+			PATHS ${_R_HOME}
 			REQUIRED
 		)
+	message(STATUS "[R-Interface]: Found ${_LIB_R} at ${_R_HOME}")
 
-	find_library(LIBRCPP
+	set(_LIB_RCPP_HOME ${_R_HOME}/library/Rcpp/libs)
+	find_library(_LIB_RCPP
 			NAMES Rcpp.so
-			PATHS "${_R_HOME}/library/Rcpp/libs"
+			PATHS ${_LIB_RCPP_HOME}
 			REQUIRED
 		)
+	message(STATUS "[R-Interface]: Found ${_LIB_RCPP} at ${_LIBRCPP_HOME}")
 
+	include_directories(RInside)
 	include_directories(${_R_HOME}/include)
 	include_directories(${_R_HOME}/library/Rcpp/include)
 endif()
 
-include_directories(RInside)
 include_directories(jaspResults)
 include_directories(${PROJECT_SOURCE_DIR}/Common)
 include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
@@ -45,16 +55,17 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${LIBJSON_INCLUDE_DIRS})
 
 add_definitions(-DJASP_R_INTERFACE_LIBRARY)
+add_definitions(-DQT_NO_DEPRECATED_WARNINGS)
 
 
 SET(HEADER_FILES
-	RInside/Callbacks.h
-	RInside/MemBuf.h
-	RInside/RInside.h
-	RInside/RInsideAutoloads.h
-	RInside/RInsideCommon.h
-	RInside/RInsideConfig.h
-	RInside/RInsideEnvVars.h
+	# RInside/Callbacks.h
+	# RInside/MemBuf.h
+	# RInside/RInside.h
+	# RInside/RInsideAutoloads.h
+	# RInside/RInsideCommon.h
+	# RInside/RInsideConfig.h
+	# RInside/RInsideEnvVars.h
 	jaspResults/src/jaspColumn.h
 	jaspResults/src/jaspContainer.h
 	jaspResults/src/jaspHtml.h
@@ -72,8 +83,8 @@ SET(HEADER_FILES
 	)
 
 SET(SOURCE_FILES
-	RInside/MemBuf.cpp
-	RInside/RInside.cpp
+	# RInside/MemBuf.cpp
+	# RInside/RInside.cpp
 	jaspResults/src/jaspColumn.cpp
 	jaspResults/src/jaspContainer.cpp
 	jaspResults/src/jaspHtml.cpp
@@ -97,21 +108,26 @@ qt_add_library(
 if (BUILD_WITH_SYSTEM_R)
 
 	target_link_libraries(
-		R-Interface PUBLIC Common
+		R-Interface PUBLIC
+		Common
 		${Boost_LIBRARIES}
+		
 		PkgConfig::LIBJSON
 		PkgConfig::LIBR
-		# PkgConfig::LIBRCPP
+
+		${_LIB_RCPP}
+		${_LIB_RInside}
 	)
 
 else()
 
 	target_link_libraries(
-		R-Interface Common
-		${Boost_LIBRARIES}
+		R-Interface PUBLIC 
+		Common
 		PkgConfig::LIBJSON
-		${LIBR}
-		${LIBRCPP}
+		${Boost_LIBRARIES}
+		${_LIB_R}
+		${_LIB_RCPP}
 	)
 
 endif()
@@ -120,40 +136,6 @@ endif()
 # qt_internal_add_cmake_library(R-Interface11'.'6
 #     OUTPUT_DIRECTORY ".."
 #     SOURCES
-		
-		 
-
-		 
-
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		 
-
-		
 #     DEFINES
 #         BUILDING_JASP
 #         CURRENT_R_VERSION=\"4.1\"

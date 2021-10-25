@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.20)
 
 project(JASP 
 	VERSION 0.16.0
@@ -41,5 +41,5 @@ if(NOT CMAKE_BUILD_TYPE MATCHES Debug) #Release, RelWithDebInfo and MinSizeRel
 	else() # UNIX
 		set(SYSTEM_TYPE EXCLUDE_FROM_ALL)
 	endif()
-	message("System type is " ${SYSTEM_TYPE})
+	message(STATUS "System type is " ${SYSTEM_TYPE})
 endif()

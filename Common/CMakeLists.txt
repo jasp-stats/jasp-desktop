@@ -1,8 +1,4 @@
-# Part of this file is generated from Common.pro using the pro2cmake.py script by Qt Core Team
-# But to be honest their script sucks, and it's not using their new APIs anyway. There are a lot 
-# of commented line that I will go through them later.
-
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.20)
 
 message(STATUS "[JASP]: Configuring Common...")
 
@@ -15,8 +11,18 @@ if (BUILD_WITH_SYSTEM_R)
 	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
 	include_directories(${LIBR_INCLUDE_DIRS})
 
-	# I am still missing the Rcpp
-	include_directories(${_R_HOME}/library/Rcpp/include)
+	include_directories(${_Rcpp_HOME}/include)
+	include_directories(${_RInside_HOME}/include)
+
+	find_library(_LIB_RCPP
+		NAMES Rcpp.so
+		PATHS ${_Rcpp_HOME}/libs
+		REQUIRED)
+
+	find_library(_LIB_RInside
+		NAMES RInside.so
+		PATHS ${_RInside_HOME}/libs
+		REQUIRED)
 else()
 	find_library(LIBR
 			NAMES R

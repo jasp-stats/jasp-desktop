@@ -188,9 +188,10 @@ protected:
 protected:
 	QAbstractItemModel *									_model = nullptr;
 
-	std::vector<QSizeF>										_cellSizes; //[col]
-	std::vector<double>										_colXPositions; //[col][row]
-	std::vector<double>										_dataColsMaxWidth;
+	/// @todo, Amir: these guys, if not initialized, they will crash JASP at start
+	std::vector<QSizeF>										_cellSizes{0}; //[col]
+	std::vector<double>										_colXPositions{0}; //[col][row]
+	std::vector<double>										_dataColsMaxWidth{0};
 	std::stack<ItemContextualized*>							_textItemStorage;
 	bool													_cacheItems = true;
 	std::stack<ItemContextualized*>							_rowNumberStorage;

@@ -1,6 +1,4 @@
-# Generated from Engine.pro.
-
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.20)
 
 message(STATUS "[JASP]: Configuring the Engine")
 
@@ -49,8 +47,18 @@ if (BUILD_WITH_SYSTEM_R)
 	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
 	include_directories(${LIBR_INCLUDE_DIRS})
 
-	# I am still missing the Rcpp
-	include_directories(${_R_HOME}/library/Rcpp/include)
+	include_directories(${_Rcpp_HOME}/include)
+	include_directories(${_RInside_HOME}/include)
+
+	find_library(_LIB_RCPP
+		NAMES Rcpp.so
+		PATHS ${_Rcpp_HOME}/libs
+		REQUIRED)
+
+	find_library(_LIB_RInside
+		NAMES RInside.so
+		PATHS ${_RInside_HOME}/libs
+		REQUIRED)
 else()
 	message(STATUS "[Engine]: Looking for the libR, here: " ${_R_HOME})
 	find_library(LIBR
@@ -164,9 +172,11 @@ qt_add_executable(JASPEngine
 if (BUILD_WITH_SYSTEM_R)
 
 	target_link_libraries(
-		JASPEngine PUBLIC Common R-Interface
+		JASPEngine PUBLIC 
+			Common
+			R-Interface
 			Qt::Core
-			PkgConfig::LIBARCHIVE
+			PkgConfig::LIBJSON
 			PkgConfig::LIBR
 			${Boost_LIBRARIES}
 		)
@@ -174,10 +184,10 @@ if (BUILD_WITH_SYSTEM_R)
 else()
 
 	target_link_libraries(
-		JASPEngine Common R-Interface
+		JASPEngine PUBLIC Common R-Interface
 			Qt::Core
-			PkgConfig::LIBARCHIVE
-			PkgConfig::LIBJSON
+			${LIBARCHIVE_LIBRARIES}
+			${LIBJSON_LIBRARIES}
 			${LIBR}
 			${Boost_LIBRARIES}
 		)

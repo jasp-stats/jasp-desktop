@@ -1,5 +1,4 @@
-# Generated from Desktop.pro.
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.20)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
@@ -30,10 +29,12 @@ include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 add_definitions(-DBUILDING_JASP)
 add_definitions(-DJASP_USES_QT_HERE)
 add_definitions(-DPRINT_ENGINE_MESSAGES)
+add_definitions(-Wno-deprecated-declarations)
 
 
 # I think we can put some of these files into the JASP binary, e.g., translations, and helps
 file(COPY ${CMAKE_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+message(STATUS "[Desktop]: Successfully copied the Resources files to Desktop/")
 
 # TODO: This can all be done using the include_directories I think
 set(HEADER_FILES
