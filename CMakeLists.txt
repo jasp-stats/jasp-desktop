@@ -32,5 +32,14 @@ add_subdirectory(Engine)
 add_subdirectory(Desktop)
 # add_subdirectory(Modules)
 
-# if(UNIX)
-# endif()
+# Some primarily checks. This will extend as we move to other systems.
+if(NOT CMAKE_BUILD_TYPE MATCHES Debug) #Release, RelWithDebInfo and MinSizeRel
+	if(WIN32) # Check if we are on Windows
+		set(SYSTEM_TYPE WIN32)
+	elseif(APPLE) # MacOS X
+		set(SYSTEM_TYPE MACOSX_BUNDLE)
+	else() # UNIX
+		set(SYSTEM_TYPE EXCLUDE_FROM_ALL)
+	endif()
+	message("System type is " ${SYSTEM_TYPE})
+endif()

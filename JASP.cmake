@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
 set(JASP_REQUIRED_FILES ${CMAKE_SOURCE_DIR}/../jasp-required-files)
-message(STATUS ${JASP_REQUIRED_FILES})
 
 set(CURRENT_R_VERSION "4.1")
 set(GIT_CURRENT_BRANCH "(git rev-parse --abbrev-ref HEAD)")
@@ -22,3 +21,5 @@ set(PRINT_ENGINE_MESSAGES OFF)
 set(BUILD_WITH_SYSTEM_R ON)
 
 add_definitions(-DBUILDING_JASP)
+add_definitions(-DJASP_DEBUG)
+add_definitions(-DPRINT_ENGINE_MESSAGES)

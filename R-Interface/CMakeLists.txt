@@ -2,37 +2,38 @@
 
 cmake_minimum_required(VERSION 3.2)
 
+message(STATUS "[JASP]: Configuring the R-Interface...")
+
 #####################################################################
 ## R-Interface11'.'6 Generic Library:
 #####################################################################
 
 find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono REQUIRED)
 
-
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
 
 if (BUILD_WITH_SYSTEM_R)
-    message(STATUS ">>> Building with system R...")
-    pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
-    include_directories(${LIBR_INCLUDE_DIRS})
+	message(STATUS "[R-Interface]: Building with system R...")
+	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
+	include_directories(${LIBR_INCLUDE_DIRS})
 
-    # I am still missing the Rcpp
-    include_directories(${_R_HOME}/library/Rcpp/include)
+	# I am still missing the Rcpp
+	include_directories(${_R_HOME}/library/Rcpp/include)
 else()
-    find_library(LIBR
-            NAMES R
-            PATHS "${_R_HOME}"
-            REQUIRED
-        )
+	find_library(LIBR
+			NAMES R
+			PATHS "${_R_HOME}"
+			REQUIRED
+		)
 
-    find_library(LIBRCPP
-            NAMES Rcpp.so
-            PATHS "${_R_HOME}/library/Rcpp/libs"
-            REQUIRED
-        )
+	find_library(LIBRCPP
+			NAMES Rcpp.so
+			PATHS "${_R_HOME}/library/Rcpp/libs"
+			REQUIRED
+		)
 
-    include_directories(${_R_HOME}/include)
-    include_directories(${_R_HOME}/library/Rcpp/include)
+	include_directories(${_R_HOME}/include)
+	include_directories(${_R_HOME}/library/Rcpp/include)
 endif()
 
 include_directories(RInside)
@@ -47,69 +48,71 @@ add_definitions(-DJASP_R_INTERFACE_LIBRARY)
 
 
 SET(HEADER_FILES
-    RInside/Callbacks.h
-    RInside/MemBuf.h
-    RInside/RInside.h
-    RInside/RInsideAutoloads.h
-    RInside/RInsideCommon.h
-    RInside/RInsideConfig.h
-    RInside/RInsideEnvVars.h
-    jaspResults/src/jaspColumn.h
-    jaspResults/src/jaspContainer.h
-    jaspResults/src/jaspHtml.h
-    jaspResults/src/jaspJson.h
-    jaspResults/src/jaspList.h
-    jaspResults/src/jaspModuleRegistration.h
-    jaspResults/src/jaspObject.h
-    jaspResults/src/jaspPlot.h
-    jaspResults/src/jaspQmlSource.h
-    jaspResults/src/jaspResults.h
-    jaspResults/src/jaspState.h
-    jaspResults/src/jaspTable.h
-    jasprcpp.h
-    jasprcpp_interface.h
-    )
+	RInside/Callbacks.h
+	RInside/MemBuf.h
+	RInside/RInside.h
+	RInside/RInsideAutoloads.h
+	RInside/RInsideCommon.h
+	RInside/RInsideConfig.h
+	RInside/RInsideEnvVars.h
+	jaspResults/src/jaspColumn.h
+	jaspResults/src/jaspContainer.h
+	jaspResults/src/jaspHtml.h
+	jaspResults/src/jaspJson.h
+	jaspResults/src/jaspList.h
+	jaspResults/src/jaspModuleRegistration.h
+	jaspResults/src/jaspObject.h
+	jaspResults/src/jaspPlot.h
+	jaspResults/src/jaspQmlSource.h
+	jaspResults/src/jaspResults.h
+	jaspResults/src/jaspState.h
+	jaspResults/src/jaspTable.h
+	jasprcpp.h
+	jasprcpp_interface.h
+	)
 
 SET(SOURCE_FILES
-    RInside/MemBuf.cpp
-    RInside/RInside.cpp
-    jaspResults/src/jaspColumn.cpp
-    jaspResults/src/jaspContainer.cpp
-    jaspResults/src/jaspHtml.cpp
-    jaspResults/src/jaspJson.cpp
-    jaspResults/src/jaspObject.cpp
-    jaspResults/src/jaspPlot.cpp
-    jaspResults/src/jaspQmlSource.cpp
-    jaspResults/src/jaspResults.cpp
-    jaspResults/src/jaspState.cpp
-    jaspResults/src/jaspTable.cpp
-    jasprcpp.cpp
-    )
+	RInside/MemBuf.cpp
+	RInside/RInside.cpp
+	jaspResults/src/jaspColumn.cpp
+	jaspResults/src/jaspContainer.cpp
+	jaspResults/src/jaspHtml.cpp
+	jaspResults/src/jaspJson.cpp
+	jaspResults/src/jaspObject.cpp
+	jaspResults/src/jaspPlot.cpp
+	jaspResults/src/jaspQmlSource.cpp
+	jaspResults/src/jaspResults.cpp
+	jaspResults/src/jaspState.cpp
+	jaspResults/src/jaspTable.cpp
+	jasprcpp.cpp
+	)
 
-qt_add_library(R-Interface
-    ${HEADER_FILES}
-    ${SOURCE_FILES}
+qt_add_library(
+	R-Interface
+	${HEADER_FILES}
+	${SOURCE_FILES}
+	STATIC
 )
 
 if (BUILD_WITH_SYSTEM_R)
 
-    target_link_libraries(
-        R-Interface Common
-        ${Boost_LIBRARIES}
-        PkgConfig::LIBJSON
-        PkgConfig::LIBR
-        # PkgConfig::LIBRCPP
-    )
+	target_link_libraries(
+		R-Interface PUBLIC Common
+		${Boost_LIBRARIES}
+		PkgConfig::LIBJSON
+		PkgConfig::LIBR
+		# PkgConfig::LIBRCPP
+	)
 
 else()
 
-    target_link_libraries(
-        R-Interface Common
-        ${Boost_LIBRARIES}
-        PkgConfig::LIBJSON
-        ${LIBR}
-        ${LIBRCPP}
-    )
+	target_link_libraries(
+		R-Interface Common
+		${Boost_LIBRARIES}
+		PkgConfig::LIBJSON
+		${LIBR}
+		${LIBRCPP}
+	)
 
 endif()
 
@@ -117,40 +120,40 @@ endif()
 # qt_internal_add_cmake_library(R-Interface11'.'6
 #     OUTPUT_DIRECTORY ".."
 #     SOURCES
-        
-         
+		
+		 
 
-         
+		 
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-         
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		 
 
-        
+		
 #     DEFINES
 #         BUILDING_JASP
 #         CURRENT_R_VERSION=\"4.1\"

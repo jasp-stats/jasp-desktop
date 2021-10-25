@@ -37,6 +37,7 @@ include_directories(${PROJECT_SOURCE_DIR}/Common)
 include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
 add_definitions(-DJASP_USES_QT_HERE)
+add_definitions(-DPRINT_ENGINE_MESSAGES)
 
 # TODO: This can all be done using the include_directories I think
 set(HEADER_FILES
@@ -465,10 +466,8 @@ qt_add_executable(JASP
     ${RESOURCE_FILES}
 )
 
-target_compile_options(JASP PRIVATE -Wno-deprecated-declarations)
-
 target_link_libraries(
-    JASP PRIVATE Common
+    JASP PUBLIC Common
     Qt::Core Qt::Gui Qt::OpenGL 
     Qt::Widgets Qt::Qml Qt::WebEngineWidgets
     Qt::WebEngineQuick Qt::WebChannel Qt::Svg

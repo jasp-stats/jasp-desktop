@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 3.2)
 
-message(STATUS "Building the Engine")
+message(STATUS "[JASP]: Configuring the Engine")
 
 #####################################################################
 ## JASPEngine Binary:
@@ -45,14 +45,14 @@ include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 # configure_file(appinfo.cpp.in appinfo.cpp)
 
 if (BUILD_WITH_SYSTEM_R)
-	message(STATUS "Building with system R..")
+	message(STATUS "[Engine]: Building with system R..")
 	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
 	include_directories(${LIBR_INCLUDE_DIRS})
 
 	# I am still missing the Rcpp
 	include_directories(${_R_HOME}/library/Rcpp/include)
 else()
-	message(STATUS "Looking for the libR, here: " ${_R_HOME})
+	message(STATUS "[Engine]: Looking for the libR, here: " ${_R_HOME})
 	find_library(LIBR
 			NAMES R
 			PATHS ${_R_HOME}
@@ -153,16 +153,18 @@ endif()
 #         -stdlib=libc++ -stdlib=libc++
 # )
 
+add_definitions(-DBUILDING_JASP_ENGINE)
+add_definitions(-DR_HOME=${_R_HOME})
+
 qt_add_executable(JASPEngine
 	${HEADER_FILES}
 	${SOURCE_FILES}
 )
 
-
 if (BUILD_WITH_SYSTEM_R)
 
 	target_link_libraries(
-		JASPEngine PRIVATE Common R-Interface
+		JASPEngine PUBLIC Common R-Interface
 			Qt::Core
 			PkgConfig::LIBARCHIVE
 			PkgConfig::LIBR
