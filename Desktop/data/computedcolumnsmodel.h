@@ -7,6 +7,9 @@
 #include "datasetpackage.h"
 #include "analysis/analyses.h"
 
+/// 
+/// A model for use by the computed columns editor in QML
+/// It can only show the relevant information for a single computed column at a time
 class ComputedColumnsModel : public QObject
 {
 	Q_OBJECT

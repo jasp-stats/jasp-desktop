@@ -23,7 +23,6 @@
 
 #include "QDate"
 
-#include "../importerutils.h"
 #include "../importcolumn.h"
 
 using namespace std;

@@ -7,6 +7,10 @@ class Importer;
 
 typedef std::vector<ImportColumn *> ImportColumns;
 
+///
+/// Base class for all data during import
+/// It has some utility functions and defines the interface that is used to convert all this to the "real" dataset in memory in JASP
+/// It stores ImportColumn and can be used to iterate over these.
 class ImportDataSet
 {
 

@@ -7,6 +7,11 @@
 
 class Analysis;
 
+///
+/// Handles everything related to a single computed column
+/// Checks whether it has dependencies on other computed columns, on analyses (if they generate a computed column for instance)
+/// Also used to make sure the computed column are reran if any of their sources of information change (like a normal column)
+/// Furthermore can convert itself to and fro json for easy storage inside a jasp-file.
 class ComputedColumn
 {
 public:

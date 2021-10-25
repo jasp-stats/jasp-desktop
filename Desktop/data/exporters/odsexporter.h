@@ -26,6 +26,8 @@
 
 #include <QDomDocument>
 
+///
+/// To export to ODS
 class ODSExporter : public Exporter
 {
 public:

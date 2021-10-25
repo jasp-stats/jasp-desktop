@@ -25,6 +25,9 @@
 #include <QString>
 #include <QStringList>
 
+///
+/// Not really sure how to describe this, Bruno?
+///
 class Term
 {
 public:

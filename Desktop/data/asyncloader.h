@@ -30,6 +30,10 @@
 
 #include "osf/onlinedatamanager.h"
 
+///
+/// Used to run importers and exporters in a different thread from the main event loop.
+/// This way we can keep the interface responsive but it is important to make sure the right kind of qt connections are used.
+/// And no direct calls to the other threads...
 class AsyncLoader : public QObject
 {
 	Q_OBJECT

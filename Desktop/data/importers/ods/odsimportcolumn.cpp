@@ -22,12 +22,11 @@
 #include "odsimportcolumn.h"
 #include "odssheetcell.h"
 
-#include "../importerutils.h"
-
 #include "odstypes.h"
 #include "odsimportdataset.h"
 
 #include <set>
+#include "log.h"
 
 using namespace std;
 using namespace ods;
@@ -84,15 +83,13 @@ void ODSImportColumn::createSpace(size_t row)
 #ifdef JASP_DEBUG
 	}
 
-	if (numAdded != 0)
-		DEBUG_COUT7("ODSImportColumn::_createSpace(", row, ") - added ", numAdded, " row",
-					((numAdded != 1) ? "s" : ""), ".");
+	//if (numAdded != 0) 	Log::log() << "ODSImportColumn::_createSpace(" << row << ") - added " << numAdded << " row" <<((numAdded != 1) ? "s" : "") << "." << std::endl;
 #endif
 }
 
 void ODSImportColumn::setValue(int row, const string &data)
 {
-	DEBUG_COUT7("Inserting ", data, ", row ", row, ", column ", _columnNumber, ".");
+	//Log::log() << "Inserting " << data << ", row " << row << ", column " << _columnNumber << "." << std::endl;
 
 	// Big enough?
 	createSpace(row);

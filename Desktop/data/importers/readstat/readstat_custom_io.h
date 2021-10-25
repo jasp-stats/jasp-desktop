@@ -4,6 +4,8 @@
 #include "readstat_windows_helper.h"
 #include "readstat.h"
 
+/// This file is here to work around the lack of unistd.h on Windows (it is part of POSIX)
+
 #ifdef WIN32
 extern "C"
 {

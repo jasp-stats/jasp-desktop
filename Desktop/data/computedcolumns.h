@@ -4,6 +4,9 @@
 #include "columntype.h"
 #include "computedcolumn.h"
 
+///
+/// Collects all ComputedColumn objects and makes them accessible and interoperable
+/// Also the main interface for creating and destroying them (through some help of DataSetPackage ofc)
 class ComputedColumns
 {
 public:

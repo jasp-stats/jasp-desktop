@@ -12,6 +12,10 @@ class JASPListControl;
 class BoundControl;
 class ComputedColumn;
 
+///
+/// Basic class for all our qml controls
+/// Contains all the properties that *must* be there for the QML components defined under Desktop/components/Controls and their bases in Desktop/widgets to function
+/// Also defined here are qml-enums for use in qml and of course a whole lot of functionality.
 class JASPControl : public QQuickItem
 {
 	Q_OBJECT

@@ -3,6 +3,8 @@
 
 #include "importcolumn.h"
 
+///
+/// Storing a column during import of a CSV
 class CSVImportColumn : public ImportColumn
 {
 public:

@@ -5,6 +5,9 @@
 #include "datasettableproxy.h"
 #include <QTimer>
 
+/// 
+/// This pipes through the label-information for a single column from DataSetPackage
+/// The column is selected by changing `proxyParentColumn` from DataSetTableProxy
 class LabelModel : public DataSetTableProxy
 {
 	Q_OBJECT

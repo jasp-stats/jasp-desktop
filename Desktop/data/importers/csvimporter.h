@@ -22,6 +22,8 @@
 #include <QCoreApplication>
 #include "utilities/qutils.h"
 
+///
+/// This description is never going to be more useful than the name of the class
 class CSVImporter : public Importer
 {
 	Q_DECLARE_TR_FUNCTIONS(CSVImporter)

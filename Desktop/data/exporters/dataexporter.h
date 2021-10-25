@@ -20,6 +20,8 @@
 
 #include "exporter.h"
 
+///
+/// To export data to csv, with or without computed columns
 class DataExporter : public Exporter
 {
 public:

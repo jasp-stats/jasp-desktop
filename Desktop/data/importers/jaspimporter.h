@@ -28,6 +28,10 @@
 #include <QCoreApplication>
 #include "utilities/qutils.h"
 
+///
+/// Loads a jasp file
+/// We generally try to make sure to always stay backwards compatible as far as we can.
+/// Which as of 0.15 is still all the way back to 0.8.? something at least
 class JASPImporter
 {
 	Q_DECLARE_TR_FUNCTIONS(JASPImporter)

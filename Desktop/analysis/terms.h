@@ -29,6 +29,9 @@
 
 #include "term.h"
 
+///
+/// Not really sure how to describe this, Bruno?
+///
 class Terms
 {
 public:

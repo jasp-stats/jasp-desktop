@@ -25,6 +25,9 @@
 #include "exporters/exporter.h"
 #include "utilenums.h"
 
+///
+/// This class is used to handle the communication to and from the asynchronous loading/synching/saving file processes.
+/// These can be chained to have a Close come after a save once the latter is done.
 class FileEvent : public QObject
 {
 	Q_OBJECT

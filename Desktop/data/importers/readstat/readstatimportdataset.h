@@ -27,6 +27,9 @@
 //needed for the key of the submap in ReadStatImportDataSet::labelsMapT (otherwise it just compares the pointer probably)
 bool operator<(const readstat_value_t & l, const readstat_value_t & r);
 
+///
+/// Handles input from ReadStat during importing
+/// Insofar as it pertains to the dataset.
 class ReadStatImportDataSet : public ImportDataSet
 {
 	typedef std::pair<readstat_type_t, std::string>							keyTypeAndLabelT;

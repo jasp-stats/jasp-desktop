@@ -22,6 +22,9 @@
 #include <QMutex>
 #include <QWaitCondition>
 
+
+///
+/// To export the results to HTML or PDF
 class ResultExporter: public Exporter
 {
 public:

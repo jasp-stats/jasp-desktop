@@ -4,6 +4,8 @@
 #include <QObject>
 #include "data/labelmodel.h"
 
+///
+/// This is used to generate R-filters based on what the user disables/enables in the label-editor (or variableswindow)
 class labelFilterGenerator : public QObject
 {
 	Q_OBJECT

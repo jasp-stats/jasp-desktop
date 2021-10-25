@@ -20,6 +20,8 @@
 
 #include <QThread>
 
+///
+/// Handles the thread used by AsyncLoader
 class AsyncLoaderThread : public QThread
 {
 public:

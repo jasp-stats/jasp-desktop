@@ -32,6 +32,10 @@
 
 class RibbonModel;
 
+///
+/// This class stores all the analyses that have been instantiated by the user and also makes them available as a qt listmodel
+/// This listmodel shares information like the ID and which qml-form contains the interface. And more, see Analyses::data and friends
+/// To iterate over the analyses and do things with them you can use `Analyses::applyToAll` and `Analyses::applyToSome`
 class Analyses : public QAbstractListModel
 {
 	Q_OBJECT

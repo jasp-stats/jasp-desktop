@@ -6,6 +6,8 @@
 #include "datasetpackage.h"
 #include "labelfiltergenerator.h"
 
+///
+/// Backend for the filter gui
 class FilterModel : public QObject
 {
 	Q_OBJECT

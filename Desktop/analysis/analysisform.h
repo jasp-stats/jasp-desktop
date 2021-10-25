@@ -37,6 +37,12 @@ class JASPControl;
 class ExpanderButtonBase;
 class ColumnsModel;
 
+///
+/// The backend for the `Form{}` used in all JASP's well, qml forms
+/// This is directly a QQuickItem and connects to Analyses to inform it when the options change.
+/// Each element placed inside the Form will be a derivative of JASPControl and/or BoundControl
+/// BoundControl is bound in the sense that any changes to its values will be propagated to Anlaysis and stored there through `Analysis::setBoundValue`
+/// But Im sure Bruno can give a much nicer and detailed description here
 class AnalysisForm : public QQuickItem, public VariableInfoProvider
 {
 	Q_OBJECT

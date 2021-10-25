@@ -25,6 +25,9 @@
 #include "column.h"
 #include "qquick/jasptheme.h"
 
+///
+/// Not really sure how to describe this, Bruno?
+///
 class VariableInfo
 {
 public:
