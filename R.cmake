@@ -9,6 +9,7 @@ if (BUILD_WITH_SYSTEM_R)
 
 	if (${LIBR_FOUND}) 
 
+		set(_R_EXE "/opt/homebrew/bin/R")
 		set(_R_HOME "/opt/homebrew/lib/R/")
 		set(_R_Library "opt/homebrew/lib/R/library/")
 		set(_Rcpp_HOME "/opt/homebrew/lib/R/4.1/site-library/Rcpp/")
