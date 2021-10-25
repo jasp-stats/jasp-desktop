@@ -808,7 +808,11 @@ function headerCellsToDataCells(cells) {
 
 function formatCellforLaTeX (toFormat) {
 	/**
-	 * Format text to compatible latex code
+	 * Format text to compatible latex code, sort of! This function doens't have any 
+	 * idea about the type of the input that is getting, and at the moment it doesn't
+	 * account for it. It tries to correct for <sup> and <sub> but it cannot know
+	 * whether it's doing it on a data or a text.
+	 * 
 	 * @param toFormat - string
 	 */
 
@@ -817,25 +821,29 @@ function formatCellforLaTeX (toFormat) {
 		return '';
 	}
 	let text = toFormat.toString();
-	let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB', '\u273B', '\u2009', '\u2014', '\u273B',    '\u221E']
-	let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$',      '*',      ' ',     '--',      '*', '$\\infty$']
+	let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u00D7', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB', '\u273B', '\u2009', '\u2014', '\u273B',    '\u221E']
+	let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '\\times', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$',      '*',      ' ',     '--',      '*', '$\\infty$']
 
 	// Handle special characters
 	for (let i = 0; i < special_match.length; ++i) {
 		text = (text.split(special_match[i]).join(special_repla[i])).toString();
 	}
 
-	// match superscripts and subscripts, TODO: handle multiple occurences
+	// Matches superscripts and subscripts, TODO: handle multiple occurences
+	// Since we are constructing the numbers ourselves, and know that they will either have
+	// <sup> or <sub> I think this solution is valid, unless I'm missing something.
 	let matched = text.match('<sup>(.*)</sup>');
 	if (matched !== null) {
-		let formatted = '$^{'+ matched[1] + '}$';
+		let formatted = '^{'+ matched[1] + '}';
 		text = text.replace(matched[0], formatted);
+		text = "$" + text + "$";
 	}
 
 	matched = text.match('<sub>(.*)</sub>');
 	if (matched !== null) {
 		let formatted = '$\_{'+ matched[1] + '}$';
 		text = text.replace(matched[0], formatted);
+		text = "$" + text + "$";
 	}
 
 	matched = text.match('<em>(.*)</em>');
