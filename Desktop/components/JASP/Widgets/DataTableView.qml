@@ -377,6 +377,21 @@ FocusScope
 
 				}
 
+			/// So, this is the layout, it's like before but with a bit more structure. I have tried to
+			///	make sure that the header title always appears in the center, and I think I got it, but
+			/// I feel sometimes it is slightly off.
+			///
+			/// RowLayout:
+			/// 
+			/// +-------------------------------------------------------------------------------------+
+			/// | +---------------------------------+ +-------------------------------+ +-----------+ |
+			/// | | +-------+  +-------+  +-------+ | | +-------------------++-------+| | +-------+ | |
+			/// | | |       |  |       |  |       | | | |                   ||       || | |       | | |
+			/// | | |  Typ. |  |  Com. |  |  Fil. | | | |  Header Title     ||  Err. || | |  Ren. | | |
+			/// | | |       |  |       |  |       | | | |                   ||       || | |       | | |
+			/// | | +-------+  +-------+  +-------+ | | +-------------------++-------+| | +-------+ | |
+			/// | +---------------------------------+ +-------------------------------+ +-----------+ |
+			/// +-------------------------------------------------------------------------------------+
 			columnHeaderDelegate: Rectangle
 			{
 				id:		headerRoot
@@ -526,12 +541,13 @@ FocusScope
 								}
 							}
 						}
+					
 					}
 
 					RowLayout {
-						id: textLayout
+						id: 						titleLayout
 
-						Layout.alignment:			Qt.AlignLeft || Qt.AlignVCenter
+						Layout.alignment:			Qt.AlignHCenter || Qt.AlignVCenter
 
 						Text
 						{
@@ -575,7 +591,7 @@ FocusScope
 
 							visible:					columnError.length > 0 // && !columnIsInvalidated
 
-							source:					jaspTheme.iconPath + "/error.png"
+							source:						jaspTheme.iconPath + "/error.png"
 
 							MouseArea
 							{
@@ -600,44 +616,69 @@ FocusScope
 							visible:	columnIsInvalidated
 						}
 
-
 					}
 
-					Image
-					{
-						id:							colMenuImage
+					RowLayout {
+
+						id:							renameLayout
+						Layout.alignment:			Qt.AlignRight || Qt.AlignVCenter
 						Layout.preferredHeight: 	0.6 * headerRoot.height
 						Layout.preferredWidth: 		0.6 * headerRoot.height
-						Layout.alignment:			Qt.AlignRight || Qt.AlignVCenter
-						fillMode: 					Image.PreserveAspectFit
 
-						// visible:					renameMenuMouseArea.containsMouse
+						Rectangle {
+							id: 						renameButtonContainer
+							Layout.preferredHeight: 	0.6 * headerRoot.height
+							Layout.preferredWidth: 		0.6 * headerRoot.height
 
-						source:						jaspTheme.iconPath + "/edit-pencil.png"
+							color: 						"transparent"
 
-						MouseArea
-						{
-							id: renameMenuMouseArea
-							anchors.fill: parent
+							Image
+							{
+								id:							colMenuImage
+								anchors.fill: 				parent
+								fillMode: 					Image.PreserveAspectFit
+								opacity: 					0.0
 
-							onClicked:  dataSetModel.renameColumnDialog(columnIndex);
+								source:						jaspTheme.iconPath + "/edit-pencil.png"
 
-							// if(dataSetModel.columnIcon(columnIndex)  !== columnTypeScale)
-							// {
-							// 	var changedIndex		= labelModel.chosenColumn	!== columnIndex
-							// 	labelModel.chosenColumn	= columnIndex;
-							// 	labelModel.visible		= changedIndex ? true : !labelModel.visible;
-							// }
-							// else
-							// ToolTip.text:		qsTr("Click here to change labels") + (columnIsFiltered ? qsTr(" or inspect filter") : "" )
+								MouseArea
+								{
+									id: renameMenuMouseArea
+									anchors.fill: parent
 
-							hoverEnabled:		true
-							ToolTip.visible:	containsMouse
-							ToolTip.text:		qsTr("Click here to rename the column")
-							ToolTip.timeout:	3000
-							ToolTip.delay:		500
-							cursorShape:		dataSetModel.columnIcon(columnIndex)  !== columnTypeScale || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor
+									onClicked:  dataSetModel.renameColumnDialog(columnIndex);
+
+									// Unfortunately, I couldn't get the `MouseArea::containsMouse` to work; so, I had to do this.
+									onEntered: {
+										colMenuImage.opacity = 1.0;
+									}
+
+									onExited: {
+										colMenuImage.opacity = 0.0;
+									}
+
+									// TODO: I sill need to implement this part. The idea is that this functionality will move into 
+									// a menu containing a few things, e.g., rename, change label, delete, ...
+									//
+									// if(dataSetModel.columnIcon(columnIndex)  !== columnTypeScale)
+									// {
+									// 	var changedIndex		= labelModel.chosenColumn	!== columnIndex
+									// 	labelModel.chosenColumn	= columnIndex;
+									// 	labelModel.visible		= changedIndex ? true : !labelModel.visible;
+									// }
+									// else
+									// ToolTip.text:		qsTr("Click here to change labels") + (columnIsFiltered ? qsTr(" or inspect filter") : "" )
+
+									hoverEnabled:		true
+									ToolTip.visible:	containsMouse
+									ToolTip.text:		qsTr("Click here to rename the column")
+									ToolTip.timeout:	3000
+									ToolTip.delay:		500
+									cursorShape:		dataSetModel.columnIcon(columnIndex)  !== columnTypeScale || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor
+								}
+							}
 						}
+
 					}
 
 				}

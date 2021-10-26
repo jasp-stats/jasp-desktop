@@ -235,7 +235,7 @@ void DataSetView::calculateCellSizesAndClear(bool clearStorage)
 	_dataColsMaxWidth.resize(_model->columnCount());
 
 	for(int col=0; col<_model->columnCount(); col++)
-		_dataColsMaxWidth[col] = _cellSizes[col].width() + _itemHorizontalPadding * 2;
+		_dataColsMaxWidth[col] = _cellSizes[col].width() + _itemHorizontalPadding * 4;
 
 	setHeaderHeight(_model->columnCount() == 0 ? 0 : _cellSizes[0].height() + _itemVerticalPadding * 2);
 	setRowNumberWidth(getRowHeaderSize().width());
