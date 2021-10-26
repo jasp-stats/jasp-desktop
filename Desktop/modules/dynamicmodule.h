@@ -50,6 +50,9 @@ struct ModuleException : public std::runtime_error
 class Description;
 class Upgrades;
 
+///
+/// Contains all relevant information for a single (dynamic) module
+/// These can be either included with the jasp installation or installed later.
 class DynamicModule : public QObject
 {
 	Q_OBJECT

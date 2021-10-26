@@ -7,6 +7,9 @@
 namespace Modules
 {
 
+///
+/// This change allows one to set a particular value, which can be any kind of json object.
+/// It should of course be exactly that which the QML element expects.
 class ChangeSetValue : public ChangeBase
 {
 	Q_OBJECT

@@ -16,7 +16,9 @@ struct EntryError  : public std::runtime_error
 	const char* what() const noexcept override;
 };
 
-// This class must be merged with analysisentry somehow
+/// Is used by MAKE_ENTRY_CLASS to generate the subitems for Description{}
+/// All functionality is already present here, the only thing the subclasses add is their type
+/// This class must be merged with analysisentry somehow
 class EntryBase : public DescriptionChildBase
 {
 	Q_OBJECT

@@ -29,6 +29,9 @@ namespace Modules
 class DynamicModule;
 class EntryBase;
 
+
+/// All information required to show an analysis/separator/grouptitle in a module-menu
+/// Should be merged with EntryBase somehow
 class AnalysisEntry
 {
 	friend EntryBase;

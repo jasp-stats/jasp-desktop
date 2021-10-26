@@ -30,7 +30,9 @@
 #include "dirs.h"
 #include "log.h"
 
-
+///
+/// The model behind a single menu-button in the JASP ribbon
+/// Allows access to it's menu, what icon it has, whether it is connected to a module or directly to a lambda-function
 class RibbonButton : public QObject
 {
 	Q_OBJECT

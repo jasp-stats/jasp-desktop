@@ -5,6 +5,8 @@
 #include "upgradechange.h"
 
 
+/// This file is part of the older upgrades.json style of upgrading analyses. In the future Upgrades.qml should be used preferably
+
 namespace Modules
 {
 

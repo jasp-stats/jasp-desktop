@@ -6,7 +6,9 @@
 namespace Modules
 {
 
-
+///
+/// This changes simply removes an option entirely, not really needed because it would then be ignored anyway.
+/// Perhaps if the original option contains faulty information or something this could be useful?
 class ChangeRemove : public ChangeBase
 {
 	Q_OBJECT

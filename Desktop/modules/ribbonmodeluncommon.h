@@ -4,6 +4,10 @@
 #include <QSortFilterProxyModel>
 #include "ribbonmodel.h"
 
+///
+/// This filters the RibbonButtons made available by RibbonModel.
+/// It only passes through those bundled modules not in Common or those installed manually by the user
+/// This is used by the modules-menu to allow users to turn modules on and off, because those in Common are always enabled
 class RibbonModelUncommon : public QSortFilterProxyModel
 {
 	Q_OBJECT

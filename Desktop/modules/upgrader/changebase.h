@@ -11,6 +11,10 @@ namespace Modules
 
 class Upgrade;
 
+///
+/// Base class for all possible changes upgrades can have
+/// manages being registered in Upgrade and can contain condition for when to apply it.
+/// See the subclasses for actual functional changes, where applyUpgrade has been implemented
 class ChangeBase : public QQuickItem
 {
 	Q_OBJECT

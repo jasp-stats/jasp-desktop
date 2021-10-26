@@ -19,6 +19,9 @@ class RequiredModule;
 class AnalysisEntry;
 class DynamicModule;
 
+///
+/// Backend for Description{} in Description.qml in each module
+/// Most of the properties defined here should actually be taken from DESCRIPTION though
 class Description : public QQuickItem
 {
 	Q_OBJECT

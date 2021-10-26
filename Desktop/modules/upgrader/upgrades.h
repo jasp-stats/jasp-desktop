@@ -10,7 +10,8 @@ namespace Modules
 
 class Upgrade;
 
-///Part of the modulespecific upgrade process as defined in each (inst/)Upgrades.qml
+/// Part of the modulespecific upgrade process as defined in each (inst/)Upgrades.qml
+/// It collects a group of Upgrade instances for a module
 class Upgrades : public QQuickItem
 {
 	Q_OBJECT

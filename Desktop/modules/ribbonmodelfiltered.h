@@ -4,6 +4,9 @@
 #include <QSortFilterProxyModel>
 #include "ribbonmodel.h"
 
+///
+/// Filters the RibbonButtons delivered by RibbonModel to only show those that are active or "enabled" 
+/// This model is used by the actual ribbon in the GUI
 class RibbonModelFiltered : public QSortFilterProxyModel
 {
 	Q_OBJECT
@@ -18,7 +21,7 @@ public:
 
 	Q_INVOKABLE int filteredRowToOriginal(int filteredRow) const;
 	Q_INVOKABLE int originalRowToFiltered(int originalRow) const;
-
+/// 
 	int highlightedModuleIndex() const { return _ribbonModel == nullptr || _ribbonModel->highlightedModuleIndex() == -1 ? -1 : originalRowToFiltered(_ribbonModel->highlightedModuleIndex()); }
 
 signals:

@@ -27,7 +27,9 @@
 #include "modules/ribbonbutton.h"
 #include "gui/preferencesmodel.h"
 
-
+///
+/// This base model holds the RibbonButtons that are currently active and inactive in JASP and makes them available as a list
+/// 
 class RibbonModel : public QAbstractListModel
 {
 	Q_OBJECT

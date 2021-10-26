@@ -6,6 +6,9 @@
 namespace Modules
 {
 
+///
+/// This change is one of the more error-prone ones and enables the use of running custom code
+/// It will create a new entry under `name` and then run `jsFunction` with the entire list of `options` as they exist at that time in the update process
 class ChangeJS : public ChangeBase
 {
 	Q_OBJECT
