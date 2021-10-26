@@ -823,7 +823,7 @@ function formatCellforLaTeX (toFormat) {
 
 	let text = toFormat.toString();
 
-	// Checking if toFormat is a number.
+	// If text is a number, we put the entire thing inside a math block
 	if (!isNaN(text)) {
 		return "$" + text + "$";
 	}
@@ -841,6 +841,8 @@ function formatCellforLaTeX (toFormat) {
 	let matched = text.match('<sup>(.*)</sup>');
 	if (matched !== null) {
 
+		// If the base is a number as well, then we put the entire text inside
+		// the math block as well.
 		let splitted = text.split('\\times')
 		if (!isNaN(splitted[0])) {
 			let formatted = '^{'+ matched[1] + '}';
