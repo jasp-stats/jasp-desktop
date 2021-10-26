@@ -159,7 +159,8 @@ void SourceItem::_setUp()
 
 		// Do not connect before this control (and the controls of the source) are completely initialized
 		// The source could sent some data to this control before it is completely ready for it.
-		connect(_listControl, &JASPControl::initializedChanged,			this,	&SourceItem::_connectModels);
+		if (_listControl->initialized()) _connectModels();
+		else connect(_listControl, &JASPControl::initializedChanged, this, &SourceItem::_connectModels);
 	}
 	else if (_rSources.length() == 0)
 	{
