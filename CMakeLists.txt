@@ -1,9 +1,14 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.21)
 
 project(JASP 
 	VERSION 0.16.0
 	LANGUAGES CXX C)
 # TODO: Later on, we can use CMake to even have proper TWEAK versioning as well
+# set(JASP_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+# set(JASP_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+# set(JASP_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+# set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
+
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,6 +18,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+
+option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" ON)
 
 include(JASP.cmake)
 include(R.cmake)

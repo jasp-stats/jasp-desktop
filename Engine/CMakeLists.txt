@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.21)
 
 message(STATUS "[JASP]: Configuring the Engine")
 
@@ -50,15 +50,6 @@ if (BUILD_WITH_SYSTEM_R)
 	include_directories(${_Rcpp_HOME}/include)
 	include_directories(${_RInside_HOME}/include)
 
-	find_library(_LIB_RCPP
-		NAMES Rcpp.so
-		PATHS ${_Rcpp_HOME}/libs
-		REQUIRED)
-
-	find_library(_LIB_RInside
-		NAMES RInside.so
-		PATHS ${_RInside_HOME}/libs
-		REQUIRED)
 else()
 	message(STATUS "[Engine]: Looking for the libR, here: " ${_R_HOME})
 	find_library(LIBR
@@ -171,25 +162,27 @@ qt_add_executable(JASPEngine
 
 if (BUILD_WITH_SYSTEM_R)
 
+
 	target_link_libraries(
 		JASPEngine PUBLIC 
 			Common
 			R-Interface
-			Qt::Core
-			PkgConfig::LIBJSON
-			PkgConfig::LIBR
-			${Boost_LIBRARIES}
 		)
 
 else()
 
 	target_link_libraries(
-		JASPEngine PUBLIC Common R-Interface
-			Qt::Core
-			${LIBARCHIVE_LIBRARIES}
-			${LIBJSON_LIBRARIES}
-			${LIBR}
+		JASPEngine PUBLIC 
+			# JASP Libraries
+			Common
+			R-Interface
+			
+			# CMake and PkgConfig
+			PkgConfig::LIBJSON
 			${Boost_LIBRARIES}
+
+			# Local Frameworks, and Libraries
+			${LIBR}
 		)
 	
 endif()

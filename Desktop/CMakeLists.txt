@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.21)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
@@ -34,7 +34,7 @@ add_definitions(-Wno-deprecated-declarations)
 
 # I think we can put some of these files into the JASP binary, e.g., translations, and helps
 file(COPY ${CMAKE_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-message(STATUS "[Desktop]: Successfully copied the Resources files to Desktop/")
+message(STATUS "[Desktop]: Successfully copied the Resources files to JASP/Desktop/")
 
 # TODO: This can all be done using the include_directories I think
 set(HEADER_FILES
@@ -456,9 +456,6 @@ target_link_libraries(
     Qt::QuickWidgets
     Qt::Core5Compat
 
-    ${Boost_LIBRARIES}
-    PkgConfig::LIBJSON
-    PkgConfig::LIBARCHIVE
     PkgConfig::LIBREADSTAT
 )
 

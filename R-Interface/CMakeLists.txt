@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.21)
 
 message(STATUS "[JASP]: Configuring the R-Interface...")
 
@@ -9,38 +9,28 @@ pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
 if (BUILD_WITH_SYSTEM_R)
 	message(STATUS "[R-Interface]: Building with system R...")
 	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
-	include_directories(${LIBR_INCLUDE_DIRS})
 
+	include_directories(${LIBR_INCLUDE_DIRS})
 	include_directories(${_Rcpp_HOME}/include)
 	include_directories(${_RInside_HOME}/include)
-
-	find_library(_LIB_RCPP
-		NAMES Rcpp.so
-		PATHS ${_Rcpp_HOME}/libs
-		REQUIRED)
-
-	find_library(_LIB_RInside
-		NAMES RInside.so
-		PATHS ${_RInside_HOME}/libs
-		REQUIRED)
 
 else()
 	message(STATUS "[R-Interface]: Building with R.framework...")
 
-	find_library(_LIB_R
-			NAMES R
-			PATHS ${_R_HOME}
-			REQUIRED
-		)
-	message(STATUS "[R-Interface]: Found ${_LIB_R} at ${_R_HOME}")
+	# find_library(_LIB_R
+	# 		NAMES R
+	# 		PATHS $s{_R_HOME}
+	# 		REQUIRED
+	# 	)
+	# message(STATUS "[R-Interface]: Found ${_LIB_R} at ${_R_HOME}")
 
-	set(_LIB_RCPP_HOME ${_R_HOME}/library/Rcpp/libs)
-	find_library(_LIB_RCPP
-			NAMES Rcpp.so
-			PATHS ${_LIB_RCPP_HOME}
-			REQUIRED
-		)
-	message(STATUS "[R-Interface]: Found ${_LIB_RCPP} at ${_LIBRCPP_HOME}")
+	# set(_LIB_RCPP_HOME ${_R_HOME}/library/Rcpp/libs)
+	# find_library(_LIB_RCPP
+	# 		NAMES Rcpp.so
+	# 		PATHS ${_LIB_RCPP_HOME}
+	# 		REQUIRED
+	# 	)
+	# message(STATUS "[R-Interface]: Found ${_LIB_RCPP} at ${_LIBRCPP_HOME}")
 
 	include_directories(RInside)
 	include_directories(${_R_HOME}/include)
@@ -107,12 +97,11 @@ qt_add_library(
 
 if (BUILD_WITH_SYSTEM_R)
 
+
 	target_link_libraries(
 		R-Interface PUBLIC
 		Common
-		${Boost_LIBRARIES}
 		
-		PkgConfig::LIBJSON
 		PkgConfig::LIBR
 
 		${_LIB_RCPP}

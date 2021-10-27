@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.21)
 
 message(STATUS "[JASP]: Configuring Common...")
 
@@ -14,15 +14,6 @@ if (BUILD_WITH_SYSTEM_R)
 	include_directories(${_Rcpp_HOME}/include)
 	include_directories(${_RInside_HOME}/include)
 
-	find_library(_LIB_RCPP
-		NAMES Rcpp.so
-		PATHS ${_Rcpp_HOME}/libs
-		REQUIRED)
-
-	find_library(_LIB_RInside
-		NAMES RInside.so
-		PATHS ${_RInside_HOME}/libs
-		REQUIRED)
 else()
 	find_library(LIBR
 			NAMES R
