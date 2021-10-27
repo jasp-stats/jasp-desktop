@@ -45,21 +45,18 @@ include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 if (BUILD_WITH_SYSTEM_R)
 	message(STATUS "[Engine]: Building with system R..")
 	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
-	include_directories(${LIBR_INCLUDE_DIRS})
 
+	include_directories(${LIBR_INCLUDE_DIRS})
 	include_directories(${_Rcpp_HOME}/include)
 	include_directories(${_RInside_HOME}/include)
 
 else()
-	message(STATUS "[Engine]: Looking for the libR, here: " ${_R_HOME})
-	find_library(LIBR
-			NAMES R
-			PATHS ${_R_HOME}
-			REQUIRED
-		)
+	message(STATUS "[Engine]: Building with R.framework...")
+	message(STATUS "[Engine]: Setting the headers...")
 
-	include_directories(${_R_HOME}/include)
-	include_directories(${_R_HOME}/library/Rcpp/include)
+	include_directories(${CMAKE_SOURCE_DIR}/${_R_HOME}/include)
+	include_directories(${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include)
+	include_directories(${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
 endif()
 
 # qt_internal_add_executable(JASPEngine
@@ -162,7 +159,6 @@ qt_add_executable(JASPEngine
 
 if (BUILD_WITH_SYSTEM_R)
 
-
 	target_link_libraries(
 		JASPEngine PUBLIC 
 			Common
@@ -173,16 +169,8 @@ else()
 
 	target_link_libraries(
 		JASPEngine PUBLIC 
-			# JASP Libraries
 			Common
 			R-Interface
-			
-			# CMake and PkgConfig
-			PkgConfig::LIBJSON
-			${Boost_LIBRARIES}
-
-			# Local Frameworks, and Libraries
-			${LIBR}
 		)
 	
 endif()

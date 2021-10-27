@@ -16,25 +16,18 @@ if (BUILD_WITH_SYSTEM_R)
 
 else()
 	message(STATUS "[R-Interface]: Building with R.framework...")
+	message(STATUS "[R-Interface]: Setting the headers...")
 
-	# find_library(_LIB_R
-	# 		NAMES R
-	# 		PATHS $s{_R_HOME}
-	# 		REQUIRED
-	# 	)
-	# message(STATUS "[R-Interface]: Found ${_LIB_R} at ${_R_HOME}")
+	include_directories(${CMAKE_SOURCE_DIR}/${_R_HOME}/include)
+	include_directories(${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include)
+	include_directories(${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
 
-	# set(_LIB_RCPP_HOME ${_R_HOME}/library/Rcpp/libs)
-	# find_library(_LIB_RCPP
-	# 		NAMES Rcpp.so
-	# 		PATHS ${_LIB_RCPP_HOME}
-	# 		REQUIRED
-	# 	)
-	# message(STATUS "[R-Interface]: Found ${_LIB_RCPP} at ${_LIBRCPP_HOME}")
+	# include_directories(/Users/amabdol/Projects/JASP/Frameworks/R.framework/Versions/4.1/Resources/library/Rcpp/include)
+	# include_directories(/Users/amabdol/Projects/JASP/Frameworks/R.framework/Versions/4.1/Resources/library/RInside/include)
+	# include_directories(RInside)
 
-	include_directories(RInside)
-	include_directories(${_R_HOME}/include)
-	include_directories(${_R_HOME}/library/Rcpp/include)
+	message(STATUS "[R-Interface]: Rcpp_INCLUDE_DIRS is set to ${_Rcpp_HOME}/include")
+	message(STATUS "[R-Interface]: RInside_INCLUDE_DIRS is set to ${_RInside_HOME}/include")
 endif()
 
 include_directories(jaspResults)
@@ -56,21 +49,21 @@ SET(HEADER_FILES
 	# RInside/RInsideCommon.h
 	# RInside/RInsideConfig.h
 	# RInside/RInsideEnvVars.h
-	jaspResults/src/jaspColumn.h
-	jaspResults/src/jaspContainer.h
-	jaspResults/src/jaspHtml.h
-	jaspResults/src/jaspJson.h
-	jaspResults/src/jaspList.h
-	jaspResults/src/jaspModuleRegistration.h
-	jaspResults/src/jaspObject.h
-	jaspResults/src/jaspPlot.h
-	jaspResults/src/jaspQmlSource.h
-	jaspResults/src/jaspResults.h
-	jaspResults/src/jaspState.h
-	jaspResults/src/jaspTable.h
+	# jaspResults/src/jaspColumn.h
+	# jaspResults/src/jaspContainer.h
+	# jaspResults/src/jaspHtml.h
+	# jaspResults/src/jaspJson.h
+	# jaspResults/src/jaspList.h
+	# jaspResults/src/jaspModuleRegistration.h
+	# jaspResults/src/jaspObject.h
+	# jaspResults/src/jaspPlot.h
+	# jaspResults/src/jaspQmlSource.h
+	# jaspResults/src/jaspResults.h
+	# jaspResults/src/jaspState.h
+	# jaspResults/src/jaspTable.h
 	jasprcpp.h
 	jasprcpp_interface.h
-	)
+)
 
 SET(SOURCE_FILES
 	# RInside/MemBuf.cpp
@@ -86,7 +79,7 @@ SET(SOURCE_FILES
 	jaspResults/src/jaspState.cpp
 	jaspResults/src/jaspTable.cpp
 	jasprcpp.cpp
-	)
+)
 
 qt_add_library(
 	R-Interface
@@ -96,7 +89,6 @@ qt_add_library(
 )
 
 if (BUILD_WITH_SYSTEM_R)
-
 
 	target_link_libraries(
 		R-Interface PUBLIC
@@ -110,13 +102,20 @@ if (BUILD_WITH_SYSTEM_R)
 
 else()
 
+	# target_link_directories(R-Interface BEFORE
+	# 	INTERFACE ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/lib)
+
 	target_link_libraries(
 		R-Interface PUBLIC 
 		Common
-		PkgConfig::LIBJSON
+
+		${_R_Framework}
+
 		${Boost_LIBRARIES}
-		${_LIB_R}
-		${_LIB_RCPP}
+
+		# ${_LIB_R}
+		# ${_LIB_RCPP}
+		${_LIB_RInside}
 	)
 
 endif()

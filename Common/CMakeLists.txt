@@ -98,21 +98,19 @@ qt_add_library(Common
 if (BUILD_WITH_SYSTEM_R)
 
 	target_link_libraries(
-		Common
-			${Boost_LIBRARIES}
-			PkgConfig::LIBARCHIVE
-			PkgConfig::LIBJSON
-			# PkgConfig::LIBR
+		Common PUBLIC
+		${Boost_LIBRARIES}
+		PkgConfig::LIBARCHIVE
+		PkgConfig::LIBJSON
 		)
 
 else()
 
 	target_link_libraries(
-	Common
+		Common PUBLIC
 		${Boost_LIBRARIES}
 		PkgConfig::LIBARCHIVE
 		PkgConfig::LIBJSON
-		# ${LIBR}
 	)
 
 endif()
