@@ -22,18 +22,18 @@ if (BUILD_WITH_SYSTEM_R)
 		set(_Rcpp_HOME "/opt/homebrew/lib/R/4.1/site-library/Rcpp/")
 		set(_RInside_HOME "/opt/homebrew/lib/R/4.1/site-library/RInside/")
 
-		message(STATUS "[JASP]: Checking for 'Rcpp.so'")
-		find_library(_LIB_RCPP
-			NAMES Rcpp.so
-			PATHS ${_Rcpp_HOME}/libs
-			NO_CACHE
-			REQUIRED)
+		# message(STATUS "[JASP]: Checking for 'Rcpp.so'")
+		# find_library(_LIB_RCPP
+		# 	NAMES Rcpp.so
+		# 	PATHS ${_Rcpp_HOME}/libs
+		# 	NO_CACHE
+		# 	REQUIRED)
 
-		if (_LIB_RCPP)
-			message(STATUS "[JASP]: Found the 'Rcpp.so' library in " ${_LIB_RCPP})
-		else()
-			message(FATAL_ERROR "[JASP]: Couldn't find the 'Rcpp.so'")
-		endif()
+		# if (_LIB_RCPP)
+		# 	message(STATUS "[JASP]: Found the 'Rcpp.so' library in " ${_LIB_RCPP})
+		# else()
+		# 	message(FATAL_ERROR "[JASP]: Couldn't find the 'Rcpp.so'")
+		# endif()
 
 		message(STATUS "[JASP]: Checking for 'RInside.so'")
 		find_library(_LIB_RInside
@@ -68,7 +68,7 @@ else()
 		# set(CMAKE_INSTALL_RPATH "${_Rcpp_HOME}/libs;${_RInside_HOME}/libs")
 		# set(CMAKE_BUILD_RPATH "${_Rcpp_HOME}/libs;${_RInside_HOME}/libs")
 
-		message(STATUS "[JASP]: Looking for 'R.framework'")
+		message(STATUS "[JASP]: Looking for 'R.framework' in " ${_R_Framework})
 		find_library(_R_Framework
 			NAMES R
 			PATHS ${CMAKE_SOURCE_DIR}
@@ -81,7 +81,7 @@ else()
 			message(FATAL_ERROR "[JASP]: Couldn't find the 'R.framework' in ${CMAKE_SOURCE_DIR}")
 		endif()
 
-		message(STATUS "[JASP]: Checking for 'libR'")
+		message(STATUS "[JASP]: Checking for 'libR' in " ${_R_HOME}/lib)
 		find_library(_LIB_R
 			NAMES R
 			PATHS ${_R_HOME}/lib
@@ -94,20 +94,20 @@ else()
 			message(FATAL_ERROR "[JASP]: Couldn't find the 'libR' in ${_R_HOME}/lib")
 		endif()
 
-		message(STATUS "[JASP]: Checking for 'Rcpp.so'")
-		find_library(_LIB_RCPP
-			NAMES Rcpp.so
-			PATHS ${_Rcpp_HOME}/libs
-			NO_CACHE
-			REQUIRED)
+		# message(STATUS "[JASP]: Checking for 'Rcpp.so'")
+		# find_library(_LIB_RCPP
+		# 	NAMES Rcpp.so
+		# 	PATHS ${_Rcpp_HOME}/libs
+		# 	NO_CACHE
+		# 	REQUIRED)
 
-		if (_LIB_RCPP)
-			message(STATUS "[JASP]: Found the 'Rcpp.so' library in " ${_LIB_RCPP})
-		else()
-			message(FATAL_ERROR "[JASP]: Couldn't find the 'Rcpp.so' in ${_Rcpp_HOME}/libs")
-		endif()
+		# if (_LIB_RCPP)
+		# 	message(STATUS "[JASP]: Found the 'Rcpp.so' library in " ${_LIB_RCPP})
+		# else()
+		# 	message(FATAL_ERROR "[JASP]: Couldn't find the 'Rcpp.so' in ${_Rcpp_HOME}/libs")
+		# endif()
 
-		message(STATUS "[JASP]: Checking for 'RInside.so'")
+		message(STATUS "[JASP]: Checking for 'libRInside' in" ${_LIB_RInside})
 		find_library(_LIB_RInside
 			NAMES RInside
 			PATHS ${_RInside_HOME}/lib
@@ -115,9 +115,9 @@ else()
 			REQUIRED)
 
 		if(_LIB_RInside)
-			message(STATUS "[JASP]: Found the 'RInside.so' library in " ${_LIB_RInside})
+			message(STATUS "[JASP]: Found the 'libRInside' library in " ${_LIB_RInside})
 		else()
-			message(FATAL_ERROR "[JASP]: Couldn't find the 'RInside.so' in ${_RInside_HOME}/libs")
+			message(FATAL_ERROR "[JASP]: Couldn't find the 'libRInside' in ${_RInside_HOME}/libs")
 		endif()
 
 

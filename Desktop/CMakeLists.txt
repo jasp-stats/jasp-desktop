@@ -34,7 +34,9 @@ add_definitions(-Wno-deprecated-declarations)
 
 # I think we can put some of these files into the JASP binary, e.g., translations, and helps
 file(COPY ${CMAKE_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-message(STATUS "[Desktop]: Successfully copied the Resources files to JASP/Desktop/")
+message(STATUS "[Desktop]: Successfully copied the Resources files to ${CMAKE_CURRENT_BINARY_DIR}")
+
+configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
 
 # TODO: This can all be done using the include_directories I think
 set(HEADER_FILES
@@ -429,7 +431,7 @@ set(SOURCE_FILES
     widgets/boundcontrolgridtableview.cpp
 )
 
-qt_add_executable(JASP
+qt_add_executable(JASP MACOSX_BUNDLE
     ${HEADER_FILES}
     ${SOURCE_FILES}
 )
@@ -458,6 +460,11 @@ target_link_libraries(
 
     PkgConfig::LIBREADSTAT
 )
+
+# set_target_properties(JASP PROPERTIES
+#     MACOS_BUNDLE_IDENTIFIER org.jasp-stats.jasp
+#     RESOURCES '${CMAKE_SOURCE_DIR}/Resources/Translations/jaspDesktop-nl.qm'
+# )
 
 # Resources:
 # set_source_files_properties("html/css/bootstrap.min.css"

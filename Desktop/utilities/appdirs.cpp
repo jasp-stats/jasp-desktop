@@ -129,7 +129,7 @@ QString AppDirs::rHome()
 #ifdef _WIN32
 	QString rHomePath = programDir().absoluteFilePath("R");
 #elif defined(__APPLE__)
-    QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
+    QString rHomePath = programDir().absoluteFilePath("../../R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
 #else //linux
 
 #ifndef R_HOME

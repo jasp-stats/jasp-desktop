@@ -96,7 +96,6 @@ if (BUILD_WITH_SYSTEM_R)
 		
 		PkgConfig::LIBR
 
-		${_LIB_RCPP}
 		${_LIB_RInside}
 	)
 
@@ -110,16 +109,19 @@ else()
 
 		${Boost_LIBRARIES}
 
-		# ${_LIB_R}
-		# ${_LIB_RCPP}
 		${_LIB_RInside}
 	)
 
-	add_custom_command(TARGET R-Interface
-		POST_BUILD 
-		COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("Rcpp", repos="http://cran.r-project.org"\)'
-		COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("rjags", repos="http://cran.r-project.org"\)'
-		COMMENT "=== Installing Rcpp ...")
+	if (${Install_R_Modules})
+
+		add_custom_command(TARGET R-Interface
+			POST_BUILD 
+			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("Rcpp", repos="http://cran.r-project.org"\)'
+			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("RInside", repos="http://cran.r-project.org"\)'
+			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("rjags", repos="http://cran.r-project.org"\)'
+			COMMENT "=== Installing R Modules ...")
+
+	endif()
 
 
 endif()

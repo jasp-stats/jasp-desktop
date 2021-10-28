@@ -19,7 +19,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" ON)
+option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
 
 include(JASP.cmake)
 include(R.cmake)

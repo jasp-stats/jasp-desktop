@@ -13,6 +13,8 @@ set(JASP_VERSION_REVISION 0)
 # Amir: Do we have two variable for one thing?
 set(GITHUB_PAT_DEFINE ${GITHUB_PAT_DEF})
 
+option(Install_R_Modules "Whether to install R modules during build" OFF)
+
 # Amir: We probably won't need them soon
 set(JASP_LIBJSON_STATIC OFF)
 set(PRINT_ENGINE_MESSAGES OFF)

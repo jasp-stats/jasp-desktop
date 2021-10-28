@@ -9,17 +9,12 @@ pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
 if (BUILD_WITH_SYSTEM_R)
 	message(STATUS "[Common]: Building with system R..")
 	pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
-	include_directories(${LIBR_INCLUDE_DIRS})
 
+	include_directories(${LIBR_INCLUDE_DIRS})
 	include_directories(${_Rcpp_HOME}/include)
 	include_directories(${_RInside_HOME}/include)
 
 else()
-	find_library(LIBR
-			NAMES R
-			PATHS "${_R_HOME}"
-			REQUIRED
-		)
 
 	include_directories(${_R_HOME}/include)
 	include_directories(${_R_HOME}/library/Rcpp/include)
