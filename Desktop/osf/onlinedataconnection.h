@@ -25,6 +25,8 @@
 #include <QIODevice>
 #include <QByteArray>
 
+///
+/// Handles connections with servers, only used for OSF
 class OnlineDataConnection: public QObject
 {
 	Q_OBJECT

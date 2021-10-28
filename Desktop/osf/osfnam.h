@@ -5,6 +5,8 @@
 
 #include "common.h"
 
+///
+/// The QNetworkAccessManager used for all connections with OSF
 class OSFNAM : public QNetworkAccessManager
 {
 	Q_OBJECT

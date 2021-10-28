@@ -11,6 +11,8 @@
 #define theme_sizeType		float
 #define theme_timeType		int
 
+/// Basic qquickItem we use a theme solution and to easily change theme by simply changing the one referenced in the global environment
+/// Currently only two are instantiated by Desktop during loadQml()
 class JaspTheme : public QQuickItem
 {
 	Q_OBJECT

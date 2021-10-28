@@ -35,13 +35,15 @@
 #include "r_functionwhitelist.h"
 #include "columnencoder.h"
 
-/* The R Bridge provides functions to the R analyses;
- * i.e. functions to read the data set from shared memory
- * Similarly, it provides functions to C++ code for
- * launching analyses written in R.
- * In this way, it functions as the bridge between the C++
- * application, and the R analyses
- */
+/// The R Bridge provides functions to the R analyses;
+/// i.e. functions to read the data set from shared memory
+/// Similarly, it provides functions to C++ code for launching analyses written in R.
+/// In this way, it functions as the bridge between the C++ application, and the R analyses
+/// 
+/// But why do we need such a bridge?
+/// Because on windows, for some time at least, Qt was only buildable in MSVC and R is only buildable with GCC or something that acts like it.
+/// Thus we needed to split R-Interface up into a DLL and can't send over std::string etc, because the implementations aren't the same
+/// rbridge handles conversions between the two through const char *.
 extern "C" {
 	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
 	RBridgeColumn*				STDCALL rbridge_readFullDataSet(		size_t * colMax);

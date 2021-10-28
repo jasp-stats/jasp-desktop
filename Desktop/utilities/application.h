@@ -23,6 +23,8 @@
 #include "mainwindow.h"
 #include "common.h"
 
+///
+/// Our override of QApplication, basically instantiates MainWindow and cleans it up at the end
 class Application : public QApplication
 {
 	Q_OBJECT

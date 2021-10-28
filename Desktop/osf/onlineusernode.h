@@ -8,6 +8,8 @@
 #include "onlinenode.h"
 #include "common.h"
 
+///
+/// Representing a user in abstract, base class
 class OnlineUserNode: public OnlineNode
 {
 	Q_OBJECT

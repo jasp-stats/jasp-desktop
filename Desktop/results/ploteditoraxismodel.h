@@ -11,6 +11,8 @@ namespace PlotEditor
 
 class PlotEditorModel;
 
+///
+/// Represents one of the axes of a graph in the ploteditor
 class AxisModel : public QAbstractTableModel
 {
 	Q_OBJECT

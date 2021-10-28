@@ -4,6 +4,8 @@
 #include "onlinedatanode.h"
 #include "common.h"
 
+///
+/// Fills in the interface of OnlineDataNode for OSF
 class OnlineDataNodeOSF: public OnlineDataNode
 {
 	Q_OBJECT

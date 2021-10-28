@@ -7,6 +7,11 @@
 namespace resultXmlCompare
 {
 
+///
+/// Main class for running JASP-file-unit-tests
+/// The basis here is that each jasp-file contains the output as a html page, we can parse it and compare it with what we get when we rerun it.
+/// That way we can be sure that the output is still the same in a newer version of JASP/module
+/// It doesn however only look at tables and for the plots maybe at the title but not at the image.
 class compareResults
 {
 public:

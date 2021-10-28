@@ -8,6 +8,9 @@
 namespace PlotEditor
 {
 
+/// 
+/// To be used for picking out elements in the ploteditor (axis-title, labels etc)
+/// Right now the data isn't being passed from R though so it can't be used.
 class HitRectangle
 {
 public:

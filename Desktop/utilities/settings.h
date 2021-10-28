@@ -7,6 +7,8 @@
 
 enum class winLcCtypeSetting;
 
+///
+/// Sometimes a class-name says more than a thousand comments
 class Settings {
 
 public:

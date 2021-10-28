@@ -5,7 +5,11 @@
 #include "languagemodel.h"
 #include "analysis/analysis.h"
 
-///This class is a bit of a mess. Would be good to move all helpfiles to `info` so that this can be cleaned up.
+/// This class is a bit of a mess. Would be good to move all helpfiles to `info` so that this can be cleaned up.
+/// It used to support loading a file from Resources/analyses/ANALYSIS_NAME.md/html and show it in HelpModel.qml
+/// Then for https://github.com/jasp-stats/INTERNAL-jasp/issues/740 `info` fields were added to qml (and rudimentary to R)
+/// These can be converted into markdown on the fly and are more easily translated through weblate but we currently need to support both.
+/// This because the info feature isnt entirely finished and also because almost no help file has been ported to these fields now. 
 class HelpModel : public QObject
 {
 	Q_OBJECT
