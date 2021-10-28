@@ -102,9 +102,6 @@ if (BUILD_WITH_SYSTEM_R)
 
 else()
 
-	# target_link_directories(R-Interface BEFORE
-	# 	INTERFACE ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/lib)
-
 	target_link_libraries(
 		R-Interface PUBLIC 
 		Common
@@ -117,6 +114,13 @@ else()
 		# ${_LIB_RCPP}
 		${_LIB_RInside}
 	)
+
+	add_custom_command(TARGET R-Interface
+		POST_BUILD 
+		COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("Rcpp", repos="http://cran.r-project.org"\)'
+		COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("rjags", repos="http://cran.r-project.org"\)'
+		COMMENT "=== Installing Rcpp ...")
+
 
 endif()
 
