@@ -98,7 +98,6 @@ void RowControls::setContext(int row, const QString &key)
 	_context->setContextProperty("rowIndex", row);
 	_context->setContextProperty("rowValue", key);
 	_context->setContextProperty("isNew", false);
-	_rowObject->setParentItem(nullptr);
 
 	_setupControls(true);
 }
