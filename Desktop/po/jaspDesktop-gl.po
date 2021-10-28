@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-10-28 16:19+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -202,7 +208,7 @@ msgstr "Para continuar, inicia unha sesión coa túa conta de OSF"
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
-msgstr "Ficheiro vixente"
+msgstr "Ficheiro Vixente"
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
@@ -242,15 +248,15 @@ msgstr "Colapsar"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Image"
-msgstr "Editar a imaxe"
+msgstr "Editar Imaxe"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
-msgstr "Editar o título"
+msgstr "Editar Título"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove All"
-msgstr "Eliminar todo"
+msgstr "Eliminar Todo"
 
 msgctxt "ResultMenuModel|"
 msgid "Duplicate"
@@ -258,15 +264,15 @@ msgstr "Duplicar"
 
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr "Exportar os resultados"
+msgstr "Exportar Resultados"
 
 msgctxt "ResultMenuModel|"
 msgid "Add Note"
-msgstr "Engadir comentario"
+msgstr "Engadir Nota"
 
 msgctxt "ResultMenuModel|"
 msgid "Save Image As"
-msgstr "Gardar a imaxe como"
+msgstr "Gardar a Imaxe como"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy LaTeX"
@@ -278,11 +284,11 @@ msgstr "Renovar todo"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy Citations"
-msgstr "Copiar as referencias"
+msgstr "Copiar as Referencias"
 
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
-msgstr "Amosar as dependencias"
+msgstr "Amosar as Dependencias"
 
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
@@ -335,7 +341,7 @@ msgstr "Fallo"
 
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr "Iniciar o editor"
+msgstr "Iniciar o Editor"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -368,7 +374,7 @@ msgid ""
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
 "JASP iniciouse cun ficheiro de datos en liña (ficheiro csv, sav ou ods); "
-"mais para editar os datos JASP necesita ese ficheiro no teu ordenador. "
+"mais para editar os datos, JASP necesita ese ficheiro no teu ordenador. "
 "Existe tamén ese ficheiro de datos no teu ordenador, ou queres xeralo?"
 
 #, qt-format
@@ -394,7 +400,7 @@ msgstr "Non se pode abrir GitHub para ti"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr "Xerar un ficheiro de datos"
+msgstr "Xerar un Ficheiro de Datos"
 
 msgctxt "MainWindow|"
 msgid "Save failed"
@@ -445,12 +451,12 @@ msgid ""
 msgstr ""
 "JASP iniciouse sen un ficheiro de datos asociado (ficheiro csv, sav ou ods); "
 "mais para editar os datos, JASP inicia un editor de follas de cálculo "
-"baseado no novo ficheiro e sincroniza os datos cando este se garda. Existe "
+"baseado nun novo ficheiro e sincroniza os datos cando este se garda. Existe "
 "xa ese ficheiro de datos, ou queres xeralo?"
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr "Eliminar todas as análises"
+msgstr "Eliminar Todas as Análises"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -511,7 +517,7 @@ msgstr ""
 
 msgctxt "FileMenu|"
 msgid "Find Data File"
-msgstr "Atopar o ficheiro de datos"
+msgstr "Atopar Ficheiro de Datos"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -584,7 +590,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr "Iniciar o editor de follas de cálculo"
+msgstr "Iniciar o Editor de Follas de Cálculo"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
@@ -596,7 +602,7 @@ msgstr "Ordenar por nome, A-Z"
 
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
-msgstr "O SortMenuModel non foi requirido cun parente portátil"
+msgstr "O SortMenuModel non foi requirido cun parente ordenable"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
@@ -628,11 +634,11 @@ msgstr "Pechar"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr "Sincronizar os datos"
+msgstr "Sincronizar Datos"
 
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr "Exportar os datos"
+msgstr "Exportar Datos"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
@@ -873,16 +879,16 @@ msgstr "Os ficheiros non poden engadirse a '%1' por unha causa descoñecida."
 #, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
-msgstr "O nome %1 só pode conter os seguintes caracteres: A-Z a-z 0-9 _ %2"
+msgstr "O nome de %1 só pode conter os seguintes caracteres: A-Z a-z 0-9 _ %2"
 
 msgctxt "FileMenu|"
 msgid "File Types"
-msgstr "Tipo de ficheiro"
+msgstr "Tipos de Ficheiros"
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
 msgstr ""
-"Fallo do límite de tempo da conexión. Por favor, comproba a túa conexión a "
+"Fallo no tempo de espera da conexión. Por favor, comproba a túa conexión a "
 "Internet."
 
 msgctxt "OSF|"
@@ -1967,7 +1973,7 @@ msgstr "Creando un novo ficheiro "
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
-msgstr "%1 %2 falla porque %3"
+msgstr "%1 %2 fallou porque %3"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
@@ -2224,7 +2230,7 @@ msgstr "Atopouse un fallo durante a carga de actualizacións para %1: %2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
-msgstr "Actualizacións da carga de fallos"
+msgstr "Fallo ao Cargar Actualizacións"
 
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
@@ -3116,7 +3122,7 @@ msgstr "Gardar"
 
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr "Atopar o Ficheiro de Datos"
+msgstr "Atopar Ficheiro de Datos"
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
@@ -3195,8 +3201,7 @@ msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr ""
-"Ocorreu un fallo ao tratar de iniciar un módulo do directorio %1; o fallo "
-"foi: %2"
+"Ocorreu un fallo ao tratar de iniciar un módulo de dir %1; o fallo foi: %2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3218,13 +3223,13 @@ msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
-"A instalación do módulo %1 fallou coa seguinte mensaxe de fallo:\n"
+"A instalación do Módulo %1 fallou coa seguinte mensaxe de fallo:\n"
 "%2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Loading packages for Module %1 failed"
-msgstr "Fallou a carga de paquetes para o módulo %1"
+msgstr "Fallo ao cargar paquetes para o Módulo %1"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -3232,7 +3237,7 @@ msgid ""
 "Loading the packages of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
-"Fallou a carga de paquetes para o módulo %1, coa seguinte mensaxe:\n"
+"Fallou a carga de paquetes do Módulo %1, coa seguinte mensaxe de fallo:\n"
 "%2"
 
 msgctxt "Modules::DynamicModules|"
@@ -3511,7 +3516,7 @@ msgstr ""
 
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
-msgstr "Exportar os Resultados"
+msgstr "Exportar Resultados"
 
 msgctxt "QObject|"
 msgid "valid R code"
@@ -3532,7 +3537,7 @@ msgstr "Pechar"
 
 msgctxt "OSF|"
 msgid "File Types"
-msgstr "Tipos de Ficheiro"
+msgstr "Tipos de Ficheiros"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
@@ -3673,13 +3678,13 @@ msgstr "Tipo de fonte incorrecto para VariableList %1"
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
-msgstr "Non se atopou unha lista relacionada para a Lista de Variables %1"
+msgstr "Non se atopou unha lista relacionada para VariablesList %1"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr ""
-"Atopouse un tipo de lista relacionada (%1) incorrecto para VariablesList %2"
+"Atopouse un tipo incorrecto de lista relacionada (%1) para VariablesList %2"
 
 #, qt-format
 msgctxt "VariablesListBase|"
