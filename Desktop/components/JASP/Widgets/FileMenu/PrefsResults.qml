@@ -37,6 +37,17 @@ ScrollView
 				label:					qsTr("Display exact p-values")
 				checked:				preferencesModel.exactPValues
 				onCheckedChanged:		preferencesModel.exactPValues = checked
+				KeyNavigation.tab:		useNormalizedNotation
+				KeyNavigation.down:		useNormalizedNotation
+			}
+
+			CheckBox
+			{
+				id:						useNormalizedNotation
+				label:					qsTr("Use normalized notation")
+				labelTextFormat:		Text.RichText
+				checked:				preferencesModel.normalizedNotation
+				onCheckedChanged:		preferencesModel.normalizedNotation = checked
 				KeyNavigation.tab:		fixDecs
 				KeyNavigation.down:		fixDecs
 			}

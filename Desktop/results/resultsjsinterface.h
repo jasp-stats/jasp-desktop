@@ -116,6 +116,7 @@ signals:
 
 public slots:
 	void setExactPValuesHandler(	bool			exact);
+	void setNormalizedNotationHandler(		bool			notation);
 	void setFixDecimalsHandler(		QString			numDecimals);
 	void analysisImageEditedHandler(Analysis	*	analysis);
 	void cancelImageEdit(			int				id);

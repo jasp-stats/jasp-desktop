@@ -217,7 +217,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 				}
 				else {
 
-					var paddingNeeded = Math.max(maxFSDOE - fSD(content), 0)
+					// var paddingNeeded = Math.max(maxFSDOE - fSD(content), 0)
+					var paddingNeeded = 0
 
 					var exponent = Math.abs(Math.floor(content))
 
@@ -261,9 +262,17 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					let reassembled;
 
 					if (html) {
-						reassembled = mantissa + "e&thinsp;" + padding + sign + exponent;
+						if (window.globSet.normalizedNotation) {
+							reassembled = mantissa + "&times;10" + "<sup>" + padding + sign + exponent + "</sup>";
+						} else {
+							reassembled = mantissa + "e" + padding + sign + exponent;
+						}
 					} else {
-						reassembled = mantissa + "e" + sign + exponent;
+						if (window.globSet.normalizedNotation) {
+							reassembled = mantissa + "×10" + "<sup>" + sign + exponent + "</sup>";
+						} else {
+							reassembled = mantissa + "e" + sign + exponent;
+						}
 					}
 
 					formatted = { content: reassembled, "class": "number" }
@@ -274,7 +283,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp)) {
 
 				var decimalsExpon = fixDecimals ? dp : sf - 1;
-				var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
+				// var paddingNeeded = Math.max(maxFSDOE - fSDOE(content), 0)
+				var paddingNeeded = 0
 
 				let reassembled = toExponential(content, decimalsExpon, paddingNeeded, html)
 				formatted = { content: reassembled, "class": "number" }
@@ -798,7 +808,11 @@ function headerCellsToDataCells(cells) {
 
 function formatCellforLaTeX (toFormat) {
 	/**
-	 * Format text to compatible latex code
+	 * Format text to compatible latex code, sort of! This function doens't have any 
+	 * idea about the type of the input that is getting, and at the moment it doesn't
+	 * account for it. It tries to correct for <sup> and <sub> but it cannot know
+	 * whether it's doing it on a data or a text.
+	 * 
 	 * @param toFormat - string
 	 */
 
@@ -806,20 +820,38 @@ function formatCellforLaTeX (toFormat) {
 	if (toFormat === '&nbsp;') {
 		return '';
 	}
+
 	let text = toFormat.toString();
-	let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB', '\u273B', '\u2009', '\u2014', '\u273B',    '\u221E']
-	let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$',      '*',      ' ',     '--',      '*', '$\\infty$']
+
+	// If text is a number, we put the entire thing inside a math block
+	if (!isNaN(text)) {
+		return "$" + text + "$";
+	}
+
+	let special_match = [  '_',   '%',/*   '$',*/   '&tau;', '&sup2;',   '&', '\u00D7', '\u208A', '\u208B',  '\u223C',  '\u03C7', '\u03A7',  '\u03B7',    '\u03C9', '\u2080', '\u2081', '\u2082', '\u00B2',    '\u03B1',     '\u03BB', '\u273B', '\u2009', '\u2014', '\u273B',    '\u221E']
+	let special_repla = ['\\_', '\\%',/* '\\$',*/ '$\\tau$', '$^{2}$', '\\&', '\\times', '$_{+}$', '$_{-}$', '$\\sim$', '$\\chi$',      'X', '$\\eta$', '$\\omega$', '$_{0}$', '$_{1}$', '$_{2}$', '$^{2}$', '$\\alpha$', '$\\lambda$',      '*',      ' ',     '--',      '*', '$\\infty$']
+
 
 	// Handle special characters
 	for (let i = 0; i < special_match.length; ++i) {
 		text = (text.split(special_match[i]).join(special_repla[i])).toString();
 	}
 
-	// match superscripts and subscripts, TODO: handle multiple occurences
+	// Matching superscripts and subscripts, TODO: handle multiple occurences
 	let matched = text.match('<sup>(.*)</sup>');
 	if (matched !== null) {
-		let formatted = '$^{'+ matched[1] + '}$';
-		text = text.replace(matched[0], formatted);
+
+		// If the base is a number as well, then we put the entire text inside
+		// the math block as well.
+		let splitted = text.split('\\times')
+		if (!isNaN(splitted[0])) {
+			let formatted = '^{'+ matched[1] + '}';
+			text = text.replace(matched[0], formatted);
+			text = "$" + text + "$";
+		} else {
+			let formatted = '$^{'+ matched[1] + '}$';
+			text = text.replace(matched[0], formatted);
+		}
 	}
 
 	matched = text.match('<sub>(.*)</sub>');
@@ -871,9 +903,17 @@ function toExponential(number, decimalsExpon, paddingNeeded, html) {
 
 	let reassembled;
 	if (html) {
-		reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum;
+		if (window.globSet.normalizedNotation) {
+			reassembled = mantissa + "&times;10" + "<sup>" + padding + exponentSign + exponentNum + "</sup>";
+		} else {
+			reassembled = mantissa + "e" + padding + exponentSign + exponentNum;
+		}
 	} else {
-		reassembled = mantissa + "e" + exponentSign + exponentNum;
+		if (window.globSet.normalizedNotation) {
+			reassembled = mantissa + "×10" + "<sup>" + exponentSign + exponentNum + "</sup>";
+		} else {
+			reassembled = mantissa + "e" + exponentSign + exponentNum;
+		}
 	}
 
 	return reassembled;

@@ -43,6 +43,7 @@ CheckBoxBase
 			property alias	font:					label.font
 			property alias	fontInfo:				label.fontInfo
 			property alias	label:					control.text
+			property alias	labelTextFormat:		label.textFormat
 			property alias	checked:				control.checked
 			property bool	childrenOnSameRow:		false
 			property alias	columns:				childControlsArea.columns

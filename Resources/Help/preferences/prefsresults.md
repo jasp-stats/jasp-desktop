@@ -11,6 +11,10 @@ Regarding analysis results in JASP you can choose the following options:
 
 Here you can specify if p-values should be shown as "< .001" or if an exact value should be given.
 
+### Use normalized notation
+
+Here you can specify if scientific numbers should be displayed with normatlized notation, 1×10<sup>-10</sup> instead of being displayed using the E notation, 1e-10.
+
 ### Fix the number of decimals
 
 This represents the number of decimals JASP will show for numeric values.
