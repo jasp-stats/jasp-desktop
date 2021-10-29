@@ -3806,3 +3806,7 @@ msgstr ""
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language."
 msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Use normalized notation"
+msgstr ""

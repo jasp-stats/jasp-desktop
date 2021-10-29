@@ -3839,3 +3839,7 @@ msgstr "Open-Source-Komponenten"
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language."
 msgstr "Helfen Sie uns, JASP in Ihre Sprache zu übersetzen oder zu verbessern."
+
+msgctxt "PrefsResults|"
+msgid "Use normalized notation"
+msgstr ""

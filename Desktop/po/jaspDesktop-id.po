@@ -1,17 +1,11 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-09-25 01:31+0000\n"
-"Last-Translator: Sunu Bagaskara <sunu.bagaskara@gmail.com>\n"
-"Language-Team: Indonesian <https://hosted.weblate.org/projects/jasp/"
-"jaspdesktop/id/>\n"
-"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9-dev\n"
-"X-Qt-Contexts: true\n"
 "X-Language: id\n"
+"X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -1022,8 +1016,8 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
-"Beralih ke mode \"lebih aman\" untuk grafik alias perenderan perangkat lunak."
-"\n"
+"Beralih ke mode \"lebih aman\" untuk grafik alias perenderan perangkat "
+"lunak.\n"
 "Ini akan membuat antarmuka Anda lebih lambat tetapi jika Anda memiliki "
 "beberapa masalah (gangguan aneh, tidak dapat melihat hasil atau apa pun) "
 "mungkin memperbaikinya.\n"
@@ -1261,53 +1255,63 @@ msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "nilai absolut"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "simpangan baku"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr ""
+msgstr "varians"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr ""
+msgstr "penjumlahan"
 
 msgctxt "FilterWindow|"
 msgid "product of values"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "mengembalikan nilai minimum"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "mengembalikan nilai maksimum"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "mean"
-msgstr ""
+msgstr "rerata"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "bulatkan y ke n desimal"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "median"
-msgstr ""
+msgstr "median"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "pernyataan jika-lainnya"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -1345,13 +1349,15 @@ msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr ""
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Buka Dokumentasi"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Hide filter"
-msgstr ""
+msgstr "Sembunyikan saringan"
 
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
@@ -1389,9 +1395,10 @@ msgctxt "JagsTableView|"
 msgid "Delete Data"
 msgstr ""
 
+#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Atur ulang"
 
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
@@ -1405,13 +1412,15 @@ msgctxt "MainPage|"
 msgid "Show data"
 msgstr ""
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "Ubah ukuran data/hasil"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "Drag untuk menampilkan data"
 
 msgctxt "MainPage|"
 msgid "Results"
@@ -1554,17 +1563,20 @@ msgctxt "SetSeed|"
 msgid "Set seed:"
 msgstr ""
 
+#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "Tambah Kolom"
 
+#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "Hapus Kolom"
 
+#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Atur ulang"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
@@ -2043,17 +2055,20 @@ msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
 msgstr ""
 
+#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr ""
+msgstr "Skala"
 
+#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
-msgstr ""
+msgstr "Ordinal"
 
+#, fuzzy
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
-msgstr ""
+msgstr "Nominal"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
@@ -2067,9 +2082,10 @@ msgctxt "MessageForwarder|"
 msgid "Cancel"
 msgstr ""
 
+#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr ""
+msgstr "Simpan"
 
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
@@ -2480,9 +2496,10 @@ msgctxt "ActionButtons|"
 msgid "Open"
 msgstr ""
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr ""
+msgstr "Simpan"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
@@ -2500,9 +2517,10 @@ msgctxt "ActionButtons|"
 msgid "Sync Data"
 msgstr ""
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Close"
-msgstr ""
+msgstr "Tutup"
 
 msgctxt "ActionButtons|"
 msgid "Preferences"
@@ -2649,13 +2667,15 @@ msgctxt "ResourceButtons|"
 msgid "Computer"
 msgstr ""
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr ""
+msgstr "Perpustakaan Data"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
@@ -3393,9 +3413,10 @@ msgctxt "TableView|"
 msgid "Add to the right"
 msgstr ""
 
+#, fuzzy
 msgctxt "TableView|"
 msgid "Delete"
-msgstr ""
+msgstr "Hapus"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
@@ -3548,10 +3569,19 @@ msgid ""
 "start JASP again."
 msgstr ""
 
+#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Buka Dokumentasi"
 
 msgctxt "AboutWindow|"
 msgid "Open Source Components"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Use normalized notation"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Help us translate or improve JASP in your language."
 msgstr ""
