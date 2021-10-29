@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-10-28 16:19+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -2291,37 +2297,33 @@ msgstr ""
 "\n"
 "Complete toda la información que falte allí."
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr "GitHub no podría abrirse para ti"
+msgstr "No puede abrirse GitHub para ti"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "Something went wrong with leading you to GitHub..\n"
 "You can still report the bug by going to https://github.com/jasp-stats/jasp-"
 "issues/issues"
 msgstr ""
-"Algo salió mal al llevarte a GitHub ..\n"
-"Aún puede informar el error en https://github.com/jasp-stats/jasp-issues/"
-"issues"
+"Algo salió mal al conectarte a GitHub ..\n"
+"Aún se puede informar del error accediendo a https://github.com/jasp-stats/"
+"jasp-issues/issues"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Error"
-msgstr "Error"
+msgstr "Fallo"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "JASP has experienced an unexpected internal error:\n"
 "%1"
 msgstr ""
-"JASP ha experimentado un error interno inesperado:\n"
+"JASP ha sufrido un fallo interno inesperado:\n"
 "%1"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "JASP cannot continue and will close.\n"
@@ -2332,17 +2334,14 @@ msgstr ""
 "\n"
 "Le agradeceríamos que informara de este error al equipo de JASP."
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Report"
-msgstr "Reporte"
+msgstr "Informar"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Exit"
-msgstr "Salida"
+msgstr "Salir"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "JASP was started without associated data file (csv, sav or ods file). But to "
@@ -2350,86 +2349,78 @@ msgid ""
 "synchronize the data when the file is saved. Does this data file exist "
 "already, or do you want to generate it?"
 msgstr ""
-"JASP se inició sin un archivo de datos asociado (archivo csv, sav o ods). "
-"Pero para editar los datos, JASP inicia un editor de hojas de cálculo basado "
-"en este archivo y sincroniza los datos cuando se guarda el archivo. ¿Este "
-"archivo de datos ya existe o desea generarlo?"
+"JASP se inició sin un archivo de datos asociado (archivo csv, sav o ods); "
+"pero para editar los datos, JASP inicia un editor de hojas de cálculo basado "
+"en un nuevo archivo y sincroniza los datos cuando este se guarda. ¿Existe ya "
+"este archivo de datos, o desea generarlo?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "JASP was started with an online data file (csv, sav or ods file). But to "
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
-"JASP se inició con un archivo de datos en línea (archivo csv, sav o ods). "
-"Pero para editar los datos, JASP necesita este archivo en su computadora. "
-"¿Este archivo de datos también existe en su computadora o desea generarlo?"
+"JASP se inició con un archivo de datos en línea (archivo csv, sav o ods); "
+"pero para editar los datos, JASP necesita este archivo en su ordenador. ¿"
+"Existe también este archivo de datos en su ordenador, o desea generarlo?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "JASP was started with a read-only data file (probably from the examples). "
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
 msgstr ""
-"JASP se inició con un archivo de datos de solo lectura (probablemente de los "
-"ejemplos). Pero para editar los datos, JASP necesita escribir en el archivo "
-"de datos. ¿Existe el mismo archivo también en su computadora o desea "
+"JASP se inició con un archivo de datos de solo lectura (uno de los ejemplos, "
+"probablemente); pero para editar los datos, JASP necesita escribir en el "
+"archivo de datos. ¿Existe también el mismo archivo en su ordenador, o desea "
 "generarlo?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr "Iniciar el editor de hojas de cálculo"
+msgstr "Iniciar el Editor de Hojas de Cálculo"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr "Generar archivo de datos"
+msgstr "Generar un Archivo de Datos"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr "Buscar archivo de datos"
+msgstr "Buscar Archivo de Datos"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr "Iniciar editor"
+msgstr "Iniciar el Editor"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "Unable to start the editor : %1. Please check your editor settings in the "
 "preference menu."
 msgstr ""
-"No se puede iniciar el editor: %1. Compruebe la configuración de su editor "
-"en el menú de preferencias."
+"No se puede iniciar el editor: %1. Por favor, compruebe la configuración de "
+"su editor en el menú de Preferencias."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "No default spreadsheet editor for file %1. Use Preferences to set the right "
 "editor."
 msgstr ""
-"No hay editor de hojas de cálculo predeterminado para el archivo %1. Utilice "
-"Preferencias para configurar el editor adecuado."
+"No hay un editor de hojas de cálculo predeterminado para el archivo %1. "
+"Utilizar Preferencias para establecer el editor correcto."
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr "Eliminar todos los análisis"
+msgstr "Eliminar Todos los Análisis"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
-msgstr "¿Realmente desea eliminar todos los análisis?"
+msgstr "¿Desea realmente eliminar todos los análisis?"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
-msgstr "Error al cargar paquetes para el módulo %1"
+msgstr "Falló la carga del módulo %1 empaquetado"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -2443,27 +2434,23 @@ msgstr ""
 "\n"
 "%2"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "R (Beta)"
 msgstr "R (Beta)"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
-msgstr "Error al cargar actualizaciones"
+msgstr "Fallo al Cargar Actualizaciones"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::Upgrader|"
 msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr "Al cargar las actualizaciones para %1, se encontró un error: %2"
+msgstr "Al cargar las actualizaciones para %1, se encontró un fallo: %2"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
 msgstr "No se pudieron leer las actualizaciones"
 
-#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid ""
 "The necessary upgrades for reading older JASP-files could not be read...\n"
@@ -2471,18 +2458,16 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
-"Las actualizaciones necesarias para leer archivos JASP más antiguos (<0,12) "
-"no se pudieron leer ...\n"
-"Aún puede usar JASP e incluso leer (algunos) archivos más antiguos, pero es "
-"posible que algunas opciones no se entiendan correctamente y que algunos "
-"análisis no se carguen por completo."
+"No se pudieron leer las actualizaciones necesarias para leer los archivos "
+"antiguos de JASP ...\n"
+"Aún se puede usar JASP e incluso leer (algunos) archivos más antiguos, pero "
+"es posible que algunas opciones no se interpreten correctamente y que falle "
+"la carga completa de algunos análisis."
 
-#, fuzzy
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
-msgstr "Archivo cambiado"
+msgstr "Archivo Cambiado"
 
-#, fuzzy
 msgctxt "OnlineDataManager|"
 msgid ""
 "The online copy of this file has changed since it was opened.\n"
@@ -2491,109 +2476,89 @@ msgid ""
 msgstr ""
 "La copia en línea de este archivo ha cambiado desde que se abrió.\n"
 "\n"
-"¿Le gustaría anular el archivo en línea?"
+"¿Le gustaría sobrescribir el archivo en línea?"
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
-msgstr "Iniciando carga de "
+msgstr "Iniciando la carga de "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating download of "
-msgstr "Iniciando descarga de "
+msgstr "Iniciando la descarga de "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new file "
-msgstr "Iniciando la creación de un nuevo archivo "
+msgstr "Comenzando a generar un nuevo archivo "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
-msgstr "Iniciando la creación de una nueva carpeta "
+msgstr "Comenzando a generar una nueva carpeta "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
-msgstr "Iniciando la acción de osf "
+msgstr "Comenzando una acción OSF "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Upload of "
-msgstr "Subida de "
+msgstr "Carga de "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Download of "
 msgstr "Descarga de "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new file "
-msgstr "Creando nuevo archivo "
+msgstr "Creando un nuevo archivo "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
-msgstr "Creando nueva carpeta "
+msgstr "Creando una nueva carpeta "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
-msgstr "Acción osf "
+msgstr "Acción OSF "
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
 msgstr "%1 %2 falló porque %3"
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
 msgstr " en progreso"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr "Colapso"
+msgstr "Colapsar"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
-msgstr "Editar título"
+msgstr "Editar el título"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Copy"
 msgstr "Copiar"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Copy LaTeX"
 msgstr "Copiar LaTeX"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Copy Citations"
-msgstr "Copiar citas"
+msgstr "Copiar las Referencias"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Save Image As"
-msgstr "Guardar imagen como"
+msgstr "Guardar la Imagen como"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Edit Image"
-msgstr "Editar imagen"
+msgstr "Editar Imagen"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Add Note"
-msgstr "Añadir la nota"
+msgstr "Añadir Nota"
 
-#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Duplicate"
 msgstr "Duplicar"
@@ -2622,7 +2587,6 @@ msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
 msgstr "Aviso de Resultados"
 
-#, fuzzy
 msgctxt "HelpModel|"
 msgid ""
 "Coming Soon!\n"
@@ -2637,17 +2601,16 @@ msgstr ""
 "\n"
 "Actualmente no hay ayuda disponible para este análisis.\n"
 "\n"
-"La documentación adicional estará disponible en futuras versiones de JASP."
+"En futuras versiones de JASP estará disponible información adicional."
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "valid R code"
-msgstr "código R válido"
+msgstr "código de R válido"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr "Opción desconocida %1 en DropDown %2"
+msgstr "Opción %1 desconocida en DropDown %2"
 
 msgctxt "ActionButtons|"
 msgid "Open"
@@ -2657,61 +2620,50 @@ msgctxt "ActionButtons|"
 msgid "Save"
 msgstr "Guardar"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Save As"
 msgstr "Guardar como"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr "Exportar resultados"
+msgstr "Exportar Resultados"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr "Exportar datos"
+msgstr "Exportar Datos"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr "Sincronizar datos"
+msgstr "Sincronizar Datos"
 
 msgctxt "ActionButtons|"
 msgid "Close"
 msgstr "Cerrar"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Preferences"
 msgstr "Preferencias"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "About"
 msgstr "Acerca de"
 
-#, fuzzy
 msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
 msgstr "Categorías"
 
-#, fuzzy
 msgctxt "FileMenu|"
 msgid "File Types"
-msgstr "Tipos de archivo"
+msgstr "Tipos de Archivos"
 
-#, fuzzy
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr "No se pudo abrir el archivo desde OSF"
+msgstr "Fallo al abrir el archivo desde OSF"
 
-#, fuzzy
 msgctxt "FileMenu|"
 msgid "No associated data file"
 msgstr "Sin archivo de datos asociado"
 
-#, fuzzy
 msgctxt "FileMenu|"
 msgid ""
 "JASP has no associated data file to be synchronized with.\n"
@@ -2719,67 +2671,59 @@ msgid ""
 "NB: You can also set this data file via menu File/Sync Data."
 msgstr ""
 "JASP no tiene ningún archivo de datos asociado con el que sincronizarse.\n"
-"¿Quiere buscar un archivo de datos de este tipo en su computadora?\n"
-"NB: También puede configurar este archivo de datos a través del menú "
-"Archivo / Sincronizar datos."
+"¿Quiere buscar un archivo de datos de este tipo en su ordenador?\n"
+"Nota: También puede definir este archivo de datos a través del menú Archivo /"
+" Sincronizar datos."
 
-#, fuzzy
 msgctxt "FileMenu|"
 msgid "Find Data File"
-msgstr "Buscar archivo de datos"
+msgstr "Buscar Archivo de Datos"
 
-#, fuzzy
 msgctxt "FileMenu|"
 msgid "Data File"
-msgstr "Archivo de datos"
+msgstr "Archivo de Datos"
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
 msgstr ""
-"El nombre de usuario y / o la contraseña no son correctos. Inténtalo de "
-"nuevo."
+"El nombre de usuario y / o la contraseña son incorrectos. Por favor, "
+"inténtelo de nuevo."
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
 msgstr ""
-"El servicio OSF no está disponible. Por favor revise su conexion a internet."
+"El servicio OSF no está disponible. Por favor, compruebe su conexión a "
+"Internet."
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
 msgstr ""
-"Error de tiempo de espera de conexión. Por favor revise su conexion a "
-"internet."
+"Fallo en el tiempo de espera de la conexión. Por favor, compruebe su "
+"conexión a Internet."
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "OSF Error"
 msgstr "Error de OSF"
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "Projects"
 msgstr "Proyectos"
 
-#, fuzzy
 msgctxt "OSF|"
 msgid ""
 "Files cannot be added to the projects list.\n"
 "\n"
 "To add a new project please use the online OSF services."
 msgstr ""
-"No se pueden agregar archivos a la lista de proyectos.\n"
+"Los archivos no se pueden agregar a la lista de proyectos.\n"
 "\n"
-"Para agregar un nuevo proyecto, utilice los servicios OSF en línea."
+"Para agregar un nuevo proyecto, por favor, utilice los servicios OSF en "
+"línea."
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "Data Providers"
-msgstr "Proveedores de datos"
+msgstr "Proveedores de Datos"
 
-#, fuzzy
 msgctxt "OSF|"
 msgid ""
 "Files cannot be added to a projects data providers list.\n"
@@ -2790,28 +2734,25 @@ msgstr ""
 "Los archivos no se pueden agregar a una lista de proveedores de datos de "
 "proyectos.\n"
 "\n"
-"Para agregar un nuevo proveedor de datos (por ejemplo, Google Drive), "
-"utilice los servicios OSF en línea."
+"Para agregar un nuevo proveedor de datos (por ejemplo, Google Drive), por "
+"favor, utilice los servicios OSF en línea."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
-msgstr "No se pueden agregar archivos a '%1' por una razón desconocida."
+msgstr "Los archivos no se pueden agregar a '%1' por una razón desconocida."
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "File Types"
-msgstr "Tipos de archivo"
+msgstr "Tipos de Archivos"
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr "No se pudo abrir el archivo desde OSF"
+msgstr "Fallo al abrir el archivo desde OSF"
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr "Se produjo un error y no se pudo crear la carpeta."
+msgstr "Se produjo un fallo y no se pudo crear la carpeta."
 
 msgctxt "OSF|"
 msgid ""
@@ -2830,52 +2771,45 @@ msgstr ""
 "proyectos. Para agregar un nuevo proveedor de datos (por ejemplo, Google "
 "Drive), por favor, utilizar los servicios en línea de OSF."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
-msgstr ""
-"No se puede agregar una nueva carpeta a '%1' por un motivo desconocido."
+msgstr "No se puede agregar una nueva carpeta a '%1' por un motivo desconocido."
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "Folder"
 msgstr "Carpeta"
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "Login"
 msgstr "Iniciar sesión"
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
-msgstr "El usuario o la contraseña no pueden estar vacíos."
+msgstr "No pueden estar vacíos el usuario ni la contraseña."
 
-#, fuzzy
 msgctxt "OSF|"
 msgid "Entry name cannot be empty."
 msgstr "El nombre de la entrada no puede estar vacío."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
 msgstr ""
-"%1 el nombre solo puede contener los siguientes caracteres A-Z a-z 0-9 _ %2"
+"El nombre de %1 solo puede contener los siguientes caracteres A-Z a-z 0-9 _ "
+"%2"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
-msgstr "Archivos recientes"
+msgstr "Archivos Recientes"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Current File"
-msgstr "Archivo actual"
+msgstr "Archivo Actual"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Computer"
-msgstr "Computadora"
+msgstr "Ordenador"
 
 msgctxt "ResourceButtons|"
 msgid "OSF"
@@ -2911,156 +2845,136 @@ msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
 msgstr "Estrato %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
 msgstr ""
-"Un RadioButton dentro del elemento RadioButtonGroup (nombre: %1) no tiene "
+"Hay un RadioButton en el elemento RadioButtonGroup (nombre: %1) que no tiene "
 "ningún nombre"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr "Ningún botón de radio correspondiente al nombre %1"
+msgstr "No hay ningún botón de opción que se corresponda con el nombre %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RowControls|"
 msgid "A row component in %1 does not have a name"
-msgstr "Un componente de fila en %1 no tiene nombre"
+msgstr "Hay una fila componente de %1 que no tiene ningún nombre"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
-msgstr "2 componentes de fila en %1 tienen el mismo nombre"
+msgstr "2 filas componentes de %1 tienen el mismo nombre"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "None"
 msgstr "Ninguna"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
 msgstr "Ordenar por nombre"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by name A-Z"
-msgstr "Ordenar por nombre A-Z"
+msgstr "Ordenar por nombre, A-Z"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
-msgstr "Ordenar por nombre Z-A"
+msgstr "Ordenar por nombre, Z-A"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by type"
 msgstr "Ordenar por tipo"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
 msgstr "Ordenar por fecha"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "Sort by size"
 msgstr "Ordenado por tamaño"
 
-#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
-msgstr "SortMenuModel no llamado con un padre ordenable"
+msgstr "El SortMenuModel no fue requerido con un pariente ordenable"
 
-#, fuzzy
 msgctxt "TextAreaBase|"
 msgid "Model applied"
 msgstr "Modelo aplicado"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
 msgstr "La expresión no devolvió un número."
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Integer Field"
-msgstr "Campo entero"
+msgstr "Campo de Entero"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Number Field"
-msgstr "Campo numérico"
+msgstr "Campo Numérico"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
-msgstr "Campo de porcentaje"
+msgstr "Campo de Porcentaje"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Integers Field"
-msgstr "Campo de enteros"
+msgstr "Campo de Enteros"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr "Campo de dobles"
+msgstr "Campo de Dobles Precisiones"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
-msgstr "Agregar campo de columna"
+msgstr "Agregar Campo de Columna"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr "Agregar campo de columna calculado"
+msgstr "Agregar Campo de Columna Calculada"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Formula Field"
-msgstr "Campo de fórmula"
+msgstr "Campo de Fórmula"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Formulas Field"
-msgstr "Campo de fórmulas"
+msgstr "Campo de Fórmulas"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Text Field"
-msgstr "Campo de texto"
+msgstr "Campo de Texto"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
 msgstr "El valor (%1) debe ser %2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr "El modelo fuente de %1 debe ser de una lista de factores"
+msgstr "El modelo fuente de %1 debe ser de una Lista de Factores"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Cannot find source for VariableList %1"
 msgstr "No se puede encontrar la fuente para VariableList %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
 msgstr "Tipo de fuente incorrecto para VariableList %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
 msgstr "No se encontró una lista relacionada para VariablesList %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr ""
@@ -3217,29 +3131,28 @@ msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error: %1"
 msgstr "La carga de actualizaciones generó el siguiente error: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr ""
-"Ocurrió un error al intentar inicializar un módulo desde dir %1, el error "
-"fue: %2"
+"Ocurrió un fallo al intentar iniciar un módulo de dir %1; el fallo fue: %2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr "Ocurrió un error al intentar cargar el módulo %1, el error fue: '%2'"
+msgstr "Ocurrió un fallo al intentar cargar el módulo %1; el fallo fue: '%2'"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
 msgstr ""
-"Se produjo un error al eliminar los archivos del módulo %1 en la ruta '%2' y "
-"el error fue: %3"
+"Algo fue mal al eliminar los archivos para el módulo %1 en la ruta '%2'; y "
+"el fallo fue: %3"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
@@ -3248,19 +3161,19 @@ msgstr ""
 "La instalación del Módulo %1 falló con el siguiente mensaje de error:\n"
 "%2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Loading packages for Module %1 failed"
-msgstr "Error al cargar paquetes para el módulo %1"
+msgstr "Fallo al cargar paquetes para el Módulo %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Loading the packages of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
-"La carga de los paquetes del Módulo %1 falló con el siguiente mensaje de "
-"error:\n"
+"Falló la carga de paquetes del Módulo %1, con el siguiente mensaje de error:"
+"\n"
 "%2"
 
 msgctxt "Modules::DynamicModules|"
@@ -3284,7 +3197,7 @@ msgstr ""
 "caracteres ASCII y ningún espacio. O puedes deshabilitar el \"LC_CTYPE para C"
 "\" en Preferencias->Avanzado->Modo de desarrollador."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
 msgstr "No se puede instalar el módulo porque %1 no existe."
@@ -3303,7 +3216,6 @@ msgstr ""
 "Cambie el nombre (en DESCRIPCIÓN y description.json) y vuelva a intentarlo. "
 "Si no es el autor de este módulo y no sabe cómo hacerlo, comuníquese con: %2"
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
 msgstr "Seleccionar una carpeta"
