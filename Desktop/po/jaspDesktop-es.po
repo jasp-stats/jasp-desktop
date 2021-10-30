@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2021-10-29 15:08+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.9-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -2271,7 +2277,6 @@ msgctxt "MainWindow|"
 msgid "Join GitHub"
 msgstr "Unirse a GitHub"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "We will open two pages for you in your webbrowser.\n"
@@ -2283,13 +2288,13 @@ msgid ""
 "Please fill in all missing information there."
 msgstr ""
 "Abriremos dos páginas para usted en su navegador web.\n"
-"El segundo será la página 'Unirse a GitHub' donde puede registrarse para "
-"obtener una cuenta con GitHub.\n"
+"La segunda será la página 'Unirse a GitHub', donde puede registrarse para "
+"obtener una cuenta de GitHub.\n"
 "La primera será una página de inicio de sesión que conduce a un informe de "
-"errores parcialmente lleno después de iniciar sesión con su nueva cuenta de "
+"fallos parcialmente lleno, después de iniciar sesión con su nueva cuenta de "
 "GitHub.\n"
 "\n"
-"Complete toda la información que falte allí."
+"Por favor, complete toda la información que falte ahí."
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
@@ -3197,7 +3202,7 @@ msgctxt "Modules::DynamicModules|"
 msgid "Cannot install module because %1 does not exist."
 msgstr "No se puede instalar el módulo porque %1 no existe."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Cannot install module because it is named '%1' and that name is reserved for "
@@ -3215,21 +3220,19 @@ msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
 msgstr "Seleccionar una carpeta"
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
-"Para instalar un módulo de desarrollo, debe seleccionar la carpeta que desea "
-"ver y cargar, puede hacerlo en el menú de archivo, Preferencias-> Avanzado."
+"Para instalar un módulo de desarrollo, se debe seleccionar la carpeta que se "
+"desea ver y cargar. Se puede hacer esto mediante el menú y Preferencias-> "
+"Avanzado."
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
-msgstr "Problema al inicializar el módulo"
+msgstr "Problema al iniciar el módulo"
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
@@ -3238,12 +3241,10 @@ msgstr ""
 "Hubo un problema al cargar el módulo de desarrollador:\n"
 "\n"
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
 msgstr "Faltan archivos o carpetas"
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
@@ -3256,42 +3257,38 @@ msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/Description.qml file."
 msgstr "Crear un archivo inst/Description.qml."
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr "Cree un directorio R que contenga su código de análisis."
+msgstr "Crear un directorio de R que contenga el código de análisis."
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
-"Cree un directorio inst / qml que contenga sus formularios de opciones."
+msgstr "Crear un directorio inst/qml que contenga los formularios de opciones."
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
 msgstr ""
-"Cree un directorio inst / icons que contenga los iconos de los botones de la "
+"Crear un directorio inst/icons que contenga los iconos de los botones de la "
 "cinta."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
 msgstr "Falta %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 from your development module directory. Without "
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
 msgstr ""
-"Parece que ha eliminado %1 del directorio del módulo de desarrollo. Sin él, "
-"su módulo no puede funcionar, asegúrese de volver a colocarlo. Por ahora se "
+"Parece que se ha eliminado %1 del directorio de módulos de desarrollo. Como "
+"sin eso el módulo no puede funcionar, asegúrese de reponerlo. Por ahora, se "
 "mantendrá su antiguo archivo %2."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have never had a %1 in your development module directory. "
@@ -3299,42 +3296,42 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"Parece que nunca ha tenido un %1 en el directorio de su módulo de "
-"desarrollo. Sin él, su módulo no puede funcionar, asegúrese de crear uno. "
-"Cómo lo instaló es un poco misterioso y, por lo tanto, el módulo de "
-"desarrollo se desinstalará ahora"
+"Parece que nunca ha habido un %1 en el directorio de módulos de desarrollo. "
+"Como sin eso el módulo no puede funcionar, asegúrese de crear uno. Cómo se "
+"ha instalado es un poco misterioso, por eso el módulo de desarrollo debe "
+"desinstalarse ahora"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
 msgstr "%1 fue eliminado!"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr ""
-"Parece que ha eliminado %1 pero este archivo es necesario para que su módulo "
-"funcione. El módulo de desarrollo se desinstalará ahora."
+"Parece que se ha eliminado %1, pero este archivo es necesario para que "
+"funcione el módulo. El módulo de desarrollo se desinstalará ahora."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
 msgstr "Falta la carpeta %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed the folder %1 from your development module "
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
 msgstr ""
-"Parece que ha eliminado la carpeta %1 del directorio del módulo de "
-"desarrollo. Sin él, su módulo no puede funcionar, asegúrese de volver a "
-"colocarlo. Por ahora se mantendrá su carpeta anterior."
+"Parece que se ha eliminado la carpeta %1 del directorio de módulos de "
+"desarrollo. Como sin eso el módulo no puede funcionar, asegúrese de "
+"reponerlo. Por ahora, se conservará la carpeta anterior."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have never had the folder %1 in your development module "
@@ -3342,10 +3339,10 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"Parece que nunca ha tenido la carpeta %1 en el directorio del módulo de "
-"desarrollo. Sin él, su módulo no puede funcionar, asegúrese de crear uno. "
-"Cómo lo instaló es un poco misterioso y, por lo tanto, el módulo de "
-"desarrollo se desinstalará ahora"
+"Parece que nunca ha habido la carpeta %1 en el directorio de módulos de "
+"desarrollo. Como sin eso el módulo no puede funcionar, asegúrese de crear "
+"uno. Cómo se ha instalado es un poco misterioso, por eso el módulo de "
+"desarrollo debe desinstalarse ahora"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
@@ -3374,7 +3371,7 @@ msgid "Column number in source is bigger than the number of columns of %1"
 msgstr ""
 "El número de columna en la fuente es mayor que el número de columnas de %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong column type: %1 for ListView %2"
 msgstr "Tipo de columna incorrecto: %1 para ListView %2"
@@ -3644,16 +3641,15 @@ msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
 msgstr "Ejecutar un código de R en la consola"
 
-#, fuzzy
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
 msgstr ""
-"Solo se puede establecer 1 lista de variables disponibles en VariablesForm"
+"Solo se puede establecer 1 lista de Variables Disponibles en el Formulario "
+"de Variables"
 
-#, fuzzy
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
-msgstr "No hay una lista disponible en el formulario de variables"
+msgstr "No hay una Lista Disponible en el Formulario de Variables"
 
 msgctxt "TableView|"
 msgid "Add to the left"
@@ -3782,7 +3778,6 @@ msgctxt "PlotEditingAxis|"
 msgid "Position"
 msgstr "Posición"
 
-#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
 msgstr "Avanzado"
@@ -3854,4 +3849,4 @@ msgstr "Ayúdanos a traducir o mejorar JASP en tu idioma."
 
 msgctxt "PrefsResults|"
 msgid "Use normalized notation"
-msgstr ""
+msgstr "Utilizar notación normalizada"
