@@ -4,11 +4,13 @@ if (BUILD_WITH_SYSTEM_R)
 	message(STATUS "[JASP]: Building with system R...")
 
 	# Trying to set the RPATH using CMake, but it's not there yet...
-	set(CMAKE_SKIP_BUILD_RPATH OFF)
-	set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+	# set(CMAKE_SKIP_BUILD_RPATH OFF)
+	# set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
-	set(CMAKE_INSTALL_RPATH "/opt/homebrew/lib/R/4.1/site-library/Rcpp/libs/;/opt/homebrew/lib/R/4.1/site-library/RInside/libs/")
-	set(CMAKE_BUILD_RPATH "/opt/homebrew/lib/R/4.1/site-library/Rcpp/libs/;/opt/homebrew/lib/R/4.1/site-library/RInside/libs/")
+	# set(CMAKE_INSTALL_RPATH "/opt/homebrew/lib/R/4.1/site-library/Rcpp/libs/;/opt/homebrew/lib/R/4.1/site-library/RInside/libs/")
+	# set(CMAKE_BUILD_RPATH "/opt/homebrew/lib/R/4.1/site-library/Rcpp/libs/;/opt/homebrew/lib/R/4.1/site-library/RInside/libs/")
+
+	set(CMAKE_BUILD_WITH_INSTALL_RPATH)
 
 	find_package(PkgConfig REQUIRED)
 
@@ -68,6 +70,7 @@ else()
 		# set(CMAKE_INSTALL_RPATH "${_Rcpp_HOME}/libs;${_RInside_HOME}/libs")
 		# set(CMAKE_BUILD_RPATH "${_Rcpp_HOME}/libs;${_RInside_HOME}/libs")
 
+		set(CMAKE_FIND_FRAMEWORK ON)
 		message(STATUS "[JASP]: Looking for 'R.framework' in " ${_R_Framework})
 		find_library(_R_Framework
 			NAMES R

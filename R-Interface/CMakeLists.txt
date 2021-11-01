@@ -112,7 +112,7 @@ else()
 		${_LIB_RInside}
 	)
 
-	if (${Install_R_Modules})
+	if (${INSTALL_R_MODULES})
 
 		add_custom_command(TARGET R-Interface
 			POST_BUILD 

@@ -38,403 +38,51 @@ message(STATUS "[Desktop]: Successfully copied the Resources files to ${CMAKE_CU
 
 configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
 
-# TODO: This can all be done using the include_directories I think
-set(HEADER_FILES
-    analysis/analysisform.h
-    analysis/knownissues.h
-    analysis/term.h
-    analysis/terms.h
-    analysis/analyses.h
-    analysis/analysis.h
-    data/datasettableproxy.h
-    data/exporters/dataexporter.h
-    data/exporters/exporter.h
-    data/exporters/jaspexporter.h
-    data/exporters/resultexporter.h
-    data/importers/ods/odsimportcolumn.h
-    data/importers/ods/odsimportdataset.h
-    data/importers/ods/odssheetcell.h
-    data/importers/ods/odstypes.h
-    data/importers/ods/odsxmlcontentshandler.h
-    data/importers/ods/odsxmlhandler.h
-    data/importers/ods/odsxmlmanifesthandler.h
-    data/importers/readstat/readstat.h
-    data/importers/readstat/readstatimportcolumn.h
-    data/importers/readstat/readstatimportdataset.h
-    data/importers/readstatimporter.h
-    data/importers/codepageconvert.h
-    data/importers/convertedstringcontainer.h
-    data/importers/csv.h
-    data/importers/csvimportcolumn.h
-    data/importers/csvimporter.h
-    data/importers/importcolumn.h
-    data/importers/importdataset.h
-    data/importers/importer.h
-    data/importers/importerutils.h
-    data/importers/jaspimporter.h
-    data/importers/odsimporter.h
-    data/asyncloader.h
-    data/asyncloaderthread.h
-    data/columnsmodel.h
-    data/computedcolumn.h
-    data/computedcolumns.h
-    data/computedcolumnsmodel.h
-    data/datasetloader.h
-    data/datasetpackage.h
-    data/fileevent.h
-    analysis/variableinfo.h
-    engine/enginerepresentation.h
-    engine/enginesync.h
-    engine/rscriptstore.h
-    gui/columntypesmodel.h
-    modules/description/description.h
-    modules/description/descriptionchildbase.h
-    modules/description/entrybase.h
-    modules/upgrader/changebase.h
-    modules/upgrader/changecopy.h
-    modules/upgrader/changejs.h
-    modules/upgrader/changeremove.h
-    modules/upgrader/changerename.h
-    modules/upgrader/changesetvalue.h
-    modules/upgrader/upgrade.h
-    modules/upgrader/upgradeDefinitions.h
-    modules/upgrader/upgradechange.h
-    modules/upgrader/upgrader.h
-    modules/upgrader/upgrades.h
-    modules/upgrader/upgradestep.h
-    modules/ribbonmodeluncommon.h
-    qquick/datasetview.h
-    modules/analysisentry.h
-    modules/dynamicmodule.h
-    modules/dynamicmodules.h
-    modules/ribbonmodel.h
-    modules/analysismenumodel.h
-    osf/onlinedataconnection.h
-    osf/onlinedatamanager.h
-    osf/onlinedatanode.h
-    osf/onlinedatanodeosf.h
-    osf/onlinenode.h
-    osf/onlineusernode.h
-    osf/onlineusernodeosf.h
-    osf/osfnam.h
-    qquick/jasptheme.h
-    qquick/rcommander.h
-    utilities/appdirs.h
-    utilities/application.h
-    utilities/jsonutilities.h
-    utilities/processhelper.h
-    utilities/qmlutils.h
-    utilities/qutils.h
-    results/resultsjsinterface.h
-    utilities/settings.h
-    utilities/simplecrypt.h
-    utilities/languagemodel.h
-    utilities/simplecryptkey.h
-    data/labelfiltergenerator.h
-    widgets/filemenu/filemenuobject.h
-    widgets/filemenu/datalibrary.h
-    widgets/filemenu/filesystem.h
-    widgets/filemenu/osffilesystem.h
-    widgets/filemenu/recentfiles.h
-    widgets/filemenu/computer.h
-    widgets/filemenu/osf.h
-    widgets/filemenu/datalibrarybreadcrumbsmodel.h
-    widgets/filemenu/datalibrarylistmodel.h
-    widgets/filemenu/computerfilesystem.h
-    widgets/filemenu/filesystementry.h
-    widgets/listmodeljagsdatainput.h
-    widgets/listmodeltermsassigned.h
-    widgets/listmodeltermsavailable.h
-    mainwindow.h
-    utilities/extractarchive.h
-    widgets/listmodel.h
-    widgets/listmodelassignedinterface.h
-    widgets/listmodelavailableinterface.h
-    widgets/listmodeldraggable.h
-    widgets/listmodelmeasurescellsassigned.h
-    widgets/listmodellayersassigned.h
-    widgets/listmodelmultinomialchi2test.h 
-    data/filtermodel.h
-    widgets/filemenu/recentfileslistmodel.h
-    widgets/filemenu/datalibraryfilesystem.h
-    widgets/filemenu/recentfilesfilesystem.h
-    widgets/filemenu/currentfilelistmodel.h
-    widgets/filemenu/currentfilefilesystem.h
-    widgets/filemenu/computerlistmodel.h
-    widgets/filemenu/osflistmodel.h
-    widgets/filemenu/osfbreadcrumbslistmodel.h
-    resultstesting/compareresults.h
-    resultstesting/resultscomparetable.h
-    widgets/filemenu/filemenu.h
-    gui/messageforwarder.h
-    widgets/filemenu/filemenulistitem.h
-    widgets/filemenu/filemenubasiclistmodel.h
-    modules/ribbonmodelfiltered.h
-    utilities/helpmodel.h
-    widgets/lavaansyntaxhighlighter.h
-    widgets/listmodelinteractionassigned.h
-    gui/preferencesmodel.h
-    widgets/filemenu/actionbuttons.h
-    widgets/filemenu/resourcebuttons.h
-    widgets/filemenu/resourcebuttonsvisible.h
-    widgets/interactionmodel.h
-    widgets/listmodelinteractionavailable.h
-    results/resultmenuentry.h
-    results/resultmenumodel.h
-    analysis/jaspdoublevalidator.h
-    widgets/listmodelfactorsform.h
-    gui/aboutmodel.h
-    modules/ribbonbutton.h
-    widgets/filemenu/currentdatafile.h
-    gui/jaspversionchecker.h
-    widgets/listmodeltableviewbase.h
-    widgets/sortmenumodel.h
-    widgets/sortable.h
-    widgets/listmodelfiltereddataentry.h
-    data/importers/readstat/readstat_custom_io.h
-    data/importers/readstat/readstat_windows_helper.h
-    data/datasettablemodel.h
-    data/labelmodel.h
-    results/ploteditormodel.h
-    results/ploteditoraxismodel.h
-    results/ploteditorcoordinates.h
-    widgets/listmodelinputvalue.h
-    widgets/rowcontrols.h
-    widgets/listmodelmultitermsassigned.h
-    widgets/listmodelcustomcontrasts.h
-    widgets/listmodellabelvalueterms.h
-    analysis/jaspcontrol.h
-    widgets/checkboxbase.h
-    widgets/comboboxbase.h
-    widgets/textinputbase.h
-    widgets/componentslistbase.h
-    widgets/factorsformbase.h
-    widgets/inputlistbase.h
-    widgets/sliderbase.h
-    widgets/expanderbuttonbase.h
-    widgets/variableslistbase.h
-    widgets/boundcontrolmeasurescells.h
-    widgets/boundcontrollayers.h
-    widgets/boundcontrolterms.h
-    widgets/boundcontrolmultiterms.h
-    widgets/tableviewbase.h
-    widgets/textareabase.h
-    widgets/boundcontroltextarea.h
-    widgets/boundcontrolsourcetextarea.h
-    widgets/boundcontrollavaantextarea.h
-    widgets/boundcontroljagstextarea.h
-    widgets/radiobuttonsgroupbase.h
-    widgets/jasplistcontrol.h
-    widgets/radiobuttonbase.h
-    widgets/sourceitem.h
-    analysis/boundcontrol.h
-    analysis/boundcontrolbase.h
-    widgets/boundcontroltableview.h
-    widgets/boundcontrolcontraststableview.h
-    widgets/boundcontrolfilteredtableview.h
-    widgets/variablesformbase.h
-    widgets/factorlevellistbase.h
-    widgets/listmodelfactorlevels.h
-    widgets/listmodelgridinput.h
-    widgets/boundcontrolgridtableview.h
-)
+# We can technically use these two lines to grab all *.h, and *.cpp files
+# but it think there are unused files.
 
-set(SOURCE_FILES
-    analysis/analysisform.cpp
-    analysis/knownissues.cpp
-    analysis/term.cpp
-    analysis/terms.cpp
-    analysis/analyses.cpp
-    analysis/analysis.cpp
-    data/datasettableproxy.cpp
-    data/exporters/dataexporter.cpp
-    data/exporters/exporter.cpp
-    data/exporters/jaspexporter.cpp
-    data/exporters/resultexporter.cpp
-    data/importers/ods/odsimportcolumn.cpp
-    data/importers/ods/odsimportdataset.cpp
-    data/importers/ods/odssheetcell.cpp
-    data/importers/ods/odstypes.cpp
-    data/importers/ods/odsxmlcontentshandler.cpp
-    data/importers/ods/odsxmlhandler.cpp
-    data/importers/ods/odsxmlmanifesthandler.cpp
-    data/importers/readstat/readstatimportcolumn.cpp
-    data/importers/readstat/readstatimportdataset.cpp
-    data/importers/readstatimporter.cpp
-    data/importers/codepageconvert.cpp
-    data/importers/convertedstringcontainer.cpp
-    data/importers/csv.cpp
-    data/importers/csvimportcolumn.cpp
-    data/importers/csvimporter.cpp
-    data/importers/importcolumn.cpp
-    data/importers/importdataset.cpp
-    data/importers/importer.cpp
-    data/importers/jaspimporter.cpp
-    data/importers/odsimporter.cpp
-    data/asyncloader.cpp
-    data/asyncloaderthread.cpp
-    data/columnsmodel.cpp
-    data/computedcolumn.cpp
-    data/computedcolumns.cpp
-    data/computedcolumnsmodel.cpp
-    data/datasetloader.cpp
-    data/datasetpackage.cpp
-    data/fileevent.cpp
-    engine/enginerepresentation.cpp
-    engine/enginesync.cpp
-    gui/columntypesmodel.cpp
-    modules/description/description.cpp
-    modules/description/descriptionchildbase.cpp
-    modules/description/entrybase.cpp
-    modules/upgrader/changebase.cpp
-    modules/upgrader/changecopy.cpp
-    modules/upgrader/changejs.cpp
-    modules/upgrader/changeremove.cpp
-    modules/upgrader/changerename.cpp
-    modules/upgrader/changesetvalue.cpp
-    modules/upgrader/upgrade.cpp
-    modules/upgrader/upgradeDefinitions.cpp
-    modules/upgrader/upgradechange.cpp
-    modules/upgrader/upgrader.cpp
-    modules/upgrader/upgrades.cpp
-    modules/upgrader/upgradestep.cpp
-    modules/ribbonmodeluncommon.cpp
-    qquick/datasetview.cpp
-    modules/analysisentry.cpp
-    modules/dynamicmodule.cpp
-    modules/dynamicmodules.cpp
-    modules/ribbonmodel.cpp
-    modules/analysismenumodel.cpp
-    osf/onlinedataconnection.cpp
-    osf/onlinedatamanager.cpp
-    osf/onlinedatanode.cpp
-    osf/onlinedatanodeosf.cpp
-    osf/onlinenode.cpp
-    osf/onlineusernode.cpp
-    osf/onlineusernodeosf.cpp
-    osf/osfnam.cpp
-    qquick/jasptheme.cpp
-    qquick/rcommander.cpp
-    utilities/appdirs.cpp
-    utilities/application.cpp
-    utilities/jsonutilities.cpp
-    utilities/processhelper.cpp
-    utilities/qmlutils.cpp
-    utilities/qutils.cpp
-    results/resultsjsinterface.cpp
-    utilities/settings.cpp
-    utilities/simplecrypt.cpp
-    utilities/languagemodel.cpp
-    data/labelfiltergenerator.cpp
-    widgets/filemenu/filemenuobject.cpp
-    widgets/filemenu/datalibrary.cpp
-    widgets/filemenu/filesystem.cpp
-    widgets/filemenu/osffilesystem.cpp
-    widgets/filemenu/recentfiles.cpp
-    widgets/filemenu/computer.cpp
-    widgets/filemenu/osf.cpp
-    widgets/filemenu/datalibrarybreadcrumbsmodel.cpp
-    widgets/filemenu/datalibrarylistmodel.cpp
-    widgets/filemenu/computerfilesystem.cpp
-    widgets/listmodeljagsdatainput.cpp
-    widgets/listmodeltermsassigned.cpp
-    widgets/listmodeltermsavailable.cpp
-    main.cpp
-    mainwindow.cpp
-    utilities/extractarchive.cpp
-    widgets/listmodel.cpp
-    widgets/listmodelavailableinterface.cpp
-    widgets/listmodelassignedinterface.cpp
-    widgets/listmodeldraggable.cpp
-    widgets/listmodelmeasurescellsassigned.cpp
-    widgets/listmodellayersassigned.cpp
-    widgets/listmodelmultinomialchi2test.cpp
-    data/filtermodel.cpp
-    widgets/filemenu/recentfileslistmodel.cpp
-    widgets/filemenu/datalibraryfilesystem.cpp
-    widgets/filemenu/recentfilesfilesystem.cpp
-    widgets/filemenu/currentfilelistmodel.cpp
-    widgets/filemenu/currentfilefilesystem.cpp
-    widgets/filemenu/computerlistmodel.cpp
-    widgets/filemenu/osflistmodel.cpp
-    widgets/filemenu/osfbreadcrumbslistmodel.cpp
-    resultstesting/compareresults.cpp
-    resultstesting/resultscomparetable.cpp
-    widgets/filemenu/filemenu.cpp
-    gui/messageforwarder.cpp
-    widgets/filemenu/filemenubasiclistmodel.cpp
-    modules/ribbonmodelfiltered.cpp
-    utilities/helpmodel.cpp
-    widgets/lavaansyntaxhighlighter.cpp
-    widgets/listmodelinteractionassigned.cpp
-    gui/preferencesmodel.cpp
-    widgets/filemenu/actionbuttons.cpp
-    widgets/filemenu/resourcebuttons.cpp
-    widgets/filemenu/resourcebuttonsvisible.cpp
-    widgets/interactionmodel.cpp
-    widgets/listmodelinteractionavailable.cpp
-    results/resultmenumodel.cpp
-    results/resultmenuentry.cpp
-    analysis/jaspdoublevalidator.cpp
-    widgets/listmodelfactorsform.cpp
-    gui/aboutmodel.cpp
-    modules/ribbonbutton.cpp
-    widgets/filemenu/currentdatafile.cpp
-    gui/jaspversionchecker.cpp
-    widgets/listmodeltableviewbase.cpp
-    widgets/sortmenumodel.cpp
-    widgets/sortable.cpp
-    widgets/listmodelfiltereddataentry.cpp
-    data/importers/readstat/readstat_custom_io.cpp
-    data/datasettablemodel.cpp
-    data/labelmodel.cpp
-    results/ploteditormodel.cpp
-    results/ploteditoraxismodel.cpp
-    results/ploteditorcoordinates.cpp
-    widgets/listmodelinputvalue.cpp
-    widgets/rowcontrols.cpp
-    widgets/listmodelmultitermsassigned.cpp
-    widgets/listmodelcustomcontrasts.cpp
-    widgets/listmodellabelvalueterms.cpp
-    analysis/jaspcontrol.cpp
-    widgets/checkboxbase.cpp
-    widgets/comboboxbase.cpp
-    widgets/textinputbase.cpp
-    widgets/componentslistbase.cpp
-    widgets/factorsformbase.cpp
-    widgets/inputlistbase.cpp
-    widgets/sliderbase.cpp
-    widgets/expanderbuttonbase.cpp
-    widgets/variableslistbase.cpp
-    widgets/boundcontrolmeasurescells.cpp
-    widgets/boundcontrollayers.cpp
-    widgets/boundcontrolterms.cpp
-    widgets/boundcontrolmultiterms.cpp
-    widgets/tableviewbase.cpp
-    widgets/textareabase.cpp
-    widgets/boundcontroltextarea.cpp
-    widgets/boundcontrolsourcetextarea.cpp
-    widgets/boundcontrollavaantextarea.cpp
-    widgets/boundcontroljagstextarea.cpp
-    widgets/radiobuttonsgroupbase.cpp
-    widgets/jasplistcontrol.cpp
-    widgets/radiobuttonbase.cpp
-    widgets/sourceitem.cpp
-    analysis/boundcontrolbase.cpp
-    widgets/boundcontroltableview.cpp
-    widgets/boundcontrolcontraststableview.cpp
-    widgets/boundcontrolfilteredtableview.cpp
-    widgets/variablesformbase.cpp
-    widgets/factorlevellistbase.cpp
-    widgets/listmodelfactorlevels.cpp
-    widgets/listmodelgridinput.cpp
-    widgets/boundcontrolgridtableview.cpp
-)
+file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+list(REMOVE_ITEM HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/exporters/odsexporter.h)
 
-qt_add_executable(JASP MACOSX_BUNDLE
+file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/exporters/odsexporter.cpp)
+
+
+file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
+
+# This is a handy little for-loop from here, https://stackoverflow.com/a/66401708/1141307,
+# which keeps all the resource files into the Resources folder while
+# keeping their relative path. So, I don't have to group them manually, and
+# ndividually set the file's path properties.
+foreach (FILE ${BUNDLE_RESOURCES})
+    # Get the relative path from the Resources to the particular file.
+    file(RELATIVE_PATH NEW_FILE "${CMAKE_SOURCE_DIR}/Resources" ${FILE})
+
+    # Get the relative path to the file.
+    get_filename_component(NEW_FILE_PATH ${NEW_FILE} DIRECTORY)
+
+    # Set it's location inside the app package (under Resources).
+    set_property(SOURCE ${FILE} 
+                 PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${NEW_FILE_PATH}")
+
+    # Optional: Add the file to the 'Resources' folder group in Xcode.
+    #           This also preserves folder structure.
+    source_group("Resources/${NEW_FILE_PATH}" FILES "${FILE}")
+endforeach ()
+
+# message(STATUS ${CMAKE_BINARY_DIR})
+
+# set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Desktop/JASPEngine
+#              PROPERTY MACOSX_PACKAGE_LOCATION MacOS)
+
+add_executable(JASP MACOSX_BUNDLE
     ${HEADER_FILES}
     ${SOURCE_FILES}
+    ${BUNDLE_RESOURCES}
+    ${_R_Framework}
 )
+
+# add_dependencies(JASP JASPEngine)
 
 target_link_libraries(
     JASP PUBLIC 
@@ -459,7 +107,47 @@ target_link_libraries(
     Qt::Core5Compat
 
     PkgConfig::LIBREADSTAT
+
+    # ${CMAKE_SOURCE_DIR}/R.framework
+    ${_R_Framework}
 )
+
+set_target_properties(JASP PROPERTIES
+    INSTALL_RPATH @executable_path/../Frameworks
+)
+
+# set_target_properties(${_R_Framework} PROPERTIES
+#     FRAMEWORK TRUE
+#     INSTALL_RPATH @loader_path/../../..
+# )
+
+set_target_properties(JASP PROPERTIES
+    XCODE_ATTRIBUTE_SKIP_INSTALL  NO
+    XCODE_ATTRIBUTE_INSTALL_PATH  "$(LOCAL_APPS_DIR)"
+)
+
+set_target_properties(JASP PROPERTIES
+    XCODE_EMBED_FRAMEWORKS                        ${_R_Framework}
+    XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY      TRUE
+    XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY FALSE
+    )
+
+# set_target_properties(JASP PROPERTIES
+#     XCODE_EMBED_APP_EXTENTIONS  JASPEngine
+# )
+
+# set_source_files_properties(
+#     ${_R_Framework} PROPERTIES 
+#     MACOSX_PACKAGE_LOCATION "Frameworks"
+#     )
+
+
+# set_target_properties(JASP PROPERTIES
+#     RESOURCE "${BUNDLE_RESOURCES_FILES}")
+
+# set_source_files_properties(${BUNDLE_RESOURCES_FILES} PROPERTIES
+#     MACOS_PACKAGE_LOCATION Resources/Data)
+
 
 # set_target_properties(JASP PROPERTIES
 #     MACOS_BUNDLE_IDENTIFIER org.jasp-stats.jasp
@@ -1205,6 +893,7 @@ qt_add_resources(JASP "qml"
 )
 
 
+
 # #### Keys ignored in scope 1:.:.:Desktop.pro:<TRUE>:
 # # COPY_CRYPT = "$$[ENVIRONMENT_CRYPTKEY]"
 # # DEPENDPATH = ".."
@@ -1434,3 +1123,397 @@ qt_add_resources(JASP "qml"
 
 #### Keys ignored in scope 92:.:..:../R_INSTALL_CMDS.pri:defineReplace(runRCommandForInstall):
 # CMD = "$$1"
+
+
+# TODO: This can all be done using the include_directories I think
+# set(HEADER_FILES
+#     analysis/analysisform.h
+#     analysis/knownissues.h
+#     analysis/term.h
+#     analysis/terms.h
+#     analysis/analyses.h
+#     analysis/analysis.h
+#     data/datasettableproxy.h
+#     data/exporters/dataexporter.h
+#     data/exporters/exporter.h
+#     data/exporters/jaspexporter.h
+#     data/exporters/resultexporter.h
+#     data/importers/ods/odsimportcolumn.h
+#     data/importers/ods/odsimportdataset.h
+#     data/importers/ods/odssheetcell.h
+#     data/importers/ods/odstypes.h
+#     data/importers/ods/odsxmlcontentshandler.h
+#     data/importers/ods/odsxmlhandler.h
+#     data/importers/ods/odsxmlmanifesthandler.h
+#     data/importers/readstat/readstat.h
+#     data/importers/readstat/readstatimportcolumn.h
+#     data/importers/readstat/readstatimportdataset.h
+#     data/importers/readstatimporter.h
+#     data/importers/codepageconvert.h
+#     data/importers/convertedstringcontainer.h
+#     data/importers/csv.h
+#     data/importers/csvimportcolumn.h
+#     data/importers/csvimporter.h
+#     data/importers/importcolumn.h
+#     data/importers/importdataset.h
+#     data/importers/importer.h
+#     data/importers/importerutils.h
+#     data/importers/jaspimporter.h
+#     data/importers/odsimporter.h
+#     data/asyncloader.h
+#     data/asyncloaderthread.h
+#     data/columnsmodel.h
+#     data/computedcolumn.h
+#     data/computedcolumns.h
+#     data/computedcolumnsmodel.h
+#     data/datasetloader.h
+#     data/datasetpackage.h
+#     data/fileevent.h
+#     analysis/variableinfo.h
+#     engine/enginerepresentation.h
+#     engine/enginesync.h
+#     engine/rscriptstore.h
+#     gui/columntypesmodel.h
+#     modules/description/description.h
+#     modules/description/descriptionchildbase.h
+#     modules/description/entrybase.h
+#     modules/upgrader/changebase.h
+#     modules/upgrader/changecopy.h
+#     modules/upgrader/changejs.h
+#     modules/upgrader/changeremove.h
+#     modules/upgrader/changerename.h
+#     modules/upgrader/changesetvalue.h
+#     modules/upgrader/upgrade.h
+#     modules/upgrader/upgradeDefinitions.h
+#     modules/upgrader/upgradechange.h
+#     modules/upgrader/upgrader.h
+#     modules/upgrader/upgrades.h
+#     modules/upgrader/upgradestep.h
+#     modules/ribbonmodeluncommon.h
+#     qquick/datasetview.h
+#     modules/analysisentry.h
+#     modules/dynamicmodule.h
+#     modules/dynamicmodules.h
+#     modules/ribbonmodel.h
+#     modules/analysismenumodel.h
+#     osf/onlinedataconnection.h
+#     osf/onlinedatamanager.h
+#     osf/onlinedatanode.h
+#     osf/onlinedatanodeosf.h
+#     osf/onlinenode.h
+#     osf/onlineusernode.h
+#     osf/onlineusernodeosf.h
+#     osf/osfnam.h
+#     qquick/jasptheme.h
+#     qquick/rcommander.h
+#     utilities/appdirs.h
+#     utilities/application.h
+#     utilities/jsonutilities.h
+#     utilities/processhelper.h
+#     utilities/qmlutils.h
+#     utilities/qutils.h
+#     results/resultsjsinterface.h
+#     utilities/settings.h
+#     utilities/simplecrypt.h
+#     utilities/languagemodel.h
+#     utilities/simplecryptkey.h
+#     data/labelfiltergenerator.h
+#     widgets/filemenu/filemenuobject.h
+#     widgets/filemenu/datalibrary.h
+#     widgets/filemenu/filesystem.h
+#     widgets/filemenu/osffilesystem.h
+#     widgets/filemenu/recentfiles.h
+#     widgets/filemenu/computer.h
+#     widgets/filemenu/osf.h
+#     widgets/filemenu/datalibrarybreadcrumbsmodel.h
+#     widgets/filemenu/datalibrarylistmodel.h
+#     widgets/filemenu/computerfilesystem.h
+#     widgets/filemenu/filesystementry.h
+#     widgets/listmodeljagsdatainput.h
+#     widgets/listmodeltermsassigned.h
+#     widgets/listmodeltermsavailable.h
+#     mainwindow.h
+#     utilities/extractarchive.h
+#     widgets/listmodel.h
+#     widgets/listmodelassignedinterface.h
+#     widgets/listmodelavailableinterface.h
+#     widgets/listmodeldraggable.h
+#     widgets/listmodelmeasurescellsassigned.h
+#     widgets/listmodellayersassigned.h
+#     widgets/listmodelmultinomialchi2test.h 
+#     data/filtermodel.h
+#     widgets/filemenu/recentfileslistmodel.h
+#     widgets/filemenu/datalibraryfilesystem.h
+#     widgets/filemenu/recentfilesfilesystem.h
+#     widgets/filemenu/currentfilelistmodel.h
+#     widgets/filemenu/currentfilefilesystem.h
+#     widgets/filemenu/computerlistmodel.h
+#     widgets/filemenu/osflistmodel.h
+#     widgets/filemenu/osfbreadcrumbslistmodel.h
+#     resultstesting/compareresults.h
+#     resultstesting/resultscomparetable.h
+#     widgets/filemenu/filemenu.h
+#     gui/messageforwarder.h
+#     widgets/filemenu/filemenulistitem.h
+#     widgets/filemenu/filemenubasiclistmodel.h
+#     modules/ribbonmodelfiltered.h
+#     utilities/helpmodel.h
+#     widgets/lavaansyntaxhighlighter.h
+#     widgets/listmodelinteractionassigned.h
+#     gui/preferencesmodel.h
+#     widgets/filemenu/actionbuttons.h
+#     widgets/filemenu/resourcebuttons.h
+#     widgets/filemenu/resourcebuttonsvisible.h
+#     widgets/interactionmodel.h
+#     widgets/listmodelinteractionavailable.h
+#     results/resultmenuentry.h
+#     results/resultmenumodel.h
+#     analysis/jaspdoublevalidator.h
+#     widgets/listmodelfactorsform.h
+#     gui/aboutmodel.h
+#     modules/ribbonbutton.h
+#     widgets/filemenu/currentdatafile.h
+#     gui/jaspversionchecker.h
+#     widgets/listmodeltableviewbase.h
+#     widgets/sortmenumodel.h
+#     widgets/sortable.h
+#     widgets/listmodelfiltereddataentry.h
+#     data/importers/readstat/readstat_custom_io.h
+#     data/importers/readstat/readstat_windows_helper.h
+#     data/datasettablemodel.h
+#     data/labelmodel.h
+#     results/ploteditormodel.h
+#     results/ploteditoraxismodel.h
+#     results/ploteditorcoordinates.h
+#     widgets/listmodelinputvalue.h
+#     widgets/rowcontrols.h
+#     widgets/listmodelmultitermsassigned.h
+#     widgets/listmodelcustomcontrasts.h
+#     widgets/listmodellabelvalueterms.h
+#     analysis/jaspcontrol.h
+#     widgets/checkboxbase.h
+#     widgets/comboboxbase.h
+#     widgets/textinputbase.h
+#     widgets/componentslistbase.h
+#     widgets/factorsformbase.h
+#     widgets/inputlistbase.h
+#     widgets/sliderbase.h
+#     widgets/expanderbuttonbase.h
+#     widgets/variableslistbase.h
+#     widgets/boundcontrolmeasurescells.h
+#     widgets/boundcontrollayers.h
+#     widgets/boundcontrolterms.h
+#     widgets/boundcontrolmultiterms.h
+#     widgets/tableviewbase.h
+#     widgets/textareabase.h
+#     widgets/boundcontroltextarea.h
+#     widgets/boundcontrolsourcetextarea.h
+#     widgets/boundcontrollavaantextarea.h
+#     widgets/boundcontroljagstextarea.h
+#     widgets/radiobuttonsgroupbase.h
+#     widgets/jasplistcontrol.h
+#     widgets/radiobuttonbase.h
+#     widgets/sourceitem.h
+#     analysis/boundcontrol.h
+#     analysis/boundcontrolbase.h
+#     widgets/boundcontroltableview.h
+#     widgets/boundcontrolcontraststableview.h
+#     widgets/boundcontrolfilteredtableview.h
+#     widgets/variablesformbase.h
+#     widgets/factorlevellistbase.h
+#     widgets/listmodelfactorlevels.h
+#     widgets/listmodelgridinput.h
+#     widgets/boundcontrolgridtableview.h
+# )
+
+# set(SOURCE_FILES
+#     analysis/analysisform.cpp
+#     analysis/knownissues.cpp
+#     analysis/term.cpp
+#     analysis/terms.cpp
+#     analysis/analyses.cpp
+#     analysis/analysis.cpp
+#     data/datasettableproxy.cpp
+#     data/exporters/dataexporter.cpp
+#     data/exporters/exporter.cpp
+#     data/exporters/jaspexporter.cpp
+#     data/exporters/resultexporter.cpp
+#     data/importers/ods/odsimportcolumn.cpp
+#     data/importers/ods/odsimportdataset.cpp
+#     data/importers/ods/odssheetcell.cpp
+#     data/importers/ods/odstypes.cpp
+#     data/importers/ods/odsxmlcontentshandler.cpp
+#     data/importers/ods/odsxmlhandler.cpp
+#     data/importers/ods/odsxmlmanifesthandler.cpp
+#     data/importers/readstat/readstatimportcolumn.cpp
+#     data/importers/readstat/readstatimportdataset.cpp
+#     data/importers/readstatimporter.cpp
+#     data/importers/codepageconvert.cpp
+#     data/importers/convertedstringcontainer.cpp
+#     data/importers/csv.cpp
+#     data/importers/csvimportcolumn.cpp
+#     data/importers/csvimporter.cpp
+#     data/importers/importcolumn.cpp
+#     data/importers/importdataset.cpp
+#     data/importers/importer.cpp
+#     data/importers/jaspimporter.cpp
+#     data/importers/odsimporter.cpp
+#     data/asyncloader.cpp
+#     data/asyncloaderthread.cpp
+#     data/columnsmodel.cpp
+#     data/computedcolumn.cpp
+#     data/computedcolumns.cpp
+#     data/computedcolumnsmodel.cpp
+#     data/datasetloader.cpp
+#     data/datasetpackage.cpp
+#     data/fileevent.cpp
+#     engine/enginerepresentation.cpp
+#     engine/enginesync.cpp
+#     gui/columntypesmodel.cpp
+#     modules/description/description.cpp
+#     modules/description/descriptionchildbase.cpp
+#     modules/description/entrybase.cpp
+#     modules/upgrader/changebase.cpp
+#     modules/upgrader/changecopy.cpp
+#     modules/upgrader/changejs.cpp
+#     modules/upgrader/changeremove.cpp
+#     modules/upgrader/changerename.cpp
+#     modules/upgrader/changesetvalue.cpp
+#     modules/upgrader/upgrade.cpp
+#     modules/upgrader/upgradeDefinitions.cpp
+#     modules/upgrader/upgradechange.cpp
+#     modules/upgrader/upgrader.cpp
+#     modules/upgrader/upgrades.cpp
+#     modules/upgrader/upgradestep.cpp
+#     modules/ribbonmodeluncommon.cpp
+#     qquick/datasetview.cpp
+#     modules/analysisentry.cpp
+#     modules/dynamicmodule.cpp
+#     modules/dynamicmodules.cpp
+#     modules/ribbonmodel.cpp
+#     modules/analysismenumodel.cpp
+#     osf/onlinedataconnection.cpp
+#     osf/onlinedatamanager.cpp
+#     osf/onlinedatanode.cpp
+#     osf/onlinedatanodeosf.cpp
+#     osf/onlinenode.cpp
+#     osf/onlineusernode.cpp
+#     osf/onlineusernodeosf.cpp
+#     osf/osfnam.cpp
+#     qquick/jasptheme.cpp
+#     qquick/rcommander.cpp
+#     utilities/appdirs.cpp
+#     utilities/application.cpp
+#     utilities/jsonutilities.cpp
+#     utilities/processhelper.cpp
+#     utilities/qmlutils.cpp
+#     utilities/qutils.cpp
+#     results/resultsjsinterface.cpp
+#     utilities/settings.cpp
+#     utilities/simplecrypt.cpp
+#     utilities/languagemodel.cpp
+#     data/labelfiltergenerator.cpp
+#     widgets/filemenu/filemenuobject.cpp
+#     widgets/filemenu/datalibrary.cpp
+#     widgets/filemenu/filesystem.cpp
+#     widgets/filemenu/osffilesystem.cpp
+#     widgets/filemenu/recentfiles.cpp
+#     widgets/filemenu/computer.cpp
+#     widgets/filemenu/osf.cpp
+#     widgets/filemenu/datalibrarybreadcrumbsmodel.cpp
+#     widgets/filemenu/datalibrarylistmodel.cpp
+#     widgets/filemenu/computerfilesystem.cpp
+#     widgets/listmodeljagsdatainput.cpp
+#     widgets/listmodeltermsassigned.cpp
+#     widgets/listmodeltermsavailable.cpp
+#     main.cpp
+#     mainwindow.cpp
+#     utilities/extractarchive.cpp
+#     widgets/listmodel.cpp
+#     widgets/listmodelavailableinterface.cpp
+#     widgets/listmodelassignedinterface.cpp
+#     widgets/listmodeldraggable.cpp
+#     widgets/listmodelmeasurescellsassigned.cpp
+#     widgets/listmodellayersassigned.cpp
+#     widgets/listmodelmultinomialchi2test.cpp
+#     data/filtermodel.cpp
+#     widgets/filemenu/recentfileslistmodel.cpp
+#     widgets/filemenu/datalibraryfilesystem.cpp
+#     widgets/filemenu/recentfilesfilesystem.cpp
+#     widgets/filemenu/currentfilelistmodel.cpp
+#     widgets/filemenu/currentfilefilesystem.cpp
+#     widgets/filemenu/computerlistmodel.cpp
+#     widgets/filemenu/osflistmodel.cpp
+#     widgets/filemenu/osfbreadcrumbslistmodel.cpp
+#     resultstesting/compareresults.cpp
+#     resultstesting/resultscomparetable.cpp
+#     widgets/filemenu/filemenu.cpp
+#     gui/messageforwarder.cpp
+#     widgets/filemenu/filemenubasiclistmodel.cpp
+#     modules/ribbonmodelfiltered.cpp
+#     utilities/helpmodel.cpp
+#     widgets/lavaansyntaxhighlighter.cpp
+#     widgets/listmodelinteractionassigned.cpp
+#     gui/preferencesmodel.cpp
+#     widgets/filemenu/actionbuttons.cpp
+#     widgets/filemenu/resourcebuttons.cpp
+#     widgets/filemenu/resourcebuttonsvisible.cpp
+#     widgets/interactionmodel.cpp
+#     widgets/listmodelinteractionavailable.cpp
+#     results/resultmenumodel.cpp
+#     results/resultmenuentry.cpp
+#     analysis/jaspdoublevalidator.cpp
+#     widgets/listmodelfactorsform.cpp
+#     gui/aboutmodel.cpp
+#     modules/ribbonbutton.cpp
+#     widgets/filemenu/currentdatafile.cpp
+#     gui/jaspversionchecker.cpp
+#     widgets/listmodeltableviewbase.cpp
+#     widgets/sortmenumodel.cpp
+#     widgets/sortable.cpp
+#     widgets/listmodelfiltereddataentry.cpp
+#     data/importers/readstat/readstat_custom_io.cpp
+#     data/datasettablemodel.cpp
+#     data/labelmodel.cpp
+#     results/ploteditormodel.cpp
+#     results/ploteditoraxismodel.cpp
+#     results/ploteditorcoordinates.cpp
+#     widgets/listmodelinputvalue.cpp
+#     widgets/rowcontrols.cpp
+#     widgets/listmodelmultitermsassigned.cpp
+#     widgets/listmodelcustomcontrasts.cpp
+#     widgets/listmodellabelvalueterms.cpp
+#     analysis/jaspcontrol.cpp
+#     widgets/checkboxbase.cpp
+#     widgets/comboboxbase.cpp
+#     widgets/textinputbase.cpp
+#     widgets/componentslistbase.cpp
+#     widgets/factorsformbase.cpp
+#     widgets/inputlistbase.cpp
+#     widgets/sliderbase.cpp
+#     widgets/expanderbuttonbase.cpp
+#     widgets/variableslistbase.cpp
+#     widgets/boundcontrolmeasurescells.cpp
+#     widgets/boundcontrollayers.cpp
+#     widgets/boundcontrolterms.cpp
+#     widgets/boundcontrolmultiterms.cpp
+#     widgets/tableviewbase.cpp
+#     widgets/textareabase.cpp
+#     widgets/boundcontroltextarea.cpp
+#     widgets/boundcontrolsourcetextarea.cpp
+#     widgets/boundcontrollavaantextarea.cpp
+#     widgets/boundcontroljagstextarea.cpp
+#     widgets/radiobuttonsgroupbase.cpp
+#     widgets/jasplistcontrol.cpp
+#     widgets/radiobuttonbase.cpp
+#     widgets/sourceitem.cpp
+#     analysis/boundcontrolbase.cpp
+#     widgets/boundcontroltableview.cpp
+#     widgets/boundcontrolcontraststableview.cpp
+#     widgets/boundcontrolfilteredtableview.cpp
+#     widgets/variablesformbase.cpp
+#     widgets/factorlevellistbase.cpp
+#     widgets/listmodelfactorlevels.cpp
+#     widgets/listmodelgridinput.cpp
+#     widgets/boundcontrolgridtableview.cpp
+# )

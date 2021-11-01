@@ -175,7 +175,7 @@ else()
 
 	add_custom_command(TARGET JASPEngine
 	    POST_BUILD
-	    COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/JASPEngine ${CMAKE_CURRENT_BINARY_DIR}/../Desktop
+	    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/JASPEngine ${CMAKE_CURRENT_BINARY_DIR}/../Desktop
     	COMMENT "       [JASP]: Placing the Engine at the right place...")
 	
 endif()

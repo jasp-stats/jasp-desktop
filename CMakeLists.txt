@@ -20,6 +20,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
+option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
+option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
 
 include(JASP.cmake)
 include(R.cmake)
