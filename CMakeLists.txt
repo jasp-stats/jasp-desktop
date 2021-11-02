@@ -19,6 +19,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+message(STATUS "Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
+
 option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
 option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)

@@ -90,6 +90,11 @@ qt_add_library(Common
 	STATIC
 	)
 
+# Making sure that Xcode could find libCommon.a during the archiving
+set_target_properties(Common PROPERTIES
+	ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/)
+
+
 if (BUILD_WITH_SYSTEM_R)
 
 	target_link_libraries(

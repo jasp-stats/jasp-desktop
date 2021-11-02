@@ -88,6 +88,12 @@ qt_add_library(
 	STATIC
 )
 
+# Making sure that Xcode could find libR-Interface.a during the archiving
+set_target_properties(R-Interface PROPERTIES
+	ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/)
+
+add_dependencies(R-Interface Common)
+
 if (BUILD_WITH_SYSTEM_R)
 
 	target_link_libraries(

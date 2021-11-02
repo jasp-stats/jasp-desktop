@@ -82,7 +82,7 @@ add_executable(JASP MACOSX_BUNDLE
     ${_R_Framework}
 )
 
-# add_dependencies(JASP JASPEngine)
+add_dependencies(JASP JASPEngine)
 
 target_link_libraries(
     JASP PUBLIC 
