@@ -885,11 +885,13 @@ void Engine::absorbSettings(const Json::Value & jsonRequest)
 	_developerMode		= jsonRequest.get("developerMode",		_developerMode	).asBool();
 	_imageBackground	= jsonRequest.get("imageBackground",	_imageBackground).asString();
 	_langR				= jsonRequest.get("languageCode",		_langR			).asString();
+
+	const char	* PAT	= std::getenv("GITHUB_PAT");
 	
 #ifdef _WIN32
-	_putenv_s	("GITHUB_PAT",  jsonRequest.get("GITHUB_PAT",			getenv("GITHUB_PAT")).asCString());
+	_putenv_s	("GITHUB_PAT",  jsonRequest.get("GITHUB_PAT",			PAT ? PAT : "").asCString());
 #else
-	setenv		("GITHUB_PAT",  jsonRequest.get("GITHUB_PAT",			getenv("GITHUB_PAT")).asCString(), 1);
+	setenv		("GITHUB_PAT",  jsonRequest.get("GITHUB_PAT",			PAT ? PAT : "").asCString(), 1);
 #endif
 	rbridge_setLANG(_langR);
 }
