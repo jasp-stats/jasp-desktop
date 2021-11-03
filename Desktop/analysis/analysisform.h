@@ -40,9 +40,11 @@ class ColumnsModel;
 ///
 /// The backend for the `Form{}` used in all JASP's well, qml forms
 /// This is directly a QQuickItem and connects to Analyses to inform it when the options change.
-/// Each element placed inside the Form will be a derivative of JASPControl and/or BoundControl
-/// BoundControl is bound in the sense that any changes to its values will be propagated to Anlaysis and stored there through `Analysis::setBoundValue`
-/// But Im sure Bruno can give a much nicer and detailed description here
+/// Each element placed inside the Form will be a derivative of JASPControl
+/// A JASPControl can be also a BoundControl: it is bound in the sense that any changes to its values will be propagated to Analysis and stored there through `Analysis::setBoundValue`
+/// Each time a JASPControl is initialized, it is registered by the form, and when the form is initialized it sets up the JASPControls either by their default values, 
+/// or by the values stored in a JASP file (when a JASP file is loaded).
+/// The interface errors and warnings are managed by this class.
 class AnalysisForm : public QQuickItem, public VariableInfoProvider
 {
 	Q_OBJECT
