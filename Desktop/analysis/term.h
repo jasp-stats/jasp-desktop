@@ -26,7 +26,8 @@
 #include <QStringList>
 
 ///
-/// Not really sure how to describe this, Bruno?
+/// A term is a basic element of a VariablesList
+/// It is usually just a string, but in case of interactions, it is a vector of strings, a component being one part of an interaction.
 ///
 class Term
 {
