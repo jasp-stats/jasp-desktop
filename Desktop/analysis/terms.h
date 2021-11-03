@@ -30,7 +30,13 @@
 #include "term.h"
 
 ///
-/// Not really sure how to describe this, Bruno?
+/// Terms is a list of Term. They are used in VariablesList
+/// Some extra functionalities are added to deal with terms with interactions, in order for example to remove all terms that contain some component
+/// (a component is most of the time a Variable name, but it can be a factor of level name).
+/// Terms may have a parent Terms. This is used mainly in the available Variables List: this list has some variables that can be assigned to another (assigned) list.
+/// The variable is then removed from the Available list and added to the assigned list. But if this variable is set back to the available list, it should get the same
+/// order as before being set to the assigned list. For this we keep the original terms, and set it as parent of the 'functional' terms of the available list. When a variable
+/// is set back to the available list, we can know with the parent terms where it was before being moved.
 ///
 class Terms
 {
