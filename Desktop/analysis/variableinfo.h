@@ -26,7 +26,10 @@
 #include "qquick/jasptheme.h"
 
 ///
-/// Not really sure how to describe this, Bruno?
+/// This is a mechanism to give some extra information about a variable in a VariablesList.
+/// There is a provider and a consumer.
+/// The provider is in fact always the form. It knows from which dataset comes the variable, and can tell which type it has, and which labels it uses.
+/// The consumer is usually the VariablesList, so that it can set for example the right type icon for each variable.
 ///
 class VariableInfo
 {
