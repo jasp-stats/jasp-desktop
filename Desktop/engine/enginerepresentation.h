@@ -15,6 +15,10 @@
 #include "rscriptstore.h"
 #include "modules/dynamicmodules.h"
 
+///
+/// Keeps track of the state of a single Engine process (JASPEngine)
+/// Tracks it through knowing the state, aka is it running an analysis, a filter or something else
+/// Also handles pausing, resuming, stopping and restarting them
 class EngineRepresentation : public QObject
 {
 	Q_OBJECT

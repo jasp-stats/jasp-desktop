@@ -8,6 +8,11 @@
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"
 
+
+/// Helper class to interface with lizip/archive to unpack archives and to get particular files from it
+/// Used by DynamicModules and the ModuleInstaller for getting DESCRIPTION and/or Description.qml out of the archive when manually installing a module (from an archive)
+/// This way the description can be shown before installing it, which is nice.
+/// It can unpack it somewhere and make sure certain structures are removed (some nesting)
 class ExtractArchive
 {
 public:

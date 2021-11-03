@@ -14,6 +14,10 @@ class Analysis;
 namespace PlotEditor
 {
 
+///
+/// Main model for the ploteditor, loads the `editingOptions` from `writeImage` and initializes itself with that.
+/// Whenever changes are made these are communicated to the right engine and the results caught and processed here again
+/// It also makes sure that the Analysis is updated.
 class PlotEditorModel : public QObject
 {
 	Q_OBJECT

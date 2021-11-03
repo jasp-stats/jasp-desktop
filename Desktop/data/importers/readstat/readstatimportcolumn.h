@@ -5,6 +5,12 @@
 #include "readstat.h"
 #include "../importcolumn.h"
 
+///
+/// Stores relevant information for a column being imported through ReadStat.
+/// Tries to stay true to the datatypes as defined in the sourcefile
+/// But not all combinations are possible in JASP (such as double values with string labels and other combinations)
+/// In those cases it tries to go for whatever fits best.
+/// In the end `tryNominalMinusText` will be called to make sure that if all the "double-values" are also possibly int-values they are converted to that.
 class ReadStatImportColumn : public ImportColumn
 {
 public:

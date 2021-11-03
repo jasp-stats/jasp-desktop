@@ -41,6 +41,12 @@ typedef boost::interprocess::allocator<char,	boost::interprocess::managed_shared
 typedef boost::container::basic_string<char,	std::char_traits<char>, CharAllocator						> String;
 typedef boost::interprocess::allocator<String,	boost::interprocess::managed_shared_memory::segment_manager	> StringAllocator;
 
+///
+/// IPCChannel or Interproces communication channel
+/// Roughly a string guarded by a mutex to have a one way communication channel between Engine and Desktop
+/// This means that two of these are needed to have, well you guessed it, two way communication.
+/// It is created with a certain size but if it needs to grow (because of massive messages) it will double in size until it accomodates the message.
+///
 class IPCChannel
 {
 public:

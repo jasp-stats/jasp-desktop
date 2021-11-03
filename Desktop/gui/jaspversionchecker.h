@@ -25,7 +25,9 @@
 #include <QUrl>
 #include <QTimer>
 
-///One off version checker, will delete itself after downloading!
+///
+/// One off version checker, will delete itself after downloading!
+/// Also downloads the known issues json from static.jasp-stats.org for userfeedback on bad bugs
 class JASPVersionChecker : public QObject
 {
 	Q_OBJECT

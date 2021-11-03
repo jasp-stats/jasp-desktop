@@ -50,61 +50,6 @@
 using namespace std;
 using namespace boost;
 
-string Dirs::appDataDir()
-{
-	static string p = "";
-
-	if (p != "")
-		return p;
-
-	string dir;
-	filesystem::path pa;
-
-#ifdef _WIN32
-	TCHAR buffer[MAX_PATH];
-
-	HRESULT ret = SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, buffer);
-
-	if ( ! SUCCEEDED(ret))
-	{
-		stringstream ss;
-		ss << "App Data directory could not be retrieved (" << ret << ")";
-		throw Exception(ss.str());
-	}
-
-	dir = nowide::narrow(buffer);
-	dir += "/JASP/" + AppInfo::getShortDesc();
-
-	pa = nowide::widen(dir);
-
-#else
-
-	dir = string(getpwuid(getuid())->pw_dir);
-	dir += "/.JASP/" + AppInfo::getShortDesc();
-
-	pa = dir;
-
-#endif
-
-	if ( ! filesystem::exists(pa))
-	{
-		system::error_code ec;
-
-		filesystem::create_directories(pa, ec);
-
-		if (ec)
-		{
-			stringstream ss;
-			ss << "App Data directory could not be created: " << dir;
-			throw Exception(ss.str());
-		}
-	}
-
-	p = filesystem::path(dir).generic_string();
-
-	return p;
-}
-
 string Dirs::tempDir()
 {
 	static string p = "";
@@ -273,19 +218,6 @@ string Dirs::exeDir()
 
 #endif
 
-}
-
-string Dirs::rHomeDir()
-{
-	string dir = exeDir();
-
-#ifdef __APPLE__
-    dir += "/../Frameworks/R.framework/Versions/" + AppInfo::getRVersion() + "/Resources";
-#else
-	dir += "/R";
-#endif
-
-	return dir;
 }
 
 string Dirs::resourcesDir()

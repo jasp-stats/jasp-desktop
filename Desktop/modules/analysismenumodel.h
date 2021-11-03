@@ -27,7 +27,9 @@
 
 class RibbonButton;
 
-//This class should not hold it's own data but simply be an interface for the description of a RibbonButton/Dynamic Module
+/// This class should not hold it's own data but simply be an interface for the description of a RibbonButton/Dynamic Module
+/// And I suppose that means it could also be subclassed by Description? So that that directly delivers the entries? 
+/// This all depends on how EntryBase and AnalysisEntry are merged though
 class AnalysisMenuModel : public QAbstractListModel
 {
 	Q_OBJECT

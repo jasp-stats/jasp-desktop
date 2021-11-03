@@ -5,6 +5,9 @@
 #include "column.h"
 #include <QString>
 
+
+///
+/// Base class for storing requests to run some R-script in an engine
 struct RScriptStore
 {
 	RScriptStore(int requestId, QString script, engineState typeScript = engineState::rCode, bool whiteListedVersion = true, bool returnLog = false)
@@ -18,6 +21,8 @@ struct RScriptStore
 
 };
 
+///
+/// For when you want to run a filter use this override
 struct RFilterStore : public RScriptStore
 {
 	RFilterStore(QString generatedfilter, QString filter, int requestID) : RScriptStore(requestID, filter, engineState::filter), generatedfilter(generatedfilter) { }
@@ -25,6 +30,8 @@ struct RFilterStore : public RScriptStore
 	QString generatedfilter;
 };
 
+///
+/// For when a computed column must be, well, computed
 struct RComputeColumnStore : public RScriptStore
 {
 	RComputeColumnStore(QString columnName, QString computeCode, columnType colType) : RScriptStore(-1, computeCode, engineState::computeColumn), _columnName(columnName), _columnType(colType)

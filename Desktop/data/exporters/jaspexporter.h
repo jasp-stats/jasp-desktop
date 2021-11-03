@@ -21,6 +21,9 @@
 #include "exporter.h"
 #include "libzip/archive.h"
 
+///
+/// To export to *.JASP files
+/// Those are basically zips with some json files in there btw
 class JASPExporter: public Exporter
 {
 public:

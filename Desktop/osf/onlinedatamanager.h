@@ -9,6 +9,9 @@
 
 #include <map>
 
+///
+/// Authenticating, connecting, uploading and downloading to and from servers, depending on the provider chosen.
+/// You can however only choose OSF
 class OnlineDataManager : public QObject
 {
 	Q_OBJECT

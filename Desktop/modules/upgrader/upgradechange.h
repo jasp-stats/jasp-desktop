@@ -7,6 +7,7 @@
 #include "enumutilities.h"
 #include "upgradeDefinitions.h"
 
+// This file contains outdated upgrading options. In the future we should move towards doing everything through Upgrades.qml
 
 namespace Modules {
 
@@ -33,7 +34,7 @@ private:
 	bool						_noOp = false;
 };
 
-///Part of the monolithic upgrade process as defined by upgrades.json
+/// Part of the monolithic upgrade process as defined by upgrades.json
 class UpgradeChange
 {
 public:

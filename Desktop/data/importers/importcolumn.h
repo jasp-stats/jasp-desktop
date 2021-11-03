@@ -8,6 +8,10 @@
 
 class ImportDataSet;
 
+
+///
+/// Base class for all columns during import
+/// It has some utility functions and defines the interface that is used to convert all this to the "real" dataset in memory in JASP
 class ImportColumn
 {
 public:

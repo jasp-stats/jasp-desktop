@@ -25,7 +25,9 @@
 #include "utilities/jsonutilities.h"
 #include "results/resultmenuentry.h"
 
-
+/// Model for the custom menu in JASP. It is not just used in the results despite the name.
+/// It is called from javascript as "jasp.showAnalysesMenu" which refers to the WebChannel in MainPage.qml with id "jasp"
+/// That then calls `setOptions` on _resultMenuModel which is the only instance (but not a singleton, although it could be) of this class.
 class ResultMenuModel : public QAbstractListModel
 {
 	Q_OBJECT

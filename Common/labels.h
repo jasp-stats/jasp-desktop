@@ -42,7 +42,9 @@ struct labelNotFound : public std::runtime_error
 	const char* what() const noexcept override;
 };
 
-
+///
+/// A collection of Label objects that can be stored directly in shared memory.
+///
 class Labels
 {
 public:

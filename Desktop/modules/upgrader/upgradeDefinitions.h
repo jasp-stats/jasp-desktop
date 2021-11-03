@@ -28,7 +28,8 @@ struct upgradeLoadError  : public std::runtime_error
 	const char* what() const noexcept override;
 };
 
-
+/// Used to avoid loops by tracking each step and making sure they keep increasing in version.
+/// And not recur, which would lead to infinity
 struct StepTaken
 {
 	std::string module,

@@ -18,6 +18,9 @@
 #ifndef JASPRCPP_INTERFACE_H
 #define JASPRCPP_INTERFACE_H
 
+/// This file contains all the functions that need to be accessible in Engine
+/// So make sure to only use C types.
+
 //unix uses same compiler for both R-Interface and Engine so no need for dll-hoops to jump through
 #ifdef _WIN32
 #if defined(JASP_R_INTERFACE_LIBRARY)

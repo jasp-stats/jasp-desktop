@@ -25,6 +25,12 @@
 
 #include <boost/nowide/fstream.hpp>
 
+///
+/// This files is used to read CSV files
+/// It tries to guess the utf encoding from either a BOM if present (and has the option to decide it is then in the "local codepage" if running on windows)
+/// And otherwise it just looks at the characters and sees if any of the codes for multiple bytes etc are present.
+/// It also tries to determine the delimiter by looking at the first line and trying some fun heuristics.
+/// If it finds nothing (one column for instance, or something crazy) it defaults to comma
 class CSV
 {
 public:

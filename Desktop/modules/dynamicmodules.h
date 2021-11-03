@@ -32,6 +32,9 @@
 namespace Modules
 {
 
+/// 
+/// This class handles all dynamic modules and (un)loading them, as well as facilitating installation etc
+/// 
 class DynamicModules : public QObject
 {
 	Q_OBJECT

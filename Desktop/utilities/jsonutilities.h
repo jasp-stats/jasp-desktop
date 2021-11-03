@@ -8,6 +8,9 @@
 #include <cmath>
 #include "qutils.h"
 
+/// There are recurring needs when working with Json::Value etc and these are collected here.
+/// For instance converting from and to a std::vector<std::string> is useful and might as well be written here.
+/// The function vecToJsonArray for instance handles inf or nan occuring in double, because json doesn't support it...
 class JsonUtilities
 {
 public:

@@ -29,12 +29,12 @@
 
 #include "enginerepresentation.h"
 
-/* EngineSync is responsible for launching the background
- * processes, scheduling analyses, and for sending and
- * receiving communications with the running analyses.
- * It keeps track of which analyses are executing on
- * which background process.
- */
+/// EngineSync is responsible for launching the background
+/// processes, scheduling analyses, and for sending and
+/// receiving communications with the running analyses.
+/// It keeps track of which analyses, etc are executing on
+/// which background process through the use of EngineRepresentation
+/// 
 class EngineSync : public QObject
 {
 	Q_OBJECT

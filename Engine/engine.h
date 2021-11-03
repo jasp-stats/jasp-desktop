@@ -25,10 +25,9 @@
 #include "jsonredirect.h"
 #include "columnencoder.h"
 
-/* The Engine represents the background processes.
- * It can be in a variety of states _currentEngineState and can run analyses, filters, compute columns and Rcode.
- */
-
+/// The Engine handles communication between Desktop and R
+/// It can be in a variety of states _currentEngineState and can run analyses, filters, compute columns and Rcode.
+/// It also contains some utility functions for use by rbridge and by extension R
 class Engine
 {
 public:

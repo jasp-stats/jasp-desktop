@@ -23,6 +23,9 @@
 #include "jasprcpp_interface.h"
 #include "columntype.h"
 
+/// Main definitions for jaspRcpp functions, only for internal use in R-Interface so stdlib can be used to your hearts delight
+/// A lot of these functions are directly callable from R as long as they are registered through RInside, see jaspRCPP_init for that
+
 // Calls From R
 Rcpp::DataFrame jaspRCPP_readFullDataSet();
 Rcpp::DataFrame jaspRCPP_readFullFilteredDataSet();

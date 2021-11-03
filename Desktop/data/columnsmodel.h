@@ -5,7 +5,9 @@
 #include "datasettablemodel.h"
 #include "common.h"
 
-///Surprisingly the columns are laid out as rows ;-)
+/// 
+/// Model used by the filter-drag-n-drop to give all the columns and their datatypes
+/// The columns are layed out as rows to facilitate that
 class ColumnsModel  : public QTransposeProxyModel
 {
 	Q_OBJECT

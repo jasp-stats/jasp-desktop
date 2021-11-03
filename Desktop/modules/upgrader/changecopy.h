@@ -6,6 +6,8 @@
 namespace Modules
 {
 
+///
+/// This change allows one to copy an option-json and (of course) with another name
 class ChangeCopy : public ChangeBase
 {
 	Q_OBJECT

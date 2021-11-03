@@ -187,8 +187,8 @@ INSTALLS += Resources
 HEADERS += \
     analysis/analysisform.h \
     analysis/knownissues.h \
-	analysis/term.h \
-	analysis/terms.h \
+    analysis/term.h \
+    analysis/terms.h \
     analysis/analyses.h \
     analysis/analysis.h \
     data/datasettableproxy.h \
@@ -207,15 +207,12 @@ HEADERS += \
     data/importers/readstat/readstatimportcolumn.h \
     data/importers/readstat/readstatimportdataset.h \
     data/importers/readstatimporter.h \
-    data/importers/codepageconvert.h \
-    data/importers/convertedstringcontainer.h \
     data/importers/csv.h \
     data/importers/csvimportcolumn.h \
     data/importers/csvimporter.h \
     data/importers/importcolumn.h \
     data/importers/importdataset.h \
     data/importers/importer.h \
-    data/importers/importerutils.h \
     data/importers/jaspimporter.h \
     data/importers/odsimporter.h \
     data/asyncloader.h \
@@ -227,7 +224,7 @@ HEADERS += \
     data/datasetloader.h \
     data/datasetpackage.h \
     data/fileevent.h \
-	analysis/variableinfo.h \
+	  analysis/variableinfo.h \
     engine/enginerepresentation.h \
     engine/enginesync.h \
     engine/rscriptstore.h \
@@ -386,8 +383,8 @@ HEADERS += \
 SOURCES += \
     analysis/analysisform.cpp \
     analysis/knownissues.cpp \
-	analysis/term.cpp \
-	analysis/terms.cpp \
+    analysis/term.cpp \
+    analysis/terms.cpp \
     analysis/analyses.cpp \
     analysis/analysis.cpp \
     data/datasettableproxy.cpp \
@@ -405,8 +402,6 @@ SOURCES += \
     data/importers/readstat/readstatimportcolumn.cpp \
     data/importers/readstat/readstatimportdataset.cpp \
     data/importers/readstatimporter.cpp \
-    data/importers/codepageconvert.cpp \
-    data/importers/convertedstringcontainer.cpp \
     data/importers/csv.cpp \
     data/importers/csvimportcolumn.cpp \
     data/importers/csvimporter.cpp \

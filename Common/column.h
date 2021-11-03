@@ -30,6 +30,12 @@
 
 #include "columntype.h"
 
+
+///
+/// This class contains the actual data for a column, stored as either as int (IntsStruct) or double (DoublesStruct)
+/// It allocates the memory for that through the use of DataBlock (see datablock.h) and Column::append()/Column::truncate()
+/// If there are stringlabels these are stored in Labels
+/// It is part of Columns, which is part of DataSet.
 class Column
 {
 	friend class DataSet;

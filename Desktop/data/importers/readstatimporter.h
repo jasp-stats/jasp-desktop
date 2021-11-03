@@ -5,7 +5,8 @@
 #include <string>
 #include "column.h"
 
-
+///
+/// Uses ReadStat to import SPSS/SAS/STATA files and perhaps others.
 class ReadStatImporter : public Importer
 {
 

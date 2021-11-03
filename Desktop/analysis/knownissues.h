@@ -6,6 +6,11 @@
 #include "utilities/qutils.h"
 #include "stringutils.h"
 
+///
+/// This class stores information per module and analysis that is pulled from the server occasionally (in JaspVersionChecker)
+/// When the user adds an analysis it checks whether we have found a serious issue and posted it to our server. Which allows us to show a message in the qml form
+/// Mentioning the problem and that we are working on it. 
+/// This way people can be informed of problems with an analysis and they won't try to publish faulty results (in the worst case).
 class KnownIssues : public QObject
 {
 	Q_OBJECT

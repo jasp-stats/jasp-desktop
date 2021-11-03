@@ -9,7 +9,8 @@
 class JaspTheme;
 
 
-
+///
+/// Interface between QML and Settings, mostly templated functions to link through directly.
 class PreferencesModel : public QObject
 {
 	Q_OBJECT

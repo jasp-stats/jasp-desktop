@@ -1,5 +1,6 @@
 #include "odsxmlcontentshandler.h"
-#include "../importerutils.h"
+
+#include "log.h"
 
 using namespace std;
 using namespace ods;
@@ -59,7 +60,7 @@ bool XmlContentsHandler::startElement(const QString &namespaceURI, const QString
 {
 	if (_tableRead == false)
 	{
-		DEBUG_COUT6("XmlContentsHandler::startElement. docDepth: ", _docDepth, ", localName: ", localName.toStdString(), ", qName: ", qName.toStdString());
+		//Log::log() << "XmlContentsHandler::startElement. docDepth: " << _docDepth << ", localName: " << localName << ", qName: " << qName << std::endl;
 		
 		// Where were we?
 		switch(_docDepth)
@@ -129,7 +130,7 @@ bool XmlContentsHandler::endElement(const QString &namespaceURI, const QString &
 {
 	if (_tableRead == false)
 	{
-		DEBUG_COUT6("XmlContentsHandler::endElement. docDepth: ", _docDepth, ", localName: ", localName.toStdString(), ", qName: ", qName.toStdString());
+		//Log::log() << "XmlContentsHandler::endElement. docDepth: " << _docDepth << ", localName: " << localName.toStdString() << ", qName: " << qName.toStdString() << std::endl;
 		
 		switch(_docDepth)
 		{
@@ -248,7 +249,7 @@ bool XmlContentsHandler::characters(const QString &ch)
 	{
 		if ((_docDepth == text) && (ch.isEmpty() == false) && _currentCell.isEmpty())
 		{
-			DEBUG_COUT2("Characters: ", ch.toStdString());
+			//Log::log() << "Characters: " << ch << std::endl;
 			_currentCell = ch;
 		}
 	}

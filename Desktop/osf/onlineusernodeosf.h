@@ -4,6 +4,8 @@
 #include "onlineusernode.h"
 #include "common.h"
 
+///
+/// Representing a user specifically for/on OSF
 class OnlineUserNodeOSF: public OnlineUserNode
 {
 	Q_OBJECT

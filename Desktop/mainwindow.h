@@ -62,6 +62,11 @@ using namespace std;
 using PlotEditor::PlotEditorModel;
 using Modules::Upgrader;
 
+///
+/// Not only the main window of the application but also the main class.
+/// Instantiates relevant models and loads QML (see loadQml)
+/// it also handles a variety of slots
+/// Most of the connections are also created by this (in makeConnections)
 class MainWindow : public QObject
 {
 	Q_OBJECT

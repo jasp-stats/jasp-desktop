@@ -23,6 +23,9 @@
 #include "analysis/jaspcontrol.h"
 #include "log.h"
 
+/// 
+/// This is used in QML to verify whether entered numbers in `DoubleField` are correct accordin to the desired settings.
+///
 class JASPDoubleValidator : public QDoubleValidator
 {
 	Q_OBJECT

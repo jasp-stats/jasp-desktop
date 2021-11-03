@@ -3,6 +3,11 @@
 
 #include "enumutilities.h"
 
+///
+/// This file defines the necessary types for communication between Desktop and Engine
+/// Using enumutilities templates to make sure we can easily and quickly go from enum -> string -> enum for json communication
+///
+
 DECLARE_ENUM(engineState,			initializing, idle, analysis, filter, rCode, computeColumn, moduleInstallRequest, moduleLoadRequest, pauseRequested, paused, resuming, stopRequested, stopped, logCfg, settings, killed);
 DECLARE_ENUM(performType,			run, abort, saveImg, editImg, rewriteImgs);
 DECLARE_ENUM(analysisResultStatus,	validationError, fatalError, imageSaved, imageEdited, imagesRewritten, complete, running, changed, waiting);

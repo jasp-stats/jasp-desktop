@@ -21,6 +21,10 @@
 #include <string>
 #include <stdexcept>
 
+///
+/// Stores versions and has flexible parsing from string to instantiate.
+/// The fourth value wat used as a sort of alpha/beta flagg at some point in the past but it added a lot of crap and we didn't use it so I removed it.
+/// To be able to read those values it is still there, vestigially.
 class Version
 {
 public:

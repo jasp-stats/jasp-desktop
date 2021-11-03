@@ -6,6 +6,8 @@
 
 class EngineRepresentation;
 
+///
+/// Interface for the R-commander. Keeps a log, and handles communication with the engine that belongs to it.
 class RCommander : public QQuickItem
 {
 	Q_OBJECT

@@ -7,6 +7,8 @@
 #include <QNetworkAccessManager>
 #include "onlinedataconnection.h"
 
+///
+///The base for OnlineDataNode and OnlineUserNode
 class OnlineNode: public QObject
 {
 	Q_OBJECT

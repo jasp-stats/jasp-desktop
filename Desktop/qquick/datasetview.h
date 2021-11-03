@@ -26,7 +26,11 @@ struct ItemContextualized
 };
 
 
-
+/// Custom QQuickItem to render data tables witch caching and only displaying the necessary cells and lines
+/// Supports scaling the data into millions of columns and rows without any noticable slowdowns (the model could slow it down though)
+/// Contains custom rendering code for the lines to make sure they are always a single pixel wide.
+/// Caching is a bit flawed at the moment though so when changing data in the model it is best to turn that off.
+/// It also uses pools of header-, rowheader- and general-items when they go out of view to avoid the overhead of recreating them all the time.
 class DataSetView : public QQuickItem
 {
 	Q_OBJECT

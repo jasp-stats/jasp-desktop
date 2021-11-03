@@ -29,7 +29,10 @@
 #include "utilities/jsonutilities.h"
 #include "analysis/analysis.h"
 
-
+/// Interface between C++/Qt and Qml/WebEngine+JS
+/// Converts slots etc to proper javascript commands as JS could understand them and then passes them through to QML for use by WebChannel+WebEngine in MainPage.qml
+/// It also collects javascript commands for when the webengine isn't loaded (this happens during language changing and during startup) and runs them once the time is right.
+/// It will also get called through the WebChannel object "jasp" in MainPage.qml to get output and user interaction from JS to the rest of the application.
 class ResultsJsInterface : public QObject
 {
 	Q_OBJECT

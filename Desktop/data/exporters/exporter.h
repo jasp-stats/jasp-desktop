@@ -29,6 +29,8 @@
 #include "common.h"
 #include "utils.h"
 
+///
+/// Base class for all exporters
 class Exporter
 {
 protected:

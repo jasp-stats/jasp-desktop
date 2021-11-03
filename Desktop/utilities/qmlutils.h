@@ -5,6 +5,8 @@
 #include <QJSValue>
 #include <QQuickItem>
 
+/// Simply links through utilities for use in QML+JS
+/// Only links to column encoding stuff for now though, in case it is needed.
 class QmlUtils : public QObject
 {
 	Q_OBJECT

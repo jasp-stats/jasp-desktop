@@ -22,8 +22,8 @@
 #include <QAbstractListModel>
 #include <QStringList>
 
-
-
+///
+/// A simple qt model with the columntypes, their respective icons and names
 class ColumnTypesModel : public QAbstractListModel
 {
 	Q_OBJECT

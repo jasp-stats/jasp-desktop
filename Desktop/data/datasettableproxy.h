@@ -4,6 +4,9 @@
 #include <QSortFilterProxyModel>
 #include "datasetpackage.h"
 
+///
+/// Makes sure that only a desired subnode of DataSetPackage is passed through
+/// It can also be used to filter out rows or columns and even though rearrange them (in potential that is)
 class DataSetTableProxy : public QSortFilterProxyModel
 {
 	Q_OBJECT

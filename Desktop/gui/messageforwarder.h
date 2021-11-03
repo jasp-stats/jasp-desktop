@@ -6,6 +6,10 @@
 
 class MainWindow;
 
+///
+/// Singleton class for shwoing warnings, messages, etc
+/// Can be accessed through the static function anywhere in Desktop
+/// Can also be accessed through `messages.` in QML
 class MessageForwarder : public QQuickItem
 {
 	Q_OBJECT

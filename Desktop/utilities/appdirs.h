@@ -22,7 +22,8 @@
 #include <QString>
 #include <QDir>
 
-
+/// collector class with functions that make the locations of relevannt folders available
+/// Uses Qt so can't be used in R-Interface.
 class AppDirs
 {
 public:
@@ -39,7 +40,7 @@ public:
 	static QString rHome();
 	static QDir    programDir();
 	static QString renvRootLocation();
-	static QString renvCacheLocations(); //Just one for now, but expected to become at least two separated by ;
+	static QString renvCacheLocations();
 	
 private:
 	static QString processPath(const QString & path);

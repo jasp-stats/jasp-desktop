@@ -23,6 +23,8 @@
 #include "datasetpackage.h"
 #include "importers/importer.h"
 
+/// Helper class for loading or synchronizing with data/jasp-files
+/// It can determine which importer is needed for which file-extension as needed
 class DataSetLoader
 {
 public:

@@ -8,6 +8,8 @@
 #include "onlinenode.h"
 #include "common.h"
 
+///
+/// Represents a single node in a directory/file structure on a server
 class OnlineDataNode: public OnlineNode
 {
 	Q_OBJECT

@@ -6,6 +6,8 @@
 namespace Modules
 {
 
+///
+/// This change allows one to rename an option.
 class ChangeRename : public ChangeBase
 {
 	Q_OBJECT

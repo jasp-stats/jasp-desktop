@@ -22,6 +22,8 @@
 #include "datasettableproxy.h"
 
 
+///
+/// Makes sure that the data from DataSetPackage is properly filtered (and possible sorted) and then passed on as a normal table-model to QML
 class DataSetTableModel : public DataSetTableProxy
 {
 	Q_OBJECT

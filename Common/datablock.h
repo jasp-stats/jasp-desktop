@@ -20,6 +20,10 @@
 
 #define BLOCK_SIZE 512
 
+///
+/// A single block of "data" to be stored in shared memroy and remember how many entries of either double or in are stored.
+/// Used in Column
+///
 class DataBlock
 {
 

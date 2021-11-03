@@ -3,6 +3,9 @@
 
 #include <QProcessEnvironment>
 
+///
+/// Makes sure the relevant environment variables required for an engine to function are set in a central place.
+///
 class ProcessHelper
 {
 public:

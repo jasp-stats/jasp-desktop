@@ -3,6 +3,11 @@
 
 #ifdef PROFILE_JASP
 
+///
+/// This file contains some simple timers that can be added to a variety of locations in JASP to be able to profile easily
+/// To do so PROFILE_JASP can be defined in the build-environment and then rebuilt.
+/// If it isn't used it just compiles into some comments and thus thrown out entirely by the preprocessor.
+
 #include <boost/timer/timer.hpp>
 #include <string>
 #include <map>

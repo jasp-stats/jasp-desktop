@@ -1421,7 +1421,7 @@ void DataSetPackage::removeColumn(std::string name)
 
 	if(isLoaded()) setModified(true);
 
-	if (!_synchingData) // If wwe are synchronising, the datasetChanged is already called
+	if (!_synchingData) // If we are synchronising, the datasetChanged is already called
 		emit datasetChanged({}, {tq(name)}, {}, false, false);
 }
 

@@ -20,8 +20,7 @@
 */
 
 #include "odsimportdataset.h"
-
-#include "../importerutils.h"
+#include "log.h"
 
 using namespace std;
 using namespace ods;
@@ -44,7 +43,7 @@ ODSImportDataSet::~ODSImportDataSet()
 
 ODSImportColumn & ODSImportDataSet::createColumn(string name)
 {
-	DEBUG_COUT2("ODSImportDataSet::createColumn: ", name);
+	//Log::log() << "ODSImportDataSet::createColumn: " << name << std::endl;
 	ODSImportColumn* column = new ODSImportColumn(this, columnCount(), name);
 	addColumn(column);
 	return *column;

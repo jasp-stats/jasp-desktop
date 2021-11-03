@@ -38,6 +38,23 @@ DECLARE_ENUM_WITH_TYPE(parIdxType, unsigned char, root = 0, data, filter, label)
 
 class EngineSync;
 
+///
+/// This class is meant as the single bottleneck between the main application and Qt and the data stored in shared memory.
+/// To this end a clean separation has been attempted between any access of the data so that it can easily be controlled.
+///
+/// In order to have all that data available through this class a tree-model has been chosen here.
+/// Any QModelIndex that has as parent QModelIndex() (which would be "invalid") is interpreted to mean a reference to a cell in the data.
+/// - Actually, now that I check the code this might not be true... A good thing to clean up when changing the backend though.
+/// Any QModelIndex that has as parent a valid QModelIndex is for a sub-node.
+/// parentIndexTypeIs() interprets that parent-QModelIndex as either parIdxType::data, parIdxType::filter or parIdxType::label
+/// in case of `data` well, it is just that, a cell in the data. 
+/// For the filter it can, now because we only support a single filter, return a list of booleans. But this might be expanded later on.
+/// The label is a special case and some support has been hacked in to also specify which particular column is referenced. 
+/// Those labels are returned as columns: [filter-value, value-value, label-text]
+///
+/// These subnodes are then used by proxy-classes like DataSetTable(Proxy)Model to make them easily available to QML.
+///
+/// It can use cleaning up though.
 class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940 (And this being a tree model)
 {
 	Q_OBJECT

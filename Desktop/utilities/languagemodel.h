@@ -8,6 +8,12 @@
 
 namespace Modules { class DynamicModule; }
 
+
+/// Handles language selection in JASP
+/// Scans the run folder for qm files etc and handles changes in the preferences.
+/// Sends out the right signals to get the whole application to change language.
+/// In Desktop it is as easy as setting the new locale and then reloading QML (might not be needed with Qt 6, this was a workaround)
+/// The Engines are stopped and restarted with the right language code, because R/gettext only seems to check it during startup (on linux anyway)
 class LanguageModel : public QAbstractListModel
 {
 	Q_OBJECT

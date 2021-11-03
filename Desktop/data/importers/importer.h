@@ -11,7 +11,9 @@ class ImportColumn;
 #include <QCoreApplication>
 #include "utilities/qutils.h"
 
-
+///
+/// Base class for all importers
+/// These are always run in a different thread (through AsyncLoader) than the rest of the application
 class Importer
 {
 	Q_DECLARE_TR_FUNCTIONS(Importer)
