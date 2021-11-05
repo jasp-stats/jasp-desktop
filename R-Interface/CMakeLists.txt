@@ -85,7 +85,6 @@ qt_add_library(
 	R-Interface
 	${HEADER_FILES}
 	${SOURCE_FILES}
-	STATIC
 )
 
 # Making sure that Xcode could find libR-Interface.a during the archiving process

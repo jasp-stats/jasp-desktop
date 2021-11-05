@@ -87,7 +87,6 @@ SET(SOURCE_FILES
 qt_add_library(Common
 	${HEADER_FILES}
 	${SOURCE_FILES}
-	STATIC
 	)
 
 # Making sure that Xcode could find libCommon.a during the archiving
