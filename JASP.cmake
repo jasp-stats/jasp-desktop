@@ -13,8 +13,6 @@ set(JASP_VERSION_REVISION 0)
 # Amir: Do we have two variable for one thing?
 set(GITHUB_PAT_DEFINE ${GITHUB_PAT_DEF})
 
-option(Install_R_Modules "Whether to install R modules during build" OFF)
-
 # Amir: We probably won't need them soon
 set(JASP_LIBJSON_STATIC OFF)
 set(PRINT_ENGINE_MESSAGES OFF)
@@ -25,3 +23,9 @@ set(PRINT_ENGINE_MESSAGES OFF)
 add_definitions(-DBUILDING_JASP)
 add_definitions(-DJASP_DEBUG)
 add_definitions(-DPRINT_ENGINE_MESSAGES)
+
+
+option(USE_JASP_TIMER "Use JASP timer for profiling" OFF)
+
+# TODO:
+# - [ ] Find the Git location, I think I can use CMake's $ENV{GIT} or something like that

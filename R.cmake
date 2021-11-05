@@ -57,6 +57,7 @@ else()
 	message(STATUS "[Config]: Building using the R.framework")
 
 
+	# TODO: Replace the version with a variable
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		set(_R_HOME "R.framework/Versions/4.1/Resources")
 		set(_R_Library_HOME "${_R_HOME}/library")
@@ -65,16 +66,12 @@ else()
 		set(_Rcpp_HOME "${_R_Library_HOME}/Rcpp")
 		set(_RInside_HOME "${_R_Library_HOME}/RInside")
 
-		# message(STATUS ${_R_HOME})
-		# message(STATUS ${_Rcpp_HOME})
-		# set(CMAKE_INSTALL_RPATH "${_Rcpp_HOME}/libs;${_RInside_HOME}/libs")
-		# set(CMAKE_BUILD_RPATH "${_Rcpp_HOME}/libs;${_RInside_HOME}/libs")
+		set(_R_FRAMEWORK_PATH ${CMAKE_SOURCE_DIR})
 
-		set(CMAKE_FIND_FRAMEWORK ON)
-		message(STATUS "[JASP]: Looking for 'R.framework' in " ${_R_Framework})
+		message(STATUS "[JASP]: Looking for 'R.framework' in " ${_R_FRAMEWORK_PATH})
 		find_library(_R_Framework
 			NAMES R
-			PATHS ${CMAKE_SOURCE_DIR}
+			PATHS ${_R_FRAMEWORK_PATH}
 			NO_CACHE
 			REQUIRED)
 
@@ -96,19 +93,6 @@ else()
 		else()
 			message(FATAL_ERROR "[JASP]: Couldn't find the 'libR' in ${_R_HOME}/lib")
 		endif()
-
-		# message(STATUS "[JASP]: Checking for 'Rcpp.so'")
-		# find_library(_LIB_RCPP
-		# 	NAMES Rcpp.so
-		# 	PATHS ${_Rcpp_HOME}/libs
-		# 	NO_CACHE
-		# 	REQUIRED)
-
-		# if (_LIB_RCPP)
-		# 	message(STATUS "[JASP]: Found the 'Rcpp.so' library in " ${_LIB_RCPP})
-		# else()
-		# 	message(FATAL_ERROR "[JASP]: Couldn't find the 'Rcpp.so' in ${_Rcpp_HOME}/libs")
-		# endif()
 
 		message(STATUS "[JASP]: Checking for 'libRInside' in" ${_LIB_RInside})
 		find_library(_LIB_RInside

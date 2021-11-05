@@ -31,206 +31,55 @@ include_directories(jaspColumnEncoder)
 configure_file(appinfo.cpp.in appinfo.cpp)
 message(STATUS "[Common]: appinfo.cpp is successfully generated...")
 
-SET(HEADER_FILES
+file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 
-	appinfo.h
-	column.h
-	columns.h
-	common.h
-	datablock.h
-	dataset.h
-	dirs.h
-	enginedefinitions.h
-	filereader.h
-	ipcchannel.h
-	jsonredirect.h
-	label.h
-	labels.h
-	log.h
-	processinfo.h
-	r_functionwhitelist.h
-	sharedmemory.h
-	tempfiles.h
-	timers.h
-	utilenums.h
-	utils.h
-	version.h
-)
+file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+list(APPEND 	  SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 
-SET(SOURCE_FILES
-
-	# This is generated from appinfo.cpp.in
-	${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp
-	column.cpp 
-	columns.cpp 
-	datablock.cpp 
-	dataset.cpp 
-	dirs.cpp 
-	enginedefinitions.cpp 
-	filereader.cpp 
-	ipcchannel.cpp 
-	label.cpp 
-	labels.cpp 
-	log.cpp 
-	processinfo.cpp 
-	r_functionwhitelist.cpp 
-	sharedmemory.cpp 
-	tempfiles.cpp 
-	timers.cpp 
-	utilenums.cpp 
-	utils.cpp 
-	version.cpp 
-	jaspColumnEncoder/columnencoder.cpp 
-	jaspColumnEncoder/columntype.cpp 
-)
-
-qt_add_library(Common
+add_library(Common
 	${HEADER_FILES}
 	${SOURCE_FILES}
 	)
 
 # Making sure that Xcode could find libCommon.a during the archiving
-set_target_properties(Common PROPERTIES
-	ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/)
-
-
-if (BUILD_WITH_SYSTEM_R)
-
-	target_link_libraries(
-		Common PUBLIC
-		${Boost_LIBRARIES}
-		PkgConfig::LIBARCHIVE
-		PkgConfig::LIBJSON
-		)
-
-else()
-
-	target_link_libraries(
-		Common PUBLIC
-		${Boost_LIBRARIES}
-		PkgConfig::LIBARCHIVE
-		PkgConfig::LIBJSON
-	)
-
+if (CMAKE_GENERATOR STREQUAL "Xcode")
+	set_target_properties(Common PROPERTIES
+		ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/)
 endif()
 
+target_link_libraries(
+	Common PUBLIC
+	${Boost_LIBRARIES}
+	PkgConfig::LIBARCHIVE
+	PkgConfig::LIBJSON
+)
 
-# qt_add_library(Common
-#     OUTPUT_DIRECTORY ".."
-#     SOURCES
-	# DEFINES
-	#     BUILDING_JASP
-	#     CURRENT_R_VERSION=\"4.1\"
-	#     GITHUB_PAT_DEFINE=\"$ENV{GITHUB_PAT_DEF}\"
-	#     GIT_CURRENT_BRANCH=\"(\"git\" rev-parse --abbrev-ref HEAD)\"
-	#     GIT_CURRENT_COMMIT=\"(\"git\" rev-parse --verify HEAD)\"
-	#     JASP_LIBJSON_STATIC
-	#     JASP_VERSION_BUILD=0
-	#     JASP_VERSION_MAJOR=0
-	#     JASP_VERSION_MINOR=16
-	#     JASP_VERSION_REVISION=0
-	#     PRINT_ENGINE_MESSAGES
-	#     QT_NO_FOREACH
-	# INCLUDE_DIRECTORIES
-	#     ../../jasp-required-files/boost_1_71_0
-	#     /
-	#     jaspColumnEncoder
+if(USE_JASP_TIMER)
+	target_compile_definitions(Common PUBLIC
+		PROFILE_JASP
+	)
+endif()
 
-#### Keys ignored in scope 1:.:.:Common.pro:<TRUE>:
-# TEMPLATE = "lib"
+if(APPLE)
+	target_compile_definitions(Common PUBLIC
+		DBOOST_INTERPROCESS_SHARED_DIR_FUNC
+	)
+elseif(WIN32)
+	target_compile_definitions(Common PUBLIC
+		BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+		BOOST_USE_WINDOWS_H
+		NOMINMAX
+		WIN32_LEAN_AND_MEAN
+	)
 
-## Scopes:
-#####################################################################
+	# TODO: I have no idea what these are.
+	# For now, for Windows build, I'm just translating the Qmake
+	target_link_libraries(Common PUBLIC
+        archive.dll
+        ole32
+        oleaut32
+	)
+endif()
 
-# if(__Apple__)
-	
-# endif()
-
-# qt_add_library(Common CONDITION MACOS
-#     DEFINES
-#         BOOST_INTERPROCESS_SHARED_DIR_FUNC
-#     COMPILE_OPTIONS
-#         -Wno-c++11-extensions
-#         -Wno-c++11-extra-semi
-#         -Wno-c++11-long-long
-#         -Wno-deprecated-declarations
-#         -stdlib=libc++
-# )
-
-# qt_add_library(Common CONDITION windows
-#     DEFINES
-#         BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
-#         BOOST_USE_WINDOWS_H BOOST_USE_WINDOWS_H
-#         NOMINMAX NOMINMAX
-#         WIN32_LEAN_AND_MEAN
-#     PUBLIC_LIBRARIES
-#         archive.dll
-#         ole32
-#         oleaut32
-# )
-
-# qt_add_library(Common CONDITION DEFINES___contains___JASP_LIBJSON_STATIC
-#     SOURCES
-
-# )
-
-#### Keys ignored in scope 6:.:..:../JASP.pri:GITHUB_PAT_DEF_ISEMPTY:
-# GITHUB_PAT_DEF = "$$(GITHUB_PAT)"
-
-#### Keys ignored in scope 7:.:..:../JASP.pri:EXISTS /app/lib/_x_:
-# GITHUB_PAT = "$$system(echo $${GITHUB_PAT} | base64 -d)"
-# GITHUB_PAT_DEF = "$$system(echo $${GITHUB_PAT_DEF} | base64 -d)"
-
-#### Keys ignored in scope 10:.:..:../JASP.pri:_GIT_LOCATION_ISEMPTY:
-# _GIT_LOCATION = "C:Program FilesGit"
-
-# qt_internal_extend_target(Common CONDITION (EXISTS /app/lib/_x_) AND (LINUX)
-#     DEFINES
-#         FLATPAK_USED
-# )
-
-# qt_internal_extend_target(Common CONDITION (NOT (EXISTS /app/lib/_x_)) AND (LINUX AND CONFIG(debug,debug OR release))
-#     DEFINES
-#         JASP_DEBUG
-#         LINUX_NOT_FLATPAK
-# )
-
-# qt_internal_extend_target(Common CONDITION CMAKE_BUILD_TYPE STREQUAL Debug AND (MACOS OR windows)
-#     DEFINES
-#         JASP_DEBUG
-# )
-
-#### Ignored by pro2cmake.py
-#### Keys ignored in scope 18:.:..:../JASP.pri:QT_ARCH___contains___i386:
-# ARCH = "i386"
-# BOOST_ARCH = "x32"
-
-#### Keys ignored in scope 19:.:..:../JASP.pri:else:
-# ARCH = "x64"
-# BOOST_ARCH = "x64"
-
-#### Keys ignored in scope 20:.:..:../JASP.pri:CONFIG(ReleaseBuild):
-# BOOST_POSTFIX = "-vc142-mt-$${BOOST_ARCH}-1_71"
-
-#### Keys ignored in scope 21:.:..:../JASP.pri:CONFIG(DebugBuild):
-# BOOST_POSTFIX = "-vc142-mt-gd-$${BOOST_ARCH}-1_71"
-
-# qt_internal_extend_target(Common CONDITION UNIX
-#     COMPILE_OPTIONS
-#         -Werror=return-type
-# )
-
-# qt_internal_extend_target(Common CONDITION _ss_JASPTIMER_USED
-#     DEFINES
-#         PROFILE_JASP
-# )
-
-# qt_internal_extend_target(Common CONDITION (MACOS) AND (CONFIG(debug))
-#     COMPILE_OPTIONS
-#         -fstandalone-debug
-# )
-
-# qt_internal_extend_target(Common CONDITION LINUX
-#     LINK_OPTIONS
-#         "-fuse-ld=gold"
-# )
+# I'm leaving the flatpak config behind, as it should be pretty straighforward,
+# and I think CMake can take care of most of it
