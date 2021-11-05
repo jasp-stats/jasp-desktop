@@ -72,8 +72,9 @@ endforeach ()
 
 # message(STATUS ${CMAKE_BINARY_DIR})
 
-# set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Desktop/JASPEngine
-#              PROPERTY MACOSX_PACKAGE_LOCATION MacOS)
+# set_property(SOURCE ${CMAKE_BINARY_DIR}/Desktop/JASPEngine
+#              PROPERTY MACOSX_PACKAGE_LOCATION MacOS
+#              )
 
 add_executable(JASP MACOSX_BUNDLE
     ${HEADER_FILES}
@@ -112,9 +113,9 @@ target_link_libraries(
     ${_R_Framework}
 )
 
-set_target_properties(JASP PROPERTIES
-    INSTALL_RPATH @executable_path/../Frameworks
-)
+# set_target_properties(JASP PROPERTIES
+#     INSTALL_RPATH @executable_path/../Frameworks
+# )
 
 # set_target_properties(${_R_Framework} PROPERTIES
 #     FRAMEWORK TRUE

@@ -175,13 +175,36 @@ else()
 
 	add_dependencies(JASPEngine R-Interface)
 
-	# add_custom_command(TARGET JASPEngine
-	#     POST_BUILD
-	#     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/JASPEngine ${CMAKE_CURRENT_BINARY_DIR}/../Desktop
- 	#     COMMENT "       [JASP]: Placing the Engine at the right place...")
 
-	set_property(SOURCE JASPEngine
-				 PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
+	set(MACOSX_BUNDLE_DIR "${CMAKE_BINARY_DIR}/Desktop/Debug/${PROJECT_NAME}.app/Contents")
+	set(MACOSX_BUNDLE_RUNTIME_DIR "${MACOSX_BUNDLE_DIR}/MacOS")
+	set(MACOSX_BUNDLE_RESOURCE_DIR "${MACOSX_BUNDLE_DIR}/Resources")
+
+	message(STATUS "[JASP]: ${MACOSX_BUNDLE_RUNTIME_DIR}")
+
+	# set_target_properties(JASPEngine PROPERTIES
+	# 		RUNTIME_OUTPUT_DIRECTORY ${MACOSX_BUNDLE_RUNTIME_DIR}/
+	# 	)
+
+	# set_target_properties(JASPEngine PROPERTIES
+	# 		ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/
+	# 	)
+
+	# set_target_properties(JASPEngine PROPERTIES
+	# 		MACOSX_PACKAEG_LOCATION ${MACOSX_BUNDLE_RUNTIME_DIR}
+	# 	)
+
+	# This does the job, but I'm not sure if that's the right way of doing it.
+	# I'm still asking around to see how to do this correctly. The side-effect of
+	# doing it post build like this is that Xcode loses control, and therefore 
+	# cannot sign the binary properly
+	add_custom_command(TARGET JASPEngine
+	    POST_BUILD
+	    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/Debug/JASPEngine ${MACOSX_BUNDLE_RUNTIME_DIR}
+ 	    COMMENT "       [JASP]: Placing the Engine at the right place...")
+
+	# set_property(SOURCE JASPEngine
+	# 			 PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
 	
 endif()
 

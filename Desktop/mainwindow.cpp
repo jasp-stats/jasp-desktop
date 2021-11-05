@@ -348,7 +348,6 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
-	connect(_preferences,			&PreferencesModel::normalizedNotationChanged,		_resultsJsInterface,	&ResultsJsInterface::setNormalizedNotationHandler			);
 	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::setZoom								);
 	connect(_preferences,			&PreferencesModel::developerModeChanged,			_analyses,				&Analyses::refreshAllAnalyses								);
@@ -508,9 +507,10 @@ void MainWindow::loadQML()
 
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
 	_ribbonModel->loadModules(	
-		{ 	"jaspDescriptives", "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },
-		{ 	"jaspAudit", "jaspBain", "jaspCircular", "jaspCochrane", "jaspDistributions" , "jaspEquivalenceTTests", "jaspJags", "jaspLearnBayes", "jaspMachineLearning",
-			"jaspMetaAnalysis", "jaspNetwork"/*, "jaspProcessControl"*/, "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
+		{ 	"jaspDescriptives" }, //, "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },
+		{ 	"jaspAudit" } );
+		// , "jaspBain", "jaspCircular", "jaspDistributions" , "jaspEquivalenceTTests", "jaspJags", "jaspLearnBayes", "jaspMachineLearning",
+		// 	"jaspMetaAnalysis", "jaspNetwork"/*, "jaspProcessControl"*/, "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
 
 	_engineSync->loadAllActiveModules();
 	_dynamicModules->startUpCompleted();
@@ -1004,11 +1004,11 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 		if(saveEvent->isCompleted())	return saveEvent->isSuccessful();
 		else							_savingForClose = true;
 	}
-	[[fallthrough]];
+	[[clang::fallthrough]];
 
 	case MessageForwarder::DialogResponse::Cancel:			return false;
 
-	default:												[[fallthrough]];
+	default:												[[clang::fallthrough]];
 	case MessageForwarder::DialogResponse::Discard:			return true;
 	}
 }

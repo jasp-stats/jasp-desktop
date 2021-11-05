@@ -88,7 +88,7 @@ qt_add_library(
 	STATIC
 )
 
-# Making sure that Xcode could find libR-Interface.a during the archiving
+# Making sure that Xcode could find libR-Interface.a during the archiving process
 set_target_properties(R-Interface PROPERTIES
 	ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/)
 
@@ -125,6 +125,7 @@ else()
 			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("Rcpp", repos="http://cran.r-project.org"\)'
 			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("RInside", repos="http://cran.r-project.org"\)'
 			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("rjags", repos="http://cran.r-project.org"\)'
+			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'remotes::install_github\("jasp-stats/jaspDescriptives"\)'
 			COMMENT "=== Installing R Modules ...")
 
 	endif()
