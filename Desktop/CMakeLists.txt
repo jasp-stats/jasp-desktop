@@ -41,11 +41,11 @@ configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template ${CMAKE_CURRE
 # We can technically use these two lines to grab all *.h, and *.cpp files
 # but it think there are unused files.
 
-file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-list(REMOVE_ITEM HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/exporters/odsexporter.h)
+file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
+list(REMOVE_ITEM HEADER_FILES ${CMAKE_CURRENT_LIST_DIR}/data/exporters/odsexporter.h)
 
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/exporters/odsexporter.cpp)
+file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_LIST_DIR}/data/exporters/odsexporter.cpp)
 
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")

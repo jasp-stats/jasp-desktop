@@ -117,19 +117,6 @@ else()
 		${_LIB_RInside}
 	)
 
-	if (${INSTALL_R_MODULES})
-
-		add_custom_command(TARGET R-Interface
-			POST_BUILD 
-			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("Rcpp", repos="http://cran.r-project.org"\)'
-			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("RInside", repos="http://cran.r-project.org"\)'
-			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("rjags", repos="http://cran.r-project.org"\)'
-			COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'remotes::install_github\("jasp-stats/jaspDescriptives"\)'
-			COMMENT "=== Installing R Modules ...")
-
-	endif()
-
-
 endif()
 
 
