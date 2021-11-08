@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 
-
-# This should happen before the configuration
-# add_custom_command(TARGET R-Interface
-# 	PRE_BUILD
-# 	COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("Rcpp", repos="http://cran.r-project.org"\)'
-# 	COMMAND ${CMAKE_SOURCE_DIR}/${_Rscript_EXE} -e 'install.packages\("RInside", repos="http://cran.r-project.org"\)'
-# 	COMMENT "=== Installing RInside and Rcpp ...")
+# TODOs:
+# - [ ] Make sure that RInside and Rcpp are installed prior to the configuration
+# - [ ] Install JAGS as a Framework
 
 set(JASP_COMMON_MODULES
 	jaspBase

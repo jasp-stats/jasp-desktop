@@ -63,3 +63,7 @@ cmake-build-*
 
 # Xcode project
 xcode-project/
+
+
+# Temporary 
+R.framework/

@@ -23,6 +23,8 @@ set(PRINT_ENGINE_MESSAGES OFF)
 add_definitions(-DBUILDING_JASP)
 add_definitions(-DJASP_DEBUG)
 add_definitions(-DPRINT_ENGINE_MESSAGES)
+add_definitions(-DJASP_USES_QT_HERE)
+# add_definitions(-DJASP_RESULTS_DEBUG_TRACES)
 
 
 option(USE_JASP_TIMER "Use JASP timer for profiling" OFF)

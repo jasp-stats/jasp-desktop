@@ -47,11 +47,17 @@ if (CMAKE_GENERATOR STREQUAL "Xcode")
 		ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/)
 endif()
 
+find_package(Qt6 
+                REQUIRED
+                COMPONENTS Core)
+
 target_link_libraries(
 	Common PUBLIC
 	${Boost_LIBRARIES}
 	PkgConfig::LIBARCHIVE
 	PkgConfig::LIBJSON
+
+	Qt::Core
 )
 
 if(USE_JASP_TIMER)
