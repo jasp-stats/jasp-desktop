@@ -59,7 +59,7 @@ else()
 
 	# TODO: Replace the version with a variable
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		set(_R_HOME "R.framework/Versions/4.1/Resources")
+		set(_R_HOME "${CMAKE_SOURCE_DIR}/R.framework/Versions/4.1/Resources")
 		set(_R_Library_HOME "${_R_HOME}/library")
 		set(_R_EXE "${_R_HOME}/R")
 		set(_Rscript_EXE "${_R_HOME}/bin/Rscript")
@@ -72,6 +72,7 @@ else()
 		find_library(_R_Framework
 			NAMES R
 			PATHS ${_R_FRAMEWORK_PATH}
+			NO_DEFAULT_PATH
 			NO_CACHE
 			REQUIRED)
 
@@ -85,6 +86,7 @@ else()
 		find_library(_LIB_R
 			NAMES R
 			PATHS ${_R_HOME}/lib
+			NO_DEFAULT_PATH
 			NO_CACHE
 			REQUIRED)
 
@@ -98,6 +100,7 @@ else()
 		find_library(_LIB_RInside
 			NAMES RInside
 			PATHS ${_RInside_HOME}/lib
+			NO_DEFAULT_PATH
 			NO_CACHE
 			REQUIRED)
 

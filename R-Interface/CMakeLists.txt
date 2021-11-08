@@ -18,9 +18,9 @@ else()
 	message(STATUS "[R-Interface]: Building with R.framework...")
 	message(STATUS "[R-Interface]: Setting the headers...")
 
-	include_directories(${CMAKE_SOURCE_DIR}/${_R_HOME}/include)
-	include_directories(${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include)
-	include_directories(${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
+	include_directories(${_R_HOME}/include)
+	include_directories(${_Rcpp_HOME}/include)
+	include_directories(${_RInside_HOME}/include)
 
 	message(STATUS "[R-Interface]: Rcpp_INCLUDE_DIRS is set to ${_Rcpp_HOME}/include")
 	message(STATUS "[R-Interface]: RInside_INCLUDE_DIRS is set to ${_RInside_HOME}/include")
