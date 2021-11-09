@@ -54,7 +54,7 @@ jaspModules <- Filter(isJaspModule, list.dirs(file.path(jaspDir, "Modules"), rec
 names(jaspModules) <- basename(jaspModules)
 
 # | HERE | you can add modules to exclude
-jaspModules <- jaspModules[setdiff(names(jaspModules), c("jaspCircular"))]
+jaspModules <- jaspModules[setdiff(names(jaspModules), c("jaspProcessControl"))]
 
 getModuleEnvironments(jaspModules)
 # system("beep_finished.sh")

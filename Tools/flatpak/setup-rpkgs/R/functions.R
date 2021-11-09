@@ -517,11 +517,12 @@ downloadFile <- function(url, destdir) {
 
 downloadRenv <- function(destdir) {
   # TODO: don't hardcode the renv version? maybe use 1 older than the current release so the url always works?
+  #That might be smart yeah... Or getting it from MRAN or so
   downloadFile("https://cran.r-project.org/src/contrib/renv_0.14.0.tar.gz", destdir)
 }
 
 downloadRemotes <- function(destdir) {
-  downloadFile("https://cran.r-project.org/src/contrib/remotes_2.4.0.tar.gz", destdir)
+  downloadFile("https://cran.r-project.org/src/contrib/remotes_2.4.1.tar.gz", destdir) #This breaks whenever remotes is updated on cran
 }
 
 copyRfiles <- function(dirs) {
