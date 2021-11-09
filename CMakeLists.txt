@@ -41,7 +41,10 @@ option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
 
 include(R.cmake)
 include(JASP.cmake)
-include(Modules.cmake)
+
+if(INSTALL_R_MODULES)
+  include(Modules.cmake)
+endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Widgets Qml)
 

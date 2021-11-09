@@ -19,13 +19,38 @@ set(PRINT_ENGINE_MESSAGES OFF)
 
 # This is how we can link to the system R set(BUILD_WITH_SYSTEM_R OFF)
 
-add_definitions(-DBUILDING_JASP)
-add_definitions(-DJASP_DEBUG)
-add_definitions(-DPRINT_ENGINE_MESSAGES)
-add_definitions(-DJASP_USES_QT_HERE)
+option(BUILDING_JASP "Indicates whether we are building JASP or not.
+					  This helps jaspResults to find its lib_json." ON)
+if(BUILDING_JASP)
+  add_definitions(-DBUILDING_JASP)
+endif()
+
+option(JASP_DEBUG "Toggle the debug flag" ON)
+if(JASP_DEBUG)
+  add_definitions(-DJASP_DEBUG)
+endif()
+
+option(PRINT_ENGINE_MESSAGES
+       "Indicates whether the log contains JASPEngine messages" ON)
+if(PRINT_ENGINE_MESSAGES)
+  add_definitions(-DPRINT_ENGINE_MESSAGES)
+endif()
+
+option(JASP_USES_QT_HERE "Indicates whether some files are using Qt.
+						  This doesn't strike as a very informative name
+						  for an option!" ON)
+if(JASP_USES_QT_HERE)
+  add_definitions(-DJASP_USES_QT_HERE)
+endif()
+
 # add_definitions(-DJASP_RESULTS_DEBUG_TRACES)
 
 option(USE_JASP_TIMER "Use JASP timer for profiling" OFF)
+if(USE_JASP_TIMER)
+  add_definitions(-DUSE_JASP_TIMER)
+endif()
 
-# TODO: - [ ] Find the Git location, I think I can use CMake's $ENV{GIT} or
-# something like that
+# TODO:
+# - [ ] Make sure that all variables from .pri and .pro make it to the CMake files
+# - [ ] Find the Git location, I think I can use CMake's $ENV{GIT} or something like that
+# - [ ] Find a better name for some of these variables
