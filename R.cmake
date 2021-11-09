@@ -96,6 +96,16 @@ else()
 			message(FATAL_ERROR "[JASP]: Couldn't find the 'libR' in ${_R_HOME}/lib")
 		endif()
 
+		if(NOT EXISTS ${_RInside_HOME})
+			message(STATUS "[JASP]: RInside is not installed! Installing RInside and Rcpp...")
+			execute_process(
+				COMMAND ${_Rscript_EXE} -e install.packages\("RInside",repos="http://cran.r-project.org"\)
+				COMMAND_ERROR_IS_FATAL ANY
+				COMMAND_ECHO NONE
+				OUTPUT_QUIET ERROR_QUIET)
+			message(STATUS "[JASP]: Successfully installed RInside and Rcpp.")
+		endif()
+
 		message(STATUS "[JASP]: Checking for 'libRInside' in" ${_LIB_RInside})
 		find_library(_LIB_RInside
 			NAMES RInside
@@ -108,6 +118,7 @@ else()
 			message(STATUS "[JASP]: Found the 'libRInside' library in " ${_LIB_RInside})
 		else()
 			message(FATAL_ERROR "[JASP]: Couldn't find the 'libRInside' in ${_RInside_HOME}/libs")
+			message(FATAL_ERROR "[JASP]: Apparently the installation of RInside was not so successuful!")
 		endif()
 
 

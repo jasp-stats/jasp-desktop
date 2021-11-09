@@ -100,7 +100,7 @@ else()
 
 	add_custom_command(TARGET JASPEngine
     POST_BUILD
-    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/JASPEngine ${PROJECT_SOURCE_DIR}/Desktop
+    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/JASPEngine ${PROJECT_BINARY_DIR}/Desktop
 	    COMMENT "       [JASP]: Placing the Engine into the Desktop folder...")
 endif()
 
