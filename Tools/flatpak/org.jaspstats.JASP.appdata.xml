@@ -35,7 +35,7 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-	<release version="0.16.0" date="2021-11-08">
+		<release version="0.16.0" date="2021-11-08">
 			<description>
 				New release 0.16
 
@@ -56,8 +56,7 @@
 				- Circular Statistics are added
 				- Regression now has proportions in confusion matrix and adds marginal effect plots
 			</description>
-	</release>
-	<releases>
+		</release>
 		<release version="0.15.0" date="2021-09-21">
 					<description>
 						New release 0.15
