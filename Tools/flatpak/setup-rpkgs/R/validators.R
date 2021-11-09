@@ -1,25 +1,25 @@
 assertDirExists <- function(x) {
   if (!dir.exists(x))
-    stop("Directory ", x, " does not exist", domain = NA)
+    stop2("Directory ", x, " does not exist")
 }
 
 validateJaspDir <- function(dir) {
   assertDirExists(dir)
   expectedDirs <- c("Common", "Desktop", "Engine", "Modules", "R-Interface", "Resources", "Tools")
   if (!all(expectedDirs %in% list.dirs(dir, full.names = FALSE, recursive = FALSE)))
-    stop("Invalid jaspDir. Expected these folders: ", paste(expectedDirs, collapse = ", "), domain = NA)
+    stop2("Invalid jaspDir. Expected these folders: ", paste(expectedDirs, collapse = ", "))
 }
 
 validateFlatpakDir <- function(dir) {
   assertDirExists(dir)
   expectedFiles <- c("flathub.json", "org.jaspstats.JASP.json", "RPackages.json")
   if (!all(expectedFiles %in% list.files(dir)))
-    stop("Invalid flatpakDir. Expected these files", domain = NA)
+    stop2("Invalid flatpakDir. Expected these files")
 }
 
 validateGithubPath <- function() {
   if (Sys.getenv("GITHUB_PAT") == "")
-    stop("GITHUB_PAT is not set!", domain = NA)
+    stop2("GITHUB_PAT is not set!")
 }
 
 validateSetup <- function(jaspDir, flatpakDir) {
@@ -54,7 +54,7 @@ validateGithubPkgs <- function(dirs) {
     errorMessages <- c(errorMessages, paste0("These github packages are missing a tarball: ", paste(names(SHAs)[missing], collapse = ", ")))
 
   if (length(errorMessages) > 0L)
-    stop("These error message occurred:\n\n", paste(errorMessages, collapse = "\n"))
+    stop2("These error message occurred:\n\n", paste(errorMessages, collapse = "\n"))
 
   return(invisible(TRUE))
 
@@ -64,11 +64,11 @@ validateV8folder <- function(dirs) {
 
   v8Dir <- file.path(dirs["other-dependencies"], "v8")
   if (!dir.exists(v8Dir))
-    stop("V8 dir does not exist at ", v8Dir, domain = NA)
+    stop2("V8 dir does not exist at ", v8Dir, domain = NA)
 
   subdirs <- file.path(v8Dir, c("include", "lib", "lic"))
   if (!all(dir.exists(subdirs)))
-    stop("V8 dir does not contain the following subdirectories: ", paste(subdirs, collapse = ", "), domain = NA)
+    stop2("V8 dir does not contain the following subdirectories: ", paste(subdirs, collapse = ", "), domain = NA)
 
 
 }

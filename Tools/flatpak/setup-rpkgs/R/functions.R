@@ -95,7 +95,7 @@ download_override <- function(url, destfile, mode = "wb", quiet = FALSE, headers
         existingFiles <- list.files(path = dirname(to), pattern = paste(basename(to), "*"), full.names = TRUE)
         res <- file.remove(existingFiles)
         if (!all(res))
-          stop("Failed to remove previously downloaded GitHub packages: ", paste(existingFiles[!res], collapse = ", "), domain = NA)
+          stop2("Failed to remove previously downloaded GitHub packages: ", paste(existingFiles[!res], collapse = ", "))
       }
       file.copy(from = destfile, to = to, overwrite = TRUE)
 
@@ -262,11 +262,10 @@ installRecommendedPackages <- function(dirs) {
   rec_pkgs <- unname(installed[installed[, "Priority"] %in% "recommended", "Package"])
   customRenvInstall(rec_pkgs, customDownload = FALSE)
 
-  # for some reason, these two are missing...
-  customRenvInstall(c("devtools", "roxygen2"), customDownload = FALSE)
-
-  downloadRenv(file.path(dirs["local-cran"], "src", "contrib"))
-  downloadRemotes(file.path(dirs["local-cran"], "src", "contrib"))
+  # for some reason, "devtools" and "roxygen2" are missing...
+  # renv is not a direct dependency and is installed by default
+  # jasp-desktop does somewhere loadNamespace("remotes"), which is why we also download it here
+  customRenvInstall(c("devtools", "roxygen2", "renv", "remotes"), customDownload = FALSE)
 
 }
 
@@ -479,7 +478,7 @@ fixLocalPath <- function(path) {
     oldpath <- newpath
     newpath <- sub("[^/]+/", "", newpath)
   }
-  stop(sprintf("Could not make this path work: %s", orgpath))
+  stop2(sprintf("Could not make this path work: %s", orgpath))
 
 }
 
@@ -515,21 +514,11 @@ downloadFile <- function(url, destdir) {
   return(destfile)
 }
 
-downloadRenv <- function(destdir) {
-  # TODO: don't hardcode the renv version? maybe use 1 older than the current release so the url always works?
-  #That might be smart yeah... Or getting it from MRAN or so
-  downloadFile("https://cran.r-project.org/src/contrib/renv_0.14.0.tar.gz", destdir)
-}
-
-downloadRemotes <- function(destdir) {
-  downloadFile("https://cran.r-project.org/src/contrib/remotes_2.4.1.tar.gz", destdir) #This breaks whenever remotes is updated on cran
-}
-
 copyRfiles <- function(dirs) {
   rfiles <- list.files("R", pattern = "*\\.R$", full.names = TRUE)
   successes <- file.copy(from = rfiles, to = dirs["r-helpers"], overwrite = TRUE)
   if (!all(successes))
-    stop("failed to copy these R files: ", paste(rfiles[!successes], collapse = ", "), " to ", dirs["r-helpers"])
+    stop2("failed to copy these R files: ", paste(rfiles[!successes], collapse = ", "), " to ", dirs["r-helpers"])
 
 }
 
@@ -557,7 +546,7 @@ createTarArchive <- function(dirs, jaspDir, outputPath = "archives/flatpak_archi
       "fast" = "-I 'gzip -1'"
     )
   } else if (!is.numeric(compression) || (is.numeric(compression) && !(compression >= 1 && compression <= 9))) {
-    stop("compression must be character ('best' or 'fast') or numeric (1-9)")
+    stop2("compression must be character ('best' or 'fast') or numeric (1-9)")
   }
 
   dirsForArchive <- dirs["flatpak-dir"]
@@ -596,7 +585,7 @@ createTarArchive <- function(dirs, jaspDir, outputPath = "archives/flatpak_archi
 uploadTarArchive <- function(archivePath = "archives/flatpak_archive.tar.gz", verbose = TRUE) {
 
   if (!file.exists(archivePath))
-    stop("Archive does not exist")
+    stop2("Archive does not exist")
 
   archivePath <- normalizePath(archivePath)
   archiveName <- basename(archivePath)
@@ -660,7 +649,7 @@ installJaspStats <- function(pkgs, dirs) {
   for (i in seq_along(pkgs)) {
     pathsFound <- list.files(path = dirs["local-github"], pattern = sprintf("^jasp-stats_%s_tarball_", pkgs[i]), full.names = TRUE)
     if (length(pathsFound) != 1L)
-      stop("There are ", if (length(pathsFound) < 1L) "zero" else "multiple", " ", pkgs[i], "_*.tar.gz present!")
+      stop2("There are ", if (length(pathsFound) < 1L) "zero" else "multiple", " ", pkgs[i], "_*.tar.gz present!")
     paths[i] <- pathsFound
   }
 
@@ -743,7 +732,7 @@ downloadFakeV8 <- function(dirs) {
   V8origFile <- dir(V8dir, full.names = TRUE)
 
   if (length(V8origFile) > 1L) {
-    stop("There are multiple V8 packages at ", V8dir)
+    stop2("There are multiple V8 packages at ", V8dir)
   } else if (length(V8origFile) == 1L) {
     unlink(V8origFile)
   }
@@ -767,7 +756,7 @@ downloadV8 <- function(dirs) {
 
 copyV8Lib <- function(dirs, source = "other_deps/v8") {
   if (!file.copy(source, to = dirs["other-dependencies"], recursive = TRUE))
-    stop("Failed to copy from ", source, " to ", dirs["other-dependencies"], domain = NA)
+    stop2("Failed to copy from ", source, " to ", dirs["other-dependencies"])
 }
 
 updateV8Rpackage <- function(dirs) {
@@ -849,3 +838,14 @@ downloadV8ifneeded <- function(destination = "other_deps") {
 getDirs <- function() {
   get("dirs", envir = .GlobalEnv)
 }
+
+stop2 <- function(..., call. = TRUE, domain = NA) {
+  stop(crayon::red(crayon::bold(paste0(..., collapse = ""))), call. = call., domain = domain)
+}
+
+options("error" = function() {
+  traceback(4, max.lines = 2L)
+  if (!interactive()) {
+    quit(status = 1)
+  }
+})
