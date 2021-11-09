@@ -34,7 +34,6 @@ set(JASP_EXTRA_MODULES
 	jaspCircular
 	)
 
-
 if (${INSTALL_R_MODULES})
 
 	message(STATUS "[JASP]: Installing JASP's R Modules...")

@@ -17,8 +17,7 @@ set(GITHUB_PAT_DEFINE ${GITHUB_PAT_DEF})
 set(JASP_LIBJSON_STATIC OFF)
 set(PRINT_ENGINE_MESSAGES OFF)
 
-# This is how we can link to the system R
-# set(BUILD_WITH_SYSTEM_R OFF)
+# This is how we can link to the system R set(BUILD_WITH_SYSTEM_R OFF)
 
 add_definitions(-DBUILDING_JASP)
 add_definitions(-DJASP_DEBUG)
@@ -26,8 +25,7 @@ add_definitions(-DPRINT_ENGINE_MESSAGES)
 add_definitions(-DJASP_USES_QT_HERE)
 # add_definitions(-DJASP_RESULTS_DEBUG_TRACES)
 
-
 option(USE_JASP_TIMER "Use JASP timer for profiling" OFF)
 
-# TODO:
-# - [ ] Find the Git location, I think I can use CMake's $ENV{GIT} or something like that
+# TODO: - [ ] Find the Git location, I think I can use CMake's $ENV{GIT} or
+# something like that

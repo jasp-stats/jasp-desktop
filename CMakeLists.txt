@@ -1,14 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(JASP 
-	VERSION 0.16.0
-	LANGUAGES CXX C)
+project(JASP VERSION 0.16.0 LANGUAGES CXX C)
 # TODO: Later on, we can use CMake to even have proper TWEAK versioning as well
 # set(JASP_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 # set(JASP_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 # set(JASP_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 # set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
-
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,18 +19,18 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # Some primarily checks. This will extend as we move to other systems.
-# Later on, as I integrate more options, this helps us to have a 
+# Later on, as I integrate more options, this helps us to have a
 # cross-platform build without tweaking the entire build system so much.
 # CMake makes sure that .dll are build on Windows, and .a/.so on macOS, and Linux.
 if(NOT CMAKE_BUILD_TYPE MATCHES Debug) #Release, RelWithDebInfo and MinSizeRel
-	if(WIN32) # Check if we are on Windows
-		set(SYSTEM_TYPE WIN32)
-	elseif(APPLE) # MacOS X
-		set(SYSTEM_TYPE MACOSX_BUNDLE)
-	else() # UNIX
-		set(SYSTEM_TYPE EXCLUDE_FROM_ALL)
-	endif()
-	message(STATUS "System type is " ${SYSTEM_TYPE})
+  if(WIN32) # Check if we are on Windows
+    set(SYSTEM_TYPE WIN32)
+  elseif(APPLE) # MacOS X
+    set(SYSTEM_TYPE MACOSX_BUNDLE)
+  else() # UNIX
+    set(SYSTEM_TYPE EXCLUDE_FROM_ALL)
+  endif()
+  message(STATUS "System type is " ${SYSTEM_TYPE})
 endif()
 
 message(STATUS "Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
@@ -46,14 +43,7 @@ include(R.cmake)
 include(JASP.cmake)
 include(Modules.cmake)
 
-find_package(Qt6 REQUIRED
-				 COMPONENTS
-				 Core
-				 Gui
-				 OpenGL
-				 Widgets 
-				 Qml
-				)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Widgets Qml)
 
 add_subdirectory(Common)
 add_subdirectory(R-Interface)
