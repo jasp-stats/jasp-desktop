@@ -158,8 +158,8 @@ void TextInputBase::bindTo(const Json::Value& value)
 
 Json::Value TextInputBase::createJson()
 {
-	QString startValue = property("startValue").toString();
-	QString value = startValue.isEmpty() ? property("value").toString() : startValue;
+	QVariant value = property("value");
+	if (value.toString() == "" && !_defaultValue.isNull())	value = _defaultValue;
 
 	return _getJsonValue(value);
 }
@@ -195,7 +195,6 @@ void TextInputBase::setUp()
 	else								_inputType = TextInputType::StringInputType;
 
 	_parseDefaultValue = property("parseDefaultValue").toBool();
-	_defaultValue = property("defaultEmptyValue").toString();
 
 	QQuickItem::connect(this, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 
@@ -299,19 +298,20 @@ bool TextInputBase::_formulaResultInBounds(double result)
 	return inBounds;
 }
 
-Json::Value TextInputBase::_getJsonValue(QString& text)
+Json::Value TextInputBase::_getJsonValue(const QVariant& value)
 {
 	switch (_inputType)
 	{
-	case TextInputType::IntegerInputType:		return (text.toInt());
-	case TextInputType::NumberInputType:		return text.toDouble();
-	case TextInputType::PercentIntputType:		return std::min(std::max(text.toDouble(), 0.0), 100.0) / 100;
+	case TextInputType::IntegerInputType:		return (value.toInt());
+	case TextInputType::NumberInputType:		return value.toDouble();
+	case TextInputType::PercentIntputType:		return std::min(std::max(value.toDouble(), 0.0), 100.0) / 100;
 	case TextInputType::IntegerArrayInputType:
 	case TextInputType::DoubleArrayInputType:
 	{
-		text.replace(QString(" "), QString(","));
+		QString str = value.toString();
+		str.replace(QString(" "), QString(","));
 		Json::Value values(Json::arrayValue);
-		QStringList chunks = text.split(QChar(','), Qt::SkipEmptyParts);
+		QStringList chunks = str.split(QChar(','), Qt::SkipEmptyParts);
 
 		for (QString &chunk: chunks)
 		{
@@ -329,7 +329,7 @@ Json::Value TextInputBase::_getJsonValue(QString& text)
 		}
 		return values;
 	}
-	default:	return fq(text);
+	default:	return fq(value.toString());
 	}
 }
 
@@ -338,7 +338,7 @@ void TextInputBase::textChangedSlot()
 	if (!isBound() && _inputType != TextInputType::FormulaType && _inputType != TextInputType::FormulaArrayType)
 		// In a TabView, if the name of the tab is edited and, before validating, a new tab is added, the model is first changed because of adding a tab,
 		// possibly making the QML item of the TextField invalid (as this TextField depends on the TabView model).
-		// But as this TextField is not bound (_option is null), and is not a Formula, we don't need to fetch the value of the item anyway.
+		// But as this TextField is not bound, and is not a Formula, we don't need to fetch the value of the item anyway.
 		return;
 
 	_value = property("value").toString();
@@ -350,6 +350,8 @@ void TextInputBase::textChangedSlot()
 		{
 			if (!_parseDefaultValue && _defaultValue == _value)
 			{
+				// The value is the same as the default value and this default value should not be parsed (this might be just a string like '...')
+				// So just set this value and emit that the formula is succesfully checked without running the R script.
 				setBoundValue(_value.toStdString());
 				emit formulaCheckSucceeded();
 			}

@@ -101,7 +101,10 @@ void ListModelTableViewBase::addColumn(bool emitStuff)
 	if (count < _maxColumn)
 	{
 		_tableTerms.colNames.push_back(getDefaultColName(count));
-		_tableTerms.values.push_back(QVector<QVariant>(_tableTerms.rowNames.length(), _tableView->defaultValue()));
+		QVector<QVariant> values;
+		for (int rowIndex = 0; rowIndex < _tableTerms.rowNames.length(); rowIndex++)
+			values.push_back(_tableView->defaultValue(count, rowIndex));
+		_tableTerms.values.push_back(values);
 	}
 
 	if (emitStuff)
@@ -140,10 +143,13 @@ void ListModelTableViewBase::addRow(bool emitStuff)
 	if (rowCount() < int(_maxRow))
 	{
 		_tableTerms.rowNames.push_back(getDefaultRowName(rowCount()));
-
+		int colIndex = 0;
 		for (QVector<QVariant> & value : _tableTerms.values)
+		{
 			while (value.size() < _tableTerms.rowNames.size()) //Lets make sure the data is rectangular!
-				value.push_back(_tableView->defaultValue());
+				value.push_back(_tableView->defaultValue(colIndex, value.length()));
+			colIndex++;
+		}
 	}
 
 	if (emitStuff)
@@ -191,7 +197,7 @@ void ListModelTableViewBase::reset()
 
 	if (!_keepRowsOnReset)
 		for (int row=0; row < rows; row++)
-			addRow();
+			addRow(false);
 
 	endResetModel();
 
@@ -305,7 +311,9 @@ void ListModelTableViewBase::sourceTermsReset()
 
 	for (int col = 0; col < columnCount(); col++)
 	{
-		QVector<QVariant> newValues(rowCount(), _tableView->defaultValue());
+		QVector<QVariant> newValues;
+		for (int row = 0; row < rowCount(); row++)
+			newValues.push_back(_tableView->defaultValue(col, row));
 		_tableTerms.values.push_back(newValues);
 
 		for (int row = 0; row < rowCount(); row++)

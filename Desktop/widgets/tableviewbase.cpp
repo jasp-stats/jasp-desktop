@@ -188,32 +188,40 @@ void TableViewBase::termsChangedHandler()
 		_boundControl->resetBoundValue();
 }
 
-QVariant TableViewBase::defaultValue() const
+QVariant TableViewBase::defaultValue(int colIndex, int rowIndex)
 {
+	QVariant defValue = _defaultValue;
+	if (colIndex >= 0 && rowIndex >= 0)
+	{
+		QMetaObject::invokeMethod(this, "getDefaultValue", Qt::DirectConnection,
+								  Q_RETURN_ARG(QVariant, defValue),
+								  Q_ARG(QVariant, colIndex),
+								  Q_ARG(QVariant, rowIndex));
+	}
 	// Force the QVariant to have the right type
 	switch (itemType())
 	{
 	case JASPControl::ItemType::Integer:
 	{
-		if (_defaultValue.type() == QVariant::Int)		return _defaultValue;
-		if (_defaultValue.canConvert(QVariant::Int))	return _defaultValue.toInt();
+		if (defValue.type() == QVariant::Int)		return defValue;
+		if (defValue.canConvert(QVariant::Int))	return defValue.toInt();
 		break;
 	}
 	case JASPControl::ItemType::Double:
 	{
-		if (_defaultValue.type() == QVariant::Double)	return _defaultValue;
-		if (_defaultValue.canConvert(QVariant::Double))	return _defaultValue.toDouble();
+		if (defValue.type() == QVariant::Double)	return defValue;
+		if (defValue.canConvert(QVariant::Double))	return defValue.toDouble();
 		break;
 	}
 	case JASPControl::ItemType::String:
 	{
-		if (_defaultValue.type() == QVariant::String)	return _defaultValue;
-		if (_defaultValue.canConvert(QVariant::String))	return _defaultValue.toString();
+		if (defValue.type() == QVariant::String)	return defValue;
+		if (defValue.canConvert(QVariant::String))	return defValue.toString();
 		break;
 	}
 	}
 
-	return _defaultValue;
+	return defValue;
 }
 
 std::vector<std::string> TableViewBase::usedVariables() const

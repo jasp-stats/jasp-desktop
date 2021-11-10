@@ -37,7 +37,7 @@ public:
 protected:
 	virtual void			fillTableTerms(const Json::Value& value, ListModelTableViewBase::TableTerms& tableTerms);
 	virtual void			fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms);
-	Json::Value				_defaultValue();
+	Json::Value				_defaultValue(int colIndex = -1, int rowIndex = -1);
 
 	TableViewBase			* _tableView	= nullptr;
 };

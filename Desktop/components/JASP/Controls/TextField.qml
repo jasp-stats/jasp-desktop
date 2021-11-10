@@ -35,16 +35,15 @@ TextInputBase
 	property alias	label:				beforeLabel.text
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
-	property string startValue:			""
-	property string lastValidValue:		""
+	property string lastValidValue:		defaultValue
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	!parentListView
 	property bool	showBorder:			true
 	property alias	placeholderText:	control.placeholderText
 	property bool	selectValueOnFocus:	false
-	property string defaultEmptyValue:	""
-	
+	property alias	startValue:			textField.defaultValue
+
 	property alias	validator:			control.validator
 	property alias	controlLabel:		beforeLabel
 	property alias	afterLabel:			afterLabel.text
@@ -61,8 +60,8 @@ TextInputBase
 
 	function doEditingFinished()
 	{
-		if (control.text === "" && defaultEmptyValue !== "")
-			control.text = defaultEmptyValue;
+		if (control.text === "" && String(defaultValue) !== "")
+			control.text = defaultValue;
 		lastValidValue = control.text
 		editingFinished();
 	}
@@ -112,6 +111,7 @@ TextInputBase
 		selectedTextColor:		jaspTheme.white
 		selectionColor:			jaspTheme.itemSelectedColor
 		enabled:				textField.editable
+		text:					textField.defaultValue
 
 		background: Rectangle
 		{
