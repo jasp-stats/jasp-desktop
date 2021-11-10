@@ -68,7 +68,7 @@ public:
 
 	JASPControl::ModelType		modelType()								const				{ return _modelType;					}
 	JASPControl::ItemType		itemType()								const				{ return _itemType;						}
-	QVariant					defaultValue()							const;
+	QVariant					defaultValue(int colIndex = -1, int rowIndex = -1);
 	QVariantList				itemTypePerRow()						const				{ QVariantList l; for (auto t : _itemTypePerRow) l.append(int(t)); return l;	}
 	QVariantList				itemTypePerColumn()						const				{ QVariantList l; for (auto t : _itemTypePerColumn) l.append(int(t)); return l;	}
 	QVariant					initialValuesSource()					const				{ return _initialValuesSource;			}

@@ -23,7 +23,7 @@ import JASP				1.0
 TextField
 {
 					id:					textField
-	property int	defaultValue:		0
+					defaultValue:		0
 	property string	_prevDefaultValue:	"0"
 	property bool	negativeValues:		false
 	property int	min:				negativeValues ? -2147483647 : 0 // 2^32 - 1
@@ -33,8 +33,6 @@ TextField
     
 					inputType:			"integer"
 					validator:			JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0 }
-					lastValidValue:		defaultValue;
-					value:				defaultValue
 					cursorShape:		Qt.IBeamCursor
 					fieldWidth:			jaspTheme.numericFieldWidth
 

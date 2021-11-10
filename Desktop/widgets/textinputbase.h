@@ -27,6 +27,8 @@ class TextInputBase : public JASPControl, public BoundControlBase
 	Q_OBJECT
 
 	Q_PROPERTY( bool		hasScriptError		READ hasScriptError			WRITE setHasScriptError		NOTIFY hasScriptErrorChanged		)
+	Q_PROPERTY( QVariant	defaultValue		READ defaultValue			WRITE setDefaultValue		NOTIFY defaultValueChanged			)
+
 
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType, FormulaArrayType};
@@ -42,20 +44,23 @@ public:
 	TextInputType	inputType()	{ return _inputType; }
 	QString			friendlyName() const override;
 	bool			hasScriptError()						const	{ return _hasScriptError;		}
+	QVariant		defaultValue()							const	{ return _defaultValue;			}
 
 signals:
 	void		formulaCheckSucceeded();
 	void		hasScriptErrorChanged();
+	void		defaultValueChanged();
 
 public slots:
 	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
+	GENERIC_SET_FUNCTION(DefaultValue,		_defaultValue,		defaultValueChanged,	QVariant	)
 
 private slots:
 	void		textChangedSlot();
 	void		resetValue();
 
 private:
-	Json::Value	_getJsonValue(QString& text);
+	Json::Value	_getJsonValue(const QVariant& value);
 	bool		_formulaResultInBounds(double result);
 
 	QString		_getPercentValue(double val);
@@ -66,7 +71,7 @@ private:
 	QString					_value;
 
 	bool					_parseDefaultValue	= true;
-	QString					_defaultValue		= "";
+	QVariant				_defaultValue;
 	bool					_hasScriptError		= false;
 
 };

@@ -37,26 +37,23 @@ Json::Value BoundControlTableView::createJson()
 	Terms terms = _tableView->model()->getSourceTerms();
 
 	Json::Value levels(Json::arrayValue);
-	Json::Value values(Json::arrayValue);
-	Json::Value defaultValue = _defaultValue();
 
 	for (const Term& term : terms)
-	{
 		levels.append(term.asString());
-		values.append(defaultValue);
-	}
 
 	for (int row = int(terms.size()); row < _tableView->initialRowCount(); row++)
-	{
 		levels.append(fq(_tableView->tableModel()->getDefaultRowName(size_t(row))));
-		values.append(defaultValue);
-	}
 
-	for (int i = 0; i < _tableView->initialColumnCount(); i++)
+	for (int colIndex = 0; colIndex < _tableView->initialColumnCount(); colIndex++)
 	{
 		Json::Value row(Json::objectValue);
 		row["levels"] = levels;
-		row["name"] = fq(_tableView->tableModel()->getDefaultColName(size_t(i)));
+		row["name"] = fq(_tableView->tableModel()->getDefaultColName(size_t(colIndex)));
+
+		Json::Value values(Json::arrayValue);
+		for (int rowIndex = 0; rowIndex < int(levels.size()); rowIndex++)
+			values.append(_defaultValue(colIndex, rowIndex));
+
 		row["values"] = values;
 		result.append(row);
 	}
@@ -130,19 +127,21 @@ void BoundControlTableView::fillBoundValue(Json::Value &boundValue, const  ListM
 	}
 }
 
-Json::Value BoundControlTableView::_defaultValue()
+Json::Value BoundControlTableView::_defaultValue(int colIndex, int rowIndex)
 {
-	Json::Value defaultValue;
+	Json::Value result;
+	QVariant defaultValue = _tableView->defaultValue(colIndex, rowIndex);
+
 	JASPControl::ItemType itemType = _tableView->itemType();
 
 	if (itemType == JASPControl::ItemType::Double)
-		defaultValue = _tableView->defaultValue().toDouble();
+		result = defaultValue.toDouble();
 	else if (itemType == JASPControl::ItemType::Integer)
-		defaultValue = _tableView->defaultValue().toInt();
+		result = defaultValue.toInt();
 	else
-		defaultValue = fq(_tableView->defaultValue().toString());
+		result = fq(defaultValue.toString());
 
-	return defaultValue;
+	return result;
 }
 
 void BoundControlTableView::resetBoundValue()

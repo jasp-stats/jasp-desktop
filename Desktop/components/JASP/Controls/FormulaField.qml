@@ -23,13 +23,12 @@ import JASP				1.0
 TextField
 {
 					id:					formulaField
-					value:				"0"
+					defaultValue:		"0"
 	property double realValue:			0
 	property var	realValues:			[]
 	property double	min:				-Infinity
 	property double	max:				Infinity
 	property int	inclusive:			JASP.MinMax
-	property alias	defaultValue:		formulaField.value
 	property bool	multiple:			false
 	property bool	parseDefaultValue:	true
 					inputType:			multiple ? "formulaArray" : "formula"

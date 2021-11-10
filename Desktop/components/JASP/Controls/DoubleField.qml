@@ -22,8 +22,8 @@ import JASP				1.0
 
 TextField
 {
-	id:									doubleField
-	property double defaultValue:		0
+					id:					doubleField
+					defaultValue:		0
 	property string _prevDefaultValue:	"0"
 	property alias	doubleValidator:	doubleValidator
 	property bool	negativeValues:		false
@@ -34,8 +34,6 @@ TextField
 
 					inputType:			"number"
 					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: doubleField.decimals; notation: DoubleValidator.StandardNotation }
-					lastValidValue:		defaultValue
-					value:				defaultValue
 					fieldWidth:			jaspTheme.numericFieldWidth
 
 	onDefaultValueChanged:
