@@ -43,6 +43,8 @@ IF "%PKG_NAME:~0,4%"=="jasp" (
 
     rem for issue https://github.com/jasp-stats/jasp-test-release/issues/416#issuecomment-591899068
     if "%PKG_NAME%"=="viridisLite"                ( xcopy %SRCE_DIR%\%REL_PATH%\data         /Y /Q /E /I data        >nul )
+    rem this could be done prettier with some kind of OR statement but this is easier. jaspCircular needs rao.table from data in circular
+    if "%PKG_NAME%"=="circular"                   ( xcopy %SRCE_DIR%\%REL_PATH%\data         /Y /Q /E /I data        >nul )
 
     if exist %SRCE_DIR%\%REL_PATH%\libs (
         mkdir %DEST_DIR%\%REL_PATH%\libs
