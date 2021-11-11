@@ -128,7 +128,7 @@ copyRPkg() {
 		copyFolderIfThere template		#for issue https://github.com/jasp-stats/jasp-test-release/issues/823
 		copyFolderIfThere shinythemes
 
-		if [[ $PKG_NAME == viridisLite || $PKG_NAME == circular]]; then # for issue https://github.com/jasp-stats/jasp-test-release/issues/416#issuecomment-591899068 and for jaspCircular that needs rao.table from circular/data
+		if [[ $PKG_NAME == viridisLite || $PKG_NAME == circular ]]; then # for issue https://github.com/jasp-stats/jasp-test-release/issues/416#issuecomment-591899068 and for jaspCircular that needs rao.table from circular/data
 			cp -R data $DEST_PATH
 		fi 
 	fi
