@@ -97,7 +97,7 @@ void TextAreaBase::setText(const QString& text)
 
 void TextAreaBase::termsChangedHandler()
 {
-	if (_textType == TextType::TextTypeLavaan && form())
+	if (_textType == TextType::TextTypeLavaan && form() && initialized())
 		form()->refreshAnalysis();
 
 }
