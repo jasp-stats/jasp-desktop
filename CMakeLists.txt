@@ -29,10 +29,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 # create binaries and installer for different systems
 if(WIN32) # Check if we are on Windows
   set(SYSTEM_TYPE WIN32)
-elseif(APPLE) # MacOS X
-  set(SYSTEM_TYPE MACOSX_BUNDLE)
-else() # UNIX
-  set(SYSTEM_TYPE EXCLUDE_FROM_ALL)
 endif()
 message(STATUS "System type is " ${SYSTEM_TYPE})
 

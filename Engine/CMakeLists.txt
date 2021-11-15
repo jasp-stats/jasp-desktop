@@ -47,7 +47,7 @@ endif()
 add_definitions(-DBUILDING_JASP_ENGINE)
 add_definitions(-DR_HOME=${_R_HOME})
 
-add_executable(JASPEngine ${HEADER_FILES} ${SOURCE_FILES})
+add_executable(JASPEngine ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
 
 target_link_libraries(JASPEngine PUBLIC Common R-Interface)
 

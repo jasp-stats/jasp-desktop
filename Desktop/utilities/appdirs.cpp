@@ -125,12 +125,20 @@ QString AppDirs::appData()
 
 QString AppDirs::rHome()
 {
-	
 #ifdef _WIN32
 	QString rHomePath = programDir().absoluteFilePath("R");
-#elif defined(__APPLE__)
-    QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
-#else //linux
+#endif
+
+#if defined(__APPLE__)
+	#ifdef MACOSX_BUNDLE
+        QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
+	#else
+	    // Qt Creator / CLI / Debugging
+	    QString rHomePath = programDir().absoluteFilePath("../../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
+	#endif
+#endif
+    
+#ifdef linux
 
 #ifndef R_HOME
 	QString rHomePath = programDir().absoluteFilePath("R/lib/libR.so");

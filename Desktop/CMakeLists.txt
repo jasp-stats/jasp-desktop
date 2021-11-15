@@ -102,9 +102,11 @@ endif()
 if(CMAKE_GENERATOR STREQUAL "Xcode")
   qt_add_executable(JASP MACOSX_BUNDLE ${HEADER_FILES} ${SOURCE_FILES}
                     ${BUNDLE_RESOURCES} ${_R_Framework})
+
+  target_compile_definitions(JASP PUBLIC MACOSX_BUNDLE)
 else()
-  qt_add_executable(JASP ${HEADER_FILES} ${SOURCE_FILES} ${BUNDLE_RESOURCES}
-                    ${_R_Framework})
+  qt_add_executable(JASP ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES}
+                    ${BUNDLE_RESOURCES} ${_R_Framework})
 endif()
 
 add_dependencies(JASP JASPEngine)
