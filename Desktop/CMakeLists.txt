@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
+list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
@@ -87,7 +89,7 @@ else()
        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
   message(
     STATUS
-      "[Desktop]: Successfully copied the Resources files to ${CMAKE_CURRENT_BINARY_DIR}"
+      "Successfully copied the Resources files to ${CMAKE_CURRENT_BINARY_DIR}"
   )
 
 endif()
@@ -225,3 +227,5 @@ qt_add_resources(
   "${CMAKE_CURRENT_LIST_DIR}/resources"
   FILES
   ${RESOURCES_RESOURCE_FILES})
+
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)

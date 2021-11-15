@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
 
-message(STATUS "[JASP]: Configuring Common...")
+list(APPEND CMAKE_MESSAGE_CONTEXT Common)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
 
 if(BUILD_WITH_SYSTEM_R)
-  message(STATUS "[Common]: Building with system R..")
+  message(STATUS "Building with system R..")
   pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
 
   include_directories(${LIBR_INCLUDE_DIRS})
@@ -30,7 +30,7 @@ include_directories(${LIBARCHIVE_INCLUDE_DIRS})
 include_directories(jaspColumnEncoder)
 
 configure_file(appinfo.cpp.in appinfo.cpp)
-message(STATUS "[Common]: appinfo.cpp is successfully generated...")
+message(STATUS "appinfo.cpp is successfully generated...")
 
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 
@@ -68,3 +68,5 @@ endif()
 
 # I'm leaving the flatpak config behind, as it should be pretty straighforward,
 # and I think CMake can take care of most of it
+
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)

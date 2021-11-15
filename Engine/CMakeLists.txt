@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-message(STATUS "[JASP]: Configuring the Engine")
+list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
 
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 
@@ -28,7 +28,7 @@ include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 # configure_file(appinfo.cpp.in appinfo.cpp)
 
 if(BUILD_WITH_SYSTEM_R)
-  message(STATUS "[Engine]: Building with system R..")
+  message(STATUS "Building with system R..")
   pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
 
   include_directories(${LIBR_INCLUDE_DIRS})
@@ -36,8 +36,8 @@ if(BUILD_WITH_SYSTEM_R)
   include_directories(${_RInside_HOME}/include)
 
 else()
-  message(STATUS "[Engine]: Building with R.framework...")
-  message(STATUS "[Engine]: Setting the headers...")
+  message(STATUS "Building with R.framework...")
+  message(STATUS "Setting the headers...")
 
   include_directories(${CMAKE_SOURCE_DIR}/${_R_HOME}/include)
   include_directories(${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include)
@@ -83,3 +83,5 @@ else()
 endif()
 
 # set_property(SOURCE JASPEngine PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
+
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
+list(APPEND CMAKE_MESSAGE_CONTEXT JASP)
+
 set(JASP_REQUIRED_FILES ${CMAKE_SOURCE_DIR}/../jasp-required-files)
 
 set(CURRENT_R_VERSION "4.1")
@@ -54,3 +56,5 @@ endif()
 # - [ ] Make sure that all variables from .pri and .pro make it to the CMake files
 # - [ ] Find the Git location, I think I can use CMake's $ENV{GIT} or something like that
 # - [ ] Find a better name for some of these variables
+
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)

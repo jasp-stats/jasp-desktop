@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
+list(APPEND CMAKE_MESSAGE_CONTEXT Config)
+
 if(BUILD_WITH_SYSTEM_R)
   message(STATUS "[JASP]: Building with system R...")
 
@@ -47,7 +49,7 @@ if(BUILD_WITH_SYSTEM_R)
 
 else()
 
-  message(STATUS "[Config]: Building using the R.framework")
+  message(STATUS "Building using the R.framework")
 
   # TODO: Replace the version with a variable
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -60,56 +62,56 @@ else()
 
     set(_R_FRAMEWORK_PATH ${CMAKE_SOURCE_DIR})
 
-    message(STATUS "[JASP]: Looking for 'R.framework' in " ${_R_FRAMEWORK_PATH})
+    message(STATUS "Looking for 'R.framework' in " ${_R_FRAMEWORK_PATH})
     find_library(_R_Framework NAMES R PATHS ${_R_FRAMEWORK_PATH}
                  NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
     if(_R_Framework)
-      message(STATUS "[JASP]: Found the 'R.framework' library in "
+      message(STATUS "Found the 'R.framework' library in "
                      ${_R_Framework})
     else()
       message(
         FATAL_ERROR
-          "[JASP]: Couldn't find the 'R.framework' in ${CMAKE_SOURCE_DIR}")
+          "Couldn't find the 'R.framework' in ${CMAKE_SOURCE_DIR}")
     endif()
 
-    message(STATUS "[JASP]: Checking for 'libR' in " ${_R_HOME}/lib)
+    message(STATUS "Checking for 'libR' in " ${_R_HOME}/lib)
     find_library(_LIB_R NAMES R PATHS ${_R_HOME}/lib NO_DEFAULT_PATH NO_CACHE
                                                      REQUIRED)
 
     if(_LIB_R)
-      message(STATUS "[JASP]: Found the 'libR' library in " ${_LIB_R})
+      message(STATUS "Found the 'libR' library in " ${_LIB_R})
     else()
-      message(FATAL_ERROR "[JASP]: Couldn't find the 'libR' in ${_R_HOME}/lib")
+      message(FATAL_ERROR "Couldn't find the 'libR' in ${_R_HOME}/lib")
     endif()
 
     if(NOT EXISTS ${_RInside_HOME})
       message(
         STATUS
-          "[JASP]: RInside is not installed! Installing RInside and Rcpp...")
+          "RInside is not installed! Installing RInside and Rcpp...")
       execute_process(
         COMMAND
           ${_Rscript_EXE} -e
           install.packages\("RInside",repos="http://cran.r-project.org"\)
           COMMAND_ERROR_IS_FATAL ANY COMMAND_ECHO NONE
         OUTPUT_QUIET ERROR_QUIET)
-      message(STATUS "[JASP]: Successfully installed RInside and Rcpp.")
+      message(STATUS "Successfully installed RInside and Rcpp.")
     endif()
 
-    message(STATUS "[JASP]: Checking for 'libRInside' in" ${_LIB_RInside})
+    message(STATUS "Checking for 'libRInside' in" ${_LIB_RInside})
     find_library(_LIB_RInside NAMES RInside PATHS ${_RInside_HOME}/lib
                  NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
     if(_LIB_RInside)
-      message(STATUS "[JASP]: Found the 'libRInside' library in "
+      message(STATUS "Found the 'libRInside' library in "
                      ${_LIB_RInside})
     else()
       message(
         FATAL_ERROR
-          "[JASP]: Couldn't find the 'libRInside' in ${_RInside_HOME}/libs")
+          "Couldn't find the 'libRInside' in ${_RInside_HOME}/libs")
       message(
         FATAL_ERROR
-          "[JASP]: Apparently the installation of RInside was not so successuful!"
+          "Apparently the installation of RInside was not so successuful!"
       )
     endif()
 
@@ -117,7 +119,9 @@ else()
 
 endif()
 
-message(STATUS "[Config]: _R_HOME is set to ${_R_HOME}")
-message(STATUS "[Config]: _Rcpp_HOME is set to ${_Rcpp_HOME}")
-message(STATUS "[Config]: _RInside_HOME is set to ${_RInside_HOME}")
-message(STATUS "[Config]: _R_Library is set to ${_R_Library_HOME}")
+message(STATUS "_R_HOME is set to ${_R_HOME}")
+message(STATUS "_Rcpp_HOME is set to ${_Rcpp_HOME}")
+message(STATUS "_RInside_HOME is set to ${_RInside_HOME}")
+message(STATUS "_R_Library is set to ${_R_Library_HOME}")
+
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)
