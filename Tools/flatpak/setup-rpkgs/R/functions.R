@@ -52,9 +52,16 @@ download_override <- function(url, destfile, mode = "wb", quiet = FALSE, headers
         pkg <- basename(url)
         if (pkg != "PACKAGES.rds") {
           pkgName <- gsub("_.*", "", pkg)
-          localFile0 <- file.path(dirs["local-cran"], "src", "contrib", pkg)
-          localFile1 <- file.path(dirs["renv-root"], "source", "repository", pkgName, pkg)
+
+          localFile0 <- file.path(dirs["local-cran-source"], pkg)
+          if (getOption("binaryPkgs", FALSE)) {
+            localFile1 <- file.path(dirs["renv-root-binary"], pkgName, pkg)
+          } else {
+            localFile1 <- file.path(dirs["renv-root-source"], "source", "repository", pkgName, pkg)
+          }
+
           if (file.exists(localFile1)) {
+
             ws <- strrep(" ", 35 - nchar(pkg)) # NetworkComparisonTest is the longest package name I encountered
             maybecat(sprintf("Already downloaded %s%sreusing %s\n", pkg, ws, makePathRelative(localFile1, dirs["jasp-subdir"])))
             if (!file.exists(localFile0))
@@ -112,7 +119,10 @@ download_override <- function(url, destfile, mode = "wb", quiet = FALSE, headers
     return(file)
 
     }, error = function(e) {
-      browser()
+      if (interactive())
+        browser()
+      else
+        stop2(e)
     }
   )
 
@@ -259,13 +269,22 @@ customRenvInstall <- function(packages, library = NULL, rebuild = TRUE, customDo
 installRecommendedPackages <- function(dirs) {
 
   installed <- installed.packages(.libPaths())
-  rec_pkgs <- unname(installed[installed[, "Priority"] %in% "recommended", "Package"])
-  customRenvInstall(rec_pkgs, customDownload = FALSE)
+  recPkgs <- unname(installed[installed[, "Priority"] %in% "recommended", "Package"])
 
-  # for some reason, "devtools" and "roxygen2" are missing...
-  # renv is not a direct dependency and is installed by default
-  # jasp-desktop does somewhere loadNamespace("remotes"), which is why we also download it here
-  customRenvInstall(c("devtools", "roxygen2", "renv", "remotes"), customDownload = FALSE)
+  alreadyDownloadedPkgs <- list.files(dirs["local-cran-source"], pattern = "\\.tar\\.gz$", recursive = TRUE, full.names = FALSE)
+  alreadyDownloadedPkgs <- gsub("_(.*)", "", basename(alreadyDownloadedPkgs))
+
+  toInstall <- c(recPkgs,
+    # for some reason, "devtools" and "roxygen2" are missing...
+    # renv is not a direct dependency and is installed by default
+    # jasp-desktop does somewhere loadNamespace("remotes"), which is why we also download it here
+    "devtools", "roxygen2", "renv", "remotes"
+  )
+
+  toInstall <- setdiff(toInstall, alreadyDownloadedPkgs)
+
+  if (length(toInstall) > 0L)
+    customRenvInstall(toInstall, customDownload = FALSE)
 
 }
 
@@ -330,7 +349,9 @@ createFolderStructure <- function(toplevel = file.path(getwd(), "toplevelReposit
 
   contrib  <- file.path(toplevel, "src", "contrib")
   mkdir(contrib)
-  return(c("root" = toplevel, "contrib" = contrib))
+  contribBinary  <- file.path(toplevel, "bin", "linux", "contrib")
+  mkdir(contribBinary)
+  return(c("root" = toplevel, "source" = contrib, "binary" = contribBinary))
 
 }
 
@@ -377,28 +398,43 @@ createLocalGithubRepository <- function(resultsEnv, githubDir, sourcePkgsDir) {
 
 createLocalPackageRepository <- function(dirs) {
 
-  sourcePkgsDir <- file.path(dirs["renv-root"], "source", "repository")
+  createLocalRepository(dirs["local-cran-source"], dirs["renv-root-source"])
 
-  paths <- createFolderStructure(dirs["local-cran"])
+}
 
-  createLocalRepository(paths[["contrib"]], sourcePkgsDir)
-  # createLocalGithubRepository(resultsEnv, paths[["github"]],  sourcePkgsDir)
-  paths
+copy_of_renv_bootstrap_platform_prefix <- function() {
+  # as the name suggests, a copy of renv:::renv_bootstrap_platform_prefix
+  version <- paste(R.version$major, R.version$minor, sep = ".")
+  prefix <- paste("R", numeric_version(version)[1, 1:2], sep = "-")
+  devel <- identical(R.version[["status"]], "Under development (unstable)") ||
+    identical(R.version[["nickname"]], "Unsuffered Consequences")
+  if (devel)
+    prefix <- paste(prefix, R.version[["svn rev"]], sep = "-r")
+  components <- c(prefix, R.version$platform)
+  # prefix <- renv_bootstrap_platform_prefix_impl()
+  prefix <- NA
+  if (!is.na(prefix) && nzchar(prefix))
+    components <- c(prefix, components)
+  paste(components, collapse = "/")
 }
 
 setupJaspDirs <- function(root = getwd(), jaspSubdir = "jasp-build", flatpakSubdir = "flatpak-helper", clearAll = FALSE, renvOnly = FALSE) {
 
   paths <- c(
     # folder structure should be identical to JASP
-    "Modules"    = file.path(root, jaspSubdir, "Modules"),
-    "renv-cache" = file.path(root, jaspSubdir, "renv-cache"),
-    "renv-root"  = file.path(root, jaspSubdir, "renv-root"),
+    "Modules"          = file.path(root, jaspSubdir, "Modules"),
+    "renv-cache"       = file.path(root, jaspSubdir, "renv-cache"),
+    "renv-root"        = file.path(root, jaspSubdir, "renv-root"),
+    "renv-root-source" = file.path(root, jaspSubdir, "renv-root", "source", "repository"),
+    "renv-root-binary" = file.path(root, jaspSubdir, "renv-root", "binary", copy_of_renv_bootstrap_platform_prefix(), "repository"),
 
-    # this directories are only relevant for building flatpak
+    # these directories are only relevant for building flatpak
     "module-environments" = file.path(root, flatpakSubdir, "module-environments"),
     "other-dependencies"  = file.path(root, flatpakSubdir, "other-dependencies"),
     "r-helpers"           = file.path(root, flatpakSubdir, "r-helpers"),
     "local-cran"          = file.path(root, flatpakSubdir, "local-cran"),
+    "local-cran-source"   = file.path(root, flatpakSubdir, "local-cran", "src", "contrib"),
+    "local-cran-binary"   = file.path(root, flatpakSubdir, "local-cran", "bin", "linux", "contrib"),
     "local-github"        = file.path(root, flatpakSubdir, "local-github"),
     "root"                = root,
     "jasp-subdir"         = file.path(root, jaspSubdir),
@@ -709,6 +745,14 @@ cleanupBigPackages <- function(dirs) {
 
     dirTemp2 <- file.path(tempdir(), basename(path))
     mkdir(dirTemp2, deleteIfExists = TRUE)
+
+    if (startsWith(basename(path), "dustinfife_flexplot")) {
+      # flexplot removes jasp related files in the .Rbuildignore...
+      .Rbuildignore <- readLines(file.path(newPath, ".Rbuildignore"))
+      .Rbuildignore <- .Rbuildignore[!(grepl("jasp", .Rbuildignore) & endsWith(.Rbuildignore, ".R"))]
+      writeLines(.Rbuildignore, file.path(newPath, ".Rbuildignore"))
+
+    }
 
     setwd(dirTemp2)
     cmd <- sprintf("%s CMD build --no-build-vignettes --no-manual --resave-data %s", rpath, newPath)

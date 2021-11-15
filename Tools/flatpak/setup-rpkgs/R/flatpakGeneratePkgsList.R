@@ -37,7 +37,9 @@ source(file.path("R", "validators.R"))
 
 validateSetup(jaspDir, flatpakDir)
 
-options(repos = list(repos = c(CRAN = "https://cran.rstudio.com")))
+# options(repos = list(repos = c(CRAN = "https://cran.rstudio.com")))
+options(repos = list(repos = c(RSPM = "https://packagemanager.rstudio.com/all/__linux__/focal/latest")))
+options("binaryPkgs" = TRUE)
 
 # NOTE: if you change the flatpak_dir anywhere you must also change it in the flatpak builder script!
 dirs <- setupJaspDirs("flatpak_folder")
