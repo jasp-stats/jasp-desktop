@@ -9,7 +9,6 @@ project(JASP VERSION 0.16.0 LANGUAGES CXX C)
 # set(JASP_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 # set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
 
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -21,38 +20,31 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Some primarily checks. This will extend as we move to other systems.
-# Later on, as I integrate more options, this helps us to have a
-# cross-platform build without tweaking the entire build system so much.
-# CMake makes sure that .dll are build on Windows, and .a/.so on macOS, and Linux.
-if(NOT CMAKE_BUILD_TYPE MATCHES Debug) #Release, RelWithDebInfo and MinSizeRel
-  if(WIN32) # Check if we are on Windows
-    set(SYSTEM_TYPE WIN32)
-  elseif(APPLE) # MacOS X
-    set(SYSTEM_TYPE MACOSX_BUNDLE)
-  else() # UNIX
-    set(SYSTEM_TYPE EXCLUDE_FROM_ALL)
-  endif()
-  message(STATUS "System type is " ${SYSTEM_TYPE})
+# This loads all the Qt-related CMake Modules.
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
+# I am not using this for now, but later on, we can use it to
+# create binaries and installer for different systems
+if(WIN32) # Check if we are on Windows
+  set(SYSTEM_TYPE WIN32)
+elseif(APPLE) # MacOS X
+  set(SYSTEM_TYPE MACOSX_BUNDLE)
+else() # UNIX
+  set(SYSTEM_TYPE EXCLUDE_FROM_ALL)
 endif()
+message(STATUS "System type is " ${SYSTEM_TYPE})
 
-message(STATUS "Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
-
-option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
-option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
-option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
-
-include(R.cmake)
+# JASP Options
 include(JASP.cmake)
 
-if(INSTALL_R_MODULES)
-  include(Modules.cmake)
-endif()
-
-find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Widgets Qml)
+# R/Environment Configurations
+include(R.cmake)
 
 add_subdirectory(Common)
 add_subdirectory(R-Interface)
 add_subdirectory(Engine)
 add_subdirectory(Desktop)
-# add_subdirectory(Modules)
+
+if(INSTALL_R_MODULES)
+  include(Modules.cmake)
+endif()

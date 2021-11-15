@@ -89,8 +89,7 @@ else()
        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
   message(
     STATUS
-      "Successfully copied the Resources files to ${CMAKE_CURRENT_BINARY_DIR}"
-  )
+      "Successfully copied the Resources files to ${CMAKE_CURRENT_BINARY_DIR}")
 
 endif()
 

@@ -19,6 +19,12 @@ set(GITHUB_PAT_DEFINE ${GITHUB_PAT_DEF})
 set(JASP_LIBJSON_STATIC OFF)
 set(PRINT_ENGINE_MESSAGES OFF)
 
+option(GITHUB_PAT "Your GitHub Personal Access Token" OFF)
+
+option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
+option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
+option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
+
 # This is how we can link to the system R set(BUILD_WITH_SYSTEM_R OFF)
 
 option(BUILDING_JASP "Indicates whether we are building JASP or not.

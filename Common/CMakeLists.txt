@@ -39,12 +39,6 @@ list(APPEND SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 
 add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
 
-# Making sure that Xcode could find libCommon.a during the archiving
-if(CMAKE_GENERATOR STREQUAL "Xcode")
-  set_target_properties(Common PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
-                                          ${PROJECT_BINARY_DIR}/)
-endif()
-
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
 target_link_libraries(Common PUBLIC ${Boost_LIBRARIES} PkgConfig::LIBARCHIVE
@@ -55,7 +49,7 @@ if(USE_JASP_TIMER)
 endif()
 
 if(APPLE)
-  target_compile_definitions(Common PUBLIC DBOOST_INTERPROCESS_SHARED_DIR_FUNC)
+  target_compile_definitions(Common PUBLIC BOOST_INTERPROCESS_SHARED_DIR_FUNC)
 elseif(WIN32)
   target_compile_definitions(
     Common PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
