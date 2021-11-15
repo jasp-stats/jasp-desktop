@@ -288,7 +288,7 @@ DropArea
 
 						Keys.onEscapePressed: 	stopEditing(false);
 						Keys.onEnterPressed:	stopEditing(true);
-						Keys.onReturnPressed: 	stopEditing(true);
+						Keys.onReturnPressed: (event)=> 	stopEditing(true);
 						onActiveFocusChanged:	if(!activeFocus && visible)	stopEditing(true);
 
 						function startEditing()

@@ -13,10 +13,10 @@ Rectangle
 		id:				splitViewData
 		anchors.fill:	parent
 		orientation:	Qt.Vertical
-        handle:	Rectangle
+		handle:			Rectangle
 		{
 			implicitHeight:	jaspTheme.splitHandleWidth * 0.8;
-			color:			styleData.hovered || styleData.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
+			color:			SplitHandle.hovered || SplitHandle.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
 
 			Item
 			{

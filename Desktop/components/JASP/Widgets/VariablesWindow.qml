@@ -35,7 +35,7 @@ FocusScope
 	{
 		target: labelModel
 		
-		onChosenColumnChanged:
+		function onChosenColumnChanged(chosenColumn)
 		{
 			if(labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
