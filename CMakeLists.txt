@@ -20,6 +20,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+include(CMakePrintHelpers)
+
 # This loads all the Qt-related CMake Modules.
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
