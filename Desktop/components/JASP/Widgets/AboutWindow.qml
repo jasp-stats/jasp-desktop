@@ -261,7 +261,7 @@ Window
 			cursorShape:			Qt.PointingHandCursor
 			focus:					true
 			Keys.onEnterPressed:	{aboutModel.visible = false; aboutWindow.close()}
-			Keys.onReturnPressed:	{aboutModel.visible = false; aboutWindow.close()}
+			Keys.onReturnPressed: (event)=>	{aboutModel.visible = false; aboutWindow.close()}
 			Keys.onEscapePressed:	{aboutModel.visible = false; aboutWindow.close()}
 		}
 	}

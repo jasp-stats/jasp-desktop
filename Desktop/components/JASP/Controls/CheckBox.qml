@@ -61,7 +61,7 @@ CheckBoxBase
 		// When the checked is changed by a binding, run the clicked slot without emiting the clicked signal
 		// The clicked signal should be emitted only when the user really clicks on the CheckBox.
 		onCheckedChanged:		checkBox.clickedSlot()
-		Keys.onReturnPressed:	checked = !checked
+		Keys.onReturnPressed: (event)=>	checked = !checked
 		Keys.onEnterPressed:	checked = !checked
 
 		// When the user clicks on the CheckBox, the clicked signal of the parent (CheckBoxBase) must be emitted.

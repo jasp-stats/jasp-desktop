@@ -246,7 +246,7 @@ Rectangle
 			cursorShape		: Qt.PointingHandCursor
 			enabled			: ribbonButton.enabled
 
-			onClicked:
+			onClicked: (mouse)=>
 			{
 				fileMenuModel.visible	= false;
 				modulesMenu.opened		= false;

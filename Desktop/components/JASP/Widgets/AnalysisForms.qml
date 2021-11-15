@@ -200,8 +200,8 @@ FocusScope
 			{
 				id:					catchMouseEvents
 				z:					-10
-				onWheel:			wheel.accepted = true
-				onPositionChanged:	mouse.accepted = true
+				onWheel:			(wheel)=>{ wheel.accepted = true; }
+				onPositionChanged:	(mouse)=>{ mouse.accepted = true; }
 				anchors
 				{
 					fill:			parent

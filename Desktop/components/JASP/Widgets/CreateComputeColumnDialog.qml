@@ -147,7 +147,7 @@ Popup
 							ToolTip.visible:		columnNameInUse
 							ToolTip.text:			qsTr("Column name is already used, please choose a different one.")
 	
-							Keys.onReturnPressed:	rootCreateComputedColumn.createComputedColumn()
+							Keys.onReturnPressed: (event)=>	rootCreateComputedColumn.createComputedColumn()
 		
 							onActiveFocusChanged:
 							{

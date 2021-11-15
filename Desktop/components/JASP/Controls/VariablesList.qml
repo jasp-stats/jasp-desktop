@@ -402,7 +402,7 @@ VariablesListBase
 	{
 		moveSelectedItems()
 	}
-	Keys.onReturnPressed:
+	Keys.onReturnPressed: (event)=>
 	{
 		moveSelectedItems()
 	}

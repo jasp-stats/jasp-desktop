@@ -172,19 +172,21 @@ Item
 					case Qt.Key_PageUp:		resultsView.runJavaScript("windows.pageUp();");		break;
 					}
 
-				onNavigationRequested:
+				onNavigationRequested: (request)=>
+				{
 					if(request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == resultsJsInterface.resultsPageUrl)
-						request.action = WebEngineNavigationRequest.AcceptRequest
+						request.accept()
 					else
 					{
 						if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
 							Qt.openUrlExternally(request.url);
-						request.action = WebEngineNavigationRequest.IgnoreRequest;
+						request.reject();
 					}
+				}
 
-				onLoadingChanged:
+				onLoadingChanged: (loadRequest)=>
 				{
-					resultsJsInterface.resultsLoaded = loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus;
+					resultsJsInterface.resultsLoaded = loadRequest.status === WebEngineView.LoadSucceededStatus;
 					setTranslatedResultsString();
 				}
 

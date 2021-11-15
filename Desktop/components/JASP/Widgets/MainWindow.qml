@@ -45,7 +45,7 @@ Window
 
 	onDevicePixelRatioChanged: if(devicePixelRatio > 0) mainWindow.screenPPI = devicePixelRatio * 96
 
-	onClosing:
+	onClosing: (close)=>
 	{
 		close.accepted = mainWindow.checkPackageModifiedBeforeClosing();
 

@@ -338,7 +338,7 @@ BasicTableViewJasp {
                 firstKeyRow = -1
         }
 
-        Keys.onReturnPressed: {
+        Keys.onReturnPressed: (event)=> {
             if (currentRow > -1)
                 root.activated(currentRow);
             else

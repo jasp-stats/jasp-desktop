@@ -54,7 +54,7 @@ Rectangle
 			rightMargin:	-1
 		}
 		cursorShape:		handleRoot.dragEnabled ? Qt.SplitHCursor : Qt.ArrowCursor //Take into account resizing? styleData.resizing
-		onPositionChanged:	mouse.accepted = true
+		onPositionChanged:	(mouse)=>{ mouse.accepted = true; }
 	}
 
 

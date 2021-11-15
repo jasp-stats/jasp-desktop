@@ -35,7 +35,7 @@ FocusScope
 	onAllHoveredChanged:	if(allHovered) { ListView.currentIndex = index; forceActiveFocus(); }
 
 	Keys.onEnterPressed:									openStuff(model);
-	Keys.onReturnPressed:									openStuff(model);
+	Keys.onReturnPressed: (event)=>									openStuff(model);
 	Keys.onSpacePressed:									openStuff(model);
 	Keys.onRightPressed:			if(model.type === 3)	openStuff(model);
 
