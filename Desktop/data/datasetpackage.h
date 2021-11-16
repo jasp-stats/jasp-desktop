@@ -66,7 +66,9 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 	Q_PROPERTY(bool			loaded					READ isLoaded				WRITE setLoaded			NOTIFY loadedChanged				)
 	Q_PROPERTY(QString		currentFile				READ currentFile			WRITE setCurrentFile	NOTIFY currentFileChanged			)
 
-	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
+	typedef std::map<std::string, std::map<int, std::string>>	emptyValsType;
+	typedef std::pair<parIdxType, int>							intnlPntPair; //first value is what kind of data the index is for and the int is for parIdxType::label only, to know which column is selected.
+	typedef std::vector<intnlPntPair>							internalPointerType; 
 
 public:
 	///Special roles for the different submodels of DataSetPackage. If both maxColString and columnWidthFallback are defined by a model DataSetView will only use maxColString. selected is now only used in LabelModel, but defined here for convenience.
@@ -92,7 +94,7 @@ public:
 		bool				enginesInitializing()	{ return emit enginesInitializingSignal();	}
 		
 		void				waitForExportResultsReady();
-
+		
 		void				beginLoadingData();
 		void				endLoadingData();
 		void				beginSynchingData();
@@ -114,6 +116,8 @@ public:
 				QModelIndex			parent(		const QModelIndex & index)														const	override;
 				QModelIndex			index(int row, int column, const QModelIndex &parent)										const	override;
 				parIdxType			parentIndexTypeIs(const QModelIndex &index)													const;
+		const	intnlPntPair *		getInternalPointerPairFromIndex(const QModelIndex & index)									const;
+				void				regenerateInternalPointers();
 				QModelIndex			parentModelForType(parIdxType type, int column = 0)											const;
 				int					filteredRowCount()																			const { return _dataSet ? _dataSet->filteredRowCount() : 0; }
 				QVariant			getDataSetViewLines(bool up=false, bool left=false, bool down=true, bool right=true)		const;
@@ -332,6 +336,7 @@ private:
 	ComputedColumns				_computedColumns;
 	bool						_synchingData				= false;
 	std::map<std::string, bool> _columnNameUsedInEasyFilter;
+	internalPointerType			_internalPointers			= {{ parIdxType::root, 0 }};			///< The hacky solution we used prior to Qt 6 (with fake pointers) doesnt work so now we just make a little datastructure in regenerateInternalPointers
 
 	friend class ComputedColumns; //temporary! Or well, should be thought about anyway
 };

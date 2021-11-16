@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
@@ -124,47 +124,57 @@ void DataSetPackage::freeDataSet()
 	_dataSet = nullptr;
 }
 
+void DataSetPackage::regenerateInternalPointers()
+{
+	_internalPointers = {{ parIdxType::root, 0 }, { parIdxType::data, 0 }, { parIdxType::filter, 0 }}; // these dont need a column indicated.
+	
+	for(int col=0; col<columnCount(); col++)
+		_internalPointers.push_back({parIdxType::label, col}); //these do
+}
+
 QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent) const
 {
-    parIdxType * pointer;
-
-	if(!parent.isValid())
+	const void * pointer = nullptr;
+	
+	if(!parent.isValid()) //this index call is for creating a parent-index it seems as it got QModelIndex() as parent which is !valid
 	{
-		pointer += row; //this index will be the root for data/labels/filter indices and will remember what type it is through the pointer
-
-		if(parIdxType(row) == parIdxType::label)
-			pointer += column;
+		if(row <= int(parIdxType::label))	pointer = static_cast<const void*>(_internalPointers.data() + row + (row == int(parIdxType::label) ? column : 0));
+		else								throw std::runtime_error("Row of root for DataSetPackage::index is larger than parIdxType::label but this is not allowed.");
+			
 	}
-	else					pointer = static_cast<parIdxType*>(parent.internalPointer());
+	else					
+		pointer = parent.internalPointer();
 
-	return createIndex(row, column, static_cast<void*>(pointer));
+	return createIndex(row, column, pointer);
 }
+
+const DataSetPackage::intnlPntPair * DataSetPackage::getInternalPointerPairFromIndex(const QModelIndex & index) const
+{
+	const void * internalPointer = index.internalPointer();
+	if(internalPointer >= _internalPointers.data() && internalPointer <= (_internalPointers.data() + _internalPointers.size())) // Is this pointer in our vector? 
+	{
+		return static_cast<const intnlPntPair*>(internalPointer);
+	}
+	
+	Log::log() << "getInternalPointerPairFromIndex received an internalPointer that doesnt seem to be part of _internalPointers" << std::endl;
+	
+	return _internalPointers.data(); //aka the one with parIdxType::root
+}
+
 
 parIdxType DataSetPackage::parentIndexTypeIs(const QModelIndex &index) const
 {
 	if(!index.isValid()) return parIdxType::root;
 
-	//parIdxType	* pointer = static_cast<parIdxType*>(index.internalPointer());
-	//return		* pointer; //Is defined in static array _nodeCategory!
-
-	uint64_t notPointer = reinterpret_cast<uint64_t>(index.internalPointer());
-	if(notPointer < uint64_t(parIdxType::label))
-			return parIdxType(notPointer);
-
-	return parIdxType::label; //The label also encodes which column it is.
+	return getInternalPointerPairFromIndex(index)->first;
 }
 
 QModelIndex DataSetPackage::parent(const QModelIndex & index) const
 {
-	parIdxType	parentType		= parentIndexTypeIs(index);
-	int			parentColumn	= 0;
-
-	if(parentType == parIdxType::label)
-	{
-		uint64_t	notPointer		= reinterpret_cast<uint64_t>(index.internalPointer());
-					parentColumn	= notPointer - uint64_t(parIdxType::label);
-	}
-
+	const	intnlPntPair *	pointerPair		= getInternalPointerPairFromIndex(index);
+			parIdxType		parentType		= pointerPair->first;
+			int				parentColumn	= pointerPair->second;
+	
 	return parentModelForType(parentType, parentColumn);
 }
 
@@ -837,6 +847,7 @@ void DataSetPackage::endLoadingData()
 {
 	JASPTIMER_SCOPE(DataSetPackage::endLoadingData);
 
+	regenerateInternalPointers();
 	endResetModel();
 
 	if(_enginesLoadedAtBeginSync)
@@ -1296,6 +1307,7 @@ bool DataSetPackage::setFilterData(std::string filter, std::vector<bool> filterR
 		//This actually lets the whole application freeze when a filter is undone... -> emit dataChanged(index(0, 0, parentModelForType(parIdxType::data)),		index(rowCount(), columnCount(),	parentModelForType(parIdxType::data)));
 
 		beginResetModel();
+		regenerateInternalPointers();
 		endResetModel();
 	}
 
@@ -1400,6 +1412,7 @@ bool DataSetPackage::createColumn(std::string name, columnType columnType)
 	setDataSetColumnCount(newColumnIndex + 1);
 
 	_dataSet->columns().initializeColumnAs(newColumnIndex, name)->setDefaultValues(columnType);
+	regenerateInternalPointers();
 	endResetModel();
 
 	pauseEngines();
@@ -1417,6 +1430,7 @@ void DataSetPackage::removeColumn(std::string name)
 
 	beginResetModel();
 	_dataSet->columns().removeColumn(name);
+	regenerateInternalPointers();
 	endResetModel();
 
 	if(isLoaded()) setModified(true);
