@@ -31,14 +31,6 @@ find_package(
              QuickWidgets
              Core5Compat)
 
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${LIBJSON_INCLUDE_DIRS})
-include_directories(${LIBARCHIVE_INCLUDE_DIRS})
-include_directories(${LIBREADSTAT_INCLUDE_DIRS})
-
-include_directories(${PROJECT_SOURCE_DIR}/Common)
-include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
-
 add_definitions(-DBUILDING_JASP)
 add_definitions(-DJASP_USES_QT_HERE)
 add_definitions(-DPRINT_ENGINE_MESSAGES)
@@ -110,6 +102,15 @@ else()
 endif()
 
 add_dependencies(JASP JASPEngine)
+
+target_include_directories(
+  JASP
+  PUBLIC ${Boost_INCLUDE_DIRS}
+         ${LIBJSON_INCLUDE_DIRS}
+         ${LIBARCHIVE_INCLUDE_DIRS}
+         ${LIBREADSTAT_INCLUDE_DIRS}
+         ${PROJECT_SOURCE_DIR}/Common
+         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
 target_link_libraries(
   JASP

@@ -16,14 +16,20 @@ find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${LIBJSON_INCLUDE_DIRS})
-include_directories(${LIBARCHIVE_INCLUDE_DIRS})
+add_definitions(-DBUILDING_JASP_ENGINE)
+add_definitions(-DR_HOME=${_R_HOME})
 
-# TODO: This should be done better
-include_directories(${PROJECT_SOURCE_DIR}/R-Interface)
-include_directories(${PROJECT_SOURCE_DIR}/Common/)
-include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
+add_executable(JASPEngine ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
+
+target_include_directories(
+  JASPEngine
+  PUBLIC ${Boost_INCLUDE_DIRS}
+         ${LIBJSON_INCLUDE_DIRS}
+         ${LIBARCHIVE_INCLUDE_DIRS}
+         # and these:
+         ${PROJECT_SOURCE_DIR}/R-Interface
+         ${PROJECT_SOURCE_DIR}/Common/
+         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
 # configure_file(appinfo.cpp.in appinfo.cpp)
 
@@ -31,23 +37,20 @@ if(BUILD_WITH_SYSTEM_R)
   message(STATUS "Building with system R..")
   pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
 
-  include_directories(${LIBR_INCLUDE_DIRS})
-  include_directories(${_Rcpp_HOME}/include)
-  include_directories(${_RInside_HOME}/include)
+  target_include_directories(
+    JASPEngine PUBLIC ${LIBR_INCLUDE_DIRS} ${_Rcpp_HOME}/include
+                      ${_RInside_HOME}/include)
 
 else()
   message(STATUS "Building with R.framework...")
   message(STATUS "Setting the headers...")
 
-  include_directories(${CMAKE_SOURCE_DIR}/${_R_HOME}/include)
-  include_directories(${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include)
-  include_directories(${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
+  target_include_directories(
+    JASPEngine
+    PUBLIC ${CMAKE_SOURCE_DIR}/${_R_HOME}/include
+           ${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include
+           ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
 endif()
-
-add_definitions(-DBUILDING_JASP_ENGINE)
-add_definitions(-DR_HOME=${_R_HOME})
-
-add_executable(JASPEngine ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
 
 target_link_libraries(JASPEngine PUBLIC Common R-Interface)
 

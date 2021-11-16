@@ -5,32 +5,6 @@ list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono
              REQUIRED)
 
-if(BUILD_WITH_SYSTEM_R)
-  message(STATUS "Building with system R...")
-  pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
-
-  include_directories(${LIBR_INCLUDE_DIRS})
-  include_directories(${_Rcpp_HOME}/include)
-  include_directories(${_RInside_HOME}/include)
-
-else()
-  message(STATUS "Building with R.framework...")
-  message(STATUS "Setting the headers...")
-
-  include_directories(${_R_HOME}/include)
-  include_directories(${_Rcpp_HOME}/include)
-  include_directories(${_RInside_HOME}/include)
-
-  message(STATUS "Rcpp_INCLUDE_DIRS is set to ${_Rcpp_HOME}/include")
-  message(STATUS "RInside_INCLUDE_DIRS is set to ${_RInside_HOME}/include")
-endif()
-
-include_directories(jaspResults)
-include_directories(${PROJECT_SOURCE_DIR}/Common)
-include_directories(${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
-
-include_directories(${Boost_INCLUDE_DIRS})
-
 add_definitions(-DJASP_R_INTERFACE_LIBRARY)
 add_definitions(-DQT_NO_DEPRECATED_WARNINGS)
 
@@ -38,6 +12,31 @@ file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
 list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
 add_library(R-Interface ${HEADER_FILES} ${SOURCE_FILES})
+
+if(BUILD_WITH_SYSTEM_R)
+  message(STATUS "Building with system R...")
+  pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
+
+  target_include_directories(
+    R-Interface PUBLIC ${LIBR_INCLUDE_DIRS} ${_Rcpp_HOME}/include
+                       ${_RInside_HOME}/include)
+
+else()
+  message(STATUS "Building with R.framework...")
+  message(STATUS "Setting the headers...")
+
+  target_include_directories(
+    R-Interface PUBLIC ${_R_HOME}/include ${_Rcpp_HOME}/include
+                       ${_RInside_HOME}/include)
+
+  message(STATUS "Rcpp_INCLUDE_DIRS is set to ${_Rcpp_HOME}/include")
+  message(STATUS "RInside_INCLUDE_DIRS is set to ${_RInside_HOME}/include")
+endif()
+
+target_include_directories(
+  R-Interface
+  PUBLIC jaspResults ${PROJECT_SOURCE_DIR}/Common
+         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder ${Boost_INCLUDE_DIRS})
 
 add_dependencies(R-Interface Common)
 

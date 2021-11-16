@@ -6,28 +6,8 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
 
-if(BUILD_WITH_SYSTEM_R)
-  message(STATUS "Building with system R..")
-  pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
-
-  include_directories(${LIBR_INCLUDE_DIRS})
-  include_directories(${_Rcpp_HOME}/include)
-  include_directories(${_RInside_HOME}/include)
-
-else()
-
-  include_directories(${_R_HOME}/include)
-  include_directories(${_R_HOME}/library/Rcpp/include)
-endif()
-
 find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono
              REQUIRED)
-
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${LIBJSON_INCLUDE_DIRS})
-include_directories(${LIBARCHIVE_INCLUDE_DIRS})
-
-include_directories(jaspColumnEncoder)
 
 configure_file(appinfo.cpp.in appinfo.cpp)
 message(STATUS "appinfo.cpp is successfully generated...")
@@ -38,6 +18,24 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 list(APPEND SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 
 add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
+
+target_include_directories(
+  Common PUBLIC ${Boost_INCLUDE_DIRS} ${LIBJSON_INCLUDE_DIRS}
+                ${LIBARCHIVE_INCLUDE_DIRS} jaspColumnEncoder)
+
+if(BUILD_WITH_SYSTEM_R)
+  message(STATUS "Building with system R..")
+  pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
+
+  target_include_directories(
+    Common PUBLIC ${LIBR_INCLUDE_DIRS} ${_Rcpp_HOME}/include
+                  ${_RInside_HOME}/include)
+
+else()
+
+  target_include_directories(Common PUBLIC ${_R_HOME}/include
+                                           ${_R_HOME}/library/Rcpp/include)
+endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
