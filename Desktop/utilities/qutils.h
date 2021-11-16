@@ -40,14 +40,16 @@
 
 enum Encryption { NoEncryption, SimpleCryptEncryption };
 
+//fq -> fromQt, tq -> toQt
+//tql -> toQtList (the tql is reasonable for going from a set to a vector because Qt no doubt has a QSet or something as well, which would then be reached through tq if we ever need it)
+//fqj and tqj are for from/to QtJson
 inline	std::string							fq (const QString							 & from)	{ return from.toUtf8().toStdString(); }
 		std::vector<std::string>			fq (const QVector<QString>					 & vec);
 		std::map<std::string, std::string>	fq (const QMap<QString, QString>			 & map);
 		QMap<QString, QString>				tq (const std::map<std::string, std::string> & map);
 inline	QString								tq (const std::string						 & from)	{ return QString::fromUtf8(from.c_str(), from.length()); }
 		QVector<QString>					tq (const std::vector<std::string>			 & vec);
-		QStringList							tql(const std::vector<std::string>			 & from);
-inline	QStringList							tql(const std::set<std::string>				 & from)	{ return tql(std::vector<std::string>(from.begin(), from.end())); }
+inline	QStringList							tql(const std::set<std::string>				 & from)	{ return tq(std::vector<std::string>(from.begin(), from.end())); }
 
 		//These need to have a different name because otherwise the default Json::Value(const std::string & str) constructor steals any fq(std::string()) call...
 		Json::Value							fqj(const QJSValue							 & jsVal);

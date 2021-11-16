@@ -247,7 +247,7 @@ void LanguageModel::findQmFiles()
 
 		if (!_allowedLanguages.contains(_languageCode))
 		{
-			Log::log() << "Language " << loc.language() << " (" << _languageCode << ") is not allowed";
+			Log::log() << "Language " << QLocale::languageToString(loc.language()) << " (" << _languageCode << ") is not allowed";
 			continue;
 		}
 
@@ -255,7 +255,7 @@ void LanguageModel::findQmFiles()
 
 		if (!_languages.contains(language))
 		{
-			Log::log() << "Language (" << loc.language() << ") not registered in LanguageModel, adding it now" << std::endl;
+			Log::log() << "Language (" << QLocale::languageToString(loc.language()) << ") not registered in LanguageModel, adding it now" << std::endl;
 			_languages[language] = LanguageInfo(loc, fi.filePath(), _allowedLanguages[_languageCode]);
 		}
 		else

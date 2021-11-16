@@ -817,7 +817,7 @@ void DataSetPackage::endSynchingData(std::vector<std::string>			&	changedColumns
 	endLoadingData();
 	_synchingData = false;
 	//We convert all of this stuff to qt containers even though this takes time etc. Because it needs to go through a (queued) connection and it might not work otherwise
-	emit datasetChanged(tql(changedColumns), tql(missingColumns), tq(changeNameColumns), rowCountChanged, hasNewColumns);
+	emit datasetChanged(tq(changedColumns), tq(missingColumns), tq(changeNameColumns), rowCountChanged, hasNewColumns);
 }
 
 
