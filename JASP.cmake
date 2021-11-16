@@ -4,7 +4,9 @@ list(APPEND CMAKE_MESSAGE_CONTEXT JASP)
 
 set(JASP_REQUIRED_FILES ${CMAKE_SOURCE_DIR}/../jasp-required-files)
 
+# TODO: Find this version number automatically
 set(CURRENT_R_VERSION "4.1")
+
 set(GIT_CURRENT_BRANCH "(git rev-parse --abbrev-ref HEAD)")
 set(GIT_CURRENT_COMMIT "(git rev-parse --verify HEAD)")
 set(JASP_VERSION_BUILD 0)
@@ -12,14 +14,9 @@ set(JASP_VERSION_MAJOR 0)
 set(JASP_VERSION_MINOR 16)
 set(JASP_VERSION_REVISION 0)
 
-# Amir: Do we have two variable for one thing?
-set(GITHUB_PAT_DEFINE ${GITHUB_PAT_DEF})
-
 # Amir: We probably won't need them soon
 set(JASP_LIBJSON_STATIC OFF)
 set(PRINT_ENGINE_MESSAGES OFF)
-
-option(GITHUB_PAT "Your GitHub Personal Access Token" OFF)
 
 option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
@@ -62,5 +59,6 @@ endif()
 # - [ ] Make sure that all variables from .pri and .pro make it to the CMake files
 # - [ ] Find the Git location, I think I can use CMake's $ENV{GIT} or something like that
 # - [ ] Find a better name for some of these variables
+# - [ ] Setup the GITHUB_PAT
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
