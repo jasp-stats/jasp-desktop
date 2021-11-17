@@ -34,7 +34,7 @@
 #define DEFAULT_FILTER_JSON	"{\"formulas\":[]}"
 #define DEFAULT_FILTER_GEN	"generatedFilter <- rep(TRUE, rowcount)"
 
-DECLARE_ENUM_WITH_TYPE(parIdxType, unsigned char, root = 0, dataRoot, data, filterRoot, filter, labelRoot, label) //If this is changed then DataSetPackage::index and co must also be!
+DECLARE_ENUM_WITH_TYPE(parIdxType, unsigned char, dataRoot = 0, data, filterRoot, filter, labelRoot, label) //If this is changed then DataSetPackage::index and co must also be!
 
 class EngineSync;
 
