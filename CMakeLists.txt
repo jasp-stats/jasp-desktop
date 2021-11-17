@@ -39,5 +39,5 @@ add_subdirectory(Engine)
 add_subdirectory(Desktop)
 
 if(INSTALL_R_MODULES)
-  include(Modules.cmake)
+  add_subdirectory(Modules)
 endif()
