@@ -46,7 +46,8 @@ void DataSetTableModel::setShowInactive(bool showInactive)
 	endResetModel();
 }
 
-bool DataSetTableModel::filterAcceptsRow(int source_row, const QModelIndex &)	const
+bool DataSetTableModel::filterAcceptsRow(int source_row, const QModelIndex & source_parent)	const
 {
-	return _showInactive || DataSetPackage::pkg()->getRowFilter(source_row);
+	parIdxType parentType = DataSetPackage::pkg()->parIdxTypeIs(source_parent);
+	return  parentType == parIdxType::root || (parentType == parIdxType::dataRoot && (_showInactive || DataSetPackage::pkg()->getRowFilter(source_row)));
 }

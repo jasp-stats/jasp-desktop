@@ -1003,11 +1003,11 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 		if(saveEvent->isCompleted())	return saveEvent->isSuccessful();
 		else							_savingForClose = true;
 	}
-	[[clang::fallthrough]];
+	[[fallthrough]];
 
 	case MessageForwarder::DialogResponse::Cancel:			return false;
 
-	default:												[[clang::fallthrough]];
+	default:												[[fallthrough]];
 	case MessageForwarder::DialogResponse::Discard:			return true;
 	}
 }

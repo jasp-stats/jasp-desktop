@@ -15,10 +15,13 @@ class DataSetTableProxy : public QSortFilterProxyModel
 public:
 	explicit				DataSetTableProxy(parIdxType proxyType);
 
-	QModelIndex				mapToSource(	const QModelIndex & proxyIndex)		const	override;
-	QModelIndex				mapFromSource(	const QModelIndex & sourceIndex)	const	override;
+	// QModelIndex				mapToSource(	const QModelIndex & proxyIndex)		const	override;
+	// QModelIndex				mapFromSource(	const QModelIndex & sourceIndex)	const	override;
 
 	int						proxyParentColumn()									const	{ return _proxyParentColumn; }
+
+	bool					filterAcceptsRow(	int source_row, const QModelIndex & source_parent)	const override;
+	bool					filterAcceptsColumn(int source_col, const QModelIndex & source_parent)	const override;
 
 public slots:
 	void setProxyParentColumn(int proxyParentColumn);
