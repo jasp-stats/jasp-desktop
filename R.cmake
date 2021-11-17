@@ -113,6 +113,20 @@ else()
 
 endif()
 
+# Amir: Not sure about this yet.
+# GETTEXT_LOCATION = $$(GETTEXT_PATH) #The GETTEXT_PATH can be used as environment for a specific gettext location
+
+# unix {
+#   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
+#   EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$dirname(QMAKE_QMAKE)
+# }
+
+# win32 {
+#   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
+#   WINQTBIN  = $$winPathFix($$QMAKE_QMAKE)
+#   WINQTBIN ~= s,qmake.exe,,gs
+# }
+
 message(STATUS "R Configurations:")
 
 cmake_print_variables(_R_Framework)

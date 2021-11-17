@@ -4,9 +4,7 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
 # TODOs:
 # - [ ] Install JAGS as a Framework
-# - [ ] Setup the RENV
-# - [ ] Make sure that modules get installed after JASP.
-#   - For some reason, custom_target doesn't respect the dependencies
+# - [ ] Double check the GITHUB_PAT stuff
 
 # We can perhaps install a lot of the packages that we need before
 # getting into JASP stuff, if they don't cause any clash

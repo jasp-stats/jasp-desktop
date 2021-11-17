@@ -7,16 +7,39 @@ set(JASP_REQUIRED_FILES ${CMAKE_SOURCE_DIR}/../jasp-required-files)
 # TODO: Find this version number automatically
 set(CURRENT_R_VERSION "4.1")
 
-set(GIT_CURRENT_BRANCH "(git rev-parse --abbrev-ref HEAD)")
-set(GIT_CURRENT_COMMIT "(git rev-parse --verify HEAD)")
-set(JASP_VERSION_BUILD 0)
-set(JASP_VERSION_MAJOR 0)
-set(JASP_VERSION_MINOR 16)
-set(JASP_VERSION_REVISION 0)
+set(GIT_EXEC "git")
+
+message(CHECK_START "Retrieving the git-branch information")
+execute_process(COMMAND ${GIT_EXEC} rev-parse --abbrev-ref HEAD
+                OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${GIT_EXEC} rev-parse --verify HEAD
+                OUTPUT_VARIABLE GIT_COMMIT OUTPUT_STRIP_TRAILING_WHITESPACE)
+message(CHECK_PASS "done.")
+
+set(GIT_CURRENT_BRANCH GIT_BRANCH)
+set(GIT_CURRENT_COMMIT GIT_COMMIT)
+
+# We can define the JASP project version in CMakeLists.txt, and then
+# convert it to what we need, or just use them directly.
+#
+# The last two doesn't look very semver-y and we might want to just
+# change them to PATCH and TWEAK anyway.
+#
+# Note:
+#   I think for pushing these into the source, we should probably use
+#   a #define structure and rely on make/cmake to handle this. I think
+#   qmake does something similar but it looks a bit convoluted.
+set(JASP_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(JASP_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(JASP_VERSION_REVISION ${PROJECT_VERSION_PATCH})
+set(JASP_VERSION_BUILD ${PROJECT_VERSION_TWEAK})
 
 # Amir: We probably won't need them soon
-set(JASP_LIBJSON_STATIC OFF)
-set(PRINT_ENGINE_MESSAGES OFF)
+# option(JASP_LIBJSON_STATIC
+#        "Whether or not we are using the 'libjson' as static library?" OFF)
+
+option(PRINT_ENGINE_MESSAGES "Whether or not JASPEngine prints log messages"
+       OFF)
 
 option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
@@ -58,8 +81,8 @@ endif()
 
 # add_definitions(-DJASP_RESULTS_DEBUG_TRACES)
 
-option(USE_JASP_TIMER "Use JASP timer for profiling" OFF)
-if(USE_JASP_TIMER)
+option(JASPTIMER_USED "Use JASP timer for profiling" OFF)
+if(JASPTIMER_USED)
   add_definitions(-DUSE_JASP_TIMER)
 endif()
 
