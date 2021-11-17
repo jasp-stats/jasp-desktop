@@ -127,70 +127,50 @@ void DataSetPackage::freeDataSet()
 void DataSetPackage::regenerateInternalPointers()
 {
 	//The following must all be done in the same order as the definition of parIdxType otherwise ::index(...) breaks:
-	_internalPointers = {{ parIdxType::root,		0 },
-						 { parIdxType::dataRoot,	0 },
+	_internalPointers = {{ parIdxType::dataRoot,	0 },
 						 { parIdxType::data,		0 },
 						 { parIdxType::filterRoot,	0 },
-						 { parIdxType::filter,		0 }}; // none of the before need a column indicated.
-
-	
-	for(int col=0; col<columnCount(); col++)
-		_internalPointers.push_back({parIdxType::labelRoot, col}); //these do because they need to know which column is ref'd
+						 { parIdxType::filter,		0 },
+						 { parIdxType::labelRoot,	0 }}; // none of the before need a column indicated.
 
 	for(int col=0; col<columnCount(); col++)
 		_internalPointers.push_back({parIdxType::label, col}); //these do because they need to know which column is ref'd
+
+	yeah ok so actually I should just make a for real tree structure, not store column in the pointer hacky at all and just return columnCount and rowCount properly
 }
 
 QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent) const
 {
 	const void * pointer = nullptr;
-	
-	if(!parent.isValid()) //this index call is for creating a parent-index it see as it got QModelIndex() as parent which is !valid
-		pointer = static_cast<const void*>(_internalPointers.data()); //If the parent is invalid this must be root
+
+	if(!parent.isValid()) //this is a rootnode
+	{
+		parIdxType	newIndexType = row == 0 ? parIdxType::dataRoot : row == 1 ? parIdxType::filterRoot : parIdxType::labelRoot;
+					pointer = static_cast<const void*>(_internalPointers.data() + int(newIndexType));
+
+	}
 	else
 	{
-		if(row > int(parIdxType::labelRoot))
-			throw std::runtime_error("Row of root for DataSetPackage::index is larger than parIdxType::labelRoot but this is not possible/allowed.");
+		parIdxType parentType = parIdxTypeIs(parent);
 
-		parIdxType	newIndexType = parIdxType(row),
-					parentType	 = parIdxTypeIs(parent);
-
-		switch(newIndexType)
+		switch(parentType)
 		{
 		case parIdxType::dataRoot:
+			pointer = static_cast<const void*>(_internalPointers.data() + int(parIdxType::data));
+			break;
+
 		case parIdxType::filterRoot:
+			pointer = static_cast<const void*>(_internalPointers.data() + int(parIdxType::data));
+			break;
+
 		case parIdxType::labelRoot:
-			//These sit one level below parIdxType::root and make sure we have a parent to refer to from data, filter and label.
-			if(parentType == parIdxType::root)
-				pointer = static_cast<const void*>(_internalPointers.data() + row + (newIndexType == parIdxType::labelRoot ? 1 /*because label follows labelRoot*/ + column : 0));
-			else
-				throw std::runtime_error("Only allowed children of parIdxType::root are ::dataRoot, ::filterRoot and ::labelRoot");
-			break;
 
-		case parIdxType::data:
-			if(parentType != parIdxType::dataRoot)
-				throw std::runtime_error("Only allowed children of parIdxType::dataRoot are ::data");
-			pointer = static_cast<const void*>(_internalPointers.data() + int(parIdxType::data));
-			break;
-
-		case parIdxType::filter:
-			if(parentType != parIdxType::filterRoot)
-				throw std::runtime_error("Only allowed children of parIdxType::filterRoot are ::filter");
-			pointer = static_cast<const void*>(_internalPointers.data() + int(parIdxType::data));
-			break;
-
-		case parIdxType::label:
-			if(parentType != parIdxType::labelRoot)
-				throw std::runtime_error("Only allowed children of parIdxType::labelRoot are ::label");
 			pointer = static_cast<const void*>(_internalPointers.data() + int(parIdxType::label) + columnCount() + column); //We add columnCount to jump over labelRoot entries.
-			break;
-
-		case parIdxType::root:
-			pointer = static_cast<const void*>(_internalPointers.data());
 			break;
 
 		default:
 			pointer = nullptr;
+			Log::log() << "Got a valid parent in DataSetPackage::index but it isn't one of the `*Root`s" << std::endl;
 			break;
 		}
 			
