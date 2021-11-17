@@ -3,14 +3,13 @@ cmake_minimum_required(VERSION 3.21)
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
 # TODOs:
-# - [ ] Make sure that RInside and Rcpp are installed prior to the configuration
 # - [ ] Install JAGS as a Framework
-# - [ ] Install the jaspBase
 # - [ ] Setup the RENV
-# - [ ] Install the common modules
 # - [ ] Make sure that modules get installed after JASP.
 #   - For some reason, custom_target doesn't respect the dependencies
 
+# We can perhaps install a lot of the packages that we need before
+# getting into JASP stuff, if they don't cause any clash
 set(R_REQUIRED_MODULES "devtools")
 
 set(JASP_COMMON_MODULES
@@ -81,6 +80,7 @@ cmake_print_variables(MODULES_RENV_CACHE_PATH)
 # , JAGS_ROOT="$JAGS_ROOT"$$JAGS_MAC_HELPER\)'
 
 add_custom_target(Modules)
+add_dependencies(JASP Modules)
 
 message(STATUS "Installing Required R Modules...")
 

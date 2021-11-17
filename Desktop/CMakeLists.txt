@@ -101,7 +101,7 @@ else()
                     ${BUNDLE_RESOURCES} ${_R_Framework})
 endif()
 
-add_dependencies(JASP JASPEngine Modules)
+add_dependencies(JASP JASPEngine)
 
 target_include_directories(
   JASP

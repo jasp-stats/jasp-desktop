@@ -114,7 +114,6 @@ else()
 endif()
 
 message(STATUS "R Configurations:")
-list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 cmake_print_variables(_R_Framework)
 cmake_print_variables(_LIB_R)
@@ -123,7 +122,5 @@ cmake_print_variables(_R_HOME)
 cmake_print_variables(_Rcpp_HOME)
 cmake_print_variables(_RInside_HOME)
 cmake_print_variables(_R_Library_HOME)
-
-list(POP_BACK CMAKE_MESSAGE_INDENT)
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
