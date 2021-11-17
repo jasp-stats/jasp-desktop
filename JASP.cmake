@@ -22,6 +22,14 @@ option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
 option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
 
+# This is being set using the `Sys.setenv()` and later on when
+# we install a module using `{renv}`, the `{credentials}` package
+# knows how to read and use it.
+option(GITHUB_PAT "GitHub Personal Access Token")
+if(GITHUB_PAT)
+  message(STATUS "GITHUB_PAT is set to ${GITHUB_PAT}")
+endif()
+
 # This is how we can link to the system R set(BUILD_WITH_SYSTEM_R OFF)
 
 option(BUILDING_JASP "Indicates whether we are building JASP or not.

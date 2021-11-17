@@ -8,12 +8,14 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 # - [ ] Install the jaspBase
 # - [ ] Setup the RENV
 # - [ ] Install the common modules
+# - [ ] Make sure that modules get installed after JASP.
+#   - For some reason, custom_target doesn't respect the dependencies
 
 set(R_REQUIRED_MODULES "devtools")
 
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
-    "jaspAnova"
+    # "jaspAnova"
     # "jaspFactor"
     # "jaspFrequencies"
     # "jaspRegression"
@@ -51,6 +53,8 @@ set(MODULES_RENV_ROOT_PATH "${MODULES_RENV_PATH}/renv-root"
     CACHE PATH "Location of renv root directories")
 set(MODULES_RENV_CACHE_PATH "${MODULES_RENV_PATH}/renv-cache"
     CACHE PATH "Location of renv cache directories")
+set(JASPENGINE_PATH "${PROJECT_BINARY_DIR}/Desktop/"
+    CACHE PATH "Location of the JASPEngine")
 
 make_directory(${MODULES_RENV_PATH})
 make_directory(${MODULES_RENV_ROOT_PATH})
@@ -78,7 +82,6 @@ cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
 add_custom_target(Modules)
 
-list(APPEND CMAKE_MESSAGE_INDENT "  ")
 message(STATUS "Installing Required R Modules...")
 
 foreach(MODULE ${R_REQUIRED_MODULES})
@@ -92,35 +95,55 @@ foreach(MODULE ${R_REQUIRED_MODULES})
 
 endforeach()
 
-add_custom_command(
-  TARGET Modules POST_BUILD
-  COMMAND ${_Rscript_EXE} -e 'remotes::install_github\("jasp-stats/jaspBase"\)'
-  COMMENT "------ Installing jaspBase...")
+# I need to make sure that this goes before other jaspModules.
+# I am still not sure if it's better to use the execute_process or
+# create a custom_command
+message(CHECK_START "Checking for 'jaspBase'")
+if(NOT EXISTS ${_R_Library_HOME}/jaspBase)
+  message(CHECK_START "Installing the 'jaspBase'")
+  execute_process(
+    COMMAND ${_Rscript_EXE} -e remotes::install_github\("jasp-stats/jaspBase"\)
+            COMMAND_ERROR_IS_FATAL ANY COMMAND_ECHO NONE OUTPUT_QUIET)
+  message(CHECK_PASS "successful.")
+else()
+  message(CHECK_PASS "found.")
+endif()
 
-message(STATUS "Installing JASP's Common Modules...")
+message(STATUS "Configuring JASP's Common Modules...")
 foreach(MODULE ${JASP_COMMON_MODULES})
 
+  # We can technically create a new .Rprofile for each Renv
+  # even better, we can have different templates for each module, and use those
+  # to set them up correctly
+  make_directory(${MODULES_RENV_PATH}/${MODULE})
+  configure_file(${MODULES_SOURCE_PATH}/.Rprofile.in
+                 ${MODULES_RENV_PATH}/${MODULE}/.Rprofile)
+
   add_custom_command(
     TARGET Modules
     POST_BUILD
     COMMAND
       ${_Rscript_EXE} -e
       'jaspBase::installJaspModule\("${MODULES_SOURCE_PATH}/${MODULE}", libPathsToUse=NULL, repos="http://cran.r-project.org", moduleLibrary="${MODULES_RENV_PATH}/${MODULE}", onlyModPkg=FALSE\)'
+    WORKING_DIRECTORY ${MODULES_RENV_PATH}/${MODULE}
     COMMENT "------ Installing ${MODULE}...")
 
 endforeach()
 
-message(STATUS "Installing JASP's Extra Modules...")
+message(STATUS "Configuring JASP's Extra Modules...")
 foreach(MODULE ${JASP_EXTRA_MODULES})
 
+  make_directory(${MODULES_RENV_PATH}/${MODULE})
+  configure_file(${MODULES_SOURCE_PATH}/.Rprofile.in
+                 ${MODULES_RENV_PATH}/${MODULE}/.Rprofile)
+
   add_custom_command(
     TARGET Modules
     POST_BUILD
     COMMAND
       ${_Rscript_EXE} -e
       'jaspBase::installJaspModule\("${MODULES_SOURCE_PATH}/${MODULE}", libPathsToUse=NULL, repos="http://cran.r-project.org", moduleLibrary="${MODULES_RENV_PATH}/${MODULE}", onlyModPkg=FALSE\)'
+    WORKING_DIRECTORY ${MODULES_RENV_PATH}/${MODULE}
     COMMENT "------ Installing ${MODULE}...")
 
 endforeach()
-
-list(POP_BACK CMAKE_MESSAGE_CONTEXT)

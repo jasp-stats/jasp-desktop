@@ -1,14 +1,14 @@
 isEmpty(JASP_BUILDROOT_DIR):  JASP_BUILDROOT_DIR  = $$OUT_PWD/.. #We expect this to be run from at least one folder deep into the buildroot! Engine/Desktop/Etc
 
 macx {
-        isEmpty(_R_HOME):_R_HOME = $${JASP_BUILDROOT_DIR}/../Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
-        R_EXE  = $$_R_HOME/bin/R
+    isEmpty(_R_HOME):_R_HOME = $${JASP_BUILDROOT_DIR}/../Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
+    R_EXE  = $$_R_HOME/bin/R
 }
 
 windows {
-        isEmpty(_R_HOME):_R_HOME = $${JASP_BUILDROOT_DIR}/R
-        R_BIN  = $$winPathFix($$_R_HOME/bin/$$ARCH)
-		R_EXE  = $$R_BIN\\R
+    isEmpty(_R_HOME):_R_HOME = $${JASP_BUILDROOT_DIR}/R
+    R_BIN  = $$winPathFix($$_R_HOME/bin/$$ARCH)
+	R_EXE  = $$R_BIN\\R
 }
 
 exists(/app/lib/*) {  #for flatpak we can should use R's own library as it is contained anyway
@@ -22,7 +22,10 @@ isEmpty(JASP_LIBRARY_DIR):   JASP_LIBRARY_DIR   = $$ROOT_LIBRARY_DIR
 win32:  LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$${JASP_BUILDROOT_DIR}/R/library\'))"
 unix:	LIBPATHS = ".libPaths(c(\'$$ROOT_LIBRARY_DIR\', \'$$_R_HOME/library\'))"
 
-isEmpty(LOAD_WORKAROUND): LOAD_WORKAROUND = false
+isEmpty(LOAD_WORKAROUND) {
+    LOAD_WORKAROUND = false
+}
+
 WORKAROUND_LOADER =
 $$LOAD_WORKAROUND: WORKAROUND_LOADER = source(\'../workarounds.R\');
 
