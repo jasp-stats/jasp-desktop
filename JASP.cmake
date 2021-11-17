@@ -48,7 +48,7 @@ option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
 # This is being set using the `Sys.setenv()` and later on when
 # we install a module using `{renv}`, the `{credentials}` package
 # knows how to read and use it.
-option(GITHUB_PAT "GitHub Personal Access Token")
+set(GITHUB_PAT CACHE STRING "GitHub Personal Access Token")
 if(GITHUB_PAT)
   message(STATUS "GITHUB_PAT is set to ${GITHUB_PAT}")
 endif()
