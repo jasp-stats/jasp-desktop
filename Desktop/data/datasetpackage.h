@@ -34,7 +34,7 @@
 #define DEFAULT_FILTER_JSON	"{\"formulas\":[]}"
 #define DEFAULT_FILTER_GEN	"generatedFilter <- rep(TRUE, rowcount)"
 
-DECLARE_ENUM_WITH_TYPE(parIdxType, unsigned char, root = 0, data, filter, label) //If this is changed then DataSetPackage::index must also be!
+DECLARE_ENUM_WITH_TYPE(parIdxType, unsigned char, root = 0, dataRoot, data, filterRoot, filter, labelRoot, label) //If this is changed then DataSetPackage::index and co must also be!
 
 class EngineSync;
 
@@ -115,10 +115,11 @@ public:
 				Qt::ItemFlags		flags(		const QModelIndex &index)														const	override;
 				QModelIndex			parent(		const QModelIndex & index)														const	override;
 				QModelIndex			index(int row, int column, const QModelIndex &parent)										const	override;
-				parIdxType			parentIndexTypeIs(const QModelIndex &index)													const;
+				parIdxType			parIdxTypeIs(const QModelIndex &index)														const;
 		const	intnlPntPair *		getInternalPointerPairFromIndex(const QModelIndex & index)									const;
 				void				regenerateInternalPointers();
 				QModelIndex			parentModelForType(parIdxType type, int column = 0)											const;
+		static	parIdxType			parentTypeForType(parIdxType type);
 				int					filteredRowCount()																			const { return _dataSet ? _dataSet->filteredRowCount() : 0; }
 				QVariant			getDataSetViewLines(bool up=false, bool left=false, bool down=true, bool right=true)		const;
 

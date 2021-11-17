@@ -3,7 +3,6 @@
 
 #include <QSortFilterProxyModel>
 #include "datasetpackage.h"
-#include "datasetpackagesubnodemodel.h"
 
 ///
 /// Makes sure that only a desired subnode of DataSetPackage is passed through
@@ -14,18 +13,27 @@ class DataSetTableProxy : public QSortFilterProxyModel
 	Q_PROPERTY(int proxyParentColumn READ proxyParentColumn WRITE setProxyParentColumn NOTIFY proxyParentColumnChanged)
 
 public:
-	explicit				DataSetTableProxy(DataSetPackageSubNodeModel * subNodeModel);
+	explicit				DataSetTableProxy(parIdxType proxyType);
 
-	int						proxyParentColumn()	const { return _subNodeModel ? _subNodeModel->proxyParentColumn() : 0; } //might not be set yet at some annoying points during init
+	// QModelIndex				mapToSource(	const QModelIndex & proxyIndex)		const	override;
+	// QModelIndex				mapFromSource(	const QModelIndex & sourceIndex)	const	override;
 
+	int						proxyParentColumn()									const	{ return _proxyParentColumn; }
 
+	bool					filterAcceptsRow(	int source_row, const QModelIndex & source_parent)	const override;
+	bool					filterAcceptsColumn(int source_col, const QModelIndex & source_parent)	const override;
+
+public slots:
+	void setProxyParentColumn(int proxyParentColumn);
+	void columnsWereRemoved(const QModelIndex & parent, int first, int last) { modelWasReset();	}
+	void modelWasReset();
 
 signals:
-	void setProxyParentColumn(int proxyParentColumn);
 	void proxyParentColumnChanged();
 
 private:
-	DataSetPackageSubNodeModel * _subNodeModel = nullptr;
+	parIdxType				_proxyType			= parIdxType::root;
+	int						_proxyParentColumn	= 0; //Should work fine for data/root/filter. label will need to change this though, to specify which actual column is being shown.
 };
 
 #endif // DATASETTABLEPROXY_H
