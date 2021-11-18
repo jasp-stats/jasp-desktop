@@ -86,7 +86,7 @@ Item
 		}
 
 
-        handle: Item
+		handle: Item
 		{
 			implicitWidth:			splitHandle.width + analyses.width
 
@@ -99,10 +99,9 @@ Item
 				toolTipArrow:	mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? qsTr("Hide data")  : qsTr("Show data")) : ""
 				toolTipDrag:	mainWindow.dataPanelVisible ? qsTr("Resize data/results") : qsTr("Drag to show data")
 				dragEnabled:	mainWindow.dataAvailable && mainWindow.analysesAvailable
-				hovered:		SplitHandle.hovered
 			}
 
-			AnalysisForms //This is placed inside the splithandle so that you can drag on both sides of it. Not the most obvious path to take but the only viable one. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
+			AnalysisForms
 			{
 				id:						analyses
 				z:						-1
