@@ -73,9 +73,9 @@ Rectangle
 		{
 			id:							filterWindow
 			objectName:					"filterWindow"
-			Layout.minimumHeight:		desiredMinimumHeight
-			Layout.preferredHeight:		rootDataset.height * 0.25
-			Layout.maximumHeight:		rootDataset.height * 0.8
+			SplitView.minimumHeight:	desiredMinimumHeight
+			SplitView.preferredHeight:	rootDataset.height * 0.25
+			SplitView.maximumHeight:	rootDataset.height * 0.8
 
 		}
 
@@ -83,23 +83,23 @@ Rectangle
 		{
 			id:							computeColumnWindow
 			objectName:					"computeColumnWindow"
-			Layout.minimumHeight:		desiredMinimumHeight
-			Layout.preferredHeight:		rootDataset.height * 0.25
-			Layout.maximumHeight:		rootDataset.height * 0.8
+			SplitView.minimumHeight:	desiredMinimumHeight
+			SplitView.preferredHeight:	rootDataset.height * 0.25
+			SplitView.maximumHeight:	rootDataset.height * 0.8
 		}
 
         VariablesWindow
         {
 			id:							variablesWindow
-			Layout.minimumHeight:		calculatedMinimumHeight
-			Layout.preferredHeight:		rootDataset.height * 0.25
-			Layout.maximumHeight:		rootDataset.height * 0.8
+			SplitView.minimumHeight:	calculatedMinimumHeight
+			SplitView.preferredHeight:	rootDataset.height * 0.25
+			SplitView.maximumHeight:	rootDataset.height * 0.8
         }
 
 		DataTableView
 		{
 			objectName:				"dataSetTableView"
-			Layout.fillHeight:		true
+			SplitView.fillHeight:	true
 			onDoubleClicked:		mainWindow.startDataEditorHandler()
         }
 	}

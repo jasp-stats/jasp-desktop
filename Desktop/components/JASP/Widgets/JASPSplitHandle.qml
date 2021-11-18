@@ -15,10 +15,9 @@ Rectangle
 
 	property string toolTipDrag:	""
 	property string toolTipArrow:	""
-	property bool	hovered:		hoverMouse.containsMouse
+	property bool	hovered:		false//hoverMouse.containsMouse
 
-	implicitWidth:	jaspTheme.splitHandleWidth
-	width:			implicitWidth
+	width:			jaspTheme.splitHandleWidth
 	color:			handleRoot.dragEnabled && handleRoot.hovered ? jaspTheme.grayLighter : jaspTheme.uiBackground
 	//border.color:	jaspTheme.uiBorder
 	//border.width:	1
@@ -41,7 +40,7 @@ Rectangle
 		x:				parent.width / 2
 	}
 
-	MouseArea
+	/*MouseArea
 	{
 		id:					hoverMouse
 		acceptedButtons:	Qt.NoButton
@@ -55,7 +54,7 @@ Rectangle
 		}
 		cursorShape:		handleRoot.dragEnabled ? Qt.SplitHCursor : Qt.ArrowCursor //Take into account resizing? styleData.resizing
 		onPositionChanged:	(mouse)=>{ mouse.accepted = true; }
-	}
+	}*/
 
 
 	Item

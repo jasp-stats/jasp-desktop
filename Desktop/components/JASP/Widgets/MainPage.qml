@@ -19,10 +19,6 @@
 import QtQuick			2.12
 import QtWebEngine		1.7
 import QtWebChannel		1.0
-
-//import QtQuick.Controls 1.4 as OLD
-import QtQuick.Layouts	1.3
-
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
 import QtQuick.Controls 6.0
@@ -38,7 +34,7 @@ Item
 		else if(splitViewContainer.width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
 	}
 
-    SplitView
+	SplitView
 	{
 		id:				panelSplit
 		orientation:	Qt.Horizontal
@@ -75,8 +71,8 @@ Item
 					data.wasMaximized = false;
 			}
 
-			function maximizeData()	{ data.width = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true; }
-			function minimizeData()	{ data.width = 0;													data.wasMaximized = false; }
+			function maximizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true; }
+			function minimizeData()	{ SplitView.preferredWidth = 0;													data.wasMaximized = false; }
 
 			Connections
 			{
@@ -92,10 +88,9 @@ Item
 
         handle: Item
 		{
-			width:				splitHandle.width + analyses.width
-			//onWidthChanged:		parent.width = width
+			implicitWidth:			splitHandle.width + analyses.width
 
-			SplitHandle
+			JASPSplitHandle
 			{
 				id:				splitHandle
 				onArrowClicked:	mainWindow.dataPanelVisible = !mainWindow.dataPanelVisible
@@ -104,6 +99,7 @@ Item
 				toolTipArrow:	mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? qsTr("Hide data")  : qsTr("Show data")) : ""
 				toolTipDrag:	mainWindow.dataPanelVisible ? qsTr("Resize data/results") : qsTr("Drag to show data")
 				dragEnabled:	mainWindow.dataAvailable && mainWindow.analysesAvailable
+				hovered:		SplitHandle.hovered
 			}
 
 			AnalysisForms //This is placed inside the splithandle so that you can drag on both sides of it. Not the most obvious path to take but the only viable one. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
@@ -120,18 +116,18 @@ Item
 
 		Rectangle
 		{
-			id:						giveResultsSomeSpace
-			implicitWidth:			jaspTheme.resultWidth + panelSplit.hackySplitHandlerHideWidth
-			Layout.fillWidth:		true
-			z:						3
-			visible:				mainWindow.analysesAvailable
-			onVisibleChanged:		if(visible) width = jaspTheme.resultWidth; else data.maximizeData()
-			color:					analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
+			id:								giveResultsSomeSpace
+			SplitView.preferredWidth:		jaspTheme.resultWidth + panelSplit.hackySplitHandlerHideWidth
+			SplitView.fillWidth:			true
+			z:								3
+			visible:						mainWindow.analysesAvailable
+			onVisibleChanged:				if(visible) width = jaspTheme.resultWidth; else data.maximizeData()
+			color:							analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
 
 			Connections
 			{
 				target:				analysesModel
-				function onAnalysisAdded()
+				function			onAnalysisAdded()
 				{
 					//make sure we get to see the results!
 
