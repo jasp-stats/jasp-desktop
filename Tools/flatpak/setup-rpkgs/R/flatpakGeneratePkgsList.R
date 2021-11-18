@@ -38,6 +38,9 @@ source(file.path("R", "validators.R"))
 validateSetup(jaspDir, flatpakDir)
 
 options(repos = list(repos = c(CRAN = "https://cran.rstudio.com")))
+# for binary packages, but this does not yet work well
+# options(repos = list(repos = c(RSPM = "https://packagemanager.rstudio.com/all/__linux__/focal/latest")))
+# options("binaryPkgs" = TRUE)
 
 # NOTE: if you change the flatpak_dir anywhere you must also change it in the flatpak builder script!
 dirs <- setupJaspDirs("flatpak_folder")
@@ -88,4 +91,4 @@ info <- createTarArchive(dirs, jaspDir, verbose = FALSE, compression = "best")
 writeRpkgsJson(file.path(flatpakDir, "RPackages.json"), info, local = TRUE)
 
 # IF you have ssh setup this will upload the tar.gz to static-jasp. It's nicer to do this via a terminal because there you see a progress bar
-# uploadTarArchive(info["tar-file"])
+uploadTarArchive(info["tar-file"], printOnly = TRUE)

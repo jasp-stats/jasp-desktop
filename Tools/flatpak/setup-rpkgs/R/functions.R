@@ -52,9 +52,16 @@ download_override <- function(url, destfile, mode = "wb", quiet = FALSE, headers
         pkg <- basename(url)
         if (pkg != "PACKAGES.rds") {
           pkgName <- gsub("_.*", "", pkg)
-          localFile0 <- file.path(dirs["local-cran"], "src", "contrib", pkg)
-          localFile1 <- file.path(dirs["renv-root"], "source", "repository", pkgName, pkg)
+
+          localFile0 <- file.path(dirs["local-cran-source"], pkg)
+          if (getOption("binaryPkgs", FALSE)) {
+            localFile1 <- file.path(dirs["renv-root-binary"], pkgName, pkg)
+          } else {
+            localFile1 <- file.path(dirs["renv-root-source"], pkgName, pkg)
+          }
+
           if (file.exists(localFile1)) {
+
             ws <- strrep(" ", 35 - nchar(pkg)) # NetworkComparisonTest is the longest package name I encountered
             maybecat(sprintf("Already downloaded %s%sreusing %s\n", pkg, ws, makePathRelative(localFile1, dirs["jasp-subdir"])))
             if (!file.exists(localFile0))
@@ -112,7 +119,10 @@ download_override <- function(url, destfile, mode = "wb", quiet = FALSE, headers
     return(file)
 
     }, error = function(e) {
-      browser()
+      if (interactive())
+        browser()
+      else
+        stop2(e)
     }
   )
 
@@ -120,11 +130,6 @@ download_override <- function(url, destfile, mode = "wb", quiet = FALSE, headers
 
 maybecat <- function(x) {
   if (getResultsEnv()$debug) cat(x)
-}
-
-maybe_copy <- function(path) {
-  # if (dir.exists(resultsEnv$dirForPkgs) && !startsWith(basename(path), "renv-"))
-  #   file.copy(path, resultsEnv$dirForPkgs)
 }
 
 getResultsEnv <- function() get("resultsEnv", envir = .GlobalEnv)
@@ -174,7 +179,7 @@ storeUrl <- function(url, destfile) {
 
 stripUrl <- function(url) {
   # since repos is hardcoded in renv:::renv_remotes_resolve_github_ref_impl and we modify host,
-  # this ooks like the safest approach
+  # this looks like the safest approach
   gsub("/+", "_", strsplit(url, "repos/", fixed = TRUE)[[1L]][2])
 }
 
@@ -259,13 +264,28 @@ customRenvInstall <- function(packages, library = NULL, rebuild = TRUE, customDo
 installRecommendedPackages <- function(dirs) {
 
   installed <- installed.packages(.libPaths())
-  rec_pkgs <- unname(installed[installed[, "Priority"] %in% "recommended", "Package"])
-  customRenvInstall(rec_pkgs, customDownload = FALSE)
+  recPkgs <- unname(installed[installed[, "Priority"] %in% "recommended", "Package"])
 
-  # for some reason, "devtools" and "roxygen2" are missing...
-  # renv is not a direct dependency and is installed by default
-  # jasp-desktop does somewhere loadNamespace("remotes"), which is why we also download it here
-  customRenvInstall(c("devtools", "roxygen2", "renv", "remotes"), customDownload = FALSE)
+  alreadyDownloadedPkgs <- list.files(dirs["local-cran-source"], pattern = "\\.tar\\.gz$", recursive = TRUE, full.names = FALSE)
+  alreadyDownloadedPkgs <- gsub("_(.*)", "", basename(alreadyDownloadedPkgs))
+
+  toInstall <- c(recPkgs,
+    # for some reason, "devtools" and "roxygen2" are missing...
+    # renv is not a direct dependency and is installed by default
+    # jasp-desktop does somewhere loadNamespace("remotes"), which is why we also download it here
+    "devtools", "roxygen2", "renv", "remotes"
+  )
+
+  toInstall <- setdiff(toInstall, alreadyDownloadedPkgs)
+
+  # these must be installed from CRAN
+  options(repos = list(repos = c(CRAN = "https://cran.rstudio.com")))
+  if (length(toInstall) > 0L) {
+    cat("Downloading recommended packages:", paste(toInstall, collapse = ", "))
+    customRenvInstall(toInstall, customDownload = FALSE)
+  } else {
+    cat("All recommended packages are downloaded.")
+  }
 
 }
 
@@ -330,7 +350,9 @@ createFolderStructure <- function(toplevel = file.path(getwd(), "toplevelReposit
 
   contrib  <- file.path(toplevel, "src", "contrib")
   mkdir(contrib)
-  return(c("root" = toplevel, "contrib" = contrib))
+  contribBinary  <- file.path(toplevel, "bin", "linux", "contrib")
+  mkdir(contribBinary)
+  return(c("root" = toplevel, "source" = contrib, "binary" = contribBinary))
 
 }
 
@@ -377,28 +399,43 @@ createLocalGithubRepository <- function(resultsEnv, githubDir, sourcePkgsDir) {
 
 createLocalPackageRepository <- function(dirs) {
 
-  sourcePkgsDir <- file.path(dirs["renv-root"], "source", "repository")
+  createLocalRepository(dirs["local-cran-source"], dirs[c("renv-root-source", "renv-root-binary")])
 
-  paths <- createFolderStructure(dirs["local-cran"])
+}
 
-  createLocalRepository(paths[["contrib"]], sourcePkgsDir)
-  # createLocalGithubRepository(resultsEnv, paths[["github"]],  sourcePkgsDir)
-  paths
+copy_of_renv_bootstrap_platform_prefix <- function() {
+  # as the name suggests, a copy of renv:::renv_bootstrap_platform_prefix
+  version <- paste(R.version$major, R.version$minor, sep = ".")
+  prefix <- paste("R", numeric_version(version)[1, 1:2], sep = "-")
+  devel <- identical(R.version[["status"]], "Under development (unstable)") ||
+    identical(R.version[["nickname"]], "Unsuffered Consequences")
+  if (devel)
+    prefix <- paste(prefix, R.version[["svn rev"]], sep = "-r")
+  components <- c(prefix, R.version$platform)
+  # prefix <- renv_bootstrap_platform_prefix_impl()
+  prefix <- NA
+  if (!is.na(prefix) && nzchar(prefix))
+    components <- c(prefix, components)
+  paste(components, collapse = "/")
 }
 
 setupJaspDirs <- function(root = getwd(), jaspSubdir = "jasp-build", flatpakSubdir = "flatpak-helper", clearAll = FALSE, renvOnly = FALSE) {
 
   paths <- c(
     # folder structure should be identical to JASP
-    "Modules"    = file.path(root, jaspSubdir, "Modules"),
-    "renv-cache" = file.path(root, jaspSubdir, "renv-cache"),
-    "renv-root"  = file.path(root, jaspSubdir, "renv-root"),
+    "Modules"          = file.path(root, jaspSubdir, "Modules"),
+    "renv-cache"       = file.path(root, jaspSubdir, "renv-cache"),
+    "renv-root"        = file.path(root, jaspSubdir, "renv-root"),
+    "renv-root-source" = file.path(root, jaspSubdir, "renv-root", "source", "repository"),
+    "renv-root-binary" = file.path(root, jaspSubdir, "renv-root", "binary", copy_of_renv_bootstrap_platform_prefix(), "repository"),
 
-    # this directories are only relevant for building flatpak
+    # these directories are only relevant for building flatpak
     "module-environments" = file.path(root, flatpakSubdir, "module-environments"),
     "other-dependencies"  = file.path(root, flatpakSubdir, "other-dependencies"),
     "r-helpers"           = file.path(root, flatpakSubdir, "r-helpers"),
     "local-cran"          = file.path(root, flatpakSubdir, "local-cran"),
+    "local-cran-source"   = file.path(root, flatpakSubdir, "local-cran", "src", "contrib"),
+    "local-cran-binary"   = file.path(root, flatpakSubdir, "local-cran", "bin", "linux", "contrib"),
     "local-github"        = file.path(root, flatpakSubdir, "local-github"),
     "root"                = root,
     "jasp-subdir"         = file.path(root, jaspSubdir),
@@ -582,7 +619,7 @@ createTarArchive <- function(dirs, jaspDir, outputPath = "archives/flatpak_archi
   ))
 }
 
-uploadTarArchive <- function(archivePath = "archives/flatpak_archive.tar.gz", verbose = TRUE) {
+uploadTarArchive <- function(archivePath = "archives/flatpak_archive.tar.gz", verbose = TRUE, printOnly = TRUE) {
 
   if (!file.exists(archivePath))
     stop2("Archive does not exist")
@@ -591,7 +628,7 @@ uploadTarArchive <- function(archivePath = "archives/flatpak_archive.tar.gz", ve
   archiveName <- basename(archivePath)
 
   cmd <- sprintf("scp %s jonathonlove@static.jasp-stats.org:static.jasp-stats.org/%s", archivePath, archiveName)
-  system(cmd)
+  if (printOnly) cat(cmd) else system(cmd)
 
 }
 
@@ -710,6 +747,17 @@ cleanupBigPackages <- function(dirs) {
     dirTemp2 <- file.path(tempdir(), basename(path))
     mkdir(dirTemp2, deleteIfExists = TRUE)
 
+    if (startsWith(basename(path), "dustinfife_flexplot")) {
+      # flexplot removes jasp related files in the .Rbuildignore...
+      .RbuildignorePath <- file.path(newPath, ".Rbuildignore")
+      if (file.exists(.RbuildignorePath)) {
+        .Rbuildignore <- readLines(.RbuildignorePath)
+        .Rbuildignore <- .Rbuildignore[!(grepl("jasp", .Rbuildignore) & endsWith(.Rbuildignore, ".R"))]
+        writeLines(.Rbuildignore, .RbuildignorePath)
+      }
+
+    }
+
     setwd(dirTemp2)
     cmd <- sprintf("%s CMD build --no-build-vignettes --no-manual --resave-data %s", rpath, newPath)
     system(cmd)
@@ -720,40 +768,6 @@ cleanupBigPackages <- function(dirs) {
 
 }
 
-downloadFakeV8 <- function(dirs) {
-
-  tdir <- file.path(tempdir(), "fakeV8")
-  if (dir.exists(tdir)) unlink(tdir, recursive = TRUE)
-  mkdir(tdir, deleteIfExists = TRUE)
-  downloadFile("https://github.com/vandenman/V8/raw/master/V8_100.0.0.tar.gz", tdir)
-  file <- dir(tdir, full.names = TRUE)[1L]
-
-  V8dir <- file.path(dirs["renv-root"], "source", "repository", "V8")
-  V8origFile <- dir(V8dir, full.names = TRUE)
-
-  if (length(V8origFile) > 1L) {
-    stop2("There are multiple V8 packages at ", V8dir)
-  } else if (length(V8origFile) == 1L) {
-    unlink(V8origFile)
-  }
-
-  newFileName <- file.path(V8dir, basename(file))
-  file.copy(from = file, to = newFileName, overwrite = TRUE)
-
-}
-
-# This downloads the precompiled V8 source from jeroen/V8 -- but this only works on x86
-downloadV8 <- function(dirs) {
-
-  # see https://github.com/jeroen/V8/blob/master/configure#L61
-  # this might need to be updated from time to time!
-  tarfile <- downloadFile("http://jeroen.github.io/V8/v8-8.3.110.13-linux.tar.gz", dirs["other-dependencies"])
-  untar(tarfile, exdir = dirs["other-dependencies"]) # otherwise we need to do this on flatpak
-  unlink(tarfile)
-  # unlink(list.files(path = dirs["other-dependencies"], pattern = "\\._(.+)", recursive = TRUE, full.names = TRUE))
-
-}
-
 copyV8Lib <- function(dirs, source = "other_deps/v8") {
   if (!file.copy(source, to = dirs["other-dependencies"], recursive = TRUE))
     stop2("Failed to copy from ", source, " to ", dirs["other-dependencies"])
@@ -761,27 +775,40 @@ copyV8Lib <- function(dirs, source = "other_deps/v8") {
 
 updateV8Rpackage <- function(dirs) {
 
-  pathV8 <- list.files(file.path(dirs["renv-root"], "source", "repository", "V8"), pattern = "^V8_*", full.names = TRUE)
+  pathV8 <- list.files(file.path(dirs["renv-root-source"], "V8"), pattern = "^V8_*", full.names = TRUE)
   if (length(pathV8) == 0L) {
     warning("No V8 package found. This is fine if you adjusted some things and are not building everything.", domain = NA)
     return()
   }
-  dirTemp <- file.path(tempdir(), "V8_fix")
-  mkdir(dirTemp, deleteIfExists = TRUE)
-  untar(tarfile = pathV8, exdir = dirTemp)
-  dirTempV8 <- file.path(dirTemp, "V8")
-  configureLines <- readLines(file.path(dirTempV8, "configure"))
-  configureLines[startsWith(configureLines, "PKG_LIBS=\"-lv8")] <- "PKG_LIBS=\"-lv8_monolith_$LIB_ARCH\""
-  configureLines[startsWith(configureLines, "PKG_CFLAGS=\"-I/usr/include/v8")] <- "PKG_CFLAGS=\"\""
-  writeLines(configureLines, file.path(dirTempV8, "configure"))
 
-  newPathV8 <- file.path(dirTemp, basename(pathV8))
-  oldwd <- getwd()
-  on.exit(setwd(oldwd))
-  setwd(dirTemp)
-  tar(tarfile = newPathV8, files = "V8", compression = "gzip")
+  fixV8Package <- function(pathV8) {
+    dirTemp <- file.path(tempdir(), "V8_fix")
+    mkdir(dirTemp, deleteIfExists = TRUE)
+    untar(tarfile = pathV8, exdir = dirTemp)
+    dirTempV8 <- file.path(dirTemp, "V8")
+    configureLines <- readLines(file.path(dirTempV8, "configure"))
+    configureLines[startsWith(configureLines, "PKG_LIBS=\"-lv8")] <- "PKG_LIBS=\"-lv8_monolith_$LIB_ARCH\""
+    configureLines[startsWith(configureLines, "PKG_CFLAGS=\"-I/usr/include/v8")] <- "PKG_CFLAGS=\"\""
+    writeLines(configureLines, file.path(dirTempV8, "configure"))
 
-  file.copy(from = newPathV8, to = pathV8, overwrite = TRUE)
+    newPathV8 <- file.path(dirTemp, basename(pathV8))
+    oldwd <- getwd()
+    on.exit(setwd(oldwd))
+    setwd(dirTemp)
+    tar(tarfile = newPathV8, files = "V8", compression = "gzip")
+
+    result <- file.copy(from = newPathV8, to = pathV8, overwrite = TRUE)
+    if (!result)
+      stop2("failed to update the V8 package for path: ", pathV8)
+
+  }
+
+  fixV8Package(pathV8)
+
+  # also do this for the cran repo, just in case functions are run out of order
+  pathV8cran <- list.files(dirs["local-cran-source"], pattern = "^V8_*", full.names = TRUE)
+  if (length(pathV8cran) > 0L)
+    fixV8Package(pathV8cran)
 
 }
 
