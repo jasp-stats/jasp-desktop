@@ -50,11 +50,6 @@
 		<Directory Id="ProgramFilesFolder">
             <Directory Id="APPLICATIONFOLDER" Name="JASP">
                 <!-- files added in JASPFilesFragment.wxs -->
-
-				<Component Id="CleanupMainApplicationFolderOnInstall" Guid="bf3d406f-4778-4c17-a311-c18ba9cede79">
-					<RegistryValue Root="HKMU" Key="SOFTWARE\JASP" Name="Path" Type="string" Value="[APPLICATIONFOLDER]" KeyPath="yes" />
-					<util:RemoveFolderEx On="both" Property="APPLICATIONFOLDER" />
-				</Component>
             </Directory>
         </Directory>
 
@@ -149,9 +144,11 @@
     <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
 
 	<CustomAction Id="FixModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="[APPLICATIONFOLDER]JASP.exe --junctions" />
+	<CustomAction Id="RemoveModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="[APPLICATIONFOLDER]JASP.exe --removeJunctions" />
 
 	<InstallExecuteSequence>
-		<Custom Action='FixModulesJunctions' Before='InstallFinalize'>NOT REMOVE</Custom>
+                <Custom Action='RemoveModulesJunctions' After='InstallInitialize'>(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
+                <Custom Action='FixModulesJunctions' Before='InstallFinalize'>NOT REMOVE</Custom>
 	</InstallExecuteSequence>
 
 	<!-- Remember applicationfolderpath to later remove it entirely (mostly to get rid of Modules)-->
@@ -165,7 +162,6 @@
 		<ComponentGroupRef Id="JASPFiles" 							/>
 		<ComponentRef Id="ApplicationShortcut"				 		/>
 		<ComponentRef Id="FileTypeRegistration"					 	/>
-		<ComponentRef Id="CleanupMainApplicationFolderOnInstall"	/>
     </Feature>
 
     <Feature Id="VCRedist" Title="Visual C++ 14.0 Runtime" AllowAdvertise="no" Display="collapse" Level="10">

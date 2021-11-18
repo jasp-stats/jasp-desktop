@@ -30,17 +30,20 @@
 #include "timers.h"
 #include <QMessageBox>
 
-const std::string	jaspExtension	= ".jasp",
-					unitTestArg		= "--unitTest",
-					saveArg			= "--save",
-					timeOutArg		= "--timeOut=",
-					junctionArg		= "--junctions";
+const std::string	jaspExtension		= ".jasp",
+					unitTestArg			= "--unitTest",
+					saveArg				= "--save",
+					timeOutArg			= "--timeOut=",
+					junctionArg			= "--junctions",
+					removeJunctionsArg	= "--removeJunctions";
 
 #ifdef _WIN32
 
 #include "utilities/processhelper.h"
-//This function simply sets the proper environment of jaspengine, and starts it in junction-fixing mode. This is called after the installer runs to fix the junctions in Modules that actually point to renv-cache instead of nowhere
-bool runJaspEngineJunctionFixer(int argc, char *argv[], bool exitAfterwards = true)
+// This function simply sets the proper environment of jaspengine, and starts it in junction-fixing mode or remove-junction mode.
+// The junction-fixining mode is called after the installer runs to fix the junctions in Modules that actually point to renv-cache instead of nowhere
+// The remove-junction mode is called before the uninstaller runs to remove all these junstions: doing this prevent the uninstaller to run for ages.
+bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = false, bool exitAfterwards = true)
 {
 	QApplication	*	app		= exitAfterwards ? new QApplication(argc, argv) : nullptr;
 	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine(false, false);
@@ -52,7 +55,8 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool exitAfterwards = tr
 	engine.setProcessEnvironment(env);
 	engine.setWorkingDirectory(workDir);
 	engine.setProgram("JASPEngine.exe");
-	engine.setArguments({"--recreateJunctions", workDir});
+	if (removeJunctions)	engine.setArguments({"--removeJunctions", workDir});
+	else					engine.setArguments({"--recreateJunctions", workDir});
 	engine.start();
 	
 	if(!engine.waitForStarted())		{	std::cerr << "JASPEngine failed to start for junctions!" << std::endl;						exit(2); }
@@ -61,7 +65,7 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool exitAfterwards = tr
 
 	bool worked = engine.exitCode() == 0;
 	
-	std::cout << "Replacing junctions with JASPEngine seems to have " << (worked ? "worked." : "failed.")  << std::endl;
+	std::cout << (removeJunctions ? "Removing" : "Replacing") << " junctions with JASPEngine seems to have " << (worked ? "worked." : "failed.")  << std::endl;
 
 	
 	if(exitAfterwards)
@@ -106,7 +110,8 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		else if(args[arg] == "--setLC_CTYPE_C")					LC_CTYPE_C				= true;
 		else if(args[arg] == "--setLC_CTYPE_system")			LC_CTYPE_system			= true;
 #ifdef _WIN32
-		else if(args[arg] == junctionArg)						runJaspEngineJunctionFixer(argc, argv); //Run the junctionfixer, it will exit the application btw!
+		else if(args[arg] == junctionArg)						runJaspEngineJunctionFixer(argc, argv, false); //Run the junctionfixer, it will exit the application btw!
+		else if(args[arg] == removeJunctionsArg)				runJaspEngineJunctionFixer(argc, argv, true);  //Remove the junctions
 #endif
 		else if(args[arg] == "--unitTestRecursive")
 		{
@@ -401,7 +406,7 @@ int main(int argc, char *argv[])
 			{
 				QMessageBox::information(nullptr, Application::tr("One time setup for JASP Modules"), Application::tr("JASP has been installed from a zip and it needs to recreate certain paths for your analyses to work.\n\nPlease be patient and wait for the application to show before attempting to start JASP again."));
 				
-				if(!runJaspEngineJunctionFixer(argc, argv, false))
+				if(!runJaspEngineJunctionFixer(argc, argv, false, false))
 				{					
 					std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support, or try the MSI." << std::endl;	
 					exit(1234);
