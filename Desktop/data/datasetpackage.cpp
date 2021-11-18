@@ -149,9 +149,10 @@ QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent
 
 	if(!parent.isValid()) //this is a rootnode then
 	{
-		//rootnodes are as follows (arranged as columns on row 0): dataRoot, filterRoot, labelRoot-col0 ... labelRoot-colN
-		parIdxType	newIndexType = column < 2 ? (column == 0 ? parIdxType::dataRoot : parIdxType::filterRoot) : parIdxType::labelRoot;
-					pointer = static_cast<const void*>(_internalPointers.data() + int(newIndexType) + (newIndexType == parIdxType::labelRoot ? column - 2 : 0));
+		//rootnodes are as follows (arranged as columns on row 0):	dataRoot, filterRoot
+		//and as columns on row1:									labelRoot-col0 ... labelRoot-colN
+		parIdxType	newIndexType = row < 1 ? (column == 0 ? parIdxType::dataRoot : parIdxType::filterRoot) : parIdxType::labelRoot;
+					pointer = static_cast<const void*>(_internalPointers.data() + int(newIndexType) + (newIndexType == parIdxType::labelRoot ? column: 0));
 	}
 	else
 	{
@@ -272,7 +273,7 @@ QModelIndex DataSetPackage::rootModelIndexForType(parIdxType type, int column) c
 	{
 	case parIdxType::dataRoot:		return index(0,		0,			QModelIndex());
 	case parIdxType::filterRoot:	return index(0,		1,			QModelIndex());
-	case parIdxType::labelRoot:		return index(0,		2 + column, QModelIndex());
+	case parIdxType::labelRoot:		return index(1,		column,		QModelIndex());
 	default:						break;
 	}
 
