@@ -1,10 +1,10 @@
 #ifndef DATASETPACKAGESUBNODEMODEL_H
 #define DATASETPACKAGESUBNODEMODEL_H
 
-#include <QAbstractProxyModel>
+#include <QIdentityProxyModel>
 #include "datasetdefinitions.h"
 
-class DataSetPackageSubNodeModel : public QAbstractProxyModel
+class DataSetPackageSubNodeModel : public QIdentityProxyModel
 {
 	Q_OBJECT
 	Q_PROPERTY(int proxyParentColumn READ proxyParentColumn WRITE setProxyParentColumn NOTIFY proxyParentColumnChanged)
@@ -14,10 +14,10 @@ public:
 
 	QModelIndex			mapToSource(	const QModelIndex & proxyIndex)				const	override;
 	QModelIndex			mapFromSource(	const QModelIndex & sourceIndex)			const	override;
-	int					rowCount(		const QModelIndex &parent = QModelIndex())	const	override;
+	/*int					rowCount(		const QModelIndex &parent = QModelIndex())	const	override;
 	int					columnCount(	const QModelIndex &parent = QModelIndex())	const	override;
 	QModelIndex			parent(			const QModelIndex & index)					const	override;
-	QModelIndex			index(int row, int column, const QModelIndex &parent)		const	override;
+	QModelIndex			index(int row, int column, const QModelIndex &parent)		const	override;*/
 
 
 	int					proxyParentColumn() const;
