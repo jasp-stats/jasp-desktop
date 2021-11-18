@@ -98,7 +98,7 @@
         <file>components/JASP/Widgets/FileMenu/PrefsAdvanced.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsMissingValues.qml</file>
         <file>components/JASP/Widgets/AnalysisFormExpander.qml</file>
-        <file>components/JASP/Widgets/SplitHandle.qml</file>
+        <file>components/JASP/Widgets/JASPSplitHandle.qml</file>
         <file>components/JASP/Controls/AvailableVariablesList.qml</file>
         <file>components/JASP/Controls/ComputedColumnField.qml</file>
         <file>components/JASP/Widgets/AboutWindow.qml</file>

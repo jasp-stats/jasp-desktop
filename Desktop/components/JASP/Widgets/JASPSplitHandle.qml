@@ -1,7 +1,6 @@
 import QtQuick			2.11
 import JASP.Widgets		1.0
-
-import QtQuick.Controls	2.4
+import QtQuick.Controls	6.0
 
 //Only works vertically right now...
 
@@ -16,7 +15,7 @@ Rectangle
 
 	property string toolTipDrag:	""
 	property string toolTipArrow:	""
-	property alias	hovered:		hoverMouse.containsMouse
+	property bool	hovered:		false//hoverMouse.containsMouse
 
 	width:			jaspTheme.splitHandleWidth
 	color:			handleRoot.dragEnabled && handleRoot.hovered ? jaspTheme.grayLighter : jaspTheme.uiBackground
@@ -41,7 +40,7 @@ Rectangle
 		x:				parent.width / 2
 	}
 
-	MouseArea
+	/*MouseArea
 	{
 		id:					hoverMouse
 		acceptedButtons:	Qt.NoButton
@@ -55,7 +54,7 @@ Rectangle
 		}
 		cursorShape:		handleRoot.dragEnabled ? Qt.SplitHCursor : Qt.ArrowCursor //Take into account resizing? styleData.resizing
 		onPositionChanged:	(mouse)=>{ mouse.accepted = true; }
-	}
+	}*/
 
 
 	Item

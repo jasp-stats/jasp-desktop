@@ -67,7 +67,7 @@ FocusScope
 			anchors.top:	parent.top
 			anchors.right:	parent.right
 
-			SplitHandle
+			JASPSplitHandle
 			{
 				showArrow:				true
 				pointingLeft:			analysesModel.visible
