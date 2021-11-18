@@ -149,9 +149,11 @@
     <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
 
 	<CustomAction Id="FixModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="[APPLICATIONFOLDER]JASP.exe --junctions" />
+        <CustomAction Id="RemoveModulesJunctions" Impersonate="no" Execute="deferred" Return="check" Directory="APPLICATIONFOLDER" ExeCommand="[APPLICATIONFOLDER]JASP.exe --removeJunctions" />
 
 	<InstallExecuteSequence>
-		<Custom Action='FixModulesJunctions' Before='InstallFinalize'>NOT REMOVE</Custom>
+                <Custom Action='RemoveModulesJunctions' After='InstallInitialize'>(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
+                <Custom Action='FixModulesJunctions' Before='InstallFinalize'>NOT REMOVE</Custom>
 	</InstallExecuteSequence>
 
 	<!-- Remember applicationfolderpath to later remove it entirely (mostly to get rid of Modules)-->

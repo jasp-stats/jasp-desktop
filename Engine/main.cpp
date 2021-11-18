@@ -24,6 +24,7 @@
 #include <codecvt>
 #include "otoolstuff.h"
 #include "rbridge.h"
+#include "utils.h"
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -107,9 +108,9 @@ int main(int argc, char *argv[])
 	else if(argc == 2)
 	{
 		std::cout << "Engine started in R (Module) Library Fixer mode because it received a single argument: '" << argv[1] << "'." << std::endl;
-		
+
 		Engine e(0, 0); //It needs to start to make sure rbridge functions work
-		
+
 		_moduleLibraryFixer(argv[1], true, true);
 
 		exit(0);
@@ -118,12 +119,23 @@ int main(int argc, char *argv[])
 	else if(argc == 3)
 	{
 		std::string arg1(argv[1]), arg2(argv[2]);
-		const std::string junctionCollectArg("--collectJunctions"), junctionRecreateArg("--recreateJunctions");
+		const std::string junctionCollectArg("--collectJunctions"), junctionRecreateArg("--recreateJunctions"), junctionRemoveArg("--removeJunctions");
 		
 		if(arg1 == junctionCollectArg || arg1 == junctionRecreateArg)
 		{
 			std::cout << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
 			rbridge_junctionHelper(arg1 == junctionCollectArg, arg2);
+			exit(0);
+		}
+		else if(arg1 == junctionRemoveArg)
+		{
+			std::string modulesFolder("Modules");
+			std::cout << "Engine started to remove the Modules folder" << std::endl;
+			boost::filesystem::path	modulesPath	= Utils::osPath(modulesFolder);
+			if(exists(modulesPath))
+				remove_all(modulesPath);
+			else
+				std::cout << "Error: Could not find the Modules folder" << std::endl;
 			exit(0);
 		}
 	}
