@@ -20,7 +20,7 @@ import QtQuick			2.15
 import JASP				1.0
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.12 as QTC
 import QtQuick.Layouts	1.15
 import "."
 
@@ -221,11 +221,11 @@ FocusScope
 
 							Row
 							{
-                                Button
+								QTC.Button
 								{
 									id:						filterCheckButton
-//									checkable:				true
-//									checked:				itemFiltered
+									checkable:				true
+									checked:				itemFiltered
 									height:					backroundItem.height
 									width:					levelsTableView.filterColWidth;
 									anchors.top:			parent.top
