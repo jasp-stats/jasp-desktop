@@ -26,13 +26,13 @@ QModelIndex	DataSetPackageSubNodeModel::mapFromSource(const QModelIndex &sourceI
 {
 	QModelIndex sourceParent = sourceIndex.parent();
 
-	if(	DataSetPackage::pkg()->parIdxTypeIs(sourceIndex)	== DataSetPackage::parIdxTypeChildForParent(_proxyType)	||
+	if(	DataSetPackage::pkg()->parIdxTypeIs(sourceIndex)	!= DataSetPackage::parIdxTypeChildForParent(_proxyType)	||
 		DataSetPackage::pkg()->parIdxTypeIs(sourceParent)	!= _proxyType											||
-		sourceIndex.column()								!= _proxyParentColumn
+		sourceParent.column()								!= _proxyParentColumn
 	)
 		return QModelIndex();
 
-	return index(sourceIndex.row(), sourceIndex.column(), QModelIndex());
+	return createIndex(sourceIndex.row(), sourceIndex.column(), nullptr);
 }
 
 /*
@@ -51,9 +51,10 @@ QModelIndex DataSetPackageSubNodeModel::parent(const QModelIndex &index) const
 	return mapFromSource(sourceModel()->parent(mapToSource(index)));
 }
 
-QModelIndex DataSetPackageSubNodeModel::index(int row, int column, const QModelIndex & parent) const
+QModelIndex DataSetPackageSubNodeModel::index(int row, int column, const QModelIndex & ) const
 {
-	return mapFromSource(sourceModel()->index(row, column, mapToSource(parent)));
+	//We do not care about parent here because it shouldnt matter
+	return createIndex(row, column, nullptr);
 }*/
 
 int DataSetPackageSubNodeModel::proxyParentColumn() const
