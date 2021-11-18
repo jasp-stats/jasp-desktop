@@ -38,16 +38,19 @@ class DataSetPackageSubNodeModel;
 /// To this end a clean separation has been attempted between any access of the data so that it can easily be controlled.
 ///
 /// In order to have all that data available through this class a tree-model has been chosen here.
-/// Any QModelIndex that has as parent QModelIndex() (which would be "invalid") is interpreted to mean a reference to a cell in the data.
-/// - Actually, now that I check the code this might not be true... A good thing to clean up when changing the backend though.
-/// Any QModelIndex that has as parent a valid QModelIndex is for a sub-node.
-/// parentIndexTypeIs() interprets that parent-QModelIndex as either parIdxType::data, parIdxType::filter or parIdxType::label
-/// in case of `data` well, it is just that, a cell in the data. 
+///
+/// The top layer of this tree are a parIdxType::dataRoot, ::filterRoot and several ::labelRoot "nodes" (one per column) stored in _internalPointers (together with column, just for label*)
+/// Each of these is used a the rootnode for a DataSetPackageSubNodeModel, which basically drops everything not belonging to that rootnode.
+/// And then makes sure it looks like a table to whatever model connects to that (like DataSetTableProxy which can then be used for filtering and sorting)
+/// The _internalPointers structure also contains a node for parIdxType::data and parIdxType::filter and several for parIdxType::label (again one per column)
+/// _internalPointers is formed by pairs of the nodetype and a column, the column is only used for the label and labelRoot nodes though.
+/// by storing a reference to one of these elements in QModelIndices for DataSetPackage the correct parent can be found and proper filtering can be achieved.
+///
 /// For the filter it can, now because we only support a single filter, return a list of booleans. But this might be expanded later on.
 /// The label is a special case and some support has been hacked in to also specify which particular column is referenced. 
 /// Those labels are returned as columns: [filter-value, value-value, label-text]
 ///
-/// These subnodes are then used by proxy-classes like DataSetTable(Proxy)Model to make them easily available to QML.
+/// These subnodes (at dataSubModel, filterSubModel and labelSubModel) are then used by proxy-classes like DataSetTable(Proxy)Model to make them easily available to QML.
 ///
 /// It can use cleaning up though.
 class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940 (And this being a tree model)
@@ -339,7 +342,7 @@ private:
 	ComputedColumns				_computedColumns;
 	bool						_synchingData				= false;
 	std::map<std::string, bool> _columnNameUsedInEasyFilter;
-	internalPointerType			_internalPointers;	///< The hacky solution we used prior to Qt 6 (with fake pointers) was not quite workable in the end, so it is replaced by actual pointers in conjunction with `DataSetPackageSubNodeModel`s
+	internalPointerType			_internalPointers;	///< The hacky solution we used prior to Qt 6 (with fake pointers) was not quite workable in the end, so it is replaced by actual pointers in conjunction with `DataSetPackageSubNodeModel`s that interface on an actual tree model
 
 	SubNodeModel			*	_dataSubModel,
 							*	_filterSubModel,
