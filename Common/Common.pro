@@ -7,7 +7,7 @@ TARGET = Common
 TEMPLATE = lib
 CONFIG += staticlib
 CONFIG += c++17
- 
+
 include(../JASP.pri)
 
 

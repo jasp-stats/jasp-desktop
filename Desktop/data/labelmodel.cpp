@@ -2,7 +2,7 @@
 #include "log.h"
 #include "qquick/jasptheme.h"
 
-LabelModel::LabelModel() : DataSetTableProxy(parIdxType::label)
+LabelModel::LabelModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubModel())
 {
 	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &LabelModel::filteredOutChangedHandler);
 	connect(this,					&DataSetTableProxy::proxyParentColumnChanged,	this, &LabelModel::filteredOutChanged		);
