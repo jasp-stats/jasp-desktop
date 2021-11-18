@@ -18,6 +18,7 @@
 #ifndef FILEPACKAGE_H
 #define FILEPACKAGE_H
 
+#include <cstddef>
 #include <QAbstractItemModel>
 #include <QFileInfo>
 #include <QUrl>
@@ -27,16 +28,10 @@
 #include <map>
 #include "jsonredirect.h"
 #include "computedcolumns.h"
-#include "enumutilities.h"
-
-
-#define DEFAULT_FILTER		"# Add filters using R syntax here, see question mark for help.\n\ngeneratedFilter # by default: pass the non-R filter(s)"
-#define DEFAULT_FILTER_JSON	"{\"formulas\":[]}"
-#define DEFAULT_FILTER_GEN	"generatedFilter <- rep(TRUE, rowcount)"
-
-DECLARE_ENUM_WITH_TYPE(parIdxType, unsigned char, dataRoot = 0, data, filterRoot, filter, labelRoot, label) //If this is changed then DataSetPackage::index and co must also be!
+#include "datasetdefinitions.h"
 
 class EngineSync;
+class DataSetPackageSubNodeModel;
 
 ///
 /// This class is meant as the single bottleneck between the main application and Qt and the data stored in shared memory.
@@ -68,7 +63,8 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 
 	typedef std::map<std::string, std::map<int, std::string>>	emptyValsType;
 	typedef std::pair<parIdxType, int>							intnlPntPair; //first value is what kind of data the index is for and the int is for parIdxType::label only, to know which column is selected.
-	typedef std::vector<intnlPntPair>							internalPointerType; 
+	typedef std::vector<intnlPntPair>							internalPointerType;
+	typedef DataSetPackageSubNodeModel							SubNodeModel;
 
 public:
 	///Special roles for the different submodels of DataSetPackage. If both maxColString and columnWidthFallback are defined by a model DataSetView will only use maxColString. selected is now only used in LabelModel, but defined here for convenience.
@@ -92,6 +88,10 @@ public:
 		void				pauseEngines();
 		void				resumeEngines();
 		bool				enginesInitializing()	{ return emit enginesInitializingSignal();	}
+
+		SubNodeModel	*	dataSubModel	() { return _dataSubModel;	 }
+		SubNodeModel	*	filterSubModel	() { return _filterSubModel; }
+		SubNodeModel	*	labelsSubModel	() { return _labelsSubModel; }
 		
 		void				waitForExportResultsReady();
 		
@@ -119,7 +119,8 @@ public:
 		const	intnlPntPair *		getInternalPointerPairFromIndex(const QModelIndex & index)									const;
 				void				regenerateInternalPointers();
 				QModelIndex			parentModelForType(parIdxType type, int column = 0)											const;
-		static	parIdxType			parentTypeForType(parIdxType type);
+		static	parIdxType			parIdxTypeParentForChild(parIdxType type);
+		static	parIdxType			parIdxTypeChildForParent(parIdxType type);
 				int					filteredRowCount()																			const { return _dataSet ? _dataSet->filteredRowCount() : 0; }
 				QVariant			getDataSetViewLines(bool up=false, bool left=false, bool down=true, bool right=true)		const;
 
@@ -337,7 +338,11 @@ private:
 	ComputedColumns				_computedColumns;
 	bool						_synchingData				= false;
 	std::map<std::string, bool> _columnNameUsedInEasyFilter;
-	internalPointerType			_internalPointers			= {{ parIdxType::root, 0 }};			///< The hacky solution we used prior to Qt 6 (with fake pointers) doesnt work so now we just make a little datastructure in regenerateInternalPointers
+	internalPointerType			_internalPointers;	///< The hacky solution we used prior to Qt 6 (with fake pointers) was not quite workable in the end, so it is replaced by actual pointers in conjunction with `DataSetPackageSubNodeModel`s
+
+	SubNodeModel			*	_dataSubModel,
+							*	_filterSubModel,
+							*	_labelsSubModel;
 
 	friend class ComputedColumns; //temporary! Or well, should be thought about anyway
 };

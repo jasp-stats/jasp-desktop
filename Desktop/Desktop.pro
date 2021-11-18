@@ -195,6 +195,8 @@ HEADERS += \
     analysis/terms.h \
     analysis/analyses.h \
     analysis/analysis.h \
+  data/datasetdefinitions.h \
+  data/datasetpackagesubnodemodel.h \
     data/datasettableproxy.h \
     data/exporters/dataexporter.h \
     data/exporters/exporter.h \
@@ -391,6 +393,8 @@ SOURCES += \
     analysis/terms.cpp \
     analysis/analyses.cpp \
     analysis/analysis.cpp \
+    data/datasetdefinitions.cpp \
+    data/datasetpackagesubnodemodel.cpp \
     data/datasettableproxy.cpp \
     data/exporters/dataexporter.cpp \
     data/exporters/exporter.cpp \
