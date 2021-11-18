@@ -11,11 +11,20 @@ set(CMAKE_FIND_FRAMEWORK ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+include(CMakePrintHelpers)
+
+option(
+  INSTALL_JASP_REQUIRED_LIBRARIES
+  "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
+  OFF)
+
+if(INSTALL_JASP_REQUIRED_LIBRARIES)
+  include(Dependencies.cmake)
+endif()
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-
-include(CMakePrintHelpers)
 
 # This loads all the Qt-related CMake Modules.
 find_package(Qt6 REQUIRED COMPONENTS Core)
