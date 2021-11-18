@@ -255,13 +255,31 @@ QModelIndex DataSetPackage::parentModelForType(parIdxType type, int column) cons
 	case parIdxType::filterRoot:	[[fallthrough]];
 	case parIdxType::labelRoot:		return QModelIndex();
 
-	case parIdxType::data:			return index(0,		0,			QModelIndex());
-	case parIdxType::filter:		return index(0,		1,			QModelIndex());
-	case parIdxType::label:			return index(0,		2 + column, QModelIndex());
+	case parIdxType::data:			return rootModelIndexForType(parIdxType::dataRoot,		column);
+	case parIdxType::filter:		return rootModelIndexForType(parIdxType::filterRoot,	column);
+	case parIdxType::label:			return rootModelIndexForType(parIdxType::labelRoot,		column);
 	}
 
 	return QModelIndex(); //Gcc really doesn't get it.
 }
+
+QModelIndex DataSetPackage::rootModelIndexForType(parIdxType type, int column) const
+{
+	if(column < 0)
+		return QModelIndex();
+
+	switch(type)
+	{
+	case parIdxType::dataRoot:		return index(0,		0,			QModelIndex());
+	case parIdxType::filterRoot:	return index(0,		1,			QModelIndex());
+	case parIdxType::labelRoot:		return index(0,		2 + column, QModelIndex());
+	default:						break;
+	}
+
+	return QModelIndex(); //Gcc really doesn't get it.
+}
+
+
 
 int DataSetPackage::rowCount(const QModelIndex & parent) const
 {
@@ -308,9 +326,7 @@ int DataSetPackage::columnCount(const QModelIndex &parent) const
 
 bool DataSetPackage::getRowFilter(int row) const
 {
-	QModelIndex filterParent(parentModelForType(parIdxType::filter));
-
-	return data(this->index(row, 0, filterParent)).toBool();
+	return data(this->index(row, 0, parentModelForType(parIdxType::filter))).toBool();
 }
 
 QVariant DataSetPackage::getDataSetViewLines(bool up, bool left, bool down, bool right) const

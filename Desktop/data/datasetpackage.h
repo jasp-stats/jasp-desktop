@@ -119,6 +119,7 @@ public:
 		const	intnlPntPair *		getInternalPointerPairFromIndex(const QModelIndex & index)									const;
 				void				regenerateInternalPointers();
 				QModelIndex			parentModelForType(parIdxType type, int column = 0)											const;
+				QModelIndex			rootModelIndexForType(parIdxType type, int column = 0)										const;
 		static	parIdxType			parIdxTypeParentForChild(parIdxType type);
 		static	parIdxType			parIdxTypeChildForParent(parIdxType type);
 				int					filteredRowCount()																			const { return _dataSet ? _dataSet->filteredRowCount() : 0; }
