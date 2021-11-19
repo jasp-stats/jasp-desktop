@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.21)
 list(APPEND CMAKE_MESSAGE_CONTEXT Common)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
+find_package(LibArchive REQUIRED)
+# pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
 
 find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono
@@ -20,8 +21,12 @@ list(APPEND SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
 
 target_include_directories(
-  Common PUBLIC ${Boost_INCLUDE_DIRS} ${LIBJSON_INCLUDE_DIRS}
-                ${LIBARCHIVE_INCLUDE_DIRS} jaspColumnEncoder)
+  Common
+  PUBLIC ${Boost_INCLUDE_DIRS}
+         ${LIBJSON_INCLUDE_DIRS}
+         ${LibArchive_INCLUDE_DIRS}
+         # ${LIBARCHIVE_INCLUDE_DIRS}
+         jaspColumnEncoder)
 
 if(BUILD_WITH_SYSTEM_R)
   message(STATUS "Building with system R..")
@@ -39,7 +44,7 @@ endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
-target_link_libraries(Common PUBLIC ${Boost_LIBRARIES} PkgConfig::LIBARCHIVE
+target_link_libraries(Common PUBLIC ${Boost_LIBRARIES} ${LibArchive_LIBRARIES}
                                     PkgConfig::LIBJSON Qt::Core)
 
 if(USE_JASP_TIMER)

@@ -7,7 +7,8 @@ file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
+find_package(LibArchive REQUIRED)
+# pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
 
 # TODO: I don't think Engine needs all of these, but for now, I leave them here
@@ -25,7 +26,8 @@ target_include_directories(
   JASPEngine
   PUBLIC ${Boost_INCLUDE_DIRS}
          ${LIBJSON_INCLUDE_DIRS}
-         ${LIBARCHIVE_INCLUDE_DIRS}
+         # ${LIBARCHIVE_INCLUDE_DIRS}
+         ${LibArchive_INCLUDE_DIRS}
          # and these:
          ${PROJECT_SOURCE_DIR}/R-Interface
          ${PROJECT_SOURCE_DIR}/Common/

@@ -3,12 +3,17 @@ cmake_minimum_required(VERSION 3.21)
 list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
+find_package(LibArchive REQUIRED)
+
+# pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
-# pkg_check_modules(LIBSSL REQUIRED IMPORTED_TARGET libssl)
-# pkg_check_modules(LIBCRYPTO REQUIRED IMPORTED_TARGET libcrypto)
-pkg_check_modules(LIBZ REQUIRED IMPORTED_TARGET zlib)
+
+find_package(ZLIB)
+# pkg_check_modules(LIBZ REQUIRED IMPORTED_TARGET zlib)
+
 pkg_check_modules(LIBREADSTAT REQUIRED IMPORTED_TARGET readstat)
+
+find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
 find_package(Boost REQUIRED COMPONENTS nowide filesystem system date_time timer
                                        chrono)
@@ -107,6 +112,7 @@ target_include_directories(
   JASP
   PUBLIC ${Boost_INCLUDE_DIRS}
          ${LIBJSON_INCLUDE_DIRS}
+         # ${LibArchive_INCLUDE_DIRS}
          ${LIBARCHIVE_INCLUDE_DIRS}
          ${LIBREADSTAT_INCLUDE_DIRS}
          ${PROJECT_SOURCE_DIR}/Common

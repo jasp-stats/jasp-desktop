@@ -69,3 +69,4 @@ xcode-project/
 # Temporary 
 Frameworks/
 R.framework/
+.cache/
