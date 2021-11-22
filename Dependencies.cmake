@@ -32,10 +32,13 @@ elseif(APPLE)
     URL https://cran.r-project.org/bin/macosx/base/R-4.1.2.pkg
     # URLHASH ""
     DOWNLOAD_NO_EXTRACT ON
+    BUILD_IN_SOURCE ON
     STEP_TARGETS configure build install
     DOWNLOAD_NAME R-4.1.2.pkg
     CONFIGURE_COMMAND xar -xf <DOWNLOAD_DIR>/R-4.1.2.pkg
-    BUILD_COMMAND tar -xvf <BINARY_DIR>/R-fw.pkg/Payload
+    BUILD_COMMAND tar -xvf R-fw.pkg/Payload
+    # BUILD_COMMAND ""
+    INSTALL_COMMAND ""
     # INSTALL_COMMAND cp -r <BINARY_DIR>/R.framework ${CMAKE_SOURCE_DIR}/Frameworks
   )
 
@@ -107,10 +110,10 @@ externalproject_add(
   GIT_REPOSITORY "https://github.com/WizardMac/ReadStat"
   GIT_TAG "v1.1.7"
   BUILD_IN_SOURCE ON
-  LOG_CONFIGURE ON
-  LOG_BUILD ON
-  LOG_INSTALL ON
-  LOG_OUTPUT_ON_FAILURE ON
+  # LOG_CONFIGURE ON
+  # LOG_BUILD ON
+  # LOG_INSTALL ON
+  # LOG_OUTPUT_ON_FAILURE ON
   CONFIGURE_COMMAND ./autogen.sh
   COMMAND autoupdate
   COMMAND
