@@ -28,7 +28,7 @@ FocusScope
 		ribbon.focus = true;
 	}
 
-	Keys.onPressed:
+	Keys.onPressed: (event)=>
 	{
 		if (event.key === Qt.Key_Down)
 		{

@@ -194,7 +194,7 @@ Window
 				}
 			}
 
-			onPressed:
+			onPressed: (mouse)=>
 			{
 				if(customMenu.visible)
 				{
