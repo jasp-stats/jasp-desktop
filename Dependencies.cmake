@@ -66,15 +66,15 @@ externalproject_add(
   GIT_REPOSITORY "https://github.com/WizardMac/ReadStat"
   GIT_TAG "v1.1.7"
   BUILD_IN_SOURCE ON
-  # LOG_CONFIGURE ON
-  # LOG_BUILD ON
-  # LOG_INSTALL ON
-  # LOG_OUTPUT_ON_FAILURE ON
+  LOG_CONFIGURE ON
+  LOG_BUILD ON
+  LOG_INSTALL ON
+  LOG_OUTPUT_ON_FAILURE ON
   CONFIGURE_COMMAND ./autogen.sh
   COMMAND autoupdate
   COMMAND
     ./configure
-    --prefix=${CMAKE_CURRENT_BINARY_DIR}/Dependencies/readstat/src/readstat-build
+    --prefix=${CMAKE_CURRENT_BINARY_DIR}/Dependencies/readstat/src/readstat-install
   BUILD_COMMAND ${MAKE})
 
 externalproject_get_property(readstat SOURCE_DIR)
@@ -94,14 +94,16 @@ externalproject_add(
   HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
   HG_TAG "release-4_3_0"
   BUILD_IN_SOURCE ON
-  # LOG_CONFIGURE ON
-  # LOG_BUILD ON
-  # LOG_INSTALL ON
-  # LOG_OUTPUT_ON_FAILURE ON
+  LOG_CONFIGURE ON
+  LOG_BUILD ON
+  LOG_INSTALL ON
+  LOG_OUTPUT_ON_FAILURE ON
+  STEP_TARGETS configure install
   CONFIGURE_COMMAND ${ACLOCAL}
   COMMAND ${AUTORECONF} -fi
-  COMMAND ./configure --disable-dependency-tracking
-          --prefix=${CMAKE_CURRENT_BINARY_DIR}/Dependencies/jags/src/jags-build
+  COMMAND
+    ./configure --disable-dependency-tracking
+    --prefix=${CMAKE_CURRENT_BINARY_DIR}/Dependencies/jags/src/jags-install
   BUILD_COMMAND ${MAKE})
 
 externalproject_get_property(jags SOURCE_DIR)

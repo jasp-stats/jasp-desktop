@@ -97,10 +97,11 @@ foreach(MODULE ${JASP_COMMON_MODULES})
   configure_file(${CMAKE_CURRENT_LIST_DIR}/install_module.R.in
                  ${MODULES_RENV_PATH}/${MODULE}/install_module.R)
 
-  add_custom_command(
-    TARGET Modules POST_BUILD
+  add_custom_target(
+    ${MODULE} #POST_BUILD
     COMMAND ${_Rscript_EXE} ${MODULES_RENV_PATH}/${MODULE}/install_module.R
     COMMENT "------ Installing ${MODULE}...")
+  add_dependencies(Modules ${MODULE})
 
 endforeach()
 
@@ -111,9 +112,12 @@ foreach(MODULE ${JASP_EXTRA_MODULES})
   configure_file(${CMAKE_CURRENT_LIST_DIR}/install_module.R.in
                  ${MODULES_RENV_PATH}/${MODULE}/install_module.R)
 
-  add_custom_command(
-    TARGET Modules POST_BUILD
+  add_custom_target(
+    ${MODULE} #POST_BUILD
     COMMAND ${_Rscript_EXE} ${MODULES_RENV_PATH}/${MODULE}/install_module.R
     COMMENT "------ Installing ${MODULE}...")
+  add_dependencies(Modules ${MODULE})
 
 endforeach()
+
+# add_dependencies(jaspMetaAnalysis jags-install)
