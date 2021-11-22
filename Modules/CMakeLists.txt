@@ -98,8 +98,9 @@ foreach(MODULE ${JASP_COMMON_MODULES})
                  ${MODULES_RENV_PATH}/${MODULE}/install_module.R)
 
   add_custom_target(
-    ${MODULE} #POST_BUILD
+    ${MODULE}
     COMMAND ${_Rscript_EXE} ${MODULES_RENV_PATH}/${MODULE}/install_module.R
+    BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}/
     COMMENT "------ Installing ${MODULE}...")
   add_dependencies(Modules ${MODULE})
 
@@ -113,11 +114,18 @@ foreach(MODULE ${JASP_EXTRA_MODULES})
                  ${MODULES_RENV_PATH}/${MODULE}/install_module.R)
 
   add_custom_target(
-    ${MODULE} #POST_BUILD
+    ${MODULE}
     COMMAND ${_Rscript_EXE} ${MODULES_RENV_PATH}/${MODULE}/install_module.R
+    BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}/
     COMMENT "------ Installing ${MODULE}...")
   add_dependencies(Modules ${MODULE})
 
 endforeach()
 
+# Dependencies of Modules
+#
+# - If a module needs a dependency, we can download/configure/install it
+#   in the Dependencies.cmake and make sure that their dependencies are
+#   build before the installation of the module.
+#
 # add_dependencies(jaspMetaAnalysis jags-install)
