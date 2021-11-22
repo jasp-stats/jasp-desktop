@@ -5,33 +5,20 @@ list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono
              REQUIRED)
 
-add_definitions(-DJASP_R_INTERFACE_LIBRARY)
-add_definitions(-DQT_NO_DEPRECATED_WARNINGS)
-
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
 list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
 add_library(R-Interface ${HEADER_FILES} ${SOURCE_FILES})
 
-if(BUILD_WITH_SYSTEM_R)
-  message(STATUS "Building with system R...")
-  pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
+message(STATUS "Building with R.framework...")
+message(STATUS "Setting the headers...")
 
-  target_include_directories(
-    R-Interface PUBLIC ${LIBR_INCLUDE_DIRS} ${_Rcpp_HOME}/include
-                       ${_RInside_HOME}/include)
+target_include_directories(
+  R-Interface PUBLIC ${_R_HOME}/include ${_Rcpp_HOME}/include
+                     ${_RInside_HOME}/include)
 
-else()
-  message(STATUS "Building with R.framework...")
-  message(STATUS "Setting the headers...")
-
-  target_include_directories(
-    R-Interface PUBLIC ${_R_HOME}/include ${_Rcpp_HOME}/include
-                       ${_RInside_HOME}/include)
-
-  message(STATUS "Rcpp_INCLUDE_DIRS is set to ${_Rcpp_HOME}/include")
-  message(STATUS "RInside_INCLUDE_DIRS is set to ${_RInside_HOME}/include")
-endif()
+message(STATUS "Rcpp_INCLUDE_DIRS is set to ${_Rcpp_HOME}/include")
+message(STATUS "RInside_INCLUDE_DIRS is set to ${_RInside_HOME}/include")
 
 target_include_directories(
   R-Interface
@@ -41,6 +28,9 @@ target_include_directories(
 add_dependencies(R-Interface Common)
 
 target_link_libraries(R-Interface PUBLIC Common ${_R_Framework} ${_LIB_RInside})
+
+target_compile_definitions(R-Interface PUBLIC JASP_R_INTERFACE_LIBRARY
+                                              QT_NO_DEPRECATED_WARNINGS)
 
 if(WIN32)
   target_compile_definitions(

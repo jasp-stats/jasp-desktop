@@ -36,11 +36,6 @@ find_package(
              QuickWidgets
              Core5Compat)
 
-add_definitions(-DBUILDING_JASP)
-add_definitions(-DJASP_USES_QT_HERE)
-add_definitions(-DPRINT_ENGINE_MESSAGES)
-add_definitions(-Wno-deprecated-declarations)
-
 configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template
                ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
 
@@ -105,6 +100,10 @@ else()
   qt_add_executable(JASP ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES}
                     ${BUNDLE_RESOURCES} ${_R_Framework})
 endif()
+
+target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
+
+target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
 
 add_dependencies(JASP JASPEngine)
 

@@ -60,7 +60,8 @@ elseif(WIN32)
 
   # TODO: I have no idea what these are. For now, for Windows build, I'm just
   # translating the Qmake
-  target_link_libraries(Common PUBLIC archive.dll ole32 oleaut32)
+  #
+  target_link_libraries(Common PUBLIC ole32 oleaut32)
 endif()
 
 # I'm leaving the flatpak config behind, as it should be pretty straighforward,

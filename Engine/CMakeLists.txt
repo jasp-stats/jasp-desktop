@@ -17,9 +17,6 @@ find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
-add_definitions(-DBUILDING_JASP_ENGINE)
-add_definitions(-DR_HOME=${_R_HOME})
-
 add_executable(JASPEngine ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
 
 target_include_directories(
@@ -56,6 +53,9 @@ endif()
 
 target_link_libraries(JASPEngine PUBLIC Common R-Interface)
 
+target_compile_definitions(JASPEngine PUBLIC BUILDING_JASP_ENGINE
+                                             R_HOME=${_R_HOME})
+
 add_dependencies(JASPEngine R-Interface)
 
 set(MACOSX_BUNDLE_DIR
@@ -85,6 +85,24 @@ else()
     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/JASPEngine
             ${PROJECT_BINARY_DIR}/Desktop
     COMMENT "       [JASP]: Placing the Engine into the Desktop folder...")
+endif()
+
+if(APPLE)
+  # Amir: There are some compiler messages that I left out for now
+
+  # target_compile_options(
+  #   JASPEngine
+  #   PUBLIC -Wno-unused-parameter -Wno-unused-local-typedef
+  #          -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi
+  #          -stdlib=libc++)
+
+  # target_compile_definitions(JASPEngine PUBLIC )
+elseif(WIN32)
+  target_compile_definitions(
+    JASPEngine PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+                      BOOST_USE_WINDOWS_H NOMINMAX WIN32_LEAN_AND_MEAN)
+
+  target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
 endif()
 
 # set_property(SOURCE JASPEngine PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
