@@ -49,7 +49,7 @@ set(MODULES_RENV_ROOT_PATH "${MODULES_RENV_PATH}/renv-root"
     CACHE PATH "Location of renv root directories")
 set(MODULES_RENV_CACHE_PATH "${MODULES_RENV_PATH}/renv-cache"
     CACHE PATH "Location of renv cache directories")
-set(JASPENGINE_PATH "${PROJECT_BINARY_DIR}/Desktop/"
+set(JASP_ENGINE_PATH "${PROJECT_BINARY_DIR}/Desktop/"
     CACHE PATH "Location of the JASPEngine")
 
 make_directory(${MODULES_RENV_PATH})
