@@ -3,6 +3,39 @@ cmake_minimum_required(VERSION 3.21)
 include(ExternalProject)
 include(Tools/cmake/CPM.cmake)
 
+if(WIN32)
+  # That's the gist of it, but I still need to test it on Windows
+  find_program(EXTRACT NAMES extract)
+  externalproject_add(
+    Rexe
+    PREFIX Dependencies/R
+    URL https://cran.r-project.org/bin/windows/base/R-4.1.2-win.exe
+    # URLHASH ""
+    DOWNLOAD_NO_EXTRACT ON
+    DOWNLOAD_NAME R-4.1.2-win.exe
+    CONFIGURE_COMMAND extract /c <DOWNLOAD_DIR>/R-4.1.2-win.exe /l <BINARY_DIR>
+    # BUILD_COMMAND ""
+    # INSTALL_COMMAND ""
+    )
+elseif(APPLE)
+
+  externalproject_add(
+    Rframework
+    PREFIX Dependencies/Rframework
+    URL https://cran.r-project.org/bin/macosx/base/R-4.1.2.pkg
+    # URLHASH ""
+    DOWNLOAD_NO_EXTRACT ON
+    DOWNLOAD_NAME R-4.1.2.pkg
+    CONFIGURE_COMMAND xar -xf <DOWNLOAD_DIR>/R-4.1.2.pkg
+    BUILD_COMMAND tar -xvf <BINARY_DIR>/R-fw.pkg/Payload
+    # INSTALL_COMMAND cp -r <BINARY_DIR>/R.framework ${CMAKE_SOURCE_DIR}/Frameworks
+  )
+
+else()
+
+endif()
+
+
 set(CPM_USE_LOCAL_PACKAGES ON)
 
 # cpmaddpackage(
