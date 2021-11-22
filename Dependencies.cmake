@@ -12,6 +12,7 @@ if(WIN32)
     URL https://cran.r-project.org/bin/windows/base/R-4.1.2-win.exe
     # URLHASH ""
     DOWNLOAD_NO_EXTRACT ON
+    STEP_TARGETS configure build install
     DOWNLOAD_NAME R-4.1.2-win.exe
     CONFIGURE_COMMAND extract /c <DOWNLOAD_DIR>/R-4.1.2-win.exe /l <BINARY_DIR>
     # BUILD_COMMAND ""
@@ -19,12 +20,19 @@ if(WIN32)
     )
 elseif(APPLE)
 
+  # Caveat:
+  #   - There is a change that this overwrite the previously downloaded 
+  #     and configured R.framework, but I am not sure, for now, I am just
+  #     downloading it, and when we decide to use it, we can see if it 
+  #     happens, then I can use `FetchContent` to download and configure it
+  #     during the Configuration time.
   externalproject_add(
     Rframework
     PREFIX Dependencies/Rframework
     URL https://cran.r-project.org/bin/macosx/base/R-4.1.2.pkg
     # URLHASH ""
     DOWNLOAD_NO_EXTRACT ON
+    STEP_TARGETS configure build install
     DOWNLOAD_NAME R-4.1.2.pkg
     CONFIGURE_COMMAND xar -xf <DOWNLOAD_DIR>/R-4.1.2.pkg
     BUILD_COMMAND tar -xvf <BINARY_DIR>/R-fw.pkg/Payload
