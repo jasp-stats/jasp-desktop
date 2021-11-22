@@ -29,8 +29,8 @@ Item
 
 	onWidthChanged:
 	{
-		if(!mainWindow.analysesAvailable)											data.width = splitViewContainer.width
-		else if(data.wasMaximized)													return; //wasMaximized binds!
+		if(!mainWindow.analysesAvailable)												data.width = splitViewContainer.width
+		else if(data.wasMaximized)														return; //wasMaximized binds!
 		else if(splitViewContainer.width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
 	}
 
@@ -88,7 +88,8 @@ Item
 
 		handle: Item
 		{
-			implicitWidth:			splitHandle.width + analyses.width
+			implicitWidth:			splitHandle.width + analyses.implicitWidth
+			width:					implicitWidth
 
 			JASPSplitHandle
 			{
