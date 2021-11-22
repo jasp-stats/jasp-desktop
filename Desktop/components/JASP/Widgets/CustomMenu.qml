@@ -186,7 +186,7 @@ FocusScope
 					id		: repeater
 					model	: menu.props === undefined ? undefined : menu.props["model"]
 
-					onItemAdded:
+					onItemAdded: (index, item)=>
 					{
 						if (index === 0)
 						{
