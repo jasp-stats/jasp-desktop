@@ -8,12 +8,15 @@ Rectangle
 	id:				rootDataset
 	color:			jaspTheme.uiBackground
 
+	property int leftHandSpace: 0 //Used to allow splithandler to move out of the screen on the left a bit.
+
     SplitView
     {
-		id:				splitViewData
-		anchors.fill:	parent
-		orientation:	Qt.Vertical
-		handle:			Rectangle
+		id:					splitViewData
+		anchors.fill:		parent
+		anchors.leftMargin: rootDataset.leftHandSpace
+		orientation:		Qt.Vertical
+		handle:				Rectangle
 		{
 			implicitHeight:	jaspTheme.splitHandleWidth * 0.8;
 			color:			SplitHandle.hovered || SplitHandle.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
