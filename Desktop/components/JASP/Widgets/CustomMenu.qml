@@ -16,9 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick				2.11
-import QtQuick.Controls		2.4
-import JASP.Controls		1.0 as JASPControl
+import QtQuick						2.15
+import QtQuick.Controls				2.4
+import JASP.Controls				1.0 as JASPControl
+import Qt5Compat.GraphicalEffects
 
 FocusScope
 {
@@ -129,7 +130,7 @@ FocusScope
 	Rectangle
 	{
 		id		: menuRectangle
-//		z		: menuShadow.z + 1
+		z		: menuShadow.z + 1
 		color	: jaspTheme.fileMenuColorBackground
 		focus	: true
 		width	: column.maxWidth + (itemScrollbar.visible ? itemScrollbar.width : 0)
@@ -299,7 +300,7 @@ FocusScope
 									smooth				: true
 									mipmap				: true
 									fillMode			: Image.PreserveAspectFit
-									visible				: menuImageSource !== ""
+									visible				: source != ""
 
 									anchors
 									{
@@ -337,14 +338,13 @@ FocusScope
 		}
 	}
 
-//	RectangularGlow
-//	{
-//		id				: menuShadow
-//		anchors.fill	: menuRectangle
-
-//		color			: jaspTheme.shadow
-//		spread			: 0.2
-//		cornerRadius	: menuRectangle.radius + glowRadius
-//		glowRadius		: 5
-//	}
+	RectangularGlow
+	{
+		id				: menuShadow
+		anchors.fill	: menuRectangle
+		color			: jaspTheme.shadow
+		spread			: 0.2
+		cornerRadius	: menuRectangle.radius + glowRadius
+		glowRadius		: 5
+	}
 }

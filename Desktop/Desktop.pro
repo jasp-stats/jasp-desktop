@@ -1,4 +1,4 @@
-QT      += webenginewidgets webenginequick webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2 core core5compat
+QT      += webenginequick webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2 core core5compat
 DEFINES += JASP_USES_QT_HERE
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
