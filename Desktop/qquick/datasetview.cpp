@@ -1073,8 +1073,15 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
 	const int linesPerNode = 2048;
 
+	if(oldNode)
+	{
+		delete oldNode;
+		oldNode = nullptr;
+	}
+
 	if(!oldNode)				oldNode = new QSGNode();
 	else if(!_linesWasChanged)	return oldNode;
+
 	
 	QSGGeometryNode * currentNode = static_cast<QSGGeometryNode*>(oldNode->firstChild());
 
@@ -1105,22 +1112,12 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		geometry->setLineWidth(1);
 		geometry->setDrawingMode(GL_LINES);
 
+		assert(sizeof(float) * 2 == geometry->sizeOfVertex());
+
 		float * vertexData = static_cast<float*>(geometry->vertexData());
 
 		memcpy(vertexData, _lines.data() + lineIndex, geomSize * 2 * sizeof(float));
 		lineIndex += 2 * geomSize;
-
-
-		/*QSGGeometry::Point2D *points = geometry->vertexDataAsPoint2D();
-
-		for(int geomIndex=0; geomIndex<geomSize; geomIndex+=2)
-		{
-			points[geomIndex    ].x = _lines[lineIndex + 0];
-			points[geomIndex    ].y = _lines[lineIndex + 1];
-			points[geomIndex + 1].x = _lines[lineIndex + 2];
-			points[geomIndex + 1].y = _lines[lineIndex + 3];
-			lineIndex += 4;
-		}*/
 
 		currentNode->setGeometry(geometry);
 		
@@ -1130,14 +1127,13 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		currentNode = static_cast<QSGGeometryNode*>(currentNode->nextSibling());
 	}
 
-
+/*
 	std::queue<QSGGeometryNode*> killThem;
 
 	while(currentNode != nullptr) //superfluous children! Lets kill em
 	{
 		killThem.push(currentNode);
 		currentNode = static_cast<QSGGeometryNode*>(currentNode->nextSibling());
-		oldNode->markDirty(QSGNode::DirtyNodeRemoved);
 	}
 
 	while(killThem.size() > 0)
@@ -1145,8 +1141,13 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		QSGGeometryNode * childToDie = killThem.front();
 		killThem.pop();
 
+		//oldNode->removeChildNode(childToDie);
+		//oldNode->markDirty(QSGNode::DirtyNodeRemoved);
+
+		std::cout << "DELETING STUFF" << std::endl;
+
 		delete childToDie;
-	}
+	}*/
 
 	_linesWasChanged = false;
 
