@@ -72,19 +72,22 @@ else()
 
 endif()
 
-set(CPM_USE_LOCAL_PACKAGES ON)
+# set(CPM_USE_LOCAL_PACKAGES ON)
 
+# This is rather slow because it has to download all the submodules,
+# when the final version of 1.78.0 is released, we can replace it
+# with the .tar.gz to have a faster download.
 # cpmaddpackage(
 #   NAME
 #   Boost
 #   VERSION
-#   1.77.0
+#   1.78.0
 #   OPTIONS
 #   "BUILD_TESTING OFF"
 #   GITHUB_REPOSITORY
 #   "boostorg/boost"
 #   GIT_TAG
-#   "boost-1.77.0")
+#   "boost-1.78.0.beta1")
 
 # cpmaddpackage(
 #   NAME
@@ -154,22 +157,20 @@ externalproject_add(
   STEP_TARGETS configure build install
   CONFIGURE_COMMAND ./autogen.sh
   COMMAND autoupdate
-  COMMAND
-    ./configure
-    --prefix=${CMAKE_CURRENT_BINARY_DIR}/Dependencies/readstat/src/readstat-install
+  COMMAND ./configure --prefix=<DOWNLOAD_DIR>/readstat-install
   BUILD_COMMAND ${MAKE})
 
-externalproject_get_property(readstat SOURCE_DIR)
-set(readstat_SOURCE_DIR ${SOURCE_DIR})
-set(readstat_BUILD_DIR ${readstat_SOURCE_DIR}/../readstat-build)
-set(readstat_INCLUDES_DIR ${readstat_BUILD_DIR}/include)
-set(readstat_LIBRARIES_DIR ${readstat_BUILD_DIR}/lib)
+externalproject_get_property(readstat DOWNLOAD_DIR)
+set(readstat_DOWNLOAD_DIR ${DOWNLOAD_DIR})
+set(readstat_BUILD_DIR ${readstat_DOWNLOAD_DIR}/readstat-build)
+set(readstat_INCLUDE_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/include)
+set(readstat_LIBRARY_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/lib)
 
 # Installing JAGS
 #
 # - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.
 # - With this, we can build JAGS, and link it, or even place it inside the the `R.framework`
-#
+# - You can run `make jags-build` or `make jags-install` to just play with JAGS target
 externalproject_add(
   jags
   PREFIX _deps/jags
@@ -179,13 +180,12 @@ externalproject_add(
   STEP_TARGETS configure build install
   CONFIGURE_COMMAND ${ACLOCAL}
   COMMAND ${AUTORECONF} -fi
-  COMMAND
-    ./configure --disable-dependency-tracking
-    --prefix=${CMAKE_CURRENT_BINARY_DIR}/Dependencies/jags/src/jags-install
+  COMMAND ./configure --disable-dependency-tracking
+          --prefix=<DOWNLOAD_DIR>/jags-install
   BUILD_COMMAND ${MAKE})
 
-externalproject_get_property(jags SOURCE_DIR)
-set(JAGS_SOURCE_DIR ${SOURCE_DIR})
-set(JAGS_BUILD_DIR ${JAGS_SOURCE_DIR}/../jags-build)
-set(JAGS_INCLUDES_DIR ${JAGS_BUILD_DIR}/include)
-set(JAGS_LIBRARIES_DIR ${JAGS_BUILD_DIR}/lib)
+externalproject_get_property(jags DOWNLOAD_DIR)
+set(jags_DOWNLOAD_DIR ${DOWNLOAD_DIR})
+set(jags_BUILD_DIR ${jags_DOWNLOAD_DIR}/jags-build)
+set(jags_INCLUDE_DIRS ${jags_DOWNLOAD_DIR}/jags-install/include)
+set(jags_LIBRARY_DIRS ${jags_DOWNLOAD_DIR}/jags-install/lib)

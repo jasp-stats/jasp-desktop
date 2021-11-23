@@ -4,7 +4,7 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Common)
 
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
-# pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
+
 pkg_check_modules(
   LIBJSON
   REQUIRED

@@ -15,11 +15,24 @@ pkg_check_modules(
 find_package(ZLIB)
 # pkg_check_modules(LIBZ REQUIRED IMPORTED_TARGET zlib)
 
-pkg_check_modules(
-  LIBREADSTAT
-  REQUIRED
-  IMPORTED_TARGET
-  readstat)
+if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
+  pkg_check_modules(
+    LIBREADSTAT
+    REQUIRED
+    IMPORTED_TARGET
+    readstat)
+else()
+  find_library(
+    LIBREADSTAT
+    NAMES readstat
+    PATHS ${readstat_LIBRARIES_DIR})
+
+  set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
+  set(LIBREADSTAT_LIBRARY_DIRS ${LIBREADSTAT})
+endif()
+# cmake_print_variables(LIBREADSTAT_INCLUDE_DIRS)
+# cmake_print_variables(LIBREADSTAT_LIBRARY_DIRS)
+# cmake_print_variables(LIBREADSTAT)
 
 find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
@@ -133,14 +146,17 @@ target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
 
 target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
 
-add_dependencies(JASP JASPEngine)
+if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
+  add_dependencies(JASP JASPEngine)
+else()
+  add_dependencies(JASP JASPEngine readstat-install)
+endif()
 
 target_include_directories(
   JASP
   PUBLIC ${Boost_INCLUDE_DIRS}
          ${LIBJSON_INCLUDE_DIRS}
-         # ${LibArchive_INCLUDE_DIRS}
-         ${LIBARCHIVE_INCLUDE_DIRS}
+         ${LibArchive_INCLUDE_DIRS}
          ${LIBREADSTAT_INCLUDE_DIRS}
          ${PROJECT_SOURCE_DIR}/Common
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
@@ -164,7 +180,7 @@ target_link_libraries(
          Qt::QuickControls2
          Qt::QuickWidgets
          Qt::Core5Compat
-         PkgConfig::LIBREADSTAT
+         ${LIBREADSTAT_LIBRARY_DIRS}
          ${_R_Framework})
 
 set_target_properties(
