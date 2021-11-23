@@ -3,49 +3,80 @@ cmake_minimum_required(VERSION 3.21)
 include(ExternalProject)
 include(Tools/cmake/CPM.cmake)
 
+# FetchContent variables will be lowercased, that's why we have
+# werid variable names like r_win_exe_POPULATED
+
+set(R_VERSION "4.1.2")
+
+# Here,we download the R binary, extract its content and copy it into the
+# right place.
+#   - [ ] I still have to test the windows version
+#   - On macOS, this will place the R.framework into the ${CMAKE_SOURCE_DIR}/Frameworks
+#
 if(WIN32)
-  # That's the gist of it, but I still need to test it on Windows
   find_program(EXTRACT NAMES extract)
-  externalproject_add(
-    Rexe
-    PREFIX Dependencies/R
-    URL https://cran.r-project.org/bin/windows/base/R-4.1.2-win.exe
-    # URLHASH ""
+
+  set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
+  set(R_DOWNLOAD_URL
+      "https://cran.r-project.org/bin/windows/base/R-${R_VERSION}-win.exe")
+
+  fetchcontent_declare(
+    r_win_exe
+    URL ${R_DOWNLOAD_URL}
     DOWNLOAD_NO_EXTRACT ON
-    STEP_TARGETS configure build install
-    DOWNLOAD_NAME R-4.1.2-win.exe
-    CONFIGURE_COMMAND extract /c <DOWNLOAD_DIR>/R-4.1.2-win.exe /l <BINARY_DIR>
-    # BUILD_COMMAND ""
-    # INSTALL_COMMAND ""
-    )
+    DOWNLOAD_NAME ${R_PACKAGE_NAME})
+
+  fetchcontent_populate(r_win_exe)
+  fetchcontent_getproperties(r_win_exe)
+
+  if(r_win_exe_POPULATED)
+    execute_process(
+      WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
+      COMMAND extract /c ${R_PACKAGE_NAME} /l ${r_win_exe_BINARY_DIR}
+      COMMAND cp -r ${r_win_exe_BINARY_DIR} ${CMAKE_SOURCE_DIR}/R)
+  endif()
+
 elseif(APPLE)
 
-  # Caveat:
-  #   - There is a change that this overwrite the previously downloaded 
-  #     and configured R.framework, but I am not sure, for now, I am just
-  #     downloading it, and when we decide to use it, we can see if it 
-  #     happens, then I can use `FetchContent` to download and configure it
-  #     during the Configuration time.
-  externalproject_add(
-    Rframework
-    PREFIX Dependencies/Rframework
-    URL https://cran.r-project.org/bin/macosx/base/R-4.1.2.pkg
-    # URLHASH ""
-    DOWNLOAD_NO_EXTRACT ON
-    BUILD_IN_SOURCE ON
-    STEP_TARGETS configure build install
-    DOWNLOAD_NAME R-4.1.2.pkg
-    CONFIGURE_COMMAND xar -xf <DOWNLOAD_DIR>/R-4.1.2.pkg
-    BUILD_COMMAND tar -xvf R-fw.pkg/Payload
-    # BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    # INSTALL_COMMAND cp -r <BINARY_DIR>/R.framework ${CMAKE_SOURCE_DIR}/Frameworks
-  )
+  if(CMAKE_HOST_SYSTEM_PROCESSOR
+     STREQUAL
+     "arm64")
+    set(R_PACKAGE_NAME "R-${R_VERSION}-${CMAKE_HOST_SYSTEM_PROCESSOR}.pkg")
+    set(R_DOWNLOAD_URL
+        "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
+    )
+  else()
+    set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
+    set(R_DOWNLOAD_URL
+        "https://cran.r-project.org/bin/macosx/base/R-${R_VERSION}.pkg")
+  endif()
+
+  if(NOT
+     EXISTS
+     ${CMAKE_SOURCE_DIR}/Frameworks/R.framework)
+
+    fetchcontent_declare(
+      r_pkg
+      URL ${R_DOWNLOAD_URL}
+      DOWNLOAD_NO_EXTRACT ON
+      DOWNLOAD_NAME ${R_PACKAGE_NAME})
+
+    fetchcontent_populate(r_pkg)
+    fetchcontent_getproperties(r_pkg)
+
+    if(r_pkg_POPULATED)
+      execute_process(
+        WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+        COMMAND xar -xf ${R_PACKAGE_NAME}
+        COMMAND tar xvf R-fw.pkg/Payload
+        COMMAND cp -r R.framework ${CMAKE_SOURCE_DIR}/Frameworks/)
+    endif()
+
+  endif()
 
 else()
 
 endif()
-
 
 set(CPM_USE_LOCAL_PACKAGES ON)
 
@@ -97,23 +128,39 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 #   GIT_TAG
 #   "v1.2.11")
 
-find_program(MAKE NAMES gmake nmake make)
+find_program(
+  MAKE
+  NAMES gmake
+        nmake
+        make)
 find_program(ACLOCAL NAMES aclocal)
 find_program(AUTOCONF NAMES autoconf)
 find_program(AUTORECONF NAMES autoreconf)
 
-# Installing ReadStat
+# Installing Irregular Dependencies
 #
+# - [ ] CMake caches the build and everything, but it does it
+#       after running the `./configure`. I think I can simply
+#       and if they exist, ignore the process! For now, I leave
+#       it like this that I can be sure that raising issues is not
+#       due to this. So, be prepared for some extra ./configure
+#       messages.
+
+# I would love to have these active that we don't get a lot
+# of build messages, but CMake proved to be not so good at
+# dealing with a tiniest anomoly that the build process throw
+# at it, so, if even a warning happens, it stops the build!
+#
+# - LOG_CONFIGURE ON
+# - LOG_BUILD ON
+# - LOG_INSTALL ON
+# - LOG_OUTPUT_ON_FAILURE ON
 externalproject_add(
   readstat
   PREFIX Dependencies/readstat
   GIT_REPOSITORY "https://github.com/WizardMac/ReadStat"
   GIT_TAG "v1.1.7"
   BUILD_IN_SOURCE ON
-  # LOG_CONFIGURE ON
-  # LOG_BUILD ON
-  # LOG_INSTALL ON
-  # LOG_OUTPUT_ON_FAILURE ON
   CONFIGURE_COMMAND ./autogen.sh
   COMMAND autoupdate
   COMMAND
@@ -138,10 +185,6 @@ externalproject_add(
   HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
   HG_TAG "release-4_3_0"
   BUILD_IN_SOURCE ON
-  LOG_CONFIGURE ON
-  LOG_BUILD ON
-  LOG_INSTALL ON
-  LOG_OUTPUT_ON_FAILURE ON
   STEP_TARGETS configure install
   CONFIGURE_COMMAND ${ACLOCAL}
   COMMAND ${AUTORECONF} -fi

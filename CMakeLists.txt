@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.21)
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
 
-project(JASP VERSION 0.16.0.0 LANGUAGES CXX C)
+project(
+  JASP
+  VERSION 0.16.0.0
+  LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,6 +21,10 @@ option(
   "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
   OFF)
 
+# If set, CMake tries to download all the necessary dependencies
+#
+#   - R.exe or R.framework depending on the system
+#   - Boost, jsoncpp, libarchive, zlib, readstat, and jags
 if(INSTALL_JASP_REQUIRED_LIBRARIES)
   include(Dependencies.cmake)
 endif()
@@ -40,6 +47,9 @@ message(STATUS "System type is " ${SYSTEM_TYPE})
 include(JASP.cmake)
 
 # R/Environment Configurations
+#
+#   - Assuming that R.framework exists, this set the all the R-related paths
+#   - Install RInside, and Rcpp, and prepare them to be linked to the R-Interface
 include(R.cmake)
 
 add_subdirectory(Common)
