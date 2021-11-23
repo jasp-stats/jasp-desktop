@@ -29,7 +29,7 @@ Item
 
 	onWidthChanged:
 	{
-		if(!mainWindow.analysesAvailable)												data.width = splitViewContainer.width
+		if(!mainWindow.analysesAvailable)												data.maximizeData();
 		else if(data.wasMaximized)														return; //wasMaximized binds!
 		else if(splitViewContainer.width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
 	}
@@ -39,48 +39,75 @@ Item
 		id:				panelSplit
 		orientation:	Qt.Horizontal
 		height:			parent.height
-		width:			parent.width + hackySplitHandlerHideWidth
+		width:			parent.width + hackySplitHandlerHideWidth + leftHandSplitHandlerSpace
+		x:				-leftHandSplitHandlerSpace
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
-		property int  hackySplitHandlerHideWidth:	( analysesModel.visible ? jaspTheme.formWidth + 3 + jaspTheme.scrollbarBoxWidthBig : 0) + ( mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0 )
+		//And also on the left side to allow it to move out of the screen there.
+		property int	hackySplitHandlerHideWidth:	( mainWindow.analysesAvailable ? (analysesModel.visible ? leftHandSplitHandlerSpace : 0 ) + jaspTheme.splitHandleWidth : 0 )
+		property int	leftHandSplitHandlerSpace:	jaspTheme.formWidth + 3 + jaspTheme.scrollbarBoxWidthBig
+
+		onResizingChanged: if(!resizing) data.makeSureHandleVisible();
 
 		DataPanel
 		{
 			id:						data
 			visible:				mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
 			z:						1
+			leftHandSpace:			panelSplit.leftHandSplitHandlerSpace
 
-			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0)
+			property real baseMaxWidth:					fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0)
+			property real maxWidth:						leftHandSpace + baseMaxWidth
 			property bool fakeEmptyDataForSumStatsEtc:	!mainWindow.dataAvailable && mainWindow.analysesAvailable
 			property bool wasMaximized:					false
+
+			function makeSureHandleVisible()
+			{
+				if(!analysesModel.visible && data.width < leftHandSpace)
+					data.minimizeData();
+				else if(data.width - leftHandSpace > splitViewContainer.width - jaspTheme.splitHandleWidth)
+					data.maximizeData();
+			}
 
 			onWidthChanged:
 			{
 
-				var iAmBig = width > 0;
-				 if(iAmBig !== mainWindow.dataPanelVisible)
+				var iAmBig = width > leftHandSpace;
+				if(iAmBig != mainWindow.dataPanelVisible)
 					mainWindow.dataPanelVisible = iAmBig
 
 				if(fakeEmptyDataForSumStatsEtc)
 				{
 					mainWindow.dataPanelVisible = false;
-					width = 0;
+					width = leftHandSpace;
 				}
 
-				if(data.width !== data.maxWidth)
+				if(data.width != data.maxWidth)
 					data.wasMaximized = false;
+
+				makeSureHandleVisible();
 			}
 
 			function maximizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true; }
-			function minimizeData()	{ SplitView.preferredWidth = 0;													data.wasMaximized = false; }
+			function minimizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return leftHandSpace; });	data.wasMaximized = false; }
 
 			Connections
 			{
-				target:						mainWindow
+				target:		mainWindow
 				function onDataPanelVisibleChanged(visible)
 				{
-					if (visible && data.width === 0)	data.maximizeData();
-					else if(!visible && data.width > 0)	data.minimizeData();
+					if (visible && data.width		<=	data.leftHandSpace)	data.maximizeData();
+					else if(!visible && data.width	>	data.leftHandSpace)	data.minimizeData();
+				}
+			}
+
+			Connections
+			{
+				target:	analysesModel
+				function onVisibleChanged(visible)
+				{
+					if(!visible)
+						data.makeSureHandleVisible();
 				}
 			}
 		}
@@ -90,6 +117,8 @@ Item
 		{
 			implicitWidth:			splitHandle.width + analyses.implicitWidth
 			width:					implicitWidth
+
+
 
 			JASPSplitHandle
 			{
