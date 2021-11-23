@@ -10,10 +10,14 @@ set(CURRENT_R_VERSION "4.1")
 set(GIT_EXEC "git")
 
 message(CHECK_START "Retrieving the git-branch information")
-execute_process(COMMAND ${GIT_EXEC} rev-parse --abbrev-ref HEAD
-                OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND ${GIT_EXEC} rev-parse --verify HEAD
-                OUTPUT_VARIABLE GIT_COMMIT OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(
+  COMMAND ${GIT_EXEC} rev-parse --abbrev-ref HEAD
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(
+  COMMAND ${GIT_EXEC} rev-parse --verify HEAD
+  OUTPUT_VARIABLE GIT_COMMIT
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 message(CHECK_PASS "done.")
 
 set(GIT_CURRENT_BRANCH GIT_BRANCH)

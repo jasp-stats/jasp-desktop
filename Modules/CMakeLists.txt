@@ -40,16 +40,21 @@ set(JASP_EXTRA_MODULES
 
 # TODO: Standardize these names, either use PATH, ROOT, or DIR, but everywhere
 
-set(MODULES_SOURCE_PATH ${PROJECT_SOURCE_DIR}/Modules
+set(MODULES_SOURCE_PATH
+    ${PROJECT_SOURCE_DIR}/Modules
     CACHE PATH "Location of JASP Modules")
 
-set(MODULES_RENV_PATH "${CMAKE_BINARY_DIR}/Desktop/Modules"
+set(MODULES_RENV_PATH
+    "${CMAKE_BINARY_DIR}/Desktop/Modules"
     CACHE PATH "Location of the renv libraries")
-set(MODULES_RENV_ROOT_PATH "${MODULES_RENV_PATH}/renv-root"
+set(MODULES_RENV_ROOT_PATH
+    "${MODULES_RENV_PATH}/renv-root"
     CACHE PATH "Location of renv root directories")
-set(MODULES_RENV_CACHE_PATH "${MODULES_RENV_PATH}/renv-cache"
+set(MODULES_RENV_CACHE_PATH
+    "${MODULES_RENV_PATH}/renv-cache"
     CACHE PATH "Location of renv cache directories")
-set(JASP_ENGINE_PATH "${PROJECT_BINARY_DIR}/Desktop/"
+set(JASP_ENGINE_PATH
+    "${PROJECT_BINARY_DIR}/Desktop/"
     CACHE PATH "Location of the JASPEngine")
 
 make_directory(${MODULES_RENV_PATH})
@@ -84,7 +89,12 @@ execute_process(
   COMMAND
     ${_Rscript_EXE} -e
     "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL)"
-  OUTPUT_QUIET ERROR_QUIET COMMAND_ERROR_IS_FATAL ANY COMMAND_ECHO NONE)
+  OUTPUT_QUIET
+  ERROR_QUIET
+  COMMAND_ERROR_IS_FATAL
+  ANY
+  COMMAND_ECHO
+  NONE)
 message(CHECK_PASS "successful.")
 
 message(STATUS "Configuring Common Modules...")

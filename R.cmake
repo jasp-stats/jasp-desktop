@@ -17,7 +17,11 @@ if(BUILD_WITH_SYSTEM_R)
 
   find_package(PkgConfig REQUIRED)
 
-  pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
+  pkg_check_modules(
+    LIBR
+    REQUIRED
+    IMPORTED_TARGET
+    libR)
 
   if(${LIBR_FOUND})
 
@@ -35,8 +39,10 @@ if(BUILD_WITH_SYSTEM_R)
     # 'Rcpp.so'") endif()
 
     message(STATUS "[JASP]: Checking for 'RInside.so'")
-    find_library(_LIB_RInside NAMES RInside.so PATHS ${_RInside_HOME}/libs
-                                                     NO_CACHE REQUIRED)
+    find_library(
+      _LIB_RInside
+      NAMES RInside.so
+      PATHS ${_RInside_HOME}/libs NO_CACHE REQUIRED)
 
     if(_LIB_RInside)
       message(STATUS "[JASP]: Found the 'RInside.so' library in "
@@ -64,8 +70,11 @@ else()
     set(_R_FRAMEWORK_PATH ${CMAKE_SOURCE_DIR}/Frameworks)
 
     message(CHECK_START "Checking for 'R.framework'")
-    find_library(_R_Framework NAMES R PATHS ${_R_FRAMEWORK_PATH}
-                 NO_DEFAULT_PATH NO_CACHE REQUIRED)
+    find_library(
+      _R_Framework
+      NAMES R
+      PATHS ${_R_FRAMEWORK_PATH}
+      NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
     if(_R_Framework)
       message(CHECK_PASS "found.")
@@ -74,8 +83,11 @@ else()
     endif()
 
     message(CHECK_START "Checking for 'libR'")
-    find_library(_LIB_R NAMES R PATHS ${_R_HOME}/lib NO_DEFAULT_PATH NO_CACHE
-                                                     REQUIRED)
+    find_library(
+      _LIB_R
+      NAMES R
+      PATHS ${_R_HOME}/lib
+      NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
     if(_LIB_R)
       message(CHECK_PASS "found.")
@@ -100,8 +112,11 @@ else()
     endif()
 
     message(CHECK_START "Checking for 'libRInside'")
-    find_library(_LIB_RInside NAMES RInside PATHS ${_RInside_HOME}/lib
-                 NO_DEFAULT_PATH NO_CACHE REQUIRED)
+    find_library(
+      _LIB_RInside
+      NAMES RInside
+      PATHS ${_RInside_HOME}/lib
+      NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
     if(_LIB_RInside)
       message(CHECK_PASS "found.")

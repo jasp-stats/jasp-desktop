@@ -6,17 +6,31 @@ find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 
 # pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
-pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
+pkg_check_modules(
+  LIBJSON
+  REQUIRED
+  IMPORTED_TARGET
+  jsoncpp)
 
 find_package(ZLIB)
 # pkg_check_modules(LIBZ REQUIRED IMPORTED_TARGET zlib)
 
-pkg_check_modules(LIBREADSTAT REQUIRED IMPORTED_TARGET readstat)
+pkg_check_modules(
+  LIBREADSTAT
+  REQUIRED
+  IMPORTED_TARGET
+  readstat)
 
 find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
-find_package(Boost REQUIRED COMPONENTS nowide filesystem system date_time timer
-                                       chrono)
+find_package(
+  Boost REQUIRED
+  COMPONENTS nowide
+             filesystem
+             system
+             date_time
+             timer
+             chrono)
 find_package(
   Qt6 REQUIRED
   COMPONENTS Core
@@ -60,7 +74,11 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
   # ndividually set the file's path properties.
   foreach(FILE ${BUNDLE_RESOURCES})
     # Get the relative path from the Resources to the particular file.
-    file(RELATIVE_PATH NEW_FILE "${CMAKE_SOURCE_DIR}/Resources" ${FILE})
+    file(
+      RELATIVE_PATH
+      NEW_FILE
+      "${CMAKE_SOURCE_DIR}/Resources"
+      ${FILE})
 
     # Get the relative path to the file.
     get_filename_component(NEW_FILE_PATH ${NEW_FILE} DIRECTORY)
@@ -92,13 +110,23 @@ endif()
 #              )
 
 if(CMAKE_GENERATOR STREQUAL "Xcode")
-  qt_add_executable(JASP MACOSX_BUNDLE ${HEADER_FILES} ${SOURCE_FILES}
-                    ${BUNDLE_RESOURCES} ${_R_Framework})
+  qt_add_executable(
+    JASP
+    MACOSX_BUNDLE
+    ${HEADER_FILES}
+    ${SOURCE_FILES}
+    ${BUNDLE_RESOURCES}
+    ${_R_Framework})
 
   target_compile_definitions(JASP PUBLIC MACOSX_BUNDLE)
 else()
-  qt_add_executable(JASP ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES}
-                    ${BUNDLE_RESOURCES} ${_R_Framework})
+  qt_add_executable(
+    JASP
+    ${SYSTEM_TYPE}
+    ${HEADER_FILES}
+    ${SOURCE_FILES}
+    ${BUNDLE_RESOURCES}
+    ${_R_Framework})
 endif()
 
 target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)

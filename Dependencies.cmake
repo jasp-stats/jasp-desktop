@@ -38,9 +38,7 @@ if(WIN32)
 
 elseif(APPLE)
 
-  if(CMAKE_HOST_SYSTEM_PROCESSOR
-     STREQUAL
-     "arm64")
+  if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
     set(R_PACKAGE_NAME "R-${R_VERSION}-${CMAKE_HOST_SYSTEM_PROCESSOR}.pkg")
     set(R_DOWNLOAD_URL
         "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
@@ -51,9 +49,7 @@ elseif(APPLE)
         "https://cran.r-project.org/bin/macosx/base/R-${R_VERSION}.pkg")
   endif()
 
-  if(NOT
-     EXISTS
-     ${CMAKE_SOURCE_DIR}/Frameworks/R.framework)
+  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/Frameworks/R.framework)
 
     fetchcontent_declare(
       r_pkg
@@ -128,11 +124,7 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 #   GIT_TAG
 #   "v1.2.11")
 
-find_program(
-  MAKE
-  NAMES gmake
-        nmake
-        make)
+find_program(MAKE NAMES gmake nmake make)
 find_program(ACLOCAL NAMES aclocal)
 find_program(AUTOCONF NAMES autoconf)
 find_program(AUTORECONF NAMES autoreconf)

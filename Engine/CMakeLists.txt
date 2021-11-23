@@ -9,11 +9,22 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 # pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
-pkg_check_modules(LIBJSON REQUIRED IMPORTED_TARGET jsoncpp)
+pkg_check_modules(
+  LIBJSON
+  REQUIRED
+  IMPORTED_TARGET
+  jsoncpp)
 
 # TODO: I don't think Engine needs all of these, but for now, I leave them here
-find_package(Boost COMPONENTS nowide filesystem system date_time timer chrono
-             REQUIRED)
+find_package(
+  Boost
+  COMPONENTS nowide
+             filesystem
+             system
+             date_time
+             timer
+             chrono
+  REQUIRED)
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
@@ -34,7 +45,11 @@ target_include_directories(
 
 if(BUILD_WITH_SYSTEM_R)
   message(STATUS "Building with system R..")
-  pkg_check_modules(LIBR REQUIRED IMPORTED_TARGET libR)
+  pkg_check_modules(
+    LIBR
+    REQUIRED
+    IMPORTED_TARGET
+    libR)
 
   target_include_directories(
     JASPEngine PUBLIC ${LIBR_INCLUDE_DIRS} ${_Rcpp_HOME}/include
@@ -99,8 +114,11 @@ if(APPLE)
   # target_compile_definitions(JASPEngine PUBLIC )
 elseif(WIN32)
   target_compile_definitions(
-    JASPEngine PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
-                      BOOST_USE_WINDOWS_H NOMINMAX WIN32_LEAN_AND_MEAN)
+    JASPEngine
+    PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+           BOOST_USE_WINDOWS_H
+           NOMINMAX
+           WIN32_LEAN_AND_MEAN)
 
   target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
 endif()
