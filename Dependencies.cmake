@@ -6,8 +6,6 @@ include(Tools/cmake/CPM.cmake)
 # FetchContent variables will be lowercased, that's why we have
 # werid variable names like r_win_exe_POPULATED
 
-set(R_VERSION "4.1.2")
-
 # Here,we download the R binary, extract its content and copy it into the
 # right place.
 #   - [ ] I still have to test the windows version

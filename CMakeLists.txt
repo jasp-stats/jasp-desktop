@@ -21,6 +21,9 @@ option(
   "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
   OFF)
 
+set(R_VERSION "4.1.2")
+set(R_VERSION_MAJOR_MINOR "4.1")
+
 # If set, CMake tries to download all the necessary dependencies
 #
 #   - R.exe or R.framework depending on the system
