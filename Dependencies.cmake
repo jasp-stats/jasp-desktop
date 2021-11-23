@@ -149,10 +149,11 @@ find_program(AUTORECONF NAMES autoreconf)
 # - LOG_OUTPUT_ON_FAILURE ON
 externalproject_add(
   readstat
-  PREFIX Dependencies/readstat
+  PREFIX _deps/readstat
   GIT_REPOSITORY "https://github.com/WizardMac/ReadStat"
   GIT_TAG "v1.1.7"
   BUILD_IN_SOURCE ON
+  STEP_TARGETS configure build install
   CONFIGURE_COMMAND ./autogen.sh
   COMMAND autoupdate
   COMMAND
@@ -173,11 +174,11 @@ set(readstat_LIBRARIES_DIR ${readstat_BUILD_DIR}/lib)
 #
 externalproject_add(
   jags
-  PREFIX Dependencies/jags
+  PREFIX _deps/jags
   HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
   HG_TAG "release-4_3_0"
   BUILD_IN_SOURCE ON
-  STEP_TARGETS configure install
+  STEP_TARGETS configure build install
   CONFIGURE_COMMAND ${ACLOCAL}
   COMMAND ${AUTORECONF} -fi
   COMMAND
