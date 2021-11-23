@@ -32,7 +32,6 @@
         <file>components/JASP/Widgets/SubjectivePriors.qml</file>
         <file>components/JASP/Widgets/ContrastsList.qml</file>
         <file>components/JASP/Widgets/Chi2TestTableView.qml</file>
-        <file>components/JASP/Widgets/BasicTableViewJasp.qml</file>
         <file>components/JASP/Widgets/ComputeColumnWindow.qml</file>
         <file>components/JASP/Widgets/CreateComputeColumnDialog.qml</file>
         <file>components/JASP/Widgets/CustomMenu.qml</file>
