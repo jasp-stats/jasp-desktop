@@ -144,5 +144,9 @@
         <file>components/JASP/Controls/FactorLevelList.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsTextInput.qml</file>
         <file>components/JASP/Widgets/RoundedButton.qml</file>
+        <file>components/JASP/Widgets/ImageInverter.frag</file>
+        <file>components/JASP/Widgets/ImageInverter.vert</file>
+        <file>components/JASP/Widgets/ImageInverter.frag.qsb</file>
+        <file>components/JASP/Widgets/ImageInverter.vert.qsb</file>
     </qresource>
 </RCC>
