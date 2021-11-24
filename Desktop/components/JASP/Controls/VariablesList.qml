@@ -284,7 +284,7 @@ VariablesListBase
 		anchors.fill:	itemRectangle
 		keys:			variablesList.dropKeys
 
-		onPositionChanged:
+		onPositionChanged:  (drag)=>
 		{
 			if (!itemRectangle.enabled || variablesList.maxRows === 1 || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
 

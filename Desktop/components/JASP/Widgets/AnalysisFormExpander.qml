@@ -16,7 +16,7 @@ DropArea
 	property alias		formQmlUrl:				loader.formQmlUrl
 	property alias		backgroundFlickable:	loader.backgroundFlickable
 
-	onEntered:
+	onEntered: (drag)=>
 	{
 		if (drag.source.myIndex !== myIndex)
 		{
