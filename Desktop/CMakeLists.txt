@@ -5,7 +5,6 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 
-# pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 pkg_check_modules(
   LIBJSON
   REQUIRED
@@ -13,7 +12,6 @@ pkg_check_modules(
   jsoncpp)
 
 find_package(ZLIB)
-# pkg_check_modules(LIBZ REQUIRED IMPORTED_TARGET zlib)
 
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
   pkg_check_modules(

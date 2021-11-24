@@ -46,7 +46,6 @@ option(PRINT_ENGINE_MESSAGES "Whether or not JASPEngine prints log messages"
        OFF)
 
 option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
-option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
 option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
 
 # This is being set using the `Sys.setenv()` and later on when

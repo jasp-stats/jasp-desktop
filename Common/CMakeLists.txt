@@ -39,23 +39,8 @@ target_include_directories(
          # ${LIBARCHIVE_INCLUDE_DIRS}
          jaspColumnEncoder)
 
-if(BUILD_WITH_SYSTEM_R)
-  message(STATUS "Building with system R..")
-  pkg_check_modules(
-    LIBR
-    REQUIRED
-    IMPORTED_TARGET
-    libR)
-
-  target_include_directories(
-    Common PUBLIC ${LIBR_INCLUDE_DIRS} ${_Rcpp_HOME}/include
-                  ${_RInside_HOME}/include)
-
-else()
-
-  target_include_directories(Common PUBLIC ${_R_HOME}/include
-                                           ${_R_HOME}/library/Rcpp/include)
-endif()
+target_include_directories(Common PUBLIC ${_R_HOME}/include
+                                         ${_Rcpp_HOME}/include)
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 

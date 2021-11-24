@@ -8,7 +8,7 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
-# pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
+
 pkg_check_modules(
   LIBJSON
   REQUIRED
