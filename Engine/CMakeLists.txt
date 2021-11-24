@@ -87,6 +87,7 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
   # ${CMAKE_CURRENT_BINARY_DIR}/Debug/JASPEngine ${MACOSX_BUNDLE_RUNTIME_DIR}
   # COMMENT "       [JASP]: Placing the Engine into the MacOS folder...")
 
+  # I don't think this works
   set_target_properties(
     JASPEngine
     PROPERTIES XCODE_ATTRIBUTE_SKIP_INSTALL NO

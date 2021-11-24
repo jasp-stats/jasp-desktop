@@ -159,27 +159,39 @@ target_include_directories(
          ${PROJECT_SOURCE_DIR}/Common
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
-target_link_libraries(
-  JASP
-  PUBLIC Common
-         Qt::Core
-         Qt::Gui
-         Qt::OpenGL
-         Qt::Widgets
-         Qt::Qml
-         Qt::WebEngineWidgets
-         Qt::WebEngineQuick
-         Qt::WebChannel
-         Qt::Svg
-         Qt::Network
-         Qt::PrintSupport
-         Qt::Xml
-         Qt::Quick
-         Qt::QuickControls2
-         Qt::QuickWidgets
-         Qt::Core5Compat
-         ${LIBREADSTAT_LIBRARY_DIRS}
-         ${_R_Framework})
+if(APPLE)
+
+  target_link_libraries(
+    JASP
+    PUBLIC Common
+           Qt::Core
+           Qt::Gui
+           Qt::OpenGL
+           Qt::Widgets
+           Qt::Qml
+           Qt::WebEngineWidgets
+           Qt::WebEngineQuick
+           Qt::WebChannel
+           Qt::Svg
+           Qt::Network
+           Qt::PrintSupport
+           Qt::Xml
+           Qt::Quick
+           Qt::QuickControls2
+           Qt::QuickWidgets
+           Qt::Core5Compat
+           # Only one of these will have value
+           ${LIBREADSTAT}
+           PkgConfig::LIBREADSTAT
+           ${_R_Framework})
+
+elseif(WIN32)
+  # As far as I understoon, on Windows we don't need to do a lot.
+  # I only want to remove the _R_Framework explicitely. But, as we
+  # progress that can be dealt with with a variable.
+else() # Linux
+
+endif()
 
 set_target_properties(
   JASP PROPERTIES XCODE_ATTRIBUTE_SKIP_INSTALL NO XCODE_ATTRIBUTE_INSTALL_PATH

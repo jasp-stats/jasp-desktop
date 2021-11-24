@@ -127,6 +127,10 @@ else()
       message(CHECK_FAIL "not found in ${_RInside_HOME}/libs")
     endif()
 
+  elseif(WIN32)
+    # TODO
+    #   - [ ] I can use the PATH to R/ as _R_framework and everything else should just work
+
   endif()
 
 endif()
