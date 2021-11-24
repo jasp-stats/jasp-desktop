@@ -28,9 +28,6 @@ else()
   set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
   set(LIBREADSTAT_LIBRARY_DIRS ${LIBREADSTAT})
 endif()
-# cmake_print_variables(LIBREADSTAT_INCLUDE_DIRS)
-# cmake_print_variables(LIBREADSTAT_LIBRARY_DIRS)
-# cmake_print_variables(LIBREADSTAT)
 
 find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
@@ -42,6 +39,7 @@ find_package(
              date_time
              timer
              chrono)
+
 find_package(
   Qt6 REQUIRED
   COMPONENTS Core
@@ -49,7 +47,7 @@ find_package(
              OpenGL
              Widgets
              Qml
-             WebEngineWidgets
+             WebEngineWidgets # remove this after the rebase
              WebEngineQuick
              WebChannel
              Svg

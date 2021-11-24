@@ -15,19 +15,6 @@ pkg_check_modules(
   IMPORTED_TARGET
   jsoncpp)
 
-# TODO: I don't think Engine needs all of these, but for now, I leave them here
-find_package(
-  Boost
-  COMPONENTS nowide
-             filesystem
-             system
-             date_time
-             timer
-             chrono
-  REQUIRED)
-
-find_package(Qt6 REQUIRED COMPONENTS Core)
-
 add_executable(JASPEngine ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
 
 target_include_directories(
@@ -40,8 +27,6 @@ target_include_directories(
          ${PROJECT_SOURCE_DIR}/R-Interface
          ${PROJECT_SOURCE_DIR}/Common/
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
-
-# configure_file(appinfo.cpp.in appinfo.cpp)
 
 if(BUILD_WITH_SYSTEM_R)
   message(STATUS "Building with system R..")

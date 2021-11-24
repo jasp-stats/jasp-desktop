@@ -2,26 +2,23 @@ cmake_minimum_required(VERSION 3.21)
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-# TODOs:
-# - [ ] Install JAGS as a Framework
-
-# We can perhaps install a lot of the packages that we need before
-# getting into JASP stuff, if they don't cause any clash
-set(R_REQUIRED_MODULES "devtools")
-
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
     # "jaspAnova"
-    # "jaspFactor"
+    "jaspFactor"
     # "jaspFrequencies"
-    # "jaspRegression"
+    "jaspRegression"
     # "jaspTTests"
     # "jaspMixedModels"
 )
 
+set(JASP_COMMON_MODULES_COPY ${JASP_COMMON_MODULES})
+list(POP_FRONT JASP_COMMON_MODULES_COPY FIRST_COMMON_MODULE)
+cmake_print_variables(FIRST_COMMON_MODULE)
+
 set(JASP_EXTRA_MODULES
     # "jaspAudit"
-    # "jaspBain"
+    "jaspBain"
     # "jaspNetwork"
     # "jaspSem"
     # "jaspMachineLearning"
@@ -37,6 +34,9 @@ set(JASP_EXTRA_MODULES
     # "jaspProcessControl"
     # "jaspCircular"
 )
+# list(REVERSE JASP_EXTRA_MODULES)
+set(JASP_EXTRA_MODULES_COPY ${JASP_EXTRA_MODULES})
+list(POP_FRONT JASP_EXTRA_MODULES_COPY)
 
 # TODO: Standardize these names, either use PATH, ROOT, or DIR, but everywhere
 
@@ -70,20 +70,7 @@ add_dependencies(JASP Modules)
 
 message(STATUS "Installing Required R Modules...")
 
-foreach(MODULE ${R_REQUIRED_MODULES})
-
-  add_custom_command(
-    TARGET Modules
-    PRE_BUILD
-    COMMAND ${_Rscript_EXE} -e
-            'install.packages\("${MODULE}", repos="http://cran.r-project.org"\)'
-    COMMENT "------ Installing ${MODULE}...")
-
-endforeach()
-
-# I need to make sure that this goes before other jaspModules.
-# I am still not sure if it's better to use the execute_process or
-# create a custom_command
+# This happens during the configuration!
 message(CHECK_START "Installing the 'jaspBase'")
 execute_process(
   COMMAND
@@ -112,6 +99,13 @@ foreach(MODULE ${JASP_COMMON_MODULES})
     COMMAND ${_Rscript_EXE} ${MODULES_RENV_PATH}/${MODULE}/install_module.R
     BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}/
     COMMENT "------ Installing ${MODULE}...")
+
+  list(POP_FRONT JASP_COMMON_MODULES_COPY PREVIOUS_COMMON_MODULE)
+
+  if(PREVIOUS_COMMON_MODULE)
+    add_dependencies(${MODULE} ${PREVIOUS_COMMON_MODULE})
+  endif()
+
   add_dependencies(Modules ${MODULE})
 
 endforeach()
@@ -128,6 +122,13 @@ foreach(MODULE ${JASP_EXTRA_MODULES})
     COMMAND ${_Rscript_EXE} ${MODULES_RENV_PATH}/${MODULE}/install_module.R
     BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}/
     COMMENT "------ Installing ${MODULE}...")
+
+  list(POP_FRONT JASP_EXTRA_MODULES_COPY PREVIOUS_EXTRA_MODULE)
+
+  if(PREVIOUS_EXTRA_MODULE)
+    add_dependencies(${MODULE} ${PREVIOUS_EXTRA_MODULE} ${FIRST_COMMON_MODULE})
+  endif()
+
   add_dependencies(Modules ${MODULE})
 
 endforeach()
