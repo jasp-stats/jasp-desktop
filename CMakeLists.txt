@@ -4,7 +4,7 @@ set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
 
 project(
   JASP
-  VERSION 0.16.0.0
+  VERSION 0.16.0.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
   LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)

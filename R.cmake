@@ -60,7 +60,7 @@ else()
   message(STATUS "Building using the R.framework")
 
   # TODO: Replace the version with a variable
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  if(APPLE)
     set(_R_HOME
         "${CMAKE_SOURCE_DIR}/Frameworks/R.framework/Versions/${R_VERSION_MAJOR_MINOR}/Resources"
     )

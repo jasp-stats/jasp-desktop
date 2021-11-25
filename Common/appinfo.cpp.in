@@ -18,7 +18,7 @@
 #include "appinfo.h"
 #include <sstream> 
 
-const Version AppInfo::version = Version(@JASP_VERSION_MAJOR@, @JASP_VERSION_MINOR@, @JASP_VERSION_REVISION@, @JASP_VERSION_BUILD@);
+const Version AppInfo::version = Version(@JASP_VERSION_MAJOR@, @JASP_VERSION_MINOR@, @JASP_VERSION_PATCH@, @JASP_VERSION_TWEAK@);
 const std::string AppInfo::name = "JASP";
 const std::string AppInfo::builddate = __DATE__ " " __TIME__ " (Netherlands)" ;
 
