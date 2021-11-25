@@ -270,6 +270,7 @@ HEADERS += \
     utilities/appdirs.h \
     utilities/application.h \
     utilities/jsonutilities.h \
+  utilities/plotschemehandler.h \
     utilities/processhelper.h \
     utilities/qmlutils.h \
     utilities/qutils.h \
@@ -465,6 +466,7 @@ SOURCES += \
     utilities/appdirs.cpp \
     utilities/application.cpp \
     utilities/jsonutilities.cpp \
+    utilities/plotschemehandler.cpp \
     utilities/processhelper.cpp \
     utilities/qmlutils.cpp \
     utilities/qutils.cpp \
