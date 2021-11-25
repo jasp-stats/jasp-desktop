@@ -27,6 +27,7 @@ else()
 
   set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
   set(LIBREADSTAT_LIBRARY_DIRS ${LIBREADSTAT})
+  set(LIBREADSTAT_LIBRARIES ${LIBREADSTAT})
 endif()
 
 find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
@@ -161,27 +162,27 @@ if(APPLE)
 
   target_link_libraries(
     JASP
-    PUBLIC Common
-           Qt::Core
-           Qt::Gui
-           Qt::OpenGL
-           Qt::Widgets
-           Qt::Qml
-           Qt::WebEngineWidgets
-           Qt::WebEngineQuick
-           Qt::WebChannel
-           Qt::Svg
-           Qt::Network
-           Qt::PrintSupport
-           Qt::Xml
-           Qt::Quick
-           Qt::QuickControls2
-           Qt::QuickWidgets
-           Qt::Core5Compat
-           # Only one of these will have value
-           ${LIBREADSTAT}
-           PkgConfig::LIBREADSTAT
-           ${_R_Framework})
+    PUBLIC
+      Common
+      Qt::Core
+      Qt::Gui
+      Qt::OpenGL
+      Qt::Widgets
+      Qt::Qml
+      Qt::WebEngineWidgets
+      Qt::WebEngineQuick
+      Qt::WebChannel
+      Qt::Svg
+      Qt::Network
+      Qt::PrintSupport
+      Qt::Xml
+      Qt::Quick
+      Qt::QuickControls2
+      Qt::QuickWidgets
+      Qt::Core5Compat
+      # Based on our config, this is either from PkgConfig, or the build/_deps/
+      ${LIBREADSTAT_LIBRARIES}
+      ${_R_Framework})
 
 elseif(WIN32)
   # As far as I understoon, on Windows we don't need to do a lot.

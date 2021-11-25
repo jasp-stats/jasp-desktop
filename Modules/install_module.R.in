@@ -7,6 +7,7 @@ Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
 Sys.setenv(JAGS_PREFIX="@JAGS_BUILD_DIR@")
 Sys.setenv(JAGS_INCLUDEDIR="@JAGS_INCLUDES_DIRS@")
 Sys.setenv(JAGS_LIBDIR="@JAGS_LIBRARY_DIRS@")
+Sys.setenv(PKG_CONFIG_PATH="@jags_PKG_CONFIG_PATH@")
 
 options(pkgType = "source")
 jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
