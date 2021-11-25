@@ -69,7 +69,7 @@ cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
 add_custom_target(Modules)
-add_dependencies(JASP Modules)
+add_dependencies(Modules JASP)
 
 message(STATUS "Installing Required R Modules...")
 
@@ -133,6 +133,11 @@ foreach(MODULE ${JASP_EXTRA_MODULES})
   endif()
 
   add_dependencies(Modules ${MODULE})
+
+  # We can add other specific dependencies here:
+  if(${MODULE} STREQUAL "jaspMetaAnalysis")
+    add_dependencies(${MODULE} jags-install)
+  endif()
 
 endforeach()
 

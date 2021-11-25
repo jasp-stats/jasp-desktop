@@ -8,6 +8,8 @@ set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/CPM)
 include(ExternalProject)
 include(Tools/cmake/CPM.cmake)
 
+add_custom_target(Dependencies)
+
 # FetchContent variables will be lowercased, that's why we have
 # werid variable names like r_win_exe_POPULATED
 
@@ -99,6 +101,11 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 #   GIT_TAG
 #   "boost-1.78.0.beta1")
 
+# So, the problem is that jsoncpp has a faulty CMake config,
+# and this triggers the install stage during the build. This
+# triggers an install command on all targets and messes up
+# everything.
+#
 # cpmaddpackage(
 #   NAME
 #   jsoncpp
@@ -107,6 +114,7 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 #   OPTIONS
 #   "JSONCPP_WITH_TESTS OFF"
 #   "JSONCPP_WITH_POST_BUILD_UNITTEST OFF"
+#   "JSONCPP_WITH_CMAKE_PACKAGE OFF"
 #   GITHUB_REPOSITORY
 #   "open-source-parsers/jsoncpp"
 #   GIT_TAG
@@ -149,6 +157,17 @@ find_program(AUTORECONF NAMES autoreconf)
 #       due to this. So, be prepared for some extra ./configure
 #       messages.
 
+# externalproject_add(
+#   jsoncpp
+#   PREFIX _deps/jsoncpp
+#   GIT_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git"
+#   GIT_TAG "1.9.5"
+#   STEP_TARGETS configure build install
+#   CMAKE_ARGS -DJSONCPP_WITH_TESTS=OFF
+#              -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF
+#              -DJSONCPP_WITH_CMAKE_PACKAGE=OFF
+#              -DCMAKE_INSTALL_PREFIX=<DOWNLOAD_DIR>/jsoncpp-install)
+
 # I would love to have these active that we don't get a lot
 # of build messages, but CMake proved to be not so good at
 # dealing with a tiniest anomoly that the build process throw
@@ -180,6 +199,7 @@ set(readstat_LIBRARY_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/lib)
 #
 # - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.
 # - With this, we can build JAGS, and link it, or even place it inside the the `R.framework`
+#   - `--prefix=${_R_HOME}`, with this, we inherit the R
 # - You can run `make jags-build` or `make jags-install` to just play with JAGS target
 externalproject_add(
   jags
