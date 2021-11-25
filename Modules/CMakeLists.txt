@@ -90,16 +90,16 @@ message(CHECK_PASS "successful.")
 message(STATUS "Configuring Common Modules...")
 foreach(MODULE ${JASP_COMMON_MODULES})
 
-  # We can technically create a new install_module.R for each Renv
+  # We can technically create a new install-module.R for each Renv
   # even better, we can have different templates for each module, and use those
   # to set them up correctly
   make_directory(${MODULES_RENV_PATH}/${MODULE})
-  configure_file(${CMAKE_CURRENT_LIST_DIR}/install_module.R.in
-                 ${MODULES_RENV_PATH}/${MODULE}/install_module.R)
+  configure_file(${CMAKE_CURRENT_LIST_DIR}/install-module.R.in
+                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
   add_custom_target(
     ${MODULE}
-    COMMAND ${_Rscript_EXE} ${MODULES_RENV_PATH}/${MODULE}/install_module.R
+    COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
     BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}/
     COMMENT "------ Installing ${MODULE}...")
 
@@ -117,12 +117,12 @@ message(STATUS "Configuring Extra Modules...")
 foreach(MODULE ${JASP_EXTRA_MODULES})
 
   make_directory(${MODULES_RENV_PATH}/${MODULE})
-  configure_file(${CMAKE_CURRENT_LIST_DIR}/install_module.R.in
-                 ${MODULES_RENV_PATH}/${MODULE}/install_module.R)
+  configure_file(${CMAKE_CURRENT_LIST_DIR}/install-module.R.in
+                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
   add_custom_target(
     ${MODULE}
-    COMMAND ${_Rscript_EXE} ${MODULES_RENV_PATH}/${MODULE}/install_module.R
+    COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
     BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}/
     COMMENT "------ Installing ${MODULE}...")
 
