@@ -45,7 +45,7 @@ FocusScope
 
 	property int	currentIndex: -1
 
-	Keys.onPressed:
+	Keys.onPressed: (event)=>
 	{
 		if (event.key === Qt.Key_Up)
 		{

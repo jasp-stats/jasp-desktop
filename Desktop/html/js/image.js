@@ -149,7 +149,7 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 		if (data) {
 			html += '<div class="jasp-image-image"';
 			var id = data.replace(/[^A-Za-z0-9]/g, '-');
-			var url = window.globSet.tempFolder + data;
+			var url = "plot://" + data;
 			html += ' id="' + id + '" style="';
 			html += error ? 'background-image: linear-gradient(rgba(255,255,255,0.67), rgba(255,255,255,0.67)),' : 'background-image:'
 			html += 'url(\'' + url + '?rev=' + this.model.get("revision") + '\'); '
@@ -228,7 +228,7 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 	_getHTMLImage: function (htmlImageFormatData, width, height, exportParams) {
 		var html = "";
 		if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary)
-			html = '<img src="file:///' + htmlImageFormatData.temporary + '" style="width:' + width + 'px; height:' + height + 'px;" />';
+			html = '<img src="file://' + htmlImageFormatData.temporary + '" style="width:' + width + 'px; height:' + height + 'px;" />';
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.embedded)
 			html = '<div style="background-image : url(data:image/png;base64,' + htmlImageFormatData.embedded + '); background-size:' + width + 'px ' + height + 'px; width:' + width + 'px; height:' + height + 'px;"></div>';
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)

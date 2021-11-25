@@ -232,7 +232,7 @@ Item
 						resultsView.printToPdf(pdfPath);
 					}
 				}
-				onPdfPrintingFinished:
+				onPdfPrintingFinished: (filePath)=>
 				{
 					if(preferencesModel.currentThemeName !== "lightTheme")
 						resultsJsInterface.setThemeCss(preferencesModel.currentThemeName);
