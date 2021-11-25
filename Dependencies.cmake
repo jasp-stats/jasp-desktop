@@ -17,10 +17,12 @@ if(WIN32)
   set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
   set(R_DOWNLOAD_URL
       "https://cran.r-project.org/bin/windows/base/R-${R_VERSION}-win.exe")
+  set(R_PACKAGE_HASH "776384c989ea061728e781b6b9ce5b92")
 
   fetchcontent_declare(
     r_win_exe
     URL ${R_DOWNLOAD_URL}
+    URL_HASH MD5=${R_PACKAGE_HASH}
     DOWNLOAD_NO_EXTRACT ON
     DOWNLOAD_NAME ${R_PACKAGE_NAME})
 
@@ -41,10 +43,12 @@ elseif(APPLE)
     set(R_DOWNLOAD_URL
         "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
     )
+    set(R_PACKAGE_HASH "69e8845ffa134c822d4bdcf458220e841a9eeaa5")
   else()
     set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
     set(R_DOWNLOAD_URL
         "https://cran.r-project.org/bin/macosx/base/R-${R_VERSION}.pkg")
+    set(R_PACKAGE_HASH "61d3909bc070f7fb86c5a2bd67209fda9408faaa")
   endif()
 
   if(NOT EXISTS ${CMAKE_SOURCE_DIR}/Frameworks/R.framework)
@@ -52,6 +56,7 @@ elseif(APPLE)
     fetchcontent_declare(
       r_pkg
       URL ${R_DOWNLOAD_URL}
+      URL_HASH SHA1=${R_PACKAGE_HASH}
       DOWNLOAD_NO_EXTRACT ON
       DOWNLOAD_NAME ${R_PACKAGE_NAME})
 
