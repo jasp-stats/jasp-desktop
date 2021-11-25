@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.21)
 
+# Adding caching for CPM, this is going to be useful later that we
+# want to have CI builds on GitHub, see here:
+# https://github.com/cpm-cmake/CPM.cmake/wiki/Caching-with-CPM.cmake-and-ccache-on-GitHub-Actions
+set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/CPM)
+
 include(ExternalProject)
 include(Tools/cmake/CPM.cmake)
 
