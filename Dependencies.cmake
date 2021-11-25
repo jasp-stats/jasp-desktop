@@ -1,17 +1,36 @@
 cmake_minimum_required(VERSION 3.21)
 
+# Notes:
+#
+# - FetchContent variables will be lower cased, that's why we have
+#   weird variable names like r_win_exe_POPULATED.
+
+# TODOs:
+#
+# - [ ] CMake caches the build and everything, but it does it
+#       after running the `./configure`. This produces a lot of
+#       unnecessary outputs during the build. I think I can simply
+#       and if they exist, ignore the process but that is not perfect!
+#       However, since we are not changing these packages so often,
+#       we should be fine. Either way, for now I leave it like this.
+#
+# - [ ] I would love to add these to the ExternalPackage,
+#       but CMake proved to be not so good at dealing with a
+#       tiniest anomaly/warning that the build process throw
+#       at it, and this could cause it to stop the build!
+#         - LOG_CONFIGURE ON
+#         - LOG_BUILD ON
+#         - LOG_INSTALL ON
+#         - LOG_OUTPUT_ON_FAILURE ON
+
 # Adding caching for CPM, this is going to be useful later that we
-# want to have CI builds on GitHub, see here:
-# https://github.com/cpm-cmake/CPM.cmake/wiki/Caching-with-CPM.cmake-and-ccache-on-GitHub-Actions
+# want to have CI builds on GitHub, see here: https://github.com/cpm-cmake/CPM.cmake/wiki/Caching-with-CPM.cmake-and-ccache-on-GitHub-Actions
 set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/CPM)
 
 include(ExternalProject)
 include(Tools/cmake/CPM.cmake)
 
 add_custom_target(Dependencies)
-
-# FetchContent variables will be lowercased, that's why we have
-# werid variable names like r_win_exe_POPULATED
 
 # Here,we download the R binary, extract its content and copy it into the
 # right place.
@@ -101,10 +120,41 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 #   GIT_TAG
 #   "boost-1.78.0.beta1")
 
+cpmaddpackage(
+  NAME
+  LibArchive
+  VERSION
+  3.5.2
+  OPTIONS
+  "ENABLE_TEST OFF"
+  "JSONCPP_WITH_POST_BUILD_UNITTEST OFF"
+  GITHUB_REPOSITORY
+  "libarchive/libarchive"
+  GIT_TAG
+  "v3.5.2")
+
+cpmaddpackage(
+  NAME
+  ZLIB
+  VERSION
+  1.2.11
+  GITHUB_REPOSITORY
+  "madler/zlib"
+  GIT_TAG
+  "v1.2.11")
+
+find_program(MAKE NAMES gmake nmake make)
+find_program(ACLOCAL NAMES aclocal)
+find_program(AUTOCONF NAMES autoconf)
+find_program(AUTORECONF NAMES autoreconf)
+
+# ----- jsoncpp ------
+#
 # So, the problem is that jsoncpp has a faulty CMake config,
 # and this triggers the install stage during the build. This
 # triggers an install command on all targets and messes up
-# everything.
+# everything. For this reason, I had to use the `ExternalProject`
+# and handle the build myself.
 #
 # cpmaddpackage(
 #   NAME
@@ -120,63 +170,26 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 #   GIT_TAG
 #   "1.9.5")
 
-# cpmaddpackage(
-#   NAME
-#   LibArchive
-#   VERSION
-#   3.5.2
-#   OPTIONS
-#   "ENABLE_TEST OFF"
-#   "JSONCPP_WITH_POST_BUILD_UNITTEST OFF"
-#   GITHUB_REPOSITORY
-#   "libarchive/libarchive"
-#   GIT_TAG
-#   "v3.5.2")
-
-# cpmaddpackage(
-#   NAME
-#   ZLIB
-#   VERSION
-#   1.2.11
-#   GITHUB_REPOSITORY
-#   "madler/zlib"
-#   GIT_TAG
-#   "v1.2.11")
-
-find_program(MAKE NAMES gmake nmake make)
-find_program(ACLOCAL NAMES aclocal)
-find_program(AUTOCONF NAMES autoconf)
-find_program(AUTORECONF NAMES autoreconf)
-
-# Installing Irregular Dependencies
 #
-# - [ ] CMake caches the build and everything, but it does it
-#       after running the `./configure`. I think I can simply
-#       and if they exist, ignore the process! For now, I leave
-#       it like this that I can be sure that raising issues is not
-#       due to this. So, be prepared for some extra ./configure
-#       messages.
-
-# externalproject_add(
-#   jsoncpp
-#   PREFIX _deps/jsoncpp
-#   GIT_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git"
-#   GIT_TAG "1.9.5"
-#   STEP_TARGETS configure build install
-#   CMAKE_ARGS -DJSONCPP_WITH_TESTS=OFF
-#              -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF
-#              -DJSONCPP_WITH_CMAKE_PACKAGE=OFF
-#              -DCMAKE_INSTALL_PREFIX=<DOWNLOAD_DIR>/jsoncpp-install)
-
-# I would love to have these active that we don't get a lot
-# of build messages, but CMake proved to be not so good at
-# dealing with a tiniest anomoly that the build process throw
-# at it, so, if even a warning happens, it stops the build!
+# By setting, `-DCMAKE_BINARY_DIR=<DOWNLOAD_DIR>/jsoncpp-install`,
+# I am somehow manipulating the path, this should be secluded from
+# everything else, but I am observing this until I make sure that
+# it works.
 #
-# - LOG_CONFIGURE ON
-# - LOG_BUILD ON
-# - LOG_INSTALL ON
-# - LOG_OUTPUT_ON_FAILURE ON
+externalproject_add(
+  jsoncpp
+  PREFIX _deps/jsoncpp
+  GIT_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git"
+  GIT_TAG "1.9.5"
+  STEP_TARGETS configure build install
+  CMAKE_ARGS -DJSONCPP_WITH_TESTS=OFF
+             -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF
+             -DJSONCPP_WITH_CMAKE_PACKAGE=OFF
+             -DCMAKE_INSTALL_PREFIX=<DOWNLOAD_DIR>/jsoncpp-install
+             -DCMAKE_BINARY_DIR=<DOWNLOAD_DIR>/jsoncpp-install)
+
+# ----- readstat -----
+
 externalproject_add(
   readstat
   PREFIX _deps/readstat
@@ -195,7 +208,7 @@ set(readstat_BUILD_DIR ${readstat_DOWNLOAD_DIR}/readstat-build)
 set(readstat_INCLUDE_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/include)
 set(readstat_LIBRARY_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/lib)
 
-# Installing JAGS
+# ----- jags -----
 #
 # - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.
 # - With this, we can build JAGS, and link it, or even place it inside the the `R.framework`
