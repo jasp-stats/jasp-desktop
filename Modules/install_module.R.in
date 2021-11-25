@@ -3,13 +3,17 @@
 Sys.setenv(GITHUB_PAT="@GITHUB_PAT@")
 Sys.setenv(RENV_PATHS_ROOT="@MODULES_RENV_ROOT_PATH@")
 Sys.setenv(RENV_PATHS_CACHE="@MODULES_RENV_CACHE_PATH@")
-# Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@")
+Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
 Sys.setenv(JAGS_PREFIX="@JAGS_BUILD_DIR@")
-Sys.setenv(JAGS_INCLUDEDIR="@JAGS_INCLUDES_DIR@")
-Sys.setenv(JAGS_LIBDIR="@JAGS_LIBRARIES_DIR@")
+Sys.setenv(JAGS_INCLUDEDIR="@JAGS_INCLUDES_DIRS@")
+Sys.setenv(JAGS_LIBDIR="@JAGS_LIBRARY_DIRS@")
 
+options(pkgType = "source")
 jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
 	libPathsToUse=NULL, 
-	repos="http://cran.r-project.org", 
+	repos="@R_REPOSITORY@", 
 	moduleLibrary="@MODULES_RENV_PATH@/@MODULE@", 
 	onlyModPkg=FALSE)
+	
+
+# renv::install("@MODULES_SOURCE_PATH@/@MODULE@")

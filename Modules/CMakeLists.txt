@@ -2,29 +2,31 @@ cmake_minimum_required(VERSION 3.21)
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
+set(R_REPOSITORY "http://cran.r-project.org")
+
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
     # "jaspAnova"
-    "jaspFactor"
+    # "jaspFactor"
     # "jaspFrequencies"
-    "jaspRegression"
+    # "jaspRegression"
     # "jaspTTests"
     # "jaspMixedModels"
 )
 
+list(REVERSE JASP_COMMON_MODULES)
 set(JASP_COMMON_MODULES_COPY ${JASP_COMMON_MODULES})
 list(POP_FRONT JASP_COMMON_MODULES_COPY FIRST_COMMON_MODULE)
-cmake_print_variables(FIRST_COMMON_MODULE)
 
 set(JASP_EXTRA_MODULES
     # "jaspAudit"
-    "jaspBain"
+    # "jaspBain"
     # "jaspNetwork"
     # "jaspSem"
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
-    # "jaspMetaAnalysis"
-    "jaspDistributions"
+    "jaspMetaAnalysis"
+    # "jaspDistributions"
     # "jaspEquivalenceTTests"
     # "jaspJags"
     # "jaspReliability"
@@ -34,7 +36,8 @@ set(JASP_EXTRA_MODULES
     # "jaspProcessControl"
     # "jaspCircular"
 )
-# list(REVERSE JASP_EXTRA_MODULES)
+
+list(REVERSE JASP_EXTRA_MODULES)
 set(JASP_EXTRA_MODULES_COPY ${JASP_EXTRA_MODULES})
 list(POP_FRONT JASP_EXTRA_MODULES_COPY)
 

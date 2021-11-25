@@ -65,3 +65,7 @@ add_subdirectory(Desktop)
 if(INSTALL_R_MODULES)
   add_subdirectory(Modules)
 endif()
+
+include(Install.cmake)
+
+include(CPack.cmake)
