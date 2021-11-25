@@ -26,6 +26,31 @@ option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
 set(R_VERSION "4.1.2")
 set(R_VERSION_MAJOR_MINOR "4.1")
 
+# This could run/update the git-submodule for us to at least get those
+# essentials
+find_package(Git)
+
+if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+  # Update submodules as needed
+  option(GIT_SUBMODULE "Check submodules during build" ON)
+  if(GIT_SUBMODULE)
+    message(STATUS "Submodule update")
+    execute_process(
+      COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      RESULT_VARIABLE GIT_SUBMOD_RESULT)
+    if(NOT
+       GIT_SUBMOD_RESULT
+       EQUAL
+       "0")
+      message(
+        FATAL_ERROR
+          "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules"
+      )
+    endif()
+  endif()
+endif()
+
 # If set, CMake tries to download all the necessary dependencies
 #
 #   - R.exe or R.framework depending on the system
