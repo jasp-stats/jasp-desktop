@@ -193,6 +193,11 @@ externalproject_add(
              -DCMAKE_INSTALL_PREFIX=<DOWNLOAD_DIR>/jsoncpp-install
              -DCMAKE_BINARY_DIR=<DOWNLOAD_DIR>/jsoncpp-install)
 
+externalproject_get_property(jsoncpp DOWNLOAD_DIR)
+set(jsoncpp_DOWNLOAD_DIR ${DOWNLOAD_DIR})
+set(jsoncpp_INCLUDE_DIRS ${jsoncpp_DOWNLOAD_DIR}/jsoncpp-install/include)
+set(jsoncpp_LIBRARY_DIRS ${jsoncpp_DOWNLOAD_DIR}/jsoncpp-install/lib)
+
 # ----- readstat -----
 
 externalproject_add(

@@ -24,11 +24,11 @@ else()
   find_library(
     LIBREADSTAT
     NAMES readstat
-    PATHS ${readstat_LIBRARIES_DIR})
+    HINTS ${readstat_LIBRARY_DIRS})
 
   set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
-  set(LIBREADSTAT_LIBRARY_DIRS ${LIBREADSTAT})
-  set(LIBREADSTAT_LIBRARIES ${LIBREADSTAT})
+  set(LIBREADSTAT_LIBRARY_DIRS ${readstat_LIBRARY_DIRS})
+  set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT})
 endif()
 
 find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
@@ -182,7 +182,7 @@ if(APPLE)
       Qt::QuickWidgets
       Qt::Core5Compat
       # Based on our config, this is either from PkgConfig, or the build/_deps/
-      ${LIBREADSTAT_LIBRARIES}
+      ${LIBREADSTAT_LINK_LIBRARIES}
       ${Iconv_LIBRARIES}
       ${_R_Framework})
 

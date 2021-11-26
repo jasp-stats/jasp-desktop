@@ -5,11 +5,22 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Common)
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 
-pkg_check_modules(
-  LIBJSON
-  REQUIRED
-  IMPORTED_TARGET
-  jsoncpp)
+if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
+  pkg_check_modules(
+    LIBJSONCPP
+    REQUIRED
+    IMPORTED_TARGET
+    jsoncpp)
+else()
+  find_library(
+    LIBJSONCPP
+    NAMES jsoncpp
+    HINTS ${jsoncpp_LIBRARY_DIRS})
+
+  set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
+  set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
+  set(LIBJSONCPP_LINK_LIBRARIES ${LIBJSONCPP})
+endif()
 
 find_package(
   Boost
@@ -34,9 +45,8 @@ add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
 target_include_directories(
   Common
   PUBLIC ${Boost_INCLUDE_DIRS}
-         ${LIBJSON_INCLUDE_DIRS}
+         ${LIBJSONCPP_INCLUDE_DIRS}
          ${LibArchive_INCLUDE_DIRS}
-         # ${LIBARCHIVE_INCLUDE_DIRS}
          jaspColumnEncoder)
 
 target_include_directories(Common PUBLIC ${_R_HOME}/include
@@ -48,7 +58,7 @@ target_link_libraries(
   Common
   PUBLIC ${Boost_LIBRARIES}
          ${LibArchive_LIBRARIES}
-         PkgConfig::LIBJSON
+         ${LIBJSONCPP_LINK_LIBRARIES}
          Qt::Core)
 
 if(USE_JASP_TIMER)
