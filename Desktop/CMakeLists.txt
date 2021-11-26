@@ -12,6 +12,7 @@ pkg_check_modules(
   jsoncpp)
 
 find_package(ZLIB)
+find_package(Iconv)
 
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
   pkg_check_modules(
@@ -182,6 +183,7 @@ if(APPLE)
       Qt::Core5Compat
       # Based on our config, this is either from PkgConfig, or the build/_deps/
       ${LIBREADSTAT_LIBRARIES}
+      ${Iconv_LIBRARIES}
       ${_R_Framework})
 
 elseif(WIN32)
