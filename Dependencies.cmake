@@ -22,6 +22,10 @@ cmake_minimum_required(VERSION 3.21)
 #         - LOG_BUILD ON
 #         - LOG_INSTALL ON
 #         - LOG_OUTPUT_ON_FAILURE ON
+# - [ ] Only build part of the Boost that we need. Currently, it is not
+#       possible to pass a list to CPM. This is not that bad because we
+#       only need to build it once anyway, but when this issue is fixed,
+#       we can change it.
 
 # Adding caching for CPM, this is going to be useful later that we
 # want to have CI builds on GitHub, see here: https://github.com/cpm-cmake/CPM.cmake/wiki/Caching-with-CPM.cmake-and-ccache-on-GitHub-Actions
@@ -115,6 +119,7 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 #   1.78.0
 #   OPTIONS
 #   "BUILD_TESTING OFF"
+#   # "BOOST_INCLUDE_LIBRARIES:STRING=nowide;filesystem;system;date_time;timer;chrono;atomic"
 #   GITHUB_REPOSITORY
 #   "boostorg/boost"
 #   GIT_TAG
