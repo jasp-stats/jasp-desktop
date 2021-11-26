@@ -107,7 +107,7 @@ else()
       execute_process(
         COMMAND
           ${_Rscript_EXE} -e
-          install.packages\("RInside",repos="http://cran.r-project.org"\)
+          install.packages\("RInside",repos="${R_REPOSITORY}"\)
           COMMAND_ERROR_IS_FATAL ANY COMMAND_ECHO NONE
         OUTPUT_QUIET ERROR_QUIET)
 

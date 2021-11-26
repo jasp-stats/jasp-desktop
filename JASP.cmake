@@ -56,7 +56,12 @@ if(GITHUB_PAT)
   message(STATUS "GITHUB_PAT is set to ${GITHUB_PAT}")
 endif()
 
-# This is how we can link to the system R set(BUILD_WITH_SYSTEM_R OFF)
+if(NOT R_REPOSITORY)
+  set(R_REPOSITORY
+      "http://cran.r-project.org"
+      CACHE STRING "The CRAN mirror used by 'renv' and 'install.packages'")
+endif()
+message(STATUS "CRAN mirror: ${R_REPOSITORY}")
 
 option(BUILDING_JASP "Indicates whether we are building JASP or not.
 					  This helps jaspResults to find its lib_json." ON)

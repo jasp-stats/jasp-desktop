@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.21)
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-set(R_REPOSITORY "http://cran.r-project.org")
-
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
     # "jaspAnova"
@@ -78,7 +76,7 @@ message(CHECK_START "Installing the 'jaspBase'")
 execute_process(
   COMMAND
     ${_Rscript_EXE} -e
-    "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL)"
+    "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos='${R_REPOSITORY}')"
   OUTPUT_QUIET
   ERROR_QUIET
   COMMAND_ERROR_IS_FATAL
