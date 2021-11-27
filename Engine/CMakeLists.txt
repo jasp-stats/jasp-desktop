@@ -16,10 +16,16 @@ pkg_check_modules(
   jsoncpp)
 
 add_executable(JASPEngine ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
+# target_link_options(JASPEngine PUBLIC -lboost_filesystem)
 
 target_include_directories(
   JASPEngine
-  PUBLIC ${Boost_INCLUDE_DIRS}
+  PUBLIC Boost::nowide
+         Boost::filesystem
+         Boost::system
+         Boost::date_time
+         Boost::timer
+         Boost::chrono
          ${LIBJSON_INCLUDE_DIRS}
          # ${LIBARCHIVE_INCLUDE_DIRS}
          ${LibArchive_INCLUDE_DIRS}
@@ -51,7 +57,7 @@ else()
            ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
 endif()
 
-target_link_libraries(JASPEngine PUBLIC Common R-Interface)
+target_link_libraries(JASPEngine PUBLIC Common R-Interface ${Boost_LIBRARIES})
 
 target_compile_definitions(JASPEngine PUBLIC BUILDING_JASP_ENGINE
                                              R_HOME=${_R_HOME})

@@ -112,18 +112,18 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 # This is rather slow because it has to download all the submodules,
 # when the final version of 1.78.0 is released, we can replace it
 # with the .tar.gz to have a faster download.
-# cpmaddpackage(
-#   NAME
-#   Boost
-#   VERSION
-#   1.78.0
-#   OPTIONS
-#   "BUILD_TESTING OFF"
-#   # "BOOST_INCLUDE_LIBRARIES:STRING=nowide;filesystem;system;date_time;timer;chrono;atomic"
-#   GITHUB_REPOSITORY
-#   "boostorg/boost"
-#   GIT_TAG
-#   "boost-1.78.0.beta1")
+cpmaddpackage(
+  NAME
+  Boost
+  VERSION
+  1.78.0
+  OPTIONS
+  "BUILD_TESTING OFF"
+  # "BOOST_INCLUDE_LIBRARIES:STRING=nowide;filesystem;system;date_time;timer;chrono;atomic"
+  GITHUB_REPOSITORY
+  "boostorg/boost"
+  GIT_TAG
+  "boost-1.78.0.beta1")
 
 cpmaddpackage(
   NAME

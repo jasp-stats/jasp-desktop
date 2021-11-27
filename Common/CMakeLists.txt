@@ -23,14 +23,13 @@ else()
 endif()
 
 find_package(
-  Boost
+  Boost REQUIRED
   COMPONENTS nowide
              filesystem
              system
              date_time
              timer
-             chrono
-  REQUIRED)
+             chrono)
 
 configure_file(appinfo.cpp.in appinfo.cpp)
 message(STATUS "appinfo.cpp is successfully generated...")
@@ -56,10 +55,17 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 
 target_link_libraries(
   Common
-  PUBLIC ${Boost_LIBRARIES}
+  PUBLIC Boost::nowide
+         Boost::filesystem
+         Boost::system
+         Boost::date_time
+         Boost::timer
+         Boost::chrono
          ${LibArchive_LIBRARIES}
          ${LIBJSONCPP_LINK_LIBRARIES}
          Qt::Core)
+
+# target_link_options(Common PUBLIC -lboost_filesystem)
 
 if(USE_JASP_TIMER)
   target_compile_definitions(Common PUBLIC PROFILE_JASP)

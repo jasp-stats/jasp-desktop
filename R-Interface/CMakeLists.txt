@@ -2,16 +2,6 @@ cmake_minimum_required(VERSION 3.21)
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
-find_package(
-  Boost
-  COMPONENTS nowide
-             filesystem
-             system
-             date_time
-             timer
-             chrono
-  REQUIRED)
-
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
 list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
