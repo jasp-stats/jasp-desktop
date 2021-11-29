@@ -33,13 +33,14 @@ SourceItem::SourceItem(
 		, QAbstractItemModel*						nativeModel
 		, const QVector<SourceItem*>&				discardSources
 		, const QVector<QMap<QString, QVariant> >&	conditionVariables
-		) : QObject(listControl), _listControl(listControl)
+		)
+		: QObject(listControl), _listControl(listControl)
 {
+	QString modelUse = map["use"].toString().trimmed();
+
 	_name					= map["name"].toString();
 	_controlName			= map["controlName"].toString();
-	QString modelUse = map["use"].toString().trimmed();
-	if (!modelUse.isEmpty())
-		_modelUse			= modelUse.split(",");
+	_modelUse				= !modelUse.isEmpty() ? modelUse.split(",") : QStringList();
 	_conditionExpression	= map["condition"].toString();
 	_values					= values;
 	_nativeModel			= nativeModel;
@@ -156,8 +157,8 @@ void SourceItem::_setUp()
 	else if (_listControl->form() && !_name.isEmpty())	_nativeModel = _listControl->form()->getModel(_name);
 	else if (_isColumnsModel)
 	{
-		_nativeModel = ColumnsModel::singleton();
-		_nativeModelRole = ColumnsModel::NameRole;
+		_nativeModel		= ColumnsModel::singleton();
+		_nativeModelRole	= ColumnsModel::NameRole;
 	}
 
 	if (_nativeModel || _isRSource)
@@ -188,7 +189,8 @@ QList<QVariant> SourceItem::_getListVariant(QVariant var)
 	if (!var.isValid() || var.isNull())
 		return listVar;
 
-	listVar = var.toList();
+	if(var.typeId() == QMetaType::QString)	listVar = QList<QVariant>({var});
+	else									listVar = var.toList();
 
 	if (listVar.isEmpty())
 	{
