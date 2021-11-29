@@ -144,9 +144,13 @@ target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
 
 target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
 
-add_dependencies(JASP JASPEngine Modules)
+add_dependencies(JASP JASPEngine)
 
-if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
+if(INSTALL_R_MODULES)
+  add_dependencies(JASP Modules)
+endif()
+
+if(INSTALL_JASP_REQUIRED_LIBRARIES)
   add_dependencies(JASP readstat-install)
 endif()
 

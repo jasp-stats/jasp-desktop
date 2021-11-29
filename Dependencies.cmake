@@ -37,7 +37,9 @@ include(Tools/cmake/CPM.cmake)
 add_custom_target(Dependencies)
 
 # The rest of dependencies are automatically being handled by the CPM
-add_dependencies(Dependencies jags-install readstat-install)
+if(INSTALL_JASP_REQUIRED_LIBRARIES)
+  add_dependencies(Dependencies jags-install readstat-install)
+endif()
 
 # Here,we download the R binary, extract its content and copy it into the
 # right place.
