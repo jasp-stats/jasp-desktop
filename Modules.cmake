@@ -151,7 +151,8 @@ foreach(MODULE ${JASP_EXTRA_MODULES})
   add_dependencies(Modules ${MODULE})
 
   # We can add other specific dependencies here:
-  if(${MODULE} STREQUAL "jaspMetaAnalysis")
+  if((${MODULE} STREQUAL "jaspMetaAnalysis")
+     AND (INSTALL_JASP_REQUIRED_LIBRARIES))
     add_dependencies(${MODULE} jags-install)
   endif()
 
