@@ -34,6 +34,8 @@ Item
 		else if(splitViewContainer.width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
 	}
 
+	onVisibleChanged:	if(visible && !mainWindow.dataPanelVisible)	data.minimizeData();
+
 	SplitView
 	{
 		id:				panelSplit
@@ -88,7 +90,7 @@ Item
 				makeSureHandleVisible();
 			}
 
-			function maximizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true; }
+			function maximizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true;  }
 			function minimizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return leftHandSpace; });	data.wasMaximized = false; }
 
 			Connections
@@ -97,7 +99,7 @@ Item
 				function onDataPanelVisibleChanged(visible)
 				{
 					if (visible && data.width		<=	data.leftHandSpace)	data.maximizeData();
-					else if(!visible && data.width	>	data.leftHandSpace)	data.minimizeData();
+					else if(!visible)										data.minimizeData();
 				}
 			}
 
