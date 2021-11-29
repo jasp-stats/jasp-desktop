@@ -452,7 +452,8 @@ DropArea
 				Loader
 				{
 					id:					loader
-					source:				!expanderButton.imploded || expanderButton.expanded ? loader.formQmlUrl : ""
+					active:				!expanderButton.imploded || expanderButton.expanded
+					source:				loader.formQmlUrl
 					asynchronous:		false // makes it slow when true
 
 					anchors
