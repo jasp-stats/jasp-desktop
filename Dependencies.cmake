@@ -36,6 +36,9 @@ include(Tools/cmake/CPM.cmake)
 
 add_custom_target(Dependencies)
 
+# The rest of dependencies are automatically being handled by the CPM
+add_dependencies(Dependencies jags-install readstat-install)
+
 # Here,we download the R binary, extract its content and copy it into the
 # right place.
 #   - [ ] I still have to test the windows version
@@ -49,21 +52,25 @@ if(WIN32)
       "https://cran.r-project.org/bin/windows/base/R-${R_VERSION}-win.exe")
   set(R_PACKAGE_HASH "776384c989ea061728e781b6b9ce5b92")
 
-  fetchcontent_declare(
-    r_win_exe
-    URL ${R_DOWNLOAD_URL}
-    URL_HASH MD5=${R_PACKAGE_HASH}
-    DOWNLOAD_NO_EXTRACT ON
-    DOWNLOAD_NAME ${R_PACKAGE_NAME})
+  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/R)
 
-  fetchcontent_populate(r_win_exe)
-  fetchcontent_getproperties(r_win_exe)
+    fetchcontent_declare(
+      r_win_exe
+      URL ${R_DOWNLOAD_URL}
+      URL_HASH MD5=${R_PACKAGE_HASH}
+      DOWNLOAD_NO_EXTRACT ON
+      DOWNLOAD_NAME ${R_PACKAGE_NAME})
 
-  if(r_win_exe_POPULATED)
-    execute_process(
-      WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
-      COMMAND extract /c ${R_PACKAGE_NAME} /l ${r_win_exe_BINARY_DIR}
-      COMMAND cp -r ${r_win_exe_BINARY_DIR} ${CMAKE_SOURCE_DIR}/R)
+    fetchcontent_populate(r_win_exe)
+    fetchcontent_getproperties(r_win_exe)
+
+    if(r_win_exe_POPULATED)
+      execute_process(
+        WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
+        COMMAND extract /c ${R_PACKAGE_NAME} /l ${r_win_exe_BINARY_DIR}
+        COMMAND cp -r ${r_win_exe_BINARY_DIR} ${CMAKE_SOURCE_DIR}/R)
+    endif()
+
   endif()
 
 elseif(APPLE)

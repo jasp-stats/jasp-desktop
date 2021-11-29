@@ -6,7 +6,7 @@ find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 
 pkg_check_modules(
-  LIBJSON
+  LIBJSONCPP
   REQUIRED
   IMPORTED_TARGET
   jsoncpp)
@@ -144,16 +144,16 @@ target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
 
 target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
 
+add_dependencies(JASP JASPEngine Modules)
+
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
-  add_dependencies(JASP JASPEngine)
-else()
-  add_dependencies(JASP JASPEngine readstat-install)
+  add_dependencies(JASP readstat-install)
 endif()
 
 target_include_directories(
   JASP
   PUBLIC ${Boost_INCLUDE_DIRS}
-         ${LIBJSON_INCLUDE_DIRS}
+         ${LIBJSONCPP_INCLUDE_DIRS}
          ${LibArchive_INCLUDE_DIRS}
          ${LIBREADSTAT_INCLUDE_DIRS}
          ${PROJECT_SOURCE_DIR}/Common

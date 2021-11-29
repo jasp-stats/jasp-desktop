@@ -67,7 +67,7 @@ cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
 add_custom_target(Modules)
-add_dependencies(Modules JASP)
+add_dependencies(Modules ${JASP_COMMON_MODULES} ${JASP_EXTRA_MODULES})
 
 message(STATUS "Installing Required R Modules...")
 
