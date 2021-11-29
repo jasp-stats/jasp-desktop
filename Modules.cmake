@@ -46,7 +46,7 @@ set(MODULES_SOURCE_PATH
     CACHE PATH "Location of JASP Modules")
 
 set(MODULES_RENV_PATH
-    "${CMAKE_BINARY_DIR}/Desktop/Modules"
+    "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Modules"
     CACHE PATH "Location of the renv libraries")
 set(MODULES_RENV_ROOT_PATH
     "${MODULES_RENV_PATH}/renv-root"
@@ -55,8 +55,12 @@ set(MODULES_RENV_CACHE_PATH
     "${MODULES_RENV_PATH}/renv-cache"
     CACHE PATH "Location of renv cache directories")
 set(JASP_ENGINE_PATH
-    "${PROJECT_BINARY_DIR}/Desktop/"
+    "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
     CACHE PATH "Location of the JASPEngine")
+
+set(INSTALL_MODULE_TEMPLATE_FILE
+    "${PROJECT_SOURCE_DIR}/Modules/install-module.R.in"
+    CACHE FILEPATH "Location of the install-module.R.in")
 
 make_directory(${MODULES_RENV_PATH})
 make_directory(${MODULES_RENV_ROOT_PATH})
@@ -102,7 +106,7 @@ foreach(MODULE ${JASP_COMMON_MODULES})
   # even better, we can have different templates for each module, and use those
   # to set them up correctly
   make_directory(${MODULES_RENV_PATH}/${MODULE})
-  configure_file(${CMAKE_CURRENT_LIST_DIR}/install-module.R.in
+  configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
   add_custom_target(
@@ -127,7 +131,7 @@ message(STATUS "Configuring Extra Modules...")
 foreach(MODULE ${JASP_EXTRA_MODULES})
 
   make_directory(${MODULES_RENV_PATH}/${MODULE})
-  configure_file(${CMAKE_CURRENT_LIST_DIR}/install-module.R.in
+  configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
   add_custom_target(

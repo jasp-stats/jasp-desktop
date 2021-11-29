@@ -98,8 +98,7 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
     set_property(SOURCE ${FILE} PROPERTY MACOSX_PACKAGE_LOCATION
                                          "Resources/${NEW_FILE_PATH}")
 
-    # Optional: Add the file to the 'Resources' folder group in Xcode.
-    #           This also preserves folder structure.
+    # Add the file to the 'Resources' folder group in Xcode. This also preserves folder structure.
     source_group("Resources/${NEW_FILE_PATH}" FILES "${FILE}")
   endforeach()
 
@@ -107,10 +106,15 @@ else()
 
   # I think we can put some of these files into the JASP binary, e.g., translations, and helps
   file(COPY ${CMAKE_SOURCE_DIR}/Resources
-       DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+       DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
   message(
     STATUS
       "Successfully copied the Resources files to ${CMAKE_CURRENT_BINARY_DIR}")
+
+  set_property(
+    DIRECTORY
+    APPEND
+    PROPERTY ADDITIONAL_CLEAN_FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Resources)
 
 endif()
 

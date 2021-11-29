@@ -78,7 +78,7 @@ QString AppDirs::bundledModulesDir()
 {
 	static QString folder =
 #ifdef __APPLE__
-	 (QDir(programDir().absoluteFilePath("../Resources/Modules")).exists() ? programDir().absoluteFilePath("../Resources/Modules") : programDir().absoluteFilePath("Modules")) + '/';
+	 (QDir(programDir().absoluteFilePath("../Modules")).exists() ? programDir().absoluteFilePath("../Resources/Modules") : programDir().absoluteFilePath("Modules")) + '/';
 #elif _WIN32
 	 programDir().absoluteFilePath("Modules") + '/';
 #elif FLATPAK_USED
@@ -130,11 +130,13 @@ QString AppDirs::rHome()
 #endif
 
 #if defined(__APPLE__)
+	// There was a difference between these two, but now I'm changing the strcutre and
+	// there will be same. I keep them for now, in case I need to do some other tweaks
 	#ifdef MACOSX_BUNDLE
         QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
 	#else
 	    // Qt Creator / CLI / Debugging
-	    QString rHomePath = programDir().absoluteFilePath("../../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
+	    QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
 	#endif
 #endif
     

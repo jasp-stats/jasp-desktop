@@ -84,14 +84,6 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
     PROPERTIES XCODE_ATTRIBUTE_SKIP_INSTALL NO
                XCODE_ATTRIBUTE_INSTALL_PATH
                "$(LOCAL_APPS_DIR)/JASP.app/Contents/MacOS")
-else()
-
-  add_custom_command(
-    TARGET JASPEngine
-    POST_BUILD
-    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/JASPEngine
-            ${PROJECT_BINARY_DIR}/Desktop
-    COMMENT "       [JASP]: Placing the Engine into the Desktop folder...")
 endif()
 
 if(APPLE)

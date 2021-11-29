@@ -83,11 +83,13 @@ include(R.cmake)
 
 add_subdirectory(Common)
 add_subdirectory(R-Interface)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(Engine)
 add_subdirectory(Desktop)
 
 if(INSTALL_R_MODULES)
-  add_subdirectory(Modules)
+  include(Modules.cmake)
 endif()
 
 include(Install.cmake)
