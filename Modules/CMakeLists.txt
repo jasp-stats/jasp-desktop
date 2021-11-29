@@ -66,6 +66,15 @@ cmake_print_variables(MODULES_RENV_PATH)
 cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
+# Cleaning the renv-path on Windows only, for now.
+# It takes somes times on macOS, but if we can build and
+# cache it, let's do it.
+set_property(
+  DIRECTORY
+  APPEND
+  PROPERTY ADDITIONAL_CLEAN_FILES
+           $<PLATFORM_ID:Windows,${${MODULES_RENV_PATH}}>)
+
 add_custom_target(Modules)
 
 add_dependencies(Modules ${JASP_COMMON_MODULES} ${JASP_EXTRA_MODULES})
