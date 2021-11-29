@@ -71,7 +71,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 if(WIN32) # Check if we are on Windows
   set(SYSTEM_TYPE WIN32)
 endif()
-message(STATUS "System type is " ${SYSTEM_TYPE})
 
 # JASP Options
 include(JASP.cmake)

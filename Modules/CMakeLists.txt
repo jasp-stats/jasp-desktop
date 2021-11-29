@@ -67,6 +67,7 @@ cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
 add_custom_target(Modules)
+
 add_dependencies(Modules ${JASP_COMMON_MODULES} ${JASP_EXTRA_MODULES})
 
 message(STATUS "Installing Required R Modules...")
@@ -98,7 +99,9 @@ foreach(MODULE ${JASP_COMMON_MODULES})
   add_custom_target(
     ${MODULE}
     COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-    BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}/
+    BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}
+               ${MODULES_RENV_PATH}/${MODULE}_md5sums.rds
+               ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
     COMMENT "------ Installing ${MODULE}...")
 
   list(POP_FRONT JASP_COMMON_MODULES_COPY PREVIOUS_COMMON_MODULE)
@@ -121,7 +124,9 @@ foreach(MODULE ${JASP_EXTRA_MODULES})
   add_custom_target(
     ${MODULE}
     COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-    BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}/
+    BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}
+               ${MODULES_RENV_PATH}/${MODULE}_md5sums.rds
+               ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
     COMMENT "------ Installing ${MODULE}...")
 
   list(POP_FRONT JASP_EXTRA_MODULES_COPY PREVIOUS_EXTRA_MODULE)
