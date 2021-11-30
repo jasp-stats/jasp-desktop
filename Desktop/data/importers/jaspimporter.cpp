@@ -31,7 +31,7 @@
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"
 #include "jsonredirect.h"
-#include "filereader.h"
+#include "archivereader.h"
 #include "tempfiles.h"
 #include "../exporters/jaspexporter.h"
 
@@ -169,7 +169,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 	}
 
 	std::string entryName = "data.bin";
-	FileReader dataEntry = FileReader(path, entryName);
+	ArchiveReader dataEntry = ArchiveReader(path, entryName);
 	if (!dataEntry.exists())
 		throw std::runtime_error("Entry " + entryName + " could not be found.");
 
@@ -223,7 +223,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 	{
 		//Read the results from when the JASP file was saved and store them in compareResults field
 
-		FileReader	resultsEntry	= FileReader(path, "index.html");
+		ArchiveReader	resultsEntry	= ArchiveReader(path, "index.html");
 		int			errorCode		= 0;
 		std::string	html			= resultsEntry.readAllData(sizeof(char), errorCode);
 
@@ -247,26 +247,6 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 			||	metaData.get("filterConstructorJSON",	DEFAULT_FILTER_JSON).asString() != DEFAULT_FILTER_JSON	);
 
 	packageData->setFilterShouldRunInit(filterShouldBeRun);
-
-
-	//Take out for the time being
-	/*string entryName3 = "results.html";
-	FileReader dataEntry3 = FileReader(path, entryName3);
-	if (dataEntry3.exists())
-	{
-		int size1 = dataEntry3.bytesAvailable();
-		char memblock1[size1];
-		int startOffset1 = dataEntry3.pos();
-		int errorCode = 0;
-		while ((errorCode = dataEntry3.readData(&memblock1[dataEntry3.pos() - startOffset1], 8016)) > 0 ) ;
-		if (errorCode < 0)
-			throw runtime_error("Error reading Entry " + entryName3 + " in JASP archive.");
-
-		packageData->analysesHTML = std::string(memblock1, size1);
-		packageData->hasAnalyses = true;
-
-		dataEntry3.close();
-	}*/
 }
 
 void JASPImporter::loadJASPArchive(const std::string &path, boost::function<void(int)> progressCallback)
@@ -286,12 +266,12 @@ void JASPImporter::loadJASPArchive_1_00(const std::string &path, boost::function
 
 	if (parseJsonEntry(analysesData, path, "analyses.json", false))
 	{
-		std::vector<std::string> resources = FileReader::getEntryPaths(path, "resources");
+		std::vector<std::string> resources = ArchiveReader::getEntryPaths(path, "resources");
 	
 		double resourceCounter = 0;
 		for (std::string resource : resources)
 		{
-			FileReader resourceEntry = FileReader(path, resource);
+			ArchiveReader resourceEntry = ArchiveReader(path, resource);
 			std::string filename	= resourceEntry.fileName();
 			std::string dir			= resource.substr(0, resource.length() - filename.length() - 1);
 
@@ -355,7 +335,7 @@ void JASPImporter::readManifest(const std::string &path)
 	bool		foundVersion		= false,
 				foundDataVersion	= false;
 	std::string	manifestName		= "META-INF/MANIFEST.MF";
-	FileReader	manifest			= FileReader(path, manifestName);
+	ArchiveReader	manifest			= ArchiveReader(path, manifestName);
 	int			size				= manifest.bytesAvailable();
 
 	if (size > 0)
@@ -399,10 +379,10 @@ void JASPImporter::readManifest(const std::string &path)
 
 bool JASPImporter::parseJsonEntry(Json::Value &root, const std::string &path,  const std::string &entry, bool required)
 {
-	FileReader* dataEntry = NULL;
+	ArchiveReader* dataEntry = NULL;
 	try
 	{
-		dataEntry = new FileReader(path, entry);
+		dataEntry = new ArchiveReader(path, entry);
 	}
 	catch(...)
 	{

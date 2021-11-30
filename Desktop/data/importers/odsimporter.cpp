@@ -20,7 +20,7 @@
 
 #include "ods/odsxmlmanifesthandler.h"
 #include "ods/odsxmlcontentshandler.h"
-#include "filereader.h"
+#include "archivereader.h"
 
 #include <QXmlInputSource>
 
@@ -63,7 +63,7 @@ void ODSImporter::readManifest(const std::string &path, ODSImportDataSet *datase
 	QXmlInputSource src;
 	{
 		// Get the data file proper from the ODS manifest file.
-		FileReader manifest(path, ODSImportDataSet::manifestPath);
+		ArchiveReader manifest(path, ODSImportDataSet::manifestPath);
 		std::string tmp;
 		int errorCode = 0;
 		if (((tmp = manifest.readAllData(4096, errorCode)).size() == 0) || (errorCode < 0))
@@ -84,7 +84,7 @@ void ODSImporter::readManifest(const std::string &path, ODSImportDataSet *datase
 void ODSImporter::readContents(const std::string &path, ODSImportDataSet *dataset)
 {
 
-	FileReader contents(path, dataset->getContentFilename());
+	ArchiveReader contents(path, dataset->getContentFilename());
 
 	QXmlInputSource src;
 	{

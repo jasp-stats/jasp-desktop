@@ -22,13 +22,13 @@ INCLUDEPATH += $$PWD/ jaspColumnEncoder
 
 SOURCES += \
 	appinfo.cpp \
+  archivereader.cpp \
 	column.cpp \
 	jaspColumnEncoder/columnencoder.cpp \
 	columns.cpp \
 	datablock.cpp \
 	dataset.cpp \
 	dirs.cpp \
-	filereader.cpp \
 	ipcchannel.cpp \
 	label.cpp \
 	labels.cpp \
@@ -46,6 +46,7 @@ SOURCES += \
 
 HEADERS += \
 	appinfo.h \
+  archivereader.h \
 	jaspColumnEncoder/boost/nowide/args.hpp \
 	jaspColumnEncoder/boost/nowide/cenv.hpp \
 	jaspColumnEncoder/boost/nowide/config.hpp \
@@ -65,7 +66,6 @@ HEADERS += \
 	datablock.h \
 	dataset.h \
 	dirs.h \
-	filereader.h \
 	ipcchannel.h \
 	label.h \
 	labels.h \
