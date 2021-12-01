@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
 
