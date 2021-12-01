@@ -177,7 +177,7 @@ FocusScope
 
 		onPressed:
 		{
-			console.log("doubleclick workaround pressed")
+			//console.log("doubleclick workaround pressed")
 			if(!__JASPDataViewRoot.doubleClickWorkaround)
 			{
 				mouse.accepted = false;
@@ -188,13 +188,13 @@ FocusScope
 
 			if(lastTimeClicked === -1 || curTime - lastTimeClicked > doubleClickTime)
 			{
-				console.log("doubleclick workaround pressed set time")
+			//	console.log("doubleclick workaround pressed set time")
 				lastTimeClicked = curTime
 				mouse.accepted = false
 			}
 			else
 			{
-				console.log("doubleclick workaround activated")
+			//	console.log("doubleclick workaround activated")
 				lastTimeClicked = -1
 				__JASPDataViewRoot.doubleClicked()
 			}

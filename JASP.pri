@@ -30,7 +30,7 @@ DEFINES += BUILDING_JASP
 JASP_VERSION_MAJOR      = 0
 JASP_VERSION_MINOR      = 16
 JASP_VERSION_REVISION   = 0
-JASP_VERSION_BUILD      = 0 #Should be ignored because the code handling it is buggy as hell (aka https://www.youtube.com/watch?v=otCpCn0l4Wo )
+JASP_VERSION_BUILD      = 1 #Should be ignored because the code handling it is buggy as hell (aka https://www.youtube.com/watch?v=otCpCn0l4Wo )
 
 DEFINES +=    "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
 DEFINES +=    "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
