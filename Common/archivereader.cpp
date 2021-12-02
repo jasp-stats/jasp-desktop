@@ -51,8 +51,10 @@ ArchiveReader::~ArchiveReader()
 void ArchiveReader::openEntry(const string &archivePath, const string &entryPath)
 {
 	boost::filesystem::path pathArchive = PATH_CONVERSION(archivePath);
+	
+	_archiveExists = boost::filesystem::exists(pathArchive);
 
-	if ((_archiveExists = boost::filesystem::exists(pathArchive)))
+	if (_archiveExists)
 	{
 		_archive = archive_read_new();
 		archive_read_support_filter_all(_archive);

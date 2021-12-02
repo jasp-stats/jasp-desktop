@@ -22,7 +22,7 @@ INCLUDEPATH += $$PWD/ jaspColumnEncoder
 
 SOURCES += \
 	appinfo.cpp \
-  archivereader.cpp \
+	archivereader.cpp \
 	column.cpp \
 	jaspColumnEncoder/columnencoder.cpp \
 	columns.cpp \
@@ -36,17 +36,17 @@ SOURCES += \
 	r_functionwhitelist.cpp \
 	sharedmemory.cpp \
 	tempfiles.cpp \
-    utilenums.cpp \
+	utilenums.cpp \
 	utils.cpp \
 	version.cpp \
 	enginedefinitions.cpp \
 	timers.cpp \
-    log.cpp \
+	log.cpp \
 	jaspColumnEncoder/columntype.cpp
 
 HEADERS += \
 	appinfo.h \
-  archivereader.h \
+	archivereader.h \
 	jaspColumnEncoder/boost/nowide/args.hpp \
 	jaspColumnEncoder/boost/nowide/cenv.hpp \
 	jaspColumnEncoder/boost/nowide/config.hpp \
@@ -75,7 +75,7 @@ HEADERS += \
 	r_functionwhitelist.h \
 	sharedmemory.h \
 	tempfiles.h \
-    utilenums.h \
+	utilenums.h \
 	utils.h \
 	version.h \
 	jsonredirect.h \
@@ -83,7 +83,7 @@ HEADERS += \
 	timers.h \
 	jaspColumnEncoder/enumutilities.h \
 	jaspColumnEncoder/stringutils.h \
-    log.h \
+	log.h \
 	jaspColumnEncoder/columntype.h
 
 #exists(/app/lib/*) should only be true when building flatpak

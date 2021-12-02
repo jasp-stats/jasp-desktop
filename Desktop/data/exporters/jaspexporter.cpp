@@ -264,14 +264,12 @@ void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
 			std::vector<std::string> paths = TempFiles::retrieveList(analysisJson["id"].asInt());
 			for (size_t j = 0; j < paths.size(); j++)
 			{
-				boost::nowide::ifstream readTempFile(TempFiles::sessionDirName() + "/" + paths[j], std::ios::in | std::ios::binary);
+				// std::ios::ate seeks to the end of stream immediately after open
+				boost::nowide::ifstream readTempFile(TempFiles::sessionDirName() + "/" + paths[j], std::ios::ate | std::ios::binary);
 
 				if (readTempFile.is_open())
 				{
-					readTempFile.seekg(0, readTempFile.end);	// move to end to get filesize
 					int imageSize = readTempFile.tellg();		// get size from curpos
-					readTempFile.seekg(0, readTempFile.beg);	// move back to begin
-
 
 					entry = archive_entry_new();
 					std::string dd4 = paths[j];
@@ -281,7 +279,8 @@ void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
 					archive_entry_set_perm(entry, 0644); // Not sure what this does
 					archive_write_header(a, entry);
 
-					int	bytes		= 0;
+					int	bytes = 0;
+					readTempFile.seekg(0, std::ios::beg);		// move back to begin
 
 					while (!readTempFile.eof())
 					{

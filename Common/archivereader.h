@@ -92,7 +92,7 @@ public:
 	 * @brief isOpen Checks for file/archive being open.
 	 * @return true if file opened...
 	 */
-	bool isOpen();
+	bool isOpen() {return _isOpen; }
 
 	/**
 	 * @brief exists Checks if the archive/file existant.
