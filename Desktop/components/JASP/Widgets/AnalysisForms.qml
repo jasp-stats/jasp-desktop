@@ -143,7 +143,8 @@ FocusScope
 				Connections
 				{
 					target:							analysesModel
-					function onCurrentFormHeightChanged(formHeight) { if (formHeight > analysesModel.currentFormPrevH) reposition(); }//If it got larger it probably means an expander opened and we should reposition if possible
+					function onCurrentFormHeightChanged(formHeight)
+					{ if (formHeight > analysesModel.currentFormPrevH) reposition(); }//If it got larger it probably means an expander opened and we should reposition if possible
 
 					function reposition()
 					{
