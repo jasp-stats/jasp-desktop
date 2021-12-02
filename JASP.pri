@@ -3,8 +3,8 @@
 #Jasp-R-Interface
 JASP_R_INTERFACE_TARGET = R-Interface
 
-JASP_R_INTERFACE_MAJOR_VERSION =  11  # Interface changes or whenever you feel majorlike
-JASP_R_INTERFACE_MINOR_VERSION =  6   # Code changes
+JASP_R_INTERFACE_MAJOR_VERSION =  12  # Interface changes or whenever you feel majorlike
+JASP_R_INTERFACE_MINOR_VERSION =  0   # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
