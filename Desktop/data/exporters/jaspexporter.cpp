@@ -23,11 +23,11 @@
 #include <sys/stat.h>
 
 #include "dataset.h"
-
+#include <ios>
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"
 #include "jsonredirect.h"
-#include "filereader.h"
+#include "archivereader.h"
 #include "../Common/version.h"
 #include "tempfiles.h"
 #include "appinfo.h"
@@ -264,10 +264,12 @@ void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
 			std::vector<std::string> paths = TempFiles::retrieveList(analysisJson["id"].asInt());
 			for (size_t j = 0; j < paths.size(); j++)
 			{
-				FileReader fileInfo = FileReader(TempFiles::sessionDirName() + "/" + paths[j]);
-				if (fileInfo.exists())
+				// std::ios::ate seeks to the end of stream immediately after open
+				boost::nowide::ifstream readTempFile(TempFiles::sessionDirName() + "/" + paths[j], std::ios::ate | std::ios::binary);
+
+				if (readTempFile.is_open())
 				{
-					int imageSize = fileInfo.size();
+					int imageSize = readTempFile.tellg();		// get size from curpos
 
 					entry = archive_entry_new();
 					std::string dd4 = paths[j];
@@ -277,21 +279,24 @@ void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
 					archive_entry_set_perm(entry, 0644); // Not sure what this does
 					archive_write_header(a, entry);
 
-					int	bytes		= 0,
-						errorCode	= 0;
+					int	bytes = 0;
+					readTempFile.seekg(0, std::ios::beg);		// move back to begin
 
-					while ((bytes = fileInfo.readData(imagebuff, sizeof(imagebuff), errorCode)) > 0 && errorCode == 0) {
+					while (!readTempFile.eof())
+					{
+						readTempFile.read(imagebuff, sizeof(imagebuff));
+						bytes = readTempFile.gcount();
+
 						archive_write_data(a, imagebuff, size_t(bytes));
 					}
 
 					archive_entry_free(entry);
 
-					if (errorCode < 0)
-						throw std::runtime_error("Required resource files could not be accessed.");
 				}
 				else
-					Log::log() << "JASP Export: cannot find file " << (TempFiles::sessionDirName() + "/" + paths[j]);
-				fileInfo.close();
+					Log::log() << "JASP Export: cannot find/open file " << (TempFiles::sessionDirName() + "/" + paths[j]);
+
+				readTempFile.close();
 			}
 		}
 	}

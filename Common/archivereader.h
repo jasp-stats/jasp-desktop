@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef FILEREADER_H
-#define FILEREADER_H
+#ifndef ARCHIVEREADER_H
+#define ARCHIVEREADER_H
 
 #include <string>
 #include <vector>
@@ -27,57 +27,37 @@
 #include "libzip/archive.h"
 
 /**
- * @brief The FileReader class - Reads archives or simple files.
+ * @brief The ArchiveReader class - Reads archives.
  *
- * Reads (archive) files, and extracts entiries in the archive.
+ * Reads and extracts entiries from the archive.
  *
  */
-class FileReader
+class ArchiveReader
 {
 public:
-	/**
-	 * @brief FileReader Ctor to read an entry in the archieve.
-	 * @param archivePath - Path to archive file.
-	 * @param entryPath - Path to entry in archive,
-	 *
-	 */
-	FileReader(const std::string &archivePath, const std::string &entryPath);
+	ArchiveReader(const std::string &archivePath, const std::string &entryPath);
 
-	/**
-	 * @brief FileReader - Ctor to read simple file.
-	 * @param path - Path to archive.
-	 */
-	FileReader(const std::string &path);
-
-	/**
-	 * @brief Dtor()
-	 *
-	 */
-	~FileReader();
+	~ArchiveReader();
 
 	/**
 	 * @brief size Sizeof archive, or entry.
 	 * @return size found.
 	 */
-	int size() const;
+	int size() const { return _exists ? _size : 0;
+	}
 
 	/**
 	 * @brief pos The current position in the file.
 	 * @return Bytes from start of file.
 	 */
-	int pos() const;
+	int pos() const { return _currentRead; }
 
 	/**
 	 * @brief bytes Available Bytes in the file or entry.
 	 * @return Number bytes still to be read.
 	 */
-	int bytesAvailable() const;
+	int bytesAvailable() const { return _exists ? _size - _currentRead : 0;	}
 
-	/**
-	 * @brief isSequential Is file access sequnential.
-	 * @return true.
-	 */
-	bool isSequential() const;
 
 	/**
 	 * @brief readData Reads at most maxSize bytes to data.
@@ -109,22 +89,22 @@ public:
 	void reset();
 
 	/**
-	 * @brief isClosed Checks for file/archive not open.
-	 * @return true if file closed.
+	 * @brief isOpen Checks for file/archive being open.
+	 * @return true if file opened...
 	 */
-	bool isClosed();
+	bool isOpen() {return _isOpen; }
 
 	/**
 	 * @brief exists Checks if the archive/file existant.
 	 * @return true if existant (and open).
 	 */
-	bool exists() const;
+	bool exists() const { return _exists; }
 
 	/**
 	 * @brief archiveExists Check if is archive, and achives exists
 	 * @return true if archive (not file) has been opened.
 	 */
-	bool archiveExists() const;
+	bool archiveExists() const { return _archiveExists; }
 
 	/**
 	 * @brief fileName The file name of the last archive entry.
@@ -142,21 +122,17 @@ public:
 
 private:
 
-	struct archive *_archive;
-	boost::nowide::ifstream *_file = NULL;
+	struct archive			*	_archive		= nullptr;
 
-	bool _isArchive = false;
-
-	int _size = 0;
-	int _currentRead = 0;
-	bool _isOpen = false;
-	bool _exists = false;
-	bool _archiveExists = false;
-	std::string _archivePath;
-	std::string _entryPath;
+	bool						_isOpen			= false,
+								_exists			= false,
+								_archiveExists	= false;
+	int							_size			= 0,
+								_currentRead	= 0;
+	std::string					_archivePath,
+								_entryPath;
 
 	void openEntry(const std::string &archivePath, const std::string &entryPath);
-	void openFile(const std::string &filePath);
 };
 
-#endif // FILEREADER_H
+#endif // ARCHIVEREADER_H
