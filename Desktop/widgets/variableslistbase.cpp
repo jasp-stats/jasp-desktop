@@ -61,38 +61,11 @@ void VariablesListBase::setUp()
 		}
 	}
 
-	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_draggableModel);
+	_setRelations();
 
-	if (assignedModel)
-	{
-		ListModel* relatedModel = getRelatedModel();
-		if (!relatedModel)
-		{
-			if (sourceItems().empty() && !property("debug").toBool())
-				addControlError(tr("Cannot find source for VariableList %1").arg(name()));
-		}
-		else
-		{
-			ListModelAvailableInterface* availableModel = dynamic_cast<ListModelAvailableInterface*>(relatedModel);
-			if (!availableModel)
-				addControlError(tr("Wrong kind of source for VariableList %1").arg(name()));
-			else
-			{
-				assignedModel->setAvailableModel(availableModel);
-				availableModel->addAssignedModel(assignedModel);
-				addDependency(availableModel->listView());
-				setContainsVariables();
-				setContainsInteractions();
-				
-				//For https://github.com/jasp-stats/jasp-test-release/issues/1369 (Analysis doesnt respond to labelchanges/reorders) 
-				//This could be done more elegantly through setting a "invalidated" property in the `createMeta()` function, but this would be ignored now because the Anlysis caches `_boundValues`.
-				//In the future we could dynamically generate them instead and avoid this kind of rough-riding
-				connect(assignedModel, &ListModel::labelsReordered, this, [&](){ if(form()) form()->refreshAnalysis(); });
-				connect(assignedModel, &ListModel::labelsChanged,	this, [&](){ if(form()) form()->refreshAnalysis(); });
-			}
-		}
-	}
-	else
+	ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(_draggableModel);
+
+	if (availableModel)
 	{
 		SortMenuModel* sortedMenuModel = new SortMenuModel(_draggableModel, {Sortable::None, Sortable::SortByName, Sortable::SortByType});
 		setProperty("sortMenuModel", QVariant::fromValue(sortedMenuModel));
@@ -105,8 +78,8 @@ void VariablesListBase::setUp()
 	_draggableModel->setDropMode(dropMode);
 	
 	//We use macros here because the signals come from QML
-	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),							this, SLOT(itemDoubleClickedHandler(int)));
-	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int, int)));
+	QQuickItem::connect(this, SIGNAL(itemDoubleClicked(int)),						this, SLOT(itemDoubleClickedHandler(int)));
+	QQuickItem::connect(this, SIGNAL(itemsDropped(QVariant, QVariant, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int)));
 }
 
 
@@ -218,7 +191,7 @@ void VariablesListBase::itemDoubleClickedHandler(int index)
 	moveItems(indexes, draggableTargetModel);
 }
 
-void VariablesListBase::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex, int assignOption)
+void VariablesListBase::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex)
 {
 	JASPListControl		* dropList  = qobject_cast<JASPListControl*>(vdropList.value<QObject*>());
 	ListModelDraggable	* dropModel = !dropList	? qobject_cast<ListModelDraggable*>(getRelatedModel())
@@ -242,7 +215,6 @@ void VariablesListBase::itemsDroppedHandler(QVariant vindexes, QVariant vdropLis
 	
 	_tempDropModel		= dropModel;
 	_tempDropItemIndex	= dropItemIndex;
-	_tempAssignOption	= JASPControl::AssignType(assignOption);
 	// the call to itemsDropped is called from an item that will be removed (the items of the variable list
 	// will be re-created). So itemsDropped should not call _moveItems directly.
 	QTimer::singleShot(0, this, SLOT(moveItemsDelayedHandler()));
@@ -250,10 +222,10 @@ void VariablesListBase::itemsDroppedHandler(QVariant vindexes, QVariant vdropLis
 
 void VariablesListBase::moveItemsDelayedHandler()
 {
-	moveItems(_tempIndexes, _tempDropModel, _tempDropItemIndex, _tempAssignOption);
+	moveItems(_tempIndexes, _tempDropModel, _tempDropItemIndex);
 }
 
-void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex, JASPControl::AssignType assignOption)
+void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex)
 {
 	if (targetModel && indexes.size() > 0)
 	{
@@ -279,7 +251,7 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 				termsAdded = targetModel->canAddTerms(terms);
 
 				if (termsAdded.size() > 0)
-					removedTermsWhenAdding = targetModel->addTerms(termsAdded, dropItemIndex, assignOption);
+					removedTermsWhenAdding = targetModel->addTerms(termsAdded, dropItemIndex);
 
 				if (termsAdded.size() != terms.size())
 				{
@@ -322,6 +294,17 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 	{
 		Log::log()  << (!targetModel ? "no dropModel" : "no indexes") << std::endl;
 	}
+}
+
+void VariablesListBase::setDropKeys(const QStringList &dropKeys)
+{
+	if (dropKeys != _dropKeys)
+	{
+		_dropKeys = dropKeys;
+		_setRelations();
+		emit dropKeysChanged();
+	}
+
 }
 
 ListModel *VariablesListBase::getRelatedModel()
@@ -405,6 +388,30 @@ void VariablesListBase::_setAllowedVariables()
 			iconList.push_back(colModel->getIconFile(type, ColumnsModel::InactiveIconType));
 	}
 	setSuggestedColumnsIcons(iconList);
+}
+
+void VariablesListBase::_setRelations()
+{
+	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_draggableModel);
+	if (assignedModel)
+	{
+		ListModel* relatedModel = getRelatedModel();
+		if (relatedModel)
+		{
+			ListModelAvailableInterface* availableModel = dynamic_cast<ListModelAvailableInterface*>(relatedModel);
+			if (!availableModel)
+				addControlError(tr("Wrong kind of source for VariableList %1").arg(name()));
+			else
+			{
+				assignedModel->setAvailableModel(availableModel);
+				availableModel->addAssignedModel(assignedModel);
+				addDependency(availableModel->listView());
+				setContainsVariables();
+				setContainsInteractions();
+
+			}
+		}
+	}
 }
 
 void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl)

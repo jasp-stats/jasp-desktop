@@ -30,8 +30,8 @@ ComponentsListBase
 	implicitHeight			: itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
 	shouldStealHover		: false
 	innerControl			: itemGrid
+	addItemManually			: !source && !rSource
 
-	property string title
 	property alias	label				: componentsList.title
 	property alias	columns				: itemGrid.columns
 	property alias	rows				: itemGrid.rows
@@ -41,17 +41,11 @@ ComponentsListBase
 	property alias	itemTitle			: itemTitle
 	property alias	rowSpacing			: itemGrid.rowSpacing
 	property alias	columnSpacing		: itemGrid.columnSpacing
-
-	property bool	addItemManually		: !source && !values && !rSource
 	property bool	showAddIcon			: addItemManually
-	property int	minimumItems		: 0
-	property int	maximumItems		: -1
-	property string newItemName			: "#"
 	property string	removeIcon			: "cross.png"
 	property string	addIcon				: "duplicate.png"
 	property string addTooltip			: qsTr("Add a row")
 	property string removeTooltip		: qsTr("Remove a row")
-	property var	defaultValues		: []
 
 	Text
 	{

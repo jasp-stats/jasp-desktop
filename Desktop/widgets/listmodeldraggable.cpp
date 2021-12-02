@@ -89,10 +89,8 @@ void ListModelDraggable::moveTerms(const QList<int> &indexes, int dropItemIndex)
 	endResetModel();
 }
 
-Terms ListModelDraggable::addTerms(const Terms& terms, int dropItemIndex, JASPControl::AssignType)
+Terms ListModelDraggable::addTerms(const Terms& terms, int dropItemIndex, const RowControlsValues&)
 {
-	Q_UNUSED(dropItemIndex);
-
 	if (terms.size() > 0)
 	{
 		beginResetModel();
@@ -100,7 +98,7 @@ Terms ListModelDraggable::addTerms(const Terms& terms, int dropItemIndex, JASPCo
 		endResetModel();
 	}
 
-	return nullptr;
+	return Terms();
 }
 
 Terms ListModelDraggable::canAddTerms(const Terms& terms) const

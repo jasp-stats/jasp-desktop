@@ -31,28 +31,23 @@ ComponentsListBase
 	implicitHeight			: itemStack.y + itemStack.height
 	shouldStealHover		: false
 	innerControl			: itemTabBar
+	addItemManually			: !source
+	minimumItems			: 1
+	newItemName				: qsTr("New tab")
 
-	property string title
 	property alias	label				: tabView.title
-	property var	defaultValues		: []
-	property bool	addItemManually		: !source
 	property bool	showAddIcon			: addItemManually
 	property bool	showRemoveIcon		: addItemManually
 	property bool	tabNameEditable		: addItemManually
-	property int	minimumItems		: 1
-	property int	maximumItems		: -1
 	property string	removeIcon			: "cross.png"
 	property string	addIcon				: "duplicate.png"
 	property string addTooltip			: qsTr("Add a tab")
 	property string removeTooltip		: qsTr("Remove this tab")
-	property string newItemName			: qsTr("New tab")
 	property alias	newTabName			: tabView.newItemName
-
 	property alias	itemTabBar			: itemTabBar
 	property alias	itemTitle			: itemTitle
 	property alias  content				: tabView.rowComponent
 	property alias	currentIndex		: itemTabBar.currentIndex
-
 	property var	buttonComponent		: defaultButtonButton
 
 	Text

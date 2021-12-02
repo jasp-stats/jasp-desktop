@@ -208,7 +208,7 @@ void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, JASPCont
 	setTerms();
 }
 
-Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControl::AssignType assignType)
+Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemIndex, const RowControlsValues&)
 {
 	Q_UNUSED(dropItemIndex);
 
@@ -217,12 +217,9 @@ Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemInd
 	if (terms.size() == 0)
 		return result;
 	
-	if (assignType == JASPControl::AssignType::AssignDefault)
-		assignType = JASPControl::AssignType::AssignCross;
-		
-	addCombinedTerms(terms, assignType);
+	addCombinedTerms(terms, JASPControl::AssignType::AssignCross);
 	
-	return nullptr;
+	return Terms();
 }
 
 void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)

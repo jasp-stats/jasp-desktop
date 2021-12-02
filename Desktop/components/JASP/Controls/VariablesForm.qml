@@ -65,92 +65,24 @@ VariablesFormBase
 		id: assignButtonRepeater
 		model: 0
 		
-		Loader
+		AssignButton
 		{
-			property var myLeftSource:			availableVariablesList
-			property var myRightSource:			allAssignedVariablesList[index];
-			property bool interactionAssign:	allAssignedVariablesList[index].addInteractionOptions
-			z:	10
-			
-			
-			sourceComponent: interactionAssign ? assignInteractionButtonComponent : assignButtonComponent
-			x:		(allAssignedVariablesList[index].x + availableVariablesList.width - 40 * preferencesModel.uiScale) / 2
-			y:      allAssignedVariablesList[index].y  + allAssignedVariablesList[index].rectangleY
-		
-			onLoaded:
+			x:				(allAssignedVariablesList[index].x + availableVariablesList.width - 40 * preferencesModel.uiScale) / 2
+			y:				allAssignedVariablesList[index].y  + allAssignedVariablesList[index].rectangleY
+			z:				10
+			leftSource:		availableVariablesList
+			rightSource:	allAssignedVariablesList[index]
+
+			Component.onCompleted:
 			{
-				allAssignedVariablesList[index]	.activeFocusChanged		.connect(item.setIconToLeft	);
-				availableVariablesList			.activeFocusChanged		.connect(item.setIconToRight);
-				allAssignedVariablesList[index]	.selectedItemsChanged	.connect(item.setState		);
-				availableVariablesList			.selectedItemsChanged	.connect(item.setState		);
-				
-				if (interactionAssign)
-				{
-					allAssignedVariablesList[index].interactionControl = item.interactionControl
-					item.interactionControl.resetWidth(["Main Effects"])
-					item.interactionControl.activated.connect(item.setState)
-				}
+				allAssignedVariablesList[index]	.activeFocusChanged		.connect(setIconToLeft	);
+				availableVariablesList			.activeFocusChanged		.connect(setIconToRight	);
+				allAssignedVariablesList[index]	.selectedItemsChanged	.connect(setState		);
+				availableVariablesList			.selectedItemsChanged	.connect(setState		);
 			}
 		}
-
 	}
 	
-	Component
-	{
-		id: assignButtonComponent
-		AssignButton 
-		{
-			z:				30
-			leftSource:		myLeftSource
-			rightSource:	myRightSource
-		}		
-	}
-	
-	Component
-	{
-		id: assignInteractionButtonComponent
-		Item
-		{
-			z:	10
-
-			property alias assignButton: assignButton
-			property alias interactionControl: interactionControl
-			
-			function setIconToLeft()	{ assignButton.setIconToLeft() }
-			function setIconToRight()	{ assignButton.setIconToRight() }
-			function setState()			{ assignButton.setState() }
-
-			
-			AssignButton
-			{
-				id:					assignButton
-				leftSource:			myLeftSource
-				rightSource:		myRightSource
-				interactionControl: interactionControl
-				z:					3
-			}
-			
-			DropDown
-			{
-				id:					interactionControl
-				anchors.left:		assignButton.left
-				anchors.leftMargin: (assignButton.width - width - 4) / 2
-				anchors.top:		assignButton.bottom
-				anchors.topMargin:	2
-				currentIndex:		0
-				values: ListModel 
-				{
-					ListElement { label: qsTr("Main Effects");	value: "MainEffects" }
-					ListElement { label: qsTr("Only 2 way");		value: "All2Way" }
-					ListElement { label: qsTr("Only 3 way");		value: "All3Way" }
-					ListElement { label: qsTr("Only 4 way");		value: "All4Way" }
-					ListElement { label: qsTr("Only 5 way");		value: "All5Way" }
-					ListElement { label: qsTr("All");				value: "Cross" }
-				}
-			}			
-		}
-	}
-
 	function init()
 	{
 		var first = true
@@ -165,24 +97,28 @@ VariablesFormBase
 		}
 
 		var countAssignedList = 0
+		var availableDropKeys = []
 		for (var key in allAssignedVariablesList)
 		{
 			countAssignedList++;
 			var assignedList = allAssignedVariablesList[key]
-			availableVariablesList.dropKeys.push(assignedList.name);
+			var assignedDropKeys = [];
+			availableDropKeys.push(assignedList.name);
 			availableVariablesList.draggingChanged.connect(assignedList.setEnabledState);
-			assignedList.dropKeys.push(availableVariablesList.name);
+			assignedDropKeys.push(availableVariablesList.name);
 
 			for (var key2 in allAssignedVariablesList)
 			{
-				assignedList.dropKeys.push(allAssignedVariablesList[key2].name);
+				assignedDropKeys.push(allAssignedVariablesList[key2].name);
 				if (assignedList !== allAssignedVariablesList[key2])
 					assignedList.draggingChanged.connect(allAssignedVariablesList[key2].setEnabledState);
 			}
+
+			assignedList.dropKeys = assignedDropKeys;
 		}
 
+		availableVariablesList.dropKeys = availableDropKeys
 		setControlsSize()
-
 		assignButtonRepeater.model = countAssignedList;
 	}
 

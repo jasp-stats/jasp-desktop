@@ -32,8 +32,8 @@ public:
 	int				rowCount(const QModelIndex &parent = QModelIndex())												const	override { return _levels.size() * 2; }
 	QVariant		data(const QModelIndex &index, int role = Qt::DisplayRole)										const	override;
 	Terms			termsFromIndexes(const QList<int> &indexes)														const	override;
-	void			initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues())			override;
-	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault)	override;
+	void			initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues())				override;
+	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues())		override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)											override;
 	void			removeTerms(const QList<int>& indexes) override;
 

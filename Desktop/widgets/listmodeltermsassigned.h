@@ -30,8 +30,8 @@ public:
 	ListModelTermsAssigned(JASPListControl* listView, int maxRows = -1);
 	
 	void			initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues())			override;
-	Terms			canAddTerms(const Terms& terms)																	const	override;
-	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault)	override;
+	Terms			canAddTerms(const Terms& terms)																const	override;
+	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues())	override;
 	void			removeTerm(int index);
 
 	virtual void	changeTerm(int index, const QString& name);
@@ -42,7 +42,6 @@ public slots:
 	
 private:
 	int		_maxRows = -1;
-	Terms	_tempTermsToSendBack;
 
 };
 

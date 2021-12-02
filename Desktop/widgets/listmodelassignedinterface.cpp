@@ -18,6 +18,7 @@
 
 #include "listmodelassignedinterface.h"
 #include "variableslistbase.h"
+#include "analysis/analysisform.h"
 
 ListModelAssignedInterface::ListModelAssignedInterface(JASPListControl* listView)
 	: ListModelDraggable(listView)
@@ -74,4 +75,24 @@ int ListModelAssignedInterface::sourceColumnTypeChanged(QString name)
 	}
 
 	return index;
+}
+
+bool ListModelAssignedInterface::sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels)
+{
+	bool change = ListModelDraggable::sourceLabelsChanged(columnName, changedLabels);
+
+	if (change && listView() && listView()->form())
+		listView()->form()->refreshAnalysis();
+
+	return change;
+}
+
+bool ListModelAssignedInterface::sourceLabelsReordered(QString columnName)
+{
+	bool change = ListModelDraggable::sourceLabelsReordered(columnName);
+
+	if (change && listView() && listView()->form())
+		listView()->form()->refreshAnalysis();
+
+	return change;
 }

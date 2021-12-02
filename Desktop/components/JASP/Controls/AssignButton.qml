@@ -31,8 +31,6 @@ Button
 				property var	source:			leftToRight ? leftSource : rightSource
 				property var	target:			leftToRight ? rightSource : leftSource
 
-				property var	interactionControl
-
 	readonly	property string iconToLeft:		jaspTheme.iconPath + "arrow-left.png"
 	readonly	property string iconToRight:	jaspTheme.iconPath + "arrow-right.png"
 	
@@ -66,21 +64,6 @@ Button
 						isEnabled = true;
 				}
 			}
-		}
-
-		if (isEnabled && interactionControl)
-		{
-			if (target.addInteractionOptions && source.model)
-			{
-				var nb = source.model.selectedItems().length
-				interactionControl.enabled = isEnabled
-				var enabledOptions = [ true, nb > 1, nb > 2, nb > 3, nb > 4, true ]
-				interactionControl.enabledOptions = enabledOptions
-				if (!enabledOptions[interactionControl.currentIndex])
-					isEnabled = false;
-			}
-			else
-				interactionControl.enabled = false
 		}
 		
 		enabled = isEnabled

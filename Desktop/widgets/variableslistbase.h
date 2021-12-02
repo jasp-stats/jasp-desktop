@@ -65,7 +65,7 @@ public:
 	const QStringList&			dropKeys()							const				{ return _dropKeys;									}
 	const QString&				interactionHighOrderCheckBox()		const				{ return _interactionHighOrderCheckBox;				}
 	bool						addRowControl(const QString& key, JASPControl* control) override;
-	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, JASPControl::AssignType assignOption = JASPControl::AssignType::AssignDefault);
+	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1);
 
 signals:
 	void listViewTypeChanged();
@@ -84,8 +84,9 @@ protected:
 	GENERIC_SET_FUNCTION(SuggestedColumns,				_suggestedColumns,				suggestedColumnsChanged,				QStringList		)
 	GENERIC_SET_FUNCTION(SuggestedColumnsIcons,			_suggestedColumnsIcons,			suggestedColumnsIconsChanged,			QStringList		)
 	GENERIC_SET_FUNCTION(ColumnsTypes,					_columnsTypes,					columnsTypesChanged,					QStringList		)
-	GENERIC_SET_FUNCTION(DropKeys,						_dropKeys,						dropKeysChanged,						QStringList		)
 	GENERIC_SET_FUNCTION(InteractionHighOrderCheckBox,	_interactionHighOrderCheckBox,	interactionHighOrderCheckBoxChanged,	QString			)
+
+	void						setDropKeys(const QStringList& dropKeys);
 
 	ListModel*					getRelatedModel();
 
@@ -97,19 +98,19 @@ protected slots:
 	void termsChangedHandler()		override;
 	void moveItemsDelayedHandler();
 	void itemDoubleClickedHandler(int index);
-	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex, int assignOption);
+	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex);
 	void interactionHighOrderHandler(JASPControl* checkBoxControl);
 
 private:
 	int							_getAllowedColumnsTypes();
 	void						_setAllowedVariables();
+	void						_setRelations();
 
 	int							_columns				= 1;
 
 	ListModelDraggable	*		_tempDropModel = nullptr;
 	QList<int>					_tempIndexes;
 	int							_tempDropItemIndex;
-	JASPControl::AssignType		_tempAssignOption = JASPControl::AssignType::AssignDefault;
 
 	QStringList					_allowedColumns,
 								_suggestedColumns,

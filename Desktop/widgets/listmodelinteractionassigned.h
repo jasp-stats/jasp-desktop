@@ -33,7 +33,7 @@ public:
 	void			initTerms(const Terms &terms, const RowControlsValues& = RowControlsValues())	override;
 	Terms			termsFromIndexes(const QList<int> &indexes)								const	override;
 	Terms			canAddTerms(const Terms& terms) const override;
-	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControl::AssignType assignType = JASPControl::AssignType::AssignDefault) override;
+	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues())	override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
 	void			removeTerms(const QList<int> &indices)											override;
 	QString			getItemType(const Term &term)											const	override;
