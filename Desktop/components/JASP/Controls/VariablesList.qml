@@ -58,9 +58,6 @@ VariablesListBase
 	property bool	allowAnalysisOwnComputedColumns	: true
 	property bool	allowDuplicatesInMultipleColumns: false // This property is used in the constructor and is not updatable afterwards.
 
-	property var	interactionControl
-	property bool	addInteractionOptions			: false
-
 	property int	indexInDroppedListViewOfDraggedItem:	-1
 	
 	readonly property int rectangleY				: itemRectangle.y
@@ -74,7 +71,7 @@ VariablesListBase
 	property string	searchKeys						: ""
 	
 	signal itemDoubleClicked(int index);
-	signal itemsDropped(var indexes, var dropList, int dropItemIndex, int assignOption);
+	signal itemsDropped(var indexes, var dropList, int dropItemIndex);
 	signal draggingChanged(var context, bool dragging);
 	signal selectedItemsChanged();
 
@@ -114,8 +111,7 @@ VariablesListBase
 		var selectedItems = variablesList.model.selectedItems()
 		if (selectedItems.length === 0) return;
 
-		var assignOption = (target && target.interactionControl) ? JASP.AssignCross: JASP.AssignDefault
-		itemsDropped(selectedItems, target, -1, assignOption);
+		itemsDropped(selectedItems, target, -1);
 		variablesList.clearSelectedItems();
 	}
 
@@ -656,8 +652,7 @@ VariablesListBase
 									return;
 								
 								var variablesListName = variablesList.name
-								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : JASP.AssignDefault
-								itemsDropped(selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
+								itemsDropped(selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem);
 								variablesList.clearSelectedItems();
 							}
 						}

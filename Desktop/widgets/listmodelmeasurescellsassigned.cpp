@@ -101,7 +101,7 @@ void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListMod
 	_fitTermsWithLevels();
 }
 
-Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, JASPControl::AssignType)
+Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const RowControlsValues&)
 {
 	beginResetModel();
 	if (dropItemIndex >= 0)

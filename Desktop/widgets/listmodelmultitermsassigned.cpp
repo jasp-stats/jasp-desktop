@@ -163,7 +163,7 @@ void ListModelMultiTermsAssigned::_setTerms()
 }
 
 
-Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, JASPControl::AssignType)
+Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const RowControlsValues&)
 {
 	beginResetModel();
 	Terms termsToReturn;

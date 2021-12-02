@@ -71,12 +71,9 @@ Terms ListModelTermsAssigned::canAddTerms(const Terms& terms) const
 	return ListModelDraggable::canAddTerms(terms);
 }
 
-Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, JASPControl::AssignType)
+Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const RowControlsValues& rowValues)
 {
-	_tempTermsToSendBack.clear();
-
-	beginResetModel();
-
+	Terms termsToSendBack;
 	Terms newTerms = terms();
 	if (dropItemIndex < 0 && _maxRows == 1)
 		dropItemIndex = 0; // for single row, per default replace old item by new one.
@@ -89,15 +86,20 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 	if (newTerms.size() > maxRows)
 	{
 		for (size_t i = maxRows; i < newTerms.size(); i++)
-			_tempTermsToSendBack.add(newTerms.at(i));
+			termsToSendBack.add(newTerms.at(i));
 		newTerms.remove(maxRows, newTerms.size() - maxRows);
 	}
+
+	beginResetModel();
+
+	for (const auto& it : rowValues.toStdMap())
+		_rowControlsValues[it.first] = it.second;
 
 	_setTerms(newTerms);
 
 	endResetModel();
 
-	return _tempTermsToSendBack;
+	return termsToSendBack;
 }
 
 void ListModelTermsAssigned::removeTerm(int index)

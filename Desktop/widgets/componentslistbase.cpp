@@ -53,7 +53,6 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 Json::Value ComponentsListBase::createJson()
 {
 	std::string keyName = fq(_optionKey);
-
 	Json::Value result(Json::arrayValue);
 
 	if (hasSource())
@@ -76,31 +75,26 @@ Json::Value ComponentsListBase::createJson()
 	}
 	else
 	{
-		QString			defaultName			= property("newItemName").toString();
-		QVariant		defaultValuesVar	= property("defaultValues");
-		QList<QVariant> defaultValues		= defaultValuesVar.toList();
-		int				minimumItems		= property("minimumItems").toInt();
-
-		while (defaultValues.length() < minimumItems)
-			defaultValues.push_back(defaultName);
-
 		QList<QString> keyValues;
 
-		for (const QVariant& defaultValue : defaultValues)
+		int nbOfRows = _defaultValues.length();
+		if (_minimumItems > nbOfRows) nbOfRows = _minimumItems;
+		for (int rowNb = 0; rowNb < nbOfRows; rowNb++)
 		{
-			QVariantMap defaultValueMap = defaultValue.toMap();
+			QVariantMap defaultValuesMap;
+			if (rowNb < _defaultValues.length()) defaultValuesMap = _defaultValues[rowNb].toMap();
 			Json::Value row(Json::objectValue);
 
-			QString keyValue = (defaultValue.type() == QVariant::String) ? defaultValue.toString() : defaultName;
-			if (defaultValueMap.contains(_optionKey))
-				keyValue = defaultValueMap[_optionKey].toString();
+			QString keyValue = _newItemName;
+			if (defaultValuesMap.contains(_optionKey))
+				keyValue = defaultValuesMap[_optionKey].toString();
 
 			keyValue = _makeUnique(keyValue, keyValues);
 			keyValues.push_back(keyValue);
 
 			row[keyName] = fq(keyValue);
 
-			QMapIterator<QString, QVariant> it(defaultValueMap);
+			QMapIterator<QString, QVariant> it(defaultValuesMap);
 			while (it.hasNext())
 			{
 				it.next();
@@ -146,8 +140,33 @@ void ComponentsListBase::termsChangedHandler()
 void ComponentsListBase::addItemHandler()
 {
 	Terms newTerms;
-	newTerms.add(_makeUnique(property("newItemName").toString()));
-	_termsModel->addTerms(newTerms);
+	QString newTerm = _makeUnique(_newItemName);
+	newTerms.add(newTerm);
+	ListModel::RowControlsValues rowValues;
+
+	if (_duplicateWhenAdding)
+	{
+		QMap<QString, Json::Value> jsonValues;
+		const Json::Value& boundVal = boundValue();
+		int currentIndex = property("currentIndex").toInt();
+		const Terms& terms = _termsModel->terms();
+		if (boundVal.isArray() && int(terms.size()) >= currentIndex)
+		{
+			std::string keyString = terms.at(size_t(currentIndex)).asString();
+			for (const Json::Value& jsonVal : boundVal)
+			{
+				const Json::Value& keyVal = jsonVal.get(fq(_optionKey), Json::nullValue);
+				if (keyVal.asString() == keyString)
+				{
+					for (const std::string& member : jsonVal.getMemberNames())
+						jsonValues[tq(member)] = jsonVal.get(member, Json::nullValue);
+				}
+				jsonValues[_optionKey] = fq(newTerm);
+			}
+		}
+		rowValues[newTerm] = jsonValues;
+	}
+	_termsModel->addTerms(newTerms, -1, rowValues);
 	setProperty("currentIndex", _termsModel->rowCount() - 1);
 }
 
