@@ -13,7 +13,7 @@ options(pkgType = "source")
 jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
 	libPathsToUse=NULL, 
 	repos="@R_REPOSITORY@", 
-	moduleLibrary="@MODULES_RENV_PATH@/@MODULE@", 
+	moduleLibrary="@MODULES_BINARY_PATH@/@MODULE@", 
 	onlyModPkg=FALSE)
 	
 
