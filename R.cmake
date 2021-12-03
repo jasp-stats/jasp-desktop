@@ -1,4 +1,3 @@
-
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
 if(BUILD_WITH_SYSTEM_R)
@@ -60,16 +59,17 @@ else()
 
   # TODO: Replace the version with a variable
   if(APPLE)
+    set(_R_FRAMEWORK_PATH ${CMAKE_SOURCE_DIR}/Frameworks)
+
     set(_R_HOME
-        "${CMAKE_SOURCE_DIR}/Frameworks/R.framework/Versions/${R_VERSION_MAJOR_MINOR}/Resources"
+        "${_R_FRAMEWORK_PATH}/R.framework/Versions/${R_VERSION_MAJOR_MINOR}/Resources"
     )
+
     set(_R_Library_HOME "${_R_HOME}/library")
     set(_R_EXE "${_R_HOME}/R")
     set(_Rscript_EXE "${_R_HOME}/bin/Rscript")
     set(_Rcpp_HOME "${_R_Library_HOME}/Rcpp")
     set(_RInside_HOME "${_R_Library_HOME}/RInside")
-
-    set(_R_FRAMEWORK_PATH ${CMAKE_SOURCE_DIR}/Frameworks)
 
     message(CHECK_START "Checking for 'R.framework'")
     find_library(

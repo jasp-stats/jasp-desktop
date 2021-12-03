@@ -97,4 +97,4 @@ include(Modules.cmake)
 
 include(Install.cmake)
 
-include(CPack.cmake)
+include(Pack.cmake)

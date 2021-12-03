@@ -50,7 +50,7 @@ if(NOT EXISTS ${MODULES_SOURCE_PATH})
 endif()
 
 set(MODULES_BINARY_PATH
-    "${CMAKE_BINARY_DIR}/Desktop/Modules"
+    "${CMAKE_BINARY_DIR}/Modules"
     CACHE PATH "Location of the renv libraries")
 set(MODULES_RENV_ROOT_PATH
     "${MODULES_BINARY_PATH}/renv-root"

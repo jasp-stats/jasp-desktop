@@ -112,16 +112,10 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
     ${BUNDLE_RESOURCES}
     ${_R_Framework})
 
-  # set_target_properties(JASP PROPERTIES MACOSX_BUNDLE TRUE)
-
   # This influences some of the #ifdef's
   target_compile_definitions(JASP PUBLIC MACOSX_BUNDLE)
 
 else()
-
-  # TODO:
-  #
-  # - [ ] This needs to be handled by the `install` I assume
 
   qt_add_executable(
     JASP
@@ -192,7 +186,7 @@ if(APPLE)
       ${_R_Framework})
 
 elseif(WIN32)
-  # As far as I understoon, on Windows we don't need to do a lot.
+  # As far as I understood, on Windows we don't need to do a lot.
   # I only want to remove the _R_Framework explicitely. But, as we
   # progress that can be dealt with with a variable.
 else() # Linux
@@ -208,18 +202,6 @@ set_target_properties(
   PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
              XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY TRUE
              XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY FALSE)
-
-# set_target_properties(JASP PROPERTIES
-#     XCODE_EMBED_APP_EXTENTIONS  JASPEngine
-# )
-
-# set_source_files_properties(
-#     ${_R_Framework} PROPERTIES
-#     MACOSX_PACKAGE_LOCATION "Frameworks"
-#     )
-
-# set_target_properties(JASP PROPERTIES
-#     RESOURCE "${BUNDLE_RESOURCES_FILES}")
 
 # Amir:
 # We can either add the resources using the `.qrc` files, or ask CMake to
