@@ -76,7 +76,8 @@ public:
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
 	virtual void					setUpRowControls();
-	const rowControlMap	&			getRowControls() const { return _rowControlsMap; }
+	const rowControlMap	&			getAllRowControls()											const		{ return _rowControlsMap;				}
+	RowControls*					getRowControls(const QString& key)							const		{ return _rowControlsMap.value(key);	}
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)		const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
 			QStringList				termsTypes();

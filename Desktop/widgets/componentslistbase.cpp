@@ -138,7 +138,7 @@ bool ComponentsListBase::isJsonValid(const Json::Value &value)
 void ComponentsListBase::termsChangedHandler()
 {
 	const Terms& terms = _termsModel->terms();
-	const QMap<QString, RowControls*>& allControls = _termsModel->getRowControls();
+	const QMap<QString, RowControls*>& allControls = _termsModel->getAllRowControls();
 
 	_setTableValue(terms, allControls, fq(_optionKey), containsInteractions());
 }
