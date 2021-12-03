@@ -22,7 +22,7 @@ set(JASP_EXTRA_MODULES
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
     "jaspMetaAnalysis"
-    # "jaspDistributions"
+    "jaspDistributions"
     # "jaspEquivalenceTTests"
     # "jaspJags"
     # "jaspReliability"

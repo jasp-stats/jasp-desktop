@@ -59,7 +59,22 @@ else()
 
   # TODO: Replace the version with a variable
   if(APPLE)
-    set(_R_FRAMEWORK_PATH ${CMAKE_SOURCE_DIR}/Frameworks)
+
+    # I copy the `R.frameworks` inside the build folder as well,
+    # so we will have a similar debug and bundle builds and our
+    # paths are not altered that we have to take care of them later.
+    # This also leaves the original `R.framework` intact. This is
+    # important because, as we are starting to mess with it and installing
+    # `jags`, etc., we want to have it to be build dependent when we are
+    # experimenting and not always tapping into one instance of it.
+    if(NOT EXISTS ${CMAKE_BINARY_DIR}/Frameworks/R.framework)
+      message(CHECK_START "Copying the R.framework into the build folder")
+      execute_process(COMMAND cp -r ${CMAKE_SOURCE_DIR}/Frameworks
+                              ${CMAKE_BINARY_DIR})
+      message(CHECK_PASS "done.")
+    endif()
+
+    set(_R_FRAMEWORK_PATH ${CMAKE_BINARY_DIR}/Frameworks)
 
     set(_R_HOME
         "${_R_FRAMEWORK_PATH}/R.framework/Versions/${R_VERSION_MAJOR_MINOR}/Resources"

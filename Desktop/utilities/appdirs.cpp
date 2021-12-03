@@ -76,16 +76,16 @@ QString AppDirs::userModulesDir()
 
 QString AppDirs::bundledModulesDir()
 {
-	static QString folder =
-#ifdef __APPLE__
-	 (QDir(programDir().absoluteFilePath("../Modules")).exists() ? programDir().absoluteFilePath("../Resources/Modules") : programDir().absoluteFilePath("Modules")) + '/';
-#elif _WIN32
-	 programDir().absoluteFilePath("Modules") + '/';
-#elif FLATPAK_USED
-	"/app/bin/Modules/";
-#else  //Normal linux build
-	programDir().absoluteFilePath("Modules") + '/';
-#endif
+	static QString folder = programDir().absoluteFilePath("../Modules/");
+// #ifdef __APPLE__
+// 	 programDir().absoluteFilePath("../Modules/");
+// #elif _WIN32
+// 	 programDir().absoluteFilePath("Modules") + '/';
+// #elif FLATPAK_USED
+// 	"/app/bin/Modules/";
+// #else  //Normal linux build
+// 	programDir().absoluteFilePath("Modules") + '/';
+// #endif
 	
 	return folder ;
 }

@@ -66,6 +66,15 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
 
   # set_target_properties(JASPEngine PROPERTIES MACOSX_PACKAGE_LOCATION "MacOS")
 
+else()
+
+  add_custom_command(
+    TARGET JASPEngine
+    POST_BUILD
+    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/JASPEngine
+            ${PROJECT_BINARY_DIR}/Desktop
+    COMMENT "====== Placing the JASPEngine next to JASP...")
+
 endif()
 
 if(APPLE)
