@@ -131,13 +131,13 @@ else()
     ${BUNDLE_RESOURCES}
     ${_R_Framework})
 
-  add_custom_command(
-    TARGET JASP
-    POST_BUILD
+  add_custom_target(
+    Resources
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND cp -r Resources ${CMAKE_CURRENT_BINARY_DIR}
-    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/Resources
-    COMMENT "====== Copying the Resources...")
+    COMMAND cp -r Resources ${CMAKE_BINARY_DIR}
+    BYPRODUCTS ${CMAKE_BINARY_DIR}/Resources)
+
+  add_dependencies(JASP Resources)
 
 endif()
 

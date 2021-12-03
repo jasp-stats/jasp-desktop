@@ -43,28 +43,34 @@ set(MODULES_SOURCE_PATH
     ${PROJECT_SOURCE_DIR}/Modules
     CACHE PATH "Location of JASP Modules")
 
-set(MODULES_RENV_PATH
-    "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Modules"
+if(NOT EXISTS ${MODULES_SOURCE_PATH})
+  message(WARNING "Modules sources are not available. If you are planning
+       to install them during the build, make sure that they are avialble in
+       the jasp-desktop folder.")
+endif()
+
+set(MODULES_BINARY_PATH
+    "${CMAKE_BINARY_DIR}/Desktop/Modules"
     CACHE PATH "Location of the renv libraries")
 set(MODULES_RENV_ROOT_PATH
-    "${MODULES_RENV_PATH}/renv-root"
+    "${MODULES_BINARY_PATH}/renv-root"
     CACHE PATH "Location of renv root directories")
 set(MODULES_RENV_CACHE_PATH
-    "${MODULES_RENV_PATH}/renv-cache"
+    "${MODULES_BINARY_PATH}/renv-cache"
     CACHE PATH "Location of renv cache directories")
 set(JASP_ENGINE_PATH
-    "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+    "${CMAKE_BINARY_DIR}/Desktop/"
     CACHE PATH "Location of the JASPEngine")
 
 set(INSTALL_MODULE_TEMPLATE_FILE
     "${PROJECT_SOURCE_DIR}/Modules/install-module.R.in"
     CACHE FILEPATH "Location of the install-module.R.in")
 
-make_directory(${MODULES_RENV_PATH})
+make_directory(${MODULES_BINARY_PATH})
 make_directory(${MODULES_RENV_ROOT_PATH})
 make_directory(${MODULES_RENV_CACHE_PATH})
 
-cmake_print_variables(MODULES_RENV_PATH)
+cmake_print_variables(MODULES_BINARY_PATH)
 cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
@@ -77,7 +83,7 @@ if(INSTALL_R_MODULES)
     DIRECTORY
     APPEND
     PROPERTY ADDITIONAL_CLEAN_FILES
-             $<PLATFORM_ID:Windows,${${MODULES_RENV_PATH}}>)
+             $<PLATFORM_ID:Windows,${${MODULES_BINARY_PATH}}>)
 
   add_custom_target(Modules)
 
@@ -105,15 +111,15 @@ if(INSTALL_R_MODULES)
     # We can technically create a new install-module.R for each Renv
     # even better, we can have different templates for each module, and use those
     # to set them up correctly
-    make_directory(${MODULES_RENV_PATH}/${MODULE})
+    make_directory(${MODULES_BINARY_PATH}/${MODULE})
     configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                    ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
     add_custom_target(
       ${MODULE}
       COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-      BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}
-                 ${MODULES_RENV_PATH}/${MODULE}_md5sums.rds
+      BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
+                 ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing ${MODULE}...")
 
@@ -130,15 +136,15 @@ if(INSTALL_R_MODULES)
   message(STATUS "Configuring Extra Modules...")
   foreach(MODULE ${JASP_EXTRA_MODULES})
 
-    make_directory(${MODULES_RENV_PATH}/${MODULE})
+    make_directory(${MODULES_BINARY_PATH}/${MODULE})
     configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                    ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
     add_custom_target(
       ${MODULE}
       COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-      BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}
-                 ${MODULES_RENV_PATH}/${MODULE}_md5sums.rds
+      BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
+                 ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing ${MODULE}...")
 
