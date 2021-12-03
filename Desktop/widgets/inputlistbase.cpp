@@ -112,7 +112,7 @@ bool InputListBase::isJsonValid(const Json::Value &value)
 void InputListBase::termsChangedHandler()
 {
 	const Terms& terms = _inputModel->terms();
-	const QMap<QString, RowControls*>& allControls = _inputModel->getRowControls();
+	const QMap<QString, RowControls*>& allControls = _inputModel->getAllRowControls();
 
 	if (hasRowComponent())
 		_setTableValue(terms, allControls, fq(_optionKey), containsInteractions());

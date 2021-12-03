@@ -140,7 +140,7 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue)
 void BoundControlTerms::resetBoundValue()
 {
 	const Terms& terms = _termsModel->terms();
-	const QMap<QString, RowControls*>& allControls = _termsModel->getRowControls();
+	const QMap<QString, RowControls*>& allControls = _termsModel->getAllRowControls();
 
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
 		_setTableValue(terms, allControls, _optionKey, _listView->containsInteractions());

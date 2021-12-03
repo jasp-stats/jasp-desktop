@@ -420,36 +420,31 @@ void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl
 	if (form()) form()->blockValueChangeSignal(true);
 
 	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
-	for (const Term& term : _draggableModel->terms())
+	Term keyTerm = Term::readTerm(checkBoxControl->parentListViewKey());
+	for (const Term& otherTerm : _draggableModel->terms())
 	{
-		RowControls* rowControls = _draggableModel->getRowControls()[term.asQString()];
-		if (rowControls->getJASPControlsMap()[_interactionHighOrderCheckBox] == checkBox)
+		if (otherTerm == keyTerm)
+			continue;
+
+		RowControls* rowControls = _draggableModel->getRowControls(otherTerm.asQString());
+		if (!rowControls) continue; // Apparently the controls are not created yet for this row. Does not matter: this function will be called when they are created
+		CheckBoxBase* otherCheckBox = qobject_cast<CheckBoxBase*>(rowControls->getJASPControl(_interactionHighOrderCheckBox));
+		bool otherChecked = otherCheckBox->checked();
+
+		if (checked)
 		{
-			for (const Term& otherTerm : _draggableModel->terms())
+			if (keyTerm.containsAll(otherTerm) && !otherChecked)
 			{
-				if (otherTerm == term)
-					continue;
-
-				rowControls = _draggableModel->getRowControls()[otherTerm.asQString()];
-				CheckBoxBase* otherCheckBox = qobject_cast<CheckBoxBase*>(rowControls->getJASPControlsMap()[_interactionHighOrderCheckBox]);
-				bool otherChecked = otherCheckBox->checked();
-
-				if (checked)
-				{
-					if (term.containsAll(otherTerm) && !otherChecked)
-					{
-						otherCheckBox->setChecked(true);
-						otherCheckBox->setBoundValue(Json::Value(true));
-					}
-				}
-				else
-				{
-					if (otherTerm.containsAll(term) && otherChecked)
-					{
-						otherCheckBox->setChecked(false);
-						otherCheckBox->setBoundValue(Json::Value(false));
-					}
-				}
+				otherCheckBox->setChecked(true);
+				otherCheckBox->setBoundValue(Json::Value(true));
+			}
+		}
+		else
+		{
+			if (otherTerm.containsAll(keyTerm) && otherChecked)
+			{
+				otherCheckBox->setChecked(false);
+				otherCheckBox->setBoundValue(Json::Value(false));
 			}
 		}
 	}

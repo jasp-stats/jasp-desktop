@@ -159,7 +159,7 @@ void JASPListControl::cleanUp()
 		if (_model)
 		{
 			_model->disconnect();
-			for (RowControls* rowControls : _model->getRowControls().values())
+			for (RowControls* rowControls : _model->getAllRowControls().values())
 				for (JASPControl* control : rowControls->getJASPControlsMap().values())
 					control->cleanUp();
 		}
