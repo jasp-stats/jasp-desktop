@@ -1,4 +1,3 @@
-
 list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
 find_package(PkgConfig REQUIRED)
@@ -74,9 +73,12 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 list(REMOVE_ITEM SOURCE_FILES
      ${CMAKE_CURRENT_LIST_DIR}/data/exporters/odsexporter.cpp)
 
-if(CMAKE_GENERATOR STREQUAL "Xcode")
+file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
 
-  file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
+# NOTE:
+#   The resources has to be added and managed before the creation of the
+#   JASP target
+if(CMAKE_GENERATOR STREQUAL "Xcode")
 
   # This is a handy little for-loop from here, https://stackoverflow.com/a/66401708/1141307,
   # which keeps all the resource files into the Resources folder while
@@ -101,39 +103,26 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
     source_group("Resources/${NEW_FILE_PATH}" FILES "${FILE}")
   endforeach()
 
-else()
+  set_property(SOURCE JASPEngine PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
 
-  # I think we can put some of these files into the JASP binary, e.g., translations, and helps
-  file(COPY ${CMAKE_SOURCE_DIR}/Resources
-       DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-  message(
-    STATUS
-      "Successfully copied the Resources files to ${CMAKE_CURRENT_BINARY_DIR}")
-
-  set_property(
-    DIRECTORY
-    APPEND
-    PROPERTY ADDITIONAL_CLEAN_FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Resources)
-
-endif()
-
-# message(STATUS ${CMAKE_BINARY_DIR})
-
-# set_property(SOURCE ${CMAKE_BINARY_DIR}/Desktop/JASPEngine
-#              PROPERTY MACOSX_PACKAGE_LOCATION MacOS
-#              )
-
-if(CMAKE_GENERATOR STREQUAL "Xcode")
-  qt_add_executable(
-    JASP
-    MACOSX_BUNDLE
+  add_executable(
+    JASP MACOSX_BUNDLE
     ${HEADER_FILES}
     ${SOURCE_FILES}
     ${BUNDLE_RESOURCES}
     ${_R_Framework})
 
+  # set_target_properties(JASP PROPERTIES MACOSX_BUNDLE TRUE)
+
+  # This influences some of the #ifdef's
   target_compile_definitions(JASP PUBLIC MACOSX_BUNDLE)
+
 else()
+
+  # TODO:
+  #
+  # - [ ] This needs to be handled by the `install` I assume
+
   qt_add_executable(
     JASP
     ${SYSTEM_TYPE}
@@ -141,6 +130,15 @@ else()
     ${SOURCE_FILES}
     ${BUNDLE_RESOURCES}
     ${_R_Framework})
+
+  add_custom_command(
+    TARGET JASP
+    POST_BUILD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND cp -r Resources ${CMAKE_CURRENT_BINARY_DIR}
+    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/Resources
+    COMMENT "====== Copying the Resources...")
+
 endif()
 
 target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)

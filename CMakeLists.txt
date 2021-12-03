@@ -5,7 +5,9 @@ set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
 project(
   JASP
   VERSION 0.16.0.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
-  LANGUAGES CXX C)
+  LANGUAGES CXX C
+  HOMEPAGE_URL "http://jasp-stats.org/"
+  DESCRIPTION "A fresh way to do statistics")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -81,16 +83,17 @@ include(JASP.cmake)
 #   - Install RInside, and Rcpp, and prepare them to be linked to the R-Interface
 include(R.cmake)
 
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
 add_subdirectory(Common)
 add_subdirectory(R-Interface)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(Engine)
 add_subdirectory(Desktop)
 
-if(INSTALL_R_MODULES)
-  include(Modules.cmake)
-endif()
+# If INSTALL_R_MODULES is not ON, this will only look for already installed
+# Modules/ and set their path to be used by the rest of the script.
+include(Modules.cmake)
 
 include(Install.cmake)
 

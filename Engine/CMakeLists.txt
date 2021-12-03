@@ -1,4 +1,3 @@
-
 list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
 
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
@@ -9,7 +8,7 @@ find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 
 pkg_check_modules(
-  LIBJSON
+  LIBJSONCPP
   REQUIRED
   IMPORTED_TARGET
   jsoncpp)
@@ -25,36 +24,21 @@ target_include_directories(
          Boost::date_time
          Boost::timer
          Boost::chrono
-         ${LIBJSON_INCLUDE_DIRS}
-         # ${LIBARCHIVE_INCLUDE_DIRS}
+         ${LIBJSONCPP_INCLUDE_DIRS}
          ${LibArchive_INCLUDE_DIRS}
          # and these:
          ${PROJECT_SOURCE_DIR}/R-Interface
          ${PROJECT_SOURCE_DIR}/Common/
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
-if(BUILD_WITH_SYSTEM_R)
-  message(STATUS "Building with system R..")
-  pkg_check_modules(
-    LIBR
-    REQUIRED
-    IMPORTED_TARGET
-    libR)
+message(STATUS "Building with R.framework...")
+message(STATUS "Setting the headers...")
 
-  target_include_directories(
-    JASPEngine PUBLIC ${LIBR_INCLUDE_DIRS} ${_Rcpp_HOME}/include
-                      ${_RInside_HOME}/include)
-
-else()
-  message(STATUS "Building with R.framework...")
-  message(STATUS "Setting the headers...")
-
-  target_include_directories(
-    JASPEngine
-    PUBLIC ${CMAKE_SOURCE_DIR}/${_R_HOME}/include
-           ${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include
-           ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
-endif()
+target_include_directories(
+  JASPEngine
+  PUBLIC ${CMAKE_SOURCE_DIR}/${_R_HOME}/include
+         ${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include
+         ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
 
 target_link_libraries(JASPEngine PUBLIC Common R-Interface ${Boost_LIBRARIES})
 
@@ -78,11 +62,10 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
   # COMMENT "       [JASP]: Placing the Engine into the MacOS folder...")
 
   # I don't think this works
-  set_target_properties(
-    JASPEngine
-    PROPERTIES XCODE_ATTRIBUTE_SKIP_INSTALL NO
-               XCODE_ATTRIBUTE_INSTALL_PATH
-               "$(LOCAL_APPS_DIR)/JASP.app/Contents/MacOS")
+  # set_property(SOURCE JASPEngine PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
+
+  # set_target_properties(JASPEngine PROPERTIES MACOSX_PACKAGE_LOCATION "MacOS")
+
 endif()
 
 if(APPLE)

@@ -1,4 +1,3 @@
-
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
 set(JASP_COMMON_MODULES
@@ -69,98 +68,95 @@ cmake_print_variables(MODULES_RENV_PATH)
 cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
-# Cleaning the renv-path on Windows only, for now.
-# It takes somes times on macOS, but if we can build and
-# cache it, let's do it.
-set_property(
-  DIRECTORY
-  APPEND
-  PROPERTY ADDITIONAL_CLEAN_FILES
-           $<PLATFORM_ID:Windows,${${MODULES_RENV_PATH}}>)
+if(INSTALL_R_MODULES)
 
-add_custom_target(Modules)
+  # Cleaning the renv-path on Windows only, for now.
+  # It takes somes times on macOS, but if we can build and
+  # cache it, let's do it.
+  set_property(
+    DIRECTORY
+    APPEND
+    PROPERTY ADDITIONAL_CLEAN_FILES
+             $<PLATFORM_ID:Windows,${${MODULES_RENV_PATH}}>)
 
-add_dependencies(Modules ${JASP_COMMON_MODULES} ${JASP_EXTRA_MODULES})
+  add_custom_target(Modules)
 
-message(STATUS "Installing Required R Modules...")
+  add_dependencies(Modules ${JASP_COMMON_MODULES} ${JASP_EXTRA_MODULES})
 
-# This happens during the configuration!
-message(CHECK_START "Installing the 'jaspBase'")
-execute_process(
-  COMMAND
-    ${_Rscript_EXE} -e
-    "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos='${R_REPOSITORY}')"
-  OUTPUT_QUIET
-  ERROR_QUIET
-  COMMAND_ERROR_IS_FATAL
-  ANY
-  COMMAND_ECHO
-  NONE)
-message(CHECK_PASS "successful.")
+  message(STATUS "Installing Required R Modules...")
 
-message(STATUS "Configuring Common Modules...")
-foreach(MODULE ${JASP_COMMON_MODULES})
+  # This happens during the configuration!
+  message(CHECK_START "Installing the 'jaspBase'")
+  execute_process(
+    COMMAND
+      ${_Rscript_EXE} -e
+      "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos='${R_REPOSITORY}')"
+    OUTPUT_QUIET
+    ERROR_QUIET
+    COMMAND_ERROR_IS_FATAL
+    ANY
+    COMMAND_ECHO
+    NONE)
+  message(CHECK_PASS "successful.")
 
-  # We can technically create a new install-module.R for each Renv
-  # even better, we can have different templates for each module, and use those
-  # to set them up correctly
-  make_directory(${MODULES_RENV_PATH}/${MODULE})
-  configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
-                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
+  message(STATUS "Configuring Common Modules...")
+  foreach(MODULE ${JASP_COMMON_MODULES})
 
-  add_custom_target(
-    ${MODULE}
-    COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-    BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}
-               ${MODULES_RENV_PATH}/${MODULE}_md5sums.rds
-               ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-    COMMENT "------ Installing ${MODULE}...")
+    # We can technically create a new install-module.R for each Renv
+    # even better, we can have different templates for each module, and use those
+    # to set them up correctly
+    make_directory(${MODULES_RENV_PATH}/${MODULE})
+    configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
+                   ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
-  list(POP_FRONT JASP_COMMON_MODULES_COPY PREVIOUS_COMMON_MODULE)
+    add_custom_target(
+      ${MODULE}
+      COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}
+                 ${MODULES_RENV_PATH}/${MODULE}_md5sums.rds
+                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMENT "------ Installing ${MODULE}...")
 
-  if(PREVIOUS_COMMON_MODULE)
-    add_dependencies(${MODULE} ${PREVIOUS_COMMON_MODULE})
-  endif()
+    list(POP_FRONT JASP_COMMON_MODULES_COPY PREVIOUS_COMMON_MODULE)
 
-  add_dependencies(Modules ${MODULE})
+    if(PREVIOUS_COMMON_MODULE)
+      add_dependencies(${MODULE} ${PREVIOUS_COMMON_MODULE})
+    endif()
 
-endforeach()
+    add_dependencies(Modules ${MODULE})
 
-message(STATUS "Configuring Extra Modules...")
-foreach(MODULE ${JASP_EXTRA_MODULES})
+  endforeach()
 
-  make_directory(${MODULES_RENV_PATH}/${MODULE})
-  configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
-                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
+  message(STATUS "Configuring Extra Modules...")
+  foreach(MODULE ${JASP_EXTRA_MODULES})
 
-  add_custom_target(
-    ${MODULE}
-    COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-    BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}
-               ${MODULES_RENV_PATH}/${MODULE}_md5sums.rds
-               ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-    COMMENT "------ Installing ${MODULE}...")
+    make_directory(${MODULES_RENV_PATH}/${MODULE})
+    configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
+                   ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
-  list(POP_FRONT JASP_EXTRA_MODULES_COPY PREVIOUS_EXTRA_MODULE)
+    add_custom_target(
+      ${MODULE}
+      COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      BYPRODUCTS ${MODULES_RENV_PATH}/${MODULE}
+                 ${MODULES_RENV_PATH}/${MODULE}_md5sums.rds
+                 ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMENT "------ Installing ${MODULE}...")
 
-  if(PREVIOUS_EXTRA_MODULE)
-    add_dependencies(${MODULE} ${PREVIOUS_EXTRA_MODULE} ${FIRST_COMMON_MODULE})
-  endif()
+    list(POP_FRONT JASP_EXTRA_MODULES_COPY PREVIOUS_EXTRA_MODULE)
 
-  add_dependencies(Modules ${MODULE})
+    if(PREVIOUS_EXTRA_MODULE)
+      add_dependencies(${MODULE} ${PREVIOUS_EXTRA_MODULE}
+                       ${FIRST_COMMON_MODULE})
+    endif()
 
-  # We can add other specific dependencies here:
-  if((${MODULE} STREQUAL "jaspMetaAnalysis")
-     AND (INSTALL_JASP_REQUIRED_LIBRARIES))
-    add_dependencies(${MODULE} jags-install)
-  endif()
+    add_dependencies(Modules ${MODULE})
 
-endforeach()
+    # We can add other specific dependencies here:
+    if((${MODULE} STREQUAL "jaspMetaAnalysis")
+       AND (INSTALL_JASP_REQUIRED_LIBRARIES))
+      add_dependencies(${MODULE} jags-install)
+    endif()
 
-# Dependencies of Modules
-#
-# - If a module needs a dependency, we can download/configure/install it
-#   in the Dependencies.cmake and make sure that their dependencies are
-#   build before the installation of the module.
-#
-# add_dependencies(jaspMetaAnalysis jags-install)
+  endforeach()
+
+endif()
