@@ -30,13 +30,13 @@ if(CCACHE_PROGRAM
         "Xcode"
        ))
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-  message(STATUS "Using ccache: ${CCACHE_PROGRAM}")
+  message(STATUS "Found ccache: ${CCACHE_PROGRAM}")
 endif()
 
 option(RUN_IWYU "Whether to run Include What You Use" OFF)
 find_program(IWYU include-what-you-use)
 if(IWYU)
-  message(STATUS "Using iwyu: ${IWYU}")
+  message(STATUS "Found iwyu: ${IWYU}")
 endif()
 
 include(CMakePrintHelpers)
