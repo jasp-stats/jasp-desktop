@@ -1,4 +1,3 @@
-
 list(APPEND CMAKE_MESSAGE_CONTEXT JASP)
 
 set(JASP_REQUIRED_FILES ${CMAKE_SOURCE_DIR}/../jasp-required-files)

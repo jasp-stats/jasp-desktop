@@ -59,6 +59,7 @@ find_package(
              QuickWidgets
              Core5Compat)
 
+set(MACOSX_ICON_PATH ${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns)
 configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template
                ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
 

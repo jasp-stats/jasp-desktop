@@ -13,22 +13,22 @@
     <string>English</string>
 
 	<key>CFBundleGetInfoString</key>
-	<string>JASP_VERSION</string>
+	<string>@JASP_VERSION@</string>
 
 	<key>CFBundleShortVersionString</key>
-	<string>JASP_VERSION</string>
+	<string>@JASP_VERSION@</string>
 
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 
 	<key>CFBundleIconFile</key>
-	<string>icon.icns</string>
+	<string>@MACOSX_ICON_PATH@</string>
 
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 
 	<key>CFBundleGetInfoString</key>
-	<string>Created by Qt/QMake</string>
+	<string>Created by Qt/CMake</string>
 
 	<key>CFBundleSignature</key>
 	<string>JASP</string>
@@ -86,7 +86,7 @@
 			<string>JASP Data Set</string>
 
 			<key>UTTypeIconFile</key>
-			<string>icon.icns</string>
+			<string>@MACOSX_ICON_PATH@</string>
 
 			<key>UTTypeTagSpecification</key>
 			<dict>
