@@ -59,7 +59,11 @@ find_package(
              QuickWidgets
              Core5Compat)
 
-set(MACOSX_ICON_PATH ${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns)
+# TODO:
+#
+# - [ ] There is not much to configure here, CMake takes care of the
+#       most variable, but for now, I keep it like this. When we are
+#       sure that things are working, we can just drop the `.template`
 configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template
                ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
 
@@ -112,6 +116,27 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
     ${SOURCE_FILES}
     ${BUNDLE_RESOURCES}
     ${_R_Framework})
+
+  set_target_properties(
+    JASP
+    PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
+               MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+               MACOSX_BUNDLE_SHORT_VERSION_STRING
+               "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+               MACOSX_BUNDLE_ICON_FILE
+               "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
+               MACOSX_BUNDLE_COPYRIGHT "© JASP Team"
+               MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_LIST_DIR}/Info.plist")
+
+  set_target_properties(
+    JASP PROPERTIES XCODE_ATTRIBUTE_SKIP_INSTALL NO XCODE_ATTRIBUTE_INSTALL_PATH
+                                                    "$(LOCAL_APPS_DIR)")
+
+  set_target_properties(
+    JASP
+    PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
+               XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY TRUE
+               XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY FALSE)
 
   # This influences some of the #ifdef's
   target_compile_definitions(JASP PUBLIC MACOSX_BUNDLE)
@@ -197,16 +222,6 @@ elseif(WIN32)
 else() # Linux
 
 endif()
-
-set_target_properties(
-  JASP PROPERTIES XCODE_ATTRIBUTE_SKIP_INSTALL NO XCODE_ATTRIBUTE_INSTALL_PATH
-                                                  "$(LOCAL_APPS_DIR)")
-
-set_target_properties(
-  JASP
-  PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
-             XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY TRUE
-             XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY FALSE)
 
 # Amir:
 # We can either add the resources using the `.qrc` files, or ask CMake to

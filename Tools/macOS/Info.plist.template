@@ -4,46 +4,41 @@
 <dict>
 
 	<key>CFBundleName</key>
-	<string>JASP</string>
+	<string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
 
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
 
-    <key>CFBundleDevelopmentRegion</key>
-    <string>English</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
 
-	<key>CFBundleGetInfoString</key>
-	<string>@JASP_VERSION@</string>
+	<key>CFBundleVersion</key>
+	<string>${MACOSX_BUNDLE_BUNDLE_VERSION}</string>
 
 	<key>CFBundleShortVersionString</key>
-	<string>@JASP_VERSION@</string>
-
+	<string>${MACOSX_BUNDLE_SHORT_VERSION_STRING}</string>
+	
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 
+	<!-- CFBundleIconFile is deprecated and recommends using CFBundleIconFiles or CFBundleIcons instead. We should probably replace it at some point! -->
 	<key>CFBundleIconFile</key>
-	<string>@MACOSX_ICON_PATH@</string>
+	<string>${MACOSX_BUNDLE_ICON_FILE}</string>
 
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 
-	<key>CFBundleGetInfoString</key>
-	<string>Created by Qt/CMake</string>
-
-	<key>CFBundleSignature</key>
-	<string>JASP</string>
-
 	<key>CFBundleExecutable</key>
-	<string>JASP</string>
+	<string>$(EXECUTABLE_NAME)</string>
 
 	<key>CFBundleIdentifier</key>
 	<string>org.jasp-stats.jasp</string>
 
 	<key>LSMinimumSystemVersion</key>
-	<string>10.13.0</string>
+	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 
-	<key>CFBundleSignature</key>
-	<string>JASP</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>${MACOSX_BUNDLE_COPYRIGHT}</string>
 
 	<key>CFBundleDocumentTypes</key>
 	<array>
@@ -54,7 +49,7 @@
 			</array>
 
 			<key>CFBundleTypeIconFile</key>
-			<string>icon.icns</string>
+			<string>${MACOSX_BUNDLE_ICON_FILE}</string>
 
 			<key>CFBundleTypeName</key>
 			<string>JASP Data Set</string>
@@ -86,7 +81,7 @@
 			<string>JASP Data Set</string>
 
 			<key>UTTypeIconFile</key>
-			<string>@MACOSX_ICON_PATH@</string>
+			<string>${MACOSX_BUNDLE_ICON_FILE}</string>
 
 			<key>UTTypeTagSpecification</key>
 			<dict>
