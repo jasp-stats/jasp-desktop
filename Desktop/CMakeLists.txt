@@ -1,5 +1,7 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
+set(CMAKE_BUILD_WITH_INSTALL_RPATH YES)
+
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 
@@ -111,31 +113,13 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
 
   # set_property(SOURCE JASPEngine PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
 
-  add_executable(
-    JASP MACOSX_BUNDLE
+  qt_add_executable(
+    JASP
+    MACOSX_BUNDLE
     ${HEADER_FILES}
     ${SOURCE_FILES}
     ${BUNDLE_RESOURCES}
     ${_R_Framework})
-
-  # set_source_files_properties(
-  #   ${MODULES_BINARY_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION
-  #                                     SharedSupport/Modules)
-
-  set_target_properties(
-    JASP
-    PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
-               MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-               MACOSX_BUNDLE_SHORT_VERSION_STRING
-               "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
-               MACOSX_BUNDLE_ICON_FILE
-               "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
-               MACOSX_BUNDLE_COPYRIGHT "© JASP Team"
-               MACOSX_BUNDLE_INFO_PLIST
-               "${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in")
-
-  # This influences some of the #ifdef's
-  target_compile_definitions(JASP PUBLIC MACOSX_BUNDLE)
 
 else()
 
@@ -209,17 +193,68 @@ if(APPLE)
       # Based on our config, this is either from PkgConfig, or the build/_deps/
       ${LIBREADSTAT_LINK_LIBRARIES}
       ${Iconv_LIBRARIES}
-      ${_R_Framework})
+    PRIVATE ${_R_Framework})
 
-  set_target_properties(
-    JASP PROPERTIES XCODE_ATTRIBUTE_SKIP_INSTALL NO XCODE_ATTRIBUTE_INSTALL_PATH
-                                                    "$(LOCAL_APPS_DIR)")
+  # R.framework linkage ----------
+  #
+  # There are two ways to link and copy the R.framework, I think
+  #
+  #
+  # Note: For some reason, I broke the code-signing of the Framework! I think I have
+  # probably corrupted my version, but I am going to investigate
+
+  # 1.
+  # Simply copying the framework. This is recommened but it's less flexible
+  # when it comes to code-signing
+  set_source_files_properties(${_R_Framework} PROPERTIES MACOSX_PACKAGE_LOCATION
+                                                         Frameworks)
+
+  # 2.
+  # This is meant for framework that are built using CMake but it works here as
+  # well and it gives us more options. That being said, I prefer the method above
+  # because I feel this one enforces the Framework strcutre and that could cause
+  # problem because R.framework doesn't have a proper structure
+  # set_target_properties(
+  #   JASP
+  #   PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
+  #              XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
+  #              XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY OFF)
+
+  # set_target_properties(JASP PROPERTIES INSTALL_RPATH
+  #                                       @executable_path/../Frameworks)
+
+  # ------------------------------
+
+  # Modules ----------------------
+
+  # RPATH ----------------------
+
+  # set_target_properties(
+  #   JASP PROPERTIES XCODE_ATTRIBUTE_SKIP_INSTALL NO XCODE_ATTRIBUTE_INSTALL_PATH
+  #                                                   "$(LOCAL_APPS_DIR)")
+
+  # ------------------------------
+
+  set_source_files_properties(
+    ${MODULES_BINARY_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION
+                                      SharedSupport/Modules)
+
+  # ------------------------------
 
   set_target_properties(
     JASP
-    PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
-               XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
-               XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY OFF)
+    PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
+               MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+               MACOSX_BUNDLE_SHORT_VERSION_STRING
+               "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+               MACOSX_BUNDLE_ICON_FILE
+               "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
+               MACOSX_BUNDLE_COPYRIGHT "© JASP Team"
+               MACOSX_BUNDLE_INFO_PLIST
+               "${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in")
+
+  # This influences some of the #ifdef's
+  target_compile_definitions(JASP PUBLIC MACOSX_BUNDLE)
 
 elseif(WIN32)
   # As far as I understood, on Windows we don't need to do a lot.

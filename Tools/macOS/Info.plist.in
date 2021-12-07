@@ -1,98 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
+	<dict>
 
-	<key>CFBundleName</key>
-	<string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
+		<key>CFBundleName</key>
+		<string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
 
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
 
-	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>English</string>
 
-	<key>CFBundleVersion</key>
-	<string>${MACOSX_BUNDLE_BUNDLE_VERSION}</string>
+		<key>CFBundleVersion</key>
+		<string>${MACOSX_BUNDLE_BUNDLE_VERSION}</string>
 
-	<key>CFBundleShortVersionString</key>
-	<string>${MACOSX_BUNDLE_SHORT_VERSION_STRING}</string>
-	
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
+		<key>CFBundleShortVersionString</key>
+		<string>${MACOSX_BUNDLE_SHORT_VERSION_STRING}</string>
+		
+		<key>NSPrincipalClass</key>
+		<string>NSApplication</string>
 
-	<!-- CFBundleIconFile is deprecated and recommends using CFBundleIconFiles or CFBundleIcons instead. We should probably replace it at some point! -->
-	<key>CFBundleIconFile</key>
-	<string>${MACOSX_BUNDLE_ICON_FILE}</string>
+		<!-- CFBundleIconFile is deprecated and recommends using CFBundleIconFiles or CFBundleIcons instead. We should probably replace it at some point! -->
+		<key>CFBundleIconFile</key>
+		<string>${MACOSX_BUNDLE_ICON_FILE}</string>
 
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
 
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
 
-	<key>CFBundleIdentifier</key>
-	<string>org.jasp-stats.jasp</string>
+		<key>CFBundleIdentifier</key>
+		<string>org.jasp-stats.jasp</string>
 
-	<key>LSMinimumSystemVersion</key>
-	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+		<key>LSMinimumSystemVersion</key>
+		<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 
-	<key>NSHumanReadableCopyright</key>
-	<string>${MACOSX_BUNDLE_COPYRIGHT}</string>
+		<key>NSHumanReadableCopyright</key>
+		<string>${MACOSX_BUNDLE_COPYRIGHT}</string>
 
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>jasp</string>
-			</array>
-
-			<key>CFBundleTypeIconFile</key>
-			<string>${MACOSX_BUNDLE_ICON_FILE}</string>
-
-			<key>CFBundleTypeName</key>
-			<string>JASP Data Set</string>
-
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-
-			<key>LSHandlerRank</key>
-			<string>owner</string>
-
-			<key>LSIsAppleDefaultForType</key>
-			<true/>
-
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>org.jasp-stats.jasp</string>
-			</array>
-		</dict>
-	</array>
-
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-
-			<key>UTTypeIdentifier</key>
-			<string>org.jasp-stats.jasp</string>
-
-			<key>UTTypeDescription</key>
-			<string>JASP Data Set</string>
-
-			<key>UTTypeIconFile</key>
-			<string>${MACOSX_BUNDLE_ICON_FILE}</string>
-
-			<key>UTTypeTagSpecification</key>
+		<key>CFBundleDocumentTypes</key>
+		<array>
 			<dict>
-				<key>public.filename-extension</key>
+				<key>CFBundleTypeExtensions</key>
 				<array>
 					<string>jasp</string>
 				</array>
+
+				<key>CFBundleTypeIconFile</key>
+				<string>${MACOSX_BUNDLE_ICON_FILE}</string>
+
+				<key>CFBundleTypeName</key>
+				<string>JASP Data Set</string>
+
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+
+				<key>LSHandlerRank</key>
+				<string>owner</string>
+
+				<key>LSIsAppleDefaultForType</key>
+				<true/>
+
+				<key>LSItemContentTypes</key>
+				<array>
+					<string>org.jasp-stats.jasp</string>
+				</array>
 			</dict>
+		</array>
 
-		</dict>
-	</array>
+		<key>UTExportedTypeDeclarations</key>
+		<array>
+			<dict>
 
-</dict>
+				<key>UTTypeIdentifier</key>
+				<string>org.jasp-stats.jasp</string>
+
+				<key>UTTypeDescription</key>
+				<string>JASP Data Set</string>
+
+				<key>UTTypeIconFile</key>
+				<string>${MACOSX_BUNDLE_ICON_FILE}</string>
+
+				<key>UTTypeTagSpecification</key>
+				<dict>
+					<key>public.filename-extension</key>
+					<array>
+						<string>jasp</string>
+					</array>
+				</dict>
+
+			</dict>
+		</array>
+
+	</dict>
 </plist>
