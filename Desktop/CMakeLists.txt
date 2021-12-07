@@ -125,6 +125,10 @@ else()
     ${BUNDLE_RESOURCES}
     ${_R_Framework})
 
+  if(IWYU AND RUN_IWYU)
+    set_target_properties(JASP PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+  endif()
+
   add_custom_target(
     Resources
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

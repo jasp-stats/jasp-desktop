@@ -14,7 +14,10 @@ pkg_check_modules(
   jsoncpp)
 
 add_executable(JASPEngine ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
-# target_link_options(JASPEngine PUBLIC -lboost_filesystem)
+
+if(IWYU AND RUN_IWYU)
+  set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+endif()
 
 target_include_directories(
   JASPEngine

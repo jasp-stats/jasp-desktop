@@ -39,6 +39,10 @@ list(APPEND SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 
 add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
 
+if(IWYU AND RUN_IWYU)
+  set_target_properties(Common PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+endif()
+
 target_include_directories(
   Common
   PUBLIC ${Boost_INCLUDE_DIRS}

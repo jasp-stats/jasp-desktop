@@ -1,10 +1,13 @@
-
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
 list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
 add_library(R-Interface ${HEADER_FILES} ${SOURCE_FILES})
+
+if(IWYU AND RUN_IWYU)
+  set_target_properties(R-Interface PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+endif()
 
 message(STATUS "Building with R.framework...")
 message(STATUS "Setting the headers...")

@@ -60,6 +60,7 @@ else()
   # TODO: Replace the version with a variable
   if(APPLE)
 
+    #
     # I copy the `R.frameworks` inside the build folder as well,
     # so we will have a similar debug and bundle builds and our
     # paths are not altered that we have to take care of them later.
@@ -67,6 +68,11 @@ else()
     # important because, as we are starting to mess with it and installing
     # `jags`, etc., we want to have it to be build dependent when we are
     # experimenting and not always tapping into one instance of it.
+    #
+    # Another reason for having the Framework being copied into the build
+    # folder is that it allows us to leave the CMake in charge of the
+    # multi-architecture build.
+    #
     if(NOT EXISTS ${CMAKE_BINARY_DIR}/Frameworks/R.framework)
       message(CHECK_START "Copying the R.framework into the build folder")
       execute_process(COMMAND cp -r ${CMAKE_SOURCE_DIR}/Frameworks

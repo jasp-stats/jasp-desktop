@@ -12,9 +12,32 @@ project(
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# When everything is done, we should be able to just activate
+# this and build it for two architectures. This will also download
+# the correct R.framework
+# set(CMAKE_OSX_ARCHITECTURES "x86_64" "arm64")
+
 set(CMAKE_FIND_FRAMEWORK ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# With this, we can hit up to 90% speed up!
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM
+   AND (NOT
+        CMAKE_GENERATOR
+        STREQUAL
+        "Xcode"
+       ))
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+  message(STATUS "Using ccache: ${CCACHE_PROGRAM}")
+endif()
+
+option(RUN_IWYU "Whether to run Include What You Use" OFF)
+find_program(IWYU include-what-you-use)
+if(IWYU)
+  message(STATUS "Using iwyu: ${IWYU}")
+endif()
 
 include(CMakePrintHelpers)
 
