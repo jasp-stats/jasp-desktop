@@ -161,8 +161,7 @@ endif()
 
 target_include_directories(
   JASP
-  PUBLIC ${Boost_INCLUDE_DIRS}
-         ${LIBJSONCPP_INCLUDE_DIRS}
+  PUBLIC ${LIBJSONCPP_INCLUDE_DIRS}
          ${LibArchive_INCLUDE_DIRS}
          ${LIBREADSTAT_INCLUDE_DIRS}
          ${PROJECT_SOURCE_DIR}/Common

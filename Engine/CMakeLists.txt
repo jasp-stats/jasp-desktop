@@ -6,6 +6,14 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
+find_package(
+  Boost REQUIRED
+  COMPONENTS nowide
+             filesystem
+             system
+             date_time
+             timer
+             chrono)
 
 pkg_check_modules(
   LIBJSONCPP
@@ -15,40 +23,38 @@ pkg_check_modules(
 
 add_executable(JASPEngine ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
 
-if(IWYU AND RUN_IWYU)
-  set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
-endif()
+add_dependencies(JASPEngine R-Interface)
 
 target_include_directories(
   JASPEngine
-  PUBLIC Boost::nowide
+  PUBLIC ${LIBJSONCPP_INCLUDE_DIRS}
+         # JASP
+         ${PROJECT_SOURCE_DIR}/R-Interface
+         ${PROJECT_SOURCE_DIR}/Common/
+         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+         # R
+         ${CMAKE_SOURCE_DIR}/${_R_HOME}/include
+         ${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include
+         ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
+
+target_link_libraries(
+  JASPEngine
+  PUBLIC Common
+         R-Interface
+         Boost::nowide
          Boost::filesystem
          Boost::system
          Boost::date_time
          Boost::timer
          Boost::chrono
-         ${LIBJSONCPP_INCLUDE_DIRS}
-         ${LibArchive_INCLUDE_DIRS}
-         # and these:
-         ${PROJECT_SOURCE_DIR}/R-Interface
-         ${PROJECT_SOURCE_DIR}/Common/
-         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
+         LibArchive::LibArchive)
 
-message(STATUS "Building with R.framework...")
-message(STATUS "Setting the headers...")
-
-target_include_directories(
-  JASPEngine
-  PUBLIC ${CMAKE_SOURCE_DIR}/${_R_HOME}/include
-         ${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include
-         ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
-
-target_link_libraries(JASPEngine PUBLIC Common R-Interface ${Boost_LIBRARIES})
+if(IWYU AND RUN_IWYU)
+  set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+endif()
 
 target_compile_definitions(JASPEngine PUBLIC BUILDING_JASP_ENGINE
                                              R_HOME=${_R_HOME})
-
-add_dependencies(JASPEngine R-Interface)
 
 set(MACOSX_BUNDLE_DIR
     "${CMAKE_BINARY_DIR}/Desktop/Debug/${PROJECT_NAME}.app/Contents")

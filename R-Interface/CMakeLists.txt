@@ -5,27 +5,27 @@ list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
 add_library(R-Interface ${HEADER_FILES} ${SOURCE_FILES})
 
-if(IWYU AND RUN_IWYU)
-  set_target_properties(R-Interface PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
-endif()
-
-target_include_directories(
-  R-Interface PUBLIC ${_R_HOME}/include ${_Rcpp_HOME}/include
-                     ${_RInside_HOME}/include)
+add_dependencies(R-Interface Common)
 
 target_include_directories(
   R-Interface
-  PUBLIC jaspResults
+  PUBLIC # JASP
+         jaspResults
          ${PROJECT_SOURCE_DIR}/Common
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-         ${Boost_INCLUDE_DIRS})
-
-add_dependencies(R-Interface Common)
+         # R
+         ${_R_HOME}/include
+         ${_Rcpp_HOME}/include
+         ${_RInside_HOME}/include)
 
 target_link_libraries(R-Interface PUBLIC Common ${_R_Framework} ${_LIB_RInside})
 
 target_compile_definitions(R-Interface PUBLIC JASP_R_INTERFACE_LIBRARY
                                               QT_NO_DEPRECATED_WARNINGS)
+
+if(IWYU AND RUN_IWYU)
+  set_target_properties(R-Interface PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+endif()
 
 if(WIN32)
   target_compile_definitions(

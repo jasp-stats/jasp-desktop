@@ -2,6 +2,14 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Common)
 
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
+find_package(
+  Boost REQUIRED
+  COMPONENTS nowide
+             filesystem
+             system
+             date_time
+             timer
+             chrono)
 
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
   pkg_check_modules(
@@ -20,15 +28,6 @@ else()
   set(LIBJSONCPP_LINK_LIBRARIES ${LIBJSONCPP})
 endif()
 
-find_package(
-  Boost REQUIRED
-  COMPONENTS nowide
-             filesystem
-             system
-             date_time
-             timer
-             chrono)
-
 configure_file(appinfo.cpp.in appinfo.cpp)
 message(STATUS "appinfo.cpp is successfully generated...")
 
@@ -45,15 +44,12 @@ endif()
 
 target_include_directories(
   Common
-  PUBLIC ${Boost_INCLUDE_DIRS}
-         ${LIBJSONCPP_INCLUDE_DIRS}
-         ${LibArchive_INCLUDE_DIRS}
-         jaspColumnEncoder)
-
-target_include_directories(Common PUBLIC ${_R_HOME}/include
-                                         ${_Rcpp_HOME}/include)
-
-find_package(Qt6 REQUIRED COMPONENTS Core)
+  PUBLIC ${LIBJSONCPP_INCLUDE_DIRS}
+         # JASP
+         jaspColumnEncoder
+         # R
+         ${_R_HOME}/include
+         ${_Rcpp_HOME}/include)
 
 target_link_libraries(
   Common
@@ -63,9 +59,10 @@ target_link_libraries(
          Boost::date_time
          Boost::timer
          Boost::chrono
-         ${LibArchive_LIBRARIES}
+         LibArchive::LibArchive
          ${LIBJSONCPP_LINK_LIBRARIES}
-         Qt::Core)
+         # Only if JASP_USES_QT_HERE is ON
+         $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
 if(USE_JASP_TIMER)
   target_compile_definitions(Common PUBLIC PROFILE_JASP)
