@@ -1,25 +1,29 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT JASP)
 
-set(JASP_REQUIRED_FILES ${CMAKE_SOURCE_DIR}/../jasp-required-files)
+find_package(Git)
 
-# TODO: Find this version number automatically
-set(CURRENT_R_VERSION "4.1")
+if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 
-set(GIT_EXEC "git")
+  message(CHECK_START "Retrieving the git-branch information")
 
-message(CHECK_START "Retrieving the git-branch information")
-execute_process(
-  COMMAND ${GIT_EXEC} rev-parse --abbrev-ref HEAD
-  OUTPUT_VARIABLE GIT_BRANCH
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(
-  COMMAND ${GIT_EXEC} rev-parse --verify HEAD
-  OUTPUT_VARIABLE GIT_COMMIT
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-message(CHECK_PASS "done.")
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
+    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-set(GIT_CURRENT_BRANCH GIT_BRANCH)
-set(GIT_CURRENT_COMMIT GIT_COMMIT)
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} rev-parse --verify HEAD
+    OUTPUT_VARIABLE GIT_COMMIT
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  message(CHECK_PASS "done.")
+
+  set(GIT_CURRENT_BRANCH ${GIT_BRANCH})
+  set(GIT_CURRENT_COMMIT ${GIT_COMMIT})
+
+  cmake_print_variables(GIT_CURRENT_BRANCH)
+  cmake_print_variables(GIT_CURRENT_COMMIT)
+endif()
 
 # We can define the JASP project version in CMakeLists.txt, and then
 # convert it to what we need, or just use them directly.
@@ -43,7 +47,6 @@ set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
 option(PRINT_ENGINE_MESSAGES "Whether or not JASPEngine prints log messages"
        OFF)
 
-option(BUILD_WITH_SYSTEM_R "Build JASP using the system R" OFF)
 option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
 
 # This is being set using the `Sys.setenv()` and later on when

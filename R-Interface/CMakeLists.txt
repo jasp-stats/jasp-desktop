@@ -9,15 +9,9 @@ if(IWYU AND RUN_IWYU)
   set_target_properties(R-Interface PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
 endif()
 
-message(STATUS "Building with R.framework...")
-message(STATUS "Setting the headers...")
-
 target_include_directories(
   R-Interface PUBLIC ${_R_HOME}/include ${_Rcpp_HOME}/include
                      ${_RInside_HOME}/include)
-
-message(STATUS "Rcpp_INCLUDE_DIRS is set to ${_Rcpp_HOME}/include")
-message(STATUS "RInside_INCLUDE_DIRS is set to ${_RInside_HOME}/include")
 
 target_include_directories(
   R-Interface

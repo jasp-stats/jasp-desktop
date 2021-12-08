@@ -48,9 +48,6 @@ option(
 
 option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
 
-set(R_VERSION "4.1.2")
-set(R_VERSION_MAJOR_MINOR "4.1")
-
 # This could run/update the git-submodule for us to at least get those
 # essentials
 find_package(Git)
@@ -114,7 +111,7 @@ add_subdirectory(R-Interface)
 add_subdirectory(Engine)
 add_subdirectory(Desktop)
 
-# If INSTALL_R_MODULES is not ON, this will only look for already installed
+# If INSTALL_R_MODULES is OFF, this will only look for already installed
 # Modules/ and set their path to be used by the rest of the script.
 include(Modules.cmake)
 

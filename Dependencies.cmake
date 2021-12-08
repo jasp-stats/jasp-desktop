@@ -1,8 +1,10 @@
-
 # Notes:
 #
 # - FetchContent variables will be lower cased, that's why we have
 #   weird variable names like r_win_exe_POPULATED.
+# - "CMake 3.22 updated the FindPkgConfig module to allow passing
+#   arbitrary arguments to the pkgconfig executable." This could come handy
+#   later on when dealing with some of the more annoying dependencies
 
 # TODOs:
 #
@@ -21,6 +23,7 @@
 #         - LOG_BUILD ON
 #         - LOG_INSTALL ON
 #         - LOG_OUTPUT_ON_FAILURE ON
+#
 # - [ ] Only build part of the Boost that we need. Currently, it is not
 #       possible to pass a list to CPM. This is not that bad because we
 #       only need to build it once anyway, but when this issue is fixed,
