@@ -20,8 +20,12 @@ target_include_directories(
 
 target_link_libraries(R-Interface PUBLIC Common ${_R_Framework} ${_LIB_RInside})
 
-target_compile_definitions(R-Interface PUBLIC JASP_R_INTERFACE_LIBRARY
-                                              QT_NO_DEPRECATED_WARNINGS)
+target_compile_definitions(
+  R-Interface
+  PUBLIC JASP_R_INTERFACE_LIBRARY
+         QT_NO_DEPRECATED_WARNINGS
+         $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
+         $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
 
 if(IWYU AND RUN_IWYU)
   set_target_properties(R-Interface PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})

@@ -83,7 +83,7 @@ if(INSTALL_R_MODULES)
     DIRECTORY
     APPEND
     PROPERTY ADDITIONAL_CLEAN_FILES
-             $<PLATFORM_ID:Windows,${${MODULES_BINARY_PATH}}>)
+             $<PLATFORM_ID:Windows,${MODULES_BINARY_PATH}>)
 
   add_custom_target(Modules)
 

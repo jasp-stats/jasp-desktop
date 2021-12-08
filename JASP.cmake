@@ -30,16 +30,6 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   cmake_print_variables(GIT_CURRENT_COMMIT)
 endif()
 
-# We can define the JASP project version in CMakeLists.txt, and then
-# convert it to what we need, or just use them directly.
-#
-# The last two doesn't look very semver-y and we might want to just
-# change them to PATCH and TWEAK anyway.
-#
-# Note:
-#   I think for pushing these into the source, we should probably use
-#   a #define structure and rely on make/cmake to handle this. I think
-#   qmake does something similar but it looks a bit convoluted.
 set(JASP_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(JASP_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(JASP_VERSION_PATCH ${PROJECT_VERSION_PATCH})
@@ -75,6 +65,7 @@ if(BUILDING_JASP)
   add_definitions(-DBUILDING_JASP)
 endif()
 
+# This one is GLOBAL
 option(JASP_DEBUG "Toggle the debug flag" ON)
 if(JASP_DEBUG)
   add_definitions(-DJASP_DEBUG)
@@ -82,9 +73,6 @@ endif()
 
 option(PRINT_ENGINE_MESSAGES
        "Indicates whether the log contains JASPEngine messages" ON)
-if(PRINT_ENGINE_MESSAGES)
-  add_definitions(-DPRINT_ENGINE_MESSAGES)
-endif()
 
 option(JASP_USES_QT_HERE "Indicates whether some files are using Qt.
 						  This doesn't strike as a very informative name

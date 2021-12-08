@@ -12,12 +12,15 @@ find_package(
              chrono)
 
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
+
   pkg_check_modules(
     LIBJSONCPP
     REQUIRED
     IMPORTED_TARGET
     jsoncpp)
+
 else()
+
   find_library(
     LIBJSONCPP
     NAMES jsoncpp
@@ -26,6 +29,7 @@ else()
   set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
   set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
   set(LIBJSONCPP_LINK_LIBRARIES ${LIBJSONCPP})
+
 endif()
 
 configure_file(appinfo.cpp.in appinfo.cpp)
@@ -37,10 +41,6 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 list(APPEND SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 
 add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
-
-if(IWYU AND RUN_IWYU)
-  set_target_properties(Common PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
-endif()
 
 target_include_directories(
   Common
@@ -64,10 +64,18 @@ target_link_libraries(
          # Only if JASP_USES_QT_HERE is ON
          $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
-if(USE_JASP_TIMER)
-  target_compile_definitions(Common PUBLIC PROFILE_JASP)
+target_compile_definitions(
+  Common PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
+                $<$<BOOL:${PROFILE_JASP}>:PROFILE_JASP>)
+
+if(IWYU AND RUN_IWYU)
+  set_target_properties(Common PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
 endif()
 
+# TODOs:
+#
+# - [ ] After confirming these, they can all be rewritten as generator-expressions
+#
 if(APPLE)
   target_compile_definitions(Common PUBLIC BOOST_INTERPROCESS_SHARED_DIR_FUNC)
 elseif(WIN32)

@@ -22,8 +22,10 @@ set(CMAKE_FIND_FRAMEWORK ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # With this, we can hit up to 90% speed up!
+option(USE_CCACHE "Whether to use ccache for build" OFF)
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM
+   AND USE_CCACHE
    AND (NOT
         CMAKE_GENERATOR
         STREQUAL

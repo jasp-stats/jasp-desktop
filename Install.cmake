@@ -1,3 +1,11 @@
+# Taking care of the installation of the JASP.
+#
+# You can run this either by running `make install` or  `cmake --install .`
+# from the build/ directory.
+#
+# - On Linux and Flatpak, we can probably just use this, and don't
+# bother with the packaging.
+
 include(GNUInstallDirs)
 
 install(

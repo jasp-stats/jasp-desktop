@@ -1,9 +1,5 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
 
-file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
-
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
-
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 find_package(
@@ -21,7 +17,11 @@ pkg_check_modules(
   IMPORTED_TARGET
   jsoncpp)
 
-add_executable(JASPEngine ${SYSTEM_TYPE} ${HEADER_FILES} ${SOURCE_FILES})
+file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
+
+file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+
+add_executable(JASPEngine ${HEADER_FILES} ${SOURCE_FILES})
 
 add_dependencies(JASPEngine R-Interface)
 
@@ -53,8 +53,9 @@ if(IWYU AND RUN_IWYU)
   set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
 endif()
 
-target_compile_definitions(JASPEngine PUBLIC BUILDING_JASP_ENGINE
-                                             R_HOME=${_R_HOME})
+target_compile_definitions(
+  JASPEngine PUBLIC $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>
+                    BUILDING_JASP_ENGINE R_HOME=${_R_HOME})
 
 set(MACOSX_BUNDLE_DIR
     "${CMAKE_BINARY_DIR}/Desktop/Debug/${PROJECT_NAME}.app/Contents")

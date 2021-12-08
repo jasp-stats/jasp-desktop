@@ -4,32 +4,8 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH YES)
 
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
-
-pkg_check_modules(
-  LIBJSONCPP
-  REQUIRED
-  IMPORTED_TARGET
-  jsoncpp)
-
-find_package(ZLIB)
-find_package(Iconv)
-
-if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
-  pkg_check_modules(
-    LIBREADSTAT
-    REQUIRED
-    IMPORTED_TARGET
-    readstat)
-else()
-  find_library(
-    LIBREADSTAT
-    NAMES readstat
-    HINTS ${readstat_LIBRARY_DIRS})
-
-  set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
-  set(LIBREADSTAT_LIBRARY_DIRS ${readstat_LIBRARY_DIRS})
-  set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT})
-endif()
+find_package(ZLIB REQUIRED)
+find_package(Iconv REQUIRED)
 
 find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
@@ -61,6 +37,29 @@ find_package(
              QuickWidgets
              Core5Compat)
 
+pkg_check_modules(
+  LIBJSONCPP
+  REQUIRED
+  IMPORTED_TARGET
+  jsoncpp)
+
+if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
+  pkg_check_modules(
+    LIBREADSTAT
+    REQUIRED
+    IMPORTED_TARGET
+    readstat)
+else()
+  find_library(
+    LIBREADSTAT
+    NAMES readstat
+    HINTS ${readstat_LIBRARY_DIRS})
+
+  set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
+  set(LIBREADSTAT_LIBRARY_DIRS ${readstat_LIBRARY_DIRS})
+  set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT})
+endif()
+
 # TODO:
 #
 # - [ ] There is not much to configure here, CMake takes care of the
@@ -88,6 +87,8 @@ file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
 #   JASP target
 if(CMAKE_GENERATOR STREQUAL "Xcode")
 
+  # -- Resources -----------------
+  #
   # This is a handy little for-loop from here, https://stackoverflow.com/a/66401708/1141307,
   # which keeps all the resource files into the Resources folder while
   # keeping their relative path. So, I don't have to group them manually, and
@@ -145,11 +146,11 @@ else()
 
 endif()
 
+add_dependencies(JASP JASPEngine)
+
 target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
 
 target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
-
-add_dependencies(JASP JASPEngine)
 
 if(INSTALL_R_MODULES)
   add_dependencies(JASP Modules)
