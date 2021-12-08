@@ -1,5 +1,10 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT JASP)
 
+# TODOs:
+#
+# - [ ] Most of these add_definitions should turn into `set_target_definitions`
+#       and link to their appropriate targets later on.
+
 find_package(Git)
 
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
@@ -84,9 +89,6 @@ endif()
 option(JASP_USES_QT_HERE "Indicates whether some files are using Qt.
 						  This doesn't strike as a very informative name
 						  for an option!" ON)
-if(JASP_USES_QT_HERE)
-  add_definitions(-DJASP_USES_QT_HERE)
-endif()
 
 # add_definitions(-DJASP_RESULTS_DEBUG_TRACES)
 
