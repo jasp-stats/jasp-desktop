@@ -7,7 +7,7 @@ find_package(LibArchive REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
 
-find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
+# find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
 find_package(
   Boost REQUIRED
@@ -190,6 +190,8 @@ if(APPLE)
       Qt::QuickControls2
       Qt::QuickWidgets
       Qt::Core5Compat
+      # OpenSSL::SSL
+      # OpenSSL::Crypto
       # Based on our config, this is either from PkgConfig, or the build/_deps/
       ${LIBREADSTAT_LINK_LIBRARIES}
       ${Iconv_LIBRARIES}
