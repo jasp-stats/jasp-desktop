@@ -74,6 +74,16 @@ cmake_print_variables(MODULES_BINARY_PATH)
 cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
+# Moving the .R files into the Modules/ folder
+file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
+     DESTINATION ${MODULES_BINARY_PATH})
+file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
+     DESTINATION ${MODULES_BINARY_PATH})
+file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
+     DESTINATION ${MODULES_BINARY_PATH})
+file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
+     DESTINATION ${MODULES_BINARY_PATH})
+
 if(INSTALL_R_MODULES)
 
   # Cleaning the renv-path on Windows only, for now.

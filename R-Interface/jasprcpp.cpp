@@ -176,9 +176,9 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("library(\"jaspBase\")");
 		
 	jaspRCPP_logString("Loading auxillary R-files.\n");
-	jaspRCPP_parseEvalQNT("source(file='writeImage.R')");
-	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')");
-	jaspRCPP_parseEvalQNT("source(file='workarounds.R')");
+	jaspRCPP_parseEvalQNT("source(file='../Modules/writeImage.R')");
+	jaspRCPP_parseEvalQNT("source(file='../Modules/zzzWrappers.R')");
+	jaspRCPP_parseEvalQNT("source(file='../Modules/workarounds.R')");
 
 	jaspRCPP_logString("initEnvironment().\n");
 	jaspRCPP_parseEvalQNT("initEnvironment()");
@@ -207,7 +207,7 @@ void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder
 	
 	std::cout << "RInside created, now about to " << (collectNotRestore ? "collect" :  "recreate") << " Modules junctions in renv-cache" << std::endl;
 	
-	rinside->parseEvalQNT("source('symlinkTools.R')");
+	rinside->parseEvalQNT("source('../Modules/symlinkTools.R')");
 	
 	rInside["symFolder"] = CSTRING_TO_R_UTF8(folder);
 	
