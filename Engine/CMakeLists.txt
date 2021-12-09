@@ -27,15 +27,18 @@ add_dependencies(JASPEngine R-Interface)
 
 target_include_directories(
   JASPEngine
-  PUBLIC ${LIBJSONCPP_INCLUDE_DIRS}
-         # JASP
-         ${PROJECT_SOURCE_DIR}/R-Interface
-         ${PROJECT_SOURCE_DIR}/Common/
-         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-         # R
-         ${CMAKE_SOURCE_DIR}/${_R_HOME}/include
-         ${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include
-         ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include)
+  PUBLIC
+    ${LIBJSONCPP_INCLUDE_DIRS}
+    # JASP
+    ${PROJECT_SOURCE_DIR}/R-Interface
+    # ${PROJECT_SOURCE_DIR}/Common/
+    # ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+    # R
+    # ${CMAKE_SOURCE_DIR}/${_R_HOME}/include
+    # ${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include
+    # ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include
+    # ↑ These are being included during the linking of Common and R-Interface
+)
 
 target_link_libraries(
   JASPEngine

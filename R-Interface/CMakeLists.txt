@@ -18,7 +18,12 @@ target_include_directories(
          ${_Rcpp_HOME}/include
          ${_RInside_HOME}/include)
 
-target_link_libraries(R-Interface PUBLIC Common ${_R_Framework} ${_LIB_RInside})
+target_link_libraries(
+  R-Interface
+  PUBLIC Common
+         ${_R_Framework}
+         ${_LIB_RInside}
+         $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
 target_compile_definitions(
   R-Interface

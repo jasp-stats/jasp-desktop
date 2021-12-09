@@ -75,6 +75,9 @@ cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
 # Moving the .R files into the Modules/ folder
+# TODO:
+# - [ ] They still need to be installed as well.
+#   - They are most likely being installed during the Module transfer anyway
 file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
      DESTINATION ${MODULES_BINARY_PATH})
 file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
