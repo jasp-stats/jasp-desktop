@@ -32,8 +32,9 @@ target_compile_definitions(
          $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
          $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
 
-if(IWYU AND RUN_IWYU)
-  set_target_properties(R-Interface PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+if(IWYU_EXECUTABLE AND RUN_IWYU)
+  set_target_properties(R-Interface PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
+                                               ${IWYU_EXECUTABLE})
 endif()
 
 if(WIN32)

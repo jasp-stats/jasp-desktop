@@ -132,8 +132,9 @@ else()
     ${BUNDLE_RESOURCES}
     ${_R_Framework})
 
-  if(IWYU AND RUN_IWYU)
-    set_target_properties(JASP PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+  if(IWYU_EXECUTABLE AND RUN_IWYU)
+    set_target_properties(JASP PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
+                                          ${IWYU_EXECUTABLE})
   endif()
 
   add_custom_target(

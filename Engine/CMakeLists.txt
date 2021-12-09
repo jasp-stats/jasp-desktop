@@ -52,8 +52,9 @@ target_link_libraries(
          Boost::chrono
          LibArchive::LibArchive)
 
-if(IWYU AND RUN_IWYU)
-  set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+if(IWYU_EXECUTABLE AND RUN_IWYU)
+  set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
+                                              ${IWYU_EXECUTABLE})
 endif()
 
 target_compile_definitions(

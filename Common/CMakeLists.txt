@@ -68,8 +68,9 @@ target_compile_definitions(
   Common PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
                 $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>)
 
-if(IWYU AND RUN_IWYU)
-  set_target_properties(Common PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})
+if(IWYU_EXECUTABLE AND RUN_IWYU)
+  set_target_properties(Common PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
+                                          ${IWYU_EXECUTABLE})
 endif()
 
 # TODOs:

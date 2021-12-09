@@ -23,22 +23,22 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # With this, we can hit up to 90% speed up!
 option(USE_CCACHE "Whether to use ccache for build" OFF)
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM
+find_program(CCACHE_EXECUTABLE ccache)
+if(CCACHE_EXECUTABLE
    AND USE_CCACHE
    AND (NOT
         CMAKE_GENERATOR
         STREQUAL
         "Xcode"
        ))
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-  message(STATUS "Found ccache: ${CCACHE_PROGRAM}")
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_EXECUTABLE}")
+  message(STATUS "Found ccache: ${CCACHE_EXECUTABLE}")
 endif()
 
 option(RUN_IWYU "Whether to run Include What You Use" OFF)
-find_program(IWYU include-what-you-use)
-if(IWYU)
-  message(STATUS "Found iwyu: ${IWYU}")
+find_program(IWYU_EXECUTABLE include-what-you-use)
+if(IWYU_EXECUTABLE)
+  message(STATUS "Found iwyu: ${IWYU_EXECUTABLE}")
 endif()
 
 include(CMakePrintHelpers)
