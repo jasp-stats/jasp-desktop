@@ -66,7 +66,7 @@ target_link_libraries(
 
 target_compile_definitions(
   Common PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
-                $<$<BOOL:${PROFILE_JASP}>:PROFILE_JASP>)
+                $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>)
 
 if(IWYU AND RUN_IWYU)
   set_target_properties(Common PROPERTIES CXX_INCLUDE_WHAT_YOU_USE ${IWYU})

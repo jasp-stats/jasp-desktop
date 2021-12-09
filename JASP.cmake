@@ -41,8 +41,12 @@ set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
 # option(JASP_LIBJSON_STATIC
 #        "Whether or not we are using the 'libjson' as static library?" OFF)
 
-option(PRINT_ENGINE_MESSAGES "Whether or not JASPEngine prints log messages"
-       OFF)
+# TODO:
+# - [ ] Rename all JASP related variables to `JASP_*`. This way,
+#       Qt Creator can categorize them nicely in its CMake configurator
+option(JASP_PRINT_ENGINE_MESSAGES
+       "Whether or not JASPEngine prints log messages" OFF)
+set(PRINT_ENGINE_MESSAGES ${JASP_PRINT_ENGINE_MESSAGES})
 
 option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
 
@@ -82,9 +86,9 @@ option(JASP_USES_QT_HERE "Indicates whether some files are using Qt.
 
 # add_definitions(-DJASP_RESULTS_DEBUG_TRACES)
 
-option(JASPTIMER_USED "Use JASP timer for profiling" OFF)
-if(JASPTIMER_USED)
-  add_definitions(-DUSE_JASP_TIMER)
+option(JASP_TIMER_USED "Use JASP timer for profiling" OFF)
+if(JASP_TIMER_USED)
+  add_definitions(-DPROFILE_JASP)
 endif()
 
 # TODO:
