@@ -108,7 +108,7 @@ if(INSTALL_R_MODULES)
   message(CHECK_START "Installing the 'jaspBase'")
   execute_process(
     COMMAND
-      ${_Rscript_EXE} -e
+      ${RSCRIPT_EXECUTABLE} -e
       "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos='${R_REPOSITORY}')"
     OUTPUT_QUIET
     ERROR_QUIET
@@ -130,7 +130,8 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMAND ${RSCRIPT_EXECUTABLE}
+              ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
@@ -155,7 +156,8 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      COMMAND ${_Rscript_EXE} ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMAND ${RSCRIPT_EXECUTABLE}
+              ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R

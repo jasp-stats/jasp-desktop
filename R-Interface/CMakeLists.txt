@@ -15,14 +15,14 @@ target_include_directories(
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
          # R
          ${_R_HOME}/include
-         ${_Rcpp_HOME}/include
-         ${_RInside_HOME}/include)
+         ${RCPP_PATH}/include
+         ${RINSIDE_PATH}/include)
 
 target_link_libraries(
   R-Interface
   PUBLIC Common
          ${_R_Framework}
-         ${_LIB_RInside}
+         ${_LIB_RINSIDE}
          $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
 target_compile_definitions(

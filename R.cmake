@@ -29,29 +29,41 @@ if(APPLE)
     message(CHECK_PASS "done.")
   endif()
 
-  set(_R_FRAMEWORK_PATH ${CMAKE_BINARY_DIR}/Frameworks)
+  set(R_FRAMEWORK_PATH ${CMAKE_BINARY_DIR}/Frameworks)
+
+  set_property(
+    DIRECTORY
+    APPEND
+    PROPERTY ADDITIONAL_CLEAN_FILES ${R_FRAMEWORK_PATH})
 
   set(_R_HOME
-      "${_R_FRAMEWORK_PATH}/R.framework/Versions/${R_VERSION_MAJOR_MINOR}/Resources"
+      "${R_FRAMEWORK_PATH}/R.framework/Versions/${R_VERSION_MAJOR_MINOR}/Resources"
   )
 
-  set(_R_Library_HOME "${_R_HOME}/library")
-  set(_R_EXE "${_R_HOME}/R")
-  set(_Rscript_EXE "${_R_HOME}/bin/Rscript")
-  set(_Rcpp_HOME "${_R_Library_HOME}/Rcpp")
-  set(_RInside_HOME "${_R_Library_HOME}/RInside")
+  cmake_print_variables(R_FRAMEWORK_PATH)
+  cmake_print_variables(_R_HOME)
+
+  set(R_LIBRARY_PATH "${_R_HOME}/library")
+  set(R_EXECUTABLE "${_R_HOME}/R")
+  set(RSCRIPT_EXECUTABLE "${_R_HOME}/bin/Rscript")
+  set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
+  set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+
+  cmake_print_variables(_R_HOME)
+  cmake_print_variables(RCPP_PATH)
+  cmake_print_variables(RINSIDE_PATH)
 
   message(CHECK_START "Checking for 'R.framework'")
   find_library(
     _R_Framework
     NAMES R
-    PATHS ${_R_FRAMEWORK_PATH}
+    PATHS ${R_FRAMEWORK_PATH}
     NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
   if(_R_Framework)
     message(CHECK_PASS "found.")
   else()
-    message(CHECK_FAIL "not found in ${_R_FRAMEWORK_PATH}")
+    message(CHECK_FAIL "not found in ${R_FRAMEWORK_PATH}")
   endif()
 
   message(CHECK_START "Checking for 'libR'")
@@ -63,36 +75,39 @@ if(APPLE)
 
   if(_LIB_R)
     message(CHECK_PASS "found.")
+    message(STATUS "  ${_LIB_R}")
   else()
     message(CHECK_FAIL "not found in ${_R_HOME}/lib")
   endif()
 
-  if(NOT EXISTS ${_RInside_HOME})
+  if(NOT EXISTS ${RINSIDE_PATH})
     message(STATUS "RInside is not installed!")
 
     message(CHECK_START
             "Installing the 'RInside' and 'Rcpp' within the R.framework")
 
     execute_process(
-      COMMAND
-        ${_Rscript_EXE} -e install.packages\("RInside",repos="${R_REPOSITORY}"\)
-        COMMAND_ERROR_IS_FATAL ANY COMMAND_ECHO NONE
-      OUTPUT_QUIET ERROR_QUIET)
+      COMMAND ${RSCRIPT_EXECUTABLE} -e
+              install.packages\("RInside",repos="${R_REPOSITORY}"\)
+      #   COMMAND_ERROR_IS_FATAL ANY COMMAND_ECHO NONE
+      # OUTPUT_QUIET ERROR_QUIET
+    )
 
     message(CHECK_PASS "successful.")
   endif()
 
   message(CHECK_START "Checking for 'libRInside'")
   find_library(
-    _LIB_RInside
+    _LIB_RINSIDE
     NAMES RInside
-    PATHS ${_RInside_HOME}/lib
+    PATHS ${RINSIDE_PATH}/lib
     NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
-  if(_LIB_RInside)
+  if(_LIB_RINSIDE)
     message(CHECK_PASS "found.")
+    message(STATUS "  ${_LIB_RINSIDE}")
   else()
-    message(CHECK_FAIL "not found in ${_RInside_HOME}/libs")
+    message(CHECK_FAIL "not found in ${RINSIDE_PATH}/libs")
   endif()
 
 elseif(WIN32)
@@ -119,10 +134,7 @@ message(STATUS "R Configurations:")
 
 cmake_print_variables(_R_Framework)
 cmake_print_variables(_LIB_R)
-cmake_print_variables(_LIB_RInside)
-cmake_print_variables(_R_HOME)
-cmake_print_variables(_Rcpp_HOME)
-cmake_print_variables(_RInside_HOME)
-cmake_print_variables(_R_Library_HOME)
+cmake_print_variables(_LIB_RINSIDE)
+cmake_print_variables(R_LIBRARY_PATH)
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

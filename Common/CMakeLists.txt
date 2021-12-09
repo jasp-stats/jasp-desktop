@@ -49,7 +49,7 @@ target_include_directories(
          jaspColumnEncoder
          # R
          ${_R_HOME}/include
-         ${_Rcpp_HOME}/include)
+         ${RCPP_PATH}/include)
 
 target_link_libraries(
   Common

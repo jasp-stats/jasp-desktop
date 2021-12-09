@@ -34,9 +34,9 @@ target_include_directories(
     # ${PROJECT_SOURCE_DIR}/Common/
     # ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
     # R
-    # ${CMAKE_SOURCE_DIR}/${_R_HOME}/include
-    # ${CMAKE_SOURCE_DIR}/${_Rcpp_HOME}/include
-    # ${CMAKE_SOURCE_DIR}/${_RInside_HOME}/include
+    # ${_R_HOME}/include
+    # ${RCPP_PATH}/include
+    # ${RINSIDE_PATH}/include
     # ↑ These are being included during the linking of Common and R-Interface
 )
 
