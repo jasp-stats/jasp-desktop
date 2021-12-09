@@ -78,13 +78,8 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
 
 else()
 
-  add_custom_command(
-    TARGET JASPEngine
-    POST_BUILD
-    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/JASPEngine
-            ${PROJECT_BINARY_DIR}/Desktop
-    COMMENT "====== Placing the JASPEngine next to JASP...")
-
+  set_target_properties(JASPEngine PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                                              ${CMAKE_BINARY_DIR}/Desktop)
 endif()
 
 if(APPLE)

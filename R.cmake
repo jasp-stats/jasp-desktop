@@ -5,8 +5,6 @@ set(R_VERSION "4.1.2")
 set(R_VERSION_MAJOR_MINOR "4.1")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
-message(STATUS "Building using the R.framework")
-
 # TODO: Replace the version with a variable
 if(APPLE)
 
@@ -25,6 +23,7 @@ if(APPLE)
   #
   if(NOT EXISTS ${CMAKE_BINARY_DIR}/Frameworks/R.framework)
     message(CHECK_START "Copying the R.framework into the build folder")
+    message(STATUS "This may take a few minutes...")
     execute_process(COMMAND cp -r ${CMAKE_SOURCE_DIR}/Frameworks
                             ${CMAKE_BINARY_DIR})
     message(CHECK_PASS "done.")

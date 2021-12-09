@@ -134,7 +134,7 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   "boostorg/boost"
   GIT_TAG
-  "boost-1.78.0.beta1")
+  "boost-1.78.0")
 
 cpmaddpackage(
   NAME
