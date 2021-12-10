@@ -1,10 +1,5 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
-# TODO: Find this version number automatically
-set(R_VERSION "4.1.2")
-set(R_VERSION_MAJOR_MINOR "4.1")
-set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
-
 # TODO: Replace the version with a variable
 if(APPLE)
 
@@ -23,9 +18,9 @@ if(APPLE)
   #
   if(NOT EXISTS ${CMAKE_BINARY_DIR}/Frameworks/R.framework)
     message(CHECK_START "Copying the R.framework into the build folder")
-    message(STATUS "This may take a few minutes...")
-    execute_process(COMMAND cp -r ${CMAKE_SOURCE_DIR}/Frameworks
-                            ${CMAKE_BINARY_DIR})
+    make_directory(${CMAKE_BINARY_DIR}/Frameworks)
+    execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Frameworks
+                    COMMAND cp -Rpf R.framework ${CMAKE_BINARY_DIR}/Frameworks/)
     message(CHECK_PASS "done.")
   endif()
 
@@ -36,16 +31,14 @@ if(APPLE)
     APPEND
     PROPERTY ADDITIONAL_CLEAN_FILES ${R_FRAMEWORK_PATH})
 
-  set(_R_HOME
-      "${R_FRAMEWORK_PATH}/R.framework/Versions/${R_VERSION_MAJOR_MINOR}/Resources"
-  )
+  set(_R_HOME "${R_FRAMEWORK_PATH}/R.framework/Resources")
 
   cmake_print_variables(R_FRAMEWORK_PATH)
   cmake_print_variables(_R_HOME)
 
   set(R_LIBRARY_PATH "${_R_HOME}/library")
   set(R_EXECUTABLE "${_R_HOME}/R")
-  set(RSCRIPT_EXECUTABLE "${_R_HOME}/bin/Rscript")
+  set(RSCRIPT_EXECUTABLE "${_R_HOME}/Rscript")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
 

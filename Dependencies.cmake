@@ -33,6 +33,7 @@
 # want to have CI builds on GitHub, see here: https://github.com/cpm-cmake/CPM.cmake/wiki/Caching-with-CPM.cmake-and-ccache-on-GitHub-Actions
 set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/CPM)
 
+include(FetchContent)
 include(ExternalProject)
 include(Tools/cmake/CPM.cmake)
 
@@ -71,13 +72,18 @@ if(WIN32)
     if(r_win_exe_POPULATED)
       execute_process(
         WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
-        COMMAND extract /c ${R_PACKAGE_NAME} /l ${r_win_exe_BINARY_DIR}
+        COMMAND extract /c ${R_PACKAGE_NAME} /l ${r_win_exe_BINARY_DIR})
+      execute_process(
+        WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
         COMMAND cp -r ${r_win_exe_BINARY_DIR} ${CMAKE_SOURCE_DIR}/R)
+
     endif()
 
   endif()
 
 elseif(APPLE)
+
+  # https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-4.1.2-arm64.pkg
 
   if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
     set(R_PACKAGE_NAME "R-${R_VERSION}-${CMAKE_HOST_SYSTEM_PROCESSOR}.pkg")
@@ -85,6 +91,7 @@ elseif(APPLE)
         "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
     )
     set(R_PACKAGE_HASH "69e8845ffa134c822d4bdcf458220e841a9eeaa5")
+
   else()
     set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
     set(R_DOWNLOAD_URL
@@ -101,15 +108,47 @@ elseif(APPLE)
       DOWNLOAD_NO_EXTRACT ON
       DOWNLOAD_NAME ${R_PACKAGE_NAME})
 
+    message(CHECK_START "Downloading '${R_PACKAGE_NAME}'.")
     fetchcontent_populate(r_pkg)
+    message(CHECK_PASS "done.")
+
     fetchcontent_getproperties(r_pkg)
 
     if(r_pkg_POPULATED)
+
+      message(CHECK_START "Unpacking '${R_PACKAGE_NAME}'.")
+      execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+                      COMMAND xar -xf ${R_PACKAGE_NAME})
+      message(CHECK_PASS "done.")
+
+      message(CHECK_START "Unpacking Payload.")
+      execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+                      COMMAND tar xvf R-fw.pkg/Payload)
+      message(CHECK_PASS "done.")
+
+      message(CHECK_START "Patching the R.framework.")
+
+      # execute_process(
+      #   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/macOS
+      #   COMMAND cp makeframework.sh ${r_pkg_SOURCE_DIR}
+      #   COMMAND cp repairframework.sh ${r_pkg_SOURCE_DIR}
+      #   COMMAND cp update-libraries-of-rframework.py ${r_pkg_SOURCE_DIR}
+      #   COMMAND cp create-rframework.py ${r_pkg_SOURCE_DIR})
+
+      # execute_process(
+      #   WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+      #   COMMAND ${CMAKE_SOURCE_DIR}/Tools/macOS/create-rframework.py)
+
+      message(CHECK_PASS "done.")
+
+      message(CHECK_START
+              "Copying the 'R.framework' to the jasp-desktop/Frameworks.")
+
       execute_process(
         WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
-        COMMAND xar -xf ${R_PACKAGE_NAME}
-        COMMAND tar xvf R-fw.pkg/Payload
-        COMMAND cp -r R.framework ${CMAKE_SOURCE_DIR}/Frameworks/)
+        COMMAND cp -Rpf R.framework ${CMAKE_SOURCE_DIR}/Frameworks)
+
+      message(CHECK_PASS "done.")
     endif()
 
   endif()

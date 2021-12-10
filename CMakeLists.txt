@@ -12,6 +12,11 @@ project(
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# TODO: Find this version number automatically
+set(R_VERSION "4.1.2")
+set(R_VERSION_MAJOR_MINOR "4.1")
+set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
+
 # When everything is done, we should be able to just activate
 # this and build it for two architectures. This will also download
 # the correct R.framework
@@ -75,14 +80,6 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   endif()
 endif()
 
-# If set, CMake tries to download all the necessary dependencies
-#
-#   - R.exe or R.framework depending on the system
-#   - Boost, jsoncpp, libarchive, zlib, readstat, and jags
-if(INSTALL_JASP_REQUIRED_LIBRARIES)
-  include(Dependencies.cmake)
-endif()
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -94,6 +91,14 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 # create binaries and installer for different systems
 if(WIN32) # Check if we are on Windows
   set(SYSTEM_TYPE WIN32)
+endif()
+
+# If set, CMake tries to download all the necessary dependencies
+#
+#   - R.exe or R.framework depending on the system
+#   - Boost, jsoncpp, libarchive, zlib, readstat, and jags
+if(INSTALL_JASP_REQUIRED_LIBRARIES)
+  include(Dependencies.cmake)
 endif()
 
 # JASP Options
