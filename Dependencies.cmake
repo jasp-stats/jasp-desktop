@@ -86,6 +86,7 @@ elseif(APPLE)
   # https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-4.1.2-arm64.pkg
 
   if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+    set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
     set(R_PACKAGE_NAME "R-${R_VERSION}-${CMAKE_HOST_SYSTEM_PROCESSOR}.pkg")
     set(R_DOWNLOAD_URL
         "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
@@ -93,6 +94,7 @@ elseif(APPLE)
     set(R_PACKAGE_HASH "69e8845ffa134c822d4bdcf458220e841a9eeaa5")
 
   else()
+    set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}")
     set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
     set(R_DOWNLOAD_URL
         "https://cran.r-project.org/bin/macosx/base/R-${R_VERSION}.pkg")
@@ -128,16 +130,39 @@ elseif(APPLE)
 
       message(CHECK_START "Patching the R.framework.")
 
-      # execute_process(
-      #   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/macOS
-      #   COMMAND cp makeframework.sh ${r_pkg_SOURCE_DIR}
-      #   COMMAND cp repairframework.sh ${r_pkg_SOURCE_DIR}
-      #   COMMAND cp update-libraries-of-rframework.py ${r_pkg_SOURCE_DIR}
-      #   COMMAND cp create-rframework.py ${r_pkg_SOURCE_DIR})
+      execute_process(
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/macOS
+        COMMAND cp makeframework.sh ${r_pkg_SOURCE_DIR}
+        COMMAND cp repairframework.sh ${r_pkg_SOURCE_DIR}
+        COMMAND cp update-libraries-of-rframework.py ${r_pkg_SOURCE_DIR}
+        COMMAND cp create-rframework.py ${r_pkg_SOURCE_DIR}
+        COMMAND cp install_name_prefix_tool.sh ${r_pkg_SOURCE_DIR})
 
       # execute_process(
       #   WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
       #   COMMAND ${CMAKE_SOURCE_DIR}/Tools/macOS/create-rframework.py)
+
+      message(
+        STATUS
+          "${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources/*.so"
+      )
+
+      file(
+        GLOB_RECURSE SO_LIBRARIES
+        "${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources/*.so")
+      file(
+        GLOB_RECURSE
+        DYLIB_LIBRARIES
+        "${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources/*.dylib"
+      )
+
+      cmake_print_variables(SO_LIBRARIES)
+      cmake_print_variables(DYLIB_LIBRARIES)
+
+      set(__LIBRARIES ${SO_LIBRARIES} ${DYLIB_LIBRARIES})
+      foreach(__LIB ${__LIBRARIES})
+        message(STATUS ${__LIB})
+      endforeach()
 
       message(CHECK_PASS "done.")
 
