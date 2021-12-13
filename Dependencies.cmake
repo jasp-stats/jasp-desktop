@@ -232,7 +232,14 @@ elseif(APPLE)
           ./install_name_prefix_tool.sh
           R.framework/Versions/4.1-arm64/Resources/bin/exec/R
           /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib
-          @loader_path/../lib)
+          @executable_path/../lib)
+
+      execute_process(
+        WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+        COMMAND
+          ./install_name_prefix_tool.sh R.framework/R
+          /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib
+          @executable_path/Versions/4.1-arm64/Resources/lib)
 
       message(CHECK_PASS "done.")
 
