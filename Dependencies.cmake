@@ -132,11 +132,10 @@ elseif(APPLE)
 
       execute_process(
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/macOS
-        COMMAND cp makeframework.sh ${r_pkg_SOURCE_DIR}
-        COMMAND cp repairframework.sh ${r_pkg_SOURCE_DIR}
-        COMMAND cp update-libraries-of-rframework.py ${r_pkg_SOURCE_DIR}
-        COMMAND cp create-rframework.py ${r_pkg_SOURCE_DIR}
         COMMAND cp install_name_prefix_tool.sh ${r_pkg_SOURCE_DIR})
+
+      execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+                      COMMAND chmod +x install_name_prefix_tool.sh)
 
       # execute_process(
       #   WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
@@ -155,14 +154,85 @@ elseif(APPLE)
         DYLIB_LIBRARIES
         "${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources/*.dylib"
       )
+      list(
+        FILTER
+        DYLIB_LIBRARIES
+        EXCLUDE
+        REGEX
+        ".*dSYM.*")
 
-      cmake_print_variables(SO_LIBRARIES)
-      cmake_print_variables(DYLIB_LIBRARIES)
+      foreach(SO_LIB ${SO_LIBRARIES})
 
-      set(__LIBRARIES ${SO_LIBRARIES} ${DYLIB_LIBRARIES})
-      foreach(__LIB ${__LIBRARIES})
-        message(STATUS ${__LIB})
+        cmake_path(
+          GET
+          SO_LIB
+          FILENAME
+          SO_LIB_FILENAME)
+        message(CHECK_START "Patching ${SO_LIB_FILENAME}")
+
+        string(
+          REGEX MATCH
+                ".*library.*"
+                SO_LIB_IN_LIBRARY
+                ${SO_LIB})
+
+        if(SO_LIB_IN_LIBRARY)
+
+          execute_process(
+            WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+            COMMAND
+              ./install_name_prefix_tool.sh ${SO_LIB_IN_LIBRARY}
+              /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib
+              @loader_path/../../../lib)
+
+        endif()
+
+        string(
+          REGEX MATCH
+                ".*module.*"
+                SO_LIB_IN_MODULES
+                ${SO_LIB})
+
+        if(SO_LIB_IN_MODULES)
+
+          execute_process(
+            WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+            COMMAND
+              ./install_name_prefix_tool.sh ${SO_LIB_IN_MODULES}
+              /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib
+              @loader_path/../lib)
+
+        endif()
+
+        message(CHECK_PASS "successful.")
       endforeach()
+
+      foreach(DYLIB_LIB ${DYLIB_LIBRARIES})
+
+        cmake_path(
+          GET
+          DYLIB_LIB
+          FILENAME
+          DYLIB_LIB_FILENAME)
+        message(CHECK_START "Patching ${DYLIB_LIB_FILENAME}")
+
+        execute_process(
+          WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+          COMMAND
+            ./install_name_prefix_tool.sh ${DYLIB_LIB}
+            /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib/
+            @loader_path/)
+
+        message(CHECK_PASS "successful.")
+      endforeach()
+
+      execute_process(
+        WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+        COMMAND
+          ./install_name_prefix_tool.sh
+          R.framework/Versions/4.1-arm64/Resources/bin/exec/R
+          /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib
+          @loader_path/../lib)
 
       message(CHECK_PASS "done.")
 
