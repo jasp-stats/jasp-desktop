@@ -41,12 +41,6 @@ else
     exit 1
 fi
 
-# if [ ! -d $PREFIX ] 
-# then 
-# 	echo "Warning: Prefix \"$PREFIX\" does not exist." 
-# 	exit 1
-# fi
-
 INSTALL_NAME_TOOL_BIN=$(which install_name_tool)
 OTOOL_BIN=$(which otool)
 GREP_BIN=$(which egrep)
