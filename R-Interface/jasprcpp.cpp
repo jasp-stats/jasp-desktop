@@ -365,7 +365,7 @@ const char* STDCALL jaspRCPP_saveImage(const char * data, const char *type, cons
 	rInside[".ppi"]				= ppi;
 
 	static std::string staticResult;
-	staticResult = jaspRCPP_parseEvalStringReturn("saveImage(plotName, format, height, width)", true);
+	staticResult = jaspRCPP_parseEvalStringReturn("jaspBase:::saveImage(plotName, format, height, width)", true);
 	return staticResult.c_str();
 }
 
@@ -382,7 +382,7 @@ const char* STDCALL jaspRCPP_editImage(const char * name, const char * optionsJs
 	_setJaspResultsInfo(analysisID, 0, false);
 
 	static std::string staticResult;
-	staticResult =  jaspRCPP_parseEvalStringReturn("editImage(.analysisName, .editImgOptions)", true);
+	staticResult =  jaspRCPP_parseEvalStringReturn("jaspBase:::editImage(.analysisName, .editImgOptions)", true);
 
 	return staticResult.c_str();
 }
@@ -400,7 +400,7 @@ void STDCALL jaspRCPP_rewriteImages(const char * name, const int ppi, const char
 
 	_setJaspResultsInfo(analysisID, 0, false);
 
-	jaspRCPP_parseEvalQNT("rewriteImages(.analysisName, .ppi, .imageBackground)", true);
+	jaspRCPP_parseEvalQNT("jaspBase:::rewriteImages(.analysisName, .ppi, .imageBackground)", true);
 }
 
 const char*	STDCALL jaspRCPP_evalRCode(const char *rCode, bool setWd) {
