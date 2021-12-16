@@ -40,6 +40,10 @@ file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 list(APPEND SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 
+# Note:
+# I might need to use `qt_add_library` instead only because we
+# are depending on `Qt::Core`. Maybe later, we can free the Common
+# from it.
 add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
 
 target_include_directories(

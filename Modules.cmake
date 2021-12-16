@@ -111,7 +111,8 @@ if(INSTALL_R_MODULES)
     "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos='${R_REPOSITORY}')"
   )
   execute_process(
-    COMMAND ${R_EXECUTABLE} CMD BATCH --verbose
+    WORKING_DIRECTORY ${_R_HOME}
+    COMMAND ./R CMD BATCH --verbose
             ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.r
     OUTPUT_QUIET
     COMMAND_ERROR_IS_FATAL
@@ -132,7 +133,8 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      COMMAND ${R_EXECUTABLE} CMD BATCH --verbose
+      WORKING_DIRECTORY ${_R_HOME}
+      COMMAND ./R CMD BATCH --verbose
               ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
@@ -158,7 +160,8 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      COMMAND ${R_EXECUTABLE} CMD BATCH --verbose
+      WORKING_DIRECTORY ${_R_HOME}
+      COMMAND ./R CMD BATCH --verbose
               ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
