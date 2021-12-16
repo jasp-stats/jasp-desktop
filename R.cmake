@@ -79,10 +79,11 @@ if(APPLE)
     message(CHECK_START
             "Installing the 'RInside' and 'Rcpp' within the R.framework")
 
-    file(WRITE ${CMAKE_BINARY_DIR}/Modules/install-RInside.r
+    file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.r
          "install.packages('RInside', repos='${R_REPOSITORY}')")
-    execute_process(COMMAND ${R_EXECUTABLE} CMD BATCH
-                            ${CMAKE_BINARY_DIR}/Modules/install-RInside.r)
+    execute_process(
+      COMMAND ${R_EXECUTABLE} CMD BATCH
+              ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.r)
 
     message(CHECK_PASS "successful.")
   endif()
