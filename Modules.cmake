@@ -106,12 +106,14 @@ if(INSTALL_R_MODULES)
 
   # This happens during the configuration!
   message(CHECK_START "Installing the 'jaspBase'")
+  file(
+    WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.r
+    "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos='${R_REPOSITORY}')"
+  )
   execute_process(
-    COMMAND
-      ${RSCRIPT_EXECUTABLE} -e
-      "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos='${R_REPOSITORY}')"
+    COMMAND ${R_EXECUTABLE} CMD BATCH --verbose
+            ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.r
     OUTPUT_QUIET
-    ERROR_QUIET
     COMMAND_ERROR_IS_FATAL
     ANY
     COMMAND_ECHO
@@ -130,7 +132,7 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      COMMAND ${RSCRIPT_EXECUTABLE}
+      COMMAND ${R_EXECUTABLE} CMD BATCH --verbose
               ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
@@ -156,7 +158,7 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      COMMAND ${RSCRIPT_EXECUTABLE}
+      COMMAND ${R_EXECUTABLE} CMD BATCH --verbose
               ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
