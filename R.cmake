@@ -9,6 +9,13 @@ if(APPLE)
 
   # This whole thing can be a module of itself but after I make sure that it
   # fully works
+
+  # TODOs:
+  #
+  # - [ ] I need to check whether I should download the `.tar.gz` version of the
+  #       framework instead. It seems that the `.pkg` version requires xQuartz but
+  #       the former does not.
+  #
   if(INSTALL_R_FRAMEWORK)
 
     if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
@@ -44,14 +51,24 @@ if(APPLE)
 
       if(r_pkg_POPULATED)
 
+        set(r_pkg_r_home
+            ${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources/)
+
         message(CHECK_START "Unpacking '${R_PACKAGE_NAME}'.")
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
                         COMMAND xar -xf ${R_PACKAGE_NAME})
         message(CHECK_PASS "done.")
 
-        message(CHECK_START "Unpacking Payload.")
+        message(CHECK_START "Unpacking the payloads.")
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
-                        COMMAND tar xvf R-fw.pkg/Payload)
+                        COMMAND tar -xf R-fw.pkg/Payload)
+
+        execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+                        COMMAND tar -xf tcltk.pkg/Payload -C ${r_pkg_r_home})
+
+        execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+                        COMMAND tar -xf texinfo.pkg/Payload -C ${r_pkg_r_home})
+
         message(CHECK_PASS "done.")
 
         message(CHECK_START "Patching the R.framework.")
@@ -63,9 +80,6 @@ if(APPLE)
 
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
                         COMMAND chmod +x install_name_prefix_tool.sh)
-
-        set(r_pkg_r_home
-            ${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources/)
 
         file(
           GLOB_RECURSE
@@ -187,13 +201,12 @@ if(APPLE)
     message(CHECK_START
             "Installing the 'RInside' and 'Rcpp' within the R.framework")
 
-    file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.r
+    file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
          "install.packages('RInside', repos='${R_REPOSITORY}')")
 
     execute_process(
       WORKING_DIRECTORY ${_R_HOME}
-      COMMAND ./R CMD BATCH
-              ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.r)
+      COMMAND ./R --slave --no-restore --no-save --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
 
     message(CHECK_PASS "successful.")
   endif()

@@ -105,15 +105,19 @@ if(INSTALL_R_MODULES)
   message(STATUS "Installing Required R Modules...")
 
   # This happens during the configuration!
-  message(CHECK_START "Installing the 'jaspBase'")
-  file(
-    WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.r
-    "install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos='${R_REPOSITORY}')"
-  )
+  message(CHECK_START "Installing the 'jaspBase' and its dependencies...")
+  file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R
+    "
+    install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
+                        'jsonlite', 'modules', 'officer', 'pkgbuild',
+                        'plyr', 'qgraph', 'ragg', 'R6', 'renv',
+                        'rjson', 'rvg', 'svglite', 'systemfonts', 'with'), type='binary', repos='${R_REPOSITORY}')
+    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL)
+    ")
   execute_process(
     WORKING_DIRECTORY ${_R_HOME}
-    COMMAND ./R CMD BATCH --verbose
-            ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.r
+    COMMAND ./R --slave --no-restore --no-save
+            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R
     OUTPUT_QUIET
     COMMAND_ERROR_IS_FATAL
     ANY
@@ -134,8 +138,8 @@ if(INSTALL_R_MODULES)
     add_custom_target(
       ${MODULE}
       WORKING_DIRECTORY ${_R_HOME}
-      COMMAND ./R CMD BATCH --verbose
-              ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMAND ./R --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
@@ -161,8 +165,8 @@ if(INSTALL_R_MODULES)
     add_custom_target(
       ${MODULE}
       WORKING_DIRECTORY ${_R_HOME}
-      COMMAND ./R CMD BATCH --verbose
-              ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMAND ./R --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
