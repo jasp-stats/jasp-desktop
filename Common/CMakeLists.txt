@@ -52,7 +52,7 @@ target_include_directories(
          # JASP
          jaspColumnEncoder
          # R
-         ${_R_HOME}/include
+         ${R_HOME_PATH}/include
          ${RCPP_PATH}/include)
 
 target_link_libraries(

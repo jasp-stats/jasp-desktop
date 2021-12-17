@@ -7,6 +7,24 @@ option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" OFF)
 # TODO: Replace the version with a variable
 if(APPLE)
 
+  # These are futher paths, and may not exist yet!
+  # CMake throws if it cannot setup the R.framework properly and get to
+  # these paths!
+
+  set(R_FRAMEWORK_PATH ${CMAKE_BINARY_DIR}/Frameworks)
+  set(R_HOME_PATH "${R_FRAMEWORK_PATH}/R.framework/Resources")
+  set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
+  set(R_EXECUTABLE "${R_HOME_PATH}/R")
+  set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
+  set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+
+  cmake_print_variables(R_FRAMEWORK_PATH)
+  cmake_print_variables(R_HOME_PATH)
+  cmake_print_variables(R_HOME_PATH)
+  cmake_print_variables(RCPP_PATH)
+  cmake_print_variables(RINSIDE_PATH)
+  cmake_print_variables(R_EXECUTABLE)
+
   # This whole thing can be a module of itself but after I make sure that it
   # fully works
 
@@ -52,7 +70,7 @@ if(APPLE)
       if(r_pkg_POPULATED)
 
         set(r_pkg_r_home
-            ${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources/)
+            ${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources)
 
         message(CHECK_START "Unpacking '${R_PACKAGE_NAME}'.")
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
@@ -64,10 +82,10 @@ if(APPLE)
                         COMMAND tar -xf R-fw.pkg/Payload)
 
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
-                        COMMAND tar -xf tcltk.pkg/Payload -C ${r_pkg_r_home})
+                        COMMAND tar -xf tcltk.pkg/Payload -C ${r_pkg_r_home}/)
 
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
-                        COMMAND tar -xf texinfo.pkg/Payload -C ${r_pkg_r_home})
+                        COMMAND tar -xf texinfo.pkg/Payload -C ${r_pkg_r_home}/)
 
         message(CHECK_PASS "done.")
 
@@ -105,7 +123,7 @@ if(APPLE)
         # Patching R -------------
 
         include(${CMAKE_SOURCE_DIR}/PatchR.cmake)
-        patch_r(${r_pkg_r_home})
+        patch_r(${r_pkg_r_home} ${R_HOME_PATH})
 
         # ------------------------
 
@@ -114,9 +132,10 @@ if(APPLE)
         message(CHECK_START
                 "Copying the 'R.framework' to the jasp-desktop/Frameworks.")
 
+        make_directory(${CMAKE_BINARY_DIR}/Frameworks)
         execute_process(
           WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
-          COMMAND cp -Rpf R.framework ${CMAKE_SOURCE_DIR}/Frameworks)
+          COMMAND cp -Rpf R.framework ${CMAKE_BINARY_DIR}/Frameworks)
 
         message(CHECK_PASS "done.")
       endif()
@@ -139,34 +158,17 @@ if(APPLE)
   # multi-architecture build.
   #
   if(NOT EXISTS ${CMAKE_BINARY_DIR}/Frameworks/R.framework)
-    message(CHECK_START "Copying the R.framework into the build folder")
-    make_directory(${CMAKE_BINARY_DIR}/Frameworks)
-    execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Frameworks
-                    COMMAND cp -Rpf R.framework ${CMAKE_BINARY_DIR}/Frameworks/)
-    message(CHECK_PASS "done.")
+    message(
+      FATAL_ERROR
+        "Cannot locate R.framework inside the build folder.
+      You can use `cmake .. -DINSTALL_R_FRAMEWORK=ON` to ask CMake to install
+      it for you.")
   endif()
-
-  set(R_FRAMEWORK_PATH ${CMAKE_BINARY_DIR}/Frameworks)
 
   set_property(
     DIRECTORY
     APPEND
     PROPERTY ADDITIONAL_CLEAN_FILES ${R_FRAMEWORK_PATH})
-
-  set(_R_HOME "${R_FRAMEWORK_PATH}/R.framework/Resources")
-
-  cmake_print_variables(R_FRAMEWORK_PATH)
-  cmake_print_variables(_R_HOME)
-
-  set(R_LIBRARY_PATH "${_R_HOME}/library")
-  set(R_EXECUTABLE "${_R_HOME}/R")
-  set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
-  set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
-
-  cmake_print_variables(_R_HOME)
-  cmake_print_variables(RCPP_PATH)
-  cmake_print_variables(RINSIDE_PATH)
-  cmake_print_variables(R_EXECUTABLE)
 
   message(CHECK_START "Checking for 'R.framework'")
   find_library(
@@ -185,14 +187,14 @@ if(APPLE)
   find_library(
     _LIB_R
     NAMES R
-    PATHS ${_R_HOME}/lib
+    PATHS ${R_HOME_PATH}/lib
     NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
   if(_LIB_R)
     message(CHECK_PASS "found.")
     message(STATUS "  ${_LIB_R}")
   else()
-    message(CHECK_FAIL "not found in ${_R_HOME}/lib")
+    message(CHECK_FAIL "not found in ${R_HOME_PATH}/lib")
   endif()
 
   if(NOT EXISTS ${RINSIDE_PATH})
@@ -205,8 +207,14 @@ if(APPLE)
          "install.packages('RInside', repos='${R_REPOSITORY}')")
 
     execute_process(
-      WORKING_DIRECTORY ${_R_HOME}
-      COMMAND ./R --slave --no-restore --no-save --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      COMMAND ./R --slave --no-restore --no-save
+              --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
+
+    if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
+      message(CHECK_FAIL "unsuccessful.")
+      message(FATAL_ERROR "'RInside' installation has failed!")
+    endif()
 
     message(CHECK_PASS "successful.")
   endif()
@@ -236,7 +244,7 @@ endif()
 
 # unix {
 #   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
-#   EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME:$$dirname(QMAKE_QMAKE)
+#   EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$R_HOME_PATH:$$dirname(QMAKE_QMAKE)
 # }
 
 # win32 {

@@ -21,7 +21,7 @@ set(JASP_EXTRA_MODULES
     # "jaspSem"
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
-    "jaspMetaAnalysis"
+    # "jaspMetaAnalysis"
     "jaspDistributions"
     # "jaspEquivalenceTTests"
     # "jaspJags"
@@ -116,14 +116,15 @@ if(INSTALL_R_MODULES)
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL)
     ")
   execute_process(
-    WORKING_DIRECTORY ${_R_HOME}
+    WORKING_DIRECTORY ${R_HOME_PATH}
     COMMAND ./R --slave --no-restore --no-save
-            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R
-    OUTPUT_QUIET
-    COMMAND_ERROR_IS_FATAL
-    ANY
-    COMMAND_ECHO
-    NONE)
+            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R)
+
+  if(NOT EXISTS ${R_LIBRARY_PATH}/jaspBase)
+    message(CHECK_FAIL "unsuccessful.")
+    message(FATAL_ERROR "'jaspBase' installation has failed!")
+  endif()
+
   message(CHECK_PASS "successful.")
 
   message(STATUS "Configuring Common Modules...")
@@ -138,7 +139,7 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      WORKING_DIRECTORY ${_R_HOME}
+      WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
@@ -165,7 +166,7 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      WORKING_DIRECTORY ${_R_HOME}
+      WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}

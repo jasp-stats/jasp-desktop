@@ -34,7 +34,7 @@ target_include_directories(
     # ${PROJECT_SOURCE_DIR}/Common/
     # ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
     # R
-    # ${_R_HOME}/include
+    # ${R_HOME_PATH}/include
     # ${RCPP_PATH}/include
     # ${RINSIDE_PATH}/include
     # ↑ These are being included during the linking of Common and R-Interface
@@ -59,7 +59,7 @@ endif()
 
 target_compile_definitions(
   JASPEngine PUBLIC $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>
-                    BUILDING_JASP_ENGINE R_HOME=${_R_HOME})
+                    BUILDING_JASP_ENGINE R_HOME=${R_HOME_PATH})
 
 set(MACOSX_BUNDLE_DIR
     "${CMAKE_BINARY_DIR}/Desktop/Debug/${PROJECT_NAME}.app/Contents")

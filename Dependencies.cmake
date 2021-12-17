@@ -204,7 +204,7 @@ set(readstat_LIBRARY_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/lib)
 #
 # - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.
 # - With this, we can build JAGS, and link it, or even place it inside the the `R.framework`
-#   - `--prefix=${_R_HOME}`, with this, we inherit the R
+#   - `--prefix=${R_HOME_PATH}`, with this, we inherit the R
 # - You can run `make jags-build` or `make jags-install` to just play with JAGS target
 externalproject_add(
   jags

@@ -14,7 +14,7 @@ target_include_directories(
          ${PROJECT_SOURCE_DIR}/Common
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
          # R
-         ${_R_HOME}/include
+         ${R_HOME_PATH}/include
          ${RCPP_PATH}/include
          ${RINSIDE_PATH}/include)
 
