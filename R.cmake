@@ -34,7 +34,8 @@ if(APPLE)
   #       framework instead. It seems that the `.pkg` version requires xQuartz but
   #       the former does not.
   #
-  if(INSTALL_R_FRAMEWORK)
+  if(INSTALL_R_FRAMEWORK AND (NOT EXISTS
+                              ${CMAKE_BINARY_DIR}/Frameworks/R.framework))
 
     if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
       set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
@@ -160,9 +161,9 @@ if(APPLE)
   if(NOT EXISTS ${CMAKE_BINARY_DIR}/Frameworks/R.framework)
     message(
       FATAL_ERROR
-        "Cannot locate R.framework inside the build folder.
-      You can use `cmake .. -DINSTALL_R_FRAMEWORK=ON` to ask CMake to install
-      it for you.")
+        "CMake cannot locate 'R.framework' inside this build folder.
+         You can use `cmake .. -DINSTALL_R_FRAMEWORK=ON` to ask CMake to install
+         it for you.")
   endif()
 
   set_property(
