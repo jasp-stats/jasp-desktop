@@ -106,12 +106,13 @@ if(INSTALL_R_MODULES)
 
   # This happens during the configuration!
   message(CHECK_START "Installing the 'jaspBase' and its dependencies...")
-  file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R
+  file(
+    WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R
     "
     install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
                         'jsonlite', 'modules', 'officer', 'pkgbuild',
                         'plyr', 'qgraph', 'ragg', 'R6', 'renv',
-                        'rjson', 'rvg', 'svglite', 'systemfonts', 'with'), type='binary', repos='${R_REPOSITORY}')
+                        'rjson', 'rvg', 'svglite', 'systemfonts', 'withr'), type='binary', repos='${R_REPOSITORY}')
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL)
     ")
   execute_process(
