@@ -72,7 +72,6 @@ void HelpModel::setMarkdown(QString markdown)
 
 void HelpModel::setPagePath(QString pagePath)
 {	
-	_pagePath = convertPagePathToLower(pagePath); //Otherwise we get into to trouble on systems that discern between cases in the filesystem. Also means we should make sure all documentation html are named lowercase!
 	emit pagePathChanged(_pagePath);
 }
 
@@ -128,8 +127,6 @@ void HelpModel::showOrTogglePage(QString pagePath)
 {
 	_analysis = nullptr;
 	
-	pagePath = convertPagePathToLower(pagePath);
-
 	if(pagePath == _pagePath && _visible)
 		setVisible(false);
 	else
@@ -149,7 +146,7 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 	
 	QString renderFunc, 
 			contentMD,
-			pagePath = convertPagePathToLower(helpPage == "" ? analysis->helpFile() : analysis->fullHelpPath(helpPage));
+			pagePath = helpPage == "" ? analysis->helpFile() : analysis->fullHelpPath(helpPage);
 	
 	if(analysis == _analysis && pagePath == _pagePath && _visible)
 	{
@@ -206,8 +203,6 @@ void HelpModel::setFont()
 ///Temporary function for https://github.com/jasp-stats/INTERNAL-jasp/issues/1215 
 bool HelpModel::pageExists(QString pagePath)
 {
-	pagePath = convertPagePathToLower(pagePath);
-	
 	 QString renderFunc, content;
 	 
 	 //We will simply have to use loadHelpContent to make sure we follow the same logic.
