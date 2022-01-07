@@ -40,7 +40,9 @@ std::string _system(std::string cmd)
 // But, I am thinking to replace these MACROs and maybe find something better
 #define CURRENT_R_VERSION "4.1"
 #define MAC_LIB_FOLDER "Frameworks/R.framework/Versions/"  CURRENT_R_VERSION "/Resources/lib"
+#define MAC_OPT_FOLDER "Frameworks/R.framework/Versions/"  CURRENT_R_VERSION "/Resources/opt"
 #define MAC_LIB_FOLDER_FROM_EXE "@executable_path/../" MAC_LIB_FOLDER "/"
+#define MAC_OPT_FOLDER_FROM_EXE "@executable_path/../" MAC_OPT_FOLDER "/"
 #define MAC_LIB_FOLDER_FROM_MODULE "../../../" MAC_LIB_FOLDER "/"
 
 void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall, bool printStuff)
@@ -110,8 +112,8 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				//For the JAGS stuff we need to replace like so:
 				const std::map<std::string, std::string> replaceThese =
 				{
-					{	"/usr/local/lib/libjags.4.dylib",				"@executable_path/JAGS/libjags.4.dylib"		},
-					{	"/usr/local/lib/libjrmath.0.dylib",				"@executable_path/JAGS/libjrmath.0.dylib"		},
+					{	"/usr/local/lib/libjags.4.dylib",				MAC_OPT_FOLDER_FROM_EXE "jags/lib/libjags.4.dylib"	},
+					{	"/usr/local/lib/libjrmath.0.dylib",				MAC_OPT_FOLDER_FROM_EXE "jags/lib/libjrmath.0.dylib"},
 					{	"/usr/local/gfortran/lib/libgfortran.5.dylib",	MAC_LIB_FOLDER_FROM_EXE "libgfortran.5.dylib"		},
 					{	"/usr/local/gfortran/lib/libquadmath.0.dylib",	MAC_LIB_FOLDER_FROM_EXE "libquadmath.0.dylib"		}
 				/*	R 4 doesnt have the following anymore:

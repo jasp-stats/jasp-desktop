@@ -215,8 +215,9 @@ externalproject_add(
   STEP_TARGETS configure build install
   CONFIGURE_COMMAND ${ACLOCAL}
   COMMAND ${AUTORECONF} -fi
-  COMMAND ./configure --disable-dependency-tracking
-          --prefix=<DOWNLOAD_DIR>/jags-install
+  COMMAND
+    ./configure --disable-dependency-tracking --prefix="${R_OPT_PATH}/jags"
+    # --prefix=${<DOWNLOAD_DIR>/jags-install}
   BUILD_COMMAND ${MAKE})
 
 externalproject_get_property(jags DOWNLOAD_DIR)

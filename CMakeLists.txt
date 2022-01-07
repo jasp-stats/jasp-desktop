@@ -93,14 +93,6 @@ if(WIN32) # Check if we are on Windows
   set(SYSTEM_TYPE WIN32)
 endif()
 
-# If set, CMake tries to download all the necessary dependencies
-#
-#   - R.exe or R.framework depending on the system
-#   - Boost, jsoncpp, libarchive, zlib, readstat, and jags
-if(INSTALL_JASP_REQUIRED_LIBRARIES)
-  include(Dependencies.cmake)
-endif()
-
 # JASP Options
 include(JASP.cmake)
 
@@ -109,6 +101,14 @@ include(JASP.cmake)
 #   - Assuming that R.framework exists, this set the all the R-related paths
 #   - Install RInside, and Rcpp, and prepare them to be linked to the R-Interface
 include(R.cmake)
+
+# If set, CMake tries to download all the necessary dependencies
+#
+#   - R.exe or R.framework depending on the system
+#   - Boost, jsoncpp, libarchive, zlib, readstat, and jags
+if(INSTALL_JASP_REQUIRED_LIBRARIES)
+  include(Dependencies.cmake)
+endif()
 
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 # set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
