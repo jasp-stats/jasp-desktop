@@ -37,8 +37,9 @@ ScrollView
 				label:					qsTr("Display exact p-values")
 				checked:				preferencesModel.exactPValues
 				onCheckedChanged:		preferencesModel.exactPValues = checked
-				KeyNavigation.tab:		useNormalizedNotation
-				KeyNavigation.down:		useNormalizedNotation
+				
+				KeyNavigation.backtab:		transparentBackgroundButton
+				KeyNavigation.tab:			useNormalizedNotation
 			}
 
 			CheckBox
@@ -49,6 +50,7 @@ ScrollView
 				onCheckedChanged:		preferencesModel.normalizedNotation = !checked
 				KeyNavigation.tab:		fixDecs
 				KeyNavigation.down:		fixDecs
+
 			}
 
 			Item
@@ -62,8 +64,9 @@ ScrollView
 					label:					qsTr("Fix the number of decimals")
 					checked:				preferencesModel.fixedDecimals
 					onCheckedChanged:		preferencesModel.fixedDecimals = checked
-					KeyNavigation.tab:		numDecs
-					KeyNavigation.down:		numDecs
+					
+					KeyNavigation.backtab:		useNormalizedNotation
+					KeyNavigation.tab:			numDecs
 				}
 
 				SpinBox
@@ -71,10 +74,11 @@ ScrollView
 					id:						numDecs
 					value:					preferencesModel.numDecimals
 					onValueChanged:			preferencesModel.numDecimals = value
-					visible:				preferencesModel.fixedDecimals
+					enabled:				preferencesModel.fixedDecimals
 
-					KeyNavigation.tab:		useDefaultPPICheckbox
-					KeyNavigation.down:		useDefaultPPICheckbox
+                    KeyNavigation.backtab:		fixDecs
+					KeyNavigation.tab:			useDefaultPPICheckbox
+
 					anchors
 					{
 						left:				fixDecs.right
@@ -98,8 +102,9 @@ ScrollView
 				height:				implicitHeight * preferencesModel.uiScale
 				toolTip:			qsTr("Use the Pixels Per Inch of your screen to render your plots.")
 				focus:				true
-				KeyNavigation.tab:	customPPISpinBox
-				KeyNavigation.down:	customPPISpinBox
+				
+				KeyNavigation.backtab:	numDecs
+				KeyNavigation.tab:		customPPISpinBox
 			}
 
 			SpinBox
@@ -111,12 +116,13 @@ ScrollView
 				to:						2000
 				stepSize:				16
 
-				KeyNavigation.tab:		whiteBackgroundButton
-				KeyNavigation.down:		whiteBackgroundButton
 				text:					qsTr("Custom PPI: ")
 				enabled:				!preferencesModel.useDefaultPPI
 
 				x:						jaspTheme.subOptionOffset
+				
+				KeyNavigation.backtab:		useDefaultPPICheckbox
+				KeyNavigation.tab:			whiteBackgroundButton
 			}
 
 			RadioButtonGroup
@@ -130,8 +136,9 @@ ScrollView
 					checked:			preferencesModel.whiteBackground
 					onCheckedChanged:	preferencesModel.whiteBackground = checked
 					toolTip:			qsTr("This makes the background of all plots white, quite useful if you want to use it in LaTeX or submit it to a journal.")
-					KeyNavigation.tab:	transparentBackgroundButton
-					KeyNavigation.down:	transparentBackgroundButton
+					
+					KeyNavigation.backtab:	customPPISpinBox
+					KeyNavigation.tab:      transparentBackgroundButton
 				}
 
 				RadioButton
@@ -141,8 +148,9 @@ ScrollView
 					checked:			!preferencesModel.whiteBackground
 					onCheckedChanged:	preferencesModel.whiteBackground = !checked
 					toolTip:			qsTr("This makes the background of all plots transparent, quite useful if you want to use it seamlessly on any background that isn't white.")
-					KeyNavigation.tab:	displayExactPVals
-					KeyNavigation.down:	displayExactPVals
+					
+					KeyNavigation.backtab:	whiteBackgroundButton
+					KeyNavigation.tab:		displayExactPVals
 				}
 			}
 		}

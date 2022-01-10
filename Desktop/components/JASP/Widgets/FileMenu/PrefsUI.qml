@@ -8,7 +8,7 @@ ScrollView
 {
 	id:						scrollPrefs
 	focus:					true
-	onActiveFocusChanged:	if(activeFocus) uiScaleSpinBox.forceActiveFocus();
+	onActiveFocusChanged:	if(activeFocus) interfaceFonts.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
 	function resetMe()
@@ -51,35 +51,35 @@ ScrollView
 
 			GridLayout
 			{
-				columns			: 2
-				rowSpacing		: 3 * preferencesModel.uiScale
-				columnSpacing	: 3 * preferencesModel.uiScale
+				columns:		2
+				rowSpacing: 	3 * preferencesModel.uiScale
+				columnSpacing:	3 * preferencesModel.uiScale
 
 				Text { text: qsTr("Interface:") }
 
 				DropDown
 				{
-					id						: interfaceFonts
-					values					: preferencesModel.allInterfaceFonts
-					addEmptyValue			: true
-					showEmptyValueAsNormal	: true
-					addLineAfterEmptyValue	: true
-					addScrollBar			: true
-					placeholderText			: qsTr("default: %1").arg(defaultInterfaceFont.fontInfo.family)
-					startValue				: preferencesModel.interfaceFont
-					onValueChanged			: preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
+					id:			 			interfaceFonts
+					values:			 		preferencesModel.allInterfaceFonts
+					addEmptyValue:			true
+					showEmptyValueAsNormal:	true
+					addLineAfterEmptyValue:	true
+					addScrollBar:			true
+					placeholderText:		qsTr("default: %1").arg(defaultInterfaceFont.fontInfo.family)
+					startValue:				preferencesModel.interfaceFont
+					onValueChanged: 		preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
 
-					KeyNavigation.tab		: codeFonts
-					KeyNavigation.down		: codeFonts
+					KeyNavigation.backtab: 	useNativeFileDialog
+					KeyNavigation.tab:		codeFonts
 
 					Text
 					{
 						// If the defaultInterfaceFont does not exist on the machine, then the default font of the machine is used.
 						// This (invisible) Text item is just to ask what will be the real font used.
-						id					: defaultInterfaceFont
-						font.family			: preferencesModel.defaultInterfaceFont
-						text				: fontInfo.family
-						visible				: false
+						id:				 defaultInterfaceFont
+						font.family:	 preferencesModel.defaultInterfaceFont
+						text:			 fontInfo.family
+						visible:		 false
 					}
 				}
 
@@ -87,25 +87,25 @@ ScrollView
 
 				DropDown
 				{
-					id						: codeFonts
-					values					: preferencesModel.allCodeFonts
-					addEmptyValue			: true
-					showEmptyValueAsNormal	: true
-					addLineAfterEmptyValue	: true
-					addScrollBar			: true
-					placeholderText			: qsTr("default: %1").arg(defaultRCodeFont.fontInfo.family)
-					startValue				: preferencesModel.codeFont
-					onValueChanged			: preferencesModel.codeFont = (currentIndex <= 0 ? "" : value)
+					id:							codeFonts
+					values:		 				preferencesModel.allCodeFonts
+					addEmptyValue:		 		true
+					showEmptyValueAsNormal:		true
+					addLineAfterEmptyValue:		true
+					addScrollBar:		 		true
+					placeholderText:		 	qsTr("default: %1").arg(defaultRCodeFont.fontInfo.family)
+					startValue:				 	preferencesModel.codeFont
+					onValueChanged:				preferencesModel.codeFont = (currentIndex <= 0 ? "" : value)
 
-					KeyNavigation.tab		: resultFonts
-					KeyNavigation.down		: resultFonts
+					KeyNavigation.backtab:		interfaceFonts
+					KeyNavigation.tab:			resultFonts
 
 					Text
 					{
-						id					: defaultRCodeFont
-						text				: fontInfo.family
-						font.family			: preferencesModel.defaultCodeFont
-						visible				: false
+						id:			 	defaultRCodeFont
+						text:			fontInfo.family
+						font.family:	preferencesModel.defaultCodeFont
+						visible:		false
 					}
 
 				}
@@ -114,25 +114,25 @@ ScrollView
 
 				DropDown
 				{
-					id						: resultFonts
-					values					: preferencesModel.allResultFonts
-					addEmptyValue			: true
-					showEmptyValueAsNormal	: true
-					addLineAfterEmptyValue	: true
-					addScrollBar			: true
-					placeholderText			: qsTr("default: %1").arg(defaultResultFont.fontInfo.family)
-					startValue				: preferencesModel.resultFont
-					onValueChanged			: preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
+					id:							resultFonts
+					values:						preferencesModel.allResultFonts
+					addEmptyValue:				true
+					showEmptyValueAsNormal:		true
+					addLineAfterEmptyValue:		true
+					addScrollBar:				true
+					placeholderText: 			qsTr("default: %1").arg(defaultResultFont.fontInfo.family)
+					startValue: 				preferencesModel.resultFont
+					onValueChanged: 			preferencesModel.resultFont = (currentIndex <= 0 ? "" : value)
 
-					KeyNavigation.tab		: lightThemeButton
-					KeyNavigation.down		: lightThemeButton
+					KeyNavigation.backtab: 		codeFonts
+					KeyNavigation.tab: 			lightThemeButton
 
 					Text
 					{
-						id					: defaultResultFont
-						text				: fontInfo.family
-						font.family			: preferencesModel.defaultResultFont
-						visible				: false
+						id: 			defaultResultFont
+						text: 			fontInfo.family
+						font.family: 	preferencesModel.defaultResultFont
+						visible: 		false
 					}
 				}
 			}
@@ -153,8 +153,9 @@ ScrollView
 					checked:			preferencesModel.currentThemeName === "lightTheme"
 					onCheckedChanged:	preferencesModel.currentThemeName  =  "lightTheme"
 					toolTip:			qsTr("Switches to a light theme, this is the default and original flavour of JASP.")
-					KeyNavigation.tab:	darkThemeButton
-					KeyNavigation.down:	darkThemeButton
+
+					KeyNavigation.backtab:	resultFonts
+					KeyNavigation.tab:		darkThemeButton
 				}
 
 				RadioButton
@@ -164,8 +165,9 @@ ScrollView
 					checked:			preferencesModel.currentThemeName === "darkTheme"
 					onCheckedChanged:	preferencesModel.currentThemeName  =  "darkTheme"
 					toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
-					KeyNavigation.tab:	languages
-					KeyNavigation.down:	languages
+					
+					KeyNavigation.backtab:	lightThemeButton
+					KeyNavigation.tab:		languages
 				}
 			}
 		}
@@ -187,13 +189,13 @@ ScrollView
 
 				source:					languageModel
 
-				KeyNavigation.tab:		uiScaleSpinBox
-				KeyNavigation.down:		uiScaleSpinBox
+				KeyNavigation.backtab:		darkThemeButton
+				KeyNavigation.tab:			uiScaleSpinBox
 			}
 
 			Text
 			{
-                id:                     translationDocLink
+				id:                     translationDocLink
 
 				text:				qsTr("Help us translate or improve JASP in your language")
 				color:				jaspTheme.blue
@@ -205,7 +207,7 @@ ScrollView
 				{
 					id:				mouseAreaTranslationDocLink
 					anchors.fill:	parent
-                    onClicked:		Qt.openUrlExternally("https://jasp-stats.org/translation-guidelines")
+					onClicked:		Qt.openUrlExternally("https://jasp-stats.org/translation-guidelines")
 					cursorShape:	Qt.PointingHandCursor
 				}
 			}
@@ -228,8 +230,8 @@ ScrollView
 				text:					qsTr("Zoom (%): ")
 				toolTip:				qsTr("Increase or decrease the size of the interface elements (text, buttons, etc).")
 
-				KeyNavigation.tab:		uiMaxFlickVelocity
-				KeyNavigation.down:		uiMaxFlickVelocity
+				KeyNavigation.backtab:		languages
+				KeyNavigation.tab:			uiMaxFlickVelocity
 
 				widthLabel:				Math.max(uiScaleSpinBox.implicitWidthLabel, uiMaxFlickVelocity.implicitWidthLabel)
 			}
@@ -247,8 +249,8 @@ ScrollView
 				toolTip:				qsTr("Set the speed with which you can scroll in the options, dataviewer and other places.")
 				widthLabel:				uiScaleSpinBox.widthLabel
 
-				KeyNavigation.tab:		safeGraphicsMode
-				KeyNavigation.down:		safeGraphicsMode
+				KeyNavigation.backtab:		uiScaleSpinBox
+				KeyNavigation.tab:			safeGraphicsMode
 			}
 
 
@@ -260,9 +262,8 @@ ScrollView
 				onCheckedChanged:	preferencesModel.safeGraphics = checked
 				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
 
-
-				KeyNavigation.tab:		disableAnimations
-				KeyNavigation.down:		disableAnimations
+				KeyNavigation.backtab:		uiMaxFlickVelocity
+				KeyNavigation.tab:			disableAnimations
 
 			}
 
@@ -276,8 +277,8 @@ ScrollView
 
 				enabled:			!preferencesModel.safeGraphics
 
-				KeyNavigation.tab:		useNativeFileDialog
-				KeyNavigation.down:		useNativeFileDialog
+				KeyNavigation.backtab:		safeGraphicsMode
+				KeyNavigation.tab:			useNativeFileDialog
 			}
 
 
@@ -289,8 +290,8 @@ ScrollView
 				onCheckedChanged:	preferencesModel.useNativeFileDialog = checked
 				toolTip:			qsTr("If disabled it will not use your operating system's file dialogs but those made by Qt. This might solve some problems on Windows where JASP crashes on pressing \"Browse\".")
 
-				KeyNavigation.tab:		interfaceFonts
-				KeyNavigation.down:		interfaceFonts
+				KeyNavigation.backtab:		disableAnimations
+				KeyNavigation.tab:			interfaceFonts
 			}
 		}
 	}

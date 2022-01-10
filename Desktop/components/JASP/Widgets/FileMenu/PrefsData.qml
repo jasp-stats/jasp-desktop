@@ -7,8 +7,8 @@ import JASP.Controls	1.0
 
 ScrollView
 {
-    id:                     scrollPrefs
-    focus:                  true
+	id:                     scrollPrefs
+	focus:                  true
 	onActiveFocusChanged:	if(activeFocus) synchronizeDataSave.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
@@ -38,8 +38,9 @@ ScrollView
 				label:				qsTr("Synchronize automatically on data file save")
 				checked:			preferencesModel.dataAutoSynchronization
 				onCheckedChanged:	preferencesModel.dataAutoSynchronization = checked
-				KeyNavigation.down:	useDefaultEditor
-				KeyNavigation.tab:	useDefaultEditor
+
+				KeyNavigation.backtab:	missingValuesList.firstComponent
+				KeyNavigation.tab:      useDefaultEditor
 			}
 
 			Item //Use default spreadsheet editor
@@ -50,13 +51,14 @@ ScrollView
 
 				CheckBox
 				{
-					id:					useDefaultEditor
-					label:				qsTr("Use default spreadsheet editor")
-					checked:			LINUX || preferencesModel.useDefaultEditor
-					onCheckedChanged:	preferencesModel.useDefaultEditor = checked
-					KeyNavigation.down:	browseEditorButton
-					KeyNavigation.tab:	browseEditorButton
-					enabled:			!LINUX
+					id:                     useDefaultEditor
+					label:                  qsTr("Use default spreadsheet editor")
+					checked:                LINUX || preferencesModel.useDefaultEditor
+					onCheckedChanged:       preferencesModel.useDefaultEditor = checked
+					enabled:                !LINUX
+
+					KeyNavigation.backtab:  synchronizeDataSave
+					KeyNavigation.tab:      !checked ? browseEditorButton : customThreshold
 				}
 
 				Label
@@ -77,7 +79,8 @@ ScrollView
 				Item
 				{
 					id:					editCustomEditor
-					visible:			!LINUX && !preferencesModel.useDefaultEditor
+					// visible:			!LINUX && !preferencesModel.useDefaultEditor
+					enabled:			!LINUX && !preferencesModel.useDefaultEditor
 					width:				parent.width
 					height:				browseEditorButton.height
 					anchors.top:		useDefaultEditor.bottom
@@ -89,8 +92,9 @@ ScrollView
 						onClicked:			preferencesModel.browseSpreadsheetEditor()
 						anchors.left:		parent.left
 						anchors.leftMargin: jaspTheme.subOptionOffset
-						KeyNavigation.down:	customEditorText
-						KeyNavigation.tab:	customEditorText
+
+						KeyNavigation.backtab:	useDefaultEditor
+						KeyNavigation.tab:      customEditorText
 					}
 
 					Rectangle
@@ -116,8 +120,9 @@ ScrollView
 							font:				jaspTheme.font
 							onTextChanged:		preferencesModel.customEditor = text
 							color:				jaspTheme.textEnabled
-							KeyNavigation.down:	customThreshold
-							KeyNavigation.tab:	customThreshold
+
+							KeyNavigation.backtab:	browseEditorButton
+							KeyNavigation.tab:      customThreshold
 
 							anchors
 							{
@@ -152,8 +157,9 @@ ScrollView
 					ToolTip.delay:		500
 					ToolTip.timeout:	6000 //Some longer to read carefully
 					toolTip:			qsTr("Threshold number of unique integers before classifying a variable as 'scale'.\nYou need to reload your data to take effect! Check help for more info.")
-					KeyNavigation.down:	thresholdScale
-					KeyNavigation.tab:	thresholdScale
+
+					KeyNavigation.backtab:	!useDefaultEditor.checked ? customEditorText : useDefaultEditor
+					KeyNavigation.tab:      preferencesModel.customThresholdScale ? thresholdScale : missingValuesList.firstComponent
 
 				}
 
@@ -162,10 +168,10 @@ ScrollView
 					id:					thresholdScale
 					value:				preferencesModel.thresholdScale
 					onValueChanged:		preferencesModel.thresholdScale = value
-					visible:			preferencesModel.customThresholdScale
+					enabled:			preferencesModel.customThresholdScale
 
-					KeyNavigation.down:	missingValueDataLabelInput
 					KeyNavigation.tab:	missingValueDataLabelInput
+
 					anchors
 					{
 						left:			customThreshold.right
@@ -204,7 +210,7 @@ ScrollView
 
 					text:			preferencesModel.dataLabelNA
 					onTextChanged:	preferencesModel.dataLabelNA = text
-					nextEl:			missingFileList.firstComponent
+					nextEl:			missingValuesList.firstComponent
 
 					anchors
 					{
@@ -214,11 +220,17 @@ ScrollView
 				}
 			}
 
-			PrefsMissingValues { id: missingFileList; navigateAfter: noBomNative }
+			PrefsMissingValues
+			{
+				id: 			missingValuesList
+				navigateFrom:   missingValueDataLabelInput
+				navigateTo:     noBomNative
+			}
 			
 			PrefsGroupRect
 			{
 				visible:	WINDOWS
+				enabled:	WINDOWS
 				title:		qsTr("Windows workaround")
 				
 				CheckBox
@@ -228,8 +240,9 @@ ScrollView
 					checked:			preferencesModel.windowsNoBomNative
 					onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
 					toolTip:			qsTr("See documentation for more information ")
-					KeyNavigation.down:	synchronizeDataSave
-					KeyNavigation.tab:	synchronizeDataSave
+
+					KeyNavigation.backtab:	missingValuesList.firstComponent
+					KeyNavigation.tab:		synchronizeDataSave
 
 				}
 			}

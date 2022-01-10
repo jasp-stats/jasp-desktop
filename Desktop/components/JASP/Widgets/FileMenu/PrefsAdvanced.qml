@@ -37,8 +37,9 @@ ScrollView
 				checked:			preferencesModel.modulesRemember
 				onCheckedChanged:	preferencesModel.modulesRemember = checked
 				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")
-				KeyNavigation.tab:	developerMode
-				KeyNavigation.down:	developerMode
+				
+				KeyNavigation.backtab:	maxEngineCount
+				KeyNavigation.tab:		developerMode
 			}
 
 			CheckBox
@@ -48,8 +49,9 @@ ScrollView
 				checked:			preferencesModel.developerMode
 				onCheckedChanged:	preferencesModel.developerMode = checked
 				toolTip:			qsTr("To use JASP Modules enable this option.")
-				KeyNavigation.tab:	browseDeveloperFolderButton
-				KeyNavigation.down:	browseDeveloperFolderButton
+				
+				KeyNavigation.backtab:	rememberModulesSelected
+				KeyNavigation.tab:		browseDeveloperFolderButton
 			}
 
 			Item
@@ -67,8 +69,9 @@ ScrollView
 					anchors.left:		parent.left
 					anchors.leftMargin: jaspTheme.subOptionOffset
 					toolTip:			qsTr("Browse to your JASP Module folder.")
-					KeyNavigation.tab:	developerFolderText.textInput
-					KeyNavigation.down:	developerFolderText.textInput
+					
+					KeyNavigation.backtab:	developerMode
+					KeyNavigation.tab:		developerFolderText.textInput
 				}
 				
 				PrefsTextInput
@@ -122,6 +125,9 @@ ScrollView
 						left:		cranRepoUrlLabel.right
 						right:		parent.right
 					}
+
+					KeyNavigation.backtab: 	developerMode
+					KeyNavigation.tab:		githubPatDefault
 				}
 			}
 			
@@ -133,8 +139,9 @@ ScrollView
 				checked:			preferencesModel.githubPatUseDefault
 				onCheckedChanged:	preferencesModel.githubPatUseDefault = checked
 				toolTip:			qsTr("Either use the bundled GITHUB_PAT or, if available, use the one set in environment variables.")
-				KeyNavigation.tab:	githubPatCustomToken
-				KeyNavigation.down:	githubPatCustomToken
+				
+				KeyNavigation.backtab:	cranRepoUrl
+				KeyNavigation.tab:		githubPatCustomToken
 			}
 			
 
@@ -178,6 +185,9 @@ ScrollView
 					}
 
 					textInput.echoMode:	TextInput.PasswordEchoOnEdit
+
+					KeyNavigation.backtab:	githubPatDefault
+					KeyNavigation.tab:		generateMarkdown
 				}
 			}				
 
@@ -188,8 +198,9 @@ ScrollView
 				toolTip:			qsTr("Enabling this will generate markdown helpfile from the info at qml options.")
 				checked:			preferencesModel.generateMarkdown
 				onCheckedChanged:	preferencesModel.generateMarkdown = checked
-				KeyNavigation.tab:	cleanModulesFolder
-				KeyNavigation.down:	cleanModulesFolder
+				
+				KeyNavigation.backtab:	githubPatCustomToken
+				KeyNavigation.tab:		cleanModulesFolder
 
 			}
 	
@@ -199,8 +210,9 @@ ScrollView
 				text:				qsTr("Clear installed modules and packages")
 				toolTip:			qsTr("This will erase the 'renv' and 'Modules' folders in the appdata.")
 				onClicked:			mainWindow.clearModulesFoldersUser();
-				KeyNavigation.tab:	checkForLC_CTYPE_C
-				KeyNavigation.down:	checkForLC_CTYPE_C
+				
+				KeyNavigation.backtab:	generateMarkdown
+				KeyNavigation.tab:		checkForLC_CTYPE_C
 			}
 		}
 		
@@ -222,8 +234,9 @@ ScrollView
 					toolTip:			qsTr("Check the install and user directory path for compatibility with LC_CTYPE=\"C\" and set if reasonable.")
 					checked:			preferencesModel.lcCtypeWin == 0
 					onCheckedChanged:	if(checked) preferencesModel.lcCtypeWin = 0
-					KeyNavigation.tab:	alwaysSetLC_CTYPE_C
-					KeyNavigation.down:	alwaysSetLC_CTYPE_C
+					
+					KeyNavigation.backtab:	cleanModulesFolder
+					KeyNavigation.tab:		alwaysSetLC_CTYPE_C
 				}
 				
 				RadioButton
@@ -234,8 +247,9 @@ ScrollView
 					info:				qsTr("If this is enabled and you have non-ascii characters in your install path JASP won't work anymore.  If you only have non-ascii characters in your username then installing modules will probably break.")
 					checked:			preferencesModel.lcCtypeWin == 1
 					onCheckedChanged:	if(checked) preferencesModel.lcCtypeWin = 1
-					KeyNavigation.tab:	neverSetLC_CTYPE_C
-					KeyNavigation.down:	neverSetLC_CTYPE_C
+					
+					KeyNavigation.backtab:	checkForLC_CTYPE_C
+					KeyNavigation.tab:		neverSetLC_CTYPE_C
 				}
 				
 				RadioButton
@@ -246,8 +260,9 @@ ScrollView
 					info:				qsTr("Enabling this will make certain characters in the results look weird, but at least you can use JASP if you installed it in a folder with non-ascii characters in the path. Sorry for the inconvenience, we are working on it and hopefully have this fixed next release.")
 					checked:			preferencesModel.lcCtypeWin == 2
 					onCheckedChanged:	if(checked) preferencesModel.lcCtypeWin = 2
-					KeyNavigation.tab:	logToFile
-					KeyNavigation.down:	logToFile
+					
+					KeyNavigation.backtab:	alwaysSetLC_CTYPE_C
+					KeyNavigation.tab:		logToFile
 				}
 			}
 			
@@ -266,8 +281,9 @@ ScrollView
 				checked:			preferencesModel.logToFile
 				onCheckedChanged:	preferencesModel.logToFile = checked
 				toolTip:			qsTr("To store debug-logs of JASP in a file, check this box.")
-				KeyNavigation.tab:	maxLogFilesSpinBox
-				KeyNavigation.down:	maxLogFilesSpinBox
+				
+				KeyNavigation.backtab:	neverSetLC_CTYPE_C
+				KeyNavigation.tab:		maxLogFilesSpinBox
 			}
 
 			Item
@@ -288,8 +304,9 @@ ScrollView
 					to:					1000000
 					defaultValue:		10
 					stepSize:			1
-					KeyNavigation.tab:	showLogs
-					KeyNavigation.down:	showLogs
+					
+					KeyNavigation.backtab:	logToFile
+					KeyNavigation.tab:		showLogs
 					text:				qsTr("Max logfiles to keep: ")
 
 					anchors
@@ -313,8 +330,9 @@ ScrollView
 					}
 
 
-					KeyNavigation.tab:	maxEngineCount
-					KeyNavigation.down:	maxEngineCount
+					
+					KeyNavigation.backtab:	maxLogFilesSpinBox
+					KeyNavigation.tab:		maxEngineCount
 				}
 			}
 		}
@@ -333,8 +351,9 @@ ScrollView
 				to:					preferencesModel.maxEnginesAdmin > 0 ? preferencesModel.maxEnginesAdmin : 16
 				defaultValue:		Math.max(preferencesModel.maxEnginesAdmin, 4)
 				stepSize:			1
-				KeyNavigation.tab:	rememberModulesSelected
-				KeyNavigation.down:	rememberModulesSelected
+				
+				KeyNavigation.backtab:	showLogs
+				KeyNavigation.tab:		rememberModulesSelected
 				text:				qsTr("Maximum # of engines: ")
 			}
 			
