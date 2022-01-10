@@ -21,7 +21,7 @@ import QtQuick.Controls 2.5
 import JASP.Widgets		1.0
 import JASP				1.0
 
-FocusScope
+Item
 {
 					id:						root
 	property alias	value:					valueField.text
@@ -46,13 +46,13 @@ FocusScope
 
 					Keys.onDownPressed:		{ minus.clicked(); event.accepted = true; }
 					Keys.onUpPressed:		{ plus.clicked();  event.accepted = true; }
-					Keys.onEnterPressed:	valueField.focus = !valueField.focus;
-					Keys.onReturnPressed: (event)=>	valueField.focus = !valueField.focus;
-					Keys.onEscapePressed:	focus = false;
+					Keys.onEnterPressed:	(event)=>   valueField.focus = !valueField.focus;
+					Keys.onReturnPressed: 	(event)=>	valueField.focus = !valueField.focus;
+
 
 	signal editingFinished()
 	
-	Component.onCompleted: valueField.onEditingFinished.connect(editingFinished);        
+	Component.onCompleted: valueField.onEditingFinished.connect(editingFinished);
 	
 	function setValue(val)
 	{
@@ -61,7 +61,6 @@ FocusScope
 		val					= Math.min(root.max, Math.max(root.min, val));
 		valueField.text		= String(val);
 		editingFinished()
-		//valueField.focus	= false;
 	}
 
 	Text
@@ -90,6 +89,8 @@ FocusScope
 			left:				label.right
 			leftMargin:			label.visible ? jaspTheme.labelSpacing : 0
 		}
+
+		activeFocusOnTab: false
 	}
 
 	TextField
@@ -108,20 +109,21 @@ FocusScope
 		padding:					jaspTheme.jaspControlPadding
 		Keys.onReturnPressed: (event)=>		valueField.processInput()
 		Keys.onEnterPressed:		valueField.processInput()
-		Keys.onEscapePressed:		{ text = root.lastValidValue; focus = false; }
+		Keys.onEscapePressed: 		text = root.lastValidValue
+
 		onTextChanged:				if(acceptableInput) root.lastValidValue = text
 		selectByMouse:				true
 		selectedTextColor:			jaspTheme.white
 		selectionColor:				jaspTheme.itemSelectedColor
 		color:						enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 
+        activeFocusOnTab: false
+
 		function processInput()
 		{
 			if (!acceptableInput)	text				= root.lastValidValue;
 			else					root.lastValidValue = Number(text)
-			focus = false;
 		}
-		onActiveFocusChanged:		if(!activeFocus) focus = false;
 
 		ToolTip.text:				root.toolTip
 		ToolTip.timeout:			jaspTheme.toolTipTimeout
@@ -145,6 +147,8 @@ FocusScope
 		width:				height
 
 		anchors.left:		valueField.right
+
+		activeFocusOnTab: false
 	}
 
 	Rectangle
@@ -164,12 +168,12 @@ FocusScope
 		visible:			root.activeFocus
 	}
 
-	MouseArea
-	{
-		id:					hoverMe
-		anchors.fill:		valueField
-		hoverEnabled:		true
-		acceptedButtons:	Qt.NoButton
-		onWheel:			if(wheel.angleDelta > 0) plus.clicked(); else minus.clicked();
-	}
+     MouseArea
+     {
+        id:					hoverMe
+        anchors.fill:		valueField
+        hoverEnabled:		true
+        acceptedButtons:	Qt.NoButton
+        onWheel:			if(wheel.angleDelta > 0) plus.clicked(); else minus.clicked();
+     }
 }
