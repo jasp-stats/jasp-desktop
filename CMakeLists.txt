@@ -12,23 +12,49 @@ project(
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_FIND_FRAMEWORK ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 # TODO: Find this version number automatically
 set(R_VERSION "4.1.2")
 set(R_VERSION_MAJOR_MINOR "4.1")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
+
+# This loads all the Qt-related CMake Modules.
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
+include(FetchContent)
+include(ExternalProject)
+include(CMakePrintHelpers)
+include(Tools/cmake/CPM.cmake)
+
+find_package(Git)
+find_program(MAKE NAMES gmake nmake make)
+find_program(ACLOCAL NAMES aclocal)
+find_program(AUTOCONF NAMES autoconf)
+find_program(AUTORECONF NAMES autoreconf)
+find_program(CCACHE_EXECUTABLE ccache)
+find_program(IWYU_EXECUTABLE include-what-you-use)
 
 # When everything is done, we should be able to just activate
 # this and build it for two architectures. This will also download
 # the correct R.framework
 # set(CMAKE_OSX_ARCHITECTURES "x86_64" "arm64")
 
-set(CMAKE_FIND_FRAMEWORK ON)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 # With this, we can hit up to 90% speed up!
 option(USE_CCACHE "Whether to use ccache for build" OFF)
-find_program(CCACHE_EXECUTABLE ccache)
+option(RUN_IWYU "Whether to run Include What You Use" OFF)
+option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
+option(GIT_SUBMODULE "Check submodules during build" ON)
+option(
+  INSTALL_JASP_REQUIRED_LIBRARIES
+  "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
+  OFF)
+
 if(CCACHE_EXECUTABLE
    AND USE_CCACHE
    AND (NOT
@@ -40,28 +66,13 @@ if(CCACHE_EXECUTABLE
   message(STATUS "Found ccache: ${CCACHE_EXECUTABLE}")
 endif()
 
-option(RUN_IWYU "Whether to run Include What You Use" OFF)
-find_program(IWYU_EXECUTABLE include-what-you-use)
 if(IWYU_EXECUTABLE)
   message(STATUS "Found iwyu: ${IWYU_EXECUTABLE}")
 endif()
 
-include(CMakePrintHelpers)
-
-option(
-  INSTALL_JASP_REQUIRED_LIBRARIES
-  "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
-  OFF)
-
-option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
-
-# This could run/update the git-submodule for us to at least get those
-# essentials
-find_package(Git)
-
+# Dealing with Git submodules
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   # Update submodules as needed
-  option(GIT_SUBMODULE "Check submodules during build" ON)
   if(GIT_SUBMODULE)
     message(STATUS "Submodule update")
     execute_process(
@@ -80,48 +91,33 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   endif()
 endif()
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
-# This loads all the Qt-related CMake Modules.
-find_package(Qt6 REQUIRED COMPONENTS Core)
-
 # I am not using this for now, but later on, we can use it to
 # create binaries and installer for different systems
 if(WIN32) # Check if we are on Windows
   set(SYSTEM_TYPE WIN32)
 endif()
 
-# JASP Options
+# Sets the build options
 include(JASP.cmake)
 
-# R/Environment Configurations
-#
-#   - Assuming that R.framework exists, this set the all the R-related paths
-#   - Install RInside, and Rcpp, and prepare them to be linked to the R-Interface
+# Prepares and configures everything related to R, and R.framework
 include(R.cmake)
 
-# If set, CMake tries to download all the necessary dependencies
-#
-#   - R.exe or R.framework depending on the system
-#   - Boost, jsoncpp, libarchive, zlib, readstat, and jags
+# Builds and configures all the dependencies
 if(INSTALL_JASP_REQUIRED_LIBRARIES)
   include(Dependencies.cmake)
 endif()
-
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(Common)
 add_subdirectory(R-Interface)
 add_subdirectory(Engine)
 add_subdirectory(Desktop)
 
-# If INSTALL_R_MODULES is OFF, this will only look for already installed
-# Modules/ and set their path to be used by the rest of the script.
+# Builds, installs and configures JASP Modules
 include(Modules.cmake)
 
+# Installs the JASP and JASPEngine
 include(Install.cmake)
 
+# Packs and creates installer executable for Windows, and macOS
 include(Pack.cmake)

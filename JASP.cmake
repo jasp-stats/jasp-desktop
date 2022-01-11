@@ -1,3 +1,10 @@
+# JASP.cmake Module
+#
+# This file provides and sets most of the build options, e.g., GITHUB_PAT.
+# New options should be listed here, unless they are meant to be used
+# directly in the primary CMakeLists.txt file, e.g., USE_CCACHE, RUN_IWYU,
+# INSTALL_R_MODULES, INSTALL_R_REQUIRED_LIBRARIES.
+
 list(APPEND CMAKE_MESSAGE_CONTEXT JASP)
 
 # TODOs:

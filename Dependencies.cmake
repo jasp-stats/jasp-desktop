@@ -1,3 +1,8 @@
+# If set, CMake tries to download all the necessary dependencies
+#
+#   - R.exe or R.framework depending on the system
+#   - Boost, jsoncpp, libarchive, zlib, and readstat
+
 # Notes:
 #
 # - FetchContent variables will be lower cased, that's why we have
@@ -33,15 +38,11 @@
 # want to have CI builds on GitHub, see here: https://github.com/cpm-cmake/CPM.cmake/wiki/Caching-with-CPM.cmake-and-ccache-on-GitHub-Actions
 set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/CPM)
 
-include(FetchContent)
-include(ExternalProject)
-include(Tools/cmake/CPM.cmake)
-
 add_custom_target(Dependencies)
 
 # The rest of dependencies are automatically being handled by the CPM
 if(INSTALL_JASP_REQUIRED_LIBRARIES)
-  add_dependencies(Dependencies jags-install readstat-install)
+  add_dependencies(Dependencies readstat-install)
 endif()
 
 # Here,we download the R binary, extract its content and copy it into the
@@ -130,11 +131,6 @@ cpmaddpackage(
   GIT_TAG
   "v1.2.11")
 
-find_program(MAKE NAMES gmake nmake make)
-find_program(ACLOCAL NAMES aclocal)
-find_program(AUTOCONF NAMES autoconf)
-find_program(AUTORECONF NAMES autoreconf)
-
 # ----- jsoncpp ------
 #
 # So, the problem is that jsoncpp has a faulty CMake config,
@@ -199,30 +195,3 @@ set(readstat_DOWNLOAD_DIR ${DOWNLOAD_DIR})
 set(readstat_BUILD_DIR ${readstat_DOWNLOAD_DIR}/readstat-build)
 set(readstat_INCLUDE_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/include)
 set(readstat_LIBRARY_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/lib)
-
-# ----- jags -----
-#
-# - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.
-# - With this, we can build JAGS, and link it, or even place it inside the the `R.framework`
-#   - `--prefix=${R_HOME_PATH}`, with this, we inherit the R
-# - You can run `make jags-build` or `make jags-install` to just play with JAGS target
-externalproject_add(
-  jags
-  PREFIX _deps/jags
-  HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
-  HG_TAG "release-4_3_0"
-  BUILD_IN_SOURCE ON
-  STEP_TARGETS configure build install
-  CONFIGURE_COMMAND ${ACLOCAL}
-  COMMAND ${AUTORECONF} -fi
-  COMMAND
-    ./configure --disable-dependency-tracking --prefix="${R_OPT_PATH}/jags"
-    # --prefix=${<DOWNLOAD_DIR>/jags-install}
-  BUILD_COMMAND ${MAKE})
-
-externalproject_get_property(jags DOWNLOAD_DIR)
-set(jags_DOWNLOAD_DIR ${DOWNLOAD_DIR})
-set(jags_BUILD_DIR ${jags_DOWNLOAD_DIR}/jags-build)
-set(jags_INCLUDE_DIRS ${jags_DOWNLOAD_DIR}/jags-install/include)
-set(jags_LIBRARY_DIRS ${jags_DOWNLOAD_DIR}/jags-install/lib)
-set(jags_PKG_CONFIG_PATH ${jags_DOWNLOAD_DIR}/jags-install/lib/pkgconfig/)

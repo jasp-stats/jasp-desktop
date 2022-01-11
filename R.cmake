@@ -1,6 +1,9 @@
-list(APPEND CMAKE_MESSAGE_CONTEXT Config)
+# R/Environment Configurations
+#
+#   - Assuming that R.framework exists, this set the all the R-related paths
+#   - Install RInside, and Rcpp, and prepare them to be linked to the R-Interface
 
-include(FetchContent)
+list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
 option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" OFF)
 

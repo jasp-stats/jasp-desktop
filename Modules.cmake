@@ -21,7 +21,7 @@ set(JASP_EXTRA_MODULES
     # "jaspSem"
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
-    # "jaspMetaAnalysis"
+    "jaspMetaAnalysis"
     "jaspDistributions"
     # "jaspEquivalenceTTests"
     # "jaspJags"
@@ -184,8 +184,35 @@ if(INSTALL_R_MODULES)
     add_dependencies(Modules ${MODULE})
 
     # We can add other specific dependencies here:
-    if((${MODULE} STREQUAL "jaspMetaAnalysis")
-       AND (INSTALL_JASP_REQUIRED_LIBRARIES))
+    if(${MODULE} STREQUAL "jaspMetaAnalysis")
+      # ----- jags -----
+      #
+      # - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.
+      # - With this, we can build JAGS, and link it, or even place it inside the the `R.framework`
+      #   - `--prefix=${R_HOME_PATH}`, with this, we inherit the R
+      # - You can run `make jags-build` or `make jags-install` to just play with JAGS target
+      make_directory("${R_OPT_PATH}/jags")
+      externalproject_add(
+        jags
+        PREFIX _deps/jags
+        HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
+        HG_TAG "release-4_3_0"
+        BUILD_IN_SOURCE ON
+        STEP_TARGETS configure build install
+        CONFIGURE_COMMAND ${ACLOCAL}
+        COMMAND ${AUTORECONF} -fi
+        COMMAND
+          ./configure --disable-dependency-tracking --prefix=${R_OPT_PATH}/jags
+          # --prefix=${<DOWNLOAD_DIR>/jags-install}
+        BUILD_COMMAND ${MAKE})
+
+      externalproject_get_property(jags DOWNLOAD_DIR)
+      set(jags_DOWNLOAD_DIR ${DOWNLOAD_DIR})
+      set(jags_BUILD_DIR ${jags_DOWNLOAD_DIR}/jags-build)
+      set(jags_INCLUDE_DIRS ${jags_DOWNLOAD_DIR}/jags-install/include)
+      set(jags_LIBRARY_DIRS ${jags_DOWNLOAD_DIR}/jags-install/lib)
+      set(jags_PKG_CONFIG_PATH ${jags_DOWNLOAD_DIR}/jags-install/lib/pkgconfig/)
+
       add_dependencies(${MODULE} jags-install)
     endif()
 
