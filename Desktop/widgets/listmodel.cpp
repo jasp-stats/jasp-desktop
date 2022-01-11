@@ -592,8 +592,9 @@ void ListModel::dataChangedHandler(const QModelIndex &, const QModelIndex &, con
 
 void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)
 {
-	_terms.setSortParent(parentTerms);
+	_terms.removeParent();
 	_setTerms(terms);
+	_terms.setSortParent(parentTerms);
 }
 
 void ListModel::_setTerms(const std::vector<Term> &terms)
