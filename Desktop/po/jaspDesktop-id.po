@@ -3583,5 +3583,5 @@ msgid "Use normalized notation"
 msgstr ""
 
 msgctxt "PrefsUI|"
-msgid "Help us translate or improve JASP in your language."
+msgid "Help us translate or improve JASP in your language"
 msgstr ""

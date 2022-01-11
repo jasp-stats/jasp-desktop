@@ -3804,8 +3804,8 @@ msgid "Open Source Components"
 msgstr "Open Source Componenten"
 
 msgctxt "PrefsUI|"
-msgid "Help us translate or improve JASP in your language."
-msgstr "Help ons JASP te vertalen of te verbeteren in uw taal."
+msgid "Help us translate or improve JASP in your language"
+msgstr "Help ons JASP te vertalen of te verbeteren in uw taal"
 
 msgctxt "PrefsResults|"
 msgid "Use normalized notation"

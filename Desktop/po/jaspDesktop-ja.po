@@ -3775,7 +3775,7 @@ msgid "Open Source Components"
 msgstr "オープンソース要素"
 
 msgctxt "PrefsUI|"
-msgid "Help us translate or improve JASP in your language."
+msgid "Help us translate or improve JASP in your language"
 msgstr "あなたの言語でのJASPの翻訳や改善にご協力ください。"
 
 msgctxt "PrefsResults|"
