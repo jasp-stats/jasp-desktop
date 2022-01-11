@@ -149,6 +149,7 @@ if(INSTALL_R_MODULES)
 
     list(POP_FRONT JASP_COMMON_MODULES_COPY PREVIOUS_COMMON_MODULE)
 
+    # Making sure that CMake doesn't parallelize the installation of the modules
     if(PREVIOUS_COMMON_MODULE)
       add_dependencies(${MODULE} ${PREVIOUS_COMMON_MODULE})
     endif()
@@ -176,6 +177,7 @@ if(INSTALL_R_MODULES)
 
     list(POP_FRONT JASP_EXTRA_MODULES_COPY PREVIOUS_EXTRA_MODULE)
 
+    # Making sure that CMake doesn't parallelize the installation of the modules
     if(PREVIOUS_EXTRA_MODULE)
       add_dependencies(${MODULE} ${PREVIOUS_EXTRA_MODULE}
                        ${FIRST_COMMON_MODULE})
@@ -189,8 +191,13 @@ if(INSTALL_R_MODULES)
       #
       # - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.
       # - With this, we can build JAGS, and link it, or even place it inside the the `R.framework`
-      #   - `--prefix=${R_HOME_PATH}`, with this, we inherit the R
+      #   - `--prefix=${R_OPT_PATH}/jags`, with this, we inherit the R
       # - You can run `make jags-build` or `make jags-install` to just play with JAGS target
+      #
+      #
+      # Todos:
+      # - [ ] I can skip the build if `libjags` exists.
+      #     - If so, I need to remove the dependency as well and that might just be enough
       make_directory("${R_OPT_PATH}/jags")
       externalproject_add(
         jags
@@ -209,9 +216,13 @@ if(INSTALL_R_MODULES)
       externalproject_get_property(jags DOWNLOAD_DIR)
       set(jags_DOWNLOAD_DIR ${DOWNLOAD_DIR})
       set(jags_BUILD_DIR ${jags_DOWNLOAD_DIR}/jags-build)
-      set(jags_INCLUDE_DIRS ${jags_DOWNLOAD_DIR}/jags-install/include)
-      set(jags_LIBRARY_DIRS ${jags_DOWNLOAD_DIR}/jags-install/lib)
-      set(jags_PKG_CONFIG_PATH ${jags_DOWNLOAD_DIR}/jags-install/lib/pkgconfig/)
+      set(jags_INCLUDE_DIRS ${R_OPT_PATH}/jags/include)
+      set(jags_LIBRARY_DIRS ${R_OPT_PATH}/jags/lib)
+      set(jags_PKG_CONFIG_PATH ${R_OPT_PATH}/jags/lib/pkgconfig/)
+
+      # install-jaspMetaAnalysis.R needs to be reconfigured again
+      configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
+                     ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
       add_dependencies(${MODULE} jags-install)
     endif()

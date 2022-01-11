@@ -3,6 +3,12 @@
 #   - Assuming that R.framework exists, this set the all the R-related paths
 #   - Install RInside, and Rcpp, and prepare them to be linked to the R-Interface
 
+# Todos:
+#
+# - [ ] Maybe, the entire R.framework prepration should be a target. The advantages
+#       is that it can be triggered independently, however, it will only be
+#       done during the build stage and not configuration
+
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
 option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" OFF)
