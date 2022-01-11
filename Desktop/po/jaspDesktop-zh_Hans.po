@@ -3643,8 +3643,8 @@ msgid "Open Source Components"
 msgstr "开源组件"
 
 msgctxt "PrefsUI|"
-msgid "Help us translate or improve JASP in your language."
-msgstr "协助我们翻译或改进 JASP 的语言本地化."
+msgid "Help us translate or improve JASP in your language"
+msgstr "协助我们翻译或改进 JASP 的语言本地化"
 
 msgctxt "PrefsResults|"
 msgid "Use normalized notation"

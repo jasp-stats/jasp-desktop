@@ -3838,8 +3838,8 @@ msgid "Open Source Components"
 msgstr "Componentes de Código Abierto"
 
 msgctxt "PrefsUI|"
-msgid "Help us translate or improve JASP in your language."
-msgstr "Ayúdanos a traducir o mejorar JASP en tu idioma."
+msgid "Help us translate or improve JASP in your language"
+msgstr "Ayúdanos a traducir o mejorar JASP en tu idioma"
 
 msgctxt "PrefsResults|"
 msgid "Use normalized notation"
