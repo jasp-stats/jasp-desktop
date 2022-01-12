@@ -102,10 +102,10 @@ if(APPLE)
 
         message(CHECK_START "Patching the R.framework.")
 
+        # These can be done using the file(COPY files DESTINATION dir)
         execute_process(
           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/macOS
-          COMMAND cp install_name_prefix_tool.sh ${r_pkg_SOURCE_DIR}
-          COMMAND cp ${CMAKE_SOURCE_DIR}/R.framework.cmake ${r_pkg_SOURCE_DIR})
+          COMMAND cp install_name_prefix_tool.sh ${r_pkg_SOURCE_DIR})
 
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
                         COMMAND chmod +x install_name_prefix_tool.sh)
@@ -129,12 +129,19 @@ if(APPLE)
 
         message(CHECK_PASS "done.")
 
-        message(CHECK_START "Patching bin/R and etc/Makeconf")
+        message(CHECK_START
+                "Patching bin/R and etc/Makeconf, and library paths")
 
         # Patching R -------------
 
         include(${CMAKE_SOURCE_DIR}/PatchR.cmake)
-        patch_r(${r_pkg_r_home} ${R_HOME_PATH})
+        cmake_print_variables(r_pkg_r_home)
+        cmake_print_variables(R_HOME_PATH)
+        patch_r()
+
+        include(${CMAKE_SOURCE_DIR}/R.framework.cmake)
+        cmake_print_variables(r_pkg_SOURCE_DIR)
+        patch_ld_paths(${r_pkg_r_home} ${r_pkg_SOURCE_DIR})
 
         # ------------------------
 

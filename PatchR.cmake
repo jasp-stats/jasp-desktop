@@ -1,13 +1,17 @@
 # A macro for patching some of the paths and values in `bin/R` and
 # `etc/Makeconf`.
 
-macro(patch_r r_pkg_r_home build_r_home)
+macro(patch_r)
 
+  cmake_print_variables(r_pkg_r_home)
+  cmake_print_variables(R_HOME_PATH)
+
+  # Putting espace characters in the path
   string(
     REPLACE "/"
             "\\/"
             build_r_home_for_sed
-            ${build_r_home})
+            ${R_HOME_PATH})
 
   execute_process(
     WORKING_DIRECTORY ${r_pkg_r_home}/bin

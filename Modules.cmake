@@ -21,7 +21,7 @@ set(JASP_EXTRA_MODULES
     # "jaspSem"
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
-    "jaspMetaAnalysis"
+    # "jaspMetaAnalysis"
     "jaspDistributions"
     # "jaspEquivalenceTTests"
     # "jaspJags"

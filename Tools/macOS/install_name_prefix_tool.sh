@@ -47,25 +47,24 @@ GREP_BIN=$(which egrep)
 
 for lib in $TARGETS;
 do
-	echo "Modifing library \"$lib\"..."
+
 	lib_basename=$(basename $lib)
-	echo "lib_basename: " $lib_basename
+
 	echo $($OTOOL_BIN -L $lib)
 	for entry in $($OTOOL_BIN -L $lib | $GREP_BIN -o "$PREFIX/([^[:space:]]*)");
 	do
-		echo "entry: " $entry
 		entry_basename=$(basename $entry)
-		echo "entry_basename: " $entry_basename
 		entry_target="$NEWPREFIX/$entry_basename"
-		echo "entry_target: " $entry_target
 
 		ID_ADD=""
 		if [ "$lib_basename" = "$entry_basename" ];
 		then
-			ID_ADD="-id $entry_basename"
+			ID_ADD="-id $entry_target"
 		fi
 
 		echo "Changing prefix \"$entry\" to \"$entry_target\"..."
 		$INSTALL_NAME_TOOL_BIN -change $entry $entry_target $ID_ADD $lib
 	done
+
+	echo $($OTOOL_BIN -L $lib)
 done
