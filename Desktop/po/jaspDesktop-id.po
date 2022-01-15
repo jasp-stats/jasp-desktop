@@ -94,34 +94,6 @@ msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
 msgstr "Memulihkan nilai terakhir yang benar: %1"
 
-msgctxt "VariablesForm|"
-msgid "Main Effects"
-msgstr "Efek Utama"
-
-#, fuzzy
-msgctxt "VariablesForm|"
-msgid "Only 2 way"
-msgstr "Hanya 2 jalur"
-
-#, fuzzy
-msgctxt "VariablesForm|"
-msgid "Only 3 way"
-msgstr "Hanya 3 jalur"
-
-#, fuzzy
-msgctxt "VariablesForm|"
-msgid "Only 4 way"
-msgstr "Hanya 4 jalur"
-
-#, fuzzy
-msgctxt "VariablesForm|"
-msgid "Only 5 way"
-msgstr "Hanya 5 jalur"
-
-msgctxt "VariablesForm|"
-msgid "All"
-msgstr "Semua"
-
 msgctxt "AboutWindow|"
 msgid "About JASP"
 msgstr "Tentang JASP"
@@ -2813,11 +2785,6 @@ msgstr ""
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr ""
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Cannot find source for VariableList %1"
 msgstr ""
 
 #, qt-format

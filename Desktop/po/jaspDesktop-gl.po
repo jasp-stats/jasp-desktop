@@ -96,10 +96,6 @@ msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
 msgstr "Magnitude do efecto bruto (Dienes)"
 
-msgctxt "VariablesForm|"
-msgid "All"
-msgstr "Todos"
-
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
 msgstr "Factor de Bayes"
@@ -143,26 +139,6 @@ msgstr "Restablecer"
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
 msgstr "Eliminar"
-
-msgctxt "VariablesForm|"
-msgid "Only 3 way"
-msgstr "Só o xeito 3"
-
-msgctxt "VariablesForm|"
-msgid "Only 2 way"
-msgstr "Só o xeito 2"
-
-msgctxt "VariablesForm|"
-msgid "Only 5 way"
-msgstr "Só o xeito 5"
-
-msgctxt "VariablesForm|"
-msgid "Only 4 way"
-msgstr "Só o xeito 4"
-
-msgctxt "VariablesForm|"
-msgid "Main Effects"
-msgstr "Efectos Principais"
 
 msgctxt "ColumnTypesModel|"
 msgid "Nominal"
@@ -3658,11 +3634,6 @@ msgstr "Non hai unha Lista Dispoñible no Formulario de Variables"
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
 msgstr "O modelo fonte de %1 debe ser dunha Lista de Factores"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Cannot find source for VariableList %1"
-msgstr "Non pode atoparse a fonte para VariableList %1"
 
 #, qt-format
 msgctxt "VariablesListBase|"

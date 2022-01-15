@@ -967,30 +967,6 @@ msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
 msgstr "Redefinir"
 
-msgctxt "VariablesForm|"
-msgid "Main Effects"
-msgstr "Efeitos principais"
-
-msgctxt "VariablesForm|"
-msgid "Only 2 way"
-msgstr "Apenas 2 vias"
-
-msgctxt "VariablesForm|"
-msgid "Only 3 way"
-msgstr "Apenas 3 vias"
-
-msgctxt "VariablesForm|"
-msgid "Only 4 way"
-msgstr "Apenas de 4 vias"
-
-msgctxt "VariablesForm|"
-msgid "Only 5 way"
-msgstr "Apenas 5 vias"
-
-msgctxt "VariablesForm|"
-msgid "All"
-msgstr "Todos"
-
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
 msgstr "Filtro alterado"
@@ -3351,11 +3327,6 @@ msgstr "O valor (%1) deve ser %2"
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
 msgstr "O modelo fonte de %1 deve ser de uma Lista de Fatores"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Cannot find source for VariableList %1"
-msgstr "Não é possível encontrar fonte para VariableList %1"
 
 #, qt-format
 msgctxt "VariablesListBase|"

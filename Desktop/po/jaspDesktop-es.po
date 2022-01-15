@@ -96,30 +96,6 @@ msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
 msgstr "Restableciendo el último valor correcto: %1"
 
-msgctxt "VariablesForm|"
-msgid "Main Effects"
-msgstr "Efectos Principales"
-
-msgctxt "VariablesForm|"
-msgid "Only 2 way"
-msgstr "Solo el modo 2"
-
-msgctxt "VariablesForm|"
-msgid "Only 3 way"
-msgstr "Solo el modo 3"
-
-msgctxt "VariablesForm|"
-msgid "Only 4 way"
-msgstr "Solo el modo 4"
-
-msgctxt "VariablesForm|"
-msgid "Only 5 way"
-msgstr "Solo el modo 5"
-
-msgctxt "VariablesForm|"
-msgid "All"
-msgstr "Todo"
-
 msgctxt "AboutWindow|"
 msgid "About JASP"
 msgstr "Sobre JASP"
@@ -2955,11 +2931,6 @@ msgstr "El modelo fuente de %1 debe ser de una Lista de Factores"
 
 #, qt-format
 msgctxt "VariablesListBase|"
-msgid "Cannot find source for VariableList %1"
-msgstr "No se puede encontrar la fuente para VariableList %1"
-
-#, qt-format
-msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
 msgstr "Tipo de fuente incorrecto para VariableList %1"
 
@@ -3844,7 +3815,3 @@ msgstr "Ayúdanos a traducir o mejorar JASP en tu idioma"
 msgctxt "PrefsResults|"
 msgid "Use normalized notation"
 msgstr "Utilizar notación normalizada"
-
-msgctxt "PrefsUI|"
-msgid "Help us translate or improve JASP in your language."
-msgstr "Ayúdanos a traducir o mejorar JASP en tu idioma."

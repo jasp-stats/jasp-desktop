@@ -91,30 +91,6 @@ msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
 msgstr "正在恢复最近的正确值：%1"
 
-msgctxt "VariablesForm|"
-msgid "Main Effects"
-msgstr "主效应"
-
-msgctxt "VariablesForm|"
-msgid "Only 2 way"
-msgstr "双因素"
-
-msgctxt "VariablesForm|"
-msgid "Only 3 way"
-msgstr "3因素"
-
-msgctxt "VariablesForm|"
-msgid "Only 4 way"
-msgstr "4因素"
-
-msgctxt "VariablesForm|"
-msgid "Only 5 way"
-msgstr "5因素"
-
-msgctxt "VariablesForm|"
-msgid "All"
-msgstr "全部"
-
 msgctxt "AboutWindow|"
 msgid "About JASP"
 msgstr "关于JASP"
@@ -2817,11 +2793,6 @@ msgstr "值 (%1) 必须是 %2"
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
 msgstr "%1 的源模型必须来自因子列表"
-
-#, qt-format
-msgctxt "VariablesListBase|"
-msgid "Cannot find source for VariableList %1"
-msgstr "找不到变量列表 %1 的源"
 
 #, qt-format
 msgctxt "VariablesListBase|"
