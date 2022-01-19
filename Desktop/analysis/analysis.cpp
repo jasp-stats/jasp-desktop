@@ -61,7 +61,6 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _imgOptions(		duplicateMe->_imgOptions	)
 	, _progress(		duplicateMe->_progress		)
 	, _id(				id							)
-	, _module(			duplicateMe->_module		)
 	, _name(			duplicateMe->_name			)
 	, _qml(				duplicateMe->_qml			)
 	, _titleDefault(	duplicateMe->_titleDefault	)
@@ -342,37 +341,13 @@ Json::Value Analysis::asJSON() const
 	analysisAsJson["title"]			= _title;
 	analysisAsJson["titleDef"]		= _titleDefault;
 	analysisAsJson["rfile"]			= _rfile;
-	analysisAsJson["module"]		= _module;
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["version"]		= _version.asString();
 	analysisAsJson["results"]		= _results;
-	
-	
-
-	std::string status;
-
-	switch (_status)
-	{
-	case Analysis::Empty:			status = "empty";			break;
-	case Analysis::Running:			status = "running";			break;
-	case Analysis::RunningImg:		status = "runningImg";		break;
-	case Analysis::Complete:		status = "complete";		break;
-	case Analysis::Aborted:			status = "aborted";			break;
-	case Analysis::SaveImg:			status = "SaveImg";			break;
-	case Analysis::EditImg:			status = "EditImg";			break;
-	case Analysis::RewriteImgs:		status = "RewriteImgs";		break;
-	case Analysis::ValidationError:	status = "validationError";	break;
-	case Analysis::Initializing:	status = "initializing";	break;
-	default:						status = "fatalError";		break;
-	}
-
-	analysisAsJson["status"]		= status;
+	analysisAsJson["status"]		= statusToString(_status);
 	analysisAsJson["options"]		= boundValues();
 	analysisAsJson["userdata"]		= userData();
-
-
-	if(_moduleData != nullptr)
-		analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
+	analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
 
 	Log::log() << "Analysis::asJSON():\n" << analysisAsJson.toStyledString() << std::endl;
 

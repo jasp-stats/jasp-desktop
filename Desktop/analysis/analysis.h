@@ -120,7 +120,7 @@ public:
 	const	std::string		&	title()				const	{ return _title;							}
 			QString				titleQ()			const	{ return tq(_title);						}
 	const	std::string		&	rfile()				const	{ return _rfile;							}
-	const	std::string		&	module()			const	{ return _module;							}
+	const	std::string			module()			const	{ return _moduleData->dynamicModule()->name();	}
 			size_t				id()				const	{ return _id;								}
 			Status				status()			const	{ return _status;							}
 			QString				statusQ()			const	{ return tq(statusToString(_status));		}
@@ -262,8 +262,7 @@ protected:
 private:
 	size_t					_id,
 							_counter		= 0;
-	std::string				_module			= "dynamic",
-							_name,
+	std::string				_name,
 							_qml,
 							_titleDefault,
 							_title,
