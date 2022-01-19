@@ -98,6 +98,10 @@
 	path = Modules/jaspProcessControl
 	url = https://github.com/jasp-stats/jaspProcessControl
 	branch = master
+[submodule "Modules/jaspCochrane"]
+	path = Modules/jaspCochrane
+	url = https://github.com/jasp-stats/jaspCochrane
+	branch = master
 [submodule "Modules/jaspCircular"]
 	path = Modules/jaspCircular
 	url = https://github.com/jasp-stats/jaspCircular
