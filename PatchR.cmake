@@ -33,6 +33,10 @@ macro(patch_r)
     COMMAND sed -i.bak -e "s/R_DOC_DIR=.*/R_DOC_DIR=\$\\{R_HOME_DIR\\}\\/doc/g"
             R)
 
+  # Commenting all instances of ldpaths call
+  execute_process(WORKING_DIRECTORY ${r_pkg_r_home}/bin
+                  COMMAND sed -i.bak "/ldpaths/s/^/#/g" R)
+
   execute_process(
     WORKING_DIRECTORY ${r_pkg_r_home}/etc
     COMMAND

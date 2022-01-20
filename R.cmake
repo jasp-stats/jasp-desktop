@@ -141,7 +141,7 @@ if(APPLE)
 
         include(${CMAKE_SOURCE_DIR}/R.framework.cmake)
         cmake_print_variables(r_pkg_SOURCE_DIR)
-        patch_ld_paths(${r_pkg_r_home} ${r_pkg_SOURCE_DIR})
+        patch_ld_paths()
 
         # ------------------------
 
