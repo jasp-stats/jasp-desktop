@@ -36,6 +36,7 @@ public:
 	static std::string getShortDesc();
 	static std::string getBuildYear();
 	static std::string getRVersion();
+	static std::string getRDirName();
 };
 
 #endif // APPINFO_H

@@ -24,6 +24,12 @@ set(R_VERSION "4.1.2")
 set(R_VERSION_MAJOR_MINOR "4.1")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
+if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+  set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
+else()
+  set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}")
+endif()
+
 # This loads all the Qt-related CMake Modules.
 find_package(Qt6 REQUIRED COMPONENTS Core)
 

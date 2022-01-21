@@ -23,14 +23,13 @@ if(APPLE)
   # CMake throws if it cannot setup the R.framework properly and get to
   # these paths!
 
-  set(R_FRAMEWORK_PATH ${CMAKE_BINARY_DIR}/Frameworks)
+  set(R_FRAMEWORK_PATH "${CMAKE_BINARY_DIR}/Frameworks")
   set(R_HOME_PATH "${R_FRAMEWORK_PATH}/R.framework/Resources")
   set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
   set(R_OPT_PATH "${R_HOME_PATH}/opt")
   set(R_EXECUTABLE "${R_HOME_PATH}/R")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
-  set(R_DIR_NAME "") # this will be set later...
 
   cmake_print_variables(R_FRAMEWORK_PATH)
   cmake_print_variables(R_HOME_PATH)
@@ -54,7 +53,7 @@ if(APPLE)
                               ${CMAKE_BINARY_DIR}/Frameworks/R.framework))
 
     if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
-      set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
+
       set(R_PACKAGE_NAME "R-${R_VERSION}-${CMAKE_HOST_SYSTEM_PROCESSOR}.pkg")
       set(R_DOWNLOAD_URL
           "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
@@ -62,11 +61,12 @@ if(APPLE)
       set(R_PACKAGE_HASH "69e8845ffa134c822d4bdcf458220e841a9eeaa5")
 
     else()
-      set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}")
+
       set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
       set(R_DOWNLOAD_URL
           "https://cran.r-project.org/bin/macosx/base/R-${R_VERSION}.pkg")
       set(R_PACKAGE_HASH "61d3909bc070f7fb86c5a2bd67209fda9408faaa")
+
     endif()
 
     if(NOT EXISTS ${CMAKE_SOURCE_DIR}/Frameworks/R.framework)

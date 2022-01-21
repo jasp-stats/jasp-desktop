@@ -47,3 +47,7 @@ std::string AppInfo::getRVersion()
 	return "@CURRENT_R_VERSION@";
 }
 
+std::string AppInfo::getRDirName()
+{
+	return "@R_DIR_NAME@";
+}

@@ -53,7 +53,7 @@ set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
 #       Qt Creator can categorize them nicely in its CMake configurator
 option(JASP_PRINT_ENGINE_MESSAGES
        "Whether or not JASPEngine prints log messages" ON)
-set(PRINT_ENGINE_MESSAGES ${JASP_PRINT_ENGINE_MESSAGES})
+# set(PRINT_ENGINE_MESSAGES ${JASP_PRINT_ENGINE_MESSAGES})
 
 option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
 
