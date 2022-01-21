@@ -8,8 +8,11 @@
 # - [ ] Maybe, the entire R.framework prepration should be a target. The advantages
 #       is that it can be triggered independently, however, it will only be
 #       done during the build stage and not configuration
+# - [ ] R_VERSION_NAME is a better name R_DIR_NAME
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
+
+# include(Patch.cmake)
 
 option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" OFF)
 
@@ -27,13 +30,16 @@ if(APPLE)
   set(R_EXECUTABLE "${R_HOME_PATH}/R")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+  set(R_DIR_NAME "") # this will be set later...
 
   cmake_print_variables(R_FRAMEWORK_PATH)
   cmake_print_variables(R_HOME_PATH)
-  cmake_print_variables(R_HOME_PATH)
+  cmake_print_variables(R_LIBRARY_PATH)
+  cmake_print_variables(R_OPT_PATH)
+  cmake_print_variables(R_EXECUTABLE)
+
   cmake_print_variables(RCPP_PATH)
   cmake_print_variables(RINSIDE_PATH)
-  cmake_print_variables(R_EXECUTABLE)
 
   # This whole thing can be a module of itself but after I make sure that it
   # fully works
@@ -100,53 +106,6 @@ if(APPLE)
 
         message(CHECK_PASS "done.")
 
-        message(CHECK_START "Patching the R.framework.")
-
-        # These can be done using the file(COPY files DESTINATION dir)
-        execute_process(
-          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/macOS
-          COMMAND cp install_name_prefix_tool.sh ${r_pkg_SOURCE_DIR})
-
-        execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
-                        COMMAND chmod +x install_name_prefix_tool.sh)
-
-        file(
-          GLOB_RECURSE
-          SO_LIBRARIES
-          "${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources/*.so"
-        )
-        file(
-          GLOB_RECURSE
-          DYLIB_LIBRARIES
-          "${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources/*.dylib"
-        )
-        list(
-          FILTER
-          DYLIB_LIBRARIES
-          EXCLUDE
-          REGEX
-          ".*dSYM.*")
-
-        message(CHECK_PASS "done.")
-
-        message(CHECK_START
-                "Patching bin/R and etc/Makeconf, and library paths")
-
-        # Patching R -------------
-
-        include(${CMAKE_SOURCE_DIR}/PatchR.cmake)
-        cmake_print_variables(r_pkg_r_home)
-        cmake_print_variables(R_HOME_PATH)
-        patch_r()
-
-        include(${CMAKE_SOURCE_DIR}/R.framework.cmake)
-        cmake_print_variables(r_pkg_SOURCE_DIR)
-        patch_ld_paths()
-
-        # ------------------------
-
-        message(CHECK_PASS "done.")
-
         message(CHECK_START
                 "Copying the 'R.framework' to the jasp-desktop/Frameworks.")
 
@@ -156,7 +115,75 @@ if(APPLE)
           COMMAND cp -Rpf R.framework ${CMAKE_BINARY_DIR}/Frameworks)
 
         message(CHECK_PASS "done.")
+      else()
+        message(WARNING "Failed to download the R.framework.")
       endif()
+
+      # --------------------------------------------------------
+      # Patching R.framework and everything related to it ------
+      # --------------------------------------------------------
+
+      # message(CHECK_START "Patching the R.framework.")
+
+      # These can be done using the file(COPY files DESTINATION dir)
+      # execute_process(
+      #   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/macOS
+      #   COMMAND cp install_name_prefix_tool.sh ${r_pkg_SOURCE_DIR})
+
+      # execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+      #                 COMMAND chmod +x install_name_prefix_tool.sh)
+
+      # message(CHECK_PASS "done.")
+
+      message(CHECK_START "Patching bin/R and etc/Makeconf, and library paths")
+
+      # Patching R's pathing variables, R_HOME, etc. -------------
+
+      include(${CMAKE_SOURCE_DIR}/PatchR.cmake)
+      cmake_print_variables(r_pkg_r_home)
+      cmake_print_variables(R_HOME_PATH)
+      patch_r()
+
+      # include(${CMAKE_SOURCE_DIR}/R.framework.cmake)
+      # cmake_print_variables(r_pkg_SOURCE_DIR)
+      # patch_ld_paths()
+
+      execute_process(
+        COMMAND_ECHO STDOUT
+        WORKING_DIRECTORY ${R_HOME_PATH}
+        COMMAND
+          ${CMAKE_COMMAND} -D
+          NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+          -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
+          R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake)
+
+      # R binary should be patched
+      execute_process(
+        COMMAND_ECHO STDOUT
+        WORKING_DIRECTORY ${R_HOME_PATH}
+        COMMAND
+          bash ${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+          "${R_HOME_PATH}/bin/exec/R"
+          "/Library/Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
+      )
+
+      execute_process(
+        COMMAND_ECHO STDOUT
+        WORKING_DIRECTORY ${R_HOME_PATH}
+        COMMAND
+          codesign --force --sign
+          "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)"
+          "${R_HOME_PATH}/bin/exec/R")
+
+      execute_process(
+        COMMAND_ECHO STDOUT
+        WORKING_DIRECTORY ${R_HOME_PATH}/bin
+        COMMAND ln -s ../../../../../../Frameworks Frameworks)
+
+      # ------------------------
+
+      message(CHECK_PASS "done.")
 
     endif()
 
@@ -229,6 +256,22 @@ if(APPLE)
       COMMAND ./R --slave --no-restore --no-save
               --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
 
+    # Patching RInside and RCpp
+    message(STATUS "Patching RInside and Rcpp")
+    execute_process(
+      COMMAND_ECHO STDOUT
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      COMMAND
+        ${CMAKE_COMMAND} -D
+        NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+        -D PATH=${R_HOME_PATH}/library/RInside -D R_HOME_PATH=${R_HOME_PATH} -D
+        R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake
+      COMMAND
+        ${CMAKE_COMMAND} -D
+        NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+        -D PATH=${R_HOME_PATH}/library/Rcpp -D R_HOME_PATH=${R_HOME_PATH} -D
+        R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake)
+
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
       message(CHECK_FAIL "unsuccessful.")
       message(FATAL_ERROR "'RInside' installation has failed!")
@@ -248,7 +291,7 @@ if(APPLE)
     message(CHECK_PASS "found.")
     message(STATUS "  ${_LIB_RINSIDE}")
   else()
-    message(CHECK_FAIL "not found in ${RINSIDE_PATH}/libs")
+    message(CHECK_FAIL "not found in ${RINSIDE_PATH}/lib")
   endif()
 
 elseif(WIN32)
@@ -276,6 +319,5 @@ message(STATUS "R Configurations:")
 cmake_print_variables(_R_Framework)
 cmake_print_variables(_LIB_R)
 cmake_print_variables(_LIB_RINSIDE)
-cmake_print_variables(R_LIBRARY_PATH)
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

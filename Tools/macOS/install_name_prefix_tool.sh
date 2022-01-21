@@ -32,6 +32,10 @@ TARGETS=$1
 PREFIX=$2
 NEWPREFIX=$3
 
+# echo "TARGETS:   " $TARGETS
+# echo "PREFIX:    " $PREFIX
+# echo "NEWPREFIX: " $NEWPREFIX
+
 if [[ -d $TARGETS ]]; then
 	TARGETS=$TARGETS/*.dylib
 elif [[ -f $TARGETS ]]; then
@@ -50,21 +54,40 @@ do
 
 	lib_basename=$(basename $lib)
 
-	echo $($OTOOL_BIN -L $lib)
+	# echo "lib_basename: " $lib_basename
+
+	# echo $($OTOOL_BIN -L $lib)
+	# otool -L $lib
 	for entry in $($OTOOL_BIN -L $lib | $GREP_BIN -o "$PREFIX/([^[:space:]]*)");
 	do
+		# echo "entry: " $entry
 		entry_basename=$(basename $entry)
 		entry_target="$NEWPREFIX/$entry_basename"
+
+		# echo "entry basename: " $entry_basename
+		# echo "entry target: " $entry_target
+
+		lib_basename=$(echo $lib_basename | sed 's/.vecLib//g')
 
 		ID_ADD=""
 		if [ "$lib_basename" = "$entry_basename" ];
 		then
 			ID_ADD="-id $entry_target"
+			echo "id: " $ID_ADD $lib
+			echo
+			$INSTALL_NAME_TOOL_BIN $ID_ADD $lib
 		fi
 
-		echo "Changing prefix \"$entry\" to \"$entry_target\"..."
-		$INSTALL_NAME_TOOL_BIN -change $entry $entry_target $ID_ADD $lib
+		# echo "Changing prefix \"$entry\" to \"$entry_target\"..."
+		# echo "$INSTALL_NAME_TOOL_BIN -change $entry $entry_target $lib"
+		# echo
+		$INSTALL_NAME_TOOL_BIN -change $entry $entry_target $lib
+		# 
+		# echo "----------"
 	done
 
-	echo $($OTOOL_BIN -L $lib)
+	# otool -L $lib
+	# echo
+	# echo "---"
+	# echo
 done

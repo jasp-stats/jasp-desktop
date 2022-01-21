@@ -120,6 +120,15 @@ if(INSTALL_R_MODULES)
     COMMAND ./R --slave --no-restore --no-save
             --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R)
 
+  execute_process(
+    COMMAND_ECHO STDOUT
+    WORKING_DIRECTORY ${R_HOME_PATH}
+    COMMAND
+      ${CMAKE_COMMAND} -D
+      NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+      -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+      R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake)
+
   if(NOT EXISTS ${R_LIBRARY_PATH}/jaspBase)
     message(CHECK_FAIL "unsuccessful.")
     message(FATAL_ERROR "'jaspBase' installation has failed!")
@@ -142,6 +151,11 @@ if(INSTALL_R_MODULES)
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMAND
+        ${CMAKE_COMMAND} -D
+        NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+        -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D R_HOME_PATH=${R_HOME_PATH}
+        -D R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
@@ -170,6 +184,11 @@ if(INSTALL_R_MODULES)
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
+      COMMAND
+        ${CMAKE_COMMAND} -D
+        NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+        -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D R_HOME_PATH=${R_HOME_PATH}
+        -D R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
