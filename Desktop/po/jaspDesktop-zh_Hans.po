@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-01-23 13:55+0000\n"
+"PO-Revision-Date: 2022-01-25 11:56+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -2712,7 +2712,7 @@ msgstr "%1 中的 2 个行组件具有相同的名称"
 
 msgctxt "SortMenuModel|"
 msgid "None"
-msgstr "None"
+msgstr "不排序"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
