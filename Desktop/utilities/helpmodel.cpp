@@ -72,6 +72,7 @@ void HelpModel::setMarkdown(QString markdown)
 
 void HelpModel::setPagePath(QString pagePath)
 {	
+    _pagePath = pagePath;
 	emit pagePathChanged(_pagePath);
 }
 
@@ -127,7 +128,7 @@ void HelpModel::showOrTogglePage(QString pagePath)
 {
 	_analysis = nullptr;
 	
-	if(pagePath == _pagePath && _visible)
+    if((pagePath == _pagePath) && _visible)
 		setVisible(false);
 	else
 	{

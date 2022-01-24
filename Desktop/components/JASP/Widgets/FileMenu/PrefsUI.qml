@@ -38,7 +38,7 @@ ScrollView
 		{
 			id:				menuHeader
 			headertext:		qsTr("User Interface Options")
-			helpfile:		"preferences/prefsui"
+			helpfile:		"preferences/PrefsUI"
 			anchorMe:		false
 			width:			scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
 			x:				jaspTheme.generalMenuMargin
