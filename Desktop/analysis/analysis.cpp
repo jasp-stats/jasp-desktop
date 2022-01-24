@@ -72,6 +72,7 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _dynamicModule(	duplicateMe->_dynamicModule	)
 	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry)
 	, _helpFile(						duplicateMe->_helpFile)
+	, _rSources(		duplicateMe->_rSources		)
 {
 }
 
@@ -169,7 +170,6 @@ void Analysis::run()
 
 void Analysis::refresh()
 {
-	clearRSources();
 	TempFiles::deleteAll(int(_id));
 	run();
 

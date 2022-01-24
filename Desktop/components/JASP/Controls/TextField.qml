@@ -60,7 +60,7 @@ TextInputBase
 
 	function doEditingFinished()
 	{
-		if (control.text === "" && String(defaultValue) !== "")
+		if (control.text === "" && defaultValue !== undefined && String(defaultValue) !== "")
 			control.text = defaultValue;
 		lastValidValue = control.text
 		editingFinished();
