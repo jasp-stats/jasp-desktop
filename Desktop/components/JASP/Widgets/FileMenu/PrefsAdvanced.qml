@@ -19,7 +19,7 @@ ScrollView
 		{
 			id:				menuHeader
 			headertext:		qsTr("Advanced Preferences")
-			helpfile:		"preferences/prefsadvanced"
+			helpfile:		"preferences/PrefsAdvanced"
 			anchorMe:		false
 			width:			scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
 			x:				jaspTheme.generalMenuMargin

@@ -21,7 +21,7 @@ ScrollView
 		{
 			id:			menuHeader
 			headertext:	qsTr("Data Preferences")
-			helpfile:	"preferences/prefsdata"
+			helpfile:	"preferences/PrefsData"
 			anchorMe:	false
 			width:		scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
 			x:			jaspTheme.generalMenuMargin
