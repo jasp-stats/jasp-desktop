@@ -73,8 +73,8 @@ do
 		if [ "$lib_basename" = "$entry_basename" ];
 		then
 			ID_ADD="-id $entry_target"
-			echo "id: " $ID_ADD $lib
-			echo
+			# echo "id: " $ID_ADD $lib
+			# echo
 			$INSTALL_NAME_TOOL_BIN $ID_ADD $lib
 		fi
 

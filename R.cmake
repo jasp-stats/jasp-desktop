@@ -149,7 +149,8 @@ if(APPLE)
       # patch_ld_paths()
 
       execute_process(
-        COMMAND_ECHO STDOUT
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           ${CMAKE_COMMAND} -D
@@ -159,7 +160,8 @@ if(APPLE)
 
       # R binary should be patched
       execute_process(
-        COMMAND_ECHO STDOUT
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           bash ${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -169,7 +171,8 @@ if(APPLE)
       )
 
       execute_process(
-        COMMAND_ECHO STDOUT
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           codesign --force --sign
@@ -177,7 +180,8 @@ if(APPLE)
           "${R_HOME_PATH}/bin/exec/R")
 
       execute_process(
-        COMMAND_ECHO STDOUT
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}/bin
         COMMAND ln -s ../../../../../../Frameworks Frameworks)
 
@@ -252,6 +256,8 @@ if(APPLE)
          "install.packages('RInside', repos='${R_REPOSITORY}')")
 
     execute_process(
+      # COMMAND_ECHO STDOUT
+      ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ./R --slave --no-restore --no-save
               --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
@@ -259,7 +265,8 @@ if(APPLE)
     # Patching RInside and RCpp
     message(STATUS "Patching RInside and Rcpp")
     execute_process(
-      COMMAND_ECHO STDOUT
+      # COMMAND_ECHO STDOUT
+      ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND
         ${CMAKE_COMMAND} -D
