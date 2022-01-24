@@ -10,11 +10,16 @@ Sys.setenv(JAGS_LIBDIR="@jags_LIBRARY_DIRS@")
 Sys.setenv(PKG_CONFIG_PATH="@jags_PKG_CONFIG_PATH@")
 
 # options(pkgType = "source")
-jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
+result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
 	libPathsToUse=NULL, 
 	repos="@R_REPOSITORY@", 
 	moduleLibrary="@MODULES_BINARY_PATH@/@MODULE@", 
 	onlyModPkg=FALSE)
 	
+print(result)
+
+if (result == "succes") {
+	cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
+}
 
 # renv::install("@MODULES_SOURCE_PATH@/@MODULE@")

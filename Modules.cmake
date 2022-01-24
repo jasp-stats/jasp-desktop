@@ -1,5 +1,9 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
+if(CMAKE_GENERATOR STREQUAL "Ninja")
+  set_property(GLOBAL PROPERTY JOB_POOLS sequential=1)
+endif()
+
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
     # "jaspAnova"
@@ -105,7 +109,6 @@ if(INSTALL_R_MODULES)
   message(STATUS "Installing Required R Modules...")
 
   # This happens during the configuration!
-  message(CHECK_START "Installing the 'jaspBase' and its dependencies...")
   file(
     WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R
     "
@@ -114,27 +117,26 @@ if(INSTALL_R_MODULES)
                         'plyr', 'qgraph', 'ragg', 'R6', 'renv',
                         'rjson', 'rvg', 'svglite', 'systemfonts', 'withr'), type='binary', repos='${R_REPOSITORY}')
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL)
+    if ('jaspBase' %in% installed.packages()) {
+      cat(NULL, file='${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log')
+    }
     ")
-  execute_process(
-    WORKING_DIRECTORY ${R_HOME_PATH}
-    COMMAND ./R --slave --no-restore --no-save
-            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R)
 
-  execute_process(
-    COMMAND_ECHO STDOUT
+  # I'm using a custom_command here to make sure that jaspBase is installed once
+  # and only once before everything else. So, `install-jaspBase.R` creates an empty
+  # file, i.e., `jaspBase-installed-successfully.log` and all other Modules look for
+  # it. If they find it, they proceed, if not, they trigger this custom command.
+  add_custom_command(
     WORKING_DIRECTORY ${R_HOME_PATH}
+    OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
+    COMMAND ./R --slave --no-restore --no-save
+            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R
     COMMAND
       ${CMAKE_COMMAND} -D
       NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
       -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-      R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake)
-
-  if(NOT EXISTS ${R_LIBRARY_PATH}/jaspBase)
-    message(CHECK_FAIL "unsuccessful.")
-    message(FATAL_ERROR "'jaspBase' installation has failed!")
-  endif()
-
-  message(CHECK_PASS "successful.")
+      R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake
+    COMMENT "------ Installing 'jaspBase'")
 
   message(STATUS "Configuring Common Modules...")
   foreach(MODULE ${JASP_COMMON_MODULES})
@@ -149,6 +151,7 @@ if(INSTALL_R_MODULES)
     add_custom_target(
       ${MODULE}
       WORKING_DIRECTORY ${R_HOME_PATH}
+      DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND
@@ -161,13 +164,22 @@ if(INSTALL_R_MODULES)
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-      COMMENT "------ Installing ${MODULE}...")
-
-    list(POP_FRONT JASP_COMMON_MODULES_COPY PREVIOUS_COMMON_MODULE)
+      COMMENT "------ Installing '${MODULE}'")
 
     # Making sure that CMake doesn't parallelize the installation of the modules
-    if(PREVIOUS_COMMON_MODULE)
-      add_dependencies(${MODULE} ${PREVIOUS_COMMON_MODULE})
+
+    if(CMAKE_GENERATOR STREQUAL "Ninja")
+
+      set_property(TARGET ${MODULE} PROPERTY JOB_POOL_COMPILE sequential)
+
+    else()
+
+      list(POP_FRONT JASP_COMMON_MODULES_COPY PREVIOUS_COMMON_MODULE)
+
+      if(PREVIOUS_COMMON_MODULE)
+        add_dependencies(${MODULE} ${PREVIOUS_COMMON_MODULE})
+      endif()
+
     endif()
 
     add_dependencies(Modules ${MODULE})
@@ -184,6 +196,7 @@ if(INSTALL_R_MODULES)
     add_custom_target(
       ${MODULE}
       WORKING_DIRECTORY ${R_HOME_PATH}
+      DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND
@@ -194,14 +207,23 @@ if(INSTALL_R_MODULES)
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
-      COMMENT "------ Installing ${MODULE}...")
-
-    list(POP_FRONT JASP_EXTRA_MODULES_COPY PREVIOUS_EXTRA_MODULE)
+      COMMENT "------ Installing '${MODULE}'")
 
     # Making sure that CMake doesn't parallelize the installation of the modules
-    if(PREVIOUS_EXTRA_MODULE)
-      add_dependencies(${MODULE} ${PREVIOUS_EXTRA_MODULE}
-                       ${FIRST_COMMON_MODULE})
+
+    if(CMAKE_GENERATOR STREQUAL "Ninja")
+
+      set_property(TARGET ${MODULE} PROPERTY JOB_POOL_COMPILE sequential)
+
+    else()
+
+      list(POP_FRONT JASP_EXTRA_MODULES_COPY PREVIOUS_EXTRA_MODULE)
+
+      if(PREVIOUS_EXTRA_MODULE)
+        add_dependencies(${MODULE} ${PREVIOUS_EXTRA_MODULE}
+                         ${FIRST_COMMON_MODULE})
+      endif()
+
     endif()
 
     add_dependencies(Modules ${MODULE})

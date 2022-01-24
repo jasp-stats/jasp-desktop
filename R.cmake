@@ -262,8 +262,15 @@ if(APPLE)
       COMMAND ./R --slave --no-restore --no-save
               --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
 
+    if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
+      message(CHECK_FAIL "unsuccessful.")
+      message(FATAL_ERROR "'RInside' installation has failed!")
+    endif()
+
+    message(CHECK_PASS "successful.")
+
     # Patching RInside and RCpp
-    message(STATUS "Patching RInside and Rcpp")
+    message(CHECK_START "Patching RInside and Rcpp")
     execute_process(
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
@@ -278,11 +285,6 @@ if(APPLE)
         NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
         -D PATH=${R_HOME_PATH}/library/Rcpp -D R_HOME_PATH=${R_HOME_PATH} -D
         R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake)
-
-    if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
-      message(CHECK_FAIL "unsuccessful.")
-      message(FATAL_ERROR "'RInside' installation has failed!")
-    endif()
 
     message(CHECK_PASS "successful.")
   endif()
