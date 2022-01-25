@@ -1174,8 +1174,12 @@ void Analysis::checkForRSources()
 
 	for(auto & newOptionJson : newSources)
 	{
-		_rSources[newOptionJson.first] = newOptionJson.second;
-		emit rSourceChanged(tq(newOptionJson.first));
+		//Make sure to only update rSource if it changes
+		if(!_rSources.count(newOptionJson.first) ||  _rSources[newOptionJson.first] != newOptionJson.second)
+		{
+			_rSources[newOptionJson.first] = newOptionJson.second;
+			emit rSourceChanged(tq(newOptionJson.first));
+		}
 	}
 
 	for(const std::string & removeThis : removeAfterwards)
