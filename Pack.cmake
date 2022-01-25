@@ -1,5 +1,3 @@
-include(CPack)
-
 set(CPACK_PACKAGE_NAME "JASP")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A Fresh Way to Do Statistics")
 set(CPACK_PACKAGE_VENDOR "University of Amsterdam")
@@ -14,21 +12,29 @@ set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 
 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/COPYING.txt)
-set(CPACK_PACKAGE_ICON)
 
 set(CPACK_PACKAGE_DIRECTORY ${CPACK_PACKAGE_NAME})
 
-if(WIN32)
-  set(CPACK_GENERATOR ZIP WIX)
-elseif(APPLE)
-  set(CPACK_GENERATOR TGZ productbuild)
-  set(CPACK_PACKAGE_ICON ${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  set(CPACK_GENERATOR TGZ RPM)
-else()
-  set(CPACK_GENERATOR TGZ)
-endif()
+# if(WIN32)
+#   set(CPACK_GENERATOR ZIP WIX)
+# elseif(APPLE)
 
+# set(CPACK_GENERATOR TGZ productbuild)
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns")
+
+# ------ Bundle Generator
+set(CPACK_BUNDLE_NAME "JASP")
+set(CPACK_BUNDLE_APPLE_CERT_APP
+    "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)")
+set(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns")
+set(CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/Desktop/Info.plist")
+
+# ------ DMG Generator
+set(CPACK_DMG_VOLUME_NAME "JASP")
+set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/Tools/macOS/background.png")
+
+# Note:
+#   - `.cpack-ignore` must be properly escaped
 file(READ ${CMAKE_CURRENT_LIST_DIR}/.cpack-ignore _cpack_ignore)
 string(
   REGEX
@@ -36,4 +42,7 @@ string(
           ";"
           _cpack_ignore
           ${_cpack_ignore})
+
 set(CPACK_SOURCE_IGNORE_FILES "${_cpack_ignore}")
+
+include(CPack)

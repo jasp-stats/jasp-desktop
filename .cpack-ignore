@@ -1,1 +1,15 @@
-*.DS_Store
+\\.DS_Store
+\\.git/
+CMakeLists\\.txt\\.user
+\\.*\\.log
+\\.*\\.c
+\\.*\\.f
+\\.*\\.cpp
+\\.*\\.a
+
+\\.*.dSYM*/
+
+*build*/
+*examples*/
+*doc*/
+*test*/

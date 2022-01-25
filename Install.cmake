@@ -8,12 +8,16 @@
 
 include(GNUInstallDirs)
 
+# - [ ] This needs to be removed. We don't necessary need it, and
+#       for now, it is here for testing
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/Install)
+message(STATUS ${CMAKE_INSTALL_PREFIX})
+
 install(
   TARGETS JASP JASPEngine
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  BUNDLE DESTINATION ${CMAKE_INSTALL_LIBDIR}/Bundle)
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 # This is not the way to do it, but for now it works, and I'm just
 # shuffling things around
@@ -25,3 +29,17 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources
 
 install(DIRECTORY ${MODULES_BINARY_PATH}
         DESTINATION ${CMAKE_INSTALL_BINDIR}/../)
+
+#
+# Deployment on macOS
+#
+find_program(DEPLOYQT_EXECUTABLE macdeployqt)
+
+set(DEPLOY_OPTIONS
+    [[JASP
+    -verbose=2
+    -codesign="Developer ID Application: Bruno Boutin (AWJJ3YVK9B)"
+]])
+
+configure_file(Deploy.cmake.in Deploy.cmake @ONLY)
+# install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/Deploy.cmake)
