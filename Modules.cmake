@@ -25,8 +25,8 @@ set(JASP_EXTRA_MODULES
     # "jaspSem"
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
-    # "jaspMetaAnalysis"
-    "jaspDistributions"
+    "jaspMetaAnalysis"
+    # "jaspDistributions"
     # "jaspEquivalenceTTests"
     # "jaspJags"
     # "jaspReliability"
@@ -196,7 +196,9 @@ if(INSTALL_R_MODULES)
     add_custom_target(
       ${MODULE}
       WORKING_DIRECTORY ${R_HOME_PATH}
-      DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
+      DEPENDS
+        ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
+        $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${R_OPT_PATH}/jags/lib/libjags.dylib>
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND
@@ -237,28 +239,14 @@ if(INSTALL_R_MODULES)
       #   - `--prefix=${R_OPT_PATH}/jags`, with this, we inherit the R
       # - You can run `make jags-build` or `make jags-install` to just play with JAGS target
       #
-      #
-      # Todos:
-      # - [ ] I can skip the build if `libjags` exists.
-      #     - If so, I need to remove the dependency as well and that might just be enough
-      make_directory("${R_OPT_PATH}/jags")
-      externalproject_add(
-        jags
-        PREFIX _deps/jags
-        HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
-        HG_TAG "release-4_3_0"
-        BUILD_IN_SOURCE ON
-        STEP_TARGETS configure build install
-        CONFIGURE_COMMAND ${ACLOCAL}
-        COMMAND ${AUTORECONF} -fi
-        COMMAND
-          ./configure --disable-dependency-tracking --prefix=${R_OPT_PATH}/jags
-          # --prefix=${<DOWNLOAD_DIR>/jags-install}
-        BUILD_COMMAND ${MAKE})
 
-      externalproject_get_property(jags DOWNLOAD_DIR)
-      set(jags_DOWNLOAD_DIR ${DOWNLOAD_DIR})
-      set(jags_BUILD_DIR ${jags_DOWNLOAD_DIR}/jags-build)
+      find_package(BISON)
+      if(NOT BISON_FOUND)
+        message(FATAL_ERROR "GNU Bison is required for build 'jags'.")
+      endif()
+
+      make_directory("${R_OPT_PATH}/jags")
+
       set(jags_INCLUDE_DIRS ${R_OPT_PATH}/jags/include)
       set(jags_LIBRARY_DIRS ${R_OPT_PATH}/jags/lib)
       set(jags_PKG_CONFIG_PATH ${R_OPT_PATH}/jags/lib/pkgconfig/)
@@ -267,7 +255,44 @@ if(INSTALL_R_MODULES)
       configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                      ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
 
-      add_dependencies(${MODULE} jags-install)
+      # ----- Downloading and Building jags
+
+      fetchcontent_declare(
+        jags
+        HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
+        HG_TAG "release-4_3_0")
+
+      message(CHECK_START "Downloading 'jags'")
+
+      fetchcontent_populate(jags)
+      fetchcontent_getproperties(jags)
+
+      if(jags_POPULATED)
+
+        message(CHECK_PASS "successful.")
+
+        add_custom_command(
+          WORKING_DIRECTORY ${jags_SOURCE_DIR}
+          OUTPUT ${R_OPT_PATH}/jags/lib/libjags.dylib
+          COMMAND ${ACLOCAL}
+          COMMAND ${AUTORECONF} -fi
+          COMMAND ./configure --disable-dependency-tracking
+                  --prefix=${R_OPT_PATH}/jags
+          COMMAND ${MAKE}
+          COMMAND ${MAKE} install
+          COMMAND
+            ${CMAKE_COMMAND} -D
+            NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+            -D PATH=${R_OPT_PATH}/jags -D R_HOME_PATH=${R_HOME_PATH} -D
+            R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake
+          COMMENT "----- Preparing 'jags'")
+
+      else()
+
+        message(CHECK_FAIL "failed.")
+
+      endif()
+
     endif()
 
   endforeach()

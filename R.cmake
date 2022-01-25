@@ -24,7 +24,8 @@ if(APPLE)
   # these paths!
 
   set(R_FRAMEWORK_PATH "${CMAKE_BINARY_DIR}/Frameworks")
-  set(R_HOME_PATH "${R_FRAMEWORK_PATH}/R.framework/Resources")
+  set(R_HOME_PATH
+      "${R_FRAMEWORK_PATH}/R.framework/Versions/${R_DIR_NAME}/Resources")
   set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
   set(R_OPT_PATH "${R_HOME_PATH}/opt")
   set(R_EXECUTABLE "${R_HOME_PATH}/R")
@@ -78,7 +79,7 @@ if(APPLE)
         DOWNLOAD_NO_EXTRACT ON
         DOWNLOAD_NAME ${R_PACKAGE_NAME})
 
-      message(CHECK_START "Downloading '${R_PACKAGE_NAME}'.")
+      message(CHECK_START "Downloading '${R_PACKAGE_NAME}'")
       fetchcontent_populate(r_pkg)
       message(CHECK_PASS "done.")
 
@@ -89,7 +90,7 @@ if(APPLE)
         set(r_pkg_r_home
             ${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources)
 
-        message(CHECK_START "Unpacking '${R_PACKAGE_NAME}'.")
+        message(CHECK_START "Unpacking '${R_PACKAGE_NAME}'")
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
                         COMMAND xar -xf ${R_PACKAGE_NAME})
         message(CHECK_PASS "done.")
@@ -123,34 +124,22 @@ if(APPLE)
       # Patching R.framework and everything related to it ------
       # --------------------------------------------------------
 
-      # message(CHECK_START "Patching the R.framework.")
-
-      # These can be done using the file(COPY files DESTINATION dir)
-      # execute_process(
-      #   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Tools/macOS
-      #   COMMAND cp install_name_prefix_tool.sh ${r_pkg_SOURCE_DIR})
-
-      # execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
-      #                 COMMAND chmod +x install_name_prefix_tool.sh)
-
-      # message(CHECK_PASS "done.")
-
-      message(CHECK_START "Patching bin/R and etc/Makeconf, and library paths")
-
       # Patching R's pathing variables, R_HOME, etc. -------------
+      message(CHECK_START "Patching bin/R and etc/Makeconf, and library paths")
 
       include(${CMAKE_SOURCE_DIR}/PatchR.cmake)
       cmake_print_variables(r_pkg_r_home)
       cmake_print_variables(R_HOME_PATH)
       patch_r()
 
-      # include(${CMAKE_SOURCE_DIR}/R.framework.cmake)
-      # cmake_print_variables(r_pkg_SOURCE_DIR)
-      # patch_ld_paths()
+      message(CHECK_PASS "done.")
 
+      message(CHECK_START "Patching and signing all the first-party libraries")
+
+      # Patch and sign all first party libraries
       execute_process(
         # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
+        # ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           ${CMAKE_COMMAND} -D
@@ -158,10 +147,10 @@ if(APPLE)
           -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
           R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake)
 
-      # R binary should be patched
+      # R binary should be patched as well
       execute_process(
         # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
+        # ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           bash ${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh

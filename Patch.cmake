@@ -33,7 +33,7 @@ foreach(FILE ${LIBRARIES})
   get_filename_component(FILE_NAME ${FILE} NAME)
   get_filename_component(DIRECTORY_NAME ${FILE} DIRECTORY)
 
-  message(CHECK_START "Patching ${FILE}")
+  message(CHECK_START "-------- ${FILE}")
 
   if(NOT EXISTS "${DIRECTORY_NAME}/${FILE_NAME}.patched.log")
 
@@ -52,6 +52,15 @@ foreach(FILE ${LIBRARIES})
         REPLACE
           "${R_HOME_PATH}/modules/"
           "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/modules/"
+          NEW_ID
+          ${FILE})
+
+    elseif(FILE MATCHES "/opt/jags/")
+
+      string(
+        REPLACE
+          "${R_HOME_PATH}/opt/jags/"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/"
           NEW_ID
           ${FILE})
 
