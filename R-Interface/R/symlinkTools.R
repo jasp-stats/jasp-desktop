@@ -65,16 +65,16 @@ determineOverlap <- function(targetRoot, sourceRoot)
   return(list(targetToSource=targetToSource, sourceToTarget=sourceToTarget))
 }
 
-#Use overlapfunctions as returned by determineOverlap to generate a function to turn target-path from absolute to relative
+# Use overlapfunctions as returned by determineOverlap to generate a function to turn target-path from absolute to relative
 getRelativityFunction <- function(modulesRoot, renvCache)
 {
-  #I wanted this code to be more general but then it is too complicated to debug. And has a bug. And renv-cache can be assumed to be right next to Modules anyway...
+  # I wanted this code to be more general but then it is too complicated to debug. 
+  # And has a bug. And renv-cache can be assumed to be right next to Modules anyway...
   # So instead of doing:
   #   modToRenvF <- determineOverlap(modulesRoot, renvCache)
-  #   modToRenvS <-  modToRenvF$targetToSource(renvCache, TRUE)
+  #   modToRenvS <- modToRenvF$targetToSource(renvCache, TRUE)
   # We can assume:
-  modToRenvS <- pastePath(c("..","..","renv-cache"))
-  #print(paste0("modToRenvS: ", modToRenvS))
+  modToRenvS <- pastePath(c("..", "renv-cache"))
   
   return(
     function(linkLocation, targetPath)
@@ -82,7 +82,7 @@ getRelativityFunction <- function(modulesRoot, renvCache)
       linkLocation <-              (path.expand(linkLocation)) #Do not normalize it because Windows then follows this path...
       targetPath   <- normalizePath(path.expand(targetPath))
       #linkToMod    <- determineOverlap(linkLocation, modulesRoot)$targetToSource
-      pathToRenv   <- determineOverlap(targetPath,   renvCache)  $sourceToTarget
+      pathToRenv   <- determineOverlap(targetPath,   renvCache)$sourceToTarget
 
       #linkToModS   <- linkToMod(linkLocation, FALSE)
       linkToRenvS  <- modToRenvS #pastePath(c(linkToModS, modToRenvS))
@@ -130,9 +130,12 @@ get.junction.pwrshll <- function(paths)
 # Returns a list of symlinks with target location relative to modulesRoot
 collectLinks <- function(modulesRoot, renvCache, isLink, getLink)
 {
-  #Honestly this whole recursive setup for determining the shared overlap of the renv-cache and Modules is totally overkill as they are always next to each other.
-  #But I wanted to allow for the possibility of moving the renv-cache somewhere else and the code works fine now, so... I'll leave it like this.
-  #The next time someone needs to work on this and this complexity is causing trouble we should know whether or not it is useful to have this flexibility or not. And remove it if not.
+  # Honestly this whole recursive setup for determining the shared overlap of the renv-cache
+  # and Modules is totally overkill as they are always next to each other. But I wanted to
+  # allow for the possibility of moving the renv-cache somewhere else and the code works fine
+  # now, so... I'll leave it like this. The next time someone needs to work on this and this
+  # complexity is causing trouble we should know whether or not it is useful to have this
+  # flexibility or not. And remove it if not.
   modulesRoot <- normalizePath(path.expand(modulesRoot))
   renvCache   <- normalizePath(path.expand(renvCache))
 

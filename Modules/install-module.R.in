@@ -22,4 +22,7 @@ if (result == "succes") {
 	cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
 }
 
-# renv::install("@MODULES_SOURCE_PATH@/@MODULE@")
+# Fixing the renv's symlinks
+source('@MODULES_BINARY_PATH@/symlinkTools.R')
+
+convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')

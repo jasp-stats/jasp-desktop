@@ -80,12 +80,13 @@ if(APPLE)
         DOWNLOAD_NAME ${R_PACKAGE_NAME})
 
       message(CHECK_START "Downloading '${R_PACKAGE_NAME}'")
-      fetchcontent_populate(r_pkg)
-      message(CHECK_PASS "done.")
 
+      fetchcontent_populate(r_pkg)
       fetchcontent_getproperties(r_pkg)
 
       if(r_pkg_POPULATED)
+
+        message(CHECK_PASS "done.")
 
         set(r_pkg_r_home
             ${r_pkg_SOURCE_DIR}/R.framework/Versions/${R_DIR_NAME}/Resources)
@@ -117,7 +118,7 @@ if(APPLE)
 
         message(CHECK_PASS "done.")
       else()
-        message(WARNING "Failed to download the R.framework.")
+        message(CHECK_FAIL "failed.")
       endif()
 
       # --------------------------------------------------------
