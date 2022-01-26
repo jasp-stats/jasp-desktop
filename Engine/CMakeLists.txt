@@ -2,6 +2,8 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
 
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
+
+set(Boost_USE_STATIC_LIBS ON)
 find_package(
   Boost REQUIRED
   COMPONENTS nowide
@@ -25,31 +27,21 @@ add_executable(JASPEngine ${HEADER_FILES} ${SOURCE_FILES})
 
 add_dependencies(JASPEngine R-Interface)
 
-target_include_directories(
-  JASPEngine
-  PUBLIC
-    ${LIBJSONCPP_INCLUDE_DIRS}
-    # JASP
-    ${PROJECT_SOURCE_DIR}/R-Interface
-    # ${PROJECT_SOURCE_DIR}/Common/
-    # ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-    # R
-    # ${R_HOME_PATH}/include
-    # ${RCPP_PATH}/include
-    # ${RINSIDE_PATH}/include
-    # ↑ These are being included during the linking of Common and R-Interface
-)
+target_include_directories(JASPEngine PUBLIC ${LIBJSONCPP_INCLUDE_DIRS}
+                                             ${PROJECT_SOURCE_DIR}/R-Interface)
 
 target_link_libraries(
   JASPEngine
   PUBLIC Common
          R-Interface
+         #
          Boost::nowide
          Boost::filesystem
          Boost::system
          Boost::date_time
          Boost::timer
          Boost::chrono
+         # System
          LibArchive::LibArchive)
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)

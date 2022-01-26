@@ -59,7 +59,7 @@ option(GIT_SUBMODULE "Check submodules during build" ON)
 option(
   INSTALL_JASP_REQUIRED_LIBRARIES
   "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
-  OFF)
+  ON)
 
 if(CCACHE_EXECUTABLE
    AND USE_CCACHE

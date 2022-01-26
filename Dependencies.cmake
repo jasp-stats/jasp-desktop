@@ -33,6 +33,9 @@
 #       possible to pass a list to CPM. This is not that bad because we
 #       only need to build it once anyway, but when this issue is fixed,
 #       we can change it.
+#
+# - [ ] I would have liked to choose a better name for _deps but since CPM
+#       uses it, I went for it that I don't have to maintain two paths
 
 # Adding caching for CPM, this is going to be useful later that we
 # want to have CI builds on GitHub, see here: https://github.com/cpm-cmake/CPM.cmake/wiki/Caching-with-CPM.cmake-and-ccache-on-GitHub-Actions
@@ -108,28 +111,31 @@ cpmaddpackage(
   GIT_TAG
   "boost-1.78.0")
 
-cpmaddpackage(
-  NAME
-  LibArchive
-  VERSION
-  3.5.2
-  OPTIONS
-  "ENABLE_TEST OFF"
-  "JSONCPP_WITH_POST_BUILD_UNITTEST OFF"
-  GITHUB_REPOSITORY
-  "libarchive/libarchive"
-  GIT_TAG
-  "v3.5.2")
+#
+# Removing these, since they are part of the Xcode and MSVC's toolchain
+#
+# cpmaddpackage(
+#   NAME
+#   LibArchive
+#   VERSION
+#   3.5.2
+#   OPTIONS
+#   "ENABLE_TEST OFF"
+#   "JSONCPP_WITH_POST_BUILD_UNITTEST OFF"
+#   GITHUB_REPOSITORY
+#   "libarchive/libarchive"
+#   GIT_TAG
+#   "v3.5.2")
 
-cpmaddpackage(
-  NAME
-  ZLIB
-  VERSION
-  1.2.11
-  GITHUB_REPOSITORY
-  "madler/zlib"
-  GIT_TAG
-  "v1.2.11")
+# cpmaddpackage(
+#   NAME
+#   ZLIB
+#   VERSION
+#   1.2.11
+#   GITHUB_REPOSITORY
+#   "madler/zlib"
+#   GIT_TAG
+#   "v1.2.11")
 
 # ----- jsoncpp ------
 #
@@ -162,6 +168,10 @@ cpmaddpackage(
 externalproject_add(
   jsoncpp
   PREFIX _deps/jsoncpp
+  LOG_CONFIGURE ON
+  LOG_BUILD ON
+  LOG_INSTALL ON
+  LOG_OUTPUT_ON_FAILURE ON
   GIT_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git"
   GIT_TAG "1.9.5"
   STEP_TARGETS configure build install
@@ -181,14 +191,19 @@ set(jsoncpp_LIBRARY_DIRS ${jsoncpp_DOWNLOAD_DIR}/jsoncpp-install/lib)
 externalproject_add(
   readstat
   PREFIX _deps/readstat
+  LOG_CONFIGURE ON
+  LOG_BUILD ON
+  LOG_INSTALL ON
+  LOG_OUTPUT_ON_FAILURE ON
   GIT_REPOSITORY "https://github.com/WizardMac/ReadStat"
   GIT_TAG "v1.1.7"
   BUILD_IN_SOURCE ON
   STEP_TARGETS configure build install
   CONFIGURE_COMMAND ./autogen.sh
   COMMAND autoupdate
-  COMMAND ./configure --prefix=<DOWNLOAD_DIR>/readstat-install
-  BUILD_COMMAND ${MAKE})
+  COMMAND ./configure --enable-static --prefix=<DOWNLOAD_DIR>/readstat-install
+  BUILD_COMMAND ${MAKE}
+  INSTALL_COMMAND ${MAKE} install)
 
 externalproject_get_property(readstat DOWNLOAD_DIR)
 set(readstat_DOWNLOAD_DIR ${DOWNLOAD_DIR})

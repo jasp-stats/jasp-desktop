@@ -2,6 +2,8 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Common)
 
 find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
+
+set(Boost_USE_STATIC_LIBS ON)
 find_package(
   Boost REQUIRED
   COMPONENTS nowide
@@ -21,14 +23,14 @@ if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
 
 else()
 
-  find_library(
-    LIBJSONCPP
-    NAMES jsoncpp
-    HINTS ${jsoncpp_LIBRARY_DIRS})
+  # find_library(
+  #   LIBJSONCPP REQUIRED
+  #   NAMES jsoncpp
+  #   HINTS ${jsoncpp_LIBRARY_DIRS})
 
   set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
   set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
-  set(LIBJSONCPP_LINK_LIBRARIES ${LIBJSONCPP})
+  set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
 
 endif()
 
@@ -45,6 +47,10 @@ list(APPEND SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 # are depending on `Qt::Core`. Maybe later, we can free the Common
 # from it.
 add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
+
+if(INSTALL_JASP_REQUIRED_LIBRARIES)
+  add_dependencies(Common jsoncpp-install)
+endif()
 
 target_include_directories(
   Common

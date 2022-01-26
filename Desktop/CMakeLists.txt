@@ -44,20 +44,27 @@ pkg_check_modules(
   jsoncpp)
 
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
+
   pkg_check_modules(
     LIBREADSTAT
     REQUIRED
     IMPORTED_TARGET
     readstat)
+
 else()
-  find_library(
-    LIBREADSTAT
-    NAMES readstat
-    HINTS ${readstat_LIBRARY_DIRS})
+
+  # find_library(
+  #   LIBREADSTAT REQUIRED
+  #   NAMES libreadstat.a
+  #   HINTS ${readstat_LIBRARY_DIRS})
 
   set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
+  cmake_print_variables(LIBREADSTAT_INCLUDE_DIRS)
   set(LIBREADSTAT_LIBRARY_DIRS ${readstat_LIBRARY_DIRS})
-  set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT})
+  cmake_print_variables(LIBREADSTAT_LIBRARY_DIRS)
+  set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT_LIBRARY_DIRS}/libreadstat.a)
+  cmake_print_variables(LIBREADSTAT_LINK_LIBRARIES)
+
 endif()
 
 # TODO:
@@ -195,7 +202,9 @@ if(APPLE)
       # OpenSSL::Crypto
       # Based on our config, this is either from PkgConfig, or the build/_deps/
       ${LIBREADSTAT_LINK_LIBRARIES}
+      # System
       ${Iconv_LIBRARIES}
+      ${ZLIB_LIBRARIES} # Needed for libreadstat.a
     PRIVATE ${_R_Framework})
 
   # R.framework linkage ----------
