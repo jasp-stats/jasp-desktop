@@ -184,8 +184,8 @@ QTCONTROLS.Popup
 				}
 				enabled:			descriptionViewer.moduleIsOK
 
-				text:				"Install"
-				toolTip:			enabled ? "Press this to install your selected Module" : "Select a JASP Module to install"
+				text:				qsTr("Install")
+				toolTip:			enabled ? qsTr("Press this to install your selected Module") : qsTr("Select a JASP Module to install")
 
 				onClicked:
 				{
