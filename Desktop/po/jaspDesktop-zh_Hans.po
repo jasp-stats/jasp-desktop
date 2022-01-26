@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-01-25 11:56+0000\n"
+"PO-Revision-Date: 2022-01-27 06:28+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "jasp/jaspdesktop/zh_Hans/>\n"
@@ -1395,7 +1395,7 @@ msgstr "就绪"
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr "安装：%1\n"
+msgstr "正在安装：%1\n"
 
 #, qt-format
 msgctxt "ModulesMenu|"
@@ -3307,7 +3307,7 @@ msgstr "使用本地文件对话框"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
-msgstr "单击此处选择开发人员模块"
+msgstr "单击此处选择开发者模块"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
