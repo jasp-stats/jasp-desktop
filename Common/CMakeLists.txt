@@ -86,6 +86,8 @@ endif()
 # TODOs:
 #
 # - [ ] After confirming these, they can all be rewritten as generator-expressions
+# - [ ] I don't think most of the Boost stuffs have effect here, and they should
+#       probably move into `Dependencies.cmake` where I actually build Boost.
 #
 if(APPLE)
   target_compile_definitions(Common PUBLIC BOOST_INTERPROCESS_SHARED_DIR_FUNC)

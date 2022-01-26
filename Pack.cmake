@@ -46,3 +46,28 @@ string(
 set(CPACK_SOURCE_IGNORE_FILES "${_cpack_ignore}")
 
 include(CPack)
+
+cpack_add_component(
+  jaspCore
+  DISPLAY_NAME JASP
+  DESCRIPTION "Essential parts of the JASP program."
+  REQUIRED
+  # INSTALL_TYPE
+  # Full
+  # Developer
+  # Minimal
+)
+
+cpack_add_component_group(
+  commonModules
+  DISPLAY_NAME "Common Modules"
+  DESCRIPTION "JASP Common Modules")
+
+cpack_add_component_group(
+  extraModules
+  DISPLAY_NAME "Extra Modules"
+  DESCRIPTION "JASP Extra Modules")
+
+# cpack_add_install_type(Full)
+# cpack_add_install_type(Minimal)
+# cpack_add_install_type(Developer DISPLAY_NAME "SDK Development")

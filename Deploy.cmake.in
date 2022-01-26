@@ -1,13 +1,8 @@
 execute_process(
-  COMMAND @DEPLOYQT_EXECUTABLE@ @DEPLOY_OPTIONS@
+  COMMAND bash @DEPLOYQT_EXECUTABLE@ @DEPLOY_OPTIONS@
   WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}”
   RESULT_VARIABLE result)
 
 if(result)
   message(FATAL_ERROR "Executing @DEPLOYQT_EXECUTABLE@ failed: ${result}")
 endif()
-
-# I can create different targets for deploying in different systems
-# add_custom_target(macOS_Deploy)
-
-# add_custom_target(Windows_Deploy)

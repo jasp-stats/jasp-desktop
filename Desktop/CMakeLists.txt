@@ -211,9 +211,6 @@ if(APPLE)
   #
   # There are two ways to link and copy the R.framework, I think
   #
-  #
-  # Note: For some reason, I broke the code-signing of the Framework! I think I have
-  # probably corrupted my version, but I am going to investigate
 
   # 1.
   # Simply copying the framework. This is recommened but it's less flexible
@@ -247,9 +244,8 @@ if(APPLE)
 
   # ------------------------------
 
-  set_source_files_properties(
-    ${MODULES_BINARY_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION
-                                      SharedSupport/Modules)
+  set_source_files_properties(${MODULES_BINARY_PATH}
+                              PROPERTIES MACOSX_PACKAGE_LOCATION Modules)
 
   # ------------------------------
 

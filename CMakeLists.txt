@@ -101,6 +101,8 @@ endif()
 # create binaries and installer for different systems
 if(WIN32) # Check if we are on Windows
   set(SYSTEM_TYPE WIN32)
+  # else(APPLE)
+  #   set(SYSTEM_TYPE MACOSX_BUNDLE)
 endif()
 
 # Sets the build options

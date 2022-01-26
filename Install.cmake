@@ -5,6 +5,9 @@
 #
 # - On Linux and Flatpak, we can probably just use this, and don't
 # bother with the packaging.
+#       - For linux, the only thing that need to do is to set the
+#         `CMAKE_INSTALL_PREFIX` correctly, something like `/opt/jasp`
+#         and everything will work
 
 include(GNUInstallDirs)
 
@@ -15,17 +18,19 @@ message(STATUS ${CMAKE_INSTALL_PREFIX})
 
 install(
   TARGETS JASP JASPEngine
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR}/
+  BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR}/MacOS COMPONENT jaspCore)
 
-# This is not the way to do it, but for now it works, and I'm just
-# shuffling things around
-install(DIRECTORY ${_R_Framework}
-        DESTINATION ${CMAKE_INSTALL_BINDIR}/../Frameworks)
+install(
+  DIRECTORY ${_R_Framework}
+  DESTINATION ${CMAKE_INSTALL_BINDIR}/../Frameworks
+  COMPONENT jaspCore)
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources
-        DESTINATION ${CMAKE_INSTALL_BINDIR}/../)
+install(
+  DIRECTORY ${CMAKE_SOURCE_DIR}/Resources
+  DESTINATION ${CMAKE_INSTALL_BINDIR}/../
+  COMPONENT jaspCore)
 
 install(DIRECTORY ${MODULES_BINARY_PATH}
         DESTINATION ${CMAKE_INSTALL_BINDIR}/../)

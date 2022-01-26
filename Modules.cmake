@@ -6,7 +6,7 @@ endif()
 
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
-    # "jaspAnova"
+    "jaspAnova"
     # "jaspFactor"
     # "jaspFrequencies"
     # "jaspRegression"
@@ -166,6 +166,11 @@ if(INSTALL_R_MODULES)
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
 
+    install(
+      DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
+      DESTINATION ${CMAKE_INSTALL_BINDIR}/../Modules/
+      COMPONENT ${MODULE})
+
     # Making sure that CMake doesn't parallelize the installation of the modules
 
     if(CMAKE_GENERATOR STREQUAL "Ninja")
@@ -210,6 +215,11 @@ if(INSTALL_R_MODULES)
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
+
+    install(
+      DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
+      DESTINATION ${CMAKE_INSTALL_BINDIR}/../Modules/
+      COMPONENT ${MODULE})
 
     # Making sure that CMake doesn't parallelize the installation of the modules
 

@@ -48,4 +48,11 @@ macro(patch_r)
     COMMAND sed -i.bak -e "s/\\/opt\\/R\\/arm64/$(R_HOME)\\/opt\\/R\\/arm64/g"
             Makeconf)
 
+  # execute_process(
+  #   WORKING_DIRECTORY ${R_HOME_PATH}/etc
+  #   COMMAND
+  #     sed -i.bak -e
+  #     "s/FC = \$\(R_HOME\)/opt/R/arm64/bin/gfortran -mtune=native/gfortran -mtune=native/g"
+  #     Makeconf)
+
 endmacro()

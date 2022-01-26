@@ -21,7 +21,6 @@
 		<key>NSPrincipalClass</key>
 		<string>NSApplication</string>
 
-		<!-- CFBundleIconFile is deprecated and recommends using CFBundleIconFiles or CFBundleIcons instead. We should probably replace it at some point! -->
 		<key>CFBundleIconFile</key>
 		<string>${MACOSX_BUNDLE_ICON_FILE}</string>
 

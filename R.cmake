@@ -108,6 +108,36 @@ if(APPLE)
 
         message(CHECK_PASS "done.")
 
+        # ------
+
+        # message(CHECK_START "Downloading 'gfortran'")
+
+        # fetchcontent_declare(
+        #   gfortran_tar
+        #   URL https://github.com/fxcoudert/gfortran-for-macOS/releases/download/12.0.0-20211211-experimental/bootstrap.tar.bz2
+        #   DOWNLOAD_NO_EXTRACT ON
+        #   DOWNLOAD_NAME bootstrap.tar.bz2)
+
+        # fetchcontent_populate(gfortran_tar)
+        # fetchcontent_getproperties(gfortran_tar)
+
+        # if(gfortran_tar_POPULATED)
+
+        #   message(CHECK_START "Unpacking the 'gfortran'.")
+        #   execute_process(
+        #     WORKING_DIRECTORY ${gfortran_tar_SOURCE_DIR}
+        #     COMMAND tar --strip-components 1 -xjvf bootstrap.tar.bz2 -C
+        #             ${r_pkg_r_home}/opt/R/arm64/)
+
+        #   message(CHECK_PASS "done.")
+
+        # else()
+        #   message(CHECK_FAIL "done.")
+
+        # endif()
+
+        # -----
+
         message(CHECK_START
                 "Copying the 'R.framework' to the jasp-desktop/Frameworks.")
 

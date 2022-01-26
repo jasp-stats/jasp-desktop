@@ -9,7 +9,7 @@ Sys.setenv(JAGS_INCLUDEDIR="@jags_INCLUDE_DIRS@")
 Sys.setenv(JAGS_LIBDIR="@jags_LIBRARY_DIRS@")
 Sys.setenv(PKG_CONFIG_PATH="@jags_PKG_CONFIG_PATH@")
 
-# options(pkgType = "source")
+options(pkgType = "binary")
 result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
 	libPathsToUse=NULL, 
 	repos="@R_REPOSITORY@", 
