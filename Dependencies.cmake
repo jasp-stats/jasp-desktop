@@ -1,7 +1,6 @@
 # If set, CMake tries to download all the necessary dependencies
 #
-#   - R.exe or R.framework depending on the system
-#   - Boost, jsoncpp, libarchive, zlib, and readstat
+#   - Boost, jsoncpp, and readstat
 
 # Notes:
 #
@@ -28,11 +27,6 @@
 #         - LOG_BUILD ON
 #         - LOG_INSTALL ON
 #         - LOG_OUTPUT_ON_FAILURE ON
-#
-# - [ ] Only build part of the Boost that we need. Currently, it is not
-#       possible to pass a list to CPM. This is not that bad because we
-#       only need to build it once anyway, but when this issue is fixed,
-#       we can change it.
 #
 # - [ ] I would have liked to choose a better name for _deps but since CPM
 #       uses it, I went for it that I don't have to maintain two paths
@@ -98,14 +92,16 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 # This is rather slow because it has to download all the submodules,
 # when the final version of 1.78.0 is released, we can replace it
 # with the .tar.gz to have a faster download.
+#   - For some reason, the .tar.gz doesn't support CMake!
+#   - It's not necessary to pass a list of targets. CMake only builds want it needs
 cpmaddpackage(
   NAME
   Boost
   VERSION
   1.78.0
   OPTIONS
-  "BUILD_TESTING OFF"
-  # "BOOST_INCLUDE_LIBRARIES:STRING=nowide;filesystem;system;date_time;timer;chrono;atomic"
+  "BUILD_TESTING=OFF"
+  "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
   GITHUB_REPOSITORY
   "boostorg/boost"
   GIT_TAG
@@ -178,6 +174,7 @@ externalproject_add(
   CMAKE_ARGS -DJSONCPP_WITH_TESTS=OFF
              -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF
              -DJSONCPP_WITH_CMAKE_PACKAGE=OFF
+             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
              -DCMAKE_INSTALL_PREFIX=<DOWNLOAD_DIR>/jsoncpp-install
              -DCMAKE_BINARY_DIR=<DOWNLOAD_DIR>/jsoncpp-install)
 
