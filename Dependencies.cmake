@@ -100,8 +100,9 @@ cpmaddpackage(
   VERSION
   1.78.0
   OPTIONS
-  "BUILD_TESTING=OFF"
-  "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+  "BUILD_TESTING:BOOL=OFF"
+  "CMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
+  "BOOST_INCLUDE_LIBRARIES:STRING=nowide\\\\;filesystem\\\\;system\\\\;date_time\\\\;timer\\\\;chrono\\\\;atomic"
   GITHUB_REPOSITORY
   "boostorg/boost"
   GIT_TAG
