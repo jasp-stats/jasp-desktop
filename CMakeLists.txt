@@ -48,6 +48,7 @@ find_program(MAKE NAMES gmake nmake make)
 find_program(ACLOCAL NAMES aclocal)
 find_program(AUTOCONF NAMES autoconf)
 find_program(AUTORECONF NAMES autoreconf)
+find_program(AUTOUPDATE NAMES autoupdate)
 find_program(CCACHE_EXECUTABLE ccache)
 find_program(IWYU_EXECUTABLE include-what-you-use)
 
@@ -59,6 +60,7 @@ find_program(IWYU_EXECUTABLE include-what-you-use)
 # With this, we can hit up to 90% speed up!
 option(USE_CCACHE "Whether to use ccache for build" OFF)
 option(RUN_IWYU "Whether to run Include What You Use" OFF)
+option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" ON)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
 option(GIT_SUBMODULE "Check submodules during build" ON)
 option(

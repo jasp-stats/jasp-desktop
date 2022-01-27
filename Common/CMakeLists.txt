@@ -28,6 +28,8 @@ else()
   #   NAMES jsoncpp
   #   HINTS ${jsoncpp_LIBRARY_DIRS})
 
+  # WARNING: This is not the way to do it, and it does not work with Ninja :\
+
   set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
   set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
   set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)

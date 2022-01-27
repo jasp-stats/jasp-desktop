@@ -165,10 +165,10 @@ cpmaddpackage(
 externalproject_add(
   jsoncpp
   PREFIX _deps/jsoncpp
-  LOG_CONFIGURE ON
-  LOG_BUILD ON
-  LOG_INSTALL ON
-  LOG_OUTPUT_ON_FAILURE ON
+  # LOG_CONFIGURE ON
+  # LOG_BUILD ON
+  # LOG_INSTALL ON
+  # LOG_OUTPUT_ON_FAILURE ON
   GIT_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git"
   GIT_TAG "1.9.5"
   STEP_TARGETS configure build install
@@ -189,16 +189,16 @@ set(jsoncpp_LIBRARY_DIRS ${jsoncpp_DOWNLOAD_DIR}/jsoncpp-install/lib)
 externalproject_add(
   readstat
   PREFIX _deps/readstat
-  LOG_CONFIGURE ON
-  LOG_BUILD ON
-  LOG_INSTALL ON
-  LOG_OUTPUT_ON_FAILURE ON
+  # LOG_CONFIGURE ON
+  # LOG_BUILD ON
+  # LOG_INSTALL ON
+  # LOG_OUTPUT_ON_FAILURE ON
   GIT_REPOSITORY "https://github.com/WizardMac/ReadStat"
   GIT_TAG "v1.1.7"
   BUILD_IN_SOURCE ON
   STEP_TARGETS configure build install
   CONFIGURE_COMMAND ./autogen.sh
-  COMMAND autoupdate
+  COMMAND ${AUTOUPDATE}
   COMMAND ./configure --enable-static --prefix=<DOWNLOAD_DIR>/readstat-install
   BUILD_COMMAND ${MAKE}
   INSTALL_COMMAND ${MAKE} install)
