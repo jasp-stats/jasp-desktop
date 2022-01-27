@@ -55,6 +55,9 @@ macro(patch_r)
   #     "s/FC = \$\(R_HOME\)/opt/R/arm64/bin/gfortran -mtune=native/gfortran -mtune=native/g"
   #     Makeconf)
 
+  # -------------------------------------------------------------
+  # Resolving some absolute symlinks that may cause signing issue
+
   file(GLOB CONF_FILES "${R_HOME_PATH}/fontconfig/fonts/conf.d/*.conf")
 
   foreach(FILE ${CONF_FILES})
@@ -66,5 +69,20 @@ macro(patch_r)
       COMMAND ln -sf ../../fontconfig/conf.avail/${FILE_NAME} ${FILE_NAME})
 
   endforeach()
+
+  # -------------------------------------------------------------
+  # Adding the main executable of the R.framework to the plist.Info
+  # Note:
+  #   - This might be problmatic since the main executable is not where Apple
+  #     expect it. For now, I point it to the thing, and I hope it's good enough.
+  #     If this doesn't work, we need to copy the `bin/exec/R` out, and let it
+  #     sit there for show. This means that we cannot use the `./R` script in the
+  #     R_HOME_PATH, and we need to call the one in the `bin` folder.
+  execute_process(
+    WORKING_DIRECTORY ${R_HOME_PATH}
+    COMMAND
+      sed -i.bak
+      "s/<\\/dict>/<key>CFBundleExecutable<\\/key><string>bin\\/exec\\/R<\\/string><\\/dict>/"
+      Info.plist)
 
 endmacro()
