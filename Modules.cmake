@@ -88,6 +88,7 @@ set(MODULES_RENV_CACHE_PATH
 set(JASP_ENGINE_PATH
     "${CMAKE_BINARY_DIR}/Desktop/"
     CACHE PATH "Location of the JASPEngine")
+# Setting JASP_ENGINE_PATH like this doesn't work with APP_BUNDLE
 
 set(INSTALL_MODULE_TEMPLATE_FILE
     "${PROJECT_SOURCE_DIR}/Modules/install-module.R.in"
@@ -194,6 +195,8 @@ if(INSTALL_R_MODULES)
     #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
     #   COMPONENT ${MODULE})
 
+    add_dependencies(${MODULE} JASPEngine)
+
     # Making sure that CMake doesn't parallelize the installation of the modules
 
     if(CMAKE_GENERATOR STREQUAL "Ninja")
@@ -243,6 +246,8 @@ if(INSTALL_R_MODULES)
     #   DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
     #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
     #   COMPONENT ${MODULE})
+
+    add_dependencies(${MODULE} JASPEngine)
 
     # Making sure that CMake doesn't parallelize the installation of the modules
 
