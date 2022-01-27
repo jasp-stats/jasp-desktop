@@ -55,4 +55,16 @@ macro(patch_r)
   #     "s/FC = \$\(R_HOME\)/opt/R/arm64/bin/gfortran -mtune=native/gfortran -mtune=native/g"
   #     Makeconf)
 
+  file(GLOB CONF_FILES "${R_HOME_PATH}/fontconfig/fonts/conf.d/*.conf")
+
+  foreach(FILE ${CONF_FILES})
+
+    get_filename_component(FILE_NAME ${FILE} NAME)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/fontconfig/fonts/conf.d/
+      COMMAND ln -sf ../../fontconfig/conf.avail/${FILE_NAME} ${FILE_NAME})
+
+  endforeach()
+
 endmacro()
