@@ -1,12 +1,35 @@
+# This file contains codes necessary for setting up JASP Modules, it prepares
+#   - `jaspBase` if it is not installed
+#   - For every Module,
+#     - We create an installer file from the `install-module.R.in` template
+#     - Runs them *one by one* at Build time, and if successful, the
+#       `install-module.R` creates an empty file `<module>-installed-successfully.log`.
+#       I can also use the `.mds` file but for now, I have it like this.
+#         - `symlinktools.R` is being called right after successful installation as well
+#     - After a successful installation, we run the `Patch.R` on each Modules
+#       to patch and sign the installed libraries.
+#
+#
+# Todos:
+#   - [ ] If we end up using the install components, we need to make sure that
+#   the `install` command for each Module is more granular, and only targets
+#   the pieces of the `renv-cache` that belongs to the Module.
+
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
+# Ninja supports JOB_POOL therefore setting up the sequential building of
+# modules is much nicer, and easier. Without Ninja, I have to make a chain
+# of them, and make them depend on each other, and some of the biolerplate
+# below is deal with that, because we cannot use Ninja all the time, and
+# I'm not yet fully convinced that it can handle everything we need. I remember
+# it having some issues with Resources, etc.
 if(CMAKE_GENERATOR STREQUAL "Ninja")
   set_property(GLOBAL PROPERTY JOB_POOLS sequential=1)
 endif()
 
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
-    "jaspAnova"
+    # "jaspAnova"
     # "jaspFactor"
     # "jaspFrequencies"
     # "jaspRegression"
@@ -166,10 +189,10 @@ if(INSTALL_R_MODULES)
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
 
-    install(
-      DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
-      DESTINATION ${CMAKE_INSTALL_BINDIR}/../Modules/
-      COMPONENT ${MODULE})
+    # install(
+    #   DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
+    #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
+    #   COMPONENT ${MODULE})
 
     # Making sure that CMake doesn't parallelize the installation of the modules
 
@@ -216,10 +239,10 @@ if(INSTALL_R_MODULES)
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
 
-    install(
-      DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
-      DESTINATION ${CMAKE_INSTALL_BINDIR}/../Modules/
-      COMPONENT ${MODULE})
+    # install(
+    #   DIRECTORY ${MODULES_BINARY_PATH}/${MODULE}
+    #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
+    #   COMPONENT ${MODULE})
 
     # Making sure that CMake doesn't parallelize the installation of the modules
 

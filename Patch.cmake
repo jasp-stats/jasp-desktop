@@ -1,4 +1,4 @@
-# This scripts patches and signs all the libraries found in the PATH variable. In addition,
+# This script patches and signs all the libraries found in the PATH variable. In addition,
 # for every library that it patches, it creates an empty file, logging its action. So, for
 # `R_HOME/lib/libR.dylib`, we will have `R_HOME/lib/libR.dylib.patched.log`. I'm basically
 # implementing a simple cache to not patch things several times. This is especially useful
