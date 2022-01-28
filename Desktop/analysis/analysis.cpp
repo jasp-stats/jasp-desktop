@@ -1165,7 +1165,10 @@ void Analysis::checkForRSources()
 	std::set<std::string> removeAfterwards;
 
 	for(auto & sourceJson : _rSources)
-		if(newSources.count(sourceJson.first) == 0)
+		// The sourceIDs come from the meta values, newSources from the results
+		// If a result of a source does not change, only its meta value is send, not its result.
+		// So only when a source does not exist in the meta values, it can be removed
+		if(sourceIDs.count(sourceJson.first) == 0)
 		{
 			removeAfterwards.insert(sourceJson.first);
 			sourceJson.second = Json::nullValue;
