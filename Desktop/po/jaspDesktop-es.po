@@ -3815,3 +3815,15 @@ msgstr "Ayúdanos a traducir o mejorar JASP en tu idioma"
 msgctxt "PrefsResults|"
 msgid "Use normalized notation"
 msgstr "Utilizar notación normalizada"
+
+msgctxt "ModuleInstaller|"
+msgid "Install"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Press this to install your selected Module"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Select a JASP Module to install"
+msgstr ""

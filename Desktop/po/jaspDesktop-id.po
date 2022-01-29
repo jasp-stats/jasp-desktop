@@ -3552,3 +3552,15 @@ msgstr ""
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
 msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Install"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Press this to install your selected Module"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Select a JASP Module to install"
+msgstr ""

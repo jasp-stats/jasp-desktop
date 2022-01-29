@@ -3452,3 +3452,15 @@ msgstr ""
 msgctxt "PrefsResults|"
 msgid "Use normalized notation"
 msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Install"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Press this to install your selected Module"
+msgstr ""
+
+msgctxt "ModuleInstaller|"
+msgid "Select a JASP Module to install"
+msgstr ""
