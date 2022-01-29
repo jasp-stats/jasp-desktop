@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2022-01-30 10:54+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.11-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -3623,12 +3629,12 @@ msgstr "使用标准化符号(即科学计数法形如2.33×10²，默认为e符
 
 msgctxt "ModuleInstaller|"
 msgid "Install"
-msgstr ""
+msgstr "安装"
 
 msgctxt "ModuleInstaller|"
 msgid "Press this to install your selected Module"
-msgstr ""
+msgstr "按此安装您选择的模块"
 
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module to install"
-msgstr ""
+msgstr "选择要安装的 JASP 模块"
