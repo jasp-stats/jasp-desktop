@@ -53,7 +53,7 @@ foreach(FILE ${LIBRARIES})
         WORKING_DIRECTORY ${PATH}
         COMMAND
           install_name_tool -change "@rpath/libtbbmalloc.dylib"
-          "@executable_path/../Modules/jaspProphet/RcppParallel/lib/libtbbmalloc.dylib"
+          "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbbmalloc.dylib"
           "${FILE}")
 
       execute_process(
@@ -62,7 +62,7 @@ foreach(FILE ${LIBRARIES})
         WORKING_DIRECTORY ${PATH}
         COMMAND
           install_name_tool -change "@rpath/libtbbmalloc_proxy.dylib"
-          "@executable_path/../Modules/jaspProphet/RcppParallel/lib/libtbbmalloc_proxy.dylib"
+          "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbbmalloc_proxy.dylib"
           "${FILE}")
 
       execute_process(
@@ -71,7 +71,7 @@ foreach(FILE ${LIBRARIES})
         WORKING_DIRECTORY ${PATH}
         COMMAND
           install_name_tool -change "@rpath/libtbb.dylib"
-          "@executable_path/../Modules/jaspProphet/RcppParallel/lib/libtbb.dylib"
+          "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbb.dylib"
           "${FILE}")
 
       string(
