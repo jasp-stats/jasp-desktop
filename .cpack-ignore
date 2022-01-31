@@ -7,7 +7,7 @@ CMakeLists\\.txt\\.user
 \\.*\\.cpp
 \\.*\\.a
 
-\\.*.dSYM*/
+\\.*\\.dSYM\\.*/
 
 *build*/
 *examples*/

@@ -14,8 +14,6 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
 # include(Patch.cmake)
 
-option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" OFF)
-
 # TODO: Replace the version with a variable
 if(APPLE)
 

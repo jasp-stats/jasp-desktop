@@ -36,8 +36,9 @@ install(
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   BUNDLE DESTINATION JASP.app/Contents/MacOS/ COMPONENT jaspCore)
 
+# At the moment, I don't remove the `.a` files
 set(FILES_EXCLUDE_PATTERN
-    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log)$")
+    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak)$")
 set(FOLDERS_EXCLUDE_PATTERN
     ".*(/doc|/examples|/help|/man|/html|/bib|/announce|/test|/tinytest|/tests)$"
 )

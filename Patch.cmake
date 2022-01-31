@@ -12,7 +12,7 @@
 #     `add_custom_targets` and I needed to have that in a few situtation.
 #
 
-cmake_policy(SET CMP0009 NEW)
+# cmake_policy(SET CMP0009 NEW)
 
 file(
   GLOB_RECURSE
@@ -37,7 +37,58 @@ foreach(FILE ${LIBRARIES})
 
   if(NOT EXISTS "${DIRECTORY_NAME}/${FILE_NAME}.patched.log")
 
-    if(FILE MATCHES "/library/")
+    # This `if` doesn't look great but it should cover our main patterns.
+    # Later on, after we are sure that everything works as expected, we can
+    # make it nicer.
+
+    if((FILE MATCHES "prophet.so")
+       OR (FILE MATCHES "metaBMA.so")
+       OR (FILE MATCHES "libtbbmalloc.dylib")
+       OR (FILE MATCHES "libtbbmalloc_proxy.dylib")
+       OR (FILE MATCHES "libtbb.dylib"))
+
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND
+          install_name_tool -change "@rpath/libtbbmalloc.dylib"
+          "@executable_path/../Modules/jaspProphet/RcppParallel/lib/libtbbmalloc.dylib"
+          "${FILE}")
+
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND
+          install_name_tool -change "@rpath/libtbbmalloc_proxy.dylib"
+          "@executable_path/../Modules/jaspProphet/RcppParallel/lib/libtbbmalloc_proxy.dylib"
+          "${FILE}")
+
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND
+          install_name_tool -change "@rpath/libtbb.dylib"
+          "@executable_path/../Modules/jaspProphet/RcppParallel/lib/libtbb.dylib"
+          "${FILE}")
+
+      string(
+        REPLACE "${MODULES_BINARY_PATH}/${MODULE}"
+                "@executable_path/../Modules/${MODULE}"
+                NEW_ID
+                ${FILE})
+
+    elseif(FILE MATCHES "/Modules/jasp")
+
+      string(
+        REPLACE "${MODULES_BINARY_PATH}/${MODULE}"
+                "@executable_path/../Modules/${MODULE}"
+                NEW_ID
+                ${FILE})
+
+    elseif(FILE MATCHES "/library/")
 
       string(
         REPLACE
@@ -73,16 +124,9 @@ foreach(FILE ${LIBRARIES})
           NEW_ID
           ${FILE})
 
-    elseif(FILE MATCHES "/Modules/jasp")
-
-      string(
-        REPLACE "${MODULES_BINARY_PATH}/${MODULE}"
-                "@executable_path/../Modules/${MODULE}"
-                NEW_ID
-                ${FILE})
-
     endif()
 
+    # Changing the `R_HOME/lib/` prefix
     execute_process(
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
@@ -93,6 +137,9 @@ foreach(FILE ${LIBRARIES})
         "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
     )
 
+    # Changing the `/opt/R/arm64/lib` prefix
+    # These are additional libraries needed for arm64.
+    # @todo, at some point, we might need to have a case for them, but for now they are fine
     execute_process(
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
@@ -102,12 +149,14 @@ foreach(FILE ${LIBRARIES})
         "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib"
     )
 
+    # Changing the library `id`s
     execute_process(
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${PATH}
       COMMAND install_name_tool -id "${NEW_ID}" "${FILE}")
 
+    # Signing the library
     execute_process(
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
