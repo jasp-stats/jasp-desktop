@@ -43,10 +43,16 @@ macro(patch_r)
 
   # If this fails, I might need to have a quote aruond "$(R_HOME)",
   # or the whole line including it. I'm not sure yet.
-  execute_process(
-    WORKING_DIRECTORY ${R_HOME_PATH}/etc
-    COMMAND sed -i.bak -e "s/\\/opt\\/R\\/arm64/$(R_HOME)\\/opt\\/R\\/arm64/g"
-            Makeconf)
+  if(R_HOME_PATH MATCHES "arm64")
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e
+              "s/\\/opt\\/R\\/arm64/$(R_HOME)\\/opt\\/R\\/arm64/g" Makeconf)
+
+  else()
+    # On x86_64, we might need to do a bit differently since some of these packages
+    # are installed in R_HOME/usr/local/ which is bizarre, but I guess we will see
+  endif()
 
   # execute_process(
   #   WORKING_DIRECTORY ${R_HOME_PATH}/etc
