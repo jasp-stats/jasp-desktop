@@ -111,28 +111,42 @@ cpmaddpackage(
 #
 # Removing these, since they are part of the Xcode and MSVC's toolchain
 #
-# cpmaddpackage(
-#   NAME
-#   LibArchive
-#   VERSION
-#   3.5.2
-#   OPTIONS
-#   "ENABLE_TEST OFF"
-#   "JSONCPP_WITH_POST_BUILD_UNITTEST OFF"
-#   GITHUB_REPOSITORY
-#   "libarchive/libarchive"
-#   GIT_TAG
-#   "v3.5.2")
+if(WIN32)
 
-# cpmaddpackage(
-#   NAME
-#   ZLIB
-#   VERSION
-#   1.2.11
-#   GITHUB_REPOSITORY
-#   "madler/zlib"
-#   GIT_TAG
-#   "v1.2.11")
+  cpmaddpackage(
+    NAME
+    LibArchive
+    VERSION
+    3.5.2
+    OPTIONS
+    "ENABLE_TEST OFF"
+    "JSONCPP_WITH_POST_BUILD_UNITTEST OFF"
+    GITHUB_REPOSITORY
+    "libarchive/libarchive"
+    GIT_TAG
+    "v3.5.2")
+
+  cpmaddpackage(
+    NAME
+    ZLIB
+    VERSION
+    1.2.11
+    GITHUB_REPOSITORY
+    "madler/zlib"
+    GIT_TAG
+    "v1.2.11")
+
+  cpmaddpackage(
+    NAME
+    ZSTD
+    VERSION
+    1.5.2
+    GITHUB_REPOSITORY
+    "facebook/zstd"
+    GIT_TAG
+    "v1.5.2")
+
+endif()
 
 # ----- jsoncpp ------
 #

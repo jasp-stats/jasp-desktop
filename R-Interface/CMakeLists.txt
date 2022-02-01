@@ -44,7 +44,7 @@ if(WIN32)
            BOOST_USE_WINDOWS_H
            NOMINMAX
            WIN32_LEAN_AND_MEAN)
-  target_compile_options(R-Interface -Og -municode)
+  # target_compile_options(R-Interface -Og -municode)
 endif()
 
 # Amir: There are some auxillary files here, and I guess I will take care of
