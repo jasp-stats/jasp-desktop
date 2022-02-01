@@ -70,7 +70,10 @@ target_include_directories(
          jaspColumnEncoder
          # R
          ${R_HOME_PATH}/include
-         ${RCPP_PATH}/include)
+         ${RCPP_PATH}/include
+         # Conan
+         ${CONAN_INCLUDE_DIRS_JSONCPP}
+         ${CONAN_INCLUDE_DIRS_LIBARCHIVE})
 
 target_link_libraries(
   Common
@@ -80,6 +83,7 @@ target_link_libraries(
          Boost::date_time
          Boost::timer
          Boost::chrono
+         # Conan
          # LibArchive::LibArchive
          # ${LIBJSONCPP_LINK_LIBRARIES}
          # ${CONAN_LIBS_libarchive}

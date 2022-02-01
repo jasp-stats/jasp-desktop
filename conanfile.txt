@@ -1,0 +1,20 @@
+# You can search the availability of a certain library here, https://conan.io/center/
+# After adding the library, you can add it to the target using
+#
+# - `CONAN_PKG::library-name` (if you use this, you don't need to add the header files)
+# - or ${CONAN_LIBS_LIBRARY-name} (it needs to be upper case)
+# 
+# The header files can be added to a target using ${CONAN_INCLUDE_DIRS_LIBRARY-NAME}
+
+[requires]
+boost/1.78.0
+libiconv/1.16
+libarchive/3.5.2
+zlib/1.2.11
+zstd/1.5.2
+jsoncpp/1.9.5
+openssl/3.0.1
+bison/3.7.6
+
+[generators]
+cmake

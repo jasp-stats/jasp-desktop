@@ -224,12 +224,8 @@ if(INSTALL_JASP_REQUIRED_LIBRARIES)
 endif()
 
 target_include_directories(
-  JASP
-  PUBLIC ${LIBJSONCPP_INCLUDE_DIRS}
-         ${LibArchive_INCLUDE_DIRS}
-         ${LIBREADSTAT_INCLUDE_DIRS}
-         ${PROJECT_SOURCE_DIR}/Common
-         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
+  JASP PUBLIC ${LIBREADSTAT_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/Common
+              ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
 if(APPLE)
 
