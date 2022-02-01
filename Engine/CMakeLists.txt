@@ -52,12 +52,12 @@ add_executable(JASPEngine ${HEADER_FILES} ${SOURCE_FILES})
 
 add_dependencies(JASPEngine R-Interface)
 
-target_include_directories(JASPEngine PUBLIC ${LIBJSONCPP_INCLUDE_DIRS}
+target_include_directories(JASPEngine PUBLIC ${CONAN_INCLUDE_DIRS_jsoncpp}
                                              ${PROJECT_SOURCE_DIR}/R-Interface)
 
 target_link_libraries(
   JASPEngine
-  PUBLIC Common
+  PUBLIC Common # includes jsoncpp, libarchive
          R-Interface
          #
          Boost::nowide

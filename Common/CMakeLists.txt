@@ -65,6 +65,7 @@ endif()
 target_include_directories(
   Common
   PUBLIC ${LIBJSONCPP_INCLUDE_DIRS}
+         ${CONAN_INCLUDE_DIRS_libjson}
          # JASP
          jaspColumnEncoder
          # R
@@ -79,6 +80,12 @@ target_link_libraries(
          Boost::date_time
          Boost::timer
          Boost::chrono
+         # LibArchive::LibArchive
+         # ${LIBJSONCPP_LINK_LIBRARIES}
+         # ${CONAN_LIBS_libarchive}
+         # ${CONAN_LIBS_jsoncpp}
+         CONAN_PKG::jsoncpp
+         CONAN_PKG::libarchive
          LibArchive::LibArchive
          ${LIBJSONCPP_LINK_LIBRARIES}
          # Only if JASP_USES_QT_HERE is ON
