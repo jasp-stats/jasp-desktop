@@ -97,7 +97,7 @@ file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
 # NOTE:
 #   The resources has to be added and managed before the creation of the
 #   JASP target
-if(CMAKE_GENERATOR STREQUAL "Xcode")
+if((CMAKE_GENERATOR STREQUAL "Xcode") OR ${BUILD_MACOSX_BUNDLE})
 
   # -- Resources -----------------
   #
@@ -228,11 +228,11 @@ if(APPLE)
   # well and it gives us more options. That being said, I prefer the method above
   # because I feel this one enforces the Framework strcutre and that could cause
   # problem because R.framework doesn't have a proper structure
-  # set_target_properties(
-  #   JASP
-  #   PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
-  #              XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
-  #              XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY OFF)
+  set_target_properties(
+    JASP
+    PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
+               XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
+               XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY OFF)
 
   # set_target_properties(JASP PROPERTIES INSTALL_RPATH
   #                                       @executable_path/../Frameworks)
@@ -260,6 +260,7 @@ if(APPLE)
                MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
                MACOSX_BUNDLE_SHORT_VERSION_STRING
                "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+               MACOSX_BUNDLE_GUI_IDENTIFIER "org.jasp-stats.jasp"
                MACOSX_BUNDLE_ICON_FILE
                "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
                MACOSX_BUNDLE_COPYRIGHT "© JASP Team"
