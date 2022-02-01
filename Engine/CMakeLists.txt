@@ -13,11 +13,28 @@ find_package(
              timer
              chrono)
 
-pkg_check_modules(
-  LIBJSONCPP
-  REQUIRED
-  IMPORTED_TARGET
-  jsoncpp)
+if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
+
+  pkg_check_modules(
+    LIBJSONCPP
+    REQUIRED
+    IMPORTED_TARGET
+    jsoncpp)
+
+else()
+
+  # find_library(
+  #   LIBJSONCPP REQUIRED
+  #   NAMES jsoncpp
+  #   HINTS ${jsoncpp_LIBRARY_DIRS})
+
+  # WARNING: This is not the way to do it, and it does not work with Ninja :\
+
+  set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
+  set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
+  set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
+
+endif()
 
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 

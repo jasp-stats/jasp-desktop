@@ -67,6 +67,7 @@ option(
   INSTALL_JASP_REQUIRED_LIBRARIES
   "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
   ON)
+option(BUILD_TESTS "Whether to build the test suits" OFF)
 
 if(CCACHE_EXECUTABLE
    AND USE_CCACHE
@@ -127,6 +128,11 @@ add_subdirectory(Common)
 add_subdirectory(R-Interface)
 add_subdirectory(Engine)
 add_subdirectory(Desktop)
+
+if(BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(Tests)
+endif()
 
 # Builds, installs and configures JASP Modules
 include(Modules.cmake)
