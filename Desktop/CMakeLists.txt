@@ -2,7 +2,6 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH YES)
 
-find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
@@ -39,28 +38,12 @@ find_package(
 
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
 
+  find_package(PkgConfig REQUIRED)
   pkg_check_modules(
     LIBJSONCPP
     REQUIRED
     IMPORTED_TARGET
     jsoncpp)
-
-else()
-
-  # find_library(
-  #   LIBJSONCPP REQUIRED
-  #   NAMES jsoncpp
-  #   HINTS ${jsoncpp_LIBRARY_DIRS})
-
-  # WARNING: This is not the way to do it, and it does not work with Ninja :\
-
-  set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
-  set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
-  set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
-
-endif()
-
-if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
 
   pkg_check_modules(
     LIBREADSTAT
@@ -71,16 +54,21 @@ if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
 else()
 
   # find_library(
-  #   LIBREADSTAT REQUIRED
-  #   NAMES libreadstat.a
-  #   HINTS ${readstat_LIBRARY_DIRS})
+  #   LIBJSONCPP REQUIRED
+  #   NAMES jsoncpp
+  #   HINTS ${jsoncpp_LIBRARY_DIRS})
 
+  # WARNING: This is not the way to do it, and it does not work with Ninja :\
+
+  # jsoncpp
+  set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
+  set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
+  set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
+
+  # readstat
   set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
-  cmake_print_variables(LIBREADSTAT_INCLUDE_DIRS)
   set(LIBREADSTAT_LIBRARY_DIRS ${readstat_LIBRARY_DIRS})
-  cmake_print_variables(LIBREADSTAT_LIBRARY_DIRS)
   set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT_LIBRARY_DIRS}/libreadstat.a)
-  cmake_print_variables(LIBREADSTAT_LINK_LIBRARIES)
 
 endif()
 

@@ -1,6 +1,5 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Common)
 
-find_package(PkgConfig REQUIRED)
 find_package(LibArchive REQUIRED)
 
 set(Boost_USE_STATIC_LIBS ON)
@@ -15,6 +14,7 @@ find_package(
 
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
 
+  find_package(PkgConfig REQUIRED)
   pkg_check_modules(
     LIBJSONCPP
     REQUIRED
