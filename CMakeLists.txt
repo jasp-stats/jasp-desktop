@@ -34,10 +34,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_FIND_FRAMEWORK ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
 # TODO: Find this version number automatically
 set(R_VERSION "4.1.2")
 set(R_VERSION_MAJOR_MINOR "4.1")
@@ -79,6 +75,10 @@ endif()
 
 # This loads all the Qt-related CMake Modules.
 find_package(Qt6 REQUIRED COMPONENTS Core)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 find_package(Git)
 find_program(MAKE NAMES gmake nmake make)

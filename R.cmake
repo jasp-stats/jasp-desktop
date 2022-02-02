@@ -9,6 +9,11 @@
 #       is that it can be triggered independently, however, it will only be
 #       done during the build stage and not configuration
 # - [ ] R_VERSION_NAME is a better name R_DIR_NAME
+# - [ ] All the code inside the if(APPLE), and if(WIN32) should be turned into 
+#       a CMake module. I leave this for later cleanup
+# - [ ] Both R package intaller can be improved by some caching, now cleaning is
+#       a bit brutal
+#       
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
