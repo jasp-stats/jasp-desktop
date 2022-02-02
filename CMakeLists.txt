@@ -9,6 +9,22 @@ project(
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")
 
+include(FetchContent)
+include(ExternalProject)
+include(CMakePrintHelpers)
+include(Tools/cmake/CPM.cmake)
+
+# I have a construct for this, and Qt often messes things up.
+# I will consider turning this off, and letting Qt does it 
+# when everything else worked properly
+set(QT_CREATOR_SKIP_CONAN_SETUP ON)
+
+
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND conan install ${CMAKE_SOURCE_DIR} --build=missing)
+endif()
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
@@ -38,13 +54,31 @@ else()
   set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}")
 endif()
 
+if(CMAKE_SIZEOF_VOID_P EQUAL 8) # 64 bits
+    set(R_DIR_NAME "x64")
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
+    set(R_DIR_NAME "i386")
+endif()
+
+# Sets the build options
+include(JASP.cmake)
+
+# Prepares and configures everything related to R, and R.framework
+include(R.cmake)
+
+# Builds and configures all the dependencies
+# if(INSTALL_JASP_REQUIRED_LIBRARIES)
+include(Dependencies.cmake)
+
+if (QTDIR OR DEFINED ENV{QTDIR} OR DEFINED ENV{QTDIR32} OR DEFINED ENV{QTDIR64})
+  # Qt path set by user or env var
+else()
+  set(QTDIR "" CACHE PATH "Path to Qt (e.g. C:/Qt/5.7/msvc2015_64)")
+  message(WARNING "QTDIR variable is missing.  Please set this variable to specify path to Qt (e.g. C:/Qt/5.7/msvc2015_64)")
+endif()
+
 # This loads all the Qt-related CMake Modules.
 find_package(Qt6 REQUIRED COMPONENTS Core)
-
-include(FetchContent)
-include(ExternalProject)
-include(CMakePrintHelpers)
-include(Tools/cmake/CPM.cmake)
 
 find_package(Git)
 find_program(MAKE NAMES gmake nmake make)
@@ -108,15 +142,14 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   endif()
 endif()
 
-# Sets the build options
-include(JASP.cmake)
+# I am not using this for now, but later on, we can use it to
+# create binaries and installer for different systems
+if(WIN32) # Check if we are on Windows
+  set(SYSTEM_TYPE WIN32)
+  # else(APPLE)
+  #   set(SYSTEM_TYPE MACOSX_BUNDLE)
+endif()
 
-# Prepares and configures everything related to R, and R.framework
-include(R.cmake)
-
-# Builds and configures all the dependencies
-# if(INSTALL_JASP_REQUIRED_LIBRARIES)
-include(Dependencies.cmake)
 # endif()
 
 add_subdirectory(Common)

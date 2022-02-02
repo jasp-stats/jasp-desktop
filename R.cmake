@@ -322,6 +322,105 @@ elseif(WIN32)
   # TODO
   #   - [ ] I can use the PATH to R/ as _R_framework and everything else should just work
 
+  # set(R_FRAMEWORK_PATH "${CMAKE_BINARY_DIR}/R")
+  set(R_HOME_PATH
+      "${CMAKE_BINARY_DIR}/R")
+  set(R_BIN_PATH "${R_HOME_PATH}/bin")
+  set(R_LIB_PATH "${R_HOME_PATH}/bin/${R_DIR_NAME}")
+  set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
+  set(R_OPT_PATH "${R_HOME_PATH}/opt")
+  set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
+  set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
+  set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+
+  cmake_print_variables(R_HOME_PATH)
+  cmake_print_variables(R_LIB_PATH)
+  cmake_print_variables(R_LIBRARY_PATH)
+  cmake_print_variables(R_OPT_PATH)
+  cmake_print_variables(R_EXECUTABLE)
+
+  cmake_print_variables(RCPP_PATH)
+  cmake_print_variables(RINSIDE_PATH)
+
+
+  message(CHECK_START "Downloading R-${R_VERSION}-win.exe")
+
+  set(R_PACKAGE_NAME "R-${R_VERSION}-win.exe")
+  set(R_DOWNLOAD_URL
+      "https://cran.r-project.org/bin/windows/base/R-${R_VERSION}-win.exe")
+  set(R_PACKAGE_HASH "776384c989ea061728e781b6b9ce5b92")
+
+  if(NOT EXISTS ${CMAKE_BINARY_DIR}/R)
+
+    fetchcontent_declare(
+      r_win_exe
+      URL ${R_DOWNLOAD_URL}
+      URL_HASH MD5=${R_PACKAGE_HASH}
+      DOWNLOAD_NO_EXTRACT ON
+      DOWNLOAD_NAME ${R_PACKAGE_NAME})
+
+    fetchcontent_populate(r_win_exe)
+    fetchcontent_getproperties(r_win_exe)
+
+    if(r_win_exe_POPULATED)
+
+      message(CHECK_PASS "successful.")
+
+      message(CHECK_START "Unpacking and preparing the R instance")
+
+      execute_process(
+        WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
+        COMMAND ${R_PACKAGE_NAME} /CURRENTUSER /verysilent /sp /DIR=${r_win_exe_BINARY_DIR}/R)
+
+      file(COPY ${r_win_exe_BINARY_DIR}/R DESTINATION ${CMAKE_BINARY_DIR})
+
+      if (EXISTS ${CMAKE_BINARY_DIR}/R)
+        message(CHECK_PASS "successful")
+      else()
+        message(CHECK_FAIL "failed")
+        message(FATAL_ERROR "CMake has failed to prepare the R environment in the build folder.")
+      endif()
+
+
+      # TODOs:
+      #   - [ ] I think we should probably remove a few auxiliary files, e.g. uninstall stuff
+
+
+    else()
+
+      message(CHECK_FAIL "failed.")
+
+    endif()
+
+  endif()
+
+
+
+  if(NOT EXISTS ${RINSIDE_PATH})
+    message(STATUS "RInside is not installed!")
+
+    message(CHECK_START
+            "Installing the 'RInside' and 'Rcpp'")
+
+    file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
+         "install.packages('RInside', repos='${R_REPOSITORY}')")
+
+    execute_process(
+      # COMMAND_ECHO STDOUT
+      ERROR_QUIET OUTPUT_QUIET
+      WORKING_DIRECTORY ${R_BIN_PATH}
+      COMMAND ./R --slave --no-restore --no-save
+              --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
+
+    if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
+      message(CHECK_FAIL "unsuccessful.")
+      message(FATAL_ERROR "'RInside' installation has failed!")
+    endif()
+
+    message(CHECK_PASS "successful.")
+
+  endif()
+
 endif()
 
 # Amir: Not sure about this yet.
@@ -338,10 +437,10 @@ endif()
 #   WINQTBIN ~= s,qmake.exe,,gs
 # }
 
-message(STATUS "R Configurations:")
+# message(STATUS "R Configurations:")
 
-cmake_print_variables(_R_Framework)
-cmake_print_variables(_LIB_R)
-cmake_print_variables(_LIB_RINSIDE)
+# cmake_print_variables(_R_Framework)
+# cmake_print_variables(_LIB_R)
+# cmake_print_variables(_LIB_RINSIDE)
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

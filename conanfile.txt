@@ -7,14 +7,17 @@
 # The header files can be added to a target using ${CONAN_INCLUDE_DIRS_LIBRARY-NAME}
 
 [requires]
-boost/1.78.0
+# boost/1.75.0
 libiconv/1.16
 libarchive/3.5.2
 zlib/1.2.11
 zstd/1.5.2
 jsoncpp/1.9.5
-openssl/3.0.1
-bison/3.7.6
+openssl/1.1.1m
+# bison/3.7.6
 
 [generators]
 cmake
+
+#[options]
+#bison:fPIC=False

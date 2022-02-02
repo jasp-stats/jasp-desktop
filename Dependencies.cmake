@@ -1,3 +1,5 @@
+list(APPEND CMAKE_MESSAGE_CONTEXT Dependencies)
+
 # If set, CMake tries to download all the necessary dependencies
 #
 #   - Boost, jsoncpp, and readstat
@@ -48,36 +50,8 @@ endif()
 #   - On macOS, this will place the R.framework into the ${CMAKE_SOURCE_DIR}/Frameworks
 #
 if(WIN32)
-  find_program(EXTRACT NAMES extract)
-
-  set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
-  set(R_DOWNLOAD_URL
-      "https://cran.r-project.org/bin/windows/base/R-${R_VERSION}-win.exe")
-  set(R_PACKAGE_HASH "776384c989ea061728e781b6b9ce5b92")
-
-  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/R)
-
-    fetchcontent_declare(
-      r_win_exe
-      URL ${R_DOWNLOAD_URL}
-      URL_HASH MD5=${R_PACKAGE_HASH}
-      DOWNLOAD_NO_EXTRACT ON
-      DOWNLOAD_NAME ${R_PACKAGE_NAME})
-
-    fetchcontent_populate(r_win_exe)
-    fetchcontent_getproperties(r_win_exe)
-
-    if(r_win_exe_POPULATED)
-      execute_process(
-        WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
-        COMMAND extract /c ${R_PACKAGE_NAME} /l ${r_win_exe_BINARY_DIR})
-      execute_process(
-        WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
-        COMMAND cp -r ${r_win_exe_BINARY_DIR} ${CMAKE_SOURCE_DIR}/R)
-
-    endif()
-
-  endif()
+  
+  # Moved to the R.cmake
 
 elseif(APPLE)
 
@@ -94,19 +68,19 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 # with the .tar.gz to have a faster download.
 #   - For some reason, the .tar.gz doesn't support CMake!
 #   - It's not necessary to pass a list of targets. CMake only builds want it needs
-# cpmaddpackage(
-#   NAME
-#   Boost
-#   VERSION
-#   1.78.0
-#   OPTIONS
-#   "BUILD_TESTING:BOOL=OFF"
-#   "CMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
-#   "BOOST_INCLUDE_LIBRARIES:STRING=nowide\\\\;filesystem\\\\;system\\\\;date_time\\\\;timer\\\\;chrono\\\\;atomic"
-#   GITHUB_REPOSITORY
-#   "boostorg/boost"
-#   GIT_TAG
-#   "boost-1.78.0")
+cpmaddpackage(
+  NAME
+  Boost
+  VERSION
+  1.78.0
+  OPTIONS
+  "BUILD_TESTING:BOOL=OFF"
+  "CMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
+  "BOOST_INCLUDE_LIBRARIES:STRING=nowide\\\\;filesystem\\\\;system\\\\;date_time\\\\;timer\\\\;chrono\\\\;atomic"
+  GITHUB_REPOSITORY
+  "boostorg/boost"
+  GIT_TAG
+  "boost-1.78.0")
 
 #
 # Removing these, since they are part of the Xcode and MSVC's toolchain
@@ -222,3 +196,5 @@ set(readstat_DOWNLOAD_DIR ${DOWNLOAD_DIR})
 set(readstat_BUILD_DIR ${readstat_DOWNLOAD_DIR}/readstat-build)
 set(readstat_INCLUDE_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/include)
 set(readstat_LIBRARY_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/lib)
+
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)
