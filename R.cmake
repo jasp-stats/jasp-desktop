@@ -347,15 +347,18 @@ elseif(WIN32)
   cmake_print_variables(RCPP_PATH)
   cmake_print_variables(RINSIDE_PATH)
 
-
-  message(CHECK_START "Downloading R-${R_VERSION}-win.exe")
-
-  set(R_PACKAGE_NAME "R-${R_VERSION}-win.exe")
-  set(R_DOWNLOAD_URL
-      "https://cran.r-project.org/bin/windows/base/R-${R_VERSION}-win.exe")
-  set(R_PACKAGE_HASH "776384c989ea061728e781b6b9ce5b92")
+  message(CHECK_START "Checking for R/")
 
   if(NOT EXISTS ${CMAKE_BINARY_DIR}/R)
+
+    message(CHECK_FAIL "not found.")
+
+    message(CHECK_START "Downloading R-${R_VERSION}-win.exe")
+
+    set(R_PACKAGE_NAME "R-${R_VERSION}-win.exe")
+    set(R_DOWNLOAD_URL
+        "https://cran.r-project.org/bin/windows/base/R-${R_VERSION}-win.exe")
+    set(R_PACKAGE_HASH "776384c989ea061728e781b6b9ce5b92")
 
     fetchcontent_declare(
       r_win_exe
@@ -396,6 +399,10 @@ elseif(WIN32)
       message(CHECK_FAIL "failed.")
 
     endif()
+
+  else()
+
+    message(STATUS "found.")
 
   endif()
 
