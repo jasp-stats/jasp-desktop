@@ -153,7 +153,11 @@ endif()
 # endif()
 
 add_subdirectory(Common)
-add_subdirectory(R-Interface)
+
+if (NOT WIN32)
+  add_subdirectory(R-Interface)
+endif()
+
 add_subdirectory(Engine)
 add_subdirectory(Desktop)
 
