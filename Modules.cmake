@@ -55,7 +55,7 @@ set(JASP_EXTRA_MODULES
     # "jaspReliability"
     # "jaspVisualModeling"
     # "jaspLearnBayes"
-    "jaspProphet"
+    # "jaspProphet"
     # "jaspProcessControl"
     # "jaspCircular"
 )

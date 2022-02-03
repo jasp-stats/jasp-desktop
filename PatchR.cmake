@@ -91,4 +91,12 @@ macro(patch_r)
       "s/<\\/dict>/<key>CFBundleExecutable<\\/key><string>bin\\/exec\\/R<\\/string><\\/dict>/"
       Info.plist)
 
+  # Removing things...
+  if(R_HOME_PATH MATCHES "arm64")
+
+    execute_process(WORKING_DIRECTORY "${R_FRAMEWORK_PATH}"
+                    COMMAND rm -rf R.framework/Resources.old)
+
+  endif()
+
 endmacro()

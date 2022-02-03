@@ -1,0 +1,30 @@
+# Removing the symlinks
+execute_process(
+  WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@/R.framework
+  COMMAND rm -rf R
+  COMMAND rm -rf Headers
+  COMMAND rm -rf Libraries
+  COMMAND rm -rf PrivateHeaders
+  COMMAND rm -rf Resources)
+
+# Signing the Framework
+execute_process(
+  WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
+  COMMAND codesign --force --verbose=3 --deep --sign
+          "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" R.framework)
+
+# Signing the Bundle
+execute_process(
+  COMMAND
+    codesign --verbose=4 --deep --force --options runtime --entitlements
+    "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
+    "@JASP_INSTALL_PREFIX@")
+
+# Adding the symlinks
+execute_process(
+  WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@/R.framework
+  COMMAND ln -s Versions/Current/R R
+  COMMAND ln -s Versions/Current/Headers Headers
+  COMMAND ln -s Versions/Current/Resources/lib Libraries
+  COMMAND ln -s Versions/Current/PrivateHeaders PrivateHeaders
+  COMMAND ln -s Versions/Current/Resources Resources)

@@ -57,6 +57,8 @@ flatpak-builder-folder/
 # CMake Stuff
 build/
 build*/
+bundle/
+bundle*/
 
 # CLion Stuff
 cmake-build-*

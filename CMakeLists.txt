@@ -27,7 +27,7 @@ set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 # - [ ] This needs to be removed. We don't necessary need it, and
 #       for now, it is here for testing
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/Install)
-message(STATUS ${CMAKE_INSTALL_PREFIX})
+# message(STATUS ${CMAKE_INSTALL_PREFIX})
 
 if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
   set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
