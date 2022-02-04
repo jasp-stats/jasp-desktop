@@ -1,6 +1,8 @@
 execute_process(
-  COMMAND bash @DEPLOYQT_EXECUTABLE@ @DEPLOY_OPTIONS@
-  WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}”
+  WORKING_DIRECTORY @CMAKE_INSTALL_PREFIX@ 
+  COMMAND @DEPLOYQT_EXECUTABLE@ JASP.app -executable=@JASP_INSTALL_BINDIR@/JASPEngine
+  -codesign="Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" -verbose=3 
+  # -hardend-runtime
   RESULT_VARIABLE result)
 
 if(result)

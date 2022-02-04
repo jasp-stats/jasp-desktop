@@ -130,14 +130,7 @@ QString AppDirs::rHome()
 #endif
 
 #if defined(__APPLE__)
-	// There was a difference between these two, but now I'm changing the strcutre and
-	// there will be same. I keep them for now, in case I need to do some other tweaks
-	#ifdef MACOSX_BUNDLE
-        QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRDirName()) + "/Resources");
-	#else
-	    // Qt Creator / CLI / Debugging
-	    QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRDirName()) + "/Resources");
-	#endif
+	QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRDirName()) + "/Resources");
 #endif
     
 #ifdef linux

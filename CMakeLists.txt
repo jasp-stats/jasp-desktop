@@ -105,14 +105,6 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   endif()
 endif()
 
-# I am not using this for now, but later on, we can use it to
-# create binaries and installer for different systems
-if(WIN32) # Check if we are on Windows
-  set(SYSTEM_TYPE WIN32)
-  # else(APPLE)
-  #   set(SYSTEM_TYPE MACOSX_BUNDLE)
-endif()
-
 # Sets the build options
 include(JASP.cmake)
 

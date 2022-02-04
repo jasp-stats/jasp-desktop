@@ -77,9 +77,21 @@ endif()
 # - [ ] There is not much to configure here, CMake takes care of the
 #       most variable, but for now, I keep it like this. When we are
 #       sure that things are working, we can just drop the `.template`
-set(MACOSX_ICON_PATH ${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns)
-configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template
-               ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
+# - [ ] If and when Xcode build works, we can use this in the Info.plist
+#       and let Xcode derives it based on our build setting.
+#
+# <key>LSMinimumSystemVersion</key>
+# <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+
+if(APPLE)
+  if(CMAKE_GENERATOR STREQUAL "Xcode")
+    configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
+  else()
+    configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template
+                   ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
+  endif()
+endif()
 
 # We can technically use these two lines to grab all *.h, and *.cpp files
 # but it think there are unused files.
@@ -124,15 +136,50 @@ if((CMAKE_GENERATOR STREQUAL "Xcode") OR ${BUILD_MACOSX_BUNDLE})
     source_group("Resources/${NEW_FILE_PATH}" FILES "${FILE}")
   endforeach()
 
-  # set_property(SOURCE JASPEngine PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
-
   qt_add_executable(
     JASP
     MACOSX_BUNDLE
+    #
     ${HEADER_FILES}
     ${SOURCE_FILES}
+    ${_R_Framework}
+    #
     ${BUNDLE_RESOURCES}
-    ${_R_Framework})
+    ${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns)
+
+  # This does NOT work, sadly!
+  set_source_files_properties(JASPEngine PROPERTIES MACOSX_PACKAGE_LOCATION
+                                                    MacOS)
+
+  # Placing the Icon in the right place
+  # set_source_files_properties(${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns
+  #                             PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+
+  # When creating an App Bundle, we cannot simply copy paste the
+  # Framework into the Bundle, we can embed it, and that sort of
+  # works, but not really. It's only at the Archive stage that
+  # Xcode decides to copy it, but I don't know who that will look
+  # like because I cannot get it working properly.
+  set_target_properties(
+    JASP
+    PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
+               XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY OFF
+               XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY OFF)
+
+  # ------------------------------
+
+  set_target_properties(
+    JASP
+    PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
+               MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+               MACOSX_BUNDLE_SHORT_VERSION_STRING
+               "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+               MACOSX_BUNDLE_GUI_IDENTIFIER "org.jasp-stats.jasp"
+               MACOSX_BUNDLE_ICON_FILE
+               "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
+               MACOSX_BUNDLE_COPYRIGHT "© JASP Team"
+               MACOSX_BUNDLE_INFO_PLIST
+               "${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in")
 
 else()
 
@@ -210,65 +257,7 @@ if(APPLE)
       # System
       ${Iconv_LIBRARIES}
       ${ZLIB_LIBRARIES} # Needed for libreadstat.a
-    PRIVATE ${_R_Framework})
-
-  # R.framework linkage ----------
-  #
-  # There are two ways to link and copy the R.framework, I think
-  #
-
-  # 1.
-  # Simply copying the framework. This is recommened but it's less flexible
-  # when it comes to code-signing
-  set_source_files_properties(${_R_Framework} PROPERTIES MACOSX_PACKAGE_LOCATION
-                                                         Frameworks)
-
-  # 2.
-  # This is meant for framework that are built using CMake but it works here as
-  # well and it gives us more options. That being said, I prefer the method above
-  # because I feel this one enforces the Framework strcutre and that could cause
-  # problem because R.framework doesn't have a proper structure
-  set_target_properties(
-    JASP
-    PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
-               XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
-               XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY OFF)
-
-  # set_target_properties(JASP PROPERTIES INSTALL_RPATH
-  #                                       @executable_path/../Frameworks)
-
-  # ------------------------------
-
-  # Modules ----------------------
-
-  # RPATH ----------------------
-
-  # set_target_properties(
-  #   JASP PROPERTIES XCODE_ATTRIBUTE_SKIP_INSTALL NO XCODE_ATTRIBUTE_INSTALL_PATH
-  #                                                   "$(LOCAL_APPS_DIR)")
-
-  # ------------------------------
-
-  set_source_files_properties(${MODULES_BINARY_PATH}
-                              PROPERTIES MACOSX_PACKAGE_LOCATION Modules)
-
-  # ------------------------------
-
-  set_target_properties(
-    JASP
-    PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
-               MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-               MACOSX_BUNDLE_SHORT_VERSION_STRING
-               "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
-               MACOSX_BUNDLE_GUI_IDENTIFIER "org.jasp-stats.jasp"
-               MACOSX_BUNDLE_ICON_FILE
-               "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
-               MACOSX_BUNDLE_COPYRIGHT "© JASP Team"
-               MACOSX_BUNDLE_INFO_PLIST
-               "${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in")
-
-  # This influences some of the #ifdef's
-  target_compile_definitions(JASP PUBLIC MACOSX_BUNDLE)
+      ${_R_Framework})
 
 elseif(WIN32)
   # As far as I understood, on Windows we don't need to do a lot.

@@ -54,13 +54,6 @@ macro(patch_r)
     # are installed in R_HOME/usr/local/ which is bizarre, but I guess we will see
   endif()
 
-  # execute_process(
-  #   WORKING_DIRECTORY ${R_HOME_PATH}/etc
-  #   COMMAND
-  #     sed -i.bak -e
-  #     "s/FC = \$\(R_HOME\)/opt/R/arm64/bin/gfortran -mtune=native/gfortran -mtune=native/g"
-  #     Makeconf)
-
   # -------------------------------------------------------------
   # Resolving some absolute symlinks that may cause signing issue
 

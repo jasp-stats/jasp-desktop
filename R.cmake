@@ -106,36 +106,6 @@ if(APPLE)
 
         message(CHECK_PASS "done.")
 
-        # ------
-
-        # message(CHECK_START "Downloading 'gfortran'")
-
-        # fetchcontent_declare(
-        #   gfortran_tar
-        #   URL https://github.com/fxcoudert/gfortran-for-macOS/releases/download/12.0.0-20211211-experimental/bootstrap.tar.bz2
-        #   DOWNLOAD_NO_EXTRACT ON
-        #   DOWNLOAD_NAME bootstrap.tar.bz2)
-
-        # fetchcontent_populate(gfortran_tar)
-        # fetchcontent_getproperties(gfortran_tar)
-
-        # if(gfortran_tar_POPULATED)
-
-        #   message(CHECK_START "Unpacking the 'gfortran'.")
-        #   execute_process(
-        #     WORKING_DIRECTORY ${gfortran_tar_SOURCE_DIR}
-        #     COMMAND tar --strip-components 1 -xjvf bootstrap.tar.bz2 -C
-        #             ${r_pkg_r_home}/opt/R/arm64/)
-
-        #   message(CHECK_PASS "done.")
-
-        # else()
-        #   message(CHECK_FAIL "done.")
-
-        # endif()
-
-        # -----
-
         message(CHECK_START
                 "Copying the 'R.framework' to the jasp-desktop/Frameworks.")
 
@@ -151,9 +121,12 @@ if(APPLE)
 
       # --------------------------------------------------------
       # Patching R.framework and everything related to it ------
+      #
+      # A this point, R.framework is unpacked, and prepared and
+      # has been copied into the build directory.
       # --------------------------------------------------------
 
-      # Patching R's pathing variables, R_HOME, etc. -------------
+      # Patching R's pathing variables, R_HOME, etc. -----------
       message(CHECK_START "Patching bin/R and etc/Makeconf, and library paths")
 
       include(${CMAKE_SOURCE_DIR}/PatchR.cmake)
@@ -188,14 +161,16 @@ if(APPLE)
           "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
       )
 
+      message(CHECK_START "Signing '${R_HOME_PATH}/bin/exec/R'")
       execute_process(
         # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
+        # ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           codesign --force --sign
           "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)"
           "${R_HOME_PATH}/bin/exec/R")
+      message(CHECK_FAIL "successful.")
 
       execute_process(
         # COMMAND_ECHO STDOUT

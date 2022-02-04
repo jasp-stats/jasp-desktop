@@ -117,6 +117,4 @@ elseif(WIN32)
   target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
 endif()
 
-# set_property(SOURCE JASPEngine PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
-
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
