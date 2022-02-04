@@ -137,11 +137,13 @@ Do not forget to rebase your repository often.
 
 #### Push your changes
 
-Once you are happy with your features, do not forget to bring your GitHub repository up to date with your local repository:
+Do not forget to bring your GitHub repository up to date with your local repository by pushing your commits to GitHub:
 
 ```
 git push
 ```
+
+Remember, GitHub serves you as a back up. If you commit your changes but do not push them to GitHub, your work may be lost if your laptop gets stolen, or your house burns down!
 
 
 ### Pull requests [(GitHub documentation)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)
