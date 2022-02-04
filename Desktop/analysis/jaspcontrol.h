@@ -116,6 +116,7 @@ public:
 	bool				indent()					const	{ return _indent;				}
 	bool				isDependency()				const	{ return _isDependency;			}
 	bool				initialized()				const	{ return _initialized;			}
+	bool				initializedByFile()			const	{ return _initializedByFile;	}
 	bool				shouldShowFocus()			const	{ return _shouldShowFocus;		}
 	bool				shouldStealHover()			const	{ return _shouldStealHover;		}
 	bool				debug()						const	{ return _debug;				}
@@ -125,7 +126,7 @@ public:
 	bool				childHasError()				const;
 	bool				childHasWarning()			const;
 	bool				focusOnTab()				const	{ return activeFocusOnTab();	}
-	bool				hasUserInteractiveValue()	const	{ return _hasUserInteractiveValue; }
+	bool				hasUserInteractiveValue()	const	{ return _hasUserInteractiveValue;	}
 
 	AnalysisForm	*	form()						const	{ return _form;					}
 	QQuickItem		*	childControlsArea()			const	{ return _childControlsArea;	}
@@ -143,7 +144,7 @@ public:
 	int					alignment()					const	{ return _alignment;			}
 													
 	QString				humanFriendlyLabel()		const;
-	void				setInitialized()	{ if (!_initialized) { _initialized = true; emit initializedChanged();} }
+	void				setInitialized(bool byFile = false);
 	
 	QVector<JASPControl::ParentKey>	getParentKeys();
 
@@ -265,6 +266,7 @@ protected:
 	bool					_isBound					= true,
 							_indent						= false,
 							_initialized				= false,
+							_initializedByFile			= false,
 							_debug						= false,
 							_parentDebug				= false,
 							_hasError					= false,

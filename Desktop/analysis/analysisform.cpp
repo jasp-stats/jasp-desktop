@@ -358,6 +358,7 @@ void AnalysisForm::bindTo()
 	
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
+		bool hasOption = false;
 		BoundControl* boundControl = control->boundControl();
 		JASPListControl* listControl = dynamic_cast<JASPListControl *>(control);
 
@@ -375,6 +376,8 @@ void AnalysisForm::bindTo()
 
 			if (optionValue == Json::nullValue)
 				optionValue = boundControl->createJson();
+			else
+				hasOption = true;
 
 			boundControl->bindTo(optionValue);
 		}
@@ -397,7 +400,7 @@ void AnalysisForm::bindTo()
 			}
 		}
 
-		control->setInitialized();
+		control->setInitialized(hasOption);
 	}
 
 	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)
