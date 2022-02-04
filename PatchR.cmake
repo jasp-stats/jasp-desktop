@@ -88,7 +88,7 @@ macro(patch_r)
     WORKING_DIRECTORY ${R_HOME_PATH}
     COMMAND
       sed -i.bak
-      "s/<\\/dict>/<key>CFBundleExecutable<\\/key><string>bin\\/exec\\/R<\\/string><\\/dict>/"
+      "s/<\\/dict>/<key>CFBundleExecutable<\\/key><string>R<\\/string><\\/dict>/"
       Info.plist)
 
   # Removing things...
