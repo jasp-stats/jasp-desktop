@@ -138,7 +138,7 @@ void JASPControl::_resetBindingValue()
 	// If a control gets a value from a JASP file, this value may differ from its default value sets by a QML binding:
 	// this QML binding may then change the value during the initialization of the form.
 	// In this case, restore the original value.
-	if (isBound() && hasUserInteractiveValue() && initialized() && form() && !form()->initialized())
+	if (isBound() && hasUserInteractiveValue() && initializedFromJaspFile() && form() && !form()->initialized())
 		boundControl()->resetBoundValue();
 }
 
@@ -580,6 +580,16 @@ QString JASPControl::humanFriendlyLabel() const
 
 	return label;
 
+		}
+
+void JASPControl::setInitialized(bool byFile)
+{
+	if (!_initialized)
+	{
+		_initialized = true;
+		_initializedFromJaspFile = byFile;
+		emit initializedChanged();
+	}
 }
 
 QVector<JASPControl::ParentKey> JASPControl::getParentKeys()

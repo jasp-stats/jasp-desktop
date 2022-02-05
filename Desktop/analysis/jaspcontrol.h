@@ -116,6 +116,7 @@ public:
 	bool				indent()					const	{ return _indent;				}
 	bool				isDependency()				const	{ return _isDependency;			}
 	bool				initialized()				const	{ return _initialized;			}
+	bool				initializedFromJaspFile()	const	{ return _initializedFromJaspFile;	}
 	bool				shouldShowFocus()			const	{ return _shouldShowFocus;		}
 	bool				shouldStealHover()			const	{ return _shouldStealHover;		}
 	bool				debug()						const	{ return _debug;				}
@@ -125,7 +126,7 @@ public:
 	bool				childHasError()				const;
 	bool				childHasWarning()			const;
 	bool				focusOnTab()				const	{ return activeFocusOnTab();	}
-	bool				hasUserInteractiveValue()	const	{ return _hasUserInteractiveValue; }
+	bool				hasUserInteractiveValue()	const	{ return _hasUserInteractiveValue;	}
 
 	AnalysisForm	*	form()						const	{ return _form;					}
 	QQuickItem		*	childControlsArea()			const	{ return _childControlsArea;	}
@@ -141,10 +142,10 @@ public:
 	int					cursorShape()				const	{ return _cursorShape;			}
 	bool				hovered()					const;
 	int					alignment()					const	{ return _alignment;			}
-													
+
 	QString				humanFriendlyLabel()		const;
-	void				setInitialized()	{ if (!_initialized) { _initialized = true; emit initializedChanged();} }
-	
+	void				setInitialized(bool byFile = false);
+
 	QVector<JASPControl::ParentKey>	getParentKeys();
 
 	QQmlComponent				*	rowComponent()						const { return _rowComponent;	}
@@ -243,7 +244,7 @@ signals:
 	void hoveredChanged();
 	void controlTypeChanged();			// Not used, defined only to suppress warning in QML
 	void boundValueChanged(JASPControl* control);
-	
+
 	void				requestColumnCreation(std::string columnName, columnType columnType);
 	ComputedColumn *	requestComputedColumnCreation(std::string columnName);
 	void				requestComputedColumnDestruction(std::string columnName);
@@ -265,6 +266,7 @@ protected:
 	bool					_isBound					= true,
 							_indent						= false,
 							_initialized				= false,
+							_initializedFromJaspFile	= false,
 							_debug						= false,
 							_parentDebug				= false,
 							_hasError					= false,
