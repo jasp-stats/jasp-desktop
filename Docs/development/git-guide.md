@@ -1,12 +1,39 @@
 Git Guide
 =========
 
-This document gives tips for working with `git` an `GitHub`, specifically in the context of the JASP module development workflow. This guide assumes you have `git` installed [(intructions)](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and that you have an account on `GitHub` [(make an account)](https://github.com/join).
+Git ([documentation](https://git-scm.com/), [Wiki](https://en.wikipedia.org/wiki/Git)) is a version control system that we use to develop JASP. This document gives tips for working with `git` an `GitHub`, specifically in the context of the JASP module development workflow. 
 
-We strongly recommend getting to know using `git` in terminal instead of relying on clients such as GiHub Desktop, GitKraken, etc (unless you know what you are doing). If you follow the guide below, it is less likely that you will get into trouble than if you use a client. Further, should something go wrong anyway, it is then easier for us to help you fix it.
+## Prerequisites
 
-As with any programming gimmick, read carefully what `git` tells you, and "google up" messages you do not undestand. In general, internet is your friend and the first one to give you good answers about `git`. Useful website is the official GitHub documentation [https://docs.github.com/](https://docs.github.com/). Most of the information presented in this guide can be found in the GitHub documentation as well.
 
+This guide assumes you have `git` installed [(instructions)](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and that you have an account on `GitHub` [(make an account)](https://github.com/join). 
+
+For Windows users: The standard recommendation for using `git` is by installing [Git BASH](https://gitforwindows.org/).
+
+### Git
+
+We strongly recommend getting to know using `git` itself instead of relying on clients such as GiHub Desktop, GitKraken, etc (unless you know what you are doing). If you follow the guide below, it is less likely that you will get into trouble than if you use a client. Further, should something go wrong anyway, it is then easier for us to help you fix it. As with any programming gimmick, read carefully what `git` tells you, and "google up" messages you do not undestand. In general, internet is your friend and the first one to give you good answers about `git`. Useful website is the official GitHub documentation [https://docs.github.com/](https://docs.github.com/), and there also exist useful video tutorials [(example)](https://youtu.be/8Dd7KRpKeaE). Most of the information presented in this guide can be found in the GitHub documentation as well.
+
+### The terminal
+
+Because we do not recommend any `git` client, the following guide assumes basic understanding of a terminal [(tutorial here)](https://code.tutsplus.com/tutorials/command-line-basics-and-useful-tricks-with-the-terminal--cms-29356), but one does not need to be experienced with it. Search and click on the `Terminal`/`Console` application in MacOS/Linux, or one of the terminal applications in Windows (e.g., `PowerShell`, `Command Prompt`, `Git BASH`) to get started. The only really important thing to know about the terminal is that one can type a command in the terminal and execute it with pressing `Enter` to tell the terminal to do something. 
+
+In this guide, the only really important activity with the terminal is to be able to navigate between different folders in your computer, and running `git`. Whenever this guide says something like "navigate your terminal to a folder `jaspRegression/`", this means to change the working folder of the terminal such that we are inside the folder called `jaspRegression`. The following commands will help that task done:
+
+- `pwd`: Executing this command prints the current working folder of the terminal
+- `ls`: Executing this command prints the contents of the current working folder (i.e., prints the files and folders)
+- `tree`: Executing this commans prints the contents of the current working folder in a structural manner, also showing the contents of folders inside the working folder, etc. For example, executing `tree -L 2` shows the contents of the working folder recursively up to two levels, e.g., shows contents of the folders inside of the working folder.
+- `cd`: Executing this command changes the folder of the terminal, based on the address that follows the `cd` keyword. For example:
+  - `cd jaspRegression`: Moves the terminal inside of the `jaspRegression` folder (as long as it exist within the current working folder). This is an example of a *relative* path: Writing just the name of the path you want to go to assumes that the starting point is wherever the current working folder is.
+  - `cd ~/Dektop/JASP/Development/Modules/jaspRegression`: Moves the terminal into the folder specified on that address. This is an example of an *absolute* path: Writing `~` in front of the path  you want to go assumes that the starting point is the user root folder. Executing `cd` without anything moves the terminal to that user root folder.
+  - `cd ../../`: Two dots `..` tell `cd` to move one level up in the folder structure. For example, if we execute `cd ~/Dektop/JASP/Development/Modules/jaspRegression` and then `cd ../../`, we would end up in the `~/Dektop/JASP/Development/` folder.
+
+To run `git` in the terminal, we execute `git` commands - these start with typing `git` and follow some other keywords or arguments that specify what exactly we want `git` to do. For example, executing `git status` shows the status of the current `git` repository.
+
+
+See this [various cheatsheets](https://www.codecademy.com/resources/cheatsheets/language/bash) designed to help with the basic terminal and git commands.
+
+### Customization
 
 
 ## JASP module development workflow [(GitHub documentation)](https://docs.github.com/en/get-started/quickstart/github-flow)
@@ -29,13 +56,13 @@ Navigate to the repository containing the module you want to fork (copy), e.g., 
 
 ### Clone your repository [(GitHub documentation)](https://docs.github.com/en/get-started/quickstart/fork-a-repo#cloning-your-forked-repository)
 
-To be able to work on the code on your computer, you need to clone the repository to make a local copy on your machine. Navigate your browser to your module repository (e.g., `https://github.com/username/jaspRegression`), click on `Code` button, and copy the address under the "Clone" heading. The adress would look something like `https://github.com/username/jaspRegression.git`. Open the terminal (or git-bash on Windows) on your computer, navigate to the directory where you want to have the repository on your computer (using `cd`, [https://en.wikipedia.org/wiki/Cd_(command)](https://en.wikipedia.org/wiki/Cd_(command))) and then type
+To be able to work on the code on your computer, you need to clone the repository to make a local copy on your machine. Navigate your browser to your module repository (e.g., `https://github.com/username/jaspRegression`), click on `Code` button, and copy the address under the "Clone" heading. The adress would look something like `https://github.com/username/jaspRegression.git`. Open the terminal (or git-bash on Windows) on your computer, navigate to the folder where you want to have the repository on your computer (using `cd`, [https://en.wikipedia.org/wiki/Cd_(command)](https://en.wikipedia.org/wiki/Cd_(command))) and then type
 
 ```
 git clone https://github.com/username/jaspRegression.git
 ```
 
-Now, the directory in which you called this command will contain another directory, `jaspRegression/`, which contains the local copy of the repository. Execute `cd jaspRegression` in the terminal to jump inside the repository.
+Now, the folder in which you called this command will contain another folder, `jaspRegression/`, which contains the local copy of the repository. Execute `cd jaspRegression` in the terminal to jump inside the repository.
 
 ### Connect your local clone to `jasp-stats` [(GitHub documentation)](https://docs.github.com/en/get-started/quickstart/fork-a-repo#configuring-git-to-sync-your-fork-with-the-original-repository)
 
@@ -146,6 +173,9 @@ git push
 Remember, GitHub serves you as a back up. If you commit your changes but do not push them to GitHub, your work may be lost if your laptop gets stolen, or your house burns down!
 
 
+#### Squashing commits (optional)
+
+
 ### Pull requests [(GitHub documentation)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)
 
 #### Create a pull request
@@ -206,6 +236,10 @@ A PR needs to be reviewed and approved by a JASP Team member to be merged into `
 |jaspProcessControl|All|SKF Team|
 
 </details>
+
+#### GitHub Actions
+
+
 
 #### Respond to reviews
 
@@ -318,3 +352,25 @@ git push origin --delete myFeatureBranch
 ```
 
 This needs to be done once for each feature branch. Do not delete it if you want to keep the branch!
+
+## Git submodules: `jasp-stats/jasp-desktop`
+
+
+
+## Summary of basic principles
+
+
+1. Do not use git clients for making PRs, unless you know what you are doing.
+2. Learn working with git comfortably.
+3. Fork and clone jaspModules to make PRs, do not work inside of jasp-desktop repository.
+4. Work in feature branches.
+5. Rebase often. Do **not** call `git pull` to sync your repository with `jasp-stats`. **Rebase**.
+6. Prefer making more smaller PRs rather than making one PR implementing many unrelated features.
+7. Make clean PRs
+	- Make sure you do not have merge conflicts (rebase)
+	- Test your code before making a PR
+	- Document your changes by writing informative commit messages
+	- Link issues to your PR
+8. You are responsible for making sure your PR will be dealt with. Assign reviewers to your PRs. Communicate when your PR goes stale or if your PR needs special attention.
+9. Be proactive when assigned to review: let the PR author know if you cannot review their PR.
+10. You can add other people's forks as your remote to review or checkout their code.
