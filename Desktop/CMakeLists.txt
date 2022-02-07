@@ -86,10 +86,10 @@ endif()
 if(APPLE)
   if(CMAKE_GENERATOR STREQUAL "Xcode")
     configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in
-                   ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
+                   ${CMAKE_BINARY_DIR}/Info.plist)
   else()
     configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template
-                   ${CMAKE_CURRENT_BINARY_DIR}/Info.plist)
+                   ${CMAKE_BINARY_DIR}/Info.plist)
   endif()
 endif()
 
@@ -144,16 +144,7 @@ if((CMAKE_GENERATOR STREQUAL "Xcode") OR ${BUILD_MACOSX_BUNDLE})
     ${SOURCE_FILES}
     ${_R_Framework}
     #
-    ${BUNDLE_RESOURCES}
-    ${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns)
-
-  # This does NOT work, sadly!
-  set_source_files_properties(JASPEngine PROPERTIES MACOSX_PACKAGE_LOCATION
-                                                    MacOS)
-
-  # Placing the Icon in the right place
-  # set_source_files_properties(${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns
-  #                             PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    ${BUNDLE_RESOURCES})
 
   # When creating an App Bundle, we cannot simply copy paste the
   # Framework into the Bundle, we can embed it, and that sort of

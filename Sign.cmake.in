@@ -1,30 +1,24 @@
-# Removing the symlinks
-execute_process(
-  WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@/R.framework
-  COMMAND rm -rf R
-  COMMAND rm -rf Headers
-  COMMAND rm -rf Libraries
-  COMMAND rm -rf PrivateHeaders
-  COMMAND rm -rf Resources)
+# We are removing this because having the Libraries/ as a symlink in
+# the root of R.framework/ is not acceptable by Apple.
+execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@/R.framework
+                COMMAND rm -rf Libraries)
 
-# Signing the Framework
+message(CHECK_START "Siging 'R.framework'")
 execute_process(
   WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
-  COMMAND codesign --force --verbose=3 --deep --sign
+  COMMAND codesign --force --deep --verbose=3 --timestamp --strict --sign
           "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" R.framework)
+message(CHECK_FAIL "successful.")
 
-# Signing the Bundle
+execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
+                COMMAND codesign --verify --verbose R.framework)
+
+message(CHECK_START "Siging 'JASP.app'")
 execute_process(
   COMMAND
-    codesign --verbose=4 --deep --force --options runtime --entitlements
+    codesign --force --deep --verbose=3 --timestamp --strict --entitlements
     "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
     "@JASP_INSTALL_PREFIX@")
+message(CHECK_FAIL "successful.")
 
-# Adding the symlinks
-execute_process(
-  WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@/R.framework
-  COMMAND ln -s Versions/Current/R R
-  COMMAND ln -s Versions/Current/Headers Headers
-  COMMAND ln -s Versions/Current/Resources/lib Libraries
-  COMMAND ln -s Versions/Current/PrivateHeaders PrivateHeaders
-  COMMAND ln -s Versions/Current/Resources Resources)
+execute_process(COMMAND codesign --verify --verbose "@JASP_INSTALL_PREFIX@")

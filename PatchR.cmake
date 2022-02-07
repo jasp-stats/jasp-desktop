@@ -81,7 +81,7 @@ macro(patch_r)
     WORKING_DIRECTORY ${R_HOME_PATH}
     COMMAND
       sed -i.bak
-      "s/<\\/dict>/<key>CFBundleExecutable<\\/key><string>R<\\/string><\\/dict>/"
+      "s/<\\/dict>/<key>CFBundleExecutable<\\/key><string>lib\\/libR.dylib<\\/string><\\/dict>/"
       Info.plist)
 
   # Removing things...
@@ -91,5 +91,10 @@ macro(patch_r)
                     COMMAND rm -rf R.framework/Resources.old)
 
   endif()
+
+  # We are removing this because having the Libraries/ as a symlink in
+  # the root of R.framework is not acceptable by Apple.
+  execute_process(WORKING_DIRECTORY "${R_FRAMEWORK_PATH}"
+                  COMMAND rm -rf R.framework/Libraries)
 
 endmacro()

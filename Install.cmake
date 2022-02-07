@@ -14,38 +14,6 @@
 
 # include(GNUInstallDirs)
 
-if(APPLE AND BUILD_MACOSX_BUNDLE)
-  set(MACOS_BUNDLE_NAME JASP)
-  set(JASP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/${MACOS_BUNDLE_NAME}.app")
-  set(JASP_INSTALL_BINDIR "${JASP_INSTALL_PREFIX}/Contents/MacOS")
-  set(JASP_INSTALL_RESOURCEDIR "${JASP_INSTALL_PREFIX}/Contents/Resources")
-  set(JASP_INSTALL_FRAMEWORKDIR "${JASP_INSTALL_PREFIX}/Contents/Frameworks")
-  set(JASP_INSTALL_MODULEDIR "${JASP_INSTALL_PREFIX}/Contents/Modules")
-  set(JASP_INSTALL_DOCDIR "${JASP_INSTALL_RESOURCEDIR}")
-endif()
-
-if(APPLE AND BUILD_MACOSX_BUNDLE)
-  install(FILES "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
-          DESTINATION ${JASP_INSTALL_RESOURCEDIR})
-
-endif()
-
-# This is smart enough to put everything into the right place in
-# different systems.
-# - [ ] We can make it more granular on Windows and Linux later.
-install(
-  TARGETS JASP JASPEngine
-  RUNTIME DESTINATION ${JASP_INSTALL_BINDIR}
-  BUNDLE DESTINATION . COMPONENT jaspCore)
-
-# We need to handle the JASPEngine a bit differenly because it is different
-# install(
-#   TARGETS JASPEngine
-#   RUNTIME DESTINATION ${JASP_INSTALL_BINDIR}/MacOS
-#   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#   BUNDLE DESTINATION . COMPONENT jaspCore)
-
 # At the moment, I don't remove the `.a` files
 set(FILES_EXCLUDE_PATTERN
     ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak)$")
@@ -53,29 +21,28 @@ set(FOLDERS_EXCLUDE_PATTERN
     ".*(/doc|/examples|/help|/man|/html|/bib|/announce|/test|/tinytest|/tests)$"
 )
 
-install(
-  DIRECTORY ${_R_Framework}
-  DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}
-  COMPONENT jaspCore
-  REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
-  REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+if(APPLE)
+  set(MACOS_BUNDLE_NAME JASP)
+  set(JASP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/${MACOS_BUNDLE_NAME}.app")
+  set(JASP_INSTALL_BINDIR "${JASP_INSTALL_PREFIX}/Contents/MacOS")
+  set(JASP_INSTALL_RESOURCEDIR "${JASP_INSTALL_PREFIX}/Contents/Resources")
+  set(JASP_INSTALL_FRAMEWORKDIR "${JASP_INSTALL_PREFIX}/Contents/Frameworks")
+  set(JASP_INSTALL_MODULEDIR "${JASP_INSTALL_PREFIX}/Contents/Modules")
+  set(JASP_INSTALL_DOCDIR "${JASP_INSTALL_RESOURCEDIR}")
 
-# install(IMPORTED_RUNTIME_ARTIFACTS ${_R_Framework}
-#   FRAMEWORK DESTINATION ${CMAKE_INSTALL_PREFIX}/Frameworks
-#   BUNDLE DESTINATION JASP.app/Contents/Frameworks)
+  install(FILES "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
+          DESTINATION ${JASP_INSTALL_RESOURCEDIR})
 
-install(
-  DIRECTORY ${MODULES_BINARY_PATH}/
-  DESTINATION ${JASP_INSTALL_MODULEDIR}
-  REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
-  REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+  install(
+    TARGETS JASP JASPEngine
+    RUNTIME DESTINATION ${JASP_INSTALL_BINDIR}
+    BUNDLE DESTINATION . COMPONENT jaspCore)
 
-install(
-  DIRECTORY ${CMAKE_SOURCE_DIR}/Resources
-  DESTINATION ${JASP_INSTALL_RESOURCEDIR}
-  COMPONENT jaspCore)
+  install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
+    DESTINATION ${JASP_INSTALL_RESOURCEDIR}
+    COMPONENT jaspCore)
 
-if(APPLE AND BUILD_MACOSX_BUNDLE)
   set(R_FRAMEWORK_INSTALL_PATH ${JASP_INSTALL_FRAMEWORKDIR})
 
   set(BUNDLE_NAME "${MACOS_BUNDLE_NAME}.app")
@@ -88,23 +55,31 @@ if(APPLE AND BUILD_MACOSX_BUNDLE)
   configure_file(${CMAKE_SOURCE_DIR}/Sign.cmake.in
                  ${CMAKE_BINARY_DIR}/Sign.cmake @ONLY)
   install(SCRIPT ${CMAKE_BINARY_DIR}/Sign.cmake)
+
+  # find_program(DEPLOYQT_EXECUTABLE macdeployqt)
+
+  # configure_file(Deploy.cmake.in ${CMAKE_BINARY_DIR}/Deploy.cmake @ONLY)
+  # install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.cmake)
+
+  install(
+    DIRECTORY ${_R_Framework}
+    DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}
+    COMPONENT jaspCore
+    REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
+    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+
+  install(
+    DIRECTORY ${MODULES_BINARY_PATH}/
+    DESTINATION ${JASP_INSTALL_MODULEDIR}
+    REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
+    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+
+  install(FILES ${CMAKE_BINARY_DIR}/Info.plist
+          DESTINATION ${JASP_INSTALL_PREFIX}/Contents)
+
+  install(SCRIPT ${CMAKE_BINARY_DIR}/Sign.cmake)
+
 endif()
-
-# install(TARGETS ${_R_Framework}
-#   FRAMEWORK DESTINATION )
-#
-# Deployment on macOS
-#
-find_program(DEPLOYQT_EXECUTABLE macdeployqt)
-
-set(DEPLOY_OPTIONS
-    [[JASP
-    -verbose=2
-    -codesign="Developer ID Application: Bruno Boutin (AWJJ3YVK9B)"
-]])
-
-configure_file(Deploy.cmake.in Deploy.cmake @ONLY)
-# install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/Deploy.cmake)
 
 # ---- Windows
 
