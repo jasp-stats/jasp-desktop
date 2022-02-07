@@ -2771,7 +2771,8 @@ msgstr ""
 #, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
-msgstr "Un nouveau dossier ne peut être ajouté à '%1' pour une raison inconnue."
+msgstr ""
+"Un nouveau dossier ne peut être ajouté à '%1' pour une raison inconnue."
 
 msgctxt "OSF|"
 msgid "Folder"
@@ -2792,7 +2793,8 @@ msgstr "Le nom de l'entrée ne peut pas être vide."
 #, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
-msgstr "Le nom %1 ne peut contenir que les caractères suivants A-Z a-z 0-9 _ %2"
+msgstr ""
+"Le nom %1 ne peut contenir que les caractères suivants A-Z a-z 0-9 _ %2"
 
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
@@ -3191,8 +3193,8 @@ msgstr ""
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
 msgstr ""
-"Une erreur s’est produite lors de la tentative de chargement du module %1, l’"
-"erreur était : '%2'"
+"Une erreur s’est produite lors de la tentative de chargement du module %1, "
+"l’erreur était : '%2'"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
