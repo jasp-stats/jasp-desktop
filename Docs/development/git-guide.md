@@ -1,7 +1,7 @@
 Git Guide
 =========
 
-Git ([documentation](https://git-scm.com/), [Wiki](https://en.wikipedia.org/wiki/Git)) is a version control system that we use to develop JASP. This document gives tips for working with `git` an `GitHub`, specifically in the context of the JASP module development workflow. 
+Git ([website](https://git-scm.com/), [Wiki](https://en.wikipedia.org/wiki/Git)) is a version control system that we use to develop JASP. This document gives tips for working with `git` an `GitHub`, specifically in the context of the JASP module development workflow. 
 
 ## Prerequisites
 
@@ -18,22 +18,27 @@ We strongly recommend getting to know using `git` itself instead of relying on c
 
 Because we do not recommend any `git` client, the following guide assumes basic understanding of a terminal [(tutorial here)](https://code.tutsplus.com/tutorials/command-line-basics-and-useful-tricks-with-the-terminal--cms-29356), but one does not need to be experienced with it. Search and click on the `Terminal`/`Console` application in MacOS/Linux, or one of the terminal applications in Windows (e.g., `PowerShell`, `Command Prompt`, `Git BASH`) to get started. The only really important thing to know about the terminal is that one can type a command in the terminal and execute it with pressing `Enter` to tell the terminal to do something. 
 
-In this guide, the only really important activity with the terminal is to be able to navigate between different folders in your computer, and running `git`. Whenever this guide says something like "navigate your terminal to a folder `jaspRegression/`", this means to change the working folder of the terminal such that we are inside the folder called `jaspRegression`. The following commands will help that task done:
+In this guide, the only really important activity with the terminal is to be able to navigate between different folders in your computer, and running `git`. Whenever this guide says something like "navigate your terminal to a folder `jaspRegression/`", this means to change the working directory of the terminal such that we are inside the folder called `jaspRegression`. The following commands will help that task done:
 
-- `pwd`: Executing this command prints the current working folder of the terminal
-- `ls`: Executing this command prints the contents of the current working folder (i.e., prints the files and folders)
-- `tree`: Executing this commans prints the contents of the current working folder in a structural manner, also showing the contents of folders inside the working folder, etc. For example, executing `tree -L 2` shows the contents of the working folder recursively up to two levels, e.g., shows contents of the folders inside of the working folder.
+- `pwd`: Executing this command prints the current working directory of the terminal
+- `ls`: Executing this command prints the contents of the current working directory (i.e., prints the files and folders)
+- `tree`: Executing this command prints the contents of the current working directory in a structural manner, also showing the contents of folders inside the working folder, etc. For example, executing `tree -L 2` shows the contents of the working directory recursively up to two levels, e.g., shows contents of the folders inside of the working directory.
+- `mkdir`: Executing this command coupled with a path creates a folder (directory) at the specified location. For example, `mkdir myNewFolder` creates a folder called `myNewFolder` inside of the current working directory.
 - `cd`: Executing this command changes the folder of the terminal, based on the address that follows the `cd` keyword. For example:
-  - `cd jaspRegression`: Moves the terminal inside of the `jaspRegression` folder (as long as it exist within the current working folder). This is an example of a *relative* path: Writing just the name of the path you want to go to assumes that the starting point is wherever the current working folder is.
-  - `cd ~/Dektop/JASP/Development/Modules/jaspRegression`: Moves the terminal into the folder specified on that address. This is an example of an *absolute* path: Writing `~` in front of the path  you want to go assumes that the starting point is the user root folder. Executing `cd` without anything moves the terminal to that user root folder.
+  - `cd jaspRegression`: Moves the terminal inside of the `jaspRegression` folder (as long as it exist within the current working directory). This is an example of a *relative* path: Writing just the name of the path you want to go to assumes that the starting point is wherever the current working directory is.
+  - `cd ~/Dektop/JASP/Development/Modules/jaspRegression`: Moves the terminal into the folder specified on that address. This is an example of an *absolute* path: Writing `~` in front of the path  you want to go assumes that the starting point is the user root directory. Executing `cd` without anything moves the terminal to that user root directorys.
   - `cd ../../`: Two dots `..` tell `cd` to move one level up in the folder structure. For example, if we execute `cd ~/Dektop/JASP/Development/Modules/jaspRegression` and then `cd ../../`, we would end up in the `~/Dektop/JASP/Development/` folder.
 
 To run `git` in the terminal, we execute `git` commands - these start with typing `git` and follow some other keywords or arguments that specify what exactly we want `git` to do. For example, executing `git status` shows the status of the current `git` repository.
 
 
-See this [various cheatsheets](https://www.codecademy.com/resources/cheatsheets/language/bash) designed to help with the basic terminal and git commands.
+See [various cheatsheets](https://www.codecademy.com/resources/cheatsheets/language/bash) designed to help with the basic terminal and git commands.
 
 ### Customization
+
+The terminal, as well as git, can be customised to make it nicer for you to work with it. For example, see a customization framework for the popular `zsh` shell, [Oh My Zsh](https://ohmyz.sh/).
+
+At some points, `git` may require a text editor to complete some command. In those cases, it automatically opens the terminal text editor that is configured for the terminal. For many people, this will be `Vim` ([website](https://www.vim.org/), [Wiki](https://en.wikipedia.org/wiki/Vim_(text_editor))). Some people prefer other editors, for example `Nano` ([website](https://www.nano-editor.org/), [Wiki](https://en.wikipedia.org/wiki/GNU_nano)). To set `Nano` as the default text editor, you need to open the terminal configuration file (`.bashrc` or `.zshrc`) and add a line `EDITOR=nano`. In Windows, text editor settings should be available during installation of `Git BASH`.
 
 
 ## JASP module development workflow [(GitHub documentation)](https://docs.github.com/en/get-started/quickstart/github-flow)
