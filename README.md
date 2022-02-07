@@ -61,6 +61,7 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
   - [Creating a Module](Docs/development/jasp-adding-module.md)
   - [Module Workflow](Docs/development/jasp-module-workflow.md)
   - [Making a QML Interface](Docs/development/jasp-qml-guide.md)
+  - [Upgrading a QML Interface](Docs/development/jasp-upgrade-qml.md)
     
 #### R
   - [Implementing Analyses in R](Docs/development/r-analyses-guide.md)
