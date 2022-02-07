@@ -56,10 +56,11 @@ if(APPLE)
                  ${CMAKE_BINARY_DIR}/Sign.cmake @ONLY)
   install(SCRIPT ${CMAKE_BINARY_DIR}/Sign.cmake)
 
-  # find_program(DEPLOYQT_EXECUTABLE macdeployqt)
-
-  # configure_file(Deploy.cmake.in ${CMAKE_BINARY_DIR}/Deploy.cmake @ONLY)
-  # install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.cmake)
+  find_program(DEPLOYQT_EXECUTABLE macdeployqt)
+  set(DEPLOYQT_EXECUTABLE "/Users/amabdol/Qt/6.2.2/macos/bin/macdeployqt")
+  set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
+  configure_file(Deploy.cmake.in ${CMAKE_BINARY_DIR}/Deploy.cmake @ONLY)
+  install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.cmake)
 
   install(
     DIRECTORY ${_R_Framework}

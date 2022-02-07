@@ -31,8 +31,11 @@ find_package(
              Network
              PrintSupport
              Xml
+             DBus
+             QuickTemplates2
              Quick
              QuickControls2
+             QuickControls2Impl
              QuickWidgets
              Core5Compat)
 
@@ -239,8 +242,11 @@ if(APPLE)
       Qt::Xml
       Qt::Quick
       Qt::QuickControls2
+      Qt::QuickControls2Impl
       Qt::QuickWidgets
       Qt::Core5Compat
+      Qt::QuickTemplates2
+      Qt::DBus
       # OpenSSL::SSL
       # OpenSSL::Crypto
       # Based on our config, this is either from PkgConfig, or the build/_deps/

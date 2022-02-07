@@ -11,7 +11,7 @@ execute_process(
 message(CHECK_FAIL "successful.")
 
 execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
-                COMMAND codesign --verify --verbose R.framework)
+                COMMAND codesign --verify --verbose --display R.framework)
 
 message(CHECK_START "Siging 'JASP.app'")
 execute_process(
@@ -21,4 +21,5 @@ execute_process(
     "@JASP_INSTALL_PREFIX@")
 message(CHECK_FAIL "successful.")
 
-execute_process(COMMAND codesign --verify --verbose "@JASP_INSTALL_PREFIX@")
+execute_process(COMMAND codesign --verify --verbose --display
+                        "@JASP_INSTALL_PREFIX@")
