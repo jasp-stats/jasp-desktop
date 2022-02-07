@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-02-07 14:47+0000\n"
+"PO-Revision-Date: 2022-02-08 08:01+0000\n"
 "Last-Translator: JASP Stats <b.boutin@uva.nl>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "fr/>\n"
@@ -1098,7 +1098,6 @@ msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
 msgstr "Filtre appliqué<br>"
 
-#, fuzzy
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.<br>"
 msgstr ""
@@ -1595,7 +1594,7 @@ msgstr "Trier les éléments"
 
 msgctxt "SubjectivePriors|"
 msgid "Prior"
-msgstr ""
+msgstr "Antérieur"
 
 msgctxt "SubjectivePriors|"
 msgid "Standardized effect size"
@@ -1661,7 +1660,6 @@ msgctxt "SubjectivePriors|"
 msgid "upper bound:"
 msgstr "borne supérieure :"
 
-#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
 msgstr "Demi-normal"
@@ -3288,7 +3286,6 @@ msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
 msgstr "Problème d'initialisation du module"
 
-#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
@@ -3433,7 +3430,7 @@ msgctxt "VariablesListBase|"
 msgid "Wrong column type: %1 for ListView %2"
 msgstr "Mauvais type de colonne : %1 pour le ListView %2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
@@ -3634,7 +3631,7 @@ msgstr ""
 "cette version. Ce n'est pas nécessairement un problème mais si cela continue "
 "à se produire, vous pouvez contacter l'équipe JASP pour obtenir de l'aide."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "KnownIssues|"
 msgid ""
 "JASP ran into a problem ('%1') loading the known issues for this version, "
