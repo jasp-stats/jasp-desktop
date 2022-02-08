@@ -22,7 +22,7 @@
 
 #include <sstream>
 
-#include "libzip/archive_entry.h"
+#include "archive_entry.h"
 
 using namespace std;
 
