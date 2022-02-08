@@ -36,6 +36,7 @@ find_package(
              Quick
              QuickControls2
              QuickControls2Impl
+             QmlWorkerScript
              QuickWidgets
              Core5Compat)
 
@@ -247,6 +248,7 @@ if(APPLE)
       Qt::Core5Compat
       Qt::QuickTemplates2
       Qt::DBus
+      Qt::QmlWorkerScript
       # OpenSSL::SSL
       # OpenSSL::Crypto
       # Based on our config, this is either from PkgConfig, or the build/_deps/
