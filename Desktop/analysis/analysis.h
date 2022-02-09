@@ -246,7 +246,7 @@ protected:
 	Status					_status			= Initializing;
 	bool					_refreshBlocked	= false;
 
-	Json::Value				_boundValues;
+	Json::Value				_boundValues 	= Json::objectValue;
 
 
 	///For backward compatibility: _optionsDotJASP = options from (old) JASP file.
