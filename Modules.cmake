@@ -139,10 +139,32 @@ if(INSTALL_R_MODULES)
     install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
                         'jsonlite', 'modules', 'officer', 'pkgbuild',
                         'plyr', 'qgraph', 'ragg', 'R6', 'renv',
-                        'rjson', 'rvg', 'svglite', 'systemfonts', 'withr'), type='binary', repos='${R_REPOSITORY}')
+                        'rjson', 'rvg', 'svglite', 'systemfonts',
+                        'withr', 'testthat',
+                        'data.table', 'httr', 'jsonlite', 'lifecycle',
+                        'pkgload', 'remotes', 'rjson', 'stringi', 'stringr',
+                        'vdiffr'), type='binary', repos='${R_REPOSITORY}')
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL)
     if ('jaspBase' %in% installed.packages()) {
       cat(NULL, file='${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log')
+    }
+    ")
+
+  file(
+    WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspGraphs.R
+    "
+    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL)
+    if ('jaspGraphs' %in% installed.packages()) {
+      cat(NULL, file='${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log')
+    }
+    ")
+
+  file(
+    WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspTools.R
+    "
+    install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL)
+    if ('jaspTools' %in% installed.packages()) {
+      cat(NULL, file='${MODULES_RENV_ROOT_PATH}/jaspTools-installed-successfully.log')
     }
     ")
 
@@ -150,6 +172,9 @@ if(INSTALL_R_MODULES)
   # and only once before everything else. So, `install-jaspBase.R` creates an empty
   # file, i.e., `jaspBase-installed-successfully.log` and all other Modules look for
   # it. If they find it, they proceed, if not, they trigger this custom command.
+  # TODO:
+  #   - [ ] The following commands can be turned into a function or a macro, but
+  #         for now, I would like to keep a granular control over differnt steps
   add_custom_command(
     WORKING_DIRECTORY ${R_HOME_PATH}
     OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
@@ -160,7 +185,36 @@ if(INSTALL_R_MODULES)
       NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
       -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
       R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake
+    COMMAND ./R --slave --no-restore --no-save
+            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspGraphs.R
     COMMENT "------ Installing 'jaspBase'")
+
+  add_custom_command(
+    WORKING_DIRECTORY ${R_HOME_PATH}
+    DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
+    OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log
+    COMMAND ./R --slave --no-restore --no-save
+            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspGraphs.R
+    COMMAND
+      ${CMAKE_COMMAND} -D
+      NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+      -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+      R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake
+    COMMENT "------ Installing 'jaspGraphs'")
+
+  add_custom_command(
+    WORKING_DIRECTORY ${R_HOME_PATH}
+    DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
+            ${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log
+    OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspTools-installed-successfully.log
+    COMMAND ./R --slave --no-restore --no-save
+            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspTools.R
+    COMMAND
+      ${CMAKE_COMMAND} -D
+      NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+      -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+      R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake
+    COMMENT "------ Installing 'jaspTools'")
 
   message(STATUS "Configuring Common Modules...")
   foreach(MODULE ${JASP_COMMON_MODULES})
@@ -176,6 +230,8 @@ if(INSTALL_R_MODULES)
       ${MODULE}
       WORKING_DIRECTORY ${R_HOME_PATH}
       DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
+              ${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log
+              ${MODULES_RENV_ROOT_PATH}/jaspTools-installed-successfully.log
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND

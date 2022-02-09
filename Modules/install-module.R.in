@@ -23,6 +23,8 @@ if (result == "succes") {
 }
 
 # Fixing the renv's symlinks
+# On macOS, this is most likely not necessary as I take care of 
+# it using CMake but for now, I leave it here anyway... 
 source('@MODULES_BINARY_PATH@/symlinkTools.R')
 
 convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
