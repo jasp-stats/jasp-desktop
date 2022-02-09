@@ -72,6 +72,7 @@ void HelpModel::setMarkdown(QString markdown)
 
 void HelpModel::setPagePath(QString pagePath)
 {	
+	_pagePath = pagePath;
 	emit pagePathChanged(_pagePath);
 }
 
