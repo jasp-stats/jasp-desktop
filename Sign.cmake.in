@@ -4,22 +4,36 @@ execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@/R.framework
                 COMMAND rm -rf Libraries)
 
 message(CHECK_START "Siging 'R.framework'")
+
+execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
+                COMMAND bash @PARALLEL_SIGNER@ R.framework)
+
 execute_process(
   WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
   COMMAND codesign --force --deep --verbose=3 --timestamp --strict --sign
-          "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" R.framework)
+          "@APPLE_CODESIGN_IDENTITY@" --options runtime R.framework)
+
 message(CHECK_FAIL "successful.")
 
 execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
                 COMMAND codesign --verify --verbose --display R.framework)
 
 message(CHECK_START "Siging 'JASP.app'")
+
+execute_process(COMMAND bash @PARALLEL_SIGNER@ @JASP_INSTALL_PREFIX@)
+
 execute_process(
   COMMAND
     codesign --force --deep --verbose=3 --timestamp --strict --entitlements
     "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
-    "@JASP_INSTALL_PREFIX@")
+    --options runtime "@JASP_INSTALL_PREFIX@")
 message(CHECK_FAIL "successful.")
+
+execute_process(COMMAND codesign --verify --verbose --display
+                        "@JASP_INSTALL_PREFIX@/Contents/MacOS/JASP")
+
+execute_process(COMMAND codesign --verify --verbose --display
+                        "@JASP_INSTALL_PREFIX@/Contents/MacOS/JASPEngine")
 
 execute_process(COMMAND codesign --verify --verbose --display
                         "@JASP_INSTALL_PREFIX@")

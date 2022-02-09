@@ -72,3 +72,4 @@ xcode-project/
 Frameworks/
 R.framework/
 .cache/
+Modules/renv-root/

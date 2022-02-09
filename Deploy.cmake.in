@@ -1,8 +1,10 @@
 execute_process(
-  WORKING_DIRECTORY @CMAKE_INSTALL_PREFIX@ 
-  COMMAND @DEPLOYQT_EXECUTABLE@ JASP.app -executable=@JASP_INSTALL_BINDIR@/JASPEngine 
-  -codesign="Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" -verbose=3 -qmldir=@JASP_QML_FILES@
-  # -hardend-runtime
+  WORKING_DIRECTORY @CMAKE_INSTALL_PREFIX@
+  COMMAND
+    @DEPLOYQT_EXECUTABLE@ JASP.app -executable=@JASP_INSTALL_BINDIR@/JASPEngine
+    -codesign="@APPLE_CODESIGN_IDENTITY@"
+    -sign-for-notarization="@APPLE_CODESIGN_IDENTITY@" -verbose=3
+    -qmldir=@JASP_QML_FILES@ -hardened-runtime
   RESULT_VARIABLE result)
 
 if(result)

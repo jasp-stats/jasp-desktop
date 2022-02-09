@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# A simple call to `find` and `parallel` for parallelizing the signing process.
+# This is being configured and later called from the `Sing.cmake`. It accepts a
+# path parameters.
+#
+# TODOs:
+# - [ ] Add a progress bar
+# - [ ] Add a flag for verbosity level
+
+echo "Signing everything in $1/"
+
+find "$1" -type f -name "*" -print0 | parallel -q0 codesign --force --timestamp --deep --verbose --strict --sign "@APPLE_CODESIGN_IDENTITY@" --entitlements "@APPLE_CODESIGN_ENTITLEMENTS@" --options runtime {}

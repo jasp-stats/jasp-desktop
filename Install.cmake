@@ -52,14 +52,20 @@ if(APPLE)
   set(APPLE_CODESIGN_ENTITLEMENTS
       "${CMAKE_SOURCE_DIR}/Tools/macOS/entitlements.plist")
 
-  configure_file(${CMAKE_SOURCE_DIR}/Sign.cmake.in
-                 ${CMAKE_BINARY_DIR}/Sign.cmake @ONLY)
-  install(SCRIPT ${CMAKE_BINARY_DIR}/Sign.cmake)
-
   find_program(DEPLOYQT_EXECUTABLE macdeployqt)
   set(DEPLOYQT_EXECUTABLE "/Users/amabdol/Qt/6.2.2/macos/bin/macdeployqt")
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
-  configure_file(Deploy.cmake.in ${CMAKE_BINARY_DIR}/Deploy.cmake @ONLY)
+  set(PARALLEL_SIGNER "${CMAKE_BINARY_DIR}/ParallelSigner.sh")
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/ParallelSigner.sh.in
+                 ${CMAKE_BINARY_DIR}/ParallelSigner.sh)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Sign.cmake.in
+                 ${CMAKE_BINARY_DIR}/Sign.cmake @ONLY)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Deploy.cmake.in
+                 ${CMAKE_BINARY_DIR}/Deploy.cmake @ONLY)
+
   install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.cmake)
 
   install(

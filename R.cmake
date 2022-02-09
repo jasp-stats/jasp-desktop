@@ -14,6 +14,23 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
 # include(Patch.cmake)
 
+set(MODULES_SOURCE_PATH
+    ${PROJECT_SOURCE_DIR}/Modules
+    CACHE PATH "Location of JASP Modules")
+
+set(MODULES_BINARY_PATH
+    "${CMAKE_BINARY_DIR}/Modules"
+    CACHE PATH "Location of the renv libraries")
+set(MODULES_RENV_ROOT_PATH
+    "${MODULES_SOURCE_PATH}/renv-root"
+    CACHE PATH "Location of renv root directories")
+set(MODULES_RENV_CACHE_PATH
+    "${MODULES_BINARY_PATH}/renv-cache"
+    CACHE PATH "Location of renv cache directories")
+set(JASP_ENGINE_PATH
+    "${CMAKE_BINARY_DIR}/Desktop/"
+    CACHE PATH "Location of the JASPEngine")
+
 # TODO: Replace the version with a variable
 if(APPLE)
 
@@ -245,7 +262,7 @@ if(APPLE)
     message(CHECK_START
             "Installing the 'RInside' and 'Rcpp' within the R.framework")
 
-    file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
+    file(WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
          "install.packages('RInside', repos='${R_REPOSITORY}')")
 
     execute_process(
@@ -253,7 +270,7 @@ if(APPLE)
       ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ./R --slave --no-restore --no-save
-              --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
+              --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
       message(CHECK_FAIL "unsuccessful.")

@@ -66,28 +66,12 @@ list(POP_FRONT JASP_EXTRA_MODULES_COPY)
 
 # TODO: Standardize these names, either use PATH, ROOT, or DIR, but everywhere
 
-set(MODULES_SOURCE_PATH
-    ${PROJECT_SOURCE_DIR}/Modules
-    CACHE PATH "Location of JASP Modules")
-
 if(NOT EXISTS ${MODULES_SOURCE_PATH})
   message(WARNING "Modules sources are not available. If you are planning
        to install them during the build, make sure that they are avialble in
        the jasp-desktop folder.")
 endif()
 
-set(MODULES_BINARY_PATH
-    "${CMAKE_BINARY_DIR}/Modules"
-    CACHE PATH "Location of the renv libraries")
-set(MODULES_RENV_ROOT_PATH
-    "${MODULES_BINARY_PATH}/renv-root"
-    CACHE PATH "Location of renv root directories")
-set(MODULES_RENV_CACHE_PATH
-    "${MODULES_BINARY_PATH}/renv-cache"
-    CACHE PATH "Location of renv cache directories")
-set(JASP_ENGINE_PATH
-    "${CMAKE_BINARY_DIR}/Desktop/"
-    CACHE PATH "Location of the JASPEngine")
 # Setting JASP_ENGINE_PATH like this doesn't work with APP_BUNDLE
 
 set(INSTALL_MODULE_TEMPLATE_FILE
@@ -134,7 +118,7 @@ if(INSTALL_R_MODULES)
 
   # This happens during the configuration!
   file(
-    WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R
+    WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
     "
     install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
                         'jsonlite', 'modules', 'officer', 'pkgbuild',
@@ -151,7 +135,7 @@ if(INSTALL_R_MODULES)
     ")
 
   file(
-    WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspGraphs.R
+    WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
     "
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL)
     if ('jaspGraphs' %in% installed.packages()) {
@@ -160,7 +144,7 @@ if(INSTALL_R_MODULES)
     ")
 
   file(
-    WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspTools.R
+    WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
     "
     install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL)
     if ('jaspTools' %in% installed.packages()) {
@@ -179,14 +163,14 @@ if(INSTALL_R_MODULES)
     WORKING_DIRECTORY ${R_HOME_PATH}
     OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
     COMMAND ./R --slave --no-restore --no-save
-            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspBase.R
+            --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
     COMMAND
       ${CMAKE_COMMAND} -D
       NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
       -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
       R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake
     COMMAND ./R --slave --no-restore --no-save
-            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspGraphs.R
+            --file=${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
     COMMENT "------ Installing 'jaspBase'")
 
   add_custom_command(
@@ -194,7 +178,7 @@ if(INSTALL_R_MODULES)
     DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
     OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log
     COMMAND ./R --slave --no-restore --no-save
-            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspGraphs.R
+            --file=${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
     COMMAND
       ${CMAKE_COMMAND} -D
       NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -208,7 +192,7 @@ if(INSTALL_R_MODULES)
             ${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log
     OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspTools-installed-successfully.log
     COMMAND ./R --slave --no-restore --no-save
-            --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-jaspTools.R
+            --file=${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
     COMMAND
       ${CMAKE_COMMAND} -D
       NAME_TOOL_EXECUTABLE=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
