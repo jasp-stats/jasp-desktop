@@ -332,7 +332,7 @@ std::string Analysis::statusToString(Status status)
 	}
 }
 
-Json::Value Analysis::asJSON() const
+Json::Value Analysis::asJSON(bool withRSource) const
 {
 	Json::Value analysisAsJson = Json::objectValue;
 
@@ -348,6 +348,8 @@ Json::Value Analysis::asJSON() const
 	analysisAsJson["options"]		= boundValues();
 	analysisAsJson["userdata"]		= userData();
 	analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
+	if (withRSource)
+		analysisAsJson["rSources"]	= rSources();
 
 	Log::log() << "Analysis::asJSON():\n" << analysisAsJson.toStyledString() << std::endl;
 
@@ -484,11 +486,12 @@ void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 	_oldVersion		= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();	
 }
 
-void Analysis::loadResultsUserdataFromJASPFile(const Json::Value & analysisData)
+void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData)
 {
-	Log::log() << "Now loading userdata and results for analysis " << _name << " from file." << std::endl;
+	Log::log() << "Now loading userdata results and R Sources for analysis " << _name << " from file." << std::endl;
 	setUserData(analysisData["userdata"]);
 	setResults(analysisData["results"], _status);
+	setRSources(analysisData["rSources"]);
 
 	//The rest is already taken in from Analyses::createFromJaspFileEntry
 }
@@ -846,6 +849,16 @@ std::string Analysis::upgradeMsgsForOption(const std::string & name) const
 	return out.str();
 }
 
+Json::Value Analysis::rSources() const
+{
+	Json::Value result(Json::objectValue);
+
+	for (const auto& pair : _rSources)
+		result[pair.first] = pair.second;
+
+	return result;
+}
+
 void Analysis::storeUserDataEtc()
 {
 	if(!needsRefresh())
@@ -1095,6 +1108,15 @@ void Analysis::setUserData(Json::Value userData)
 	};
 
 	setHasVolatileNotes(checkForVolatileNotes(_userData));
+}
+
+void Analysis::setRSources(const Json::Value &rSources)
+{
+	_rSources.clear();
+	if (rSources.isNull() || !rSources.isObject()) return;
+
+	for (const std::string &sourceName : rSources.getMemberNames())
+		_rSources[sourceName] = rSources[sourceName];
 }
 
 void Analysis::setDynamicModule(Modules::DynamicModule * module)

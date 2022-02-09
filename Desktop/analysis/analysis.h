@@ -98,6 +98,7 @@ public:
 	void rewriteImages();
 
 	void setRFile(const std::string &file)				{ _rfile = file;								}
+	void setRSources(const Json::Value& rSources);
 	void setUserData(Json::Value userData);
 	void setVersion(Version version, bool resetWasUpgraded = false);
 	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;						}
@@ -146,9 +147,9 @@ public:
 			void        exportResults();
 			void		remove();
 
-			Json::Value asJSON()		const;
+			Json::Value asJSON(bool withRSources = false)	const;
 			void		checkDefaultTitleFromJASPFile(	const Json::Value & analysisData);
-			void		loadResultsUserdataFromJASPFile(const Json::Value & analysisData);
+			void		loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData);
 			Json::Value createAnalysisRequestJson();
 
 	static	Status		parseStatus(std::string name);
@@ -175,6 +176,7 @@ public:
 
 	const QList<std::string>	& computedColumns()								const	{ return _computedColumns; }
 	const Json::Value			& getRSource(const std::string& name)			const	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
+	Json::Value				rSources()											const;
 	
 signals:
 	void				nameChanged();

@@ -118,7 +118,7 @@ Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEn
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
 	
-	if(!analysisData.isNull())	analysis->loadResultsUserdataFromJASPFile(analysisData);
+	if(!analysisData.isNull())	analysis->loadResultsUserdataAndRSourcesFromJASPFile(analysisData);
 	else						analysis->setResults(analysisEntry->getDefaultResults(), status);
 	
 
@@ -250,7 +250,7 @@ Json::Value Analyses::asJson() const
 				analysesDataList	= Json::arrayValue;;
 
 	applyToAll([&analysesDataList](const Analysis * analysis)
-		{ analysesDataList.append(analysis->asJSON()); });
+		{ analysesDataList.append(analysis->asJSON(true)); });
 
 	analysesJson["analyses"]	= analysesDataList;
 	analysesJson["meta"]		= resultsMeta();
