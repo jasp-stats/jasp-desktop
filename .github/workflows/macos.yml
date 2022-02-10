@@ -1,0 +1,43 @@
+name: macOS
+
+on:
+  push:
+    branches:
+      - development
+      - github-action-tests
+
+jobs:
+  xcode:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        xcode: [13.2]
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+
+    steps:
+      - name: Setting up the Keychain Certificate
+        env: 
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+          MACOS_KEYCHAIN_PWD: ${{ secrets.MACOS_KEYCHAIN_PWD }}
+          PKG_CONFIG_PATH: /usr/local/opt/zlib/lib/pkgconfig:/usr/local/opt/openssl@3/lib/pkgconfig:/usr/local/opt/qt/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > Certificate.p12
+          security create-keychain -p $MACOS_KEYCHAIN_PWD build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p $MACOS_KEYCHAIN_PWD build.keychain
+          security import Certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_KEYCHAIN_PWD build.keychain
+      - name: Updating Homebrew
+        run: brew update --preinstall
+      - name: Preparing the Requirements
+        run: brew install automake jsoncpp bison cmake qt boost pkg-config libarchive zlib libiconv openssl
+      - name: Setting up the Environment Variables
+        run: |
+          export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
+      - uses: actions/checkout@v2
+      - name: Configure
+        run: cmake -S . -B build -D GITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DINSTALL_JASP_REQUIRED_LIBRARIES=OFF -DINSTALL_R_FRAMEWORK=ON -DINSTALL_R_MODULES=ON
+      - name: Build
+        run: cmake --build build --parallel 10
