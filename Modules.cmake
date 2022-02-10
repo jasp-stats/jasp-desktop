@@ -41,7 +41,14 @@ list(REVERSE JASP_COMMON_MODULES)
 set(JASP_COMMON_MODULES_COPY ${JASP_COMMON_MODULES})
 list(POP_FRONT JASP_COMMON_MODULES_COPY FIRST_COMMON_MODULE)
 
+# Possible Bug:
+#
+# - The order is kind of important here, because `jaspProphet` and `jaspCircular`
+# are linking against broken libraries. It is also partially caused by having
+# the `.patched.log` but I'm not so sure.
 set(JASP_EXTRA_MODULES
+    "jaspProphet"
+    "jaspCircular"
     # "jaspAudit"
     # "jaspBain"
     # "jaspNetwork"
@@ -55,9 +62,7 @@ set(JASP_EXTRA_MODULES
     # "jaspReliability"
     # "jaspVisualModeling"
     # "jaspLearnBayes"
-    # "jaspProphet"
     # "jaspProcessControl"
-    # "jaspCircular"
 )
 
 list(REVERSE JASP_EXTRA_MODULES)
@@ -130,7 +135,7 @@ if(INSTALL_R_MODULES)
                         'vdiffr'), type='binary', repos='${R_REPOSITORY}')
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL)
     if ('jaspBase' %in% installed.packages()) {
-      cat(NULL, file='${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log')
+      cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
     }
     ")
 
@@ -139,7 +144,7 @@ if(INSTALL_R_MODULES)
     "
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL)
     if ('jaspGraphs' %in% installed.packages()) {
-      cat(NULL, file='${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log')
+      cat(NULL, file='${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log')
     }
     ")
 
@@ -148,7 +153,7 @@ if(INSTALL_R_MODULES)
     "
     install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL)
     if ('jaspTools' %in% installed.packages()) {
-      cat(NULL, file='${MODULES_RENV_ROOT_PATH}/jaspTools-installed-successfully.log')
+      cat(NULL, file='${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log')
     }
     ")
 
@@ -161,7 +166,7 @@ if(INSTALL_R_MODULES)
   #         for now, I would like to keep a granular control over differnt steps
   add_custom_command(
     WORKING_DIRECTORY ${R_HOME_PATH}
-    OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
+    OUTPUT ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
     COMMAND ./R --slave --no-restore --no-save
             --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
     COMMAND
@@ -175,8 +180,8 @@ if(INSTALL_R_MODULES)
 
   add_custom_command(
     WORKING_DIRECTORY ${R_HOME_PATH}
-    DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
-    OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log
+    DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+    OUTPUT ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
     COMMAND ./R --slave --no-restore --no-save
             --file=${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
     COMMAND
@@ -188,9 +193,9 @@ if(INSTALL_R_MODULES)
 
   add_custom_command(
     WORKING_DIRECTORY ${R_HOME_PATH}
-    DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
-            ${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log
-    OUTPUT ${MODULES_RENV_ROOT_PATH}/jaspTools-installed-successfully.log
+    DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+            ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+    OUTPUT ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
     COMMAND ./R --slave --no-restore --no-save
             --file=${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
     COMMAND
@@ -213,9 +218,9 @@ if(INSTALL_R_MODULES)
     add_custom_target(
       ${MODULE}
       WORKING_DIRECTORY ${R_HOME_PATH}
-      DEPENDS ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
-              ${MODULES_RENV_ROOT_PATH}/jaspGraphs-installed-successfully.log
-              ${MODULES_RENV_ROOT_PATH}/jaspTools-installed-successfully.log
+      DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+              ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+              ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND
@@ -268,7 +273,9 @@ if(INSTALL_R_MODULES)
       ${MODULE}
       WORKING_DIRECTORY ${R_HOME_PATH}
       DEPENDS
-        ${MODULES_RENV_ROOT_PATH}/jaspBase-installed-successfully.log
+        ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+        ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+        ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
         $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${R_OPT_PATH}/jags/lib/libjags.dylib>
       COMMAND ./R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
