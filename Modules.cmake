@@ -47,8 +47,8 @@ list(POP_FRONT JASP_COMMON_MODULES_COPY FIRST_COMMON_MODULE)
 # are linking against broken libraries. It is also partially caused by having
 # the `.patched.log` but I'm not so sure.
 set(JASP_EXTRA_MODULES
-    "jaspProphet"
-    "jaspCircular"
+    # "jaspProphet"
+    # "jaspCircular"
     # "jaspAudit"
     # "jaspBain"
     # "jaspNetwork"

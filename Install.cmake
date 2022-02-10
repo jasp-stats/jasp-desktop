@@ -53,7 +53,7 @@ if(APPLE)
       "${CMAKE_SOURCE_DIR}/Tools/macOS/entitlements.plist")
 
   find_program(DEPLOYQT_EXECUTABLE macdeployqt)
-  set(DEPLOYQT_EXECUTABLE "/Users/amabdol/Qt/6.2.2/macos/bin/macdeployqt")
+  # set(DEPLOYQT_EXECUTABLE "/Users/amabdol/Qt/6.2.2/macos/bin/macdeployqt")
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   set(PARALLEL_SIGNER "${CMAKE_BINARY_DIR}/ParallelSigner.sh")
 
