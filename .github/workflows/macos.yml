@@ -3,7 +3,6 @@ name: macOS
 on:
   push:
     branches:
-      - development
       - github-action-tests
 
 jobs:
