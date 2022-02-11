@@ -5,8 +5,6 @@ list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
 add_library(R-Interface ${HEADER_FILES} ${SOURCE_FILES})
 
-add_dependencies(R-Interface Common)
-
 target_include_directories(
   R-Interface
   PUBLIC # JASP
@@ -19,11 +17,8 @@ target_include_directories(
          ${RINSIDE_PATH}/include)
 
 target_link_libraries(
-  R-Interface
-  PUBLIC Common
-         ${_R_Framework}
-         ${_LIB_RINSIDE}
-         $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+  R-Interface PUBLIC ${_R_Framework} ${_LIB_RINSIDE}
+                     $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
 target_compile_definitions(
   R-Interface
