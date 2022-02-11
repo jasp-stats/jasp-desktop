@@ -2,9 +2,18 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH YES)
 
-find_package(LibArchive REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
+
+find_package(LibArchive)
+if(NOT LibArchive_FOUND)
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(
+    LibArchive
+    REQUIRED
+    IMPORTED_TARGET
+    libarchive)
+endif()
 
 # find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 

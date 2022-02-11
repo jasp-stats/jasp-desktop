@@ -1,6 +1,14 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
 
-find_package(LibArchive REQUIRED)
+find_package(LibArchive)
+if(NOT LibArchive_FOUND)
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(
+    LibArchive
+    REQUIRED
+    IMPORTED_TARGET
+    libarchive)
+endif()
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(
