@@ -130,8 +130,8 @@ if(INSTALL_R_MODULES)
                         'plyr', 'qgraph', 'ragg', 'R6', 'renv',
                         'rjson', 'rvg', 'svglite', 'systemfonts',
                         'withr', 'testthat',
-                        'data.table', 'httr', 'jsonlite', 'lifecycle',
-                        'pkgload', 'remotes', 'rjson', 'stringi', 'stringr',
+                        'data.table', 'httr', 'lifecycle',
+                        'pkgload', 'remotes', 'stringi', 'stringr',
                         'vdiffr'), type='binary', repos='${R_REPOSITORY}')
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL)
     if ('jaspBase' %in% installed.packages()) {

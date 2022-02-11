@@ -33,7 +33,6 @@ find_package(
              OpenGL
              Widgets
              Qml
-             WebEngineWidgets # remove this after the rebase
              WebEngineQuick
              WebChannel
              Svg
@@ -243,7 +242,6 @@ if(APPLE)
       Qt::OpenGL
       Qt::Widgets
       Qt::Qml
-      Qt::WebEngineWidgets
       Qt::WebEngineQuick
       Qt::WebChannel
       Qt::Svg
