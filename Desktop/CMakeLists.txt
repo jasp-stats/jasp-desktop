@@ -40,6 +40,7 @@ find_package(
              DBus
              QuickTemplates2
              Quick
+             QuickLayouts
              QuickControls2
              QuickControls2Impl
              QmlWorkerScript
@@ -247,6 +248,7 @@ if(APPLE)
       Qt::PrintSupport
       Qt::Xml
       Qt::Quick
+      Qt::QuickLayouts
       Qt::QuickControls2
       Qt::QuickControls2Impl
       Qt::QuickWidgets
