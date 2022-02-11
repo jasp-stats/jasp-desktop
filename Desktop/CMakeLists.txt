@@ -1,7 +1,5 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
-set(CMAKE_BUILD_WITH_INSTALL_RPATH YES)
-
 find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
 
