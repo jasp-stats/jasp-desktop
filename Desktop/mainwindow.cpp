@@ -20,7 +20,6 @@
 #include <QFile>
 #include <QUrl>
 #include <QShortcut>
-#include <QStringBuilder>
 #include <QDesktopServices>
 #include <QQmlContext>
 #include <QQuickItem>
@@ -1357,6 +1356,8 @@ void MainWindow::startDataEditorHandler()
 
 		switch(choice)
 		{
+        case MessageForwarder::DialogResponse::Save:
+        case MessageForwarder::DialogResponse::Discard:
 		case MessageForwarder::DialogResponse::Cancel:
 			return;
 
