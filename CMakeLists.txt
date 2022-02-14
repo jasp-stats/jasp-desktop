@@ -14,19 +14,31 @@ include(ExternalProject)
 include(CMakePrintHelpers)
 include(Tools/cmake/CPM.cmake)
 
+find_package(Git)
+find_program(MAKE NAMES gmake nmake make)
+find_program(ACLOCAL NAMES aclocal)
+find_program(AUTOCONF NAMES autoconf)
+find_program(AUTORECONF NAMES autoreconf)
+find_program(AUTOUPDATE NAMES autoupdate)
+find_program(CCACHE_EXECUTABLE ccache)
+find_program(IWYU_EXECUTABLE include-what-you-use)
+
 # I have a construct for this, and Qt often messes things up.
-# I will consider turning this off, and letting Qt does it 
+# I will consider turning this off, and letting Qt does it
 # when everything else worked properly
-set(QT_CREATOR_SKIP_CONAN_SETUP ON)
+option(USE_CONAN "Whether to use CONAN package manager" OFF)
 
+if(WIN32 OR USE_CONAN)
+  set(QT_CREATOR_SKIP_CONAN_SETUP ON)
 
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-  execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND conan install ${CMAKE_SOURCE_DIR} --build=missing)
+  if(NOT EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                    COMMAND conan install ${CMAKE_SOURCE_DIR} --build=missing)
+  endif()
+
+  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+  conan_basic_setup(TARGETS)
 endif()
-
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -50,10 +62,12 @@ else()
   set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}")
 endif()
 
-if(CMAKE_SIZEOF_VOID_P EQUAL 8) # 64 bits
+if(WIN32)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8) # 64 bits
     set(R_DIR_NAME "x64")
-elseif(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
+  elseif(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
     set(R_DIR_NAME "i386")
+  endif()
 endif()
 
 # Sets the build options
@@ -63,14 +77,25 @@ include(JASP.cmake)
 include(R.cmake)
 
 # Builds and configures all the dependencies
-# if(INSTALL_JASP_REQUIRED_LIBRARIES)
-include(Dependencies.cmake)
+if(INSTALL_JASP_REQUIRED_LIBRARIES)
+  include(Dependencies.cmake)
+endif()
 
-if (QTDIR OR DEFINED ENV{QTDIR} OR DEFINED ENV{QTDIR32} OR DEFINED ENV{QTDIR64})
-  # Qt path set by user or env var
-else()
-  set(QTDIR "" CACHE PATH "Path to Qt (e.g. C:/Qt/5.7/msvc2015_64)")
-  message(WARNING "QTDIR variable is missing.  Please set this variable to specify path to Qt (e.g. C:/Qt/5.7/msvc2015_64)")
+if(WIN32)
+  if(QTDIR
+     OR DEFINED ENV{QTDIR}
+     OR DEFINED ENV{QTDIR32}
+     OR DEFINED ENV{QTDIR64})
+    # Qt path set by user or env var
+  else()
+    set(QTDIR
+        ""
+        CACHE PATH "Path to Qt (e.g. C:/Qt/5.7/msvc2015_64)")
+    message(
+      WARNING
+        "QTDIR variable is missing.  Please set this variable to specify path to Qt (e.g. C:/Qt/5.7/msvc2015_64)"
+    )
+  endif()
 endif()
 
 # This loads all the Qt-related CMake Modules.
@@ -79,15 +104,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-
-find_package(Git)
-find_program(MAKE NAMES gmake nmake make)
-find_program(ACLOCAL NAMES aclocal)
-find_program(AUTOCONF NAMES autoconf)
-find_program(AUTORECONF NAMES autoreconf)
-find_program(AUTOUPDATE NAMES autoupdate)
-find_program(CCACHE_EXECUTABLE ccache)
-find_program(IWYU_EXECUTABLE include-what-you-use)
 
 # When everything is done, we should be able to just activate
 # this and build it for two architectures. This will also download
@@ -154,7 +170,7 @@ endif()
 
 add_subdirectory(Common)
 
-if (NOT WIN32)
+if(NOT WIN32)
   add_subdirectory(R-Interface)
 endif()
 

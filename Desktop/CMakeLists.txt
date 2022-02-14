@@ -64,24 +64,24 @@ if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
 
 else()
 
-#   # find_library(
-#   #   LIBJSONCPP REQUIRED
-#   #   NAMES jsoncpp
-#   #   HINTS ${jsoncpp_LIBRARY_DIRS})
+  #   # find_library(
+  #   #   LIBJSONCPP REQUIRED
+  #   #   NAMES jsoncpp
+  #   #   HINTS ${jsoncpp_LIBRARY_DIRS})
 
-#   # WARNING: This is not the way to do it, and it does not work with Ninja :\
+  #   # WARNING: This is not the way to do it, and it does not work with Ninja :\
 
   # jsoncpp
   set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
   set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
   set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
 
-# readstat
-set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
-set(LIBREADSTAT_LIBRARY_DIRS ${readstat_LIBRARY_DIRS})
-set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT_LIBRARY_DIRS}/libreadstat.a)
+  # readstat
+  set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
+  set(LIBREADSTAT_LIBRARY_DIRS ${readstat_LIBRARY_DIRS})
+  set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT_LIBRARY_DIRS}/libreadstat.a)
 
-# endif()
+  # endif()
 endif()
 
 # TODO:
@@ -256,9 +256,9 @@ if(APPLE)
       # OpenSSL::SSL
       # OpenSSL::Crypto
       # System
-      CONAN_PKG::libiconv
-      CONAN_PKG::zlib
-      CONAN_PKG::openssl
+      $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
+      $<$<BOOL:${USE_CONAN}>:CONAN_PKG::zlib>
+      $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
       # Based on our config, this is either from PkgConfig, or the build/_deps/
       ${LIBREADSTAT_LINK_LIBRARIES}
       # System

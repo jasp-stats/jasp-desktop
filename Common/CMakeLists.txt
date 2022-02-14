@@ -18,10 +18,7 @@ find_package(
              system
              date_time
              timer
-             chrono
-             interprocess
-             locale
-             iostreams)
+             chrono)
 
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
 
@@ -76,7 +73,9 @@ target_include_directories(
          ${RCPP_PATH}/include
          # Conan
          ${CONAN_INCLUDE_DIRS_JSONCPP}
-         ${CONAN_INCLUDE_DIRS_LIBARCHIVE})
+         ${CONAN_INCLUDE_DIRS_LIBARCHIVE}
+         #
+         ${Boost_INCLUDE_DIRS})
 
 target_link_libraries(
   Common
@@ -86,16 +85,13 @@ target_link_libraries(
          Boost::date_time
          Boost::timer
          Boost::chrono
-         Boost::interprocess
-         Boost::locale
-         Boost::iostreams
          # Conan
          # LibArchive::LibArchive
          # ${LIBJSONCPP_LINK_LIBRARIES}
          # ${CONAN_LIBS_libarchive}
          # ${CONAN_LIBS_jsoncpp}
-         CONAN_PKG::jsoncpp
-         CONAN_PKG::libarchive
+         $<$<BOOL:${USE_CONAN}>:CONAN_PKG::jsoncpp>
+         $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libarchive>
          LibArchive::LibArchive
          ${LIBJSONCPP_LINK_LIBRARIES}
          # Only if JASP_USES_QT_HERE is ON

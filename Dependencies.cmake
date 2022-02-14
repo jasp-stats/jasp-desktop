@@ -50,7 +50,7 @@ endif()
 #   - On macOS, this will place the R.framework into the ${CMAKE_SOURCE_DIR}/Frameworks
 #
 if(WIN32)
-  
+
   # Moved to the R.cmake
 
 elseif(APPLE)
@@ -68,19 +68,19 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 # with the .tar.gz to have a faster download.
 #   - For some reason, the .tar.gz doesn't support CMake!
 #   - It's not necessary to pass a list of targets. CMake only builds want it needs
-cpmaddpackage(
-  NAME
-  Boost
-  VERSION
-  1.78.0
-  OPTIONS
-  "BUILD_TESTING:BOOL=OFF"
-  "CMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
-  "BOOST_INCLUDE_LIBRARIES:STRING=nowide\\\\;filesystem\\\\;system\\\\;date_time\\\\;timer\\\\;chrono\\\\;atomic"
-  GITHUB_REPOSITORY
-  "boostorg/boost"
-  GIT_TAG
-  "boost-1.78.0")
+# cpmaddpackage(
+#   NAME
+#   Boost
+#   VERSION
+#   1.78.0
+#   OPTIONS
+#   "BUILD_TESTING:BOOL=OFF"
+#   "CMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
+#   "BOOST_INCLUDE_LIBRARIES:STRING=nowide\\\\;filesystem\\\\;system\\\\;date_time\\\\;timer\\\\;chrono\\\\;atomic"
+#   GITHUB_REPOSITORY
+#   "boostorg/boost"
+#   GIT_TAG
+#   "boost-1.78.0")
 
 #
 # Removing these, since they are part of the Xcode and MSVC's toolchain
