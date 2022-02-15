@@ -240,7 +240,10 @@ if(INSTALL_R_MODULES)
     #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
     #   COMPONENT ${MODULE})
 
-    add_dependencies(${MODULE} JASPEngine)
+    # To fix the Rpath stuff
+    if(APPLE)
+      add_dependencies(${MODULE} JASPEngine)
+    endif()
 
     # Making sure that CMake doesn't parallelize the installation of the modules
 
@@ -296,7 +299,10 @@ if(INSTALL_R_MODULES)
     #   DESTINATION ${CMAKE_INSTALL_PREFIX}/Modules/
     #   COMPONENT ${MODULE})
 
-    add_dependencies(${MODULE} JASPEngine)
+    # To fix the Rpath stuff
+    if(APPLE)
+      add_dependencies(${MODULE} JASPEngine)
+    endif()
 
     # Making sure that CMake doesn't parallelize the installation of the modules
 
