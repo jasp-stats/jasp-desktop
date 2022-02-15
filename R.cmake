@@ -433,6 +433,112 @@ elseif(WIN32)
 
   endif()
 
+elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+
+
+  message(CHECK_START "Looking for R")
+
+  find_program(R_BIN
+    NAMES
+    R)
+
+  if(R_BIN STREQUAL "")
+
+    message(CHECK_FAIL "unsuccessful")
+    message(FATAL_ERROR "R is not installed in your system. Please install R and try again.")
+
+  else()
+
+    message(CHECK_PASS "successful")
+
+    execute_process(COMMAND
+      ${R_BIN} RHOME
+      OUTPUT_VARIABLE R_HOME_PATH
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+    message(STATUS "R_HOME is ${R_HOME_PATH}")
+
+  endif()
+
+  set(R_SITE_LIBRARY_PATH $ENV{HOME}/R/site-library)
+  make_directory(${R_SITE_LIBRARY_PATH})
+
+  file(WRITE ${MODULES_RENV_ROOT_PATH}/add-new-libPaths.R
+        ".libPaths(${R_SITE_LIBRARY_PATH})")
+
+  # execute_process(COMMAND
+  #   ${R_BIN} CMD 
+  #   OUTPUT_VARIABLE R_)
+
+  set(R_LIBRARY_PATH "${R_SITE_LIBRARY_PATH}")
+  set(R_OPT_PATH "${R_HOME_PATH}/opt")
+  set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
+  set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
+  set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+
+
+  cmake_print_variables(R_HOME_PATH)
+  cmake_print_variables(R_LIBRARY_PATH)
+  cmake_print_variables(R_OPT_PATH)
+  cmake_print_variables(R_EXECUTABLE)
+
+  cmake_print_variables(RCPP_PATH)
+  cmake_print_variables(RINSIDE_PATH)
+
+
+  message(CHECK_START "Checking for 'libR'")
+  find_library(
+    _LIB_R
+    NAMES R
+    PATHS ${R_HOME_PATH}/lib
+    NO_DEFAULT_PATH NO_CACHE REQUIRED)
+
+  if(_LIB_R)
+    message(CHECK_PASS "found.")
+    message(STATUS "  ${_LIB_R}")
+  else()
+    message(CHECK_FAIL "not found in ${R_HOME_PATH}/lib")
+  endif()
+
+  if(NOT EXISTS ${RINSIDE_PATH})
+    message(STATUS "RInside is not installed!")
+
+    message(CHECK_START
+            "Installing the 'RInside' and 'Rcpp'")
+
+    file(WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
+         "install.packages('RInside', repos='${R_REPOSITORY}', lib='${R_SITE_LIBRARY_PATH}')")
+
+    execute_process(
+      COMMAND_ECHO STDOUT
+      # ERROR_QUIET OUTPUT_QUIET
+      COMMAND R --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
+
+    if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
+      message(CHECK_FAIL "unsuccessful.")
+      message(FATAL_ERROR "'RInside' installation has failed!")
+    endif()
+
+    message(CHECK_PASS "successful.")
+
+  endif()
+
+  message(CHECK_START "Checking for 'libRInside'")
+  find_library(
+    _LIB_RINSIDE
+    NAMES RInside
+    PATHS ${RINSIDE_PATH}/lib
+    NO_DEFAULT_PATH NO_CACHE REQUIRED)
+
+  if(_LIB_RINSIDE)
+    message(CHECK_PASS "found.")
+    message(STATUS "  ${_LIB_RINSIDE}")
+  else()
+    message(CHECK_FAIL "not found in ${RINSIDE_PATH}/lib")
+  endif()
+
+  # message(FATAL_ERROR "Step by step...")
+
 endif()
 
 # Amir: Not sure about this yet.

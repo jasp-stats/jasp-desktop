@@ -85,7 +85,7 @@ set(CPM_USE_LOCAL_PACKAGES ON)
 #
 # Removing these, since they are part of the Xcode and MSVC's toolchain
 #
-if(WIN32)
+# if(WIN32)
 
   cpmaddpackage(
     NAME
@@ -120,7 +120,7 @@ if(WIN32)
     GIT_TAG
     "v1.5.2")
 
-endif()
+# endif()
 
 # ----- jsoncpp ------
 #
