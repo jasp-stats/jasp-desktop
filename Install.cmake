@@ -57,25 +57,14 @@ if(APPLE)
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   set(PARALLEL_SIGNER "${CMAKE_BINARY_DIR}/ParallelSigner.sh")
 
-  configure_file(
-    ${CMAKE_SOURCE_DIR}/Tools/macOS/ParallelSigner.sh.in
-    ${CMAKE_BINARY_DIR}/ParallelSigner.sh
-    FILE_PERMISSIONS
-    OWNER_EXECUTE)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/ParallelSigner.sh.in
+                 ${CMAKE_BINARY_DIR}/ParallelSigner.sh @ONLY)
 
-  configure_file(
-    ${CMAKE_SOURCE_DIR}/Sign.cmake.in
-    ${CMAKE_BINARY_DIR}/Sign.cmake
-    @ONLY
-    FILE_PERMISSIONS
-    OWNER_EXECUTE)
+  configure_file(${CMAKE_SOURCE_DIR}/Sign.cmake.in
+                 ${CMAKE_BINARY_DIR}/Sign.cmake @ONLY)
 
-  configure_file(
-    ${CMAKE_SOURCE_DIR}/Deploy.cmake.in
-    ${CMAKE_BINARY_DIR}/Deploy.cmake
-    @ONLY
-    FILE_PERMISSIONS
-    OWNER_EXECUTE)
+  configure_file(${CMAKE_SOURCE_DIR}/Deploy.cmake.in
+                 ${CMAKE_BINARY_DIR}/Deploy.cmake @ONLY)
 
   install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.cmake)
 

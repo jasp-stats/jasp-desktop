@@ -70,15 +70,15 @@ if(WIN32)
   endif()
 endif()
 
-if(UNIX)
+# if(UNIX)
 
-  file(
-    CHMOD
-    ${CMAKE_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-    PERMISSIONS
-    OWNER_EXECUTE)
+#   file(
+#     CHMOD
+#     ${CMAKE_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+#     PERMISSIONS
+#     OWNER_EXECUTE)
 
-endif()
+# endif()
 
 # Sets the build options
 include(JASP.cmake)
