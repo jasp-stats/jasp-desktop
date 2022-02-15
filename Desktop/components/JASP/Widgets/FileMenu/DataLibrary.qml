@@ -24,7 +24,7 @@ Item
 	{
 		id:						datalibrarybreadcrumbs
 		model:					fileMenuModel.datalibrary.breadcrumbsmodel
-		onCrumbButtonClicked:	model.indexChanged(modelIndex)
+		onCrumbButtonClicked:	(modelIndex)=>{ model.indexChanged(modelIndex) }
 
 		anchors
 		{

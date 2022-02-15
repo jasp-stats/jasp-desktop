@@ -37,7 +37,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
 	setObjectName("AnalysisForm");
 	connect(this,					&AnalysisForm::infoChanged,			this, &AnalysisForm::helpMDChanged			);
-	connect(this,					&AnalysisForm::formCompleted,		this, &AnalysisForm::formCompletedHandler   );
+	connect(this,					&AnalysisForm::formCompleted,		this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
 	connect(this,					&AnalysisForm::analysisChanged,		this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 	connect(KnownIssues::issues(),	&KnownIssues::knownIssuesUpdated,	this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 }
@@ -478,7 +478,7 @@ void AnalysisForm::addControlError(JASPControl* control, QString message, bool t
 			if (!_controlErrorMessageComponent)
 				_controlErrorMessageComponent = new QQmlComponent(qmlEngine(this), "qrc:///components/JASP/Widgets/ControlErrorMessage.qml");
 
-			controlErrorMessageItem = qobject_cast<QQuickItem*>(_controlErrorMessageComponent->create());
+			controlErrorMessageItem = qobject_cast<QQuickItem*>(_controlErrorMessageComponent->create(QQmlEngine::contextForObject(this)));
 			if (!controlErrorMessageItem)
 			{
 				Log::log() << "Could not create Control Error Item!!" << std::endl;
@@ -573,8 +573,7 @@ void AnalysisForm::boundValueChangedHandler(JASPControl *)
 }
 
 
-void AnalysisForm::formCompletedHandler()  { QTimer::singleShot(0, this, &AnalysisForm::_formCompletedHandler); }
-void AnalysisForm::_formCompletedHandler()
+void AnalysisForm::formCompletedHandler()
 {
 	_formCompleted = true;
 	setAnalysisUp();

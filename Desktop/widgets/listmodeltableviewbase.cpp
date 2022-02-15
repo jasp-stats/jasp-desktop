@@ -71,7 +71,7 @@ int ListModelTableViewBase::getMaximumColumnWidthInCharacters(size_t columnIndex
 
 	if (column < _tableTerms.values.size())
 		for (QVariant val : _tableTerms.values[column])
-			maxL = std::max(val.toString().size(), maxL);
+            maxL = std::max(static_cast<int>(val.toString().size()), maxL);
 
 	return maxL + 3;
 }
@@ -82,7 +82,7 @@ QString ListModelTableViewBase::getMaximumRowHeaderString() const
 	int maxL = 7;
 
 	for (QString val : _tableTerms.rowNames)
-			maxL = std::max(val.size() + 2, maxL);
+            maxL = std::max(static_cast<int>(val.size() + 2), maxL);
 
 	QString dummyText;
 	while (maxL > dummyText.length())
@@ -193,7 +193,7 @@ void ListModelTableViewBase::reset()
 		for (int col=0; col < _tableView->initialColumnCount(); col++)
 			addColumn(false);
 
-	int rows = std::max(_tableTerms.rowNames.length(), _tableView->initialRowCount());
+    int rows = std::max(static_cast<int>(_tableTerms.rowNames.length()), _tableView->initialRowCount());
 
 	if (!_keepRowsOnReset)
 		for (int row=0; row < rows; row++)

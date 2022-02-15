@@ -82,12 +82,12 @@ void BoundControlJAGSTextArea::checkSyntax()
 				int idxStart, idxEnd;
 				idxStart = paramName.indexOf("(") + 1;
 				idxEnd   = paramName.indexOf(")") - idxStart;
-				paramName = paramName.midRef(idxStart, idxEnd).toString();
+                paramName = paramName.mid(idxStart, idxEnd);
 			}
 
 			// get rid of any indexing
 			if (paramName.contains("["))
-				paramName = paramName.leftRef(paramName.indexOf("[")).toString();
+                paramName = paramName.left(paramName.indexOf("["));
 
 			if (paramName != "" && !ColumnEncoder::columnEncoder()->shouldDecode(fq(paramName)))
 				_usedParameters.insert(paramName);

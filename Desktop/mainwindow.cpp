@@ -25,7 +25,7 @@
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQuickStyle>
-#include <QtWebEngine>
+#include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <QAction>
 #include <QMenuBar>
 
@@ -1003,11 +1003,11 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 		if(saveEvent->isCompleted())	return saveEvent->isSuccessful();
 		else							_savingForClose = true;
 	}
-	[[clang::fallthrough]];
+	[[fallthrough]];
 
 	case MessageForwarder::DialogResponse::Cancel:			return false;
 
-	default:												[[clang::fallthrough]];
+	default:												[[fallthrough]];
 	case MessageForwarder::DialogResponse::Discard:			return true;
 	}
 }
@@ -1037,7 +1037,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				QString dataFilePath = QString::fromStdString(_package->dataFilePath());
 				if (QFileInfo::exists(dataFilePath))
 				{
-					uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toTime_t();
+                    uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toSecsSinceEpoch();
 					if (currentDataFileTimestamp > _package->dataFileTimestamp())
 					{
 						setCheckAutomaticSync(true);
@@ -1307,7 +1307,6 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 		QFile file(filename);
 		file.open(QIODevice::WriteOnly | QIODevice::Truncate);
 		QTextStream stream(&file);
-		stream.setCodec("UTF-8");
 
 		stream << data;
 		stream.flush();

@@ -40,7 +40,7 @@ using namespace boost;
 
 string DataSetLoader::getExtension(const string &locator, const string &extension)
 {
-	filesystem::path path(locator);
+    boost::filesystem::path path(locator);
 	string ext = path.extension().generic_string();
 
 	if (!ext.length()) ext=extension;

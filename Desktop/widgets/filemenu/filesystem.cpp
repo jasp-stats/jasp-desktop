@@ -88,15 +88,15 @@ void FileSystem::sortEntries(Sortable::SortType  sortOrder)
 			break;
 
 		case Sortable::SortType::SortByNameAZ:
-			qSort(_entries.begin(), _entries.end(), FileSystemEntry::compareNames);
+            std::sort(_entries.begin(), _entries.end(), FileSystemEntry::compareNames);
 			break;
 
 		case Sortable::SortType::SortByNameZA:
-			qSort(_entries.begin(), _entries.end(), FileSystemEntry::compareNamesReversed);
+            std::sort(_entries.begin(), _entries.end(), FileSystemEntry::compareNamesReversed);
 			break;
 
 		case Sortable::SortType::SortByDate:
-			qSort(_entries.begin(), _entries.end(), FileSystemEntry::compareDateTime);
+            std::sort(_entries.begin(), _entries.end(), FileSystemEntry::compareDateTime);
 			break;
 
 		//case Sortable::SortType::SortByDate:

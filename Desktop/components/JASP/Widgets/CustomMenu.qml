@@ -16,10 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick				2.11
-import QtQuick.Controls		2.4
-import QtGraphicalEffects	1.12
-import JASP.Controls		1.0 as JASPControl
+import QtQuick						2.15
+import QtQuick.Controls				2.4
+import JASP.Controls				1.0 as JASPControl
+import Qt5Compat.GraphicalEffects
 
 FocusScope
 {
@@ -45,7 +45,7 @@ FocusScope
 
 	property int	currentIndex: -1
 
-	Keys.onPressed:
+	Keys.onPressed: (event)=>
 	{
 		if (event.key === Qt.Key_Up)
 		{
@@ -187,7 +187,7 @@ FocusScope
 					id		: repeater
 					model	: menu.props === undefined ? undefined : menu.props["model"]
 
-					onItemAdded:
+					onItemAdded: (index, item)=>
 					{
 						if (index === 0)
 						{
@@ -300,7 +300,7 @@ FocusScope
 									smooth				: true
 									mipmap				: true
 									fillMode			: Image.PreserveAspectFit
-									visible				: menuImageSource !== ""
+									visible				: source != ""
 
 									anchors
 									{
@@ -342,7 +342,6 @@ FocusScope
 	{
 		id				: menuShadow
 		anchors.fill	: menuRectangle
-
 		color			: jaspTheme.shadow
 		spread			: 0.2
 		cornerRadius	: menuRectangle.radius + glowRadius

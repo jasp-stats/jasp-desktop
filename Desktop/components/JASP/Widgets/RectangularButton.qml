@@ -58,7 +58,7 @@ Item
 
 	Keys.onSpacePressed:	clicked();
 	Keys.onEnterPressed:	clicked();
-	Keys.onReturnPressed:	clicked();
+	Keys.onReturnPressed: (event)=>	clicked();
 
 	signal clicked()
 

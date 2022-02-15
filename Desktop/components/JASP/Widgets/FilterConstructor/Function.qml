@@ -188,8 +188,8 @@ Item
 
 		x: haakjesLinks.width + haakjesLinks.x
 
-		width:	dropRepeat.rowWidthCalc()
-		height: dropRepeat.rowHeightCalc()
+		width:	0
+		height: 0
 
 		property real implicitWidthDrops: parent.acceptsDrops ? funcRoot.initialWidth / 4 : 0
 
@@ -197,8 +197,8 @@ Item
 
 		Repeater
 		{
-			id: dropRepeat
-			model: funcRoot.parameterNames
+			id:		dropRepeat
+			model:	funcRoot.parameterNames
 			//anchors.fill: parent
 
 			property var rowWidthCalc: function()

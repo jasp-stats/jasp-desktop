@@ -284,7 +284,7 @@ VariablesListBase
 		anchors.fill:	itemRectangle
 		keys:			variablesList.dropKeys
 
-		onPositionChanged:
+		onPositionChanged:  (drag)=>
 		{
 			if (!itemRectangle.enabled || variablesList.maxRows === 1 || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
 
@@ -366,7 +366,7 @@ VariablesListBase
 		onTriggered: variablesList.searchKeys = ""
 	}
 
-	Keys.onPressed:
+	Keys.onPressed: (event)=>
 	{
 		if (event.key === Qt.Key_Shift)
 			variablesList.shiftPressed = true;
@@ -392,17 +392,17 @@ VariablesListBase
 		}
 	}
 
-	Keys.onReleased:
+	Keys.onReleased: (event)=>
 	{
 		if (event.key === Qt.Key_Shift)
 			variablesList.shiftPressed = false;
 	}
 
-	Keys.onSpacePressed:
+	Keys.onSpacePressed: (event)=>
 	{
 		moveSelectedItems()
 	}
-	Keys.onReturnPressed:
+	Keys.onReturnPressed: (event)=>
 	{
 		moveSelectedItems()
 	}
@@ -481,10 +481,10 @@ VariablesListBase
 				{
 					if (extraItem)
 					{
-						extraItem.parent = itemRectangle;
-						extraItem.anchors.verticalCenter = itemRectangle.verticalCenter;
-						extraItem.anchors.right = itemRectangle.right;
-						extraItem.anchors.rightMargin = 3 * preferencesModel.uiScale;
+						extraItem.parent					= itemRectangle;
+						extraItem.anchors.verticalCenter	= itemRectangle.verticalCenter;
+						extraItem.anchors.right				= itemRectangle.right;
+						extraItem.anchors.rightMargin		= 3 * preferencesModel.uiScale;
 					}
 				}
 
@@ -549,7 +549,7 @@ VariablesListBase
 					hoverEnabled:	true
 					cursorShape:	Qt.PointingHandCursor
 					
-					onDoubleClicked:
+					onDoubleClicked: (mouse)=>
 					{
 						if (itemRectangle.draggable)
 						{
@@ -558,13 +558,13 @@ VariablesListBase
 						}
 					}
 					
-					onClicked:
+					onClicked: (mouse)=>
 					{
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 							variablesList.setSelectedItem(itemRectangle.rank)
 					}
 					
-					onPressed:
+					onPressed: (mouse)=>
 					{
 						variablesList.mousePressed = true
 						itemGridView.currentIndex = index;
@@ -597,7 +597,7 @@ VariablesListBase
 							variablesList.endShiftSelected = -1;
 						}
 					}
-					onReleased:
+					onReleased: (mouse)=>
 					{
 						variablesList.mousePressed = false;
 					}

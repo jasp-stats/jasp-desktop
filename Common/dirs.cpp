@@ -58,7 +58,7 @@ string Dirs::tempDir()
 		return p;
 
 	string dir;
-	filesystem::path pa;
+	boost::filesystem::path pa;
 
 #ifdef _WIN32
 	TCHAR buffer[MAX_PATH];
@@ -79,10 +79,10 @@ string Dirs::tempDir()
 
 #endif
 
-	if ( ! filesystem::exists(pa))
+	if (!boost::filesystem::exists(pa))
 	{
 		system::error_code ec;
-		filesystem::create_directories(pa, ec);
+		boost::filesystem::create_directories(pa, ec);
 
 		if (ec)
 		{
@@ -92,7 +92,7 @@ string Dirs::tempDir()
 		}
 	}
 
-	p = filesystem::path(dir).generic_string();
+	p = boost::filesystem::path(dir).generic_string();
 
 	return p;
 }
@@ -229,7 +229,7 @@ string Dirs::resourcesDir()
 		dir = exeDir();
 
 #ifdef __APPLE__
-	if (!filesystem::exists("Makefile"))
+	if (!boost::filesystem::exists("Makefile"))
 		dir += "/..";
 #endif
 

@@ -1,6 +1,5 @@
 import QtQuick			2.12
-import QtQuick.Controls 2.12
-import QtQuick.Controls 1.4 as OLD
+import QtQuick.Controls 6.0
 import QtQuick.Layouts	1.0
 
 
@@ -9,15 +8,18 @@ Rectangle
 	id:				rootDataset
 	color:			jaspTheme.uiBackground
 
-	OLD.SplitView
+	property int leftHandSpace: 0 //Used to allow splithandler to move out of the screen on the left a bit.
+
+    SplitView
     {
-		id:				splitViewData
-		anchors.fill:	parent
-		orientation:	Qt.Vertical
-		handleDelegate:	Rectangle
+		id:					splitViewData
+		anchors.fill:		parent
+		anchors.leftMargin: rootDataset.leftHandSpace
+		orientation:		Qt.Vertical
+		handle:				Rectangle
 		{
 			implicitHeight:	jaspTheme.splitHandleWidth * 0.8;
-			color:			styleData.hovered || styleData.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
+			color:			SplitHandle.hovered || SplitHandle.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
 
 			Item
 			{
@@ -74,9 +76,9 @@ Rectangle
 		{
 			id:							filterWindow
 			objectName:					"filterWindow"
-			Layout.minimumHeight:		desiredMinimumHeight
-			Layout.preferredHeight:		rootDataset.height * 0.25
-			Layout.maximumHeight:		rootDataset.height * 0.8
+			SplitView.minimumHeight:	desiredMinimumHeight
+			SplitView.preferredHeight:	rootDataset.height * 0.25
+			SplitView.maximumHeight:	rootDataset.height * 0.8
 
 		}
 
@@ -84,23 +86,23 @@ Rectangle
 		{
 			id:							computeColumnWindow
 			objectName:					"computeColumnWindow"
-			Layout.minimumHeight:		desiredMinimumHeight
-			Layout.preferredHeight:		rootDataset.height * 0.25
-			Layout.maximumHeight:		rootDataset.height * 0.8
+			SplitView.minimumHeight:	desiredMinimumHeight
+			SplitView.preferredHeight:	rootDataset.height * 0.25
+			SplitView.maximumHeight:	rootDataset.height * 0.8
 		}
 
         VariablesWindow
         {
 			id:							variablesWindow
-			Layout.minimumHeight:		calculatedMinimumHeight
-			Layout.preferredHeight:		rootDataset.height * 0.25
-			Layout.maximumHeight:		rootDataset.height * 0.8
+			SplitView.minimumHeight:	calculatedMinimumHeight
+			SplitView.preferredHeight:	rootDataset.height * 0.25
+			SplitView.maximumHeight:	rootDataset.height * 0.8
         }
 
 		DataTableView
 		{
 			objectName:				"dataSetTableView"
-			Layout.fillHeight:		true
+			SplitView.fillHeight:	true
 			onDoubleClicked:		mainWindow.startDataEditorHandler()
         }
 	}

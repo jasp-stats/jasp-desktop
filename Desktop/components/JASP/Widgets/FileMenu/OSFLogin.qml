@@ -18,7 +18,6 @@
 
 import QtQuick				2.12
 import QtQuick.Controls		2.2
-import QtGraphicalEffects	1.12
 import JASP.Controls		1.0
 import JASP.Widgets			1.0
 

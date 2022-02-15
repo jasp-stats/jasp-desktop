@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (C) 2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "datasetpackage.h"
 #include "log.h"
 #include "utilities/qutils.h"
 #include "sharedmemory.h"
@@ -26,9 +27,7 @@
 #include "utilities/appdirs.h"
 #include "utils.h"
 #include "gui/messageforwarder.h"
-
-#define ENUM_DECLARATION_CPP
-#include "datasetpackage.h"
+#include "datasetpackagesubnodemodel.h"
 
 
 DataSetPackage * DataSetPackage::_singleton = nullptr;
@@ -44,6 +43,10 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::folderChanged,		this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::nameChanged);
+
+	_dataSubModel	= new SubNodeModel(parIdxType::dataRoot);
+	_filterSubModel = new SubNodeModel(parIdxType::filterRoot);
+	_labelsSubModel = new SubNodeModel(parIdxType::labelRoot);
 }
 
 void DataSetPackage::setEngineSync(EngineSync * engineSync)
@@ -124,69 +127,171 @@ void DataSetPackage::freeDataSet()
 	_dataSet = nullptr;
 }
 
-QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent) const
+void DataSetPackage::regenerateInternalPointers()
 {
-	parIdxType * pointer = 0;
+	//Instead of hardcoding the positions for the rootnodes like is done in ::index we could also construct a map here to get back to the internal pointer easily, but it is a bit overkill. So im leaving it
+	//The following must all be done in the same order as the definition of parIdxType otherwise ::index(...) breaks:
+	_internalPointers = {{ parIdxType::dataRoot,	0 },
+						 { parIdxType::data,		0 },
+						 { parIdxType::filterRoot,	0 },
+						 { parIdxType::filter,		0 }}; // none of the before need a column indicated.
 
-	if(!parent.isValid())
-	{
-		pointer += row; //this index will be the root for data/labels/filter indices and will remember what type it is through the pointer
+	for(int col=0; col<columnCount(); col++)
+		_internalPointers.push_back({parIdxType::labelRoot, col}); //these do because they need to know which column is ref'd
 
-		if(parIdxType(row) == parIdxType::label)
-			pointer += column;
-	}
-	else					pointer = static_cast<parIdxType*>(parent.internalPointer());
-
-	return createIndex(row, column, static_cast<void*>(pointer));
+	for(int col=0; col<columnCount(); col++)
+		_internalPointers.push_back({parIdxType::label,		col}); //these do because they need to know which column is ref'd
 }
 
-parIdxType DataSetPackage::parentIndexTypeIs(const QModelIndex &index) const
+QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent) const
 {
-	if(!index.isValid()) return parIdxType::root;
+	const void * pointer = nullptr;
 
-	//parIdxType	* pointer = static_cast<parIdxType*>(index.internalPointer());
-	//return		* pointer; //Is defined in static array _nodeCategory!
+	if(!parent.isValid()) //this is a rootnode then
+	{
+		//rootnodes are as follows (arranged as columns on row 0):	dataRoot, filterRoot
+		//and as columns on row1:									labelRoot-col0 ... labelRoot-colN
+		parIdxType	newIndexType = row < 1 ? (column == 0 ? parIdxType::dataRoot : parIdxType::filterRoot) : parIdxType::labelRoot;
+					pointer = static_cast<const void*>(_internalPointers.data() + int(newIndexType) + (newIndexType == parIdxType::labelRoot ? column: 0));
+	}
+	else
+	{
+		const intnlPntPair * parentInfo = getInternalPointerPairFromIndex(parent);
 
-	uint64_t notPointer = reinterpret_cast<uint64_t>(index.internalPointer());
-	if(notPointer < uint64_t(parIdxType::label))
-			return parIdxType(notPointer);
+		switch(parentInfo->first)
+		{
+		case parIdxType::dataRoot:
+			pointer = static_cast<const void*>(_internalPointers.data() + int(parIdxType::data));
+			break;
 
-	return parIdxType::label; //The label also encodes which column it is.
+		case parIdxType::filterRoot:
+			pointer = static_cast<const void*>(_internalPointers.data() + int(parIdxType::filter));
+			break;
+
+		case parIdxType::labelRoot:
+
+			pointer = static_cast<const void*>(_internalPointers.data() + int(parIdxType::labelRoot) + columnCount() + parentInfo->second); //We add columnCount to jump over labelRoot entries. And we use the column from the parent so that we can later find our parent again.
+			break;
+
+		default:
+			pointer = nullptr;
+			Log::log() << "Got a valid parent in DataSetPackage::index but it isn't one of the `*Root`s" << std::endl;
+			break;
+		}
+			
+	}
+
+	return createIndex(row, column, pointer);
+}
+
+const DataSetPackage::intnlPntPair * DataSetPackage::getInternalPointerPairFromIndex(const QModelIndex & index) const
+{
+	const void * internalPointer = index.internalPointer();
+	if(internalPointer >= _internalPointers.data() && internalPointer <= (_internalPointers.data() + _internalPointers.size())) // Is this pointer in our vector? 
+	{
+		return static_cast<const intnlPntPair*>(internalPointer);
+	}
+	
+	Log::log() << "getInternalPointerPairFromIndex received an internalPointer that doesnt seem to be part of _internalPointers" << std::endl;
+	
+	return _internalPointers.data(); //aka the one with parIdxType::root
+}
+
+
+parIdxType DataSetPackage::parIdxTypeIs(const QModelIndex &index) const
+{
+	if(!index.isValid()) return parIdxType::dataRoot;
+
+	return getInternalPointerPairFromIndex(index)->first;
 }
 
 QModelIndex DataSetPackage::parent(const QModelIndex & index) const
 {
-	parIdxType	parentType		= parentIndexTypeIs(index);
-	int			parentColumn	= 0;
+	if(!index.isValid())
+		return QModelIndex();
 
-	if(parentType == parIdxType::label)
-	{
-		uint64_t	notPointer		= reinterpret_cast<uint64_t>(index.internalPointer());
-					parentColumn	= notPointer - uint64_t(parIdxType::label);
-	}
-
-	return parentModelForType(parentType, parentColumn);
+	const	intnlPntPair *	pointerPair		= getInternalPointerPairFromIndex(index);
+			parIdxType		myType			= pointerPair->first;
+			int				myColumn		= pointerPair->second;
+	
+	return parentModelForType(myType, myColumn);
 }
 
+parIdxType DataSetPackage::parIdxTypeParentForChild(parIdxType type)
+{
+	switch(type)
+	{
+	case parIdxType::data:			return parIdxType::dataRoot;
+	case parIdxType::filter:		return parIdxType::filterRoot;
+	case parIdxType::label:			return parIdxType::labelRoot;
+	default:						break;
+	}
 
+	Log::log() << "Parent parIdxType requested for " << parIdxTypeToString(type) << " but that isn't possible, so returning it" << std::endl;
+	return type;
+}
+
+parIdxType DataSetPackage::parIdxTypeChildForParent(parIdxType type)
+{
+	switch(type)
+	{
+	case parIdxType::dataRoot:		return parIdxType::data;
+	case parIdxType::filterRoot:	return parIdxType::filter;
+	case parIdxType::labelRoot:		return parIdxType::label;
+	default:						break;
+	}
+
+	Log::log() << "Child parIdxType requested for " << parIdxTypeToString(type) << " but that isn't possible, so returning it" << std::endl;
+	return type;
+}
 
 QModelIndex DataSetPackage::parentModelForType(parIdxType type, int column) const
 {
-	if(type == parIdxType::root || column < 0)
+	if(column < 0)
 		return QModelIndex();
 
-	return index(int(type), column, QModelIndex());
+	switch(type)
+	{
+	case parIdxType::dataRoot:		[[fallthrough]];
+	case parIdxType::filterRoot:	[[fallthrough]];
+	case parIdxType::labelRoot:		return QModelIndex();
+
+	case parIdxType::data:			return rootModelIndexForType(parIdxType::dataRoot,		column);
+	case parIdxType::filter:		return rootModelIndexForType(parIdxType::filterRoot,	column);
+	case parIdxType::label:			return rootModelIndexForType(parIdxType::labelRoot,		column);
+	}
+
+	return QModelIndex(); //Gcc really doesn't get it.
 }
+
+QModelIndex DataSetPackage::rootModelIndexForType(parIdxType type, int column) const
+{
+	if(column < 0)
+		return QModelIndex();
+
+	switch(type)
+	{
+	case parIdxType::dataRoot:		return index(0,		0,			QModelIndex());
+	case parIdxType::filterRoot:	return index(0,		1,			QModelIndex());
+	case parIdxType::labelRoot:		return index(1,		column,		QModelIndex());
+	default:						break;
+	}
+
+	return QModelIndex(); //Gcc really doesn't get it.
+}
+
+
 
 int DataSetPackage::rowCount(const QModelIndex & parent) const
 {
 	if(!_dataSet) return 0;
 
-	switch(parentIndexTypeIs(parent))
+	switch(parIdxTypeIs(parent))
 	{
-	case parIdxType::label:
+	case parIdxType::labelRoot:
 	{
-		if(parent.column() >= _dataSet->columnCount()) return 0;
+		if(parent.column() >= int(_dataSet->columnCount()))
+			return 0;
 
 		Column & col = _dataSet->columns()[parent.column()];
 		if(col.getColumnType() == columnType::scale)
@@ -195,9 +300,9 @@ int DataSetPackage::rowCount(const QModelIndex & parent) const
 		int labelSize = col.labels().size();
 		return labelSize;
 	}
-	case parIdxType::filter:
-	case parIdxType::root:		//return int(parIdxType::leaf); Its more logical to get the actual datasize
-	case parIdxType::data:		return !_dataSet ? 0 : _dataSet->rowCount();
+	case parIdxType::filterRoot:	[[fallthrough]];
+	case parIdxType::dataRoot:		return !_dataSet ? 0 : _dataSet->rowCount();
+	default:						return 0;
 	}
 
 	return 0; // <- because gcc is stupid
@@ -205,12 +310,16 @@ int DataSetPackage::rowCount(const QModelIndex & parent) const
 
 int DataSetPackage::columnCount(const QModelIndex &parent) const
 {
-	switch(parentIndexTypeIs(parent))
+	switch(parIdxTypeIs(parent))
 	{
-	case parIdxType::filter:	return 1;
-	case parIdxType::label:		return 1; //The parent index has a column index in it that tells you which actual column was selected!
-	case parIdxType::root:		//Default is columnCount of data because it makes programming easier. I do hope it doesn't mess up the use of the tree-like-structure of the data though
-	case parIdxType::data:		return _dataSet == nullptr ? 0 : _dataSet->columnCount();
+	case parIdxType::filter:		[[fallthrough]];
+	case parIdxType::filterRoot:	return 1;
+
+	case parIdxType::label:			[[fallthrough]];
+	case parIdxType::labelRoot:		return 1;				 //The parent index has a column index in it that tells you which actual column was selected!
+
+	case parIdxType::data:			[[fallthrough]];
+	case parIdxType::dataRoot:		return _dataSet == nullptr ? 0 : _dataSet->columnCount();
 	}
 
 	return 0; // <- because gcc is stupid
@@ -218,9 +327,7 @@ int DataSetPackage::columnCount(const QModelIndex &parent) const
 
 bool DataSetPackage::getRowFilter(int row) const
 {
-	QModelIndex filterParent(parentModelForType(parIdxType::filter));
-
-	return data(this->index(row, 0, filterParent)).toBool();
+	return data(this->index(row, 0, parentModelForType(parIdxType::filter))).toBool();
 }
 
 QVariant DataSetPackage::getDataSetViewLines(bool up, bool left, bool down, bool right) const
@@ -235,23 +342,23 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 {
 	if(!index.isValid()) return QVariant();
 
-	parIdxType parentType = parentIndexTypeIs(index);
+	parIdxType myType = parIdxTypeIs(index);
 	
 	if(role == int(specialRoles::selected))
 		return false; //DataSetPackage doesnt know anything about selected, only LabelModel does (now)
 
-	switch(parentType)
+	switch(myType)
 	{
 	default:
 		return QVariant();
 
 	case parIdxType::filter:
-		if(_dataSet == nullptr || index.row() < 0 || index.row() >= _dataSet->filterVector().size())
+		if(_dataSet == nullptr || index.row() < 0 || index.row() >= int(_dataSet->filterVector().size()))
 			return true;
 		return _dataSet->filterVector()[index.row()];
 
 	case parIdxType::data:
-		if(_dataSet == nullptr || index.column() >= _dataSet->columnCount() || index.row() >= _dataSet->rowCount())
+		if(_dataSet == nullptr || index.column() >= int(_dataSet->columnCount()) || index.row() >= int(_dataSet->rowCount()))
 			return QVariant(); // if there is no data then it doesn't matter what role we play
 
 		switch(role)
@@ -282,8 +389,8 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 		if(!_dataSet || index.row() >= parRowCount)
 			return QVariant(); // if there is no data then it doesn't matter what role we play
 
-		//We know which column we need through the parent index!
-		Labels & labels = _dataSet->column(index.parent().column()).labels();
+		//We know which column we need through the intnlPntPair!
+		Labels & labels = _dataSet->column(getInternalPointerPairFromIndex(index)->second).labels();
 
 		switch(role)
 		{
@@ -340,15 +447,15 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 {
 	if(!index.isValid() || !_dataSet) return false;
 
-	parIdxType parentType = parentIndexTypeIs(index);
+	parIdxType myType = parIdxTypeIs(index);
 
-	switch(parentType)
+	switch(myType)
 	{
 	default:
 		return false;
 
 	case parIdxType::filter:
-		if(index.row() < 0 || index.row() >= _dataSet->filterVector().size() || value.type() != QMetaType::Bool)
+		if(index.row() < 0 || index.row() >= int(_dataSet->filterVector().size()) || value.typeId() != QMetaType::Bool)
 			return false;
 
 		if(_dataSet->filterVector()[index.row()] != value.toBool())
@@ -380,7 +487,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 		switch(role)
 		{
 		case int(specialRoles::filter):
-			if(value.type() != QMetaType::Bool) return false;
+			if(value.typeId() != QMetaType::Bool) return false;
 			return setAllowFilterOnLabel(index, value.toBool());
 
 		case int(specialRoles::value):
@@ -433,7 +540,7 @@ void DataSetPackage::resetFilterAllows(size_t columnIndex)
 
 bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAllowValue)
 {
-	if(parentIndexTypeIs(index.parent()) != parIdxType::label)
+	if(parIdxTypeIs(index.parent()) != parIdxType::labelRoot)
 		return false;
 
 	bool atLeastOneRemains = newAllowValue;
@@ -444,7 +551,7 @@ bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAl
 				col		= parent.column();
 
 
-	if(col > columnCount() || row > rowCount(parent))
+	if(int(col) > columnCount() || int(row) > rowCount(parent))
 		return false;
 
 	Column & column = _dataSet->column(col);
@@ -452,6 +559,7 @@ bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAl
 
 	if(!atLeastOneRemains) //Do not let the user uncheck every single one because that is useless, the user wants to uncheck row so lets see if there is another one left after that.
 		for(size_t i=0; i< labels.size(); i++)
+		{
 			if(i != row && labels[i].filterAllows())
 			{
 				atLeastOneRemains = true;
@@ -459,6 +567,7 @@ bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAl
 			}
 			else if(i == row && labels[i].filterAllows() == newAllowValue) //Did not change!
 				return true;
+		}
 
 	if(atLeastOneRemains)
 	{
@@ -484,7 +593,7 @@ bool DataSetPackage::setAllowFilterOnLabel(const QModelIndex & index, bool newAl
 
 int DataSetPackage::filteredOut(size_t col) const
 {
-	if(!_dataSet || col > columnCount())
+	if(!_dataSet || int(col) > columnCount())
 		return 0; //or -1?
 
 	Labels &	labels		= _dataSet->column(col).labels();
@@ -499,7 +608,7 @@ int DataSetPackage::filteredOut(size_t col) const
 
 Qt::ItemFlags DataSetPackage::flags(const QModelIndex &index) const
 {
-	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | (parentIndexTypeIs(index) != parIdxType::data ? Qt::ItemIsEditable : Qt::NoItemFlags);
+	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | (parIdxTypeIs(index) != parIdxType::data ? Qt::ItemIsEditable : Qt::NoItemFlags);
 }
 
 QHash<int, QByteArray> DataSetPackage::roleNames() const
@@ -817,7 +926,7 @@ void DataSetPackage::endSynchingData(std::vector<std::string>			&	changedColumns
 	endLoadingData();
 	_synchingData = false;
 	//We convert all of this stuff to qt containers even though this takes time etc. Because it needs to go through a (queued) connection and it might not work otherwise
-	emit datasetChanged(tql(changedColumns), tql(missingColumns), tq(changeNameColumns), rowCountChanged, hasNewColumns);
+	emit datasetChanged(tq(changedColumns), tq(missingColumns), tq(changeNameColumns), rowCountChanged, hasNewColumns);
 }
 
 
@@ -837,6 +946,7 @@ void DataSetPackage::endLoadingData()
 {
 	JASPTIMER_SCOPE(DataSetPackage::endLoadingData);
 
+	regenerateInternalPointers();
 	endResetModel();
 
 	if(_enginesLoadedAtBeginSync)
@@ -923,9 +1033,9 @@ bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, std::string newN
 
 bool DataSetPackage::initColumnAsScale(QVariant colID, std::string newName, const std::vector<double> & values)
 {
-	if(colID.type() == QMetaType::Int || colID.type() == QMetaType::UInt)
+	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
 	{
-		int colNo = colID.type() == QMetaType::Int ? colID.toInt() : colID.toUInt();
+		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
 		return initColumnAsScale(colNo, newName, values);
 	}
 	else
@@ -934,9 +1044,9 @@ bool DataSetPackage::initColumnAsScale(QVariant colID, std::string newName, cons
 
 std::map<int, std::string> DataSetPackage::initColumnAsNominalText(QVariant colID, std::string newName, const std::vector<std::string> & values, const std::map<std::string, std::string> & labels)
 {
-	if(colID.type() == QMetaType::Int || colID.type() == QMetaType::UInt)
+	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
 	{
-		int colNo = colID.type() == QMetaType::Int ? colID.toInt() : colID.toUInt();
+		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
 		return initColumnAsNominalText(colNo, newName, values, labels);
 	}
 	else
@@ -945,9 +1055,9 @@ std::map<int, std::string> DataSetPackage::initColumnAsNominalText(QVariant colI
 
 bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, std::string newName, const std::vector<int> & values, bool is_ordinal)
 {
-	if(colID.type() == QMetaType::Int || colID.type() == QMetaType::UInt)
+	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
 	{
-		int colNo = colID.type() == QMetaType::Int ? colID.toInt() : colID.toUInt();
+		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
 		return initColumnAsNominalOrOrdinal(colNo, newName, values, is_ordinal);
 	}
 	else
@@ -956,9 +1066,9 @@ bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, std::string n
 
 bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, std::string newName, const std::vector<int> & values, const std::map<int, std::string> &uniqueValues, bool is_ordinal)
 {
-	if(colID.type() == QMetaType::Int || colID.type() == QMetaType::UInt)
+	if(colID.typeId() == QMetaType::Int || colID.typeId() == QMetaType::UInt)
 	{
-		int colNo = colID.type() == QMetaType::Int ? colID.toInt() : colID.toUInt();
+		int colNo = colID.typeId() == QMetaType::Int ? colID.toInt() : colID.toUInt();
 		return initColumnAsNominalOrOrdinal(colNo, newName, values, uniqueValues, is_ordinal);
 	}
 	else
@@ -1131,7 +1241,7 @@ Json::Value DataSetPackage::columnToJsonForJASPFile(size_t columnIndex, Json::Va
 
 			Json::Value &orgStringValuesMetaData	= columnLabelData["orgStringValues"];
 			std::map<int, std::string> &orgLabels	= labels.getOrgStringValues();
-			for (const std::pair<int, std::string> &pair : orgLabels)
+			for (const auto & pair : orgLabels)
 			{
 				Json::Value keyValuePair(Json::arrayValue);
 				keyValuePair.append(pair.first);
@@ -1174,7 +1284,7 @@ void DataSetPackage::columnLabelsFromJsonForJASPFile(Json::Value xData, Json::Va
 		labels.clear();
 		int index = 1;
 
-		for (Json::Value keyValueFilterTrip : labelsDesc)
+		for (Json::Value & keyValueFilterTrip : labelsDesc)
 		{
 			int zero		= 0; //MSVC complains on int(0) with: error C2668: 'Json::Value::get': ambiguous call to overloaded function
 			int key			= keyValueFilterTrip.get(zero,		Json::nullValue).asInt();
@@ -1195,7 +1305,7 @@ void DataSetPackage::columnLabelsFromJsonForJASPFile(Json::Value xData, Json::Va
 
 		if (!orgStringValuesDesc.isNull())
 		{
-			for (Json::Value keyValuePair : orgStringValuesDesc)
+			for (Json::Value & keyValuePair : orgStringValuesDesc)
 			{
 				int zero		= 0; //MSVC complains on int(0) with: error C2668: 'Json::Value::get': ambiguous call to overloaded function
 				int key			= keyValuePair.get(zero,	Json::nullValue).asInt();
@@ -1258,7 +1368,6 @@ void DataSetPackage::setColumnDataInts(size_t columnIndex, std::vector<int> ints
 void DataSetPackage::setColumnDataDbls(size_t columnIndex, std::vector<double> dbls)
 {
 	Column & col = _dataSet->column(columnIndex);
-	Labels & lab = col.labels();
 
 	for(size_t r = 0; r<dbls.size(); r++)
 		col.setValue(r, dbls[r]);
@@ -1274,7 +1383,7 @@ void DataSetPackage::emptyValuesChangedHandler()
 
 		enlargeDataSetIfNecessary([&](){ emptyValuesChanged = _dataSet->resetEmptyValues(emptyValuesMap()); }, "emptyValuesChangedHandler");
 
-		for (auto it : emptyValuesChanged)
+		for (auto & it : emptyValuesChanged)
 		{
 			colChanged.push_back(it.first);
 			storeInEmptyValues(it.first, it.second);
@@ -1296,6 +1405,7 @@ bool DataSetPackage::setFilterData(std::string filter, std::vector<bool> filterR
 		//This actually lets the whole application freeze when a filter is undone... -> emit dataChanged(index(0, 0, parentModelForType(parIdxType::data)),		index(rowCount(), columnCount(),	parentModelForType(parIdxType::data)));
 
 		beginResetModel();
+		regenerateInternalPointers();
 		endResetModel();
 	}
 
@@ -1400,6 +1510,7 @@ bool DataSetPackage::createColumn(std::string name, columnType columnType)
 	setDataSetColumnCount(newColumnIndex + 1);
 
 	_dataSet->columns().initializeColumnAs(newColumnIndex, name)->setDefaultValues(columnType);
+	regenerateInternalPointers();
 	endResetModel();
 
 	pauseEngines();
@@ -1417,6 +1528,7 @@ void DataSetPackage::removeColumn(std::string name)
 
 	beginResetModel();
 	_dataSet->columns().removeColumn(name);
+	regenerateInternalPointers();
 	endResetModel();
 
 	if(isLoaded()) setModified(true);

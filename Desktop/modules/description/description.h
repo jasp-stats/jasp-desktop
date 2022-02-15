@@ -9,6 +9,8 @@
 #include "utilities/qutils.h"
 #include "jsonredirect.h"
 
+#include "modules/dynamicmodule.h"
+
 namespace Modules
 {
 
@@ -17,7 +19,6 @@ class EntryBase;
 class RequiredPackage;
 class RequiredModule;
 class AnalysisEntry;
-class DynamicModule;
 
 ///
 /// Backend for Description{} in Description.qml in each module

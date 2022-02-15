@@ -1,5 +1,5 @@
+#include <QRegExp>
 #include "odsxmlmanifesthandler.h"
-
 
 using namespace std;
 using namespace ods;

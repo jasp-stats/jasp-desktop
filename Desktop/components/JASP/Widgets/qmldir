@@ -32,7 +32,7 @@ MessageBox                  1.0 MessageBox.qml
 AnalysisForms               1.0 AnalysisForms.qml
 AnalysisFormExpander        1.0 AnalysisFormExpander.qml
 CustomMenu                  1.0 CustomMenu.qml
-SplitHandle                 1.0 SplitHandle.qml
+JASPSplitHandle             1.0 JASPSplitHandle.qml
 SpinBox                     1.0 SpinBox.qml
 SortMenuButton              1.0 SortMenuButton.qml
 WelcomePage                 1.0 WelcomePage.qml

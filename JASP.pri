@@ -3,8 +3,8 @@
 #Jasp-R-Interface
 JASP_R_INTERFACE_TARGET = R-Interface
 
-JASP_R_INTERFACE_MAJOR_VERSION =  11  # Interface changes or whenever you feel majorlike
-JASP_R_INTERFACE_MINOR_VERSION =  6   # Code changes
+JASP_R_INTERFACE_MAJOR_VERSION =  12  # Interface changes or whenever you feel majorlike
+JASP_R_INTERFACE_MINOR_VERSION =  0   # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
@@ -29,13 +29,15 @@ DEFINES += BUILDING_JASP
 #JASP Version
 JASP_VERSION_MAJOR      = 0
 JASP_VERSION_MINOR      = 16
-JASP_VERSION_REVISION   = 1
+JASP_VERSION_REVISION   = 2
 JASP_VERSION_BUILD      = 0 #Should be ignored because the code handling it is buggy as hell (aka https://www.youtube.com/watch?v=otCpCn0l4Wo )
 
 DEFINES +=    "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
 DEFINES +=    "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
 DEFINES +=    "JASP_VERSION_BUILD=$$JASP_VERSION_BUILD"
 DEFINES += "JASP_VERSION_REVISION=$$JASP_VERSION_REVISION"
+
+linux: QMAKE_CXXFLAGS += -gdwarf-4 #Running into some issues with default DWARF 5 and ld.gold not supporting that.
 
 GIT_EXEC=git #Unix knows where to find things
 windows { #Windows is not so sure
@@ -122,8 +124,8 @@ exists(/app/lib/*)	{
 DEFINES += QT_NO_FOREACH #Come on Qt we can just use the nice new ranged for from c++11 and higher, we dont need your help!
 
 macx {
-  QMAKE_CXXFLAGS_WARN_ON  += -Wno-unused-parameter -Wno-unused-local-typedef
-  QMAKE_CXXFLAGS          += -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++ -Wno-deprecated-declarations
+  # QMAKE_CXXFLAGS_WARN_ON  += -Wno-unused-parameter -Wno-unused-local-typedef
+  # QMAKE_CXXFLAGS          += -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++ -Wno-deprecated-declarations
 
   CONFIG(debug): QMAKE_CXXFLAGS +=  -fstandalone-debug
 }
