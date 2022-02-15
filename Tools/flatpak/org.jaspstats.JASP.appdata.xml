@@ -35,6 +35,73 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+		<release version="0.16.1" date="2022-02-15">
+			<description>
+				New release 0.16.1
+
+				New features and improvements
+
+				Translated to French (incomplete)
+
+				ANOVA
+				- Improved effect size calculation, including interactions, multiplicity, and confidence intervals.
+				- Effect sizes now computed with emmeans, which also allows effect sizes for interactions and confidence intervals 
+				- Update help file to explain Levene test
+
+				Machine Learning
+				- New analyses decision tree regression and classification
+				- New analyses Support vector machine regression and classification
+				- K-medoids and K-medians clustering techniques added to Neighborhood-based (formerly K-means)
+				- Extra plot in k-nn regression and classification showing the relative weights as a function of the distance
+				- Extra evaluation metrics for all classification analyses
+
+				New module: Cochrane Meta-Analysis
+				- Allows users to select and analyze data from Cochrane Database of Systematic Reviews.
+
+				Logistic Regression:
+				-- Total percentage in confusion matrix added
+				-- Multicollinearity Diagnostics added 
+				-- Improved the help file
+
+				Bain
+				- An extra column showing PMPc has been added to the ANOVA, ANCOVA, SEM, and linear regression standard table outputs.
+
+				ANOVA
+				- Improved effect size calculation, including interactions, multiplicity, and confidence intervals.
+				- Effect sizes now computed with emmeans, which also allows effect sizes for interactions and confidence intervals 
+				- Update help file to explain Levene test 
+
+				Descriptive Statistics
+				- Option to hide/ show Valid and Missing cases
+
+				Factor Analysis
+				- New option for parallel analysis: 1) can be based on FA or 2) PCA 
+				- Scree plot is overhauled to be more concise. New option to turn parallel analysis results on and off in the plot. .
+
+				Reliability
+				- New analysis for Cohen's & Fleiss' kappa 
+
+				Bayesian Unidimensional Reliability added:
+				- Standardized coefficients
+				- Standardized single-factor loadings
+				- Control over the priors
+				- Median option as a point estimate
+				- Fit measures for single-factor model (rmsea, LR, cfi, tli)
+				- Improved help file
+
+				Audit
+				- Added an option to specify the maximum sample size
+				- Fixed a bug in the Bayesian workflow where the sample size started counting at 5, sometimes resulting in sample sizes that did not match the desired input criteria.
+				- Improvements to “About”
+				- Improved layout of network graphs in Network module
+
+				Bug fixes
+				- Path plots in Factor module fixed
+				- Factor correlation matrix showed the correlations of the estimated factor scores. Now  the proper factor intercorrelations are used.
+				- Computing Z-scores does not give an error anymore
+				- Pairwise plots able to handle ordinal variables
+			</description>
+		</release>
 		<release version="0.16.0" date="2021-11-17">
 			<description>
 				New release 0.16
