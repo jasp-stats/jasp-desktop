@@ -1,6 +1,5 @@
 ﻿import QtQuick				2.14
-import QtQuick.Controls		2.14
-import QtQuick.Controls		1.4		as OLD
+import QtQuick.Controls		6.0
 import QtQuick.Layouts		1.3
 import JASP.Widgets			1.0		as	JASPW
 import JASP.Theme			1.0
@@ -57,7 +56,7 @@ Popup
 				y:							jaspTheme.generalAnchorMargin
 			}
 
-			OLD.SplitView
+			SplitView
 			{
 				id:				splitView
 				anchors
@@ -69,7 +68,8 @@ Popup
 					margins:		jaspTheme.generalAnchorMargin
 				}
 				orientation:	Qt.Horizontal
-				handleDelegate:	Rectangle
+
+                handle:	Rectangle
 				{
 					implicitWidth:	jaspTheme.splitHandleWidth * 0.8;
 					color:			"transparent"
@@ -78,21 +78,22 @@ Popup
 					{
 						anchors
 						{
-							fill: parent
-							topMargin: axes.tabBarHeight
+							fill:		parent
+							topMargin:	axes.tabBarHeight
 						}
-						color: styleData.hovered || styleData.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
+
+						color: SplitHandle.hovered || SplitHandle.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
 
 						Rectangle
 						{
 							anchors
 							{
-								top: parent.top
-								right: parent.right
-								left: parent.left
+								top:	parent.top
+								right:	parent.right
+								left:	parent.left
 							}
-							height: 1
-							color: jaspTheme.uiBorder
+							height:		1
+							color:	jaspTheme.uiBorder
 						}
 
 						Rectangle
@@ -100,8 +101,8 @@ Popup
 							anchors
 							{
 								bottom: parent.bottom
-								right: parent.right
-								left: parent.left
+								right:	parent.right
+								left:	parent.left
 							}
 							height: 1
 							color: jaspTheme.uiBorder

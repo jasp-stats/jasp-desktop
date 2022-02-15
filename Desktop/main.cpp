@@ -22,13 +22,14 @@
 #include "utilities/application.h"
 #include <QQuickWindow>
 #include "utilities/settings.h"
-#include <QtWebEngine>
+#include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <boost/filesystem.hpp>
 #include <codecvt>
 #include "appinfo.h"
 #include <iostream>
 #include "timers.h"
 #include <QMessageBox>
+#include "utilities/plotschemehandler.h"
 
 const std::string	jaspExtension		= ".jasp",
 					unitTestArg			= "--unitTest",
@@ -246,7 +247,7 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 
 		//std::cout << "QDir dir: " << dir.path().toStdString() << " has " << files.size() << " subfiles!" << std::endl;
 
-		for(QFileInfo subFile : dir.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Files | QDir::Dirs))
+		for(QFileInfo & subFile : dir.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Files | QDir::Dirs))
 			recursiveFileOpener(subFile, failures, total, timeOut, argc, argv, save, hideJASP);
 
 	}
@@ -357,7 +358,8 @@ int main(int argc, char *argv[])
 				putenv("LIBGL_ALWAYS_SOFTWARE=1");
 			}
 
-			QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+			PlotSchemeHandler::createUrlScheme(); //Needs to be done *before* creating PlotSchemeHandler instance and also before QApplication is instantiated
+
 			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
 
@@ -395,6 +397,8 @@ int main(int argc, char *argv[])
 			
 			std::cout << "Application initialized" << std::endl;
 
+			PlotSchemeHandler plotSchemeHandler; //Makes sure plots can still be loaded in webengine with Qt6
+
 #ifdef _WIN32
 			// Since we introduced renv to JASP the win installer needs to recreate the junctions from Modules -> renv-cache on install. Because they do not support relative paths
 			// For this JASP has the --junctions argument, and is run by JASP-*.msi during install to make sure everything is ready.
@@ -416,7 +420,7 @@ int main(int argc, char *argv[])
 			
 			a.init(filePathQ, unitTest, timeOut, save, logToFile);
 
-			QtWebEngine::initialize(); //We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
+			QtWebEngineQuick::initialize(); //We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
 
 			std::cout << "QtWebEngine initialized" << std::endl;
 			

@@ -249,7 +249,7 @@ void AsyncLoader::loadPackage(QString id)
 			if (_currentEvent->type() != Utils::FileType::jasp)
 			{
 				pkg->setDataFilePath(_currentEvent->path().toStdString());
-				pkg->setDataFileTimestamp(_currentEvent->isOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t());
+                pkg->setDataFileTimestamp(_currentEvent->isOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toSecsSinceEpoch());
 			}
 			pkg->setDataFileReadOnly(_currentEvent->isReadOnly());
 			_currentEvent->setDataFilePath(QString::fromStdString(pkg->dataFilePath()));

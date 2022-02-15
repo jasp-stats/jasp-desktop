@@ -245,4 +245,3 @@ void JASPListControl::sourceChangedHandler()
 	_setupSources();
 	model()->sourceTermsReset();
 }
-

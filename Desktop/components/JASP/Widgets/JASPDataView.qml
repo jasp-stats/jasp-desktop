@@ -57,7 +57,7 @@ FocusScope
 		property real	lastTimeClicked:	-1
 		property real	doubleClickTime:	400
 
-		onPressed:
+		onPressed: (mouse)=>
 		{
 			if(!doubleClickWorkaround)
 			{
@@ -79,7 +79,7 @@ FocusScope
 			}
 		}
 
-		onWheel:
+		onWheel: (wheel)=>
 		{
 			if(wheel.angleDelta.y == 120)
 			{

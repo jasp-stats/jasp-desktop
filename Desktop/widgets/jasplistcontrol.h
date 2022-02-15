@@ -27,8 +27,8 @@
 #include <QMap>
 #include <QSet>
 #include <QAbstractItemModel>
+#include "listmodel.h"
 
-class ListModel;
 class Options;
 class RowControls;
 class Terms;

@@ -129,7 +129,7 @@ long Utils::getFileModificationTime(const std::string &filename)
 long Utils::getFileSize(const string &filename)
 {
 	system::error_code ec;
-	filesystem::path path;
+	boost::filesystem::path path;
 
 #ifdef _WIN32
 
@@ -141,7 +141,7 @@ long Utils::getFileSize(const string &filename)
 
 #endif
 
-	uintmax_t fileSize = filesystem::file_size(path, ec);
+	uintmax_t fileSize = boost::filesystem::file_size(path, ec);
 
 	if (!ec)
 		return fileSize;
@@ -182,19 +182,19 @@ void Utils::touch(const string &filename)
 
 bool Utils::renameOverwrite(const string &oldName, const string &newName)
 {
-	filesystem::path o = osPath(oldName);
-	filesystem::path n = osPath(newName);
+	boost::filesystem::path o = osPath(oldName);
+	boost::filesystem::path n = osPath(newName);
 	system::error_code ec;
 
 #ifdef _WIN32
 	system::error_code er;
-	if (filesystem::exists(n, er)) 
+	if (boost::filesystem::exists(n, er)) 
 	{
-		filesystem::file_status s = filesystem::status(n);
+		boost::filesystem::file_status s = boost::filesystem::status(n);
 		
-		bool readOnly = (s.permissions() & filesystem::owner_write) == 0;
+		bool readOnly = (s.permissions() & boost::filesystem::owner_write) == 0;
 		if (readOnly)
-			filesystem::permissions(n, filesystem::owner_write);
+			boost::filesystem::permissions(n, boost::filesystem::owner_write);
 	}
 #endif
 
@@ -205,7 +205,7 @@ bool Utils::renameOverwrite(const string &oldName, const string &newName)
 
 bool Utils::removeFile(const string &path)
 {
-	filesystem::path p = osPath(path);
+	boost::filesystem::path p = osPath(path);
 	system::error_code ec;
 
 	boost::filesystem::remove(p, ec);
@@ -213,16 +213,16 @@ bool Utils::removeFile(const string &path)
 	return !ec;
 }
 
-filesystem::path Utils::osPath(const string &path)
+boost::filesystem::path Utils::osPath(const string &path)
 {
 #ifdef _WIN32
-	return filesystem::path(nowide::widen(path));
+	return boost::filesystem::path(nowide::widen(path));
 #else
-	return filesystem::path(path);
+	return boost::filesystem::path(path);
 #endif
 }
 
-string Utils::osPath(const filesystem::path &path)
+string Utils::osPath(const boost::filesystem::path &path)
 {
 #ifdef _WIN32
 	return nowide::narrow(path.generic_wstring());

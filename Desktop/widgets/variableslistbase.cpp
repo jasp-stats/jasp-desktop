@@ -55,9 +55,12 @@ void VariablesListBase::setUp()
 			ListModelFactorLevels* factorsModel = dynamic_cast<ListModelFactorLevels*>(sourceItem->listModel());
 			if (!factorsModel)
 				addControlError(tr("Source model of %1 must be from a Factor List").arg(name()));
-			addDependency(factorsModel->listView());
-			BoundControlMeasuresCells* measuresCellsControl = dynamic_cast<BoundControlMeasuresCells*>(_boundControl);
-			measuresCellsControl->addFactorModel(factorsModel);
+			else
+			{
+				addDependency(factorsModel->listView());
+				BoundControlMeasuresCells* measuresCellsControl = dynamic_cast<BoundControlMeasuresCells*>(_boundControl);
+				measuresCellsControl->addFactorModel(factorsModel);
+			}
 		}
 	}
 
@@ -72,6 +75,8 @@ void VariablesListBase::setUp()
 	}
 
 	_setAllowedVariables();
+
+	connect(PreferencesModel::prefs(), &PreferencesModel::currentThemeNameChanged, this, &VariablesListBase::_setAllowedVariables);
 
 	_draggableModel->setItemType(property("itemType").toString());
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());

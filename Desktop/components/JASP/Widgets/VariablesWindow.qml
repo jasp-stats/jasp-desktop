@@ -20,7 +20,7 @@ import QtQuick			2.15
 import JASP				1.0
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.12 as QTC
 import QtQuick.Layouts	1.15
 import "."
 
@@ -35,7 +35,7 @@ FocusScope
 	{
 		target: labelModel
 		
-		onChosenColumnChanged:
+		function onChosenColumnChanged(chosenColumn)
 		{
 			if(labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
@@ -221,7 +221,7 @@ FocusScope
 
 							Row
 							{
-								Button
+								QTC.Button
 								{
 									id:						filterCheckButton
 									checkable:				true

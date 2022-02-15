@@ -159,7 +159,7 @@ TextInputBase
 				clearControlError()
 		}
 
-		Keys.onReturnPressed:
+		Keys.onReturnPressed: (event)=>
 		{
 			if (!control.acceptableInput)
 			{

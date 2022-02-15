@@ -5,7 +5,7 @@ QT -= gui
 include(../JASP.pri)
 BUILDING_JASP_ENGINE=true
 
-CONFIG += c++11
+CONFIG += c++17
 linux:CONFIG += -pipe
 
 DESTDIR   = ..
@@ -34,6 +34,7 @@ windows {
 macx {
   LIBS                   += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
   INCLUDEPATH 			 += ../../boost_1_71_0
+  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 
   QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
   QMAKE_CXXFLAGS         += -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++

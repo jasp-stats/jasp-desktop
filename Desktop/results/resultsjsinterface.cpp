@@ -134,7 +134,7 @@ void ResultsJsInterface::setGlobalJsValues()
 	QString normalizedNotationString = (normalizedNotation ? "true" : "false");
 
 	QString numDecimals = Settings::value(Settings::NUM_DECIMALS).toString();
-	QString tempFolder = "file:///" + tq(TempFiles::sessionDirName());
+	QString tempFolder = "file://" + tq(TempFiles::sessionDirName());
 
 	QString js = "window.globSet.pExact = " + exactPValueString;
 	js += "; window.globSet.normalizedNotation = " + normalizedNotationString;

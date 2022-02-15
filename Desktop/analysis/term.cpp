@@ -28,7 +28,7 @@ const char * Term::separator =
 #endif
 
 
-Term::Term(const std::vector<std::string>	components)	{ initFrom(tql(components));	}
+Term::Term(const std::vector<std::string>	components)	{ initFrom(tq(components));		}
 Term::Term(const std::string				component)	{ initFrom(tq(component));		}
 Term::Term(const QStringList				components)	{ initFrom(components);			}
 Term::Term(const QString					component)	{ initFrom(component);			}

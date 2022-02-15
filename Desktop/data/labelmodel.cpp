@@ -2,7 +2,7 @@
 #include "log.h"
 #include "qquick/jasptheme.h"
 
-LabelModel::LabelModel() : DataSetTableProxy(parIdxType::label)
+LabelModel::LabelModel() : DataSetTableProxy(DataSetPackage::pkg()->labelsSubModel())
 {
 	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &LabelModel::filteredOutChangedHandler);
 	connect(this,					&DataSetTableProxy::proxyParentColumnChanged,	this, &LabelModel::filteredOutChanged		);
@@ -132,7 +132,7 @@ bool LabelModel::setData(const QModelIndex & index, const QVariant & value, int 
 	if(role == int(DataSetPackage::specialRoles::selected))
 		return false;
 
-	return DataSetPackage::pkg()->setData(mapToSource(index), value, role != -1 ? role : int(DataSetPackage::specialRoles::label));
+	return DataSetTableProxy::setData(index, value, role != -1 ? role : int(DataSetPackage::specialRoles::label));
 }
 
 QVariant LabelModel::data(	const QModelIndex & index, int role) const
@@ -143,7 +143,7 @@ QVariant LabelModel::data(	const QModelIndex & index, int role) const
 		return s;
 	}
 
-	return DataSetPackage::pkg()->data(mapToSource(index), role > 0 ? role : int(DataSetPackage::specialRoles::label));
+	return DataSetTableProxy::data(index, role > 0 ? role : int(DataSetPackage::specialRoles::label));
 }
 
 void LabelModel::filteredOutChangedHandler(int c)

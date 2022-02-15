@@ -75,6 +75,14 @@ protected:
 					&& item.isVirtual == isVirtual
 					&& item.value == value;
 		}
+
+        bool operator==(const FactorLevelItem& item) const
+        {
+            return item.headFactor == headFactor
+                    && item.isLevel == isLevel
+                    && item.isVirtual == isVirtual
+                    && item.value == value;
+        }
 	};
 	QList<FactorLevelItem>	_items;
 	Terms					_allLevelsCombinations;

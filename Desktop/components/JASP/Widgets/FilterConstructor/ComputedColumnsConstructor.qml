@@ -254,7 +254,7 @@ Item
 
 			height:					font.pixelSize + contentHeight
 
-			wrapMode:				TextArea.WordWrap
+			wrapMode:				TextEdit.WordWrap
 			horizontalAlignment:	TextArea.AlignHCenter
 
 			textFormat:				Text.StyledText
@@ -296,9 +296,9 @@ Item
 				text:					filterConstructor.rCode
 				color:					jaspTheme.textEnabled
 
-				wrapMode:				TextArea.WordWrap
-				horizontalAlignment:	TextArea.AlignLeft
-				verticalAlignment:		TextArea.AlignVCenter
+				wrapMode:				TextEdit.WordWrap
+				horizontalAlignment:	TextEdit.AlignLeft
+				verticalAlignment:		TextEdit.AlignVCenter
 
 				textFormat:				Text.PlainText
 				font.family:			"Courier"

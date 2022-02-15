@@ -19,12 +19,9 @@
 import QtQuick			2.12
 import QtWebEngine		1.7
 import QtWebChannel		1.0
-import QtQuick.Controls 2.4
-import QtQuick.Controls 1.4 as OLD
-import QtQuick.Layouts	1.3
-
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
+import QtQuick.Controls 6.0
 
 Item
 {
@@ -32,69 +29,100 @@ Item
 
 	onWidthChanged:
 	{
-		if(!mainWindow.analysesAvailable)											data.width = splitViewContainer.width
-		else if(data.wasMaximized)													return; //wasMaximized binds!
+		if(!mainWindow.analysesAvailable)												data.maximizeData();
+		else if(data.wasMaximized)														return; //wasMaximized binds!
 		else if(splitViewContainer.width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
 	}
 
-	OLD.SplitView
+	onVisibleChanged:	if(visible && !mainWindow.dataPanelVisible)	data.minimizeData();
+
+	SplitView
 	{
 		id:				panelSplit
 		orientation:	Qt.Horizontal
 		height:			parent.height
-		width:			parent.width + hackySplitHandlerHideWidth
+		width:			parent.width + hackySplitHandlerHideWidth + leftHandSplitHandlerSpace
+		x:				-leftHandSplitHandlerSpace
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
-		property int  hackySplitHandlerHideWidth:	( analysesModel.visible ? jaspTheme.formWidth + 3 + jaspTheme.scrollbarBoxWidthBig : 0) + ( mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0 )
+		//And also on the left side to allow it to move out of the screen there.
+		property int	hackySplitHandlerHideWidth:	( mainWindow.analysesAvailable ? (analysesModel.visible ? leftHandSplitHandlerSpace : 0 ) + jaspTheme.splitHandleWidth : 0 )
+		property int	leftHandSplitHandlerSpace:	jaspTheme.formWidth + 3 + jaspTheme.scrollbarBoxWidthBig
+
+		onResizingChanged: if(!resizing) data.makeSureHandleVisible();
 
 		DataPanel
 		{
 			id:						data
 			visible:				mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
 			z:						1
+			leftHandSpace:			panelSplit.leftHandSplitHandlerSpace
 
-			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0)
+			property real baseMaxWidth:					fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0)
+			property real maxWidth:						leftHandSpace + baseMaxWidth
 			property bool fakeEmptyDataForSumStatsEtc:	!mainWindow.dataAvailable && mainWindow.analysesAvailable
 			property bool wasMaximized:					false
+
+			function makeSureHandleVisible()
+			{
+				if(!analysesModel.visible && data.width < leftHandSpace)
+					data.minimizeData();
+				else if(data.width - leftHandSpace > splitViewContainer.width - jaspTheme.splitHandleWidth)
+					data.maximizeData();
+			}
 
 			onWidthChanged:
 			{
 
-				var iAmBig = width > 0;
-				 if(iAmBig !== mainWindow.dataPanelVisible)
+				var iAmBig = width > leftHandSpace;
+				if(iAmBig != mainWindow.dataPanelVisible)
 					mainWindow.dataPanelVisible = iAmBig
 
 				if(fakeEmptyDataForSumStatsEtc)
 				{
 					mainWindow.dataPanelVisible = false;
-					width = 0;
+					width = leftHandSpace;
 				}
 
-				if(data.width !== data.maxWidth)
+				if(data.width != data.maxWidth)
 					data.wasMaximized = false;
+
+				makeSureHandleVisible();
 			}
 
-			function maximizeData()	{ data.width = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true; }
-			function minimizeData()	{ data.width = 0;													data.wasMaximized = false; }
+			function maximizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return data.maxWidth; });	data.wasMaximized = true;  }
+			function minimizeData()	{ SplitView.preferredWidth = Qt.binding(function() { return leftHandSpace; });	data.wasMaximized = false; }
 
 			Connections
 			{
-				target:						mainWindow
+				target:		mainWindow
 				function onDataPanelVisibleChanged(visible)
 				{
-					if (visible && data.width === 0)	data.maximizeData();
-					else if(!visible && data.width > 0)	data.minimizeData();
+					if (visible && data.width		<=	data.leftHandSpace)	data.maximizeData();
+					else if(!visible)										data.minimizeData();
+				}
+			}
+
+			Connections
+			{
+				target:	analysesModel
+				function onVisibleChanged(visible)
+				{
+					if(!visible)
+						data.makeSureHandleVisible();
 				}
 			}
 		}
 
 
-		handleDelegate: Item
+		handle: Item
 		{
-			width:				splitHandle.width + analyses.width
-			//onWidthChanged:		parent.width = width
+			implicitWidth:			splitHandle.width + analyses.implicitWidth
+			width:					implicitWidth
 
-			SplitHandle
+
+
+			JASPSplitHandle
 			{
 				id:				splitHandle
 				onArrowClicked:	mainWindow.dataPanelVisible = !mainWindow.dataPanelVisible
@@ -105,7 +133,7 @@ Item
 				dragEnabled:	mainWindow.dataAvailable && mainWindow.analysesAvailable
 			}
 
-			AnalysisForms //This is placed inside the splithandle so that you can drag on both sides of it. Not the most obvious path to take but the only viable one. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
+			AnalysisForms
 			{
 				id:						analyses
 				z:						-1
@@ -119,18 +147,18 @@ Item
 
 		Rectangle
 		{
-			id:						giveResultsSomeSpace
-			implicitWidth:			jaspTheme.resultWidth + panelSplit.hackySplitHandlerHideWidth
-			Layout.fillWidth:		true
-			z:						3
-			visible:				mainWindow.analysesAvailable
-			onVisibleChanged:		if(visible) width = jaspTheme.resultWidth; else data.maximizeData()
-			color:					analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
+			id:								giveResultsSomeSpace
+			SplitView.preferredWidth:		jaspTheme.resultWidth + panelSplit.hackySplitHandlerHideWidth
+			SplitView.fillWidth:			true
+			z:								3
+			visible:						mainWindow.analysesAvailable
+			onVisibleChanged:				if(visible) width = jaspTheme.resultWidth; else data.maximizeData()
+			color:							analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
 
 			Connections
 			{
 				target:				analysesModel
-				function onAnalysisAdded()
+				function			onAnalysisAdded()
 				{
 					//make sure we get to see the results!
 
@@ -171,19 +199,21 @@ Item
 					case Qt.Key_PageUp:		resultsView.runJavaScript("windows.pageUp();");		break;
 					}
 
-				onNavigationRequested:
+				onNavigationRequested: (request)=>
+				{
 					if(request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == resultsJsInterface.resultsPageUrl)
-						request.action = WebEngineNavigationRequest.AcceptRequest
+						request.accept()
 					else
 					{
 						if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
 							Qt.openUrlExternally(request.url);
-						request.action = WebEngineNavigationRequest.IgnoreRequest;
+						request.reject();
 					}
+				}
 
-				onLoadingChanged:
+				onLoadingChanged: (loadRequest)=>
 				{
-					resultsJsInterface.resultsLoaded = loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus;
+					resultsJsInterface.resultsLoaded = loadRequest.status === WebEngineView.LoadSucceededStatus;
 					setTranslatedResultsString();
 				}
 
@@ -204,7 +234,7 @@ Item
 						resultsView.printToPdf(pdfPath);
 					}
 				}
-				onPdfPrintingFinished:
+				onPdfPrintingFinished: (filePath)=>
 				{
 					if(preferencesModel.currentThemeName !== "lightTheme")
 						resultsJsInterface.setThemeCss(preferencesModel.currentThemeName);

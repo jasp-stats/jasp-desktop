@@ -349,7 +349,7 @@ FocusScope
 			id:					gottaCatchEmAll //Clicks that is
 			anchors.fill:		parent
 			z:					-6
-			onWheel:			wheel.accepted = true
+			onWheel:			function(wheel) { wheel.accepted = true; }
 		}
 	}
 }

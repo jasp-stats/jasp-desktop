@@ -17,7 +17,7 @@ size_t ReadStatImportColumn::size() const
 	{
 	default:						return _leadingMissingValues;
 	case columnType::scale:			return _doubles.size();
-	case columnType::ordinal:		[[clang::fallthrough]];
+	case columnType::ordinal:		[[fallthrough]];
 	case columnType::nominal:		return _ints.size();
 	case columnType::nominalText:	return _strings.size();
 	}
@@ -31,7 +31,7 @@ std::string ReadStatImportColumn::valueAsString(size_t row) const
 	{
 	default:						return Utils::emptyValue;
 	case columnType::scale:			return Utils::doubleToString(_doubles[row]);
-	case columnType::ordinal:		[[clang::fallthrough]];
+	case columnType::ordinal:		[[fallthrough]];
 	case columnType::nominal:		return std::to_string(_ints[row]);
 	case columnType::nominalText:	return _strings[row];
 	}
@@ -64,7 +64,7 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 		switch(newType)
 		{
 		case columnType::nominalText:	return true;
-		case columnType::ordinal:		[[clang::fallthrough]];
+		case columnType::ordinal:		[[fallthrough]];
 		case columnType::nominal:
 			for(double d : _doubles)
 				if(!isMissingValue(d) && d != double(int(d)))
@@ -74,12 +74,12 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 		break;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	case columnType::ordinal:			[[clang::fallthrough]];
+	case columnType::ordinal:			[[fallthrough]];
 	case columnType::nominal:
 		switch(newType)
 		{
-		case columnType::ordinal:		[[clang::fallthrough]];
-		case columnType::nominalText:	[[clang::fallthrough]];
+		case columnType::ordinal:		[[fallthrough]];
+		case columnType::nominalText:	[[fallthrough]];
 		case columnType::nominal:		return true;
 		case columnType::scale:			return _intLabels.size() == 0;
 		}
@@ -103,7 +103,7 @@ bool ReadStatImportColumn::canConvertToType(columnType newType)
 
 			return true;
 
-		case columnType::ordinal:	[[clang::fallthrough]];
+		case columnType::ordinal:	[[fallthrough]];
 		case columnType::nominal:
 		{
 			int val;
@@ -149,7 +149,7 @@ void ReadStatImportColumn::setType(columnType newType)
 	case columnType::scale:
 		switch(newType)
 		{
-		case columnType::ordinal:		[[clang::fallthrough]];
+		case columnType::ordinal:		[[fallthrough]];
 		case columnType::nominal:
 			for(double d : _doubles)
 				if(isMissingValue(d))			_ints.push_back(missingValueInt());
@@ -167,11 +167,11 @@ void ReadStatImportColumn::setType(columnType newType)
 		break;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	case columnType::ordinal:			[[clang::fallthrough]];
+	case columnType::ordinal:			[[fallthrough]];
 	case columnType::nominal:
 		switch(newType)
 		{
-		case columnType::ordinal:		[[clang::fallthrough]];
+		case columnType::ordinal:		[[fallthrough]];
 		case columnType::nominal:
 			_type = newType; //Ordinal <> Nominal?
 			return;
@@ -214,7 +214,7 @@ void ReadStatImportColumn::setType(columnType newType)
 			}
 			break;
 
-		case columnType::ordinal:	[[clang::fallthrough]];
+		case columnType::ordinal:	[[fallthrough]];
 		case columnType::nominal:
 		{
 			int val;
@@ -305,11 +305,11 @@ void ReadStatImportColumn::addValue(const double & val)
 			return;
 		}
 		//Else if not integer val then:
-		[[clang::fallthrough]];
+		[[fallthrough]];
 
 	case columnType::unknown:
 		setType(columnType::scale);
-		[[clang::fallthrough]];
+		[[fallthrough]];
 
 	case columnType::scale:
 		_doubles.push_back(val);
@@ -323,7 +323,7 @@ void ReadStatImportColumn::addValue(const double & val)
 		}
 		//else not integral
 		setType(columnType::nominalText);
-		[[clang::fallthrough]];
+		[[fallthrough]];
 
 	case columnType::nominalText:
 		addValue(Utils::doubleToString(val));
@@ -337,7 +337,7 @@ void ReadStatImportColumn::addValue(const int & val)
 	{
 	case columnType::unknown:
 		setType(columnType::ordinal);
-		[[clang::fallthrough]];
+		[[fallthrough]];
 
 	case columnType::ordinal:
 	case columnType::nominal:
@@ -424,7 +424,7 @@ void ReadStatImportColumn::addMissingValue()
 	{
 	case columnType::unknown:		_leadingMissingValues++;					return;
 	case columnType::scale:			_doubles.push_back(missingValueDouble());	return;
-	case columnType::ordinal:		[[clang::fallthrough]];
+	case columnType::ordinal:		[[fallthrough]];
 	case columnType::nominal:		_ints.push_back(missingValueInt());			return;
 	case columnType::nominalText:	_strings.push_back(missingValueString());	return;
 	}

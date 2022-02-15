@@ -47,7 +47,7 @@ FocusScope
 					Keys.onDownPressed:		{ minus.clicked(); event.accepted = true; }
 					Keys.onUpPressed:		{ plus.clicked();  event.accepted = true; }
 					Keys.onEnterPressed:	valueField.focus = !valueField.focus;
-					Keys.onReturnPressed:	valueField.focus = !valueField.focus;
+					Keys.onReturnPressed: (event)=>	valueField.focus = !valueField.focus;
 					Keys.onEscapePressed:	focus = false;
 
 	signal editingFinished()
@@ -106,7 +106,7 @@ FocusScope
 		font:						jaspTheme.font
 		horizontalAlignment:		Text.AlignHCenter
 		padding:					jaspTheme.jaspControlPadding
-		Keys.onReturnPressed:		valueField.processInput()
+		Keys.onReturnPressed: (event)=>		valueField.processInput()
 		Keys.onEnterPressed:		valueField.processInput()
 		Keys.onEscapePressed:		{ text = root.lastValidValue; focus = false; }
 		onTextChanged:				if(acceptableInput) root.lastValidValue = text

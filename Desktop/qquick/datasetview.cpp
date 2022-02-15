@@ -362,9 +362,6 @@ void DataSetView::storeOutOfViewItems()
 	JASPTIMER_STOP(storeOutOfViewItems);
 }
 
-#define SHOW_ITEMS_PLEASE
-#define ADD_LINES_PLEASE
-
 void DataSetView::addLine(float x0, float y0, float x1, float y1)
 {
 	if(_lines.size() < _linesActualSize + 4)
@@ -389,7 +386,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 	if(_currentViewportColMax == -1 ||  _currentViewportColMin == -1 || _currentViewportRowMax == -1 || _currentViewportRowMin == -1)
 		return;
 
-#ifdef ADD_LINES_PLEASE
+#ifdef DATASETVIEW_ADD_LINES_PLEASE
 	_linesActualSize = 0;
 	size_t expectedLinesSize = (_currentViewportColMax - _currentViewportColMin) * (_currentViewportRowMax - _currentViewportRowMin) * 4 * 2;
 	if(_lines.size() < expectedLinesSize)
@@ -427,12 +424,12 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 					up		= (lineFlags & 4) > 0	&& pos0y  > _dataRowsMaxHeight + _viewportY,
 					down	= (lineFlags & 8) > 0	&& pos1y  > _dataRowsMaxHeight + _viewportY;
 
-#ifdef SHOW_ITEMS_PLEASE
+#ifdef DATASETVIEW_SHOW_ITEMS_PLEASE
 			createTextItem(row, col);
 #endif
 
 
-#ifdef ADD_LINES_PLEASE
+#ifdef DATASETVIEW_ADD_LINES_PLEASE
 			if(up)		addLine(pos1x, pos0y, pos0x, pos0y);
 			if(down)	addLine(pos0x, pos1y, pos1x, pos1y);
 
@@ -453,7 +450,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 
 	JASPTIMER_STOP(buildNewLinesAndCreateNewItems_GRID);
 
-#ifdef ADD_LINES_PLEASE
+#ifdef DATASETVIEW_ADD_LINES_PLEASE
 	addLine(_viewportX + 0.5f,					_viewportY,							_viewportX + 0.5f,					_viewportY + _viewportH);
 	addLine(_viewportX + _rowNumberMaxWidth,	_viewportY,							_viewportX + _rowNumberMaxWidth,	_viewportY + _viewportH);
 
@@ -472,7 +469,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 		if(createRowNumber(row))
 		{
 
-#ifdef ADD_LINES_PLEASE
+#ifdef DATASETVIEW_ADD_LINES_PLEASE
 			float	pos0x(_viewportX),
 					pos0y((1 + row) * _dataRowsMaxHeight),
 					pos1x(_viewportX + _rowNumberMaxWidth),
@@ -493,7 +490,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 
 		createColumnHeader(col);
 
-#ifdef ADD_LINES_PLEASE
+#ifdef DATASETVIEW_ADD_LINES_PLEASE
 		float	pos0x(_colXPositions[col]),
 				pos0y(_viewportY),
 				pos1x(pos0x + _dataColsMaxWidth[col]),
@@ -508,7 +505,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 #endif
 	}
 
-#ifdef ADD_LINES_PLEASE
+#ifdef DATASETVIEW_ADD_LINES_PLEASE
 	_linesWasChanged = true;
 #endif
 
@@ -1058,7 +1055,7 @@ void DataSetView::myParentChanged(QQuickItem * newParentItem)
 */
 }
 
-
+#ifdef DATASETVIEW_ADD_LINES_PLEASE
 QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
 	//JASPTIMER_RESUME(updatePaintNode);
@@ -1110,7 +1107,7 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		
 		QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), geomSize);
 		geometry->setLineWidth(1);
-		geometry->setDrawingMode(GL_LINES);
+        geometry->setDrawingMode(QSGGeometry::DrawLines);
 
 		assert(sizeof(float) * 2 == geometry->sizeOfVertex());
 
@@ -1155,3 +1152,4 @@ QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 
 	return oldNode;
 }
+#endif

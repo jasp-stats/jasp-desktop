@@ -10,7 +10,7 @@ FocusScope
 	implicitWidth:	extraSpace + (analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + verticalScrollbar.width : 0)
 	width:			implicitWidth
 
-	property int	extraSpace:	analysesModel.count > 0 ? openCloseButton.width : 0
+	property int	extraSpace:	openCloseButton.width
 
 	Behavior on width { enabled: preferencesModel.animationsOn; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
@@ -67,7 +67,7 @@ FocusScope
 			anchors.top:	parent.top
 			anchors.right:	parent.right
 
-			SplitHandle
+			JASPSplitHandle
 			{
 				showArrow:				true
 				pointingLeft:			analysesModel.visible
@@ -143,7 +143,8 @@ FocusScope
 				Connections
 				{
 					target:							analysesModel
-					function onCurrentFormHeightChanged(formHeight) { if (formHeight > analysesModel.currentFormPrevH) reposition(); }//If it got larger it probably means an expander opened and we should reposition if possible
+					function onCurrentFormHeightChanged(formHeight)
+					{ if (formHeight > analysesModel.currentFormPrevH) reposition(); }//If it got larger it probably means an expander opened and we should reposition if possible
 
 					function reposition()
 					{
@@ -200,8 +201,8 @@ FocusScope
 			{
 				id:					catchMouseEvents
 				z:					-10
-				onWheel:			wheel.accepted = true
-				onPositionChanged:	mouse.accepted = true
+				onWheel:			(wheel)=>{ wheel.accepted = true; }
+				onPositionChanged:	(mouse)=>{ mouse.accepted = true; }
 				anchors
 				{
 					fill:			parent

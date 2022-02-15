@@ -18,9 +18,10 @@
 
 #include "datasettablemodel.h"
 
+
 DataSetTableModel* DataSetTableModel::_singleton = nullptr;
 
-DataSetTableModel::DataSetTableModel() : DataSetTableProxy(parIdxType::data)
+DataSetTableModel::DataSetTableModel() : DataSetTableProxy(DataSetPackage::pkg()->dataSubModel())
 {
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsFilteredCountChanged,	this, &DataSetTableModel::columnsFilteredCountChanged	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this, &DataSetTableModel::columnTypeChanged				);
@@ -46,7 +47,7 @@ void DataSetTableModel::setShowInactive(bool showInactive)
 	endResetModel();
 }
 
-bool DataSetTableModel::filterAcceptsRow(int source_row, const QModelIndex &)	const
+bool DataSetTableModel::filterAcceptsRow(int source_row, const QModelIndex & source_parent)	const
 {
-	return _showInactive || DataSetPackage::pkg()->getRowFilter(source_row);
+	return (_showInactive || DataSetPackage::pkg()->getRowFilter(source_row));
 }

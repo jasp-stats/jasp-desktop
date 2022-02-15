@@ -88,7 +88,7 @@ public:
 	Q_INVOKABLE void				setSelectedItem(int _index);
 	Q_INVOKABLE void				selectAllItems();
 	Q_INVOKABLE QList<int>			selectedItems()															{ return _selectedItems; }
-	Q_INVOKABLE QList<QString>		selectedItemsTypes()													{ return _selectedItemsTypes.toList(); }
+    Q_INVOKABLE QList<QString>		selectedItemsTypes()													{ return QList<QString>(_selectedItemsTypes.begin(), _selectedItemsTypes.end()); }
 
 
 signals:

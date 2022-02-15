@@ -18,6 +18,7 @@
 #ifndef FILEPACKAGE_H
 #define FILEPACKAGE_H
 
+#include <cstddef>
 #include <QAbstractItemModel>
 #include <QFileInfo>
 #include <QUrl>
@@ -27,32 +28,29 @@
 #include <map>
 #include "jsonredirect.h"
 #include "computedcolumns.h"
-#include "enumutilities.h"
-
-
-#define DEFAULT_FILTER		"# Add filters using R syntax here, see question mark for help.\n\ngeneratedFilter # by default: pass the non-R filter(s)"
-#define DEFAULT_FILTER_JSON	"{\"formulas\":[]}"
-#define DEFAULT_FILTER_GEN	"generatedFilter <- rep(TRUE, rowcount)"
-
-DECLARE_ENUM_WITH_TYPE(parIdxType, unsigned char, root = 0, data, filter, label) //If this is changed then DataSetPackage::index must also be!
+#include "datasetdefinitions.h"
 
 class EngineSync;
+class DataSetPackageSubNodeModel;
 
 ///
 /// This class is meant as the single bottleneck between the main application and Qt and the data stored in shared memory.
 /// To this end a clean separation has been attempted between any access of the data so that it can easily be controlled.
 ///
 /// In order to have all that data available through this class a tree-model has been chosen here.
-/// Any QModelIndex that has as parent QModelIndex() (which would be "invalid") is interpreted to mean a reference to a cell in the data.
-/// - Actually, now that I check the code this might not be true... A good thing to clean up when changing the backend though.
-/// Any QModelIndex that has as parent a valid QModelIndex is for a sub-node.
-/// parentIndexTypeIs() interprets that parent-QModelIndex as either parIdxType::data, parIdxType::filter or parIdxType::label
-/// in case of `data` well, it is just that, a cell in the data. 
+///
+/// The top layer of this tree are a parIdxType::dataRoot, ::filterRoot and several ::labelRoot "nodes" (one per column) stored in _internalPointers (together with column, just for label*)
+/// Each of these is used a the rootnode for a DataSetPackageSubNodeModel, which basically drops everything not belonging to that rootnode.
+/// And then makes sure it looks like a table to whatever model connects to that (like DataSetTableProxy which can then be used for filtering and sorting)
+/// The _internalPointers structure also contains a node for parIdxType::data and parIdxType::filter and several for parIdxType::label (again one per column)
+/// _internalPointers is formed by pairs of the nodetype and a column, the column is only used for the label and labelRoot nodes though.
+/// by storing a reference to one of these elements in QModelIndices for DataSetPackage the correct parent can be found and proper filtering can be achieved.
+///
 /// For the filter it can, now because we only support a single filter, return a list of booleans. But this might be expanded later on.
 /// The label is a special case and some support has been hacked in to also specify which particular column is referenced. 
 /// Those labels are returned as columns: [filter-value, value-value, label-text]
 ///
-/// These subnodes are then used by proxy-classes like DataSetTable(Proxy)Model to make them easily available to QML.
+/// These subnodes (at dataSubModel, filterSubModel and labelSubModel) are then used by proxy-classes like DataSetTable(Proxy)Model to make them easily available to QML.
 ///
 /// It can use cleaning up though.
 class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940 (And this being a tree model)
@@ -66,7 +64,10 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 	Q_PROPERTY(bool			loaded					READ isLoaded				WRITE setLoaded			NOTIFY loadedChanged				)
 	Q_PROPERTY(QString		currentFile				READ currentFile			WRITE setCurrentFile	NOTIFY currentFileChanged			)
 
-	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
+	typedef std::map<std::string, std::map<int, std::string>>	emptyValsType;
+	typedef std::pair<parIdxType, int>							intnlPntPair; //first value is what kind of data the index is for and the int is for parIdxType::label only, to know which column is selected.
+	typedef std::vector<intnlPntPair>							internalPointerType;
+	typedef DataSetPackageSubNodeModel							SubNodeModel;
 
 public:
 	///Special roles for the different submodels of DataSetPackage. If both maxColString and columnWidthFallback are defined by a model DataSetView will only use maxColString. selected is now only used in LabelModel, but defined here for convenience.
@@ -90,9 +91,13 @@ public:
 		void				pauseEngines();
 		void				resumeEngines();
 		bool				enginesInitializing()	{ return emit enginesInitializingSignal();	}
+
+		SubNodeModel	*	dataSubModel	() { return _dataSubModel;	 }
+		SubNodeModel	*	filterSubModel	() { return _filterSubModel; }
+		SubNodeModel	*	labelsSubModel	() { return _labelsSubModel; }
 		
 		void				waitForExportResultsReady();
-
+		
 		void				beginLoadingData();
 		void				endLoadingData();
 		void				beginSynchingData();
@@ -113,8 +118,13 @@ public:
 				Qt::ItemFlags		flags(		const QModelIndex &index)														const	override;
 				QModelIndex			parent(		const QModelIndex & index)														const	override;
 				QModelIndex			index(int row, int column, const QModelIndex &parent)										const	override;
-				parIdxType			parentIndexTypeIs(const QModelIndex &index)													const;
+				parIdxType			parIdxTypeIs(const QModelIndex &index)														const;
+		const	intnlPntPair *		getInternalPointerPairFromIndex(const QModelIndex & index)									const;
+				void				regenerateInternalPointers();
 				QModelIndex			parentModelForType(parIdxType type, int column = 0)											const;
+				QModelIndex			rootModelIndexForType(parIdxType type, int column = 0)										const;
+		static	parIdxType			parIdxTypeParentForChild(parIdxType type);
+		static	parIdxType			parIdxTypeChildForParent(parIdxType type);
 				int					filteredRowCount()																			const { return _dataSet ? _dataSet->filteredRowCount() : 0; }
 				QVariant			getDataSetViewLines(bool up=false, bool left=false, bool down=true, bool right=true)		const;
 
@@ -332,6 +342,11 @@ private:
 	ComputedColumns				_computedColumns;
 	bool						_synchingData				= false;
 	std::map<std::string, bool> _columnNameUsedInEasyFilter;
+	internalPointerType			_internalPointers;	///< The hacky solution we used prior to Qt 6 (with fake pointers) was not quite workable in the end, so it is replaced by actual pointers in conjunction with `DataSetPackageSubNodeModel`s that interface on an actual tree model
+
+	SubNodeModel			*	_dataSubModel,
+							*	_filterSubModel,
+							*	_labelsSubModel;
 
 	friend class ComputedColumns; //temporary! Or well, should be thought about anyway
 };

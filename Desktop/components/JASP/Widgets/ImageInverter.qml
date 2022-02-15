@@ -11,24 +11,6 @@ ShaderEffect
 
 	property variant src:	plotImg
 
-	vertexShader: "
-		uniform		highp mat4 qt_Matrix;
-		attribute	highp vec4 qt_Vertex;
-		attribute	highp vec2 qt_MultiTexCoord0;
-		varying		highp vec2 coord;
-
-		void main() {
-			coord = qt_MultiTexCoord0;
-			gl_Position = qt_Matrix * qt_Vertex;
-		}"
-
-	fragmentShader: "
-	varying highp	vec2		coord;
-	uniform			sampler2D	src;
-	uniform lowp	float		qt_Opacity;
-
-	void main() {
-		highp vec4 tex = texture2D(src, coord);
-		gl_FragColor = vec4(vec3(1.0) - (tex.rgb), 1.0) * tex.a * qt_Opacity;
-	}"
+	vertexShader:	"qrc:/components/JASP/Widgets/ImageInverter.vert.qsb"
+	fragmentShader: "qrc:/components/JASP/Widgets/ImageInverter.frag.qsb"
 }

@@ -153,13 +153,13 @@ bool LanguageModel::isValidLocaleName(const QString& filename, QLocale & locale)
 {
 	//Checks if the filename has a proper localename suffix for a valid CLocale::Language
 	//https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
-	//We use the two lettecode in the qm filename
+    //We use the two letter code in the qm filename
 
 	int		start		= filename.indexOf('-');
 	QString localeName	= filename.mid(start + 1);
 	int		end			= localeName.lastIndexOf('.');
 
-	locale = localeName.left(end);
+    locale = QLocale(localeName.left(end));
 	return locale != QLocale(QLocale::C);
 }
 
@@ -247,7 +247,7 @@ void LanguageModel::findQmFiles()
 
 		if (!_allowedLanguages.contains(_languageCode))
 		{
-			Log::log() << "Language " << loc.language() << " (" << _languageCode << ") is not allowed";
+			Log::log() << "Language " << QLocale::languageToString(loc.language()) << " (" << _languageCode << ") is not allowed";
 			continue;
 		}
 
@@ -255,7 +255,7 @@ void LanguageModel::findQmFiles()
 
 		if (!_languages.contains(language))
 		{
-			Log::log() << "Language (" << loc.language() << ") not registered in LanguageModel, adding it now" << std::endl;
+			Log::log() << "Language (" << QLocale::languageToString(loc.language()) << ") not registered in LanguageModel, adding it now" << std::endl;
 			_languages[language] = LanguageInfo(loc, fi.filePath(), _allowedLanguages[_languageCode]);
 		}
 		else

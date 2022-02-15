@@ -133,8 +133,9 @@ EngineRepresentation * EngineSync::createNewEngine()
 {
 	try
 	{
-		static size_t freeChannel = 0;
-		EngineRepresentation * engine = new EngineRepresentation(new IPCChannel(_memoryName, freeChannel), startSlaveProcess(freeChannel), this);
+		static size_t			  freeChannel	= 0;
+		IPCChannel				* newChannel	= new IPCChannel(_memoryName, freeChannel);
+		EngineRepresentation	* engine		= new EngineRepresentation(newChannel, startSlaveProcess(freeChannel), this);
 		freeChannel++;
 		
 		_engines.insert(engine);

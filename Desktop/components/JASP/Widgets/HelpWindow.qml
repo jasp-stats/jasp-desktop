@@ -40,19 +40,21 @@ Window
 		anchors.bottomMargin:	searchBar.height + (jaspTheme.generalAnchorMargin * 2)
 		zoomFactor:				preferencesModel.uiScale
 		backgroundColor:		jaspTheme.uiBackground
-		onLoadingChanged:
+		onLoadingChanged:	(loadRequest)=>
 		{
-			if(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus)
+			if(loadRequest.status === WebEngineView.LoadSucceededStatus)
 				helpModel.loadingSucceeded()
 			searchBar.search();
 		}
 
-		onNavigationRequested:
+		onNavigationRequested: (request)=>
+		{
 			if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
 			{
 				Qt.openUrlExternally(request.url);
-				request.action = WebEngineNavigationRequest.IgnoreRequest;
+				request.reject();
 			}
+		}
 
 		Connections
 		{
