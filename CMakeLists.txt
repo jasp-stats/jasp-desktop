@@ -70,6 +70,16 @@ if(WIN32)
   endif()
 endif()
 
+if(UNIX)
+
+  file(
+    CHMOD
+    ${CMAKE_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+    PERMISSIONS
+    OWNER_EXECUTE)
+
+endif()
+
 # Sets the build options
 include(JASP.cmake)
 
