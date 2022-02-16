@@ -44,6 +44,20 @@ else()
 
 endif()
 
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(
+    _LIB_R_PKG_CONFIG
+    REQUIRED
+    IMPORTED_TARGET
+    libR)
+
+  target_link_libraries(R-Interface
+    PUBLIC ${_LIB_R_PKG_CONFIG_LIBRARIES})
+
+endif()
+
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -141,6 +155,13 @@ elseif(WIN32)
            WIN32_LEAN_AND_MEAN)
 
   target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
+
+elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+
+  message(STATUS "HELLO!")
+  target_link_libraries(JASPEngine
+  PUBLIC rt)
+
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

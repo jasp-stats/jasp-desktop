@@ -227,52 +227,52 @@ target_include_directories(
   JASP PUBLIC ${LIBREADSTAT_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/Common
               ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
-if(APPLE)
+# if(UNIX)
 
-  target_link_libraries(
-    JASP
-    PUBLIC
-      Common
-      Qt::Core
-      Qt::Gui
-      Qt::OpenGL
-      Qt::Widgets
-      Qt::Qml
-      Qt::WebEngineQuick
-      Qt::WebChannel
-      Qt::Svg
-      Qt::Network
-      Qt::PrintSupport
-      Qt::Xml
-      Qt::Quick
-      Qt::QuickLayouts
-      Qt::QuickControls2
-      Qt::QuickControls2Impl
-      Qt::QuickWidgets
-      Qt::Core5Compat
-      Qt::QuickTemplates2
-      Qt::DBus
-      Qt::QmlWorkerScript
-      # OpenSSL::SSL
-      # OpenSSL::Crypto
-      # System
-      $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
-      $<$<BOOL:${USE_CONAN}>:CONAN_PKG::zlib>
-      $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
-      # Based on our config, this is either from PkgConfig, or the build/_deps/
-      ${LIBREADSTAT_LINK_LIBRARIES}
-      # System
-      ${Iconv_LIBRARIES}
-      ${ZLIB_LIBRARIES} # Needed for libreadstat.a
-      ${_R_Framework})
+target_link_libraries(
+JASP
+PUBLIC
+  Common
+  Qt::Core
+  Qt::Gui
+  Qt::OpenGL
+  Qt::Widgets
+  Qt::Qml
+  Qt::WebEngineQuick
+  Qt::WebChannel
+  Qt::Svg
+  Qt::Network
+  Qt::PrintSupport
+  Qt::Xml
+  Qt::Quick
+  Qt::QuickLayouts
+  Qt::QuickControls2
+  Qt::QuickControls2Impl
+  Qt::QuickWidgets
+  Qt::Core5Compat
+  Qt::QuickTemplates2
+  Qt::DBus
+  Qt::QmlWorkerScript
+  # OpenSSL::SSL
+  # OpenSSL::Crypto
+  # System
+  $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
+  $<$<BOOL:${USE_CONAN}>:CONAN_PKG::zlib>
+  $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
+  # Based on our config, this is either from PkgConfig, or the build/_deps/
+  ${LIBREADSTAT_LINK_LIBRARIES}
+  # System
+  ${Iconv_LIBRARIES}
+  ${ZLIB_LIBRARIES} # Needed for libreadstat.a
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 
-elseif(WIN32)
-  # As far as I understood, on Windows we don't need to do a lot.
-  # I only want to remove the _R_Framework explicitely. But, as we
-  # progress that can be dealt with with a variable.
-else() # Linux
+# elseif(WIN32)
+#   # As far as I understood, on Windows we don't need to do a lot.
+#   # I only want to remove the _R_Framework explicitely. But, as we
+#   # progress that can be dealt with with a variable.
+# else() # Linux
 
-endif()
+# endif()
 
 # Amir:
 # We can either add the resources using the `.qrc` files, or ask CMake to

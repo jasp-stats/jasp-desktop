@@ -104,4 +104,10 @@ endif()
 # - [ ] Find a better name for some of these variables
 # - [ ] Setup the GITHUB_PAT
 
+
+
+# if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+#   add_link_options(-fuse-ld=gold)
+# endif()
+
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

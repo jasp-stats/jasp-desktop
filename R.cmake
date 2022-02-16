@@ -493,7 +493,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
   if(_LIB_R)
-    message(CHECK_PASS "found.")
+    message(CHECK_PASS "found")
     message(STATUS "  ${_LIB_R}")
   else()
     message(CHECK_FAIL "not found in ${R_HOME_PATH}/lib")
@@ -506,7 +506,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
             "Installing the 'RInside' and 'Rcpp'")
 
     file(WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-         "install.packages('RInside', repos='${R_REPOSITORY}', lib='${R_SITE_LIBRARY_PATH}')")
+         "install.packages('RInside', repos='${R_REPOSITORY}', lib='${R_LIBRARY_PATH}')")
 
     execute_process(
       COMMAND_ECHO STDOUT
@@ -531,7 +531,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
   if(_LIB_RINSIDE)
-    message(CHECK_PASS "found.")
+    message(CHECK_PASS "found")
     message(STATUS "  ${_LIB_RINSIDE}")
   else()
     message(CHECK_FAIL "not found in ${RINSIDE_PATH}/lib")

@@ -233,7 +233,7 @@ string Dirs::resourcesDir()
 		dir += "/..";
 #endif
 
-		dir += "/Resources/";
+		dir += "/../Resources/";
 	}
 
 	return dir; 
