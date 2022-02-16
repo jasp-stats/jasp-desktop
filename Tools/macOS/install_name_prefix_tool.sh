@@ -21,6 +21,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 
 # USA
 
+if [ "$(uname)" != "Darwin" ]; then
+	exit 0
+fi
+
 if [ $# -lt 3 ] 
 then 
 	echo "Usage: ${0##*/} <DIR|FILE> <OLD> <NEW>"
