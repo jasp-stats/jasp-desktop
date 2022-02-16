@@ -81,6 +81,15 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   target_include_directories(Common
     PUBLIC ${_LIB_R_PKG_CONFIG_INCLUDE_DIRS})
 
+
+  find_library(_LIB_RT
+    NAMES rt
+    PATHS /usr/lib
+    NO_DEFAULT_PATH NO_CACHE REQUIRED)
+
+  target_link_libraries(Common PUBLIC
+      ${_LIB_RT})
+
 endif()
 
 target_include_directories(

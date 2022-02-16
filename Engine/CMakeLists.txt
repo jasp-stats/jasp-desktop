@@ -158,9 +158,8 @@ elseif(WIN32)
 
 elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
-  message(STATUS "HELLO!")
-  target_link_libraries(JASPEngine
-  PUBLIC rt)
+  # target_link_libraries(JASPEngine
+  # PUBLIC rt)
 
 endif()
 
