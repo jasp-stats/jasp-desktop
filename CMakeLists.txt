@@ -14,6 +14,8 @@ include(ExternalProject)
 include(CMakePrintHelpers)
 include(Tools/cmake/CPM.cmake)
 
+include(Checks.cmake)
+
 find_package(Git)
 find_program(MAKE NAMES gmake nmake make)
 find_program(ACLOCAL NAMES aclocal)
@@ -131,6 +133,11 @@ option(
   "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
   OFF)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
+option(LINUX_LOCAL_BUILD "Whether we are building inside the Build folder" OFF)
+
+if(INSTALL_R_MODULES AND (GITHUB_PAT STREQUAL ""))
+  message(WARNING "You probably need to set the GITHUB_PAT\; otherwise CMAKE cannot effectively communicate with GitHub.")
+endif()
 
 if(CCACHE_EXECUTABLE
    AND USE_CCACHE

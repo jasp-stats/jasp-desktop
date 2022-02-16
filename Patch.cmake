@@ -14,163 +14,170 @@
 
 # cmake_policy(SET CMP0009 NEW)
 
-file(
-  GLOB_RECURSE
-  LIBRARIES
-  "${PATH}/*.so"
-  "${PATH}/*.dylib")
-list(
-  FILTER
-  LIBRARIES
-  EXCLUDE
-  REGEX
-  ".*dSYM*")
+if(NOT APPLE)
+  message(STATUS "Nothing to fix here.")
 
-set(NEW_ID "")
+else()
+  
+  file(
+    GLOB_RECURSE
+    LIBRARIES
+    "${PATH}/*.so"
+    "${PATH}/*.dylib")
+  list(
+    FILTER
+    LIBRARIES
+    EXCLUDE
+    REGEX
+    ".*dSYM*")
 
-foreach(FILE ${LIBRARIES})
+  set(NEW_ID "")
 
-  get_filename_component(FILE_NAME ${FILE} NAME)
-  get_filename_component(DIRECTORY_NAME ${FILE} DIRECTORY)
+  foreach(FILE ${LIBRARIES})
 
-  message(CHECK_START "-------- ${FILE}")
+    get_filename_component(FILE_NAME ${FILE} NAME)
+    get_filename_component(DIRECTORY_NAME ${FILE} DIRECTORY)
 
-  if(NOT EXISTS "${DIRECTORY_NAME}/${FILE_NAME}.patched.log")
+    message(CHECK_START "-------- ${FILE}")
 
-    # This `if` doesn't look great but it should cover our main patterns.
-    # Later on, after we are sure that everything works as expected, we can
-    # make it nicer.
+    if(NOT EXISTS "${DIRECTORY_NAME}/${FILE_NAME}.patched.log")
 
-    if((FILE MATCHES "prophet.so")
-       OR (FILE MATCHES "metaBMA.so")
-       OR (FILE MATCHES "libtbbmalloc.dylib")
-       OR (FILE MATCHES "libtbbmalloc_proxy.dylib")
-       OR (FILE MATCHES "libtbb.dylib"))
+      # This `if` doesn't look great but it should cover our main patterns.
+      # Later on, after we are sure that everything works as expected, we can
+      # make it nicer.
 
+      if((FILE MATCHES "prophet.so")
+         OR (FILE MATCHES "metaBMA.so")
+         OR (FILE MATCHES "libtbbmalloc.dylib")
+         OR (FILE MATCHES "libtbbmalloc_proxy.dylib")
+         OR (FILE MATCHES "libtbb.dylib"))
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change "@rpath/libtbbmalloc.dylib"
+            "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbbmalloc.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change "@rpath/libtbbmalloc_proxy.dylib"
+            "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbbmalloc_proxy.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change "@rpath/libtbb.dylib"
+            "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbb.dylib"
+            "${FILE}")
+
+        string(
+          REPLACE "${MODULES_BINARY_PATH}/${MODULE}"
+                  "@executable_path/../Modules/${MODULE}"
+                  NEW_ID
+                  ${FILE})
+
+      elseif(FILE MATCHES "/Modules/jasp")
+
+        string(
+          REPLACE "${MODULES_BINARY_PATH}/${MODULE}"
+                  "@executable_path/../Modules/${MODULE}"
+                  NEW_ID
+                  ${FILE})
+
+      elseif(FILE MATCHES "/library/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/library/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/library/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/modules/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/modules/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/modules/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/opt/jags/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/opt/jags/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/lib/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/lib/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/"
+            NEW_ID
+            ${FILE})
+
+      endif()
+
+      # Changing the `R_HOME/lib/` prefix
       execute_process(
         # COMMAND_ECHO STDOUT
         ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${PATH}
         COMMAND
-          install_name_tool -change "@rpath/libtbbmalloc.dylib"
-          "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbbmalloc.dylib"
-          "${FILE}")
+          bash ${NAME_TOOL_EXECUTABLE} "${FILE}"
+          "/Library/Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
+      )
 
+      # Changing the `/opt/R/arm64/lib` prefix
+      # These are additional libraries needed for arm64.
+      # @todo, at some point, we might need to have a case for them, but for now they are fine
       execute_process(
         # COMMAND_ECHO STDOUT
         ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${PATH}
         COMMAND
-          install_name_tool -change "@rpath/libtbbmalloc_proxy.dylib"
-          "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbbmalloc_proxy.dylib"
-          "${FILE}")
+          bash ${NAME_TOOL_EXECUTABLE} "${FILE}" "/opt/R/arm64/lib"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib"
+      )
 
+      # Changing the library `id`s
       execute_process(
         # COMMAND_ECHO STDOUT
         ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${PATH}
-        COMMAND
-          install_name_tool -change "@rpath/libtbb.dylib"
-          "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbb.dylib"
-          "${FILE}")
+        COMMAND install_name_tool -id "${NEW_ID}" "${FILE}")
 
-      string(
-        REPLACE "${MODULES_BINARY_PATH}/${MODULE}"
-                "@executable_path/../Modules/${MODULE}"
-                NEW_ID
-                ${FILE})
+      # Signing the library
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND codesign --force --sign
+                "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" "${FILE}")
 
-    elseif(FILE MATCHES "/Modules/jasp")
+      file(WRITE ${DIRECTORY_NAME}/${FILE_NAME}.patched.log "")
+      message(CHECK_PASS "successful.")
 
-      string(
-        REPLACE "${MODULES_BINARY_PATH}/${MODULE}"
-                "@executable_path/../Modules/${MODULE}"
-                NEW_ID
-                ${FILE})
+    else()
 
-    elseif(FILE MATCHES "/library/")
-
-      string(
-        REPLACE
-          "${R_HOME_PATH}/library/"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/library/"
-          NEW_ID
-          ${FILE})
-
-    elseif(FILE MATCHES "/modules/")
-
-      string(
-        REPLACE
-          "${R_HOME_PATH}/modules/"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/modules/"
-          NEW_ID
-          ${FILE})
-
-    elseif(FILE MATCHES "/opt/jags/")
-
-      string(
-        REPLACE
-          "${R_HOME_PATH}/opt/jags/"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/"
-          NEW_ID
-          ${FILE})
-
-    elseif(FILE MATCHES "/lib/")
-
-      string(
-        REPLACE
-          "${R_HOME_PATH}/lib/"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/"
-          NEW_ID
-          ${FILE})
+      message(CHECK_PASS "already patched.")
 
     endif()
 
-    # Changing the `R_HOME/lib/` prefix
-    execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${PATH}
-      COMMAND
-        bash ${NAME_TOOL_EXECUTABLE} "${FILE}"
-        "/Library/Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
-        "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
-    )
+  endforeach()
 
-    # Changing the `/opt/R/arm64/lib` prefix
-    # These are additional libraries needed for arm64.
-    # @todo, at some point, we might need to have a case for them, but for now they are fine
-    execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${PATH}
-      COMMAND
-        bash ${NAME_TOOL_EXECUTABLE} "${FILE}" "/opt/R/arm64/lib"
-        "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib"
-    )
-
-    # Changing the library `id`s
-    execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${PATH}
-      COMMAND install_name_tool -id "${NEW_ID}" "${FILE}")
-
-    # Signing the library
-    execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${PATH}
-      COMMAND codesign --force --sign
-              "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" "${FILE}")
-
-    file(WRITE ${DIRECTORY_NAME}/${FILE_NAME}.patched.log "")
-    message(CHECK_PASS "successful.")
-
-  else()
-
-    message(CHECK_PASS "already patched.")
-
-  endif()
-
-endforeach()
+endif()

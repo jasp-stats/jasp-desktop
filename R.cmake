@@ -459,28 +459,62 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
   endif()
 
-  set(R_SITE_LIBRARY_PATH $ENV{HOME}/R/site-library)
-  make_directory(${R_SITE_LIBRARY_PATH})
 
-  file(WRITE ${MODULES_RENV_ROOT_PATH}/add-new-libPaths.R
-        ".libPaths(${R_SITE_LIBRARY_PATH})")
+  # Ok, we are not doing this...
+  #
+  # message(CHECK_START "Looking for R_LIBS_USER")
+  # execute_process(
+  #   COMMAND
+  #   Rscript -e cat\(Sys.getenv\("R_LIBS_USER"\)\)
+  #   OUTPUT_VARIABLE R_LIBS_USER_OUTPUT)
+  # get_filename_component(R_LIBS_USER
+  #                      "${R_LIBS_USER_OUTPUT}"
+  #                      ABSOLUTE)
+  # if(R_LIBS_USER STREQUAL "")
+  #   message(CHECK_FAIL "failed")
+  # else()
+  #   message(CHECK_PASS "found, ${R_LIBS_USER}")
+  # endif()
 
-  # execute_process(COMMAND
-  #   ${R_BIN} CMD 
-  #   OUTPUT_VARIABLE R_)
+  if (LINUX_LOCAL_BUILD)
+    message(STATUS "JASP is configured to install all its 
+      R depdendencies inside the build folder. If this is
+      not what you want, make sure that 'LINUX_LOCAL_BUILD'
+      parametere is set to OFF, e.g., 'cmake .. -DLINUX_LOCAL_BUILD=OFF'")
 
-  set(R_LIBRARY_PATH "${R_SITE_LIBRARY_PATH}")
+    set(R_LIBS_LOCAL "${CMAKE_BINARY_DIR}/R")
+    set(R_LIBRARY_PATH "${R_LIBS_LOCAL}")
+    make_directory(${R_LIBRARY_PATH})
+  else() # Flatpak
+    message(WARNING "JASP is configured to install all its
+      depdendencies into the ${R_HOME_PATH}/library. CMake
+      may not be able to continue if the user does not have
+      the right permission to right into ${R_HOME_PATH}/library
+      folder.")
+
+    set(R_LIBS_LOCAL "NULL") # <- This is being used in install-module.R.in
+    set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
+  endif()
+
   set(R_OPT_PATH "${R_HOME_PATH}/opt")
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
 
+  # This is an ugly expnasion as you can see a few lines under, but
+  # for now, I want to make sure that flow works and I am going to
+  # clean it up later...
+  if(LINUX_LOCAL_BUILD)
+    set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBS_LOCAL}'")
+    set(IS_LINUX_LOCAL_BUILD TRUE)
+  else()
+    set(USE_LOCAL_R_LIBS_PATH "")
+  endif()
 
   cmake_print_variables(R_HOME_PATH)
   cmake_print_variables(R_LIBRARY_PATH)
   cmake_print_variables(R_OPT_PATH)
   cmake_print_variables(R_EXECUTABLE)
-
   cmake_print_variables(RCPP_PATH)
   cmake_print_variables(RINSIDE_PATH)
 
@@ -506,7 +540,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
             "Installing the 'RInside' and 'Rcpp'")
 
     file(WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-         "install.packages('RInside', repos='${R_REPOSITORY}', lib='${R_LIBRARY_PATH}')")
+         "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})")
 
     execute_process(
       COMMAND_ECHO STDOUT
