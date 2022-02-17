@@ -144,15 +144,15 @@ if(INSTALL_R_MODULES)
   file(
     WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
     "
-    install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
-                        'jsonlite', 'modules', 'officer', 'pkgbuild',
-                        'plyr', 'qgraph', 'ragg', 'R6', 'renv',
-                        'rjson', 'rvg', 'svglite', 'systemfonts',
-                        'withr', 'testthat',
-                        'data.table', 'httr', 'lifecycle',
-                        'pkgload', 'remotes', 'stringi', 'stringr',
-                        'vdiffr'), type='${R_PKG_TYPE}', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})
-    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='${R_PKG_TYPE}', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
+    # install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
+    #                     'jsonlite', 'modules', 'officer', 'pkgbuild',
+    #                     'plyr', 'qgraph', 'ragg', 'R6', 'renv',
+    #                     'rjson', 'rvg', 'svglite', 'systemfonts',
+    #                     'withr', 'testthat',
+    #                     'data.table', 'httr', 'lifecycle',
+    #                     'pkgload', 'remotes', 'stringi', 'stringr',
+    #                     'vdiffr'), type='${R_PKG_TYPE}', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})
+    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
     if ('jaspBase' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
     }
@@ -161,7 +161,7 @@ if(INSTALL_R_MODULES)
   file(
     WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
     "
-    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='${R_PKG_TYPE}', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
+    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
     if ('jaspGraphs' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log')
     }
@@ -170,7 +170,7 @@ if(INSTALL_R_MODULES)
   file(
     WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
     "
-    install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='${R_PKG_TYPE}', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
+    install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
     if ('jaspTools' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log')
     }

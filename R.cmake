@@ -482,7 +482,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
       not what you want, make sure that 'LINUX_LOCAL_BUILD'
       parametere is set to OFF, e.g., 'cmake .. -DLINUX_LOCAL_BUILD=OFF'")
 
-    set(R_LIBS_LOCAL "${CMAKE_BINARY_DIR}/R")
+    set(R_LIBS_LOCAL "${CMAKE_BINARY_DIR}/R/library")
     set(R_LIBRARY_PATH "${R_LIBS_LOCAL}")
     make_directory(${R_LIBRARY_PATH})
   else() # Flatpak

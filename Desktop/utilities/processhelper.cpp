@@ -93,5 +93,10 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 	env.insert("R_LIBS_SITE",		"");
 	env.insert("R_LIBS_USER",		AppDirs::userRLibrary().toStdString().c_str());
 
+#ifdef LINUX_LOCAL_BUILD
+	// Sorry Joris, I still had to do this because I couldn't get your method to work!
+	env.insert("R_LIBS_USER", (AppDirs::programDir().absolutePath().toStdString() + "/../R/library").c_str());
+#endif
+
 	return(env);	
 }

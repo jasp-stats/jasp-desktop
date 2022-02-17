@@ -11,7 +11,10 @@ Sys.setenv(PKG_CONFIG_PATH="@jags_PKG_CONFIG_PATH@")
 
 if ((Sys.info()["sysname"] == "Linux") && @IS_LINUX_LOCAL_BUILD@ ) {
 	options(pkgType = "binary")
-	.libPaths(c('@R_LIBS_LOCAL@', .libPaths()))
+	
+	if (@IS_LINUX_LOCAL_BUILD@) {
+		.libPaths(c('@R_LIBS_LOCAL@', .libPaths()))
+	}
 }
 
 result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 

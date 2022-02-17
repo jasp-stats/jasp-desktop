@@ -477,7 +477,7 @@ std::string DynamicModule::getLibPathsToUse()
 	for(const std::string & path : requiredLibPaths)
 		libPathsToUse += ", '" + path + "'";
 
-	libPathsToUse += ", '" + AppDirs::bundledModulesDir().toStdString() + "'";
+	libPathsToUse += ", '" + AppDirs::programDir().absolutePath().toStdString() + "../R/library" + "'";
 	libPathsToUse += ", .libPaths())";
 
 	return libPathsToUse;

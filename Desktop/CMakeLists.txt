@@ -274,6 +274,10 @@ PUBLIC
 
 # endif()
 
+if(LINUX_LOCAL_BUILD)
+  target_compile_definitions(JASP PUBLIC
+    LINUX_LOCAL_BUILD)
+endif()
 # Amir:
 # We can either add the resources using the `.qrc` files, or ask CMake to
 # build them for us based on the directory that they are in. This can be
