@@ -18,7 +18,7 @@ if(NOT APPLE)
   message(STATUS "Nothing to fix here.")
 
 else()
-  
+
   file(
     GLOB_RECURSE
     LIBRARIES
@@ -137,7 +137,7 @@ else()
         ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${PATH}
         COMMAND
-          bash ${NAME_TOOL_EXECUTABLE} "${FILE}"
+          bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
           "/Library/Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
           "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
       )
@@ -150,7 +150,7 @@ else()
         ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${PATH}
         COMMAND
-          bash ${NAME_TOOL_EXECUTABLE} "${FILE}" "/opt/R/arm64/lib"
+          bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
           "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib"
       )
 
