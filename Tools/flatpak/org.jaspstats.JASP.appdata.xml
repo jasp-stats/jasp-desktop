@@ -79,7 +79,7 @@
 				- Scree plot is overhauled to be more concise. New option to turn parallel analysis results on and off in the plot. .
 
 				Reliability
-				- New analysis for Cohen's & Fleiss' kappa 
+				- New analysis for Cohen's &amp; Fleiss' kappa
 
 				Bayesian Unidimensional Reliability added:
 				- Standardized coefficients
