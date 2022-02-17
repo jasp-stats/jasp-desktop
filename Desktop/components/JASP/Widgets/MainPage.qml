@@ -189,7 +189,7 @@ Item
 				width:					giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
 
 				url:					resultsJsInterface.resultsPageUrl
-				onContextMenuRequested: request.accepted = true
+				onContextMenuRequested: (request)=>{ request.accepted = true; }
 				backgroundColor:		jaspTheme.uiBackground
 
 				Keys.onPressed:
