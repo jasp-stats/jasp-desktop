@@ -143,11 +143,17 @@ endif()
 if(LINUX_LOCAL_BUILD)
   set(FLATPAK_USED OFF)
   message(STATUS "JASP will be configured for local testing")
-  message(WARNING "In this mode, JASP configures a local R/library; however this cannot be used for installing JASP. If you wish to install JASP (e.g., on Flatpak), you must diabled this flag.")
+  message(
+    WARNING
+      "In this mode, JASP configures a local R/library; however this cannot be used for installing JASP. If you wish to install JASP (e.g., on Flatpak), you must diabled this flag."
+  )
 endif()
 
 if(INSTALL_R_MODULES AND (GITHUB_PAT STREQUAL ""))
-  message(WARNING "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub.")
+  message(
+    WARNING
+      "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub."
+  )
 endif()
 
 if(CCACHE_EXECUTABLE
@@ -184,6 +190,10 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
       )
     endif()
   endif()
+endif()
+
+if(NOT (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux"))
+  set(IS_LINUX_LOCAL_BUILD FALSE)
 endif()
 
 # I am not using this for now, but later on, we can use it to
