@@ -4,14 +4,18 @@ Sys.setenv(GITHUB_PAT="@GITHUB_PAT@")
 Sys.setenv(RENV_PATHS_ROOT="@MODULES_RENV_ROOT_PATH@")
 Sys.setenv(RENV_PATHS_CACHE="@MODULES_RENV_CACHE_PATH@")
 Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
-Sys.setenv(JAGS_PREFIX="@jags_BUILD_DIR@")
+Sys.setenv(JAGS_PREFIX="@jags_HOME@")
 Sys.setenv(JAGS_INCLUDEDIR="@jags_INCLUDE_DIRS@")
 Sys.setenv(JAGS_LIBDIR="@jags_LIBRARY_DIRS@")
-Sys.setenv(PKG_CONFIG_PATH="@jags_PKG_CONFIG_PATH@")
+
+if (@IS_LINUX_LOCAL_BUILD@) {
+	Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
+}
 
 if ((Sys.info()["sysname"] == "Linux") && @IS_LINUX_LOCAL_BUILD@ ) {
+
 	options(pkgType = "binary")
-	
+
 	if (@IS_LINUX_LOCAL_BUILD@) {
 		.libPaths(c('@R_LIBS_LOCAL@', .libPaths()))
 	}
@@ -29,9 +33,8 @@ if (result == "succes") {
 	cat(NULL, file="@MODULES_RENV_ROOT_PATH@/@MODULE@-installed-successfully.log")
 }
 
-# Fixing the renv's symlinks
-# On macOS, this is most likely not necessary as I take care of 
-# it using CMake but for now, I leave it here anyway... 
-source('@MODULES_BINARY_PATH@/symlinkTools.R')
-
-convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
+# Converting the absolute symlinks to relative symlinks on macOS
+if (Sys.info()["sysname"] == "Darwin") { 
+	source('@MODULES_BINARY_PATH@/symlinkTools.R')
+	convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
+}

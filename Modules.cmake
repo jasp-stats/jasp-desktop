@@ -71,12 +71,13 @@ list(POP_FRONT JASP_EXTRA_MODULES_COPY)
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   if (LINUX_LOCAL_BUILD)
-    set(jags_HOME $ENV{HOME}/.local/jags)
+    set(jags_HOME ${R_OPT_PATH}/jags)
   else()
     # Flatpak
     set(jags_HOME /usr)
   endif()
 else()
+  # On macOS and Windows jags will live inside R.framework/ or R/
   set(jags_HOME ${R_OPT_PATH}/jags) 
 endif()
 message(STATUS "If necessary, 'jags' will be installed at ${jags_HOME}")
@@ -230,7 +231,7 @@ if(INSTALL_R_MODULES)
     # to set them up correctly
     make_directory(${MODULES_BINARY_PATH}/${MODULE})
     configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
-                   ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
+                   ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
 
     add_custom_target(
       ${MODULE}
@@ -287,7 +288,7 @@ if(INSTALL_R_MODULES)
 
     make_directory(${MODULES_BINARY_PATH}/${MODULE})
     configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
-                   ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
+                   ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
 
     add_custom_target(
       ${MODULE}
@@ -365,7 +366,7 @@ if(INSTALL_R_MODULES)
 
       # install-jaspMetaAnalysis.R needs to be reconfigured again
       configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
-                     ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R)
+                     ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
 
       # ----- Downloading and Building jags
 

@@ -484,7 +484,9 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
     set(R_LIBS_LOCAL "${CMAKE_BINARY_DIR}/R/library")
     set(R_LIBRARY_PATH "${R_LIBS_LOCAL}")
+    set(R_OPT_PATH "${CMAKE_BINARY_DIR}/R/opt")
     make_directory(${R_LIBRARY_PATH})
+    make_directory(${R_OPT_PATH})
   else() # Flatpak
     message(WARNING "JASP is configured to install all its
       depdendencies into the ${R_HOME_PATH}/library. CMake
@@ -494,9 +496,10 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
     set(R_LIBS_LOCAL "NULL") # <- This is being used in install-module.R.in
     set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
+    set(R_OPT_PATH "${R_HOME_PATH}/opt")
   endif()
 
-  set(R_OPT_PATH "${R_HOME_PATH}/opt")
+  
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
