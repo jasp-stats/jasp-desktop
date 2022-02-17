@@ -14,6 +14,7 @@
 #   - [ ] If we end up using the install components, we need to make sure that
 #   the `install` command for each Module is more granular, and only targets
 #   the pieces of the `renv-cache` that belongs to the Module.
+#   - [ ] Move the installation of jaspBase dependencies to R.cmake
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
@@ -70,7 +71,7 @@ set(JASP_EXTRA_MODULES_COPY ${JASP_EXTRA_MODULES})
 list(POP_FRONT JASP_EXTRA_MODULES_COPY)
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-  if (LINUX_LOCAL_BUILD)
+  if(LINUX_LOCAL_BUILD)
     set(jags_HOME ${R_OPT_PATH}/jags)
   else()
     # Flatpak
@@ -78,7 +79,7 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   endif()
 else()
   # On macOS and Windows jags will live inside R.framework/ or R/
-  set(jags_HOME ${R_OPT_PATH}/jags) 
+  set(jags_HOME ${R_OPT_PATH}/jags)
 endif()
 message(STATUS "If necessary, 'jags' will be installed at ${jags_HOME}")
 
@@ -117,7 +118,6 @@ file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
 file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
      DESTINATION ${MODULES_BINARY_PATH})
 
-
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   set(R_PKG_TYPE "source")
 else()
@@ -145,14 +145,14 @@ if(INSTALL_R_MODULES)
   file(
     WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
     "
-    # install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
-    #                     'jsonlite', 'modules', 'officer', 'pkgbuild',
-    #                     'plyr', 'qgraph', 'ragg', 'R6', 'renv',
-    #                     'rjson', 'rvg', 'svglite', 'systemfonts',
-    #                     'withr', 'testthat',
-    #                     'data.table', 'httr', 'lifecycle',
-    #                     'pkgload', 'remotes', 'stringi', 'stringr',
-    #                     'vdiffr'), type='${R_PKG_TYPE}', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})
+    install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
+                        'jsonlite', 'modules', 'officer', 'pkgbuild',
+                        'plyr', 'qgraph', 'ragg', 'R6', 'renv',
+                        'rjson', 'rvg', 'svglite', 'systemfonts',
+                        'withr', 'testthat',
+                        'data.table', 'httr', 'lifecycle',
+                        'pkgload', 'remotes', 'stringi', 'stringr',
+                        'vdiffr'), type='${R_PKG_TYPE}', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
     if ('jaspBase' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
