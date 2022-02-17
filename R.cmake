@@ -9,11 +9,11 @@
 #       is that it can be triggered independently, however, it will only be
 #       done during the build stage and not configuration
 # - [ ] R_VERSION_NAME is a better name R_DIR_NAME
-# - [ ] All the code inside the if(APPLE), and if(WIN32) should be turned into 
+# - [ ] All the code inside the if(APPLE), and if(WIN32) should be turned into
 #       a CMake module. I leave this for later cleanup
 # - [ ] Both R package intaller can be improved by some caching, now cleaning is
 #       a bit brutal
-#       
+#
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
@@ -328,8 +328,7 @@ elseif(WIN32)
   #   - [ ] I can use the PATH to R/ as _R_framework and everything else should just work
 
   # set(R_FRAMEWORK_PATH "${CMAKE_BINARY_DIR}/R")
-  set(R_HOME_PATH
-      "${CMAKE_BINARY_DIR}/R")
+  set(R_HOME_PATH "${CMAKE_BINARY_DIR}/R")
   set(R_BIN_PATH "${R_HOME_PATH}/bin")
   set(R_LIB_PATH "${R_HOME_PATH}/bin/${R_DIR_NAME}")
   set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
@@ -378,21 +377,23 @@ elseif(WIN32)
 
       execute_process(
         WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
-        COMMAND ${R_PACKAGE_NAME} /CURRENTUSER /verysilent /sp /DIR=${r_win_exe_BINARY_DIR}/R)
+        COMMAND ${R_PACKAGE_NAME} /CURRENTUSER /verysilent /sp
+                /DIR=${r_win_exe_BINARY_DIR}/R)
 
       file(COPY ${r_win_exe_BINARY_DIR}/R DESTINATION ${CMAKE_BINARY_DIR})
 
-      if (EXISTS ${CMAKE_BINARY_DIR}/R)
+      if(EXISTS ${CMAKE_BINARY_DIR}/R)
         message(CHECK_PASS "successful")
       else()
         message(CHECK_FAIL "failed")
-        message(FATAL_ERROR "CMake has failed to prepare the R environment in the build folder.")
+        message(
+          FATAL_ERROR
+            "CMake has failed to prepare the R environment in the build folder."
+        )
       endif()
-
 
       # TODOs:
       #   - [ ] I think we should probably remove a few auxiliary files, e.g. uninstall stuff
-
 
     else()
 
@@ -406,13 +407,10 @@ elseif(WIN32)
 
   endif()
 
-
-
   if(NOT EXISTS ${RINSIDE_PATH})
     message(STATUS "RInside is not installed!")
 
-    message(CHECK_START
-            "Installing the 'RInside' and 'Rcpp'")
+    message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
     file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
          "install.packages('RInside', repos='${R_REPOSITORY}')")
@@ -435,30 +433,28 @@ elseif(WIN32)
 
 elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
-
   message(CHECK_START "Looking for R")
 
-  find_program(R_BIN
-    NAMES
-    R)
+  find_program(R_BIN NAMES R)
 
   if(R_BIN STREQUAL "")
 
     message(CHECK_FAIL "unsuccessful")
-    message(FATAL_ERROR "R is not installed in your system. Please install R and try again.")
+    message(
+      FATAL_ERROR
+        "R is not installed in your system. Please install R and try again.")
 
   else()
 
     message(CHECK_PASS "successful")
 
-    execute_process(COMMAND
-      ${R_BIN} RHOME
+    execute_process(
+      COMMAND ${R_BIN} RHOME
       OUTPUT_VARIABLE R_HOME_PATH
       OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS "R_HOME is ${R_HOME_PATH}")
 
   endif()
-
 
   # Ok, we are not doing this...
   #
@@ -476,8 +472,10 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   #   message(CHECK_PASS "found, ${R_LIBS_USER}")
   # endif()
 
-  if (LINUX_LOCAL_BUILD)
-    message(STATUS "JASP is configured to install all its 
+  if(LINUX_LOCAL_BUILD)
+    message(
+      STATUS
+        "JASP is configured to install all its
       R depdendencies inside the build folder. If this is
       not what you want, make sure that 'LINUX_LOCAL_BUILD'
       parametere is set to OFF, e.g., 'cmake .. -DLINUX_LOCAL_BUILD=OFF'")
@@ -488,7 +486,9 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     make_directory(${R_LIBRARY_PATH})
     make_directory(${R_OPT_PATH})
   else() # Flatpak
-    message(WARNING "JASP is configured to install all its
+    message(
+      WARNING
+        "JASP is configured to install all its
       depdendencies into the ${R_HOME_PATH}/library. CMake
       may not be able to continue if the user does not have
       the right permission to right into ${R_HOME_PATH}/library
@@ -499,7 +499,6 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     set(R_OPT_PATH "${R_HOME_PATH}/opt")
   endif()
 
-  
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
@@ -512,6 +511,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     set(IS_LINUX_LOCAL_BUILD TRUE)
   else()
     set(USE_LOCAL_R_LIBS_PATH "")
+    set(IS_LINUX_LOCAL_BUILD FALSE)
   endif()
 
   cmake_print_variables(R_HOME_PATH)
@@ -520,7 +520,6 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   cmake_print_variables(R_EXECUTABLE)
   cmake_print_variables(RCPP_PATH)
   cmake_print_variables(RINSIDE_PATH)
-
 
   message(CHECK_START "Checking for 'libR'")
   find_library(
@@ -539,11 +538,12 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   if(NOT EXISTS ${RINSIDE_PATH})
     message(STATUS "RInside is not installed!")
 
-    message(CHECK_START
-            "Installing the 'RInside' and 'Rcpp'")
+    message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
-    file(WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-         "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})")
+    file(
+      WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
+      "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})"
+    )
 
     execute_process(
       COMMAND_ECHO STDOUT
