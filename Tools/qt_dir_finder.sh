@@ -8,7 +8,7 @@ then
 UNAME="$(uname -s)"
 if [ "$UNAME" = "Darwin" ]
 then
-QT_KIT=clang_64
+QT_KIT=macos
 else
 QT_KIT=gcc_64
 fi
@@ -21,7 +21,7 @@ fi
 
 if [ -z "$QT_VERSION" ]
 then
-QT_VERSION=5.15.2
+QT_VERSION=6.2.3
 fi
 
 echo "Using QT_DIR $QT_DIR, QT_VERSION $QT_VERSION and QT_KIT $QT_KIT"
