@@ -274,10 +274,19 @@ PUBLIC
 
 # endif()
 
+# Amir: All these single if's can be written using the 
+#       generator expressions but since debugging those
+#       isn't trivial, I don't want to do it now
 if(LINUX_LOCAL_BUILD)
   target_compile_definitions(JASP PUBLIC
     LINUX_LOCAL_BUILD)
 endif()
+
+if(FLATPAK_USED)
+  target_compile_definitions(JASP PUBLIC
+    FLATPAK_USED)
+endif()
+
 # Amir:
 # We can either add the resources using the `.qrc` files, or ask CMake to
 # build them for us based on the directory that they are in. This can be

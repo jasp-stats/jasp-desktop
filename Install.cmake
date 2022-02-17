@@ -88,6 +88,63 @@ if(APPLE)
 
 endif()
 
+
+# ---- Linux / Flatpak
+
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+
+  if (EXISTS /app/bin)
+    set(JASP_INSTALL_PREFIX "/app")
+    message(STATUS "Flatpak environment is detected.")
+  else()
+    set(JASP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+  endif()
+  set(JASP_INSTALL_BINDIR "${JASP_INSTALL_PREFIX}/bin")
+  set(JASP_INSTALL_RESOURCEDIR "${JASP_INSTALL_PREFIX}/Resources")
+  set(JASP_INSTALL_MODULEDIR "${JASP_INSTALL_PREFIX}/Modules")
+
+  install(
+    TARGETS JASP JASPEngine
+    RUNTIME DESTINATION ${JASP_INSTALL_BINDIR}
+    BUNDLE DESTINATION . COMPONENT jaspCore)
+
+  install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
+    DESTINATION ${JASP_INSTALL_RESOURCEDIR}
+    COMPONENT jaspCore)
+
+  install(
+    DIRECTORY ${MODULES_BINARY_PATH}/
+    DESTINATION ${JASP_INSTALL_MODULEDIR})
+
+  install(DIRECTORY ${MODULES_RENV_ROOT_PATH}/
+    DESTINATION ${JASP_INSTALL_PREFIX}/lib64/renv-root)
+
+  install(DIRECTORY ${MODULES_RENV_CACHE_PATH}/
+    DESTINATION ${JASP_INSTALL_PREFIX}/lib64/renv-cache)
+
+  # Flatpak Misc.
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.desktop
+    DESTINATION ${JASP_INSTALL_PREFIX}/share/applications)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
+    DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
+    DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/64/org.jaspstats.JASP.png
+    DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/64x64/apps)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/128/org.jaspstats.JASP.png
+    DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/128x128/apps)
+
+  install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.appdata.xml
+    DESTINATION ${JASP_INSTALL_PREFIX}/share/metainfo)
+
+endif()
+
 # ---- Windows
 
 # Essential on WIN32 as some binaries should be around

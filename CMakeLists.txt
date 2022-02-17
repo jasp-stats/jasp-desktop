@@ -55,7 +55,7 @@ set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
 # - [ ] This needs to be removed. We don't necessary need it, and
 #       for now, it is here for testing
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/Install)
+# set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/Install)
 # message(STATUS ${CMAKE_INSTALL_PREFIX})
 
 if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
@@ -134,9 +134,20 @@ option(
   OFF)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
 option(LINUX_LOCAL_BUILD "Whether we are building inside the Build folder" OFF)
+option(FLATPAK_USED "Whether we are building for Flatpak" OFF)
+
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+  set(FLATPAK_USED ON)
+endif()
+
+if(LINUX_LOCAL_BUILD)
+  set(FLATPAK_USED OFF)
+  message(STATUS "JASP will be configured for local testing")
+  message(WARNING "In this mode, JASP configures a local R/library; however this cannot be used for installing JASP. If you wish to install JASP (e.g., on Flatpak), you must diabled this flag.")
+endif()
 
 if(INSTALL_R_MODULES AND (GITHUB_PAT STREQUAL ""))
-  message(WARNING "You probably need to set the GITHUB_PAT\; otherwise CMAKE cannot effectively communicate with GitHub.")
+  message(WARNING "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub.")
 endif()
 
 if(CCACHE_EXECUTABLE
