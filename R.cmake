@@ -8,7 +8,6 @@
 # - [ ] Maybe, the entire R.framework prepration should be a target. The advantages
 #       is that it can be triggered independently, however, it will only be
 #       done during the build stage and not configuration
-# - [ ] R_VERSION_NAME is a better name R_DIR_NAME
 # - [ ] All the code inside the if(APPLE), and if(WIN32) should be turned into
 #       a CMake module. I leave this for later cleanup
 # - [ ] Both R package intaller can be improved by some caching, now cleaning is
@@ -16,8 +15,6 @@
 #
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
-
-# include(Patch.cmake)
 
 set(MODULES_SOURCE_PATH
     ${PROJECT_SOURCE_DIR}/Modules
@@ -36,12 +33,7 @@ set(JASP_ENGINE_PATH
     "${CMAKE_BINARY_DIR}/Desktop/"
     CACHE PATH "Location of the JASPEngine")
 
-# TODO: Replace the version with a variable
 if(APPLE)
-
-  # These are futher paths, and may not exist yet!
-  # CMake throws if it cannot setup the R.framework properly and get to
-  # these paths!
 
   set(R_FRAMEWORK_PATH "${CMAKE_BINARY_DIR}/Frameworks")
   set(R_HOME_PATH
@@ -57,19 +49,9 @@ if(APPLE)
   cmake_print_variables(R_LIBRARY_PATH)
   cmake_print_variables(R_OPT_PATH)
   cmake_print_variables(R_EXECUTABLE)
-
   cmake_print_variables(RCPP_PATH)
   cmake_print_variables(RINSIDE_PATH)
 
-  # This whole thing can be a module of itself but after I make sure that it
-  # fully works
-
-  # TODOs:
-  #
-  # - [ ] I need to check whether I should download the `.tar.gz` version of the
-  #       framework instead. It seems that the `.pkg` version requires xQuartz but
-  #       the former does not.
-  #
   if(INSTALL_R_FRAMEWORK AND (NOT EXISTS
                               ${CMAKE_BINARY_DIR}/Frameworks/R.framework))
 
@@ -327,7 +309,6 @@ elseif(WIN32)
   # TODO
   #   - [ ] I can use the PATH to R/ as _R_framework and everything else should just work
 
-  # set(R_FRAMEWORK_PATH "${CMAKE_BINARY_DIR}/R")
   set(R_HOME_PATH "${CMAKE_BINARY_DIR}/R")
   set(R_BIN_PATH "${R_HOME_PATH}/bin")
   set(R_LIB_PATH "${R_HOME_PATH}/bin/${R_DIR_NAME}")
@@ -456,29 +437,11 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
   endif()
 
-  # Ok, we are not doing this...
-  #
-  # message(CHECK_START "Looking for R_LIBS_USER")
-  # execute_process(
-  #   COMMAND
-  #   Rscript -e cat\(Sys.getenv\("R_LIBS_USER"\)\)
-  #   OUTPUT_VARIABLE R_LIBS_USER_OUTPUT)
-  # get_filename_component(R_LIBS_USER
-  #                      "${R_LIBS_USER_OUTPUT}"
-  #                      ABSOLUTE)
-  # if(R_LIBS_USER STREQUAL "")
-  #   message(CHECK_FAIL "failed")
-  # else()
-  #   message(CHECK_PASS "found, ${R_LIBS_USER}")
-  # endif()
-
   if(LINUX_LOCAL_BUILD)
     message(
       STATUS
-        "JASP is configured to install all its
-      R depdendencies inside the build folder. If this is
-      not what you want, make sure that 'LINUX_LOCAL_BUILD'
-      parametere is set to OFF, e.g., 'cmake .. -DLINUX_LOCAL_BUILD=OFF'")
+        "JASP is configured to install all its R depdendencies inside the build folder. If this is not what you want, make sure that 'LINUX_LOCAL_BUILD' parametere is set to OFF, e.g., 'cmake .. -DLINUX_LOCAL_BUILD=OFF'"
+    )
 
     set(R_LIBS_LOCAL "${CMAKE_BINARY_DIR}/R/library")
     set(R_LIBRARY_PATH "${R_LIBS_LOCAL}")
@@ -488,11 +451,8 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   else() # Flatpak
     message(
       WARNING
-        "JASP is configured to install all its
-      depdendencies into the ${R_HOME_PATH}/library. CMake
-      may not be able to continue if the user does not have
-      the right permission to right into ${R_HOME_PATH}/library
-      folder.")
+        "JASP is configured to install all its depdendencies into the ${R_HOME_PATH}/library. CMake may not be able to continue if the user does not have the right permission to right into ${R_HOME_PATH}/library folder."
+    )
 
     set(R_LIBS_LOCAL "NULL") # <- This is being used in install-module.R.in
     set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
@@ -503,9 +463,8 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
 
-  # This is an ugly expnasion as you can see a few lines under, but
-  # for now, I want to make sure that flow works and I am going to
-  # clean it up later...
+  # This makes sure that `install.packages()` command be called with the right
+  # lib paths in case we are installing locally.
   if(LINUX_LOCAL_BUILD)
     set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBS_LOCAL}'")
     set(IS_LINUX_LOCAL_BUILD TRUE)
@@ -546,8 +505,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     )
 
     execute_process(
-      COMMAND_ECHO STDOUT
-      # ERROR_QUIET OUTPUT_QUIET
+      ERROR_QUIET OUTPUT_QUIET
       COMMAND R --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
 
@@ -574,28 +532,6 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     message(CHECK_FAIL "not found in ${RINSIDE_PATH}/lib")
   endif()
 
-  # message(FATAL_ERROR "Step by step...")
-
 endif()
-
-# Amir: Not sure about this yet.
-# GETTEXT_LOCATION = $$(GETTEXT_PATH) #The GETTEXT_PATH can be used as environment for a specific gettext location
-
-# unix {
-#   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
-#   EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$R_HOME_PATH:$$dirname(QMAKE_QMAKE)
-# }
-
-# win32 {
-#   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
-#   WINQTBIN  = $$winPathFix($$QMAKE_QMAKE)
-#   WINQTBIN ~= s,qmake.exe,,gs
-# }
-
-# message(STATUS "R Configurations:")
-
-# cmake_print_variables(_R_Framework)
-# cmake_print_variables(_LIB_R)
-# cmake_print_variables(_LIB_RINSIDE)
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
