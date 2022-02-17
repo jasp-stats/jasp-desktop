@@ -43,7 +43,7 @@ set JASP_BASE_DIR_DEFAULT=%CD%
 popd
 
 set QTDIR_DEFAULT=C:\Qt
-set QTVER_DEFAULT=5.15.2
+set QTVER_DEFAULT=6.2.3
 set RTOOLS40DIR_DEFAULT=C:\rtools40
 set WIX_DEFAULT=C:\Program Files (x86)\WiX Toolset v3.11
 set MSVCDIR_DEFAULT=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community
