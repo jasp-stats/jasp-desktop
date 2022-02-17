@@ -370,12 +370,13 @@ This needs to be done once for each feature branch. Do not delete it if you want
 3. Fork and clone jaspModules to make PRs, do not work inside of jasp-desktop repository.
 4. Work in feature branches.
 5. Rebase often. Do **not** call `git pull` to sync your repository with `jasp-stats`. **Rebase**.
-6. Prefer making more smaller PRs rather than making one PR implementing many unrelated features.
-7. Make clean PRs
+6. Push your changes regularly from your local repository to your GitHub repository, to back up your work in progress.
+7. Prefer making more smaller PRs rather than making one PR implementing many unrelated features.
+8. Make clean PRs
 	- Make sure you do not have merge conflicts (rebase)
 	- Test your code before making a PR
 	- Document your changes by writing informative commit messages
 	- Link issues to your PR
-8. You are responsible for making sure your PR will be dealt with. Assign reviewers to your PRs. Communicate when your PR goes stale or if your PR needs special attention.
-9. Be proactive when assigned to review: let the PR author know if you cannot review their PR.
-10. You can add other people's forks as your remote to review or checkout their code.
+9. You are responsible for making sure your PR will be dealt with. Assign reviewers to your PRs. Communicate when your PR goes stale or if your PR needs special attention.
+10. Be proactive when assigned to review: let the PR author know if you cannot review their PR.
+11. You can add other people's forks as your remote to review or checkout their code.
