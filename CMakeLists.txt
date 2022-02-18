@@ -82,6 +82,18 @@ endif()
 
 # endif()
 
+# This looks weird but CMake doesn't like ON/OFF in the if condition,
+# especially if it's passed
+option(SIGN_AT_BUILD_TIME
+       "Whether to sign every library during the configuration and build" ON)
+if(${SIGN_AT_BUILD_TIME})
+  message(STATUS "Signing everything during the configuration and building.")
+  set(IS_SIGNING 1)
+else()
+  message(STATUS "Only signing essential libraries and binaries.")
+  set(IS_SIGNING 0)
+endif()
+
 # Sets the build options
 include(JASP.cmake)
 

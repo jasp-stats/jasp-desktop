@@ -38,7 +38,7 @@ else()
     get_filename_component(FILE_NAME ${FILE} NAME)
     get_filename_component(DIRECTORY_NAME ${FILE} DIRECTORY)
 
-    message(CHECK_START "-------- ${FILE}")
+    message(CHECK_START "-------- Patching ${FILE}")
 
     if(NOT EXISTS "${DIRECTORY_NAME}/${FILE_NAME}.patched.log")
 
@@ -161,16 +161,34 @@ else()
         WORKING_DIRECTORY ${PATH}
         COMMAND install_name_tool -id "${NEW_ID}" "${FILE}")
 
-      # Signing the library
-      execute_process(
-        # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
-        WORKING_DIRECTORY ${PATH}
-        COMMAND codesign --force --sign
-                "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" "${FILE}")
-
       file(WRITE ${DIRECTORY_NAME}/${FILE_NAME}.patched.log "")
       message(CHECK_PASS "successful.")
+
+      # Signing the library
+
+      if(${SIGNING})
+
+        message(CHECK_START "-------- Signing ${FILE}")
+
+        set(SIGNING_RESULT "timeout")
+
+        while((${SIGNING_RESULT} STREQUAL "timeout"))
+
+          execute_process(
+            # COMMAND_ECHO STDOUT
+            TIMEOUT 20
+            ERROR_QUIET OUTPUT_QUIET
+            WORKING_DIRECTORY ${PATH}
+            COMMAND
+              codesign --force --sign
+              "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" "${FILE}"
+            RESULT_VARIABLE SIGNING_RESULT)
+
+        endwhile()
+
+        message(CHECK_PASS "successful")
+
+      endif()
 
     else()
 

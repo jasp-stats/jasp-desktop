@@ -151,7 +151,8 @@ if(APPLE)
           ${CMAKE_COMMAND} -D
           NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
           -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
-          R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake)
+          R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -P
+          ${PROJECT_SOURCE_DIR}/Patch.cmake)
 
       # R binary should be patched as well
       execute_process(
@@ -166,14 +167,21 @@ if(APPLE)
       )
 
       message(CHECK_START "Signing '${R_HOME_PATH}/bin/exec/R'")
-      execute_process(
-        # COMMAND_ECHO STDOUT
-        # ERROR_QUIET OUTPUT_QUIET
-        WORKING_DIRECTORY ${R_HOME_PATH}
-        COMMAND
-          codesign --force --sign
-          "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)"
-          "${R_HOME_PATH}/bin/exec/R")
+
+      set(SIGNING_RESULT "timeout")
+      while(${SIGNING_RESULT} STREQUAL "timeout")
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          # ERROR_QUIET OUTPUT_QUIET
+          TIMEOUT 20
+          WORKING_DIRECTORY ${R_HOME_PATH}
+          COMMAND
+            codesign --force --sign
+            "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)"
+            "${R_HOME_PATH}/bin/exec/R"
+          RESULT_VARIABLE SIGNING_RESULT)
+      endwhile()
+
       message(CHECK_FAIL "successful.")
 
       execute_process(
@@ -276,7 +284,8 @@ if(APPLE)
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
         -D PATH=${R_HOME_PATH}/library/RInside -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake)
+        R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -P
+        ${PROJECT_SOURCE_DIR}/Patch.cmake)
 
     execute_process(
       # COMMAND_ECHO STDOUT
@@ -286,7 +295,8 @@ if(APPLE)
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
         -D PATH=${R_HOME_PATH}/library/Rcpp -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -P ${PROJECT_SOURCE_DIR}/Patch.cmake)
+        R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -P
+        ${PROJECT_SOURCE_DIR}/Patch.cmake)
 
     message(CHECK_PASS "successful.")
   endif()
