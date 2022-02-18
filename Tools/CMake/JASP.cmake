@@ -44,6 +44,8 @@ set(JASP_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(JASP_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
 
+message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
+
 # Amir: We probably won't need them soon
 # option(JASP_LIBJSON_STATIC
 #        "Whether or not we are using the 'libjson' as static library?" OFF)
@@ -72,8 +74,7 @@ if(NOT R_REPOSITORY)
 endif()
 
 if(FLATPAK_USED AND (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux"))
-  set(R_REPOSITORY
-    "file:///app/lib64/local-cran")
+  set(R_REPOSITORY "file:///app/lib64/local-cran")
 endif()
 
 message(STATUS "CRAN mirror: ${R_REPOSITORY}")
@@ -110,10 +111,35 @@ endif()
 # - [ ] Find a better name for some of these variables
 # - [ ] Setup the GITHUB_PAT
 
-
-
 # if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 #   add_link_options(-fuse-ld=gold)
 # endif()
+
+option(UPDATE_JASP_SUBMODULES
+       "Whether to automatically initialize and update the submodules" ON)
+
+# Dealing with Git submodules
+
+if(UPDATE_JASP_SUBMODULES)
+  if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    # Update submodules as needed
+    if(GIT_SUBMODULE)
+      message(STATUS "Submodule update")
+      execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+      if(NOT
+         GIT_SUBMOD_RESULT
+         EQUAL
+         "0")
+        message(
+          FATAL_ERROR
+            "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules"
+        )
+      endif()
+    endif()
+  endif()
+endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

@@ -14,8 +14,30 @@
 #       a bit brutal
 #
 
-list(APPEND CMAKE_MESSAGE_CONTEXT Config)
+list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
+set(R_VERSION "4.1.2")
+set(R_VERSION_MAJOR_MINOR "4.1")
+set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
+
+if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+  set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
+else()
+  set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}")
+endif()
+
+if(WIN32)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8) # 64 bits
+    set(R_DIR_NAME "x64")
+  elseif(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
+    set(R_DIR_NAME "i386")
+  endif()
+endif()
+
+message(STATUS "Buidling using R ${R_VERSION}")
+
+# ------ Preparing REnv Paths
+#
 set(MODULES_SOURCE_PATH
     ${PROJECT_SOURCE_DIR}/Modules
     CACHE PATH "Location of JASP Modules")
@@ -32,6 +54,8 @@ set(MODULES_RENV_CACHE_PATH
 set(JASP_ENGINE_PATH
     "${CMAKE_BINARY_DIR}/Desktop/"
     CACHE PATH "Location of the JASPEngine")
+
+# ------
 
 if(APPLE)
 
@@ -133,7 +157,7 @@ if(APPLE)
       # Patching R's pathing variables, R_HOME, etc. -----------
       message(CHECK_START "Patching bin/R and etc/Makeconf, and library paths")
 
-      include(${CMAKE_SOURCE_DIR}/PatchR.cmake)
+      include(${CMAKE_SOURCE_DIR}/Tools/CMake/PatchR.cmake)
       cmake_print_variables(r_pkg_r_home)
       cmake_print_variables(R_HOME_PATH)
       patch_r()
@@ -152,7 +176,7 @@ if(APPLE)
           NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
           -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
           R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -P
-          ${PROJECT_SOURCE_DIR}/Patch.cmake)
+          ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
       # R binary should be patched as well
       execute_process(
@@ -285,7 +309,7 @@ if(APPLE)
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
         -D PATH=${R_HOME_PATH}/library/RInside -D R_HOME_PATH=${R_HOME_PATH} -D
         R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -P
-        ${PROJECT_SOURCE_DIR}/Patch.cmake)
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
     execute_process(
       # COMMAND_ECHO STDOUT
@@ -296,7 +320,7 @@ if(APPLE)
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
         -D PATH=${R_HOME_PATH}/library/Rcpp -D R_HOME_PATH=${R_HOME_PATH} -D
         R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -P
-        ${PROJECT_SOURCE_DIR}/Patch.cmake)
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
     message(CHECK_PASS "successful.")
   endif()

@@ -60,10 +60,10 @@ if(APPLE)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/ParallelSigner.sh.in
                  ${CMAKE_BINARY_DIR}/ParallelSigner.sh @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Sign.cmake.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Sign.cmake.in
                  ${CMAKE_BINARY_DIR}/Sign.cmake @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Deploy.cmake.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Deploy.cmake.in
                  ${CMAKE_BINARY_DIR}/Deploy.cmake @ONLY)
 
   install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.cmake)
@@ -88,12 +88,11 @@ if(APPLE)
 
 endif()
 
-
 # ---- Linux / Flatpak
 
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
-  if (EXISTS /app/bin)
+  if(EXISTS /app/bin)
     set(JASP_INSTALL_PREFIX "/app")
     message(STATUS "Flatpak environment is detected.")
   else()
@@ -113,35 +112,34 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     DESTINATION ${JASP_INSTALL_RESOURCEDIR}
     COMPONENT jaspCore)
 
-  install(
-    DIRECTORY ${MODULES_BINARY_PATH}/
-    DESTINATION ${JASP_INSTALL_MODULEDIR})
+  install(DIRECTORY ${MODULES_BINARY_PATH}/
+          DESTINATION ${JASP_INSTALL_MODULEDIR})
 
   install(DIRECTORY ${MODULES_RENV_ROOT_PATH}/
-    DESTINATION ${JASP_INSTALL_PREFIX}/lib64/renv-root)
+          DESTINATION ${JASP_INSTALL_PREFIX}/lib64/renv-root)
 
   install(DIRECTORY ${MODULES_RENV_CACHE_PATH}/
-    DESTINATION ${JASP_INSTALL_PREFIX}/lib64/renv-cache)
+          DESTINATION ${JASP_INSTALL_PREFIX}/lib64/renv-cache)
 
   # Flatpak Misc.
 
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.desktop
-    DESTINATION ${JASP_INSTALL_PREFIX}/share/applications)
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/applications)
 
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
-    DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
 
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.svg
-    DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
 
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/64/org.jaspstats.JASP.png
-    DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/64x64/apps)
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/64x64/apps)
 
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/128/org.jaspstats.JASP.png
-    DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/128x128/apps)
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/icons/hicolor/128x128/apps)
 
   install(FILES ${CMAKE_SOURCE_DIR}/Tools/flatpak/org.jaspstats.JASP.appdata.xml
-    DESTINATION ${JASP_INSTALL_PREFIX}/share/metainfo)
+          DESTINATION ${JASP_INSTALL_PREFIX}/share/metainfo)
 
 endif()
 
