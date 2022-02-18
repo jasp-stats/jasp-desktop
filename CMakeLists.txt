@@ -84,6 +84,10 @@ else()
   set(IS_SIGNING 0)
 endif()
 
+set(CUSTOM_R_PATH
+    ""
+    CACHE PATH "Path to your custom R installation" FORCE)
+
 # Sets the build options
 include(JASP.cmake)
 

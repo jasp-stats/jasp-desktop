@@ -426,24 +426,36 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
   message(CHECK_START "Looking for R")
 
-  find_program(R_BIN NAMES R)
+  if(CUSTOM_R_PATH STREQUAL "")
 
-  if(R_BIN STREQUAL "")
+    find_program(R_BIN NAMES R)
 
-    message(CHECK_FAIL "unsuccessful")
-    message(
-      FATAL_ERROR
-        "R is not installed in your system. Please install R and try again.")
+    if(R_BIN STREQUAL "")
+
+      message(CHECK_FAIL "unsuccessful")
+      message(
+        FATAL_ERROR
+          "R is not installed in your system. Please install R and try again.")
+
+    else()
+
+      message(CHECK_PASS "successful")
+
+      execute_process(
+        COMMAND ${R_BIN} RHOME
+        OUTPUT_VARIABLE R_HOME_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+      message(STATUS "R_HOME is ${R_HOME_PATH}")
+
+    endif()
 
   else()
 
-    message(CHECK_PASS "successful")
+    if(EXISTS ${CUSTOM_R_PATH})
 
-    execute_process(
-      COMMAND ${R_BIN} RHOME
-      OUTPUT_VARIABLE R_HOME_PATH
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "R_HOME is ${R_HOME_PATH}")
+      set(R_HOME_PATH ${CUSTOM_R_PATH})
+
+    endif()
 
   endif()
 
