@@ -15,20 +15,27 @@ find_package(
 
 add_library(R-Interface ${HEADER_FILES} ${SOURCE_FILES})
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
 
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(
-    _LIB_R_PKG_CONFIG
-    # REQUIRED
-    IMPORTED_TARGET libR)
+    LIBJSONCPP
+    REQUIRED
+    IMPORTED_TARGET
+    jsoncpp)
 
-  # I think we need to deduct most information about R using the
-  # PkgConfig but for now, I'm doing it as minimal as possible
-  # to keep it consistent to other platforms
-  target_include_directories(
-    R-Interface PUBLIC ${_LIB_R_PKG_CONFIG_INCLUDE_DIRS} /usr/include
-                       /usr/include/R)
+else()
+
+  # find_library(
+  #   LIBJSONCPP REQUIRED
+  #   NAMES jsoncpp
+  #   HINTS ${jsoncpp_LIBRARY_DIRS})
+
+  # WARNING: This is not the way to do it, and it does not work with Ninja :\
+
+  set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
+  set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
+  set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
 
 endif()
 
@@ -40,7 +47,7 @@ target_include_directories(
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
          ${LIBJSONCPP_INCLUDE_DIRS}
          # R
-         ${R_HOME_PATH}/include
+         ${R_INCLUDE_PATH}
          ${RCPP_PATH}/include
          ${RINSIDE_PATH}/include)
 
@@ -52,6 +59,7 @@ target_link_libraries(
          Boost::date_time
          Boost::timer
          Boost::chrono
+         ${LIBJSONCPP_LINK_LIBRARIES}
          $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
          $<$<PLATFORM_ID:Linux>:${_LIB_R}>
          ${_LIB_RINSIDE}

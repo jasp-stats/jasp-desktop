@@ -46,14 +46,7 @@ endif()
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(
-    _LIB_R_PKG_CONFIG
-    # REQUIRED
-    IMPORTED_TARGET libR)
-
-  target_link_libraries(R-Interface PUBLIC ${_LIB_R_PKG_CONFIG_LIBRARIES}
-                                           ${_LIB_R})
+  target_link_libraries(R-Interface PUBLIC ${_LIB_R})
 
 endif()
 

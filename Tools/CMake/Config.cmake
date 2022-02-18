@@ -15,7 +15,7 @@ endif()
 
 set(CUSTOM_R_PATH
     ""
-    CACHE PATH "Path to your custom R installation" FORCE)
+    CACHE PATH "Path to your custom R installation")
 
 # With this, we can hit up to 90% speed up!
 option(USE_CCACHE "Whether to use ccache for build" OFF)

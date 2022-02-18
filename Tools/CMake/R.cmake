@@ -34,7 +34,7 @@ if(WIN32)
   endif()
 endif()
 
-message(STATUS "Buidling using R ${R_VERSION}")
+# message(STATUS "Buidling using R ${R_VERSION}")
 
 # ------ Preparing REnv Paths
 #
@@ -65,6 +65,7 @@ if(APPLE)
   set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
   set(R_OPT_PATH "${R_HOME_PATH}/opt")
   set(R_EXECUTABLE "${R_HOME_PATH}/R")
+  set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
 
@@ -288,7 +289,7 @@ if(APPLE)
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
-      COMMAND ./R --slave --no-restore --no-save
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
@@ -349,6 +350,7 @@ elseif(WIN32)
   set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
   set(R_OPT_PATH "${R_HOME_PATH}/opt")
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
+  set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
 
@@ -434,7 +436,7 @@ elseif(WIN32)
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_BIN_PATH}
-      COMMAND ./R --slave --no-restore --no-save
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
@@ -478,6 +480,13 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     if(EXISTS ${CUSTOM_R_PATH})
 
       set(R_HOME_PATH ${CUSTOM_R_PATH})
+      message(CHECK_PASS "successful")
+      message(STATUS "Using a custom R installation, ${R_HOME_PATH}")
+
+    else()
+
+      message(CHECK_FAIL "unsuccessful")
+      message(FATAL_ERROR "${CUSTOM_R_PATH} does not exist.")
 
     endif()
 
@@ -506,6 +515,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   endif()
 
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
+  set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
 
@@ -552,7 +562,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
     execute_process(
       ERROR_QUIET OUTPUT_QUIET
-      COMMAND R --slave --no-restore --no-save
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)

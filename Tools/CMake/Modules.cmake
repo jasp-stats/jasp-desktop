@@ -70,16 +70,20 @@ list(REVERSE JASP_EXTRA_MODULES)
 set(JASP_EXTRA_MODULES_COPY ${JASP_EXTRA_MODULES})
 list(POP_FRONT JASP_EXTRA_MODULES_COPY)
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-  if(LINUX_LOCAL_BUILD)
-    set(jags_HOME ${R_OPT_PATH}/jags)
+if("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES)
+  if((CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux"))
+    if(LINUX_LOCAL_BUILD)
+      set(jags_HOME ${R_OPT_PATH}/jags)
+    else()
+      # Flatpak
+      set(jags_HOME /usr)
+    endif()
   else()
-    # Flatpak
-    set(jags_HOME /usr)
+    # On macOS and Windows jags will live inside R.framework/ or R/
+    set(jags_HOME ${R_OPT_PATH}/jags)
   endif()
 else()
-  # On macOS and Windows jags will live inside R.framework/ or R/
-  set(jags_HOME ${R_OPT_PATH}/jags)
+  set(jags_HOME "")
 endif()
 message(STATUS "If necessary, 'jags' will be installed at ${jags_HOME}")
 
@@ -187,6 +191,7 @@ if(INSTALL_R_MODULES)
   add_custom_command(
     WORKING_DIRECTORY ${R_HOME_PATH}
     OUTPUT ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+    BYPRODUCTS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
     COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
             --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
     COMMAND
@@ -201,6 +206,7 @@ if(INSTALL_R_MODULES)
     WORKING_DIRECTORY ${R_HOME_PATH}
     DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
     OUTPUT ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+    BYPRODUCTS ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
     COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
             --file=${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
     COMMAND
@@ -216,6 +222,7 @@ if(INSTALL_R_MODULES)
     DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
             ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
     OUTPUT ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
+    BYPRODUCTS ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
     COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
             --file=${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
     COMMAND
@@ -253,6 +260,7 @@ if(INSTALL_R_MODULES)
         SIGNING=${IS_SIGNING} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
+                 ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
 
@@ -312,6 +320,7 @@ if(INSTALL_R_MODULES)
         SIGNING=${IS_SIGNING} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
+                 ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
                  ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMENT "------ Installing '${MODULE}'")
 

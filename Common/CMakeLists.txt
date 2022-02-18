@@ -64,32 +64,14 @@ endif()
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(
-    _LIB_R_PKG_CONFIG
-    # REQUIRED
-    IMPORTED_TARGET libR)
-
-  # I think we need to deduct most information about R using the
-  # PkgConfig but for now, I'm doing it as minimal as possible
-  # to keep it consistent to other platforms
-
-  # This is needed because we are including the Rcpp, and otherwise
-  # Rcpp cannot find R's headers
-  target_include_directories(Common PUBLIC ${_LIB_R_PKG_CONFIG_INCLUDE_DIRS}
-                                           /usr/include /usr/include/R)
-
   find_library(
     _LIB_RT
     NAMES rt
-    PATHS /usr/lib /usr/lib32 /usr/lib64
+    PATHS /usr/lib64 /usr/lib32 /usr/lib
     NO_DEFAULT_PATH NO_CACHE)
 
   target_link_libraries(Common PUBLIC ${_LIB_RT})
-  target_link_options(
-    Common
-    PUBLIC
-    -lrt)
+  target_link_options(Common PUBLIC -lrt)
 
 endif()
 
@@ -100,6 +82,7 @@ target_include_directories(
          # JASP
          jaspColumnEncoder
          # R
+         ${R_INCLUDE_PATH}
          ${R_HOME_PATH}/include
          ${RCPP_PATH}/include
          # Conan
@@ -118,7 +101,6 @@ target_link_libraries(
          Boost::chrono
          # Conan
          # LibArchive::LibArchive
-         # /usr/lib64/librt.so
          # ${LIBJSONCPP_LINK_LIBRARIES}
          # ${CONAN_LIBS_libarchive}
          # ${CONAN_LIBS_jsoncpp}

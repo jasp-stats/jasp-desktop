@@ -35,7 +35,7 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Dependencies)
 
 # Adding caching for CPM, this is going to be useful later that we
 # want to have CI builds on GitHub, see here: https://github.com/cpm-cmake/CPM.cmake/wiki/Caching-with-CPM.cmake-and-ccache-on-GitHub-Actions
-# set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/CPM)
+set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/CPM)
 
 add_custom_target(Dependencies)
 
