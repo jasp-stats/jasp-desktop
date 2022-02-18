@@ -12,7 +12,10 @@ project(
 include(FetchContent)
 include(ExternalProject)
 include(CMakePrintHelpers)
-include(Tools/cmake/CPM.cmake)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Tools/cmake")
+
+include(CPM)
 
 include(Checks.cmake)
 
@@ -88,6 +91,33 @@ set(CUSTOM_R_PATH
     ""
     CACHE PATH "Path to your custom R installation" FORCE)
 
+# With this, we can hit up to 90% speed up!
+option(USE_CCACHE "Whether to use ccache for build" OFF)
+option(RUN_IWYU "Whether to run Include What You Use" OFF)
+option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" ON)
+option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
+option(GIT_SUBMODULE "Check submodules during build" ON)
+option(
+  INSTALL_JASP_REQUIRED_LIBRARIES
+  "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
+  OFF)
+option(BUILD_TESTS "Whether to build the test suits" OFF)
+option(LINUX_LOCAL_BUILD "Whether we are building inside the Build folder" OFF)
+option(FLATPAK_USED "Whether we are building for Flatpak" OFF)
+
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+  set(FLATPAK_USED ON)
+endif()
+
+if(LINUX_LOCAL_BUILD)
+  set(FLATPAK_USED OFF)
+  message(STATUS "JASP will be configured for local testing")
+  message(
+    WARNING
+      "In this mode, JASP configures a local R/library; however this cannot be used for installing JASP. If you wish to install JASP (e.g., on Flatpak), you must diabled this flag."
+  )
+endif()
+
 # Sets the build options
 include(JASP.cmake)
 
@@ -127,33 +157,6 @@ set(CMAKE_AUTOUIC ON)
 # this and build it for two architectures. This will also download
 # the correct R.framework
 # set(CMAKE_OSX_ARCHITECTURES "x86_64" "arm64")
-
-# With this, we can hit up to 90% speed up!
-option(USE_CCACHE "Whether to use ccache for build" OFF)
-option(RUN_IWYU "Whether to run Include What You Use" OFF)
-option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" ON)
-option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
-option(GIT_SUBMODULE "Check submodules during build" ON)
-option(
-  INSTALL_JASP_REQUIRED_LIBRARIES
-  "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
-  OFF)
-option(BUILD_TESTS "Whether to build the test suits" OFF)
-option(LINUX_LOCAL_BUILD "Whether we are building inside the Build folder" OFF)
-option(FLATPAK_USED "Whether we are building for Flatpak" OFF)
-
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-  set(FLATPAK_USED ON)
-endif()
-
-if(LINUX_LOCAL_BUILD)
-  set(FLATPAK_USED OFF)
-  message(STATUS "JASP will be configured for local testing")
-  message(
-    WARNING
-      "In this mode, JASP configures a local R/library; however this cannot be used for installing JASP. If you wish to install JASP (e.g., on Flatpak), you must diabled this flag."
-  )
-endif()
 
 if(INSTALL_R_MODULES AND (GITHUB_PAT STREQUAL ""))
   message(
