@@ -62,33 +62,35 @@ if(INSTALL_JASP_REQUIRED_LIBRARIES)
   add_dependencies(Common jsoncpp-install)
 endif()
 
-
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(
     _LIB_R_PKG_CONFIG
-    REQUIRED
-    IMPORTED_TARGET
-    libR)
+    # REQUIRED
+    IMPORTED_TARGET libR)
 
   # I think we need to deduct most information about R using the
-  # PkgConfig but for now, I'm doing it as minimal as possible 
+  # PkgConfig but for now, I'm doing it as minimal as possible
   # to keep it consistent to other platforms
 
   # This is needed because we are including the Rcpp, and otherwise
   # Rcpp cannot find R's headers
-  target_include_directories(Common
-    PUBLIC ${_LIB_R_PKG_CONFIG_INCLUDE_DIRS})
+  target_include_directories(Common PUBLIC ${_LIB_R_PKG_CONFIG_INCLUDE_DIRS}
+                                           /usr/include /usr/include/R)
 
-
-  find_library(_LIB_RT
+  find_library(
+    _LIB_RT
     NAMES rt
-    PATHS /usr/lib
+    PATHS /usr/lib /usr/lib32 /usr/lib64
     NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
-  target_link_libraries(Common PUBLIC
-      ${_LIB_RT})
+  target_link_libraries(Common PUBLIC ${_LIB_RT})
+  target_link_options(
+    Common
+    PUBLIC
+    rt
+    "-lrt")
 
 endif()
 

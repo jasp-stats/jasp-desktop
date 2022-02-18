@@ -15,21 +15,20 @@ find_package(
 
 add_library(R-Interface ${HEADER_FILES} ${SOURCE_FILES})
 
-
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(
     _LIB_R_PKG_CONFIG
-    REQUIRED
-    IMPORTED_TARGET
-    libR)
+    # REQUIRED
+    IMPORTED_TARGET libR)
 
   # I think we need to deduct most information about R using the
-  # PkgConfig but for now, I'm doing it as minimal as possible 
+  # PkgConfig but for now, I'm doing it as minimal as possible
   # to keep it consistent to other platforms
-  target_include_directories(R-Interface
-    PUBLIC ${_LIB_R_PKG_CONFIG_INCLUDE_DIRS})
+  target_include_directories(
+    R-Interface PUBLIC ${_LIB_R_PKG_CONFIG_INCLUDE_DIRS} /usr/include
+                       /usr/include/R)
 
 endif()
 
@@ -79,7 +78,7 @@ if(WIN32)
            WIN32_LEAN_AND_MEAN)
   # target_compile_options(R-Interface -Og -municode)
 elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-  
+
 endif()
 
 # Amir: There are some auxillary files here, and I guess I will take care of

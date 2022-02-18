@@ -49,12 +49,11 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(
     _LIB_R_PKG_CONFIG
-    REQUIRED
-    IMPORTED_TARGET
-    libR)
+    # REQUIRED
+    IMPORTED_TARGET libR)
 
-  target_link_libraries(R-Interface
-    PUBLIC ${_LIB_R_PKG_CONFIG_LIBRARIES})
+  target_link_libraries(R-Interface PUBLIC ${_LIB_R_PKG_CONFIG_LIBRARIES}
+                                           usr/include usr/include/R)
 
 endif()
 
@@ -64,41 +63,42 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 add_executable(JASPEngine ${HEADER_FILES} ${SOURCE_FILES})
 
-if (NOT WIN32)
+if(NOT WIN32)
   add_dependencies(JASPEngine R-Interface)
 endif()
 
-target_include_directories(JASPEngine PUBLIC ${CONAN_INCLUDE_DIRS_JSONCPP}
-                                             ${PROJECT_SOURCE_DIR}/R-Interface
-                                             ${PROJECT_SOURCE_DIR}/Common)
-
-if (NOT WIN32)
-target_link_libraries(
+target_include_directories(
   JASPEngine
-  PUBLIC Common # includes jsoncpp, libarchive
-         R-Interface
-         #
-         Boost::nowide
-         Boost::filesystem
-         Boost::system
-         Boost::date_time
-         Boost::timer
-         Boost::chrono
-         # System
-         LibArchive::LibArchive)
+  PUBLIC ${CONAN_INCLUDE_DIRS_JSONCPP} ${PROJECT_SOURCE_DIR}/R-Interface
+         ${PROJECT_SOURCE_DIR}/Common)
+
+if(NOT WIN32)
+  target_link_libraries(
+    JASPEngine
+    PUBLIC Common # includes jsoncpp, libarchive
+           R-Interface
+           #
+           Boost::nowide
+           Boost::filesystem
+           Boost::system
+           Boost::date_time
+           Boost::timer
+           Boost::chrono
+           # System
+           LibArchive::LibArchive)
 else()
   target_link_libraries(
-  JASPEngine
-  PUBLIC Common # includes jsoncpp, libarchive
-         #
-         Boost::nowide
-         Boost::filesystem
-         Boost::system
-         Boost::date_time
-         Boost::timer
-         Boost::chrono
-         # System
-         LibArchive::LibArchive)
+    JASPEngine
+    PUBLIC Common # includes jsoncpp, libarchive
+           #
+           Boost::nowide
+           Boost::filesystem
+           Boost::system
+           Boost::date_time
+           Boost::timer
+           Boost::chrono
+           # System
+           LibArchive::LibArchive)
 endif()
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)
