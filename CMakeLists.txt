@@ -72,16 +72,6 @@ if(WIN32)
   endif()
 endif()
 
-# if(UNIX)
-
-#   file(
-#     CHMOD
-#     ${CMAKE_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-#     PERMISSIONS
-#     OWNER_EXECUTE)
-
-# endif()
-
 # This looks weird but CMake doesn't like ON/OFF in the if condition,
 # especially if it's passed
 option(SIGN_AT_BUILD_TIME

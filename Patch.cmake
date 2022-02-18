@@ -168,11 +168,11 @@ else()
 
       if(${SIGNING})
 
-        message(CHECK_START "-------- Signing ${FILE}")
-
         set(SIGNING_RESULT "timeout")
 
         while((${SIGNING_RESULT} STREQUAL "timeout"))
+
+          message(CHECK_START "-------- Signing ${FILE}")
 
           execute_process(
             # COMMAND_ECHO STDOUT
@@ -186,7 +186,7 @@ else()
 
         endwhile()
 
-        message(CHECK_PASS "successful")
+        message(CHECK_PASS "signed")
 
       endif()
 
