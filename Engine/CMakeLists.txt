@@ -53,7 +53,7 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     IMPORTED_TARGET libR)
 
   target_link_libraries(R-Interface PUBLIC ${_LIB_R_PKG_CONFIG_LIBRARIES}
-                                           usr/include usr/include/R)
+                                           ${_LIB_R})
 
 endif()
 
@@ -158,8 +158,9 @@ elseif(WIN32)
 
 elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
-  # target_link_libraries(JASPEngine
+  # target_link_options(JASPEngine
   # PUBLIC rt)
+  # target_link_libraries(JASPEngine PUBLIC "-lrt")
 
 endif()
 

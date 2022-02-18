@@ -83,14 +83,13 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     _LIB_RT
     NAMES rt
     PATHS /usr/lib /usr/lib32 /usr/lib64
-    NO_DEFAULT_PATH NO_CACHE REQUIRED)
+    NO_DEFAULT_PATH NO_CACHE)
 
   target_link_libraries(Common PUBLIC ${_LIB_RT})
   target_link_options(
     Common
     PUBLIC
-    rt
-    "-lrt")
+    -lrt)
 
 endif()
 
