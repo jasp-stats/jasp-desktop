@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-02-08 08:01+0000\n"
-"Last-Translator: JASP Stats <b.boutin@uva.nl>\n"
+"PO-Revision-Date: 2022-02-16 10:54+0000\n"
+"Last-Translator: Jordy STEFAN <jordy.stefan@askoria.eu>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "fr/>\n"
 "Language: fr\n"
@@ -573,7 +573,7 @@ msgstr "Définir la colonne par glisser-déposer des formules"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr ""
+msgstr "Échelle"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
@@ -889,6 +889,10 @@ msgid ""
 "'scale'.\n"
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
+"Numéro de seuil d'entiers uniques avant de classer une variable comme "
+"«échelle».\n"
+"Vous devez recharger vos données pour prendre effet ! Consultez l'aide pour "
+"plus d'informations."
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
@@ -1147,6 +1151,7 @@ msgstr "Modulo : renvoie le reste d'une division. 3%2 renvoie 1"
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
 msgstr ""
+"renvoie des valeurs logiques et peut être la racine d'une formule de filtre"
 
 #, qt-format
 msgctxt "OperatorSelector|"
@@ -1228,7 +1233,7 @@ msgstr "Modulo : renvoie le reste d'une division. 3%2 renvoie 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr ""
+msgstr "renvoie des logiques"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
@@ -1574,7 +1579,7 @@ msgstr "Répétabilité"
 
 msgctxt "SetSeed|"
 msgid "Set seed:"
-msgstr ""
+msgstr "Mettre la graine :"
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
@@ -1610,7 +1615,7 @@ msgstr "Cauchy"
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr ""
+msgstr "échelle"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
@@ -1622,7 +1627,7 @@ msgstr "emplacement :"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr ""
+msgstr "échelle :"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
@@ -1646,7 +1651,7 @@ msgstr "df :"
 
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
-msgstr ""
+msgstr "Taille de l'effet brut (Dienes)"
 
 msgctxt "SubjectivePriors|"
 msgid "Uniform"
@@ -1854,11 +1859,11 @@ msgstr "Résultat"
 
 msgctxt "AnalysisForm|"
 msgid "Output"
-msgstr ""
+msgstr "Sortie"
 
 msgctxt "AnalysisForm|"
 msgid "Input"
-msgstr ""
+msgstr "Entrée"
 
 msgctxt "JASPControl|"
 msgid "Option"
@@ -1898,7 +1903,7 @@ msgstr "ComboBox"
 
 msgctxt "JASPControl|"
 msgid "Input ListView"
-msgstr ""
+msgstr "Liste d'entrée"
 
 msgctxt "JASPControl|"
 msgid "TableView"
@@ -1926,7 +1931,7 @@ msgstr "Liste des composants"
 
 msgctxt "JASPControl|"
 msgid "Group Box"
-msgstr ""
+msgstr "Boîte de groupe"
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
@@ -2006,7 +2011,7 @@ msgstr "Le '"
 
 msgctxt "ColumnsModel|"
 msgid "'-column "
-msgstr ""
+msgstr "'-colonne "
 
 #, qt-format
 msgctxt "FileEvent|"
@@ -2098,7 +2103,7 @@ msgstr "Erreur lors du redimensionnement du graphique"
 
 msgctxt "ColumnTypesModel|"
 msgid "Scale"
-msgstr ""
+msgstr "Échelle"
 
 msgctxt "ColumnTypesModel|"
 msgid "Ordinal"
@@ -2198,6 +2203,9 @@ msgid ""
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
+"Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;"
+"Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
+"PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2524,7 +2532,7 @@ msgstr " en cours"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr ""
+msgstr "Effondrer"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
@@ -2778,7 +2786,7 @@ msgstr "Dossier"
 
 msgctxt "OSF|"
 msgid "Login"
-msgstr ""
+msgstr "S'identifier"
 
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
@@ -3608,7 +3616,7 @@ msgstr "Variables"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "Séparation"
 
 msgctxt "KnownIssues|"
 msgid ""
