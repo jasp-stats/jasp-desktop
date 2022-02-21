@@ -363,11 +363,6 @@ if(INSTALL_R_MODULES)
       # - You can run `make jags-build` or `make jags-install` to just play with JAGS target
       #
 
-      find_package(BISON)
-      if(NOT BISON_FOUND)
-        message(FATAL_ERROR "GNU Bison is required for building 'jags'")
-      endif()
-
       if(NOT EXISTS ${jags_HOME})
         make_directory(${jags_HOME})
       endif()

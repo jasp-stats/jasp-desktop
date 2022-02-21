@@ -49,6 +49,32 @@ find_package(
              QuickWidgets
              Core5Compat)
 
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+
+  find_library(
+    _LIB_RT
+    NAMES rt
+    PATHS /usr/lib64
+          /usr/lib
+          /usr/lib32
+          NO_CACHE)
+
+  target_link_libraries(Common PUBLIC ${_LIB_RT})
+  target_link_options(Common PUBLIC -lrt)
+
+endif()
+
+if(APPLE)
+
+  message(CHECK_START "Looking for 'libbrotlicommon'")
+
+  find_library(_LIB_BROTLICOMMON NAMES brotlicommon REQUIRED)
+
+  message(CHECK_PASS "found")
+  message(STATUS "  ${_LIB_BROTLICOMMON}")
+
+endif()
+
 if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
 
   pkg_check_modules(

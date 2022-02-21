@@ -75,6 +75,15 @@ if(APPLE)
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
 
+  # I had to do this manually, since `macdeployqt` misses it.
+  # See here: https://bugreports.qt.io/browse/QTBUG-100686
+  #
+  # Feel free to remove it when the bug is fixed
+  install(
+    FILES ${_LIB_BROTLICOMMON}
+    DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}
+    COMPONENT jaspCore)
+
   install(
     DIRECTORY ${MODULES_BINARY_PATH}/
     DESTINATION ${JASP_INSTALL_MODULEDIR}
