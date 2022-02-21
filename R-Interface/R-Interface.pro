@@ -40,7 +40,6 @@ SOURCES += \
     RInside/RInside.cpp \
     jaspResults/src/jaspHtml.cpp \
     jaspResults/src/jaspObject.cpp \
-    jaspResults/src/jaspJson.cpp \
     jaspResults/src/jaspContainer.cpp \
     jaspResults/src/jaspPlot.cpp \
     jaspResults/src/jaspResults.cpp \
@@ -61,7 +60,6 @@ HEADERS += \
     RInside/RInsideEnvVars.h \
     jaspResults/src/jaspHtml.h \
     jaspResults/src/jaspObject.h \
-    jaspResults/src/jaspJson.h \
     jaspResults/src/jaspList.h \
     jaspResults/src/jaspContainer.h \
     jaspResults/src/jaspPlot.h \
