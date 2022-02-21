@@ -168,7 +168,11 @@ externalproject_add(
              -DCMAKE_BINARY_DIR=<DOWNLOAD_DIR>/jsoncpp-install)
 
 externalproject_get_property(jsoncpp DOWNLOAD_DIR)
+externalproject_get_property(jsoncpp INSTALL_DIR)
+
 set(jsoncpp_DOWNLOAD_DIR ${DOWNLOAD_DIR})
+set(jsoncpp_INSTALL_DIR ${INSTALL_DIR})
+
 set(jsoncpp_INCLUDE_DIRS ${jsoncpp_DOWNLOAD_DIR}/jsoncpp-install/include)
 set(jsoncpp_LIBRARY_DIRS ${jsoncpp_DOWNLOAD_DIR}/jsoncpp-install/lib)
 
@@ -192,9 +196,15 @@ externalproject_add(
   INSTALL_COMMAND ${MAKE} install)
 
 externalproject_get_property(readstat DOWNLOAD_DIR)
+externalproject_get_property(readstat INSTALL_DIR)
+
 set(readstat_DOWNLOAD_DIR ${DOWNLOAD_DIR})
-set(readstat_BUILD_DIR ${readstat_DOWNLOAD_DIR}/readstat-build)
+set(readstat_INSTALL_DIR ${INSTALL_DIR})
+
 set(readstat_INCLUDE_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/include)
 set(readstat_LIBRARY_DIRS ${readstat_DOWNLOAD_DIR}/readstat-install/lib)
+
+unset(DOWNLOAD_DIR)
+unset(INSTALL_DIR)
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

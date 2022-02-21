@@ -3,41 +3,7 @@ list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
 list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
-set(Boost_USE_STATIC_LIBS ON)
-find_package(
-  Boost REQUIRED
-  COMPONENTS nowide
-             filesystem
-             system
-             date_time
-             timer
-             chrono)
-
 add_library(R-Interface ${HEADER_FILES} ${SOURCE_FILES})
-
-if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
-
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(
-    LIBJSONCPP
-    REQUIRED
-    IMPORTED_TARGET
-    jsoncpp)
-
-else()
-
-  # find_library(
-  #   LIBJSONCPP REQUIRED
-  #   NAMES jsoncpp
-  #   HINTS ${jsoncpp_LIBRARY_DIRS})
-
-  # WARNING: This is not the way to do it, and it does not work with Ninja :\
-
-  set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
-  set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
-  set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
-
-endif()
 
 target_include_directories(
   R-Interface

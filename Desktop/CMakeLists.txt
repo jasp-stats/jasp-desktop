@@ -1,89 +1,5 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
-find_package(ZLIB REQUIRED)
-find_package(Iconv REQUIRED)
-
-find_package(LibArchive)
-if(NOT LibArchive_FOUND)
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(
-    LibArchive
-    REQUIRED
-    IMPORTED_TARGET
-    libarchive)
-endif()
-
-# find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
-
-find_package(
-  Boost REQUIRED
-  COMPONENTS nowide
-             filesystem
-             system
-             date_time
-             timer
-             chrono)
-
-find_package(
-  Qt6 REQUIRED
-  COMPONENTS Core
-             Gui
-             OpenGL
-             Widgets
-             Qml
-             WebEngineQuick
-             WebChannel
-             Svg
-             Network
-             PrintSupport
-             Xml
-             DBus
-             QuickTemplates2
-             Quick
-             QuickLayouts
-             QuickControls2
-             QuickControls2Impl
-             QmlWorkerScript
-             QuickWidgets
-             Core5Compat)
-
-if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
-
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(
-    LIBJSONCPP
-    REQUIRED
-    IMPORTED_TARGET
-    jsoncpp)
-
-  pkg_check_modules(
-    LIBREADSTAT
-    REQUIRED
-    IMPORTED_TARGET
-    readstat)
-
-else()
-
-  #   # find_library(
-  #   #   LIBJSONCPP REQUIRED
-  #   #   NAMES jsoncpp
-  #   #   HINTS ${jsoncpp_LIBRARY_DIRS})
-
-  #   # WARNING: This is not the way to do it, and it does not work with Ninja :\
-
-  # jsoncpp
-  set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
-  set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
-  set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
-
-  # readstat
-  set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
-  set(LIBREADSTAT_LIBRARY_DIRS ${readstat_LIBRARY_DIRS})
-  set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT_LIBRARY_DIRS}/libreadstat.a)
-
-  # endif()
-endif()
-
 # TODO:
 #
 # - [ ] There is not much to configure here, CMake takes care of the
@@ -230,41 +146,41 @@ target_include_directories(
 # if(UNIX)
 
 target_link_libraries(
-JASP
-PUBLIC
-  Common
-  Qt::Core
-  Qt::Gui
-  Qt::OpenGL
-  Qt::Widgets
-  Qt::Qml
-  Qt::WebEngineQuick
-  Qt::WebChannel
-  Qt::Svg
-  Qt::Network
-  Qt::PrintSupport
-  Qt::Xml
-  Qt::Quick
-  Qt::QuickLayouts
-  Qt::QuickControls2
-  Qt::QuickControls2Impl
-  Qt::QuickWidgets
-  Qt::Core5Compat
-  Qt::QuickTemplates2
-  Qt::DBus
-  Qt::QmlWorkerScript
-  # OpenSSL::SSL
-  # OpenSSL::Crypto
-  # System
-  $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
-  $<$<BOOL:${USE_CONAN}>:CONAN_PKG::zlib>
-  $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
-  # Based on our config, this is either from PkgConfig, or the build/_deps/
-  ${LIBREADSTAT_LINK_LIBRARIES}
-  # System
-  ${Iconv_LIBRARIES}
-  ${ZLIB_LIBRARIES} # Needed for libreadstat.a
-  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
+  JASP
+  PUBLIC
+    Common
+    Qt::Core
+    Qt::Gui
+    Qt::OpenGL
+    Qt::Widgets
+    Qt::Qml
+    Qt::WebEngineQuick
+    Qt::WebChannel
+    Qt::Svg
+    Qt::Network
+    Qt::PrintSupport
+    Qt::Xml
+    Qt::Quick
+    Qt::QuickLayouts
+    Qt::QuickControls2
+    Qt::QuickControls2Impl
+    Qt::QuickWidgets
+    Qt::Core5Compat
+    Qt::QuickTemplates2
+    Qt::DBus
+    Qt::QmlWorkerScript
+    # OpenSSL::SSL
+    # OpenSSL::Crypto
+    # System
+    $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
+    $<$<BOOL:${USE_CONAN}>:CONAN_PKG::zlib>
+    $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
+    # Based on our config, this is either from PkgConfig, or the build/_deps/
+    ${LIBREADSTAT_LINK_LIBRARIES}
+    # System
+    ${Iconv_LIBRARIES}
+    ${ZLIB_LIBRARIES} # Needed for libreadstat.a
+    $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 
 # elseif(WIN32)
 #   # As far as I understood, on Windows we don't need to do a lot.
@@ -274,17 +190,15 @@ PUBLIC
 
 # endif()
 
-# Amir: All these single if's can be written using the 
+# Amir: All these single if's can be written using the
 #       generator expressions but since debugging those
 #       isn't trivial, I don't want to do it now
 if(LINUX_LOCAL_BUILD)
-  target_compile_definitions(JASP PUBLIC
-    LINUX_LOCAL_BUILD)
+  target_compile_definitions(JASP PUBLIC LINUX_LOCAL_BUILD)
 endif()
 
 if(FLATPAK_USED)
-  target_compile_definitions(JASP PUBLIC
-    FLATPAK_USED)
+  target_compile_definitions(JASP PUBLIC FLATPAK_USED)
 endif()
 
 # Amir:

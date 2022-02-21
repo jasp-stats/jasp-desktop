@@ -1,49 +1,5 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
 
-find_package(LibArchive)
-if(NOT LibArchive_FOUND)
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(
-    LibArchive
-    REQUIRED
-    IMPORTED_TARGET
-    libarchive)
-endif()
-
-set(Boost_USE_STATIC_LIBS ON)
-find_package(
-  Boost REQUIRED
-  COMPONENTS nowide
-             filesystem
-             system
-             date_time
-             timer
-             chrono)
-
-if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
-
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(
-    LIBJSONCPP
-    REQUIRED
-    IMPORTED_TARGET
-    jsoncpp)
-
-else()
-
-  # find_library(
-  #   LIBJSONCPP REQUIRED
-  #   NAMES jsoncpp
-  #   HINTS ${jsoncpp_LIBRARY_DIRS})
-
-  # WARNING: This is not the way to do it, and it does not work with Ninja :\
-
-  set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
-  set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
-  set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
-
-endif()
-
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
   target_link_libraries(R-Interface PUBLIC ${_LIB_R})

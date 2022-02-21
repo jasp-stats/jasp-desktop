@@ -53,16 +53,18 @@ include(CPM)
 
 include(Checks)
 
-include(Config)
-
-include(JASP)
-
-include(R)
-
 # Builds and configures all the dependencies
 if(INSTALL_JASP_REQUIRED_LIBRARIES)
   include(Dependencies)
 endif()
+
+include(Config)
+
+include(Libraries)
+
+include(JASP)
+
+include(R)
 
 # This loads all the Qt-related CMake Modules.
 find_package(Qt6 REQUIRED COMPONENTS Core)
