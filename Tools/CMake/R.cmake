@@ -283,7 +283,7 @@ if(APPLE)
             "Installing the 'RInside' and 'Rcpp' within the R.framework")
 
     file(WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-         "install.packages('RInside', repos='${R_REPOSITORY}')")
+         "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}')")
 
     execute_process(
       # COMMAND_ECHO STDOUT
@@ -430,7 +430,7 @@ elseif(WIN32)
     message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
     file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
-         "install.packages('RInside', repos='${R_REPOSITORY}')")
+         "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}')")
 
     execute_process(
       # COMMAND_ECHO STDOUT
