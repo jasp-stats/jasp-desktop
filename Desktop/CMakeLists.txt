@@ -24,6 +24,9 @@ endif()
 # We can technically use these two lines to grab all *.h, and *.cpp files
 # but it think there are unused files.
 
+configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h.in ${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h)
+message(STATUS "appdirs.h is successfully generated...")
+
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 list(REMOVE_ITEM HEADER_FILES
      ${CMAKE_CURRENT_LIST_DIR}/data/exporters/odsexporter.h)

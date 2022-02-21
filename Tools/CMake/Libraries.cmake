@@ -51,6 +51,7 @@ find_package(
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
+  message(CHECK_START "Looking for `librt`")
   find_library(
     _LIB_RT
     NAMES rt
@@ -59,7 +60,7 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
           /usr/lib32
           NO_CACHE)
 
-  if (_LIB_RT_FOUND)
+  if (_LIB_RT)
     message(CHECK_PASS "found")
     message(STATUS "  ${_LIB_RT}")
   else()
@@ -75,7 +76,7 @@ if(APPLE)
 
   find_library(_LIB_BROTLICOMMON NAMES brotlicommon)
 
-  if (_LIB_BROTLICOMMON_FOUND)
+  if (_LIB_BROTLICOMMON)
     message(CHECK_PASS "found")
     message(STATUS "  ${_LIB_BROTLICOMMON}")
   else()

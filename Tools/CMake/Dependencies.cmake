@@ -177,7 +177,11 @@ set(jsoncpp_INCLUDE_DIRS ${jsoncpp_DOWNLOAD_DIR}/jsoncpp-install/include)
 set(jsoncpp_LIBRARY_DIRS ${jsoncpp_DOWNLOAD_DIR}/jsoncpp-install/lib)
 
 # ----- readstat -----
-
+#
+# I'm aware of the issue that CMake tries to configure readstat everytime
+# it wants to build. This doesn't intiate the build, but it's still very
+# annoying, but I let it be for now, because I want to deal with ReadStat
+# in a different way
 externalproject_add(
   readstat
   PREFIX _deps/readstat
