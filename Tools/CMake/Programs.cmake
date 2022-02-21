@@ -1,3 +1,5 @@
+list(APPEND CMAKE_MESSAGE_CONTEXT Programs)
+
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
   message(CHECK_START "Looking for 'gfortran'")
@@ -67,3 +69,5 @@ if(NOT WIN32)
   find_program(IWYU_EXECUTABLE NAMES include-what-you-use)
 
 endif()
+
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)

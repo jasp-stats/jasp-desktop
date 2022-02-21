@@ -66,9 +66,7 @@ include(JASP)
 
 include(R)
 
-# This loads all the Qt-related CMake Modules.
-find_package(Qt6 REQUIRED COMPONENTS Core)
-
+# These tell Qt to do its things
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
