@@ -515,9 +515,26 @@ elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   endif()
 
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
-  set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+
+  message(CHECK_START "Looking for R.h")
+  set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
+  if(NOT EXISTS ${R_INCLUDE_PATH})
+    find_file(_R_H
+      NAMES R.h
+      PATHS /usr/include
+      /usr/include/R)
+
+    if(_R_H)
+      get_filename_component(R_INCLUDE_PATH ${_R_H} DIRECTORY)
+      message(CHECK_PASS "found")
+      message("  ${_R_H}")
+    else()
+      message(CHECK_FAIL "not found")
+      message(FATAL_ERROR "R.h is necessary for building R-Interface library.")
+    endif()
+  endif()
 
   # This makes sure that `install.packages()` command be called with the right
   # lib paths in case we are installing locally.

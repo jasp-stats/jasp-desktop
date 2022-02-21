@@ -59,8 +59,13 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
           /usr/lib32
           NO_CACHE)
 
-  target_link_libraries(Common PUBLIC ${_LIB_RT})
-  target_link_options(Common PUBLIC -lrt)
+  if (_LIB_RT_FOUND)
+    message(CHECK_PASS "found")
+    message(STATUS "  ${_LIB_RT}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(FATAL_ERROR "librt is required for building libCommon on Linux")
+  endif()
 
 endif()
 
@@ -68,10 +73,15 @@ if(APPLE)
 
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
-  find_library(_LIB_BROTLICOMMON NAMES brotlicommon REQUIRED)
+  find_library(_LIB_BROTLICOMMON NAMES brotlicommon)
 
-  message(CHECK_PASS "found")
-  message(STATUS "  ${_LIB_BROTLICOMMON}")
+  if (_LIB_BROTLICOMMON_FOUND)
+    message(CHECK_PASS "found")
+    message(STATUS "  ${_LIB_BROTLICOMMON}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(FATAL_ERROR "libbrotli is required for creating the DMG file. ")
+  endif()
 
 endif()
 
