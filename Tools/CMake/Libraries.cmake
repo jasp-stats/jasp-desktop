@@ -1,14 +1,15 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Libraries)
 
-find_package(PkgConfig REQUIRED)
+if(NOT WIN32)
+  find_package(PkgConfig REQUIRED)
+endif()
 
 find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
 # find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
 find_package(LibArchive)
-if(NOT LibArchive_FOUND)
-  find_package(PkgConfig REQUIRED)
+if((NOT LibArchive_FOUND) AND (NOT WIN32))
   pkg_check_modules(
     LibArchive
     REQUIRED
@@ -86,7 +87,7 @@ if(APPLE)
 
 endif()
 
-if(NOT INSTALL_JASP_REQUIRED_LIBRARIES)
+if((NOT INSTALL_JASP_REQUIRED_LIBRARIES) AND (NOT WIN32))
 
   pkg_check_modules(
     LIBJSONCPP

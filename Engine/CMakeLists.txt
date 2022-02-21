@@ -18,8 +18,11 @@ endif()
 
 target_include_directories(
   JASPEngine
-  PUBLIC ${CONAN_INCLUDE_DIRS_JSONCPP} ${PROJECT_SOURCE_DIR}/R-Interface
-         ${PROJECT_SOURCE_DIR}/Common)
+  PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
+         ${PROJECT_SOURCE_DIR}/Common
+         # Conan
+         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_BOOST}>
+         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>)
 
 target_link_libraries(
   JASPEngine
@@ -33,9 +36,10 @@ target_link_libraries(
          $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::timer>
          $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::chrono>
          # Conan
-         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_BOOST}>
+         $<$<BOOL:${USE_CONAN}>:CONAN_PKG::boost>
+         $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libarchive>
          # System
-         LibArchive::LibArchive)
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:LibArchive::LibArchive>)
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)
   set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE

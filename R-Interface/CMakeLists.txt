@@ -57,6 +57,9 @@ if (WIN32)
            Boost::chrono
            # CPM/CMake
            ${LIBJSONCPP_LINK_LIBRARIES}
+           # Conan
+           $<$<BOOL:${USE_CONAN}>:CONAN_PKG::jsoncpp>
+           $<$<BOOL:${USE_CONAN}>:CONAN_PKG::boost>
            # R
            ${_LIB_RINSIDE}
            $<$<PLATFORM_ID:Linux>:${_LIB_R}>

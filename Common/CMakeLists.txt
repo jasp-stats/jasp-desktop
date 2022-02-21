@@ -51,8 +51,8 @@ target_link_libraries(
          $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libarchive>
          $<$<BOOL:${USE_CONAN}>:CONAN_PKG::boost>
          # CMake/PkgConfig/CPM
-         LibArchive::LibArchive
-         ${LIBJSONCPP_LINK_LIBRARIES}
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:LibArchive::LibArchive>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:${LIBJSONCPP_LINK_LIBRARIES}>
          # 
          $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 

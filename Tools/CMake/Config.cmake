@@ -5,12 +5,14 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 option(SIGN_AT_BUILD_TIME
        "Whether to sign every library during the configuration and build" ON)
 
-if(${SIGN_AT_BUILD_TIME})
-  message(STATUS "Signing everything during the configuration and building.")
-  set(IS_SIGNING 1)
-else()
-  message(STATUS "Only signing essential libraries and binaries.")
-  set(IS_SIGNING 0)
+if(APPLE)
+  if(${SIGN_AT_BUILD_TIME})
+    message(STATUS "Signing everything during the configuration and building.")
+    set(IS_SIGNING 1)
+  else()
+    message(STATUS "Only signing essential libraries and binaries.")
+    set(IS_SIGNING 0)
+  endif()
 endif()
 
 set(CUSTOM_R_PATH
@@ -85,21 +87,21 @@ endif()
 
 # In case Qt is not in path
 # NEEDS TESTING
-if(WIN32)
-  if(QTDIR
-     OR DEFINED ENV{QTDIR}
-     OR DEFINED ENV{QTDIR32}
-     OR DEFINED ENV{QTDIR64})
-    # Qt path set by user or env var
-  else()
-    set(QTDIR
-        ""
-        CACHE PATH "Path to Qt (e.g. C:/Qt/5.7/msvc2015_64)")
-    message(
-      WARNING
-        "QTDIR variable is missing.  Please set this variable to specify path to Qt (e.g. C:/Qt/5.7/msvc2015_64)"
-    )
-  endif()
-endif()
+# if(WIN32)
+#   if(QTDIR
+#      OR DEFINED $ENV{QTDIR}
+#      OR DEFINED $ENV{QTDIR32}
+#      OR DEFINED $ENV{QTDIR64})
+#     # Qt path set by user or env var
+#   else()
+#     set(QTDIR
+#         ""
+#         CACHE PATH "Path to Qt (e.g. C:/Qt/5.7/msvc2015_64)")
+#     message(
+#       WARNING
+#         "QTDIR variable is missing.  Please set this variable to specify path to Qt (e.g. C:/Qt/5.7/msvc2015_64)"
+#     )
+#   endif()
+# endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
