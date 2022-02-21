@@ -51,7 +51,7 @@ endif()
 
 include(CPM)
 
-include(Checks)
+include(Programs)
 
 # Builds and configures all the dependencies
 if(INSTALL_JASP_REQUIRED_LIBRARIES)
