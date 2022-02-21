@@ -52,6 +52,9 @@ endif()
 # I will consider turning this off, and letting Qt does it
 # when everything else worked properly
 option(USE_CONAN "Whether to use CONAN package manager" OFF)
+if(WIN32)
+  set(USE_CONAN ON)
+endif()
 
 if(INSTALL_R_MODULES AND (GITHUB_PAT STREQUAL ""))
   message(

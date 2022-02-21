@@ -1,16 +1,5 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
-# TODO:
-#
-# - [ ] There is not much to configure here, CMake takes care of the
-#       most variable, but for now, I keep it like this. When we are
-#       sure that things are working, we can just drop the `.template`
-# - [ ] If and when Xcode build works, we can use this in the Info.plist
-#       and let Xcode derives it based on our build setting.
-#
-# <key>LSMinimumSystemVersion</key>
-# <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
-
 if(APPLE)
   if(CMAKE_GENERATOR STREQUAL "Xcode")
     configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in
@@ -111,7 +100,7 @@ else()
     ${HEADER_FILES}
     ${SOURCE_FILES}
     ${BUNDLE_RESOURCES}
-    ${_R_Framework})
+    $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 
   if(IWYU_EXECUTABLE AND RUN_IWYU)
     set_target_properties(JASP PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
@@ -146,8 +135,6 @@ target_include_directories(
   JASP PUBLIC ${LIBREADSTAT_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/Common
               ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
-# if(UNIX)
-
 target_link_libraries(
   JASP
   PUBLIC
@@ -175,23 +162,15 @@ target_link_libraries(
     # OpenSSL::SSL
     # OpenSSL::Crypto
     # System
-    $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
     $<$<BOOL:${USE_CONAN}>:CONAN_PKG::zlib>
     $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
+    $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
     # Based on our config, this is either from PkgConfig, or the build/_deps/
     ${LIBREADSTAT_LINK_LIBRARIES}
     # System
     ${Iconv_LIBRARIES}
     ${ZLIB_LIBRARIES} # Needed for libreadstat.a
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
-
-# elseif(WIN32)
-#   # As far as I understood, on Windows we don't need to do a lot.
-#   # I only want to remove the _R_Framework explicitely. But, as we
-#   # progress that can be dealt with with a variable.
-# else() # Linux
-
-# endif()
 
 # Amir: All these single if's can be written using the
 #       generator expressions but since debugging those

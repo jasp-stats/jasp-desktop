@@ -46,10 +46,6 @@ set(JASP_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
 
 message(STATUS "Version: ${CMAKE_PROJECT_VERSION}")
 
-# Amir: We probably won't need them soon
-# option(JASP_LIBJSON_STATIC
-#        "Whether or not we are using the 'libjson' as static library?" OFF)
-
 # TODO:
 # - [ ] Rename all JASP related variables to `JASP_*`. This way,
 #       Qt Creator can categorize them nicely in its CMake configurator

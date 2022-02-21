@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
 
-set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
 
 project(
   JASP
@@ -8,6 +7,8 @@ project(
   LANGUAGES CXX C
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")
+
+set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,14 +18,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Tools/CMake")
 
-# - [ ] This needs to be removed. We don't necessary need it, and
-#       for now, it is here for testing
-# set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/Install)
-# message(STATUS ${CMAKE_INSTALL_PREFIX})
+# ------ Build Toolchain
 
-# When everything is done, we should be able to just activate
-# this and build it for two architectures. This will also download
-# the correct R.framework
 # set(CMAKE_OSX_ARCHITECTURES "x86_64" "arm64")
 
 # ------ CMake Modules
@@ -35,17 +30,7 @@ include(CMakePrintHelpers)
 
 # ------ Conan Dependency Manager
 
-if(WIN32 OR USE_CONAN)
-  set(QT_CREATOR_SKIP_CONAN_SETUP ON)
-
-  if(NOT EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                    COMMAND conan install ${CMAKE_SOURCE_DIR} --build=missing)
-  endif()
-
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-  conan_basic_setup(TARGETS)
-endif()
+include(Conan)
 
 # ------ JASP Config
 

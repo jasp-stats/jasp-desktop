@@ -21,34 +21,21 @@ target_include_directories(
   PUBLIC ${CONAN_INCLUDE_DIRS_JSONCPP} ${PROJECT_SOURCE_DIR}/R-Interface
          ${PROJECT_SOURCE_DIR}/Common)
 
-if(NOT WIN32)
-  target_link_libraries(
-    JASPEngine
-    PUBLIC Common # includes jsoncpp, libarchive
-           R-Interface
-           #
-           Boost::nowide
-           Boost::filesystem
-           Boost::system
-           Boost::date_time
-           Boost::timer
-           Boost::chrono
-           # System
-           LibArchive::LibArchive)
-else()
-  target_link_libraries(
-    JASPEngine
-    PUBLIC Common # includes jsoncpp, libarchive
-           #
-           Boost::nowide
-           Boost::filesystem
-           Boost::system
-           Boost::date_time
-           Boost::timer
-           Boost::chrono
-           # System
-           LibArchive::LibArchive)
-endif()
+target_link_libraries(
+  JASPEngine
+  PUBLIC Common
+         $<$<NOT:$<PLATFORM_ID:Windows>>:R-Interface>
+         #
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::nowide>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::filesystem>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::system>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::date_time>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::timer>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::chrono>
+         # Conan
+         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_BOOST}>
+         # System
+         LibArchive::LibArchive)
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)
   set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE

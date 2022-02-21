@@ -341,8 +341,6 @@ if(APPLE)
   endif()
 
 elseif(WIN32)
-  # TODO
-  #   - [ ] I can use the PATH to R/ as _R_framework and everything else should just work
 
   set(R_HOME_PATH "${CMAKE_BINARY_DIR}/R")
   set(R_BIN_PATH "${R_HOME_PATH}/bin")

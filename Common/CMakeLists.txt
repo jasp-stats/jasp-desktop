@@ -23,8 +23,7 @@ endif()
 
 target_include_directories(
   Common
-  PUBLIC ${LIBJSONCPP_INCLUDE_DIRS}
-         ${CONAN_INCLUDE_DIRS_libjson}
+  PUBLIC 
          # JASP
          jaspColumnEncoder
          # R
@@ -32,29 +31,29 @@ target_include_directories(
          ${R_HOME_PATH}/include
          ${RCPP_PATH}/include
          # Conan
-         ${CONAN_INCLUDE_DIRS_JSONCPP}
-         ${CONAN_INCLUDE_DIRS_LIBARCHIVE}
+         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>
+         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_LIBARCHIVE}>
+         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_BOOST}>
          #
+         ${LIBJSONCPP_INCLUDE_DIRS}
          ${Boost_INCLUDE_DIRS})
 
 target_link_libraries(
   Common
-  PUBLIC Boost::nowide
-         Boost::filesystem
-         Boost::system
-         Boost::date_time
-         Boost::timer
-         Boost::chrono
+  PUBLIC $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::nowide>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::filesystem>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::system>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::date_time>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::timer>
+         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::chrono>
          # Conan
-         # LibArchive::LibArchive
-         # ${LIBJSONCPP_LINK_LIBRARIES}
-         # ${CONAN_LIBS_libarchive}
-         # ${CONAN_LIBS_jsoncpp}
          $<$<BOOL:${USE_CONAN}>:CONAN_PKG::jsoncpp>
          $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libarchive>
+         $<$<BOOL:${USE_CONAN}>:CONAN_PKG::boost>
+         # CMake/PkgConfig/CPM
          LibArchive::LibArchive
          ${LIBJSONCPP_LINK_LIBRARIES}
-         # Only if JASP_USES_QT_HERE is ON
+         # 
          $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
 target_compile_definitions(
@@ -87,8 +86,5 @@ elseif(WIN32)
   #
   # target_link_libraries(Common PUBLIC ole32 oleaut32)
 endif()
-
-# I'm leaving the flatpak config behind, as it should be pretty straighforward,
-# and I think CMake can take care of most of it
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
