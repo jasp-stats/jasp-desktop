@@ -191,7 +191,7 @@ if(INSTALL_R_MODULES)
   add_custom_command(
     WORKING_DIRECTORY ${R_HOME_PATH}
     OUTPUT ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-    BYPRODUCTS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+    # BYPRODUCTS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
     COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
             --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
     COMMAND
@@ -206,7 +206,7 @@ if(INSTALL_R_MODULES)
     WORKING_DIRECTORY ${R_HOME_PATH}
     DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
     OUTPUT ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-    BYPRODUCTS ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+    # BYPRODUCTS ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
     COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
             --file=${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
     COMMAND
@@ -222,7 +222,7 @@ if(INSTALL_R_MODULES)
     DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
             ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
     OUTPUT ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
-    BYPRODUCTS ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
+    # BYPRODUCTS ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
     COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
             --file=${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
     COMMAND

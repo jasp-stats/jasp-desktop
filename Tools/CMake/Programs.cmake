@@ -70,4 +70,18 @@ if(NOT WIN32)
 
 endif()
 
+if(WIN32)
+
+  message(CHECK_START "Looking for MSYS2")
+  set(MINGW_PATH "C:/msys64/mingw64")
+  if(EXISTS ${MINGW_PATH})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${MINGW_PATH}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(FATAL_ERROR "MSYS2 is required for building on Windows, please follow the build instruction before you continue.")
+  endif()
+
+endif()
+
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

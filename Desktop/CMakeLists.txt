@@ -108,9 +108,9 @@ else()
   endif()
 
   add_custom_target(
-    Resources
+    Resources ALL
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND cp -r Resources ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory Resources ${CMAKE_BINARY_DIR}/Resources
     BYPRODUCTS ${CMAKE_BINARY_DIR}/Resources)
 
   add_dependencies(JASP Resources)
@@ -121,7 +121,9 @@ add_dependencies(JASP JASPEngine)
 
 target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
 
-target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
+if(NOT WIN32)
+  target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
+endif()
 
 if(INSTALL_R_MODULES)
   add_dependencies(JASP Modules)
@@ -132,7 +134,9 @@ if(INSTALL_JASP_REQUIRED_LIBRARIES)
 endif()
 
 target_include_directories(
-  JASP PUBLIC ${LIBREADSTAT_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/Common
+  JASP PUBLIC ${LIBREADSTAT_INCLUDE_DIRS}
+              $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_H}>
+              ${PROJECT_SOURCE_DIR}/Common
               ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
 
 target_link_libraries(
@@ -167,6 +171,7 @@ target_link_libraries(
     $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
     # Based on our config, this is either from PkgConfig, or the build/_deps/
     ${LIBREADSTAT_LINK_LIBRARIES}
+    $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
     # System
     ${Iconv_LIBRARIES}
     ${ZLIB_LIBRARIES} # Needed for libreadstat.a
@@ -182,6 +187,10 @@ endif()
 if(FLATPAK_USED)
   target_compile_definitions(JASP PUBLIC FLATPAK_USED)
 endif()
+
+# if(WIN32)
+#   target_link_options(JASP PUBLIC libreadstat)
+# endif()
 
 # Amir:
 # We can either add the resources using the `.qrc` files, or ask CMake to
