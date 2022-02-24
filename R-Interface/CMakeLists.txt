@@ -4,8 +4,6 @@ if(WIN32)
 
   cmake_minimum_required(VERSION 3.21)
 
-  set(QT_CREATOR_SKIP_CONAN_SETUP ON)
-
   project(
     R-Interface
     VERSION 11.5.0.0

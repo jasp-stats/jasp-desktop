@@ -17,5 +17,4 @@ openssl/1.1.1m
 bison/3.7.6
 
 [generators]
-cmake_paths
-cmake_find_package
+cmake

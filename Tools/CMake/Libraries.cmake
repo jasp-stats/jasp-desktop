@@ -4,11 +4,11 @@ if(NOT WIN32)
   find_package(PkgConfig REQUIRED)
 endif()
 
-find_package(ZLIB 1.2 REQUIRED)
-find_package(Iconv 1.11 REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(Iconv REQUIRED)
 # find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
-find_package(LibArchive 3.5)
+find_package(LibArchive)
 if((NOT LibArchive_FOUND) AND (NOT WIN32))
   pkg_check_modules(
     LibArchive
@@ -87,11 +87,13 @@ if(APPLE)
 
 endif()
 
-pkg_check_modules(
-  LIBJSONCPP
-  REQUIRED
-  IMPORTED_TARGET
-  jsoncpp)
+if(NOT WIN32)
+  pkg_check_modules(
+    LIBJSONCPP
+    REQUIRED
+    IMPORTED_TARGET
+    jsoncpp)
+endif()
 
 if((NOT INSTALL_JASP_REQUIRED_LIBRARIES) AND (NOT WIN32))
 
@@ -123,6 +125,7 @@ if(WIN32)
 
   if(_LIB_R_INTERFACE_SHARED)
     message(CHECK_PASS "found")
+    message(STATUS "  ${_LIB_R_INTERFACE_SHARED}")
   else()
     message(CHECK_FAIL "not found")
     # message(FATAL_ERROR "libR-Interface.dll is necessary for building JASP.")

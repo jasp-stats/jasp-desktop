@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
+# Because Qt implementation is a bit buggy,
+# when this is fixed, the setup will be even nicer.
 set(QT_CREATOR_SKIP_CONAN_SETUP ON)
 
 project(
