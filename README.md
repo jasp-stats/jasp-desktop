@@ -54,7 +54,7 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
   
 #### Building
   - [Guide to Building JASP](Docs/development/jasp-building-guide.md)
-  - [Rebasing your Repository](Docs/development/git-guide.md)
+  - [Git and GitHub guide](Docs/development/git-guide.md)
   - [Nightly versions of JASP here](http://static.jasp-stats.org/Nightlies/) (built fresh every night)
 
 #### Modules
