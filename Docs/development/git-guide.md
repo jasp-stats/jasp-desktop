@@ -397,7 +397,25 @@ This needs to be done once for each feature branch. Do not delete it if you want
 
 ## Git submodules: `jasp-stats/jasp-desktop`
 
+As mentioned previously, JASP modules are separate repositories on GitHub. There is one repository, `jasp-stats/jasp-desktop` ([https://github.com/jasp-stats/jasp-desktop](https://github.com/jasp-stats/jasp-desktop)), that has all the code required to build the JASP application. Usually, you do not need to do anything with this repository, and should work on the separate repositories. You need `jasp-desktop` only if you want to build JASP ([Guide to Building JASP](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-building-guide.md)) or if you want to make changes to the core JASP code and not to the code associated with a specific analysis. 
 
+All other repositories are included in `jasp-desktop` as "git submodules". This makes `jasp-desktop` a little bit special because it requires some more steps to keep the submodules up to date. You can rebase as normally, but that will not rebase the individual submodules. Instead, run
+
+```
+git fetch --all
+git submodule init
+git submodule update --remote
+```
+
+`git fetch --all` fetches all remotes and submodules, `git submodule init` initiates all submodules in your local repo that were created, and `git submodule update --remote` updates local submodules to be up to date with the current version of the `master` branch of the submodules on `jasp-stats`. This means that whenever a PR to one of the modules has been accepted the commits are added to that branch and everyone who builds their own copy of JASP then gets this updated code once they run git submodule update --remote. In a nutshell it means that it'll keep all your modules up to date, which the command itself of course already seemed to imply quite strongly.
+
+### Editing in submodules
+
+Be careful with editing in the submodules though! Because these are copies of the `jasp-stats` based repositories it is unlikely you have push-rights and even if you do you should go through the proper channels, that is, PR + review.
+
+### Important branches
+
+All jaspModules (e.g., `jaspRegression`) on `jasp-stats` have a `master` branch, which is the default branch. This is not the case for `jasp-stats/jasp-desktop`. This repository has two important branches, `stable` and `development`. The `stable` branch, as its name suggest, is a version of `jasp-desktop` that is stable, usually very similar to the version that was in the latest release of JASP. This version should be always ready to be build in Qt without problems, and should just work. However, it may not contain the latest hot changes to the JASP application. For that version, there is the branch `development`, which containts the current version of the JASP application being developed for the next release. `development` is the default branch of `jasp-desktop`. **Be careful about which branch you use when you rebase**, i.e., `git rebase upstream/stable` or `git rebase upstream/development`. 
 
 ## Summary of basic principles
 
