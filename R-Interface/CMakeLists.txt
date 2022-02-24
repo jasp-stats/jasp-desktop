@@ -68,10 +68,9 @@ if(WIN32)
     message(FATAL_ERROR "libRInside is required for building ")
   endif()
 
-  find_package(jsoncpp REQUIRED)
   find_file(
     _LIB_JSONCPP
-    NAMES libjsoncpp
+    NAMES libjsoncpp-24.dll
     PATHS ${MINGW_PATH}/bin REQUIRED)
 
   file(GLOB HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.h")
