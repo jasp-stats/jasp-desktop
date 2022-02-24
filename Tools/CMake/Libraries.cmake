@@ -5,7 +5,7 @@ if(NOT WIN32)
 endif()
 
 find_package(ZLIB 1.2 REQUIRED)
-find_package(Iconv 1.16 REQUIRED)
+find_package(Iconv 1.11 REQUIRED)
 # find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
 find_package(LibArchive 3.5)
