@@ -173,7 +173,7 @@ target_link_libraries(
     $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
     $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
     # Based on our config, this is either from PkgConfig, or the build/_deps/
-    ${_LIB_READSTAT}
+    ${_LIB_READSTAT_LIBRARY}
     $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
     # System
     ${Iconv_LIBRARIES}
