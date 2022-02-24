@@ -4,11 +4,11 @@ if(NOT WIN32)
   find_package(PkgConfig REQUIRED)
 endif()
 
-find_package(ZLIB REQUIRED)
-find_package(Iconv REQUIRED)
+find_package(ZLIB 1.2 REQUIRED)
+find_package(Iconv 1.16 REQUIRED)
 # find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
-find_package(LibArchive)
+find_package(LibArchive 3.5)
 if((NOT LibArchive_FOUND) AND (NOT WIN32))
   pkg_check_modules(
     LibArchive
@@ -19,7 +19,7 @@ endif()
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(
-  Boost REQUIRED
+  Boost 1.78.0 REQUIRED
   COMPONENTS nowide
              filesystem
              system
