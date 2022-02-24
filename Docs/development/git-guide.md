@@ -1,7 +1,7 @@
 Git Guide
 =========
 
-Git ([website](https://git-scm.com/), [Wiki](https://en.wikipedia.org/wiki/Git)) is a version control system that we use to develop JASP. This document gives tips for working with `git` an `GitHub`, specifically in the context of the JASP module development workflow. 
+Git ([website](https://git-scm.com/), [Wiki](https://en.wikipedia.org/wiki/Git)) is a version control system that the JASP Team relies upon to manage different versions of JASP throghout its development. This document gives tips for working with `git` an GitHub, specifically in the context of the JASP module development workflow. 
 
 ## Prerequisites
 
@@ -12,13 +12,13 @@ For Windows users: The standard recommendation for using `git` is by installing 
 
 ### Git
 
-We strongly recommend getting to know using `git` itself instead of relying on clients such as GiHub Desktop, GitKraken, etc (unless you know what you are doing). If you follow the guide below, it is less likely that you will get into trouble than if you use a client. Further, should something go wrong anyway, it is then easier for us to help you fix it. As with any programming gimmick, read carefully what `git` tells you, and "google up" messages you do not undestand. In general, internet is your friend and the first one to give you good answers about `git`. Useful website is the official GitHub documentation [https://docs.github.com/](https://docs.github.com/), and there also exist useful video tutorials [(example)](https://youtu.be/8Dd7KRpKeaE). Most of the information presented in this guide can be found in the GitHub documentation as well.
+We strongly recommend getting to know using `git` itself instead of relying on clients such as GiHub Desktop, GitKraken, etc (unless you know what you are doing). If you follow this guide, it is less likely that you will get into trouble than if you use a client. Further, should something go wrong anyway, it is then easier for us to help you fix it. As with any programming gimmick, read carefully what `git` tells you, and "google up" messages you do not undestand. In general, internet is your friend and the first one to give you good answers about `git`. A useful website is the official GitHub documentation [https://docs.github.com/](https://docs.github.com/), and there also exist useful video tutorials ([example](https://youtu.be/8Dd7KRpKeaE)). Most of the information presented in this guide can be already found in the `git` and GitHub documentation as well, but this guide is describing the workflow in context of JASP development to be more explicit.
 
 ### The terminal
 
-Because we do not recommend any `git` client, the following guide assumes basic understanding of a terminal [(tutorial here)](https://code.tutsplus.com/tutorials/command-line-basics-and-useful-tricks-with-the-terminal--cms-29356), but one does not need to be experienced with it. Search and click on the `Terminal`/`Console` application in MacOS/Linux, or one of the terminal applications in Windows (e.g., `PowerShell`, `Command Prompt`, `Git BASH`) to get started. The only really important thing to know about the terminal is that one can type a command in the terminal and execute it with pressing `Enter` to tell the terminal to do something. 
+Because we do not recommend any `git` client, the following guide assumes basic understanding of a terminal [(tutorial here)](https://code.tutsplus.com/tutorials/command-line-basics-and-useful-tricks-with-the-terminal--cms-29356), but one does not need to be very experienced with it. Search and click on the `Terminal`/`Console` application in MacOS/Linux, or one of the terminal applications in Windows (e.g., `PowerShell`, `Command Prompt`, `Git BASH`) to get started. The only really important thing to know about the terminal is that one can type a command inside of the terminal and execute it with pressing `Enter` to tell the terminal to do something. 
 
-In this guide, the only really important activity with the terminal is to be able to navigate between different folders in your computer, and running `git`. Whenever this guide says something like "navigate your terminal to a folder `jaspRegression/`", this means to change the working directory of the terminal such that we are inside the folder called `jaspRegression`. The following commands will help that task done:
+In this guide, the only really important activity with the terminal is to be able to navigate between different folders in your computer, and running `git`. Whenever this guide says something like "navigate your terminal to a folder `jaspRegression`", this means to change the working directory of the terminal such that we are inside the folder called `jaspRegression`. The following commands will help that task done:
 
 - `pwd`: Executing this command prints the current working directory of the terminal
 - `ls`: Executing this command prints the contents of the current working directory (i.e., prints the files and folders)
@@ -28,6 +28,8 @@ In this guide, the only really important activity with the terminal is to be abl
   - `cd jaspRegression`: Moves the terminal inside of the `jaspRegression` folder (as long as it exist within the current working directory). This is an example of a *relative* path: Writing just the name of the path you want to go to assumes that the starting point is wherever the current working directory is.
   - `cd ~/Dektop/JASP/Development/Modules/jaspRegression`: Moves the terminal into the folder specified on that address. This is an example of an *absolute* path: Writing `~` in front of the path  you want to go assumes that the starting point is the user root directory. Executing `cd` without anything moves the terminal to that user root directorys.
   - `cd ../../`: Two dots `..` tell `cd` to move one level up in the folder structure. For example, if we execute `cd ~/Dektop/JASP/Development/Modules/jaspRegression` and then `cd ../../`, we would end up in the `~/Dektop/JASP/Development/` folder.
+
+For Windows users: Paths in Windows are specified using a backslash `\` instead of a forward slash `\`, and instead of using `~/` for the user root folder, absolute paths are specified by starting from the drive name, e.g., `C:\JASP\jaspRegression`.
 
 To run `git` in the terminal, we execute `git` commands - these start with typing `git` and follow some other keywords or arguments that specify what exactly we want `git` to do. For example, executing `git status` shows the status of the current `git` repository.
 
@@ -51,9 +53,11 @@ In a nutshell: Each contributor keeps their own fork of the `jasp-stats`, mainta
 
 The following guide will use the "Regression" module as a concrete example. Keyword `username` will be used as a placeholder for your username on GitHub.
 
+Note: Arguably the most important repository in `jasp-stats`, but also the one that you probably will not work with very often (if you are an R contributor or translator), is the `jasp-desktop` repository at [https://github.com/jasp-stats/jasp-desktop](https://github.com/jasp-stats/jasp-desktop). This repository holds the core code that is required to build the JASP application. Working with this repository requires additional steps, which are described in section Git submodules: `jasp-stats/jasp-desktop`.
+
 ## Setting up your repository
 
-These steps need to be done only once per module. Once everything it set up, you are ready to contribute to JASP!
+These steps need to be done only once per module. When everything it set up, you are ready to contribute to JASP!
 
 ### Fork the `jasp-stats` repository [(GitHub documentation)](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
 
@@ -81,7 +85,7 @@ Open the terminal (or git-bash on Windows), navigate to the local clone on your 
 git remote add upstream https://github.com/jasp-stats/jaspRegression.git
 ```
 
-to confirm that the repository has been added, type `git remote -v`. Your repository should show up in the terminal as `origin`, the `jasp-stats` as upstream, like this:
+to confirm that the repository has been added, type `git remote -v`. Your repository should show up in the terminal as `origin`, the `jasp-stats` as `upstream`, like this:
 
 ```
 origin    https://github.com/username/jaspRegression.git (fetch)
@@ -90,14 +94,16 @@ upstream  https://github.com/jasp-stats/jaspRegression.git (fetch)
 upstream  https://github.com/jasp-stats/jaspRegression.git (push)
 ```
 
+If that is the case, great! Your local clone of the repository stored on your computer is now able to communicate both with your personal fork of the `jaspRegression` module under your GitHub account, as well as the one stored under the `jasp-stats` project.
+
 ## Rebasing your repository [(GitHub documentation)](https://docs.github.com/en/get-started/using-git/about-git-rebase)
 
 To get updates from `jasp-stats` into your local repository and your GitHub repository, you will need to do a rebase. It is good idea to rebase often, and you should **always** rebase before making a PR.
 
 To do a rebase, navigate your terminal to the location of your local clone. Then, type in
 
-1. `git stash` - optional: this command stashes changes that you made in the repository, but did not commit.
-2. `git fetch upstream` - this command gets the code from the `jasp-stats` repository (if you set up your remote correctly, see above).
+1. `git stash` - optional: this command stashes (temporarily hides) changes that you made in the repository, but did not commit. Generally, you do not need to do this if you are sure you did not modify any files in the repository without committing the changes.
+2. `git fetch upstream` - this command gets the code from the `jasp-stats` repository (if you set up your remote correctly, see above). The code from `jasp-stats` repository is not yet *applied* to your repository, but is available on your machine.
 3. `git rebase upstream/master` - this command updates your local repository: the history of the repository on your computer becomes up-to-date with the repository on `jasp-stats` and its `master` branch.
 4. `git push` - this command pushes the update to your remote repository on GitHub: now your local clone, as well as your GitHub repository, are up to date with `jasp-stats`.
 5. `git stash pop` - optional: recovers the changes that you stashed before (**do not** call this command if you did not call `git stash` in the first place, or if `git stash` returned "No local changes to save")
@@ -139,17 +145,19 @@ git push --set-upstream origin myFeatureBranch
 ```
 
 
-Before making a new feature branch, it is usually good to switch to the `master` branch (`git checkout master`), and rebase it. That way, you will keep your `master` up to date, and make sure that your new feature branch starts with a clean slate.
+Before making a new feature branch, it is usually good to switch to the `master` branch (`git checkout master`), and rebase it. That way, you will keep your `master` up to date, and make sure that your new feature branch is created clean and up to date.
 
 #### Commit your changes
 
 During implementing a feature, regularly commit your progress as you code. To commit changes, roughly the following workflow applies.
 
-Check the status of your branch (what files were chanched, etc.):
+Check the status of your branch (what files were changed, created, deleted, etc.):
 
 ```
 git status
 ```
+
+If you want to see specific changes to the *code* in the files that were modified, execute `git diff [filename]` to open up an overview of what lines of code were deleted and what added. When you are done inspecting the changes, press the `Q` key on your keyboard to return to your terminal. 
 
 Add files you want to commit:
 
@@ -163,7 +171,7 @@ And commit your changes:
 git commit -m "some informative message"
 ```
 
-Be descriptive in your commits, and commit often (usually when you implemented some logical sub-unit of your feature/bug fix).
+Be descriptive in your commits, and commit often (usually when you implemented some logical sub-unit of your feature/bug fix). The flag `-m` allows you to write a brief commit message. If you would like to be more verbose, you may run the command just as is (`git commit`), which opens up the configured text editor. Once you save the commit message, the commit is made. If you close the text editor without saving the commit message, the commit will not be done.
 
 Do not forget to rebase your repository often.
 
@@ -175,17 +183,40 @@ Do not forget to bring your GitHub repository up to date with your local reposit
 git push
 ```
 
-Remember, GitHub serves you as a back up. If you commit your changes but do not push them to GitHub, your work may be lost if your laptop gets stolen, or your house burns down!
+Remember, GitHub serves you as a back up. If you commit your changes but do not push them to GitHub, your work may be lost if your laptop gets stolen, or your house burns down and your compurer with all your hard drive back ups with it!
 
 
 #### Squashing commits (optional)
 
+Squashing commits is usually not necessary, but can come in handy in certain situations. For example, if you work on some feature branch and make multiple commits and at some point get merge conflicts when trying to rebase. In this situation, you need to resolve the conflicts, which is done one commit at a time. So if you made a lot of commits that each had some merge conflicts with `jasp-stats`, you may end up doing a lot of work fixing the conflicts for each commit. Instead, you may squash your commits, which is basically combining multiple commits into one, and then resolve your conflicts only once.
+
+There are multiple ways how to squash your commits. One way is to simply undo your last commits and commiting them again as one commit. An example:
+
+```
+git reset --soft HEAD~9
+git commit -m "a new commit message outlining the changes in the previous 9 commits"
+```
+
+The first command `reset` is used to "undo" your commits. The option `--soft` makes sure that while you undo the commits, you *keep* the changes. All your edits are still preserved, just not commited anymore. The last argument `HEAD~9` is about how many commits you want to undo. `HEAD` points to the current status of the repository, and `HEAD~9` means "the most recent nine commits".
+
+While this way to squash commits is easy, it has its downside. The original commit messages of the commits that you undo are undone as well, and forever lost. In case you want to combine the individual messages into one message as well, you will need to use methors like `git rebase -i <last-commit-to-keep>`, or `git merge --squash`. These methods are more advanced, so make sure you understand what you are doing. For example by studying the responses in the following thread: [https://stackoverflow.com/questions/5189560/squash-my-last-x-commits-together-using-git](https://stackoverflow.com/questions/5189560/squash-my-last-x-commits-together-using-git).
+
+If you already pushed your commits to your GitHub repository, and then squash your commits, your local repository has diverged from the GitHub repository. To push your squashed commits, you will need to `git push -f` or `git push -force` to override the GitHub repository with the new version on your computer.
+
+
+
 
 ### Pull requests [(GitHub documentation)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)
 
+Pull request (PR) is a way how to review and merge your changes into the `jasp-stats` repository in a controlled and structured way, so that we can be always sure that the code on `jasp-stats` is working. 
+
+#### Prefer smaller PRs 
+
+Usually, a PR should implement a logically coherent feature or a bug fix, and should not bring together many unrelated changes. For example, if your task is to fix two unrelated bugs in the same module, it makes sense to split the two fixes in two different PRs. If the bugs are related (for example, you cannot fix one without fixing the other), then you make one PR for both. There are exceptions, of course, such as when the changes are so trivial and small that it is easy to keep track of everything at once, or if your PR introduces refactoring or adding a large part of the code, which happens to also fix some bugs and add multiple more features. But in general, making rather smaller PRs helps to get the PR reviewed and merged quicker and is less error prone. Large PRs tend to go stale, get nasty merge conflicts, and are difficult to review and test properly.
+
 #### Create a pull request
 
-After commiting you changes and pushing them to your repository, you can make a PR. Navigate your browser to your repository (`https://github.com/username/jaspRegression`) and click `Pull request` button.
+After commiting your changes and pushing them to your repository, you can make a PR. Navigate your browser to your repository (`https://github.com/username/jaspRegression`) and click `Pull request` button.
 
 1. Verify that:
   - base repository is set to: `jasp-stats/jaspRegression`, base: `master`
@@ -244,15 +275,21 @@ A PR needs to be reviewed and approved by a JASP Team member to be merged into `
 
 #### GitHub Actions
 
+After you created the PR, GitHub actions will be executed, which check the code in your PR. Most notably, the unit tests are run on instances of Windows, Mac, and Linux machine, so that we check that the PR will not break something if it is being merged. 
 
+If any of the tests fail, the PR cannot be merged. You as an author of the PR is responsible to fix the issues with unit tests. A good idea is to run the tests on your computer (using `jaspTools::testAll()`) to check that the tests are not broken (and fix any problems) even before making a new PR. Successful checks are shown in the PR as this:
+
+![Screenshot of successful tests](/Docs/development/img/successful-checks.PNG)
+
+If any of the tests fail, they will be shown with a red cross. Click on `details` to view the log of the test to see what went wrong. If you are unsure what you are seeing, or do not know how to fix the problem, ask for guidance someone from the JASP Team, or comment in the PR on GitHub.
 
 #### Respond to reviews
 
 Reviewers may require some changes to the PR. Resolve the suggestions, commit the changes, and push to your GitHub repository. 
 
-In case that you do not receive a review within a couple of days, ask the assigned reviewer whether they are aware that they were assigned or whether they have time to review. In case they decline, assign someone else. Assigned reviewers are responsible to review your work or notify you if they cannot do so, but your are responsible for the PR as a whole.
+In case that you do not receive a review within a couple of days, ask the assigned reviewer whether they are aware that they were assigned or whether they have time to review. In case they decline, assign someone else. Assigned reviewers are responsible to review your work or notify you if they cannot do so, but you are responsible for the PR as a whole.
 
-If you think the PR is urgent, write to the collective communication channels (preferably Slack), or get in touch with a senior JASP Team member.
+If you think the PR is urgent, write to the collective communication channels (e.g., Slack), or get in touch with a senior JASP Team member.
 
 #### Delete your feature branch
 
@@ -311,7 +348,7 @@ git remote add upstream https://github.com/jasp-stats/jaspRegression.git
 git remote -v
 ```
 
-This need to be done once per repository.
+This needs to be done once per your local repository.
 
 ### Rebase
 
@@ -367,9 +404,9 @@ This needs to be done once for each feature branch. Do not delete it if you want
 
 1. Do not use git clients for making PRs, unless you know what you are doing.
 2. Learn working with git comfortably.
-3. Fork and clone jaspModules to make PRs, do not work inside of jasp-desktop repository.
-4. Work in feature branches.
-5. Rebase often. Do **not** call `git pull` to sync your repository with `jasp-stats`. **Rebase**.
+3. Fork and clone jaspModules to make PRs, do not work inside of `jasp-desktop` repository.
+4. Work in feature branches not on `master`.
+5. Rebase often. **Do not** call `git pull` to sync your repository with `jasp-stats`. **Rebase**.
 6. Push your changes regularly from your local repository to your GitHub repository, to back up your work in progress.
 7. Prefer making more smaller PRs rather than making one PR implementing many unrelated features.
 8. Make clean PRs
