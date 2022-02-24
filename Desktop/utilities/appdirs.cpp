@@ -76,18 +76,21 @@ QString AppDirs::userModulesDir()
 
 QString AppDirs::bundledModulesDir()
 {
-	static QString folder = programDir().absoluteFilePath("../Modules/");
-// #ifdef __APPLE__
-// 	 programDir().absoluteFilePath("../Modules/");
-// #elif _WIN32
-// 	 programDir().absoluteFilePath("Modules") + '/';
-// #elif FLATPAK_USED
-// 	"/app/bin/Modules/";
-// #else  //Normal linux build
-// 	programDir().absoluteFilePath("Modules") + '/';
-// #endif
+	static QString folder = 
+#ifdef __APPLE__
+	 programDir().absoluteFilePath("../Modules/");
+#elif _WIN32
+	 programDir().absoluteFilePath("Modules") + '/';
+#elif FLATPAK_USED
+	"/app/bin/../Modules/";
+#else  //Normal linux build
+	programDir().absoluteFilePath("../Modules") + '/';
+#endif
+	// @Joris, I think these guys should be one level up,
+	// they are not binaries, so, they should not be in 
+	// the binary folder in my opinion.
 	
-	return folder ;
+	return folder;
 }
 
 QString AppDirs::processPath(const QString & path)

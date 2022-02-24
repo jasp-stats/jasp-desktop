@@ -63,10 +63,10 @@ if(APPLE)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Sign.cmake.in
                  ${CMAKE_BINARY_DIR}/Sign.cmake @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Deploy.cmake.in
-                 ${CMAKE_BINARY_DIR}/Deploy.cmake @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Deploy.mac.cmake.in
+                 ${CMAKE_BINARY_DIR}/Deploy.mac.cmake @ONLY)
 
-  install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.cmake)
+  install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.mac.cmake)
 
   install(
     DIRECTORY ${_R_Framework}
@@ -156,10 +156,50 @@ endif()
 
 # Essential on WIN32 as some binaries should be around
 if(WIN32)
+  set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install")
+  set(JASP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+  set(JASP_INSTALL_BINDIR "${JASP_INSTALL_PREFIX}")
+  set(JASP_INSTALL_RESOURCEDIR "${JASP_INSTALL_PREFIX}/Resources")
+  set(JASP_INSTALL_MODULEDIR "${JASP_INSTALL_PREFIX}/Modules")
+  set(JASP_INSTALL_DOCDIR "${JASP_INSTALL_RESOURCEDIR}")
   # set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT JASP JASPEngine)
   # set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${JASP_INSTALL_BINDIR}")
   # if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
   #   set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
   # endif()
-  # include(InstallRequiredSystemLibraries)
+  include(InstallRequiredSystemLibraries)
+
+  install(
+    TARGETS JASP JASPEngine
+    RUNTIME DESTINATION ${JASP_INSTALL_PREFIX}
+    COMPONENT jaspCore)
+
+  set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Deploy.win.cmake.in
+                 ${CMAKE_BINARY_DIR}/Deploy.win.cmake @ONLY)
+
+  install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.win.cmake)
+
+  install(DIRECTORY ${CMAKE_BINARY_DIR}/R
+    DESTINATION ${JASP_INSTALL_PREFIX}
+    COMPONENT jaspCore)
+
+  install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
+    DESTINATION ${JASP_INSTALL_RESOURCEDIR}
+    COMPONENT jaspCore)
+
+  install(DIRECTORY ${CMAKE_BINARY_DIR}/Modules/
+    DESTINATION ${JASP_INSTALL_MODULEDIR}
+    COMPONENT jaspModules)
+
+  install(FILES
+    ${MINGW_LIBGCC_S_SEH} 
+    ${MINGW_LIBSTDCPP} 
+    ${MINGW_LIBWINPTHREAD} 
+    ${MINGW_LIBJSONCPP} 
+    ${_LIB_R_INTERFACE_SHARED} 
+    DESTINATION ${JASP_INSTALL_PREFIX}
+    COMPONENT jaspCore)
+
 endif()

@@ -119,7 +119,6 @@ option(UPDATE_JASP_SUBMODULES
 if(UPDATE_JASP_SUBMODULES)
   if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     # Update submodules as needed
-    if(GIT_SUBMODULE)
       message(STATUS "Submodule update")
       execute_process(
         COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
@@ -133,7 +132,6 @@ if(UPDATE_JASP_SUBMODULES)
           FATAL_ERROR
             "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules"
         )
-      endif()
     endif()
   endif()
 endif()

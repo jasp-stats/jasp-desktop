@@ -1,0 +1,10 @@
+execute_process(
+  COMMAND_ECHO STDOUT
+  WORKING_DIRECTORY @CMAKE_INSTALL_PREFIX@
+  COMMAND
+    @DEPLOYQT_EXECUTABLE@ --qmldir=@JASP_QML_FILES@ @JASP_INSTALL_BINDIR@/JASP.exe @JASP_INSTALL_BINDIR@/JASPEngine.exe
+  RESULT_VARIABLE result)
+
+if(result)
+  message(FATAL_ERROR "Executing @DEPLOYQT_EXECUTABLE@ failed: ${result}")
+endif()

@@ -24,7 +24,6 @@ option(USE_CCACHE "Whether to use ccache for build" OFF)
 option(RUN_IWYU "Whether to run Include What You Use" OFF)
 option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" ON)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
-option(GIT_SUBMODULE "Check submodules during build" ON)
 option(
   INSTALL_JASP_REQUIRED_LIBRARIES
   "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
@@ -84,8 +83,6 @@ endif()
 if(WIN32)
   set(SYSTEM_TYPE WIN32)
 endif()
-
-option(GITHUB_ACTION_PRE_BUILD "Whether we are building on GitHub Action" OFF)
 
 # In case Qt is not in path
 # NEEDS TESTING
