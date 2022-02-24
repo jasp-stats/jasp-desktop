@@ -85,6 +85,8 @@ if(WIN32)
   set(SYSTEM_TYPE WIN32)
 endif()
 
+option(GITHUB_ACTION_PRE_BUILD "Whether we are building on GitHub Action" OFF)
+
 # In case Qt is not in path
 # NEEDS TESTING
 # if(WIN32)

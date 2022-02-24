@@ -17,10 +17,5 @@ openssl/1.1.1m
 bison/3.7.6
 
 [generators]
-cmake
-
-[imports]
-bin, *.dll -> ./bin
-
-# [options]
-# bison:fPIC=False
+cmake_paths
+cmake_find_package

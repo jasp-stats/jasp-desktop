@@ -67,25 +67,33 @@ if(WIN32)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
-add_subdirectory(Common)
+# This is a workaruond that allows us to call `jasp-desktop/CMakeLists.txt`
+# in order to prepare the R/ folder and _without halting the GitHub action._
+# If this is not here, the FATAL_ERROR in `Engine/CMakeLists.txt` will halt
+# the GitHub Action and that's not what we want. See `.github/workflow/windows.yml`
+# for more info.
+if(NOT GITHUB_ACTION_PRE_BUILD)
+  add_subdirectory(Common)
 
-if(NOT WIN32)
-  add_subdirectory(R-Interface)
+  if(NOT WIN32)
+    add_subdirectory(R-Interface)
+  endif()
+
+  add_subdirectory(Engine)
+  add_subdirectory(Desktop)
+
+  if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(Tests)
+  endif()
+
+  # Builds, installs and configures JASP Modules
+  include(Modules)
+
+  # Installs the JASP and JASPEngine
+  include(Install)
+
+  # Packs and creates installer executable for Windows, and macOS
+  include(Pack)
+
 endif()
-
-add_subdirectory(Engine)
-add_subdirectory(Desktop)
-
-if(BUILD_TESTS)
-  enable_testing()
-  add_subdirectory(Tests)
-endif()
-
-# Builds, installs and configures JASP Modules
-include(Modules)
-
-# Installs the JASP and JASPEngine
-include(Install)
-
-# Packs and creates installer executable for Windows, and macOS
-include(Pack)
