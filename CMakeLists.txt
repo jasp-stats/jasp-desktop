@@ -37,7 +37,7 @@ include(Conan)
 
 # ------ JASP Config
 
-include(CPM)
+# include(CPM)
 
 include(Programs)
 
@@ -69,33 +69,34 @@ if(WIN32)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
-# This is a workaruond that allows us to call `jasp-desktop/CMakeLists.txt`
-# in order to prepare the R/ folder and _without halting the GitHub action._
-# If this is not here, the FATAL_ERROR in `Engine/CMakeLists.txt` will halt
-# the GitHub Action and that's not what we want. See `.github/workflow/windows.yml`
-# for more info.
-if(NOT GITHUB_ACTION_PRE_BUILD)
-  add_subdirectory(Common)
+add_subdirectory(Common)
 
-  if(NOT WIN32)
-    add_subdirectory(R-Interface)
-  endif()
-
-  add_subdirectory(Engine)
-  add_subdirectory(Desktop)
-
-  if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(Tests)
-  endif()
-
-  # Builds, installs and configures JASP Modules
-  include(Modules)
-
-  # Installs the JASP and JASPEngine
-  include(Install)
-
-  # Packs and creates installer executable for Windows, and macOS
-  include(Pack)
-
+if(NOT WIN32)
+  add_subdirectory(R-Interface)
+else()
+  # Building R-Interface with MinGW configuration
+  # Note that the reason I'm not directly building into the main BINARY_DIR
+  # is because CMake artifacts will conflicts in that case.
+  add_custom_target(R-Interface
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+    COMMAND ${CMAKE_COMMAND} -G "MinGW Makefiles" -S . -B ${CMAKE_BINARY_DIR}/R-Interface "-DCMAKE_C_COMPILER:STRING=${MINGW_C_COMPILER}" "-DCMAKE_CXX_COMPILER:STRING=${MINGW_CXX_COMPILER}" "-DCMAKE_MAKE_PROGRAM:STRING=${MINGW_MAKE_PROGRAM}" "-DJASP_BINARY_DIR:STRING=${CMAKE_BINARY_DIR}" "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
+    )
 endif()
+
+add_subdirectory(Engine)
+add_subdirectory(Desktop)
+
+if(BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(Tests)
+endif()
+
+# Builds, installs and configures JASP Modules
+include(Modules)
+
+# Installs the JASP and JASPEngine
+include(Install)
+
+# Packs and creates installer executable for Windows, and macOS
+include(Pack)

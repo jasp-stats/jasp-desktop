@@ -15,9 +15,6 @@ if(WIN32)
 
   set(MINGW_PATH "C:/msys64/mingw64")
   set(JASP_SOURCE_DIR "${CMAKE_SOURCE_DIR}/..")
-  set(JASP_BINARY_DIR
-      "${CMAKE_SOURCE_DIR}/../../build-jasp-desktop-Desktop_Qt_6_3_0_MSVC2019_64bit-Debug"
-  )
   if(NOT EXISTS ${JASP_BINARY_DIR})
     message(
       FATAL_ERROR
@@ -139,15 +136,6 @@ if(WIN32)
            BOOST_USE_WINDOWS_H
            NOMINMAX
            WIN32_LEAN_AND_MEAN)
-
-  add_custom_target(
-    Transfer-R-Interface-To-JASP ALL
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy libR-Interface.a ${JASP_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy libR-Interface.dll ${JASP_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy libR-Interface.dll.a ${JASP_BINARY_DIR}
-    COMMENT "Copying R-Interface to the jasp-desktop build folder")
-  add_dependencies(Transfer-R-Interface-To-JASP R-Interface)
 
 else()
 

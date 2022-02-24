@@ -12,9 +12,10 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 add_executable(JASPEngine ${HEADER_FILES} ${SOURCE_FILES})
 
-if(NOT WIN32)
-  add_dependencies(JASPEngine R-Interface)
-endif()
+# Note that on WIN32 this is going to invoke the external build of
+# the R-Interface. So, while I'm using the same name for these targets
+# they are not 100% the same!
+add_dependencies(JASPEngine R-Interface)
 
 target_include_directories(
   JASPEngine
@@ -26,20 +27,30 @@ target_include_directories(
 
 if(WIN32)
 
+  message(CHECK_START "Looking for libR-Interface.dll")
+  find_file(
+    _LIB_R_INTERFACE_SHARED
+    NAMES libR-Interface.dll
+    PATHS ${CMAKE_BINARY_DIR}/R-Interface)
+
+  if(_LIB_R_INTERFACE_SHARED)
+    message(CHECK_PASS "found")
+    message(STATUS "  ${_LIB_R_INTERFACE_SHARED}")
+  else()
+    message(CHECK_FAIL "not found")
+ endif()
+
   message(CHECK_START "Looking for libR-Interface.dll.a")
   find_file(
     _LIB_R_INTERFACE_STATIC
     NAMES libR-Interface.dll.a
-    PATHS ${R_INTERFACE_BINARY_DIR})
+    PATHS ${CMAKE_BINARY_DIR}/R-Interface)
 
   if(_LIB_R_INTERFACE_STATIC)
     message(CHECK_PASS "found")
+    message(STATUS "  ${_LIB_R_INTERFACE_STATIC}")
   else()
     message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "libR-Interface.dll.a is necessary for building JASP. If you see this error, you need to build the R-Interface first."
-    )
   endif()
 
 endif()
@@ -124,8 +135,7 @@ elseif(WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBSTDCPP} ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBWINPTHREAD} ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJSONCPP} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_R_INTERFACE_SHARED}
-            ${CMAKE_BINARY_DIR})
+    COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_R_INTERFACE_SHARED} ${CMAKE_BINARY_DIR})
 
   add_dependencies(Copy-Required-Libraries-To-Bin JASPEngine)
 

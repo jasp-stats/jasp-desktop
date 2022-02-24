@@ -108,33 +108,6 @@ if((NOT INSTALL_JASP_REQUIRED_LIBRARIES) AND (NOT WIN32))
 endif()
 
 if(WIN32)
-
-  # R-Interface
-  set(R_INTERFACE_BINARY_DIR
-      "${CMAKE_SOURCE_DIR}/build-R-Interface-MinGW_for_R_Interface-Debug")
-
-  # if(NOT EXISTS ${R_INTERFACE_BINARY_DIR})
-  #   message(FATAL_ERROR "Please set the path to R-Interface build directory")
-  # endif()
-
-  message(CHECK_START "Looking for libR-Interface.dll")
-  find_file(
-    _LIB_R_INTERFACE_SHARED
-    NAMES libR-Interface.dll
-    PATHS ${R_INTERFACE_BINARY_DIR})
-
-  if(_LIB_R_INTERFACE_SHARED)
-    message(CHECK_PASS "found")
-    message(STATUS "  ${_LIB_R_INTERFACE_SHARED}")
-  else()
-    message(CHECK_FAIL "not found")
-    # message(FATAL_ERROR "libR-Interface.dll is necessary for building JASP.")
-    # This will not break the config, but the one in Engine/CMakeLists.txt will.
-    # This is because JASP needs to be configured before R-Interface for R/ to exist
-    # So, the config proceed until we have all those sorted out, and we will check
-    # again to make sure that R-Interface is build before proceeding with the Build
-  endif()
-
   # ReadStat
 
   message(CHECK_START "Looking for libreadstat.dll.a")

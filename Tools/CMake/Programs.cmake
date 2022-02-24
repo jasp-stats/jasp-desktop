@@ -85,6 +85,10 @@ if(WIN32)
     )
   endif()
 
+   set(MINGW_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe")
+   set(MINGW_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe")
+   set(MINGW_MAKE_PROGRAM "C:/msys64/mingw64/bin/mingw32-make.exe")
+
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
