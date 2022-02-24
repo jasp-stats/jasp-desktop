@@ -53,7 +53,7 @@ In a nutshell: Each contributor keeps their own fork of the `jasp-stats`, mainta
 
 The following guide will use the "Regression" module as a concrete example. Keyword `username` will be used as a placeholder for your username on GitHub.
 
-Note: Arguably the most important repository in `jasp-stats`, but also the one that you probably will not work with very often (if you are an R contributor or translator), is the `jasp-desktop` repository at [https://github.com/jasp-stats/jasp-desktop](https://github.com/jasp-stats/jasp-desktop). This repository holds the core code that is required to build the JASP application. Working with this repository requires additional steps, which are described in section [Git submodules: `jasp-stats/jasp-desktop`](#git-submodules-jasp-statsjasp-desktop).
+Note: Arguably the most important repository is `jasp-stats`, but it is also the one that you probably will not work with very often (if you are an R contributor or translator), is the `jasp-desktop` repository at [https://github.com/jasp-stats/jasp-desktop](https://github.com/jasp-stats/jasp-desktop). This repository holds the core code that is required to build the JASP application. Working with this repository requires additional steps, which are described in section [Git submodules: `jasp-stats/jasp-desktop`](#git-submodules-jasp-statsjasp-desktop).
 
 ## Setting up your repository
 
