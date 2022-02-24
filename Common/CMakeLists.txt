@@ -10,9 +10,9 @@ list(APPEND SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 
 add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
 
-if(INSTALL_JASP_REQUIRED_LIBRARIES)
-  add_dependencies(Common jsoncpp-install)
-endif()
+# if(INSTALL_JASP_REQUIRED_LIBRARIES)
+#   add_dependencies(Common jsoncpp-install)
+# endif()
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 
@@ -23,8 +23,7 @@ endif()
 
 target_include_directories(
   Common
-  PUBLIC 
-         # JASP
+  PUBLIC # JASP
          jaspColumnEncoder
          # R
          ${R_INCLUDE_PATH}
@@ -53,7 +52,7 @@ target_link_libraries(
          # CMake/PkgConfig/CPM
          $<$<NOT:$<BOOL:${USE_CONAN}>>:LibArchive::LibArchive>
          $<$<NOT:$<BOOL:${USE_CONAN}>>:${LIBJSONCPP_LINK_LIBRARIES}>
-         # 
+         #
          $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
 target_compile_definitions(

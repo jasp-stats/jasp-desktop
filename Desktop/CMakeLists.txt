@@ -132,7 +132,7 @@ if(INSTALL_R_MODULES)
 endif()
 
 if(INSTALL_JASP_REQUIRED_LIBRARIES)
-  add_dependencies(JASP readstat-install)
+  add_dependencies(JASP readstat)
 endif()
 
 target_include_directories(
@@ -173,7 +173,7 @@ target_link_libraries(
     $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
     $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
     # Based on our config, this is either from PkgConfig, or the build/_deps/
-    ${LIBREADSTAT_LINK_LIBRARIES}
+    ${_LIB_READSTAT}
     $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
     # System
     ${Iconv_LIBRARIES}

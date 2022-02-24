@@ -384,8 +384,7 @@ if(INSTALL_R_MODULES)
 
       message(CHECK_START "Downloading 'jags'")
 
-      fetchcontent_populate(jags)
-      fetchcontent_getproperties(jags)
+      fetchcontent_makeavailable(jags)
 
       if(jags_POPULATED)
 

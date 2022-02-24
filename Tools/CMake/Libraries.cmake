@@ -87,35 +87,21 @@ if(APPLE)
 
 endif()
 
+pkg_check_modules(
+  LIBJSONCPP
+  REQUIRED
+  IMPORTED_TARGET
+  jsoncpp)
+
 if((NOT INSTALL_JASP_REQUIRED_LIBRARIES) AND (NOT WIN32))
 
-  pkg_check_modules(
-    LIBJSONCPP
-    REQUIRED
-    IMPORTED_TARGET
-    jsoncpp)
-
+  # This most likely doesn't work because readstat doesn't have a proper
+  # pkgconfig.pc, but I leave it here fore when they do!
   pkg_check_modules(
     LIBREADSTAT
     REQUIRED
     IMPORTED_TARGET
     readstat)
-
-else()
-
-  # WARNING: This is not the way to do it, and it does not work with Ninja :\
-
-  # jsoncpp
-  set(LIBJSONCPP_INCLUDE_DIRS ${jsoncpp_INCLUDE_DIRS})
-  set(LIBJSONCPP_LIBRARY_DIRS ${jsoncpp_LIBRARY_DIRS})
-  set(LIBJSONCPP_LINK_LIBRARIES ${jsoncpp_LIBRARY_DIRS}/libjsoncpp.a)
-
-  # # readstat
-  if(NOT WIN32)
-    set(LIBREADSTAT_INCLUDE_DIRS ${readstat_INCLUDE_DIRS})
-    set(LIBREADSTAT_LIBRARY_DIRS ${readstat_LIBRARY_DIRS})
-    set(LIBREADSTAT_LINK_LIBRARIES ${LIBREADSTAT_LIBRARY_DIRS}/libreadstat.a)
-  endif()
 
 endif()
 

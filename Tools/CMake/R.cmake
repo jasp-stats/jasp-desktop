@@ -10,7 +10,7 @@
 #       done during the build stage and not configuration
 # - [ ] All the code inside the if(APPLE), and if(WIN32) should be turned into
 #       a CMake module. I leave this for later cleanup
-# - [ ] Both R package intaller can be improved by some caching, now cleaning is
+# - [ ] Both R package installer can be improved by some caching, now cleaning can be
 #       a bit brutal
 #
 
@@ -108,8 +108,7 @@ if(APPLE)
 
       message(CHECK_START "Downloading '${R_PACKAGE_NAME}'")
 
-      fetchcontent_populate(r_pkg)
-      fetchcontent_getproperties(r_pkg)
+      fetchcontent_makeavailable(r_pkg)
 
       if(r_pkg_POPULATED)
 
@@ -381,8 +380,7 @@ elseif(WIN32)
       DOWNLOAD_NO_EXTRACT ON
       DOWNLOAD_NAME ${R_PACKAGE_NAME})
 
-    fetchcontent_populate(r_win_exe)
-    fetchcontent_getproperties(r_win_exe)
+    fetchcontent_makeavailable(r_win_exe)
 
     if(r_win_exe_POPULATED)
 

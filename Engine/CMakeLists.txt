@@ -38,7 +38,7 @@ if(WIN32)
     message(CHECK_FAIL "not found")
     message(
       FATAL_ERROR
-        "libR-Interface.dll.a is necessary for building JASP. If you see this error, you need to build the R-Interface first. Read more here:"
+        "libR-Interface.dll.a is necessary for building JASP. If you see this error, you need to build the R-Interface first."
     )
   endif()
 
