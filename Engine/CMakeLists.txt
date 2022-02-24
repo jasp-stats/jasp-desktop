@@ -24,11 +24,11 @@ target_include_directories(
          $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_BOOST}>
          $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>)
 
-
 if(WIN32)
-  
+
   message(CHECK_START "Looking for libR-Interface.dll.a")
-  find_file(_LIB_R_INTERFACE_STATIC
+  find_file(
+    _LIB_R_INTERFACE_STATIC
     NAMES libR-Interface.dll.a
     PATHS ${R_INTERFACE_BINARY_DIR})
 
@@ -36,12 +36,13 @@ if(WIN32)
     message(CHECK_PASS "found")
   else()
     message(CHECK_FAIL "not found")
-    # message(FATAL_ERROR "libR-Interface.dll.a is necessary for building JASP.")
+    message(
+      FATAL_ERROR
+        "libR-Interface.dll.a is necessary for building JASP. If you see this error, you need to build the R-Interface first. Read more here:"
+    )
   endif()
 
 endif()
-
-# message(FATAL_ERROR ${CMAKE_SYSTEM_LIBRARY_PATH})
 
 target_link_libraries(
   JASPEngine
@@ -117,16 +118,16 @@ elseif(WIN32)
   target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
 
   # These are mainly for R-Interface, and all build using the MinGW
-  add_custom_target(Copy-Required-Libraries-To-Bin ALL
+  add_custom_target(
+    Copy-Required-Libraries-To-Bin ALL
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBGCC_S_SEH} ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBSTDCPP} ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBWINPTHREAD} ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJSONCPP} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_R_INTERFACE_SHARED} ${CMAKE_BINARY_DIR}
-    )
+    COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_R_INTERFACE_SHARED}
+            ${CMAKE_BINARY_DIR})
 
   add_dependencies(Copy-Required-Libraries-To-Bin JASPEngine)
-
 
 elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 

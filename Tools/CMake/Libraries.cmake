@@ -61,7 +61,7 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
           /usr/lib32
           NO_CACHE)
 
-  if (_LIB_RT)
+  if(_LIB_RT)
     message(CHECK_PASS "found")
     message(STATUS "  ${_LIB_RT}")
   else()
@@ -77,7 +77,7 @@ if(APPLE)
 
   find_library(_LIB_BROTLICOMMON NAMES brotlicommon)
 
-  if (_LIB_BROTLICOMMON)
+  if(_LIB_BROTLICOMMON)
     message(CHECK_PASS "found")
     message(STATUS "  ${_LIB_BROTLICOMMON}")
   else()
@@ -122,14 +122,16 @@ endif()
 if(WIN32)
 
   # R-Interface
-  set(R_INTERFACE_BINARY_DIR "${CMAKE_SOURCE_DIR}/build-R-Interface-MinGW_for_R_Interface-Debug")
+  set(R_INTERFACE_BINARY_DIR
+      "${CMAKE_SOURCE_DIR}/build-R-Interface-MinGW_for_R_Interface-Debug")
 
   # if(NOT EXISTS ${R_INTERFACE_BINARY_DIR})
   #   message(FATAL_ERROR "Please set the path to R-Interface build directory")
   # endif()
 
   message(CHECK_START "Looking for libR-Interface.dll")
-  find_file(_LIB_R_INTERFACE_SHARED
+  find_file(
+    _LIB_R_INTERFACE_SHARED
     NAMES libR-Interface.dll
     PATHS ${R_INTERFACE_BINARY_DIR})
 
@@ -138,12 +140,17 @@ if(WIN32)
   else()
     message(CHECK_FAIL "not found")
     # message(FATAL_ERROR "libR-Interface.dll is necessary for building JASP.")
+    # This will not break the config, but the one in Engine/CMakeLists.txt will.
+    # This is because JASP needs to be configured before R-Interface for R/ to exist
+    # So, the config proceed until we have all those sorted out, and we will check
+    # again to make sure that R-Interface is build before proceeding with the Build
   endif()
 
   # ReadStat
 
   message(CHECK_START "Looking for libreadstat.dll.a")
-  find_file(MINGW_LIBREADSTAT
+  find_file(
+    MINGW_LIBREADSTAT
     NAMES libreadstat.dll.a
     PATHS ${MINGW_PATH}/lib)
 
@@ -152,11 +159,15 @@ if(WIN32)
     message(STATUS "  ${MINGW_LIBREADSTAT}")
   else()
     message(CHECK_FAIL "not found")
-    message(FATAL_ERROR "ReadStat is required for building on Windows, please follow the build instruction before you continue.")
+    message(
+      FATAL_ERROR
+        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+    )
   endif()
 
   message(CHECK_START "Looking for readstat.h")
-  find_file(MINGW_LIBREADSTAT_H
+  find_file(
+    MINGW_LIBREADSTAT_H
     NAMES readstat.h
     PATHS ${MINGW_PATH}/include)
 
@@ -165,13 +176,17 @@ if(WIN32)
     message(STATUS "  ${MINGW_LIBREADSTAT_H}")
   else()
     message(CHECK_FAIL "not found")
-    message(FATAL_ERROR "ReadStat is required for building on Windows, please follow the build instruction before you continue.")
+    message(
+      FATAL_ERROR
+        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+    )
   endif()
 
   # MinGW Libraries
-    
+
   message(CHECK_START "Looking for libgcc_s_seh-1.dll")
-  find_file(MINGW_LIBGCC_S_SEH
+  find_file(
+    MINGW_LIBGCC_S_SEH
     NAMES libgcc_s_seh-1.dll
     PATHS ${MINGW_PATH}/bin)
 
@@ -180,12 +195,15 @@ if(WIN32)
     message(STATUS "  ${MINGW_LIBGCC_S_SEH}")
   else()
     message(CHECK_FAIL "not found")
-    message(FATAL_ERROR "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue.")
+    message(
+      FATAL_ERROR
+        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
+    )
   endif()
-  
 
   message(CHECK_START "Looking for libstdc++-6.dll")
-  find_file(MINGW_LIBSTDCPP
+  find_file(
+    MINGW_LIBSTDCPP
     NAMES libstdc++-6.dll
     PATHS ${MINGW_PATH}/bin)
 
@@ -194,12 +212,15 @@ if(WIN32)
     message(STATUS "  ${MINGW_LIBSTDCPP}")
   else()
     message(CHECK_FAIL "not found")
-    message(FATAL_ERROR "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue.")
+    message(
+      FATAL_ERROR
+        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
+    )
   endif()
-  
 
   message(CHECK_START "Looking for libwinpthread-1.dll")
-  find_file(MINGW_LIBWINPTHREAD
+  find_file(
+    MINGW_LIBWINPTHREAD
     NAMES libwinpthread-1.dll
     PATHS ${MINGW_PATH}/bin)
 
@@ -208,11 +229,15 @@ if(WIN32)
     message(STATUS "  ${MINGW_LIBWINPTHREAD}")
   else()
     message(CHECK_FAIL "not found")
-    message(FATAL_ERROR "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue.")
+    message(
+      FATAL_ERROR
+        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
+    )
   endif()
-  
+
   message(CHECK_START "Looking for libjsoncpp-24.dll")
-  find_file(MINGW_LIBJSONCPP
+  find_file(
+    MINGW_LIBJSONCPP
     NAMES libjsoncpp-24.dll
     PATHS ${MINGW_PATH}/bin)
 
@@ -221,7 +246,10 @@ if(WIN32)
     message(STATUS "  ${MINGW_LIBJSONCPP}")
   else()
     message(CHECK_FAIL "not found")
-    message(FATAL_ERROR "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue.")
+    message(
+      FATAL_ERROR
+        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
+    )
   endif()
 
 endif()

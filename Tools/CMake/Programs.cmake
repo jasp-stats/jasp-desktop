@@ -79,7 +79,10 @@ if(WIN32)
     message(STATUS "  ${MINGW_PATH}")
   else()
     message(CHECK_FAIL "not found")
-    message(FATAL_ERROR "MSYS2 is required for building on Windows, please follow the build instruction before you continue.")
+    message(
+      FATAL_ERROR
+        "MSYS2 is required for building on Windows, please follow the build instruction before you continue."
+    )
   endif()
 
 endif()

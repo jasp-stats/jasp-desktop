@@ -1,13 +1,13 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
-if (WIN32)
-
+if(WIN32)
 
   cmake_minimum_required(VERSION 3.21)
 
   set(QT_CREATOR_SKIP_CONAN_SETUP ON)
- 
-  project(R-Interface
+
+  project(
+    R-Interface
     VERSION 11.5.0.0
     LANGUAGES C CXX)
 
@@ -15,9 +15,14 @@ if (WIN32)
 
   set(MINGW_PATH "C:/msys64/mingw64")
   set(JASP_SOURCE_DIR "${CMAKE_SOURCE_DIR}/..")
-  set(JASP_BINARY_DIR "${CMAKE_SOURCE_DIR}/../../build-jasp-desktop-Desktop_Qt_6_3_0_MSVC2019_64bit-Debug")
+  set(JASP_BINARY_DIR
+      "${CMAKE_SOURCE_DIR}/../../build-jasp-desktop-Desktop_Qt_6_3_0_MSVC2019_64bit-Debug"
+  )
   if(NOT EXISTS ${JASP_BINARY_DIR})
-    message(FATAL_ERROR "Please set the correct Path to the JASP build folder, e.g., 'C:/path/to/build-jasp-desktop-Desktop_Qt_6_3_0_MSVC2019_64bit-Debug'")
+    message(
+      FATAL_ERROR
+        "Please set the correct Path to the JASP build folder, e.g., 'C:/path/to/build-jasp-desktop-Desktop_Qt_6_3_0_MSVC2019_64bit-Debug'"
+    )
   endif()
 
   set(R_HOME_PATH "${JASP_BINARY_DIR}/R")
@@ -34,40 +39,10 @@ if (WIN32)
   include(FetchContent)
   include(ExternalProject)
 
-  # include(Conan)
-
-  # set(USE_CONAN OFF)
-  # set(RInterface ON)
-  # set(JASP_USES_QT_HERE OFF)
-
-  # include(Programs)
-
-  # include(Libraries)
-
-  # include(../Tools/CMake/CPM.cmake)
-  # include(Dependencies)
-
-  # message(FATAL_ERROR ${R_HOME_PATH}/bin/x64)
-
-  # message(CHECK_START "Checking for 'libR'")
-  # find_library(
-  #   _LIB_R
-  #   NAMES R.dll
-  #   PATHS ${R_HOME_PATH}/bin/x64
-  #   PATH_SUFFIXES x64 x32
-  #   NO_CACHE)
-
-  # if(_LIB_R)
-  #   message(CHECK_PASS "found.")
-  #   message(STATUS "  ${_LIB_R}")
-  # else()
-  #   message(CHECK_FAIL "not found in ${R_HOME_PATH}/bin/x64")
-  #   message(FATAL_ERROR "Something is wrong!")
-  # endif()
-
   message(CHECK_START "Looking for R.dll")
   set(_LIB_R_PATH ${JASP_BINARY_DIR}/R)
-  find_file(_LIB_R
+  find_file(
+    _LIB_R
     NAMES R.dll
     PATHS ${_LIB_R_PATH}/bin
     PATH_SUFFIXES x64 x32)
@@ -85,8 +60,7 @@ if (WIN32)
     _LIB_RINSIDE
     NAMES RInside
     PATHS ${RINSIDE_PATH}/lib
-    PATH_SUFFIXES x64 x32
-    NO_CACHE )
+    PATH_SUFFIXES x64 x32 NO_CACHE)
 
   if(_LIB_RINSIDE)
     message(CHECK_PASS "found.")
@@ -97,10 +71,10 @@ if (WIN32)
   endif()
 
   find_package(jsoncpp REQUIRED)
-  find_file(_LIB_JSONCPP
+  find_file(
+    _LIB_JSONCPP
     NAMES libjsoncpp
-    PATHS ${MINGW_PATH}/bin
-    REQUIRED)
+    PATHS ${MINGW_PATH}/bin REQUIRED)
 
   file(GLOB HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.h")
   list(APPEND HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
@@ -167,7 +141,8 @@ if (WIN32)
            NOMINMAX
            WIN32_LEAN_AND_MEAN)
 
-  add_custom_target(Transfer-R-Interface-To-JASP ALL
+  add_custom_target(
+    Transfer-R-Interface-To-JASP ALL
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy libR-Interface.a ${JASP_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy libR-Interface.dll ${JASP_BINARY_DIR}
