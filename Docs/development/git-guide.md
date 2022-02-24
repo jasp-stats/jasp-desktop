@@ -279,7 +279,7 @@ After you created the PR, GitHub actions will be executed, which check the code 
 
 If any of the tests fail, the PR cannot be merged. You as an author of the PR is responsible to fix the issues with unit tests. A good idea is to run the tests on your computer (using `jaspTools::testAll()`) to check that the tests are not broken (and fix any problems) even before making a new PR. Successful checks are shown in the PR as this:
 
-![Screenshot of successful tests](/Docs/development/img/successful-checks.PNG)
+![Screenshot of successful tests](/Docs/development/img/git-guide/successful-checks.png)
 
 If any of the tests fail, they will be shown with a red cross. Click on `details` to view the log of the test to see what went wrong. If you are unsure what you are seeing, or do not know how to fix the problem, ask for guidance someone from the JASP Team, or comment in the PR on GitHub.
 
