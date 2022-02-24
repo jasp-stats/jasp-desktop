@@ -2,6 +2,8 @@ list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
 if(WIN32)
 
+  set(QT_CREATOR_SKIP_CONAN_SETUP ON)
+
   cmake_minimum_required(VERSION 3.21)
 
   project(
