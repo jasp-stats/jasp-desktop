@@ -108,10 +108,13 @@ else()
                                           ${IWYU_EXECUTABLE})
   endif()
 
+  # I think Ninja doesn't really like this, but I cannot tell why yet
+  # It sometimes just fails, but I'm really not sure. I need to look 
+  # into it further later.
   add_custom_target(
-    Resources ALL
+    Resources
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_directory Resources
+    COMMAND ${CMAKE_COMMAND} -E copy_directory Resources/
             ${CMAKE_BINARY_DIR}/Resources
     BYPRODUCTS ${CMAKE_BINARY_DIR}/Resources)
 

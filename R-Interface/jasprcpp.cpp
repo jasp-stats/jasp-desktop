@@ -176,9 +176,16 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("library(\"jaspBase\")");
 		
 	jaspRCPP_logString("Loading auxillary R-files.\n");
+
+#ifdef _WIN32
+	jaspRCPP_parseEvalQNT("source(file='Modules/writeImage.R')");
+	jaspRCPP_parseEvalQNT("source(file='Modules/zzzWrappers.R')");
+	jaspRCPP_parseEvalQNT("source(file='Modules/workarounds.R')");
+#else
 	jaspRCPP_parseEvalQNT("source(file='../Modules/writeImage.R')");
 	jaspRCPP_parseEvalQNT("source(file='../Modules/zzzWrappers.R')");
 	jaspRCPP_parseEvalQNT("source(file='../Modules/workarounds.R')");
+#endif
 
 	jaspRCPP_logString("initEnvironment().\n");
 	jaspRCPP_parseEvalQNT("initEnvironment()");

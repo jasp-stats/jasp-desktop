@@ -74,8 +74,7 @@ if(WIN32)
 
   find_program(DEPLOYQT_EXECUTABLE
     NAMES windeployqt
-    PATHS ${Qt6_DIR}/bin
-    REQUIRED)
+    PATHS ${Qt6_DIR}/bin)
 
   message(CHECK_START "Looking for MSYS2")
   set(MINGW_PATH "C:/msys64/mingw64")

@@ -251,25 +251,25 @@ if(WIN32)
     NAMES libjags.dll.a
     PATHS ${MINGW_PATH}/lib
     REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS}")
+  message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_A}")
   find_file(
     MINGW_LIBJAGS_LIBJAGS_LA
     NAMES libjags.la
     PATHS ${MINGW_PATH}/lib
     REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS}")
+  message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_LA}")
   find_file(
     MINGW_LIBJAGS_LIBJRMATH_A
     NAMES libjrmath.dll.a
     PATHS ${MINGW_PATH}/lib
     REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH}")
+  message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_A}")
   find_file(
     MINGW_LIBJAGS_LIBJRMATH_LA
     NAMES libjrmath.la
     PATHS ${MINGW_PATH}/lib
     REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH}")
+  message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_LA}")
 
   find_file(
     MINGW_LIBJAGS_JAGS_TERMINAL_EXE
