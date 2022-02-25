@@ -367,6 +367,73 @@ if(INSTALL_R_MODULES)
         make_directory(${jags_HOME})
       endif()
 
+      if(WIN32)
+
+        add_custom_command(
+          OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
+          # bin
+          COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/bin
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_BAT} ${jags_HOME}/bin/
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS} ${jags_HOME}/bin/
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JRMATH} ${jags_HOME}/bin/
+          # libexe
+          COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/libexe
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE} ${jags_HOME}/libexe/
+          # headers
+          COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include/JAGS
+          COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_HEADERS_PATH}/ ${jags_HOME}/include/JAGS
+          # libs
+          COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/lib
+          COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_LIBRARIES_PATH}/ ${jags_HOME}/lib/JAGS
+          COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_PKGCONFIG_PATH}/ ${jags_HOME}/lib/pkgconfig
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_A} ${jags_HOME}/lib
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_LA} ${jags_HOME}/lib
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_A} ${jags_HOME}/lib
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_LA} ${jags_HOME}/lib
+           )
+
+      else()
+
+        # ----- Downloading and Building jags
+
+        fetchcontent_declare(
+          jags
+          HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
+          HG_TAG "release-4_3_0")
+
+        message(CHECK_START "Downloading 'jags'")
+
+        fetchcontent_makeavailable(jags)
+
+        if(jags_POPULATED)
+
+          message(CHECK_PASS "successful.")
+
+          add_custom_command(
+            WORKING_DIRECTORY ${jags_SOURCE_DIR}
+            OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
+            COMMAND ${ACLOCAL}
+            COMMAND ${AUTORECONF} -fi
+            COMMAND ./configure --disable-dependency-tracking
+                    --prefix=${jags_HOME}
+            COMMAND ${MAKE}
+            COMMAND ${MAKE} install
+            COMMAND
+              ${CMAKE_COMMAND} -D
+              NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+              -D PATH=${jags_HOME} -D R_HOME_PATH=${R_HOME_PATH} -D
+              R_DIR_NAME=${R_DIR_NAME} -SIGNING=${IS_SIGNING} -P
+              ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+            COMMENT "----- Preparing 'jags'")
+
+        else()
+
+          message(CHECK_FAIL "failed.")
+
+        endif()
+
+      endif()
+
       set(jags_INCLUDE_DIRS ${jags_HOME}/include)
       set(jags_LIBRARY_DIRS ${jags_HOME}/lib)
       set(jags_PKG_CONFIG_PATH ${jags_HOME}/lib/pkgconfig/)
@@ -375,43 +442,7 @@ if(INSTALL_R_MODULES)
       configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                      ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
 
-      # ----- Downloading and Building jags
 
-      fetchcontent_declare(
-        jags
-        HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
-        HG_TAG "release-4_3_0")
-
-      message(CHECK_START "Downloading 'jags'")
-
-      fetchcontent_makeavailable(jags)
-
-      if(jags_POPULATED)
-
-        message(CHECK_PASS "successful.")
-
-        add_custom_command(
-          WORKING_DIRECTORY ${jags_SOURCE_DIR}
-          OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
-          COMMAND ${ACLOCAL}
-          COMMAND ${AUTORECONF} -fi
-          COMMAND ./configure --disable-dependency-tracking
-                  --prefix=${jags_HOME}
-          COMMAND ${MAKE}
-          COMMAND ${MAKE} install
-          COMMAND
-            ${CMAKE_COMMAND} -D
-            NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-            -D PATH=${jags_HOME} -D R_HOME_PATH=${R_HOME_PATH} -D
-            R_DIR_NAME=${R_DIR_NAME} -SIGNING=${IS_SIGNING} -P
-            ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-          COMMENT "----- Preparing 'jags'")
-
-      else()
-
-        message(CHECK_FAIL "failed.")
-
-      endif()
 
     endif()
 

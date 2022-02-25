@@ -214,6 +214,72 @@ if(WIN32)
     )
   endif()
 
+
+  # jags 
+  # This could all go into its module later, and these can
+  # turn into a function, but I don't want to do it now
+  # because I'm uncertain about CMake variable scopping
+  message(CHECK_START "Looking for jags files")
+  find_file(
+    MINGW_LIBJAGS_BAT
+    NAMES jags.bat
+    PATHS ${MINGW_PATH}/bin
+    REQUIRED)
+  message(STATUS "  ${MINGW_LIBJAGS_BAT}")
+  find_file(
+    MINGW_LIBJAGS
+    NAMES libjags-5.dll
+    PATHS ${MINGW_PATH}/bin
+    REQUIRED)
+  message(STATUS "  ${MINGW_LIBJAGS}")
+  find_file(
+    MINGW_LIBJAGS_JRMATH
+    NAMES libjrmath-0.dll
+    PATHS ${MINGW_PATH}/bin
+    REQUIRED)
+  message(STATUS "  ${MINGW_LIBJAGS_JRMATH}")
+
+  set(MINGW_LIBJAGS_HEADERS_PATH "${MINGW_PATH}/include/JAGS")
+  message(STATUS "  ${MINGW_LIBJAGS_HEADERS_PATH}")
+  set(MINGW_LIBJAGS_LIBRARIES_PATH "${MINGW_PATH}/lib/JAGS")
+  message(STATUS "  ${MINGW_LIBJAGS_LIBRARIES_PATH}")
+  set(MINGW_LIBJAGS_PKGCONFIG_PATH "${MINGW_PATH}/lib/pkgconfig")
+  message(STATUS "  ${MINGW_LIBJAGS_PKGCONFIG_PATH}")
+
+  find_file(
+    MINGW_LIBJAGS_LIBJAGS_A
+    NAMES libjags.dll.a
+    PATHS ${MINGW_PATH}/lib
+    REQUIRED)
+  message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS}")
+  find_file(
+    MINGW_LIBJAGS_LIBJAGS_LA
+    NAMES libjags.la
+    PATHS ${MINGW_PATH}/lib
+    REQUIRED)
+  message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS}")
+  find_file(
+    MINGW_LIBJAGS_LIBJRMATH_A
+    NAMES libjrmath.dll.a
+    PATHS ${MINGW_PATH}/lib
+    REQUIRED)
+  message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH}")
+  find_file(
+    MINGW_LIBJAGS_LIBJRMATH_LA
+    NAMES libjrmath.la
+    PATHS ${MINGW_PATH}/lib
+    REQUIRED)
+  message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH}")
+
+  find_file(
+    MINGW_LIBJAGS_JAGS_TERMINAL_EXE
+    NAMES jags-terminal.exe
+    PATHS ${MINGW_PATH}/libexec
+    REQUIRED)
+  message(STATUS "  ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE}")
+
+  message(CHECK_PASS "found")
+
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
