@@ -95,18 +95,6 @@ if(NOT WIN32)
     jsoncpp)
 endif()
 
-if((NOT INSTALL_JASP_REQUIRED_LIBRARIES) AND (NOT WIN32))
-
-  # This most likely doesn't work because readstat doesn't have a proper
-  # pkgconfig.pc, but I leave it here fore when they do!
-  pkg_check_modules(
-    LIBREADSTAT
-    REQUIRED
-    IMPORTED_TARGET
-    readstat)
-
-endif()
-
 if(WIN32)
   # ReadStat
 
@@ -214,8 +202,7 @@ if(WIN32)
     )
   endif()
 
-
-  # jags 
+  # jags
   # This could all go into its module later, and these can
   # turn into a function, but I don't want to do it now
   # because I'm uncertain about CMake variable scopping
@@ -223,20 +210,17 @@ if(WIN32)
   find_file(
     MINGW_LIBJAGS_BAT
     NAMES jags.bat
-    PATHS ${MINGW_PATH}/bin
-    REQUIRED)
+    PATHS ${MINGW_PATH}/bin REQUIRED)
   message(STATUS "  ${MINGW_LIBJAGS_BAT}")
   find_file(
     MINGW_LIBJAGS
     NAMES libjags-5.dll
-    PATHS ${MINGW_PATH}/bin
-    REQUIRED)
+    PATHS ${MINGW_PATH}/bin REQUIRED)
   message(STATUS "  ${MINGW_LIBJAGS}")
   find_file(
     MINGW_LIBJAGS_JRMATH
     NAMES libjrmath-0.dll
-    PATHS ${MINGW_PATH}/bin
-    REQUIRED)
+    PATHS ${MINGW_PATH}/bin REQUIRED)
   message(STATUS "  ${MINGW_LIBJAGS_JRMATH}")
 
   set(MINGW_LIBJAGS_HEADERS_PATH "${MINGW_PATH}/include/JAGS")
@@ -249,33 +233,28 @@ if(WIN32)
   find_file(
     MINGW_LIBJAGS_LIBJAGS_A
     NAMES libjags.dll.a
-    PATHS ${MINGW_PATH}/lib
-    REQUIRED)
+    PATHS ${MINGW_PATH}/lib REQUIRED)
   message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_A}")
   find_file(
     MINGW_LIBJAGS_LIBJAGS_LA
     NAMES libjags.la
-    PATHS ${MINGW_PATH}/lib
-    REQUIRED)
+    PATHS ${MINGW_PATH}/lib REQUIRED)
   message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_LA}")
   find_file(
     MINGW_LIBJAGS_LIBJRMATH_A
     NAMES libjrmath.dll.a
-    PATHS ${MINGW_PATH}/lib
-    REQUIRED)
+    PATHS ${MINGW_PATH}/lib REQUIRED)
   message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_A}")
   find_file(
     MINGW_LIBJAGS_LIBJRMATH_LA
     NAMES libjrmath.la
-    PATHS ${MINGW_PATH}/lib
-    REQUIRED)
+    PATHS ${MINGW_PATH}/lib REQUIRED)
   message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_LA}")
 
   find_file(
     MINGW_LIBJAGS_JAGS_TERMINAL_EXE
     NAMES jags-terminal.exe
-    PATHS ${MINGW_PATH}/libexec
-    REQUIRED)
+    PATHS ${MINGW_PATH}/libexec REQUIRED)
   message(STATUS "  ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE}")
 
   message(CHECK_PASS "found")

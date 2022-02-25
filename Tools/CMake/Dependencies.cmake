@@ -17,7 +17,6 @@ add_custom_target(Dependencies)
 
 add_dependencies(Dependencies readstat)
 
-
 # ----- readstat -----
 #
 # This might look a bit unusual but it is fine. I had to do it this
@@ -52,7 +51,7 @@ if(readstat_POPULATED)
 
   set(LIBREADSTAT_INCLUDE_DIRS ${readstat_BINARY_DIR}/include)
   set(LIBREADSTAT_LIBRARY_DIRS ${readstat_BINARY_DIR}/lib)
-  set(_LIB_READSTAT_LIBRARY ${LIBREADSTAT_LIBRARY_DIRS} REQUIRED)
+  set(LIBREADSTAT_LIBRARIES ${LIBREADSTAT_LIBRARY_DIRS}/libreadstat.a)
 
 else()
 

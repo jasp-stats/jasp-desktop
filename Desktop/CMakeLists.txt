@@ -109,7 +109,7 @@ else()
   endif()
 
   # I think Ninja doesn't really like this, but I cannot tell why yet
-  # It sometimes just fails, but I'm really not sure. I need to look 
+  # It sometimes just fails, but I'm really not sure. I need to look
   # into it further later.
   add_custom_target(
     Resources
@@ -176,7 +176,7 @@ target_link_libraries(
     $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
     $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
     # Based on our config, this is either from PkgConfig, or the build/_deps/
-    ${_LIB_READSTAT_LIBRARY}
+    ${LIBREADSTAT_LIBRARIES}
     $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
     # System
     ${Iconv_LIBRARIES}
