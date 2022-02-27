@@ -444,7 +444,7 @@ elseif(WIN32)
 
   endif()
 
-elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+elseif(LINUX)
 
   message(CHECK_START "Looking for R")
 

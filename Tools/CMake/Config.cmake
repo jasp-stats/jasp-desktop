@@ -2,10 +2,11 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
 # This looks weird but CMake doesn't like ON/OFF in the if condition,
 # especially if it's passed
-option(SIGN_AT_BUILD_TIME
-       "Whether to sign every library during the configuration and build" ON)
 
 if(APPLE)
+  option(SIGN_AT_BUILD_TIME
+         "Whether to sign every library during the configuration and build" ON)
+
   if(${SIGN_AT_BUILD_TIME})
     message(STATUS "Signing everything during the configuration and building.")
     set(IS_SIGNING 1)
@@ -13,26 +14,43 @@ if(APPLE)
     message(STATUS "Only signing essential libraries and binaries.")
     set(IS_SIGNING 0)
   endif()
+
+  option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" ON)
+
 endif()
 
-set(CUSTOM_R_PATH
-    ""
-    CACHE PATH "Path to your custom R installation")
+if(WIN32)
+
+endif()
+
+if(LINUX)
+
+  set(CUSTOM_R_PATH
+      ""
+      CACHE PATH "Path to your custom R installation")
+
+  option(LINUX_LOCAL_BUILD "Whether we are building inside the Build folder"
+         OFF)
+
+  option(FLATPAK_USED "Whether we are building for Flatpak" OFF)
+
+else()
+
+  set(IS_LINUX_LOCAL_BUILD FALSE)
+
+endif()
 
 # With this, we can hit up to 90% speed up!
 option(USE_CCACHE "Whether to use ccache for build" OFF)
 option(RUN_IWYU "Whether to run Include What You Use" OFF)
-option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" ON)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
 option(
   INSTALL_JASP_REQUIRED_LIBRARIES
   "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
   OFF)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
-option(LINUX_LOCAL_BUILD "Whether we are building inside the Build folder" OFF)
-option(FLATPAK_USED "Whether we are building for Flatpak" OFF)
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+if(LINUX)
   set(FLATPAK_USED ON)
 endif()
 
@@ -43,10 +61,6 @@ if(LINUX_LOCAL_BUILD)
     WARNING
       "In this mode, JASP configures a local R/library; however this cannot be used for installing JASP. If you wish to install JASP (e.g., on Flatpak), you must diabled this flag."
   )
-endif()
-
-if(NOT (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux"))
-  set(IS_LINUX_LOCAL_BUILD FALSE)
 endif()
 
 # I have a construct for this, and Qt often messes things up.

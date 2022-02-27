@@ -14,7 +14,7 @@ add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
 #   add_dependencies(Common jsoncpp-install)
 # endif()
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+if(LINUX)
 
   target_link_libraries(Common PUBLIC ${_LIB_RT})
   target_link_options(Common PUBLIC -lrt)

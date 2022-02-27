@@ -1,6 +1,6 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Programs)
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+if(LINUX)
 
   message(CHECK_START "Looking for 'gfortran'")
   find_program(
@@ -72,7 +72,8 @@ endif()
 
 if(WIN32)
 
-  find_program(DEPLOYQT_EXECUTABLE
+  find_program(
+    DEPLOYQT_EXECUTABLE
     NAMES windeployqt
     PATHS ${Qt6_DIR}/bin)
 
@@ -89,9 +90,9 @@ if(WIN32)
     )
   endif()
 
-   set(MINGW_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe")
-   set(MINGW_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe")
-   set(MINGW_MAKE_PROGRAM "C:/msys64/mingw64/bin/mingw32-make.exe")
+  set(MINGW_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe")
+  set(MINGW_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe")
+  set(MINGW_MAKE_PROGRAM "C:/msys64/mingw64/bin/mingw32-make.exe")
 
 endif()
 

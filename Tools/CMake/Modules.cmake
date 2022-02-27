@@ -71,7 +71,7 @@ set(JASP_EXTRA_MODULES_COPY ${JASP_EXTRA_MODULES})
 list(POP_FRONT JASP_EXTRA_MODULES_COPY)
 
 if("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES)
-  if((CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux"))
+  if(LINUX)
     if(LINUX_LOCAL_BUILD)
       set(jags_HOME ${R_OPT_PATH}/jags)
     else()
@@ -122,7 +122,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
 file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
      DESTINATION ${MODULES_BINARY_PATH})
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+if(LINUX)
   set(R_PKG_TYPE "source")
 else()
   set(R_PKG_TYPE "binary")
@@ -261,8 +261,10 @@ if(INSTALL_R_MODULES)
         -D R_DIR_NAME=${R_DIR_NAME} -D
         MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -D MODULE=${MODULE} -D
         SIGNING=${IS_SIGNING} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-      COMMAND 
-        ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
+      COMMAND
+        ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
+        MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
@@ -323,7 +325,10 @@ if(INSTALL_R_MODULES)
         -D R_DIR_NAME=${R_DIR_NAME} -D
         MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -D MODULE=${MODULE} -D
         SIGNING=${IS_SIGNING} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-      COMMAND ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
+      COMMAND
+        ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
+        MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
@@ -379,24 +384,33 @@ if(INSTALL_R_MODULES)
           OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
           # bin
           COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/bin
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_BAT} ${jags_HOME}/bin/
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_BAT}
+                  ${jags_HOME}/bin/
           COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS} ${jags_HOME}/bin/
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JRMATH} ${jags_HOME}/bin/
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JRMATH}
+                  ${jags_HOME}/bin/
           # libexe
           COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/libexe
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE} ${jags_HOME}/libexe/
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE}
+                  ${jags_HOME}/libexe/
           # headers
           COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include/JAGS
-          COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_HEADERS_PATH}/ ${jags_HOME}/include/JAGS
+          COMMAND ${CMAKE_COMMAND} -E copy_directory
+                  ${MINGW_LIBJAGS_HEADERS_PATH}/ ${jags_HOME}/include/JAGS
           # libs
           COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/lib
-          COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_LIBRARIES_PATH}/ ${jags_HOME}/lib/JAGS
-          COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_PKGCONFIG_PATH}/ ${jags_HOME}/lib/pkgconfig
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_A} ${jags_HOME}/lib
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_LA} ${jags_HOME}/lib
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_A} ${jags_HOME}/lib
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_LA} ${jags_HOME}/lib
-           )
+          COMMAND ${CMAKE_COMMAND} -E copy_directory
+                  ${MINGW_LIBJAGS_LIBRARIES_PATH}/ ${jags_HOME}/lib/JAGS
+          COMMAND ${CMAKE_COMMAND} -E copy_directory
+                  ${MINGW_LIBJAGS_PKGCONFIG_PATH}/ ${jags_HOME}/lib/pkgconfig
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_A}
+                  ${jags_HOME}/lib
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_LA}
+                  ${jags_HOME}/lib
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_A}
+                  ${jags_HOME}/lib
+          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_LA}
+                  ${jags_HOME}/lib)
 
       else()
 
@@ -447,8 +461,6 @@ if(INSTALL_R_MODULES)
       # install-jaspMetaAnalysis.R needs to be reconfigured again
       configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                      ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
-
-
 
     endif()
 

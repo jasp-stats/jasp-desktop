@@ -19,6 +19,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_FIND_FRAMEWORK ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+  set(LINUX ON)
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Tools/CMake")
 
 # ------ Build Toolchain
@@ -77,11 +81,18 @@ else()
   # Building R-Interface with MinGW configuration
   # Note that the reason I'm not directly building into the main BINARY_DIR
   # is because CMake artifacts will conflicts in that case.
-  add_custom_target(R-Interface
+  add_custom_target(
+    R-Interface
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-    COMMAND ${CMAKE_COMMAND} -G "MinGW Makefiles" -S . -B ${CMAKE_BINARY_DIR}/R-Interface "-DCMAKE_C_COMPILER:STRING=${MINGW_C_COMPILER}" "-DCMAKE_CXX_COMPILER:STRING=${MINGW_CXX_COMPILER}" "-DCMAKE_MAKE_PROGRAM:STRING=${MINGW_MAKE_PROGRAM}" "-DJASP_BINARY_DIR:STRING=${CMAKE_BINARY_DIR}" "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
-    )
+    COMMAND
+      ${CMAKE_COMMAND} -G "MinGW Makefiles" -S . -B
+      ${CMAKE_BINARY_DIR}/R-Interface
+      "-DCMAKE_C_COMPILER:STRING=${MINGW_C_COMPILER}"
+      "-DCMAKE_CXX_COMPILER:STRING=${MINGW_CXX_COMPILER}"
+      "-DCMAKE_MAKE_PROGRAM:STRING=${MINGW_MAKE_PROGRAM}"
+      "-DJASP_BINARY_DIR:STRING=${CMAKE_BINARY_DIR}"
+      "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface)
 endif()
 
 add_subdirectory(Engine)

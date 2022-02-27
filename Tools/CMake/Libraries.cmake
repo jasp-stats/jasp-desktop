@@ -50,7 +50,7 @@ find_package(
              QuickWidgets
              Core5Compat)
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+if(LINUX)
 
   message(CHECK_START "Looking for `librt`")
   find_library(
@@ -75,10 +75,22 @@ if(APPLE)
 
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
-  find_library(_LIB_BROTLICOMMON NAMES brotlicommon)
+  find_library(_LIB_BROTLICOMMON NAMES brotlicommon REQUIRED)
 
-  if(_LIB_BROTLICOMMON)
+  pkg_check_modules(_PKGCONFIG_LIB_BROTLICOMMON REQUIRED libbrotlicommon)
+
+  set(_LIB_BROTLICOMMON
+      ${_LIB_BROTL_LIBRARY_DIRS}/libbrotlicommon.${_PKGCONFIG_LIB_BROTLICOMMON_VERSION}.dylib
+  )
+
+  if(EXISTS "${_LIB_BROTLICOMMON}")
     message(CHECK_PASS "found")
+    message(STATUS "  Copying the 'libbrotlicommon' to the local build folder")
+    execute_process(
+      WORKING_DIRECTORY ${_LIB_BROTL_LIBRARY_DIRS}
+      COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_BROTLICOMMON}
+              ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
+    set(_LIB_BROTLICOMMON ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
     message(STATUS "  ${_LIB_BROTLICOMMON}")
   else()
     message(CHECK_FAIL "not found")

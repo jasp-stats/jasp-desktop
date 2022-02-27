@@ -1,6 +1,6 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+if(LINUX)
 
   target_link_libraries(R-Interface PUBLIC ${_LIB_R})
 
@@ -38,7 +38,7 @@ if(WIN32)
     message(STATUS "  ${_LIB_R_INTERFACE_SHARED}")
   else()
     message(CHECK_FAIL "not found")
- endif()
+  endif()
 
   message(CHECK_START "Looking for libR-Interface.dll.a")
   find_file(
@@ -135,12 +135,13 @@ elseif(WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBSTDCPP} ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBWINPTHREAD} ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJSONCPP} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_R_INTERFACE_SHARED} ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_R_INTERFACE_SHARED}
+            ${CMAKE_BINARY_DIR}
     COMMENT "------ Re-installing the DLLs")
 
   add_dependencies(Copy-Required-Libraries-To-Bin JASPEngine)
 
-elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+elseif(LINUX)
 
   # target_link_options(JASPEngine
   # PUBLIC rt)

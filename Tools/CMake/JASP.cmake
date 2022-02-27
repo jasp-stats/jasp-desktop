@@ -69,7 +69,7 @@ if(NOT R_REPOSITORY)
       CACHE STRING "The CRAN mirror used by 'renv' and 'install.packages'")
 endif()
 
-if(FLATPAK_USED AND (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux"))
+if(FLATPAK_USED AND (LINUX))
   set(R_REPOSITORY "file:///app/lib64/local-cran")
 endif()
 
@@ -107,7 +107,7 @@ endif()
 # - [ ] Find a better name for some of these variables
 # - [ ] Setup the GITHUB_PAT
 
-# if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+# if(LINUX)
 #   add_link_options(-fuse-ld=gold)
 # endif()
 
@@ -119,19 +119,19 @@ option(UPDATE_JASP_SUBMODULES
 if(UPDATE_JASP_SUBMODULES)
   if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     # Update submodules as needed
-      message(STATUS "Submodule update")
-      execute_process(
-        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-      if(NOT
-         GIT_SUBMOD_RESULT
-         EQUAL
-         "0")
-        message(
-          FATAL_ERROR
-            "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules"
-        )
+    message(STATUS "Submodule update")
+    execute_process(
+      COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      RESULT_VARIABLE GIT_SUBMOD_RESULT)
+    if(NOT
+       GIT_SUBMOD_RESULT
+       EQUAL
+       "0")
+      message(
+        FATAL_ERROR
+          "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules"
+      )
     endif()
   endif()
 endif()

@@ -37,3 +37,9 @@ execute_process(COMMAND codesign --verify --verbose --display
 
 execute_process(COMMAND codesign --verify --verbose --display
                         "@JASP_INSTALL_PREFIX@")
+
+execute_process(
+  COMMAND
+    codesign --verbose=4 --deep --force --entitlements
+    "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
+    --options runtime "@JASP_INSTALL_PREFIX@")

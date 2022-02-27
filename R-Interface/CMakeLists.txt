@@ -205,7 +205,7 @@ else()
              NOMINMAX
              WIN32_LEAN_AND_MEAN)
     # target_compile_options(R-Interface -Og -municode)
-  elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+  elseif(LINUX)
 
   endif()
 
