@@ -186,7 +186,11 @@ else()
 
         endwhile()
 
-        message(CHECK_PASS "signed")
+        if(NOT (SIGNING_RESULT STREQUAL "timeout"))
+          message(CHECK_START "successful")
+        else()
+          message(CHECK_FAIL "unsuccessful")
+        endif()
 
       endif()
 

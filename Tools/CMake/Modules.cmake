@@ -374,6 +374,9 @@ if(INSTALL_R_MODULES)
 
       if(WIN32)
 
+        # Manually copying the entire JAGS from MSYS2 into the R/opt/jags
+        # if later, we need any other libraries, we can use this method,
+        # automate it a bit nicer, and ship our external libraries
         add_custom_command(
           OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
           # bin

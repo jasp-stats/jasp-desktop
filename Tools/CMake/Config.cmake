@@ -61,9 +61,10 @@ if(LINUX)
 
   # IS_LINUX_LOCAL_BUILD is a special variable that will be used in install-module.R
   # and it is suppose to store R's TRUE or FALSE
+  set(IS_LINUX_LOCAL_BUILD TRUE)
+
   if(LINUX_LOCAL_BUILD)
     set(FLATPAK_USED OFF)
-    set(IS_LINUX_LOCAL_BUILD TRUE)
 
     message(STATUS "JASP will be configured for local testing")
     message(
@@ -72,8 +73,11 @@ if(LINUX)
     )
   else()
     set(FLATPAK_USED OFF)
-    set(IS_LINUX_LOCAL_BUILD FALSE)
   endif()
+
+else()
+
+  set(IS_LINUX_LOCAL_BUILD FALSE)
 
 endif()
 

@@ -53,6 +53,10 @@ set(JASP_ENGINE_PATH
     "${CMAKE_BINARY_DIR}/Desktop/"
     CACHE PATH "Location of the JASPEngine")
 
+make_directory("${MODULES_BINARY_PATH}")
+make_directory("${MODULES_RENV_ROOT_PATH}")
+make_directory("${MODULES_RENV_CACHE_PATH}")
+
 # ------
 
 if(APPLE)
@@ -193,7 +197,7 @@ if(APPLE)
       set(SIGNING_RESULT "timeout")
       while(${SIGNING_RESULT} STREQUAL "timeout")
         execute_process(
-          # COMMAND_ECHO STDOUT
+          COMMAND_ECHO STDOUT
           # ERROR_QUIET OUTPUT_QUIET
           TIMEOUT 20
           WORKING_DIRECTORY ${R_HOME_PATH}
@@ -201,10 +205,16 @@ if(APPLE)
             codesign --force --sign
             "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)"
             "${R_HOME_PATH}/bin/exec/R"
-          RESULT_VARIABLE SIGNING_RESULT)
+          RESULT_VARIABLE SIGNING_RESULT
+          OUTPUT_VARIABLE SIGNING_OUTPUT)
+        message(STATUS ${SIGNING_OUTPUT})
       endwhile()
 
-      message(CHECK_FAIL "successful.")
+      if(NOT (SIGNING_RESULT STREQUAL "timeout"))
+        message(CHECK_START "successful")
+      else()
+        message(CHECK_FAIL "unsuccessful")
+      endif()
 
       execute_process(
         # COMMAND_ECHO STDOUT
@@ -279,11 +289,17 @@ if(APPLE)
     message(CHECK_START
             "Installing the 'RInside' and 'Rcpp' within the R.framework")
 
-    file(WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-         "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}')")
+    file(
+      WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
+      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}')"
+    )
+
+    if(NOT EXISTS "${MODULES_RENV_ROOT_PATH}/install-RInside.R")
+      message(STATUS "install-RInside.R doesn't exist")
+    endif()
 
     execute_process(
-      # COMMAND_ECHO STDOUT
+      COMMAND_ECHO STDOUT
       # ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
@@ -427,8 +443,10 @@ elseif(WIN32)
 
     message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
-    file(WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
-         "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}')")
+    file(
+      WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
+      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}')"
+    )
 
     execute_process(
       # COMMAND_ECHO STDOUT
