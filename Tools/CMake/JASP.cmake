@@ -69,7 +69,7 @@ if(NOT R_REPOSITORY)
       CACHE STRING "The CRAN mirror used by 'renv' and 'install.packages'")
 endif()
 
-if(FLATPAK_USED AND (LINUX))
+if(FLATPAK_USED AND LINUX)
   set(R_REPOSITORY "file:///app/lib64/local-cran")
 endif()
 
