@@ -257,3 +257,8 @@ In addition, if you do not wish to pollute your custom library directory, you ca
 
 ## Known Issues
 
+- Some commands and targets might run when it's not really necessary. After I'm sure that everything works, I will look into them to reduce the redundant runs
+- CMake can do some caching, there is already some but I can do better, for now, until everytihng works I like to be sure that caching doesn't mess anything, so, you might notice some redownloading, rebuilding, etc.
+	- The solution is using `add_custom_command` and `add_custom_target`, but they need to be used with care
+- Some platform specific compiler flags might be missing
+- Some parts of CMake can be more granular and modular, but I have not done it because I'm worried about CMake variable scoping. For now, I will leave them like this, when we have the CI's in place, changing and testing these will be much easier.

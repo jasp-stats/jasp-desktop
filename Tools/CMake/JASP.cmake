@@ -101,16 +101,6 @@ if(JASP_TIMER_USED)
   add_definitions(-DPROFILE_JASP)
 endif()
 
-# TODO:
-# - [ ] Make sure that all variables from .pri and .pro make it to the CMake files
-# - [ ] Find the Git location, I think I can use CMake's $ENV{GIT} or something like that
-# - [ ] Find a better name for some of these variables
-# - [ ] Setup the GITHUB_PAT
-
-# if(LINUX)
-#   add_link_options(-fuse-ld=gold)
-# endif()
-
 option(UPDATE_JASP_SUBMODULES
        "Whether to automatically initialize and update the submodules" ON)
 

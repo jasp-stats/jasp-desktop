@@ -32,7 +32,7 @@ jobs:
       - name: Updating Homebrew
         run: brew update --preinstall
       - name: Preparing the Requirements
-        run: brew install automake jsoncpp bison cmake qt boost pkg-config libarchive zlib libiconv openssl mercurial
+        run: brew install automake jsoncpp bison cmake qt boost pkg-config libarchive zlib libiconv openssl mercurial brotli
       - name: Setting up the Environment Variables
         run: |
           export PKG_CONFIG_PATH="/usr/local/opt/zlib/lib/pkgconfig:/usr/local/opt/openssl@3/lib/pkgconfig:/usr/local/opt/qt/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig:/usr/local/Cellar/libarchive/3.5.2/lib/pkgconfig"

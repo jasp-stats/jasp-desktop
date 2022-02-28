@@ -6,6 +6,12 @@ else()
   set(LINUX 0)
 endif()
 
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+  set(WINDOWS 1)
+else()
+  set(WINDOWS 0)
+endif()
+
 # This looks weird but CMake doesn't like ON/OFF in the if condition,
 # especially if it's passed
 

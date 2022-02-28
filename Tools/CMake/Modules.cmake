@@ -87,8 +87,6 @@ else()
 endif()
 message(STATUS "If necessary, 'jags' will be installed at ${jags_HOME}")
 
-# TODO: Standardize these names, either use PATH, ROOT, or DIR, but everywhere
-
 if(NOT EXISTS ${MODULES_SOURCE_PATH})
   message(WARNING "Modules sources are not available. If you are planning
        to install them during the build, make sure that they are avialble in
@@ -109,10 +107,6 @@ cmake_print_variables(MODULES_BINARY_PATH)
 cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
-# Moving the .R files into the Modules/ folder
-# TODO:
-# - [ ] They still need to be installed as well.
-#   - They are most likely being installed during the Module transfer anyway
 file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
      DESTINATION ${MODULES_BINARY_PATH})
 file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
