@@ -19,10 +19,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_FIND_FRAMEWORK ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-  set(LINUX ON)
-endif()
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Tools/CMake")
 
 # ------ Build Toolchain
@@ -34,6 +30,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Tools/CMake")
 include(FetchContent)
 include(ExternalProject)
 include(CMakePrintHelpers)
+
+# ------ Options
+
+include(Config)
 
 # ------ Conan Dependency Manager
 
@@ -49,8 +49,6 @@ include(Programs)
 if(INSTALL_JASP_REQUIRED_LIBRARIES)
   include(Dependencies)
 endif()
-
-include(Config)
 
 include(Libraries)
 

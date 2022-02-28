@@ -53,15 +53,14 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
   - [Logging](Docs/user-guide/logging-howto.md)
   
 #### Building
-  - [Guide to Building JASP](Docs/development/jasp-building-guide.md)
-  - [Git and GitHub guide](Docs/development/git-guide.md)
+  - [Guide to Building JASP](Docs/development/jasp-cmake-building-guide.md)
+  - [Rebasing your Repository](Docs/development/git-guide.md)
   - [Nightly versions of JASP here](http://static.jasp-stats.org/Nightlies/) (built fresh every night)
 
 #### Modules
   - [Creating a Module](Docs/development/jasp-adding-module.md)
   - [Module Workflow](Docs/development/jasp-module-workflow.md)
   - [Making a QML Interface](Docs/development/jasp-qml-guide.md)
-  - [Upgrading a QML Interface](Docs/development/jasp-upgrade-qml.md)
     
 #### R
   - [Implementing Analyses in R](Docs/development/r-analyses-guide.md)

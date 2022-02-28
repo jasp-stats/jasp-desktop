@@ -536,10 +536,8 @@ elseif(LINUX)
   # lib paths in case we are installing locally.
   if(LINUX_LOCAL_BUILD)
     set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBS_LOCAL}'")
-    set(IS_LINUX_LOCAL_BUILD TRUE)
   else()
     set(USE_LOCAL_R_LIBS_PATH "")
-    set(IS_LINUX_LOCAL_BUILD FALSE)
   endif()
 
   cmake_print_variables(R_HOME_PATH)

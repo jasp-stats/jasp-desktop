@@ -1,5 +1,11 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+  set(LINUX 1)
+else()
+  set(LINUX 0)
+endif()
+
 # This looks weird but CMake doesn't like ON/OFF in the if condition,
 # especially if it's passed
 
@@ -17,9 +23,23 @@ if(APPLE)
 
   option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" ON)
 
+  # Later we use this to produce two DMG file, or maybe a Universal one
+  # but I'm not yet so sure how that will work
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64")
+    set(CPACK_ARCH_SUFFIX "Intel")
+  elseif(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+    set(CPACK_ARCH_SUFFIX "Apple")
+  else()
+    set(CPACK_ARCH_SUFFIX "Universal")
+  endif()
+
 endif()
 
 if(WIN32)
+
+  option(USE_CONAN "Whether to use CONAN package manager" ON)
+
+  set(SYSTEM_TYPE WIN32)
 
 endif()
 
@@ -34,9 +54,21 @@ if(LINUX)
 
   option(FLATPAK_USED "Whether we are building for Flatpak" OFF)
 
-else()
+  # IS_LINUX_LOCAL_BUILD is a special variable that will be used in install-module.R
+  # and it is suppose to store R's TRUE or FALSE
+  if(LINUX_LOCAL_BUILD)
+    set(FLATPAK_USED OFF)
+    set(IS_LINUX_LOCAL_BUILD TRUE)
 
-  set(IS_LINUX_LOCAL_BUILD FALSE)
+    message(STATUS "JASP will be configured for local testing")
+    message(
+      WARNING
+        "In this mode, JASP configures a local R/library; however this cannot be used for installing JASP. If you wish to install JASP (e.g., on Flatpak), you must diabled this flag."
+    )
+  else()
+    set(FLATPAK_USED OFF)
+    set(IS_LINUX_LOCAL_BUILD FALSE)
+  endif()
 
 endif()
 
@@ -50,26 +82,9 @@ option(
   OFF)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
 
-if(LINUX)
-  set(FLATPAK_USED ON)
-endif()
-
-if(LINUX_LOCAL_BUILD)
-  set(FLATPAK_USED OFF)
-  message(STATUS "JASP will be configured for local testing")
-  message(
-    WARNING
-      "In this mode, JASP configures a local R/library; however this cannot be used for installing JASP. If you wish to install JASP (e.g., on Flatpak), you must diabled this flag."
-  )
-endif()
-
 # I have a construct for this, and Qt often messes things up.
 # I will consider turning this off, and letting Qt does it
 # when everything else worked properly
-option(USE_CONAN "Whether to use CONAN package manager" OFF)
-if(WIN32)
-  set(USE_CONAN ON)
-endif()
 
 if(INSTALL_R_MODULES AND (GITHUB_PAT STREQUAL ""))
   message(
@@ -95,7 +110,7 @@ endif()
 
 # To change the binary architecture on Win
 if(WIN32)
-  set(SYSTEM_TYPE WIN32)
+
 endif()
 
 # In case Qt is not in path
