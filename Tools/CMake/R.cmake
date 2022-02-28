@@ -177,7 +177,8 @@ if(APPLE)
           ${CMAKE_COMMAND} -D
           NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
           -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
-          R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -P
+          R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -D
+          CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
           ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
       # R binary should be patched as well
@@ -202,18 +203,17 @@ if(APPLE)
           TIMEOUT 20
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
-            codesign --force --sign
+            codesign --force ${CODESIGN_TIMESTAMP_FLAG} --sign
             "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)"
             "${R_HOME_PATH}/bin/exec/R"
           RESULT_VARIABLE SIGNING_RESULT
           OUTPUT_VARIABLE SIGNING_OUTPUT)
-        message(STATUS ${SIGNING_OUTPUT})
       endwhile()
 
       if(NOT (SIGNING_RESULT STREQUAL "timeout"))
-        message(CHECK_START "successful")
+        message(CHECK_PASS "signed")
       else()
-        message(CHECK_FAIL "unsuccessful")
+        message(CHECK_FAIL "failed")
       endif()
 
       execute_process(
@@ -294,20 +294,12 @@ if(APPLE)
       "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}')"
     )
 
-    if(NOT EXISTS "${MODULES_RENV_ROOT_PATH}/install-RInside.R")
-      message(STATUS "install-RInside.R doesn't exist")
-    endif()
-
     execute_process(
       COMMAND_ECHO STDOUT
       # ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
-
-    if(NOT EXISTS ${R_LIBRARY_PATH})
-      message(STATUS "R/library doesn't exist!")
-    endif()
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
       message(CHECK_FAIL "unsuccessful.")
@@ -326,7 +318,8 @@ if(APPLE)
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
         -D PATH=${R_HOME_PATH}/library/RInside -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -P
+        R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -D
+        CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
     execute_process(
@@ -337,7 +330,8 @@ if(APPLE)
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
         -D PATH=${R_HOME_PATH}/library/Rcpp -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -P
+        R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -D
+        CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
     message(CHECK_PASS "successful.")

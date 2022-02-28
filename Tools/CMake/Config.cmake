@@ -17,13 +17,25 @@ endif()
 if(APPLE)
   option(SIGN_AT_BUILD_TIME
          "Whether to sign every library during the configuration and build" ON)
+  option(
+    TIMESTAMP_AT_BUILD_TIME
+    "Whether to add the timstamp every library during the configuration and build"
+    OFF)
 
   if(${SIGN_AT_BUILD_TIME})
     message(STATUS "Signing everything during the configuration and building.")
     set(IS_SIGNING 1)
+    set(CODESIGN_TIMESTAMP_FLAG "--timestamp")
   else()
     message(STATUS "Only signing essential libraries and binaries.")
+    set(CODESIGN_TIMESTAMP_FLAG "--timestamp=none")
     set(IS_SIGNING 0)
+  endif()
+
+  if(${TIMESTAMP_AT_BUILD_TIME})
+    set(CODESIGN_TIMESTAMP_FLAG "--timestamp")
+  else()
+    set(CODESIGN_TIMESTAMP_FLAG "--timestamp=none")
   endif()
 
   option(INSTALL_R_FRAMEWORK "Whether to download and prepare R.framework" ON)

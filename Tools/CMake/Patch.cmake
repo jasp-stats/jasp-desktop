@@ -170,9 +170,9 @@ else()
 
         set(SIGNING_RESULT "timeout")
 
-        while((${SIGNING_RESULT} STREQUAL "timeout"))
+        message(CHECK_START "-------- Signing ${FILE}")
 
-          message(CHECK_START "-------- Signing ${FILE}")
+        while(${SIGNING_RESULT} STREQUAL "timeout")
 
           execute_process(
             # COMMAND_ECHO STDOUT
@@ -180,16 +180,16 @@ else()
             ERROR_QUIET OUTPUT_QUIET
             WORKING_DIRECTORY ${PATH}
             COMMAND
-              codesign --force --sign
+              codesign --force ${CODESIGN_TIMESTAMP_FLAG} --sign
               "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" "${FILE}"
-            RESULT_VARIABLE SIGNING_RESULT)
-
+            RESULT_VARIABLE SIGNING_RESULT
+            OUTPUT_VARIABLE SIGNING_OUTPUT)
         endwhile()
 
         if(NOT (SIGNING_RESULT STREQUAL "timeout"))
-          message(CHECK_START "successful")
+          message(CHECK_PASS "signed")
         else()
-          message(CHECK_FAIL "unsuccessful")
+          message(CHECK_FAIL "failed")
         endif()
 
       endif()

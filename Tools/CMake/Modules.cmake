@@ -193,7 +193,8 @@ if(INSTALL_R_MODULES)
       ${CMAKE_COMMAND} -D
       NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
       -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-      R_DIR_NAME=${R_DIR_NAME} -SIGNING=${IS_SIGNING} -P
+      R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
+      CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
       ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
     COMMENT "------ Installing 'jaspBase'")
 
@@ -209,7 +210,8 @@ if(INSTALL_R_MODULES)
       ${CMAKE_COMMAND} -D
       NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
       -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-      R_DIR_NAME=${R_DIR_NAME} -SIGNING=${IS_SIGNING} -P
+      R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
+      CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
       ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
     COMMENT "------ Installing 'jaspGraphs'")
 
@@ -226,7 +228,8 @@ if(INSTALL_R_MODULES)
       ${CMAKE_COMMAND} -D
       NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
       -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-      R_DIR_NAME=${R_DIR_NAME} -SIGNING=${IS_SIGNING} -P
+      R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
+      CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
       ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
     COMMENT "------ Installing 'jaspTools'")
 
@@ -439,7 +442,8 @@ if(INSTALL_R_MODULES)
               ${CMAKE_COMMAND} -D
               NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
               -D PATH=${jags_HOME} -D R_HOME_PATH=${R_HOME_PATH} -D
-              R_DIR_NAME=${R_DIR_NAME} -SIGNING=${IS_SIGNING} -P
+              R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
+              CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
               ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
             COMMENT "----- Preparing 'jags'")
 
