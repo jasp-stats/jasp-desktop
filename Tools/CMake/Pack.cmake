@@ -61,7 +61,7 @@ if(APPLE)
   #              --password <secret_2FA_password>
   add_custom_target(
     notarise COMMAND xcrun notarytool submit "JASP/${CPACK_DMG_VOLUME_NAME}"
-                     --keychain-profile "AC_PASSWORD" --wait)
+                     --keychain-profile "AC_PASSWORD")
 endif()
 
 include(CPack)
