@@ -284,10 +284,14 @@ if(APPLE)
 
     execute_process(
       # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      # ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
+
+    if(NOT EXISTS ${R_LIBRARY_PATH})
+      message(STATUS "R/library doesn't exist!")
+    endif()
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
       message(CHECK_FAIL "unsuccessful.")

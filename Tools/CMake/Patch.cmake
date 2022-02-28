@@ -176,7 +176,7 @@ else()
 
           execute_process(
             # COMMAND_ECHO STDOUT
-            TIMEOUT 20
+            TIMEOUT 30
             ERROR_QUIET OUTPUT_QUIET
             WORKING_DIRECTORY ${PATH}
             COMMAND
