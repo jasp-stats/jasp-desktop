@@ -40,6 +40,7 @@ if(readstat_POPULATED)
   add_custom_command(
     WORKING_DIRECTORY ${readstat_SOURCE_DIR}
     OUTPUT ${readstat_BINARY_DIR}/include/readstat.h
+           ${readstat_BINARY_DIR}/lib/libreadstat.a
     COMMAND ${AUTORECONF} -fi
     COMMAND ${AUTOUPDATE}
     COMMAND ./configure --enable-static --prefix=${readstat_BINARY_DIR}
