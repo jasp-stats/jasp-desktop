@@ -42,6 +42,7 @@ find_package(
              Xml
              DBus
              QuickTemplates2
+             LabsFolderListModel
              Quick
              QuickLayouts
              QuickControls2

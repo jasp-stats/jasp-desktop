@@ -169,6 +169,7 @@ target_link_libraries(
     Qt::QuickTemplates2
     Qt::DBus
     Qt::QmlWorkerScript
+    Qt::LabsFolderListModel
     # OpenSSL::SSL
     # OpenSSL::Crypto
     # System
