@@ -38,7 +38,14 @@ else()
     get_filename_component(FILE_NAME ${FILE} NAME)
     get_filename_component(DIRECTORY_NAME ${FILE} DIRECTORY)
 
-    message(CHECK_START "-------- Patching ${FILE}")
+    string(LENGTH "${PATH}/" PATH_LENGTH)
+    string(
+      SUBSTRING "${FILE}"
+                "${PATH_LENGTH}"
+                "-1"
+                FILE_SHORT_PATH)
+
+    message(CHECK_START "-------- Patching ${FILE_SHORT_PATH}")
 
     if(NOT EXISTS "${DIRECTORY_NAME}/${FILE_NAME}.patched.log")
 
@@ -170,7 +177,7 @@ else()
 
         set(SIGNING_RESULT "timeout")
 
-        message(CHECK_START "-------- Signing ${FILE}")
+        message(CHECK_START "-------- Signing ${FILE_SHORT_PATH}")
 
         while(${SIGNING_RESULT} STREQUAL "timeout")
 

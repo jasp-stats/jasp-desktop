@@ -38,9 +38,9 @@ set(JASP_COMMON_MODULES
     # "jaspMixedModels"
 )
 
-list(REVERSE JASP_COMMON_MODULES)
-set(JASP_COMMON_MODULES_COPY ${JASP_COMMON_MODULES})
-list(POP_FRONT JASP_COMMON_MODULES_COPY FIRST_COMMON_MODULE)
+# list(REVERSE JASP_COMMON_MODULES)
+# set(JASP_COMMON_MODULES_COPY ${JASP_COMMON_MODULES})
+# list(POP_FRONT JASP_COMMON_MODULES_COPY FIRST_COMMON_MODULE)
 
 # Possible Bug:
 #
@@ -66,9 +66,9 @@ set(JASP_EXTRA_MODULES
     # "jaspProcessControl"
 )
 
-list(REVERSE JASP_EXTRA_MODULES)
-set(JASP_EXTRA_MODULES_COPY ${JASP_EXTRA_MODULES})
-list(POP_FRONT JASP_EXTRA_MODULES_COPY)
+# list(REVERSE JASP_EXTRA_MODULES)
+# set(JASP_EXTRA_MODULES_COPY ${JASP_EXTRA_MODULES})
+# list(POP_FRONT JASP_EXTRA_MODULES_COPY)
 
 if("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES)
   if(LINUX)
@@ -245,6 +245,7 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
+      JOB_POOL sequential
       WORKING_DIRECTORY ${R_HOME_PATH}
       DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
               ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
@@ -278,22 +279,6 @@ if(INSTALL_R_MODULES)
       add_dependencies(${MODULE} JASPEngine)
     endif()
 
-    # Making sure that CMake doesn't parallelize the installation of the modules
-
-    if(CMAKE_GENERATOR STREQUAL "Ninja")
-
-      set_property(TARGET ${MODULE} PROPERTY JOB_POOL_COMPILE sequential)
-
-    else()
-
-      list(POP_FRONT JASP_COMMON_MODULES_COPY PREVIOUS_COMMON_MODULE)
-
-      if(PREVIOUS_COMMON_MODULE)
-        add_dependencies(${MODULE} ${PREVIOUS_COMMON_MODULE})
-      endif()
-
-    endif()
-
     add_dependencies(Modules ${MODULE})
 
   endforeach()
@@ -307,6 +292,7 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
+      JOB_POOL sequential
       WORKING_DIRECTORY ${R_HOME_PATH}
       DEPENDS
         ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
@@ -343,21 +329,6 @@ if(INSTALL_R_MODULES)
     endif()
 
     # Making sure that CMake doesn't parallelize the installation of the modules
-
-    if(CMAKE_GENERATOR STREQUAL "Ninja")
-
-      set_property(TARGET ${MODULE} PROPERTY JOB_POOL_COMPILE sequential)
-
-    else()
-
-      list(POP_FRONT JASP_EXTRA_MODULES_COPY PREVIOUS_EXTRA_MODULE)
-
-      if(PREVIOUS_EXTRA_MODULE)
-        add_dependencies(${MODULE} ${PREVIOUS_EXTRA_MODULE}
-                         ${FIRST_COMMON_MODULE})
-      endif()
-
-    endif()
 
     add_dependencies(Modules ${MODULE})
 

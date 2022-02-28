@@ -58,6 +58,8 @@ if(APPLE)
       "JASP/${CPACK_DMG_VOLUME_NAME}"
     COMMENT "------ Creating the ${CPACK_DMG_VOLUME_NAME}")
 
+  add_dependencies(dmg install)
+
   # Add your password like this to the KeyChain
   #
   # % xcrun notarytool store-credentials "AC_PASSWORD"
