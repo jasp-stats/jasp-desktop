@@ -1,3 +1,5 @@
+list(APPEND CMAKE_MESSAGE_CONTEXT Pack)
+
 set(CPACK_PACKAGE_NAME "JASP")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A Fresh Way to Do Statistics")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://jasp-stats.org")
@@ -14,69 +16,54 @@ set(CPACK_VERBATIM_VARIABLES ON)
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 
-set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/COPYING.txt)
+# set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/COPYING.txt)
 
 set(CPACK_PACKAGE_DIRECTORY ${CPACK_PACKAGE_NAME})
 
 # --- WIX
 set(CPACK_WIX_UPGRADE_GUID "")
-set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/wix/jaspLicense.rtf")
+# set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/wix/jaspLicense.rtf")
 set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
 set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/Tools/wix/installerBanner.png")
 set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/Tools/wix/installerBackground.png")
 
-# set(CPACK_GENERATOR TGZ productbuild)
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns")
 
-# ------ Bundle Generator
-set(CPACK_BUNDLE_NAME "JASP")
-set(CPACK_BUNDLE_APPLE_CERT_APP
-    "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)")
-set(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns")
-set(CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/Desktop/Info.plist")
-set(CPACK_BUNDLE_APPLE_CODESIGN_FILES ${_R_Framework} JASPEngine)
+if(APPLE)
+  set(CPACK_PACKAGE_FILE_NAME
+      "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-macOS-${CPACK_ARCH_SUFFIX}"
+  )
+  set(CPACK_DMG_VOLUME_NAME "${CPACK_PACKAGE_FILE_NAME}.dmg")
+  set(CPACK_DMG_BACKGROUND_IMAGE
+      "${CMAKE_SOURCE_DIR}/Tools/macOS/background.png")
 
-# ------ DMG Generator
-set(CPACK_DMG_VOLUME_NAME "JASP")
-set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/Tools/macOS/background.png")
+  add_custom_target(
+    dmg
+    COMMAND
+      ${CREATE_DMG_EXECUTABLE} --volname "${CPACK_PACKAGE_FILE_NAME}" --volicon
+      "${CPACK_PACKAGE_ICON}" --icon-size 96 --icon "JASP.app" 130 270
+      --background "${CPACK_DMG_BACKGROUND_IMAGE}" --window-size 527 454
+      --window-pos 200 200 --app-drop-link 430 270
+      "JASP/${CPACK_DMG_VOLUME_NAME}" "Install/"
+    COMMAND
+      codesign --verbose --verify --deep --force --sign
+      "${APPLE_CODESIGN_IDENTITY}" --options runtime
+      "JASP/${CPACK_DMG_VOLUME_NAME}")
 
-# Note:
-#   - `.cpack-ignore` must be properly escaped
-# file(READ ${CMAKE_CURRENT_LIST_DIR}/.cpack-ignore _cpack_ignore)
-# string(
-#   REGEX
-#   REPLACE "\n"
-#           ";"
-#           _cpack_ignore
-#           ${_cpack_ignore})
-
-# set(CPACK_SOURCE_IGNORE_FILES "${_cpack_ignore}")
+  # Add your password like this to the KeyChain
+  #
+  # % xcrun notarytool store-credentials "AC_PASSWORD"
+  #              --apple-id "jasp.stats@gmail.com"
+  #              --team-id AWJJ3YVK9B
+  #              --password <secret_2FA_password>
+  add_custom_target(
+    notarise COMMAND xcrun notarytool submit "JASP/${CPACK_DMG_VOLUME_NAME}"
+                     --keychain-profile "AC_PASSWORD" --wait)
+endif()
 
 include(CPack)
 
-# cpack_add_component(
-#   jaspCore
-#   DISPLAY_NAME JASP
-#   DESCRIPTION "Essential parts of the JASP program."
-#   REQUIRED
-#   # INSTALL_TYPE
-#   # Full
-#   # Developer
-#   # Minimal
-# )
-
-# cpack_add_component_group(
-#   commonModules
-#   DISPLAY_NAME "Common Modules"
-#   DESCRIPTION "JASP Common Modules")
-
-# cpack_add_component_group(
-#   extraModules
-#   DISPLAY_NAME "Extra Modules"
-#   DESCRIPTION "JASP Extra Modules")
-
-# cpack_add_install_type(Full)
-# cpack_add_install_type(Minimal)
-# cpack_add_install_type(Developer DISPLAY_NAME "SDK Development")
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)

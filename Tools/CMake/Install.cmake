@@ -12,14 +12,22 @@
 #         `CMAKE_INSTALL_PREFIX` correctly, something like `/opt/jasp`
 #         and everything will work
 
-# include(GNUInstallDirs)
-
 # At the moment, I don't remove the `.a` files
 set(FILES_EXCLUDE_PATTERN
     ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak)$")
 set(FOLDERS_EXCLUDE_PATTERN
     ".*(/doc|/examples|/help|/man|/html|/bib|/announce|/test|/tinytest|/tests)$"
 )
+
+# See here, http://cmake.org/cmake/help/v3.22/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html
+# I'm still experimenting with the install sequence, I would like to have a
+# staging installation without messing up users' preference if it's defined
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX
+      "${CMAKE_BINARY_DIR}/Install"
+      CACHE STRING "Directory to install JASP after building" FORCE)
+  cmake_print_variables(CMAKE_INSTALL_PREFIX)
+endif()
 
 if(APPLE)
   set(MACOS_BUNDLE_NAME JASP)
@@ -36,12 +44,10 @@ if(APPLE)
   install(
     TARGETS JASP JASPEngine
     RUNTIME DESTINATION ${JASP_INSTALL_BINDIR}
-    BUNDLE DESTINATION . COMPONENT jaspCore)
+    BUNDLE DESTINATION .)
 
-  install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
-    DESTINATION ${JASP_INSTALL_RESOURCEDIR}
-    COMPONENT jaspCore)
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
+          DESTINATION ${JASP_INSTALL_RESOURCEDIR})
 
   set(R_FRAMEWORK_INSTALL_PATH ${JASP_INSTALL_FRAMEWORKDIR})
 
@@ -52,8 +58,6 @@ if(APPLE)
   set(APPLE_CODESIGN_ENTITLEMENTS
       "${CMAKE_SOURCE_DIR}/Tools/macOS/entitlements.plist")
 
-  find_program(DEPLOYQT_EXECUTABLE macdeployqt)
-  # set(DEPLOYQT_EXECUTABLE "/Users/amabdol/Qt/6.2.2/macos/bin/macdeployqt")
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   set(PARALLEL_SIGNER "${CMAKE_BINARY_DIR}/ParallelSigner.sh")
 
@@ -71,7 +75,6 @@ if(APPLE)
   install(
     DIRECTORY ${_R_Framework}
     DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}
-    COMPONENT jaspCore
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
 
@@ -79,10 +82,7 @@ if(APPLE)
   # See here: https://bugreports.qt.io/browse/QTBUG-100686
   #
   # Feel free to remove it when the bug is fixed
-  install(
-    FILES ${_LIB_BROTLICOMMON}
-    DESTINATION ${JASP_INSTALL_FRAMEWORKDIR}
-    COMPONENT jaspCore)
+  install(FILES ${_LIB_BROTLICOMMON} DESTINATION ${JASP_INSTALL_FRAMEWORKDIR})
 
   install(
     DIRECTORY ${MODULES_BINARY_PATH}/
@@ -99,7 +99,7 @@ endif()
 
 # ---- Linux / Flatpak
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+if(LINUX)
 
   if(EXISTS /app/bin)
     set(JASP_INSTALL_PREFIX "/app")
@@ -114,12 +114,10 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   install(
     TARGETS JASP JASPEngine
     RUNTIME DESTINATION ${JASP_INSTALL_BINDIR}
-    BUNDLE DESTINATION . COMPONENT jaspCore)
+    BUNDLE DESTINATION .)
 
-  install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
-    DESTINATION ${JASP_INSTALL_RESOURCEDIR}
-    COMPONENT jaspCore)
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
+          DESTINATION ${JASP_INSTALL_RESOURCEDIR})
 
   install(DIRECTORY ${MODULES_BINARY_PATH}/
           DESTINATION ${JASP_INSTALL_MODULEDIR})
@@ -169,10 +167,7 @@ if(WIN32)
   # endif()
   include(InstallRequiredSystemLibraries)
 
-  install(
-    TARGETS JASP JASPEngine
-    RUNTIME DESTINATION ${JASP_INSTALL_PREFIX}
-    COMPONENT jaspCore)
+  install(TARGETS JASP JASPEngine RUNTIME DESTINATION ${JASP_INSTALL_PREFIX})
 
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Deploy.win.cmake.in
@@ -180,30 +175,27 @@ if(WIN32)
 
   install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.win.cmake)
 
-  install(DIRECTORY ${CMAKE_BINARY_DIR}/R
+  install(
+    DIRECTORY ${CMAKE_BINARY_DIR}/R
     DESTINATION ${JASP_INSTALL_PREFIX}
-    COMPONENT jaspCore
+    REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
+    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
+          DESTINATION ${JASP_INSTALL_RESOURCEDIR})
+
+  install(
+    DIRECTORY ${CMAKE_BINARY_DIR}/Modules/
+    DESTINATION ${JASP_INSTALL_MODULEDIR}
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
 
   install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
-    DESTINATION ${JASP_INSTALL_RESOURCEDIR}
-    COMPONENT jaspCore)
-
-  install(DIRECTORY ${CMAKE_BINARY_DIR}/Modules/
-    DESTINATION ${JASP_INSTALL_MODULEDIR}
-    COMPONENT jaspModules
-    REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
-    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
-
-  install(FILES
-    ${MINGW_LIBGCC_S_SEH} 
-    ${MINGW_LIBSTDCPP} 
-    ${MINGW_LIBWINPTHREAD} 
-    ${MINGW_LIBJSONCPP} 
-    ${_LIB_R_INTERFACE_SHARED} 
-    DESTINATION ${JASP_INSTALL_PREFIX}
-    COMPONENT jaspCore)
+    FILES ${MINGW_LIBGCC_S_SEH}
+          ${MINGW_LIBSTDCPP}
+          ${MINGW_LIBWINPTHREAD}
+          ${MINGW_LIBJSONCPP}
+          ${_LIB_R_INTERFACE_SHARED}
+    DESTINATION ${JASP_INSTALL_PREFIX})
 
 endif()

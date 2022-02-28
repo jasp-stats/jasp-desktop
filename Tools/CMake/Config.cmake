@@ -45,7 +45,7 @@ if(APPLE)
   elseif(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
     set(CPACK_ARCH_SUFFIX "Apple")
   else()
-    set(CPACK_ARCH_SUFFIX "Universal")
+    set(CPACK_ARCH_SUFFIX ${CMAKE_HOST_SYSTEM_PROCESSOR})
   endif()
 
 endif()

@@ -79,6 +79,20 @@ endif()
 if(APPLE)
 
   find_program(DEPLOYQT_EXECUTABLE macdeployqt)
+  if(NOT DEPLOYQT_EXECUTABLE)
+    message(
+      STATUS
+        "macdeployqt not found. If you plan to deploy the JASP.app, you will need this."
+    )
+  endif()
+
+  find_program(CREATE_DMG_EXECUTABLE create-dmg)
+  if(NOT CREATE_DMG_EXECUTABLE)
+    message(
+      STATUS
+        "create-dmg not found. If you plan to make a DMG file, you will need this"
+    )
+  endif()
 
 endif()
 
