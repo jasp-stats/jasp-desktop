@@ -12,8 +12,7 @@ else()
   set(WINDOWS 0)
 endif()
 
-# This looks weird but CMake doesn't like ON/OFF in the if condition,
-# especially if it's passed
+# ------------
 
 if(APPLE)
   option(SIGN_AT_BUILD_TIME

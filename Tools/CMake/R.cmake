@@ -34,8 +34,6 @@ if(WIN32)
   endif()
 endif()
 
-# message(STATUS "Buidling using R ${R_VERSION}")
-
 # ------ Preparing REnv Paths
 #
 set(MODULES_SOURCE_PATH

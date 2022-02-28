@@ -85,7 +85,7 @@ if(APPLE)
     message(CHECK_PASS "found")
     message(STATUS "  Copying the 'libbrotlicommon' to the local build folder")
     execute_process(
-      WORKING_DIRECTORY ${_LIB_BROTL_LIBRARY_DIRS}
+      WORKING_DIRECTORY ${_PKGCONFIG_LIB_BROTLICOMMON_LIBRARY_DIRS}
       COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_BROTLICOMMON}
               ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
     set(_LIB_BROTLICOMMON ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
