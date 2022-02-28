@@ -203,17 +203,17 @@ if(APPLE)
           TIMEOUT 20
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
-            codesign --force ${CODESIGN_TIMESTAMP_FLAG} --sign
-            "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)"
-            "${R_HOME_PATH}/bin/exec/R"
+            codesign --force --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
+            "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" --options
+            runtime "${R_HOME_PATH}/bin/exec/R"
           RESULT_VARIABLE SIGNING_RESULT
           OUTPUT_VARIABLE SIGNING_OUTPUT)
       endwhile()
 
       if(NOT (SIGNING_RESULT STREQUAL "timeout"))
-        message(CHECK_PASS "signed")
+        message(CHECK_PASS "successful")
       else()
-        message(CHECK_FAIL "failed")
+        message(CHECK_FAIL "unsuccessful")
       endif()
 
       execute_process(
