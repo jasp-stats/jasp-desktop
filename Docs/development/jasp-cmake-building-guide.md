@@ -230,7 +230,7 @@ On Ubuntu, you can use `apt`.
 sudo apt install boost jsoncpp libarchive autoconf zlib cmake gfortran build-essential r-base
 ```
 
-> ⚠️ Some of these libraries might not be up-to-date and as a result JASP will complain. If this happens, you need to download, make and install those libraries individually.
+> ⚠️ Some of these libraries might not be up-to-date and as a result JASP will complain. If this happens, you need to download, make and install those libraries individually. Alternatively, you can use the [Linux version of Homebrew](https://docs.brew.sh/Homebrew-on-Linux) and install the up-to-dated libraries locally.
 
 On Manjaro / Arch
 

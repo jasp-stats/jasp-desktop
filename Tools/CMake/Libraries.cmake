@@ -75,12 +75,10 @@ if(APPLE)
 
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
-  find_library(_LIB_BROTLICOMMON NAMES brotlicommon REQUIRED)
-
   pkg_check_modules(_PKGCONFIG_LIB_BROTLICOMMON REQUIRED libbrotlicommon)
 
   set(_LIB_BROTLICOMMON
-      ${_LIB_BROTL_LIBRARY_DIRS}/libbrotlicommon.${_PKGCONFIG_LIB_BROTLICOMMON_VERSION}.dylib
+      ${_PKGCONFIG_LIB_BROTLICOMMON_LIBRARY_DIRS}/libbrotlicommon.${_PKGCONFIG_LIB_BROTLICOMMON_VERSION}.dylib
   )
 
   if(EXISTS "${_LIB_BROTLICOMMON}")
