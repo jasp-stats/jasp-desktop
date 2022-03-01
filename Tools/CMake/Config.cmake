@@ -12,6 +12,16 @@ else()
   set(WINDOWS 0)
 endif()
 
+# With this, we can hit up to 90% speed up!
+option(USE_CCACHE "Whether to use ccache for build" OFF)
+option(RUN_IWYU "Whether to run Include What You Use" OFF)
+option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
+option(
+  INSTALL_JASP_REQUIRED_LIBRARIES
+  "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
+  OFF)
+option(BUILD_TESTS "Whether to build the test suits" OFF)
+
 # ------------
 
 if(APPLE)
@@ -22,6 +32,8 @@ if(APPLE)
     TIMESTAMP_AT_BUILD_TIME
     "Whether to add the timstamp every library during the configuration and build"
     OFF)
+
+  set(INSTALL_JASP_REQUIRED_LIBRARIES ON)
 
   if(${SIGN_AT_BUILD_TIME})
     message(STATUS "Signing everything during the configuration and building.")
@@ -91,16 +103,6 @@ else()
   set(IS_LINUX_LOCAL_BUILD FALSE)
 
 endif()
-
-# With this, we can hit up to 90% speed up!
-option(USE_CCACHE "Whether to use ccache for build" OFF)
-option(RUN_IWYU "Whether to run Include What You Use" OFF)
-option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
-option(
-  INSTALL_JASP_REQUIRED_LIBRARIES
-  "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
-  OFF)
-option(BUILD_TESTS "Whether to build the test suits" OFF)
 
 # I have a construct for this, and Qt often messes things up.
 # I will consider turning this off, and letting Qt does it

@@ -10,10 +10,6 @@ list(APPEND SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/appinfo.cpp)
 
 add_library(Common ${HEADER_FILES} ${SOURCE_FILES})
 
-# if(INSTALL_JASP_REQUIRED_LIBRARIES)
-#   add_dependencies(Common jsoncpp-install)
-# endif()
-
 if(LINUX)
 
   target_link_libraries(Common PUBLIC ${_LIB_RT})
