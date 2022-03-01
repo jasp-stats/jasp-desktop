@@ -57,6 +57,8 @@ QHash<int, QByteArray> ListModel::roleNames() const
 		roles[NameRole]						= "name";
 		roles[RowComponentRole]				= "rowComponent";
 		roles[ValueRole]					= "value";
+		roles[VirtualRole]					= "virtual";
+		roles[DeletableRole]				= "deletable";
 
 		setMe = false;
 	}

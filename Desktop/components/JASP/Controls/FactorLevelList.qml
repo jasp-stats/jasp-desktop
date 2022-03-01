@@ -107,23 +107,19 @@ FactorLevelListBase
 				focus:			true
 				color:			jaspTheme.controlBackgroundColor
 
-				property bool isDeletable:	model.type.includes("deletable")
-				property bool isVirtual:	model.type.includes("virtual")
-				property bool isLevel:		model.type.includes("level")
-
 				TextField
 				{
 					id:								colName
 					isBound:						false
-					value:							itemRectangle.isVirtual ? "" : model.name
-					placeholderText:				itemRectangle.isVirtual ? model.name : ""
+					value:							model.virtual ? "" : model.name
+					placeholderText:				model.virtual ? model.name : ""
 					anchors.centerIn:				parent
 					fieldWidth:						parent.width
 					fieldHeight:					parent.height
 					useExternalBorder:				false
 					showBorder:						false
 					selectValueOnFocus:				true
-					control.horizontalAlignment:	itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter
+					control.horizontalAlignment:	model.type === "level" ? TextInput.AlignLeft : TextInput.AlignHCenter
 					onEditingFinished:				itemChanged(index, value)
 				}
 
@@ -132,7 +128,7 @@ FactorLevelListBase
 					source:					jaspTheme.iconPath + deleteIcon
 					anchors.right:			parent.right
 					anchors.verticalCenter:	parent.verticalCenter
-					visible:				itemRectangle.isDeletable
+					visible:				model.deletable
 					height:					16 * preferencesModel.uiScale
 					width:					16 * preferencesModel.uiScale
 					z:						2
