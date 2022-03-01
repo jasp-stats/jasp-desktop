@@ -182,9 +182,10 @@ if(APPLE)
           ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
       # R binary should be patched as well
+      message(CHECK_START "Patching /bin/exec/R")
       execute_process(
         # COMMAND_ECHO STDOUT
-        # ERROR_QUIET OUTPUT_QUIET
+        ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           bash ${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -192,22 +193,25 @@ if(APPLE)
           "/Library/Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
           "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
       )
+      message(CHECK_PASS "successful")
 
       message(CHECK_START "Signing '${R_HOME_PATH}/bin/exec/R'")
 
       set(SIGNING_RESULT "timeout")
-      while(${SIGNING_RESULT} STREQUAL "timeout")
+      while((${SIGNING_RESULT} STREQUAL "timeout") OR (${SIGNING_RESULT}
+                                                       STREQUAL "1"))
         execute_process(
-          COMMAND_ECHO STDOUT
+          # COMMAND_ECHO STDOUT
           # ERROR_QUIET OUTPUT_QUIET
-          TIMEOUT 20
+          TIMEOUT 30
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
-            codesign --force --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
+            codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
             "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" --options
             runtime "${R_HOME_PATH}/bin/exec/R"
           RESULT_VARIABLE SIGNING_RESULT
-          OUTPUT_VARIABLE SIGNING_OUTPUT)
+          OUTPUT_VARIABLE SIGNING_OUTPUT
+          ERROR_VARIABLE SIGNING_ERROR)
       endwhile()
 
       if(NOT (SIGNING_RESULT STREQUAL "timeout"))
