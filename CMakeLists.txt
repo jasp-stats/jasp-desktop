@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 3.21)
 # when this is fixed, the setup will be even nicer.
 set(QT_CREATOR_SKIP_CONAN_SETUP ON)
 
+if(APPLE)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
+endif()
+
 project(
   JASP
   VERSION 0.16.1.0 # <major>[.<minor>[.<patch>[.<tweak>]]]

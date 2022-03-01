@@ -15,6 +15,7 @@ endif()
 # ------------
 
 if(APPLE)
+
   option(SIGN_AT_BUILD_TIME
          "Whether to sign every library during the configuration and build" ON)
   option(
