@@ -48,7 +48,9 @@ public:
 		ColumnTypeIconRole,
 		ColumnTypeDisabledIconRole,
 		RowComponentRole,
-		ValueRole
+		ValueRole,
+		VirtualRole,
+		DeletableRole
     };
 	typedef QMap<QString, QMap<QString, Json::Value> > RowControlsValues;
 

@@ -50,52 +50,35 @@ protected:
 		QString				value;
 		bool				isVirtual;
 		bool				isLevel;
-		FactorLevelItem*	headFactor;
-		FactorLevelItem(const QString& _value, bool _isVirtual, bool _isLevel, FactorLevelItem* _factor = nullptr) :
-			value(_value), isVirtual(_isVirtual), isLevel(_isLevel)
-		{
-			if (_factor)
-				headFactor = _factor;
-			else
-				headFactor = this;
-		}
 
-		FactorLevelItem(const FactorLevelItem& item) : value(item.value), isVirtual(item.isVirtual), isLevel(item.isLevel)
-		{
-			if (&item == item.headFactor)
-				headFactor = this;
-			else
-				headFactor = item.headFactor;
-		}
+		FactorLevelItem(const QString& _value, bool _isVirtual, bool _isLevel) :
+			value(_value), isVirtual(_isVirtual), isLevel(_isLevel) {}
 
-		bool operator==(const FactorLevelItem& item)
-		{
-			return item.headFactor == headFactor
-					&& item.isLevel == isLevel
-					&& item.isVirtual == isVirtual
-					&& item.value == value;
-		}
+		FactorLevelItem(const FactorLevelItem& item) : value(item.value), isVirtual(item.isVirtual), isLevel(item.isLevel) {}
 
         bool operator==(const FactorLevelItem& item) const
         {
-            return item.headFactor == headFactor
-                    && item.isLevel == isLevel
-                    && item.isVirtual == isVirtual
-                    && item.value == value;
+			return item.isLevel == isLevel
+				&& item.isVirtual == isVirtual
+				&& item.value == value;
         }
+		bool operator!=(const FactorLevelItem& item) const
+		{
+			return !(item == *this);
+		}
+
+		static FactorLevelItem dummyFactor;
 	};
+
 	QList<FactorLevelItem>	_items;
 	Terms					_allLevelsCombinations;
 
-	QStringList		_getOtherLevelsStringList(const FactorLevelItem& item);
-	QStringList		_getAllFactorsStringList();
-	QString			_giveUniqueName(const QStringList& names, const QString startName);
-	int				_getIndex(const FactorLevelItem& item) const;
-	
-	void			_updateVirtualLevelIndex(FactorLevelItem* headFactor);
-	void			_updateVirtualFactorIndex();
-	void			_setAllLevelsCombinations();
-	QString			_removeItem(int row);
+	QStringList			_getAllFactors()													const;
+	QString				_giveUniqueValue(const FactorLevelItem& item, const QString value)	const;
+	bool				_isDeletable(const FactorLevelItem& item)							const;
+	FactorLevelItem&	_getFactor(const FactorLevelItem& item)								const;
+	void				_setAllLevelsCombinations();
+	bool				_removeItem(int row);
 };
 
 #endif // LISTMODELFACTORLEVELS_H
