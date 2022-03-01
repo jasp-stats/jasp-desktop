@@ -12,6 +12,8 @@
 #         `CMAKE_INSTALL_PREFIX` correctly, something like `/opt/jasp`
 #         and everything will work
 
+list(APPEND CMAKE_MESSAGE_CONTEXT Install)
+
 # At the moment, I don't remove the `.a` files
 set(FILES_EXCLUDE_PATTERN
     ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak)$")
@@ -199,3 +201,5 @@ if(WIN32)
     DESTINATION ${JASP_INSTALL_PREFIX})
 
 endif()
+
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)

@@ -43,12 +43,13 @@ if(APPLE)
   add_custom_target(
     dmg
     VERBATIM
+    DEPENDS ${CMAKE_BINARY_DIR}/Install/JASP.app/Contents/MacOS/JASP
     COMMAND
       ${CREATE_DMG_EXECUTABLE} --volname "${CPACK_PACKAGE_FILE_NAME}" --volicon
       "${CPACK_PACKAGE_ICON}" --icon-size 96 --icon "JASP.app" 130 270
       --background "${CPACK_DMG_BACKGROUND_IMAGE}" --window-size 527 454
-      --window-pos 200 200 --app-drop-link 430 270 "${CPACK_DMG_VOLUME_NAME}"
-      "Install/"
+      --window-pos 200 200 --app-drop-link 430 270 --disk-image-size 4000
+      "${CPACK_DMG_VOLUME_NAME}" "Install/"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy "${CPACK_DMG_VOLUME_NAME}"
             ${CMAKE_BINARY_DIR}/JASP/
@@ -57,8 +58,6 @@ if(APPLE)
       "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" --options runtime
       "JASP/${CPACK_DMG_VOLUME_NAME}"
     COMMENT "------ Creating the ${CPACK_DMG_VOLUME_NAME}")
-
-  add_dependencies(dmg install)
 
   # Add your password like this to the KeyChain
   #
@@ -71,6 +70,8 @@ if(APPLE)
     COMMAND xcrun notarytool submit "JASP/${CPACK_DMG_VOLUME_NAME}"
             --keychain-profile "AC_PASSWORD"
     COMMENT "Submitting the JASP/${CPACK_DMG_VOLUME_NAME} for notarisation")
+
+  add_custom_target(staple COMMAND xcrun stapler staple "Install/JASP.app")
 endif()
 
 include(CPack)

@@ -206,6 +206,13 @@ Let the Qt Creator to finish the first configuration, and then you need to chang
 
 After setting these parameters, you can re-run the CMake and if everything goes fine you are going to see another `-- Generating done` message and you are ready to build.
 
+
+### Notes
+
+On Windows, 
+
+- Junction will be replaced by Symlinks after building each Module. At the moment, the script is being run every time but it doesn't do anything if it sees symlinks. When we are sure that this is working, we only need to do this during the staging and preparation of the WIX.
+
 ---
 
 

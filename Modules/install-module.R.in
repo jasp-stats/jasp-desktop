@@ -15,13 +15,12 @@ if (@IS_LINUX_LOCAL_BUILD@) {
 
 if ((Sys.info()["sysname"] == "Linux") && @IS_LINUX_LOCAL_BUILD@ ) {
 
-	options(pkgType = "binary")
-
 	if (@IS_LINUX_LOCAL_BUILD@) {
 		# Only set when building using LINUX_LOCAL_BUILD. This helps R to look into the build/R/library
 		.libPaths(c('@R_LIBS_LOCAL@', .libPaths()))
 	}
-}
+	
+} 
 
 result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
 	libPathsToUse=ifelse("@R_LIBS_LOCAL@" == "NULL", NULL, "@R_LIBS_LOCAL@"), 
@@ -36,6 +35,7 @@ if (result == "succes") {
 }
 
 # Converting the absolute symlinks to relative symlinks on macOS
+# Todo, I can do this using CMake like I do on Windows
 if (Sys.info()["sysname"] == "Darwin") { 
 	source('@MODULES_BINARY_PATH@/symlinkTools.R')
 	convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
