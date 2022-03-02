@@ -6,7 +6,11 @@ endif()
 
 find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
-# find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
+find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
+
+if(USE_CONAN)
+  find_package(jsoncpp REQUIRED)
+endif()
 
 find_package(LibArchive)
 if((NOT LibArchive_FOUND) AND (NOT WIN32))

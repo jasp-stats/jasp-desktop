@@ -90,34 +90,21 @@ if(WIN32)
            ${CMAKE_CURRENT_LIST_DIR}
            ${PROJECT_SOURCE_DIR}/../Common
            ${PROJECT_SOURCE_DIR}/../Common/jaspColumnEncoder
-           ${jsoncpp_INCLUDE_DIRS}
            # R
            ${R_INCLUDE_PATH}
            ${RCPP_PATH}/include
            ${RINSIDE_PATH}/include
-           # Boost
+           # Boost and jsoncpp
            ${MINGW_PATH}/include)
 
   target_link_libraries(
     R-Interface
-    PUBLIC # Boost::nowide
-           # Boost::filesystem
-           # Boost::system
-           # Boost::date_time
-           # Boost::timer
-           # Boost::chrono
-           # CPM/CMake
-           # ${LIBJSONCPP_LINK_LIBRARIES}
-           ${_LIB_JSONCPP}
-           # ${jsoncpp_LIBRARIES}
-           # jsoncpp::jsoncpp
-           # jsoncpp::jsoncpp_lib
-           # jsoncpp::jsoncpp_object
-           # Conan
-           $<$<BOOL:${USE_CONAN}>:CONAN_PKG::jsoncpp>
-           $<$<BOOL:${USE_CONAN}>:CONAN_PKG::boost>
-           # R
+    PUBLIC 
+           # jsoncpp
+           ${_LIB_JSONCPP}    # MinGW's libjsoncpp-24.dll
+           # RInside
            ${_LIB_RINSIDE}
+           # R
            $<$<NOT:$<PLATFORM_ID:Darwin>>:${_LIB_R}>
            $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
            #
@@ -167,15 +154,12 @@ else()
 
   target_link_libraries(
     R-Interface
-    PUBLIC $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::nowide>
-           $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::filesystem>
-           $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::system>
-           $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::date_time>
-           $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::timer>
-           $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::chrono>
-           # Conan
-           $<$<BOOL:${USE_CONAN}>:CONAN_PKG::boost>
-           $<$<BOOL:${USE_CONAN}>:CONAN_PKG::jsoncpp>
+    PUBLIC Boost::nowide
+           Boost::filesystem
+           Boost::system
+           Boost::date_time
+           Boost::timer
+           Boost::chrono
            # CPM/CMake
            ${LIBJSONCPP_LINK_LIBRARIES}
            # R

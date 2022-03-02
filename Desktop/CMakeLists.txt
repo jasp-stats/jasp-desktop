@@ -170,18 +170,16 @@ target_link_libraries(
     Qt::DBus
     Qt::QmlWorkerScript
     Qt::LabsFolderListModel
-    # OpenSSL::SSL
-    # OpenSSL::Crypto
     # System
-    $<$<BOOL:${USE_CONAN}>:CONAN_PKG::zlib>
-    $<$<BOOL:${USE_CONAN}>:CONAN_PKG::openssl>
-    $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libiconv>
+    ZLIB::ZLIB
+    Iconv::Iconv
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    # ReadStat
     # Based on our config, this is either from PkgConfig, or the build/_deps/
     ${LIBREADSTAT_LIBRARIES}
     $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
-    # System
-    ${Iconv_LIBRARIES}
-    ${ZLIB_LIBRARIES} # Needed for libreadstat.a
+    # R-Framework
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 
 # Amir: All these single if's can be written using the

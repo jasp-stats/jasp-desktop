@@ -18,3 +18,4 @@ bison/3.7.6
 
 [generators]
 cmake
+cmake_find_package

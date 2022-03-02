@@ -22,7 +22,6 @@ target_include_directories(
   PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
          ${PROJECT_SOURCE_DIR}/Common
          # Conan
-         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_BOOST}>
          $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>)
 
 if(WIN32)
@@ -42,20 +41,18 @@ endif()
 target_link_libraries(
   JASPEngine
   PUBLIC Common
+         #
          $<$<PLATFORM_ID:Windows>:${_LIB_R_INTERFACE_STATIC}>
          $<$<NOT:$<PLATFORM_ID:Windows>>:R-Interface>
+         # Boost
+         Boost::nowide
+         Boost::filesystem
+         Boost::system
+         Boost::date_time
+         Boost::timer
+         Boost::chrono
          #
-         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::nowide>
-         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::filesystem>
-         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::system>
-         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::date_time>
-         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::timer>
-         $<$<NOT:$<BOOL:${USE_CONAN}>>:Boost::chrono>
-         # Conan
-         $<$<BOOL:${USE_CONAN}>:CONAN_PKG::boost>
-         $<$<BOOL:${USE_CONAN}>:CONAN_PKG::libarchive>
-         # System
-         $<$<NOT:$<BOOL:${USE_CONAN}>>:LibArchive::LibArchive>)
+         LibArchive::LibArchive)
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)
   set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
