@@ -156,7 +156,6 @@ endif()
 
 # Essential on WIN32 as some binaries should be around
 if(WIN32)
-  set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install")
   set(JASP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
   set(JASP_INSTALL_BINDIR "${JASP_INSTALL_PREFIX}")
   set(JASP_INSTALL_RESOURCEDIR "${JASP_INSTALL_PREFIX}/Resources")

@@ -102,7 +102,7 @@ if(JASP_TIMER_USED)
 endif()
 
 option(UPDATE_JASP_SUBMODULES
-       "Whether to automatically initialize and update the submodules" ON)
+       "Whether to automatically initialize and update the submodules" OFF)
 
 # Dealing with Git submodules
 

@@ -104,7 +104,7 @@ if(WIN32)
     PATHS ${Qt6_DIR}/bin)
 
   message(CHECK_START "Looking for MSYS2")
-  set(MINGW_PATH "C:/msys64/mingw64")
+  set(MINGW_PATH "C:/msys64/mingw64" CACHE PATH "Path to MinGW x64 folder, e.g., C:/msys64/mingw64")
   if(EXISTS ${MINGW_PATH})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_PATH}")
@@ -112,13 +112,13 @@ if(WIN32)
     message(CHECK_FAIL "not found")
     message(
       FATAL_ERROR
-        "MSYS2 is required for building on Windows, please follow the build instruction before you continue."
+        "MSYS2 is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the MINGW_PATH to your MinGW x64 path, e.g., C:/msys64/mingw64"
     )
   endif()
 
-  set(MINGW_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe")
-  set(MINGW_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe")
-  set(MINGW_MAKE_PROGRAM "C:/msys64/mingw64/bin/mingw32-make.exe")
+  set(MINGW_C_COMPILER "${MINGW_PATH}/bin/gcc.exe")
+  set(MINGW_CXX_COMPILER "${MINGW_PATH}/bin/g++.exe")
+  set(MINGW_MAKE_PROGRAM "${MINGW_PATH}/bin/mingw32-make.exe")
 
 endif()
 

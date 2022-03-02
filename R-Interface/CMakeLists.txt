@@ -13,7 +13,7 @@ if(WIN32)
 
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../Tools/CMake")
 
-  set(MINGW_PATH "C:/msys64/mingw64")
+  set(MINGW_PATH "C:/msys64/mingw64" CACHE PATH "Path to MinGW x64 folder")
   set(JASP_SOURCE_DIR "${CMAKE_SOURCE_DIR}/..")
   if(NOT EXISTS ${JASP_BINARY_DIR})
     message(
