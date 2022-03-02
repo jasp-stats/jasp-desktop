@@ -107,16 +107,6 @@ cmake_print_variables(MODULES_BINARY_PATH)
 cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
-add_custom_command(
-  TARGET R-Interface
-  POST_BUILD
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R ${MODULES_BINARY_PATH}/ 
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R ${MODULES_BINARY_PATH}/
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R ${MODULES_BINARY_PATH}/
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R ${MODULES_BINARY_PATH}/
-)
-
 if(LINUX)
   set(R_PKG_TYPE "source")
 else()
@@ -137,6 +127,25 @@ if(INSTALL_R_MODULES)
   add_custom_target(Modules)
 
   add_dependencies(Modules ${JASP_COMMON_MODULES} ${JASP_EXTRA_MODULES})
+
+  add_custom_command(
+    TARGET Modules
+    PRE_BUILD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_if_different
+      ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
+      ${MODULES_BINARY_PATH}/
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_if_different
+      ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
+      ${MODULES_BINARY_PATH}/
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_if_different
+      ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R ${MODULES_BINARY_PATH}/
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_if_different
+      ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R ${MODULES_BINARY_PATH}/)
 
   message(STATUS "Installing Required R Modules...")
 

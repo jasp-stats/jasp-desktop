@@ -32,7 +32,7 @@ jobs:
       - name: Updating Homebrew
         run: brew update --preinstall
       - name: Preparing the Requirements
-        run: brew install automake jsoncpp bison cmake qt boost pkg-config libarchive zlib libiconv openssl mercurial brotli ninja
+        run: brew install automake jsoncpp bison cmake qt boost pkg-config libarchive zlib libiconv openssl@1.1 mercurial brotli ninja
       - name: Setting up the Environment Variables
         run: |
           export PKG_CONFIG_PATH="/usr/local/opt/zlib/lib/pkgconfig:/usr/local/opt/openssl@3/lib/pkgconfig:/usr/local/opt/qt/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig:/usr/local/Cellar/libarchive/3.5.2/lib/pkgconfig"
@@ -40,6 +40,6 @@ jobs:
           pkg-config --libs libarchive
       - uses: actions/checkout@v2
       - name: Configure
-        run: cmake -S . -B build -G Ninja -D GITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DSIGN_AT_BUILD_TIME=OFF -DTIMESTAMP_AT_BUILD_TIME=OFF -DINSTALL_JASP_REQUIRED_LIBRARIES=ON -DINSTALL_R_FRAMEWORK=ON -DINSTALL_R_MODULES=ON -DCMAKE_PREFIX_PATH=/usr/local/opt/libarchive;/usr/local/opt/openssl
+        run: cmake -S . -B build -G Ninja -D GITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DSIGN_AT_BUILD_TIME=OFF -DTIMESTAMP_AT_BUILD_TIME=OFF -DINSTALL_JASP_REQUIRED_LIBRARIES=ON -DINSTALL_R_FRAMEWORK=ON -DINSTALL_R_MODULES=ON -DCMAKE_PREFIX_PATH=/usr/local/opt/libarchive -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@1.1
       - name: Build
         run: cmake --build build

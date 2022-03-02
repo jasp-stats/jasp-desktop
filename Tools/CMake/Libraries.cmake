@@ -6,10 +6,17 @@ endif()
 
 find_package(ZLIB REQUIRED)
 find_package(Iconv REQUIRED)
-find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
 
 if(USE_CONAN)
   find_package(jsoncpp REQUIRED)
+endif()
+
+find_package(OpenSSL COMPONENTS SSL Crypto)
+if(NOT OpenSSL_FOUND)
+  message(
+    FATAL_ERROR
+      "CMake cannot find the OpenSSL. Set the variable 'OPENSSL_ROOT_DIR' to your OpenSSL installation directory."
+  )
 endif()
 
 find_package(LibArchive)
