@@ -107,14 +107,15 @@ cmake_print_variables(MODULES_BINARY_PATH)
 cmake_print_variables(MODULES_RENV_ROOT_PATH)
 cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
-file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
-     DESTINATION ${MODULES_BINARY_PATH})
-file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
-     DESTINATION ${MODULES_BINARY_PATH})
-file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
-     DESTINATION ${MODULES_BINARY_PATH})
-file(COPY ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
-     DESTINATION ${MODULES_BINARY_PATH})
+add_custom_command(
+  TARGET R-Interface
+  POST_BUILD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R ${MODULES_BINARY_PATH}/ 
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R ${MODULES_BINARY_PATH}/
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R ${MODULES_BINARY_PATH}/
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R ${MODULES_BINARY_PATH}/
+)
 
 if(LINUX)
   set(R_PKG_TYPE "source")
