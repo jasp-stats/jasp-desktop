@@ -93,9 +93,10 @@ else()
   # Building R-Interface with MinGW configuration
   # Note that the reason I'm not directly building into the main BINARY_DIR
   # is because CMake artifacts will conflicts in that case.
-  add_custom_target(
-    R-Interface
+  add_custom_command(
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+    OUTPUT ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
+           ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a
     COMMAND
       ${CMAKE_COMMAND} -G "MinGW Makefiles" -S . -B
       ${CMAKE_BINARY_DIR}/R-Interface
@@ -105,7 +106,12 @@ else()
       "-DCMAKE_MAKE_PROGRAM:STRING=${MINGW_MAKE_PROGRAM}"
       "-DJASP_BINARY_DIR:STRING=${CMAKE_BINARY_DIR}"
       "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface)
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
+    COMMENT "------ Configuring and Building the libR-Interface")
+
+  add_custom_target(R-Interface DEPENDS 
+    ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
+    ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a)
 endif()
 
 add_subdirectory(Engine)

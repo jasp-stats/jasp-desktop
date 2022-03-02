@@ -27,33 +27,15 @@ target_include_directories(
 
 if(WIN32)
 
-  message(CHECK_START "Looking for libR-Interface.dll")
-  # find_file(
-  #   _LIB_R_INTERFACE_SHARED
-  #   NAMES libR-Interface.dll
-  #   PATHS ${CMAKE_BINARY_DIR}/R-Interface)
-
+  message(CHECK_START "Setting path to libR-Interface.dll")
   set(_LIB_R_INTERFACE_SHARED ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll)
-  # if(_LIB_R_INTERFACE_SHARED)
-  #   message(CHECK_PASS "found")
-  #   message(STATUS "  ${_LIB_R_INTERFACE_SHARED}")
-  # else()
-  #   message(CHECK_FAIL "not found")
-  # endif()
+  message(STATUS "  ${_LIB_R_INTERFACE_SHARED}")
 
-  message(CHECK_START "Looking for libR-Interface.dll.a")
-  # find_file(
-  #   _LIB_R_INTERFACE_STATIC
-  #   NAMES libR-Interface.dll.a
-  #   PATHS ${CMAKE_BINARY_DIR}/R-Interface)
-
+  message(CHECK_START "Setting path to libR-Interface.dll.a")
   set(_LIB_R_INTERFACE_STATIC ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a)
-  # if(_LIB_R_INTERFACE_STATIC)
-  #   message(CHECK_PASS "found")
-  #   message(STATUS "  ${_LIB_R_INTERFACE_STATIC}")
-  # else()
-  #   message(CHECK_FAIL "not found")
-  # endif()
+  message(STATUS "  ${_LIB_R_INTERFACE_STATIC}")
+
+  message(STATUS "libR-Interface will be build if it is missing.")
 
 endif()
 
