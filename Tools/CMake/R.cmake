@@ -367,6 +367,9 @@ elseif(WIN32)
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
 
+  # This will be added to the install.packages calls
+  set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBRARY_PATH}'")
+
   cmake_print_variables(R_HOME_PATH)
   cmake_print_variables(R_LIB_PATH)
   cmake_print_variables(R_LIBRARY_PATH)
@@ -443,7 +446,7 @@ elseif(WIN32)
 
     file(
       WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
-      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}')"
+      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})"
     )
 
     execute_process(
@@ -512,8 +515,7 @@ elseif(LINUX)
         "JASP is configured to install all its R depdendencies inside the build folder. If this is not what you want, make sure that 'LINUX_LOCAL_BUILD' parametere is set to OFF, e.g., 'cmake .. -DLINUX_LOCAL_BUILD=OFF'"
     )
 
-    set(R_LIBS_LOCAL "${CMAKE_BINARY_DIR}/R/library")
-    set(R_LIBRARY_PATH "${R_LIBS_LOCAL}")
+    set(R_LIBRARY_PATH "${CMAKE_BINARY_DIR}/R/library")
     set(R_OPT_PATH "${CMAKE_BINARY_DIR}/R/opt")
     make_directory(${R_LIBRARY_PATH})
     make_directory(${R_OPT_PATH})
@@ -523,7 +525,6 @@ elseif(LINUX)
         "JASP is configured to install all its depdendencies into the ${R_HOME_PATH}/library. CMake may not be able to continue if the user does not have the right permission to right into ${R_HOME_PATH}/library folder."
     )
 
-    set(R_LIBS_LOCAL "NULL") # <- This is being used in install-module.R.in
     set(R_LIBRARY_PATH "${R_HOME_PATH}/library")
     set(R_OPT_PATH "${R_HOME_PATH}/opt")
   endif()
@@ -531,6 +532,8 @@ elseif(LINUX)
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+
+  set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBRARY_PATH}'")
 
   message(CHECK_START "Looking for R.h")
   set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
@@ -548,14 +551,6 @@ elseif(LINUX)
       message(CHECK_FAIL "not found")
       message(FATAL_ERROR "R.h is necessary for building R-Interface library.")
     endif()
-  endif()
-
-  # This makes sure that `install.packages()` command be called with the right
-  # lib paths in case we are installing locally.
-  if(LINUX_LOCAL_BUILD)
-    set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBS_LOCAL}'")
-  else()
-    set(USE_LOCAL_R_LIBS_PATH "")
   endif()
 
   cmake_print_variables(R_HOME_PATH)

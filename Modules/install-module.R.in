@@ -13,17 +13,15 @@ if (@IS_LINUX_LOCAL_BUILD@) {
 	Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
 }
 
-if ((Sys.info()["sysname"] == "Linux") && @IS_LINUX_LOCAL_BUILD@ ) {
+# The R_LIBRARY_PATH might already be there, but depending on the configuration 
+# of the CMake, we might be installing in a different location, so, I just add
+# it anyway! It gets to if-y. 
+.libPaths(c("@R_LIBRARY_PATH@", .libPaths()))
 
-	if (@IS_LINUX_LOCAL_BUILD@) {
-		# Only set when building using LINUX_LOCAL_BUILD. This helps R to look into the build/R/library
-		.libPaths(c('@R_LIBS_LOCAL@', .libPaths()))
-	}
-	
-} 
-
+# Related to the comment above, there is variable here called, 
+# `libPathsToUse` but it is not connected to anything. If this works,
+# then, I don't need to set the libPaths() anymore perhaps.
 result <- jaspBase::installJaspModule("@MODULES_SOURCE_PATH@/@MODULE@", 
-	libPathsToUse=ifelse("@R_LIBS_LOCAL@" == "NULL", NULL, "@R_LIBS_LOCAL@"), 
 	repos="@R_REPOSITORY@", 
 	moduleLibrary="@MODULES_BINARY_PATH@/@MODULE@", 
 	onlyModPkg=FALSE)
