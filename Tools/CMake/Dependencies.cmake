@@ -26,8 +26,9 @@ add_dependencies(Dependencies readstat)
 
 fetchcontent_declare(
   readstat
-  GIT_REPOSITORY "https://github.com/WizardMac/ReadStat"
-  GIT_TAG "v1.1.7")
+  URL "https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz"
+  URL_HASH
+    SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
 
 message(CHECK_START "Downloading 'readstat'")
 
@@ -41,8 +42,6 @@ if(readstat_POPULATED)
     WORKING_DIRECTORY ${readstat_SOURCE_DIR}
     OUTPUT ${readstat_BINARY_DIR}/include/readstat.h
            ${readstat_BINARY_DIR}/lib/libreadstat.a
-    COMMAND ${AUTORECONF} -fi
-    COMMAND ${AUTOUPDATE}
     COMMAND ./configure --enable-static --prefix=${readstat_BINARY_DIR}
     COMMAND ${MAKE}
     COMMAND ${MAKE} install
