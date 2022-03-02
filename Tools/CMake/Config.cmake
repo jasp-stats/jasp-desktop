@@ -110,7 +110,7 @@ endif()
 
 if(INSTALL_R_MODULES AND (GITHUB_PAT STREQUAL ""))
   message(
-    WARNING
+    FATAL_ERROR
       "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub."
   )
 endif()

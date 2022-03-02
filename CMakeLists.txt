@@ -53,8 +53,6 @@ include(Conan)
 
 # ------ JASP Config
 
-# include(CPM)
-
 include(Programs)
 
 # Builds and configures all the dependencies
