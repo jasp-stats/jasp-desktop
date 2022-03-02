@@ -110,17 +110,17 @@ elseif(WIN32)
   target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
 
   # These are mainly for R-Interface, and all build using the MinGW
-  add_custom_target(
-    Copy-Required-Libraries-To-Bin ALL
-    COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBGCC_S_SEH} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBSTDCPP} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBWINPTHREAD} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJSONCPP} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_R_INTERFACE_SHARED}
+  add_custom_command(
+    TARGET JASPEngine
+    POST_BUILD
+    DEPENDS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBGCC_S_SEH} ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBSTDCPP} ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBWINPTHREAD} ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBJSONCPP} ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_SHARED}
             ${CMAKE_BINARY_DIR}
-    COMMENT "------ Re-installing the DLLs")
-
-  add_dependencies(Copy-Required-Libraries-To-Bin JASPEngine)
+    COMMENT "------ Re-installing the dependencies (if necessary)")
 
 elseif(LINUX)
 

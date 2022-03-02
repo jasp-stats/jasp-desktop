@@ -124,15 +124,6 @@ if(WIN32)
            NOMINMAX
            WIN32_LEAN_AND_MEAN)
 
-  add_custom_target(
-    Transfer-R-Interface-To-JASP ALL
-    WORKING_DIRECTORY ${JASP_BINARY_DIR}/R-Interface
-    COMMAND ${CMAKE_COMMAND} -E copy libR-Interface.dll ${JASP_BINARY_DIR}/
-    COMMAND ${CMAKE_COMMAND} -E copy libR-Interface.dll.a ${JASP_BINARY_DIR}/
-    COMMENT "Copying the R-Interface to the jasp-desktop build folder\n          ${JASP_BINARY_DIR}")
-
-  add_dependencies(Transfer-R-Interface-To-JASP R-Interface)
-
 else()
 
   file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
