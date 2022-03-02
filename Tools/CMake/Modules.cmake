@@ -259,10 +259,10 @@ if(INSTALL_R_MODULES)
         -D R_DIR_NAME=${R_DIR_NAME} -D
         MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -D MODULE=${MODULE} -D
         SIGNING=${IS_SIGNING} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-      COMMAND
-        ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
-        MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P
-        ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
+      # COMMAND
+      #   ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
+      #   MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P
+      #   ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
@@ -308,10 +308,10 @@ if(INSTALL_R_MODULES)
         -D R_DIR_NAME=${R_DIR_NAME} -D
         MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -D MODULE=${MODULE} -D
         SIGNING=${IS_SIGNING} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-      COMMAND
-        ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
-        MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P
-        ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
+      # COMMAND
+      #   ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
+      #   MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P
+      #   ${PROJECT_SOURCE_DIR}/Tools/CMake/Symlink.cmake
       BYPRODUCTS ${MODULES_BINARY_PATH}/${MODULE}
                  ${MODULES_BINARY_PATH}/${MODULE}_md5sums.rds
                  ${MODULES_BINARY_PATH}/${MODULE}-installed-successfully.log
