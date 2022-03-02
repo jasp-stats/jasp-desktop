@@ -163,6 +163,9 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspResults::setBaseCitation(baseCitation);
 	jaspResults::setInsideJASP();
 
+	jaspRCPP_parseEvalQNT("library(methods)");
+	jaspRCPP_parseEvalQNT("library(jaspBase)");
+
 	jaspRCPP_logString("Initializing jaspResultsModule.\n");
 
 	rInside["jaspResultsModule"]			= givejaspResultsModule();
