@@ -78,6 +78,21 @@ endif()
 
 if(APPLE)
 
+  message(CHECK_START "Looking for 'gfortran'")
+  find_program(
+    FORTRAN_EXECUTABLE
+    NAMES gfortran REQUIRED
+    PATHS /usr/local/bin/gfortran /opt/homebrew/bin
+    DOC "'gfortran' is needed for building some of the R packages")
+
+  if(NOT FORTRAN_EXECUTABLE)
+    message(CHECK_FAIL "not found")
+    message(FATAL_ERROR "Please install 'gfortran' before continuing.")
+  else()
+    message(CHECK_PASS "found")
+    set(JAGS_F77_FLAG "F77=${FORTRAN_EXECUTABLE}")
+  endif()
+
   find_program(DEPLOYQT_EXECUTABLE macdeployqt)
   if(NOT DEPLOYQT_EXECUTABLE)
     message(
@@ -104,7 +119,9 @@ if(WIN32)
     PATHS ${Qt6_DIR}/bin)
 
   message(CHECK_START "Looking for MSYS2")
-  set(MINGW_PATH "C:/msys64/mingw64" CACHE PATH "Path to MinGW x64 folder, e.g., C:/msys64/mingw64")
+  set(MINGW_PATH
+      "C:/msys64/mingw64"
+      CACHE PATH "Path to MinGW x64 folder, e.g., C:/msys64/mingw64")
   if(EXISTS ${MINGW_PATH})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_PATH}")

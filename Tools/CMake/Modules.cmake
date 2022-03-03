@@ -415,7 +415,7 @@ if(INSTALL_R_MODULES)
           add_custom_command(
             WORKING_DIRECTORY ${jags_SOURCE_DIR}
             OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
-            COMMAND ./configure --disable-dependency-tracking
+            COMMAND ${JAGS_F77_FLAG} ./configure --disable-dependency-tracking
                     --prefix=${jags_HOME}
             COMMAND ${MAKE}
             COMMAND ${MAKE} install
