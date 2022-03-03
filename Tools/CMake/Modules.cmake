@@ -18,16 +18,6 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-# Ninja supports JOB_POOL therefore setting up the sequential building of
-# modules is much nicer, and easier. Without Ninja, I have to make a chain
-# of them, and make them depend on each other, and some of the biolerplate
-# below is deal with that, because we cannot use Ninja all the time, and
-# I'm not yet fully convinced that it can handle everything we need. I remember
-# it having some issues with Resources, etc.
-if(CMAKE_GENERATOR STREQUAL "Ninja")
-  set_property(GLOBAL PROPERTY JOB_POOLS sequential=1)
-endif()
-
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
     # "jaspAnova"
@@ -113,46 +103,27 @@ else()
   set(R_PKG_TYPE "binary")
 endif()
 
-if(INSTALL_R_MODULES)
+message(STATUS "Installing Required R Modules...")
 
-  # Cleaning the renv-path on Windows only, for now.
-  # It takes somes times on macOS, but if we can build and
-  # cache it, let's do it.
-  set_property(
-    DIRECTORY
-    APPEND
-    PROPERTY ADDITIONAL_CLEAN_FILES
-             $<$<PLATFORM_ID:Windows>:${MODULES_BINARY_PATH}>)
+add_custom_target(
+  jaspBase
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+          ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/writeImage.R
+          ${MODULES_BINARY_PATH}/
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/zzzWrappers.R
+          ${MODULES_BINARY_PATH}/
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
+          ${MODULES_BINARY_PATH}/
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
+          ${MODULES_BINARY_PATH}/)
 
-  add_custom_target(Modules)
-
-  add_dependencies(Modules ${JASP_COMMON_MODULES} ${JASP_EXTRA_MODULES})
-
-  add_custom_command(
-    TARGET Modules
-    PRE_BUILD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-    COMMAND
-      ${CMAKE_COMMAND} -E copy_if_different
-      ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
-      ${MODULES_BINARY_PATH}/
-    COMMAND
-      ${CMAKE_COMMAND} -E copy_if_different
-      ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
-      ${MODULES_BINARY_PATH}/
-    COMMAND
-      ${CMAKE_COMMAND} -E copy_if_different
-      ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R ${MODULES_BINARY_PATH}/
-    COMMAND
-      ${CMAKE_COMMAND} -E copy_if_different
-      ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R ${MODULES_BINARY_PATH}/)
-
-  message(STATUS "Installing Required R Modules...")
-
-  # This happens during the configuration!
-  file(
-    WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
-    "
+# This happens during the configuration!
+file(
+  WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
+  "
     install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
                         'jsonlite', 'modules', 'officer', 'pkgbuild',
                         'plyr', 'qgraph', 'ragg', 'R6', 'renv',
@@ -167,81 +138,93 @@ if(INSTALL_R_MODULES)
     }
     ")
 
-  file(
-    WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
-    "
+file(
+  WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
+  "
     install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
     if ('jaspGraphs' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log')
     }
     ")
 
-  file(
-    WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
-    "
+file(
+  WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
+  "
     install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
     if ('jaspTools' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log')
     }
     ")
 
-  # I'm using a custom_command here to make sure that jaspBase is installed once
-  # and only once before everything else. So, `install-jaspBase.R` creates an empty
-  # file, i.e., `jaspBase-installed-successfully.log` and all other Modules look for
-  # it. If they find it, they proceed, if not, they trigger this custom command.
-  # TODO:
-  #   - [ ] The following commands can be turned into a function or a macro, but
-  #         for now, I would like to keep a granular control over differnt steps
-  add_custom_command(
-    WORKING_DIRECTORY ${R_HOME_PATH}
-    OUTPUT ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-    # BYPRODUCTS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-    JOB_POOL sequential
-    COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-            --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
-    COMMAND
-      ${CMAKE_COMMAND} -D
-      NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-      -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-      R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
-      CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-      ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-    COMMENT "------ Installing 'jaspBase'")
+# I'm using a custom_command here to make sure that jaspBase is installed once
+# and only once before everything else. So, `install-jaspBase.R` creates an empty
+# file, i.e., `jaspBase-installed-successfully.log` and all other Modules look for
+# it. If they find it, they proceed, if not, they trigger this custom command.
+# TODO:
+#   - [ ] The following commands can be turned into a function or a macro, but
+#         for now, I would like to keep a granular control over differnt steps
+add_custom_command(
+  WORKING_DIRECTORY ${R_HOME_PATH}
+  OUTPUT ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+  JOB_POOL sequential
+  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+          --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
+  COMMAND
+    ${CMAKE_COMMAND} -D
+    NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+    -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+    R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
+    CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+    ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+  COMMENT "------ Installing 'jaspBase'")
 
-  add_custom_command(
-    WORKING_DIRECTORY ${R_HOME_PATH}
-    DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-    OUTPUT ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-    # BYPRODUCTS ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-    JOB_POOL sequential
-    COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-            --file=${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
-    COMMAND
-      ${CMAKE_COMMAND} -D
-      NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-      -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-      R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
-      CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-      ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-    COMMENT "------ Installing 'jaspGraphs'")
+add_custom_command(
+  WORKING_DIRECTORY ${R_HOME_PATH}
+  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+  OUTPUT ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+  JOB_POOL sequential
+  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+          --file=${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
+  COMMAND
+    ${CMAKE_COMMAND} -D
+    NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+    -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+    R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
+    CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+    ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+  COMMENT "------ Installing 'jaspGraphs'")
 
-  add_custom_command(
-    WORKING_DIRECTORY ${R_HOME_PATH}
-    DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-            ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-    OUTPUT ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
-    # BYPRODUCTS ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
-    JOB_POOL sequential
-    COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-            --file=${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
-    COMMAND
-      ${CMAKE_COMMAND} -D
-      NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-      -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-      R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
-      CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-      ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-    COMMENT "------ Installing 'jaspTools'")
+add_custom_command(
+  WORKING_DIRECTORY ${R_HOME_PATH}
+  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+  OUTPUT ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
+  JOB_POOL sequential
+  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+          --file=${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
+  COMMAND
+    ${CMAKE_COMMAND} -D
+    NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+    -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
+    R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
+    CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+    ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+  COMMENT "------ Installing 'jaspTools'")
+
+if(INSTALL_R_MODULES)
+
+  # Cleaning the renv-path on Windows only, for now.
+  # It takes somes times on macOS, but if we can build and
+  # cache it, let's do it.
+  set_property(
+    DIRECTORY
+    APPEND
+    PROPERTY ADDITIONAL_CLEAN_FILES
+             $<$<PLATFORM_ID:Windows>:${MODULES_BINARY_PATH}>)
+
+  add_custom_target(Modules)
+
+  add_dependencies(Modules ${JASP_COMMON_MODULES} ${JASP_EXTRA_MODULES})
 
   message(STATUS "Configuring Common Modules...")
   foreach(MODULE ${JASP_COMMON_MODULES})

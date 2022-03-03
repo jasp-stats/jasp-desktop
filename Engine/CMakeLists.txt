@@ -12,26 +12,44 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 add_executable(JASPEngine ${HEADER_FILES} ${SOURCE_FILES})
 
+# add_custom_command(
+#   TARGET JASPEngine
+#   POST_BUILD
+#   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+#   DEPENDS
+#   ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+#   ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
+#   ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+#   COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/writeImage.R
+#           ${MODULES_BINARY_PATH}/
+#   COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/zzzWrappers.R
+#           ${MODULES_BINARY_PATH}/
+#   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
+#           ${MODULES_BINARY_PATH}/
+#   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
+#           ${MODULES_BINARY_PATH}/)
+
 # Note that on WIN32 this is going to invoke the external build of
 # the R-Interface. So, while I'm using the same name for these targets
 # they are not 100% the same!
-add_dependencies(JASPEngine R-Interface)
+add_dependencies(JASPEngine R-Interface jaspBase)
 
 target_include_directories(
   JASPEngine
-  PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
-         ${PROJECT_SOURCE_DIR}/Common
+  PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface ${PROJECT_SOURCE_DIR}/Common
          # Conan
          $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>)
 
 if(WIN32)
 
   message(CHECK_START "Setting path to libR-Interface.dll")
-  set(_LIB_R_INTERFACE_SHARED ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll)
+  set(_LIB_R_INTERFACE_SHARED
+      ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll)
   message(STATUS "  ${_LIB_R_INTERFACE_SHARED}")
 
   message(CHECK_START "Setting path to libR-Interface.dll.a")
-  set(_LIB_R_INTERFACE_STATIC ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a)
+  set(_LIB_R_INTERFACE_STATIC
+      ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a)
   message(STATUS "  ${_LIB_R_INTERFACE_STATIC}")
 
   message(STATUS "libR-Interface will be build if it is missing.")
@@ -112,12 +130,15 @@ elseif(WIN32)
   # These are mainly for R-Interface, and all build using the MinGW
   add_custom_command(
     TARGET JASPEngine
-    POST_BUILD
-    DEPENDS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBGCC_S_SEH} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBSTDCPP} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBWINPTHREAD} ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBJSONCPP} ${CMAKE_BINARY_DIR}
+    POST_BUILD DEPENDS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBGCC_S_SEH}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBSTDCPP}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBWINPTHREAD}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBJSONCPP}
+            ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_SHARED}
             ${CMAKE_BINARY_DIR}
     COMMENT "------ Re-installing the dependencies (if necessary)")

@@ -1,5 +1,7 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
+set_property(GLOBAL PROPERTY JOB_POOLS sequential=1)
+
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
   set(LINUX 1)
 else()
@@ -21,6 +23,7 @@ option(
   "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
   OFF)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
+option(USE_CONAN "Whether to use CONAN package manager" OFF)
 
 # ------------
 
@@ -65,8 +68,7 @@ endif()
 
 if(WIN32)
 
-  option(USE_CONAN "Whether to use CONAN package manager" ON)
-
+  set(USE_CONAN ON)
   set(SYSTEM_TYPE WIN32)
 
 endif()

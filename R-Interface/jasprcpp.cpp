@@ -192,10 +192,9 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_logString("initEnvironment().\n");
 	jaspRCPP_parseEvalQNT("initEnvironment()");
-
 	
 	_R_HOME = jaspRCPP_parseEvalStringReturn("R.home('')");
-	jaspRCPP_logString("R_HOME is: " + _R_HOME);
+	jaspRCPP_logString("R_HOME is: " + _R_HOME + "\n");
 	
 
 #ifdef __APPLE__
