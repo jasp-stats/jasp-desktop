@@ -31,14 +31,13 @@ target_include_directories(
 
 target_link_libraries(
   Common
-  PUBLIC 
-         # jsoncpp
+  PUBLIC # jsoncpp
          $<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
          $<$<NOT:$<BOOL:${USE_CONAN}>>:${LIBJSONCPP_LINK_LIBRARIES}>
          #
          LibArchive::LibArchive
          # Boost
-         Boost::nowide
+         $<$<PLATFORM_ID:Windows>:Boost::nowide>
          Boost::filesystem
          Boost::system
          Boost::date_time

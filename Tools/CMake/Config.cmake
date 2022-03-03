@@ -21,7 +21,7 @@ option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
 option(
   INSTALL_JASP_REQUIRED_LIBRARIES
   "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
-  OFF)
+  ON)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
 option(USE_CONAN "Whether to use CONAN package manager" OFF)
 

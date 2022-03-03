@@ -36,9 +36,12 @@ add_dependencies(JASPEngine R-Interface jaspBase)
 
 target_include_directories(
   JASPEngine
-  PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface ${PROJECT_SOURCE_DIR}/Common
+  PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
+         ${PROJECT_SOURCE_DIR}/Common
          # Conan
-         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>)
+         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>
+         #
+         ${Boost_INCLUDE_DIRS})
 
 if(WIN32)
 
@@ -63,7 +66,7 @@ target_link_libraries(
          $<$<PLATFORM_ID:Windows>:${_LIB_R_INTERFACE_STATIC}>
          $<$<NOT:$<PLATFORM_ID:Windows>>:R-Interface>
          # Boost
-         Boost::nowide
+         $<$<PLATFORM_ID:Windows>:Boost::nowide>
          Boost::filesystem
          Boost::system
          Boost::date_time

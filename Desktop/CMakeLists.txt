@@ -172,11 +172,13 @@ target_link_libraries(
     Iconv::Iconv
     OpenSSL::SSL
     OpenSSL::Crypto
-    # ReadStat
-    # Based on our config, this is either from PkgConfig, or the build/_deps/
+    # ReadStat -----------------------------------
     ${LIBREADSTAT_LIBRARIES}
+    # When using Conan, we need to provide the static libraries directly, for some reason!
+    ${Iconv_LIBRARY_LIST}
+    # MinGW's ReadStat
     $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
-    # R-Framework
+    # R-Framework --------------------------------
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 
 # Amir: All these single if's can be written using the

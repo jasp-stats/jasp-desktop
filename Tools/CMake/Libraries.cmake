@@ -31,12 +31,22 @@ endif()
 set(Boost_USE_STATIC_LIBS ON)
 find_package(
   Boost 1.78.0 REQUIRED
-  COMPONENTS nowide
-             filesystem
+  COMPONENTS filesystem
              system
              date_time
              timer
              chrono)
+
+if(WINDOWS)
+  find_package(
+    Boost 1.78.0 REQUIRED
+    COMPONENTS nowide
+               filesystem
+               system
+               date_time
+               timer
+               chrono)
+endif()
 
 find_package(
   Qt6 REQUIRED

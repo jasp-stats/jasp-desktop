@@ -55,12 +55,9 @@ include(Conan)
 
 include(Programs)
 
-# Builds and configures all the dependencies
-if(INSTALL_JASP_REQUIRED_LIBRARIES)
-  include(Dependencies)
-endif()
-
 include(Libraries)
+
+include(Dependencies)
 
 include(JASP)
 
@@ -98,8 +95,7 @@ else()
                ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a
     COMMAND
       ${CMAKE_COMMAND} -G "MinGW Makefiles" -S . -B
-      ${CMAKE_BINARY_DIR}/R-Interface
-      "-DMINGW_PATH:PATH=${MINGW_PATH}"
+      ${CMAKE_BINARY_DIR}/R-Interface "-DMINGW_PATH:PATH=${MINGW_PATH}"
       "-DCMAKE_C_COMPILER:STRING=${MINGW_C_COMPILER}"
       "-DCMAKE_CXX_COMPILER:STRING=${MINGW_CXX_COMPILER}"
       "-DCMAKE_MAKE_PROGRAM:STRING=${MINGW_MAKE_PROGRAM}"
@@ -108,7 +104,7 @@ else()
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
     COMMENT "------ Configuring and Building the libR-Interface")
 
-  # add_custom_target(R-Interface DEPENDS 
+  # add_custom_target(R-Interface DEPENDS
   #   ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
   #   ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a)
 endif()

@@ -13,7 +13,9 @@ if(WIN32)
 
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../Tools/CMake")
 
-  set(MINGW_PATH "C:/msys64/mingw64" CACHE PATH "Path to MinGW x64 folder")
+  set(MINGW_PATH
+      "C:/msys64/mingw64"
+      CACHE PATH "Path to MinGW x64 folder")
   set(JASP_SOURCE_DIR "${CMAKE_SOURCE_DIR}/..")
   if(NOT EXISTS ${JASP_BINARY_DIR})
     message(
@@ -99,9 +101,8 @@ if(WIN32)
 
   target_link_libraries(
     R-Interface
-    PUBLIC 
-           # jsoncpp
-           ${_LIB_JSONCPP}    # MinGW's libjsoncpp-24.dll
+    PUBLIC # jsoncpp
+           ${_LIB_JSONCPP} # MinGW's libjsoncpp-24.dll
            # RInside
            ${_LIB_RINSIDE}
            # R
@@ -141,11 +142,13 @@ else()
            # R
            ${R_INCLUDE_PATH}
            ${RCPP_PATH}/include
-           ${RINSIDE_PATH}/include)
+           ${RINSIDE_PATH}/include
+           #
+           ${Boost_INCLUDE_DIRS})
 
   target_link_libraries(
     R-Interface
-    PUBLIC Boost::nowide
+    PUBLIC $<$<PLATFORM_ID:Windows>:Boost::nowide>
            Boost::filesystem
            Boost::system
            Boost::date_time

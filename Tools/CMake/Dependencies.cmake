@@ -34,6 +34,11 @@ message(CHECK_START "Downloading 'readstat'")
 
 fetchcontent_makeavailable(readstat)
 
+if(USE_CONAN)
+  set(Iconv_FLAGS_FOR_READSTAT --with-libiconv-prefix=${Iconv_LIB_DIRS}/..
+                               --without-libiconv-prefix)
+endif()
+
 if(readstat_POPULATED)
 
   message(CHECK_PASS "successful.")
@@ -43,6 +48,7 @@ if(readstat_POPULATED)
     OUTPUT ${readstat_BINARY_DIR}/include/readstat.h
            ${readstat_BINARY_DIR}/lib/libreadstat.a
     COMMAND ./configure --enable-static --prefix=${readstat_BINARY_DIR}
+            ${Iconv_FLAGS_FOR_READSTAT}
     COMMAND ${MAKE}
     COMMAND ${MAKE} install
     COMMENT "----- Preparing 'readstat'")

@@ -81,7 +81,10 @@ if(APPLE)
   message(CHECK_START "Looking for 'gfortran'")
   find_program(
     FORTRAN_EXECUTABLE
-    NAMES gfortran REQUIRED
+    NAMES gfortran
+          gfortran-11
+          gfortran-12
+          REQUIRED
     PATHS /usr/local/bin/gfortran /opt/homebrew/bin
     DOC "'gfortran' is needed for building some of the R packages")
 
@@ -90,6 +93,7 @@ if(APPLE)
     message(FATAL_ERROR "Please install 'gfortran' before continuing.")
   else()
     message(CHECK_PASS "found")
+    message(STATUS "  ${FORTRAN_EXECUTABLE}")
     set(JAGS_F77_FLAG "F77=${FORTRAN_EXECUTABLE}")
   endif()
 
