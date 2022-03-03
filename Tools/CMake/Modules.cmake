@@ -399,8 +399,10 @@ if(INSTALL_R_MODULES)
 
         fetchcontent_declare(
           jags
-          HG_REPOSITORY "http://hg.code.sf.net/p/mcmc-jags/code-0"
-          HG_TAG "release-4_3_0")
+          URL "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Source/JAGS-4.3.0.tar.gz"
+          URL_HASH
+            SHA256=8ac5dd57982bfd7d5f0ee384499d62f3e0bb35b5f1660feb368545f1186371fc
+        )
 
         message(CHECK_START "Downloading 'jags'")
 
@@ -413,8 +415,6 @@ if(INSTALL_R_MODULES)
           add_custom_command(
             WORKING_DIRECTORY ${jags_SOURCE_DIR}
             OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
-            COMMAND ${ACLOCAL}
-            COMMAND ${AUTORECONF} -fi
             COMMAND ./configure --disable-dependency-tracking
                     --prefix=${jags_HOME}
             COMMAND ${MAKE}
@@ -427,6 +427,8 @@ if(INSTALL_R_MODULES)
               CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
               ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
             COMMENT "----- Preparing 'jags'")
+
+          add_custom_target(jags DEPENDS ${jags_HOME}/lib/pkgconfig/jags.pc)
 
         else()
 
