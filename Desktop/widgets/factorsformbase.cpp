@@ -41,6 +41,8 @@ void FactorsFormBase::setUpModel()
 	_availableVariablesListName = property("availableVariablesListName").toString();
 	QVariant availableListVariant = property("availableVariablesList");
 	_availableVariablesListItem = dynamic_cast<JASPControl*>(qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>()));
+
+	connect(this, &FactorsFormBase::initializedChanged, this, &FactorsFormBase::countVariablesChanged);
 }
 
 void FactorsFormBase::bindTo(const Json::Value& value)
@@ -130,4 +132,5 @@ void FactorsFormBase::factorAdded(int index, QVariant item)
 	_factorsModel->factorAdded(index, listView);
 	
 	connect(listView->model(), &ListModel::termsChanged, _factorsModel, &ListModelFactorsForm::resetModelTerms);
+	connect(listView->model(), &ListModel::termsChanged, this, &FactorsFormBase::countVariablesChanged);
 }
