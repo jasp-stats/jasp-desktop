@@ -29,25 +29,29 @@ class FactorsFormBase :  public JASPListControl, public BoundControlBase
 	Q_OBJECT
 
 	Q_PROPERTY( int		initNumberFactors		READ initNumberFactors		WRITE setInitNumberFactors	NOTIFY initNumberFactorsChanged	)
+	Q_PROPERTY( int		countVariables			READ countVariables										NOTIFY countVariablesChanged	)
+
 
 public:
 	FactorsFormBase(QQuickItem* parent = nullptr);
 
-	bool			isJsonValid(const Json::Value& optionValue)	override;
-	Json::Value		createJson()								override;
-	void			bindTo(const Json::Value& value)			override;
-	ListModel*		model()								const	override { return _factorsModel; }
-	void			setUpModel()								override;
+	bool			isJsonValid(const Json::Value& optionValue)			override;
+	Json::Value		createJson()										override;
+	void			bindTo(const Json::Value& value)					override;
+	ListModel*		model()										const	override	{ return _factorsModel; }
+	void			setUpModel()										override;
 
-	Q_INVOKABLE	void	addFactor()								{ _factorsModel->addFactor();						}
-	Q_INVOKABLE void	removeFactor()							{ _factorsModel->removeFactor();					}
-	Q_INVOKABLE void	titleChanged(int index, QString title)	{ _factorsModel->titleChangedSlot(index, title);	}
+	Q_INVOKABLE	void	addFactor()													{ _factorsModel->addFactor();						}
+	Q_INVOKABLE void	removeFactor()												{ _factorsModel->removeFactor();					}
+	Q_INVOKABLE void	titleChanged(int index, QString title)						{ _factorsModel->titleChangedSlot(index, title);	}
 	Q_INVOKABLE void	factorAdded(int index, QVariant item);
 
-	int	initNumberFactors()	const	{ return _initNumberFactors; }
+	int	initNumberFactors()										const				{ return _initNumberFactors;						}
+	int countVariables()										const				{ return _initialized ? _factorsModel->countVariables() : 0; }
 
 signals:
 	void initNumberFactorsChanged();
+	void countVariablesChanged();
 
 protected slots:
 	void			termsChangedHandler() override;
