@@ -78,7 +78,16 @@ void ListModelFactorsForm::initFactors(const FactorVec &factors)
 	}
 	
 	_setTerms(newTerms);
-	endResetModel();	
+	endResetModel();
+}
+
+int ListModelFactorsForm::countVariables() const
+{
+	int count = 0;
+	for (Factor* factor : _factors)
+		count += factor->listView->count();
+
+	return count;
 }
 
 
