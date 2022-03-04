@@ -4,6 +4,7 @@
 #ifdef _WIN32
 
 #include "boost/nowide/cstdio.hpp"
+#include "boost/nowide/stackstring.hpp"
 #include <fcntl.h>
 #include <io.h>
 
@@ -49,7 +50,7 @@ int handle_open(const char *path, void * io_ctx)
 		return 0;
 	}
 
-	int fd = _wopen(wname.c_str(), O_RDONLY | O_BINARY);
+    int fd = _wopen(wname.get(), O_RDONLY | O_BINARY);
 
 	static_cast<jasp_io_ctx*>(io_ctx)->fd = fd;
 

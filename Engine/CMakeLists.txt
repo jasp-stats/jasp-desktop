@@ -66,7 +66,6 @@ target_link_libraries(
          $<$<PLATFORM_ID:Windows>:${_LIB_R_INTERFACE_STATIC}>
          $<$<NOT:$<PLATFORM_ID:Windows>>:R-Interface>
          # Boost
-         $<$<PLATFORM_ID:Windows>:Boost::nowide>
          Boost::filesystem
          Boost::system
          Boost::date_time
@@ -74,6 +73,10 @@ target_link_libraries(
          Boost::chrono
          #
          LibArchive::LibArchive)
+
+if(WINDOWS)
+  target_link_libraries(JASPEngine PUBLIC Boost::nowide)
+endif()
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)
   set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
@@ -124,9 +127,10 @@ elseif(WIN32)
   target_compile_definitions(
     JASPEngine
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
-           BOOST_USE_WINDOWS_H
+           BOOST_WINDOWS
            NOMINMAX
-           WIN32_LEAN_AND_MEAN)
+           WIN32_LEAN_AND_MEAN
+           )
 
   target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
 
@@ -139,6 +143,8 @@ elseif(WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBSTDCPP}
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBWINPTHREAD}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIB_BOOST_NOWIDE}
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBJSONCPP}
             ${CMAKE_BINARY_DIR}

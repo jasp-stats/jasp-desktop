@@ -81,6 +81,8 @@ if(WIN32)
   file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
   list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
+  find_package(Boost 1.78 REQUIRED nowide)
+
   add_library(R-Interface SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
   add_definitions(-DJASP_R_INTERFACE_LIBRARY)
@@ -108,6 +110,8 @@ if(WIN32)
            # R
            $<$<NOT:$<PLATFORM_ID:Darwin>>:${_LIB_R}>
            $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+           #
+           Boost::nowide
            #
            $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 

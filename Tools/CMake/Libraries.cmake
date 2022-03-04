@@ -217,6 +217,24 @@ if(WIN32)
     )
   endif()
 
+
+  message(CHECK_START "Looking for libboost_nowide-mt.dll")
+  find_file(
+    MINGW_LIB_BOOST_NOWIDE
+    NAMES libboost_nowide-mt.dll
+    PATHS ${MINGW_PATH}/bin)
+
+  if(EXISTS ${MINGW_PATH})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${MINGW_LIB_BOOST_NOWIDE}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
+    )
+  endif()
+
   message(CHECK_START "Looking for libjsoncpp-24.dll")
   find_file(
     MINGW_LIBJSONCPP

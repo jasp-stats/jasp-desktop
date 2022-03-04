@@ -25,6 +25,10 @@
 #include "r_functionwhitelist.h"
 #include "otoolstuff.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 DataSet						*	rbridge_dataSet		= nullptr;
 RCallback						rbridge_callback	= NULL;
 std::set<std::string>			filterColumnsUsed;

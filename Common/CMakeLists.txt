@@ -37,7 +37,6 @@ target_link_libraries(
          #
          LibArchive::LibArchive
          # Boost
-         $<$<PLATFORM_ID:Windows>:Boost::nowide>
          Boost::filesystem
          Boost::system
          Boost::date_time
@@ -45,6 +44,10 @@ target_link_libraries(
          Boost::chrono
          #
          $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
+
+if(WINDOWS)
+  target_link_libraries(Common PUBLIC Boost::nowide)
+endif()
 
 target_compile_definitions(
   Common PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
@@ -67,9 +70,10 @@ elseif(WIN32)
   target_compile_definitions(
     Common
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
-           BOOST_USE_WINDOWS_H
+           BOOST_WINDOWS
            NOMINMAX
-           WIN32_LEAN_AND_MEAN)
+           WIN32_LEAN_AND_MEAN
+           )
 
   # TODO: I have no idea what these are. For now, for Windows build, I'm just
   # translating the Qmake
