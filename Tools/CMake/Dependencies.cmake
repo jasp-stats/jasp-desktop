@@ -15,57 +15,59 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Dependencies)
 
 add_custom_target(Dependencies)
 
-add_dependencies(Dependencies readstat)
+if(NOT WIN32)
 
-# ----- readstat -----
-#
-# This might look a bit unusual but it is fine. I had to do it this
-# way because CMake was not being very smart about it, and was
-# reconfiguring the entire readstat everytime during build even if
-# it was already built!
+  add_dependencies(Dependencies readstat)
 
-fetchcontent_declare(
-  readstat
-  URL "https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz"
-  URL_HASH
-    SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
+  # ----- readstat -----
+  #
+  # This might look a bit unusual but it is fine. I had to do it this
+  # way because CMake was not being very smart about it, and was
+  # reconfiguring the entire readstat everytime during build even if
+  # it was already built!
 
-message(CHECK_START "Downloading 'readstat'")
+  fetchcontent_declare(
+    readstat
+    URL "https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz"
+    URL_HASH
+      SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
 
-fetchcontent_makeavailable(readstat)
+  message(CHECK_START "Downloading 'readstat'")
 
-if(USE_CONAN)
-  set(Iconv_FLAGS_FOR_READSTAT --with-libiconv-prefix=${Iconv_LIB_DIRS}/..
-                               --without-libiconv-prefix)
+  fetchcontent_makeavailable(readstat)
+
+  if(USE_CONAN)
+    set(Iconv_FLAGS_FOR_READSTAT --with-libiconv-prefix=${Iconv_LIB_DIRS}/..
+                                 --without-libiconv-prefix)
+  endif()
+
+  if(readstat_POPULATED)
+
+    message(CHECK_PASS "successful.")
+
+    add_custom_command(
+      WORKING_DIRECTORY ${readstat_SOURCE_DIR}
+      OUTPUT ${readstat_BINARY_DIR}/include/readstat.h
+             ${readstat_BINARY_DIR}/lib/libreadstat.a
+      COMMAND ./configure --enable-static --prefix=${readstat_BINARY_DIR}
+              ${Iconv_FLAGS_FOR_READSTAT}
+      COMMAND ${MAKE}
+      COMMAND ${MAKE} install
+      COMMENT "----- Preparing 'readstat'")
+
+    add_custom_target(readstat
+                      DEPENDS ${readstat_BINARY_DIR}/include/readstat.h)
+
+    set(LIBREADSTAT_INCLUDE_DIRS ${readstat_BINARY_DIR}/include)
+    set(LIBREADSTAT_LIBRARY_DIRS ${readstat_BINARY_DIR}/lib)
+    set(LIBREADSTAT_LIBRARIES ${LIBREADSTAT_LIBRARY_DIRS}/libreadstat.a)
+
+  else()
+
+    message(CHECK_FAIL "failed.")
+
+  endif()
+
 endif()
-
-if(readstat_POPULATED)
-
-  message(CHECK_PASS "successful.")
-
-  add_custom_command(
-    WORKING_DIRECTORY ${readstat_SOURCE_DIR}
-    OUTPUT ${readstat_BINARY_DIR}/include/readstat.h
-           ${readstat_BINARY_DIR}/lib/libreadstat.a
-    COMMAND ./configure --enable-static --prefix=${readstat_BINARY_DIR}
-            ${Iconv_FLAGS_FOR_READSTAT}
-    COMMAND ${MAKE}
-    COMMAND ${MAKE} install
-    COMMENT "----- Preparing 'readstat'")
-
-  add_custom_target(readstat DEPENDS ${readstat_BINARY_DIR}/include/readstat.h)
-
-  set(LIBREADSTAT_INCLUDE_DIRS ${readstat_BINARY_DIR}/include)
-  set(LIBREADSTAT_LIBRARY_DIRS ${readstat_BINARY_DIR}/lib)
-  set(LIBREADSTAT_LIBRARIES ${LIBREADSTAT_LIBRARY_DIRS}/libreadstat.a)
-
-else()
-
-  message(CHECK_FAIL "failed.")
-
-endif()
-
-unset(DOWNLOAD_DIR)
-unset(INSTALL_DIR)
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
