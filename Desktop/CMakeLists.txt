@@ -131,7 +131,7 @@ if(INSTALL_R_MODULES)
   add_dependencies(JASP Modules)
 endif()
 
-if(INSTALL_JASP_REQUIRED_LIBRARIES)
+if(NOT WINDOWS)
   add_dependencies(JASP readstat)
 endif()
 
@@ -174,12 +174,18 @@ target_link_libraries(
     OpenSSL::Crypto
     # ReadStat -----------------------------------
     ${LIBREADSTAT_LIBRARIES}
-    # When using Conan, we need to provide the static libraries directly, for some reason!
-    ${Iconv_LIBRARY_LIST}
     # MinGW's ReadStat
     $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
     # R-Framework --------------------------------
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
+
+if(NOT WINDOWS)
+  target_link_libraries(
+    JASP 
+      PUBLIC 
+      # When using Conan, we need to provide the static libraries directly, for some reason!
+      ${Iconv_LIBRARY_LIST})
+endif()
 
 # Amir: All these single if's can be written using the
 #       generator expressions but since debugging those
