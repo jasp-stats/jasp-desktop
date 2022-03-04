@@ -137,6 +137,15 @@ if(WIN32)
 
 endif()
 
+# ------ Code signing
+
+set(APPLE_CODESIGN_IDENTITY
+    "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)")
+set(APPLE_CODESIGN_ENTITLEMENTS
+    "${CMAKE_SOURCE_DIR}/Tools/macOS/entitlements.plist")
+
+message(STATUS "Signing with ${APPLE_CODESIGN_IDENTITY}")
+
 # In case Qt is not in path
 # NEEDS TESTING
 # if(WIN32)

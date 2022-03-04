@@ -55,10 +55,6 @@ if(APPLE)
 
   set(BUNDLE_NAME "${MACOS_BUNDLE_NAME}.app")
   set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
-  set(APPLE_CODESIGN_IDENTITY
-      "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)")
-  set(APPLE_CODESIGN_ENTITLEMENTS
-      "${CMAKE_SOURCE_DIR}/Tools/macOS/entitlements.plist")
 
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   set(PARALLEL_SIGNER "${CMAKE_BINARY_DIR}/ParallelSigner.sh")

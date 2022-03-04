@@ -207,8 +207,8 @@ if(APPLE)
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
             codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
-            "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)" --options
-            runtime "${R_HOME_PATH}/bin/exec/R"
+            "${APPLE_CODESIGN_IDENTITY}" --options runtime
+            "${R_HOME_PATH}/bin/exec/R"
           RESULT_VARIABLE SIGNING_RESULT
           OUTPUT_VARIABLE SIGNING_OUTPUT
           ERROR_VARIABLE SIGNING_ERROR)
