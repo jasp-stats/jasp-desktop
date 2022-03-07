@@ -30,11 +30,11 @@ option(USE_CONAN "Whether to use CONAN package manager" OFF)
 if(APPLE)
 
   option(SIGN_AT_BUILD_TIME
-         "Whether to sign every library during the configuration and build" OFF)
+         "Whether to sign every library during the configuration and build" ON)
   option(
     TIMESTAMP_AT_BUILD_TIME
     "Whether to add the timstamp every library during the configuration and build"
-    OFF)
+    ON)
 
   set(INSTALL_JASP_REQUIRED_LIBRARIES ON)
 
