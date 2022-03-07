@@ -162,6 +162,17 @@ else()
           "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib"
       )
 
+      # Changing the `/opt/jags/lib` prefix
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND
+          bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+          "${R_HOME_PATH}/opt/jags/lib"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
+      )
+
       # Changing the library `id`s
       execute_process(
         # COMMAND_ECHO STDOUT
@@ -186,11 +197,11 @@ else()
 
           execute_process(
             # COMMAND_ECHO STDOUT
-            TIMEOUT 30
             ERROR_QUIET OUTPUT_QUIET
+            TIMEOUT 30
             WORKING_DIRECTORY ${PATH}
-            COMMAND codesign --force ${CODESIGN_TIMESTAMP_FLAG} --sign
-                    "${APPLE_CODESIGN_IDENTITY}" "${FILE}"
+            COMMAND codesign --deep --force ${CODESIGN_TIMESTAMP_FLAG} --sign
+                    "${APPLE_CODESIGN_IDENTITY}" --options runtime "${FILE}"
             RESULT_VARIABLE SIGNING_RESULT
             OUTPUT_VARIABLE SIGNING_OUTPUT)
         endwhile()
