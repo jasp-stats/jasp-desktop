@@ -30,11 +30,11 @@ option(USE_CONAN "Whether to use CONAN package manager" OFF)
 if(APPLE)
 
   option(SIGN_AT_BUILD_TIME
-         "Whether to sign every library during the configuration and build" ON)
+         "Whether to sign every library during the configuration and build" OFF)
   option(
     TIMESTAMP_AT_BUILD_TIME
     "Whether to add the timstamp every library during the configuration and build"
-    ON)
+    OFF)
 
   set(INSTALL_JASP_REQUIRED_LIBRARIES ON)
 
@@ -111,10 +111,19 @@ endif()
 # when everything else worked properly
 
 if(INSTALL_R_MODULES AND (GITHUB_PAT STREQUAL ""))
-  message(
-    FATAL_ERROR
-      "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub."
-  )
+
+  message(STATUS "GITHUB_PAT is not set")
+  message(CHECK_START "Looking if its set as an environment variable.")
+
+  if(GITHUB_PAT STREQUAL "")
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub."
+    )
+  endif()
+  message(CHECK_PASS "found")
+
 endif()
 
 if(CCACHE_EXECUTABLE

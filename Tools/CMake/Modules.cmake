@@ -28,10 +28,6 @@ set(JASP_COMMON_MODULES
     # "jaspMixedModels"
 )
 
-# list(REVERSE JASP_COMMON_MODULES)
-# set(JASP_COMMON_MODULES_COPY ${JASP_COMMON_MODULES})
-# list(POP_FRONT JASP_COMMON_MODULES_COPY FIRST_COMMON_MODULE)
-
 # Possible Bug:
 #
 # - The order is kind of important here, because `jaspProphet` and `jaspCircular`
@@ -55,10 +51,6 @@ set(JASP_EXTRA_MODULES
     # "jaspLearnBayes"
     # "jaspProcessControl"
 )
-
-# list(REVERSE JASP_EXTRA_MODULES)
-# set(JASP_EXTRA_MODULES_COPY ${JASP_EXTRA_MODULES})
-# list(POP_FRONT JASP_EXTRA_MODULES_COPY)
 
 if("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES)
   if(LINUX)
@@ -132,7 +124,7 @@ file(
                         'data.table', 'httr', 'lifecycle',
                         'pkgload', 'remotes', 'stringi', 'stringr',
                         'vdiffr'), type='${R_PKG_TYPE}', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})
-    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
+    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
     if ('jaspBase' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
     }
@@ -141,7 +133,7 @@ file(
 file(
   WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
   "
-    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
+    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
     if ('jaspGraphs' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log')
     }
@@ -150,7 +142,7 @@ file(
 file(
   WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
   "
-    install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH})
+    install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
     if ('jaspTools' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log')
     }

@@ -45,7 +45,7 @@ else()
                 "-1"
                 FILE_SHORT_PATH)
 
-    message(CHECK_START "-------- Patching ${FILE_SHORT_PATH}")
+    message(CHECK_START "--- Patching ${FILE_SHORT_PATH}")
 
     if(NOT EXISTS "${DIRECTORY_NAME}/${FILE_NAME}.patched.log")
 
@@ -55,13 +55,14 @@ else()
 
       if((FILE MATCHES "prophet.so")
          OR (FILE MATCHES "metaBMA.so")
+         OR (FILE MATCHES "rstanarm.so")
          OR (FILE MATCHES "libtbbmalloc.dylib")
          OR (FILE MATCHES "libtbbmalloc_proxy.dylib")
          OR (FILE MATCHES "libtbb.dylib"))
 
         execute_process(
           # COMMAND_ECHO STDOUT
-          ERROR_QUIET OUTPUT_QUIET
+          # ERROR_QUIET OUTPUT_QUIET
           WORKING_DIRECTORY ${PATH}
           COMMAND
             install_name_tool -change "@rpath/libtbbmalloc.dylib"
@@ -70,7 +71,7 @@ else()
 
         execute_process(
           # COMMAND_ECHO STDOUT
-          ERROR_QUIET OUTPUT_QUIET
+          # ERROR_QUIET OUTPUT_QUIET
           WORKING_DIRECTORY ${PATH}
           COMMAND
             install_name_tool -change "@rpath/libtbbmalloc_proxy.dylib"
@@ -79,7 +80,7 @@ else()
 
         execute_process(
           # COMMAND_ECHO STDOUT
-          ERROR_QUIET OUTPUT_QUIET
+          # ERROR_QUIET OUTPUT_QUIET
           WORKING_DIRECTORY ${PATH}
           COMMAND
             install_name_tool -change "@rpath/libtbb.dylib"
@@ -179,7 +180,7 @@ else()
 
         set(SIGNING_RESULT "timeout")
 
-        message(CHECK_START "-------- Signing ${FILE_SHORT_PATH}")
+        message(CHECK_START "--- Signing  ${FILE_SHORT_PATH}")
 
         while(${SIGNING_RESULT} STREQUAL "timeout")
 

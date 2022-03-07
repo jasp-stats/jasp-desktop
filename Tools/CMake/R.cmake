@@ -295,7 +295,7 @@ if(APPLE)
 
     file(
       WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}')"
+      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs --no-test-load')"
     )
 
     execute_process(
@@ -446,7 +446,7 @@ elseif(WIN32)
 
     file(
       WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
-      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})"
+      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')"
     )
 
     execute_process(
@@ -581,7 +581,7 @@ elseif(LINUX)
 
     file(
       WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-      "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})"
+      "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')"
     )
 
     execute_process(

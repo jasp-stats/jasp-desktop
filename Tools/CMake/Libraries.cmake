@@ -21,11 +21,15 @@ endif()
 
 find_package(LibArchive)
 if((NOT LibArchive_FOUND) AND (NOT WIN32))
-  pkg_check_modules(
-    LibArchive
-    REQUIRED
-    IMPORTED_TARGET
-    libarchive)
+  pkg_check_modules(LibArchive IMPORTED_TARGET libarchive)
+
+  if(NOT LibArchive_FOUND)
+    message(STATUS "LibArchive not found.")
+    message(
+      FATAL_ERROR
+        "If you have already installed the libarchive, you can direct CMake to its path, e.g., `-DCMAKE_PREFIX_PATH=/opt/homebrew/libarchive/`"
+    )
+  endif()
 endif()
 
 set(Boost_USE_STATIC_LIBS ON)
@@ -216,7 +220,6 @@ if(WIN32)
         "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
-
 
   message(CHECK_START "Looking for libboost_nowide-mt.dll")
   find_file(
