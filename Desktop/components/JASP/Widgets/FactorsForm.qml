@@ -77,6 +77,7 @@ FactorsFormBase
                     allowedColumns:     allowAll ? [] : ["scale", "ordinal"]
 					implicitHeight:		factorsForm.factorListHeight // preferredHeight does not work when changing the language: the height is set to the implicitHeight
 					implicitWidth:		listWidth
+					isBound:			false
 
 					onTitleIsChanged:	factorsForm.titleChanged(index, editableTitle)
 				}

@@ -99,6 +99,11 @@ bool FactorsFormBase::isJsonValid(const Json::Value &value)
 
 void FactorsFormBase::termsChangedHandler()
 {
+	// This slot is called to set the boundValues if the factors are changed.
+	// This does not have to be called during the initialization of the FactorsForm: the _factorsModel might give the wrong information
+	// and during the initialization, the boundValues has to be set by the bindTo method anyway.
+	if (!initialized()) return;
+
 	const ListModelFactorsForm::FactorVec &factors = _factorsModel->getFactors();
 	Json::Value boundValue(Json::arrayValue);
 	
