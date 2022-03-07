@@ -61,17 +61,31 @@ if(APPLE)
 
   # Add your password like this to the KeyChain
   #
-  # % xcrun notarytool store-credentials "AC_PASSWORD"
-  #              --apple-id "jasp.stats@gmail.com"
-  #              --team-id AWJJ3YVK9B
-  #              --password <secret_2FA_password>
-  add_custom_target(
-    notarise
-    COMMAND xcrun notarytool submit "JASP/${CPACK_DMG_VOLUME_NAME}"
-            --keychain-profile "AC_PASSWORD"
-    COMMENT "Submitting the JASP/${CPACK_DMG_VOLUME_NAME} for notarisation")
+  if(XCODE_VERSION VERSION_GREATER 12.0)
+    # % xcrun notarytool store-credentials "AC_PASSWORD"
+    #              --apple-id "jasp.stats@gmail.com"
+    #              --team-id AWJJ3YVK9B
+    #              --password <secret_2FA_password>
+    add_custom_target(
+      notarise
+      COMMAND xcrun notarytool submit "JASP/${CPACK_DMG_VOLUME_NAME}"
+              --keychain-profile "AC_PASSWORD"
+      COMMENT "Submitting the JASP/${CPACK_DMG_VOLUME_NAME} for notarisation")
 
-  add_custom_target(staple COMMAND xcrun stapler staple "Install/JASP.app")
+    add_custom_target(staple COMMAND xcrun stapler staple "Install/JASP.app")
+  else()
+    # % xcrun altool --store-password-in-keychain-item "AC_PASSWORD"
+    #            -u "AC_USERNAME"
+    #            -p <secret_password>
+    add_custom_target(
+      notarise
+      COMMAND
+        xcrun altool --notarize-app --primary-bundle-id "org.jasp-stats.jasp"
+        --password "@keychain:AC_PASSWORD" --file
+        "JASP/${CPACK_DMG_VOLUME_NAME}"
+      COMMENT "Submitting the JASP/${CPACK_DMG_VOLUME_NAME} for notarisation")
+  endif()
+
 endif()
 
 include(CPack)
