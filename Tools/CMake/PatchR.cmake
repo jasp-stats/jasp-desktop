@@ -52,6 +52,10 @@ macro(patch_r)
   else()
     # On x86_64, we might need to do a bit differently since some of these packages
     # are installed in R_HOME/usr/local/ which is bizarre, but I guess we will see
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e "s/\\/usr\\/local/$(R_HOME)\\/opt\\/local/g"
+              Makeconf)
   endif()
 
   # -------------------------------------------------------------

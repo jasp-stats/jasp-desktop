@@ -128,11 +128,29 @@ if(APPLE)
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
                         COMMAND tar -xf R-fw.pkg/Payload)
 
-        execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
-                        COMMAND tar -xf tcltk.pkg/Payload -C ${r_pkg_r_home}/)
+        if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
 
-        execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
-                        COMMAND tar -xf texinfo.pkg/Payload -C ${r_pkg_r_home}/)
+          execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+                          COMMAND tar -xf tcltk.pkg/Payload -C ${r_pkg_r_home}/)
+
+          execute_process(
+            WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+            COMMAND tar -xf texinfo.pkg/Payload -C ${r_pkg_r_home}/)
+
+        else()
+
+          make_directory(${r_pkg_r_home}/opt)
+          execute_process(
+            WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+            COMMAND tar -xf tcltk.pkg/Payload --strip-components=2 -C
+                    ${r_pkg_r_home}/opt)
+
+          execute_process(
+            WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
+            COMMAND tar -xf texinfo.pkg/Payload --strip-components=2 -C
+                    ${r_pkg_r_home}/opt)
+
+        endif()
 
         message(CHECK_PASS "done.")
 

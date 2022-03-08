@@ -107,7 +107,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				const std::map<std::string, std::string> prefixes_map = {
 					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib", "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib"},
 					{"/opt/R/arm64/lib", "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/opt/R/arm64/lib"},
-					// {"/usr/local/lib", "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/opt/local/lib"},
+					{"/usr/local/lib", "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/opt/local/lib"},
 				};
 
 				// Known fix library id's and paths 
