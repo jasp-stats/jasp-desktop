@@ -153,25 +153,30 @@ else()
       # Changing the `/opt/R/arm64/lib` prefix
       # These are additional libraries needed for arm64.
       # @todo, at some point, we might need to have a case for them, but for now they are fine
-      execute_process(
-        # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
-        WORKING_DIRECTORY ${PATH}
-        COMMAND
-          bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib"
-      )
+      if(NOT (FILE MATCHES ".*(runjags|rjags|RoBMA|metaBMA).*"))
 
-      # Changing the `/opt/jags/lib` prefix
-      execute_process(
-        # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
-        WORKING_DIRECTORY ${PATH}
-        COMMAND
-          bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
-          "${R_HOME_PATH}/opt/jags/lib"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
-      )
+        execute_process(
+          COMMAND_ECHO STDOUT
+          # ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib"
+        )
+
+      else()
+
+        # Changing the `/opt/jags/lib` prefix
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
+        )
+
+      endif()
 
       # Changing the library `id`s
       execute_process(

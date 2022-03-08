@@ -29,17 +29,20 @@ execute_process(
     --options runtime "@JASP_INSTALL_PREFIX@")
 message(CHECK_FAIL "successful.")
 
-execute_process(COMMAND codesign --verify --verbose --display
-                        "@JASP_INSTALL_PREFIX@/Contents/MacOS/JASP")
+# execute_process(COMMAND codesign --verify --verbose --display
+#                         "@JASP_INSTALL_PREFIX@/Contents/MacOS/JASP")
 
-execute_process(COMMAND codesign --verify --verbose --display
-                        "@JASP_INSTALL_PREFIX@/Contents/MacOS/JASPEngine")
+# execute_process(COMMAND codesign --verify --verbose --display
+#                         "@JASP_INSTALL_PREFIX@/Contents/MacOS/JASPEngine")
 
-execute_process(COMMAND codesign --verify --verbose --display
-                        "@JASP_INSTALL_PREFIX@")
+# execute_process(COMMAND codesign --verify --verbose --display
+#                         "@JASP_INSTALL_PREFIX@")
 
 execute_process(
   COMMAND
     codesign --verbose --timestamp --deep --force --entitlements
     "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
     --options runtime "@JASP_INSTALL_PREFIX@")
+
+execute_process(COMMAND codesign --verify --verbose --display
+                        "@JASP_INSTALL_PREFIX@")

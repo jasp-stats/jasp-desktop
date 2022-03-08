@@ -19,13 +19,14 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
 set(JASP_COMMON_MODULES
-    # "jaspDescriptives"
+    "jaspDescriptives"
     # "jaspAnova"
     # "jaspFactor"
     # "jaspFrequencies"
     # "jaspRegression"
     # "jaspTTests"
-    "jaspMixedModels")
+    # "jaspMixedModels"
+)
 
 set(JASP_EXTRA_MODULES
     # "jaspProphet"
@@ -36,17 +37,18 @@ set(JASP_EXTRA_MODULES
     # "jaspSem"
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
-    # "jaspMetaAnalysis"
+    "jaspMetaAnalysis"
     # "jaspDistributions"
     # "jaspEquivalenceTTests"
-    # "jaspJags"
+    "jaspJags"
     # "jaspReliability"
     # "jaspVisualModeling"
     # "jaspLearnBayes"
     # "jaspProcessControl"
 )
 
-if("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES)
+if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
+                                                       JASP_EXTRA_MODULES))
   if(LINUX)
     if(LINUX_LOCAL_BUILD)
       set(jags_HOME ${R_OPT_PATH}/jags)
@@ -289,6 +291,7 @@ if(INSTALL_R_MODULES)
         ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
         ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
         $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_HOME}/lib/pkgconfig/jags.pc>
+        $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_HOME}/lib/pkgconfig/jags.pc>
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND
@@ -323,7 +326,8 @@ if(INSTALL_R_MODULES)
     add_dependencies(Modules ${MODULE})
 
     # We can add other specific dependencies here:
-    if(${MODULE} STREQUAL "jaspMetaAnalysis")
+    if((${MODULE} STREQUAL "jaspMetaAnalysis") OR (${MODULE} STREQUAL "jaspJags"
+                                                  ))
       # ----- jags -----
       #
       # - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.
@@ -333,7 +337,8 @@ if(INSTALL_R_MODULES)
       #
 
       if(NOT EXISTS ${jags_HOME})
-        make_directory(${jags_HOME})
+        message(STATUS "Creating ${jags_HOME}")
+        make_directory("${jags_HOME}")
       endif()
 
       if(WIN32)
@@ -408,7 +413,9 @@ if(INSTALL_R_MODULES)
               ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
             COMMENT "----- Preparing 'jags'")
 
-          add_custom_target(jags DEPENDS ${jags_HOME}/lib/pkgconfig/jags.pc)
+          if(NOT TARGET jags)
+            add_custom_target(jags DEPENDS ${jags_HOME}/lib/pkgconfig/jags.pc)
+          endif()
 
         else()
 
