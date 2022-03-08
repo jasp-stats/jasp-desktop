@@ -81,15 +81,16 @@ make_directory(${MODULES_BINARY_PATH})
 make_directory(${MODULES_RENV_ROOT_PATH})
 make_directory(${MODULES_RENV_CACHE_PATH})
 
-if(APPLE)
+if(APPLE AND (NOT EXISTS ${R_HOME_PATH}/bin/Modules))
   # This is added because packages installed by Renv needs to be at
   # @executable_path/../ relative to the R binary, which is in `/bin/exec/R`
   # So, by adding this, both R binary and JASP can find their libraries
+  message(STATUS "${R_HOME_PATH}/bin")
   execute_process(
     # COMMAND_ECHO STDOUT
     ERROR_QUIET OUTPUT_QUIET
     WORKING_DIRECTORY ${R_HOME_PATH}/bin
-    COMMAND ln -s ../../../../../../Modules Modules)
+    COMMAND ln -sf ../../../../../../Modules Modules)
 endif()
 
 cmake_print_variables(MODULES_BINARY_PATH)

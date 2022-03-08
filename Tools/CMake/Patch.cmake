@@ -173,8 +173,8 @@ else()
       if(NOT (FILE MATCHES ".*(runjags|rjags|RoBMA|metaBMA).*"))
 
         execute_process(
-          COMMAND_ECHO STDOUT
-          # ERROR_QUIET OUTPUT_QUIET
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
           WORKING_DIRECTORY ${PATH}
           COMMAND
             bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
