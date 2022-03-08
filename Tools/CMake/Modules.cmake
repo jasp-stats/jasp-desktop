@@ -19,20 +19,14 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
 set(JASP_COMMON_MODULES
-    "jaspDescriptives"
+    # "jaspDescriptives"
     # "jaspAnova"
     # "jaspFactor"
     # "jaspFrequencies"
     # "jaspRegression"
     # "jaspTTests"
-    # "jaspMixedModels"
-)
+    "jaspMixedModels")
 
-# Possible Bug:
-#
-# - The order is kind of important here, because `jaspProphet` and `jaspCircular`
-# are linking against broken libraries. It is also partially caused by having
-# the `.patched.log` but I'm not so sure.
 set(JASP_EXTRA_MODULES
     # "jaspProphet"
     # "jaspCircular"
