@@ -108,7 +108,7 @@ if(APPLE)
   find_program(CREATE_DMG_EXECUTABLE create-dmg)
   if(NOT CREATE_DMG_EXECUTABLE)
     message(
-      STATUS
+      WARNING
         "create-dmg not found. If you plan to make a DMG file, you will need this"
     )
   endif()

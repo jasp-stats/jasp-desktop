@@ -61,7 +61,7 @@ if(APPLE)
 
   # Add your password like this to the KeyChain
   #
-  if(XCODE_VERSION VERSION_GREATER 12.0)
+  if(XCODE_VERSION GREATER 12)
     # % xcrun notarytool store-credentials "AC_PASSWORD"
     #              --apple-id "jasp.stats@gmail.com"
     #              --team-id AWJJ3YVK9B

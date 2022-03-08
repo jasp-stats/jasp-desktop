@@ -64,6 +64,21 @@ if(APPLE)
     set(CPACK_ARCH_SUFFIX ${CMAKE_HOST_SYSTEM_PROCESSOR})
   endif()
 
+  # Getting the major version of Xcode
+  # There is already a variable called XCODE_VERSION but that is only
+  # set when Xcode generator is used, so I had to get this myself
+  execute_process(
+    ERROR_QUIET
+    COMMAND xcodebuild -version
+    OUTPUT_VARIABLE XCODEBUILD_OUTPUT
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  string(
+    SUBSTRING ${XCODEBUILD_OUTPUT}
+              6
+              2
+              XCODE_VERSION)
+
 endif()
 
 if(WIN32)
