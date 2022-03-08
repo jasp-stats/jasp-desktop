@@ -31,9 +31,18 @@ else()
     REGEX
     ".*dSYM*")
 
+  file(GLOB BINARIES "${PATH}/*/bin/*")
+
+  set(FILES "")
+  list(
+    APPEND
+    FILES
+    ${LIBRARIES}
+    ${BINARIES})
+
   set(NEW_ID "")
 
-  foreach(FILE ${LIBRARIES})
+  foreach(FILE ${FILES})
 
     get_filename_component(FILE_NAME ${FILE} NAME)
     get_filename_component(DIRECTORY_NAME ${FILE} DIRECTORY)
