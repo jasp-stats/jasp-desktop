@@ -57,9 +57,11 @@ if(APPLE)
   # Later we use this to produce two DMG file, or maybe a Universal one
   # but I'm not yet so sure how that will work
   if(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64")
+    set(DARWIN_ARCH "x86_64")
     set(CPACK_ARCH_SUFFIX "Intel")
   elseif(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
     set(CPACK_ARCH_SUFFIX "Apple")
+    set(DARWIN_ARCH "arm")
   else()
     set(CPACK_ARCH_SUFFIX ${CMAKE_HOST_SYSTEM_PROCESSOR})
   endif()
@@ -90,6 +92,14 @@ if(APPLE)
   else()
     message(STATUS "Xcode version: ${XCODE_VERSION}")
   endif()
+
+  execute_process(
+    COMMAND uname -r
+    RESULT_VARIABLE result
+    OUTPUT_VARIABLE DARWIN_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  set(CONFIGURE_HOST_FLAG ${DARWIN_ARCH}-apple-darwin${DARWIN_VERSION})
 
 endif()
 
