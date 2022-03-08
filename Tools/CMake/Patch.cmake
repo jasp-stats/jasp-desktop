@@ -184,8 +184,10 @@ else()
       else()
 
         # Changing the `/opt/jags/lib` prefix
+        message(STATUS "One of them: ${FILES}")
 
-        if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+        if(R_DIR_NAME MATCHES "arm64")
+
           execute_process(
             # COMMAND_ECHO STDOUT
             ERROR_QUIET OUTPUT_QUIET
