@@ -31,7 +31,15 @@ else()
     REGEX
     ".*dSYM*")
 
-  file(GLOB BINARIES "${PATH}/*/bin/*")
+  # file(GLOB BINARIES "${PATH}/*/bin/*")
+  # list(
+  #   FILTER
+  #   "${BINARIES}"
+  #   EXCLUDE
+  #   REGEX
+  #   ".*\\.patched\\.log.*")
+
+  # message(STATUS "HERE ARE BINARIES:\n ${BINARIES}")
 
   set(FILES "")
   list(
