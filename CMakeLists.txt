@@ -5,7 +5,10 @@ cmake_minimum_required(VERSION 3.21)
 set(QT_CREATOR_SKIP_CONAN_SETUP ON)
 
 if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET
+      10.15
+      CACHE STRING "Minimum macOS version the build will be able to run on"
+            FORCE)
 endif()
 
 project(

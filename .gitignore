@@ -59,6 +59,7 @@ build/
 build*/
 bundle/
 bundle*/
+CMakeLists.txt.user
 
 # CLion Stuff
 cmake-build-*

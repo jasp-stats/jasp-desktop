@@ -79,6 +79,18 @@ if(APPLE)
               2
               XCODE_VERSION)
 
+  set(XCODE_VERSION
+      ""
+      CACHE PATH "Path to your custom R installation")
+  if(XCODE_VERSION STREQUAL "")
+    message(
+      WARNING
+        "Please set the Xcode version using XCODE_VERSION to be able to notarise your app, e.g., 13.2.1"
+    )
+  else()
+    message(STATUS "Xcode version: ${XCODE_VERSION}")
+  endif()
+
 endif()
 
 if(WIN32)
