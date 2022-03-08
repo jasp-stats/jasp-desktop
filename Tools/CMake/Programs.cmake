@@ -100,7 +100,7 @@ if(APPLE)
   find_program(DEPLOYQT_EXECUTABLE macdeployqt)
   if(NOT DEPLOYQT_EXECUTABLE)
     message(
-      STATUS
+      WARNING
         "macdeployqt not found. If you plan to deploy the JASP.app, you will need this."
     )
   endif()
@@ -111,6 +111,12 @@ if(APPLE)
       WARNING
         "create-dmg not found. If you plan to make a DMG file, you will need this"
     )
+  endif()
+
+  find_program(CREATE_DMG_EXECUTABLE parallel)
+  if(NOT CREATE_DMG_EXECUTABLE)
+    message(
+      WARNING "parallel not found. If you plan to sign and distribute JASP.")
   endif()
 
 endif()
