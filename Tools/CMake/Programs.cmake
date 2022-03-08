@@ -97,12 +97,30 @@ if(APPLE)
     set(JAGS_F77_FLAG "F77=${FORTRAN_EXECUTABLE}")
   endif()
 
+  message(CHECK_START "Looking for 'macdeployqt'")
   find_program(DEPLOYQT_EXECUTABLE macdeployqt)
   if(NOT DEPLOYQT_EXECUTABLE)
+    message(CHECK_FAIL "not found")
     message(
       WARNING
         "macdeployqt not found. If you plan to deploy the JASP.app, you will need this."
     )
+  else()
+    message(CHECK_PASS "found")
+    message(STATUS "  ${DEPLOYQT_EXECUTABLE}")
+  endif()
+
+  message(CHECK_START "Looking for 'codesign'")
+  find_program(CODESIGN_EXECUTABLE codesign)
+  if(NOT CODESIGN_EXECUTABLE)
+    message(CHECK_FAIL "not found")
+    message(
+      WARNING
+        "codesign not found. If you plan to deploy the JASP.app, you will need this."
+    )
+  else()
+    message(CHECK_PASS "found")
+    message(STATUS "  ${CODESIGN_EXECUTABLE}")
   endif()
 
   find_program(CREATE_DMG_EXECUTABLE create-dmg)

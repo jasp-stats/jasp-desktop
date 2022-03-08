@@ -1,9 +1,15 @@
+# We must pass the identity like this; otherwise CMake escapes the
+# text incorrectly, and as a result `macdeployqt` cannot identify the
+# signature
+set(IDENTITY "@APPLE_CODESIGN_IDENTITY@")
+
 execute_process(
   COMMAND_ECHO STDOUT
   WORKING_DIRECTORY @CMAKE_INSTALL_PREFIX@
   COMMAND
     @DEPLOYQT_EXECUTABLE@ JASP.app -executable=@JASP_INSTALL_BINDIR@/JASPEngine
-    -verbose=3 -qmldir=@JASP_QML_FILES@ -hardened-runtime
+    -sign-for-notarization=${IDENTITY} -verbose=3 -qmldir=@JASP_QML_FILES@
+    -hardened-runtime
   RESULT_VARIABLE result)
 
 if(result)

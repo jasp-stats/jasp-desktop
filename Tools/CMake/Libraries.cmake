@@ -75,6 +75,8 @@ find_package(
              QmlWorkerScript
              QuickWidgets
              Core5Compat)
+message(STATUS "Found Qt6")
+message(STATUS "  ${Qt6_DIR}")
 
 if(LINUX)
 
