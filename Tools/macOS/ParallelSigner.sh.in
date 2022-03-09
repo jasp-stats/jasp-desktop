@@ -10,4 +10,4 @@
 
 echo "Signing everything in $1/"
 
-find "$1" -type f -name "*" -print0 | parallel -q0 codesign --force --timestamp --deep --verbose --strict --sign "@APPLE_CODESIGN_IDENTITY@" --entitlements "@APPLE_CODESIGN_ENTITLEMENTS@" --options runtime {}
+find "$1" -type f -name "*" -print0 | parallel -q0 codesign --force --timestamp --deep --verbose --strict --identifier "org.jasp-stats.jasp" --sign "@APPLE_CODESIGN_IDENTITY@" --entitlements "@APPLE_CODESIGN_ENTITLEMENTS@" --options runtime {}

@@ -1,0 +1,4 @@
+execute_process(WORKING_DIRECTORY @CMAKE_BINARY_DIR@ COMMAND bash Cleaner.sh)
+
+# execute_process(WORKING_DIRECTORY @JASP_INSTALL_PREFIX@/Contents/
+#                 COMMAND find . -type f -name "*.entitlements" -exec rm -f {} \;)

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+find @JASP_INSTALL_PREFIX@/Contents/ -name "*dSYM*" -exec rm -rf {} \;
+find @JASP_INSTALL_PREFIX@/Contents/ -type f -name "*.entitlements" -exec rm -rf {} \;

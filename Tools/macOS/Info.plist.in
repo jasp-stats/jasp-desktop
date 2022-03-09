@@ -4,7 +4,7 @@
 	<dict>
 
 		<key>CFBundleName</key>
-		<string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
+		<string>JASP</string>
 
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
@@ -13,10 +13,10 @@
 		<string>English</string>
 
 		<key>CFBundleVersion</key>
-		<string>${MACOSX_BUNDLE_BUNDLE_VERSION}</string>
+		<string>@JASP_VERSION@</string>
 
 		<key>CFBundleShortVersionString</key>
-		<string>${MACOSX_BUNDLE_SHORT_VERSION_STRING}</string>
+		<string>@JASP_SHORT_VERSION@</string>
 		
 		<key>NSPrincipalClass</key>
 		<string>NSApplication</string>
@@ -27,17 +27,17 @@
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 
+		<key>CFBundleGetInfoString</key>
+		<string>Created by Qt/CMake</string>
+
 		<key>CFBundleExecutable</key>
-		<string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
+		<string>JASP</string>
 
 		<key>CFBundleIdentifier</key>
-		<string>${MACOSX_BUNDLE_GUI_IDENTIFIER}</string>
+		<string>org.jasp-stats.jasp</string>
 
 		<key>LSMinimumSystemVersion</key>
-		<string>10.15</string>
-
-		<key>NSHumanReadableCopyright</key>
-		<string>${MACOSX_BUNDLE_COPYRIGHT}</string>
+		<string>@CMAKE_OSX_DEPLOYMENT_TARGET@</string>
 
 		<key>CFBundleDocumentTypes</key>
 		<array>

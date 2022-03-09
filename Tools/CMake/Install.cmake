@@ -92,6 +92,14 @@ if(APPLE)
   install(FILES ${CMAKE_BINARY_DIR}/Info.plist
           DESTINATION ${JASP_INSTALL_PREFIX}/Contents)
 
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Cleaner.sh.in
+                 ${CMAKE_BINARY_DIR}/Cleaner.sh @ONLY)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Clean.cmake.in
+                 ${CMAKE_BINARY_DIR}/Clean.cmake @ONLY)
+
+  install(SCRIPT ${CMAKE_BINARY_DIR}/Clean.cmake)
+
   install(SCRIPT ${CMAKE_BINARY_DIR}/Sign.cmake)
 
 endif()

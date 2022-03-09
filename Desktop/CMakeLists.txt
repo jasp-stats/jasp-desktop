@@ -1,13 +1,8 @@
 list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
 if(APPLE)
-  if(CMAKE_GENERATOR STREQUAL "Xcode")
-    configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in
-                   ${CMAKE_BINARY_DIR}/Info.plist)
-  else()
-    configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.template
-                   ${CMAKE_BINARY_DIR}/Info.plist)
-  endif()
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in
+                 ${CMAKE_BINARY_DIR}/Info.plist)
 endif()
 
 # We can technically use these two lines to grab all *.h, and *.cpp files
@@ -144,45 +139,44 @@ target_include_directories(
 
 target_link_libraries(
   JASP
-  PUBLIC
-    Common
-    Qt::Core
-    Qt::Gui
-    Qt::OpenGL
-    Qt::Widgets
-    Qt::Qml
-    Qt::WebEngineQuick
-    Qt::WebChannel
-    Qt::Svg
-    Qt::Network
-    Qt::PrintSupport
-    Qt::Xml
-    Qt::Quick
-    Qt::QuickLayouts
-    Qt::QuickControls2
-    Qt::QuickControls2Impl
-    Qt::QuickWidgets
-    Qt::Core5Compat
-    Qt::QuickTemplates2
-    Qt::DBus
-    Qt::QmlWorkerScript
-    Qt::LabsFolderListModel
-    # System
-    ZLIB::ZLIB
-    Iconv::Iconv
-    OpenSSL::SSL
-    OpenSSL::Crypto
-    # ReadStat -----------------------------------
-    ${LIBREADSTAT_LIBRARIES}
-    # MinGW's ReadStat
-    $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
-    # R-Framework --------------------------------
-    $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
+  PUBLIC Common
+         Qt::Core
+         Qt::Gui
+         Qt::OpenGL
+         Qt::Widgets
+         Qt::Qml
+         Qt::WebEngineQuick
+         Qt::WebChannel
+         Qt::Svg
+         Qt::Network
+         Qt::PrintSupport
+         Qt::Xml
+         Qt::Quick
+         Qt::QuickLayouts
+         Qt::QuickControls2
+         Qt::QuickControls2Impl
+         Qt::QuickWidgets
+         Qt::Core5Compat
+         Qt::QuickTemplates2
+         Qt::DBus
+         Qt::QmlWorkerScript
+         Qt::LabsFolderListModel
+         # System
+         ZLIB::ZLIB
+         Iconv::Iconv
+         OpenSSL::SSL
+         OpenSSL::Crypto
+         # ReadStat -----------------------------------
+         ${LIBREADSTAT_LIBRARIES}
+         # MinGW's ReadStat
+         $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
+         # R-Framework --------------------------------
+         $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 
 if(NOT WINDOWS)
   target_link_libraries(
-    JASP 
-      PUBLIC 
+    JASP
+    PUBLIC
       # When using Conan, we need to provide the static libraries directly, for some reason!
       ${Iconv_LIBRARY_LIST})
 endif()
