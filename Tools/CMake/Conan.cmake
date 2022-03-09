@@ -14,8 +14,6 @@ if(WIN32 OR USE_CONAN)
   endif()
 
   execute_process(
-    COMMAND_ECHO STDOUT
-    ERROR_QUIET OUTPUT_QUIET
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
 
