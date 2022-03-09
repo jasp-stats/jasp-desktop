@@ -463,7 +463,7 @@ elseif(WIN32)
     message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
     file(
-      WRITE ${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R
+      WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
       "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')"
     )
 
@@ -472,7 +472,7 @@ elseif(WIN32)
       ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_BIN_PATH}
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-              --file=${CMAKE_BINARY_DIR}/Modules/renv-root/install-RInside.R)
+              --file=${MODULES_RENV_ROOT_PATH}/install-RInside.R)
 
     if(NOT EXISTS ${R_LIBRARY_PATH}/RInside)
       message(CHECK_FAIL "unsuccessful.")
