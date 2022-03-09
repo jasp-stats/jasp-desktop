@@ -13,9 +13,26 @@ if(WIN32 OR USE_CONAN)
     set(CONAN_COMPILER_RUNTIME "MDd")
   endif()
 
-  execute_process(
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
+  if(WIN32)
+
+    execute_process(
+      # COMMAND_ECHO STDOUT
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      COMMAND
+        conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
+        compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
+
+  elseif(APPLE)
+
+    execute_process(
+      # COMMAND_ECHO STDOUT
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      COMMAND
+        conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
+        os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s os.sdk=macosx
+        --build=missing)
+
+  endif()
 
   if(EXISTS ${CMAKE_BINARY_DIR}/conan_paths.cmake)
     message(CHECK_PASS "successful")
