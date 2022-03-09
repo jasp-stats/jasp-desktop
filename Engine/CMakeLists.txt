@@ -47,12 +47,12 @@ if(WIN32)
 
   message(CHECK_START "Setting path to libR-Interface.dll")
   set(_LIB_R_INTERFACE_SHARED
-      ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll)
+      "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll" CACHE STRING "Path to libR-Interface.dll")
   message(STATUS "  ${_LIB_R_INTERFACE_SHARED}")
 
   message(CHECK_START "Setting path to libR-Interface.dll.a")
   set(_LIB_R_INTERFACE_STATIC
-      ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a)
+      "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a" CACHE STRING "Path to libR-Interface.dll.a")
   message(STATUS "  ${_LIB_R_INTERFACE_STATIC}")
 
   message(STATUS "libR-Interface will be build if it is missing.")
