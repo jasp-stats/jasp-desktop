@@ -46,25 +46,28 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 	{
 		for(const std::string & moduleName : (common ? commonModulesToLoad : extraModulesToLoad))
 		{
-			if(DynamicModules::dynMods()->moduleIsInstalledByUser(moduleName)) //Only load bundled if the user did not install a newer/other version
-				addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[moduleName]);
-			else
+			if (!moduleName.empty())
 			{
-				try {
-					std::string moduleLibrary = DynamicModules::bundledModuleLibraryPath(moduleName);
-					
-					//Check if the module pkg actually exists in the module library and otherwise show a friendly warning instead of confusing stuff about icons: https://github.com/jasp-stats/INTERNAL-jasp/issues/1287
-					if(!QFileInfo(tq(moduleLibrary + "/" + moduleName)).exists())
-						MessageForwarder::showWarning(
-							tr("Module missing"), 
-							tr(	"It seems the bundled module %1 wasn't correctly installed, and thus cannot be loaded.\n"
-								"If you installed this version of JASP via an official installer let the JASP team know.").arg(tq(moduleName)));
-					else
-						DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, common);
-				} 
-				catch (std::runtime_error & e) 
+				if(DynamicModules::dynMods()->moduleIsInstalledByUser(moduleName)) //Only load bundled if the user did not install a newer/other version
+					addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[moduleName]);
+				else
 				{
-					MessageForwarder::showWarning(tr("Loading bundled module %1 failed").arg(tq(moduleName)), tr("Loading of the bundled module %1 failed with the following error:\n\n%2").arg(tq(moduleName)).arg(tq(e.what())));
+					try {
+						std::string moduleLibrary = DynamicModules::bundledModuleLibraryPath(moduleName);
+						
+						//Check if the module pkg actually exists in the module library and otherwise show a friendly warning instead of confusing stuff about icons: https://github.com/jasp-stats/INTERNAL-jasp/issues/1287
+						if(!QFileInfo(tq(moduleLibrary + "/" + moduleName)).exists())
+							MessageForwarder::showWarning(
+								tr("Module missing"), 
+								tr(	"It seems the bundled module %1 wasn't correctly installed, and thus cannot be loaded.\n"
+									"If you installed this version of JASP via an official installer let the JASP team know.").arg(tq(moduleName)));
+						else
+							DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, common);
+					} 
+					catch (std::runtime_error & e) 
+					{
+						MessageForwarder::showWarning(tr("Loading bundled module %1 failed").arg(tq(moduleName)), tr("Loading of the bundled module %1 failed with the following error:\n\n%2").arg(tq(moduleName)).arg(tq(e.what())));
+					}
 				}
 			}
 		}

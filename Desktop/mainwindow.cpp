@@ -39,6 +39,7 @@
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "sharedmemory.h"
+#include "activemodules.h"
 
 #include "mainwindow.h"
 
@@ -506,10 +507,8 @@ void MainWindow::loadQML()
 
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
 	_ribbonModel->loadModules(	
-		{ 	"jaspDescriptives" }, //, "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },
-		{ 	"jaspDistributions", "jaspMetaAnalysis" } );
-		// , "jaspBain", "jaspCircular", "jaspDistributions" , "jaspEquivalenceTTests", "jaspJags", "jaspLearnBayes", "jaspMachineLearning",
-		// 	"jaspMetaAnalysis", "jaspNetwork"/*, "jaspProcessControl"*/, "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
+		ActiveModules::getActiveCommonModules(),
+		ActiveModules::getActiveExtraModules());
 
 	_engineSync->loadAllActiveModules();
 	_dynamicModules->startUpCompleted();

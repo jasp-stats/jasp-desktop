@@ -37,7 +37,7 @@ set(JASP_EXTRA_MODULES
     # "jaspSem"
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
-    # "jaspMetaAnalysis"
+    "jaspMetaAnalysis"
     # "jaspDistributions"
     # "jaspEquivalenceTTests"
     # "jaspJags"
@@ -46,6 +46,22 @@ set(JASP_EXTRA_MODULES
     # "jaspLearnBayes"
     # "jaspProcessControl"
 )
+
+list(
+  JOIN
+  JASP_COMMON_MODULES
+  "\",\n\t\t\t\""
+  JASP_COMMON_MODULES_QUOTED)
+
+list(
+  JOIN
+  JASP_EXTRA_MODULES
+  "\",\n\t\t\t\""
+  JASP_EXTRA_MODULES_QUOTED)
+
+configure_file(${CMAKE_SOURCE_DIR}/Desktop/activemodules.h.in
+               ${CMAKE_SOURCE_DIR}/Desktop/activemodules.h @ONLY)
+message(STATUS "appdirs.h is successfully generated...")
 
 if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
                                                        JASP_EXTRA_MODULES))
@@ -399,6 +415,7 @@ if(INSTALL_R_MODULES)
           message(CHECK_PASS "successful.")
 
           add_custom_command(
+            JOB_POOL sequential
             WORKING_DIRECTORY ${jags_SOURCE_DIR}
             OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
             COMMAND ${JAGS_F77_FLAG} ./configure --disable-dependency-tracking
@@ -415,7 +432,10 @@ if(INSTALL_R_MODULES)
             COMMENT "----- Preparing 'jags'")
 
           if(NOT TARGET jags)
-            add_custom_target(jags DEPENDS ${jags_HOME}/lib/pkgconfig/jags.pc)
+            add_custom_target(
+              jags
+              JOB_POOL sequential
+              DEPENDS ${jags_HOME}/lib/pkgconfig/jags.pc)
           endif()
 
         else()

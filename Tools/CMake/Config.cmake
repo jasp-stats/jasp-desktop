@@ -61,7 +61,7 @@ if(APPLE)
     set(CPACK_ARCH_SUFFIX "Intel")
   elseif(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
     set(CPACK_ARCH_SUFFIX "Apple")
-    set(DARWIN_ARCH "arm")
+    set(DARWIN_ARCH "aarch64")
   else()
     set(CPACK_ARCH_SUFFIX ${CMAKE_HOST_SYSTEM_PROCESSOR})
   endif()
@@ -100,6 +100,7 @@ if(APPLE)
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   set(CONFIGURE_HOST_FLAG ${DARWIN_ARCH}-apple-darwin${DARWIN_VERSION})
+  message(STATUS "  ${CONFIGURE_HOST_FLAG}")
 
 endif()
 

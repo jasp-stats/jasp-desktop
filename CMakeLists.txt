@@ -36,7 +36,13 @@ endif()
 
 # ------ Build Toolchain
 
-# set(CMAKE_OSX_ARCHITECTURES "x86_64" "arm64")
+# set(CMAKE_OSX_ARCHITECTURES "arm64")
+# if(CMAKE_OSX_ARCHITECTURES STREQUAL "")
+#   set(CMAKE_OSX_ARCHITECTURES
+#       ${CMAKE_HOST_SYSTEM_PROCESSOR}
+#       CACHE STRING "" FORCE)
+# endif()
+# message(STATUS "Building for ${CMAKE_OSX_ARCHITECTURES} architecture")
 
 # ------ CMake Modules
 

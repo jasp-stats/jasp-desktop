@@ -75,3 +75,4 @@ R.framework/
 .cache/
 Modules/renv-root/
 Desktop/utilities/appdirs.h
+Desktop/activemodules.h

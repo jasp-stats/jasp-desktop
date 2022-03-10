@@ -184,7 +184,6 @@ else()
       else()
 
         # Changing the `/opt/jags/lib` prefix
-        message(STATUS "One of them: ${FILES}")
 
         if(R_DIR_NAME MATCHES "arm64")
 
