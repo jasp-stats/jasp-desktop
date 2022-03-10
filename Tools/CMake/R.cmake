@@ -20,7 +20,7 @@ set(R_VERSION "4.1.2")
 set(R_VERSION_MAJOR_MINOR "4.1")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
-if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
   set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
 else()
   set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}")
@@ -82,9 +82,9 @@ if(APPLE)
   if(INSTALL_R_FRAMEWORK AND (NOT EXISTS
                               ${CMAKE_BINARY_DIR}/Frameworks/R.framework))
 
-    if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+    if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
 
-      set(R_PACKAGE_NAME "R-${R_VERSION}-${CMAKE_HOST_SYSTEM_PROCESSOR}.pkg")
+      set(R_PACKAGE_NAME "R-${R_VERSION}-${CMAKE_OSX_ARCHITECTURES}.pkg")
       set(R_DOWNLOAD_URL
           "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
       )
@@ -128,7 +128,7 @@ if(APPLE)
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
                         COMMAND tar -xf R-fw.pkg/Payload)
 
-        if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+        if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
 
           execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
                           COMMAND tar -xf tcltk.pkg/Payload -C ${r_pkg_r_home}/)

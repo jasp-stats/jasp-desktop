@@ -63,7 +63,7 @@ if(APPLE)
     set(CPACK_ARCH_SUFFIX "Apple")
     set(DARWIN_ARCH "aarch64")
   else()
-    set(CPACK_ARCH_SUFFIX ${CMAKE_HOST_SYSTEM_PROCESSOR})
+    set(CPACK_ARCH_SUFFIX ${CMAKE_OSX_ARCHITECTURES})
   endif()
 
   # Getting the major version of Xcode
@@ -75,11 +75,15 @@ if(APPLE)
     OUTPUT_VARIABLE XCODEBUILD_OUTPUT
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  string(
-    SUBSTRING ${XCODEBUILD_OUTPUT}
-              6
-              2
-              XCODE_VERSION)
+  if(NOT (XCODEBUILD_OUTPUT STREQUAL ""))
+    string(
+      SUBSTRING ${XCODEBUILD_OUTPUT}
+                6
+                2
+                XCODE_VERSION)
+  else()
+    set(XCODE_VERSION "")
+  endif()
 
   if(XCODE_VERSION STREQUAL "")
     message(
@@ -96,7 +100,8 @@ if(APPLE)
     OUTPUT_VARIABLE DARWIN_VERSION
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  set(CONFIGURE_HOST_FLAG ${DARWIN_ARCH}-apple-darwin${DARWIN_VERSION})
+  set(CONFIGURE_HOST_FLAG
+      ${CMAKE_OSX_ARCHITECTURES}-apple-darwin${DARWIN_VERSION})
   message(STATUS "  ${CONFIGURE_HOST_FLAG}")
 
 endif()

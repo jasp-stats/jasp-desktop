@@ -25,8 +25,7 @@ set(JASP_COMMON_MODULES
     # "jaspFrequencies"
     # "jaspRegression"
     # "jaspTTests"
-    # "jaspMixedModels"
-)
+    "jaspMixedModels")
 
 set(JASP_EXTRA_MODULES
     # "jaspProphet"
@@ -37,7 +36,7 @@ set(JASP_EXTRA_MODULES
     # "jaspSem"
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
-    "jaspMetaAnalysis"
+    # "jaspMetaAnalysis"
     # "jaspDistributions"
     # "jaspEquivalenceTTests"
     # "jaspJags"
@@ -61,7 +60,7 @@ list(
 
 configure_file(${CMAKE_SOURCE_DIR}/Desktop/activemodules.h.in
                ${CMAKE_SOURCE_DIR}/Desktop/activemodules.h @ONLY)
-message(STATUS "appdirs.h is successfully generated...")
+message(STATUS "activemodules.h is successfully generated...")
 
 if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
                                                        JASP_EXTRA_MODULES))

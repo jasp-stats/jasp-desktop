@@ -37,12 +37,20 @@ endif()
 # ------ Build Toolchain
 
 # set(CMAKE_OSX_ARCHITECTURES "arm64")
-# if(CMAKE_OSX_ARCHITECTURES STREQUAL "")
-#   set(CMAKE_OSX_ARCHITECTURES
-#       ${CMAKE_HOST_SYSTEM_PROCESSOR}
-#       CACHE STRING "" FORCE)
-# endif()
-# message(STATUS "Building for ${CMAKE_OSX_ARCHITECTURES} architecture")
+
+if(CMAKE_OSX_ARCHITECTURES STREQUAL "")
+  set(CMAKE_OSX_ARCHITECTURES
+      ${CMAKE_HOST_SYSTEM_PROCESSOR}
+      CACHE STRING "" FORCE)
+  set(CROSS_COMPILING 0)
+  message(STATUS "Building for ${CMAKE_OSX_ARCHITECTURES} architecture")
+else()
+  if(NOT (CMAKE_OSX_ARCHITECTURES STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR))
+    set(CROSS_COMPILING 1)
+    message(
+      STATUS "Cross compiling for ${CMAKE_OSX_ARCHITECTURES} architecture")
+  endif()
+endif()
 
 # ------ CMake Modules
 
