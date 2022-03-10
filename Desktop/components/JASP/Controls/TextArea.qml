@@ -72,7 +72,7 @@ TextAreaBase
 				color:				textArea.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 				wrapMode:			TextArea.Wrap
 
-				Keys.onPressed:
+				Keys.onPressed: (event) =>
 				{
 					if (event.modifiers & Qt.ControlModifier)
 					{
