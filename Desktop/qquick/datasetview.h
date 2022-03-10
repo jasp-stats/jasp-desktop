@@ -18,8 +18,8 @@
 
 //#define DATASETVIEW_DEBUG_VIEWPORT
 //#define DATASETVIEW_DEBUG_CREATION
-#define DATASETVIEW_SHOW_ITEMS_PLEASE
-#define DATASETVIEW_ADD_LINES_PLEASE
+#define SHOW_ITEMS_PLEASE
+#define ADD_LINES_PLEASE
 
 struct ItemContextualized
 {
@@ -210,7 +210,7 @@ protected:
 	void		storeOutOfViewItems();
 	void		buildNewLinesAndCreateNewItems();
 
-#ifdef DATASETVIEW_ADD_LINES_PLEASE
+#ifdef ADD_LINES_PLEASE
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
 #endif
 	float extraColumnWidth() { return !_extraColumnItem ? 0 : 2 + _extraColumnItem->width(); }
