@@ -126,7 +126,7 @@ Item
 
 		onDragStarted:					customMenu.hide()
 		onMovementStarted:				customMenu.hide()
-		Keys.onPressed:
+		Keys.onPressed: (event) =>
 		{
 			if      (event.key   === Qt.Key_Left)
 			{

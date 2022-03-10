@@ -52,7 +52,7 @@ Rectangle
 	ToolTip.delay:				jaspTheme.toolTipDelay
 	ToolTip.visible:			ribbonButton.toolTip !== "" && mice.containsMouse && !ribbonButton.showPressed
 	
-	Keys.onPressed:
+	Keys.onPressed: (event) =>
 	{
 		if (event.key === Qt.Key_Escape)
 		{

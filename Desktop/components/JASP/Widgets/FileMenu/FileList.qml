@@ -31,7 +31,8 @@ ListView
 	}
 
 
-	Keys.onLeftPressed:
+	Keys.onLeftPressed: (event) =>
+	{
 		if(breadCrumbs !== null)
 		{
 			event.accepted = breadCrumbs.count > 1;
@@ -41,6 +42,7 @@ ListView
 		}
 		else
 			event.accepted = false;
+	}
 
 	Connections
 	{

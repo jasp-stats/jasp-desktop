@@ -192,12 +192,14 @@ Item
 				onContextMenuRequested: (request)=>{ request.accepted = true; }
 				backgroundColor:		jaspTheme.uiBackground
 
-				Keys.onPressed:
+				Keys.onPressed: (event) =>
+				{
 					switch(event)
 					{
 					case Qt.Key_PageDown:	resultsView.runJavaScript("windows.pageDown();");	break;
 					case Qt.Key_PageUp:		resultsView.runJavaScript("windows.pageUp();");		break;
 					}
+				}
 
 				onNavigationRequested: (request)=>
 				{
