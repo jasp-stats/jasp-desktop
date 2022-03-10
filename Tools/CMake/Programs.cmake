@@ -80,9 +80,9 @@ if(APPLE)
 
   message(CHECK_START "Looking for 'gfortran'")
   if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-    set(GFORTRAN_PATH "/opt/homebrew/bin /usr/local/bin")
+    set(GFORTRAN_PATH "/opt/homebrew/bin")
   else()
-    set(GFORTRAN_PATH "/usr/local/bin /opt/homebrew/bin")
+    set(GFORTRAN_PATH "/usr/local/bin")
   endif()
   message(STATUS "Expecting 'gfortran' in ${GFORTRAN_PATH}")
 
