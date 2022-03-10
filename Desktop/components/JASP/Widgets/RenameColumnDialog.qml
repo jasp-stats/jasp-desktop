@@ -25,7 +25,7 @@ Popup
     Connections
 	{
 		target:					dataSetModel
-		onRenameColumnDialog:
+		function onRenameColumnDialog(columnIndex)
 		{
 			console.log("renaming column dialog opened for " + String(columnIndex))
 			colIndex = columnIndex;
