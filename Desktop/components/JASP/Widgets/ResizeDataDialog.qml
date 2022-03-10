@@ -22,8 +22,8 @@ Popup
 
     Connections
 	{
-		target:			ribbonModel
-		onResizeData:	popupResizeData.open()
+		target:					ribbonModel
+		function onResizeData() {	popupResizeData.open() }
     }
 
 	Loader
