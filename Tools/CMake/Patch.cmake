@@ -79,7 +79,7 @@ else()
 
         execute_process(
           # COMMAND_ECHO STDOUT
-          # ERROR_QUIET OUTPUT_QUIET
+          ERROR_QUIET OUTPUT_QUIET
           WORKING_DIRECTORY ${PATH}
           COMMAND
             install_name_tool -change "@rpath/libtbbmalloc.dylib"
@@ -88,7 +88,7 @@ else()
 
         execute_process(
           # COMMAND_ECHO STDOUT
-          # ERROR_QUIET OUTPUT_QUIET
+          ERROR_QUIET OUTPUT_QUIET
           WORKING_DIRECTORY ${PATH}
           COMMAND
             install_name_tool -change "@rpath/libtbbmalloc_proxy.dylib"
@@ -97,7 +97,7 @@ else()
 
         execute_process(
           # COMMAND_ECHO STDOUT
-          # ERROR_QUIET OUTPUT_QUIET
+          ERROR_QUIET OUTPUT_QUIET
           WORKING_DIRECTORY ${PATH}
           COMMAND
             install_name_tool -change "@rpath/libtbb.dylib"
@@ -165,6 +165,18 @@ else()
           bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
           "/Library/Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
           "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
+      )
+
+      # Changing the `R_HOME/opt/jags/lib` prefix
+      # This only applies on .so inside the /opt/jags/lib/JAGS/modules-4/
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND
+          bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+          "${R_HOME_PATH}/opt/jags/lib"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
       )
 
       # Changing the `/opt/R/arm64/lib` prefix
