@@ -125,13 +125,13 @@ if(APPLE)
 
 endif()
 
-if(NOT WIN32)
-  pkg_check_modules(
-    LIBJSONCPP
-    REQUIRED
-    IMPORTED_TARGET
-    jsoncpp)
-endif()
+# if(NOT WIN32)
+#   pkg_check_modules(
+#     LIBJSONCPP
+#     REQUIRED
+#     IMPORTED_TARGET
+#     jsoncpp)
+# endif()
 
 if(WIN32)
   # ReadStat
