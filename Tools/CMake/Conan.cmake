@@ -25,14 +25,30 @@ if(WIN32 OR USE_CONAN)
 
   elseif(APPLE)
 
-    execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      COMMAND
-        conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
-        os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s os.sdk=macosx
-        --build=missing)
+    if(CROSS_COMPILING)
+
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND
+          conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
+          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s os.sdk=macosx -s
+          arch=${CMAKE_OSX_ARCHITECTURES} -s
+          arch_build=${CMAKE_OSX_ARCHITECTURES} --build=missing)
+
+    else()
+
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND
+          conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
+          os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s os.sdk=macosx
+          --build=missing)
+
+    endif()
 
   endif()
 

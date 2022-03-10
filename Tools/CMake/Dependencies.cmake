@@ -45,12 +45,22 @@ if(NOT WIN32)
 
     message(CHECK_PASS "successful.")
 
+    set(READSTAT_CFLAGS
+        "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+    )
+    set(READSTAT_CXXFLAGS "${READSTAT_CFLAGS}")
+    set(READSTAT_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
+    set(READSTAT_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
+
     add_custom_command(
       WORKING_DIRECTORY ${readstat_SOURCE_DIR}
       OUTPUT ${readstat_BINARY_DIR}/include/readstat.h
              ${readstat_BINARY_DIR}/lib/libreadstat.a
-      COMMAND ./configure --enable-static --prefix=${readstat_BINARY_DIR}
-              ${Iconv_FLAGS_FOR_READSTAT}
+      COMMAND
+        export CFLAGS=${READSTAT_CFLAGS} && export CXXFLAGS=${READSTAT_CXXFLAGS}
+        && ./configure --enable-static --prefix=${readstat_BINARY_DIR}
+        ${Iconv_FLAGS_FOR_READSTAT} ${READSTAT_EXTRA_FLAGS_1}
+        ${READSTAT_EXTRA_FLAGS_2}
       COMMAND ${MAKE}
       COMMAND ${MAKE} install
       COMMENT "----- Preparing 'readstat'")

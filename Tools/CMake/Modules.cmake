@@ -25,7 +25,8 @@ set(JASP_COMMON_MODULES
     # "jaspFrequencies"
     # "jaspRegression"
     # "jaspTTests"
-    "jaspMixedModels")
+    # "jaspMixedModels"
+)
 
 set(JASP_EXTRA_MODULES
     # "jaspProphet"
@@ -36,7 +37,7 @@ set(JASP_EXTRA_MODULES
     # "jaspSem"
     # "jaspMachineLearning"
     # "jaspSummaryStatistics"
-    # "jaspMetaAnalysis"
+    "jaspMetaAnalysis"
     # "jaspDistributions"
     # "jaspEquivalenceTTests"
     # "jaspJags"
@@ -413,12 +414,22 @@ if(INSTALL_R_MODULES)
 
           message(CHECK_PASS "successful.")
 
+          set(JAGS_CFLAGS
+              "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+          )
+          set(JAGS_CXXFLAGS "${JAGS_CFLAGS}")
+          set(JAGS_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
+          set(JAGS_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
+
           add_custom_command(
             JOB_POOL sequential
             WORKING_DIRECTORY ${jags_SOURCE_DIR}
             OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
-            COMMAND ${JAGS_F77_FLAG} ./configure --disable-dependency-tracking
-                    --prefix=${jags_HOME}
+            COMMAND
+              export CFLAGS=${READSTAT_CFLAGS} && export
+              CXXFLAGS=${READSTAT_CXXFLAGS} && ${JAGS_F77_FLAG} ./configure
+              --disable-dependency-tracking --prefix=${jags_HOME}
+              ${JAGS_EXTRA_FLAGS_1} ${JAGS_EXTRA_FLAGS_2}
             COMMAND ${MAKE}
             COMMAND ${MAKE} install
             COMMAND

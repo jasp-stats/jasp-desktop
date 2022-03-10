@@ -79,13 +79,20 @@ endif()
 if(APPLE)
 
   message(CHECK_START "Looking for 'gfortran'")
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+    set(GFORTRAN_PATH "/opt/homebrew/bin /usr/local/bin")
+  else()
+    set(GFORTRAN_PATH "/usr/local/bin /opt/homebrew/bin")
+  endif()
+  message(STATUS "Expecting 'gfortran' in ${GFORTRAN_PATH}")
+
   find_program(
     FORTRAN_EXECUTABLE
     NAMES gfortran
           gfortran-11
           gfortran-12
           REQUIRED
-    PATHS /usr/local/bin/gfortran /opt/homebrew/bin
+    HINTS ${GFORTRAN_PATH}
     DOC "'gfortran' is needed for building some of the R packages")
 
   if(NOT FORTRAN_EXECUTABLE)
