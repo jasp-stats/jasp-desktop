@@ -1,9 +1,7 @@
-
 import QtQuick
 import QtQuick.Controls
 import JASP.Controls		as JaspControls
 import QtQml.Models
-import QtGraphicalEffects
 
 
 FocusScope

@@ -220,8 +220,9 @@ QModelIndex DataSetPackage::index(int row, int column, const QModelIndex &parent
 			Log::log() << "Got a valid parent in DataSetPackage::index but it isn't one of the `*Root`s" << std::endl;
 			break;
 		}
-			
 	}
+	
+	return createIndex(row, column, pointer);
 }
 
 const DataSetPackage::intnlPntPair * DataSetPackage::getInternalPointerPairFromIndex(const QModelIndex & index) const

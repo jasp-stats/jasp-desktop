@@ -32,7 +32,8 @@ Item
 	Connections
 	{
 		target:				ribbonModel
-		onDataModeChanged:	focusOut();
+							
+		function onDataModeChanged() { focusOut(); }
 	}
 
 	function setCurrentIndex(which, _index=null)

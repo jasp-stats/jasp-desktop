@@ -74,7 +74,7 @@ FocusScope
 			{
 				id:					columnNameVariablesWindow
 				text:				labelModel.columnName
-				onTextChanged:		labelModel.columnName = text
+				onTextChanged:		if(labelModel.columnName != text) labelModel.columnName = text
 				color:				jaspTheme.textEnabled
 				font:				jaspTheme.fontGroupTitle
 				enabled:			ribbonModel.dataMode

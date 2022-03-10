@@ -402,7 +402,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 	if(_currentViewportColMax == -1 ||  _currentViewportColMin == -1 || _currentViewportRowMax == -1 || _currentViewportRowMin == -1)
 		return;
 
-#ifdef DATASETVIEW_ADD_LINES_PLEASE
+#ifdef ADD_LINES_PLEASE
 	_linesActualSize = 0;
 	size_t expectedLinesSize = (_currentViewportColMax - _currentViewportColMin) * (_currentViewportRowMax - _currentViewportRowMin) * 4 * 2;
 	if(_lines.size() < expectedLinesSize)
@@ -446,7 +446,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 #endif
 
 
-#ifdef DATASETVIEW_ADD_LINES_PLEASE
+#ifdef ADD_LINES_PLEASE
 			if(up)		addLine(pos1x, pos0y, pos0x, pos0y);
 			if(down)	addLine(pos0x, pos1y, pos1x, pos1y);
 
@@ -467,7 +467,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 
 	JASPTIMER_STOP(buildNewLinesAndCreateNewItems_GRID);
 
-#ifdef DATASETVIEW_ADD_LINES_PLEASE
+#ifdef ADD_LINES_PLEASE
 	addLine(_viewportX + 0.5f,					_viewportY,							_viewportX + 0.5f,					_viewportY + _viewportH);
 	addLine(_viewportX + _rowNumberMaxWidth,	_viewportY,							_viewportX + _rowNumberMaxWidth,	_viewportY + _viewportH);
 
@@ -486,7 +486,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 		if(createRowNumber(row))
 		{
 
-#ifdef DATASETVIEW_ADD_LINES_PLEASE
+#ifdef ADD_LINES_PLEASE
 			float	pos0x(_viewportX),
 					pos0y((1 + row) * _dataRowsMaxHeight),
 					pos1x(_viewportX + _rowNumberMaxWidth),
@@ -507,7 +507,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 
 		createColumnHeader(col);
 
-#ifdef DATASETVIEW_ADD_LINES_PLEASE
+#ifdef ADD_LINES_PLEASE
 		float	pos0x(_colXPositions[col]),
 				pos0y(_viewportY),
 				pos1x(pos0x + _dataColsMaxWidth[col]),
@@ -522,7 +522,7 @@ void DataSetView::buildNewLinesAndCreateNewItems()
 #endif
 	}
 
-#ifdef DATASETVIEW_ADD_LINES_PLEASE
+#ifdef ADD_LINES_PLEASE
 	_linesWasChanged = true;
 #endif
 
@@ -1532,7 +1532,7 @@ void DataSetView::myParentChanged(QQuickItem * newParentItem)
 */
 }
 
-#ifdef DATASETVIEW_ADD_LINES_PLEASE
+#ifdef ADD_LINES_PLEASE
 QSGNode * DataSetView::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
 	//JASPTIMER_RESUME(updatePaintNode);
