@@ -75,12 +75,6 @@ if(APPLE)
     OUTPUT_VARIABLE XCODEBUILD_OUTPUT
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  string(
-    SUBSTRING ${XCODEBUILD_OUTPUT}
-              6
-              2
-              XCODE_VERSION)
-
   set(XCODE_VERSION
       ""
       CACHE PATH "Path to your custom R installation")
