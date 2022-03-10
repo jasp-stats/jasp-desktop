@@ -308,19 +308,19 @@ BasicTableViewJasp {
 
         Keys.forwardTo: [root]
 
-        Keys.onUpPressed: {
+		Keys.onUpPressed: (event) => {
             event.accepted = __listView.decrementCurrentIndexBlocking()
             if (selectionMode)
                 keySelect(event.modifiers & Qt.ShiftModifier, currentRow)
         }
 
-        Keys.onDownPressed: {
+		Keys.onDownPressed: (event) => {
             event.accepted = __listView.incrementCurrentIndexBlocking()
             if (selectionMode)
                 keySelect(event.modifiers & Qt.ShiftModifier, currentRow)
         }
 
-        Keys.onPressed: {
+		Keys.onPressed: (event) => {
             __listView.scrollIfNeeded(event.key)
 
             if (event.key === Qt.Key_Shift) {
@@ -333,7 +333,7 @@ BasicTableViewJasp {
             }
         }
 
-        Keys.onReleased: {
+		Keys.onReleased: (event) => {
             if (event.key === Qt.Key_Shift)
                 firstKeyRow = -1
         }

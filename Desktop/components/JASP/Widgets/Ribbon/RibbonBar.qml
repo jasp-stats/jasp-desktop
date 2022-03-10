@@ -63,7 +63,7 @@ FocusScope
 		ribbonMenu.setCurrentIndex('other', _index);
 	}
 
-	Keys.onPressed:
+	Keys.onPressed: (event) =>
 	{
 		if      (event.key === Qt.Key_Left)
 		{
