@@ -81,7 +81,11 @@ if(WIN32)
   file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
   list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
-  find_package(Boost 1.78 REQUIRED nowide)
+  find_package(
+    Boost
+    1.78
+    REQUIRED
+    nowide)
 
   add_library(R-Interface SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
@@ -160,6 +164,7 @@ else()
            Boost::chrono
            # CPM/CMake
            ${LIBJSONCPP_LINK_LIBRARIES}
+           $<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
            # R
            ${_LIB_RINSIDE}
            $<$<PLATFORM_ID:Linux>:${_LIB_R}>
