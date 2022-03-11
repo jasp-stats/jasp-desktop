@@ -110,6 +110,15 @@ else()
                   NEW_ID
                   ${FILE})
 
+      elseif(FILE MATCHES "/opt/R/arm64/gfortran/lib/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/gfortran/lib/"
+            NEW_ID
+            ${FILE})
+
       elseif(FILE MATCHES "/Modules/jasp")
 
         string(
@@ -179,15 +188,84 @@ else()
           "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
       )
 
-      execute_process(
-        # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
-        WORKING_DIRECTORY ${PATH}
-        COMMAND
-          install_name_tool -change
-          "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/libgfortran.dylib"
-          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libgfortran.5.dylib"
-          "${FILE}")
+      if(R_DIR_NAME MATCHES "arm64")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change
+            "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/libgfortran.dylib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libgfortran.5.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+            "/opt/R/arm64/gfortran/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/gfortran/lib"
+        )
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+            "${R_HOME_PATH}/opt/R/arm64/gfortran/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/gfortran/lib"
+        )
+
+      else()
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change
+            "${R_HOME_PATH}/opt/local/gfortran/lib/libgfortran.dylib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libgfortran.5.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change
+            "${R_HOME_PATH}/opt/local/gfortran/lib/libquadmath.dylib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libquadmath.0.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+            "/usr/local/gfortran/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/local/gfortran/lib"
+        )
+        # For whatever reason, the above command cannot replace the prefix of these libraries. I have tried to
+        # directly changed their 'id' even, and that didn't help either!
+        #   - libgcc_ext.10.4.dylib
+        #   - libgcc_ext.10.5.dylib
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/usr/local/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/local/lib"
+        )
+
+      endif()
 
       # Changing the `/opt/R/arm64/lib` prefix
       # These are additional libraries needed for arm64.
