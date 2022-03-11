@@ -398,59 +398,61 @@ if(INSTALL_R_MODULES)
       else()
 
         # ----- Downloading and Building jags
+        if(NOT TARGET jags)
 
-        fetchcontent_declare(
-          jags
-          URL "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Source/JAGS-4.3.0.tar.gz"
-          URL_HASH
-            SHA256=8ac5dd57982bfd7d5f0ee384499d62f3e0bb35b5f1660feb368545f1186371fc
-        )
-
-        message(CHECK_START "Downloading 'jags'")
-
-        fetchcontent_makeavailable(jags)
-
-        if(jags_POPULATED)
-
-          message(CHECK_PASS "successful.")
-
-          set(JAGS_CFLAGS
-              "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+          fetchcontent_declare(
+            jags
+            URL "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Source/JAGS-4.3.0.tar.gz"
+            URL_HASH
+              SHA256=8ac5dd57982bfd7d5f0ee384499d62f3e0bb35b5f1660feb368545f1186371fc
           )
-          set(JAGS_CXXFLAGS "${JAGS_CFLAGS}")
-          set(JAGS_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
-          set(JAGS_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
 
-          add_custom_command(
-            JOB_POOL sequential
-            WORKING_DIRECTORY ${jags_SOURCE_DIR}
-            OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
-            COMMAND
-              export CFLAGS=${READSTAT_CFLAGS} && export
-              CXXFLAGS=${READSTAT_CXXFLAGS} && ${JAGS_F77_FLAG} ./configure
-              --disable-dependency-tracking --prefix=${jags_HOME}
-              ${JAGS_EXTRA_FLAGS_1} ${JAGS_EXTRA_FLAGS_2}
-            COMMAND ${MAKE}
-            COMMAND ${MAKE} install
-            COMMAND
-              ${CMAKE_COMMAND} -D
-              NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-              -D PATH=${jags_HOME} -D R_HOME_PATH=${R_HOME_PATH} -D
-              R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
-              CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
-              ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-            COMMENT "----- Preparing 'jags'")
+          message(CHECK_START "Downloading 'jags'")
 
-          if(NOT TARGET jags)
+          fetchcontent_makeavailable(jags)
+
+          if(jags_POPULATED)
+
+            message(CHECK_PASS "successful.")
+
+            set(JAGS_F77_FLAG "F77=${FORTRAN_EXECUTABLE}")
+            set(JAGS_CFLAGS
+                "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+            )
+            set(JAGS_CXXFLAGS "${JAGS_CFLAGS}")
+            set(JAGS_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
+            set(JAGS_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
+
+            add_custom_command(
+              JOB_POOL sequential
+              WORKING_DIRECTORY ${jags_SOURCE_DIR}
+              OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
+              COMMAND
+                export CFLAGS=${READSTAT_CFLAGS} && export
+                CXXFLAGS=${READSTAT_CXXFLAGS} && ${JAGS_F77_FLAG} ./configure
+                --disable-dependency-tracking --prefix=${jags_HOME}
+                ${JAGS_EXTRA_FLAGS_1} ${JAGS_EXTRA_FLAGS_2}
+              COMMAND ${MAKE}
+              COMMAND ${MAKE} install
+              COMMAND
+                ${CMAKE_COMMAND} -D
+                NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+                -D PATH=${jags_HOME} -D R_HOME_PATH=${R_HOME_PATH} -D
+                R_DIR_NAME=${R_DIR_NAME} -D SIGNING=${IS_SIGNING} -D
+                CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+                ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+              COMMENT "----- Preparing 'jags'")
+
             add_custom_target(
               jags
               JOB_POOL sequential
               DEPENDS ${jags_HOME}/lib/pkgconfig/jags.pc)
+
+          else()
+
+            message(CHECK_FAIL "failed.")
+
           endif()
-
-        else()
-
-          message(CHECK_FAIL "failed.")
 
         endif()
 

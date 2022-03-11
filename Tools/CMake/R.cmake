@@ -137,6 +137,35 @@ if(APPLE)
             WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
             COMMAND tar -xf texinfo.pkg/Payload -C ${r_pkg_r_home}/)
 
+          # Downloading the gfortran
+
+          message(CHECK_START "Downloading gfortran")
+
+          fetchcontent_declare(
+            gfortran_tar_gz
+            URL "https://mac.r-project.org/libs-arm64/gfortran-f51f1da0-darwin20.0-arm64.tar.gz"
+            URL_HASH
+              SHA256=e7a5272fcbe002e9e22effc18bba01c352ca95f63dc3264865d9f8020ac55821
+            DOWNLOAD_NO_EXTRACT ON
+            DOWNLOAD_NAME gfortran.tar.gz)
+
+          fetchcontent_makeavailable(gfortran_tar_gz)
+
+          if(gfortran_tar_gz_POPULATED)
+
+            message(CHECK_PASS "done.")
+
+            execute_process(WORKING_DIRECTORY ${gfortran_tar_gz_SOURCE_DIR}
+                            COMMAND tar xzf gfortran.tar.gz -C ${r_pkg_r_home}/)
+
+            set(GFORTRAN_PATH ${R_OPT_PATH}/R/arm64/bin)
+
+          else()
+
+            message(CHECK_FAIL "unsuccessful")
+
+          endif()
+
         else()
 
           make_directory(${r_pkg_r_home}/opt)
@@ -150,9 +179,55 @@ if(APPLE)
             COMMAND tar -xf texinfo.pkg/Payload --strip-components=2 -C
                     ${r_pkg_r_home}/opt)
 
-        endif()
+          # Downloading the gfortran
 
-        message(CHECK_PASS "done.")
+          message(CHECK_START "Downloading gfortran")
+
+          fetchcontent_declare(
+            gfortran_dmg
+            URL "https://mac.r-project.org/tools/gfortran-8.2-Mojave.dmg"
+            URL_HASH
+              SHA256=81d379231ba5671a5ef1b7832531f53be5a1c651701a61d87e1d877c4f06d369
+            DOWNLOAD_NO_EXTRACT ON
+            DOWNLOAD_NAME gfortran.dmg)
+
+          fetchcontent_makeavailable(gfortran_dmg)
+
+          if(gfortran_dmg_POPULATED)
+
+            message(CHECK_PASS "done.")
+
+            # message(CHECK_START "Unpacking the payloads.")
+            execute_process(WORKING_DIRECTORY ${gfortran_dmg_SOURCE_DIR}
+                            COMMAND hdiutil attach gfortran.dmg)
+
+            execute_process(
+              WORKING_DIRECTORY /Volumes/gfortran-8.2-Mojave/gfortran-8.2-Mojave
+              COMMAND ${CMAKE_COMMAND} -E copy gfortran.pkg
+                      ${gfortran_dmg_SOURCE_DIR}/)
+
+            execute_process(WORKING_DIRECTORY ${gfortran_dmg_SOURCE_DIR}
+                            COMMAND xar -xf gfortran.pkg)
+
+            execute_process(WORKING_DIRECTORY ${gfortran_dmg_SOURCE_DIR}
+                            COMMAND tar -xf Payload)
+
+            execute_process(
+              WORKING_DIRECTORY ${gfortran_dmg_SOURCE_DIR}
+              COMMAND ${CMAKE_COMMAND} -E copy_directory usr/local
+                      ${r_pkg_r_home}/opt/local/)
+
+            execute_process(COMMAND hdiutil detach /Volumes/gfortran-8.2-Mojave)
+
+            set(GFORTRAN_PATH ${R_OPT_PATH}/local/gfortran/bin)
+
+          else()
+
+            message(CHECK_FAIL "unsuccessful")
+
+          endif()
+
+        endif()
 
         message(CHECK_START
                 "Copying the 'R.framework' to the jasp-desktop/Frameworks.")
@@ -165,6 +240,21 @@ if(APPLE)
         message(CHECK_PASS "done.")
       else()
         message(CHECK_FAIL "failed.")
+      endif()
+
+      find_program(
+        FORTRAN_EXECUTABLE
+        NAMES gfortran
+        PATHS ${GFORTRAN_PATH}
+        NO_DEFAULT_PATH
+        DOC "'gfortran' is needed for building some of the R packages")
+
+      if(NOT FORTRAN_EXECUTABLE)
+        message(CHECK_FAIL "not found")
+        message(FATAL_ERROR "Please install 'gfortran' before continuing.")
+      else()
+        message(CHECK_PASS "found")
+        message(STATUS "  ${FORTRAN_EXECUTABLE}")
       endif()
 
       # --------------------------------------------------------
@@ -243,6 +333,9 @@ if(APPLE)
         ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}/bin
         COMMAND ln -s ../../../../../../Frameworks Frameworks)
+
+      execute_process(WORKING_DIRECTORY ${R_OPT_PATH}/R/arm64/gfortran
+                      COMMAND ln -sfn ${CMAKE_OSX_SYSROOT} SDK)
 
       # ------------------------
 
