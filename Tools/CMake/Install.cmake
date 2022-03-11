@@ -19,7 +19,7 @@ set(FILES_EXCLUDE_PATTERN
     ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb)$"
 )
 set(FOLDERS_EXCLUDE_PATTERN
-    ".*(/doc|/examples|/help|/man|/html|/bib|/announce|/test|/tinytest|/tests)$"
+    ".*(/doc|/examples|/help|/man|/html|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$"
 )
 
 # See here, http://cmake.org/cmake/help/v3.22/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html
