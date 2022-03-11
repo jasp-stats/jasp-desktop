@@ -179,6 +179,16 @@ else()
           "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
       )
 
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND
+          install_name_tool -change
+          "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/libgfortran.dylib"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libgfortran.5.dylib"
+          "${FILE}")
+
       # Changing the `/opt/R/arm64/lib` prefix
       # These are additional libraries needed for arm64.
       # @todo, at some point, we might need to have a case for them, but for now they are fine
