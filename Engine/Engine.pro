@@ -64,9 +64,10 @@ exists(/app/lib/*) {
     # org.jaspstats.JASP.json and flatpakbuilder do all this
 } else {
 
-	InstallJASPRPackage.commands        = ""
-    #InstallJASPRPackage.commands        =  $${INSTALL_R_PKG_DEPS_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_DEPS_CMD_POSTFIX};	 $$escape_expand(\\n\\t) 
-	InstallJASPRPackage.commands       +=       $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_CMD_POSTFIX}
+	InstalljaspResults.commands			= ""
+	InstallJASPRPackage.commands		= ""
+	InstallJASPRPackage.commands		+= $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/jaspBase$${INSTALL_R_PKG_CMD_POSTFIX}
+	InstalljaspResults.commands			+= $${INSTALL_R_PKG_CMD_PREFIX}$$PWD/../R-Interface/jaspResults$${INSTALL_R_PKG_CMD_POSTFIX}
 	
 	#InstalljaspGraphsRPackage.commands  =  ""
 	#InstalljaspGraphsRPackage.commands  =  $${INSTALL_R_PKG_DEPS_CMD_PREFIX}$$PWD/jaspGraphs$${INSTALL_R_PKG_DEPS_CMD_POSTFIX};	 $$escape_expand(\\n\\t) 
@@ -92,7 +93,9 @@ exists(/app/lib/*) {
 	#POST_TARGETDEPS     += InstalljaspGraphsRPackage
 
 	QMAKE_EXTRA_TARGETS += InstallJASPRPackage
+	QMAKE_EXTRA_TARGETS += InstalljaspResults
 	POST_TARGETDEPS     += InstallJASPRPackage
+	POST_TARGETDEPS     += InstalljaspResults
 }
 
 QMAKE_CLEAN += $$OUT_PWD/../R/library/* #Does this not mess up Windows somehow?

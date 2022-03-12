@@ -16,7 +16,7 @@
 //
 
 #include "jasprcpp.h"
-#include "jaspResults/src/jaspResults.h"
+//#include "jaspResults/src/jaspResults.h"
 #include <fstream>
 #include "boost/nowide/system.hpp"
 
@@ -71,6 +71,12 @@ static std::string				_R_HOME = "";
 
 bool shouldCrashSoon = false; //Simply here to allow a developer to force a crash
 
+// TODO: this probably won't work on windows
+std::string jaspNativeToUtf8(const Rcpp::String & in)
+{
+	return in;
+}
+
 extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
@@ -114,7 +120,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	runCallbackCB								= callbacks->runCallbackCB;
 	readDataSetCB								= callbacks->readDataSetCB;
 
-
+	// TODO: none of this should pollute the global environment.
 	rInside[".setLog"]							= Rcpp::InternalFunction(&jaspRCPP_setLog);
 	rInside[".setRError"]						= Rcpp::InternalFunction(&jaspRCPP_setRError);
 	rInside[".crashPlease"]						= Rcpp::InternalFunction(&jaspRCPP_crashPlease);
@@ -158,27 +164,19 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".baseCitation"]		= CSTRING_TO_R(baseCitation);
 	rInside[".resultsFont"]			= resultsFont;
 
-	jaspResults::setSendFunc(sendToDesktopFunction);
-	jaspResults::setPollMessagesFunc(pollMessagesFunction);
-	jaspResults::setBaseCitation(baseCitation);
-	jaspResults::setInsideJASP();
-
-	jaspRCPP_logString("Initializing jaspResultsModule.\n");
-
-	rInside["jaspResultsModule"]			= givejaspResultsModule();
-
-	//Adding some functions in R to the RefClass (generator) in the module
-	//To do: move this entirely to zzzWrapper if this wasn't done yet.
-	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
-	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
+	rInside[".sendToDesktopFunction"]	= Rcpp::XPtr<sendFuncDef>(&sendToDesktopFunction);
+	rInside[".pollMessagesFunction"]	= Rcpp::XPtr<pollMessagesFuncDef>(&pollMessagesFunction);
+	rInside[".baseCitation"]			= baseCitation;
+	jaspRCPP_parseEvalQNT("jaspResults:::setSendFunc(.sendToDesktopFunction)");
+	jaspRCPP_parseEvalQNT("jaspResults:::setPollMessagesFunc(.pollMessagesFunction)");
+	jaspRCPP_parseEvalQNT("jaspResults:::setBaseCitation(.baseCitation)");
+	jaspRCPP_parseEvalQNT("jaspResults:::setInsideJasp()");
 	
+	jaspRCPP_logString("Initializing jaspResults.\n");
+	jaspRCPP_parseEvalQNT("library(\"jaspResults\")");
+
 	jaspRCPP_logString("Initializing jaspBase.\n");
 	jaspRCPP_parseEvalQNT("library(\"jaspBase\")");
-		
-	jaspRCPP_logString("Loading auxillary R-files.\n");
-	jaspRCPP_parseEvalQNT("source(file='writeImage.R')");
-	jaspRCPP_parseEvalQNT("source(file='zzzWrappers.R')");
-	jaspRCPP_parseEvalQNT("source(file='workarounds.R')");
 
 	jaspRCPP_logString("initEnvironment().\n");
 	jaspRCPP_parseEvalQNT("initEnvironment()");
@@ -222,20 +220,27 @@ void STDCALL jaspRCPP_purgeGlobalEnvironment()
 
 void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMode)
 {
-	jaspResults::setResponseData(analysisID, analysisRevision);
-	jaspResults::setDeveloperMode(developerMode);
+	jaspRCPP_parseEvalQNT(
+				"jaspResults:::setResponseData(" + std::to_string(analysisID) +", " + std::to_string(analysisRevision) + ");\n" +
+				"jaspResults:::setDeveloperMode(" + (developerMode ? "TRUE" : "FALSE") + ")"
+	);
 
 	std::string root, relativePath;
 
 	if(!jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath))
 		throw std::runtime_error("Did not receive a valid filename to store jaspResults.json at.");
 
-	jaspResults::setSaveLocation(root, relativePath);
+	jaspRCPP_parseEvalQNT(
+		"jaspResults:::setSaveLocation(\"" + root + "\", \"" + relativePath + "\");"
+	);
 
-	if(!jaspRCPP_requestSpecificRelativeFilePath(jaspResults::writeSealFilename(), root, relativePath))
+	std::string specificFilename = jaspRCPP_parseEvalStringReturn("jaspResults:::writeSealFilename()");
+	if(!jaspRCPP_requestSpecificRelativeFilePath(specificFilename, root, relativePath))
 			throw std::runtime_error("Did not receive a valid filename to store jaspResults write seal at.");
 
-	jaspResults::setWriteSealLocation(root, relativePath);
+	jaspRCPP_parseEvalQNT(
+		"jaspResults:::setWriteSealLocation(\"" + root + "\", \"" + relativePath + "\");"
+	);
 }
 
 const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode, const char* resultsFont)
@@ -267,7 +272,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	jaspRCPP_logString("result of runJaspResults:\n" + str + "\n");
 #endif
 
-	jaspObject::destroyAllAllocatedObjects();
+	jaspRCPP_parseEvalQNT("jaspResults:::destroyAllAllocatedObjects()");
 
 	jaspRCPP_checkForCrashRequest();
 
@@ -1213,7 +1218,7 @@ std::string jaspRCPP_nativeToUtf8(const Rcpp::String & string)
 	if(string.get_encoding() == CE_UTF8)
 		return string;
 	
-	return _stringNativeToUtf8(string.get_cstring());	
+	return _stringNativeToUtf8(string.get_cstring());
 #else
 	return string;
 #endif
