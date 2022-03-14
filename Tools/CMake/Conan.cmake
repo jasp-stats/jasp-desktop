@@ -5,6 +5,8 @@ if(WIN32 OR USE_CONAN)
   message(CHECK_START "Configuring Conan")
   set(CONAN_FILE_PATH ${CMAKE_SOURCE_DIR})
 
+  message(STATUS "  ${CMAKE_BUILD_TYPE}")
+
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CONAN_COMPILER_RUNTIME "MDd")
   elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -13,11 +15,12 @@ if(WIN32 OR USE_CONAN)
     set(CONAN_COMPILER_RUNTIME "MDd")
   endif()
 
+  message(STATUS "  ${CONAN_COMPILER_RUNTIME}")
+
   if(WIN32)
 
     execute_process(
-      # COMMAND_ECHO STDOUT
-      ERROR_QUIET OUTPUT_QUIET
+      COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       COMMAND
         conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
@@ -28,8 +31,6 @@ if(WIN32 OR USE_CONAN)
     if(CROSS_COMPILING)
 
       execute_process(
-        # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMAND
           conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
@@ -40,8 +41,6 @@ if(WIN32 OR USE_CONAN)
     else()
 
       execute_process(
-        # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMAND
           conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s

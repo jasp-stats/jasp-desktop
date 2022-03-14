@@ -261,58 +261,80 @@ if(WIN32)
   # This could all go into its module later, and these can
   # turn into a function, but I don't want to do it now
   # because I'm uncertain about CMake variable scopping
-  message(CHECK_START "Looking for jags files")
-  find_file(
-    MINGW_LIBJAGS_BAT
-    NAMES jags.bat
-    PATHS ${MINGW_PATH}/bin REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_BAT}")
-  find_file(
-    MINGW_LIBJAGS
-    NAMES libjags-5.dll
-    PATHS ${MINGW_PATH}/bin REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS}")
-  find_file(
-    MINGW_LIBJAGS_JRMATH
-    NAMES libjrmath-0.dll
-    PATHS ${MINGW_PATH}/bin REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_JRMATH}")
+  # message(CHECK_START "Looking for jags files")
+  # find_file(
+  #   MINGW_LIBJAGS_BAT
+  #   NAMES jags.bat
+  #   PATHS ${MINGW_PATH}/bin REQUIRED)
+  # message(STATUS "  ${MINGW_LIBJAGS_BAT}")
+  # find_file(
+  #   MINGW_LIBJAGS
+  #   NAMES libjags-4.dll
+  #   PATHS ${MINGW_PATH}/bin REQUIRED)
+  # message(STATUS "  ${MINGW_LIBJAGS}")
+  # find_file(
+  #   MINGW_LIBJAGS_JRMATH
+  #   NAMES libjrmath-0.dll
+  #   PATHS ${MINGW_PATH}/bin REQUIRED)
+  # message(STATUS "  ${MINGW_LIBJAGS_JRMATH}")
+  # find_file(
+  #   MINGW_LIB_BLAS
+  #   NAMES libblas.dll
+  #   PATHS ${MINGW_PATH}/bin REQUIRED)
+  # message(STATUS "  ${MINGW_LIB_BLAS}")
+  # find_file(
+  #   MINGW_LIB_LAPACK
+  #   NAMES liblapack.dll
+  #   PATHS ${MINGW_PATH}/bin REQUIRED)
+  # message(STATUS "  ${MINGW_LIB_LAPACK}")
 
-  set(MINGW_LIBJAGS_HEADERS_PATH "${MINGW_PATH}/include/JAGS")
-  message(STATUS "  ${MINGW_LIBJAGS_HEADERS_PATH}")
-  set(MINGW_LIBJAGS_LIBRARIES_PATH "${MINGW_PATH}/lib/JAGS")
-  message(STATUS "  ${MINGW_LIBJAGS_LIBRARIES_PATH}")
-  set(MINGW_LIBJAGS_PKGCONFIG_PATH "${MINGW_PATH}/lib/pkgconfig")
-  message(STATUS "  ${MINGW_LIBJAGS_PKGCONFIG_PATH}")
+  # set(MINGW_LIBJAGS_HEADERS_PATH "${MINGW_PATH}/include/JAGS")
+  # message(STATUS "  ${MINGW_LIBJAGS_HEADERS_PATH}")
+  # set(MINGW_LIBJAGS_LIBRARIES_PATH "${MINGW_PATH}/lib/JAGS")
+  # message(STATUS "  ${MINGW_LIBJAGS_LIBRARIES_PATH}")
+  # set(MINGW_LIBJAGS_PKGCONFIG_PATH "${MINGW_PATH}/lib/pkgconfig")
+  # message(STATUS "  ${MINGW_LIBJAGS_PKGCONFIG_PATH}")
+  # set(MINGW_LIBJAGS_MODULES_PATH "${MINGW_PATH}/lib/JAGS/modules-4")
+  # message(STATUS "  ${MINGW_LIBJAGS_MODULES_PATH}")
 
-  find_file(
-    MINGW_LIBJAGS_LIBJAGS_A
-    NAMES libjags.dll.a
-    PATHS ${MINGW_PATH}/lib REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_A}")
-  find_file(
-    MINGW_LIBJAGS_LIBJAGS_LA
-    NAMES libjags.la
-    PATHS ${MINGW_PATH}/lib REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_LA}")
-  find_file(
-    MINGW_LIBJAGS_LIBJRMATH_A
-    NAMES libjrmath.dll.a
-    PATHS ${MINGW_PATH}/lib REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_A}")
-  find_file(
-    MINGW_LIBJAGS_LIBJRMATH_LA
-    NAMES libjrmath.la
-    PATHS ${MINGW_PATH}/lib REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_LA}")
+  # find_file(
+  #   MINGW_LIBJAGS_LIBJAGS_A
+  #   NAMES libjags.dll.a
+  #   PATHS ${MINGW_PATH}/lib REQUIRED)
+  # message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_A}")
+  # find_file(
+  #   MINGW_LIBJAGS_LIBJAGS_LA
+  #   NAMES libjags.la
+  #   PATHS ${MINGW_PATH}/lib REQUIRED)
+  # message(STATUS "  ${MINGW_LIBJAGS_LIBJAGS_LA}")
+  # find_file(
+  #   MINGW_LIBJAGS_LIBJRMATH_A
+  #   NAMES libjrmath.dll.a
+  #   PATHS ${MINGW_PATH}/lib REQUIRED)
+  # message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_A}")
+  # find_file(
+  #   MINGW_LIBJAGS_LIBJRMATH_LA
+  #   NAMES libjrmath.la
+  #   PATHS ${MINGW_PATH}/lib REQUIRED)
+  # message(STATUS "  ${MINGW_LIBJAGS_LIBJRMATH_LA}")
+  # find_file(
+  #   MINGW_LIB_BLAS_DLL_A
+  #   NAMES libblas.dll.a
+  #   PATHS ${MINGW_PATH}/lib REQUIRED)
+  # message(STATUS "  ${MINGW_LIB_BLAS_DLL_A}")
+  # find_file(
+  #   MINGW_LIB_LAPACK_DLL_A
+  #   NAMES liblapack.dll.a
+  #   PATHS ${MINGW_PATH}/lib REQUIRED)
+  # message(STATUS "  ${MINGW_LIB_LAPACK_DLL_A}")
 
-  find_file(
-    MINGW_LIBJAGS_JAGS_TERMINAL_EXE
-    NAMES jags-terminal.exe
-    PATHS ${MINGW_PATH}/libexec REQUIRED)
-  message(STATUS "  ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE}")
+  # find_file(
+  #   MINGW_LIBJAGS_JAGS_TERMINAL_EXE
+  #   NAMES jags-terminal.exe
+  #   PATHS ${MINGW_PATH}/libexec REQUIRED)
+  # message(STATUS "  ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE}")
 
-  message(CHECK_PASS "found")
+  # message(CHECK_PASS "found")
 
 endif()
 

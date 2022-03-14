@@ -16,7 +16,7 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Install)
 
 # At the moment, I don't remove the `.a` files
 set(FILES_EXCLUDE_PATTERN
-    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb)$"
+    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store)$"
 )
 set(FOLDERS_EXCLUDE_PATTERN
     ".*(/doc|/examples|/help|/man|/html|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$"

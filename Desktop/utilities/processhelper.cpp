@@ -41,7 +41,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool withT
 	
 	QString PATH		= shortenWinPaths(programDir.absoluteFilePath("R/library/RInside/libs/" ARCH_SUBPATH)) + ";" + shortenWinPaths(programDir.absoluteFilePath("R/library/Rcpp/libs/" ARCH_SUBPATH)) + ";" + shortenWinPaths(programDir.absoluteFilePath("R/bin/" ARCH_SUBPATH)) + ";" + shortenWinPaths(env.value("PATH")),
 			R_HOME		= shortenWinPaths(rHome.absolutePath()),
-			JAGS_HOME	= shortenWinPaths(programDir.absoluteFilePath("R/opt/jags/lib/JAGS/"));
+			JAGS_HOME	= shortenWinPaths(programDir.absoluteFilePath("R/opt/jags/"));
 			// JAGS_LIBDIR	= shortenWinPaths(programDir.absoluteFilePath("R/opt/jags/lib/"));
 	
 	Log::log() << "R_HOME set to " << R_HOME << std::endl;

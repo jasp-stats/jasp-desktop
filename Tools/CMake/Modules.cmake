@@ -75,6 +75,11 @@ if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
   else()
     # On macOS and Windows jags will live inside R.framework/ or R/
     set(jags_HOME ${R_OPT_PATH}/jags)
+    if(WIN32)
+      set(jags_VERSION_H_PATH ${jags_HOME}/include/version.h)
+    else()
+      set(jags_VERSION_H_PATH ${jags_HOME}/include/JAGS/version.h)
+    endif()
   endif()
 else()
   set(jags_HOME "")
@@ -307,8 +312,8 @@ if(INSTALL_R_MODULES)
         ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
         ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
         ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
-        $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_HOME}/lib/pkgconfig/jags.pc>
-        $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_HOME}/lib/pkgconfig/jags.pc>
+        $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}>
+        $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND
@@ -360,40 +365,76 @@ if(INSTALL_R_MODULES)
 
       if(WIN32)
 
+        if(NOT TARGET jags)
+
+        message(STATUS "Downloading `jags`")
+        fetchcontent_declare(
+          jags_win
+          URL "https://static.jasp-stats.org/development/JAGS-4.3.0-Windows.zip"
+          URL_HASH SHA256=dd2429f44526643074bc65bf98c3a445c50513c051c5f7f5ec51e270ee465aeb
+        )
+
+        fetchcontent_makeavailable(jags_win)
+
+        if(jags_win_POPULATED)
+
+          message(CHECK_PASS "successful")
+
+          add_custom_command(
+            OUTPUT ${jags_VERSION_H_PATH}
+            # bin
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${jags_win_SOURCE_DIR}/x64/ ${jags_HOME}/x64
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${jags_win_SOURCE_DIR}/include/ ${jags_HOME}/include
+          )
+
+          add_custom_target(
+            jags
+            JOB_POOL sequential
+            DEPENDS ${jags_VERSION_H_PATH})
+
+        else()
+
+          message(CHECK_FAIL "failed")
+
+        endif()
+
+
+
         # Manually copying the entire JAGS from MSYS2 into the R/opt/jags
         # if later, we need any other libraries, we can use this method,
         # automate it a bit nicer, and ship our external libraries
-        add_custom_command(
-          OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
-          # bin
-          COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/bin
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_BAT}
-                  ${jags_HOME}/bin/
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS} ${jags_HOME}/bin/
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JRMATH}
-                  ${jags_HOME}/bin/
-          # libexe
-          COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/libexe
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE}
-                  ${jags_HOME}/libexe/
-          # headers
-          COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include/JAGS
-          COMMAND ${CMAKE_COMMAND} -E copy_directory
-                  ${MINGW_LIBJAGS_HEADERS_PATH}/ ${jags_HOME}/include/JAGS
-          # libs
-          COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/lib
-          COMMAND ${CMAKE_COMMAND} -E copy_directory
-                  ${MINGW_LIBJAGS_LIBRARIES_PATH}/ ${jags_HOME}/lib/JAGS
-          COMMAND ${CMAKE_COMMAND} -E copy_directory
-                  ${MINGW_LIBJAGS_PKGCONFIG_PATH}/ ${jags_HOME}/lib/pkgconfig
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_A}
-                  ${jags_HOME}/lib
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_LA}
-                  ${jags_HOME}/lib
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_A}
-                  ${jags_HOME}/lib
-          COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_LA}
-                  ${jags_HOME}/lib)
+        # add_custom_command(
+        #   OUTPUT ${jags_VERSION_H_PATH}
+        #   # bin
+        #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64
+        #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64/bin
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_BAT} ${jags_HOME}/x64/bin/
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS} ${jags_HOME}/x64/bin/
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JRMATH} ${jags_HOME}/x64/bin/
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE} ${jags_HOME}/x64/bin
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_BLAS} ${jags_HOME}/x64/bin
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_LAPACK} ${jags_HOME}/x64/bin
+        #   # headers
+        #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include
+        #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_HEADERS_PATH}/ ${jags_HOME}/include
+        #   # libs
+        #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64/lib
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_A} ${jags_HOME}/x64/lib
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_LA} ${jags_HOME}/x64/lib
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_A} ${jags_HOME}/x64/lib
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_LA} ${jags_HOME}/x64/lib
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_BLAS_DLL_A} ${jags_HOME}/x64/lib
+        #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_LAPACK_DLL_A} ${jags_HOME}/x64/lib
+        #   # modules
+        #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64/modules
+        #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_MODULES_PATH} ${jags_HOME}/x64/modules
+        #   # pkgconfig
+        #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_PKGCONFIG_PATH}/ ${jags_HOME}/lib/pkgconfig
+        #   )
+
+        endif()
 
       else()
 
@@ -426,7 +467,7 @@ if(INSTALL_R_MODULES)
             add_custom_command(
               JOB_POOL sequential
               WORKING_DIRECTORY ${jags_SOURCE_DIR}
-              OUTPUT ${jags_HOME}/lib/pkgconfig/jags.pc
+              OUTPUT ${jags_VERSION_H_PATH}
               COMMAND
                 export CFLAGS=${READSTAT_CFLAGS} && export
                 CXXFLAGS=${READSTAT_CXXFLAGS} && ${JAGS_F77_FLAG} ./configure
@@ -446,7 +487,7 @@ if(INSTALL_R_MODULES)
             add_custom_target(
               jags
               JOB_POOL sequential
-              DEPENDS ${jags_HOME}/lib/pkgconfig/jags.pc)
+              DEPENDS ${jags_VERSION_H_PATH})
 
           else()
 
