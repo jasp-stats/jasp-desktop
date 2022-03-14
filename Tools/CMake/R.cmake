@@ -16,7 +16,7 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
-set(R_VERSION "4.1.2")
+set(R_VERSION "4.1.3")
 set(R_VERSION_MAJOR_MINOR "4.1")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
@@ -88,14 +88,14 @@ if(APPLE)
       set(R_DOWNLOAD_URL
           "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
       )
-      set(R_PACKAGE_HASH "69e8845ffa134c822d4bdcf458220e841a9eeaa5")
+      set(R_PACKAGE_HASH "dad405d4f58349403c4976ba50e944502070b209")
 
     else()
 
       set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
       set(R_DOWNLOAD_URL
           "https://cran.r-project.org/bin/macosx/base/R-${R_VERSION}.pkg")
-      set(R_PACKAGE_HASH "61d3909bc070f7fb86c5a2bd67209fda9408faaa")
+      set(R_PACKAGE_HASH "45121f2c830b0cd7d180aee3fc4cd80d0de1e582")
 
     endif()
 
@@ -501,7 +501,7 @@ elseif(WIN32)
     set(R_PACKAGE_NAME "R-${R_VERSION}-win.exe")
     set(R_DOWNLOAD_URL
         "https://cran.r-project.org/bin/windows/base/R-${R_VERSION}-win.exe")
-    set(R_PACKAGE_HASH "776384c989ea061728e781b6b9ce5b92")
+    set(R_PACKAGE_HASH "f02b305ebec458e8ba0fea9ebb0cebb3")
 
     fetchcontent_declare(
       r_win_exe
