@@ -193,6 +193,8 @@ if(WIN32)
 
   install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/ DESTINATION Resources)
 
+  install(FILES ${CMAKE_SOURCE_DIR}/Desktop/icon.ico DESTINATION .)
+
   install(
     DIRECTORY ${CMAKE_BINARY_DIR}/Modules/
     DESTINATION Modules

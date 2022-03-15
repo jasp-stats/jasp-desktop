@@ -40,7 +40,11 @@ set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/Tools/wix/installerBackground.png")
 # set(CPACK_WIX_TEMPLATE "${CMAKE_SOURCE_DIR}/Tools/wix/jasp.wxs")
 # set(CPACK_WIX_LIGHT_EXTENSIONS "WixUIExtension;WixUtilExtension")
 
-set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns")
+if(WIN32)
+  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
+else()
+  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns")
+endif()
 
 if(APPLE)
   set(CPACK_PACKAGE_FILE_NAME

@@ -96,6 +96,7 @@ else()
     ${HEADER_FILES}
     ${SOURCE_FILES}
     ${BUNDLE_RESOURCES}
+    $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 
   if(IWYU_EXECUTABLE AND RUN_IWYU)
