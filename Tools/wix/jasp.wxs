@@ -2,7 +2,7 @@
 <!-- Add xmlns:util namespace definition to be able to use stuff from WixUtilExtension dll-->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 	<?include $(sys.CURRENTDIR)jasp.wxi ?>
-	<?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.Revision).$(var.BuildVersion)" ?>
+	<?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.PatchVersion).$(var.TweakVersion)" ?>
 
 	<?if $(sys.BUILDARCH)="x86"?>
 		<?define Program_Files="ProgramFilesFolder"?>

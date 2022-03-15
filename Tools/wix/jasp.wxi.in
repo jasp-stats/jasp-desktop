@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>   
+	<?define MajorVersion="@JASP_VERSION_MAJOR@" ?>
+	<?define MinorVersion="@JASP_VERSION_MINOR@" ?>
+	<?define PatchVersion="@JASP_VERSION_PATCH@" ?>
+	<?define TweakVersion="@JASP_VERSION_TWEAK@" ?>
+</Include>  
