@@ -9,7 +9,7 @@
 [submodule "Modules/Common/jaspAnova"]
 	path = Modules/jaspAnova
 	url = https://github.com/jasp-stats/jaspAnova
-	branch = master
+	branch = orderRestrictions
 [submodule "Modules/Common/jaspRegression"]
 	path = Modules/jaspRegression
 	url = https://github.com/jasp-stats/jaspRegression
