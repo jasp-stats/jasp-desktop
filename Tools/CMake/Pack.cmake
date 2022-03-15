@@ -26,15 +26,19 @@ set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
 # --- WIX
 if(WIN32)
   set(CPACK_GENERATOR "WIX")
+  # set(CPACK_SET_DESTDIR OFF)
+  # SET(CPACK_PACKAGE_INSTALL_DIRECTORY "JASP")
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/jasp.wxi.in
+    ${CMAKE_BINARY_DIR}/jasp.wxi @ONLY)
 endif()
 
-set(CPACK_WIX_UPGRADE_GUID "")
-# set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/wix/jaspLicense.rtf")
+set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/wix/jaspLicense.rtf")
 set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
 set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/Tools/wix/installerBanner.png")
 set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/Tools/wix/installerBackground.png")
-set(CPACK_WIX_EXTRA_SOURCES "${CMAKE_SOURCE_DIR}/Tools/wix/jasp.wxs")
+# set(CPACK_WIX_TEMPLATE "${CMAKE_SOURCE_DIR}/Tools/wix/jasp.wxs")
+# set(CPACK_WIX_LIGHT_EXTENSIONS "WixUIExtension;WixUtilExtension")
 
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns")
 
