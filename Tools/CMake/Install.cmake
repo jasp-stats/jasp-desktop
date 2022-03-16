@@ -204,6 +204,9 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/WIX.cmd.in
     ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)
 
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/ZIP.cmd.in
+    ${CMAKE_BINARY_DIR}/ZIP.cmd @ONLY)
+
   configure_file(${CMAKE_SOURCE_DIR}/Tools/CollectJunctions.cmd.in
     ${CMAKE_BINARY_DIR}/CollectJunctions.cmd @ONLY)
 

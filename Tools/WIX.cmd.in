@@ -15,9 +15,6 @@ call "@VC_VARS_PATH@/vcvars64.bat"
 
 rem ---------------------- Packing -------------------------------
 
-echo Making zip-version of installer
-rem powershell Compress-Archive "@JASP_INSTALL_DIR_NATIVE@\*" "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-@JASP_VERSION@.zip"
-
 echo Melting and Coalescing MSI
 
 rem set MERGE_MODULE_NAME=@VC_MERGE_MODULE_NAME@
