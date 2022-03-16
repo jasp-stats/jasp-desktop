@@ -196,10 +196,10 @@ if(WIN32)
   cmake_path(NATIVE_PATH JASP_BINARY_DIR NORMALIZE JASP_BINARY_DIR_NATIVE)
   cmake_path(NATIVE_PATH JASP_INSTALL_PREFIX NORMALIZE JASP_INSTALL_DIR_NATIVE)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/jasp.wxi.in
-    ${CMAKE_BINARY_DIR}/jasp.wxi @ONLY)
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/jasp.wxs
-    ${CMAKE_BINARY_DIR}/jasp.wxs @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/JASP.wxi.in
+    ${CMAKE_BINARY_DIR}/JASP.wxi @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/JASP.wxs
+    ${CMAKE_BINARY_DIR}/JASP.wxs @ONLY)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/WIX.cmd.in
     ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)

@@ -41,9 +41,8 @@ if(WIN32)
     # DEPENDS "${CMAKE_BINARY_DIR}/junctions.rds"
     BYPRODUCTS 
     "${CMAKE_SOURCE_DIR}/JASPFilesFragment.wixobj"
-    "${CMAKE_SOURCE_DIR}/jasp.wixobj"
+    "${CMAKE_SOURCE_DIR}/JASP.wixobj" 
     "${CMAKE_SOURCE_DIR}/JASP.wixpdb"
-    "${CMAKE_SOURCE_DIR}/JASPEngine.exe.manifest"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND cmd.exe /C WIX.cmd)
 
