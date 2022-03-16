@@ -84,7 +84,7 @@
 					<ProgId Id="JASP.Document" Description="A JASP file, containing analyses and/or data">
 						<Extension Id="jasp">
 							<!-- WIX complains about [APPLICATIONFOLDER]JASP.exe but it seems to work so you know, whatever. -->
-							<Verb Id="open" TargetProperty="&quot;[APPLICATIONFOLDER]\JASP.exe&quot;" Argument="&quot;%1&quot;" />
+							<Verb Id="open" Target="&quot;[APPLICATIONFOLDER]\JASP.exe&quot;" Argument="&quot;%1&quot;" />
 							<!--<MIME Advertise="yes" ContentType="application/jasp" Default="yes" />-->
 						</Extension>
 					</ProgId>
@@ -102,7 +102,7 @@
 	<WixVariable	Id="WixUIDialogBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\wix\installerBackground.png" />
 	<WixVariable 	Id="WixUIBannerBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\wix\installerBanner.png" />
 
-	<Property Id="APPLICATIONFOLDER"					Value="[$(var.Program_Files)][ApplicationFolderName]"	/>
+	<!-- <Property Id="APPLICATIONFOLDER"					Value="[$(var.Program_Files)][ApplicationFolderName]"	/> -->
 	<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch JASP" 									/>
 	<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX"     Value="1"												/>
 	<Property Id="WixAppFolder" 						Value="WixPerMachineFolder" 							/> <!-- default to per machine-->
