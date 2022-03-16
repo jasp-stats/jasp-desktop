@@ -156,14 +156,21 @@ if(WIN32)
     )
   endif()
 
+  set(WIX_PATH
+    ""
+    CACHE PATH "Path to your WIX installation, e.g., C:\\Program Files (x86)\\WiX Toolset v3.11\\bin")
+  
   find_program(HEAT_EXECUTABLE 
-    NAMES heat.exe)
+    NAMES heat.exe
+    HINTS ${WIX_PATH})
 
   find_program(CANDLE_EXECUTABLE 
-    NAMES candle.exe)
+    NAMES candle.exe
+    HINTS ${WIX_PATH})
 
   find_program(LIGHT_EXECUTABLE 
-    NAMES light.exe)
+    NAMES light.exe
+    HINTS ${WIX_PATH})
 
   set(MINGW_C_COMPILER "${MINGW_PATH}/bin/gcc.exe")
   set(MINGW_CXX_COMPILER "${MINGW_PATH}/bin/g++.exe")

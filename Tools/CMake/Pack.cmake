@@ -44,6 +44,7 @@ if(WIN32)
     "${CMAKE_SOURCE_DIR}/jasp.wixobj"
     "${CMAKE_SOURCE_DIR}/JASP.wixpdb"
     "${CMAKE_SOURCE_DIR}/JASPEngine.exe.manifest"
+    COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND cmd.exe /C WIX.cmd)
 
 endif()
