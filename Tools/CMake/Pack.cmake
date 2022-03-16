@@ -38,6 +38,7 @@ if(WIN32)
 
   add_custom_target(wix
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    DEPENDS "${CMAKE_SOURCE_DIR}/junctions.rds"
     BYPRODUCTS 
     "${CMAKE_SOURCE_DIR}/JASPFilesFragment.wixobj"
     "${CMAKE_SOURCE_DIR}/jasp.wixobj"
