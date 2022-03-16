@@ -156,6 +156,15 @@ if(WIN32)
     )
   endif()
 
+  find_program(HEAT_EXECUTABLE 
+    NAMES heat.exe)
+
+  find_program(CANDLE_EXECUTABLE 
+    NAMES candle.exe)
+
+  find_program(LIGHT_EXECUTABLE 
+    NAMES light.exe)
+
   set(MINGW_C_COMPILER "${MINGW_PATH}/bin/gcc.exe")
   set(MINGW_CXX_COMPILER "${MINGW_PATH}/bin/g++.exe")
   set(MINGW_MAKE_PROGRAM "${MINGW_PATH}/bin/mingw32-make.exe")

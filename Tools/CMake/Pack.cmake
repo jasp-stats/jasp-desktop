@@ -26,10 +26,25 @@ set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
 # --- WIX
 if(WIN32)
   set(CPACK_GENERATOR "WIX")
-  # set(CPACK_SET_DESTDIR OFF)
-  # SET(CPACK_PACKAGE_INSTALL_DIRECTORY "JASP")
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/jasp.wxi.in
-    ${CMAKE_BINARY_DIR}/jasp.wxi @ONLY)
+
+  add_custom_target(collect-junctions
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    BYPRODUCTS "${CMAKE_SOURCE_DIR}/junctions.rds"
+    COMMAND cmd.exe /C CollectJunctions.cmd)
+
+  add_custom_target(recreate-junctions
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    COMMAND cmd.exe /C RecreateJunctions.cmd)
+
+  add_custom_target(wix
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    BYPRODUCTS 
+    "${CMAKE_SOURCE_DIR}/JASPFilesFragment.wixobj"
+    "${CMAKE_SOURCE_DIR}/jasp.wixobj"
+    "${CMAKE_SOURCE_DIR}/JASP.wixpdb"
+    "${CMAKE_SOURCE_DIR}/JASPEngine.exe.manifest"
+    COMMAND cmd.exe /C WIX.cmd)
+
 endif()
 
 set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/wix/jaspLicense.rtf")

@@ -19,7 +19,7 @@ set(FILES_EXCLUDE_PATTERN
     ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store)$"
 )
 set(FOLDERS_EXCLUDE_PATTERN
-    ".*(/doc|/examples|/help|/man|/html|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$"
+    ".*(/doc|/examples|/help|/man|/html|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$"
 )
 
 # See here, http://cmake.org/cmake/help/v3.22/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html
@@ -159,7 +159,6 @@ endif()
 
 # ---- Windows
 
-# Essential on WIN32 as some binaries should be around
 if(WIN32)
   set(JASP_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
   set(JASP_INSTALL_BINDIR "${JASP_INSTALL_PREFIX}")
@@ -167,23 +166,78 @@ if(WIN32)
   set(JASP_INSTALL_MODULEDIR "${JASP_INSTALL_PREFIX}/Modules")
   set(JASP_INSTALL_DOCDIR "${JASP_INSTALL_RESOURCEDIR}")
 
-  set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${JASP_INSTALL_PREFIX}")
+  
   if(MSVC AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
     set(CMAKE_INSTALL_DEBUG_LIBRARIES ON)
   endif()
+  set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS ON)
+  set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${JASP_INSTALL_PREFIX}")
 
-  set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
   include (InstallRequiredSystemLibraries)
   install (PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-          DESTINATION .)
+           DESTINATION .)
 
-  install(TARGETS JASP JASPEngine RUNTIME DESTINATION .)
+  install(TARGETS JASP JASPEngine
+    RUNTIME_DEPENDENCY_SET JASP_DEPENDENCIES
+     RUNTIME DESTINATION .
+    )
+  message(STATUS ${JASP_DEPENDENCIES})
 
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(WINDEPLOY_QT_BUILD_TYPE "--debug")
+  elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(WINDEPLOY_QT_BUILD_TYPE "--release")
+  endif()
   configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Deploy.win.cmake.in
                  ${CMAKE_BINARY_DIR}/Deploy.win.cmake @ONLY)
 
+  cmake_path(NATIVE_PATH JASP_SOURCE_DIR NORMALIZE JASP_SOURCE_DIR_NATIVE)
+  cmake_path(NATIVE_PATH JASP_BINARY_DIR NORMALIZE JASP_BINARY_DIR_NATIVE)
+  cmake_path(NATIVE_PATH JASP_INSTALL_PREFIX NORMALIZE JASP_INSTALL_PREFIX_NATIVE)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/jasp.wxi.in
+    ${CMAKE_BINARY_DIR}/jasp.wxi @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/jasp.wxs
+    ${CMAKE_BINARY_DIR}/jasp.wxs @ONLY)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/WIX.cmd.in
+    ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CollectJunctions.cmd.in
+    ${CMAKE_BINARY_DIR}/CollectJunctions.cmd @ONLY)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/RecreateJunctions.cmd.in
+    ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
+
+  # configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/WIX.cmake.in
+  #   ${CMAKE_BINARY_DIR}/WIX.cmake @ONLY)
+
   install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.win.cmake)
+
+  # file(GET_RUNTIME_DEPENDENCIES)
+
+  # install(CODE [[
+  # file(GET_RUNTIME_DEPENDENCIES
+  #   EXECUTABLES JASP.exe JASPEngine.exe
+  #   PRE_EXCLUDE_REGEXES
+  #   [[api-ms-win-.*]]
+  #   [[ext-ms-.*]]
+  #   [[kernel32\.dll]]
+  #   POST_EXCLUDE_REGEXES
+  #   [[*./system32/.*\.dll]]
+  #   )
+  # ]])
+
+    # install(RUNTIME_DEPENDENCY_SET JASP_DEPENDENCIES
+    # DESTINATION .
+    # PRE_EXCLUDE_REGEXES
+    # [[api-ms-win-.*]]
+    # [[ext-ms-.*]]
+    # [[kernel32\.dll]]
+    # POST_EXCLUDE_REGEXES
+    # [[*./system32/.*\.dll]])
+
 
   install(
     DIRECTORY ${CMAKE_BINARY_DIR}/R
