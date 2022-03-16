@@ -14,19 +14,6 @@ if(NOT WIN32)
   find_program(CCACHE_EXECUTABLE NAMES ccache)
   find_program(IWYU_EXECUTABLE NAMES include-what-you-use)
 
-  message(CHECK_START "Looking for 'mercurial'")
-  find_program(
-    MERCURIAL_EXECUTABLE
-    NAMES hg
-    DOC "'mercurial' is needed for downloading some of the dependencies.")
-
-  if(NOT MERCURIAL_EXECUTABLE)
-    message(CHECK_FAIL "not found")
-    message(FATAL_ERROR "Please install 'mercurial' before continuing.")
-  else()
-    message(CHECK_PASS "found")
-  endif()
-
 endif()
 
 # ------ Linux Tools/Programs
