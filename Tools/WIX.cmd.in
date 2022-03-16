@@ -1,3 +1,12 @@
+rem This file is generated from Tools/WIX.cmd.in, if you want to change it, be aware 
+rem that it will be overwritten. You can edit the template file, and rerun the CMake
+rem to see your changes here.
+rem 
+rem You can set the path to the MERGE_MODULE_NAME and MERGE_MODULE_PATH in the Config.cmake
+rem
+rem You don't need to run this file manually, you can ask CMake to run it for you using 
+rem `cmake --build . --target wix`
+
 rem @echo off
 rem autorun
 setlocal EnableDelayedExpansion
@@ -7,7 +16,7 @@ call "@VC_VARS_PATH@/vcvars64.bat"
 rem ---------------------- Packing -------------------------------
 
 echo Making zip-version of installer
-rem powershell Compress-Archive "@JASP_INSTALL_DIR_NATIVE@/*" "@JASP_BINARY_DIR_NATIVE@/JASP/JASP-@JASP_VERSION@.zip"
+rem powershell Compress-Archive "@JASP_INSTALL_DIR_NATIVE@\*" "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-@JASP_VERSION@.zip"
 
 echo Melting and Coalescing MSI
 

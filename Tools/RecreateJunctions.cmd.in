@@ -1,3 +1,10 @@
+rem This file is generated from Tools/RecreateJunctions.cmd.in, if you want to change it,
+rem be aware that it will be overwritten. You can edit the template file, and rerun the CMake
+rem to see your changes here.
+rem
+rem You don't need to run this file manually, you can ask CMake to run it for you using 
+rem `cmake --build . --target recreate-junctions`
+
 rem Setting up Visual Studio Environment and R/JASPEngine related stuff
 call "@VC_VARS_PATH@/vcvars64.bat"
 set PATH=@RINSIDE_PATH@/libs/x64;@RCPP_PATH@/libs/x64;@R_BIN_PATH@/x64;%QTVCDIR%;%PATH%
