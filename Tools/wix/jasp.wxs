@@ -95,12 +95,12 @@
 	</Directory>
 
 
-	<!-- <Icon       	Id="JASP.ico" SourceFile="$(var.JASP_SOURCE_DIR)\Desktop\icon.ico" /> -->
+	<Icon       	Id="JASP.ico" SourceFile="$(var.JASP_SOURCE_DIR)\Desktop\icon.ico" />
 	<!-- <Property   	Id="ARPPRODUCTICON" 			Value="JASP.ico" /> -->
 	<!-- <Property       Id="ARPNOMODIFY"                Value="1" /> -->
 
-	<!-- <WixVariable	Id="WixUIDialogBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\wix\installerBackground.png" /> -->
-	<!-- <WixVariable 	Id="WixUIBannerBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\wix\installerBanner.png" /> -->
+	<WixVariable	Id="WixUIDialogBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\wix\installerBackground.png" />
+	<WixVariable 	Id="WixUIBannerBmp" 			Value="$(var.JASP_SOURCE_DIR)\Tools\wix\installerBanner.png" />
 
 	<!-- <Property Id="APPLICATIONFOLDER"					Value="[$(var.Program_Files)][ApplicationFolderName]"	/> -->
 	<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch JASP" 									/>
