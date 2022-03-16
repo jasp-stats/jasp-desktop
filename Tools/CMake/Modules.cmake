@@ -126,12 +126,7 @@ endif()
 
 message(STATUS "Installing Required R Modules...")
 
-add_custom_target(
-  jaspBase
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-          ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
+execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
   COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/writeImage.R
           ${MODULES_BINARY_PATH}/
   COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/zzzWrappers.R
@@ -140,6 +135,13 @@ add_custom_target(
           ${MODULES_BINARY_PATH}/
   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
           ${MODULES_BINARY_PATH}/)
+
+add_custom_target(
+  jaspBase
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+          ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log)
 
 # This happens during the configuration!
 file(

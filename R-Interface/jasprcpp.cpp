@@ -215,7 +215,7 @@ void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * folder
 	
 	std::cout << "RInside created, now about to " << (collectNotRestore ? "collect" :  "recreate") << " Modules junctions in renv-cache" << std::endl;
 	
-	rinside->parseEvalQNT("source('../Modules/symlinkTools.R')");
+	rinside->parseEvalQNT("source('Modules/symlinkTools.R')");
 	
 	rInside["symFolder"] = CSTRING_TO_R_UTF8(folder);
 	
