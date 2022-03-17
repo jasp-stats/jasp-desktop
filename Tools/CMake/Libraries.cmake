@@ -1,5 +1,5 @@
-# Libraries.cmake contains all the necessary logics for finding JASP 
-# required libraries. Here, everything goes through CMake. 
+# Libraries.cmake contains all the necessary logics for finding JASP
+# required libraries. Here, everything goes through CMake.
 #
 #
 # `find_package` uses Find*.cmake files that Conan has generated, and use
@@ -11,7 +11,7 @@
 #
 # On Linux,
 #   - For some reason, CMake has trouble finding the `librt.so`, so I had to force
-#     it a bit; other than that, everything is the same. 
+#     it a bit; other than that, everything is the same.
 #   - Since we can have everything build properly on Linux, all these find_packages
 #     reply on their libraries to have a proper CMake helper file, otherwise they'll
 #     fail, and that's why I'm building the ReadStat for instance.
@@ -21,9 +21,9 @@
 #     because `macdeployqt` cannot deal with it
 #
 # On Windows,
-#   - Conan does the most work, 
+#   - Conan does the most work,
 #   - in addition, I tap into the MSYS2 environment, and grab some files for later
-#     use in R-Interface build. If you ran into a problem, then you probably need 
+#     use in R-Interface build. If you ran into a problem, then you probably need
 #     to set your MINGW_PATH that CMake can navigate its way to it.
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Libraries)
@@ -32,14 +32,14 @@ if(NOT WIN32)
   find_package(PkgConfig REQUIRED)
 endif()
 
-find_package(ZLIB REQUIRED)
-find_package(Iconv REQUIRED)
+find_package(ZLIB 1.2 REQUIRED)
+find_package(Iconv 1.16 REQUIRED)
 
 if(USE_CONAN)
-  find_package(jsoncpp REQUIRED)
+  find_package(jsoncpp 1.9 REQUIRED)
 endif()
 
-find_package(OpenSSL COMPONENTS SSL Crypto)
+find_package(OpenSSL 1.1.1 COMPONENTS SSL Crypto)
 if(NOT OpenSSL_FOUND)
   message(
     FATAL_ERROR
@@ -47,7 +47,7 @@ if(NOT OpenSSL_FOUND)
   )
 endif()
 
-find_package(LibArchive)
+find_package(LibArchive 3.5)
 if((NOT LibArchive_FOUND) AND (NOT WIN32))
   pkg_check_modules(LibArchive IMPORTED_TARGET libarchive)
 
@@ -62,7 +62,7 @@ endif()
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(
-  Boost 1.78.0 REQUIRED
+  Boost 1.78 REQUIRED
   COMPONENTS filesystem
              system
              date_time
@@ -71,7 +71,7 @@ find_package(
 
 if(WINDOWS)
   find_package(
-    Boost 1.78.0 REQUIRED
+    Boost 1.78 REQUIRED
     COMPONENTS nowide
                filesystem
                system
@@ -134,10 +134,8 @@ if(LINUX)
   endif()
 
   message(CHECK_START "Looking for libreadstat.so")
-  find_file(LIBREADSTAT_LIBRARIES
-      libreadstat.so
-      HINTS ${LIBREADSTAT_LIBRARY_DIRS}
-      REQUIRED)
+  find_file(LIBREADSTAT_LIBRARIES libreadstat.so
+            HINTS ${LIBREADSTAT_LIBRARY_DIRS} REQUIRED)
 
   if(EXISTS ${LIBREADSTAT_LIBRARIES})
     message(CHECK_PASS "found")
@@ -151,8 +149,7 @@ if(LINUX)
   endif()
 
   find_package(PkgConfig)
-  pkg_check_modules(_PKGCONFIG_LIB_JSONCPP
-    REQUIRED jsoncpp)
+  pkg_check_modules(_PKGCONFIG_LIB_JSONCPP REQUIRED jsoncpp>=1.9)
 
 endif()
 
@@ -277,8 +274,6 @@ if(WIN32)
         "ReadStat is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
-
-
 
   # MinGW Libraries
 
