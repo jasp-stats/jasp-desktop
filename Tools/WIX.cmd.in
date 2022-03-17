@@ -17,16 +17,15 @@ rem ---------------------- Packing -------------------------------
 
 echo Melting and Coalescing MSI
 
-rem set MERGE_MODULE_NAME=@VC_MERGE_MODULE_NAME@
-rem set MERGE_MODULE_PATH=@VC_TOOLS_REDIST_DIR_VARIABLE@/Redist/MSVC/v143/MergeModules/%MERGE_MODULE_NAME%
-set MERGE_MODULE_PATH="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\v143\MergeModules\Microsoft_VC143_CRT_x64.msm"
+set MERGE_MODULE_NAME=@VC_MERGE_MODULE_NAME@
+set MERGE_MODULE_PATH="@VC_TOOLS_REDIST_DIR_VARIABLE@\Redist\MSVC\v143\MergeModules\%MERGE_MODULE_NAME%"
 
 echo VCToolsRedistDir: @VC_TOOLS_REDIST_DIR_VARIABLE@
 
-copy %MERGE_MODULE_PATH% /Y
+copy %MERGE_MODULE_PATH% . /Y
 "@HEAT_EXECUTABLE_NATIVE@" dir @JASP_INSTALL_DIR_NATIVE@ -cg JASPFiles -gg -scom -sreg -sfrag -srd -dr APPLICATIONFOLDER -var var.JASP_INSTALL_DIR -out JASPFilesFragment.wxs || exit /B 7
 
-copy @JASP_BINARY_DIR_NATIVE@\JASP.wxi /Y
+copy @JASP_BINARY_DIR_NATIVE@\JASP.wxi . /Y
 "@CANDLE_EXECUTABLE_NATIVE@" -arch x64 -dJASP_INSTALL_DIR=@JASP_INSTALL_DIR_NATIVE@  JASPFilesFragment.wxs  || exit /B 8
 
 copy @JASP_SOURCE_DIR_NATIVE@\Tools\wix\JASP.wxs . /Y
