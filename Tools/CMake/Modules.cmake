@@ -66,12 +66,31 @@ message(STATUS "activemodules.h is successfully generated...")
 if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
                                                        JASP_EXTRA_MODULES))
   if(LINUX)
+    
     if(LINUX_LOCAL_BUILD)
-      set(jags_HOME ${R_OPT_PATH}/jags)
-    else()
-      # Flatpak
-      set(jags_HOME /usr)
+      set(jags_HOME /usr/local)
     endif()
+
+    if(FLATPAK_USED)
+      set(jags_HOME /app)
+    endif()
+
+    message(CHECK_START "Looking for libjags.so")
+    find_file(LIBJAGS
+      libjags.so
+      HINTS ${jags_HOME}/lib
+      REQUIRED)
+    if(EXISTS ${LIBJAGS})
+      message(CHECK_PASS "found")
+      message(STATUS "  ${LIBJAGS}")
+    else()
+      message(CHECK_FAIL "not found")
+      message(
+        FATAL_ERROR
+          "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+      )
+    endif()
+
   else()
     # On macOS and Windows jags will live inside R.framework/ or R/
     set(jags_HOME ${R_OPT_PATH}/jags)
@@ -361,7 +380,7 @@ if(INSTALL_R_MODULES)
       # - You can run `make jags-build` or `make jags-install` to just play with JAGS target
       #
 
-      if(NOT EXISTS ${jags_HOME})
+      if((NOT EXISTS ${jags_HOME}) AND (NOT LINUX))
         message(STATUS "Creating ${jags_HOME}")
         make_directory("${jags_HOME}")
       endif()
@@ -439,7 +458,7 @@ if(INSTALL_R_MODULES)
 
         endif()
 
-      else()
+      elseif(APPLE)
 
         # ----- Downloading and Building jags
         if(NOT TARGET jags)
@@ -512,6 +531,11 @@ if(INSTALL_R_MODULES)
           endif()
 
         endif()
+
+      elseif(LINUX)
+
+        # On Linux,
+        #   we only set the jags_HOME to the /usr/local/ or /app in case of FLATPAK
 
       endif()
 

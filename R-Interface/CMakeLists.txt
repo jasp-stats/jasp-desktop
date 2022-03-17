@@ -146,7 +146,7 @@ else()
            jaspResults
            ${PROJECT_SOURCE_DIR}/Common
            ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
-           ${LIBJSONCPP_INCLUDE_DIRS}
+           $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
            # R
            ${R_INCLUDE_PATH}
            ${RCPP_PATH}/include
@@ -163,7 +163,7 @@ else()
            Boost::timer
            Boost::chrono
            # CPM/CMake
-           ${LIBJSONCPP_LINK_LIBRARIES}
+           $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
            $<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
            # R
            ${_LIB_RINSIDE}

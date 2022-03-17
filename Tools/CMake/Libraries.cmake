@@ -125,6 +125,35 @@ if(LINUX)
     message(FATAL_ERROR "librt is required for building libCommon on Linux")
   endif()
 
+  if(FLATPAK_USED)
+    set(LIBREADSTAT_INCLUDE_DIRS /app/include)
+    set(LIBREADSTAT_LIBRARY_DIRS /app/lib)
+  else()
+    set(LIBREADSTAT_INCLUDE_DIRS /usr/local/include)
+    set(LIBREADSTAT_LIBRARY_DIRS /usr/local/lib)
+  endif()
+
+  message(CHECK_START "Looking for libreadstat.so")
+  find_file(LIBREADSTAT_LIBRARIES
+      libreadstat.so
+      HINTS ${LIBREADSTAT_LIBRARY_DIRS}
+      REQUIRED)
+
+  if(EXISTS ${LIBREADSTAT_LIBRARIES})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${LIBREADSTAT_LIBRARIES}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+    )
+  endif()
+
+  find_package(PkgConfig)
+  pkg_check_modules(_PKGCONFIG_LIB_JSONCPP
+    REQUIRED jsoncpp)
+
 endif()
 
 if(APPLE)

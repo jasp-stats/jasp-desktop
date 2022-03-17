@@ -22,7 +22,7 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Dependencies)
 
 add_custom_target(Dependencies)
 
-if(NOT WIN32)
+if(APPLE)
 
   add_dependencies(Dependencies readstat)
 

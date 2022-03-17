@@ -127,7 +127,7 @@ if(INSTALL_R_MODULES)
   add_dependencies(JASP Modules)
 endif()
 
-if(NOT WINDOWS)
+if(APPLE)
   add_dependencies(JASP readstat)
 endif()
 
@@ -140,10 +140,13 @@ endif()
 
 target_include_directories(
   JASP
-  PUBLIC ${LIBREADSTAT_INCLUDE_DIRS}
-         $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_H}>
+  PUBLIC 
          ${PROJECT_SOURCE_DIR}/Common
-         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder)
+         ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+         # ReadStat
+         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
+         $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_H}>
+  )
 
 target_link_libraries(
   JASP
@@ -175,7 +178,7 @@ target_link_libraries(
          OpenSSL::SSL
          OpenSSL::Crypto
          # ReadStat -----------------------------------
-         ${LIBREADSTAT_LIBRARIES}
+         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
          # MinGW's ReadStat
          $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
          # R-Framework --------------------------------
