@@ -242,7 +242,7 @@ sudo apt install boost jsoncpp libarchive autoconf zlib cmake gfortran build-ess
 On Manjaro / Arch
 
 ```
-sudo pacman -Syu boost jsoncpp libarchive cmake zlib libarchive  gcc gcc-gfortran r
+sudo pacman -Syu boost jsoncpp libarchive cmake zlib libarchive make autoconf qt6 gcc gcc-gfortran r
 ```
 
 #### ReadStat and JAGS
