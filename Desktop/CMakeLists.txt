@@ -144,8 +144,10 @@ target_include_directories(
          ${PROJECT_SOURCE_DIR}/Common
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
          # ReadStat
-         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
          $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_H}>
+         $<$<PLATFORM_ID:Windows>:${LIBREADSTAT_INCLUDE_DIRS}>
+         # JSONCPP
+         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
   )
 
 target_link_libraries(
@@ -177,10 +179,12 @@ target_link_libraries(
          Iconv::Iconv
          OpenSSL::SSL
          OpenSSL::Crypto
-         # ReadStat -----------------------------------
-         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
+         # Linux's ReadStat -----------------------------------
+         $<$<PLATFORM_ID:Linux>:${LIBREADSTAT_LIBRARIES}>
          # MinGW's ReadStat
          $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
+         # JSONCPP
+         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
          # R-Framework --------------------------------
          $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 

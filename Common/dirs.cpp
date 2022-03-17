@@ -229,7 +229,8 @@ string Dirs::resourcesDir()
 		dir = exeDir();
 
 #ifdef __APPLE__
-	// if (!boost::filesystem::exists("Makefile"))
+		dir += "/..";
+#elif __linux__
 		dir += "/..";
 #endif
 
