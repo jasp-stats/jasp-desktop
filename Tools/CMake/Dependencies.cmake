@@ -1,17 +1,24 @@
-list(APPEND CMAKE_MESSAGE_CONTEXT Dependencies)
-
+# Dependencies.cmake tries to provide any dependencies that cannot be 
+# installed, or configured using Conan. At the moment, this only includes
+# ReadStat which doesn't have a proper CMake or PkgConfig. 
+#
 # Notes:
 #
 # - FetchContent variables will be lower cased, that's why we have
-#   weird variable names like r_win_exe_POPULATED.
+#   weird variable names readstat_POPULATED.
 # - "CMake 3.22 updated the FindPkgConfig module to allow passing
 #   arbitrary arguments to the pkgconfig executable." This could come handy
 #   later on when dealing with some of the more annoying dependencies
+#
+# On macOS, 
+#   We can cross compiler, so, here I take care that right ARCH and target are set.
+#   I'm not fully trusting this and rather have a native build, but this seems to be
+#   working!
+#
+# On Linux,
+#   We can build for Flatpak, as well as a local build, ...
 
-# Adding caching for CPM, this is going to be useful later that we
-# want to have CI builds on GitHub, see here: https://github.com/cpm-cmake/CPM.cmake/wiki/Caching-with-CPM.cmake-and-ccache-on-GitHub-Actions
-# set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/CPM)
-# set(CPM_USE_LOCAL_PACKAGES ON)
+list(APPEND CMAKE_MESSAGE_CONTEXT Dependencies)
 
 add_custom_target(Dependencies)
 

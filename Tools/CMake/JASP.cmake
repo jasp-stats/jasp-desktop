@@ -1,18 +1,14 @@
-# JASP.cmake Module
+# JASP.cmake sets a lot of JASP parameters, e.g., version. In addition to adding
+# some of the CMake variables, it also add some _global_ definition to the compiler
+# based on the value of those variables, e.g., `-DJASP_DEBUG`.
 #
-# This file provides and sets most of the build options, e.g., GITHUB_PAT.
-# New options should be listed here, unless they are meant to be used
-# directly in the primary CMakeLists.txt file, e.g., USE_CCACHE, RUN_IWYU,
-# INSTALL_R_MODULES, INSTALL_R_REQUIRED_LIBRARIES.
+# 
+# TODOs:
+#   - [ ] Most of these add_definitions should turn into `set_target_definitions`
+#       and link to their appropriate targets later on.
 
 list(APPEND CMAKE_MESSAGE_CONTEXT JASP)
 
-# TODOs:
-#
-# - [ ] Most of these add_definitions should turn into `set_target_definitions`
-#       and link to their appropriate targets later on.
-
-find_package(Git)
 
 if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
 

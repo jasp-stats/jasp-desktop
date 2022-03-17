@@ -1,8 +1,22 @@
-# R/Environment Configurations
+# R.cmake handles the process of downloading, patching, locating and pathing the R
+# instance in different platforms. There is a lot that is going on here, so, if you
+# don't know what you are doing, you might very well start breaking things!
 #
-#   - Assuming that R.framework exists, this set the all the R-related paths
-#   - Install RInside, and Rcpp, and prepare them to be linked to the R-Interface
-
+# The general flow of setting R is as follow:
+#
+#   - Downloading or locating the R instance, e.g., R.framework, 
+#   - Copying the R instance to the build folder, after patching and preparing it (only on Windows and macOS)
+#   - Installing RInside, and Rcpp
+#   - Interpolating all the necessary paths and passing them to the rest of the CMake
+#
+# On macOS,
+#   
+#
+# On Windows,
+#
+#
+# On Linux,
+#
 # Todos:
 #
 # - [ ] Maybe, the entire R.framework prepration should be a target. The advantages
