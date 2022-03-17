@@ -26,11 +26,19 @@ if(NOT WIN32)
   # reconfiguring the entire readstat everytime during build even if
   # it was already built!
 
-  fetchcontent_declare(
-    readstat
-    URL "https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz"
-    URL_HASH
-      SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
+  if(FLATPAK_USED)
+    fetchcontent_declare(
+      readstat
+      SOURCE_DIR "${READSTAT_SOURCE_DIR}"
+      URL_HASH
+        SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
+  else()
+    fetchcontent_declare(
+      readstat
+      URL "https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz"
+      URL_HASH
+        SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
+  endif()
 
   message(CHECK_START "Downloading 'readstat'")
 
@@ -45,12 +53,16 @@ if(NOT WIN32)
 
     message(CHECK_PASS "successful.")
 
-    set(READSTAT_CFLAGS
-        "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
-    )
+    if(APPLE)
+      set(READSTAT_CFLAGS
+          "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+      )
+      set(READSTAT_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
+      set(READSTAT_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
+    else()
+      set(READSTAT_CFLAGS "-g -O2")
+    endif()
     set(READSTAT_CXXFLAGS "${READSTAT_CFLAGS}")
-    set(READSTAT_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
-    set(READSTAT_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
 
     add_custom_command(
       WORKING_DIRECTORY ${readstat_SOURCE_DIR}

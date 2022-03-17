@@ -117,12 +117,15 @@ if(WIN32)
   set(VC_MERGE_MODULE_NAME "Microsoft_VC143_CRT_x64.msm")
   if(MSVC_VERSION GREATER "1930")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
-    set(VC_VARS_PATH "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build")
+    set(VC_VARS_PATH
+        "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build"
+    )
   elseif(MSVC_VERSION GREATER "1920")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCToolsRedistDir%")
-    set(VC_VARS_PATH "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Auxiliary\\Build")
+    set(VC_VARS_PATH
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Auxiliary\\Build"
+    )
   endif()
-
 
 endif()
 
