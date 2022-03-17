@@ -148,6 +148,12 @@ elseif(WIN32)
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBJSONCPP}
             ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBREADSTAT_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_ZLIB_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBICONV_DLL}
+            ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_SHARED}
             ${CMAKE_BINARY_DIR}
     COMMENT "------ Re-installing the dependencies (if necessary)")

@@ -270,6 +270,9 @@ if(WIN32)
           ${MINGW_LIBWINPTHREAD}
           ${MINGW_LIB_BOOST_NOWIDE}
           ${MINGW_LIBJSONCPP}
+          ${MINGW_LIBREADSTAT_DLL}
+          ${MINGW_ZLIB_DLL}
+          ${MINGW_LIBICONV_DLL}
           ${_LIB_R_INTERFACE_SHARED}
     DESTINATION .)
 

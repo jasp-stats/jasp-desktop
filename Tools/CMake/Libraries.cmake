@@ -198,6 +198,59 @@ if(WIN32)
     )
   endif()
 
+  message(CHECK_START "Looking for libreadstat-1.dll")
+  find_file(
+    MINGW_LIBREADSTAT_DLL
+    NAMES libreadstat-1.dll
+    PATHS ${MINGW_PATH}/bin)
+
+  if(EXISTS ${MINGW_PATH})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${MINGW_LIBREADSTAT_DLL}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+    )
+  endif()
+
+  message(CHECK_START "Looking for zlib1.dll")
+  find_file(
+    MINGW_ZLIB_DLL
+    NAMES zlib1.dll
+    PATHS ${MINGW_PATH}/bin)
+
+  if(EXISTS ${MINGW_PATH})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${MINGW_ZLIB_DLL}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+    )
+  endif()
+
+  message(CHECK_START "Looking for libiconv-2.dll")
+  find_file(
+    MINGW_LIBICONV_DLL
+    NAMES libiconv-2.dll
+    PATHS ${MINGW_PATH}/bin)
+
+  if(EXISTS ${MINGW_PATH})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${MINGW_LIBICONV_DLL}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+    )
+  endif()
+
+
+
   # MinGW Libraries
 
   message(CHECK_START "Looking for libgcc_s_seh-1.dll")
