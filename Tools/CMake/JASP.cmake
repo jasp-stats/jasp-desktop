@@ -2,13 +2,12 @@
 # some of the CMake variables, it also add some _global_ definition to the compiler
 # based on the value of those variables, e.g., `-DJASP_DEBUG`.
 #
-# 
+#
 # TODOs:
 #   - [ ] Most of these add_definitions should turn into `set_target_definitions`
 #       and link to their appropriate targets later on.
 
 list(APPEND CMAKE_MESSAGE_CONTEXT JASP)
-
 
 if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
 
@@ -53,14 +52,6 @@ option(JASP_PRINT_ENGINE_MESSAGES
 # set(PRINT_ENGINE_MESSAGES ${JASP_PRINT_ENGINE_MESSAGES})
 
 option(BUILD_MACOSX_BUNDLE "Whether or not building a macOS Bundle" OFF)
-
-# This is being set using the `Sys.setenv()` and later on when
-# we install a module using `{renv}`, the `{credentials}` package
-# knows how to read and use it.
-set(GITHUB_PAT CACHE STRING "GitHub Personal Access Token")
-if(GITHUB_PAT)
-  message(STATUS "GITHUB_PAT is set to ${GITHUB_PAT}")
-endif()
 
 if(NOT R_REPOSITORY)
   set(R_REPOSITORY
