@@ -137,7 +137,7 @@
 	</UI>
 
 	<!-- JASP "license" -->
-	<!-- <WixVariable Id="WixUILicenseRtf" Value="jaspLicense.rtf" /> -->
+	<WixVariable Id="WixUILicenseRtf" Value="$(var.JASP_SOURCE_DIR)\Tools\wix\jaspLicense.rtf" />
 
 
 	<Property Id="WixShellExecTarget" Value="[ExeLocation]" />

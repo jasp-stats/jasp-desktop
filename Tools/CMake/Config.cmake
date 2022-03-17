@@ -1,3 +1,24 @@
+# Config.cmake contains several CMake variables that are being used
+# for configuring the JASP project. In addition, it tries to set 
+# other necessary variables based on users input, or deduct them when 
+# possible.
+#
+# On Linux, 
+#   - `CUSTOM_R_PATH` can be used to setup the CMake project to a custom
+#     R installation instead of the one find in PATH
+#   - `LINUX_LOCAL_BUILD` indicates whether or not, R packages should be
+#     located in the build folder, or the R_HOME. This is useful when you
+#     don't want to pollute your local R installation with JASP's build 
+#     artifacts
+#   - `FLATPAK_USED` indicates whether we are building on Flatpak
+#
+# On macOS,
+#   - You can specifically choose to sign, `SIGN_AT_BUILD_TIME`, and timestamp
+#     your binaries during the build, `TIMESTAMP_AT_BUILD_TIME`. 
+#     - Be aware that often you don't have any other choice, and if you don't
+#       sign your libraries, the build cannot continue because macOS wouldn't
+#       allow your binaries to be called, or be executed.
+
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
 set_property(GLOBAL PROPERTY JOB_POOLS sequential=1)

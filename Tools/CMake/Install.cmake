@@ -166,7 +166,6 @@ if(WIN32)
   set(JASP_INSTALL_MODULEDIR "${JASP_INSTALL_PREFIX}/Modules")
   set(JASP_INSTALL_DOCDIR "${JASP_INSTALL_RESOURCEDIR}")
 
-  
   if(MSVC AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
     set(CMAKE_INSTALL_DEBUG_LIBRARIES ON)
   endif()
@@ -178,10 +177,8 @@ if(WIN32)
            DESTINATION .)
 
   install(TARGETS JASP JASPEngine
-    RUNTIME_DEPENDENCY_SET JASP_DEPENDENCIES
      RUNTIME DESTINATION .
     )
-  message(STATUS ${JASP_DEPENDENCIES})
 
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -213,8 +210,8 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/RecreateJunctions.cmd.in
     ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
 
-  # configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/WIX.cmake.in
-  #   ${CMAKE_BINARY_DIR}/WIX.cmake @ONLY)
+  execute_process(WORKING_DIRECTORY ${JASP_INSTALL_PREFIX}
+    COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_INSTALL_PREFIX}/junctions-recreated-successfully.log")
 
   install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.win.cmake)
 
@@ -250,13 +247,22 @@ if(WIN32)
 
   install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/ DESTINATION Resources)
 
-  install(FILES ${CMAKE_SOURCE_DIR}/Desktop/icon.ico DESTINATION .)
+  install(FILES 
+    ${CMAKE_SOURCE_DIR}/Desktop/icon.ico
+    DESTINATION .)
 
   install(
     DIRECTORY ${CMAKE_BINARY_DIR}/Modules/renv-cache
     DESTINATION Modules/
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+
+  install(FILES 
+    ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
+    ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
+    ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
+    ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
+    DESTINATION Modules/)
 
   install(
     FILES ${MINGW_LIBGCC_S_SEH}

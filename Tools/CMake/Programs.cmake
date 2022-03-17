@@ -1,3 +1,24 @@
+# Program.cmake contains all the logics needed to find all the 
+# necessary software and tools that are being used during the
+# configuration, building, and deployment of JASP.
+#
+# On Linux,
+#   CMake makes sure that the Compiler, etc. exists, and beyond
+#   that we are looking for a few other tools, e.g., gfortran 
+#   that is required for building some of the R packages.
+#
+# On macOS,
+#   Beyond the Xcode, which is being verified by CMake, we are 
+#   expecting two third party tools, `create-dmg` and `parallel`
+#
+# On Windows,
+#   We need to make sure that MinGW and MSYS2 environment exists,
+#   and that we can find it. In addition, we look binaries of 
+#   WIX Toolset.
+#     - If CMake cannot find either of the heat, candle, or light
+#       executable, you can use the `WIX_PATH` variable to nudge
+#       it to the right directory.
+
 list(APPEND CMAKE_MESSAGE_CONTEXT Programs)
 
 # ------ Git

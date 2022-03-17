@@ -281,10 +281,14 @@ restoreJunctions <- function(modulesRoot)
       if(!dir.exists(link) && link != "BH") #It keeps turning up and this is the easiest way of getting rid of it
       {
         # print(paste0("Creating junction '", padToMax(link, 1), "' with one to '", padToMax(renv, 2), "' in '", padToMax(pastePath(c(modulesRoot, module)), 3), "'"))
-        Sys.junction(from=paste0("../",renv), to=link)
+        Sys.junction(from=paste0("..\\",renv), to=link)
       }
     }
+
+    cat(NULL, file=paste0(modulesRoot, "\\..\\junctions-recreated-successfully.log"))
+
   }
+
 }
 
 restoreModulesIfNeeded <- function(jaspFolder)
