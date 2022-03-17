@@ -131,6 +131,13 @@ if(NOT WINDOWS)
   add_dependencies(JASP readstat)
 endif()
 
+if(WIN32)
+  # This is added to the build folder that JASP doesn't try to recreate the
+  # junctions in the build folder, they are there anyway!
+  execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E touch "junctions-recreated-successfully.log")
+endif()
+
 target_include_directories(
   JASP
   PUBLIC ${LIBREADSTAT_INCLUDE_DIRS}

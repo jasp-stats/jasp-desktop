@@ -130,6 +130,11 @@ int main(int argc, char *argv[])
 		}
 		else if(arg1 == junctionRemoveArg)
 		{
+			std::string junctionsCreationLog("junctions-recreated-successfully.log");
+			boost::filesystem::path	junctionsCreationLogPath = Utils::osPath(junctionsCreationLog);
+			if(exists(junctionsCreationLogPath))
+				remove(junctionsCreationLogPath);
+
 			std::string modulesFolder("Modules");
 			std::cout << "Engine started to remove the Modules folder" << std::endl;
 			boost::filesystem::path	modulesPath	= Utils::osPath(modulesFolder);

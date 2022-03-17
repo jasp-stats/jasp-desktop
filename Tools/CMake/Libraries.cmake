@@ -1,3 +1,31 @@
+# Libraries.cmake contains all the necessary logics for finding JASP 
+# required libraries. Here, everything goes through CMake. 
+#
+#
+# `find_package` uses Find*.cmake files that Conan has generated, and use
+# them to create targets and variables that are pointing to artifacts of a
+# library. CMake targets, e.g., Boost::filesystem, can be used to both include
+# the headers and link libraries, if a library doesn't have a Target, then some
+# helper variables, e.g., LibArchive_INCLUDE_DIRS can be used for including the
+# header files.
+#
+# On Linux,
+#   - For some reason, CMake has trouble finding the `librt.so`, so I had to force
+#     it a bit; other than that, everything is the same. 
+#   - Since we can have everything build properly on Linux, all these find_packages
+#     reply on their libraries to have a proper CMake helper file, otherwise they'll
+#     fail, and that's why I'm building the ReadStat for instance.
+#
+# On macOS,
+#   - I had to look for the `libbrotlicommon.dylib` and provide it to the JASP.app
+#     because `macdeployqt` cannot deal with it
+#
+# On Windows,
+#   - Conan does the most work, 
+#   - in addition, I tap into the MSYS2 environment, and grab some files for later
+#     use in R-Interface build. If you ran into a problem, then you probably need 
+#     to set your MINGW_PATH that CMake can navigate its way to it.
+
 list(APPEND CMAKE_MESSAGE_CONTEXT Libraries)
 
 if(NOT WIN32)
