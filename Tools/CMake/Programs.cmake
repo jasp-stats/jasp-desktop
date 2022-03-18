@@ -1,19 +1,19 @@
-# Program.cmake contains all the logics needed to find all the 
+# Program.cmake contains all the logics needed to find all the
 # necessary software and tools that are being used during the
 # configuration, building, and deployment of JASP.
 #
 # On Linux,
 #   CMake makes sure that the Compiler, etc. exists, and beyond
-#   that we are looking for a few other tools, e.g., gfortran 
+#   that we are looking for a few other tools, e.g., gfortran
 #   that is required for building some of the R packages.
 #
 # On macOS,
-#   Beyond the Xcode, which is being verified by CMake, we are 
+#   Beyond the Xcode, which is being verified by CMake, we are
 #   expecting two third party tools, `create-dmg` and `parallel`
 #
 # On Windows,
 #   We need to make sure that MinGW and MSYS2 environment exists,
-#   and that we can find it. In addition, we look binaries of 
+#   and that we can find it. In addition, we look binaries of
 #   WIX Toolset.
 #     - If CMake cannot find either of the heat, candle, or light
 #       executable, you can use the `WIX_PATH` variable to nudge
@@ -177,26 +177,59 @@ if(WIN32)
     )
   endif()
 
-  set(WIX_PATH
-    ""
-    CACHE PATH "Path to your WIX installation, e.g., C:\\Program Files (x86)\\WiX Toolset v3.11\\bin")
+  message(CHECK_START "Looking for MSYS2")
+  set(RTOOLS_PATH
+      "C:/rtool40"
+      CACHE PATH "Path to rtool40 folder, e.g., C:/rtool40")
+  if(EXISTS ${RTOOLS_PATH})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${RTOOLS_PATH}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "Rtool40 is required for building on some of the R packages, and JASP modules."
+    )
+  endif()
 
-  find_program(HEAT_EXECUTABLE 
+  set(WIX_PATH
+      ""
+      CACHE
+        PATH
+        "Path to your WIX installation, e.g., C:\\Program Files (x86)\\WiX Toolset v3.11\\bin"
+  )
+
+  find_program(
+    HEAT_EXECUTABLE
     NAMES heat.exe
     HINTS ${WIX_PATH})
-  cmake_path(NATIVE_PATH HEAT_EXECUTABLE NORMALIZE HEAT_EXECUTABLE_NATIVE)
+  cmake_path(
+    NATIVE_PATH
+    HEAT_EXECUTABLE
+    NORMALIZE
+    HEAT_EXECUTABLE_NATIVE)
   message(STATUS "  ${HEAT_EXECUTABLE_NATIVE}")
 
-  find_program(CANDLE_EXECUTABLE 
+  find_program(
+    CANDLE_EXECUTABLE
     NAMES candle.exe
     HINTS ${WIX_PATH})
-  cmake_path(NATIVE_PATH CANDLE_EXECUTABLE NORMALIZE CANDLE_EXECUTABLE_NATIVE)
+  cmake_path(
+    NATIVE_PATH
+    CANDLE_EXECUTABLE
+    NORMALIZE
+    CANDLE_EXECUTABLE_NATIVE)
   message(STATUS "  ${CANDLE_EXECUTABLE_NATIVE}")
 
-  find_program(LIGHT_EXECUTABLE 
+  find_program(
+    LIGHT_EXECUTABLE
     NAMES light.exe
     HINTS ${WIX_PATH})
-  cmake_path(NATIVE_PATH LIGHT_EXECUTABLE NORMALIZE LIGHT_EXECUTABLE_NATIVE)
+  cmake_path(
+    NATIVE_PATH
+    LIGHT_EXECUTABLE
+    NORMALIZE
+    LIGHT_EXECUTABLE_NATIVE)
   message(STATUS "  ${LIGHT_EXECUTABLE_NATIVE}")
 
   set(MINGW_C_COMPILER "${MINGW_PATH}/bin/gcc.exe")

@@ -66,7 +66,7 @@ message(STATUS "activemodules.h is successfully generated...")
 if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
                                                        JASP_EXTRA_MODULES))
   if(LINUX)
-    
+
     if(LINUX_LOCAL_BUILD)
       set(jags_HOME /usr/local)
     endif()
@@ -76,10 +76,7 @@ if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
     endif()
 
     message(CHECK_START "Looking for libjags.so")
-    find_file(LIBJAGS
-      libjags.so
-      HINTS ${jags_HOME}/lib
-      REQUIRED)
+    find_file(LIBJAGS libjags.so HINTS ${jags_HOME}/lib REQUIRED)
     if(EXISTS ${LIBJAGS})
       message(CHECK_PASS "found")
       message(STATUS "  ${LIBJAGS}")
@@ -463,21 +460,12 @@ if(INSTALL_R_MODULES)
         # ----- Downloading and Building jags
         if(NOT TARGET jags)
 
-          if(FLATPAK_USED)
-            fetchcontent_declare(
-              jags
-              SOURCE_DIR "${JAGS_SOURCE_DIR}"
-              URL_HASH
-                SHA256=8ac5dd57982bfd7d5f0ee384499d62f3e0bb35b5f1660feb368545f1186371fc
-            )
-          else()
-            fetchcontent_declare(
-              jags
-              URL "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Source/JAGS-4.3.0.tar.gz"
-              URL_HASH
-                SHA256=8ac5dd57982bfd7d5f0ee384499d62f3e0bb35b5f1660feb368545f1186371fc
-            )
-          endif()
+          fetchcontent_declare(
+            jags
+            URL "https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Source/JAGS-4.3.0.tar.gz"
+            URL_HASH
+              SHA256=8ac5dd57982bfd7d5f0ee384499d62f3e0bb35b5f1660feb368545f1186371fc
+          )
 
           message(CHECK_START "Downloading 'jags'")
 
@@ -487,16 +475,12 @@ if(INSTALL_R_MODULES)
 
             message(CHECK_PASS "successful.")
 
-            if(APPLE)
-              set(JAGS_F77_FLAG "F77=${FORTRAN_EXECUTABLE}")
-              set(JAGS_CFLAGS
-                  "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
-              )
-              set(JAGS_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
-              set(JAGS_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
-            else()
-              set(JAGS_CFLAGS "-g -O2")
-            endif()
+            set(JAGS_F77_FLAG "F77=${FORTRAN_EXECUTABLE}")
+            set(JAGS_CFLAGS
+                "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+            )
+            set(JAGS_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
+            set(JAGS_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
             set(JAGS_CXXFLAGS "${JAGS_CFLAGS}")
 
             add_custom_command(
@@ -543,7 +527,8 @@ if(INSTALL_R_MODULES)
       set(jags_LIBRARY_DIRS ${jags_HOME}/lib)
       set(jags_PKG_CONFIG_PATH ${jags_HOME}/lib/pkgconfig/)
 
-      # install-jaspMetaAnalysis.R needs to be reconfigured again
+      # The install-jaspMetaAnalysis.R and/or install-jaspJags.R need to be reconfigured
+      # for jags flags to be included as well
       configure_file(${INSTALL_MODULE_TEMPLATE_FILE}
                      ${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R @ONLY)
 

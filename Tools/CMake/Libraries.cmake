@@ -196,7 +196,7 @@ if(WIN32)
     NAMES libreadstat.dll.a
     PATHS ${MINGW_PATH}/lib)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_LIBREADSTAT_DLL_A})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_LIBREADSTAT_DLL_A}")
   else()
@@ -213,7 +213,7 @@ if(WIN32)
     NAMES readstat.h
     PATHS ${MINGW_PATH}/include)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_LIBREADSTAT_H})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_LIBREADSTAT_H}")
   else()
@@ -230,7 +230,7 @@ if(WIN32)
     NAMES libreadstat-1.dll
     PATHS ${MINGW_PATH}/bin)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_LIBREADSTAT_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_LIBREADSTAT_DLL}")
   else()
@@ -247,7 +247,7 @@ if(WIN32)
     NAMES zlib1.dll
     PATHS ${MINGW_PATH}/bin)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_ZLIB_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_ZLIB_DLL}")
   else()
@@ -264,7 +264,7 @@ if(WIN32)
     NAMES libiconv-2.dll
     PATHS ${MINGW_PATH}/bin)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_LIBICONV_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_LIBICONV_DLL}")
   else()
@@ -283,7 +283,7 @@ if(WIN32)
     NAMES libgcc_s_seh-1.dll
     PATHS ${MINGW_PATH}/bin)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_LIBGCC_S_SEH_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_LIBGCC_S_SEH_DLL}")
   else()
@@ -300,7 +300,7 @@ if(WIN32)
     NAMES libstdc++-6.dll
     PATHS ${MINGW_PATH}/bin)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_LIBSTDCPP_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_LIBSTDCPP_DLL}")
   else()
@@ -317,7 +317,7 @@ if(WIN32)
     NAMES libwinpthread-1.dll
     PATHS ${MINGW_PATH}/bin)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_LIBWINPTHREAD_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_LIBWINPTHREAD_DLL}")
   else()
@@ -334,7 +334,7 @@ if(WIN32)
     NAMES libboost_nowide-mt.dll
     PATHS ${MINGW_PATH}/bin)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_LIB_BOOST_NOWIDE_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_LIB_BOOST_NOWIDE_DLL}")
   else()
@@ -351,7 +351,7 @@ if(WIN32)
     NAMES libjsoncpp-24.dll
     PATHS ${MINGW_PATH}/bin)
 
-  if(EXISTS ${MINGW_PATH})
+  if(EXISTS ${MINGW_LIBJSONCPP_DLL})
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_LIBJSONCPP_DLL}")
   else()

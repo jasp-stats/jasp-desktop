@@ -1,3 +1,24 @@
+# Pack.cmake packages the JASP binary
+#
+# On Windows,
+#   - We have two bundler, WIX and ZIP; and they can be called by their target name
+#       - `cmake --build . --target wix`
+#       - `cmake --build . --target zip`
+#   - In addition, there are two targets for collecting and recreating junctions that
+#     are being called automatically before the creation of WIX,
+#       - `cmake --build . --target recreate-junctions`
+#       - `cmake --build . --target collect-junctions`
+#
+# On macOS,
+#   - We are using the `create-dmg` script to create and design the DMG. You need to
+#     install it before you can configure JASP. You can download it from Homebrew
+#     using `brew install create-dmg`
+#       - `cmake --build . --target dmg`
+#   - You can also apply the binary for notarisation using the `notarise` command
+#       - `cmake --build . --target notarise`
+#   - Following the successful notarisation, you can staple the DMG using the `staple` target
+#       - `cmake --build . --target staple`
+#
 list(APPEND CMAKE_MESSAGE_CONTEXT Pack)
 
 set(CPACK_PACKAGE_NAME "JASP")
@@ -27,35 +48,40 @@ set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
 if(WIN32)
   set(CPACK_GENERATOR "WIX")
 
-  add_custom_target(collect-junctions
+  add_custom_target(
+    collect-junctions
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     BYPRODUCTS "${CMAKE_BINARY_DIR}/junctions.rds"
     COMMAND cmd.exe /C CollectJunctions.cmd
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/")
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/")
 
-  add_custom_target(recreate-junctions
+  add_custom_target(
+    recreate-junctions
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMAND cmd.exe /C RecreateJunctions.cmd)
 
-  add_custom_target(wix
+  add_custom_target(
+    wix
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     DEPENDS "${CMAKE_BINARY_DIR}/junctions.rds"
-    BYPRODUCTS 
-    "${CMAKE_SOURCE_DIR}/JASPFilesFragment.wixobj"
-    "${CMAKE_SOURCE_DIR}/JASP.wixobj"
-    "${CMAKE_SOURCE_DIR}/JASP/JASP.msi"
-    "${CMAKE_SOURCE_DIR}/JASP/JASP.wixpdb"
+    BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASPFilesFragment.wixobj"
+               "${CMAKE_SOURCE_DIR}/JASP.wixobj"
+               "${CMAKE_SOURCE_DIR}/JASP/JASP.msi"
+               "${CMAKE_SOURCE_DIR}/JASP/JASP.wixpdb"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C WIX.cmd)
 
-  add_custom_target(zip
+  add_custom_target(
+    zip
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     DEPENDS "${CMAKE_BINARY_DIR}/junctions.rds"
-    BYPRODUCTS 
-    "${CMAKE_SOURCE_DIR}/JASP/JASP-${JASP_VERSION}.msi"
+    BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASP/JASP-${JASP_VERSION}.msi"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C ZIP.cmd)
 
 endif()

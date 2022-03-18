@@ -85,7 +85,7 @@ target_include_directories(
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
          # ReadStat
          $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_H}>
-         $<$<PLATFORM_ID:Windows>:${LIBREADSTAT_INCLUDE_DIRS}>
+         ${LIBREADSTAT_INCLUDE_DIRS}
          # JSONCPP
          $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>)
 
@@ -118,8 +118,8 @@ target_link_libraries(
          Iconv::Iconv
          OpenSSL::SSL
          OpenSSL::Crypto
-         # Linux's ReadStat -----------------------------------
-         $<$<PLATFORM_ID:Linux>:${LIBREADSTAT_LIBRARIES}>
+         # ReadStat -----------------------------------
+         ${LIBREADSTAT_LIBRARIES}
          # MinGW's ReadStat
          $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_DLL_A}>
          # JSONCPP

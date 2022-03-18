@@ -80,6 +80,7 @@ After this parameters, re-run the CMake and wait until you see the following mes
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.2
     - Qt Creator 7 is in beta, and it has a much better CMake support!
 - [MSYS2](https://www.msys2.org/)
+- [RTools](https://cran.r-project.org/bin/windows/Rtools/rtools40.html)
 - [Conan](https://github.com/conan-io/conan/releases) > 1.45.0
 
 #### Installing Visual Studio
@@ -132,15 +133,6 @@ git clone https://github.com/WizardMac/ReadStat.git
 git checkout tags/v1.1.7
 cd ReadStat
 ./autogen.sh
-./configure
-make -j
-make install
-```
-
-```
-hg clone http://hg.code.sf.net/p/mcmc-jags/code-0
-cd code-0
-autoreconf -fi
 ./configure
 make -j
 make install

@@ -29,6 +29,8 @@
 #   - The install process configure a few Batch files for performing a few tasks, e.g.,
 #     creating WIX installer. Those files need to be configured using the NATIVE directory
 #     paths. Those `cmake_paths` are doing exactly that.
+#   - CMake doesn't copy JASP Modules, `jasp*`, into the install folder, and therefore there
+#     is no need to remove the junction inside the staged folder
 #
 # ------------------------------------------------------------------------------
 # Notes

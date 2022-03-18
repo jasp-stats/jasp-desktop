@@ -1,6 +1,6 @@
-# Dependencies.cmake tries to provide any dependencies that cannot be 
+# Dependencies.cmake tries to provide any dependencies that cannot be
 # installed, or configured using Conan. At the moment, this only includes
-# ReadStat which doesn't have a proper CMake or PkgConfig. 
+# ReadStat which doesn't have a proper CMake or PkgConfig.
 #
 # Notes:
 #
@@ -10,7 +10,7 @@
 #   arbitrary arguments to the pkgconfig executable." This could come handy
 #   later on when dealing with some of the more annoying dependencies
 #
-# On macOS, 
+# On macOS,
 #   We can cross compiler, so, here I take care that right ARCH and target are set.
 #   I'm not fully trusting this and rather have a native build, but this seems to be
 #   working!
@@ -33,19 +33,11 @@ if(APPLE)
   # reconfiguring the entire readstat everytime during build even if
   # it was already built!
 
-  if(FLATPAK_USED)
-    fetchcontent_declare(
-      readstat
-      SOURCE_DIR "${READSTAT_SOURCE_DIR}"
-      URL_HASH
-        SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
-  else()
-    fetchcontent_declare(
-      readstat
-      URL "https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz"
-      URL_HASH
-        SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
-  endif()
+  fetchcontent_declare(
+    readstat
+    URL "https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz"
+    URL_HASH
+      SHA256=400b8e6a5f0f6458227b454785d68beadd8a88870a7745d49def49740e3971a8)
 
   message(CHECK_START "Downloading 'readstat'")
 
@@ -60,15 +52,11 @@ if(APPLE)
 
     message(CHECK_PASS "successful.")
 
-    if(APPLE)
-      set(READSTAT_CFLAGS
-          "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
-      )
-      set(READSTAT_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
-      set(READSTAT_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
-    else()
-      set(READSTAT_CFLAGS "-g -O2")
-    endif()
+    set(READSTAT_CFLAGS
+        "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+    )
+    set(READSTAT_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
+    set(READSTAT_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
     set(READSTAT_CXXFLAGS "${READSTAT_CFLAGS}")
 
     add_custom_command(
