@@ -172,13 +172,10 @@ if(WIN32)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS ON)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${JASP_INSTALL_PREFIX}")
 
-  include (InstallRequiredSystemLibraries)
-  install (PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-           DESTINATION .)
+  include(InstallRequiredSystemLibraries)
+  install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 
-  install(TARGETS JASP JASPEngine
-     RUNTIME DESTINATION .
-    )
+  install(TARGETS JASP JASPEngine RUNTIME DESTINATION .)
 
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -189,55 +186,61 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Deploy.win.cmake.in
                  ${CMAKE_BINARY_DIR}/Deploy.win.cmake @ONLY)
 
-  cmake_path(NATIVE_PATH JASP_SOURCE_DIR NORMALIZE JASP_SOURCE_DIR_NATIVE)
-  cmake_path(NATIVE_PATH JASP_BINARY_DIR NORMALIZE JASP_BINARY_DIR_NATIVE)
-  cmake_path(NATIVE_PATH JASP_INSTALL_PREFIX NORMALIZE JASP_INSTALL_DIR_NATIVE)
+  cmake_path(
+    NATIVE_PATH
+    JASP_SOURCE_DIR
+    NORMALIZE
+    JASP_SOURCE_DIR_NATIVE)
+  cmake_path(
+    NATIVE_PATH
+    JASP_BINARY_DIR
+    NORMALIZE
+    JASP_BINARY_DIR_NATIVE)
+  cmake_path(
+    NATIVE_PATH
+    JASP_INSTALL_PREFIX
+    NORMALIZE
+    JASP_INSTALL_DIR_NATIVE)
+
+  cmake_path(
+    NATIVE_PATH
+    RINSIDE_PATH
+    NORMALIZE
+    RINSIDE_PATH_NATIVE)
+  cmake_path(
+    NATIVE_PATH
+    RCPP_PATH
+    NORMALIZE
+    RCPP_PATH_NATIVE)
+  cmake_path(
+    NATIVE_PATH
+    R_BIN_PATH
+    NORMALIZE
+    R_BIN_PATH_NATIVE)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/JASP.wxi.in
-    ${CMAKE_BINARY_DIR}/JASP.wxi @ONLY)
+                 ${CMAKE_BINARY_DIR}/JASP.wxi @ONLY)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/JASP.wxs
-    ${CMAKE_BINARY_DIR}/JASP.wxs @ONLY)
+                 ${CMAKE_BINARY_DIR}/JASP.wxs @ONLY)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/WIX.cmd.in
-    ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)
+                 ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/ZIP.cmd.in
-    ${CMAKE_BINARY_DIR}/ZIP.cmd @ONLY)
+                 ${CMAKE_BINARY_DIR}/ZIP.cmd @ONLY)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/CollectJunctions.cmd.in
-    ${CMAKE_BINARY_DIR}/CollectJunctions.cmd @ONLY)
+                 ${CMAKE_BINARY_DIR}/CollectJunctions.cmd @ONLY)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/RecreateJunctions.cmd.in
-    ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
+                 ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
 
-  execute_process(WORKING_DIRECTORY ${JASP_INSTALL_PREFIX}
-    COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_INSTALL_PREFIX}/junctions-recreated-successfully.log")
+  execute_process(
+    WORKING_DIRECTORY ${JASP_INSTALL_PREFIX}
+    COMMAND ${CMAKE_COMMAND} -E remove -f
+            "${CMAKE_INSTALL_PREFIX}/junctions-recreated-successfully.log")
 
   install(SCRIPT ${CMAKE_BINARY_DIR}/Deploy.win.cmake)
-
-  # file(GET_RUNTIME_DEPENDENCIES)
-
-  # install(CODE [[
-  # file(GET_RUNTIME_DEPENDENCIES
-  #   EXECUTABLES JASP.exe JASPEngine.exe
-  #   PRE_EXCLUDE_REGEXES
-  #   [[api-ms-win-.*]]
-  #   [[ext-ms-.*]]
-  #   [[kernel32\.dll]]
-  #   POST_EXCLUDE_REGEXES
-  #   [[*./system32/.*\.dll]]
-  #   )
-  # ]])
-
-    # install(RUNTIME_DEPENDENCY_SET JASP_DEPENDENCIES
-    # DESTINATION .
-    # PRE_EXCLUDE_REGEXES
-    # [[api-ms-win-.*]]
-    # [[ext-ms-.*]]
-    # [[kernel32\.dll]]
-    # POST_EXCLUDE_REGEXES
-    # [[*./system32/.*\.dll]])
-
 
   install(
     DIRECTORY ${CMAKE_BINARY_DIR}/R
@@ -247,9 +250,7 @@ if(WIN32)
 
   install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/ DESTINATION Resources)
 
-  install(FILES 
-    ${CMAKE_SOURCE_DIR}/Desktop/icon.ico
-    DESTINATION .)
+  install(FILES ${CMAKE_SOURCE_DIR}/Desktop/icon.ico DESTINATION .)
 
   install(
     DIRECTORY ${CMAKE_BINARY_DIR}/Modules/renv-cache
@@ -257,11 +258,11 @@ if(WIN32)
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
 
-  install(FILES 
-    ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
-    ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
-    ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
-    ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
+  install(
+    FILES ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/writeImage.R
+          ${CMAKE_SOURCE_DIR}/R-Interface/jaspResults/R/zzzWrappers.R
+          ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
+          ${CMAKE_SOURCE_DIR}/R-Interface/R/symlinkTools.R
     DESTINATION Modules/)
 
   install(

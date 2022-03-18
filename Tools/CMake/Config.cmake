@@ -142,12 +142,12 @@ if(WIN32)
       CACHE PATH "Module Merge Name")
   if(MSVC_VERSION GREATER "1930")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
-    set(VC_VARS_PATH
+    set(VC_VARS_PATH_NATIVE
         "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build"
     )
   elseif(MSVC_VERSION GREATER "1920")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCToolsRedistDir%")
-    set(VC_VARS_PATH
+    set(VC_VARS_PATH_NATIVE
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Auxiliary\\Build"
     )
   endif()

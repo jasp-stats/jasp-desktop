@@ -11,7 +11,7 @@ rem @echo off
 rem autorun
 setlocal EnableDelayedExpansion
 
-call "@VC_VARS_PATH@/vcvars64.bat"
+call "@VC_VARS_PATH_NATIVE@\vcvars64.bat"
 
 rem ---------------------- Packing -------------------------------
 

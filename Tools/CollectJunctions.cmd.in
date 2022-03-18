@@ -6,10 +6,10 @@ rem You don't need to run this file manually, you can ask CMake to run it for yo
 rem `cmake --build . --target collect-junctions`
 
 rem Setting up Visual Studio Environment and R/JASPEngine related stuff
-call "@VC_VARS_PATH@/vcvars64.bat"
-set PATH=@RINSIDE_PATH@/libs/x64;@RCPP_PATH@/libs/x64;@R_BIN_PATH@/x64;%QTVCDIR%;%PATH%
-set R_HOME=@R_HOME_PATH@
-set JASPENGINE_LOCATION=@JASP_BINARY_DIR@/JASPEngine.exe
+call "@VC_VARS_PATH_NATIVE@\vcvars64.bat"
+set PATH=@RINSIDE_PATH_NATIVE@\libs\x64;@RCPP_PATH_NATIVE@\libs\x64;@R_BIN_PATH_NATIVE@\x64;%QTVCDIR%;%PATH%
+set R_HOME=@R_HOME_PATH_NATIVE@
+set JASPENGINE_LOCATION=@JASP_BINARY_DIR_NATIVE@\JASPEngine.exe
 
 rem ---------------------- Collecting Junctions ------------------
 
