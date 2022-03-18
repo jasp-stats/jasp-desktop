@@ -50,6 +50,8 @@ option(USE_CONAN "Whether to use CONAN package manager" OFF)
 
 if(APPLE)
 
+  set(USE_CONAN ON)
+
   option(SIGN_AT_BUILD_TIME
          "Whether to sign every library during the configuration and build" ON)
   option(
@@ -189,29 +191,24 @@ endif()
 # I will consider turning this off, and letting Qt does it
 # when everything else worked properly
 
+message(CHECK_START "Looking if its set as an environment variable.")
+set(GITHUB_PAT $ENV{GITHUB_PAT})
+
 if(INSTALL_R_MODULES)
 
-  if(NOT GITHUB_PAT)
-
-    message(STATUS "GITHUB_PAT is not set")
-    message(CHECK_START "Looking if its set as an environment variable.")
-    set(GITHUB_PAT $ENV{GITHUB_PAT})
-
-    if(GITHUB_PAT STREQUAL "")
-      message(CHECK_FAIL "not found")
-      message(
-        FATAL_ERROR
-          "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub."
-      )
-    endif()
-
-    message(CHECK_PASS "found")
-
+  if(GITHUB_PAT STREQUAL "")
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub."
+    )
   endif()
 
-  message(STATUS "  ${GITHUB_PAT}")
+  message(CHECK_PASS "found")
 
 endif()
+
+message(STATUS "GITHUB_PAT: ${GITHUB_PAT}")
 
 if(CCACHE_EXECUTABLE
    AND USE_CCACHE
