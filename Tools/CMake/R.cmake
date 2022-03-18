@@ -4,13 +4,13 @@
 #
 # The general flow of setting R is as follow:
 #
-#   - Downloading or locating the R instance, e.g., R.framework, 
+#   - Downloading or locating the R instance, e.g., R.framework,
 #   - Copying the R instance to the build folder, after patching and preparing it (only on Windows and macOS)
 #   - Installing RInside, and Rcpp
 #   - Interpolating all the necessary paths and passing them to the rest of the CMake
 #
 # On macOS,
-#   
+#
 #
 # On Windows,
 #
@@ -102,7 +102,7 @@ if(APPLE)
       set(R_DOWNLOAD_URL
           "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
       )
-      set(R_PACKAGE_HASH "dad405d4f58349403c4976ba50e944502070b209")
+      set(R_PACKAGE_HASH "4e702650f8967bc388ae31d897a4ae888dd6e89b")
 
     else()
 
