@@ -153,7 +153,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 			}
 
 			std::cout << "Signing the modified library\n";
-			const std::string sign_command = "codesign --force --deep --verbose=4 --timestamp --sign \"Developer ID Application: Bruno Boutin (AWJJ3YVK9B)\" " + path.string();
+			const std::string sign_command = "codesign --force --deep --verbose=4 --timestamp --sign \"" + AppInfo::getSigningIdentity() + "\" " + path.string();
 
 			if (printStuff)
 				std::cout << sign_command << std::endl;

@@ -299,7 +299,8 @@ if(APPLE)
           ${CMAKE_COMMAND} -D
           NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
           -D PATH=${R_HOME_PATH} -D R_HOME_PATH=${R_HOME_PATH} -D
-          R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -D
+          R_DIR_NAME=${R_DIR_NAME} -D
+          SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=1 -D
           CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
           ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
@@ -307,7 +308,7 @@ if(APPLE)
       message(CHECK_START "Patching /bin/exec/R")
       execute_process(
         # COMMAND_ECHO STDOUT
-        ERROR_QUIET OUTPUT_QUIET
+        # ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           bash ${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -320,8 +321,8 @@ if(APPLE)
       message(CHECK_START "Signing '${R_HOME_PATH}/bin/exec/R'")
 
       set(SIGNING_RESULT "timeout")
-      while((${SIGNING_RESULT} STREQUAL "timeout") OR (${SIGNING_RESULT}
-                                                       STREQUAL "1"))
+      while((${SIGNING_RESULT} MATCHES "timeout") OR (${SIGNING_RESULT} STREQUAL
+                                                      "1"))
         execute_process(
           # COMMAND_ECHO STDOUT
           # ERROR_QUIET OUTPUT_QUIET
@@ -329,14 +330,14 @@ if(APPLE)
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
             codesign --force --verbose --deep ${CODESIGN_TIMESTAMP_FLAG} --sign
-            "${APPLE_CODESIGN_IDENTITY}" --options runtime
+            ${APPLE_CODESIGN_IDENTITY} --options runtime
             "${R_HOME_PATH}/bin/exec/R"
           RESULT_VARIABLE SIGNING_RESULT
           OUTPUT_VARIABLE SIGNING_OUTPUT
           ERROR_VARIABLE SIGNING_ERROR)
       endwhile()
 
-      if(NOT (SIGNING_RESULT STREQUAL "timeout"))
+      if(NOT (SIGNING_RESULT MATCHES "timeout"))
         message(CHECK_PASS "successful")
       else()
         message(CHECK_FAIL "unsuccessful")
@@ -447,8 +448,8 @@ if(APPLE)
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
         -D PATH=${R_HOME_PATH}/library/RInside -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -D
-        CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
+        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
     execute_process(
@@ -459,8 +460,8 @@ if(APPLE)
         ${CMAKE_COMMAND} -D
         NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
         -D PATH=${R_HOME_PATH}/library/Rcpp -D R_HOME_PATH=${R_HOME_PATH} -D
-        R_DIR_NAME=${R_DIR_NAME} -D SIGNING=1 -D
-        CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+        R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
+        -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
         ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake)
 
     message(CHECK_PASS "successful.")

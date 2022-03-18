@@ -324,14 +324,13 @@ else()
       # Signing the library
 
       if(${SIGNING})
-        set(APPLE_CODESIGN_IDENTITY
-            "Developer ID Application: Bruno Boutin (AWJJ3YVK9B)")
+        set(APPLE_CODESIGN_IDENTITY "${SIGNING_IDENTITY}")
 
         set(SIGNING_RESULT "timeout")
 
         message(CHECK_START "--- Signing  ${FILE_SHORT_PATH}")
 
-        while(${SIGNING_RESULT} STREQUAL "timeout")
+        while(${SIGNING_RESULT} MATCHES "timeout")
 
           execute_process(
             # COMMAND_ECHO STDOUT
@@ -339,12 +338,12 @@ else()
             TIMEOUT 30
             WORKING_DIRECTORY ${PATH}
             COMMAND codesign --deep --force ${CODESIGN_TIMESTAMP_FLAG} --sign
-                    "${APPLE_CODESIGN_IDENTITY}" --options runtime "${FILE}"
+                    ${APPLE_CODESIGN_IDENTITY} --options runtime "${FILE}"
             RESULT_VARIABLE SIGNING_RESULT
             OUTPUT_VARIABLE SIGNING_OUTPUT)
         endwhile()
 
-        if(NOT (SIGNING_RESULT STREQUAL "timeout"))
+        if(SIGNING_RESULT STREQUAL "0")
           message(CHECK_PASS "successful")
         else()
           message(CHECK_FAIL "unsuccessful")

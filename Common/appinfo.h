@@ -37,6 +37,7 @@ public:
 	static std::string getBuildYear();
 	static std::string getRVersion();
 	static std::string getRDirName();
+	static std::string getSigningIdentity();
 };
 
 #endif // APPINFO_H
