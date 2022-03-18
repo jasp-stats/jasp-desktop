@@ -39,10 +39,6 @@ endif()
 option(USE_CCACHE "Whether to use ccache for build" OFF)
 option(RUN_IWYU "Whether to run Include What You Use" OFF)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
-option(
-  INSTALL_JASP_REQUIRED_LIBRARIES
-  "Indicates whether CMake should take care of the dependencies like 'Boost', 'jsoncpp', etc."
-  ON)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
 option(USE_CONAN "Whether to use CONAN package manager" OFF)
 
@@ -58,8 +54,6 @@ if(APPLE)
     TIMESTAMP_AT_BUILD_TIME
     "Whether to add the timstamp every library during the configuration and build"
     ON)
-
-  set(INSTALL_JASP_REQUIRED_LIBRARIES ON)
 
   if(${SIGN_AT_BUILD_TIME})
     message(STATUS "Signing everything during the configuration and building.")
