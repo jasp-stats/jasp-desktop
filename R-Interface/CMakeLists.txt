@@ -1,3 +1,31 @@
+# This script in fact consists of two scripts. The first part is used for building
+# CMake using the MSYS2 environment on Windows and the second part is a rather normal
+# script that is being included by the main `CMakeLists.txt` and will build the
+# R-Interface on macOS and Linux.
+#
+# On Windows,
+#   - This will be invoked through a direct call of the CMAKE_COMMAND that is set to
+#     generate a "MinGW Makefiles". In addition to the generator, more parameters will
+#     be passed to this file, e.g., CMAKE_C_COMPILER. These parameters are set or deducted
+#     in the Config module. JASP's CMake triggers the R-Interface build during every build
+#     however, it just asks this file whether things need to be recompiled or not, if not
+#     then, it won't recompile things.
+#   - The output library, R-Interface.dll, and some of its artifact will be transfered
+#     to the Build/ directory and linked dynamically to the JASPEngine, etc.
+#   - Boost::nowide, `libboost_nowide`, needs to be linked to the R-Interface, and later on
+#     it needs to be copied to the Build/ and Install/ folder.
+#
+# On Linux/macOS,
+#   Here we are building a static library, and it will be link statically to the rest
+#   of the libraries and executables.
+#
+# -----------------------------------------------------------------------------------
+#
+# Notes
+#   - There are overlap between these two scripts, however I have not got to fully
+#     simplify it, that's maybe for later...
+#
+
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
 if(WIN32)
@@ -134,6 +162,7 @@ if(WIN32)
            WIN32_LEAN_AND_MEAN)
 
 else()
+  # Linux and macOS
 
   file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
   list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
@@ -182,18 +211,6 @@ else()
   if(IWYU_EXECUTABLE AND RUN_IWYU)
     set_target_properties(R-Interface PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
                                                  ${IWYU_EXECUTABLE})
-  endif()
-
-  if(WIN32)
-    target_compile_definitions(
-      R-Interface
-      PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
-             BOOST_USE_WINDOWS_H
-             NOMINMAX
-             WIN32_LEAN_AND_MEAN)
-    # target_compile_options(R-Interface -Og -municode)
-  elseif(LINUX)
-
   endif()
 
 endif()

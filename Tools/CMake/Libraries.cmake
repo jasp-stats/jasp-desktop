@@ -15,6 +15,12 @@
 #   - Since we can have everything build properly on Linux, all these find_packages
 #     reply on their libraries to have a proper CMake helper file, otherwise they'll
 #     fail, and that's why I'm building the ReadStat for instance.
+#     - `jsoncpp` has a decent PkgConfig config file, so, I'm getting everything from there
+#     - `readstat` doesn't provide anything, so, I try to manually find it,
+#       and if I cannot, the configuration fails
+#     - `jags` has a PkgConfig, but I don't necessary use it since I already have
+#       all its path, etc working for other system, I only change the `jags_HOME` to
+#       point to the right place, and then I have everything...
 #
 # On macOS,
 #   - I had to look for the `libbrotlicommon.dylib` and provide it to the JASP.app
@@ -22,9 +28,11 @@
 #
 # On Windows,
 #   - Conan does the most work,
-#   - in addition, I tap into the MSYS2 environment, and grab some files for later
+#   - In addition, I tap into the MSYS2 environment, and grab some files for later
 #     use in R-Interface build. If you ran into a problem, then you probably need
 #     to set your MINGW_PATH that CMake can navigate its way to it.
+#   - Boost::nowide is a library that needs to be linked statically to the executable.
+#     This is not necessary on macOS and Linux.
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Libraries)
 
@@ -179,26 +187,18 @@ if(APPLE)
 
 endif()
 
-# if(NOT WIN32)
-#   pkg_check_modules(
-#     LIBJSONCPP
-#     REQUIRED
-#     IMPORTED_TARGET
-#     jsoncpp)
-# endif()
-
 if(WIN32)
   # ReadStat
 
   message(CHECK_START "Looking for libreadstat.dll.a")
   find_file(
-    MINGW_LIBREADSTAT
+    MINGW_LIBREADSTAT_DLL_A
     NAMES libreadstat.dll.a
     PATHS ${MINGW_PATH}/lib)
 
   if(EXISTS ${MINGW_PATH})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBREADSTAT}")
+    message(STATUS "  ${MINGW_LIBREADSTAT_DLL_A}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -279,13 +279,13 @@ if(WIN32)
 
   message(CHECK_START "Looking for libgcc_s_seh-1.dll")
   find_file(
-    MINGW_LIBGCC_S_SEH
+    MINGW_LIBGCC_S_SEH_DLL
     NAMES libgcc_s_seh-1.dll
     PATHS ${MINGW_PATH}/bin)
 
   if(EXISTS ${MINGW_PATH})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBGCC_S_SEH}")
+    message(STATUS "  ${MINGW_LIBGCC_S_SEH_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -296,13 +296,13 @@ if(WIN32)
 
   message(CHECK_START "Looking for libstdc++-6.dll")
   find_file(
-    MINGW_LIBSTDCPP
+    MINGW_LIBSTDCPP_DLL
     NAMES libstdc++-6.dll
     PATHS ${MINGW_PATH}/bin)
 
   if(EXISTS ${MINGW_PATH})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBSTDCPP}")
+    message(STATUS "  ${MINGW_LIBSTDCPP_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -313,13 +313,13 @@ if(WIN32)
 
   message(CHECK_START "Looking for libwinpthread-1.dll")
   find_file(
-    MINGW_LIBWINPTHREAD
+    MINGW_LIBWINPTHREAD_DLL
     NAMES libwinpthread-1.dll
     PATHS ${MINGW_PATH}/bin)
 
   if(EXISTS ${MINGW_PATH})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBWINPTHREAD}")
+    message(STATUS "  ${MINGW_LIBWINPTHREAD_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -330,13 +330,13 @@ if(WIN32)
 
   message(CHECK_START "Looking for libboost_nowide-mt.dll")
   find_file(
-    MINGW_LIB_BOOST_NOWIDE
+    MINGW_LIB_BOOST_NOWIDE_DLL
     NAMES libboost_nowide-mt.dll
     PATHS ${MINGW_PATH}/bin)
 
   if(EXISTS ${MINGW_PATH})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIB_BOOST_NOWIDE}")
+    message(STATUS "  ${MINGW_LIB_BOOST_NOWIDE_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -347,13 +347,13 @@ if(WIN32)
 
   message(CHECK_START "Looking for libjsoncpp-24.dll")
   find_file(
-    MINGW_LIBJSONCPP
+    MINGW_LIBJSONCPP_DLL
     NAMES libjsoncpp-24.dll
     PATHS ${MINGW_PATH}/bin)
 
   if(EXISTS ${MINGW_PATH})
     message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_LIBJSONCPP}")
+    message(STATUS "  ${MINGW_LIBJSONCPP_DLL}")
   else()
     message(CHECK_FAIL "not found")
     message(

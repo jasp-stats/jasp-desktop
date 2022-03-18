@@ -134,21 +134,20 @@ endif()
 if(WIN32)
   # This is added to the build folder that JASP doesn't try to recreate the
   # junctions in the build folder, they are there anyway!
-  execute_process(WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  execute_process(
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E touch "junctions-recreated-successfully.log")
 endif()
 
 target_include_directories(
   JASP
-  PUBLIC 
-         ${PROJECT_SOURCE_DIR}/Common
+  PUBLIC ${PROJECT_SOURCE_DIR}/Common
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
          # ReadStat
          $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_H}>
          $<$<PLATFORM_ID:Windows>:${LIBREADSTAT_INCLUDE_DIRS}>
          # JSONCPP
-         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
-  )
+         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>)
 
 target_link_libraries(
   JASP
@@ -182,7 +181,7 @@ target_link_libraries(
          # Linux's ReadStat -----------------------------------
          $<$<PLATFORM_ID:Linux>:${LIBREADSTAT_LIBRARIES}>
          # MinGW's ReadStat
-         $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT}>
+         $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_DLL_A}>
          # JSONCPP
          $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
          # R-Framework --------------------------------

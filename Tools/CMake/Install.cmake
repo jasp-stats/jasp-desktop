@@ -204,6 +204,11 @@ if(WIN32)
 
   cmake_path(
     NATIVE_PATH
+    R_HOME_PATH
+    NORMALIZE
+    R_HOME_PATH_NATIVE)
+  cmake_path(
+    NATIVE_PATH
     RINSIDE_PATH
     NORMALIZE
     RINSIDE_PATH_NATIVE)
@@ -266,11 +271,11 @@ if(WIN32)
     DESTINATION Modules/)
 
   install(
-    FILES ${MINGW_LIBGCC_S_SEH}
-          ${MINGW_LIBSTDCPP}
-          ${MINGW_LIBWINPTHREAD}
-          ${MINGW_LIB_BOOST_NOWIDE}
-          ${MINGW_LIBJSONCPP}
+    FILES ${MINGW_LIBGCC_S_SEH_DLL}
+          ${MINGW_LIBSTDCPP_DLL}
+          ${MINGW_LIBWINPTHREAD_DLL}
+          ${MINGW_LIB_BOOST_NOWIDE_DLL}
+          ${MINGW_LIBJSONCPP_DLL}
           ${MINGW_LIBREADSTAT_DLL}
           ${MINGW_ZLIB_DLL}
           ${MINGW_LIBICONV_DLL}

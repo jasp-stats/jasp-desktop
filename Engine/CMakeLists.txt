@@ -46,14 +46,16 @@ target_include_directories(
 if(WIN32)
 
   message(CHECK_START "Setting path to libR-Interface.dll")
-  set(_LIB_R_INTERFACE_SHARED
-      "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll" CACHE STRING "Path to libR-Interface.dll")
-  message(STATUS "  ${_LIB_R_INTERFACE_SHARED}")
+  set(_LIB_R_INTERFACE_DLL
+      "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll"
+      CACHE STRING "Path to libR-Interface.dll")
+  message(STATUS "  ${_LIB_R_INTERFACE_DLL}")
 
   message(CHECK_START "Setting path to libR-Interface.dll.a")
-  set(_LIB_R_INTERFACE_STATIC
-      "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a" CACHE STRING "Path to libR-Interface.dll.a")
-  message(STATUS "  ${_LIB_R_INTERFACE_STATIC}")
+  set(_LIB_R_INTERFACE_STATIC_DLL_A
+      "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a"
+      CACHE STRING "Path to libR-Interface.dll.a")
+  message(STATUS "  ${_LIB_R_INTERFACE_STATIC_DLL_A}")
 
   message(STATUS "libR-Interface will be build if it is missing.")
 
@@ -63,7 +65,7 @@ target_link_libraries(
   JASPEngine
   PUBLIC Common
          #
-         $<$<PLATFORM_ID:Windows>:${_LIB_R_INTERFACE_STATIC}>
+         $<$<PLATFORM_ID:Windows>:${_LIB_R_INTERFACE_STATIC_DLL_A}>
          $<$<NOT:$<PLATFORM_ID:Windows>>:R-Interface>
          # Boost
          Boost::filesystem
@@ -129,8 +131,7 @@ elseif(WIN32)
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
            BOOST_WINDOWS
            NOMINMAX
-           WIN32_LEAN_AND_MEAN
-           )
+           WIN32_LEAN_AND_MEAN)
 
   target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
 
@@ -138,15 +139,15 @@ elseif(WIN32)
   add_custom_command(
     TARGET JASPEngine
     POST_BUILD DEPENDS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBGCC_S_SEH}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBGCC_S_SEH_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBSTDCPP}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBSTDCPP_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBWINPTHREAD}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBWINPTHREAD_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIB_BOOST_NOWIDE}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIB_BOOST_NOWIDE_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBJSONCPP}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBJSONCPP_DLL}
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBREADSTAT_DLL}
             ${CMAKE_BINARY_DIR}
@@ -154,7 +155,7 @@ elseif(WIN32)
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBICONV_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_SHARED}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_DLL}
             ${CMAKE_BINARY_DIR}
     COMMENT "------ Re-installing the dependencies (if necessary)")
 

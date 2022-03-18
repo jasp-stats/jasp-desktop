@@ -1,3 +1,11 @@
+# This will build the Common library
+#
+# On Linux,
+#   - We need to link to the `librt.so`, and for some reason, CMake cannot find it
+#     easily, so, Libraries module tries to find it and provides it to Common here.
+#   - Since we are
+#
+#
 list(APPEND CMAKE_MESSAGE_CONTEXT Common)
 
 configure_file(appinfo.cpp.in appinfo.cpp)
@@ -26,14 +34,13 @@ target_include_directories(
          ${R_HOME_PATH}/include
          ${RCPP_PATH}/include
          #
-         ${LIBJSONCPP_INCLUDE_DIRS}
-         ${Boost_INCLUDE_DIRS})
+         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>)
 
 target_link_libraries(
   Common
   PUBLIC # jsoncpp
          $<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
-         $<$<NOT:$<BOOL:${USE_CONAN}>>:${LIBJSONCPP_LINK_LIBRARIES}>
+         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
          #
          LibArchive::LibArchive
          # Boost
@@ -58,12 +65,6 @@ if(IWYU_EXECUTABLE AND RUN_IWYU)
                                           ${IWYU_EXECUTABLE})
 endif()
 
-# TODOs:
-#
-# - [ ] After confirming these, they can all be rewritten as generator-expressions
-# - [ ] I don't think most of the Boost stuffs have effect here, and they should
-#       probably move into `Dependencies.cmake` where I actually build Boost.
-#
 if(APPLE)
   target_compile_definitions(Common PUBLIC BOOST_INTERPROCESS_SHARED_DIR_FUNC)
 elseif(WIN32)
@@ -72,13 +73,7 @@ elseif(WIN32)
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
            BOOST_WINDOWS
            NOMINMAX
-           WIN32_LEAN_AND_MEAN
-           )
-
-  # TODO: I have no idea what these are. For now, for Windows build, I'm just
-  # translating the Qmake
-  #
-  # target_link_libraries(Common PUBLIC ole32 oleaut32)
+           WIN32_LEAN_AND_MEAN)
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
