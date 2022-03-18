@@ -1,16 +1,40 @@
-# Taking care of the installation process. The `install` stage is where you
-# specify all the files that you want to ship with your software. It's being
-# used as the basis for the `packaging` stage, and on Linux it can be used
-# directly to install on `/usr/local/`, etc.
+# Install.cmake takes care of the installation process.
+# The `install` stage is where you specify all the files that you want to ship
+# with your software. It's being used as the basis for the `packaging` stage,
+# and on Linux it can be used directly to install on `/usr/local/`, etc.
 #
-# You can run this either by running `make install` or  `cmake --install .`
-# from the build/ directory.
+# You can run this either by running `cmake --build . --target install`
+# from the build/ directory. In addition, you can select the `install` target from
+# the Qt Creator Build setting, and that should triggers the install as well.
 #
-# - On Linux and Flatpak, we can probably just use this, and don't
-# bother with the packaging.
-#       - For linux, the only thing that need to do is to set the
-#         `CMAKE_INSTALL_PREFIX` correctly, something like `/opt/jasp`
-#         and everything will work
+# > Be aware that this creates a folder called "Install" inside your build folder,
+#   unless you specify a different path for it using the `-DCMAKE_INSTALL_PREFIX`
+#
+#
+# On macOS,
+#   - Here I hoped that CMake can create the `JASP.app` but that was quite problematic
+#     since the whole bundle should behave and with R.framework in there, we had no
+#     chance; so, instead, I'm setting up a proper directory structure and copy everything
+#   - Since `macdeployqt` is a mess, I need to perform some extra cleanup at the end. This
+#     is done by `Cleaner.sh` and removes a few debugger artifacts, and left over files
+#
+# On Linux,
+#   - Generally, I don't expect anyone to trigger the install unless it's us trying to
+#     install on Flatpak. So, the install script is very bare and I'm trusting Linux to
+#     handle most of the heavy lifting.
+#
+# On Windows,
+#   - In addition to the normal installation process, we need to install some of the
+#     MinGW libraries. They can all be found with `MINGW_*_DLL` pattern.
+#   - The install process configure a few Batch files for performing a few tasks, e.g.,
+#     creating WIX installer. Those files need to be configured using the NATIVE directory
+#     paths. Those `cmake_paths` are doing exactly that.
+#
+# ------------------------------------------------------------------------------
+# Notes
+#   - There are quite some overlaps between the install stage in different OSes, but
+#     for now, I would like to keep it like this for debugging, when the build is
+#     stable I can start removing the redundancies.
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Install)
 
@@ -25,7 +49,7 @@ set(FOLDERS_EXCLUDE_PATTERN
 # See here, http://cmake.org/cmake/help/v3.22/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html
 # I'm still experimenting with the install sequence, I would like to have a
 # staging installation without messing up users' preference if it's defined
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND (NOT LINUX))
   set(CMAKE_INSTALL_PREFIX
       "${CMAKE_BINARY_DIR}/Install"
       CACHE STRING "Directory to install JASP after building" FORCE)

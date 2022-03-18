@@ -1,3 +1,12 @@
+# Configuring and building the JASPEngine. To build JASPEngine we need the R-Interface, and
+# the `add_dependencies` takes care of this dependency, however, there is a subtle difference
+# between how it works on Windows compared to other OSes. On Windwos, R-Interface is a
+# custom target, while on other OSes its a target defined by `add_library`.
+#
+# On Windows,
+#   - We need to manually link to the R-Interface.dll.a and also place the R-Interface.dll
+#     inside the build folder.
+#
 list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
 
 if(LINUX)
@@ -12,26 +21,6 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 add_executable(JASPEngine ${HEADER_FILES} ${SOURCE_FILES})
 
-# add_custom_command(
-#   TARGET JASPEngine
-#   POST_BUILD
-#   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-#   DEPENDS
-#   ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-#   ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
-#   ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-#   COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/writeImage.R
-#           ${MODULES_BINARY_PATH}/
-#   COMMAND ${CMAKE_COMMAND} -E copy_if_different jaspResults/R/zzzWrappers.R
-#           ${MODULES_BINARY_PATH}/
-#   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
-#           ${MODULES_BINARY_PATH}/
-#   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
-#           ${MODULES_BINARY_PATH}/)
-
-# Note that on WIN32 this is going to invoke the external build of
-# the R-Interface. So, while I'm using the same name for these targets
-# they are not 100% the same!
 add_dependencies(JASPEngine R-Interface jaspBase)
 
 target_include_directories(
@@ -76,10 +65,6 @@ target_link_libraries(
          #
          LibArchive::LibArchive)
 
-if(WINDOWS)
-  target_link_libraries(JASPEngine PUBLIC Boost::nowide)
-endif()
-
 if(IWYU_EXECUTABLE AND RUN_IWYU)
   set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
                                               ${IWYU_EXECUTABLE})
@@ -95,37 +80,13 @@ set(MACOSX_BUNDLE_DIR
 set(MACOSX_BUNDLE_RUNTIME_DIR "${MACOSX_BUNDLE_DIR}/MacOS")
 set(MACOSX_BUNDLE_RESOURCE_DIR "${MACOSX_BUNDLE_DIR}/Resources")
 
-# This does the job, but I'm not sure if that's the right way of doing it. I'm
-# still asking around to see how to do this correctly. The side-effect of doing
-# it post build like this is that Xcode loses control, and therefore cannot sign
-# the binary properly
-if(CMAKE_GENERATOR STREQUAL "Xcode")
-  # add_custom_command(TARGET JASPEngine POST_BUILD COMMAND cp
-  # ${CMAKE_CURRENT_BINARY_DIR}/Debug/JASPEngine ${MACOSX_BUNDLE_RUNTIME_DIR}
-  # COMMENT "       [JASP]: Placing the Engine into the MacOS folder...")
+# Putting the JASPEngine next to the JASP executable
+set_target_properties(JASPEngine PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                                            ${CMAKE_BINARY_DIR}/Desktop)
 
-  # I don't think this works
-  # set_property(SOURCE JASPEngine PROPERTY MACOSX_PACKAGE_LOCATION "MacOS")
+if(WINDOWS)
+  target_link_libraries(JASPEngine PUBLIC Boost::nowide)
 
-  # set_target_properties(JASPEngine PROPERTIES MACOSX_PACKAGE_LOCATION "MacOS")
-
-else()
-
-  set_target_properties(JASPEngine PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                                              ${CMAKE_BINARY_DIR}/Desktop)
-endif()
-
-if(APPLE)
-  # Amir: There are some compiler messages that I left out for now
-
-  # target_compile_options(
-  #   JASPEngine
-  #   PUBLIC -Wno-unused-parameter -Wno-unused-local-typedef
-  #          -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi
-  #          -stdlib=libc++)
-
-  # target_compile_definitions(JASPEngine PUBLIC )
-elseif(WIN32)
   target_compile_definitions(
     JASPEngine
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
@@ -158,12 +119,6 @@ elseif(WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_DLL}
             ${CMAKE_BINARY_DIR}
     COMMENT "------ Re-installing the dependencies (if necessary)")
-
-elseif(LINUX)
-
-  # target_link_options(JASPEngine
-  # PUBLIC rt)
-  # target_link_libraries(JASPEngine PUBLIC "-lrt")
 
 endif()
 

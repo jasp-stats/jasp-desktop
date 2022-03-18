@@ -68,14 +68,19 @@ include(Conan)
 
 # ------ JASP Config
 
+# Looking for programs, e.g., git, bison, flex
 include(Programs)
 
+# Looking for libraries, e.g., Boost, Qt
 include(Libraries)
 
+# Preparing irregular dependencies, e.g., ReadStat
 include(Dependencies)
 
+# Setting JASP's parameters, e.g., JASP_VERSION
 include(JASP)
 
+# Preparing R environment, and setting R_HOME_PATH
 include(R)
 
 # These tell Qt to do its things
@@ -100,9 +105,9 @@ add_subdirectory(Common)
 if(NOT WIN32)
   add_subdirectory(R-Interface)
 else()
-  # Building R-Interface with MinGW configuration
-  # Note that the reason I'm not directly building into the main BINARY_DIR
-  # is because CMake artifacts will conflicts in that case.
+  # Building R-Interface with MinGW configuration, see R-Interface/CMakeLists.txt
+  # for more info. Note that the build path is set to be inside the JASP's build
+  # folder, e.g. jasp-desktop-build-dir/R-Interface
   add_custom_target(
     R-Interface
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
@@ -119,9 +124,6 @@ else()
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
     COMMENT "------ Configuring and Building the libR-Interface")
 
-  # add_custom_target(R-Interface DEPENDS
-  #   ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
-  #   ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a)
 endif()
 
 add_subdirectory(Engine)
@@ -135,7 +137,7 @@ endif()
 # Builds, installs and configures JASP Modules
 include(Modules)
 
-# Installs the JASP and JASPEngine
+# Install logic, usually staging a deploy-able JASP in Build/Install/ folder
 include(Install)
 
 # Packs and creates installer executable for Windows, and macOS

@@ -1,12 +1,28 @@
+# Configures and builds JASP executable.
+#
+# Notes:
+#   - There are way too many Qt libraries are linked, some are not necessary; however,
+#     this is because `qtdeployqt` is not doing a great job at collecting and deploying
+#     all the necessary libraries. So, if I don't include some of those, the deployment
+#     process fails to create a proper package!
+#   - We can either add the resources using the `.qrc` files, or ask CMake to
+#     build them for us based on the directory that they are in. This can be
+#     simplified with some GLOBing, then we can just create a new files, and
+#     don't worry about keeping the `.qrc` files up-to-date. Alternatively, we can
+#     maintain the QRC files and add them like this.
+#
+#     set(RESOURCE_FILES
+#         html/html.qrc
+#         resources/icons.qrc
+#         resources/resources.qrc
+#         qml.qrc)
+#
 list(APPEND CMAKE_MESSAGE_CONTEXT Desktop)
 
 if(APPLE)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in
                  ${CMAKE_BINARY_DIR}/Info.plist)
 endif()
-
-# We can technically use these two lines to grab all *.h, and *.cpp files
-# but it think there are unused files.
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h.in
                ${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h)
@@ -22,106 +38,30 @@ list(REMOVE_ITEM SOURCE_FILES
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
 
-# NOTE:
-#   The resources has to be added and managed before the creation of the
-#   JASP target
-if((CMAKE_GENERATOR STREQUAL "Xcode") OR ${BUILD_MACOSX_BUNDLE})
+qt_add_executable(
+  JASP
+  ${SYSTEM_TYPE}
+  ${HEADER_FILES}
+  ${SOURCE_FILES}
+  ${BUNDLE_RESOURCES}
+  $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 
-  # -- Resources -----------------
-  #
-  # This is a handy little for-loop from here, https://stackoverflow.com/a/66401708/1141307,
-  # which keeps all the resource files into the Resources folder while
-  # keeping their relative path. So, I don't have to group them manually, and
-  # ndividually set the file's path properties.
-  foreach(FILE ${BUNDLE_RESOURCES})
-    # Get the relative path from the Resources to the particular file.
-    file(
-      RELATIVE_PATH
-      NEW_FILE
-      "${CMAKE_SOURCE_DIR}/Resources"
-      ${FILE})
-
-    # Get the relative path to the file.
-    get_filename_component(NEW_FILE_PATH ${NEW_FILE} DIRECTORY)
-
-    # Set it's location inside the app package (under Resources).
-    set_property(SOURCE ${FILE} PROPERTY MACOSX_PACKAGE_LOCATION
-                                         "Resources/${NEW_FILE_PATH}")
-
-    # Add the file to the 'Resources' folder group in Xcode. This also preserves folder structure.
-    source_group("Resources/${NEW_FILE_PATH}" FILES "${FILE}")
-  endforeach()
-
-  qt_add_executable(
-    JASP
-    MACOSX_BUNDLE
-    #
-    ${HEADER_FILES}
-    ${SOURCE_FILES}
-    ${_R_Framework}
-    #
-    ${BUNDLE_RESOURCES})
-
-  # When creating an App Bundle, we cannot simply copy paste the
-  # Framework into the Bundle, we can embed it, and that sort of
-  # works, but not really. It's only at the Archive stage that
-  # Xcode decides to copy it, but I don't know who that will look
-  # like because I cannot get it working properly.
-  set_target_properties(
-    JASP
-    PROPERTIES XCODE_EMBED_FRAMEWORKS ${_R_Framework}
-               XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY OFF
-               XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY OFF)
-
-  # ------------------------------
-
-  set_target_properties(
-    JASP
-    PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
-               MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-               MACOSX_BUNDLE_SHORT_VERSION_STRING
-               "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
-               MACOSX_BUNDLE_GUI_IDENTIFIER "org.jasp-stats.jasp"
-               MACOSX_BUNDLE_ICON_FILE
-               "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
-               MACOSX_BUNDLE_COPYRIGHT "© JASP Team"
-               MACOSX_BUNDLE_INFO_PLIST
-               "${CMAKE_SOURCE_DIR}/Tools/macOS/Info.plist.in")
-
-else()
-
-  qt_add_executable(
-    JASP
-    ${SYSTEM_TYPE}
-    ${HEADER_FILES}
-    ${SOURCE_FILES}
-    ${BUNDLE_RESOURCES}
-    $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
-    $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
-
-  if(IWYU_EXECUTABLE AND RUN_IWYU)
-    set_target_properties(JASP PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
-                                          ${IWYU_EXECUTABLE})
-  endif()
-
-  add_custom_command(
-    TARGET JASP
-    POST_BUILD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_directory Resources/
-            ${CMAKE_BINARY_DIR}/Resources
-    BYPRODUCTS ${CMAKE_BINARY_DIR}/Resources
-    COMMENT "------ Updating the Resources")
-
+if(IWYU_EXECUTABLE AND RUN_IWYU)
+  set_target_properties(JASP PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
+                                        ${IWYU_EXECUTABLE})
 endif()
+
+add_custom_command(
+  TARGET JASP
+  POST_BUILD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_directory Resources/
+          ${CMAKE_BINARY_DIR}/Resources
+  BYPRODUCTS ${CMAKE_BINARY_DIR}/Resources
+  COMMENT "------ Updating the Resources")
 
 add_dependencies(JASP JASPEngine)
-
-target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
-
-if(NOT WIN32)
-  target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
-endif()
 
 if(INSTALL_R_MODULES)
   add_dependencies(JASP Modules)
@@ -131,7 +71,7 @@ if(APPLE)
   add_dependencies(JASP readstat)
 endif()
 
-if(WIN32)
+if(WINDOWS)
   # This is added to the build folder that JASP doesn't try to recreate the
   # junctions in the build folder, they are there anyway!
   execute_process(
@@ -187,7 +127,11 @@ target_link_libraries(
          # R-Framework --------------------------------
          $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 
+target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
+
 if(NOT WINDOWS)
+  target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
+
   target_link_libraries(
     JASP
     PUBLIC
@@ -195,33 +139,15 @@ if(NOT WINDOWS)
       ${Iconv_LIBRARY_LIST})
 endif()
 
-# Amir: All these single if's can be written using the
-#       generator expressions but since debugging those
-#       isn't trivial, I don't want to do it now
-if(LINUX_LOCAL_BUILD)
-  target_compile_definitions(JASP PUBLIC LINUX_LOCAL_BUILD)
+if(LINUX)
+  if(LINUX_LOCAL_BUILD)
+    target_compile_definitions(JASP PUBLIC LINUX_LOCAL_BUILD)
+  endif()
+
+  if(FLATPAK_USED)
+    target_compile_definitions(JASP PUBLIC FLATPAK_USED)
+  endif()
 endif()
-
-if(FLATPAK_USED)
-  target_compile_definitions(JASP PUBLIC FLATPAK_USED)
-endif()
-
-# if(WIN32)
-#   target_link_options(JASP PUBLIC libreadstat)
-# endif()
-
-# Amir:
-# We can either add the resources using the `.qrc` files, or ask CMake to
-# build them for us based on the directory that they are in. This can be
-# simplified with some GLOBing, then we can just create a new files, and
-# don't worry about keeping the `.qrc` files up-to-date.
-# Alternatively, we can maintain the QRC files and add them like this,
-#    set(RESOURCE_FILES
-#        html/html.qrc
-#        resources/icons.qrc
-#        resources/resources.qrc
-#        qml.qrc
-#    )
 
 file(GLOB_RECURSE HTML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/html/*")
 qt_add_resources(

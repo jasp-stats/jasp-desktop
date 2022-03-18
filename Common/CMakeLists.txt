@@ -3,7 +3,7 @@
 # On Linux,
 #   - We need to link to the `librt.so`, and for some reason, CMake cannot find it
 #     easily, so, Libraries module tries to find it and provides it to Common here.
-#   - Since we are
+#   - Since we are not using Conan, I link to the libjsoncpp, using the PkgConfig variables
 #
 #
 list(APPEND CMAKE_MESSAGE_CONTEXT Common)
@@ -52,28 +52,26 @@ target_link_libraries(
          #
          $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
-if(WINDOWS)
-  target_link_libraries(Common PUBLIC Boost::nowide)
-endif()
-
 target_compile_definitions(
   Common PUBLIC $<$<BOOL:${JASP_USES_QT_HERE}>:JASP_USES_QT_HERE>
                 $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>)
 
-if(IWYU_EXECUTABLE AND RUN_IWYU)
-  set_target_properties(Common PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
-                                          ${IWYU_EXECUTABLE})
-endif()
-
 if(APPLE)
   target_compile_definitions(Common PUBLIC BOOST_INTERPROCESS_SHARED_DIR_FUNC)
-elseif(WIN32)
+elseif(WINDOWS)
+  target_link_libraries(Common PUBLIC Boost::nowide)
+
   target_compile_definitions(
     Common
     PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
            BOOST_WINDOWS
            NOMINMAX
            WIN32_LEAN_AND_MEAN)
+endif()
+
+if(IWYU_EXECUTABLE AND RUN_IWYU)
+  set_target_properties(Common PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
+                                          ${IWYU_EXECUTABLE})
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
