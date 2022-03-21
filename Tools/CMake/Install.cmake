@@ -128,11 +128,14 @@ if(APPLE)
 
   install(SCRIPT ${CMAKE_BINARY_DIR}/Sign.cmake)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/nightlies.plist.in
-                 ${CMAKE_BINARY_DIR}/nightlies.plist @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Upload.sh.in
+                 ${CMAKE_BINARY_DIR}/Upload.sh @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/nightlies.sh.in
-                 ${CMAKE_BINARY_DIR}/nightlies.sh @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Nightlies.plist.in
+                 ${CMAKE_BINARY_DIR}/Nightlies.plist @ONLY)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Nightlies.sh.in
+                 ${CMAKE_BINARY_DIR}/Nightlies.sh @ONLY)
 
 endif()
 
@@ -271,6 +274,9 @@ if(WIN32)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/RecreateJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/Upload.cmd.in
+                 ${CMAKE_BINARY_DIR}/Upload.cmd @ONLY)
 
   execute_process(
     WORKING_DIRECTORY ${JASP_INSTALL_PREFIX}

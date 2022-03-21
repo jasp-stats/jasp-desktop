@@ -84,6 +84,11 @@ if(WIN32)
             "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C ZIP.cmd)
 
+  add_custom_target(
+    upload
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND cmd.exe /C Upload.cmd)
+
 endif()
 
 set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/wix/jaspLicense.rtf")
@@ -157,6 +162,11 @@ if(APPLE)
     staple
     COMMAND xcrun stapler staple "JASP/${CPACK_DMG_VOLUME_NAME}"
     COMMENT "Stapling the JASP/${CPACK_DMG_VOLUME_NAME}")
+
+  add_custom_target(
+    upload
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND Upload.sh)
 
 endif()
 

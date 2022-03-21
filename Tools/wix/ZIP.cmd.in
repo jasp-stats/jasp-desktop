@@ -12,6 +12,6 @@ setlocal EnableDelayedExpansion
 rem ---------------------- Packing -------------------------------
 
 echo Making zip-version of installer
-powershell Compress-Archive -Update "@JASP_INSTALL_DIR_NATIVE@\*" "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-@JASP_VERSION@.zip"
+powershell Compress-Archive -Update "@JASP_INSTALL_DIR_NATIVE@\*" "@JASP_BINARY_DIR_NATIVE@\JASP\JASP.zip"
 
 endlocal
