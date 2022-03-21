@@ -254,16 +254,16 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/JASP.wxs
                  ${CMAKE_BINARY_DIR}/JASP.wxs @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/WIX.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/WIX.cmd.in
                  ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/ZIP.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/ZIP.cmd.in
                  ${CMAKE_BINARY_DIR}/ZIP.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/CollectJunctions.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/CollectJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/CollectJunctions.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/RecreateJunctions.cmd.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/RecreateJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
 
   execute_process(
