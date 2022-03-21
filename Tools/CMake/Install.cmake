@@ -128,6 +128,12 @@ if(APPLE)
 
   install(SCRIPT ${CMAKE_BINARY_DIR}/Sign.cmake)
 
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/nightlies.plist.in
+                 ${CMAKE_BINARY_DIR}/nightlies.plist @ONLY)
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/nightlies.sh.in
+                 ${CMAKE_BINARY_DIR}/nightlies.sh @ONLY)
+
 endif()
 
 # ---- Linux / Flatpak
