@@ -63,7 +63,12 @@ const Settings::Setting Settings::Values[] = {
 	{"maxEngineCount",				4}, //In debug always 1
 	{"GITHUB_PAT_Custom",			"" },
 	{"GITHUB_PAT_UseDefault",		true},
-	{"WindowsNoBomNative",			false} //false as default because then we keep the behaviour we had before. 
+	{"WindowsNoBomNative",			false}, //false as default because then we keep the behaviour we had before.
+	{"dbImportDbType",				0},
+	{"dbImportDbName",				""},
+	{"dbImportHostName",			""},
+	{"dbImportUserName",			""},
+	{"dbImportPassword"				""}
 };
 
 QVariant Settings::value(Settings::Type key)

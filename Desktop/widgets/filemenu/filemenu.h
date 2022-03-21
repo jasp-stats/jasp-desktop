@@ -28,6 +28,7 @@
 #include "widgets/filemenu/currentdatafile.h"
 #include "widgets/filemenu/computer.h"
 #include "widgets/filemenu/osf.h"
+#include "widgets/filemenu/database.h"
 #include "widgets/filemenu/datalibrary.h"
 
 #include "data/fileevent.h"
@@ -40,18 +41,20 @@ class DataSetPackage;
 
 class FileMenu : public QObject
 {
+	typedef ActionButtons::FileOperation FileOperation;
 	Q_OBJECT
 
-	Q_PROPERTY(ActionButtons::FileOperation fileoperation		READ fileoperation				WRITE setFileoperation				NOTIFY fileoperationChanged		)
-	Q_PROPERTY(DataLibrary *  datalibrary						READ datalibrary													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(CurrentDataFile * currentFile					READ currentFile													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(RecentFiles * recentFiles						READ recentFiles													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(Computer * computer								READ computer														NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(OSF * osf										READ osf															NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(bool visible										READ visible					WRITE setVisible					NOTIFY visibleChanged			)
-	Q_PROPERTY(ActionButtons * actionButtons					READ actionButtons													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(ResourceButtons * resourceButtons				READ resourceButtons												NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(ResourceButtonsVisible * resourceButtonsVisible	READ resourceButtonsVisible											NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(FileOperation				fileoperation			READ fileoperation				WRITE setFileoperation				NOTIFY fileoperationChanged		)
+	Q_PROPERTY(DataLibrary				*	datalibrary				READ datalibrary													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(CurrentDataFile			*	currentFile				READ currentFile													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(RecentFiles				*	recentFiles				READ recentFiles													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(Computer					*	computer				READ computer														NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(OSF						*	osf						READ osf															NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(Database					*	database				READ database														NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(bool							visible					READ visible					WRITE setVisible					NOTIFY visibleChanged			)
+	Q_PROPERTY(ActionButtons			*	actionButtons			READ actionButtons													NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(ResourceButtons			*	resourceButtons			READ resourceButtons												NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(ResourceButtonsVisible	*	resourceButtonsVisible	READ resourceButtonsVisible											NOTIFY dummyChangedNotifier		)
 
 public:
 
@@ -63,7 +66,7 @@ public:
 	virtual ~FileMenu() {}
 	
 
-	void		setResourceButtonsVisibleFor(ActionButtons::FileOperation fo);
+	void		setResourceButtonsVisibleFor(FileOperation fo);
 
 	void		setOnlineDataManager(OnlineDataManager *odm);
 	FileEvent *	open(const QString &filepath);
@@ -84,12 +87,13 @@ public:
 	void			syncDataFile(const QString& path, bool waitForExistence = false);
 
 
-	ActionButtons::FileOperation		fileoperation()				const	{ return _fileoperation;			}
+	FileOperation						fileoperation()				const	{ return _fileoperation;			}
 	DataLibrary						*	datalibrary()				const	{ return _dataLibrary;				}
 	CurrentDataFile					*	currentFile()				const	{ return _currentDataFile;			}
 	RecentFiles						*	recentFiles()				const	{ return _recentFiles;				}
 	Computer						*	computer()					const	{ return _computer;					}
 	OSF								*	osf()						const	{ return _OSF;						}
+	Database						*	database()					const	{ return _database;					}
 	bool								visible()					const	{ return _visible;					}
 	ActionButtons					*	actionButtons()				const	{ return _actionButtons;			}
 	ResourceButtons					*	resourceButtons()			const	{ return _resourceButtons;			}
@@ -140,6 +144,7 @@ private:
 	RecentFiles					*	_recentFiles				= nullptr;
 	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
+	Database					*	_database					= nullptr;
 	DataLibrary					*	_dataLibrary				= nullptr;
 	ActionButtons				*	_actionButtons				= nullptr;
 	ResourceButtons				*	_resourceButtons			= nullptr;
@@ -151,7 +156,7 @@ private:
 	Utils::FileType					_currentFileType			= Utils::FileType::unknown;
 	bool							_currentFileReadOnly		= false,
 									_visible					= false;
-	ActionButtons::FileOperation	_fileoperation				= ActionButtons::None;
+	FileOperation					_fileoperation				= ActionButtons::None;
 	MainWindow*						_mainWindow					= nullptr;
 };
 

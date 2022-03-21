@@ -287,6 +287,7 @@ void MainWindow::makeConnections()
 
 	qRegisterMetaType<columnType>();
 	qRegisterMetaType<ListModel*>();
+	qRegisterMetaType<DbType>();
 
 	connect(_computedColumnsModel,	&ComputedColumnsModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnsModel::showAnalysisForm,			_analyses,				&Analyses::selectAnalysis									);

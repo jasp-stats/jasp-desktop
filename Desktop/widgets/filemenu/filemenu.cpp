@@ -32,6 +32,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_currentDataFile		= new CurrentDataFile(parent);
 	_computer				= new Computer(parent);
 	_OSF					= new OSF(parent);
+	_database				= new Database(parent);
 	_dataLibrary			= new DataLibrary(parent);
 	_actionButtons			= new ActionButtons(this);
 	_resourceButtons		= new ResourceButtons(this);
@@ -41,6 +42,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	connect(_currentDataFile,	&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
 	connect(_computer,			&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
 	connect(_OSF,				&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
+	connect(_database,			&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
 	connect(_dataLibrary,		&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
 	connect(&_watcher,			&QFileSystemWatcher::fileChanged,			this, &FileMenu::dataFileModifiedHandler);
 	connect(_actionButtons,		&ActionButtons::buttonClicked,				this, &FileMenu::actionButtonClicked	);
