@@ -139,10 +139,10 @@ int main(int argc, char *argv[])
 			std::cout << "Engine started to remove the Modules folder" << std::endl;
 			boost::filesystem::path	modulesPath	= Utils::osPath(modulesFolder);
 			if(exists(modulesPath)) {
-                for(boost::filesystem::directory_entry& entry : boost::filesystem::directory_iterator(modulesPath)) {
-                    if(entry.path().string().find("\\jasp") != std::string::npos)
-                        remove_all(entry);
-                }
+				for(boost::filesystem::directory_entry& entry : boost::filesystem::directory_iterator(modulesPath)) {
+					if(entry.path().string().find("\\jasp") != std::string::npos)
+						remove_all(entry);
+				}
 			}
 			else
 				std::cout << "Error: Could not find the Modules folder" << std::endl;

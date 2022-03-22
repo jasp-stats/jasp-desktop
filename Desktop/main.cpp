@@ -408,7 +408,7 @@ int main(int argc, char *argv[])
 			// Since we introduced renv to JASP the win installer needs to recreate the junctions from Modules -> renv-cache on install. Because they do not support relative paths
 			// For this JASP has the --junctions argument, and is run by JASP-*.msi during install to make sure everything is ready.
 			// However, we also want to support ZIP distributions of jasp, and there is no installer. But the good thing is it also means the user has write access to the main folder. Which means we can fix it now.
-            QFile junctionsCreationLog("junctions-recreated-successfully.log");
+			QFile junctionsCreationLog("junctions-recreated-successfully.log");
 			QFile jaspEngine("JASPEngine.exe");
 						
 			if(jaspEngine.exists() && !junctionsCreationLog.exists())

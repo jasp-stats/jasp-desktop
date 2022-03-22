@@ -53,11 +53,11 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 	std::string jaspModuleName;
 	if (modLibpath.string().find("/Modules/jasp") != std::string::npos) 
 	{
-	    auto modulePlace = modLibpath.string().find("/Modules/") + 9;
-	    auto moduleNameLength = modLibpath.string().find('/', modulePlace);
+		auto modulePlace = modLibpath.string().find("/Modules/") + 9;
+		auto moduleNameLength = modLibpath.string().find('/', modulePlace);
 
-	    jaspModuleName = modLibpath.string().substr(modulePlace, moduleNameLength - modulePlace);
-	    jaspModuleBinaryPath = modLibpath.string().substr(0, modulePlace);
+		jaspModuleName = modLibpath.string().substr(modulePlace, moduleNameLength - modulePlace);
+		jaspModuleBinaryPath = modLibpath.string().substr(0, modulePlace);
 	}
 
 #ifdef __APPLE__
