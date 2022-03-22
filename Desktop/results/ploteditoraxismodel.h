@@ -2,7 +2,7 @@
 #define PLOTEDITORAXISMODEL_H
 
 #include <QAbstractTableModel>
-#include "jsonredirect.h"
+#include <json/json.h>
 #include <vector>
 #include <cmath>
 

@@ -1,7 +1,7 @@
 #ifndef COMPUTEDCOLUMN_H
 #define COMPUTEDCOLUMN_H
 
-#include "jsonredirect.h"
+#include <json/json.h>
 #include <list>
 #include <set>
 

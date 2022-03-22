@@ -16,7 +16,7 @@
 //
 
 #include "rbridge.h"
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "sharedmemory.h"
 #include "appinfo.h"
 #include "tempfiles.h"

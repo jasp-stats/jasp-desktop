@@ -26,7 +26,7 @@
 #include <ios>
 #include "archive.h"
 #include "archive_entry.h"
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "archivereader.h"
 #include "../Common/version.h"
 #include "tempfiles.h"

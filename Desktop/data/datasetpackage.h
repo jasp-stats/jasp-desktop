@@ -26,7 +26,7 @@
 #include "dataset.h"
 #include "../Common/version.h"
 #include <map>
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "computedcolumns.h"
 #include "datasetdefinitions.h"
 

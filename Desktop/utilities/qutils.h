@@ -33,7 +33,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include "jsonredirect.h"
+#include <json/json.h>
 
 /// This file collect a set of useful functions for interop between Qt and stdlib, like `fq` and `tq` for easily converting to and fro normal strings and whatnot
 /// These could have been collected into a class but because we use `fq` and `tq` in so many places that would probably not have made our life easier anyway.

@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 #include "version.h"
-#include "jsonredirect.h"
+#include <json/json.h>
 
 
 namespace Modules

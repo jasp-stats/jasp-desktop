@@ -1,7 +1,7 @@
 #ifndef JSONUTILITIES_H
 #define JSONUTILITIES_H
 
-#include "jsonredirect.h"
+#include <json/json.h>
 #include <string>
 #include <set>
 #include "stringutils.h"

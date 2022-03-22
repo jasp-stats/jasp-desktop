@@ -215,7 +215,4 @@ else()
 
 endif()
 
-# Amir: There are some auxillary files here, and I guess I will take care of
-# them later
-
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

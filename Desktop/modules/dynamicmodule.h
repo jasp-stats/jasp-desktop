@@ -29,7 +29,7 @@
 #include <QFileInfo>
 #include <QDateTime>
 #include <QQmlEngine>
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "analysisentry.h"
 #include "utilities/qutils.h"
 #include "enginedefinitions.h"

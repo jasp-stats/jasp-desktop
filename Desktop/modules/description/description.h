@@ -7,7 +7,7 @@
 
 #include "version.h"
 #include "utilities/qutils.h"
-#include "jsonredirect.h"
+#include <json/json.h>
 
 #include "modules/dynamicmodule.h"
 

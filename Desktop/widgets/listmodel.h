@@ -25,7 +25,7 @@
 #include "common.h"
 #include "analysis/variableinfo.h"
 #include "analysis/terms.h"
-#include "jsonredirect.h"
+#include <json/json.h>
 
 class JASPListControl;
 class RowControls;

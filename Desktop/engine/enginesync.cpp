@@ -27,7 +27,7 @@
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "processinfo.h"
 #include "common.h"
 #include "appinfo.h"

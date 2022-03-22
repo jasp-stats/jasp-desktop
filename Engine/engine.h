@@ -22,7 +22,7 @@
 #include "dataset.h"
 #include "ipcchannel.h"
 #include "processinfo.h"
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "columnencoder.h"
 
 /// The Engine handles communication between Desktop and R
