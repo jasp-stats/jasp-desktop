@@ -188,7 +188,6 @@ protected:
 protected:
 	QAbstractItemModel *									_model = nullptr;
 
-	/// @todo, Amir: these guys, if not initialized, they will crash JASP at start
 	std::vector<QSizeF>										_cellSizes; //[col]
 	std::vector<double>										_colXPositions; //[col][row]
 	std::vector<double>										_dataColsMaxWidth;
