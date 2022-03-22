@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+//
+//	NOTICE:
+//		`appinfo.cpp` is generated from `appinfo.cpp.in` and you should edit 
+//		that file instead if you want your changes to reflect in the app
+//
+
 #ifndef ACTIVEMODULES_H
 #define ACTIVEMODULES_H
 

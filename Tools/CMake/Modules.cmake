@@ -59,8 +59,8 @@ list(
   "\",\n\t\t\t\""
   JASP_EXTRA_MODULES_QUOTED)
 
-configure_file(${CMAKE_SOURCE_DIR}/Desktop/activemodules.h.in
-               ${CMAKE_SOURCE_DIR}/Desktop/activemodules.h @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Desktop/modules/activemodules.h.in
+               ${CMAKE_SOURCE_DIR}/Desktop/modules/activemodules.h @ONLY)
 message(STATUS "activemodules.h is successfully generated...")
 
 if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST

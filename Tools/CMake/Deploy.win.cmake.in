@@ -1,8 +1,14 @@
+# This file is generated from `Deploy.win.cmake.in`.
+#
+# It is being used to run the `macdeployqt` on the `JASP.app` binary, as well
+# as the JASPEngine
+
 execute_process(
   COMMAND_ECHO STDOUT
   WORKING_DIRECTORY "@CMAKE_INSTALL_PREFIX@"
   COMMAND
-    @DEPLOYQT_EXECUTABLE@ @WINDEPLOY_QT_BUILD_TYPE@ --qmldir="@JASP_QML_FILES@" "@JASP_INSTALL_BINDIR@/JASP.exe" "@JASP_INSTALL_BINDIR@/JASPEngine.exe"
+    @DEPLOYQT_EXECUTABLE@ @WINDEPLOY_QT_BUILD_TYPE@ --qmldir="@JASP_QML_FILES@"
+    "@JASP_INSTALL_BINDIR@/JASP.exe" "@JASP_INSTALL_BINDIR@/JASPEngine.exe"
   RESULT_VARIABLE result)
 
 if(result)

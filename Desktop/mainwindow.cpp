@@ -39,7 +39,6 @@
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "sharedmemory.h"
-#include "activemodules.h"
 
 #include "mainwindow.h"
 
@@ -67,6 +66,7 @@
 #include "gui/preferencesmodel.h"
 #include "gui/messageforwarder.h"
 
+#include "modules/activemodules.h"
 #include "modules/dynamicmodules.h"
 #include "modules/analysismenumodel.h"
 #include "modules/description/entrybase.h"
