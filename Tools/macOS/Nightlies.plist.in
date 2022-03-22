@@ -12,7 +12,7 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/sh</string>
-		<string>@JASP_SOURCE_DIR@/Tools/macOS/nightlies.sh</string>
+		<string>@JASP_SOURCE_DIR@/Tools/macOS/Nightlies.sh</string>
 	</array>
 	<key>RunAtLoad</key>
 	<false/>

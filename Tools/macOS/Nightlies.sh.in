@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# This file is generated from `Nightlies.sh.in`
+# 
+# It is written to be used in a cronjob, e.g.,  `launchd` instance. 
 
 cd @JASP_SOURCE_DIR@
 
