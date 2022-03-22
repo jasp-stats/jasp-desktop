@@ -53,7 +53,7 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
   - [Logging](Docs/user-guide/logging-howto.md)
   
 #### Building
-  - Guide for Building JASP
+  - [Introduction](Docs/development/jasp-building-guide.md)
     - [macOS](Docs/development/jasp-build-guide-macos.md)
     - [Linux](Docs/development/jasp-build-guide-linux.md)
     - [Windows](Docs/development/jasp-build-guide-windows.md)

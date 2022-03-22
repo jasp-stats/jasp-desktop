@@ -1,20 +1,20 @@
 # macOS Build Guide
 
+If you have not cloned the `jasp-desktop` repository, please head back to the build introduction, and after cloning the repo, and updating the submodules continue with the rest of this article.
 
 ## Requirements
 
 - [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.2
-    - Qt Creator 7 is in beta, and it has a much better CMake support!
+    - Qt Creator 7 (Recommended)
 - [Homebrew](http://brew.sh)
 - [CMake](https://cmake.org), installed via Homebrew and Qt Creator
 - [Conan](https://conan.io), installed via Homebrew
 - Third-party Libraries
-	- R.framwork, installed automatically 
-	- gfortran, installed automatically
+	- R.framework, installed automatically 
+	- GNU Fortran, installed automatically
 	- ReadStat, installed automatically
 	- JAGS, installed automatically
-
 
 #### Install Xcode
 
@@ -33,26 +33,29 @@ You can download and install Homebrew using the following command. After running
 After installing Homebrew, you can start installing your requirements by running the following command in the Terminal.
 
 ```bash
-brew install conan bison flex pkg-config automake autoconf brotli
+brew install conan bison flex pkg-config automake autoconf brotli create-dmg parallel
 ```
 
-> If you are planning to build JAPS from the command line, we recommend installing Qt using Homebrew as well, `brew install qt`.
-
-> ℹ️ Some of these libraries might be included in your Xcode installation, but due to differences between macOS and Xcode version, we recommend you to install those all the libraries via Homebrew anyway.
+> 💡 Optionally, you can install the Qt from the command line, and build JASP using that, e.g., `brew install qt`. 
 
 ### Qt Creator
 
-After installing all your dependencies, you can open the `CMakeLists.txt` file inside the Qt Creator app. Qt Creator will be able to configure the JASP project using this file, however there are a few things that you still need to take care of:
+After installing all your dependencies, you can open the `CMakeLists.txt` file inside the Qt Creator app. By doing so, you are techincally opening the JASP project, and Qt Creator starts to configure the JASP project using this file.
 
-- You need to set your `GITHUB_PAT` variable
+JASP's CMake configuration file provides several variables that allow you to customize your build. Here, we mention a few important ones, and you can find the rest of the variables for further customization in your "Projects" tab.
+
+- `GITHUB_PAT`
 	- If you don't have a `GITHUB_PAT`, you can create one by following this instruction: [GitHub Personal Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
-	- If you are using the command line, CMake looks for this variable in your environment variable and is able to set it automatically
-	- If you are using the Qt Creator, you need to either set the `GITHUB_PAT` directly to your CMake variables, or adds it to the Environment variable
-- If you wish to install JASP modules, you can do so by switching the `INSTALL_R_MODULES` to `ON`.
+	- After creating a new PAT, you can set that `GITHUB_PAT` variable in two ways,
+		- If you are using the Qt Creator, you need to either set the `GITHUB_PAT` directly to your CMake variables, under the "Projects->Build->Current Configuration". Search the list for `GITHUB_PAT`, and paste your PAT value there. This will instruct the CMake to use your PAT whenever necessary. 
+	- If you are using the command line, CMake looks for this variable in your environment variable and is able to automatically find and use it, if your `GITHUB_PAT` can be found in your environment variables.
+		- Adding this like to your `.bash_profile`, or `.zshrc` will fasciliate this process, `export GITHUB_PAT=your github pat`
+- `INSTALL_R_MODULES`
+	- If you wish to install JASP modules, you need to toggle this option `ON`. In Qt Creator->Projects->Builds->Current Configuration, you can find this variable, and check the checkbox. Or if you are using a command line, you can include this in your command line by `-DINSTALL_R_MODULES=ON`.
 - Lastly, you need to make sure that `Add build library search path to DYLD_LIBRARY_PATH and DYLD_FRAMEWORK_PATH` is set to `OFF`. 
 	- ⚠️ This is important, otherwise, Qt Creator cannot run JASP!
 
-After these parameters, re-run the CMake and wait until you see the following message. This means that JASP is configured correctly, and you can start building JASP.
+If you change any of these parameters, you need to reconfigure the CMake. This as soon as you press the `Run CMake`. At this point, Qt Creator rerun the CMake configuration, and prepares everything for a build. You can check the progress of the CMake configuration in the "General Messages" output panel. If you don't get any error, the last few messages will look like this, and you are ready to build JASP. 
 
 ```
 -- Configuring done
@@ -60,6 +63,4 @@ After these parameters, re-run the CMake and wait until you see the following me
 -- Build files have been written to: <path-to-your-build-folder>
 ```
 
-Now you can press "Build" and start building!
-
----
+Now you can press the "Build" button, and start building JASP. If everything goes well, you have not missed anything, the build will be successful, and you should be able to run JASP by pressing the "Play" button in the left bottom corner.

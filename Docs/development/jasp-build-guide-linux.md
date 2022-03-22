@@ -1,13 +1,21 @@
 # Linux Build Guide
 
-On Linux, 
+If you have not cloned the `jasp-desktop` repository, please head back to the build introduction, and after cloning the repo, and updating the submodules continue with the rest of this article.
 
 ## Requirements
 
 - Libraries
-	- `boost (>1.78), jsoncpp, libarchive, autoconf, zlib, cmake (>3.21)`
-- Qt Creator / Qt (> 6.2)
-
+	- `boost (>=1.78)`
+	- `jsoncpp (>=1.9)`
+	- `libarchive (>=3.5)`
+	- `cmake (>3.21)`
+	- `openssl (1.1.1m)`
+	- `autoconf`
+	- `zlib`
+	- `bison`
+	- `flex`
+- Qt (>= 6.2)
+	- Qt Creator 7 (Recommended)
 
 ### Installing Dependencies
 
