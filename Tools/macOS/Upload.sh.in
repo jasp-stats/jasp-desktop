@@ -4,4 +4,4 @@
 # repository isn't mentioned because I figured the name was long enough already.
 DEST_FILE=JASP-nightly-@GIT_BRANCH@-@GIT_COMMIT@.dmg
 echo Copying @CPACK_PACKAGE_NAME@ to jasp-static with name $DEST_FILE
-scp @JASP_BINARY_DIR@/JASP/@CPACK_PACKAGE_NAME@ nachtjapon@static.jasp-stats.org:~/Nightlies/MacOS/@CMAKE_OSX_ARCHITECTURES@/$DEST_FILE
+scp @JASP_BINARY_DIR@/JASP/@CPACK_PACKAGE_NAME@ nachtjapon@static.jasp-stats.org:~/Nightlies/macOS-@CMAKE_OSX_ARCHITECTURES@/@CMAKE_OSX_ARCHITECTURES@/$DEST_FILE

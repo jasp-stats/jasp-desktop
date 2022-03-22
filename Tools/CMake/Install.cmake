@@ -128,13 +128,13 @@ if(APPLE)
 
   install(SCRIPT ${CMAKE_BINARY_DIR}/Sign.cmake)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Upload.sh.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Upload.sh.in
                  ${CMAKE_BINARY_DIR}/Upload.sh @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Nightlies.plist.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Nightlies.plist.in
                  ${CMAKE_BINARY_DIR}/Nightlies.plist @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Nightlies.sh.in
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Nightlies.sh.in
                  ${CMAKE_BINARY_DIR}/Nightlies.sh @ONLY)
 
 endif()
