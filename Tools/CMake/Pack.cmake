@@ -48,6 +48,9 @@ set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
 if(WIN32)
   set(CPACK_GENERATOR "WIX")
 
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/Upload.cmd.in
+                 ${CMAKE_BINARY_DIR}/Upload.cmd @ONLY)
+
   add_custom_target(
     collect-junctions
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
@@ -78,7 +81,7 @@ if(WIN32)
     zip
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     DEPENDS "${CMAKE_BINARY_DIR}/junctions.rds"
-    BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASP/JASP-${JASP_VERSION}.msi"
+    BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASP/JASP.zip"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
@@ -112,6 +115,9 @@ if(APPLE)
   set(CPACK_DMG_VOLUME_NAME "${CPACK_PACKAGE_FILE_NAME}.dmg")
   set(CPACK_DMG_BACKGROUND_IMAGE
       "${CMAKE_SOURCE_DIR}/Tools/macOS/background.png")
+
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Upload.sh.in
+                 ${CMAKE_BINARY_DIR}/Upload.sh @ONLY)
 
   add_custom_target(
     dmg

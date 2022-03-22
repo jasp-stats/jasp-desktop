@@ -1,7 +1,9 @@
 #!/bin/bash
+# 
+# This file is generated from `Upload.sh.in`, and it is used to upload
+# the `JASP.dmg` to our server with the name: JASP-nightly-*branch*-*commit*, 
+# repository isn't mentioned because the name was long enough already.
 
-# Uploads the JASP.dmg to our server with the name: JASP-nightly-*branch*-*commit*, 
-# repository isn't mentioned because I figured the name was long enough already.
 DEST_FILE=JASP-nightly-@GIT_BRANCH@-@GIT_COMMIT@.dmg
-echo Copying @CPACK_PACKAGE_NAME@ to jasp-static with name $DEST_FILE
-scp @JASP_BINARY_DIR@/JASP/@CPACK_PACKAGE_NAME@ nachtjapon@static.jasp-stats.org:~/Nightlies/macOS-@CMAKE_OSX_ARCHITECTURES@/@CMAKE_OSX_ARCHITECTURES@/$DEST_FILE
+echo Copying @CPACK_DMG_VOLUME_NAME@ to jasp-static with name $DEST_FILE
+scp @JASP_BINARY_DIR@/JASP/@CPACK_DMG_VOLUME_NAME@ nachtjapon@static.jasp-stats.org:~/Nightlies/macOS-@CMAKE_OSX_ARCHITECTURES@/@CMAKE_OSX_ARCHITECTURES@/$DEST_FILE

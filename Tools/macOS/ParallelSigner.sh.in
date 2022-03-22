@@ -1,8 +1,8 @@
 #!/bin/bash
-
-# A simple call to `find` and `parallel` for parallelizing the signing process.
-# This is being configured and later called from the `Sing.cmake`. It accepts a
-# path parameters.
+#
+# This file is generated from `ParallelSigner.sh.in`. It is a simple call to `find`
+# and `parallel` for parallelizing the signing process. This is being configured and
+# later called from the `Sing.cmake`. It accepts a path parameters.
 #
 # TODOs:
 # - [ ] Add a progress bar

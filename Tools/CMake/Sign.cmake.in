@@ -1,3 +1,10 @@
+# This file is generated from `Sing.cmake.in`
+#
+# It is being used by the install script to Sing the R.framework, and the
+# rest of the files. At the moment, we are signing everything, and I mean
+# _everything_. I think we can relax this requirement a bit in the future,
+# since not all files need to be signed.
+
 # We are removing this because having the Libraries/ as a symlink in
 # the root of R.framework/ is not acceptable by Apple.
 execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@/R.framework

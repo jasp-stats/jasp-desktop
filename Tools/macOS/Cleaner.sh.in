@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# This file is generated from Cleaner.sh.in, and it is removing some of 
+# the mess that that `macdeployqt` leaves behind. It is being called 
+# after the installation and deployment, and right before the singing.
+# If you wish to remove something from the App Bundle and you cannot
+# use the EXLUDE lists for whatever reason, you can put it here.
 
 find @JASP_INSTALL_PREFIX@/Contents/ -name "*dSYM*" -exec rm -rf {} \;
 find @JASP_INSTALL_PREFIX@/Contents/ -type f -name "*.entitlements" -exec rm -rf {} \;

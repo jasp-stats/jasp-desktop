@@ -1,6 +1,11 @@
-# We must pass the identity like this; otherwise CMake escapes the
-# text incorrectly, and as a result `macdeployqt` cannot identify the
-# signature
+# This file is generated from `Deploy.mac.cmake.in`.
+#
+# It is being used to run the `macdeployqt` on the `JASP.app` binary, as well
+# as the JASPEngine. Notice that we are double signing some of the Qt libraries,
+# once here, and once at the end of the install stage. This is necessary because
+# Qt libraries are framework, and the `ParallelSigner.sh.in` might not deal with
+# them appropriately
+
 set(IDENTITY "@APPLE_CODESIGN_IDENTITY@")
 
 execute_process(
