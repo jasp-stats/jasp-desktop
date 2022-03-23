@@ -52,7 +52,7 @@ private:
 	static QString processPath(const QString & path);
 
 #ifdef linux
-	static QString R_HOME() {
+	static QString rHomeDir() {
 		return QString("@R_HOME_PATH@");
 	} 
 #endif

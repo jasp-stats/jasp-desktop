@@ -126,6 +126,21 @@ QString AppDirs::appData()
 	return processPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 }
 
+/**
+ * @brief 		This returns the path to R home directory, where `bin/`, `lib/`, `library/`, etc.
+ *          	are located.
+ * 
+ * @details 	On macOS, R lives inside the Frameworks folder, both on build and inside the
+ *           	the App Bundle, that's a level up from JASP, and JASPEngine. On Windows, R is in the same
+ *            	level as JASP binaries, and on Linux, R might lives in different location, that's why we
+ *             	have a bit of a logic there to figure out where it is. 
+ * 
+ * @note       	The Linux logic is most likely not necessary since rHomeDir is being set at config
+ *              time by CMake and that should always point to the right place no matter what. I will
+ *              revisit this as soon as we have a working Flatpak build.
+ *              
+ * @return 		Path to R home directory
+ */
 QString AppDirs::rHome()
 {
 
@@ -141,13 +156,7 @@ QString AppDirs::rHome()
     
 #ifdef linux
 
-// I had to change this because CMake doesn't really like to pass values into
-// MACRO's and rather prefers this template method, so, I made some changes.
-//
-// That being said, none of these are necesasry because R_HOME_PATH should always
-// point to the right place even with all different build variations, so we can 
-// just remove it, but I leave it for the review.
-if (R_HOME().isEmpty())
+if (AppDirs::rHomeDir().isEmpty())
 {
 	rHomePath = programDir().absoluteFilePath("R/lib/libR.so");
 	if (QFileInfo(rHomePath).exists() == false)
@@ -157,8 +166,8 @@ if (R_HOME().isEmpty())
 		rHomePath = "/usr/lib/R/";
 #endif
 } else {
-	Log::log() << "R_HOME is set " << R_HOME() << std::endl;
-	rHomePath = QDir::isRelativePath(R_HOME()) ? programDir().absoluteFilePath(R_HOME()) : R_HOME();
+	Log::log() << "AppDirs::rHomeDir() is set " << AppDirs::rHomeDir() << std::endl;
+	rHomePath = QDir::isRelativePath(AppDirs::rHomeDir()) ? programDir().absoluteFilePath(AppDirs::rHomeDir()) : AppDirs::rHomeDir();
 }
 #endif
 	
