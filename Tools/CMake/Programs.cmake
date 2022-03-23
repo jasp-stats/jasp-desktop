@@ -177,19 +177,34 @@ if(WIN32)
     )
   endif()
 
-  message(CHECK_START "Looking for MSYS2")
+  message(CHECK_START "Looking for Rtools")
   set(RTOOLS_PATH
       "C:/rtools40"
       CACHE PATH "Path to rtools40 folder, e.g., C:/rtools40")
+
   if(EXISTS ${RTOOLS_PATH})
+
     message(CHECK_PASS "found")
     message(STATUS "  ${RTOOLS_PATH}")
+
   else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "Rtool40 is required for building on some of the R packages, and JASP modules."
-    )
+
+    set(RTOOLS_PATH "D:/rtools40")
+    if(EXISTS ${RTOOLS_PATH})
+
+      message(CHECK_PASS "found")
+      message(STATUS "  ${RTOOLS_PATH}")
+
+    else()
+
+      message(CHECK_FAIL "not found")
+      message(
+        FATAL_ERROR
+          "Rtool40 is required for building on some of the R packages, and JASP modules. If you have installed the Rtools in a non-default location, you can specify the installation path using the RTOOLS_PATH variable."
+      )
+
+    endif()
+
   endif()
 
   set(WIX_PATH
