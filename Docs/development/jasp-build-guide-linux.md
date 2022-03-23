@@ -1,6 +1,6 @@
 # Linux Build Guide
 
-If you have not cloned the `jasp-desktop` repository, please head back to the build introduction, and after cloning the repo, and updating the submodules continue with the rest of this article.
+If you have not cloned the `jasp-desktop` repository, please head back to the [build introduction](Docs/development/jasp-building-guide.md), and after cloning the repo, and updating the submodules continue with the rest of this article.
 
 ## Requirements
 
@@ -49,4 +49,4 @@ After installing all the libraries and the Qt library, open the Qt Creator, and 
 
 On Linux, you can configure the `jasp-desktop` to use a custom R installation on your system, to do so, you can set the `CUSTOM_R_PATH` variable to the home of your R installation, e.g., `/usr/lib64/R`.
 
-In addition, if you do not wish to pollute your custom library directory, you can construct CMake to install all its libraries into the build folder. You can do this by setting the `LOCAL_LINUX_BUILD` to `ON`. In this case, JASP creates a new directory at `<build-folder>/R/library` and installs everything there.
+In addition, if you do not wish to pollute your custom library directory, you can construct CMake to install all its libraries into the build folder. You can do this by setting the `LINUX_LOCAL_BUILD` to `ON`. In this case, JASP creates a new directory at `<build-folder>/R/library` and installs everything there.

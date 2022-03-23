@@ -162,6 +162,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspResults::setBaseCitation(baseCitation);
 	jaspResults::setInsideJASP();
 
+	jaspRCPP_logString("Initializing jaspBase.\n");
 	jaspRCPP_parseEvalQNT("library(methods)");
 	jaspRCPP_parseEvalQNT("library(jaspBase)");
 
@@ -173,10 +174,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	//To do: move this entirely to zzzWrapper if this wasn't done yet.
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
-	
-	jaspRCPP_logString("Initializing jaspBase.\n");
-	jaspRCPP_parseEvalQNT("library(\"jaspBase\")");
-		
+			
 	jaspRCPP_logString("Loading auxillary R-files.\n");
 
 #if defined _WIN32 || defined __MINGW32__

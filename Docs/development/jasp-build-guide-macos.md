@@ -1,6 +1,6 @@
 # macOS Build Guide
 
-If you have not cloned the `jasp-desktop` repository, please head back to the build introduction, and after cloning the repo, and updating the submodules continue with the rest of this article.
+If you have not cloned the `jasp-desktop` repository, please head back to the [build introduction](Docs/development/jasp-building-guide.md), and after cloning the repo, and updating the submodules continue with the rest of this article.
 
 ## Requirements
 

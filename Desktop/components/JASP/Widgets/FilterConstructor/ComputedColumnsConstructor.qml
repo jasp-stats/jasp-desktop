@@ -301,7 +301,7 @@ Item
                 verticalAlignment:		Text.AlignVCenter
 
 				textFormat:				Text.PlainText
-				font.family:			"Courier"
+				font.family:			jaspTheme.fontCode
 				font.pixelSize:			filterConstructor.fontPixelSize
 				selectByMouse:			true
 				selectByKeyboard:		true

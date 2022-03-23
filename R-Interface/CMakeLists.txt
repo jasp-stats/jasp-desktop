@@ -1,5 +1,5 @@
 # This script in fact consists of two scripts. The first part is used for building
-# CMake using the MSYS2 environment on Windows and the second part is a rather normal
+# R-Interface using the MSYS2 environment on Windows and the second part is a rather normal
 # script that is being included by the main `CMakeLists.txt` and will build the
 # R-Interface on macOS and Linux.
 #

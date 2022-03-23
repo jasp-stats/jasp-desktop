@@ -1,6 +1,6 @@
 # Windows Build Guide
 
-If you have not cloned the `jasp-desktop` repository, please head back to the build introduction, and after cloning the repo, and updating the submodules continue with the rest of this article.
+If you have not cloned the `jasp-desktop` repository, please head back to the [build introduction](Docs/development/jasp-building-guide.md), and after cloning the repo, and updating the submodules continue with the rest of this article.
 
 ## Requirements
 
@@ -22,7 +22,7 @@ Before everything, you need to download and install the Microsoft Visual Studio 
 	- During the installation, you will be asked asked to customize your installation, in this section, here, make sure to select the followings, 
 		- From the left panel, you should select the "Desktop development with C++" module. This package includes several tools, e.g.,
 			- Just-In-Time debugger
-			- VC++ 2017
+			- VC++ 2019 or VC++ 2022
 			- C++ profiling tools
 			- Visual C++ tools for CMake
 
@@ -53,7 +53,7 @@ After installing MSYS2, you will find a new program in your Start Menu. Search f
 Copy and paste the following line into the Terminal and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP.
 
 ```bash
-pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-boost mingw-w64-x86_64-jsoncpp bison flex mercurial make autoconf
+pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-boost mingw-w64-x86_64-jsoncpp bison flex make autoconf
 ```
 
 #### Downloading and Building ReadStat (on MSYS2)
@@ -124,7 +124,7 @@ If this is your first time preparing your project, CMake is going to configure *
 
 #### ⚠️ R-Interface 
 
-CMake makes sure that it build the R-Interface using the MinGW x64 libraries every time (if necessary). So, unlike before, you don't need to worry about building it separately and copying it into the right place, however, you need to make sure that the `C:\msys64\mingw64\bin` is in your PATH. You can add this address to your Build Environment path inside the Qt Creator.
+CMake makes sure that it build the R-Interface using the MinGW x64 libraries every time (if necessary). So, unlike before, you don't need to anything special to have the R-Interface build and prepared, however, you need to make sure that the `C:\msys64\mingw64\bin` is in your PATH. You can add this address to your Build Environment path inside the Qt Creator.
 
 Find the "Build Environment" section under the "Projects -> Build", and expand its details by clicking the "Details". Here, you need to find the `Path` variable, select it, press "Edit", and add the mentioned path to the list.
 

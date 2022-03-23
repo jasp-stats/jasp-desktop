@@ -267,7 +267,7 @@ void Engine::runFilter(const std::string & filter, const std::string & generated
 {
 	try
 	{
-        std::string strippedFilter		= stringUtils::stripRComments(filter);
+		std::string strippedFilter		= stringUtils::stripRComments(filter);
 		std::vector<bool> filterResult	= rbridge_applyFilter(strippedFilter, generatedFilter);
 		std::string RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 
@@ -316,7 +316,7 @@ void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 	std::string rCode			= jsonRequest.get("rCode",			"").asString();
 	int			rCodeRequestId	= jsonRequest.get("requestId",		-1).asInt();
 	bool		whiteListed		= jsonRequest.get("whiteListed",	true).asBool(),
-	            returnLog		= jsonRequest.get("returnLog",		false).asBool();
+				returnLog		= jsonRequest.get("returnLog",		false).asBool();
 
 	if(returnLog)	runRCodeCommander(rCode);
 	else			runRCode(rCode, rCodeRequestId, whiteListed);
@@ -546,9 +546,9 @@ void Engine::sendString(std::string message)
 
 	Json::Value msgJson;
 
-    // JSONCPP_STRING          err;
-    // Json::CharReaderBuilder jsonReaderBuilder;
-    // std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
+	// JSONCPP_STRING          err;
+	// Json::CharReaderBuilder jsonReaderBuilder;
+	// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
 
 	// if(jsonReader->parse(message.c_str(), message.c_str() + message.length(), &msgJson, &err)) //If everything is converted to jaspResults maybe we can do this there?
 
@@ -594,30 +594,30 @@ void Engine::runAnalysis()
 		return;
 
 	case Status::changed: 
-            // analysis was changed, and the analysis killed itself through jaspResults::checkForAnalysisChanged()
-            //It needs to be re-run and the tempfiles can be cleared.
-            _analysisStatus = Status::toRun;
-            TempFiles::deleteList(TempFiles::retrieveList(_analysisId));
-            return;
-        
+			// analysis was changed, and the analysis killed itself through jaspResults::checkForAnalysisChanged()
+			//It needs to be re-run and the tempfiles can be cleared.
+			_analysisStatus = Status::toRun;
+			TempFiles::deleteList(TempFiles::retrieveList(_analysisId));
+			return;
+		
 
 	default: 
 
-            // JSONCPP_STRING          err;
-            // Json::CharReaderBuilder jsonReaderBuilder;
-            // std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
+			// JSONCPP_STRING          err;
+			// Json::CharReaderBuilder jsonReaderBuilder;
+			// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
 
-            // jsonReader->parse(_analysisResultsString.c_str(), _analysisResultsString.c_str() + _analysisResultsString.length(), &_analysisResults, &err);
+			// jsonReader->parse(_analysisResultsString.c_str(), _analysisResultsString.c_str() + _analysisResultsString.length(), &_analysisResults, &err);
 
 			Json::Reader().parse(_analysisResultsString, _analysisResults, false);
 
-            _engineState = engineState::idle;
-            _analysisStatus = Status::empty;
+			_engineState = engineState::idle;
+			_analysisStatus = Status::empty;
 
-            removeNonKeepFiles(
-                    _analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
-            return;
-        
+			removeNonKeepFiles(
+					_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
+			return;
+		
 	}
 }
 
@@ -631,9 +631,9 @@ void Engine::saveImage()
 
 	Json::Reader().parse(result, _analysisResults, false);
 
-    // JSONCPP_STRING          err;
-    // Json::CharReaderBuilder jsonReaderBuilder;
-    // std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
+	// JSONCPP_STRING          err;
+	// Json::CharReaderBuilder jsonReaderBuilder;
+	// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
 
 	// jsonReader->parse(result.c_str(), result.c_str() + result.length(), &_analysisResults, &err);
 
@@ -651,9 +651,9 @@ void Engine::editImage()
 	std::string optionsJson	= _imageOptions.toStyledString(),
 				result		= jaspRCPP_editImage(_analysisName.c_str(), optionsJson.c_str(), _ppi, _imageBackground.c_str(), _analysisId);
 
-    // JSONCPP_STRING          err;
-    // Json::CharReaderBuilder jsonReaderBuilder;
-    // std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
+	// JSONCPP_STRING          err;
+	// Json::CharReaderBuilder jsonReaderBuilder;
+	// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
 
 	// jsonReader->parse(result.c_str(), result.c_str() + result.length(), &_analysisResults, &err);
 
