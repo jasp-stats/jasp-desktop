@@ -16,8 +16,8 @@ That is, the name is written in lowercase letters except of the first letter in 
 
 - `modelTerms` (not `ModelTerms` or `model_terms`)
 - `mean` (not `Mean`)
-- `QqPlot` (not `QQplot` or `QQPlot`)
-- `PpPlot` (not `Ppplot` or `PPPlot`)
+- `qqPlot` (not `QQplot` or `QQPlot`)
+- `qpPlot` (not `Ppplot` or `PPPlot`)
 
 ### Correspondence between option name and label
 
