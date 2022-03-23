@@ -1,6 +1,6 @@
 #define ENUM_DECLARATION_CPP
 #include "log.h"
-#include "boost/nowide/cstdio.hpp"
+#include <boost/nowide/cstdio.hpp>
 #include <iostream>
 #include <chrono>
 #ifdef WIN32
@@ -8,9 +8,9 @@
 #endif
 
 #include "utils.h"
-#include "boost/iostreams/stream.hpp"
-#include "boost/iostreams/device/null.hpp"
-#include "boost/nowide/fstream.hpp"
+#include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/device/null.hpp>
+#include <boost/nowide/fstream.hpp>
 #include <codecvt>
 
 typedef boost::nowide::ofstream bofstream; //Use this to work around problems on Windows with utf8 conversion

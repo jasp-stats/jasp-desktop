@@ -3,7 +3,7 @@
 #include "rbridge.h"
 #include <fstream>
 #include <boost/filesystem.hpp>
-#include "boost/nowide/fstream.hpp"
+#include <boost/nowide/fstream.hpp>
 #include "utils.h"
 #include "appinfo.h"
 #include <iostream>

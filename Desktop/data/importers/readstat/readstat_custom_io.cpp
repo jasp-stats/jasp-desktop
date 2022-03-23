@@ -3,8 +3,8 @@
 
 #ifdef _WIN32
 
-#include "boost/nowide/cstdio.hpp"
-#include "boost/nowide/stackstring.hpp"
+#include <boost/nowide/cstdio.hpp>
+#include <boost/nowide/stackstring.hpp>
 #include <fcntl.h>
 #include <io.h>
 
