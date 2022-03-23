@@ -23,6 +23,15 @@
 #ifndef ACTIVEMODULES_H
 #define ACTIVEMODULES_H
 
+/**
+ * @brief 		A minimal class for reporting the list active modules, to be used by `loadModules`.
+ * 
+ * @details 	This class exists only to dynamically adjust the active modules of the ribbon, in
+ *           	case we decide not to have them all. So, the changes in `JASP_COMMON_MODULES` and
+ *           	`JASP_EXTRA_MODULES` variables in `Tools/CMake/Modules.cmake` will be reflected 
+ *           	here. By commenting any of the modules in the CMake file, they'll be excluded from
+ *           	the build, and will not be available to JASP.
+ */
 class ActiveModules {
 public:
 
