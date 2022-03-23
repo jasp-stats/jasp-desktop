@@ -188,16 +188,20 @@ endif()
 # I will consider turning this off, and letting Qt does it
 # when everything else worked properly
 
-message(CHECK_START "Looking if its set as an environment variable.")
-set(GITHUB_PAT $ENV{GITHUB_PAT})
+set(GITHUB_PAT
+    ""
+    CACHE STRING "GitHub Personal Access Token")
 
 if(INSTALL_R_MODULES)
+
+  message(CHECK_START "Looking if its set as an environment variable.")
+  set(GITHUB_PAT $ENV{GITHUB_PAT})
 
   if(GITHUB_PAT STREQUAL "")
     message(CHECK_FAIL "not found")
     message(
       FATAL_ERROR
-        "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub."
+        "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub. If you are using Qt Creator, you can set a new environment GITHUB_PAT variable in Qt Creator."
     )
   endif()
 
@@ -229,31 +233,16 @@ endif()
 
 # ------ Code signing
 
-set(APPLE_CODESIGN_IDENTITY
-    "AWJJ3YVK9B"
-    CACHE STRING "Code signing identity")
-set(APPLE_CODESIGN_ENTITLEMENTS
-    "${CMAKE_SOURCE_DIR}/Tools/macOS/entitlements.plist")
+if(APPLE)
 
-message(STATUS "Signing with \"${APPLE_CODESIGN_IDENTITY}\"")
+  set(APPLE_CODESIGN_IDENTITY
+      "AWJJ3YVK9B"
+      CACHE STRING "Code signing identity")
+  set(APPLE_CODESIGN_ENTITLEMENTS
+      "${CMAKE_SOURCE_DIR}/Tools/macOS/entitlements.plist")
 
-# In case Qt is not in path
-# NEEDS TESTING
-# if(WIN32)
-#   if(QTDIR
-#      OR DEFINED $ENV{QTDIR}
-#      OR DEFINED $ENV{QTDIR32}
-#      OR DEFINED $ENV{QTDIR64})
-#     # Qt path set by user or env var
-#   else()
-#     set(QTDIR
-#         ""
-#         CACHE PATH "Path to Qt (e.g. C:/Qt/5.7/msvc2015_64)")
-#     message(
-#       WARNING
-#         "QTDIR variable is missing.  Please set this variable to specify path to Qt (e.g. C:/Qt/5.7/msvc2015_64)"
-#     )
-#   endif()
-# endif()
+  message(STATUS "Signing with \"${APPLE_CODESIGN_IDENTITY}\"")
+
+endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
