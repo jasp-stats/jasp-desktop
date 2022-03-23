@@ -164,9 +164,9 @@ Popup
 				Item
 				{
 					id:						axes
-					Layout.preferredWidth:	parent.width * .3
-					Layout.minimumWidth:	parent.width * .3
-					Layout.maximumWidth:	parent.width * .9
+					SplitView.preferredWidth:	parent.width * .3
+					SplitView.minimumWidth:	parent.width * .3
+					SplitView.maximumWidth:	parent.width * .9
 
 					property real	tabBarHeight:		28 * preferencesModel.uiScale
 					property real	tabButtonRadius:	5 * preferencesModel.uiScale
