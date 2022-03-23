@@ -15,18 +15,27 @@ That is, the name is written in lowercase letters except of the first letter in 
 #### Examples
 
 - `modelTerms` (not `ModelTerms` or `model_terms`)
-- `mean` (not `Mean`)
 - `qqPlot` (not `QQplot` or `QQPlot`)
 - `ppPlot` (not `Ppplot` or `PPPlot`)
 
 ### Correspondence between option name and label
 
-It should be possible from the option name to deduce the option label, and vice versa. This also includes avoiding shortcuts or acronyms except for standardized option names (see below).
+It should be possible from the option name (which is visible to the R users) to deduce the option label (which is visible to the JASP users), and vice versa. This also includes avoiding shortcuts or abbreviations except for standardized option names (see below).
 
 #### Examples
 
 - if an option is labeled as `label: qsTr("Variables")`, the option name should be `name: "variables"`, and not `name: "dependent"` or `name: "variable"`.
 - `kruskalWallisTerms` (not `kwTerms`)
+
+### Abbreviations are a single word
+
+Abbreviations should not be used in general, except for common option names (see below). For these cases an abbreviation is treated as a single word - which is important to keep in mind with respect to the camelCase.
+
+#### Examples
+
+- `mcmcMethod`: `mcmc` is an abbreviation of markov chain monte carlo, and it is treated as a word. Do not do `MCMCMethod`
+- `marginalMeansCi`: `Ci` is an abbreviation of confidence interval, and so is treated as a word. Do not do `marginalMeansCI`
+- `contrastsSeMethod`: `Se` is an abbreviation of a standard error, and so is treated as a word. Do not do `contrastsSEMethod`
 
 
 ### Correspondence between options
@@ -111,16 +120,16 @@ Combining the basic principles above may seem to be silly and annoying because t
 - `ci`: confidence (or credible) interval checkbox
 - `ciLevel`: confidence (or credible) level of the confidence (credible) interval
 - `se`: standard error
-- `pi`: prediction interval
-- `piLevel`: confidence level of a prediction interval
+- `predictionInterval`: prediction interval
+- `predictionIntervalLevel`: confidence level of a prediction interval
 - `dependent`: for specifying the dependent variable
 - `fixedFactors`: for specifying Fixed Factors variable list
 - `randomFactors`: for specifying Random Factors variable list
 - `covariates`: for specifying covariates
 - `weights`: variable specifying weights
 - `terms`: for specifying terms (allowing interactions). This can be combined with what the terms relate to, e.g., `modelTerms`, `marginalMeansTerms`, `plotTerms`, etc.
-- `naAction`: name for an option that specifies the action to take with missing values. The option arguments can be for example, `pairwise` for pairwise deletion, `listwise` for listwise deletion, `perAnalysis` for deleting per analysis, `perDependent` for deleting per dependent variable.
-- `alternative`: name for the option specifying the alternative hypothesis. This is to ensure consistency with base R.
+- `naAction`: name for an option that specifies the action to take with missing values. The option values can be for example, `pairwise` for pairwise deletion, `listwise` for listwise deletion, `perAnalysis` for deleting per analysis, `perDependent` for deleting per dependent variable, so that the analysis can be called as `analysis(..., naAction = "pairwise")`, for example.
+- `alternative`: name for the option specifying the alternative hypothesis. This is to ensure consistency with base R. Typical values of this option would be `greater`, `less`, `two.sided` for consistency with base R functions.
 - `testValue`: name for the option specifying the test value
 - `vovkSellke`: name for the Vovk-Sellke maximum p-ratio checkbox
 - `bootstrap`: checkbox for enabling bootstrapping
@@ -146,3 +155,17 @@ Combining the basic principles above may seem to be silly and annoying because t
 - `tPriorLocation`: location of the t prior
 - `tPriorScale`: scale of the t prior
 - `tPriorDf`: df of the t prior
+
+## Points of contention
+
+### Rephrain from using verbs for options
+
+Option names should preferably be nouns. 
+
+#### Examples
+
+- `histrogramPlot`, not `plotHistogram`
+- `errorBars`, not `displayErrorBars`
+
+- `descriptiveTableTransposed`, not `transposeDescriptiveTable`??
+- `residualsExport`, not `exportResiduals`??
