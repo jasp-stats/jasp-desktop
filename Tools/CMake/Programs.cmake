@@ -179,8 +179,8 @@ if(WIN32)
 
   message(CHECK_START "Looking for MSYS2")
   set(RTOOLS_PATH
-      "C:/rtool40"
-      CACHE PATH "Path to rtool40 folder, e.g., C:/rtool40")
+      "C:/rtools40"
+      CACHE PATH "Path to rtools40 folder, e.g., C:/rtools40")
   if(EXISTS ${RTOOLS_PATH})
     message(CHECK_PASS "found")
     message(STATUS "  ${RTOOLS_PATH}")
