@@ -154,8 +154,7 @@ if(LINUX)
       ""
       CACHE PATH "Path to your custom R installation")
 
-  option(LINUX_LOCAL_BUILD "Whether we are building inside the Build folder"
-         OFF)
+  option(LINUX_LOCAL_BUILD "Whether we are building inside the Build folder" ON)
 
   option(FLATPAK_USED "Whether we are building for Flatpak" OFF)
 
@@ -164,15 +163,19 @@ if(LINUX)
   set(IS_LINUX_LOCAL_BUILD TRUE)
 
   if(LINUX_LOCAL_BUILD)
-    set(FLATPAK_USED OFF)
+
+    set(IS_LINUX_LOCAL_BUILD TRUE)
 
     message(STATUS "JASP will be configured for local testing")
     message(
       WARNING
         "In this mode, JASP configures a local R/library; however this cannot be used for installing JASP. If you wish to install JASP (e.g., on Flatpak), you must diabled this flag."
     )
+
   else()
-    set(FLATPAK_USED OFF)
+
+    set(IS_LINUX_LOCAL_BUILD FALSE)
+
   endif()
 
 else()
