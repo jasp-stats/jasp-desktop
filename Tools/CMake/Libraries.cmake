@@ -116,6 +116,20 @@ if(NOT FLATPAK_USED)
 else()
 
   find_package(
+    Qt6
+    COMPONENTS WebEngineQuick
+               HINTS
+               ${Qt6WebEngineQuick_DIR}
+               NO_DEFAULT_PATH)
+
+  find_package(
+    Qt6
+    COMPONENTS Core5Compat
+               HINTS
+               ${Qt6Core5Compat_DIR}
+               NO_DEFAULT_PATH)
+
+  find_package(
     Qt6 REQUIRED
     COMPONENTS Core
                Gui
@@ -137,19 +151,6 @@ else()
                QmlWorkerScript
                QuickWidgets)
 
-  find_package(
-    Qt6
-    COMPONENTS WebEngineQuick
-               HINTS
-               ${Qt6WebEngineQuick_DIR}
-               NO_DEFAULT_PATH)
-
-  find_package(
-    Qt6
-    COMPONENTS Core5Compat
-               HINTS
-               ${Qt6Core5Compat_DIR}
-               NO_DEFAULT_PATH)
 endif()
 
 message(STATUS "Found Qt6")
