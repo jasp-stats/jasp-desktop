@@ -41,7 +41,9 @@ On Linux JASP's CMake script will download and install ReadStat and JAGS for you
 
 ### Installing Qt Creator / Qt
 
-Similar to Windows and macOS, you can download and install the Qt Framework from Qt website, [here](https://www.qt.io/download).
+Similar to Windows and macOS, you can download and install the Qt Framework from Qt website, [here](https://www.qt.io/download). 
+
+> 💡 Sometimes, dependeing on your Linux distribution, you might be able to get the Qt libraries using your package manger. For instance, if you are running any variant of an Arch Linux, e.g., Manjaro, `pacman` readily offers the latest build of the Qt libraries, and you can download it by running the following command, `pacman -Syu qt6`.
 
 ### Configuring and Building JASP Desktop
 
