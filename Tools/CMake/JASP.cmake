@@ -77,9 +77,7 @@ endif()
 option(PRINT_ENGINE_MESSAGES
        "Indicates whether the log contains JASPEngine messages" ON)
 
-option(JASP_USES_QT_HERE "Indicates whether some files are using Qt.
-						  This doesn't strike as a very informative name
-						  for an option!" ON)
+option(JASP_USES_QT_HERE "Indicates whether some projects are using Qt" ON)
 
 # add_definitions(-DJASP_RESULTS_DEBUG_TRACES)
 
