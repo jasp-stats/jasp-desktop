@@ -67,7 +67,8 @@ if(APPLE)
   set(JASP_INSTALL_MODULEDIR "${JASP_INSTALL_PREFIX}/Contents/Modules")
   set(JASP_INSTALL_DOCDIR "${JASP_INSTALL_RESOURCEDIR}")
 
-  install(FILES "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns"
+  install(FILES "${CMAKE_SOURCE_DIR}/Tools/macOS/JASP.icns"
+                "${CMAKE_SOURCE_DIR}/Tools/macOS/Document.icns"
           DESTINATION ${JASP_INSTALL_RESOURCEDIR})
 
   install(

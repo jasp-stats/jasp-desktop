@@ -22,7 +22,7 @@
 		<string>NSApplication</string>
 
 		<key>CFBundleIconFile</key>
-		<string>icon.icns</string>
+		<string>JASP</string>
 
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
@@ -39,48 +39,18 @@
 		<key>LSMinimumSystemVersion</key>
 		<string>@CMAKE_OSX_DEPLOYMENT_TARGET@</string>
 
-		<key>CFBundleDocumentTypes</key>
-		<array>
-			<dict>
-				<key>CFBundleTypeExtensions</key>
-				<array>
-					<string>jasp</string>
-				</array>
-
-				<key>CFBundleTypeIconFile</key>
-				<string>icon.icns</string>
-
-				<key>CFBundleTypeName</key>
-				<string>JASP Data Set</string>
-
-				<key>CFBundleTypeRole</key>
-				<string>Editor</string>
-
-				<key>LSHandlerRank</key>
-				<string>owner</string>
-
-				<key>LSIsAppleDefaultForType</key>
-				<true/>
-
-				<key>LSItemContentTypes</key>
-				<array>
-					<string>org.jasp-stats.jasp</string>
-				</array>
-			</dict>
-		</array>
-
 		<key>UTExportedTypeDeclarations</key>
 		<array>
 			<dict>
-
-				<key>UTTypeIdentifier</key>
-				<string>org.jasp-stats.jasp</string>
 
 				<key>UTTypeDescription</key>
 				<string>JASP Data Set</string>
 
 				<key>UTTypeIconFile</key>
-				<string>icon.icns</string>
+				<string>Document</string>
+
+				<key>UTTypeIdentifier</key>
+				<string>org.jasp-stats.jasp.jasp</string>
 
 				<key>UTTypeTagSpecification</key>
 				<dict>
@@ -90,6 +60,43 @@
 					</array>
 				</dict>
 
+			</dict>
+		</array>
+
+		<key>CFBundleDocumentTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Document</string>
+
+				<key>LSHandlerRank</key>
+				<string>Owner</string>
+
+				<key>LSItemContentTypes</key>
+				<array>
+					<string>org.jasp-stats.jasp.jasp</string>
+				</array>
+			</dict>
+
+			<dict>
+				<key>CFBundleTypeIconFile</key>
+				<string>Document</string>
+				<key>CFBundleTypeName</key>
+				<string>Text Document</string>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleTypeOSTypes</key>
+				<array>
+					<string>****</string>
+				</array>
+				<key>LSHandlerRank</key>
+				<string>Alternate</string>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>csv</string>
+					<string>spss</string>
+					<string>sav</string>
+				</array>
 			</dict>
 		</array>
 

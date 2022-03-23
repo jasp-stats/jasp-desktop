@@ -105,7 +105,7 @@ set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/Tools/wix/installerBackground.png")
 if(WIN32)
   set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
 else()
-  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/icon.icns")
+  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/JASP.icns")
 endif()
 
 if(APPLE)
@@ -125,10 +125,10 @@ if(APPLE)
     DEPENDS ${CMAKE_BINARY_DIR}/Install/JASP.app/Contents/MacOS/JASP
     COMMAND
       ${CREATE_DMG_EXECUTABLE} --volname "${CPACK_PACKAGE_FILE_NAME}" --volicon
-      "${CPACK_PACKAGE_ICON}" --icon-size 96 --icon "JASP.app" 130 270
-      --background "${CPACK_DMG_BACKGROUND_IMAGE}" --window-size 527 454
-      --window-pos 200 200 --app-drop-link 430 270 --disk-image-size 4000
-      "${CPACK_DMG_VOLUME_NAME}" "Install/"
+      "${CMAKE_SOURCE_DIR}/Tools/macOS/Volume.icns" --icon-size 96 --icon
+      "JASP.app" 130 270 --background "${CPACK_DMG_BACKGROUND_IMAGE}"
+      --window-size 527 454 --window-pos 200 200 --app-drop-link 430 270
+      --disk-image-size 4000 "${CPACK_DMG_VOLUME_NAME}" "Install/"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy "${CPACK_DMG_VOLUME_NAME}"
             ${CMAKE_BINARY_DIR}/JASP/
