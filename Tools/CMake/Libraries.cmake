@@ -88,29 +88,70 @@ if(WINDOWS)
                chrono)
 endif()
 
-find_package(
-  Qt6 REQUIRED
-  COMPONENTS Core
-             Gui
-             OpenGL
-             Widgets
-             Qml
-             WebEngineQuick
-             WebChannel
-             Svg
-             Network
-             PrintSupport
-             Xml
-             DBus
-             QuickTemplates2
-             LabsFolderListModel
-             Quick
-             QuickLayouts
-             QuickControls2
-             QuickControls2Impl
-             QmlWorkerScript
-             QuickWidgets
-             Core5Compat)
+if(NOT FLATPAK_USED)
+  find_package(
+    Qt6 REQUIRED
+    COMPONENTS Core
+               Gui
+               OpenGL
+               Widgets
+               Qml
+               WebEngineQuick
+               WebChannel
+               Svg
+               Network
+               PrintSupport
+               Xml
+               DBus
+               QuickTemplates2
+               LabsFolderListModel
+               Quick
+               QuickLayouts
+               QuickControls2
+               QuickControls2Impl
+               QmlWorkerScript
+               QuickWidgets
+               Core5Compat)
+
+else()
+
+  find_package(
+    Qt6 REQUIRED
+    COMPONENTS Core
+               Gui
+               OpenGL
+               Widgets
+               Qml
+               WebChannel
+               Svg
+               Network
+               PrintSupport
+               Xml
+               DBus
+               QuickTemplates2
+               LabsFolderListModel
+               Quick
+               QuickLayouts
+               QuickControls2
+               QuickControls2Impl
+               QmlWorkerScript
+               QuickWidgets)
+
+  find_package(
+    Qt6
+    COMPONENTS WebEngineQuick
+               HINTS
+               ${Qt6WebEngineQuick_DIR}
+               NO_DEFAULT_PATH)
+
+  find_package(
+    Qt6
+    COMPONENTS Core5Compat
+               HINTS
+               ${Qt6Core5Compat_DIR}
+               NO_DEFAULT_PATH)
+endif()
+
 message(STATUS "Found Qt6")
 message(STATUS "  ${Qt6_DIR}")
 
