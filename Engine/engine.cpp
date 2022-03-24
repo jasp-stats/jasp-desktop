@@ -22,9 +22,9 @@
 
 //#include "../Common/analysisloader.h"
 #include <boost/bind.hpp>
-#include "../Common/tempfiles.h"
-#include "../Common/utils.h"
-#include "../Common/sharedmemory.h"
+#include "tempfiles.h"
+#include "utils.h"
+#include "sharedmemory.h"
 #include <csignal>
 
 #include "rbridge.h"
@@ -188,7 +188,12 @@ bool Engine::receiveMessages(int timeout)
 		if(data =="")
 			return false;
 
+		// JSONCPP_STRING          err;
+		// Json::Value		        jsonRequest;
+		// Json::CharReaderBuilder jsonReaderBuilder;
+		// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
 
+		// if(!jsonReader->parse(data.c_str(), data.c_str() + data.length(), &jsonRequest, &err))
 
 		Json::Value		jsonRequest;
 		Json::Reader	jsonReader;
@@ -206,6 +211,7 @@ bool Engine::receiveMessages(int timeout)
 			}
 
 			Log::log() << "Parsing request failed on:\n" << jsonReader.getFormatedErrorMessages() << std::endl;
+			// Log::log() << "Parsing request failed on:\n" << err << std::endl;
 		}
 
 		//Clear send buffer
@@ -261,7 +267,7 @@ void Engine::runFilter(const std::string & filter, const std::string & generated
 {
 	try
 	{
-        std::string strippedFilter		= stringUtils::stripRComments(filter);
+		std::string strippedFilter		= stringUtils::stripRComments(filter);
 		std::vector<bool> filterResult	= rbridge_applyFilter(strippedFilter, generatedFilter);
 		std::string RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 
@@ -310,7 +316,7 @@ void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 	std::string rCode			= jsonRequest.get("rCode",			"").asString();
 	int			rCodeRequestId	= jsonRequest.get("requestId",		-1).asInt();
 	bool		whiteListed		= jsonRequest.get("whiteListed",	true).asBool(),
-	            returnLog		= jsonRequest.get("returnLog",		false).asBool();
+				returnLog		= jsonRequest.get("returnLog",		false).asBool();
 
 	if(returnLog)	runRCodeCommander(rCode);
 	else			runRCode(rCode, rCodeRequestId, whiteListed);
@@ -540,6 +546,12 @@ void Engine::sendString(std::string message)
 
 	Json::Value msgJson;
 
+	// JSONCPP_STRING          err;
+	// Json::CharReaderBuilder jsonReaderBuilder;
+	// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
+
+	// if(jsonReader->parse(message.c_str(), message.c_str() + message.length(), &msgJson, &err)) //If everything is converted to jaspResults maybe we can do this there?
+
 	if(Json::Reader().parse(message, msgJson)) //If everything is converted to jaspResults maybe we can do this there?
 	{
 		ColumnEncoder::columnEncoder()->decodeJson(msgJson); // decode all columnnames as far as you can
@@ -581,21 +593,31 @@ void Engine::runAnalysis()
 	case Status::exception:
 		return;
 
-	case Status::changed:
-		// analysis was changed, and the analysis killed itself through jaspResults::checkForAnalysisChanged()
-		//It needs to be re-run and the tempfiles can be cleared.
-		_analysisStatus = Status::toRun;
-		TempFiles::deleteList(TempFiles::retrieveList(_analysisId));
-		return;
+	case Status::changed: 
+			// analysis was changed, and the analysis killed itself through jaspResults::checkForAnalysisChanged()
+			//It needs to be re-run and the tempfiles can be cleared.
+			_analysisStatus = Status::toRun;
+			TempFiles::deleteList(TempFiles::retrieveList(_analysisId));
+			return;
+		
 
-	default:
-		Json::Reader().parse(_analysisResultsString, _analysisResults, false);
+	default: 
 
-		_engineState	= engineState::idle;
-		_analysisStatus	= Status::empty;
+			// JSONCPP_STRING          err;
+			// Json::CharReaderBuilder jsonReaderBuilder;
+			// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
 
-		removeNonKeepFiles(_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
-		return;
+			// jsonReader->parse(_analysisResultsString.c_str(), _analysisResultsString.c_str() + _analysisResultsString.length(), &_analysisResults, &err);
+
+			Json::Reader().parse(_analysisResultsString, _analysisResults, false);
+
+			_engineState = engineState::idle;
+			_analysisStatus = Status::empty;
+
+			removeNonKeepFiles(
+					_analysisResults.isObject() ? _analysisResults.get("keep", Json::nullValue) : Json::nullValue);
+			return;
+		
 	}
 }
 
@@ -608,6 +630,12 @@ void Engine::saveImage()
 				result	= jaspRCPP_saveImage(data.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
 
 	Json::Reader().parse(result, _analysisResults, false);
+
+	// JSONCPP_STRING          err;
+	// Json::CharReaderBuilder jsonReaderBuilder;
+	// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
+
+	// jsonReader->parse(result.c_str(), result.c_str() + result.length(), &_analysisResults, &err);
 
 	_analysisStatus								= Status::complete;
 	_analysisResults["results"]["inputOptions"]	= _imageOptions;
@@ -622,6 +650,12 @@ void Engine::editImage()
 {
 	std::string optionsJson	= _imageOptions.toStyledString(),
 				result		= jaspRCPP_editImage(_analysisName.c_str(), optionsJson.c_str(), _ppi, _imageBackground.c_str(), _analysisId);
+
+	// JSONCPP_STRING          err;
+	// Json::CharReaderBuilder jsonReaderBuilder;
+	// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
+
+	// jsonReader->parse(result.c_str(), result.c_str() + result.length(), &_analysisResults, &err);
 
 	Json::Reader().parse(result, _analysisResults, false);
 

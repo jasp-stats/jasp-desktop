@@ -18,7 +18,7 @@
 #ifndef JASPRCPP_H
 #define JASPRCPP_H
 
-#include <RInside/RInside.h>
+#include <RInside.h>
 #include <Rcpp.h>
 #include "jasprcpp_interface.h"
 #include "columntype.h"

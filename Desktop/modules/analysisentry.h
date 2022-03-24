@@ -22,7 +22,7 @@
 
 #include <string>
 #include <vector>
-#include "jsonredirect.h"
+#include <json/json.h>
 
 namespace Modules
 {

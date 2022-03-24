@@ -3,7 +3,7 @@
 
 #include <QUrl>
 #include <QObject>
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "ploteditoraxismodel.h"
 #include "ploteditorcoordinates.h"
 #include <stack>

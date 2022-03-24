@@ -1,0 +1,11 @@
+rem @echo off
+rem autorun
+setlocal EnableDelayedExpansion
+
+SET DEST_FILE=JASP-nightly-@GIT_BRANCH@-@GIT_COMMIT@
+echo "Copying MSI & ZIP to jasp-static with filename : @DEST_FILE@"
+
+scp @JASP_BINARY_DIR_NATIVE@\JASP\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows/@DEST_FILE@.msi
+scp @JASP_BINARY_DIR_NATIVE@\JASP\JASP.zip nachtjapon@static.jasp-stats.org:~/Nightlies/WindowsZip/@DEST_FILE@.zip
+
+endlocal

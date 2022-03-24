@@ -2,7 +2,7 @@
 #define CHANGESETVALUE_H
 
 #include "changebase.h"
-#include "jsonredirect.h"
+#include <json/json.h>
 
 namespace Modules
 {

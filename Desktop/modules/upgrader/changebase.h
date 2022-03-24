@@ -2,7 +2,7 @@
 #define CHANGEBASE_H
 
 #include <QQuickItem>
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "upgradeDefinitions.h"
 #include <QJSValue>
 

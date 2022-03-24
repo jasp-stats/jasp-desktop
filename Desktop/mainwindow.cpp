@@ -20,7 +20,6 @@
 #include <QFile>
 #include <QUrl>
 #include <QShortcut>
-#include <QStringBuilder>
 #include <QDesktopServices>
 #include <QQmlContext>
 #include <QQuickItem>
@@ -29,6 +28,7 @@
 #include <QAction>
 #include <QMenuBar>
 
+#include <iostream>
 #include <boost/filesystem.hpp>
 
 #include "log.h"
@@ -66,6 +66,7 @@
 #include "gui/preferencesmodel.h"
 #include "gui/messageforwarder.h"
 
+#include "modules/activemodules.h"
 #include "modules/dynamicmodules.h"
 #include "modules/analysismenumodel.h"
 #include "modules/description/entrybase.h"
@@ -347,7 +348,6 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::plotPPIChanged,					this,					&MainWindow::plotPPIChangedHandler							);
 	connect(_preferences,			&PreferencesModel::dataAutoSynchronizationChanged,	_fileMenu,				&FileMenu::dataAutoSynchronizationChanged					);
 	connect(_preferences,			&PreferencesModel::exactPValuesChanged,				_resultsJsInterface,	&ResultsJsInterface::setExactPValuesHandler					);
-	connect(_preferences,			&PreferencesModel::normalizedNotationChanged,		_resultsJsInterface,	&ResultsJsInterface::setNormalizedNotationHandler			);
 	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::setZoom								);
 	connect(_preferences,			&PreferencesModel::developerModeChanged,			_analyses,				&Analyses::refreshAllAnalyses								);
@@ -507,9 +507,8 @@ void MainWindow::loadQML()
 
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
 	_ribbonModel->loadModules(	
-		{ 	"jaspDescriptives", "jaspTTests", "jaspAnova", "jaspMixedModels", "jaspRegression", "jaspFrequencies", "jaspFactor" },
-		{ 	"jaspAudit", "jaspBain", "jaspCircular", "jaspCochrane", "jaspDistributions" , "jaspEquivalenceTTests", "jaspJags", "jaspLearnBayes", "jaspMachineLearning",
-			"jaspMetaAnalysis", "jaspNetwork"/*, "jaspProcessControl"*/, "jaspProphet", "jaspReliability", "jaspSem", "jaspSummaryStatistics", "jaspVisualModeling" });
+		ActiveModules::getActiveCommonModules(),
+		ActiveModules::getActiveExtraModules());
 
 	_engineSync->loadAllActiveModules();
 	_dynamicModules->startUpCompleted();
@@ -1356,6 +1355,8 @@ void MainWindow::startDataEditorHandler()
 
 		switch(choice)
 		{
+        case MessageForwarder::DialogResponse::Save:
+        case MessageForwarder::DialogResponse::Discard:
 		case MessageForwarder::DialogResponse::Cancel:
 			return;
 

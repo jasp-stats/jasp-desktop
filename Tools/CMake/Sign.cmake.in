@@ -1,0 +1,55 @@
+# This file is generated from `Sign.cmake.in`
+#
+# It is being used by the install script to Sign the R.framework, and the
+# rest of the files. At the moment, we are signing everything, and I mean
+# _everything_. I think we can relax this requirement a bit in the future,
+# since not all files need to be signed.
+
+# We are removing this because having the Libraries/ as a symlink in
+# the root of R.framework/ is not acceptable by Apple.
+execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@/R.framework
+                COMMAND rm -rf Libraries)
+
+message(CHECK_START "Siging 'R.framework'")
+
+execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
+                COMMAND bash @PARALLEL_SIGNER@ R.framework)
+
+execute_process(
+  WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
+  COMMAND codesign --force --deep --verbose --timestamp --strict --sign
+          "@APPLE_CODESIGN_IDENTITY@" --options runtime R.framework)
+
+message(CHECK_FAIL "successful.")
+
+execute_process(WORKING_DIRECTORY @R_FRAMEWORK_INSTALL_PATH@
+                COMMAND codesign --verify --verbose --display R.framework)
+
+message(CHECK_START "Siging 'JASP.app'")
+
+execute_process(COMMAND bash @PARALLEL_SIGNER@ @JASP_INSTALL_PREFIX@)
+
+execute_process(
+  COMMAND
+    codesign --force --deep --verbose --timestamp --strict --entitlements
+    "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
+    --options runtime "@JASP_INSTALL_PREFIX@")
+message(CHECK_FAIL "successful.")
+
+# execute_process(COMMAND codesign --verify --verbose --display
+#                         "@JASP_INSTALL_PREFIX@/Contents/MacOS/JASP")
+
+# execute_process(COMMAND codesign --verify --verbose --display
+#                         "@JASP_INSTALL_PREFIX@/Contents/MacOS/JASPEngine")
+
+# execute_process(COMMAND codesign --verify --verbose --display
+#                         "@JASP_INSTALL_PREFIX@")
+
+execute_process(
+  COMMAND
+    codesign --verbose --timestamp --deep --force --entitlements
+    "@APPLE_CODESIGN_ENTITLEMENTS@" --sign "@APPLE_CODESIGN_IDENTITY@"
+    --options runtime "@JASP_INSTALL_PREFIX@")
+
+execute_process(COMMAND codesign --verify --verbose --display
+                        "@JASP_INSTALL_PREFIX@")

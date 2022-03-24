@@ -254,8 +254,8 @@ Item
 
 			height:					font.pixelSize + contentHeight
 
-			wrapMode:				TextEdit.WordWrap
-			horizontalAlignment:	TextArea.AlignHCenter
+            wrapMode:				Text.WordWrap
+            horizontalAlignment:	Text.AlignHCenter
 
 			textFormat:				Text.StyledText
 			font.pixelSize:			filterConstructor.fontPixelSize
@@ -296,12 +296,12 @@ Item
 				text:					filterConstructor.rCode
 				color:					jaspTheme.textEnabled
 
-				wrapMode:				TextEdit.WordWrap
-				horizontalAlignment:	TextEdit.AlignLeft
-				verticalAlignment:		TextEdit.AlignVCenter
+                wrapMode:				Text.WordWrap
+                horizontalAlignment:	Text.AlignLeft
+                verticalAlignment:		Text.AlignVCenter
 
 				textFormat:				Text.PlainText
-				font.family:			"Courier"
+				font.family:			jaspTheme.fontCode
 				font.pixelSize:			filterConstructor.fontPixelSize
 				selectByMouse:			true
 				selectByKeyboard:		true

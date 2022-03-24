@@ -2,7 +2,7 @@
 #define KNOWNISSUES_H
 
 #include <QObject>
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "utilities/qutils.h"
 #include "stringutils.h"
 

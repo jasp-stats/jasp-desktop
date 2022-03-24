@@ -20,6 +20,7 @@
 #include "log.h"
 #include <locale>
 #include <QThread>
+#include <iostream>
 #include "tempfiles.h"
 #include <QQmlContext>
 #include <QQmlIncubator>
@@ -475,6 +476,8 @@ std::string DynamicModule::getLibPathsToUse()
 
 	for(const std::string & path : requiredLibPaths)
 		libPathsToUse += ", '" + path + "'";
+
+	libPathsToUse += ", '" + AppDirs::rHome().toStdString() + "/library" + "'";
 
 	libPathsToUse += ", .libPaths())";
 

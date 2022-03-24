@@ -18,7 +18,7 @@
 #ifndef APPINFO_H
 #define APPINFO_H
 
-#include "../Common/version.h"
+#include "version.h"
 
 
 ///
@@ -36,6 +36,8 @@ public:
 	static std::string getShortDesc();
 	static std::string getBuildYear();
 	static std::string getRVersion();
+	static std::string getRDirName();
+	static std::string getSigningIdentity();
 };
 
 #endif // APPINFO_H

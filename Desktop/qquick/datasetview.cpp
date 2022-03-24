@@ -10,6 +10,7 @@
 #include "qquick/jasptheme.h"
 #include <QScreen>
 #include "data/datasetpackage.h"
+#include <iostream>
 
 DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
 

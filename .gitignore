@@ -52,3 +52,28 @@ flatpak-builder-folder/
 .RData
 .Rhistory
 .vscode
+
+
+# CMake Stuff
+build/
+build*/
+bundle/
+bundle*/
+CMakeLists.txt.user
+
+# CLion Stuff
+cmake-build-*
+.idea
+
+# Xcode project
+xcode-project/
+
+
+# Temporary 
+Frameworks/
+R.framework/
+.cache/
+Modules/renv-root/
+Desktop/utilities/appdirs.h
+Desktop/modules/activemodules.h
+Common/appinfo.cpp

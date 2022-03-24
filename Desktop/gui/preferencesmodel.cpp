@@ -169,7 +169,8 @@ QString PreferencesModel::languageCode() const
 QString PreferencesModel::githubPatResolved() const
 {
 	if(githubPatUseDefault())
-		return QProcessEnvironment::systemEnvironment().value("GITHUB_PAT", GITHUB_PAT_DEFINE);
+		return QProcessEnvironment::systemEnvironment().value("GITHUB_PAT", "@GITHUB_PAT_DEFINE@");
+        // TODO: Make sure that I can pass the Github PAT
 
 	return githubPatCustom();
 }

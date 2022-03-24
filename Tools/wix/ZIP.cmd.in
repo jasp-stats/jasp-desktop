@@ -1,0 +1,17 @@
+rem This file is generated from Tools/ZIP.cmd.in, if you want to change it, be aware 
+rem that it will be overwritten. You can edit the template file, and rerun the CMake
+rem to see your changes here.
+rem
+rem You don't need to run this file manually, you can ask CMake to run it for you using 
+rem `cmake --build . --target zip`
+
+rem @echo off
+rem autorun
+setlocal EnableDelayedExpansion
+
+rem ---------------------- Packing -------------------------------
+
+echo Making zip-version of installer
+powershell Compress-Archive -Update "@JASP_INSTALL_DIR_NATIVE@\*" "@JASP_BINARY_DIR_NATIVE@\JASP\JASP.zip"
+
+endlocal

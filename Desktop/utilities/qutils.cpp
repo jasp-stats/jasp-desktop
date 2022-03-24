@@ -198,7 +198,7 @@ QJSValue tqj(const Json::Value & json, const QQuickItem * qItem)
 	{
 		QJSValue array = QQmlEngine::contextForObject(qItem)->engine()->newArray(json.size());
 
-		for(size_t i=0; i<json.size(); i++)
+		for(auto i=0; i<json.size(); i++)
 			array.setProperty(i, tqj(json[i], qItem));
 
 		return array;

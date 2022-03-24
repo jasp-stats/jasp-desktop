@@ -1,0 +1,45 @@
+name: macOS
+
+on:
+  push:
+    branches:
+      - github-action-tests
+      - qt-6.2-cmake-cpp-17
+
+jobs:
+  xcode:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        xcode: [13.2]
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+
+    steps:
+      - name: Setting up the Keychain Certificate
+        env: 
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+          MACOS_KEYCHAIN_PWD: ${{ secrets.MACOS_KEYCHAIN_PWD }}
+          PKG_CONFIG_PATHS_FOR_CMAKE: "/usr/local/opt/zlib;/usr/local/opt/openssl@3;/usr/local/opt/qt;/usr/local/opt/libarchive"
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > Certificate.p12
+          security create-keychain -p $MACOS_KEYCHAIN_PWD build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p $MACOS_KEYCHAIN_PWD build.keychain
+          security import Certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $MACOS_KEYCHAIN_PWD build.keychain
+      - name: Updating Homebrew
+        run: brew update --preinstall
+      - name: Preparing the Requirements
+        run: brew install automake jsoncpp bison cmake qt boost pkg-config libarchive zlib libiconv openssl@1.1 mercurial brotli ninja
+      - name: Setting up the Environment Variables
+        run: |
+          export PKG_CONFIG_PATH="/usr/local/opt/zlib/lib/pkgconfig:/usr/local/opt/openssl@3/lib/pkgconfig:/usr/local/opt/qt/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig:/usr/local/Cellar/libarchive/3.5.2/lib/pkgconfig"
+          echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
+          pkg-config --libs libarchive
+      - uses: actions/checkout@v2
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -D GITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DSIGN_AT_BUILD_TIME=OFF -DTIMESTAMP_AT_BUILD_TIME=OFF -DINSTALL_JASP_REQUIRED_LIBRARIES=ON -DINSTALL_R_FRAMEWORK=ON -DINSTALL_R_MODULES=ON -DCMAKE_PREFIX_PATH=/usr/local/opt/libarchive -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl@1.1
+      - name: Build
+        run: cmake --build build

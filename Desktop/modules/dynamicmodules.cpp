@@ -416,7 +416,7 @@ DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std
 Json::Value	DynamicModules::getJsonForPackageInstallationRequest()
 {
 	if(_modulesInstallPackagesNeeded.size() == 0)
-		return nullptr;
+		return Json::nullValue;
 
 	std::string installMe	= _modulesInstallPackagesNeeded.begin()->first;
 	bool		onlyModPkg = _modulesInstallPackagesNeeded.begin()->second;

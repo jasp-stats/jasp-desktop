@@ -268,8 +268,8 @@ Item
 
 				height:					filterConstructor.fontPixelSize + contentHeight
 
-				wrapMode:				TextEdit.WordWrap
-				horizontalAlignment:	TextEdit.AlignHCenter
+                wrapMode:				Text.WordWrap
+                horizontalAlignment:	Text.AlignHCenter
 
 				textFormat:				Text.StyledText
 				font.pixelSize:			filterConstructor.fontPixelSize

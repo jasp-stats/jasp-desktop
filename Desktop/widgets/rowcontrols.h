@@ -22,7 +22,7 @@
 #include "common.h"
 #include <QQmlComponent>
 #include <QQuickItem>
-#include "jsonredirect.h"
+#include <json/json.h>
 
 class JASPListControl;
 class ListModel;

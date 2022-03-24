@@ -3,7 +3,7 @@
 
 #include <string>
 #include "enumutilities.h"
-#include "jsonredirect.h"
+#include <json/json.h>
 #include <ostream>
 
 DECLARE_ENUM(logType,  cout, file, null);

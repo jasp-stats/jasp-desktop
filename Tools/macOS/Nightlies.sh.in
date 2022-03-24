@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# This file is generated from `Nightlies.sh.in`
+# 
+# It is written to be used in a cronjob, e.g.,  `launchd` instance. 
+
+cd @JASP_SOURCE_DIR@
+
+mkdir build-x86_64-nightly
+cd build-x86_64-nightly
+cmake ..
+cmake .. -GNinja -DUSE_CONAN=ON -DCMAKE_PREFIX_PATH=@Qt6_DIR@ -DINSTALL_R_MODULES=ON -DCMAKE_OSX_ARCHITECTURES=x86_64
+cmake --build . --target JASP
+cmake --build . --target install
+cmake --build . --target dmg
+cmake --build . --target notarise
+
+mkdir build-arm64-nightly
+cd build-arm64-nightly
+cmake ..
+cmake .. -GNinja -DUSE_CONAN=ON -DCMAKE_PREFIX_PATH=@Qt6_DIR@ -DINSTALL_R_MODULES=ON -DCMAKE_OSX_ARCHITECTURES=arm64
+cmake --build . --target JASP
+cmake --build . --target install
+cmake --build . --target dmg
+cmake --build . --target notarise

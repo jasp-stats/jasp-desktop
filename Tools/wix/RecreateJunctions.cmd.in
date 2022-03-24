@@ -1,0 +1,22 @@
+rem This file is generated from Tools/RecreateJunctions.cmd.in, if you want to change it,
+rem be aware that it will be overwritten. You can edit the template file, and rerun the CMake
+rem to see your changes here.
+rem
+rem You don't need to run this file manually, you can ask CMake to run it for you using 
+rem `cmake --build . --target recreate-junctions`
+
+rem Setting up Visual Studio Environment and R/JASPEngine related stuff
+call "@VC_VARS_PATH_NATIVE@\vcvars64.bat"
+set PATH=@RINSIDE_PATH_NATIVE@\libs\x64;@RCPP_PATH_NATIVE@\libs\x64;@R_BIN_PATH_NATIVE@\x64;%QTVCDIR%;%PATH%
+set R_HOME=@R_HOME_PATH_NATIVE@
+set JASPENGINE_LOCATION=@JASP_BINARY_DIR_NATIVE@\JASPEngine.exe
+
+rem ---------------------- Collecting Junctions ------------------
+
+echo we run symlinkTools.R and then particularly collectAndStoreJunctions
+echo to generate junctions.rds which will be used later on the users pc to
+echo restore them
+echo
+echo Running JASPEngine junction collector
+
+START "junction collector" /B /WAIT JASPEngine.exe --recreateJunctions "@JASP_BINARY_DIR_NATIVE@"

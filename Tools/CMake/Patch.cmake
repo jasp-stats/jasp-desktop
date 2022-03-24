@@ -1,0 +1,362 @@
+# This script patches and signs all the libraries found in the PATH variable. In addition,
+# for every library that it patches, it creates an empty file, logging its action. So, for
+# `R_HOME/lib/libR.dylib`, we will have `R_HOME/lib/libR.dylib.patched.log`. I'm basically
+# implementing a simple cache to not patch things several times. This is especially useful
+# when we are installing the modules
+#
+# Notes:
+#
+#   - While this can easily be a CMake Function, or a Macro, it is not,
+#     and it should be called using the `cmake -P Patch.cmake`. It is a standalone script
+#     because CMake cannot call its function inside a COMMAND section of `execute_process` or
+#     `add_custom_targets` and I needed to have that in a few situtation.
+#
+
+# cmake_policy(SET CMP0009 NEW)
+
+if(NOT APPLE)
+  message(STATUS "Nothing to fix here.")
+
+else()
+
+  file(
+    GLOB_RECURSE
+    LIBRARIES
+    "${PATH}/*.so"
+    "${PATH}/*.dylib")
+  list(
+    FILTER
+    LIBRARIES
+    EXCLUDE
+    REGEX
+    ".*dSYM*")
+
+  # file(GLOB BINARIES "${PATH}/*/bin/*")
+  # list(
+  #   FILTER
+  #   "${BINARIES}"
+  #   EXCLUDE
+  #   REGEX
+  #   ".*\\.patched\\.log.*")
+
+  # message(STATUS "HERE ARE BINARIES:\n ${BINARIES}")
+
+  set(FILES "")
+  list(
+    APPEND
+    FILES
+    ${LIBRARIES}
+    ${BINARIES})
+
+  set(NEW_ID "")
+
+  foreach(FILE ${FILES})
+
+    get_filename_component(FILE_NAME ${FILE} NAME)
+    get_filename_component(DIRECTORY_NAME ${FILE} DIRECTORY)
+
+    string(LENGTH "${PATH}/" PATH_LENGTH)
+    string(
+      SUBSTRING "${FILE}"
+                "${PATH_LENGTH}"
+                "-1"
+                FILE_SHORT_PATH)
+
+    message(CHECK_START "--- Patching ${FILE_SHORT_PATH}")
+
+    if(NOT EXISTS "${DIRECTORY_NAME}/${FILE_NAME}.patched.log")
+
+      # This `if` doesn't look great but it should cover our main patterns.
+      # Later on, after we are sure that everything works as expected, we can
+      # make it nicer.
+
+      if((FILE MATCHES "prophet.so")
+         OR (FILE MATCHES "metaBMA.so")
+         OR (FILE MATCHES "rstanarm.so")
+         OR (FILE MATCHES "libtbbmalloc.dylib")
+         OR (FILE MATCHES "libtbbmalloc_proxy.dylib")
+         OR (FILE MATCHES "libtbb.dylib"))
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change "@rpath/libtbbmalloc.dylib"
+            "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbbmalloc.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change "@rpath/libtbbmalloc_proxy.dylib"
+            "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbbmalloc_proxy.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change "@rpath/libtbb.dylib"
+            "@executable_path/../Modules/${MODULE}/RcppParallel/lib/libtbb.dylib"
+            "${FILE}")
+
+        string(
+          REPLACE "${MODULES_BINARY_PATH}/${MODULE}"
+                  "@executable_path/../Modules/${MODULE}"
+                  NEW_ID
+                  ${FILE})
+
+      elseif(FILE MATCHES "/opt/R/arm64/gfortran/lib/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/gfortran/lib/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/Modules/jasp")
+
+        string(
+          REPLACE "${MODULES_BINARY_PATH}/${MODULE}"
+                  "@executable_path/../Modules/${MODULE}"
+                  NEW_ID
+                  ${FILE})
+
+      elseif(FILE MATCHES "/library/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/library/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/library/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/modules/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/modules/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/modules/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/opt/jags/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/opt/jags/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/"
+            NEW_ID
+            ${FILE})
+
+      elseif(FILE MATCHES "/lib/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/lib/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/"
+            NEW_ID
+            ${FILE})
+
+      endif()
+
+      # Changing the `R_HOME/lib/` prefix
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND
+          bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+          "/Library/Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib"
+      )
+
+      # Changing the `R_HOME/opt/jags/lib` prefix
+      # This only applies on .so inside the /opt/jags/lib/JAGS/modules-4/
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND
+          bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+          "${R_HOME_PATH}/opt/jags/lib"
+          "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
+      )
+
+      if(R_DIR_NAME MATCHES "arm64")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change
+            "${R_HOME_PATH}/opt/R/arm64/gfortran/lib/libgfortran.dylib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libgfortran.5.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+            "/opt/R/arm64/gfortran/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/gfortran/lib"
+        )
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+            "${R_HOME_PATH}/opt/R/arm64/gfortran/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/gfortran/lib"
+        )
+
+      else()
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change
+            "${R_HOME_PATH}/opt/local/gfortran/lib/libgfortran.dylib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libgfortran.5.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            install_name_tool -change
+            "${R_HOME_PATH}/opt/local/gfortran/lib/libquadmath.dylib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/lib/libquadmath.0.dylib"
+            "${FILE}")
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}"
+            "/usr/local/gfortran/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/local/gfortran/lib"
+        )
+        # For whatever reason, the above command cannot replace the prefix of these libraries. I have tried to
+        # directly changed their 'id' even, and that didn't help either!
+        #   - libgcc_ext.10.4.dylib
+        #   - libgcc_ext.10.5.dylib
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/usr/local/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/local/lib"
+        )
+
+      endif()
+
+      # Changing the `/opt/R/arm64/lib` prefix
+      # These are additional libraries needed for arm64.
+      # @todo, at some point, we might need to have a case for them, but for now they are fine
+      if(NOT (FILE MATCHES ".*(runjags|rjags|RoBMA|metaBMA).*"))
+
+        execute_process(
+          # COMMAND_ECHO STDOUT
+          ERROR_QUIET OUTPUT_QUIET
+          WORKING_DIRECTORY ${PATH}
+          COMMAND
+            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib"
+        )
+
+      else()
+
+        # Changing the `/opt/jags/lib` prefix
+
+        if(R_DIR_NAME MATCHES "arm64")
+
+          execute_process(
+            # COMMAND_ECHO STDOUT
+            ERROR_QUIET OUTPUT_QUIET
+            WORKING_DIRECTORY ${PATH}
+            COMMAND
+              bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/opt/R/arm64/lib"
+              "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
+          )
+
+        else()
+
+          execute_process(
+            # COMMAND_ECHO STDOUT
+            ERROR_QUIET OUTPUT_QUIET
+            WORKING_DIRECTORY ${PATH}
+            COMMAND
+              bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/usr/local/lib"
+              "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/jags/lib"
+          )
+
+        endif()
+
+      endif()
+
+      # Changing the library `id`s
+      execute_process(
+        # COMMAND_ECHO STDOUT
+        ERROR_QUIET OUTPUT_QUIET
+        WORKING_DIRECTORY ${PATH}
+        COMMAND install_name_tool -id "${NEW_ID}" "${FILE}")
+
+      file(WRITE ${DIRECTORY_NAME}/${FILE_NAME}.patched.log "")
+      message(CHECK_PASS "successful.")
+
+      # Signing the library
+
+      if(${SIGNING})
+        set(APPLE_CODESIGN_IDENTITY "${SIGNING_IDENTITY}")
+
+        set(SIGNING_RESULT "timeout")
+
+        message(CHECK_START "--- Signing  ${FILE_SHORT_PATH}")
+
+        while(${SIGNING_RESULT} MATCHES "timeout")
+
+          execute_process(
+            # COMMAND_ECHO STDOUT
+            ERROR_QUIET OUTPUT_QUIET
+            TIMEOUT 30
+            WORKING_DIRECTORY ${PATH}
+            COMMAND codesign --deep --force ${CODESIGN_TIMESTAMP_FLAG} --sign
+                    ${APPLE_CODESIGN_IDENTITY} --options runtime "${FILE}"
+            RESULT_VARIABLE SIGNING_RESULT
+            OUTPUT_VARIABLE SIGNING_OUTPUT)
+        endwhile()
+
+        if(SIGNING_RESULT STREQUAL "0")
+          message(CHECK_PASS "successful")
+        else()
+          message(CHECK_FAIL "unsuccessful")
+        endif()
+
+      endif()
+
+    else()
+
+      message(CHECK_PASS "already patched.")
+
+    endif()
+
+  endforeach()
+
+endif()

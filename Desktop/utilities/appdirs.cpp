@@ -76,18 +76,21 @@ QString AppDirs::userModulesDir()
 
 QString AppDirs::bundledModulesDir()
 {
-	static QString folder =
+	static QString folder = 
 #ifdef __APPLE__
-	 (QDir(programDir().absoluteFilePath("../Resources/Modules")).exists() ? programDir().absoluteFilePath("../Resources/Modules") : programDir().absoluteFilePath("Modules")) + '/';
+	 programDir().absoluteFilePath("../Modules/");
 #elif _WIN32
 	 programDir().absoluteFilePath("Modules") + '/';
 #elif FLATPAK_USED
-	"/app/bin/Modules/";
+	"/app/bin/../Modules/";
 #else  //Normal linux build
-	programDir().absoluteFilePath("Modules") + '/';
+	programDir().absoluteFilePath("../Modules") + '/';
 #endif
+	// @Joris, I think these guys should be one level up,
+	// they are not binaries, so, they should not be in 
+	// the binary folder in my opinion.
 	
-	return folder ;
+	return folder;
 }
 
 QString AppDirs::processPath(const QString & path)
@@ -123,26 +126,49 @@ QString AppDirs::appData()
 	return processPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 }
 
+/**
+ * @brief 		This returns the path to R home directory, where `bin/`, `lib/`, `library/`, etc.
+ *          	are located.
+ * 
+ * @details 	On macOS, R lives inside the Frameworks folder, both on build and inside the
+ *           	the App Bundle, that's a level up from JASP, and JASPEngine. On Windows, R is in the same
+ *            	level as JASP binaries, and on Linux, R might lives in different location, that's why we
+ *             	have a bit of a logic there to figure out where it is. 
+ * 
+ * @note       	The Linux logic is most likely not necessary since rHomeDir is being set at config
+ *              time by CMake and that should always point to the right place no matter what. I will
+ *              revisit this as soon as we have a working Flatpak build.
+ *              
+ * @return 		Path to R home directory
+ */
 QString AppDirs::rHome()
 {
-	
-#ifdef _WIN32
-	QString rHomePath = programDir().absoluteFilePath("R");
-#elif defined(__APPLE__)
-    QString rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
-#else //linux
 
-#ifndef R_HOME
-	QString rHomePath = programDir().absoluteFilePath("R/lib/libR.so");
+	QString rHomePath;
+
+#ifdef _WIN32
+	rHomePath = programDir().absoluteFilePath("R");
+#endif
+
+#if defined(__APPLE__)
+	rHomePath = programDir().absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRDirName()) + "/Resources");
+#endif
+    
+#ifdef linux
+
+if (AppDirs::rHomeDir().isEmpty())
+{
+	rHomePath = programDir().absoluteFilePath("R/lib/libR.so");
 	if (QFileInfo(rHomePath).exists() == false)
 #ifdef FLATPAK_USED
 		rHomePath = "/app/lib64/R/"; //Tools/flatpak/org.jaspstats.JASP.json also sets R_HOME to /app/lib64 for 32bits...
 #else
 		rHomePath = "/usr/lib/R/";
 #endif
-#else
-	QString rHomePath = QDir::isRelativePath(R_HOME) ? programDir().absoluteFilePath(R_HOME) : R_HOME;
-#endif
+} else {
+	Log::log() << "AppDirs::rHomeDir() is set " << AppDirs::rHomeDir() << std::endl;
+	rHomePath = QDir::isRelativePath(AppDirs::rHomeDir()) ? programDir().absoluteFilePath(AppDirs::rHomeDir()) : AppDirs::rHomeDir();
+}
 #endif
 	
 	return rHomePath;

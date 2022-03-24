@@ -19,7 +19,7 @@
 #ifndef BOUNDCONTROL_H
 #define BOUNDCONTROL_H
 
-#include "jsonredirect.h"
+#include <json/json.h>
 
 class BoundControl
 {

@@ -19,7 +19,6 @@
 #include "resultsjsinterface.h"
 
 #include <QClipboard>
-#include <QStringBuilder>
 
 #ifdef _WIN32
 #include <QPainter>
@@ -273,7 +272,7 @@ void ResultsJsInterface::overwriteUserdata(Analysis *analysis)
 
 void ResultsJsInterface::showAnalysis(int id)
 {
-	runJavaScript("window.select(" % QString::number(id) % ", true)");
+	runJavaScript("window.select(" + QString::number(id) + ", true)");
 }
 
 void ResultsJsInterface::exportSelected(const QString &filename)
@@ -303,7 +302,7 @@ void ResultsJsInterface::unselect()
 
 void ResultsJsInterface::removeAnalysis(Analysis *analysis)
 {
-	runJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
+	runJavaScript("window.remove(" + QString::number(analysis->id()) + ")");
 }
 
 void ResultsJsInterface::removeAnalyses()
@@ -313,7 +312,7 @@ void ResultsJsInterface::removeAnalyses()
 
 void ResultsJsInterface::moveAnalyses(quint64 fromId, quint64 toId)
 {
-	runJavaScript("window.moveAnalyses(" % QString::number(fromId) % "," % QString::number(toId) % ")");
+	runJavaScript("window.moveAnalyses(" + QString::number(fromId) + "," + QString::number(toId) + ")");
 }
 
 void ResultsJsInterface::showInstruction()

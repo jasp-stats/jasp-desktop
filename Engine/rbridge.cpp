@@ -16,7 +16,7 @@
 //
 
 #include "rbridge.h"
-#include "jsonredirect.h"
+#include <json/json.h>
 #include "sharedmemory.h"
 #include "appinfo.h"
 #include "tempfiles.h"
@@ -24,6 +24,10 @@
 #include "timers.h"
 #include "r_functionwhitelist.h"
 #include "otoolstuff.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 DataSet						*	rbridge_dataSet		= nullptr;
 RCallback						rbridge_callback	= NULL;

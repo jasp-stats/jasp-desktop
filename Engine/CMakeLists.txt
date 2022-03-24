@@ -1,0 +1,125 @@
+# Configuring and building the JASPEngine. To build JASPEngine we need the R-Interface, and
+# the `add_dependencies` takes care of this dependency, however, there is a subtle difference
+# between how it works on Windows compared to other OSes. On Windwos, R-Interface is a
+# custom target, while on other OSes its a target defined by `add_library`.
+#
+# On Windows,
+#   - We need to manually link to the R-Interface.dll.a and also place the R-Interface.dll
+#     inside the build folder.
+#
+list(APPEND CMAKE_MESSAGE_CONTEXT Engine)
+
+if(LINUX)
+
+  target_link_libraries(R-Interface PUBLIC ${_LIB_R})
+
+endif()
+
+file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
+
+file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+
+add_executable(JASPEngine ${HEADER_FILES} ${SOURCE_FILES})
+
+add_dependencies(JASPEngine R-Interface jaspBase)
+
+target_include_directories(
+  JASPEngine
+  PUBLIC ${PROJECT_SOURCE_DIR}/R-Interface
+         ${PROJECT_SOURCE_DIR}/Common
+         # Conan
+         $<$<BOOL:${USE_CONAN}>:${CONAN_INCLUDE_DIRS_JSONCPP}>
+         #
+         ${Boost_INCLUDE_DIRS})
+
+if(WIN32)
+
+  message(CHECK_START "Setting path to libR-Interface.dll")
+  set(_LIB_R_INTERFACE_DLL
+      "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll"
+      CACHE STRING "Path to libR-Interface.dll")
+  message(STATUS "  ${_LIB_R_INTERFACE_DLL}")
+
+  message(CHECK_START "Setting path to libR-Interface.dll.a")
+  set(_LIB_R_INTERFACE_STATIC_DLL_A
+      "${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a"
+      CACHE STRING "Path to libR-Interface.dll.a")
+  message(STATUS "  ${_LIB_R_INTERFACE_STATIC_DLL_A}")
+
+  message(STATUS "libR-Interface will be build if it is missing.")
+
+endif()
+
+target_link_libraries(
+  JASPEngine
+  PUBLIC Common
+         #
+         $<$<PLATFORM_ID:Windows>:${_LIB_R_INTERFACE_STATIC_DLL_A}>
+         $<$<NOT:$<PLATFORM_ID:Windows>>:R-Interface>
+         # Boost
+         Boost::filesystem
+         Boost::system
+         Boost::date_time
+         Boost::timer
+         Boost::chrono
+         #
+         LibArchive::LibArchive)
+
+if(IWYU_EXECUTABLE AND RUN_IWYU)
+  set_target_properties(JASPEngine PROPERTIES CXX_INCLUDE_WHAT_YOU_USE
+                                              ${IWYU_EXECUTABLE})
+endif()
+
+target_compile_definitions(
+  JASPEngine
+  PUBLIC $<$<BOOL:${JASP_PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>
+         BUILDING_JASP_ENGINE R_HOME=${R_HOME_PATH})
+
+set(MACOSX_BUNDLE_DIR
+    "${CMAKE_BINARY_DIR}/Desktop/Debug/${PROJECT_NAME}.app/Contents")
+set(MACOSX_BUNDLE_RUNTIME_DIR "${MACOSX_BUNDLE_DIR}/MacOS")
+set(MACOSX_BUNDLE_RESOURCE_DIR "${MACOSX_BUNDLE_DIR}/Resources")
+
+# Putting the JASPEngine next to the JASP executable
+set_target_properties(JASPEngine PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                                            ${CMAKE_BINARY_DIR}/Desktop)
+
+if(WINDOWS)
+  target_link_libraries(JASPEngine PUBLIC Boost::nowide)
+
+  target_compile_definitions(
+    JASPEngine
+    PUBLIC BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+           BOOST_WINDOWS
+           NOMINMAX
+           WIN32_LEAN_AND_MEAN)
+
+  target_link_libraries(JASPEngine PUBLIC ole32 oleaut32)
+
+  # These are mainly for R-Interface, and all build using the MinGW
+  add_custom_command(
+    TARGET JASPEngine
+    POST_BUILD DEPENDS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBGCC_S_SEH_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBSTDCPP_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBWINPTHREAD_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIB_BOOST_NOWIDE_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBJSONCPP_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBREADSTAT_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_ZLIB_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBICONV_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_DLL}
+            ${CMAKE_BINARY_DIR}
+    COMMENT "------ Re-installing the dependencies (if necessary)")
+
+endif()
+
+list(POP_BACK CMAKE_MESSAGE_CONTEXT)

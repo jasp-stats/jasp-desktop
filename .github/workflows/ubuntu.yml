@@ -1,0 +1,31 @@
+name: Ubuntu
+
+on:
+  push:
+    branches:
+      - github-action-tests
+      - qt-6.2-cmake-cpp-17
+
+jobs:
+  qt:
+    name: Ubuntu Build
+    if: false
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        qt-version: [6.2]
+
+    steps:
+      - name: Qt Requirements
+        run: |
+          sudo apt update
+          brew update
+      - name: Dependencies
+        run: |
+          sudo apt-get -y install build-essential mercurial gfortran-9 gfortran-10 flex bison r-base cmake libarchive-dev zlibc libzstd-dev mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev libglew-dev libglfw3-dev libglm-dev libao-dev libmpg123-dev
+          brew install qt jsoncpp boost libarchive
+      - uses: actions/checkout@v2
+      - name: Configure
+        run: cmake -S . -B build -D GITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DINSTALL_JASP_REQUIRED_LIBRARIES=ON -DLINUX_LOCAL_BUILD=ON -DINSTALL_R_MODULES=ON
+      - name: Build
+        run: cmake --build build

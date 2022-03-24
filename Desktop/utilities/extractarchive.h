@@ -5,8 +5,8 @@
 #include <map>
 #include <string>
 #include <functional>
-#include "libzip/archive.h"
-#include "libzip/archive_entry.h"
+#include <archive.h>
+#include <archive_entry.h>
 
 
 /// Helper class to interface with lizip/archive to unpack archives and to get particular files from it
