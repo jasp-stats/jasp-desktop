@@ -49,7 +49,6 @@
 				<array>
 					<string>public.data</string>
 					<string>public.archive</string>
-					<string>public.zip-archive</string>
 				</array>
 				<key>UTTypeDescription</key>
 				<string>JASP Data Set</string>
