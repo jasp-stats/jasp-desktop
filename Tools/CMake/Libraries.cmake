@@ -116,18 +116,16 @@ if(NOT FLATPAK_USED)
 else()
 
   find_package(
-    Qt6
-    COMPONENTS WebEngineQuick
-               HINTS
-               ${Qt6WebEngineQuick_DIR}
-               NO_DEFAULT_PATH)
+    Qt6WebEngineQuick
+    PATHS
+    ${Qt6WebEngineQuick_DIR}
+    NO_DEFAULT_PATH)
 
   find_package(
-    Qt6
-    COMPONENTS Core5Compat
-               HINTS
-               ${Qt6Core5Compat_DIR}
-               NO_DEFAULT_PATH)
+    Qt6Core5Compat
+    PATHS
+    ${Qt6Core5Compat_DIR}
+    NO_DEFAULT_PATH)
 
   find_package(
     Qt6 REQUIRED

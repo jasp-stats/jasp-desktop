@@ -98,6 +98,8 @@ target_link_libraries(
          Qt::Widgets
          Qt::Qml
          Qt::WebEngineQuick
+         $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::WebEngineQuick>
+         $<$<BOOL:${FLATPAK_USED}>:Qt6WebEngineQuick>
          Qt::WebChannel
          Qt::Svg
          Qt::Network
@@ -108,7 +110,8 @@ target_link_libraries(
          Qt::QuickControls2
          Qt::QuickControls2Impl
          Qt::QuickWidgets
-         Qt::Core5Compat
+         $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
+         $<$<BOOL:${FLATPAK_USED}>:Qt6Core5Compat>
          Qt::QuickTemplates2
          Qt::DBus
          Qt::QmlWorkerScript
