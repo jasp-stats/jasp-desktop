@@ -68,9 +68,6 @@ determineOverlap <- function(targetRoot, sourceRoot)
 # Use overlapfunctions as returned by determineOverlap to generate a function to turn target-path from absolute to relative
 getRelativityFunction <- function(modulesRoot, renvCache)
 {
-  # I wanted this code to be more general but then it is too complicated to debug. 
-  # And has a bug. And renv-cache can be assumed to be right next to Modules anyway...
-  # So instead of doing:
   
   if (Sys.info()["sysname"] == "Darwin") {
     modToRenvS <- pastePath(c("..", "renv-cache"))
