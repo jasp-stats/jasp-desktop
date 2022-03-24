@@ -109,8 +109,8 @@
 [submodule "Common/jaspColumnEncoder"]
 	path = Common/jaspColumnEncoder
 	url = https://github.com/jasp-stats/jaspColumnEncoder
-	branch = qt-6.2-cmake-cpp-17
+	branch = master
 [submodule "R-Interface/jaspResults"]
 	path = R-Interface/jaspResults
 	url = https://github.com/jasp-stats/jaspResults
-	branch = qt-6.2-cmake-cpp-17
+	branch = master
