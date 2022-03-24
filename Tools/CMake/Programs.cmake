@@ -166,15 +166,31 @@ if(WIN32)
   set(MINGW_PATH
       "C:/msys64/mingw64"
       CACHE PATH "Path to MinGW x64 folder, e.g., C:/msys64/mingw64")
+
   if(EXISTS ${MINGW_PATH})
+
     message(CHECK_PASS "found")
     message(STATUS "  ${MINGW_PATH}")
+
   else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "MSYS2 is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the MINGW_PATH to your MinGW x64 path, e.g., C:/msys64/mingw64"
-    )
+
+    set(MINGW_PATH "D:/msys64/mingw64")
+
+    if(EXISTS ${MINGW_PATH})
+
+      message(CHECK_PASS "found")
+      message(STATUS "  ${RTOOLS_PATH}")
+
+    else()
+
+      message(CHECK_FAIL "not found")
+      message(
+        FATAL_ERROR
+          "MSYS2 is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the MINGW_PATH to your MinGW x64 path, e.g., C:/msys64/mingw64"
+      )
+
+    endif()
+
   endif()
 
   message(CHECK_START "Looking for Rtools")
@@ -190,6 +206,7 @@ if(WIN32)
   else()
 
     set(RTOOLS_PATH "D:/rtools40")
+
     if(EXISTS ${RTOOLS_PATH})
 
       message(CHECK_PASS "found")

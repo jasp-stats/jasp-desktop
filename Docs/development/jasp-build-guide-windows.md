@@ -53,7 +53,7 @@ After installing MSYS2, you will find a new program in your Start Menu. Search f
 Copy and paste the following line into the Terminal and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP.
 
 ```bash
-pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-boost mingw-w64-x86_64-jsoncpp bison flex make autoconf
+pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-boost mingw-w64-x86_64-jsoncpp bison flex make autoconf automake git
 ```
 
 #### Downloading and Building ReadStat (on MSYS2)
@@ -61,10 +61,9 @@ pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-boost mingw-w64-x86_64-j
 In addition to these libraries, you need to manually download and install the ReadStat library. You can do that by typing the following commands into the command line.
 
 ```
-git clone https://github.com/WizardMac/ReadStat.git
-git checkout tags/v1.1.7
-cd ReadStat
-./autogen.sh
+wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.7/readstat-1.1.7.tar.gz
+tar xvf readstat-1.1.7.tar.gz
+cd readstat-1.1.7
 ./configure
 make -j
 make install

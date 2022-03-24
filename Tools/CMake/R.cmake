@@ -561,7 +561,7 @@ elseif(WIN32)
 
   else()
 
-    message(STATUS "found.")
+    message(CHECK_PASS "found.")
 
   endif()
 
