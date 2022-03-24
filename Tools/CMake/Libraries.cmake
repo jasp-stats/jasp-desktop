@@ -153,9 +153,6 @@ else()
 
 endif()
 
-message(STATUS "Found Qt6")
-message(STATUS "  ${Qt6_DIR}")
-
 if(LINUX)
 
   message(CHECK_START "Looking for `librt`")

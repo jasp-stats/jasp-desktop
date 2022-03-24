@@ -157,10 +157,14 @@ if(LINUX)
   option(LINUX_LOCAL_BUILD "Whether we are building inside the Build folder" ON)
 
   option(FLATPAK_USED "Whether we are building for Flatpak" OFF)
+  if(FLATPAK_USED)
+    set(LINUX_LOCAL_BUILD OFF)
+    set(IS_LINUX_LOCAL_BUILD FALSE)
+  endif()
 
   # IS_LINUX_LOCAL_BUILD is a special variable that will be used in install-module.R
   # and it is suppose to store R's TRUE or FALSE
-  set(IS_LINUX_LOCAL_BUILD TRUE)
+  # set(IS_LINUX_LOCAL_BUILD TRUE)
 
   if(LINUX_LOCAL_BUILD)
 

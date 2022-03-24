@@ -595,11 +595,12 @@ elseif(LINUX)
 
   message(CHECK_START "Looking for R")
 
+  # If not custom path is not defined, we are looking if R_HOME is set
   if(CUSTOM_R_PATH STREQUAL "")
 
-    find_program(R_BIN NAMES R)
+    set(R_HOME_PATH $ENV{R_HOME})
 
-    if(R_BIN STREQUAL "")
+    if(R_HOME_PATH STREQUAL "")
 
       message(CHECK_FAIL "unsuccessful")
       message(
@@ -609,11 +610,6 @@ elseif(LINUX)
     else()
 
       message(CHECK_PASS "successful")
-
-      execute_process(
-        COMMAND ${R_BIN} RHOME
-        OUTPUT_VARIABLE R_HOME_PATH
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
       message(STATUS "R_HOME is ${R_HOME_PATH}")
 
     endif()
