@@ -39,19 +39,24 @@
 		<key>LSMinimumSystemVersion</key>
 		<string>@CMAKE_OSX_DEPLOYMENT_TARGET@</string>
 
+		<key>LSApplicationCategoryType</key>
+		<string>public.app-category.education</string>
+
 		<key>UTExportedTypeDeclarations</key>
 		<array>
 			<dict>
-
+				<key>UTTypeConformsTo</key>
+				<array>
+					<string>public.data</string>
+					<string>public.archive</string>
+					<string>public.zip-archive</string>
+				</array>
 				<key>UTTypeDescription</key>
 				<string>JASP Data Set</string>
-
 				<key>UTTypeIconFile</key>
 				<string>Document</string>
-
 				<key>UTTypeIdentifier</key>
 				<string>org.jasp-stats.jasp.jasp</string>
-
 				<key>UTTypeTagSpecification</key>
 				<dict>
 					<key>public.filename-extension</key>
@@ -59,25 +64,11 @@
 						<string>jasp</string>
 					</array>
 				</dict>
-
 			</dict>
 		</array>
 
 		<key>CFBundleDocumentTypes</key>
 		<array>
-			<dict>
-				<key>CFBundleTypeRole</key>
-				<string>Document</string>
-
-				<key>LSHandlerRank</key>
-				<string>Owner</string>
-
-				<key>LSItemContentTypes</key>
-				<array>
-					<string>org.jasp-stats.jasp.jasp</string>
-				</array>
-			</dict>
-
 			<dict>
 				<key>CFBundleTypeIconFile</key>
 				<string>Document</string>
@@ -94,8 +85,10 @@
 				<key>CFBundleTypeExtensions</key>
 				<array>
 					<string>csv</string>
-					<string>spss</string>
+					<string>tsv</string>
 					<string>sav</string>
+					<string>ods</string>
+					<string>txt</string>
 				</array>
 			</dict>
 		</array>
