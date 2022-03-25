@@ -1,4 +1,4 @@
-# Guide for consistent option names
+# Option names style guide: Towards consistency in the syntax mode
 
 This guide is aimed to help us in using consistent option names across JASP. 
 
@@ -146,6 +146,10 @@ DropDown
 Notice that we changed the option name to `mimic` so that the argument is called the same as in the `lavaan` package that runs the analysis. Further, we changed the label of value `lavaan` from "None" to "Lavaan" to still keep consistency between what is shown to the user in JASP, and what is shown to the user in R. Notice that we slightly deviate from our camelCasing rule for values `Mplus` and `EQS` for consistency with `lavaan`.
 
 Such small deviations are permissible if they improve understanding of what out analysis does. We advise thinking critically about where to push this.The primary goal of the options are to make them as clear as possible to JASP and R users, and R packages not necessarily design their arguments to be easily translatable into a good GUI programme. If that is the case, consistency and clarity of the JASP programme and the JASP code should always take precedence above consistency with the underlying R package that runs the analysis.
+
+### Reserved option names
+
+`data` and `formula` are reserved option names: **Do not use them for naming options in the Qml file.**
 
 
 ### Long option names are not evil
