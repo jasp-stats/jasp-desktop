@@ -146,6 +146,23 @@ if(WIN32)
     )
   endif()
 
+  set(VC_MERGE_MODULE_PATH_NATIVE
+      "${VC_VARS_PATH_NATIVE}\\${VC_MERGE_MODULE_NAME}}")
+
+  message(CHECK_START "Looking for VC Merge Module, ${VC_MERGE_MODULE_NAME}")
+
+  if(EXISTS ${VC_MERGE_MODULE_PATH_NATIVE})
+
+    message(CHECK_PASS "found.")
+    message(STATUS "  ${VC_MERGE_MODULE_PATH_NATIVE}")
+
+  else()
+
+    message(CHECK_FAIL "not found.")
+    message(FATAL_ERROR "${VC_MERGE_MODULE_NAME} cannot be found.")
+
+  endif()
+
 endif()
 
 if(LINUX)

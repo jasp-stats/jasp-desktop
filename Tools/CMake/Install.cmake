@@ -312,7 +312,7 @@ if(WIN32)
           ${MINGW_LIBREADSTAT_DLL}
           ${MINGW_ZLIB_DLL}
           ${MINGW_LIBICONV_DLL}
-          ${_LIB_R_INTERFACE_SHARED}
+          ${_LIB_R_INTERFACE_DLL}
     DESTINATION .)
 
 endif()
