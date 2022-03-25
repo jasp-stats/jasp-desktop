@@ -186,7 +186,7 @@ Option names should preferably be nouns.
 - `residualsExport`, not `exportResiduals`??
 
 
-## Consistency with underlying analysis packages
+### Consistency with underlying analysis packages
 
 In some cases, an option name/value is selected so that it is directly compatible with option names/values of the underlying package. For example, consider the following excerpt from a SEM analysis:
 
