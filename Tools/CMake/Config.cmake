@@ -133,23 +133,27 @@ if(WIN32)
 
   set(VC_MERGE_MODULE_NAME
       "Microsoft_VC143_CRT_x64.msm"
-      CACHE PATH "Module Merge Name")
+      CACHE STRING "Module Merge Name")
   if(MSVC_VERSION GREATER "1930")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
+    set(VC_TOOLS_REDIST_PATH "$ENV{VCINSTALLDIR}")
     set(VC_VARS_PATH_NATIVE
         "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build"
     )
   elseif(MSVC_VERSION GREATER "1920")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCToolsRedistDir%")
+    set(VC_TOOLS_REDIST_PATH "$ENV{VCToolsRedistDir}")
     set(VC_VARS_PATH_NATIVE
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Auxiliary\\Build"
     )
   endif()
 
   set(VC_MERGE_MODULE_PATH_NATIVE
-      "${VC_VARS_PATH_NATIVE}\\${VC_MERGE_MODULE_NAME}}")
+      "${VC_TOOLS_REDIST_PATH}/MergeModules/${VC_MERGE_MODULE_NAME}"
+      CACHE PATH "Merge Module Path")
 
-  message(CHECK_START "Looking for VC Merge Module, ${VC_MERGE_MODULE_NAME}")
+  message(CHECK_START
+          "Looking for VC Merge Module, ${VC_MERGE_MODULE_PATH_NATIVE}")
 
   if(EXISTS ${VC_MERGE_MODULE_PATH_NATIVE})
 

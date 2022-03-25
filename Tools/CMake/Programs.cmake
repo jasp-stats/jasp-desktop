@@ -179,7 +179,7 @@ if(WIN32)
     if(EXISTS ${MINGW_PATH})
 
       message(CHECK_PASS "found")
-      message(STATUS "  ${RTOOLS_PATH}")
+      message(STATUS "  ${MINGW_PATH}")
 
     else()
 
@@ -225,7 +225,7 @@ if(WIN32)
   endif()
 
   set(WIX_PATH
-      ""
+      "C:/Program Files (x86)/WiX Toolset v3.11/bin"
       CACHE
         PATH
         "Path to your WIX installation, e.g., C:\\Program Files (x86)\\WiX Toolset v3.11\\bin"
