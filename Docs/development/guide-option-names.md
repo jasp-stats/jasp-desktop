@@ -110,43 +110,6 @@ Section
 
 Here, we have a section for specifying marginal means. So every option starts with `marginalMeans`. Further, the number of bootstrapping replicates is a child of the checkbox that enables bootstrapping, and so it starts with `marginalMeansBootstrap`.
 
-## Consistency with underlying analysis packages
-
-In some cases, an option name/value is selected so that it is directly compatible with option names/values of the underlying package. For example, consider the following excerpt from a SEM analysis:
-
-```qml
-DropDown
-{
-	name:	"emulation"
-	label:	qsTr("Emulation")
-	values: [
-		{ value: "lavaan",	label: qsTr("None") 	},
-		{ value: "Mplus",	label: qsTr("Mplus") 	},
-		{ value: "EQS",		label: qsTr("EQS") 		}
-	] 
-}
-```
-
-Here we see a schism between the value of the option (`lavaan`) and the label of the option ("None"). This is because the value of the option `emulation` is directly feeded into the lavaan functions under argument `mimic`. The programmer now need to make a conscious decision: Do we need and want to keep consistency with the underlying analysis package? If the answer is yes, then it is adviseable to make the consistency as tight as possible. This means that slight deviations from the our style-guide is possible if this helps keeping consistent with the underlying package. In this case, we could change the component accordingly
-
-```qml
-DropDown
-{
-	name:	"mimic"
-	label:	qsTr("Mimic")
-	info:	qsTr("Obtain results based on emulating popular SEM software. The option corresponds to the lavaan's `mimic` arument.")
-	values: [
-		{ value: "lavaan",	label: qsTr("Lavaan") 	},
-		{ value: "Mplus",	label: qsTr("Mplus") 	},
-		{ value: "EQS",		label: qsTr("EQS") 		}
-	] 
-}
-```
-
-Notice that we changed the option name to `mimic` so that the argument is called the same as in the `lavaan` package that runs the analysis. Further, we changed the label of value `lavaan` from "None" to "Lavaan" to still keep consistency between what is shown to the user in JASP, and what is shown to the user in R. Notice that we slightly deviate from our camelCasing rule for values `Mplus` and `EQS` for consistency with `lavaan`.
-
-Such small deviations are permissible if they improve understanding of what out analysis does. We advise thinking critically about where to push this.The primary goal of the options are to make them as clear as possible to JASP and R users, and R packages not necessarily design their arguments to be easily translatable into a good GUI programme. If that is the case, consistency and clarity of the JASP programme and the JASP code should always take precedence above consistency with the underlying R package that runs the analysis.
-
 ### Reserved option names
 
 `data` and `formula` are reserved option names: **Do not use them for naming options in the Qml file.**
@@ -221,3 +184,41 @@ Option names should preferably be nouns.
 
 - `descriptiveTableTransposed`, not `transposeDescriptiveTable`??
 - `residualsExport`, not `exportResiduals`??
+
+
+## Consistency with underlying analysis packages
+
+In some cases, an option name/value is selected so that it is directly compatible with option names/values of the underlying package. For example, consider the following excerpt from a SEM analysis:
+
+```qml
+DropDown
+{
+	name:	"emulation"
+	label:	qsTr("Emulation")
+	values: [
+		{ value: "lavaan",	label: qsTr("None") 	},
+		{ value: "Mplus",	label: qsTr("Mplus") 	},
+		{ value: "EQS",		label: qsTr("EQS") 		}
+	] 
+}
+```
+
+Here we see a schism between the value of the option (`lavaan`) and the label of the option ("None"). This is because the value of the option `emulation` is directly feeded into the lavaan functions under argument `mimic`. The programmer now need to make a conscious decision: Do we need and want to keep consistency with the underlying analysis package? If the answer is yes, then it is adviseable to make the consistency as tight as possible. This means that slight deviations from the our style-guide is possible if this helps keeping consistent with the underlying package. In this case, we could change the component accordingly
+
+```qml
+DropDown
+{
+	name:	"mimic"
+	label:	qsTr("Mimic")
+	info:	qsTr("Obtain results based on emulating popular SEM software. The option corresponds to the lavaan's `mimic` arument.")
+	values: [
+		{ value: "lavaan",	label: qsTr("Lavaan") 	},
+		{ value: "Mplus",	label: qsTr("Mplus") 	},
+		{ value: "EQS",		label: qsTr("EQS") 		}
+	] 
+}
+```
+
+Notice that we changed the option name to `mimic` so that the argument is called the same as in the `lavaan` package that runs the analysis. Further, we changed the label of value `lavaan` from "None" to "Lavaan" to still keep consistency between what is shown to the user in JASP, and what is shown to the user in R. Notice that we slightly deviate from our camelCasing rule for values `Mplus` and `EQS` for consistency with `lavaan`.
+
+Such small deviations are permissible if they improve understanding of what out analysis does. We advise thinking critically about where to push this.The primary goal of the options are to make them as clear as possible to JASP and R users, and R packages not necessarily design their arguments to be easily translatable into a good GUI programme. If that is the case, consistency and clarity of the JASP programme and the JASP code should always take precedence above consistency with the underlying R package that runs the analysis.
