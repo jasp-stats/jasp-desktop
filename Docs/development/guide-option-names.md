@@ -110,6 +110,43 @@ Section
 
 Here, we have a section for specifying marginal means. So every option starts with `marginalMeans`. Further, the number of bootstrapping replicates is a child of the checkbox that enables bootstrapping, and so it starts with `marginalMeansBootstrap`.
 
+## Consistency with underlying analysis packages
+
+In some cases, an option name/value is selected so that it is directly compatible with option names/values of the underlying package. For example, consider the following excerpt from a SEM analysis:
+
+```qml
+DropDown
+{
+	name:	"emulation"
+	label:	qsTr("Emulation")
+	values: [
+		{ value: "lavaan",	label: qsTr("None") 	},
+		{ value: "Mplus",	label: qsTr("Mplus") 	},
+		{ value: "EQS",		label: qsTr("EQS") 		}
+	] 
+}
+```
+
+Here we see a schism between the value of the option (`lavaan`) and the label of the option ("None"). This is because the value of the option `emulation` is directly feeded into the lavaan functions under argument `mimic`. The programmer now need to make a conscious decision: Do we need and want to keep consistency with the underlying analysis package? If the answer is yes, then it is adviseable to make the consistency as tight as possible. This means that slight deviations from the our style-guide is possible if this helps keeping consistent with the underlying package. In this case, we could change the component accordingly
+
+```qml
+DropDown
+{
+	name:	"mimic"
+	label:	qsTr("Mimic")
+	info:	qsTr("Obtain results based on emulating popular SEM software. The option corresponds to the lavaan's `mimic` arument.")
+	values: [
+		{ value: "lavaan",	label: qsTr("Lavaan") 	},
+		{ value: "Mplus",	label: qsTr("Mplus") 	},
+		{ value: "EQS",		label: qsTr("EQS") 		}
+	] 
+}
+```
+
+Notice that we changed the option name to `mimic` so that the argument is called the same as in the `lavaan` package that runs the analysis. Further, we changed the label of value `lavaan` from "None" to "Lavaan" to still keep consistency between what is shown to the user in JASP, and what is shown to the user in R. Notice that we slightly deviate from our camelCasing rule for values `Mplus` and `EQS` for consistency with `lavaan`.
+
+Such small deviations are permissible if they improve understanding of what out analysis does. We advise thinking critically about where to push this.The primary goal of the options are to make them as clear as possible to JASP and R users, and R packages not necessarily design their arguments to be easily translatable into a good GUI programme. If that is the case, consistency and clarity of the JASP programme and the JASP code should always take precedence above consistency with the underlying R package that runs the analysis.
+
 
 ### Long option names are not evil
 
@@ -120,6 +157,7 @@ Combining the basic principles above may seem to be silly and annoying because t
 - `ci`: confidence (or credible) interval checkbox
 - `ciLevel`: confidence (or credible) level of the confidence (credible) interval
 - `se`: standard error
+- `sd`: standard deviation
 - `predictionInterval`: prediction interval
 - `predictionIntervalLevel`: confidence level of a prediction interval
 - `dependent`: for specifying the dependent variable
@@ -129,7 +167,7 @@ Combining the basic principles above may seem to be silly and annoying because t
 - `weights`: variable specifying weights
 - `terms`: for specifying terms (allowing interactions). This can be combined with what the terms relate to, e.g., `modelTerms`, `marginalMeansTerms`, `plotTerms`, etc.
 - `naAction`: name for an option that specifies the action to take with missing values. The option values can be for example, `pairwise` for pairwise deletion, `listwise` for listwise deletion, `perAnalysis` for deleting per analysis, `perDependent` for deleting per dependent variable, so that the analysis can be called as `analysis(..., naAction = "pairwise")`, for example.
-- `alternative`: name for the option specifying the alternative hypothesis. This is to ensure consistency with base R. Typical values of this option would be `greater`, `less`, `two.sided` for consistency with base R functions.
+- `alternative`: name for the option specifying the alternative hypothesis. This is to ensure consistency with base R. Typical values of this option would be `greater`, `less`, `two.sided` for hypotheses such as "> Test Value" (consistency with base R functions). For hypotheses such as "Group one > Group two" use `greater`, for "Group one < Group two" use `less` and for "Group one != Group two" use `two.sided`. This needs to be explained further in the documentation (`info` fields).
 - `testValue`: name for the option specifying the test value
 - `vovkSellke`: name for the Vovk-Sellke maximum p-ratio checkbox
 - `bootstrap`: checkbox for enabling bootstrapping
@@ -137,11 +175,21 @@ Combining the basic principles above may seem to be silly and annoying because t
 - `bootstrapType`: type of bootstrap
 - `setSeed`: checkbox for setting seed for reproducibility
 - `seed`: specifying the seed for reproducibility
+- `xAxis`, `yAxis`: name of the variable on the x- and y-axes, respectivelly
+- `xAxisLabel`, `yAxisLabel`: name of the text field specifying the axis labels
+- `rSquared`: name for R^2
+- `effectSize`: effect size
+- `pValue`: p-value
+- `max`: maximum
+- `min`: minimum
 
 ### Specific to Bayesian analyses
 
 - `sampling`: radiobutton for selecting type of MCMC sampling (e.g., `auto`, `manual`, `bas`, `mcmc`, etc.)
 - `samples`: number of MCMC iterations for Bayesian analyses
+- `burnin`: number of burnin samples
+- `thinning`: thinning factor
+- `chains`: number of chains
 - `bayesFactor`: Bayes factor
 - `priorAndPosterior`: checkbox for prior and posterior
 - `robustnessCheck`: checkbox for robustness check
