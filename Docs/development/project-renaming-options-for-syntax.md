@@ -34,7 +34,7 @@ To facilitate consistency in naming options, we created an [option names style g
 
 ### 2. Qml files
 
-The first 
+Open the analysis Qml file that you need to check for consistency. Edit the option names (or values) according to the style guide.
 
 #### Moving documentation to `info`
 
@@ -42,11 +42,30 @@ Should we do this at this stage or not? Should we do it in two waves instead?
 
 ### 3. R files
 
+If you changed any option name in the Qml files, now it is time to make sure that the changes are also reflected in the R files. Edit the R files.
+
+The option names need to be also updated in the test files in the `tests/testthat/` folder!
+
+**Note**. Be careful with using "find and replace all" especially if there is a chance of changing code that you did not intend to change, e.g., due to partial matching. An easy way to prevent this to happen is to use wider context of the text to replace. E.g. if we renamed an option from `old_option_name` to `newOptionName`, you can run find: `options[["old_option_name"]]` and replace all: `options[["newOptionName"]]` to avoid any surprises. You still need to check manually whether there is anything that you missed.
+
 #### Run tests
+
+After you have made all your changes, run the tests using `jaspTools::testAll()` to test whether anything is broken. 
 
 ### 4. Upgrades.qml 
 
+Renaming options means that .jasp files saved with an older JASP version will no longer be compatible. To ensure backwards compatibility, the changes made to the option names need to be listed in the upgrades file in `inst/Upgrades.qml`. Follow the [guide for option ugrades](jasp-upgrade-qml.md).
+
 #### Test upgrades
+
+After you specified the upgrades in the `Upgrades.qml`, test whether they work. 
+
+1. Open the analysis you are modifying using the latest official release of JASP. 
+2. Run an analysis using all options that you changes during this process. 
+3. Save the .jasp file. Close the file.
+4. Install your current version of the module you are working on as a developer module.
+5. Open the .jasp file you saved. Refresh the file. If the analysis looks like before, everything went smoothly.
+
 
 ### 5. Make a PR
 
