@@ -46,7 +46,7 @@ If several options functionally belong together (e.g., relate to the same output
 
 ##### One option is a child of another option
 
-```
+```qml
 CheckBox
 {
 	label:		qsTr("Display error bars")
@@ -73,13 +73,13 @@ CheckBox
 
 Here, the `CheckBox` `errorBars` is a parent to the the radio button control and the `CIField`. To make this clear, we use the `"errorBars"` as an indication that the rest of the options are related to the checkbox. The reason for this is that when the user calls the analysis from R, the relationship between the arguments is clear from the names:
 
-```
+```r
 analysis(errorBars = TRUE, errorBarsType = "ci", errorBarsCiLevel = 0.95, ...)
 ```
 
 ##### Options are grouped in a `Section{}`
 
-```
+```qml
 Section
 {
 	title: qsTr("Marginal Means")
