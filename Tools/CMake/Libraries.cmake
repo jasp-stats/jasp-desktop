@@ -204,17 +204,17 @@ if(APPLE)
 
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
-  pkg_check_modules(_PKGCONFIG_LIB_BROTLICOMMON REQUIRED libbrotlicommon)
+  find_package(Brotli 1.0.9 REQUIRED)
 
   set(_LIB_BROTLICOMMON
-      ${_PKGCONFIG_LIB_BROTLICOMMON_LIBRARY_DIRS}/libbrotlicommon.${_PKGCONFIG_LIB_BROTLICOMMON_VERSION}.dylib
+      ${Brotli_LIB_DIRS}/libbrotlicommon.1.0.9.dylib
   )
 
   if(EXISTS "${_LIB_BROTLICOMMON}")
     message(CHECK_PASS "found")
     message(STATUS "  Copying the 'libbrotlicommon' to the local build folder")
     execute_process(
-      WORKING_DIRECTORY ${_PKGCONFIG_LIB_BROTLICOMMON_LIBRARY_DIRS}
+      WORKING_DIRECTORY ${Brotli_LIB_DIRS}
       COMMAND ${CMAKE_COMMAND} -E copy ${_LIB_BROTLICOMMON}
               ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
     set(_LIB_BROTLICOMMON ${CMAKE_BINARY_DIR}/libbrotlicommon.1.dylib)
