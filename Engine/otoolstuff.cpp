@@ -111,7 +111,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				};
 
 				// Known fix library id's and paths 
-				const std::map<std::string, std::string> replaceThese =
+				const std::map<std::string, std::string> ids_to_be_replaced =
 				{
 					{"@rpath/libtbbmalloc.dylib",					"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc.dylib"},
 					{"@rpath/libtbbmalloc_proxy.dylib",				"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
@@ -121,6 +121,16 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				auto install_name_tool_cmd = [&](const std::string & replaceThisLine, const std::string & withThisLine)
 				{
 					const std::string cmd = "install_name_tool -change " + replaceThisLine + " " + withThisLine + " " + libPath;
+	
+					if(printStuff)
+						std::cout << cmd << std::endl;
+	
+					_system(cmd);
+				};
+
+				auto install_name_tool_id_cmd = [&](const std::string & newId)
+				{
+					const std::string cmd = "install_name_tool -id " + newId + " " + libPath;
 	
 					if(printStuff)
 						std::cout << cmd << std::endl;
@@ -141,11 +151,11 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					}
 
 					// Replacing the known fixed paths, and id's
-					for(auto &entry : replaceThese) 
+					for(auto &entry : ids_to_be_replaced) 
 					{
 						if (stringUtils::startsWith(line, entry.first)) 
 						{
-							install_name_tool_cmd(line, entry.second);
+							install_name_tool_id_cmd(entry.second);
 						}
 					}
 				}
