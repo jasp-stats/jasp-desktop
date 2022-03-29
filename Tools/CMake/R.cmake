@@ -568,7 +568,7 @@ elseif(WIN32)
     fetchcontent_declare(
       r_win_exe
       URL ${R_DOWNLOAD_URL}
-      URL_HASH MD5=${R_PACKAGE_HASH}
+      URL_HASH SHA1=${R_PACKAGE_HASH}
       DOWNLOAD_NO_EXTRACT ON
       DOWNLOAD_NAME ${R_PACKAGE_NAME})
 
