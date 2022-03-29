@@ -58,11 +58,15 @@ if(WIN32)
     COMMAND cmd.exe /C CollectJunctions.cmd
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/")
+		
+  set_target_properties(collect-junctions PROPERTIES EXCLUDE_FROM_ALL 1)
 
   add_custom_target(
     recreate-junctions
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMAND cmd.exe /C RecreateJunctions.cmd)
+
+  set_target_properties(recreate-junctions PROPERTIES EXCLUDE_FROM_ALL 1)
 
   add_custom_target(
     wix
@@ -77,6 +81,8 @@ if(WIN32)
             "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C WIX.cmd)
 
+  set_target_properties(wix PROPERTIES EXCLUDE_FROM_ALL 1)
+
   add_custom_target(
     zip
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
@@ -87,11 +93,15 @@ if(WIN32)
             "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C ZIP.cmd)
 
+  set_target_properties(zip PROPERTIES EXCLUDE_FROM_ALL 1)
+  
   add_custom_target(
     upload
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND cmd.exe /C Upload.cmd)
 
+  set_target_properties(upload PROPERTIES EXCLUDE_FROM_ALL 1)
+  
 endif()
 
 set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/wix/jaspLicense.rtf")
