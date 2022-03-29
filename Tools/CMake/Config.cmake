@@ -38,7 +38,7 @@ endif()
 # With this, we can hit up to 90% speed up!
 option(USE_CCACHE "Whether to use ccache for build" OFF)
 option(RUN_IWYU "Whether to run Include What You Use" OFF)
-option(INSTALL_R_MODULES "Whether or not installing R Modules" OFF)
+option(INSTALL_R_MODULES "Whether or not installing R Modules" ON)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
 option(USE_CONAN "Whether to use CONAN package manager" OFF)
 

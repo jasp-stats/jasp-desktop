@@ -134,6 +134,7 @@ target_link_libraries(
          $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_DLL_A}>
          # JSONCPP
          $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
+         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
          # R-Framework --------------------------------
          $<$<PLATFORM_ID:Darwin>:${_R_Framework}>)
 

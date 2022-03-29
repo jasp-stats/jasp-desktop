@@ -41,6 +41,7 @@ target_link_libraries(
   PUBLIC # jsoncpp
          $<$<BOOL:${USE_CONAN}>:jsoncpp::jsoncpp>
          $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
+         $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
          #
          LibArchive::LibArchive
          # Boost
