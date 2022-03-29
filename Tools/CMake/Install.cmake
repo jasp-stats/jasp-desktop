@@ -273,8 +273,6 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/RecreateJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
 
-  install(FILES ${CMAKE_BINARY_DIR}/junctions.rds DESTINATION .)
-
   execute_process(
     WORKING_DIRECTORY ${JASP_INSTALL_PREFIX}
     COMMAND ${CMAKE_COMMAND} -E remove -f
