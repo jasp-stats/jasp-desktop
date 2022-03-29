@@ -5,6 +5,7 @@
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlRecord>
 #include "log.h"
+#include "utilities/qutils.h"
 
 const QStringList Database::dbTypes()
 {
@@ -24,14 +25,16 @@ const QStringList Database::dbTypes()
 Database::Database(QObject *parent)
 	: FileMenuObject{parent}
 {
-	_dbType			= static_cast<DbType>(Settings::value(	Settings::DB_IMPORT_TYPE	)	.toUInt());
-	_database		= Settings::value(						Settings::DB_IMPORT_DBNAME	)	.toString();
-	_hostname		= Settings::value(						Settings::DB_IMPORT_HOSTNAME)	.toString();
-	_username		= Settings::value(						Settings::DB_IMPORT_USERNAME)	.toString();
-	_password		= Settings::value(						Settings::DB_IMPORT_PASSWORD)	.toString();
+	_dbType			= static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
+	_database		=						Settings::value( Settings::DB_IMPORT_DBNAME		).toString();
+	_hostname		=						Settings::value( Settings::DB_IMPORT_HOSTNAME	).toString();
+	_port			=						Settings::value( Settings::DB_IMPORT_PORT		).toInt();
+	_username		=						Settings::value( Settings::DB_IMPORT_USERNAME	).toString();
+	_password		= decrypt(				Settings::value( Settings::DB_IMPORT_PASSWORD	).toString());
+	_query			=						Settings::value( Settings::DB_IMPORT_QUERY		).toString();
 }
 
-void	Database::connect()
+void Database::connect()
 {
 	setConnected(false);
 
@@ -67,12 +70,12 @@ QString	Database::_runQuery(const QString & queryText)
 
 	if(!db.isOpen())
 		return tr("JASP thinks it's connected to the database but the QSqlDatabase isn't opened...");
-
+	
 	QSqlQuery query;
 	query.setForwardOnly(true);
 
 	if(!query.exec(queryText))
-		return tr("Query failed with: '$1'").arg(query.lastError().text());
+		return tr("Query failed with: '%1'").arg(query.lastError().text());
 
 	if(!query.isSelect())
 		return tr("Query wasn't a SELECT-like statement and returned nothing.");
@@ -82,41 +85,41 @@ QString	Database::_runQuery(const QString & queryText)
 
 	QStringList fewLines;
 
-	if(query.isValid())
+	
+	QSqlRecord  record = query.record();
+
 	{
-		QSqlRecord  record = query.record();
+		QStringList names;
 
-		{
-			QStringList names;
+		for(int i=0; i<record.count(); i++)
+			names.push_back(record.fieldName(i));
 
-			for(int i=0; i<record.count(); i++)
-				names.push_back(record.fieldName(i));
-
-			fewLines.push_back(names.join(", "));
-		}
-
-		while(query.isValid() && fewLines.size() < 10)
-		{
-
-			QStringList values;
-
-			for(int i=0; i<record.count(); i++)
-				values.push_back(query.value(i).toString());
-
-			fewLines.push_back(values.join(", "));
-			query.next();
-		}
+		fewLines.push_back(names.join(", "));
 	}
+	
+	do
+	{
+		QStringList values;
+
+		for(int i=0; i<record.count(); i++)
+			values.push_back(query.value(i).toString());
+
+		fewLines.push_back(values.join(", "));
+	}
+	while(query.next() && fewLines.size() < 10);
+	
 
 	return fewLines.join("\n");
 }
-
 
 void Database::setUsername(const QString &newUsername)
 {
 	if (_username == newUsername)
 		return;
+	
 	_username = newUsername;
+	Settings::setValue(Settings::DB_IMPORT_USERNAME, _username);
+	
 	emit usernameChanged();
 }
 
@@ -124,7 +127,10 @@ void Database::setPassword(const QString &newPassword)
 {
 	if (_password == newPassword)
 		return;
+	
 	_password = newPassword;
+	Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_password));
+	
 	emit passwordChanged();
 }
 
@@ -132,7 +138,10 @@ void Database::setDatabase(const QString &newDatabase)
 {
 	if (_database == newDatabase)
 		return;
+	
 	_database = newDatabase;
+	Settings::setValue(Settings::DB_IMPORT_DBNAME, _database);
+	
 	emit databaseChanged();
 }
 
@@ -140,7 +149,10 @@ void Database::setHostname(const QString &newHostname)
 {
 	if (_hostname == newHostname)
 		return;
+	
 	_hostname = newHostname;
+	Settings::setValue(Settings::DB_IMPORT_HOSTNAME, _hostname);
+	
 	emit hostnameChanged();
 }
 
@@ -148,7 +160,10 @@ void Database::setDbType(const DbType newDbType)
 {
 	if (_dbType == newDbType)
 		return;
+	
 	_dbType = newDbType;
+	Settings::setValue(Settings::DB_IMPORT_TYPE, static_cast<uint>(_dbType));
+	
 	emit dbTypeChanged();
 }
 
@@ -164,7 +179,9 @@ void Database::setQueryResult(const QString &newQueryResult)
 {
 	if (_queryResult == newQueryResult)
 		return;
+	
 	_queryResult = newQueryResult;
+	
 	emit queryResultChanged();
 }
 
@@ -190,6 +207,20 @@ void Database::setPort(int newPort)
 {
 	if (_port == newPort)
 		return;
+	
 	_port = newPort;
+	Settings::setValue(Settings::DB_IMPORT_PORT, _port);
+	
 	emit portChanged();
+}
+
+void Database::setQuery(const QString &newQuery)
+{
+	if (_query == newQuery)
+		return;
+	
+	_query = newQuery;
+	Settings::setValue(Settings::DB_IMPORT_QUERY, _query);
+	
+	emit queryChanged();
 }

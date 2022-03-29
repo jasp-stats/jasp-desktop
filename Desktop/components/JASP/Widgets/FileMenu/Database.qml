@@ -205,7 +205,8 @@ Item
 			{
 				id:						dbQuery
 				nextEl:					runQuery
-				text:					""
+				text:					fileMenuModel.database.query
+				onTextChanged:			fileMenuModel.database.query = text
 				LQ.Layout.fillWidth:	true
 			}
 
@@ -225,14 +226,19 @@ Item
 		id:			previewGroup
 		title:		qsTr("Preview")
 
-
+		anchors.top:		databaseGroup.bottom
+		anchors.topMargin:	jaspTheme.generalAnchorMargin
 
 		QC.TextArea
 		{
-			height:			500
+			height:			contentHeight < 100 ? 100 : contentHeight
 			text:			fileMenuModel.database.connected ? fileMenuModel.database.queryResult : fileMenuModel.database.lastError
 			font:			jaspTheme.font
 			color:			jaspTheme.textEnabled
+			width:			parent.width
+			wrapMode:		TextEdit.Wrap
+			readOnly:		true
+			selectByMouse:	true
 		}
 	}
 }

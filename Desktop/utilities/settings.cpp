@@ -67,8 +67,11 @@ const Settings::Setting Settings::Values[] = {
 	{"dbImportDbType",				0},
 	{"dbImportDbName",				""},
 	{"dbImportHostName",			""},
+	{"dbImportPort",				1433},
 	{"dbImportUserName",			""},
-	{"dbImportPassword"				""}
+	{"dbImportPassword"				""},
+	{"dbImportQuery"				""}
+	
 };
 
 QVariant Settings::value(Settings::Type key)

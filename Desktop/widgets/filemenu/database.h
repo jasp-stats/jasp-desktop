@@ -15,6 +15,7 @@ class Database : public FileMenuObject
 	Q_PROPERTY(QString		password	READ password		WRITE setPassword		NOTIFY passwordChanged		)
 	Q_PROPERTY(bool			connected	READ connected		WRITE setConnected		NOTIFY connectedChanged		)
 	Q_PROPERTY(QString		queryResult READ queryResult	WRITE setQueryResult	NOTIFY queryResultChanged	)
+	Q_PROPERTY(QString		query		READ query			WRITE setQuery			NOTIFY queryChanged			)
 	Q_PROPERTY(QStringList	dbTypes		READ dbTypes								NOTIFY dbTypesChanged		)
 	Q_PROPERTY(QString		lastError	READ lastError								NOTIFY lastErrorChanged		)
 	Q_PROPERTY(int			port		READ port			WRITE setPort			NOTIFY portChanged			)
@@ -33,7 +34,9 @@ public:
 	const QString		&	password()		const { return _password;		}
 	bool					connected()		const { return _connected;		}
 	const QString		&	queryResult()	const { return _queryResult;	}
-	const QString		&	lastError() const;
+	const QString		&	lastError()		const;
+	int						port()			const;
+	const QString		&	query()			const { return _query;			}
 
 	static const QStringList		dbTypes();
 
@@ -42,13 +45,12 @@ public:
 	void setDatabase(	const QString & newDatabase		);
 	void setUsername(	const QString & newUsername		);
 	void setPassword(	const QString & newPassword		);
+	void setQuery(		const QString &	newQuery		);
+	void setPort(		int				newPort			);
 	void setConnected(	bool			newConnected	);
 	void setQueryResult(const QString & newQueryResult	);
 	void setLastError(	const QString &	newLastError	);
-
-	int port() const;
-	void setPort(int newPort);
-
+	
 signals:
 	void dbTypeChanged();
 	void usernameChanged();
@@ -60,7 +62,9 @@ signals:
 	void dbTypesChanged();
 	void lastErrorChanged();
 	void portChanged();
-
+	
+	void queryChanged();
+	
 private:
 	QString	_runQuery(const QString & query);
 
@@ -71,9 +75,10 @@ private:
 			_database		= "",
 			_hostname		= "",
 			_queryResult	= "",
-			_lastError		= "";
+			_lastError		= "",
+			_query			= "";
 	bool	_connected		= false;
-	int		_port			= 1433;
+	int		_port			= 0;
 };
 
 #endif // DATABASE_H
