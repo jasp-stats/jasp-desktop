@@ -119,6 +119,15 @@ else()
             NEW_ID
             ${FILE})
 
+      elseif(FILE MATCHES "/opt/R/arm64/lib/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/opt/R/arm64/lib/"
+            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/R/arm64/lib/"
+            NEW_ID
+            ${FILE})
+
       elseif(FILE MATCHES "/Modules/jasp")
 
         string(

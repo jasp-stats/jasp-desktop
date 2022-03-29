@@ -28,9 +28,27 @@
 #       a bit brutal
 #
 
+set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development")
+set(AVAILABLE_R_VERSIONS
+    "R-4.1.2"
+    "R-4.1.2-arm64"
+    "R-4.1.3"
+    "R-4.1.3-arm64"
+    "R-4.1.2-win"
+    "R-4.1.3-win")
+set(R_BINARY_HASHES
+    "61d3909bc070f7fb86c5a2bd67209fda9408faaa"
+    "69e8845ffa134c822d4bdcf458220e841a9eeaa5"
+    "45121f2c830b0cd7d180aee3fc4cd80d0de1e582"
+    "dad405d4f58349403c4976ba50e944502070b209"
+    "c72e68bc50e84bea68a2379073c9fedbdfaeda0c"
+    "d4068fdc75334c850d5948a0dc8356d34d3512e1")
+
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
-set(R_VERSION "4.1.3")
+set(R_VERSION
+    "4.1.3"
+    CACHE STRING "R version to be used")
 set(R_VERSION_MAJOR_MINOR "4.1")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
@@ -98,18 +116,37 @@ if(APPLE)
 
     if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
 
-      set(R_PACKAGE_NAME "R-${R_VERSION}-${CMAKE_OSX_ARCHITECTURES}.pkg")
-      set(R_DOWNLOAD_URL
-          "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_VERSION}-arm64.pkg"
-      )
-      set(R_PACKAGE_HASH "4e702650f8967bc388ae31d897a4ae888dd6e89b")
+      set(R_VERSION_NAME "R-${R_VERSION}-${CMAKE_OSX_ARCHITECTURES}")
+      set(R_PACKAGE_NAME "${R_VERSION_NAME}.pkg")
+      set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
+
+      list(
+        FIND
+        AVAILABLE_R_VERSIONS
+        "${R_VERSION_NAME}"
+        HASH_INDEX)
+      list(
+        GET
+        R_BINARY_HASHES
+        ${HASH_INDEX}
+        R_PACKAGE_HASH)
 
     else()
 
-      set(R_PACKAGE_NAME "R-${R_VERSION}.pkg")
-      set(R_DOWNLOAD_URL
-          "https://cran.r-project.org/bin/macosx/base/R-${R_VERSION}.pkg")
-      set(R_PACKAGE_HASH "45121f2c830b0cd7d180aee3fc4cd80d0de1e582")
+      set(R_VERSION_NAME "R-${R_VERSION}")
+      set(R_PACKAGE_NAME "${R_VERSION_NAME}.pkg")
+      set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
+
+      list(
+        FIND
+        AVAILABLE_R_VERSIONS
+        ${R_VERSION_NAME}
+        HASH_INDEX)
+      list(
+        GET
+        R_BINARY_HASHES
+        ${HASH_INDEX}
+        R_PACKAGE_HASH)
 
     endif()
 
@@ -513,10 +550,20 @@ elseif(WIN32)
 
     message(CHECK_START "Downloading R-${R_VERSION}-win.exe")
 
-    set(R_PACKAGE_NAME "R-${R_VERSION}-win.exe")
-    set(R_DOWNLOAD_URL
-        "https://cran.r-project.org/bin/windows/base/R-${R_VERSION}-win.exe")
-    set(R_PACKAGE_HASH "f02b305ebec458e8ba0fea9ebb0cebb3")
+    set(R_VERSION_NAME "R-${R_VERSION}-win")
+    set(R_PACKAGE_NAME "${R_VERSION_NAME}.exe")
+    set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
+
+    list(
+      FIND
+      AVAILABLE_R_VERSIONS
+      "${R_VERSION_NAME}"
+      HASH_INDEX)
+    list(
+      GET
+      R_BINARY_HASHES
+      ${HASH_INDEX}
+      R_PACKAGE_HASH)
 
     fetchcontent_declare(
       r_win_exe

@@ -138,6 +138,16 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					_system(cmd);
 				};
 
+				auto install_name_tool_delete_rpath_cmd = [&](const std::string & rpath)
+				{
+					const std::string cmd = "install_name_tool -delete_rpath " + rpath + " " + libPath;
+	
+					if(printStuff)
+						std::cout << cmd << std::endl;
+	
+					_system(cmd);
+				};
+
 				if (!stringUtils::startsWith(line, "@executable_path/../"))
 				{
 
@@ -156,6 +166,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 						if (stringUtils::startsWith(line, entry.first)) 
 						{
 							install_name_tool_id_cmd(entry.second);
+							install_name_tool_delete_rpath_cmd(entry.first);
 						}
 					}
 				}

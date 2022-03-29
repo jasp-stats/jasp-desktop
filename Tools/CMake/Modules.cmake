@@ -83,7 +83,7 @@ if(("jaspMetaAnalysis" IN_LIST JASP_EXTRA_MODULES) OR ("jaspJags" IN_LIST
       message(CHECK_FAIL "not found")
       message(
         FATAL_ERROR
-          "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+          "JAGS is required for building on Windows, please follow the build instruction before you continue."
       )
     endif()
 
