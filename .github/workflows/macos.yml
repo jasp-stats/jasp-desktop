@@ -8,7 +8,7 @@ on:
 
 jobs:
   xcode:
-    runs-on: windows-latest
+    runs-on: macos-latest
     strategy:
       matrix:
         xcode: [13.2]
