@@ -131,16 +131,19 @@ if(WIN32)
   message(STATUS ${MSVC_TOOLSET_VERSION})
   message(STATUS ${MSVC_VERSION})
 
-  set(VC_MERGE_MODULE_NAME
-      "Microsoft_VC143_CRT_x64.msm"
-      CACHE STRING "Module Merge Name")
   if(MSVC_VERSION GREATER "1930")
+    set(VC_MERGE_MODULE_NAME
+        "Microsoft_VC143_CRT_x64.msm"
+        CACHE STRING "Module Merge Name")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
     set(VC_TOOLS_REDIST_PATH "$ENV{VCINSTALLDIR}")
     set(VC_VARS_PATH_NATIVE
         "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build"
     )
   elseif(MSVC_VERSION GREATER "1920")
+    set(VC_MERGE_MODULE_NAME
+        "Microsoft_VC142_CRT_x64.msm"
+        CACHE STRING "Module Merge Name")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCToolsRedistDir%")
     set(VC_TOOLS_REDIST_PATH "$ENV{VCToolsRedistDir}")
     set(VC_VARS_PATH_NATIVE
