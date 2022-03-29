@@ -78,12 +78,6 @@ if(WINDOWS)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E touch "junctions-recreated-successfully.log")
 
-  add_custom_command(
-    TARGET JASP
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    POST_BUILD
-    COMMAND cmd.exe /C CollectJunctions.cmd)
-
 endif()
 
 target_include_directories(
