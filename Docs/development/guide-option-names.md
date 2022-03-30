@@ -110,6 +110,79 @@ Section
 
 Here, we have a section for specifying marginal means. So every option starts with `marginalMean`. Further, the number of bootstrapping replicates is a child of the checkbox that enables bootstrapping, and so it starts with `marginalMeanBootstrap`.
 
+### Nested option names
+
+In the previous section we had options that are nested in the Qml file, but they are not nested in the R syntax. However, there are cases where an option is actually nested within the R syntax as well. In this case, special care needs to be taken to adhere to the style of "option names within options".
+
+#### Examples
+
+##### Radio Buttons
+
+We actually already saw this in the previous section. Radio Buttons are a special control because they result in a single argument in the syntax, but can take different character values. These character values need to adhere to the code style as well.
+
+```qml
+RabioButtonGroup
+{
+	name:	"alternative"
+	label:	qsTr("Alternative hypothesis")
+	RadioButton
+	{
+		name:		"twoSided"
+		label:		qsTr("Group 1 ≠ Group 2")
+		checked:	true
+	}
+	RadioButton
+	{
+		name:		"greater"
+		label:		qsTr("Group 1 > Group 2")
+	}
+	RadioButton
+	{
+		name:		"less"
+		label:		qsTr("Group 1 < Group 2")
+	}
+}
+```
+
+This results in an option in the R syntax defined as `analysis(..., alternative = c("twoSided", "greater", "less"))` and its use requires to specify one of the options, e.g. `analysis(..., alternative = "twoSided")`. Note: the use of `greater`, `twoSided`, `less` is defined in in the list of common option names below.
+
+##### TabView
+
+There are other, more complicated components than that. For example, `TabView` enables a collection of options that can be specified multiple times. A typical example is the SEM module which enables to specify multiple models in a single analysis.
+
+```qml
+TabView
+{
+	id: models
+	name: "models"
+	maximumItems: 9
+	newItemName: qsTr("Model 1")
+	optionKey: "name"
+
+	content: TextArea { name: "syntax"; width: models.width; textType: JASP.TextTypeLavaan }
+}
+```
+
+note that `name: "models"` names the option that can take a list of options. Each element of that list is a list that contains `modelName` and `syntax`, and will be used in R like this:
+
+```r
+jaspSem::sem(
+	models = list(
+		list(
+			name   = "Model 1 name",
+			syntax = "#sem syntax for model 1"
+		),
+		list(
+			name   = "Another model",
+			syntax = "#sem syntax for another model"
+		)
+	),
+	...
+)
+```
+
+Notice that the options are nested within another option both in Qml and in the R syntax. Therefore, we do not need to prepend the nested options with the name of the parent option, i.e., we do not need to name the `TextArea` as `modelSyntax` or the `optionKey` as `modelName`, as it is clear from the structure of the argument itself that `syntax` and `name` are a part of the `models` option.
+
 ### Reserved option names
 
 `data` and `formula` are reserved option names: **Do not use them for naming options in the Qml file.**
