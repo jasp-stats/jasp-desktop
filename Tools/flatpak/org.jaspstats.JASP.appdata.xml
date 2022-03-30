@@ -35,9 +35,12 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-	<release version="0.16.2" date="2022-02-25">
+	<release version="0.16.3" date="2022-05-17">
 			<description>
 				Using Qt 6 to fix problems like flatpak JASP crashing hard on filter/comp.column.
+				We also switched the buildsystem to cmake and related changes to that.
+
+				Also a whole bunch of new modules and analyses.
 			</description>
 		</release>
 		<release version="0.16.1" date="2022-02-15">

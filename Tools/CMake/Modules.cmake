@@ -25,7 +25,8 @@ set(JASP_COMMON_MODULES
     "jaspMixedModels"
     "jaspRegression"
     "jaspFrequencies"
-    "jaspFactor")
+    "jaspFactor"
+    )
 
 set(JASP_EXTRA_MODULES
     "jaspAudit"
@@ -45,7 +46,8 @@ set(JASP_EXTRA_MODULES
     "jaspSem"
     "jaspSummaryStatistics"
     "jaspVisualModeling"
-    "jaspProphet")
+    "jaspProphet"
+    )
 
 list(
   JOIN
