@@ -36,9 +36,6 @@ To facilitate consistency in naming options, we created an [option names style g
 
 Open the analysis Qml file that you need to check for consistency. Edit the option names (or values) according to the style guide.
 
-#### Moving documentation to `info`
-
-Should we do this at this stage or not? Should we do it in two waves instead?
 
 ### 3. R files
 
