@@ -13,6 +13,11 @@ if (@IS_LINUX_LOCAL_BUILD@) {
 	Sys.setenv(LD_LIBRARY_PATH="@jags_LIBRARY_DIRS@")
 }
 
+
+if (@IS_FLATPAK_USED@) {
+	source('/app/lib64/Rprofile.R');
+}
+
 # The R_LIBRARY_PATH might already be there, but depending on the configuration 
 # of the CMake, we might be installing in a different location, so, I just add
 # it anyway! It gets to if-y. 

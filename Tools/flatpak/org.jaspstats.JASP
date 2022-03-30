@@ -1,0 +1,5 @@
+#!/bin/sh
+export LD_LIBRARY_PATH=/app/lib/x86_64-linux-gnu/ 
+export QML2_IMPORT_PATH=$QML2_IMPORT_PATH:/app/qml 
+
+JASP $1
