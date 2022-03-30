@@ -12,3 +12,19 @@ if "%MSVCDIR%"=="" (
 set VCVARS_DIR="%MSVCDIR%\VC\Auxiliary\Build"
 
 call %VCVARS_DIR%\vcvars%ARCH%.bat
+
+mkdir build"
+
+cmake .. -GNinja -DCMAKE_PREFIX_PATH=D:/Qt/6.2.4/msvc2019_64
+
+cmake --build . --target all
+
+cmake --build . --target install
+
+cmake --build . --target collect-junctions
+
+cmake --build . --target wix
+
+cmake --build . --target zip
+
+cmake --build . --target upload
