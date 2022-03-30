@@ -120,7 +120,7 @@ Prefer singular form for names that relate to the output, *even if the output fe
 
 #### Examples
 
-- `Ci` not `Cis` for confidence intervals (even if the output could feature multiple intervals)
+- `ci` not `cis` for confidence intervals (even if the output could feature multiple intervals)
 - `pValue` not `pValues` for p-values (even if the output could feature multiple p-values)
 - `marginalMeanTerms`: use singular `marginalMean` as an indicator of the output (regardles that there may be more marginal means in the output), but use plural `Terms` to indicate to the user that they may specify multiple terms.
 - `variable`: use singular in case that the `AssignedVariableList` in Qml specifies `singleVariable: true` to indicate to the user that only one variable is allowed. On the other hand, if it's possible to specify multiple variables, use plural `variables` (and similarly, `fixedFactors`, `randomFactors`, `covariates`, etc.)
@@ -132,7 +132,7 @@ Option names should preferably be nouns and not verbs.
 
 #### Examples
 
-- `histrogramPlot`, not `plotHistogram`
+- `histogramPlot`, not `plotHistogram`
 - `errorBars`, not `displayErrorBars`
 - `marginalMean` not `computeMarginalMean`
 
