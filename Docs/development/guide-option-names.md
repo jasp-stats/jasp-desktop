@@ -144,7 +144,7 @@ RabioButtonGroup
 }
 ```
 
-This results in an option in the R syntax defined as `analysis(..., alternative = c("twoSided", "greater", "less"))` and its use requires to specify one of the options, e.g. `analysis(..., alternative = "twoSided")`. Note: the use of `greater`, `twoSided`, `less` is defined in in the list of common option names below.
+This results in an option in the R syntax defined as `analysis(..., alternative = c("twoSided", "greater", "less"))` and its use requires to specify one of the options, e.g. `analysis(..., alternative = "greater")`. Note: the use of `greater`, `twoSided`, `less` is defined in the list of common option names below.
 
 ##### TabView
 
@@ -163,7 +163,7 @@ TabView
 }
 ```
 
-note that `name: "models"` names the option that can take a list of options. Each element of that list is a list that contains `modelName` and `syntax`, and will be used in R like this:
+note that `name: "models"` names the option that can take a list of options. Each element of that list is a list that contains `Name` and `syntax` elements, and will be used in R like this:
 
 ```r
 jaspSem::sem(
