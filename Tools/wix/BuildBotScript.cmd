@@ -1,4 +1,4 @@
-rem Calling vcvars%ARCH%.bat
+rem Build script for building JASP on the buildbot
 
 set MSVCDIR_DEFAULT=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community
 
@@ -13,18 +13,20 @@ set VCVARS_DIR="%MSVCDIR%\VC\Auxiliary\Build"
 
 call %VCVARS_DIR%\vcvars%ARCH%.bat
 
-mkdir build"
+cmake -E remove_directory build
 
-cmake .. -GNinja -DCMAKE_PREFIX_PATH=D:/Qt/6.2.4/msvc2019_64
+cmake -E make_directory build
 
-cmake --build . --target all
+cmake -S . -B build -GNinja -DCMAKE_PREFIX_PATH=D:/Qt/6.2.4/msvc2019_64
 
-cmake --build . --target install
+cmake --build build --target all
 
-cmake --build . --target collect-junctions
+cmake --build build --target install
 
-cmake --build . --target wix
+cmake --build build --target collect-junctions
 
-cmake --build . --target zip
+cmake --build build --target wix
 
-cmake --build . --target upload
+cmake --build build --target zip
+
+cmake --build build --target upload
