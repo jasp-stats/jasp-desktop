@@ -163,7 +163,7 @@ TabView
 }
 ```
 
-note that `name: "models"` names the option that can take a list of options. Each element of that list is a list that contains `Name` and `syntax` elements, and will be used in R like this:
+note that `name: "models"` names the option that can take a list of options. Each element of that list is a list that contains `name` and `syntax` elements, and will be used in R like this:
 
 ```r
 jaspSem::sem(
