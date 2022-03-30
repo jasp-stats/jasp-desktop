@@ -167,17 +167,17 @@ note that `name: "models"` names the option that can take a list of options. Eac
 
 ```r
 jaspSem::sem(
-	models = list(
-		list(
-			name   = "Model 1 name",
-			syntax = "#sem syntax for model 1"
-		),
-		list(
-			name   = "Another model",
-			syntax = "#sem syntax for another model"
-		)
-	),
-	...
+    models = list(
+        list(
+            name   = "Model 1 name",
+            syntax = "#sem syntax for model 1"
+        ),
+        list(
+            name   = "Another model",
+            syntax = "#sem syntax for another model"
+        )
+    ),
+    ...
 )
 ```
 
