@@ -4,6 +4,7 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include "utils.h"
 #include "appinfo.h"
 #include <iostream>
@@ -91,9 +92,6 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 			auto		otoolLines	= stringUtils::splitString(otoolOut, '\n');
 
 			std::string libName 	= path.stem().string() + path.extension().string();
-
-			std::cout << "libPath: " << libPath << std::endl;
-			std::cout << "libName: " << libName << std::endl;
 	
 			for(size_t i = 1; i < otoolLines.size(); i++)
 			{
@@ -113,9 +111,9 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				// Known fix library id's and paths 
 				const std::map<std::string, std::string> ids_to_be_replaced =
 				{
-					{"@rpath/libtbbmalloc.dylib",					"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc.dylib"},
-					{"@rpath/libtbbmalloc_proxy.dylib",				"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
-					{"@rpath/libtbb.dylib",							"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbb.dylib"}
+					{"libtbbmalloc.dylib",					"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc.dylib"},
+					{"libtbbmalloc_proxy.dylib",			"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbbmalloc_proxy.dylib"},
+					{"libtbb.dylib",						"@executable_path/../Modules/" + jaspModuleName + "/RcppParallel/lib/libtbb.dylib"}
 				};
 
 				auto install_name_tool_cmd = [&](const std::string & replaceThisLine, const std::string & withThisLine)
@@ -163,10 +161,12 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 					// Replacing the known fixed paths, and id's
 					for(auto &entry : ids_to_be_replaced) 
 					{
-						if (stringUtils::startsWith(line, entry.first)) 
+						if (boost::algorithm::ends_with(line, entry.first))
 						{
-							install_name_tool_id_cmd(entry.second);
-							install_name_tool_delete_rpath_cmd(entry.first);
+							if (boost::algorithm::ends_with(line, libName)) {
+								install_name_tool_id_cmd(entry.second);
+							}
+							install_name_tool_cmd(line, entry.second);
 						}
 					}
 				}
