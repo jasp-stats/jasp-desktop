@@ -266,14 +266,18 @@ else()
         #   - libgcc_ext.10.4.dylib
         #   - libgcc_ext.10.5.dylib
 
-        execute_process(
-          # COMMAND_ECHO STDOUT
-          ERROR_QUIET OUTPUT_QUIET
-          WORKING_DIRECTORY ${PATH}
-          COMMAND
-            bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/usr/local/lib"
-            "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/local/lib"
-        )
+        if(NOT (FILE MATCHES ".*(runjags|rjags|RoBMA|metaBMA).*"))
+
+          execute_process(
+            # COMMAND_ECHO STDOUT
+            ERROR_QUIET OUTPUT_QUIET
+            WORKING_DIRECTORY ${PATH}
+            COMMAND
+              bash ${NAME_TOOL_PREFIX_PATCHER} "${FILE}" "/usr/local/lib"
+              "@executable_path/../Frameworks/R.framework/Versions/${R_DIR_NAME}/Resources/opt/local/lib"
+          )
+
+        endif()
 
       endif()
 
