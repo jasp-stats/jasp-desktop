@@ -13,10 +13,14 @@ set VCVARS_DIR="%MSVCDIR%\VC\Auxiliary\Build"
 
 call %VCVARS_DIR%\vcvars64.bat
 
+echo Navigate to source root
+cd ..\..
+
 cmake -E remove_directory build
 
 cmake -E make_directory build
 
+echo start build
 cmake -S . -B build -GNinja -DCMAKE_PREFIX_PATH=D:/Qt/6.2.4/msvc2019_64
 
 cmake --build build --target all
