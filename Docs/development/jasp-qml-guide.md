@@ -14,41 +14,42 @@ For more explanation on QML, you can read [wikipedia on QML](https://en.wikipedi
 To write a QML form you should follow the [styleguide](jasp-qml-style-example.qml).
 
 Table of Contents:
-- [Components](#components)
-  * [General Input](#general-input)
-    + [CheckBox](#checkbox)
-    + [RadioButton](#radiobutton)
-    + [DropDown](#dropdown)
-    + [Slider](#slider)
-    + [DoubleField](#doublefield)
-    + [IntegerField](#integerfield)
-    + [PercentField](#percentfield)
-    + [CIField](#cifield)
-    + [TextField](#textfield)
-    + [FormulaField](#formulafield)
-    + [TextArea](#textarea)
-  * [Variable Specification](#variable-specification)
-    + [AvailableVariablesList](#availablevariableslist)
-    + [AssignedVariablesList](#assignedvariableslist)
-	+ [FactorLevelList](#factorlevellist)
-  * [Complex Components](#complex-components)
-    + [ComponentsList](#componentslist)
-    + [TabView](#tabview)
-    + [InputListView](#inputlistview)
-    + [TableView](#tableview)
-  * [Grouping](#grouping)
-    + [Group](#group)
-    + [Section](#section)
-- [Layout of Components](#layout-of-components)
-    + [Layout.rowSpan](#layoutrowspan)
-    + [Layout.columnSpan](#layoutcolumnspan)
-- [Connecting Multiple Components](#connecting-multiple-components)
-- [An Example](#an-example)
-  * [1. Specifying Imports](#1-specifying-imports)
-  * [2. Adding the Form](#2-adding-the-form)
-  * [3. Adding the Components](#3-adding-the-components)
-- [Advanced Usage](#advanced-usage)
-- [Custom Imports](#custom-imports)
+- [Guide to writing an analysis interface in QML](#guide-to-writing-an-analysis-interface-in-qml)
+  - [Components](#components)
+    - [General Input](#general-input)
+      - [CheckBox](#checkbox)
+      - [RadioButton](#radiobutton)
+      - [DropDown](#dropdown)
+      - [Slider](#slider)
+      - [DoubleField](#doublefield)
+      - [IntegerField](#integerfield)
+      - [PercentField](#percentfield)
+      - [CIField](#cifield)
+      - [TextField](#textfield)
+      - [FormulaField](#formulafield)
+      - [TextArea](#textarea)
+    - [Variable Specification](#variable-specification)
+      - [AvailableVariablesList](#availablevariableslist)
+      - [AssignedVariablesList](#assignedvariableslist)
+      - [FactorLevelList](#factorlevellist)
+    - [Complex components](#complex-components)
+      - [ComponentsList](#componentslist)
+      - [TabView](#tabview)
+      - [InputListView](#inputlistview)
+      - [TableView](#tableview)
+    - [Grouping](#grouping)
+      - [Group](#group)
+      - [Section](#section)
+  - [Layout of Components](#layout-of-components)
+      - [Layout.rowSpan](#layoutrowspan)
+      - [Layout.columnSpan](#layoutcolumnspan)
+  - [Connecting Multiple Components](#connecting-multiple-components)
+  - [An Example](#an-example)
+    - [1. Specifying Imports](#1-specifying-imports)
+    - [2. Adding the Form](#2-adding-the-form)
+    - [3. Adding the Components](#3-adding-the-components)
+  - [Advanced Usage](#advanced-usage)
+  - [Custom Imports](#custom-imports)
 
 
 ## Components
@@ -835,6 +836,21 @@ We can begin actual work on the QML file, first we have to tell the engine where
 
 </details>
 
+In the future, we will require using qualified namespace for the import statements for the JASP QML modules [see here](https://doc.qt.io/qt-5/qtqml-syntax-imports.html#importing-into-a-qualified-local-namespace).
+
+<details>
+	<summary>Code</summary>
+
+  ```qml
+  import QtQuick          2.11
+  import QtQuick.Layouts  1.3
+  import JASP.Controls    1.0 as JC
+  import JASP.Theme	      1.0 as JT
+  import JASP.Widgets     1.0 as JW
+  ```
+</details>
+
+This means that a JASP control, theme or a widget needs to be prepended with the qualifier, e.g., `JC.CheckBox` instead of just `CheckBox`.
 
 ### 2. Adding the Form
 At this point we add a `Form` which will hold all our input components:
