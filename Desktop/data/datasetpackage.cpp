@@ -1433,8 +1433,38 @@ QStringList DataSetPackage::getColumnLabelsAsStringList(size_t columnIndex)	cons
 	QStringList list;
 	if(columnIndex < 0 || columnIndex >= columnCount()) return list;
 
-	for(const Label & label : _dataSet->column(columnIndex).labels())
-		list.append(tq(label.text()));
+	Column& col = _dataSet->column(columnIndex);
+	QVector<bool> filterRows;
+	bool hasFilter = false;
+	for (int i = 0; i < _dataSet->rowCount(); i++)
+	{
+		bool filtered = getRowFilter(i);
+		hasFilter |= !filtered;
+		filterRows.push_back(filtered);
+	}
+
+	for(const Label & label : col.labels())
+	{
+		bool add = true;
+		QString labelText = tq(label.text());
+		if (hasFilter)
+		{
+			add = false;
+			for (int i = 0; i < col.rowCount(); i++)
+			{
+				if (filterRows[i])
+				{
+					QString val = tq(col[i]);
+					if (val == labelText)
+					{
+						add = true;
+						break;
+					}
+				}
+			}
+		}
+		if (add) list.append(labelText);
+	}
 
 	return list;
 }
