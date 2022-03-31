@@ -29,6 +29,6 @@ copy %MERGE_MODULE_PATH% . /Y
 
 "@CANDLE_EXECUTABLE_NATIVE@" -dRedistMergeModule=@VC_MERGE_MODULE_NAME@ -arch x64 -dJASP_SOURCE_DIR=@JASP_SOURCE_DIR_NATIVE@ -ext WixUIExtension -ext WixUtilExtension JASP.wxs || exit /B 9
 
-"@LIGHT_EXECUTABLE_NATIVE@" -sval -dRedistMergeModule=@VC_MERGE_MODULE_NAME@ -ext WixUIExtension -ext WixUtilExtension -out JASP\JASP.msi JASPFilesFragment.wixobj JASP.wixobj || exit /B 10
+"@LIGHT_EXECUTABLE_NATIVE@" -sval -dRedistMergeModule=@VC_MERGE_MODULE_NAME@ -ext WixUIExtension -ext WixUtilExtension -out "@JASP_BINARY_DIR_NATIVE@\JASP\JASP.msi" JASPFilesFragment.wixobj JASP.wixobj || exit /B 10
 
 endlocal
