@@ -12,7 +12,7 @@
 #     `add_custom_targets` and I needed to have that in a few situtation.
 #
 
-# cmake_policy(SET CMP0009 NEW)
+cmake_policy(SET CMP0009 NEW)
 
 if(NOT APPLE)
   message(STATUS "Nothing to fix here.")
@@ -22,6 +22,7 @@ else()
   file(
     GLOB_RECURSE
     LIBRARIES
+    FOLLOW_SYMLINKS
     "${PATH}/*.so"
     "${PATH}/*.dylib")
   list(
@@ -356,6 +357,10 @@ else()
           message(CHECK_PASS "successful")
         else()
           message(CHECK_FAIL "unsuccessful")
+          message(
+            WARNING
+              "Signing of ${FILE_SHORT_PATH} was NOT successful. This could break your build!"
+          )
         endif()
 
       endif()

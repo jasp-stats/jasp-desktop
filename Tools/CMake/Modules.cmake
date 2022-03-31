@@ -163,7 +163,10 @@ add_custom_target(
 file(
   WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
   "
-    install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
+    if ('jaspBase' %in% installed.packages()) {
+      cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
+    } else {
+      install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
                         'jsonlite', 'modules', 'officer', 'pkgbuild',
                         'plyr', 'qgraph', 'ragg', 'R6', 'renv',
                         'rjson', 'rvg', 'svglite', 'systemfonts',
@@ -171,27 +174,27 @@ file(
                         'data.table', 'httr', 'lifecycle',
                         'pkgload', 'remotes', 'stringi', 'stringr',
                         'vdiffr'), type='${R_PKG_TYPE}', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})
-    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
-    if ('jaspBase' %in% installed.packages()) {
-      cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
+      install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
     }
     ")
 
 file(
   WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
   "
-    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
     if ('jaspGraphs' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log')
+    } else {
+      install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
     }
     ")
 
 file(
   WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
   "
-    install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
     if ('jaspTools' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log')
+    } else {
+      install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
     }
     ")
 
@@ -290,7 +293,8 @@ if(INSTALL_R_MODULES)
         -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D R_HOME_PATH=${R_HOME_PATH}
         -D R_DIR_NAME=${R_DIR_NAME} -D
         MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -D MODULE=${MODULE} -D
-        SIGNING=${IS_SIGNING} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+        SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=${IS_SIGNING} -P
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
       # COMMAND
       #   ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
       #   MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P
@@ -340,7 +344,8 @@ if(INSTALL_R_MODULES)
         -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D R_HOME_PATH=${R_HOME_PATH}
         -D R_DIR_NAME=${R_DIR_NAME} -D
         MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -D MODULE=${MODULE} -D
-        SIGNING=${IS_SIGNING} -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+        SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D SIGNING=${IS_SIGNING} -P
+        ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
       # COMMAND
       #   ${CMAKE_COMMAND} -D PATH=${MODULES_BINARY_PATH}/${MODULE} -D
       #   MODULES_BINARY_PATH=${MODULES_BINARY_PATH} -P
