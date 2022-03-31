@@ -172,7 +172,7 @@ if(APPLE)
   add_custom_target(
     upload
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND Upload.sh)
+    COMMAND bash Upload.sh)
 
 endif()
 
