@@ -11,7 +11,7 @@ if "%MSVCDIR%"=="" (
 
 set VCVARS_DIR="%MSVCDIR%\VC\Auxiliary\Build"
 
-call %VCVARS_DIR%\vcvars%ARCH%.bat
+call %VCVARS_DIR%\vcvars64.bat
 
 cmake -E remove_directory build
 
