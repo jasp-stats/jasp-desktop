@@ -18,7 +18,7 @@ rem ---------------------- Packing -------------------------------
 echo Melting and Coalescing MSI
 
 set MERGE_MODULE_NAME=@VC_MERGE_MODULE_NAME@
-set MERGE_MODULE_PATH="@VC_TOOLS_REDIST_DIR_VARIABLE@\Redist\MSVC\v143\MergeModules\%MERGE_MODULE_NAME%"
+set MERGE_MODULE_PATH="@VC_MERGE_MODULE_PATH_NATIVE@"
 
 echo VCToolsRedistDir: @VC_TOOLS_REDIST_DIR_VARIABLE@
 
