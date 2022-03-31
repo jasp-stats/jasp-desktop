@@ -175,7 +175,7 @@ if(APPLE)
                         COMMAND xar -xf ${R_PACKAGE_NAME})
         message(CHECK_PASS "done.")
 
-        message(CHECK_START "Unpacking the payloads.")
+        message(CHECK_START "Unpacking the payloads")
         execute_process(WORKING_DIRECTORY ${r_pkg_SOURCE_DIR}
                         COMMAND tar -xf R-fw.pkg/Payload)
 
@@ -231,7 +231,6 @@ if(APPLE)
                     ${r_pkg_r_home}/opt)
 
           # Downloading the gfortran
-
           message(CHECK_START "Downloading gfortran")
 
           fetchcontent_declare(
@@ -293,6 +292,8 @@ if(APPLE)
         message(CHECK_FAIL "failed.")
       endif()
 
+      message(CHECK_START "Locating the 'gfortran'")
+
       find_program(
         FORTRAN_EXECUTABLE
         NAMES gfortran
@@ -330,7 +331,7 @@ if(APPLE)
       # Patch and sign all first party libraries
       execute_process(
         # COMMAND_ECHO STDOUT
-        # ERROR_QUIET OUTPUT_QUIET
+        ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           ${CMAKE_COMMAND} -D
@@ -345,7 +346,7 @@ if(APPLE)
       message(CHECK_START "Patching /bin/exec/R")
       execute_process(
         # COMMAND_ECHO STDOUT
-        # ERROR_QUIET OUTPUT_QUIET
+        ERROR_QUIET OUTPUT_QUIET
         WORKING_DIRECTORY ${R_HOME_PATH}
         COMMAND
           bash ${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
@@ -362,7 +363,7 @@ if(APPLE)
                                                       "1"))
         execute_process(
           # COMMAND_ECHO STDOUT
-          # ERROR_QUIET OUTPUT_QUIET
+          ERROR_QUIET OUTPUT_QUIET
           TIMEOUT 30
           WORKING_DIRECTORY ${R_HOME_PATH}
           COMMAND
@@ -479,7 +480,7 @@ if(APPLE)
     message(CHECK_START "Patching RInside and Rcpp")
     execute_process(
       # COMMAND_ECHO STDOUT
-      # ERROR_QUIET OUTPUT_QUIET
+      ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND
         ${CMAKE_COMMAND} -D
@@ -491,7 +492,7 @@ if(APPLE)
 
     execute_process(
       # COMMAND_ECHO STDOUT
-      # ERROR_QUIET OUTPUT_QUIET
+      ERROR_QUIET OUTPUT_QUIET
       WORKING_DIRECTORY ${R_HOME_PATH}
       COMMAND
         ${CMAKE_COMMAND} -D

@@ -86,33 +86,6 @@ endif()
 
 if(APPLE)
 
-  # message(CHECK_START "Looking for 'gfortran'")
-  # if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-  #   set(GFORTRAN_PATH "/opt/homebrew/bin")
-  # else()
-  #   set(GFORTRAN_PATH "/usr/local/bin")
-  # endif()
-  # message(STATUS "Expecting 'gfortran' in ${GFORTRAN_PATH}")
-
-  # find_program(
-  #   FORTRAN_EXECUTABLE
-  #   NAMES gfortran
-  #         gfortran-11
-  #         gfortran-12
-  #         REQUIRED
-  #   HINTS /usr/local/bin
-  #   DOC "'gfortran' is needed for building some of the R packages")
-
-  # set(FORTRAN_EXECUTABLE "")
-
-  # if(NOT FORTRAN_EXECUTABLE)
-  #   message(CHECK_FAIL "not found")
-  #   message(FATAL_ERROR "Please install 'gfortran' before continuing.")
-  # else()
-  #   message(CHECK_PASS "found")
-  #   message(STATUS "  ${FORTRAN_EXECUTABLE}")
-  # endif()
-
   message(CHECK_START "Looking for 'macdeployqt'")
   find_program(DEPLOYQT_EXECUTABLE macdeployqt)
   if(NOT DEPLOYQT_EXECUTABLE)
