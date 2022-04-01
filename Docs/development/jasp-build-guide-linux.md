@@ -15,7 +15,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 	- `bison`
 	- `flex`
 - Qt (>= 6.2)
-	- Qt Creator 7 (Recommended)
+	- Qt Creator 7
 
 ### Installing Dependencies
 

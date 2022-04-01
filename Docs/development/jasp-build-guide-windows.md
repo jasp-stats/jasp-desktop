@@ -6,7 +6,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 
 - [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.2
-    - Qt Creator 7 is in beta, and it has a much better CMake support!
+    - Qt Creator 7
 - [MSYS2](https://www.msys2.org/), for building some of the dependencies
 - [RTools](https://cran.r-project.org/bin/windows/Rtools/rtools40.html), for building R modules
 - [Conan](https://github.com/conan-io/conan/releases) > 1.45.0
@@ -20,11 +20,15 @@ Before everything, you need to download and install the Microsoft Visual Studio 
 	- Head to the bottom of the page, select the Windows, and then for the languages and platforms, select the C++. This should give you an installer with all the C++ tools and libraries that we need.
 - If you are installing the VS with C++ Community, you don't need to add or modify your installation, however, if you are downloading the general version, you need to make sure that the following packages are being installed.
 	- During the installation, you will be asked asked to customize your installation, in this section, here, make sure to select the followings, 
-		- From the left panel, you should select the "Desktop development with C++" module. This package includes several tools, e.g.,
+		- From the "Workloads" tab, select the "Desktop Development with C++" item. This package includes several tools, and you should make sure that the followings are selected from the right panel,
+			- C++ code desktop features (probably pre-selected)
+			- MSVC v142 (v143) - VS 2019 (2020) C++ x64/x86 build tools
+			- Windows 10 SDK
 			- Just-In-Time debugger
-			- VC++ 2019 or VC++ 2022
 			- C++ profiling tools
-			- Visual C++ tools for CMake
+			- C++ CMake Tools for Windows
+		- From the "Individual Components" tab, search and select the following
+			- C++ 2019 (2022) Redistributable MSMs
 
 ### Installing Qt Creator and Qt 6
 
@@ -35,7 +39,7 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 	- Qt
 		- Qt 6.2.4
 		- Developer and Designer Tools
-			- Qt Creator 7.0 Beta (Recommended)
+			- Qt Creator 7.0
 			- Qt Creator Debug Symbols
 			- CMake
 			- Ninja

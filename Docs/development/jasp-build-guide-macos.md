@@ -6,7 +6,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 
 - [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.2
-    - Qt Creator 7 (Recommended)
+    - Qt Creator 7
 - [Homebrew](http://brew.sh)
 - [CMake](https://cmake.org), installed via Homebrew and Qt Creator
 - [Conan](https://conan.io), installed via Homebrew
@@ -33,7 +33,7 @@ You can download and install Homebrew using the following command. After running
 After installing Homebrew, you can start installing your requirements by running the following command in the Terminal.
 
 ```bash
-brew install conan bison flex pkg-config automake autoconf brotli create-dmg parallel
+brew install conan bison flex pkg-config automake autoconf create-dmg parallel
 ```
 
 > 💡 Optionally, you can install the Qt from the command line, and build JASP using that, e.g., `brew install qt`. 
