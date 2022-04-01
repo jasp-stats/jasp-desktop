@@ -42,7 +42,7 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Install)
 
 # At the moment, I don't remove the `.a` files
 set(FILES_EXCLUDE_PATTERN
-    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store)$"
+    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store|\\.Rhistory)$"
 )
 set(FOLDERS_EXCLUDE_PATTERN
     ".*(/doc|/examples|/help|/man|/html|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$"

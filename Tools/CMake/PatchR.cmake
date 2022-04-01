@@ -1,5 +1,22 @@
-# A macro for patching some of the paths and values in `bin/R` and
-# `etc/Makeconf`.
+# PatchR.cmake patches some of the paths and values in `bin/R` and `etc/Makeconf`.
+#
+# A few things happen here,
+#   In bin/R,
+#     - Setting the R_HOME_DIR, and some of its dependent paths, e.g., R_SHARED_DIR.
+#     - Setting the path to LIBR, this is going to be the path to `R.framework`
+#     - On arm64 arch, replacing `/opt/R/arm64/` with `R_HOME/opt/R/arm64`
+#     - On x86_64 arch, replacing `/usr/local/` with `R_HOME/usr/local`
+#     - Changing the absolute symlinks of `R_HOME/fontconfig/fonts/conf.d` to relative symlinks.
+#       This is one of the reason for broken notarization.
+#     - Modifying the R.framework/Info.plist
+#     - and removing bunch of stuff that could break the notarization
+#
+#
+#
+# WARNING:
+#
+#   When updating to a new R, we need to make sure that this script makes sense and it could
+#   still manage to prepare a portable `R.framework`.
 
 macro(patch_r)
 

@@ -1,15 +1,30 @@
-# This script patches and signs all the libraries found in the PATH variable. In addition,
+# This script patches and signs all the libraries found in given PATH. In addition,
 # for every library that it patches, it creates an empty file, logging its action. So, for
 # `R_HOME/lib/libR.dylib`, we will have `R_HOME/lib/libR.dylib.patched.log`. I'm basically
 # implementing a simple cache to not patch things several times. This is especially useful
-# when we are installing the modules
+# when we are installing the modules.
+#
+# Todos:
+#   - [ ] Make the script more robust against the order of patching. I think this can be done
+#         with stronger `MATCHES` instruction, but it needs some extensive testing
+#   - [ ] Add a variable to control the verbosity of the output
+#   - [ ] Some R packages have some binaries with them, e.g., `jags`. Although I noticed that
+#         they are not usually liked against anything, and they are often just shell scripts,
+#         we should probably check them and patch them if necessary.
+#
+# Warnings:
+#   - The order of statements in this file matters a lot, so, we need to catch the
+#     `/opt/R/arm64/gfortran/lib/` before the generic `lib/`; so, be aware of this
+#     when you are attempting to modify this.
+#   - When calling this script make sure that you are passing the parameters correctly.
+#     See, `Modules.cmake` or `R.cmake` for examples.
 #
 # Notes:
 #
 #   - While this can easily be a CMake Function, or a Macro, it is not,
 #     and it should be called using the `cmake -P Patch.cmake`. It is a standalone script
 #     because CMake cannot call its function inside a COMMAND section of `execute_process` or
-#     `add_custom_targets` and I needed to have that in a few situtation.
+#     `add_custom_targets` and I needed to have that in a few situation.
 #
 
 cmake_policy(SET CMP0009 NEW)
