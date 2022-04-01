@@ -167,6 +167,11 @@ if(WIN32)
     message(CHECK_PASS "found.")
     message(STATUS "  ${VC_MERGE_MODULE_PATH_NATIVE}")
 
+    execute_process(
+      WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              "${VC_MERGE_MODULE_PATH_NATIVE}" "${CMAKE_BINARY_DIR}")
+
   else()
 
     message(CHECK_FAIL "not found.")

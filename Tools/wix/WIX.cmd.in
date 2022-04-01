@@ -2,10 +2,6 @@ rem This file is generated from Tools/WIX.cmd.in, if you want to change it, be a
 rem that it will be overwritten. You can edit the template file, and rerun the CMake
 rem to see your changes here.
 rem 
-rem You can set the path to the MERGE_MODULE_NAME and MERGE_MODULE_PATH in the Config.cmake
-rem
-rem You don't need to run this file manually, you can ask CMake to run it for you using 
-rem `cmake --build . --target wix`
 
 rem @echo off
 rem autorun
@@ -17,12 +13,8 @@ rem ---------------------- Packing -------------------------------
 
 echo Melting and Coalescing MSI
 
-set MERGE_MODULE_NAME=@VC_MERGE_MODULE_NAME@
-set MERGE_MODULE_PATH="@VC_MERGE_MODULE_PATH_NATIVE@"
+echo VCMergeModule: @VC_MERGE_MODULE_PATH_NATIVE@
 
-echo VCToolsRedistDir: @VC_TOOLS_REDIST_DIR_VARIABLE@
-
-copy %MERGE_MODULE_PATH% . /Y
 "@HEAT_EXECUTABLE_NATIVE@" dir @JASP_INSTALL_DIR_NATIVE@ -cg JASPFiles -gg -scom -sreg -sfrag -srd -dr APPLICATIONFOLDER -var var.JASP_INSTALL_DIR -out JASPFilesFragment.wxs || exit /B 7
 
 "@CANDLE_EXECUTABLE_NATIVE@" -arch x64 -dJASP_INSTALL_DIR=@JASP_INSTALL_DIR_NATIVE@  JASPFilesFragment.wxs  || exit /B 8

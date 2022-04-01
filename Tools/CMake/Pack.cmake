@@ -67,7 +67,6 @@ if(WIN32)
   add_custom_target(
     wix
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    DEPENDS "${CMAKE_BINARY_DIR}/junctions.rds"
     BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASPFilesFragment.wixobj"
                "${CMAKE_SOURCE_DIR}/JASP.wixobj"
                "${CMAKE_SOURCE_DIR}/JASP/JASP.msi"
@@ -80,7 +79,6 @@ if(WIN32)
   add_custom_target(
     zip
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    DEPENDS "${CMAKE_BINARY_DIR}/junctions.rds"
     BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASP/JASP.zip"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
