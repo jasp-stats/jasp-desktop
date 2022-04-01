@@ -113,10 +113,6 @@ set(INSTALL_MODULE_TEMPLATE_FILE
     "${PROJECT_SOURCE_DIR}/Modules/install-module.R.in"
     CACHE FILEPATH "Location of the install-module.R.in")
 
-make_directory(${MODULES_BINARY_PATH})
-make_directory(${MODULES_RENV_ROOT_PATH})
-make_directory(${MODULES_RENV_CACHE_PATH})
-
 if(APPLE AND (NOT EXISTS ${R_HOME_PATH}/bin/Modules))
   # This is added because packages installed by Renv needs to be at
   # @executable_path/../ relative to the R binary, which is in `/bin/exec/R`
@@ -128,10 +124,6 @@ if(APPLE AND (NOT EXISTS ${R_HOME_PATH}/bin/Modules))
     WORKING_DIRECTORY ${R_HOME_PATH}/bin
     COMMAND ln -sf ../../../../../../Modules Modules)
 endif()
-
-cmake_print_variables(MODULES_BINARY_PATH)
-cmake_print_variables(MODULES_RENV_ROOT_PATH)
-cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
 if(LINUX)
   set(R_PKG_TYPE "source")

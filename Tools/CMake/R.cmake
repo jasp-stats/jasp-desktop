@@ -76,7 +76,7 @@ set(MODULES_BINARY_PATH
     "${CMAKE_BINARY_DIR}/Modules"
     CACHE PATH "Location of the renv libraries")
 set(MODULES_RENV_ROOT_PATH
-    "${MODULES_SOURCE_PATH}/renv-root"
+    "${PROJECT_BINARY_DIR}/_cache/renv-root"
     CACHE PATH "Location of renv root directories")
 set(MODULES_RENV_CACHE_PATH
     "${MODULES_BINARY_PATH}/renv-cache"
@@ -88,6 +88,10 @@ set(JASP_ENGINE_PATH
 make_directory("${MODULES_BINARY_PATH}")
 make_directory("${MODULES_RENV_ROOT_PATH}")
 make_directory("${MODULES_RENV_CACHE_PATH}")
+
+cmake_print_variables(MODULES_BINARY_PATH)
+cmake_print_variables(MODULES_RENV_ROOT_PATH)
+cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
 # ------
 
