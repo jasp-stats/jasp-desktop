@@ -8,7 +8,7 @@ name: generate-translations
 
 jobs:
   generate-translations:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     env:
       GITHUB_TOKEN: ${{ secrets.REPO_KEY }}
       WEBLATE_KEY: ${{ secrets.WEBLATE_KEY }}
