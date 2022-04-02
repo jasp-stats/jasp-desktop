@@ -12,7 +12,7 @@
 cmake -E remove_directory build-x86_64
 cmake -E make_directory build-x86_64
 
-cmake -S . -B build-x86_64 -GNinja -DCMAKE_PREFIX_PATH=/Users/buildbotworker/Qt/6.2.4/macos -DCMAKE_OSX_ARCHITECTURES=x86_64
+cmake -S . -B build-x86_64 -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_PREFIX_PATH=/Users/buildbotworker/Qt/6.2.4/macos 
 cmake --build build-x86_64 --target all
 cmake --build build-x86_64 --target install
 cmake --build build-x86_64 --target dmg
