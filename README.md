@@ -40,7 +40,7 @@ Citations are an important measure of how widely the software is used, and an im
     - [macOS](Docs/development/jasp-build-guide-macos.md)
     - [Linux](Docs/development/jasp-build-guide-linux.md)
     - [Windows](Docs/development/jasp-build-guide-windows.md)
-  - [Rebasing your Repository](Docs/development/git-guide.md)
+  - [Git Guide](Docs/development/git-guide.md)
   - [Nightly versions of JASP here](http://static.jasp-stats.org/Nightlies/) (built fresh every night)
 
 #### Modules
