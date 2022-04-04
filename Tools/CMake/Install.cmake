@@ -40,12 +40,14 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Install)
 
-# At the moment, I don't remove the `.a` files
+# Notes
+#   - On macOS, gfortran is being installed by CMake, and it's being used during the build,
+#     and here we exclude it.
 set(FILES_EXCLUDE_PATTERN
     ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store|\\.Rhistory)$"
 )
 set(FOLDERS_EXCLUDE_PATTERN
-    ".*(/doc|/examples|/help|/man|/html|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$"
+    ".*(/doc|/examples|/help|/man|/html|/demo|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$"
 )
 
 # See here, http://cmake.org/cmake/help/v3.22/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html
