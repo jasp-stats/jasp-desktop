@@ -3,6 +3,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 
+
 Json::Value DatabaseConnectionInfo::toJson() const
 {
 	Json::Value out = Json::objectValue;
@@ -31,9 +32,34 @@ bool DatabaseConnectionInfo::connect() const
 	return db.open();
 }
 
+void DatabaseConnectionInfo::close() const
+{
+	QSqlDatabase::database().close();
+}
+
 QString DatabaseConnectionInfo::lastError() const
 {
 	return QSqlDatabase::database().lastError().text();	
+}
+
+QSqlQuery DatabaseConnectionInfo::runQuery() const
+{
+	if(!QSqlDatabase::database().isOpen())
+		throw std::runtime_error(fq(QObject::tr("JASP thinks it's connected to the database but the QSqlDatabase isn't opened...")));
+	
+	QSqlQuery query;
+	query.setForwardOnly(true);
+
+	if(!query.exec(_query))
+		throw std::runtime_error(fq(QObject::tr("Query failed with: '%1'").arg(query.lastError().text())));
+
+	if(!query.isSelect())
+		throw std::runtime_error(fq(QObject::tr("Query wasn't a SELECT-like statement and returned nothing.")));
+
+	if(!query.isActive())
+		throw std::runtime_error(fq(QObject::tr("No active result found, maybe there is something wrong with your query?")));
+	
+	return query;
 }
 
 void DatabaseConnectionInfo::fromJson(const Json::Value & json)

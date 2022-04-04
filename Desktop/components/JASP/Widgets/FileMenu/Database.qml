@@ -229,8 +229,8 @@ For a local or toy database this is probably overkill, but use your own judgemen
 			{
 				id:						runQuery
 				text:					qsTr("Execute")
-				onClicked:				fileMenuModel.database.runQuery(dbQuery.text);
-				//KeyNavigation.tab:	?
+				onClicked:				fileMenuModel.database.runQuery();
+				KeyNavigation.tab:	loadResults
 			}
 		}
 
@@ -248,8 +248,8 @@ For a local or toy database this is probably overkill, but use your own judgemen
 		{
 			id:						loadResults
 			text:					qsTr("Load into JASP")
-			onClicked:				fileMenuModel.database.importResults());
-			//KeyNavigation.tab:	?
+			onClicked:				fileMenuModel.database.importResults();
+			enabled:				fileMenuModel.database.connected && fileMenuModel.database.resultsOK
 		}
 
 		QC.TextArea

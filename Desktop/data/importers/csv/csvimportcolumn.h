@@ -1,7 +1,7 @@
 #ifndef CSVIMPORTCOLUMN_H
 #define CSVIMPORTCOLUMN_H
 
-#include "importcolumn.h"
+#include "../importcolumn.h"
 
 ///
 /// Storing a column during import of a CSV

@@ -109,9 +109,9 @@ void FileEvent::chain(FileEvent *event)
 	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
 }
 
-const QString FileEvent::database() const 
+const std::string FileEvent::database() const 
 { 
-	return tq(_database.toStyledString());		
+	return _database.toStyledString();
 }
 
 QString FileEvent::getProgressMsg() const

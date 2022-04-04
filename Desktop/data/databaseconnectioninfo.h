@@ -4,7 +4,7 @@
 #include "utilenums.h"
 #include <QString>
 #include <json/json.h>
-
+#include <QSqlQuery>
 
 class DatabaseConnectionInfo
 {
@@ -15,9 +15,11 @@ public:
 	void		fromJson(const Json::Value & json);
 	Json::Value	toJson() const;
 	
-	bool		connect() const;
+	bool		connect()	const;
+	void		close()		const;
 	
 	QString		lastError() const;
+	QSqlQuery	runQuery()	const;
 	
 	
 	DbType  _dbType			= DbType::NOTCHOSEN;
@@ -27,6 +29,7 @@ public:
 			_hostname		= "",
 			_query			= "";
 	int		_port			= 0;
+	
 };
 
 #endif // DATABASECONNECTIONINFO_H

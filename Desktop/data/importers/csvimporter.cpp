@@ -16,8 +16,8 @@
 //
 
 #include "csvimporter.h"
-#include "csvimportcolumn.h"
-#include "csv.h"
+#include "csv/csvimportcolumn.h"
+#include "csv/csv.h"
 #include "timers.h"
 
 using namespace std;

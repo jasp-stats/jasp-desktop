@@ -28,7 +28,7 @@ public:
 	explicit Database(QObject *parent = nullptr);
 
 	Q_INVOKABLE void	connect();
-	Q_INVOKABLE void	runQuery(const QString & query);
+	Q_INVOKABLE void	runQuery();
 	Q_INVOKABLE void	importResults();
 	Q_INVOKABLE void	setDbTypeFromIndex(int dbTypeIdx);
 
@@ -75,7 +75,7 @@ signals:
 	void resultsOKChanged();
 	
 private:
-	QString	_runQuery(const QString & query);
+	QString	_runQuery();
 
 private:
 	Info	_info;

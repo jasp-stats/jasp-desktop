@@ -40,9 +40,9 @@ void Database::connect()
 	setLastError(connected() ? "Connected!" : "Error: " + _info.lastError());
 }
 
-void Database::runQuery(const QString & query)
+void Database::runQuery()
 {
-	setQueryResult(_runQuery(query));
+	setQueryResult(_runQuery());
 }
 
 bool Database::readyForImport() const
@@ -57,7 +57,9 @@ void Database::importResults()
 		Log::log() << "Database::importResults() called without it being ready for import... Should not be possible but ok..." << std::endl;
 		return;
 	}
-		
+	
+	_info.close();
+	
 	FileEvent *event = new FileEvent(this, _mode);
 
 	event->setDatabase(_info.toJson());
@@ -69,60 +71,49 @@ void Database::setDbTypeFromIndex(int dbTypeIdx)
 	setDbType(static_cast<DbType>(dbTypeIdx));
 }
 
-QString	Database::_runQuery(const QString & queryText)
+QString	Database::_runQuery()
 {
 	setResultsOK(false);
 	
 	if(!connected())
 		return tr("Not connected to database!");
-
-	QSqlDatabase db = QSqlDatabase::database();
-
-	if(!db.isOpen())
-		return tr("JASP thinks it's connected to the database but the QSqlDatabase isn't opened...");
 	
-	QSqlQuery query;
-	query.setForwardOnly(true);
-
-	if(!query.exec(queryText))
-		return tr("Query failed with: '%1'").arg(query.lastError().text());
-
-	if(!query.isSelect())
-		return tr("Query wasn't a SELECT-like statement and returned nothing.");
-
-	if(!query.isActive())
-		return tr("No active result found, maybe there is something wrong with your query?");
-	
-	
-
-	QStringList fewLines;
-
-	QSqlRecord  record = query.record();
-
+	try
 	{
-		QStringList names;
-
-		for(int i=0; i<record.count(); i++)
-			names.push_back(record.fieldName(i));
-
-		fewLines.push_back(names.join(", "));
-	}
+		QSqlQuery query = _info.runQuery();
 	
-	do
+		QStringList fewLines;
+	
+		QSqlRecord  record = query.record();
+	
+		{
+			QStringList names;
+	
+			for(int i=0; i<record.count(); i++)
+				names.push_back(record.fieldName(i));
+	
+			fewLines.push_back(names.join(", "));
+		}
+		
+		do
+		{
+			QStringList values;
+	
+			for(int i=0; i<record.count(); i++)
+				values.push_back(query.value(i).toString());
+	
+			fewLines.push_back(values.join(", "));
+		}
+		while(query.next() && fewLines.size() < 10);
+	
+		setResultsOK(true); //I suppose the results must be ok if we get all the way here
+	
+		return fewLines.join("\n");
+	}
+	catch(std::runtime_error & e)
 	{
-		QStringList values;
-
-		for(int i=0; i<record.count(); i++)
-			values.push_back(query.value(i).toString());
-
-		fewLines.push_back(values.join(", "));
+		return tq(e.what());	
 	}
-	while(query.next() && fewLines.size() < 10);
-	
-	setResultsOK(true); //I suppose the results must be ok if we get all the way here
-	
-
-	return fewLines.join("\n");
 }
 
 void Database::setUsername(const QString &newUsername)
