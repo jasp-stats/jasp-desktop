@@ -68,7 +68,8 @@ void Database::importResults()
 
 void Database::setDbTypeFromIndex(int dbTypeIdx)
 {
-	setDbType(static_cast<DbType>(dbTypeIdx));
+	if(dbTypeIdx > 0 && dbTypeIdx <= int(DbType::QSQLITE)) //is it really one?
+		setDbType(static_cast<DbType>(dbTypeIdx));
 }
 
 QString	Database::_runQuery()

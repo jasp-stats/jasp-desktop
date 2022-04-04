@@ -2,7 +2,7 @@
 #include "utilities/qutils.h"
 #include <QSqlDatabase>
 #include <QSqlError>
-
+#include "log.h"
 
 Json::Value DatabaseConnectionInfo::toJson() const
 {
@@ -19,9 +19,23 @@ Json::Value DatabaseConnectionInfo::toJson() const
 	return out;
 }
 
+void DatabaseConnectionInfo::fromJson(const Json::Value & json)
+{
+	//Log::log() << "DatabaseConnectionInfo::fromJson got:\n" << json << std::endl;
+	
+	_dbType		= DbTypeFromString(	json["dbType"]		.asString() )	;
+	_username	= tq(				json["username"]	.asString() )	;
+	_password	= tq(				json["password"]	.asString() )	;
+	_database	= tq(				json["database"]	.asString() )	;
+	_hostname	= tq(				json["hostname"]	.asString() )	;
+	_query		= tq(				json["query"]		.asString() )	;
+	_port		=					json["port"]		.asUInt()		;
+
+}
+
 bool DatabaseConnectionInfo::connect() const
 {
-	QSqlDatabase db = QSqlDatabase::addDatabase(DbTypeToQString(_dbType));
+	QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");//DbTypeToQString(_dbType));
 
 	db.setDatabaseName(	_database);
 	db.setHostName(		_hostname);
@@ -62,14 +76,4 @@ QSqlQuery DatabaseConnectionInfo::runQuery() const
 	return query;
 }
 
-void DatabaseConnectionInfo::fromJson(const Json::Value & json)
-{
-	_dbType		= DbTypeFromString(	json["dbType"]		.asString() )	;
-	_username	= tq(				json["username"]	.asString() )	;
-	_password	= tq(				json["password"]	.asString() )	;
-	_database	= tq(				json["database"]	.asString() )	;
-	_hostname	= tq(				json["hostname"]	.asString() )	;
-	_query		= tq(				json["query"]		.asString() )	;
-	_port		=					json["port"]		.asUInt()		;
 
-}
