@@ -136,8 +136,8 @@
 					print("</tbody></table>");
 				}
 
-				createTable("MacOS", "./macOS-arm64");
-				createTable("MacOS", "./macOS-x86_64");
+				createTable("macOS arm64", "./macOS-arm64");
+				createTable("macOS x86_64", "./macOS-x86_64");
 
 				createTable("Windows ZIP 64bit", "./WindowsZip");
 				createTable("Windows MSI 64bit", "./Windows");
