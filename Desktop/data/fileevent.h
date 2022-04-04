@@ -41,12 +41,14 @@ public:
 	bool			setPath(		const QString & path);
 	void			setDataFilePath(const QString & path);
 	void			setOsfPath(		const QString & path) { _osfPath = path; }
+	void			setDatabase(	const Json::Value & dbInfo);
 
 	void			setComplete(bool success = true, const QString &message = "");
 	void			chain(FileEvent *event);
 
 	void			setReadOnly()		  { _readOnly = true;		}
 
+	bool			isDatabase()	const { return _database != Json::nullValue;	}
 	bool			isOnlineNode()	const { return _path.startsWith("http");		}
 	bool			isReadOnly()	const { return _readOnly;						}
 	bool			isCompleted()	const { return _completed;						}
@@ -57,6 +59,7 @@ public:
 	Utils::FileType	type()			const { return _type;			}
 
 	const QString &	path()			const { return _path;			}
+	const QString 	database()		const;
 	const QString &	osfPath()		const { return _osfPath;		}
 	const QString &	dataFilePath()	const { return _dataFilePath;	}
 	const QString &	message()		const { return _message;		}
@@ -83,6 +86,7 @@ private:
 						_success		= false;
 	FileEvent		*	_chainedTo		= nullptr;
 	Exporter		*	_exporter		= nullptr;
+	Json::Value			_database		= Json::nullValue;
 };
 
 Q_DECLARE_METATYPE(FileEvent *)

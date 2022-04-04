@@ -3,9 +3,12 @@
 
 #include "filemenuobject.h"
 #include "utilenums.h"
+#include "data/databaseconnectioninfo.h"
 
 class Database : public FileMenuObject
 {
+	typedef DatabaseConnectionInfo Info;
+	
 	Q_OBJECT
 
 	Q_PROPERTY(DbType		dbType		READ dbType			WRITE setDbType			NOTIFY dbTypeChanged		)
@@ -19,24 +22,29 @@ class Database : public FileMenuObject
 	Q_PROPERTY(QStringList	dbTypes		READ dbTypes								NOTIFY dbTypesChanged		)
 	Q_PROPERTY(QString		lastError	READ lastError								NOTIFY lastErrorChanged		)
 	Q_PROPERTY(int			port		READ port			WRITE setPort			NOTIFY portChanged			)
+	Q_PROPERTY(bool			resultsOK	READ resultsOK		WRITE setResultsOK		NOTIFY resultsOKChanged		)
 
 public:
 	explicit Database(QObject *parent = nullptr);
 
 	Q_INVOKABLE void	connect();
 	Q_INVOKABLE void	runQuery(const QString & query);
+	Q_INVOKABLE void	importResults();
 	Q_INVOKABLE void	setDbTypeFromIndex(int dbTypeIdx);
 
-	const DbType			dbType()		const { return _dbType;			}
-	const QString		&	hostname()		const { return _hostname;		}
-	const QString		&	database()		const { return _database;		}
-	const QString		&	username()		const { return _username;		}
-	const QString		&	password()		const { return _password;		}
-	bool					connected()		const { return _connected;		}
-	const QString		&	queryResult()	const { return _queryResult;	}
-	const QString		&	lastError()		const;
-	int						port()			const;
-	const QString		&	query()			const { return _query;			}
+	const DbType			dbType()			const { return _info._dbType;	}
+	const QString		&	hostname()			const { return _info._hostname;	}
+	const QString		&	database()			const { return _info._database;	}
+	const QString		&	username()			const { return _info._username;	}
+	const QString		&	password()			const { return _info._password;	}
+	bool					connected()			const { return _connected;		}
+	const QString		&	queryResult()		const { return _queryResult;	}
+	const QString		&	lastError()			const { return _lastError;		}
+	int						port()				const { return _info._port;		}
+	const QString		&	query()				const { return _info._query;	}
+	bool					resultsOK()			const { return _resultsOK;		}
+
+	bool					readyForImport()	const;
 
 	static const QStringList		dbTypes();
 
@@ -50,6 +58,7 @@ public:
 	void setConnected(	bool			newConnected	);
 	void setQueryResult(const QString & newQueryResult	);
 	void setLastError(	const QString &	newLastError	);
+	void setResultsOK(	bool			newResultsOK	);
 	
 signals:
 	void dbTypeChanged();
@@ -62,23 +71,18 @@ signals:
 	void dbTypesChanged();
 	void lastErrorChanged();
 	void portChanged();
-	
 	void queryChanged();
+	void resultsOKChanged();
 	
 private:
 	QString	_runQuery(const QString & query);
 
 private:
-	DbType  _dbType			= DbType::NOTCHOSEN;
-	QString _username		= "",
-			_password		= "",
-			_database		= "",
-			_hostname		= "",
-			_queryResult	= "",
-			_lastError		= "",
-			_query			= "";
-	bool	_connected		= false;
-	int		_port			= 0;
+	Info	_info;
+	QString _queryResult	= "",
+			_lastError		= "";
+	bool	_connected		= false,
+			_resultsOK		= false;
 };
 
 #endif // DATABASE_H

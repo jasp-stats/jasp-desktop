@@ -36,8 +36,8 @@ public:
 	void refresh();
 
 signals:
-				void selectedActionChanged(FileOperation selectedAction);
-	Q_INVOKABLE void buttonClicked(FileOperation selectedAction);
+	void selectedActionChanged(FileOperation selectedAction);
+	void buttonClicked(FileOperation selectedAction);
 
 public slots:
 	void setEnabled(ActionButtons::FileOperation operation, bool enabledState);

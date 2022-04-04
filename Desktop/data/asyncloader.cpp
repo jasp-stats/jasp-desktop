@@ -223,7 +223,13 @@ void AsyncLoader::loadPackage(QString id)
 				path = fq(_odm->getLocalPath(_currentEvent->path()));
 			}
 
-			extension = _loader.getExtension(path, extension); //Because it might still be ""...
+			if(!_currentEvent->isDatabase())
+				extension = _loader.getExtension(path, extension); //Because it might still be ""...
+			else
+			{
+				extension = "DATABASE"; //Lets be clear what this is ;)
+				path = _currentEvent->database();
+			}
 
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
 					_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));

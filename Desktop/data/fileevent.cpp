@@ -43,12 +43,19 @@ FileEvent::~FileEvent()
 	   _exporter = nullptr;
 }
 
-void FileEvent::setDataFilePath(const QString &path)
+void FileEvent::setDataFilePath(const QString & path)
 {
 	_dataFilePath = path;
 }
 
-bool FileEvent::setPath(const QString &path)
+void FileEvent::setDatabase(const Json::Value & dbInfo)
+{
+	setReadOnly();
+	
+	_database = dbInfo;
+}
+
+bool FileEvent::setPath(const QString & path)
 {
 	_path = path;
 	_type = Utils::getTypeFromFileName(path.toStdString());
@@ -100,6 +107,11 @@ void FileEvent::chain(FileEvent *event)
 {
 	_chainedTo = event;
 	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
+}
+
+const QString FileEvent::database() const 
+{ 
+	return tq(_database.toStyledString());		
 }
 
 QString FileEvent::getProgressMsg() const

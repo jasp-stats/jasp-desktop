@@ -27,14 +27,14 @@ class FileMenuObject : public QObject
 {
 	Q_OBJECT
 public:
-	explicit FileMenuObject(QObject *parent = 0);
+	explicit FileMenuObject(QObject *parent); ///< parent should be FileMenu *
 	virtual void setMode(FileEvent::FileMode mode);
 
 signals:
 	void dataSetIORequest(FileEvent *event);
 
 protected:
-	FileEvent::FileMode _mode;
+	FileEvent::FileMode _mode = FileEvent::FileOpen;
 
 };
 

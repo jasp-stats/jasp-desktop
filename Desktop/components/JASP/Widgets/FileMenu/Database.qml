@@ -40,6 +40,21 @@ Item
 		id				: menuHeader
 		headertext		: qsTr("Database")
 	}
+	
+	Text
+	{
+		text:		qsTr(
+"<i>Warning!</i>
+
+JASP stores the password to your database in jasp-files, while not directly readable it is easy to extract.
+
+In case you are trying to connect to a production or even just network-accessible database:
+We <b>strongly urge</b> you to make a special user for JASP in your database with as <i>few permissions</i> as needed.
+
+For a local or toy database this is probably overkill, but use your own judgement."
+)
+				
+	}
 
 	PrefsGroupRect
 	{
@@ -60,7 +75,7 @@ Item
 			currentIndex:			fileMenuModel.database.dbType
 			onCurrentIndexChanged:	fileMenuModel.database.setDbTypeFromIndex(currentIndex);
 
-			source:					fileMenuModel.database.dbTypes
+			source:					fileMenuModel.database.dbTypes 
 
 			KeyNavigation.tab:		dbHostnameInput
 		}
@@ -228,6 +243,14 @@ Item
 
 		anchors.top:		databaseGroup.bottom
 		anchors.topMargin:	jaspTheme.generalAnchorMargin
+		
+		RoundedButton
+		{
+			id:						loadResults
+			text:					qsTr("Load into JASP")
+			onClicked:				fileMenuModel.database.importResults());
+			//KeyNavigation.tab:	?
+		}
 
 		QC.TextArea
 		{

@@ -27,28 +27,24 @@
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
-	_mainWindow				= dynamic_cast<MainWindow*>(parent);
-	_recentFiles			= new RecentFiles(parent);
-	_currentDataFile		= new CurrentDataFile(parent);
-	_computer				= new Computer(parent);
-	_OSF					= new OSF(parent);
-	_database				= new Database(parent);
-	_dataLibrary			= new DataLibrary(parent);
-	_actionButtons			= new ActionButtons(this);
-	_resourceButtons		= new ResourceButtons(this);
+	_mainWindow				= qobject_cast<MainWindow*>(parent);
+	_recentFiles			= new RecentFiles			(this);
+	_currentDataFile		= new CurrentDataFile		(this);
+	_computer				= new Computer				(this);
+	_OSF					= new OSF					(this);
+	_database				= new Database				(this);
+	_dataLibrary			= new DataLibrary			(this);
+	_actionButtons			= new ActionButtons			(this);
+	_resourceButtons		= new ResourceButtons		(this);
 	_resourceButtonsVisible	= new ResourceButtonsVisible(this, _resourceButtons);
 
-	connect(_recentFiles,		&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(_currentDataFile,	&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(_computer,			&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(_OSF,				&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(_database,			&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(_dataLibrary,		&FileMenuObject::dataSetIORequest,			this, &FileMenu::dataSetIORequestHandler);
-	connect(&_watcher,			&QFileSystemWatcher::fileChanged,			this, &FileMenu::dataFileModifiedHandler);
-	connect(_actionButtons,		&ActionButtons::buttonClicked,				this, &FileMenu::actionButtonClicked	);
-	connect(_actionButtons,		&ActionButtons::selectedActionChanged,		this, &FileMenu::setFileoperation		);
-	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this, &FileMenu::resourceButtonClicked	);
-	connect(_currentDataFile,	&CurrentDataFile::setCheckAutomaticSync,	_mainWindow, &MainWindow::setCheckAutomaticSync	);
+	
+
+	connect(&_watcher,			&QFileSystemWatcher::fileChanged,			this,			&FileMenu::dataFileModifiedHandler	);
+	connect(_actionButtons,		&ActionButtons::buttonClicked,				this,			&FileMenu::actionButtonClicked		);
+	connect(_actionButtons,		&ActionButtons::selectedActionChanged,		this,			&FileMenu::setFileoperation			);
+	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this,			&FileMenu::resourceButtonClicked	);
+	connect(_currentDataFile,	&CurrentDataFile::setCheckAutomaticSync,	_mainWindow,	&MainWindow::setCheckAutomaticSync	);
 
 	_actionButtons->setEnabled(ActionButtons::Open,				true);
 	_actionButtons->setEnabled(ActionButtons::Save,				false);

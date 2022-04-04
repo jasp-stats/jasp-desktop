@@ -41,6 +41,8 @@ class DataSetPackage;
 
 class FileMenu : public QObject
 {
+	friend FileMenuObject;
+	
 	typedef ActionButtons::FileOperation FileOperation;
 	Q_OBJECT
 

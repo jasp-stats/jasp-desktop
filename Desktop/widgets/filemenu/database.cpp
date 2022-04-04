@@ -25,35 +25,43 @@ const QStringList Database::dbTypes()
 Database::Database(QObject *parent)
 	: FileMenuObject{parent}
 {
-	_dbType			= static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
-	_database		=						Settings::value( Settings::DB_IMPORT_DBNAME		).toString();
-	_hostname		=						Settings::value( Settings::DB_IMPORT_HOSTNAME	).toString();
-	_port			=						Settings::value( Settings::DB_IMPORT_PORT		).toInt();
-	_username		=						Settings::value( Settings::DB_IMPORT_USERNAME	).toString();
-	_password		= decrypt(				Settings::value( Settings::DB_IMPORT_PASSWORD	).toString());
-	_query			=						Settings::value( Settings::DB_IMPORT_QUERY		).toString();
+	_info._dbType	= DbType::QODBC;// just hardcode this until combobox works static_cast<DbType>(	Settings::value( Settings::DB_IMPORT_TYPE		).toUInt());
+	_info._database	=						Settings::value( Settings::DB_IMPORT_DBNAME		).toString();
+	_info._hostname	=						Settings::value( Settings::DB_IMPORT_HOSTNAME	).toString();
+	_info._port		=						Settings::value( Settings::DB_IMPORT_PORT		).toInt();
+	_info._username	=						Settings::value( Settings::DB_IMPORT_USERNAME	).toString();
+	_info._password	= decrypt(				Settings::value( Settings::DB_IMPORT_PASSWORD	).toString());
+	_info._query	=						Settings::value( Settings::DB_IMPORT_QUERY		).toString();
 }
 
 void Database::connect()
 {
-	setConnected(false);
-
-	QSqlDatabase db = QSqlDatabase::addDatabase(DbTypeToQString(DbType::QODBC));
-
-	db.setDatabaseName(	_database);
-	db.setHostName(		_hostname);
-	db.setUserName(		_username);
-	db.setPassword(		_password);
-	db.setPort(			_port);
-
-	setConnected(db.open());
-
-	setLastError(connected() ? "Connected!" : "Error: " + db.lastError().text());
+	setConnected(_info.connect());
+	setLastError(connected() ? "Connected!" : "Error: " + _info.lastError());
 }
 
 void Database::runQuery(const QString & query)
 {
 	setQueryResult(_runQuery(query));
+}
+
+bool Database::readyForImport() const
+{
+	return connected() && resultsOK();
+}
+
+void Database::importResults()
+{
+	if(!readyForImport())
+	{
+		Log::log() << "Database::importResults() called without it being ready for import... Should not be possible but ok..." << std::endl;
+		return;
+	}
+		
+	FileEvent *event = new FileEvent(this, _mode);
+
+	event->setDatabase(_info.toJson());
+	emit dataSetIORequest(event);
 }
 
 void Database::setDbTypeFromIndex(int dbTypeIdx)
@@ -63,6 +71,8 @@ void Database::setDbTypeFromIndex(int dbTypeIdx)
 
 QString	Database::_runQuery(const QString & queryText)
 {
+	setResultsOK(false);
+	
 	if(!connected())
 		return tr("Not connected to database!");
 
@@ -82,10 +92,11 @@ QString	Database::_runQuery(const QString & queryText)
 
 	if(!query.isActive())
 		return tr("No active result found, maybe there is something wrong with your query?");
+	
+	
 
 	QStringList fewLines;
 
-	
 	QSqlRecord  record = query.record();
 
 	{
@@ -108,61 +119,63 @@ QString	Database::_runQuery(const QString & queryText)
 	}
 	while(query.next() && fewLines.size() < 10);
 	
+	setResultsOK(true); //I suppose the results must be ok if we get all the way here
+	
 
 	return fewLines.join("\n");
 }
 
 void Database::setUsername(const QString &newUsername)
 {
-	if (_username == newUsername)
+	if (_info._username == newUsername)
 		return;
 	
-	_username = newUsername;
-	Settings::setValue(Settings::DB_IMPORT_USERNAME, _username);
+	_info._username = newUsername;
+	Settings::setValue(Settings::DB_IMPORT_USERNAME, _info._username);
 	
 	emit usernameChanged();
 }
 
 void Database::setPassword(const QString &newPassword)
 {
-	if (_password == newPassword)
+	if (_info._password == newPassword)
 		return;
 	
-	_password = newPassword;
-	Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_password));
+	_info._password = newPassword;
+	Settings::setValue(Settings::DB_IMPORT_PASSWORD, encrypt(_info._password));
 	
 	emit passwordChanged();
 }
 
 void Database::setDatabase(const QString &newDatabase)
 {
-	if (_database == newDatabase)
+	if (_info._database == newDatabase)
 		return;
 	
-	_database = newDatabase;
-	Settings::setValue(Settings::DB_IMPORT_DBNAME, _database);
+	_info._database = newDatabase;
+	Settings::setValue(Settings::DB_IMPORT_DBNAME, _info._database);
 	
 	emit databaseChanged();
 }
 
 void Database::setHostname(const QString &newHostname)
 {
-	if (_hostname == newHostname)
+	if (_info._hostname == newHostname)
 		return;
 	
-	_hostname = newHostname;
-	Settings::setValue(Settings::DB_IMPORT_HOSTNAME, _hostname);
+	_info._hostname = newHostname;
+	Settings::setValue(Settings::DB_IMPORT_HOSTNAME, _info._hostname);
 	
 	emit hostnameChanged();
 }
 
 void Database::setDbType(const DbType newDbType)
 {
-	if (_dbType == newDbType)
+	if (_info._dbType == newDbType)
 		return;
 	
-	_dbType = newDbType;
-	Settings::setValue(Settings::DB_IMPORT_TYPE, static_cast<uint>(_dbType));
+	_info._dbType = newDbType;
+	Settings::setValue(Settings::DB_IMPORT_TYPE, static_cast<uint>(_info._dbType));
 	
 	emit dbTypeChanged();
 }
@@ -185,42 +198,42 @@ void Database::setQueryResult(const QString &newQueryResult)
 	emit queryResultChanged();
 }
 
-const QString &Database::lastError() const
-{
-	return _lastError;
-}
-
 void Database::setLastError(const QString &newLastError)
 {
 	if (_lastError == newLastError)
 		return;
+	
 	_lastError = newLastError;
+	
 	emit lastErrorChanged();
-}
-
-int Database::port() const
-{
-	return _port;
 }
 
 void Database::setPort(int newPort)
 {
-	if (_port == newPort)
+	if (_info._port == newPort)
 		return;
 	
-	_port = newPort;
-	Settings::setValue(Settings::DB_IMPORT_PORT, _port);
+	_info._port = newPort;
+	Settings::setValue(Settings::DB_IMPORT_PORT, _info._port);
 	
 	emit portChanged();
 }
 
 void Database::setQuery(const QString &newQuery)
 {
-	if (_query == newQuery)
+	if (_info._query == newQuery)
 		return;
 	
-	_query = newQuery;
-	Settings::setValue(Settings::DB_IMPORT_QUERY, _query);
+	_info._query = newQuery;
+	Settings::setValue(Settings::DB_IMPORT_QUERY, _info._query);
 	
 	emit queryChanged();
+}
+
+void Database::setResultsOK(bool newResultsOK)
+{
+	if (_resultsOK == newResultsOK)
+		return;
+	_resultsOK = newResultsOK;
+	emit resultsOKChanged();
 }
