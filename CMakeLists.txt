@@ -142,3 +142,13 @@ include(Install)
 
 # Packs and creates installer executable for Windows, and macOS
 include(Pack)
+
+if(NOT
+   CMAKE_GENERATOR
+   STREQUAL
+   "Ninja")
+  message(
+    WARNING
+      "JASP is optimised to be built using the Ninja build system. You have chosen ${CMAKE_GENERATOR}, and this might cause issue during the build."
+  )
+endif()

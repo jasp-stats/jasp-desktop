@@ -37,6 +37,7 @@ set(JASP_EXTRA_MODULES
     "jaspMachineLearning"
     "jaspSummaryStatistics"
     "jaspMetaAnalysis"
+    "jaspCochrane"
     "jaspDistributions"
     "jaspEquivalenceTTests"
     "jaspJags"
