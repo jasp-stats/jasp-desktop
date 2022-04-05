@@ -1,5 +1,5 @@
 # Option names style guide: Towards consistency in the syntax mode
-This guide aims to help us specify consistent option names across JASP. By "options" we mean the input provided by the user in the left hand panel in JASP. This input is referred to by a "name" specified in the Qml form, which is internally referenced in R. For instance, if a drags variables into the "Fixed factors" box in JASP, the Qml file then identifies the user input by the "name: `fixedFactors`", and R is then presented with the variables that the user specified as `fixedFactors`. With these `fixedFactors` in hand, functions in R can then do the computations. Hence, this guide is concerned with how the options should be named in both the Qml file that defines the GUI and the R file that runs the analysis. Consistent option names help us (1) better organise and understand the JASP code, (2) simplify the review process, and  (3) allows for logical syntax.
+This guide aims to help us specify consistent option names across JASP. By "options" we mean the input provided by the user in the left hand panel in JASP. This input is referred to by a "name" specified in the Qml form, which is internally referenced in R. For instance, if a user drags variables into the "Fixed factors" box in JASP, the Qml file then identifies the user input by the "name: `fixedFactors`", and R is then presented with the variables that the user specified as `fixedFactors`. With these `fixedFactors` in hand, functions in R can then do the computations. Hence, this guide is concerned with how the options should be named in both the Qml file that defines the GUI and the R file that runs the analysis. Consistent option names help us (1) better organise and understand the JASP code, (2) simplify the review process, and  (3) allows for logical syntax.
 
 In the past, option names were used only internally and never shown to the user - and so while we generally followed some general principles, complete consistency was never enforced. However, with syntax mode in JASP, the user will be exposed to the option names as arguments of an analysis function in R. Hence, we not only need to stick to good habits in naming the options, we also need to use consistent naming conventions for inputs that are used across JASP in different analyses.
 
@@ -13,15 +13,15 @@ The goal is clear human-readable code and we adopt the following principles:
 3. Option names should be nouns, because they are things, whereas functions names should start with a verb, because they do things.
 4. Singular: When calling objects the typical preference should go to the singular form of a noun. The plural form is allowed to indicate multiple inputs.
 
-We first elaborate on these principles in R, and then discuss what they imply for the Qml forms. For Qml we use the same principles with only one exception, because Qml requires objects to begin with a capital letter, such as `CheckBox`, `Section`, `VariableList`. An R programmer most likely won't make Qml objects, but will use them. To keep things as consistent as possible, we opted for the same CamelCasing rules in Qml (as opposed to PascalCasing), but with a StartingUppercaseLetter.
+We first elaborate on these principles in R, and then discuss what these imply for the Qml forms.
 
-### Long option and descriptives names are not evil
+### Long and descriptive option names are not evil
 To enhance human readability, we recommend the use of descriptive names for objects and functions. This can lead to long option names - and a more typing, but given that most of the time people use autocomplete features in text editors, it is a small price to pay for enhanced clarity - the best state of code documentation is when the user does not need additional documentation to understand what the code does. At the other extreme, the users would need to bury themselves in the documentation to understand what the arguments mean - which takes much more time than simply typing a few extra letters.
 
 ### Use camelCase
 The reason that we opted for camelCase is that it does not need an extra character (such as an underscore, or full stop/dots) to separate words. Each capital letter indicates a new word. In R the names of objects and functions should start in lowercase, but each concatenated word should begins with a capital letter. No underscores are allowed. Neither are full stops/dots allowed for objects, unless they are used for S3 dispatch.
 
-### Rephrain from using verbs for option names
+### Refrain from using verbs for option names
 Option names should preferably be nouns and not verbs. Verbs emphasise actions, and are reserved to identify functions.
 
 #### Examples
@@ -51,12 +51,16 @@ Prefer singular form of nouns, *even if the output features multiple instances o
 - An exception is when the input is a number, such as in `bootstrapSamples`. In this case, the input is still a singular object (a number), but the plural indicates that it expects just that: a number.
 
 ## Same principles in Qml
-The discussion so far was concerned with R code. In Qml objects have to start with a capital letter such as `CheckBox`, `Section`, `VariableList`. To keep things as consistent as possible, we opted for CamelCasing in Qml, so all rules elaborated above remain. In particular, the rule regarding abbreviations apply. An R programmer most likely won't make Qml objects, but will use them.
+The discussion so far was concerned with option names in the R code. These option names appear as the `name` property in Qml items. In Qml items/objects have to start with a capital letter such as `CheckBox`, `Section`, `VariableList`. As an R user you typically don't make these items. Instead, you'll call them to, say, make a `CheckBox` or a tab (`Section`). A full list of items can be found in our [Guide to writing an analysis interface in QML](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-qml-guide.md). These items are styled according to Qml standard in PascalCase: similar to camelCase, but with two exceptions: (i) a first capital letter, and (ii) abbreviations are all capitalised.
+
+Each item has two important properties: `name` and a `label`. The label is something that the user sees in the GUI, whereas the `name` is the option name discussed above.
 
 ### Correspondence between option names (seen in R) and labels (seen in JASP)
-A label in a Qml form is what is printed in JASP such as "Fixed Factors", whereas an option name is a reference in the code such as `fixedFactors`. The option name visible to R users should be easily deducible from the label visible to the user in R, and vice versa. This also includes avoiding shortcuts or abbreviations except for standardised option names (see below).
+A label in a Qml form is what is printed in JASP such as "Fixed Factors", whereas an option name is a reference in the code such as `fixedFactors`. The option name visible to R users should be easily deducible from the label visible to the user in R, and vice versa. These option `name`s should be in camelCase as discussed above. In particular, abbreviations should be avoided except for standardised option names, listed below.
 
 #### Examples
+Note: The `qsTr` function clarifies that a string is translatable. Internal option names (used in the R code) should never be translatable.
+
 - if an option is labeled as `label: qsTr("Variables")`, the option name should be `name: "variables"`, and not `name: "dependent"`.
 - The variables for which the Kruskall-Wallis Test needs to be computed `label: qsTr("Kruskall-Wallis Terms")`, should get the option name `name: kruskalWallisTerms` (not `kwTerms`).
 
@@ -85,7 +89,7 @@ CheckBox
 		RadioButton
 		{
 			value: "se";
-			label: qsTr("Standard error") }
+			label: qsTr("Standard error")}
 		}
 	}
 }
