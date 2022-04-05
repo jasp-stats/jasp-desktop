@@ -48,9 +48,7 @@ DropArea
 	{
 		id:					draggableItem
 		height:				loaderAndError.y
-		anchors.top:		parent.top
-		anchors.left:		parent.left
-		anchors.right:		parent.right
+
 
 		property int		myIndex:			-1
 		property int		droppedIndex:		-1
@@ -73,25 +71,33 @@ DropArea
 					target:			draggableItem
 					parent:			backgroundFlickable
 				}
-
-				PropertyChanges
-				{
-					target:			shadow
-					visible:		true
-				}
-
-				PropertyChanges
-				{
-					target:			mouseArea
-					cursorShape:	Qt.ClosedHandCursor
-				}
-
+				
 				AnchorChanges
 				{
 					target:			draggableItem
 					anchors.top:	undefined
 					anchors.left:	undefined
 					anchors.right:	undefined
+				}
+			},
+			
+			State
+			{
+				name:	"chilling"
+				when:	!draggableItem.Drag.active
+
+				ParentChange
+				{
+					target:			draggableItem
+					parent:			analysisFormExpander
+				}
+
+				AnchorChanges
+				{
+					target:			draggableItem
+					anchors.top:	parent.top
+					anchors.left:	parent.left
+					anchors.right:	parent.right
 				}
 			}
 		]
@@ -113,7 +119,7 @@ DropArea
 			id:				mouseArea
 			onClicked:		analysisFormExpander.toggleExpander();
 			hoverEnabled:	true
-			cursorShape:	Qt.PointingHandCursor
+			cursorShape:	draggableItem.Drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 			drag.target:	draggableItem
 
 			drag.onActiveChanged:
@@ -146,7 +152,7 @@ DropArea
 			anchors.centerIn: draggableItem
 			width			: draggableItem.width
 			height			: draggableItem.height
-			visible			: false
+			visible			: draggableItem.Drag.active
 			color			: jaspTheme.grayDarker
 			spread			: 0.2
 			cornerRadius	: expanderButton.radius + glowRadius

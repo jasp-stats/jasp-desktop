@@ -129,24 +129,9 @@ DropArea {
 		//height: dropTextStatic.visible ? dropTextStatic.height : dropTextInput.height
 
 		states: [
-			State {
-				when: dragTarget.containsDrag
-				PropertyChanges {
-					target: dropText
-					text: ""
-				}
-			},
-			State {
-				when: !dragTarget.containsDrag
-				PropertyChanges {
-					target: dropText
-					text: dragTarget.defaultText
-				}
-			}
+			State {	when:  dragTarget.containsDrag;	PropertyChanges { target: dropText; text: "";						} },
+			State {	when: !dragTarget.containsDrag;	PropertyChanges { target: dropText; text: dragTarget.defaultText;	} }
 		]
-
-		//visible: (parent.acceptsDrops || shouldShowX) && dragTarget.containsItem === null
-		//readOnly: dragTarget.containsItem !== null || !parent.acceptsDrops
 
 		Text
 		{

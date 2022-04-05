@@ -356,7 +356,7 @@ VariablesListBase
 		}
 
 		sortMenuModel: variablesList.sortMenuModel
-		scrollYPosition: backgroundForms.contentY
+		scrollYPosition: backgroundForms ? backgroundForms.contentY : 0
 	}
 			
 	Timer
@@ -421,8 +421,7 @@ VariablesListBase
 			{
 				id:							itemRectangle
 				objectName:					"itemRectangle"
-				anchors.horizontalCenter:	parent.horizontalCenter
-				anchors.verticalCenter:		parent.verticalCenter
+
 				// the height & width of itemWrapper & itemRectangle must be set independently of each other:
 				// when the rectangle is dragged, it gets another parent but it must keep the same size,
 				height:			itemGridView.cellHeight
@@ -521,22 +520,45 @@ VariablesListBase
 				states: [
 					State
 					{
-						when: itemRectangle.dragging
+						when:	itemRectangle.dragging
+						
 						ParentChange
 						{
-							target: itemRectangle
-							parent: form
+							target:						itemRectangle
+							parent:						form
 						}
 						AnchorChanges
 						{
-							target: itemRectangle
-							anchors.horizontalCenter: undefined
-							anchors.verticalCenter: undefined
+							target:						itemRectangle
+							anchors.horizontalCenter:	undefined
+							anchors.verticalCenter:		undefined
 						}
 						PropertyChanges
 						{
-							target: itemRectangle
-							opacity: 0.4
+							target:						itemRectangle
+							opacity:					0.4
+						}
+					},
+					
+					State
+					{
+						when: !itemRectangle.dragging
+						
+						ParentChange
+						{
+							target:						itemRectangle
+							parent:						itemWrapper
+						}
+						AnchorChanges
+						{
+							target:						itemRectangle
+							anchors.horizontalCenter:	parent.horizontalCenter
+							anchors.verticalCenter:		parent.verticalCenter
+						}
+						PropertyChanges
+						{
+							target:						itemRectangle
+							opacity:					1.0
 						}
 					}
 				]

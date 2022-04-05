@@ -111,7 +111,7 @@ TextInputBase
 		selectedTextColor:		jaspTheme.white
 		selectionColor:			jaspTheme.itemSelectedColor
 		enabled:				textField.editable
-		text:					textField.defaultValue
+		text:					textField.defaultValue !== undefined ? textField.defaultValue : ""
 
 		background: Rectangle
 		{

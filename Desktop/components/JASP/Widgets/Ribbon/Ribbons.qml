@@ -102,7 +102,7 @@ Item
 		anchors.fill:		buttonList
 		acceptedButtons:	Qt.NoButton
 		cursorShape:		Qt.PointingHandCursor
-		onWheel:
+		onWheel:			(wheel)=>
 		{
 			var bigWheel = Math.abs(wheel.angleDelta.x) > Math.abs(wheel.angleDelta.y) ? wheel.angleDelta.x : wheel.angleDelta.y;
 			buttonList.flick(1000 * bigWheel / 120, 0)
