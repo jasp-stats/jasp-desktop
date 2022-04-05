@@ -89,6 +89,24 @@ endif()
 option(UPDATE_JASP_SUBMODULES
        "Whether to automatically initialize and update the submodules" OFF)
 
+
+message(CHECK_START "Checking for CRYPT_KEY")
+set(CRYPT_KEY "" CACHE STRING "")
+if(CRYPT_KEY STREQUAL "")
+  set(CRYPT_KEY $ENV{ENVIRONMENT_CRYPTKEY})
+
+  if(CRYPT_KEY STREQUAL "")
+    message(CHECK_FAIL "not found.")
+    message(WARNING "CRYPT_KEY is not found.")
+  else()
+    message(CHECK_PASS "found.")
+    message(STATUS "  ${CRYPT_KEY}")
+
+    add_definitions(-DENVIRONMENT_CRYPTKEY)
+  endif()
+
+endif()
+
 # Dealing with Git submodules
 
 if(UPDATE_JASP_SUBMODULES)

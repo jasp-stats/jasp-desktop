@@ -28,6 +28,10 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h.in
                ${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h)
 message(STATUS "appdirs.h is successfully generated...")
 
+configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/simplecryptkey.h.in
+               ${CMAKE_CURRENT_LIST_DIR}/utilities/simplecryptkey.h)
+message(STATUS "simplecryptkey.h is successfully generated...")
+
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
