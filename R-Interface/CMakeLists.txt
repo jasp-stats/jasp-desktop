@@ -102,10 +102,6 @@ if(WIN32)
     NAMES libjsoncpp-24.dll
     PATHS ${MINGW_PATH}/bin REQUIRED)
 
-  file(GLOB HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.h")
-  list(APPEND HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
-  list(APPEND HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp_interface.h")
-
   file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
   list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
@@ -115,15 +111,15 @@ if(WIN32)
     REQUIRED
     nowide)
 
-  add_library(R-Interface SHARED ${HEADER_FILES} ${SOURCE_FILES})
+  add_library(R-Interface SHARED ${SOURCE_FILES})
 
   add_definitions(-DJASP_R_INTERFACE_LIBRARY)
 
   target_include_directories(
     R-Interface
     PUBLIC # JASP
-           jaspResults/src
            ${CMAKE_CURRENT_LIST_DIR}
+           ${CMAKE_CURRENT_LIST_DIR}/jaspResults/src
            ${PROJECT_SOURCE_DIR}/../Common
            ${PROJECT_SOURCE_DIR}/../Common/jaspColumnEncoder
            # R
@@ -167,7 +163,7 @@ else()
   file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
   list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
-  add_library(R-Interface ${HEADER_FILES} ${SOURCE_FILES})
+  add_library(R-Interface ${SOURCE_FILES})
 
   target_include_directories(
     R-Interface

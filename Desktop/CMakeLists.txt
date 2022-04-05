@@ -28,20 +28,13 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h.in
                ${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h)
 message(STATUS "appdirs.h is successfully generated...")
 
-file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
-list(REMOVE_ITEM HEADER_FILES
-     ${CMAKE_CURRENT_LIST_DIR}/data/exporters/odsexporter.h)
-
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
-list(REMOVE_ITEM SOURCE_FILES
-     ${CMAKE_CURRENT_LIST_DIR}/data/exporters/odsexporter.cpp)
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
 
 qt_add_executable(
   JASP
   ${SYSTEM_TYPE}
-  ${HEADER_FILES}
   ${SOURCE_FILES}
   ${BUNDLE_RESOURCES}
   $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
@@ -82,7 +75,8 @@ endif()
 
 target_include_directories(
   JASP
-  PUBLIC ${PROJECT_SOURCE_DIR}/Common
+  PUBLIC ${CMAKE_CURRENT_LIST_DIR}
+         ${PROJECT_SOURCE_DIR}/Common
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
          # ReadStat
          $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_H}>
