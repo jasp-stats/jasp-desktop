@@ -122,32 +122,36 @@ int main(int argc, char *argv[])
 		std::string arg1(argv[1]), arg2(argv[2]);
 		const std::string junctionCollectArg("--collectJunctions"), junctionRecreateArg("--recreateJunctions"), junctionRemoveArg("--removeJunctions");
 		
-		if(arg1 == junctionCollectArg || arg1 == junctionRecreateArg)
-		{
-			std::cout << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
-			rbridge_junctionHelper(arg1 == junctionCollectArg, arg2);
-			exit(0);
-		}
-		else if(arg1 == junctionRemoveArg)
+		if(arg1 == junctionRemoveArg || arg1 == junctionRecreateArg) //Also remove the old modules if it already exists and we are asked to recreate them, because it might be the old ones (previous install)
 		{
 			std::string junctionsCreationLog("junctions-recreated-successfully.log");
 			boost::filesystem::path	junctionsCreationLogPath = Utils::osPath(junctionsCreationLog);
+			
 			if(exists(junctionsCreationLogPath))
 				remove(junctionsCreationLogPath);
 
 			std::string modulesFolder("Modules");
 			std::cout << "Engine started to remove the Modules folder" << std::endl;
 			boost::filesystem::path	modulesPath	= Utils::osPath(modulesFolder);
+			
 			if(exists(modulesPath)) {
-				for(boost::filesystem::directory_entry& entry : boost::filesystem::directory_iterator(modulesPath)) {
+				for(boost::filesystem::directory_entry& entry : boost::filesystem::directory_iterator(modulesPath))
 					if(entry.path().string().find("\\jasp") != std::string::npos)
 						remove_all(entry);
-				}
+				
 			}
-			else
+			else if(arg1 == junctionRemoveArg)
 				std::cout << "Error: Could not find the Modules folder" << std::endl;
-			exit(0);
+			
 		}
+		
+		if(arg1 == junctionCollectArg || arg1 == junctionRecreateArg)
+		{
+			std::cout << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
+			rbridge_junctionHelper(arg1 == junctionCollectArg, arg2);
+		}
+		
+		exit(0);
 	}
 #endif
 
