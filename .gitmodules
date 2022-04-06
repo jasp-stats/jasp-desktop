@@ -114,3 +114,6 @@
 	path = R-Interface/jaspResults
 	url = https://github.com/jasp-stats/jaspResults
 	branch = master
+[submodule "Modules/jaspLearnStats"]
+	path = Modules/jaspLearnStats
+	url = https://github.com/jasp-stats/jaspLearnStats
