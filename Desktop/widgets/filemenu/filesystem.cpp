@@ -102,6 +102,8 @@ void FileSystem::sortEntries(Sortable::SortType  sortOrder)
 		//case Sortable::SortType::SortByDate:
 		//	qSort(_entries.begin(), _entries.end(), FileSystemEntry::compareDateTimeReversed);
 		//	break;
+		default:
+			break;
 
 	}
 }

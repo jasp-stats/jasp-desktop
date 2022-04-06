@@ -59,7 +59,7 @@ public:
 	 * @brief size Returns the size of (i.e. number of) rows.
 	 * @return The size of (i.e. number of) rows.
 	 */
-	virtual size_t size() const;
+	size_t size() const override;
 
 	std::vector<std::string>	allValuesAsStrings()					const	override;
 
