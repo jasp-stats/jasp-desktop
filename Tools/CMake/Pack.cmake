@@ -38,8 +38,6 @@ set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 
-# set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/COPYING.txt)
-
 set(CPACK_PACKAGE_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
@@ -47,6 +45,15 @@ set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
 # --- WIX
 if(WIN32)
   set(CPACK_GENERATOR "WIX")
+
+  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
+
+  set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/wix/jaspLicense.rtf")
+  set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
+  set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
+  set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/Tools/wix/installerBanner.png")
+  set(CPACK_WIX_UI_DIALOG
+      "${CMAKE_SOURCE_DIR}/Tools/wix/installerBackground.png")
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/wix/Upload.cmd.in
                  ${CMAKE_BINARY_DIR}/Upload.cmd @ONLY)
@@ -92,20 +99,6 @@ if(WIN32)
 
 endif()
 
-set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/wix/jaspLicense.rtf")
-set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
-set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
-set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/Tools/wix/installerBanner.png")
-set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/Tools/wix/installerBackground.png")
-# set(CPACK_WIX_TEMPLATE "${CMAKE_SOURCE_DIR}/Tools/wix/JASP.wxs")
-# set(CPACK_WIX_LIGHT_EXTENSIONS "WixUIExtension;WixUtilExtension")
-
-if(WIN32)
-  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
-else()
-  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/JASP.icns")
-endif()
-
 if(APPLE)
   set(CPACK_PACKAGE_FILE_NAME
       "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-macOS-${CPACK_ARCH_SUFFIX}"
@@ -113,6 +106,7 @@ if(APPLE)
   set(CPACK_DMG_VOLUME_NAME "${CPACK_PACKAGE_FILE_NAME}.dmg")
   set(CPACK_DMG_BACKGROUND_IMAGE
       "${CMAKE_SOURCE_DIR}/Tools/macOS/background.png")
+  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Tools/macOS/JASP.icns")
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/macOS/Upload.sh.in
                  ${CMAKE_BINARY_DIR}/Upload.sh @ONLY)
@@ -174,6 +168,8 @@ if(APPLE)
 
 endif()
 
-include(CPack)
+if(NOT LINUX)
+  include(CPack)
+endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
