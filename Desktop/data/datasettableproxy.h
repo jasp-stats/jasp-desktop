@@ -14,18 +14,16 @@ class DataSetTableProxy : public QSortFilterProxyModel
 	Q_PROPERTY(int proxyParentColumn READ proxyParentColumn WRITE setProxyParentColumn NOTIFY proxyParentColumnChanged)
 
 public:
-	explicit				DataSetTableProxy(DataSetPackageSubNodeModel * subNodeModel);
-
-	int						proxyParentColumn()	const { return _subNodeModel ? _subNodeModel->proxyParentColumn() : 0; } //might not be set yet at some annoying points during init
-
-
+	explicit	DataSetTableProxy(DataSetPackageSubNodeModel * subNodeModel);
+	
+	int			proxyParentColumn()							const	{ return	subNodeModel()->proxyParentColumn();						}
+	void		setProxyParentColumn(int proxyParentColumn)			{			subNodeModel()->setProxyParentColumn(proxyParentColumn);	}
+	
+protected:
+	DataSetPackageSubNodeModel	*	subNodeModel() const { return qobject_cast<DataSetPackageSubNodeModel*>(sourceModel()); }
 
 signals:
-	void setProxyParentColumn(int proxyParentColumn);
-	void proxyParentColumnChanged();
-
-private:
-	DataSetPackageSubNodeModel * _subNodeModel = nullptr;
+	void		proxyParentColumnChanged();
 };
 
 #endif // DATASETTABLEPROXY_H
