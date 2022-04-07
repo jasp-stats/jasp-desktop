@@ -69,8 +69,7 @@ if(BUILDING_JASP)
 endif()
 
 # This one is GLOBAL
-option(JASP_DEBUG "Toggle the debug flag" ON)
-if(JASP_DEBUG)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DJASP_DEBUG)
 endif()
 
@@ -89,9 +88,10 @@ endif()
 option(UPDATE_JASP_SUBMODULES
        "Whether to automatically initialize and update the submodules" OFF)
 
-
 message(CHECK_START "Checking for CRYPT_KEY")
-set(CRYPT_KEY "" CACHE STRING "")
+set(CRYPT_KEY
+    ""
+    CACHE STRING "")
 if(CRYPT_KEY STREQUAL "")
   set(CRYPT_KEY $ENV{ENVIRONMENT_CRYPTKEY})
 
