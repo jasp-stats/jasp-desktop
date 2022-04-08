@@ -90,6 +90,7 @@ void DataSetPackage::reset()
 	_warningMessage				= std::string();
 	_hasAnalysesWithoutData		= false;
 	_analysesHTMLReady			= false;
+	_database					= Json::nullValue;
 	_isArchive					= false;
 	_dataFilter					= DEFAULT_FILTER;
 	_filterConstructorJSON		= DEFAULT_FILTER_JSON;

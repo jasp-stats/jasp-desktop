@@ -256,6 +256,7 @@ void AsyncLoader::loadPackage(QString id)
 			{
 				pkg->setDataFilePath(_currentEvent->path().toStdString());
                 pkg->setDataFileTimestamp(_currentEvent->isOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toSecsSinceEpoch());
+				pkg->setDatabaseJson(_currentEvent->database());
 			}
 			pkg->setDataFileReadOnly(_currentEvent->isReadOnly());
 			_currentEvent->setDataFilePath(QString::fromStdString(pkg->dataFilePath()));

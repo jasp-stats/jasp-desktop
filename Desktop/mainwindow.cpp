@@ -1032,22 +1032,28 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if(event->osfPath() != "")
 				_package->setFolder("OSF://" + event->osfPath()); //It is also set by setCurrentPath, but then we get some weirdlooking OSF path
 
-			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath().empty() && !_package->dataFileReadOnly() && strncmp("http", _package->dataFilePath().c_str(), 4) != 0)
+			if (event->type() == Utils::FileType::jasp)
 			{
-				QString dataFilePath = QString::fromStdString(_package->dataFilePath());
-				if (QFileInfo::exists(dataFilePath))
+				if(!_package->dataFilePath().empty() && !_package->dataFileReadOnly() && strncmp("http", _package->dataFilePath().c_str(), 4) != 0)
 				{
-                    uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toSecsSinceEpoch();
-					if (currentDataFileTimestamp > _package->dataFileTimestamp())
+					QString dataFilePath = QString::fromStdString(_package->dataFilePath());
+					if (QFileInfo::exists(dataFilePath))
 					{
-						setCheckAutomaticSync(true);
-						_fileMenu->syncDataFile(dataFilePath);
+						uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toSecsSinceEpoch();
+						if (currentDataFileTimestamp > _package->dataFileTimestamp())
+						{
+							setCheckAutomaticSync(true);
+							_fileMenu->syncDataFile(dataFilePath);
+						}
+					}
+					else
+					{
+						_package->setDataFilePath("");
 					}
 				}
-				else
-				{
-					_package->setDataFilePath("");
-				}
+				
+				if(_package->databaseJson() != Json::nullValue)
+					_fileMenu->setCurrentDatabase(_package->databaseJson());
 			}
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())

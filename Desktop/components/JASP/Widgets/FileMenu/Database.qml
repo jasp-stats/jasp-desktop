@@ -93,14 +93,18 @@ For a local or toy database this is probably overkill, but use your own judgemen
 			KeyNavigation.tab:		dbHostnameInput
 		}
 
-		RowLayout
+		Item
 		{
-			width:					parent.width
+			anchors.left:		parent.left;
+			anchors.right:		parent.right;
+			height:				childrenRect.height
 
 			Text
 			{
 				id:				dbHostnameLabel
 				text:			qsTr("Hostname")
+				
+				onWidthChanged: console.log("dbHostnameLabel width: " + width);
 				width:			jaspTheme.generalAnchorMargin + Math.max(contentWidth, dbPortLabel.contentWidth, dbNameLabel.contentWidth, dbUsernameLabel.contentWidth, dbPasswordLabel.contentWidth)
 			}
 
@@ -111,14 +115,18 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				text:			fileMenuModel.database.hostname
 				onTextChanged:	fileMenuModel.database.hostname = text;
 
+				x:				dbHostnameLabel.width
 				width:			parent.width - dbHostnameLabel.width
+				onWidthChanged: console.log("dbHostnameInput width: " + width);
 			}
 		}
 
-		RowLayout
+		Item
 		{
-			width:					parent.width
-
+			anchors.left:		parent.left;
+			anchors.right:		parent.right;
+			height:				childrenRect.height
+			
 			Text
 			{
 				id:				dbPortLabel
@@ -134,14 +142,17 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				onTextChanged:	fileMenuModel.database.port = parseInt(text);
 
 				textInput.validator: JASPDoubleValidator { id: intValidator; bottom: 0; top: 9999999999999; decimals: 0 }
-
+				
+				x:				dbHostnameLabel.width
 				width:			dbHostnameInput.width
 			}
 		}
 
-		RowLayout
+		Item
 		{
-			width:					parent.width
+			anchors.left:		parent.left;
+			anchors.right:		parent.right;
+			height:				childrenRect.height
 
 			Text
 			{
@@ -157,13 +168,16 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				text:			fileMenuModel.database.database
 				onTextChanged:	fileMenuModel.database.database = text;
 
+				x:				dbHostnameLabel.width
 				width:			dbHostnameInput.width
 			}
 		}
 
-		RowLayout
+		Item
 		{
-			width:					parent.width
+			anchors.left:		parent.left;
+			anchors.right:		parent.right;
+			height:				childrenRect.height
 
 			Text
 			{
@@ -179,13 +193,16 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				text:			fileMenuModel.database.username
 				onTextChanged:	fileMenuModel.database.username = text;
 
+				x:				dbHostnameLabel.width
 				width:			dbHostnameInput.width
 			}
 		}
 
-		RowLayout
+		Item
 		{
-			width:					parent.width
+			anchors.left:		parent.left;
+			anchors.right:		parent.right;
+			height:				childrenRect.height		
 
 			Text
 			{
@@ -203,7 +220,8 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 				textInput.echoMode:		TextInput.Password
 
-				width:			dbHostnameInput.width
+				x:						dbHostnameLabel.width
+				width:					dbHostnameInput.width
 			}
 		}
 
@@ -257,6 +275,13 @@ For a local or toy database this is probably overkill, but use your own judgemen
 		anchors.top:		databaseGroup.bottom
 		anchors.topMargin:	jaspTheme.generalAnchorMargin
 
+		RoundedButton
+		{
+			id:						loadResults
+			text:					qsTr("Load into JASP")
+			onClicked:				fileMenuModel.database.importResults();
+			enabled:				fileMenuModel.database.connected && fileMenuModel.database.resultsOK
+		}
 
 		QC.TextArea
 		{
@@ -271,12 +296,6 @@ For a local or toy database this is probably overkill, but use your own judgemen
 		}
 		
 		
-		RoundedButton
-		{
-			id:						loadResults
-			text:					qsTr("Load into JASP")
-			onClicked:				fileMenuModel.database.importResults();
-			enabled:				fileMenuModel.database.connected && fileMenuModel.database.resultsOK
-		}
+
 	}
 }

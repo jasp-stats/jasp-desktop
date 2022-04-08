@@ -105,7 +105,7 @@ QString	Database::_runQuery()
 	
 			fewLines.push_back(values.join(", "));
 		}
-		while(query.next() && fewLines.size() < 10);
+		while(query.next() && fewLines.size() < 4);
 	
 		setResultsOK(true); //I suppose the results must be ok if we get all the way here
 	
