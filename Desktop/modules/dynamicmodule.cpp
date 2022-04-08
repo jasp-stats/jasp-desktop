@@ -450,8 +450,8 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	}
 	setInstallLog("Installing module " + _name + ".\n");
 	
-	//installJaspModule <- function(modulePkg, libPathsToUse, moduleLibrary, repos, onlyModPkg)
-	return "jaspBase::installJaspModule(modulePkg='" + _modulePackage + "', libPathsToUse=" + getLibPathsToUse() + ", moduleLibrary='" + moduleRLibrary().toStdString() + "', repos='" + Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() + "', onlyModPkg=" + (onlyModPkg ? "TRUE" : "FALSE") + ", force=TRUE);";
+	//installJaspModule <- function(modulePkg, libPathsToUse, moduleLibrary, repos, onlyModPkg, force = FALSE, cacheAble=TRUE) {
+	return "jaspBase::installJaspModule(modulePkg='" + _modulePackage + "', libPathsToUse=" + getLibPathsToUse() + ", moduleLibrary='" + moduleRLibrary().toStdString() + "', repos='" + Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() + "', onlyModPkg=" + (onlyModPkg ? "TRUE" : "FALSE") + ", force=TRUE, cacheAble=FALSE);";
 }
 
 std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)

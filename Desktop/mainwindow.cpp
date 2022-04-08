@@ -513,6 +513,8 @@ void MainWindow::loadQML()
 	_ribbonModel->loadModules(	
 		ActiveModules::getActiveCommonModules(),
 		ActiveModules::getActiveExtraModules());
+	
+}
 
 void MainWindow::showEnginesWindow()
 {
