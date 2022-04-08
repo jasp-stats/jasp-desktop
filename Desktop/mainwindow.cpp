@@ -273,6 +273,7 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
 	connect(_package,				&DataSetPackage::freeDatasetSignal,					_loader,				&AsyncLoader::free											);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
+	connect(_package,				&DataSetPackage::synchingIntervalPassed,			this,					&MainWindow::syncKeyPressed									);
 
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
@@ -1053,8 +1054,13 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 				}
 				
 				if(_package->databaseJson() != Json::nullValue)
+				{
 					_fileMenu->setCurrentDatabase(_package->databaseJson());
+					_package->databaseStartSynching(true);
+				}
 			}
+			else if(event->isDatabase()) //Not a jasp file, but a direct load from a database, make sure it starts synching if the user wants it to:
+				_package->databaseStartSynching(false);
 
 			if (resultXmlCompare::compareResults::theOne()->testMode())
 			{
@@ -1413,8 +1419,8 @@ void MainWindow::startDataEditorHandler()
 		}
 
 		}
-		connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
-		connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
+		connect(event, &FileEvent::completed, this,			&MainWindow::startDataEditorEventCompleted);
+		connect(event, &FileEvent::completed, _fileMenu,	&FileMenu::setSyncFile);
 		event->setPath(path);
 		_loader->io(event);
 		showProgress();

@@ -47,6 +47,14 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	_dataSubModel	= new SubNodeModel(parIdxType::dataRoot);
 	_filterSubModel = new SubNodeModel(parIdxType::filterRoot);
 	_labelsSubModel = new SubNodeModel(parIdxType::labelRoot);
+	
+	connect(&_databaseIntervalSyncher, &QTimer::timeout, this, &DataSetPackage::synchingIntervalPassed);
+}
+
+DataSetPackage::~DataSetPackage() 
+{ 
+	_singleton = nullptr; 
+	_databaseIntervalSyncher.stop();
 }
 
 void DataSetPackage::setEngineSync(EngineSync * engineSync)
@@ -81,6 +89,8 @@ void DataSetPackage::resumeEngines()
 
 void DataSetPackage::reset()
 {
+	_databaseIntervalSyncher.stop();
+	
 	beginLoadingData();
 	setDataSet(nullptr);
 	_archiveVersion				= Version();
@@ -1556,6 +1566,25 @@ std::vector<bool> DataSetPackage::filterVector()
 	}
 
 	return out;
+}
+
+void DataSetPackage::databaseStartSynching(bool syncImmediately)
+{
+	if(_database == Json::nullValue)
+		throw std::runtime_error("Cannot start synching with a database if we arent connected to a database...");
+	
+	_databaseIntervalSyncher.stop(); //Is this even necessary? Probaly not but lets do it just in case
+	
+	int interval = _database["interval"].asInt();
+	
+	if(interval > 0)
+	{
+		_databaseIntervalSyncher.setInterval(1000 * 60 * _database["interval"].asInt());
+		_databaseIntervalSyncher.start();
+	}
+	
+	if(syncImmediately)
+		emit synchingIntervalPassed();
 }
 
 

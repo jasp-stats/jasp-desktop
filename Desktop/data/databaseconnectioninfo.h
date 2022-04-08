@@ -28,7 +28,8 @@ public:
 			_database		= "",
 			_hostname		= "",
 			_query			= "";
-	int		_port			= 0;
+	int		_port			= 0,
+			_interval		= 0;
 	
 };
 

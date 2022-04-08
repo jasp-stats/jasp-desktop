@@ -15,6 +15,7 @@ Json::Value DatabaseConnectionInfo::toJson() const
 	out["hostname"]	= fq(_hostname);
 	out["query"]	= fq(_query);
 	out["port"]		= _port;
+	out["interval"]	= _interval;
 
 	return out;
 }
@@ -30,6 +31,7 @@ void DatabaseConnectionInfo::fromJson(const Json::Value & json)
 	_hostname	= tq(				json["hostname"]	.asString() )	;
 	_query		= tq(				json["query"]		.asString() )	;
 	_port		=					json["port"]		.asUInt()		;
+	_interval	=					json["interval"]	.asInt()		;
 
 }
 

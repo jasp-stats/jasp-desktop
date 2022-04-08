@@ -101,11 +101,12 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 			Text
 			{
-				id:				dbHostnameLabel
-				text:			qsTr("Hostname")
-				
-				onWidthChanged: console.log("dbHostnameLabel width: " + width);
-				width:			jaspTheme.generalAnchorMargin + Math.max(contentWidth, dbPortLabel.contentWidth, dbNameLabel.contentWidth, dbUsernameLabel.contentWidth, dbPasswordLabel.contentWidth)
+				id:						dbHostnameLabel
+				text:					qsTr("Hostname")
+
+				anchors.verticalCenter: parent.verticalCenter
+				onWidthChanged:			console.log("dbHostnameLabel width: " + width);
+				width:					jaspTheme.generalAnchorMargin + Math.max(contentWidth, dbPortLabel.contentWidth, dbNameLabel.contentWidth, dbUsernameLabel.contentWidth, dbPasswordLabel.contentWidth)
 			}
 
 			PrefsTextInput
@@ -129,9 +130,10 @@ For a local or toy database this is probably overkill, but use your own judgemen
 			
 			Text
 			{
-				id:				dbPortLabel
-				text:			qsTr("Port")
-				width:			dbHostnameLabel.width
+				id:						dbPortLabel
+				text:					qsTr("Port")
+				width:					dbHostnameLabel.width
+				anchors.verticalCenter: parent.verticalCenter
 			}
 
 			PrefsTextInput
@@ -156,9 +158,10 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 			Text
 			{
-				id:				dbNameLabel
-				text:			qsTr("Name")
-				width:			dbHostnameLabel.width
+				id:						dbNameLabel
+				text:					qsTr("Name")
+				width:					dbHostnameLabel.width
+				anchors.verticalCenter: parent.verticalCenter
 			}
 
 			PrefsTextInput
@@ -181,9 +184,10 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 			Text
 			{
-				id:				dbUsernameLabel
-				text:			qsTr("Username")
-				width:			dbHostnameLabel.width
+				id:						dbUsernameLabel
+				text:					qsTr("Username")
+				width:					dbHostnameLabel.width
+				anchors.verticalCenter: parent.verticalCenter
 			}
 
 			PrefsTextInput
@@ -206,9 +210,10 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 			Text
 			{
-				id:				dbPasswordLabel
-				text:			qsTr("Password")
-				width:			dbHostnameLabel.width
+				id:						dbPasswordLabel
+				text:					qsTr("Password")
+				width:					dbHostnameLabel.width
+				anchors.verticalCenter: parent.verticalCenter
 			}
 
 			PrefsTextInput
@@ -245,6 +250,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				id:						dbQueryLabel
 				text:					qsTr("Query")
 				width:					implicitWidth + jaspTheme.generalAnchorMargin
+				anchors.verticalCenter: parent.verticalCenter
 			}
 
 			PrefsTextInput
@@ -261,7 +267,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				id:						runQuery
 				text:					qsTr("Execute")
 				onClicked:				fileMenuModel.database.runQuery();
-				KeyNavigation.tab:	loadResults
+				KeyNavigation.tab:		loadResults
 			}
 		}
 
@@ -270,17 +276,44 @@ For a local or toy database this is probably overkill, but use your own judgemen
 	PrefsGroupRect
 	{
 		id:			previewGroup
-		title:		qsTr("Preview")
+		title:		qsTr("Preview data")
+		enabled:	fileMenuModel.database.connected && fileMenuModel.database.resultsOK
 
 		anchors.top:		databaseGroup.bottom
 		anchors.topMargin:	jaspTheme.generalAnchorMargin
 
-		RoundedButton
+		
+		Item
 		{
-			id:						loadResults
-			text:					qsTr("Load into JASP")
-			onClicked:				fileMenuModel.database.importResults();
-			enabled:				fileMenuModel.database.connected && fileMenuModel.database.resultsOK
+			height:			childrenRect.height
+			anchors
+			{
+				left:		parent.right
+				right:		parent.right
+				margins:	jaspTheme.generalAnchorMargin
+			}
+			
+			RoundedButton
+			{
+				id:						loadResults
+				text:					qsTr("Load into JASP")
+				onClicked:				fileMenuModel.database.importResults();
+				KeyNavigation.tab:		intervalSpinner
+			}
+			
+			SpinBox
+			{
+				id:					intervalSpinner
+				value:				fileMenuModel.database.interval
+				onValueChanged:		if(value != "") fileMenuModel.database.interval = value
+				from:				0
+				to:					24 * 60 * 7 // do we want to have bigger than a week interval?
+				defaultValue:		0 
+				stepSize:			1
+				text:				qsTr("Synching interval in minutes: ")
+				toolTip:			qsTr("0 means no automatic synching, but you can still synch manually by pressing Ctrl/Cmd+Y")
+				anchors.right:		parent.right
+			}
 		}
 
 		QC.TextArea

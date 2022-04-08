@@ -59,20 +59,21 @@ const Settings::Setting Settings::Values[] = {
 									".AppleSystemUIFontMonospaced"},
 #endif									
 	{"resultFont",					"\"Lucida Grande\",Helvetica,Arial,sans-serif,\"Helvetica Neue\",freesans,Segoe UI"},
-	{"win_LC_CTYPE_C",				"check" }, //"check" should be an actual value in the underlying enum that is defined in preferencesmode.h
-	{"maxEngineCount",				4}, //In debug always 1
-	{"GITHUB_PAT_Custom",			"" },
-	{"GITHUB_PAT_UseDefault",		true},
-	{"WindowsNoBomNative",			false}, //false as default because then we keep the behaviour we had before.
-	{"dbImportDbType",				0},
-	{"dbImportDbName",				""},
-	{"dbImportHostName",			""},
-	{"dbImportPort",				1433},
-	{"dbImportUserName",			""},
-	{"dbImportPassword"				""},
-	{"dbImportQuery"				""}
+	{"win_LC_CTYPE_C",				"check" }, //"check" should be an actual value in the underlying enum that is defined in preferencesmodel.h
+	{"maxEngineCount",				4		}, //In debug always 1
+	{"GITHUB_PAT_Custom",			""		},
+	{"GITHUB_PAT_UseDefault",		true	},
+	{"WindowsNoBomNative",			false	}, //false as default because then we keep the behaviour we had before.
+	{"dbImportDbType",				0		},
+	{"dbImportDbName",				""		},
+	{"dbImportHostName",			""		},
+	{"dbImportPort",				1433	},
+	{"dbImportUserName",			""		},
+	{"dbImportPassword",			""		},
+	{"dbImportQuery",				""		},
+	{"dbImportInterval",			0		}
 	
-};
+};	
 
 QVariant Settings::value(Settings::Type key)
 {

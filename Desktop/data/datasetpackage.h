@@ -29,6 +29,7 @@
 #include <json/json.h>
 #include "computedcolumns.h"
 #include "datasetdefinitions.h"
+#include <QTimer>
 
 class EngineSync;
 class DataSetPackageSubNodeModel;
@@ -76,7 +77,7 @@ public:
 	static DataSetPackage *	pkg() { return _singleton; }
 
 							DataSetPackage(QObject * parent);
-							~DataSetPackage() { _singleton = nullptr; }
+							~DataSetPackage();
 		void				setEngineSync(EngineSync * engineSync);
 		void				reset();
 		void				setDataSetSize(size_t columnCount, size_t rowCount);
@@ -258,7 +259,7 @@ public:
 				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->setFilterVector(newFilterVector); }
 
 
-
+				void						databaseStartSynching(bool syncImmediately);
 
 
 
@@ -292,6 +293,7 @@ signals:
 				void				windowTitleChanged();
 				void				loadedChanged();
 				void				currentFileChanged();
+				void				synchingIntervalPassed();
 
 public slots:
 				void				refresh() { beginResetModel(); endResetModel(); }
@@ -350,6 +352,8 @@ private:
 	SubNodeModel			*	_dataSubModel,
 							*	_filterSubModel,
 							*	_labelsSubModel;
+	
+	QTimer						_databaseIntervalSyncher;
 
 	friend class ComputedColumns; //temporary! Or well, should be thought about anyway
 };

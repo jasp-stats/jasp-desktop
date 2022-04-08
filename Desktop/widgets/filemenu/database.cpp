@@ -32,6 +32,7 @@ Database::Database(QObject *parent)
 	_info._username	=						Settings::value( Settings::DB_IMPORT_USERNAME	).toString();
 	_info._password	= decrypt(				Settings::value( Settings::DB_IMPORT_PASSWORD	).toString());
 	_info._query	=						Settings::value( Settings::DB_IMPORT_QUERY		).toString();
+	_info._interval	=						Settings::value( Settings::DB_IMPORT_INTERVAL	).toInt();
 }
 
 void Database::connect()
@@ -68,7 +69,7 @@ void Database::importResults()
 
 void Database::setDbTypeFromIndex(int dbTypeIdx)
 {
-	if(dbTypeIdx > 0 && dbTypeIdx <= int(DbType::QSQLITE)) //is it really one?
+	if(dbTypeIdx > 0 && dbTypeIdx <= int(DbType::QSQLITE)) //is it really a DbType?
 		setDbType(static_cast<DbType>(dbTypeIdx));
 }
 
@@ -228,4 +229,15 @@ void Database::setResultsOK(bool newResultsOK)
 		return;
 	_resultsOK = newResultsOK;
 	emit resultsOKChanged();
+}
+
+void Database::setInterval(int newInterval)
+{
+	if (_info._interval == newInterval)
+		return;
+	
+	_info._interval = newInterval;
+	Settings::setValue(Settings::DB_IMPORT_INTERVAL, _info._interval);
+	
+	emit intervalChanged();
 }

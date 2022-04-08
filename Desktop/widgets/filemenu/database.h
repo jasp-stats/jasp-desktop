@@ -23,6 +23,7 @@ class Database : public FileMenuObject
 	Q_PROPERTY(QString		lastError	READ lastError								NOTIFY lastErrorChanged		)
 	Q_PROPERTY(int			port		READ port			WRITE setPort			NOTIFY portChanged			)
 	Q_PROPERTY(bool			resultsOK	READ resultsOK		WRITE setResultsOK		NOTIFY resultsOKChanged		)
+	Q_PROPERTY(int			interval	READ interval		WRITE setInterval		NOTIFY intervalChanged		)
 
 public:
 	explicit Database(QObject *parent = nullptr);
@@ -43,6 +44,7 @@ public:
 	int						port()				const { return _info._port;		}
 	const QString		&	query()				const { return _info._query;	}
 	bool					resultsOK()			const { return _resultsOK;		}
+	int						interval()			const { return _info._interval; }
 
 	bool					readyForImport()	const;
 
@@ -59,6 +61,8 @@ public:
 	void setQueryResult(const QString & newQueryResult	);
 	void setLastError(	const QString &	newLastError	);
 	void setResultsOK(	bool			newResultsOK	);
+	void setInterval(	int				newInterval		);
+	
 	
 signals:
 	void dbTypeChanged();
@@ -74,6 +78,8 @@ signals:
 	void queryChanged();
 	void resultsOKChanged();
 	
+	void intervalChanged();
+	
 private:
 	QString	_runQuery();
 
@@ -83,6 +89,7 @@ private:
 			_lastError		= "";
 	bool	_connected		= false,
 			_resultsOK		= false;
+	
 };
 
 #endif // DATABASE_H
