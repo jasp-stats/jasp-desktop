@@ -228,7 +228,7 @@ void AsyncLoader::loadPackage(QString id)
 			else
 			{
 				extension = "DATABASE"; //Lets be clear what this is ;)
-				path = _currentEvent->database();
+				path = _currentEvent->databaseStr();
 			}
 
 			if (_currentEvent->operation() == FileEvent::FileSyncData)

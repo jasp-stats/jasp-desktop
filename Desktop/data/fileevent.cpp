@@ -109,7 +109,7 @@ void FileEvent::chain(FileEvent *event)
 	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
 }
 
-const std::string FileEvent::database() const 
+const std::string FileEvent::databaseStr() const 
 { 
 	return _database.toStyledString();
 }

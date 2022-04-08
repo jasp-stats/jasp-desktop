@@ -76,7 +76,8 @@ public:
 	void		sync();
 
 			
-	void			setCurrentDataFile(const QString &path);
+	void			setCurrentDatabase(const Json::Value	& dbInfo);
+	void			setCurrentDataFile(const QString		& path);
 	void			setDataFileWatcher(bool watch);
 	
 	void			setSaveMode(FileEvent::FileMode mode);
@@ -143,6 +144,7 @@ private:
 private:
 	OnlineDataManager			*	_odm						= nullptr;
 	CurrentDataFile				*	_currentDataFile			= nullptr;
+	Json::Value						_currentDatabase			= Json::nullValue;
 	RecentFiles					*	_recentFiles				= nullptr;
 	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;

@@ -59,7 +59,8 @@ public:
 	Utils::FileType		type()			const { return _type;			}
 
 	const QString &		path()			const { return _path;			}
-	const std::string	database()		const;
+	const std::string	databaseStr()	const;
+	const Json::Value &	database()		const { return _database;		}
 	const QString &		osfPath()		const { return _osfPath;		}
 	const QString &		dataFilePath()	const { return _dataFilePath;	}
 	const QString &		message()		const { return _message;		}

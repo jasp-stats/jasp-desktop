@@ -128,20 +128,30 @@ FileEvent *FileMenu::save()
 
 void FileMenu::sync()
 {
-	QString path = _currentDataFile->getCurrentFilePath();
-
-	if (path.isEmpty())
-	{
-		if(!MessageForwarder::showYesNo(tr("No associated data file"),
-					tr("JASP has no associated data file to be synchronized with.\nDo you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data.")))
-			return;
-
-		path =  MessageForwarder::browseOpenFile(tr("Find Data File"), "", tr("Data File").arg("*.csv *.txt *.tsv *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt"));
-	}
-
-	_mainWindow->setCheckAutomaticSync(false);
-	setSyncRequest(path);
 	
+	if(_currentDatabase != Json::nullValue)
+	{
+		FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
+	
+		event->setDatabase(_currentDatabase);
+		dataSetIORequestHandler(event);
+	}
+	else
+	{
+		QString path = _currentDataFile->getCurrentFilePath();
+	
+		if (path.isEmpty())
+		{
+			if(!MessageForwarder::showYesNo(tr("No associated data file"),
+						tr("JASP has no associated data file to be synchronized with.\nDo you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data.")))
+				return;
+	
+			path =  MessageForwarder::browseOpenFile(tr("Find Data File"), "", tr("Data File").arg("*.csv *.txt *.tsv *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt"));
+		}
+	
+		_mainWindow->setCheckAutomaticSync(false);
+		setSyncRequest(path);
+	}	
 }
 
 void FileMenu::close()
@@ -152,6 +162,13 @@ void FileMenu::close()
 	setSaveMode(FileEvent::FileOpen);
 	_actionButtons->setSelectedAction(ActionButtons::FileOperation::Open);
 }
+
+
+void FileMenu::setCurrentDatabase(const Json::Value &dbInfo)
+{
+	_currentDatabase = dbInfo;
+}
+
 
 void FileMenu::setCurrentDataFile(const QString &path)
 {
@@ -230,6 +247,9 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 					datafile = QString::fromStdString(DataSetPackage::pkg()->dataFilePath());
 				setCurrentDataFile(datafile);
 			}
+			
+			if(event->isDatabase())
+				setCurrentDatabase(event->database());
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
@@ -440,6 +460,7 @@ void FileMenu::clearSyncData()
 {
 	setDataFileWatcher(false); // must be done before setting the current to empty.
 	_currentDataFile->setCurrentFilePath(QString());
+	_currentDatabase = Json::nullValue;
 }
 
 bool FileMenu::clearOSFFromRecentList(QString path)

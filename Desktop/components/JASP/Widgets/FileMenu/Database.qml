@@ -41,18 +41,30 @@ Item
 		headertext		: qsTr("Database")
 	}
 	
+	//Maybe the warning should look like a warning as in Form. It might also be good to make a special QML item for it
 	Text
 	{
+		id:			warning
+		color:		jaspTheme.red
 		text:		qsTr(
 "<i>Warning!</i>
-
+<br><br>
 JASP stores the password to your database in jasp-files, while not directly readable it is easy to extract.
-
+<br><br>
 In case you are trying to connect to a production or even just network-accessible database:
+<br>
 We <b>strongly urge</b> you to make a special user for JASP in your database with as <i>few permissions</i> as needed.
-
+<br><br>
 For a local or toy database this is probably overkill, but use your own judgement."
 )
+		wrapMode:	Text.Wrap
+		anchors
+		{
+			top:		menuHeader.bottom
+			left:		parent.left
+			right:		parent.right
+			margins:	jaspTheme.generalAnchorMargin
+		}
 				
 	}
 
@@ -62,7 +74,8 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 		title:	qsTr("Database")
 
-		anchors.top: menuHeader.bottom
+		anchors.top:		warning.bottom
+		anchors.topMargin:	jaspTheme.generalAnchorMargin
 
 		ComboBox
 		{
@@ -98,7 +111,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				text:			fileMenuModel.database.hostname
 				onTextChanged:	fileMenuModel.database.hostname = text;
 
-				LQ.Layout.fillWidth:	true
+				width:			parent.width - dbHostnameLabel.width
 			}
 		}
 
@@ -122,7 +135,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 				textInput.validator: JASPDoubleValidator { id: intValidator; bottom: 0; top: 9999999999999; decimals: 0 }
 
-				LQ.Layout.fillWidth:	true
+				width:			dbHostnameInput.width
 			}
 		}
 
@@ -144,7 +157,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				text:			fileMenuModel.database.database
 				onTextChanged:	fileMenuModel.database.database = text;
 
-				LQ.Layout.fillWidth:	true
+				width:			dbHostnameInput.width
 			}
 		}
 
@@ -166,7 +179,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 				text:			fileMenuModel.database.username
 				onTextChanged:	fileMenuModel.database.username = text;
 
-				LQ.Layout.fillWidth:	true
+				width:			dbHostnameInput.width
 			}
 		}
 
@@ -190,7 +203,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 				textInput.echoMode:		TextInput.Password
 
-				LQ.Layout.fillWidth:	true
+				width:			dbHostnameInput.width
 			}
 		}
 
@@ -243,14 +256,7 @@ For a local or toy database this is probably overkill, but use your own judgemen
 
 		anchors.top:		databaseGroup.bottom
 		anchors.topMargin:	jaspTheme.generalAnchorMargin
-		
-		RoundedButton
-		{
-			id:						loadResults
-			text:					qsTr("Load into JASP")
-			onClicked:				fileMenuModel.database.importResults();
-			enabled:				fileMenuModel.database.connected && fileMenuModel.database.resultsOK
-		}
+
 
 		QC.TextArea
 		{
@@ -262,6 +268,15 @@ For a local or toy database this is probably overkill, but use your own judgemen
 			wrapMode:		TextEdit.Wrap
 			readOnly:		true
 			selectByMouse:	true
+		}
+		
+		
+		RoundedButton
+		{
+			id:						loadResults
+			text:					qsTr("Load into JASP")
+			onClicked:				fileMenuModel.database.importResults();
+			enabled:				fileMenuModel.database.connected && fileMenuModel.database.resultsOK
 		}
 	}
 }
