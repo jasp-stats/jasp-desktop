@@ -13,7 +13,7 @@ If everything goes right, you now have a folder named `jasp-desktop` in your cur
 
 ```bash
 cd jasp-desktop
-git update submodule --init
+git submodule update --init
 ```
 
 Now that we have everything downloaded and updated, you can continue to your our system specific build guides, 
