@@ -59,7 +59,7 @@ Some remarks about these components:
 - In several examples you may encounter `qsTr()`, it is important that this function wraps all text that will be shown in the interface. It will provide the possibility to translate JASP in the future.
 - The components described below may generally be nested to an arbitrary level (e.g., a checkbox in a group in a checkbox).
 
-All (well almost all) of these components have a property `name` that is also used in JASP-files to store the value the user selected. That means that whenever you change `name` for a component for a newer version of your analysis/module the stored value will be ignored. To make sure the user entered information isn't lost you can add an [upgrade.json to your module](jasp-upgrade-json.md).
+All (well almost all) of these components have a property `name` that is also used in JASP-files to store the value the user selected. That means that whenever you change `name` for a component for a newer version of your analysis/module the stored value will be ignored. To make sure the user entered information isn't lost you can add an [Upgrades.qml to your module](jasp-upgrade-qml.md).
 
 ### General Input
 These components are quite common in questionnaires and input forms on websites, they include the checkbox, radiobutton, dropdown, slider and textfields where text may be entered.
