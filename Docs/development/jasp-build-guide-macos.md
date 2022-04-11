@@ -51,11 +51,11 @@ Follow the installation steps, and select the following items from the list of c
 			- [x] Qt Web Engine
 			- [x] Qt Web Channel
 			- [x] Qt WebSockets
-		- **Developer and Designer Tools**
-			- [x] Qt Creator 7
-			- [x] Qt Creator 7 Debug Symbols
-			- [x] CMake
-			- [x] Ninja
+	- **Developer and Designer Tools**
+		- [x] Qt Creator 7
+		- [x] Qt Creator 7 Debug Symbols
+		- [x] CMake
+		- [x] Ninja
 
 ### Configuring and Building JASP
 
