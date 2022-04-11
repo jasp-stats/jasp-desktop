@@ -46,7 +46,7 @@ Follow the installation steps, and select the following items from the list of c
 - **Qt**
 	- **Qt 6.2.4** (or newest stable Qt)
 		- [x] macOS
-		- [x] Qt 5 Compatibility Modules
+		- [x] Qt 5 Compatibility Module
 		- **Additional Libraries**
 			- [x] Qt Web Engine
 			- [x] Qt Web Channel
