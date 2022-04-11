@@ -5,9 +5,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 ## Requirements
 
 - [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)
-	- Tick macOS + Qt WebEngine
-- [Qt Creator](https://www.qt.io/download) / Qt >= 6.2
-    - Qt Creator 7
+- [Qt Framework and Qt Creator](https://www.qt.io/download)
 - [Homebrew](http://brew.sh)
 - [CMake](https://cmake.org), installed via Homebrew and Qt Creator
 - [Conan](https://conan.io), installed via Homebrew
@@ -31,31 +29,35 @@ You can download and install Homebrew using the following command. After running
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Note the instructions in mentioned under "Next Steps" after installing homebrew, where `userName` below should be changed to your username
-
-```bash
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/userName/.zprofile
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-```
-
 After installing Homebrew, you can start installing your requirements by running the following command in the Terminal.
 
 ```bash
-brew install conan bison flex pkg-config automake autoconf create-dmg parallel
-```
-
-Install CMake as follows:
-
-```bash
-brew install cmake
+brew install conan cmake bison flex pkg-config automake autoconf create-dmg parallel
 ```
 
 > 💡 Optionally, you can install the Qt from the command line, and build JASP using that, e.g., `brew install qt`. 
 
-### Qt Creator
-<img width="1136" alt="qtInstallComponents" src="https://user-images.githubusercontent.com/10271675/162528342-d7db3c71-9747-4e10-b193-efedb7b52191.png">
+### Qt Framework and Qt Creator
 
-, you can find `CMakeLists.txt`
+Download the [Qt Installer](https://www.qt.io/download) from their website, and run the installer. You may need to install the [Qt Account](https://login.qt.io/login) before you will be able to download and install Qt.
+
+Follow the installation steps, and select the following items from the list of components in the "Select Components" step:
+
+- **Qt**
+	- **Qt 6.2.4** (or newest stable Qt)
+		- [x] macOS
+		- [x] Qt 5 Compatibility Modules
+		- **Additional Libraries**
+			- [x] Qt Web Engine
+			- [x] Qt Web Channel
+			- [x] Qt WebSockets
+		- **Developer and Designer Tools**
+			- [x] Qt Creator 7
+			- [x] Qt Creator 7 Debug Symbols
+			- [x] CMake
+			- [x] Ninja
+
+### Configuring and Building JASP
 
 After installing all your dependencies, go to the Qt Creator app - go to open - your cloned `jasp-desktop` folder and open `CMakeLists.txt`. By doing so, Qt Creator configures the JASP project using CMake. 
 
