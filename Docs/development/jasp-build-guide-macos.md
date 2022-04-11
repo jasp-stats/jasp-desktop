@@ -21,7 +21,7 @@ You can install Xcode from the [Mac App Store](https://apps.apple.com/us/app/xco
 
 > ⚠️ This is going to take a while, and it has to be finished before you can configure with the rest of the process.
 
-#### Homebrew Packages
+#### Homebrew and Homebrew Packages (Conan, CMake, etc.)
 
 You can download and install Homebrew using the following command. After running the following command, you may be prompted to install Xcode Command Line Tools. You need this package.
 
