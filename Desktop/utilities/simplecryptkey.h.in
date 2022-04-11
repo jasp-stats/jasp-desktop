@@ -1,6 +1,0 @@
-#ifndef SIMPLECRYPTKEY
-
-#define SIMPLECRYPTKEY (@CRYPT_KEY@)
-
-#endif
-

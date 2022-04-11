@@ -21,8 +21,8 @@
 #include <QQmlContext>
 #include <QStringList>
 #include <QDateTime>
+#include "appinfo.h"
 #include "simplecrypt.h"
-#include "simplecryptkey.h"
 #include "utils.h"
 
 using namespace std;
@@ -67,7 +67,7 @@ QString getShortCutKey()
 
 QString encrypt(const QString &input)
 {
-	long long key = SIMPLECRYPTKEY;
+	long long key = AppInfo::getSimpleCryptKey();
 	SimpleCrypt crypto(key); //some random number
 	
 	return crypto.encryptToString(input);	
@@ -75,7 +75,7 @@ QString encrypt(const QString &input)
 
 QString decrypt(const QString &input)
 {	
-	long long key = SIMPLECRYPTKEY;
+	long long key = AppInfo::getSimpleCryptKey();
 	SimpleCrypt crypto(key); //some random number
 	
 	return crypto.decryptToString(input);

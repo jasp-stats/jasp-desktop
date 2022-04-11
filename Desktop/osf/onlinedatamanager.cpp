@@ -27,8 +27,8 @@
 #include "onlineusernodeosf.h"
 #include "gui/messageforwarder.h"
 #include "utilities/simplecrypt.h"
-#include "utilities/simplecryptkey.h"
 #include "utilities/settings.h"
+#include "appinfo.h"
 
 
 OnlineDataManager::OnlineDataManager(QObject *parent):

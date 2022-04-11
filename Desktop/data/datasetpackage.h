@@ -24,7 +24,7 @@
 #include <QUrl>
 #include "common.h"
 #include "dataset.h"
-#include "../Common/version.h"
+#include "version.h"
 #include <map>
 #include <json/json.h>
 #include "computedcolumns.h"
