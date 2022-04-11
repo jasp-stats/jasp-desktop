@@ -6,7 +6,7 @@ Before you start building JASP, you need to clone its repository. If you are not
 If you know how git work, then we are going to start by cloning the `jasp-desktop` repository by writing the following commands into your terminal:
 
 ```bash
-git clone https://github.com/amirmasoudabdol/jasp-desktop.git
+git clone https://github.com/jasp-stats/jasp-desktop.git
 ```
 
 If everything goes right, you now have a folder named `jasp-desktop` in your current directory. Now, we need to update JASP submodules by executing the following commands:
@@ -15,6 +15,12 @@ If everything goes right, you now have a folder named `jasp-desktop` in your cur
 cd jasp-desktop
 git submodule update --init
 ```
+
+
+If you haven't got a [GitHub Personal Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), please make one that allows access to your repository, that is:
+- repo:status
+- repo:rep_deployment
+- repo:public_repo
 
 Now that we have everything downloaded and updated, you can continue to your our system specific build guides, 
 
