@@ -39,7 +39,7 @@ brew install conan cmake bison flex pkg-config automake autoconf create-dmg para
 
 ### Qt Framework and Qt Creator
 
-Download the [Qt Installer](https://www.qt.io/download) from their website, and run the installer. You may need to install the [Qt Account](https://login.qt.io/login) before you will be able to download and install Qt.
+Download the [Qt Installer](https://www.qt.io/download), and run the installer. You may need to create a [Qt Account](https://login.qt.io/login) before you will be able to download and install the Qt Framework.
 
 Follow the installation steps, and select the following items from the list of components in the "Select Components" step:
 
@@ -69,8 +69,6 @@ JASP's CMake configuration file provides several variables that allow you to cus
 		- If you are using the Qt Creator, you need to either set the `GITHUB_PAT` directly to your CMake variables, under the "Projects->Build->Current Configuration". Search the list for `GITHUB_PAT`, and paste your PAT value there. This will instruct the CMake to use your PAT whenever necessary. 
 	- If you are using the command line, CMake looks for this variable in your environment variable and is able to automatically find and use it, if your `GITHUB_PAT` can be found in your environment variables.
 		- Adding the following to your `.bash_profile`, or `.zshrc` will fasciliate this process, `export GITHUB_PAT=your github pat`
-- `INSTALL_R_MODULES`
-	- If you wish to install JASP modules, then you need to toggle this option `ON`. In Qt Creator->Projects->Builds->Current Configuration, you can find this option, and check the checkbox. Or if you are using a command line, you can include this in your command line by `-DINSTALL_R_MODULES=ON`.
 - Lastly, you need to make sure that `Add build library search path to DYLD_LIBRARY_PATH and DYLD_FRAMEWORK_PATH` is set to `OFF`. 
 	- ⚠️ This is important, otherwise, Qt Creator cannot run JASP!
 
