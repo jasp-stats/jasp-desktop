@@ -210,7 +210,7 @@ bool Engine::receiveMessages(int timeout)
 				Log::log() << c;
 			}
 
-			Log::log() << "Parsing request failed on:\n" << jsonReader.getFormatedErrorMessages() << std::endl;
+			Log::log() << "Parsing request failed on:\n" << jsonReader.getFormattedErrorMessages() << std::endl;
 			// Log::log() << "Parsing request failed on:\n" << err << std::endl;
 		}
 
