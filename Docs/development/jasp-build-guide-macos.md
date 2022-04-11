@@ -22,15 +22,13 @@ You can install Xcode from the [Mac App Store](https://apps.apple.com/us/app/xco
 
 #### Homebrew and Homebrew Packages (Conan, CMake, etc.)
 
-You can download and install Homebrew using the following command.
+You can download and install Homebrew using the following command, which might prompt you to install Xcode Command Line Tools. If that's the case, please do so. 
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-> ⚠️ Please pay a close attention to outputs of the following command, and if you ran into any problems installing Homebrew, check out their [Documentation](https://docs.brew.sh) and ask for help in [GitHub Discussions](https://github.com/orgs/Homebrew/discussions).
-
-After running the following command, you may be prompted to install Xcode Command Line Tools.
+> ⚠️ Please pay close attention to outputs of the following command, and if you ran into any problems installing Homebrew, check out their [Documentation](https://docs.brew.sh) and ask for help in [GitHub Discussions](https://github.com/orgs/Homebrew/discussions).
 
 After installing Homebrew, you can start install the other requirements by running the following command in the Terminal.
 
