@@ -149,15 +149,14 @@ add_custom_target(
   jaspBase
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
   DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-          )
+          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log)
 
 # This happens during the configuration!
 file(
   WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
   "
-    .libPaths('${${R_LIBRARY_PATH}}') # make sure to only look in our local library
-	
+    .libPaths('${R_LIBRARY_PATH}') # make sure to only look in our local library
+
     if ('jaspBase' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
     } else {
@@ -176,25 +175,14 @@ file(
 file(
   WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
   "
-  .libPaths('${${R_LIBRARY_PATH}}') # make sure to only look in our local library
-  
+    .libPaths('${R_LIBRARY_PATH}') # make sure to only look in our local library
+
     if ('jaspGraphs' %in% installed.packages()) {
       cat(NULL, file='${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log')
     } else {
       install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
     }
     ")
-
-# We do not in fact need jaspTools
-#file(
-#  WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
-# "
-#    if ('jaspTools' %in% installed.packages()) {
-#      cat(NULL, file='${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log')
-#    } else {
-#      install.packages('${PROJECT_SOURCE_DIR}/Tools/jaspTools/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
-#    }
-#    ")
 
 # I'm using a custom_command here to make sure that jaspBase is installed once
 # and only once before everything else. So, `install-jaspBase.R` creates an empty
@@ -233,23 +221,6 @@ add_custom_command(
     SIGNING=${IS_SIGNING} -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG}
     -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
   COMMENT "------ Installing 'jaspGraphs'")
-
-#add_custom_command(
-#  WORKING_DIRECTORY ${R_HOME_PATH}
-#  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-#          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-#  OUTPUT ${MODULES_BINARY_PATH}/jaspTools-installed-successfully.log
-#  JOB_POOL sequential
-#  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-#          --file=${MODULES_RENV_ROOT_PATH}/install-jaspTools.R
-#  COMMAND
-#    ${CMAKE_COMMAND} -D
-#    NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-#    -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-#    R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D
-#    SIGNING=${IS_SIGNING} -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG}
-#    -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-#  COMMENT "------ Installing 'jaspTools'")
 
 if(INSTALL_R_MODULES)
 
