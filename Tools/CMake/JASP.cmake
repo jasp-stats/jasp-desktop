@@ -92,19 +92,27 @@ message(CHECK_START "Checking for CRYPT_KEY")
 set(CRYPT_KEY
     ""
     CACHE STRING "")
+
 if(CRYPT_KEY STREQUAL "")
-  set(CRYPT_KEY $ENV{ENVIRONMENT_CRYPTKEY})
+  # Let's see if the user has set something in the environment
+  set(CRYPT_KEY $ENV{CRYPTKEY})
 
   if(CRYPT_KEY STREQUAL "")
-    message(CHECK_FAIL "not found.")
-    message(WARNING "CRYPT_KEY is not found.")
-  else()
-    message(CHECK_PASS "found.")
-    message(STATUS "  ${CRYPT_KEY}")
 
-    add_definitions(-DENVIRONMENT_CRYPTKEY)
+    message(CHECK_PASS "set to default.")
+
+    set(CRYPT_KEY "0x0c2ad4a4acb9f023")
+
+  else()
+
+    message(CHECK_PASS "found in environment.")
+
   endif()
 
+  message(STATUS "  ${CRYPT_KEY}")
+
+else()
+  message(CHECK_PASS "set by user in cmake config.")
 endif()
 
 # Dealing with Git submodules

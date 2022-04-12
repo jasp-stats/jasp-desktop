@@ -28,7 +28,7 @@
 #include <archive_entry.h>
 #include <json/json.h>
 #include "archivereader.h"
-#include "../Common/version.h"
+#include "version.h"
 #include "tempfiles.h"
 #include "appinfo.h"
 #include "log.h"

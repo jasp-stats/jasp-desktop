@@ -56,3 +56,8 @@ std::string AppInfo::getSigningIdentity()
 {
 	return "@APPLE_CODESIGN_IDENTITY@";
 }
+
+long long AppInfo::getSimpleCryptKey()
+{
+	return @CRYPT_KEY@;
+}
