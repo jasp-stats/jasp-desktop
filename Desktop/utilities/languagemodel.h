@@ -21,11 +21,18 @@ class LanguageModel : public QAbstractListModel
 
 	struct LanguageInfo
 	{
-		LanguageInfo(const QLocale& _locale = LanguageModel::_defaultLocale, const QString& _qmFilename = "", bool _isComplete = true);
+		static QString getLanguageCode(const QLocale& locale);
+		static bool isLanguageAllowed(const QString& language) { return _allowedLanguages.contains(language); }
 
+		LanguageInfo(const QLocale& _locale = LanguageModel::_defaultLocale, const QString& _code = getLanguageCode(LanguageModel::_defaultLocale), const QString& _qmFilename = "");
+
+		static QMap<QString, bool> _allowedLanguages;
+		static QString				_incompleteFlag;
+
+		QString				code;		// This is not necessary the same as locale.name(), especially with zh_Hans or zh_Hant
+		QString				entryName;	// Name used in the language dropdown
 		QLocale				locale;
 		QVector<QString>	qmFilenames;
-		bool				isComplete;
 	};
 
 public:
@@ -48,12 +55,9 @@ public:
 
 	QHash<int, QByteArray>	roleNames() const override;
 
-	QString languageCode(const QLocale& locale)		const;
-	QString languageCode(const QString& language)	const;
-	QString	languageName(const QLocale& loc)		const;
-	QString currentLanguageCode()					const	{ return languageCode(_currentLanguage); }
-	QString currentLanguage()						const;
-	bool	hasDefaultLanguage()					const;
+	QString currentLanguageCode()											const	{ return _currentLanguageCode; }
+	QString currentLanguage()												const;
+	bool	hasDefaultLanguage()											const;
 
 	//This function (currentTranslationSuffix) should be made obsolete through the abolishment of all the _nl etc files:
 	static	QString	currentTranslationSuffix()	{ return _singleton->hasDefaultLanguage() ? "" : ("_" + _singleton->currentLanguageCode()); }
@@ -75,21 +79,19 @@ signals:
 	void resumeEngines();
 
 private:
-	static LanguageModel	* _singleton;
-	static QLocale			_defaultLocale;
-	static QMap<QString, bool> _allowedLanguages;
-	static QString			_incompleteFlag;
+	static LanguageModel *		_singleton;
+	static QLocale				_defaultLocale;
 
 	void					findQmFiles();
-	void					loadQmFilesForLanguage(const QString& language);
+	void					loadQmFilesForLanguage(const QString& languageCode);
 	void					loadQmFile(const QString& filename);
 	void					removeTranslators();
-	bool					isValidLocaleName(const QString& filename, QLocale & loc);
+	bool					isValidLocaleName(const QString& filename, QLocale & loc, QString & languageCode);
 
 	QApplication					* _mApp						= nullptr;
 	QTranslator						* _mTranslator				= nullptr;
 	QQmlApplicationEngine			* _qml						= nullptr;
-	QString							_currentLanguage,
+	QString							_currentLanguageCode,
 									_qmLocation;
 	QMap<QString, LanguageInfo>		_languages;
 	QVector<QTranslator *>			_translators;
