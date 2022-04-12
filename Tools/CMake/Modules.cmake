@@ -145,11 +145,7 @@ execute_process(
   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
           ${MODULES_BINARY_PATH}/)
 
-add_custom_target(
-  jaspBase
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log)
+add_custom_target(jaspBase WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface)
 
 # This happens during the configuration!
 file(
@@ -157,19 +153,16 @@ file(
   "
     .libPaths('${R_LIBRARY_PATH}') # make sure to only look in our local library
 
-    if ('jaspBase' %in% installed.packages()) {
-      cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
-    } else {
-      install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
-                        'jsonlite', 'modules', 'officer', 'pkgbuild',
-                        'plyr', 'qgraph', 'ragg', 'R6', 'renv',
-                        'rjson', 'rvg', 'svglite', 'systemfonts',
-                        'withr', 'testthat',
-                        'data.table', 'httr', 'lifecycle',
-                        'pkgload', 'remotes', 'stringi', 'stringr',
-                        'vdiffr'), type='${R_PKG_TYPE}', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})
-      install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
-    }
+    install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
+                      'jsonlite', 'modules', 'officer', 'pkgbuild',
+                      'plyr', 'qgraph', 'ragg', 'R6', 'renv',
+                      'rjson', 'rvg', 'svglite', 'systemfonts',
+                      'withr', 'testthat',
+                      'data.table', 'httr', 'lifecycle',
+                      'pkgload', 'remotes', 'stringi', 'stringr',
+                      'vdiffr'), type='${R_PKG_TYPE}', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})
+    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL, INSTALL_opts='--no-multiarch --no-docs --no-test-load' ${USE_LOCAL_R_LIBS_PATH})
+
     ")
 
 file(
@@ -177,11 +170,7 @@ file(
   "
     .libPaths('${R_LIBRARY_PATH}') # make sure to only look in our local library
 
-    if ('jaspGraphs' %in% installed.packages()) {
-      cat(NULL, file='${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log')
-    } else {
-      install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')
-    }
+    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL, INSTALL_opts='--no-multiarch --no-docs --no-test-load' ${USE_LOCAL_R_LIBS_PATH})
     ")
 
 # I'm using a custom_command here to make sure that jaspBase is installed once
@@ -194,7 +183,7 @@ file(
 add_custom_command(
   WORKING_DIRECTORY ${R_HOME_PATH}
   OUTPUT ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-  JOB_POOL sequential
+  USES_TERMINAL
   COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
           --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
   COMMAND
@@ -210,7 +199,7 @@ add_custom_command(
   WORKING_DIRECTORY ${R_HOME_PATH}
   DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
   OUTPUT ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-  JOB_POOL sequential
+  USES_TERMINAL
   COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
           --file=${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
   COMMAND
