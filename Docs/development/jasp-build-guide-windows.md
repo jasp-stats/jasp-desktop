@@ -145,16 +145,13 @@ Find the "Build Environment" section under the "Projects -> Build", and expand i
 CMake can to some extend configure the JASP project for you. Here are a few of the variables that you can use to customize your build,
 
 - `GITHUB_PAT`
-	- If you don't have a `GITHUB_PAT`, you can create one by following this instruction: [GitHub Personal Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
+	- If you don't have a `GITHUB_PAT`, please check the [build introduction](jasp-building-guide.md)
 	- After creating a new PAT, you can set that `GITHUB_PAT` variable in two ways,
-		- If you are using the Qt Creator, you need to either set the `GITHUB_PAT` directly to your CMake variables, under the "Projects->Build->Current Configuration". Search the list for `GITHUB_PAT`, and paste your PAT value there. This will instruct the CMake to use your PAT whenever necessary. 
+		- If you are using the Qt Creator, under the "Project Settings" on the left panel, find and click on the "Environment" item. Here, you can "Add" a new variable, `GITHUB_PAT`, and for its value enter the PAT that you've created. 
 	- If you are using the command line, CMake looks for this variable in your environment variable and is able to automatically find and use it, if your `GITHUB_PAT` can be found in your environment variables.
 		- Adding this like to your `.bash_profile`, or `.zshrc` will fasciliate this process, `export GITHUB_PAT=your github pat`
-- `INSTALL_R_MODULES`
-	- If you wish to install JASP modules, you need to toggle this option `ON`. In Qt Creator->Projects->Builds->Current Configuration, you can find this variable, and check the checkbox. Or if you are using a command line, you can include this in your command line by `-DINSTALL_R_MODULES=ON`.
 
 Remember that you need to re-run the CMake configuration every time you change any of the variables.
-
 
 ### Building JASP
 
