@@ -4,7 +4,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 ## Requirements
 
 - [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)
-- [Qt Framework and Qt Creator](https://www.qt.io/download): As discussed in the [build introduction](jasp-building-guide.md#install-qt-62).
+- [Qt Framework and Qt Creator](https://www.qt.io/download)
 - [Homebrew](http://brew.sh)
 - CMake: Installed via Homebrew and Qt Creator
 - Conan: Installed via Homebrew
@@ -19,6 +19,26 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 You can install Xcode from the [Mac App Store](https://apps.apple.com/us/app/xcode/id497799835?mt=12).
 
 > ⚠️ This is going to take a while, and it has to be finished before you can configure with the rest of the process.
+
+#### Qt Framework and Qt Creator
+
+You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries and GUI. For this, 
+
+- You need to download and install the Qt installer from [Qt website](https://www.qt.io/download).
+- After downloading the installer, run the installer and make sure that the following packages are selected for installation
+	- **Qt**
+		- **Qt 6.2.4** (or newest stable Qt)
+			- [x] macOS
+			- [x] Qt 5 Compatibility Module
+			- **Additional Libraries**
+				- [x] Qt Web Engine
+				- [x] Qt Web Channel
+				- [x] Qt Positioning
+		- **Developer and Designer Tools**
+			- **Qt Creator 7**
+			- [x] Qt Creator 7 Debug Symbols
+			- [x] CMake
+			- [x] Ninja
 
 #### Homebrew and Homebrew Packages (Conan, CMake, etc.)
 

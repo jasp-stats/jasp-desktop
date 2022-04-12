@@ -35,6 +35,26 @@ On Manjaro / Arch
 sudo pacman -Syu boost jsoncpp libarchive cmake zlib libarchive make autoconf qt6 gcc gcc-gfortran r
 ```
 
+### Qt Framework and Qt Creator
+
+You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries and GUI. For this, 
+
+- You need to download and install the Qt installer from [Qt website](https://www.qt.io/download).
+- After downloading the installer, run the installer and make sure that the following packages are selected for installation
+	- **Qt**
+		- **Qt 6.2.4** (or newest stable Qt)
+			- [x] Desktop gcc 64-bit
+			- [x] Qt 5 Compatibility Module
+			- **Additional Libraries**
+				- [x] Qt Web Engine
+				- [x] Qt Web Channel
+				- [x] Qt Positioning
+		- **Developer and Designer Tools**
+			- **Qt Creator 7**
+			- [x] Qt Creator 7 Debug Symbols
+			- [x] CMake
+			- [x] Ninja
+
 ### ReadStat and JAGS
 
 On Linux JASP's CMake script will download and install ReadStat and JAGS for you when necessary.
