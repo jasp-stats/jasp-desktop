@@ -11,24 +11,34 @@
 
 LanguageModel * LanguageModel::_singleton = nullptr;
 QLocale LanguageModel::_defaultLocale = QLocale(QLocale::English, QLocale::World);
-QMap<QString, bool> LanguageModel::_allowedLanguages =
-{
-	{ "nl",	true	},
-	{ "de",	true	},
-	{ "pt",	true	},
-	{ "gl",	true	},
-	{ "ja",	true	},
-	{ "es",	true	},
-	{ "zh",	true	},
-	{ "id", false	},
-	{ "fr", false   }
-};
-QString LanguageModel::_incompleteFlag = "(incomplete)";
 
-LanguageModel::LanguageInfo::LanguageInfo(const QLocale& _locale, const QString& _qmFilename, bool _isComplete)
-	 : locale(_locale), isComplete(_isComplete)
+QMap<QString, bool> LanguageModel::LanguageInfo::_allowedLanguages =
 {
-	if (!_qmFilename.isEmpty()) qmFilenames.push_back(_qmFilename);
+	{ "en"		,	true	},
+	{ "nl"		,	true	},
+	{ "de"		,	true	},
+	{ "pt"		,	true	},
+	{ "gl"		,	true	},
+	{ "ja"		,	true	},
+	{ "es"		,	true	},
+	{ "zh_Hans"	,	true	},
+	{ "id"		,	false	},
+	{ "fr"		,	false   }
+};
+QString LanguageModel::LanguageInfo::_incompleteFlag = "(incomplete)";
+
+QString LanguageModel::LanguageInfo::getLanguageCode(const QLocale& locale)
+{
+	return locale.name().split("_")[0];
+}
+
+LanguageModel::LanguageInfo::LanguageInfo(const QLocale& _locale, const QString& _code, const QString& _qmFilename)
+	 : locale(_locale), code(_code)
+{
+	entryName =  code + " - " + locale.nativeLanguageName();
+
+	if (!_allowedLanguages[code])	entryName += (" " + _incompleteFlag);
+	if (!_qmFilename.isEmpty())		qmFilenames.push_back(_qmFilename);
 }
 
 LanguageModel::LanguageModel(QApplication *app, QQmlApplicationEngine *qml, QObject *parent)
@@ -47,20 +57,19 @@ LanguageModel::LanguageModel(QApplication *app, QQmlApplicationEngine *qml, QObj
 
 void LanguageModel::initialize()
 {
-	QString defaultLanguageName = languageName(_defaultLocale);
-	_languages[defaultLanguageName] = LanguageInfo(_defaultLocale);
+	QString defaultLanguageCode = LanguageInfo::getLanguageCode(_defaultLocale);
+	LanguageInfo defaultLanguageInfo(_defaultLocale);
+	_languages[defaultLanguageCode] = defaultLanguageInfo;
 
 	findQmFiles();
 
-	QLocale::Language prefLanguage = static_cast<QLocale::Language>(Settings::value(Settings::PREFERRED_LANGUAGE).toInt());
-	QLocale::Country prefCountry = static_cast<QLocale::Country>(Settings::value(Settings::PREFERRED_COUNTRY).toInt());
-	_currentLanguage = languageName(QLocale(prefLanguage, prefCountry));
-	if (!_languages.contains(_currentLanguage)) _currentLanguage = defaultLanguageName;
+	_currentLanguageCode = Settings::value(Settings::PREFERRED_LANGUAGE).toString();
+	if (!LanguageInfo::isLanguageAllowed(_currentLanguageCode)) _currentLanguageCode = defaultLanguageCode;
 
-	if (_currentLanguage != defaultLanguageName)
+	if (_currentLanguageCode != defaultLanguageCode)
 	{
 		// Load all translated language files for specific language
-		loadQmFilesForLanguage(_currentLanguage);
+		loadQmFilesForLanguage(_currentLanguageCode);
 		_qml->retranslate();
 	}
 
@@ -68,11 +77,10 @@ void LanguageModel::initialize()
 
 QVariant LanguageModel::data(const QModelIndex &index, int role) const
 {
-	if (index.row() >= rowCount())
+	if (index.row() < 0 || index.row() >= rowCount())
 		return QVariant();
 
-	QString languageName = _languages.keys()[index.row()];
-	bool isComplete = _languages[languageName].isComplete;
+	QString languageCode = _languages.keys()[index.row()];
 
 	QString result;
 	switch(role)
@@ -80,9 +88,9 @@ QVariant LanguageModel::data(const QModelIndex &index, int role) const
 	case NameRole:
 	case Qt::DisplayRole:
 	case LabelRole:
-	case ValueRole:			result = languageName + (isComplete ? "" : (" " + _incompleteFlag)); break;
-	case NationFlagRole:	result = "qrc:/translations/images/flag_" + languageCode(languageName) + ".png"; break;
-	case LocalNameRole:		result = languageCode(languageName); break;
+	case ValueRole:			result = _languages[languageCode].entryName; break;
+	case NationFlagRole:	result = "qrc:/translations/images/flag_" + languageCode + ".png"; break;
+	case LocalNameRole:		result = languageCode; break;
 	default: result = "";
 	}
 
@@ -106,18 +114,14 @@ QHash<int, QByteArray> LanguageModel::roleNames() const
 
 void LanguageModel::setCurrentLanguage(QString language)
 {	
-
-	int index = language.indexOf(_incompleteFlag);
-	if (index > 0)	language = language.left(index);
-	language = language.trimmed();
-
-	if (language == _currentLanguage || language.isEmpty())
+	QString languageCode = language.split(" ")[0];
+	if (languageCode == _currentLanguageCode || languageCode.isEmpty() || !_languages.contains(languageCode))
 		return;
 
-	_currentLanguage = language;
+	_currentLanguageCode = languageCode;
 
-	if (_currentLanguage == languageName(_defaultLocale))	removeTranslators();
-	else													loadQmFilesForLanguage(_currentLanguage);
+	if (_currentLanguageCode == LanguageInfo::getLanguageCode(_defaultLocale))	removeTranslators();
+	else																		loadQmFilesForLanguage(_currentLanguageCode);
 
 	//prepare for language change
 	emit aboutToChangeLanguage();								//asks all analyses to abort and to block refresh
@@ -132,8 +136,8 @@ void LanguageModel::setCurrentLanguage(QString language)
 #endif
 
 	_qml->retranslate();
-	Settings::setValue(Settings::PREFERRED_LANGUAGE, _languages[_currentLanguage].locale.language());
-	Settings::setValue(Settings::PREFERRED_COUNTRY, _languages[_currentLanguage].locale.country());
+	Settings::setValue(Settings::PREFERRED_LANGUAGE , _currentLanguageCode);
+	Settings::setValue(Settings::PREFERRED_COUNTRY, _languages[_currentLanguageCode].locale.country());
 	_shouldEmitLanguageChanged = true;
 	
 	ResultsJsInterface::singleton()->resetResults();
@@ -151,7 +155,7 @@ void LanguageModel::resultsPageLoaded()
 	emit resumeEngines();
 }
 
-bool LanguageModel::isValidLocaleName(const QString& filename, QLocale & locale)
+bool LanguageModel::isValidLocaleName(const QString& filename, QLocale& locale, QString& languageCode)
 {
 	//Checks if the filename has a proper localename suffix for a valid CLocale::Language
 	//https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
@@ -161,8 +165,10 @@ bool LanguageModel::isValidLocaleName(const QString& filename, QLocale & locale)
 	QString localeName	= filename.mid(start + 1);
 	int		end			= localeName.lastIndexOf('.');
 
-    locale = QLocale(localeName.left(end));
-	return locale != QLocale(QLocale::C);
+	languageCode = localeName.left(end);
+	locale = QLocale(languageCode);
+
+	return LanguageInfo::isLanguageAllowed(languageCode);
 }
 
 void LanguageModel::loadModuleTranslationFiles(Modules::DynamicModule *dyn)
@@ -171,6 +177,7 @@ void LanguageModel::loadModuleTranslationFiles(Modules::DynamicModule *dyn)
 
 	bool result;
 	QLocale loc;
+	QString languageCode;
 	bool newfileloaded = false;
 
 	//Get qm folder as subfolder from qml folder
@@ -184,25 +191,23 @@ void LanguageModel::loadModuleTranslationFiles(Modules::DynamicModule *dyn)
 		QFileInfo fi = qdi.fileInfo();
 
 		//Can QLocale be found from localname suffix?
-		if (!isValidLocaleName(fi.fileName(), loc))
+		if (!isValidLocaleName(fi.fileName(), loc, languageCode))
 		{
 			Log::log() << "Invalid translation file found with name: " << fi.fileName().toStdString()  << std::endl ;
 			continue;
 		}
 
-		QString language = languageName(loc);
-		if (!_languages.contains(language))
+		if (!_languages.contains(languageCode))
 		{
 			Log::log() << "Not a Jasp supported language in: " << fi.fileName().toStdString()  << std::endl ;
 			continue;
 		}
 
-		LanguageInfo & li = _languages[language];
+		LanguageInfo & li = _languages[languageCode];
 		QString addFile = fi.filePath();
 		li.qmFilenames.push_back(addFile);
-		//li.qmFilenames.push_front(addFile);
 
-		if (language != _currentLanguage)
+		if (languageCode != _currentLanguageCode)
 		{
 			//Module language differs from Jasp language. Just add to qmFiles for further use.			
 			//Log::log() << "The translation for module '" << dyn->name() << "' with " << fi.fileName().toStdString() << " does not support the current language "<<  currentLanguageInfo().languageName << std::endl ;
@@ -225,6 +230,7 @@ void LanguageModel::findQmFiles()
 {	
 	QDir dir(_qmLocation);
 	QLocale loc;
+	QString languageCode;
 
 	QDirIterator qdi(_qmLocation, QStringList() << "*.qm" << "*.QM");
 
@@ -239,39 +245,29 @@ void LanguageModel::findQmFiles()
 
 		Log::log() << "Checking qm file: " << fi.absoluteFilePath() << std::endl;
 
-		if (!isValidLocaleName(fi.fileName(), loc))
+		if (!isValidLocaleName(fi.fileName(), loc, languageCode))
 		{
 			Log::log() << "Invalid translation file found with name: " << fi.fileName().toStdString()  << std::endl ;
 			continue;
 		}
 
-		QString _languageCode = languageCode(loc);
-
-		if (!_allowedLanguages.contains(_languageCode))
-		{
-			Log::log() << "Language " << QLocale::languageToString(loc.language()) << " (" << _languageCode << ") is not allowed";
-			continue;
-		}
-
-		QString language = languageName(loc);
-
-		if (!_languages.contains(language))
+		if (!_languages.contains(languageCode))
 		{
 			Log::log() << "Language (" << QLocale::languageToString(loc.language()) << ") not registered in LanguageModel, adding it now" << std::endl;
-			_languages[language] = LanguageInfo(loc, fi.filePath(), _allowedLanguages[_languageCode]);
+			_languages[languageCode] = LanguageInfo(loc, languageCode, fi.filePath());
 		}
 		else
 		{
 			Log::log() << "More translated language files for a language that was already register in LanguageModel" << std::endl;
-			_languages[language].qmFilenames.push_back(fi.filePath());
+			_languages[languageCode].qmFilenames.push_back(fi.filePath());
 		}
 	}
 
 }
 
-void LanguageModel::loadQmFilesForLanguage(const QString& language)
+void LanguageModel::loadQmFilesForLanguage(const QString& languageCode)
 {
-	LanguageInfo & li = _languages[language];
+	LanguageInfo & li = _languages[languageCode];
 
 	for (QString qmfilename: li.qmFilenames)
 		loadQmFile(qmfilename);
@@ -311,30 +307,14 @@ void LanguageModel::removeTranslators()
 
 }
 
-QString LanguageModel::languageCode(const QLocale& locale) const
-{
-	return locale.name().split("_")[0];
-}
-
-QString LanguageModel::languageCode(const QString& languageName) const
-{
-	return languageCode(_languages[languageName].locale);
-}
-
-
-QString LanguageModel::languageName(const QLocale &loc) const
-{
-	return languageCode(loc) + " - " + loc.nativeLanguageName();
-}
-
 QString LanguageModel::currentLanguage() const
 {
-	const LanguageInfo & li = _languages[_currentLanguage];
-	return _currentLanguage + (li.isComplete ? "" : (" " + _incompleteFlag));
+	const LanguageInfo & li = _languages[_currentLanguageCode];
+	return li.entryName;
 }
 
 bool LanguageModel::hasDefaultLanguage() const
 {
-	const LanguageInfo & li = _languages[_currentLanguage];
+	const LanguageInfo & li = _languages[_currentLanguageCode];
 	return li.locale == _defaultLocale;
 }
