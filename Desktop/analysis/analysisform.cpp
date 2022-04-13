@@ -362,6 +362,24 @@ void AnalysisForm::bindTo()
 		BoundControl* boundControl = control->boundControl();
 		JASPListControl* listControl = dynamic_cast<JASPListControl *>(control);
 
+		if (listControl && listControl->hasSource())
+		{
+			ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(listControl->model());
+			// The availableList control are not bound with options, but they have to be updated from their sources when the form is initialized.
+			// The availableList cannot signal their assigned models now because they are not yet bound (the controls are ordered by dependency)
+			// When the options come from a JASP file, an assigned model needs sometimes the available model (eg. to determine the kind of terms they have).
+			// So in this case resetTermsFromSourceModels has to be called now but with updateAssigned argument set to false.
+			// When the options come from default options (from source models), the availableList needs sometimes to signal their assigned models (e.g. when addAvailableVariablesToAssigned if true).
+			// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
+			if (availableModel)
+			{
+				if (defaultOptions != Json::nullValue || _analysis->isDuplicate())
+					availableModel->resetTermsFromSources(false);
+				else
+					availableModelsToBeReset.push_back(availableModel);
+			}
+		}
+
 		if (boundControl)
 		{
 			std::string name = control->name().toStdString();
@@ -380,24 +398,6 @@ void AnalysisForm::bindTo()
 				hasOption = true;
 
 			boundControl->bindTo(optionValue);
-		}
-
-		if (listControl && listControl->hasSource())
-		{
-			ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(listControl->model());
-			// The availableList control are not bound with options, but they have to be updated from their sources when the form is initialized.
-			// The availableList cannot signal their assigned models now because they are not yet bound (the controls are ordered by dependency)
-			// When the options come from a JASP file, an assigned model needs sometimes the available model (eg. to determine the kind of terms they have).
-			// So in this case resetTermsFromSourceModels has to be called now but with updateAssigned argument set to false.
-			// When the options come from default options (from source models), the availableList needs sometimes to signal their assigned models (e.g. when addAvailableVariablesToAssigned if true).
-			// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
-			if (availableModel)
-			{
-				if (defaultOptions != Json::nullValue || _analysis->isDuplicate())
-					availableModel->resetTermsFromSources(false);
-				else
-					availableModelsToBeReset.push_back(availableModel);
-			}
 		}
 
 		control->setInitialized(hasOption);
@@ -437,19 +437,6 @@ void AnalysisForm::addFormError(const QString &error)
 	emit errorsChanged();
 }
 
-QQuickItem* AnalysisForm::_getControlErrorMessageOfControl(JASPControl* jaspControl)
-{
-	QQuickItem* result = nullptr;
-
-	for (QQuickItem* item : _controlErrorMessageCache)
-		if (item->parentItem() == jaspControl)
-		{
-			result = item;
-			break;
-		}
-
-	return result;
-}
 
 //This should be moved to JASPControl maybe?
 //Maybe even to full QML? Why don't we just use a loader...
