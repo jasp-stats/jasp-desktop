@@ -47,6 +47,7 @@ Rectangle
 	{
 		control.hasError	= false;
 		control.hasWarning	= false;
+		control				= null;
 		parent				= null;
 	}
 

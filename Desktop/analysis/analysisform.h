@@ -157,7 +157,6 @@ private:
 	void		setControlMustContain(	QString controlName, QStringList containThis);
 	void		setControlIsDependency(	std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
 	void		setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
-	QQuickItem* _getControlErrorMessageOfControl(JASPControl* jaspControl);
 	void		setAnalysisUp();
 	std::vector<std::vector<std::string> > _getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath);
 
