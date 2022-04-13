@@ -6,13 +6,13 @@
 # If you wish to remove something from the App Bundle and you cannot
 # use the EXLUDE lists for whatever reason, you can put it here.
 
-find @JASP_INSTALL_PREFIX@/Contents/ -name "*dSYM*" -delete
-find @JASP_INSTALL_PREFIX@/Contents/ -type f -name "*.entitlements" -delete
+find @JASP_INSTALL_PREFIX@/Contents/ -name "*dSYM*" -exec rm -rf {} \;
+find @JASP_INSTALL_PREFIX@/Contents/ -type f -name "*.entitlements" -exec rm -rf {} \;
 
 # For some reason, `-path` doesn't work with the full path
 cd @JASP_INSTALL_PREFIX@/Contents/Modules/
-find renv-cache -path "*help*" -not -path "*/jasp*/help*" -delete
-# find renv-cache -path "*po*" -not -path "*/jasp*/po*" -delete
+find renv-cache -path "*help*" -not -path "*/jasp*/help*" -exec rm -rf {} \;
+# find renv-cache -path "*po*" -not -path "*/jasp*/po*" -exec rm -rf {} \;
 cd ../../../
 
 rm -rf @JASP_INSTALL_PREFIX@/Contents/Frameworks/Resources/opt/R/arm64/bin/gfortran
