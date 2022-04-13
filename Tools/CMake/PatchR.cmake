@@ -96,13 +96,10 @@ macro(patch_r)
 
     execute_process(
       WORKING_DIRECTORY ${R_HOME_PATH}/etc
-      COMMAND sed -i.bak -e "/FC = gfortran / s/$/ -mmacosx-version-min=11.0/"
-              Makeconf)
-
-    execute_process(
-      WORKING_DIRECTORY ${R_HOME_PATH}/etc
-      COMMAND sed -i.bak -e
-              "/FC = \\/usr\\/local / s/$/ -mmacosx-version-min=11.0/" Makeconf)
+      COMMAND
+        sed -i.bak -e
+        "/FC = \\/opt\\/R\\/arm64\\/bin\\/gfortran / s/$/ -mmacosx-version-min=11.0/"
+        Makeconf)
 
     execute_process(
       WORKING_DIRECTORY ${R_HOME_PATH}/etc
