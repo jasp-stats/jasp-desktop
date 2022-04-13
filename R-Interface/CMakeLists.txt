@@ -62,6 +62,7 @@ if(WIN32)
 
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+  set(RENV_PATH "${R_LIBRARY_PATH}/renv")
 
   include(FetchContent)
   include(ExternalProject)

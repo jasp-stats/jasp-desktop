@@ -106,6 +106,7 @@ if(APPLE)
   set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+  set(RENV_PATH "${R_LIBRARY_PATH}/renv")
 
   cmake_print_variables(R_FRAMEWORK_PATH)
   cmake_print_variables(R_HOME_PATH)
@@ -114,6 +115,7 @@ if(APPLE)
   cmake_print_variables(R_EXECUTABLE)
   cmake_print_variables(RCPP_PATH)
   cmake_print_variables(RINSIDE_PATH)
+  cmake_print_variables(RENV_PATH)
 
   if(INSTALL_R_FRAMEWORK AND (NOT EXISTS
                               ${CMAKE_BINARY_DIR}/Frameworks/R.framework))
@@ -455,6 +457,29 @@ if(APPLE)
     message(CHECK_FAIL "not found in ${R_HOME_PATH}/lib")
   endif()
 
+  if(NOT EXISTS ${RENV_PATH})
+	message(STATUS "renv is not installed!")
+	message(CHECK_START
+            "Installing 'renv' within the R.framework")
+	file(
+	  WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
+	  "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
+	)
+	execute_process(
+	  # COMMAND_ECHO STDOUT
+	  ERROR_QUIET OUTPUT_QUIET
+	  WORKING_DIRECTORY ${R_HOME_PATH}
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+			  --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+
+	if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
+	  message(CHECK_FAIL "unsuccessful.")
+	  message(FATAL_ERROR "'renv' installation has failed!")
+	endif()
+
+	message(CHECK_PASS "successful.")
+  endif()
+
   if(NOT EXISTS ${RINSIDE_PATH})
     message(STATUS "RInside is not installed!")
 
@@ -463,7 +488,7 @@ if(APPLE)
 
     file(
       WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs --no-test-load')"
+	  "options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary'); renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')"
     )
 
     execute_process(
@@ -534,6 +559,7 @@ elseif(WIN32)
   set(R_INCLUDE_PATH "${R_HOME_PATH}/include")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+  set(RENV_PATH "${R_LIBRARY_PATH}/renv")
 
   # This will be added to the install.packages calls
   set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBRARY_PATH}'")
@@ -546,6 +572,7 @@ elseif(WIN32)
 
   cmake_print_variables(RCPP_PATH)
   cmake_print_variables(RINSIDE_PATH)
+  cmake_print_variables(RENV_PATH)
 
   message(CHECK_START "Checking for R/")
 
@@ -617,6 +644,29 @@ elseif(WIN32)
 
   endif()
 
+  if(NOT EXISTS ${RENV_PATH})
+	message(STATUS "renv is not installed!")
+	message(CHECK_START
+            "Installing 'renv' within the R.framework")
+	file(
+	  WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
+	  "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
+	)
+	execute_process(
+	  # COMMAND_ECHO STDOUT
+	  ERROR_QUIET OUTPUT_QUIET
+	  WORKING_DIRECTORY ${R_HOME_PATH}
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+			  --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+
+	if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
+	  message(CHECK_FAIL "unsuccessful.")
+	  message(FATAL_ERROR "'renv' installation has failed!")
+	endif()
+
+	message(CHECK_PASS "successful.")
+  endif()
+
   if(NOT EXISTS ${RINSIDE_PATH})
     message(STATUS "RInside is not installed!")
 
@@ -624,7 +674,7 @@ elseif(WIN32)
 
     file(
       WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-      "install.packages(c('RInside', 'Rcpp'), type='binary', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')"
+	  "options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary'); renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')"
     )
 
     execute_process(
@@ -706,6 +756,7 @@ elseif(LINUX)
   set(R_EXECUTABLE "${R_HOME_PATH}/bin/R")
   set(RCPP_PATH "${R_LIBRARY_PATH}/Rcpp")
   set(RINSIDE_PATH "${R_LIBRARY_PATH}/RInside")
+  set(RENV_PATH "${R_LIBRARY_PATH}/renv")
 
   set(USE_LOCAL_R_LIBS_PATH ", lib='${R_LIBRARY_PATH}'")
 
@@ -733,6 +784,7 @@ elseif(LINUX)
   cmake_print_variables(R_EXECUTABLE)
   cmake_print_variables(RCPP_PATH)
   cmake_print_variables(RINSIDE_PATH)
+  cmake_print_variables(RENV_PATH)
 
   message(CHECK_START "Checking for 'libR'")
   find_library(
@@ -748,6 +800,29 @@ elseif(LINUX)
     message(CHECK_FAIL "not found in ${R_HOME_PATH}/lib")
   endif()
 
+  if(NOT EXISTS ${RENV_PATH})
+	message(STATUS "renv is not installed!")
+	message(CHECK_START
+            "Installing 'renv' within the R.framework")
+	file(
+	  WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
+	  "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
+	)
+	execute_process(
+	  # COMMAND_ECHO STDOUT
+	  ERROR_QUIET OUTPUT_QUIET
+	  WORKING_DIRECTORY ${R_HOME_PATH}
+	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+			  --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+
+	if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
+	  message(CHECK_FAIL "unsuccessful.")
+	  message(FATAL_ERROR "'renv' installation has failed!")
+	endif()
+
+	message(CHECK_PASS "successful.")
+  endif()
+
   if(NOT EXISTS ${RINSIDE_PATH})
     message(STATUS "RInside is not installed!")
 
@@ -755,7 +830,7 @@ elseif(LINUX)
 
     file(
       WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-      "install.packages(c('RInside', 'Rcpp'), repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH}, INSTALL_opts='--no-multiarch --no-docs --no-test-load')"
+	  "options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary'); renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')"
     )
 
     execute_process(

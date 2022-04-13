@@ -145,32 +145,50 @@ execute_process(
   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
           ${MODULES_BINARY_PATH}/)
 
-add_custom_target(jaspBase WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface)
+add_custom_target(
+  jaspBase
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log)
 
 # This happens during the configuration!
 file(
   WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
   "
-    .libPaths('${R_LIBRARY_PATH}') # make sure to only look in our local library
-
-    install.packages(c('ggplot2', 'gridExtra', 'gridGraphics',
-                      'jsonlite', 'modules', 'officer', 'pkgbuild',
-                      'plyr', 'qgraph', 'ragg', 'R6', 'renv',
-                      'rjson', 'rvg', 'svglite', 'systemfonts',
-                      'withr', 'testthat',
-                      'data.table', 'httr', 'lifecycle',
-                      'pkgload', 'remotes', 'stringi', 'stringr',
-                      'vdiffr'), type='${R_PKG_TYPE}', repos='${R_REPOSITORY}' ${USE_LOCAL_R_LIBS_PATH})
-    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', type='source', repos=NULL, INSTALL_opts='--no-multiarch --no-docs --no-test-load' ${USE_LOCAL_R_LIBS_PATH})
-
+    # same hash as jaspBase::installModule uses
+    computeHash <- function(modulePkg) {
+      srcFiles <- c(
+        list.files(modulePkg,                         recursive=TRUE, full.names = TRUE, pattern = '(NAMESPACE|DESCRIPTION)$'),
+        #list.files(file.path(modulePkg, 'src'),       recursive=TRUE, full.names = TRUE, pattern = '(\\\\.(cpp|c|hpp|h)|(Makevars|Makevars\\\\.win))$'),
+        list.files(file.path(modulePkg, 'R'),         recursive=TRUE, full.names = TRUE, pattern = '\\\\.R$'),
+        #list.files(file.path(modulePkg, 'inst'),      recursive=TRUE, full.names = TRUE, pattern = '\\\\.(qml|po|svg|png|jpg|md)$'),
+        #list.files(file.path(modulePkg, 'inst'),      recursive=TRUE, full.names = TRUE, pattern = '\\\\qmldir$'),
+        list.files(modulePkg,                         recursive=TRUE, full.names = TRUE, pattern = 'renv\\\\.lock')
+      )
+      tools::md5sum(srcFiles)
+    }
+    hashPath <- file.path('${R_LIBRARY_PATH}', 'jaspBase', 'jaspBaseHash.txt')
+    currentHash <- computeHash('${PROJECT_SOURCE_DIR}/Engine/jaspBase/')
+    if (!(file.exists(hashPath) && 'jaspBase' %in% installed.packages() && identical(currentHash, try(readRDS(hashPath))))) {
+      options(install_opts = '--no-multiarch --no-docs --no-test-load')
+      options('renv.cache.linkable' = TRUE)
+      renv::install('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', repos=NULL, library='${R_LIBRARY_PATH}')
+    }
+    if ('jaspBase' %in% installed.packages()) {
+      saveRDS(currentHash, hashPath)
+      #cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
+    }
     ")
 
 file(
   WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
   "
-    .libPaths('${R_LIBRARY_PATH}') # make sure to only look in our local library
-
-    install.packages('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', type='source', repos=NULL, INSTALL_opts='--no-multiarch --no-docs --no-test-load' ${USE_LOCAL_R_LIBS_PATH})
+    if ('jaspGraphs' %in% installed.packages()) {
+      cat(NULL, file='${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log')
+    } else {
+      options(install_opts = '--no-multiarch --no-docs --no-test-load')
+      renv::install('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', repos=NULL, library = '${R_LIBRARY_PATH}')
+    }
     ")
 
 # I'm using a custom_command here to make sure that jaspBase is installed once
