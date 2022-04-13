@@ -20,32 +20,31 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
 set(JASP_COMMON_MODULES
     "jaspDescriptives"
-    "jaspAnova"
-    "jaspFactor"
-    "jaspFrequencies"
-    "jaspRegression"
     "jaspTTests"
-    "jaspMixedModels")
+    "jaspAnova"
+    "jaspMixedModels"
+    "jaspRegression"
+    "jaspFrequencies"
+    "jaspFactor")
 
 set(JASP_EXTRA_MODULES
-    "jaspProphet"
-    "jaspCircular"
     "jaspAudit"
     "jaspBain"
-    "jaspNetwork"
-    "jaspSem"
-    "jaspMachineLearning"
-    "jaspSummaryStatistics"
-    "jaspMetaAnalysis"
+    "jaspCircular"
     "jaspCochrane"
     "jaspDistributions"
     "jaspEquivalenceTTests"
     "jaspJags"
-    "jaspReliability"
-    "jaspVisualModeling"
     "jaspLearnBayes"
+    "jaspMachineLearning"
+    "jaspMetaAnalysis"
+    "jaspNetwork"
     # "jaspProcessControl"
-)
+    "jaspReliability"
+    "jaspSem"
+    "jaspSummaryStatistics"
+    "jaspVisualModeling"
+    "jaspProphet")
 
 list(
   JOIN
