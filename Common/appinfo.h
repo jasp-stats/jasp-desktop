@@ -38,6 +38,7 @@ public:
 	static std::string getRVersion();
 	static std::string getRDirName();
 	static std::string getSigningIdentity();
+	static std::string getArchLabel();
 	static long long   getSimpleCryptKey();
 };
 

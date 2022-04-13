@@ -52,8 +52,7 @@ if(USE_CONAN)
         COMMAND
           conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s
           os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} -s os.sdk=macosx -s
-          arch=${CMAKE_OSX_ARCHITECTURES} -s
-          arch_build=${CMAKE_OSX_ARCHITECTURES} --build=missing)
+          arch=${CONAN_ARCH} -s arch_build=${CONAN_ARCH} --build=missing)
 
     else()
 

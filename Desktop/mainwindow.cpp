@@ -1790,5 +1790,8 @@ QString MainWindow::versionString()
 #ifdef JASP_DEBUG
 		+	"-Debug"
 #endif
+#ifdef __APPLE__
+		+	" (" + QString::fromStdString(AppInfo::getArchLabel()) + ")"
+#endif
 			;
 }

@@ -58,6 +58,64 @@ macro(patch_r)
       "s/LIBR =.*/LIBR = -F$(R_HOME)\\/..\\/..\\/..\\/..\\/ -framework R/g"
       Makeconf)
 
+  if(R_HOME_PATH MATCHES "arm64")
+
+    # They are setting the minimum target flag. We might not need these anymore
+    # if R team actually fixes this. It's basically their job to set it, but they
+    # didn't at the moment
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e "/CC = clang / s/$/ -mmacosx-version-min=11.0/"
+              Makeconf)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e "/CXX = clang++ / s/$/ -mmacosx-version-min=11.0/"
+              Makeconf)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e
+              "/CXX11 = clang++ / s/$/ -mmacosx-version-min=11.0/" Makeconf)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e
+              "/CXX14 = clang++ / s/$/ -mmacosx-version-min=11.0/" Makeconf)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e
+              "/CXX17 = clang++ / s/$/ -mmacosx-version-min=11.0/" Makeconf)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e
+              "/CXX20 = clang++ / s/$/ -mmacosx-version-min=11.0/" Makeconf)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e "/FC = gfortran / s/$/ -mmacosx-version-min=11.0/"
+              Makeconf)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e
+              "/FC = \\/usr\\/local / s/$/ -mmacosx-version-min=11.0/" Makeconf)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e "/OBJC = clang / s/$/ -mmacosx-version-min=11.0/"
+              Makeconf)
+
+    execute_process(
+      WORKING_DIRECTORY ${R_HOME_PATH}/etc
+      COMMAND sed -i.bak -e "/OBJCXX = / s/$/ -mmacosx-version-min=11.0/"
+              Makeconf)
+
+  endif()
+
   # If this fails, I might need to have a quote aruond "$(R_HOME)",
   # or the whole line including it. I'm not sure yet.
   if(R_HOME_PATH MATCHES "arm64")

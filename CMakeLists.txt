@@ -4,11 +4,38 @@ cmake_minimum_required(VERSION 3.21)
 # when this is fixed, the setup will be even nicer.
 set(QT_CREATOR_SKIP_CONAN_SETUP ON)
 
+# ------ Build Toolchain
+
 if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET
-      10.15
-      CACHE STRING "Minimum macOS version the build will be able to run on"
-            FORCE)
+
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "")
+    set(CMAKE_OSX_ARCHITECTURES
+        ${CMAKE_HOST_SYSTEM_PROCESSOR}
+        CACHE STRING "" FORCE)
+    set(CROSS_COMPILING 0)
+    message(STATUS "Building for ${CMAKE_OSX_ARCHITECTURES} architecture")
+  else()
+    if(NOT (CMAKE_OSX_ARCHITECTURES STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR))
+      set(CROSS_COMPILING 1)
+      message(
+        STATUS "Cross compiling for ${CMAKE_OSX_ARCHITECTURES} architecture")
+    endif()
+  endif()
+
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET
+        11.0
+        CACHE STRING "Minimum macOS version the build will be able to run on"
+              FORCE)
+    set(CONAN_ARCH "armv8")
+  else()
+    set(CMAKE_OSX_DEPLOYMENT_TARGET
+        10.15
+        CACHE STRING "Minimum macOS version the build will be able to run on"
+              FORCE)
+    set(CONAN_ARCH "x86_64")
+  endif()
+
 endif()
 
 project(
@@ -32,22 +59,6 @@ if(NOT CMAKE_BUILD_TYPE)
       CACHE STRING
             "OBS build type [Release, RelWithDebInfo, Debug, MinSizeRel]" FORCE)
   message(STATUS "Building for ${CMAKE_BUILD_TYPE}")
-endif()
-
-# ------ Build Toolchain
-
-if(CMAKE_OSX_ARCHITECTURES STREQUAL "")
-  set(CMAKE_OSX_ARCHITECTURES
-      ${CMAKE_HOST_SYSTEM_PROCESSOR}
-      CACHE STRING "" FORCE)
-  set(CROSS_COMPILING 0)
-  message(STATUS "Building for ${CMAKE_OSX_ARCHITECTURES} architecture")
-else()
-  if(NOT (CMAKE_OSX_ARCHITECTURES STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR))
-    set(CROSS_COMPILING 1)
-    message(
-      STATUS "Cross compiling for ${CMAKE_OSX_ARCHITECTURES} architecture")
-  endif()
 endif()
 
 # ------ CMake Modules
