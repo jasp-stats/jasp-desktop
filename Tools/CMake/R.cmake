@@ -488,7 +488,11 @@ if(APPLE)
 
     file(
       WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-	  "options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary'); renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')"
+      "
+       options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = TRUE)
+       Sys.setenv(RENV_PATHS_ROOT='${MODULES_RENV_ROOT_PATH}', RENV_PATHS_CACHE='${MODULES_RENV_CACHE_PATH}')
+       renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')
+      "
     )
 
     execute_process(
@@ -674,7 +678,11 @@ elseif(WIN32)
 
     file(
       WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-	  "options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary'); renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')"
+      "
+      options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = TRUE)
+      Sys.setenv(RENV_PATHS_ROOT='${MODULES_RENV_ROOT_PATH}', RENV_PATHS_CACHE='${MODULES_RENV_CACHE_PATH}')
+      renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')
+      "
     )
 
     execute_process(
@@ -830,7 +838,11 @@ elseif(LINUX)
 
     file(
       WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-	  "options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary'); renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')"
+      "
+      options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = TRUE)
+      Sys.setenv(RENV_PATHS_ROOT='${MODULES_RENV_ROOT_PATH}', RENV_PATHS_CACHE='${MODULES_RENV_CACHE_PATH}')
+      renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')
+      "
     )
 
     execute_process(

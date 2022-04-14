@@ -1,0 +1,44 @@
+# Generated from install-jaspBase.R.in
+#
+Sys.setenv(GITHUB_PAT="@GITHUB_PAT@")
+Sys.setenv(RENV_PATHS_ROOT="@MODULES_RENV_ROOT_PATH@")
+Sys.setenv(RENV_PATHS_CACHE="@MODULES_RENV_CACHE_PATH@")
+Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
+
+# The R_LIBRARY_PATH might already be there, but depending on the configuration
+# of the CMake, we might be installing in a different location, so, I just add
+# it anyway! It gets to if-y.
+.libPaths(c("@R_LIBRARY_PATH@", .libPaths()))
+
+# The code below mimics what jaspBase::installModule does
+computeHash <- function(modulePkg) {
+  srcFiles <- c(
+    list.files(modulePkg,                    recursive=TRUE, full.names = TRUE, pattern = '(NAMESPACE|DESCRIPTION)$'),
+    # list.files(file.path(modulePkg, 'src'),  recursive=TRUE, full.names = TRUE, pattern = '(\\.(cpp|c|hpp|h)|(Makevars|Makevars\\.win))$'),
+    list.files(file.path(modulePkg, 'R'),    recursive=TRUE, full.names = TRUE, pattern = '\\.R$'),
+    # list.files(file.path(modulePkg, 'inst'), recursive=TRUE, full.names = TRUE, pattern = '\\.(qml|po|svg|png|jpg|md)$'),
+    # list.files(file.path(modulePkg, 'inst'), recursive=TRUE, full.names = TRUE, pattern = '\\qmldir$'),
+    list.files(modulePkg,                    recursive=TRUE, full.names = TRUE, pattern = 'renv\\.lock')
+  )
+  tools::md5sum(srcFiles)
+}
+
+hashPath <- file.path("@R_LIBRARY_PATH@", "jaspBase", "jaspBaseHash.rds")
+currentHash <- computeHash("@PROJECT_SOURCE_DIR@/Engine/jaspBase/")
+if (!(file.exists(hashPath) && "jaspBase" %in% installed.packages() && identical(currentHash, try(readRDS(hashPath))))) {
+  options(
+    install_opts = "--no-multiarch --no-docs --no-test-load",
+    renv.cache.linkable = TRUE
+  )
+  renv::install("@PROJECT_SOURCE_DIR@/Engine/jaspBase/", repos=NULL, library="@R_LIBRARY_PATH@")
+}
+if ("jaspBase" %in% installed.packages()) {
+  saveRDS(currentHash, hashPath)
+}
+
+# Converting the absolute symlinks to relative symlinks on macOS
+# Todo, I can do this using CMake like I do on Windows
+if (Sys.info()["sysname"] == "Darwin") {
+  source('@MODULES_BINARY_PATH@/symlinkTools.R')
+  convertAbsoluteSymlinksToRelative('@MODULES_BINARY_PATH@', '@MODULES_RENV_CACHE_PATH@')
+}

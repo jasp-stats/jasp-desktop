@@ -148,48 +148,11 @@ execute_process(
 add_custom_target(
   jaspBase
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-          ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log)
+  DEPENDS ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds)
 
-# This happens during the configuration!
-file(
-  WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
-  "
-    # same hash as jaspBase::installModule uses
-    computeHash <- function(modulePkg) {
-      srcFiles <- c(
-        list.files(modulePkg,                         recursive=TRUE, full.names = TRUE, pattern = '(NAMESPACE|DESCRIPTION)$'),
-        #list.files(file.path(modulePkg, 'src'),       recursive=TRUE, full.names = TRUE, pattern = '(\\\\.(cpp|c|hpp|h)|(Makevars|Makevars\\\\.win))$'),
-        list.files(file.path(modulePkg, 'R'),         recursive=TRUE, full.names = TRUE, pattern = '\\\\.R$'),
-        #list.files(file.path(modulePkg, 'inst'),      recursive=TRUE, full.names = TRUE, pattern = '\\\\.(qml|po|svg|png|jpg|md)$'),
-        #list.files(file.path(modulePkg, 'inst'),      recursive=TRUE, full.names = TRUE, pattern = '\\\\qmldir$'),
-        list.files(modulePkg,                         recursive=TRUE, full.names = TRUE, pattern = 'renv\\\\.lock')
-      )
-      tools::md5sum(srcFiles)
-    }
-    hashPath <- file.path('${R_LIBRARY_PATH}', 'jaspBase', 'jaspBaseHash.txt')
-    currentHash <- computeHash('${PROJECT_SOURCE_DIR}/Engine/jaspBase/')
-    if (!(file.exists(hashPath) && 'jaspBase' %in% installed.packages() && identical(currentHash, try(readRDS(hashPath))))) {
-      options(install_opts = '--no-multiarch --no-docs --no-test-load')
-      options('renv.cache.linkable' = TRUE)
-      renv::install('${PROJECT_SOURCE_DIR}/Engine/jaspBase/', repos=NULL, library='${R_LIBRARY_PATH}')
-    }
-    if ('jaspBase' %in% installed.packages()) {
-      saveRDS(currentHash, hashPath)
-      #cat(NULL, file='${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log')
-    }
-    ")
+configure_file("${PROJECT_SOURCE_DIR}/Modules/install-jaspBase.R.in"
+               ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R @ONLY)
 
-file(
-  WRITE ${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
-  "
-    if ('jaspGraphs' %in% installed.packages()) {
-      cat(NULL, file='${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log')
-    } else {
-      options(install_opts = '--no-multiarch --no-docs --no-test-load')
-      renv::install('${PROJECT_SOURCE_DIR}/Engine/jaspGraphs/', repos=NULL, library = '${R_LIBRARY_PATH}')
-    }
-    ")
 
 # I'm using a custom_command here to make sure that jaspBase is installed once
 # and only once before everything else. So, `install-jaspBase.R` creates an empty
@@ -200,8 +163,9 @@ file(
 #         for now, I would like to keep a granular control over differnt steps
 add_custom_command(
   WORKING_DIRECTORY ${R_HOME_PATH}
-  OUTPUT ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
+  OUTPUT ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
   USES_TERMINAL
+  JOB_POOL sequential
   COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
           --file=${MODULES_RENV_ROOT_PATH}/install-jaspBase.R
   COMMAND
@@ -213,21 +177,6 @@ add_custom_command(
     -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
   COMMENT "------ Installing 'jaspBase'")
 
-add_custom_command(
-  WORKING_DIRECTORY ${R_HOME_PATH}
-  DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-  OUTPUT ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
-  USES_TERMINAL
-  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-          --file=${MODULES_RENV_ROOT_PATH}/install-jaspGraphs.R
-  COMMAND
-    ${CMAKE_COMMAND} -D
-    NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-    -D PATH=${R_HOME_PATH}/library -D R_HOME_PATH=${R_HOME_PATH} -D
-    R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D
-    SIGNING=${IS_SIGNING} -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG}
-    -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
-  COMMENT "------ Installing 'jaspGraphs'")
 
 if(INSTALL_R_MODULES)
 
@@ -258,8 +207,7 @@ if(INSTALL_R_MODULES)
       ${MODULE}
       JOB_POOL sequential
       WORKING_DIRECTORY ${R_HOME_PATH}
-      DEPENDS ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-              ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+      DEPENDS ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
               --file=${MODULES_RENV_ROOT_PATH}/install-${MODULE}.R
       COMMAND
@@ -306,8 +254,7 @@ if(INSTALL_R_MODULES)
       JOB_POOL sequential
       WORKING_DIRECTORY ${R_HOME_PATH}
       DEPENDS
-        ${MODULES_BINARY_PATH}/jaspBase-installed-successfully.log
-        ${MODULES_BINARY_PATH}/jaspGraphs-installed-successfully.log
+        ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
         $<$<STREQUAL:"${MODULE}","jaspMetaAnalysis">:${jags_VERSION_H_PATH}>
         $<$<STREQUAL:"${MODULE}","jaspJags">:${jags_VERSION_H_PATH}>
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
