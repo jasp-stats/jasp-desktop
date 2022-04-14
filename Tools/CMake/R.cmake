@@ -458,26 +458,26 @@ if(APPLE)
   endif()
 
   if(NOT EXISTS ${RENV_PATH})
-	message(STATUS "renv is not installed!")
-	message(CHECK_START
+    message(STATUS "renv is not installed!")
+    message(CHECK_START
             "Installing 'renv' within the R.framework")
-	file(
-	  WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
-	  "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
-	)
-	execute_process(
-	  # COMMAND_ECHO STDOUT
-	  ERROR_QUIET OUTPUT_QUIET
-	  WORKING_DIRECTORY ${R_HOME_PATH}
-	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-			  --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+    file(
+      WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
+      "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
+    )
+    execute_process(
+      # COMMAND_ECHO STDOUT
+      ERROR_QUIET OUTPUT_QUIET
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
 
-	if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
-	  message(CHECK_FAIL "unsuccessful.")
-	  message(FATAL_ERROR "'renv' installation has failed!")
-	endif()
+    if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
+      message(CHECK_FAIL "unsuccessful.")
+      message(FATAL_ERROR "'renv' installation has failed!")
+    endif()
 
-	message(CHECK_PASS "successful.")
+    message(CHECK_PASS "successful.")
   endif()
 
   if(NOT EXISTS ${RINSIDE_PATH})
@@ -649,26 +649,26 @@ elseif(WIN32)
   endif()
 
   if(NOT EXISTS ${RENV_PATH})
-	message(STATUS "renv is not installed!")
-	message(CHECK_START
+    message(STATUS "renv is not installed!")
+    message(CHECK_START
             "Installing 'renv' within the R.framework")
-	file(
-	  WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
-	  "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
-	)
-	execute_process(
-	  # COMMAND_ECHO STDOUT
-	  ERROR_QUIET OUTPUT_QUIET
-	  WORKING_DIRECTORY ${R_HOME_PATH}
-	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-			  --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+    file(
+      WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
+      "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
+    )
+    execute_process(
+      # COMMAND_ECHO STDOUT
+      ERROR_QUIET OUTPUT_QUIET
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
 
-	if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
-	  message(CHECK_FAIL "unsuccessful.")
-	  message(FATAL_ERROR "'renv' installation has failed!")
-	endif()
+    if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
+      message(CHECK_FAIL "unsuccessful.")
+      message(FATAL_ERROR "'renv' installation has failed!")
+    endif()
 
-	message(CHECK_PASS "successful.")
+    message(CHECK_PASS "successful.")
   endif()
 
   if(NOT EXISTS ${RINSIDE_PATH})
@@ -809,26 +809,26 @@ elseif(LINUX)
   endif()
 
   if(NOT EXISTS ${RENV_PATH})
-	message(STATUS "renv is not installed!")
-	message(CHECK_START
+    message(STATUS "renv is not installed!")
+    message(CHECK_START
             "Installing 'renv' within the R.framework")
-	file(
-	  WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
-	  "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
-	)
-	execute_process(
-	  # COMMAND_ECHO STDOUT
-	  ERROR_QUIET OUTPUT_QUIET
-	  WORKING_DIRECTORY ${R_HOME_PATH}
-	  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
-			  --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
+    file(
+      WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
+      "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
+    )
+    execute_process(
+      # COMMAND_ECHO STDOUT
+      ERROR_QUIET OUTPUT_QUIET
+      WORKING_DIRECTORY ${R_HOME_PATH}
+      COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
+              --file=${MODULES_RENV_ROOT_PATH}/install-renv.R)
 
-	if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
-	  message(CHECK_FAIL "unsuccessful.")
-	  message(FATAL_ERROR "'renv' installation has failed!")
-	endif()
+    if(NOT EXISTS ${R_LIBRARY_PATH}/renv)
+      message(CHECK_FAIL "unsuccessful.")
+      message(FATAL_ERROR "'renv' installation has failed!")
+    endif()
 
-	message(CHECK_PASS "successful.")
+    message(CHECK_PASS "successful.")
   endif()
 
   if(NOT EXISTS ${RINSIDE_PATH})
