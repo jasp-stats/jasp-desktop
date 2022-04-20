@@ -459,12 +459,11 @@ if(APPLE)
 
   if(NOT EXISTS ${RENV_PATH})
     message(STATUS "renv is not installed!")
-    message(CHECK_START
-            "Installing 'renv' within the R.framework")
-    file(
-      WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
-      "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
-    )
+    message(CHECK_START "Installing 'renv'")
+
+    configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
+                   ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
+
     execute_process(
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
@@ -483,17 +482,10 @@ if(APPLE)
   if(NOT EXISTS ${RINSIDE_PATH})
     message(STATUS "RInside is not installed!")
 
-    message(CHECK_START
-            "Installing the 'RInside' and 'Rcpp' within the R.framework")
+    message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
-    file(
-      WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-      "
-       options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = TRUE)
-       Sys.setenv(RENV_PATHS_ROOT='${MODULES_RENV_ROOT_PATH}', RENV_PATHS_CACHE='${MODULES_RENV_CACHE_PATH}')
-       renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')
-      "
-    )
+    configure_file(${MODULES_SOURCE_PATH}/install-RInside.R.in
+                   ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
 
     execute_process(
       # COMMAND_ECHO STDOUT
@@ -650,12 +642,11 @@ elseif(WIN32)
 
   if(NOT EXISTS ${RENV_PATH})
     message(STATUS "renv is not installed!")
-    message(CHECK_START
-            "Installing 'renv' within the R.framework")
-    file(
-      WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
-      "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
-    )
+    message(CHECK_START "Installing 'renv'")
+
+    configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
+                   ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
+
     execute_process(
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
@@ -676,14 +667,8 @@ elseif(WIN32)
 
     message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
-    file(
-      WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-      "
-      options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = TRUE)
-      Sys.setenv(RENV_PATHS_ROOT='${MODULES_RENV_ROOT_PATH}', RENV_PATHS_CACHE='${MODULES_RENV_CACHE_PATH}')
-      renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')
-      "
-    )
+    configure_file(${MODULES_SOURCE_PATH}/install-RInside.R.in
+                   ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
 
     execute_process(
       # COMMAND_ECHO STDOUT
@@ -810,12 +795,11 @@ elseif(LINUX)
 
   if(NOT EXISTS ${RENV_PATH})
     message(STATUS "renv is not installed!")
-    message(CHECK_START
-            "Installing 'renv' within the R.framework")
-    file(
-      WRITE ${MODULES_RENV_ROOT_PATH}/install-renv.R
-      "install.packages('renv', lib='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}', INSTALL_opts='--no-multiarch --no-docs')"
-    )
+    message(CHECK_START "Installing 'renv'")
+
+    configure_file(${MODULES_SOURCE_PATH}/install-renv.R.in
+                   ${MODULES_RENV_ROOT_PATH}/install-renv.R @ONLY)
+
     execute_process(
       # COMMAND_ECHO STDOUT
       ERROR_QUIET OUTPUT_QUIET
@@ -836,14 +820,8 @@ elseif(LINUX)
 
     message(CHECK_START "Installing the 'RInside' and 'Rcpp'")
 
-    file(
-      WRITE ${MODULES_RENV_ROOT_PATH}/install-RInside.R
-      "
-      options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = TRUE)
-      Sys.setenv(RENV_PATHS_ROOT='${MODULES_RENV_ROOT_PATH}', RENV_PATHS_CACHE='${MODULES_RENV_CACHE_PATH}')
-      renv::install(c('RInside', 'Rcpp'), library='${R_LIBRARY_PATH}', repos='${R_REPOSITORY}')
-      "
-    )
+    configure_file(${MODULES_SOURCE_PATH}/install-RInside.R.in
+                   ${MODULES_RENV_ROOT_PATH}/install-RInside.R @ONLY)
 
     execute_process(
       ERROR_QUIET OUTPUT_QUIET

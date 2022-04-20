@@ -1,0 +1,9 @@
+# Generated from install-RInside.R.in
+#
+# Installs `RInside` and `Rcpp`. While `Rcpp` is a dependency of the `RInside`, 
+# I've ran into situation where installing `RInside` doesn't install the `Rcpp`.
+# 
+
+options(install.opts = '--no-multiarch --no-docs --no-test-load', pkgType = 'binary', renv.cache.linkable = TRUE)
+Sys.setenv(RENV_PATHS_ROOT='@MODULES_RENV_ROOT_PATH@', RENV_PATHS_CACHE='@MODULES_RENV_CACHE_PATH@')
+renv::install(c('RInside', 'Rcpp'), library='@R_LIBRARY_PATH@', repos='@R_REPOSITORY@')

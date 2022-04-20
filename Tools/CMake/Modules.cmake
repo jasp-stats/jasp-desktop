@@ -153,7 +153,6 @@ add_custom_target(
 configure_file("${PROJECT_SOURCE_DIR}/Modules/install-jaspBase.R.in"
                ${MODULES_RENV_ROOT_PATH}/install-jaspBase.R @ONLY)
 
-
 # I'm using a custom_command here to make sure that jaspBase is installed once
 # and only once before everything else. So, `install-jaspBase.R` creates an empty
 # file, i.e., `jaspBase-installed-successfully.log` and all other Modules look for
@@ -175,7 +174,6 @@ add_custom_command(
     SIGNING=${IS_SIGNING} -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG}
     -P ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
   COMMENT "------ Installing 'jaspBase'")
-
 
 if(INSTALL_R_MODULES)
 
