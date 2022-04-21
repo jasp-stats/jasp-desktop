@@ -36,6 +36,7 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( QStringList		suggestedColumns				READ suggestedColumns				WRITE setSuggestedColumns				NOTIFY suggestedColumnsChanged				)
 	Q_PROPERTY(	QStringList		suggestedColumnsIcons			READ suggestedColumnsIcons													NOTIFY suggestedColumnsIconsChanged			)
 	Q_PROPERTY( QStringList		columnsTypes					READ columnsTypes															NOTIFY columnsTypesChanged					)
+	Q_PROPERTY( QStringList		columnsNames					READ columnsNames															NOTIFY columnsNamesChanged					)
 	Q_PROPERTY( QStringList		dropKeys						READ dropKeys						WRITE setDropKeys						NOTIFY dropKeysChanged						)
 	Q_PROPERTY( QString			interactionHighOrderCheckBox	READ interactionHighOrderCheckBox	WRITE setInteractionHighOrderCheckBox	NOTIFY interactionHighOrderCheckBoxChanged	)
 
@@ -62,6 +63,7 @@ public:
 	const QStringList&			suggestedColumns()					const				{ return _suggestedColumns;							}
 	const QStringList&			suggestedColumnsIcons()				const				{ return _suggestedColumnsIcons;					}
 	const QStringList&			columnsTypes()						const				{ return _columnsTypes;								}
+	const QStringList&			columnsNames()						const				{ return _columnsNames;								}
 	const QStringList&			dropKeys()							const				{ return _dropKeys;									}
 	const QString&				interactionHighOrderCheckBox()		const				{ return _interactionHighOrderCheckBox;				}
 	bool						addRowControl(const QString& key, JASPControl* control) override;
@@ -74,6 +76,7 @@ signals:
 	void suggestedColumnsChanged();
 	void suggestedColumnsIconsChanged();
 	void columnsTypesChanged();
+	void columnsNamesChanged();
 	void dropKeysChanged();
 	void interactionHighOrderCheckBoxChanged();
 
@@ -84,6 +87,7 @@ protected:
 	GENERIC_SET_FUNCTION(SuggestedColumns,				_suggestedColumns,				suggestedColumnsChanged,				QStringList		)
 	GENERIC_SET_FUNCTION(SuggestedColumnsIcons,			_suggestedColumnsIcons,			suggestedColumnsIconsChanged,			QStringList		)
 	GENERIC_SET_FUNCTION(ColumnsTypes,					_columnsTypes,					columnsTypesChanged,					QStringList		)
+	GENERIC_SET_FUNCTION(ColumnsNames,					_columnsNames,					columnsNamesChanged,					QStringList		)
 	GENERIC_SET_FUNCTION(InteractionHighOrderCheckBox,	_interactionHighOrderCheckBox,	interactionHighOrderCheckBoxChanged,	QString			)
 
 	void						setDropKeys(const QStringList& dropKeys);
@@ -116,6 +120,7 @@ private:
 								_suggestedColumns,
 								_suggestedColumnsIcons,
 								_columnsTypes,
+								_columnsNames,
 								_dropKeys;
 	QString						_interactionHighOrderCheckBox;
 	

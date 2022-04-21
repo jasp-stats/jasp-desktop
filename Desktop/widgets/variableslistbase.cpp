@@ -333,6 +333,7 @@ ListModel *VariablesListBase::getRelatedModel()
 void VariablesListBase::termsChangedHandler()
 {
 	setColumnsTypes(model()->termsTypes());
+	setColumnsNames(model()->terms().asQList());
 
 	if (_boundControl)	_boundControl->resetBoundValue();
 	else JASPListControl::termsChangedHandler();
