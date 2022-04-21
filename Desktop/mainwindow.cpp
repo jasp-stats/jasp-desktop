@@ -460,6 +460,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("MACOS",				isMac);
 	_qml->rootContext()->setContextProperty("LINUX",				isLinux);
 	_qml->rootContext()->setContextProperty("WINDOWS",				isWindows);
+	_qml->rootContext()->setContextProperty("INTERACTION_SEPARATOR", Term::separator);
 
 	_qml->setOutputWarningsToStandardError(true);
 
