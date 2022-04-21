@@ -201,7 +201,7 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      JOB_POOL sequential
+      USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
       DEPENDS ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
       COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save
@@ -247,7 +247,7 @@ if(INSTALL_R_MODULES)
 
     add_custom_target(
       ${MODULE}
-      JOB_POOL sequential
+      USES_TERMINAL
       WORKING_DIRECTORY ${R_HOME_PATH}
       DEPENDS
         ${MODULES_BINARY_PATH}/jaspBase/jaspBaseHash.rds
