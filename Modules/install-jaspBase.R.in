@@ -10,6 +10,14 @@ Sys.setenv(JASPENGINE_LOCATION="@JASP_ENGINE_PATH@/JASPEngine")
 # it anyway! It gets to if-y.
 .libPaths(c("@R_LIBRARY_PATH@", .libPaths()))
 
+# This is to avoid any surprises during the installation of `jaspBase`.
+# E.g., if one of the packages suddenly needs building, then the build
+# might fails since we didn't have time to sign all the previous libraries
+# yet.
+if (Sys.info()["sysname"] == "Darwin") {
+  options(install.packages.compile.from.source = "never")
+}
+
 # The code below mimics what jaspBase::installModule does
 computeHash <- function(modulePkg) {
   srcFiles <- c(
