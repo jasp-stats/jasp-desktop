@@ -715,6 +715,13 @@
             "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> <i>Data set included in R.<\/i>",
             "kind": "file",
             "associated_datafile": "wine.csv"
+          },
+          {
+            "name": "Spiral",
+            "path": "spiral.jasp",
+            "description": "Data contains a spiral figure on a two-dimensional plane. Two classes are represented in the 200 samples. <br><br> <i>Data set included in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "spiral.csv"
           }
         ],
         "debug": false

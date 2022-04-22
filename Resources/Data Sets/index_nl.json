@@ -715,6 +715,13 @@
             "description": "De resultaten van chemische analyse van wijnen die worden ontwikkeld in een specifieke regio in Italië. Drie soorten wijn zijn gebruikt in de 178 monsters, en de resultaten van 13 chemische analyses zijn gerapporteerd voor iedere monster. <br><br> <i>Dataset in R.<\/i>",
             "kind": "file",
             "associated_datafile": "wine.csv"
+          },
+          {
+            "name": "Spiraal",
+            "path": "spiral.jasp",
+            "description": "De data bevat een spiraalvormig figuur op een twee-dimensionaal vlak. Twee klassen zijn vertegenwoordigd in de 200 observaties. <br><br> <i>Dataset in R.<\/i>",
+            "kind": "file",
+            "associated_datafile": "spiral.csv"
           }
         ],
         "debug": false
