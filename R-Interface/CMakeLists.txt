@@ -109,6 +109,9 @@ if(WIN32)
   file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
   list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
+  # @todo, this needs to be more specific; otherwise CMake might pick up the
+  # wrong Boost. I'm also not so sure why UCRT64 environment doesn't have the
+  # BoostConfig.cmake file
   find_package(
     Boost
     1.78
