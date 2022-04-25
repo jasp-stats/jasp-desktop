@@ -310,9 +310,9 @@ if(INSTALL_R_MODULES)
           message(STATUS "Downloading `jags`")
           fetchcontent_declare(
             jags_win
-            URL "https://static.jasp-stats.org/development/JAGS-4.3.0-Windows.zip"
+            URL "https://static.jasp-stats.org/development/JAGS-4.3.1-Windows.zip"
             URL_HASH
-              SHA256=dd2429f44526643074bc65bf98c3a445c50513c051c5f7f5ec51e270ee465aeb
+              SHA256=4b168ddcc29a22c02e5c8dd61e3240ec8f940fee239b1563f63fc5b0bea60796
           )
 
           fetchcontent_makeavailable(jags_win)
