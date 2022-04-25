@@ -25,7 +25,7 @@
 #
 # On Windows,
 #   - In addition to the normal installation process, we need to install some of the
-#     MinGW libraries. They can all be found with `MINGW_*_DLL` pattern.
+#     MinGW libraries. They can all be found with `RTOOLS_*_DLL` pattern.
 #   - The install process configure a few Batch files for performing a few tasks, e.g.,
 #     creating WIX installer. Those files need to be configured using the NATIVE directory
 #     paths. Those `cmake_paths` are doing exactly that.
@@ -306,14 +306,14 @@ if(WIN32)
     DESTINATION Modules/)
 
   install(
-    FILES ${MINGW_LIBGCC_S_SEH_DLL}
-          ${MINGW_LIBSTDCPP_DLL}
-          ${MINGW_LIBWINPTHREAD_DLL}
-          ${MINGW_LIB_BOOST_NOWIDE_DLL}
-          ${MINGW_LIBJSONCPP_DLL}
-          ${MINGW_LIBREADSTAT_DLL}
-          ${MINGW_ZLIB_DLL}
-          ${MINGW_LIBICONV_DLL}
+    FILES ${RTOOLS_LIBGCC_S_SEH_DLL}
+          ${RTOOLS_LIBSTDCPP_DLL}
+          ${RTOOLS_LIBWINPTHREAD_DLL}
+          ${RTOOLS_LIB_BOOST_NOWIDE_DLL}
+          ${RTOOLS_LIBJSONCPP_DLL}
+          ${RTOOLS_LIBREADSTAT_DLL}
+          ${RTOOLS_ZLIB_DLL}
+          ${RTOOLS_LIBICONV_DLL}
           ${_LIB_R_INTERFACE_DLL}
     DESTINATION .)
 

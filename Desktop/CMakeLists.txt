@@ -79,7 +79,7 @@ target_include_directories(
          ${PROJECT_SOURCE_DIR}/Common
          ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
          # ReadStat
-         $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_H}>
+         $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_H}>
          ${LIBREADSTAT_INCLUDE_DIRS}
          # JSONCPP
          $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>)
@@ -119,7 +119,7 @@ target_link_libraries(
          # ReadStat -----------------------------------
          ${LIBREADSTAT_LIBRARIES}
          # MinGW's ReadStat
-         $<$<PLATFORM_ID:Windows>:${MINGW_LIBREADSTAT_DLL_A}>
+         $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_DLL_A}>
          # JSONCPP
          $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
          $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>

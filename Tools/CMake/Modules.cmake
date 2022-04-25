@@ -350,28 +350,28 @@ if(INSTALL_R_MODULES)
           #   # bin
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64/bin
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_BAT} ${jags_HOME}/x64/bin/
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS} ${jags_HOME}/x64/bin/
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JRMATH} ${jags_HOME}/x64/bin/
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_JAGS_TERMINAL_EXE} ${jags_HOME}/x64/bin
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_BLAS} ${jags_HOME}/x64/bin
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_LAPACK} ${jags_HOME}/x64/bin
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_BAT} ${jags_HOME}/x64/bin/
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS} ${jags_HOME}/x64/bin/
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_JRMATH} ${jags_HOME}/x64/bin/
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_JAGS_TERMINAL_EXE} ${jags_HOME}/x64/bin
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIB_BLAS} ${jags_HOME}/x64/bin
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIB_LAPACK} ${jags_HOME}/x64/bin
           #   # headers
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include
-          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_HEADERS_PATH}/ ${jags_HOME}/include
+          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${RTOOLS_LIBJAGS_HEADERS_PATH}/ ${jags_HOME}/include
           #   # libs
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_A} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJAGS_LA} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_A} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIBJAGS_LIBJRMATH_LA} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_BLAS_DLL_A} ${jags_HOME}/x64/lib
-          #   COMMAND ${CMAKE_COMMAND} -E copy ${MINGW_LIB_LAPACK_DLL_A} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_LIBJAGS_A} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_LIBJAGS_LA} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_LIBJRMATH_A} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIBJAGS_LIBJRMATH_LA} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIB_BLAS_DLL_A} ${jags_HOME}/x64/lib
+          #   COMMAND ${CMAKE_COMMAND} -E copy ${RTOOLS_LIB_LAPACK_DLL_A} ${jags_HOME}/x64/lib
           #   # modules
           #   COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64/modules
-          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_MODULES_PATH} ${jags_HOME}/x64/modules
+          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${RTOOLS_LIBJAGS_MODULES_PATH} ${jags_HOME}/x64/modules
           #   # pkgconfig
-          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${MINGW_LIBJAGS_PKGCONFIG_PATH}/ ${jags_HOME}/lib/pkgconfig
+          #   COMMAND ${CMAKE_COMMAND} -E copy_directory ${RTOOLS_LIBJAGS_PKGCONFIG_PATH}/ ${jags_HOME}/lib/pkgconfig
           #   )
 
         endif()
