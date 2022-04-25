@@ -66,7 +66,7 @@ After installing MSYS2, you will find a new program in your Start Menu. Search f
 Copy and paste the following line into the Terminal and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP.
 
 ```bash
-pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost mingw-w64-ucrt-x86_64-jsoncpp bison flex make autoconf automake git wget
+pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost mingw-w64-ucrt-x86_64-jsoncpp bison flex make autoconf automake git wget cmake
 ```
 
 #### Downloading and Building ReadStat (on MSYS2)

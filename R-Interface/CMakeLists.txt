@@ -113,6 +113,9 @@ if(WIN32)
     PATHS ${RTOOLS_PATH}/bin REQUIRED
     NO_DEFAULT_PATH)
 
+  # @todo, this needs to be more specific; otherwise CMake might pick up the
+  # wrong Boost. I'm also not so sure why UCRT64 environment doesn't have the
+  # BoostConfig.cmake file
   find_package(
     Boost
     1.78
