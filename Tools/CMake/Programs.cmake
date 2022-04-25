@@ -135,41 +135,10 @@ if(WIN32)
     NAMES windeployqt
     PATHS ${Qt6_DIR}/bin)
 
-  message(CHECK_START "Looking for MSYS2")
-  set(MINGW_PATH
-      "C:/msys64/mingw64"
-      CACHE PATH "Path to MinGW x64 folder, e.g., C:/msys64/mingw64")
-
-  if(EXISTS ${MINGW_PATH})
-
-    message(CHECK_PASS "found")
-    message(STATUS "  ${MINGW_PATH}")
-
-  else()
-
-    set(MINGW_PATH "D:/msys64/mingw64")
-
-    if(EXISTS ${MINGW_PATH})
-
-      message(CHECK_PASS "found")
-      message(STATUS "  ${MINGW_PATH}")
-
-    else()
-
-      message(CHECK_FAIL "not found")
-      message(
-        FATAL_ERROR
-          "MSYS2 is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the MINGW_PATH to your MinGW x64 path, e.g., C:/msys64/mingw64"
-      )
-
-    endif()
-
-  endif()
-
-  message(CHECK_START "Looking for Rtools")
+  message(CHECK_START "Looking for Rtools42")
   set(RTOOLS_PATH
-      "C:/rtools40"
-      CACHE PATH "Path to rtools40 folder, e.g., C:/rtools40")
+      "C:/rtools42/ucrt64"
+      CACHE PATH "Path to Rtools42 x64 folder, e.g., C:/rtools42/ucrt64")
 
   if(EXISTS ${RTOOLS_PATH})
 
@@ -178,7 +147,9 @@ if(WIN32)
 
   else()
 
-    set(RTOOLS_PATH "D:/rtools40")
+    # I don't think R would like this, but I leave the option mainly for Joris, if
+    # he wants to install the Rtools somewhere else in the system.
+    set(RTOOLS_PATH "D:/rtools42/ucrt64")
 
     if(EXISTS ${RTOOLS_PATH})
 
@@ -190,7 +161,7 @@ if(WIN32)
       message(CHECK_FAIL "not found")
       message(
         FATAL_ERROR
-          "Rtool40 is required for building on some of the R packages, and JASP modules. If you have installed the Rtools in a non-default location, you can specify the installation path using the RTOOLS_PATH variable."
+          "Rtools42 is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the RTOOLS_PATH to your MinGW x64 path, e.g., C:/rtools42/ucrt64"
       )
 
     endif()
@@ -237,9 +208,9 @@ if(WIN32)
     LIGHT_EXECUTABLE_NATIVE)
   message(STATUS "  ${LIGHT_EXECUTABLE_NATIVE}")
 
-  set(MINGW_C_COMPILER "${MINGW_PATH}/bin/gcc.exe")
-  set(MINGW_CXX_COMPILER "${MINGW_PATH}/bin/g++.exe")
-  set(MINGW_MAKE_PROGRAM "${MINGW_PATH}/bin/mingw32-make.exe")
+  set(RTOOLS_C_COMPILER "${RTOOLS_PATH}/bin/gcc.exe")
+  set(RTOOLS_CXX_COMPILER "${RTOOLS_PATH}/bin/g++.exe")
+  set(RTOOLS_MAKE_PROGRAM "${RTOOLS_PATH}/bin/mingw32-make.exe")
 
 endif()
 

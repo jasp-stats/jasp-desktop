@@ -48,9 +48,9 @@ if(WIN32)
 
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../Tools/CMake")
 
-  set(MINGW_PATH
-      "C:/msys64/mingw64"
-      CACHE PATH "Path to MinGW x64 folder")
+  set(RTOOLS_PATH
+      "C:/rtools42/ucrt64"
+      CACHE PATH "Path to Rtools42 ucrt64 folder")
   set(JASP_SOURCE_DIR "${CMAKE_SOURCE_DIR}/..")
   if(NOT EXISTS ${JASP_BINARY_DIR})
     message(
@@ -80,7 +80,8 @@ if(WIN32)
     _LIB_R
     NAMES R.dll
     PATHS ${_LIB_R_PATH}/bin
-    PATH_SUFFIXES x64 x32)
+    PATH_SUFFIXES x64 x32
+    NO_DEFAULT_PATH)
 
   if(_LIB_R)
     message(CHECK_PASS "found.")
@@ -95,7 +96,8 @@ if(WIN32)
     _LIB_RINSIDE
     NAMES RInside
     PATHS ${RINSIDE_PATH}/lib
-    PATH_SUFFIXES x64 x32 NO_CACHE)
+    PATH_SUFFIXES x64 x32 NO_CACHE
+    NO_DEFAULT_PATH)
 
   if(_LIB_RINSIDE)
     message(CHECK_PASS "found.")
@@ -108,7 +110,8 @@ if(WIN32)
   find_file(
     _LIB_JSONCPP
     NAMES libjsoncpp-24.dll
-    PATHS ${MINGW_PATH}/bin REQUIRED)
+    PATHS ${RTOOLS_PATH}/bin REQUIRED
+    NO_DEFAULT_PATH)
 
   find_package(
     Boost
@@ -132,7 +135,7 @@ if(WIN32)
            ${RCPP_PATH}/include
            ${RINSIDE_PATH}/include
            # Boost and jsoncpp
-           ${MINGW_PATH}/include)
+           ${RTOOLS_PATH}/include)
 
   target_link_libraries(
     R-Interface

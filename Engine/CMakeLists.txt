@@ -99,21 +99,21 @@ if(WINDOWS)
   add_custom_command(
     TARGET JASPEngine
     POST_BUILD DEPENDS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBGCC_S_SEH_DLL}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBGCC_S_SEH_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBSTDCPP_DLL}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBSTDCPP_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBWINPTHREAD_DLL}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBWINPTHREAD_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIB_BOOST_NOWIDE_DLL}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIB_BOOST_NOWIDE_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBJSONCPP_DLL}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBJSONCPP_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBREADSTAT_DLL}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBREADSTAT_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_ZLIB_DLL}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_ZLIB_DLL}
             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MINGW_LIBICONV_DLL}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBICONV_DLL}
             ${CMAKE_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_DLL}
             ${CMAKE_BINARY_DIR}
