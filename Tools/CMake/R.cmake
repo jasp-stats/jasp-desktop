@@ -32,17 +32,23 @@ set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development")
 set(AVAILABLE_R_VERSIONS
     "R-4.1.2"
     "R-4.1.2-arm64"
+    "R-4.1.2-win"
     "R-4.1.3"
     "R-4.1.3-arm64"
-    "R-4.1.2-win"
-    "R-4.1.3-win")
+    "R-4.1.3-win"
+    "R-4.2.0"
+    "R-4.2.0-arm64"
+    "R-4.2.0-win")
 set(R_BINARY_HASHES
     "61d3909bc070f7fb86c5a2bd67209fda9408faaa"
     "69e8845ffa134c822d4bdcf458220e841a9eeaa5"
+    "c72e68bc50e84bea68a2379073c9fedbdfaeda0c"
     "45121f2c830b0cd7d180aee3fc4cd80d0de1e582"
     "dad405d4f58349403c4976ba50e944502070b209"
-    "c72e68bc50e84bea68a2379073c9fedbdfaeda0c"
-    "d4068fdc75334c850d5948a0dc8356d34d3512e1")
+    "d4068fdc75334c850d5948a0dc8356d34d3512e1"
+    "2a90fb8629e44f72f9d89d6a9bac9b71564587d7"
+    "ada2602d245164d316967d24f5482b58e2dfddff"
+    "fa035f8c22ab8b3f53d8595a5d80cca2a32282a8")
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
@@ -205,9 +211,9 @@ if(APPLE)
 
           fetchcontent_declare(
             gfortran_tar_gz
-            URL "https://mac.r-project.org/libs-arm64/gfortran-f51f1da0-darwin20.0-arm64.tar.gz"
+            URL "https://static.jasp-stats.org/development/gfortran-12.0.1-20220312-is-darwin20-arm64.tar.xz"
             URL_HASH
-              SHA256=e7a5272fcbe002e9e22effc18bba01c352ca95f63dc3264865d9f8020ac55821
+              SHA256=a2ab8be30a7d92a24f53e1509c8c0804f8502f0bc35469750e3f1e233d1c64b8
             DOWNLOAD_NO_EXTRACT ON
             DOWNLOAD_NAME gfortran.tar.gz)
 
@@ -244,9 +250,10 @@ if(APPLE)
           # Downloading the gfortran
           message(CHECK_START "Downloading gfortran")
 
+          # @todo, it's probably a good idea to unpack this and provide a tar.gz like the other version
           fetchcontent_declare(
             gfortran_dmg
-            URL "https://mac.r-project.org/tools/gfortran-8.2-Mojave.dmg"
+            URL "https://static.jasp-stats.org/development/gfortran-8.2-Mojave.dmg"
             URL_HASH
               SHA256=81d379231ba5671a5ef1b7832531f53be5a1c651701a61d87e1d877c4f06d369
             DOWNLOAD_NO_EXTRACT ON
