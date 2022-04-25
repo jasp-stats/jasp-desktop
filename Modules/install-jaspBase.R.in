@@ -38,7 +38,7 @@ if (!(file.exists(hashPath) && "jaspBase" %in% installed.packages() && identical
     install_opts = "--no-multiarch --no-docs --no-test-load",
     renv.cache.linkable = TRUE
   )
-  renv::install("@PROJECT_SOURCE_DIR@/Engine/jaspBase/", repos=NULL, library="@R_LIBRARY_PATH@")
+  renv::install("@PROJECT_SOURCE_DIR@/Engine/jaspBase", repos=NULL, library="@R_LIBRARY_PATH@")
 }
 if ("jaspBase" %in% installed.packages()) {
   saveRDS(currentHash, hashPath)
