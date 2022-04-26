@@ -30,6 +30,7 @@ set(JASP_COMMON_MODULES
 set(JASP_EXTRA_MODULES
     "jaspAudit"
     "jaspBain"
+    "jaspBsts"
     "jaspCircular"
     "jaspCochrane"
     "jaspDistributions"
