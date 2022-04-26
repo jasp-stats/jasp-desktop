@@ -74,11 +74,6 @@ target_compile_definitions(
   PUBLIC $<$<BOOL:${JASP_PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>
          BUILDING_JASP_ENGINE R_HOME=${R_HOME_PATH})
 
-set(MACOSX_BUNDLE_DIR
-    "${CMAKE_BINARY_DIR}/Desktop/Debug/${PROJECT_NAME}.app/Contents")
-set(MACOSX_BUNDLE_RUNTIME_DIR "${MACOSX_BUNDLE_DIR}/MacOS")
-set(MACOSX_BUNDLE_RESOURCE_DIR "${MACOSX_BUNDLE_DIR}/Resources")
-
 # Putting the JASPEngine next to the JASP executable
 set_target_properties(JASPEngine PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                                             ${CMAKE_BINARY_DIR}/Desktop)

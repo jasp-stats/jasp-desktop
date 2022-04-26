@@ -109,25 +109,34 @@ if(WIN32)
     message(FATAL_ERROR "libRInside is required for building ")
   endif()
 
+  message(CHECK_START "Checking for 'libjsoncpp-24.dll'")
   find_file(
-    _LIB_JSONCPP
+    RTOOLS_LIB_JSONCPP_DLL
     NAMES libjsoncpp-24.dll
     PATHS ${RTOOLS_PATH}/bin REQUIRED
     NO_DEFAULT_PATH)
 
+  if(RTOOLS_LIB_JSONCPP_DLL)
+    message(CHECK_PASS "found.")
+    message(STATUS "  ${RTOOLS_LIB_JSONCPP_DLL}")
+  else()
+    message(CHECK_FAIL "not found in ${RTOOLS_PATH}/bin")
+    message(FATAL_ERROR "libjsoncpp-24.dll is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-jsoncpp`.")
+  endif()
+
   message(CHECK_START "Checking for 'libboost_nowide-mt.dll.a'")
   find_file(
-    _LIB_BOOST_NOWIDE_DLL_A
+    RTOOLS_LIB_BOOST_NOWIDE_DLL_A
     NAMES libboost_nowide-mt.dll.a
     PATHS ${RTOOLS_PATH}/lib REQUIRED
     NO_DEFAULT_PATH)
 
-  if(_LIB_BOOST_NOWIDE_DLL_A)
+  if(RTOOLS_LIB_BOOST_NOWIDE_DLL_A)
     message(CHECK_PASS "found.")
-    message(STATUS "  ${_LIB_BOOST_NOWIDE_DLL_A}")
+    message(STATUS "  ${RTOOLS_LIB_BOOST_NOWIDE_DLL_A}")
   else()
     message(CHECK_FAIL "not found in ${RTOOLS_PATH}/lib")
-    message(FATAL_ERROR "libboost_nowide-mt.dll.a is required for building ")
+    message(FATAL_ERROR "libboost_nowide-mt.dll.a is required for building. If it is missing, you need to install it in your rtools42 ucrt64 environment using `pacman -Syu mingw-w64-ucrt-x86_64-boost`.")
   endif()
 
   add_library(R-Interface SHARED ${SOURCE_FILES} ${HEADER_FILES})
@@ -150,14 +159,13 @@ if(WIN32)
 
   target_link_libraries(
     R-Interface
-    PUBLIC # jsoncpp
-           ${_LIB_JSONCPP} # MinGW's libjsoncpp-24.dll
-           # RInside
+    PUBLIC # RInside
            ${_LIB_RINSIDE}
            # R
            ${_LIB_R}
            #
-           ${_LIB_BOOST_NOWIDE_DLL_A}
+           ${RTOOLS_LIB_JSONCPP_DLL} 
+           ${RTOOLS_LIB_BOOST_NOWIDE_DLL_A}
            #
            $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 
