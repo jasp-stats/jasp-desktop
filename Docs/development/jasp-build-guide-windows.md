@@ -7,8 +7,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 - [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.2
     - Qt Creator 7
-- [MSYS2](https://www.msys2.org/), for building some of the dependencies
-- [RTools](https://cran.r-project.org/bin/windows/Rtools/rtools40.html), for building R modules
+- [RTools42](https://cran.r-project.org/bin/windows/Rtools/rtools42/rtools.html), for building R modules
 - [Conan](https://github.com/conan-io/conan/releases) > 1.45.0
 - [WIX Toolset](https://wixtoolset.org), if you want to distribute JASP, i.e., creating an installer.
 
@@ -53,15 +52,15 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 			- [x] CMake
 			- [x] Ninja
 
-### Installing MSYS2 
+### Installing Rtools42 
 
-Download the MSYS2 from [here](https://www.msys2.org/) and install it in the **default** path, i.e., `C:\msys64`.
+Download the Rtool42 from [here](https://cran.r-project.org/bin/windows/Rtools/rtools42/rtools.html) and *preferably* install it in the **default** path, i.e., `C:\rtools42`.
 
-> ⚠️ This is important because JASP build system expect to find the MSYS2 in the following default path, otherwise you need to specify your custom path to CMake, using the `MINGW_PATH` variable, e.g., `-DMINGW_PATH=D:\msys64`.
+> ⚠️ This is important because JASP build system expect to find the Rtool42 in the following default path, otherwise you need to specify your custom path to CMake, using the `RTOOLS_PATH` variable, e.g., `-DRTOOLS_PATH=D:\rtools42\ucrt64`.
 
-#### Installing MSYS2 Libraries and Packages
+#### Installing Rtool42 Libraries and Packages
 
-After installing MSYS2, you will find a new program in your Start Menu. Search for "MSYS2" in your Start Menu, and from the selection of applications that are showing up, run the one name "MSYS2 MinGW x64". At this point, you should be welcomed with a command prompt.
+After installing Rtool42, you will find a new program in your Start Menu. Search for "Rtool42" in your Start Menu, and from the selection of applications that are showing up, run the one name "Rtool 64-bit UCRT". At this point, you should be welcomed with a command prompt.
 
 Copy and paste the following line into the Terminal and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP.
 
@@ -69,7 +68,7 @@ Copy and paste the following line into the Terminal and press Enter. With this c
 pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost mingw-w64-ucrt-x86_64-jsoncpp bison flex make autoconf automake git wget cmake
 ```
 
-#### Downloading and Building ReadStat (on MSYS2)
+#### Downloading and Building ReadStat (on Rtool42)
 
 In addition to these libraries, you need to manually download and install the ReadStat library. You can do that by typing the following commands into the command line.
 
@@ -82,7 +81,11 @@ make -j
 make install
 ```
 
-This will build and install these libraries inside the MSYS environment where JASP will look for them. If any of these steps goes wrong, JASP's build system cannot configure the build.
+This will build and install these libraries inside the Rtool42 environment where JASP will look for them. If any of these steps goes wrong, JASP's build system cannot configure the build.
+
+#### Adding Rtools42 to your PATH
+
+It's important that Rtool42 is in your user variables PATH. You can check this by opening the "Edit the system environment variables" setting, and selecting the "Environment Variables", and finally adding the path to your UCRT bin folder to the PATH variable, e.g., `C:\rtools42\ucrt64\bin`.
 
 ### Installing Conan
 
@@ -122,7 +125,7 @@ build_type=Debug
 
 At this point, you are ready to start configuring and building JASP. Open the Qt Creator, and select "File → Open Project", then find and open the `CMakeLists.txt` file inside the `jasp-desktop` folder. By opening this file, you are opening the entire JASP project, and and you will be prompted to "Manage Kits". Here you want to select the "Desktop Qt 6.2.3 MSVC2019 64bit" kit by checking the checkbox next to it. 
 
-> ⚠️ This is an important step, and if you miss selecting the **Desktop** kit, you will not be able to build JASp.
+> ⚠️ This is an important step, and if you miss selecting the **Desktop** kit, you will not be able to build JASP.
 
 After selecting your kit, you can select the "Create Configuration", and observe the Qt Creator starting to configure your project. You can see the progress of the CMake configuration in the "General Messages" output panel, usually Ctrl+6.
 
