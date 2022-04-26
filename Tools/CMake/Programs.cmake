@@ -135,6 +135,9 @@ if(WIN32)
     NAMES windeployqt
     PATHS ${Qt6_DIR}/bin)
 
+  # @todo, apparently, Rtool42 registers an environment variable called
+  # RTOOLS42_HOME, so if you want, you can replace part of this by reading 
+  # that variable.
   message(CHECK_START "Looking for Rtools42")
   set(RTOOLS_PATH
       "C:/rtools42/ucrt64"
