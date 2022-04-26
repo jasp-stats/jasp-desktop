@@ -87,6 +87,8 @@ This will build and install these libraries inside the Rtool42 environment where
 
 It's important that Rtool42 is in your user variables PATH. You can check this by opening the "Edit the system environment variables" setting, and selecting the "Environment Variables", and finally adding the path to your UCRT bin folder to the PATH variable, e.g., `C:\rtools42\ucrt64\bin`.
 
+> ⚠️ I'm not 100% sure what the correct order is, but you most likely need to have the Rtools path under the Qt path.
+
 ### Installing Conan
 
 We are using Conan to manage some of the dependencies of JASP on Windows, so you need to make sure that Conan is installed in your system.
