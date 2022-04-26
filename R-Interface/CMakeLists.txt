@@ -41,6 +41,8 @@ if(WIN32)
 
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../Tools/CMake")
 
+  # This is a variable and it's provided by the main CMakeFiles.txt.
+  # It is here only if we someone wants to build the R-Interface separately.
   set(RTOOLS_PATH
       "C:/rtools42/ucrt64"
       CACHE PATH "Path to Rtools42 ucrt64 folder")
@@ -109,14 +111,20 @@ if(WIN32)
   file(GLOB SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jaspResults/src/*.cpp")
   list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 
-  # @todo, this needs to be more specific; otherwise CMake might pick up the
-  # wrong Boost. I'm also not so sure why UCRT64 environment doesn't have the
-  # BoostConfig.cmake file
-  find_package(
-    Boost
-    1.78
-    REQUIRED
-    nowide)
+  message(CHECK_START "Checking for 'libboost_nowide-mt.dll.a'")
+  find_file(
+    _LIB_BOOST_NOWIDE_DLL_A
+    NAMES libboost_nowide-mt.dll.a
+    PATHS ${RTOOLS_PATH}/lib REQUIRED
+    NO_DEFAULT_PATH)
+
+  if(_LIB_BOOST_NOWIDE_DLL_A)
+    message(CHECK_PASS "found.")
+    message(STATUS "  ${_LIB_BOOST_NOWIDE_DLL_A}")
+  else()
+    message(CHECK_FAIL "not found in ${RTOOLS_PATH}/lib")
+    message(FATAL_ERROR "libboost_nowide-mt.dll.a is required for building ")
+  endif()
 
   add_library(R-Interface SHARED ${SOURCE_FILES})
 
@@ -143,10 +151,9 @@ if(WIN32)
            # RInside
            ${_LIB_RINSIDE}
            # R
-           $<$<NOT:$<PLATFORM_ID:Darwin>>:${_LIB_R}>
-           $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+           ${_LIB_R}
            #
-           Boost::nowide
+           ${_LIB_BOOST_NOWIDE_DLL_A}
            #
            $<$<BOOL:${JASP_USES_QT_HERE}>:Qt::Core>)
 

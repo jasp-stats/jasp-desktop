@@ -133,6 +133,7 @@ else()
       "-DJASP_BINARY_DIR:PATH=${CMAKE_BINARY_DIR}"
       "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
+    USES_TERMINAL
     COMMENT "------ Configuring and Building the libR-Interface")
 
 endif()
