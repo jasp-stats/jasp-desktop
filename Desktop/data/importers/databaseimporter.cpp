@@ -60,7 +60,7 @@ void DatabaseImporter::initColumn(QVariant colId, ImportColumn *importColumn)
 	switch(col->type().id())
 	{
 	default:
-	case MT::QDate:			//These could later get their own handler
+	case MT::QDate:			//These could later get their own handler, dependent on https://github.com/jasp-stats/INTERNAL-jasp/issues/312 and https://github.com/jasp-stats/jasp-issues/issues/606
 	case MT::QDateTime: 
 	case MT::Char:
 	case MT::QString:
@@ -95,7 +95,7 @@ void DatabaseImporter::initColumn(QVariant colId, ImportColumn *importColumn)
 		asDoubles.reserve(col->size());
 		
 		for(const QVariant & v : col->getValues())
-			asDoubles.push_back(v.toInt());
+			asDoubles.push_back(v.toDouble());
 		
 		initColumnAsScale(colId, col->name(), asDoubles);
 		break;
