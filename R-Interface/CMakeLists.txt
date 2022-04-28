@@ -10,14 +10,14 @@
 #     in the Config module. JASP's CMake triggers the R-Interface build during every build
 #     however, it just asks this file whether things need to be recompiled or not, if not
 #     then, it won't recompile things.
-#   - The output library, R-Interface.dll, and some of its artifact will be transfered
+#   - The output library, R-Interface.dll, and some of its artifact will be transferred
 #     to the Build/ directory and linked dynamically to the JASPEngine, etc.
 #   - Boost::nowide, `libboost_nowide`, needs to be linked to the R-Interface, and later on
 #     it needs to be copied to the Build/ and Install/ folder.
 #
 # On Linux/macOS,
 #   Here we are building a static library, and it will be link statically to the rest
-#   of the libraries and executables.
+#   of the libraries and executable.
 #
 # -----------------------------------------------------------------------------------
 #
@@ -25,6 +25,18 @@
 #   - There are overlap between these two scripts, however I have not got to fully
 #     simplify it, that's maybe for later...
 #
+#
+# Todos:
+#   - [ ] On Windows, Qt Creator and CMake can still get confused, and
+#     as a result R-Interface's build might fail with this, 
+#     `The C compiler "C:/rtools42/ucrt64/bin/qcc.exe"is not able to compile a simple test program`.
+#     This happens because CMake cannot navigate its way to the compiler toolset, 
+#     and the solution for it is to set the PATH correctly. However, that's not
+#     great, and the ultimate solution for it is to use a CMake Toolchain file, 
+#     such that CMake knows that R-Interface is going to be build with set of 
+#     different tools. I've tried to get the Toolchain working, but it was very
+#     stubborn, if you feel working on it, you can read more about it here,
+#     https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html.
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 

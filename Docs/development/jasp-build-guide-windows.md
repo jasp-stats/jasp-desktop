@@ -60,12 +60,12 @@ Download the Rtool42 from [here](https://cran.r-project.org/bin/windows/Rtools/r
 
 #### Installing Rtool42 Libraries and Packages
 
-After installing Rtool42, you will find a new program in your Start Menu. Search for "Rtool42" in your Start Menu, and from the selection of applications that are showing up, run the one name "Rtool 64-bit UCRT". At this point, you should be welcomed with a command prompt.
+After installing Rtool42, you will find a new program in your Start Menu. Search for "Rtool42" in your Start Menu, and from the selection of applications that are showing up, run the one name "Rtool 64-bit UCRT". At this point, you should be welcomed with a command prompt. Somtimes, it's quite tricky to find this executable, especially if you already have the Rtools42 installed, so, to make sure that you are running the right console, you can navigate to your Rtools42 installation folder, and find the `ucrt64` executable.
 
 Copy and paste the following line into the Terminal and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP.
 
 ```bash
-pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost mingw-w64-ucrt-x86_64-jsoncpp bison flex make autoconf automake git wget cmake
+pacman -Syu toolchain boost jsoncpp bison flex make autoconf automake git wget cmake
 ```
 
 #### Downloading and Building ReadStat (on Rtool42)
@@ -87,7 +87,7 @@ This will build and install these libraries inside the Rtool42 environment where
 
 It's important that Rtool42 is in your user variables PATH. You can check this by opening the "Edit the system environment variables" setting, and selecting the "Environment Variables", and finally adding the path to your UCRT bin folder to the PATH variable, e.g., `C:\rtools42\ucrt64\bin`.
 
-> ⚠️ I'm not 100% sure what the correct order is, but you most likely need to have the Rtools path under the Qt path.
+> ⚠️ **I'm not 100% sure what the correct order is, but you most likely need to have the Rtools path under the Qt path. Moreover, please make sure that both Qt, and Rtools42 are the first two items after the last item mentioning the `SYSTEM`, or `WINDOWS`.** 
 
 ### Installing Conan
 
@@ -139,11 +139,13 @@ If this is your first time preparing your project, CMake is going to configure *
 -- Build files have been written to: <path-to-your-build-folder>
 ```
 
-#### ⚠️ R-Interface 
+#### R-Interface 
 
-CMake makes sure that it build the R-Interface using the MinGW x64 libraries every time (if necessary). So, unlike before, you don't need to anything special to have the R-Interface build and prepared, however, you need to make sure that the `C:\msys64\mingw64\bin` is in your PATH. You can add this address to your Build Environment path inside the Qt Creator.
+CMake makes sure that it build the R-Interface using the MinGW x64 libraries every time (if necessary). So, unlike before, you don't need to anything special to have the R-Interface build and prepared, however, you need to make sure that the `C:\rtools42\ucrt64\bin` is in your PATH. You can add this address to your Build Environment path inside the Qt Creator.
 
 Find the "Build Environment" section under the "Projects -> Build", and expand its details by clicking the "Details". Here, you need to find the `Path` variable, select it, press "Edit", and add the mentioned path to the list.
+
+> ⚠️ One of the most common issues that you may run into is that Qt Creator, and CMake cannot figure out where compiler binaries are, and you'll get an error like this, `The C compiler "C:/rtools42/ucrt64/bin/qcc.exe"is not able to compile a simple test program`. In order to resolve this, you need to make sure that the order of items in `Qt Creator → Projects → Build Environment → Path` is similiar to your environment variables, as described above.
 
 #### Configuring the CMake Variables
 
