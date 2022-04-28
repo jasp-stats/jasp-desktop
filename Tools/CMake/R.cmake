@@ -21,6 +21,11 @@
 #     download, unpacked, and placed in the right location. You can find the 
 #     appropriate version in `etc/Makeconf` and the binary here,
 #     https://github.com/fxcoudert/gfortran-for-macOS/releases
+#   - On GitHub Action,
+#     - You probably want to unpack the `https://static.jasp-stats.org/development/gfortran-8.2-Mojave.dmg`
+#       into a `.tar.gz`. I think this might elimite some possible issues with the unpacking on
+#       their environment. If you have decided to do this, make sure that the structure of the 
+#       archive is similiar and things land where they are expected.
 #
 # Todos:
 #
