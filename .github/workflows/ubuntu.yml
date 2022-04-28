@@ -3,8 +3,7 @@ name: Ubuntu
 on:
   push:
     branches:
-      - github-action-tests
-      - qt-6.2-cmake-cpp-17
+      - github-action-debug
 
 jobs:
   qt:
@@ -26,6 +25,8 @@ jobs:
           brew install qt jsoncpp boost libarchive
       - uses: actions/checkout@v2
       - name: Configure
-        run: cmake -S . -B build -D GITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DINSTALL_JASP_REQUIRED_LIBRARIES=ON -DLINUX_LOCAL_BUILD=ON -DINSTALL_R_MODULES=ON
+        run: |
+          git submodule update --init
+          cmake -S . -B build -D GITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DINSTALL_JASP_REQUIRED_LIBRARIES=ON -DLINUX_LOCAL_BUILD=ON
       - name: Build
         run: cmake --build build
