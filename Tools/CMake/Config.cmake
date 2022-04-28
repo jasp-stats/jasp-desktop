@@ -11,6 +11,7 @@
 #     don't want to pollute your local R installation with JASP's build
 #     artifacts
 #   - `FLATPAK_USED` indicates whether we are building on Flatpak
+#     - [ ] This should probably be called `FLATPAK_BUILD` instead.
 #
 # On macOS,
 #   - You can specifically choose to sign, `SIGN_AT_BUILD_TIME`, and timestamp
@@ -18,6 +19,12 @@
 #     - Be aware that often you don't have any other choice, and if you don't
 #       sign your libraries, the build cannot continue because macOS wouldn't
 #       allow your binaries to be called, or be executed.
+#
+# On Windows,
+#   - Generally, I think we should be using more environment variable, and CMake
+#     might have some helper tools, but I didn't look into it yet,
+#     - This is especially important on GitHub Action where the pathing might not
+#       be trivial. 
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Config)
 
