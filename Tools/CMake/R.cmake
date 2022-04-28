@@ -9,23 +9,23 @@
 #   - Installing RInside, and Rcpp
 #   - Interpolating all the necessary paths and passing them to the rest of the CMake
 #
-# On macOS,
+# on macOS,
+#   - Because we are cross-building, I am downloading the right Fortran, place it inside the
+#     R.framework, and make sure that R can find it. Most of this is being done in the
+#     PatchR.cmake were I modify the `etc/Makeconf`. On ARM, R uses the Fortran 11, or so; and
+#     on x86_64, it is using the Fortran 8.
 #
-#
-# On Windows,
-#
-#
-# On Linux,
+# Notes:
+#   - Be aware that at some point, R will move to use a different Fortran, and 
+#     when that happens, someone needs to make sure that the right Fortran is being
+#     download, unpacked, and placed in the right location. You can find the 
+#     appropriate version in `etc/Makeconf` and the binary here,
+#     https://github.com/fxcoudert/gfortran-for-macOS/releases
 #
 # Todos:
 #
-# - [ ] Maybe, the entire R.framework prepration should be a target. The advantages
-#       is that it can be triggered independently, however, it will only be
-#       done during the build stage and not configuration
-# - [ ] All the code inside the if(APPLE), and if(WIN32) should be turned into
+#   - [ ] All the code inside the if(APPLE), and if(WIN32) should be turned into
 #       a CMake module. I leave this for later cleanup
-# - [ ] Both R package installer can be improved by some caching, now cleaning can be
-#       a bit brutal
 #
 
 set(R_BINARY_REPOSITORY "https://static.jasp-stats.org/development")
