@@ -2,6 +2,7 @@
 
 var jasp = null;
 var scrollAtAll = true;
+var analysesGlobal = null;
 
 $(document).ready(function () {
 	var d		= new Date();
@@ -33,6 +34,8 @@ $(document).ready(function () {
 	var showInstructions	= false;
 	var wasLastClickNote	= false;
 	var analyses			= new JASPWidgets.Analyses({ className: "jasp-report" });
+
+	analysesGlobal 			= analyses
 
 	window.setZoom			= function (zoom)			{ document.body.style.zoom = "" + Math.floor(zoom * 100) + "%";	}
 	window.reRenderAnalyses = function ()				{ analyses.reRender();											}

@@ -1,10 +1,14 @@
 JASPWidgets.reportNode = Backbone.Model.extend({
 
 	defaults: {
-		title: "",
-        rawtext: "",
-		html: "",
-		report: false
+		title: 			"",
+        rawtext: 		"",
+		html: 			"",
+		topHtml: 		"",
+		warningIndex:	0,
+		warningsTotal:	0,
+		analysisId:		-1,
+		report: 		false
 	}
 });
 
@@ -78,7 +82,18 @@ JASPWidgets.reportNodePrimitive = JASPWidgets.View.extend({
 			this.$el.append("<div class='jaspReportRealLocation'>" + this.model.get("html") + "</div>");
 
 			if(this.model.get("report"))
-				this.$el.append("<div class='jaspReportTop'>" + this.model.get("html") + "</div>");
+			{
+				modelText = this.model.get("topHtml")
+				//We calculate the z based on analysisposition and warning within the analysis.
+				//Using totalAnalyses-analysisIndex works most of the time. Except when loading a jasp-file.
+				// so lets just assume people won't really be adding more than 30 analyses *AND* run reports
+				// even then it will just jump to analyses in the wrong order so nothing lost really
+				analysisZ = 1234 * (Math.max(30, analysesGlobal.analysesTotal()) - analysesGlobal.analysisIndex(this.model.get("analysisId")))
+				desiredZ  = analysisZ + (this.model.get("warningsTotal") - this.model.get("warningIndex"));
+				console.log("jaspReport render called for id " + this.model.get("analysisId") + " and its desiredZ is: " + desiredZ)
+				modelText = modelText.replace("~ZZZ~", String(desiredZ))
+				this.$el.append(modelText);
+			}
 		}
 	},
 

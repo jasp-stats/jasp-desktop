@@ -149,6 +149,19 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		//console.log(`bottomSpacer height set to ${height}`);
 	},
 
+	analysisIndex: function(analysisId)
+	{
+		for (var i = 0; i < this.analyses.length; i++)
+			if (this.analyses[i].model.get("id") === analysisId)
+				return i;
+		return -1;
+	},
+
+	analysesTotal: function()
+	{
+		return this.analyses.length;
+	},
+
 	move: function(fromId, toId) {
 		var fromIndex = -1, toIndex = -1
 		for (var i = 0; i < this.analyses.length; i++) {
@@ -164,6 +177,9 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 			this.analyses.splice(toIndex, 0, this.analyses.splice(fromIndex, 1)[0])
 			this.views.splice(toIndex + 1, 0, this.views.splice(fromIndex + 1, 1)[0])
 
+			fromAnalysis.render()
+			toAnalysis.render()
+
 			fromAnalysis.$el.slideUp(200, function () {
 				if (toIndex > fromIndex)
 					toAnalysis.$el.after(fromAnalysis.$el)
@@ -171,7 +187,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 					toAnalysis.$el.before(fromAnalysis.$el)
 				fromAnalysis.$el.slideDown(200)
 			})
-
+			
 			this.setBottomSpacerHeight();
 		}
 	},

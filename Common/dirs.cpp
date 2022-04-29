@@ -44,8 +44,6 @@
 
 using namespace std;
 
-
-
 string Dirs::_reportingDir = "";
 
 string Dirs::tempDir()
