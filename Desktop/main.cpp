@@ -85,7 +85,7 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 #define QSTRING_FILE_ARG QString::fromStdString
 #endif
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & LC_CTYPE_C, bool & LC_CTYPE_system, Json::Value & dbJson)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & LC_CTYPE_C, bool & LC_CTYPE_system, Json::Value & dbJson, QString & reportingDir)
 {
 	filePath		= "";
 	unitTest		= false;
@@ -94,6 +94,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 	logToFile		= false;
 	hideJASP		= false;
 	safeGraphics	= false;
+	reportingDir	= "";
 	LC_CTYPE_C		= false;
 	LC_CTYPE_system	= false;
 	timeOut			= 10;
@@ -137,7 +138,10 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		else if(args[arg] == unitTestArg)
 		{
 			if(arg >= args.size() - 1)
+			{
+				std::cerr << "Argument for unit test file missing!" << std::endl;
 				letsExplainSomeThings = true;
+			}
 			else
 			{
 				filePath = args[arg + 1];
@@ -159,6 +163,30 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 				}
 
 				unitTest = true;
+			}
+		}
+		else if(args[arg] == "--report")
+		{
+			if(arg >= args.size() - 1)
+			{
+				std::cerr << "Argument for reporting directory missing!" << std::endl;
+				letsExplainSomeThings = true;
+			}
+			else
+			{
+				arg++;
+				std::string dirPath = args[arg];
+
+				QDir testMe(QSTRING_FILE_ARG(dirPath.c_str()));
+				testMe.mkpath(".");
+
+				if(!testMe.exists())
+				{
+					std::cerr << "Directory to write reports to " << testMe.absolutePath().toStdString() << " does not exist and cannot be created!" << std::endl;
+					letsExplainSomeThings = true;
+				}	
+				else
+					reportingDir = testMe.absolutePath();
 			}
 		}
 		else if(args[arg].size() > timeOutArg.size() && args[arg].substr(0, timeOutArg.size()) == timeOutArg)
@@ -219,6 +247,12 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 			}
 		}
 	}
+	
+	if(filePath == "" && reportingDir != "")
+	{
+		std::cerr << "If you want JASP to run in reportingmode you should also give it a jaspfile to run off." << std::endl;
+		letsExplainSomeThings = true;
+	}
 
 	if(letsExplainSomeThings)
 	{
@@ -228,8 +262,9 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 					<< "For both testing arguments there is the optional --save argument, which specifies that JASP should save the file after refreshing it.\n"
 					<< "For both testing arguments there is the optional --timeout argument, which specifies how many minutes JASP will wait for the analyses-refresh to take. Default is 10 minutes.\n"
 					<< "If --logToFile is specified then JASP will try it's utmost to write logging to a file, this might come in handy if you want to figure out why JASP does not start in case of a bug.\n"
-					<< "If --hide is specified then JASP will not be shown during recursive testing.\n"
-					<< "If --safeGraphics is specified then JASP will be started with software rendering enabled.\n"
+					<< "If --hide is specified then JASP will not be shown during recursive testing or reporting.\n"
+					<< "If --safeGraphics is specified then JASP will be started with software rendering enabled, this will be saved to your settings.\n"
+					<< "If --report is specified then JASP will be started in reporting mode, which requires a path to where you would like to store the results. This is usually used in conjunction with a service/daemon and in that case it might make sense to also pass --hide. Don't forget to also pass a jasp filename otherwise it won't have anything to run...\n"
 			   #ifdef _WIN32
 					<< "If --setLC_CTYPE_C is specified JASP will make sure LC_CTYPE is set to \"C\" for the engine, --setLC_CTYPE_system is specified the system default is used."
 					<< "If --junctions is specified JASP will recreate the junctions in Modules/ to renv-cache/, this needs to be done at least once after install, but is usually triggered automatically."
@@ -329,6 +364,7 @@ int main(int argc, char *argv[])
 #endif
 
 	std::string filePath;
+	QString		reportingDir;
 	bool		unitTest,
 				dirTest,
 				save,
@@ -344,10 +380,13 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
 	
-	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, setLC_CTYPE_C, setLC_CTYPE_system, dbJson);
+	parseArguments(argc, argv, filePath, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, setLC_CTYPE_C, setLC_CTYPE_system, dbJson, reportingDir);
 	
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
+	
+	if(reportingDir!="")	Settings::setValue(Settings::REPORT_SHOW, true);
+	
 	
 	//Make sure the strings are the same as enum winLcCtypeSetting in enginedefinitions.h
 	if(setLC_CTYPE_C)		Settings::setValue(Settings::LC_CTYPE_C_WIN, "alwaysC"); 
@@ -369,6 +408,12 @@ int main(int argc, char *argv[])
 				QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
 				args.push_back("--disable-gpu");
 				putenv("LIBGL_ALWAYS_SOFTWARE=1");
+			}
+			
+			if(hideJASP)
+			{
+				args.push_back("-platform");
+				args.push_back("minimal");
 			}
 
 			PlotSchemeHandler::createUrlScheme(); //Needs to be done *before* creating PlotSchemeHandler instance and also before QApplication is instantiated
@@ -434,7 +479,7 @@ int main(int argc, char *argv[])
 			}
 #endif
 			
-			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson);
+			a.init(filePathQ, unitTest, timeOut, save, logToFile, dbJson, reportingDir);
 			
 			try 
 			{

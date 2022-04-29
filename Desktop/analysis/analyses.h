@@ -74,7 +74,8 @@ public:
 	void			clear();
 	void			reload(Analysis* analysis, bool logProblem);
 
-	bool			allFresh() const;
+	bool			allFresh()		const;
+	bool			allFinished()	const;
 	void			setAnalysesUserData(Json::Value userData);
 	void			loadAnalysesFromDatasetPackage(bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel);
 

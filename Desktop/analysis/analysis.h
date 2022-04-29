@@ -156,11 +156,13 @@ public:
 
 	bool isEmpty()			const { return status() == Empty;		}
 	bool isAborted()		const { return status() == Aborted;		}
+	
 	bool isSaveImg()		const { return status() == SaveImg;		}
 	bool isRewriteImgs()	const { return status() == RewriteImgs;	}
 	bool isEditImg()		const { return status() == EditImg;		}
 	bool isRunningImg()		const { return status() == RunningImg;	}
-	bool isFinished()		const { return status() == Complete || status() == ValidationError || status() == FatalError; }
+	bool isFinished()		const { return status() == Complete || isErrorState(); }
+	bool isErrorState()		const { return status() == ValidationError  || status() == FatalError; }
 
 
 	void initialized(AnalysisForm* form, bool isNewAnalysis);

@@ -238,6 +238,15 @@ bool Analyses::allFresh() const
 	return true;
 }
 
+bool Analyses::allFinished() const
+{
+	for (auto idAnalysis : _analysisMap)
+		if (!idAnalysis.second->isFinished())
+			return false;
+
+	return true;
+}
+
 void Analyses::_analysisQMLFileChanged(Analysis *analysis)
 {
 	emit emptyQMLCache();

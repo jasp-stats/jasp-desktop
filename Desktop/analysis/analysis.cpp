@@ -826,7 +826,7 @@ bool Analysis::_setEditOptionsOfPlot(Json::Value & results, const std::string & 
 void Analysis::setErrorInResults(const std::string & msg)
 {
 	Json::Value errorResults		= Json::objectValue;
-	errorResults["error"]			= 1;
+	errorResults["error"]			= true;
 	errorResults["errorMessage"]	= msg;
 	errorResults["title"]			= title();
 

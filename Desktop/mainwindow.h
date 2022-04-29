@@ -52,6 +52,7 @@
 #include "results/resultmenumodel.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
+#include "utilities/reporter.h"
 #include "widgets/filemenu/filemenu.h"
 
 #include "utilities/languagemodel.h"
@@ -88,6 +89,7 @@ public:
 	void open(QString filepath);
 	void open(const Json::Value & dbJson);
 	void testLoadedJaspFile(int timeOut, bool save);
+	void reportHere(QString dir);
 
 	~MainWindow() override;
 
@@ -275,6 +277,7 @@ private:
 	PlotEditorModel				*	_plotEditorModel		= nullptr;
 	JaspTheme					*	_jaspTheme				= nullptr;
 	Upgrader					*	_upgrader				= nullptr;
+	Reporter					*	_reporter				= nullptr;
 
 	QSettings						_settings;
 
@@ -301,7 +304,7 @@ private:
 									_savingForClose			= false,
 									_welcomePageVisible		= true,
 									_checkAutomaticSync		= false;
-
+									
 	QFont							_defaultFont;
 };
 
