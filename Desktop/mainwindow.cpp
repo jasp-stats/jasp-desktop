@@ -91,7 +91,6 @@
 #include "boost/iostreams/stream.hpp"
 #include <boost/iostreams/device/null.hpp>
 
-
 using namespace std;
 using namespace Modules;
 
@@ -544,6 +543,14 @@ void MainWindow::loadQML()
 	Log::log() << "Loading HelpWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
+
+	for(const auto & keyval : JaspTheme::themes())
+	{
+		connect(keyval.second,		&JaspTheme::currentThemeNameChanged,			_preferences,		&PreferencesModel::currentThemeNameHandler	);
+		connect(keyval.second,		&JaspTheme::currentThemeReady,					_preferences,		&PreferencesModel::currentThemeReady		);
+		connect(_preferences,		&PreferencesModel::uiScaleChanged,				keyval.second,		&JaspTheme::uiScaleHandler					);
+		connect(_preferences,		&PreferencesModel::maxFlickVelocityChanged, 	keyval.second,		&JaspTheme::maxFlickVeloHandler				);
+	}		
 
 	connect(_preferences, &PreferencesModel::uiScaleChanged,		DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
 	connect(_preferences, &PreferencesModel::interfaceFontChanged,	DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);

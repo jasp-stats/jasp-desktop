@@ -6,6 +6,7 @@ PreferencesModelBase* PreferencesModelBase::_singleton = nullptr;
 PreferencesModelBase::PreferencesModelBase(QObject *parent)
 	: QObject{parent}
 {
+	assert(!_singleton);
 	_singleton = this;
 }
 

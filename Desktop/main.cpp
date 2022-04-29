@@ -204,17 +204,27 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		else
 		{
 			const std::string	remoteDebuggingPort = "--remote-debugging-port=",
+								webEngineArgs		= "--webEngineArgs", // This is apparently necessary to use in front of --remote-debugging-port nowadays, see: https://doc.qt.io/qt-6/qtwebengine-debugging.html
 								qmlJsDebug			= "-qmljsdebugger",
 								dashing				= "--",
 								psn					= "-psn";
 
+			static bool foundWebEngineArgs = false;
+
 			auto startsWith = [&](const std::string checkThis)
 			{
-				return args[arg].size() > checkThis.size() && args[arg].substr(0, checkThis.size()) == checkThis;
+				return args[arg].size() >= checkThis.size() && args[arg].substr(0, checkThis.size()) == checkThis;
 			};
 
 			if(args[arg] == "-platform")
 				arg++; // because it is always followed by the actual platform one wants to use (minimal for example)
+			else if(startsWith(webEngineArgs))
+				foundWebEngineArgs = true;
+			else if(startsWith(remoteDebuggingPort) && !foundWebEngineArgs)
+			{
+				std::cerr << "If you want to use a remote debugging port enter the following: '--webEngineArgs --remote-debugging-port=12345' otherwise webengine will ignore it." << std::endl;
+				exit(2);
+			}
 			else if(!(startsWith(remoteDebuggingPort) || startsWith(qmlJsDebug))) //Just making sure it isnt something else that should be allowed.
 			{
 				if(startsWith(dashing))
@@ -398,6 +408,12 @@ int main(int argc, char *argv[])
 				args.push_back("--disable-gpu");
 				char dst[] = "LIBGL_ALWAYS_SOFTWARE=1";
 				putenv(dst);
+			}
+			
+			if(hideJASP)
+			{
+				args.push_back("-platform");
+				args.push_back("minimal");
 			}
 			
 			if(hideJASP)
