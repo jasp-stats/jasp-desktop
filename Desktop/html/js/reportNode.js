@@ -1,45 +1,16 @@
-JASPWidgets.htmlNode = Backbone.Model.extend({
+JASPWidgets.reportNode = Backbone.Model.extend({
 
 	defaults: {
 		title: "",
-		citation: null,
         rawtext: "",
-		text: "",
-		class: "",
-		maxWidth: "15cm",
-		elementType: "p"
+		html: "",
+		report: false
 	}
 });
 
-//So this function is global, and im fairly sure that is bad practice. My bad. But Im leaving it like this for, uhm, now.
-convertModelToHtml = function(model)
-{
-	var optText			= model.get("text");
-	var optClass		= model.get("class");
-	var optMaxWidth		= model.get("maxWidth");
-	var optElementType	= model.get("elementType");
+JASPWidgets.reportNodeView = JASPWidgets.objectView.extend({
 
-	if(optElementType === undefined || optElementType === null)
-		optElementType = "p";
-
-	if(optClass === undefined || optClass === null)
-		optClass = "";
-
-	if(optText === undefined || optText === null)
-		optText = "";
-
-	var html = '<span style="max-width:'+optMaxWidth+'; display:block;">';
-	if(optElementType === "errorMsg")	html = '<div class="fatalError analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"/>' + optText + '</div>'
-	else if(optElementType === "")		html +=														optText + "</span>";
-	else if(optClass === "")			html += '<'+ optElementType +' >' +							optText + '</'+ optElementType +'></span>';
-	else								html += '<'+ optElementType +' class="'+ optClass +'">' +	optText + '</'+ optElementType +'></span>';
-
-	return html;
-}
-
-JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
-
-	menuName: "HtmlNode",
+	menuName: "ReportNode",
 
 	 attachToolbar: function($toolbar) {
 		 var title = this.model.get("title");
@@ -55,7 +26,7 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 		 exportParams.process = JASPWidgets.ExportProperties.process.copy;
 		 exportParams.includeNotes = false;
 
-		 pushTextToClipboard({raw: this.model.get("rawtext"), html: convertModelToHtml(this.model) } , exportParams)
+		 pushTextToClipboard({raw: this.model.get("rawtext"), html: this.model.get("html") } , exportParams)
 		 return true;
 	 },
 
@@ -90,19 +61,19 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 			return self.$el.find('th, td:not(.squash-left)');
 		};
 
-		var htmlPrimitive = new JASPWidgets.htmlNodePrimitive({ model: this.model, className: "jasp-html-primitive jasp-display-primitive" });
-		this.localViews.push(htmlPrimitive);
-		this.views.push(htmlPrimitive);
+		var reportPrimitive = new JASPWidgets.reportNodePrimitive({ model: this.model, className: "jasp-report-primitive jasp-display-primitive" });
+		this.localViews.push(reportPrimitive);
+		this.views.push(reportPrimitive);
 	},
 
 	disableTitleExport: true,
 });
 
 
-JASPWidgets.htmlNodePrimitive = JASPWidgets.View.extend({
+JASPWidgets.reportNodePrimitive = JASPWidgets.View.extend({
 
 	render: function () {
-		this.$el.append(convertModelToHtml(this.model));
+		this.$el.append(this.model.get("html"));
 	},
 
 	getExportAttributes: function (element, exportParams) {

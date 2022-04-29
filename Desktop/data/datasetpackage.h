@@ -143,6 +143,7 @@ public:
 				bool				isReady()							const	{ return _analysesHTMLReady;			}
 				bool				isLoaded()							const	{ return _isLoaded;						 }
 				bool				isArchive()							const	{ return _isArchive;					  }
+				bool				isJaspFile()						const	{ return _isArchive;					  } ///< for readability
 				bool				isModified()						const	{ return _isModified;					   }
 				std::string			dataFilter()						const	{ return _dataFilter;						}
 				std::string			initialMD5()						const	{ return _initialMD5;						 }

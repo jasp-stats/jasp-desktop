@@ -142,7 +142,8 @@ public:
 	bool isRewriteImgs()	const { return status() == RewriteImgs;	}
 	bool isEditImg()		const { return status() == EditImg;		}
 	bool isRunningImg()		const { return status() == RunningImg;	}
-	bool isFinished()		const { return status() == Complete || status() == ValidationError || status() == FatalError; }
+	bool isFinished()		const { return status() == Complete || isErrorState(); }
+	bool isErrorState()		const { return status() == ValidationError  || status() == FatalError; }
 
 	std::string				qmlFormPath(bool addFileProtocol = true, bool ignoreReadyForUse = false)	const	override;
 	void Q_INVOKABLE		createForm(QQuickItem* parentItem = nullptr)		override;

@@ -231,7 +231,6 @@ bool Analyses::allFresh() const
 }
 
 
-
 Json::Value Analyses::asJson() const
 {
 	Json::Value analysesJson		= Json::objectValue,
